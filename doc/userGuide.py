@@ -15,24 +15,34 @@
 #
 # #PS after commands that will be executed.
 #
+# create directory log if not exist
+import os, sys
 
-#file importSimuPOP.log
+if not os.path.isdir('log'):
+  try:
+    os.mkdir('log')
+  except:
+    print "Failed to make output directory log"
+    sys.exit(1)
+  
+
+#file log/importSimuPOP.log
 from simuPOP import *
 #end
 
-#file importSimuPOPOpt.log
+#file log/importSimuPOPOpt.log
 import simuOpt
 simuOpt.setOptions(optimized=False, longAllele=True)
 from simuPOP import *
 #end
 
-#file addSysPath.log
+#file log/addSysPath.log
 import sys
 sys.path.append('path/to/simuPOP')
 from simuPOP import *
 #end
 
-#file simpleExample.log
+#file log/simpleExample.log
 from simuPOP import *
 from simuUtil import *
 simu = simulator(
@@ -54,7 +64,7 @@ simu.evolve(
 
 
 
-#file genoStru.log
+#file log/genoStru.log
 # create a population, most parameters have default values
 pop = population(size=5, ploidy=2, loci=[5,10],
     lociDist=[range(0,5),range(0,20,2)],
@@ -68,7 +78,7 @@ print pop.locusDist(2)
 print pop.alleleName(1)
 #end
 
-#file indGenoStru.log
+#file log/indGenoStru.log
 # get the fourth individual of the population
 ind = pop.individual(3)
 # access genotypic structure info
@@ -81,16 +91,16 @@ simu = simulator(pop, randomMating(), rep=3)
 print simu.numChrom()
 #end
 
-#file absIndex.log
+#file log/absIndex.log
 print pop.chromLocusPair(7)
 print pop.absLocusIndex(1,1)
 #end
 
-#file helpPopInit.log
+#file log/helpPopInit.log
 help(population.__init__)
 #end
 
-#file popInit.log
+#file log/popInit.log
 # a Wright-Fisher population
 WF = population(size=100, ploidy=1, loci=[1])
 
@@ -108,7 +118,7 @@ InitByFreq(pop, [.25]*4)
 #end
 
 
-#file popSaveLoad.log
+#file log/popSaveLoad.log
 # save it in various formats, default format is "txt"
 pop.savePopulation("pop.txt")
 pop.savePopulation("pop.xml", format="xml")
@@ -118,7 +128,7 @@ pop.savePopulation("pop.bin", format="bin")
 pop1 = LoadPopulation("pop.xml", format="xml")
 #end
 
-#file saveFstat.log
+#file log/saveFstat.log
 from simuUtil import *
 SaveFstat(pop, "pop.dat", maxAllele=9)
 print open("pop.dat").read()
@@ -129,9 +139,10 @@ import os
 os.remove('pop.xml')
 os.remove('pop.bin')
 os.remove('pop.dat')
+os.remove('pop.txt')
 
 
-#file InitByFreq.log
+#file log/InitByFreq.log
 def InitByFreq(pop, *args, **kwargs):
   initByFreq(*args, **kwargs).apply(pop)
 
@@ -139,14 +150,14 @@ InitByFreq(pop, [.2, .3, .4, .1])
 #end
 
 
-#file dumpPop.log
+#file log/dumpPop.log
 # .apply form
 initByFreq([.2, .3, .4, .1]).apply(pop)
 # function form
 Dump(pop)
 #end
 
-#file popStru.log
+#file log/popStru.log
 print pop.popSize()
 print pop.numSubPop()
 print pop.subPopSize(0)
@@ -157,7 +168,7 @@ print pop.subPopIndPair(3)
 print pop.absIndIndex(1,1)
 #end
 
-#file ind.log
+#file log/ind.log
 # get an individual
 ind = pop.individual(9)
 # oops, wrong index
@@ -181,14 +192,14 @@ print ind.affectedChar()
 print ind.sexChar()
 #end
 
-#file randomSample.log
+#file log/randomSample.log
 # random sample
 # [0]: RandomSample already return
 #  a list of samples even if times=1 (default)
 Dump( RandomSample(pop, 3)[0])
 #end
 
-#file popVars.log
+#file log/popVars.log
 from simuUtil import listVars
 listVars(pop.vars(), useWxPython=False)
 Stat(pop, popSize=1, alleleFreq=[0])
@@ -198,7 +209,7 @@ print pop.vars()['alleleNum'][0][1]
 print pop.dvars().alleleNum[0][1]
 #end
 
-#file localNamespace.log
+#file log/localNamespace.log
 print pop.evaluate('alleleNum[0][1] + alleleNum[0][2]')
 pop.execute('newPopSize=int(popSize*1.5)')
 listVars(pop.vars(), level=1, useWxPython=False)
@@ -211,7 +222,7 @@ newPopSize
 #turnOnDebug(DBG_SIMULATOR)
 #turnOnDebug(DBG_UTILITY)
 
-#file expr.log
+#file log/expr.log
 simu = simulator(population(10),noMating(), rep=2)
 # evaluate an expression in different areas
 print simu.vars(0)
@@ -223,17 +234,17 @@ simu.population(0).execute("myRep=2+rep*rep")
 simu.population(1).execute("myRep=2*rep")
 print simu.vars(0)
 #end
-#file expreval.log
+#file log/expreval.log
 simu.step([ pyExec("myRep=2+rep*rep") ])
 print simu.vars(0)
 #end
 
-#file calcStat.log
+#file log/calcStat.log
 Stat(pop, popSize=1, alleleFreq=range(0, pop.totNumLoci()),
   heteroFreq=range(0,pop.totNumLoci()), Fst=[0])
 #end
 
-#file calcFstH.log
+#file log/calcFstH.log
 def calc_Fst_H(pop, loci):
   """ calculate expected heterozygosities at given loci
     Formula etc please refer to user's manual
@@ -262,7 +273,7 @@ def calc_Fst_H(pop, loci):
       s.Fit_H['%d-%d' % (loc,ale)] = (H_T - H_I)/H_T
 #end
 
-#file wrapFstH.log
+#file log/wrapFstH.log
 def Fst_H(loci,**kwargs):
   parm = ''  
   for (k,v) in kwargs.items():
@@ -274,14 +285,14 @@ def Fst_H(loci,**kwargs):
   return eval( cmd )
 #end
 
-#file useFstH.log
+#file log/useFstH.log
 simu.apply([ initByFreq([.3,.5,.2]), 
   stat(popSize=1, heteroFreq=[0]), 
   Fst_H([0]) ] )
 listVars(simu.vars(0), level=1, useWxPython=False)
 #end
 
-#file operatorstages.log
+#file log/operatorstages.log
 d = dumper()
 print d.canApplyPreMating()
 print d.canApplyDuringMating()
@@ -289,7 +300,7 @@ print d.canApplyDuringMating()
 print d.canApplyPostMating()
 #end
 
-#file operatorgen.log
+#file log/operatorgen.log
 simu = simulator(population(1),binomialSelection(), rep=3)
 op1 = output("a", begin=5, end=20, step=3)
 op2 = output("a", begin=-5, end=-1, step=2)
@@ -300,7 +311,7 @@ simu.evolve( [ pyEval(r"str(gen)+'\n'", begin=5, end=-1, step=2)],
 #end
 
 
-#file operatorgrp.log
+#file log/operatorgrp.log
 from simuUtil import *
 simu = simulator(population(1),binomialSelection(), rep=4,
                  grp=[1,2,1,2])
@@ -308,7 +319,7 @@ simu.apply([ pyEval(r"grp+3", grp=1),
              pyEval(r"grp+6", grp=2), tab(), endl() ])
 #end
 
-#file operatoroutput.log
+#file log/operatoroutput.log
 simu = simulator(population(100),randomMating(), rep=2)
 simu.step([ stat(alleleFreq=[0], output=">"), 
     tab(), endl() ],
@@ -329,7 +340,9 @@ simu.step([ stat(alleleFreq=[0], output=outfile),
 print open("a.txt").read()
 #end
 
-#file operatoroutputexpr.log
+os.remove('a.txt')
+
+#file log/operatoroutputexpr.log
 outfile="'>>a'+str(rep)+'.txt'"
 simu.step([ stat(alleleFreq=[0], outputExpr=outfile), 
     output("\n", outputExpr=outfile) ],
@@ -338,7 +351,7 @@ print open("a0.txt").read()
 print open("a1.txt").read()
 #end
 
-#file simulatorsaveload.log
+#file log/simulatorsaveload.log
 simu.saveSimulator("s.txt")
 simu.saveSimulator("s.xml", format="xml")
 simu.saveSimulator("s.bin", format="bin")
@@ -347,7 +360,14 @@ simu2 = LoadSimulator("s.xml", randomMating(), format="xml")
 simu3 = LoadSimulator("s.bin", randomMating(), format="bin")
 #end
 
-#file initByFreq.log
+# remove these files
+os.remove('s.txt')
+os.remove('s.xml')
+os.remove('s.bin')
+os.remove('a0.txt')
+os.remove('a1.txt')
+
+#file log/initByFreq.log
 help(initByFreq.__init__)
 simu = simulator( population(subPop=[2,3], loci=[5,7]),
     randomMating(), rep=1)
@@ -357,13 +377,13 @@ simu.apply([
   ])
 #end
 
-#file initByValue.log
+#file log/initByValue.log
 simu.apply([
     initByValue([1]*5 + [2]*7 + [3]*5 +[4]*7),
     dumper(alleleOnly=True)])
 #end
 
-#file pyInit.log
+#file log/pyInit.log
 help(pyInit.__init__)
 def initAllele(ind, p, sp):
   return sp + ind + p
@@ -373,11 +393,11 @@ simu.apply([
     dumper(alleleOnly=True, dispWidth=2)])
 #end
 
-#file migratorhelp.log
+#file log/migratorhelp.log
 help(migrator.__init__)
 #end
 
-#file pyMigrator.log
+#file log/pyMigrator.log
 help(pyMigrator.__init__)
 
 simu = simulator(population(subPop=[2,3], loci=[2,5]),
@@ -392,18 +412,18 @@ simu.apply( [
 
 #end
 
-#file mutatorhelp.log
+#file log/mutatorhelp.log
 help(mutator.__init__)
 #end
 
-#file kamMutator.log
+#file log/kamMutator.log
 simu = simulator(population(size=5, loci=[3,5]), noMating())
 simu.apply([
     kamMutator( rate=[.2,.6,.5], atLoci=[0,2,6], maxAllele=9),
     dumper(alleleOnly=True)])
 #end
 
-#file smmMutator.log
+#file log/smmMutator.log
 simu = simulator(population(size=3, loci=[3,5]), noMating())
 simu.apply([
     initByFreq( [.2,.3,.5]),
@@ -411,7 +431,7 @@ simu.apply([
     dumper(alleleOnly=True, stage=PrePostMating)])
 #end
 
-#file gsmMutator.log
+#file log/gsmMutator.log
 simu.apply([
     initByFreq( [.2,.3,.5]),
     gsmMutator(rate=1, p=.8, incProb=.8),
@@ -428,7 +448,7 @@ simu.apply([
 
 #end
 
-#file pyMutator.log
+#file log/pyMutator.log
 def mut(x):
   return 8
 
@@ -437,11 +457,11 @@ simu.apply([
   dumper(alleleOnly=True)])
 #end
 
-#file recombinatorhelp.log
+#file log/recombinatorhelp.log
 help(recombinator.__init__)
 #end
 
-#file recombinator.log
+#file log/recombinator.log
 simu = simulator(population(4, loci=[4,5,6]),
     randomMating())
 simu.step([
@@ -458,11 +478,11 @@ simu.step([
 )
 #end
 
-#file selectorhelp.log
+#file log/selectorhelp.log
 help(basicSelector.__init__)
 #end
 
-#file basicSelector.log
+#file log/basicSelector.log
 simu = simulator(
     population(size=1000, ploidy=2, loci=[1]),
     randomMating())
@@ -477,7 +497,7 @@ simu.evolve([
     end=300)
 #end
 
-#file pySelector.log
+#file log/pySelector.log
 simu = simulator(
     population(size=1000, ploidy=2, loci=[3]),
     randomMating() )
@@ -505,7 +525,7 @@ simu.evolve([
     end=100)
 #end
 
-#file pySubset.log
+#file log/pySubset.log
 simu = simulator(population(subPop=[2,3], loci=[3,4]),
     randomMating())
 simu.apply([
@@ -516,14 +536,14 @@ simu.apply([
 #end
 
 
-#file expressionhelp.log
+#file log/expressionhelp.log
 help(pyEval.__init__)
 #end
 
 #turnOnDebug(DBG_ALL)
 #turnOnDebug(DBG_SIMULATOR)
 
-#file varPlotter.log
+#file log/varPlotter.log
 from simuUtil import *
 from simuRPy import *
 
@@ -547,7 +567,7 @@ simu.evolve([
 
 #end
 
-#file scipy.log
+#file log/scipy.log
 from simuUtil import *
 from simuSciPy import *
 pop = population(size=200, ploidy=2, loci=[3,4],
@@ -573,7 +593,7 @@ simu.evolve([
 
 #end
 
-#file ifElse.log
+#file log/ifElse.log
 from simuRPy import *
 from simuUtil import *
 numRep=4
@@ -604,14 +624,14 @@ simu.evolve(
 )
 #end
 
-#file rng.log
+#file log/rng.log
 print listAllRNG()
 print rng().name()
 setRNG("ranlux389")
 print rng().name()
 #end
 
-#file rngrand.log
+#file log/rngrand.log
 r=rng()
 #help(RNG)
 for n in range(1,10):
@@ -621,7 +641,7 @@ for n in range(1,10):
 
 
 
-#file extgenostru.log
+#file log/extgenostru.log
 pop=population(1, loci=[2,3,4])
 print pop.numLoci(1)
 print pop.locusDist(2)
@@ -632,7 +652,7 @@ print pop.locusDist(2)
 print pop.arrLociDist()
 #end
 
-#file extgenotype.log
+#file log/extgenotype.log
 InitByFreq(pop, [.2,.8])
 Dump(pop, alleleOnly=1)
 ind = pop.individual(0)
@@ -650,7 +670,7 @@ a[2]=4
 Dump(pop, alleleOnly=1)
 #end
 
-#file extother.log
+#file log/extother.log
 print ind.sex()
 print ind.sexChar()
 ind.setSex(Female)
@@ -660,7 +680,7 @@ ind.setTag([1,2])
 Dump(pop)
 #end
 
-#file extsimu.log
+#file log/extsimu.log
 simu = simulator(pop, randomMating(), rep=3)
 pop1 = simu.population(1)
 ind1 = pop1.individual(0)
@@ -668,12 +688,12 @@ ind1.setAllele(3,0)
 Dump(pop1)
 #end
 
-#file extoperator.log
+#file log/extoperator.log
 simu.apply([ pyEval(stmts="pop=simu.population(rep)")])
 #end
 
 
-#file tab.log
+#file log/tab.log
 def tab(**kwargs):
   parm = ''  
   for (k,v) in kwargs.items():
@@ -683,7 +703,7 @@ def tab(**kwargs):
   return eval(cmd)
 #end
 
-#file saveFstat.tmp
+#file log/saveFstat.tmp
 def saveInFstatFormat(pop, output='', outputExpr='', maxAllele=0):
   if output != '':
     file = output
@@ -745,10 +765,10 @@ def saveInFstatFormat(pop, output='', outputExpr='', maxAllele=0):
       f.write( "\n")
   f.close()
 #end
-#PS head -15 saveFstat.tmp > saveInFstatFormat.log
-#PS rm -f saveFstat.tmp
+#PS head -15 log/saveFstat.tmp > log/saveInFstatFormat.log
+#PS rm -f log/saveFstat.tmp
 
-#file saveFstat.log
+#file log/saveFstat.log
 def saveFstat(output='', outputExpr='', **kwargs):
   # deal with additional arguments
   parm = ''
@@ -765,7 +785,7 @@ def saveFstat(output='', outputExpr='', **kwargs):
 #end
 
 
-#file expLD.log
+#file log/expLD.log
 #
 # this is an example of observing decay of LD
 from simuUtil import *
@@ -791,7 +811,7 @@ simu.evolve([
 
 
 
-#file expcomplex.log
+#file log/expcomplex.log
 #
 
 numSubPop = 100     # number of archipelagos
@@ -850,7 +870,7 @@ simu.evolve([
 
 #end
 
-#file expmigration.log
+#file log/expmigration.log
 # this is an example of complex population size change.
 # for endl and tab
 from simuUtil import *

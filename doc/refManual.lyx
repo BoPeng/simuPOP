@@ -580,7 +580,7 @@ You should be able to load simuPOP library by running command
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{importSimuPOP.log}
+\begin_inset Include \verbatiminput{log/importSimuPOP.log}
 preview false
 
 \end_inset 
@@ -622,7 +622,7 @@ is loaded
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{importSimuPOPOpt.log}
+\begin_inset Include \verbatiminput{log/importSimuPOPOpt.log}
 preview false
 
 \end_inset 
@@ -1017,7 +1017,7 @@ The following example creates a population and displays some of genotypic
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{genoStru.log}
+\begin_inset Include \verbatiminput{log/genoStru.log}
 preview false
 
 \end_inset 
@@ -1039,7 +1039,7 @@ genotypic information can be retrieved from individual, population and simulator
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{indGenoStru.log}
+\begin_inset Include \verbatiminput{log/indGenoStru.log}
 preview false
 
 \end_inset 
@@ -1095,7 +1095,7 @@ absLocusIndex(chrom,index)
 \family default 
  can be used.
  
-\begin_inset Include \verbatiminput{absIndex.log}
+\begin_inset Include \verbatiminput{log/absIndex.log}
 preview false
 
 \end_inset 
@@ -1362,7 +1362,7 @@ help(population.__init__)
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{helpPopInit.log}
+\begin_inset Include \verbatiminput{log/helpPopInit.log}
 preview false
 
 \end_inset 
@@ -1678,7 +1678,7 @@ is defined for operator
 initByFreq 
 \family default 
 as follows
-\begin_inset Include \verbatiminput{InitByFreq.log}
+\begin_inset Include \verbatiminput{log/InitByFreq.log}
 preview false
 
 \end_inset 
@@ -1842,7 +1842,7 @@ The following example demonstrate the use of these two operators:
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{dumpPop.log}
+\begin_inset Include \verbatiminput{log/dumpPop.log}
 preview false
 
 \end_inset 
@@ -1896,7 +1896,7 @@ popSize
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{popStru.log}
+\begin_inset Include \verbatiminput{log/popStru.log}
 preview false
 
 \end_inset 
@@ -2158,7 +2158,7 @@ object also has its own member functions.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{ind.log}
+\begin_inset Include \verbatiminput{log/ind.log}
 preview false
 
 \end_inset 
@@ -2265,7 +2265,7 @@ is used to display the variables.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{popVars.log}
+\begin_inset Include \verbatiminput{log/popVars.log}
 preview false
 
 \end_inset 
@@ -2301,7 +2301,7 @@ Local namespace
 \emph default 
 means that you can use dictionary items as variables duing evaluation.
  For example: 
-\begin_inset Include \verbatiminput{localNamespace.log}
+\begin_inset Include \verbatiminput{log/localNamespace.log}
 preview false
 
 \end_inset 
@@ -2619,7 +2619,7 @@ txt
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{popSaveLoad.log}
+\begin_inset Include \verbatiminput{log/popSaveLoad.log}
 preview false
 
 \end_inset 
@@ -3811,7 +3811,7 @@ LoadSimulator
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{simulatorsaveload.log}
+\begin_inset Include \verbatiminput{log/simulatorsaveload.log}
 preview false
 
 \end_inset 
@@ -3991,7 +3991,7 @@ parameter since they have to work at a certain stage.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{operatorstages.log}
+\begin_inset Include \verbatiminput{log/operatorstages.log}
 preview false
 
 \end_inset 
@@ -4067,7 +4067,7 @@ For example
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{operatorgen.log}
+\begin_inset Include \verbatiminput{log/operatorgen.log}
 preview false
 
 \end_inset 
@@ -4135,7 +4135,7 @@ Here is an example of using replicate groups:
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{operatorgrp.log}
+\begin_inset Include \verbatiminput{log/operatorgrp.log}
 preview false
 
 \end_inset 
@@ -4237,7 +4237,7 @@ The following example shows the difference between
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{operatoroutput.log}
+\begin_inset Include \verbatiminput{log/operatoroutput.log}
 preview false
 
 \end_inset 
@@ -4317,7 +4317,7 @@ output
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{operatoroutputexpr.log}
+\begin_inset Include \verbatiminput{log/operatoroutputexpr.log}
 preview false
 
 \end_inset 
@@ -4643,7 +4643,7 @@ b
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{exprvarsrep.log}
+\begin_inset Include \verbatiminput{log/exprvarsrep.log}
 preview false
 
 \end_inset 
@@ -4831,7 +4831,7 @@ operators.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{expreval.log}
+\begin_inset Include \verbatiminput{log/expreval.log}
 preview false
 
 \end_inset 
@@ -4877,7 +4877,7 @@ Run a simple simulation and generate the statistics you need.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{calcStat.log}
+\begin_inset Include \verbatiminput{log/calcStat.log}
 preview false
 
 \end_inset 
@@ -4922,7 +4922,7 @@ stat
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{calcFstH.log}
+\begin_inset Include \verbatiminput{log/calcFstH.log}
 preview false
 
 \end_inset 
@@ -4976,7 +4976,7 @@ g simuPOP' chapter.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{wrapFstH.log}
+\begin_inset Include \verbatiminput{log/wrapFstH.log}
 preview false
 
 \end_inset 
@@ -5056,7 +5056,7 @@ hetero
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{useFstH.log}
+\begin_inset Include \verbatiminput{log/useFstH.log}
 preview false
 
 \end_inset 
@@ -5307,7 +5307,7 @@ Here is an example of using
 alleleFreq
 \family default 
 :
-\begin_inset Include \verbatiminput{initByFreq.log}
+\begin_inset Include \verbatiminput{log/initByFreq.log}
 preview false
 
 \end_inset 
@@ -5355,7 +5355,7 @@ atLoci
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{initByValue.log}
+\begin_inset Include \verbatiminput{log/initByValue.log}
 preview false
 
 \end_inset 
@@ -5452,7 +5452,7 @@ pyInit
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{pyInit.log}
+\begin_inset Include \verbatiminput{log/pyInit.log}
 preview false
 
 \end_inset 
@@ -5603,7 +5603,7 @@ are default to all subpopulations.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{migratorhelp.log}
+\begin_inset Include \verbatiminput{log/migratorhelp.log}
 preview false
 
 \end_inset 
@@ -5721,7 +5721,7 @@ pyMigrator
 \family default 
  then complete migration according its content.
  For example:
-\begin_inset Include \verbatiminput{pyMigrator.log}
+\begin_inset Include \verbatiminput{log/pyMigrator.log}
 preview false
 
 \end_inset 
@@ -5841,7 +5841,7 @@ Mutation
 \layout Standard
 
 All mutators have the common interface as shown below: 
-\begin_inset Include \verbatiminput{mutatorhelp.log}
+\begin_inset Include \verbatiminput{log/mutatorhelp.log}
 preview false
 
 \end_inset 
@@ -5921,7 +5921,7 @@ maxAllele
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{kamMutator.log}
+\begin_inset Include \verbatiminput{log/kamMutator.log}
 preview false
 
 \end_inset 
@@ -5996,7 +5996,7 @@ The following example demonstrate the use of
 maxAllele 
 \family default 
 which is defaulted to 99 in this case.
-\begin_inset Include \verbatiminput{smmMutator.log}
+\begin_inset Include \verbatiminput{log/smmMutator.log}
 preview false
 
 \end_inset 
@@ -6072,7 +6072,7 @@ implements both models.
 
  should be provided and the operator will act as a geometric generalized
  stepwise model.
-\begin_inset Include \verbatiminput{gsmMutator.log}
+\begin_inset Include \verbatiminput{log/gsmMutator.log}
 preview false
 
 \end_inset 
@@ -6113,7 +6113,7 @@ will choose an allele as usual and call your function to mutate it to another
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{pyMutator.log}
+\begin_inset Include \verbatiminput{log/pyMutator.log}
 preview false
 
 \end_inset 
@@ -6240,7 +6240,7 @@ and
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{recombinatorhelp.log}
+\begin_inset Include \verbatiminput{log/recombinatorhelp.log}
 preview false
 
 \end_inset 
@@ -6258,7 +6258,7 @@ parentsTagger
 to mark the parents of each individual so you can (if you have enough patience)
  see exactly how recombination works.
  
-\begin_inset Include \verbatiminput{recombinator.log}
+\begin_inset Include \verbatiminput{log/recombinator.log}
 preview false
 
 \end_inset 
@@ -6431,7 +6431,7 @@ basicSelector
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{selectorhelp.log}
+\begin_inset Include \verbatiminput{log/selectorhelp.log}
 preview false
 
 \end_inset 
@@ -6472,7 +6472,7 @@ Which is
 
 ).
  
-\begin_inset Include \verbatiminput{basicSelector.log}
+\begin_inset Include \verbatiminput{log/basicSelector.log}
 preview false
 
 \end_inset 
@@ -6653,7 +6653,7 @@ pySelector
 sel
 \family default 
  function only uses the first one.
-\begin_inset Include \verbatiminput{pySelector.log}
+\begin_inset Include \verbatiminput{log/pySelector.log}
 preview false
 
 \end_inset 
@@ -7492,7 +7492,7 @@ controls
 The following example shows how to draw a random sample (without replacement
  of course) from an existing population.
  
-\begin_inset Include \verbatiminput{randomSample.log}
+\begin_inset Include \verbatiminput{log/randomSample.log}
 preview false
 
 \end_inset 
@@ -8820,7 +8820,7 @@ varPlotter
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{expressionhelp.log}
+\begin_inset Include \verbatiminput{log/expressionhelp.log}
 preview false
 
 \end_inset 
@@ -9121,7 +9121,7 @@ Here is an example:
 \layout LyX-Code
 
 
-\begin_inset Include \verbatiminput{simuPlotter.log}
+\begin_inset Include \verbatiminput{log/simuPlotter.log}
 preview false
 
 \end_inset 
@@ -9261,7 +9261,7 @@ simuMatPlt.py
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{scipy.log}
+\begin_inset Include \verbatiminput{log/scipy.log}
 preview false
 
 \end_inset 
@@ -10088,7 +10088,7 @@ Use dryrun to exam simulator first.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{ifElse.log}
+\begin_inset Include \verbatiminput{log/ifElse.log}
 preview false
 
 \end_inset 
@@ -10238,7 +10238,7 @@ Random number generator is a tricky business.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{rng.log}
+\begin_inset Include \verbatiminput{log/rng.log}
 preview false
 
 \end_inset 
@@ -10273,7 +10273,7 @@ does not have many member functions and it might be tricky to use them correctly
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{rngrand.log}
+\begin_inset Include \verbatiminput{log/rngrand.log}
 preview false
 
 \end_inset 
@@ -10594,7 +10594,7 @@ The following example shows how to change locus distance through this function.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{extgenostru.log}
+\begin_inset Include \verbatiminput{log/extgenostru.log}
 preview false
 
 \end_inset 
@@ -10665,7 +10665,7 @@ pop
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{extgenotype.log}
+\begin_inset Include \verbatiminput{log/extgenotype.log}
 preview false
 
 \end_inset 
@@ -10678,7 +10678,7 @@ Sex, affected status can be accessed through
 sex, setSex, affected, setAffected 
 \family default 
 functions.
-\begin_inset Include \verbatiminput{extother.log}
+\begin_inset Include \verbatiminput{log/extother.log}
 preview false
 
 \end_inset 
@@ -10709,7 +10709,7 @@ tab
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{tab.log}
+\begin_inset Include \verbatiminput{log/tab.log}
 preview false
 
 \end_inset 
@@ -10753,7 +10753,7 @@ saves a population in FSTAT format.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{saveInFstatFormat.log}
+\begin_inset Include \verbatiminput{log/saveInFstatFormat.log}
 preview false
 
 \end_inset 
@@ -10790,7 +10790,7 @@ operator:
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{saveFstat.log}
+\begin_inset Include \verbatiminput{log/saveFstat.log}
 preview false
 
 \end_inset 
@@ -10947,7 +10947,7 @@ Decay of Linkage Disequilibrium
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{expLD.log}
+\begin_inset Include \verbatiminput{log/expLD.log}
 preview false
 
 \end_inset 
@@ -10978,7 +10978,7 @@ Here is an example when all genetic forces are in effect:
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{expcomplex.log}
+\begin_inset Include \verbatiminput{log/expcomplex.log}
 preview false
 
 \end_inset 
@@ -11014,7 +11014,7 @@ The following script describe the rules almost literally:
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{expmigration.log}
+\begin_inset Include \verbatiminput{log/expmigration.log}
 preview false
 
 \end_inset 
@@ -11142,7 +11142,7 @@ Implementation
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{gcontrol.py}
+\begin_inset Include \verbatiminput{log/gcontrol.py}
 preview false
 
 \end_inset 
@@ -11452,7 +11452,7 @@ r(`')
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{reich.py}
+\begin_inset Include \verbatiminput{log/reich.py}
 preview false
 
 \end_inset 
