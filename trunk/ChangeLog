@@ -1,0 +1,218 @@
+ChangeLog of simuPOP
+
+NOTE: The newest release is always in beta-testing stage. It is actually
+  a daily snapshot of simuPOP.
+
+Known bugs     - all fixed now
+    
+version 0.6.8 - Uploaded as a beta version since Aug, 1st, 2005
+  - fix a reporting bug in simuCDCV.py
+  - support sex chromosome and sex chromosome related mating, recombination issues.
+      -- sexChrom() in population::population(), 
+      -- stop recombination between XY of male individual
+      -- determine sex in random mating by sex chromosome
+  - add parameters atPloidy, sex to initializers. Now, you can 
+    initialize individuals at ploidy level and control assignment of sex.
+    Now, with so many options, these initializers are overly complicated.
+  - add support for sex-specific recombination rate. (parameter maleIntensity,
+    maleRate, and maleAfterLoci.)
+
+version 0.6.7 - Aug, 1st, 2005
+  - Add help() infor for the function version of operators and member functions.
+  - use Walker's alias algorithm for weighted sampling. Random mating with 
+    selection should be only slightly slower than without selection. The performance
+    of simuCDCV.py increased by 15% using this algorithm. This method will use
+    a lot of RAM when population size is large (8*N bytes).
+  - add compiler info to Welcome message. (to see if it matches that of Python.)
+  - change the use of logfile in simuCDCV.py 
+  - fix a bug in operator InitByFreq.
+
+version 0.6.6 - various GUI / wxPython improvements. Not released.
+  - add wxGetParam. Will be used when wxPython is available.
+  - add wxPython version of listVars. Much better than the text version (when wxPython is available)
+  - add some demographic functions in simuUtil.py
+  - use grid for tkinter box
+  - add migrIslandRates() and migrStepstoneRates() in simuUtil.py
+  - find an uncaptured out of memory exception.
+  - simuCDCV.py is better, with log file.
+  - stop using global variable gen. Add gen() function to individual population
+    and "gen" to local variable space. (Avoid using modular level global variable)
+    If this breaks anything, please let me know.
+  - Change penetrance from 1,1-s,1-2s to 1,1-s/2,1-s in simuComplexDisease.py and 
+    simuCDCV.py. This is more natural.
+  - Add tooltip to the wxPython version of getParam.
+
+version 0.6.5 - userfriendliness (simuPOP scripts). May 1st, 2005
+  - separate user's guide and reference manual
+  - streamline getParam, usage, help etc.
+  - add scripts folder for common simupop templates
+  - add quiet option to simuPOP to suppress initial input
+  - add tk support for easy inputing of variables. This is 
+    a major enhancement for userfriendliness. A first glimpse of a GUI
+  - fix a bug in saving shared variables. Exam saved format. Full backward
+    compatibility should start from here.
+  - simuComplexDisease.py. It uses almost all features of simuPOP
+  - remove headers support for object. They are not very useful and 
+    hard to use.
+  
+
+version 0.6.4 - efficiency and usability. Not released
+  - savePopulation saves local variables as well. This is used to save special info like 
+    disease susceptibility loci. 
+  - Label save population with max allowed allele number.
+  - merge some parameters through python code. Now, parameters like rate
+    can be either a number or an array. Same is true for value, indRange.
+  - caseControlSample can takes array cases/controls parameters.
+  - optimized genoStructure access, fix a bug about transferring the structure
+  - add LoadRandFam ( not easy :-)
+  - add parameters loci, chrom, indRange, subPop to dumper() and Dump()
+    Dump() is finally useful now.
+  - more efficient handling of ancestral pops
+       
+    
+version 0.6.3 -  Ancestral populations  Apr. 5, 2005
+  - add simulator::getPopulation get a copy of population
+  - add simuOpt to control simuPOP behavior, hide other modules
+  - add pointMutator
+  - change the meaning of rate in recombinator, add parameter intensity
+  - IMPORTANT: population can contain multiple generations. 
+    add: population.pushAndDiscard (CPPONLY), Lots of work.
+      parameter ancestry for population.__init__
+      parameter ancestry for dumper
+  - add SavePopulations and LoadPopulations function.
+  - add stat(homoFreq and expHetero)
+  - fix a small bug with end < 0 and step > 1
+  - add splitSubPop(ByProportion), mergeSubPops member functions, operators 
+      and functions.
+  - make duringMating oeprators re-order automatically
+  - add numOffspringsFunc, mode=MATE_NumOffsprings, MATE_GeometricDistribution etc
+  - add affected sibpair sampling scheme
+  - export to linkage format (affected sibpair samples)
+  - export to randfam format
+  - test parentsTagger, successfully track pedigree info   
+
+version 0.6.2 - better usage of vars  Mar, 23, 2005
+  - variables are now population associated. (pop.evaluate(...)
+  - add quantitative trait and penetrance support
+  - add dryrun parameter to apply and evolve
+  - dvars() function. (Automatic dictionary wrapper class)
+  - add more flexibility to initializers. (indRanges, subPop, atLoci etc)
+  - varPlotter becomes an operator.
+  - add D, D' and r2 measures
+  - add newSubPopSizeFunc option to Mating schemes
+  - change haploFreq to count all haplotypes.
+  - add multi-allele Fst, LD etc. (average)
+  - fixes all memory leak and reference count problems 
+  - save/load auto format according to file extension.
+  - fix a small bug of unclosed files.
+  - finsh LoadSimulatorFromFiles (uses in pair with savePopulation operator)
+  - fix two bugs in AvgLD calculation and in recombinator.
+    
+version 0.6.1  - usability and real applications Feb, 12, 2005
+  - add simuPOP_la library for long alleles.
+  - add exposePop option to pyEval (better pure-python operator support)
+  - better treatment for carray. (fix a bug)
+  - more statistics: Fst, Rst, H_est, H_obs etc
+  - read/write, FSTAT format
+  - use simple string instead of list to store statements.
+  - merge alleleCounter and popStat since alleleCounter may depend on popStat
+  - add operator pause for presentation purpose
+    new operator is called 'basicStat'
+  - Genomic control (use R/gap package, simple subpop vs subpop version)
+    
+Version 0.6.0 - validation and distribution, Jan, 1st, 2005
+  - bug fixes
+  - better distribution process and binaries.
+  - remove internal language and use Python expression only
+  - more mutation models
+  - some hybrid operators added
+  - simuPOP website
+
+Version 0.5.9 - performance boost, dynamic population size  Dec. 12th, 2004
+  - re-write Bernulli-trials and gain 10x performance boost
+  - dynamic population size through newSubPopSizeExpr="".
+  - re-write migration to allow migration between subset of subpopulations
+  - ability to create new subpopulation through migration
+  - tagging x-y location.
+  - visualize migration
+
+Version 0.5.8 - selection Dec. 5nd, 2004
+  - selection. 
+  - better matings.
+  - bug fixes
+  - migration and selection examples
+
+version 0.5.7 -  serialization Nov. 24, 2004
+  - add serialization of simulator. Now I can save 
+    population/simulator into a file and load it later.
+  - text, xml and binary formats are supported. XML support
+    is especially useful since the data can then be easily
+    loaded into other applications.
+
+version 0.5.6 -  expression. Nov. 19, 2004
+  - better shared variable interface 
+  - (IMPORTANT!) implement a C/Matlab like language to calculate
+    statistics. Terminator has been re-written. Many applicaitons
+    are expected to be done easily.
+  - add more functions (abs etc) to inline expression)
+  - fixed some bugs.
+    
+Version 0.5.5, - more clean up,  more examples. Nov. 10, 2004
+  - clean the code. Use unsigned long when applicable. Elimilate all 
+    compiling warnings.
+  - add some more test cases to cover all user features.
+  - Some real examples
+
+Version 0.5.4, Nov. 7, 2004 - clean the code. still working on the code base
+  - return default value for SharedVariable::getVar(name, default)
+    and display warning when in debug mode.
+  - shared variables can take string, double, array and dictionary.
+  - varParser can now take all kind of shared variables, using
+    %str, %double, %array[index], %dictionary{key}
+  - DataProvider is separated from Operator and is put in utility.h
+  - DataSource is separated from Visualizer so that other operators
+    can also use such sources.
+  - VarDataSource is provided so Visualizer etc can visaulize/display
+    shared variables directly.
+
+Version 0.5.3 Oct 10, 2004 -- some interesting new features
+  - shared variables (operators can store and retrieve variables by name)
+  - better written outputHelper. Now can print shared variables.
+    for example %(gen)+%shvar
+  - add "memory file" to improve efficiency under certain circumstances.
+  - overhaul of operator's filename parser (can take shared var now)
+  - provide binary distribution for linux, mac and solaris.
+  - create a batch file to build win32 binary. (Much easier to use)
+    distribute win32 binary. 
+   
+Version 0.5.2  -- windows port, smaller distribution, better help()
+  - help(class/function) now uses doxygen generated document.
+  - distribute tools like .emacs.python.el and swig.xsl
+  - remove all unnecessary files from boost and gsl distribution
+    this is done by some perl scripts testing the usefulness of each file.
+  - ported to windows. see INSTALL.win32 for details 
+    fixed two windows specific bugs.
+  - make DEBUG the default library (optimized will be used less frequently.)
+   
+Version 0.5.1
+  - better suport of GSL. add setRNG()
+  - better debug: debug(code) instead of debug(level)
+  - better macOS  support
+      
+Version 0.5
+  - a working distribution with lots of test cases
+  - ported to maxOS, solaris
+
+Version 0.1 Friday 18, June 2004
+  
+  - Customize doxygen and direct output to http://bp6.stat.rice.edu:8080/simuPOP
+  - change README and make it doxygen mainpage
+  - create todo list and many other documents
+  - implement exception classes with error message sent to Python
+  - change most arrays to vector so that they can be accessed through python
+  - find the right way to do keyword argument from python. Very useful.
+  - Population basic structure is finished with basic operations.
+  - Operator start-every-end-at is implemented.
+  - genetic drifting sample program went fine.
+   
+
