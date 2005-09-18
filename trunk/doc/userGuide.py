@@ -190,9 +190,9 @@ Dump( RandomSample(pop, 3)[0])
 
 #file popVars.log
 from simuUtil import listVars
-listVars(pop.vars())
+listVars(pop.vars(), useWxPython=False)
 Stat(pop, popSize=1, alleleFreq=[0])
-listVars(pop.vars())
+listVars(pop.vars(), useWxPython=False)
 # print number of allele 1 at locus 0
 print pop.vars()['alleleNum'][0][1]
 print pop.dvars().alleleNum[0][1]
@@ -201,7 +201,7 @@ print pop.dvars().alleleNum[0][1]
 #file localNamespace.log
 print pop.evaluate('alleleNum[0][1] + alleleNum[0][2]')
 pop.execute('newPopSize=int(popSize*1.5)')
-listVars(pop.vars(), level=1)
+listVars(pop.vars(), level=1, useWxPython=False)
 # this variable is 'local' to the population and is
 # not available in the main namespace
 newPopSize
@@ -278,7 +278,7 @@ def Fst_H(loci,**kwargs):
 simu.apply([ initByFreq([.3,.5,.2]), 
   stat(popSize=1, heteroFreq=[0]), 
   Fst_H([0]) ] )
-listVars(simu.vars(0), level=1)
+listVars(simu.vars(0), level=1, useWxPython=False)
 #end
 
 #file operatorstages.log
