@@ -1008,7 +1008,7 @@ You should be able to load simuPOP library by running command
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{importSimuPOP.log}
+\begin_inset Include \verbatiminput{log/importSimuPOP.log}
 preview false
 
 \end_inset 
@@ -1643,7 +1643,7 @@ Let us demonstrate these concepts through a simple example.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{simpleExample.log}
+\begin_inset Include \verbatiminput{log/simpleExample.log}
 preview false
 
 \end_inset 
@@ -1871,7 +1871,7 @@ The following the result of
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{simuLDDecay.log}
+\begin_inset Include \verbatiminput{log/simuLDDecay.log}
 preview false
 
 \end_inset 
@@ -1909,7 +1909,7 @@ See script simuCDCV.py.
 \layout Standard
 
 
-\begin_inset Include \verbatiminput{simuComplexDisease.log}
+\begin_inset Include \verbatiminput{log/simuComplexDisease.log}
 preview false
 
 \end_inset 
