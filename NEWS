@@ -1,0 +1,41 @@
+
+<h3>Oct 12, 2004</h3>
+
+<p>version 0.5.3 is out with some internal optimization and better windows
+port. Please refer to the ChangeLog for details.</p>
+
+<p>Starting from this version, I will also make binary distributions for
+linux, mac and solaris systems. These binaries can be easily generated
+through a shell script. Windows binary need more work so I will leave 
+it later. ( Complain: windows is the worst system to handle before of its
+lack of scripting languages! ) </p>
+
+<p>Please go to <a href="../../bin">binary directory</a> for binary distributions.</p>
+
+<h3>Oct 2, 2004</h3>
+simuPOP has been ported to windows! If you have visual c++, it should
+be easy to build and run simuPOP under windows. Please see INSTALL.win32
+for details.
+
+<h3>Sep 10, 2004</h3>
+
+I am glad to introduce the first public release of simuPOP. I have
+tested the distribution on Liunx and Solaris systems. If you can make
+it work on any other system, please <a href=mailto:bpeng@rice.edu>
+send me an emal</a>. 
+
+<p> Download simupop-x.x.tar.gz from <a href="../../src">source directory</a> </p>
+
+The build process is as usual:
+<pre>
+  > wget http://bp6.stat.rice.edu:8080/simuPOP/simupop-0.5.tar.gz
+  > tar zxf simupop-0.5.tar.gz
+  > cd simupop-0.5
+  > ./configure --prefix=/path/to/distribution
+  > make
+  > make install
+</pre>
+
+Be sure to read things after ./configure script. The most likely change
+to ./configure parameter is to specify --with-matlab=/usr/site/matlab-X.X/
+Without matlab, the visualization engine will not work.
