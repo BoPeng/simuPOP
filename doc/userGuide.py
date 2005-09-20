@@ -245,19 +245,24 @@ Stat(pop, popSize=1, alleleFreq=range(0, pop.totNumLoci()),
 #end
 
 #file log/calcFstH.log
-def calc_Fst_H(pop, loci):
+def calc_Fst_H(pop, alleles):
   """ calculate expected heterozygosities at given loci
     Formula etc please refer to user's manual
   """
   s = pop.dvars()
-  if len(loci) == 0:
+  if len(alleles) == 0:
     raise exceptions.ValueError("Please specify alleles on which to calculate Fst_H")
-  
-  for loc in loci:   # of form [locus, allele, allele ...]
+
+  # FIXME: need better interface.
+  for l in alleles:   # of form [locus, allele, allele ...]
+    if (type(l) != type([]) and type(l) != type(())) or len(l) <= 1:
+      raise exceptions.ValueError("Format [ [ locus, allele,...]. [...] ]");
+    
     s.Fst_H = {}
     s.Fis_H = {}
     s.Fit_H = {}
-    for ale in range(1, len(s.heteroFreq[loc])):
+    loc = l[0]
+    for ale in l[1:]:
       # calculate Fst_H for each loc, ale pair.
       # H_I based on observed heterozygosities in individuals in subpopulations
       H_I = 0.0
@@ -274,13 +279,13 @@ def calc_Fst_H(pop, loci):
 #end
 
 #file log/wrapFstH.log
-def Fst_H(loci,**kwargs):
+def Fst_H(alleles,**kwargs):
   parm = ''  
   for (k,v) in kwargs.items():
     parm += ' , ' + str(k) + '=' + str(v)
   #  calc_Fst_H(loci= loci?, rep=rep)
-  cmd = r'pyExec( exposePop=1, stmts=r"""calc_Fst_H(pop=pop, loci= ' + \
-    str(loci) + ')""", %s)' % parm
+  cmd = r'pyExec( exposePop=1, stmts=r"""calc_Fst_H(pop=pop, alleles= ' + \
+    str(alleles) + ')""", %s)' % parm
   # print cmd
   return eval( cmd )
 #end
@@ -288,7 +293,7 @@ def Fst_H(loci,**kwargs):
 #file log/useFstH.log
 simu.apply([ initByFreq([.3,.5,.2]), 
   stat(popSize=1, heteroFreq=[0]), 
-  Fst_H([0]) ] )
+  Fst_H([[0,1,2]]) ] )
 listVars(simu.vars(0), level=1, useWxPython=False)
 #end
 
@@ -513,6 +518,8 @@ def sel(arr):
     return 1
   else:
     return 1 - s2
+
+
 # test func
 print sel(carray('B',[1,1]))
 
@@ -560,12 +567,14 @@ simu.evolve([
    migr, 
    stat,
    varPlotter('subPopSize', numRep=4, byRep=1, 
-     varDim=3, win=10, title='subPop size', saveAs='simuDemo')
+     varDim=3, win=10, title='subPop size', saveAs='log/simuDemo')
    ],
    end=30
 )
 
 #end
+#PS convert log/simuDemo16.eps log/simuDemo16.png
+#PS /bin/rm -f log/simuDemo*.eps
 
 #file log/scipy.log
 from simuUtil import *
@@ -579,7 +588,7 @@ pSize = stat(popSize=1, stage=PreMating)
 show = pyEval(r"str(subPopSize)+'\n'")
 
 pPlot = varPlotter(expr='subPopSize', win=10, update=5, title='subPop size',
-    ytitle='size', legend=["rep"], saveAs="subpop.png")
+    ytitle='size', legend=["rep"], saveAs="log/subpop.png")
 
 simu.setGen(0)
 simu.evolve([
@@ -798,14 +807,17 @@ simu = simulator(
 # see the change of allele/genotype/heplotype numbers as
 # the result of genetic drift.
 init = initByValue([1,2,2,1])
-count = stat(LD=[[0,1]])
+count = stat(LD=[0,1])
 recombine = recombinator( rate=0.1 )
 simu.evolve([
-   recombine, count, pyEval(r'"%.4f\t" % LD[0][1]'), endl(rep=REP_LAST),
-   varPlotter(expr='LD[0][1]', title='Linkage disequilibrium',
-     numRep = 4, ytitle='LD', saveAs='LD')
+   recombine, count,
+   pyEval(r'"%.4f\t" % LD[0][1]'),
+   endl(rep=REP_LAST),
+   #varPlotter(expr='LD[0][1]', title='Linkage disequilibrium',
+   #  numRep = 4, ytitle='LD', saveAs='LD')
    ], preOps=[init],
-   end=10)
+   end=10
+)
 
 #end
 
@@ -816,7 +828,7 @@ simu.evolve([
 
 numSubPop = 100     # number of archipelagos
 numFamilies = 10    # real simulation uses 1000
-numOffsprings = 4   # kind of family size
+numOffspring = 4   # kind of family size
 numReplicate = 1
 loci = [20]*20      # 400 loci on 20 chromosomes
 endGen = 10         # should be at leat 1000
@@ -824,17 +836,11 @@ maxAllele = 30
 mutationRate = 0.001
 recombinationRate = 0.02
 
-popSize = numFamilies*numOffsprings*numSubPop
-subPopSize = [numFamilies*numOffsprings]*numSubPop
+popSize = numFamilies*numOffspring*numSubPop
+subPopSize = [numFamilies*numOffspring]*numSubPop
 
 # intializer
 init = initByFreq( alleleFreq=[1./maxAllele]*maxAllele )
-
-# mating:
-# each mating generate 4 offsprings
-# keep subpop size
-mating =  randomMating(numOffsprings = numOffsprings,
-                       newSubPopSize=subPopSize) 
 
 # migration: island model
 #   by proportion, .1 to all others
@@ -851,18 +857,21 @@ mutate = kamMutator(rate=mutationRate, maxAllele=maxAllele)
 
 # recombination
 recombine = recombinator( rate = recombinationRate )
- 
+
+# create a simulator 
 simu = simulator(
     population(size=popSize, ploidy=2, loci=loci,
-               subPop=subPopSize),
-    mating)
-
+      subPop=subPopSize),
+    randomMating(numOffspring = numOffspring,
+                       newSubPopSize=subPopSize) )
+#
+# evolve
 simu.evolve([
     migrate, 
     recombine, 
     mutate,
     pyEval(r"gen", rep=0),  # report progress
-    endl()
+    endl(rep=REP_LAST)
     ],
     preOps=[init],
     end=endGen)
@@ -895,9 +904,10 @@ for i in range(1,nc-1):
   rates[i,i-1]=0.05
 rates[0,1] = 0.1
 rates[nc-1,nc-2] = 0.1
+
 # print rates
 print rates
-migr = migrator( rates, mode=MigrByProbability)
+migr = migrator( rate=rates, mode=MigrByProbability)
 
 # initially, we need to set everyone to middle subpop
 initMigr = migrator(rate=[[1]], mode=MigrByProportion,
@@ -909,8 +919,11 @@ pop = population(size=500)
 # which is calculated from subPopSize bu newSize operator
 simu = simulator(pop,
     randomMating(newSubPopSizeFunc=changeSPSize) )
-                   
-simu.evolve([migr, stat(popSize=True), pyEval('list(subPopSize)'), endl()],
+
+# evolve!
+simu.evolve(
+  [migr, stat(popSize=True),
+   pyEval('list(subPopSize)'), endl()],
   preOps = [ initMigr ], end=10
   )
 

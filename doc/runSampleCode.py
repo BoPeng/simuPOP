@@ -96,4 +96,4 @@ perlscript.close()
 os.system('perl ' + sys.argv[1]+'.pl' + ' ' + sys.argv[1]+'.out')
 
 os.remove(sys.argv[1]+'.pl')
-os.remove(sys.argv[1]+'.out')
+#os.remove(sys.argv[1]+'.out')
