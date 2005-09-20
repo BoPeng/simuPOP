@@ -9134,7 +9134,7 @@ and one of its output figure:
 \align center 
 
 \begin_inset Graphics
-	filename simuDemo16
+	filename log/simuDemo16
 	lyxscale 40
 	width 5in
 	height 4in
@@ -11155,7 +11155,7 @@ results
 \align center 
 
 \begin_inset Graphics
-	filename GCLD1000
+	filename log/GCLD1000
 	lyxscale 40
 	width 5in
 	keepAspectRatio
@@ -11215,7 +11215,7 @@ The following figure displays the
 \align center 
 
 \begin_inset Graphics
-	filename GCX21000
+	filename log/GCX21000
 	lyxscale 40
 	width 5in
 	keepAspectRatio
@@ -11481,7 +11481,7 @@ e of the alleles.
 
 
 \begin_inset Graphics
-	filename plot986
+	filename log/plot986
 	lyxscale 40
 	width 5in
 	keepAspectRatio

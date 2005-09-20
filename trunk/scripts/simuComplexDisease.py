@@ -26,15 +26,19 @@ the following four stages:
 
   1. Burn-in the population with mutation and recombination
   2. Introduce disease mutants and make them common with advantagous selection
-  3. Split and grow the population without migration
+  3. Split and grow the population without migration, disease alleles
+     may be under selection pressure.
   4. Mix subpopulations at given migration level
 
 The result of the simulation is a set of large populations. For each population,
 
   1. Single or multi-locus penetrance functions are applied to determine 
-     affectedness of each individual
+     affectedness of each individual. Note that the penetrance model would
+     better be compatible to the fitness model. You would not want to assign
+     affectedness to individuals according to disease susceptibility locus 
+     (DSL) one while selection was working on DSL two.
   2. Population and/or pedigree based samples are drawn and saved in popular
-     format.
+     formats.
   3. If geneHunter is available, it will be used to analyze affected sibpair 
      samples using TDT method.
 
@@ -49,8 +53,9 @@ With typical settings, each individual will have 20 chromosomes, each having
 20 equal spaced microsatellite or SNP markers. A disease will be caused by 
 several disease susceptibility loci (DSL) between markers. For example, a
 DSL may be .3 unit to the right of marker 25 (the six marker on the second
-chromosome using a zero-based index). Since there is no selection on disease
-mutants, individual affectedness is not specified till the sampling stage.
+chromosome using a zero-based index). Since we assume that fitness is 
+only determined by genotype, not affectedness status or trait value, we 
+do not assign individual affectedness till the sampling stage.
 
 
 Evolutionary Scenario
@@ -95,6 +100,7 @@ No-migration stage
 The population will be split into 10 subpopulations and starts to grow,
 aiming at 100,000 or more individuals at the end. No migration is allowed
 between subpopulations so population heterogeneity will build up.
+Negative selection may decrease the allele frequency of DSL.
 
 
 Mixing stage
@@ -108,46 +114,36 @@ a level depending on migration rate and length of this stage.
 Penetrance
 ==========
 
-Since their is no selection for the disease mutants during evolution. We do
-not really care who are affected. This has to change at the last generation
-where different sampling schemes will be applied to the population. Several
-penetrance schemes are allowed:
+Since we assume that fitness only depends on genotype, not affectedness status,
+we do not care who are affected during evolution. This has to change at the 
+last generation where different sampling schemes will be applied to the 
+population. Several customizable penetrance schemes will be used. As a matter
+of fact, if there is no selection against any DS allele, we can use any
+of the penetrance functions:
 
-  1. ressive1: single-locus recessive model (use the first DSL regardless number of DSLs)
-    At DSL 1 , penetrance will be computed as
-      0, 0, p
+  1. recessive single-locus and heterogeneity multi-locus model: 
+    At DSL i , penetrance will be computed as
+      0, 0, p_i
     for genotype
       aa, aA, AA  (a is wild type)
+    where pi are penetrance factors (that can vary between DSL).
+
+    The overall penetrance is 
+      1 - Prod(1-P_i)
+    where Pi is the penetrance at locus i.
   
-  2. ressive2: Recessive at at least one of the two DSL 
-    An individual can be affected when at least one of the DSL is
-    homozygously affected. For each DSL, the penetrance is
-      0, 0, p
+  2. additive single-locus and heterogeneity multi-locus model: 
+    For each DSL, the penetrance is
+      0, p/2, p
     for genotype
       aa, aA, AA
     where the overall penetrance takes the form of
       1 - Prod( 1- P_i)
     This is the heterogeneity model proposed by Neil Risch (1990).
      
-  3. ressive3: Recessive at at least one of the three DSL 
-
-  4. additive1: single-locus additive model at the first DSL
-     The penetrance is 
-        0, p, p
-     for genotype
-        aa, aA, AA
-
-  5. additive2: Additive with at least two disease susceptibility alleles at the first 2 DSL
-    An individual can be affected when there are at least two disease
-    alleles. For each DSL, the penetrance is
-      0, p/2, p
-    for genotype
-      aa, aA, AA
-    where the overall penetrance takes the form of
-      1 - Prod ( 1 - P_i)
-
-  6. additive3: Additive with at least three disease susceptibility alleles at 3 DSL
-
+  3,4,5,6 are customized penetrances. You will have to modify
+    this script to apply them.
+  
 Statistics Monitored
 ====================
 
@@ -174,9 +170,9 @@ Different kinds of samples will be draw from the final large population.
      two parents) will be drawn. (Sample size is N cases and N controls
      when counting individuals.)
 
-The datasets will be saved in native simuPOP format, Linkage format and
-a format used by a new gene mapping method. DSL markers will be removed
-so there will be no marker that is directly linked to the disease.
+The datasets will be saved in native simuPOP format and in Linkage format.
+DSL markers will be removed so there will be no marker that is directly 
+linked to the disease.
 
 All files are put under a specified folder. They are organized by population
 and penetrance methods. A html file summary.htm will be automatically 
@@ -271,11 +267,24 @@ options = [
         till the end of burnin stage''',
    'validate':  simuOpt.valueGT(0)
   },
+  {'longarg': 'medianInitAllele=',
+   'default': 50,
+   'configName': 'median initial allele number for the markers',
+   'allowedTypes': [types.IntType, types.LongType],
+   'prompt': 'Initial haplotype for the markers, microsatellite only ([50):  ',
+   'description': '''Initial haplotype for the markers. This option ignored for SNP markers
+        since 1111..., 2222.... will be used as initial haplotypes. For 
+        micraosate markers, this number will be the median of the alleles used.
+        For example, if number of DSL is 5 and 50 is given for this option,
+        initial haplotypes will be 48,48,48,..., 49,49,49,..., 50,50,50,...,
+        51,51,51,...., 52,52,52,.... ''',
+   'validate':  simuOpt.valueGT(0)
+  }, 
   {'longarg': 'burnin=',
-   'default': 4000,
+   'default': 1000,
    'configName': 'Length of burnin stage',
    'allowedTypes': [types.IntType],
-   'prompt': 'Length of burn in stage (4000):  ',
+   'prompt': 'Length of burn in stage (1000):  ',
    'description': 'Number of generations of the burn in stage.',
    'validate':  simuOpt.valueGT(0)
   },
