@@ -1,11 +1,11 @@
 ChangeLog of simuPOP
 
-NOTE: The newest release is always in beta-testing stage. It is actually
-  a daily snapshot of simuPOP.
+NOTE: Daily snapshot reflects current SVN version but might not be stable.
+  Versioned releases are relatively stabler.
 
 Known bugs     - all fixed now
     
-version 0.6.8 - Uploaded as a beta version since Aug, 1st, 2005
+version 0.6.8 - Sep 21st, 2005
   - fix a reporting bug in simuCDCV.py
   - support sex chromosome and sex chromosome related mating, recombination issues.
       -- sexChrom() in population::population(), 
@@ -16,6 +16,8 @@ version 0.6.8 - Uploaded as a beta version since Aug, 1st, 2005
     Now, with so many options, these initializers are overly complicated.
   - add support for sex-specific recombination rate. (parameter maleIntensity,
     maleRate, and maleAfterLoci.)
+  - modify some features of simuComplexDisease.py
+  - release 0.6.8 and set up daily snapshots 
 
 version 0.6.7 - Aug, 1st, 2005
   - Add help() infor for the function version of operators and member functions.
