@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # make src and binary distribution on all platforms 
-# (currently mac, linux and solaris)
+# (currently mac, linux and solaris) as daily snapshot
 #
 # This is part of simuPOP
 # 
@@ -21,17 +21,14 @@ find . -name '.#*' -exec rm -f {} \;
 find . -name '*~' -exec rm -f {} \;
 find . -name '#*#' -exec rm -f {} \;
 
-# figure out the version number
-VER=`cat setup.py | grep SIMUPOP_VER | head -1 | cut -f2 -d= | cut -f2 -d\' `
-SIMUPOP_VER=$VER
+# snapshot version.
+SIMUPOP_VER=snapshot
 
 # export, to be used in Doxyfile
 export SIMUPOP_VER
 # perl -pi.bak -e "s/unknown-version/$SIMUPOP_VER/" src/simupop_cfg.h
 perl -pi.bak -e "s/^#define SIMUPOP_VER.*$/#define SIMUPOP_VER \"$SIMUPOP_VER\"/" src/simupop_cfg.h
-
-#./autogen.sh
-#./configure 
+perl -pi.bak -e "s/^SIMUPOP_VER=.*$/SIMUPOP_VER=\"$SIMUPOP_VER\"/" setup.py
 
 # make docstring
 doxygen Doxyfile
@@ -43,17 +40,17 @@ postGuide.sh
 cd ../tools
 
 # remove previous build
-rm -f /var/www/html/simuPOP/download/simuPOP-$VER-src.tar.gz
+rm -f /var/www/html/simuPOP/download/simuPOP-$SIMUPOP_VER-src.tar.gz
 
 # build source distribution
 make_src.sh
 
 # distribute source
 
-echo $VER > /var/www/html/simuPOP/download/latestversion
+echo $SIMUPOP_VER > /var/www/html/simuPOP/download/latestversion
 
 # check files
-if test ! -f /var/www/html/simuPOP/download/simuPOP-$VER-src.tar.gz ; then
+if test ! -f /var/www/html/simuPOP/download/simuPOP-$SIMUPOP_VER-src.tar.gz ; then
   echo "Can not make src distribution."
   exit
 fi
@@ -70,5 +67,5 @@ make_mdk.sh
 make_mac.sh
 
 # copy files to thor:
-scp /var/www/html/simuPOP/download/simuPOP-$VER* thor:public_html/simuPOP
+scp /var/www/html/simuPOP/download/simuPOP-$SIMUPOP_VER* thor:public_html/simuPOP
 scp /var/www/html/simuPOP_doc/*.pdf thor:public_html/simuPOP

@@ -1,12 +1,13 @@
 #!/bin/sh
 
 cd ..
-VER=`cat setup.py | grep SIMUPOP_VER | head -1 | cut -f2 -d= | cut -f2 -d\'`
-echo $VER > /var/www/html/simuPOP/download/latestversion
+#VER=`cat setup.py | grep SIMUPOP_VER | head -1 | cut -f2 -d= | cut -f2 -d\'`
+VER=`cat /var/www/html/simuPOP/download/latestversion`
 rm -rf dist
 
 # generate wrap files for other libraries
 SWIG='swig  -shadow -python -keyword -w-503,-312,-511,-362,-383,-384,-389,-315,-525 -nodefault -c++'
+echo "Generating SWIG wrap files"
 $SWIG   -o src/simuPOP_std_wrap.cpp src/simuPOP_std.i
 $SWIG   -DOPTIMIZED -o src/simuPOP_op_wrap.cpp src/simuPOP_op.i
 $SWIG   -DLONGALLELE -o src/simuPOP_la_wrap.cpp src/simuPOP_la.i
