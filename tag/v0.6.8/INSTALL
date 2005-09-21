@@ -1,0 +1,369 @@
+simuPOP installation guide
+============================
+
+Compiled libraries for Linux, windows XP, Solaris and MacOSX are provided.
+In most cases, you will only need to download simuPOP and follow the usual
+installation process of your platform. This file shows you how to install
+simuPOP binaries and other recommended Python components; and how to build
+simuPOP when none of the binaries work for you.
+
+Although simuPOP works well with only Python installed, it can
+benefit from many other Python modules. It is highly recommended that 
+you also install:
+
+1. R         R statistical computing environment, for plotting and 
+             statistical analysis
+2. RPy       Python module that provides link between R and Python
+3. Numeric   Python numeric package. 
+
+4. wxPython  simuPOP can use wxPython instead of (ugly) Tkinter if wxPython
+             is available. Some functions can also use wxPython. The most
+             common one is listVars()
+
+TO MAC USERS:
+Due to a bug of mac/gcc compiler (?), xml support is not available for macOSX 
+systems. That is to say, you can not save simuPOP population in XML format.
+
+Try these known-to-be-working configurations first!
+===================================================
+
+If you have a standard (most of you have) windows XP or Linux machine and 
+does not care about the 'lastest' version of Python or R, here are a list 
+of know-to-be-working configurations.
+
+(Please feel free to email me your working configration.)
+
+
+win32:
+-------
+
+windowsXP + Official Python 2.3.5 or ActiveState Python 2.3 + simuPOP + 
+R-2.0.0 + RPy-0.3.6 + wxPython 2.6
+--------------------------------------------
+
+REQUIRED:
+
+- Official Python 2.3.5 at 
+    http://www.python.org 
+  or ActiveState Python 2.3:
+    http://www.activestate.com/Products/ActivePython/
+- latest simuPOP win32 binary for python 2.3
+    http://bp6.stat.rice.edu:8080/simuPOP
+
+OPTIONAL:
+
+R/RPy: (visualization)
+
+- R-2.0.0 from http://www.r-project.org/ . Note that you will have to 
+  go to the 'Old' directory to get the R-2.0.0 binary.
+  NOTE: Include c:\progra~1\R\rw2000\bin in system PATH. (computer->property->...)
+- Python Numeric module from  http://sourceforge.net/projects/numpy
+- RPy-0.3.6 for win32 from 
+    http://sourceforge.net/project/showfiles.php?group_id=48422
+
+
+wxPython: (prettier GUI)
+
+- wxPython from
+    http://www.wxpython.org/download.php#binaries
+
+
+You can test this installation by running c:\Python23\share\simuPOP\scripts\simuLDDecay.py
+
+Note: 
+  1. rpy homwpage recommend ActivePython but official Python works fine. 
+  2. Numeric Python module is required for this rpy-0.3.6 binary to work.
+
+
+Linux redhat EL3/4:
+-------------------
+
+Linux Redhat + Python + simuPOP + R-2.1.0 + rpy + wxPython
+-----------------------------------------------------------
+
+REUIQRED:
+
+- Python: alreay installed 
+- simuPOP: get simuPOP linux rpm and install
+
+OPTIONAL: (compile from source. these components work better under linux)
+
+R/RPy:
+
+- R-2.1.0.tar.gz from http://www.r-project.org/
+    > tar zxf R-2.1.0.tar.gz
+    > cd R-2.1.0
+    > ./configure --enable-R-shlid --prefix=/usr
+    > make; make install
+- If your linux Python installation has python/numeric, 
+  install it
+- Rpy-0.4.1 from rpy home page.
+    > tar zxf rpy-0.4.1.tar.gz
+    > cd rpy-0.4.1
+    > mkdir -p R-2.1.0/src
+    > cp R-source-directory/src/include R-2.1.0/src
+    > python setup.py install
+
+
+wxPython:
+
+- wxPython RPM or source from wxPython homepage. If build from source, do
+  something like:
+    > rpmbuild wxPython-2.6.0.rpm
+    > rpm -ihv /usr/src/.../wxPython......rpm
+  Details please check wxPython homepage or wiki page.
+
+
+
+Mac:
+----
+
+The only mac I have access to is outdated. Please use the provided binary
+library (without XML support) or compile it by yourself. I never tried 
+R/Rpy on mac.
+
+
+
+If you do not want to use these working but perhaps old configurations,
+you can install the latest versions of these components one by one.
+
+Installing Python
+==================
+
+simuPOP works as a python library so a working version of python is 
+required. Python is widely available on Linux/Mac systems but not for
+windows. For windows system, you can use 
+
+  - Official python  http://www.python.org
+  - ActiveState python  http://www.activestate.com/Products/ActivePython/ 
+    (not GPL), or 
+  - Enthought Python http://www.enthought.com/python/ (windows only)
+
+The last one is very interesting since it contains many packages such as
+Numeric and SciPY so you do not have to install them separately.
+
+To test if you have python installed, open a terminal (or command window) 
+and type in the command
+
+  > python
+
+
+Installing simuPOP (binary)
+============================
+
+Download the latest simuPOP binary that matches your python distribution. 
+For example, if you have enthough Python 2.3.3 installed, you should 
+download simupop-x.x.x-py23-win32.exe. The installation procedure is
+platform dependent and should be familiar to you. 
+
+
+Windows/ .exe
+--------------
+
+Double click the downloaded .exe file, follow the instructions. SimuPOP
+libraries will be installed to the Python site-packages directory. 
+
+Linux, MacOSX, Solaris / .tar.gz
+---------------------------------
+
+Unpack the file with
+
+  > tar -zxf simuPOP-XXX.tar.gz 
+
+then copy files to appripriate places or set PYTHONPATH.
+
+
+Linux / .rpm
+-------------
+
+Install with command
+
+  > rpm -ihv simuPOP-XXX.rpm
+
+
+
+Installing R/RPy
+================
+
+windows users
+-------------
+
+For windows users, if you do not want to go through all the trouble of 
+building rpy by yourself, should go to Rpy homepage and download the 
+lastest rpy windows binary. Then, depend on what you have, you should
+
+  - download and install *matching* R version
+  - download and install Python Numeric package.
+
+
+Linux users
+------------
+
+You should try to build rpy by yourself. Since default R rpm packages are
+not built as dynamic library, you will have to build R yourself. Trust
+me, it is not that difficult. Basically, you need to
+
+  - download the latest R and Rpy source code
+  - unpack them like
+    > tar zxf R-2.1.0.tar.gz
+    > tar zxf rpy-0.4.1.tar.gz
+  - copy R src include to rpy is needed
+    > mkdir -p rpy-0.4.1/R-2.1.0/src
+    > cp R-2.1.0/src/include rpy-0.4.1/R-2.1.0/src
+  - build R with --enable-R-shlib
+    > cd R-2.1.0
+    > ./configure --prefix=/usr --enable-R-shlib
+    > make; make install
+  - build rpy
+    > cd rpy-0.4.1
+    > python setup.py install
+
+
+Installing wxPython
+====================
+
+There are detailed instructions at wxPython homepage.
+
+
+
+
+Build simuPOP from Source
+==========================
+
+In case that none of the compiled libraries works for you, 
+or you want to extend simuPOP in C++, you can build simuPOP 
+from source. 
+
+Another important reason of building from source is machine-
+dependent optimization. Since python/setup.py uses generic 
+optimization options to gurantee that the library can run on 
+majority of the machines, the generated code can not make use
+of many advanced parallel feature of modern CPU. Machine dependent 
+optimization may significantly improve simuPOP performance if the 
+right compiler/options are used.
+
+For example, Intel icc compiler can parallelize the code pretty well. 
+You can consider using
+  -tpp7 -xN -parallel -O3
+options if you can use icc compiler (free on linux platform).
+
+For gcc compiler, you can use
+  -march=pentium4 -O3 -pipe -fomit-frame-pointer 
+
+
+Autoconf method (obsolete, may not work now)
+--------------------------------------------
+
+This method works on all platforms and hopefully any C++ compiler.
+
+  > ./configure -prefix=/path/to/destination
+  > make
+  > make check
+  > make install 
+
+Make install will install simuPOP to the directory you specify. You will 
+have to set PYTHONPATH in most cases. This method is kept since its wide
+applicability. 
+
+
+Windows system with cygwin/mingw32 g++ compiler (free)
+-------------------------------------------------------
+
+  1. Use the installer from http://www.cygwin.com/ to install Cygwin, including
+     the g++ compiler and the MingW32 libraries. 
+
+  2. Get pexports from 
+      http://www.emmestech.com/software/cygwin/pexports-0.43/pexports-0.43.zip
+    (if the link does not work, google pexports) and unzip to cygwin/bin.
+
+  3. Find your pythonXX.dll file, where XX is the version of Python you have
+    installed. This is normally in C:\WINDOWS\system32\ or C:\winnt\system32\.
+
+  4. Make a .def file from your pythonXX.dll. 
+    > pexports 'C:\WINDOWS\system32\pythonXX.dll' > pythonXX.def
+
+  5. Create a static library (libpythonXX.a) and copy it to Python libs directory.
+    > dlltool --dllname pythonXX.dll --def pythonXX.def --output-lib libpythonXX.a
+    copy the generated .a file to c:\pythonXX\libs
+   
+  6. Download simuPOP source package and unpack
+    > tar zxf simuPOP-XXX-src.tar.gz
+
+  7. go to simuPOP-XXX directory and run (assue you are using official 
+     Python under c:\Python2.3
+
+    > /cygdrive/c/Python2.3/python.exe setup.py build --compiler=mingw32 bdist_wininst
+
+  8. If things go smoothly, you will get a .exe file under dist directory. If you 
+    only need to install simuPOP, use
+
+    > /cygdrive/c/Python2.3/python.exe setup.py build --compiler=mingw32 install
+
+    If you receive the following error (only exhibited under Python 2.3),
+    distutils is having trouble traversing the Cygwin-based symlink from 
+    /bin/cc.exe to /bin/gcc.exe. The hacky solution to this (until this bugfix 
+    in distutils is fixed) is to delete the symlink and make a real copy :
+
+    > rm /bin/cc.exe
+    > cp /bin/gcc.exe /bin/cc.exe 
+
+
+Windows with MSVC
+-------------------
+
+The biggest problem with this approach is that you will need the same MSVC 
+as the one Python use (currently MSVC6). If you do have the same version, 
+the procedure is easier
+
+  1. download simuPOP source, unpack, go to simuPOP-XXX directory
+
+  2. Run
+      /cygdrive/c/Python2.3/python.exe setup.py bdist_wininst
+    or
+      /cygdrive/c/Python2.3/python.exe setup.py install
+
+    to install without creating an installer.
+
+
+
+Linux-Solaris-MacOSX System
+============================
+
+
+  1. download and unpack simuPOP source, goto simuPOP-XXX directory
+ 
+   2. Run
+    > python setup.py build
+
+  3. create binary library distribution with 
+      > python setup.py bdist --formats=rpm
+    or
+      > python setup.py bdist --formats=gztar
+    or install simuPOP directly
+      > python setup.py install
+  
+  You might need to use 
+    >  sudo python setup.py install
+  to install. If you do not have root priviledge,
+    >  python setup.py install --home=/path/to/simuPOP
+  and then set PYTHONPATH to where simuPOP locates.
+  
+
+
+test simuPOP
+===============
+
+After installation, you can test simuPOP and other components by
+
+  > Python
+  .......
+  >>> import simuPOP
+  >>> import wx
+  >>> import rpy
+  >>> rpy.r.plot(1)
+  >>> execfile('/usr/share/simuPOP/scripts/simuLDDecay.py')
+
+Note that the path is platform dependent.
+
+
+

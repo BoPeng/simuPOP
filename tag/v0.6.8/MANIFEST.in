@@ -1,0 +1,20 @@
+include README INSTALL ChangeLog COPYING TODO AUTHORS
+include autogen.sh configure.in configure Makefile.am Makefile.in config.h.in
+include src/Makefile.am src/Makefile.in 
+include acinclude.m4 aclocal.m4 buildwin.bat compile depcomp install-sh 
+include config.guess config.sub ltmain.sh missing mkinstalldirs simuPOP.vcproj 
+include MANIFEST.in setup.py setup.cfg 
+include config_solaris.h config_win32.h config_linux.h config_mac.h
+include doc/userGuide.pdf doc/userGuide.py doc/refManual.pdf
+include misc/README misc/python-mode.el misc/emacs-python.el 
+include src/simuPOP.py src/simuOpt.py src/simuPOP_std.py src/simuPOP_op.py src/simuUtil.py src/simuSciPy.py src/simuMatPlt.py 
+include src/simuPOP_la.py src/simuPOP_laop.py src/simuRPy.py src/Makefile.icc
+include src/simuPOP_std_wrap.cpp src/simuPOP_op_wrap.cpp src/simuPOP_la_wrap.cpp src/simuPOP_laop_wrap.cpp
+recursive-include m4 *
+recursive-include test test_*.py 
+recursive-include gsl *
+recursive-include boost *
+recursive-include boost/spirit/core *
+recursive-include src  *.cpp *.c *.h *.i *.ipp
+recursive-include scripts *.py
+
