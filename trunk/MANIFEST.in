@@ -11,7 +11,7 @@ include src/simuPOP.py src/simuOpt.py src/simuPOP_std.py src/simuPOP_op.py src/s
 include src/simuPOP_la.py src/simuPOP_laop.py src/simuRPy.py src/Makefile.icc
 include src/simuPOP_std_wrap.cpp src/simuPOP_op_wrap.cpp src/simuPOP_la_wrap.cpp src/simuPOP_laop_wrap.cpp
 recursive-include m4 *
-recursive-include test test_*.py pop1.bin
+recursive-include test test_*.py 
 recursive-include gsl *
 recursive-include boost *
 recursive-include boost/spirit/core *

@@ -458,11 +458,10 @@ options = [
    'configName': 'penetrance functions',
    'allowedTypes': [types.ListType, types.TupleType],
    'prompt': 'Penetrance to be used: (recessive, additive):  ',
-   'description': '''\
-			  Penetrance functions to be applied to the final
+   'description': ''' Penetrance functions to be applied to the final
         population. Two penetrance fucntions are provided, namely recessive or additive
-				single-locus model with heterogeneity multi-locus model. You can define another
-				customized penetrance functions by modifying this script. ''',
+	single-locus model with heterogeneity multi-locus model. You can define another
+	customized penetrance functions by modifying this script. ''',
    'allowedTypes': [types.ListType, types.TupleType],
    'validate':  simuOpt.valueListOf( simuOpt.valueOneOf(['recessive', 'additive', 'custom'])),
    'chooseFrom': [ 'recessive', 'additive', 'custom']
@@ -657,8 +656,8 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
   if maxAle > 2:  # Not SNP
     preOperators = [
       # initialize all loci with 5 haplotypes
-      initByValue(value=[[x]*gt.totNumLoci() for x in range(meanInitAllele-2,meanInitAllele+2)],
-        proportions=[.1]*10), 
+      initByValue(value=[[x]*gt.totNumLoci() for x in range(meanInitAllele-2,meanInitAllele+3)],
+        proportions=[.2]*5), 
       # and then init DSL with all wild type alleles
       initByValue([1]*len(DSL), atLoci=DSL)
     ]
@@ -978,83 +977,28 @@ def plotLD(pop, epsFile, jpgFile):
 
 # penetrance functions. They will return a penetrance function
 # 
-def recessive1(pen):
-  ''' return a penetrance function (weird? :-) '''
-  def func(geno):
-    if geno[0] + geno[1] == 4:     # only use the first DSL
-      return pen
-    else:
-      return 0
-  return func
-
-def recessive2(pen):
-  ''' recessive All '''
+def recessive(pen):
+  ''' recessive single-locus, heterogeneity multi-locus '''
   def func(geno):
     val = 1
-    numRecessive = 0
-    if len(geno) < 4:
-      raise exceptions.ValueError("Number of DSL < 2, can not apply this penetrance function.")
-    for i in range(2):
+    for i in range(len(gen)/2):
       if geno[i*2]+geno[i*2+1] == 4:
         val *= 1 - pen
-        numRecessive += 1
-    if numRecessive == 0:
-      return 0
-    else:
-      return 1-val
-  return func
-
-def recessive3(pen):
-  ''' recessive All '''
-  def func(geno):
-    val = 1
-    numRecessive = 0
-    if len(geno) < 6:
-      raise exceptions.ValueError("Number of DSL < 3, can not apply this penetrance function.")
-    for i in range(3):
-      if geno[i*2]+geno[i*2+1] == 4:
-        val *= 1 - pen
-        numRecessive += 1
-    if numRecessive == 0:
-      return 0
-    else:
-      return 1-val
-  return func
-  
-def additive1(pen):
-  ''' additive2 '''
-  def func(geno):
-    return (geno[0]+geno[1]-2)*pen/2.
-  return func
-
-def additive2(pen):
-  ''' additive2 '''
-  def func(geno):
-    if len(geno) < 4:
-      raise exceptions.ValueError("Number of DSL < 2, can not apply this penetrance function.")
-    if geno.count(2) < 2:
-      return 0.
-    # other wise a heterogeneity model
-    val = 1
-    for i in range(2):
-      val *= 1- (geno[i*2]+geno[i*2+1]-2)*pen/2.
     return 1-val
   return func
   
-def additive3(pen):
-  ''' additive2 '''
+def additive(pen):
+  ''' additive single-locus, heterogeneity multi-locus '''
   def func(geno):
-    if len(geno) < 6:
-      raise exceptions.ValueError("Number of DSL < 3, can not apply this penetrance function.")
-    if geno.count(2) < 3:
-      return 0.
-    # other wise a heterogeneity model
     val = 1
-    for i in range(3):
+    for i in range(len(gen)/2):
       val *= 1- (geno[i*2]+geno[i*2+1]-2)*pen/2.
     return 1-val
   return func
 
+def custom(pen):
+  def func(geno):
+    raise "customized penetrance function has not been defined."
 
 def drawSamples(pop, penFun):
   ''' get samples of different type using a penetrance function '''
@@ -1272,30 +1216,18 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
   if 'Linkage' in saveFormat:
     Stat(pop, alleleFreq=range(pop.totNumLoci()))
   for p in range(len(peneFunc)):
-    if peneFunc[p] == 'recessive1':
-      print "Using recessive1 penetrance function"
-      summary += "<h4>Recessive at one locus</h4>\n"
-      s = drawSamples(pop, recessive1( penePara[p]))
-    elif peneFunc[p] == 'recessive2':
-      print "Using recessive2 penetrance function"
-      summary += "<h4>Recessive at one locus, 2 DSL</h4>\n"
-      s = drawSamples(pop, recessive2(penePara[p]))
-    elif peneFunc[p] == 'recessive3':
-      print "Using recessive3 penetrance function"
-      summary += "<h4>Recessive at one locus, 3 DSL</h4>\n"
-      s = drawSamples(pop, recessive3(penePara[p]))
-    elif peneFunc[p] == 'additive1':
-      print "Using additive1 penetrance function"
-      summary += "<h4>Additive at one locus</h4>\n"
-      s = drawSamples(pop, additive1(penePara[p]))
-    elif peneFunc[p] == 'additive2':
-      print "Using recessive3 penetrance function"
-      summary += "<h4>Additive at 2 DSL, at least 2 DS alleles</h4>\n"
-      s = drawSamples(pop, additive2(penePara[p]))
-    else:
-      print "Using additive2 penetrance function"
-      summary += "<h4>Additive at 3 DSL, at least 3 DS alleles</h4>\n"
-      s = drawSamples(pop, additive3(penePara[p]))
+    if peneFunc[p] == 'recessive':
+      print "Using recessive penetrance function"
+      summary += "<h4>Recessive single-locus, heterogeneity multi-locus</h4>\n"
+      s = drawSamples(pop, recessive( penePara[p]))
+    elif peneFunc[p] == 'additive':
+      print "Using additive penetrance function"
+      summary += "<h4>Additive single-locus, heterogeneity multi-locus</h4>\n"
+      s = drawSamples(pop, additive(penePara[p]))
+    elif peneFunc[p] == 'custom':
+      print "Using customized penetrance function"
+      summary += "<h4>Customized penetrance function</h4>\n"
+      s = drawSamples(pop, customPene(penePara[p]))
     # save these samples
     #
     penDir = dataDir + "/" + peneFunc[p]
@@ -1360,7 +1292,7 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
     if suc > 1 : # jpg file is generated
       summary += '''<p><img src="%s/TDT.jpg" width=800, height=600></p>''' % relDir
     # keep some numbers depending on the penetrance model
-    result.append(res[:int(peneFunc[p][-1])])
+    result.append(res)
   return (summary, result)
 
 
@@ -1452,7 +1384,7 @@ if __name__ == '__main__':
     maxAlleleFreq, fitnessTmp, mlSelModelTmp, 
     numSubPop, finalSize, noMigrGen,
     mixingGen, growth, migrModel, migrRate, mutaRate, recRate,
-    numRep, saveFormat, peneFuncTmp, penePara, N, outputDir,
+    numRep, saveFormat, peneFunc, penePara, N, outputDir,
     overwrite, geneHunter, dryrun, saveConfig) = allParam
   #
   # this may not happen at all but we do need to be careful
@@ -1511,13 +1443,6 @@ if __name__ == '__main__':
   else:
     raise exceptions.ValueError("Growth model can be one of linear and exponential. Given " + growth)
   #  
-  # Penetrance related !
-  peneFunc = []
-  for pe in peneFuncTmp:
-    if int(pe[-1]) > len(DSLafter):
-      print "Number of DSL is ", len(DSLafter), " ignoring penetrance function ", pe
-    else:
-      peneFunc.append(pe)
       
   # check penePara
   if len(penePara) == 0:
@@ -1539,7 +1464,7 @@ if __name__ == '__main__':
           _mkdir(dataDir)      
           (text, result) =  processOnePopulation(dataDir,
             numChrom, numLoci, markerType, 
-            DSLafter, DSLdist, initSize, burnin, introGen, introSel,
+            DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, introSel,
             minAlleleFreq, maxAlleleFreq, fitness, mlSelModel, numSubPop, 
             finalSize, noMigrGen, mixingGen, popSizeFunc, migrModel, 
             mu, mi, rec, dryrun, popIdx)
