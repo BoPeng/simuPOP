@@ -267,17 +267,16 @@ options = [
         till the end of burnin stage''',
    'validate':  simuOpt.valueGT(0)
   },
-  {'longarg': 'medianInitAllele=',
+  {'longarg': 'meanInitAllele=',
    'default': 50,
-   'configName': 'median initial allele number for the markers',
+   'configName': 'mean initial alleles for the markers',
    'allowedTypes': [types.IntType, types.LongType],
-   'prompt': 'Initial haplotype for the markers, microsatellite only ([50):  ',
+   'prompt': 'Mean initial alleles for the markers, microsatellite only (50):  ',
    'description': '''Initial haplotype for the markers. This option ignored for SNP markers
         since 1111..., 2222.... will be used as initial haplotypes. For 
-        micraosate markers, this number will be the median of the alleles used.
-        For example, if number of DSL is 5 and 50 is given for this option,
-        initial haplotypes will be 48,48,48,..., 49,49,49,..., 50,50,50,...,
-        51,51,51,...., 52,52,52,.... ''',
+        microsatellite markers, this number will be the mean of the alleles used.
+        In this simulation, markers will be initialized with one of five haplotypes
+				given by m-2,m-1,m,m+1,m+2 while m is the mean initial allele. ''',
    'validate':  simuOpt.valueGT(0)
   }, 
   {'longarg': 'burnin=',
@@ -403,7 +402,7 @@ options = [
    'chooseOneOf': ['stepstone', 'island', 'none']
   }, 
   {'longarg': 'migrRate=',
-   'default': [0,0.01,0.05,0.1],
+   'default': [0,0.001,0.01,0.1],
    'configName': 'Migration Rates',
    'prompt': 'Migration rate(s) during mixing stage. A separate dataset\n' +
         'will be genrated for each of the given migration rate. ([0, 0.01, 0.05, 0.1]):  ',
@@ -443,37 +442,40 @@ options = [
         number of replicates.''',
    'validate':  simuOpt.valueGT(0)   
   },
+	# temporarily remove randTent format.
   {'longarg': 'saveFormat=',
-   'default': ['simuPOP','Linkage','randTent'],
+   'default': ['simuPOP','Linkage'],
    'configName': 'saveInFormat',
    'allowedTypes': [types.ListType, types.TupleType],
    'prompt': "Save datasets in format (['simuPOP','Linkage','randTent']):  ",
    'description': '''Save generated datasets in specified formats.
         Choosen from simuPOP, Linkage, randTent. ''',
-   'validate':  simuOpt.valueListOf( simuOpt.valueOneOf([ 'simuPOP', 'Linkage', 'randTent'])),
-   'chooseFrom': [ 'simuPOP', 'Linkage', 'randTent']
+   'validate':  simuOpt.valueListOf( simuOpt.valueOneOf([ 'simuPOP', 'Linkage'])),
+   'chooseFrom': [ 'simuPOP', 'Linkage']
   },
   {'longarg': 'peneFunc=',
-   'default': ['recessive1','recessive2','recessive3','additive1','additive2','additive3'],
+   'default': ['recessive','additive'],
    'configName': 'penetrance functions',
    'allowedTypes': [types.ListType, types.TupleType],
-   'prompt': 'Penetrance to be used:  choose from recessive1/2/3, and additive1/2/3\n' +
-         "(all six):  ",
-   'description': '''Penetrance functions to be applied to the final
-        population. Details please refer to -h info.''',
+   'prompt': 'Penetrance to be used: (recessive, additive):  ',
+   'description': '''\
+			  Penetrance functions to be applied to the final
+        population. Two penetrance fucntions are provided, namely recessive or additive
+				single-locus model with heterogeneity multi-locus model. You can define another
+				customized penetrance functions by modifying this script. ''',
    'allowedTypes': [types.ListType, types.TupleType],
-   'validate':  simuOpt.valueListOf( simuOpt.valueOneOf(['recessive1', 'recessive2', 'recessive3',\
-     'additive1', 'additive2', 'additive3'])),
-   'chooseFrom': ['recessive1', 'recessive2', 'recessive3',\
-     'additive1', 'additive2', 'additive3']
+   'validate':  simuOpt.valueListOf( simuOpt.valueOneOf(['recessive', 'additive', 'custom'])),
+   'chooseFrom': [ 'recessive', 'additive', 'custom']
   },
   {'longarg': 'penePara=',
    'default': [0.5],
    'configName': 'penetrance parameter',
    'prompt': 'Penetrance parameter used by penetrance functions. \n' + 
-         "Can be an array. see help for formulae. (0.5):  ",
-   'description': '''Penetrance parameter used in each penetrance type.
-        If an array is given, they are the parameter for each type.''',
+         "Can be an array (for each DSL). (0.5) ",
+   'description': '''Penetrance parameter for all DSL. An array of parameter 
+        can be given to each DSL. The meaning of this parameter differ by penetrance model.
+				For a recessive model, the penetrance is 0,0,p for genotype AA,Aa,aa (a is disease
+				allele) respectively. For an additive model, the penetrance is 0,p/2,p respectively.''',
    'allowedTypes': [types.ListType, types.TupleType],
    'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
   },
@@ -573,7 +575,7 @@ def getOptions(details=__doc__):
 # recombination rate
 # 
 def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
-    initSize, burnin, introGen, introSel, minAlleleFreq,
+    initSize, meanInitAllele, burnin, introGen, introSel, minAlleleFreq,
     maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
     mixingGen, popSizeFunc, migrModel, mu, mi, rec, dryrun, logFile):
   ''' run a simulation of complex disease with
@@ -654,8 +656,8 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
   # initialization and mutation
   if maxAle > 2:  # Not SNP
     preOperators = [
-      # initialize all loci with 10 haplotypes
-      initByValue(value=[[x]*gt.totNumLoci() for x in range(50,60)],
+      # initialize all loci with 5 haplotypes
+      initByValue(value=[[x]*gt.totNumLoci() for x in range(meanInitAllele-2,meanInitAllele+2)],
         proportions=[.1]*10), 
       # and then init DSL with all wild type alleles
       initByValue([1]*len(DSL), atLoci=DSL)
@@ -897,6 +899,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
       pop.dvars().DSLAfter = DSLafter
       pop.dvars().DSLdist = DSLdist
       pop.dvars().initSize = initSize
+      pop.dvars().meanInitAllele = meanInitAllele
       pop.dvars().finalSize = finalSize
       pop.dvars().burnin = burnin
       pop.dvars().introGen = introGen
@@ -1195,7 +1198,7 @@ def _mkdir(d):
     sys.exit(1)
 
 def processOnePopulation(dataDir, numChrom, numLoci, markerType,
-    DSLafter, DSLdist, initSize, burnin, introGen, introSel, minAlleleFreq,
+    DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, introSel, minAlleleFreq,
     maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
     mixingGen, popSizeFunc, migrModel, mu, mi, rec, dryrun, popIdx):
   '''
@@ -1225,7 +1228,7 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
   if genDataset:
     print "Generating dataset ", str(popIdx)
     pop = simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
-      initSize, burnin, introGen, introSel, minAlleleFreq,
+      initSize, meanInitAllele, burnin, introGen, introSel, minAlleleFreq,
       maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
       mixingGen, popSizeFunc, migrModel, mu, mi, rec, dryrun, logFile)
     SavePopulation(pop, popFile)
@@ -1445,7 +1448,7 @@ if __name__ == '__main__':
   allParam = getOptions()
   # unpack options
   (numChrom, numLoci, markerType, DSLafter, DSLdist,
-    initSize, burnin, introGen, introSel,  minAlleleFreq, 
+    initSize, meanInitAllele, burnin, introGen, introSel,  minAlleleFreq, 
     maxAlleleFreq, fitnessTmp, mlSelModelTmp, 
     numSubPop, finalSize, noMigrGen,
     mixingGen, growth, migrModel, migrRate, mutaRate, recRate,
