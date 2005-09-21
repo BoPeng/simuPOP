@@ -188,7 +188,7 @@ DATA_FILES =  [
   ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 'src/Makefile.icc', 
     'COPYING', 'TODO']), 
   ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
-  ('share/simuPOP/test', ['test/test_population.py', 'test/pop1.bin', 'test/test_fstat.py',
+  ('share/simuPOP/test', ['test/test_population.py',  'test/test_fstat.py',
   'test/test_mutate.py', 'test/test_simulator.py',  'test/test_ifelse.py', 
   'test/test_operator.py', 'test/test_rplot.py', 'test/test_stat.py', 
   'test/test_individual.py', 'test/test_penetrance.py', 'test/test_scipy.py',
