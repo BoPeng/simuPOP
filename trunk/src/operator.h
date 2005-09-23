@@ -961,5 +961,99 @@ namespace simuPOP
       DBG_CODE m_code;
   };
 
+  /* 
+     pyOperator, the ultimate python operator
+     */
+  template<class Pop>
+    class PyOperator: public Operator<Pop>
+  {
+
+    public:
+      /** \brief python operator, using a function that accept a population object 
+
+      \param func a python function that accept a population and perform whatever
+			   operation it wants to.
+							 
+			 Note: (FIXME) output to output or outputExpr is not yet supported. Ideally, 
+			   this func will take two parameters with pop and then a filehandle to output,
+				 however, differentiating output, append etc is too troublesome right now.
+       */
+      PyOperator(PyObject* func, 
+        int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
+        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
+      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp, sep)
+      {
+			  if( !PyCallable_Check(func))
+					throw ValueError("Passed variable is not a callable python function.");
+
+				// save func
+				Py_XINCREF(func);
+				m_func = func;
+      };
+
+      /// destructor
+      virtual ~PyOperator()
+      {
+				if( m_func != NULL)
+					Py_DECREF(m_func);
+      };
+
+			/// need a copy operator because of m_func
+			PyOperator(const PyOperator& rhs):
+			Operator<Pop>(rhs), m_func(rhs.m_func)
+			{
+				if( m_func != NULL)
+			    Py_INCREF( m_func);
+			}
+			
+      /// this function is very important
+      virtual Operator<Pop>* clone() const
+      {
+        return new PyOperator(*this);
+      }
+
+      virtual bool apply(Pop& pop)
+      {
+				// call the python function, pass the whole population in it.
+				// get pop object
+				PyObject* popObj=pointer2pyObj((void*)(&pop), PopSWIGType);
+				// if pop is valid?
+				if(popObj == NULL)
+					throw SystemError("Could not pass population to the provided function. \n"
+							"Compiled with the wrong version of SWIG?");
+				Py_INCREF(popObj);
+				
+				// parameter list
+				PyObject* arglist = Py_BuildVars("(0)", popObj);
+				PyObject* result = PyEval_CallOject(m_func, arglist);
+				// need to make sure this is correct.
+				Py_DECREF(popObj);
+				// release arglist
+				Py_DECREF(arglist);
+				
+				if( result == NULL)
+				{
+					PyErr_Print();
+					throw ValueError("Function call failed.");
+				}
+				// result should be a boolean value
+				bool resBool;
+				// defined in utility.h
+				PyObj_As_Bool(result, resBool);
+				Py_DECREF(result);
+				return result;
+      }
+
+      virtual string __repr__()
+      {
+        return "<simuPOP::pyOperator>";
+      }
+
+    private:
+      
+			/// the function
+			PyObject * m_func;
+  };
+
 }
 #endif
