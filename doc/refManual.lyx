@@ -5174,6 +5174,85 @@ if hasRPy:
   r.....
 \layout Section
 
+Operator (Hybrid) 
+\family typewriter 
+pyOperator
+\begin_inset LatexCommand \index{operator!pyOperator}
+
+\end_inset 
+
+
+\layout Standard
+
+This is the single most powerful hybrid operator.
+ Whenever you think that something is too complicated to be done by standard
+ operators, you can do it here in python.
+ This operator accepts a Python function which can accept a population as
+ its parameter.
+ To use this operator, you will need to 
+\layout Itemize
+
+define a function that handle a population as you wish.
+\begin_deeper 
+\layout LyX-Code
+
+def myOperator(pop):
+\layout LyX-Code
+
+  ' do whatever you want'
+\layout LyX-Code
+
+  return True
+\layout Standard
+
+If you return 
+\family typewriter 
+False
+\family default 
+, this operator will work like a terminator.
+\end_deeper 
+\layout Itemize
+
+use 
+\family typewriter 
+pyOperator
+\family default 
+ like
+\begin_deeper 
+\layout LyX-Code
+
+pyOperator(myOperator)
+\layout Standard
+
+all parameters of an operator are supported except for 
+\family typewriter 
+output
+\family default 
+ and 
+\family typewriter 
+outputExpr
+\family default 
+ which are ignored for now.
+\end_deeper 
+\layout Standard
+
+When 
+\family typewriter 
+pyOperator 
+\family default 
+is called, it will simply pass the accepted population to the function.
+ If your function returns 
+\family typewriter 
+False
+\family default 
+, the simulation will be stopped.
+\layout Standard
+
+Of course, to use this operator, you will have to know how to use population-rel
+ated functions.
+ 
+\layout Section
+
 Initialization
 \begin_inset LatexCommand \index{initializer}
 

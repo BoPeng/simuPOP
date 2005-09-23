@@ -208,6 +208,7 @@ namespace simuPOP
   //%template(indTagPair)       Individual<std::pair<int,int> >;
   %template(population)         Population<individual>;
   %template(baseOperator)       Operator< pop >;
+  %template(pyOperator)         PyOperator< pop >;
 }
 
 %inline

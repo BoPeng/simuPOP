@@ -22,7 +22,7 @@ XML_SUPPORT=1
 
 from distutils.core import setup, Extension
 
-import os, shutil, sys
+import os, shutil, sys, glob
 
 SIMUPOP_VER="snapshot"
 if sys.argv[1] not in ['sdist']:
@@ -184,16 +184,13 @@ if XML_SUPPORT == 1:
     ]
   )
 
+# find all test files
+testFiles = glob.glob('test/test_*.py')
 DATA_FILES =  [
   ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 'src/Makefile.icc', 
     'COPYING', 'TODO']), 
   ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
-  ('share/simuPOP/test', ['test/test_population.py',  'test/test_fstat.py',
-  'test/test_mutate.py', 'test/test_simulator.py',  'test/test_ifelse.py', 
-  'test/test_operator.py', 'test/test_rplot.py', 'test/test_stat.py', 
-  'test/test_individual.py', 'test/test_penetrance.py', 'test/test_scipy.py',
-  'test/test_recombination.py', 
-  'test/test_init.py', 'test/test_selection.py', 'test/test_leak.py']), 
+  ('share/simuPOP/test', glob.glob('test/test_*.py')),
   ('share/simuPOP/misc', ['misc/README', 'misc/python-mode.el', 'misc/emacs-python.el']),
   ('share/simuPOP/scripts', ['scripts/simuComplexDisease.py',  
    'scripts/simuLDDecay.py', 'scripts/simuCDCV.py']),
