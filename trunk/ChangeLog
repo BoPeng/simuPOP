@@ -5,6 +5,10 @@ NOTE: Daily snapshot reflects current SVN version but might not be stable.
 
 Known bugs     - all fixed now
     
+version 0.6.9 -  currently available as daily snapshot
+  - add pyOperator, the ultimate hybrid operator, this will considerably simplify many
+    coomplicated tasks 
+
 version 0.6.8 - Sep 21st, 2005
   - fix a reporting bug in simuCDCV.py
   - support sex chromosome and sex chromosome related mating, recombination issues.

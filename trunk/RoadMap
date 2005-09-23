@@ -3,6 +3,7 @@ RoadMap of simuPOP
 Towards simuPOP 1.0     - Roadmaps  Marked by Easy 1 --- difficult 9. Workload 1 - 9
 
 Roadmap: test and documentation:
+ *2/2 Use doctest module to test if test cases are generating the same output
   3/8 document each class whether or not they are suitable only for diploid population.
   3/7 sample script and precise description for each class, put it in online help
   4/9 comprehensive testing scripts
