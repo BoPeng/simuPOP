@@ -8,6 +8,9 @@ Known bugs     - all fixed now
 version 0.6.9 -  currently available as daily snapshot
   - add pyOperator, the ultimate hybrid operator, this will considerably simplify many
     coomplicated tasks 
+  - start to convert all test cases to PyUnit. This means better test cases and more
+    thorough testing. I expect that code 0.7.0 is a version with much less bugs due to
+    this change. 
 
 version 0.6.8 - Sep 21st, 2005
   - fix a reporting bug in simuCDCV.py
