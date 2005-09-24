@@ -39,7 +39,7 @@ sys.stderr = output
 sys.stdout = output
 
 
-b = runScriptInteractively(filename = sys.argv[1])
+b = runScriptInteractively(locals=locals(), filename = sys.argv[1])
 b.interact(None)
 
 output.close()
