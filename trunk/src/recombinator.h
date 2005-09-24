@@ -205,8 +205,11 @@ namespace simuPOP
             vecP[index++] = .5;
           }
 
+          // FIXME: remove zero indices for efficiency purpose, but there is no
+          // real need for this if atLoci is not specified.
+
           DBG_DO(DBG_RECOMBINATOR, cout << "Use all Loci. With rates "
-            << vecP << " at " << recBeforeLoci << endl);
+            << vecP << " before " << recBeforeLoci << endl);
         }
         else                                      // afterLoci not empty
         {
@@ -237,18 +240,35 @@ namespace simuPOP
               pos = find( afterLoci.begin(), afterLoci.end(), index);
               if( pos != afterLoci.end())
               {
-                if( useLociDist)
-                  vecP.push_back( (pop.locusDist(index+1) - pop.locusDist(index))*intensity);
+                if( useLociDist )
+                {
+                  if( intensity > 0 )             // igore zero rate
+                  {
+                    vecP.push_back( (pop.locusDist(index+1) - pop.locusDist(index))*intensity);
+                    recBeforeLoci.push_back(index+1);
+                  }
+                }
                 else if( rate.size() == 1 && ! useLociDist)
-                  vecP.push_back( rate[0]);
+                {
+                  if( rate[0] > 0 )               // ignore zero rate
+                  {
+                    vecP.push_back( rate[0]);
+                    recBeforeLoci.push_back(index+1);
+                  }
+                }
                 else
-                  vecP.push_back( rate[ pos-afterLoci.begin() ] );
+                {
+                                                  // ignore zero rate
+                  if( rate[ pos - afterLoci.begin() ] > 0 )
+                  {
+                    vecP.push_back( rate[ pos - afterLoci.begin() ] );
+                    recBeforeLoci.push_back(index+1);
+                  }
+                }
 
                 DBG_ASSERT( fcmp_ge(vecP[vecP.size()-1],0) && fcmp_le(vecP[vecP.size()-1],1),
                   ValueError,
                   "Recombination rate should be in [0,1]. (Maybe your loci distance is too high.)");
-
-                recBeforeLoci.push_back(index+1);
               }
               index++;
             }
@@ -313,6 +333,7 @@ namespace simuPOP
         BitSet::size_type pos = bs.find_first();
         BitSet::size_type newpos = 0;
 
+        // there is some recombination
         if(pos !=  BitSet::npos)
         {
           cp[0] = &*parent->genoBegin(0);
@@ -333,7 +354,7 @@ namespace simuPOP
             // copy to offspring
             // element curCp+newpos+1 will not be copied. [) effect
             copy(curCp+recBeforeLoci[pos],
-              curCp+recBeforeLoci[newpos], 
+              curCp+recBeforeLoci[newpos],
               off+recBeforeLoci[pos]);
             pos = newpos;
             // switch
@@ -341,6 +362,9 @@ namespace simuPOP
           }
 
           // copy the last piece
+          // NOTE: we should make sure recBeforeLoci.back()
+          // refer to the end of the chromosome
+
           copy(curCp + recBeforeLoci[pos],
             curCp + recBeforeLoci.back(),
             off + recBeforeLoci[pos]);
@@ -357,7 +381,7 @@ namespace simuPOP
         else
         {
           copy(parent->genoBegin(initCp),
-            parent->genoEnd(initCp) ,
+            parent->genoEnd(initCp),
             offspring->genoBegin(offPloidy));
 
           if( setSex )
@@ -424,7 +448,7 @@ namespace simuPOP
       //  vector<BernulliTrials*> m_bt;
       BernulliTrials m_bt, m_maleBt;
 
-      /// whether or not set sex
+      /// whether or not set sex (population having sex chromosome)
       bool m_setSex;
   };
 

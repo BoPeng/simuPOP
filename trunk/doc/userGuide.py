@@ -25,9 +25,17 @@ if not os.path.isdir('log'):
     print "Failed to make output directory log"
     sys.exit(1)
   
-
 #file log/importSimuPOP.log
 from simuPOP import *
+#end
+
+# we assume that ../script/ is the path to simuLDDecay.py
+import sys
+
+#PS ../script/simuLDDecay.py 
+
+#file log/simuLDDecay.py
+
 #end
 
 #file log/importSimuPOPOpt.log
