@@ -333,7 +333,8 @@ namespace simuPOP
             // copy to offspring
             // element curCp+newpos+1 will not be copied. [) effect
             copy(curCp+recBeforeLoci[pos],
-              curCp+recBeforeLoci[newpos], off+recBeforeLoci[pos]);
+              curCp+recBeforeLoci[newpos], 
+              off+recBeforeLoci[pos]);
             pos = newpos;
             // switch
             curCp = (curCp == cp[0]) ? cp[1] : cp[0];
@@ -355,8 +356,9 @@ namespace simuPOP
         // if no switch is needed, copy the entire chromosome
         else
         {
-          copy(parent->genoBegin(initCp), parent->genoEnd(initCp) ,
-            offspring->genoBegin(0));
+          copy(parent->genoBegin(initCp),
+            parent->genoEnd(initCp) ,
+            offspring->genoBegin(offPloidy));
 
           if( setSex )
           {
@@ -378,12 +380,12 @@ namespace simuPOP
           // prepare m_bt
           // female
           vectorf vecP;
-// female does not determine sex
+          // female does not determine sex
           prepareRecRates(pop, m_intensity, m_rate, m_afterLoci,
             false, m_recBeforeLoci, vecP);
           m_bt.setParameter(vecP, pop.popSize()*pop.ploidy());
 
-vecP.clear();
+          vecP.clear();
           // male case is most complicated.
           m_setSex = pop.sexChrom()?true:false;
           double maleIntensity = (m_maleIntensity != -1 || !m_maleRate.empty() )

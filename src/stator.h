@@ -610,10 +610,13 @@ namespace simuPOP
       {
         vectori al;
 
-        for(size_t j=1; j < m_alleleNum.back()[loc].size(); ++j)
+        for(size_t j=0; j < m_alleleNum.back()[loc].size(); ++j)
           if( m_alleleNum.back()[loc][j] > 0)
             al.push_back(j);
 
+        if( m_alleleNum.back()[loc][0] != 0)
+          cout << "Warning: having zero (NA) allele, counted as one allele." ;
+          
         DBG_ASSERT( al.size() == static_cast<UINT>(numOfAlleles()[loc]),
           SystemError, "Number of alleles at locus " + toStr(loc)
           + " does not match.Observed "
@@ -627,10 +630,15 @@ namespace simuPOP
       {
         vectori al;
 
-        for(size_t j=1; j < m_alleleNum[subPop][loc].size(); ++j)
+        // whether or not count 0 allele?
+        // consider NA as an allele is reasonable.
+        for(size_t j=0; j < m_alleleNum[subPop][loc].size(); ++j)
           if( m_alleleNum[subPop][loc][j] != 0)
             al.push_back(j);
 
+        if( m_alleleNum[subPop][loc][0] != 0)
+          cout << "Warning: having zero (NA) allele, counted as one allele." << endl;
+          
         DBG_ASSERT( al.size() == static_cast<UINT>(numOfAlleles(subPop)[loc]),
           SystemError, "Number of alleles at locus " + toStr(loc)
           + " at subpop " + toStr(subPop) + " does not match. Observed "
@@ -736,7 +744,7 @@ namespace simuPOP
 
             // set numOfAlleles if necessary
             m_numOfAlleles[sp][loc] = count_if( num.begin(), num.end(),
-              bind2nd(std::greater<int>(),0));
+              bind2nd(std::greater<int>(), 0));
           }                                       // subpop
 
           if(numSP > 1 )                          // calculate sum and post overall result
@@ -759,7 +767,7 @@ namespace simuPOP
 
             // set numOfAlleles if necessary
             m_numOfAlleles.back()[loc] = count_if( sum.begin(), sum.end(),
-              bind2nd(std::greater<int>(),0));
+              bind2nd(std::greater<int>(), 0));
           }
         }                                         // all loci
 

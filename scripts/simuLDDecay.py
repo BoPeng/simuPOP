@@ -131,10 +131,10 @@ else:
   
 # everyone will have the same genotype: 12/21
 simu.evolve(
-  preOps = [initByValue([1,2,2,1])],
+  preOps = [initByValue([1,2,2,1]), dumper()],
   ops = [
-    recombinator( rate = recRate),
-    stat( LD=[0,1] ),
+    #recombinator( rate = recRate),
+    stat( alleleFreq=[0], LD=[0,1] ),
     pyEval(r"'%.4f\t' % LD[0][1]"),
     endl(rep=REP_LAST),
     plotter
