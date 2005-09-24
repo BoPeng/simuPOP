@@ -411,17 +411,6 @@ namespace simuPOP
 
         DBG_FAILIF( !m_proportion.empty() && fcmp_ne(accumulate(m_proportion.begin(), m_proportion.end(), 0.0), 1),
           ValueError, "Proportion should add up to one.");
-
-        // make cusum proportion
-        if( !m_proportion.empty())
-        {
-          for(size_t i=1; i< m_proportion.size(); ++i)
-            m_proportion[i] += m_proportion[i-1];
-          DBG_FAILIF( fcmp_ne(m_proportion[m_proportion.size()-1], 1.),
-            ValueError, "Proportion should add up to one.");
-          // make it precisely one, just to make sure.
-          m_proportion[ m_proportion.size()-1] = 1.;
-        }
       }
 
       ~InitByValue(){}

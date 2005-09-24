@@ -11,6 +11,8 @@ version 0.6.9 -  currently available as daily snapshot
   - start to convert all test cases to PyUnit. This means better test cases and more
     thorough testing. I expect that code 0.7.0 is a version with much less bugs due to
     this change. 
+  - fix a bug in initializer (parameter proportion)
+  - fix a bug in recombinator concerning direct chrom copy.
 
 version 0.6.8 - Sep 21st, 2005
   - fix a reporting bug in simuCDCV.py
