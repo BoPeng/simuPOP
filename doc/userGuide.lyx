@@ -863,25 +863,22 @@ Download Rpy windows binary from
 \layout Standard
 
 After you installed Python, R and Rpy, open a python terminal ( or GUI)
- and type in
-\layout LyX-Code
-
->>> from rpy import *
-\layout LyX-Code
-
->>> r.seq(1,10,2)
-\layout LyX-Code
-
->>> r.plot([1,2,3], type='l')
-\layout Standard
-
-to see if Rpy is working well.
+ and type the following command in to see if Rpy is working well.
  Note that on Linux/Mac systems, the default R installation does not support
  RPy, you will have to rebuild R from source (use 
 \family typewriter 
 --enable-shlib
 \family default 
  option).
+\layout Standard
+
+
+\begin_inset Include \verbatiminput{log/testRPy.log}
+preview false
+
+\end_inset 
+
+
 \layout Section
 
 Installing simuPOP
@@ -1124,7 +1121,7 @@ button.
 \align center 
 
 \begin_inset Graphics
-	filename log/lddecay.png
+	filename log/LDDecay.png
 	lyxscale 20
 	width 4in
 
@@ -1168,111 +1165,14 @@ $ python simuLDDecay.py -h
 \layout Standard
 
 You will get 
-\layout LyX-Code
+\layout Standard
 
-$ python simuLDDecay.py -h
-\layout LyX-Code
 
-Welcome to simuPOP 0.6.3
-\layout LyX-Code
+\begin_inset Include \verbatiminput{log/LDDecayHelp.log}
+preview false
 
-Copyright Bo Peng 2004 (bpeng@stat.rice.edu)
-\layout LyX-Code
+\end_inset 
 
-URL: http://bp6.stat.rice.edu:8080/simuPOP
-\layout LyX-Code
-
-Debug code DBG_GENERAL is turned on.
- cf.
- listDebugCode()
-\layout LyX-Code
-
-Random Number Gernator is set to be mt19937 c.f.
- listAllRNG()
-\layout LyX-Code
-
-Maximum allele number per locus is 255.
-\layout LyX-Code
-
-You are running in standard mode with strict boundary check etc.
-\layout LyX-Code
-
-Use simuOpt.setOptions(optimized, longAllele) to change these options.
-\layout LyX-Code
-
-\layout LyX-Code
-
-simuLDDecay.py usage:
-\layout LyX-Code
-
-This program demonstrate the decay of linkage disequilibrium.
-\layout LyX-Code
-
-  > simuLDDecay.py options
-\layout LyX-Code
-
-  Options: (-shortoption --longoption configname: description.)
-\layout LyX-Code
-
-    -h --help :
-\layout LyX-Code
-
-        Print this usage message.
-\layout LyX-Code
-
-        Default to 0
-\layout LyX-Code
-
-    -s xxx --size xxx (config file entry: popSize):
-\layout LyX-Code
-
-        Population size
-\layout LyX-Code
-
-        Default to 1000
-\layout LyX-Code
-
-    -e xxx --endGen xxx (config file entry: endGen=):
-\layout LyX-Code
-
-        Length of evolution
-\layout LyX-Code
-
-        Default to 50
-\layout LyX-Code
-
-    -r xxx --recRate xxx (config file entry: recombinationRate):
-\layout LyX-Code
-
-        Recombination rate
-\layout LyX-Code
-
-        Default to 0.01
-\layout LyX-Code
-
-    -n xxx --replicate xxx (config file entry: numOfReplicate):
-\layout LyX-Code
-
-        Number of replicates
-\layout LyX-Code
-
-        Default to 5
-\layout LyX-Code
-
-    --saveConfig xxx :
-\layout LyX-Code
-
-        Save current paremeter set to specified file.
-\layout LyX-Code
-
-    -v --verbose :
-\layout LyX-Code
-
-        Verbose mode.
-\layout LyX-Code
-
-        Default to 0
-\layout LyX-Code
 
 \layout Section
 
@@ -1319,41 +1219,6 @@ If you prefer not to use the dialog, you can use the '
 \layout LyX-Code
 
 % simuLDDecay.py -s 500 -e 10 --noDialog
-\layout LyX-Code
-
-Welcome to simuPOP 0.6.3
-\layout LyX-Code
-
-Copyright Bo Peng 2004 (bpeng@stat.rice.edu)
-\layout LyX-Code
-
-URL: http://bp6.stat.rice.edu:8080/simuPOP
-\layout LyX-Code
-
-Debug code DBG_GENERAL is turned on.
- cf.
- listDebugCode()
-\layout LyX-Code
-
-Random Number Gernator is set to be mt19937 c.f.
- listAllRNG()
-\layout LyX-Code
-
-Maximum allele number per locus is 255.
-\layout LyX-Code
-
-You are running in standard mode with strict boundary check etc.
-\layout LyX-Code
-
-Use simuOpt.setOptions(optimized, longAllele) to change these options.
-\layout LyX-Code
-
-\layout LyX-Code
-
-Recombination rate (0.01): 0.1<CR>
-\layout LyX-Code
-
-Number of replicates (5):<CR>
 \layout Standard
 
 
@@ -1864,30 +1729,7 @@ Simulations of standard population genetics models
 simuLDDecay
 \layout Standard
 
-The following the result of 
-\layout LyX-Code
-
-> simuLDDecay.py --quiet -h
-\layout Standard
-
-
-\begin_inset Include \verbatiminput{log/simuLDDecay.log}
-preview false
-
-\end_inset 
-
-
-\layout Standard
-\align center 
-
-\begin_inset Graphics
-	filename log/lddecayRes.png
-	lyxscale 20
-	width 4in
-
-\end_inset 
-
-
+This script has been discussed before.
 \layout Section
 
 Simulations of the evolution of diseases
