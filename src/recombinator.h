@@ -213,8 +213,8 @@ namespace simuPOP
         }
         else                                      // afterLoci not empty
         {
-          DBG_ASSERT( rate.size() == afterLoci.size(), SystemError,
-            "rates and afterLoci should have the same length");
+          DBG_FAILIF( rate.size() > 1 && rate.size() != afterLoci.size(), SystemError,
+            "If an array is given, rates and afterLoci should have the same length");
 
           vectoru::iterator pos;
           vecP.clear();
