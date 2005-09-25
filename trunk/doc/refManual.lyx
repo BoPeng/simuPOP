@@ -10709,7 +10709,7 @@ ind.setAllele
 
 
 \family typewriter 
-ind.arrAlleles
+ind.arrGenotype
 \begin_inset LatexCommand \index{function!arrAlleles}
 
 \end_inset 
@@ -10731,7 +10731,7 @@ means chromosome.
  For example
 \layout LyX-Code
 
-pop.individual(1).arrAlleles(1, 2)
+pop.individual(1).arrGenotype(1, 2)
 \layout Standard
 
 returns an array of alleles on the third chromosome of the second copy of

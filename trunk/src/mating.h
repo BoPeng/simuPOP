@@ -901,8 +901,7 @@ namespace simuPOP
 
               if( formOffGeno )                   // use the default no recombination random mating.
               {
-                int dadPloidy;
-                int momPloidy;
+                int dadPloidy=0, momPloidy=1;     // initialize to avoid compiler complains
                 const BitSet& succ = m_bt.succ(0);
 
                 for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd;  ++ch)

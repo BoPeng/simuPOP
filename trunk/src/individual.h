@@ -81,8 +81,9 @@ namespace simuPOP
     public:
 
       /// CPPONLY serialization library requires a default constructor
-      GenoStructure():m_ploidy(2), m_totNumLoci(0), m_sexChrom(false), m_genoSize(0), m_numChrom(0),
-        m_numLoci(0), m_lociDist(0), m_chromIndex(0), m_alleleNames(), m_lociNames(), m_maxAllele()
+      GenoStructure():m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
+        m_numLoci(0), m_sexChrom(false), m_lociDist(0), m_chromIndex(0), 
+        m_alleleNames(), m_lociNames(), m_maxAllele()
         {}
 
       /** \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
@@ -98,7 +99,7 @@ namespace simuPOP
       GenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
         const vectorf& lociDist, const vectorstr& alleleNames,
         const vectorstr& lociNames, UINT maxAllele)
-        :m_ploidy(ploidy),  m_numChrom(loci.size()), m_sexChrom(sexChrom), m_numLoci(loci),
+        :m_ploidy(ploidy),  m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom), 
         m_lociDist(lociDist), m_chromIndex(loci.size()+1),
         m_alleleNames(alleleNames), m_lociNames(lociNames), m_maxAllele(maxAllele)
       {
@@ -743,7 +744,7 @@ namespace simuPOP
 
       /// return genotype as python Numeric.array object
       /// This is the whole genotype (all)
-      PyObject* arrAlleles()
+      PyObject* arrGenotype()
       {
         // this &* is to avoid any possible type mismatch thing.
         return Allele_Vec_As_NumArray( genoSize(), &*m_genoPtr, false);
@@ -751,7 +752,7 @@ namespace simuPOP
 
       /// return genotype as python Numeric.array object
       /// This is the p'th copy of chromosomes
-      PyObject* arrAlleles(UINT p)
+      PyObject* arrGenotype(UINT p)
       {
         CHECKRANGEPLOIDY(p);
 
@@ -760,7 +761,7 @@ namespace simuPOP
 
       /// return genotype as python Numeric.array object
       /// This is the ch chromosome of the pth copy of chromosome
-      PyObject* arrAlleles(UINT p, UINT ch)
+      PyObject* arrGenotype(UINT p, UINT ch)
       {
         CHECKRANGEPLOIDY(p);
 
