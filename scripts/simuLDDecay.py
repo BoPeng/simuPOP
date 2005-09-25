@@ -133,7 +133,7 @@ else:
 simu.evolve(
   preOps = [initByValue([1,2,2,1]), dumper()],
   ops = [
-    #recombinator( rate = recRate),
+    recombinator( rate = recRate),
     stat( alleleFreq=[0], LD=[0,1] ),
     pyEval(r"'%.4f\t' % LD[0][1]"),
     endl(rep=REP_LAST),
