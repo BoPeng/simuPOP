@@ -13,6 +13,22 @@ from simuUtil import *
 import unittest
 
 class TestRecombinator(unittest.TestCase):
+  def testRecRate(self):
+    ' see if we actually recombine at this rate '
+    pop = population(10000, loci=[2,3,2])
+    InitByValue(pop, value=[1]*7+[2]*7)
+    simu = simulator(pop, randomMating())
+    simu.step( [ 
+      stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]), 
+      recombinator(rate = 0.1) ] )
+    # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
+    assert (simu.dvars(0).haploFreq['0-1']['1-2'] - 0.05) < 0.01
+    assert (simu.dvars(0).haploFreq['0-1']['2-3'] - 0.05) < 0.01
+    assert (simu.dvars(0).haploFreq['0-1']['3-4'] - 0.05) < 0.01
+    assert (simu.dvars(0).haploFreq['0-1']['4-5'] - 0.25) < 0.01
+    assert (simu.dvars(0).haploFreq['0-1']['5-6'] - 0.05) < 0.01
+        
+    
   def testNoNewAllele(self):
     ' cross same haplotype should not result in new alleles at loci'
     geno = [1,2,3,4,5,6,7]
