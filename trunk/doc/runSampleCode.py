@@ -7,6 +7,9 @@
 # 
 import code, sys, os
 
+outputFile = sys.argv[1].split('.')[0] + '.out'
+perlFile = sys.argv[1].split('.')[0] + '.pl'
+
 #  run a script interatively
 class runScriptInteractively(code.InteractiveConsole):
     def __init__(self, locals=None, filename="<console>", file = None):
@@ -30,24 +33,31 @@ class wrapper:
     return getattr(self.file, key)
 
 # out to a file
-output = open(sys.argv[1]+'.out', 'w')
+outFile = open(outputFile, 'w')
+
+oldIn = sys.stdin
+oldOut = sys.stdout
+oldErr = sys.stderr
 
 # set stdin, stderr, stdout
 sys.stdin = wrapper(sys.stdin)
 #sys.stderr = sys.stdout
-sys.stderr = output
-sys.stdout = output
-
+sys.stderr = outFile
+sys.stdout = outFile
 
 b = runScriptInteractively(locals=locals(), filename = sys.argv[1])
 b.interact(None)
 
-output.close()
+# reset io streams
+sys.stdin = oldIn
+sys.stdout = oldOut
+sys.stderr = oldErr
+
+outFile.close()
 
 # separate this file using a perl script
-perlscript = open(sys.argv[1]+'.pl', 'w')
-perlscript.write('''\
-#!/usr/bin/perl
+perlscript = open(perlFile, 'w')
+perlscript.write(r'''#!/usr/bin/perl
 $output = 0;
 $first = 0;
 $file = "";
@@ -72,6 +82,7 @@ while(<>)
   elsif (/^(>>>|\.\.\.)\s*#PS / )
   {
     ($pre, $cmd) = $_ =~ /^(>>>|\.\.\.)\s*#PS (.*)$/;
+    print "Running command ", $cmd, "\n";
     system("$cmd");
   }
   if( $output )
@@ -93,7 +104,9 @@ close(FILE);
 perlscript.close()
 
 # run this perl script
-os.system('perl ' + sys.argv[1]+'.pl' + ' ' + sys.argv[1]+'.out')
+print "Processing output... "
+print 'perl ' + perlFile + ' ' + outputFile
+os.system('perl ' + perlFile + ' ' + outputFile)
 
-os.remove(sys.argv[1]+'.pl')
-#os.remove(sys.argv[1]+'.out')
+#os.remove(perlFile)
+#os.remove(outputFile)

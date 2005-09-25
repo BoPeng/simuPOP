@@ -131,7 +131,7 @@ else:
   
 # everyone will have the same genotype: 12/21
 simu.evolve(
-  preOps = [initByValue([1,2,2,1]), dumper()],
+  preOps = [initByValue([1,2,2,1])],
   ops = [
     recombinator( rate = recRate),
     stat( alleleFreq=[0], LD=[0,1] ),

@@ -25,18 +25,29 @@ if not os.path.isdir('log'):
     print "Failed to make output directory log"
     sys.exit(1)
   
+
+#
 #file log/importSimuPOP.log
 from simuPOP import *
 #end
 
-# we assume that ../script/ is the path to simuLDDecay.py
+#file log/testRPy.log
+from simuRPy import *
+r.seq(1,10,2)
+r.plot([1,2,3], type='l')
+#end
+
+
+# we assume that ../scripts/ is the path to simuLDDecay.py
 import sys
 
-#PS ../script/simuLDDecay.py 
+#PS ../scripts/simuLDDecay.py --help > log/LDDecayHelp.log
+#PS ../scripts/simuLDDecay.py --noDialog --size=1000 --endGen=50 --recRate=0.01 --replicate=5 --saveFigure=LDDecay 
+#PS mv LDDecay50.eps log/LDDecay.eps
+#PS convert -rotate 90 log/LDDecay.eps log/LDDecay.png
+#PS /bin/rm -f log/LDDecay.eps
+#PS ../scripts/simuComplexDisease.py --help > log/simuComplexDisease.log
 
-#file log/simuLDDecay.py
-
-#end
 
 #file log/importSimuPOPOpt.log
 import simuOpt
@@ -46,7 +57,7 @@ from simuPOP import *
 
 #file log/addSysPath.log
 import sys
-sys.path.append('path/to/simuPOP')
+sys.path.append('/path/to/simuPOP')
 from simuPOP import *
 #end
 
@@ -937,3 +948,5 @@ simu.evolve(
 
 #end
 
+# need reich.py
+#PS /bin/cp -f ../examples/Reich2002/reich.py log/reich.py
