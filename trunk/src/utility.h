@@ -532,8 +532,8 @@ namespace simuPOP
         return val;
       }
 
-      /// CPPONLY
-      void numArrayOwnMem(const string& name);
+      /// CPPONLY, obsolete
+      // void numArrayOwnMem(const string& name);
 
       /// CPPONLY
       string getVarAsString(const string& name, bool nameError=true)
@@ -1348,7 +1348,6 @@ namespace simuPOP
   /// initialize module simuPOP when using "import simuPOP"
   bool initialize();
 
-  /// CPPONLY
   void showSimuPopInfo();
 
   /// CPPONLY

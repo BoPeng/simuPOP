@@ -570,6 +570,108 @@ def getOptions(details=__doc__):
   return allParam[1:-1]
 
 #
+# we need to output various statistics, using all
+# pyEval operator like in the previous versions are too
+# tedious. This version uses a pyOperator to do it
+# all together.
+#
+
+def outputAtSplit(pop):
+def outputAtMixing(pop):
+def outputAtEndGen(pop):
+ #
+  # Now, most troublesome operators: dealing with output.
+  # We need to write expressions that will be evaluated automatically by pyEval
+  # operator. 
+  # 
+  # ** If you are not sure you are getting the right expression (expression error
+  #    happend. Use a output() operator to output the expression itself.
+  # 
+  # We need to track:
+  # 1. LD (D') from a central marker to all others on a
+  #   non-DSL chromosome, at burnin and before and after migration
+  # 2. LD (D') from a central DSL to all others,
+  #   at burnin and end
+  # 3. Fst before and after migration
+  # 4. allele frequency at DSL at the end (always monitored)
+  # 5. Mean observed heterogeneity at the marker loci
+  #
+  #
+  DSLLDString =  r"\nD' between DSL %d (chrom %d) and surrounding markers at gen %%d\n" \
+    % (ctrDSL, ctrChrom)
+  nonDSLLDString = r"\nD' between a center marker %d (chrom %d) and surrounding markers at gen %%d\n" \
+    % (gt.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom)
+  #
+  # each DSL is available as LD_prime[a][b] but we have so many
+  # of them, need to write some expressions (that will be evaluated automatically)
+  # ''"" etc quickly get complicated
+  #
+  # What we need is something like this:
+  # "%.4f %.4f \n" % (LD_prime[1][2], LD_Prime[3][4])
+  # 
+  ctrDSLExpr = '"' + ('%.4f ' * len(ctrDSLLD))  + r'\n" % (' 
+  for ld in ctrDSLLD:
+    ctrDSLExpr += ' LD_prime[%d][%d],' % (ld[0], ld[1])
+  ctrDSLExpr += ')'
+  #
+  nonDSLExpr = '"' + ('%.4f ' * len(noDSLLD))  + r'\n" % ('
+  for ld in noDSLLD:
+    nonDSLExpr += ' LD_prime[%d][%d],' % (ld[0], ld[1])
+  nonDSLExpr += ')'
+  # output a table of DSL allele freq like
+  # all x x x
+  # 1   x x x
+  # 2   x x x
+  # ...
+  alleleFreqExpr = r'"all\t' + (r'%.4f\t' * numDSL) + r'\n'
+  for sp in range(numSubPop):
+    alleleFreqExpr += str(sp+1) + r'\t' + (r'%.4f\t' * numDSL) + r'\n'
+  alleleFreqExpr += '" % ('
+  for d in DSL:
+    alleleFreqExpr += ' 1.-alleleFreq[%d][1],' % d
+  for sp in range(numSubPop):
+    for d in DSL:
+      alleleFreqExpr += '1.-subPop[%d]["alleleFreq"][%d][1],' % (sp, d)
+  alleleFreqExpr += ')'
+  # need reduce(....)
+  heteroFreqExec = "AvgHetero=("
+  for d in range(gt.totNumLoci()):
+    heteroFreqExec += 'heteroFreq[%d][0]+' % d
+  heteroFreqExec += '0.)/%d' % gt.totNumLoci() 
+  heteroFreqExpr = r"'\nAverage counted heterozygosity is %.4f.\n' % AvgHetero"
+  #
+
+   
+    # calculate LD
+    stat( LD = ctrDSLLD + noDSLLD, at = [burnin, mixing, endGen]),
+    # calculate average Fst based on non-DSL markers
+    # calculate observed heterogeneity at all markers (including DSL)
+    stat( Fst = nonDSL, heteroFreq = range(gt.totNumLoci()), at = [ mixing, endGen]),
+    
+  ' a function to output statistics, will be used with pyOperator'
+  pyEval( '"' + DSLLDString + '" % gen', output = ">>" + logFile,
+    at = [split, mixing, endGen]),
+  pyEval( ctrDSLExpr,  output = ">>" + logFile, at = [split, mixing, endGen]),
+  pyEval( '"' + nonDSLLDString + '" % gen', output = ">>" + logFile,
+    at = [split, mixing, endGen]),
+  pyEval( nonDSLExpr,  output = ">>" + logFile, at = [split, mixing, endGen]),
+  # allele frequency
+  pyEval(r'"\nDSL allele frequency at gen %d\n" % gen', output = ">>" + logFile,
+    at = [mixing, endGen]), 
+  pyEval( alleleFreqExpr, output = ">>" + logFile, at = [mixing, endGen]),
+  # heterogeneity
+  pyExec( heteroFreqExec, at = [ mixing, endGen]),
+  pyEval( heteroFreqExpr, output = ">>" + logFile, at = [ mixing, endGen]),
+  # Fst
+  pyEval( r'"\nFst at gen %d is %.4f\n" % (gen, AvgFst)', output = ">>" + logFile,
+    at = [ mixing, endGen]),
+     # see how long the simulation has been running
+    output("Start introducing disease\t\t", at = [burnin] ),
+    output("Start no-migration stage\t\t", at = [split ] ),
+    output("Start mixing\t\t", at = [mixing]),
+    output("End of simulation. \n", at = [endGen]),
+    pyEval(r'"Generation %d\n" % gen ', step = 100),
+#
 # simulate function, using a single value of mutation, migration,
 # recombination rate
 # 
@@ -761,102 +863,10 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
     setAncestralDepth(2, at=[-2]),
     # track pedigree
     parentsTagger(begin=-2),
-  ])
-  #
-  # Now, most troublesome operators: dealing with output.
-  # We need to write expressions that will be evaluated automatically by pyEval
-  # operator. 
-  # 
-  # ** If you are not sure you are getting the right expression (expression error
-  #    happend. Use a output() operator to output the expression itself.
-  # 
-  # We need to track:
-  # 1. LD (D') from a central marker to all others on a
-  #   non-DSL chromosome, at burnin and before and after migration
-  # 2. LD (D') from a central DSL to all others,
-  #   at burnin and end
-  # 3. Fst before and after migration
-  # 4. allele frequency at DSL at the end (always monitored)
-  # 5. Mean observed heterogeneity at the marker loci
-  #
-  #
-  DSLLDString =  r"\nD' between DSL %d (chrom %d) and surrounding markers at gen %%d\n" \
-    % (ctrDSL, ctrChrom)
-  nonDSLLDString = r"\nD' between a center marker %d (chrom %d) and surrounding markers at gen %%d\n" \
-    % (gt.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom)
-  #
-  # each DSL is available as LD_prime[a][b] but we have so many
-  # of them, need to write some expressions (that will be evaluated automatically)
-  # ''"" etc quickly get complicated
-  #
-  # What we need is something like this:
-  # "%.4f %.4f \n" % (LD_prime[1][2], LD_Prime[3][4])
-  # 
-  ctrDSLExpr = '"' + ('%.4f ' * len(ctrDSLLD))  + r'\n" % (' 
-  for ld in ctrDSLLD:
-    ctrDSLExpr += ' LD_prime[%d][%d],' % (ld[0], ld[1])
-  ctrDSLExpr += ')'
-  #
-  nonDSLExpr = '"' + ('%.4f ' * len(noDSLLD))  + r'\n" % ('
-  for ld in noDSLLD:
-    nonDSLExpr += ' LD_prime[%d][%d],' % (ld[0], ld[1])
-  nonDSLExpr += ')'
-  #
-  # output a table of DSL allele freq like
-  # all x x x
-  # 1   x x x
-  # 2   x x x
-  # ...
-  alleleFreqExpr = r'"all\t' + (r'%.4f\t' * numDSL) + r'\n'
-  for sp in range(numSubPop):
-    alleleFreqExpr += str(sp+1) + r'\t' + (r'%.4f\t' * numDSL) + r'\n'
-  alleleFreqExpr += '" % ('
-  for d in DSL:
-    alleleFreqExpr += ' 1.-alleleFreq[%d][1],' % d
-  for sp in range(numSubPop):
-    for d in DSL:
-      alleleFreqExpr += '1.-subPop[%d]["alleleFreq"][%d][1],' % (sp, d)
-  alleleFreqExpr += ')'
-  # need reduce(....)
-  heteroFreqExec = "AvgHetero=("
-  for d in range(gt.totNumLoci()):
-    heteroFreqExec += 'heteroFreq[%d][0]+' % d
-  heteroFreqExec += '0.)/%d' % gt.totNumLoci() 
-  heteroFreqExpr = r"'\nAverage counted heterozygosity is %.4f.\n' % AvgHetero"
-  #
-  # pyEval operators
-  operators.extend( [
-    # calculate LD
-    stat( LD = ctrDSLLD + noDSLLD, at = [burnin, mixing, endGen]),
-    # calculate average Fst based on non-DSL markers
-    # calculate observed heterogeneity at all markers (including DSL)
-    stat( Fst = nonDSL, heteroFreq = range(gt.totNumLoci()), at = [ mixing, endGen]),
-    #
     # output statistics
-    # LD
-    pyEval( '"' + DSLLDString + '" % gen', output = ">>" + logFile,
-      at = [split, mixing, endGen]),
-    pyEval( ctrDSLExpr,  output = ">>" + logFile, at = [split, mixing, endGen]),
-    pyEval( '"' + nonDSLLDString + '" % gen', output = ">>" + logFile,
-      at = [split, mixing, endGen]),
-    pyEval( nonDSLExpr,  output = ">>" + logFile, at = [split, mixing, endGen]),
-    # allele frequency
-    pyEval(r'"\nDSL allele frequency at gen %d\n" % gen', output = ">>" + logFile,
-      at = [mixing, endGen]), 
-    pyEval( alleleFreqExpr, output = ">>" + logFile, at = [mixing, endGen]),
-    # heterogeneity
-    pyExec( heteroFreqExec, at = [ mixing, endGen]),
-    pyEval( heteroFreqExpr, output = ">>" + logFile, at = [ mixing, endGen]),
-    # Fst
-    pyEval( r'"\nFst at gen %d is %.4f\n" % (gen, AvgFst)', output = ">>" + logFile,
-      at = [ mixing, endGen]),
-    # monitor progress and 
-    # see how long the simulation has been running
-    output("Start introducing disease\t\t", at = [burnin] ),
-    output("Start no-migration stage\t\t", at = [split ] ),
-    output("Start mixing\t\t", at = [mixing]),
-    output("End of simulation. \n", at = [endGen]),
-    pyEval(r'"Generation %d\n" % gen ', step = 100),
+    pyOperator(outputAtSplit, at = [split]),
+    pyOperator(outputAtMixing, at = [mixing]),
+    pyOperator(outputAtEndGen, at = [endGen]),
     # Show how long the program has been running.
     ticToc(at=[burnin, split, mixing, endGen]),
     ]

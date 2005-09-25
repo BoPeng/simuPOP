@@ -47,9 +47,9 @@ while(<>)
     $valid = 0 if /NODOCSTRING/ ;
     $ignore = 1 if /CPPONLY/ ;
 
-    die "out of range : $cur" if $cur < 0 || $cur > 9;
+    #die "out of range : $cur" if $cur < 0 || $cur > 9;
 
-    $cont[ $cur] .= $_;
+    $cont[ $cur] .= $_ if $cur >= 0 && $cur <= 9;
     next;
   }
   elsif( /^OriArgString/ )
@@ -64,7 +64,7 @@ while(<>)
       $cur = $i if /$Pattern[$i]/;
     }
 
-    die "can not find any pattern?\n" . $_ unless $cur != -1;
+    next if $cur == -1;  # can not find any pattern, ignore
 
     if( $cur == 0 )
     {

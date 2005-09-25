@@ -973,37 +973,48 @@ namespace simuPOP
 
       \param func a python function that accept a population and perform whatever
       operation it wants to.
+      \param para any python object that will be passed to func after pop parameter.
+        Multiple parameter can be passed as a tuple.
 
        Note: (FIXME) output to output or outputExpr is not yet supported. Ideally,
          this func will take two parameters with pop and then a filehandle to output,
          however, differentiating output, append etc is too troublesome right now.
        */
-      PyOperator(PyObject* func,
+      PyOperator(PyObject* func, PyObject* param=NULL,
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp, sep)
+      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp, sep),
+        m_func(func), m_param(param)
       {
         if( !PyCallable_Check(func))
           throw ValueError("Passed variable is not a callable python function.");
 
-        // save func
+        // inc reference count
         Py_XINCREF(func);
-        m_func = func;
+
+        if(param != NULL)
+          Py_XINCREF(param);
       };
 
       /// destructor
       virtual ~PyOperator()
       {
-        if( m_func != NULL)
-          Py_DECREF(m_func);
+        Py_DECREF(m_func);
+
+        if( m_param != NULL)
+          Py_DECREF(m_param);
       };
 
-      /// need a copy operator because of m_func
+      /// CPPONLY need a copy operator because of m_func
       PyOperator(const PyOperator& rhs):
-      Operator<Pop>(rhs), m_func(rhs.m_func)
+      Operator<Pop>(rhs),
+        m_func(rhs.m_func),
+        m_param(rhs.m_param)
       {
-        if( m_func != NULL)
-          Py_INCREF( m_func);
+        Py_INCREF( m_func);
+
+        if( m_param != NULL)
+          Py_INCREF( m_param);
       }
 
       /// this function is very important
@@ -1023,8 +1034,13 @@ namespace simuPOP
             "Compiled with the wrong version of SWIG?");
         Py_INCREF(popObj);
 
-        // parameter list, ref count increased
-        PyObject* arglist = Py_BuildValue("(O)", popObj);
+        // parammeter list, ref count increased
+        PyObject* arglist;
+        if( m_param == NULL)
+          arglist = Py_BuildValue("(O)", popObj);
+        else
+          arglist = Py_BuildValue("(OO)", popObj, m_param);
+
         // we do not need to catch exceptions here,
         // our wrapper will do that
         PyObject* result = PyEval_CallObject(m_func, arglist);
@@ -1044,7 +1060,7 @@ namespace simuPOP
         // defined in utility.h
         PyObj_As_Bool(result, resBool);
         Py_DECREF(result);
-        return result;
+        return resBool;
       }
 
       virtual string __repr__()
@@ -1056,6 +1072,9 @@ namespace simuPOP
 
       /// the function
       PyObject * m_func;
+
+      /// parammeters
+      PyObject * m_param;
   };
 
 }
