@@ -5187,8 +5187,8 @@ pyOperator
 This is the single most powerful hybrid operator.
  Whenever you think that something is too complicated to be done by standard
  operators, you can do it here in python.
- This operator accepts a Python function which can accept a population as
- its parameter.
+ This operator accepts a Python function which can accept a population and
+ optionally a parameter.
  To use this operator, you will need to 
 \layout Itemize
 
@@ -5196,7 +5196,7 @@ define a function that handle a population as you wish.
 \begin_deeper 
 \layout LyX-Code
 
-def myOperator(pop):
+def myOperator(pop, para):
 \layout LyX-Code
 
   ' do whatever you want'
@@ -5221,7 +5221,7 @@ pyOperator
 \begin_deeper 
 \layout LyX-Code
 
-pyOperator(myOperator)
+pyOperator(myOperator,para)
 \layout Standard
 
 all parameters of an operator are supported except for 
