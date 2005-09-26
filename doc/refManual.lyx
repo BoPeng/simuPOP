@@ -5251,6 +5251,38 @@ False
 Of course, to use this operator, you will have to know how to use population-rel
 ated functions.
  
+\layout Standard
+
+Currently, 
+\family typewriter 
+pyOperator 
+\family default 
+does not support parameter 
+\family typewriter 
+output
+\family default 
+ and 
+\family typewriter 
+outputExpr
+\family default 
+.
+ This is because of the incompatibility between the Python way and underlying
+ C++ way of handling file stream.
+ Consequently, you will have to handle file input/output by yourself through
+ 
+\family typewriter 
+param
+\family default 
+ parameter.
+ Be careful that you 
+\series bold 
+can no
+\series default 
+ mix output of 
+\family typewriter 
+pyOperator
+\family default 
+ with those of other operators.
 \layout Section
 
 Initialization

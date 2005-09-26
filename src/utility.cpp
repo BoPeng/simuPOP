@@ -1775,7 +1775,7 @@ T Expression::valueAs##TypeName() \
       delete m_filePtr;
     }
   }
-
+  
   void StreamProvider::analyzeOutputString(const string& output)
   {
     if( output.empty() )
