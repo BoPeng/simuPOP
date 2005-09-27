@@ -981,7 +981,7 @@ namespace simuPOP
          however, differentiating output, append etc is too troublesome right now.
        */
       PyOperator(PyObject* func, PyObject* param=NULL,
-        int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
+        int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp, sep),
         m_func(func), m_param(param)
