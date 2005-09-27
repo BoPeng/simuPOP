@@ -86,13 +86,13 @@ individuals (one DSL per individual). The mutants will be given strong
 selective advantage so they will reach a high allele frequency quickly. 
 A mutant will be re-introduced if it gets lost due to genetic drift.
 
-At the end of this stage, allele frequencies at DSL will be checked.
-If they are too low or too high, the simulation will be abandoned and
-restart again. Since new mutants get lost quickly, it is unlikely that
-allele frequencies at DSL will meet our requirement at the first time.
-As a matter of fact, most of the simultion time will be spent on this
-trial and restart process.
-
+Parameters about the lower and upper bound of acceptable allele 
+frequency at each DSL can be given. During this stage, the intensity
+of selective advantage will vary according to allele frequencies 
+at individual DSL. For example, for a DSL that has reached or 
+exceeded the upper bound, it will be subject to no or even negative
+selection pressure. This mechanism will allow all DSL to reach 
+their expected range at the end of this stage.
 
 No-migration stage
 -------------------
@@ -151,7 +151,7 @@ A number of statistics will be measured and saved. They are:
 
   1. Fst before and after mixing
   2. Observed heterogeneity before and after mixing
-  3. LD (D') between markers and between a DSL and surrounding markers
+  3. LD (D prime) between markers and between a DSL and surrounding markers
      at the end of each stage.
   4. Disease allele frequency at the end of each stage.
 
@@ -267,10 +267,11 @@ options = [
         till the end of burnin stage''',
    'validate':  simuOpt.valueGT(0)
   },
+  # this parameter will not be shown in the dialog, or be prompted
+  # It can only be given through comandline parameter.
   {'longarg': 'meanInitAllele=',
    'default': 50,
    'allowedTypes': [types.IntType, types.LongType],
-   'prompt': 'Mean initial alleles for the markers, microsatellite only (50):  ',
    'description': '''Initial haplotype for the markers. This option ignored for SNP markers
         since 1111..., 2222.... will be used as initial haplotypes. For 
         microsatellite markers, this number will be the mean of the alleles used.
@@ -296,35 +297,24 @@ options = [
         stage, large introGen will lead to over-common diseases.''',
    'validate':  simuOpt.valueGT(0),
   },
-  {'longarg': 'introSel=',
-   'default': -1,
-   'configName': 'Selection coef of mutants',
-   'allowedTypes': [types.FloatType, types.IntType],
-   'prompt': 'Selection coef of mutants during disease-introduction stage (-1):  ',
-   'description': '''Selection coef of mutants during disease-introduction stage.
-        Individuals with these mutants will have fitness values 1,1-s/2,1-s for genotype
-        AA,Aa,aa (a is mutatnt). The deault value is -0.5 meaning strong positive 
-        selection on these mutants. You can set this value to zero to disable such
-        artificial boost of allele frequency.''',
-  },
   {'longarg': 'minAlleleFreq=',
-   'default': 0.01,
+   'default': [0.05],
    'configName': 'minimal Allele Frequency',
-   'allowedTypes': [types.FloatType],
-   'prompt': 'Minimum allele frequency required for each DSL (0.01):  ',
-   'description': '''Mininal allele frequencies required for each DSL,
-        The simulation will restart if allele frequency is lower than
-        this number.''',
+   'allowedTypes': [types.ListType, types.TupleType],
+   'prompt': 'Minimum allele frequency required for each DSL (0.05):  ',
+   'description': '''Mininal allele frequencies required for each DSL.
+        If a number is given, it is assumed to be the lower bound for all
+        DSL.''',
    'validate':  simuOpt.valueBetween(0,1)
   },
   {'longarg': 'maxAlleleFreq=',
-   'default': 0.2,
+   'default': [0.10],
    'configName': 'maximum Allele Frequency',
-   'allowedTypes': [types.FloatType],
-   'prompt': 'Maximum allele frequency required for each DSL (0.2):  ',
-   'description': '''Maximum allele frequencies required for each DSL,
-        The simulation will restart if allele frequency is greater than
-        this number.''',
+   'allowedTypes': [types.ListType, types.TupleType],
+   'prompt': 'Maximum allele frequency required for each DSL (0.10):  ',
+   'description': '''Maximum allele frequencies required for each DSL.
+        If a number is given, it is assumed to be the upper bound for all
+        DSL.''',
    'validate':  simuOpt.valueBetween(0,1)
   },
   {'longarg': 'fitness=',
@@ -441,7 +431,7 @@ options = [
         number of replicates.''',
    'validate':  simuOpt.valueGT(0)   
   },
-	# temporarily remove randTent format.
+  # temporarily remove randTent format.
   {'longarg': 'saveFormat=',
    'default': ['simuPOP','Linkage'],
    'configName': 'saveInFormat',
@@ -665,12 +655,35 @@ def outputStatistics(pop, args):
     print >> output, '\nAverage counted heterozygosity is %.4f.\n' % AvgHetero
   return True
 
+# dynamic advantageous selector
+def dynaAdvSelector(pop):
+  ''' this selector will select give advantage to DSl according to
+    allele frequency at each DSL. minAlleleFreq and maxAlleleFreq
+    are stored in pop.
+  '''
+  DSL = pop.dvars().DSL
+  # get allele frequencies
+  Stat(pop, alleleFreq=DSL)
+  # calculate 'advantage' level
+  sel = []
+  for i in range(len(DSL)):
+    freq = pop.dvars().alleleFreq[DSL[i]]
+    # positive selection (promote allele)
+    if x < pop.dvars().minAlleleFreq[i]:
+      sel.append( maSelector(locus=DSL[i], wildtype=[1], fitness=[1,1.25,1.5]) )
+    # negative selection (select against allele)
+    elif x > pop.dvars().maxAlleleFreq[i]:
+      sel.append( maSelector(locus=DSL[i], wildtype=[1], fitness=[1,0.9,0.8]) )
+    # apply multi-locus selector, not that this opertor will only
+    # set a variable fitness in pop, actual selection happens during mating.
+    MlSelector( pop, sel, mode=SEL_Multiplicative)
+  return True
 #
 # simulate function, using a single value of mutation, migration,
 # recombination rate
 # 
 def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
-    initSize, meanInitAllele, burnin, introGen, introSel, minAlleleFreq,
+    initSize, meanInitAllele, burnin, introGen, minAlleleFreq,
     maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
     mixingGen, popSizeFunc, migrModel, mu, mi, rec, dryrun, logFile):
   ''' run a simulation of complex disease with
@@ -769,22 +782,9 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
     )
   #
   # optionally, the mutants will be given some selective pressure
-  # if introSel < 0, mutants will have selective advantage and will
-  # reach high allele frequency quickly.
-  operators.extend([
-    mlSelector(
-      # with five multiple-allele selector as parameter
-      [ maSelector(locus=x, wildtype=[1], 
-        fitness=[1, 1-introSel/2, 1-introSel]) for x in DSL ],
-      mode=SEL_Multiplicative, begin=burnin, end=split),
-    #  
-    # population will be adjusted at the end of this stage
-    # this step might terminate the simulation process
-    # (when allele is can not reach minAlleleFreq after adjustement)
-    #pyOperator(func=adjustPopulation,
-    #  param=(DSL, minAlleleFreq, maxAlleleFreq), 
-    #  at=[split]), 
-    ])       
+  operators.append(
+    pyOperator( func=dynaAdvSelector, stage=PreMating, 
+      begin=burnin, end=split) )
   #### no migration stage
   if numSubPop > 1:
     operators.append( 
@@ -1104,7 +1104,7 @@ def _mkdir(d):
     sys.exit(1)
 
 def processOnePopulation(dataDir, numChrom, numLoci, markerType,
-    DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, introSel, minAlleleFreq,
+    DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, minAlleleFreq,
     maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
     mixingGen, popSizeFunc, migrModel, mu, mi, rec, dryrun, popIdx):
   '''
@@ -1134,7 +1134,7 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
   if genDataset:
     print "Generating dataset ", str(popIdx)
     pop = simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
-      initSize, meanInitAllele, burnin, introGen, introSel, minAlleleFreq,
+      initSize, meanInitAllele, burnin, introGen, minAlleleFreq,
       maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
       mixingGen, popSizeFunc, migrModel, mu, mi, rec, dryrun, logFile)
     SavePopulation(pop, popFile)
@@ -1331,10 +1331,9 @@ def writeReport(content, allParam, results):
 if __name__ == '__main__':
   allParam = getOptions()
   # unpack options
-  (numChrom, numLoci, markerType, DSLafter, DSLdist,
-    initSize, meanInitAllele, burnin, introGen, introSel,  minAlleleFreq, 
-    maxAlleleFreq, fitnessTmp, mlSelModelTmp, 
-    numSubPop, finalSize, noMigrGen,
+  (numChrom, numLoci, markerType, DSLafter, DSLdist, initSize, meanInitAllele, 
+    burnin, introGen, minAlleleFreqTmp, maxAlleleFreqTmp, fitnessTmp, 
+    mlSelModelTmp, numSubPop, finalSize, noMigrGen,
     mixingGen, growth, migrModel, migrRate, mutaRate, recRate,
     numRep, saveFormat, peneFunc, penePara, N, outputDir,
     overwrite, geneHunter, dryrun, saveConfig) = allParam
@@ -1345,7 +1344,22 @@ if __name__ == '__main__':
   #
   if len( DSLafter ) != len(DSLdist):
     raise exceptions.ValueError("Please specify DSL distance for each DSL.")
-
+  # handle minAlleleFreq and maxAlleleFreq
+  if len(minAlleleFreqTmp) == 1:
+    minAlleleFreq = minAlleleFreqTmp * len(DSLafter)
+  elif len(minAlleleFreqTmp) == len(DSLafter):
+    minAlleleFreq = minAlleleFreqTmp
+  else:
+    raise exceptions.ValueError("min allele frequency should be either a number or a list\n" +
+      " of the same length as DSLafter")
+  if len(maxAlleleFreqTmp) == 1:
+    maxAlleleFreq = maxAlleleFreqTmp * len(DSLafter)
+  elif len(maxAlleleFreqTmp) == len(DSLafter):
+    maxAlleleFreq = maxAlleleFreqTmp
+  else:
+    raise exceptions.ValueError("max allele frequency should be either a number or a list\n" +
+      " of the same length as DSLafter")
+  #  
   fitness = []
   if type(fitnessTmp[0]) in [types.FloatType, types.IntType]:
     for d in DSLafter:
@@ -1394,7 +1408,6 @@ if __name__ == '__main__':
       burnin, split, numSubPop)
   else:
     raise exceptions.ValueError("Growth model can be one of linear and exponential. Given " + growth)
-  #  
       
   # check penePara
   if len(penePara) == 0:
@@ -1416,7 +1429,7 @@ if __name__ == '__main__':
           _mkdir(dataDir)      
           (text, result) =  processOnePopulation(dataDir,
             numChrom, numLoci, markerType, 
-            DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, introSel,
+            DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, 
             minAlleleFreq, maxAlleleFreq, fitness, mlSelModel, numSubPop, 
             finalSize, noMigrGen, mixingGen, popSizeFunc, migrModel, 
             mu, mi, rec, dryrun, popIdx)
