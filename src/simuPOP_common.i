@@ -564,24 +564,24 @@ def RemoveEmptySubPops(pop, *args, **kwargs):
 #RemoveEmptySubPops.__doc__ = "Function versionof member function population::removeEmptySubPops with help info:\n" + population.removeEmptySubPops.__doc__
 
 def BasicSelect(pop, *args, **kwargs):
-  basicSelect(stage=PostMating, *args, **kwargs).apply(pop)
+  basicSelector(stage=PostMating, *args, **kwargs).apply(pop)
   
-BasicSelect.__doc__ = "Function version of operator basicSelect whose __init__ function is \n" + basicSelect.__init__.__doc__
+BasicSelect.__doc__ = "Function version of operator basicSelect whose __init__ function is \n" + basicSelector.__init__.__doc__
 
 def MaSelect(pop, *args, **kwargs):
-  maSelect(stage=PostMating, *args, **kwargs).apply(pop)
+  maSelector(stage=PostMating, *args, **kwargs).apply(pop)
   
-MaSelect.__doc__ = "Function version of operator maSelect whose __init__ function is \n" + maSelect.__init__.__doc__
+MaSelect.__doc__ = "Function version of operator maSelect whose __init__ function is \n" + maSelector.__init__.__doc__
 
 def MlSelect(pop, *args, **kwargs):
-  mlSelect(stage=PostMating, *args, **kwargs).apply(pop)
+  mlSelector(stage=PostMating, *args, **kwargs).apply(pop)
   
-MlSelect.__doc__ = "Function version of operator mlSelect whose __init__ function is \n" + mlSelect.__init__.__doc__
+MlSelect.__doc__ = "Function version of operator mlSelect whose __init__ function is \n" + mlSelector.__init__.__doc__
 
 def PySelect(pop, *args, **kwargs):
-  pySelect(stage=PostMating, *args, **kwargs).apply(pop)
+  pySelector(stage=PostMating, *args, **kwargs).apply(pop)
   
-PySelect.__doc__ = "Function version of operator pySelect whose __init__ function is \n" + pySelect.__init__.__doc__
+PySelect.__doc__ = "Function version of operator pySelect whose __init__ function is \n" + pySelector.__init__.__doc__
 
 def BasicPenetrance(pop, *args, **kwargs):
   basicPenetrance(stage=PostMating, *args, **kwargs).apply(pop)

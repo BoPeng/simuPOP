@@ -188,7 +188,7 @@ like multiple testing.
 
 """
 
-import simuOpt
+import simuOpt, simuUtil
 import os, sys, types, exceptions, os.path, re, math, time
 
 #
@@ -305,7 +305,7 @@ options = [
    'description': '''Mininal allele frequencies required for each DSL.
         If a number is given, it is assumed to be the lower bound for all
         DSL.''',
-   'validate':  simuOpt.valueBetween(0,1)
+   'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
   },
   {'longarg': 'maxAlleleFreq=',
    'default': [0.10],
@@ -315,7 +315,7 @@ options = [
    'description': '''Maximum allele frequencies required for each DSL.
         If a number is given, it is assumed to be the upper bound for all
         DSL.''',
-   'validate':  simuOpt.valueBetween(0,1)
+   'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
   },
   {'longarg': 'fitness=',
    'default': [1,1,1],
@@ -495,7 +495,7 @@ options = [
    'default': '',
    'allowedTypes': [types.StringType],
    'configName': 'Location of gene hunter',
-   'prompt': 'Provide location of gene hunter():  ',
+   'prompt': 'Provide location of gene hunter ():  ',
    'description': '''Location of gene hunter executable. If provided,
         the TDT method of genehunter will be applied to affected sibpair samples.'''
   },
@@ -521,7 +521,7 @@ options = [
   },
 ]
 
-# __doc__ + parameter definition takes >500 lines, 
+# __doc__ + parameter definitions use >500 lines, 
 # more than one third of the total length of the script.
 
 def getOptions(details=__doc__):
@@ -558,7 +558,6 @@ def getOptions(details=__doc__):
 # we need to output various statistics, using pyEval operator
 # like what I did in the previous versions are too tedious. 
 # This version uses a pyOperator to do it all together.
-#
 def outputStatistics(pop, args): 
   ''' this function will be working with a pyOperator
     to output statistics. Many parameters will be passed,
@@ -574,8 +573,8 @@ def outputStatistics(pop, args):
    5. Mean observed heterogeneity at the marker loci
   '''
   # unwrap parameter
-  (DSL, loci, lociDist, burnin, split, mixing, endGen, outfile) = args
-  #
+  (burnin, split, mixing, endGen, outfile) = args
+  # 
   gen = pop.gen()
   # see how long the simulation has been running
   if gen == burnin:
@@ -587,70 +586,67 @@ def outputStatistics(pop, args):
   elif gen == endGen:
     print "End of simulation. \n"
   #
-  # append to output file.
-  output = open(outfile, 'a')
-  numLoci = min(loci)
+  #### preparations 
+  # number of loci when not counting DSL
+  numLoci = pop.dvars().numLoci
   # non DSL loci, for convenience
-  nonDSL = range(0, sum(loci))
+  nonDSL = range( pop.totNumLoci() )
+  DSL = pop.dvars().DSL
   for loc in DSL:
     nonDSL.remove(loc)
-  # use a dummy population so it is easy to call functions like
-  # chromBegin()
-  gt = population(size=1, loci = loci, lociDist=lociDist)
-  # 
   # In this analysis, we also need to know
   # 1. a DSL that is closest to the center of a chromosome
-  toCtrDist = [abs(gt.locusDist(x)-numLoci/2) for x in DSL]
-  ctrDSL = DSL[ [x==min(toCtrDist) for x in toCtrDist].index(True)]
-  ctrChrom = gt.chromLocusPair(ctrDSL)[0]
-  # 2. a chromosome without DSL
-  noDSLChrom = [x==numLoci for x in loci].index(True)
+  toCtrDist = [abs(pop.locusDist(x)-numLoci/2) for x in DSL]
+  ctrChromDSL = DSL[ [x==min(toCtrDist) for x in toCtrDist].index(True)]
+  ctrChrom = pop.chromLocusPair(ctrChromDSL)[0]
+  # 2. first chromosome without DSL
+  noDSLChrom = [pop.numLoci(x)==numLoci for x in range(pop.numChrom())].index(True)
   #
-  # LD pairs on the selected chromosomes
-  i = gt.chromBegin( ctrChrom)
-  ctrDSLLD = [ [x, ctrDSL] for x in range(i, ctrDSL)] + \
-    [ [ctrDSL, x] for x in range(ctrDSL+1, i+numLoci+1)]
-  i = gt.chromBegin( noDSLChrom)
+  # loci pairs on the selected chromosomes when calculating LD
+  i = pop.chromBegin( ctrChrom)
+  ctrDSLLD = [ [x, ctrChromDSL] for x in range(i, ctrChromDSL)] + \
+    [ [ctrChromDSL, x] for x in range(ctrChromDSL+1, i+numLoci+1)]
+  i = pop.chromBegin( noDSLChrom)
   noDSLLD = [ [i+x, i+numLoci/2] for x in range(numLoci/2)] + \
     [ [i + numLoci/2, i+x] for x in range(numLoci/2+1, numLoci)]
-  # save these info for later use
-  pop.dvars().DSL = DSL
+  # save these info for later use (a plotting function will
+  # use these info.
   pop.dvars().ctrChrom = ctrChrom
-  pop.dvars().ctrDSL = ctrDSL
+  pop.dvars().ctrChromDSL = ctrChromDSL
   pop.dvars().ctrDSLLD = ctrDSLLD
   pop.dvars().noDSLChrom = noDSLChrom
   pop.dvars().noDSLLD = noDSLLD
   #
-  #
+  #@@@ NOW, output statistics
+  # append to output file.
+  output = open(outfile, 'a')
   # first, calculate LD and other statistics
-  Stat(pop, LD = ctrDSLLD + noDSLLD, Fst = nonDSL, 
-    heteroFreq = range( gt.totNumLoci() ) )
-  # output D' at split, mixing and endGen
+  Stat(pop, alleleFreq=DSL, LD = ctrDSLLD + noDSLLD, Fst = nonDSL, 
+    heteroFreq = range( pop.totNumLoci() ) )
+  # output D', allele frequency at split, mixing and endGen
   if gen in [split, mixing, endGen]:
     print >> output, "\nD' between DSL %d (chrom %d) and surrounding markers at gen %d\n" \
-      % (ctrDSL, ctrChrom, gen)
+      % (ctrChromDSL, ctrChrom, gen)
     for ld in ctrDSLLD:
       print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
     print >> output, "\nD' between a center marker %d (chrom %d) and surrounding markers at gen %d\n" \
-      % (gt.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
+      % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
     for ld in noDSLLD:
       print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
-  # output allele frequency at mixing and endGen
-  if gen in [mixing, endGen]:
-    print >> output, "Allele frequencies\nall",
+    print >> output, "\nAllele frequencies\nall\t",
     for d in DSL:
       print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][1]),
-    print
+    print >> output, "\n",
     for sp in range(numSubPop):
-      print >> output, "%d\t" % gen,
+      print >> output, "\n%d\t" % sp,
       for d in DSL:
         print >> output, '%.4f ' % (1. - pop.dvars(sp).alleleFreq[d][1]),
-      print
+    print >> output, "\n",
     # hetero frequency
     AvgHetero = 0
-    for d in range(gt.totNumLoci()):
+    for d in range(pop.totNumLoci()):
       AvgHetero += pop.dvars().heteroFreq[d][0]
-    AvgHetero /= gt.totNumLoci()
+    AvgHetero /= pop.totNumLoci()
     # output it
     print >> output, '\nAverage counted heterozygosity is %.4f.\n' % AvgHetero
   return True
@@ -664,30 +660,35 @@ def dynaAdvSelector(pop):
   DSL = pop.dvars().DSL
   # get allele frequencies
   Stat(pop, alleleFreq=DSL)
-  # calculate 'advantage' level
+  # gives 1,1.25,1.5 to promote allele if freq < lower cound
+  # gives 1,0.9,0.8 to select agsinst DSL with freq > upper
   sel = []
+  freq = pop.dvars().alleleFreq
+  # print +- symbol for each DSL to visualize how frequencies are manipulated
   for i in range(len(DSL)):
-    freq = pop.dvars().alleleFreq[DSL[i]]
     # positive selection (promote allele)
-    if x < pop.dvars().minAlleleFreq[i]:
-      sel.append( maSelector(locus=DSL[i], wildtype=[1], fitness=[1,1.25,1.5]) )
+    if 1-freq[DSL[i]][1] < pop.dvars().minAlleleFreq[i]:
+      print '+',
+      sel.append( maSelector(locus=DSL[i], wildtype=[1], fitness=[1,1.5,2]) )
     # negative selection (select against allele)
-    elif x > pop.dvars().maxAlleleFreq[i]:
+    elif 1-freq[DSL[i]][1] > pop.dvars().maxAlleleFreq[i]:
+      print '-',
       sel.append( maSelector(locus=DSL[i], wildtype=[1], fitness=[1,0.9,0.8]) )
-    # apply multi-locus selector, not that this opertor will only
+    else:
+      print ' ',
+    # apply multi-locus selector, note that this opertor will only
     # set a variable fitness in pop, actual selection happens during mating.
-    MlSelector( pop, sel, mode=SEL_Multiplicative)
+    if len(sel ) > 0:  # need adjustment
+      MlSelect( pop, sel, mode=SEL_Multiplicative)
   return True
-#
+
 # simulate function, using a single value of mutation, migration,
 # recombination rate
-# 
 def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
     initSize, meanInitAllele, burnin, introGen, minAlleleFreq,
     maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
     mixingGen, popSizeFunc, migrModel, mu, mi, rec, dryrun, logFile):
-  ''' run a simulation of complex disease with
-    given parameters. 
+  ''' run a simulation of complex disease with given parameters. 
   '''
   if markerType == 'microsatellite':
     maxAle = 99                   # max allele
@@ -750,7 +751,8 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
       # and then init DSL with all wild type alleles
       initByValue([1]*len(DSL), atLoci=DSL)
     ]      
-    mutator = kamMutator(rate=mu, maxAllele=maxAle,
+    # k-allele model for mutation of SNP
+    mutator = kamMutator(rate=mu, maxAllele=2,
       atLoci=nonDSL)
   #### burn in stage
   # mutation and recombination will always be in effective
@@ -763,9 +765,11 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
     recombinator(intensity=rec),
   ]
   #### disease introduction stage
-  operators.append(
+  operators.extend( [
     # need to measure allele frequency at DSL
-    stat(alleleFreq=DSL, begin = burnin)
+    stat(alleleFreq=DSL, popSize=True, begin = burnin),
+    pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.3f"%(1-alleleFreq[x][1]) for x in DSL])+"\n"', 
+      begin = burnin) ]
   )
   # need five conditional point mutator to
   # introduce disease. It does not matter that we introduce
@@ -781,7 +785,8 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
       begin=burnin, end=split) 
     )
   #
-  # optionally, the mutants will be given some selective pressure
+  # use selective pressure to let allele frequency reach 
+  # [minAlleleFreq, maxAlleleFreq].
   operators.append(
     pyOperator( func=dynaAdvSelector, stage=PreMating, 
       begin=burnin, end=split) )
@@ -815,18 +820,21 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
   # the last two generations, this is when we should store parental 
   # information and trace pedigree info
   #
-  # We do this at the end to save some time
   operators.extend([
     # save ancestral populations starting at -2 gen
     setAncestralDepth(2, at=[-2]),
     # track pedigree
     parentsTagger(begin=-2),
+    # terminate simulation is on DSL get lost.
+    terminateIf("True in [alleleFreq[x][1] == 1 for x in DSL]",
+      begin=split), 
     # output statistics
     pyOperator(func=outputStatistics, 
-      param = (DSL, loci, lociDist, burnin, split, mixing, endGen, logFile),
+      param = (burnin, split, mixing, endGen, logFile),
       at = [burnin, split, mixing, endGen] ), 
     # Show how long the program has been running.
     pyEval(r'"Generation %d\n" % gen ', step = 100),
+    # show elapsed time
     ticToc(at=[burnin, split, mixing, endGen]),
     ]
   )
@@ -838,19 +846,22 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
       return 2
     else:
       return 1
-  #
   # may need to run several times to
-  # get a valid population (requirements on allele frequency
+  # get a valid population (terminate if any DSL has no disease allele) 
   fixedCount = 1
   while(True):
     # create a simulator
-    simu = simulator(
-      population(subPop=popSizeFunc(0), ploidy=2,
-        loci = loci,
-        maxAllele = maxAle,
-        lociDist = lociDist), 
-      randomMating(newSubPopSizeFunc=popSizeFunc,
-        numOffspringFunc=last_two),
+    pop =  population(subPop=popSizeFunc(0), ploidy=2,
+      loci = loci, maxAllele = maxAle, lociDist = lociDist)
+    # save DSL info, some operators will use it.
+    pop.dvars().DSL = DSL
+    pop.dvars().numLoci = numLoci
+    pop.dvars().minAlleleFreq = minAlleleFreq
+    pop.dvars().maxAlleleFreq = maxAlleleFreq
+    simu = simulator( pop, 
+      randomMating(
+        newSubPopSizeFunc=popSizeFunc,  # demographic model
+        numOffspringFunc=last_two),     # save last two generations
       rep=1)
     # evolve! If --dryrun is set, only show info
     simu.evolve( preOps = preOperators, ops = operators, 
@@ -862,7 +873,6 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
       pop = simu.population(0)
       # we want to save info on how this population is generated.
       # This is not required but is a good practise
-      pop.dvars().DSL = DSL
       pop.dvars().DSLAfter = DSLafter
       pop.dvars().DSLdist = DSLdist
       pop.dvars().initSize = initSize
@@ -873,14 +883,11 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
       pop.dvars().numSubPop = numSubPop
       pop.dvars().noMigrGen = noMigrGen
       pop.dvars().mixingGen = mixingGen
-      pop.dvars().minAlleleFreq = minAlleleFreq
-      pop.dvars().maxAlleleFreq = maxAlleleFreq
       pop.dvars().mutationRate = mu
       pop.dvars().mutationModel = "symmetric stepwise"
       pop.dvars().migrationRate = mi
       pop.dvars().migrationModel = "circular stepstone"
       pop.dvars().recombinationRate = rec
-      pop.dvars().numLoci = numLoci
       # can not just return the reference...
       # return a copy (and then simulator will be destroyed)
       return simu.getPopulation(0)
@@ -891,7 +898,6 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
         tuple([1-simu.dvars(0).alleleFreq[x][1] for x in DSL]) 
       fixedCount += 1
 
-#
 # plot the LD values for the sample.
 def plotLD(pop, epsFile, jpgFile):
   ''' plot LD values in R and convert to jpg if possible '''
@@ -904,7 +910,7 @@ def plotLD(pop, epsFile, jpgFile):
   dist = []
   ldprime = []
   for ld in pop.dvars().ctrDSLLD:
-    if ld[1] == pop.dvars().ctrDSL:
+    if ld[1] == pop.dvars().ctrChromDSL:
       dist.append(pop.locusDist(ld[0]))
     else:
       dist.append(pop.locusDist(ld[1]))
@@ -912,8 +918,8 @@ def plotLD(pop, epsFile, jpgFile):
   res.append(max(ldprime))
   r.plot( dist, ldprime, main="D' between DSL and other markers on chrom %d" % pop.dvars().ctrChrom,
     xlab="marker location", ylab="D'", type='b')
-  r.abline( v = pop.locusDist(pop.dvars().ctrDSL), lty=3 )
-  r.axis( 1, [pop.locusDist(pop.dvars().ctrDSL)], ['DSL'])
+  r.abline( v = pop.locusDist(pop.dvars().ctrChromDSL), lty=3 )
+  r.axis( 1, [pop.locusDist(pop.dvars().ctrChromDSL)], ['DSL'])
   dist = []
   ldprime = []
   for ld in pop.dvars().noDSLLD:
@@ -937,8 +943,8 @@ def plotLD(pop, epsFile, jpgFile):
   except:
     return (1,res)  # fail
 
-# penetrance functions. They will return a penetrance function
-# 
+# penetrance generator functions. They will return a penetrance function
+# with given penetrance parameter
 def recessive(pen):
   ''' recessive single-locus, heterogeneity multi-locus '''
   def func(geno):
@@ -954,10 +960,12 @@ def additive(pen):
   def func(geno):
     val = 1
     for i in range(len(geno)/2):
-      val *= 1- (geno[i*2]+geno[i*2+1]-2)*pen/2.
+      val *= 1 - (geno[i*2]+geno[i*2+1]-2)*pen/2.
     return 1-val
   return func
 
+# if you need some specialized penetrance function, modify this
+# function here.
 def custom(pen):
   def func(geno):
     raise "customized penetrance function has not been defined."
@@ -966,10 +974,8 @@ def drawSamples(pop, penFun):
   ''' get samples of different type using a penetrance function '''
   # first, apply peneFunction
   PyPenetrance(pop, loci=pop.dvars().DSL, func=penFun)
-  #
   # all types of samples
   allSample = []
-  #
   # 1. population based case control
   # get number of affected
   Stat(pop, numOfAffected=True)
@@ -1016,7 +1022,7 @@ def drawSamples(pop, penFun):
     allSample.extend([None, None])
   return allSample
 
-
+# apply the TDT method of GeneHunter
 def TDT(DSL, dataDir, data, epsFile, jpgFile):
   ''' use TDT method to analyze the results. Has to have rpy installed '''
   if not hasRPy:
