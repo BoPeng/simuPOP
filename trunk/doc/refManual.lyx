@@ -5248,10 +5248,25 @@ False
 , the simulation will be stopped.
 \layout Standard
 
-Of course, to use this operator, you will have to know how to use population-rel
-ated functions.
- 
+This operator allows implementation of arbitrarily complicated operators,
+ at a cost of efficiency.
+ Of course, to use this operator, you will have to know how to use population-re
+lated functions.
+ The following example shows how to implement a dynamic mutator which mutate
+ loci according to their allele frequency.
 \layout Standard
+
+
+\begin_inset Include \verbatiminput{log/pyOperator.log}
+preview false
+
+\end_inset 
+
+
+\layout Standard
+
+Note that 
+\layout Itemize
 
 Currently, 
 \family typewriter 
@@ -5267,7 +5282,7 @@ outputExpr
 \family default 
 .
  This is because of the incompatibility between the Python way and underlying
- C++ way of handling file stream.
+ C++ way of handling file I/O stream.
  Consequently, you will have to handle file input/output by yourself through
  
 \family typewriter 
@@ -5276,13 +5291,33 @@ param
  parameter.
  Be careful that you 
 \series bold 
-can no
+can not
 \series default 
  mix output of 
 \family typewriter 
 pyOperator
 \family default 
- with those of other operators.
+ with those of other (normal) operators.
+\layout Itemize
+
+Since you can attach any information to a population, you can in practise
+ use 
+\family typewriter 
+pop.dvars()
+\family default 
+ to pass parameters.
+\layout Itemize
+
+
+\family typewriter 
+pyOperator
+\family default 
+ is a post-mating operator by default.
+ Remember to use 
+\family typewriter 
+stage 
+\family default 
+parameter to change this when necessary.
 \layout Section
 
 Initialization
@@ -6517,6 +6552,46 @@ n_{11}\frac{w_{11}}{\sum_{n=1}^{N}w_{n}}=n_{11}\frac{w_{11}}{n_{11}w_{11}+n_{12}
 
 The same argument applies to arbitrary number of genotypes and random mating.
  
+\layout Standard
+
+The following operators, when applied, will set a variable
+\family typewriter 
+ fitness
+\family default 
+ and an indicator so that selector-aware mating scheme can select individuals
+ according to these values.
+ This has two consequences:
+\layout Itemize
+
+selector along can not do selection! Only mating schemes can actually select
+ on individuals.
+\layout Itemize
+
+selector has to be 
+\family typewriter 
+PreMating 
+\family default 
+operator.
+ This is not a problem when you use the operator form of the selectors since
+ their default stage is 
+\family typewriter 
+PreMating
+\family default 
+.
+ However, if you use the function form of these selectors in a
+\family typewriter 
+ pyOperator
+\family default 
+, make sure to set the stage of 
+\family typewriter 
+pyOperator
+\family default 
+ to
+\family typewriter 
+ PreMating
+\family default 
+.
+ 
 \layout Subsection
 
 Operator (C++) 
@@ -6526,9 +6601,16 @@ basicSelector
 
 \end_inset 
 
- 
+,
 \family default 
-(diploid population only)
+function 
+\family typewriter 
+BasicSele
+\begin_inset LatexCommand \index{function!BasicSelect}
+
+\end_inset 
+
+ 
 \layout Standard
 
 
@@ -6598,7 +6680,16 @@ maSelector
 
 \end_inset 
 
+, 
+\family default 
+function 
+\family typewriter 
+MaSelect
+\begin_inset LatexCommand \index{function!MaSelect}
 
+\end_inset 
+
+ 
 \layout Standard
 
 
@@ -6646,6 +6737,15 @@ mlSelector
 \end_inset 
 
 
+\family default 
+, function 
+\family typewriter 
+MlSelect
+\begin_inset LatexCommand \index{function!MlSelect}
+
+\end_inset 
+
+ 
 \layout Standard
 
 
@@ -6728,6 +6828,15 @@ pySelector
 \end_inset 
 
 
+\family default 
+, function 
+\family typewriter 
+PySelect
+\begin_inset LatexCommand \index{function!PySelect}
+
+\end_inset 
+
+ 
 \layout Standard
 
 

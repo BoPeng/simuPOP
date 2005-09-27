@@ -316,6 +316,8 @@ simu.apply([ initByFreq([.3,.5,.2]),
 listVars(simu.vars(0), level=1, useWxPython=False)
 #end
 
+
+
 #file log/operatorstages.log
 d = dumper()
 print d.canApplyPreMating()
@@ -390,6 +392,47 @@ os.remove('s.xml')
 os.remove('s.bin')
 os.remove('a0.txt')
 os.remove('a1.txt')
+
+#file log/pyOperator.log
+from simuRPy import *
+import time
+
+def dynaMutator(pop, param):
+  ''' this mutator mutate common loci with low mutation rate
+  and rare loci with high mutation rate, as an attempt to
+  bring allele frequency of these loci at an equal level.'''
+  # unpack parameter
+  (cutoff, mu1, mu2) = param;
+  Stat(pop, alleleFreq=range( pop.totNumLoci() ) )
+  for i in range( pop.totNumLoci() ):
+    # 1-freq of wild type = total disease allele frequency
+    if 1-pop.dvars().alleleFreq[i][1] < cutoff:
+      KamMutate(pop, maxAllele=2, rate=mu1, atLoci=[i])
+    else:
+      KamMutate(pop, maxAllele=2, rate=mu2, atLoci=[i])
+  return True
+
+pop = population(size=10000, ploidy=2, loci=[2, 3])    
+simu = simulator(pop, randomMating())
+simu.evolve(
+  preOps = [ 
+    initByFreq( [.6, .4], atLoci=[0,2,4]),
+    initByFreq( [.8, .2], atLoci=[1,3]) ],
+  ops = [ 
+    pyOperator( func=dynaMutator, param=(.5, .1, 0) ),
+    stat(alleleFreq=range(5)),
+    varPlotter('(alleleFreq[0][2],alleleFreq[1][2])', 
+      title='allele frequency at loci 0 and 1',
+      update=5, varDim=2),
+    ],
+  end = 30
+)        
+print "The R window will be closed after five seconds..."
+time.sleep(5)
+
+
+#end
+
 
 #file log/initByFreq.log
 help(initByFreq.__init__)
