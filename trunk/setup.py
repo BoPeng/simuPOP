@@ -1,11 +1,11 @@
 """
 simuPOP installer 
 
-If you would like to generate wrap file using swig,
-make sure you have swig >= 1.3.23 and set the following
-variable to 1
+In case that you have modified the C++ code, or you are
+checking out simuPOP from svn repository, you need to 
+install swig >= 1.3.23 (and remove src/*wrap.cpp if they
+exist) to generate these wrap files.
 """
-RUN_SWIG = 0
 
 #
 # XML_SUPPORT will be disabled for mac machines due to a bug
@@ -22,7 +22,7 @@ XML_SUPPORT=1
 
 from distutils.core import setup, Extension
 
-import os, shutil, sys, glob
+import os, shutil, sys, glob, re
 
 SIMUPOP_VER="snapshot"
 if sys.argv[1] not in ['sdist']:
@@ -51,22 +51,44 @@ if sys.argv[1] not in ['sdist']:
       print "Error: Unknown system type. Use configure to generate config.h."
       sys.exit()
     
+def addCarrayEntry(file):
+  ' add a line at the wrap file for carray type definition'
+  shutil.copy(file, file+'tmp')
+  ofile = open(file, 'w')
+  ifile = open(file+'tmp', 'r')
+  for line in ifile.readlines():
+    if line.find('static PyMethodDef SwigMethods[] = ') != -1:
+      ofile.write('''static PyMethodDef SwigMethods[] = {
+        /* add carray entries */ 
+        { (char*)"carray", a_array, METH_VARARGS, a_array_doc}, 
+        ''')
+    else:
+      ofile.write(line)
+  ifile.close()
+  ofile.close()
+  os.remove(file+'tmp')
 
 # run swig, modify generated wrap file.
-if RUN_SWIG == 1:
+if not ( os.path.isfile('src/simuPOP_std_wrap.cpp') and \
+  os.path.isfile('src/simuPOP_op_wrap.cpp') and \
+  os.path.isfile('src/simuPOP_la_wrap.cpp') and \
+  os.path.isfile('src/simuPOP_laop_wrap.cpp') ):
   SWIG = 'swig  -shadow -python -keyword -w-503,-312,-511,-362,-383,-384,-389,-315,-525 -nodefault -c++ '
   print "Generating wrap file for standard library..."
   os.system(SWIG + ' -o src/simuPOP_std_wrap.cpp src/simuPOP_std.i')
+  addCarrayEntry('src/simuPOP_std_wrap.cpp')
   # for optimized library
   print "Generating wrap file for optimzied library..."
   os.system(SWIG + ' -DOPTIMIZED -o src/simuPOP_op_wrap.cpp src/simuPOP_op.i')
+  addCarrayEntry('src/simuPOP_op_wrap.cpp')
   # for long allele library
   print "Generating wrap file for long allele library..."
   os.system(SWIG + ' -DLONGALLELE -o src/simuPOP_la_wrap.cpp src/simuPOP_la.i')
+  addCarrayEntry('src/simuPOP_la_wrap.cpp')
   # for long allele optimized library
   print "Generating wrap file for long allele library..."
   os.system(SWIG + ' -DLONGALLELE -DOPTIMIZED -o src/simuPOP_laop_wrap.cpp src/simuPOP_laop.i')
-  
+  addCarrayEntry('src/simuPOP_laop_wrap.cpp')
 
 DESCRIPTION = """
 SimuPOP is a forward-based population genetics simulation program. 
