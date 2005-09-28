@@ -1003,5 +1003,5 @@ if par_useTkinter or not useWxPython:
     if TkVersion < 8.0 :
       useTkinter = False
   except:
-    print "Tkinter can not be loaded. This is rare. Please check your Python installation."
+    print "Tkinter can not be loaded. Please check your Python installation."
     useTkinter = False
