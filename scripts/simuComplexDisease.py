@@ -859,8 +859,11 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
     pop.dvars().numLoci = numLoci
     pop.dvars().minAlleleFreq = minAlleleFreq
     pop.dvars().maxAlleleFreq = maxAlleleFreq
-    # clear log file
-    os.remove(logFile)
+    # clear log file if it exists
+    try:
+      os.remove(logFile)
+    except:
+      pass
     # start simulation.
     simu = simulator( pop, 
       randomMating(
