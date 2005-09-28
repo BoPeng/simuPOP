@@ -1905,6 +1905,8 @@ T Expression::valueAs##TypeName() \
   }
 
   ///////////// Weighted Sampler //////////////
+  /// FIXME: consider adopting R's implementation.
+  /// They may be quicker.
   void WeightedSampler::set(const vectorf& weight)
   {
     m_N = weight.size();

@@ -230,7 +230,7 @@ def migrIslandRates(r, n):
   return m             
   
 
-def migrStepstoneRates(r, n, circular=False):
+def migrSteppingStoneRates(r, n, circular=False):
   '''
    migration rate matrix, circular step stone model (X=1-m)
   

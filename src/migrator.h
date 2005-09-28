@@ -86,14 +86,11 @@ namespace simuPOP
         m_rate(0), m_mode(0), m_from(fromSubPop), m_to(toSubPop)
       {
 
-        DBG_FAILIF( rate.size() > 1 && !m_from.empty() && m_from.size() != rate.size(),
-          ValueError, "Length of param from must match rows of rate matrix.");
+        DBG_FAILIF( !m_from.empty() && m_from.size() != rate.size(),
+          ValueError, "Length of param fromSubPop must match rows of rate matrix.");
 
-        DBG_FAILIF( rate.size() > 1 && !m_to.empty() && m_to.size() != rate[0].size(),
-          ValueError, "Length of param to must match columns of rate matrix.");
-
-        DBG_FAILIF( rate.size() == 1 && (m_from.size() != 1 || m_to.size() != 1),
-          ValueError, "If rate=r (assumed to be [[r]], fromSubPOp and toSubPop should not be empty()");
+        DBG_FAILIF( !m_to.empty() && m_to.size() != rate[0].size(),
+          ValueError, "Length of param toSubPop must match columns of rate matrix.");
 
         setRates(rate, mode);
       };
@@ -186,21 +183,6 @@ namespace simuPOP
             }
           }
         }
-
-        if( m_mode == MigrByProbability )         // probability, we need cumulative probability
-        {
-          for(size_t i=0; i < szFrom; i++)        // from
-          {
-            size_t jEnd = m_rate[i].size();
-            for(size_t j=1; j < jEnd; j++)
-              // rate might have been extended to save i->i info
-              // the last one should be 1
-              m_rate[i][j] += m_rate[i][j-1];
-
-            DBG_FAILIF( fcmp_ne(m_rate[i][ jEnd-1] , 1.0) , ValueError,
-              "Accumulative rate should have 1 at last.");
-          }
-        }
       }
 
       virtual bool apply(Pop& pop)
@@ -212,12 +194,13 @@ namespace simuPOP
 
         vectorlu toIndices(0);
 
+        WeightedSampler ws(rng());
+
         for(UINT from=0, fromEnd=m_from.size(); from < fromEnd; ++from)
         {
           UINT spFrom = m_from[from];
           // rateSize might be toSize + 1, the last one is from->from
           UINT toSize = m_to.size(), toIndex;
-          WeightedSampler ws(rng(), m_rate[from]);
 
           // m_from out of range.... ignore.
           if( spFrom >= pop.numSubPop() )
@@ -225,6 +208,8 @@ namespace simuPOP
 
           if(m_mode == MigrByProbability )        // migrate by probability
           {
+            ws.set(m_rate[from]);
+
             // for each individual, migrate according to migration probability
             for(ind=pop.indBegin( spFrom), indEd = pop.indEnd(spFrom);
               ind != indEd;  ++ind)
@@ -320,7 +305,7 @@ namespace simuPOP
       This operator accept a one-dimensional Numeric Python int array. (created by Numeric.array ).
       The contend of the array will be considered as subpopulation id.
 
-      \param subPopID a 1-d Numeric Python int array. Must has length greater or equal to
+      \param subPopID a 1-d array (list, typle, carray). Must has length greater or equal to
       population size.
       \param stage is default to PreMating, please refer to help(baseOperator.__init__)
       for details about other parameters.
@@ -330,8 +315,10 @@ namespace simuPOP
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp, sep)
       {
-        DBG_ASSERT( PyObj_Is_IntNumArray(subPopID), ValueError,
-          "Passed vector is not a Python/Numeric int array");
+        // carray of python list/typle
+        DBG_ASSERT( PyObj_Is_IntNumArray(subPopID) ||
+          PySequence_Check(subPopID), ValueError,
+          "Passed vector is not a sequence (Python list, tuple or carray)");
         Py_INCREF(subPopID);
         m_subPopID = subPopID;
       }
@@ -357,21 +344,35 @@ namespace simuPOP
 
       virtual bool apply(Pop& pop)
       {
+        if(PyObj_Is_IntNumArray(m_subPopID) )
+        {
+          DBG_ASSERT( NumArray_Size(m_subPopID) >= static_cast<int>(pop.popSize()) ,
+            ValueError, "Given subpopid array has a length of "
+            + toStr( NumArray_Size(m_subPopID)) + " which is less than population size "
+            + toStr(pop.popSize()));
 
-        DBG_ASSERT( NumArray_Size(m_subPopID) >= static_cast<int>(pop.popSize()) ,
-          ValueError, "Given subpopid array has a length of "
-          + toStr( NumArray_Size(m_subPopID)) + " which is less than population size "
-          + toStr(pop.popSize()));
+          long * id = reinterpret_cast<long*>(NumArray_Data(m_subPopID));
 
-        long * id = reinterpret_cast<long*>(NumArray_Data(m_subPopID));
+          for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
+            pop.individual(i).setInfo( id[i] );
+        }
+        else
+        {
+          DBG_ASSERT( PySequence_Size(m_subPopID) >=  static_cast<int>(pop.popSize()) ,
+            ValueError, "Given subpopid array has a length of "
+            + toStr( PySequence_Size(m_subPopID)) + " which is less than population size "
+            + toStr(pop.popSize()));
 
-        for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
-          pop.individual(i).setInfo( id[i] );
-
+          int id;
+          for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
+          {
+            PyObj_As_Int(PySequence_GetItem(m_subPopID, i), id);
+            pop.individual(i).setInfo(id);
+          }
+        }
         // do migration.
         // true: rearrange individuals
         pop.setSubPopByIndInfo();
-
         return true;
       }
 

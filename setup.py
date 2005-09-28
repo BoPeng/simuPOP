@@ -187,7 +187,7 @@ if XML_SUPPORT == 1:
 # find all test files
 testFiles = glob.glob('test/test_*.py')
 DATA_FILES =  [
-  ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 'src/Makefile.icc', 
+  ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
     'COPYING', 'TODO']), 
   ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
   ('share/simuPOP/test', glob.glob('test/test_*.py')),

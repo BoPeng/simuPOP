@@ -368,7 +368,7 @@ options = [
    'allowedTypes': [types.IntType, types.LongType],
    'prompt': 'Length of mixing stage (population admixing) (50):  ',
    'description': '''Number of generations when migration is present. This stage
-        will mix individuals from subpopulations using an circular stepstone
+        will mix individuals from subpopulations using an circular stepping stone
         migration model.''',
    'validate':  simuOpt.valueGT(0)
   },
@@ -381,14 +381,14 @@ options = [
    'chooseOneOf': ['exponential', 'linear'],
   },
   {'longarg': 'migrModel=',
-   'default': 'stepstone',
+   'default': 'stepping stone',
    'configName': 'Migration Model',
-   'prompt': 'Mutation model. (stepstone):  ',
+   'prompt': 'Mutation model. (stepping stone):  ',
    'allowedTypes': [types.StringType],
-   'description': '''Migration model. Choose between stepstone (circular),
+   'description': '''Migration model. Choose between stepping stone (circular),
         island and none. ''',
-   'validate':  simuOpt.valueOneOf(['island', 'stepstone', 'none']),
-   'chooseOneOf': ['stepstone', 'island', 'none']
+   'validate':  simuOpt.valueOneOf(['island', 'stepping stone', 'none']),
+   'chooseOneOf': ['stepping stone', 'island', 'none']
   }, 
   {'longarg': 'migrRate=',
    'default': [0,0.001,0.01,0.1],
@@ -396,7 +396,7 @@ options = [
    'prompt': 'Migration rate(s) during mixing stage. A separate dataset\n' +
         'will be genrated for each of the given migration rate. ([0, 0.01, 0.05, 0.1]):  ',
    'description': '''Migration rate during mixing stage. Can be a number or an array.
-        A circular stepstone migration model will be used. 
+        A circular stepping stone migration model will be used. 
         Separate datasets will be generated for each value of migration rate.''',
    'allowedTypes': [types.ListType, types.TupleType],
    'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
@@ -636,7 +636,6 @@ def outputStatistics(pop, args):
     print >> output, "\nAllele frequencies\nall\t",
     for d in DSL:
       print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][1]),
-    print >> output, "\n",
     for sp in range(numSubPop):
       print >> output, "\n%d\t" % sp,
       for d in DSL:
@@ -807,12 +806,14 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
     )
   #
   ### mixing stage
-  # a migrator, stepstone or island
-  if numSubPop > 1 and migrModel == 'island':
+  # a migrator, stepping stone or island
+  if numSubPop > 1 and migrModel == 'island' and mi > 0:
+    print "Migration rate", migrIslandRates(mi, numSubPop)
     operators.append( migrator(migrIslandRates(mi, numSubPop),
       mode=MigrByProbability, begin=mixing) )
-  elif numSubPop > 1 and migrModel == 'stepstone':
-    operators.append( migrator(migrStepstoneRates(mi, numSubPop, circular=True),
+  elif numSubPop > 1 and migrModel == 'stepping stone' and mi > 0:
+    print "Migration rate", migrSteppingStoneRates(mi, numSubPop)
+    operators.append( migrator(migrSteppingStoneRates(mi, numSubPop, circular=True),
       mode=MigrByProbability, begin=mixing) )
   #
   # prepare for sampling:
@@ -833,7 +834,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
       param = (burnin, split, mixing, endGen, logFile),
       at = [burnin, split, mixing, endGen] ), 
     # Show how long the program has been running.
-    pyEval(r'"Generation %d\n" % gen ', step = 100),
+    #pyEval(r'"Generation %d\n" % gen ', step = 100),
     # show elapsed time
     ticToc(at=[burnin, split, mixing, endGen]),
     ]
@@ -858,6 +859,9 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
     pop.dvars().numLoci = numLoci
     pop.dvars().minAlleleFreq = minAlleleFreq
     pop.dvars().maxAlleleFreq = maxAlleleFreq
+    # clear log file
+    os.remove(logFile)
+    # start simulation.
     simu = simulator( pop, 
       randomMating(
         newSubPopSizeFunc=popSizeFunc,  # demographic model
@@ -886,7 +890,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
       pop.dvars().mutationRate = mu
       pop.dvars().mutationModel = "symmetric stepwise"
       pop.dvars().migrationRate = mi
-      pop.dvars().migrationModel = "circular stepstone"
+      pop.dvars().migrationModel = "circular stepping stone"
       pop.dvars().recombinationRate = rec
       # can not just return the reference...
       # return a copy (and then simulator will be destroyed)
@@ -1174,6 +1178,8 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
       summary += '''<img src="pop_%d/LD_%d.jpg"
         width=800, height=600>'''  % (popIdx, popIdx)
     result.extend(ldres)
+  else: # FIXME, without RPy, ld is still obtainable.
+    retuls.extend([])
   result.extend( [1- pop.dvars().alleleFreq[i][1] for i in pop.dvars().DSL])
   #
   # apply penetrance and get three samples (different format)
@@ -1245,18 +1251,7 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
     summary += '</ul>\n'
     # if there is a valid gene hunter program, run it
     (suc,res) = TDT(pop.dvars().DSL, penDir, "/Linkage/Aff", penDir + "/TDT.eps", penDir + "/TDT.jpg")
-    if suc > 0 : # eps file successfully generated
-      summary += """<h4>TDT analysis for affected sibpair data:  <a href="%s/TDT.eps">TDT.eps</a>""" % relDir
-    if suc > 1 : # jpg file is generated
-      summary += '''<p><img src="%s/TDT.jpg" width=800, height=600></p>''' % relDir
-    # keep some numbers depending on the penetrance model
-    result.append(res)
-  return (summary, result)
-
-
-def writeReport(content, allParam, results):
-  ''' write a HTML file. The parts for each population has
-    been written but we need a summary table. '''
+    if suc > 0 : # eps file succe
   print "Writing a report (saved in summary.htm )"
   try:
     summary = open(outputDir + "/summary.htm", 'w')
@@ -1304,12 +1299,14 @@ def writeReport(content, allParam, results):
   <tr><th>id </th>
   <th>mu</th>  <th>mi</th>   <th>rec</th>
   <th>Fst</th> <th>Het</th> <th>D'(dsl)</th> <th>D'(non)</th>
-  ''' +  ''.join(map(lambda x: '<th>allFrq%d</th>'%(x+1), \
-    range(len(allParam[3])) )) )
+  ''')
+  for i in range(len(allParam[3])):
+    summary.write('<th>allFrq%d</th>'%(i+1))
   #
-  # how about TDT?
-  if hasRPy:
-    summary.write(' '.join(map(lambda x: '<th>%s</th>'%x, allParam[20])))
+  # has TDT?
+  if allParam[-3] != '':
+    for i in range(len(allParam[3])):
+      summary.write('<th>TDT%d</th>'%(i+1))
   summary.write('</tr>')
   # end of headers, now result
   for res in results:
@@ -1320,7 +1317,7 @@ def writeReport(content, allParam, results):
       if type(item) == types.FloatType:
         summary.write('<td>%.3g</td>'% item)
       elif type(item) in [types.ListType, types.TupleType]:
-        summary.write('<td>' + ', '.join(map(lambda x:'%.2g'%x, item))+'</td>')
+        summary.write('<td>' + ', '.join(map(lambda x:'%.3g'%x, item))+'</td>')
       else:
         summary.write('<td>%s</td>' % str(item))
     summary.write('''</tr>''')
