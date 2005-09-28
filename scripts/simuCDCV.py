@@ -6,8 +6,8 @@
 #
 # Bo Peng (bpeng@rice.edu)
 #
-# Jan. 2005
-# Last updated: May, 2005
+# $LastChangedDate$
+# $Rev$
 # 
 # Usage:
 #   simuReich2001.py 

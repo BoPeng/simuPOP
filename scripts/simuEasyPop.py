@@ -4,8 +4,8 @@
 #
 # Author: Bo Peng (bpeng@rice.edu)
 #
-# Date:   Apr. 2005
-# Last Updated: Apr. 2005
+# $LastChangedDate$
+# $Rev$
 # 
 
 # 
