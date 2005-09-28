@@ -10,7 +10,7 @@
 #
 
 VER=`cat /var/www/html/simuPOP/download/latestversion`
-cd /home/bpeng/temp
+cd /home/bpeng/tmp
 /bin/rm -rf simuPOP-$VER &&  /bin/rm -rf simuPOP
 cp /var/www/html/simuPOP/download/simuPOP-$VER-src.tar.gz .
 

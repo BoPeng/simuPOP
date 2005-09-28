@@ -539,7 +539,7 @@ def Migrate(pop, *args, **kwargs):
 Migrate.__doc__ = "Function version of operator migrator whose __init__ function is \n" + migrator.__init__.__doc__
 
 def PyMigrate(pop, *args, **kwargs):
-  pyMigrate(*args, **kwargs).apply(pop)
+  pyMigrator(*args, **kwargs).apply(pop)
 
 PyMigrate.__doc__ = "Function version of operator pyMigrate whose __init__ function is \n" + pyMigrator.__init__.__doc__
 
@@ -786,13 +786,17 @@ del pyMutator.__init__
 pyMutator.__init__ = new_pyMutator
 
 
-
-
 def new_migrator(self, rate, fromSubPop=[], toSubPop=[], *args, **kwargs):
   # parameter rate
   r = rate
-  if type(rate) in  [types.IntType, types.LongType]:
+  if type(rate) in  [types.IntType, types.LongType, types.FloatType]:
     r = [[rate]]
+  # if a single vector, [a,b] ==> [[a,b]]
+  if type(rate) in [types.ListType, types.TupleType, types.FloatType]:
+    if len(rate) == 0:
+      raise exceptions.ValueError('Migration rate can not be empty')
+    elif type(rate[0]) in [types.IntType, types.LongType, types.FloatType]:
+      r = [rate]      
   # parameter fromSubPop
   if type(fromSubPop) in [types.IntType, types.LongType]:
     fs = [fromSubPop]

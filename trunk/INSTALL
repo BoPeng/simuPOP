@@ -251,21 +251,6 @@ For gcc compiler, you can use
   -march=pentium4 -O3 -pipe -fomit-frame-pointer 
 
 
-Autoconf method (obsolete, may not work now)
---------------------------------------------
-
-This method works on all platforms and hopefully any C++ compiler.
-
-  > ./configure -prefix=/path/to/destination
-  > make
-  > make check
-  > make install 
-
-Make install will install simuPOP to the directory you specify. You will 
-have to set PYTHONPATH in most cases. This method is kept since its wide
-applicability. 
-
-
 Windows system with cygwin/mingw32 g++ compiler (free)
 -------------------------------------------------------
 

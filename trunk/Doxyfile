@@ -110,6 +110,7 @@ RECURSIVE              = YES
 EXCLUDE                = config.h \
                          debug/config.h \
                          test \
+                         tools \
                          boost \
                          gsl \
                          src/serialization \
