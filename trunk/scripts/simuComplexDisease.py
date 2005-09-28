@@ -5,10 +5,9 @@
 #           loci.
 #
 # Bo Peng (bpeng@rice.edu)
-# April, 2005
 #
-# Last revision date:
-#   Sep, 2005
+# $LastChangedDate$
+# $Rev$
 #
 # Known bugs:
 #   None
@@ -625,15 +624,15 @@ def outputStatistics(pop, args):
     heteroFreq = range( pop.totNumLoci() ) )
   # output D', allele frequency at split, mixing and endGen
   if gen in [split, mixing, endGen]:
-    print >> output, "\nD' between DSL %d (chrom %d) and surrounding markers at gen %d\n" \
+    print >> output, "D' between DSL %d (chrom %d) and surrounding markers at gen %d" \
       % (ctrChromDSL, ctrChrom, gen)
     for ld in ctrDSLLD:
       print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
-    print >> output, "\nD' between a center marker %d (chrom %d) and surrounding markers at gen %d\n" \
+    print >> output, "\n\nD' between a center marker %d (chrom %d) and surrounding markers at gen %d" \
       % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
     for ld in noDSLLD:
       print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
-    print >> output, "\nAllele frequencies\nall\t",
+    print >> output, "\n\nAllele frequencies\nall\t",
     for d in DSL:
       print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][1]),
     for sp in range(numSubPop):
@@ -808,11 +807,9 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
   ### mixing stage
   # a migrator, stepping stone or island
   if numSubPop > 1 and migrModel == 'island' and mi > 0:
-    print "Migration rate", migrIslandRates(mi, numSubPop)
     operators.append( migrator(migrIslandRates(mi, numSubPop),
       mode=MigrByProbability, begin=mixing) )
   elif numSubPop > 1 and migrModel == 'stepping stone' and mi > 0:
-    print "Migration rate", migrSteppingStoneRates(mi, numSubPop)
     operators.append( migrator(migrSteppingStoneRates(mi, numSubPop, circular=True),
       mode=MigrByProbability, begin=mixing) )
   #
@@ -1251,7 +1248,19 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
     summary += '</ul>\n'
     # if there is a valid gene hunter program, run it
     (suc,res) = TDT(pop.dvars().DSL, penDir, "/Linkage/Aff", penDir + "/TDT.eps", penDir + "/TDT.jpg")
-    if suc > 0 : # eps file succe
+    #  if suc > 0 : # eps file succe
+    if suc > 0 : # eps file successfully generated
+      summary += """<h4>TDT analysis for affected sibpair data:  <a href="%s/TDT.eps">TDT.eps</a>""" % relDir
+    if suc > 1 : # jpg file is generated
+      summary += '''<p><img src="%s/TDT.jpg" width=800, height=600></p>''' % relDir
+    # keep some numbers depending on the penetrance model
+    #FIXMEresult.append(res[:int(peneFunc[p][-1])])
+  return (summary, result)
+
+
+def writeReport(content, allParam, results):
+  ''' write a HTML file. The parts for each population has
+    been written but we need a summary table. '''
   print "Writing a report (saved in summary.htm )"
   try:
     summary = open(outputDir + "/summary.htm", 'w')
