@@ -8,7 +8,7 @@
 
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.6.8 $Revision$}
+\setreleaseinfo{Release 0.6.8 $Rev$}
 \authoraddress{
 {\bf Department of Statistics, Rice University}\\
 {\bf Email: }{\textsf bpeng@rice.edu}\\
