@@ -5,7 +5,7 @@
 \usepackage{underscore}
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.6.8}
+\setreleaseinfo{Release 0.6.8 $Rev$}
 \authoraddress{
 {\bf Department of Statistics, Rice University}\\
 {\bf Email: }{\textsf bpeng@rice.edu}\\
@@ -15,7 +15,7 @@
 \date{December 2004\\
 \hfill{}\\
 Last modified \\
-\today }
+$Date$ }
 
 \ifhtml
 \chapter*{Front Matter\label{front}}

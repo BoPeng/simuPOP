@@ -2293,7 +2293,11 @@ T Expression::valueAs##TypeName() \
 
   string ver()
   {
-    return SIMUPOP_VER;
+    string revision = "$Rev$";
+    // remove $Rev:
+    revision = revision.substr(5);
+    revision = revision.remove( revision.find("*"));
+    return SIMUPOP_VER + toStr(" Rev: ") + revision;
   }
 
   /** This file is used to initialize simuPOP when being load into
