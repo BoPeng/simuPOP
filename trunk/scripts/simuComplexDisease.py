@@ -624,6 +624,7 @@ def outputStatistics(pop, args):
     heteroFreq = range( pop.totNumLoci() ) )
   # output D', allele frequency at split, mixing and endGen
   if gen in [split, mixing, endGen]:
+    print >> output, "Average Fst estimated from non-DSL at gen %d: %.4f " % (gen, pop.dvars().AvgFst)
     print >> output, "D' between DSL %d (chrom %d) and surrounding markers at gen %d" \
       % (ctrChromDSL, ctrChrom, gen)
     for ld in ctrDSLLD:
@@ -645,6 +646,8 @@ def outputStatistics(pop, args):
     for d in range(pop.totNumLoci()):
       AvgHetero += pop.dvars().heteroFreq[d][0]
     AvgHetero /= pop.totNumLoci()
+    # save to pop
+    pop.dvars().AvgHetero = AvgHetero
     # output it
     print >> output, '\nAverage counted heterozygosity is %.4f.\n' % AvgHetero
   return True
@@ -902,8 +905,6 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
 # plot the LD values for the sample.
 def plotLD(pop, epsFile, jpgFile):
   ''' plot LD values in R and convert to jpg if possible '''
-  r.postscript(file=epsFile)
-  r.par(mfrow=[2,1])
   # return max LD
   res = []
   # dist: distance (location) of marker
@@ -917,10 +918,13 @@ def plotLD(pop, epsFile, jpgFile):
       dist.append(pop.locusDist(ld[1]))
     ldprime.append(pop.dvars().LD_prime[ld[0]][ld[1]])
   res.append(max(ldprime))
-  r.plot( dist, ldprime, main="D' between DSL and other markers on chrom %d" % pop.dvars().ctrChrom,
-    xlab="marker location", ylab="D'", type='b')
-  r.abline( v = pop.locusDist(pop.dvars().ctrChromDSL), lty=3 )
-  r.axis( 1, [pop.locusDist(pop.dvars().ctrChromDSL)], ['DSL'])
+  if hasRPy:
+    r.postscript(file=epsFile)
+    r.par(mfrow=[2,1])
+    r.plot( dist, ldprime, main="D' between DSL and other markers on chrom %d" % pop.dvars().ctrChrom,
+      xlab="marker location", ylab="D'", type='b')
+    r.abline( v = pop.locusDist(pop.dvars().ctrChromDSL), lty=3 )
+    r.axis( 1, [pop.locusDist(pop.dvars().ctrChromDSL)], ['DSL'])
   dist = []
   ldprime = []
   for ld in pop.dvars().noDSLLD:
@@ -930,11 +934,12 @@ def plotLD(pop, epsFile, jpgFile):
       dist.append(pop.locusDist(ld[1]))
     ldprime.append(pop.dvars().LD_prime[ld[0]][ld[1]])    
   res.append(max(ldprime))
-  r.plot( dist, ldprime, main="D' between marker %d and other markers on chrom %d" \
-    % (numLoci/2, pop.dvars().noDSLChrom),
-    xlab="marker location", ylab="D'", type='b')    
-  r.abline( v = pop.locusDist(pop.chromBegin(pop.dvars().noDSLChrom)+pop.dvars().numLoci/2), lty=3 )
-  r.dev_off()
+  if hasRPy:
+    r.plot( dist, ldprime, main="D' between marker %d and other markers on chrom %d" \
+      % (numLoci/2, pop.dvars().noDSLChrom),
+      xlab="marker location", ylab="D'", type='b')    
+    r.abline( v = pop.locusDist(pop.chromBegin(pop.dvars().noDSLChrom)+pop.dvars().numLoci/2), lty=3 )
+    r.dev_off()
   # try to get a jpg file
   try:
     if os.system("convert -rotate 90 %s %s " % (epsFile, jpgFile) ) == 0:
@@ -1145,14 +1150,12 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
       maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
       mixingGen, popSizeFunc, migrModel, mu, mi, rec, dryrun, logFile)
     SavePopulation(pop, popFile)
-  # have the population, get info
-  ## FIZMW result.extend( [ pop.dvars().AvgFst, pop.dvars().AvgHetero])
   # log file is ...
-  summary = '''<h2><a name="pop_%d">Dataset %d</a></h2>\n''' \
-    % (popIdx, popIdx)
-  summary += '''<h3>Log file (LD and other statistics): 
-    <a href="pop_%d/pop_%d.log">pop_%d.log</a></h3>\n''' \
-    % (popIdx, popIdx, popIdx)
+  summary = '''\
+    <h2><a name="pop_%d">Dataset %d</a></h2>
+    <h3>Log file (LD and other statistics): 
+      <a href="pop_%d/pop_%d.log">pop_%d.log</a></h3>
+    ''' % (popIdx, popIdx, popIdx, popIdx, popIdx)
   #
   # actually write the log file in the summary page
   try:
@@ -1161,22 +1164,23 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
     lf.close()
   except:
     print "Can not open log file, ignoring. "
+  # save Fst, Het in res
+  result.extend( [ pop.dvars().AvgFst, pop.dvars().AvgHetero])
   #
   # plot LD, res = 0, fail, 1: eps file, 2: converted to jpg
   epsFile = dataDir + "/LD_" + str(popIdx) + ".eps"
   jpgFile = dataDir + "/LD_" + str(popIdx) + ".jpg"
   #
-  if hasRPy:
-    (suc,ldres) = plotLD(pop, epsFile, jpgFile)
-    if suc > 0 : # eps file successfully generated
-      summary += """<p>D' measures on two chromosomes with/without DSL at the last gen: 
-      <a href="pop_%d/LD_%d.eps">LD.eps</a></p>\n""" % (popIdx, popIdx)
-    if suc > 1 : # jpg file is generated
-      summary += '''<img src="pop_%d/LD_%d.jpg"
-        width=800, height=600>'''  % (popIdx, popIdx)
-    result.extend(ldres)
-  else: # FIXME, without RPy, ld is still obtainable.
-    retuls.extend([])
+  # ldres has max D' on a chrom with DSL, and a chrom without DSL
+  (suc,ldres) = plotLD(pop, epsFile, jpgFile)
+  if suc > 0 : # eps file successfully generated
+    summary += """<p>D' measures on two chromosomes with/without DSL at the last gen: 
+    <a href="pop_%d/LD_%d.eps">LD.eps</a></p>\n""" % (popIdx, popIdx)
+  if suc > 1 : # jpg file is generated
+    summary += '''<img src="pop_%d/LD_%d.jpg"
+      width=800, height=600>'''  % (popIdx, popIdx)
+  result.extend(ldres)
+  # now add allele frequency
   result.extend( [1- pop.dvars().alleleFreq[i][1] for i in pop.dvars().DSL])
   #
   # apply penetrance and get three samples (different format)
@@ -1200,7 +1204,6 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
       summary += "<h4>Customized penetrance function</h4>\n"
       s = drawSamples(pop, customPene(penePara[p]))
     # save these samples
-    #
     penDir = dataDir + "/" + peneFunc[p]
     relDir = 'pop_%d/%s/' % (popIdx, peneFunc[p])
     _mkdir(penDir)
@@ -1254,7 +1257,7 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
     if suc > 1 : # jpg file is generated
       summary += '''<p><img src="%s/TDT.jpg" width=800, height=600></p>''' % relDir
     # keep some numbers depending on the penetrance model
-    #FIXMEresult.append(res[:int(peneFunc[p][-1])])
+    result.append(res)
   return (summary, result)
 
 
@@ -1312,10 +1315,10 @@ def writeReport(content, allParam, results):
   for i in range(len(allParam[3])):
     summary.write('<th>allFrq%d</th>'%(i+1))
   #
-  # has TDT?
-  if allParam[-3] != '':
-    for i in range(len(allParam[3])):
-      summary.write('<th>TDT%d</th>'%(i+1))
+  # has TDT and some penetrance function
+  if len(allParam[-8]) > 0:
+    for p in allParam[-8]:
+      summary.write('<th>%s:TDT</th>'%p)
   summary.write('</tr>')
   # end of headers, now result
   for res in results:
