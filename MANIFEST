@@ -13094,7 +13094,6 @@ scripts/simuCDCV.py
 scripts/simuComplexDisease.py
 scripts/simuEasyPop.py
 scripts/simuLDDecay.py
-src/Makefile.icc
 src/arraymodule.c
 src/individual.h
 src/initializer.h
@@ -13178,6 +13177,7 @@ test/test_individual.py
 test/test_init.py
 test/test_leak.py
 test/test_mating.py
+test/test_migration.py
 test/test_misc.py
 test/test_mutate.py
 test/test_mutationDriftEquilibrium.py
