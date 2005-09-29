@@ -14,9 +14,9 @@ exist) to generate these wrap files.
 # and should suffice most applications.
 #
 # If you do need XML_SUPPORT under mac, you can go to line 42
-# set XML_SUPPORT=1 and try to compile.
+# set XML_SUPPORT=True and try to compile.
 #
-XML_SUPPORT=1
+XML_SUPPORT = True
 
 #########################################################
 
@@ -41,7 +41,7 @@ if sys.argv[1] not in ['sdist']:
       shutil.copy('config_solaris.h', 'config.h')
     elif sysName == 'Darwin':  # MacOS
       shutil.copy('config_mac.h', 'config.h')
-      XML_SUPPORT=0
+      XML_SUPPORT = False
   else:
     try:
       open('config.h')
@@ -91,24 +91,18 @@ if not ( os.path.isfile('src/simuPOP_std_wrap.cpp') and \
   addCarrayEntry('src/simuPOP_laop_wrap.cpp')
 
 DESCRIPTION = """
-SimuPOP is a forward-based population genetics simulation program. 
-Unlike coalescence-based simulation programs, simuPOP evolves 
-population(s) forward in time -- subject to arbitrary number of 
-gentic and environmental forces (mutation, recombination, 
-migration, population size change etc.). Easy simulations like 
-most models in standard population genetics books can be setup 
-easily, whereas very complicated simulations such as spreading 
-of complex diseases, ancient out-of-africa migrations can be 
-built step by step by adding appropriate operators (objects 
-that work on populations).
-
-simuPOP is written in C++ and is provided as a Python library. 
-Besides a front-end providing an interactive shell and a 
-scripting language, Python is used extensively to pass dynamic
-parameters, calculate complex statistics and write operators.
-This flexibility gives simuPOP the power to simulate almost 
-all evolution scenarios. sec:A-Simple-Example illustrates 
-roughly how simuPOP works. 
+simuPOP is a forward-time population genetics simulation environment.
+The core of simuPOP is a scripting language (Python) that provides 
+a large number of objects and functions to manipulate populations, 
+and a mechanism to evolve populations forward in time. Using this 
+R/Splus-like environment, users can create, manipulate and evolve 
+populations interactively, or write a script and run it as a batch 
+file. Owing to its flexible and extensible design, simuPOP can simulate
+large and complex evolutionary processes with ease. At a more 
+user-friendly level, simuPOP provides an increasing number of built-in
+scripts that perform simulations ranging from implementation of basic 
+population genetics models to generating datasets under complex 
+evolutionary scenarios.
 """
 
 GSL_FILES = [ 
@@ -196,7 +190,7 @@ SERIAL_FILES = [
   'src/serialization/polymorphic_iarchive.cpp',
   'src/serialization/polymorphic_oarchive.cpp'
 ]
-if XML_SUPPORT == 1: 
+if XML_SUPPORT: 
   SERIAL_FILES.extend( [
     'src/serialization/basic_xml_archive.cpp',
     # 'src/serialization/basic_xml_grammar.ipp',
@@ -207,7 +201,6 @@ if XML_SUPPORT == 1:
   )
 
 # find all test files
-testFiles = glob.glob('test/test_*.py')
 DATA_FILES =  [
   ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
     'COPYING', 'TODO']), 
@@ -218,7 +211,7 @@ DATA_FILES =  [
    'scripts/simuLDDecay.py', 'scripts/simuCDCV.py']),
 ]
 
-if XML_SUPPORT == 1: # using serialization library with xml support
+if XML_SUPPORT: # using serialization library with xml support
   serial_macro = []
 else:
   serial_macro = [ ('__NO_XML_SUPPORT__', None) ]
