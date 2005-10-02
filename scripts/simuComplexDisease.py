@@ -1082,7 +1082,7 @@ def drawSamples(pop, penFun, numSample):
   return allSample
 
 # apply the TDT method of GeneHunter
-def TDT(DSL, dataDir, data, epsFile, jpgFile):
+def TDT(DSL, cutoff, dataDir, data, epsFile, jpgFile):
   ''' use TDT method to analyze the results. Has to have rpy installed '''
   if not hasRPy:
     return (0,[])
@@ -1142,10 +1142,10 @@ def TDT(DSL, dataDir, data, epsFile, jpgFile):
   # use R to draw a picture
   r.postscript(file=epsFile)
   r.plot(allPvalue, main="-log10(P-value) for each marker (TDT)",
-    xlab="chromosome", ylab="-log10 p-value", type='l', axes=False)
+    xlab="chromosome", ylab="-log10 p-value", type='l', axes=False, ylim=[0.01, 5])
   r.box()
   r.abline( v = [DSLafter[g]+DSLdist[g] for g in range(len(DSL))], lty=3)
-  r.abline( h = -math.log10(0.05))                       
+  r.abline( h = cutoff )                       
   r.axis(1, [numLoci*x for x in range(numChrom)], [str(x+1) for x in range(numChrom)])
   r.axis(2)
   r.dev_off()
@@ -1159,7 +1159,7 @@ def TDT(DSL, dataDir, data, epsFile, jpgFile):
     return (1,res)  # fail
 
 # apply the Linkage method of GeneHunter
-def Linkage(DSL, dataDir, data, epsFile, jpgFile):
+def Linkage(DSL, cutoff, dataDir, data, epsFile, jpgFile):
   ''' use Linkage method to analyze the results. Has to have rpy installed '''
   if not hasRPy: 
     return (0,[])
@@ -1230,11 +1230,11 @@ def Linkage(DSL, dataDir, data, epsFile, jpgFile):
     res.append( max(allPvalue[(d-2):(d+2)]))
   # use R to draw a picture
   r.postscript(file=epsFile)
-  r.plot(allPvalue, main="-log10(P-value) for each marker (TDT)",
+  r.plot(allPvalue, main="-log10(P-value) for each marker (LOD)", ylim=[0.01,5], 
     xlab="chromosome", ylab="-log10 p-value", type='l', axes=False)
   r.box()
   r.abline( v = [DSLafter[g]+DSLdist[g] for g in range(len(DSL))], lty=3)
-  r.abline( h = -math.log10(0.05))                       
+  r.abline( h = cutoff )                       
   r.axis(1, [numLoci*x for x in range(numChrom)], [str(x+1) for x in range(numChrom)])
   r.axis(2)
   r.dev_off()
@@ -1257,6 +1257,47 @@ def _mkdir(d):
     print "Can not make output directory ", d
     sys.exit(1)
 
+def popStat(pop, p):
+  ' calculate population statistics '
+  # K -- populaiton prevalance
+  print "Caculating population statistics "
+  Stat(pop, numOfAffected=True)
+  result = {}
+  result[p+'_K'] = pop.dvars().numOfAffected * 1.0 / pop.popSize()
+  # P11 = [ ] = proportion of 11 | affected, 
+  # P12 = [ ] = proportion of 12 | affected
+  DSL = pop.dvars().DSL
+  P11 = [0.]*len(DSL)
+  P12 = [0.]*len(DSL)
+  P22 = [0.]*len(DSL)
+  for ind in range(pop.popSize()):
+    if pop.individual(ind).affected:
+      for x in range(len(DSL)):
+        s1 = pop.individual(ind).allele(DSL[x], 0)
+        s2 = pop.individual(ind).allele(DSL[x], 1)
+        if s1 == 1 and s2 == 1:
+          P11[x] += 1
+        elif s1 == 2 and s2 == 2:
+          P22[x] += 1
+        else:
+          P12[x] += 1
+  N = pop.popSize()
+  result[p+'_P11'] = [ x/N for x in P11 ]
+  result[p+'_P12'] = [ x/N for x in P12 ]
+  result[p+'_P22'] = [ x/N for x in P22 ]
+  # Ks = Pr(Xs=1 | Xp=1 ) = Pr(Xs=1, Xp=1) | P(Xp=1)
+  Ks = 0
+  for ind in range(pop.popSize()/2):
+    s1 = pop.individual(ind*2).affected
+    s2 = pop.individual(ind*2).affected
+    if s1 and s2:
+      Ks += 1
+  result[p+'_Ks'] = (Ks*2.0/ pop.popSize()) / result[p+'_K']
+  # Lambda = Ks/K
+  result[p+'_Ls'] = result[p+'_Ks'] / result[p+'_K']
+  return result
+   
+  
 def processOnePopulation(dataDir, numChrom, numLoci, markerType,
     DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, minAlleleFreq,
     maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
@@ -1353,6 +1394,8 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
       print "Using customized penetrance function"
       summary += "<h4>Customized penetrance function</h4>\n"
       s = drawSamples(pop, customPene(penePara[p]), numSample)
+    # calculate population statistics like prevalence
+    result.update( popStat(pop, peneFunc[p]) )
     # for each sample
     for sn in range(numSample):
       print "Processing sample %s%d" % ( peneFunc[p], sn)
@@ -1408,7 +1451,8 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
         summary += '</li>\n'
       summary += '</ul>\n'
       # if there is a valid gene hunter program, run it
-      (suc,res) = TDT(pop.dvars().DSL, penDir, "/Linkage/Aff", penDir + "/TDT.eps", penDir + "/TDT.jpg")
+      (suc,res) = TDT(pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
+        penDir, "/Linkage/Aff", penDir + "/TDT.eps", penDir + "/TDT.jpg")
       #  if suc > 0 : # eps file succe
       if suc > 0 : # eps file successfully generated
         summary += """<h4>TDT analysis for affected sibpair data:  <a href="%s/TDT.eps">TDT.eps</a>""" % relDir
@@ -1417,7 +1461,8 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
       # keep some numbers depending on the penetrance model
       result['TDT_%s_%d' % (peneFunc[p], sn)] = res
       # then the Linkage method
-      (suc,res) = Linkage(pop.dvars().DSL, penDir, "/Linkage/Aff", penDir + "/LOD.eps", penDir + "/LOD.jpg")
+      (suc,res) = Linkage(pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
+        penDir, "/Linkage/Aff", penDir + "/LOD.eps", penDir + "/LOD.jpg")
       #  if suc > 0 : # eps file succe
       if suc > 0 : # eps file successfully generated
         summary += """<h4>LOD analysis for affected sibpair data:  <a href="%s/LOD.eps">LOD.eps</a>""" % relDir
@@ -1472,8 +1517,11 @@ def writeReport(content, allParam, results):
   rate, recombination rate, Fst, average heterozygosity, highest D'/D between a 
   DSL and all surrounding markers (not necessarily its cloest marker), highest
   D'/D between a marker with its surrounding markers on a chromsome without
-  DSL, allele frequency at DSL, -log10 p-values (TDT method and Linkage method) at
-  all relevant DSL. </p>
+  DSL, allele frequency at DSL, -log10 p-values (TDT method and Linkage method, + for
+  exceeds and - for less than cutoff value -log10(pvalue/total number of loci) ) at
+  all relevant DSL. Other statistics include K (population prevalence), Ks (sibling 
+  recurrance risk), Ls (lambda_s, sibling recurrance ratio), P11 (P(NN | affected)),
+  P12 (P(NS | affected)), P13 (P(SS|affected))</p>
   <table border="1">
   <tr><th>id </th>
   <th>mu</th>  <th>mi</th>   <th>rec</th>
@@ -1486,6 +1534,8 @@ def writeReport(content, allParam, results):
   #
   # has TDT and some penetrance function
   if len(allParam[-9]) > 0:
+    summary.write('<th>K</th><th>Ks</th><th>Ls</th>')
+    summary.write('<th>P11</th><th>P12</th><th>P22</th>')
     for p in allParam[-9]:
       summary.write('<th>%s:TDT</th><th>%s:LOD</th>'%(p,p))
   summary.write('</tr>')
@@ -1497,24 +1547,32 @@ def writeReport(content, allParam, results):
     summary.write('<td>%.5g</td>' % res['mu'])
     summary.write('<td>%.5g</td>' % res['mi'])
     summary.write('<td>%.5g</td>' % res['rec'])
-    summary.write('<td>%.5g</td>' % res['Fst'])
-    summary.write('<td>%.5g</td>' % res['AvgHet'])
-    summary.write('<td>%.5g/%.5g</td>' % (res['DpDSL'], res['DpNon']))
-    summary.write('<td>%.5g/%.5g</td>' % (res['DDSL'], res['DNon']))
-    for i in range(len(allParam[3])):
+    summary.write('<td>%.2g</td>' % res['Fst'])
+    summary.write('<td>%.2g</td>' % res['AvgHet'])
+    summary.write('<td>%.2g</td>' % res['DpDSL'])
+    summary.write('<td>%.2g</td>' % res['DDSL'])
+    summary.write('<td>%.2g</td>' % res['DpNon'])
+    summary.write('<td>%.2g</td>' % res['DNon'])
+    for i in range(len(allParam[3])):  # len(DSLafter)
       summary.write('<td>%.3f</td>'% res['alleleFreq'][i] )
     # for each penetrance function
     if len(allParam[-9]) > 0:
-      for met in ['TDT', 'LOD']:
-        for p in allParam[-9]: # penetrance
+      for p in allParam[-9]: # penetrance function
+        summary.write('<td>%.2g</td>' % res[p+'_K'])
+        summary.write('<td>%.2g</td>' % res[p+'_Ks'])
+        summary.write('<td>%.2g</td>' % res[p+'_Ls'])
+        summary.write('<td>' + ','.join( ['%.2g'%x for x in res[p+'_P11'] ]) + '</td>')
+        summary.write('<td>' + ','.join( ['%.2g'%x for x in res[p+'_P12'] ]) + '</td>')
+        summary.write('<td>' + ','.join( ['%.2g'%x for x in res[p+'_P22'] ]) + '</td>')
+        for met in ['TDT', 'LOD']:
           for num in range(int(allParam[-6])): # samples
-            plusMinus = '<td>'
-            for p in res[met+'_'+p+'_'+str(num)]:
-              if p > -math.log10(0.01/400.):
+            plusMinus = ''
+            for pvalue in res[met+'_'+p+'_'+str(num)]:
+              if pvalue > -math.log10(0.05/(allParam[0]*allParam[1])):
                 plusMinus += '+'
               else:
                 plusMinus += '-'
-              summary.write(plusMinus+'</td>')
+            summary.write('<td>'+plusMinus+'</td>')
     summary.write('''</tr>''')
   # the middle (big) and last piece) 
   summary.write('''</table>

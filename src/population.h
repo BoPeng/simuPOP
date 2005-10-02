@@ -106,7 +106,7 @@ namespace simuPOP
       /// create a population object with given size and genotypic structure
       /**
       \param size population size. Can be ignored if subPop is specified.
-         In that case, size is sum of subPop.
+         In that case, size is sum of subPop. Default to 0.
       \param ploidy number of sets of chromosomes. Default to 2 (diploid).
       \param loci an array of numbers of loci on each chromosome. If
          not specified, assume a single locus on one chromosome. Number
@@ -136,7 +136,7 @@ namespace simuPOP
       \sa simulator, baseOperator, mating schemes
       \test popInit.log \include popInit.log
       */
-      Population( ULONG size=1,
+      Population( ULONG size=0,
         UINT ploidy=2,
         const vectoru& loci=vectoru(),
         bool sexChrom=false,
@@ -172,16 +172,12 @@ namespace simuPOP
         // if specify subPop but not m_popSize
         if( !subPop.empty() )
         {
-          if( size == 1 )
+          if( size == 0 )
             m_popSize = accumulate(subPop.begin(), subPop.end(), 0UL);
           else
             DBG_ASSERT( m_popSize == accumulate(subPop.begin(), subPop.end(), 0UL),
               ValueError, "If both size and subPop are specified, size should equal to sum(subPop)");
         }
-
-        // popsize
-        DBG_ASSERT( m_popSize >= 1, IndexError,
-          "Population size ( given " + toStr(m_popSize) + " should be at least 1.");
 
         // get a GenoStructure with parameters. GenoStructure may be shared by some populations
         // a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
@@ -219,7 +215,7 @@ namespace simuPOP
             << " which requires approximately " << static_cast<double>(m_popGenoSize)/1024/1024
             + static_cast<double>(m_popSize) * sizeof( IndType ) /1024/1024 << "M RAM." << endl;
           cout << "Memory allocation fail. A population of size 1 is created." << endl;
-          *this = Population(1);
+          *this = Population(0);
           throw OutOfMemory("Memory allocation fail");
         }
         // set local variable
@@ -258,7 +254,7 @@ namespace simuPOP
             << " which requires approximately " << static_cast<double>(m_popGenoSize)/1024/1024
             + static_cast<double>(m_popSize) * sizeof( IndType ) /1024/1024 << "M RAM." << endl;
           cout << "Memory allocation fail. A population of size 1 is created." << endl;
-          *this = Population(1);
+          *this = Population(0);
           throw OutOfMemory("Memory allocation fail");
         }
 
