@@ -698,7 +698,7 @@ def SaveSimulator(simu, *args, **kwargs):
 SaveSimulator.__doc__ = "Function versionof member function simulator::saveSimulator with help info:\n" + simulator.saveSimulator.__doc__
 
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
-def new_population(self, size=1, ploidy=2, loci=[], sexChrom=False, 
+def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False, 
   lociDist=[], subPop=[], ancestralDepth=0, alleleNames=[], lociNames=[],
   maxAllele=MaxAllele):
     ld = lociDist

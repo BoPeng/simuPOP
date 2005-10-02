@@ -188,7 +188,7 @@ like multiple testing.
 """
 
 import simuOpt, simuUtil
-import os, sys, types, exceptions, os.path, re, math, time
+import os, sys, types, exceptions, os.path, re, math, time, copy
 
 #
 # declare all options. getParam will use these information to get parameters
@@ -1375,12 +1375,6 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
   #
   # apply penetrance and get numSample for each sample
   summary += "<h3>Samples using different penetrance function</h3>\n"
-  # if we are going to save in linkage format, and specify
-  # allele frequency from the whole population, we need to calculate them
-  # now. (Previously, we only have data for DSL
-  # remove DSL from the population,
-  if 'Linkage' in saveFormat:
-    Stat(pop, alleleFreq=range(pop.totNumLoci()))
   for p in range(len(peneFunc)):
     if peneFunc[p] == 'recessive':
       print "Using recessive penetrance function"
@@ -1433,20 +1427,28 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
         summary += '<li>Linkage format by chromosome:'
         linDir = penDir + "/Linkage/"
         _mkdir(linDir)
+        # here we are facing a problem of using which allele frequency for the sample
+        # In reality, if it is difficult to estimate population allele frequency,
+        # sample frequency has to be used. Otherwise, population frequency should 
+        # be used whenever possible. Here, we use population allele frequency, with only
+        # one problem in that we need to remove frequencies at DSL (since samples do not
+        # have DSL).
+        af = []
+        Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        for x in range( pop.totNumLoci() ):
+          if x not in pop.dvars().DSL:
+            af.append( pop.dvars().alleleFreq[x] )
         if s[sn][1] != None: # has case control
           for ch in range(0, pop.numChrom() ):
             SaveLinkage(pop=s[sn][1], popType='sibpair', output = linDir+"/Aff_%d" % ch,
               chrom=ch, recombination=pop.dvars().recombinationRate,
-              # we can not use population frequency since samples do not have DSL
-              #alleleFreq=pop.dvars().alleleFreq, 
-              daf=0.1)        
+              alleleFreq=af, daf=0.1)        
           summary +=  '<a href="%sLinkage">affected</a>, ' % relDir
         if s[sn][2] != None:
           for ch in range(0,pop.numChrom() ):
             SaveLinkage(pop=s[sn][2], popType='sibpair', output = linDir+"/Unaff_%d" % ch,
               chrom=ch, recombination=pop.dvars().recombinationRate,                            
-              #alleleFreq=pop.dvars().alleleFreq,  
-              daf=0.1)        
+              alleleFreq=af, daf=0.1)        
           summary += '<a href="%sLinkage">unaffected</a>' % relDir
         summary += '</li>\n'
       summary += '</ul>\n'
