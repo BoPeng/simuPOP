@@ -293,7 +293,9 @@ options = [
    'prompt': 'Length of disease-introduction stage (12):  ',
    'description': '''Number of generations to introduce the disease
         Since the disease will be under positive selection during this
-        stage, large introGen will lead to over-common diseases.''',
+        stage, large introGen will lead to over-common diseases. Note 
+        that the larger the initial population size is, the longer 
+        introGen is required.''',
    'validate':  simuOpt.valueGT(0),
   },
   {'longarg': 'minAlleleFreq=',
@@ -412,11 +414,11 @@ options = [
    'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
   },
   {'longarg': 'recRate=',
-   'default': [0.1],
+   'default': [0.0005],
    'configName': 'Recombination Rates',
    'allowedTypes': [types.ListType, types.TupleType],
    'prompt': 'Recombination rate between adjacent markers. Separate datasets\n'+
-        'will be generated for each rec values if a list is given. (0.1):  ',
+        'will be generated for each rec values if a list is given. (0.0005):  ',
    'description': '''Recombination rate between adjacent markers. if a list is
         given, separate datasets will be given for each value.''',
    'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
@@ -474,6 +476,14 @@ options = [
    'description':  '''Size of the samples, that will mean N/4 affected sibpair families (of size 4),
         N/2 cases and controls etc. ''',
    'validate':  simuOpt.valueGT(1)
+  },
+  {'longarg': 'numSampleber=',
+   'default': 2,
+   'configName':  'Sample Number',
+   'allowedTypes':  [types.IntType, types.LongType],
+   'prompt':  'Number of samples for each penetrance function (2):  ',
+   'description':  '''Number of samples to draw for each penetrance function. ''',
+   'validate':  simuOpt.valueGT(0)
   },
   {'longarg': 'outputDir=',
    'default': '.',
@@ -624,8 +634,16 @@ def outputStatistics(pop, args):
     heteroFreq = range( pop.totNumLoci() ) )
   # output D', allele frequency at split, mixing and endGen
   if gen in [split, mixing, endGen]:
-    print >> output, "Average Fst estimated from non-DSL at gen %d: %.4f " % (gen, pop.dvars().AvgFst)
-    print >> output, "D' between DSL %d (chrom %d) and surrounding markers at gen %d" \
+    print >> output, "Average Fst estimated from non-DSL at gen %d: %.4f \n" % (gen, pop.dvars().AvgFst)
+    print >> output, "D between DSL %d (chrom %d) and surrounding markers at gen %d" \
+      % (ctrChromDSL, ctrChrom, gen)
+    for ld in ctrDSLLD:
+      print >> output, '%.4f ' % pop.dvars().LD[ld[0]][ld[1]],
+    print >> output, "\n\nD between a center marker %d (chrom %d) and surrounding markers at gen %d" \
+      % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
+    for ld in noDSLLD:
+      print >> output, '%.4f ' % pop.dvars().LD[ld[0]][ld[1]],
+    print >> output, "\n\nD' between DSL %d (chrom %d) and surrounding markers at gen %d" \
       % (ctrChromDSL, ctrChrom, gen)
     for ld in ctrDSLLD:
       print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
@@ -676,10 +694,12 @@ def dynaAdvSelector(pop):
       print '-',
       sel.append( maSelector(locus=DSL[i], wildtype=[1], fitness=[1,0.9,0.8]) )
     else:
+    # encourage slightly towards upper bound
+      sel.append( maSelector(locus=DSL[i], wildtype=[1], fitness=[1,1.02,1.04]) )
       print ' ',
     # apply multi-locus selector, note that this opertor will only
     # set a variable fitness in pop, actual selection happens during mating.
-    if len(sel ) > 0:  # need adjustment
+    if len(sel ) > 0:  # need adjustment (needed if 'else' part is empty)
       MlSelect( pop, sel, mode=SEL_Multiplicative)
   return True
 
@@ -791,6 +811,11 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
   operators.append(
     pyOperator( func=dynaAdvSelector, stage=PreMating, 
       begin=burnin, end=split) )
+  # check if allele frequency has reached desired value (loosely judged by 4/5*min)
+  for i in range(len(DSL)):
+    operators.append(
+      terminateIf("1-alleleFreq[%d][1]<%f" % (DSL[i], minAlleleFreq[i]*4/5.),
+      at=[split]) )
   #### no migration stage
   if numSubPop > 1:
     operators.append( 
@@ -834,7 +859,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
       param = (burnin, split, mixing, endGen, logFile),
       at = [burnin, split, mixing, endGen] ), 
     # Show how long the program has been running.
-    #pyEval(r'"Generation %d\n" % gen ', step = 100),
+    pyEval(r'"Burn-in stage: generation %d\n" % gen ', step = 10, end=burnin),
     # show elapsed time
     ticToc(at=[burnin, split, mixing, endGen]),
     ]
@@ -895,9 +920,18 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
       pop.dvars().migrationRate = mi
       pop.dvars().migrationModel = "circular stepping stone"
       pop.dvars().recombinationRate = rec
-      # can not just return the reference...
       # return a copy (and then simulator will be destroyed)
-      return simu.getPopulation(0)
+      #return simu.getPopulation(0)
+      # simu will be destroyed after return, however, simu.getPopulation
+      # will make a copy of population(0) and double the use of memory
+      # at this time.... this will cause problem when population size
+      # is large. 
+      # I am using a trick here, namely, create a small population and 
+      # swap out the population in simulator. This is undocumented
+      # and should be avoid whenever possible
+      tmpPop = population(1)
+      tmpPop.swap(simu.population(0))
+      return tmpPop      
     else:
       print "Population restarted at gen ", simu.gen()
       print "Overall fixed population ", fixedCount
@@ -909,18 +943,21 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
 def plotLD(pop, epsFile, jpgFile):
   ''' plot LD values in R and convert to jpg if possible '''
   # return max LD
-  res = []
+  res = {}
   # dist: distance (location) of marker
   # ldprime: D' value
   dist = []
-  ldprime = []
+  ldprime = [] # D'
+  ldvalue = [] # D
   for ld in pop.dvars().ctrDSLLD:
     if ld[1] == pop.dvars().ctrChromDSL:
       dist.append(pop.locusDist(ld[0]))
     else:
       dist.append(pop.locusDist(ld[1]))
     ldprime.append(pop.dvars().LD_prime[ld[0]][ld[1]])
-  res.append(max(ldprime))
+    ldvalue.append(pop.dvars().LD[ld[0]][ld[1]])
+  res['DpDSL'] = max(ldprime)
+  res['DDSL'] = max(ldvalue)
   if hasRPy:
     r.postscript(file=epsFile)
     r.par(mfrow=[2,1])
@@ -928,15 +965,18 @@ def plotLD(pop, epsFile, jpgFile):
       xlab="marker location", ylab="D'", type='b')
     r.abline( v = pop.locusDist(pop.dvars().ctrChromDSL), lty=3 )
     r.axis( 1, [pop.locusDist(pop.dvars().ctrChromDSL)], ['DSL'])
-  dist = []
-  ldprime = []
+  dist = [] 
+  ldprime = []  # D'
+  ldvalue = []  # D
   for ld in pop.dvars().noDSLLD:
     if ld[1] == pop.chromBegin(pop.dvars().noDSLChrom) + numLoci/2:
       dist.append(pop.locusDist(ld[0]))
     else:
       dist.append(pop.locusDist(ld[1]))
     ldprime.append(pop.dvars().LD_prime[ld[0]][ld[1]])    
-  res.append(max(ldprime))
+    ldvalue.append(pop.dvars().LD[ld[0]][ld[1]])    
+  res['DpNon'] = max(ldprime)
+  res['DNon'] = max(ldvalue)
   if hasRPy:
     r.plot( dist, ldprime, main="D' between marker %d and other markers on chrom %d" \
       % (numLoci/2, pop.dvars().noDSLChrom),
@@ -979,56 +1019,66 @@ def custom(pen):
   def func(geno):
     raise "customized penetrance function has not been defined."
 
-def drawSamples(pop, penFun):
+def drawSamples(pop, penFun, numSample):
   ''' get samples of different type using a penetrance function '''
   # first, apply peneFunction
   PyPenetrance(pop, loci=pop.dvars().DSL, func=penFun)
   # all types of samples
   allSample = []
-  # 1. population based case control
-  # get number of affected
-  Stat(pop, numOfAffected=True)
-  nCase = min(pop.dvars().numOfAffected , N/2)
-  nControl = min(pop.dvars().numOfUnaffected, N/2)
-  try:
-    # if N=800, 400 case and 400 controls
-    s = CaseControlSample(pop, nCase, nControl)
-    # remove DSL
-    s[0].removeLoci(remove=DSL)
-    allSample.append(s[0])
-  except:
-    print "Can not draw case control sample. "
-    allSample.append(None)
-  #
-  # 2. affected and unaffected sibpairs
-  # this is difficult since simuPOP only has
-  # methods to draw one kind of sibpairs and 
-  try:
-    # get number of affected/unaffected sibpairs
-    # There may not be enough to be sampled
-    AffectedSibpairSample(pop, countOnly=True)
-    nAff = min(pop.dvars().numAffectedSibpairs, N/4)
-    AffectedSibpairSample(pop, chooseUnaffected=True, countOnly=True)
-    nUnaff = min(pop.dvars().numAffectedSibpairs, N/4)
+  for ns in range(numSample):
+    print "Generating sample ", ns+1, ' of ', numSample
+    allSample.append([])
+    # 1. population based case control
+    # get number of affected
+    Stat(pop, numOfAffected=True)
+    print "Number of affected individuals: ", pop.dvars().numOfAffected
+    print "Number of unaffected individuals: ", pop.dvars().numOfUnaffected
+    nCase = min(pop.dvars().numOfAffected , N/2)
+    nControl = min(pop.dvars().numOfUnaffected, N/2)
+    try:
+      # if N=800, 400 case and 400 controls
+      s = CaseControlSample(pop, nCase, nControl)
+      # remove DSL
+      s[0].removeLoci(remove=pop.dvars().DSL)
+      allSample[ns].append(s[0])
+    except Exception, err:
+      print "Can not draw case control sample. "
+      print type(err), err
+      allSample[ns].append(None)
     #
-    affected = AffectedSibpairSample(pop, name='sample1',
-       size=nAff)
-    # now chose unaffected. These samples will not overlap
-    # 
-    # NOTE: however, you may not be able to easily merge these two 
-    # samples since they may shared parents.
-    #
-    # Use another name to avoid conflict since these sampled are stored
-    # in local namespace
-    unaffected = AffectedSibpairSample(pop, chooseUnaffected=True,
-      name='sample2', size=nUnaff)
-    # remove DSL
-    affected[0].removeLoci(remove=pop.dvars().DSL)
-    unaffected[0].removeLoci(remove=pop.dvars().DSL)
-    allSample.extend([affected[0], unaffected[0] ])
-  except:
-    print "Can not draw affected sibpars."
-    allSample.extend([None, None])
+    # 2. affected and unaffected sibpairs
+    # this is difficult since simuPOP only has
+    # methods to draw one kind of sibpairs and 
+    try:
+      # get number of affected/unaffected sibpairs
+      # There may not be enough to be sampled
+      AffectedSibpairSample(pop, countOnly=True)
+      nAff = min(pop.dvars().numAffectedSibpairs, N/4)
+      print "Number of (both) affected sibpairs: ", pop.dvars().numAffectedSibpairs
+      AffectedSibpairSample(pop, chooseUnaffected=True, countOnly=True)
+      print "Number of unaffected sibpairs: ", pop.dvars().numAffectedSibpairs
+      nUnaff = min(pop.dvars().numAffectedSibpairs, N/4)
+      #
+      affected = AffectedSibpairSample(pop, name='sample1',
+         size=nAff)
+      # now chose unaffected. These samples will not overlap
+      # 
+      # NOTE: however, you may not be able to easily merge these two 
+      # samples since they may shared parents.
+      #
+      # Use another name to avoid conflict since these sampled are stored
+      # in local namespace
+      unaffected = AffectedSibpairSample(pop, chooseUnaffected=True,
+        name='sample2', size=nUnaff)
+      # remove DSL
+      affected[0].removeLoci(remove=pop.dvars().DSL)
+      unaffected[0].removeLoci(remove=pop.dvars().DSL)
+      allSample[ns].extend([affected[0], unaffected[0] ])
+    except Exception, err:
+      print type(err)
+      print err
+      print "Can not draw affected sibpars."
+      allSample[ns].extend([None, None])
   return allSample
 
 # apply the TDT method of GeneHunter
@@ -1108,6 +1158,95 @@ def TDT(DSL, dataDir, data, epsFile, jpgFile):
   except:
     return (1,res)  # fail
 
+# apply the Linkage method of GeneHunter
+def Linkage(DSL, dataDir, data, epsFile, jpgFile):
+  ''' use Linkage method to analyze the results. Has to have rpy installed '''
+  if not hasRPy: 
+    return (0,[])
+  # write a batch file and call gh
+  allPvalue = []
+  print "Applying Linkage (LOD) method to affected sibpairs "
+  for ch in range(numChrom):
+    inputfile = dataDir+data+ "_%d" % ch
+    if not os.path.isfile(inputfile + ".ped"):
+      print "Ped file ", inputfile+".ped does not exist. Can not apply TDT method."
+      return (0,[])
+    # batch file
+    f=open("ghLOD.cmd","w")
+    f.write("load markers " + inputfile + ".dat\n")
+    f.write("single point on\n")
+    f.write("scan pedigrees " + inputfile + ".ped\n")
+    f.write("photo tmp.txt\n")
+    f.write("total stat\n")
+    f.write("q\n")
+    f.close()
+    # run gene hunter
+    os.system(geneHunter + " < ghLOD.cmd > res.txt ")
+    # get the result
+    # ( I was using              
+    # | grep '^loc' | tr -d 'a-zA-Z+-' > " + outputfile)
+    # but this is not portable
+    #
+    # use re package
+    # get only loc number and p-value
+    # position (locxx) -- Lodscore -- NPL score -- p-value -- information
+    scan = re.compile('loc(\d+)\s+[^\s]+\s+[^\s]+\s+([^\s]+)\s*.*')
+    minPvalue = [1]*(numLoci-1)
+    try:
+      res = open("tmp.txt")  # read result
+      for l in res.readlines():
+        try:
+          # get minimal p-value for all alleles at each locus
+          (loc,pvalue) = scan.match(l).groups()
+          if minPvalue[int(loc)-1] > float(pvalue):
+            minPvalue[int(loc)-1] = float(pvalue)
+        except:
+          # does not match
+          #print l
+          #print err
+          continue
+      res.close()
+    except Exception, err:
+      print type(err), err
+      print "Can not open result file tmp.txt. LOD failed"
+      return (0,[])
+    # did not get anything
+    if minPvalue == [1]*(numLoci-1):
+      print "Do not get any p-value, something is wrong"
+    # collect -log10 pvalue
+    allPvalue.extend([-math.log10(max(x,1e-6)) for x in minPvalue])
+    # There will be numLoci-1 numbers, pad to the correct length
+    allPvalue.append(0)
+    try:
+      os.unlink('res.txt')
+      os.unlink('tmp.txt')
+      os.unlink('ghLOD.cmd')
+    except:
+      pass
+  # now, we need to see how Linkage works with a set of p-values around DSL
+  # DSL is global
+  res = []
+  for d in DSL: 
+    res.append( max(allPvalue[(d-2):(d+2)]))
+  # use R to draw a picture
+  r.postscript(file=epsFile)
+  r.plot(allPvalue, main="-log10(P-value) for each marker (TDT)",
+    xlab="chromosome", ylab="-log10 p-value", type='l', axes=False)
+  r.box()
+  r.abline( v = [DSLafter[g]+DSLdist[g] for g in range(len(DSL))], lty=3)
+  r.abline( h = -math.log10(0.05))                       
+  r.axis(1, [numLoci*x for x in range(numChrom)], [str(x+1) for x in range(numChrom)])
+  r.axis(2)
+  r.dev_off()
+  # try to get a jpg file
+  try:
+    if os.system("convert -rotate 90 %s %s " % (epsFile, jpgFile) ) == 0:
+      return (2,res)  # success
+    else:
+      return (1,res) # fail
+  except:
+    return (1,res)  # fail
+    
 # create output directory if necessary
 # a more friendly version of mkdir
 def _mkdir(d):
@@ -1121,7 +1260,8 @@ def _mkdir(d):
 def processOnePopulation(dataDir, numChrom, numLoci, markerType,
     DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, minAlleleFreq,
     maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
-    mixingGen, popSizeFunc, migrModel, mu, mi, rec, dryrun, popIdx):
+    mixingGen, popSizeFunc, migrModel, mu, mi, rec,  peneFunc, penePara, N, 
+    numSample, dryrun, popIdx):
   '''
      this function organize all previous functions
      and
@@ -1129,17 +1269,18 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
      2. apply different kinds of penetrance functions
      3. draw sample
      4. save samples
-     5. apply TDT and/or randTent method
-     6. return a text summary and a result list
+     5. apply TDT and/or Linkage method
+     6. return a text summary and a result dictionary
   '''
   # get population
-  result = [popIdx, mu, mi, rec]
+  result = {'id':popIdx, 'mu':mu, 'mi':mi, 'rec':rec}
   logFile = dataDir + "/pop_" + str(popIdx) + ".log"
   popFile = dataDir + "/pop_" + str(popIdx) + ".bin"
   genDataset = True
   if os.path.isfile(popFile) and (not overwrite):
     print "Loading a pre-existing file ", popFile
     pop = LoadPopulation(popFile)
+    # check if the population is using the same parameters as requested
     if abs(pop.dvars().mutationRate - mu) + abs(pop.dvars().migrationRate - mi) \
        + abs( pop.dvars().recombinationRate - rec) < 1e-7:
       genDataset = False
@@ -1152,6 +1293,7 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
       initSize, meanInitAllele, burnin, introGen, minAlleleFreq,
       maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
       mixingGen, popSizeFunc, migrModel, mu, mi, rec, dryrun, logFile)
+    # note that this file does not have affectedness info.
     SavePopulation(pop, popFile)
   # log file is ...
   summary = '''\
@@ -1167,13 +1309,16 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
     lf.close()
   except:
     print "Can not open log file, ignoring. "
+  #
   # save Fst, Het in res
-  result.extend( [ pop.dvars().AvgFst, pop.dvars().AvgHetero])
+  result['Fst'] = pop.dvars().AvgFst
+  result['AvgHet'] = pop.dvars().AvgHetero
+  result['alleleFreq'] = [1- pop.dvars().alleleFreq[i][1] for i in pop.dvars().DSL]
   #
   # plot LD, res = 0, fail, 1: eps file, 2: converted to jpg
   epsFile = dataDir + "/LD_" + str(popIdx) + ".eps"
   jpgFile = dataDir + "/LD_" + str(popIdx) + ".jpg"
-  #
+  
   # ldres has max D' on a chrom with DSL, and a chrom without DSL
   (suc,ldres) = plotLD(pop, epsFile, jpgFile)
   if suc > 0 : # eps file successfully generated
@@ -1182,85 +1327,104 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
   if suc > 1 : # jpg file is generated
     summary += '''<img src="pop_%d/LD_%d.jpg"
       width=800, height=600>'''  % (popIdx, popIdx)
-  result.extend(ldres)
-  # now add allele frequency
-  result.extend( [1- pop.dvars().alleleFreq[i][1] for i in pop.dvars().DSL])
+  result['DpDSL'] = ldres['DpDSL']
+  result['DpNon'] = ldres['DpNon']
+  result['DDSL'] = ldres['DDSL']
+  result['DNon'] = ldres['DNon']
   #
-  # apply penetrance and get three samples (different format)
+  # apply penetrance and get numSample for each sample
   summary += "<h3>Samples using different penetrance function</h3>\n"
   # if we are going to save in linkage format, and specify
   # allele frequency from the whole population, we need to calculate them
   # now. (Previously, we only have data for DSL
+  # remove DSL from the population,
   if 'Linkage' in saveFormat:
     Stat(pop, alleleFreq=range(pop.totNumLoci()))
   for p in range(len(peneFunc)):
     if peneFunc[p] == 'recessive':
       print "Using recessive penetrance function"
       summary += "<h4>Recessive single-locus, heterogeneity multi-locus</h4>\n"
-      s = drawSamples(pop, recessive( penePara[p]))
+      s = drawSamples(pop, recessive( penePara[p]), numSample)
     elif peneFunc[p] == 'additive':
       print "Using additive penetrance function"
       summary += "<h4>Additive single-locus, heterogeneity multi-locus</h4>\n"
-      s = drawSamples(pop, additive(penePara[p]))
+      s = drawSamples(pop, additive(penePara[p]), numSample)
     elif peneFunc[p] == 'custom':
       print "Using customized penetrance function"
       summary += "<h4>Customized penetrance function</h4>\n"
-      s = drawSamples(pop, customPene(penePara[p]))
-    # save these samples
-    penDir = dataDir + "/" + peneFunc[p]
-    relDir = 'pop_%d/%s/' % (popIdx, peneFunc[p])
-    _mkdir(penDir)
-    summary += "<p>Case-control, affected and unaffected sibpairs saved in different formats. Sample sizes are "
-    if s[0] != None:
-      summary += str(s[0].popSize()) + " (case-control), "
-    if s[1] != None:
-      summary += str(s[1].popSize()) + " (affected sibs), "
-    if s[2] != None:
-      summary += str(s[2].popSize()) + " (unaffected sibs) "
-    summary += '<ul>'
-    if 'simuPOP' in saveFormat:
-      print "Write to simuPOP format"
-      summary += '<li>simuPOP binary format:'
-      if s[0] != None: # has case control
-        binFile = penDir + "/caseControl.bin"
-        s[0].savePopulation(binFile)
-        summary += '<a href="%scaseControl.bin"> caseControl.bin</a>, ' % relDir
-      if s[1] != None: # has affected sibpairs
-        binFile = penDir + "/affectedSibpairs.bin"
-        s[1].savePopulation(binFile)
-        summary += '<a href="%saffectedSibpairs.bin"> affectedSibpairs.bin</a>, ' % relDir
-      if s[2] != None:
-        binFile = penDir + "/unaffectedSibpairs.bin"
-        s[2].savePopulation(binFile)
-        summary += '<a href="%sunaffectedSibpairs.bin"> unaffectedSibpirs.bin</a>, ' % relDir
-      summary += '</li>\n'
-    if 'Linkage' in saveFormat:
-      summary += '<li>Linkage format by chromosome:'
-      linDir = penDir + "/Linkage/"
-      _mkdir(linDir)
-      if s[1] != None: # has case control
-        for ch in range(0,pop.numChrom() ):
-          SaveLinkage(pop=s[1], popType='sibpair', output = linDir+"/Aff_%d" % ch,
-            chrom=ch, recombination=pop.dvars().recombinationRate,
-            alleleFreq=pop.dvars().alleleFreq, daf=0.1)        
-        summary +=  '<a href="%sLinkage">affected</a>, ' % relDir
-      if s[2] != None:
-        for ch in range(0,pop.numChrom() ):
-          SaveLinkage(pop=s[2], popType='sibpair', output = linDir+"/Unaff_%d" % ch,
-            chrom=ch, recombination=pop.dvars().recombinationRate,                            
-            alleleFreq=pop.dvars().alleleFreq,  daf=0.1)        
-        summary += '<a href="%sLinkage">unaffected</a>' % relDir
-      summary += '</li>\n'
-    summary += '</ul>\n'
-    # if there is a valid gene hunter program, run it
-    (suc,res) = TDT(pop.dvars().DSL, penDir, "/Linkage/Aff", penDir + "/TDT.eps", penDir + "/TDT.jpg")
-    #  if suc > 0 : # eps file succe
-    if suc > 0 : # eps file successfully generated
-      summary += """<h4>TDT analysis for affected sibpair data:  <a href="%s/TDT.eps">TDT.eps</a>""" % relDir
-    if suc > 1 : # jpg file is generated
-      summary += '''<p><img src="%s/TDT.jpg" width=800, height=600></p>''' % relDir
-    # keep some numbers depending on the penetrance model
-    result.append(res)
+      s = drawSamples(pop, customPene(penePara[p]), numSample)
+    # for each sample
+    for sn in range(numSample):
+      print "Processing sample %s%d" % ( peneFunc[p], sn)
+      # save these samples
+      penDir = dataDir + "/" + peneFunc[p] + str(sn)
+      relDir = 'pop_%d/%s%d/' % (popIdx, peneFunc[p], sn)
+      _mkdir(penDir)
+      summary += "<p>Case-control, affected and unaffected sibpairs saved in different formats. Sample sizes are "
+      if s[sn][0] != None:
+        summary += str(s[sn][0].popSize()) + " (case-control), "
+      if s[sn][1] != None:
+        summary += str(s[sn][1].popSize()) + " (affected sibs), "
+      if s[sn][2] != None:
+        summary += str(s[sn][2].popSize()) + " (unaffected sibs) "
+      summary += '<ul>'
+      # write samples to different format
+      if 'simuPOP' in saveFormat:
+        print "Write to simuPOP binary format"
+        summary += '<li>simuPOP binary format:'
+        if s[sn][0] != None: # has case control
+          binFile = penDir + "/caseControl.bin"
+          s[sn][0].savePopulation(binFile)
+          summary += '<a href="%scaseControl.bin"> caseControl.bin</a>, ' % relDir
+        if s[sn][1] != None: # has affected sibpairs
+          binFile = penDir + "/affectedSibpairs.bin"
+          s[sn][1].savePopulation(binFile)
+          summary += '<a href="%saffectedSibpairs.bin"> affectedSibpairs.bin</a>, ' % relDir
+        if s[sn][2] != None:
+          binFile = penDir + "/unaffectedSibpairs.bin"
+          s[sn][2].savePopulation(binFile)
+          summary += '<a href="%sunaffectedSibpairs.bin"> unaffectedSibpirs.bin</a>, ' % relDir
+        summary += '</li>\n'
+      if 'Linkage' in saveFormat:
+        print "Write to linkage format"
+        summary += '<li>Linkage format by chromosome:'
+        linDir = penDir + "/Linkage/"
+        _mkdir(linDir)
+        if s[sn][1] != None: # has case control
+          for ch in range(0, pop.numChrom() ):
+            SaveLinkage(pop=s[sn][1], popType='sibpair', output = linDir+"/Aff_%d" % ch,
+              chrom=ch, recombination=pop.dvars().recombinationRate,
+              # we can not use population frequency since samples do not have DSL
+              #alleleFreq=pop.dvars().alleleFreq, 
+              daf=0.1)        
+          summary +=  '<a href="%sLinkage">affected</a>, ' % relDir
+        if s[sn][2] != None:
+          for ch in range(0,pop.numChrom() ):
+            SaveLinkage(pop=s[sn][2], popType='sibpair', output = linDir+"/Unaff_%d" % ch,
+              chrom=ch, recombination=pop.dvars().recombinationRate,                            
+              #alleleFreq=pop.dvars().alleleFreq,  
+              daf=0.1)        
+          summary += '<a href="%sLinkage">unaffected</a>' % relDir
+        summary += '</li>\n'
+      summary += '</ul>\n'
+      # if there is a valid gene hunter program, run it
+      (suc,res) = TDT(pop.dvars().DSL, penDir, "/Linkage/Aff", penDir + "/TDT.eps", penDir + "/TDT.jpg")
+      #  if suc > 0 : # eps file succe
+      if suc > 0 : # eps file successfully generated
+        summary += """<h4>TDT analysis for affected sibpair data:  <a href="%s/TDT.eps">TDT.eps</a>""" % relDir
+      if suc > 1 : # jpg file is generated
+        summary += '''<p><img src="%s/TDT.jpg" width=800, height=600></p>''' % relDir
+      # keep some numbers depending on the penetrance model
+      result['TDT_%s_%d' % (peneFunc[p], sn)] = res
+      # then the Linkage method
+      (suc,res) = Linkage(pop.dvars().DSL, penDir, "/Linkage/Aff", penDir + "/LOD.eps", penDir + "/LOD.jpg")
+      #  if suc > 0 : # eps file succe
+      if suc > 0 : # eps file successfully generated
+        summary += """<h4>LOD analysis for affected sibpair data:  <a href="%s/LOD.eps">LOD.eps</a>""" % relDir
+      if suc > 1 : # jpg file is generated
+        summary += '''<p><img src="%s/LOD.jpg" width=800, height=600></p>''' % relDir
+      # keep some numbers depending on the penetrance model
+      result['LOD_%s_%d' % (peneFunc[p], sn)] = res
   return (summary, result)
 
 
@@ -1275,7 +1439,7 @@ def writeReport(content, allParam, results):
   summary.write('''
   <HTML>
   <HEAD>
-  <TITLE>Summary of simulation</TITLE>
+  <TITLE>Summary of simulations</TITLE>
   <META NAME="description" CONTENT="summary of simulation">
   <META NAME="keywords" CONTENT="simuPOP">
   <META NAME="resource-type" CONTENT="document">
@@ -1305,36 +1469,52 @@ def writeReport(content, allParam, results):
   </ul>
   <h2>Summary of datasets </h2>
   <p>The following table lists population id, mutation rate, migration
-  rate, recombination rate, Fst, average heterozygosity, highest D' between a 
+  rate, recombination rate, Fst, average heterozygosity, highest D'/D between a 
   DSL and all surrounding markers (not necessarily its cloest marker), highest
-  D' between a marker with its surrounding markers on a chromsome without
-  DSL, allele frequency at DSL, -log10 p-values (TDT method) at
+  D'/D between a marker with its surrounding markers on a chromsome without
+  DSL, allele frequency at DSL, -log10 p-values (TDT method and Linkage method) at
   all relevant DSL. </p>
   <table border="1">
   <tr><th>id </th>
   <th>mu</th>  <th>mi</th>   <th>rec</th>
-  <th>Fst</th> <th>Het</th> <th>D'(dsl)</th> <th>D'(non)</th>
+  <th>Fst</th> <th>Het</th> 
+  <th>D'(dsl)</th> <th>D (dsl)</th>
+  <th>D'(non)</th> <th>D (non)</th>
   ''')
   for i in range(len(allParam[3])):
-    summary.write('<th>allFrq%d</th>'%(i+1))
+    summary.write('<th>allele Frq%d</th>'%(i+1))
   #
   # has TDT and some penetrance function
-  if len(allParam[-8]) > 0:
-    for p in allParam[-8]:
-      summary.write('<th>%s:TDT</th>'%p)
+  if len(allParam[-9]) > 0:
+    for p in allParam[-9]:
+      summary.write('<th>%s:TDT</th><th>%s:LOD</th>'%(p,p))
   summary.write('</tr>')
+  #
   # end of headers, now result
   for res in results:
     summary.write('''<tr><td><a href="#pop_%d">%d</a></td> ''' \
-      % (res[0], res[0]))    
-    for i in range(1,len(res)):
-      item = res[i]
-      if type(item) == types.FloatType:
-        summary.write('<td>%.3g</td>'% item)
-      elif type(item) in [types.ListType, types.TupleType]:
-        summary.write('<td>' + ', '.join(map(lambda x:'%.3g'%x, item))+'</td>')
-      else:
-        summary.write('<td>%s</td>' % str(item))
+      % (res['id'], res['id']))    
+    summary.write('<td>%.5g</td>' % res['mu'])
+    summary.write('<td>%.5g</td>' % res['mi'])
+    summary.write('<td>%.5g</td>' % res['rec'])
+    summary.write('<td>%.5g</td>' % res['Fst'])
+    summary.write('<td>%.5g</td>' % res['AvgHet'])
+    summary.write('<td>%.5g/%.5g</td>' % (res['DpDSL'], res['DpNon']))
+    summary.write('<td>%.5g/%.5g</td>' % (res['DDSL'], res['DNon']))
+    for i in range(len(allParam[3])):
+      summary.write('<td>%.3f</td>'% res['alleleFreq'][i] )
+    # for each penetrance function
+    if len(allParam[-9]) > 0:
+      for met in ['TDT', 'LOD']:
+        for p in allParam[-9]: # penetrance
+          for num in range(int(allParam[-6])): # samples
+            plusMinus = '<td>'
+            for p in res[met+'_'+p+'_'+str(num)]:
+              if p > -math.log10(0.01/400.):
+                plusMinus += '+'
+              else:
+                plusMinus += '-'
+              summary.write(plusMinus+'</td>')
     summary.write('''</tr>''')
   # the middle (big) and last piece) 
   summary.write('''</table>
@@ -1349,19 +1529,25 @@ def writeReport(content, allParam, results):
 if __name__ == '__main__':
   allParam = getOptions()
   # unpack options
-  (numChrom, numLoci, markerType, DSLafter, DSLdist, initSize, meanInitAllele, 
+  (numChrom, numLoci, markerType, DSLafter, DSLdistTmp, initSize, meanInitAllele, 
     burnin, introGen, minAlleleFreqTmp, maxAlleleFreqTmp, fitnessTmp, 
     mlSelModelTmp, numSubPop, finalSize, noMigrGen,
     mixingGen, growth, migrModel, migrRate, mutaRate, recRate,
-    numRep, saveFormat, peneFunc, penePara, N, outputDir,
+    numRep, saveFormat, peneFunc, peneParaTmp, N, numSample, outputDir,
     overwrite, geneHunter, dryrun, saveConfig) = allParam
   #
   # this may not happen at all but we do need to be careful
   if initSize < len(DSLafter):
     raise exceptions.ValueError("Initial population size is too small. (Less than number of DSL)")
   #
+  # expand .5 => .5,.5,.5 etc
+  if len(DSLdistTmp) == 1:
+    DSLdist = DSLdistTmp * len(DSLafter)
+  else:
+    DSLdist = DSLdistTmp
   if len( DSLafter ) != len(DSLdist):
     raise exceptions.ValueError("Please specify DSL distance for each DSL.")
+  #  
   # handle minAlleleFreq and maxAlleleFreq
   if len(minAlleleFreqTmp) == 1:
     minAlleleFreq = minAlleleFreqTmp * len(DSLafter)
@@ -1428,11 +1614,12 @@ if __name__ == '__main__':
     raise exceptions.ValueError("Growth model can be one of linear and exponential. Given " + growth)
       
   # check penePara
-  if len(penePara) == 0:
-    penePara = [0.25]*len(peneFunc)
-  if len(peneFunc) > len(penePara):
-    for i in range( len(peneFunc) - len(penePara)):
-      penePara.append(penePara[0])
+  if len(peneParaTmp) == 1:
+    penePara = peneParaTmp*len(peneFunc)
+  else:
+    penePara = peneParaTmp
+  if len(peneFunc) != len(penePara):
+    raise exceptions.ValueError("Please give penetrance parameter to each chosen penetrance function")
   #
   # everything is ready
   popIdx = 1
@@ -1442,16 +1629,17 @@ if __name__ == '__main__':
     for mi in migrRate:
       for rec in recRate:
         for rep in range(numRep):
-          dataDir = outputDir + "/pop_" + str(popIdx)
           # outputDir should already exist
+          dataDir = outputDir + "/pop_" + str(popIdx)
           _mkdir(dataDir)      
           (text, result) =  processOnePopulation(dataDir,
             numChrom, numLoci, markerType, 
             DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, 
             minAlleleFreq, maxAlleleFreq, fitness, mlSelModel, numSubPop, 
             finalSize, noMigrGen, mixingGen, popSizeFunc, migrModel, 
-            mu, mi, rec, dryrun, popIdx)
+            mu, mi, rec, peneFunc, penePara, N, numSample, dryrun, popIdx)
           summary += text
           results.append( result)
           popIdx += 1
   writeReport(summary, allParam, results)
+  print "Done!"

@@ -157,6 +157,15 @@ class TestPopulation(unittest.TestCase):
     
   def testVars(self):
     self.pop.vars()
+
+  def testSwap(self):
+    pop1 = population()
+    InitByFreq(self.pop, [.2,.3,.5])
+    #Dump(self.pop)
+    pop1.swap(self.pop)
+    #Dump(pop1)
+    #Dump(self.pop)
+    #assert(pop1.
     
 #  def testAncestry(self):
 #    # test ancestry history features

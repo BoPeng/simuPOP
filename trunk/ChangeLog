@@ -15,6 +15,8 @@ version 0.6.9 -  currently available as daily snapshot
   - fix a bug in recombinator concerning direct chrom copy.
   - remove autoconf, Makefile.icc stuff to avoid confusion.
   - fix a bug in migrator/MigrByCounts, which is introduced in 0.6.8
+  - add subversion  revision number to doc and binary releases for
+    better tracking of changes.
 
 version 0.6.8 - Sep 21st, 2005
   - fix a reporting bug in simuCDCV.py
