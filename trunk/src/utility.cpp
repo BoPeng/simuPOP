@@ -2295,8 +2295,8 @@ T Expression::valueAs##TypeName() \
   {
     char * revision = "$Rev$";
     int rev;
-    sscanf("$Rec: %d$", &rev);
-    return toStr(SIMUPOP_VER) + " Revision " + toStr(rev); 
+    sscanf(revision, "$Rev:%d$", &rev);
+    return toStr(SIMUPOP_VER) + " (Revision " + toStr(rev) + ")"; 
   }
 
   /** This file is used to initialize simuPOP when being load into
@@ -2341,11 +2341,10 @@ T Expression::valueAs##TypeName() \
   void showSimuPopInfo()
   {
     cout << "simuPOP " << ver() << COMPILER << endl;
-    cout << "Copyright Bo Peng 2004-2005" << endl;
+    cout << "Copyright 2004-2005 Bo Peng (bpeng@rice.edu)" << endl;
     cout << "URL: http://simupop.sourceforge.net" << endl;
     cout << "MailingList: simupop-list@lists.sourceforge.net" << endl << endl;
-    cout << "Random Number Generator is set to be " << rng().name()
-      << " c.f. listAllRNG()" << endl;
+    cout << "Random Number Generator is set to be " << rng().name() << endl;
 
     if( MaxAllele == 127 )
       cout << "Maximum allele number per locus is " << toStr(ULONG(MaxAllele)) << "." << endl;
@@ -2356,7 +2355,6 @@ T Expression::valueAs##TypeName() \
 #else
     cout << "You are running in optimized mode at maximum speed." << endl;
 #endif
-    cout << "Use simuOpt.setOptions(optimized, longAllele) to change these options." << endl;
   }
 
 }
