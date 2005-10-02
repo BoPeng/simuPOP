@@ -85,7 +85,7 @@ namespace simuPOP
 
       /// CPPONLY serialization library requires a default constructor
       GenoStructure():m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
-        m_numLoci(0), m_sexChrom(false), m_lociDist(0), m_chromIndex(0), 
+        m_numLoci(0), m_sexChrom(false), m_lociDist(0), m_chromIndex(0),
         m_alleleNames(), m_lociNames(), m_maxAllele()
         {}
 
@@ -102,7 +102,7 @@ namespace simuPOP
       GenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
         const vectorf& lociDist, const vectorstr& alleleNames,
         const vectorstr& lociNames, UINT maxAllele)
-        :m_ploidy(ploidy),  m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom), 
+        :m_ploidy(ploidy),  m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom),
         m_lociDist(lociDist), m_chromIndex(loci.size()+1),
         m_alleleNames(alleleNames), m_lociNames(lociNames), m_maxAllele(maxAllele)
       {
@@ -581,6 +581,11 @@ namespace simuPOP
       void setMaxAllele(UINT maxAllele)
       {
         m_genoStru->m_maxAllele = maxAllele;
+      }
+
+      void swap(GenoStruTrait& rhs)
+      {
+        std::swap(m_genoStru, rhs.m_genoStru);
       }
 
     private:

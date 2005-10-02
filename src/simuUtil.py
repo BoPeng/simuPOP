@@ -789,7 +789,7 @@ def SaveLinkage(pop, popType='sibpair', output='', outputExpr='', alleleFreq=[],
   dataFile.write( "0 0.4 .8 << penetrance\n")
   # describe each locus
   if alleleFreq == []: # if not given,
-    print "Warning: using sample allele frequency."
+    # print "Warning: using sample allele frequency."
     Stat(pop, alleleFreq=range(0, pop.totNumLoci()))
     af = pop.dvars().alleleFreq
   else:

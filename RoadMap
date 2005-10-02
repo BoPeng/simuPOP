@@ -2,6 +2,8 @@ RoadMap of simuPOP
 
 Towards simuPOP 1.0     - Roadmaps  Marked by Easy 1 --- difficult 9. Workload 1 - 9
 
+* With high priority
+
 Roadmap: test and documentation:
  *2/2 Use doctest module to test if test cases are generating the same output
   3/8 document each class whether or not they are suitable only for diploid population.
@@ -18,6 +20,7 @@ Roadmap: scripts:
   2/1 (DONE) add things like listbox to tkGetParam function. Use wxPython when possible
 
 Roadmap: simuPOP core
+ *1/1 Sampling now copy populations and result in high RAM demand
   5/5 aged population
   8/8 overlapped generations and continuous time reproduction. (mating in aged populations.)
   3/2 sex-difference recombination rate.

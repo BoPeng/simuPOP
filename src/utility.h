@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Bo Peng                                         *
- *   bpeng@rice.edu   
+ *   bpeng@rice.edu
  *                                                                         *
  *   $LastChangedDate$
  *   $Rev$                                                     *
@@ -451,8 +451,15 @@ namespace simuPOP
           throw SystemError("Invaid dictionary. The local namespace may have been cleared.");
       }
 
-      /// CPP only, copy and increase ref count
+      /// CPPONLY, copy and increase ref count
       SharedVariables(const SharedVariables& rhs);
+
+      /// CPPONLY swap two ShatedVariables
+      void swap(SharedVariables& rhs)
+      {
+        std::swap(m_dict, rhs.m_dict);
+        std::swap(m_ownVars, rhs.m_ownVars);
+      }
 
       /// CPPONLY  destructor
       /// I can not clear dict here since

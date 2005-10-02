@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Bo Peng                                         *
- *   bpeng@rice.edu   
+ *   bpeng@rice.edu
  *                                                                         *
  *   $LastChangedDate$
  *   $Rev$                                                     *
@@ -320,6 +320,27 @@ namespace simuPOP
         if( keepAncestralPops == false)
           p.m_ancestralPops.clear();
         return p;
+      }
+
+      /// SWAP population
+      /// swap the content of two populations
+      void swap(Population& rhs)
+      {
+        GenoStruTrait::swap(rhs);
+        std::swap(m_popSize, rhs.m_popSize);
+        std::swap(m_numSubPop, rhs.m_numSubPop);
+        m_subPopSize.swap(rhs.m_subPopSize);
+        std::swap(m_popGenoSize, rhs.m_popGenoSize);
+        m_subPopIndex.swap(rhs.m_subPopIndex);
+        m_genotype.swap(rhs.m_genotype);
+        m_inds.swap(rhs.m_inds);
+        std::swap(m_ancestralDepth, rhs.m_ancestralDepth);
+        m_vars.swap(rhs.m_vars);
+        m_ancestralPops.swap(rhs.m_ancestralPops);
+        std::swap(m_rep, rhs.m_rep);
+        std::swap(m_grp, rhs.m_grp);
+        std::swap(m_gen, rhs.m_gen);
+        std::swap(m_curAncestralPop, rhs.m_curAncestralPop);
       }
 
       /// destroy a population
