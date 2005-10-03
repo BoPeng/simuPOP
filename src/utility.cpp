@@ -2290,15 +2290,6 @@ T Expression::valueAs##TypeName() \
       cout.rdbuf( outputFile->rdbuf());
     }
   }
-
-  string ver()
-  {
-    char * revision = "$Rev$";
-    int rev;
-    sscanf(revision, "$Rev:%d$", &rev);
-    return toStr(SIMUPOP_VER) + " (Revision " + toStr(rev) + ")"; 
-  }
-
   /** This file is used to initialize simuPOP when being load into
      python. The swig interface file will has a init% % entry to
      include this file. */
@@ -2338,22 +2329,25 @@ T Expression::valueAs##TypeName() \
 #endif
 #endif                                          /* !COMPILER */
 
-  void showSimuPopInfo()
+  int revision()
   {
-    cout << "simuPOP " << ver() << COMPILER << endl;
-    cout << "Copyright 2004-2005 Bo Peng (bpeng@rice.edu)" << endl;
-    cout << "URL: http://simupop.sourceforge.net" << endl;
-    cout << "MailingList: simupop-list@lists.sourceforge.net" << endl << endl;
-    cout << "Random Number Generator is set to be " << rng().name() << endl;
+    char * revision = "$Rev$";
+    int rev;
+    sscanf(revision, "$Rev:%d$", &rev);
+    return rev;
+  }
 
-    if( MaxAllele == 127 )
-      cout << "Maximum allele number per locus is " << toStr(ULONG(MaxAllele)) << "." << endl;
-    else
-      cout << "Maximum allele number per locus is " << toStr(ULONG(MaxAllele)) << "." << endl;
+  string simuVer()
+  {
+    return toStr(SIMUPOP_VER) + " (Revision " + toStr(revision()) + ", " + __DATE__ + ")" + COMPILER; 
+  }
+
+  bool optimized()
+  {
 #ifndef OPTIMIZED
-    cout << "You are running in standard mode with strict boundary check etc." << endl;
+    return(true);
 #else
-    cout << "You are running in optimized mode at maximum speed." << endl;
+    return(false);
 #endif
   }
 

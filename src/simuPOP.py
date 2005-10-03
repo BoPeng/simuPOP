@@ -37,4 +37,14 @@ else:
   from simuPOP_laop import *
 
 if not simuOptions['Quiet']:
-  showSimuPopInfo()
+  print "simuPOP : Copyright (c) 2004-2005 Bo Peng"
+  print "Version ", simuVer()
+  print "Random Number Generator is set to be", rng().name()
+  print "Maximum allele number per locus is %d." % MaxAllele
+  if optimized():
+    print "You are running in optimized mode at maximum speed."
+  else:
+    print "You are running in standard mode with strict boundary check etc."
+  print "For more information, please visit http://simupop.sourceforge.net,"
+  print "or email simupop-list@lists.sourceforge.net (subscription required)."
+

@@ -1351,14 +1351,19 @@ namespace simuPOP
   ///  Global debug and initialization related functions
   //////////////////////////////////////////////////////////////
 
+  /// return svn revision
+  int revision();
+
   /// return version infomation of simuPOP
-  string ver();
+  string simuVer();
 
   /// CPPONLY
   /// initialize module simuPOP when using "import simuPOP"
   bool initialize();
 
-  void showSimuPopInfo();
+  bool optimized();
+
+  
 
   /// CPPONLY
   /// get a null stream that discard everything
