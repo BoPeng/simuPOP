@@ -1352,7 +1352,7 @@ namespace simuPOP
   //////////////////////////////////////////////////////////////
 
   /// return svn revision
-  int revision();
+  int simuRev();
 
   /// return version infomation of simuPOP
   string simuVer();

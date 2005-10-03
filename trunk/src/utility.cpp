@@ -2333,7 +2333,7 @@ T Expression::valueAs##TypeName() \
 #define SIMUPOP_VER "snapshot"
 #define SIMUPOP_REV "47M"
 
-  int revision()
+  int simuRev()
   {
     char * rev = SIMUPOP_REV;
     // can have form xx:xxM etc, or simply a number
