@@ -35,7 +35,7 @@ CC = gcc
 CXX = g++
 LINK = g++ 
 CFLAGS =  -g -Wall -fexceptions -O3 -march=pentium4 -pipe -fomit-frame-pointer 
-DEF = $(FEATURES) -DSIMUPOPVER='"${SIMUPOP_VER}"'
+DEF = $(FEATURES) 
 SWIG = swig -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525 -nodefault 
 
 RM = rm -f

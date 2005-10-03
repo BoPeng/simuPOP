@@ -1,7 +1,6 @@
 #!/bin/sh
 
 cd ..
-#VER=`cat setup.py | grep SIMUPOP_VER | head -1 | cut -f2 -d= | cut -f2 -d\'`
 VER=`cat /var/www/html/simuPOP/download/latestversion`
 rm -rf dist
 

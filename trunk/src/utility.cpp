@@ -2329,12 +2329,13 @@ T Expression::valueAs##TypeName() \
 #endif
 #endif                                          /* !COMPILER */
 
+// these will be automatically replaced by snapshot.sh and release.sh
+#define SIMUPOP_VER "snapshot"
+#define SIMUPOP_REV 46
+
   int revision()
   {
-    char * revision = "$Rev$";
-    int rev;
-    sscanf(revision, "$Rev:%d$", &rev);
-    return rev;
+    return SIMUPOP_REV;
   }
 
   string simuVer()

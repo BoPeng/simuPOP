@@ -23,11 +23,14 @@ find . -name '#*#' -exec rm -f {} \;
 
 # snapshot version.
 SIMUPOP_VER=snapshot
+SIMUPOP_REV=`svnversion -n ..`
 
 # export, to be used in Doxyfile
 export SIMUPOP_VER
+export SIMUPOP_REV
 # perl -pi.bak -e "s/unknown-version/$SIMUPOP_VER/" src/simupop_cfg.h
-perl -pi.bak -e "s/^#define SIMUPOP_VER.*$/#define SIMUPOP_VER \"$SIMUPOP_VER\"/" src/simupop_cfg.h
+perl -pi.bak -e "s/^#define SIMUPOP_VER.*$/#define SIMUPOP_VER \"$SIMUPOP_VER\"/" src/utility.cpp
+perl -pi.bak -e "s/^#define SIMUPOP_REV.*$/#define SIMUPOP_REV $SIMUPOP_VER/" src/utility.cpp
 perl -pi.bak -e "s/^SIMUPOP_VER=.*$/SIMUPOP_VER=\"$SIMUPOP_VER\"/" setup.py
 
 # make docstring
