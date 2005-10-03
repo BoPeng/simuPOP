@@ -2331,11 +2331,17 @@ T Expression::valueAs##TypeName() \
 
 // these will be automatically replaced by snapshot.sh and release.sh
 #define SIMUPOP_VER "snapshot"
-#define SIMUPOP_REV 46
+#define SIMUPOP_REV "47M"
 
   int revision()
   {
-    return SIMUPOP_REV;
+    char * rev = SIMUPOP_REV;
+    // can have form xx:xxM etc, or simply a number
+    // we certainly like a single number but it is often the case that
+    // svn local copy is not up to date.
+    int num;
+    sscanf(rev, "%d", &num);
+    return num;
   }
 
   string simuVer()
