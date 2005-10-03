@@ -30,8 +30,6 @@
 #ifndef _SIMUPOP_CONFIG_H
 #define _SIMUPOP_CONFIG_H
 
-// this line will be automatically replcaed by build_all_platform.sh
-#define SIMUPOP_VER "snapshot"
 
 // include the sytem wide config.h
 // Note: there is some strange #include problem if cmath is included later.
