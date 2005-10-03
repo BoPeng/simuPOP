@@ -2331,7 +2331,7 @@ T Expression::valueAs##TypeName() \
 
 // these will be automatically replaced by snapshot.sh and release.sh
 #define SIMUPOP_VER "snapshot"
-#define SIMUPOP_REV "47M"
+#define SIMUPOP_REV "47:50M"
 
   int simuRev()
   {

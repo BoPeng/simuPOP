@@ -188,7 +188,7 @@ like multiple testing.
 """
 
 import simuOpt, simuUtil
-import os, sys, types, exceptions, os.path, re, math, time, copy
+import os, sys, types, exceptions, os.path, re, math, time, copy, operator
 
 #
 # declare all options. getParam will use these information to get parameters
@@ -384,7 +384,7 @@ options = [
   {'longarg': 'migrModel=',
    'default': 'stepping stone',
    'configName': 'Migration Model',
-   'prompt': 'Mutation model. (stepping stone):  ',
+   'prompt': 'Migration model. (stepping stone):  ',
    'allowedTypes': [types.StringType],
    'description': '''Migration model. Choose between stepping stone (circular),
         island and none. ''',
@@ -747,7 +747,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
         lociDist[ch].append(loc+1)
       i += 1
   # non DSL loci, for convenience
-  nonDSL = range(0, sum(loci))
+  nonDSL = range(0, reduce(operator.add, loci))
   for loc in DSL:
     nonDSL.remove(loc)
   #### Change generation duration to point  
@@ -758,7 +758,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
   if maxAle > 2:  # Not SNP
     preOperators = [
       # initialize all loci with 5 haplotypes
-      initByValue(value=[[x]*sum(loci) \
+      initByValue(value=[[x]*reduce(operator.add, loci) \
         for x in range(meanInitAllele-2, meanInitAllele+3)],
         proportions=[.2]*5), 
       # and then init DSL with all wild type alleles
@@ -770,7 +770,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
   else: # SNP
     preOperators = [
       # initialize all loci with two haplotypes (111,222)
-      initByValue(value=[[x]*sum(loci) for x in range(1,3)],
+      initByValue(value=[[x]*reduce(operator.add, loci) for x in range(1,3)],
         proportions=[.5]*2), 
       # and then init DSL with all wild type alleles
       initByValue([1]*len(DSL), atLoci=DSL)
@@ -1019,8 +1019,15 @@ def additive(pen):
 # if you need some specialized penetrance function, modify this
 # function here.
 def custom(pen):
+  ''' a penetrance function that focus on the first DSL '''
   def func(geno):
-    raise "customized penetrance function has not been defined."
+    # the first DSL has full delta 
+    val = 1 - (geno[0]+geno[1]-2)*pen/2.
+    # the other has delta/4 importance.
+    for i in range(1, len(geno)/2):
+      val *= 1 - (geno[i*2]+geno[i*2+1]-2)*pen/8.
+    return 1-val
+  return func
 
 def drawSamples(pop, penFun, numSample):
   ''' get samples of different type using a penetrance function '''
@@ -1284,10 +1291,12 @@ def popStat(pop, p):
           P22[x] += 1
         else:
           P12[x] += 1
+          
   N = pop.dvars().numOfAffected
   result[p+'_P11'] = [ x/N for x in P11 ]
   result[p+'_P12'] = [ x/N for x in P12 ]
   result[p+'_P22'] = [ x/N for x in P22 ]
+  result[p+'_Fprime'] = [ (P12[x]/2. + P22[x])/N for x in range(len(DSL)) ]
   # Ks = Pr(Xs=1 | Xp=1 ) = Pr(Xs=1, Xp=1) | P(Xp=1)
   Ks = 0.
   for ind in range(pop.popSize()/2):
@@ -1304,7 +1313,7 @@ def popStat(pop, p):
 def processOnePopulation(dataDir, numChrom, numLoci, markerType,
     DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, minAlleleFreq,
     maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
-    mixingGen, popSizeFunc, migrModel, mu, mi, rec,  peneFuncTmp, peneParaTmp, N, 
+    mixingGen, popSizeFunc, migrModel, mu, mi, rec,  peneFunc, penePara, N, 
     numSample, dryrun, popIdx):
   '''
      this function organize all previous functions
@@ -1378,17 +1387,6 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
   #
   # apply penetrance and get numSample for each sample
   summary += "<h3>Samples using different penetrance function</h3>\n"
-  # construct peneFunc and penePara in case that penePara is a list
-  peneFunc = []
-  penePara = []
-  for p in range(len(peneFuncTmp)):
-    if type(peneParaTmp[p]) in [types.IntType, types.FloatType, types.LongType]:
-      peneFunc.append( peneFuncTmp[p])
-      penePara.append( peneParaTmp[p])
-    elif type(peneParaTmp[p]) in [types.TupleType, types.ListType]:
-      for x in peneParaTmp[p]:
-        peneFunc.append( peneFuncTmp[p] + str(x) )
-        penePara.append( x )
   # now, deal with each penetrance ...
   for p in range(len(peneFunc)):
     if peneFunc[p].find('recessive') == 0:  # start with receissive
@@ -1490,7 +1488,7 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
   return (summary, result)
 
 
-def writeReport(content, allParam, results):
+def writeReport(content, allParam, numChrom, numLoci, DSLafter, peneFunc, numSample, results):
   ''' write a HTML file. The parts for each population has
     been written but we need a summary table. '''
   print "Writing a report (saved in summary.htm )"
@@ -1536,9 +1534,11 @@ def writeReport(content, allParam, results):
   D'/D between a marker with its surrounding markers on a chromsome without
   DSL, allele frequency at DSL, -log10 p-values (TDT method and Linkage method, + for
   exceeds and - for less than cutoff value -log10(pvalue/total number of loci) ) at
-  all relevant DSL. Other statistics include K (population prevalence), Ks (sibling 
-  recurrance risk), Ls (lambda_s, sibling recurrance ratio), P11 (P(NN | affected)),
-  P12 (P(NS | affected)), P13 (P(SS|affected))</p>
+  all relevant DSL. The cutoff is chosen as -log10(0.05/number of loci) which is the 
+  Bonferroni correction. Other statistics include K (population prevalence), Ks (sibling 
+  recurrance risk), Ls=Ks/K (lambda_s, sibling recurrance ratio), P11 (P(NN | affected)),
+  P12 (P(NS | affected)), P13 (P(SS|affected)), F' = P(disease allele | affected) = 
+  allele frequency among affected individuals.</p>
   <table border="1">
   <tr><th>id </th>
   <th>mu</th>  <th>mi</th>   <th>rec</th>
@@ -1546,15 +1546,18 @@ def writeReport(content, allParam, results):
   <th>D'(dsl)</th> <th>D (dsl)</th>
   <th>D'(non)</th> <th>D (non)</th>
   ''')
-  for i in range(len(allParam[3])):
+  for i in range(len(DSLafter)):
     summary.write('<th>allele Frq%d</th>'%(i+1))
   #
   # has TDT and some penetrance function
-  if len(allParam[-9]) > 0:
+  if len(peneFunc) > 0:
     summary.write('<th>K</th><th>Ks</th><th>Ks/K</th>')
     summary.write('<th>P11</th><th>P12</th><th>P22</th>')
-    for p in allParam[-9]:
-      summary.write('<th>%s:TDT</th><th>%s:LOD</th>'%(p,p))
+    summary.write("<th>F'</th>")
+    for p in peneFunc:
+      for met in ['TDT', 'LOD']:
+        for num in range(numSample): # samples
+          summary.write('<th>%s:%s-%d</th>'%(p,met,num))
   summary.write('</tr>')
   #
   # end of headers, now result
@@ -1564,28 +1567,29 @@ def writeReport(content, allParam, results):
     summary.write('<td>%.5g</td>' % res['mu'])
     summary.write('<td>%.5g</td>' % res['mi'])
     summary.write('<td>%.5g</td>' % res['rec'])
-    summary.write('<td>%.2g</td>' % res['Fst'])
-    summary.write('<td>%.2g</td>' % res['AvgHet'])
-    summary.write('<td>%.2g</td>' % res['DpDSL'])
-    summary.write('<td>%.2g</td>' % res['DDSL'])
-    summary.write('<td>%.2g</td>' % res['DpNon'])
-    summary.write('<td>%.2g</td>' % res['DNon'])
-    for i in range(len(allParam[3])):  # len(DSLafter)
+    summary.write('<td>%.3g</td>' % res['Fst'])
+    summary.write('<td>%.3g</td>' % res['AvgHet'])
+    summary.write('<td>%.3g</td>' % res['DpDSL'])
+    summary.write('<td>%.3g</td>' % res['DDSL'])
+    summary.write('<td>%.3g</td>' % res['DpNon'])
+    summary.write('<td>%.3g</td>' % res['DNon'])
+    for i in range(len(DSLafter)):
       summary.write('<td>%.3f</td>'% res['alleleFreq'][i] )
     # for each penetrance function
-    if len(allParam[-9]) > 0:
-      for p in allParam[-9]: # penetrance function
+    if len(peneFunc) > 0:
+      for p in peneFunc: # penetrance function
         summary.write('<td>%.3g</td>' % res[p+'_K'])
         summary.write('<td>%.3g</td>' % res[p+'_Ks'])
         summary.write('<td>%.3g</td>' % res[p+'_Ls'])
-        summary.write('<td>' + ','.join( ['%.2g'%x for x in res[p+'_P11'] ]) + '</td>')
-        summary.write('<td>' + ','.join( ['%.2g'%x for x in res[p+'_P12'] ]) + '</td>')
-        summary.write('<td>' + ','.join( ['%.2g'%x for x in res[p+'_P22'] ]) + '</td>')
+        summary.write('<td>' + ','.join( ['%.3g'%x for x in res[p+'_P11'] ]) + '</td>')
+        summary.write('<td>' + ','.join( ['%.3g'%x for x in res[p+'_P12'] ]) + '</td>')
+        summary.write('<td>' + ','.join( ['%.3g'%x for x in res[p+'_P22'] ]) + '</td>')
+        summary.write('<td>' + ','.join( ['%.3g'%x for x in res[p+'_Fprime'] ]) + '</td>')
         for met in ['TDT', 'LOD']:
-          for num in range(int(allParam[-6])): # samples
+          for num in range(numSample): # samples
             plusMinus = ''
             for pvalue in res[met+'_'+p+'_'+str(num)]:
-              if pvalue > -math.log10(0.05/(allParam[0]*allParam[1])):
+              if pvalue > -math.log10(0.05/(numChrom*numLoci)):
                 plusMinus += '+'
               else:
                 plusMinus += '-'
@@ -1695,6 +1699,17 @@ if __name__ == '__main__':
     penePara = peneParaTmp
   if len(peneFunc) != len(penePara):
     raise exceptions.ValueError("Please give penetrance parameter to each chosen penetrance function")
+  # construct peneFunc and penePara in case that penePara is a list
+  expandedPeneFunc = []
+  expandedPenePara = []
+  for p in range(len(peneFunc)):
+    if type(penePara[p]) in [types.IntType, types.FloatType, types.LongType]:
+      expandedPeneFunc.append( peneFunc[p])
+      expandedPenePara.append( penePara[p])
+    elif type(penePara[p]) in [types.TupleType, types.ListType]:
+      for x in penePara[p]:
+        expandedPeneFunc.append( peneFunc[p] + str(x) )
+        expandedPenePara.append( x )
   #
   # everything is ready
   popIdx = 1
@@ -1712,9 +1727,10 @@ if __name__ == '__main__':
             DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, 
             minAlleleFreq, maxAlleleFreq, fitness, mlSelModel, numSubPop, 
             finalSize, noMigrGen, mixingGen, popSizeFunc, migrModel, 
-            mu, mi, rec, peneFunc, penePara, N, numSample, dryrun, popIdx)
+            mu, mi, rec, expandedPeneFunc, expandedPenePara, N, numSample,
+            dryrun, popIdx)
           summary += text
           results.append( result)
           popIdx += 1
-  writeReport(summary, allParam, results)
+  writeReport(summary, allParam, numChrom, numLoci, DSLafter, expandedPeneFunc, numSample, results)
   print "Done!"
