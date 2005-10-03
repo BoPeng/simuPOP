@@ -2346,7 +2346,7 @@ T Expression::valueAs##TypeName() \
 
   string simuVer()
   {
-    return toStr(SIMUPOP_VER) + " (Revision " + toStr(revision()) + ", " + __DATE__ + ")" + COMPILER; 
+    return toStr(SIMUPOP_VER) + " (Revision " + toStr(simuRev()) + ", " + __DATE__ + ")" + COMPILER; 
   }
 
   bool optimized()

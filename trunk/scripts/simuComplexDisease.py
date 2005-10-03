@@ -464,9 +464,12 @@ options = [
    'description': '''Penetrance parameter for all DSL. An array of parameter 
         can be given to each DSL. The meaning of this parameter differ by penetrance model.
         For a recessive model, the penetrance is 0,0,p for genotype AA,Aa,aa (a is disease
-        allele) respectively. For an additive model, the penetrance is 0,p/2,p respectively.''',
+        allele) respectively. For an additive model, the penetrance is 0,p/2,p respectively.
+        A list of parameter can be given for each penetrance model in the form of 
+        [[.1,.2],[.1],[.2]] ''',
    'allowedTypes': [types.ListType, types.TupleType],
-   'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
+   'validate':  simuOpt.valueListOf( simuOpt.valueOneOf([ 
+       simuOpt.valueBetween(0,1), simuOpt.valueListOf(simuOpt.valueBetween(0,1))] ) )
   },
   {'longarg': 'sampleSize=',
    'default': 800,
@@ -1301,7 +1304,7 @@ def popStat(pop, p):
 def processOnePopulation(dataDir, numChrom, numLoci, markerType,
     DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, minAlleleFreq,
     maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
-    mixingGen, popSizeFunc, migrModel, mu, mi, rec,  peneFunc, penePara, N, 
+    mixingGen, popSizeFunc, migrModel, mu, mi, rec,  peneFuncTmp, peneParaTmp, N, 
     numSample, dryrun, popIdx):
   '''
      this function organize all previous functions
@@ -1375,16 +1378,28 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
   #
   # apply penetrance and get numSample for each sample
   summary += "<h3>Samples using different penetrance function</h3>\n"
+  # construct peneFunc and penePara in case that penePara is a list
+  peneFunc = []
+  penePara = []
+  for p in range(len(peneFuncTmp)):
+    if type(peneParaTmp[p]) in [types.IntType, types.FloatType, types.LongType]:
+      peneFunc.append( peneFuncTmp[p])
+      penePara.append( peneParaTmp[p])
+    elif type(peneParaTmp[p]) in [types.TupleType, types.ListType]:
+      for x in peneParaTmp[p]:
+        peneFunc.append( peneFuncTmp[p] + str(x) )
+        penePara.append( x )
+  # now, deal with each penetrance ...
   for p in range(len(peneFunc)):
-    if peneFunc[p] == 'recessive':
+    if peneFunc[p].find('recessive') == 0:  # start with receissive
       print "Using recessive penetrance function"
       summary += "<h4>Recessive single-locus, heterogeneity multi-locus</h4>\n"
       s = drawSamples(pop, recessive( penePara[p]), numSample)
-    elif peneFunc[p] == 'additive':
+    elif peneFunc[p].find('additive') == 0: # start with additive
       print "Using additive penetrance function"
       summary += "<h4>Additive single-locus, heterogeneity multi-locus</h4>\n"
       s = drawSamples(pop, additive(penePara[p]), numSample)
-    elif peneFunc[p] == 'custom':
+    elif peneFunc[p].find('custom') == 0: # start with custom
       print "Using customized penetrance function"
       summary += "<h4>Customized penetrance function</h4>\n"
       s = drawSamples(pop, customPene(penePara[p]), numSample)

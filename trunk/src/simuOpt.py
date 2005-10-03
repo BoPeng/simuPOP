@@ -33,7 +33,7 @@ def getParamShortArg(p, processedArgs):
   ''' try to get a param from short arg '''
   if p.has_key('arg'):
     if p['arg'] == 'c':
-      raise ValueError("-c option is reserved for config gile.")
+      raise exceptions.ValueError("-c option is reserved for config gile.")
     if p['arg'][-1] == ':': # expecting an argument
       try:
         idx = map(lambda x:x[:2]=='-'+p['arg'][0], sys.argv[1:]).index(True)
@@ -82,7 +82,7 @@ def getParamLongArg(p, processedArgs):
   ''' get param from long arg '''
   if p.has_key('longarg'):
     if p['longarg'] == 'config':
-      raise ValueError("--config option is reserved for config gile.")
+      raise exceptions.ValueError("--config option is reserved for config gile.")
     if p['longarg'][-1] == '=': # expecting an argument
       try:
         endChar = len(p['longarg'].split('=')[0])
@@ -887,8 +887,17 @@ def saveConfig(options, file, param):
 
 # define some validataion functions
 def valueOneOf(t):
+  if not type(t) in [types.ListType, types.TupleType]:
+    raise exceptions.ValueError('argument of valueOneOf should be a list')
   def func(val):
-    return val in t
+    yes = False
+    for item in t:
+      if item == val:  # equal value
+        return True
+      if type(item) == types.FunctionType: # a test function
+        if item(val):
+         return True
+    return False
   return func
   
 def valueTrueFalse():
