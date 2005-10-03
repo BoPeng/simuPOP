@@ -961,8 +961,8 @@ def plotLD(pop, epsFile, jpgFile):
   if hasRPy:
     r.postscript(file=epsFile)
     r.par(mfrow=[2,1])
-    r.plot( dist, ldprime, main="D' between DSL and other markers on chrom %d" % pop.dvars().ctrChrom,
-      xlab="marker location", ylab="D'", type='b')
+    r.plot( dist, ldprime, main="D' between DSL and other markers on chrom %d" % (pop.dvars().ctrChrom+1),
+      xlab="marker location", ylab="D'", type='b', ylim=[0,1])
     r.abline( v = pop.locusDist(pop.dvars().ctrChromDSL), lty=3 )
     r.axis( 1, [pop.locusDist(pop.dvars().ctrChromDSL)], ['DSL'])
   dist = [] 
@@ -979,8 +979,8 @@ def plotLD(pop, epsFile, jpgFile):
   res['DNon'] = max(ldvalue)
   if hasRPy:
     r.plot( dist, ldprime, main="D' between marker %d and other markers on chrom %d" \
-      % (numLoci/2, pop.dvars().noDSLChrom),
-      xlab="marker location", ylab="D'", type='b')    
+      % (numLoci/2+1, pop.dvars().noDSLChrom+1),
+      xlab="marker location", ylab="D'", type='b', ylim=[0,1])    
     r.abline( v = pop.locusDist(pop.chromBegin(pop.dvars().noDSLChrom)+pop.dvars().numLoci/2), lty=3 )
     r.dev_off()
   # try to get a jpg file
@@ -1260,7 +1260,7 @@ def _mkdir(d):
 def popStat(pop, p):
   ' calculate population statistics '
   # K -- populaiton prevalance
-  print "Caculating population statistics "
+  print "Calculating population statistics "
   Stat(pop, numOfAffected=True)
   result = {}
   result[p+'_K'] = pop.dvars().numOfAffected * 1.0 / pop.popSize()
@@ -1271,7 +1271,7 @@ def popStat(pop, p):
   P12 = [0.]*len(DSL)
   P22 = [0.]*len(DSL)
   for ind in range(pop.popSize()):
-    if pop.individual(ind).affected:
+    if pop.individual(ind).affected():
       for x in range(len(DSL)):
         s1 = pop.individual(ind).allele(DSL[x], 0)
         s2 = pop.individual(ind).allele(DSL[x], 1)
@@ -1281,18 +1281,18 @@ def popStat(pop, p):
           P22[x] += 1
         else:
           P12[x] += 1
-  N = pop.popSize()
+  N = pop.dvars().numOfAffected
   result[p+'_P11'] = [ x/N for x in P11 ]
   result[p+'_P12'] = [ x/N for x in P12 ]
   result[p+'_P22'] = [ x/N for x in P22 ]
   # Ks = Pr(Xs=1 | Xp=1 ) = Pr(Xs=1, Xp=1) | P(Xp=1)
-  Ks = 0
+  Ks = 0.
   for ind in range(pop.popSize()/2):
-    s1 = pop.individual(ind*2).affected
-    s2 = pop.individual(ind*2).affected
+    s1 = pop.individual(ind*2).affected()
+    s2 = pop.individual(ind*2+1).affected()
     if s1 and s2:
       Ks += 1
-  result[p+'_Ks'] = (Ks*2.0/ pop.popSize()) / result[p+'_K']
+  result[p+'_Ks'] = 2*Ks / pop.dvars().numOfAffected
   # Lambda = Ks/K
   result[p+'_Ls'] = result[p+'_Ks'] / result[p+'_K']
   return result
@@ -1536,7 +1536,7 @@ def writeReport(content, allParam, results):
   #
   # has TDT and some penetrance function
   if len(allParam[-9]) > 0:
-    summary.write('<th>K</th><th>Ks</th><th>Ls</th>')
+    summary.write('<th>K</th><th>Ks</th><th>Ks/K</th>')
     summary.write('<th>P11</th><th>P12</th><th>P22</th>')
     for p in allParam[-9]:
       summary.write('<th>%s:TDT</th><th>%s:LOD</th>'%(p,p))
@@ -1560,9 +1560,9 @@ def writeReport(content, allParam, results):
     # for each penetrance function
     if len(allParam[-9]) > 0:
       for p in allParam[-9]: # penetrance function
-        summary.write('<td>%.2g</td>' % res[p+'_K'])
-        summary.write('<td>%.2g</td>' % res[p+'_Ks'])
-        summary.write('<td>%.2g</td>' % res[p+'_Ls'])
+        summary.write('<td>%.3g</td>' % res[p+'_K'])
+        summary.write('<td>%.3g</td>' % res[p+'_Ks'])
+        summary.write('<td>%.3g</td>' % res[p+'_Ls'])
         summary.write('<td>' + ','.join( ['%.2g'%x for x in res[p+'_P11'] ]) + '</td>')
         summary.write('<td>' + ','.join( ['%.2g'%x for x in res[p+'_P12'] ]) + '</td>')
         summary.write('<td>' + ','.join( ['%.2g'%x for x in res[p+'_P22'] ]) + '</td>')
