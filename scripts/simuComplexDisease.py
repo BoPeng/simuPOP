@@ -480,7 +480,7 @@ options = [
         N/2 cases and controls etc. ''',
    'validate':  simuOpt.valueGT(1)
   },
-  {'longarg': 'numSampleber=',
+  {'longarg': 'numSample=',
    'default': 2,
    'configName':  'Sample Number',
    'allowedTypes':  [types.IntType, types.LongType],
@@ -612,15 +612,21 @@ def outputStatistics(pop, args):
   ctrChromDSL = DSL[ [x==min(toCtrDist) for x in toCtrDist].index(True)]
   ctrChrom = pop.chromLocusPair(ctrChromDSL)[0]
   # 2. first chromosome without DSL
-  noDSLChrom = [pop.numLoci(x)==numLoci for x in range(pop.numChrom())].index(True)
+  try:
+    noDSLChrom = [pop.numLoci(x)==numLoci for x in range(pop.numChrom())].index(True)
+  except:  # there is no such chromosome!
+    noDSLChrom = -1
   #
   # loci pairs on the selected chromosomes when calculating LD
   i = pop.chromBegin( ctrChrom)
   ctrDSLLD = [ [x, ctrChromDSL] for x in range(i, ctrChromDSL)] + \
     [ [ctrChromDSL, x] for x in range(ctrChromDSL+1, i+numLoci+1)]
-  i = pop.chromBegin( noDSLChrom)
-  noDSLLD = [ [i+x, i+numLoci/2] for x in range(numLoci/2)] + \
-    [ [i + numLoci/2, i+x] for x in range(numLoci/2+1, numLoci)]
+  if noDSLChrom > -1:
+    i = pop.chromBegin( noDSLChrom)
+    noDSLLD = [ [i+x, i+numLoci/2] for x in range(numLoci/2)] + \
+      [ [i + numLoci/2, i+x] for x in range(numLoci/2+1, numLoci)]
+  else:
+    noDSLLD = []
   # save these info for later use (a plotting function will
   # use these info.
   pop.dvars().ctrChrom = ctrChrom
@@ -642,18 +648,20 @@ def outputStatistics(pop, args):
       % (ctrChromDSL, ctrChrom, gen)
     for ld in ctrDSLLD:
       print >> output, '%.4f ' % pop.dvars().LD[ld[0]][ld[1]],
-    print >> output, "\n\nD between a center marker %d (chrom %d) and surrounding markers at gen %d" \
-      % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
-    for ld in noDSLLD:
-      print >> output, '%.4f ' % pop.dvars().LD[ld[0]][ld[1]],
+    if noDSLChrom > -1 :
+      print >> output, "\n\nD between a center marker %d (chrom %d) and surrounding markers at gen %d" \
+        % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
+      for ld in noDSLLD:
+        print >> output, '%.4f ' % pop.dvars().LD[ld[0]][ld[1]],
     print >> output, "\n\nD' between DSL %d (chrom %d) and surrounding markers at gen %d" \
       % (ctrChromDSL, ctrChrom, gen)
     for ld in ctrDSLLD:
       print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
-    print >> output, "\n\nD' between a center marker %d (chrom %d) and surrounding markers at gen %d" \
-      % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
-    for ld in noDSLLD:
-      print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
+    if noDSLChrom > -1:
+      print >> output, "\n\nD' between a center marker %d (chrom %d) and surrounding markers at gen %d" \
+        % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
+      for ld in noDSLLD:
+        print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
     print >> output, "\n\nAllele frequencies\nall\t",
     for d in DSL:
       print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][1]),
@@ -971,21 +979,30 @@ def plotLD(pop, epsFile, jpgFile):
   dist = [] 
   ldprime = []  # D'
   ldvalue = []  # D
-  for ld in pop.dvars().noDSLLD:
-    if ld[1] == pop.chromBegin(pop.dvars().noDSLChrom) + numLoci/2:
-      dist.append(pop.locusDist(ld[0]))
-    else:
-      dist.append(pop.locusDist(ld[1]))
-    ldprime.append(pop.dvars().LD_prime[ld[0]][ld[1]])    
-    ldvalue.append(pop.dvars().LD[ld[0]][ld[1]])    
-  res['DpNon'] = max(ldprime)
-  res['DNon'] = max(ldvalue)
-  if hasRPy:
-    r.plot( dist, ldprime, main="D' between marker %d and other markers on chrom %d" \
-      % (numLoci/2+1, pop.dvars().noDSLChrom+1),
-      xlab="marker location", ylab="D'", type='b', ylim=[0,1])    
-    r.abline( v = pop.locusDist(pop.chromBegin(pop.dvars().noDSLChrom)+pop.dvars().numLoci/2), lty=3 )
-    r.dev_off()
+  if pop.dvars().noDSLChrom > -1:
+    for ld in pop.dvars().noDSLLD:
+      if ld[1] == pop.chromBegin(pop.dvars().noDSLChrom) + numLoci/2:
+        dist.append(pop.locusDist(ld[0]))
+      else:
+        dist.append(pop.locusDist(ld[1]))
+      ldprime.append(pop.dvars().LD_prime[ld[0]][ld[1]])    
+      ldvalue.append(pop.dvars().LD[ld[0]][ld[1]])    
+    res['DpNon'] = max(ldprime)
+    res['DNon'] = max(ldvalue)
+    if hasRPy:
+      r.plot( dist, ldprime, main="D' between marker %d and other markers on chrom %d" \
+        % (numLoci/2+1, pop.dvars().noDSLChrom+1),
+        xlab="marker location", ylab="D'", type='b', ylim=[0,1])    
+      r.abline( v = pop.locusDist(pop.chromBegin(pop.dvars().noDSLChrom)+pop.dvars().numLoci/2), lty=3 )
+      r.dev_off()
+  else:
+    res['DpNon'] = 0
+    res['DNon'] = 0
+    if hasRPy:
+      r.plot( 0, 0, main="There is no chromosome without DSL",
+        xlab="marker location", ylab="D'", type='b', ylim=[0,1])    
+      r.dev_off()
+
   # try to get a jpg file
   try:
     if os.system("convert -rotate 90 %s %s " % (epsFile, jpgFile) ) == 0:
@@ -1092,9 +1109,9 @@ def drawSamples(pop, penFun, numSample):
   return allSample
 
 # apply the TDT method of GeneHunter
-def TDT(DSL, cutoff, dataDir, data, epsFile, jpgFile):
+def TDT(geneHunter, DSL, cutoff, dataDir, data, epsFile, jpgFile):
   ''' use TDT method to analyze the results. Has to have rpy installed '''
-  if not hasRPy:
+  if not hasRPy or geneHunter in ['', 'none']:
     return (0,[])
   # write a batch file and call gh
   allPvalue = []
@@ -1169,9 +1186,9 @@ def TDT(DSL, cutoff, dataDir, data, epsFile, jpgFile):
     return (1,res)  # fail
 
 # apply the Linkage method of GeneHunter
-def Linkage(DSL, cutoff, dataDir, data, epsFile, jpgFile):
+def Linkage(geneHunter, DSL, cutoff, dataDir, data, epsFile, jpgFile):
   ''' use Linkage method to analyze the results. Has to have rpy installed '''
-  if not hasRPy: 
+  if not hasRPy or geneHunter in ['', 'none']: 
     return (0,[])
   # write a batch file and call gh
   allPvalue = []
@@ -1313,8 +1330,8 @@ def popStat(pop, p):
 def processOnePopulation(dataDir, numChrom, numLoci, markerType,
     DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, minAlleleFreq,
     maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
-    mixingGen, popSizeFunc, migrModel, mu, mi, rec,  peneFunc, penePara, N, 
-    numSample, dryrun, popIdx):
+    mixingGen, popSizeFunc, migrModel, mu, mi, rec, peneFunc, penePara, N, 
+    numSample, geneHunter, dryrun, popIdx):
   '''
      this function organize all previous functions
      and
@@ -1466,7 +1483,7 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
         summary += '</li>\n'
       summary += '</ul>\n'
       # if there is a valid gene hunter program, run it
-      (suc,res) = TDT(pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
+      (suc,res) = TDT(geneHunter, pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
         penDir, "/Linkage/Aff", penDir + "/TDT.eps", penDir + "/TDT.jpg")
       #  if suc > 0 : # eps file succe
       if suc > 0 : # eps file successfully generated
@@ -1476,7 +1493,7 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
       # keep some numbers depending on the penetrance model
       result['TDT_%s_%d' % (peneFunc[p], sn)] = res
       # then the Linkage method
-      (suc,res) = Linkage(pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
+      (suc,res) = Linkage(geneHunter, pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
         penDir, "/Linkage/Aff", penDir + "/LOD.eps", penDir + "/LOD.jpg")
       #  if suc > 0 : # eps file succe
       if suc > 0 : # eps file successfully generated
@@ -1660,6 +1677,11 @@ if __name__ == '__main__':
   from simuPOP import *
   from simuUtil import *
 
+  # detect simuPOP version
+  if simuRev() < 47  :
+    raise exceptions.SystemError('''This scripts requires simuPOP revision %d. 
+      Please upgrade your simuPOP distribution.''' % simuRev() )
+    
   if mlSelModelTmp == 'additive':
     mlSelModel = SEL_Additive
   elif mlSelModelTmp == 'multiplicative':
@@ -1728,7 +1750,7 @@ if __name__ == '__main__':
             minAlleleFreq, maxAlleleFreq, fitness, mlSelModel, numSubPop, 
             finalSize, noMigrGen, mixingGen, popSizeFunc, migrModel, 
             mu, mi, rec, expandedPeneFunc, expandedPenePara, N, numSample,
-            dryrun, popIdx)
+            geneHunter, dryrun, popIdx)
           summary += text
           results.append( result)
           popIdx += 1

@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Bo Peng                                         *
- *   bpeng@rice.edu  
+ *   bpeng@rice.edu
  *                                                                         *
  *   $LastChangedDate$
  *   $Rev$                                                      *
@@ -41,9 +41,10 @@ namespace simuPOP
 
     public:
       /// constructor. default to be always active.
-      Terminator(string output=">", string outputExpr="", 
+      Terminator(string message = "", string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep)
+      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep), 
+        m_message(message)
       {
       };
 
@@ -54,6 +55,16 @@ namespace simuPOP
       {
         return new Terminator<Pop>(*this);
       }
+
+      string message()
+       
+       {
+        return m_message;
+      }
+
+    private:
+      /// message to print when terminated
+      string m_message;
 
   };
 
@@ -77,14 +88,13 @@ namespace simuPOP
   {
 
     public:
-      TerminateIf(string condition="",  string var="terminate",
-        string output="", string outputExpr="", 
+      TerminateIf(string condition="", string message="", string var="terminate",
+        string output="", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Terminator<Pop>(output, outputExpr, stage, begin, end, step, at,
+      Terminator<Pop>(message, output, outputExpr, stage, begin, end, step, at,
         rep, grp), m_expr(condition ), m_var(var)
       {
-
       }
 
       virtual Operator<Pop>* clone() const
@@ -106,7 +116,7 @@ namespace simuPOP
         if( m_expr.valueAsBool() == true )
         {
           // store the generations this replicate stops
-          int gen = pop.gen(); // mainVars().getVarAsInt("gen");
+          int gen = pop.gen();                    // mainVars().getVarAsInt("gen");
 
           pop.setIntVar(m_var, gen);
           if( !this->noOutput() )
@@ -115,7 +125,7 @@ namespace simuPOP
             out << gen << endl;
             this->closeOstream();
           }
-
+          cout << this->message() << endl;
           return false;                           // return false, this replicate will be stopped
         }
         else
