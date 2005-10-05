@@ -2315,19 +2315,28 @@ T Expression::valueAs##TypeName() \
 
     return true;
   }
+                                /* !COMPILER */
+
+// record COMPILER, PY_VERSION and __DATE__ , these info will
+// be displayed when simuPOP is loaded.
 
 #ifndef COMPILER
 #ifdef __GNUC__
-#define COMPILER " [GCC " __VERSION__ "]"
+#define COMPILER "[GCC " __VERSION__ "]"
 #endif
-#endif                                          /* !COMPILER */
+#endif                                            /* !COMPILER */
 #ifndef COMPILER
 #ifdef __cplusplus
-#define COMPILER " [C++]"
+#define COMPILER "[C++]"
 #else
-#define COMPILER " [C]"
+#define COMPILER "[C]"
 #endif
-#endif                                          /* !COMPILER */
+#endif
+
+#ifndef PLATFORM
+#define PLATFORM ""
+#endif
+
 
 // these will be automatically replaced by snapshot.sh and release.sh
 #define SIMUPOP_VER "snapshot"
@@ -2346,7 +2355,7 @@ T Expression::valueAs##TypeName() \
 
   string simuVer()
   {
-    return toStr(SIMUPOP_VER) + " (Revision " + toStr(simuRev()) + ", " + __DATE__ + ")" + COMPILER; 
+    return SIMUPOP_VER; 
   }
 
   bool optimized()
@@ -2358,4 +2367,23 @@ T Expression::valueAs##TypeName() \
 #endif
   }
 
+  string compileCompiler()
+  {
+     return COMPILER;
+  }
+  
+  string compileDate()
+  {
+     return __DATE__;
+  }
+
+  string compilePyVersion()
+  {
+     return PY_VERSION;
+  }
+
+  string compilePlatForm()
+  {
+    return PLATFORM;
+  }
 }
