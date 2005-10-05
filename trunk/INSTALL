@@ -292,6 +292,18 @@ Windows system with cygwin/mingw32 g++ compiler (free)
     > rm /bin/cc.exe
     > cp /bin/gcc.exe /bin/cc.exe 
 
+NOTE: for python2.4, you can get error saying 
+    import error: DSLL load failed: The specified procedure could not be found
+  This is because of a compatibility problem of mingw32/msvcrt and msv/msvcrt71. 
+  please see http://jove.prohosting.com/iwave/ipython/issues.html for details. 
+  My fix is go to python24/Lib/distutils/cygwinccompiler.py, at line 139, change
+    self.dll_libraries = [] 
+  to
+    self.dll_libraries = ['msvcrt', 'python',+ ''.join(sys.winver.aplit('.'))]
+  and comment out the following if/else block. This will force simuPOP to use msvcrt, not
+  msvcrt70 or msvcrt71 with msvc.
+ 
+
 
 Windows with MSVC
 -------------------

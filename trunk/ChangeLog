@@ -17,6 +17,8 @@ version 0.6.9 -  currently available as daily snapshot
   - fix a bug in migrator/MigrByCounts, which is introduced in 0.6.8
   - add subversion  revision number to doc and binary releases for
     better tracking of changes.
+  - fix windows binary import problem caused by mingw/msvcrt. Details please see 
+    INSTALL.
 
 version 0.6.8 - Sep 21st, 2005
   - fix a reporting bug in simuCDCV.py
