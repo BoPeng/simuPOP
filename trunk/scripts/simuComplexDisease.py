@@ -1568,10 +1568,10 @@ def writeReport(content, allParam, numChrom, numLoci, DSLafter, peneFunc, numSam
   #
   # has TDT and some penetrance function
   if len(peneFunc) > 0:
-    summary.write('<th>K</th><th>Ks</th><th>Ks/K</th>')
-    summary.write('<th>P11</th><th>P12</th><th>P22</th>')
-    summary.write("<th>F'</th>")
     for p in peneFunc:
+      summary.write('<th>K</th><th>Ks</th><th>Ks/K</th>')
+      summary.write('<th>P11</th><th>P12</th><th>P22</th>')
+      summary.write("<th>F'</th>")
       for met in ['TDT', 'LOD']:
         for num in range(numSample): # samples
           summary.write('<th>%s:%s-%d</th>'%(p,met,num))
