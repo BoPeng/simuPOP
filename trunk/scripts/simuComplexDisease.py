@@ -1049,7 +1049,15 @@ def custom(pen):
 def drawSamples(pop, penFun, numSample):
   ''' get samples of different type using a penetrance function '''
   # first, apply peneFunction
-  PyPenetrance(pop, loci=pop.dvars().DSL, func=penFun)
+  # this may or may not be important. Previously, we only
+  # set penetrance for the final genetion but linkage methods
+  # may need penetrance info for parents as well.
+  for i in range(0, pop.ancestralDepth()+1):
+    # apply penetrance function to all current and ancestral generations
+    pop.useAncestralPop(i)
+    PyPenetrance(pop, loci=pop.dvars().DSL, func=penFun)
+  # reset population to current generation.
+  pop.useAncestralPop(0)
   # all types of samples
   allSample = []
   for ns in range(numSample):

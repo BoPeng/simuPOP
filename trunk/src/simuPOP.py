@@ -40,12 +40,9 @@ if not simuOptions['Quiet']:
   print "simuPOP : Copyright (c) 2004-2005 Bo Peng"
   # compile date, compiler etc are macros that are replaced during compile time.
   print ("Version %s (Revision %d, %s) for Python %s" % (simuVer(), simuRev(), compileDate(),
-    compilePyVersion() )),
-  if compilePlatForm() != '':
-    print "on", compilePlatForm(),
-  print 
+    compilePyVersion() ))
   print compileCompiler()
-  print "Random Number Generator is set to be", rng().name()
+  print "Random Number Generator is set to", rng().name()
   print "Maximum allele number per locus is %d." % MaxAllele
   if optimized():
     print "You are running in optimized mode at maximum speed."

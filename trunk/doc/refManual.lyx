@@ -5,7 +5,7 @@
 \usepackage{underscore}
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.6.8 ($Rev$)}
+\setreleaseinfo{Release 0.6.8 ($$Rev$$)}
 \authoraddress{
 {\bf Department of Statistics, Rice University}\\
 {\bf Email: }{\textsf bpeng@rice.edu}\\
@@ -6939,6 +6939,26 @@ Affected status will be used for statistical purpose, and most importantly,
  You can use two operators: one for fitness/selection, active at every generatio
 n; one for affected status, active only at ascertainment, to avoid unnecessary
  calculation of affected status.
+\layout Standard
+
+One important note about penetrance functions is that they only apply to
+ the current generation of a population.
+ This is usually not a problem for operators, but if you need to set affected
+ status for a population with ancestral populations, you should do
+\layout LyX-Code
+
+for i in range(0, pop.ancetralDepath()+1):
+\layout LyX-Code
+
+  pop.useAncestralPop(i)
+\layout LyX-Code
+
+  PyPenetrance(pop, ...)
+\layout LyX-Code
+
+pop.useAncestralPop(0)
+\layout LyX-Code
+
 \layout Subsection
 
 Operator (C++)
