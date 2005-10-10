@@ -637,10 +637,14 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
     dlg1.Destroy()
   # format a description to tooltip
   def formatDesc(text):
-    return ' '.join( [x.strip() for x in text.splitlines()] )
+    # linux can auto wrap, windows can not but sometime wrap
+    # at unexpected places... It is safer to wrap at original
+    # place.
+    return '\n'.join( [x.strip() for x in text.splitlines()] )
   #
   # the main window
   #
+  # get font height for dialog arrangement purpose
   # top message
   box = wx.BoxSizer(wx.VERTICAL)
   # do not use a very long description please
@@ -694,7 +698,8 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
           entryWidgets[g].SetSelection(opt['chooseOneOf'].index( values[g]))
       colCount += 1
     elif opt.has_key('chooseFrom'):  # multiple choice
-      entryWidgets[g] = wx.CheckListBox(parent=dlg, id=g, size=(0, 22*len(opt['chooseFrom'])),
+      w,h = labelWidgets[g].GetTextExtent('a')
+      entryWidgets[g] = wx.CheckListBox(parent=dlg, id=g, size=(0, (h+4)*len(opt['chooseFrom'])),
         choices = opt['chooseFrom'])
       if opt.has_key('description'):
         entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
