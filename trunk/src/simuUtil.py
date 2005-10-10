@@ -703,7 +703,7 @@ def LoadGCData(file, loci=[]):
 
 #    
 def SaveLinkage(pop, popType='sibpair', output='', outputExpr='', alleleFreq=[], 
-   recombination=0.001, chrom=[], exclude=[], pre=True, daf=0.001):
+   recombination=0.001, penetrance=[0,0.25,0.5], chrom=[], exclude=[], pre=True, daf=0.001):
   """ save population in Linkage format. Currently only
     support affected sibpairs sampled with affectedSibpairSample
     operator.
@@ -786,7 +786,7 @@ def SaveLinkage(pop, popType='sibpair', output='', outputExpr='', alleleFreq=[],
   dataFile.write( "1 2 << affection status code, number of alleles\n")
   dataFile.write( "%f %f << gene frequency\n" % ( 1-daf, daf) )
   dataFile.write( "1 << number of factors\n")
-  dataFile.write( "0 0.4 .8 << penetrance\n")
+  dataFile.write( "%f %f %f << penetrance\n" % tuple(penetrance) )
   # describe each locus
   if alleleFreq == []: # if not given,
     # print "Warning: using sample allele frequency."

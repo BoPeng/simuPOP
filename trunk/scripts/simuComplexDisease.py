@@ -206,7 +206,7 @@ options = [
   },
   {'longarg': 'numChrom=',
    'default': 20,
-   'configName': 'Number Of Chromosomes',
+   'configName': 'Number of chromosomes',
    'prompt': 'Number of chromosomes (20):  ',
    'description': 'Number of chromosomes.',
    'allowedTypes': [types.IntType],
@@ -214,9 +214,10 @@ options = [
   },
   {'longarg': 'numLoci=',
    'default': 20,
-   'configName': 'Number of loci on each chrom',
+   'configName': 'Number of loci on each chromosome',
    'prompt': 'Number of loci on each chromosome (20):  ',
-   'description': 'Number of loci on each chromosome.',
+   'description': '''Number of loci on each chromosome, current there 
+       only equal number of markers on each chromosome is supported.''',
    'allowedTypes': [types.IntType],
    'validate':  simuOpt.valueGT(0)
   },
@@ -235,7 +236,7 @@ options = [
   },
   {'longarg': 'DSL=',
    'default': [45, 125, 310],
-   'configName': 'DSL After Marker',
+   'configName': 'DSL after marker (0-indexed)',
    'prompt': 'Enter a list of 0-indexed disease loci ([45,125,310]):  ',
    'description': '''A list of loci *after* a marker. For example, 
         35 means a disease locus after the 16th marker on chromosome 2,
@@ -248,7 +249,7 @@ options = [
   },
   {'longarg': 'DSLLoc=',
    'default': [.5, .5, .5],
-   'configName': 'DSL Location between markers',
+   'configName': 'DSL location between markers',
    'prompt': 'Enter the position of each DSL between two markers ([.01,.5,.75]):  ',
    'description': '''A list of loci location between two markers.
         Since all disease loci will be *between* equal spaced markers,
@@ -258,10 +259,10 @@ options = [
    'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
   },  
   {'longarg': 'initSize=',
-   'default': 1000,
-   'configName': 'initial Population Size',
+   'default': 10000,
+   'configName': 'Initial population size',
    'allowedTypes': [types.IntType, types.LongType],
-   'prompt': 'Initial Population size (1000):  ',
+   'prompt': 'Initial Population size (10000):  ',
    'description': '''Initial population size. This size will be maintained
         till the end of burnin stage''',
    'validate':  simuOpt.valueGT(0)
@@ -279,18 +280,18 @@ options = [
    'validate':  simuOpt.valueGT(0)
   }, 
   {'longarg': 'burnin=',
-   'default': 1000,
-   'configName': 'Length of burnin stage',
+   'default': 500,
+   'configName': 'Length of burn-in stage',
    'allowedTypes': [types.IntType],
-   'prompt': 'Length of burn in stage (1000):  ',
+   'prompt': 'Length of burn in stage (500):  ',
    'description': 'Number of generations of the burn in stage.',
    'validate':  simuOpt.valueGT(0)
   },
   {'longarg': 'introGen=',
-   'default': 12,
-   'configName': 'Length of Disease-Intro stage',
+   'default': 50,
+   'configName': 'Length of disease-intro stage',
    'allowedTypes': [types.IntType],
-   'prompt': 'Length of disease-introduction stage (12):  ',
+   'prompt': 'Length of disease-introduction stage (50):  ',
    'description': '''Number of generations to introduce the disease
         Since the disease will be under positive selection during this
         stage, large introGen will lead to over-common diseases. Note 
@@ -299,20 +300,20 @@ options = [
    'validate':  simuOpt.valueGT(0),
   },
   {'longarg': 'minAlleleFreq=',
-   'default': [0.05],
-   'configName': 'minimal Allele Frequency',
+   'default': [0.045],
+   'configName': 'Minimal allele frequency',
    'allowedTypes': [types.ListType, types.TupleType],
-   'prompt': 'Minimum allele frequency required for each DSL (0.05):  ',
+   'prompt': 'Minimum allele frequency required for each DSL (0.045):  ',
    'description': '''Mininal allele frequencies required for each DSL.
         If a number is given, it is assumed to be the lower bound for all
         DSL.''',
    'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
   },
   {'longarg': 'maxAlleleFreq=',
-   'default': [0.10],
-   'configName': 'maximum Allele Frequency',
+   'default': [0.055],
+   'configName': 'Maximum allele frequency',
    'allowedTypes': [types.ListType, types.TupleType],
-   'prompt': 'Maximum allele frequency required for each DSL (0.10):  ',
+   'prompt': 'Maximum allele frequency required for each DSL (0.055):  ',
    'description': '''Maximum allele frequencies required for each DSL.
         If a number is given, it is assumed to be the upper bound for all
         DSL.''',
@@ -320,7 +321,7 @@ options = [
   },
   {'longarg': 'fitness=',
    'default': [1,1,1],
-   'configName': 'Fitness of genotype AA,Aa,aa ',
+   'configName': 'Fitness of genotype AA,Aa,aa',
    'allowedTypes': [types.ListType, types.TupleType],
    'prompt': ':  Fitness of genotype AA,Aa,aa ([1,1,1]): ',
    'description': '''Fitness of genotype AA,Aa,aa for every DSL after disease introduction
@@ -330,7 +331,7 @@ options = [
   },
   {'longarg': 'selMultiLocusModel=',
   'default': 'none',
-  'configName': 'Multi-locus selection model for all DSL',
+  'configName': 'Multi-locus selection model',
   'prompt': 'selection model for the common disease (additive): ',
   'description': '''Model of overall fitness value given fitness values for each DSL.
         fitness values are Prod(f_i) for multiplicative model and
@@ -340,7 +341,7 @@ options = [
   }, 
   {'longarg': 'numSubPop=',
    'default': 10,
-   'configName': 'Number of split subpops',
+   'configName': 'Number of subpopulations to split',
    'allowedTypes': [types.IntType],
    'prompt': 'Number of subpopulations to split (10):  ',
    'description': 'Number of subpopulations to be split into after burnin stage.',
@@ -348,15 +349,15 @@ options = [
   },
   {'longarg': 'finalSize=',
    'default': 200000,
-   'configName': 'Final Population Size',
+   'configName': 'Final population size',
    'prompt': 'Final population size (sum of all subpopulations) (200000):  ',
    'allowedTypes': [types.IntType, types.LongType],
    'description': 'Ending population size (after expansion.',
    'validate':  simuOpt.valueGT(0)
   }, 
   {'longarg': 'noMigrGen=',
-   'default': 150,
-   'configName': 'Length of no-Migration stage',
+   'default': 400,
+   'configName': 'Length of split-and-grow stage',
    'prompt': 'Length of no-migration stage (build up of population structure (150):  ',
    'allowedTypes': [types.IntType, types.LongType],
    'description': '''Number of generations when migration is zero. This stage
@@ -375,7 +376,7 @@ options = [
   },
   {'longarg': 'growth=',
    'default': 'exponential',
-   'configName': 'Population Growth Model',
+   'configName': 'Population growth model',
    'prompt': 'Population growth style, linear or exponential. (exponential):  ',
    'description': '''How population is grown from initSize to finalSize.
         Choose between linear and exponential''',
@@ -383,7 +384,7 @@ options = [
   },
   {'longarg': 'migrModel=',
    'default': 'stepping stone',
-   'configName': 'Migration Model',
+   'configName': 'Migration model',
    'prompt': 'Migration model. (stepping stone):  ',
    'allowedTypes': [types.StringType],
    'description': '''Migration model. Choose between stepping stone (circular),
@@ -392,10 +393,10 @@ options = [
    'chooseOneOf': ['stepping stone', 'island', 'none']
   }, 
   {'longarg': 'migrRate=',
-   'default': [0,0.001,0.01,0.1],
-   'configName': 'Migration Rates',
+   'default': [0,0.0001],
+   'configName': 'Migration rates',
    'prompt': 'Migration rate(s) during mixing stage. A separate dataset\n' +
-        'will be genrated for each of the given migration rate. ([0, 0.01, 0.05, 0.1]):  ',
+        'will be generated for each of the given migration rate. ([0, 0.0001]):  ',
    'description': '''Migration rate during mixing stage. Can be a number or an array.
         A circular stepping stone migration model will be used. 
         Separate datasets will be generated for each value of migration rate.''',
@@ -403,9 +404,9 @@ options = [
    'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
   },
   {'longarg': 'mutaRate=',
-   'default': [0.001],
-   'configName': 'Mutation Rates',
-   'prompt': 'Mutation rate at non-DSL markers. (0.001):  ',
+   'default': [0.0001],
+   'configName': 'Mutation rates',
+   'prompt': 'Mutation rate at non-DSL markers. (0.0001):  ',
    'allowedTypes': [types.ListType, types.TupleType],
    'description': '''Microsatellite markers are mutated using  
         symmetric stepwise mutation wile SNP markers are mutaed
@@ -415,7 +416,7 @@ options = [
   },
   {'longarg': 'recRate=',
    'default': [0.0005],
-   'configName': 'Recombination Rates',
+   'configName': 'Recombination rates',
    'allowedTypes': [types.ListType, types.TupleType],
    'prompt': 'Recombination rate between adjacent markers. Separate datasets\n'+
         'will be generated for each rec values if a list is given. (0.0005):  ',
@@ -425,7 +426,7 @@ options = [
   },
   {'longarg': 'rep=',
    'default': 2,
-   'configName': 'Replicates for each settings',
+   'configName': 'Replicates for each setting',
    'allowedTypes': [types.IntType],
    'prompt': 'Number of populations for each settings (2):  ',
    'description': '''For each migration, mutation .. settings, this is the
@@ -435,7 +436,7 @@ options = [
   # temporarily remove randTent format.
   {'longarg': 'saveFormat=',
    'default': ['simuPOP','Linkage'],
-   'configName': 'saveInFormat',
+   'configName': 'Save in formats',
    'allowedTypes': [types.ListType, types.TupleType],
    'prompt': "Save datasets in format (['simuPOP','Linkage','randTent']):  ",
    'description': '''Save generated datasets in specified formats.
@@ -445,7 +446,7 @@ options = [
   },
   {'longarg': 'peneFunc=',
    'default': ['recessive','additive'],
-   'configName': 'penetrance functions',
+   'configName': 'Penetrance functions',
    'allowedTypes': [types.ListType, types.TupleType],
    'prompt': 'Penetrance to be used: (recessive, additive):  ',
    'description': ''' Penetrance functions to be applied to the final
@@ -458,7 +459,7 @@ options = [
   },
   {'longarg': 'penePara=',
    'default': [0.5],
-   'configName': 'penetrance parameter',
+   'configName': 'Penetrance parameters',
    'prompt': 'Penetrance parameter used by penetrance functions. \n' + 
       "Can be an array (for each DSL). (0.5) ",
    'description': '''Penetrance parameter for all DSL. An array of parameter 
@@ -473,7 +474,7 @@ options = [
   },
   {'longarg': 'sampleSize=',
    'default': 800,
-   'configName':  'Sample Size',
+   'configName':  'Sample size',
    'allowedTypes':  [types.IntType, types.LongType],
    'prompt':  'Size of the samples (800):  ',
    'description':  '''Size of the samples, that will mean N/4 affected sibpair families (of size 4),
@@ -482,7 +483,7 @@ options = [
   },
   {'longarg': 'numSample=',
    'default': 2,
-   'configName':  'Sample Number',
+   'configName':  'Sample number',
    'allowedTypes':  [types.IntType, types.LongType],
    'prompt':  'Number of samples for each penetrance function (2):  ',
    'description':  '''Number of samples to draw for each penetrance function. ''',
@@ -491,7 +492,7 @@ options = [
   {'longarg': 'outputDir=',
    'default': '.',
    'allowedTypes': [types.StringType],
-   'configName': 'output Directory',
+   'configName': 'Output directory',
    'prompt': 'Save datasets into directory (.):  ',
    'description': 'Directory into which the datasets will be saved. ',
    'validate':  simuOpt.valueValidDir()
@@ -509,7 +510,8 @@ options = [
    'configName': 'Location of gene hunter',
    'prompt': 'Provide location of gene hunter ():  ',
    'description': '''Location of gene hunter executable. If provided,
-        the TDT method of genehunter will be applied to affected sibpair samples.'''
+        the TDT and Linkage method of genehunter will be applied to affected sibpair 
+        samples.'''
   },
   {'longarg': 'dryrun',
    'default': False,
@@ -521,7 +523,7 @@ options = [
   {'longarg': 'saveConfig=',
    'default': sys.argv[0].split('.')[0]+'.cfg',
    'allowedTypes': [types.StringType, types.NoneType],
-   'configName': 'saveConfig',
+   'configName': 'Save configuration',
    'prompt': 'Save current configuration to file (' + sys.argv[0].split('.')[0] + '.cfg):  ',
    'description': 'Save current paremeter set to specified file.'
   },
@@ -543,9 +545,9 @@ def getOptions(details=__doc__):
   '''
   # get all parameters, __doc__ is used for help info
   allParam = simuOpt.getParam(options, 
-    '''This program simulates the evolution of a complex common disease 
-  under the effect of mutation, migration, recombination and population
-  size change. Click 'help' for more info.''', details, nCol=2)
+    '''  This program simulates the evolution of a complex common disease, subject 
+   to the impact of mutation, migration, recombination and population size change. 
+   Click 'help' for more information about the evolutionary scenario.''', details, nCol=2)
   # when user click cancel ...
   if len(allParam) == 0:
     sys.exit(1)

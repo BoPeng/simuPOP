@@ -5,11 +5,12 @@
 \usepackage{underscore}
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.6.8 ($$Rev$$)}
+\setreleaseinfo{Release 0.6.8 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Statistics, Rice University}\\
 {\bf Email: }{\textsf bpeng@rice.edu}\\
-{\bf URL: }{\textsf http://simupop.sourceforge.net}
+{\bf URL: }{\textsf http://simupop.sourceforge.net} \\
+{\bf Mailing List: }{\textsf simupop-list@lists.sourceforge.net}
 }
 \author{Bo Peng}
 \date{December 2004\\
