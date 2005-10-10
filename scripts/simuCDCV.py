@@ -30,8 +30,8 @@ population size, the allelic spectra of simple diseases become complex;
 while those of complex diseases remained simple.
 
 This script simulates the evolution of a disease using a more complicated
-version of this evolutionary process. The allelic spectrum is observed and
-plotted (if R/Rpy is available).
+version of this evolutionary process. The allelic spectrum is observed, 
+recorded and plotted (if R/Rpy is available).
 
 """
 import simuOpt
@@ -49,7 +49,7 @@ options = [
   },
   {'longarg': 'numDSL=',
    'default': 1,
-   'configName': 'Number of DSL for the disease',
+   'configName': 'Number of DSL',
    'prompt': 'Number of DSL for the disease (1):  ',
    'description': '''Number of disease susecptibility loci for the disease.''',
    'allowedTypes': [types.IntType],
@@ -57,7 +57,7 @@ options = [
   },
   {'longarg': 'initSpec=',
    'default': [0.9]+[0.02]*5,
-   'configName': 'Initial allelic spectrum for the disease',
+   'configName': 'Initial allelic spectrum',
    'prompt': 'Initial allelic spectrum for the disease ([0.9]+[.02]*5):  ',
    'description': '''Initial allelic spectrum for the disease. It will 
         be the same for all disease susceptibility loci of the disease.
@@ -68,7 +68,7 @@ options = [
   },
   {'longarg': 'selModel=',
   'default': ['recessive'],
-  'configName': 'Selection model(s) for the disease',
+  'configName': 'Selection model(s)',
   'prompt': 'selection model for the disease at a single DSL (recessive): ',
   'description': '''Given selection coef, for recessive model,
         the fitness values are [1, 1, 1-s] for genotype AA,Aa,aa (A
@@ -79,7 +79,7 @@ options = [
  },
  {'longarg': 'selModelAllDSL=',
   'default': 'additive',
-  'configName': 'Multi-locus selection model for all DSL',
+  'configName': 'Multi-locus selection model',
   'prompt': 'selection model for the disease (additive): ',
   'description': '''Overall fitness values given fitness values for each DSL,
         fitness values are Prod(f_i) for multiplicative model and
@@ -89,7 +89,7 @@ options = [
  }, 
  {'longarg': 'selCoef=',
    'default': [0.02],
-   'configName': 'Selection coef(s) for the disease',
+   'configName': 'Selection coefficient(s)',
    'prompt': 'Selection coef for the disease. ([0.02]): ',
    'description': '''Selection coef (s) for the disease.
         Fitness values will be [1,1,1-s] for the receissive model and
@@ -100,7 +100,7 @@ options = [
   },
   {'longarg': 'mutaModel=',
    'default': 'k-allele',
-   'configName': 'Mutation Model',
+   'configName': 'Mutation model',
    'prompt': 'Mutation model. (k-allele):  ',
    'allowedTypes': [types.StringType],
    'description': '''Microsatellite markers are mutated using  
@@ -125,7 +125,7 @@ options = [
   }, 
   {'longarg': 'mutaRate=',
    'default': [0.0001],
-   'configName': 'Mutation Rate(s)',
+   'configName': 'Mutation rate(s)',
    'prompt': 'Mutation rate at non-DSL markers. (0.0001):  ',
    'allowedTypes': [types.ListType, types.TupleType],
    'description': '''Mutation rate for all DSL. Can be different for each DSL.''',
@@ -133,7 +133,7 @@ options = [
   },
   {'longarg': 'initSize=',
    'default': 10000,
-   'configName': 'Initial Population Size',
+   'configName': 'Initial population size',
    'allowedTypes': [types.IntType, types.LongType],
    'prompt': 'Initial Population size (10000):  ',
    'description': '''Initial population size. This size will be maintained
@@ -142,7 +142,7 @@ options = [
   },
   {'longarg': 'finalSize=',
    'default': 1000000,
-   'configName': 'Final Population Size',
+   'configName': 'Final population size',
    'prompt': 'Final population size (sum of all subpopulations) (1000000):  ',
    'allowedTypes': [types.IntType, types.LongType],
    'description': 'Ending population size (after expansion.',
@@ -158,7 +158,7 @@ options = [
   },
   {'longarg': 'noMigrGen=',
    'default': 400,
-   'configName': 'Length of no-Migration stage',
+   'configName': 'Length of no-migration stage',
    'prompt': 'Length of no-migration stage (build up of population structure (400):  ',
    'allowedTypes': [types.IntType, types.LongType],
    'description': '''Number of generations when migration is zero. This stage
@@ -177,7 +177,7 @@ options = [
   },  
   {'longarg': 'growth=',
    'default': 'exponential',
-   'configName': 'Population Growth Model',
+   'configName': 'Population growth model',
    'prompt': 'Population growth style, linear or exponential. (exponential):  ',
    'description': '''How population is grown from initSize to finalSize.
         Choose between instant, linear and exponential''',
@@ -193,7 +193,7 @@ options = [
   },
   {'longarg': 'migrModel=',
    'default': 'none',
-   'configName': 'Migration Model',
+   'configName': 'Migration model',
    'prompt': 'Mutation model. (none):  ',
    'allowedTypes': [types.StringType],
    'description': '''Migration model. Choose between stepstone and island.  
@@ -203,7 +203,7 @@ options = [
   }, 
   {'longarg': 'migrRate=',
    'default': 0.05,
-   'configName': 'Migration Rate',
+   'configName': 'Migration rate',
    'prompt': 'Migration rate during mixing stage. ',
    'description': '''Migration rate during mixing stage. 
         Island or circular stepstone migration model can be used. ''',
@@ -232,7 +232,7 @@ options = [
   },
   {'longarg': 'dispPlot=',
    'default': True,
-   'configName': 'display Plot',
+   'configName': 'Display plot?',
    'prompt': 'display plot? (True): ',
    'allowedTypes': [types.BooleanType],
    'description': 'If false, do not disply figure.',
@@ -295,8 +295,8 @@ def getOptions(details=__doc__):
   #
   # get all parameters, __doc__ is used for help info
   allParam = simuOpt.getParam(options, 
-    'This program simulates the evolution of a (common) and a simple (rare) disease\n' +
-    'using a three-stage evolutionary scheme. The allelic spectra of both diseases are observed \n' +
+    'This program simulates the evolution of a mono or polygenic disease using a three-stage\n' +
+    'evolutionary scenario. The allelic spectrum at all disease susceptibility loci are recorded\n' +
     'and plotted (if R/RPy is available).\n',
     details, nCol=2)
   #
@@ -388,34 +388,38 @@ def getStats(v, highest):
 # This function plot the allelic spectrum
 # using given allele frequencies
 #
-def PlotSpectra(pop, numDSL, saveAt, highest=50, plot=True ):
+def PlotSpectra(pop, param):
+  " swtich from old-style python plotter to new style, use pyOperator"
+  (numDSL, saveAt, highest, plot, logFile) = param
   # use global logOutput handle
-  # out = open(logFile, 'a')
-  global logOutput
+  # this is less efficient but make sure we can see partial results
+  logOutput = open(logFile, "a")
   logOutput.write("%d\t" % pop.gen())
   for sp in range(pop.numSubPop()):
     # unpack result
-    [perc, numAllele, effNumAllele, overallFreq, percMostCommon, perc5MostCommon, percAncestralAllele] = getStats(pop.dvars(sp), highest)
+    [perc, numAllele, effNumAllele, overallFreq, percMostCommon, perc5MostCommon, percAncestralAllele] \
+      = getStats(pop.dvars(sp), highest)
     for d in range(numDSL):
       logOutput.write( '%.5f\t%d\t%.5f\t%.5f\t%.5f\t%.5f\t' % (effNumAllele[d], \
         numAllele[d], overallFreq[d], percMostCommon[d], perc5MostCommon[d], percAncestralAllele[d]))
   # if there are subpop
   if pop.numSubPop() > 1: # then write overall state
-    [perc, numAllele, effNumAllele, overallFreq, percMostCommon, perc5MostCommon, percAncestralAllele] = getStats(pop.dvars(), highest)
+    [perc, numAllele, effNumAllele, overallFreq, percMostCommon, perc5MostCommon, percAncestralAllele] \
+      = getStats(pop.dvars(), highest)
     for d in range(numDSL):
       logOutput.write( '%.5f\t%d\t%.5f\t%.5f\t%.5f\t%.5f\t' % (effNumAllele[d], \
         numAllele[d], overallFreq[d], percMostCommon[d], perc5MostCommon[d], percAncestralAllele[d]))
   logOutput.write("\n")
-  # out.close()
+  logOutput.close()
   # now, variable like perc holds results for the whole populations.
   # 
   # if do not plot, return
   if not plot:
-    return
+    return True
   # plot something:
-  #if gen in saveAt:
-  #  print "Saving figure in cdcv%d.eps (instead of displaying it)" % gen
-  #  r.postscript(file='cdcv%d.eps' % gen)
+  if pop.gen() in saveAt:
+    print "Saving figure in cdcv%d.eps (instead of displaying it)" % pop.gen()
+    r.postscript(file='cdcv%d.eps' % pop.gen(), width=6, height=8 )
   #
   # set no conversion mode to save execution time
   set_default_mode(NO_CONVERSION)
@@ -465,7 +469,7 @@ def PlotSpectra(pop, numDSL, saveAt, highest=50, plot=True ):
       r.plot(0, type='n', axes=False)
     else:
       r.plot(perc[d], type='n', axes=False, ylim=[0,maxPerc], xlab='', ylab='',
-        xlim=[0,50], cex=5)
+        xlim=[0,30], cex=5)
       l = len(perc[d])
       r.rect(range(l), [0]*l, range(1,l+1), perc[d], col='darkgray', border='white')
       r.axis(1)
@@ -475,21 +479,8 @@ def PlotSpectra(pop, numDSL, saveAt, highest=50, plot=True ):
     cex=1.5, forecolor='blue')
   if pop.gen() in saveAt:
     r.dev_off()
+  return True
 
-# wrap this function as an operator that will be called automatically
-def specPlotter(numDSL, saveAt, plot=True, **kwargs):
-  # deal with additional arguments (the same for every wrapper)
-  parm = ''
-  for (k,v) in kwargs.items():
-    parm += str(k) + '=' + str(v) + ', '
-  # pyExec( exposePop=1, param?, stmts="PlotSpectra(pop, numDSL)")
-  cmd = '''pyExec(exposePop=1, %s
-    stmts="PlotSpectra(pop, %s, saveAt=%s, plot=%d)", 
-    name="specPlotter" ) ''' \
-    % ( parm, numDSL, str(saveAt), plot) 
-  return eval(cmd)
-  
-   
 def simuCDCV( numDSL, initSpec, selModel,
     selModelAllDSL, selCoef,  mutaModel, maxAllele, mutaRate, 
     initSize, finalSize, burnin, noMigrGen,
@@ -558,16 +549,13 @@ def simuCDCV( numDSL, initSpec, selModel,
       migration = migrator(migrStepstoneRates(migrRate, numSubPop, circular=True), begin=mixing)
   #      
   # prepare log file, if not in resume mode
-  global logOutput
   if resume == '':  # not resume
     logOutput = open(logFile, 'w')
     logOutput.write("gen\t")
     for d in range(numDSL):
       logOutput.write( 'ne\tn\tf0\tp1\tp5\tanc\t')
     logOutput.write("\n")
-    #logOutput.close() 
-  else:  # resume
-    logOutput = open(logFile, 'a')
+    logOutput.close()
   # use global
   global allelesBeforeExpansion
   allelesBeforeExpansion = []
@@ -601,7 +589,7 @@ def simuCDCV( numDSL, initSpec, selModel,
       # migration
       migration, 
       # visualizer
-      specPlotter(numDSL, saveAt=saveAt, plot=dispPlot, step=update),
+      pyOperator(func=PlotSpectra, param=(numDSL, saveAt, 50, dispPlot, logFile), step=update ),
       # monitor execution time
       ticToc(step=100),
       ## pause at any user key input (for presentation purpose)
@@ -611,7 +599,6 @@ def simuCDCV( numDSL, initSpec, selModel,
     dryrun = dryrun
   )
   #
-  logOutput.close()
   if savePop != '':
     simu.population(0).savePopulation(savePop)
 
