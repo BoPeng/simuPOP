@@ -635,6 +635,9 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
     dlg1.Layout()
     dlg1.ShowModal()
     dlg1.Destroy()
+  # format a description to tooltip
+  def formatDesc(text):
+    return ' '.join( [x.strip() for x in text.splitlines()] )
   #
   # the main window
   #
@@ -684,20 +687,21 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
     if opt.has_key('chooseOneOf'):  # single choice
       entryWidgets[g] = wx.Choice(parent=dlg, id=g, choices = opt['chooseOneOf'])
       if opt.has_key('description'):
-        entryWidgets[g].SetToolTipString(opt['description'])
+        entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
       gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND )
       if values[g] != None:
         if type(values[g]) == types.StringType:
           entryWidgets[g].SetSelection(opt['chooseOneOf'].index( values[g]))
       colCount += 1
     elif opt.has_key('chooseFrom'):  # multiple choice
-      entryWidgets[g] = wx.CheckListBox(parent=dlg, id=g, choices = opt['chooseFrom'])
+      entryWidgets[g] = wx.CheckListBox(parent=dlg, id=g, size=(0, 22*len(opt['chooseFrom'])),
+        choices = opt['chooseFrom'])
       if opt.has_key('description'):
-        entryWidgets[g].SetToolTipString(opt['description'])
+        entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
       if values[g] != None:
         for val in values[g]:
           entryWidgets[g].Check( opt['chooseFrom'].index(val)) 
-      gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND )
+      gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND) 
       colCount += len(opt['chooseFrom']) -1
     else: # a edit box
       # put default value into the entryWidget
@@ -709,7 +713,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
          txt = str(values[g])
       entryWidgets[g] = wx.TextCtrl(parent=dlg, id=g, value=txt)
       if opt.has_key('description'):
-        entryWidgets[g].SetToolTipString(opt['description'])
+        entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
       gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND )
       colCount += 1
   # help button
