@@ -19,6 +19,9 @@ version 0.6.9 -  currently available as daily snapshot
     better tracking of changes.
   - fix windows binary import problem caused by mingw/msvcrt. Details please see 
     INSTALL.
+  - fix a bug in AffectedSibpairSample with countOnly parameter. (Not able to
+    handle None return.)
+  - add parameter --resampleOnly and --reAnalyzeOnly
 
 version 0.6.8 - Sep 21st, 2005
   - fix a reporting bug in simuCDCV.py

@@ -411,11 +411,17 @@ def PlotSpectra(pop, param):
         numAllele[d], overallFreq[d], percMostCommon[d], perc5MostCommon[d], percAncestralAllele[d]))
   logOutput.write("\n")
   logOutput.close()
-  # now, variable like perc holds results for the whole populations.
   # 
   # if do not plot, return
   if not plot:
     return True
+  # record global ne history
+  global NeHist, NeMax
+  NeHist[0].append(pop.gen())
+  for d in range(numDSL):
+    NeHist[d+1].append( effNumAllele[d] )
+  NeMax = max( NeMax, max( effNumAllele))
+  # now, variable like perc holds results for the whole populations.
   # plot something:
   if pop.gen() in saveAt:
     print "Saving figure in cdcv%d.eps (instead of displaying it)" % pop.gen()
@@ -430,19 +436,20 @@ def PlotSpectra(pop, param):
     text(x=0,y=ypos,pos=4,cex=cex,labels=x,col=forecolor)}''')
   # a two column layout
   r.layout( r.matrix(
-     [1]+range(2,numDSL+3) + [2*numDSL+4] + 
-     [1]+range(numDSL+3, 2*numDSL+4) + [2*numDSL+4],
+     [1]+range(2,numDSL+5) + [2*numDSL+8] + 
+     [1]+range(numDSL+5, 2*numDSL+8) + [2*numDSL+8],
     ncol=2),
     width=[1/6.,5/6.],
-    height=['1 cm', '1 cm']+[str(1./numDSL)]*numDSL+['2 cm'])
+    height=['1 cm', '1 cm', str(1./(numDSL+1)), '1 cm'] + [str(1./(numDSL+1))]*numDSL+['2 cm'])
   # par...
   r.par(mar=[0.1]*4)
   r.par(oma=range(1,5))
-  # windows 1
+  # windows 3
   r.ltitle('Generation %d, PopSize %d' % (pop.gen(), pop.popSize()),
     backcolor='white', forecolor='darkblue', cex=2.5)
-  # window 2
-  r.ltitle('Stat')
+  # windows 1
+  r.ltitle(''),
+
   # 2 - all DSL of disease
   # adjust font size for statistics
   if numDSL < 3:
@@ -451,13 +458,33 @@ def PlotSpectra(pop, param):
     cx = 1.3
   else:
     cx = 1
+  maxPerc = 0
+  # windows 2
+  r.ltitle('Ne', backcolor='white', forecolor='darkblue', cex=cx)
+  # window 4
+  r.ltitle('DSL')
   for d in range(0, numDSL):
     r.ltitle('%.1f,%d\n%.1f%%\n%.1f%%(1)\n%.1f%%(5)\n%.1f%%' \
     % (effNumAllele[d], numAllele[d], overallFreq[d]*100,  \
        percMostCommon[d], perc5MostCommon[d], percAncestralAllele[d]*100),
     backcolor='white', forecolor='blue', cex=cx)  
   # the second column
-  maxPerc = 0
+  # windows 1
+  r.ltitle('History of effective number of alleles'),
+  # windows 2
+  #r.assign('x', NeHist[0])
+  #r.assign('y', NeHist[1])
+  #r.assign('m', NeMax)
+  #r('''plot(x, y, ylim=c(0, m*5./4.), col=1,
+  #  axes = FALSE, type='n')''')
+  r.plot(NeHist[0], NeHist[1], ylim=[0, NeMax*5./4.], col=1,
+    axes = False, type='n', xlab='', ylab='')
+  # r.axis(1, pos=1)
+  r.axis(2, r.pretty([0, NeMax], n=2))
+  r.box()
+  for d in range(0, numDSL):
+    r.points(NeHist[0], NeHist[d+1], type='b', col=d+1)
+  #
   for d in range(1, numDSL):
     if len(perc[d]) > 0 and perc[d][0] > maxPerc:
       maxPerc = perc[d][0]
@@ -469,13 +496,17 @@ def PlotSpectra(pop, param):
       r.plot(0, type='n', axes=False)
     else:
       r.plot(perc[d], type='n', axes=False, ylim=[0,maxPerc], xlab='', ylab='',
-        xlim=[0,30], cex=5)
+        xlim=[0,10], cex=5)
       l = len(perc[d])
-      r.rect(range(l), [0]*l, range(1,l+1), perc[d], col='darkgray', border='white')
+      r.rect(range(l), [0]*l, range(1,l+1), perc[d], col=d+1, border='white')
       r.axis(1)
+      r.axis(2, r.pretty([0, maxPerc], n=2), 
+        r.paste(r.pretty([0, 100*maxPerc], n=2)))
       r.box()
   #
-  r.ltitle('Effective number of disease alleles, number of alleles\ntotal disease allele frequency\nPercent of 1 (5) most allele among all disease alleles',
+  r.ltitle('''Effective number of disease alleles, number of alleles
+total disease allele frequency
+Percent of 1 (5) most allele among all disease alleles''',
     cex=1.5, forecolor='blue')
   if pop.gen() in saveAt:
     r.dev_off()
@@ -559,6 +590,12 @@ def simuCDCV( numDSL, initSpec, selModel,
   # use global
   global allelesBeforeExpansion
   allelesBeforeExpansion = []
+  global NeHist, NeMax
+  # history of Ne, the first one is gen
+  NeHist = []
+  for i in range(numDSL+1):
+    NeHist.append( [] )
+  NeMax = 0
   # start evolution
   simu.evolve(              # start evolution
     preOps=

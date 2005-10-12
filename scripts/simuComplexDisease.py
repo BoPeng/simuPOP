@@ -332,7 +332,7 @@ options = [
   {'longarg': 'selMultiLocusModel=',
   'default': 'none',
   'configName': 'Multi-locus selection model',
-  'prompt': 'selection model for the common disease (additive): ',
+  'prompt': 'Multi-locus selection model (additive): ',
   'description': '''Model of overall fitness value given fitness values for each DSL.
         fitness values are Prod(f_i) for multiplicative model and
         1-Sum(1-f_i) for additive model. ''',
@@ -358,7 +358,7 @@ options = [
   {'longarg': 'noMigrGen=',
    'default': 400,
    'configName': 'Length of split-and-grow stage',
-   'prompt': 'Length of no-migration stage (build up of population structure (150):  ',
+   'prompt': 'Length of split-and-grow stage  (400):  ',
    'allowedTypes': [types.IntType, types.LongType],
    'description': '''Number of generations when migration is zero. This stage
         is used to build up population structure.''',
@@ -497,13 +497,6 @@ options = [
    'description': 'Directory into which the datasets will be saved. ',
    'validate':  simuOpt.valueValidDir()
   },
-  {'longarg': 'overwrite=',
-   'default': True,
-   # for compatibility. python2.2 use IntType, python 2.3 use BooleanType
-   'allowedTypes': [type(True)],  
-   'description': 'Whether or not overwrite existing data files. ',
-   'validate':  simuOpt.valueOneOf([True, False])
-  },
   {'longarg': 'geneHunter=',
    'default': '',
    'allowedTypes': [types.StringType],
@@ -512,6 +505,21 @@ options = [
    'description': '''Location of gene hunter executable. If provided,
         the TDT and Linkage method of genehunter will be applied to affected sibpair 
         samples.'''
+  },
+  # another two hidden parameter
+  {'longarg': 'resampleOnly=',
+   'default': False,
+   'allowedTypes': [type(True)],
+   'description': '''If given in command line, redo the sampling and analysis.
+       This option assumes the existance of generated samples but it will 
+       check the parameter of them. If the population parameter does not 
+       match, new populations will be generated.'''
+  },
+  # another two hidden parameter
+  {'longarg': 'reAnalyzeOnly=',
+   'default': False,
+   'allowedTypes': [type(True)],
+   'description': '''If given in command line, redo the analysis.'''
   },
   {'longarg': 'dryrun',
    'default': False,
@@ -972,7 +980,7 @@ def plotLD(pop, epsFile, jpgFile):
   res['DpDSL'] = max(ldprime)
   res['DDSL'] = max(ldvalue)
   if hasRPy:
-    r.postscript(file=epsFile)
+    r.postscript(file=epsFile, width=8, height=8)
     r.par(mfrow=[2,1])
     r.plot( dist, ldprime, main="D' between DSL and other markers on chrom %d" % (pop.dvars().ctrChrom+1),
       xlab="marker location", ylab="D'", type='b', ylim=[0,1])
@@ -1048,9 +1056,35 @@ def custom(pen):
     return 1-val
   return func
 
-def drawSamples(pop, penFun, numSample):
-  ''' get samples of different type using a penetrance function '''
+def drawSamples(pop, peneFunc, penePara, numSample, saveFormat, dataDir, reAnalyzeOnly ):
+  ''' get samples of different type using a penetrance function,
+    and save samples in dataDir in saveFormat
+    
+    pop: population
+    peneFunc: penetrance function name, can be recessive1 etc
+    penePara: parameter of the penetrance function
+    numSample: number of samples for each penetrance settings
+    saveFormat: a list of format to save
+    dataDir: where to save samples    
+    reAnalyzeOnly: load populations only
+
+    return a report
+  '''
   # first, apply peneFunction
+  #
+  report = ''
+  if peneFunc.find('recessive') == 0:  # start with recessive
+    print "Using recessive penetrance function"
+    report += "<h4>Recessive single-locus, heterogeneity multi-locus</h4>\n"
+    penFun = recessive(penePara)
+  elif peneFunc.find('additive') == 0: # start with additive
+    print "Using additive penetrance function"
+    report += "<h4>Additive single-locus, heterogeneity multi-locus</h4>\n"
+    penFun = additive(penePara)
+  elif peneFunc.find('custom') == 0: # start with custom
+    print "Using customized penetrance function"
+    report += "<h4>Customized penetrance function</h4>\n"
+    penFun = customPene(penePara)  
   # this may or may not be important. Previously, we only
   # set penetrance for the final genetion but linkage methods
   # may need penetrance info for parents as well.
@@ -1060,11 +1094,31 @@ def drawSamples(pop, penFun, numSample):
     PyPenetrance(pop, loci=pop.dvars().DSL, func=penFun)
   # reset population to current generation.
   pop.useAncestralPop(0)
-  # all types of samples
-  allSample = []
+  # 
+  report += "<ul>"
+  # here we are facing a problem of using which allele frequency for the sample
+  # In reality, if it is difficult to estimate population allele frequency,
+  # sample frequency has to be used. Otherwise, population frequency should 
+  # be used whenever possible. Here, we use population allele frequency, with only
+  # one problem in that we need to remove frequencies at DSL (since samples do not
+  # have DSL).
+  af = []
+  Stat(pop, alleleFreq=range(pop.totNumLoci()))
+  for x in range( pop.totNumLoci() ):
+    if x not in pop.dvars().DSL:
+      af.append( pop.dvars().alleleFreq[x] )
+  # start sampling
   for ns in range(numSample):
-    print "Generating sample ", ns+1, ' of ', numSample
-    allSample.append([])
+    report += "<li> sample %d <ul>" % (ns+1)
+    penDir = "%s%s%s%d%s" % (dataDir, os.sep, peneFunc, ns, os.sep)
+    # relative path used in report
+    relDir = '%s%s%s%d%s' % (dataDir.split(os.sep)[-1], os.sep, peneFunc, ns, os.sep)
+    # 
+    _mkdir(penDir)
+    if reAnalyzeOnly:
+      print "Loading sample ", ns+1, ' of ', numSample
+    else:
+      print "Generating sample ", ns+1, ' of ', numSample
     # 1. population based case control
     # get number of affected
     Stat(pop, numOfAffected=True)
@@ -1072,16 +1126,33 @@ def drawSamples(pop, penFun, numSample):
     print "Number of unaffected individuals: ", pop.dvars().numOfUnaffected
     nCase = min(pop.dvars().numOfAffected , N/2)
     nControl = min(pop.dvars().numOfUnaffected, N/2)
+      
     try:
       # if N=800, 400 case and 400 controls
-      s = CaseControlSample(pop, nCase, nControl)
-      # remove DSL
-      s[0].removeLoci(remove=pop.dvars().DSL)
-      allSample[ns].append(s[0])
+      binFile =  penDir + "caseControl.bin"
+      if reAnalyzeOnly:
+        try:
+          # try to load previous sample
+          s = [LoadPopulation(binFile)]
+        except Exception, err:
+          print "Can not load exisiting sample. Can not use --reAnalyzeOnly option"
+          raise err
+      else:
+        s = CaseControlSample(pop, nCase, nControl)
+        # remove DSL
+        s[0].removeLoci(remove=pop.dvars().DSL)
+      report += "<li> Case control sample of size %d, " % s[0].popSize()
+      # process sample
+      if 'simuPOP' in saveFormat:
+        report += 'saved in simuPOP binary format:'
+        if not reAnalyzeOnly:
+          print "Write to simuPOP binary format"
+          s[0].savePopulation(binFile)
+        report += '<a href="%scaseControl.bin"> caseControl.bin</a> ' % relDir
+      report += '</li>'
     except Exception, err:
       print "Can not draw case control sample. "
       print type(err), err
-      allSample[ns].append(None)
     #
     # 2. affected and unaffected sibpairs
     # this is difficult since simuPOP only has
@@ -1095,28 +1166,69 @@ def drawSamples(pop, penFun, numSample):
       AffectedSibpairSample(pop, chooseUnaffected=True, countOnly=True)
       print "Number of unaffected sibpairs: ", pop.dvars().numAffectedSibpairs
       nUnaff = min(pop.dvars().numAffectedSibpairs, N/4)
+      # generate or load sample
+      binFile1 = penDir + "affectedSibpairs.bin"
+      binFile2 = penDir + "unaffectedSibpairs.bin"
+      if reAnalyzeOnly:
+        try:
+          affected = [LoadPopulation(binFile1) ]
+          unaffected = [LoadPopulation(binFile2) ]
+        except Exception, err:
+          print "can not load sample, please do not use --reAnalyzeOnly option"
+          raise err
+      else:
+        #
+        affected = AffectedSibpairSample(pop, name='sample1',
+          size=nAff)
+        # now chose unaffected. These samples will not overlap
+        # 
+        # NOTE: however, you may not be able to easily merge these two 
+        # samples since they may shared parents.
+        #
+        # Use another name to avoid conflict since these sampled are stored
+        # in local namespace
+        unaffected = AffectedSibpairSample(pop, chooseUnaffected=True,
+          name='sample2', size=nUnaff)
+        # remove DSL
+        affected[0].removeLoci(remove=pop.dvars().DSL)
+        unaffected[0].removeLoci(remove=pop.dvars().DSL)
+      # return sample
       #
-      affected = AffectedSibpairSample(pop, name='sample1',
-         size=nAff)
-      # now chose unaffected. These samples will not overlap
-      # 
-      # NOTE: however, you may not be able to easily merge these two 
-      # samples since they may shared parents.
-      #
-      # Use another name to avoid conflict since these sampled are stored
-      # in local namespace
-      unaffected = AffectedSibpairSample(pop, chooseUnaffected=True,
-        name='sample2', size=nUnaff)
-      # remove DSL
-      affected[0].removeLoci(remove=pop.dvars().DSL)
-      unaffected[0].removeLoci(remove=pop.dvars().DSL)
-      allSample[ns].extend([affected[0], unaffected[0] ])
+      report += "<li> Affected sibpair sample of size %d (affected) %d (unaffected)" % \
+        ( affected[0].popSize(), unaffected[0].popSize() ) 
+      if 'simuPOP' in saveFormat:
+        report += ' saved in simuPOP binary format:'
+        report += '<a href="%saffectedSibpairs.bin"> affectedSibpairs.bin</a>, ' % relDir
+        if not reAnalyzeOnly:
+          print "Write to simuPOP binary format"
+          affected[0].savePopulation(binFile1)
+          unaffected[0].savePopulation(binFile2)
+        report += '<a href="%sunaffectedSibpairs.bin"> unaffectedSibpirs.bin</a>, ' % relDir
+      if 'Linkage' in saveFormat:
+        report += ' saved in linkage format by chromosome:'
+        linDir = penDir + "Linkage" + os.sep
+        _mkdir(linDir)
+        report +=  '<a href="%sLinkage">affected</a>, ' % relDir
+        if not reAnalyzeOnly:
+          print "Write to linkage format"
+          for ch in range(0, pop.numChrom() ):
+            SaveLinkage(pop=affected[0], popType='sibpair', output = linDir+"/Aff_%d" % ch,
+              chrom=ch, recombination=pop.dvars().recombinationRate,
+              alleleFreq=af, daf=0.1)        
+          for ch in range(0,pop.numChrom() ):
+            SaveLinkage(pop=unaffected[0], popType='sibpair', output = linDir+"/Unaff_%d" % ch,
+              chrom=ch, recombination=pop.dvars().recombinationRate,                            
+              alleleFreq=af, daf=0.1)        
+        report += '<a href="%sLinkage">unaffected</a>' % relDir
+      report += '</li>'
     except Exception, err:
       print type(err)
       print err
       print "Can not draw affected sibpars."
-      allSample[ns].extend([None, None])
-  return allSample
+    report += "</ul></li>"
+    # save these samples
+  report += "</ul>"
+  return report
 
 # apply the TDT method of GeneHunter
 def TDT(geneHunter, DSL, cutoff, dataDir, data, epsFile, jpgFile):
@@ -1177,9 +1289,9 @@ def TDT(geneHunter, DSL, cutoff, dataDir, data, epsFile, jpgFile):
   for d in DSL: 
     res.append( max(allPvalue[(d-2):(d+2)]))
   # use R to draw a picture
-  r.postscript(file=epsFile)
-  r.plot(allPvalue, main="-log10(P-value) for each marker (TDT)",
-    xlab="chromosome", ylab="-log10 p-value", type='l', axes=False, ylim=[0.01, 5])
+  r.postscript(file=epsFile, width=6, height=4)
+  r.plot(allPvalue, main="-log10(P-value) at each marker (TDT method)",
+    xlab="chromosome/markers", ylab="-log10 p-value", type='l', axes=False, ylim=[0.01, 5])
   r.box()
   r.abline( v = [DSLafter[g]+DSLdist[g] for g in range(len(DSL))], lty=3)
   r.abline( h = cutoff )                       
@@ -1266,9 +1378,9 @@ def Linkage(geneHunter, DSL, cutoff, dataDir, data, epsFile, jpgFile):
   for d in DSL: 
     res.append( max(allPvalue[(d-2):(d+2)]))
   # use R to draw a picture
-  r.postscript(file=epsFile)
-  r.plot(allPvalue, main="-log10(P-value) for each marker (LOD)", ylim=[0.01,5], 
-    xlab="chromosome", ylab="-log10 p-value", type='l', axes=False)
+  r.postscript(file=epsFile, width=6, height=4)
+  r.plot(allPvalue, main="-log10(P-value) at each marker (LOD method)", ylim=[0.01,5], 
+    xlab="chromosome/markers", ylab="-log10 p-value", type='l', axes=False)
   r.box()
   r.abline( v = [DSLafter[g]+DSLdist[g] for g in range(len(DSL))], lty=3)
   r.abline( h = cutoff )                       
@@ -1341,7 +1453,7 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
     DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, minAlleleFreq,
     maxAlleleFreq, fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
     mixingGen, popSizeFunc, migrModel, mu, mi, rec, peneFunc, penePara, N, 
-    numSample, geneHunter, dryrun, popIdx):
+    numSample, geneHunter, resampleOnly, reAnalyzeOnly, dryrun, popIdx):
   '''
      this function organize all previous functions
      and
@@ -1356,15 +1468,16 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
   result = {'id':popIdx, 'mu':mu, 'mi':mi, 'rec':rec}
   logFile = dataDir + "/pop_" + str(popIdx) + ".log"
   popFile = dataDir + "/pop_" + str(popIdx) + ".bin"
+  # whether or not generate a new sample
   genDataset = True
-  if os.path.isfile(popFile) and (not overwrite):
+  if os.path.isfile(popFile) and (resampleOnly or reAnalyzeOnly):
     print "Loading a pre-existing file ", popFile
     pop = LoadPopulation(popFile)
     # check if the population is using the same parameters as requested
     if abs(pop.dvars().mutationRate - mu) + abs(pop.dvars().migrationRate - mi) \
        + abs( pop.dvars().recombinationRate - rec) < 1e-7:
       genDataset = False
-      print "Dataset already exists, load it directly. (use --overwrite True to change this behavior)"
+      print "Dataset already exists, load it directly. (use --resampleOnly False to change this behavior)"
     else:
       print "A dataset is present but was generated with different parameters. Re-generating."
   if genDataset:
@@ -1416,18 +1529,14 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
   summary += "<h3>Samples using different penetrance function</h3>\n"
   # now, deal with each penetrance ...
   for p in range(len(peneFunc)):
-    if peneFunc[p].find('recessive') == 0:  # start with receissive
-      print "Using recessive penetrance function"
-      summary += "<h4>Recessive single-locus, heterogeneity multi-locus</h4>\n"
-      s = drawSamples(pop, recessive( penePara[p]), numSample)
-    elif peneFunc[p].find('additive') == 0: # start with additive
-      print "Using additive penetrance function"
-      summary += "<h4>Additive single-locus, heterogeneity multi-locus</h4>\n"
-      s = drawSamples(pop, additive(penePara[p]), numSample)
-    elif peneFunc[p].find('custom') == 0: # start with custom
-      print "Using customized penetrance function"
-      summary += "<h4>Customized penetrance function</h4>\n"
-      s = drawSamples(pop, customPene(penePara[p]), numSample)
+    summ = drawSamples(pop, 
+      peneFunc[p], penePara[p], # penetrance and parameter
+      numSample,    # number of sample for each setting
+      saveFormat,   # save samples in which format
+      dataDir,      # directory to save files
+      reAnalyzeOnly # whether or not load sample directly
+    )
+    summary += summ
     # calculate population statistics like prevalence
     result.update( popStat(pop, peneFunc[p]) )
     # for each sample
@@ -1437,61 +1546,7 @@ def processOnePopulation(dataDir, numChrom, numLoci, markerType,
       penDir = dataDir + "/" + peneFunc[p] + str(sn)
       relDir = 'pop_%d/%s%d/' % (popIdx, peneFunc[p], sn)
       _mkdir(penDir)
-      summary += "<p>Case-control, affected and unaffected sibpairs saved in different formats. Sample sizes are "
-      if s[sn][0] != None:
-        summary += str(s[sn][0].popSize()) + " (case-control), "
-      if s[sn][1] != None:
-        summary += str(s[sn][1].popSize()) + " (affected sibs), "
-      if s[sn][2] != None:
-        summary += str(s[sn][2].popSize()) + " (unaffected sibs) "
-      summary += '<ul>'
-      # write samples to different format
-      if 'simuPOP' in saveFormat:
-        print "Write to simuPOP binary format"
-        summary += '<li>simuPOP binary format:'
-        if s[sn][0] != None: # has case control
-          binFile = penDir + "/caseControl.bin"
-          s[sn][0].savePopulation(binFile)
-          summary += '<a href="%scaseControl.bin"> caseControl.bin</a>, ' % relDir
-        if s[sn][1] != None: # has affected sibpairs
-          binFile = penDir + "/affectedSibpairs.bin"
-          s[sn][1].savePopulation(binFile)
-          summary += '<a href="%saffectedSibpairs.bin"> affectedSibpairs.bin</a>, ' % relDir
-        if s[sn][2] != None:
-          binFile = penDir + "/unaffectedSibpairs.bin"
-          s[sn][2].savePopulation(binFile)
-          summary += '<a href="%sunaffectedSibpairs.bin"> unaffectedSibpirs.bin</a>, ' % relDir
-        summary += '</li>\n'
-      if 'Linkage' in saveFormat:
-        print "Write to linkage format"
-        summary += '<li>Linkage format by chromosome:'
-        linDir = penDir + "/Linkage/"
-        _mkdir(linDir)
-        # here we are facing a problem of using which allele frequency for the sample
-        # In reality, if it is difficult to estimate population allele frequency,
-        # sample frequency has to be used. Otherwise, population frequency should 
-        # be used whenever possible. Here, we use population allele frequency, with only
-        # one problem in that we need to remove frequencies at DSL (since samples do not
-        # have DSL).
-        af = []
-        Stat(pop, alleleFreq=range(pop.totNumLoci()))
-        for x in range( pop.totNumLoci() ):
-          if x not in pop.dvars().DSL:
-            af.append( pop.dvars().alleleFreq[x] )
-        if s[sn][1] != None: # has case control
-          for ch in range(0, pop.numChrom() ):
-            SaveLinkage(pop=s[sn][1], popType='sibpair', output = linDir+"/Aff_%d" % ch,
-              chrom=ch, recombination=pop.dvars().recombinationRate,
-              alleleFreq=af, daf=0.1)        
-          summary +=  '<a href="%sLinkage">affected</a>, ' % relDir
-        if s[sn][2] != None:
-          for ch in range(0,pop.numChrom() ):
-            SaveLinkage(pop=s[sn][2], popType='sibpair', output = linDir+"/Unaff_%d" % ch,
-              chrom=ch, recombination=pop.dvars().recombinationRate,                            
-              alleleFreq=af, daf=0.1)        
-          summary += '<a href="%sLinkage">unaffected</a>' % relDir
-        summary += '</li>\n'
-      summary += '</ul>\n'
+
       # if there is a valid gene hunter program, run it
       (suc,res) = TDT(geneHunter, pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
         penDir, "/Linkage/Aff", penDir + "/TDT.eps", penDir + "/TDT.jpg")
@@ -1640,7 +1695,7 @@ if __name__ == '__main__':
     mlSelModelTmp, numSubPop, finalSize, noMigrGen,
     mixingGen, growth, migrModel, migrRate, mutaRate, recRate,
     numRep, saveFormat, peneFunc, peneParaTmp, N, numSample, outputDir,
-    overwrite, geneHunter, dryrun, saveConfig) = allParam
+    geneHunter, resampleOnly, reAnalyzeOnly, dryrun, saveConfig) = allParam
   #
   # this may not happen at all but we do need to be careful
   if initSize < len(DSLafter):
@@ -1752,7 +1807,7 @@ if __name__ == '__main__':
       for rec in recRate:
         for rep in range(numRep):
           # outputDir should already exist
-          dataDir = outputDir + "/pop_" + str(popIdx)
+          dataDir = outputDir + os.sep + "pop_" + str(popIdx)
           _mkdir(dataDir)      
           (text, result) =  processOnePopulation(dataDir,
             numChrom, numLoci, markerType, 
@@ -1760,7 +1815,7 @@ if __name__ == '__main__':
             minAlleleFreq, maxAlleleFreq, fitness, mlSelModel, numSubPop, 
             finalSize, noMigrGen, mixingGen, popSizeFunc, migrModel, 
             mu, mi, rec, expandedPeneFunc, expandedPenePara, N, numSample,
-            geneHunter, dryrun, popIdx)
+            geneHunter, resampleOnly, reAnalyzeOnly, dryrun, popIdx)
           summary += text
           results.append( result)
           popIdx += 1

@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Bo Peng                                         *
- *   bpeng@rice.edu  
+ *   bpeng@rice.edu
  *                                                                         *
  *   $LastChangedDate$
  *   $Rev$                                                      *
@@ -1513,14 +1513,18 @@ namespace simuPOP
         else if( ! m_name.empty() )
           sampleName = m_name;
 
-        PyObject * s = pop.getVar(sampleName);
+        try
+        {
+          PyObject * s = pop.getVar(sampleName);
+          Py_INCREF(s);
 
-        DBG_ASSERT( s!=NULL, ValueError,
-          "Could not find generated sample. with name " + sampleName);
-
-        Py_INCREF(s);
-
-        return s;
+          return s;
+        }
+        catch(...)                                // if there is no sample
+        {
+          Py_INCREF(Py_None);
+          return(Py_None);
+        }
       }
 
       virtual bool apply(Pop& pop)
