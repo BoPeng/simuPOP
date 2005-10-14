@@ -390,7 +390,7 @@ def getStats(v, highest):
 #
 def PlotSpectra(pop, param):
   " swtich from old-style python plotter to new style, use pyOperator"
-  (numDSL, saveAt, highest, plot, logFile) = param
+  (numDSL, saveAt, highest, plot, plotLabel, logFile) = param
   # use global logOutput handle
   # this is less efficient but make sure we can see partial results
   logOutput = open(logFile, "a")
@@ -460,7 +460,7 @@ def PlotSpectra(pop, param):
     cx = 1
   maxPerc = 0
   # windows 2
-  r.ltitle('Ne', backcolor='white', forecolor='darkblue', cex=cx)
+  r.ltitle('Effective\nnumber\n of \nalleles', backcolor='white', forecolor='blue', cex=cx)
   # window 4
   r.ltitle('DSL')
   for d in range(0, numDSL):
@@ -471,19 +471,13 @@ def PlotSpectra(pop, param):
   # the second column
   # windows 1
   r.ltitle('History of effective number of alleles'),
-  # windows 2
-  #r.assign('x', NeHist[0])
-  #r.assign('y', NeHist[1])
-  #r.assign('m', NeMax)
-  #r('''plot(x, y, ylim=c(0, m*5./4.), col=1,
-  #  axes = FALSE, type='n')''')
   r.plot(NeHist[0], NeHist[1], ylim=[0, NeMax*5./4.], col=1,
     axes = False, type='n', xlab='', ylab='')
   # r.axis(1, pos=1)
   r.axis(2, r.pretty([0, NeMax], n=2))
   r.box()
   for d in range(0, numDSL):
-    r.points(NeHist[0], NeHist[d+1], type='b', col=d+1)
+    r.lines(NeHist[0], NeHist[d+1], type='l', col=d+1)
   #
   for d in range(1, numDSL):
     if len(perc[d]) > 0 and perc[d][0] > maxPerc:
@@ -499,6 +493,7 @@ def PlotSpectra(pop, param):
         xlim=[0,10], cex=5)
       l = len(perc[d])
       r.rect(range(l), [0]*l, range(1,l+1), perc[d], col=d+1, border='white')
+      r.text(4, maxPerc*2./3., plotLabel[d], cex=1.5, adj=0)
       r.axis(1)
       r.axis(2, r.pretty([0, maxPerc], n=2), 
         r.paste(r.pretty([0, 100*maxPerc], n=2)))
@@ -591,6 +586,10 @@ def simuCDCV( numDSL, initSpec, selModel,
   global allelesBeforeExpansion
   allelesBeforeExpansion = []
   global NeHist, NeMax
+  # determine plot label
+  plotLabel = []
+  for i in range(numDSL):
+    plotLabel.append('mu=%g, s=%g' % (mutaRate[i], selCoef[i]))
   # history of Ne, the first one is gen
   NeHist = []
   for i in range(numDSL+1):
@@ -626,7 +625,7 @@ def simuCDCV( numDSL, initSpec, selModel,
       # migration
       migration, 
       # visualizer
-      pyOperator(func=PlotSpectra, param=(numDSL, saveAt, 50, dispPlot, logFile), step=update ),
+      pyOperator(func=PlotSpectra, param=(numDSL, saveAt, 50, dispPlot, plotLabel, logFile), step=update ),
       # monitor execution time
       ticToc(step=100),
       ## pause at any user key input (for presentation purpose)

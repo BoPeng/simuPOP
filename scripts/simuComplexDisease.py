@@ -352,7 +352,7 @@ options = [
    'configName': 'Final population size',
    'prompt': 'Final population size (sum of all subpopulations) (200000):  ',
    'allowedTypes': [types.IntType, types.LongType],
-   'description': 'Ending population size (after expansion.',
+   'description': 'Final population size after population expansion.',
    'validate':  simuOpt.valueGT(0)
   }, 
   {'longarg': 'noMigrGen=',
@@ -718,7 +718,7 @@ def dynaAdvSelector(pop):
     # encourage slightly towards upper bound
       sel.append( maSelector(locus=DSL[i], wildtype=[1], fitness=[1,1.02,1.04]) )
       print ' ',
-    # apply multi-locus selector, note that this opertor will only
+    # apply multi-locus selector, note that this operator will only
     # set a variable fitness in pop, actual selection happens during mating.
     if len(sel ) > 0:  # need adjustment (needed if 'else' part is empty)
       MlSelect( pop, sel, mode=SEL_Multiplicative)

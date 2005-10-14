@@ -14,6 +14,9 @@ Roadmap: test and documentation:
   1/4 Proofread simuPOP user's guide and reference manual
 
 Roadmap: scripts:
+  2/1 add a few population conversion, sampling scripts in scripts directory.
+      For example, a script that can load some formats and save to others, and
+      another script to sample from them.
   3/2 add mutation etc to simuLDDecay.py (use useRpy and print figure. Genrate html report...)
   5/6 add models from population genetics book
   7/7 write simuEasyPop
