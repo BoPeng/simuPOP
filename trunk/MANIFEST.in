@@ -4,7 +4,7 @@ include config_solaris.h config_win32.h config_linux.h config_mac.h
 include doc/userGuide.pdf doc/userGuide.py doc/refManual.pdf
 include misc/README misc/python-mode.el misc/emacs-python.el 
 include src/simuPOP.py src/simuOpt.py src/simuPOP_std.py src/simuPOP_op.py src/simuUtil.py src/simuSciPy.py src/simuMatPlt.py 
-include src/simuPOP_la.py src/simuPOP_laop.py src/simuRPy.py 
+include src/simuPOP_la.py src/simuPOP_laop.py src/simuRPy.py src/simuViewPop.py
 include src/simuPOP_std_wrap.cpp src/simuPOP_op_wrap.cpp src/simuPOP_la_wrap.cpp src/simuPOP_laop_wrap.cpp
 recursive-include test test_*.py 
 recursive-include gsl *
