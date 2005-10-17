@@ -2727,6 +2727,75 @@ pop.dvars().diseaseLoci = [4, 30]
 \layout LyX-Code
 
 SavePopulation(pop, 'pop.bin')
+\layout Subsection
+
+View a population (GUI, wxPython required)
+\layout Standard
+
+Introduced in ver 0.6.9, 
+\family typewriter 
+simuViewPop.py
+\family default 
+ can be used to view a population.
+ It can be used as a standalone application, or in an interactive session.
+ First, you can use this script as a standalone application, simply run
+\layout LyX-Code
+
+simuViewPop.py mypop.bin
+\layout Standard
+
+will fire a GUI (Figure 
+\begin_inset LatexCommand \ref{viewpop}
+
+\end_inset 
+
+) and allow you to exam population property, genotype and calculate statistics.
+ 
+\layout Standard
+
+
+\begin_inset Float figure
+wide false
+collapsed true
+
+\layout Caption
+
+
+\begin_inset LatexCommand \label{viewpop}
+
+\end_inset 
+
+simuViewPop.py
+\layout Standard
+\align center 
+
+\begin_inset Graphics
+	filename viewPop.eps
+	width 6in
+
+\end_inset 
+
+
+\end_inset 
+
+
+\layout Standard
+
+In a Python session, import this module will provide a function 
+\family typewriter 
+viewPop
+\family default 
+, apply it on a in-memory population or a filename will have the same effect.
+ For example, 
+\layout LyX-Code
+
+import simuViewPop
+\layout LyX-Code
+
+simuViewPop.viewPop(myPop)
+\layout LyX-Code
+
+simuViewPop.viewPop(filename='mypop.bin')
 \layout Section
 
 Mating Scheme

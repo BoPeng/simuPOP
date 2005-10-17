@@ -13128,6 +13128,7 @@ src/simuPOP_std_wrap.cpp
 src/simuRPy.py
 src/simuSciPy.py
 src/simuUtil.py
+src/simuViewPop.py
 src/simulator.h
 src/simupop_cfg.h
 src/stator.h
