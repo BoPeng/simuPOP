@@ -226,7 +226,7 @@ setup(
   url = "http://bp6.stat.rice.edu:8080/simuPOP",
   package_dir = {'': 'src'}, 
   py_modules = ['simuPOP', 'simuOpt', 'simuPOP_std', 'simuPOP_op', 'simuPOP_la', 'simuPOP_laop', 
-    'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy'],
+    'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop'],
   ext_modules = [
     Extension('_simuPOP_std',
       extra_compile_args=['-O2'],

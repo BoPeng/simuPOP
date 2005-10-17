@@ -1191,11 +1191,11 @@ def LoadCSV(file):
       ind = offPop.individual(curOff, info[0])
       curOff += 1        
     # get genotype of chromosome 1, ploidy 0
-    geno = ind.arrAlleles(0,i)
+    geno = ind.arrGenotype(0,i)
     for loc in range(0,offPop.numLoci(i)):
       geno[loc] = info[4+2* lociOrder[i][loc] ]
     # ploidy 1
-    geno = ind.arrAlleles(1,i)
+    geno = ind.arrGenotype(1,i)
     for loc in range(0,offPop.numLoci(i)):
       geno[loc] = info[5+2* lociOrder[i][loc] ]
     ind.setSex( sexCode( info[2] ))
