@@ -22,6 +22,9 @@ version 0.6.9 -  currently available as daily snapshot
   - fix a bug in AffectedSibpairSample with countOnly parameter. (Not able to
     handle None return.)
   - add parameter --resampleOnly and --reAnalyzeOnly
+  - remove --optimzied --optimized etc from sys.argv after processing in simuOpt.py
+  - add simuViewPop.py (module and command) that can load and view popularion
+    property, calculate statistics etc.
 
 version 0.6.8 - Sep 21st, 2005
   - fix a reporting bug in simuCDCV.py

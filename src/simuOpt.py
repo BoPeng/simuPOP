@@ -978,6 +978,13 @@ env_longAllele = os.getenv('SIMULONGALLELE')
 [par_useTkinter] = termGetParam([{'longarg':'useTkinter', \
     'default':False }], False)
 
+# remove these parameters from sys.argv
+for arg in ['--optimized', '--longAllele', '--quiet', '-q', '--useTkinter']:
+  try:
+    sys.argv.remove( arg)
+  except:
+    pass
+
 if par_optimized != '':
   _optimized = par_optimized
 elif env_optimized != None:

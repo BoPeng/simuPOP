@@ -13090,10 +13090,13 @@ gsl/sys/.svn/text-base/pow_int.c.svn-base
 misc/README
 misc/emacs-python.el
 misc/python-mode.el
+scripts/popStat.py
 scripts/simuCDCV.py
 scripts/simuComplexDisease.py
 scripts/simuEasyPop.py
 scripts/simuLDDecay.py
+scripts/popStat-boa/App1.py
+scripts/popStat-boa/Frame1.py
 src/arraymodule.c
 src/individual.h
 src/initializer.h
