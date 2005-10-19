@@ -703,7 +703,7 @@ def LoadGCData(file, loci=[]):
 
 #    
 def SaveLinkage(pop, popType='sibpair', output='', outputExpr='', alleleFreq=[], 
-   recombination=0.001, penetrance=[0,0.25,0.5], chrom=[], exclude=[], pre=True, daf=0.001):
+   recombination=0.00001, penetrance=[0,0.25,0.5], chrom=[], exclude=[], pre=True, daf=0.001):
   """ save population in Linkage format. Currently only
     support affected sibpairs sampled with affectedSibpairSample
     operator.

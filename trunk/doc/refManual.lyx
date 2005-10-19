@@ -2754,30 +2754,14 @@ will fire a GUI (Figure
 \layout Standard
 
 
-\begin_inset Float figure
-wide false
-collapsed true
-
-\layout Caption
-
-
-\begin_inset LatexCommand \label{viewpop}
-
-\end_inset 
-
-simuViewPop.py
-\layout Standard
-\align center 
-
 \begin_inset Graphics
-	filename viewPop.eps
+	filename viewPop.png
 	width 6in
 
 \end_inset 
 
 
-\end_inset 
-
+\layout Standard
 
 \layout Standard
 
