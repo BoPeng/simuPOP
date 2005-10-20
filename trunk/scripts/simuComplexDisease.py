@@ -1084,7 +1084,7 @@ def drawSamples(pop, peneFunc, penePara, numSample, saveFormat, dataDir, reAnaly
   elif peneFunc.find('custom') == 0: # start with custom
     print "Using customized penetrance function"
     report += "<h4>Customized penetrance function</h4>\n"
-    penFun = customPene(penePara)  
+    penFun = custom(penePara)  
   # this may or may not be important. Previously, we only
   # set penetrance for the final genetion but linkage methods
   # may need penetrance info for parents as well.
