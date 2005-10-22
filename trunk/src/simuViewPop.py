@@ -373,6 +373,7 @@ class popStatDialog(wx.Dialog):
     if popFileName != '':  # give filename
       # try to load population
       try:
+        print "Loading population", popFileName
         self.pop = LoadPopulation(popFileName)
         self.popFileName = popFileName
         self.txt_filename.SetValue(popFileName)

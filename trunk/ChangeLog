@@ -5,7 +5,14 @@ NOTE: Daily snapshot reflects current SVN version but might not be stable.
 
 Known bugs     - all fixed now
     
-version 0.6.9 -  currently available as daily snapshot
+version 0.7.0 - currently available as daily snapshot
+  - add recCount(loc) and recCount() to recombinator to track
+    the number of recombination event.
+  - add mutationCount(loc) and mutationCounts() to muators to track
+    the number of mutation event.
+  - add atPloidy=[0] to pointMutator.
+
+version 0.6.9 (Rev71) - Nov, 19th,  2005
   - add pyOperator, the ultimate hybrid operator, this will considerably simplify many
     coomplicated tasks 
   - start to convert all test cases to PyUnit. This means better test cases and more

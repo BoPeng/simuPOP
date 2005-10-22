@@ -2349,8 +2349,13 @@ T Expression::valueAs##TypeName() \
     // we certainly like a single number but it is often the case that
     // svn local copy is not up to date.
     int num;
-    sscanf(rev, "%d", &num);
-    return num;
+    // first try XX:XX or XX:XXM
+    if( sscanf(rev, "%*d:%d", &num) == 1) //success
+      return num;
+    else if( sscanf(rev, "%d", &num) == 1) // XX or XXM
+      return num;
+    else
+      return 0;
   }
 
   string simuVer()
