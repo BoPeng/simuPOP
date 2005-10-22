@@ -853,7 +853,7 @@ Usage:
 
 %ignore simuPOP::GenoStructure::GenoStructure();
 
-%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociDist, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele);
+%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele);
 
 %ignore simuPOP::GenoStructure::GenoStructure(const GenoStructure &rhs);
 
@@ -885,7 +885,7 @@ Usage:
 
 ";
 
-%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociDist, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele);
+%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele);
 
 %feature("docstring")  simuPOP::GenoStruTrait::setGenoStructure " 
 
@@ -952,12 +952,12 @@ Usage:
 
 ";
 
-%feature("docstring")  simuPOP::GenoStruTrait::locusDist " 
+%feature("docstring")  simuPOP::GenoStruTrait::locusPos " 
 
 locus distance.
 
 Usage:
-  x.locusDist()
+  x.locusPos()
 
 ";
 
@@ -3680,7 +3680,7 @@ create a population object with given size and genotypic structure
 
 Usage:
   population(size=1, ploidy=2, &loci=[], sexChrom=False,
-    &lociDist=[], &subPop=[], ancestralDepth=0, &alleleNames=[],
+    &lociPos=[], &subPop=[], ancestralDepth=0, &alleleNames=[],
     &lociNames=[], maxAllele=MaxAllele)
 
 Arguments:
@@ -3694,7 +3694,7 @@ Arguments:
       specified, assume a single locus on one chromosome. Number of
       chromosomes is determined by the size of this array.
       
-  lociDist:  an array of loci distance for each locus. You can also
+  lociPos:  an array of loci distance for each locus. You can also
       use a nested array to specify loci distance for each chromosome.
       ( [1,2,3,4,5] or [[1,2],[3,4,5]] are both allowed for
       loci=[2,3]) The default values are 1, 2, etc. on each

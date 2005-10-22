@@ -11,6 +11,8 @@ version 0.7.0 - currently available as daily snapshot
   - add mutationCount(loc) and mutationCounts() to muators to track
     the number of mutation event.
   - add atPloidy=[0] to pointMutator.
+  - replace lociDist and locusDist by lociPos and locusPos. This kind of term 
+    change should be done as soon as possible.
 
 version 0.6.9 (Rev71) - Nov, 19th,  2005
   - add pyOperator, the ultimate hybrid operator, this will considerably simplify many

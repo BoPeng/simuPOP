@@ -202,7 +202,7 @@ namespace simuPOP
           {
             cout << "\t\t";
             for(UINT i=0; i < pop.numLoci(ch); ++i)
-              out << pop.locusDist( pop.absLocusIndex(ch,i) ) << " ";
+              out << pop.locusPos( pop.absLocusIndex(ch,i) ) << " ";
             out << endl;
           }
           out << "Loci names: " << endl;

@@ -19,13 +19,13 @@ class TestPopulation(unittest.TestCase):
   def setUp(self):
     ' set up a population with given property'
     self.pop = population(size=100, ploidy=2, loci=[5, 7], \
-      subPop=[20, 80], lociDist=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], \
+      subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], \
       maxAllele=4, alleleNames=['_','A','C','T','G']) 
 
   def testNewPopulation1(self):
     ' no exception '
     population(size=100, ploidy=2, loci=[5, 7], subPop=[20, 80],
-      lociDist=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+      lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
       maxAllele=4, alleleNames=['_','A','C','T','G'])
     
   def testNewPopulation2(self):
@@ -39,21 +39,21 @@ class TestPopulation(unittest.TestCase):
 
   def testNewPopulation3(self):
     self.assertRaises(TypeError, 
-      population(subPop=[2], lociDist=[1,2]) )
+      population(subPop=[2], lociPos=[1,2]) )
       
   def testNewPopulation4(self):
-    population(subPop=[2], loci=[2], lociDist=[[1,2]])
+    population(subPop=[2], loci=[2], lociPos=[[1,2]])
 
   def testNewPopulation5(self):
-    population(subPop=[2], loci=[2], lociDist=[[1,2]])
+    population(subPop=[2], loci=[2], lociPos=[[1,2]])
 
   def testNewPopulation6(self):
     self.assertRaises(TypeError,   
-      population(subPop=[2], loci=2, lociDist=[[2,1]]) )
+      population(subPop=[2], loci=2, lociPos=[[2,1]]) )
     
   def testNewPopulation6(self):
     self.assertRaises(ValueError, 
-      population(subPop=[2], loci=[2], lociDist=[[2,1]]) )
+      population(subPop=[2], loci=[2], lociPos=[[2,1]]) )
 
   def testPopSize(self):
     self.assertEqual(self.pop.popSize(), 100)
@@ -74,7 +74,7 @@ class TestPopulation(unittest.TestCase):
       self.pop.numLoci(2) )
     
   def testLocusDist(self):
-    self.assertEqual( self.pop.locusDist(10), 12)
+    self.assertEqual( self.pop.locusPos(10), 12)
     
   def testArrLociDist(self):
     self.assertEqual( len( self.pop.arrLociDist()), 12)
@@ -92,7 +92,7 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual( self.pop.chromLocusPair(10), (1,5) )
     
   def testLocusDist(self):
-    self.assertEqual( self.pop.locusDist( a.absLocusIndex(1,2) ), 6)
+    self.assertEqual( self.pop.locusPos( a.absLocusIndex(1,2) ), 6)
     
   def testNumSubPop(self):
     self.assertEqual( self.pop.numSubPop(), 2)

@@ -85,7 +85,7 @@ namespace simuPOP
 
       /// CPPONLY serialization library requires a default constructor
       GenoStructure():m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
-        m_numLoci(0), m_sexChrom(false), m_lociDist(0), m_chromIndex(0),
+        m_numLoci(0), m_sexChrom(false), m_lociPos(0), m_chromIndex(0),
         m_alleleNames(), m_lociNames(), m_maxAllele()
         {}
 
@@ -93,17 +93,17 @@ namespace simuPOP
       CPPONLY
       \param ploidy number of sets of chromosomes
       \param loci number of loci on each chromosome.
-      \param lociDist loci distance on each chromosome. the default values
+      \param lociPos loci distance on each chromosome. the default values
          are 1,2,etc.
       \param alleleNames allele names. The first one should be given to 'invalid' allele
       \param lociNames name of loci
       \param maxAllele maximum possible allele number for all alleles.
       */
       GenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
-        const vectorf& lociDist, const vectorstr& alleleNames,
+        const vectorf& lociPos, const vectorstr& alleleNames,
         const vectorstr& lociNames, UINT maxAllele)
         :m_ploidy(ploidy),  m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom),
-        m_lociDist(lociDist), m_chromIndex(loci.size()+1),
+        m_lociPos(lociPos), m_chromIndex(loci.size()+1),
         m_alleleNames(alleleNames), m_lociNames(lociNames), m_maxAllele(maxAllele)
       {
 
@@ -128,24 +128,24 @@ namespace simuPOP
         m_totNumLoci = m_chromIndex[m_numChrom];
         m_genoSize = m_totNumLoci*m_ploidy;
 
-        // if lociDist not specified, use 1,2,3.. 1,2,3. .. on each chromosome.
-        if( m_lociDist.empty() )
+        // if lociPos not specified, use 1,2,3.. 1,2,3. .. on each chromosome.
+        if( m_lociPos.empty() )
         {
-          m_lociDist.resize(m_totNumLoci);
+          m_lociPos.resize(m_totNumLoci);
           for (i = 0; i < m_numChrom; ++i)
             for (j = 0; j < m_numLoci[i]; j++)
-              m_lociDist[m_chromIndex[i]+j] = j + 1;
+              m_lociPos[m_chromIndex[i]+j] = j + 1;
         }
 #ifndef NDEBUG
         else                                      // check loci distance
         {
           // loci distance, if specified, chould have length of chromosome.
-          DBG_FAILIF( m_lociDist.size() != m_totNumLoci, ValueError,
+          DBG_FAILIF( m_lociPos.size() != m_totNumLoci, ValueError,
             "You should specify loci distance for every locus (" + toStr(m_totNumLoci) + ")");
 
           for( i=0; i < m_numChrom; ++i)
             for (j = 0; j < m_numLoci[i]; ++j)
-              DBG_FAILIF( j > 0 && fcmp_lt( m_lociDist[m_chromIndex[i]+j], m_lociDist[m_chromIndex[i]+j-1]),
+              DBG_FAILIF( j > 0 && fcmp_lt( m_lociPos[m_chromIndex[i]+j], m_lociPos[m_chromIndex[i]+j-1]),
                 ValueError, "Loci distance must be in order.");
         }
 #endif
@@ -168,7 +168,7 @@ namespace simuPOP
         m_numChrom(rhs.m_numChrom),
         m_numLoci(rhs.m_numLoci),
         m_sexChrom(rhs.m_sexChrom),
-        m_lociDist(rhs.m_lociDist),
+        m_lociPos(rhs.m_lociPos),
         m_chromIndex(rhs.m_chromIndex),
         m_alleleNames(rhs.m_alleleNames),
         m_lociNames(rhs.m_lociNames),
@@ -183,7 +183,7 @@ namespace simuPOP
           ( m_ploidy == rhs.m_ploidy) &&
           ( m_numLoci == rhs.m_numLoci) &&
           ( m_sexChrom == rhs.m_sexChrom) &&
-          ( m_lociDist == rhs.m_lociDist) &&
+          ( m_lociPos == rhs.m_lociPos) &&
           ( m_alleleNames == rhs.m_alleleNames) &&
           ( m_lociNames == rhs.m_lociNames) &&
           ( m_maxAllele == rhs.m_maxAllele) ) )
@@ -237,7 +237,7 @@ namespace simuPOP
         ar & make_nvp("num_of_chrom", m_numChrom);
         ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
         ar & make_nvp("sex_chromosome", m_sexChrom);
-        ar & make_nvp("loci_distance_on_chrom", m_lociDist);
+        ar & make_nvp("loci_distance_on_chrom", m_lociPos);
         ar & make_nvp("allele_name", m_alleleNames);
         ar & make_nvp("loci_name", m_lociNames);
         ar & make_nvp("max_allele", m_maxAllele);
@@ -255,7 +255,7 @@ namespace simuPOP
           ar & make_nvp("sex_chromosome", m_sexChrom);
         else
           m_sexChrom = false;
-        ar & make_nvp("loci_distance_on_chrom", m_lociDist);
+        ar & make_nvp("loci_distance_on_chrom", m_lociPos);
         ar & make_nvp("allele_name", m_alleleNames);
         ar & make_nvp("loci_name", m_lociNames);
         ar & make_nvp("max_allele", m_maxAllele);
@@ -291,7 +291,7 @@ namespace simuPOP
       bool m_sexChrom;
 
       /// position of loci on chromosome, recommended with unit cM
-      vectorf m_lociDist;
+      vectorf m_lociPos;
 
       /// loci index
       vectoru m_chromIndex;
@@ -341,11 +341,11 @@ namespace simuPOP
       /// set genotypic structure
       /// CPPONLY
       void setGenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
-        const vectorf& lociDist, const vectorstr& alleleNames,
+        const vectorf& lociPos, const vectorstr& alleleNames,
         const vectorstr& lociNames, UINT maxAllele)
       {
         GenoStructure* tmp = new GenoStructure( ploidy, loci, sexChrom,
-          lociDist, alleleNames, lociNames, maxAllele);
+          lociPos, alleleNames, lociNames, maxAllele);
         for(vector<GenoStructure*>::iterator it = g_genoStruRepository.begin();
           it != g_genoStruRepository.end(); ++it)
         {
@@ -467,19 +467,19 @@ namespace simuPOP
       }
 
       /// locus distance.
-      double locusDist(UINT locus) const
+      double locusPos(UINT locus) const
       {
         DBG_FAILIF( m_genoStru == NULL, SystemError,
-          "locusDist: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
+          "locusPos: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
         CHECKRANGEABSLOCUS(locus);
-        return m_genoStru->m_lociDist[locus];
+        return m_genoStru->m_lociPos[locus];
       }
 
       /// return loci distance as python Numeric.array object
       PyObject* arrLociDist()
       {
-        return Double_Vec_As_NumArray( totNumLoci(), &(m_genoStru->m_lociDist[0]), false);
+        return Double_Vec_As_NumArray( totNumLoci(), &(m_genoStru->m_lociPos[0]), false);
       }
 
       /// number of chromosome

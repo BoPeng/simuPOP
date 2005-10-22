@@ -699,13 +699,13 @@ SaveSimulator.__doc__ = "Function versionof member function simulator::saveSimul
 
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
 def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False, 
-  lociDist=[], subPop=[], ancestralDepth=0, alleleNames=[], lociNames=[],
+  lociPos=[], subPop=[], ancestralDepth=0, alleleNames=[], lociNames=[],
   maxAllele=MaxAllele):
-    ld = lociDist
-    if len(lociDist) > 0 and type(lociDist[0]) in [types.TupleType, types.ListType]:
+    ld = lociPos
+    if len(lociPos) > 0 and type(lociPos[0]) in [types.TupleType, types.ListType]:
        ld = []
-       for i in range(0, len(lociDist)):
-         ld.extend( lociDist[i])
+       for i in range(0, len(lociPos)):
+         ld.extend( lociPos[i])
     ln = lociNames
     if len(lociNames) > 0 and type(lociNames[0]) in [types.TupleType, types.ListType]:
        ln = []

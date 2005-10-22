@@ -111,7 +111,7 @@ namespace simuPOP
       \param loci an array of numbers of loci on each chromosome. If
          not specified, assume a single locus on one chromosome. Number
          of chromosomes is determined by the size of this array.
-      \param lociDist an array of loci distance for each locus. You can
+      \param lociPos an array of loci distance for each locus. You can
          also use a nested array to specify loci distance for each chromosome.
          ( [1,2,3,4,5] or [[1,2],[3,4,5]] are both allowed for loci=[2,3])
          The default values are 1, 2, etc. on each chromosome.
@@ -140,7 +140,7 @@ namespace simuPOP
         UINT ploidy=2,
         const vectoru& loci=vectoru(),
         bool sexChrom=false,
-        const vectorf& lociDist=vectorf(),
+        const vectorf& lociPos=vectorf(),
         const vectorlu& subPop=vectorlu(),
         int ancestralDepth=0,
         const vectorstr& alleleNames=vectorstr(),
@@ -181,7 +181,7 @@ namespace simuPOP
 
         // get a GenoStructure with parameters. GenoStructure may be shared by some populations
         // a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
-        this->setGenoStructure(ploidy, loci, sexChrom, lociDist, alleleNames, lociNames, maxAllele );
+        this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames, lociNames, maxAllele );
 
         // size of genotypic data for the whole population
         m_popGenoSize = totNumLoci() * ploidy * m_popSize;
@@ -1193,7 +1193,7 @@ namespace simuPOP
           }
           else
             newNumLoci.back()++;
-          newLociDist.push_back( this->locusDist(*loc));
+          newLociDist.push_back( this->locusPos(*loc));
           newLociNames.push_back( this->locusName(*loc));
         }
 
