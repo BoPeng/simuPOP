@@ -6067,6 +6067,27 @@ atLoci
 is defaulted to all loci.
  The only differences between the following mutors are they way they actually
  mutate an allele, and corresponding input parameters.
+\layout Standard
+
+Mutators record the number of mutation events at each loci.
+ You can retrieve this information using
+\layout LyX-Code
+
+mut.mutationCount(locus)
+\layout LyX-Code
+
+mut.mutationCounts()
+\layout Standard
+
+where 
+\family typewriter 
+mut
+\family default 
+ is any mutator and 
+\family typewriter 
+locus
+\family default 
+ is locus index.
 \layout Subsection
 
 Operator (C++) 
@@ -6474,6 +6495,28 @@ is true, there is no recombination between the last chromosome (sex chromosomes
  XY) of male individuals.
  This may change later if the exchanges of genes between pseudoautosomal
  region of XY need to be modeled.
+\layout Standard
+
+Recombinations after each locus will be recorded.
+ You can retrieve this information through functions
+\layout LyX-Code
+
+rec.recCount(locus)
+\layout LyX-Code
+
+rec.recCounts()
+\layout Standard
+
+where 
+\family typewriter 
+rec
+\family default 
+ is the recombinator, 
+\family typewriter 
+locus
+\family default 
+ is locus index.
+ 
 \layout Section
 
 Selection
