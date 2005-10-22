@@ -13,6 +13,9 @@ version 0.7.0 - currently available as daily snapshot
   - add atPloidy=[0] to pointMutator.
   - replace lociDist and locusDist by lociPos and locusPos. This kind of term 
     change should be done as soon as possible.
+  - add simuRecHotSpot.py which is used to generate SNP sample that can be used
+    to estimate recombination rate between markers.
+  - convert test_mutator.py to unittest framework.
 
 version 0.6.9 (Rev71) - Nov, 19th,  2005
   - add pyOperator, the ultimate hybrid operator, this will considerably simplify many
