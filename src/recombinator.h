@@ -101,7 +101,7 @@ namespace simuPOP
         m_rate(rate), m_maleRate(maleRate),
         m_afterLoci(afterLoci), m_maleAfterLoci(maleAfterLoci),
         m_recBeforeLoci(0), m_maleRecBeforeLoci(0),
-        m_bt(rng()), m_maleBt(rng())
+        m_bt(rng()), m_maleBt(rng()), m_recCount(0)
       {
         // tells mating schemes that this operator will form
         // the genotype of offspring so they do not have to
@@ -306,7 +306,25 @@ namespace simuPOP
             << vecP << " before " << recBeforeLoci << endl);
         }
 
+        /// initialize recombination counter,
+        /// This will count recombination events after
+        /// each locus.
+        m_recCount.resize( pop.totNumLoci(), 0);
         return;
+      }
+
+      /// return recombination count
+      ULONG recCount(size_t locus)
+      {
+        DBG_ASSERT( locus < m_recCount.size(), IndexError,
+          "locus index " + toStr(locus) + " is out of range");
+        return m_recCount[locus];
+      }
+
+      /// return recombination counts
+      vectoru recCounts()
+      {
+        return m_recCount;
       }
 
       // this function implement how to recombine
@@ -347,6 +365,7 @@ namespace simuPOP
 
           // copy from 0 to the first occurance
           copy(curCp, curCp+recBeforeLoci[pos], off);
+          m_recCount[recBeforeLoci[pos]-1]++;
 
           // then switch to another chromosome copy
           curCp = (curCp == cp[0]) ? cp[1] : cp[0];
@@ -359,6 +378,7 @@ namespace simuPOP
             copy(curCp+recBeforeLoci[pos],
               curCp+recBeforeLoci[newpos],
               off+recBeforeLoci[pos]);
+            m_recCount[recBeforeLoci[newpos]-1]++;
             pos = newpos;
             // switch
             curCp = (curCp == cp[0]) ? cp[1] : cp[0];
@@ -453,6 +473,9 @@ namespace simuPOP
 
       /// whether or not set sex (population having sex chromosome)
       bool m_setSex;
+
+      /// report the number of recombination events
+      vectoru m_recCount;
   };
 
 }

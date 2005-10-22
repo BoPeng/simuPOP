@@ -152,6 +152,24 @@ class TestRecombinator(unittest.TestCase):
       "Decay of LD is not as expected: " + str(simu.dvars(0).LD[0][1]) + " vs expected " \
       + str( 0.25*(1-r)**10 )
 
+  def testRecCount(self):
+    ' test count of recombination events '
+    r = 0.01
+    N = 1000
+    G = 100
+    rec = recombinator(rate=r)
+    pop = population(size=N, loci=[10,10])
+    simu = simulator(pop, randomMating())
+    simu.evolve( [ rec ], end=G)
+    # number of recombination event should be bionomial(ploidy*N*r, 0.1) with mean 10000
+    # at end should be bionomial(ploidy*N*r, 0.5)
+    print rec.recCounts()
+    assert abs( rec.recCount(0) - 2*N*r*G ) < 200, \
+      'Number of recombination event is not as expected.'
+    assert abs( rec.recCount(9) - 2*N*0.5*G ) < 2000, \
+      'Number of recombination event is not as expected.'
+    
+
   def testNoMaleRec(self):
     ' male chromosome is not supposed to recombine '
     # create such an situation where female has 11111/22222, male has 1111/33333

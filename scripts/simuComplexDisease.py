@@ -575,7 +575,7 @@ def getOptions(details=__doc__):
         else:
           print options[p]['configName'], '\t', str(allParam[p])
   # return the rest of the parameters
-  return allParam[1:-1]
+  return allParam[1:-2]
 
 # we need to output various statistics, using pyEval operator
 # like what I did in the previous versions are too tedious. 
@@ -1695,7 +1695,7 @@ if __name__ == '__main__':
     mlSelModelTmp, numSubPop, finalSize, noMigrGen,
     mixingGen, growth, migrModel, migrRate, mutaRate, recRate,
     numRep, saveFormat, peneFunc, peneParaTmp, N, numSample, outputDir,
-    geneHunter, resampleOnly, reAnalyzeOnly, dryrun, saveConfig) = allParam
+    geneHunter, resampleOnly, reAnalyzeOnly, dryrun) = allParam
   #
   # this may not happen at all but we do need to be careful
   if initSize < len(DSLafter):

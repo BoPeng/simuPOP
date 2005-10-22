@@ -22,7 +22,12 @@ find . -name '*~' -exec rm -f {} \;
 find . -name '#*#' -exec rm -f {} \;
 
 # snapshot version.
-SIMUPOP_VER=snapshot
+if test "x$1" == 'x'; then
+  SIMUPOP_VER=snapshot
+else
+  SIMUPOP_VER=$1
+fi
+echo "Building " $SIMUPOP_VER
 SIMUPOP_REV=`svnversion .`
 
 # export, to be used in Doxyfile

@@ -73,7 +73,7 @@ namespace simuPOP
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         :Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep), 
         m_rate(rate), m_maxAllele(maxAllele), m_atLoci(atLoci),
-        m_bt(rng()), m_initialized(false)
+        m_bt(rng()), m_initialized(false), m_mutCount(0)
       {
         if( m_rate.empty() )
           throw SystemError("You should specify at least rate ( (0,1] ) or rates (a sequence of rate.)");
@@ -142,6 +142,21 @@ namespace simuPOP
         m_maxAllele = maxAllele;
       }
 
+      /// return mutation count
+      ULONG mutationCount(size_t locus)
+      {
+        DBG_ASSERT( locus < m_mutCount.size(), IndexError,
+          "locus index " + toStr(locus) + " is out of range");
+        return m_mutCount[locus];
+      }
+
+      /// return mutation counts
+      vectoru mutationCounts()
+      {
+        return m_mutCount;
+      }
+
+
       /// how to mutate a single allele.
       /// this is usually the only function that need to be defined by the subclasses.
       virtual void mutate(Allele* allele)
@@ -194,6 +209,7 @@ namespace simuPOP
 #else
               mutate( (pop.alleleBegin( locus ) + pos ).ptr());
 #endif
+              m_mutCount[ locus ]++;
             }while( (pos = succ.find_next(pos)) != BitSet::npos );
           }                                       // succ.any
         }                                         // each applicable loci
@@ -238,7 +254,7 @@ namespace simuPOP
           if( fcmp_lt( m_rate[i], 0.) || fcmp_gt( m_rate[i], 1.) )
             throw ValueError("Migration rate should be between [0,1], given " + toStr(m_rate[i]));
 #endif
-
+        m_mutCount.resize(pop.totNumLoci(), 0);
         m_initialized = true;
       }
 
@@ -258,6 +274,8 @@ namespace simuPOP
       /// initialized? the first apply() call will trigger an initialization process.
       bool m_initialized;
 
+      /// report the number of mutation events
+      vectoru m_mutCount;
   };
 
   /// K-Allele Model mutator
@@ -616,14 +634,19 @@ namespace simuPOP
       \param toAllele mutate to 'toAllele'
       */
       PointMutator(
-        vectori atLoci, Allele toAllele, vectorlu inds=vectorlu(),
+        vectori atLoci, 
+        Allele toAllele, 
+        vectoru atPloidy=vectoru(),
+        vectorlu inds=vectorlu(),
         string output=">", string outputExpr="", 
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         :Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
-        m_atLoci(atLoci), m_toAllele(toAllele), m_inds(inds)
+        m_atLoci(atLoci), m_toAllele(toAllele), 
+        m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)
       {
-
+        if(m_atPloidy.empty())
+          m_atPloidy.push_back(0);
       }
 
       /// destructor
@@ -640,13 +663,18 @@ namespace simuPOP
       /// apply!
       virtual bool apply(Pop& pop)
       {
+        m_mutCount.resize(pop.totNumLoci(), 0);
         // mutate each mutable locus
         for( size_t i=0, iEnd=m_atLoci.size(); i < iEnd; ++i)
         {
           for( vectorlu::iterator ind = m_inds.begin();
             ind != m_inds.end(); ++ind)
           {
-            *(pop.individual(*ind).genoBegin()+m_atLoci[i])= m_toAllele;
+            for( size_t p=0; p<m_atPloidy.size(); ++p)
+            {
+              m_mutCount[m_atLoci[i]]++;
+              *(pop.individual(*ind).genoBegin(m_atPloidy[p])+m_atLoci[i])= m_toAllele;
+            }
           }
         }                                         // each applicable loci
 
@@ -658,12 +686,30 @@ namespace simuPOP
         return "<simuPOP::point mutator>" ;
       }
 
+     /// return mutation count
+      ULONG mutationCount(size_t locus)
+      {
+        DBG_ASSERT( locus < m_mutCount.size(), IndexError,
+          "locus index " + toStr(locus) + " is out of range");
+        return m_mutCount[locus];
+      }
+
+      /// return mutation counts
+      vectoru mutationCounts()
+      {
+        return m_mutCount;
+      }
+
+
     private:
 
       /// applicable loci.
       vectori m_atLoci;
       Allele m_toAllele;
+      vectoru m_atPloidy;
       vectorlu m_inds;
+      /// report the number of mutation events
+      vectoru m_mutCount;
   };
 
 }
