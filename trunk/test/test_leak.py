@@ -37,6 +37,8 @@ import sys
 import types
 
 
+import wx
+
 def rc(o):
   # one for parameter of rc, one for getrefcount(o)
   return sys.getrefcount(o)-3 
@@ -52,7 +54,7 @@ simu = simulator(pop, randomMating(), rep=3)
 op = dumper()
 op1 = pyEval("gen")
 op2 = pyExec("s=1")
- 
+#   
 op3 = initByFreq([.2,.3,.5], indRange=[[1,5],[6,10]])
 op4 = stat(alleleFreq=range(0,pop.totNumLoci()))
 op5 = stat(LD=[[1,2],[3,4]])
@@ -96,5 +98,7 @@ for i in range(0,1):
 pop=population(size=1000, loci=[2,3])
 InitByFreq(pop, [.2,.5,.3])
 Stat(pop, alleleFreq=[2,4])
-listVars(pop.vars())
+listVars(pop.vars(), useWxPython=False)
 pop.checkRefCount()
+
+sys.exit(0)
