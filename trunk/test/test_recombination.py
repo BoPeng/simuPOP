@@ -47,7 +47,7 @@ class TestRecombinator(unittest.TestCase):
           
   def testRecIntensity(self):
     ' see if we actually recombine at this rate '
-    pop = population(10000, loci=[2,3,2], lociDist=[0,1,0,2,4,0,4] )
+    pop = population(10000, loci=[2,3,2], lociPos=[0,1,0,2,4,0,4] )
     InitByValue(pop, value=[1]*7+[2]*7)
     simu = simulator(pop, randomMating())
     simu.step( [ 
@@ -63,7 +63,7 @@ class TestRecombinator(unittest.TestCase):
   
   def testRecIntensityAfterLoci(self):
     ' see if we actually recombine at this rate '
-    pop = population(10000, loci=[2,3,2], lociDist=[0,1,0,2,4,0,4] )
+    pop = population(10000, loci=[2,3,2], lociPos=[0,1,0,2,4,0,4] )
     InitByValue(pop, value=[1]*7+[2]*7)
     simu = simulator(pop, randomMating())
     simu.step( [ 

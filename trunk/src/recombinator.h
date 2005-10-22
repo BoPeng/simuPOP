@@ -193,7 +193,7 @@ namespace simuPOP
               loc < locEnd; ++loc)
             {
               if(useLociDist)
-                vecP[index] = (pop.locusDist(index+1) - pop.locusDist(index))*intensity;
+                vecP[index] = (pop.locusPos(index+1) - pop.locusPos(index))*intensity;
               else
                 vecP[index] = rate[0];
 
@@ -247,7 +247,7 @@ namespace simuPOP
                 {
                   if( intensity > 0 )             // igore zero rate
                   {
-                    vecP.push_back( (pop.locusDist(index+1) - pop.locusDist(index))*intensity);
+                    vecP.push_back( (pop.locusPos(index+1) - pop.locusPos(index))*intensity);
                     recBeforeLoci.push_back(index+1);
                   }
                 }

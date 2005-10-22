@@ -5,7 +5,7 @@
 \usepackage{underscore}
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.6.8 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.6.9 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Statistics, Rice University}\\
 {\bf Email: }{\textsf bpeng@rice.edu}\\
@@ -972,13 +972,13 @@ numLoci
 locus location on chromosome (c.f.
  
 \family typewriter 
-locusDist
-\begin_inset LatexCommand \index{GenoStruTrait!locusDist}
+locusPos
+\begin_inset LatexCommand \index{GenoStruTrait!locusPos}
 
 \end_inset 
 
-(loc), arrLociDist
-\begin_inset LatexCommand \index{GenoStruTrait!arrLociDist}
+(loc), arrlociPos
+\begin_inset LatexCommand \index{GenoStruTrait!arrLociPos}
 
 \end_inset 
 
@@ -1419,12 +1419,12 @@ true or false.
 
 
 \family typewriter 
-lociDist:
+lociPos:
 \family default 
  a 1-d or 2-d array specifying positions of loci on each chromosome.
  For example, you can use 
 \family typewriter 
-lociDist=[1,2,3]
+lociPos=[1,2,3]
 \family default 
  when
 \family typewriter 
@@ -1432,7 +1432,7 @@ lociDist=[1,2,3]
 \family default 
  or
 \family typewriter 
- lociDist=[[1,2],[1.5,3,5]]
+ lociPos=[[1,2],[1.5,3,5]]
 \family default 
  for 
 \family typewriter 
@@ -10891,8 +10891,8 @@ parameter when creating a population, return allele number
 
 
 \family typewriter 
-locusDist
-\begin_inset LatexCommand \index{function!locusDist}
+locusPos
+\begin_inset LatexCommand \index{function!locusPos}
 
 \end_inset 
 
@@ -10903,8 +10903,8 @@ locusDist
 
 
 \family typewriter 
-arrLociDist
-\begin_inset LatexCommand \index{function!arrLociDist}
+arrlociPos
+\begin_inset LatexCommand \index{function!arrLociPos}
 
 \end_inset 
 

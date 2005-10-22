@@ -1008,7 +1008,7 @@ def SaveCSV(pop, output='', outputExpr='', exclude=[], **kwargs):
   This format is used mostly for randTent method.
   Ihe format is:
   
-    chromsome #,,,locusName,locusDist,locusName,locusDist,....
+    chromsome #,,,locusName,locusPos,locusName,locusPos,....
     famID,indID,sex,affectedness,allel1-1,allel1-2,allele2-1,allele2-2,
     ...
     ...
@@ -1111,31 +1111,31 @@ def LoadCSV(file):
       return False
   # determine loci number on each chromsome
   numLoci = []
-  # lociDist[ch][ lociOrder[j] ] will be in order
+  # lociPos[ch][ lociOrder[j] ] will be in order
   lociOrder = []
-  lociDist = []
+  lociPos = []
   lociNames = []
   # process the first time
   for line in allLines:
     if line[:10] == 'Chromosome':
       numLoci.append(0)
       lociOrder.append([])
-      lociDist.append([])
+      lociPos.append([])
       lociNames.append([])
       i = len(numLoci) - 1
       chInfo = line.split(',')
       numLoci[i] =  (len(chInfo)-4)/2
       names = []   # store unordered loci name
       for j in range(0, numLoci[i]):
-        lociDist[i].append(float( chInfo[5+j*2]))
-        lociOrder[i].append(lociDist[i][-1])
+        lociPos[i].append(float( chInfo[5+j*2]))
+        lociOrder[i].append(lociPos[i][-1])
         names.append( chInfo[4+j*2].strip())
       # deal with loci order
       lociOrder[i].sort()
       for j in range(0,len(lociOrder[i])):
-        lociOrder[i][j] = lociDist[i].index(lociOrder[i][j])
+        lociOrder[i][j] = lociPos[i].index(lociOrder[i][j])
       # adjust loci dist
-      lociDist[i].sort()
+      lociPos[i].sort()
       # really add lociNames
       for j in range(0,len(lociOrder[i])):
         lociNames[i].append( names[ lociOrder[i][j] ])
@@ -1164,9 +1164,9 @@ def LoadCSV(file):
       offSizes[fam] += 1
   # create a population
   offPop = population( subPop=offSizes, loci = numLoci, ploidy=2,
-    lociNames=lociNames, lociDist=lociDist)
+    lociNames=lociNames, lociPos=lociPos)
   parPop = population( subPop=parSizes, loci = numLoci, ploidy=2,
-    lociNames=lociNames, lociDist=lociDist)
+    lociNames=lociNames, lociPos=lociPos)
   # process the third time 
   # fill in info
   maxAllele = 0
