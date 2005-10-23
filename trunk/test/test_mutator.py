@@ -4,8 +4,8 @@
 #    Copyright (C) 2004 by Bo Peng                                         
 #    bpeng@rice.edu                                                        
 #                                                                          
-#    $LastChangedDate$          
-#    $Rev$                       
+#    $LastChangedDate: 2005-09-28 01:59:19 -0500 (Wed, 28 Sep 2005) $          
+#    $Rev: 35 $                       
 #                                                                          
 #    This program is free software; you can redistribute it and/or modify  
 #    it under the terms of the GNU General Public License as published by  
@@ -40,59 +40,50 @@
 #
 
 from simuPOP import *
-simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
-                  randomMating(), rep=5)
-
-simu.apply( [ initByFreq([.2,.8])])
-d = dumper(alleleOnly=1, rep=5)
-simu.apply([d])
-
-simu.evolve([ kamMutator(rate=0.1)], end=200)
-
-
-# have a look at a single mutator
-# help(kamMutator)
-m = kamMutator(rate=0.5, maxAllele=9)
-print m.maxAllele()
-m.setMaxAllele(5)
-print m.rate()
-# 
-m.setRate([0.1,.02],[1,2])
-print m.rate()
-m.setRate(0.2)
-print m.rate()
-
-simu.setGen(0)
-simu.evolve([m, dumper(step=5,rep=5)], end=12)
-
-# it is easier to see mutation if no mating is invoolved.
-
-simu = simulator(population(size=10, ploidy=2, loci=[2, 3]),
-                  randomMating(), rep=3)
-simu.evolve([kamMutator(rate=0.1), dumper(rep=3)], end=5)
-
-pop = population(size=10)
-d=dumper()
-d.apply(pop)
-# cutom mutator
-def mut(x):
-  return 8
-
-m = pyMutator(rate=1, func=mut)
-m.apply(pop)
-d.apply(pop)
-
-
 from simuUtil import *
-# test point mutator
-pop = population(size=10, ploidy=2, loci=[5])
-InitByValue(pop, value=[[1]*5, [2]*5], proportions=[.3,.7])
-Dump(pop)
-PointMutate(pop, inds=[1,2,3], toAllele=3, atLoci=[1,2])
-Dump(pop)
 
+import unittest
 
-#
-#
-# test P113 of HC 3nd
-#
+class TestMutator(unittest.TestCase):
+  def testMutator(self):
+    simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
+      randomMating(), rep=5)
+    simu.apply( [ initByFreq([.2,.8])])
+    simu.evolve([ kamMutator(rate=0.1)], end=200)
+
+  def testPyMutator(self):
+    pop = population(size=10, loci=[2])
+    # cutom mutator
+    def mut(x):
+      return 8
+    m = pyMutator(rate=1, func=mut)
+    m.apply(pop)
+    assert pop.individual(0).allele(0) == 8, \
+      "PyMutator failed"
+    
+  def testMutationCount(self):
+    N = 10000
+    r = 0.001
+    G = 100
+    pop = population(size=N, ploidy=2, loci=[5])
+    simu = simulator(pop, randomMating())
+    mut = kamMutator(rate=r, maxAllele=10)
+    simu.evolve( [mut], end=G)
+    print mut.mutationCounts()
+    assert abs( mut.mutationCount(0) - 2*N*r*G) < 200, \
+      "Number of mutation event is not as expected."
+    
+  def testPointMutator(self):    
+    # test point mutator
+    pop = population(size=10, ploidy=2, loci=[5])
+    InitByValue(pop, value=[[1]*5, [2]*5], proportions=[.3,.7])
+    PointMutate(pop, inds=[1,2,3], toAllele=3, atLoci=[1,2])
+    assert pop.individual(1).allele(1,0) == 3
+    assert pop.individual(1).allele(1,1) != 3
+    PointMutate(pop, inds=[1,2,3], atPloidy=[1], 
+      toAllele=4, atLoci=[1,2])
+    assert pop.individual(1).allele(2,1) == 4
+    assert pop.individual(1).allele(2,0) != 4
+
+if __name__ == '__main__':
+  unittest.main()
