@@ -13095,6 +13095,7 @@ scripts/simuCDCV.py
 scripts/simuComplexDisease.py
 scripts/simuEasyPop.py
 scripts/simuLDDecay.py
+scripts/simuRecHotSpot.py
 scripts/popStat-boa/App1.py
 scripts/popStat-boa/Frame1.py
 src/arraymodule.c
