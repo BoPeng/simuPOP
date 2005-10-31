@@ -618,7 +618,7 @@ def outputStatistics(pop, args):
     nonDSL.remove(loc)
   # In this analysis, we also need to know
   # 1. a DSL that is closest to the center of a chromosome
-  toCtrDist = [abs(pop.locusDist(x)-numLoci/2) for x in DSL]
+  toCtrDist = [abs(pop.locusPos(x)-numLoci/2) for x in DSL]
   ctrChromDSL = DSL[ [x==min(toCtrDist) for x in toCtrDist].index(True)]
   ctrChrom = pop.chromLocusPair(ctrChromDSL)[0]
   # 2. first chromosome without DSL
@@ -737,7 +737,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
   else:
     maxAle = 2                    # SNP 
   #### translate numChrom, numLoci, DSLafterLoci to
-  #### loci, lociDist, DSL, nonDSL in the usual index
+  #### loci, lociPos, DSL, nonDSL in the usual index
   #### (count markers along with DSL)
   numDSL = len(DSLafter)
   if len(DSLdist) != numDSL:
@@ -746,23 +746,23 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
   DSL = list(DSLafter)
   for i in range(0,numDSL):
     DSL[i] += i+1
-  # adjust loci and lociDist
+  # adjust loci and lociPos
   loci = [0]*numChrom
-  lociDist = []
+  lociPos = []
   i = 0  # current absolute locus 
   j = 0  # current DSL
   for ch in range(0, numChrom):
-    lociDist.append([])
+    lociPos.append([])
     for loc in range(0,numLoci):
       # DSL after original loci indices
       if j < numDSL and i == DSLafter[j]:
         loci[ch] += 2
-        lociDist[ch].append(loc+1)
-        lociDist[ch].append(loc+1 + DSLdist[j])
+        lociPos[ch].append(loc+1)
+        lociPos[ch].append(loc+1 + DSLdist[j])
         j += 1
       else:
         loci[ch] += 1
-        lociDist[ch].append(loc+1)
+        lociPos[ch].append(loc+1)
       i += 1
   # non DSL loci, for convenience
   nonDSL = range(0, reduce(operator.add, loci))
@@ -899,7 +899,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdist,
   while(True):
     # create a simulator
     pop =  population(subPop=popSizeFunc(0), ploidy=2,
-      loci = loci, maxAllele = maxAle, lociDist = lociDist)
+      loci = loci, maxAllele = maxAle, lociPos = lociPos)
     # save DSL info, some operators will use it.
     pop.dvars().DSL = DSL
     pop.dvars().numLoci = numLoci
@@ -972,9 +972,9 @@ def plotLD(pop, epsFile, jpgFile):
   ldvalue = [] # D
   for ld in pop.dvars().ctrDSLLD:
     if ld[1] == pop.dvars().ctrChromDSL:
-      dist.append(pop.locusDist(ld[0]))
+      dist.append(pop.locusPos(ld[0]))
     else:
-      dist.append(pop.locusDist(ld[1]))
+      dist.append(pop.locusPos(ld[1]))
     ldprime.append(pop.dvars().LD_prime[ld[0]][ld[1]])
     ldvalue.append(pop.dvars().LD[ld[0]][ld[1]])
   res['DpDSL'] = max(ldprime)
@@ -984,17 +984,17 @@ def plotLD(pop, epsFile, jpgFile):
     r.par(mfrow=[2,1])
     r.plot( dist, ldprime, main="D' between DSL and other markers on chrom %d" % (pop.dvars().ctrChrom+1),
       xlab="marker location", ylab="D'", type='b', ylim=[0,1])
-    r.abline( v = pop.locusDist(pop.dvars().ctrChromDSL), lty=3 )
-    r.axis( 1, [pop.locusDist(pop.dvars().ctrChromDSL)], ['DSL'])
+    r.abline( v = pop.locusPos(pop.dvars().ctrChromDSL), lty=3 )
+    r.axis( 1, [pop.locusPos(pop.dvars().ctrChromDSL)], ['DSL'])
   dist = [] 
   ldprime = []  # D'
   ldvalue = []  # D
   if pop.dvars().noDSLChrom > -1:
     for ld in pop.dvars().noDSLLD:
       if ld[1] == pop.chromBegin(pop.dvars().noDSLChrom) + numLoci/2:
-        dist.append(pop.locusDist(ld[0]))
+        dist.append(pop.locusPos(ld[0]))
       else:
-        dist.append(pop.locusDist(ld[1]))
+        dist.append(pop.locusPos(ld[1]))
       ldprime.append(pop.dvars().LD_prime[ld[0]][ld[1]])    
       ldvalue.append(pop.dvars().LD[ld[0]][ld[1]])    
     res['DpNon'] = max(ldprime)
@@ -1003,7 +1003,7 @@ def plotLD(pop, epsFile, jpgFile):
       r.plot( dist, ldprime, main="D' between marker %d and other markers on chrom %d" \
         % (numLoci/2+1, pop.dvars().noDSLChrom+1),
         xlab="marker location", ylab="D'", type='b', ylim=[0,1])    
-      r.abline( v = pop.locusDist(pop.chromBegin(pop.dvars().noDSLChrom)+pop.dvars().numLoci/2), lty=3 )
+      r.abline( v = pop.locusPos(pop.chromBegin(pop.dvars().noDSLChrom)+pop.dvars().numLoci/2), lty=3 )
       r.dev_off()
   else:
     res['DpNon'] = 0
