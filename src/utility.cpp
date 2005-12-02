@@ -114,7 +114,8 @@ namespace simuPOP
     "DBG_SELECTOR",
     "DBG_MATING",
     "DBG_MIGRATOR",
-    "DBG_PROFILE"
+    "DBG_PROFILE",
+    "DBG_DEVEL"
   };
 
   /// set debug area, default to turn all code on
@@ -2340,7 +2341,7 @@ T Expression::valueAs##TypeName() \
 
 // these will be automatically replaced by snapshot.sh and release.sh
 #define SIMUPOP_VER "snapshot"
-#define SIMUPOP_REV "0"
+#define SIMUPOP_REV "76:78M"
 
   int simuRev()
   {
@@ -2365,7 +2366,7 @@ T Expression::valueAs##TypeName() \
 
   bool optimized()
   {
-#ifndef OPTIMIZED
+#ifdef OPTIMIZED
     return(true);
 #else
     return(false);

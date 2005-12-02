@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Bo Peng                                         *
- *   bpeng@rice.edu     
+ *   bpeng@rice.edu
  *                                                                         *
  *   $LastChangedDate$
  *   $Rev$                                                   *

@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Bo Peng                                         *
- *   bpeng@rice.edu   
+ *   bpeng@rice.edu
  *                                                                         *
  *   $LastChangedDate$
  *   $Rev$                                                     *
@@ -68,10 +68,10 @@ namespace simuPOP
       */
       Mutator( vectorf rate=vectorf(),
         vectori atLoci=vectori(), UINT maxAllele=0,
-        string output=">", string outputExpr="", 
+        string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        :Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep), 
+        :Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
         m_rate(rate), m_maxAllele(maxAllele), m_atLoci(atLoci),
         m_bt(rng()), m_initialized(false), m_mutCount(0)
       {
@@ -155,7 +155,6 @@ namespace simuPOP
       {
         return m_mutCount;
       }
-
 
       /// how to mutate a single allele.
       /// this is usually the only function that need to be defined by the subclasses.
@@ -302,7 +301,7 @@ namespace simuPOP
       */
       KAMMutator(vectorf rate=vectorf(), vectori atLoci=vectori(),
         UINT maxAllele=0, vectora states=vectora(),
-        string output=">", string outputExpr="", 
+        string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         :Mutator<Pop>( rate, atLoci, maxAllele,
@@ -392,7 +391,7 @@ namespace simuPOP
       */
       SMMMutator(vectorf rate=vectorf(), vectori atLoci=vectori(),
         UINT maxAllele=0, double incProb=0.5,
-        string output=">", string outputExpr="", 
+        string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         :Mutator<Pop>( rate, atLoci, maxAllele,
@@ -459,7 +458,7 @@ namespace simuPOP
       */
       GSMMutator( vectorf rate=vectorf(), vectori atLoci=vectori(),
         UINT maxAllele=0, double incProb=0.5, double p=0, PyObject* func=NULL,
-        string output=">", string outputExpr="", 
+        string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         :Mutator<Pop>( rate, atLoci, maxAllele,
@@ -556,7 +555,7 @@ namespace simuPOP
     public:
       PyMutator(vectorf rate=vectorf(), vectori atLoci=vectori(), UINT maxAllele=0,
         PyObject* func=NULL,
-        string output=">", string outputExpr="", 
+        string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         :Mutator<Pop>( rate,atLoci, maxAllele,
@@ -634,15 +633,15 @@ namespace simuPOP
       \param toAllele mutate to 'toAllele'
       */
       PointMutator(
-        vectori atLoci, 
-        Allele toAllele, 
+        vectori atLoci,
+        Allele toAllele,
         vectoru atPloidy=vectoru(),
         vectorlu inds=vectorlu(),
-        string output=">", string outputExpr="", 
+        string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         :Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
-        m_atLoci(atLoci), m_toAllele(toAllele), 
+        m_atLoci(atLoci), m_toAllele(toAllele),
         m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)
       {
         if(m_atPloidy.empty())
@@ -686,7 +685,7 @@ namespace simuPOP
         return "<simuPOP::point mutator>" ;
       }
 
-     /// return mutation count
+      /// return mutation count
       ULONG mutationCount(size_t locus)
       {
         DBG_ASSERT( locus < m_mutCount.size(), IndexError,
@@ -699,7 +698,6 @@ namespace simuPOP
       {
         return m_mutCount;
       }
-
 
     private:
 

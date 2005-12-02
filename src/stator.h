@@ -1,6 +1,6 @@
 /**************************************************************************
  *   Copyright (C) 2004 by Bo Peng                                         *
- *   bpeng@rice.edu  
+ *   bpeng@rice.edu
  *                                                                         *
  *   $LastChangedDate$
  *   $Rev$                                                      *
@@ -619,7 +619,7 @@ namespace simuPOP
 
         if( m_alleleNum.back()[loc][0] != 0)
           cout << "Warning: having zero (NA) allele, counted as one allele." ;
-          
+
         DBG_ASSERT( al.size() == static_cast<UINT>(numOfAlleles()[loc]),
           SystemError, "Number of alleles at locus " + toStr(loc)
           + " does not match.Observed "
@@ -641,7 +641,7 @@ namespace simuPOP
 
         if( m_alleleNum[subPop][loc][0] != 0)
           cout << "Warning: having zero (NA) allele, counted as one allele." << endl;
-          
+
         DBG_ASSERT( al.size() == static_cast<UINT>(numOfAlleles(subPop)[loc]),
           SystemError, "Number of alleles at locus " + toStr(loc)
           + " at subpop " + toStr(subPop) + " does not match. Observed "

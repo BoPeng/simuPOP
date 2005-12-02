@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Bo Peng                                         *
- *   bpeng@rice.edu  
+ *   bpeng@rice.edu
  *                                                                         *
  *   $LastChangedDate$
  *   $Rev$                                                            *
@@ -206,7 +206,7 @@ namespace simuPOP
         }
 
         // use pop's geno structure
-        this->setGenoStructure(m_ptrRep[0]->genoStru());
+        this->setGenoStruIdx(m_ptrRep[0]->genoStruIdx());
 
         m_curRep = 0;
 
@@ -297,7 +297,7 @@ namespace simuPOP
         if( pop.genoStru() != this->genoStru() )
         {
           DBG_DO(DBG_SIMULATOR,  cout << "Warning: added population has different genotypic structure." << endl);
-          setGenoStructure( pop.genoStru());
+          setGenoStruIdx( pop.genoStruIdx());
         }
         if( pop.genoStru() != m_scratchPop->genoStru() )
         {
@@ -941,7 +941,7 @@ namespace simuPOP
           m_ptrRep[i]->setRep(i);
         }
         m_scratchPop = new PopType(*m_ptrRep[0]);
-        setGenoStructure(m_ptrRep[0]->genoStru());
+        setGenoStruIdx(m_ptrRep[0]->genoStruIdx());
 
         ar & make_nvp("groups", m_groups);
 

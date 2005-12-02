@@ -43,7 +43,7 @@ namespace simuPOP
       /// constructor. default to be always active.
       Terminator(string message = "", string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep), 
+      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
         m_message(message)
       {
       };
@@ -57,8 +57,8 @@ namespace simuPOP
       }
 
       string message()
-       
-       {
+
+      {
         return m_message;
       }
 

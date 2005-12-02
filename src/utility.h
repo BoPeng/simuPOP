@@ -1358,9 +1358,9 @@ namespace simuPOP
   string simuVer();
 
   string compileCompiler();
-  
+
   string compileDate();
-  
+
   string compilePyVersion();
 
   string compilePlatForm();
@@ -1379,6 +1379,7 @@ namespace simuPOP
   /// set standard output to (default standard Python output)
   void setLogOutput(const string filename="");
 }
+
 
 /// CPPONLY
 /// combine a pointer with its type obj and return a new PyObject*

@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Bo Peng                                         *
- *   bpeng@rice.edu    
+ *   bpeng@rice.edu
  *                                                                         *
  *   $LastChangedDate$
  *   $Rev$                                                    *
@@ -50,7 +50,7 @@ namespace simuPOP
 
     public:
       /// constructor. default to be always active.
-      Outputer(string output=">", string outputExpr="", 
+      Outputer(string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep)
@@ -145,7 +145,7 @@ namespace simuPOP
       Dumper( bool alleleOnly=false, bool infoOnly=false, bool ancestralPops=false, int dispWidth=1, UINT max=100,
         const vectori& chrom=vectori(), const vectori& loci=vectori(), const vectoru& subPop=vectoru(),
         const vectorlu& indRange=vectorlu(),
-        string output=">", string outputExpr="", 
+        string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       Outputer<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
@@ -405,7 +405,7 @@ namespace simuPOP
     class SavePopulation: public Outputer<Pop>
   {
     public:
-      SavePopulation( string output="", string outputExpr="", 
+      SavePopulation( string output="", string outputExpr="",
         string format = "bin", int stage=PostMating, int begin=-1, int end=-1,
         int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       Outputer<Pop>( "", "", stage, begin, end, step, at, rep, grp, sep),
