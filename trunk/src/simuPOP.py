@@ -27,6 +27,7 @@
 # get options
 from simuOpt import simuOptions
 
+
 if simuOptions['Optimized'] == False and simuOptions['LongAllele'] == False:
   from simuPOP_std import *
 elif simuOptions['Optimized'] == True and simuOptions['LongAllele'] == False:
@@ -36,6 +37,7 @@ elif simuOptions['Optimized'] == False and simuOptions['LongAllele'] == True:
 else:
   from simuPOP_laop import *
 
+print simuOptions['Optimized']
 if not simuOptions['Quiet']:
   print "simuPOP : Copyright (c) 2004-2005 Bo Peng"
   # compile date, compiler etc are macros that are replaced during compile time.

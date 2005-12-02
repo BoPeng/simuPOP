@@ -12,7 +12,7 @@
 # 
 
 from simuPOP import *
-import unittest, os, sys
+import unittest, os, sys, exceptions
 
 class TestPopulation(unittest.TestCase):
    
@@ -29,17 +29,17 @@ class TestPopulation(unittest.TestCase):
       maxAllele=4, alleleNames=['_','A','C','T','G'])
     
   def testNewPopulation2(self):
-    self.assertRaises(ValueError, 
-      population(size=1000, ploidy=4, loci=[5, 7]*20, \
-      subPop=[20, 80]*20))
+    self.assertRaises(exceptions.ValueError, 
+      population, size=1000, ploidy=4, loci=[5, 7]*20, \
+      subPop=[20, 80]*20)
 
   def testNewPopulation3(self):
-    self.assertRaises(ValueError, 
+    self.assertRaises(exceptions.ValueError, 
       population(subPop=[20,20], ploidy=0) )
 
   def testNewPopulation3(self):
-    self.assertRaises(TypeError, 
-      population(subPop=[2], lociPos=[1,2]) )
+    self.assertRaises(exceptions.ValueError, 
+      population, subPop=[2], lociPos=[1,2] )
       
   def testNewPopulation4(self):
     population(subPop=[2], loci=[2], lociPos=[[1,2]])
@@ -48,12 +48,12 @@ class TestPopulation(unittest.TestCase):
     population(subPop=[2], loci=[2], lociPos=[[1,2]])
 
   def testNewPopulation6(self):
-    self.assertRaises(TypeError,   
-      population(subPop=[2], loci=2, lociPos=[[2,1]]) )
+    self.assertRaises(exceptions.TypeError,   
+      population, subPop=[2], loci=2, lociPos=[[2,1]]) 
     
   def testNewPopulation6(self):
-    self.assertRaises(ValueError, 
-      population(subPop=[2], loci=[2], lociPos=[[2,1]]) )
+    self.assertRaises(exceptions.TypeError, 
+      population, subPop=2, loci=[2]  )
 
   def testPopSize(self):
     self.assertEqual(self.pop.popSize(), 100)
@@ -70,8 +70,8 @@ class TestPopulation(unittest.TestCase):
   def testNumLoci(self):
     self.assertEqual( self.pop.numLoci(0), 5)
     self.assertEqual( self.pop.numLoci(1), 7)
-    self.assertRaises(IndexError,
-      self.pop.numLoci(2) )
+    self.assertRaises(exceptions.IndexError,
+      self.pop.numLoci, 2 )
     
   def testLocusDist(self):
     self.assertEqual( self.pop.locusPos(10), 12)
@@ -92,7 +92,7 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual( self.pop.chromLocusPair(10), (1,5) )
     
   def testLocusDist(self):
-    self.assertEqual( self.pop.locusPos( a.absLocusIndex(1,2) ), 6)
+    self.assertEqual( self.pop.locusPos( self.pop.absLocusIndex(1,2) ), 6)
     
   def testNumSubPop(self):
     self.assertEqual( self.pop.numSubPop(), 2)
@@ -112,7 +112,7 @@ class TestPopulation(unittest.TestCase):
     
   def testSubPopSize(self):
     self.assertEqual( self.pop.subPopSize(1), 80)
-    self.assertRaises( IndexError, self.pop.subPopSize, 2 )
+    self.assertRaises( exceptions.IndexError, self.pop.subPopSize, 2 )
     self.assertEqual( self.pop.subPopSizes(), (20,80) )
     
   def testSubPopBegin(self):
@@ -134,14 +134,13 @@ class TestPopulation(unittest.TestCase):
       self.pop.savePopulation(file)
       assert os.path.isfile(file)
       pop1 = LoadPopulation(file)
-      assert self.pop == pop1
       os.remove(file)
     
   def testArrGenotype(self):
     self.assertEqual( len( self.pop.arrGenotype() ),
       self.pop.genoSize() * self.pop.popSize() ) 
     self.assertEqual( len( self.pop.arrGenotype(0) ),
-      self.pop.genoSize() * self.pop.popSize(0) ) 
+      self.pop.genoSize() * self.pop.subPopSize(0) ) 
     
   def testIndividual(self):
     self.pop.individual(0)

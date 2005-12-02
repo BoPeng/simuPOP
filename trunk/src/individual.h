@@ -72,8 +72,11 @@ namespace simuPOP
 
   /** \brief CPPONLY genetic structure. Shared by individuals of one population
 
-  Population create a copy of GenoStrcture and assign its pointer to each individual.
+  Populations create a copy of GenoStrcture and assign its pointer to each individual.
   This strcuture will be destroyed when population is destroyed.
+
+  Population with the same geneotype structure as an old one will use that,
+  instead of creating a new one. This is ensured by GenoStructureTrait.
 
   Different populations will have different individuals but comparison, copy etc
   are forbidden even if they do have the same genotypic structure.
@@ -308,11 +311,6 @@ namespace simuPOP
       friend class GenoStruTrait;
   };
 
-  /// glocal genotypic strcuture repository
-  /// only unique structure will be saved
-  /// store pointers instead of object to avoid relocation of
-  /// objects themselves by vector
-  vector<GenoStructure*> g_genoStruRepository;
 }
 
 
@@ -328,13 +326,19 @@ namespace simuPOP
 
   /** \brief genoStruTrait
 
-  A trait class that provide interfaces around a GenoStructure pointer.
+  A trait class that maintain a static array of geno structure,
+  and provide interfaces around a GenoStructure Index.
   */
   class GenoStruTrait
   {
+    private:
+
+#define TraitIndexType unsigned char
+#define TraitMaxIndex 0xFF
+
     public:
-      /// constructor, but m_genoStru will be set later.
-      GenoStruTrait():m_genoStru(NULL)
+      /// constructor, but m_genoStruIdx will be set later.
+      GenoStruTrait():m_genoStruIdx(TraitMaxIndex)
       {
       }
 
@@ -344,44 +348,62 @@ namespace simuPOP
         const vectorf& lociPos, const vectorstr& alleleNames,
         const vectorstr& lociNames, UINT maxAllele)
       {
+        /// only allow for TraitMaxIndex-1 different genotype structures
+        /// As a matter of fact, most simuPOP scripts have only one
+        /// population type.
+        if( s_genoStruRepository.size() == TraitMaxIndex-1 )
+        {
+          throw SystemError("This simuPOP library only allows " + toStr(TraitMaxIndex-1)
+            + " different genotype structures. \n" +
+            + "If you do need more structures, modify individual.h/TraitMaxType and " +
+            + "recompile simuPOP.");
+        }
+
         GenoStructure* tmp = new GenoStructure( ploidy, loci, sexChrom,
           lociPos, alleleNames, lociNames, maxAllele);
-        for(vector<GenoStructure*>::iterator it = g_genoStruRepository.begin();
-          it != g_genoStruRepository.end(); ++it)
+
+        for(TraitIndexType it = 0; it < s_genoStruRepository.size();
+          ++it)
         {
-          if( *(*it) == *tmp )                    // object comparison
+                                                  // object comparison
+          if( *(s_genoStruRepository[it]) == *tmp )
           {
             delete tmp;                           // use the existing one
-            m_genoStru = *it;
+            m_genoStruIdx = it;
             return;
           }
         }
         // if not found
-        g_genoStruRepository.push_back(tmp);
-        m_genoStru = tmp;
+        s_genoStruRepository.push_back(tmp);
+        // the last one.
+        m_genoStruIdx = s_genoStruRepository.size()-1;
       }
 
       /// set an existing geno structure, simply use it
-      void setGenoStructure(GenoStructure& rhs, bool checkDuplicate=false)
+      void setGenoStructure(GenoStructure& rhs)
       {
-        if(checkDuplicate)
+        for(TraitIndexType it = 0; it < s_genoStruRepository.size();
+          ++it)
         {
-          for(vector<GenoStructure*>::iterator it = g_genoStruRepository.begin();
-            it != g_genoStruRepository.end(); ++it)
+          if( *(s_genoStruRepository[it]) == rhs )// object comparison
           {
-            if( *(*it) == rhs )                   // object comparison
-            {
-              // use the existing one
-              m_genoStru = *it;
-              return;
-            }
+            m_genoStruIdx = it;
+            return;
           }
-          // if not found, make a copy and store it.
-          m_genoStru = new GenoStructure( rhs );
-          g_genoStruRepository.push_back(m_genoStru);
         }
-        else                                      // use this pointer directly
-          m_genoStru = &rhs;
+
+        // if not found, make a copy and store it.
+        s_genoStruRepository.push_back(new GenoStructure( rhs ));
+        m_genoStruIdx = s_genoStruRepository.size() - 1;
+      }
+
+      /// CPPONLY set index directly
+      void setGenoStruIdx(size_t idx)
+      {
+        DBG_FAILIF( idx >= s_genoStruRepository.size(), IndexError,
+          "Index " + toStr(idx) + " to geno structure repository should be less than " +
+          toStr( s_genoStruRepository.size() ) );
+        m_genoStruIdx = static_cast<TraitIndexType>(idx);
       }
 
       /// no destructure since a pointer will be shared by all indiviudals and a population
@@ -389,130 +411,137 @@ namespace simuPOP
       /// CPPONLY
       // void destroyGenoStructure()
       //{
-      //  delete m_genoStru;
+      //  delete m_genoStruIdx;
       // }
 
       /// return the GenoStructure
       /// CPPONLY
       GenoStructure& genoStru() const
       {
-        return *m_genoStru;
+        return *(s_genoStruRepository[m_genoStruIdx]);
+      }
+
+      /// return the GenoStructure index
+      /// CPPONLY
+      size_t genoStruIdx() const
+      {
+        return static_cast<size_t>(m_genoStruIdx);
       }
 
       /// return ploidy
       UINT ploidy() const
       {
 
-        DBG_FAILIF( m_genoStru == NULL, SystemError,
+        DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "Ploidy: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-        return m_genoStru->m_ploidy;
+        return s_genoStruRepository[m_genoStruIdx]->m_ploidy;
       }
 
       /// return ploidy
       string ploidyName() const
       {
 
-        DBG_FAILIF( m_genoStru == NULL, SystemError,
+        DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "PloidyName: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-        if (m_genoStru->m_ploidy == 1)
+        if (s_genoStruRepository[m_genoStruIdx]->m_ploidy == 1)
           return "haploid";
-        else if (m_genoStru->m_ploidy == 2)
+        else if (s_genoStruRepository[m_genoStruIdx]->m_ploidy == 2)
           return "diploid";
-        else if (m_genoStru->m_ploidy == 3)
+        else if (s_genoStruRepository[m_genoStruIdx]->m_ploidy == 3)
           return "triploid";
-        else if (m_genoStru->m_ploidy == 4)
+        else if (s_genoStruRepository[m_genoStruIdx]->m_ploidy == 4)
           return "tetraploid";
         else
-          return toStr(m_genoStru->m_ploidy) + "-polid";
+          return toStr(s_genoStruRepository[m_genoStruIdx]->m_ploidy) + "-polid";
       }
 
       /// number of loci on chromosome \c chrom
       UINT numLoci(UINT chrom) const
       {
 
-        DBG_FAILIF( m_genoStru == NULL, SystemError,
+        DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "numLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
         CHECKRANGECHROM(chrom);
-        return m_genoStru->m_numLoci[chrom];
+        return s_genoStruRepository[m_genoStruIdx]->m_numLoci[chrom];
       }
 
       /// whether or not the last chromosome is sex chromosome
       bool sexChrom() const
       {
-        DBG_FAILIF( m_genoStru == NULL, SystemError,
+        DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-        return m_genoStru->m_sexChrom;
+        return s_genoStruRepository[m_genoStruIdx]->m_sexChrom;
       }
       /// return totNumLoci (STATIC)
       UINT totNumLoci() const
       {
 
-        DBG_FAILIF( m_genoStru == NULL, SystemError,
+        DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-        return m_genoStru->m_totNumLoci;
+        return s_genoStruRepository[m_genoStruIdx]->m_totNumLoci;
       }
 
       /// return totNumLoci * ploidy
       UINT genoSize() const
       {
-        DBG_FAILIF( m_genoStru == NULL, SystemError,
+        DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-        return m_genoStru->m_genoSize;
+        return s_genoStruRepository[m_genoStruIdx]->m_genoSize;
       }
 
       /// locus distance.
       double locusPos(UINT locus) const
       {
-        DBG_FAILIF( m_genoStru == NULL, SystemError,
+        DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "locusPos: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
         CHECKRANGEABSLOCUS(locus);
-        return m_genoStru->m_lociPos[locus];
+        return s_genoStruRepository[m_genoStruIdx]->m_lociPos[locus];
       }
 
       /// return loci distance as python Numeric.array object
       PyObject* arrLociDist()
       {
-        return Double_Vec_As_NumArray( totNumLoci(), &(m_genoStru->m_lociPos[0]), false);
+        return Double_Vec_As_NumArray( totNumLoci(), &(s_genoStruRepository[m_genoStruIdx]->m_lociPos[0]), false);
       }
 
       /// number of chromosome
       UINT numChrom() const
       {
-        DBG_FAILIF( m_genoStru == NULL, SystemError,
+        DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "numChrom: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-        return m_genoStru->m_numChrom;
+        return s_genoStruRepository[m_genoStruIdx]->m_numChrom;
       }
 
       /// chromosome index of chromosome \c chrom
       UINT chromBegin(UINT chrom) const
       {
 
-        DBG_FAILIF( m_genoStru == NULL, SystemError,
+        DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "chromBegin: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
         CHECKRANGECHROM(chrom);
 
-        return m_genoStru->m_chromIndex[chrom];
+        return s_genoStruRepository[m_genoStruIdx]->m_chromIndex[chrom];
       }
 
       /// chromosome index of chromosome \c chrom
       UINT chromEnd(UINT chrom) const
       {
 
-        DBG_FAILIF( m_genoStru == NULL, SystemError,
+        DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "chromEnd: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
         CHECKRANGECHROM(chrom);
 
-        return m_genoStru->m_chromIndex[chrom+1];
+        return s_genoStruRepository[m_genoStruIdx]->m_chromIndex[chrom+1];
       }
 
       /// convert from relative locus (on chromsome) to absolute locus (no chromosome structure)
@@ -521,7 +550,7 @@ namespace simuPOP
         CHECKRANGECHROM(chrom);
         CHECKRANGELOCUS(chrom, locus);
 
-        return( m_genoStru->m_chromIndex[chrom] + locus );
+        return( s_genoStruRepository[m_genoStruIdx]->m_chromIndex[chrom] + locus );
       }
 
       /// return chrom, locus pair from an absolute locus position.
@@ -533,10 +562,10 @@ namespace simuPOP
 
         for(UINT i=1, iEnd =numChrom(); i <= iEnd;  ++i)
         {
-          if( m_genoStru->m_chromIndex[i] > locus)
+          if( s_genoStruRepository[m_genoStruIdx]->m_chromIndex[i] > locus)
           {
             loc.first = i-1;
-            loc.second = locus - m_genoStru->m_chromIndex[i-1];
+            loc.second = locus - s_genoStruRepository[m_genoStruIdx]->m_chromIndex[i-1];
             break;
           }
         }
@@ -546,12 +575,12 @@ namespace simuPOP
       /// return allele name
       string alleleName(const Allele allele) const
       {
-        if( ! m_genoStru->m_alleleNames.empty() )
+        if( ! s_genoStruRepository[m_genoStruIdx]->m_alleleNames.empty() )
         {
-          DBG_FAILIF( allele >= m_genoStru->m_alleleNames.size() ,
+          DBG_FAILIF( allele >= s_genoStruRepository[m_genoStruIdx]->m_alleleNames.size() ,
             IndexError, "No name for allele " + toStr(static_cast<UINT>(allele)));
 
-          return m_genoStru->m_alleleNames[allele];
+          return s_genoStruRepository[m_genoStruIdx]->m_alleleNames[allele];
         }
         else
           return toStr(static_cast<int>(allele));
@@ -560,32 +589,32 @@ namespace simuPOP
       /// allele names
       vectorstr alleleNames() const
       {
-        return m_genoStru->m_alleleNames;
+        return s_genoStruRepository[m_genoStruIdx]->m_alleleNames;
       }
 
       /// return locus name
       string locusName(const UINT loc) const
       {
-        DBG_FAILIF( loc >= m_genoStru->m_totNumLoci, IndexError,
+        DBG_FAILIF( loc >= s_genoStruRepository[m_genoStruIdx]->m_totNumLoci, IndexError,
           "Locus index " + toStr(loc) + " out of range of 0 ~ " +
-          toStr(m_genoStru->m_totNumLoci));
+          toStr(s_genoStruRepository[m_genoStruIdx]->m_totNumLoci));
 
-        return m_genoStru->m_lociNames[loc];
+        return s_genoStruRepository[m_genoStruIdx]->m_lociNames[loc];
       }
 
       UINT maxAllele() const
       {
-        return m_genoStru->m_maxAllele;
+        return s_genoStruRepository[m_genoStruIdx]->m_maxAllele;
       }
 
       void setMaxAllele(UINT maxAllele)
       {
-        m_genoStru->m_maxAllele = maxAllele;
+        s_genoStruRepository[m_genoStruIdx]->m_maxAllele = maxAllele;
       }
 
       void swap(GenoStruTrait& rhs)
       {
-        std::swap(m_genoStru, rhs.m_genoStru);
+        std::swap(m_genoStruIdx, rhs.m_genoStruIdx);
       }
 
     private:
@@ -595,13 +624,25 @@ namespace simuPOP
       template<class Archive>
         void serialize(Archive & ar, const UINT version)
       {
-        // do not archive pointer.
+        // do not archive index.
       }
 
-    protected:
+    private:
+      /// m_genoStru is originally a pointer,
+      /// I am using a short index now to save a few RAM (4 vs 1)
+      /// This may become significant since this info is avaiable for
+      /// all individuals.
+      TraitIndexType m_genoStruIdx;
 
-      GenoStructure * m_genoStru;
+      /// glocal genotypic strcuture repository
+      /// only unique structure will be saved
+      /// store pointers instead of object to avoid relocation of
+      /// objects themselves by vector
+      static vector<GenoStructure*> s_genoStruRepository;
   };
+
+  // initialize static variable s)genoStruRepository.
+  vector<GenoStructure*> GenoStruTrait::s_genoStruRepository = vector<GenoStructure*>();
 
   /** \brief Basic individual class
 
@@ -676,16 +717,16 @@ namespace simuPOP
       ///  @name constructor, destructor etc
       //@{
       /// default constructor, Tag field need a default constructor
-      Individual():m_genoPtr(NULL),m_info(0),m_flags(0)
+      Individual():m_flags(0),m_genoPtr(NULL),m_info(0)
       {
       }
 
       /// CPPONLY
       /// copy constructor will be a shallow copied one
       Individual(const Individual<Tag>& ind) :
-      GenoStruTrait(ind),
+      GenoStruTrait(ind), m_flags(ind.m_flags),
         m_genoPtr(ind.m_genoPtr), m_info(ind.m_info),
-        m_tag(ind.m_tag), m_flags(ind.m_flags)
+        m_tag(ind.m_tag)
       {
         if( m_genoPtr!= NULL)
           setShallowCopied(true);
@@ -718,7 +759,7 @@ namespace simuPOP
         setInfo(rhs.info());
         setGenoPtr(rhs.genoPtr());
         // also copy genoStru pointer...
-        this->m_genoStru = rhs.m_genoStru;
+        this->setGenoStruIdx(rhs.genoStruIdx());
         return *this;
       }
 
@@ -730,7 +771,7 @@ namespace simuPOP
         setInfo(rhs.info());
         copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
         // also copy genoStru pointer...
-        this->m_genoStru = rhs.m_genoStru;
+        this->setGenoStruIdx(rhs.genoStruIdx());
         setShallowCopied(false);
         return *this;
       }
@@ -1033,7 +1074,7 @@ namespace simuPOP
       */
       void swap(Individual& ind, bool swapContent=true)
       {
-        if( m_genoStru != ind.m_genoStru)
+        if( genoStruIdx() != ind.genoStruIdx() )
           throw SystemError("Can only swap individuals with different geno structure.");
 
         std::swap(m_tag, ind.m_tag);
@@ -1178,6 +1219,10 @@ namespace simuPOP
 
     protected:
 
+      /// internal flag. Can be used to perform many things.
+      /// bitset<3> was previously used but that will take 4 bytes.
+      unsigned char m_flags;
+
       /// pointer to genotype.
       Allele* m_genoPtr;
 
@@ -1186,10 +1231,6 @@ namespace simuPOP
 
       /// tag
       TagType m_tag;
-
-      /// internal flag. Can be used to perform many things.
-      /// bitset<3> was previously used but that will take 4 bytes.
-      unsigned char m_flags;
 
       /// shallow copied flag
       static bool s_flagShallowCopied;

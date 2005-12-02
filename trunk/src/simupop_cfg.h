@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Bo Peng                                         *
- *   bpeng@rice.edu   
+ *   bpeng@rice.edu
  *                                                                         *
  *   $LastChangedDate$
  *   $Rev$                                                     *
@@ -29,7 +29,6 @@
 /// global configuration
 #ifndef _SIMUPOP_CONFIG_H
 #define _SIMUPOP_CONFIG_H
-
 
 // include the sytem wide config.h
 // Note: there is some strange #include problem if cmath is included later.
@@ -156,7 +155,7 @@ namespace simuPOP
 
   // define DEBUG codes
   // DEbUG_CODE_LENGTH should be the number of debug codes
-#define DBG_CODE_LENGTH 19
+#define DBG_CODE_LENGTH 20
 
   enum DBG_CODE
   {
@@ -178,7 +177,8 @@ namespace simuPOP
     DBG_SELECTOR=15,
     DBG_MATING=16,
     DBG_MIGRATOR=17,
-    DBG_PROFILE=18
+    DBG_PROFILE=18,
+    DBG_DEVEL=19
   };
 
   // DBG_NAMES are defined in utility.cpp
@@ -206,21 +206,21 @@ namespace simuPOP
 #ifndef OPTIMIZED
 
 #define DBG_ASSERT(cond, exception, message) \
-    if(!(cond)) \
-    { \
-      throw exception( \
-        toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
-    }
+if(!(cond)) \
+{ \
+  throw exception( \
+  toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
+}
 
 #define DBG_FAILIF(cond, exception, message) \
-    if(cond) \
-    { \
-      throw exception( \
-        toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
-    }
+if(cond) \
+{ \
+  throw exception( \
+  toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
+}
 
 #define DBG_DO(dbgCode, expr) \
-    if(debug(dbgCode)){ expr; }
+if(debug(dbgCode)){ expr; }
 
 #define DBG_DO_( expr) expr
 
@@ -232,9 +232,9 @@ namespace simuPOP
 #define DBG_DO_(expr)
 #endif
 
-  // definition for all mode
+      // definition for all mode
 
-  // epsilon when during floating point comparison
+      // epsilon when during floating point comparison
 #define cmp_epsilon (1.e-9)
 
 #define CLEARFLAG(var) (var = 0)
@@ -242,7 +242,7 @@ namespace simuPOP
 #define RESETFLAG(var, flag) (var &= ~flag)
 #define ISSETFLAG(var, flag) (var & flag)
 
-  // check range.
+      // check range.
 #define CHECKRANGEPLOIDY(p)  DBG_FAILIF( p>=ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy()-1))
 #define CHECKRANGESEX(sex) DBG_FAILIF( sex!=Male && sex!=Female, IndexError, "Wrong sex info. Male " + toStr(Male) + " or Fenamle "  + toStr(Female) + " only.")
 #define CHECKRANGESUBPOP(subPop) DBG_FAILIF ( subPop >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  - " + toStr(numSubPop()-1))

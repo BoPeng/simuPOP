@@ -183,6 +183,12 @@ namespace simuPOP
         // a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
         this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames, lociNames, maxAllele );
 
+        DBG_DO( DBG_DEVEL, cout << "Individual size is " << sizeof(IndType) << '+'
+          << sizeof(Allele) << '*' << genoSize() << endl
+          << "Info: " << sizeof(InfoType) << ", Tag: " << sizeof(TagType)
+          << ", GenoPtr: " << sizeof(Allele*) << ", Flag: " << sizeof(unsigned char)
+          << ", plus genoStru" << endl );
+
         // size of genotypic data for the whole population
         m_popGenoSize = totNumLoci() * ploidy * m_popSize;
 
@@ -204,7 +210,7 @@ namespace simuPOP
           for(ULONG i=0; i< m_popSize; ++i, ptr+=step)
           {
             m_inds[i].setGenoPtr( ptr );
-            m_inds[i].setGenoStructure(this->genoStru());
+            m_inds[i].setGenoStruIdx(this->genoStruIdx());
             m_inds[i].setShallowCopied(false);
           }
           IndType::clearShallowCopiedFlag();
@@ -262,7 +268,7 @@ namespace simuPOP
         // by using their copied pointer
         // population, however, need to set this pointer correctly
         //
-        setGenoStructure(rhs.genoStru());
+        setGenoStruIdx(rhs.genoStruIdx());
 
         // copy genotype one by one so individual genoPtr will not
         // point outside of subPopulation region.
@@ -434,7 +440,7 @@ namespace simuPOP
             for(ULONG i=0; i< m_popSize; ++i, ptr+=step)
             {
               m_inds[i].setGenoPtr( ptr );
-              m_inds[i].setGenoStructure(genoStru());
+              m_inds[i].setGenoStruIdx(genoStruIdx());
               m_inds[i].setShallowCopied(false);
             }
             IndType::clearShallowCopiedFlag();
@@ -885,7 +891,7 @@ namespace simuPOP
           UINT step = genoSize();
           for(ULONG i=0; i< newPopSize; ++i, ptr+=step, ++it)
           {
-            newInds[i].setGenoStructure(genoStru());
+            newInds[i].setGenoStruIdx(genoStruIdx());
             newInds[i].setGenoPtr( ptr );
             newInds[i].copyFrom(*it);             // copy everything, with info value
           }
@@ -1219,7 +1225,7 @@ namespace simuPOP
         for(ULONG i=0; i< m_popSize; ++i)
         {
           // set new geno structure
-          m_inds[i].setGenoStructure(genoStru());
+          m_inds[i].setGenoStruIdx(genoStruIdx());
           Allele * oldPtr = m_inds[i].genoPtr();
           // new genotype
           m_inds[i].setGenoPtr( ptr );
@@ -1250,7 +1256,7 @@ namespace simuPOP
           for(ULONG i=0; i< ps; ++i)
           {
             // set new geno structure
-            inds[i].setGenoStructure(genoStru());
+            inds[i].setGenoStruIdx(genoStruIdx());
             Allele * oldPtr = inds[i].genoPtr();
             // new genotype
             inds[i].setGenoPtr( ptr );
@@ -1858,7 +1864,8 @@ namespace simuPOP
         ar & make_nvp("individuals", m_inds);
 
         // set genostructure, check duplication
-        this->setGenoStructure(stru, true);
+        // we can not use setGenoStruIdx since stru may be new.
+        this->setGenoStructure(stru);
 
         m_numSubPop = m_subPopSize.size();
         m_popSize = accumulate(m_subPopSize.begin(), m_subPopSize.end(), 0L);
@@ -1879,7 +1886,7 @@ namespace simuPOP
         UINT step = genoSize();
         for(ULONG i=0; i< m_popSize; ++i, ptr+=step)
         {
-          m_inds[i].setGenoStructure(genoStru());
+          m_inds[i].setGenoStruIdx(genoStruIdx());
           m_inds[i].setGenoPtr( ptr );
         }
         m_ancestralDepth = 0;
@@ -1908,7 +1915,7 @@ namespace simuPOP
           {
             inds[i].setGenoPtr( ptr );
             // set new genoStructure
-            inds[i].setGenoStructure(genoStru());
+            inds[i].setGenoStruIdx(genoStruIdx());
             // fresh copy so clear shallowcopied flag.
             inds[i].setShallowCopied(false);
           }
