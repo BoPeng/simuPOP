@@ -72,6 +72,9 @@ const unsigned long MaxAllele = std::numeric_limits<Allele>::max();
 
 enum Sex{ Male = 1, Female = 2};
 
+// info is usually used for subpopulation index.
+// signed short should be enough.
+typedef signed short INFO;
 typedef unsigned long ULONG;
 typedef long LONG;
 

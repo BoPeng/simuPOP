@@ -144,8 +144,8 @@ namespace std
   %template()     pair<string, double>;
   %template()     map<string, double>;
 
-  %template()     pair<float, float>;
-  %template()     vector<pair<float, float> >;
+  %template()     pair<ULONG, ULONG>;
+  %template()     vector<pair<ULONG, ULONG> >;
 
   %template()     vector< vector<int> >;
   %template()     vector< vector<double> >;
@@ -226,10 +226,7 @@ namespace std
 
 namespace simuPOP
 {  
-  %template(individual)         Individual< std::pair<float,float> > ;
-  //%template(indTagInt)        Individual<int>;
-  //%template(indWithAgeTagInt) IndividualWithAge<int>;
-  //%template(indTagPair)       Individual<std::pair<int,int> >;
+  %template(individual)         Individual< std::pair<unsigned long,unsigned long> > ;
   %template(population)         Population<individual>;
   %template(baseOperator)       Operator< pop >;
   %template(pyOperator)         PyOperator< pop >;
@@ -237,7 +234,7 @@ namespace simuPOP
 
 %inline
 %{
-  typedef simuPOP::Individual< std::pair<float,float> > individual;
+  typedef simuPOP::Individual< std::pair<unsigned long,unsigned long> > individual;
   typedef simuPOP::Population< individual > pop;
 %}
 
