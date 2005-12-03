@@ -17,9 +17,11 @@ version 0.7.0 - currently available as daily snapshot
     to estimate recombination rate between markers.
   - convert test_mutator.py to unittest framework.
   - add DBG_DEVEL for developer-level debug information.
-  - Make adjustment to how genotype structure is accessed from individual.
-    Save 4 bytes (24->20) for each individual without performance penalty. 
+  - Make adjustment to how genotype structure is accessed from individual and 
+    limit the number of subpopulations to 2^31. Save 8 bytes (24->16) for each
+    individual without noticable performance penalty. 
   - fix a tiny bug about optimization mode reporting
+  - test_population is better now, but still way to go.
 
 version 0.6.9 (Rev71) - Nov, 19th,  2005
   - add pyOperator, the ultimate hybrid operator, this will considerably simplify many

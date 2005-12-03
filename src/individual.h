@@ -700,7 +700,7 @@ namespace simuPOP
       /// an information field for *temporary* use, its actual meaning
       /// is not determined. An example is to hold destination subPopulation
       /// number for migration purpose.
-      typedef int InfoType;
+      typedef INFO InfoType;
 
     protected:
       /// 0: male, 1: female regardless of outside coding
@@ -717,7 +717,7 @@ namespace simuPOP
       ///  @name constructor, destructor etc
       //@{
       /// default constructor, Tag field need a default constructor
-      Individual():m_flags(0),m_genoPtr(NULL),m_info(0)
+      Individual():m_flags(0),m_info(0),m_genoPtr(NULL)
       {
       }
 
@@ -725,8 +725,9 @@ namespace simuPOP
       /// copy constructor will be a shallow copied one
       Individual(const Individual<Tag>& ind) :
       GenoStruTrait(ind), m_flags(ind.m_flags),
-        m_genoPtr(ind.m_genoPtr), m_info(ind.m_info),
-        m_tag(ind.m_tag)
+        m_info(ind.m_info),
+        m_tag(ind.m_tag),
+        m_genoPtr(ind.m_genoPtr)
       {
         if( m_genoPtr!= NULL)
           setShallowCopied(true);
@@ -1205,7 +1206,7 @@ namespace simuPOP
         bool b;
         m_flags = 0;
         ar & boost::serialization::make_nvp("sex",b);
-        if( b) SETFLAG(m_flags, m_flagFemale);
+        if(b) SETFLAG(m_flags, m_flagFemale);
         ar & boost::serialization::make_nvp("affected",b);
         if(b) SETFLAG(m_flags, m_flagAffected);
 
@@ -1223,14 +1224,15 @@ namespace simuPOP
       /// bitset<3> was previously used but that will take 4 bytes.
       unsigned char m_flags;
 
-      /// pointer to genotype.
-      Allele* m_genoPtr;
-
       /// temporary information
       InfoType m_info;
 
       /// tag
       TagType m_tag;
+
+      /// pointer to genotype.
+      Allele* m_genoPtr;
+
 
       /// shallow copied flag
       static bool s_flagShallowCopied;
