@@ -13090,6 +13090,7 @@ gsl/sys/.svn/text-base/pow_int.c.svn-base
 misc/README
 misc/emacs-python.el
 misc/python-mode.el
+scripts/analComplexDisease.py
 scripts/popStat.py
 scripts/simuCDCV.py
 scripts/simuComplexDisease.py
@@ -13173,7 +13174,6 @@ src/serialization/xml_oarchive.cpp
 src/serialization/xml_wgrammar.cpp
 src/serialization/xml_wiarchive.cpp
 src/serialization/xml_woarchive.cpp
-test/test_collector.py
 test/test_fstat.py
 test/test_gcontrol.py
 test/test_gendrift.py
