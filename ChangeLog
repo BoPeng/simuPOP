@@ -22,6 +22,10 @@ version 0.7.0 - currently available as daily snapshot
     individual without noticable performance penalty. 
   - fix a tiny bug about optimization mode reporting
   - test_population is better now, but still way to go.
+  - separate simuComplexDisease.py into simuComplexDisease.py and 
+    analComplexDisease.py. The first script will run simulation and generate
+    a population saved in binary format. The second script will run the old
+    analyses (apply penetrance function, plot figures, apply genehunter etc.)
 
 version 0.6.9 (Rev71) - Nov, 19th,  2005
   - add pyOperator, the ultimate hybrid operator, this will considerably simplify many
