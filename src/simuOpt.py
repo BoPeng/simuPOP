@@ -874,25 +874,39 @@ def saveConfig(options, file, param):
   f.write("#\n# options: shortarg, longarg, description and value\n")
   for p in range(0, len(options)):
     if options[p].has_key('configName'):
+      f.write("\n")
       # write arg and long arg
-      f.write("\n# ")
       if options[p].has_key('arg'):
         if options[p]['arg'][-1] == ':':
-          f.write( " -" + options[p]['arg'][0:-1] )
+          f.write( "# -" + options[p]['arg'][0:-1] 
+            + "=" + str( param[p] ) + "\n")
         else:
-          f.write( " -" + options[p]['arg'] )
+          f.write( "# -" + options[p]['arg'] + "\n")
       if options[p].has_key('longarg'):
         if options[p]['longarg'][-1] == '=':
-          f.write( " --" + options[p]['longarg'][0:-1] )
+          f.write( "# --" + options[p]['longarg'][0:-1] 
+            + "=" + str( param[p] ) + "\n") 
         else:
-          f.write( " -" + options[p]['longarg'] )
-      f.write("\n")
+          f.write( "# --" + options[p]['longarg'] + "\n")
       # write description
       if options[p].has_key('description'):
         desc = options[p]['description'].splitlines()
         for d in desc:
           f.write("# " + d.strip() + "\n")
       f.write(options[p]['configName'] + ' = ' +  str( param[p] ) + '\n')
+  f.write("\n\n#The same options can be given by command line (subject to minor changes)\n#  --noDialog ")
+  for p in range(0, len(options)):
+    if options[p].has_key('configName') and options[p].has_key('longarg'):
+      if options[p]['longarg'][-1] == '=':
+        if str(param[p]).find(",") >= 0:  # has single quote
+          f.write( " --" + options[p]['longarg'][0:-1] 
+            + '="' + str( param[p] ) + '"') 
+        else:
+          f.write( " --" + options[p]['longarg'][0:-1] 
+            + "='" + str( param[p] ) + "'") 
+      else:
+        f.write( " --" + options[p]['longarg'] )
+  f.write("\n")
   f.close()
 
 # define some validataion functions

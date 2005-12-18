@@ -943,6 +943,12 @@ namespace simuPOP
         return( ISSETFLAG(m_flags, m_flagAffected));
       }
 
+      /// unaffected?
+      bool unaffected() const
+      {
+        return( ! ISSETFLAG(m_flags, m_flagAffected));
+      }
+
       /// return A or U for affected/Unaffected, for display purpose
       char affectedChar() const
       {
