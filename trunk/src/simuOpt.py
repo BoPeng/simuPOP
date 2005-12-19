@@ -27,7 +27,7 @@
 
 # First try to get environmental variable
 
-import os, sys, exceptions, types, re, time, math
+import os, sys, exceptions, types, re, time, imp
 
 def getParamShortArg(p, processedArgs):
   ''' try to get a param from short arg '''
@@ -300,6 +300,7 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False):
 #
 def tkGetParam(options, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
   ''' get options from a given options structure '''
+  import Tkinter as tk
   if len(options) == 0:
     raise exceptions.ValueError("Empty field names...")  # some behaviors
   # values, not the final result
@@ -338,11 +339,11 @@ def tkGetParam(options, title = '', description='', details='', checkUnprocessed
   #
   def denyWindowManagerClose():
     """ don't allow WindowManager close	"""
-    x = Tk()
+    x = tk.Tk()
     x.withdraw()
     x.bell()
     x.destroy()
-  root = Tk()
+  root = tk.Tk()
   root.protocol('WM_DELETE_WINDOW', denyWindowManagerClose )
   entryWidgets = [None]*len(options)
   labelWidgets = [None]*len(options)
@@ -394,7 +395,7 @@ def tkGetParam(options, title = '', description='', details='', checkUnprocessed
   # help
   def doHelp(event):
     # open another window
-    root1 = Tk()
+    root1 = tk.Tk()
     # OK for help
     def doOK(event):
       " OK buton is pressed "
@@ -404,19 +405,19 @@ def tkGetParam(options, title = '', description='', details='', checkUnprocessed
     root1.iconname('Dialog')
     root1.geometry("+200+200")
     root1.minsize(400, 100)
-    messageFrame = Frame(root1)
+    messageFrame = tk.Frame(root1)
     messageFrame.pack(side=TOP, fill=BOTH)
-    scrollBar = Scrollbar(messageFrame)
+    scrollBar = tk.Scrollbar(messageFrame)
     scrollBar.pack(side=RIGHT, fill=Y)
-    messageWidget = Text(messageFrame, wrap=WORD, 
+    messageWidget = tk.Text(messageFrame, wrap=WORD, 
       yscrollcommand=scrollBar.set)
     messageWidget.insert(END, usage(options, details))
     scrollBar.config(command=messageWidget.yview)
     #messageWidget.configure(font=(DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE), state=DISABLED)
     messageWidget.pack(side=TOP, expand=YES, fill=X, padx='3m', pady='3m')
-    buttonFrame = Frame(root1)
+    buttonFrame = tk.Frame(root1)
     buttonFrame.pack(side=BOTTOM, fill=BOTH)
-    okButton = Button(buttonFrame, takefocus=1, text="OK")
+    okButton = tk.Button(buttonFrame, takefocus=1, text="OK")
     okButton.pack(expand=YES, padx='1m', pady='1m', ipadx='2m', ipady='1m')
     # bind the keyboard events to the widget
     okButton.bind("<Return>", doOK)
@@ -432,8 +433,8 @@ def tkGetParam(options, title = '', description='', details='', checkUnprocessed
   # all use grid management
   # top message
   # do not use a very long description please
-  Message(root, text=description, width=600).grid(row=0, column=0, 
-    columnspan = 2 * nCol, sticky=N+E+S+W, pady=20)
+  tk.Message(root, text=description, width=600).grid(row=0, column=0, 
+    columnspan = 2 * nCol, sticky=tk.N+tk.E+tk.S+tk.W, pady=20)
   # find out number of items etc
   colParam = 0
   for opt in options:
@@ -457,37 +458,37 @@ def tkGetParam(options, title = '', description='', details='', checkUnprocessed
     # --------- entryWidget ----------------------------------------------
     # use different entry method for different types
     if opt.has_key('chooseOneOf'):  # single choice
-      labelWidgets[g] = Label(root, text=opt['configName'])
+      labelWidgets[g] = tk.Label(root, text=opt['configName'])
       labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
-        rowspan = len(opt['chooseOneOf']), sticky=E)
-      entryWidgets[g] = Listbox(root, width=40, selectmode=SINGLE, \
+        rowspan = len(opt['chooseOneOf']), sticky=tk.E)
+      entryWidgets[g] = tk.Listbox(root, width=40, selectmode=tk.SINGLE, \
         exportselection=0, height=len(opt['chooseOneOf']))
       entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10,
         rowspan = len(opt['chooseOneOf']))
       colCount += len(opt['chooseOneOf'])
       for entry in opt['chooseOneOf']:
-        entryWidgets[g].insert(END, str(entry))
+        entryWidgets[g].insert(tk.END, str(entry))
       if values[g] != None:
         if type(values[g]) == types.StringType:
           entryWidgets[g].select_set( opt['chooseOneOf'].index( values[g]))
     elif opt.has_key('chooseFrom'):  # multiple choice
-      labelWidgets[g] = Label(root, text=opt['configName'])
+      labelWidgets[g] = tk.Label(root, text=opt['configName'])
       labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
-        rowspan = len(opt['chooseFrom']), sticky=E)
-      entryWidgets[g] = Listbox(root, width=40, selectmode=EXTENDED, \
+        rowspan = len(opt['chooseFrom']), sticky=tk.E)
+      entryWidgets[g] = tk.Listbox(root, width=40, selectmode=tk.EXTENDED, \
         exportselection=0, height=len( opt['chooseFrom']))
       entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10,
         rowspan = len(opt['chooseFrom']))
       colCount += len(opt['chooseFrom'])
       for entry in opt['chooseFrom']:
-        entryWidgets[g].insert(END, str(entry))
+        entryWidgets[g].insert(tk.END, str(entry))
       if values[g] != None:
         for val in values[g]:
           entryWidgets[g].select_set( opt['chooseFrom'].index(val))
     else:
-      labelWidgets[g] = Label(root, text=opt['configName'])
-      labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10, sticky=E)
-      entryWidgets[g] = Entry(root, width=40)
+      labelWidgets[g] = tk.Label(root, text=opt['configName'])
+      labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10, sticky=tk.E)
+      entryWidgets[g] = tk.Entry(root, width=40)
       entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10)
       colCount += 1
        # put default value into the entryWidget
@@ -501,17 +502,17 @@ def tkGetParam(options, title = '', description='', details='', checkUnprocessed
     entryWidgets[g].bind("<Return>", doGetText)
     entryWidgets[g].bind("<Escape>", doCancel)
   # help button
-  helpButton = Button(root, takefocus=1, text="Help")
+  helpButton = tk.Button(root, takefocus=1, text="Help")
   helpButton.bind("<Return>"  , doHelp)
   helpButton.bind("<Button-1>", doHelp)    
   helpButton.grid( column=0, columnspan=nCol, row = colParam+1, pady=20)
   # ok button 
-  okButton = Button(root, takefocus=1, text="Run!")
+  okButton = tk.Button(root, takefocus=1, text="Run!")
   okButton.bind("<Return>"  , doGetText)
   okButton.bind("<Button-1>", doGetText)
   okButton.grid( column=nCol, columnspan=nCol, row = colParam+1, pady=20)
   # cancel button
-  cancelButton = Button(root, takefocus=1, text="Cancel")
+  cancelButton = tk.Button(root, takefocus=1, text="Cancel")
   cancelButton.bind("<Return>"  , doCancel)
   cancelButton.bind("<Button-1>", doCancel)  
   cancelButton.grid( column=0, columnspan=2*nCol, row = colParam+1, pady=20)
@@ -527,7 +528,7 @@ def tkGetParam(options, title = '', description='', details='', checkUnprocessed
   if len(values) == len(options):
     return values
   else:
-   return []
+    return []
 
 #
 # This function is adapted from easyGUI.
@@ -537,6 +538,7 @@ def tkGetParam(options, title = '', description='', details='', checkUnprocessed
 #
 def wxGetParam(options, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
   ''' get options from a given options structure '''
+  import wx
   if len(options) == 0:
     raise exceptions.ValueError("Empty field names...")  # some behaviors
   # values, not the final result
@@ -1029,19 +1031,21 @@ useWxPython = False
 if not par_useTkinter:
   try:
     # wxPython might not exist
-    import wx
+    imp.find_module('wx')
   except:
     useWxPython = False
   else:
     useWxPython = True
 
 if par_useTkinter or not useWxPython:
-  # Tkinter should always exists, but
+  # Tkinter should almost always exists, but ...
   try:
-    from Tkinter import *
-    useTkinter = True
-    if TkVersion < 8.0 :
-      useTkinter = False
+    imp.find_module('Tkinter')
   except:
     print "Tkinter can not be loaded. Please check your Python installation."
     useTkinter = False
+  else:
+    useTkinter = True
+    # this is not possible now because of the use of find_module
+    #if TkVersion < 8.0 :
+    #  useTkinter = False
