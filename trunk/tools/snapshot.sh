@@ -83,5 +83,5 @@ scp /var/www/html/simuPOP_doc/*.pdf thor:public_html/simuPOP
 # this is to avoid that svn will update utility.cpp every time when a revision 
 # number has changed.
 perl -pi.bak -e "s/^#define SIMUPOP_VER.*$/#define SIMUPOP_VER \"snapshot\"/" ../src/utility.cpp
-perl -pi.bak -e "s/^#define SIMUPOP_REV.*$/#define SIMUPOP_REV \"0\"/" ../src/utility.cpp
+perl -pi.bak -e "s/^#define SIMUPOP_REV.*$/#define SIMUPOP_REV \"9999\"/" ../src/utility.cpp
 perl -pi.bak -e "s/^SIMUPOP_VER=.*$/SIMUPOP_VER=\"snapshot\"/" ../setup.py
