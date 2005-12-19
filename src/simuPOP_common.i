@@ -138,6 +138,7 @@ namespace std
   %template()     vector<int>;
   %template()     vector<LONG>;
   %template()     vector<ULONG>;
+  %template()     vector<INFO>;
   %template()     vector<double>;
   %template()     vector<string>;
 

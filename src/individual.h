@@ -359,16 +359,15 @@ namespace simuPOP
             + "recompile simuPOP.");
         }
 
-        GenoStructure* tmp = new GenoStructure( ploidy, loci, sexChrom,
+        GenoStructure tmp = GenoStructure( ploidy, loci, sexChrom,
           lociPos, alleleNames, lociNames, maxAllele);
 
         for(TraitIndexType it = 0; it < s_genoStruRepository.size();
           ++it)
         {
                                                   // object comparison
-          if( *(s_genoStruRepository[it]) == *tmp )
+          if( s_genoStruRepository[it] == tmp )
           {
-            delete tmp;                           // use the existing one
             m_genoStruIdx = it;
             return;
           }
@@ -380,12 +379,14 @@ namespace simuPOP
       }
 
       /// set an existing geno structure, simply use it
+      /// This is NOT efficient! (but has to be used when, for example,
+      /// loading a structure from file
       void setGenoStructure(GenoStructure& rhs)
       {
         for(TraitIndexType it = 0; it < s_genoStruRepository.size();
           ++it)
         {
-          if( *(s_genoStruRepository[it]) == rhs )// object comparison
+          if( s_genoStruRepository[it] == rhs )// object comparison
           {
             m_genoStruIdx = it;
             return;
@@ -393,7 +394,7 @@ namespace simuPOP
         }
 
         // if not found, make a copy and store it.
-        s_genoStruRepository.push_back(new GenoStructure( rhs ));
+        s_genoStruRepository.push_back( rhs );
         m_genoStruIdx = s_genoStruRepository.size() - 1;
       }
 
@@ -418,7 +419,7 @@ namespace simuPOP
       /// CPPONLY
       GenoStructure& genoStru() const
       {
-        return *(s_genoStruRepository[m_genoStruIdx]);
+        return s_genoStruRepository[m_genoStruIdx];
       }
 
       /// return the GenoStructure index
@@ -435,7 +436,7 @@ namespace simuPOP
         DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "Ploidy: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-        return s_genoStruRepository[m_genoStruIdx]->m_ploidy;
+        return s_genoStruRepository[m_genoStruIdx].m_ploidy;
       }
 
       /// return ploidy
@@ -445,16 +446,16 @@ namespace simuPOP
         DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "PloidyName: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-        if (s_genoStruRepository[m_genoStruIdx]->m_ploidy == 1)
+        if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 1)
           return "haploid";
-        else if (s_genoStruRepository[m_genoStruIdx]->m_ploidy == 2)
+        else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 2)
           return "diploid";
-        else if (s_genoStruRepository[m_genoStruIdx]->m_ploidy == 3)
+        else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 3)
           return "triploid";
-        else if (s_genoStruRepository[m_genoStruIdx]->m_ploidy == 4)
+        else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 4)
           return "tetraploid";
         else
-          return toStr(s_genoStruRepository[m_genoStruIdx]->m_ploidy) + "-polid";
+          return toStr(s_genoStruRepository[m_genoStruIdx].m_ploidy) + "-polid";
       }
 
       /// number of loci on chromosome \c chrom
@@ -465,7 +466,7 @@ namespace simuPOP
           "numLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
         CHECKRANGECHROM(chrom);
-        return s_genoStruRepository[m_genoStruIdx]->m_numLoci[chrom];
+        return s_genoStruRepository[m_genoStruIdx].m_numLoci[chrom];
       }
 
       /// whether or not the last chromosome is sex chromosome
@@ -474,7 +475,7 @@ namespace simuPOP
         DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-        return s_genoStruRepository[m_genoStruIdx]->m_sexChrom;
+        return s_genoStruRepository[m_genoStruIdx].m_sexChrom;
       }
       /// return totNumLoci (STATIC)
       UINT totNumLoci() const
@@ -483,7 +484,7 @@ namespace simuPOP
         DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-        return s_genoStruRepository[m_genoStruIdx]->m_totNumLoci;
+        return s_genoStruRepository[m_genoStruIdx].m_totNumLoci;
       }
 
       /// return totNumLoci * ploidy
@@ -492,7 +493,7 @@ namespace simuPOP
         DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-        return s_genoStruRepository[m_genoStruIdx]->m_genoSize;
+        return s_genoStruRepository[m_genoStruIdx].m_genoSize;
       }
 
       /// locus distance.
@@ -502,13 +503,13 @@ namespace simuPOP
           "locusPos: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
         CHECKRANGEABSLOCUS(locus);
-        return s_genoStruRepository[m_genoStruIdx]->m_lociPos[locus];
+        return s_genoStruRepository[m_genoStruIdx].m_lociPos[locus];
       }
 
       /// return loci distance as python Numeric.array object
       PyObject* arrLociDist()
       {
-        return Double_Vec_As_NumArray( totNumLoci(), &(s_genoStruRepository[m_genoStruIdx]->m_lociPos[0]), false);
+        return Double_Vec_As_NumArray( totNumLoci(), &(s_genoStruRepository[m_genoStruIdx].m_lociPos[0]), false);
       }
 
       /// number of chromosome
@@ -517,7 +518,7 @@ namespace simuPOP
         DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
           "numChrom: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-        return s_genoStruRepository[m_genoStruIdx]->m_numChrom;
+        return s_genoStruRepository[m_genoStruIdx].m_numChrom;
       }
 
       /// chromosome index of chromosome \c chrom
@@ -529,7 +530,7 @@ namespace simuPOP
 
         CHECKRANGECHROM(chrom);
 
-        return s_genoStruRepository[m_genoStruIdx]->m_chromIndex[chrom];
+        return s_genoStruRepository[m_genoStruIdx].m_chromIndex[chrom];
       }
 
       /// chromosome index of chromosome \c chrom
@@ -541,7 +542,7 @@ namespace simuPOP
 
         CHECKRANGECHROM(chrom);
 
-        return s_genoStruRepository[m_genoStruIdx]->m_chromIndex[chrom+1];
+        return s_genoStruRepository[m_genoStruIdx].m_chromIndex[chrom+1];
       }
 
       /// convert from relative locus (on chromsome) to absolute locus (no chromosome structure)
@@ -550,7 +551,7 @@ namespace simuPOP
         CHECKRANGECHROM(chrom);
         CHECKRANGELOCUS(chrom, locus);
 
-        return( s_genoStruRepository[m_genoStruIdx]->m_chromIndex[chrom] + locus );
+        return( s_genoStruRepository[m_genoStruIdx].m_chromIndex[chrom] + locus );
       }
 
       /// return chrom, locus pair from an absolute locus position.
@@ -562,10 +563,10 @@ namespace simuPOP
 
         for(UINT i=1, iEnd =numChrom(); i <= iEnd;  ++i)
         {
-          if( s_genoStruRepository[m_genoStruIdx]->m_chromIndex[i] > locus)
+          if( s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > locus)
           {
             loc.first = i-1;
-            loc.second = locus - s_genoStruRepository[m_genoStruIdx]->m_chromIndex[i-1];
+            loc.second = locus - s_genoStruRepository[m_genoStruIdx].m_chromIndex[i-1];
             break;
           }
         }
@@ -575,12 +576,12 @@ namespace simuPOP
       /// return allele name
       string alleleName(const Allele allele) const
       {
-        if( ! s_genoStruRepository[m_genoStruIdx]->m_alleleNames.empty() )
+        if( ! s_genoStruRepository[m_genoStruIdx].m_alleleNames.empty() )
         {
-          DBG_FAILIF( allele >= s_genoStruRepository[m_genoStruIdx]->m_alleleNames.size() ,
+          DBG_FAILIF( allele >= s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() ,
             IndexError, "No name for allele " + toStr(static_cast<UINT>(allele)));
 
-          return s_genoStruRepository[m_genoStruIdx]->m_alleleNames[allele];
+          return s_genoStruRepository[m_genoStruIdx].m_alleleNames[allele];
         }
         else
           return toStr(static_cast<int>(allele));
@@ -589,27 +590,27 @@ namespace simuPOP
       /// allele names
       vectorstr alleleNames() const
       {
-        return s_genoStruRepository[m_genoStruIdx]->m_alleleNames;
+        return s_genoStruRepository[m_genoStruIdx].m_alleleNames;
       }
 
       /// return locus name
       string locusName(const UINT loc) const
       {
-        DBG_FAILIF( loc >= s_genoStruRepository[m_genoStruIdx]->m_totNumLoci, IndexError,
+        DBG_FAILIF( loc >= s_genoStruRepository[m_genoStruIdx].m_totNumLoci, IndexError,
           "Locus index " + toStr(loc) + " out of range of 0 ~ " +
-          toStr(s_genoStruRepository[m_genoStruIdx]->m_totNumLoci));
+          toStr(s_genoStruRepository[m_genoStruIdx].m_totNumLoci));
 
-        return s_genoStruRepository[m_genoStruIdx]->m_lociNames[loc];
+        return s_genoStruRepository[m_genoStruIdx].m_lociNames[loc];
       }
 
       UINT maxAllele() const
       {
-        return s_genoStruRepository[m_genoStruIdx]->m_maxAllele;
+        return s_genoStruRepository[m_genoStruIdx].m_maxAllele;
       }
 
       void setMaxAllele(UINT maxAllele)
       {
-        s_genoStruRepository[m_genoStruIdx]->m_maxAllele = maxAllele;
+        s_genoStruRepository[m_genoStruIdx].m_maxAllele = maxAllele;
       }
 
       void swap(GenoStruTrait& rhs)
@@ -638,11 +639,11 @@ namespace simuPOP
       /// only unique structure will be saved
       /// store pointers instead of object to avoid relocation of
       /// objects themselves by vector
-      static vector<GenoStructure*> s_genoStruRepository;
+      static vector<GenoStructure> s_genoStruRepository;
   };
 
   // initialize static variable s)genoStruRepository.
-  vector<GenoStructure*> GenoStruTrait::s_genoStruRepository = vector<GenoStructure*>();
+  vector<GenoStructure> GenoStruTrait::s_genoStruRepository = vector<GenoStructure>();
 
   /** \brief Basic individual class
 
