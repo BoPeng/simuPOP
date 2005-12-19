@@ -26,6 +26,8 @@ version 0.7.0 - currently available as daily snapshot
     analComplexDisease.py. The first script will run simulation and generate
     a population saved in binary format. The second script will run the old
     analyses (apply penetrance function, plot figures, apply genehunter etc.)
+  - add more info to saved config file. (Add a command  line script)
+  - simuOpt does not load wx automatically when --noDialog is used.
 
 version 0.6.9 (Rev71) - Nov, 19th,  2005
   - add pyOperator, the ultimate hybrid operator, this will considerably simplify many
