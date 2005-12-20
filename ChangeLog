@@ -6,6 +6,8 @@ NOTE: Daily snapshot reflects current SVN version but might not be stable.
 Known bugs     - all fixed now
     
 version 0.7.0 - currently available as daily snapshot
+
+version 0.6.10 (Rev89) - Dec, 20th, 2005
   - add recCount(loc) and recCount() to recombinator to track
     the number of recombination event.
   - add mutationCount(loc) and mutationCounts() to muators to track
