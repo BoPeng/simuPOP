@@ -13195,7 +13195,6 @@ test/test_recombination.py
 test/test_rng.py
 test/test_rplot.py
 test/test_sampling.py
-test/test_scipy.py
 test/test_selection.py
 test/test_simulator.py
 test/test_stat.py

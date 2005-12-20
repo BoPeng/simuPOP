@@ -406,7 +406,7 @@ namespace simuPOP
   {
     public:
       SavePopulation( string output="", string outputExpr="",
-        string format = "bin", int stage=PostMating, int begin=-1, int end=-1,
+        string format = "bin", int stage=PostMating, int begin=0, int end=-1,
         int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       Outputer<Pop>( "", "", stage, begin, end, step, at, rep, grp, sep),
         m_filename(output), m_filenameParser(outputExpr), m_format(format)
@@ -434,6 +434,7 @@ namespace simuPOP
           m_filenameParser.setLocalDict(pop.dict());
           filename = m_filenameParser.valueAsString();
         }
+        DBG_DO(DBG_OUTPUTER, cout << "Save to file " << filename << endl);
         pop.savePopulation(filename, m_format);
         return true;
       }
@@ -444,10 +445,13 @@ namespace simuPOP
       }
 
     private:
+      /// filename, 
       string m_filename;
 
+      /// or an expression that will be evaluated dynamically
       Expression m_filenameParser;
 
+      /// can specify format, default to 'auto'
       string m_format;
   };
 

@@ -842,6 +842,8 @@ namespace simuPOP
       {
         if( m_func != NULL)
           Py_DECREF(m_func);
+        if( m_numArray != NULL)
+          Py_DECREF(m_numArray);
       }
 
       /// CPPONLY
@@ -865,16 +867,15 @@ namespace simuPOP
       /// currently assuming diploid
       virtual double penet(typename Pop::IndType * ind)
       {
-        if( m_len == 0)
+        int len = m_loci.size() * ind->ploidy();
+        if( m_len != len )
         {
-          m_len = m_loci.size() * ind->ploidy();
-          m_alleles.resize( m_len);
+          m_len = len;
+          m_alleles.resize(m_len);
+          if(m_numArray != NULL)
+            Py_DECREF(m_numArray);
           m_numArray = Allele_Vec_As_NumArray(m_len, &m_alleles[0], false);
         }
-
-        DBG_FAILIF( static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),
-          SystemError,
-          "Length of m_len is wrong. Have you changed pop type?" );
 
         UINT pEnd = ind->ploidy();
         for(size_t i=0, iEnd=m_loci.size(), j=0; i < iEnd; ++i)
