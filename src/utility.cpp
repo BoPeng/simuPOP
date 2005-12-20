@@ -307,8 +307,9 @@ namespace simuPOP
     PyObject* res = PyNumber_Int(obj);
     if( res==NULL)
       throw ValueError("Can not convert object to a integer");
-
+  
     val = static_cast<int>(PyInt_AS_LONG(res));
+    Py_DECREF(res);
   }
 
   void PyObj_As_Double(PyObject *obj, double& val)
@@ -324,6 +325,7 @@ namespace simuPOP
       throw ValueError("Can not convert object to a double number");
 
     val = PyFloat_AsDouble(res);
+    Py_DECREF(res);
   }
 
   void PyObj_As_String(PyObject *obj, string& val)
@@ -2341,7 +2343,7 @@ T Expression::valueAs##TypeName() \
 
 // these will be automatically replaced by snapshot.sh and release.sh
 #define SIMUPOP_VER "snapshot"
-#define SIMUPOP_REV "9999"
+#define SIMUPOP_REV "76:85M"
 
   int simuRev()
   {
