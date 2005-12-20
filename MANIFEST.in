@@ -7,9 +7,10 @@ include src/simuPOP.py src/simuOpt.py src/simuPOP_std.py src/simuPOP_op.py src/s
 include src/simuPOP_la.py src/simuPOP_laop.py src/simuRPy.py src/simuViewPop.py
 include src/simuPOP_std_wrap.cpp src/simuPOP_op_wrap.cpp src/simuPOP_la_wrap.cpp src/simuPOP_laop_wrap.cpp
 recursive-include test test_*.py 
-recursive-include gsl *
+recursive-include gsl *.h *.c
 recursive-include boost *
 recursive-include boost/spirit/core *
 recursive-include src  *.cpp *.c *.h *.i *.ipp
 recursive-include scripts *.py
+prune *.svn/*
 

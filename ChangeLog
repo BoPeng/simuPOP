@@ -1,13 +1,13 @@
 ChangeLog of simuPOP
 
-NOTE: Daily snapshot reflects current SVN version but might not be stable.
-  Versioned releases are relatively stabler.
+NOTE: Daily snapshot reflects current SVN version. It includes new features and 
+  bug fixes, but may be less stable than versioned releases.
 
 Known bugs     - all fixed now
-    
+
 version 0.7.0 - currently available as daily snapshot
 
-version 0.6.10 (Rev89) - Dec, 20th, 2005
+version 0.6.10 (Rev90) - Dec, 20th, 2005
   - add recCount(loc) and recCount() to recombinator to track
     the number of recombination event.
   - add mutationCount(loc) and mutationCounts() to muators to track
@@ -30,7 +30,7 @@ version 0.6.10 (Rev89) - Dec, 20th, 2005
     analyses (apply penetrance function, plot figures, apply genehunter etc.)
   - add more info to saved config file. (Add a command  line script)
   - simuOpt does not load wx automatically when --noDialog is used.
-  - fix a memory leak problem with genotype structure.
+  - fix a memory leak problem with genotype structure introduced in 0.6.9.
   - fix a memory leak problem with PyObject->double conversion.
   - change listVars to ListVars for naming consistency. (Captal for standalone function)
 
@@ -81,7 +81,8 @@ version 0.6.7 - Aug, 1st, 2005
 
 version 0.6.6 - various GUI / wxPython improvements. Not released.
   - add wxGetParam. Will be used when wxPython is available.
-  - add wxPython version of listVars. Much better than the text version (when wxPython is available)
+  - add wxPython version of listVars. Much better than the text version 
+    when wxPython is available.
   - add some demographic functions in simuUtil.py
   - use grid for tkinter box
   - add migrIslandRates() and migrStepstoneRates() in simuUtil.py
@@ -106,7 +107,6 @@ version 0.6.5 - userfriendliness (simuPOP scripts). May 1st, 2005
   - simuComplexDisease.py. It uses almost all features of simuPOP
   - remove headers support for object. They are not very useful and 
     hard to use.
-  
 
 version 0.6.4 - efficiency and usability. Not released
   - savePopulation saves local variables as well. This is used to save special info like 
@@ -120,8 +120,7 @@ version 0.6.4 - efficiency and usability. Not released
   - add parameters loci, chrom, indRange, subPop to dumper() and Dump()
     Dump() is finally useful now.
   - more efficient handling of ancestral pops
-       
-    
+
 version 0.6.3 -  Ancestral populations  Apr. 5, 2005
   - add simulator::getPopulation get a copy of population
   - add simuOpt to control simuPOP behavior, hide other modules
@@ -159,7 +158,7 @@ version 0.6.2 - better usage of vars  Mar, 23, 2005
   - fix a small bug of unclosed files.
   - finsh LoadSimulatorFromFiles (uses in pair with savePopulation operator)
   - fix two bugs in AvgLD calculation and in recombinator.
-    
+
 version 0.6.1  - usability and real applications Feb, 12, 2005
   - add simuPOP_la library for long alleles.
   - add exposePop option to pyEval (better pure-python operator support)
@@ -171,7 +170,7 @@ version 0.6.1  - usability and real applications Feb, 12, 2005
   - add operator pause for presentation purpose
     new operator is called 'basicStat'
   - Genomic control (use R/gap package, simple subpop vs subpop version)
-    
+
 Version 0.6.0 - validation and distribution, Jan, 1st, 2005
   - bug fixes
   - better distribution process and binaries.
@@ -189,7 +188,7 @@ Version 0.5.9 - performance boost, dynamic population size  Dec. 12th, 2004
   - visualize migration
 
 Version 0.5.8 - selection Dec. 5nd, 2004
-  - selection. 
+  - add selection. 
   - better matings.
   - bug fixes
   - migration and selection examples
@@ -248,12 +247,12 @@ Version 0.5.2  -- windows port, smaller distribution, better help()
    
 Version 0.5.1
   - better suport of GSL. add setRNG()
-  - better debug: debug(code) instead of debug(level)
-  - better macOS  support
+  - better debug debug(code) instead of debug(level)
+  - better macOS support
       
 Version 0.5
   - a working distribution with lots of test cases
-  - ported to maxOS, solaris
+  - ported to macOS, solaris
 
 Version 0.1 Friday 18, June 2004
   

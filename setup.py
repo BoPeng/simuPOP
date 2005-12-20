@@ -24,7 +24,7 @@ from distutils.core import setup, Extension
 
 import os, shutil, sys, glob, re
 
-SIMUPOP_VER="snapshot"
+SIMUPOP_VER="0.6.10"
 if sys.argv[1] not in ['sdist']:
   shutil.copy('src/utility.cpp', 'src/utility_std.cpp')
   shutil.copy('src/utility.cpp', 'src/utility_op.cpp')

@@ -50,7 +50,9 @@ postGuide.sh
 cd ../tools
 
 # remove previous build
-rm -f /var/www/html/simuPOP/download/simuPOP-$SIMUPOP_VER-src.tar.gz
+if test -f /var/www/html/simuPOP/download/simuPOP-$SIMUPOP_VER-src.tar.gz ; then
+  rm -f /var/www/html/simuPOP/download/simuPOP-$SIMUPOP_VER-src.tar.gz
+fi
 
 # build source distribution
 make_src.sh
