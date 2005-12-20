@@ -30,6 +30,7 @@ version 0.7.0 - currently available as daily snapshot
   - simuOpt does not load wx automatically when --noDialog is used.
   - fix a memory leak problem with genotype structure.
   - fix a memory leak problem with PyObject->double conversion.
+  - change listVars to ListVars for naming consistency. (Captal for standalone function)
 
 version 0.6.9 (Rev71) - Nov, 19th,  2005
   - add pyOperator, the ultimate hybrid operator, this will considerably simplify many
