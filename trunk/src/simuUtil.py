@@ -99,7 +99,7 @@ def _listVars(var, level=-1, name='', subPop=True, indent=0, curLevel=0):
     else:
       print ' '*indent, var
 
-def listVars(var, level=-1, name='', subPop=True, useWxPython=True):
+def ListVars(var, level=-1, name='', subPop=True, useWxPython=True):
   ''' 
     list a variable in tree format, either in text format or in a 
       wxPython window.
