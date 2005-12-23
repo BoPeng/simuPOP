@@ -1187,15 +1187,15 @@ namespace simuPOP
         vectoru newNumLoci;
         vectorf newLociDist;
         vectorstr newLociNames;
-        UINT lastCh = -1;
+        UINT curCh = 9999;  // not 0, will be set to 0 soon.
         for(vectoru::iterator loc = loci.begin();
           loc != loci.end(); ++loc)
         {
           UINT ch = this->chromLocusPair(*loc).first;
-          if( newNumLoci.empty() || lastCh != ch )
+          if( newNumLoci.empty() || curCh != ch )
           {
             newNumLoci.push_back(1);
-            lastCh = ch;
+            curCh = ch;
           }
           else
             newNumLoci.back()++;

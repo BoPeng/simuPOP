@@ -9,10 +9,10 @@
 #######################################################################
 
 
-PYTHON_INC= -I/usr/include/python2.2/
-CC= /usr/site/icc/bin/icc
-CXX= /usr/site/icc/bin/icpc
-LINK= /usr/site/icc/bin/icpc 
+PYTHON_INC= -I/usr/include/python2.3/
+CC= /usr/site/intel/cc/9.0/bin/icc
+CXX= /usr/site/intel/cc/9.0/bin/icpc
+LINK= /usr/site/intel/cc/9.0/bin/icpc 
 # if you do not have SWIG, comment the following line
 WRAP=simuPOP_wrap.cpp
 # define -DOPTIMIZED, -DLONGALLELE accroding to your need.
