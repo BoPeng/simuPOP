@@ -540,12 +540,19 @@ namespace simuPOP
 
       \param prompt if true (default), print prompt message.
       \param stopOnKeyStroke if true, goon if no key was pressed
+      \param exposePop whether or not expose pop to user namespace, only
+        useful when user choose 's' at pause. Default to true.
+      \param popName by which name the population is exposed? default to 'pop'
+      
       */
-      Pause(bool prompt=true, bool stopOnKeyStroke=false, string output=">", string outputExpr="",
+      Pause(bool prompt=true, bool stopOnKeyStroke=false, 
+        bool exposePop=true, string popName="pop", 
+        string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_LAST, int grp=GRP_ALL, string sep="\t"):
       Operator<Pop>("", "", stage, begin, end, step, at, rep, grp, sep),
-        m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke)
+        m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke),
+        m_exposePop(exposePop), m_popName(popName)
       {
       }
 
@@ -578,12 +585,35 @@ namespace simuPOP
         if(m_prompt)
         {
           cout << "Simulation paused. " << endl
-            << " Press `q' to stop or any other key to continue...." << endl;
+            << " Press " << endl
+            << "   q to stop evolution, " << endl
+            << "   s to start an interative shell, (current population is exported as pop)" << endl
+            << "   or any other key to continue...." << endl;
         }
         a = simuPOP_getch();                      // std::cin.get(a);
 
         if( a == 'q' || a=='Q' )
           throw SystemError("Terminated by user");
+        else if( a == 's' || a == 'S' )
+        {
+          // export current population
+          PyObject* popObj;
+          if(m_exposePop)
+          {
+            popObj=pointer2pyObj((void*)(&pop),
+              PopSWIGType);
+            if( popObj == NULL)
+              throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
+
+            Py_INCREF(popObj);
+            // get global dictionary
+            mainVars().setVar(m_popName, popObj);
+          }
+          PyRun_InteractiveLoop(stdin, "<stdin>");
+          // if expose pop, release it.
+          if(m_exposePop)
+            mainVars().removeVar(m_popName); 
+        }
 
         // clear input and wait for user input
         // std::cin.clear();
@@ -601,6 +631,12 @@ namespace simuPOP
       bool m_prompt;
 
       bool m_stopOnKeyStroke;
+
+      /// whether or not expose population to user namespace
+      bool m_exposePop;
+
+      /// name of the population object
+      string m_popName;
   };
 
   /* 

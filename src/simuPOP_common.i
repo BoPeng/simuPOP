@@ -304,6 +304,7 @@ namespace simuPOP
 
   %template(terminator)          Terminator< pop>;
   %template(terminateIf)         TerminateIf< pop>;
+  %template(continueIf)          ContinueIf< pop>;
 
   %template(stator)              Stator<pop>;
   %template(pyEval)              PyEval<pop>;

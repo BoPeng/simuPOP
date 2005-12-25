@@ -2256,7 +2256,7 @@ vars()
 .
  A function 
 \family typewriter 
-listVars 
+ListVars 
 \family default 
 defined in 
 \family typewriter 
@@ -4499,7 +4499,7 @@ stat
 
 To list these variables, you can use the 
 \family typewriter 
-listVars() 
+ListVars() 
 \family default 
 function defined in 
 \family typewriter 
@@ -4509,7 +4509,7 @@ simuUtil.py
  For example
 \layout LyX-Code
 
-listVars(simu.vars(0), level=2)
+ListVars(simu.vars(0), level=2)
 \layout Standard
 
 list all variables for the first replicate.
@@ -4519,7 +4519,7 @@ Level=2
 \family default 
  stops 
 \family typewriter 
-listVars
+ListVars
 \family default 
  from expanding lists and dictionaries after two levels.
  
@@ -9325,12 +9325,12 @@ This operator takes a list of statements and execute them.
 
 Function (Python) 
 \family typewriter 
-listVars (defined in simuUtil.py)
+ListVars (defined in simuUtil.py)
 \layout Standard
 
 
 \family typewriter 
-listVars
+ListVars
 \begin_inset LatexCommand \index{function!listVars}
 
 \end_inset 
@@ -10460,6 +10460,60 @@ simuUtil.py
 )
 \layout Section
 
+Terminator
+\layout Standard
+
+These operators are used to see if an evolution is running as expected,
+ and terminate the evolution if a condition fails.
+\layout Subsection
+
+Operator (C++) 
+\family typewriter 
+terminateIf
+\begin_inset LatexCommand \index{operator!terminateIf}
+
+\end_inset 
+
+
+\layout Standard
+
+This operator terminates the evolution under certain conditions.
+ For example,
+\layout LyX-Code
+
+terminateIf(condition='alleleFreq[0][1]<0.05', begin=100)
+\layout Standard
+
+terminate the evolution if the allele frequency of allele 1 at locus 0 is
+ less than 0.05.
+ Of course, to make this opertor work, you will need to use an 
+\family typewriter 
+stat
+\family default 
+ operator before it so that variable 
+\family typewriter 
+alleleFreq
+\family default 
+ exists in the local namespace.
+\layout Subsection
+
+Operator (C++) 
+\family typewriter 
+continueIf
+\begin_inset LatexCommand \index{operator!terminateIf}
+
+\end_inset 
+
+
+\layout Standard
+
+The same as 
+\family typewriter 
+terminateIf 
+\family default 
+but continue if the condition if true.
+\layout Section
+
 Conditional operator 
 \layout Subsection
 
@@ -10625,7 +10679,8 @@ pause
 \layout Standard
 
 This operator will pause the simulation and wait for user response.
- User can use 'q' to stop evolution or any other key to continue.
+ User can use 'q' to stop evolution, 's' to escape to a python shell, or
+ any other key to continue.
  Another way to use it is through its 
 \family typewriter 
 stopOnKeyStroke
@@ -10637,6 +10692,23 @@ pause
 \family default 
  will continue until you press any key.
  It is useful for presentation and interative simulation.
+ 
+\layout Standard
+
+When 's' is pressed, this operator expose the current population to the
+ main python dictionary as variable 'pop', and enter an interactive python
+ session.
+ The way current population is exposed can be controled by parameter 
+\family typewriter 
+exposePop
+\family default 
+ and 
+\family typewriter 
+popName
+\family default 
+.
+ This feature is useful when you want to examine the properties of a population
+ during evolution.
 \layout Subsection
 
 Operator: (C++) 

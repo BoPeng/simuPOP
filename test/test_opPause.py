@@ -4,8 +4,8 @@
 #    Copyright (C) 2004 by Bo Peng                                         
 #    bpeng@rice.edu                                                        
 #                                                                          
-#    $LastChangedDate$          
-#    $Rev$                       
+#    $LastChangedDate: 2005-09-28 01:59:19 -0500 (Wed, 28 Sep 2005) $          
+#    $Rev: 35 $                       
 #                                                                          
 #    This program is free software; you can redistribute it and/or modify  
 #    it under the terms of the GNU General Public License as published by  
@@ -23,32 +23,42 @@
 #    59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             
 ############################################################################
 
+#
+# Purpose:
+#  testing pause operator
+#
+# Author:
+#  Bo Peng (bpeng@rice.edu)
+#
+# Dec, 2005
+#
 
-# get options
-from simuOpt import simuOptions
+from simuPOP import *
+from simuUtil import *
 
+import unittest
 
-if simuOptions['Optimized'] == False and simuOptions['LongAllele'] == False:
-  from simuPOP_std import *
-elif simuOptions['Optimized'] == True and simuOptions['LongAllele'] == False:
-  from simuPOP_op import * 
-elif simuOptions['Optimized'] == False and simuOptions['LongAllele'] == True:
-  from simuPOP_la import *
-else:
-  from simuPOP_laop import *
+class TestPause(unittest.TestCase):
+  def testPauseAtGen(self):
+    simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
+      randomMating(), rep=5)
+    print "\n\nUSER INTERACTION: Please press q\n\n"
+    self.assertRaises( exceptions.SystemError, simu.evolve, 
+      ops=[ pause(at=[10]), 
+            # should quite, can not reach generation 12
+            terminateIf("True", at=[12] ) ] )
+      
+  def testExitToShell(self):
+    simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
+      randomMating(), rep=5)
+    print "\n\nUSER INTERACTION: Please press s and then Ctrl-D"
+    print "Please check the existence of variable pop\n\n"
+    simu.evolve( 
+      ops=[ pause(at=[10]) ], end=12)
+    print "\n\nUSER INTERACTION: Please press s and then Ctrl-D"
+    print "Please check the existence of variable tmpPop\n\n"
+    simu.evolve( 
+      ops=[ pause(at=[20], popName='tmpPop') ], end=25)
 
-if not simuOptions['Quiet']:
-  print "simuPOP : Copyright (c) 2004-2005 Bo Peng"
-  # compile date, compiler etc are macros that are replaced during compile time.
-  print ("Version %s (Revision %d, %s) for Python %s" % (simuVer(), simuRev(), compileDate(),
-    compilePyVersion() ))
-  print compileCompiler()
-  print "Random Number Generator is set to", rng().name()
-  print "Maximum allele number per locus is %d." % MaxAllele
-  if optimized():
-    print "You are running in optimized mode at maximum speed."
-  else:
-    print "You are running in standard mode with strict boundary check etc."
-  print "For more information, please visit http://simupop.sourceforge.net,"
-  print "or email simupop-list@lists.sourceforge.net (subscription required)."
-
+if __name__ == '__main__':
+  unittest.main()
