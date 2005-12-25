@@ -895,6 +895,10 @@ namespace simuPOP
         PyObj_As_Double(result, resDouble);
 
         DBG_DO(DBG_SELECTOR, cout << "Fitness is " << resDouble << endl);
+        // make sure the returned value is legitimate.
+        DBG_ASSERT( fcmp_ge( resDouble, 0.) && fcmp_le( resDouble, 1.),
+          ValueError, "Returned fitness " + toStr(resDouble) + " is out of range [0,1]" );
+
         Py_DECREF(result);
 
         return resDouble;
