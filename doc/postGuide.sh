@@ -3,7 +3,7 @@
 # user's guide
 
 ./convFigRule.pl userGuide.lyx >  userGuidePost.lyx
-lyx --export latex userGuidePost.lyx
+/usr/bin/lyx --export latex userGuidePost.lyx
 mv -f userGuidePost.tex userGuide.tex
 perl -pi.bak -e 's/\\IfFileExists{url.sty}{\\usepackage{url}}//' userGuide.tex
 perl -pi.bak -e 's/{\\newcommand{\\url}{\\texttt}}//' userGuide.tex
