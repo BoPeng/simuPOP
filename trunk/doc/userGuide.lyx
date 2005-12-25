@@ -8,7 +8,7 @@
 
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.6.9 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.6.10 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Statistics, Rice University}\\
 {\bf Email: }{\textsf bpeng@rice.edu}\\
@@ -1761,7 +1761,7 @@ preview false
 \layout Standard
 
 
-\begin_inset LatexCommand \BibTeX[bibtotoc,plainnat]{/home/bpeng/research/thesis/thesis}
+\begin_inset LatexCommand \BibTeX[bibtotoc,plainnat]{all}
 
 \end_inset 
 

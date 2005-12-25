@@ -5,7 +5,7 @@
 \usepackage{underscore}
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.6.9 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.6.10 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Statistics, Rice University}\\
 {\bf Email: }{\textsf bpeng@rice.edu}\\
@@ -2760,8 +2760,6 @@ will fire a GUI (Figure
 
 \end_inset 
 
-
-\layout Standard
 
 \layout Standard
 
@@ -7079,6 +7077,15 @@ BasicPenetrance
 
 Assign penetrance using a table with keys 'X-Y' where X and Y are allele
  numbers.
+ For example,
+\layout LyX-Code
+
+basicPenetrance(locus=1, penetrance={'1-1':0, '1-2':0.5, '2-2':1})
+\layout Standard
+
+Note that this dictionary can be more than three elements to accommendate
+ more than one disease alleles.
+ 
 \layout Subsection
 
 Operator (C++) 
@@ -7122,6 +7129,17 @@ maSelector
 \family default 
 accepts an array of fitness for AA, Aa, aa while A stands for wildtype alleles.
  Penetrance is then set for any given genotype.
+ For example
+\layout LyX-Code
+
+maPenetrance(locus=1, wildtype=[1], penetrance={0,0.5,1})
+\layout Standard
+
+this operator behave the same as the 
+\family typewriter 
+basicPenetrance 
+\family default 
+example but will work if there are more than one disease alleles.
  
 \layout Subsection
 
@@ -7227,6 +7245,28 @@ Please refer to
 \end_inset 
 
  for detailed information about these models.
+\layout Standard
+
+For example, if each locus follows an additive penetrance model, we can
+ have
+\layout LyX-Code
+
+pen = []
+\layout LyX-Code
+
+for loc in loci:
+\layout LyX-Code
+
+  pen.append( maPenetrance(locus=loc, wildtype=[1],
+\layout LyX-Code
+
+    penetrance=[0.0.3,0.6] ) )
+\layout LyX-Code
+
+# the multi-loci penetrance
+\layout LyX-Code
+
+penMulti = mlPenetrance(mode=PEN_Multiplicative, peneOps=pen)
 \layout Subsection
 
 Operator (Hybrid) 
@@ -7249,6 +7289,101 @@ PyPenetrance
 \layout Standard
 
 For each individual, user provide a function to calculate penetrance.
+ This method is very flexible but will be slower than previous operators
+ since a function will be called for each individual.
+ This operator accept the following parameters:
+\layout Itemize
+
+
+\family typewriter 
+loci: 
+\family default 
+disease susceptibility loci.
+ The genotype 
+\emph on 
+at these loci 
+\emph default 
+will be passed to the provided python function in the form of 
+\family typewriter 
+loc1_1, loc1_2, loc2_1, loc2_2, ...
+ 
+\family default 
+if the individuals are diploid.
+\layout Itemize
+
+
+\family typewriter 
+func:
+\family default 
+ a user-defined function that takes a array of genotype and return a penetrance
+ value.
+ The returned value should be between 0 and 1.
+\layout Standard
+
+For example, for the same multi-locus model before, we can define is using
+ 
+\family typewriter 
+pyPenetrance
+\family default 
+ as
+\layout LyX-Code
+
+def peneFunc(geno):
+\layout LyX-Code
+
+  p = 1
+\layout LyX-Code
+
+  for l in range(len(geno)/2):
+\layout LyX-Code
+
+    p *= (geno[l*2]+geno[l*2+1]-2)*0.3
+\layout LyX-Code
+
+  return p
+\layout LyX-Code
+
+penMulti = pyPenetrance(loci=loci, func=peneFunc)
+\layout Standard
+
+As you can see, using this operator, you can define arbitrarily complex
+ penetrance functions.
+ Typical such penetrance functions are interaction between loci (using a
+ multi-locus penetrance table), even random ones.
+\layout Standard
+
+It would be useful to let peneFunc take parameters.
+ This can be done by defining a python function that return a penetrance
+ function.
+ This may sound intimidating but it is really easy:
+\layout LyX-Code
+
+def peneFunc(table):
+\layout LyX-Code
+
+  def func(geno):
+\layout LyX-Code
+
+    return table[geno[0]-1][geno[1]-1]
+\layout LyX-Code
+
+  return func
+\layout LyX-Code
+
+# then, given a table, you can do
+\layout LyX-Code
+
+pen = pyPenetrance(loci=loci, func=peneFunc( ((0,0.5),(0.3,0.8)) ) )
+\layout Standard
+
+Now, for any table, you can use 
+\family typewriter 
+peneFunc 
+\family default 
+to return a penetrance function that uses this table.
+\layout LyX-Code
+
+    
 \layout Section
 
 Quantitative Trait
@@ -13632,7 +13767,7 @@ listRNGs(), setRNG()
 \layout Standard
 
 
-\begin_inset LatexCommand \BibTeX[bibtotoc,plainnat]{/home/bpeng/research/bib/all}
+\begin_inset LatexCommand \BibTeX[bibtotoc,plainnat]{all}
 
 \end_inset 
 
