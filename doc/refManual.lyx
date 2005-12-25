@@ -11164,15 +11164,89 @@ Writing Pure Python Operator
 Now we know how to access information for individuals in a population, but
  how can we use them in reality? Namely, how can you write an pure Python
  operator?
+\layout Subsection
+
+Use 
+\family typewriter 
+pyOperator
 \layout Standard
 
-Pure python operators are functions that return an ordinary operator, most
- likely a 
+There are two kinds of pure python operators.
+ The first one is easy: define a function and wrap it with a pyOperator
+ operator.
+ This method is highly recommended because of its simplicity.
+ Many user scripts will use this kind of pure python operator.
+ You can find such examples in scripts directory.
+ A good one may be simuCDCV.py where a pure python operator is used to calculate
+ and visualize special statistics.
+ 
+\layout Standard
+
+For example, if you would like to record a silly statistics, namely the
+ genotype of the 
+\begin_inset Formula $m$
+\end_inset 
+
+ individual at locu 
+\begin_inset Formula $n$
+\end_inset 
+
+, you can do:
+\layout LyX-Code
+
+def sillyStat(pop, para):
+\layout LyX-Code
+
+  # para can be used to pass any number of parameters
+\layout LyX-Code
+
+  (filename, m, n) = para # unpack parameter
+\layout LyX-Code
+
+  f = open(filename)
+\layout LyX-Code
+
+  f.write('%d ' % pop.individual(m).allele(n) )
+\layout LyX-Code
+
+  f.close()
+\layout LyX-Code
+
+# then in the evole function
+\layout LyX-Code
+
+evolve(...
+\layout LyX-Code
+
+  ops=[ # other operators
+\layout LyX-Code
+
+    pyOperator(func=sillyStat, param=('file.txt', 2, 1) )
+\layout LyX-Code
+
+  ]
+\layout LyX-Code
+
+)
+\layout Standard
+
+
 \family typewriter 
-pyEval/pyExec
+pyOperator 
 \family default 
-.
- When defined properly, they look and act just like a usual operator.
+is by default a post-mating operator, you can redefine its stage by 
+\family typewriter 
+stage
+\family default 
+ parameter.
+ 
+\layout Subsection
+
+Use Python eval function
+\layout Standard
+
+This kind of pure python operator acts more like an ordinary operator.
+ They are usually pyEval or pyExec operators returned by a wrapper function.
  For example, the following function defines a 
 \family typewriter 
 tab
@@ -11189,7 +11263,7 @@ preview false
 
 \layout Standard
 
-It will actually return an operator
+This function actually returns an operator
 \layout LyX-Code
 
 output(r"
@@ -11197,12 +11271,28 @@ output(r"
 t", rep=REP_LAST, begin=500)
 \layout Standard
 
-Anyway, most of the pure python operators uses 
+This kind of operators have some advantages, namely
+\layout Itemize
+
+it acts more like ordinary operator.
+ 
+\layout Itemize
+
+it is more efficient since it is handled (at least the first layer) by a
+ C/C++ operator.
+\layout Standard
+
+However, because of its complexity, such operators can only be found in
+ system libraries.
+ You can ignore the rest of this section if 
 \family typewriter 
-pyEval
+pyOperator
 \family default 
- to access a population.
- Here is what you will generally do:
+ is enough to you.
+ 
+\layout Standard
+
+To define a pure python operator, here is what you will generally do:
 \layout Itemize
 
 Write a function that act on a population.
@@ -11351,13 +11441,7 @@ outputExpr
  
 \layout Standard
 
-This seems to be complicated but 
-\emph on 
-all
-\emph default 
- pure python operators follow this pattern.
- All you need to do is actually write a function that act on one population
- (plus some copy-paste afterwards).
+.
  
 \layout Section
 
@@ -11377,8 +11461,8 @@ when you would like to change individual structure
 If some aspect of simuPOP is too limited (like the number of maximum alleles)
 \layout Standard
 
-It is not at all difficult to write simuPOP extension in C++, once you know
- how simuPOP is organized.
+It is not difficult to write simuPOP extension in C++, once you know how
+ simuPOP is organized.
  The general procedure is
 \layout Itemize
 
