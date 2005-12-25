@@ -75,12 +75,6 @@ namespace simuPOP
   ///    alleleNum0{2} == 0
   /// etc.
   ///
-  /// More specifically, as of now,
-  ///   function supported
-  ///     any, all, sum
-  ///   operator supported
-  ///     < > <= >= ==
-  ///
   /// When the condition is true, a shared variable var="terminate" will be
   /// set to current generation.
   template<class Pop>
@@ -141,5 +135,76 @@ namespace simuPOP
       /// variable to set when terminated
       string m_var;
   };
+
+
+
+  /// terminate according to a condition
+  /// which can be, e.g.
+  ///    any(alleleNum0) == 0
+  ///    all(alleleNum1) > 0.5
+  ///    alleleNum0{2} == 0
+  /// etc.
+  ///
+  /// When the condition is true, a shared variable var="terminate" will be
+  /// set to current generation.
+  template<class Pop>
+    class ContinueIf: public Terminator<Pop>
+  {
+
+    public:
+      ContinueIf(string condition="", string message="", string var="terminate",
+        string output="", string outputExpr="",
+        int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
+        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
+      Terminator<Pop>(message, output, outputExpr, stage, begin, end, step, at,
+        rep, grp), m_expr(condition ), m_var(var)
+      {
+      }
+
+      virtual Operator<Pop>* clone() const
+      {
+        return new ContinueIf<Pop>(*this);
+      }
+
+      virtual string __repr__()
+      {
+        return "<simuPOP::terminateIf>";
+      }
+
+      /// check all alleles in vector allele if they are fixed.
+      virtual bool apply(Pop& pop)
+      {
+        // experssion return true
+        m_expr.setLocalDict(pop.dict());
+
+        if( m_expr.valueAsBool() == false )
+        {
+          // store the generations this replicate stops
+          int gen = pop.gen();                    // mainVars().getVarAsInt("gen");
+
+          pop.setIntVar(m_var, gen);
+          if( !this->noOutput() )
+          {
+            ostream & out = this->getOstream(pop.dict());
+            out << gen << endl;
+            this->closeOstream();
+          }
+          cout << this->message() << endl;
+          return false;                           // return false, this replicate will be stopped
+        }
+        else
+          return true;
+      }
+
+      virtual ~ContinueIf(){};
+
+    private:
+      /// alleles to check. If empty, check all alleles.
+      Expression m_expr;
+
+      /// variable to set when terminated
+      string m_var;
+  };
+
 }
 #endif
