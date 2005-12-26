@@ -902,7 +902,15 @@ namespace simuPOP
 
         m_genoPtr[index+p*totNumLoci()] = allele;
       }
+      
+      void setAllele(Allele allele, UINT index, UINT p, UINT ch)
+      {
+        CHECKRANGEGENOSIZE(index);
+        CHECKRANGEPLOIDY(p);
 
+        m_genoPtr[index + p*totNumLoci() + chromBegin(ch) ] = allele;
+      }
+	    
       /// return tag
       TagType tag() const
       {
