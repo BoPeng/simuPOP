@@ -780,28 +780,28 @@ namespace simuPOP
 
       /** brief return individual info in pop namespace
        */
-      PyObject* exposeInfo()
+      PyObject* exposeInfo(string name="info")
       {
         // regardness of info type, treat it as int.
         vectori val(m_popSize);
         for(ULONG it=0; it < m_popSize; ++it)
           val[it] = static_cast<int>(individual(it).info());
         // this has to be changed according to info type.
-        PyObject* var = setIntNumArrayVar("info", m_popSize, &val[0]);
+        PyObject* var = setIntNumArrayVar(name, m_popSize, &val[0]);
         Py_INCREF(var);
         return var;
       }
 
       /** brief return individual affected status in pop namespace
        */
-      PyObject* exposeAffectedness()
+      PyObject* exposeAffectedness(string name="affected")
       {
         // regardness of info type, treat it as int.
         vectori val(m_popSize);
         for(ULONG it=0; it < m_popSize; ++it)
           val[it] = static_cast<int>(individual(it).affected());
         // this has to be changed according to info type.
-        PyObject* var = setIntNumArrayVar("affected", m_popSize, &val[0]);
+        PyObject* var = setIntNumArrayVar(name, m_popSize, &val[0]);
         Py_INCREF(var);
         return var;
       }
@@ -1050,13 +1050,22 @@ namespace simuPOP
 
       /**  remove subpop, adjust subpop numbers so that there will be no 'empty'
       subpops left */
-      void removeIndividuals(const vectoru& inds=vectoru())
+      void removeIndividuals(const vectoru& inds=vectoru(), int subPop=-1)
       {
         setIndInfoWithSubPopID();
-        for(size_t i = 0; i < inds.size(); ++i)
-          individual(i).setInfo(-1);              // remove
+        if( subPop == -1 )
+        {
+          for(size_t i = 0; i < inds.size(); ++i)
+            individual(i).setInfo(-1);              // remove
+        }
+        else
+        {
+          for(size_t i = 0; i < inds.size(); ++i)
+            individual(i, subPop).setInfo(-1);              // remove
+        }
         setSubPopByIndInfo();
       }
+
 
       /// merge population
       /** merge subpopulations, subpop id will be the ID of the first in array subPops */

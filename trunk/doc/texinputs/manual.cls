@@ -12,7 +12,7 @@
 % Change the options here to get a different set of basic options, but only
 % if you have to.  Paper and font size should be adjusted in pypaper.sty.
 %
-\LoadClass[\py@paper,\py@ptsize,twoside,openright,11pt]{report}
+\LoadClass[\py@paper,\py@ptsize,twoside,openright]{report}
 
 \setcounter{secnumdepth}{2}
 
@@ -64,7 +64,8 @@
     \let\footnotesize\small
     \let\footnoterule\relax
     \py@doHorizontalRule%
-    \@ifundefined{pdfinfo}{}{{
+    \ifpdf
+      \begingroup
       % This \def is required to deal with multi-line authors; it
       % changes \\ to ', ' (comma-space), making it pass muster for
       % generating document info in the PDF file.
@@ -73,7 +74,8 @@
         /Author (\@author)
         /Title (\@title)
       }
-    }}
+      \endgroup
+    \fi
     \begin{flushright}%
       {\rm\Huge\py@HeaderFamily \@title \par}%
       {\em\LARGE\py@HeaderFamily \py@release\releaseinfo \par}
