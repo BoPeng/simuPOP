@@ -15,6 +15,10 @@ version 0.7.0 - currently available as daily snapshot
     dictionary as variable 'pop. This can be controled by parameter exposePop
     and popName.
   - add test case test_opPause.py
+  - add name parameter to population::exposeInfo and population::exposeAffectedness
+  - add subPop parameter to population::removeIndividual
+  - add full member function of population object list to reference manual
+  - add genotypic structure function list to reference manual
 
 version 0.6.10 (Rev90) - Dec, 20th, 2005
   - add recCount(loc) and recCount() to recombinator to track
