@@ -686,6 +686,52 @@ dist (distance),  info (information), migr (migration), subPop (subpopulation),
 (rep) replicate, gen (generation), grp (group(s)), ops (operators), 
 \newline 
 expr (expression), stmts (statements) 
+\layout Section
+
+How to read this manual
+\layout Standard
+
+There are a lot of functions/operators in simuPOP and there is no reason
+ you should memorize all of them.
+ (I admit that I can not.) If you are a first time simuPOP user, my suggestion
+ is that you read through this manual quickly only to get the big picture
+ of how simuPOP works and see what simuPOP can do.
+ Then, if you decide to write some simulations, you should
+\layout Itemize
+
+Read some examples under 
+\family typewriter 
+scripts 
+\family default 
+directly.
+ From easy to difficult, you can read 
+\family typewriter 
+simuLDDecay.py, simuCDCV.py 
+\family default 
+and 
+\family typewriter 
+simuComplexDisease.py.
+ 
+\layout Itemize
+
+Copy one of the scripts as a template and modify it.
+ For whatever function/operator you need, read the relevant sections in
+ detail.
+ 
+\layout Itemize
+
+For each operator you will use, it is recommended that you write a short
+ script to test it and know how it works.
+ Assemble the operator to the big script after you have some confidence
+ in it.
+ Such short scripts can often be found under the 
+\family typewriter 
+test 
+\family default 
+directory where every feature of simuPOP are tested through many small test
+ cases.
+ (Work in progress.
+ )
 \layout Chapter
 
 simuPOP Components
@@ -1657,15 +1703,34 @@ Population has a large number of member functions, ranging from reviewing
  unless you need to write pure python functions/operators that involves
  complicated manipulation of populations.
 \layout Standard
+
+The following table lists all population related functions.
+ Functions that are prefixed by 
+\family typewriter 
+`p.' 
+\family default 
+are member functions.
+ That is to say, they should be called in the form of 
+\family typewriter 
+pop.function()
+\family default 
+ where pop is a population object created by functions like 
+\family typewriter 
+population(...) 
+\family default 
+or
+\family typewriter 
+ LoadPopulation(...).
+\layout Standard
 \added_space_top medskip \align center 
 
 \series bold 
-Member functions of the population object
+Population related functions 
 \layout Standard
 \added_space_bottom smallskip \align center 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="47" columns="3">
+<lyxtabular version="3" rows="50" columns="3">
 <features islongtable="true" firstHeadBottomDL="true" headBottomDL="true">
 <column alignment="left" valignment="top" leftline="true" width="0">
 <column alignment="left" valignment="top" leftline="true" width="0" special="|p{2in}|">
@@ -1702,6 +1767,12 @@ description
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Creating-a-population}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -1711,7 +1782,12 @@ description
 
 
 \family typewriter 
-population()
+population
+\begin_inset LatexCommand \index{population!population}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -1734,6 +1810,12 @@ function of the population object.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Creating-a-population}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -1743,7 +1825,57 @@ function of the population object.
 
 
 \family typewriter 
-numSubPop()
+p.clone
+\begin_inset LatexCommand \index{population!clone}
+
+\end_inset 
+
+()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Deep copy of a population.
+ (In python, 
+\family typewriter 
+pop1 = pop
+\family default 
+ will only create a reference to 
+\family typewriter 
+pop.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\begin_inset LatexCommand \ref{sub:Population-Structure}
+
+\end_inset 
+
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+p.numSubPop
+\begin_inset LatexCommand \index{population!numSubPop}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -1761,6 +1893,12 @@ Number of subpopulations in a population
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Structure}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -1770,7 +1908,12 @@ Number of subpopulations in a population
 
 
 \family typewriter 
-subPopSize(sp)
+p.subPopSize
+\begin_inset LatexCommand \index{population!subPopSize}
+
+\end_inset 
+
+(sp)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -1788,6 +1931,12 @@ Size of a subpopulation
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Structure}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -1797,7 +1946,12 @@ Size of a subpopulation
 
 
 \family typewriter 
-subPopSizes()
+p.subPopSizes
+\begin_inset LatexCommand \index{population!subPopSizes}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -1815,6 +1969,12 @@ Return an array of subpopulation sizes
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Structure}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -1824,7 +1984,12 @@ Return an array of subpopulation sizes
 
 
 \family typewriter 
-popSize()
+p.popSize
+\begin_inset LatexCommand \index{population!popSize}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -1842,6 +2007,12 @@ Total population size
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Structure}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -1851,7 +2022,12 @@ Total population size
 
 
 \family typewriter 
-absIndIndex(idx, sp)
+p.absIndIndex
+\begin_inset LatexCommand \index{population!absIndIndex}
+
+\end_inset 
+
+(idx, sp)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -1869,6 +2045,12 @@ Return the absolute index of an individual in a subpopulation
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Structure}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -1878,7 +2060,12 @@ Return the absolute index of an individual in a subpopulation
 
 
 \family typewriter 
-subPopIndPair(ind)
+p.subPopIndPair
+\begin_inset LatexCommand \index{population!subPopIndPair}
+
+\end_inset 
+
+(ind)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -1896,6 +2083,12 @@ Return the (sp,idx) pair from an absolute index of an individual
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Structure}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -1905,7 +2098,12 @@ Return the (sp,idx) pair from an absolute index of an individual
 
 
 \family typewriter 
-subPopBegin(sp)
+p.subPopBegin
+\begin_inset LatexCommand \index{population!subPopBegin}
+
+\end_inset 
+
+(sp)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -1923,6 +2121,12 @@ Index of the first individual of a subpopulation
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Structure}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -1932,7 +2136,12 @@ Index of the first individual of a subpopulation
 
 
 \family typewriter 
-subPopEnd(sp)
+p.subPopEnd
+\begin_inset LatexCommand \index{population!subPopEnd}
+
+\end_inset 
+
+(sp)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -1950,6 +2159,12 @@ Index of the last individual of a subpopulation + 1
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Individuals}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -1959,7 +2174,12 @@ Index of the last individual of a subpopulation + 1
 
 
 \family typewriter 
-individual(ind)
+p.individual
+\begin_inset LatexCommand \index{population!individual}
+
+\end_inset 
+
+(ind)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -1977,6 +2197,12 @@ Return an individual
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Individuals}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -1986,7 +2212,12 @@ Return an individual
 
 
 \family typewriter 
-individual(ind, sp)
+p.individual
+\begin_inset LatexCommand \index{population!individual}
+
+\end_inset 
+
+(ind, sp)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2004,6 +2235,12 @@ Return an individual from a subpopulation
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2013,7 +2250,12 @@ Return an individual from a subpopulation
 
 
 \family typewriter 
-arrGenotype()
+p.arrGenotype
+\begin_inset LatexCommand \index{population!arrGenotype}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2033,6 +2275,12 @@ Return an editable array of all genotype of the population.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2042,7 +2290,12 @@ Return an editable array of all genotype of the population.
 
 
 \family typewriter 
-arrGenotype(sp)
+p.arrGenotype
+\begin_inset LatexCommand \index{population!arrGenotype}
+
+\end_inset 
+
+(sp)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2060,6 +2313,12 @@ Return an editable array of all genotype of a subpopulation.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2069,7 +2328,12 @@ Return an editable array of all genotype of a subpopulation.
 
 
 \family typewriter 
-exposeInfo( name='info')
+p.exposeInfo
+\begin_inset LatexCommand \index{population!exposeInfo}
+
+\end_inset 
+
+( name='info')
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2087,6 +2351,12 @@ Expose (not editable) the info field of all individuals
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2096,7 +2366,12 @@ Expose (not editable) the info field of all individuals
 
 
 \family typewriter 
-exposeAffectedness( name='affected')
+p.exposeAffectedness
+\begin_inset LatexCommand \index{population!exposeAffectedness}
+
+\end_inset 
+
+( name='affected')
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2114,6 +2389,12 @@ Expose (not editable) the effectedness field of all individuals
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2123,7 +2404,12 @@ Expose (not editable) the effectedness field of all individuals
 
 
 \family typewriter 
-setIndInfo(info)
+p.setIndInfo
+\begin_inset LatexCommand \index{population!setIndInfo}
+
+\end_inset 
+
+(info)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2143,6 +2429,12 @@ Set info field of all individuals using an array of size
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2152,7 +2444,12 @@ Set info field of all individuals using an array of size
 
 
 \family typewriter 
-setIndInfoWithSubPopID()
+p.setIndInfoWithSubPopID
+\begin_inset LatexCommand \index{population!setIndInfoWithSubPopID}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2171,6 +2468,12 @@ Fill info field of all individuals using their respective subpopulation
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2180,7 +2483,12 @@ Fill info field of all individuals using their respective subpopulation
 
 
 \family typewriter 
-setSubPopByIndInfo( info=[])
+p.setSubPopByIndInfo
+\begin_inset LatexCommand \index{population!setSubPopByIndInfo}
+
+\end_inset 
+
+( info=[])
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2200,6 +2508,12 @@ Rearrange individual and set subpopulation structure, using the info value
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2209,7 +2523,12 @@ Rearrange individual and set subpopulation structure, using the info value
 
 
 \family typewriter 
-splitSubPop( which, sizes, subPopID=[])
+p.splitSubPop
+\begin_inset LatexCommand \index{population!splitSubPop}
+
+\end_inset 
+
+( which, sizes, subPopID=[])
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2232,6 +2551,12 @@ which
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2241,7 +2566,12 @@ which
 
 
 \family typewriter 
-splitSubPopByProportion( which, proportions, subPopID=[])
+p.splitSubPopByProportion
+\begin_inset LatexCommand \index{population!splitSubPopByProportion}
+
+\end_inset 
+
+( which, proportions, subPopID=[])
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2261,6 +2591,12 @@ Split a subpopulation info subpopulations of given proportions.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2270,7 +2606,12 @@ Split a subpopulation info subpopulations of given proportions.
 
 
 \family typewriter 
-removeEmptySubPops()
+p.removeEmptySubPops
+\begin_inset LatexCommand \index{population!removeEmptySubPops}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2289,6 +2630,12 @@ Remove empty subpopulations by adjusting subpopulation IDs.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2298,7 +2645,12 @@ Remove empty subpopulations by adjusting subpopulation IDs.
 
 
 \family typewriter 
-removeSubPops( subPops=[], removeEmptySubPops=False)
+p.removeSubPops
+\begin_inset LatexCommand \index{population!removeSubPops}
+
+\end_inset 
+
+( subPops=[], removeEmptySubPops=False)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2316,6 +2668,12 @@ Remove some subpopulations (and all individuals within).
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2325,7 +2683,12 @@ Remove some subpopulations (and all individuals within).
 
 
 \family typewriter 
-removeIndividuals( inds, subPop=-1)
+p.removeIndividuals
+\begin_inset LatexCommand \index{population!removeIndividuals}
+
+\end_inset 
+
+( inds, subPop=-1)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2344,6 +2707,12 @@ Remove individuals.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2353,7 +2722,12 @@ Remove individuals.
 
 
 \family typewriter 
-mergeSubPops( subPops, removeEmptySubPops=False)
+p.mergeSubPops
+\begin_inset LatexCommand \index{population!mergeSubPops}
+
+\end_inset 
+
+( subPops, removeEmptySubPops=False)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2371,6 +2745,12 @@ Merge subpopulations, using the first subpopulation ID.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2380,7 +2760,12 @@ Merge subpopulations, using the first subpopulation ID.
 
 
 \family typewriter 
-reorderSubPops( order, rank, removeEmptySubPops=False)
+p.reorderSubPops
+\begin_inset LatexCommand \index{population!reorderSubPops}
+
+\end_inset 
+
+( order, rank, removeEmptySubPops=False)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2399,6 +2784,12 @@ Reorder subpopulations by order or by rank.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2408,7 +2799,12 @@ Reorder subpopulations by order or by rank.
 
 
 \family typewriter 
-newPopByIndInfo( keepAncestralPops=True, removeEmptySubPops=False)
+p.newPopByIndInfo
+\begin_inset LatexCommand \index{population!newPopByIndInfo}
+
+\end_inset 
+
+( keepAncestralPops=True, removeEmptySubPops=False)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2426,6 +2822,12 @@ FIXME: details.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2435,7 +2837,12 @@ FIXME: details.
 
 
 \family typewriter 
-removeLoci( remove=[], keep=[])
+p.removeLoci
+\begin_inset LatexCommand \index{population!removeLoci}
+
+\end_inset 
+
+( remove=[], keep=[])
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2454,6 +2861,12 @@ Remove some loci from the current population.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2463,7 +2876,12 @@ Remove some loci from the current population.
 
 
 \family typewriter 
-newPopWithPartialLoci( remove=[], keep=[])
+p.newPopWithPartialLoci
+\begin_inset LatexCommand \index{population!newPopWithPartialLoci}
+
+\end_inset 
+
+( remove=[], keep=[])
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2482,6 +2900,12 @@ Copy current population to a new one and remove its loci.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2491,7 +2915,12 @@ Copy current population to a new one and remove its loci.
 
 
 \family typewriter 
-pushAndDiscard(pop)
+p.pushAndDiscard
+\begin_inset LatexCommand \index{population!pushAndDiscard}
+
+\end_inset 
+
+(pop)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2509,6 +2938,12 @@ pushAndDiscard(pop)
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Ancestral-populations}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2518,7 +2953,12 @@ pushAndDiscard(pop)
 
 
 \family typewriter 
-ancestralDepth()
+p.ancestralDepth
+\begin_inset LatexCommand \index{population!ancestralDepth}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2536,6 +2976,12 @@ Ancestral depth of current population.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Ancestral-populations}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2545,7 +2991,12 @@ Ancestral depth of current population.
 
 
 \family typewriter 
-setAncestralDepth(depth)
+p.setAncestralDepth
+\begin_inset LatexCommand \index{population!setAncestralDepth}
+
+\end_inset 
+
+(depth)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2564,6 +3015,12 @@ Set ancestral depth.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Ancestral-populations}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2573,7 +3030,12 @@ Set ancestral depth.
 
 
 \family typewriter 
-ancestralPop()
+p.ancestralPop
+\begin_inset LatexCommand \index{population!ancestralPop}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2592,6 +3054,12 @@ Current ancestral population selected.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Ancestral-populations}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2601,7 +3069,12 @@ Current ancestral population selected.
 
 
 \family typewriter 
-useAncestralPop(idx)
+p.useAncestralPop
+\begin_inset LatexCommand \index{population!useAncestralPop}
+
+\end_inset 
+
+(idx)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2629,7 +3102,12 @@ Use an ancestral population.
 
 
 \family typewriter 
-equalTo(pop)
+p.equalTo
+\begin_inset LatexCommand \index{population!equalTo}
+
+\end_inset 
+
+(pop)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2647,6 +3125,12 @@ Compare two populations.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Save-and-Load}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2656,7 +3140,12 @@ Compare two populations.
 
 
 \family typewriter 
-savePopulation( filename, format)
+p.savePopulation
+\begin_inset LatexCommand \index{population!savePopulation}
+
+\end_inset 
+
+( filename, format='auto')
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2674,6 +3163,12 @@ Save a population.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Save-and-Load}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2683,7 +3178,12 @@ Save a population.
 
 
 \family typewriter 
-loadPopulation( filename, format)
+p.loadPopulation
+\begin_inset LatexCommand \index{population!loadPopulation}
+
+\end_inset 
+
+( filename, format='auto')
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2706,6 +3206,12 @@ LoadPopulation
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Save-and-Load}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2715,7 +3221,42 @@ LoadPopulation
 
 
 \family typewriter 
-rep()
+LoadPopulation( filename, format='auto')
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Load a population and return it.
+ Format can be 'bin', 'xml', 'text' or 'auto'.
+ If auto is specified, file format is determined by file extension '.bin',
+ '.xml' or '.txt'.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+p.rep
+\begin_inset LatexCommand \index{population!rep}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2742,7 +3283,12 @@ Current replicate in a simulator
 
 
 \family typewriter 
-grp()
+p.grp
+\begin_inset LatexCommand \index{population!grp}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2769,7 +3315,12 @@ Current group ID in a simulator
 
 
 \family typewriter 
-gen()
+p.gen
+\begin_inset LatexCommand \index{population!gen}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2787,6 +3338,12 @@ Current generation during evolution.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Variables}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2796,7 +3353,12 @@ Current generation during evolution.
 
 
 \family typewriter 
-vars()
+p.vars
+\begin_inset LatexCommand \index{population!vars}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2814,6 +3376,12 @@ Return a dictionary of attached Python namespace.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Variables}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2823,7 +3391,12 @@ Return a dictionary of attached Python namespace.
 
 
 \family typewriter 
-vars(sp)
+p.vars
+\begin_inset LatexCommand \index{population!vars}
+
+\end_inset 
+
+(sp)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2841,6 +3414,12 @@ Return the namespace for a subpopulation
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Variables}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2850,7 +3429,12 @@ Return the namespace for a subpopulation
 
 
 \family typewriter 
-dvars()
+p.dvars
+\begin_inset LatexCommand \index{population!dvars}
+
+\end_inset 
+
+()
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2879,6 +3463,12 @@ pop.dvars().LD.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Variables}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2888,7 +3478,12 @@ pop.dvars().LD.
 
 
 \family typewriter 
-dvars(sp)
+p.dvars
+\begin_inset LatexCommand \index{population!dvars}
+
+\end_inset 
+
+(sp)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2908,6 +3503,12 @@ vars(sp)
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Variables}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2917,7 +3518,12 @@ vars(sp)
 
 
 \family typewriter 
-hasVar(name)
+p.hasVar
+\begin_inset LatexCommand \index{population!hasVar}
+
+\end_inset 
+
+( name)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2935,6 +3541,12 @@ Whether or not a variable exists in the local namespace
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Variables}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2944,7 +3556,54 @@ Whether or not a variable exists in the local namespace
 
 
 \family typewriter 
-evaluate(expr, stmts='')
+ListVars( var, level=-1, subpop=True, useWxPython=True)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+List a dictionary returned by functions like 
+\family typewriter 
+pop.dvars() or pop.vars(sp),
+\family default 
+ up to certain level (default to all).
+ You may use name parameter if you know the variable name, and set subPop=False
+ if you are only interested in the overall population.
+ wxPython will be automatically used if avaiable, unless you set 
+\family typewriter 
+useWxPython=False.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\begin_inset LatexCommand \ref{sub:Population-Variables}
+
+\end_inset 
+
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+p.evaluate
+\begin_inset LatexCommand \index{population!evaluate}
+
+\end_inset 
+
+(expr, stmts='')
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2963,6 +3622,12 @@ Evaluate an expression and return its result.
 
 \layout Standard
 
+
+\begin_inset LatexCommand \ref{sub:Population-Variables}
+
+\end_inset 
+
+
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2972,7 +3637,12 @@ Evaluate an expression and return its result.
 
 
 \family typewriter 
-execute(stmts)
+p.execute
+\begin_inset LatexCommand \index{population!execute}
+
+\end_inset 
+
+(stmts)
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2990,6 +3660,11 @@ Evaluate a statement (can be multi-line string).
 
 
 \layout Subsection
+
+
+\begin_inset LatexCommand \label{sub:Creating-a-population}
+
+\end_inset 
 
 Creating a population
 \layout Standard
@@ -3010,11 +3685,11 @@ class.
 
 call 
 \family typewriter 
-loadPopulation
+LoadPopulation
 \family default 
 , 
 \family typewriter 
-loadFstat
+LoadFstat
 \family default 
  etc to load a population from saved image file.
  
@@ -3562,6 +4237,11 @@ preview false
 
 \layout Subsection
 
+
+\begin_inset LatexCommand \label{sub:Population-Structure}
+
+\end_inset 
+
 Population Structure
 \layout Standard
 
@@ -3618,15 +4298,13 @@ preview false
 
 There are another set of functions that deal with population/subpopulation
  size changes.
- Some of them depend on a special field of 
+ In these functions, the 
 \family typewriter 
-individual
+info
 \family default 
-: 
-\family typewriter 
-info.
-
-\family default 
+ field of each individual plays an important role.
+ This field represents an individual's (new) subpopulation ID most of the
+ times.
  For example, function 
 \family typewriter 
 rearrangeByIndInfo
@@ -3637,172 +4315,86 @@ rearrangeByIndInfo
 () 
 \family default 
 rearrange individuals in the order of their info values.
- Similar functions are:
-\layout Itemize
-
-
+ Similar functions are
 \family typewriter 
-pop.setIndInfo
+ pop.setIndInfo
 \begin_inset LatexCommand \index{population!setIndInfo}
 
 \end_inset 
 
-(), 
-\family default 
-set individual info to be used by other functions.
-\layout Itemize
-
-
-\family typewriter 
-pop.setIndInfoWithSubPopID
+(), pop.setIndInfoWithSubPopID
 \begin_inset LatexCommand \index{population!setIndInfoWithSubPopID}
 
 \end_inset 
 
-(), 
-\family default 
-assume ordered info and redivide population according to info values.
-\layout Itemize
-
-
-\family typewriter 
-pop.setSubPopByIndInfo
+(), pop.setSubPopByIndInfo
 \begin_inset LatexCommand \index{population!setSubPopByIndInfo}
 
 \end_inset 
 
-(),
-\family default 
- set info with subpopulation ID
-\layout Itemize
-
-
-\family typewriter 
-pop.spliSubPopByProportion
+(), pop.spliSubPopByProportion
 \begin_inset LatexCommand \index{population!spliSubPopByProportion}
 
 \end_inset 
 
-()
-\family default 
-, split a subpopulation by proporitons
-\layout Itemize
-
-
-\family typewriter 
-pop.removeEmptySubPops
+(), pop.removeEmptySubPops
 \begin_inset LatexCommand \index{population!removeEmptySubPops}
 
 \end_inset 
 
 ()
 \family default 
-, remove empty subpops
-\layout Itemize
-
-
+,
 \family typewriter 
-pop.removeSubPops
+ pop.removeSubPops
 \begin_inset LatexCommand \index{population!removeSubPops}
 
 \end_inset 
 
-()
-\family default 
-, remove specified subpopulations.
- Subpop id will be shifted.
-\layout Itemize
-
-
-\family typewriter 
-pop.reorderSubPops
+(), pop.reorderSubPops
 \begin_inset LatexCommand \index{population!reorderSubPops}
 
 \end_inset 
 
 ()
 \family default 
-, reorder subpop with given order or rank.
-\layout Itemize
-
-
+, 
 \family typewriter 
 pop.newPopByIndInfo
 \begin_inset LatexCommand \index{population!newPopByIndInfo}
 
 \end_inset 
 
-(),
-\family default 
- return a population consists of individuals of non-negative info values.
-\layout Itemize
-
-
-\family typewriter 
-pop.removeLoci
+(), pop.removeLoci
 \begin_inset LatexCommand \index{population!removeLoci}
 
 \end_inset 
 
-()
+(),
 \family default 
-, remove loci.
- This result in a populaition with different genotypic structure.
-\layout Itemize
-
-
+ 
 \family typewriter 
 pop.newPopWithPartialLoci
 \begin_inset LatexCommand \index{population!newPopWithPartialLoci}
 
 \end_inset 
 
-()
-\family default 
-, new population with a subset of the loci
-\layout Itemize
-
-
-\family typewriter 
-pop.splitSubPop
+(), pop.splitSubPop
 \begin_inset LatexCommand \index{population!splitSubPop}
 
 \end_inset 
 
 (which, subPopSizes, subPopID),
 \family default 
- split subpop 
-\family typewriter 
-which 
-\family default 
-into sizes
-\family typewriter 
- subPopSizes
-\family default 
-, optionally given new subpopulations 
-\family typewriter 
-subPopID
-\layout Itemize
-
-
+ 
 \family typewriter 
 pop.mergeSubPop
 \begin_inset LatexCommand \index{population!mergeSubPop}
 
 \end_inset 
 
-(subPops)
-\family default 
-, merge subpopulations 
-\family typewriter 
-subPops
-\family default 
-.
- New subpopulation has the same ID as
-\family typewriter 
- subPops[0]
-\family default 
-.
+(subPops).
+ 
 \layout Standard
 
 These functions may look useful and appealing but you will almost never
@@ -3812,6 +4404,11 @@ These functions may look useful and appealing but you will almost never
  Only when you begin to write your own operators will you have to read about
  the details of these functions.
 \layout Subsection
+
+
+\begin_inset LatexCommand \label{sub:Individuals}
+
+\end_inset 
 
 Individuals
 \layout Standard
@@ -3866,6 +4463,7 @@ object also has its own member functions.
  You can retrieve genotypic information of an individual through the same
  set of functions.
  You can also get/set genotype of an individual.
+ Note that you can not create an individual object directly.
  
 \layout Standard
 
@@ -3878,10 +4476,623 @@ preview false
 
 \layout Standard
 
-Again, you will very seldom have to use these functions directly.
- Everything should be handled by operators.
+Again, you will very seldom have to use these functions directly unless
+ when you write pure python operators.
  
+\layout Standard
+
+The following table lists all individual related functions.
+ They are all member functions so they have to be access through an individual
+ object in the form of 
+\family typewriter 
+ind.function().
+ 
+\layout Standard
+\added_space_top medskip \align center 
+
+\series bold 
+Individual related functions 
+\layout Standard
+\added_space_bottom smallskip \align center 
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="24" columns="2">
+<features islongtable="true">
+<column alignment="left" valignment="top" leftline="true" width="0" special="|p{2in}|">
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="0" special="p{4.5in}|">
+<row topline="true" bottomline="true" endhead="true" endfirsthead="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+function
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+description
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.arrGenotype()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return an editable array of the genotype of an individual.
+ The layout of this array is explained in section 
+\begin_inset LatexCommand \ref{sec:Accessing-genotype-and}
+
+\end_inset 
+
+.
+ Although this function is not as easy to use as other allele-access functions,
+ it is the fastest one since you can read/write genotype directly after
+ you get the handle of all genotype through this function.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.arrGenotype(p)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return only the 
+\family typewriter 
+p
+\family default 
+-th copy of the chromosome.
+ 
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.arrGenotype(p, ch)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return only the 
+\family typewriter 
+ch
+\family default 
+-th chromosome of the 
+\family typewriter 
+p
+\family default 
+-th copy.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.allele(idx)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return the allele at locus 
+\family typewriter 
+idx 
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.allele(idx, p)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return the allele at locus 
+\family typewriter 
+idx
+\family default 
+ of the 
+\family typewriter 
+p
+\family default 
+-th copy of the chromosomes,
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.allele(idx, p, ch)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return the allele at locus 
+\family typewriter 
+idx 
+\family default 
+of the
+\family typewriter 
+ ch
+\family default 
+-th chromosome of the 
+\family typewriter 
+p
+\family default 
+-th chromosome set
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.alleleChar(idx)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return the name of allele 
+\family typewriter 
+allele(idx)
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.alleleChar(idx, p)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return the name of allele 
+\family typewriter 
+allele(idx, p)
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.alleleChar(idx, p, ch)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return the name of allele 
+\family typewriter 
+allele(idx, p, ch)
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.setAllele(allele, idx)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Set the allele at locus 
+\family typewriter 
+idx 
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.setAllele(allele, idx, p)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Set the allele at locus 
+\family typewriter 
+idx
+\family default 
+ of the 
+\family typewriter 
+p
+\family default 
+-th copy of the chromosomes,
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.setAllele(allele, idx, p, ch)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Set the allele at locus 
+\family typewriter 
+idx 
+\family default 
+of the
+\family typewriter 
+ ch
+\family default 
+-th chromosome of the 
+\family typewriter 
+p
+\family default 
+-th chromosome set
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.tag()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return the tag of an individual.
+ SimuPOP does not gurantee the type of tag.
+ Currently, the tag is a pair of int that is usually used to record the
+ parents of the individual.
+ 
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.setTag(tag)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Set the tag.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.sex()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return the sex of an individual,
+\series bold 
+ 1 for Male and 2 for Female
+\series default 
+.
+ However, this is not guranteed so please use 
+\family typewriter 
+sexChar()
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.sexChar()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return the sex of an individual
+\series bold 
+ M/F
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.setSex(sex)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Set the sex.
+ You should use 
+\family typewriter 
+setSex(Male)
+\family default 
+ or 
+\family typewriter 
+setSex(Female) 
+\family default 
+instead of 1 and 2.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.affected()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Whether or not an individual is affected
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.unaffected()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Not 
+\family typewriter 
+affected()
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.affectedChar()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return '
+\family typewriter 
+A
+\family default 
+' or '
+\family typewriter 
+U
+\family default 
+' for affectedness status.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.setAffected(aff)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Set affectedness status.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.info()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return the info field of an individual
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+i.setInfo()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Set the info field of an individual
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
 \layout Subsection
+
+
+\begin_inset LatexCommand \label{sub:Population-Variables}
+
+\end_inset 
 
 Population Variables
 \layout Standard
@@ -3897,7 +5108,8 @@ stat
 
 
 \family default 
- calculates many population statistics and store results in population namespace.
+ operator calculates many population statistics and store results in population
+ namespace.
  The following example demonstrates how 
 \family typewriter 
 stat 
@@ -4061,6 +5273,11 @@ n.
  Details please refer to the 'ascertainment section' of Chapter 5.
 \layout Subsection
 
+
+\begin_inset LatexCommand \label{sub:Ancestral-populations}
+
+\end_inset 
+
 Ancestral populations
 \layout Standard
 
@@ -4199,6 +5416,11 @@ pop.useAncestralPop(0)
 \layout LyX-Code
 
 \layout Subsection
+
+
+\begin_inset LatexCommand \label{sub:Save-and-Load}
+
+\end_inset 
 
 Save and Load a Population
 \layout Standard
@@ -4455,25 +5677,9 @@ simuViewPop.py
 simuViewPop.py mypop.bin
 \layout Standard
 
-will fire a GUI (Figure 
-\begin_inset LatexCommand \ref{viewpop}
-
-\end_inset 
-
-) and allow you to exam population property, genotype and calculate statistics.
+will fire a GUI and allow you to exam population property, genotype and
+ calculate statistics.
  
-\layout Standard
-
-
-\begin_inset Graphics
-	filename viewPop.png
-	lyxscale 30
-	width 6in
-	height 5in
-
-\end_inset 
-
-
 \layout Standard
 
 In a Python session, import this module will provide a function 
@@ -11452,22 +12658,6 @@ preview false
 \end_inset 
 
 
-\layout Standard
-
-The resulting plot is:
-\layout Standard
-\align center 
-
-\begin_inset Graphics
-	filename subpop
-	lyxscale 40
-	width 5in
-	height 4in
-	clip
-
-\end_inset 
-
-
 \layout Subsection
 
 Object (Python) 
@@ -12714,6 +13904,11 @@ To write smuPOP extension, you will have to know more data structure and
  functions do not provide keyword parameters.
 \layout Section
 
+
+\begin_inset LatexCommand \label{sec:Genotypic-structure}
+
+\end_inset 
+
 Genotypic structure
 \layout Standard
 
@@ -12859,6 +14054,11 @@ preview false
 
 \layout Section
 
+
+\begin_inset LatexCommand \label{sec:Accessing-genotype-and}
+
+\end_inset 
+
 Accessing genotype and other info
 \layout Standard
 
@@ -12941,6 +14141,17 @@ preview false
 \end_inset 
 
 
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{sub:Direct-populaiton-manipulation}
+
+\end_inset 
+
+Direct populaiton manipulation
+\layout Standard
+
+FIXME
 \layout Section
 
 Writing Pure Python Operator 
