@@ -2,6 +2,7 @@
 \lyxformat 221
 \textclass manual
 \begin_preamble
+
 \usepackage{underscore}
 \renewcommand{\py@ptsize}{12pt}
 
@@ -581,34 +582,61 @@ from python interactive shell.
  and/or post to simuPOP forum.
 \layout Standard
 
-
+Several python GUI are available including ActivePython IDE, IDLE but the
+ most convenient one is emacs (not surprisingly!).
+ Through the time of developing simuPOP, I have written several emacs extensions
+ to simplify the use of python within emacs.
+ You can find them under the 
 \family typewriter 
-from simuPOP import * 
+misc 
 \family default 
-will load the standard short-allele version of the library.
- If you would like to use another library, do either
+directory if you are interested.
+ 
+\layout Section
+
+simuPOP libraries
+\layout Standard
+
+simuPOP is composed of four libraries: stdandard, long allele, optimized,
+ optimized long allele.
+ The standard libraries use 1 byte to store each allele which limits the
+ possible allele states to 256.
+ This is enough most of the times but not so if you need to simulate models
+ like the infinite allele model.
+ In those cases, you should use the long allele version of the libraries.
+ Long allele libraries use 4 bytes for each allele and can have 
+\begin_inset Formula $2^{32}$
+\end_inset 
+
+possible allele states.
+ 
+\layout Standard
+
+Standard short and long allele libraries have detailed debug and run-time
+ validation mechanisum to make sure the simulations run correctly.
+ Whenver something unusual is detected, simuPOP would terminate with detailed
+ error messages.
+ The cost of such operations varies from simulation to simulation but can
+ be severe under some extreme circumstances.
+ Because of this, optimized versions for both short and long allele libraries
+ are provided.
+ They bypass all parameter checking and run-time validations and will simply
+ crash if things go wrong.
+ It is recommended that you use standard libraries whenever possible and
+ only use the optimized version when performance if needed and you are confidenc
+e that your simulation is running as expected.
+\layout Standard
+
+You can control the use of libraries in the following ways:
 \layout Itemize
 
-set environmental variable 
-\family typewriter 
-SIMUOPTIMIZED
-\family default 
- and/or 
-\family typewriter 
-SIMULONGALLELE
-\family default 
- accordingly
+Set environment variable SIMULONGALLELE to use the long allele, and SIMUOPTIMIZE
+D to use the optimized libraries.
 \layout Itemize
 
-use 
+Before you load simuPOP, set options using 
 \family typewriter 
-simuOpt
-\family default 
- module to set the option before 
-\family typewriter 
-simuPOP 
-\family default 
-is loaded
+simuOpt.setOptions
 \begin_deeper 
 \layout Standard
 
@@ -620,18 +648,31 @@ preview false
 
 
 \end_deeper 
+\layout Itemize
+
+If you are running a simuPOP script that conforms to simuPOP conversion,
+ you should be able to run load optimized library using command line option
+ 
+\family typewriter 
+--optimized
+\family default 
+.
+ 
 \layout Standard
 
-Several python GUI are available including ActivePython IDE, IDLE but the
- most convenient one is emacs (not surprisingly!).
- Through the time of developing simuPOP, I have written several emacs extensions
- to simplify the use of python within emacs.
- You can find them under the 
-\family typewriter 
-misc 
-\family default 
-directory if you are interested.
+You can tell which library is loaded from its initial output.
+ For example, 
+\layout LyX-Code
+
+Maximum allele number per locus is 255.
  
+\layout LyX-Code
+
+You are running in standard mode with strict boundary check etc.
+ 
+\layout Standard
+
+indicates that standard short-allele library is loaded.
 \layout Section
 
 Naming Conventions
@@ -695,7 +736,7 @@ There are a lot of functions/operators in simuPOP and there is no reason
  you should memorize all of them.
  (I admit that I can not.) If you are a first time simuPOP user, my suggestion
  is that you read through this manual quickly only to get the big picture
- of how simuPOP works and see what simuPOP can do.
+ of how simuPOP works and what simuPOP can do.
  Then, if you decide to write some simulations, you should
 \layout Itemize
 
@@ -703,7 +744,7 @@ Read some examples under
 \family typewriter 
 scripts 
 \family default 
-directly.
+directory.
  From easy to difficult, you can read 
 \family typewriter 
 simuLDDecay.py, simuCDCV.py 
@@ -722,8 +763,8 @@ Copy one of the scripts as a template and modify it.
 
 For each operator you will use, it is recommended that you write a short
  script to test it and know how it works.
- Assemble the operator to the big script after you have some confidence
- in it.
+ Assembling the operator to your script after you have some confidence in
+ it.
  Such short scripts can often be found under the 
 \family typewriter 
 test 
@@ -1145,15 +1186,9 @@ GenoStruTrait
  class.
  )
 \layout Standard
+\added_space_top medskip \align center 
 
-
-\begin_inset Float table
-placement h
-wide false
-collapsed false
-
-\layout Caption
-
+\series bold 
 Genotypic structure related functions
 \layout Standard
 
@@ -1550,9 +1585,6 @@ set maximum allele state for all loci
 \end_inset 
 
 
-\end_inset 
-
-
 \layout Subsection
 
 Sex chromosome
@@ -1727,10 +1759,10 @@ or
 \series bold 
 Population related functions 
 \layout Standard
-\added_space_bottom smallskip \align center 
+\align center 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="50" columns="3">
+<lyxtabular version="3" rows="53" columns="3">
 <features islongtable="true" firstHeadBottomDL="true" headBottomDL="true">
 <column alignment="left" valignment="top" leftline="true" width="0">
 <column alignment="left" valignment="top" leftline="true" width="0" special="|p{2in}|">
@@ -3163,6 +3195,60 @@ Save a population.
 
 \layout Standard
 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+SavePopulation( pop, filename, format='auto')
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Save a population.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+SavePopulations(pops, filename, format='auto')
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Save an array of populations to a file.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
 
 \begin_inset LatexCommand \ref{sub:Save-and-Load}
 
@@ -3233,6 +3319,33 @@ Load a population and return it.
  Format can be 'bin', 'xml', 'text' or 'auto'.
  If auto is specified, file format is determined by file extension '.bin',
  '.xml' or '.txt'.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+LoadPopulations( filename, format='auto')
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Load an array of populations from a single file.
 \end_inset 
 </cell>
 </row>
@@ -4493,7 +4606,7 @@ ind.function().
 \series bold 
 Individual related functions 
 \layout Standard
-\added_space_bottom smallskip \align center 
+\align center 
 
 \begin_inset  Tabular
 <lyxtabular version="3" rows="24" columns="2">
@@ -5261,7 +5374,7 @@ subPop
  This is a very convenient feature, because subpopulations and populations
  have similar keys, you can calculate the same statistics for the whole
  population and individual subpopulations, just by specifying different
- namespaces!
+ namespaces.
 \layout Subsection
 
 Sample from a Population
@@ -5549,7 +5662,7 @@ txt
 
 :
 \family default 
- human readable with no structure, median file size.
+ human readable with no structure, portable, median file size.
 \layout Standard
 
 
@@ -6410,19 +6523,19 @@ evolve()
 .
  It accepts arrays of operators as its parameters, among which, '
 \family typewriter 
-preop
+preOps
 \family default 
 
-\begin_inset LatexCommand \index{preop}
+\begin_inset LatexCommand \index{simulato!preOps}
 
 \end_inset 
 
 ' and '
 \family typewriter 
-postop
+postOps
 \family default 
 
-\begin_inset LatexCommand \index{postop}
+\begin_inset LatexCommand \index{simulator!postOps}
 
 \end_inset 
 
@@ -6438,7 +6551,7 @@ ops
 Generation Number
 \layout Standard
 
-Several things about generation number may cause confusion:
+Several aspects of generation number may cause confusion:
 \layout Itemize
 
 generation starts from zero
@@ -6473,11 +6586,23 @@ evolve the population three times.
  Generation 0, generation 1, and generation 2.
  At the end of simulation, current generation number is 3! (If you are familiar
  with C, this is like a for loop index).
+ This is why you should test if a simulation is finished correctly by
+\layout LyX-Code
+
+if(simu.gen() == endGen+1)
+\layout Standard
+
+instead of 
+\family typewriter 
+simu.gen() == endGen.
+ 
+\family default 
+(endGen is the value for parameter end).
 \layout Standard
 
 When you use 
 \family typewriter 
-start=0, step=5
+start=0, step=5, end=10
 \family default 
  for your operator, it will be applied at generations 
 \family typewriter 
@@ -6505,7 +6630,7 @@ pre-
  mating operators.
  During evolution, simulator first apply all 
 \family typewriter 
-preMating
+PreMating
 \family default 
  operators and then call the 
 \family typewriter 
@@ -6513,25 +6638,47 @@ mate()
 \family default 
  function of the given mating scheme, which will call 
 \family typewriter 
-duringMating 
+DuringMating 
 \family default 
 operators during the birth of each offspring.
  After the new generation is generated, 
 \family typewriter 
-postMating
+PostMating
 \family default 
  operators are applied in the order they appear in the operator list.
 \layout Standard
 
-Since operators can apply to specific replicate or replicates group, and
- might not be active at all time, the 
+Anyway, operators are not always active.
+ They can be applied to certain generations or certain replicate(s) of populatio
+n.
+ A simulator will always apply preOps and postOps operators, but will ask
+ if an operator is active (by providing 
 \family typewriter 
-isActive()
+rep, grp, gen
 \family default 
- function of each operator is called before it is applied to a population.
+ information) before its is called.
 \layout Standard
 
-If you are not sure about the calling sequence of operaotrs, you can set
+The order of applying operators usually does not matter but errors can occur
+ if you are not careful.
+ For example,
+\family typewriter 
+ stat(...)
+\family default 
+ calculate the statistics of current population.
+ It is a pre-mating operator so you should set 
+\family typewriter 
+stage=PostMating
+\family default 
+ and put it after all operators if you would like to measure post-mating
+ population.
+ However, it should be put before any operator (such as an terminator) that
+ uses the shared variable set by 
+\family typewriter 
+stat(...).
+\layout Standard
+
+If you are not sure about the calling sequence of operators, you can set
  the 
 \family typewriter 
 dryrun
@@ -6555,7 +6702,7 @@ function to true.
 evolve 
 \family default 
 will then print out the order of operators to apply.
- Consider that operator can be 
+ Consider that operators can be 
 \family typewriter 
 PreMating
 \begin_inset LatexCommand \index{constant!PreMating}
@@ -8073,8 +8220,12 @@ carray
 \family typewriter 
  carray 
 \family default 
-object as a return value of a simuPOP function, you actually get a reference
- to the underlying data.
+object as a return value of a simuPOP function (function names begin with
+ 
+\family typewriter 
+arr
+\family default 
+), you actually get a reference to the underlying data.
  Therefore, you can modify the array elements (and thus modify underlying
  data) but can not resize the array.
  
@@ -8158,7 +8309,7 @@ pyOperator
 This is the single most powerful hybrid operator.
  Whenever you think that something is too complicated to be done by standard
  operators, you can do it here in python.
- This operator accepts a Python function which can accept a population and
+ This operator accepts a Python function which accepts a population and
  optionally a parameter.
  To use this operator, you will need to 
 \layout Itemize
