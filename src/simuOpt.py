@@ -1025,6 +1025,11 @@ def setOptions(optimized=None, longAllele=None):
   if longAllele in [ True, False]:
     simuOptions['LongAllele'] = longAllele
   
+def requireRevision(rev):
+  if simuRev() <= rev:
+    raise exceptions.SystemError('''This script requires simuPOP revision >= %d, 
+      please upgrade your installation. ''' % rev)
+   
 useTkinter = False
 useWxPython = False
 

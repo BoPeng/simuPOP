@@ -559,7 +559,7 @@ def simuCDCV( numDSL, initSpec, selModel,
   # determine selection
   #
   if selModelAllDSL == 'customized':
-    selection = maSelector( loci=range(numDSL), fitness=selCoef )
+    selection = maSelector( loci=range(numDSL), fitness=selCoef, wildtype=[1] )
   else:
     sel = []
     for d in range(numDSL):
