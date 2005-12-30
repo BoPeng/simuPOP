@@ -215,14 +215,14 @@ namespace simuPOP
 
   ///
   /// The following classes apply various statistics
-  /// and basicStat class will provide an opearator interface
+  /// and stat class will provide an opearator interface
   /// to all of them.
 
   ///
   /// each class defines how to apply the statistics and
   /// provide interface to allow others to retrieve the value.
   /// NOTE: the values are population dependent so these
-  /// values are only meaningful within the same basicStat.apply
+  /// values are only meaningful within the same Stat.apply
   /// call;
   ///
   /// The design separate the calculation of statistics
@@ -829,7 +829,7 @@ namespace simuPOP
           m_calc.addLocus(*it, true);
       }
 
-      // do nothing. m_calc.spply will be called by basicStat.
+      // do nothing. m_calc.spply will be called by Stat.
       void apply(Pop& pop)
       {
       }
@@ -2518,11 +2518,11 @@ namespace simuPOP
   };
 
   template<class Pop>
-    class BasicStat: public Stator<Pop>
+    class Stat: public Stator<Pop>
   {
     public:
 
-      /// create an basicStat
+      /// create an Stat
       /**
       \param popSize whether or not calculate population sizes. will set numSubPop, subPopSize,
         popSize, subPop[sp]['popSize']
@@ -2593,7 +2593,7 @@ namespace simuPOP
       has proven to be troublesome. In this version, everything should be
       explicitly specified.
       **/
-      BasicStat(
+      Stat(
         bool popSize=false,
         bool numOfMale=false,
         bool numOfAffected=false,
@@ -2635,14 +2635,14 @@ namespace simuPOP
       {
       }
 
-      ~BasicStat()
+      ~Stat()
       {
       }
 
       /// this function is very important
       virtual Operator<Pop>* clone() const
       {
-        return new BasicStat<Pop>(*this);
+        return new Stat<Pop>(*this);
       }
 
       /// count various statistics.
@@ -2666,7 +2666,7 @@ namespace simuPOP
 
       virtual string __repr__()
       {
-        return "<simuPOP::basic statistics>";
+        return "<simuPOP::statistics>";
       }
 
     private:

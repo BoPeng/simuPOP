@@ -97,7 +97,7 @@ Usage:
 
 ";
 
-%feature("docstring") simuPOP::BasicPenetrance "
+%feature("docstring") simuPOP::MapPenetrance "
 
 penetrance according to genotype at one locus
 
@@ -107,7 +107,7 @@ Details:
 
 ";
 
-%feature("docstring")  simuPOP::BasicPenetrance::BasicPenetrance " 
+%feature("docstring")  simuPOP::MapPenetrance::MapPenetrance " 
 
 create a basic penetrance function (penetrance according to genotype
 at one locus
@@ -132,14 +132,14 @@ Arguments:
 
 ";
 
-%feature("docstring")  simuPOP::BasicPenetrance::~BasicPenetrance " 
+%feature("docstring")  simuPOP::MapPenetrance::~MapPenetrance " 
 
 Usage:
-  x.~BasicPenetrance()
+  x.~MapPenetrance()
 
 ";
 
-%feature("docstring")  simuPOP::BasicPenetrance::clone " 
+%feature("docstring")  simuPOP::MapPenetrance::clone " 
 
 this function is very important
 
@@ -148,7 +148,7 @@ Usage:
 
 ";
 
-%feature("docstring")  simuPOP::BasicPenetrance::penet " 
+%feature("docstring")  simuPOP::MapPenetrance::penet " 
 
 currently assuming diploid
 
@@ -160,14 +160,14 @@ Details:
 
 ";
 
-%feature("docstring")  simuPOP::BasicPenetrance::__repr__ " 
+%feature("docstring")  simuPOP::MapPenetrance::__repr__ " 
 
 Usage:
   x.__repr__()
 
 ";
 
-%feature("docstring") simuPOP::BasicQuanTrait "
+%feature("docstring") simuPOP::MapQuanTrait "
 
 quantitative trait according to genotype at one locus
 
@@ -176,7 +176,7 @@ Details:
 
 ";
 
-%feature("docstring")  simuPOP::BasicQuanTrait::BasicQuanTrait " 
+%feature("docstring")  simuPOP::MapQuanTrait::MapQuanTrait " 
 
 create a basic selector (quantitative trait according to genotype at
 one locus
@@ -204,14 +204,14 @@ Arguments:
 
 ";
 
-%feature("docstring")  simuPOP::BasicQuanTrait::~BasicQuanTrait " 
+%feature("docstring")  simuPOP::MapQuanTrait::~MapQuanTrait " 
 
 Usage:
-  x.~BasicQuanTrait()
+  x.~MapQuanTrait()
 
 ";
 
-%feature("docstring")  simuPOP::BasicQuanTrait::clone " 
+%feature("docstring")  simuPOP::MapQuanTrait::clone " 
 
 this function is very important
 
@@ -220,7 +220,7 @@ Usage:
 
 ";
 
-%feature("docstring")  simuPOP::BasicQuanTrait::qtrait " 
+%feature("docstring")  simuPOP::MapQuanTrait::qtrait " 
 
 currently assuming diploid
 
@@ -232,14 +232,14 @@ Details:
 
 ";
 
-%feature("docstring")  simuPOP::BasicQuanTrait::__repr__ " 
+%feature("docstring")  simuPOP::MapQuanTrait::__repr__ " 
 
 Usage:
   x.__repr__()
 
 ";
 
-%feature("docstring") simuPOP::BasicSelector "
+%feature("docstring") simuPOP::MapSelector "
 
 selection according to genotype at one locus
 
@@ -249,7 +249,7 @@ Details:
 
 ";
 
-%feature("docstring")  simuPOP::BasicSelector::BasicSelector " 
+%feature("docstring")  simuPOP::MapSelector::MapSelector " 
 
 create a basic selector (selection according to genotype at one
 locus
@@ -274,14 +274,14 @@ Arguments:
 
 ";
 
-%feature("docstring")  simuPOP::BasicSelector::~BasicSelector " 
+%feature("docstring")  simuPOP::MapSelector::~MapSelector " 
 
 Usage:
-  x.~BasicSelector()
+  x.~MapSelector()
 
 ";
 
-%feature("docstring")  simuPOP::BasicSelector::clone " 
+%feature("docstring")  simuPOP::MapSelector::clone " 
 
 this function is very important
 
@@ -290,7 +290,7 @@ Usage:
 
 ";
 
-%feature("docstring")  simuPOP::BasicSelector::fitness " 
+%feature("docstring")  simuPOP::MapSelector::fitness " 
 
 currently assuming diploid
 
@@ -302,18 +302,18 @@ Details:
 
 ";
 
-%feature("docstring")  simuPOP::BasicSelector::__repr__ " 
+%feature("docstring")  simuPOP::MapSelector::__repr__ " 
 
 Usage:
   x.__repr__()
 
 ";
 
-%feature("docstring") simuPOP::BasicStat "
+%feature("docstring") simuPOP::Stat "
 
 ";
 
-%feature("docstring")  simuPOP::BasicStat::BasicStat " 
+%feature("docstring")  simuPOP::Stat::Stat " 
 
 create an basicStat
 
@@ -408,14 +408,14 @@ Note:
 
 ";
 
-%feature("docstring")  simuPOP::BasicStat::~BasicStat " 
+%feature("docstring")  simuPOP::Stat::~Stat " 
 
 Usage:
-  x.~BasicStat()
+  x.~Stat()
 
 ";
 
-%feature("docstring")  simuPOP::BasicStat::clone " 
+%feature("docstring")  simuPOP::Stat::clone " 
 
 this function is very important
 
@@ -424,7 +424,7 @@ Usage:
 
 ";
 
-%feature("docstring")  simuPOP::BasicStat::apply " 
+%feature("docstring")  simuPOP::Stat::apply " 
 
 count various statistics. use m_alleles etc to save (potentially)
 time to resize all these variables.
@@ -434,7 +434,7 @@ Usage:
 
 ";
 
-%feature("docstring")  simuPOP::BasicStat::__repr__ " 
+%feature("docstring")  simuPOP::Stat::__repr__ " 
 
 Usage:
   x.__repr__()
@@ -1224,7 +1224,7 @@ Usage:
 
 %feature("docstring") simuPOP::Individual "
 
-Basic individual class.
+Map individual class.
 
 Details:
   class individual withgenotypic information

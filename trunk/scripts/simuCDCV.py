@@ -83,9 +83,13 @@ options = [
   'prompt': 'selection model for the disease (additive): ',
   'description': '''Overall fitness values given fitness values for each DSL,
         fitness values are Prod(f_i) for multiplicative model and
-        1-Sum(1-f_i) for additive model. ''',
+        1-Sum(1-f_i) for additive model. You can also choose customized. In this
+        case, you will have to provide your own fitness table in selCoef.
+        For example, for a 2-locus model, you need to provide 
+          [w11,w12,w13,w21,w22,w23,w31,w32,w33] 
+        where, for example, w21 is the fitness value for genotype AaBB.''',
   'allowedTypes': [types.StringType],
-  'chooseOneOf': [ 'additive', 'multiplicative']
+  'chooseOneOf': [ 'additive', 'multiplicative', 'customized']
  }, 
  {'longarg': 'selCoef=',
    'default': [0.02],
@@ -94,9 +98,10 @@ options = [
    'description': '''Selection coef (s) for the disease.
         Fitness values will be [1,1,1-s] for the receissive model and
         [1,1-s/2,1-s] for the additive model. You can specify
-        different values for each DSL''',
+        different values for each DSL. In the case of customized selection
+        model, this coefficient is a fitness table, NOT selection coefficient(s).''',
    'allowedTypes': [types.ListType, types.TupleType],
-   'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0.,1.))
+   'validate':  simuOpt.valueListOf( simuOpt.valueGT(0.))
   },
   {'longarg': 'mutaModel=',
    'default': 'k-allele',
@@ -464,7 +469,7 @@ def PlotSpectra(pop, param):
   # window 4
   r.ltitle('DSL')
   for d in range(0, numDSL):
-    r.ltitle('%.1f,%d\n%.1f%%\n%.1f%%(1)\n%.1f%%(5)\n%.1f%%' \
+    r.ltitle('%.2f, %d\n%.3f%%\n%.1f%%(1)\n%.1f%%(5)\n%.1f%%' \
     % (effNumAllele[d], numAllele[d], overallFreq[d]*100,  \
        percMostCommon[d], perc5MostCommon[d], percAncestralAllele[d]*100),
     backcolor='white', forecolor='blue', cex=cx)  
@@ -553,17 +558,20 @@ def simuCDCV( numDSL, initSpec, selModel,
     mutation = smmMutator(rate=mutaRate, atLoci=range(numDSL), maxAllele=maxAllele)
   # determine selection
   #
-  sel = []
-  for d in range(numDSL):
-    if selModel[d] == 'recessive':
-      sel.append( maSelector(locus=d, fitness=[1,1,1-selCoef[d]], wildtype=[1]))
-    else:
-      sel.append( maSelector(locus=d, fitness=[1,1-selCoef[d]/2.,1-selCoef[d]], wildtype=[1]))
-  # now, the whole selector
-  if selModelAllDSL == 'additive':
-    selection = mlSelector( sel, mode=SEL_Additive)
+  if selModelAllDSL == 'customized':
+    selection = maSelector( loci=range(numDSL), fitness=selCoef )
   else:
-    selection = mlSelector( sel, mode=SEL_Multiplicative)
+    sel = []
+    for d in range(numDSL):
+      if selModel[d] == 'recessive':
+        sel.append( maSelector(locus=d, fitness=[1,1,1-selCoef[d]], wildtype=[1]))
+      else: 
+        sel.append( maSelector(locus=d, fitness=[1,1-selCoef[d]/2.,1-selCoef[d]], wildtype=[1]))
+    # now, the whole selector
+    if selModelAllDSL == 'additive':
+      selection = mlSelector( sel, mode=SEL_Additive)
+    elif selModelAllDSL == 'multiplicative':
+      selection = mlSelector( sel, mode=SEL_Multiplicative)
   # migration
   if numSubPop == 1 or migrModel == 'none':
     # no migration
@@ -589,7 +597,10 @@ def simuCDCV( numDSL, initSpec, selModel,
   # determine plot label
   plotLabel = []
   for i in range(numDSL):
-    plotLabel.append('mu=%g, s=%g' % (mutaRate[i], selCoef[i]))
+    if selModelAllDSL == 'customized':
+      plotLabel.append('mu=%g, s=customized' % mutaRate[i])
+    else:
+      plotLabel.append('mu=%g, s=%g' % (mutaRate[i], selCoef[i]))
   # history of Ne, the first one is gen
   NeHist = []
   for i in range(numDSL+1):
@@ -626,6 +637,8 @@ def simuCDCV( numDSL, initSpec, selModel,
       migration, 
       # visualizer
       pyOperator(func=PlotSpectra, param=(numDSL, saveAt, 50, dispPlot, plotLabel, logFile), step=update ),
+      # pause when needed
+      pause(stopOnKeyStroke=True),
       # monitor execution time
       ticToc(step=100),
       ## pause at any user key input (for presentation purpose)
@@ -694,7 +707,7 @@ if __name__ == '__main__':
   if len(selCoefTmp) == 1:
     selCoef = selCoefTmp*numDSL
   else:
-    if len(selCoefTmp) != numDSL:
+    if selModelAllDSL != 'customized' and len(selCoefTmp) != numDSL:
       raise exceptions.ValueError("Number of selection coef should match number of DSL")
     selCoef = selCoefTmp
   #
