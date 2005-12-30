@@ -12,7 +12,7 @@
 ## from simuRPy import *
 ## 
 ## #
-## # 1. basic selection model
+## # 1. map selection model
 ## #
 ## #    specify relative fitness: w11, w12/w21, w22
 ## #
@@ -43,7 +43,7 @@
 ## 
 ## # now, we add selection
 ## #
-## sel = basicSelector(locus=0, fitness={'1-1':0.6, '1-2':1, '2-2':.8})
+## sel = mapSelector(locus=0, fitness={'1-1':0.6, '1-2':1, '2-2':.8})
 ## 
 ## # now, mating will do the selection.
 ## simu.evolve([
@@ -64,7 +64,7 @@
 ## #
 ## 
 ## visual = varPlotter('alleleFreq[0]', ylim=[0,1], varDim=3)  
-## sel = basicSelector(locus=0, fitness={'1-1':1, '1-2':0.9, '2-2':.8})
+## sel = mapSelector(locus=0, fitness={'1-1':1, '1-2':0.9, '2-2':.8})
 ## simu.setGen(0)
 ## simu.evolve([
 ##     count,
@@ -87,7 +87,7 @@
 ## s2 = .2
 ## p = .2/ (.1+.2)
 ## visual = varPlotter('alleleFreq[0]', ylim=[0,1], varDim=3, update=100)  
-## sel = basicSelector(locus=0,
+## sel = mapSelector(locus=0,
 ##   fitness={'1-1':(1-s1), '1-2':1, '2-2':(1-s2)})
 ## simu.setGen(0)
 ## simu.evolve([
@@ -104,7 +104,7 @@
 ## #  p unstable, become fix
 ## #
 ## visual = varPlotter('alleleFreq[0]', ylim=[0,1], varDim=3, update=10)  
-## sel = basicSelector(locus=0, fitness={'1-1':1, '1-2':.9, '2-2':1})
+## sel = mapSelector(locus=0, fitness={'1-1':1, '1-2':.9, '2-2':1})
 ## simu.setGen(0)
 ## simu.evolve([
 ##     count,
@@ -131,7 +131,7 @@
 ## s = 0.2
 ## p = (h-1)/ (2*h-1)
 ## visual = varPlotter('alleleFreq[0]', ylim=[0,1], varDim=3, update=100)  
-## sel = basicSelector(locus=0, fitness={'1-1':1, '1-2':(1-h*s), '2-2':(1-s)})
+## sel = mapSelector(locus=0, fitness={'1-1':1, '1-2':(1-h*s), '2-2':(1-s)})
 ## simu.setGen(0)
 ## simu.evolve([
 ##     count,
@@ -155,7 +155,7 @@
 ##       genoFreq=[0])
 ## visual = varPlotter('alleleFreq[0]', ylim=[0,1], varDim=3, update=100)  
 ## 
-## sel = basicSelector(locus=0, fitness={'1-1':0.6, '1-2':1, '2-2':.8},
+## sel = mapSelector(locus=0, fitness={'1-1':0.6, '1-2':1, '2-2':.8},
 ##                     begin=100)
 ## simu.setGen(0)
 ## simu.evolve([
@@ -183,7 +183,7 @@
 ## count =  stat(
 ##       alleleFreq=[0],
 ##       genoFreq=[0]) 
-## sel = basicSelector(locus=0, fitness={'1-1':0.6, '1-2':1, '2-2':.8},
+## sel = mapSelector(locus=0, fitness={'1-1':0.6, '1-2':1, '2-2':.8},
 ##                     begin=100)
 ## simu.setGen(0)
 ## simu.evolve([
@@ -203,7 +203,7 @@
 ## s2 = .2
 ## simu.evolve([
 ##     stat( alleleFreq=[0], genoFreq=[0]),
-##     basicSelector(locus=0, fitness={'1-1':(1-s1), '1-2':1, '2-2':(1-s2)}),
+##     mapSelector(locus=0, fitness={'1-1':(1-s1), '1-2':1, '2-2':(1-s2)}),
 ##     pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=10)
 ##     ],
 ##     preOps=[  initByFreq(alleleFreq=[.2,.8])],
@@ -245,8 +245,8 @@
 ## simu.evolve([
 ##     stat( alleleFreq=[0,1], genoFreq=[0,1]),
 ##     mlSelector([
-##       basicSelector(locus=0, fitness={'1-1':1,'1-2':1,'2-2':.8}),
-##       basicSelector(locus=1, fitness={'1-1':1,'1-2':1,'2-2':.8})
+##       mapSelector(locus=0, fitness={'1-1':1,'1-2':1,'2-2':.8}),
+##       mapSelector(locus=1, fitness={'1-1':1,'1-2':1,'2-2':.8})
 ##       ], mode=SEL_Additive),
 ##     pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=10)
 ##     ],
@@ -262,7 +262,7 @@
 ## simu.evolve([
 ##     stat( alleleFreq=[0,1], genoFreq=[0,1]),
 ##     mlSelector([
-##       basicSelector(locus=0, fitness={'1-1':1,'1-2':1,'2-2':.8}),
+##       mapSelector(locus=0, fitness={'1-1':1,'1-2':1,'2-2':.8}),
 ##       maSelector(locus=1, wildtype=[1], fitness=[1,1,.8])
 ##       ], mode=SEL_Additive),
 ##     pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=10)

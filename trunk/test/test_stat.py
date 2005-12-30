@@ -51,7 +51,7 @@
 ##   Fst = [ 0 ]
 ##   )
 ## 
-## pene = basicPenetrance(locus=0, stage=PreMating,
+## pene = mapPenetrance(locus=0, stage=PreMating,
 ##   penetrance={'1-1':0,'1-2':1,'2-2':0} )
 ## 
 ## 

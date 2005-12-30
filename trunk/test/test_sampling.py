@@ -35,7 +35,7 @@
 ## simu.evolve([
 ##     stat( alleleFreq=[0,1], genoFreq=[0,1]),
 ##     migrator(rate=[[0.1,0.1],[0.1,0.1]]),
-##     basicPenetrance(locus=0,
+##     mapPenetrance(locus=0,
 ##       penetrance={'1-1':0,'1-2':.7,'2-2':1}),
 ##     parentsTagger(),
 ##     ],

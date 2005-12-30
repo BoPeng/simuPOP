@@ -35,7 +35,7 @@
 ## from simuPOP import *
 ## 
 ## #
-## # 1. basic selection model
+## # 1. map selection model
 ## #
 ## #    specify relative fitness: w11, w12/w21, w22
 ## #
@@ -51,7 +51,7 @@
 ## count =  stat(
 ##       alleleFreq=[0[0,1,2]],
 ##       genotypes=[[0,1,1,1,2,2,2]]) 
-## sel = basicSelector(locus=0, fitness={101:0.6, 102:1, 202:.8},
+## sel = mapSelector(locus=0, fitness={101:0.6, 102:1, 202:.8},
 ##                     begin=100)
 ## visual = matlabPlotter(
 ##     varDataSource("%gen%genotypeFreq0_sp0[102]%genotypeFereq0_sp1[102]"),
