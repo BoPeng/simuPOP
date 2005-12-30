@@ -223,18 +223,6 @@ options = [
    'description': '''Update figure every some generation.''',
    'validate':  simuOpt.valueGE(1)
   },  
-  {'longarg': 'logFile=',
-   'default': 'cdcv.log',
-   'configName': 'Log file',
-   'prompt': 'Log file (cdcv.log):  ',
-   'allowedTypes': [types.StringType],
-   'description': '''The system will write effective number of alleles, number
-        of observed alleles, overall disease allele frequency, percent of most 
-        alleles and overall percentage of five most disease alleles
-        among disease alleles to a file. The order is: 
-          gen ... for simple disease... DSL1 ... DSL2''',
-   'validate':  simuOpt.valueGE(0)
-  },
   {'longarg': 'dispPlot=',
    'default': True,
    'configName': 'Display plot?',
@@ -277,12 +265,12 @@ options = [
    'description':  'Only display how simulation will perform.'
    # do not save to config, do not prompt, so this appeared to be an undocumented option.
   },
-  {'longarg': 'saveConfig=',
-   'default': '.'.join(sys.argv[0].split('.')[0:-1])+'.cfg',
-   'allowedTypes': [types.StringType, types.NoneType],
-   'configName': 'Save configurations to file',
-   'prompt': 'Save current configuration to file (' + sys.argv[0].split('.')[0] + '.cfg):  ',
-   'description': 'Save current paremeter set to specified file.'
+  {'longarg': 'name=',
+   'default': 'cdcv',
+   'allowedTypes': [types.StringType],
+   'configName': 'Name of the simulation',
+   'prompt': 'Name of the configureation (cdcv):  ',
+   'description': 'Base name for configuration (.cfg) log file (.log) and figures (.eps)'
   },
   {'arg': 'v',
    'longarg': 'verbose',
@@ -314,9 +302,9 @@ def getOptions(details=__doc__):
     print simuOpt.usage(options, __doc__)
     sys.exit(0)
   #
-  # --saveConfig
+  # --name
   if allParam[-2] != None: 
-    simuOpt.saveConfig(options, allParam[-2], allParam)
+    simuOpt.saveConfig(options, allParam[-2]+'.cfg', allParam)
   #
   # --verbose or -v 
   if allParam[-1]:         # verbose
@@ -395,10 +383,10 @@ def getStats(v, highest):
 #
 def PlotSpectra(pop, param):
   " swtich from old-style python plotter to new style, use pyOperator"
-  (numDSL, saveAt, highest, plot, plotLabel, logFile) = param
+  (numDSL, saveAt, highest, plot, plotLabel, name) = param
   # use global logOutput handle
   # this is less efficient but make sure we can see partial results
-  logOutput = open(logFile, "a")
+  logOutput = open(name+'.log', "a")
   logOutput.write("%d\t" % pop.gen())
   for sp in range(pop.numSubPop()):
     # unpack result
@@ -429,8 +417,8 @@ def PlotSpectra(pop, param):
   # now, variable like perc holds results for the whole populations.
   # plot something:
   if pop.gen() in saveAt:
-    print "Saving figure in cdcv%d.eps (instead of displaying it)" % pop.gen()
-    r.postscript(file='cdcv%d.eps' % pop.gen(), width=6, height=8 )
+    print "Saving figure in %s%d.eps (instead of displaying it)" % (name,pop.gen())
+    r.postscript(file='%s%d.eps' % (name, pop.gen()), width=6, height=8 )
   #
   # set no conversion mode to save execution time
   set_default_mode(NO_CONVERSION)
@@ -516,8 +504,8 @@ def simuCDCV( numDSL, initSpec, selModel,
     selModelAllDSL, selCoef,  mutaModel, maxAllele, mutaRate, 
     initSize, finalSize, burnin, noMigrGen,
     mixingGen, growth, numSubPop, migrModel, migrRate,
-    update, logFile, dispPlot, saveAt, savePop, resume,
-    resumeAtGen, dryrun):
+    update, dispPlot, saveAt, savePop, resume,
+    resumeAtGen, name, dryrun):
   ''' parameters are self-expanary. See help info for
     detailed simulation scheme. '''
   # generations
@@ -584,7 +572,7 @@ def simuCDCV( numDSL, initSpec, selModel,
   #      
   # prepare log file, if not in resume mode
   if resume == '':  # not resume
-    logOutput = open(logFile, 'w')
+    logOutput = open(name+'.log', 'w')
     logOutput.write("gen\t")
     for d in range(numDSL):
       logOutput.write( 'ne\tn\tf0\tp1\tp5\tanc\t')
@@ -626,7 +614,8 @@ def simuCDCV( numDSL, initSpec, selModel,
         for a in range(2,len(alleleNum[i])):
           if alleleNum[i][a] != 0:
             allelesBeforeExpansion[i].append(a)
-        print "Ancestral alleles before expansion: ", allelesBeforeExpansion[i]''' % (numDSL), at=[burnin]),
+        print "Ancestral alleles before expansion: ", allelesBeforeExpansion[i]''' % \
+        (numDSL), at=[burnin]),
       #
       splitSubPop(0, proportions=[1./numSubPop]*numSubPop, at=[burnin]),
       # mutate
@@ -636,9 +625,9 @@ def simuCDCV( numDSL, initSpec, selModel,
       # migration
       migration, 
       # visualizer
-      pyOperator(func=PlotSpectra, param=(numDSL, saveAt, 50, dispPlot, plotLabel, logFile), step=update ),
+      pyOperator(func=PlotSpectra, param=(numDSL, saveAt, 50, dispPlot, plotLabel, name), step=update ),
       # pause when needed
-      pause(stopOnKeyStroke=True),
+      #pause(stopOnKeyStroke=True),
       # monitor execution time
       ticToc(step=100),
       ## pause at any user key input (for presentation purpose)
@@ -660,8 +649,8 @@ if __name__ == '__main__':
   (numDSL, initSpecTmp,
     selModelTmp, selModelAllDSL, selCoefTmp, mutaModel, maxAllele, mutaRateTmp, 
     initSize, finalSize, burnin, noMigrGen, mixingGen, growth, numSubPop, 
-    migrModel, migrRate, update, logFile, dispPlot, saveAt, savePop, resume,
-    resumeAtGen, dryrun, saveConfig) = allParam
+    migrModel, migrRate, update, dispPlot, saveAt, savePop, resume,
+    resumeAtGen, dryrun, name) = allParam
 
   if maxAllele > 255:
     simuOpt.setOptions(longAllele=True)
@@ -724,8 +713,8 @@ if __name__ == '__main__':
     mutaModel, maxAllele, mutaRate, 
     initSize, finalSize, burnin, noMigrGen,
     mixingGen, growth, numSubPop, migrModel, migrRate,
-    update, logFile, dispPlot, saveAt, savePop,
-    resume, resumeAtGen, dryrun)
+    update, dispPlot, saveAt, savePop,
+    resume, resumeAtGen, name, dryrun)
   #
   # write report? What kind?
   # raw_input("Press any key to close this program and the R plot")    
