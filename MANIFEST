@@ -12813,6 +12813,7 @@ test/test_migration.py
 test/test_misc.py
 test/test_mutationDriftEquilibrium.py
 test/test_mutator.py
+test/test_opPause.py
 test/test_operator.py
 test/test_param.py
 test/test_penetrance.py

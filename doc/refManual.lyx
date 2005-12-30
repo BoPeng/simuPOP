@@ -9761,7 +9761,7 @@ pyOperator
 
 Operator (C++) 
 \family typewriter 
-basicSelector
+mapSelector
 \begin_inset LatexCommand \index{operator!basicSelector}
 
 \end_inset 
@@ -9770,7 +9770,7 @@ basicSelector
 \family default 
 function 
 \family typewriter 
-BasicSele
+MapSelector
 \begin_inset LatexCommand \index{function!BasicSelect}
 
 \end_inset 
@@ -9780,12 +9780,12 @@ BasicSele
 
 
 \family typewriter 
-basicSelector
+mapSelector
 \family default 
  implements selection at one locus.
- User should supply a dictionary of fitness values for each genotype and
- this selector will set each individual's fitness value according to its
- genotype.
+ User should supply a dictionary (map) of fitness values for each genotype
+ and this selector will set each individual's fitness value according to
+ its genotype.
 \layout Standard
 
 
@@ -9877,21 +9877,225 @@ and any other alleles are considered as diseased allele.
 \family typewriter 
 maSelector 
 \family default 
-accepts an array of fitness for AA, Aa, aa while A stands for wildtype alleles.
- Fitness is then set for any given genotype.
- (Anyway, 
+accepts an array of fitness
+\layout Itemize
+
+For single-locus, 
 \family typewriter 
-aa
+fitness
 \family default 
- does not have to have smaller fitness value than 
+ is the fitness for genotype AA, Aa, aa while A stands for wildtype alleles.
+ 
+\layout Itemize
+
+For a two-locus model, 
 \family typewriter 
+fitness 
+\family default 
+is the fitness for genotype 
+\begin_deeper 
+\layout Standard
+\align center 
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features>
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+BB
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Bb
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+bb
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
 AA
-\family default 
- or 
-\family typewriter 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\begin_inset Formula $w_{11}$
+\end_inset 
+
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\begin_inset Formula $w_{12}$
+\end_inset 
+
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\begin_inset Formula $w_{13}$
+\end_inset 
+
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
 Aa
-\family default 
-.)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\begin_inset Formula $w_{21}$
+\end_inset 
+
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\begin_inset Formula $w_{22}$
+\end_inset 
+
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\begin_inset Formula $w_{23}$
+\end_inset 
+
+
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+aa
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\begin_inset Formula $w_{31}$
+\end_inset 
+
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\begin_inset Formula $w_{32}$
+\end_inset 
+
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\begin_inset Formula $w_{33}$
+\end_inset 
+
+
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Standard
+
+in the order of 
+\begin_inset Formula $w_{11},w_{12,}...,w_{32},w_{33}$
+\end_inset 
+
+.
+ 
+\end_deeper 
+\layout Itemize
+
+For more than two-locus, use a table of length 
+\begin_inset Formula $3^{n}$
+\end_inset 
+
+ in a order similar to the two-locus model.
 \layout Subsection
 
 Operator (C++) 
@@ -10128,7 +10332,7 @@ pop.useAncestralPop(0)
 
 Operator (C++)
 \family typewriter 
- basicPenetrance
+ mapPenetrance
 \family default 
 
 \begin_inset LatexCommand \index{operator!basicPenetrance}
@@ -10137,7 +10341,7 @@ Operator (C++)
 
  (post, during-Mating), function 
 \family typewriter 
-BasicPenetrance
+MapPenetrance
 \begin_inset LatexCommand \index{function!BasicPenetrance}
 
 \end_inset 
@@ -10150,7 +10354,7 @@ Assign penetrance using a table with keys 'X-Y' where X and Y are allele
  For example,
 \layout LyX-Code
 
-basicPenetrance(locus=1, penetrance={'1-1':0, '1-2':0.5, '2-2':1})
+mapPenetrance(locus=1, penetrance={'1-1':0, '1-2':0.5, '2-2':1})
 \layout Standard
 
 Note that this dictionary can be more than three elements to accommendate
@@ -10197,17 +10401,18 @@ and any other alleles are considered as diseased allele.
 \family typewriter 
 maSelector 
 \family default 
-accepts an array of fitness for AA, Aa, aa while A stands for wildtype alleles.
+accepts an array of fitness for AA, Aa, aa in the single-locus case, and
+ a longer table for multi-locus case.
  Penetrance is then set for any given genotype.
  For example
 \layout LyX-Code
 
-maPenetrance(locus=1, wildtype=[1], penetrance={0,0.5,1})
+maPenetrance(loci=[1,5], wildtype=[1], penetrance=[0,0.5,1,0,0,1,0,1,1])
 \layout Standard
 
 this operator behave the same as the 
 \family typewriter 
-basicPenetrance 
+mapPenetrance 
 \family default 
 example but will work if there are more than one disease alleles.
  
@@ -10483,7 +10688,7 @@ QT.
 
 Operator (C++)
 \family typewriter 
- basicQuanTrait
+ mapQuanTrait
 \family default 
 
 \begin_inset LatexCommand \index{operator!basicQuanTrait}
@@ -10492,7 +10697,7 @@ Operator (C++)
 
 , function 
 \family typewriter 
-BasicQuanTrait
+MapQuanTrait
 \begin_inset LatexCommand \index{function!BasicQuanTrait}
 
 \end_inset 
@@ -10554,7 +10759,7 @@ and any other alleles are considered as diseased allele.
 \family typewriter 
 maQuanTrait 
 \family default 
-accepts an array of fitness for AA, Aa, aa while A stands for wildtype alleles.
+accepts an array of fitness as described before.
  Quantitative trait is then set for any given genotype.
  
 \begin_inset Formula $N\left(0,\sigma^{2}\right)$
@@ -11135,7 +11340,7 @@ simu.evolve( ...
   parentsTagger(begin = endGen - 3),
 \layout LyX-Code
 
-  basicPenetrance(...., begin = endGen - 2),
+  mapPenetrance(...., begin = endGen - 2),
 \layout LyX-Code
 
   setAncestralDepth(1, at = endGen -2 )
@@ -13735,22 +13940,26 @@ pause
 This operator will pause the simulation and wait for user response.
  User can use 'q' to stop evolution, 's' to escape to a python shell, or
  any other key to continue.
- Another way to use it is through its 
+ 
+\layout Standard
+
+There are two ways to use this operator, the first one is to pause the simulatio
+n at specified generations, using the usual operator parameters like 
+\family typewriter 
+at
+\family default 
+.
+ Another way is to pause a simulation with any key stroke, using the 
 \family typewriter 
 stopOnKeyStroke
 \family default 
  parameter.
- If set to true, 
-\family typewriter 
-pause
-\family default 
- will continue until you press any key.
- It is useful for presentation and interative simulation.
+ This feature is useful for presentation and interative simulation.
  
 \layout Standard
 
 When 's' is pressed, this operator expose the current population to the
- main python dictionary as variable 'pop', and enter an interactive python
+ main python dictionary as variable 'pop' and enter an interactive python
  session.
  The way current population is exposed can be controled by parameter 
 \family typewriter 

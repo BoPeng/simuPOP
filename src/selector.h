@@ -126,50 +126,57 @@ namespace simuPOP
 
   /** \brief selection according to genotype at one locus
 
-  basic selector. Assign fitness value according to a
+  map selector. Assign fitness value according to a
   given dictionary.
   */
   template<class Pop>
-    class BasicSelector: public Selector<Pop>
+    class MapSelector: public Selector<Pop>
   {
     public:
-      /** \brief create a basic selector (selection according to genotype at one locus
+      /** \brief create a map selector (selection according to genotype at one locus
 
       \param locus the locus index. The genotype of this locus will be axamed.
-      \param fitness a dictionary of fitness. The genotype must be in the form of 'a-b'.
+      \param loci the loci index. The genotype of this locus will be axamed.
+      \param fitness a dictionary of fitness. The genotype must be in the form of 'a-b'
+         for single locus, and 'a-b|c-d|e-f' for multi-locus..
       \param hasPhase if true, a/b and b/a will have different fitness value. Default to false.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      BasicSelector( UINT locus, const strDict& fitness, bool hasPhase=false,
+      MapSelector( vectoru loci, const strDict& fitness, bool hasPhase=false,
         int stage=PreMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       Selector<Pop>(stage, begin, end, step, at, rep, grp, sep),
-        m_locus(locus), m_dict(fitness), m_phase(hasPhase)
+        m_loci(loci), m_dict(fitness), m_phase(hasPhase)
       {
       };
 
-      virtual ~BasicSelector()
+      virtual ~MapSelector()
       {
       }
 
       virtual Operator<Pop>* clone() const
       {
-        return new BasicSelector(*this);
+        return new MapSelector(*this);
       }
 
       /// currently assuming diploid
       virtual double fitness(typename Pop::IndType * ind)
       {
-        /// get genotype of ind
-        Allele a = ind->allele(m_locus, 0);
-        Allele b = ind->allele(m_locus, 1);
-
         string key;
 
-        if( ! m_phase && a > b )                  // ab=ba
-          key =  toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
-        else
-          key =  toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
+        for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
+        {
+          /// get genotype of ind
+          Allele a = ind->allele(*loc, 0);
+          Allele b = ind->allele(*loc, 1);
+
+          if( loc != m_loci.begin() )
+            key += '|';
+          if( ! m_phase && a > b )                // ab=ba
+            key +=  toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
+          else
+            key +=  toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
+        }
 
         strDict::iterator pos = m_dict.find(key);
 
@@ -181,12 +188,12 @@ namespace simuPOP
 
       virtual string __repr__()
       {
-        return "<simuPOP::selector::basic selector>" ;
+        return "<simuPOP::selector::map selector>" ;
       }
 
     private:
       /// one locus
-      UINT m_locus;
+      vectoru m_loci;
 
       /// fitness for each genotype
       strDict m_dict;
@@ -206,19 +213,30 @@ namespace simuPOP
     public:
       /** \brief create a multiple allele selector (selection according to diseased or wildtype
       alleles)
+      Note that MASelector only work for diploid population now.
 
       \param locus the locus index. The genotype of this locus will be axamed.
-      \param fitness an array of fitness of AA,Aa,aa. A is the wild type group.
+      \param loci the loci index.
+      \param fitness For the single locus case, fitness is an array of fitness of AA,Aa,aa. A is the
+         wild type group. In the case of multiple loci, fitness should be in the order of
+              BB Bb bb
+           AA 1  2  3
+           Aa 4  5  6
+      aa 7  8  9
+      The length for such table is 3^(#loci).
       \param wildtype an array of alleles in the wildtype group. Anything else is disease allele.
+         default = [1]
+      NOTE that wildtype at all loci are the same.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      MASelector( UINT locus, const vectorf& fitness, const vectora& wildtype,
+      MASelector( vectoru loci, const vectorf& fitness, const vectora& wildtype,
         int stage=PreMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       Selector<Pop>(stage, begin, end, step, at, rep, grp, sep),
-        m_locus(locus), m_fitness(fitness), m_wildtype(wildtype)
+        m_loci(loci), m_fitness(fitness), m_wildtype(wildtype)
       {
-        DBG_ASSERT( m_fitness.size() == 3, ValueError, "Please specify fitness for AA,Aa,aa genotypes.");
+        DBG_ASSERT( m_fitness.size() == static_cast<UINT>(pow(3, loci.size())),
+          ValueError, "Please specify fitness for each combination of genotype.");
       };
 
       virtual ~MASelector()
@@ -233,20 +251,25 @@ namespace simuPOP
       /// currently assuming diploid
       virtual double fitness(typename Pop::IndType * ind)
       {
-        /// get genotype of ind
-        Allele a = ind->allele(m_locus, 0);
-        Allele b = ind->allele(m_locus, 1);
+        UINT index = 0;
+        for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
+        {
+          /// get genotype of ind
+          Allele a = ind->allele(*loc, 0);
+          Allele b = ind->allele(*loc, 1);
 
-        int numWildtype=0;
+          int numWildtype=0;
 
-        // count number of wildtype
-        if( find(m_wildtype.begin(), m_wildtype.end(), a) != m_wildtype.end() )
-          numWildtype ++;
+          // count number of wildtype
+          if( find(m_wildtype.begin(), m_wildtype.end(), a) != m_wildtype.end() )
+            numWildtype ++;
 
-        if( find(m_wildtype.begin(), m_wildtype.end(), b) != m_wildtype.end() )
-          numWildtype ++;
+          if( find(m_wildtype.begin(), m_wildtype.end(), b) != m_wildtype.end() )
+            numWildtype ++;
 
-        return m_fitness[2-numWildtype];
+          index = index*3 + 2-numWildtype;
+        }
+        return m_fitness[index];
       }
 
       virtual string __repr__()
@@ -256,7 +279,7 @@ namespace simuPOP
 
     private:
       /// one locus
-      UINT m_locus;
+      vectoru m_loci;
 
       /// fitness for each genotype
       vectorf m_fitness;
@@ -270,7 +293,7 @@ namespace simuPOP
    multiple loci selector. This selector takes several selectors and
    multiply their fitness values...
    e.g.
-     mlmSelector( [basicSelector(...), maSelector(...) ])
+     mlmSelector( [mapSelector(...), maSelector(...) ])
    */
   template<class Pop>
     class MLSelector: public Selector<Pop>
@@ -565,50 +588,59 @@ namespace simuPOP
 
   /** \brief penetrance according to genotype at one locus
 
-  basic selector. Assign penetrance value according to a
+  map selector. Assign penetrance value according to a
   given dictionary.
   */
   template<class Pop>
-    class BasicPenetrance: public Penetrance<Pop>
+    class MapPenetrance: public Penetrance<Pop>
   {
     public:
-      /** \brief create a basic penetrance function (penetrance according to genotype at one locus
+      /** \brief create a map penetrance function (penetrance according to genotype at one locus
 
       \param locus the locus index. The genotype of this locus will be axamed.
-      \param penetrance a dictionary of penetrance. The genotype must be in the form of 'a-b'.
+      \param loci the loci index. The genotype of this locus will be axamed.
+      \param penetrance a dictionary of penetrance. The genotype must be in the form of 'a-b' for single
+         locus.
       \param hasPhase if true, a/b and b/a will have different penetrance value. Default to false.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      BasicPenetrance( UINT locus, const strDict& penetrance, bool hasPhase=false,
+      MapPenetrance( vectoru loci, const strDict& penetrance, bool hasPhase=false,
         bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp, sep),
-        m_locus(locus), m_dict(penetrance), m_phase(hasPhase)
+        m_loci(loci), m_dict(penetrance), m_phase(hasPhase)
       {
       };
 
-      virtual ~BasicPenetrance()
+      virtual ~MapPenetrance()
       {
       }
 
       virtual Operator<Pop>* clone() const
       {
-        return new BasicPenetrance(*this);
+        return new MapPenetrance(*this);
       }
 
       /// currently assuming diploid
       virtual double penet(typename Pop::IndType * ind)
       {
-        /// get genotype of ind
-        Allele a = ind->allele(m_locus, 0);
-        Allele b = ind->allele(m_locus, 1);
-
         string key;
 
-        if( ! m_phase && a > b )                  // ab=ba
-          key =  toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
-        else
-          key =  toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
+        for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
+        {
+
+          /// get genotype of ind
+          Allele a = ind->allele(*loc, 0);
+          Allele b = ind->allele(*loc, 1);
+
+          if( loc != m_loci.begin() )
+            key += '|';
+
+          if( ! m_phase && a > b )                // ab=ba
+            key +=  toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
+          else
+            key +=  toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
+        }
 
         strDict::iterator pos = m_dict.find(key);
 
@@ -620,12 +652,12 @@ namespace simuPOP
 
       virtual string __repr__()
       {
-        return "<simuPOP::penetrance::basic penetrance>" ;
+        return "<simuPOP::penetrance::map penetrance>" ;
       }
 
     private:
       /// one locus
-      UINT m_locus;
+      vectoru m_loci;
 
       /// penetrance for each genotype
       strDict m_dict;
@@ -647,16 +679,23 @@ namespace simuPOP
       alleles)
 
       \param locus the locus index. The genotype of this locus will be axamed.
-      \param penetrance an array of penetrance of AA,Aa,aa. A is the wild type group.
-      \param wildtype an array of alleles in the wildtype group. Anything else is disease allele.
+      \param loci the loci index.
+      \param penetrance an array of penetrance of AA,Aa,aa. A is the
+         wild type group. In the case of multiple loci, fitness should be in the order of
+              BB Bb bb
+           AA 1  2  3
+           Aa 4  5  6
+           aa 7  8  9
+      \param wildtype an array of alleles in the wildtype group. Anything else is disease allele.,
+         default = [1]
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      MAPenetrance( UINT locus, const vectorf& penetrance, const vectora& wildtype,
+      MAPenetrance( vectoru loci, const vectorf& penetrance, const vectora& wildtype,
         bool exposePenetrance=false,
         int stage=DuringMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp, sep),
-        m_locus(locus), m_penetrance(penetrance), m_wildtype(wildtype)
+        m_loci(loci), m_penetrance(penetrance), m_wildtype(wildtype)
       {
         DBG_ASSERT( m_penetrance.size() == 3, ValueError, "Please specify penetrance for AA,Aa,aa genotypes.");
       };
@@ -673,20 +712,26 @@ namespace simuPOP
       /// currently assuming diploid
       virtual double penet(typename Pop::IndType * ind)
       {
-        /// get genotype of ind
-        Allele a = ind->allele(m_locus, 0);
-        Allele b = ind->allele(m_locus, 1);
+        UINT index = 0;
+        for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
+        {
 
-        int numWildtype=0;
+          /// get genotype of ind
+          Allele a = ind->allele(*loc, 0);
+          Allele b = ind->allele(*loc, 1);
 
-        // count number of wildtype
-        if( find(m_wildtype.begin(), m_wildtype.end(), a) != m_wildtype.end() )
-          numWildtype ++;
+          int numWildtype=0;
 
-        if( find(m_wildtype.begin(), m_wildtype.end(), b) != m_wildtype.end() )
-          numWildtype ++;
+          // count number of wildtype
+          if( find(m_wildtype.begin(), m_wildtype.end(), a) != m_wildtype.end() )
+            numWildtype ++;
 
-        return m_penetrance[2-numWildtype];
+          if( find(m_wildtype.begin(), m_wildtype.end(), b) != m_wildtype.end() )
+            numWildtype ++;
+          index = index*3 + 2-numWildtype;
+        }
+
+        return m_penetrance[index];
       }
 
       virtual string __repr__()
@@ -696,7 +741,7 @@ namespace simuPOP
 
     private:
       /// one locus
-      UINT m_locus;
+      vectoru m_loci;
 
       /// penetrance for each genotype
       vectorf m_penetrance;
@@ -710,7 +755,7 @@ namespace simuPOP
    multiple loci selector. This selector takes several selectors and
    multiply their penetrance values...
    e.g.
-     mlmPenetrance( [basicPenetrance(...), maPenetrance(...) ])
+     mlmPenetrance( [mapPenetrance(...), maPenetrance(...) ])
    */
   template<class Pop>
     class MLPenetrance: public Penetrance<Pop>
@@ -1016,53 +1061,60 @@ namespace simuPOP
 
   /** \brief quantitative trait according to genotype at one locus
 
-  basic selector. Assign qtrait value according to a
+  map selector. Assign qtrait value according to a
   given dictionary.
   */
   template<class Pop>
-    class BasicQuanTrait: public QuanTrait<Pop>
+    class MapQuanTrait: public QuanTrait<Pop>
   {
     public:
-      /** \brief create a basic selector (quantitative trait according to genotype at one locus
+      /** \brief create a map selector (quantitative trait according to genotype at one locus
 
       \param locus the locus index. The genotype of this locus will be axamed.
+      \param loci the loci.
       \param qtrait a dictionary of qtrait. The genotype must be in the form of 'a-b'. This is the mean
       of quantitative trait. The actual trait value will be N(mean, sigma^2)
+      For multiple loci, the form is 'a-b|c-d|e-f' etc.
       \param sigma standard deviation of the environmental facotr N(0,sigma^2).
       \param hasPhase if true, a/b and b/a will have different qtrait value. Default to false.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      BasicQuanTrait( UINT locus, const strDict& qtrait, double sigma=0, bool hasPhase=false,
+      MapQuanTrait( vectoru loci, const strDict& qtrait, double sigma=0, bool hasPhase=false,
         int stage=PostMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       QuanTrait<Pop>(stage, begin, end, step, at, rep, grp, sep),
-        m_locus(locus), m_dict(qtrait), m_sigma(sigma), m_phase(hasPhase)
+        m_loci(loci), m_dict(qtrait), m_sigma(sigma), m_phase(hasPhase)
       {
       };
 
-      virtual ~BasicQuanTrait()
+      virtual ~MapQuanTrait()
       {
       }
 
       virtual Operator<Pop>* clone() const
       {
-        return new BasicQuanTrait(*this);
+        return new MapQuanTrait(*this);
       }
 
       /// currently assuming diploid
       virtual double qtrait(typename Pop::IndType * ind)
       {
-        /// get genotype of ind
-        Allele a = ind->allele(m_locus, 0);
-        Allele b = ind->allele(m_locus, 1);
-
         string key;
 
-        if( ! m_phase && a > b )                  // ab=ba
-          key =  toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
-        else
-          key =  toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
+        for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
+        {
+          /// get genotype of ind
+          Allele a = ind->allele(*loc, 0);
+          Allele b = ind->allele(*loc, 1);
 
+          if( loc != m_loci.begin() )
+            key += '|';
+
+          if( ! m_phase && a > b )                // ab=ba
+            key +=  toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
+          else
+            key +=  toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
+        }
         strDict::iterator pos = m_dict.find(key);
 
         DBG_ASSERT( pos != m_dict.end(), ValueError,
@@ -1073,12 +1125,12 @@ namespace simuPOP
 
       virtual string __repr__()
       {
-        return "<simuPOP::qtrait::basic quantitative trait>" ;
+        return "<simuPOP::qtrait::map quantitative trait>" ;
       }
 
     private:
       /// one locus
-      UINT m_locus;
+      vectoru m_loci;
 
       /// qtrait for each genotype
       strDict m_dict;
@@ -1106,20 +1158,22 @@ namespace simuPOP
       \param qtrait an array of qtrait of AA,Aa,aa. A is the wild type group.
       \param sigma an array of standard deviation for each of the trait genotype (AA, Aa, aa)
       \param wildtype an array of alleles in the wildtype group. Anything else is disease allele.
+         default = [1]
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      MAQuanTrait( UINT locus, const vectorf& qtrait, const vectora& wildtype,
+      MAQuanTrait( vectoru loci, const vectorf& qtrait, const vectora& wildtype,
         const vectorf& sigma = vectorf(),
         int stage=PostMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       QuanTrait<Pop>(stage, begin, end, step, at, rep, grp, sep),
-        m_locus(locus), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
+        m_loci(loci), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
       {
         if( m_sigma.empty())
           m_sigma.resize(3,0.);
 
-        DBG_ASSERT( m_qtrait.size() == 3 && m_sigma.size() == 3,
-          ValueError, "Please specify qtrait for AA,Aa,aa genotypes.");
+        DBG_ASSERT( m_qtrait.size() == static_cast<UINT>(pow(3, loci.size()))
+          && m_sigma.size() == m_qtrait.size(),
+          ValueError, "Please specify qtrait for every combination of genotype.");
       };
 
       /// destructor
@@ -1135,20 +1189,25 @@ namespace simuPOP
       /// currently assuming diploid
       virtual double qtrait(typename Pop::IndType * ind)
       {
-        /// get genotype of ind
-        Allele a = ind->allele(m_locus, 0);
-        Allele b = ind->allele(m_locus, 1);
+        UINT index = 0;
+        for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
+        {
+          /// get genotype of ind
+          Allele a = ind->allele(*loc, 0);
+          Allele b = ind->allele(*loc, 1);
 
-        int numWildtype=0;
+          int numWildtype=0;
 
-        // count number of wildtype
-        if( find(m_wildtype.begin(), m_wildtype.end(), a) != m_wildtype.end() )
-          numWildtype ++;
+          // count number of wildtype
+          if( find(m_wildtype.begin(), m_wildtype.end(), a) != m_wildtype.end() )
+            numWildtype ++;
 
-        if( find(m_wildtype.begin(), m_wildtype.end(), b) != m_wildtype.end() )
-          numWildtype ++;
+          if( find(m_wildtype.begin(), m_wildtype.end(), b) != m_wildtype.end() )
+            numWildtype ++;
+          index = index*3 + 2-numWildtype;
+        }
 
-        return rng().randNormal(m_qtrait[2-numWildtype], m_sigma[2-numWildtype]);
+        return rng().randNormal(m_qtrait[index], m_sigma[index]);
       }
 
       virtual string __repr__()
@@ -1158,7 +1217,7 @@ namespace simuPOP
 
     private:
       /// one locus
-      UINT m_locus;
+      vectoru m_loci;
 
       /// qtrait for each genotype
       vectorf m_qtrait;
@@ -1175,7 +1234,7 @@ namespace simuPOP
    multiple loci selector. This selector takes several selectors and
    multiply their qtrait values...
    e.g.
-     mlmQuanTrait( [basicQuanTrait(...), maQuanTrait(...) ])
+     mlmQuanTrait( [mapQuanTrait(...), maQuanTrait(...) ])
    */
   template<class Pop>
     class MLQuanTrait: public QuanTrait<Pop>

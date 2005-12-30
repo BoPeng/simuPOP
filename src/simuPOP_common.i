@@ -309,7 +309,7 @@ namespace simuPOP
   %template(stator)              Stator<pop>;
   %template(pyEval)              PyEval<pop>;
   %template(pyExec)              PyExec<pop>;
-  %template(stat)                BasicStat<pop>;
+  %template(stat)                Stat<pop>;
 
   %template(tagger)              Tagger<pop>;
   %template(inheritTagger)       InheritTagger<pop>;
@@ -330,19 +330,19 @@ namespace simuPOP
   %template(recombinator)        Recombinator<pop>;
 
   %template(selector)            Selector<pop>;
-  %template(basicSelector)       BasicSelector<pop>;
+  %template(mapSelector)         MapSelector<pop>;
   %template(maSelector)          MASelector<pop>;
   %template(mlSelector)          MLSelector<pop>;
   %template(pySelector)          PySelector<pop>;
 
   %template(penetrance)          Penetrance<pop>;
-  %template(basicPenetrance)     BasicPenetrance<pop>;
+  %template(mapPenetrance)       MapPenetrance<pop>;
   %template(maPenetrance)        MAPenetrance<pop>;
   %template(mlPenetrance)        MLPenetrance<pop>;
   %template(pyPenetrance)        PyPenetrance<pop>;
 
   %template(quanTrait)           QuanTrait<pop>;
-  %template(basicQuanTrait)      BasicQuanTrait<pop>;
+  %template(mapQuanTrait)        MapQuanTrait<pop>;
   %template(maQuanTrait)         MAQuanTrait<pop>;
   %template(mlQuanTrait)         MLQuanTrait<pop>;
   %template(pyQuanTrait)         PyQuanTrait<pop>;
@@ -586,10 +586,10 @@ def RemoveEmptySubPops(pop, *args, **kwargs):
   
 #RemoveEmptySubPops.__doc__ = "Function versionof member function population::removeEmptySubPops with help info:\n" + population.removeEmptySubPops.__doc__
 
-def BasicSelect(pop, *args, **kwargs):
-  basicSelector(stage=PostMating, *args, **kwargs).apply(pop)
+def MapSelect(pop, *args, **kwargs):
+  mapSelector(stage=PostMating, *args, **kwargs).apply(pop)
   
-BasicSelect.__doc__ = "Function version of operator basicSelect whose __init__ function is \n" + basicSelector.__init__.__doc__
+MapSelect.__doc__ = "Function version of operator mapSelect whose __init__ function is \n" + mapSelector.__init__.__doc__
 
 def MaSelect(pop, *args, **kwargs):
   maSelector(stage=PostMating, *args, **kwargs).apply(pop)
@@ -606,10 +606,10 @@ def PySelect(pop, *args, **kwargs):
   
 PySelect.__doc__ = "Function version of operator pySelect whose __init__ function is \n" + pySelector.__init__.__doc__
 
-def BasicPenetrance(pop, *args, **kwargs):
-  basicPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
+def MapPenetrance(pop, *args, **kwargs):
+  mapPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
   
-BasicPenetrance.__doc__ = "Function version of operator basicPenetrance whose __init__ function is \n" + basicPenetrance.__init__.__doc__
+MapPenetrance.__doc__ = "Function version of operator mapPenetrance whose __init__ function is \n" + mapPenetrance.__init__.__doc__
 
 def MaPenetrance(pop, *args, **kwargs):
   maPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
@@ -626,10 +626,10 @@ def PyPenetrance(pop, *args, **kwargs):
   
 PyPenetrance.__doc__ = "Function version of operator pyPenetrance whose __init__ function is \n" + pyPenetrance.__init__.__doc__
 
-def BasicQuanTrait(pop, *args, **kwargs):
-  basicQuanTrait(*args, **kwargs).apply(pop)
+def MapQuanTrait(pop, *args, **kwargs):
+  mapQuanTrait(*args, **kwargs).apply(pop)
   
-BasicQuanTrait.__doc__ = "Function version of operator basicQuanTrait whose __init__ function is \n" + basicQuanTrait.__init__.__doc__
+MapQuanTrait.__doc__ = "Function version of operator mapQuanTrait whose __init__ function is \n" + mapQuanTrait.__init__.__doc__
 
 def MaQuanTrait(pop, *args, **kwargs):
   maQuanTrait(*args, **kwargs).apply(pop)
@@ -1020,5 +1020,110 @@ def new_affectedSibpairSample(self,size=[], *args, **kwargs):
 new_affectedSibpairSample.__doc__ = affectedSibpairSample.__init__.__doc__
 del affectedSibpairSample.__init__
 affectedSibpairSample.__init__ = new_affectedSibpairSample
+
+
+def new_mapSelector(self, locus=-1, loci=[], *args, **kwargs):
+  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+    loc = [locus]
+  elif type(loci) in [types.IntType, types.LongType]:
+    loc = [loci]
+  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+    loc = loci
+  else:
+    raise exceptions.TypeError('Please specify locus or loci')
+  _swig_setattr(self, mapSelector, 'this', 
+    cppModule.new_mapSelector(loci=loc, *args, **kwargs))
+  _swig_setattr(self, mapSelector, 'thisown', 1)
+ 
+new_mapSelector.__doc__ = mapSelector.__init__.__doc__
+del mapSelector.__init__
+mapSelector.__init__ = new_mapSelector
+
+def new_maSelector(self, locus=-1, loci=[], wildtype=[1], *args, **kwargs):
+  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+    loc = [locus]
+  elif type(loci) in [types.IntType, types.LongType]:
+    loc = [loci]
+  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+    loc = loci
+  else:
+    raise exceptions.TypeError('Please specify locus or loci')
+  _swig_setattr(self, maSelector, 'this', 
+    cppModule.new_maSelector(loci=loc, wildtype=wildtype, *args, **kwargs))
+  _swig_setattr(self, maSelector, 'thisown', 1)
+ 
+new_maSelector.__doc__ = maSelector.__init__.__doc__
+del maSelector.__init__
+maSelector.__init__ = new_maSelector
+
+
+def new_mapPenetrance(self, locus=-1, loci=[], *args, **kwargs):
+  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+    loc = [locus]
+  elif type(loci) in [types.IntType, types.LongType]:
+    loc = [loci]
+  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+    loc = loci
+  else:
+    raise exceptions.TypeError('Please specify locus or loci')
+  _swig_setattr(self, mapPenetrance, 'this', 
+    cppModule.new_mapPenetrance(loci=loc, *args, **kwargs))
+  _swig_setattr(self, mapPenetrance, 'thisown', 1)
+ 
+new_mapPenetrance.__doc__ = mapPenetrance.__init__.__doc__
+del mapPenetrance.__init__
+mapPenetrance.__init__ = new_mapPenetrance
+
+def new_maPenetrance(self, locus=-1, loci=[], wildtype=[1], *args, **kwargs):
+  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+    loc = [locus]
+  elif type(loci) in [types.IntType, types.LongType]:
+    loc = [loci]
+  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+    loc = loci
+  else:
+    raise exceptions.TypeError('Please specify locus or loci')
+  _swig_setattr(self, maPenetrance, 'this', 
+    cppModule.new_maPenetrance(loci=loc, wildtype=wildtype, *args, **kwargs))
+  _swig_setattr(self, maPenetrance, 'thisown', 1)
+ 
+new_maPenetrance.__doc__ = maPenetrance.__init__.__doc__
+del maPenetrance.__init__
+maPenetrance.__init__ = new_maPenetrance
+
+
+def new_mapQuanTrait(self, locus=-1, loci=[], *args, **kwargs):
+  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+    loc = [locus]
+  elif type(loci) in [types.IntType, types.LongType]:
+    loc = [loci]
+  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+    loc = loci
+  else:
+    raise exceptions.TypeError('Please specify locus or loci')
+  _swig_setattr(self, mapQuanTrait, 'this', 
+    cppModule.new_mapQuanTrait(loci=loc, *args, **kwargs))
+  _swig_setattr(self, mapQuanTrait, 'thisown', 1)
+ 
+new_mapQuanTrait.__doc__ = mapQuanTrait.__init__.__doc__
+del mapQuanTrait.__init__
+mapQuanTrait.__init__ = new_mapQuanTrait
+
+def new_maQuanTrait(self, locus=-1, loci=[], wildtype=[1], *args, **kwargs):
+  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+    loc = [locus]
+  elif type(loci) in [types.IntType, types.LongType]:
+    loc = [loci]
+  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+    loc = loci
+  else:
+    raise exceptions.TypeError('Please specify locus or loci')
+  _swig_setattr(self, maQuanTrait, 'this', 
+    cppModule.new_maQuanTrait(loci=loc, wildtype=wildtype, *args, **kwargs))
+  _swig_setattr(self, maQuanTrait, 'thisown', 1)
+ 
+new_maQuanTrait.__doc__ = maQuanTrait.__init__.__doc__
+del maQuanTrait.__init__
+maQuanTrait.__init__ = new_maQuanTrait
 
 %}
