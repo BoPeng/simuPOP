@@ -9762,7 +9762,7 @@ pyOperator
 Operator (C++) 
 \family typewriter 
 mapSelector
-\begin_inset LatexCommand \index{operator!basicSelector}
+\begin_inset LatexCommand \index{operator!mapSelector}
 
 \end_inset 
 
@@ -9771,7 +9771,7 @@ mapSelector
 function 
 \family typewriter 
 MapSelector
-\begin_inset LatexCommand \index{function!BasicSelect}
+\begin_inset LatexCommand \index{function!MapSelect}
 
 \end_inset 
 
@@ -10335,14 +10335,14 @@ Operator (C++)
  mapPenetrance
 \family default 
 
-\begin_inset LatexCommand \index{operator!basicPenetrance}
+\begin_inset LatexCommand \index{operator!mapPenetrance}
 
 \end_inset 
 
  (post, during-Mating), function 
 \family typewriter 
 MapPenetrance
-\begin_inset LatexCommand \index{function!BasicPenetrance}
+\begin_inset LatexCommand \index{function!MapPenetrance}
 
 \end_inset 
 
@@ -10691,14 +10691,14 @@ Operator (C++)
  mapQuanTrait
 \family default 
 
-\begin_inset LatexCommand \index{operator!basicQuanTrait}
+\begin_inset LatexCommand \index{operator!mapQuanTrait}
 
 \end_inset 
 
 , function 
 \family typewriter 
 MapQuanTrait
-\begin_inset LatexCommand \index{function!BasicQuanTrait}
+\begin_inset LatexCommand \index{function!MapQuanTrait}
 
 \end_inset 
 
