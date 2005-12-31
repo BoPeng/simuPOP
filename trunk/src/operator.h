@@ -1014,13 +1014,15 @@ namespace simuPOP
       operation it wants to.
       \param para any python object that will be passed to func after pop parameter.
         Multiple parameter can be passed as a tuple.
+      \param formOffGenotype if stage=DuringMating, set this parameter to false
+        will disallow random mating to set genotype.
 
        Note: (FIXME) output to output or outputExpr is not yet supported. Ideally,
          this func will take two parameters with pop and then a filehandle to output,
          however, differentiating output, append etc is too troublesome right now.
        */
       PyOperator(PyObject* func, PyObject* param=NULL,
-        int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
+        int stage=PostMating, bool formOffGenotype=false, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp, sep),
         m_func(func), m_param(param)
@@ -1033,6 +1035,8 @@ namespace simuPOP
 
         if(param != NULL)
           Py_XINCREF(param);
+
+        this->setFormOffGenotype(formOffGenotype);
       };
 
       /// destructor
@@ -1086,6 +1090,89 @@ namespace simuPOP
         // if things goes well....
         // need to make sure this is correct.
         Py_DECREF(popObj);
+        // release arglist
+        Py_DECREF(arglist);
+
+        if( result == NULL)
+        {
+          PyErr_Print();
+          throw ValueError("Invalid return from provided function. (Be sure to return True or False)");
+        }
+        // result should be a boolean value
+        bool resBool;
+        // defined in utility.h
+        PyObj_As_Bool(result, resBool);
+        Py_DECREF(result);
+        return resBool;
+      }
+
+      virtual bool applyDuringMating(Pop& pop, typename Pop::IndIterator offspring,
+        typename Pop::IndType* dad=NULL, typename Pop::IndType* mom=NULL)
+      {
+        // call the python function, pass all the parameters to it.
+        // get pop object
+        PyObject* popObj = pointer2pyObj((void*)(&pop), PopSWIGType);
+        // if pop is valid?
+        if(popObj == NULL)
+          throw SystemError("Could not pass population to the provided function. \n"
+            "Compiled with the wrong version of SWIG?");
+        Py_INCREF(popObj);
+
+        // get offspring object
+        PyObject* offObj = pointer2pyObj((void*)(&(*offspring)), IndSWIGType);
+        if(offObj == NULL)
+          throw SystemError("Could not pass offspring to the provided function. \n"
+            "Compiled with the wrong version of SWIG?");
+        Py_INCREF(offObj);
+
+        // get dad object
+        PyObject* dadObj;
+        if(dad == NULL)
+        {
+           Py_INCREF(Py_None);
+           dadObj = Py_None;
+        }
+        else
+        {
+          dadObj = pointer2pyObj((void*)(dad), IndSWIGType);
+          if(dadObj == NULL)
+            throw SystemError("Could not pass parent to the provided function. \n"
+              "Compiled with the wrong version of SWIG?");
+          Py_INCREF(dadObj);
+        }
+          
+        // get mom object
+        PyObject* momObj;
+        if(mom == NULL)
+        {
+           Py_INCREF(Py_None);
+           momObj = Py_None;
+        }
+        else
+        {
+          momObj = pointer2pyObj((void*)(mom), IndSWIGType);
+          if(momObj == NULL)
+            throw SystemError("Could not pass parent to the provided function. \n"
+              "Compiled with the wrong version of SWIG?");
+          Py_INCREF(momObj);
+        }
+
+        // parammeter list, ref count increased
+        PyObject* arglist;
+        if( m_param == NULL)
+          arglist = Py_BuildValue("(OOOO)", popObj, offObj, dadObj, momObj);
+        else
+          arglist = Py_BuildValue("(OOOOO)", popObj, offObj, dadObj, momObj, m_param);
+
+        // we do not need to catch exceptions here,
+        // our wrapper will do that
+        PyObject* result = PyEval_CallObject(m_func, arglist);
+        // if things goes well....
+        // need to make sure this is correct.
+        Py_DECREF(popObj);
+        Py_DECREF(offObj);
+        Py_DECREF(dadObj);
+        Py_DECREF(momObj);
         // release arglist
         Py_DECREF(arglist);
 

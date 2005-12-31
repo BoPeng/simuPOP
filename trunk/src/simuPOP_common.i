@@ -227,6 +227,8 @@ namespace std
 
 namespace simuPOP
 {  
+  // NOTE: if this changed, you will have to change SWIG name for it
+  // in simupop_cfg.h 
   %template(individual)         Individual< std::pair<unsigned long,unsigned long> > ;
   %template(population)         Population<individual>;
   %template(baseOperator)       Operator< pop >;
