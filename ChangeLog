@@ -27,6 +27,8 @@ version 0.7.0 - currently available as daily snapshot
   - *  rename basicPentrance, basicSelector and basicQuanTrait to mapPenetrance etc
   - ** add multi-locus support to mapPenetrance, maPenetrance (and selector, quantrait)
     except for locus, you can specify loci, and a longer map or array of values.
+  - ** pyOperator can now be a during-mating operator. Pass a python function
+    func(pop, offspring, dad, mom, param) and set stage=DuringMating will do.
 
 version 0.6.10 (Rev90) - Dec, 20th, 2005
   - add recCount(loc) and recCount() to recombinator to track

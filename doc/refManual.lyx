@@ -8440,6 +8440,33 @@ pyOperator
 stage 
 \family default 
 parameter to change this when necessary.
+\layout Standard
+
+
+\family typewriter 
+pyOperator
+\family default 
+ can also be a DuringMating operator, you will need to define a function
+ 
+\layout LyX-Code
+
+def func(pop, off, dad, mom, param)
+\layout Standard
+
+where 
+\family typewriter 
+param 
+\family default 
+can be ignored.
+ To this this operator, 
+\layout LyX-Code
+
+pyOperator(stage=DuringMating, func=func, param=someparam, formOffGenotype=False
+)
+\layout Standard
+
+The last parameter can be used if your operator will set genotype for the
+ offspring so a mating scheme will not do this for you.
 \layout Section
 
 Initialization
