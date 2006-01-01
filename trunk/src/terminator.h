@@ -136,8 +136,6 @@ namespace simuPOP
       string m_var;
   };
 
-
-
   /// terminate according to a condition
   /// which can be, e.g.
   ///    any(alleleNum0) == 0

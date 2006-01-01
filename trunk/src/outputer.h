@@ -445,7 +445,7 @@ namespace simuPOP
       }
 
     private:
-      /// filename, 
+      /// filename,
       string m_filename;
 
       /// or an expression that will be evaluated dynamically
