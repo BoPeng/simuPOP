@@ -1384,7 +1384,5 @@ namespace simuPOP
   /// CPPONLY
   /// set standard output to (default standard Python output)
   void setLogOutput(const string filename="");
-
-
 }
 #endif

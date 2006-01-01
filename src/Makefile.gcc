@@ -137,16 +137,16 @@ simuPOP_laop_wrap.cpp: simuPOP_laop.i simuPOP_common.i $(HEADFILES)
 	perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_laop_wrap.cpp
 
 utility_std.o: utility.h utility_std.cpp simupop_cfg.h
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=\"simuPOP_std\" $(DEF) $(UDEF) $(CFLAGS) -c utility_std.cpp -o utility_std.o
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_std $(DEF) $(UDEF) $(CFLAGS) -c utility_std.cpp -o utility_std.o
 
 utility_op.o: utility.h utility_op.cpp simupop_cfg.h
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=\"simuPOP_op\" -DOPTIMIZED $(DEF) $(UDEF) $(CFLAGS) -c utility_op.cpp -o utility_op.o
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_op -DOPTIMIZED $(DEF) $(UDEF) $(CFLAGS) -c utility_op.cpp -o utility_op.o
 
 utility_la.o: utility.h utility_la.cpp simupop_cfg.h
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=\"simuPOP_la\" -DLONGALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_la.cpp -o utility_la.o
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_la -DLONGALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_la.cpp -o utility_la.o
 
 utility_laop.o: utility.h utility_laop.cpp simupop_cfg.h
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=\"simuPOP_laop\" -DOPTIMIZED -DLONGALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_laop.cpp -o utility_laop.o
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_laop -DOPTIMIZED -DLONGALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_laop.cpp -o utility_laop.o
 
 utility_std.cpp: utility.cpp
 	cp -f utility.cpp utility_std.cpp
