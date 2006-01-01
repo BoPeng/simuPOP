@@ -12718,14 +12718,11 @@ misc/README
 misc/emacs-python.el
 misc/python-mode.el
 scripts/analComplexDisease.py
-scripts/popStat.py
+scripts/demoPyOperator.py
 scripts/simuCDCV.py
 scripts/simuComplexDisease.py
-scripts/simuEasyPop.py
 scripts/simuLDDecay.py
 scripts/simuRecHotSpot.py
-scripts/popStat-boa/App1.py
-scripts/popStat-boa/Frame1.py
 src/arraymodule.c
 src/individual.h
 src/initializer.h
@@ -12761,6 +12758,7 @@ src/simuViewPop.py
 src/simulator.h
 src/simupop_cfg.h
 src/stator.h
+src/swigpyrun.h
 src/tagger.h
 src/terminator.h
 src/utility.cpp

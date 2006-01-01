@@ -235,7 +235,7 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = [ ('SIMUPOP_MODULE', '"simuPOP_std"')] + serial_macro,
+      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_std')] + serial_macro,
       sources= GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_std_wrap.cpp',
         'src/utility_std.cpp'] 
@@ -244,7 +244,7 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = [ ('SIMUPOP_MODULE', '"simuPOP_op"'), ('OPTIMIZED', None)] + serial_macro,
+      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None)] + serial_macro,
       sources= GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_op_wrap.cpp',
         'src/utility_op.cpp'] 
@@ -253,7 +253,7 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = [ ('SIMUPOP_MODULE', '"simuPOP_la"'), ('LONGALLELE', None) ] + serial_macro,
+      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None) ] + serial_macro,
       sources= GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_la_wrap.cpp',
         'src/utility_la.cpp'] 
@@ -262,7 +262,7 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = [ ('SIMUPOP_MODULE', '"simuPOP_laop"'), ('LONGALLELE', None), ('OPTIMIZED', None) ] + serial_macro,
+      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), ('OPTIMIZED', None) ] + serial_macro,
       sources= GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_laop_wrap.cpp',
         'src/utility_laop.cpp'] 

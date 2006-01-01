@@ -69,7 +69,6 @@ extern "C" char * carray_data(PyObject*a);
 extern "C" void   initcarray(void);
 extern "C" PyTypeObject Arraytype;
 
-
 // for streambuf stuff
 #include <streambuf>
 using std::streambuf;
@@ -2318,8 +2317,14 @@ T Expression::valueAs##TypeName() \
     TurnOnDebug(DBG_GENERAL);
 #endif
 
+    // SIMUPOP_MODULE is passed as name, but we need it to be quoted.
+    // Note that under gcc, I could pass the macro from command line
+    // using \" \" but this trick does not work under VC.
+    // the following process is safer.
+#define SimuPOP_Module_Name " ## SIMUPOP_MODULE ## "
+
     // set global dictionary/variable
-    PyObject* mm = PyImport_AddModule(SIMUPOP_MODULE);
+    PyObject* mm = PyImport_AddModule(SimuPOP_Module_Name);
     g_module_vars = SharedVariables(PyModule_GetDict(mm), false);
 
     // main dictionary

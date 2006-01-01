@@ -516,7 +516,7 @@ namespace simuPOP
                 continue;
             }
 
-            size_t it;
+            size_t it = 0;                        // asign a value to reduce compiler warning
 
             // apply pre-mating ops to current gen()
             if (!preMatingOps.empty())
