@@ -207,8 +207,7 @@ DATA_FILES =  [
   ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
   ('share/simuPOP/test', glob.glob('test/test_*.py')),
   ('share/simuPOP/misc', ['misc/README', 'misc/python-mode.el', 'misc/emacs-python.el']),
-  ('share/simuPOP/scripts', ['scripts/simuComplexDisease.py', 'scripts/analComplexDisease.py',
-   'scripts/simuLDDecay.py', 'scripts/simuCDCV.py', 'scripts/simuRecHotSpot.py']),
+  ('share/simuPOP/scripts', glob.glob('scripts/*.py')),
 ]
 
 if XML_SUPPORT: # using serialization library with xml support
