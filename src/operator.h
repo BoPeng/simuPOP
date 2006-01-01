@@ -543,10 +543,10 @@ namespace simuPOP
       \param exposePop whether or not expose pop to user namespace, only
         useful when user choose 's' at pause. Default to true.
       \param popName by which name the population is exposed? default to 'pop'
-      
+
       */
-      Pause(bool prompt=true, bool stopOnKeyStroke=false, 
-        bool exposePop=true, string popName="pop", 
+      Pause(bool prompt=true, bool stopOnKeyStroke=false,
+        bool exposePop=true, string popName="pop",
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_LAST, int grp=GRP_ALL, string sep="\t"):
@@ -600,19 +600,17 @@ namespace simuPOP
           PyObject* popObj;
           if(m_exposePop)
           {
-            popObj=pointer2pyObj((void*)(&pop),
-              PopSWIGType);
+            popObj=pointer2pyObj((void*)(&pop), PopSWIGType);
             if( popObj == NULL)
               throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
 
-            Py_INCREF(popObj);
             // get global dictionary
             mainVars().setVar(m_popName, popObj);
           }
           PyRun_InteractiveLoop(stdin, "<stdin>");
           // if expose pop, release it.
           if(m_exposePop)
-            mainVars().removeVar(m_popName); 
+            mainVars().removeVar(m_popName);
         }
 
         // clear input and wait for user input
@@ -1019,8 +1017,8 @@ namespace simuPOP
 
        Note: (FIXME) output to output or outputExpr is not yet supported. Ideally,
          this func will take two parameters with pop and then a filehandle to output,
-         however, differentiating output, append etc is too troublesome right now.
-       */
+      however, differentiating output, append etc is too troublesome right now.
+      */
       PyOperator(PyObject* func, PyObject* param=NULL,
         int stage=PostMating, bool formOffGenotype=false, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
@@ -1075,7 +1073,6 @@ namespace simuPOP
         if(popObj == NULL)
           throw SystemError("Could not pass population to the provided function. \n"
             "Compiled with the wrong version of SWIG?");
-        Py_INCREF(popObj);
 
         // parammeter list, ref count increased
         PyObject* arglist;
@@ -1116,21 +1113,19 @@ namespace simuPOP
         if(popObj == NULL)
           throw SystemError("Could not pass population to the provided function. \n"
             "Compiled with the wrong version of SWIG?");
-        Py_INCREF(popObj);
 
         // get offspring object
         PyObject* offObj = pointer2pyObj((void*)(&(*offspring)), IndSWIGType);
         if(offObj == NULL)
           throw SystemError("Could not pass offspring to the provided function. \n"
             "Compiled with the wrong version of SWIG?");
-        Py_INCREF(offObj);
 
         // get dad object
         PyObject* dadObj;
         if(dad == NULL)
         {
-           Py_INCREF(Py_None);
-           dadObj = Py_None;
+          Py_INCREF(Py_None);
+          dadObj = Py_None;
         }
         else
         {
@@ -1138,15 +1133,14 @@ namespace simuPOP
           if(dadObj == NULL)
             throw SystemError("Could not pass parent to the provided function. \n"
               "Compiled with the wrong version of SWIG?");
-          Py_INCREF(dadObj);
         }
-          
+
         // get mom object
         PyObject* momObj;
         if(mom == NULL)
         {
-           Py_INCREF(Py_None);
-           momObj = Py_None;
+          Py_INCREF(Py_None);
+          momObj = Py_None;
         }
         else
         {
@@ -1154,7 +1148,6 @@ namespace simuPOP
           if(momObj == NULL)
             throw SystemError("Could not pass parent to the provided function. \n"
               "Compiled with the wrong version of SWIG?");
-          Py_INCREF(momObj);
         }
 
         // parammeter list, ref count increased

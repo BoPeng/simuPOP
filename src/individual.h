@@ -386,7 +386,7 @@ namespace simuPOP
         for(TraitIndexType it = 0; it < s_genoStruRepository.size();
           ++it)
         {
-          if( s_genoStruRepository[it] == rhs )// object comparison
+          if( s_genoStruRepository[it] == rhs )   // object comparison
           {
             m_genoStruIdx = it;
             return;
@@ -902,7 +902,7 @@ namespace simuPOP
 
         m_genoPtr[index+p*totNumLoci()] = allele;
       }
-      
+
       void setAllele(Allele allele, UINT index, UINT p, UINT ch)
       {
         CHECKRANGEGENOSIZE(index);
@@ -910,7 +910,7 @@ namespace simuPOP
 
         m_genoPtr[index + p*totNumLoci() + chromBegin(ch) ] = allele;
       }
-	    
+
       /// return tag
       TagType tag() const
       {
@@ -1247,7 +1247,6 @@ namespace simuPOP
 
       /// pointer to genotype.
       Allele* m_genoPtr;
-
 
       /// shallow copied flag
       static bool s_flagShallowCopied;

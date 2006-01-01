@@ -225,7 +225,7 @@ namespace simuPOP
       aa 7  8  9
       The length for such table is 3^(#loci).
       \param wildtype an array of alleles in the wildtype group. Anything else is disease allele.
-         default = [1]
+      default = [1]
       NOTE that wildtype at all loci are the same.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
@@ -687,7 +687,7 @@ namespace simuPOP
            Aa 4  5  6
            aa 7  8  9
       \param wildtype an array of alleles in the wildtype group. Anything else is disease allele.,
-         default = [1]
+      default = [1]
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
       MAPenetrance( vectoru loci, const vectorf& penetrance, const vectora& wildtype,
@@ -1629,6 +1629,7 @@ namespace simuPOP
                 "You may want to set name parameter to avoid conflict." << endl;
 
             // store it.
+            // I am not quite sure if this is needed
             Py_INCREF(popObj);
             pop.setVar(sampleName, popObj);
 

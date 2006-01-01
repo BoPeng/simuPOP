@@ -1056,16 +1056,15 @@ namespace simuPOP
         if( subPop == -1 )
         {
           for(size_t i = 0; i < inds.size(); ++i)
-            individual(i).setInfo(-1);              // remove
+            individual(i).setInfo(-1);            // remove
         }
         else
         {
           for(size_t i = 0; i < inds.size(); ++i)
-            individual(i, subPop).setInfo(-1);              // remove
+            individual(i, subPop).setInfo(-1);    // remove
         }
         setSubPopByIndInfo();
       }
-
 
       /// merge population
       /** merge subpopulations, subpop id will be the ID of the first in array subPops */
@@ -1196,7 +1195,7 @@ namespace simuPOP
         vectoru newNumLoci;
         vectorf newLociDist;
         vectorstr newLociNames;
-        UINT curCh = 9999;  // not 0, will be set to 0 soon.
+        UINT curCh = 9999;                        // not 0, will be set to 0 soon.
         for(vectoru::iterator loc = loci.begin();
           loc != loci.end(); ++loc)
         {

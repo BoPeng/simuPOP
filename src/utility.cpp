@@ -307,7 +307,7 @@ namespace simuPOP
     PyObject* res = PyNumber_Int(obj);
     if( res==NULL)
       throw ValueError("Can not convert object to a integer");
-  
+
     val = static_cast<int>(PyInt_AS_LONG(res));
     Py_DECREF(res);
   }
@@ -1781,7 +1781,7 @@ T Expression::valueAs##TypeName() \
       delete m_filePtr;
     }
   }
-  
+
   void StreamProvider::analyzeOutputString(const string& output)
   {
     if( output.empty() )
@@ -2318,16 +2318,16 @@ T Expression::valueAs##TypeName() \
 
     return true;
   }
-                                /* !COMPILER */
+  /* !COMPILER */
 
-// record COMPILER, PY_VERSION and __DATE__ , these info will
-// be displayed when simuPOP is loaded.
+  // record COMPILER, PY_VERSION and __DATE__ , these info will
+  // be displayed when simuPOP is loaded.
 
 #ifndef COMPILER
 #ifdef __GNUC__
 #define COMPILER "[GCC " __VERSION__ "]"
 #endif
-#endif                                            /* !COMPILER */
+#endif                                          /* !COMPILER */
 #ifndef COMPILER
 #ifdef __cplusplus
 #define COMPILER "[C++]"
@@ -2340,8 +2340,7 @@ T Expression::valueAs##TypeName() \
 #define PLATFORM ""
 #endif
 
-
-// these will be automatically replaced by snapshot.sh and release.sh
+  // these will be automatically replaced by snapshot.sh and release.sh
 #define SIMUPOP_VER "snapshot"
 #define SIMUPOP_REV "9999"
 
@@ -2353,9 +2352,9 @@ T Expression::valueAs##TypeName() \
     // svn local copy is not up to date.
     int num;
     // first try XX:XX or XX:XXM
-    if( sscanf(rev, "%*d:%d", &num) == 1) //success
+    if( sscanf(rev, "%*d:%d", &num) == 1)         //success
       return num;
-    else if( sscanf(rev, "%d", &num) == 1) // XX or XXM
+    else if( sscanf(rev, "%d", &num) == 1)        // XX or XXM
       return num;
     else
     {
@@ -2366,7 +2365,7 @@ T Expression::valueAs##TypeName() \
 
   string simuVer()
   {
-    return SIMUPOP_VER; 
+    return SIMUPOP_VER;
   }
 
   bool optimized()
@@ -2380,17 +2379,17 @@ T Expression::valueAs##TypeName() \
 
   string compileCompiler()
   {
-     return COMPILER;
+    return COMPILER;
   }
-  
+
   string compileDate()
   {
-     return __DATE__;
+    return __DATE__;
   }
 
   string compilePyVersion()
   {
-     return PY_VERSION;
+    return PY_VERSION;
   }
 
   string compilePlatForm()

@@ -135,7 +135,8 @@ namespace simuPOP
           if( popObj == NULL)
             throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
 
-          Py_INCREF(popObj);
+          // I am not quite sure this is necessary
+          // Py_INCREF(popObj);
           // set dictionary variable pop to this object
           pop.setVar("pop", popObj);
         }
