@@ -30,6 +30,8 @@ version 0.6.11 - currently available as daily snapshot
   - ** pyOperator can now be a during-mating operator. Pass a python function
     func(pop, offspring, dad, mom, param) and set stage=DuringMating will do.
   - fix another memory leak problem when an internal population is exposed
+  - improve the efficiency of dynamic type finding of population and individual
+    Decent performance boost for pyOperator, especially to the DuringMating mode.
 
 version 0.6.10 (Rev90) - Dec, 20th, 2005
   - add recCount(loc) and recCount() to recombinator to track

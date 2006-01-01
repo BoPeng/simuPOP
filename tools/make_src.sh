@@ -7,6 +7,7 @@ rm -rf dist
 # generate wrap files for other libraries
 SWIG='swig  -shadow -python -keyword -w-503,-312,-511,-362,-383,-384,-389,-315,-525 -nodefault -c++'
 echo "Generating SWIG wrap files"
+swig -python -external-runtime src/swigpyrun.h
 $SWIG   -o src/simuPOP_std_wrap.cpp src/simuPOP_std.i
 perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' src/simuPOP_std_wrap.cpp
 $SWIG   -DOPTIMIZED -o src/simuPOP_op_wrap.cpp src/simuPOP_op.i

@@ -1617,8 +1617,7 @@ namespace simuPOP
           {
             sampleName += "[" + toStr(t) + "]";
 
-            PyObject* popObj=pointer2pyObj((void*)(&sample),
-              PopSWIGType);
+            PyObject* popObj = pyPopObj(static_cast<void*>(&sample));
 
             if( popObj == NULL)
               throw SystemError("Could not expose sample pointer.");

@@ -355,47 +355,7 @@ namespace simuPOP
   %template(caseControlSample)   CaseControlSample<pop>;
   %template(affectedSibpairSample) AffectedSibpairSample<pop>;
   %template(pySample)            PySample<pop>;
-
 }
-
-////////////////////////// SWIG C++ UTILITY FUNCTIONS //////////////////////////
-
-%{
-  extern "C"
-    PyObject* pointer2pyObj(void * p, char * name)
-  {
-    swig_type_info *type = SWIG_TypeQuery(name);
-    if (type)
-    {
-      return SWIG_NewPointerObj(p, type, 0);
-    }
-    else
-    {
-      return NULL;
-    }
-  }
-
-  extern "C"
-    PyObject* getModuleDict()
-  {
-    // get simuPOP module (+1, remove _ before Module name
-    PyObject* mm = PyImport_AddModule(const_cast<char*>(SWIG_name)+1);
-    if(mm == NULL)
-      return NULL;
-    else
-      return PyModule_GetDict(mm);
-  }
-
-  extern "C"
-    PyObject* getMainDict()
-  {
-    PyObject* mm = PyImport_AddModule("__main__");
-    if(mm == NULL)
-      return NULL;
-    else
-      return PyModule_GetDict(mm);
-  }
-%}
 
 ////////////////////////// SIMUPOP C++ UTILITY FUNCTIONS //////////////////////////
 

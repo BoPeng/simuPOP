@@ -45,6 +45,8 @@ using std::ofstream;
 
 // for PySys_WriteStdout and python expressions
 #include "Python.h"
+#include "swigpyrun.h"
+
 // compile and eval enables compiling string to byte code
 #include "compile.h"
 #include "eval.h"
@@ -65,9 +67,8 @@ extern "C" int    carray_itemsize(PyObject*a);
 extern "C" char   carray_type(PyObject* a);
 extern "C" char * carray_data(PyObject*a);
 extern "C" void   initcarray(void);
-extern "C" PyObject* getModuleDict();
-extern "C" PyObject* getMainDict();
 extern "C" PyTypeObject Arraytype;
+
 
 // for streambuf stuff
 #include <streambuf>
@@ -1279,6 +1280,7 @@ namespace simuPOP
   /// will be set by // initialize() function
   /// DO NOT OWN the dictionaries
   SharedVariables g_main_vars, g_module_vars;
+  swig_type_info* g_swigPopType, *g_swigIndType;
 
   SharedVariables& mainVars()
   {
@@ -1288,6 +1290,16 @@ namespace simuPOP
   SharedVariables& moduleVars()
   {
     return g_module_vars;
+  }
+
+  PyObject* pyPopObj(void*p)
+  {
+    return SWIG_NewPointerObj(p, g_swigPopType, 0);
+  }
+
+  PyObject* pyIndObj(void*p)
+  {
+    return SWIG_NewPointerObj(p, g_swigIndType, 0);
   }
 
   // ////////////////////////////////////////////////////////////
@@ -2307,8 +2319,18 @@ T Expression::valueAs##TypeName() \
 #endif
 
     // set global dictionary/variable
-    g_module_vars = SharedVariables(getModuleDict(), false);
-    g_main_vars = SharedVariables(getMainDict(), false);
+    PyObject* mm = PyImport_AddModule(SIMUPOP_MODULE);
+    g_module_vars = SharedVariables(PyModule_GetDict(mm), false);
+
+    // main dictionary
+    mm = PyImport_AddModule("__main__");
+    g_main_vars = SharedVariables(PyModule_GetDict(mm), false);
+
+    // get population and individual type pointer
+    g_swigPopType = SWIG_TypeQuery(PopSWIGType);
+    g_swigIndType = SWIG_TypeQuery(IndSWIGType);
+    if( g_swigPopType == NULL || g_swigIndType == NULL)
+      throw SystemError("Can not get population and individual type pointer, your SWIG version may be run.");
 
     /// load carray function and type
     initcarray();
@@ -2396,4 +2418,5 @@ T Expression::valueAs##TypeName() \
   {
     return PLATFORM;
   }
+
 }

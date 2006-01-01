@@ -1215,7 +1215,7 @@ namespace simuPOP
 
                 // first: call the function, determine the
                 // size of next generation.
-                PyObject* popObj=pointer2pyObj((void*)(&pop), PopSWIGType);
+                PyObject* popObj=pyPopObj((void*)(&pop));
         Py_INCREF(popObj);
         PyObject* arglist = Py_BuildValue("(O)", popObj );
         PyObject* result = PyEval_CallObject(m_mateFunc, arglist);

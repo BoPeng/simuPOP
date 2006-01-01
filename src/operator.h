@@ -600,7 +600,7 @@ namespace simuPOP
           PyObject* popObj;
           if(m_exposePop)
           {
-            popObj=pointer2pyObj((void*)(&pop), PopSWIGType);
+            popObj = pyPopObj(static_cast<void*>(&pop));
             if( popObj == NULL)
               throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
 
@@ -1068,7 +1068,7 @@ namespace simuPOP
       {
         // call the python function, pass the whole population in it.
         // get pop object
-        PyObject* popObj=pointer2pyObj((void*)(&pop), PopSWIGType);
+        PyObject* popObj = pyPopObj(static_cast<void*>(&pop));
         // if pop is valid?
         if(popObj == NULL)
           throw SystemError("Could not pass population to the provided function. \n"
@@ -1108,14 +1108,14 @@ namespace simuPOP
       {
         // call the python function, pass all the parameters to it.
         // get pop object
-        PyObject* popObj = pointer2pyObj((void*)(&pop), PopSWIGType);
+        PyObject* popObj = pyPopObj(static_cast<void*>(&pop));
         // if pop is valid?
         if(popObj == NULL)
           throw SystemError("Could not pass population to the provided function. \n"
             "Compiled with the wrong version of SWIG?");
 
         // get offspring object
-        PyObject* offObj = pointer2pyObj((void*)(&(*offspring)), IndSWIGType);
+        PyObject* offObj = pyIndObj(static_cast<void*>(&(*offspring)));
         if(offObj == NULL)
           throw SystemError("Could not pass offspring to the provided function. \n"
             "Compiled with the wrong version of SWIG?");
@@ -1129,7 +1129,7 @@ namespace simuPOP
         }
         else
         {
-          dadObj = pointer2pyObj((void*)(dad), IndSWIGType);
+          dadObj = pyIndObj(static_cast<void*>(dad));
           if(dadObj == NULL)
             throw SystemError("Could not pass parent to the provided function. \n"
               "Compiled with the wrong version of SWIG?");
@@ -1144,7 +1144,7 @@ namespace simuPOP
         }
         else
         {
-          momObj = pointer2pyObj((void*)(mom), IndSWIGType);
+          momObj = pyIndObj(static_cast<void*>(mom));
           if(momObj == NULL)
             throw SystemError("Could not pass parent to the provided function. \n"
               "Compiled with the wrong version of SWIG?");
