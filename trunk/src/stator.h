@@ -130,8 +130,7 @@ namespace simuPOP
 
         if(m_exposePop)
         {
-          PyObject* popObj=pointer2pyObj((void*)(&pop),
-            PopSWIGType);
+          PyObject* popObj = pyPopObj(static_cast<void*>(&pop));
           if( popObj == NULL)
             throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
 

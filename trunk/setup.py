@@ -74,6 +74,10 @@ if not ( os.path.isfile('src/simuPOP_std_wrap.cpp') and \
   os.path.isfile('src/simuPOP_la_wrap.cpp') and \
   os.path.isfile('src/simuPOP_laop_wrap.cpp') ):
   SWIG = 'swig  -shadow -python -keyword -w-503,-312,-511,-362,-383,-384,-389,-315,-525 -nodefault -c++ '
+  # generate header file 
+  print "Generating external runtime header file..."
+  os.system( 'swig  -python -external-runtime swigpyrun.h' )
+  # for standard library
   print "Generating wrap file for standard library..."
   os.system(SWIG + ' -o src/simuPOP_std_wrap.cpp src/simuPOP_std.i')
   addCarrayEntry('src/simuPOP_std_wrap.cpp')
@@ -231,7 +235,7 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = serial_macro,
+      define_macros = [ ('SIMUPOP_MODULE', '"simuPOP_std"')] + serial_macro,
       sources= GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_std_wrap.cpp',
         'src/utility_std.cpp'] 
@@ -240,7 +244,7 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = [ ('OPTIMIZED', None)] + serial_macro,
+      define_macros = [ ('SIMUPOP_MODULE', '"simuPOP_op"'), ('OPTIMIZED', None)] + serial_macro,
       sources= GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_op_wrap.cpp',
         'src/utility_op.cpp'] 
@@ -249,7 +253,7 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = [ ('LONGALLELE', None) ] + serial_macro,
+      define_macros = [ ('SIMUPOP_MODULE', '"simuPOP_la"'), ('LONGALLELE', None) ] + serial_macro,
       sources= GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_la_wrap.cpp',
         'src/utility_la.cpp'] 
@@ -258,11 +262,11 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = [ ('LONGALLELE', None), ('OPTIMIZED', None) ] + serial_macro,
+      define_macros = [ ('SIMUPOP_MODULE', '"simuPOP_laop"'), ('LONGALLELE', None), ('OPTIMIZED', None) ] + serial_macro,
       sources= GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_laop_wrap.cpp',
         'src/utility_laop.cpp'] 
     )
   ],
   data_files = DATA_FILES
- )
+)

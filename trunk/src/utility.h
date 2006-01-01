@@ -608,6 +608,12 @@ namespace simuPOP
   /// get module dictionary (it is different than mainDict!
   SharedVariables& moduleVars();
 
+  /// CPPONLY
+  PyObject* pyPopObj(void* p);
+
+  /// CPPONLY
+  PyObject* pyIndObj(void* p);
+
   // ////////////////////////////////////////////////////////////
   // Expression evaluation
   // ////////////////////////////////////////////////////////////
@@ -1378,11 +1384,7 @@ namespace simuPOP
   /// CPPONLY
   /// set standard output to (default standard Python output)
   void setLogOutput(const string filename="");
+
+
 }
-
-
-/// CPPONLY
-/// combine a pointer with its type obj and return a new PyObject*
-/// this function will be appended to simuPOP_wrap.cpp
-extern "C" PyObject* pointer2pyObj(void* p, char* typeString);
 #endif
