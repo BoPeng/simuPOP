@@ -409,10 +409,13 @@ def PlotSpectra(pop, param):
   if not plot:
     return True
   # record global ne history
-  global NeHist, NeMax
+  global NeHist, NeMax, FHist, FMax
   NeHist[0].append(pop.gen())
+  FHist[0].append(pop.gen())
   for d in range(numDSL):
     NeHist[d+1].append( effNumAllele[d] )
+    FHist[d+1].append( overallFreq[d] )
+  FMax = max( FMax, max( overallFreq) )
   NeMax = max( NeMax, max( effNumAllele))
   # now, variable like perc holds results for the whole populations.
   # plot something:
@@ -422,28 +425,29 @@ def PlotSpectra(pop, param):
   #
   # set no conversion mode to save execution time
   set_default_mode(NO_CONVERSION)
-  #define a function, copied from R homepage figure script
-  r('''ltitle= function(x,backcolor="#e8c9c1",forecolor="darkred",cex=2,ypos=0.4){
-    plot(x=c(-1,1),y=c(0,1),xlim=c(0,1),ylim=c(0,1),type="n",axes=FALSE)
-    polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col=backcolor,border=NA)
-    text(x=0,y=ypos,pos=4,cex=cex,labels=x,col=forecolor)}''')
   # a two column layout
   r.layout( r.matrix(
-     [1]+range(2,numDSL+5) + [2*numDSL+8] + 
-     [1]+range(numDSL+5, 2*numDSL+8) + [2*numDSL+8],
+      [1, 1,    # head
+       2, 3,    # label: 
+       4, 5,    # history of ne
+       6, 7,    # history of f
+       8, 9] +  # label:
+       range(10,10+numDSL*2)         # spectra at each DSL
+       + [10+numDSL*2, 10+numDSL*2], # final legend
+    byrow=True,
     ncol=2),
     width=[1/6.,5/6.],
-    height=['1 cm', '1 cm', str(1./(numDSL+1)), '1 cm'] + [str(1./(numDSL+1))]*numDSL+['2 cm'])
+    height=['1 cm', '1 cm', str(1./(numDSL+2)), str(1./(numDSL+2)), '1 cm'] + [str(1./(numDSL+2))]*numDSL+['2 cm'])
   # par...
   r.par(mar=[0.1]*4)
   r.par(oma=range(1,5))
-  # windows 3
+  # windows 1
   r.ltitle('Generation %d, PopSize %d' % (pop.gen(), pop.popSize()),
     backcolor='white', forecolor='darkblue', cex=2.5)
-  # windows 1
+  # windows 2
   r.ltitle(''),
-
-  # 2 - all DSL of disease
+  # windows 3
+  r.ltitle('History of effective number of alleles'),
   # adjust font size for statistics
   if numDSL < 3:
     cx = 2
@@ -451,34 +455,41 @@ def PlotSpectra(pop, param):
     cx = 1.3
   else:
     cx = 1
-  maxPerc = 0
-  # windows 2
+  # windows 4
   r.ltitle('Effective\nnumber\n of \nalleles', backcolor='white', forecolor='blue', cex=cx)
-  # window 4
-  r.ltitle('DSL')
+  # windows 5: history
+  r.plot(NeHist[0], NeHist[1], ylim=[0, NeMax*5./4.], col=1,
+    axes = False, type='n', xlab='', ylab='')
   for d in range(0, numDSL):
+    r.lines(NeHist[0], NeHist[d+1], type='l', col=d+1)
+  r.axis(1)
+  r.axis(2, r.pretty([0, NeMax], n=2))
+  r.box()
+  # windows 6
+  r.ltitle('Total\nDisease\nAllele\nFreq.', backcolor='white', forecolor='blue', cex=cx)
+  # windows 7
+  r.plot(FHist[0], FHist[1], ylim=[0, FMax*5./4.], col=1,
+    axes = False, type='n', xlab='', ylab='')
+  for d in range(0, numDSL):
+    r.lines(FHist[0], FHist[d+1], type='l', col=d+1)
+  r.axis(2, r.pretty([0, FMax], n=2))
+  r.box()
+  # window 8
+  r.ltitle('DSL')
+  # windows 9
+  maxPerc = 0
+  for d in range(1, numDSL):
+    if len(perc[d]) > 0 and perc[d][0] > maxPerc:
+      maxPerc = perc[d][0]
+  r.ltitle('Allelic Spectrum (Max Perc=%.1f%%)' % (maxPerc*100))
+  # windows 10 ~ 10 + 2*numDSL 
+  for d in range(0, numDSL):
+    # left labels
     r.ltitle('%.2f, %d\n%.3f%%\n%.1f%%(1)\n%.1f%%(5)\n%.1f%%' \
     % (effNumAllele[d], numAllele[d], overallFreq[d]*100,  \
        percMostCommon[d], perc5MostCommon[d], percAncestralAllele[d]*100),
     backcolor='white', forecolor='blue', cex=cx)  
-  # the second column
-  # windows 1
-  r.ltitle('History of effective number of alleles'),
-  r.plot(NeHist[0], NeHist[1], ylim=[0, NeMax*5./4.], col=1,
-    axes = False, type='n', xlab='', ylab='')
-  # r.axis(1, pos=1)
-  r.axis(2, r.pretty([0, NeMax], n=2))
-  r.box()
-  for d in range(0, numDSL):
-    r.lines(NeHist[0], NeHist[d+1], type='l', col=d+1)
-  #
-  for d in range(1, numDSL):
-    if len(perc[d]) > 0 and perc[d][0] > maxPerc:
-      maxPerc = perc[d][0]
-  # 3 -..
-  r.ltitle('Allelic Spectrum (Max Perc=%.1f%%)' % (maxPerc*100))
-  # 4 - all DSL of disease
-  for d in range(0, numDSL):
+    # 4 - all DSL of disease
     if len(perc[d]) == 0:
       r.plot(0, type='n', axes=False)
     else:
@@ -491,7 +502,7 @@ def PlotSpectra(pop, param):
       r.axis(2, r.pretty([0, maxPerc], n=2), 
         r.paste(r.pretty([0, 100*maxPerc], n=2)))
       r.box()
-  #
+  # the last legend
   r.ltitle('''Effective number of disease alleles, number of alleles
 total disease allele frequency
 Percent of 1 (5) most allele among all disease alleles''',
@@ -581,7 +592,7 @@ def simuCDCV( numDSL, initSpec, selModel,
   # use global
   global allelesBeforeExpansion
   allelesBeforeExpansion = []
-  global NeHist, NeMax
+  global NeHist, NeMax, FHist, FMax
   # determine plot label
   plotLabel = []
   for i in range(numDSL):
@@ -591,9 +602,12 @@ def simuCDCV( numDSL, initSpec, selModel,
       plotLabel.append('mu=%g, s=%g' % (mutaRate[i], selCoef[i]))
   # history of Ne, the first one is gen
   NeHist = []
+  FHist = []
   for i in range(numDSL+1):
     NeHist.append( [] )
+    FHist.append( [] )
   NeMax = 0
+  FMax = 0
   # start evolution
   simu.evolve(              # start evolution
     preOps=
@@ -707,6 +721,12 @@ if __name__ == '__main__':
   else:
     raise exceptions.ValueError("Mutation rate, if more than one are given, should have length numDSL")
   #
+  #define a function, copied from R homepage figure script
+  # this will be used to draw labels of the R-based figures
+  r('''ltitle= function(x,backcolor="#e8c9c1",forecolor="darkred",cex=2,ypos=0.4){
+    plot(x=c(-1,1),y=c(0,1),xlim=c(0,1),ylim=c(0,1),type="n",axes=FALSE)
+    polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col=backcolor,border=NA)
+    text(x=0,y=ypos,pos=4,cex=cex,labels=x,col=forecolor)}''')
   # run simulation
   simuCDCV( numDSL, initSpec,
     selModel, selModelAllDSL, selCoef, 
