@@ -3,10 +3,6 @@ ChangeLog of simuPOP
 NOTE: Daily snapshot reflects current SVN version. It includes new features and 
   bug fixes, but may be less stable than versioned releases.
 
-NOTE: Starting from 0.6.9, features are marked as follows:
-  *  change existing feature
-  ** important feature
-
 Known bugs     - all fixed now
 
 version 0.6.11 - currently available as daily snapshot
@@ -24,14 +20,19 @@ version 0.6.11 - currently available as daily snapshot
   - add full member function of population object list to reference manual
   - add genotypic structure function list to reference manual
   - add individual function list to refernce manual
-  - *  rename basicPentrance, basicSelector and basicQuanTrait to mapPenetrance etc
-  - ** add multi-locus support to mapPenetrance, maPenetrance (and selector, quantrait)
+  - rename basicPentrance, basicSelector and basicQuanTrait to mapPenetrance etc
+  - add multi-locus support to mapPenetrance, maPenetrance (and selector, quantrait)
     except for locus, you can specify loci, and a longer map or array of values.
-  - ** pyOperator can now be a during-mating operator. Pass a python function
+  - pyOperator can now be a during-mating operator. Pass a python function
     func(pop, offspring, dad, mom, param) and set stage=DuringMating will do.
   - fix another memory leak problem when an internal population is exposed
   - improve the efficiency of dynamic type finding of population and individual
     Decent performance boost for pyOperator, especially to the DuringMating mode.
+  - use the new swig -external-runtime feature to generate swigpyrun.h, this allows
+    me to relocate some utility functions from the interface file to utility.h
+  - let simuCDCV.py also trace and display the change of total allele frequency.
+  - add passOffspringOnly to pyOperator to speed up duringMating pyOperator.
+  - add simuPOP coding convension to simuPOP reference manual
 
 version 0.6.10 (Rev90) - Dec, 20th, 2005
   - add recCount(loc) and recCount() to recombinator to track
