@@ -9075,7 +9075,7 @@ where
 para 
 \family default 
 can be ignored.
- To use this operator, 
+ To use this operator, you can do
 \layout LyX-Code
 
 pyOperator(stage=DuringMating, func=Func, param=someparam, formOffGenotype=True)
@@ -9118,6 +9118,14 @@ passOffspringOnly:
  In case that your function will only deal with offspring, you can set this
  parameter to true and use a shorter form of the function.
  
+\layout Standard
+
+Note that if your duringMating pyOpeartor returns False, the individual
+ will be discarded.
+ Therefore, you can write a filter in this way.
+ However, since the python function will be called for each mating event,
+ the cost of using such an operator is high, especially when population
+ size is big.
 \layout Standard
 
 An example of duringMating pyOperator can be found in 
