@@ -1014,16 +1014,21 @@ namespace simuPOP
         Multiple parameter can be passed as a tuple.
       \param formOffGenotype if stage=DuringMating, set this parameter to false
         will disallow random mating to set genotype.
+      \param passOffspringOnly Default to false. If true, pyOperator will expect
+        a function of form func(off, param), instead of func(pop, off, dad, mon, param)
+        when passOffspringOnly is false. Since many duringMating pyOperator only need 
+        access to offspring, this will imporve efficiency.
 
        Note: (FIXME) output to output or outputExpr is not yet supported. Ideally,
          this func will take two parameters with pop and then a filehandle to output,
       however, differentiating output, append etc is too troublesome right now.
       */
       PyOperator(PyObject* func, PyObject* param=NULL,
-        int stage=PostMating, bool formOffGenotype=false, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
+        int stage=PostMating, bool formOffGenotype=false, bool passOffspringOnly=false,
+        int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
       Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp, sep),
-        m_func(func), m_param(param)
+        m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
       {
         if( !PyCallable_Check(func))
           throw ValueError("Passed variable is not a callable python function.");
@@ -1106,66 +1111,70 @@ namespace simuPOP
       virtual bool applyDuringMating(Pop& pop, typename Pop::IndIterator offspring,
         typename Pop::IndType* dad=NULL, typename Pop::IndType* mom=NULL)
       {
-        // call the python function, pass all the parameters to it.
-        // get pop object
-        PyObject* popObj = pyPopObj(static_cast<void*>(&pop));
-        // if pop is valid?
-        if(popObj == NULL)
-          throw SystemError("Could not pass population to the provided function. \n"
-            "Compiled with the wrong version of SWIG?");
-
         // get offspring object
         PyObject* offObj = pyIndObj(static_cast<void*>(&(*offspring)));
-        if(offObj == NULL)
-          throw SystemError("Could not pass offspring to the provided function. \n"
-            "Compiled with the wrong version of SWIG?");
+        DBG_FAILIF(offObj == NULL, SystemError, 
+            "Could not pass offspring to the provided function. \n"
+            "Compiled with the wrong version of SWIG?");  
 
-        // get dad object
-        PyObject* dadObj;
-        if(dad == NULL)
+        PyObject* arglist, *result;
+        if( m_passOffspringOnly )
         {
-          Py_INCREF(Py_None);
-          dadObj = Py_None;
+          // parammeter list, ref count increased
+          if( m_param == NULL)
+            arglist = Py_BuildValue("(O)", offObj);
+          else
+            arglist = Py_BuildValue("(OO)", offObj, m_param);
+
+          // we do not need to catch exceptions here,
+          // our wrapper will do that
+          result = PyEval_CallObject(m_func, arglist);
+          Py_DECREF(offObj);
         }
         else
-        {
-          dadObj = pyIndObj(static_cast<void*>(dad));
-          if(dadObj == NULL)
-            throw SystemError("Could not pass parent to the provided function. \n"
+        { 
+          // call the python function, pass all the parameters to it.
+          // get pop object
+          PyObject* popObj = pyPopObj(static_cast<void*>(&pop));
+  
+          // get dad object
+          PyObject* dadObj, *momObj;
+          if(dad == NULL)
+          {
+            Py_INCREF(Py_None);
+            dadObj = Py_None;
+          }
+          else
+            dadObj = pyIndObj(static_cast<void*>(dad));
+  
+          if(mom == NULL)
+          {
+            Py_INCREF(Py_None);
+            momObj = Py_None;
+          }
+          else
+            momObj = pyIndObj(static_cast<void*>(mom));
+  
+          // if pop is valid?
+          DBG_FAILIF(popObj == NULL || dadObj == NULL || momObj == NULL, SystemError,
+              "Could not pass population or parental individuals to the provided function. \n"
               "Compiled with the wrong version of SWIG?");
-        }
 
-        // get mom object
-        PyObject* momObj;
-        if(mom == NULL)
-        {
-          Py_INCREF(Py_None);
-          momObj = Py_None;
-        }
-        else
-        {
-          momObj = pyIndObj(static_cast<void*>(mom));
-          if(momObj == NULL)
-            throw SystemError("Could not pass parent to the provided function. \n"
-              "Compiled with the wrong version of SWIG?");
-        }
+          // parammeter list, ref count increased
+          if( m_param == NULL)
+            arglist = Py_BuildValue("(OOOO)", popObj, offObj, dadObj, momObj);
+          else
+            arglist = Py_BuildValue("(OOOOO)", popObj, offObj, dadObj, momObj, m_param);
 
-        // parammeter list, ref count increased
-        PyObject* arglist;
-        if( m_param == NULL)
-          arglist = Py_BuildValue("(OOOO)", popObj, offObj, dadObj, momObj);
-        else
-          arglist = Py_BuildValue("(OOOOO)", popObj, offObj, dadObj, momObj, m_param);
-
-        // we do not need to catch exceptions here,
-        // our wrapper will do that
-        PyObject* result = PyEval_CallObject(m_func, arglist);
-        // if things goes well....
-        // need to make sure this is correct.
-        Py_DECREF(popObj);
-        Py_DECREF(offObj);
-        Py_DECREF(dadObj);
-        Py_DECREF(momObj);
+          // we do not need to catch exceptions here,
+          // our wrapper will do that
+          result = PyEval_CallObject(m_func, arglist);
+  
+          Py_DECREF(offObj);
+          Py_DECREF(popObj);
+          Py_DECREF(dadObj);
+          Py_DECREF(momObj);
+        }
         // release arglist
         Py_DECREF(arglist);
 
@@ -1194,6 +1203,9 @@ namespace simuPOP
 
       /// parammeters
       PyObject * m_param;
+
+      // whether or not pass pop, dad, mon in a duringMating py function.
+      bool m_passOffspringOnly;
   };
 
 }

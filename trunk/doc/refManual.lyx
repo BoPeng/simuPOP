@@ -37,8 +37,8 @@ Last modified \\
 \use_natbib 1
 \use_numerical_citations 0
 \paperorientation portrait
-\secnumdepth 2
-\tocdepth 2
+\secnumdepth 3
+\tocdepth 3
 \paragraph_separation indent
 \defskip medskip
 \quotes_language english
@@ -4264,7 +4264,7 @@ initByFreq
 \family default 
  object each time it calls the function.
 \end_deeper 
-\layout Subsubsection
+\layout Subsubsection*
 
 Operator 
 \family typewriter 
@@ -6250,7 +6250,7 @@ after
  burnin (start at burn+1) and split happens at 
 \family typewriter 
 split.
-\layout Subsubsection
+\layout Subsubsection*
 
 
 \family typewriter 
@@ -6276,7 +6276,7 @@ bottleneckSize
 \family default 
 at that generation.
  
-\layout Subsubsection
+\layout Subsubsection*
 
 
 \family typewriter 
@@ -6299,7 +6299,7 @@ bottleneckSize
 \family default 
 at that generation.
  
-\layout Subsubsection
+\layout Subsubsection*
 
 
 \family typewriter 
@@ -6325,7 +6325,7 @@ bottleneckSize
 \family default 
 at that generation.
  
-\layout Subsubsection
+\layout Subsubsection*
 
 
 \family typewriter 
@@ -7976,7 +7976,7 @@ simuPOP provides many built-in or pure-Python operators that can calcualte
  various statistics.
  If you can not find the one you need, you can calculate them by yourself.
  Firstly, you need to 
-\layout Subsubsection
+\layout Subsubsection*
 
 Check if your statistics can be calcualted based on exisiting statistics
 \layout Standard
@@ -7985,7 +7985,7 @@ Most statistics can be calcualted from basic quantities like allele frequencies.
  This chapter will only deal with this case.
  Please refer to chapter 'extending simuPOP' for methods to access arbitrary
  population information.
-\layout Subsubsection
+\layout Subsubsection*
 
 calculate them with existing operators
 \layout Standard
@@ -8003,7 +8003,7 @@ preview false
 
 \layout LyX-Code
 
-\layout Subsubsection
+\layout Subsubsection*
 
 know how to acess these variables
 \layout Standard
@@ -8015,7 +8015,7 @@ s = simu.dvars(1)
 \layout LyX-Code
 
 a.haploNum['1-2|1-2']
-\layout Subsubsection
+\layout Subsubsection*
 
 Write a function to calculate your statistics
 \layout Standard
@@ -8078,7 +8078,7 @@ If you would like to calculate this statistics as an operator (set
 heter_obs 
 \family default 
 automatically), you need to 
-\layout Subsubsection
+\layout Subsubsection*
 
 Wrap this function as an operator (optional)
 \layout Standard
@@ -8161,7 +8161,7 @@ Finally, use
 eval 
 \family default 
 to return the operator.
-\layout Subsubsection
+\layout Subsubsection*
 
 Use the opeator (optional)
 \layout Standard
@@ -8179,6 +8179,593 @@ preview false
 
 \end_inset 
 
+
+\layout Section
+
+Writing simuPOP scripts
+\layout Subsection
+
+Conventions of simuPOP scripts
+\layout Standard
+
+A simuPOP script is usually composed of the following parts:
+\layout Enumerate
+
+First line:
+\begin_deeper 
+\layout LyX-Code
+
+#!/usr/bin/env python
+\end_deeper 
+\layout Enumerate
+
+Introduction to the whole script:
+\begin_deeper 
+\layout LyX-Code
+
+'''
+\layout LyX-Code
+
+This script will ....
+\layout LyX-Code
+
+'''
+\layout Standard
+
+These comments can be accessed as module 
+\family typewriter 
+__doc__ 
+\family default 
+and will be displayed as help message.
+\end_deeper 
+\layout Enumerate
+
+Options: (see the next section)
+\begin_deeper 
+\layout LyX-Code
+
+options = [ 
+\layout LyX-Code
+
+...
+ a dictionary of all user input parameters ...
+\layout LyX-Code
+
+]
+\layout Standard
+
+These parameters will be handled by simuPOP automatically.
+ Users will be able to set them through command line, configuration file,
+ Tkinter- or wxPython-based GUI.
+\end_deeper 
+\layout Enumerate
+
+Auxillary functions
+\layout Enumerate
+
+Evolution function
+\begin_deeper 
+\layout LyX-Code
+
+def simulation(....)
+\end_deeper 
+\layout Enumerate
+
+Executable part:
+\begin_deeper 
+\layout LyX-Code
+
+if __name__ == '__main__':  
+\layout LyX-Code
+
+  allParam = simuOpt.getParam(options,
+\layout LyX-Code
+
+    ''' A short description ''', __doc__)
+\layout LyX-Code
+
+  # if user press cancel,
+\layout LyX-Code
+
+  if len(allParam) == 0:
+\layout LyX-Code
+
+    sys.exit(1)
+\layout LyX-Code
+
+  # -h or --help
+\layout LyX-Code
+
+  if allParam[0]:  
+\layout LyX-Code
+
+    print simuOpt.usage(options, __doc__)
+\layout LyX-Code
+
+    sys.exit(0)
+\layout LyX-Code
+
+  # sace configuration, something like
+\layout LyX-Code
+
+  if allParam[-2] != None:
+\layout LyX-Code
+
+     simuOpt.saveConfig(options, allParam[-2]+'.cfg', allParam)  
+\layout LyX-Code
+
+  # get the parameters, something like
+\layout LyX-Code
+
+  N = allParam[1]
+\layout LyX-Code
+
+  # run the simulation
+\layout LyX-Code
+
+  simulation(N) 
+\layout LyX-Code
+
+  
+\end_deeper 
+\layout Standard
+
+You will notice that 
+\family typewriter 
+simuOpt 
+\family default 
+does all the housekeeping things for you, including parameter reading, conversio
+n, validation, print usage, save configuration file.
+ Since most of the parts are pretty standard, you can actually copy any
+ of the scripts under the 
+\family typewriter 
+scripts 
+\family default 
+directory as a template for your new script.
+\layout Standard
+
+Note that these scripts, if proper written, can also be imported.
+ Other scripts (or interactive session) can import a script and call its
+ simulation function directly.
+\layout LyX-Code
+
+\layout Subsection
+
+Parameter handling and user input 
+\layout Standard
+
+Although simuPOP scripts, simply Python scripts, can be in any valid Python
+ style, it is highly recommended that all simuPOP scripts follow the same
+ writing style and provide a uniform interface to users.
+ From a user's point of view, a simuPOP script 
+\family typewriter 
+cmd.py 
+\family default 
+should
+\layout Enumerate
+
+Start a Tk/wxPython dialog to accept user input when 
+\family typewriter 
+--noDialog 
+\family default 
+is not specified.
+\layout Enumerate
+
+List all commandline/config file options through 
+\family typewriter 
+-h
+\family default 
+ or 
+\family typewriter 
+--help 
+\family default 
+option.
+ 
+\layout Enumerate
+
+Accept 
+\family typewriter 
+-c 
+\family default 
+or 
+\family typewriter 
+--config 
+\family default 
+parameter to read a configuration file and set parameters.
+\layout Enumerate
+
+Be able to use command line arguments to set parameters as well.
+\layout Enumerate
+
+Accept 
+\family typewriter 
+--saveconfig file 
+\family default 
+to save current configuration (input my commandline argument) into 
+\family typewriter 
+file
+\family default 
+.
+\layout Enumerate
+
+Be able to make use of optimized libraries through the use of command line
+ parameter ( 
+\family typewriter 
+--optimized
+\family default 
+), config file entry (
+\family typewriter 
+optimized=True
+\family default 
+) or environment variable (
+\family typewriter 
+SIMUOPTIMIZED
+\family default 
+).
+ 
+\layout Enumerate
+
+Be able to make use of longallele libraries through the use of command line
+ parameter (
+\family typewriter 
+--longallele
+\family default 
+), config file entry (
+\family typewriter 
+longallele=True
+\family default 
+) or environment variable (
+\family typewriter 
+SIMULONGALLELE
+\family default 
+).
+ 
+\layout Standard
+
+To alleviate throuble of doing all these, 
+\family typewriter 
+simuPOP
+\family default 
+ has provided a set of functions.
+ Here is how parameters should be handled.
+ The first step is decribe each parameter in details.
+ This includes (not all is necessary) short and long argument name, entry
+ on a configuration file, prompt when asking for user input, default value,
+ description that will be shown in usage, allowed types of parameter, function
+ to validate the input value.
+ All these should be put in a list of dictionaries like follows:
+\layout LyX-Code
+
+options = [
+\layout LyX-Code
+
+  { 'arg':'h', 'longarg':'help', 'default':False,
+\layout LyX-Code
+
+    'allowedTypes':[IntType],
+\layout LyX-Code
+
+    'description':'print this message'},
+\layout LyX-Code
+
+  { 'longarg':'saveconfig=', 'default':'', 'allowedTypes':[StringType],
+\layout LyX-Code
+
+    'description':'Save current configuration in a file.'},
+\layout LyX-Code
+
+  { 'arg':'m', 'longarg':'mu', 'configName'='mutationRate', 
+\layout LyX-Code
+
+    'default':0.005,
+\layout LyX-Code
+
+    'prompt':'Please enter mutation rate (default 0.005): ',
+\layout LyX-Code
+
+    'validate': simuOpt.valueBetween(0,1),
+\layout LyX-Code
+
+    'description':'mutation rate (a number or an array of numbers) at each
+ loci'
+\layout LyX-Code
+
+  } ]
+\layout Standard
+
+The entries:
+\layout Itemize
+
+
+\family typewriter 
+arg
+\family default 
+ and 
+\family typewriter 
+longarg
+\family default 
+ are command line argument format.
+ For example,
+\begin_deeper 
+\layout Itemize
+
+
+\family typewriter 
+arg:'h' 
+\family default 
+checks the presence of argument 
+\family typewriter 
+-h
+\family default 
+, return 
+\family typewriter 
+True
+\family default 
+ if succeeds
+\layout Itemize
+
+
+\family typewriter 
+arg:'f:'
+\family default 
+ checks the presence of argument pair
+\family typewriter 
+ -f something
+\family default 
+, return 
+\family typewriter 
+something
+\family default 
+ if succeeds
+\layout Itemize
+
+
+\family typewriter 
+longarg:'help' 
+\family default 
+cheks the prescence of argument 
+\family typewriter 
+--longarg
+\family default 
+, return 
+\family typewriter 
+True 
+\family default 
+if succeeds
+\layout Itemize
+
+
+\family typewriter 
+longarg:'mu=' 
+\family default 
+checks the presence of argument pair
+\family typewriter 
+ --mu number
+\family default 
+, return
+\family typewriter 
+ number
+\family default 
+ if succeeds.
+\end_deeper 
+\layout Itemize
+
+
+\family typewriter 
+configName 
+\family default 
+is the entry of the parameter in config file.
+ This will also be used as the label of input field in a parameter dialog.
+ Blanks are allowed.
+ Since you will seldom write a config file manually, using a longer name
+ will do no harm.
+\layout Itemize
+
+
+\family typewriter 
+prompt
+\family default 
+ is prompted when user input is required.
+ This is when
+\begin_deeper 
+\layout Itemize
+
+
+\family typewriter 
+--noDialog
+\family default 
+ is used to avoid parameter dialog
+\layout Itemize
+
+No command line argument is found, 
+\layout Itemize
+
+no config file is specified, 
+\layout Itemize
+
+
+\family typewriter 
+prompt
+\family default 
+ is not empty
+\end_deeper 
+\layout Itemize
+
+
+\family typewriter 
+default
+\family default 
+ is used when prompt is empty, or when user press enter directly.
+\layout Itemize
+
+
+\family typewriter 
+description 
+\family default 
+is the description of this parameter, will be put into usage information.
+ ( 
+\family typewriter 
+-h 
+\family default 
+or help button in parameter dialog).
+\layout Itemize
+
+
+\family typewriter 
+allowedTypes
+\family default 
+ is the accepted types.
+ If 
+\family typewriter 
+allowedTypes 
+\family default 
+is 
+\family typewriter 
+types.ListType
+\family default 
+ or 
+\family typewriter 
+types.TupleType
+\family default 
+ and user input is a scalar, the input will be converted to a list automatically.
+\layout Itemize
+
+
+\family typewriter 
+validate
+\family default 
+ is a function to validate the parameter.
+ You can define your own functions or use the following from 
+\family typewriter 
+simuOpt
+\begin_deeper 
+\layout Itemize
+
+
+\family typewriter 
+valueGT(a), valueLT(a), valueGE(a), valueLE(a)
+\family default 
+: check greater than, less than, greater equal, less equal to a value 
+\family typewriter 
+a.
+\layout Itemize
+
+
+\family typewriter 
+valueBetween(a,b), valueOneOf(list):
+\family default 
+ check if the value is between 
+\family typewriter 
+a 
+\family default 
+and 
+\family typewriter 
+b 
+\family default 
+or is one of 
+\family typewriter 
+list
+\layout Itemize
+
+
+\family typewriter 
+valueValidFile(), valueValidDir():
+\family default 
+ check if the parameter is a valid file/directory name.
+\layout Itemize
+
+
+\family typewriter 
+valueListOf():
+\family default 
+ check if parameter is a list of given type, in a list of types, or pass
+ a validator.
+ For example, you can use 
+\family typewriter 
+valueListOf(types.IntType)
+\family default 
+, 
+\family typewriter 
+valueListOf([types.IntType, types.LongType])
+\family default 
+ or 
+\family typewriter 
+valueListOf( valueValidFile()).
+ 
+\family default 
+As you can see, validators can be nested.
+\end_deeper 
+\layout Itemize
+
+
+\family typewriter 
+chooseOneOf: 
+\family default 
+If specified, 
+\family typewriter 
+simuOpt
+\family default 
+ will choose one from a list of values using a listbox (tk) or a combo box
+ (wxPython) .
+\layout Itemize
+
+
+\family typewriter 
+chooseFrom:
+\family default 
+ If specified, 
+\family typewriter 
+simuOpt 
+\family default 
+will choose one or more items from a list of values using a listbox (tk)
+ or a combo box (wxPython) .
+ 
+\layout Itemize
+
+
+\family typewriter 
+jump:
+\family default 
+ jump is used to skip some parameter when doing interative user input.
+ For example, 
+\family typewriter 
+getParam
+\family default 
+ will skip the rest of the parameters if
+\family typewriter 
+ -h
+\family default 
+ is specified since parameter 
+\family typewriter 
+-h
+\family default 
+ has item 
+\family typewriter 
+'jump':-1
+\family default 
+ which means jump to the end.
+ Another use of this value is when you have a hierarchical parameter sets.
+ For example, if mutation is on, specify mutation rate, otherwise proceed....
+ 
+\layout Itemize
+
+
+\family typewriter 
+jumpIfFalse: 
+\family default 
+The same as 
+\family typewriter 
+jump
+\family default 
+ but jump if current parameter is false.
+\layout Standard
+
+With all these information at hand, the rest is routine, if you follow the
+ coding conventions.
+\layout LyX-Code
+
+  
+\layout LyX-Code
 
 \layout Chapter
 
@@ -8332,6 +8919,11 @@ If you return
 False
 \family default 
 , this operator will work like a terminator.
+ 
+\family typewriter 
+para 
+\family default 
+be ommitted.
 \end_deeper 
 \layout Itemize
 
@@ -8343,7 +8935,7 @@ pyOperator
 \begin_deeper 
 \layout LyX-Code
 
-pyOperator(myOperator,para)
+pyOperator(mfunc=yOperator, param=para)
 \layout Standard
 
 all parameters of an operator are supported except for 
@@ -8422,6 +9014,25 @@ pyOperator
  with those of other (normal) operators.
 \layout Itemize
 
+If parameter 
+\family typewriter 
+param
+\family default 
+ is ignored, 
+\family typewriter 
+myOperator
+\family default 
+ must be without 
+\family typewriter 
+para
+\family default 
+ as well.
+ Note that you can pass arbitrary number of parameters by putting them into
+ a tuple and pass to 
+\family typewriter 
+myOpeartor.
+\layout Itemize
+
 Since you can attach any information to a population, you can in practise
  use 
 \family typewriter 
@@ -8450,23 +9061,70 @@ pyOperator
  
 \layout LyX-Code
 
-def func(pop, off, dad, mom, param)
+def Func(pop, off, dad, mom, para)
+\layout Standard
+
+or
+\layout LyX-Code
+
+def shortFunc(off, para)
 \layout Standard
 
 where 
 \family typewriter 
-param 
+para 
 \family default 
 can be ignored.
- To this this operator, 
+ To use this operator, 
 \layout LyX-Code
 
-pyOperator(stage=DuringMating, func=func, param=someparam, formOffGenotype=False
-)
+pyOperator(stage=DuringMating, func=Func, param=someparam, formOffGenotype=True)
 \layout Standard
 
-The last parameter can be used if your operator will set genotype for the
- offspring so a mating scheme will not do this for you.
+or
+\layout LyX-Code
+
+pyOperator(stage=DuringMating, func=shortFunc, param=someparam,
+\layout LyX-Code
+
+formOffGenotype=False, passOffspringOnly=True)
+\layout Standard
+
+The two additional parameters are:
+\layout Itemize
+
+
+\family typewriter 
+formOffGenotype: (
+\family default 
+default to 
+\family typewriter 
+False) 
+\family default 
+By default, a mating scheme will set the genotype of offspring by copy one
+ of the parental chromosomes.
+ However, if 
+\family typewriter 
+formOffGenotype
+\family default 
+ is true, the mating scheme will let you do the job.
+ You will have to set offspring genotype and sex by yourself.
+\layout Itemize
+
+
+\family typewriter 
+passOffspringOnly:
+\family default 
+ In case that your function will only deal with offspring, you can set this
+ parameter to true and use a shorter form of the function.
+ 
+\layout Standard
+
+An example of duringMating pyOperator can be found in 
+\family typewriter 
+scripts/demoPyOperator.py
+\family default 
+.
 \layout Section
 
 Initialization
@@ -10165,7 +10823,7 @@ mlSelector
 mode
 \family default 
 , which takes the value
-\layout Subsubsection
+\layout Subsubsection*
 
 SEL_Multiplicative
 \begin_inset LatexCommand \index{constant!SEL_Multiplicative}
@@ -10181,7 +10839,7 @@ The fitness is calculated as
 
 .
  
-\layout Subsubsection
+\layout Subsubsection*
 
 SEL_Additive
 \begin_inset LatexCommand \index{constant!SEL_Additive}
@@ -10474,7 +11132,7 @@ mlPentrance
 mode 
 \family default 
 parameter which can take the values:
-\layout Subsubsection
+\layout Subsubsection*
 
 PEN_Multiplicative
 \begin_inset LatexCommand \index{constant!PEN_Multiplicative}
@@ -10490,7 +11148,7 @@ The penetrance is calculated as
 
 .
  
-\layout Subsubsection
+\layout Subsubsection*
 
 PEN_Additive
 \begin_inset LatexCommand \index{constant!PEN_Additive}
@@ -10523,7 +11181,7 @@ The penetrance is calculated as
 \end_inset 
 
  directly.
-\layout Subsubsection
+\layout Subsubsection*
 
 PEN_Heterogeneity
 \begin_inset LatexCommand \index{constant!PEN_Multiplicative}
@@ -10824,7 +11482,7 @@ mlQuanTrait
 mode 
 \family default 
 parameter which can take the values:
-\layout Subsubsection
+\layout Subsubsection*
 
 QT_Multiplicative
 \begin_inset LatexCommand \index{constant!QT_Multiplicative}
@@ -10840,7 +11498,7 @@ The mean of quantitative trait is calculated as
 
 .
  
-\layout Subsubsection
+\layout Subsubsection*
 
 QT_Additive
 \begin_inset LatexCommand \index{constant!QT_Additive}
@@ -11524,7 +12182,7 @@ stat
  Note that these statistics are dependent to each other.
  For example, heterotype and allele frequency of related loci will be automatica
 lly calculated if linkage diseqilibrium is requested.
-\layout Subsubsection
+\layout Subsubsection*
 
 Population size
 \layout Itemize
@@ -11577,7 +12235,7 @@ subPopSize
 an array of subpopulation size.
  Not available for subpopulations.
 \end_deeper 
-\layout Subsubsection
+\layout Subsubsection*
 
 Number of male/female
 \layout Itemize
@@ -11612,7 +12270,7 @@ numOfFemale
 
 , subPop[sp]['numOfFemale']
 \end_deeper 
-\layout Subsubsection
+\layout Subsubsection*
 
 Number/proportion of affected/unaffected individuals
 \layout Itemize
@@ -11649,7 +12307,7 @@ propOfAffected, subPop[sp]['propOfAffected']
 \series bold 
 propOfUnaffected, subPop[sp]['propOfUnAffected']
 \end_deeper 
-\layout Subsubsection
+\layout Subsubsection*
 
 Number of distinct alleles at a locus
 \layout Standard
@@ -11698,7 +12356,7 @@ numOfAlleles
 , number of distinct alles at each loci.
  (Calculated only at requested loci.)
 \end_deeper 
-\layout Subsubsection
+\layout Subsubsection*
 
 Allele frequency/count
 \layout Itemize
@@ -11763,7 +12421,7 @@ alleleFreq[a]
 \family typewriter 
 subPop[sp]['alleleFreq'][a]
 \end_deeper 
-\layout Subsubsection
+\layout Subsubsection*
 
 heterozygote frequency/count
 \layout Itemize
@@ -11863,7 +12521,7 @@ heteroFreq[loc][allele]
 \family typewriter 
 subPop[sp]['heteroFreq'][loc][allele]
 \end_deeper 
-\layout Subsubsection
+\layout Subsubsection*
 
 expected heterozygosity
 \layout Itemize
@@ -11892,7 +12550,7 @@ variable:
 \family typewriter 
 \series bold 
 expHetero[loc], subPop[sp]['expHetero'][loc]
-\layout Subsubsection
+\layout Subsubsection*
 
 homozygosity frequency/count
 \layout Itemize
@@ -11927,7 +12585,7 @@ homoFreq[loc], subPop[sp]['homoNum'][loc]
 \family typewriter 
 \series bold 
  subPop[sp]['homoFreq'][loc]
-\layout Subsubsection
+\layout Subsubsection*
 
 genotype frequency/count
 \layout Itemize
@@ -12029,7 +12687,7 @@ geno
 \family typewriter 
 x-y.
 \end_deeper 
-\layout Subsubsection
+\layout Subsubsection*
 
 haplotype frequency
 \layout Itemize
@@ -12114,7 +12772,7 @@ haplo
 .
  
 \end_deeper 
-\layout Subsubsection
+\layout Subsubsection*
 
 Linkage disequilibrium 
 \layout Itemize
@@ -12281,7 +12939,7 @@ LD
  The names are potentially very confusing but I have no better idea.
  
 \end_deeper 
-\layout Subsubsection
+\layout Subsubsection*
 
 
 \begin_inset Formula $F_{st}$
@@ -12396,7 +13054,7 @@ Fit[loc]
 \series bold 
 AvgFst, AvgFis, AvgFit
 \end_deeper 
-\layout Subsubsection
+\layout Subsubsection*
 
 Relatedness 
 \layout Standard
@@ -12714,7 +13372,7 @@ The use of
 varPlotter 
 \family default 
 is easy, if you would like to 
-\layout Subsubsection
+\layout Subsubsection*
 
 Plotting with history
 \layout Itemize
@@ -12781,7 +13439,7 @@ numRep
 \family default 
 lines in each subplot
 \end_deeper 
-\layout Subsubsection
+\layout Subsubsection*
 
 Plotting without history
 \layout Itemize
@@ -13149,540 +13807,6 @@ name[gen]
 .
  After evolution, you will get a dictionary of values indexed by generation
  number.
-\layout Section
-
-Parameter and user input
-\layout Standard
-
-Although simuPOP scripts, simply Python scripts, can be in any valid Python
- style, it is highly recommended that all simuPOP scripts follow the same
- writing style and provide a uniform interface to users.
- From a user's point of view, a simuPOP script 
-\family typewriter 
-cmd.py 
-\family default 
-should
-\layout Enumerate
-
-Start a Tk/wxPython dialog to accept user input when 
-\family typewriter 
---noDialog 
-\family default 
-is not specified.
-\layout Enumerate
-
-List all commandline/config file options through 
-\family typewriter 
--h
-\family default 
- or 
-\family typewriter 
---help 
-\family default 
-option.
- 
-\layout Enumerate
-
-Accept 
-\family typewriter 
--c 
-\family default 
-or 
-\family typewriter 
---config 
-\family default 
-parameter to read a configuration file and set parameters.
-\layout Enumerate
-
-Be able to use command line arguments to set parameters as well.
-\layout Enumerate
-
-Accept 
-\family typewriter 
---saveconfig file 
-\family default 
-to save current configuration (input my commandline argument) into 
-\family typewriter 
-file
-\family default 
-.
-\layout Enumerate
-
-Be able to make use of optimized libraries through the use of command line
- parameter ( 
-\family typewriter 
---optimized
-\family default 
-), config file entry (
-\family typewriter 
-optimized=True
-\family default 
-) or environment variable (
-\family typewriter 
-SIMUOPTIMIZED
-\family default 
-).
- 
-\layout Enumerate
-
-Be able to make use of longallele libraries through the use of command line
- parameter (
-\family typewriter 
---longallele
-\family default 
-), config file entry (
-\family typewriter 
-longallele=True
-\family default 
-) or environment variable (
-\family typewriter 
-SIMULONGALLELE
-\family default 
-).
- 
-\layout Standard
-
-To alleviate throuble of doing all these, 
-\family typewriter 
-simuPOP
-\family default 
- has provided a set of functions.
- Here is how parameters should be handled.
- The first step is decribe each parameter in details.
- This includes (not all is necessary) short and long argument name, entry
- on a configuration file, prompt when asking for user input, default value,
- description that will be shown in usage, allowed types of parameter, function
- to validate the input value.
- All these should be put in a list of dictionaries like follows:
-\layout LyX-Code
-
-options = [
-\layout LyX-Code
-
-  { 'arg':'h', 'longarg':'help', 'default':False,
-\layout LyX-Code
-
-    'allowedTypes':[IntType],
-\layout LyX-Code
-
-    'description':'print this message'},
-\layout LyX-Code
-
-  { 'longarg':'saveconfig=', 'default':'', 'allowedTypes':[StringType],
-\layout LyX-Code
-
-    'description':'Save current configuration in a file.'},
-\layout LyX-Code
-
-  { 'arg':'m', 'longarg':'mu', 'configName'='mutationRate', 
-\layout LyX-Code
-
-    'default':0.005,
-\layout LyX-Code
-
-    'prompt':'Please enter mutation rate (default 0.005): ',
-\layout LyX-Code
-
-    'validate': simuOpt.valueBetween(0,1),
-\layout LyX-Code
-
-    'description':'mutation rate (a number or an array of numbers) at each
- loci'
-\layout LyX-Code
-
-  } ]
-\layout Standard
-
-The entries:
-\layout Itemize
-
-
-\family typewriter 
-arg
-\family default 
- and 
-\family typewriter 
-longarg
-\family default 
- are command line argument format.
- For example,
-\begin_deeper 
-\layout Itemize
-
-
-\family typewriter 
-arg:'h' 
-\family default 
-checks the presence of argument 
-\family typewriter 
--h
-\family default 
-, return 
-\family typewriter 
-True
-\family default 
- if succeeds
-\layout Itemize
-
-
-\family typewriter 
-arg:'f:'
-\family default 
- checks the presence of argument pair
-\family typewriter 
- -f something
-\family default 
-, return 
-\family typewriter 
-something
-\family default 
- if succeeds
-\layout Itemize
-
-
-\family typewriter 
-longarg:'help' 
-\family default 
-cheks the prescence of argument 
-\family typewriter 
---longarg
-\family default 
-, return 
-\family typewriter 
-True 
-\family default 
-if succeeds
-\layout Itemize
-
-
-\family typewriter 
-longarg:'mu=' 
-\family default 
-checks the presence of argument pair
-\family typewriter 
- --mu number
-\family default 
-, return
-\family typewriter 
- number
-\family default 
- if succeeds.
-\end_deeper 
-\layout Itemize
-
-
-\family typewriter 
-configName 
-\family default 
-is the entry of the parameter in config file.
- This will also be used as the label of input field in a parameter dialog.
- Blanks are allowed.
- Since you will seldom write a config file manually, using a longer name
- will do no harm.
-\layout Itemize
-
-
-\family typewriter 
-prompt
-\family default 
- is prompted when user input is required.
- This is when
-\begin_deeper 
-\layout Itemize
-
-
-\family typewriter 
---noDialog
-\family default 
- is used to avoid parameter dialog
-\layout Itemize
-
-No command line argument is found, 
-\layout Itemize
-
-no config file is specified, 
-\layout Itemize
-
-
-\family typewriter 
-prompt
-\family default 
- is not empty
-\end_deeper 
-\layout Itemize
-
-
-\family typewriter 
-default
-\family default 
- is used when prompt is empty, or when user press enter directly.
-\layout Itemize
-
-
-\family typewriter 
-description 
-\family default 
-is the description of this parameter, will be put into usage information.
- ( 
-\family typewriter 
--h 
-\family default 
-or help button in parameter dialog).
-\layout Itemize
-
-
-\family typewriter 
-allowedTypes
-\family default 
- is the accepted types.
- If 
-\family typewriter 
-allowedTypes 
-\family default 
-is 
-\family typewriter 
-types.ListType
-\family default 
- or 
-\family typewriter 
-types.TupleType
-\family default 
- and user input is a scalar, the input will be converted to a list automatically.
-\layout Itemize
-
-
-\family typewriter 
-validate
-\family default 
- is a function to validate the parameter.
- You can define your own functions or use the following from 
-\family typewriter 
-simuOpt
-\begin_deeper 
-\layout Itemize
-
-
-\family typewriter 
-valueGT(a), valueLT(a), valueGE(a), valueLE(a)
-\family default 
-: check greater than, less than, greater equal, less equal to a value 
-\family typewriter 
-a.
-\layout Itemize
-
-
-\family typewriter 
-valueBetween(a,b), valueOneOf(list):
-\family default 
- check if the value is between 
-\family typewriter 
-a 
-\family default 
-and 
-\family typewriter 
-b 
-\family default 
-or is one of 
-\family typewriter 
-list
-\layout Itemize
-
-
-\family typewriter 
-valueValidFile(), valueValidDir():
-\family default 
- check if the parameter is a valid file/directory name.
-\layout Itemize
-
-
-\family typewriter 
-valueListOf():
-\family default 
- check if parameter is a list of given type, in a list of types, or pass
- a validator.
- For example, you can use 
-\family typewriter 
-valueListOf(types.IntType)
-\family default 
-, 
-\family typewriter 
-valueListOf([types.IntType, types.LongType])
-\family default 
- or 
-\family typewriter 
-valueListOf( valueValidFile()).
- 
-\family default 
-As you can see, validators can be nested.
-\end_deeper 
-\layout Itemize
-
-
-\family typewriter 
-chooseOneOf: 
-\family default 
-If specified, 
-\family typewriter 
-simuOpt
-\family default 
- will choose one from a list of values using a listbox (tk) or a combo box
- (wxPython) .
-\layout Itemize
-
-
-\family typewriter 
-chooseFrom:
-\family default 
- If specified, 
-\family typewriter 
-simuOpt 
-\family default 
-will choose one or more items from a list of values using a listbox (tk)
- or a combo box (wxPython) .
- 
-\layout Itemize
-
-
-\family typewriter 
-jump:
-\family default 
- jump is used to skip some parameter when doing interative user input.
- For example, 
-\family typewriter 
-getParam
-\family default 
- will skip the rest of the parameters if
-\family typewriter 
- -h
-\family default 
- is specified since parameter 
-\family typewriter 
--h
-\family default 
- has item 
-\family typewriter 
-'jump':-1
-\family default 
- which means jump to the end.
- Another use of this value is when you have a hierarchical parameter sets.
- For example, if mutation is on, specify mutation rate, otherwise proceed....
- 
-\layout Itemize
-
-
-\family typewriter 
-jumpIfFalse: 
-\family default 
-The same as 
-\family typewriter 
-jump
-\family default 
- but jump if current parameter is false.
-\layout Standard
-
-With all these information at hand, the rest is routine.
- You should almost always do something like:
-\layout LyX-Code
-
-import simuOpt, os, sys, types
-\layout LyX-Code
-
-options = [
-\layout LyX-Code
-
- .....
- the parameter definitions ....
-\layout LyX-Code
-
-]
-\layout LyX-Code
-
-# get all parameters.
- a dialog may or may not be used depending
-\layout LyX-Code
-
-# on --noDialog option.
- 
-\layout LyX-Code
-
-allParam = simuOpt.getParam(options, __doc__)
-\layout LyX-Code
-
-#
-\layout LyX-Code
-
-if len(allParam) > 0:  
-\layout LyX-Code
-
-  # successfully get the params, unpack the parameters
-\layout LyX-Code
-
-  (help, popSize, endGen, recRate, numRep, saveConfig, verbose) = allParam
-\layout LyX-Code
-
-else:
-\layout LyX-Code
-
-  sys.exit(0)
-\layout LyX-Code
-
-# if --saveConfig is used
-\layout LyX-Code
-
-if saveConfig != '':
-\layout LyX-Code
-
-  simuOpt.saveConfig(options, saveConfig, allParam)
-\layout LyX-Code
-
-# if -h or --help is used
-\layout LyX-Code
-
-if help:
-\layout LyX-Code
-
-  print simuOpt.usage(options, __doc__)
-\layout LyX-Code
-
-  sys.exit(1)
-\layout LyX-Code
-
-# print out info if in verbose mode
-\layout LyX-Code
-
-if verbose:
-\layout LyX-Code
-
-  print "Pop size: ", popSize
-\layout LyX-Code
-
-  print "End gen: ", endGen
-\layout LyX-Code
-
-  print "Recombination rate: ", recRate
-\layout LyX-Code
-
-  print "Number of replicates: ", numRep
-\layout LyX-Code
-
-#
-\layout LyX-Code
-
-# continue the real stuff  
-\layout Standard
-
-As you can see, 
-\family typewriter 
-getParam
-\family default 
- does all the work for you.
- All you need to do is writing a correct (and user-friendly) parameter specifica
-tion.
-\layout LyX-Code
-
-  
-\layout LyX-Code
-
 \layout Section
 
 Output 
