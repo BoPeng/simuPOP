@@ -70,6 +70,11 @@ options = [
 
 from simuPOP import *
 
+# this will be used by a duringMating pyOpertor,
+# however, for this particular problem, you can 
+# use a postMating operator and handle all invidiauls
+# one by one. The performance will be *much* better.
+#
 def offGen(pop, off, dad, mom):
   ''' how to pass allele? 
     We can of course do everything by ourself, but if we do not

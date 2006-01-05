@@ -608,8 +608,9 @@ def PyQuanTrait(pop, *args, **kwargs):
 
 PyQuanTrait.__doc__ = "Function version of operator pyQuanTrait whose __init__ function is \n" + pyQuanTrait.__init__.__doc__
 
-def TicToc(pop, *args, **kwargs):
-  ticToc(*args, **kwargs).apply(pop)
+# meaningless
+#def TicToc(pop, *args, **kwargs):
+#  ticToc(*args, **kwargs).apply(pop)
  
 #TicToc.__doc__ = "Function version of operator ticToc whose __init__ function is \n" + ticToc.__init__.__doc__
 

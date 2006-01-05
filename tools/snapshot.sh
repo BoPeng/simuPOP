@@ -30,15 +30,13 @@ fi
 echo "Building " $SIMUPOP_VER
 SIMUPOP_REV=`svnversion .`
 
+echo SIMUPOP_VER = '"'$SIMUPOP_VER'"' > simuPOP.release
+echo SIMUPOP_REV = '"'$SIMUPOP_REV'"' >> simuPOP.release
+
 # export, to be used in Doxyfile
+# but nobody else will sue it later
 export SIMUPOP_VER
 export SIMUPOP_REV
-
-echo "Get revision number and setup src/utility.cpp"
-# perl -pi.bak -e "s/unknown-version/$SIMUPOP_VER/" src/simupop_cfg.h
-perl -pi.bak -e "s/^#define SIMUPOP_VER.*$/#define SIMUPOP_VER \"$SIMUPOP_VER\"/" src/utility.cpp
-perl -pi.bak -e "s/^#define SIMUPOP_REV.*$/#define SIMUPOP_REV \"$SIMUPOP_REV\"/" src/utility.cpp
-perl -pi.bak -e "s/^SIMUPOP_VER=.*$/SIMUPOP_VER=\"$SIMUPOP_VER\"/" setup.py
 
 # make docstring
 doxygen Doxyfile
@@ -58,7 +56,7 @@ fi
 make_src.sh
 
 # distribute source
-
+# this file will be used by other batch files
 echo $SIMUPOP_VER > /var/www/html/simuPOP/download/latestversion
 
 # check files
@@ -82,8 +80,3 @@ make_mac.sh
 scp /var/www/html/simuPOP/download/simuPOP-$SIMUPOP_VER* thor:public_html/simuPOP
 scp /var/www/html/simuPOP_doc/*.pdf thor:public_html/simuPOP
 
-# this is to avoid that svn will update utility.cpp every time when a revision 
-# number has changed.
-perl -pi.bak -e "s/^#define SIMUPOP_VER.*$/#define SIMUPOP_VER \"snapshot\"/" ../src/utility.cpp
-perl -pi.bak -e "s/^#define SIMUPOP_REV.*$/#define SIMUPOP_REV \"9999\"/" ../src/utility.cpp
-perl -pi.bak -e "s/^SIMUPOP_VER=.*$/SIMUPOP_VER=\"snapshot\"/" ../setup.py

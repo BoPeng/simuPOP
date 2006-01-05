@@ -33,6 +33,7 @@ version 0.6.11 - currently available as daily snapshot
   - let simuCDCV.py also trace and display the change of total allele frequency.
   - add passOffspringOnly to pyOperator to speed up duringMating pyOperator.
   - add simuPOP coding convension to simuPOP reference manual
+  - add simuOpt.valueOr, valueNot and valueAnd.
 
 version 0.6.10 (Rev90) - Dec, 20th, 2005
   - add recCount(loc) and recCount() to recombinator to track
