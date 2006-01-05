@@ -24,7 +24,14 @@ from distutils.core import setup, Extension
 
 import os, shutil, sys, glob, re
 
-SIMUPOP_VER="snapshot"
+# handle version and revision
+# 1. use environmental variable if possible
+#
+# for every official release, there will be a file recording release info
+os.execfile('simuPOP.release')
+std_macro = [('SIMUPOP_VER', SIMUPOP_VER), 
+             ('SIMUPOP_REV', SIMUPOP_REV) ]
+  
 if sys.argv[1] not in ['sdist']:
   shutil.copy('src/utility.cpp', 'src/utility_std.cpp')
   shutil.copy('src/utility.cpp', 'src/utility_op.cpp')
@@ -207,17 +214,15 @@ if XML_SUPPORT:
 # find all test files
 DATA_FILES =  [
   ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
-    'COPYING', 'TODO']), 
+    'COPYING', 'TODO', 'simuPOP.release']), 
   ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
   ('share/simuPOP/test', glob.glob('test/test_*.py')),
   ('share/simuPOP/misc', ['misc/README', 'misc/python-mode.el', 'misc/emacs-python.el']),
   ('share/simuPOP/scripts', glob.glob('scripts/*.py')),
 ]
 
-if XML_SUPPORT: # using serialization library with xml support
-  serial_macro = []
-else:
-  serial_macro = [ ('__NO_XML_SUPPORT__', None) ]
+if not XML_SUPPORT: # using serialization library with xml support
+  std_macro.append( ('__NO_XML_SUPPORT__', None) )
   
 setup(
   name = "simuPOP",
@@ -235,7 +240,7 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_std')] + serial_macro,
+      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_std')] + std_macro,
       sources= GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_std_wrap.cpp',
         'src/utility_std.cpp'] 
@@ -244,7 +249,7 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None)] + serial_macro,
+      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None)] + std_macro,
       sources= GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_op_wrap.cpp',
         'src/utility_op.cpp'] 
@@ -253,7 +258,7 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None) ] + serial_macro,
+      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None) ] + std_macro,
       sources= GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_la_wrap.cpp',
         'src/utility_la.cpp'] 
@@ -262,7 +267,7 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), ('OPTIMIZED', None) ] + serial_macro,
+      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), ('OPTIMIZED', None) ] + std_macro,
       sources= GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_laop_wrap.cpp',
         'src/utility_laop.cpp'] 

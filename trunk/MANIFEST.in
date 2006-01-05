@@ -1,4 +1,4 @@
-include README INSTALL ChangeLog COPYING TODO AUTHORS
+include README INSTALL ChangeLog COPYING TODO AUTHORS simuPOP.release
 include MANIFEST.in setup.py setup.cfg  simuPOP.vcproj 
 include config_solaris.h config_win32.h config_linux.h config_mac.h
 include doc/userGuide.pdf doc/userGuide.py doc/refManual.pdf

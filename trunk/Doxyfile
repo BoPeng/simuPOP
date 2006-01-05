@@ -4,7 +4,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = "simuPOP: forward-based simulator for population genetists"
-PROJECT_NUMBER         = "latest stable version: $(SIMUPOP_VER)"
+PROJECT_NUMBER         = "latest stable version: $(SIMUPOP_VER), Rev $(SIMUPOP_REV)"
 OUTPUT_DIRECTORY       = /var/www/html/simuPOP_doc/doc
 OUTPUT_LANGUAGE        = English
 USE_WINDOWS_ENCODING   = NO

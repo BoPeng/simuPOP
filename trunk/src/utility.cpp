@@ -2355,6 +2355,7 @@ T Expression::valueAs##TypeName() \
 #define COMPILER "[GCC " __VERSION__ "]"
 #endif
 #endif                                          /* !COMPILER */
+
 #ifndef COMPILER
 #ifdef __cplusplus
 #define COMPILER "[C++]"
@@ -2367,9 +2368,14 @@ T Expression::valueAs##TypeName() \
 #define PLATFORM ""
 #endif
 
-  // these will be automatically replaced by snapshot.sh and release.sh
+  // these macros will be passed from commandline, if not, use the default
+#ifndef SIMUPOP_VER
 #define SIMUPOP_VER "snapshot"
+#endif
+
+#ifndef SIMUPOP_REV
 #define SIMUPOP_REV "9999"
+#endif
 
   int simuRev()
   {

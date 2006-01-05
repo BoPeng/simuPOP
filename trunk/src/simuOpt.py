@@ -912,6 +912,31 @@ def saveConfig(options, file, param):
   f.close()
 
 # define some validataion functions
+def valueNot(t):
+  def func(val):
+    if type(t) == types.FunctionType:
+      return not t(val)
+    else:
+      raise exceptions.ValueError("We expect a function valueXXX")
+  return func
+  
+def valueOr(t1, t2):
+  def func(val):
+    if type(t1) == types.FunctionType and type(t2) == types.FunctionType:
+      return t1(val) or t2(val)
+    else:
+      raise exceptions.ValueError("We expect a function valueXXX")
+  return func
+
+def valueAnd(t1, t2):
+  def func(val):
+    if type(t1) == types.FunctionType and type(t2) == types.FunctionType:
+      return t1(val) and t2(val)
+    else:
+      raise exceptions.ValueError("We expect a function valueXXX")
+  return func
+    
+
 def valueOneOf(t):
   if not type(t) in [types.ListType, types.TupleType]:
     raise exceptions.ValueError('argument of valueOneOf should be a list')

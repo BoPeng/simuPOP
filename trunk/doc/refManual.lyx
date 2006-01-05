@@ -8694,6 +8694,22 @@ valueListOf( valueValidFile()).
  
 \family default 
 As you can see, validators can be nested.
+\layout Itemize
+
+
+\family typewriter 
+valueOr(validator), valueAnd(val1, val2), valueOr(val1,val2) 
+\family default 
+accepts other validators and perform respective logical calculation.
+ For example
+\begin_deeper 
+\layout LyX-Code
+
+valueOr( valueGT(0), valueListOf( valueGT(0) ))
+\layout Standard
+
+accept a positive number, or a list of positive number.
+\end_deeper 
 \end_deeper 
 \layout Itemize
 

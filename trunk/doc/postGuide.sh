@@ -53,4 +53,4 @@ perl -pi.bak -e 's,\/home\/bpeng\/research\/simupop\/doc\/\/,,g' /var/www/html/s
 /bin/cp -f  ../INSTALL /var/www/html/simuPOP_doc/INSTALL.txt
 
 /bin/cp -f ../ChangeLog /var/www/html/simuPOP_doc/ChangeLog
-/bin/cp -f ../RoadMap /var/www/html/simuPOP_doc/RoadMap
+/bin/cp -f ../TODO /var/www/html/simuPOP_doc/RoadMap
