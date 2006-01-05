@@ -11,6 +11,7 @@ config_solaris.h
 config_win32.h
 setup.cfg
 setup.py
+simuPOP.release
 simuPOP.vcproj
 boost/aligned_storage.hpp
 boost/any.hpp
