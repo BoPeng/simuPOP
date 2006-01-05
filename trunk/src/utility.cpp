@@ -2321,7 +2321,7 @@ T Expression::valueAs##TypeName() \
     // Note that under gcc, I could pass the macro from command line
     // using \" \" but this trick does not work under VC.
     // the following process is safer.
-#define SimuPOP_Module_Name " ## SIMUPOP_MODULE ## "
+#define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
 
     // set global dictionary/variable
     PyObject* mm = PyImport_AddModule(SimuPOP_Module_Name);
@@ -2369,17 +2369,16 @@ T Expression::valueAs##TypeName() \
 #endif
 
   // these macros will be passed from commandline, if not, use the default
-#ifndef SIMUPOP_VER
-#define SIMUPOP_VER "snapshot"
-#endif
-
 #ifndef SIMUPOP_REV
-#define SIMUPOP_REV "9999"
+#define REVISION "9999"
+#else
+// make passed macro to a real string
+#define REVISION "##SIMUPOP_REV##"
 #endif
 
   int simuRev()
   {
-    char * rev = SIMUPOP_REV;
+    char * rev = REVISION;
     // can have form xx:xxM etc, or simply a number
     // we certainly like a single number but it is often the case that
     // svn local copy is not up to date.
@@ -2391,14 +2390,20 @@ T Expression::valueAs##TypeName() \
       return num;
     else
     {
-      cout << "Can not extract revision information from " << SIMUPOP_REV << endl;
+      cout << "Can not extract revision information from " << REVISION << endl;
       return 0;
     }
   }
 
   string simuVer()
   {
-    return SIMUPOP_VER;
+#ifndef SIMUPOP_VER
+    return "snapshot";
+#else
+  // convert name to a string
+#define VERSION "##SIMUPOP_VER##"
+    return VERSION;
+#endif
   }
 
   bool optimized()
