@@ -28,7 +28,7 @@ import os, shutil, sys, glob, re
 # 1. use environmental variable if possible
 #
 # for every official release, there will be a file recording release info
-os.execfile('simuPOP.release')
+execfile('simuPOP.release')
 std_macro = [('SIMUPOP_VER', SIMUPOP_VER), 
              ('SIMUPOP_REV', SIMUPOP_REV) ]
   
