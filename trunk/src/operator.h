@@ -587,8 +587,12 @@ namespace simuPOP
           cout << "Simulation paused. " << endl
             << " Press " << endl
             << "   q to stop evolution, " << endl
-            << "   s to start an interative shell, (current population is exported as pop)" << endl
-            << "   or any other key to continue...." << endl;
+            << "   s to start an interative shell, (current population is ";
+          if(m_exposePop)
+            cout << "exported as " << m_popName << ')' << endl
+          else
+            cout << "not exported)" << endl;
+          cout << "   or any other key to continue...." << endl;
         }
         a = simuPOP_getch();                      // std::cin.get(a);
 
