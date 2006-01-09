@@ -42,7 +42,12 @@ except:
   raise exceptions.ImportError("Failed to import rpy package.")
   
 
-import sys, math, random
+import os, sys, math, random
+
+# if under windows, fix a bug with rpy which uses blocking i/o so 
+# R figure will not be refreshed in time
+if os.name == 'nt':
+  r.options(windowsBuffered=False)
 
 from simuPOP import *
 from simuUtil import Aggregator
