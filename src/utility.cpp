@@ -58,6 +58,10 @@ using std::ofstream;
 #include <termios.h>
 #endif
 
+//macros to provide a portable way to make macro-passed string to C++ string
+#define MacroQuote_(x) #x
+#define MacroQuote(x) MacroQuote_(x)
+
 // these functions are defined in arraymodule.c which is included
 // in simuPOP_wrap.cpp
 extern "C" PyObject* newcarrayobjectfrommem(char type, int size, char * ptr, bool copyOver);
@@ -2373,7 +2377,7 @@ T Expression::valueAs##TypeName() \
 #define REVISION "9999"
 #else
 // make passed macro to a real string
-#define REVISION "##SIMUPOP_REV##"
+#define REVISION MacroQuote(SIMUPOP_REV)
 #endif
 
   int simuRev()
@@ -2401,8 +2405,7 @@ T Expression::valueAs##TypeName() \
     return "snapshot";
 #else
   // convert name to a string
-#define VERSION "##SIMUPOP_VER##"
-    return VERSION;
+    return MacroQuote(SIMUPOP_VER);
 #endif
   }
 
