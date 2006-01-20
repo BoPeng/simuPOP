@@ -2040,7 +2040,8 @@ namespace simuPOP
       \param format to save sample(s)
       \param stage and other parameters please see help(baseOperator.__init__)
       */
-      AffectedSibpairSample( vectoru size = vectoru(), bool chooseUnaffected=false,
+      AffectedSibpairSample( vectoru size = vectoru(), 
+        bool chooseUnaffected=false,
         bool countOnly=false,
         const string& name="sample", const string& nameExpr="", UINT times=1,
         const string& saveAs="", const string& saveAsExpr="",
@@ -2070,26 +2071,28 @@ namespace simuPOP
         DBG_FAILIF( m_size.size() > 1 && m_size.size() != pop.numSubPop(), ValueError,
           "Length of array size and number of subpopulations do not match.");
 
+        // sibpairs in each subpopulations
         m_sibpairs.resize(pop.numSubPop());
 
+        // each subpopulation ...
         for( UINT sp=0; sp < pop.numSubPop(); ++sp)
         {
+          // find the sibpairs
           vector< std::pair<ULONG, ULONG> >& sibpairs = m_sibpairs[sp];
+
           ULONG spBegin = pop.subPopBegin(sp);
-
           ULONG spSize = pop.subPopSize(sp);
-          // get tag and affected status info
-          std::vector<typename Pop::TagType> tags( spSize);
-          std::vector<bool> affected(spSize);
 
+          // get tag and affected status info
+          std::vector<typename Pop::TagType> tags(spSize);
+          std::vector<bool> affected(spSize);
           for(size_t i=0; i < spSize; ++i)
           {
             tags[i] = pop.individual(i, sp).tag();
             affected[i] = pop.individual(i, sp).affected();
           }
 
-          // find affected sibpairs
-          // difficult...
+          // find affected sibpairs, difficult...
           typename Pop::TagType tag;
           for(size_t i=0; i< spSize; ++i)
           {
@@ -2100,17 +2103,19 @@ namespace simuPOP
               // sex exist when mating.
               if(tag.first == tag.second)
                 continue;
-
+              // find an individual with the same parents
               for(size_t j = i+1; j < spSize; ++j)
               {
+                // ok, find it
                 if( affected[j] == m_affectedness && tags[j] == tag )
                 {
+                  // use absolute index, so spBegin+...
                   sibpairs.push_back(
                     std::pair<ULONG,ULONG>(spBegin+i, spBegin+j) );
-                  // another use of this variable: sampling without replacement
+                  // mark location i, j as occupied.
                   affected[i] = ! m_affectedness;
                   affected[j] = ! m_affectedness;
-                  // remove indiviudus having a same parent.
+                  // excluding indiviudus having one of the same parent.
                   for(size_t k = i+1; k < spSize; ++k)
                   {
                     if( tags[k].first == tag.first || tags[k].second == tag.second)
@@ -2122,25 +2127,34 @@ namespace simuPOP
             }                                     // affected [i]
           }                                       // for all i
 
-          DBG_DO(DBG_SELECTOR, cout << "Sibpairs at SP " << sp << " is " << sibpairs.size() << endl);
+          DBG_DO(DBG_SELECTOR, cout << "Sibpairs at SP " << sp 
+            << " is " << sibpairs.size() << endl);
 
-          // now, we know the number of affected individuals in subpop i
-          pop.setIntVar( subPopVar_String(sp, "numAffectedSibpairs"), sibpairs.size());
+          // now, we know the number of affected sibpairs in subpop i
+          pop.setIntVar( subPopVar_String(sp, "numAffectedSibpairs"), 
+            sibpairs.size());
 
-          DBG_FAILIF( m_size.size() > 1 && m_size[sp] > sibpairs.size(),
-            ValueError, "Not enough sibpairs (" + toStr(sibpairs.size())
-            + ") to be sampled at subpop " + toStr(sp));
+          if( m_size.size() > 1 && m_size[sp] > sibpairs.size())
+          {
+            m_size[sp] = sibpairs.size();
+            cout << "Warning: Not enough sibpairs (" << sibpairs.size() 
+              << ") to be sampled at subpop " << sp;
+          }
         }                                         // each subpop
         // compose all sibs
         if( m_size.size() <= 1)
         {
+          m_allsibs.clear();
           for(UINT sp =0; sp < pop.numSubPop(); ++sp)
             m_allsibs.insert( m_allsibs.end(), m_sibpairs[sp].begin(), m_sibpairs[sp].end());
 
           DBG_DO(DBG_SELECTOR, cout << "Overall sibpairs: " << m_allsibs.size() << endl);
 
-          DBG_FAILIF( !m_size.empty() && m_size[0] > m_allsibs.size(),
-            ValueError, "Not enough sibpairs to be sampled");
+          if( !m_size.empty() && m_size[0] > m_allsibs.size() )
+          {
+            m_size[0] = m_allsibs.size();
+            cout << "Warning: Not enough sibpairs to be sampled";
+          }
 
           pop.setIntVar( "numAffectedSibpairs", m_allsibs.size());
 
@@ -2163,11 +2177,13 @@ namespace simuPOP
         vectori chosenOff, chosenPar;
 
         vectori nSibpairSP(pop.numSubPop());
-        if( m_size.size() <= 1)                   // draw from the whole set
+
+        if( m_size.size() <= 1 )                   // draw from the whole set
         {
           DBG_DO(DBG_SELECTOR, cout << "Draw from the whole population." << endl);
 
           ULONG asSize = m_allsibs.size();
+
           vectorlu idx(asSize);
           for(size_t i=0; i< asSize; ++i)
             idx[i] = i;
@@ -2175,7 +2191,9 @@ namespace simuPOP
           // set all info to -1
           for(typename Pop::IndIterator ind=pop.indBegin();
             ind != pop.indEnd(); ++ind)
-          ind->setInfo(-1);
+          {
+            ind->setInfo(-1);
+          }
 
           // sample sibpairs
           random_shuffle(idx.begin(), idx.end());
@@ -2194,10 +2212,14 @@ namespace simuPOP
           // set sibpairs
           for( size_t i=0; i< N; ++i)
           {
-            chosenOff.push_back( (int)(m_allsibs[ idx[i]].first) );
-            chosenOff.push_back( (int)(m_allsibs[ idx[i]].second) );
-            pop.individual( m_allsibs[ idx[i]].first ).setInfo(i);
-            pop.individual( m_allsibs[ idx[i]].second ).setInfo(i);
+            chosenOff.push_back( (int)(m_allsibs[ idx[i] ].first) );
+            chosenOff.push_back( (int)(m_allsibs[ idx[i] ].second) );
+            // DBG_ASSERT( pop.individual( m_allsibs[ idx[i] ].first ).info()==-1, 
+            //  SystemError, "Duplicate selection");
+            //DBG_ASSERT( pop.individual( m_allsibs[ idx[i] ].second).info()==-1, 
+            //  SystemError, "Duplicate selection");
+            pop.individual( m_allsibs[ idx[i] ].first ).setInfo(i);
+            pop.individual( m_allsibs[ idx[i] ].second ).setInfo(i);
             typename Pop::TagType tag = pop.individual( m_allsibs[ idx[i]].first ).tag();
             chosenPar.push_back( (int)(tag.first) );
             chosenPar.push_back( (int)(tag.second) );
@@ -2209,7 +2231,7 @@ namespace simuPOP
           // keep the order and count number of selected ones in each subpop
           // here we say number of individuals chosen from a sp += 2
           for( size_t i=0; i<N; ++i)
-            nSibpairSP[ pop.subPopIndPair( m_allsibs[idx[i]].first).first]+=2;
+            nSibpairSP[ pop.subPopIndPair( m_allsibs[idx[i]].first).first] += 2;
           //
           DBG_DO(DBG_SELECTOR, cout << "#ind from each SP " << nSibpairSP << endl);
         }
@@ -2260,7 +2282,7 @@ namespace simuPOP
         newPop.setIntNumArrayVar("chosenOffspring", chosenOff.size(), &chosenOff[0]);
         newPop.setIntNumArrayVar("chosenParents", chosenPar.size(), &chosenPar[0]);
 
-        DBG_DO(DBG_SELECTOR, cout << "Offspring selection done."<< endl);
+        DBG_DO(DBG_SELECTOR, cout << "Offspring selection done." << endl);
 
         vectorlu tmp(pop.numSubPop());
         for(size_t i=0; i< tmp.size(); ++i)
