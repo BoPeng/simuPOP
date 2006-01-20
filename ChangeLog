@@ -5,7 +5,9 @@ NOTE: Daily snapshot reflects current SVN version. It includes new features and
 
 Known bugs     - all fixed now
 
-version 0.6.11 - currently available as daily snapshot
+version 0.6.12 - available as snapshot
+
+version 0.6.11 - (Rev 119) - Jan 19, 2006
   - add examples of penetrance operators to the reference manual.
   - document using pyOperator to build pure-python operators
   - check return value of pyPenetrance function to be within [0,1]
@@ -35,6 +37,8 @@ version 0.6.11 - currently available as daily snapshot
   - add simuPOP coding convension to simuPOP reference manual
   - add simuOpt.valueOr, valueNot and valueAnd.
   - give correct prompt for pause operator regarding exported population name
+  - fix a bug in affectedSibpairSample, which will generate the wrong sample if
+    an operator is used a second time (So AffectedSibpairSample is not affected).
 
 version 0.6.10 (Rev90) - Dec, 20th, 2005
   - add recCount(loc) and recCount() to recombinator to track
