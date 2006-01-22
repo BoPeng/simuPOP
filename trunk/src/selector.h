@@ -1831,7 +1831,7 @@ namespace simuPOP
         : Sample<Pop>(name, nameExpr, times, saveAs, saveAsExpr, format,
         stage, begin, end, step, at, rep, grp, sep), m_numAffected(0),
         m_numCases(cases), m_numControls(controls), m_spSample(spSample),
-        m_cases(0), m_controls(0)
+        m_caseIdx(0), m_controlIdx(0)
       {
       }
 
@@ -1846,44 +1846,44 @@ namespace simuPOP
 
       virtual bool prepareSample(Pop& pop )
       {
-        if( ! m_spSample)
+        if( ! m_spSample )                        // sample from the whole population.
         {
           DBG_FAILIF( m_numCases.size() > 1 || m_numControls.size() > 1,
             ValueError, "Cases, controls need to be a number if sample from the whole population.");
 
-          m_numAffected.resize(1,0L);
           // first get number of affected.
-          m_numAffected[0] = count_if(pop.indBegin(), pop.indEnd(),
-            isAffected<typename Pop::IndType>());
+          m_numAffected.resize(1, count_if(pop.indBegin(), pop.indEnd(),
+            isAffected<typename Pop::IndType>()) );
+          m_numUnaffected.resize(1, pop.popSize() - m_numAffected[0]);
 
-          m_cases.resize(1);
-          m_controls.resize(1);
-          m_cases[0].resize(m_numAffected[0]);
-          m_controls[0].resize(pop.popSize()-m_numAffected[0]);
+          if( m_numCases.size() == 1 && m_numCases[0] > m_numAffected[0])
+            cout << "Warning: Not enough affected individuals to be sampled: " <<
+              "expected " << m_numCases[0] << " available: " << m_numAffected[0];
 
-          if( m_numCases.size() ==1 && m_numCases[0] > m_numAffected[0])
-            throw ValueError("Not enough affected individuals to be sampled: "
-              "expected " + toStr(m_numCases[0]) + " available: " + toStr(m_numAffected[0]));
+          if( m_numControls.size() == 1 && m_numControls[0] > m_numUnaffected[0])
+            cout << "Warning: Not enough unaffected individuals to be sampled." <<
+              "expected " << m_numControls[0] << " available: " << m_numUnaffected[0];
 
-          if( m_numControls.size() ==1 &&
-            static_cast<UINT>(m_numControls[0]) > pop.popSize()-m_numAffected[0])
-            throw ValueError("Not enough unaffected individuals to be sampled."
-              "expected " + toStr(m_numControls[0]) + " available: " + toStr(pop.popSize()-m_numAffected[0]));
-
+          // save individual indices
+          m_caseIdx.resize(1);
+          m_controlIdx.resize(1);
+          m_caseIdx[0].resize(m_numAffected[0]);
+          m_controlIdx[0].resize(m_numUnaffected[0]);
           for(size_t i=0, j=0, k=0, iEnd = pop.popSize(); i < iEnd; ++i)
           {
             if( pop.individual(i).affected() )
-              m_cases[0][j++] = i;
+              m_caseIdx[0][j++] = i;
             else
-              m_controls[0][k++] = i;
+              m_controlIdx[0][k++] = i;
           }
         }
         else
         {
           UINT numSP = pop.numSubPop();
           m_numAffected.resize(numSP);
-          m_cases.resize(numSP);
-          m_controls.resize(numSP);
+          m_numUnaffected.resize(numSP);
+          m_caseIdx.resize(numSP);
+          m_controlIdx.resize(numSP);
 
           if( m_numCases.size() != numSP || m_numControls.size() != numSP)
             throw ValueError("Size of cases/controls does not match number of subpopulations.");
@@ -1893,16 +1893,25 @@ namespace simuPOP
             // first get number of affected.
             m_numAffected[sp] = count_if(pop.indBegin(sp), pop.indEnd(sp),
               isAffected<typename Pop::IndType>());
+            m_numUnaffected[sp] = pop.subPopSize(sp) - m_numAffected[sp];
 
-            m_cases[sp].resize(m_numAffected[sp]);
-            m_controls[sp].resize(pop.popSize()-m_numAffected[sp]);
+            if( m_numCases[sp] > m_numAffected[sp])
+              cout << "Warning: Not enough affected individuals to be sampled: " <<
+                "expected " << m_numCases[sp] << " available: " << m_numAffected[sp];
 
+            if( m_numControls[sp] > m_numUnaffected[sp])
+              cout << "Warning: Not enough unaffected individuals to be sampled." <<
+                "expected " << m_numControls[sp] << " available: " << m_numUnaffected[sp];
+
+            // save indices
+            m_caseIdx[sp].resize(m_numAffected[sp]);
+            m_controlIdx[sp].resize(m_numUnaffected[sp]);
             for(size_t i=0, j=0, k=0, iEnd = pop.subPopSize(sp); i < iEnd; ++i)
             {
               if( pop.individual(i,sp).affected() )
-                m_cases[sp][j++] = i;
+                m_caseIdx[sp][j++] = i;
               else
-                m_controls[sp][k++] = i;
+                m_controlIdx[sp][k++] = i;
             }
           }
         }
@@ -1911,45 +1920,45 @@ namespace simuPOP
 
       virtual Pop& drawSample(Pop& pop)
       {
-        if( ! m_spSample)
+        if( ! m_spSample)                         // draw sample from the whole population
         {
-          // now choose m_cases and m_controls
+          // now choose m_caseIdx and m_controlIdx
           // random shuffle the index array.
-          random_shuffle(m_cases[0].begin(), m_cases[0].end());
-          random_shuffle(m_controls[0].begin(), m_controls[0].end());
+          random_shuffle(m_caseIdx[0].begin(), m_caseIdx[0].end());
+          random_shuffle(m_controlIdx[0].begin(), m_controlIdx[0].end());
 
           // keep first m_size individuals of shuffled indices
           ULONG nCase, nControl;
-          if( m_numCases.empty()  || m_numCases[0] == 0)
+          if( m_numCases.empty()  || m_numCases[0] == 0 || m_numCases[0] > m_numAffected[0] )
             nCase = m_numAffected[0];
           else
             nCase = m_numCases[0];
-          if( m_numControls.empty()  || m_numControls[0] == 0)
-            nControl = pop.popSize() - m_numAffected[0];
+
+          if( m_numControls.empty()  || m_numControls[0] == 0 || m_numControls[0] > m_numUnaffected[0])
+            nControl = m_numUnaffected[0];
           else
             nControl = m_numControls[0];
 
+          // keep track of which how many case/control from each subpop
           vectori nCaseInSP(pop.numSubPop()), nControlInSP(pop.numSubPop());
           for(size_t i=0; i < nCase; ++i)
           {
-            nCaseInSP[pop.subPopIndPair(m_cases[0][i]).first]++;
-            pop.individual( m_cases[0][i] ).setInfo( 0 );
+            nCaseInSP[pop.subPopIndPair(m_caseIdx[0][i]).first]++;
+            pop.individual( m_caseIdx[0][i] ).setInfo( 0 );
           }
-
           // remove others
           for(size_t i= nCase, iEnd= m_numAffected[0]; i<iEnd; ++i)
-            pop.individual( m_cases[0][i] ).setInfo( -1 );
+            pop.individual( m_caseIdx[0][i] ).setInfo( -1 );
 
           // keep first m_size individuals of shuffled indices
           for(size_t i=0; i < nControl; ++i)
           {
-            nControlInSP[pop.subPopIndPair(m_controls[0][i]).first]++;
-            pop.individual( m_controls[0][i] ).setInfo( 1 );
+            nControlInSP[pop.subPopIndPair(m_controlIdx[0][i]).first]++;
+            pop.individual( m_controlIdx[0][i] ).setInfo( 1 );
           }
-
           // remove others
-          for(size_t i= nControl, iEnd= pop.popSize() - m_numAffected[0]; i<iEnd; ++i)
-            pop.individual( m_controls[0][i] ).setInfo( -1 );
+          for(size_t i= nControl, iEnd= m_numUnaffected[0]; i<iEnd; ++i)
+            pop.individual( m_controlIdx[0][i] ).setInfo( -1 );
 
           Pop& sample = pop.newPopByIndInfo(false);
           sample.setIntNumArrayVar("nCases", pop.numSubPop(), &nCaseInSP[0]);
@@ -1957,32 +1966,33 @@ namespace simuPOP
           // determine exactly how many cases and controls in the final sample
           return sample;
         }
-        else
+        else                                      // sample from each subpop
         {
           UINT numSP = pop.numSubPop();
+          int nCase, nControl;
 
           for(UINT sp=0; sp < numSP; ++sp)
           {
-            // now choose m_cases and m_controls
+            // now choose m_caseIdx and m_controlIdx
             // random shuffle the index array.
-            random_shuffle(m_cases[sp].begin(), m_cases[sp].end());
-            random_shuffle(m_controls[sp].begin(), m_controls[sp].end());
+            random_shuffle(m_caseIdx[sp].begin(), m_caseIdx[sp].end());
+            random_shuffle(m_controlIdx[sp].begin(), m_controlIdx[sp].end());
 
             // keep first m_size individuals of shuffled indices
-            for(int i=0; i < m_numCases[sp]; ++i)
-              pop.individual( m_cases[sp][i],sp ).setInfo( 0 );
+            nCase = std::min(m_numCases[sp], m_numAffected[sp]);
+            for(int i=0; i < nCase; ++i)
+              pop.individual( m_caseIdx[sp][i],sp ).setInfo( 0 );
             // remove others
-
-            for(int i= m_numCases[sp], iEnd= m_numAffected[sp]; i<iEnd; ++i)
-              pop.individual( m_cases[sp][i],sp ).setInfo( -1 );
+            for(int i= nCase, iEnd= m_numAffected[sp]; i<iEnd; ++i)
+              pop.individual( m_caseIdx[sp][i],sp ).setInfo( -1 );
 
             // keep first m_size individuals of shuffled indices
-            for(int i=0; i < m_numControls[sp]; ++i)
-              pop.individual( m_controls[sp][i],sp ).setInfo( 1 );
+            nControl = std::min(m_numControls[sp], m_numUnaffected[sp]);
+            for(int i=0; i < nControl; ++i)
+              pop.individual( m_controlIdx[sp][i],sp ).setInfo( 1 );
             // remove others
-            for(int i= m_numControls[sp],
-              iEnd = pop.subPopSize(sp) - m_numAffected[sp]; i<iEnd; ++i)
-              pop.individual( m_controls[sp][i],sp ).setInfo( -1 );
+            for(int i= nControl, iEnd = m_numUnaffected[sp]; i<iEnd; ++i)
+              pop.individual( m_controlIdx[sp][i],sp ).setInfo( -1 );
           }
           // newPop .... but ignore ancestral populations
           Pop& sample = pop.newPopByIndInfo(false);
@@ -1998,21 +2008,16 @@ namespace simuPOP
       }
 
     private:
-      vectori m_numAffected;
+      vectori m_numAffected, m_numUnaffected;
 
       /// number of cases, use vectori instead of vectorlu because
       /// this will be post to setIntNumArrayVar
-      vectori m_numCases;
-
-      /// number of controls
-      vectori m_numControls;
+      vectori m_numCases, m_numControls;
 
       /// whether or not sample from each subpop
       bool m_spSample;
 
-      vector< vectori > m_cases;
-
-      vector< vectori > m_controls;
+      vector< vectori > m_caseIdx, m_controlIdx;
   };
 
   /// thrink population accroding to some outside value
@@ -2040,7 +2045,7 @@ namespace simuPOP
       \param format to save sample(s)
       \param stage and other parameters please see help(baseOperator.__init__)
       */
-      AffectedSibpairSample( vectoru size = vectoru(), 
+      AffectedSibpairSample( vectoru size = vectoru(),
         bool chooseUnaffected=false,
         bool countOnly=false,
         const string& name="sample", const string& nameExpr="", UINT times=1,
@@ -2127,17 +2132,17 @@ namespace simuPOP
             }                                     // affected [i]
           }                                       // for all i
 
-          DBG_DO(DBG_SELECTOR, cout << "Sibpairs at SP " << sp 
+          DBG_DO(DBG_SELECTOR, cout << "Sibpairs at SP " << sp
             << " is " << sibpairs.size() << endl);
 
           // now, we know the number of affected sibpairs in subpop i
-          pop.setIntVar( subPopVar_String(sp, "numAffectedSibpairs"), 
+          pop.setIntVar( subPopVar_String(sp, "numAffectedSibpairs"),
             sibpairs.size());
 
           if( m_size.size() > 1 && m_size[sp] > sibpairs.size())
           {
             m_size[sp] = sibpairs.size();
-            cout << "Warning: Not enough sibpairs (" << sibpairs.size() 
+            cout << "Warning: Not enough sibpairs (" << sibpairs.size()
               << ") to be sampled at subpop " << sp;
           }
         }                                         // each subpop
@@ -2178,7 +2183,7 @@ namespace simuPOP
 
         vectori nSibpairSP(pop.numSubPop());
 
-        if( m_size.size() <= 1 )                   // draw from the whole set
+        if( m_size.size() <= 1 )                  // draw from the whole set
         {
           DBG_DO(DBG_SELECTOR, cout << "Draw from the whole population." << endl);
 
@@ -2214,9 +2219,9 @@ namespace simuPOP
           {
             chosenOff.push_back( (int)(m_allsibs[ idx[i] ].first) );
             chosenOff.push_back( (int)(m_allsibs[ idx[i] ].second) );
-            // DBG_ASSERT( pop.individual( m_allsibs[ idx[i] ].first ).info()==-1, 
+            // DBG_ASSERT( pop.individual( m_allsibs[ idx[i] ].first ).info()==-1,
             //  SystemError, "Duplicate selection");
-            //DBG_ASSERT( pop.individual( m_allsibs[ idx[i] ].second).info()==-1, 
+            //DBG_ASSERT( pop.individual( m_allsibs[ idx[i] ].second).info()==-1,
             //  SystemError, "Duplicate selection");
             pop.individual( m_allsibs[ idx[i] ].first ).setInfo(i);
             pop.individual( m_allsibs[ idx[i] ].second ).setInfo(i);
