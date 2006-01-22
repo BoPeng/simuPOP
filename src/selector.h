@@ -1528,7 +1528,7 @@ namespace simuPOP
       \param stage and other parameters please see help(baseOperator.__init__)
       */
       Sample( const string& name="sample", const string& nameExpr="", UINT times=1,
-        const string& saveAs="", const string& saveAsExpr="",   const string& format="bin",
+        const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp, sep),
@@ -1709,7 +1709,7 @@ namespace simuPOP
       */
       RandomSample( vectorlu size=vectorlu(),
         const string& name="sample", const string& nameExpr="", UINT times=1,
-        const string& saveAs="", const string& saveAsExpr="",   const string& format="bin",
+        const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         : Sample<Pop>(name, nameExpr, times, saveAs, saveAsExpr, format,
@@ -1825,7 +1825,7 @@ namespace simuPOP
       */
       CaseControlSample( const vectori& cases=vectori(), const vectori& controls = vectori(),
         bool spSample=false, const string& name="sample", const string& nameExpr="", UINT times=1,
-        const string& saveAs="", const string& saveAsExpr="",   const string& format="bin",
+        const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         : Sample<Pop>(name, nameExpr, times, saveAs, saveAsExpr, format,
@@ -2050,7 +2050,7 @@ namespace simuPOP
         bool countOnly=false,
         const string& name="sample", const string& nameExpr="", UINT times=1,
         const string& saveAs="", const string& saveAsExpr="",
-        const string& format="bin",
+        const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1,
         int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
@@ -2363,7 +2363,7 @@ namespace simuPOP
       */
       PySample( PyObject * keep, bool keepAncestralPops,
         const string& name="sample", const string& nameExpr="", UINT times=1,
-        const string& saveAs="", const string& saveAsExpr="",   const string& format="bin",
+        const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         : Sample<Pop>(name, nameExpr, times, saveAs, saveAsExpr, format,
