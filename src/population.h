@@ -1517,7 +1517,6 @@ namespace simuPOP
           throw ValueError("Wrong format type. Use one of text, xml, bin or appropriate extension txt, xml or bin");
         }
         ofs.close();
-
       }
 
       /// CPPONLY load population from a file
@@ -1530,35 +1529,82 @@ namespace simuPOP
       */
       void loadPopulation(const string& filename, const string& format="auto")
       {
-
         ifstream ifs(filename.c_str());
-
+        // do not have to test again.
         if(!ifs)
           throw ValueError("Can not open file " + filename );
 
-        if( format == "text" || (format == "auto" && filename.substr(filename.size()-4,4) == ".txt" ))
+        // try to load the file, according to file extension.
+        try
         {
-          boost::archive::text_iarchive ia(ifs);
-          ia >> *this;
-        }
+          if( format == "text" || (format == "auto" && filename.substr(filename.size()-4,4) == ".txt" ))
+          {
+            boost::archive::text_iarchive ia(ifs);
+            ia >> *this;
+          }
 #ifndef __NO_XML_SUPPORT__
-        else if (format == "xml" ||  (format == "auto" && filename.substr(filename.size()-4,4) == ".xml" ))
-        {
-          boost::archive::xml_iarchive ia(ifs);
-          ia >> boost::serialization::make_nvp("population",*this);
-        }
+          else if (format == "xml" ||  (format == "auto" && filename.substr(filename.size()-4,4) == ".xml" ))
+          {
+            boost::archive::xml_iarchive ia(ifs);
+            ia >> boost::serialization::make_nvp("population",*this);
+          }
 #endif
-        else if (format == "bin" || (format == "auto" && filename.substr(filename.size()-4,4) == ".bin" ) )
-        {
-          boost::archive::binary_iarchive ia(ifs);
-          ia >> *this;
+          else if (format == "bin" || (format == "auto" && filename.substr(filename.size()-4,4) == ".bin" ) )
+          {
+            boost::archive::binary_iarchive ia(ifs);
+            ia >> *this;
+          }
+          else                                    // need special handling
+            throw;
         }
-        else
+        catch(...)                                // if any error happens, or can not determine format, try different methods
         {
+          // first close the file handle.
           ifs.close();
-          throw ValueError("Wrong format type. Use one of text, xml, bin or appropriate extension txt, xml or bin");
-        }
-        ifs.close();
+
+          DBG_DO(DBG_POPULATION,
+            cout << "Can not determine file type, or file type is wrong. Trying different ways." << endl);
+
+          // open a fresh ifstream
+          ifstream ifbin(filename.c_str());
+          // try to load the file using different iarchives.
+          try                                     // binary?
+          {
+            boost::archive::binary_iarchive ia(ifbin);
+            ia >> *this;
+          }
+          catch(...)                              // not binary, text?
+          {
+            ifbin.close();
+            ifstream iftxt(filename.c_str());
+            try
+            {
+              boost::archive::text_iarchive ia(iftxt);
+              ia >> *this;
+            }
+            catch(...)                            // then xml?
+            {
+              iftxt.close();
+#ifndef __NO_XML_SUPPORT__
+              ifstream ifxml(filename.c_str());
+              try
+              {
+                boost::archive::xml_iarchive ia(ifxml);
+                ia >> boost::serialization::make_nvp("population",*this);
+              }
+              catch(...)
+              {
+                ifxml.close();
+                throw ValueError("Failed to load population. Your file may be corrupted, "
+                  "or being a copy of non-transferrable file (.bin)");
+              }
+#else
+              throw ValueError("Failed to load population. Your file may be corrupted, "
+                "or being a copy of non-transferrable file (.bin)");
+#endif
+            }                                     // try xml
+          }                                       // try text
+        }                                         // try bin
       }
 
     public:
