@@ -1990,7 +1990,7 @@ namespace simuPOP
             random_shuffle(m_controlIdx[sp].begin(), m_controlIdx[sp].end());
 
             // keep first m_size individuals of shuffled indices
-            nCase = std::min(static_cast<size_t>(m_numCases[sp]), static_cast<size_t>(m_caseIdx[sp].size()));
+            nCase = std::min(m_numCases[sp], static_cast<int>(m_caseIdx[sp].size()));
             for(int i=0; i < nCase; ++i)
               pop.individual( m_caseIdx[sp][i],sp ).setInfo( 0 );
             // remove others
@@ -1998,7 +1998,7 @@ namespace simuPOP
               pop.individual( m_caseIdx[sp][i],sp ).setInfo( -1 );
 
             // keep first m_size individuals of shuffled indices
-            nControl = std::min(static_cast<size_t>(m_numControls[sp]), static_cast<size_t>(m_controlIdx[sp].size()));
+            nControl = std::min(m_numControls[sp], static_cast<int>(m_controlIdx[sp].size()));
             for(int i=0; i < nControl; ++i)
               pop.individual( m_controlIdx[sp][i],sp ).setInfo( 1 );
             // remove others
@@ -2261,7 +2261,7 @@ namespace simuPOP
             for(typename Pop::IndIterator ind=pop.indBegin(sp); ind != pop.indEnd(sp); ++ind)
               ind->setInfo(-1);
 
-            UINT N = std::min(asSize, m_size[sp]);
+            UINT N = std::min(asSize, static_cast<size_t>(m_size[sp]));
 
             // sample sibpairs
             random_shuffle(idx.begin(), idx.end());
