@@ -30,6 +30,9 @@
 #include "utility.h"
 #include "operator.h"
 
+#include <numeric>
+using std::min;
+
 namespace simuPOP
 {
   /** \brief selection
