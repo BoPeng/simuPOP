@@ -10,6 +10,8 @@ version 0.6.12 - available as snapshot
          a warning message, rather than exception.
   - CHG: set the default sample saveAs format to 'auto', instead of 'bin'
          'bin' was used before 'auto' was introduced
+  - NEW: the format parameter of loadPopulation, loadSimulator are obsolete.
+         File type will be automatically determined.
 
 version 0.6.11 - (Rev 119) - Jan 19, 2006
   - DOC: add examples of penetrance operators to the reference manual.
