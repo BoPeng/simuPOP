@@ -90,10 +90,6 @@ namespace simuPOP
       {
         vectorf& fitness = pop.fitness();
         
-#ifndef OPTIMIZED
-        // does not allow operators like migrator to change order.
-        pop.setIntVar("fixIndOrder", 1);
-#endif
         fitness.resize(pop.popSize());
 
         size_t i=0;

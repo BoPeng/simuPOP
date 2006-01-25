@@ -383,6 +383,10 @@ namespace simuPOP
       ///
       void setSubPopStru(const vectorlu& subPopsize, bool allowPopSizeChange)
       {
+        if( ! m_fitness.empty() )
+          throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
+            "Please put selector after migrator or other such operators.");
+            
         // case 1: remove all subpopulation structure
         // do not change population size
         // individuals are valid....
@@ -849,6 +853,10 @@ namespace simuPOP
       */
       void setSubPopByIndInfo(vectori info=vectori())
       {
+        if( ! m_fitness.empty() )
+          throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
+            "Please put selector after migrator or other such operators.");
+            
         if( !info.empty())
         {
           DBG_ASSERT( info.size() == m_popSize, ValueError,
@@ -1027,6 +1035,10 @@ namespace simuPOP
       subpops left */
       void removeSubPops(const vectoru& subPops=vectoru(), bool removeEmptySubPops=false)
       {
+        if( ! m_fitness.empty() )
+          throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
+            "Please put selector after migrator or other such operators.");
+            
         setIndInfoWithSubPopID();
         int shift=0;
         for( size_t sp = 0; sp < m_numSubPop; ++sp)
@@ -1053,6 +1065,10 @@ namespace simuPOP
       subpops left */
       void removeIndividuals(const vectoru& inds=vectoru(), int subPop=-1)
       {
+        if( ! m_fitness.empty() )
+          throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
+            "Please put selector after migrator or other such operators.");
+            
         setIndInfoWithSubPopID();
         if( subPop == -1 )
         {
@@ -1107,6 +1123,10 @@ namespace simuPOP
       void reorderSubPops(const vectoru& order=vectoru(), const vectoru& rank=vectoru(),
         bool removeEmptySubPops=false)
       {
+        if( ! m_fitness.empty() )
+          throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
+            "Please put selector after migrator or other such operators.");
+            
 
         DBG_FAILIF( order.empty() && rank.empty(), ValueError,
           "Please specify one of order or rank.");
