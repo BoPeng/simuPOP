@@ -652,7 +652,7 @@ namespace simuPOP
         :Mating<Pop>(numOffspring, numOffspringFunc, maxNumOffspring, mode,
         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
         m_contWhenUniSex(contWhenUniSex),
-        m_sexIndex(0),
+        m_maleIndex(0), m_femaleIndex(0),
         m_maleFitness(0), m_femaleFitness(0),
         m_maleSampler(rng()), m_femaleSampler(rng())
       {
@@ -715,48 +715,42 @@ namespace simuPOP
         // scrtach will have the right structure.
         this->prepareScratchPop(pop, scratch);
 
+        DBG_ASSERT( pop.numSubPop() == scratch.numSubPop(), SystemError,
+          "Number of subpopulation can not be changed.");
+        
         // empty fitness means no selection
         vectorf& fitness = pop.fitness();
         
         /// determine if any during-mating operator will generate offspring genotype
         bool formOffGeno = this->formOffGenotype(ops);
 
-        // if need to do recombination here (formOffGen)
-        // this is not recombination, rather determine each of father/monther's chromosomes
-        // to use.
-
-        // to save some resizing time, use constant size male and female index
-        // there might be a big waste of RAM!!!
-        ULONG maxSpSize = 0;
-        for(size_t sp=0; sp < pop.numSubPop(); ++sp)
-          if( maxSpSize < pop.subPopSize(sp) )
-            maxSpSize = pop.subPopSize(sp);
-        m_sexIndex.resize( maxSpSize );
         UINT numMale, numFemale;
-        ULONG* maleIndex=&m_sexIndex[0], *femaleIndex;
 
         /// random mating happens within each subPopulation
         for(UINT sp=0; sp < pop.numSubPop(); ++sp)
         {
-          DBG_DO(DBG_MATING, cout << "SP " << sp << endl);
           ULONG spSize = pop.subPopSize(sp);
-
           if( spSize == 0 ) continue;
+          
+          numMale = 0;
+          for( typename Pop::IndIterator it=pop.indBegin(sp), itEnd = pop.indEnd(sp); it < itEnd;  ++it)
+            if(it->sex() == Male)
+              numMale ++;
+
+          // to gain some performance, allocate memory at first.
+          m_maleIndex.resize(numMale);
+          m_femaleIndex.resize(spSize-numMale);
 
           numMale = 0;
-          numFemale = maxSpSize;
+          numFemale = 0;
 
           for( ULONG it=pop.subPopBegin(sp), itEnd =pop.subPopEnd(sp); it < itEnd;  it++)
           {
             if( pop.individual(it).sex() == Male)
-              m_sexIndex[numMale++] = it;
+              m_maleIndex[numMale++] = it;
             else
-              m_sexIndex[--numFemale] = it;
+              m_femaleIndex[numFemale++] = it;
           }
-
-          // point to the fist female index
-          femaleIndex = &m_sexIndex[numFemale];
-          numFemale = maxSpSize - numFemale;
 
           /// now, all individuals of needToFind sex is collected
           if( (numMale == 0 || numFemale ==0 ) && !m_contWhenUniSex )
@@ -766,6 +760,9 @@ namespace simuPOP
               "(same sex mating if have to) options to get around this problem.");
           }
 
+          DBG_ASSERT( numFemale + numMale == spSize, SystemError,
+            "Wrong number of male/female.");
+          
           /// if selection is on
           if( ! fitness.empty() )
           {
@@ -778,13 +775,15 @@ namespace simuPOP
               ValueError, "Length of var fitness should equal to popsize");
               
             for( ind = 0; ind < numMale; ++ind)
-              m_maleFitness[ind] = fitness[ maleIndex[ind] ];
+              m_maleFitness[ind] = fitness[ m_maleIndex[ind] ];
             for( ind = 0; ind < numFemale; ++ind)
-              m_femaleFitness[ind] = fitness[ femaleIndex[ind] ];
+              m_femaleFitness[ind] = fitness[ m_femaleIndex[ind] ];
 
             m_maleSampler.set(m_maleFitness);
             m_femaleSampler.set(m_femaleFitness);
           }
+          
+          // generate scratch.subPopSize(sp) individuals.
           ULONG spInd = 0;
           ULONG spIndEnd = scratch.subPopSize(sp);
           while( spInd < spIndEnd)
@@ -795,30 +794,32 @@ namespace simuPOP
 
             if( !fitness.empty() )  // with selection
             {
+              // using weidhted sampler.
               if( numMale != 0 )
-                dad = &pop.individual( maleIndex[ m_maleSampler.get() ] );
+                dad = &pop.individual( m_maleIndex[ m_maleSampler.get() ] );
               else
-                dad = &pop.individual( femaleIndex[ m_femaleSampler.get() ] );
+                dad = &pop.individual( m_femaleIndex[ m_femaleSampler.get() ] );
 
               if( numFemale != 0 )
-                mom = &pop.individual( femaleIndex[ m_femaleSampler.get() ] );
+                mom = &pop.individual( m_femaleIndex[ m_femaleSampler.get() ] );
               else
-                mom = &pop.individual( maleIndex[ m_maleSampler.get() ]);
+                mom = &pop.individual( m_maleIndex[ m_maleSampler.get() ]);
             }
             else
             {
+              // using random sample.
               if( numMale != 0 )
-                dad = &pop.individual( maleIndex[ rnd.randInt(numMale) ]);
+                dad = &pop.individual( m_maleIndex[ rnd.randInt(numMale) ]);
               else
-                dad = &pop.individual( femaleIndex[ rnd.randInt(numFemale) ]);
+                dad = &pop.individual( m_femaleIndex[ rnd.randInt(numFemale) ]);
 
               if( numFemale != 0 )
-                mom = &pop.individual( femaleIndex[ rnd.randInt(numFemale) ]);
+                mom = &pop.individual( m_femaleIndex[ rnd.randInt(numFemale) ]);
               else
-                mom = &pop.individual( maleIndex[ rnd.randInt(numMale) ]);
+                mom = &pop.individual( m_maleIndex[ rnd.randInt(numMale) ]);
             }
 
-            // generate m_numOffspring offspring
+            // generate m_numOffspring offspring per mating
             for(UINT numOS=0, numOSEnd = this->numOffspring(pop.gen()); numOS < numOSEnd;  numOS++)
             {
               typename Pop::IndIterator it = scratch.indBegin(sp) + spInd++;
@@ -837,8 +838,8 @@ namespace simuPOP
 
                 for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd;  ++ch)
                 {
-                  dadPloidy = rng().randInt(2);
-                  momPloidy = rng().randInt(2);
+                  dadPloidy = rnd.randInt(2);
+                  momPloidy = rnd.randInt(2);
 
                   DBG_ASSERT((dadPloidy==0 || dadPloidy==1) &&
                     ( momPloidy==0 || momPloidy==1), ValueError,
@@ -862,6 +863,7 @@ namespace simuPOP
                 }
               }
 
+              /// apply all during mating operators
               for( typename vector<Operator<Pop> *>::iterator iop = ops.begin(), iopEnd = ops.end(); iop != iopEnd;  ++iop)
               {
                 try
@@ -870,12 +872,13 @@ namespace simuPOP
                   if(!(*iop)->applyDuringMating(pop, it, dad, mom))
                   {
                     spInd --;
+                    numOS --;
                     break;
                   }
                 }
                 catch(...)
                 {
-                  cout << "Duringmating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
+                  cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
                   throw;
                 }
               }
@@ -905,7 +908,7 @@ namespace simuPOP
       bool m_contWhenUniSex;
 
       /// internal index to female/males.
-      vectorlu m_sexIndex;
+      vectorlu m_maleIndex, m_femaleIndex;
 
       vectorf m_maleFitness, m_femaleFitness;
 

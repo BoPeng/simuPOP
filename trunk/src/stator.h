@@ -289,19 +289,6 @@ namespace simuPOP
       bool m_isActive;
   };
 
-  /// CPPONLY operator to tell the sex of an individual
-  template<class IndType>
-    class isMale
-  {
-    public:
-      isMale(){};
-
-      bool operator() ( const IndType& ind)
-      {
-        return ind.sex() == Male;
-      }
-  };
-
   /// CPPONLY
   template<class Pop>
     class statNumOfMale
@@ -375,8 +362,13 @@ namespace simuPOP
 
         for( size_t sp=0; sp < numSP; ++sp)
         {
-          ULONG n = count_if(pop.indBegin( sp ), pop.indEnd( sp ),
-            isMale<typename Pop::IndType>());
+          ULONG n = 0;
+          for(typename Pop::IndIterator it = pop.indBegin(sp), itEnd=pop.indEnd(sp);
+            it < itEnd; ++it)
+          {
+            if(it->sex() == Male)
+              n++;
+          }
           numOfMale += n;
           m_numOfMale[sp] = n;
 
