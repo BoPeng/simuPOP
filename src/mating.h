@@ -514,15 +514,12 @@ namespace simuPOP
         /// determine if mate() will generate offspring genotype
         bool formOffGeno = this->formOffGenotype(ops);
 
-        bool select = false;
-
+        vectorf& fitness = pop.fitness();
+        
         // if selection is on
         // false: return 1 if selector does not exist.
-        if( pop.getVarAsInt("selector", false) == 1 )
+        if( ! fitness.empty() )
         {
-          select = true;
-
-          pop.setIntVar("selector", 0);
 #ifndef OPTIMIZED
           // allow migration etc later.
           pop.setIntVar("fixIndOrder", 0);
@@ -537,21 +534,11 @@ namespace simuPOP
           // if selection is on
           // generate accumulative fitness values
           WeightedSampler ws(rng());
-          if( select )
+          if( ! fitness.empty() )
           {
             m_fitness.resize(spSize);
 
             // get fitness values
-            double* fitness;
-#ifndef OPTIMIZED
-            int len = pop.getVarAsDoubleNumArray("fitness", fitness);
-
-            DBG_ASSERT( static_cast<size_t>(len) == pop.popSize(), ValueError,
-              "Length of var fitness should equal to popsize");
-#else
-            pop.getVarAsDoubleNumArray("fitness", fitness);
-#endif
-
             size_t ind;
             m_fitness[0] = fitness[ pop.subPopBegin(sp) ];
             if( spSize > 1 )
@@ -569,7 +556,7 @@ namespace simuPOP
           {
             typename Pop::IndType * parent;
             // choose a parent
-            if( select )
+            if( ! fitness.empty() )
               parent = (&*pop.indBegin(sp) + ws.get());
             else
               parent = (&*pop.indBegin(sp) + rng().randInt(spSize));
@@ -670,7 +657,8 @@ namespace simuPOP
         UINT mode=MATE_NumOffspring,
         vectorlu newSubPopSize=vectorlu(),
         PyObject* newSubPopSizeFunc=NULL,
-        string newSubPopSizeExpr="", bool contWhenUniSex=true)
+        string newSubPopSizeExpr="", 
+        bool contWhenUniSex=true)
         :Mating<Pop>(numOffspring, numOffspringFunc, maxNumOffspring, mode,
         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
         m_contWhenUniSex(contWhenUniSex),
@@ -741,10 +729,12 @@ namespace simuPOP
 
         this->prepareScratchPop(pop, scratch);
 
+        vectorf& fitness = pop.fitness();
+        
         /// determine if any during-mating operator will generate offspring genotype
         bool formOffGeno = this->formOffGenotype(ops);
 
-        // if need to do recombination here
+        // if need to do recombination here (formOffGen)
         size_t btIdx=0;
         if( formOffGeno && m_bt.size() != pop.numChrom()*2*scratch.popSize() )
         {
@@ -760,13 +750,9 @@ namespace simuPOP
         if( formOffGeno )
           m_bt.doTrial();
 
-        bool select = false;
-
         /// if selection is on
-        if( pop.getVarAsInt("selector", false) == 1 )
+        if( !fitness.empty() )
         {
-          select = true;
-          pop.setIntVar("selector", 0);
 #ifndef OPTIMIZED
           // allow migration etc later.
           pop.setIntVar("fixIndOrder", 0);
@@ -784,9 +770,8 @@ namespace simuPOP
         ULONG* maleIndex=&m_sexIndex[0], *femaleIndex;
 
         /// random mating happens within each subPopulation
-        for(UINT sp=0, spEnd = pop.numSubPop(); sp < spEnd;  ++sp)
+        for(UINT sp=0; sp < pop.numSubPop(); ++sp)
         {
-
           DBG_DO(DBG_MATING, cout << "SP " << sp << endl);
           ULONG spSize = pop.subPopSize(sp);
 
@@ -816,44 +801,21 @@ namespace simuPOP
           }
 
           /// if selection is on
-          if( select )
+          if( ! fitness.empty() )
           {
             m_maleFitness.resize(numMale);
             m_femaleFitness.resize(numFemale);
 
             size_t ind;
 
-            // get fitness values
-            double* fitness;
-#ifndef OPTIMIZED
-            int len = pop.getVarAsDoubleNumArray("fitness", fitness);
-
-            DBG_ASSERT( static_cast<size_t>(len) == pop.popSize(),
+            DBG_ASSERT( fitness.size() == pop.popSize(),
               ValueError, "Length of var fitness should equal to popsize");
-#else
-            // does not check fitness length
-            pop.getVarAsDoubleNumArray("fitness", fitness);
-#endif
-
+              
             for( ind = 0; ind < numMale; ++ind)
               m_maleFitness[ind] = fitness[ maleIndex[ind] ];
             for( ind = 0; ind < numFemale; ++ind)
               m_femaleFitness[ind] = fitness[ femaleIndex[ind] ];
 
-            /*
-            /// normalize and cusum fitness
-            if( numMale > 1 )
-              for( ind = 1; ind < numMale; ++ind)
-                m_maleFitness[ind] += m_maleFitness[ind-1];
-            for(ind = 0; ind < numMale; ++ind)
-              m_maleFitness[ind] /= m_maleFitness[numMale-1];
-
-            if( numFemale > 1 )
-              for( ind = 1; ind < numFemale; ++ind)
-                m_femaleFitness[ind] += m_femaleFitness[ind-1];
-            for( ind = 0; ind < numFemale; ++ind)
-            m_femaleFitness[ind] /= m_femaleFitness[numFemale-1];
-            */
             m_maleSampler.set(m_maleFitness);
             m_femaleSampler.set(m_femaleFitness);
           }
@@ -863,8 +825,9 @@ namespace simuPOP
           {
             // randomly choose parents
             typename Pop::IndType * dad, *mom;
+            RNG& rnd = rng();
 
-            if( select)
+            if( !fitness.empty() )  // with selection
             {
               if( numMale != 0 )
                 dad = &pop.individual( maleIndex[ m_maleSampler.get() ] );
@@ -879,14 +842,14 @@ namespace simuPOP
             else
             {
               if( numMale != 0 )
-                dad = &pop.individual( maleIndex[ rng().randInt(numMale) ]);
+                dad = &pop.individual( maleIndex[ rnd.randInt(numMale) ]);
               else
-                dad = &pop.individual( femaleIndex[ rng().randInt(numFemale) ]);
+                dad = &pop.individual( femaleIndex[ rnd.randInt(numFemale) ]);
 
               if( numFemale != 0 )
-                mom = &pop.individual( femaleIndex[ rng().randInt(numFemale) ]);
+                mom = &pop.individual( femaleIndex[ rnd.randInt(numFemale) ]);
               else
-                mom = &pop.individual( maleIndex[ rng().randInt(numMale) ]);
+                mom = &pop.individual( maleIndex[ rnd.randInt(numMale) ]);
             }
 
             // generate m_numOffspring offspring
@@ -898,7 +861,7 @@ namespace simuPOP
               // assign sex randomly
               if( ! hasSexChrom)
               {
-                int offSex = rng().randInt(2);
+                int offSex = rnd.randInt(2);
                 it->setSex( offSex==0?Male:Female);
               }
 
@@ -958,9 +921,12 @@ namespace simuPOP
                 break;
 
             }                                     // each offspring
+            // and then break here since spInd == spIndEnd.
           }
         }                                         // each subPop
 
+        // clear fitness so it will not be used later
+        fitness.clear();
         // use scratch populaiton
         pop.pushAndDiscard(scratch);
         return true;
