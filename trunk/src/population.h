@@ -246,7 +246,7 @@ namespace simuPOP
         m_grp(-1),
         m_gen(0),
         m_curAncestralPop(rhs.m_curAncestralPop),
-        m_fitness(0)                               // do not copy fitness
+        m_fitness(0)                              // do not copy fitness
       {
         DBG_DO(DBG_POPULATION,
           cout << "Copy constructor of Population is called\n" << endl);
@@ -386,7 +386,7 @@ namespace simuPOP
         if( ! m_fitness.empty() )
           throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
             "Please put selector after migrator or other such operators.");
-            
+
         // case 1: remove all subpopulation structure
         // do not change population size
         // individuals are valid....
@@ -856,7 +856,7 @@ namespace simuPOP
         if( ! m_fitness.empty() )
           throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
             "Please put selector after migrator or other such operators.");
-            
+
         if( !info.empty())
         {
           DBG_ASSERT( info.size() == m_popSize, ValueError,
@@ -1038,7 +1038,7 @@ namespace simuPOP
         if( ! m_fitness.empty() )
           throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
             "Please put selector after migrator or other such operators.");
-            
+
         setIndInfoWithSubPopID();
         int shift=0;
         for( size_t sp = 0; sp < m_numSubPop; ++sp)
@@ -1068,7 +1068,7 @@ namespace simuPOP
         if( ! m_fitness.empty() )
           throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
             "Please put selector after migrator or other such operators.");
-            
+
         setIndInfoWithSubPopID();
         if( subPop == -1 )
         {
@@ -1126,7 +1126,6 @@ namespace simuPOP
         if( ! m_fitness.empty() )
           throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
             "Please put selector after migrator or other such operators.");
-            
 
         DBG_FAILIF( order.empty() && rank.empty(), ValueError,
           "Please specify one of order or rank.");
@@ -1315,7 +1314,7 @@ namespace simuPOP
         return *pop;
       }
 
-      // return reference to fitness vector 
+      // return reference to fitness vector
       vectorf& fitness()
       {
         return m_fitness;
@@ -2065,7 +2064,7 @@ namespace simuPOP
       int m_curAncestralPop;
 
       /// fitness
-      vectorf m_fitness;      
+      vectorf m_fitness;
   };
 
   /// CPPONLY

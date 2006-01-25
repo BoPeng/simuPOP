@@ -515,7 +515,7 @@ namespace simuPOP
         bool formOffGeno = this->formOffGenotype(ops);
 
         vectorf& fitness = pop.fitness();
-        
+
         // for each subPopulation
         for(UINT sp=0, spEnd = pop.numSubPop(); sp < spEnd;  ++sp)
         {
@@ -647,7 +647,7 @@ namespace simuPOP
         UINT mode=MATE_NumOffspring,
         vectorlu newSubPopSize=vectorlu(),
         PyObject* newSubPopSizeFunc=NULL,
-        string newSubPopSizeExpr="", 
+        string newSubPopSizeExpr="",
         bool contWhenUniSex=true)
         :Mating<Pop>(numOffspring, numOffspringFunc, maxNumOffspring, mode,
         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
@@ -717,10 +717,10 @@ namespace simuPOP
 
         DBG_ASSERT( pop.numSubPop() == scratch.numSubPop(), SystemError,
           "Number of subpopulation can not be changed.");
-        
+
         // empty fitness means no selection
         vectorf& fitness = pop.fitness();
-        
+
         /// determine if any during-mating operator will generate offspring genotype
         bool formOffGeno = this->formOffGenotype(ops);
 
@@ -731,7 +731,7 @@ namespace simuPOP
         {
           ULONG spSize = pop.subPopSize(sp);
           if( spSize == 0 ) continue;
-          
+
           numMale = 0;
           for( typename Pop::IndIterator it=pop.indBegin(sp), itEnd = pop.indEnd(sp); it < itEnd;  ++it)
             if(it->sex() == Male)
@@ -762,7 +762,7 @@ namespace simuPOP
 
           DBG_ASSERT( numFemale + numMale == spSize, SystemError,
             "Wrong number of male/female.");
-          
+
           /// if selection is on
           if( ! fitness.empty() )
           {
@@ -773,7 +773,7 @@ namespace simuPOP
 
             DBG_ASSERT( fitness.size() == pop.popSize(),
               ValueError, "Length of var fitness should equal to popsize");
-              
+
             for( ind = 0; ind < numMale; ++ind)
               m_maleFitness[ind] = fitness[ m_maleIndex[ind] ];
             for( ind = 0; ind < numFemale; ++ind)
@@ -782,7 +782,7 @@ namespace simuPOP
             m_maleSampler.set(m_maleFitness);
             m_femaleSampler.set(m_femaleFitness);
           }
-          
+
           // generate scratch.subPopSize(sp) individuals.
           ULONG spInd = 0;
           ULONG spIndEnd = scratch.subPopSize(sp);
@@ -792,7 +792,7 @@ namespace simuPOP
             typename Pop::IndType * dad, *mom;
             RNG& rnd = rng();
 
-            if( !fitness.empty() )  // with selection
+            if( !fitness.empty() )                // with selection
             {
               // using weidhted sampler.
               if( numMale != 0 )

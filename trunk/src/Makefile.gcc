@@ -94,7 +94,11 @@ la: _simuPOP_la.so
 
 laop: _simuPOP_laop.so
 
-all: std op la laop 
+ba: _simuPOP_ba.so
+
+baop: _simuPOP_ba.so
+
+all: std op la laop ba baop
 
 _simuPOP_std.so: $(OBJS) utility_std.o simuPOP_std_wrap.o $(PY_FILES)
 	time $(LINK) -shared  $(OBJS) utility_std.o simuPOP_std_wrap.o $(LIBS) -o _simuPOP_std.so
@@ -108,6 +112,12 @@ _simuPOP_la.so: $(OBJS) utility_la.o simuPOP_la_wrap.o $(PY_FILES)
 _simuPOP_laop.so: $(OBJS) utility_laop.o simuPOP_laop_wrap.o $(PY_FILES)
 	time $(LINK) -shared  $(OBJS) utility_laop.o  simuPOP_laop_wrap.o $(LIBS) -o _simuPOP_laop.so
 
+_simuPOP_ba.so: $(OBJS) utility_ba.o simuPOP_ba_wrap.o $(PY_FILES)
+	time $(LINK) -shared  $(OBJS) utility_ba.o simuPOP_ba_wrap.o $(LIBS) -o _simuPOP_ba.so
+
+_simuPOP_baop.so: $(OBJS) utility_baop.o simuPOP_baop_wrap.o $(PY_FILES)
+	time $(LINK) -shared  $(OBJS) utility_baop.o  simuPOP_baop_wrap.o $(LIBS) -o _simuPOP_baop.so
+
 simuPOP_std_wrap.o: simuPOP_std_wrap.cpp arraymodule.c
 	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_std $(DEF) $(UDEF) $(CFLAGS) -c $<
 
@@ -119,6 +129,13 @@ simuPOP_la_wrap.o: simuPOP_la_wrap.cpp arraymodule.c
 
 simuPOP_laop_wrap.o: simuPOP_laop_wrap.cpp arraymodule.c
 	$(CXX) $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_laop $(DEF) -DOPTIMIZED -DLONGALLELE $(UDEF) $(CFLAGS) -c $<
+
+simuPOP_ba_wrap.o: simuPOP_ba_wrap.cpp arraymodule.c
+	$(CXX) $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_ba $(DEF) -DBINARYALLELE $(UDEF) $(CFLAGS) -c $<
+
+simuPOP_baop_wrap.o: simuPOP_baop_wrap.cpp arraymodule.c
+	$(CXX) $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_baop $(DEF) -DOPTIMIZED -DBINARYALLELE $(UDEF) $(CFLAGS) -c $<
+
 
 simuPOP_std_wrap.cpp: simuPOP_std.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF) -shadow -c++ -python -o simuPOP_std_wrap.cpp simuPOP_std.i
@@ -135,6 +152,15 @@ simuPOP_la_wrap.cpp: simuPOP_la.i simuPOP_common.i $(HEADFILES)
 simuPOP_laop_wrap.cpp: simuPOP_laop.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF) -DLONGALLELE -DOPTIMIZED -shadow -c++ -python -o simuPOP_laop_wrap.cpp simuPOP_laop.i
 	perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_laop_wrap.cpp
+	
+simuPOP_ba_wrap.cpp: simuPOP_ba.i simuPOP_common.i $(HEADFILES)
+	$(SWIG) $(DEF) -DBINARYALLELE -shadow -c++ -python -o simuPOP_ba_wrap.cpp simuPOP_ba.i
+	perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_ba_wrap.cpp
+
+simuPOP_baop_wrap.cpp: simuPOP_baop.i simuPOP_common.i $(HEADFILES)
+	$(SWIG) $(DEF) -DBINARYALLELE -DOPTIMIZED -shadow -c++ -python -o simuPOP_baop_wrap.cpp simuPOP_baop.i
+	perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_baop_wrap.cpp
+
 
 utility_std.o: utility.h utility_std.cpp simupop_cfg.h
 	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_std $(DEF) $(UDEF) $(CFLAGS) -c utility_std.cpp -o utility_std.o
@@ -147,6 +173,13 @@ utility_la.o: utility.h utility_la.cpp simupop_cfg.h
 
 utility_laop.o: utility.h utility_laop.cpp simupop_cfg.h
 	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_laop -DOPTIMIZED -DLONGALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_laop.cpp -o utility_laop.o
+	
+utility_ba.o: utility.h utility_ba.cpp simupop_cfg.h
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_ba -DBINARYALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_ba.cpp -o utility_ba.o
+
+utility_baop.o: utility.h utility_baop.cpp simupop_cfg.h
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_baop -DOPTIMIZED -DBINARYALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_baop.cpp -o utility_baop.o
+
 
 utility_std.cpp: utility.cpp
 	cp -f utility.cpp utility_std.cpp
@@ -159,6 +192,12 @@ utility_la.cpp: utility.cpp
 
 utility_laop.cpp: utility.cpp
 	cp -f utility.cpp utility_laop.cpp
+	
+utility_ba.cpp: utility.cpp
+	cp -f utility.cpp utility_ba.cpp
+
+utility_baop.cpp: utility.cpp
+	cp -f utility.cpp utility_baop.cpp
 
 %.o: %.c
 	$(CC) $(INCLUDES) $(DEF) $(UDEF) $(CFLAGS) -c $< -o $@

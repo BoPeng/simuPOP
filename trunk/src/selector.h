@@ -89,7 +89,7 @@ namespace simuPOP
       bool apply(Pop& pop)
       {
         vectorf& fitness = pop.fitness();
-        
+
         fitness.resize(pop.popSize());
 
         size_t i=0;
