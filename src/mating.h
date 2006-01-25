@@ -516,16 +516,6 @@ namespace simuPOP
 
         vectorf& fitness = pop.fitness();
         
-        // if selection is on
-        // false: return 1 if selector does not exist.
-        if( ! fitness.empty() )
-        {
-#ifndef OPTIMIZED
-          // allow migration etc later.
-          pop.setIntVar("fixIndOrder", 0);
-#endif
-        }
-
         // for each subPopulation
         for(UINT sp=0, spEnd = pop.numSubPop(); sp < spEnd;  ++sp)
         {
@@ -734,15 +724,6 @@ namespace simuPOP
         // if need to do recombination here (formOffGen)
         // this is not recombination, rather determine each of father/monther's chromosomes
         // to use.
-
-        /// if selection is on
-        if( !fitness.empty() )
-        {
-#ifndef OPTIMIZED
-          // allow migration etc later.
-          pop.setIntVar("fixIndOrder", 0);
-#endif
-        }
 
         // to save some resizing time, use constant size male and female index
         // there might be a big waste of RAM!!!
