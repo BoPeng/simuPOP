@@ -452,8 +452,12 @@ namespace simuPOP
     return is_carrayobject(obj) &&
       carray_type(obj) == 'B';
 #else
+  #ifdef BINARYALLELE
+    throw SystemError("Can not acess binary allele as python array.");
+  #else
     return is_carrayobject(obj) &&
       carray_type(obj) == 'I';
+  #endif
 #endif
   }
 

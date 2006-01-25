@@ -58,7 +58,11 @@ typedef unsigned int UINT;
 #ifdef LONGALLELE
 typedef unsigned int Allele;
 #else
+#ifdef BINARYALLELE
+typedef bool Allele;
+#else
 typedef unsigned char Allele;
+#endif
 #endif
 
 // max allowed allele state

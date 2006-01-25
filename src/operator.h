@@ -1020,11 +1020,11 @@ namespace simuPOP
         will disallow random mating to set genotype.
       \param passOffspringOnly Default to false. If true, pyOperator will expect
         a function of form func(off, param), instead of func(pop, off, dad, mon, param)
-        when passOffspringOnly is false. Since many duringMating pyOperator only need 
-        access to offspring, this will imporve efficiency.
+        when passOffspringOnly is false. Since many duringMating pyOperator only need
+      access to offspring, this will imporve efficiency.
 
-       Note: (FIXME) output to output or outputExpr is not yet supported. Ideally,
-         this func will take two parameters with pop and then a filehandle to output,
+      Note: (FIXME) output to output or outputExpr is not yet supported. Ideally,
+      this func will take two parameters with pop and then a filehandle to output,
       however, differentiating output, append etc is too troublesome right now.
       */
       PyOperator(PyObject* func, PyObject* param=NULL,
@@ -1117,9 +1117,9 @@ namespace simuPOP
       {
         // get offspring object
         PyObject* offObj = pyIndObj(static_cast<void*>(&(*offspring)));
-        DBG_FAILIF(offObj == NULL, SystemError, 
-            "Could not pass offspring to the provided function. \n"
-            "Compiled with the wrong version of SWIG?");  
+        DBG_FAILIF(offObj == NULL, SystemError,
+          "Could not pass offspring to the provided function. \n"
+          "Compiled with the wrong version of SWIG?");
 
         PyObject* arglist, *result;
         if( m_passOffspringOnly )
@@ -1136,11 +1136,11 @@ namespace simuPOP
           Py_DECREF(offObj);
         }
         else
-        { 
+        {
           // call the python function, pass all the parameters to it.
           // get pop object
           PyObject* popObj = pyPopObj(static_cast<void*>(&pop));
-  
+
           // get dad object
           PyObject* dadObj, *momObj;
           if(dad == NULL)
@@ -1150,7 +1150,7 @@ namespace simuPOP
           }
           else
             dadObj = pyIndObj(static_cast<void*>(dad));
-  
+
           if(mom == NULL)
           {
             Py_INCREF(Py_None);
@@ -1158,11 +1158,11 @@ namespace simuPOP
           }
           else
             momObj = pyIndObj(static_cast<void*>(mom));
-  
+
           // if pop is valid?
           DBG_FAILIF(popObj == NULL || dadObj == NULL || momObj == NULL, SystemError,
-              "Could not pass population or parental individuals to the provided function. \n"
-              "Compiled with the wrong version of SWIG?");
+            "Could not pass population or parental individuals to the provided function. \n"
+            "Compiled with the wrong version of SWIG?");
 
           // parammeter list, ref count increased
           if( m_param == NULL)
@@ -1173,7 +1173,7 @@ namespace simuPOP
           // we do not need to catch exceptions here,
           // our wrapper will do that
           result = PyEval_CallObject(m_func, arglist);
-  
+
           Py_DECREF(offObj);
           Py_DECREF(popObj);
           Py_DECREF(dadObj);
