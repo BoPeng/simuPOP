@@ -584,8 +584,6 @@ namespace simuPOP
       IndType& individual(ULONG ind)
       {
         CHECKRANGEIND(ind);
-        DBG_ASSERT( ind < popSize(), IndexError,
-          "Individual index " + toStr(ind) + " is out of range of 0 ~ " + toStr(popSize()-1));
 
         return m_inds[ind];
       }

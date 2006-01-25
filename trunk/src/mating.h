@@ -664,8 +664,7 @@ namespace simuPOP
         m_contWhenUniSex(contWhenUniSex),
         m_sexIndex(0),
         m_maleFitness(0), m_femaleFitness(0),
-        m_maleSampler(rng()), m_femaleSampler(rng()),
-        m_bt(rng())
+        m_maleSampler(rng()), m_femaleSampler(rng())
       {
       }
 
@@ -723,32 +722,18 @@ namespace simuPOP
         bool hasSexChrom = pop.sexChrom();
 
         this->resetNumOffspring();
-
-        // get generation number
-        int gen = pop.gen();
-
+        // scrtach will have the right structure.
         this->prepareScratchPop(pop, scratch);
 
+        // empty fitness means no selection
         vectorf& fitness = pop.fitness();
         
         /// determine if any during-mating operator will generate offspring genotype
         bool formOffGeno = this->formOffGenotype(ops);
 
         // if need to do recombination here (formOffGen)
-        size_t btIdx=0;
-        if( formOffGeno && m_bt.size() != pop.numChrom()*2*scratch.popSize() )
-        {
-          vectorf rates(1);
-          // for r = 0.5, 'fast bernulli' algorithm does not do
-          // any good at all.... :-)
-          // may be we should use the old way?
-          rates[0] = 0.5;
-          // 2 is for mom/dad
-          m_bt.setParameter(rates, pop.numChrom()*2*scratch.popSize());
-        }
-        DBG_DO(DBG_MATING, cout << "doTrial " << endl);
-        if( formOffGeno )
-          m_bt.doTrial();
+        // this is not recombination, rather determine each of father/monther's chromosomes
+        // to use.
 
         /// if selection is on
         if( !fitness.empty() )
@@ -853,7 +838,7 @@ namespace simuPOP
             }
 
             // generate m_numOffspring offspring
-            for(UINT numOS=0, numOSEnd = this->numOffspring(gen); numOS < numOSEnd;  numOS++)
+            for(UINT numOS=0, numOSEnd = this->numOffspring(pop.gen()); numOS < numOSEnd;  numOS++)
             {
               typename Pop::IndIterator it = scratch.indBegin(sp) + spInd++;
 
@@ -868,12 +853,11 @@ namespace simuPOP
               if( formOffGeno )                   // use the default no recombination random mating.
               {
                 int dadPloidy=0, momPloidy=1;     // initialize to avoid compiler complains
-                const BitSet& succ = m_bt.succ(0);
 
                 for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd;  ++ch)
                 {
-                  dadPloidy = succ[btIdx++];
-                  momPloidy = succ[btIdx++];
+                  dadPloidy = rng().randInt(2);
+                  momPloidy = rng().randInt(2);
 
                   DBG_ASSERT((dadPloidy==0 || dadPloidy==1) &&
                     ( momPloidy==0 || momPloidy==1), ValueError,
@@ -946,9 +930,6 @@ namespace simuPOP
 
       // weighted sampler
       WeightedSampler m_maleSampler, m_femaleSampler;
-
-      // for use when there is RandomMating need to do recombination
-      BernulliTrials m_bt;
   };
 
   /**

@@ -2011,6 +2011,7 @@ T Expression::valueAs##TypeName() \
     DBG_FAILIF( trials<=0 , ValueError, "trial number can not be zero.");
     DBG_FAILIF( prob.empty(), ValueError, "probability table can not be empty.");
 
+    // initialize the table
     for(vector<BitSet>::iterator it=m_table.begin(), itEnd = m_table.end();
       it != itEnd;  ++it)
     {
@@ -2043,7 +2044,7 @@ T Expression::valueAs##TypeName() \
 
   void BernulliTrials::doTrial()
   {
-    DBG_FAILIF( m_N == 0, ValueError, "number of trials should be positive");
+    DBG_ASSERT( m_N != 0, ValueError, "number of trials should be positive");
 
     DBG_DO(DBG_UTILITY, cout << "n=" << m_N << " doTrial, cur trial: " << m_cur << endl );
 
@@ -2054,7 +2055,7 @@ T Expression::valueAs##TypeName() \
       BitSet& succ = m_table[cl];
       succ.reset();
 
-      if( m_prob[cl] == 0.5)                      // random 0,1 bit
+      if( m_prob[cl] == 0.5)                      // random 0,1 bit, this will be quicker
       {
         // treat a randInt as random bits and set them directly.
         // I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
@@ -2090,9 +2091,9 @@ T Expression::valueAs##TypeName() \
         }
       }
       else if( m_N > 100)
+      {
         // it may make sense to limit the use of this method to low p,
         // but it rurns out that this may be a good idea.
-      {
         // number of success trials
         // M should be 0...m_N
         ULONG  M = m_RNG->randBinomial( m_N, m_prob[cl] );
@@ -2110,7 +2111,7 @@ T Expression::valueAs##TypeName() \
           succ.set(loc);
         }
       }
-      else
+      else  // other cases, use the straight-forward method
       {
         double p = m_prob[cl];
         for(UINT i = 0; i < m_N; ++i)
@@ -2119,7 +2120,6 @@ T Expression::valueAs##TypeName() \
       }
     }
     m_cur = 0;
-    DBG_DO(DBG_UTILITY, cout << " doTrial done" << m_cur << endl );
   }
 
   UINT BernulliTrials::curTrial()
@@ -2127,11 +2127,14 @@ T Expression::valueAs##TypeName() \
     return m_cur;
   }
 
+  /// get a trial corresponding to m_prob. 
   const BitSet& BernulliTrials::trial()
   {
     if(m_cur == m_N )                             // reach the last trial
       doTrial();
-
+      
+    // this can be slow. may be we should use vector<bool> since m_prob is
+    // usually not long.
     for(size_t cl = 0, clEnd = m_prob.size(); cl < clEnd; ++cl)
       m_bitSet.set( cl, m_table[cl][m_cur] );
 
