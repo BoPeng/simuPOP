@@ -63,8 +63,7 @@ namespace simuPOP
       /// constructor. default to be always active.
       Selector( int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        :Operator<Pop>("","",stage, begin, end, step, at, rep, grp, sep),
-        m_fitness(0), m_len(0)
+        :Operator<Pop>("","",stage, begin, end, step, at, rep, grp, sep)
       {
       }
 
@@ -79,7 +78,7 @@ namespace simuPOP
       }
 
       /// calculate/return w11 etc
-      virtual double fitness(typename Pop::IndType * ind)
+      virtual double indFitness(typename Pop::IndType * ind)
       {
         ///
         throw ValueError("This selector is not supposed to be called directly");
@@ -89,26 +88,18 @@ namespace simuPOP
       /// set fitness to all individual
       bool apply(Pop& pop)
       {
-        // tell mating that selection is in effect
-        pop.setIntVar("selector", 1);
-
+        vectorf& fitness = pop.fitness();
+        
 #ifndef OPTIMIZED
         // does not allow operators like migrator to change order.
         pop.setIntVar("fixIndOrder", 1);
 #endif
-        if(static_cast<size_t>(m_len) != pop.popSize() )
-        {
-          m_len = pop.popSize();
-          m_fitness.resize(m_len);
-          fill(m_fitness.begin(), m_fitness.end(), 0.0);
-        }
+        fitness.resize(pop.popSize());
 
         size_t i=0;
         for (typename Pop::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
-          m_fitness[i++] = fitness(&*it) ;
+          fitness[i++] = indFitness(&*it) ;
 
-        // copy values over
-        pop.setDoubleNumArrayVar("fitness", m_len, &m_fitness[0], true);
         return true;
       }
 
@@ -116,15 +107,6 @@ namespace simuPOP
       {
         return "<simuPOP::selector>" ;
       }
-
-    private:
-
-      /// fitness values
-      vectorf m_fitness;
-
-      /// length of fitness values
-      int m_len;
-
   };
 
   /** \brief selection according to genotype at one locus
@@ -163,7 +145,7 @@ namespace simuPOP
       }
 
       /// currently assuming diploid
-      virtual double fitness(typename Pop::IndType * ind)
+      virtual double indFitness(typename Pop::IndType * ind)
       {
         string key;
 
@@ -252,7 +234,7 @@ namespace simuPOP
       }
 
       /// currently assuming diploid
-      virtual double fitness(typename Pop::IndType * ind)
+      virtual double indFitness(typename Pop::IndType * ind)
       {
         UINT index = 0;
         for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
@@ -342,14 +324,14 @@ namespace simuPOP
       }
 
       /// currently assuming diploid
-      virtual double fitness(typename Pop::IndType * ind)
+      virtual double indFitness(typename Pop::IndType * ind)
       {
         if(m_mode == SEL_Multiplicative )
         {
           double fit = 1;
           for(typename vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end();
             s != sEnd; ++s)
-          fit *= static_cast<Selector<Pop>* >(*s)->fitness(ind);
+          fit *= static_cast<Selector<Pop>* >(*s)->indFitness(ind);
           return fit;
         }
         else if(m_mode == SEL_Additive )
@@ -357,7 +339,7 @@ namespace simuPOP
           double fit = 1;
           for(typename vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end();
             s != sEnd; ++s)
-          fit -= 1 - static_cast<Selector<Pop>* >(*s)->fitness(ind);
+          fit -= 1 - static_cast<Selector<Pop>* >(*s)->indFitness(ind);
           return fit<0?0.:fit;
         }
         else if(m_mode == SEL_Heterogeneity)
@@ -366,7 +348,7 @@ namespace simuPOP
           double fit = 1;
           for(typename vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end();
             s != sEnd; ++s)
-          fit *= 1 - static_cast<Selector<Pop>* >(*s)->fitness(ind);
+          fit *= 1 - static_cast<Selector<Pop>* >(*s)->indFitness(ind);
           return 1-fit;
         }
 
@@ -445,7 +427,7 @@ namespace simuPOP
       }
 
       /// currently assuming diploid
-      virtual double fitness(typename Pop::IndType * ind)
+      virtual double indFitness(typename Pop::IndType * ind)
       {
         if( m_len == 0)
         {

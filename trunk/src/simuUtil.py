@@ -702,16 +702,18 @@ def LoadGCData(file, loci=[]):
 
 
 #    
-def SaveLinkage(pop, popType='sibpair', output='', outputExpr='', alleleFreq=[], 
-   recombination=0.00001, penetrance=[0,0.25,0.5], chrom=[], exclude=[], pre=True, daf=0.001):
+def SaveLinkage(pop, chrom, popType='sibpair', output='', outputExpr='', alleleFreq=[], 
+   recombination=0.00001, penetrance=[0,0.25,0.5], exclude=[], pre=True, daf=0.001):
   """ save population in Linkage format. Currently only
     support affected sibpairs sampled with affectedSibpairSample
     operator.
      
     pop: population to be saved. Must have ancestralDepth 1.
       paired individuals are sibs. Parental population are corresponding
-      parents.
+      parents. If pop is a filename, it will be loaded.
 
+    chrom: Which chromosome is saved.
+    
     popType: population type. Can be 'sibpair' or 'bySubPop'. If type is sibpair,
       pairs of individuals will be considered as sibpairs. If type is bySubPop,
       individuals in a subpopulation is considered as siblings.
@@ -722,7 +724,6 @@ def SaveLinkage(pop, popType='sibpair', output='', outputExpr='', alleleFreq=[],
       
     outputExpr: expression version of output.
 
-    chrom: only save these chromosomes
 
     exclude: exclude some loci
     
@@ -731,6 +732,8 @@ def SaveLinkage(pop, popType='sibpair', output='', outputExpr='', alleleFreq=[],
     Note:
       the first child is always the proband.
   """
+  if type(pop) == type(''):
+    pop = LoadPopulation(pop)
   if output != '':
     file = output
   elif outputExpr != '':
@@ -740,48 +743,33 @@ def SaveLinkage(pop, popType='sibpair', output='', outputExpr='', alleleFreq=[],
   # open data file and pedigree file to write.
   try:
     dataFile = open(file + ".dat", "w")
-    pedFile = open(file + ".ped", "w")
+    if pre:
+      pedFile = open(file + ".pre", "w")
+    else:
+      pedFile = open(file + ".ped", "w")
   except exceptions.IOError:
     raise exceptions.IOError, "Can not open file " + file + ".dat/.ped to write."
-  if chrom == []:
-    chs = range(0, pop.numChrom())
-  elif type(chrom) == type(1):
-    chs = [chrom]
-  else:
-    chs = chrom
-  numLoci = 0
-  realExclude = []
-  for ch in chs:
-    numLoci += pop.numLoci(ch)
-    # look at excluded loci, are they in this chrom?
-    for e in exclude:
-      if e >= pop.chromBegin(ch) and e < pop.chromEnd(ch):
-        realExclude.append(e)
+  # look at excluded loci, are they in this chrom?
+  markers = [pop.chromBegin(chrom)+m for m in range(pop.numLoci(chrom))]
+  for e in exclude:
+    markers.remove(e)
   #  
   # file is opened.
   # write data file
   # nlocus
   # another one is affection status 
-  dataFile.write( str( numLoci + 1 - len(realExclude) ) + " ")
   # risklocus (not sure. risk is not to be calculated)
-  dataFile.write( '0 ' )
   # sexlink autosomal: 0
-  dataFile.write( '0 ')
   # nprogram whatever
-  dataFile.write( '5 << nlocus, risklocus, sexlink, nprogram\n')
   # mutsys: all loci are mutational? 0 right now
-  dataFile.write( '0 ')
   # mutmale
-  dataFile.write( '0 ')
   # mutfemale
-  dataFile.write( '0 ')
   # disequil: assume in LD? Yes.
-  dataFile.write( '0 << mutsys, mutmale, mutfemale, disequil\n')
-  # order of loci
-  string = ''
-  for m in range(0, numLoci - len(realExclude)):
-    string += "%d " % (m + 1)
-  dataFile.write( string + " << order of loci\n")
+  dataFile.write( '''%d 0 0 5 << nlocus, risklocus, sexlink, nprogram
+0 0 0 0 << mutsys, mutmale, mutfemale, disequil
+'''  % (len(markers)+1) )
+  # order of loci, allegro does not welcome comments after this line.
+  dataFile.write( ' '.join( [str(m+1) for m in range(len(markers))]) + "\n")
   # describe affected status
   dataFile.write( "1 2 << affection status code, number of alleles\n")
   dataFile.write( "%f %f << gene frequency\n" % ( 1-daf, daf) )
@@ -790,36 +778,21 @@ def SaveLinkage(pop, popType='sibpair', output='', outputExpr='', alleleFreq=[],
   # describe each locus
   if alleleFreq == []: # if not given,
     # print "Warning: using sample allele frequency."
-    Stat(pop, alleleFreq=range(0, pop.totNumLoci()))
+    Stat(pop, alleleFreq=markers)
     af = pop.dvars().alleleFreq
   else:
     af = alleleFreq
-  for ch in chs:
-    for m in range(0, pop.numLoci(ch)):
-      marker = pop.chromBegin(ch) + m
-      if marker in realExclude:
-        continue
-      # now, 3 for numbered alleles
-      numAllele = len(af[marker])-1
-      dataFile.write( '3 %d << numbered alleles code, totl number of alleles \n' % numAllele )
-      # allele frequency
-      string = ''
-      for ale in range(1, numAllele+1):
-        string += '%.6f ' % af[marker][ale]
-      dataFile.write( string + ' << gene frequencies \n')
+  for marker in markers:
+    # now, 3 for numbered alleles
+    numAllele = len(af[marker])-1
+    dataFile.write( '3 %d << Marker%d_%d \n' % (numAllele, chrom, pop.chromLocusPair(marker)[1]) )
+    dataFile.write( ''.join(['%.6f ' % af[marker][ale] for ale in range(1, numAllele+1)]) + ' << gene frequencies\n' )
   # sex-difference
-  dataFile.write('0 ')
   # interference
-  dataFile.write('0 << sex difference, interference\n')
-  # recombination: I have mutliple chromosome!
-  string = str(recombination) + ' '  # this one is for affection status
-  for ch in chs:
-    for m in range(1, pop.numLoci(ch)):
-      if not pop.chromBegin(ch) + m in realExclude:
-        string += '%f ' % recombination
-    if ch != chs[len(chs)-1]:
-      string += '.5 '
-  dataFile.write( string + ' << recombination rates \n ')
+  dataFile.write('0 0 << sex difference, interference\n')
+  # recombination
+  dataFile.write( ''.join(['%f '%recombination]*len(markers)) + ' << recombination rates \n ')
+  # I do not know what they are
   dataFile.write( "1 0.1 0.1\n")
   # done!
   dataFile.close()
@@ -837,19 +810,10 @@ def SaveLinkage(pop, popType='sibpair', output='', outputExpr='', alleleFreq=[],
     else:
       return 1
   # alleles string
-  # determine which markers will be used.
-  markers = {}
-  for ch in chs:
-    markers[ch] = []
-    for m in range(0, pop.numLoci(ch)):
-      marker = pop.chromBegin(ch) + m
-      if not marker in realExclude:
-        markers[ch].append(marker)
   def genoStr(ind):
     string = ''
-    for ch in chs:
-      for marker in markers[ch]:
-        string += "%d %d " % (ind.allele(marker, 0), ind.allele(marker, 1))
+    for marker in markers:
+      string += "%d %d " % (ind.allele(marker, 0), ind.allele(marker, 1))
     return string
   if popType == "sibpair":
     # number of pedigrees

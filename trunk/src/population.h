@@ -161,7 +161,8 @@ namespace simuPOP
         m_rep(-1),
         m_grp(-1),
         m_gen(0),
-        m_curAncestralPop(0)
+        m_curAncestralPop(0),
+        m_fitness(0)
       {
         DBG_FAILIF(maxAllele > MaxAllele, ValueError,
           "maxAllele is bigger than maximum allowed allele state of this library (" + toStr(MaxAllele) +
@@ -244,7 +245,8 @@ namespace simuPOP
         m_rep(-1),                                // rep is set to -1 for new pop (until simulator really set them
         m_grp(-1),
         m_gen(0),
-        m_curAncestralPop(rhs.m_curAncestralPop)
+        m_curAncestralPop(rhs.m_curAncestralPop),
+        m_fitness(0)                               // do not copy fitness
       {
         DBG_DO(DBG_POPULATION,
           cout << "Copy constructor of Population is called\n" << endl);
@@ -343,6 +345,7 @@ namespace simuPOP
         std::swap(m_grp, rhs.m_grp);
         std::swap(m_gen, rhs.m_gen);
         std::swap(m_curAncestralPop, rhs.m_curAncestralPop);
+        m_fitness.swap(rhs.m_fitness);
       }
 
       /// destroy a population
@@ -1294,6 +1297,12 @@ namespace simuPOP
         return *pop;
       }
 
+      // return reference to fitness vector 
+      vectorf& fitness()
+      {
+        return m_fitness;
+      }
+
       // swap in rhs. (usually a scratch population
       // if fixRhs is false, leave rhs in broken status
       // if force is true, push current population
@@ -1345,6 +1354,7 @@ namespace simuPOP
         m_subPopIndex.swap( rhs.m_subPopIndex);
         m_genotype.swap( rhs.m_genotype);
         m_inds.swap(rhs.m_inds);
+        m_fitness.swap(rhs.m_fitness);
 #ifndef OPTIMIZED
         DBG_FAILIF( rhsStartingGenoPtr != &(m_genotype[0]),
           SystemError, "Starting genoptr has been changed.");
@@ -1979,6 +1989,9 @@ namespace simuPOP
         string vars;
         ar & make_nvp("vars", vars);
         varsFromString(vars);
+
+        // m_fitness was not saved
+        m_fitness = vectorf();
       }
 
       BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -2033,6 +2046,8 @@ namespace simuPOP
       /// current ancestral depth
       int m_curAncestralPop;
 
+      /// fitness
+      vectorf m_fitness;      
   };
 
   /// CPPONLY
