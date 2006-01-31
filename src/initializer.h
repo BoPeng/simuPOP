@@ -688,7 +688,7 @@ namespace simuPOP
         if(m_subPop.empty())
           m_subPop.resize(1, p.first);
 
-        typename Pop::GenoIterator srcBegin = pop.genoBegin(m_ind),
+        GenoIterator srcBegin = pop.genoBegin(m_ind),
           srcEnd=pop.genoEnd(m_ind);
 
         for(vectoru::iterator sp=m_subPop.begin(); sp != m_subPop.end(); ++sp)

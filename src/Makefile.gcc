@@ -36,6 +36,7 @@ CXX = g++
 LINK = g++ 
 CFLAGS =  -g -Wall -fexceptions -O3 -march=pentium4 -pipe -fomit-frame-pointer 
 DEF = $(FEATURES) 
+#SWIG = /home/bpeng/swig/bin/swig -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525 -nodefault 
 SWIG = swig -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525 -nodefault 
 
 RM = rm -f
@@ -98,7 +99,7 @@ ba: _simuPOP_ba.so
 
 baop: _simuPOP_ba.so
 
-all: std op la laop ba baop
+all: std op la laop
 
 _simuPOP_std.so: $(OBJS) utility_std.o simuPOP_std_wrap.o $(PY_FILES)
 	time $(LINK) -shared  $(OBJS) utility_std.o simuPOP_std_wrap.o $(LIBS) -o _simuPOP_std.so

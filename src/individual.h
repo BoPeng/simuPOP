@@ -692,9 +692,6 @@ namespace simuPOP
 
     public:
 
-      /// expose genotype iterator
-      typedef Allele* GenoIterator;
-
       /// type of the tag, which is a template parameter.
       typedef Tag TagType;
 
@@ -718,7 +715,7 @@ namespace simuPOP
       ///  @name constructor, destructor etc
       //@{
       /// default constructor, Tag field need a default constructor
-      Individual():m_flags(0),m_info(0),m_genoPtr(NULL)
+      Individual():m_flags(0),m_info(0)
       {
       }
 
@@ -730,8 +727,7 @@ namespace simuPOP
         m_tag(ind.m_tag),
         m_genoPtr(ind.m_genoPtr)
       {
-        if( m_genoPtr!= NULL)
-          setShallowCopied(true);
+        setShallowCopied(true);
       }
 
       /// destructor. Do nothing.
@@ -742,7 +738,7 @@ namespace simuPOP
       /// CPPONLY
       /// set genotype pointer (use if Allele*pos can not
       /// be determined during construction.
-      void setGenoPtr(Allele* pos)
+      void setGenoPtr(GenoIterator pos)
       {
         m_genoPtr = pos;
       }
@@ -784,7 +780,7 @@ namespace simuPOP
 
       /// pointer to alleles
       /// CPPONLY
-      Allele* genoPtr() const
+      GenoIterator genoPtr() const
       {
         return m_genoPtr;
       }
@@ -1157,7 +1153,7 @@ namespace simuPOP
       void display( ostream& out, int width=1, const vectori& chrom=vectori(), const vectori& loci=vectori() )
       {
         out << tag() << " " << sexChar() << affectedChar() << " ";
-        DBG_DO(DBG_POPULATION, out << (ULONG)(genoPtr())  << " " << info() << " ");
+        DBG_DO(DBG_POPULATION, out <<  info() << " ");
         for(UINT p=0, pEnd = ploidy(); p < pEnd;  ++p)
         {
           //      copy( genoBegin()+i, genoBegin()+i+totNumLoci(),
@@ -1246,7 +1242,7 @@ namespace simuPOP
       TagType m_tag;
 
       /// pointer to genotype.
-      Allele* m_genoPtr;
+      GenoIterator m_genoPtr;
 
       /// shallow copied flag
       static bool s_flagShallowCopied;
