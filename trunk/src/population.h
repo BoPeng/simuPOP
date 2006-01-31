@@ -91,9 +91,6 @@ namespace simuPOP
       /// ignoring population structure.
       typedef typename vector<Allele>::iterator SimpleIterator;
 
-      /// iterate through all alleles of an individual.
-      typedef typename IndType::GenoIterator GenoIterator;
-
       /// individual tag type. (template parameter for Individual )
       typedef typename IndType::TagType TagType;
 
@@ -206,7 +203,7 @@ namespace simuPOP
 
           // set individual pointers
           // reset individual pointers
-          Allele* ptr = &(m_genotype[0]);
+          GenoIterator ptr = m_genotype.begin();
           UINT step = genoSize();
           for(ULONG i=0; i< m_popSize; ++i, ptr+=step)
           {
@@ -274,7 +271,7 @@ namespace simuPOP
 
         // copy genotype one by one so individual genoPtr will not
         // point outside of subPopulation region.
-        Allele * ptr = &(m_genotype[0]);
+        GenoIterator ptr = m_genotype.begin();
         UINT step = this->genoSize();
         for(ULONG i=0; i< m_popSize; ++i, ptr+=step)
         {
@@ -295,8 +292,8 @@ namespace simuPOP
             const popData& rp = rhs.m_ancestralPops[ap];
             vector<IndType>& linds = lp.m_inds;
             const vector<IndType>& rinds = rp.m_inds;
-            Allele* lg = &(lp.m_genotype[0]);
-            const Allele* rg = &(rp.m_genotype[0]);
+            GenoIterator lg = lp.m_genotype.begin();
+            constGenoIterator rg = rp.m_genotype.begin();
             ULONG ps = rinds.size();
 
             for(ULONG i=0; i<ps; ++i)
@@ -383,7 +380,7 @@ namespace simuPOP
       ///
       void setSubPopStru(const vectorlu& subPopsize, bool allowPopSizeChange)
       {
-        if( ! m_fitness.empty() )
+        if( allowPopSizeChange && !m_fitness.empty() )
           throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
             "Please put selector after migrator or other such operators.");
 
@@ -442,7 +439,7 @@ namespace simuPOP
               throw OutOfMemory("Memory allocation fail");
             }
             // reset individual pointers
-            Allele* ptr = &m_genotype[0];
+            GenoIterator ptr = m_genotype.begin();
             UINT step = genoSize();
             for(ULONG i=0; i< m_popSize; ++i, ptr+=step)
             {
@@ -853,10 +850,6 @@ namespace simuPOP
       */
       void setSubPopByIndInfo(vectori info=vectori())
       {
-        if( ! m_fitness.empty() )
-          throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
-            "Please put selector after migrator or other such operators.");
-
         if( !info.empty())
         {
           DBG_ASSERT( info.size() == m_popSize, ValueError,
@@ -896,7 +889,7 @@ namespace simuPOP
             "Pointer misplaced. ");
 
           // assign genotype location and set structure information for individuals
-          Allele * ptr = &newGenotype[0];
+          GenoIterator ptr = newGenotype.begin();
           UINT step = genoSize();
           for(ULONG i=0; i< newPopSize; ++i, ptr+=step, ++it)
           {
@@ -1248,13 +1241,13 @@ namespace simuPOP
         // keep newInds();
 
         // copy data over
-        Allele * ptr = &newGenotype[0];
+        GenoIterator ptr = newGenotype.begin();
         UINT pEnd = this->ploidy();
         for(ULONG i=0; i< m_popSize; ++i)
         {
           // set new geno structure
           m_inds[i].setGenoStruIdx(genoStruIdx());
-          Allele * oldPtr = m_inds[i].genoPtr();
+          GenoIterator oldPtr = m_inds[i].genoPtr();
           // new genotype
           m_inds[i].setGenoPtr( ptr );
           // copy each chromosome
@@ -1279,13 +1272,13 @@ namespace simuPOP
           vector<IndType>& inds = p.m_inds;
           ULONG ps = inds.size();
           vectora newGenotype(ps*pEnd*newTotNumLoci);
-          ptr = &(newGenotype[0]);
+          ptr = newGenotype.begin();
 
           for(ULONG i=0; i< ps; ++i)
           {
             // set new geno structure
             inds[i].setGenoStruIdx(genoStruIdx());
-            Allele * oldPtr = inds[i].genoPtr();
+            GenoIterator oldPtr = inds[i].genoPtr();
             // new genotype
             inds[i].setGenoPtr( ptr );
             // copy each chromosome
@@ -1353,7 +1346,7 @@ namespace simuPOP
           // if m_genotype is re-allocated, reset pointers
           // in m_inds
 #ifndef OPTIMIZED
-          pd.m_startingGenoPtr = &m_genotype[0];
+          pd.m_startingGenoPtr = m_genotype.begin();
 #endif
           pd.m_genotype.swap(m_genotype);
           pd.m_inds.swap(m_inds);
@@ -1361,8 +1354,8 @@ namespace simuPOP
 
         // then swap out data
 #ifndef OPTIMIZED
-        Allele* rhsStartingGenoPtr = &(rhs.m_genotype[0]);
-        Allele* lhsStartingGenoPtr = &(m_genotype[0]);
+        GenoIterator rhsStartingGenoPtr = rhs.m_genotype.begin();
+        GenoIterator lhsStartingGenoPtr = m_genotype.begin();
 #endif
         m_popSize = rhs.m_popSize;
         m_numSubPop = rhs.m_numSubPop;
@@ -1373,9 +1366,9 @@ namespace simuPOP
         m_inds.swap(rhs.m_inds);
         m_fitness.swap(rhs.m_fitness);
 #ifndef OPTIMIZED
-        DBG_FAILIF( rhsStartingGenoPtr != &(m_genotype[0]),
+        DBG_FAILIF( rhsStartingGenoPtr != m_genotype.begin(),
           SystemError, "Starting genoptr has been changed.");
-        DBG_FAILIF( lhsStartingGenoPtr != &(rhs.m_genotype[0]),
+        DBG_FAILIF( lhsStartingGenoPtr != rhs.m_genotype.begin(),
           SystemError, "Starting genoptr has been changed.");
 #endif
         // current population should be working well
@@ -1442,9 +1435,9 @@ namespace simuPOP
           pd.m_inds.swap(m_inds);
           m_curAncestralPop = 0;
 #ifndef OPTIMIZED
-          DBG_FAILIF( pd.m_startingGenoPtr != &m_genotype[0],
+          DBG_FAILIF( pd.m_startingGenoPtr != m_genotype.begin(),
             SystemError, "Starting genoptr has been changed.");
-          pd.m_startingGenoPtr = &(pd.m_genotype[0]);
+          pd.m_startingGenoPtr = pd.m_genotype.begin();
 #endif
           if( idx == 0)
           {                                       // restore key paraemeters from data
@@ -1473,7 +1466,7 @@ namespace simuPOP
         pd.m_genotype.swap(m_genotype);
         pd.m_inds.swap(m_inds);
 #ifndef OPTIMIZED
-        pd.m_startingGenoPtr = &(pd.m_genotype[0]);
+        pd.m_startingGenoPtr = pd.m_genotype.begin();
 #endif
         // use pd
         m_popSize = m_inds.size();
@@ -1963,7 +1956,7 @@ namespace simuPOP
           m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 
         // assign genotype location and set structure information for individuals
-        Allele * ptr = &(m_genotype[0]);
+        GenoIterator ptr = m_genotype.begin();
         UINT step = genoSize();
         for(ULONG i=0; i< m_popSize; ++i, ptr+=step)
         {
@@ -1990,7 +1983,7 @@ namespace simuPOP
           // set pointers
           vector<IndType>& inds = p.m_inds;
           ULONG ps = inds.size();
-          ptr = &(p.m_genotype[0]);
+          ptr = p.m_genotype.begin();
 
           for(ULONG i=0; i< ps; ++i, ptr+=step)
           {
@@ -2045,7 +2038,7 @@ namespace simuPOP
       struct popData
       {
 #ifndef OPTIMIZED
-        Allele* m_startingGenoPtr;
+        GenoIterator m_startingGenoPtr;
 #endif
         vectorlu m_subPopSize;
         vectora m_genotype;
@@ -2081,7 +2074,7 @@ namespace simuPOP
       for(IndIterator ind=indBegin(), indEd=indEnd(); ind!=indEd; ++ind)
       {
         copy(ind->genoBegin(), ind->genoEnd(), it);
-        ind->setGenoPtr(&*it);
+        ind->setGenoPtr(it);
         it+=this->totNumLoci()*this->ploidy();
         ind->setShallowCopied(false);
       }
@@ -2098,14 +2091,14 @@ namespace simuPOP
 
     for(UINT sp=0, spEd = numSubPop(); sp < spEd;  sp++)
     {
-      Allele * spBegin = &*m_genotype.begin() + m_subPopIndex[sp]*genoSize();
-      Allele * spEnd   = &*m_genotype.begin() + m_subPopIndex[sp+1]*genoSize();
+      GenoIterator spBegin = m_genotype.begin() + m_subPopIndex[sp]*genoSize();
+      GenoIterator spEnd   = m_genotype.begin() + m_subPopIndex[sp+1]*genoSize();
       for( j=0, jEnd = subPopSize(sp); j < jEnd;  j++)
       {
         if( m_inds[k].shallowCopied() )
         {
-          if( &*genoBegin(k) < spBegin
-            || &*genoEnd(k) > spEnd )
+          if( genoBegin(k) < spBegin
+            || genoEnd(k) > spEnd )
             /// record individual index and genoPtr
             scIndex.push_back(k);
           else
@@ -2122,7 +2115,7 @@ namespace simuPOP
     if( scIndex.size() == 2 )
     {
       // swap!
-      Allele* tmp = m_inds[ scIndex[0] ].genoPtr();
+      GenoIterator tmp = m_inds[ scIndex[0] ].genoPtr();
       m_inds[ scIndex[0] ].setGenoPtr( m_inds[ scIndex[1] ].genoPtr() );
       m_inds[ scIndex[1] ].setGenoPtr( tmp);
 
@@ -2142,7 +2135,7 @@ namespace simuPOP
 
     /// save genotypic info
     vectora scGeno(scIndex.size() * totNumLoci() * ploidy());
-    vector<Allele*> scPtr( scIndex.size() );
+    vector<GenoIterator> scPtr( scIndex.size() );
 
     size_t i, iEnd;
 

@@ -56,14 +56,23 @@ using std::vector;
 typedef unsigned int UINT;
 
 #ifdef LONGALLELE
-typedef unsigned int Allele;
+typedef unsigned int  Allele;
+typedef unsigned int& AlleleRef;
+typedef unsigned int* AllelePtr;
 #else
 #ifdef BINARYALLELE
 typedef bool Allele;
+typedef vector<bool>::reference AlleleRef;
+typedef vector<bool>::pointer   AllelePtr;
 #else
-typedef unsigned char Allele;
+typedef unsigned char  Allele;
+typedef unsigned char& AlleleRef;
+typedef unsigned char* AllelePtr;
 #endif
 #endif
+
+typedef std::vector<Allele>::iterator GenoIterator;
+typedef std::vector<Allele>::const_iterator constGenoIterator;
 
 // max allowed allele state
 const unsigned long MaxAllele = std::numeric_limits<Allele>::max();
