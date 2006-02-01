@@ -16,7 +16,7 @@ import simuOpt
 if len(sys.argv) > 1:
   for arg in sys.argv[1:]:
     if arg in ['standard', 'short', 'long', 'binary']:
-      simuOpt.setOptions(AlleleType = sys.argv[1])
+      simuOpt.setOptions(alleleType = sys.argv[1])
     elif srg == 'optimized':
       simuOpt.setOptions(optimized=True)
 
