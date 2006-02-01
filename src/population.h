@@ -749,7 +749,7 @@ namespace simuPOP
           adjustGenoPosition(true);
 
         // false: directly expose values. Do not copy data over.
-        return Allele_Vec_As_NumArray(m_popGenoSize, m_genotype.begin(), 0);
+        return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
       }
 
       /// get the whole genotype.
@@ -762,13 +762,7 @@ namespace simuPOP
           // adjust position. deep=true
           adjustGenoPosition(true);
 
-#ifdef BINARYALLELE
-        return NULL;                              // Allele_Vec_As_NumArray(subPopSize(subPop)*genoSize(),
-        // &*m_genotype.begin(), subPop);
-#else
-        return Allele_Vec_As_NumArray(subPopSize(subPop)*genoSize(),
-          begin(subPop));
-#endif
+        return Allele_Vec_As_NumArray( begin(subPop), end(subPop));
       }
 
       //@}
@@ -1901,8 +1895,15 @@ namespace simuPOP
 
         // save shared variables as string.
         // note that many format are not supported.
-        string vars = varsAsString();
-        ar & make_nvp("vars", vars);
+        try
+        {
+          string vars = varsAsString();
+          ar & make_nvp("vars", vars);
+        }
+        catch(...)
+        {
+          cout << "Warning: shared variable is not loaded correctly.\nPopulation should still be usable." << endl;
+        }
       }
 
       template<class Archive>
