@@ -61,7 +61,7 @@ using std::find;
 #include <iomanip>
 using std::setw;
 
-/// for random number generator
+/// for ranr generator
 #include "gsl/gsl_sys.h"                          // for floating point comparison
 #include "gsl/gsl_rng.h"
 #include "gsl/gsl_randist.h"
@@ -179,7 +179,7 @@ namespace simuPOP
 
   e.g. the following code set alleles at the first locus all to 2.
   \code
-  for(typename Pop::AlleleIterator it=pop.alleleBegin(0),
+  for(GappedAlleleIterator it=pop.alleleBegin(0),
   itEnd = pop.alleleEnd(0); it < itEnd;  ++it)
   *it = 2;
   \endcode
@@ -197,11 +197,12 @@ namespace simuPOP
       typedef std::random_access_iterator_tag iterator_category;
       typedef Allele                     value_type;
       typedef int                        difference_type;
-      typedef value_type&                reference;
-      typedef value_type*                pointer;
+      typedef AlleleRef                  reference;
+      typedef GenoIterator               pointer;
 
       /// CPPONLY
-      GappedAlleleIterator():m_step(1), m_ptr(NULL)
+      GappedAlleleIterator():m_step(1)
+      // , m_ptr(NULL) // do not initialize reference.
       {
       }
 
@@ -244,13 +245,13 @@ namespace simuPOP
       }
 
       /// CPPONLY
-      value_type& operator*() const
+      reference operator*() const
       {
         return *m_ptr;
       }
 
       /// CPPONLY
-      value_type& operator[] (difference_type diff) const
+      reference operator[] (difference_type diff) const
       {
         return *(m_ptr + diff*m_step);
       }
@@ -405,13 +406,13 @@ namespace simuPOP
   bool PyObj_Is_AlleleNumArray(PyObject * obj);
 
   /// CPPONLY
-  PyObject* Int_Vec_As_NumArray(int dim, int* buf, bool copyOver=true);
+  PyObject* Int_Vec_As_NumArray(int dim, int* buf);
 
   /// CPPONLY
-  PyObject* Double_Vec_As_NumArray(int dim, double* buf, bool copyOver=true);
+  PyObject* Double_Vec_As_NumArray(int dim, double* buf);
 
   /// CPPONLY
-  PyObject* Allele_Vec_As_NumArray(int dim, Allele* buf, bool copyOver=true);
+  PyObject* Allele_Vec_As_NumArray(int dim, GenoIterator buf, unsigned long offset=0);
 
   /// CPPONLY
   int NumArray_Size(PyObject* obj);
@@ -507,16 +508,16 @@ namespace simuPOP
       PyObject* setStringVar(const string& name, const string& val);
 
       ///CPPONLY
+      PyObject* setIntVectorVar(const string& name, const vectori& val);
+
+      ///CPPONLY
+      PyObject* setDoubleVectorVar(const string& name, const vectorf& val);
+
+      ///CPPONLY
       PyObject* setStrDictVar(const string& name, const strDict& val);
 
       ///CPPONLY
       PyObject* setIntDictVar(const string& name, const intDict& val);
-
-      ///CPPONLY
-      PyObject* setDoubleNumArrayVar(const string& name, int dim, double* buf, bool copyOver=true);
-
-      ///CPPONLY
-      PyObject* setIntNumArrayVar(const string& name, int dim, int* buf, bool copyOver=true);
 
       /// CPPONLY
       bool getVarAsBool(const string& name, bool nameError=true)
@@ -568,14 +569,6 @@ namespace simuPOP
         PyObj_As_IntDict( getVar(name, nameError), val);
         return val;
       }
-
-      /// CPPONLY
-      /// put pointer in bug
-      /// return size
-      int getVarAsDoubleNumArray(const string& name, double* &buf, bool nameError=true);
-
-      /// CPPONLY
-      int getVarAsIntNumArray(const string& name, int* &buf, bool nameError=true);
 
       PyObject*& dict()
       {

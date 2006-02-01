@@ -339,7 +339,7 @@ namespace simuPOP
         bool setSex=false)
       {
         // use which copy of chromosome
-        Allele *cp[2], *curCp, *off;
+        GenoIterator cp[2], curCp, off;
 
         const BitSet& bs =  bt.trial();
 
@@ -357,9 +357,9 @@ namespace simuPOP
         // there is some recombination
         if(pos !=  BitSet::npos)
         {
-          cp[0] = &*parent->genoBegin(0);
-          cp[1] = &*parent->genoBegin(1);
-          off = &*offspring->genoBegin(offPloidy);
+          cp[0] = parent->genoBegin(0);
+          cp[1] = parent->genoBegin(1);
+          off = offspring->genoBegin(offPloidy);
           // make use of the last unused 1/2.
           curCp = cp[initCp];
 

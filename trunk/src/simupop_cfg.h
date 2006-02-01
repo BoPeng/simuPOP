@@ -59,15 +59,28 @@ typedef unsigned int UINT;
 typedef unsigned int  Allele;
 typedef unsigned int& AlleleRef;
 typedef unsigned int* AllelePtr;
+#define AlleleInc(a)  ++(a)
+#define AlleleDec(a)  --(a)
+#define AlleleAdd(a, b) (a)+=(b)
+#define AlleleMinus(a, b) (a)-=(b)
 #else
 #ifdef BINARYALLELE
 typedef bool Allele;
 typedef vector<bool>::reference AlleleRef;
 typedef vector<bool>::pointer   AllelePtr;
+// bool type, inc go to 1, dec go to 0
+#define AlleleInc(a)  (a)=true
+#define AlleleDec(a)  (a)=false
+#define AlleleAdd(a, b) (a)=((b)==0?(a):((b)>0?true:false))
+#define AlleleMinus(a, b) (a)=((b)==0?(a):((b)>0?false:true))
 #else
 typedef unsigned char  Allele;
 typedef unsigned char& AlleleRef;
 typedef unsigned char* AllelePtr;
+#define AlleleInc(a)  ++(a)
+#define AlleleDec(a)  --(a)
+#define AlleleAdd(a, b) (a)+=(b)
+#define AlleleMinus(a, b) (a)-=(b)
 #endif
 #endif
 

@@ -279,7 +279,7 @@ namespace simuPOP
         for(size_t sp=0; sp < numSP; ++sp)
           spSize[sp] = pop.subPopSize(sp);
 
-        pop.setIntNumArrayVar(subPopSize_String, numSP, &spSize[0] );
+        pop.setIntVectorVar(subPopSize_String, spSize );
 
         for( size_t sp=0; sp < numSP; ++sp)
           pop.setIntVar(subPopVar_String(sp, popSize_String), spSize[sp]);
@@ -690,7 +690,7 @@ namespace simuPOP
             fill(num.begin(), num.end(),0);
 
             // go through all alleles
-            for(typename Pop::AlleleIterator a=pop.alleleBegin(loc, sp),
+            for(GappedAlleleIterator a=pop.alleleBegin(loc, sp),
               aEnd=pop.alleleEnd(loc, sp); a != aEnd; ++a)
             {
               if( *a >= num.size() )
@@ -717,7 +717,7 @@ namespace simuPOP
             if(m_ifPost[i])
             {
               varname = subPopVar_String(sp, AlleleNum_String) + "[" + toStr(loc) + "]";
-              PyObject * d = pop.setIntNumArrayVar(varname, num.size(), &num[0]);
+              PyObject * d = pop.setIntVectorVar(varname, num);
 
               if(numSP == 1)
               {
@@ -727,7 +727,7 @@ namespace simuPOP
               }
 
               varname = subPopVar_String(sp, AlleleFreq_String) + "[" + toStr(loc) + "]";
-              d = pop.setDoubleNumArrayVar(varname, freq.size(), &freq[0]);
+              d = pop.setDoubleVectorVar(varname, freq);
 
               if(numSP == 1)
               {
@@ -754,10 +754,10 @@ namespace simuPOP
             if(m_ifPost[i])
             {
               varname = string(AlleleNum_String) + "[" + toStr(loc) + "]";
-              pop.setIntNumArrayVar(varname, sum.size(), &sum[0]);
+              pop.setIntVectorVar(varname, sum);
 
               varname = string(AlleleFreq_String) + "[" + toStr(loc) + "]";
-              pop.setDoubleNumArrayVar(varname, freq.size(), &freq[0]);
+              pop.setDoubleVectorVar(varname, freq);
             }
 
             // set numOfAlleles if necessary
@@ -771,8 +771,8 @@ namespace simuPOP
           // post number of alleles
           for(UINT sp = 0; sp < numSP; ++sp)
           {
-            PyObject* d = pop.setIntNumArrayVar( subPopVar_String(sp, NumOfAlleles_String),
-              pop.totNumLoci(), &m_numOfAlleles[sp][0]);
+            PyObject* d = pop.setIntVectorVar( subPopVar_String(sp, NumOfAlleles_String),
+              m_numOfAlleles[sp]);
             if(numSP == 1)
             {
               Py_INCREF(d);
@@ -781,8 +781,7 @@ namespace simuPOP
           }
           if(numSP>1)
           {
-            pop.setIntNumArrayVar( NumOfAlleles_String, pop.totNumLoci(),
-              &m_numOfAlleles.back()[0]);
+            pop.setIntVectorVar( NumOfAlleles_String, m_numOfAlleles.back());
           }
         }
       }
@@ -975,7 +974,7 @@ namespace simuPOP
 
             // go through all alleles
             //?>> \todo here we assume diploid population
-            for(typename Pop::AlleleIterator a=pop.alleleBegin(loc, sp),
+            for(GappedAlleleIterator a=pop.alleleBegin(loc, sp),
               aEnd=pop.alleleEnd(loc, sp);
               a != aEnd; a+=2)
             {
@@ -1012,7 +1011,7 @@ namespace simuPOP
             if(m_ifPost[i] && m_postHetero)
             {
               varname =  subPopVar_String(sp, HeteroNum_String) + "[" + toStr(loc) + "]";
-              PyObject* d = pop.setIntNumArrayVar(varname, num.size(), &num[0]);
+              PyObject* d = pop.setIntVectorVar(varname, num);
               if(numSP == 1)
               {
                 Py_INCREF(d);
@@ -1021,7 +1020,7 @@ namespace simuPOP
               }
 
               varname = subPopVar_String(sp, HeteroFreq_String) + "[" + toStr(loc) + "]";
-              d = pop.setDoubleNumArrayVar(varname, freq.size(), &freq[0]);
+              d = pop.setDoubleVectorVar(varname, freq);
 
               if(numSP == 1)
               {
@@ -1042,10 +1041,10 @@ namespace simuPOP
             if(m_ifPost[i])
             {                                     //
               varname = string(HeteroNum_String) + "[" + toStr(loc) + "]";
-              pop.setIntNumArrayVar(varname, sum.size(), &sum[0]);
+              pop.setIntVectorVar(varname, sum);
 
               varname = string(HeteroFreq_String) + "[" + toStr(loc) + "]";
-              pop.setDoubleNumArrayVar(varname, freq.size(), &freq[0]);
+              pop.setDoubleVectorVar(varname, freq);
             }
           }                                       // whole population
         }                                         // for all loci
@@ -1078,15 +1077,13 @@ namespace simuPOP
           // post result
           for( UINT sp=0; sp < numSP; ++sp)
           {
-            pop.setIntNumArrayVar(subPopVar_String(sp,HomoNum_String),
-              m_homoNum[sp].size(), &m_homoNum[sp][0]);
-            pop.setDoubleNumArrayVar(subPopVar_String(sp,HomoFreq_String),
-              m_homoFreq[sp].size(), &m_homoFreq[sp][0]);
+            pop.setIntVectorVar(subPopVar_String(sp,HomoNum_String),
+              m_homoNum[sp]);
+            pop.setDoubleVectorVar(subPopVar_String(sp,HomoFreq_String),
+              m_homoFreq[sp]);
           }
-          pop.setIntNumArrayVar(HomoNum_String,
-            m_homoNum[numSP].size(), &m_homoNum[numSP][0]);
-          pop.setDoubleNumArrayVar(HomoFreq_String,
-            m_homoFreq[numSP].size(), &m_homoFreq[numSP][0]);
+          pop.setIntVectorVar(HomoNum_String, m_homoNum[numSP]);
+          pop.setDoubleVectorVar(HomoFreq_String, m_homoFreq[numSP]);
         }
       }
 
@@ -1178,10 +1175,10 @@ namespace simuPOP
 
         // post result
         for( UINT sp=0; sp < numSP; ++sp)
-          pop.setDoubleNumArrayVar(subPopVar_String(sp,ExpHetero_String),
-            m_expHetero[sp].size(), &m_expHetero[sp][0]);
-        pop.setDoubleNumArrayVar(ExpHetero_String,
-          m_expHetero[numSP].size(), &m_expHetero[numSP][0]);
+          pop.setDoubleVectorVar(subPopVar_String(sp,ExpHetero_String),
+            m_expHetero[sp]);
+        pop.setDoubleVectorVar(ExpHetero_String,
+          m_expHetero[numSP]);
       }
 
     private:
@@ -1262,7 +1259,7 @@ namespace simuPOP
             vector< intDict> num;
 
             /// go through a single allele for all individual, all diploid
-            for( typename Pop::AlleleIterator it = pop.alleleBegin(loc, sp),
+            for( GappedAlleleIterator it = pop.alleleBegin(loc, sp),
               itEnd = pop.alleleEnd(loc, sp); it != itEnd;  it+=2 )
             {
               a = *it;
@@ -1467,7 +1464,7 @@ namespace simuPOP
 
             vectori sampleHap(sz);
 
-            for( typename Pop::AlleleIterator it = pop.alleleBegin(0, sp),
+            for( GappedAlleleIterator it = pop.alleleBegin(0, sp),
               itEnd = pop.alleleEnd(0, sp); it != itEnd;  ++it )
             {
               for( size_t hap=0; hap < sz; ++hap)
@@ -2017,9 +2014,9 @@ namespace simuPOP
         m_avgFis = fcmp_eq(aa+bb+cc,0)?1.:(1 - cc /( bb+cc));
 
         // post results
-        pop.setDoubleNumArrayVar(Fst_String, m_Fst.size(), &m_Fst[0]);
-        pop.setDoubleNumArrayVar(Fit_String, m_Fit.size(), &m_Fit[0]);
-        pop.setDoubleNumArrayVar(Fis_String, m_Fis.size(), &m_Fis[0]);
+        pop.setDoubleVectorVar(Fst_String, m_Fst);
+        pop.setDoubleVectorVar(Fit_String, m_Fit);
+        pop.setDoubleVectorVar(Fis_String, m_Fis);
         pop.setDoubleVar(AvgFst_String, m_avgFst);
         pop.setDoubleVar(AvgFit_String, m_avgFit);
         pop.setDoubleVar(AvgFis_String, m_avgFis);
@@ -2423,8 +2420,8 @@ namespace simuPOP
               }
 
               for(UINT i=0; i<nGroups; ++i)
-                pop.setDoubleNumArrayVar(Rel_Queller_String + toStr("[")
-                  + toStr(i) + "]", nGroups, &(m_relQueller[i][0]));
+                pop.setDoubleVectorVar(Rel_Queller_String + toStr("[")
+                  + toStr(i) + "]", m_relQueller[i]);
               break;
             case REL_Lynch:
               m_relLynch.resize(nGroups);
@@ -2439,8 +2436,8 @@ namespace simuPOP
               }
 
               for(UINT i=0; i<nGroups; ++i)
-                pop.setDoubleNumArrayVar(Rel_Lynch_String + toStr("[")
-                  + toStr(i) + "]", nGroups, &(m_relLynch[i][0]));
+                pop.setDoubleVectorVar(Rel_Lynch_String + toStr("[")
+                  + toStr(i) + "]", m_relLynch[i]);
               break;
             case REL_IR:
               m_relIR.resize(nGroups);
@@ -2452,8 +2449,8 @@ namespace simuPOP
                   m_relIR[i][j] = groupRelatedness(pop, i, m_atLoci[j], m_method[m]);
 
               for(UINT i=0; i<nGroups; ++i)
-                pop.setDoubleNumArrayVar(Rel_IR_String + toStr("[")
-                  + toStr(i) + "]", nLoci, &(m_relIR[i][0]));
+                pop.setDoubleVectorVar(Rel_IR_String + toStr("[")
+                  + toStr(i) + "]", m_relIR[i]);
               break;
             case REL_D2:
               m_relD2.resize(nGroups);
@@ -2465,8 +2462,8 @@ namespace simuPOP
                   m_relD2[i][j] = groupRelatedness(pop, i, m_atLoci[j], m_method[m]);
 
               for(UINT i=0; i<nGroups; ++i)
-                pop.setDoubleNumArrayVar(Rel_D2_String + toStr("[")
-                  + toStr(i) + "]", nLoci, &(m_relD2[i][0]));
+                pop.setDoubleVectorVar(Rel_D2_String + toStr("[")
+                  + toStr(i) + "]", m_relD2[i]);
               break;
             case REL_Rel:
               m_relRel.resize(nGroups);
@@ -2478,8 +2475,8 @@ namespace simuPOP
                   m_relRel[i][j] = groupRelatedness(pop, i, m_atLoci[j], m_method[m]);
 
               for(UINT i=0; i<nGroups; ++i)
-                pop.setDoubleNumArrayVar(Rel_Rel_String + toStr("[")
-                  + toStr(i) + "]", nLoci, &(m_relRel[i][0]));
+                pop.setDoubleVectorVar(Rel_Rel_String + toStr("[")
+                  + toStr(i) + "]", m_relRel[i]);
               break;
           }
         }                                         // for all method

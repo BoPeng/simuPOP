@@ -97,9 +97,9 @@ laop: _simuPOP_laop.so
 
 ba: _simuPOP_ba.so
 
-baop: _simuPOP_ba.so
+baop: _simuPOP_baop.so
 
-all: std op la laop
+all: std op la laop ba baop
 
 _simuPOP_std.so: $(OBJS) utility_std.o simuPOP_std_wrap.o $(PY_FILES)
 	time $(LINK) -shared  $(OBJS) utility_std.o simuPOP_std_wrap.o $(LIBS) -o _simuPOP_std.so
@@ -140,27 +140,27 @@ simuPOP_baop_wrap.o: simuPOP_baop_wrap.cpp arraymodule.c
 
 simuPOP_std_wrap.cpp: simuPOP_std.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF) -shadow -c++ -python -o simuPOP_std_wrap.cpp simuPOP_std.i
-	perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_std_wrap.cpp
+	#perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_std_wrap.cpp
 
 simuPOP_op_wrap.cpp: simuPOP_op.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF) -DOPTIMIZED -shadow -c++ -python -o simuPOP_op_wrap.cpp simuPOP_op.i
-	perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_op_wrap.cpp
+	#perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_op_wrap.cpp
 
 simuPOP_la_wrap.cpp: simuPOP_la.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF) -DLONGALLELE -shadow -c++ -python -o simuPOP_la_wrap.cpp simuPOP_la.i
-	perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_la_wrap.cpp
+	#perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_la_wrap.cpp
 
 simuPOP_laop_wrap.cpp: simuPOP_laop.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF) -DLONGALLELE -DOPTIMIZED -shadow -c++ -python -o simuPOP_laop_wrap.cpp simuPOP_laop.i
-	perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_laop_wrap.cpp
+	#perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_laop_wrap.cpp
 	
 simuPOP_ba_wrap.cpp: simuPOP_ba.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF) -DBINARYALLELE -shadow -c++ -python -o simuPOP_ba_wrap.cpp simuPOP_ba.i
-	perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_ba_wrap.cpp
+	#perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_ba_wrap.cpp
 
 simuPOP_baop_wrap.cpp: simuPOP_baop.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF) -DBINARYALLELE -DOPTIMIZED -shadow -c++ -python -o simuPOP_baop_wrap.cpp simuPOP_baop.i
-	perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_baop_wrap.cpp
+	#perl -pi.bak -e 's/static PyMethodDef SwigMethods\[\] = \{/static PyMethodDef SwigMethods[] = {\n  {"carray", a_array, METH_VARARGS, a_array_doc}, \/* added by Bo Peng *\//' simuPOP_baop_wrap.cpp
 
 
 utility_std.o: utility.h utility_std.cpp simupop_cfg.h

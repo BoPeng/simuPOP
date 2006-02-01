@@ -278,7 +278,7 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False):
   if checkUnprocessedArgs and (True not in map(lambda x:x.has_key('jump'), options) \
     and True not in map(lambda x:x.has_key('jumpIfFalse'), option)):
     for i in range(1, len(sys.argv)):
-      if (not sys.argv[i] in ['-c', '--config', '--optimized', '--longAllele', '-q', \
+      if (not sys.argv[i] in ['-c', '--config', '--optimized',  '-q', \
         '--useTkinter', '--quiet', '--noDialog']) \
         and (not i in processedArgs):
         raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
@@ -332,7 +332,7 @@ def tkGetParam(options, title = '', description='', details='', checkUnprocessed
   # look if any argument was not processed
   if checkUnprocessedArgs:
     for i in range(1, len(sys.argv)):
-      if (not sys.argv[i] in ['-c', '--config', '--optimized', '--longAllele', '-q',\
+      if (not sys.argv[i] in ['-c', '--config', '--optimized', '-q',\
         '--quiet', '--noDialog', '--useTkinter']) \
         and (not i in processedArgs):
         raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
@@ -570,7 +570,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
   # look if any argument was not processed
   if checkUnprocessedArgs:
     for i in range(1, len(sys.argv)):
-      if (not sys.argv[i] in ['-c', '--config', '--optimized', '--longAllele', '-q',\
+      if (not sys.argv[i] in ['-c', '--config', '--optimized', '-q',\
         '--quiet', '--noDialog', '--useTkinter']) \
         and (not i in processedArgs):
         raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
@@ -1009,19 +1009,17 @@ def valueListOf(t):
   return func
 
 env_optimized = os.getenv('SIMUOPTIMIZED')
-env_longAllele = os.getenv('SIMULONGALLELE')
+env_longAllele = os.getenv('SIMUALLELETYPE')
 
 [par_optimized] = termGetParam([{'longarg':'optimized', \
   'configName':'optimized', 'default':''}], False)
-[par_longAllele] = termGetParam([{'longarg':'longAllele', \
-  'configName':'longAllele', 'default':''}], False)
 [par_quiet] = termGetParam([{'arg':'q','longarg':'quiet', \
   'default':False}], False)
 [par_useTkinter] = termGetParam([{'longarg':'useTkinter', \
     'default':False }], False)
 
 # remove these parameters from sys.argv
-for arg in ['--optimized', '--longAllele', '--quiet', '-q', '--useTkinter']:
+for arg in ['--optimized', '--quiet', '-q', '--useTkinter']:
   try:
     sys.argv.remove( arg)
   except:
@@ -1034,21 +1032,18 @@ elif env_optimized != None:
 else:   # default to false
   _optimized = False
    
-
-if par_longAllele != '':
-  _longAllele = par_longAllele
-elif env_longAllele != None:
-  _longAllele = True
+if env_longAllele != None and env_longAllele in ['standard', 'long', 'binary']:
+  _longAllele = env_longAllele
 else:
-  _longAllele = False
+  _longAllele = 'standard'
   
-simuOptions = {'Optimized':_optimized, 'LongAllele':_longAllele, 'Quiet':par_quiet}
+simuOptions = {'Optimized':_optimized, 'AlleleType':_longAllele, 'Quiet':par_quiet}
 
-def setOptions(optimized=None, longAllele=None):
+def setOptions(optimized=None, alleleType=None):
   if optimized in [True, False]:
     simuOptions['Optimized'] = optimized
-  if longAllele in [ True, False]:
-    simuOptions['LongAllele'] = longAllele
+  if alleleType in ['standard', 'long', 'binary']:
+    simuOptions['AlleleType'] = alleleType
   
 def requireRevision(rev):
   if simuRev() <= rev:

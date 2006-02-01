@@ -446,7 +446,8 @@ def LoadPopulations(file, format='auto'):
   return pops
 
 
-carray = cppModule.carray
+// we do not expose carray by default
+// carray = cppModule.carray
 
 #### /////////////////// FUNCTION COUNTERPART OF OPERATORS ////////////////////////////
 

@@ -158,7 +158,7 @@ namespace simuPOP
 
       /// how to mutate a single allele.
       /// this is usually the only function that need to be defined by the subclasses.
-      virtual void mutate(Allele* allele)
+      virtual void mutate(AlleleRef allele)
       {
         throw SystemError("You are not supposed to call this base mutator funciton.");
       };
@@ -172,11 +172,6 @@ namespace simuPOP
           DBG_DO(DBG_MUTATOR, cout << "Mutate at loci " << m_atLoci <<
             " at rate " << m_rate << endl);
         }
-
-#ifndef OPTIMIZED
-        vectori mutated(m_atLoci.size());
-        fill(mutated.begin(), mutated.end(), 0);
-#endif
 
         DBG_DO(DBG_MUTATOR, cout <<"Mutate replicate " << pop.rep() << endl);
         DBG_ASSERT(pop.rep() == pop.getVarAsInt("rep"), SystemError,
@@ -197,23 +192,18 @@ namespace simuPOP
             do
             {
 #ifndef OPTIMIZED
-              Allele* ptr = (pop.alleleBegin( locus ) + pos ).ptr();
-              if( ptr < &*pop.begin() || ptr >= &*pop.end() )
-                throw SystemError("Mutation happens on an allele out of range.") ;
+              AlleleRef ptr = *(pop.alleleBegin( locus ).ptr() + pos);
               DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << locus
-                << " of individual " << (pos/pop.ploidy()) << " from " << int(*ptr) );
+                << " of individual " << (pos/pop.ploidy()) << " from " << int(ptr) );
               mutate(ptr);
-              DBG_DO(DBG_MUTATOR, cout << " to " << int(*ptr) << endl);
-              mutated[i]++;
+              DBG_DO(DBG_MUTATOR, cout << " to " << int(ptr) << endl);
 #else
-              mutate( (pop.alleleBegin( locus ) + pos ).ptr());
+              mutate( *(pop.alleleBegin( locus ).ptr() + pos) );
 #endif
               m_mutCount[ locus ]++;
             }while( (pos = succ.find_next(pos)) != BitSet::npos );
           }                                       // succ.any
         }                                         // each applicable loci
-
-        DBG_DO( DBG_MUTATOR, cout << "Mutated alleles: " << mutated << endl);
 
         return true;
       }
@@ -326,26 +316,26 @@ namespace simuPOP
       ~KAMMutator(){}
 
       /// mutate to a state other than current state with equal probability
-      virtual void mutate(Allele* allele)
+      virtual void mutate(AlleleRef allele)
       {
         if(m_states.empty())
         {
           Allele new_allele = rng().randInt(this->maxAllele()-1)+1;
-          if(new_allele >= *allele)
-            *allele = new_allele+1;
+          if(new_allele >= allele)
+            allele = new_allele+1;
           else
-            *allele = new_allele;
+            allele = new_allele;
         }
         else
         {
-          DBG_FAILIF( find(m_states.begin(), m_states.end(), *allele) == m_states.end(),
+          DBG_FAILIF( find(m_states.begin(), m_states.end(), allele) == m_states.end(),
             ValueError, "Allelic state is not in one of the specified states.");
 
           size_t idx = rng().randInt(m_states.size()-1);
-          if( m_states[idx] >= *allele)
-            *allele = m_states[idx+1];
+          if( m_states[idx] >= allele)
+            allele = m_states[idx+1];
           else
-            *allele = m_states[idx];
+            allele = m_states[idx];
         }
       }
 
@@ -404,17 +394,17 @@ namespace simuPOP
 
       ~SMMMutator(){}
 
-      virtual void mutate(Allele* allele)
+      virtual void mutate(AlleleRef allele)
       {
         if( rng().randUniform01() < m_incProb)
         {
-          if( *allele < this->maxAllele() )
-            ++*allele;
+          if( allele < this->maxAllele() )
+            AlleleInc(allele);
         }
         else
         {
-          if( *allele > 1 )
-            --*allele;
+          if( allele > 1 )
+            AlleleDec(allele);
         }
       }
 
@@ -492,7 +482,7 @@ namespace simuPOP
         return new GSMMutator<Pop>(*this);
       }
 
-      virtual void mutate(Allele* allele)
+      virtual void mutate(AlleleRef allele)
       {
         int step;
 
@@ -517,17 +507,17 @@ namespace simuPOP
 
         if( rng().randUniform01() < m_incProb)
         {
-          if( static_cast<UINT>(*allele + step) < this->maxAllele() )
-            *allele += step;
+          if( static_cast<UINT>(allele + step) < this->maxAllele() )
+            AlleleAdd(allele, step);
           else
-            *allele = this->maxAllele();
+            allele = this->maxAllele();
         }
         else
         {
-          if( *allele - step > 1 )
-            *allele -= step;
+          if( allele - step > 1 )
+            AlleleMinus(allele, step);
           else
-            *allele = 1;
+            allele = 1;
         }
       }
 
@@ -588,9 +578,9 @@ namespace simuPOP
         return new PyMutator<Pop>(*this);
       }
 
-      virtual void mutate(Allele* allele)
+      virtual void mutate(AlleleRef allele)
       {
-        PyObject* arglist = Py_BuildValue("(i)", *allele);
+        PyObject* arglist = Py_BuildValue("(i)", static_cast<int>(allele) );
         PyObject* result = PyEval_CallObject(m_func, arglist);
         Py_DECREF(arglist);
 
@@ -602,9 +592,9 @@ namespace simuPOP
 
         int resInt;
         PyObj_As_Int(result, resInt);
-        DBG_DO(DBG_MUTATOR, cout << "Mutate " << static_cast<int>(*allele)
+        DBG_DO(DBG_MUTATOR, cout << "Mutate " << static_cast<int>(allele)
           << " to " << resInt << endl);
-        *allele = static_cast<Allele>(resInt);
+        allele = static_cast<Allele>(resInt);
         Py_DECREF(result);
       }
 
