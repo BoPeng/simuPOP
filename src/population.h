@@ -1315,7 +1315,7 @@ namespace simuPOP
         DBG_ASSERT( rhs.genoStru() == genoStru(), ValueError,
           "Passed population has different genotypic structure");
 
-        DBG_ASSERT( &(m_genotype[0]) != &(rhs.m_genotype[0]), ValueError,
+        DBG_ASSERT( m_genotype.begin() != rhs.m_genotype.begin(), ValueError,
           "Passed population is a reference of current population, swapPop failed." );
 
         // front -1 pop, -2 pop, .... end
