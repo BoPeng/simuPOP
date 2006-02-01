@@ -1048,6 +1048,8 @@ def setOptions(optimized=None, alleleType=None):
 # short = standard
 if simuOptions['AlleleType'] == 'standard':
   simuOptions['AlleleType'] = 'short'
+if simuOptions['Optimized'] not in [True, False]:
+  simuOptions['Optimized'] = False
 
 def requireRevision(rev):
   if simuRev() <= rev:

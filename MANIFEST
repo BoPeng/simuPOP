@@ -12738,6 +12738,12 @@ src/selector.h
 src/simuMatPlt.py
 src/simuOpt.py
 src/simuPOP.py
+src/simuPOP_ba.i
+src/simuPOP_ba.py
+src/simuPOP_ba_wrap.cpp
+src/simuPOP_baop.i
+src/simuPOP_baop.py
+src/simuPOP_baop_wrap.cpp
 src/simuPOP_common.i
 src/simuPOP_doc.i
 src/simuPOP_la.i
@@ -12764,6 +12770,8 @@ src/tagger.h
 src/terminator.h
 src/utility.cpp
 src/utility.h
+src/utility_ba.cpp
+src/utility_baop.cpp
 src/utility_la.cpp
 src/utility_laop.cpp
 src/utility_op.cpp
@@ -12800,6 +12808,7 @@ src/serialization/xml_oarchive.cpp
 src/serialization/xml_wgrammar.cpp
 src/serialization/xml_wiarchive.cpp
 src/serialization/xml_woarchive.cpp
+src/test/test.cpp
 test/test_fstat.py
 test/test_gcontrol.py
 test/test_gendrift.py

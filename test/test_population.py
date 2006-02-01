@@ -1,41 +1,64 @@
 #!/usr/bin/env python
 #
 # Purpose:
-#!/usr/bin/env python
 #
 # This is a unittest file for population object
 #
 # Bo Peng (bpeng@rice.edu)
 # 
-# Last Modified: Sep, 2005
+# Last Modified: $Date$
 # 
-# 
-
+ 
 from simuPOP import *
 import unittest, os, sys, exceptions
 
 class TestPopulation(unittest.TestCase):
    
   def setUp(self):
-    ' set up a population with given property'
+    ' set up a population with known properties '
     self.pop = population(size=100, ploidy=2, loci=[5, 7], \
       subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], \
       maxAllele=4, alleleNames=['_','A','C','T','G']) 
 
-  def testNewPopulation1(self):
-    ' no exception '
+  def testNewPopulation(self):
+    # no exception '
     population(size=100, ploidy=2, loci=[5, 7], subPop=[20, 80],
       lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
       maxAllele=4, alleleNames=['_','A','C','T','G'])
-    
-  def testNewPopulation2(self):
+    # raise exception when max allele is wrong
+    self.assertRaises(exceptions.ValueError,
+      population, size=10, maxAllele=MaxAllele+1)
+    # raise exception when subpop size does not match
     self.assertRaises(exceptions.ValueError, 
       population, size=1000, ploidy=4, loci=[5, 7]*20, \
       subPop=[20, 80]*20)
-
-  def testNewPopulation3(self):
+    # raise exception when ploidy value is wrong
     self.assertRaises(exceptions.ValueError, 
-      population(subPop=[20,20], ploidy=0) )
+      population, subPop=[20,20], ploidy=0)
+    # raise exceptions with negative values
+    self.assertRaises(exceptions.TypeError,
+      population, size=-10)
+    self.assertRaises(exceptions.TypeError,
+      population, subPop=[-10])
+    self.assertRaises(exceptions.TypeError,
+      population, ploidy=-1)
+    # lociDist is depreciated
+    self.assertRaises(exceptions.TypeError,
+      population, loci=[2], lociDist=[1,2])
+    # loci distance in order.
+    self.assertRaises(exceptions.ValueError,
+      population, loci=[2], lociPos=[3,2])
+    # loci distance is in order.
+    population(loci=[2,3], lociPos=[1,2,3,5,6])
+    # size mismatch
+    self.assertRaises(exceptions.ValueError,
+      population, loci=[2], lociPos=[1,2,3])
+    self.assertRaises(exceptions.ValueError,
+      population, loci=[2], lociPos=[1])
+    # loci names
+    self.assertRaises(exceptions.ValueError,
+      population, loci=[2], lociNames=['1', '2' , '3'])
+    
 
   def testNewPopulation3(self):
     self.assertRaises(exceptions.ValueError, 

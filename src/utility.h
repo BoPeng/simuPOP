@@ -1370,6 +1370,8 @@ namespace simuPOP
 
   bool optimized();
 
+  string alleleType();
+
   /// CPPONLY
   /// get a null stream that discard everything
   ostream& cnull();
