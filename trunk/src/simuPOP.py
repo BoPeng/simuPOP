@@ -34,14 +34,15 @@ elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'short':
   from simuPOP_op import * 
 elif simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'long':
   from simuPOP_la import *
-if simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'long':
+elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'long':
   from simuPOP_laop import *
 elif simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'binary':
   from simuPOP_ba import * 
 elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'binary':
   from simuPOP_baop import *
 else:
-  print "Warning: options unrecognized. Use standard library. "
+  print "Warning: options unrecognized (AlleleType=%s, Optimized=%d). Use standard library. " \
+    % (simuOptions['AlleleType'], simuOptions['Optimized'])
   from simuPOP_std import *
 
 if not simuOptions['Quiet']:
@@ -51,7 +52,7 @@ if not simuOptions['Quiet']:
     compilePyVersion() ))
   print compileCompiler()
   print "Random Number Generator is set to", rng().name()
-  print "Maximum allele number per locus is %d." % MaxAllele
+  print "This is the %s allele version with %d maximum allelic states." % (alleleType(), MaxAllele)
   if optimized():
     print "You are running in optimized mode at maximum speed."
   else:

@@ -160,6 +160,8 @@ namespace simuPOP
             for (j = 0; j < m_numLoci[i]; j++)
               m_lociNames[m_chromIndex[i]+j] = "loc"+ toStr(i+1) + "-" + toStr(j+1);
         }
+        DBG_ASSERT( m_lociNames.size() != m_totNumLoci, ValueError,
+          "Loci names, if specified, should be given to every loci");
       }
 
       /// copy constructor

@@ -2411,6 +2411,19 @@ T Expression::valueAs##TypeName() \
 #endif
   }
 
+  string alleleType()
+  {
+#ifdef LONGALLELE
+    return "long";
+#else
+#ifdef BINARYALLELE
+    return "binary";
+#else
+    return "short";
+#endif
+#endif
+  }
+  
   string compileCompiler()
   {
     return COMPILER;

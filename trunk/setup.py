@@ -84,7 +84,7 @@ SOURCE_FILES = [
 
 WRAP_INFO = [
   ['src/simuPOP_std_wrap.cpp', 'src/simuPOP_std.i', ''],
-  ['src/simuPOP_op_wrap.cpp', 'src/simuPOP_std.i', '-DOPTIMIZED'],
+  ['src/simuPOP_op_wrap.cpp', 'src/simuPOP_op.i', '-DOPTIMIZED'],
   ['src/simuPOP_la_wrap.cpp', 'src/simuPOP_la.i', '-DLONGALLELE'],
   ['src/simuPOP_laop_wrap.cpp', 'src/simuPOP_laop.i', '-DLONGALLELE -DOPTIMIZED'],
   ['src/simuPOP_ba_wrap.cpp', 'src/simuPOP_ba.i', '-DBINARYALLELE'],
