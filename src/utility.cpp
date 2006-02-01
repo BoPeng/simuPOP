@@ -64,7 +64,7 @@ using std::ofstream;
 
 // these functions are defined in arraymodule.c which is included
 // in simuPOP_wrap.cpp
-extern "C" PyObject* newcarrayobjectfrommem(char type, int size, char * ptr, bool copyOver);
+extern "C" PyObject* newcarrayobject(char* buf, char type, int size, unsigned long offset);
 extern "C" bool   is_carrayobject(PyObject*);
 extern "C" int    carray_length(PyObject*a);
 extern "C" int    carray_itemsize(PyObject*a);
@@ -452,37 +452,41 @@ namespace simuPOP
     return is_carrayobject(obj) &&
       carray_type(obj) == 'B';
 #else
-  #ifdef BINARYALLELE
+#ifdef BINARYALLELE
     throw SystemError("Can not acess binary allele as python array.");
-  #else
+#else
     return is_carrayobject(obj) &&
       carray_type(obj) == 'I';
-  #endif
+#endif
 #endif
   }
 
-  PyObject* Int_Vec_As_NumArray(int dim, int* buf, bool copyOver)
+  PyObject* Int_Vec_As_NumArray(int dim, int* buf)
   {
-    PyObject* res = newcarrayobjectfrommem('i', dim, reinterpret_cast<char*>(buf), copyOver);
+    PyObject* res = newcarrayobject(reinterpret_cast<char*>(buf), 'i', dim, 0);
 
     DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to int num array");
     return res;
   }
 
-  PyObject* Double_Vec_As_NumArray(int dim, double* buf, bool copyOver)
+  PyObject* Double_Vec_As_NumArray(int dim, double* buf)
   {
-    PyObject* res = newcarrayobjectfrommem('d', dim, reinterpret_cast<char*>(buf), copyOver);
+    PyObject* res = newcarrayobject(reinterpret_cast<char*>(buf), 'd', dim, 0);
 
     DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to double num array");
     return res;
   }
 
-  PyObject* Allele_Vec_As_NumArray(int dim, Allele* buf, bool copyOver)
+  PyObject* Allele_Vec_As_NumArray(int dim, GenoIterator start, unsigned long offset)
   {
 #ifdef LONGALLELE
-    PyObject* res = newcarrayobjectfrommem('I',dim, reinterpret_cast<char*>(buf), copyOver);
+    PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*start), 'I', dim, 0);
 #else
-    PyObject* res = newcarrayobjectfrommem('B',dim, reinterpret_cast<char*>(buf), copyOver);
+#ifdef SINBARYALLELE
+    PyObject* res = newcarrayobject(reinterpret_cast<char*>(start), 'a', dim, offset);
+#else
+    PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*start), 'B', dim, 0);
+#endif
 #endif
     DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to Allele num array");
     return res;
@@ -921,6 +925,37 @@ namespace simuPOP
     return setVar(name, Py_BuildValue("s", name.c_str()));
   }
 
+  PyObject* SharedVariables::setIntVectorVar(const string& name, const vectori& val)
+  {
+    PyObject * obj = PyList_New(0);
+    PyObject * item;
+    for(vectori::const_iterator it=val.begin();
+      it < val.end(); ++it)
+    {
+      item = PyInt_FromLong(*it);
+      PyList_Append(obj, item);
+      Py_XDECREF(item);
+    }
+    Py_INCREF(obj);
+    return setVar(name, obj);
+  }
+
+  ///CPPONLY
+  PyObject* SharedVariables::setDoubleVectorVar(const string& name, const vectorf& val)
+  {
+    PyObject * obj = PyList_New(0);
+    PyObject * item;
+    for(vectorf::const_iterator it=val.begin();
+      it < val.end(); ++it)
+    {
+      item = PyFloat_FromDouble(*it);
+      PyList_Append(obj, item);
+      Py_XDECREF(item);
+    }
+    Py_INCREF(obj);
+    return setVar(name, obj);
+  }
+
   PyObject* SharedVariables::setStrDictVar(const string& name, const strDict & val)
   {
     PyObject *obj = PyDict_New();
@@ -950,44 +985,6 @@ namespace simuPOP
     }
     Py_INCREF(obj);
     return setVar(name, obj);
-  }
-
-  PyObject* SharedVariables::setDoubleNumArrayVar(const string& name, int dim, double * buf, bool copyOver)
-  {
-    PyObject * obj = Double_Vec_As_NumArray(dim, buf, copyOver);
-    // do not know why, no need to inc reference. (checked with valgrind)
-    // Py_INCREF(obj);
-    return setVar(name, obj);
-  }
-
-  PyObject* SharedVariables::setIntNumArrayVar(const string& name, int dim, int * buf, bool copyOver)
-  {
-    PyObject * obj = Int_Vec_As_NumArray(dim, buf, copyOver);
-    // do not know why, no need to inc reference. (checked with valgrind)
-    // Py_INCREF(obj);
-    return setVar(name, obj);
-  }
-
-  int SharedVariables::getVarAsDoubleNumArray(const string& name, double* & buf, bool nameError)
-  {
-    PyObject * obj = getVar(name, nameError);
-
-    DBG_ASSERT( PyObj_Is_DoubleNumArray(obj), ValueError,
-      name + " is not a Python Numeric double array");
-
-    buf = reinterpret_cast<double*>(NumArray_Data(obj));
-    return NumArray_Size(obj);
-  }
-
-  int SharedVariables::getVarAsIntNumArray(const string& name, int* & buf, bool nameError)
-  {
-    PyObject * obj = getVar(name, nameError);
-
-    DBG_ASSERT( PyObj_Is_IntNumArray(obj), ValueError,
-      name + " is not a Python Numeric int array");
-
-    buf = reinterpret_cast<int*>(NumArray_Data(obj));
-    return NumArray_Size(obj);
   }
 
   void save_none(string& str)
@@ -1133,8 +1130,13 @@ namespace simuPOP
     return d;
   }
 
+  // can not save or load binary carray.
+  /*
   void save_carray(string& str, PyObject* args)
   {
+    DBG_ASSERT(carray_type(args) != 'a', ValueError,
+      "Binary carray can not be saved");
+
     char* d = carray_data(args);
     size_t len = carray_length(args);
     str += 'a' + toStr(len) + ' ' + carray_type(args)
@@ -1143,18 +1145,19 @@ namespace simuPOP
 
   PyObject* load_carray(const string& vars, size_t& offset)
   {
-    // skip 'a'
-    size_t lenlen = 0;
-    while( vars[offset+lenlen+1] != ' ' ) lenlen ++;
-    size_t len = atoi( const_cast<char*>(vars.substr(offset+1, lenlen).c_str()));
-    // get type
-    offset += lenlen+2;
-    char type = vars[offset];
-    char * ptr = const_cast<char*>(vars.c_str()) + offset + 1;
-    PyObject* arr = newcarrayobjectfrommem(type, len, ptr, true);
-    offset += len*carray_itemsize(arr) + 1;
-    return arr;
+  // skip 'a'
+  size_t lenlen = 0;
+  while( vars[offset+lenlen+1] != ' ' ) lenlen ++;
+  size_t len = atoi( const_cast<char*>(vars.substr(offset+1, lenlen).c_str()));
+  // get type
+  offset += lenlen+2;
+  char type = vars[offset];
+  char * ptr = const_cast<char*>(vars.c_str()) + offset + 1;
+  PyObject* arr = newcarrayobject(type, len, ptr, true);
+  offset += len*carray_itemsize(arr) + 1;
+  return arr;
   }
+  */
 
   void saveObj(string& str, PyObject* args)
   {
@@ -1202,13 +1205,13 @@ namespace simuPOP
           return;
         }
         break;
-      case 'a':
-        if (type == &Arraytype)
-        {
-          save_carray(str, args);
-          return;
-        }
-        break;
+        // case 'a':
+        //  if (type == &Arraytype)
+        //  {
+        //    save_carray(str, args);
+        //    return;
+        //  }
+        //  break;
       case 'f':
         if (type == &PyFloat_Type)
         {
@@ -1238,8 +1241,8 @@ namespace simuPOP
         return load_long(vars, offset);
       case 'L':
         return load_list(vars, offset);
-      case 'a':
-        return load_carray(vars, offset);
+        // case 'a':
+        //  return load_carray(vars, offset);
       case 'n':
         return load_none(vars, offset);
       default:
@@ -2115,7 +2118,7 @@ T Expression::valueAs##TypeName() \
           succ.set(loc);
         }
       }
-      else  // other cases, use the straight-forward method
+      else                                        // other cases, use the straight-forward method
       {
         double p = m_prob[cl];
         for(UINT i = 0; i < m_N; ++i)
@@ -2131,12 +2134,12 @@ T Expression::valueAs##TypeName() \
     return m_cur;
   }
 
-  /// get a trial corresponding to m_prob. 
+  /// get a trial corresponding to m_prob.
   const BitSet& BernulliTrials::trial()
   {
     if(m_cur == m_N )                             // reach the last trial
       doTrial();
-      
+
     // this can be slow. may be we should use vector<bool> since m_prob is
     // usually not long.
     for(size_t cl = 0, clEnd = m_prob.size(); cl < clEnd; ++cl)
@@ -2383,7 +2386,7 @@ T Expression::valueAs##TypeName() \
 #ifndef SIMUPOP_REV
 #define REVISION "9999"
 #else
-// make passed macro to a real string
+  // make passed macro to a real string
 #define REVISION MacroQuote(SIMUPOP_REV)
 #endif
 
@@ -2411,7 +2414,7 @@ T Expression::valueAs##TypeName() \
 #ifndef SIMUPOP_VER
     return "snapshot";
 #else
-  // convert name to a string
+    // convert name to a string
     return MacroQuote(SIMUPOP_VER);
 #endif
   }

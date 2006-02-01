@@ -28,14 +28,21 @@
 from simuOpt import simuOptions
 
 
-if simuOptions['Optimized'] == False and simuOptions['LongAllele'] == False:
+if simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'standard':
   from simuPOP_std import *
-elif simuOptions['Optimized'] == True and simuOptions['LongAllele'] == False:
+elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'standard':
   from simuPOP_op import * 
-elif simuOptions['Optimized'] == False and simuOptions['LongAllele'] == True:
+elif simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'long':
   from simuPOP_la import *
-else:
+if simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'long':
   from simuPOP_laop import *
+elif simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'binary':
+  from simuPOP_ba import * 
+elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'binary':
+  from simuPOP_baop import *
+else:
+  print "Warning: options unrecognized. Use standard library. "
+  from simuPOP_std import *
 
 if not simuOptions['Quiet']:
   print "simuPOP : Copyright (c) 2004-2005 Bo Peng"

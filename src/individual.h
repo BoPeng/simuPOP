@@ -509,7 +509,7 @@ namespace simuPOP
       /// return loci distance as python Numeric.array object
       PyObject* arrLociDist()
       {
-        return Double_Vec_As_NumArray( totNumLoci(), &(s_genoStruRepository[m_genoStruIdx].m_lociPos[0]), false);
+        return Double_Vec_As_NumArray( totNumLoci(), &(s_genoStruRepository[m_genoStruIdx].m_lociPos[0]));
       }
 
       /// number of chromosome
@@ -794,7 +794,7 @@ namespace simuPOP
       PyObject* arrGenotype()
       {
         // this &* is to avoid any possible type mismatch thing.
-        return Allele_Vec_As_NumArray( genoSize(), &*m_genoPtr, false);
+        return Allele_Vec_As_NumArray( genoSize(), m_genoPtr);
       }
 
       /// return genotype as python Numeric.array object
@@ -803,7 +803,7 @@ namespace simuPOP
       {
         CHECKRANGEPLOIDY(p);
 
-        return Allele_Vec_As_NumArray( totNumLoci(), &*(m_genoPtr+ p*totNumLoci()), false );
+        return Allele_Vec_As_NumArray( totNumLoci(), m_genoPtr+ p*totNumLoci() );
       }
 
       /// return genotype as python Numeric.array object
@@ -812,7 +812,7 @@ namespace simuPOP
       {
         CHECKRANGEPLOIDY(p);
 
-        return Allele_Vec_As_NumArray( numLoci(ch), &*(m_genoPtr+ p*totNumLoci() +chromBegin(ch)), false);
+        return Allele_Vec_As_NumArray( numLoci(ch), m_genoPtr+ p*totNumLoci() +chromBegin(ch));
       }
       /// get allele from an index
       /** \param index index from the beginning of genotypic info
@@ -821,7 +821,7 @@ namespace simuPOP
       {
         CHECKRANGEGENOSIZE(index);
 
-        return m_genoPtr[index];
+        return *(m_genoPtr+index);
       }
 
       /// get allele from an index, on the pth set of chromosome
@@ -833,7 +833,7 @@ namespace simuPOP
         CHECKRANGEABSLOCUS(index);
         CHECKRANGEPLOIDY(p);
 
-        return m_genoPtr[index + p* totNumLoci() ];
+        return *(m_genoPtr+index + p* totNumLoci() );
       }
 
       Allele allele(UINT index, UINT p, UINT ch) const
@@ -841,14 +841,14 @@ namespace simuPOP
         CHECKRANGEABSLOCUS(index);
         CHECKRANGEPLOIDY(p);
 
-        return m_genoPtr[index + p* totNumLoci() + chromBegin(ch)];
+        return *(m_genoPtr + index + p* totNumLoci() + chromBegin(ch));
       }
 
       string alleleChar(UINT index) const
       {
         CHECKRANGEGENOSIZE(index);
 
-        return this->alleleName(m_genoPtr[index]);
+        return this->alleleName(*(m_genoPtr + index));
       }
 
       /// get allele from an index, on the pth set of chromosome
@@ -860,7 +860,7 @@ namespace simuPOP
         CHECKRANGEABSLOCUS(index);
         CHECKRANGEPLOIDY(p);
 
-        return this->alleleName(m_genoPtr[index + p* totNumLoci() ]);
+        return this->alleleName(*(m_genoPtr + index + p* totNumLoci() ));
       }
 
       /// get allele from an index, on the pth set of chromosome
@@ -872,8 +872,8 @@ namespace simuPOP
         CHECKRANGEABSLOCUS(index);
         CHECKRANGEPLOIDY(p);
 
-        return this->alleleName(m_genoPtr[index + p* totNumLoci()
-          + chromBegin(ch) ]);
+        return this->alleleName(*(m_genoPtr + index + p* totNumLoci()
+          + chromBegin(ch) ) );
       }
 
       /// set allele from an index.
@@ -883,7 +883,7 @@ namespace simuPOP
       {
         CHECKRANGEGENOSIZE(index);
 
-        m_genoPtr[index] = allele;
+        *(m_genoPtr+index) = allele;
       }
 
       /// set allele from an index.
@@ -896,7 +896,7 @@ namespace simuPOP
         CHECKRANGEGENOSIZE(index);
         CHECKRANGEPLOIDY(p);
 
-        m_genoPtr[index+p*totNumLoci()] = allele;
+        *(m_genoPtr + index+p*totNumLoci()) = allele;
       }
 
       void setAllele(Allele allele, UINT index, UINT p, UINT ch)
@@ -904,7 +904,7 @@ namespace simuPOP
         CHECKRANGEGENOSIZE(index);
         CHECKRANGEPLOIDY(p);
 
-        m_genoPtr[index + p*totNumLoci() + chromBegin(ch) ] = allele;
+        *(m_genoPtr + index + p*totNumLoci() + chromBegin(ch) ) = allele;
       }
 
       /// return tag

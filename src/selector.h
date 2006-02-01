@@ -429,7 +429,7 @@ namespace simuPOP
         {
           m_len = m_loci.size() * ind->ploidy();
           m_alleles.resize( m_len);
-          m_numArray = Allele_Vec_As_NumArray(m_len, &m_alleles[0], false);
+          m_numArray = Allele_Vec_As_NumArray(m_len, m_alleles.begin());
         }
 
         DBG_FAILIF( static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),
@@ -542,7 +542,7 @@ namespace simuPOP
             it->setAffected(false);
         }
         if( m_exposePenetrance)
-          pop.setDoubleNumArrayVar("penetrance", pop.popSize(), &pVec[0]);
+          pop.setDoubleVectorVar("penetrance", pVec);
 
         return true;
       }
@@ -900,7 +900,7 @@ namespace simuPOP
           m_alleles.resize(m_len);
           if(m_numArray != NULL)
             Py_DECREF(m_numArray);
-          m_numArray = Allele_Vec_As_NumArray(m_len, &m_alleles[0], false);
+          m_numArray = Allele_Vec_As_NumArray(m_len, m_alleles.begin());
         }
 
         UINT pEnd = ind->ploidy();
@@ -1021,7 +1021,7 @@ namespace simuPOP
         for (typename Pop::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
           m_qtrait[i++] = qtrait(&*it) ;
 
-        pop.setDoubleNumArrayVar("qtrait", m_len, &m_qtrait[0], true);
+        pop.setDoubleVectorVar("qtrait", m_qtrait);
         return true;
       }
 
@@ -1362,7 +1362,7 @@ namespace simuPOP
         {
           m_len = m_loci.size() * ind->ploidy();
           m_alleles.resize( m_len);
-          m_numArray = Allele_Vec_As_NumArray(m_len, &m_alleles[0], false);
+          m_numArray = Allele_Vec_As_NumArray(m_len, m_alleles.begin());
         }
 
         DBG_FAILIF( static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),
@@ -1950,8 +1950,8 @@ namespace simuPOP
           DBG_DO(DBG_SELECTOR, cout << "Getting sample population" << endl);
           Pop& sample = pop.newPopByIndInfo(false);
 
-          sample.setIntNumArrayVar("nCases", pop.numSubPop(), &nCaseInSP[0]);
-          sample.setIntNumArrayVar("nControls", pop.numSubPop(), &nControlInSP[0]);
+          sample.setIntVectorVar("nCases", nCaseInSP);
+          sample.setIntVectorVar("nControls", nControlInSP);
           // determine exactly how many cases and controls in the final sample
           return sample;
         }
@@ -1985,8 +1985,8 @@ namespace simuPOP
           }
           // newPop .... but ignore ancestral populations
           Pop& sample = pop.newPopByIndInfo(false);
-          sample.setIntNumArrayVar("nCases", pop.numSubPop(), &m_numCases[0]);
-          sample.setIntNumArrayVar("nControls", pop.numSubPop(), &m_numControls[0]);
+          sample.setIntVectorVar("nCases", m_numCases);
+          sample.setIntVectorVar("nControls", m_numControls);
           return sample;
         }
       }
@@ -1999,7 +1999,7 @@ namespace simuPOP
     private:
 
       /// number of cases, use vectori instead of vectorlu because
-      /// this will be post to setIntNumArrayVar
+      /// this will be post to setIntVectorVar
       vectori m_numCases, m_numControls;
 
       /// whether or not sample from each subpop
@@ -2268,9 +2268,9 @@ namespace simuPOP
         // (true means keepAncestralPops)
         Pop & newPop = pop.newPopByIndInfo(true);
 
-        newPop.setIntNumArrayVar("numOffspring", pop.numSubPop(), &nSibpairSP[0]);
-        newPop.setIntNumArrayVar("chosenOffspring", chosenOff.size(), &chosenOff[0]);
-        newPop.setIntNumArrayVar("chosenParents", chosenPar.size(), &chosenPar[0]);
+        newPop.setIntVectorVar("numOffspring", nSibpairSP);
+        newPop.setIntVectorVar("chosenOffspring", chosenOff);
+        newPop.setIntVectorVar("chosenParents", chosenPar);
 
         DBG_DO(DBG_SELECTOR, cout << "Offspring selection done." << endl);
 

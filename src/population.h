@@ -83,14 +83,6 @@ namespace simuPOP
       /// individual itertor, used to iterate all individuals.
       typedef typename vector<IndType>::iterator IndIterator;
 
-      /// allele iterator, used to iterate the same allele across
-      /// all ploidy and individuals.
-      typedef GappedAlleleIterator AlleleIterator;
-
-      /// simple allele, used to iterate through all alleles one by one,
-      /// ignoring population structure.
-      typedef typename vector<Allele>::iterator SimpleIterator;
-
       /// individual tag type. (template parameter for Individual )
       typedef typename IndType::TagType TagType;
 
@@ -642,23 +634,23 @@ namespace simuPOP
       Therefore, it is possible to access all alleles within an subPopulation
       through such iterators.
       */
-      AlleleIterator alleleBegin(UINT locus)
+      GappedAlleleIterator alleleBegin(UINT locus)
       {
         CHECKRANGEABSLOCUS(locus);
 
-        return AlleleIterator( &m_genotype[locus], totNumLoci());
+        return GappedAlleleIterator( m_genotype.begin()+locus, totNumLoci());
       }
 
       /// CPPONLY allele iterator
-      AlleleIterator alleleEnd(UINT locus)
+      GappedAlleleIterator alleleEnd(UINT locus)
       {
         CHECKRANGEABSLOCUS( locus);
 
-        return AlleleIterator( &m_genotype[locus] + m_popGenoSize , totNumLoci());
+        return GappedAlleleIterator( m_genotype.begin() + locus + m_popGenoSize , totNumLoci());
       }
 
       ///  CPPONLY allele begin, for given subPopu
-      AlleleIterator alleleBegin(UINT locus, UINT subPop)
+      GappedAlleleIterator alleleBegin(UINT locus, UINT subPop)
       {
         CHECKRANGEABSLOCUS(locus);
         CHECKRANGESUBPOP(subPop);
@@ -666,36 +658,36 @@ namespace simuPOP
         if(IndType::shallowCopiedFlagOn())
           adjustGenoPosition();
 
-        return AlleleIterator( &m_genotype[ m_subPopIndex[subPop]*genoSize() +
-          locus ], totNumLoci());
+        return GappedAlleleIterator( m_genotype.begin() + m_subPopIndex[subPop]*genoSize() +
+          locus, totNumLoci());
       }
 
       ///  CPPONLY allele iterator
-      AlleleIterator alleleEnd( UINT locus, UINT subPop)
+      GappedAlleleIterator alleleEnd( UINT locus, UINT subPop)
       {
         CHECKRANGEABSLOCUS(locus);
         CHECKRANGESUBPOP(subPop);
 
         if(IndType::shallowCopiedFlagOn())
           adjustGenoPosition();
-        return AlleleIterator( &m_genotype[  m_subPopIndex[subPop+1]*genoSize() +
-          locus ], totNumLoci());
+        return GappedAlleleIterator( m_genotype.begin() + m_subPopIndex[subPop+1]*genoSize() +
+          locus, totNumLoci());
       }
 
       ///  CPPONLY allele iterator, go through all allels one by one, without subPop info
-      SimpleIterator begin()
+      GenoIterator begin()
       {
         return m_genotype.begin();
       }
 
       ///  CPPONLY allele iterator
-      SimpleIterator end()
+      GenoIterator end()
       {
         return m_genotype.end();
       }
 
       ///  CPPONLY allele iterator, go through all allels one by one in a subPopulation
-      SimpleIterator begin(UINT subPop)
+      GenoIterator begin(UINT subPop)
       {
         CHECKRANGESUBPOP(subPop);
 
@@ -706,7 +698,7 @@ namespace simuPOP
       }
 
       ///  CPPONLY allele iterator in a subPopulation.
-      SimpleIterator end(UINT subPop)
+      GenoIterator end(UINT subPop)
       {
         CHECKRANGESUBPOP(subPop);
 
@@ -757,7 +749,7 @@ namespace simuPOP
           adjustGenoPosition(true);
 
         // false: directly expose values. Do not copy data over.
-        return Allele_Vec_As_NumArray(m_popGenoSize, &m_genotype[0], false);
+        return Allele_Vec_As_NumArray(m_popGenoSize, m_genotype.begin(), 0);
       }
 
       /// get the whole genotype.
@@ -770,7 +762,13 @@ namespace simuPOP
           // adjust position. deep=true
           adjustGenoPosition(true);
 
-        return Allele_Vec_As_NumArray(subPopSize(subPop)*genoSize(), &*begin(subPop), false);
+#ifdef BINARYALLELE
+        return NULL;                              // Allele_Vec_As_NumArray(subPopSize(subPop)*genoSize(),
+        // &*m_genotype.begin(), subPop);
+#else
+        return Allele_Vec_As_NumArray(subPopSize(subPop)*genoSize(),
+          begin(subPop));
+#endif
       }
 
       //@}
@@ -789,7 +787,7 @@ namespace simuPOP
         for(ULONG it=0; it < m_popSize; ++it)
           val[it] = static_cast<int>(individual(it).info());
         // this has to be changed according to info type.
-        PyObject* var = setIntNumArrayVar(name, m_popSize, &val[0]);
+        PyObject* var = setIntVectorVar(name, val);
         Py_INCREF(var);
         return var;
       }
@@ -803,7 +801,7 @@ namespace simuPOP
         for(ULONG it=0; it < m_popSize; ++it)
           val[it] = static_cast<int>(individual(it).affected());
         // this has to be changed according to info type.
-        PyObject* var = setIntNumArrayVar(name, m_popSize, &val[0]);
+        PyObject* var = setIntVectorVar(name, val);
         Py_INCREF(var);
         return var;
       }
@@ -1772,6 +1770,18 @@ namespace simuPOP
         return m_vars.setStringVar(name, val);
       }
 
+      ///CPPONLY
+      PyObject* setIntVectorVar(const string& name, const vectori& val)
+      {
+        return m_vars.setIntVectorVar(name, val);
+      }
+
+      ///CPPONLY
+      PyObject* setDoubleVectorVar(const string& name, const vectorf& val)
+      {
+        return m_vars.setDoubleVectorVar(name, val);
+      }
+
       /// CPPONLY
       PyObject* setStrDictVar(const string& name, const strDict& val)
       {
@@ -1788,18 +1798,6 @@ namespace simuPOP
       PyObject* setVar(const string& name, PyObject* val)
       {
         return m_vars.setVar(name, val);
-      }
-
-      /// CPPONLY
-      PyObject* setDoubleNumArrayVar(const string& name, int dim, double*buf, bool copyOver=true)
-      {
-        return m_vars.setDoubleNumArrayVar(name, dim, buf, copyOver);
-      }
-
-      /// CPPONLY
-      PyObject* setIntNumArrayVar(const string& name, int dim, int*buf, bool copyOver=true)
-      {
-        return m_vars.setIntNumArrayVar(name, dim, buf, copyOver);
       }
 
       /// CPPONLY
@@ -1842,19 +1840,6 @@ namespace simuPOP
       intDict getVarAsIntDict(const string& name, bool nameError=true)
       {
         return m_vars.getVarAsIntDict(name, nameError);
-      }
-
-      /// CPPONLY
-      int getVarAsDoubleNumArray(const string& name, double* & buf,  bool nameError=true)
-      {
-
-        return m_vars.getVarAsDoubleNumArray(name, buf, nameError);
-      }
-
-      /// CPPONLY
-      int getVarAsIntNumArray(const string& name, int* & buf,  bool nameError=true)
-      {
-        return m_vars.getVarAsIntNumArray(name, buf, nameError);
       }
 
       /// CPPONLY
