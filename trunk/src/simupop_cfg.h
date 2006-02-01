@@ -63,6 +63,7 @@ typedef unsigned int* AllelePtr;
 #define AlleleDec(a)  --(a)
 #define AlleleAdd(a, b) (a)+=(b)
 #define AlleleMinus(a, b) (a)-=(b)
+#define AlleleUnsigned(a) (a)
 #else
 #ifdef BINARYALLELE
 typedef bool Allele;
@@ -73,6 +74,7 @@ typedef vector<bool>::pointer   AllelePtr;
 #define AlleleDec(a)  (a)=false
 #define AlleleAdd(a, b) (a)=((b)==0?(a):((b)>0?true:false))
 #define AlleleMinus(a, b) (a)=((b)==0?(a):((b)>0?false:true))
+#define AlleleUnsigned(a) (static_cast<unsigned char>(a))
 #else
 typedef unsigned char  Allele;
 typedef unsigned char& AlleleRef;
@@ -81,6 +83,7 @@ typedef unsigned char* AllelePtr;
 #define AlleleDec(a)  --(a)
 #define AlleleAdd(a, b) (a)+=(b)
 #define AlleleMinus(a, b) (a)-=(b)
+#define AlleleUnsigned(a) (a)
 #endif
 #endif
 

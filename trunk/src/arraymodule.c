@@ -70,8 +70,6 @@ typedef struct arrayobject
 
 // redefinition of type...
 // staticforward PyTypeObject Arraytype;
-extern "C"
-{
 
   bool is_carrayobject(PyObject *op);
 
@@ -810,11 +808,10 @@ Convert array to an ordinary list with the same items.";
     len = a->ob_size;
     if (len == 0)
     {
-      PyOS_snprintf(buf, sizeof(buf), "[]",
-        a->ob_descr->typecode);
+      PyOS_snprintf(buf, sizeof(buf), "[]");
       return PyString_FromString(buf);
     }
-    PyOS_snprintf(buf, sizeof(buf), "[", a->ob_descr->typecode);
+    PyOS_snprintf(buf, sizeof(buf), "[");
     s = PyString_FromString(buf);
     comma = PyString_FromString(", ");
     for (i = 0; i < len && !PyErr_Occurred(); i++)
@@ -1026,5 +1023,4 @@ itemsize -- the length in bytes of one array item\n\
     op->ob_descr = descriptors;
     op->ob_iterator.ob_iter = begin;
     return (PyObject *) op;
-  }
 }

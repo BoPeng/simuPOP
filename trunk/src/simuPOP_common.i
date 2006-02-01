@@ -49,7 +49,10 @@
 
 ////////////////////////// DEFINE CARRAY //////////////////////////
 %{
+extern "C"
+{
 #include "arraymodule.c"
+}
 %}
 
 
@@ -441,10 +444,6 @@ def LoadPopulations(file, format='auto'):
   for i in range(0, simu.numRep()):
     pops.append( simu.getPopulation(i))
   return pops
-
-
-# we do not expose carray by default
-# carray = cppModule.carray
 
 #### /////////////////// FUNCTION COUNTERPART OF OPERATORS ////////////////////////////
 

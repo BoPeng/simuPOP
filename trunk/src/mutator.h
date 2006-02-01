@@ -398,7 +398,7 @@ namespace simuPOP
       {
         if( rng().randUniform01() < m_incProb)
         {
-          if( allele < this->maxAllele() )
+          if( AlleleUnsigned(allele) < this->maxAllele() )
             AlleleInc(allele);
         }
         else

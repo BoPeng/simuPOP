@@ -693,7 +693,7 @@ namespace simuPOP
             for(GappedAlleleIterator a=pop.alleleBegin(loc, sp),
               aEnd=pop.alleleEnd(loc, sp); a != aEnd; ++a)
             {
-              if( *a >= num.size() )
+              if( AlleleUnsigned(*a) >= num.size() )
                 num.resize(*a+1, 0);
               num[*a]++;
             }
@@ -978,10 +978,10 @@ namespace simuPOP
               aEnd=pop.alleleEnd(loc, sp);
               a != aEnd; a+=2)
             {
-              if( *a >= num.size() )
+              if( AlleleUnsigned(*a) >= num.size() )
                 num.resize(*a+1);
 
-              if( *(a+1) >= num.size() )
+              if( AlleleUnsigned(*(a+1)) >= num.size() )
                 num.resize(*(a+1)+1);
 
               if(  *a != *(a+1) )                 // heterozygote
