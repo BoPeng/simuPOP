@@ -429,7 +429,7 @@ namespace simuPOP
         {
           m_len = m_loci.size() * ind->ploidy();
           m_alleles.resize( m_len);
-          m_numArray = Allele_Vec_As_NumArray(m_len, m_alleles.begin());
+          m_numArray = Allele_Vec_As_NumArray( m_alleles.begin(), m_alleles.end() );
         }
 
         DBG_FAILIF( static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),
@@ -900,7 +900,7 @@ namespace simuPOP
           m_alleles.resize(m_len);
           if(m_numArray != NULL)
             Py_DECREF(m_numArray);
-          m_numArray = Allele_Vec_As_NumArray(m_len, m_alleles.begin());
+          m_numArray = Allele_Vec_As_NumArray( m_alleles.begin(), m_alleles.end() );
         }
 
         UINT pEnd = ind->ploidy();
@@ -1362,7 +1362,7 @@ namespace simuPOP
         {
           m_len = m_loci.size() * ind->ploidy();
           m_alleles.resize( m_len);
-          m_numArray = Allele_Vec_As_NumArray(m_len, m_alleles.begin());
+          m_numArray = Allele_Vec_As_NumArray( m_alleles.begin(), m_alleles.end() );
         }
 
         DBG_FAILIF( static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),

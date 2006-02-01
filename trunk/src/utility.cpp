@@ -64,7 +64,8 @@ using std::ofstream;
 
 // these functions are defined in arraymodule.c which is included
 // in simuPOP_wrap.cpp
-extern "C" PyObject* newcarrayobject(char* buf, char type, int size, unsigned long offset);
+extern "C" PyObject* newcarrayobject(char* buf, char type, int size);
+extern "C" PyObject* newcarrayiterobject(GenoIterator begin, GenoIterator end);
 extern "C" bool   is_carrayobject(PyObject*);
 extern "C" int    carray_length(PyObject*a);
 extern "C" int    carray_itemsize(PyObject*a);
@@ -448,22 +449,12 @@ namespace simuPOP
   /// CPPONLY
   bool PyObj_Is_AlleleNumArray(PyObject * obj)
   {
-#ifdef LONGALLELE
-    return is_carrayobject(obj) &&
-      carray_type(obj) == 'B';
-#else
-#ifdef BINARYALLELE
-    throw SystemError("Can not acess binary allele as python array.");
-#else
-    return is_carrayobject(obj) &&
-      carray_type(obj) == 'I';
-#endif
-#endif
+    return is_carrayobject(obj) && carray_type(obj) == 'a';
   }
 
   PyObject* Int_Vec_As_NumArray(int dim, int* buf)
   {
-    PyObject* res = newcarrayobject(reinterpret_cast<char*>(buf), 'i', dim, 0);
+    PyObject* res = newcarrayobject(reinterpret_cast<char*>(buf), 'i', dim);
 
     DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to int num array");
     return res;
@@ -471,23 +462,15 @@ namespace simuPOP
 
   PyObject* Double_Vec_As_NumArray(int dim, double* buf)
   {
-    PyObject* res = newcarrayobject(reinterpret_cast<char*>(buf), 'd', dim, 0);
+    PyObject* res = newcarrayobject(reinterpret_cast<char*>(buf), 'd', dim);
 
     DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to double num array");
     return res;
   }
 
-  PyObject* Allele_Vec_As_NumArray(int dim, GenoIterator start, unsigned long offset)
+  PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
   {
-#ifdef LONGALLELE
-    PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*start), 'I', dim, 0);
-#else
-#ifdef SINBARYALLELE
-    PyObject* res = newcarrayobject(reinterpret_cast<char*>(start), 'a', dim, offset);
-#else
-    PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*start), 'B', dim, 0);
-#endif
-#endif
+    PyObject* res = newcarrayiterobject(begin, end);
     DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to Allele num array");
     return res;
   }

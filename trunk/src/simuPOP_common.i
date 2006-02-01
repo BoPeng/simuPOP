@@ -49,10 +49,7 @@
 
 ////////////////////////// DEFINE CARRAY //////////////////////////
 %{
-  extern "C"
-  {
 #include "arraymodule.c"
-  }
 %}
 
 
@@ -446,8 +443,8 @@ def LoadPopulations(file, format='auto'):
   return pops
 
 
-// we do not expose carray by default
-// carray = cppModule.carray
+# we do not expose carray by default
+# carray = cppModule.carray
 
 #### /////////////////// FUNCTION COUNTERPART OF OPERATORS ////////////////////////////
 

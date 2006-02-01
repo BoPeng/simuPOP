@@ -794,7 +794,7 @@ namespace simuPOP
       PyObject* arrGenotype()
       {
         // this &* is to avoid any possible type mismatch thing.
-        return Allele_Vec_As_NumArray( genoSize(), m_genoPtr);
+        return Allele_Vec_As_NumArray( m_genoPtr, m_genoPtr + genoSize() );
       }
 
       /// return genotype as python Numeric.array object
@@ -803,7 +803,8 @@ namespace simuPOP
       {
         CHECKRANGEPLOIDY(p);
 
-        return Allele_Vec_As_NumArray( totNumLoci(), m_genoPtr+ p*totNumLoci() );
+        return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci(), 
+          m_genoPtr + (p+1)*totNumLoci() );
       }
 
       /// return genotype as python Numeric.array object
@@ -812,7 +813,8 @@ namespace simuPOP
       {
         CHECKRANGEPLOIDY(p);
 
-        return Allele_Vec_As_NumArray( numLoci(ch), m_genoPtr+ p*totNumLoci() +chromBegin(ch));
+        return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci() +chromBegin(ch), 
+          m_genoPtr + p*totNumLoci() +chromEnd(ch));
       }
       /// get allele from an index
       /** \param index index from the beginning of genotypic info

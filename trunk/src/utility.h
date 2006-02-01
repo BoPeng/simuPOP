@@ -412,7 +412,7 @@ namespace simuPOP
   PyObject* Double_Vec_As_NumArray(int dim, double* buf);
 
   /// CPPONLY
-  PyObject* Allele_Vec_As_NumArray(int dim, GenoIterator buf, unsigned long offset=0);
+  PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 
   /// CPPONLY
   int NumArray_Size(PyObject* obj);
