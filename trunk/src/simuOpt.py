@@ -1032,7 +1032,7 @@ elif env_optimized != None:
 else:   # default to false
   _optimized = False
    
-if env_longAllele != None and env_longAllele in ['standard', 'long', 'binary']:
+if env_longAllele != None and env_longAllele in ['standard', 'short', 'long', 'binary']:
   _longAllele = env_longAllele
 else:
   _longAllele = 'standard'
@@ -1042,9 +1042,13 @@ simuOptions = {'Optimized':_optimized, 'AlleleType':_longAllele, 'Quiet':par_qui
 def setOptions(optimized=None, alleleType=None):
   if optimized in [True, False]:
     simuOptions['Optimized'] = optimized
-  if alleleType in ['standard', 'long', 'binary']:
+  if alleleType in ['standard', 'long', 'binary', 'short']:
     simuOptions['AlleleType'] = alleleType
   
+# short = standard
+if simuOptions['AlleleType'] == 'standard':
+  simuOptions['AlleleType'] = 'short'
+
 def requireRevision(rev):
   if simuRev() <= rev:
     raise exceptions.SystemError('''This script requires simuPOP revision >= %d, 

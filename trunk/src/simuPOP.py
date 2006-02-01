@@ -28,9 +28,9 @@
 from simuOpt import simuOptions
 
 
-if simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'standard':
+if simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'short':
   from simuPOP_std import *
-elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'standard':
+elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'short':
   from simuPOP_op import * 
 elif simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'long':
   from simuPOP_la import *
