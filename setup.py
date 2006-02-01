@@ -60,23 +60,6 @@ if sys.argv[1] not in ['sdist']:
       print "Error: Unknown system type. Use configure to generate config.h."
       sys.exit()
     
-def addCarrayEntry(file):
-  ' add a line at the wrap file for carray type definition'
-  shutil.copy(file, file+'tmp')
-  ofile = open(file, 'w')
-  ifile = open(file+'tmp', 'r')
-  for line in ifile.readlines():
-    if line.find('static PyMethodDef SwigMethods[] = ') != -1:
-      ofile.write('''static PyMethodDef SwigMethods[] = {
-        /* add carray entries */ 
-        { (char*)"carray", a_array, METH_VARARGS, a_array_doc}, 
-        ''')
-    else:
-      ofile.write(line)
-  ifile.close()
-  ofile.close()
-  os.remove(file+'tmp')
-
 # run swig, modify generated wrap file.
 # determine if the source if newer than _wrap files.
 SOURCE_FILES = [
@@ -122,7 +105,6 @@ if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in range(len(WRAP_INFO))]) o
       # for standard library
       print "Generating wrap file " + WRAP_INFO[lib][0]
       os.system('%s %s -o %s %s' % (SWIG, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1]))
-      addCarrayEntry(WRAP_INFO[lib][0])
   except:
     print "Can not generate wrap files. Please check your swig installation."
     raise

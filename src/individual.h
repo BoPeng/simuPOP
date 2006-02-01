@@ -803,7 +803,7 @@ namespace simuPOP
       {
         CHECKRANGEPLOIDY(p);
 
-        return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci(), 
+        return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci(),
           m_genoPtr + (p+1)*totNumLoci() );
       }
 
@@ -813,7 +813,7 @@ namespace simuPOP
       {
         CHECKRANGEPLOIDY(p);
 
-        return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci() +chromBegin(ch), 
+        return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci() +chromBegin(ch),
           m_genoPtr + p*totNumLoci() +chromEnd(ch));
       }
       /// get allele from an index
