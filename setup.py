@@ -37,6 +37,8 @@ if sys.argv[1] not in ['sdist']:
   shutil.copy('src/utility.cpp', 'src/utility_op.cpp')
   shutil.copy('src/utility.cpp', 'src/utility_la.cpp')
   shutil.copy('src/utility.cpp', 'src/utility_laop.cpp')
+  shutil.copy('src/utility.cpp', 'src/utility_ba.cpp')
+  shutil.copy('src/utility.cpp', 'src/utility_baop.cpp')
   # checking os type and copy configuration files
   if os.name == 'nt':  # Windows
     shutil.copy('config_win32.h', 'config.h')
@@ -97,40 +99,33 @@ SOURCE_FILES = [
   'src/utility.cpp'
 ]
 
-WRAP_FILES = [
-  'src/simuPOP_std_wrap.cpp',
-  'src/simuPOP_op_wrap.cpp',
-  'src/simuPOP_la_wrap.cpp',
-  'src/simuPOP_laop_wrap.cpp'
-]
+WRAP_INFO = [
+  ['src/simuPOP_std_wrap.cpp', 'src/simuPOP_std.i', ''],
+  ['src/simuPOP_op_wrap.cpp', 'src/simuPOP_std.i', '-DOPTIMIZED'],
+  ['src/simuPOP_la_wrap.cpp', 'src/simuPOP_la.i', '-DLONGALLELE'],
+  ['src/simuPOP_laop_wrap.cpp', 'src/simuPOP_laop.i', '-DLONGALLELE -DOPTIMIZED'],
+  ['src/simuPOP_ba_wrap.cpp', 'src/simuPOP_ba.i', '-DBINARYALLELE'],
+  ['src/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED']
+]  
 
 # if any of the wrap files does not exist
 # or if the wrap files are older than any of the source files.
-if (False in [os.path.isfile(x) for x in WRAP_FILES]) or \
-  (max( [os.path.getmtime(x) for x in SOURCE_FILES] ) > min( [os.path.getmtime(x) for x in WRAP_FILES])):
+if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in range(len(WRAP_INFO))]) or \
+  (max( [os.path.getmtime(x) for x in SOURCE_FILES] ) > \
+   min( [os.path.getmtime(WRAP_INFO[x][0]) for x in range(len(WRAP_INFO))])):
   try:
     SWIG = 'swig  -shadow -python -keyword -w-503,-312,-511,-362,-383,-384,-389,-315,-525 -nodefault -c++ '
     # generate header file 
     print "Generating external runtime header file..."
     os.system( 'swig  -python -external-runtime swigpyrun.h' )
-    # for standard library
-    print "Generating wrap file for standard library..."
-    os.system(SWIG + ' -o src/simuPOP_std_wrap.cpp src/simuPOP_std.i')
-    addCarrayEntry('src/simuPOP_std_wrap.cpp')
-    # for optimized library
-    print "Generating wrap file for optimzied library..."
-    os.system(SWIG + ' -DOPTIMIZED -o src/simuPOP_op_wrap.cpp src/simuPOP_op.i')
-    addCarrayEntry('src/simuPOP_op_wrap.cpp')
-    # for long allele library
-    print "Generating wrap file for long allele library..."
-    os.system(SWIG + ' -DLONGALLELE -o src/simuPOP_la_wrap.cpp src/simuPOP_la.i')
-    addCarrayEntry('src/simuPOP_la_wrap.cpp')
-    # for long allele optimized library
-    print "Generating wrap file for long allele library..."
-    os.system(SWIG + ' -DLONGALLELE -DOPTIMIZED -o src/simuPOP_laop_wrap.cpp src/simuPOP_laop.i')
-    addCarrayEntry('src/simuPOP_laop_wrap.cpp')
+    for lib in range(len(WRAP_INFO)):
+      # for standard library
+      print "Generating wrap file " + WRAP_INFO[lib][0]
+      os.system('%s %s -o %s %s' % (SWIG, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1]))
+      addCarrayEntry(WRAP_INFO[lib][0])
   except:
     print "Can not generate wrap files. Please check your swig installation."
+    raise
 
 DESCRIPTION = """
 simuPOP is a forward-time population genetics simulation environment.
@@ -298,10 +293,30 @@ setup(
       extra_compile_args=['-O2'],
       include_dirs = ["."],
       libraries = ['stdc++'],
-      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), ('OPTIMIZED', None) ] + std_macro,
+      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), 
+                        ('OPTIMIZED', None) ] + std_macro,
       sources = GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_laop_wrap.cpp',
         'src/utility_laop.cpp'] 
+    ),
+    Extension('_simuPOP_ba',
+      extra_compile_args=['-O2'],
+      include_dirs = ["."],
+      libraries = ['stdc++'],
+      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None) ] + std_macro,
+      sources = GSL_FILES + SERIAL_FILES + [
+        'src/simuPOP_ba_wrap.cpp',
+        'src/utility_ba.cpp'] 
+    ),
+    Extension('_simuPOP_baop',
+      extra_compile_args=['-O2'],
+      include_dirs = ["."],
+      libraries = ['stdc++'],
+      define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None), 
+                        ('OPTIMIZED', None) ] + std_macro,
+      sources = GSL_FILES + SERIAL_FILES + [
+        'src/simuPOP_baop_wrap.cpp',
+        'src/utility_baop.cpp'] 
     )
   ],
   data_files = DATA_FILES

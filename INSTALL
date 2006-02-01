@@ -299,7 +299,7 @@ NOTE: for python2.4, you can get error saying
   My fix is go to python24/Lib/distutils/cygwinccompiler.py, at line 139, change
     self.dll_libraries = [] 
   to
-    self.dll_libraries = ['msvcrt', 'python',+ ''.join(sys.winver.aplit('.'))]
+    self.dll_libraries = ['msvcrt', 'python' + ''.join(sys.winver.split('.'))]
   and comment out the following if/else block. This will force simuPOP to use msvcrt, not
   msvcrt70 or msvcrt71 with msvc.
  

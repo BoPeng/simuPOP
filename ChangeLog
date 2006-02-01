@@ -17,8 +17,20 @@ version 0.6.12 - available as snapshot
   - NEW: simuUtil/SaveLinkage is improved in efficiency
   - CHG: simuUtil/SaveLinkage: if pre is True, the output is filename.pre
          instead of filename.ped, which will be used when pre is False.
-  - CHG: fitness is implemented differently. Namely, fitness will no longer
-         be stored as shared variables.
+  - CHG: (internal cleaning) fitness is implemented differently.
+  - CHG: (internal cleaning) randomMating sex determination no longer use bt. 
+  - CHG: (internal cleaning) isMale class is replaced by a less fancier solution.
+  - CHG: (internal) change the use of pointer to iterator, in preparation for
+         compact presentation of binary alleles.
+  - NEW: add a compilable (imcomplete) binary library. All alleles are 0 or 1
+         and are stored internally as bits to save spaces.
+  - CHG: carray can now read/write binary allele. However, it can no longer 
+         be a standalone type. It should always be only a reference to a 
+         piece of memory. This simplifies the design since we do not have to
+         worry about extending, slicing etc.
+  - NEW: (important) addition of ba, baop modules for binary allele. Extensive
+         tests are needed but it is in working status now, including the arrGenotype
+         function series.
 
 version 0.6.11 - (Rev 119) - Jan 19, 2006
   - DOC: add examples of penetrance operators to the reference manual.
