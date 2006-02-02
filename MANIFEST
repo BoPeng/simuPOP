@@ -12809,6 +12809,9 @@ src/serialization/xml_wgrammar.cpp
 src/serialization/xml_wiarchive.cpp
 src/serialization/xml_woarchive.cpp
 src/test/test.cpp
+test/test_00_carray.py
+test/test_01_individual.py
+test/test_02_population.py
 test/test_fstat.py
 test/test_gcontrol.py
 test/test_gendrift.py
@@ -12825,7 +12828,6 @@ test/test_opPause.py
 test/test_operator.py
 test/test_param.py
 test/test_penetrance.py
-test/test_population.py
 test/test_pyOperator.py
 test/test_recombination.py
 test/test_rng.py

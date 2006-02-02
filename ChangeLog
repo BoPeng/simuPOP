@@ -32,6 +32,8 @@ version 0.6.12 - available as snapshot
          tests are needed but it is in working status now, including the arrGenotype
          function series.
   - NEW: you can now directly compare individuals and populations in python.
+  - CHG: carray is no longer a standalone type. (You can not create it in python)
+  - NEW: Complete test cases for carray, individual, population
 
 version 0.6.11 - (Rev 119) - Jan 19, 2006
   - DOC: add examples of penetrance operators to the reference manual.

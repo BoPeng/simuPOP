@@ -6,13 +6,22 @@
 #
 # Bo Peng (bpeng@rice.edu)
 # 
-# Last Modified: $Date$
+# $LastChangedRevision$
+# $LastChangedDate$
 # 
  
 from simuPOP import *
 import unittest, os, sys, exceptions
 
 class TestPopulation(unittest.TestCase):
+
+  def assertGenotype(self, pop, subPop, genotype):
+    gt = list(pop.arrGenotype(subPop))
+    gt.sort()
+    if alleleType() == 'binary':
+      self.assertEqual(gt, [x>0 for x in genotype])
+    else:
+      self.assertEqual(gt, genotype)
 
   def testNewPopulation(self):
     self.assertRaises(exceptions.ValueError,
@@ -65,11 +74,11 @@ class TestPopulation(unittest.TestCase):
     self.assertRaises(exceptions.ValueError,
       population, loci=[2], lociNames=['1', '2' , '3'])
     # allele names, should only gives warning
-    population(10, alleleNames=['-'])
+    population(10, alleleNames=['_'])
     if alleleType() == 'binary':
       population(10, maxAllele=1, alleleNames=['A', 'B'])
     else:
-      population(10, maxAllele=2, alleleNames=['-', 'A', 'B'])
+      population(10, maxAllele=2, alleleNames=['_', 'A', 'B'])
     # sex chrom, 2 does not trigger type error
     p = population(loci=[2], sexChrom=2)
     self.assertEqual( p.sexChrom(), True)
@@ -159,7 +168,7 @@ class TestPopulation(unittest.TestCase):
       # 5 is passed to be function as bool
       self.assertEqual(pop.alleleName(5), '2')
     else:
-      self.assertEqual(pop.alleleName(0), '-')
+      self.assertEqual(pop.alleleName(0), '_')
       self.assertEqual(pop.alleleName(1), 'A')
       self.assertEqual(pop.alleleName(2), 'C')
       self.assertEqual(pop.alleleName(3), 'T')
@@ -176,7 +185,7 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual(pop.locusName(2), 'lc')
     self.assertRaises(exceptions.IndexError, pop.locusName, 5)
     
-  def testPopManipulation(self):
+  def testSetSubPopStru(self):
     pop = population(size=1, loci=[1])
     # pop1 is only a reference to pop
     pop1 = pop
@@ -201,6 +210,8 @@ class TestPopulation(unittest.TestCase):
     # can change population size if allow... is set to True
     pop.setSubPopStru(newSubPopSizes=[10, 20], allowPopSizeChange=True)
     self.assertEqual( pop.subPopSizes(), (10, 20) )
+
+  def testPopSwap(self):
     # swap
     pop = population(10, loci=[2])
     pop1 = population(5, loci=[3])
@@ -211,25 +222,216 @@ class TestPopulation(unittest.TestCase):
     pop1.swap(pop)
     self.assertEqual( pop, pop1a)
     self.assertEqual( pop1, popa)
-    # FIXME: starting from here tomorrow
-    # test split and merge subpopulations
-    pop = population(subPop=[5,6,7])
-    SplitSubPop(pop, 1, [2,4])
-    self.assertEqual(pop.subPopSizes(), [5,2,4,7])
+
+  def testSplitSubPop(self):
+    pop = population(subPop=[5,6,7], ploidy=1, loci=[1])
+    arr = pop.arrGenotype()
+    # mapArr is separate
+    mapArr = list(arr)
+    mapArr = range(pop.popSize())
+    arr[:] = mapArr
+    # split, the additional subpop will be put at the end
+    # member function form
+    pop.splitSubPop(1, [2,4])
+    self.assertEqual(pop.subPopSizes(), (5,2,7,4) )
+    # check if 7,8,9,10 is moved to subpopulation 3.
+    # underlying genotype will *not* be sorted
+    self.assertGenotype(pop, 0, [0,1,2,3,4])
+    self.assertGenotype(pop, 1, [5,6])
+    self.assertGenotype(pop, 2, [11,12,13,14,15,16,17])
+    self.assertGenotype(pop, 3, [7,8,9,10])
+    #, 5,6, 11,12,13,14,15,16,17, 7,8,9,10])
     #
+    # recover population
+    pop.setSubPopStru([5,6,7], False)
+    pop.arrGenotype()[:] = range(pop.popSize())
+    # function form
     SplitSubPop(pop, 1, [2,4], subPopID=[4,1])
-    self.assertEqual(pop.subPopSizes(), [5,2,4,7])
-    pop = population(subPop=[5,6,7])
-    InitByFreq(pop,[.2,.8])
-    SplitSubPop(pop, 2, proportions=[.5,.5])
-    MergeSubPops(pop)
-    SplitSubPop(pop, 0, proportions=[.2,.3,.5])
-    MergeSubPops(pop,[0,2])
-    SplitSubPop(pop, 0, proportions=[.2,.3,.5])
-    MergeSubPops(pop,[2,0])
-    SplitSubPop(pop, 3, proportions=[.5,.5], subPopID=[-1,0])
+    self.assertEqual(pop.subPopSizes(), (5,4,7,0,2))
+    self.assertGenotype(pop, 0, [0,1,2,3,4])
+    self.assertGenotype(pop, 1, [7,8,9,10])
+    self.assertGenotype(pop, 2, [11,12,13,14,15,16,17])
+    self.assertGenotype(pop, 3, [])
+    self.assertGenotype(pop, 4, [5,6])
+    # given wrong split size?
+    self.assertRaises(exceptions.ValueError,
+      SplitSubPop, pop, 1, [2,4], subPopID=[4,1])
+    # if given subPopID is already used?
+    print "A warning should be issued"
+    SplitSubPop(pop, 0, [2,3], subPopID=[2,3])
+    
+  def testSplitSubPopByProportion(self):
+    # split by proportion -------- 
+    pop = population(subPop=[5,6,7], ploidy=1, loci=[1])
+    arr = pop.arrGenotype()
+    # mapArr is separate
+    mapArr = list(arr)
+    mapArr = range(pop.popSize())
+    arr[:] = mapArr
+    # step 1, split, the additional subpop will be put at the end
+    pop.splitSubPopByProportion(1, [2/5.,3/5.])
+    self.assertEqual(pop.subPopSizes(), (5,2,7,4) )
+    # check if 7,8,9,10 is moved to subpopulation 3.
+    # underlying genotype will *not* be sorted
+    self.assertGenotype(pop, 0, [0,1,2,3,4])
+    self.assertGenotype(pop, 1, [5,6])
+    self.assertGenotype(pop, 2, [11,12,13,14,15,16,17])
+    self.assertGenotype(pop, 3, [7,8,9,10])
+    #
+    # recover population
+    pop.setSubPopStru([5,6,7], False)
+    pop.arrGenotype()[:] = range(pop.popSize())
+    SplitSubPopByProportion(pop, 1, [2/5.,3/5.], subPopID=[4,1])
+    self.assertEqual(pop.subPopSizes(), (5,4,7,0,2))
+    self.assertGenotype(pop, 0, [0,1,2,3,4])
+    self.assertGenotype(pop, 1, [7,8,9,10])
+    self.assertGenotype(pop, 2, [11,12,13,14,15,16,17])
+    self.assertGenotype(pop, 3, [])
+    self.assertGenotype(pop, 4, [5,6])
+    # proportion does not add up to one?
+    self.assertRaises(exceptions.ValueError,
+      SplitSubPopByProportion, pop, 1, [2/3.,2/3.], subPopID=[4,1])
+    # if given subPopID is already used?
+    print "A warning should be issued"
+    SplitSubPopByProportion(pop, 0, [2/5.,3/5.], subPopID=[2,3])
+    #
+    # split by proportion
+   
+  def testEmptySubPops(self):
+    pop = population(subPop=[0,1,0,2,3,0])
+    self.assertEqual( pop.numSubPop(), 6)
+    pop.removeEmptySubPops()
+    self.assertEqual( pop.numSubPop(), 3)
+    # remove subpop
+    pop = population(subPop=[0,1,0,2,3,0], ploidy=1, loci=[1])
+    arr = pop.arrGenotype()
+    # mapArr is separate
+    arr[:] = range(pop.popSize())
+    pop.removeSubPops([1,2])
+    self.assertEqual( pop.subPopSizes(), (0,2,3,0))
+    # subpop will be shifted
+    self.assertGenotype(pop, 0, [])
+    self.assertGenotype(pop, 1, [1,2])
+    self.assertGenotype(pop, 2, [3,4,5])
+    self.assertGenotype(pop, 3, [])
+    #
+    pop.removeSubPops([2], shiftSubPopID=False)
+    self.assertEqual( pop.subPopSizes(), (0,2,0,0))
+    # subpop will be shifted
+    self.assertGenotype(pop, 0, [])
+    self.assertGenotype(pop, 1, [1,2])
+    self.assertGenotype(pop, 2, [])
+    self.assertGenotype(pop, 3, [])
+    # should give warning
+    print "A warning should be issued"
+    pop.removeSubPops([8])
    
   
+  def testRemoveIndividuals(self):
+    pop = population(subPop=[0,1,0,2,3,0], ploidy=1, loci=[1])
+    arr = pop.arrGenotype()
+    arr[:] = range(pop.popSize())
+    #
+    pop.removeIndividuals([2])
+    self.assertEqual( pop.subPopSizes(), (0,1,0,1,3,0))
+    # subpop will be shifted
+    self.assertGenotype(pop, 0, [])
+    self.assertGenotype(pop, 1, [0])
+    self.assertGenotype(pop, 2, [])
+    self.assertGenotype(pop, 3, [1])
+    self.assertGenotype(pop, 4, [3,4,5])
+    #
+    pop.removeIndividuals([1], removeEmptySubPops=True)
+    self.assertEqual( pop.subPopSizes(), (1,3))
+    # subpop will be shifted
+    self.assertGenotype(pop, 0, [0])
+    self.assertGenotype(pop, 1, [3,4,5])
+  
+  def testMergeSubPops(self):
+    pop = population(subPop=[0,1,0,2,3,0], ploidy=1, loci=[1])
+    arr = pop.arrGenotype()
+    arr[:] = range(pop.popSize())
+    #
+    pop.mergeSubPops([1,2,4])
+    self.assertEqual( pop.subPopSizes(), (0,4,0,2,0,0))
+    # subpop will be shifted
+    self.assertGenotype(pop, 0, [])
+    self.assertGenotype(pop, 1, [0,3,4,5])
+    self.assertGenotype(pop, 2, [])
+    self.assertGenotype(pop, 3, [1,2])
+    self.assertGenotype(pop, 4, [])
+    self.assertGenotype(pop, 5, [])
+    #
+    pop.mergeSubPops([1,2,3], removeEmptySubPops=True)
+    self.assertEqual( pop.subPopSizes(), (6,))
+    # subpop will be shifted
+    self.assertGenotype(pop, 0, [0,1,2,3,4,5])
+
+  def testReorderSubPops(self):
+    pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1])
+    arr = pop.arrGenotype()
+    arr[:] = range(pop.popSize())
+    #
+    pop.reorderSubPops(order=[1,3,0,2])
+    self.assertEqual( pop.subPopSizes(), (2,4,1,3))
+    # subpop will be shifted
+    self.assertGenotype(pop, 0, [1,2])
+    self.assertGenotype(pop, 1, [6,7,8,9])
+    self.assertGenotype(pop, 2, [0])
+    self.assertGenotype(pop, 3, [3,4,5])
+    # by rank
+    pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1])
+    arr = pop.arrGenotype()
+    arr[:] = range(pop.popSize())
+    #
+    pop.reorderSubPops(rank=[1,3,0,2])
+    self.assertEqual( pop.subPopSizes(), (3,1,4,2))
+    # subpop will be shifted
+    self.assertGenotype(pop, 0, [3,4,5])
+    self.assertGenotype(pop, 1, [0])
+    self.assertGenotype(pop, 2, [6,7,8,9])
+    self.assertGenotype(pop, 3, [1,2])
+
+  def testNewPopByIndInfo(self):
+    pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1])
+    arr = pop.arrGenotype()
+    arr[:] = range(pop.popSize())
+    oldPop = pop.clone()
+    #
+    pop1 = pop.newPopByIndInfo(info=[-1,0,1,1,2,1,1,2,-1,0])
+    self.assertEqual( pop, oldPop)
+    self.assertEqual( pop1.subPopSizes(), (2,4,2))
+    # subpop will be shifted
+    self.assertGenotype(pop1, 0, [1,9])
+    self.assertGenotype(pop1, 1, [2,3,5,6])
+    self.assertGenotype(pop1, 2, [4,7])
+    # change new pop will be change old one
+    pop1.individual(0).setAllele(1, 0)
+    self.assertNotEqual(pop.individual(0).allele(0), 1)
+
+  def testRemoveLoci(self):
+    pop = population(subPop=[1,2,], ploidy=2, loci=[2,3,1])
+    arr = pop.arrGenotype()
+    arr[:] = range(pop.totNumLoci())*(pop.popSize()*pop.ploidy())
+    pop.removeLoci(remove=[2])
+    self.assertEqual( pop.numChrom(), 3)
+    self.assertEqual( pop.numLoci(0), 2)
+    self.assertEqual( pop.numLoci(1), 2)
+    self.assertEqual( pop.numLoci(2), 1)
+    self.assertEqual( pop.arrGenotype().count(2), 0)
+    pop.removeLoci(remove=[4])
+    self.assertEqual( pop.numChrom(), 2)
+    self.assertEqual( pop.numLoci(0), 2)
+    self.assertEqual( pop.numLoci(1), 2)
+    self.assertEqual( pop.arrGenotype().count(5), 0)
+    # keep
+    pop.removeLoci(keep=[1,2])
+    self.assertEqual( pop.numChrom(), 2)
+    self.assertEqual( pop.numLoci(0), 1)
+    self.assertEqual( pop.numLoci(1), 1)
+    self.assertEqual( pop.arrGenotype().count(1), pop.popSize()*pop.ploidy() )
+    self.assertEqual( pop.arrGenotype().count(3), pop.popSize()*pop.ploidy() )
+    
   def testPopInfo(self):
     pop = population(subPop=[1,2])
     pop.setIndInfoWithSubPopID()
@@ -306,8 +508,6 @@ class TestPopulation(unittest.TestCase):
     (pop2, pop3) = LoadPopulations('a.txt')
     self.assertEqual(pop, pop2)
     self.assertEqual(pop1, pop3)
-    Dump(pop)
-    Dump(pop3)
     self.assertNotEqual(pop, pop3)
     os.remove('a.txt')    
     
@@ -315,90 +515,72 @@ class TestPopulation(unittest.TestCase):
     pop = population()
     self.assertEqual( pop.grp(), -1)
     self.assertEqual( pop.rep(), -1)
+    # var will be copied?
+    pop.dvars().x = 1
+    pop1 = pop.clone()
+    self.assertEqual( pop1.dvars().x, 1)
+    pop1.dvars().y = 2
+    try:
+      pop.dvars().y
+    except exceptions.AttributeError:
+      pass
 
-#  def testAncestry(self):
-#    pop = population(subPop=[3,5], loci=[2,3], ancestralDepth=2)
-#    InitByFreq(pop, [.2,.8])
-#    Dump(pop, ancestralPops=True)
-#    pop1 = population(subPop=[2,3], loci=[2,3], ancestralDepth=2)
-#    InitByFreq(pop1, [.8,.2])
-#    Dump(pop1)
-#    
-#    print popncestralDepth()
-#    pop.pushAndDiscard(pop1)
-#    print popncestralDepth()
-#    Dump(pop1)
-#    Dump(pop, ancestralPops=True)
-#    
-#    tmp = pop.clone()
-#    pop.pushAndDiscard(tmp)
-#    print popncestralDepth()
-#    Dump(pop, ancestralPops=True)
-#    
+  def testAncestry(self):
+    pop = population(subPop=[3,5], loci=[2,3], ancestralDepth=2)
+    InitByFreq(pop, [.2,.8])
+    gt = list(pop.arrGenotype())
+    self.assertEqual(pop.ancestralDepth(), 0)
+    pop1 = population(subPop=[2,3], loci=[2,3], ancestralDepth=2)
+    InitByFreq(pop1, [.8,.2])
+    gt1 = list(pop1.arrGenotype())
+    # can not do, because of different genotype
+    pop.pushAndDiscard(pop1)
+    # pop1 should be empty now
+    self.assertEqual(pop1.popSize(), 0)
+    # pop should have one ancestry
+    self.assertEqual(pop.ancestralDepth(), 1)
+    # genotype of pop should be pop1
+    self.assertEqual(pop.arrGenotype(), gt1)
+    # use ancestry pop
+    pop.useAncestralPop(1)
+    self.assertEqual(pop.arrGenotype(), gt)
+    # use back
+    pop.useAncestralPop(0)
+    self.assertEqual(pop.arrGenotype(), gt1)
+    # can not push itself
+    self.assertRaises(exceptions.ValueError,
+      pop.pushAndDiscard, pop)
+    # can not do, because of different genotype
+    pop2 = population(subPop=[3,5], loci=[2])
+    self.assertRaises(exceptions.ValueError,
+      pop.pushAndDiscard, pop2)
+    # [ gt1, gt ]
+    # push more?
+    pop2 = population(subPop=[3,5], loci=[2,3])
+    InitByFreq(pop2, [.2,.8])
+    gt2 = list(pop2.arrGenotype())
+    pop3 = pop2.clone()
+    pop.pushAndDiscard(pop2)
+    # [ gt2, gt1, gt]
+    # pop should have one ancestry
+    self.assertEqual(pop2.popSize(), 0)
+    self.assertEqual(pop.ancestralDepth(), 2)
+    # 
+    self.assertEqual(pop.arrGenotype(), gt2)
+    pop.useAncestralPop(1)
+    self.assertEqual(pop.arrGenotype(), gt1)
+    pop.useAncestralPop(2)
+    self.assertEqual(pop.arrGenotype(), gt)
+    pop.useAncestralPop(0)
+    #
+    pop.pushAndDiscard(pop3)
+    # [ gt2, gt2, gt1]
+    self.assertEqual(pop3.popSize(), 0)
+    self.assertEqual(pop.ancestralDepth(), 2)
+    pop.useAncestralPop(1)
+    self.assertEqual(pop.arrGenotype(), gt2)
+    pop.useAncestralPop(2)
+    self.assertEqual(pop.arrGenotype(), gt1)
 
-#    #
-#    #
-#    ## # testing serialization of shared vars
-#    ## pop = population(10)
-#    ## InitByFreq(pop, [.2,.4,.4])
-#    ## Stat(pop, alleleFreq=[0])
-#    ## d = pop.dvars()
-#    ## d.a = 1
-#    ## d.b = 1.0
-#    ## d.c = [1,2,3.5, "a"]
-#    ## d.d = {'1':3,'4':6}
-#    ## s =  pop.varsAsString()
-#    ## print s
-#    ## pop.varsFromString(s)
-#    ## listVars(pop.dvars())
-#    
-#    
-#    #
-#    # test remove loci
-#    pop = population(subPop=[3,5], loci=[2,3], ancestralDepth=2)
-#    pop1 = population(subPop=[2,3], loci=[2,3], ancestralDepth=2)
-#    InitByFreq(pop, [.2,.8])
-#    InitByFreq(pop1, [.5,.5])
-#    pop.pushAndDiscard(pop1)
-#    Dump(pop, ancestralPops=1)
-#    pop.removeLoci(remove=[0,1])
-#    #pop.removeLoci(keep=[3])
-#    Dump(pop, ancestralPops=1)
-#    
-#    
-#    #
-#    # load population for testing.
-#    #a = LoadPopulation("pop1.bin")
-#    # save and load
-#    #SaveFstat(a,'a.dat')
-#    #p = LoadFstat('a.dat')
-#    #Dump(p)
-#    
-#    turnOnDebug(DBG_UTILITY)
-#    # copy of variables
-#    pop =  population(subPop=[3,5], loci=[2,3], ancestralDepth=2)
-#    InitByFreq(pop, [.2,.8])
-#    Stat(pop, LD=[[1,2]])
-#    pop.savePopulation('a.bin')
-#    pop1 = LoadPopulation('a.bin')
-#    
-#    pop1 = pop.clone()
-#    pop1.dvars()
-#    pop1.savePopulation('a.bin')
-#    pop.pushAndDiscard(pop1)
-#    pop.dvars().a=1
-#    Dump(pop, ancestralPops=1)
-#    pop.savePopulation('a.bin')
-#    
-#    pop2 = pop.clone()
-#    Dump(pop2, ancestralPops=1)
-#    simu = simulator(pop, randomMating())
-#    SavePopulation(simu.getPopulation(0), 'a.bin')
-#    simu.population(0).dvars()
-#    p = simu.getPopulation(0)
-#    p.savePopulation('a.bin')
-#    p.dvars().clear()
-#
-#
 if __name__ == '__main__':
   unittest.main()
