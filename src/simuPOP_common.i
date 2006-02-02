@@ -526,24 +526,29 @@ def PyMigrate(pop, *args, **kwargs):
 PyMigrate.__doc__ = "Function version of operator pyMigrate whose __init__ function is \n" + pyMigrator.__init__.__doc__
 
 def SplitSubPop(pop, *args, **kwargs):
-  splitSubPop(*args, **kwargs).apply(pop)
+  pop.splitSubPop(*args, **kwargs)
 
-#SplitSubPop.__doc__ = "Function version of operator splitSubPop whose __init__ function is \n" + splitSubPop.__init__.__doc__
+SplitSubPop.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + population.splitSubPop.__doc__
+
+def SplitSubPopByProportion(pop, *args, **kwargs):
+  pop.splitSubPopByProportion(*args, **kwargs)
+
+SplitSubPopByProportion.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + population.splitSubPopByProportion.__doc__
 
 def MergeSubPops(pop, *args, **kwargs):
-  mergeSubPops(*args, **kwargs).apply(pop)
+  pop.mergeSubPops(*args, **kwargs).apply(pop)
   
-#mergeSubPops.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + mergeSubPops.__init__.__doc__
+MergeSubPops.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + population.mergeSubPops.__doc__
 
 def RemoveSubPops(pop, *args, **kwargs):
   pop.removeSubPops(*args, **kwargs)
   
-#RemoveSubPops.__doc__ = "Function versionof member function population::removeSubPop with help info:\n" + population.removeSubPops.__doc__
+RemoveSubPops.__doc__ = "Function versionof member function population::removeSubPop with help info:\n" + population.removeSubPops.__doc__
 
 def RemoveEmptySubPops(pop, *args, **kwargs):
   pop.removeEmptySubPops(*args, **kwargs)
   
-#RemoveEmptySubPops.__doc__ = "Function versionof member function population::removeEmptySubPops with help info:\n" + population.removeEmptySubPops.__doc__
+RemoveEmptySubPops.__doc__ = "Function versionof member function population::removeEmptySubPops with help info:\n" + population.removeEmptySubPops.__doc__
 
 def MapSelect(pop, *args, **kwargs):
   mapSelector(stage=PostMating, *args, **kwargs).apply(pop)

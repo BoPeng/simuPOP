@@ -839,12 +839,14 @@ static int array_ass_item(arrayobject *a, int i, PyObject *v)
 }
 
 
+/* not used */
+/*
 static int setarrayitem(PyObject *a, int i, PyObject *v)
 {
   assert(is_carrayobject(a));
   return array_ass_item((arrayobject *)a, i, v);
 }
-
+*/
 
 static PyObject * array_count(arrayobject *self, PyObject *args)
 {

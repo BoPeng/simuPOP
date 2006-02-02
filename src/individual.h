@@ -1060,8 +1060,8 @@ namespace simuPOP
         if( genoStruIdx() != rhs.genoStruIdx() )
           return false;
 
-        if( tag() != rhs.tag() 
-          || ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale) 
+        if( tag() != rhs.tag()
+          || ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
           || ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) )
           return false;
 
