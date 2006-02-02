@@ -407,7 +407,7 @@ namespace simuPOP
          You can remove part of a subpop by setting a new negative id.
       */
       SplitSubPop( UINT which=0,  vectorlu sizes=vectorlu(), vectorf proportions=vectorf(),
-        vectori subPopID=vectori(),
+        vectoru subPopID=vectoru(),
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp, sep),
@@ -454,7 +454,7 @@ namespace simuPOP
       vectorf m_proportions;
 
       /// subpopulation id, optional
-      vectori m_subPopID;
+      vectoru m_subPopID;
 
   };
 
