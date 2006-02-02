@@ -2411,6 +2411,15 @@ T Expression::valueAs##TypeName() \
 #endif
   }
 
+  bool supportXML()
+  {
+#ifdef __NO_XML_SUPPORT__
+    return false;
+#else
+    return true;
+#endif
+  }
+
   string alleleType()
   {
 #ifdef LONGALLELE

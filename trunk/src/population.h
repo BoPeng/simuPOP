@@ -363,9 +363,14 @@ namespace simuPOP
         if( genoStruIdx() != rhs.genoStruIdx() )
           return 1;
 
+        if(popSize() != rhs.popSize() )
+          return 1;
+
         for( ULONG i=0, iEnd = popSize(); i < iEnd; ++i)
-          if( m_inds[i] != m_inds[i] )
+          if( m_inds[i] != rhs.m_inds[i])
             return 1;
+
+        // FIXME: also compare ancestral populations
         return 0;
       }
 
@@ -790,7 +795,7 @@ namespace simuPOP
 
       /** brief return individual info in pop namespace
        */
-      PyObject* exposeInfo(string name="info")
+      PyObject* exposeIndInfo(string name="info")
       {
         // regardness of info type, treat it as int.
         vectori val(m_popSize);
