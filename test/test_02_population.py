@@ -201,9 +201,49 @@ class TestPopulation(unittest.TestCase):
     # can change population size if allow... is set to True
     pop.setSubPopStru(newSubPopSizes=[10, 20], allowPopSizeChange=True)
     self.assertEqual( pop.subPopSizes(), (10, 20) )
-    #pop.setIndInfoWithSubPopID()
-    #pop.setIndInfoWithSubPopID()
+    # swap
+    pop = population(10, loci=[2])
+    pop1 = population(5, loci=[3])
+    InitByFreq(pop, [.2,.3,.5])
+    InitByFreq(pop1, [.2,.3,.5])
+    popa = pop.clone()
+    pop1a = pop1.clone()
+    pop1.swap(pop)
+    self.assertEqual( pop, pop1a)
+    self.assertEqual( pop1, popa)
+    # FIXME: starting from here tomorrow
+    # test split and merge subpopulations
+    pop = population(subPop=[5,6,7])
+    SplitSubPop(pop, 1, [2,4])
+    self.assertEqual(pop.subPopSizes(), [5,2,4,7])
+    #
+    SplitSubPop(pop, 1, [2,4], subPopID=[4,1])
+    self.assertEqual(pop.subPopSizes(), [5,2,4,7])
+    pop = population(subPop=[5,6,7])
+    InitByFreq(pop,[.2,.8])
+    SplitSubPop(pop, 2, proportions=[.5,.5])
+    MergeSubPops(pop)
+    SplitSubPop(pop, 0, proportions=[.2,.3,.5])
+    MergeSubPops(pop,[0,2])
+    SplitSubPop(pop, 0, proportions=[.2,.3,.5])
+    MergeSubPops(pop,[2,0])
+    SplitSubPop(pop, 3, proportions=[.5,.5], subPopID=[-1,0])
+   
   
+  def testPopInfo(self):
+    pop = population(subPop=[1,2])
+    pop.setIndInfoWithSubPopID()
+    self.assertEqual(pop.exposeIndInfo(), [0,1,1])
+    #
+    pop.setIndInfo([3,4,5])
+    self.assertEqual(pop.exposeIndInfo(), [3,4,5])
+    self.assertRaises(exceptions.ValueError, 
+      pop.setIndInfo, [2,3])      
+    #
+    pop.individual(1).setAffected(True)
+    self.assertEqual(pop.exposeAffectedness(), [0,1,0])
+    #
+    
   def testArrGenotype(self):
     pop = population(loci=[1,2], subPop=[1,2])
     arr = pop.arrGenotype()
@@ -243,33 +283,40 @@ class TestPopulation(unittest.TestCase):
         alleleNames=['1','2']) 
       InitByFreq(pop, [.2, .8])
     # .xml format may not be available (under mac)
-    for file in ['a.txt', 'a.bin']:
+    for file in ['a.txt', 'a.bin', 'a.xml']:
+      if file == 'a.xml' and not supportXML():
+        continue
       pop.savePopulation(file)
       assert os.path.isfile(file)
       pop1 = LoadPopulation(file)
-      Dump(pop)
-      Dump(pop1)
-      # genotype ok
-      self.assertEqual(pop.arrGenotype(), pop1.arrGenotype())
-      # compare individual
-      for i in range(pop.popSize()):
-        self.assertEqual(pop.individual(i), pop1.individual(i))
-        
+      self.assertEqual(pop, pop1)
       os.remove(file)
+    # can load file with wrong extension
+    pop.savePopulation('a.txt', format='bin')
+    pop1 = LoadPopulation('a.txt')
+    self.assertEqual(pop, pop1)
+    os.remove('a.txt')
+    #
+    # save load several populations
+    # make pop and pop1 different
+    pop.individual(0).setAllele(0,1)
+    pop1.individual(0).setAllele(1,1)
+    self.assertNotEqual(pop, pop1)
+    SavePopulations([pop, pop1], 'a.txt')
+    (pop2, pop3) = LoadPopulations('a.txt')
+    self.assertEqual(pop, pop2)
+    self.assertEqual(pop1, pop3)
+    Dump(pop)
+    Dump(pop3)
+    self.assertNotEqual(pop, pop3)
+    os.remove('a.txt')    
     
   def testPopVars(self):
-    self.assertEqual( self.pop.grp(), -1)
-    self.assertEqual( self.pop.rep(), -1)
-    self.pop.vars()
+    pop = population()
+    self.assertEqual( pop.grp(), -1)
+    self.assertEqual( pop.rep(), -1)
 
-  def testSwap(self):
-    pop1 = population()
-    InitByFreq(self.pop, [.2,.3,.5])
-    #Dump(self.pop)
-    pop1.swap(self.pop)
-    
 #  def testAncestry(self):
-#    # test ancestry history features
 #    pop = population(subPop=[3,5], loci=[2,3], ancestralDepth=2)
 #    InitByFreq(pop, [.2,.8])
 #    Dump(pop, ancestralPops=True)
@@ -288,44 +335,7 @@ class TestPopulation(unittest.TestCase):
 #    print popncestralDepth()
 #    Dump(pop, ancestralPops=True)
 #    
-#    # test SavePopulations and LoadPopulations
-#    pop = population(subPop=[3,5], loci=[2,3], ancestralDepth=2)
-#    InitByFreq(pop, [.2,.8])
-#    pop1 = population(subPop=[2,3], loci=[2,3], ancestralDepth=2)
-#    InitByFreq(pop1, [.8,.2])
-#    SavePopulations([pop,pop1], 'pop01.bin')
-#    # pop and pop1 is still alive :-)
-#    Dump(pop)
-#    Dump(pop1)
-#    a = LoadPopulations('pop01.bin')
-#    print len(a)
-#    Dump(a[0])
-#    Dump(a[1])
-#    
-#    # test split and merge subpopulations
-#    pop = population(subPop=[5,6,7])
-#    InitByFreq(pop,[.2,.8])
-#    Dump(pop)
-#    SplitSubPop(pop, 1, [2,4],subPopID=[4,1])
-#    Dump(pop)
-#    pop = population(subPop=[5,6,7])
-#    InitByFreq(pop,[.2,.8])
-#    Dump(pop)
-#    SplitSubPop(pop, 2, proportions=[.5,.5])
-#    Dump(pop)
-#    MergeSubPops(pop)
-#    Dump(pop)
-#    SplitSubPop(pop, 0, proportions=[.2,.3,.5])
-#    Dump(pop)
-#    MergeSubPops(pop,[0,2])
-#    Dump(pop)
-#    SplitSubPop(pop, 0, proportions=[.2,.3,.5])
-#    Dump(pop)
-#    MergeSubPops(pop,[2,0])
-#    Dump(pop)
-#    SplitSubPop(pop, 3, proportions=[.5,.5], subPopID=[-1,0])
-#    Dump(pop)
-#    
+
 #    #
 #    #
 #    ## # testing serialization of shared vars

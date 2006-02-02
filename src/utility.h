@@ -1356,6 +1356,8 @@ namespace simuPOP
   /// return version infomation of simuPOP
   string simuVer();
 
+  bool supportXML();
+
   string compileCompiler();
 
   string compileDate();
