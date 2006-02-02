@@ -17,8 +17,6 @@ if len(sys.argv) > 1:
   for arg in sys.argv[1:]:
     if arg in ['standard', 'short', 'long', 'binary']:
       simuOpt.setOptions(alleleType = sys.argv[1])
-    elif srg == 'optimized':
-      simuOpt.setOptions(optimized=True)
 
 # Find all files with names like test_MODULE.py.  For each such file,
 # import it as a module.  If it defines a function called "tests", call
