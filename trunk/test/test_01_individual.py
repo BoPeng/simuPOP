@@ -2,11 +2,12 @@
 #
 # Purpose:
 #
-# This is a unittest file for population object
+# This is a unittest file for individual object
 #
 # Bo Peng (bpeng@rice.edu)
 # 
-# Last Modified: $Date: 2006-02-01 10:48:15 -0600 (Wed, 01 Feb 2006) $
+# $LastChangedRevision$
+# $LastChangedDate$
 # 
  
 from simuPOP import *

@@ -3067,7 +3067,7 @@ p.removeSubPops
 
 \end_inset
 
-( subPops=[], removeEmptySubPops=False)
+( subPops=[], shiftSubPopID=True, removeEmptySubPops=False)
 \end_layout
 
 \end_inset
@@ -3077,6 +3077,11 @@ p.removeSubPops
 
 \begin_layout Standard
 Remove some subpopulations (and all individuals within).
+ If 
+\family typewriter
+shiftSubPopID
+\family default
+ is false, subPopID will be keep intact.
 \end_layout
 
 \end_inset
@@ -9920,6 +9925,22 @@ arr[1:3] = arr[3:5]
 
 \begin_layout Standard
 No other operation is allowed.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Important note: 
+\series default
+Objects returned from 
+\family typewriter
+arrXXX
+\family default
+ functions should be considered temporary.
+ There is no gurantee the underlying array will still be valid after any
+ operation.
+ 
 \end_layout
 
 \begin_layout LyX-Code

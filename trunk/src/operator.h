@@ -211,6 +211,8 @@ namespace simuPOP
         m_stepGen = step;
         m_atGen = at;
 
+        DBG_FAILIF(step<=0, ValueError, "step need to be at least one");
+
         /// set certain m_flags to speed up using this machanism.
         setFlags();
       }
@@ -418,19 +420,26 @@ namespace simuPOP
   template<class Pop>
     bool Operator<Pop>::isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly )
   {
+    // rep does not match
     if( ( m_rep >= 0 && static_cast<UINT>(m_rep) != rep ) ||
       ( m_rep == REP_LAST && rep != numRep -1 ) )
       return false;
 
-    if( m_grp >= 0 && m_grp != grp ) return false;
+    // group does not match
+    if( m_grp >= 0 && m_grp != grp ) 
+      return false;
 
     // only check for rep and grp values.
-    if( repOnly ) return true;
+    if( repOnly ) 
+      return true;
 
-    /// if cur <=0, we are testing only group info
-    if( gen < 0 ) return true;
+    // if gen < 0, we are testing only group info
+    if( gen < 0 ) 
+      return true;
 
-    if( ISSETFLAG(m_flags, m_flagAtAllGen)) return true;
+    // if all active? (begin=0, end=-1)
+    if( ISSETFLAG(m_flags, m_flagAtAllGen)) 
+      return true;
 
     DBG_FAILIF( end > 0 && gen > end, IndexError,
       "Current generation can not be bigger than ending generation.");
@@ -462,11 +471,13 @@ namespace simuPOP
         }                                         // atGen <=0
         else
         {
-          if( end <= 0 )                          // can not determine.
+          if( end < 0 )                          // can not determine.
             continue;
-          // now end > 0 atGen <=0
-          if( end + atGen + 1 == gen ) return true;
-          else continue;
+          // now end >= 0 atGen <=0
+          if( end + atGen + 1 == gen ) 
+            return true;
+          else 
+            continue;
         }
       }
       // Do not check other parameters
@@ -490,6 +501,9 @@ namespace simuPOP
     {
       int realStartGen = m_beginGen >= 0 ? m_beginGen : m_beginGen + end + 1;
       int realEndGen = m_endGen >= 0 ? m_endGen : m_endGen + end + 1;
+
+      if(realStartGen > realEndGen)
+        return false;
 
       return(( gen >= realStartGen && gen <= realEndGen && (gen - realStartGen)%m_stepGen == 0 ) );
     }
