@@ -87,9 +87,6 @@ Note that the basic Get and Set functions do NOT check that the index is
 in bounds; that's the responsibility of the caller.
 ****************************************************************************/
 
-typedef unsigned long Bit_type;
-static size_t Word_bit = int(CHAR_BIT * sizeof(Bit_type));
-
 // bit type
 static PyObject *
 a_getitem(arrayobject *ap, int i)
@@ -107,12 +104,6 @@ a_setitem(arrayobject *ap, int i, PyObject *v)
      the overflow checking */
   if (!PyArg_Parse(v, "h;array item must be integer", &x))
     return -1;
-  else if (x > 1)
-  {
-    PyErr_SetString(PyExc_OverflowError,
-      "Can only assign 0 or 1 to a binary allele");
-    return -1;
-  }
   *(ap->ob_iterator.ob_iter+i) = x;
   return 0;
 }
@@ -463,8 +454,7 @@ carray_init(PyTypeObject *type, PyObject *args, PyObject *kwds)
 PyObject * newcarrayobject(char* ptr, char type, int size);
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
 
-static PyObject *
-getarrayitem(PyObject *op, int i)
+static PyObject * getarrayitem(PyObject *op, int i)
 {
   register arrayobject *ap;
   assert(is_carrayobject(op));
@@ -489,108 +479,227 @@ array_dealloc(arrayobject *op)
 static PyObject *
 array_richcompare(PyObject *v, PyObject *w, int op)
 {
-  arrayobject *va, *wa;
-  PyObject *vi = NULL;
-  PyObject *wi = NULL;
-  int i, k;
-  PyObject *res;
-
-  if (!is_carrayobject(v) || !is_carrayobject(w))
+  // will really has this case?
+  if (!is_carrayobject(v) && !is_carrayobject(w))
   {
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
   }
 
-  va = (arrayobject *)v;
-  wa = (arrayobject *)w;
-
-  if (va->ob_size != wa->ob_size && (op == Py_EQ || op == Py_NE))
+  // both are array
+  if( is_carrayobject(v) && is_carrayobject(w) )
   {
-    /* Shortcut: if the lengths differ, the arrays differ */
-    if (op == Py_EQ)
-      res = Py_False;
-    else
-      res = Py_True;
-    Py_INCREF(res);
-    return res;
-  }
+    arrayobject *va, *wa;
+    PyObject *vi = NULL;
+    PyObject *wi = NULL;
+    int i, k;
+    PyObject *res;
 
-  /* Search for the first index where items are different */
-  k = 1;
-  for (i = 0; i < va->ob_size && i < wa->ob_size; i++)
-  {
-    vi = getarrayitem(v, i);
-    wi = getarrayitem(w, i);
-    if (vi == NULL || wi == NULL)
+    va = (arrayobject *)v;
+    wa = (arrayobject *)w;
+
+    if (va->ob_size != wa->ob_size && (op == Py_EQ || op == Py_NE))
     {
-      Py_XDECREF(vi);
-      Py_XDECREF(wi);
-      return NULL;
+      /* Shortcut: if the lengths differ, the arrays differ */
+      if (op == Py_EQ)
+        res = Py_False;
+      else
+        res = Py_True;
+      Py_INCREF(res);
+      return res;
     }
-    k = PyObject_RichCompareBool(vi, wi, Py_EQ);
-    if (k == 0)
-      break;                                      /* Keeping vi and wi alive! */
+
+    /* Search for the first index where items are different */
+    k = 1;
+    for (i = 0; i < va->ob_size && i < wa->ob_size; i++)
+    {
+      vi = getarrayitem(v, i);
+      wi = getarrayitem(w, i);
+      if (vi == NULL || wi == NULL)
+      {
+        Py_XDECREF(vi);
+        Py_XDECREF(wi);
+        return NULL;
+      }
+      k = PyObject_RichCompareBool(vi, wi, Py_EQ);
+      if (k == 0)
+        break;                                    /* Keeping vi and wi alive! */
+      Py_DECREF(vi);
+      Py_DECREF(wi);
+      if (k < 0)
+        return NULL;
+    }
+
+    if (k)
+    {
+      /* No more items to compare -- compare sizes */
+      int vs = va->ob_size;
+      int ws = wa->ob_size;
+      int cmp;
+      switch (op)
+      {
+        case Py_LT: cmp = vs <  ws; break;
+        case Py_LE: cmp = vs <= ws; break;
+        case Py_EQ: cmp = vs == ws; break;
+        case Py_NE: cmp = vs != ws; break;
+        case Py_GT: cmp = vs >  ws; break;
+        case Py_GE: cmp = vs >= ws; break;
+        default: return NULL;                     /* cannot happen */
+      }
+      if (cmp)
+        res = Py_True;
+      else
+        res = Py_False;
+      Py_INCREF(res);
+      return res;
+    }
+    /* We have an item that differs.  First, shortcuts for EQ/NE */
+    if (op == Py_EQ)
+    {
+      Py_INCREF(Py_False);
+      res = Py_False;
+    }
+    else if (op == Py_NE)
+    {
+      Py_INCREF(Py_True);
+      res = Py_True;
+    }
+    else
+    {
+      /* Compare the final item again using the proper operator */
+      res = PyObject_RichCompare(vi, wi, op);
+    }
     Py_DECREF(vi);
     Py_DECREF(wi);
-    if (k < 0)
-      return NULL;
-  }
-
-  if (k)
-  {
-    /* No more items to compare -- compare sizes */
-    int vs = va->ob_size;
-    int ws = wa->ob_size;
-    int cmp;
-    switch (op)
-    {
-      case Py_LT: cmp = vs <  ws; break;
-      case Py_LE: cmp = vs <= ws; break;
-      case Py_EQ: cmp = vs == ws; break;
-      case Py_NE: cmp = vs != ws; break;
-      case Py_GT: cmp = vs >  ws; break;
-      case Py_GE: cmp = vs >= ws; break;
-      default: return NULL;                       /* cannot happen */
-    }
-    if (cmp)
-      res = Py_True;
-    else
-      res = Py_False;
-    Py_INCREF(res);
     return res;
-  }
-
-  /* We have an item that differs.  First, shortcuts for EQ/NE */
-  if (op == Py_EQ)
-  {
-    Py_INCREF(Py_False);
-    res = Py_False;
-  }
-  else if (op == Py_NE)
-  {
-    Py_INCREF(Py_True);
-    res = Py_True;
   }
   else
   {
-    /* Compare the final item again using the proper operator */
-    res = PyObject_RichCompare(vi, wi, op);
+    arrayobject *va;
+    PyObject* wa, *res;
+    bool dir;
+    int vs, ws;                                   // direction
+
+    // one of them is not array
+    if( is_carrayobject(v) )
+    {
+      va = (arrayobject *)v;
+      wa = w;
+      dir = true;
+    }
+    else
+    {
+      va = (arrayobject *)w;
+      wa = v;
+      dir = false;
+    }
+
+    if( ! PySequence_Check(wa) )
+    {
+      // use automatic increase of size?
+      PyErr_SetString(PyExc_IndexError, "only sequence can be compared");
+      return NULL;
+    }
+
+    vs = va->ob_size;
+    ws = PySequence_Size(wa);
+
+    if (vs != ws && (op == Py_EQ || op == Py_NE))
+    {
+      /* Shortcut: if the lengths differ, the arrays differ */
+      if (op == Py_EQ)
+        res = Py_False;
+      else
+        res = Py_True;
+      Py_INCREF(res);
+      return res;
+    }
+
+    /* Search for the first index where items are different */
+    PyObject* vi, *wi;
+    int k = 1;
+    for (int i = 0; i < vs && i < ws; i++)
+    {
+      vi = getarrayitem((PyObject*)(va), i);
+      wi = PySequence_GetItem(wa, i);
+      if (vi == NULL || wi == NULL)
+      {
+        Py_XDECREF(vi);
+        Py_XDECREF(wi);
+        return NULL;
+      }
+      k = PyObject_RichCompareBool(vi, wi, Py_EQ);
+      if (k == 0)
+        break;                                    /* Keeping vi and wi alive! */
+      Py_DECREF(vi);
+      Py_DECREF(wi);
+      // -1 for error
+      if (k < 0)
+        return NULL;
+    }
+
+    if (k)                                        // if equal
+    {
+      /* No more items to compare -- compare sizes */
+      int cmp;
+      switch (op)
+      {
+        case Py_LT: cmp = vs <  ws; break;
+        case Py_LE: cmp = vs <= ws; break;
+        case Py_EQ: cmp = vs == ws; break;
+        case Py_NE: cmp = vs != ws; break;
+        case Py_GT: cmp = vs >  ws; break;
+        case Py_GE: cmp = vs >= ws; break;
+        default: return NULL;                     /* cannot happen */
+      }
+      if ((cmp && dir) || (!cmp && !dir))
+        res = Py_True;
+      else
+        res = Py_False;
+      Py_INCREF(res);
+      return res;
+    }
+
+    /* We have an item that differs.  First, shortcuts for EQ/NE */
+    if (op == Py_EQ)
+    {
+      Py_INCREF(Py_False);
+      res = Py_False;
+    }
+    else if (op == Py_NE)
+    {
+      Py_INCREF(Py_True);
+      res = Py_True;
+    }
+    else
+    {
+      /* Compare the final item again using the proper operator */
+      int r = PyObject_RichCompareBool(vi, wi, op);
+      if( (r==0 && dir) || (r!=0 && !dir) )       // false
+      {
+        Py_INCREF(Py_False);
+        res = Py_False;
+      }
+      else
+      {
+        Py_INCREF(Py_True);
+        res = Py_True;
+      }
+    }
+    Py_DECREF(vi);
+    Py_DECREF(wi);
+    return res;
   }
-  Py_DECREF(vi);
-  Py_DECREF(wi);
-  return res;
 }
 
 
-static int
-array_length(arrayobject *a)
+static int array_length(arrayobject *a)
 {
   return a->ob_size;
 }
 
 
-static PyObject *
-array_concat(arrayobject *a, PyObject *bb)
+static PyObject * array_concat(arrayobject *a, PyObject *bb)
 {
   PyErr_SetString(PyExc_TypeError,
     "Can not concat carray object.");
@@ -598,8 +707,7 @@ array_concat(arrayobject *a, PyObject *bb)
 }
 
 
-static PyObject *
-array_repeat(arrayobject *a, int n)
+static PyObject * array_repeat(arrayobject *a, int n)
 {
   PyErr_SetString(PyExc_TypeError,
     "Can not repeat carray object.");
@@ -607,8 +715,7 @@ array_repeat(arrayobject *a, int n)
 }
 
 
-static PyObject *
-array_item(arrayobject *a, int i)
+static PyObject * array_item(arrayobject *a, int i)
 {
   if (i < 0 || i >= a->ob_size)
   {
@@ -619,8 +726,7 @@ array_item(arrayobject *a, int i)
 }
 
 
-static PyObject *
-array_slice(arrayobject *a, int ilow, int ihigh)
+static PyObject * array_slice(arrayobject *a, int ilow, int ihigh)
 {
   arrayobject *np;
   if (ilow < 0)
@@ -637,7 +743,7 @@ array_slice(arrayobject *a, int ilow, int ihigh)
     np = (arrayobject *) newcarrayiterobject(a->ob_iterator.ob_iter + ilow,
       a->ob_iterator.ob_iter + ihigh);
   else
-    np = (arrayobject *) newcarrayobject(a->ob_iterator.ob_item + ilow,
+    np = (arrayobject *) newcarrayobject(a->ob_iterator.ob_item + ilow*a->ob_descr->itemsize,
       a->ob_descr->typecode, ihigh - ilow);
   if (np == NULL)
     return NULL;
@@ -645,17 +751,81 @@ array_slice(arrayobject *a, int ilow, int ihigh)
 }
 
 
-static int
-array_ass_slice(arrayobject *a, int ilow, int ihigh, PyObject *v)
+static int array_ass_slice(arrayobject *a, int ilow, int ihigh, PyObject *v)
 {
-  PyErr_SetString(PyExc_TypeError,
-    "Assign-slice is not supported.");
-  return 0;
+  if (v == NULL || a==(arrayobject*)v)
+  {
+    PyErr_BadArgument();
+    return -1;
+  }
+
+  if (ilow < 0)
+    ilow = 0;
+  else if (ilow > a->ob_size)
+    ilow = a->ob_size;
+  if (ihigh < 0)
+    ihigh = 0;
+  if (ihigh < ilow)
+    ihigh = ilow;
+  else if (ihigh > a->ob_size)
+    ihigh = a->ob_size;
+
+  // use a single number to propagate v
+  if( PyNumber_Check(v) )
+  {
+    for(int i=ilow; i<ihigh; ++i)
+      (*a->ob_descr->setitem)(a, i, v);
+    return 0;
+  }
+#define b ((arrayobject *)v)
+  if(is_carrayobject(v))                          /* v is of array type */
+  {
+    int n = b->ob_size;
+    if (b->ob_descr != a->ob_descr)
+    {
+      PyErr_BadArgument();
+      return -1;
+    }
+    if( n != ihigh - ilow)
+    {
+      PyErr_SetString(PyExc_ValueError, "Can not extend or thrink slice");
+      return -1;
+    }
+    if( a->ob_descr->typecode != 'a')
+      memcpy(a->ob_iterator.ob_item + ilow * a->ob_descr->itemsize,
+        b->ob_iterator.ob_item, (ihigh-ilow) * a->ob_descr->itemsize);
+    else
+    {
+      for(int i=0; i<n; ++i)
+        (*a->ob_descr->setitem)(a, i+ilow, (*b->ob_descr->getitem)(b,i) );
+    }
+    return 0;
+  }
+#undef b
+  /* a general sequence */
+  if( PySequence_Check(v) )
+  {
+    int n = PySequence_Size(v);
+    if( n != ihigh - ilow)
+    {
+      PyErr_SetString(PyExc_ValueError, "Can not extend or thrink slice");
+      return -1;
+    }
+    // iterator sequence
+    for(int i=0; i<n; ++i)
+    {
+      PyObject* item = PySequence_GetItem(v, i);
+      (*a->ob_descr->setitem)(a, i+ilow, item);
+      Py_DECREF(item);
+    }
+    return 0;
+  }
+  PyErr_SetString(PyExc_ValueError, "Only number or list can be assigned");
+  return -1;
 }
 
 
-static int
-array_ass_item(arrayobject *a, int i, PyObject *v)
+static int array_ass_item(arrayobject *a, int i, PyObject *v)
 {
   if (i < 0 || i >= a->ob_size)
   {
@@ -669,16 +839,14 @@ array_ass_item(arrayobject *a, int i, PyObject *v)
 }
 
 
-static int
-setarrayitem(PyObject *a, int i, PyObject *v)
+static int setarrayitem(PyObject *a, int i, PyObject *v)
 {
   assert(is_carrayobject(a));
   return array_ass_item((arrayobject *)a, i, v);
 }
 
 
-static PyObject *
-array_count(arrayobject *self, PyObject *args)
+static PyObject * array_count(arrayobject *self, PyObject *args)
 {
   int count = 0;
   int i;
@@ -705,8 +873,7 @@ static char count_doc [] =
 \n\
 Return number of occurences of x in the array.";
 
-static PyObject *
-array_index(arrayobject *self, PyObject *args)
+static PyObject * array_index(arrayobject *self, PyObject *args)
 {
   int i;
   PyObject *v;
@@ -735,8 +902,7 @@ static char index_doc [] =
 \n\
 Return index of first occurence of x in the array.";
 
-static PyObject *
-array_tolist(arrayobject *self, PyObject *args)
+static PyObject * array_tolist(arrayobject *self, PyObject *args)
 {
   PyObject *list = PyList_New(self->ob_size);
   int i;
@@ -782,8 +948,7 @@ PyMethodDef array_methods[] =
   }
 };
 
-static PyObject *
-array_getattr(arrayobject *a, char *name)
+static PyObject * array_getattr(arrayobject *a, char *name)
 {
   if (strcmp(name, "typecode") == 0)
   {
@@ -815,8 +980,7 @@ array_getattr(arrayobject *a, char *name)
 }
 
 
-static int
-array_print(arrayobject *a, FILE *fp, int flags)
+static int array_print(arrayobject *a, FILE *fp, int flags)
 {
   int ok = 0;
   int i, len;
@@ -881,45 +1045,6 @@ static PySequenceMethods array_as_sequence =
   (intobjargproc)array_ass_item,                  /*sq_ass_item*/
   (intintobjargproc)array_ass_slice,              /*sq_ass_slice*/
 };
-
-static PyMethodDef a_methods[] =
-{
-  // removed.
-  // {"array", a_array, METH_VARARGS, a_array_doc},
-  {                                               /* sentinel */
-    NULL,    NULL
-  }
-};
-
-static char module_doc [] =
-"This module defines a new object type which can efficiently represent\n\
-an array of basic values: characters, integers, floating point\n\
-numbers.  Arrays are sequence types and behave very much like lists,\n\
-except that the type of objects stored in them is constrained.  The\n\
-type is specified at object creation time by using a type code, which\n\
-is a single character.  The following type codes are defined:\n\
-\n\
-    Type code   C Type             Minimum size in bytes \n\
-    'c'         character          1 \n\
-    'b'         signed integer     1 \n\
-    'B'         unsigned integer   1 \n\
-    'h'         signed integer     2 \n\
-    'H'         unsigned integer   2 \n\
-    'i'         signed integer     2 \n\
-    'I'         unsigned integer   2 \n\
-    'l'         signed integer     4 \n\
-    'L'         unsigned integer   4 \n\
-    'f'         floating point     4 \n\
-    'd'         floating point     8 \n\
-\n\
-Functions:\n\
-\n\
-carray(typecode [, initializer]) -- create a new array\n\
-\n\
-Special Objects:\n\
-\n\
-ArrayType -- type object for array objects\n\
-    ";
 
 static char arraytype_doc [] =
 "An array represents underlying memory of simuPOP structure \n\

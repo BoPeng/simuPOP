@@ -176,260 +176,90 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual(pop.locusName(2), 'lc')
     self.assertRaises(exceptions.IndexError, pop.locusName, 5)
     
-  def testIndProperties(self):
-    if alleleType() != 'binary':
-      pop = population(size=100, ploidy=2, loci=[5, 7], 
-        subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-        maxAllele=4, alleleNames=['_','A','C','T','G']) 
-    else:
-      pop = population(size=100, ploidy=2, loci=[5, 7], 
-        subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-        alleleNames=['1','2']) 
+  def testPopManipulation(self):
+    pop = population(size=1, loci=[1])
+    # pop1 is only a reference to pop
+    pop1 = pop
+    pop.individual(0).setAllele(1,0)
+    # the genotype of pop1 is also changed
+    self.assertEqual( pop1.individual(0).allele(0), 1)
+    pop2 = pop.clone()
+    pop.individual(0).setAllele(0,0)
+    # pop2 does not change with pop
+    self.assertEqual( pop2.individual(0).allele(0), 1)
     #
-    pop.individual(99)
-    pop.individual(19, 0)
-    pop.individual(79, 1)
-    self.assertRaises(exceptions.IndexError, pop.individual, 101)
-    self.assertRaises(exceptions.IndexError, pop.individual, 20, 0)
-    self.assertRaises(exceptions.IndexError, pop.individual, 80, 1)
-    self.assertRaises(exceptions.IndexError, pop.individual, 0, 2)
-    # 
-    ind = pop.individual(10)
-    #
-    self.assertEqual(ind.ploidy(), 2)
-    self.assertEqual(ind.ploidyName(), 'diploid')
-    #
-    self.assertEqual(ind.numChrom(), 2)
-    #
-    self.assertEqual(ind.numLoci(0), 5)
-    self.assertEqual(ind.numLoci(1), 7)
-    self.assertRaises(exceptions.IndexError, ind.numLoci, 2 )
-    #
-    self.assertEqual(ind.locusPos(10), 12)
-    self.assertRaises(exceptions.IndexError, ind.locusPos, 20 )
-    self.assertRaises(exceptions.TypeError, ind.locusPos, -1 )
-    # more use of arr.. please see test_00_carray
-    self.assertEqual(len(ind.arrLociPos()), 12)
-    self.assertEqual(ind.arrLociPos().tolist(), [2,3,4,5,6,2,4,6,8,10,12,14])
-    #
-    self.assertEqual(ind.chromBegin(0), 0)
-    self.assertEqual(ind.chromBegin(1), 5)
-    self.assertEqual(ind.chromEnd(0), 5)
-    self.assertEqual(ind.chromEnd(1), 12)
-    self.assertRaises(exceptions.IndexError, ind.chromBegin, 2 )
-    self.assertRaises(exceptions.IndexError, ind.chromEnd, 2 )
-    #
-    self.assertEqual(ind.absLocusIndex(1,5), 10)
-    self.assertEqual(ind.locusPos(ind.absLocusIndex(1,2) ), 6)
-    self.assertRaises(exceptions.IndexError, ind.absLocusIndex, 2, 5 )
-    #
-    self.assertEqual(ind.chromLocusPair(10), (1,5) )
-    self.assertRaises(exceptions.IndexError, ind.chromLocusPair, 50 )
-    #
-    if alleleType() == 'binary':
-      self.assertEqual(pop.alleleNames(), ('1','2') )
-      self.assertEqual(pop.alleleName(0), '1')
-      self.assertEqual(pop.alleleName(1), '2')
-      # 5 is passed to be function as bool
-      self.assertEqual(pop.alleleName(5), '2')
-    else:
-      self.assertEqual(pop.alleleName(0), '-')
-      self.assertEqual(pop.alleleName(1), 'A')
-      self.assertEqual(pop.alleleName(2), 'C')
-      self.assertEqual(pop.alleleName(3), 'T')
-      self.assertEqual(pop.alleleName(4), 'G')
-      self.assertRaises(exceptions.IndexError, pop.alleleName, 5)
-    # loci name, default, the name will be used by other programs
-    # or file format, so we set it to be one based.
-    self.assertEqual(pop.locusName(0), 'loc1-1')
-    self.assertEqual(pop.locusName(1), 'loc1-2')
-    self.assertEqual(pop.locusName(5), 'loc2-1')
-    pop = population(loci=[1,2], lociNames=['la','lb','lc'])
-    self.assertEqual(pop.locusName(0), 'la')
-    self.assertEqual(pop.locusName(1), 'lb')
-    self.assertEqual(pop.locusName(2), 'lc')
-    self.assertRaises(exceptions.IndexError, pop.locusName, 5)
+    pop = population(size=10)
+    self.assertEqual( pop.subPopSizes(), (10,) )
+    pop.setSubPopStru(newSubPopSizes=[2,8], allowPopSizeChange=False)
+    self.assertEqual( pop.subPopSizes(), (2,8) )
+    # can set empty subpop
+    pop.setSubPopStru(newSubPopSizes=[0,0,1,0,2,7,0], allowPopSizeChange=False)
+    self.assertEqual( pop.subPopSizes(), (0,0,1,0,2,7,0) )
+    # by default, can not change population size
+    self.assertRaises(exceptions.ValueError, 
+      pop.setSubPopStru, newSubPopSizes=[10,20], allowPopSizeChange=False)
+    # can change population size if allow... is set to True
+    pop.setSubPopStru(newSubPopSizes=[10, 20], allowPopSizeChange=True)
+    self.assertEqual( pop.subPopSizes(), (10, 20) )
+    #pop.setIndInfoWithSubPopID()
+    #pop.setIndInfoWithSubPopID()
+  
+  def testArrGenotype(self):
+    pop = population(loci=[1,2], subPop=[1,2])
+    arr = pop.arrGenotype()
+    self.assertEqual( len(arr), pop.genoSize()*pop.popSize())
+    arr = pop.arrGenotype(1)
+    self.assertEqual( len(arr), pop.genoSize()*pop.subPopSize(1))
+    arr[0] = 1
+    self.assertEqual( pop.individual(0,1).allele(0), 1)
+    self.assertRaises(exceptions.IndexError, 
+      pop.arrGenotype, 2)
+    # arr assignment
+    arr[:] = 1
+    self.assertEqual( pop.individual(0,0).arrGenotype(), [0]*pop.genoSize())
+    self.assertEqual( pop.individual(0,1).arrGenotype(), [1]*pop.genoSize())
+    self.assertEqual( pop.individual(1,1).arrGenotype(), [1]*pop.genoSize())
+        
+  def testCompare(self):
+    pop = population(10, loci=[2])
+    pop1 = population(10, loci=[2])
+    self.assertEqual( pop == pop1, True)
+    pop.individual(0).setAllele(1, 0)
+    self.assertEqual( pop == pop1, False)
+    pop1 = population(10, loci=[3])
+    pop1.individual(0).setAllele(1, 0)
+    # false becase of geno structure difference.
+    self.assertEqual( pop == pop1, False)
 
-  def testIndGenotype(self):
-    if alleleType() != 'binary':
-      pop = population(size=1, ploidy=2, loci=[5, 7], 
-        subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-        maxAllele=4, alleleNames=['_','A','C','T','G']) 
-    else:
-      pop = population(size=1, ploidy=2, loci=[5, 7], 
-        subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-        alleleNames=['1','2']) 
-    ind = pop.individual(0)
-    gt = ind.arrGenotype()
-    if alleleType() == 'binary':
-      gt[:] = [0,1]*6
-      self.assertEqual(list(gt), [0,1]*6)
-    else:
-      gt[:] = [2,3,4]*4
-      self.assertEqual(list(gt), [2,3,4]*6)
-    # ploidy 1
-    gt = ind.arrGenotype(1)
-    if alleleType() == 'binary':
-      self.assertEqual(list(gt1), [0,1]*3)
-    else:
-      self.assertEqual(list(gt1), [2,3,4]*3)
-    # ploidy 1, ch 1
-    gt = ind.arrGenotype(p=1, ch=1)
-    if alleleType() == 'binary':
-      self.assertEqual(list(gt1), [1,0,1,0,1,0,1])
-    else:
-      self.assertEqual(list(gt1), [4,2,3,4,2,3,4])
-    self.assertRaises(exceptions.IndexError, ind.arrGenotype, 2)
-    self.assertRaises(exceptions.IndexError, ind.arrGenotype, 0, 2)
-    if alleleType() == 'binary':
-      # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1 
-      self.assertEqual( ind.allele(0), 0)
-      self.assertEqual( ind.allele(1), 1)
-      self.assertEqual( ind.allele(5), 1)
-      self.assertEqual( ind.allele(1, p=1), 1)
-      self.assertEqual( ind.allele(2, p=1), 0)
-      self.assertEqual( ind.allele(2, p=1, ch=1), 1)
-      self.assertEqual( ind.allele(2, p=0, ch=1), 1)
-      self.assertRaises(exceptions.IndexError, ind.allele, 24)
-      self.assertRaises(exceptions.IndexError, ind.allele, 12, p=0)
-      self.assertRaises(exceptions.IndexError, ind.allele, 5, p=0, ch=1)
-      self.assertRaises(exceptions.IndexError, ind.allele, 0, p=2)
-      self.assertRaises(exceptions.IndexError, ind.allele, 0, p=0, ch=2)
-    else:
-      # layout 2 3 4 2 3 | 4 2 3 4 2 3 4 || 2 3 4 2 3 | 4 2 3 4 2 3 4 
-      self.assertEqual( ind.allele(0), 2)
-      self.assertEqual( ind.allele(1), 3)
-      self.assertEqual( ind.allele(5), 4)
-      self.assertEqual( ind.allele(1, p=1), 2)
-      self.assertEqual( ind.allele(2, p=1), 3)
-      self.assertEqual( ind.allele(2, p=1, ch=1), 2)
-      self.assertEqual( ind.allele(2, p=0, ch=1), 2)
-      self.assertRaises(exceptions.IndexError, ind.allele, 24)
-      self.assertRaises(exceptions.IndexError, ind.allele, 12, p=0)
-      self.assertRaises(exceptions.IndexError, ind.allele, 5, p=0, ch=1)
-      self.assertRaises(exceptions.IndexError, ind.allele, 0, p=2)
-      self.assertRaises(exceptions.IndexError, ind.allele, 0, p=0, ch=2)
-    if alleleType() == 'binary':
-      # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1 
-      self.assertEqual( ind.alleleChar(0), '1')
-      self.assertEqual( ind.alleleChar(1), '2')
-      self.assertEqual( ind.alleleChar(5), '2')
-      self.assertEqual( ind.alleleChar(1, p=1), '2')
-      self.assertEqual( ind.alleleChar(2, p=1), '1')
-      self.assertEqual( ind.alleleChar(2, p=1, ch=1), '2')
-      self.assertEqual( ind.alleleChar(2, p=0, ch=1), '2')
-      self.assertRaises(exceptions.IndexError, ind.alleleChar, 24)
-      self.assertRaises(exceptions.IndexError, ind.alleleChar, 12, p=0)
-      self.assertRaises(exceptions.IndexError, ind.alleleChar, 5, p=0, ch=1)
-      self.assertRaises(exceptions.IndexError, ind.alleleChar, 0, p=2)
-      self.assertRaises(exceptions.IndexError, ind.alleleChar, 0, p=0, ch=2)
-    else:
-      # layout 2 3 4 2 3 | 4 2 3 4 2 3 4 || 2 3 4 2 3 | 4 2 3 4 2 3 4 
-      self.assertEqual( ind.alleleChar(0), 'C')
-      self.assertEqual( ind.alleleChar(1), 'T')
-      self.assertEqual( ind.alleleChar(5), 'G')
-      self.assertEqual( ind.alleleChar(1, p=1), 'C')
-      self.assertEqual( ind.alleleChar(2, p=1), 'T')
-      self.assertEqual( ind.alleleChar(2, p=1, ch=1), 'C')
-      self.assertEqual( ind.alleleChar(2, p=0, ch=1), 'C')
-      self.assertRaises(exceptions.IndexError, ind.alleleChar, 24)
-      self.assertRaises(exceptions.IndexError, ind.alleleChar, 12, p=0)
-      self.assertRaises(exceptions.IndexError, ind.alleleChar, 5, p=0, ch=1)
-      self.assertRaises(exceptions.IndexError, ind.alleleChar, 0, p=2)
-      self.assertRaises(exceptions.IndexError, ind.alleleChar, 0, p=0, ch=2)
-    if alleleType() == 'binary':
-      # set allele
-      # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1 
-      ind.setAllele(0,1)
-      self.assertEqual( ind.allele(0), 1)
-      ind.setAllele(0,5)
-      self.assertEqual( ind.allele(5), 0)
-      ind.setAllele(0, 1, p=1)
-      self.assertEqual( ind.allele(1, p=1), 0)
-      ind.setAllele(1, 2, p=1)
-      self.assertEqual( ind.allele(2, p=1), 1)
-      ind.setAllele(0, 2, p=1, ch=1)
-      self.assertEqual( ind.allele(2, p=1, ch=1), 0)
-      ind.setAllele(0, 2, p=0, ch=1)
-      self.assertEqual( ind.allele(2, p=0, ch=1), 0)
-      self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 24)
-      self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 12, p=0)
-      self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 5, p=0, ch=1)
-      self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 0, p=2)
-      self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 0, p=0, ch=2)
-    else:
-      # layout 2 3 4 2 3 | 4 2 3 4 2 3 4 || 2 3 4 2 3 | 4 2 3 4 2 3 4 
-      ind.setAllele(1,1)
-      self.assertEqual( ind.allele(0), 1)
-      ind.setAllele(2,1)
-      self.assertEqual( ind.allele(1), 2)
-      ind.setAllele(3,5)
-      self.assertEqual( ind.allele(5), 3)
-      ind.setAllele(1,1,p=1)
-      self.assertEqual( ind.allele(1, p=1), 1)
-      ind.setAllele(2,2,p=1)
-      self.assertEqual( ind.allele(2, p=1), 2)
-      ind.setAllele(1,2,p=1,ch=1)
-      self.assertEqual( ind.allele(2, p=1, ch=1), 1)
-      ind.setAllele(1,2,p=0,ch=1)
-      self.assertEqual( ind.allele(2, p=0, ch=1), 1)
-      self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 24)
-      self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 12, p=0)
-      self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 5, p=0, ch=1)
-      self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 0, p=2)
-      self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 0, p=0, ch=2)
-    ind.setTag((1,2))
-    self.assertEqual(ind.tag(), (1,2))
-    # default to Male
-    self.assertEqual(ind.sex(), Male)
-    self.assertEqual(ind.sexChar(), 'M')
-    ind.setSex(Female)
-    self.assertEqual(ind.sex(), Female)
-    self.assertEqual(ind.sexChar(), 'F')
-    # affectedness
-    self.assertEqual(ind.affected(), False)
-    self.assertEqual(ind.Unaffected(), True)
-    ind.setAffected(True)
-    self.assertEqual(ind.affected(), True)
-    self.assertEqual(ind.Unaffected(), False)
-    # info
-    ind.setInfo(20)
-    self.assertEqual(ind.info(), 20)
-    
-  def testPopManupulation(self):
-    self.pop.setIndInfoWithSubPopID()
-    
-  def testIndividualInfo(self):
-    self.assertEqual( self.pop.individual(20).info(), 0)
-    self.pop.individual(20).setInfo(1)
-    self.assertEqual( self.pop.individual(20).info(), 1)
-    
   def testSaveLoadPopulation(self):
-    for file in ['a.txt', 'a.xml', 'a.bin']:
-      self.pop.savePopulation(file)
+    if alleleType() != 'binary':
+      pop = population(size=10, ploidy=2, loci=[5, 7], 
+        subPop=[2, 8], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+        maxAllele=4, alleleNames=['_','A','C','T','G']) 
+      InitByFreq(pop, [.2, .3, .5])
+    else:
+      pop = population(size=10, ploidy=2, loci=[5, 7], 
+        subPop=[2, 8], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+        alleleNames=['1','2']) 
+      InitByFreq(pop, [.2, .8])
+    # .xml format may not be available (under mac)
+    for file in ['a.txt', 'a.bin']:
+      pop.savePopulation(file)
       assert os.path.isfile(file)
       pop1 = LoadPopulation(file)
+      Dump(pop)
+      Dump(pop1)
+      # genotype ok
+      self.assertEqual(pop.arrGenotype(), pop1.arrGenotype())
+      # compare individual
+      for i in range(pop.popSize()):
+        self.assertEqual(pop.individual(i), pop1.individual(i))
+        
       os.remove(file)
     
-  def testArrGenotype(self):
-    self.assertEqual( len( self.pop.arrGenotype() ),
-      self.pop.genoSize() * self.pop.popSize() ) 
-    self.assertEqual( len( self.pop.arrGenotype(0) ),
-      self.pop.genoSize() * self.pop.subPopSize(0) ) 
-    
-  def testIndividual(self):
-    self.pop.individual(0)
-    
-  def testSetIndInfo(self):
-    self.pop.setIndInfo(range(0,100))
-    
-  def testGrp(self):
+  def testPopVars(self):
     self.assertEqual( self.pop.grp(), -1)
-    
-  def testRep(self):
     self.assertEqual( self.pop.rep(), -1)
-    
-  def testVars(self):
     self.pop.vars()
 
   def testSwap(self):
@@ -437,9 +267,6 @@ class TestPopulation(unittest.TestCase):
     InitByFreq(self.pop, [.2,.3,.5])
     #Dump(self.pop)
     pop1.swap(self.pop)
-    #Dump(pop1)
-    #Dump(self.pop)
-    #assert(pop1.
     
 #  def testAncestry(self):
 #    # test ancestry history features

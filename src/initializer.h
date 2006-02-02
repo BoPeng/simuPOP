@@ -258,10 +258,10 @@ namespace simuPOP
             {
               if( this->m_atPloidy==-1)           // all chromosomes
               {
-                ws.get(pop.genoBegin(left), pop.genoEnd(left), 1);
+                ws.get(pop.indGenoBegin(left), pop.indGenoEnd(left), 1);
 
                 for(ULONG ind=left+1; ind != right; ++ind)
-                  copy(pop.genoBegin(left), pop.genoEnd(left), pop.genoBegin(ind));
+                  copy(pop.indGenoBegin(left), pop.indGenoEnd(left), pop.indGenoBegin(ind));
               }
               else                                // only initialize one set of chromosome
               {
@@ -303,8 +303,8 @@ namespace simuPOP
             if( this->m_atLoci.empty())           // at all loci
             {
               if( this->m_atPloidy == -1)
-                ws.get( pop.begin()+left*pop.genoSize(),
-                  pop.begin()+right*pop.genoSize(), 1);
+                ws.get( pop.genoBegin()+left*pop.genoSize(),
+                  pop.genoBegin()+right*pop.genoSize(), 1);
               else                                // for only one ploidy
               {
                 for(ULONG ind=left; ind != right; ++ind)
@@ -500,7 +500,7 @@ namespace simuPOP
                 {
                   DBG_ASSERT(src.size() == pop.genoSize(), ValueError,
                     "Length of value does not match geno size");
-                  copy(src.begin(), src.end(), pop.genoBegin(ind));
+                  copy(src.begin(), src.end(), pop.indGenoBegin(ind));
                 }
                 else                              // one of the copied.
                 {                                 /// fixme: check length of src?
@@ -517,7 +517,7 @@ namespace simuPOP
                     (src.size() == this->m_atLoci.size() * pop.ploidy() ),
                     ValueError, "Length of value does not atLoci size");
                   for(size_t loc = 0; loc != srcSz ;++loc)
-                    *(pop.genoBegin(ind) + this->m_atLoci[loc%lociSz] + loc/lociSz*totNumLoci ) = src[loc];
+                    *(pop.indGenoBegin(ind) + this->m_atLoci[loc%lociSz] + loc/lociSz*totNumLoci ) = src[loc];
                 }
                 else                              // one of the copies.
                 {
@@ -566,21 +566,21 @@ namespace simuPOP
                     {
                       UINT idx = ws.get();
                       copy(m_value[idx].begin(), m_value[idx].end(),
-                        pop.genoBegin(ind)+p*totNumLoci);
+                        pop.indGenoBegin(ind)+p*totNumLoci);
                     }
                   }
                   else
                   {
                     UINT idx = ws.get();
                     copy(m_value[idx].begin(), m_value[idx].end(),
-                      pop.genoBegin(ind)+this->m_atPloidy*totNumLoci);
+                      pop.indGenoBegin(ind)+this->m_atPloidy*totNumLoci);
                   }
                 }
                 else                              // whole geno
                 {
                   UINT idx = ws.get();
                   if(this->m_atPloidy==-1)
-                    copy(m_value[idx].begin(), m_value[idx].end(), pop.genoBegin(ind));
+                    copy(m_value[idx].begin(), m_value[idx].end(), pop.indGenoBegin(ind));
                   else                            // only one copy of chromosome
                     copy(m_value[idx].begin(), m_value[idx].end(),
                       pop.individual(ind).genoBegin(this->m_atPloidy));
@@ -596,14 +596,14 @@ namespace simuPOP
                     {
                       UINT idx = ws.get();
                       for(size_t loc = 0; loc != srcSz ;++loc)
-                        *(pop.genoBegin(ind) + p*totNumLoci + this->m_atLoci[loc]) = m_value[idx][loc];
+                        *(pop.indGenoBegin(ind) + p*totNumLoci + this->m_atLoci[loc]) = m_value[idx][loc];
                     }
                   }
                   else
                   {
                     UINT idx = ws.get();
                     for(size_t loc = 0; loc != srcSz ;++loc)
-                      *(pop.genoBegin(ind) + this->m_atPloidy*totNumLoci +
+                      *(pop.indGenoBegin(ind) + this->m_atPloidy*totNumLoci +
                       this->m_atLoci[loc]) = m_value[idx][loc];
                   }
 
@@ -614,7 +614,7 @@ namespace simuPOP
                   {
                     UINT idx = ws.get();
                     for(size_t loc = 0; loc != srcSz ;++loc)
-                      *(pop.genoBegin(ind) + this->m_atLoci[loc%lociSz] +
+                      *(pop.indGenoBegin(ind) + this->m_atLoci[loc%lociSz] +
                       loc/lociSz*totNumLoci ) = m_value[idx][loc];
                   }
                   else
@@ -688,14 +688,14 @@ namespace simuPOP
         if(m_subPop.empty())
           m_subPop.resize(1, p.first);
 
-        GenoIterator srcBegin = pop.genoBegin(m_ind),
-          srcEnd=pop.genoEnd(m_ind);
+        GenoIterator srcBegin = pop.indGenoBegin(m_ind),
+          srcEnd=pop.indGenoEnd(m_ind);
 
         for(vectoru::iterator sp=m_subPop.begin(); sp != m_subPop.end(); ++sp)
         {
           for(ULONG i = pop.subPopBegin(*sp); i < pop.subPopEnd(*sp); ++i)
             if( i != m_ind)
-              copy(srcBegin, srcEnd, pop.genoBegin(i));
+              copy(srcBegin, srcEnd, pop.indGenoBegin(i));
         }
 
         return true;

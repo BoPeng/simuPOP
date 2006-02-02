@@ -1616,7 +1616,7 @@ the position of a locus
 \begin_layout Standard
 
 \family typewriter
-arrLociDist()
+arrLociPos()
 \end_layout
 
 \end_inset
@@ -2060,7 +2060,7 @@ Population related functions
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="53" columns="3">
+<lyxtabular version="3" rows="54" columns="3">
 <features islongtable="true" firstHeadBottomDL="true" headBottomDL="true">
 <column alignment="left" valignment="top" leftline="true" width="0">
 <column alignment="left" valignment="top" leftline="true" width="0" special="|p{2in}|">
@@ -2371,7 +2371,7 @@ p.absIndIndex
 
 \end_inset
 
-(idx, sp)
+(ind, sp)
 \end_layout
 
 \end_inset
@@ -2913,6 +2913,47 @@ Split a subpopulation into subpopulations of gives sizes.
 which
 \family default
  subpopulation.) Subpopulation IDs can be specified.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+p.setSubPopStru
+\begin_inset LatexCommand \index{population!setSubPopStru}
+
+\end_inset
+
+(newSubPopSizes, allowPopSizeChange=False)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Set subpopulation structure.
+ Population size may be changed but all genotype may be lost.
 \end_layout
 
 \end_inset
@@ -9746,7 +9787,143 @@ count, index
  to be exact, are available.
  This is because you are not allowed to change the size of underlying C/C++
  vector.
- 
+ The following is the operations allowed:
+\end_layout
+
+\begin_layout LyX-Code
+# obtain an object using one of the arrXXX functions
+\end_layout
+
+\begin_layout LyX-Code
+pop = population(loci=[3,4], lociPos=[1,2,3,4,5,6,7])
+\end_layout
+
+\begin_layout LyX-Code
+arr = pop.arrLociPos()
+\end_layout
+
+\begin_layout LyX-Code
+# print and expression (just like list)
+\end_layout
+
+\begin_layout LyX-Code
+print arr
+\end_layout
+
+\begin_layout LyX-Code
+str(arr)
+\end_layout
+
+\begin_layout LyX-Code
+# count
+\end_layout
+
+\begin_layout LyX-Code
+arr.count(2)
+\end_layout
+
+\begin_layout LyX-Code
+# index 
+\end_layout
+
+\begin_layout LyX-Code
+arr.index, 2)
+\end_layout
+
+\begin_layout LyX-Code
+# can read write
+\end_layout
+
+\begin_layout LyX-Code
+arr[0] = 0.5
+\end_layout
+
+\begin_layout LyX-Code
+# convert to list
+\end_layout
+
+\begin_layout LyX-Code
+arr.tolist()
+\end_layout
+
+\begin_layout LyX-Code
+# or simply
+\end_layout
+
+\begin_layout LyX-Code
+list(arr)
+\end_layout
+
+\begin_layout LyX-Code
+# compare to list directly
+\end_layout
+
+\begin_layout LyX-Code
+arr == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0]
+\end_layout
+
+\begin_layout LyX-Code
+# you can also convert and compare
+\end_layout
+
+\begin_layout LyX-Code
+list(arr) == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0])
+\end_layout
+
+\begin_layout LyX-Code
+# slice
+\end_layout
+
+\begin_layout LyX-Code
+arr[:] = [1,2,3,4,5,6,7]
+\end_layout
+
+\begin_layout LyX-Code
+# arr1 is 1,2,3
+\end_layout
+
+\begin_layout LyX-Code
+arr1 = arr[:3]
+\end_layout
+
+\begin_layout LyX-Code
+# assign slice from a number
+\end_layout
+
+\begin_layout LyX-Code
+# IMPORTANT NOTE that arr will also be affected
+\end_layout
+
+\begin_layout LyX-Code
+# since arr1 point to a part of arr
+\end_layout
+
+\begin_layout LyX-Code
+arr1[:] = 10
+\end_layout
+
+\begin_layout LyX-Code
+# assign vector of the same length
+\end_layout
+
+\begin_layout LyX-Code
+arr1[:] = [30,40]
+\end_layout
+
+\begin_layout LyX-Code
+# assign from another part
+\end_layout
+
+\begin_layout LyX-Code
+arr[1:3] = arr[3:5]
+\end_layout
+
+\begin_layout Standard
+No other operation is allowed.
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Section

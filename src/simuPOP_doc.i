@@ -3761,7 +3761,6 @@ Usage:
 
 ";
 
-%ignore simuPOP::Population::setSubPopStru(const vectorlu &subPopsize, bool allowPopSizeChange);
 
 %feature("docstring")  simuPOP::Population::numSubPop " 
 

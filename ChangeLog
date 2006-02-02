@@ -31,6 +31,7 @@ version 0.6.12 - available as snapshot
   - NEW: (important) addition of ba, baop modules for binary allele. Extensive
          tests are needed but it is in working status now, including the arrGenotype
          function series.
+  - NEW: you can now directly compare individuals and populations in python.
 
 version 0.6.11 - (Rev 119) - Jan 19, 2006
   - DOC: add examples of penetrance operators to the reference manual.
