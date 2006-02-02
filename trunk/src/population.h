@@ -157,7 +157,10 @@ namespace simuPOP
           "maxAllele is bigger than maximum allowed allele state of this library (" + toStr(MaxAllele) +
           ")\nPlease use simuOpt.setOptions(longAllele=True) to use the long allele version of simuPOP.");
 
-        DBG_DO( DBG_POPULATION, cout << "Constructor of Population is called\n");
+        DBG_FAILIF(maxAllele == 0, ValueError,
+          "maxAllele should be at least 1 (0,1 two states). ")
+
+          DBG_DO( DBG_POPULATION, cout << "Constructor of Population is called\n");
 
         // if specify subPop but not m_popSize
         if( !subPop.empty() )
@@ -353,9 +356,21 @@ namespace simuPOP
         return "<simuPOP::Population of size " + toStr(popSize()) + ">";
       }
 
+      // allow compaison of populations in python
+      // only equal or unequal, no greater or less than
+      int __cmp__(const Population& rhs) const
+      {
+        if( genoStruIdx() != rhs.genoStruIdx() )
+          return 1;
+
+        for( ULONG i=0, iEnd = popSize(); i < iEnd; ++i)
+          if( m_inds[i] != m_inds[i] )
+            return 1;
+        return 0;
+      }
+
       /// \brief set population/subPopulation given subpopulation sizes
       ///
-      /// CPPONLY
       /// \param subPopSize an array of subpopulation sizes
       ///    the population may or may not change according to
       ///    parameter allowPopSizeChange if sum of subPopSize
@@ -370,7 +385,7 @@ namespace simuPOP
       ///   of scratch population), users are not supposed to call it
       ///   directly. (that is why CPPONLY is set)
       ///
-      void setSubPopStru(const vectorlu& subPopsize, bool allowPopSizeChange)
+      void setSubPopStru(const vectorlu& newSubPopSizes, bool allowPopSizeChange)
       {
         if( allowPopSizeChange && !m_fitness.empty() )
           throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
@@ -379,7 +394,7 @@ namespace simuPOP
         // case 1: remove all subpopulation structure
         // do not change population size
         // individuals are valid....
-        if ( subPopsize.empty() )
+        if ( newSubPopSizes.empty() )
         {
           m_numSubPop = 1;
           m_subPopSize.resize(1, m_popSize);
@@ -387,11 +402,11 @@ namespace simuPOP
         }
         else                                      // may change populaiton size
         {
-          m_numSubPop = subPopsize.size();
-          m_subPopSize = subPopsize;
+          m_numSubPop = newSubPopSizes.size();
+          m_subPopSize = newSubPopSizes;
           m_subPopIndex.resize( m_numSubPop+1);
 
-          ULONG totSize = accumulate(subPopsize.begin(), subPopsize.end(), 0UL);
+          ULONG totSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
 
           // usually, totSize == m_popSize, individuals are valid
           if( totSize != m_popSize)
@@ -402,10 +417,11 @@ namespace simuPOP
 #ifndef OPTIMIZED
             if( !allowPopSizeChange)
             {
-              cout << "Total new size " << totSize << endl;
-              cout << "Attempted subpop " << subPopsize << endl;
-              cout << "Total current " << m_popSize << endl;
-              cout << "Current subpop size " << this->subPopSizes() << endl;
+              DBG_DO(DBG_POPULATION, cout << "Total new size " << totSize << endl);
+              DBG_DO(DBG_POPULATION, cout << "Attempted subpop " << newSubPopSizes << endl);
+              DBG_DO(DBG_POPULATION, cout << "Total current " << m_popSize << endl);
+              DBG_DO(DBG_POPULATION, cout << "Current subpop size " <<
+                this->subPopSizes() << endl);
               throw ValueError("Populaiton size is fixed (by allowPopSizeChange parameter).\n"
                 " Subpop sizes should add up to popsize");
             }
@@ -500,12 +516,12 @@ namespace simuPOP
         \return absolute index of individual at subPopulation subPop
         \sa subPopIndPair
       */
-      ULONG absIndIndex(ULONG index, UINT subPop) const
+      ULONG absIndIndex(ULONG ind, UINT subPop) const
       {
         CHECKRANGESUBPOP(subPop);
-        CHECKRANGESUBPOPMEMBER(index, subPop);
+        CHECKRANGESUBPOPMEMBER(ind, subPop);
 
-        return( m_subPopIndex[subPop] + index);
+        return( m_subPopIndex[subPop] + ind);
       }
 
       /// subPop and relative index of an individual
@@ -675,19 +691,19 @@ namespace simuPOP
       }
 
       ///  CPPONLY allele iterator, go through all allels one by one, without subPop info
-      GenoIterator begin()
+      GenoIterator genoBegin()
       {
         return m_genotype.begin();
       }
 
       ///  CPPONLY allele iterator
-      GenoIterator end()
+      GenoIterator genoEnd()
       {
         return m_genotype.end();
       }
 
       ///  CPPONLY allele iterator, go through all allels one by one in a subPopulation
-      GenoIterator begin(UINT subPop)
+      GenoIterator genoBegin(UINT subPop)
       {
         CHECKRANGESUBPOP(subPop);
 
@@ -698,7 +714,7 @@ namespace simuPOP
       }
 
       ///  CPPONLY allele iterator in a subPopulation.
-      GenoIterator end(UINT subPop)
+      GenoIterator genoEnd(UINT subPop)
       {
         CHECKRANGESUBPOP(subPop);
 
@@ -708,21 +724,21 @@ namespace simuPOP
       }
 
       ///  CPPONLY genoIterator --- beginning of individual ind.
-      GenoIterator genoBegin(ULONG ind) const
+      GenoIterator indGenoBegin(ULONG ind) const
       {
         CHECKRANGEIND(ind);
         return m_inds[ind].genoBegin();
       }
 
       ///  CPPONLY genoIterator -- end of individual ind.
-      GenoIterator genoEnd(ULONG ind) const
+      GenoIterator indGenoEnd(ULONG ind) const
       {
         CHECKRANGEIND(ind);
         return m_inds[ind].genoEnd();
       }
 
       ///  CPPONLY genoIterator --- beginning of individual ind.
-      GenoIterator genoBegin(ULONG ind, UINT subPop) const
+      GenoIterator indGenoBegin(ULONG ind, UINT subPop) const
       {
         CHECKRANGESUBPOP(subPop);
         CHECKRANGESUBPOPMEMBER(ind, subPop);
@@ -731,7 +747,7 @@ namespace simuPOP
       }
 
       ///  CPPONLY genoIterator -- end of individual ind.
-      GenoIterator genoEnd(ULONG ind, UINT subPop) const
+      GenoIterator indGenoEnd(ULONG ind, UINT subPop) const
       {
         CHECKRANGESUBPOP(subPop);
         CHECKRANGESUBPOPMEMBER(ind, subPop);
@@ -762,7 +778,7 @@ namespace simuPOP
           // adjust position. deep=true
           adjustGenoPosition(true);
 
-        return Allele_Vec_As_NumArray( begin(subPop), end(subPop));
+        return Allele_Vec_As_NumArray( genoBegin(subPop), genoEnd(subPop));
       }
 
       //@}
@@ -2083,8 +2099,8 @@ namespace simuPOP
       {
         if( m_inds[k].shallowCopied() )
         {
-          if( genoBegin(k) < spBegin
-            || genoEnd(k) > spEnd )
+          if( indGenoBegin(k) < spBegin
+            || indGenoEnd(k) > spEnd )
             /// record individual index and genoPtr
             scIndex.push_back(k);
           else
@@ -2128,7 +2144,7 @@ namespace simuPOP
     for(i=0, iEnd = scIndex.size(); i < iEnd;  i++)
     {
       scPtr[i] = m_inds[ scIndex[i]].genoPtr();
-      copy( genoBegin(scIndex[i]), genoEnd(scIndex[i]), scGeno.begin() + i* genoSize());
+      copy( indGenoBegin(scIndex[i]), indGenoEnd(scIndex[i]), scGeno.begin() + i* genoSize());
     }
 
     DBG_DO(DBG_POPULATION, cout << "Shallow copied" << scIndex << endl);
@@ -2141,7 +2157,7 @@ namespace simuPOP
     {
       m_inds[ scIndex[i] ].setGenoPtr( scPtr[i]);
       copy( scGeno.begin() + i*  genoSize(), scGeno.begin() + (i+1)*  genoSize(),
-        genoBegin( scIndex[i] ));
+        indGenoBegin( scIndex[i] ));
       m_inds[ scIndex[i] ].setShallowCopied(false);
     }
 

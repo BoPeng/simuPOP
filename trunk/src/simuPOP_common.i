@@ -664,6 +664,8 @@ def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False,
     if len(lociPos) > 0 and type(lociPos[0]) in [types.TupleType, types.ListType]:
        ld = []
        for i in range(0, len(lociPos)):
+         if len(lociPos[i]) != loci[i]:
+           raise exceptions.ValueError("Loci position specification for chromosome %d is wrong" % i)
          ld.extend( lociPos[i])
     ln = lociNames
     if len(lociNames) > 0 and type(lociNames[0]) in [types.TupleType, types.ListType]:

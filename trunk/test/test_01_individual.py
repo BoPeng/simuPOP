@@ -101,22 +101,22 @@ class TestIndividual(unittest.TestCase):
     gt = ind.arrGenotype()
     if alleleType() == 'binary':
       gt[:] = [0,1]*12
-      self.assertEqual(list(gt), [0,1]*12)
+      self.assertEqual(gt, [0,1]*12)
     else:
       gt[:] = [2,3,4]*8
-      self.assertEqual(list(gt), [2,3,4]*8)
+      self.assertEqual(gt, [2,3,4]*8)
     # ploidy 1
     gt = ind.arrGenotype(1)
     if alleleType() == 'binary':
-      self.assertEqual(list(gt), [0,1]*6)
+      self.assertEqual(gt, [0,1]*6)
     else:
-      self.assertEqual(list(gt), [2,3,4]*4)
+      self.assertEqual(gt, [2,3,4]*4)
     # ploidy 1, ch 1
     gt = ind.arrGenotype(1, 1)
     if alleleType() == 'binary':
-      self.assertEqual(list(gt), [1,0,1,0,1,0,1])
+      self.assertEqual(gt, [1,0,1,0,1,0,1])
     else:
-      self.assertEqual(list(gt), [4,2,3,4,2,3,4])
+      self.assertEqual(gt, [4,2,3,4,2,3,4])
     self.assertRaises(exceptions.IndexError, ind.arrGenotype, 2)
     self.assertRaises(exceptions.IndexError, ind.arrGenotype, 0, 2)
     if alleleType() == 'binary':
@@ -235,5 +235,16 @@ class TestIndividual(unittest.TestCase):
     ind.setInfo(20)
     self.assertEqual(ind.info(), 20)
     
+  def testCompare(self):
+    pop = population(10, loci=[2])
+    self.assertEqual( pop.individual(0) == pop.individual(1), True)
+    pop.individual(0).setAllele(1, 0)
+    self.assertEqual( pop.individual(0) == pop.individual(1), False)
+    pop1 = population(10, loci=[2])
+    self.assertEqual( pop.individual(1) == pop1.individual(1), True)
+    pop1 = population(10, loci=[3])
+    self.assertEqual( pop.individual(1) == pop1.individual(1), False)
+
+
 if __name__ == '__main__':
   unittest.main()

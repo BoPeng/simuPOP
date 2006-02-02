@@ -52,7 +52,8 @@ if not simuOptions['Quiet']:
     compilePyVersion() ))
   print compileCompiler()
   print "Random Number Generator is set to", rng().name()
-  print "This is the %s allele version with %d maximum allelic states." % (alleleType(), MaxAllele)
+  # MaxAllele + 1 since 0 is one of the allelic states
+  print "This is the %s allele version with %d maximum allelic states." % (alleleType(), MaxAllele+1)
   if optimized():
     print "You are running in optimized mode at maximum speed."
   else:

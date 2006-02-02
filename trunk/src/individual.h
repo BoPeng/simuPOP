@@ -160,8 +160,10 @@ namespace simuPOP
             for (j = 0; j < m_numLoci[i]; j++)
               m_lociNames[m_chromIndex[i]+j] = "loc"+ toStr(i+1) + "-" + toStr(j+1);
         }
-        DBG_ASSERT( m_lociNames.size() != m_totNumLoci, ValueError,
+        DBG_ASSERT( m_lociNames.size() == m_totNumLoci, ValueError,
           "Loci names, if specified, should be given to every loci");
+        DBG_WARNING( (!m_alleleNames.empty()) && m_alleleNames.size() != m_maxAllele+1,
+          "Not all allele names (plus missing) are given. ")
       }
 
       /// copy constructor
@@ -509,7 +511,7 @@ namespace simuPOP
       }
 
       /// return loci distance as python Numeric.array object
-      PyObject* arrLociDist()
+      PyObject* arrLociPos()
       {
         return Double_Vec_As_NumArray( totNumLoci(), &(s_genoStruRepository[m_genoStruIdx].m_lociPos[0]));
       }
@@ -578,7 +580,11 @@ namespace simuPOP
       /// return allele name
       string alleleName(const Allele allele) const
       {
-        if( ! s_genoStruRepository[m_genoStruIdx].m_alleleNames.empty() )
+        DBG_FAILIF(allele > s_genoStruRepository[m_genoStruIdx].m_maxAllele,
+          IndexError, "Allele out of range of 0 ~ " +
+          toStr(s_genoStruRepository[m_genoStruIdx].m_maxAllele));
+
+        if( allele < s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() )
         {
           DBG_FAILIF( allele >= s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() ,
             IndexError, "No name for allele " + toStr(static_cast<UINT>(allele)));
@@ -842,8 +848,9 @@ namespace simuPOP
 
       Allele allele(UINT index, UINT p, UINT ch) const
       {
-        CHECKRANGEABSLOCUS(index);
+        CHECKRANGELOCUS(ch, index);
         CHECKRANGEPLOIDY(p);
+        CHECKRANGECHROM(ch);
 
         return *(m_genoPtr + index + p* totNumLoci() + chromBegin(ch));
       }
@@ -873,8 +880,9 @@ namespace simuPOP
       */
       string alleleChar(UINT index, UINT p, UINT ch) const
       {
-        CHECKRANGEABSLOCUS(index);
+        CHECKRANGELOCUS(ch, index);
         CHECKRANGEPLOIDY(p);
+        CHECKRANGECHROM(ch);
 
         return this->alleleName(*(m_genoPtr + index + p* totNumLoci()
           + chromBegin(ch) ) );
@@ -897,7 +905,7 @@ namespace simuPOP
        */
       void setAllele(Allele allele, UINT index, UINT p)
       {
-        CHECKRANGEGENOSIZE(index);
+        CHECKRANGEABSLOCUS(index);
         CHECKRANGEPLOIDY(p);
 
         *(m_genoPtr + index+p*totNumLoci()) = allele;
@@ -905,8 +913,9 @@ namespace simuPOP
 
       void setAllele(Allele allele, UINT index, UINT p, UINT ch)
       {
-        CHECKRANGEGENOSIZE(index);
+        CHECKRANGELOCUS(ch, index);
         CHECKRANGEPLOIDY(p);
+        CHECKRANGECHROM(ch);
 
         *(m_genoPtr + index + p*totNumLoci() + chromBegin(ch) ) = allele;
       }
@@ -1048,6 +1057,9 @@ namespace simuPOP
       */
       bool operator== (const Individual& rhs) const
       {
+        if( genoStruIdx() != rhs.genoStruIdx() )
+          return false;
+
         if( tag() != rhs.tag() || m_flags != rhs.m_flags )
           return false;
 
@@ -1056,6 +1068,29 @@ namespace simuPOP
             return false;
 
         return true;
+      }
+
+      ///
+      bool operator!= (const Individual& rhs) const
+      {
+        return ! (*this == rhs);
+      }
+
+      // allow compaison of individuals in python
+      // only equal or unequal, no greater or less than
+      int __cmp__(const Individual& rhs) const
+      {
+        if( genoStruIdx() != rhs.genoStruIdx() )
+          return 1;
+
+        if( tag() != rhs.tag() || m_flags != rhs.m_flags )
+          return 1;
+
+        for( UINT i=0, iEnd = genoSize(); i < iEnd;  ++i)
+          if( allele(i) != rhs.allele(i) )
+            return 1;
+
+        return 0;
       }
 
       /// there is usally no >, < comparison for individuals

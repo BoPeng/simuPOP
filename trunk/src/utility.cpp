@@ -2423,7 +2423,7 @@ T Expression::valueAs##TypeName() \
 #endif
 #endif
   }
-  
+
   string compileCompiler()
   {
     return COMPILER;

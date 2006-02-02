@@ -252,6 +252,12 @@ if(cond) \
   toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
 }
 
+#define DBG_WARNING(cond, message) \
+if(cond) \
+{ \
+  cout << "Warning (line " << __LINE__ << " in " << __FILE__ << "): " << message << endl; \
+}
+
 #define DBG_DO(dbgCode, expr) \
 if(debug(dbgCode)){ expr; }
 
@@ -261,13 +267,14 @@ if(debug(dbgCode)){ expr; }
 
 #define DBG_ASSERT(cond, exception, message)
 #define DBG_FAILIF(cond, exception, message)
+#define DBG_WARNING(cond, message)
 #define DBG_DO(dbgCode, expr)
 #define DBG_DO_(expr)
 #endif
 
-      // definition for all mode
+        // definition for all mode
 
-      // epsilon when during floating point comparison
+        // epsilon when during floating point comparison
 #define cmp_epsilon (1.e-9)
 
 #define CLEARFLAG(var) (var = 0)
@@ -275,7 +282,7 @@ if(debug(dbgCode)){ expr; }
 #define RESETFLAG(var, flag) (var &= ~flag)
 #define ISSETFLAG(var, flag) (var & flag)
 
-      // check range.
+        // check range.
 #define CHECKRANGEPLOIDY(p)  DBG_FAILIF( p>=ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy()-1))
 #define CHECKRANGESEX(sex) DBG_FAILIF( sex!=Male && sex!=Female, IndexError, "Wrong sex info. Male " + toStr(Male) + " or Fenamle "  + toStr(Female) + " only.")
 #define CHECKRANGESUBPOP(subPop) DBG_FAILIF ( subPop >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  - " + toStr(numSubPop()-1))
