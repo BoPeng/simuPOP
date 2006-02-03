@@ -22,7 +22,6 @@ def genRecorder(pop):
 def opRecorder(*args, **kwargs):
   return pyOperator(func=genRecorder, *args, **kwargs)
   
-   
 class TestOperator(unittest.TestCase):
 
   def testMemberFunctions(self):
@@ -95,121 +94,109 @@ class TestOperator(unittest.TestCase):
       pass
     self.assertEqual(simu.population(2).dvars().hist, range(11))
     
+  def assertFileContent(self, file, text):
+    f = open(file)
+    t = f.read()
+    f.close()
+    self.assertEqual(t, text)
+    
   def testOutput(self):
-    simu = simulator(
-        population(size=10, ploidy=2, loci=[2, 3 ]), 
-        randomMating(), rep=5)
-    # this will not change generation number
-    simu.apply([ initByFreq([.2, .3, .5]),
-                 dumper(alleleOnly=1)])
-    # specify output is kind of complicated (because we sometimes need to 
-    # let ops output to the same file.)
-    #
-    # here is the general rule: (details please refer to online documents.)
-    #
-    #   ">file.txt"  output to this file, once done, close.
-    #                if mutliple ops output to the same file
-    #                only the last one will succeed.
-    #   ">>file.txt" output to this file, append, close when evolve stop.
-    #   ">>file%rep.txt" different filename for each replicates.
-    #                %rep will be substituted by replicate number.
-    #   ">>file%gen.txt" different filename for different generation.
-    #                %grp will be substituted by generation number
-    #   ">>%{sim}%rep.txt variables (set by setStringVar etc) can be used.
-    #   "|pipeName"   A pipe can be used. I.e., everything will be
-    #                written to a memory file. This is useful only
-    #                when the memory file will be read by a
-    #                DataProvider.
-    #
-    # for example:
-    #
-    simu.setGen(0)
-    # note the use of sep
-    # count allele at each locus
-    # header format: replicate_loci_allele
-    simu.evolve([ stat(alleleFreq=[2],
-                                output=">", sep=",",rep=1),
-                  output("\n", rep=REP_LAST)
-               ], end=10)
-    
-    #  if you would like to supress the last comma, use a
-    # \b backspace character. However, this is useful
-    # only when the output is standard output
-    # (If you write to a file, ',' and \b will be written)
-    simu.setGen(0)
-    simu.evolve([ stat(alleleFreq=[0],output=">>", sep=',',rep=2),
-                  output("\b\n", rep=REP_LAST)
-               ], end=10)
-    
-    # output to another file
-    simu.setGen(0)
-    simu.evolve([ stat(alleleFreq=[0],output="a.txt"),
-                  output("\n", rep=REP_LAST, output="a.txt")
-               ], end=10)
-    
-    # Nothing!! (this usage is totally python)
-    print open("a.txt").read()
-    
-    # you should use >> so that output will
-    # append instead of replace output from stat
-    # In the previous case, only the last output write to
-    # a.txt, i.e., only a \n was written.
-    #
-    simu.setGen(0)
-    simu.evolve([ stat(alleleFreq=[0],
-                  output=">>a.txt", rep=2),
-                  output("\n", rep=REP_LAST, output=">>a.txt")
-               ], end=10)
-    
-    
-    print open("a.txt").read()
-    
-    # note that once you specify "append mode", you do not have
-    # to do this each time.
-    simu.setGen(0)
-    simu.evolve([ stat(alleleFreq=[0],output=">>a.txt", sep=','),
-                  output("\b\n", rep=REP_LAST, output="a.txt")
-               ], end=10)
-    
-    print open("a.txt").read()
-    
-    # replicate specific output
-    simu.setGen(0)
-    simu.evolve([ stat(alleleFreq=[0],
-       outputExpr=r"'>>a'+str(rep)+'.txt'",
-                 sep=','),
-       output("\b\n", outputExpr=r"'>>a'+str(rep)+'.txt'")
+    simu = simulator( population(), 
+        noMating(), rep=5)
+    simu.evolve([
+      output("a", output=">a.txt"),
       ], end=10)
-    
-    print open("a1.txt").read()
-    print open("a2.txt").read()
-    
-    # generation specific
+    # although everyone have written to this file,
+    # only the last one will be kept
+    self.assertFileContent("a.txt", 'a')
+    #
+    # you can ignore >
     simu.setGen(0)
-    simu.evolve([ stat(alleleFreq=[0],
-                                outputExpr=r"'>>b'+str(rep)+'.txt'" ,sep=',')
-               ], end=10)
-    
-    # note that no header is output.
-    #print open("b1.txt").read()
-    #print open("b2.txt").read()
-    
-    # you can also specify "no output" 
+    simu.evolve([
+      output("a", output="a.txt"),
+      ], end=10)
+    # although everyone have written to this file,
+    # only the last one will be kept
+    self.assertFileContent("a.txt", 'a')
+    #
+    # >>
     simu.setGen(0)
-    simu.evolve([ stat(alleleFreq=[0],output="")], end=10)
-    
-    # you can actually combine replication, generation, group specific
-    # outputs....
-    # to avoid generting too many files, no example is given here.
-    
-    # remove all generated files
-    
-    import os
-    os.remove("a.txt")
-    for n in range(5):
-        os.remove( 'a%d.txt' % n)
-    #for n in range(0,11):
-    #    os.remove( 'b%d.txt' % n)
+    simu.evolve([
+      output("a", output=">>a.txt"),
+      ], end=10)
+    # a is appended 5 rep * 11 generations
+    self.assertFileContent("a.txt", 'a'*55)
+    #
+    # rep = ...
+    simu.setGen(0)
+    simu.evolve([
+      output("a", output=">>a.txt", rep=REP_LAST),
+      ], end=10)
+    # a is appended 5 rep * 11 generations
+    self.assertFileContent("a.txt", 'a'*11)
+    # if we use >>>, append to the end
+    simu.setGen(0)
+    simu.setGroup([0,0,1,1,1])
+    simu.evolve([
+      output("b", output=">>>a.txt", grp=1),
+      ], end=10)
+    # a is appended 5 rep * 11 generations
+    self.assertFileContent("a.txt", 'a'*11+'b'*33)
+    #
+    # now, we can use eval instead of output
+    simu.setGen(0)
+    simu.setGroup([0,0,1,1,1])
+    simu.evolve([
+      pyEval("gen", output=">>a.txt", grp=1),
+      ], end=10)
+    # a is appended 5 rep * 11 generations
+    self.assertFileContent("a.txt", 
+      ''.join( [ str(x)*3 for x in range(11)] ))
+    #
+    # we can use any expression, ....
+
+  def testOutputExpr(self):
+    simu = simulator( population(), 
+      noMating(), rep=5)
+    # each replicate
+    simu.evolve([
+      output("a", outputExpr="'rep%d.txt'%rep"),
+      ], end=10)
+    # although everyone have written to this file,
+    # only the last one will be kept
+    for i in range(5):
+      self.assertFileContent("rep%d.txt"%i, 'a')
+      os.remove('rep%d.txt'%i)
+    #
+    # you can ignore >
+    simu.setGen(0)
+    simu.evolve([
+      output("a", outputExpr="'>rep%d.txt'%rep"),
+      ], end=10)
+    # although everyone have written to this file,
+    # only the last one will be kept
+    for i in range(5):
+      self.assertFileContent("rep%d.txt"%i, 'a')
+      os.remove('rep%d.txt'%i)
+    #
+    # >>
+    simu.setGen(0)
+    simu.evolve([
+      output("a", outputExpr="'>>rep%d.txt'%rep"),
+      ], end=10)
+    # a is appended 1 rep * 11 generations
+    for i in range(5):
+      self.assertFileContent("rep%d.txt"%i, 'a'*11)
+      os.remove('rep%d.txt'%i)
+    # each generation?
+    simu.setGen(0)
+    simu.evolve([
+      output("a", outputExpr="'>>gen%d.txt'%gen"),
+      ], end=10)
+    # a is appended 1 rep * 11 generations
+    for i in range(11):
+      self.assertFileContent("gen%d.txt"%i, 'a'*5)
+      os.remove('gen%d.txt'%i)
    
 if __name__ == '__main__':
   unittest.main()
