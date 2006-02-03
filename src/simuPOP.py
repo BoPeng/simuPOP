@@ -27,7 +27,6 @@
 # get options
 from simuOpt import simuOptions
 
-
 if simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'short':
   from simuPOP_std import *
 elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'short':

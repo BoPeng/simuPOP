@@ -307,6 +307,7 @@ namespace simuPOP
         m_ptrRep[rep]->setRep(rep);
       }
 
+      /// CPPONLY
       UINT curRep() const
       {
         return m_curRep;
@@ -322,13 +323,14 @@ namespace simuPOP
         return m_gen;
       }
 
+      /// CPPONLY
       int grp()
       {
         return m_groups[m_curRep];
       }
 
       /// return group indices
-      vectori grps()
+      vectori group()
       {
         return m_groups;
       }
@@ -350,7 +352,6 @@ namespace simuPOP
 
         for(UINT i=0; i < m_numRep; ++i)
           m_ptrRep[i]->setGrp(m_groups[i]);
-
       }
 
       /// set generation number
@@ -393,10 +394,6 @@ namespace simuPOP
       \param end ending generation. Should be -1 (no ending generation)
       or a number greater than current generation number. When end=-1,
       simulator can only be stopped by terminators.
-      \param saveAs filename pattern, used to save simulator at saveAt generations.
-      default to 'simu'. File name will be saveAs+gen+format extension.
-      \param saveAt save simulator at these steps. negative generation is allowed.
-      \param format format to save simulator, default to 'auto'
       \result True if evolution finishs successfully.
 
       'operators' will be applied in the order of:
@@ -422,10 +419,7 @@ namespace simuPOP
       bool evolve(const vectorop& ops,
         const vectorop& preOps = vectorop(),
         const vectorop& postOps = vectorop(),
-        int end =  -1, bool dryrun = false,
-        const string saveAs = "simu",
-        const vectori& saveAt=vectori(),
-        const string format = "bin")
+        int end =  -1, bool dryrun = false)
       {
 
         DBG_DO(DBG_SIMULATOR, cout << "Starting generation: " << gen()
@@ -434,20 +428,8 @@ namespace simuPOP
         DBG_FAILIF(end > 0 && gen() > static_cast<UINT>(end), ValueError,
           "Population gen is already greater than ending generation.");
 
-        bool saveSimu = false;
-        vectorlu saveAtGen;
-        if( ! saveAt.empty())
-        {
-          for(size_t i=0; i< saveAt.size(); ++i)
-          {
-            if( saveAt[i] >= 0 && ( end < 0 || saveAt[i] <= end))
-              saveAtGen.push_back(saveAt[i]);
-            else if( saveAs[i] < 0 && end >= 0 && end + saveAs[i] +1 >=0 )
-              saveAtGen.push_back(end + saveAs[i] + 1);
-          }
-          if( ! saveAtGen.empty())
-            saveSimu = true;
-        }
+        DBG_FAILIF( end < 0 && ops.empty(), ValueError,
+          "Evolve with unspecified ending generation should have at least one terminator (operator)");
 
         vectorop preMatingOps, durMatingOps, postMatingOps, activeDurMatingOps;
 
@@ -648,18 +630,6 @@ namespace simuPOP
           // count the number of stopped replicates
           DBG_DO(DBG_SIMULATOR, cout << endl << "Number of stopped replicates: " << numStopped << endl);
 
-          // save simulator?
-          if( ! dryrun && saveSimu)
-          {
-            if( find(saveAtGen.begin(), saveAtGen.end(), m_gen) != saveAtGen.end())
-            {
-              // save simulator
-              string filename = saveAs + toStr(m_gen) + "." + format;
-              DBG_DO(DBG_SIMULATOR, cout << "Save simulator to file " << filename << endl);
-              this->saveSimulator(filename);
-            }
-          }
-
           m_gen ++;                               // increase generation!
           // only if m_gen > end will simulation stop
           // that is to say, the ending generating will be executed
@@ -785,10 +755,15 @@ namespace simuPOP
       if set, the simulator will stop evolution if one replicate
       stops. This is sometimes useful.
       */
-      bool stopIfOneRepStop(bool on=true)
+      bool setStopIfOneRepStop(bool on=true)
       {
         m_stopIfOneRepStop = on;
         return(on);
+      }
+
+      bool stopIfOneRepStop()
+      {
+        return(m_stopIfOneRepStop);
       }
 
       /// apply ops even if rep stops
@@ -799,10 +774,15 @@ namespace simuPOP
       to all stopped repicates until all replicates are marked
       stopped. This is sometimes useful.
       */
-      bool applyOpToStoppedReps(bool on = true)
+      bool setApplyOpToStoppedReps(bool on = true)
       {
         m_applyOpToStoppedReps = on;
         return(on);
+      }
+
+      bool applyOpToStoppedReps()
+      {
+        return(m_applyOpToStoppedReps);
       }
 
       /// get simulator namespace, if rep > 0 is given,

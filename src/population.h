@@ -1112,7 +1112,7 @@ namespace simuPOP
         {
           for(size_t i = 0; i < inds.size(); ++i)
                                                   // remove
-              individual(inds[i], subPop).setInfo(-1);
+            individual(inds[i], subPop).setInfo(-1);
         }
 
         int oldNumSP = numSubPop();

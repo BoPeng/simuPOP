@@ -9,6 +9,8 @@
 # $LastChangedRevision$
 # $LastChangedDate$
 # 
+import simuOpt
+simuOpt.setOptions(quiet=True)
  
 from simuPOP import *
 import unittest, os, sys, exceptions
@@ -16,6 +18,7 @@ import unittest, os, sys, exceptions
 class TestIndividual(unittest.TestCase):
 
   def testIndProperties(self):
+    'Testing individual properties'
     if alleleType() != 'binary':
       pop = population(size=100, ploidy=2, loci=[5, 7], 
         subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
@@ -28,7 +31,7 @@ class TestIndividual(unittest.TestCase):
     pop.individual(99)
     pop.individual(19, 0)
     pop.individual(79, 1)
-    self.assertRaises(exceptions.IndexError, pop.individual, 101)
+    self.assertRaises(exceptions.IndexError, pop.individual, 100)
     self.assertRaises(exceptions.IndexError, pop.individual, 20, 0)
     self.assertRaises(exceptions.IndexError, pop.individual, 80, 1)
     self.assertRaises(exceptions.IndexError, pop.individual, 0, 2)
@@ -90,6 +93,7 @@ class TestIndividual(unittest.TestCase):
     self.assertRaises(exceptions.IndexError, pop.locusName, 5)
 
   def testIndGenotype(self):
+    'Testing individual genotype manipulation function'
     if alleleType() != 'binary':
       pop = population(size=100, ploidy=2, loci=[5, 7], 
         subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
@@ -237,6 +241,7 @@ class TestIndividual(unittest.TestCase):
     self.assertEqual(ind.info(), 20)
     
   def testCompare(self):
+    'Testing individual comparison'
     pop = population(10, loci=[2])
     self.assertEqual( pop.individual(0) == pop.individual(1), True)
     pop.individual(0).setAllele(1, 0)

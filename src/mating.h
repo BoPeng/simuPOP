@@ -219,7 +219,6 @@ namespace simuPOP
         if( m_mode == MATE_NumOffspring || m_mode == MATE_NumOffspringEachFamily)
         {
           DBG_FAILIF( numOS < 1, ValueError, "Need at least one offspring.");
-          DBG_DO(DBG_MATING, cout << "Number of offspring " <<  static_cast<UINT>(numOS) << endl);
           return static_cast<UINT>(numOS);
         }
         else if( m_mode == MATE_GeometricDistribution)
@@ -227,7 +226,6 @@ namespace simuPOP
           DBG_FAILIF( fcmp_lt(numOS, 0) || fcmp_gt(numOS, 1.), ValueError,
             "P for a geometric distribution should be within [0,1], given " + toStr(numOS));
           UINT nos = rng().randGeometric(numOS);
-          DBG_DO(DBG_MATING, cout << "Number of offspring " << nos << endl);
           return nos;
         }
         else if( m_mode == MATE_PoissonDistribution)
@@ -235,7 +233,6 @@ namespace simuPOP
           DBG_FAILIF( fcmp_lt(numOS, 0) || fcmp_gt(numOS, 1.), ValueError,
             "P for a Poisson distribution should be within [0,1], given " + toStr(numOS));
           UINT nos = rng().randPoisson(numOS)+1;
-          DBG_DO(DBG_MATING, cout << "Number of offspring " << nos << endl);
           return nos;
         }
         else if( m_mode == MATE_BinomialDistribution)
@@ -246,7 +243,6 @@ namespace simuPOP
             "Max number of offspring should be greater than 1. Given "
             + toStr(m_maxNumOffspring));
           UINT nos = rng().randBinomial(m_maxNumOffspring-1, numOS)+1;
-          DBG_DO(DBG_MATING, cout << "Number of offspring " << nos << endl);
           return nos;
         }
         else
@@ -278,7 +274,6 @@ namespace simuPOP
           }
         }
         return res;
-
       }
 
       /// dealing with pop/subPop size change, copy of structure etc.
@@ -394,10 +389,10 @@ namespace simuPOP
   };
 
   /**
-     No mating. parent generation will be the offspring generation
-     during mating operators will be applied though.
-
-     */
+     No mating. No subpopulation change.
+     During mating operator will be applied, but
+     the return values are not checked.
+  */
   template<class Pop>
     class NoMating: public Mating<Pop>
   {
@@ -436,8 +431,6 @@ namespace simuPOP
       */
       virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops)
       {
-        // first: copy structure. Make sure scratch and pop are the same except
-        // for genotype
         // apply during mating operators
         if( ! ops.empty() )
         {
@@ -451,29 +444,38 @@ namespace simuPOP
         }
         return true;
       }
-
   };
 
   /**
     binomial random selection
 
     No sex. Choose one individual from last generation.
-    Subpopulations are dealt separately.
 
-    */
+    1. numOffspring protocol is honored
+    2. population size changes are allowed
+    3. selection is possible.
+
+    So this works just like a sexless random mating.
+    If ploidy is one, this is chromosomal mating.
+  */
   template<class Pop>
     class BinomialSelection: public Mating<Pop>
   {
     public:
 
       /// constructor
-      BinomialSelection(int numOffspring=1,
+      BinomialSelection(double numOffspring=1.,
+        PyObject* numOffspringFunc=NULL,
+        UINT maxNumOffspring=0,
+        UINT mode=MATE_NumOffspring,
         vectorlu newSubPopSize=vectorlu(),
         string newSubPopSizeExpr="",
         PyObject* newSubPopSizeFunc=NULL)
-        :Mating<Pop>(numOffspring, NULL, 0,
-        MATE_NumOffspring, newSubPopSize, newSubPopSizeExpr,
-        newSubPopSizeFunc)
+        :Mating<Pop>(numOffspring,
+        numOffspringFunc, maxNumOffspring, mode,
+        newSubPopSize, newSubPopSizeExpr,
+        newSubPopSizeFunc),
+        m_sampler(rng())
         {}
 
       /// destructor
@@ -502,57 +504,46 @@ namespace simuPOP
       */
       virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops)
       {
-
         this->resetNumOffspring();
-
-        // get generation number
-        //int gen = mainVars().getVarAsInt("gen");
-        int gen = pop.gen();
-
+        // scrtach will have the right structure.
         this->prepareScratchPop(pop, scratch);
+
+        DBG_DO(DBG_MATING, m_famSize.clear());
+
+        DBG_ASSERT( pop.numSubPop() == scratch.numSubPop(), SystemError,
+          "Number of subpopulation can not be changed.");
+
+        vectorf& fitness = pop.fitness();
 
         /// determine if mate() will generate offspring genotype
         bool formOffGeno = this->formOffGenotype(ops);
 
-        vectorf& fitness = pop.fitness();
-
         // for each subPopulation
-        for(UINT sp=0, spEnd = pop.numSubPop(); sp < spEnd;  ++sp)
+        for(UINT sp=0; sp < pop.numSubPop(); ++sp)
         {
           UINT spSize = pop.subPopSize(sp);
+          if( spSize == 0 ) continue;
 
           // if selection is on
-          // generate accumulative fitness values
-          WeightedSampler ws(rng());
           if( ! fitness.empty() )
-          {
-            m_fitness.resize(spSize);
-
-            // get fitness values
-            size_t ind;
-            m_fitness[0] = fitness[ pop.subPopBegin(sp) ];
-            if( spSize > 1 )
-              for( ind = 1; ind < spSize; ++ind)
-                m_fitness[ind] = m_fitness[ind-1] + fitness[ pop.subPopBegin(sp) + ind ];
-
-            for(ind = 0; ind < spSize; ++ind)
-              m_fitness[ind] /= m_fitness[spSize-1];
-            ws.set(m_fitness);
-          }
+            m_sampler.set( vectorf(fitness.begin()+pop.subPopBegin(sp),
+              fitness.begin()+pop.subPopEnd(sp) ) );
 
           // choose a parent and genreate m_numOffspring offspring
           ULONG spInd = 0;
-          while( spInd < scratch.subPopSize(sp))
+          ULONG spIndEnd = scratch.subPopSize(sp);
+          while( spInd < spIndEnd)
           {
             typename Pop::IndType * parent;
             // choose a parent
-            if( ! fitness.empty() )
-              parent = (&*pop.indBegin(sp) + ws.get());
+            if( !fitness.empty() )
+              parent = &pop.individual( m_sampler.get(), sp);
             else
-              parent = (&*pop.indBegin(sp) + rng().randInt(spSize));
+              parent = &pop.individual( rng().randInt(spSize), sp);
 
             // generate m_numOffspring offspring
-            for(UINT numOS=0, numOSEnd = this->numOffspring(gen); numOS < numOSEnd;  numOS++)
+            UINT numOS, numOSEnd;
+            for(numOS=0, numOSEnd = this->numOffspring(pop.gen() ); numOS < numOSEnd;  numOS++)
             {
               typename Pop::IndIterator it = scratch.indBegin(sp) + spInd++;
 
@@ -564,13 +555,13 @@ namespace simuPOP
               for( typename vector<Operator<Pop> *>::iterator iop = ops.begin(),
                 iopEnd = ops.end(); iop != iopEnd;  ++iop)
               {
-
                 try
                 {
                   // During Mating operator might reject this offspring.
                   if(!(*iop)->applyDuringMating(pop, it, parent, NULL))
                   {
                     spInd --;
+                    numOS --;
                     break;
                   }
                 }
@@ -580,21 +571,32 @@ namespace simuPOP
                   throw;
                 }
               }                                   // all during-mating operators
-
               // success
-              if( spInd == scratch.subPopSize(sp) )
+              if( spInd == spIndEnd )
+              {
+                numOS++;
                 break;
+              }
             }                                     // offsrping for each parent
+            // record family size
+            DBG_DO(DBG_MATING, m_famSize.push_back( numOS ));
           }                                       // all offspring
         }                                         // all subPopulation.
+        fitness.clear();
         // use scratch population,
         pop.pushAndDiscard(scratch);
+        DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
         return true;
       }
 
     private:
       /// accumulative fitness
-      vectorf m_fitness;
+      WeightedSampler m_sampler;
+
+#ifndef OPTIMIZED
+      ///
+      vectori m_famSize;
+#endif
   };
 
   /**
@@ -649,7 +651,8 @@ namespace simuPOP
         PyObject* newSubPopSizeFunc=NULL,
         string newSubPopSizeExpr="",
         bool contWhenUniSex=true)
-        :Mating<Pop>(numOffspring, numOffspringFunc, maxNumOffspring, mode,
+        :Mating<Pop>(numOffspring,
+        numOffspringFunc, maxNumOffspring, mode,
         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
         m_contWhenUniSex(contWhenUniSex),
         m_maleIndex(0), m_femaleIndex(0),
@@ -708,12 +711,13 @@ namespace simuPOP
       */
       virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops)
       {
-
         bool hasSexChrom = pop.sexChrom();
 
         this->resetNumOffspring();
         // scrtach will have the right structure.
         this->prepareScratchPop(pop, scratch);
+
+        DBG_DO(DBG_MATING, m_famSize.clear());
 
         DBG_ASSERT( pop.numSubPop() == scratch.numSubPop(), SystemError,
           "Number of subpopulation can not be changed.");
@@ -820,7 +824,8 @@ namespace simuPOP
             }
 
             // generate m_numOffspring offspring per mating
-            for(UINT numOS=0, numOSEnd = this->numOffspring(pop.gen()); numOS < numOSEnd;  numOS++)
+            UINT numOS=0, numOSEnd;
+            for(numOS=0, numOSEnd = this->numOffspring(pop.gen()); numOS < numOSEnd;  numOS++)
             {
               typename Pop::IndIterator it = scratch.indBegin(sp) + spInd++;
 
@@ -882,14 +887,17 @@ namespace simuPOP
                   throw;
                 }
               }
-
               // appy operators
               // success
               if( spInd == spIndEnd )
+              {
+                numOS++;
                 break;
-
+              }
             }                                     // each offspring
             // and then break here since spInd == spIndEnd.
+            // record family size
+            DBG_DO(DBG_MATING, m_famSize.push_back( numOS ));
           }
         }                                         // each subPop
 
@@ -897,6 +905,7 @@ namespace simuPOP
         fitness.clear();
         // use scratch populaiton
         pop.pushAndDiscard(scratch);
+        DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
         return true;
       }
 
@@ -914,6 +923,11 @@ namespace simuPOP
 
       // weighted sampler
       WeightedSampler m_maleSampler, m_femaleSampler;
+
+#ifndef OPTIMIZED
+      ///
+      vectori m_famSize;
+#endif
   };
 
   /**

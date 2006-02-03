@@ -143,6 +143,8 @@ namespace simuPOP
         m_separator(sep), m_flags(0), m_rep(rep), m_grp(grp),
         m_ostream(output, outputExpr)
       {
+        DBG_FAILIF(step<=0, ValueError, "step need to be at least one");
+
         setApplicableStage(stage);
         setFlags();
       }
@@ -426,19 +428,19 @@ namespace simuPOP
       return false;
 
     // group does not match
-    if( m_grp >= 0 && m_grp != grp ) 
+    if( m_grp >= 0 && m_grp != grp )
       return false;
 
     // only check for rep and grp values.
-    if( repOnly ) 
+    if( repOnly )
       return true;
 
     // if gen < 0, we are testing only group info
-    if( gen < 0 ) 
+    if( gen < 0 )
       return true;
 
     // if all active? (begin=0, end=-1)
-    if( ISSETFLAG(m_flags, m_flagAtAllGen)) 
+    if( ISSETFLAG(m_flags, m_flagAtAllGen))
       return true;
 
     DBG_FAILIF( end > 0 && gen > end, IndexError,
@@ -471,12 +473,12 @@ namespace simuPOP
         }                                         // atGen <=0
         else
         {
-          if( end < 0 )                          // can not determine.
+          if( end < 0 )                           // can not determine.
             continue;
           // now end >= 0 atGen <=0
-          if( end + atGen + 1 == gen ) 
+          if( end + atGen + 1 == gen )
             return true;
-          else 
+          else
             continue;
         }
       }

@@ -8,6 +8,9 @@
 # $LastChangedDate$
 #
 
+import simuOpt
+simuOpt.setOptions(quiet=True)
+
 from simuPOP import *
 import unittest, os, sys
 
@@ -25,6 +28,7 @@ def opRecorder(*args, **kwargs):
 class TestOperator(unittest.TestCase):
 
   def testMemberFunctions(self):
+    'Testing common operator member functions'
     d = dumper()
     self.assertEqual(d.canApplyPreMating(), False)
     self.assertEqual(d.canApplyDuringMating(), False)
@@ -41,6 +45,7 @@ class TestOperator(unittest.TestCase):
     self.assertEqual(d.applicableReplicate(), REP_LAST)
   
   def testActiveGen(self):
+    'Testing active generation specifications'
     def getActiveGens(endGen=20, *args, **kwargs):
       d = opRecorder(*args, **kwargs)
       simu = simulator(population(), noMating())
@@ -65,6 +70,7 @@ class TestOperator(unittest.TestCase):
       getActiveGens, begin=-10, step=-3, end=-5 )
     
   def testGroup(self):
+    'Testing group related functions'
     simu = simulator(population(), noMating(), rep=3)
     simu.setGroup([1,1,2])
     simu.evolve(
@@ -79,6 +85,7 @@ class TestOperator(unittest.TestCase):
       pass
 
   def testReplicate(self):
+    'Testing replicate related functions'
     simu = simulator(population(), noMating(), rep=3)
     simu.evolve(
       ops = [opRecorder(rep=REP_LAST)], 
@@ -101,6 +108,7 @@ class TestOperator(unittest.TestCase):
     self.assertEqual(t, text)
     
   def testOutput(self):
+    'Testing output specifications'
     simu = simulator( population(), 
         noMating(), rep=5)
     simu.evolve([
@@ -109,6 +117,7 @@ class TestOperator(unittest.TestCase):
     # although everyone have written to this file,
     # only the last one will be kept
     self.assertFileContent("a.txt", 'a')
+    os.remove('a.txt')
     #
     # you can ignore >
     simu.setGen(0)
@@ -118,6 +127,7 @@ class TestOperator(unittest.TestCase):
     # although everyone have written to this file,
     # only the last one will be kept
     self.assertFileContent("a.txt", 'a')
+    os.remove('a.txt')
     #
     # >>
     simu.setGen(0)
@@ -126,6 +136,7 @@ class TestOperator(unittest.TestCase):
       ], end=10)
     # a is appended 5 rep * 11 generations
     self.assertFileContent("a.txt", 'a'*55)
+    os.remove('a.txt')
     #
     # rep = ...
     simu.setGen(0)
@@ -142,6 +153,7 @@ class TestOperator(unittest.TestCase):
       ], end=10)
     # a is appended 5 rep * 11 generations
     self.assertFileContent("a.txt", 'a'*11+'b'*33)
+    os.remove('a.txt')
     #
     # now, we can use eval instead of output
     simu.setGen(0)
@@ -152,10 +164,10 @@ class TestOperator(unittest.TestCase):
     # a is appended 5 rep * 11 generations
     self.assertFileContent("a.txt", 
       ''.join( [ str(x)*3 for x in range(11)] ))
-    #
-    # we can use any expression, ....
+    os.remove('a.txt')
 
   def testOutputExpr(self):
+    'Testing the usage of output expression'
     simu = simulator( population(), 
       noMating(), rep=5)
     # each replicate

@@ -9,13 +9,17 @@
 # $LastChangedRevision$
 # $LastChangedDate$
 # 
- 
+
+import simuOpt
+simuOpt.setOptions(quiet=True)
+
 from simuPOP import *
 import unittest, os, sys, exceptions
 
 class TestPopulation(unittest.TestCase):
 
   def assertGenotype(self, pop, subPop, genotype):
+    'Assert if the genotype of subPop of pop is genotype '
     gt = list(pop.arrGenotype(subPop))
     gt.sort()
     if alleleType() == 'binary':
@@ -24,6 +28,7 @@ class TestPopulation(unittest.TestCase):
       self.assertEqual(gt, genotype)
 
   def testNewPopulation(self):
+    'Testing the creation of populations'
     self.assertRaises(exceptions.ValueError,
       [1,2,4,5].index, 6)
     # no exception '
@@ -96,7 +101,8 @@ class TestPopulation(unittest.TestCase):
     self.assertRaises(exceptions.ValueError,
       population, maxAllele=0)
 
-  def testPopProperties(self):
+  def testGenoStructure(self):
+    'Testing geno structure related functions'
     if alleleType() != 'binary':
       pop = population(size=100, ploidy=2, loci=[5, 7], 
         subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
@@ -105,19 +111,6 @@ class TestPopulation(unittest.TestCase):
       pop = population(size=100, ploidy=2, loci=[5, 7], 
         subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
         alleleNames=['1','2']) 
-    #
-    self.assertEqual(pop.popSize(), 100)
-    #
-    self.assertEqual(pop.subPopSize(0), 20)
-    self.assertEqual(pop.subPopSize(1), 80)
-    self.assertRaises(exceptions.IndexError, pop.subPopSize, 2 )
-    #
-    self.assertEqual(pop.subPopSizes(), (20,80) )
-    #
-    self.assertEqual(pop.subPopBegin(1), 20)
-    self.assertRaises(exceptions.IndexError, pop.subPopBegin, 2 )
-    self.assertEqual(pop.subPopEnd(0), 20)
-    self.assertRaises(exceptions.IndexError, pop.subPopEnd, 2 )
     #
     self.assertEqual(pop.ploidy(), 2)
     self.assertEqual(pop.ploidyName(), 'diploid')
@@ -149,17 +142,9 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual(pop.chromLocusPair(10), (1,5) )
     self.assertRaises(exceptions.IndexError, pop.chromLocusPair, 50 )
     #
-    self.assertEqual(pop.numSubPop(), 2)
-    #
     self.assertEqual(pop.totNumLoci(), 12)
     #
     self.assertEqual(pop.genoSize(), pop.totNumLoci()*pop.ploidy() )
-    # ind, subPop
-    self.assertEqual(pop.absIndIndex(1,1), 21)
-    self.assertRaises(exceptions.IndexError, pop.absIndIndex, 0, 2 )
-    #
-    self.assertEqual(pop.subPopIndPair(21), (1,1) )
-    self.assertRaises(exceptions.IndexError, pop.subPopIndPair, 200 )
     #
     if alleleType() == 'binary':
       self.assertEqual(pop.alleleNames(), ('1','2') )
@@ -185,7 +170,41 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual(pop.locusName(2), 'lc')
     self.assertRaises(exceptions.IndexError, pop.locusName, 5)
     
+  def testPopProperties(self):
+    'Testing population properties'
+    if alleleType() != 'binary':
+      pop = population(size=100, ploidy=2, loci=[5, 7], 
+        subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+        maxAllele=4, alleleNames=['_','A','C','T','G']) 
+    else:
+      pop = population(size=100, ploidy=2, loci=[5, 7], 
+        subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+        alleleNames=['1','2']) 
+    #
+    self.assertEqual(pop.popSize(), 100)
+    #
+    self.assertEqual(pop.subPopSize(0), 20)
+    self.assertEqual(pop.subPopSize(1), 80)
+    self.assertRaises(exceptions.IndexError, pop.subPopSize, 2 )
+    #
+    self.assertEqual(pop.subPopSizes(), (20,80) )
+    #
+    self.assertEqual(pop.subPopBegin(1), 20)
+    self.assertRaises(exceptions.IndexError, pop.subPopBegin, 2 )
+    self.assertEqual(pop.subPopEnd(0), 20)
+    self.assertRaises(exceptions.IndexError, pop.subPopEnd, 2 )
+    #
+    self.assertEqual(pop.numSubPop(), 2)
+    #
+    # ind, subPop
+    self.assertEqual(pop.absIndIndex(1,1), 21)
+    self.assertRaises(exceptions.IndexError, pop.absIndIndex, 0, 2 )
+    #
+    self.assertEqual(pop.subPopIndPair(21), (1,1) )
+    self.assertRaises(exceptions.IndexError, pop.subPopIndPair, 200 )
+   
   def testSetSubPopStru(self):
+    'Testing function setSubPopStru'
     pop = population(size=1, loci=[1])
     # pop1 is only a reference to pop
     pop1 = pop
@@ -212,7 +231,7 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual( pop.subPopSizes(), (10, 20) )
 
   def testPopSwap(self):
-    # swap
+    'Testing population swap'
     pop = population(10, loci=[2])
     pop1 = population(5, loci=[3])
     InitByFreq(pop, [.2,.3,.5])
@@ -224,6 +243,7 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual( pop1, popa)
 
   def testSplitSubPop(self):
+    'Testing function splitSubPop'
     pop = population(subPop=[5,6,7], ploidy=1, loci=[1])
     arr = pop.arrGenotype()
     # mapArr is separate
@@ -261,6 +281,7 @@ class TestPopulation(unittest.TestCase):
     SplitSubPop(pop, 0, [2,3], subPopID=[2,3])
     
   def testSplitSubPopByProportion(self):
+    'Testing function splitSubPopByProportion'
     # split by proportion -------- 
     pop = population(subPop=[5,6,7], ploidy=1, loci=[1])
     arr = pop.arrGenotype()
@@ -297,7 +318,8 @@ class TestPopulation(unittest.TestCase):
     #
     # split by proportion
    
-  def testEmptySubPops(self):
+  def testRemoveSubPops(self):
+    'Testing function removeEmptySubPops, removeSubPops'
     pop = population(subPop=[0,1,0,2,3,0])
     self.assertEqual( pop.numSubPop(), 6)
     pop.removeEmptySubPops()
@@ -325,9 +347,9 @@ class TestPopulation(unittest.TestCase):
     # should give warning
     print "A warning should be issued"
     pop.removeSubPops([8])
-   
   
   def testRemoveIndividuals(self):
+    'Testing function removeIndividuals'
     pop = population(subPop=[0,1,0,2,3,0], ploidy=1, loci=[1])
     arr = pop.arrGenotype()
     arr[:] = range(pop.popSize())
@@ -348,6 +370,7 @@ class TestPopulation(unittest.TestCase):
     self.assertGenotype(pop, 1, [3,4,5])
   
   def testMergeSubPops(self):
+    'Testing function mergeSubPops'
     pop = population(subPop=[0,1,0,2,3,0], ploidy=1, loci=[1])
     arr = pop.arrGenotype()
     arr[:] = range(pop.popSize())
@@ -368,6 +391,7 @@ class TestPopulation(unittest.TestCase):
     self.assertGenotype(pop, 0, [0,1,2,3,4,5])
 
   def testReorderSubPops(self):
+    'Testing function reorderSubPops'
     pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1])
     arr = pop.arrGenotype()
     arr[:] = range(pop.popSize())
@@ -393,6 +417,7 @@ class TestPopulation(unittest.TestCase):
     self.assertGenotype(pop, 3, [1,2])
 
   def testNewPopByIndInfo(self):
+    'Testing function newPopByIndInfo'
     pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1])
     arr = pop.arrGenotype()
     arr[:] = range(pop.popSize())
@@ -410,6 +435,7 @@ class TestPopulation(unittest.TestCase):
     self.assertNotEqual(pop.individual(0).allele(0), 1)
 
   def testRemoveLoci(self):
+    'Testing function removeLoci'
     pop = population(subPop=[1,2,], ploidy=2, loci=[2,3,1])
     arr = pop.arrGenotype()
     arr[:] = range(pop.totNumLoci())*(pop.popSize()*pop.ploidy())
@@ -433,6 +459,7 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual( pop.arrGenotype().count(3), pop.popSize()*pop.ploidy() )
     
   def testPopInfo(self):
+    'Testing population info related functions'
     pop = population(subPop=[1,2])
     pop.setIndInfoWithSubPopID()
     self.assertEqual(pop.exposeIndInfo(), [0,1,1])
@@ -447,6 +474,7 @@ class TestPopulation(unittest.TestCase):
     #
     
   def testArrGenotype(self):
+    'Testing function arrGenotype'
     pop = population(loci=[1,2], subPop=[1,2])
     arr = pop.arrGenotype()
     self.assertEqual( len(arr), pop.genoSize()*pop.popSize())
@@ -463,6 +491,7 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual( pop.individual(1,1).arrGenotype(), [1]*pop.genoSize())
         
   def testCompare(self):
+    'Testing population comparison'
     pop = population(10, loci=[2])
     pop1 = population(10, loci=[2])
     self.assertEqual( pop == pop1, True)
@@ -474,6 +503,7 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual( pop == pop1, False)
 
   def testSaveLoadPopulation(self):
+    'Testing save and load populations'
     if alleleType() != 'binary':
       pop = population(size=10, ploidy=2, loci=[5, 7], 
         subPop=[2, 8], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
@@ -512,6 +542,7 @@ class TestPopulation(unittest.TestCase):
     os.remove('a.txt')    
     
   def testPopVars(self):
+    'Testing population variables'
     pop = population()
     self.assertEqual( pop.grp(), -1)
     self.assertEqual( pop.rep(), -1)
@@ -526,6 +557,7 @@ class TestPopulation(unittest.TestCase):
       pass
 
   def testAncestry(self):
+    'Testing ancestral population related functions'
     pop = population(subPop=[3,5], loci=[2,3], ancestralDepth=2)
     InitByFreq(pop, [.2,.8])
     gt = list(pop.arrGenotype())
