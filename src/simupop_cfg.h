@@ -64,6 +64,7 @@ typedef unsigned int* AllelePtr;
 #define AlleleAdd(a, b) (a)+=(b)
 #define AlleleMinus(a, b) (a)-=(b)
 #define AlleleUnsigned(a) (a)
+#define StartingAllele  1
 #else
 #ifdef BINARYALLELE
 typedef bool Allele;
@@ -75,6 +76,7 @@ typedef vector<bool>::pointer   AllelePtr;
 #define AlleleAdd(a, b) (a)=((b)==0?(a):((b)>0?true:false))
 #define AlleleMinus(a, b) (a)=((b)==0?(a):((b)>0?false:true))
 #define AlleleUnsigned(a) (static_cast<unsigned char>(a))
+#define StartingAllele  0
 #else
 typedef unsigned char  Allele;
 typedef unsigned char& AlleleRef;
@@ -84,8 +86,10 @@ typedef unsigned char* AllelePtr;
 #define AlleleAdd(a, b) (a)+=(b)
 #define AlleleMinus(a, b) (a)-=(b)
 #define AlleleUnsigned(a) (a)
+#define StartingAllele  1
 #endif
 #endif
+
 
 typedef std::vector<Allele>::iterator GenoIterator;
 typedef std::vector<Allele>::const_iterator constGenoIterator;
