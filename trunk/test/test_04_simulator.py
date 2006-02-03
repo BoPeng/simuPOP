@@ -7,6 +7,8 @@
 # $LastChangedRevision$
 # $LastChangedDate$
 #
+import simuOpt
+simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
 import unittest, os, sys
@@ -26,7 +28,8 @@ def opRecorder(*args, **kwargs):
 class TestSimulator(unittest.TestCase):
 
   def testPopulations(self):
-    pop = population(size=1, loci=[1])
+    'Testing set/get populations'
+    pop = population(size=2, loci=[1])
     simu = simulator(pop, randomMating(), rep=2)
     # pop is not affected if simu changes
     simu.population(0).individual(0).setAllele(1,0)
@@ -41,6 +44,7 @@ class TestSimulator(unittest.TestCase):
     self.assertEqual( pop1.individual(0).allele(0), 1)
   
   def testProperties(self):
+    'Testing simulator properties'
     pop = population(size=1, loci=[1])
     simu = simulator(pop, randomMating(), rep=3)
     self.assertEqual( simu.numRep(), 3)
@@ -58,6 +62,7 @@ class TestSimulator(unittest.TestCase):
     self.assertEqual( simu.applyOpToStoppedReps(), True)
     
   def testEvolve(self):
+    'Testing function evolve and step'
     pop = population(size=1, loci=[1])
     simu = simulator(pop, randomMating(), rep=3)
     self.assertEqual( simu.gen(), 0)
@@ -67,6 +72,7 @@ class TestSimulator(unittest.TestCase):
       simu.evolve, ops=[] )
     
   def testGenoStru(self):
+    'Testing genotypic structure related functions'
     # genetic structure can also be accessed from simulator
     if alleleType() != 'binary':
       pop = population(size=100, ploidy=2, loci=[5, 7], 
@@ -124,12 +130,14 @@ class TestSimulator(unittest.TestCase):
     self.assertRaises(exceptions.IndexError, simu.locusName, 12)
     
   def testTerminator(self):
+    'Testing terminator'
     simu = simulator(population(1), noMating() )
     simu.evolve( ops=[ terminateIf( 'gen==10' ) ] )
     # always point to the enxt gen
     self.assertEqual(simu.gen(), 11 )
 
   def testMultiRep(self):
+    'Testing multi-replicates related functions'
     simu = simulator(population(1), noMating(), rep=3 )
     simu.evolve( 
       ops=[ 
@@ -181,5 +189,3 @@ class TestSimulator(unittest.TestCase):
     
 if __name__ == '__main__':
   unittest.main()
-  sys.exit(0)
-    

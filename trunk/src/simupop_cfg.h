@@ -291,7 +291,7 @@ if(debug(dbgCode)){ expr; }
 #define CHECKRANGEABSLOCUS(locus) DBG_FAILIF(  locus >= totNumLoci(), IndexError, "absolute locus index (" + toStr(locus) + ") out of range of 0 - " + toStr(totNumLoci()-1))
 #define CHECKRANGEGENOSIZE(p) DBG_FAILIF( p>=genoSize(),IndexError, "locus index  (" + toStr(p) + ") out of range of 0 - " + toStr(genoSize()-1))
 #define CHECKRANGESUBPOPMEMBER(ind,sp) DBG_FAILIF( subPopSize(sp)>0 && ind >= subPopSize(sp), IndexError, "individual index (" + toStr(ind) + ") out of range 0 ~" + toStr(subPopSize(sp)-1) + " in subPopulation " + toStr(sp))
-#define CHECKRANGEIND(ind) DBG_FAILIF(ind > popSize(), IndexError, "Individual index (" + toStr(ind) + ") is out of range of 0 ~ " + toStr(popSize()-1))
+#define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, "Individual index (" + toStr(ind) + ") is out of range of 0 ~ " + toStr(popSize()-1))
 
 }
 #endif

@@ -1039,11 +1039,13 @@ else:
   
 simuOptions = {'Optimized':_optimized, 'AlleleType':_longAllele, 'Quiet':par_quiet}
 
-def setOptions(optimized=None, alleleType=None):
+def setOptions(optimized=None, alleleType=None, quiet=None):
   if optimized in [True, False]:
     simuOptions['Optimized'] = optimized
   if alleleType in ['standard', 'long', 'binary', 'short']:
     simuOptions['AlleleType'] = alleleType
+  if quiet in [True, False]:
+    simuOptions['Quiet'] = quiet
   
 # short = standard
 if simuOptions['AlleleType'] == 'standard':

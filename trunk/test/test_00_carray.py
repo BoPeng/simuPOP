@@ -9,19 +9,23 @@
 # $LastChangedRevision$
 # $LastChangedDate$
 # 
- 
+
+import simuOpt
+simuOpt.setOptions(quiet=True)
+
 from simuPOP import *
 import unittest, os, sys, exceptions
 
 class TestCarray(unittest.TestCase):
 
   def testFloatCarray(self):
+    'Testing float carray type returned by arrLociPos'
     pop = population(loci=[3,4], lociPos=[1,2,3,4,5,6,7])
     arr = pop.arrLociPos()
     # can print
-    print arr
+    # print arr, ignore
     # expression
-    str(arr)
+    self.assertEqual(str(arr), "[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]")
     # count
     self.assertEqual(arr.count(2), 1)
     arr[1] = 1
@@ -72,13 +76,17 @@ class TestCarray(unittest.TestCase):
     self.assertEqual( arr, [1, 30,40, 30,40,6,7])
     
   def testGenotypeCarray(self):
+    'Testing allele carray type returned by arrGenotype'
     pop = population(size=2, loci=[1,2])
     arr = pop.arrGenotype()
     arr[:] = [0,1,2]*4
     # can print
-    print arr
+    # print arr
     # expression
-    str(arr)
+    if alleleType() != 'binary':
+      self.assertEqual( str(arr), "[0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2]")
+    else:
+      self.assertEqual( str(arr), "[0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1]")
     # count
     if alleleType() != 'binary':
       self.assertEqual(arr[5], 2)
@@ -110,7 +118,7 @@ class TestCarray(unittest.TestCase):
       self.assertEqual( arr.tolist(), [0,1,1]*4)
       self.assertNotEqual( arr.tolist(), [0,1,2]*4)
     # direct comparison
-    self.assertEqual( arr == [0,1,2]*4, True)
+    self.assertEqual( arr, [0,1,2]*4)
     # convert to list
     if alleleType() != 'binary':
       self.assertEqual( arr, [0,1,2]*4)

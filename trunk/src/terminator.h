@@ -65,7 +65,6 @@ namespace simuPOP
     private:
       /// message to print when terminated
       string m_message;
-
   };
 
   /// terminate according to a condition
@@ -119,7 +118,8 @@ namespace simuPOP
             out << gen << endl;
             this->closeOstream();
           }
-          cout << this->message() << endl;
+          if(this->message() != "")
+            cout << this->message() << endl;
           return false;                           // return false, this replicate will be stopped
         }
         else
@@ -187,7 +187,8 @@ namespace simuPOP
             out << gen << endl;
             this->closeOstream();
           }
-          cout << this->message() << endl;
+          if(this->message() != "")
+            cout << this->message() << endl;
           return false;                           // return false, this replicate will be stopped
         }
         else
