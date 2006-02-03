@@ -2173,11 +2173,6 @@ T Expression::valueAs##TypeName() \
     for(t=t0; *t !=0; t++)
       list.push_back((*t)->name);
 
-    DBG_DO(DBG_GENERAL, cout << "Please refer to GSL (GNU Scientific Library) website:" << endl
-      << "  http://www.gnu.org/software/gsl/manual/gsl-ref_17.html#SEC271 " << endl
-      << "about the details of each algorithm. " << endl
-      << "c.f. setRNG()"<<endl);
-
     return list;
   }
 
@@ -2194,12 +2189,6 @@ T Expression::valueAs##TypeName() \
   //////////////////////////////////////////////////////////////
   ///  Global debug and initialization related functions
   //////////////////////////////////////////////////////////////
-
-  // new handler (not used by now.)
-  //void my_new_handler()
-  //{
-  //  throw OutOfMemory("Not enough memory available. Please free some memory or simulate smaller population.");
-  //}
 
   void gsl_error_handler (const char * reason, const char * ,
     int , int gsl_errno)

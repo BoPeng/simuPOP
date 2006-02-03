@@ -258,7 +258,7 @@ namespace simuPOP
             {
               if( this->m_atPloidy==-1)           // all chromosomes
               {
-                ws.get(pop.indGenoBegin(left), pop.indGenoEnd(left), 1);
+                ws.get(pop.indGenoBegin(left), pop.indGenoEnd(left), StartingAllele);
 
                 for(ULONG ind=left+1; ind != right; ++ind)
                   copy(pop.indGenoBegin(left), pop.indGenoEnd(left), pop.indGenoBegin(ind));
@@ -266,7 +266,7 @@ namespace simuPOP
               else                                // only initialize one set of chromosome
               {
                 ws.get(pop.individual(left).genoBegin(this->m_atPloidy),
-                  pop.individual(left).genoEnd(this->m_atPloidy), 1);
+                  pop.individual(left).genoEnd(this->m_atPloidy), StartingAllele);
 
                 for(ULONG ind=left+1; ind != right; ++ind)
                   copy(pop.individual(left).genoBegin(this->m_atPloidy),
@@ -282,7 +282,7 @@ namespace simuPOP
                 if( this->m_atPloidy == -1 )      // all chromosomes
                 {
                   ws.get( pop.alleleBegin(*locus) + left * pop.ploidy(),
-                    pop.alleleBegin(*locus) + (left+1)*pop.ploidy(), 1 );
+                    pop.alleleBegin(*locus) + (left+1)*pop.ploidy(), StartingAllele );
 
                   for(ULONG ind=left+1; ind != right; ++ind)
                     copy(pop.alleleBegin(*locus) + left*pop.ploidy(),
@@ -291,7 +291,7 @@ namespace simuPOP
                 }
                 else                              // only one of the copies (do it one by one?)
                 {
-                  UINT a = ws.get()+1;
+                  UINT a = ws.get() + StartingAllele;
                   for(ULONG ind=left; ind != right; ++ind)
                     pop.individual(ind).setAllele(a, *locus, this->m_atPloidy);
                 }
@@ -304,12 +304,12 @@ namespace simuPOP
             {
               if( this->m_atPloidy == -1)
                 ws.get( pop.genoBegin()+left*pop.genoSize(),
-                  pop.genoBegin()+right*pop.genoSize(), 1);
+                  pop.genoBegin()+right*pop.genoSize(), StartingAllele);
               else                                // for only one ploidy
               {
                 for(ULONG ind=left; ind != right; ++ind)
                   ws.get( pop.individual(ind).genoBegin(this->m_atPloidy),
-                    pop.individual(ind).genoEnd(this->m_atPloidy), 1);
+                    pop.individual(ind).genoEnd(this->m_atPloidy), StartingAllele);
               }
             }
             else                                  // at certain loci
@@ -317,13 +317,14 @@ namespace simuPOP
               if( this->m_atPloidy == -1)
               {
                 for(vectoru::iterator locus=this->m_atLoci.begin(); locus != this->m_atLoci.end(); ++locus)
-                  ws.get( pop.alleleBegin(*locus) + left * pop.ploidy(), pop.alleleBegin(*locus) + right * pop.ploidy(), 1 );
+                  ws.get( pop.alleleBegin(*locus) + left * pop.ploidy(),
+                    pop.alleleBegin(*locus) + right * pop.ploidy(), StartingAllele );
               }
               else                                // for only one ploidy
               {
                 for(ULONG ind=left; ind != right; ++ind)
                   for(vectoru::iterator locus=this->m_atLoci.begin(); locus != this->m_atLoci.end(); ++locus)
-                    pop.individual(ind).setAllele(ws.get()+1, *locus, this->m_atPloidy);
+                    pop.individual(ind).setAllele(ws.get()+StartingAllele, *locus, this->m_atPloidy);
               }
             }
           }
