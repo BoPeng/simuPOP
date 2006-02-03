@@ -16,7 +16,6 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 import unittest, os, sys, exceptions
 
-
 class TestRNG(unittest.TestCase):
 
   def testSetRNG(self):
@@ -45,10 +44,8 @@ class TestRNG(unittest.TestCase):
     'Testing logging output to a file'
     setLogOutput("session.log")
     # output stuff
-    print 100
     setLogOutput()
-    print "Get from log"
-    print open('session.log').read()
+    os.remove('session.log')
   
 if __name__ == '__main__':
   unittest.main()

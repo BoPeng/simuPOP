@@ -1,36 +1,22 @@
 #!/usr/bin/env python
-
-############################################################################
-#    Copyright (C) 2004 by Bo Peng                                         
-#    bpeng@rice.edu                                                        
-#                                                                          
-#    $LastChangedDate$          
-#    $Rev$                       
-#                                                                          
-#    This program is free software; you can redistribute it and/or modify  
-#    it under the terms of the GNU General Public License as published by  
-#    the Free Software Foundation; either version 2 of the License, or     
-#    (at your option) any later version.                                   
-#                                                                          
-#    This program is distributed in the hope that it will be useful,       
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of        
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         
-#    GNU General Public License for more details.                          
-#                                                                          
-#    You should have received a copy of the GNU General Public License     
-#    along with this program; if not, write to the                         
-#    Free Software Foundation, Inc.,                                       
-#    59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             
-############################################################################
 #
-# testing puOperator
+# Testing python operator
+#
+# Bo Peng (bpeng@rice.edu)
 # 
-# load module.
+# $LastChangedRevision$
+# $LastChangedDate$
+# 
+
+
+import simuOpt
+simuOpt.setOptions(quiet=True)
+
 from simuPOP import *
-from simuRPy import *
-import unittest, time
+import unittest, time, exceptions
     
 class TestPyOperator(unittest.TestCase):
+  
   def setUp(self):
     self.pop = population(size=10000, ploidy=2, 
       loci=[2, 3])
@@ -38,16 +24,21 @@ class TestPyOperator(unittest.TestCase):
   # define a function
   def myFunc(self, pop):
     Stat(pop, alleleFreq=[0])
-    assert abs(pop.dvars().alleleFreq[0][1] - 0.2) < 0.05
+    if alleleType() == 'binary':
+      assert abs(pop.dvars().alleleFreq[0][0] - 0.2) < 0.05
+    else:
+      assert abs(pop.dvars().alleleFreq[0][1] - 0.2) < 0.05
     return True
     
   def testSimpleFunc(self):
+    'Testing a simple example'
     InitByFreq(self.pop, [.2, .3, .5])
     simu = simulator(self.pop, randomMating())
     simu.evolve( ops=[pyOperator(self.myFunc)], 
       end=2)
     
   def testCopyCone(self):
+    'Testing copy of python operator'
     op = pyOperator(self.myFunc)
     op1 = op
     op2 = op.clone()
@@ -64,6 +55,7 @@ class TestPyOperator(unittest.TestCase):
     return True
 
   def testFuncWithParam(self):
+    'Testing python operator with parameters'
     InitByFreq(self.pop, [.2, .3, .5])
     simu = simulator(self.pop, randomMating())
     simu.evolve( ops=[
@@ -81,6 +73,7 @@ class TestPyOperator(unittest.TestCase):
       return True
 
   def testTerminator(self):
+    'Testing a python terminator'
     simu = simulator(self.pop, randomMating())
     simu.evolve( ops=[ pyOperator(self.myFuncAsTerminator) ],
       end = 10 )
@@ -102,6 +95,7 @@ class TestPyOperator(unittest.TestCase):
     return True
 
   def testDynaMutator(self):
+    'Testing dynamic mutator (an example)'
     simu = simulator(self.pop, randomMating())
     simu.evolve(
       preOps = [ 
@@ -110,14 +104,14 @@ class TestPyOperator(unittest.TestCase):
       ops = [ 
         pyOperator( func=self.dynaMutator, param=(.5, .1, 0) ),
         stat(alleleFreq=range(5)),
-        varPlotter('(alleleFreq[0][2],alleleFreq[1][2])', 
-          title='allele frequency at loci 0 and 1',
-          update=5, varDim=2),
+        #varPlotter('(alleleFreq[0][2],alleleFreq[1][2])', 
+        #  title='allele frequency at loci 0 and 1',
+        #  update=5, varDim=2),
         ],
       end = 30
     )        
-    print "The R window will be closed after five seconds..."
-    time.sleep(5)
+    #print "The R window will be closed after five seconds..."
+    #time.sleep(5)
     
 if __name__ == '__main__':
   unittest.main()
