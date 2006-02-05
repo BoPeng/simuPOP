@@ -955,7 +955,6 @@ namespace simuPOP
 
   PyObject* SharedVariables::setIntDictVar(const string& name, const intDict & val)
   {
-
     PyObject *obj = PyDict_New();
     PyObject * u, *v;
     for (intDict::const_iterator i= val.begin(); i!= val.end(); ++i)

@@ -79,7 +79,6 @@ namespace simuPOP
       {
         return new Stator<Pop>(*this);
       }
-
   };
 
   /// evaluate an expression.
@@ -127,7 +126,6 @@ namespace simuPOP
       // check all alleles in vector allele if they are fixed.
       virtual bool apply(Pop& pop)
       {
-
         if(m_exposePop)
         {
           PyObject* popObj = pyPopObj(static_cast<void*>(&pop));
@@ -609,10 +607,10 @@ namespace simuPOP
           if( m_alleleNum.back()[loc][j] > 0)
             al.push_back(j);
 
-#ifndef BINARYALLELE        
+#ifndef BINARYALLELE
         DBG_WARNING( m_alleleNum.back()[loc][0] != 0,
           "Having zero (NA) allele, counted as one allele.");
-#endif        
+#endif
 
         DBG_ASSERT( al.size() == static_cast<UINT>(numOfAlleles()[loc]),
           SystemError, "Number of alleles at locus " + toStr(loc)
@@ -633,10 +631,10 @@ namespace simuPOP
           if( m_alleleNum[subPop][loc][j] != 0)
             al.push_back(j);
 
-#ifndef BINARYALLELE        
-        DBG_WARNING(m_alleleNum[subPop][loc][0] != 0, 
+#ifndef BINARYALLELE
+        DBG_WARNING(m_alleleNum[subPop][loc][0] != 0,
           "Having zero (NA) allele, counted as one allele.");
-#endif            
+#endif
 
         DBG_ASSERT( al.size() == static_cast<UINT>(numOfAlleles(subPop)[loc]),
           SystemError, "Number of alleles at locus " + toStr(loc)
@@ -704,6 +702,7 @@ namespace simuPOP
 
             // add this number to overall num
             // calculate frequency
+            // if there is only one sp, no need to do so.
             if(numSP > 1 )
             {
               if(sum.size() < num.size())
@@ -718,11 +717,13 @@ namespace simuPOP
             for(size_t e=0, eEnd=num.size(); e < eEnd; ++e)
               freq[e] = static_cast<double>(num[e])/dy;
 
+            // post result at this locus
             if(m_ifPost[i])
             {
               varname = subPopVar_String(sp, AlleleNum_String) + "[" + toStr(loc) + "]";
               PyObject * d = pop.setIntVectorVar(varname, num);
 
+              // do not need a separate result
               if(numSP == 1)
               {
                 varname = toStr(AlleleNum_String) + "[" + toStr(loc) + "]";
@@ -733,6 +734,7 @@ namespace simuPOP
               varname = subPopVar_String(sp, AlleleFreq_String) + "[" + toStr(loc) + "]";
               d = pop.setDoubleVectorVar(varname, freq);
 
+              // do not need a separate result
               if(numSP == 1)
               {
                 varname = toStr(AlleleFreq_String) + "[" + toStr(loc) + "]";
@@ -770,6 +772,7 @@ namespace simuPOP
           }
         }                                         // all loci
 
+        // post number of alleles
         if( accumulate(m_ifPost.begin(), m_ifPost.end(), 0) > 0 )
         {
           // post number of alleles
@@ -912,7 +915,7 @@ namespace simuPOP
         m_postHetero = true;
       }
 
-      int  heteroNum(UINT allele, int loc)
+      int heteroNum(UINT allele, int loc)
       {
         UINT idx=locusIdx(loc);
 
@@ -920,21 +923,21 @@ namespace simuPOP
         return allele < hn.size() ? hn[allele] : 0;
       }
 
-      double  heteroFreq(UINT allele, int loc)
+      double heteroFreq(UINT allele, int loc)
       {
         UINT idx=locusIdx(loc);
         vectorf& hf =  m_heteroFreq[resIdx(idx)];
         return allele < hf.size() ? hf[allele] : 0.;
       }
 
-      int  heteroNum(UINT allele, int loc, UINT subPop)
+      int heteroNum(UINT allele, int loc, UINT subPop)
       {
         UINT idx=locusIdx(loc);
         vectori& hn =  m_heteroNum[resIdx(idx,subPop)];
         return allele < hn.size() ? hn[allele] : 0;
       }
 
-      double  heteroFreq(UINT allele, int loc, UINT subPop)
+      double heteroFreq(UINT allele, int loc, UINT subPop)
       {
         UINT idx=locusIdx(loc);
         vectorf& hf =  m_heteroFreq[resIdx(idx,subPop)];
@@ -988,12 +991,33 @@ namespace simuPOP
               if( AlleleUnsigned(*(a+1)) >= num.size() )
                 num.resize(*(a+1)+1);
 
-              if(  *a != *(a+1) )                 // heterozygote
+#ifdef BINARYALLELE
+              if( *a != *(a+1) )
               {
-                num[0] ++;                        // overall x != y
-                num[*a]++;
-                num[*(a+1)]++;
+                num[0]++;
+                num[1]++;
               }
+#else
+              if( *a != *(a+1) )                  // heterozygote
+              {
+                if( *a == 0 )
+                {
+                  DBG_WARNING(true, "Allele zero encountered. heterNum[loc][0] is the overall heterozygote.");
+                  num[*(a+1)]++;
+                }
+                else if( *(a+1) == 0)
+                {
+                  DBG_WARNING(true, "Allele zero encountered. heterNum[loc][0] is the overall heterozygote.");
+                  num[*a]++;
+                }
+                else                              // none equal to zero
+                {
+                  num[*a]++;
+                  num[*(a+1)]++;
+                }
+                num[0] ++;                        // overall x != y
+              }
+#endif
             }
 
             // add this number to overall num
@@ -1076,7 +1100,6 @@ namespace simuPOP
             }
             m_homoNum[numSP][loc] = pop.popSize() - m_heteroNum[resIdx(i)][0];
             m_homoFreq[numSP][loc] = (double)(m_homoNum[numSP][loc])/pop.popSize();
-
           }                                       // all loci
           // post result
           for( UINT sp=0; sp < numSP; ++sp)
@@ -1209,7 +1232,7 @@ namespace simuPOP
 #define  GenotypeFreq_String  "genoFreq"
 
     public:
-      statGenoFreq(const vectori& genoFreq = vectori(), bool phase=false )
+      statGenoFreq(const vectori& genoFreq = vectori(), bool phase=true )
         : m_atLoci(genoFreq), m_phase(phase)
       {
       }
@@ -1288,7 +1311,7 @@ namespace simuPOP
             }
 
             // register values for this subpopulation
-            for(a=1; a < num.size(); ++a)
+            for(a=0; a < num.size(); ++a)
             {
               /// need to replace previous values
               // if( num[a].empty() )
@@ -1309,7 +1332,7 @@ namespace simuPOP
             }
           }
 
-          for(a=1; a<sum.size(); ++a)
+          for(a=0; a<sum.size(); ++a)
           {
             // if( sum[a].empty() )
             //  continue;
