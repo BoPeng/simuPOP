@@ -8,7 +8,6 @@
 # $LastChangedDate$
 # 
 
-
 import simuOpt
 simuOpt.setOptions(quiet=True)
 
@@ -24,6 +23,7 @@ class TestPyOperator(unittest.TestCase):
   # define a function
   def myFunc(self, pop):
     Stat(pop, alleleFreq=[0])
+    # allelic frequency was assigned to be 0.2
     if alleleType() == 'binary':
       assert abs(pop.dvars().alleleFreq[0][0] - 0.2) < 0.05
     else:
@@ -37,7 +37,7 @@ class TestPyOperator(unittest.TestCase):
     simu.evolve( ops=[pyOperator(self.myFunc)], 
       end=2)
     
-  def testCopyCone(self):
+  def testCopyClone(self):
     'Testing copy of python operator'
     op = pyOperator(self.myFunc)
     op1 = op
@@ -56,14 +56,18 @@ class TestPyOperator(unittest.TestCase):
 
   def testFuncWithParam(self):
     'Testing python operator with parameters'
-    InitByFreq(self.pop, [.2, .3, .5])
+    InitByFreq(self.pop, [.2, .8])
     simu = simulator(self.pop, randomMating())
+    if alleleType() == 'binary':
+      a1, a2 = 0, 1
+    else:
+      a1, a2 = 1, 2
     simu.evolve( ops=[
-      pyOperator(func=self.myFuncWithParam, param=(1,.2)),
-      pyOperator(func=self.myFuncWithParam, param=(2,.3)),
-      pyOperator(func=self.myFuncWithParam, param=(3,.5))
+      pyOperator(func=self.myFuncWithParam, param=(a1,.2)),
+      pyOperator(func=self.myFuncWithParam, param=(a2,.8)),
       ], 
-      end=2)
+      end=2
+    )
 
   def myFuncAsTerminator(self, pop):
     # print pop.gen()
@@ -86,12 +90,20 @@ class TestPyOperator(unittest.TestCase):
     # unpack parameter
     (cutoff, mu1, mu2) = param;
     Stat(pop, alleleFreq=range( pop.totNumLoci() ) )
-    for i in range( pop.totNumLoci() ):
-      # 1-freq of wild type = total disease allele frequency
-      if 1-pop.dvars().alleleFreq[i][1] < cutoff:
-        KamMutate(pop, maxAllele=2, rate=mu1, atLoci=[i])
-      else:
-        KamMutate(pop, maxAllele=2, rate=mu2, atLoci=[i])
+    if alleleType() == 'binary':
+      for i in range( pop.totNumLoci() ):
+        # 1-freq of wild type = total disease allele frequency
+        if 1-pop.dvars().alleleFreq[i][0] < cutoff:
+          KamMutate(pop, rate=mu1, atLoci=[i])
+        else:
+          KamMutate(pop, rate=mu2, atLoci=[i])
+    else:
+      for i in range( pop.totNumLoci() ):
+        # 1-freq of wild type = total disease allele frequency
+        if 1-pop.dvars().alleleFreq[i][1] < cutoff:
+          KamMutate(pop, maxAllele=2, rate=mu1, atLoci=[i])
+        else:
+          KamMutate(pop, maxAllele=2, rate=mu2, atLoci=[i])
     return True
 
   def testDynaMutator(self):
@@ -104,17 +116,12 @@ class TestPyOperator(unittest.TestCase):
       ops = [ 
         pyOperator( func=self.dynaMutator, param=(.5, .1, 0) ),
         stat(alleleFreq=range(5)),
-        #varPlotter('(alleleFreq[0][2],alleleFreq[1][2])', 
-        #  title='allele frequency at loci 0 and 1',
-        #  update=5, varDim=2),
+        terminateIf( 'alleleFreq[0][1] < 0.2' )
         ],
       end = 30
     )        
-    #print "The R window will be closed after five seconds..."
-    #time.sleep(5)
+    # will not terminate when allele frequency get out of control
+    self.assertEqual( simu.gen(), 31)
     
 if __name__ == '__main__':
   unittest.main()
-   
-
-

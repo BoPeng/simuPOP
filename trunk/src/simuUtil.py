@@ -24,8 +24,6 @@
 ############################################################################
 
 
-
-
 """
 simuPOP utilities.
 
@@ -37,6 +35,52 @@ and format conversion utilities.
 import exceptions, operator, types, os, sys, getopt, re, math
 
 from simuPOP import *
+
+def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
+  '''Obtain genotype as specified by parameters
+    atLoci:    subset of loci, default to all
+    subPop:    subset of subpopulations, default ao all
+    indRange:  individual ranges 
+  '''
+  geno = []
+  if type(atPloidy) == type(1):
+    ploidy = [atPloidy]
+  elif len(atPloidy) > 0:
+    ploidy = atPloidy
+  else:
+    ploidy = range(0, pop.ploidy())
+  if len(atLoci) > 0:
+    loci = atLoci
+  else:
+    loci = range(pop.totNumLoci())
+  gs = pop.genoSize()
+  tl = pop.totNumLoci()
+  if len(indRange) > 0:
+    if type(indRange[0]) not in [type([]), type(())]:
+      indRange = [indRange]
+    arr = pop.arrGenotype()
+    for r in indRange:
+      for i in range(r[0], r[1]):
+        for p in ploidy:
+          for loc in loci:
+            geno.append( arr[ gs*i + p*tl + loc] )
+  elif len(subPop) > 0:
+    for sp in subPop:
+      arr = pop.arrGenotype(sp)
+      for i in range(pop.subPopSize(sp)):
+        for p in ploidy:
+          for loc in loci:
+            geno.append(arr[ gs*i + p*tl +loc]) 
+  else:
+    arr = pop.arrGenotype()
+    if len(ploidy) == 0 and len(atLoci) == 0:
+      geno = pop.arrGenotype()
+    else:
+      for i in range(pop.popSize()):
+        for p in ploidy:
+          for loc in loci:
+            geno.append( arr[ gs*i + p*tl +loc] )
+  return geno
 
 def _listVars(var, level=-1, name='', subPop=True, indent=0, curLevel=0):
   ''' called by listVars. Will list variables recursively'''
@@ -294,63 +338,7 @@ def migrSteppingStoneRates(r, n, circular=False):
     m[n-1][n-2] = r
   return m
 
-  
-# if you do not like the internal Fst (Weir & Cockerham, Fstat)
-# you can calculate Fst from heterozygosities
-# (this is more like an example of pure-python statistics)
-#
-# This function ( and the following operator) depends on simuPOP's
-# basicStat to provide observed and expected heterozygosity.
-#
-# Calls to calc_hetero_H and hetero_H should be preceded by call to
-#   basicStat(hetero=[ loci]
-#
-# the first parameter allele takes the form
-#  [[locus allele1 allele2 ], [locus2, allele1, allele2...]]
-# just like what is in basicStat(Fst=...)
-def calc_Fst_H(pop, alleles):
-  """ calculate expected heterozygosities at given loci
-    Formula etc please refer to user's manual
-  """
-  s = pop.dvars()
-  if len(alleles) == 0:
-    raise exceptions.ValueError("Please specify alleles on which to calculate Fst_H")
-  
-  for l in alleles:   # of form [locus, allele, allele ...]
-    if (type(l) != type([]) and type(l) != type(())) or len(l) <= 1:
-      raise exceptions.ValueError("Format [ [ locus, allele,...]. [...] ]");
-    
-    s.Fst_H = {}
-    s.Fis_H = {}
-    s.Fit_H = {}
-    loc = l[0]
-    for ale in l[1:]:
-      # calculate Fst_H for each loc, ale pair.
-      # H_I based on observed heterozygosities in individuals in subpopulations
-      H_I = 0.0
-      H_S = 0.0
-      for sp in range(0, s.numSubPop):
-        H_I = H_I + s.subPopSize[sp]*s.subPop[sp]['heteroFreq'][loc][ale]
-        H_S = H_S + s.subPopSize[sp]*s.subPop[sp]['heteroFreq'][loc][0]
-      H_I = H_I / s.popSize
-      H_S = H_S / s.popSize
-      H_T = s.heteroFreq[loc][0]
-      s.Fst_H['%d-%d' % (loc,ale)] = (H_T - H_S)/H_T
-      s.Fis_H['%d-%d' % (loc,ale)] = (H_S - H_I)/H_S
-      s.Fit_H['%d-%d' % (loc,ale)] = (H_T - H_I)/H_T
-
-
-# the operator wrapper of calc_hetero
-def Fst_H(alleles,**kwargs):
-  parm = ''  
-  for (k,v) in kwargs.items():
-    parm += ' , ' + str(k) + '=' + str(v)
-  #  calc_Fst_H(loci= loci?, rep=rep)
-  cmd = r'pyExec( exposePop=1, stmts=r"""calc_Fst_H(pop=pop, alleles= ' + \
-    str(alleles) + ')""", %s)' % parm
-  # print cmd
-  return eval( cmd )
-
+ 
 # 
 # operator tab (I can use operator output
 # but the name conflicts with parameter name
@@ -377,20 +365,42 @@ def endl(output=">", outputExpr="", **kwargs):
 
 # aggregator
 # used by varPlotters
-class Aggregator:
+class dataAggregator:
   """
   collect variables so that plotters can
   plot them all at once
-  
-  """
-  def __init__(self, win=0, width=0):
+
+  You can of course put it in other uses
+
+  Usage:
+    a = dataAggregator( maxRecord=0, recordSize=0)
+      maxRecord:  if more data is pushed, the old ones are discarded
+      recordSize: size of record
+    a.push(gen, data, idx=-1)
+      gen:        generation number
+      data:       one record (will set recordSize if the first time), or
+      idx:        if idx!=-1, set data at idx.
+    a.clear()
+    a.range()  # return min, max of all data
+    a.data[i]  # column i of the data
+    a.gen      #
+    a.ready()  # if all column has the same length, so data is ready
+    
+  Internal data storage:
+    self.gen    [ .... ]
+    self.data   column1 [ ...... ]
+                column2 [ ...... ]
+                .......
+  each record is pushed at the end of 
+  """ 
+  def __init__(self, maxRecord=0, recordSize=0):
     """
-    win: window size. I.e., maximum generations of data to keep
+    maxRecord: maxRecorddow size. I.e., maximum generations of data to keep
     """
     self.gen = []
     self.data = []
-    self.win = win
-    self.width = width
+    self.maxRecord = maxRecord
+    self.recordSize = recordSize
   
   def __repr__(self):
     s = str(self.gen) + "\n"
@@ -402,80 +412,109 @@ class Aggregator:
     self.gen = []
     self.data = []
    
-  def ylim(self):
+  def ready(self):
+    return self.recordSize>0 and len(gen)>0 and len( data[0] ) == len( data[-1] )
+    
+  def flatData(self):
+    res = []
+    for d in self.data:
+      res.extend( d )
+    return res
+
+  def dataRange(self):
     if len(self.gen) == 0:
       return [0,0]
 
-    y0 = self.data[0][0]
-    y1 = self.data[0][0]
-
-    for i in range(0, len(self.data)):
-      for j in range(0, len(self.data[i])):
-        if self.data[i][j] < y0:
-          y0 = self.data[i][j]
-        if self.data[i][j] > y1:
-          y1 = self.data[i][j]
+    y0 = min( [ min(x) for x in self.data] )
+    y1 = max( [ max(x) for x in self.data] )
     return [y0,y1]
-
-  def flatData(self):
-    fd = carray('d',[])
-    for i in range(0, self.width):
-      fd += self.data[i]
-    return fd
     
   def push(self, _gen, _data, _idx=-1 ):
     # first add data to allData
-    if self.width == 0 and _idx != -1:
-      raise exceptions.ValueError("You can not store items one by one if width is not specified")
-    
-    if self.width == 0:   # _idx != -1, _data is an array,
-      self.width = len(_data)
-      for i in range(0, self.width):
-        self.data.append( carray('d', [_data[i]]))
-      self.gen = carray('i', [ _gen ])        
-      return
-    
-    # self.width is not zero.
-    if _idx == -1:    # given an array
-      if len(_data) != self.width:
-        raise exceptions.ValueError, "data should have the same length"
-      if len(self.gen) == 0:    # first time.
-        for i in range(0, self.width):
-          self.data.append( carray('d', [_data[i]]))
-        self.gen = carray('i', [ _gen ])
-      else:   # append data
-        for i in range(0, self.width):
-          self.data[i] += carray('d', [_data[i]])
-        self.gen += carray('i', [ _gen ])
-      
-    else:     # _idx != -1 , given a number
-      if type(_data) == type(()) or type(_data) == type([]) :
-        raise exceptions.ValueError("If idx is specified, _data should not be a list.")
-        
-      if _idx >= self.width:
-        raise exceptions.IndexError("Index out of range")
-          
-      if len(self.gen) == 0:  # first time
-        self.gen = carray('i', [_gen])
-        for i in range(0, self.width):
-          self.data.append( carray('d', [0]) )
-        self.data[0][_idx] = _data
-      else:   # append
-        if self.gen[-1] == _gen:   # alreay exist
-          self.data[_idx][-1] = _data
-          return 
-        else:
-          self.gen += carray('i', [_gen])
-          for i in range(0, self.width):
-            self.data[i] += carray('d', [0]) 
-          self.data[_idx][-1] = _data
-     
-    # trim data if necessary
-    if self.win > 0 :
-      if self.gen[-1] - self.gen[0] > self.win:
-        self.gen = self.gen[1:]
-        for i in range(0, self.width):
-          self.data[i] = self.data[i][1:]
+    if len(self.gen) == 0:   # the first time
+      self.gen = [ _gen ]
+      if _idx == -1:    # given a full array of data
+        if self.recordSize == 0:  
+          self.recordSize = len(_data)
+        elif self.recordSize != len(_data):
+          raise exceptions.ValueError("Data length does not equal specfied record size")
+        for i in range(self.recordSize):
+          self.data.append( [_data[i]] )
+        return
+      elif _idx == 0:   # the only allowed case
+        if type(_data) in [type(()), type([])]:
+          raise exceptions.ValueError("If idx is specified, _data should not be a list.")
+        self.data = [ [_data] ]
+        return
+      else:                        # data out of range
+        raise exceptions.ValueError("Appending data with wrong idx")
+    elif len(self.gen) == 1:       # still the first generation
+      if self.gen[-1] == _gen:    # still working on this generation
+        if _idx == -1:  # give a full array?
+          raise exceptions.ValueError("Can not reassign data from this generation")
+        elif self.recordSize != 0 and  _idx >= self.recordSize:
+          raise exceptions.ValueError("Data exceeding specified record size")
+        elif _idx == len(self.data):  # append
+          if type(_data) in [type(()), type([])]:
+            raise exceptions.ValueError("If idx is specified, _data should not be a list.")
+          self.data.append( [_data] )
+        elif _idx < len(self.data):  # change exsiting one?
+          raise exceptions.ValueError("You can not change exisiting data")
+        else:                        # data out of range
+          raise exceptions.ValueError("Appending data with wrong idx")
+      else:                          # go to the next one!
+        if self.recordSize == 0:     # not specified
+          self.recordSize = len(self.data)
+        elif self.recordSize != len(self.data):
+          raise exceptions.ValueError("The first row is imcomplete")
+        self.gen.append( _gen )
+        if _idx == -1:    # given a full array of data
+          if self.recordSize != len(_data):
+            raise exceptions.ValueError("Data length does not equal specfied record size")
+          for i in range(self.recordSize):
+            self.data[i].append( _data[i] )
+          return
+        elif _idx == 0:   # the only allowed case
+          if type(_data) in [type(()), type([])]:
+            raise exceptions.ValueError("If idx is specified, _data should not be a list.")
+          self.data[0].append(_data)
+          return
+        else:                        # data out of range
+          raise exceptions.ValueError("Appending data with wrong idx")
+    else:   # already more than one record
+      # trim data if necessary
+      if self.maxRecord > 0 :
+        if _gen - self.gen[0] >= self.maxRecord:
+          self.gen = self.gen[1:]
+          for i in range(0, self.recordSize):
+            self.data[i] = self.data[i][1:]
+      if self.gen[-1] == _gen:   # still this generation
+        if _idx == -1:  # give a full array?
+          raise exceptions.ValueError("Can not reassign data from this generation")
+        elif _idx >= self.recordSize:
+          raise exceptions.ValueError("Data exceeding specified record size")
+        elif _idx < len(self.data):  # change exsiting one?
+          if type(_data) in [type(()), type([])]:
+            raise exceptions.ValueError("If idx is specified, _data should not be a list.")
+          self.data[_idx].append( _data )
+        else:                        # data out of range
+          raise exceptions.ValueError("Appending data with wrong idx")
+      else:                          # go to the next one!
+        self.gen.append( _gen )
+        if _idx == -1:    # given a full array of data
+          if self.recordSize != len(_data):
+            raise exceptions.ValueError("Data length does not equal specfied record size")
+          for i in range(self.recordSize):
+            self.data[i].append( _data[i] )
+          return
+        elif _idx == 0:   # the only allowed case
+          if type(_data) in [type(()), type([])]:
+            raise exceptions.ValueError("If idx is specified, _data should not be a list.")
+          self.data[0].append(_data)
+          return
+        else:                        # data out of range
+          raise exceptions.ValueError("Appending data with wrong idx")
+
 
 
 # data collector
@@ -1176,6 +1215,3 @@ def LoadCSV(file):
 
 if __name__ == "__main__":
   pass
-
-
-

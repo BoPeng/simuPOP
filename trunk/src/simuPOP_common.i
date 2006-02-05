@@ -713,6 +713,17 @@ del dumper.__init__
 dumper.__init__ = new_dumper
 
 
+def mutator_setRate(self, rate, atLoci=[], *args, **kwargs):
+  # rate -> [rate] if needed
+  if type(rate)  in [types.IntType, types.FloatType]:
+    r = [rate]
+  else:
+    r = rate
+  return cppModule.mutator_setRate(self, r, atLoci, *args, **kwargs)
+
+del mutator.setRate
+mutator.setRate = mutator_setRate
+
 def new_kamMutator(self, rate=[], *args, **kwargs):
   # parameter rate
   if type(rate) in [types.IntType, types.FloatType]:

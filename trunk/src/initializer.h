@@ -65,13 +65,10 @@ namespace simuPOP
         {
           // allow for singleton
           if( m_indRange[i].size() == 1)
-            m_indRange[i].push_back( m_indRange[i][0]);
+            m_indRange[i].push_back( m_indRange[i][0]+1);
 
           if( m_indRange[i].size() != 2 || m_indRange[i][0] > m_indRange[i][1] )
             throw ValueError("Expecting a range.");
-
-          // adjust from [a,b] range to [a,b+1) range.
-          m_indRange[i][1]++;
         }
       }
 

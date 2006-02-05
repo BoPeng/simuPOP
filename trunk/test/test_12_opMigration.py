@@ -4,16 +4,20 @@
 #
 # Bo Peng (bpeng@rice.edu)
 # 
-# Last Modified: Sep, 2005
+# $LastChangedRevision$
+# $LastChangedDate$
 # 
 
+import simuOpt
+simuOpt.setOptions(quiet=True)
+
 from simuPOP import *
-from simuRPy import *
 import unittest, time, exceptions
 
 class TestMigration(unittest.TestCase):
   
   def testMigrateByCounts(self):
+    'Testing migrate by counts'
     pop = population(subPop=[2000,4000,4000], loci=[2])
     Migrate(pop, mode=MigrByCounts, 
       rate = [ [0, 50, 50],
@@ -32,6 +36,7 @@ class TestMigration(unittest.TestCase):
                [50, 0, 0] ], MigrByCounts)
     
   def testMigrateByProportion(self):
+    'Testing migrate by proportion'
     pop = population(subPop=[2000,4000,4000], loci=[2])
     # now if we want to inject a mutation whenever fixation happens
     Migrate(pop, mode=MigrByProportion, 
@@ -46,6 +51,7 @@ class TestMigration(unittest.TestCase):
     assert pop.subPopSizes() == (2000, 4500, 3500)
     
   def testMigrateByProbability(self):
+    'Testing migrate by probability'
     pop = population(subPop=[2000,4000,4000], loci=[2])
     # now if we want to inject a mutation whenever fixation happens
     Migrate(pop, mode=MigrByProbability, 
@@ -66,6 +72,7 @@ class TestMigration(unittest.TestCase):
     assert abs(pop.subPopSize(2) - 3500) < 100
 
   def testMigrateFromTo(self):
+    'Testing parameter from and to of migrators'
     pop = population(subPop=[2000,4000,4000], loci=[2])
     # now if we want to inject a mutation whenever fixation happens
     Migrate(pop, mode=MigrByProbability, 
@@ -85,7 +92,7 @@ class TestMigration(unittest.TestCase):
     assert abs(pop.subPopSize(2) - 4100) < 50
   
   def testMigrConstAlleleFreq(self):
-    ' test if allele frequency changes '
+    'Testing that migration does not change allele frequency'
     pop = population(subPop=[2000,4000,4000], loci=[2])
     InitByFreq(pop, [.2, .8])
     Stat(pop, alleleFreq=[0])
@@ -108,15 +115,16 @@ class TestMigration(unittest.TestCase):
     assert pop.dvars().alleleFreq[0][1] == af
        
   def testPyMigrator(self):
+    'Testing operator pyMigrator'
     pop = population(subPop=[2,4,4], loci=[2,6])
     InitByFreq(pop, [.2,.4,.4])
     ind1 = pop.individual(0).arrGenotype()
-    PyMigrate(pop, subPopID=carray('i',[2,2,0,0,2,2,1,1,1,1]))
+    PyMigrate(pop, subPopID=[2,2,0,0,2,2,1,1,1,1])
     assert ind1 == pop.individual(6).arrGenotype()
-    PyMigrate(pop, subPopID=carray('i',[0,0,2,2,2,2,1,1,1,1]))
+    PyMigrate(pop, subPopID=[0,0,2,2,2,2,1,1,1,1])
     assert ind1 == pop.individual(2).arrGenotype()
     self.assertRaises(exceptions.ValueError, 
-      PyMigrate, pop, carray('i',[0,0,2,2,2,2,1,1]))
+      PyMigrate, pop, [0,0,2,2,2,2,1,1])
     
 if __name__ == '__main__':
   unittest.main()
