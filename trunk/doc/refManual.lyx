@@ -13940,7 +13940,11 @@ variables: array of observed heterozygosity
  
 \family typewriter
 \series bold
-heteroNum[0][1]
+heteroNum[
+\series default
+loc
+\series bold
+][1]
 \series default
  
 \family default
@@ -13979,6 +13983,37 @@ is the overall heterozygosity number and frequency.
 
 .
  From this number, we can easily derive number of homozygosity.
+ 
+\end_layout
+
+\begin_layout Standard
+Note: 
+\end_layout
+
+\begin_layout Itemize
+In the case of binary alleles, 
+\family typewriter
+heteroNum[loc][0] == heteroNum[loc][1]
+\family default
+ and this is the overall heterozygosity.
+\end_layout
+
+\begin_layout Itemize
+In the cases of short/long alleles, we assume that there is no 0 allele
+ (used for missing values).
+ If they do exist, a warning will be given and 
+\family typewriter
+heteroNum[loc][0]
+\family default
+ is the 
+\series bold
+overall
+\series default
+ heterozygosity.
+\end_layout
+
+\begin_layout Standard
+Variables are:
 \end_layout
 
 \begin_layout Itemize
@@ -14115,7 +14150,7 @@ genoFreq=[loc1,loc2,...]
 hasPhase
 \family default
 : if a/b and b/a are the same genotype.
- default is false.
+ default is True.
 \end_layout
 
 \end_deeper
