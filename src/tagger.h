@@ -67,13 +67,15 @@ namespace simuPOP
     class InheritTagger: public Tagger<Pop>
   {
     public:
-      /// constructor. default to be always active.
-      /// string can be any string (m_Delimiter will be ignored for this class.)
-      ///  %r will be replicate number %g will be generation number.
-      InheritTagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Tagger<Pop>( begin, end, step, at, rep, grp, sep)
-      {
+#define TAG_Paternal   0
+#define TAG_Maternal   1
+#define TAG_Both       2
 
+    public:
+      /// constructor. default to be always active.
+      InheritTagger(int mode=TAG_Paternal, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
+      Tagger<Pop>( begin, end, step, at, rep, grp, sep), m_mode(mode)
+      {
       };
 
       virtual ~InheritTagger()
@@ -88,10 +90,25 @@ namespace simuPOP
       virtual bool applyDuringMating(Pop& pop, typename Pop::IndIterator offspring,
         typename Pop::IndType* dad=NULL, typename Pop::IndType* mom=NULL)
       {
-        if( dad == NULL && mom==NULL) return true;
-        else if( dad != NULL )
+        if( (dad == NULL && mom==NULL) || 
+            (dad == NULL && m_mode == TAG_Paternal) ||
+            (mom == NULL && m_mode == TAG_Maternal) )
+          offspring->setTag( typename Pop::TagType(0,0)  );
+        
+        if( m_mode == TAG_Paternal )
           offspring->setTag( dad->tag());
-
+        else if( m_mode == TAG_Maternal)
+          offspring->setTag( mom->tag());
+        else
+        {
+          if( dad == NULL )
+            offspring->setTag( typename Pop::TagType(0, mom->tag().first) );
+          else if( mom == NULL)
+            offspring->setTag( typename Pop::TagType(dad->tag().first, 0));
+          else
+            offspring->setTag( typename Pop::TagType(dad->tag().first, 
+              mom->tag().first));
+        }
         return true;
       }
 
@@ -100,6 +117,12 @@ namespace simuPOP
         return new InheritTagger<Pop>(*this);
       }
 
+    private:
+      /// mode can be
+      /// TAG_Paternal: get dad's info
+      /// TAG_Maternal: get mon's info
+      /// TAG_BOTH:     get parents' first field
+      int m_mode;
   };
 
   /// inherite tag from parents.

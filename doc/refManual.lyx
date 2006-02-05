@@ -10407,23 +10407,26 @@ indRange
  within subpopulations.
  Note that ranges are in the form of
 \family typewriter
- [a,b]
+ [a,b)
 \family default
 .
  I.e., range
 \family typewriter
  [4,6] 
 \family default
-will intialize individual 4, 5 and not 6.
+will intialize individual 4, 5, but not 6.
  As a shortcut for 
 \family typewriter
-[4,4]
+[4,5]
 \family default
 , you can use 
 \family typewriter
 [4]
 \family default
  to specify one individual.
+ (Note that some earlier versions of simuPOP may use [4,6] for 4,5 and 6.
+ I changed this to let the range specification in line with the Python conventio
+n.)
 \end_layout
 
 \begin_layout Itemize
@@ -15318,9 +15321,41 @@ duringMating
 \end_layout
 
 \begin_layout Standard
-This during-mating operator will copy the tag info from his father.
- This can be used to tracking offsprings of an ancester.
- More options may be introduced later.
+This during-mating operator will copy the tag info from his/her parents.
+ Depending on 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+mode = TAG_Paternal
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+mode = TAG_Maternal
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+mode = TAG_Both
+\end_layout
+
+\begin_layout Standard
+this tagger will obtain tag from his/her father (two tag fields), monther
+ (two tag fields) or both (first tag field from both).
+ You can check the tagger test under 
+\family typewriter
+test
+\family default
+ directory for an example.
+\end_layout
+
+\begin_layout Standard
+An example may be tagging one or a few parents and see, at the last generation,
+ how many offspring they have.
 \end_layout
 
 \begin_layout Subsection

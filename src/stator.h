@@ -609,8 +609,10 @@ namespace simuPOP
           if( m_alleleNum.back()[loc][j] > 0)
             al.push_back(j);
 
-        if( m_alleleNum.back()[loc][0] != 0)
-          cout << "Warning: having zero (NA) allele, counted as one allele." ;
+#ifndef BINARYALLELE        
+        DBG_WARNING( m_alleleNum.back()[loc][0] != 0,
+          "Having zero (NA) allele, counted as one allele.");
+#endif        
 
         DBG_ASSERT( al.size() == static_cast<UINT>(numOfAlleles()[loc]),
           SystemError, "Number of alleles at locus " + toStr(loc)
@@ -631,8 +633,10 @@ namespace simuPOP
           if( m_alleleNum[subPop][loc][j] != 0)
             al.push_back(j);
 
-        if( m_alleleNum[subPop][loc][0] != 0)
-          cout << "Warning: having zero (NA) allele, counted as one allele." << endl;
+#ifndef BINARYALLELE        
+        DBG_WARNING(m_alleleNum[subPop][loc][0] != 0, 
+          "Having zero (NA) allele, counted as one allele.");
+#endif            
 
         DBG_ASSERT( al.size() == static_cast<UINT>(numOfAlleles(subPop)[loc]),
           SystemError, "Number of alleles at locus " + toStr(loc)

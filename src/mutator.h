@@ -67,7 +67,8 @@ namespace simuPOP
       \param maxAllele max allowable allele. Interpreted by each sub mutaor class. Default to pop.maxAllele().
       */
       Mutator( vectorf rate=vectorf(),
-        vectori atLoci=vectori(), UINT maxAllele=0,
+        vectori atLoci=vectori(),
+        UINT maxAllele=0,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
@@ -76,17 +77,22 @@ namespace simuPOP
         m_bt(rng()), m_initialized(false), m_mutCount(0)
       {
         if( m_rate.empty() )
-          throw SystemError("You should specify at least rate ( (0,1] ) or rates (a sequence of rate.)");
+          throw ValueError("You should specify a rate, or a sequence of rate.");
 
         if( rate.size() > 1 && atLoci.empty())
-          throw SystemError("If you use variable rates, you should specify atLoci for each of the rate.");
+          throw ValueError("If you use variable rates, you should specify atLoci for each of the rate.");
 
         if( rate.size() > 1 && !atLoci.empty() && rate.size() != atLoci.size() )
-          throw SystemError("If both rates and atLoci are specified, they should have the same length.");
+          throw ValueError("If both rates and atLoci are specified, they should have the same length.");
 
+#ifdef BINARYALLELE
+        DBG_WARNING( maxAllele > 1, "MaxAllele for binary libraries must be 1");
+        m_maxAllele = 1;
+#else
         DBG_ASSERT( maxAllele <= MaxAllele, ValueError,
           "The maximum allele number exceeds " + toStr(MaxAllele)
           + ". \nIf you need longer allele size, please use simuPOP_la libraries.");
+#endif
       }
 
       /// destructor
@@ -106,19 +112,8 @@ namespace simuPOP
         return m_rate;
       }
 
-      /// set an equal mutation rate
-      void setRate(const double rate, const vectori atLoci = vectori() )
-      {
-        m_rate.resize(1);
-        m_rate[0] = rate;
-        if( ! atLoci.empty())
-          m_atLoci = atLoci;
-
-        m_initialized = false;
-      }
-
       /// set an array of rates
-      void setRate(const vectorf rate, const vectori atLoci = vectori() )
+      void setRate(const vectorf rate, const vectori atLoci = vectori())
       {
         if( rate.size() != 1 && rate.size() != atLoci.size() )
           throw ValueError("If you specify more than one rate values, you should also specify corresponding applicable loci");
@@ -139,7 +134,9 @@ namespace simuPOP
       ///
       void setMaxAllele(UINT maxAllele)
       {
+#ifndef BINARYALLELE
         m_maxAllele = maxAllele;
+#endif
       }
 
       /// return mutation count
@@ -174,8 +171,6 @@ namespace simuPOP
         }
 
         DBG_DO(DBG_MUTATOR, cout <<"Mutate replicate " << pop.rep() << endl);
-        DBG_ASSERT(pop.rep() == pop.getVarAsInt("rep"), SystemError,
-          "Replicate number mismatch");
 
         m_bt.doTrial();
 
@@ -192,13 +187,12 @@ namespace simuPOP
             do
             {
 #ifndef OPTIMIZED
-              AlleleRef ptr = *(pop.alleleBegin( locus ).ptr() + pos);
+              AlleleRef ptr = *(pop.alleleBegin( locus ) + pos).ptr();
               DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << locus
                 << " of individual " << (pos/pop.ploidy()) << " from " << int(ptr) );
               mutate(ptr);
-              DBG_DO(DBG_MUTATOR, cout << " to " << int(ptr) << endl);
 #else
-              mutate( *(pop.alleleBegin( locus ).ptr() + pos) );
+              mutate( *(pop.alleleBegin( locus ) + pos).ptr() );
 #endif
               m_mutCount[ locus ]++;
             }while( (pos = succ.find_next(pos)) != BitSet::npos );
@@ -213,10 +207,12 @@ namespace simuPOP
       /// initialize bernulli trial according to pop size etc
       virtual void initialize(Pop& pop)
       {
+#ifndef BINARYALLELE
         if( m_maxAllele == 0 )
           m_maxAllele = pop.maxAllele();
         else if ( m_maxAllele > 0 && m_maxAllele > pop.maxAllele() )
           throw ValueError("maxAllele exceeds population max allele.");
+#endif          
 
         DBG_DO(DBG_MUTATOR, cout << "initialize mutator" << endl);
 
@@ -286,31 +282,19 @@ namespace simuPOP
       /**
       \param rate  mutation rate. It is 'probability to mutate'. The actual
          mutation rate to any of the other K-1 allelic states are rates/(K-1)!
-      \param states allelic states. Default to is 1 - maxAllele . Given states should be in order!
       \param atLoci and other parameters: refer to help(mutator), help(baseOperator.__init__)
+      \param maxAllele maxAllele that can be mutated to. For binary libraries
+        allelic states will be [0, maxAllele]. For others, they are [1, maxAllele]
       */
-      KAMMutator(vectorf rate=vectorf(), vectori atLoci=vectori(),
-        UINT maxAllele=0, vectora states=vectora(),
+      KAMMutator(vectorf rate=vectorf(), 
+        vectori atLoci=vectori(),
+        UINT maxAllele=0, 
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
         :Mutator<Pop>( rate, atLoci, maxAllele,
-        output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
-        m_states(states)
+        output, outputExpr, stage, begin, end, step, at, rep, grp, sep)
       {
-        if( !m_states.empty())
-        {
-          DBG_FAILIF( m_states.size() == 1,
-            ValueError, "Mutation should have more than one states.");
-
-          DBG_FAILIF( m_states[0] < 1, ValueError, "Allele states must be >= 1");
-
-          for( size_t i=1; i< m_states.size(); ++i)
-          {
-            DBG_ASSERT( m_states[i] > m_states[i-1], ValueError,
-              "Given allelic states should be in order.");
-          }
-        }
       }
 
       ~KAMMutator(){}
@@ -318,25 +302,15 @@ namespace simuPOP
       /// mutate to a state other than current state with equal probability
       virtual void mutate(AlleleRef allele)
       {
-        if(m_states.empty())
-        {
-          Allele new_allele = rng().randInt(this->maxAllele()-1)+1;
-          if(new_allele >= allele)
-            allele = new_allele+1;
-          else
-            allele = new_allele;
-        }
+#ifdef BINARYALLELE        
+        allele = !allele;
+#else
+        Allele new_allele = rng().randInt(this->maxAllele()-1)+1;
+        if(new_allele >= allele)
+          allele = new_allele+1;
         else
-        {
-          DBG_FAILIF( find(m_states.begin(), m_states.end(), allele) == m_states.end(),
-            ValueError, "Allelic state is not in one of the specified states.");
-
-          size_t idx = rng().randInt(m_states.size()-1);
-          if( m_states[idx] >= allele)
-            allele = m_states[idx+1];
-          else
-            allele = m_states[idx];
-        }
+          allele = new_allele;
+#endif
       }
 
       /// this function is very important
@@ -348,12 +322,8 @@ namespace simuPOP
       virtual string __repr__()
       {
         return "<simuPOP::k-allele model mutator K=" +
-          toStr(m_states.empty()?this->maxAllele():m_states.size()) + ">" ;
+          toStr(this->maxAllele()) + ">" ;
       }
-
-    private:
-      vectora m_states;
-
   };
 
   /// stepwise mutation model.
@@ -388,6 +358,9 @@ namespace simuPOP
         output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
         m_incProb(incProb)
       {
+#ifdef BINARYALLELE
+        DBG_WARNING(true, "Symetric stepwise mutation does not work well on two state alleles.");
+#endif        
         DBG_ASSERT( fcmp_ge( incProb, 0.) && fcmp_le( incProb, 1.),
           ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
       }
@@ -403,7 +376,7 @@ namespace simuPOP
         }
         else
         {
-          if( allele > 1 )
+          if( allele > StartingAllele )
             AlleleDec(allele);
         }
       }
@@ -438,11 +411,10 @@ namespace simuPOP
       ///
       /**
       The generalized stepwise mutation model (GMM) is developed for allozymes.
-      It  provides better description
-       for these kinds of evolutionary processes.
+      It  provides better description for these kinds of evolutionary processes.
 
       \param rate: mutation rate
-      \param incProb probability to increase allele state. Default to 1
+      \param incProb probability to increase allele state. Default to 0.5
       \param atLoci and other parameters: refer to help(mutator), help(baseOperator.__init__)
       \param func return number of steps. no parameter
       */
@@ -457,7 +429,11 @@ namespace simuPOP
       {
         DBG_ASSERT( fcmp_ge( incProb, 0.) && fcmp_le( incProb, 1.),
           ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
-
+        
+#ifdef BINARYALLELE
+        DBG_WARNING(true, "Generalized stepwise mutation does not work well on two state alleles.");
+#endif   
+        
         if( func != NULL)                         // use this function
         {
           DBG_ASSERT( PyCallable_Check(func),
@@ -470,7 +446,6 @@ namespace simuPOP
         {
           DBG_ASSERT( fcmp_ge( p, 0.) && fcmp_le( p, 1.),
             ValueError, "Parameter p of a geometric distribution should be between [0,1], given " + toStr(m_p));
-
         }
       }
 
@@ -514,10 +489,10 @@ namespace simuPOP
         }
         else
         {
-          if( allele - step > 1 )
+          if( allele - step > StartingAllele )
             AlleleMinus(allele, step);
           else
-            allele = 1;
+            allele = StartingAllele;
         }
       }
 
@@ -535,7 +510,6 @@ namespace simuPOP
 
       /// the function to return random number
       PyObject* m_func;
-
   };
 
   /// mixed mutation model . has not been implemented.

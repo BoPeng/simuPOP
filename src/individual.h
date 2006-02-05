@@ -932,6 +932,12 @@ namespace simuPOP
         m_tag = tag;
       }
 
+      /// set a single number?
+      void setTag(int tag)
+      {
+        m_tag = TagType(tag, 0);
+      }
+
       /// sex?
       Sex sex() const
       {

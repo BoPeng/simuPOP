@@ -4,41 +4,45 @@
 #
 # Bo Peng (bpeng@rice.edu)
 # 
-# Last Modified: Sep, 2005
+# $LastChangedRevision$
+# $LastChangedDate$
 # 
 
+import simuOpt
+simuOpt.setOptions(quiet=True)
+
 from simuPOP import *
-from simuRPy import *
-import unittest, time
+import unittest, os, sys, exceptions
 
 class TestIfElseOperator(unittest.TestCase):
-   
-  def setUp(self):
-    ' set up a simulator'
-    self.simu = simulator(population(100, loci=[2]), 
-      randomMating())
   
   def testIfElseOperator(self):
-    # now if we want to inject a mutation whenever fixation happens
-    self.simu.evolve(
+    'Test opeartor ifElse'
+    simu = simulator(population(1000, loci=[2]), 
+      randomMating())
+    if alleleType() == 'binary':
+      a1, a2, ma = 0, 1, 1
+    else:
+      a1, a2, ma = 1, 2, 2      
+    # now if we want to flip a lot of alleles whenever it reaches 0.2
+    simu.evolve(
+      # init to 1,2 (or 0, 1 in the binary case)
       preOps = [ initByFreq([.5,.5]) ],
       ops = [
         # count number of allels at this locus
         stat(alleleFreq=[0]),
-        # inject 50% of allele 2 if this allele get lost
-        ifElse('alleleFreq[0][1]==1.', kamMutator(rate=.5, maxAllele=2, atLoci=[0]) ),
+        # inject 50% of allele 2 if this allele get low freq
+        ifElse('alleleFreq[0][%d]<0.2'%a1, 
+          kamMutator(rate=.6, maxAllele=ma, atLoci=[0]) ),
         # the other way around?
-        ifElse('alleleFreq[0][1]==0.', kamMutator(rate=.5, maxAllele=2, atLoci=[0]) ),
-        # print allele frequencies, we should see patterns of reaching zero
-        # jump to .5
-        # pyEval(r'"%.2f\n" % alleleFreq[0][1]')
-        varPlotter('alleleFreq[0][1]', update=100, ylim=[0,1],
-          title='allele freq adjust to .5 when one allele get lost')
+        ifElse('alleleFreq[0][%d]>0.8'%a1, 
+          kamMutator(rate=.6, maxAllele=ma, atLoci=[0]) ),
+        # terminate if
+        terminateIf('alleleFreq[0][%d]<0.1 or alleleFreq[0][%d]>0.9'%(a1,a1))
       ],
       end=1000
     )
-    # hold the image for 10 seconds, 
-    time.sleep(10)
+    self.assertEqual(simu.gen(), 1001)
     
 if __name__ == '__main__':
   unittest.main()

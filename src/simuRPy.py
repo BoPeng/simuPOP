@@ -50,7 +50,7 @@ if os.name == 'nt':
   r.options(windowsBuffered=False)
 
 from simuPOP import *
-from simuUtil import Aggregator
+from simuUtil import dataAggregator
 
 
 def rmatrix(mat):
@@ -257,54 +257,57 @@ class VarPlotter_NoHis(VarPlotter_Base):
       raise ValueError("Replicate out of range. (forget to set numRep?)")
     
     # plot data
-    if rep==-1 or rep == self.numRep - 1:
-      self.CanUpdate()  # effectively increase skip
-    if self.CanUpdate(False):  # check status, does not inc counter
-      self.setDev()
-      if rep == 0:
-        self.layout()
+    #if rep==-1 or rep == self.numRep - 1:
+    #  if not self.CanUpdate():
+    #    return
+    #else: 
+    #  return
       
-      if self.dynamicLim and self.plotType != 'image':
-        self.xlim[0] = 0
-        self.xlim[1] = len(data)-1
-  
-        self.ylim[0] = data[0]
-        self.ylim[1] = data[0]
-        for i in range(1, len(data)):
-          if data[i] < self.ylim[0]:
-            self.ylim[0] = data[i]
-          if data[i] > self.ylim[1]:
-            self.ylim[1] = data[i]
+    self.setDev()
+    if rep == 0:
+      self.layout()
+    
+    if self.dynamicLim and self.plotType != 'image':
+      self.xlim[0] = 0
+      self.xlim[1] = len(data)-1
+
+      self.ylim[0] = data[0]
+      self.ylim[1] = data[0]
+      for i in range(1, len(data)):
+        if data[i] < self.ylim[0]:
+          self.ylim[0] = data[i]
+        if data[i] > self.ylim[1]:
+          self.ylim[1] = data[i]
+    else:
+      self.zlim=[data[0][0],data[0][0]]
+      for i in range(1, len(data)):
+        for j in range(1, len(data[i])):
+          if data[i][j] < self.zlim[0]:
+            self.zlim[0] = data[i][j]
+          if data[i][j] > self.zlim[1]:
+            self.zlim[1] = data[i][j]
+
+    if self.plotType == 'plot':
+      if self.byRep == 1 or rep <= 0 :
+        r.plot( range(0, len(data)), data,
+          xlab=self.xlab, ylab=self.ylab,axes=self.axes,
+          main=self.title[rep], type='l', xlim=self.xlim,
+          ylim=self.ylim, lty=1)
       else:
-        self.zlim=[data[0][0],data[0][0]]
-        for i in range(1, len(data)):
-          for j in range(1, len(data[i])):
-            if data[i][j] < self.zlim[0]:
-              self.zlim[0] = data[i][j]
-            if data[i][j] > self.zlim[1]:
-              self.zlim[1] = data[i][j]
-  
-      if self.plotType == 'plot':
-        if self.byRep == 1 or rep <= 0 :
-          r.plot( range(0, len(data)), data,
-            xlab=self.xlab, ylab=self.ylab,axes=self.axes,
-            main=self.title[rep], type='l', xlim=self.xlim,
-            ylim=self.ylim, lty=1)
-        else:
-          r.lines( range(0, len(data)), data, type='l', lty=rep+1)
-      elif self.plotType == 'image':
-        if rep == 0:
-          self.setDev()
-          self.colorBar(self.level, self.zlim)
-        d=[]
-        for i in range(0,len(data)):
-          d.extend( data[i])
-        r.image( z= r.t(r.matrix( d, ncol=len(data))), 
-          byrow=True, xlab=self.xlab, axes=self.axes,
-          ylab=self.ylab, main=self.title[rep], col=self.color)
-      else: 
-        raise ValueError("Only 'plot' or 'image' is supported as plotType") 
-           
+        r.lines( range(0, len(data)), data, type='l', lty=rep+1)
+    elif self.plotType == 'image':
+      if rep == 0:
+        self.setDev()
+        self.colorBar(self.level, self.zlim)
+      d=[]
+      for i in range(0,len(data)):
+        d.extend( data[i])
+      r.image( z= r.t(r.matrix( d, ncol=len(data))), 
+        xlab=self.xlab, axes=self.axes,
+        ylab=self.ylab, main=self.title[rep], col=self.color)
+    else: 
+      raise ValueError("Only 'plot' or 'image' is supported as plotType") 
+         
     if self.saveAs != "":
       self.save(self.saveAs, gen)
 
@@ -374,18 +377,18 @@ class VarPlotter_His(VarPlotter_Base):
       self.numRep = numRep
       nplot = numRep
       for rep in range(0, numRep):
-        self.data.append(Aggregator(win=win, width=varDim))
+        self.data.append(dataAggregator(maxRecord=win, recordSize=varDim))
     elif byVal == 1:
       nplot = varDim
       for d in range(0, varDim):
-        self.data.append(Aggregator(win=win,width=numRep))
+        self.data.append(dataAggregator(maxRecord=win,recordSize=numRep))
     else:
       # otherwise, all data in one figure
       if numRep > 1:
-        self.data.append(Aggregator(win, numRep))
+        self.data.append(dataAggregator(win, numRep))
         self.byVal = 1
       else:
-        self.data.append(Aggregator(win, varDim))
+        self.data.append(dataAggregator(win, varDim))
         self.byRep = 1
   
     VarPlotter_Base.__init__(self, nplot, update, title,
@@ -463,9 +466,9 @@ class VarPlotter_His(VarPlotter_Base):
       self.xlim[1] = self.xlim[0] + self.win
 
     if self.dynamicLim:
-      self.ylim = self.data[0].ylim()
+      self.ylim = self.data[0].dataRange()
       for i in range(1, len(self.data)):
-        yl = self.data[i].ylim()
+        yl = self.data[i].dataRange()
         if yl[0] < self.ylim[0]:
           self.ylim[0] = yl[0]
         if yl[1] > self.ylim[1]:
@@ -475,58 +478,57 @@ class VarPlotter_His(VarPlotter_Base):
       if self.plotType == "image":   # use image
         self.colorBar(self.level, self.ylim)
         for rep in range(0, self.numRep):
-          r.image(x=self.data[rep].gen, y=range(0, self.data[rep].width),
-            xlim=self.xlim, z= r.t(r.matrix( self.data[rep].flatData(),axes=self.axes,
+          r.image(x=self.data[rep].gen, y=range(0, self.data[rep].recordSize),
+            xlim=self.xlim, z= r.t(r.matrix( self.data[rep].flatData(),
             byrow=True, ncol=len(self.data[rep].gen))),xlab=self.xlab,
             ylab=self.ylab, main=self.title[rep], col=self.color)
-      elif self.separate == False or self.data[rep].width == 1:
+      elif self.separate == False or self.data[rep].recordSize == 1:
         for rep in range(0, self.numRep):
           r.plot( self.data[rep].gen, self.data[rep].data[0],
             xlab=self.xlab, ylab=self.ylab,axes=self.axes,
             main=self.title[rep], type='l', xlim=self.xlim,
             ylim=self.ylim, lty=1)
-          for i in range( 1, self.data[rep].width ):        
+          for i in range( 1, self.data[rep].recordSize ):        
             r.lines( self.data[rep].gen, self.data[rep].data[i], type='l', lty=i+1)
       else:  # use panel for each item of the plot
         height = self.ylim[1] - self.ylim[0]
-        newlim = [self.ylim[0], self.ylim[0] + height* self.data[0].width]
+        newlim = [self.ylim[0], self.ylim[0] + height* self.data[0].recordSize]
         for rep in range(0, self.numRep):
           r.plot( self.data[rep].gen, self.data[rep].data[0],
             xlab=self.xlab, ylab=self.ylab,axes=self.axes,
             main=self.title[rep], type='l', xlim=self.xlim,
             ylim=newlim, lty=1)
-          r.abline(h=[newlim[0] + height*x for x in range(0, self.data[rep].width)])
-          for i in range( 1, self.data[rep].width ):        
+          r.abline(h=[newlim[0] + height*x for x in range(0, self.data[rep].recordSize)])
+          for i in range( 1, self.data[rep].recordSize ):        
             r.lines( self.data[rep].gen, 
               [height*i+x for x in self.data[rep].data[i]], type='l', lty=i+1)
-         
           
     if self.byVal == 1:
       if self.plotType == "image":
         self.colorBar(self.level,self.ylim)
         for rep in range(0, self.numRep):
-          r.image(x=self.data[rep].gen, y=range(0, self.data[rep].width), 
+          r.image(x=self.data[rep].gen, y=range(0, self.data[rep].recordSize), 
             xlim=self.xlim, z= r.t(r.matrix( self.data[rep].flatData(),axes=self.axes,
             byrow=True, ncol=len(self.data[rep].data[0]))),xlab=self.xlab,
             ylab=self.ylab, main=self.title[rep], col=self.color)
-      elif self.separate == False or self.data[rep].width == 1:
+      elif self.separate == False or self.data[rep].recordSize == 1:
         for v in range(0, self.varDim):
           r.plot( self.data[v].gen, self.data[v].data[0],
             xlab=self.xlab, ylab=self.ylab,axes=self.axes,
             main=self.title[v], type='l', xlim=self.xlim,
             ylim=self.ylim, lty=1)
-          for i in range( 1, self.data[v].width ):        
+          for i in range( 1, self.data[v].recordSize ):        
             r.lines( self.data[v].gen, self.data[v].data[i], type='l', lty=i+1)
       else:
         height = self.ylim[1] - self.ylim[0]
-        newlim = [self.ylim[0], self.ylim[0] + height* self.data[0].width]
+        newlim = [self.ylim[0], self.ylim[0] + height* self.data[0].recordSize]
         for v in range(0, self.varDim):
           r.plot( self.data[v].gen, self.data[v].data[0],
             xlab=self.xlab, ylab=self.ylab,axes=self.axes,
             main=self.title[v], type='l', xlim=self.xlim,
             ylim=newlim, lty=1)
-          r.abline(h=[newlim[0] + height*x for x in range(0, self.data[rep].width)])
-          for i in range( 1, self.data[v].width ):        
+          r.abline(h=[newlim[0] + height*x for x in range(0, self.data[rep].recordSize)])
+          for i in range( 1, self.data[v].recordSize ):        
             r.lines( self.data[v].gen, 
               [height*i + x for x in self.data[v].data[i]], type='l', lty=i+1)
         
@@ -537,7 +539,8 @@ class VarPlotter_His(VarPlotter_Base):
 def varPlotter(expr, history=1, varDim=1, numRep=1, win=0, ylim=[0,0],
   update=1, title="", xlab="generation", ylab="",axes=True, 
   mfrow=[1,1], separate=False, byRep=0, byVal=0, plotType="plot",
-  level=20, saveAs="", leaveOpen=True, dev='', width=0, height=0, *args, **kwargs):
+  level=20, saveAs="", leaveOpen=True, dev='', width=0, height=0, 
+  *args, **kwargs):
   # deal with additional arguments
   parm = ''
   for (k,v) in kwargs.items():
@@ -573,7 +576,6 @@ def varPlotter(expr, history=1, varDim=1, numRep=1, win=0, ylim=[0,0],
     ( expr, parm, plotterName, numRep, win, ylim[0], ylim[1], update, title, \
     xlab, ylab, axes, mfrow[0], mfrow[1], byRep, plotType, level,\
     saveAs, leaveOpen, dev, width, height, plotterName, plotterName, expr) 
-  #print cmd
   return eval(cmd)
 
 # VarPlotter wrapper   
