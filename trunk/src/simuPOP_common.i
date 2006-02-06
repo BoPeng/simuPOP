@@ -1026,14 +1026,34 @@ def new_maSelector(self, locus=-1, loci=[], wildtype=[1], *args, **kwargs):
     loc = loci
   else:
     raise exceptions.TypeError('Please specify locus or loci')
+  if type(wildtype) in [types.IntType, types.LongType]:
+    wt = [wildtype]
+  else:
+    wt = wildtype
   _swig_setattr(self, maSelector, 'this', 
-    cppModule.new_maSelector(loci=loc, wildtype=wildtype, *args, **kwargs))
+    cppModule.new_maSelector(loci=loc, wildtype=wt, *args, **kwargs))
   _swig_setattr(self, maSelector, 'thisown', 1)
  
 new_maSelector.__doc__ = maSelector.__init__.__doc__
 del maSelector.__init__
 maSelector.__init__ = new_maSelector
 
+def new_pySelector(self, locus=-1, loci=[], *args, **kwargs):
+  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+    loc = [locus]
+  elif type(loci) in [types.IntType, types.LongType]:
+    loc = [loci]
+  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+    loc = loci
+  else:
+    raise exceptions.TypeError('Please specify locus or loci')
+  _swig_setattr(self, pySelector, 'this', 
+    cppModule.new_pySelector(loci=loc, *args, **kwargs))
+  _swig_setattr(self, pySelector, 'thisown', 1)
+ 
+new_pySelector.__doc__ = pySelector.__init__.__doc__
+del pySelector.__init__
+pySelector.__init__ = new_pySelector
 
 def new_mapPenetrance(self, locus=-1, loci=[], *args, **kwargs):
   if locus != -1 and type(locus) in [types.IntType, types.LongType]:
@@ -1061,14 +1081,34 @@ def new_maPenetrance(self, locus=-1, loci=[], wildtype=[1], *args, **kwargs):
     loc = loci
   else:
     raise exceptions.TypeError('Please specify locus or loci')
+  if type(wildtype) in [types.IntType, types.LongType]:
+    wt = [wildtype]
+  else:
+    wt = wildtype
   _swig_setattr(self, maPenetrance, 'this', 
-    cppModule.new_maPenetrance(loci=loc, wildtype=wildtype, *args, **kwargs))
+    cppModule.new_maPenetrance(loci=loc, wildtype=wt, *args, **kwargs))
   _swig_setattr(self, maPenetrance, 'thisown', 1)
  
 new_maPenetrance.__doc__ = maPenetrance.__init__.__doc__
 del maPenetrance.__init__
 maPenetrance.__init__ = new_maPenetrance
 
+def new_pyPenetrance(self, locus=-1, loci=[], *args, **kwargs):
+  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+    loc = [locus]
+  elif type(loci) in [types.IntType, types.LongType]:
+    loc = [loci]
+  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+    loc = loci
+  else:
+    raise exceptions.TypeError('Please specify locus or loci')
+  _swig_setattr(self, pyPenetrance, 'this', 
+    cppModule.new_pyPenetrance(loci=loc, *args, **kwargs))
+  _swig_setattr(self, pyPenetrance, 'thisown', 1)
+ 
+new_pyPenetrance.__doc__ = pyPenetrance.__init__.__doc__
+del pyPenetrance.__init__
+pyPenetrance.__init__ = new_pyPenetrance
 
 def new_mapQuanTrait(self, locus=-1, loci=[], *args, **kwargs):
   if locus != -1 and type(locus) in [types.IntType, types.LongType]:
@@ -1087,7 +1127,7 @@ new_mapQuanTrait.__doc__ = mapQuanTrait.__init__.__doc__
 del mapQuanTrait.__init__
 mapQuanTrait.__init__ = new_mapQuanTrait
 
-def new_maQuanTrait(self, locus=-1, loci=[], wildtype=[1], *args, **kwargs):
+def new_maQuanTrait(self, locus=-1, loci=[], wildtype=[1], sigma=[0], qtrait=[], *args, **kwargs):
   if locus != -1 and type(locus) in [types.IntType, types.LongType]:
     loc = [locus]
   elif type(loci) in [types.IntType, types.LongType]:
@@ -1096,12 +1136,39 @@ def new_maQuanTrait(self, locus=-1, loci=[], wildtype=[1], *args, **kwargs):
     loc = loci
   else:
     raise exceptions.TypeError('Please specify locus or loci')
+  if type(wildtype) in [types.IntType, types.LongType]:
+    wt = [wildtype]
+  else:
+    wt = wildtype
+  if type(sigma) in [types.IntType, types.LongType, types.FloatType]:
+    s = [sigma]*len(qtrait)
+  elif len(sigma) == 1:
+    s = sigma*len(qtrait)
+  else:
+    s = sigma
   _swig_setattr(self, maQuanTrait, 'this', 
-    cppModule.new_maQuanTrait(loci=loc, wildtype=wildtype, *args, **kwargs))
+    cppModule.new_maQuanTrait(loci=loc, wildtype=wt, sigma=s, qtrait=qtrait, *args, **kwargs))
   _swig_setattr(self, maQuanTrait, 'thisown', 1)
  
 new_maQuanTrait.__doc__ = maQuanTrait.__init__.__doc__
 del maQuanTrait.__init__
 maQuanTrait.__init__ = new_maQuanTrait
+
+def new_pyQuanTrait(self, locus=-1, loci=[], *args, **kwargs):
+  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+    loc = [locus]
+  elif type(loci) in [types.IntType, types.LongType]:
+    loc = [loci]
+  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+    loc = loci
+  else:
+    raise exceptions.TypeError('Please specify locus or loci')
+  _swig_setattr(self, pyQuanTrait, 'this', 
+    cppModule.new_pyQuanTrait(loci=loc, *args, **kwargs))
+  _swig_setattr(self, pyQuanTrait, 'thisown', 1)
+ 
+new_pyQuanTrait.__doc__ = pyQuanTrait.__init__.__doc__
+del pyQuanTrait.__init__
+pyQuanTrait.__init__ = new_pyQuanTrait
 
 %}
