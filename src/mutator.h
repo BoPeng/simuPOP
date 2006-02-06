@@ -71,8 +71,8 @@ namespace simuPOP
         UINT maxAllele=0,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        :Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL)
+        :Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_rate(rate), m_maxAllele(maxAllele), m_atLoci(atLoci),
         m_bt(rng()), m_initialized(false), m_mutCount(0)
       {
@@ -291,9 +291,9 @@ namespace simuPOP
         UINT maxAllele=0, 
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
+        int rep=REP_ALL, int grp=GRP_ALL)
         :Mutator<Pop>( rate, atLoci, maxAllele,
-        output, outputExpr, stage, begin, end, step, at, rep, grp, sep)
+        output, outputExpr, stage, begin, end, step, at, rep, grp)
       {
       }
 
@@ -353,9 +353,9 @@ namespace simuPOP
         UINT maxAllele=0, double incProb=0.5,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
+        int rep=REP_ALL, int grp=GRP_ALL)
         :Mutator<Pop>( rate, atLoci, maxAllele,
-        output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
+        output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_incProb(incProb)
       {
 #ifdef BINARYALLELE
@@ -422,9 +422,9 @@ namespace simuPOP
         UINT maxAllele=0, double incProb=0.5, double p=0, PyObject* func=NULL,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
+        int rep=REP_ALL, int grp=GRP_ALL)
         :Mutator<Pop>( rate, atLoci, maxAllele,
-        output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
+        output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_incProb(incProb), m_p(p), m_func(func)
       {
         DBG_ASSERT( fcmp_ge( incProb, 0.) && fcmp_le( incProb, 1.),
@@ -521,9 +521,9 @@ namespace simuPOP
         PyObject* func=NULL,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
+        int rep=REP_ALL, int grp=GRP_ALL)
         :Mutator<Pop>( rate,atLoci, maxAllele,
-        output, outputExpr, stage, begin, end, step, at, rep, grp, sep), m_func(NULL)
+        output, outputExpr, stage, begin, end, step, at, rep, grp), m_func(NULL)
       {
         if( !PyCallable_Check(func))
           throw ValueError("Passed variable is not a callable python function.");
@@ -603,8 +603,8 @@ namespace simuPOP
         vectorlu inds=vectorlu(),
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        :Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL)
+        :Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_atLoci(atLoci), m_toAllele(toAllele),
         m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)
       {

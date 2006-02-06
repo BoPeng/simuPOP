@@ -117,8 +117,6 @@ class TestCarray(unittest.TestCase):
     else:
       self.assertEqual( arr.tolist(), [0,1,1]*4)
       self.assertNotEqual( arr.tolist(), [0,1,2]*4)
-    # direct comparison
-    self.assertEqual( arr, [0,1,2]*4)
     # convert to list
     if alleleType() != 'binary':
       self.assertEqual( arr, [0,1,2]*4)

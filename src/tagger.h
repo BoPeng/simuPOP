@@ -47,8 +47,8 @@ namespace simuPOP
 
     public:
       /// constructor. default to be always active but no output.
-      Tagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>("", "", DuringMating, begin, end, step, at, rep, grp, sep)
+      Tagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Operator<Pop>("", "", DuringMating, begin, end, step, at, rep, grp)
       {
       };
 
@@ -73,8 +73,8 @@ namespace simuPOP
 
     public:
       /// constructor. default to be always active.
-      InheritTagger(int mode=TAG_Paternal, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Tagger<Pop>( begin, end, step, at, rep, grp, sep), m_mode(mode)
+      InheritTagger(int mode=TAG_Paternal, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Tagger<Pop>( begin, end, step, at, rep, grp), m_mode(mode)
       {
       };
 
@@ -135,8 +135,8 @@ namespace simuPOP
       /// constructor. default to be always active.
       /// string can be any string (m_Delimiter will be ignored for this class.)
       ///  %r will be replicate number %g will be generation number.
-      ParentsTagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Tagger<Pop>( begin, end, step, at, rep, grp, sep)
+      ParentsTagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Tagger<Pop>( begin, end, step, at, rep, grp)
       {
       };
 

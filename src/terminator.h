@@ -42,8 +42,8 @@ namespace simuPOP
     public:
       /// constructor. default to be always active.
       Terminator(string message = "", string output=">", string outputExpr="",
-        int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
+        int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_message(message)
       {
       };
@@ -84,7 +84,7 @@ namespace simuPOP
       TerminateIf(string condition="", string message="", string var="terminate",
         string output="", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
+        int rep=REP_ALL, int grp=GRP_ALL):
       Terminator<Pop>(message, output, outputExpr, stage, begin, end, step, at,
         rep, grp), m_expr(condition ), m_var(var)
       {
@@ -153,7 +153,7 @@ namespace simuPOP
       ContinueIf(string condition="", string message="", string var="terminate",
         string output="", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
+        int rep=REP_ALL, int grp=GRP_ALL):
       Terminator<Pop>(message, output, outputExpr, stage, begin, end, step, at,
         rep, grp), m_expr(condition ), m_var(var)
       {

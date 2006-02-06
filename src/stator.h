@@ -64,8 +64,8 @@ namespace simuPOP
       /// phase: if we treat Aa!=aA, default is false, i.e, Aa=aA.
       Stator(string output="", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep)
+        int rep=REP_ALL, int grp=GRP_ALL):
+      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp)
       {
       };
 
@@ -104,8 +104,8 @@ namespace simuPOP
         const string& postStmts="", bool exposePop=false, const string& name="",
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL,  int grp=GRP_ALL, string sep="\t")
-        :Stator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL,  int grp=GRP_ALL)
+        :Stator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_expr(expr, stmts), m_postExpr("", postStmts), m_exposePop(exposePop), m_name(name)
       {
         if( preStmts != "")
@@ -193,9 +193,9 @@ namespace simuPOP
         bool exposePop=false, const string& name="",
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL,  int grp=GRP_ALL, string sep="\t")
+        int rep=REP_ALL,  int grp=GRP_ALL)
         :PyEval<Pop>("", stmts, preStmts, postStmts, exposePop, name, "", "",
-        stage, begin, end, step, at, rep, grp, sep)
+        stage, begin, end, step, at, rep, grp)
       {
       }
 
@@ -2632,8 +2632,8 @@ namespace simuPOP
       // regular parameters
         string output="", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL,  int grp=GRP_ALL, string sep="\t")
-        :Stator<Pop>("", outputExpr, stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL,  int grp=GRP_ALL)
+        :Stator<Pop>("", outputExpr, stage, begin, end, step, at, rep, grp),
       // the order of initialization is meaningful since they may depend on each other
         m_popSize(popSize),
         m_numOfMale(numOfMale),

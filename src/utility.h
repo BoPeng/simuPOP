@@ -666,7 +666,7 @@ namespace simuPOP
         compileStmts(stmts);
       }
 
-      /// CPPONLY evaluate with string output
+      /// CPPONLY evaluate with PyObject* output
       PyObject* evaluate();
 
       /// CPPONLY  return bool value

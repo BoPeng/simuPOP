@@ -41,8 +41,11 @@ class TestPopulation(unittest.TestCase):
         lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
         maxAllele=4, alleleNames=['_','A','C','T','G'])
     # raise exception when max allele is wrong
-    self.assertRaises(exceptions.ValueError,
-      population, size=10, maxAllele=MaxAllele+1)
+    try:  # MaxAllele may be too big.
+      self.assertRaises(exceptions.ValueError,
+        population, size=10, maxAllele=MaxAllele+1)
+    except exceptions.OverflowError:
+      pass
     # raise exception when subpop size does not match
     self.assertRaises(exceptions.ValueError, 
       population, size=1000, ploidy=4, loci=[5, 7]*20, \
@@ -436,7 +439,7 @@ class TestPopulation(unittest.TestCase):
 
   def testRemoveLoci(self):
     'Testing function removeLoci'
-    pop = population(subPop=[1,2,], ploidy=2, loci=[2,3,1])
+    pop = population(subPop=[1,2], ploidy=2, loci=[2,3,1])
     arr = pop.arrGenotype()
     arr[:] = range(pop.totNumLoci())*(pop.popSize()*pop.ploidy())
     pop.removeLoci(remove=[2])
@@ -455,8 +458,12 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual( pop.numChrom(), 2)
     self.assertEqual( pop.numLoci(0), 1)
     self.assertEqual( pop.numLoci(1), 1)
-    self.assertEqual( pop.arrGenotype().count(1), pop.popSize()*pop.ploidy() )
-    self.assertEqual( pop.arrGenotype().count(3), pop.popSize()*pop.ploidy() )
+    if alleleType() == 'binary':
+      self.assertEqual( pop.arrGenotype().count(3), 0 )
+      self.assertEqual( pop.arrGenotype().count(1), pop.popSize()*pop.ploidy()*2 )
+    else:
+      self.assertEqual( pop.arrGenotype().count(3), pop.popSize()*pop.ploidy() )
+      self.assertEqual( pop.arrGenotype().count(1), pop.popSize()*pop.ploidy() )
     
   def testPopInfo(self):
     'Testing population info related functions'

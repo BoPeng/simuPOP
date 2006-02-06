@@ -130,17 +130,15 @@ namespace simuPOP
       \param grp applicable group, default to GRP_ALL.  A group number for each
       replicate is set by simulator.__init__ or simulator::setGroup(). grp, if not
       GRP_ALL, will be compared to the group number of this replicate before applying.
-      \param sep separator string. Usually default to '\t'. Operators that
-      have array like output should use this to separate output.
 
       DEVONLY{ DO NOT SET DEFAULT PARAMETE. This will force all
       derived classes to pay attention to parameter number. }
       */
       Operator(string output, string outputExpr, int stage,
         int begin, int end, int step, vectorl at,
-        int rep, int grp, string sep):
+        int rep, int grp):
       m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at),
-        m_separator(sep), m_flags(0), m_rep(rep), m_grp(grp),
+        m_flags(0), m_rep(rep), m_grp(grp),
         m_ostream(output, outputExpr)
       {
         DBG_FAILIF(step<=0, ValueError, "step need to be at least one");
@@ -306,17 +304,6 @@ namespace simuPOP
         m_ostream.setOutput(output, outputExpr);
       }
 
-      /// what is the separator?
-      string& separator()
-      {
-        return m_separator;
-      }
-
-      /// set separator
-      virtual void setSeparator(const string sep)
-      {
-        m_separator = sep;
-      }
 
       /// get output stream. This function is not exposed to user.
       ostream& getOstream( PyObject* dict=NULL, bool readable=false)
@@ -401,9 +388,6 @@ namespace simuPOP
       /// a list of generations that this oeprator will be active.
       /// typical usage is m_atGen=[-1] to apply at the last generation.
       vectorl m_atGen;
-
-      /// field separation character
-      string m_separator;
 
       /// various m_flags of Operator for faster processing.
       unsigned char m_flags;
@@ -565,8 +549,8 @@ namespace simuPOP
         bool exposePop=true, string popName="pop",
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_LAST, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>("", "", stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_LAST, int grp=GRP_ALL):
+      Operator<Pop>("", "", stage, begin, end, step, at, rep, grp),
         m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke),
         m_exposePop(exposePop), m_popName(popName)
       {
@@ -669,8 +653,8 @@ namespace simuPOP
        */
       NoneOp( string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=0, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>("", "", stage, begin, end, step, at, rep, grp, sep)
+        int rep=REP_ALL, int grp=GRP_ALL):
+      Operator<Pop>("", "", stage, begin, end, step, at, rep, grp)
       {
       }
 
@@ -727,8 +711,8 @@ namespace simuPOP
       IfElse(const string& cond, Operator<Pop>* ifOp=NULL, Operator<Pop>* elseOp = NULL,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>("", "", stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL):
+      Operator<Pop>("", "", stage, begin, end, step, at, rep, grp),
         m_cond(cond,""), m_ifOp(NULL), m_elseOp(NULL)
       {
         if( ifOp != NULL)
@@ -829,8 +813,8 @@ namespace simuPOP
       */
       TicToc( string output=">", string outputExpr="",
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp, sep)
+        int rep=REP_ALL, int grp=GRP_ALL):
+      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp)
       {
         time(&m_startTime);
         m_lastTime = m_startTime;
@@ -896,8 +880,8 @@ namespace simuPOP
       */
       SetAncestralDepth( int depth, string output=">", string outputExpr="",
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL):
+      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp),
         m_depth(depth)
       {
       };
@@ -941,8 +925,8 @@ namespace simuPOP
        */
       TurnOnDebugOp(DBG_CODE code,
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL):
+      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp),
         m_code(code)
       {
       };
@@ -986,8 +970,8 @@ namespace simuPOP
        */
       TurnOffDebugOp(DBG_CODE code,
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL):
+      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp),
         m_code(code)
       {
       };
@@ -1046,8 +1030,8 @@ namespace simuPOP
       PyOperator(PyObject* func, PyObject* param=NULL,
         int stage=PostMating, bool formOffGenotype=false, bool passOffspringOnly=false,
         int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL):
+      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp),
         m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
       {
         if( !PyCallable_Check(func))

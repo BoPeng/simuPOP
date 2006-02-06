@@ -1929,9 +1929,9 @@ namespace simuPOP
         this function evaluate python expressions
         and return as string representing the result
           */
-      string evaluate(const string& expr="", const string& stmts="")
+      PyObject* evaluate(const string& expr="", const string& stmts="")
       {
-        return Expression(expr, stmts, m_vars.dict() ).valueAsString();
+        return Expression(expr, stmts, m_vars.dict() ).evaluate();
       }
 
       ///

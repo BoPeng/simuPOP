@@ -52,8 +52,8 @@ namespace simuPOP
       /// constructor. default to be always active.
       Outputer(string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep)
+        int rep=REP_ALL, int grp=GRP_ALL):
+      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp)
       {
       };
 
@@ -75,9 +75,9 @@ namespace simuPOP
       ///
       OutputHelper(string str="\n", string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
+        int rep=REP_ALL, int grp=GRP_ALL):
       Outputer<Pop>( output, outputExpr, stage, begin, end,
-        step, at, rep, grp, sep), m_string(str)
+        step, at, rep, grp), m_string(str)
       {
       }
 
@@ -147,8 +147,8 @@ namespace simuPOP
         const vectorlu& indRange=vectorlu(),
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Outputer<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL):
+      Outputer<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_alleleOnly(alleleOnly), m_infoOnly(infoOnly), m_dispAncestry(ancestralPops), m_width(dispWidth),
         m_chrom(chrom), m_loci(loci), m_subPop(subPop), m_indRange(indRange), m_max(max)
         {}
@@ -407,8 +407,8 @@ namespace simuPOP
     public:
       SavePopulation( string output="", string outputExpr="",
         string format = "bin", int stage=PostMating, int begin=0, int end=-1,
-        int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Outputer<Pop>( "", "", stage, begin, end, step, at, rep, grp, sep),
+        int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Outputer<Pop>( "", "", stage, begin, end, step, at, rep, grp),
         m_filename(output), m_filenameParser(outputExpr), m_format(format)
       {
         if(output == "" && outputExpr == "")

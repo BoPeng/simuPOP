@@ -3,8 +3,6 @@ ChangeLog of simuPOP
 NOTE: Daily snapshot reflects current SVN version. It includes new features and 
   bug fixes, but may be less stable than versioned releases.
 
-Known bugs     - all fixed now
-
 version 0.6.12 - available as snapshot
   - CHG: 'not enough case/control' in caseControlSample now generates 
          a warning message, rather than exception.
@@ -36,6 +34,8 @@ version 0.6.12 - available as snapshot
   - NEW: under DBG_MATING, size of each family is outputed as pop.dvars().famSizes
   - NEW: initByFreq now recognize binary library and set 0,1 instead of 1,2,...
   - NEW: (Almost) complete test cases for all operators.
+  - CHG: remove sep parameter of operators. Users need separator between output of
+         operators can use a output() operator manually. (sep is originally a bad idea.)
 
 version 0.6.11 - (Rev 119) - Jan 19, 2006
   - DOC: add examples of penetrance operators to the reference manual.
