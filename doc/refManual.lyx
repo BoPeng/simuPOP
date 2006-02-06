@@ -8,7 +8,7 @@
 \usepackage{underscore}
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.6.10 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.6.12 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Statistics, Rice University}\\
 {\bf Email: }{\textsf bpeng@rice.edu}\\
@@ -776,9 +776,11 @@ simuPOP is composed of six libraries: stdandard short, long and binary alleles,
 \begin_inset Formula $2^{32}$
 \end_inset
 
-possible allele states.
+ possible allele states.
  On the other hand, if you would like to simulate a large number of binary
  (SNP) markers, binary libraries can save you a lot of RAM.
+ Due to the additional cost of accessing alleles as bits, binary modules
+ will be around 10% slower than other libraries.
  
 \end_layout
 
@@ -9758,6 +9760,81 @@ Operator and Function References
 
 \begin_layout Standard
 This chapter will list all functions, types and operators by category.
+\end_layout
+
+\begin_layout Section
+Library-dependent functions/constants
+\end_layout
+
+\begin_layout Standard
+Several functions and constants are defined for each library
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+StartingAllele
+\family default
+ : 0 for binary modules and 1 for others.
+ For short and long version of the libraries, 0 allele is reserved for missing
+ data.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+alleleType()
+\family default
+: return 
+\family typewriter
+'binary'
+\family default
+, 
+\family typewriter
+'short'
+\family default
+, or
+\family typewriter
+ 'long'
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MaxAllele
+\family default
+: 1 for binary libraries, usually 255 for short libraries and 
+\begin_inset Formula $2^{32}-1$
+\end_inset
+
+ for long libraries.
+ Note that this number for short and long libraries might change on different
+ platforms.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simuVer()
+\family default
+: return version string
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simuRev()
+\family default
+: simuPOP revision number.
+ If your script needs a recent version of simuPOP, it is a good idea to
+ test 
+\family typewriter
+simuRev()
+\family default
+ against the revision when the feature you need became available.
 \end_layout
 
 \begin_layout Section
