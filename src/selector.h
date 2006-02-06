@@ -678,7 +678,8 @@ namespace simuPOP
       Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp, sep),
         m_loci(loci), m_penetrance(penetrance), m_wildtype(wildtype)
       {
-        DBG_ASSERT( m_penetrance.size() == 3, ValueError, "Please specify penetrance for AA,Aa,aa genotypes.");
+        DBG_ASSERT( m_penetrance.size() ==  static_cast<UINT>(pow(3, loci.size())),
+          ValueError, "Please specify penetrance for each combination of genotype.");
       };
 
       virtual ~MAPenetrance()
