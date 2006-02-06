@@ -84,8 +84,8 @@ namespace simuPOP
       Migrator( const matrix& rate, int mode = MigrByProbability,
         vectoru fromSubPop=vectoru(), vectoru toSubPop=vectoru(),
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL)
+        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp),
         m_rate(0), m_mode(0), m_from(fromSubPop), m_to(toSubPop)
       {
 
@@ -315,8 +315,8 @@ namespace simuPOP
       */
       PyMigrator( PyObject* subPopID=NULL,
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp, sep)
+        int rep=REP_ALL, int grp=GRP_ALL)
+        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp)
       {
         // carray of python list/typle
         DBG_ASSERT( PyObj_Is_IntNumArray(subPopID) ||
@@ -409,8 +409,8 @@ namespace simuPOP
       SplitSubPop( UINT which=0,  vectorlu sizes=vectorlu(), vectorf proportions=vectorf(),
         vectoru subPopID=vectoru(),
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL)
+        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp),
         m_which(which), m_subPopSizes(sizes), m_proportions(proportions), m_subPopID(subPopID)
       {
         DBG_FAILIF( sizes.empty() && proportions.empty(), ValueError,
@@ -472,8 +472,8 @@ namespace simuPOP
       */
       MergeSubPops( vectoru subPops=vectoru(), bool removeEmptySubPops=false,
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL)
+        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp),
         m_subPops(subPops), m_removeEmptySubPops(removeEmptySubPops)
       {
       }

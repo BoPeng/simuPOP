@@ -62,8 +62,8 @@ namespace simuPOP
     public:
       /// constructor. default to be always active.
       Selector( int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        :Operator<Pop>("","",stage, begin, end, step, at, rep, grp, sep)
+        int rep=REP_ALL, int grp=GRP_ALL)
+        :Operator<Pop>("","",stage, begin, end, step, at, rep, grp)
       {
       }
 
@@ -125,8 +125,8 @@ namespace simuPOP
       */
       MapSelector( vectoru loci, const strDict& fitness, bool hasPhase=false,
         int stage=PreMating, int begin=0, int end=-1, int step=1,
-        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Selector<Pop>(stage, begin, end, step, at, rep, grp, sep),
+        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Selector<Pop>(stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_dict(fitness), m_phase(hasPhase)
       {
       };
@@ -212,8 +212,8 @@ namespace simuPOP
       */
       MASelector( vectoru loci, const vectorf& fitness, const vectora& wildtype,
         int stage=PreMating, int begin=0, int end=-1, int step=1,
-        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Selector<Pop>(stage, begin, end, step, at, rep, grp, sep),
+        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Selector<Pop>(stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_fitness(fitness), m_wildtype(wildtype)
       {
         DBG_ASSERT( m_fitness.size() == static_cast<UINT>(pow(3, loci.size())),
@@ -295,8 +295,8 @@ namespace simuPOP
       */
       MLSelector( const vectorop selectors, int mode = SEL_Multiplicative,
         int stage=PreMating, int begin=0, int end=-1, int step=1,
-        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Selector<Pop>(stage, begin, end, step, at, rep, grp, sep),
+        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Selector<Pop>(stage, begin, end, step, at, rep, grp),
         m_selectors(0), m_mode(mode)
       {
         DBG_FAILIF( selectors.empty(), ValueError, "Please specify at least one selector.");
@@ -383,8 +383,8 @@ namespace simuPOP
       /// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
       PySelector( vectoru loci, PyObject* func,
         int stage=PreMating, int begin=0, int end=-1, int step=1,
-        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Selector<Pop>(stage, begin, end, step, at, rep, grp, sep),
+        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Selector<Pop>(stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
       {
         if( !PyCallable_Check(func))
@@ -494,8 +494,8 @@ namespace simuPOP
       /// constructor. default to be always active.
       /// default to post mating
       Penetrance(bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        :Operator<Pop>("","",stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL)
+        :Operator<Pop>("","",stage, begin, end, step, at, rep, grp),
         m_exposePenetrance(exposePenetrance)
       {
         DBG_FAILIF( exposePenetrance==true && stage==DuringMating, ValueError,
@@ -587,8 +587,8 @@ namespace simuPOP
       */
       MapPenetrance( vectoru loci, const strDict& penetrance, bool hasPhase=false,
         bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
-        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp, sep),
+        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_dict(penetrance), m_phase(hasPhase)
       {
       };
@@ -674,8 +674,8 @@ namespace simuPOP
       MAPenetrance( vectoru loci, const vectorf& penetrance, const vectora& wildtype,
         bool exposePenetrance=false,
         int stage=DuringMating, int begin=0, int end=-1, int step=1,
-        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp, sep),
+        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_penetrance(penetrance), m_wildtype(wildtype)
       {
         DBG_ASSERT( m_penetrance.size() ==  static_cast<UINT>(pow(3, loci.size())),
@@ -758,8 +758,8 @@ namespace simuPOP
       */
       MLPenetrance( const vectorop peneOps, int mode = PEN_Multiplicative,
         bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
-        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp, sep),
+        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp),
         m_peneOps(0), m_mode(mode)
       {
         DBG_FAILIF( peneOps.empty(), ValueError, "Please specify at least one penetrance operator.");
@@ -850,8 +850,8 @@ namespace simuPOP
       /// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
       PyPenetrance( vectoru loci, PyObject* func, bool exposePenetrance=false,
         int stage=DuringMating, int begin=0, int end=-1, int step=1,
-        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp, sep),
+        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
       {
         if( !PyCallable_Check(func))
@@ -984,8 +984,8 @@ namespace simuPOP
     public:
       /// constructor. default to be always active.
       QuanTrait( int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        :Operator<Pop>("","",stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL)
+        :Operator<Pop>("","",stage, begin, end, step, at, rep, grp),
         m_qtrait(0), m_len(0)
       {
       }
@@ -1063,8 +1063,8 @@ namespace simuPOP
       */
       MapQuanTrait( vectoru loci, const strDict& qtrait, double sigma=0, bool hasPhase=false,
         int stage=PostMating, int begin=0, int end=-1, int step=1,
-        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      QuanTrait<Pop>(stage, begin, end, step, at, rep, grp, sep),
+        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      QuanTrait<Pop>(stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_dict(qtrait), m_sigma(sigma), m_phase(hasPhase)
       {
       };
@@ -1146,8 +1146,8 @@ namespace simuPOP
       MAQuanTrait( vectoru loci, const vectorf& qtrait, const vectora& wildtype,
         const vectorf& sigma = vectorf(),
         int stage=PostMating, int begin=0, int end=-1, int step=1,
-        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      QuanTrait<Pop>(stage, begin, end, step, at, rep, grp, sep),
+        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      QuanTrait<Pop>(stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
       {
         if( m_sigma.empty())
@@ -1236,8 +1236,8 @@ namespace simuPOP
       */
       MLQuanTrait( const vectorop qtraits, int mode = QT_Multiplicative, double sigma=0,
         int stage=PostMating, int begin=0, int end=-1, int step=1,
-        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      QuanTrait<Pop>(stage, begin, end, step, at, rep, grp, sep),
+        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      QuanTrait<Pop>(stage, begin, end, step, at, rep, grp),
         m_qtraits(0), m_sigma(sigma), m_mode(mode)
       {
         DBG_FAILIF( qtraits.empty(), ValueError, "Please specify at least one selector.");
@@ -1318,8 +1318,8 @@ namespace simuPOP
       /// provide locus and qtrait for 11, 12, 13 (in the form of dictionary)
       PyQuanTrait( vectoru loci, PyObject* func,
         int stage=PostMating, int begin=0, int end=-1, int step=1,
-        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, string sep="\t"):
-      QuanTrait<Pop>(stage, begin, end, step, at, rep, grp, sep),
+        vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      QuanTrait<Pop>(stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
       {
         if( !PyCallable_Check(func))
@@ -1432,8 +1432,8 @@ namespace simuPOP
       */
       PySubset( PyObject* keep=NULL,
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp, sep)
+        int rep=REP_ALL, int grp=GRP_ALL)
+        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp)
       {
         DBG_ASSERT( PyObj_Is_IntNumArray(keep), ValueError,
           "Passed vector is not a Python/Numeric int array");
@@ -1512,8 +1512,8 @@ namespace simuPOP
       Sample( const string& name="sample", const string& nameExpr="", UINT times=1,
         const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
-        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp, sep),
+        int rep=REP_ALL, int grp=GRP_ALL)
+        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp),
         m_name(name), m_nameExpr(nameExpr,""), m_times(times), m_saveAs(saveAs),
         m_saveAsExpr(saveAsExpr), m_format(format)
       {
@@ -1692,9 +1692,9 @@ namespace simuPOP
         const string& name="sample", const string& nameExpr="", UINT times=1,
         const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
+        int rep=REP_ALL, int grp=GRP_ALL)
         : Sample<Pop>(name, nameExpr, times, saveAs, saveAsExpr, format,
-        stage, begin, end, step, at, rep, grp, sep),
+        stage, begin, end, step, at, rep, grp),
         m_size(size)
       {
       }
@@ -1808,9 +1808,9 @@ namespace simuPOP
         bool spSample=false, const string& name="sample", const string& nameExpr="", UINT times=1,
         const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
+        int rep=REP_ALL, int grp=GRP_ALL)
         : Sample<Pop>(name, nameExpr, times, saveAs, saveAsExpr, format,
-        stage, begin, end, step, at, rep, grp, sep),
+        stage, begin, end, step, at, rep, grp),
         m_numCases(cases), m_numControls(controls), m_spSample(spSample),
         m_caseIdx(0), m_controlIdx(0)
       {
@@ -2042,9 +2042,9 @@ namespace simuPOP
         const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1,
         int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
+        int rep=REP_ALL, int grp=GRP_ALL)
         : Sample<Pop>(name, nameExpr, times, saveAs, saveAsExpr, format,
-        stage, begin, end, step, at, rep, grp, sep),
+        stage, begin, end, step, at, rep, grp),
         m_size(size), m_affectedness(!chooseUnaffected), m_countOnly(countOnly),
         m_sibpairs(0)
       {
@@ -2346,9 +2346,9 @@ namespace simuPOP
         const string& name="sample", const string& nameExpr="", UINT times=1,
         const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-        int rep=REP_ALL, int grp=GRP_ALL, string sep="\t")
+        int rep=REP_ALL, int grp=GRP_ALL)
         : Sample<Pop>(name, nameExpr, times, saveAs, saveAsExpr, format,
-        stage, begin, end, step, at, rep, grp, sep),
+        stage, begin, end, step, at, rep, grp),
         m_keepAncestralPops(keepAncestralPops)
       {
         DBG_ASSERT( PyObj_Is_IntNumArray(keep), ValueError,

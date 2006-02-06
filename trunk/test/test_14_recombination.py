@@ -199,7 +199,6 @@ class TestRecombinator(unittest.TestCase):
     simu.evolve( [ rec ], end=G)
     # number of recombination event should be bionomial(ploidy*N*r, 0.1) with mean 10000
     # at end should be bionomial(ploidy*N*r, 0.5)
-    print rec.recCounts()
     assert abs( rec.recCount(0) - 2*N*r*G ) < 200, \
       'Number of recombination event is not as expected.'
     assert abs( rec.recCount(9) - 2*N*0.5*G ) < 2000, \
@@ -232,6 +231,7 @@ class TestRecombinator(unittest.TestCase):
       if ind.sex() == Male:
         # check the second chromosome
         # arrGenotype(ploidy, chrom), no dict parameter for efficiency purpose
+        #print ind.arrGenotype()
         self.assertEqual(ind.arrGenotype(1, 1), [a3]*5)
       else: 
         # there is no allele 3 anywhere (only non-binary...)
