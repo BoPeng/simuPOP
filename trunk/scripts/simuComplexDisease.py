@@ -119,7 +119,7 @@ A number of statistics will be measured and saved. They are:
 
 """
 
-import simuOpt, simuUtil
+import simuOpt
 import os, sys, exceptions, types
 
 #
@@ -605,7 +605,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
   if markerType == 'microsatellite':
     maxAle = 99                   # max allele
   else:
-    maxAle = 2                    # SNP 
+    maxAle = 1                    # SNP (0 and 1)
   #### translate numChrom, numLoci, DSLafterLoci to
   #### loci, lociPos, DSL, nonDSL in the usual index
   #### (count markers along with DSL)
@@ -643,7 +643,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
   mixing = split  + noMigrGen
   endGen = mixing + mixingGen  
   #### initialization and mutation
-  if maxAle > 2:  # Not SNP
+  if maxAle > 1:  # Not SNP
     preOperators = [
       # initialize all loci with 5 haplotypes
       initByValue(value=[[x]*reduce(operator.add, loci) \
@@ -657,13 +657,13 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
   else: # SNP
     preOperators = [
       # initialize all loci with two haplotypes (111,222)
-      initByValue(value=[[x]*reduce(operator.add, loci) for x in range(1,3)],
+      initByValue(value=[[x]*reduce(operator.add, loci) for x in [0,1] ],
         proportions=[.5]*2), 
       # and then init DSL with all wild type alleles
       initByValue([1]*len(DSL), atLoci=DSL)
     ]      
     # k-allele model for mutation of SNP
-    mutator = kamMutator(rate=mu, maxAllele=2, atLoci=nonDSL)
+    mutator = kamMutator(rate=mu, maxAllele=1, atLoci=nonDSL)
   #### burn in stage
   # mutation and recombination will always be in effective
   # so we do not have to specify them later
@@ -679,7 +679,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     # need to measure allele frequency at DSL
     stat(alleleFreq=DSL, popSize=True, begin = burnin),
     # output progress 
-    pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.3f"%(1-alleleFreq[x][1]) for x in DSL])+"\n"', 
+    pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.3f"%(1-alleleFreq[x]['+str(StartingAllele)+r']) for x in DSL])+"\n"', 
       begin = burnin) ]
   )
   # need five conditional point mutator to
@@ -690,9 +690,11 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     # this operator literally says: if there is no DS allele,
     # introduce one. Note that operator stat has to be called
     # before this one.
+    #  StartingAllele is pre-defined, it is 0 for binary module
+    #  and 1 for others
     operators.append( 
-      ifElse("alleleFreq[%d][1]==1." % DSL[i],
-        pointMutator(atLoci=[DSL[i]], toAllele=2, inds=[i]),
+      ifElse("alleleFreq[%d][%d]==1." % (DSL[i], StartingAllele),
+        pointMutator(atLoci=[DSL[i]], toAllele=StartingAllele+1, inds=[i]),
       begin=burnin, end=split) 
     )
   #
@@ -705,7 +707,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
   # if not, terminate the simulation.
   for i in range(len(DSL)):
     operators.append(
-      terminateIf("1-alleleFreq[%d][1]<%f" % (DSL[i], minAlleleFreq[i]*4/5.),
+      terminateIf("1-alleleFreq[%d][%d]<%f" % (DSL[i], StartingAllele, minAlleleFreq[i]*4/5.),
       at=[split]) )
   #### no migration stage
   if numSubPop > 1:
@@ -724,7 +726,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
   if mlSelModel != SEL_None:
     operators.append( mlSelector(
       # with five multiple-allele selector as parameter
-      [ maSelector(locus=DSL[x], wildtype=[1], 
+      [ maSelector(locus=DSL[x], wildtype=[StartingAllele], 
         fitness=fitness[x]) for x in range(len(DSL)) ],
       mode=mlSelModel, begin=split),
     )
@@ -748,7 +750,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     # track pedigree
     parentsTagger(begin=-2),
     # terminate simulation is on DSL get lost.
-    terminateIf("True in [alleleFreq[x][1] == 1 for x in DSL]",
+    terminateIf("True in [alleleFreq[x][%d] == 1 for x in DSL]" % StartingAllele,
       begin=split), 
     # output statistics
     pyOperator(func=outputStatistics, 
@@ -844,6 +846,12 @@ if __name__ == '__main__':
     mixingGen, growth, migrModel, migrRate, mutaRate, recRate,
     dryrun, filename) = allParam
   #
+  if markerType == 'SNP':
+    simuOpt.setOptions(alleleType='binary')
+  else:
+    simuOpt.setOptions(alleleType='short')
+  #simuOpt.setOptions(quiet=True)
+
   # load simuPOP libraries
   from simuPOP import *
   from simuUtil import *
