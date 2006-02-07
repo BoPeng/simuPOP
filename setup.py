@@ -98,20 +98,28 @@ if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in range(len(WRAP_INFO))]) o
    min( [os.path.getmtime(WRAP_INFO[x][0]) for x in range(len(WRAP_INFO))])):
   try:
     # for swig >= 1.3.28
-    SWIG1 = 'swig -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
+    SWIG1 = 'swig -O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
     # for swig <= 1.3.27, >= 1.3.25
-    SWIG2 = 'swig -shadow -c++ -python -keyword -nodefault -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525'
+    SWIG2 = 'swig -shadow -c++ -python -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525'
     # generate header file 
     print "Generating external runtime header file..."
     os.system( 'swig  -python -external-runtime swigpyrun.h' )
-    for lib in range(len(WRAP_INFO)):
-      # for standard library
-      print "Generating wrap file " + WRAP_INFO[lib][0]
-      if os.system('%s %s -o %s %s' % (SWIG1, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
-        print "Your swig version is not up to date. Trying options with swig <= 1.3.27"
+    # try the first option set with the first library
+    lib = 0
+    print "Generating wrap file " + WRAP_INFO[lib][0]
+    if os.system('%s %s -o %s %s' % (SWIG1, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
+      print "Your swig version is not up to date. Trying options with swig <= 1.3.27"
+      # all libraries
+      for lib in range(len(WRAP_INFO)):
+        print "Generating wrap file " + WRAP_INFO[lib][0]
         if os.system('%s %s -o %s %s' % (SWIG2, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
           print "None of the swig option sets works, please check if you have SWIG >= 1.3.25 installed"
           sys.exit(1)
+    # if OK, generate the rest of them, and I do not expect any error
+    else:
+      for lib in range(1,len(WRAP_INFO)):
+        print "Generating wrap file " + WRAP_INFO[lib][0]
+        os.system('%s %s -o %s %s' % (SWIG2, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1]))
   except:
     print "Can not generate wrap files. Please check your swig installation."
     raise
@@ -252,7 +260,7 @@ setup(
     'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop'],
   ext_modules = [
     Extension('_simuPOP_std',
-      extra_compile_args=['-O2'],
+      extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_std')] + std_macro,
@@ -261,7 +269,7 @@ setup(
         'src/utility_std.cpp'] 
     ),
     Extension('_simuPOP_op',
-      extra_compile_args=['-O2'],
+      extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None)] + std_macro,
@@ -270,7 +278,7 @@ setup(
         'src/utility_op.cpp'] 
     ),
     Extension('_simuPOP_la',
-      extra_compile_args=['-O2'],
+      extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None) ] + std_macro,
@@ -279,7 +287,7 @@ setup(
         'src/utility_la.cpp'] 
     ),
     Extension('_simuPOP_laop',
-      extra_compile_args=['-O2'],
+      extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), 
@@ -289,7 +297,7 @@ setup(
         'src/utility_laop.cpp'] 
     ),
     Extension('_simuPOP_ba',
-      extra_compile_args=['-O2'],
+      extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None) ] + std_macro,
@@ -298,7 +306,7 @@ setup(
         'src/utility_ba.cpp'] 
     ),
     Extension('_simuPOP_baop',
-      extra_compile_args=['-O2'],
+      extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None), 

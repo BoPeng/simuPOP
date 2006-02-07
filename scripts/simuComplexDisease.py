@@ -746,7 +746,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
   # information and trace pedigree info
   operators.extend([
     # save ancestral populations starting at -2 gen
-    setAncestralDepth(2, at=[-2]),
+    setAncestralDepth(1, at=[-2]),
     # track pedigree
     parentsTagger(begin=-2),
     # terminate simulation is on DSL get lost.
