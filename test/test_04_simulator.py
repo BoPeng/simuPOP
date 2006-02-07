@@ -93,7 +93,7 @@ class TestSimulator(unittest.TestCase):
     self.assertRaises(exceptions.IndexError, simu.numLoci, 2 )
     self.assertEqual(simu.locusPos(10), 12)
     self.assertRaises(exceptions.IndexError, simu.locusPos, 20 )
-    self.assertRaises(exceptions.TypeError, simu.locusPos, -1 )
+    self.assertRaises((exceptions.TypeError, exceptions.OverflowError), simu.locusPos, -1 )
     self.assertEqual(len(simu.arrLociPos()), 12)
     self.assertEqual(simu.arrLociPos().tolist(), [2,3,4,5,6,2,4,6,8,10,12,14])
     self.assertEqual(simu.chromBegin(0), 0)

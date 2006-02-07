@@ -507,11 +507,11 @@ def outputStatistics(pop, args):
         print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
     print >> output, "\n\nAllele frequencies\nall\t",
     for d in DSL:
-      print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][1]),
+      print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][StartingAllele]),
     for sp in range(numSubPop):
       print >> output, "\n%d\t" % sp,
       for d in DSL:
-        print >> output, '%.4f ' % (1. - pop.dvars(sp).alleleFreq[d][1]),
+        print >> output, '%.4f ' % (1. - pop.dvars(sp).alleleFreq[d][StartingAllele]),
     print >> output, "\n",
     # hetero frequency
     AvgHetero = 0
@@ -539,17 +539,17 @@ def dynaAdvSelector(pop):
   # print +- symbol for each DSL to visualize how frequencies are manipulated
   for i in range(len(DSL)):
     # positive selection (promote allele)
-    if 1-freq[DSL[i]][1] < pop.dvars().minAlleleFreq[i]:
+    if 1-freq[DSL[i]][StartingAllele] < pop.dvars().minAlleleFreq[i]:
       print '+',
-      sel.append( maSelector(locus=DSL[i], wildtype=[1], fitness=[1,1.5,2]) )
+      sel.append( maSelector(locus=DSL[i], wildtype=[StartingAllele], fitness=[1,1.5,2]) )
     # negative selection (select against allele)
-    elif 1-freq[DSL[i]][1] > pop.dvars().maxAlleleFreq[i]:
+    elif 1-freq[DSL[i]][StartingAllele] > pop.dvars().maxAlleleFreq[i]:
       print '-',
-      sel.append( maSelector(locus=DSL[i], wildtype=[1], fitness=[1,0.9,0.8]) )
+      sel.append( maSelector(locus=DSL[i], wildtype=[StartingAllele], fitness=[1,0.9,0.8]) )
     else:
     # encourage slightly towards upper bound
       print ' ',
-      sel.append( maSelector(locus=DSL[i], wildtype=[1], fitness=[1,1.02,1.04]) )
+      sel.append( maSelector(locus=DSL[i], wildtype=[StartingAllele], fitness=[1,1.02,1.04]) )
     # apply multi-locus selector, note that this operator will only
     # set a variable fitness in pop, actual selection happens during mating.
     if len(sel ) > 0:  # need adjustment (needed if 'else' part is empty)
@@ -657,10 +657,10 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
   else: # SNP
     preOperators = [
       # initialize all loci with two haplotypes (111,222)
-      initByValue(value=[[x]*reduce(operator.add, loci) for x in [0,1] ],
+      initByValue(value=[[x]*sum(loci) for x in [0,1] ],
         proportions=[.5]*2), 
       # and then init DSL with all wild type alleles
-      initByValue([1]*len(DSL), atLoci=DSL)
+      initByValue([StartingAllele]*len(DSL), atLoci=DSL)
     ]      
     # k-allele model for mutation of SNP
     mutator = kamMutator(rate=mu, maxAllele=1, atLoci=nonDSL)

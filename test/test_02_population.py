@@ -41,11 +41,9 @@ class TestPopulation(unittest.TestCase):
         lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
         maxAllele=4, alleleNames=['_','A','C','T','G'])
     # raise exception when max allele is wrong
-    try:  # MaxAllele may be too big.
-      self.assertRaises(exceptions.ValueError,
-        population, size=10, maxAllele=MaxAllele+1)
-    except exceptions.OverflowError:
-      pass
+    # MaxAllele may be too big.
+    self.assertRaises( (exceptions.TypeError, exceptions.ValueError, exceptions.OverflowError),
+      population, size=10, maxAllele=MaxAllele+1)
     # raise exception when subpop size does not match
     self.assertRaises(exceptions.ValueError, 
       population, size=1000, ploidy=4, loci=[5, 7]*20, \
@@ -54,11 +52,11 @@ class TestPopulation(unittest.TestCase):
     self.assertRaises(exceptions.ValueError, 
       population, subPop=[20,20], ploidy=0)
     # raise exceptions with negative values
-    self.assertRaises(exceptions.TypeError,
+    self.assertRaises((exceptions.TypeError, exceptions.OverflowError),
       population, size=-10)
-    self.assertRaises(exceptions.TypeError,
+    self.assertRaises((exceptions.TypeError, exceptions.OverflowError),
       population, subPop=[-10])
-    self.assertRaises(exceptions.TypeError,
+    self.assertRaises((exceptions.TypeError, exceptions.OverflowError), 
       population, ploidy=-1)
     # lociDist is depreciated
     self.assertRaises(exceptions.TypeError,
@@ -126,7 +124,7 @@ class TestPopulation(unittest.TestCase):
     #
     self.assertEqual(pop.locusPos(10), 12)
     self.assertRaises(exceptions.IndexError, pop.locusPos, 20 )
-    self.assertRaises(exceptions.TypeError, pop.locusPos, -1 )
+    self.assertRaises((exceptions.TypeError, exceptions.OverflowError), pop.locusPos, -1 )
     # more use of arr.. please see test_00_carray
     self.assertEqual(len(pop.arrLociPos()), 12)
     self.assertEqual(pop.arrLociPos().tolist(), [2,3,4,5,6,2,4,6,8,10,12,14])
@@ -558,10 +556,7 @@ class TestPopulation(unittest.TestCase):
     pop1 = pop.clone()
     self.assertEqual( pop1.dvars().x, 1)
     pop1.dvars().y = 2
-    try:
-      pop.dvars().y
-    except exceptions.AttributeError:
-      pass
+    self.assertEqual(pop.vars().has_key('y'), False)
 
   def testAncestry(self):
     'Testing ancestral population related functions'

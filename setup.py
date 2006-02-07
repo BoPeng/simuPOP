@@ -97,14 +97,21 @@ if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in range(len(WRAP_INFO))]) o
   (max( [os.path.getmtime(x) for x in SOURCE_FILES] ) > \
    min( [os.path.getmtime(WRAP_INFO[x][0]) for x in range(len(WRAP_INFO))])):
   try:
-    SWIG = 'swig  -shadow -python -keyword -w-503,-312,-511,-362,-383,-384,-389,-315,-525 -nodefault -c++ '
+    # for swig >= 1.3.28
+    SWIG1 = 'swig -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
+    # for swig <= 1.3.27, >= 1.3.25
+    SWIG2 = 'swig -shadow -c++ -python -keyword -nodefault -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525'
     # generate header file 
     print "Generating external runtime header file..."
     os.system( 'swig  -python -external-runtime swigpyrun.h' )
     for lib in range(len(WRAP_INFO)):
       # for standard library
       print "Generating wrap file " + WRAP_INFO[lib][0]
-      os.system('%s %s -o %s %s' % (SWIG, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1]))
+      if os.system('%s %s -o %s %s' % (SWIG1, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
+        print "Your swig version is not up to date. Trying options with swig <= 1.3.27"
+        if os.system('%s %s -o %s %s' % (SWIG2, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
+          print "None of the swig option sets works, please check if you have SWIG >= 1.3.25 installed"
+          sys.exit(1)
   except:
     print "Can not generate wrap files. Please check your swig installation."
     raise
