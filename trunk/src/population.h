@@ -1951,10 +1951,15 @@ namespace simuPOP
         const_cast<Population*>(this)->adjustGenoPosition(true);
 
         ar & make_nvp("libraryMaxAllele", MaxAllele);
+        DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
         ar & make_nvp("geno_structure", this->genoStru());
         ar & make_nvp("subPop_sizes", m_subPopSize);
+        DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
+        // save all type of genotype array in integer format
         ar & make_nvp("genotype", m_genotype);
+        DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
         ar & make_nvp("individuals", m_inds);
+        DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
         ar & make_nvp("ancestry", m_ancestralDepth);
         size_t sz = m_ancestralPops.size();
         ar & make_nvp("numOfAncestralPops", sz);
@@ -1973,12 +1978,13 @@ namespace simuPOP
         // note that many format are not supported.
         try
         {
+          DBG_DO(DBG_POPULATION, cout << "Handling shared variables" << endl);
           string vars = varsAsString();
           ar & make_nvp("vars", vars);
         }
         catch(...)
         {
-          cout << "Warning: shared variable is not loaded correctly.\nPopulation should still be usable." << endl;
+          cout << "Warning: shared variable is not saved correctly.\nPopulation should still be usable." << endl;
         }
       }
 
@@ -1989,14 +1995,18 @@ namespace simuPOP
         ar & make_nvp("libraryMaxAllele", ma);
 
         if( ma > MaxAllele)
-          cout << "Warning: The population is saved in long allele library. \n"
+          cout << "Warning: The population is saved in library with more allele states. \n"
             << "Unless all alleles are less than "  << MaxAllele
             << ", you should use the long allele library. (c.f. simuOpt.setOptions()\n";
 
         GenoStructure  stru;
+        DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
         ar & make_nvp("geno_structure", stru);
         ar & make_nvp("subPop_sizes", m_subPopSize);
+        DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
+        // load genotype in int format first
         ar & make_nvp("genotype", m_genotype);
+        DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
         ar & make_nvp("individuals", m_inds);
 
         // set genostructure, check duplication
@@ -2007,11 +2017,17 @@ namespace simuPOP
         m_popSize = accumulate(m_subPopSize.begin(), m_subPopSize.end(), 0L);
 
         if( m_popSize != m_inds.size() )
-          throw ValueError("Number of individuals does not match population size.");
+        {
+          cout << "Number of individuals loaded" << m_inds.size() << endl;
+          cout << "Population size" << m_popSize << endl;
+          throw ValueError("Number of individuals does not match population size.\n"
+            "Please use the same (binary, short or long) module to save and load files.");
+        }
 
         m_popGenoSize = totNumLoci() * GenoStruTrait::ploidy()
           * m_popSize;
 
+        DBG_DO(DBG_POPULATION, cout << "Reconstruct individual genotype" << endl);
         m_subPopIndex.resize(m_numSubPop + 1);
         UINT i = 1;
         for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
@@ -2029,6 +2045,7 @@ namespace simuPOP
         m_ancestralPops.clear();
 
         // ancestry populations
+        DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
         ar & make_nvp("ancestry", m_ancestralDepth);
         size_t na;
         ar & make_nvp("numOfAncestralPops", na);
@@ -2058,9 +2075,17 @@ namespace simuPOP
         }
 
         // load vars from string
-        string vars;
-        ar & make_nvp("vars", vars);
-        varsFromString(vars);
+        try
+        {
+          DBG_DO(DBG_POPULATION, cout << "Handling shared variables" << endl);
+          string vars;
+          ar & make_nvp("vars", vars);
+          varsFromString(vars);
+        }
+        catch(...)
+        {
+          cout << "Warning: shared variable is not loaded correctly.\nPopulation should still be usable." << endl;
+        }
 
         // m_fitness was not saved
         m_fitness = vectorf();

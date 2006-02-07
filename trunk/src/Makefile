@@ -34,10 +34,11 @@ LIBS = $(GSL_LIB)
 CC = gcc
 CXX = g++
 LINK = g++ 
-CFLAGS =  -g -Wall -fexceptions -O3 -march=pentium4 -pipe -fomit-frame-pointer 
+CFLAGS =  -Wall -fexceptions -O3 -march=pentium4 -pipe -fomit-frame-pointer 
 DEF = $(FEATURES) 
-SWIG = /home/bpeng/tmp/swig/bin/swig -templatereduce -shadow -python -keyword -w-503,-312,-511,-362,-383,-384,-389,-315,-525 -nodefaultctor -c++ 
-#SWIG = swig -templatereduce -shadow -python -keyword -w-503,-312,-511,-362,-383,-384,-389,-315,-525 -nodefaultctor -c++ 
+# for swig 1.3.28 cvs
+SWIG = /home/bpeng/tmp/swig/bin/swig -O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525
+# for swig 1.3.27
 #SWIG = swig -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525 -nodefault 
 
 RM = rm -f
@@ -124,19 +125,19 @@ _simuPOP_baop.so: $(OBJS) utility_baop.o simuPOP_baop_wrap.o $(PY_FILES)
 	time $(LINK) -shared  $(OBJS) utility_baop.o  simuPOP_baop_wrap.o $(LIBS) -o _simuPOP_baop.so
 
 simuPOP_std_wrap.o: simuPOP_std_wrap.cpp arraymodule.c
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_std $(DEF) $(UDEF) $(CFLAGS) -c $<
+	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_std $(DEF) $(UDEF) $(CFLAGS) -c $<
 
 simuPOP_op_wrap.o: simuPOP_op_wrap.cpp arraymodule.c
 	$(CXX) $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_op $(DEF) -DOPTIMIZED $(UDEF) $(CFLAGS) -c $<
 
 simuPOP_la_wrap.o: simuPOP_la_wrap.cpp arraymodule.c
-	$(CXX) $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_la $(DEF) -DLONGALLELE $(UDEF) $(CFLAGS) -c $<
+	$(CXX) -g $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_la $(DEF) -DLONGALLELE $(UDEF) $(CFLAGS) -c $<
 
 simuPOP_laop_wrap.o: simuPOP_laop_wrap.cpp arraymodule.c
 	$(CXX) $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_laop $(DEF) -DOPTIMIZED -DLONGALLELE $(UDEF) $(CFLAGS) -c $<
 
 simuPOP_ba_wrap.o: simuPOP_ba_wrap.cpp arraymodule.c
-	$(CXX) $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_ba $(DEF) -DBINARYALLELE $(UDEF) $(CFLAGS) -c $<
+	$(CXX) -g $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_ba $(DEF) -DBINARYALLELE $(UDEF) $(CFLAGS) -c $<
 
 simuPOP_baop_wrap.o: simuPOP_baop_wrap.cpp arraymodule.c
 	$(CXX) $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_baop $(DEF) -DOPTIMIZED -DBINARYALLELE $(UDEF) $(CFLAGS) -c $<
