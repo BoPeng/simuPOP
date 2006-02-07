@@ -101,8 +101,10 @@ const unsigned long MaxAllele = std::numeric_limits<Allele>::max();
 // #define PopSWIGType   "_p_simuPOP__PopulationTsimuPOP__IndividualTstd__pairTfloat_float_t_t_t"
 
 // for swig 2.3.25cvs
-#define PopSWIGType "_p_simuPOP__PopulationTindividual_t"
-#define IndSWIGType "_p_simuPOP__IndividualTstd__pairTULONG_ULONG_t_t"
+//#define PopSWIGType "_p_simuPOP__PopulationTindividual_t"
+//#define IndSWIGType "_p_simuPOP__IndividualTstd__pairTULONG_ULONG_t_t"
+#define PopSWIGType "simuPOP::Population<simuPOP::Individual<std::pair<unsigned long,unsigned long > > > *"
+#define IndSWIGType "simuPOP::Individual<std::pair<unsigned long,unsigned long > > *"
 
 enum Sex{ Male = 1, Female = 2};
 

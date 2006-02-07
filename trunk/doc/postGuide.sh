@@ -2,7 +2,7 @@
 
 # user's guide
 #LYX=/usr/local/bin/lyx14
-LYX=/usr/bin/lyx
+LYX=/usr/local/bin/lyx
 ./convFigRule.pl userGuide.lyx >  userGuidePost.lyx
 $LYX --export latex userGuidePost.lyx
 mv -f userGuidePost.tex userGuide.tex

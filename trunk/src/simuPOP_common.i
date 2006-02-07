@@ -225,6 +225,15 @@ namespace std
 %newobject simuPOP::Population::clone;
 %newobject simuPOP::Simulator::getPopulation;
 
+// Starting from SWIG version 1.3.28, typedef needs to be before template
+#if SWIG_VERSION >= 0x010328
+%inline
+%{
+  typedef simuPOP::Individual< std::pair<unsigned long,unsigned long> > individual;
+  typedef simuPOP::Population< individual > pop;
+%}
+#endif
+
 namespace simuPOP
 {  
   // NOTE: if this changed, you will have to change SWIG name for it
@@ -235,11 +244,14 @@ namespace simuPOP
   %template(pyOperator)         PyOperator< pop >;
 }
 
+// SWIG version up to 1.3.27 need this to be after template(population)
+#if SWIG_VERSION < 0x010328
 %inline
 %{
   typedef simuPOP::Individual< std::pair<unsigned long,unsigned long> > individual;
   typedef simuPOP::Population< individual > pop;
 %}
+#endif
 
 %{
   // this piece can not be processed by SWIG so can not

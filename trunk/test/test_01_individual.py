@@ -49,7 +49,7 @@ class TestIndividual(unittest.TestCase):
     #
     self.assertEqual(ind.locusPos(10), 12)
     self.assertRaises(exceptions.IndexError, ind.locusPos, 20 )
-    self.assertRaises(exceptions.TypeError, ind.locusPos, -1 )
+    self.assertRaises( (exceptions.TypeError, exceptions.OverflowError), ind.locusPos, -1 )
     # more use of arr.. please see test_00_carray
     self.assertEqual(len(ind.arrLociPos()), 12)
     self.assertEqual(ind.arrLociPos().tolist(), [2,3,4,5,6,2,4,6,8,10,12,14])

@@ -36,8 +36,9 @@ CXX = g++
 LINK = g++ 
 CFLAGS =  -g -Wall -fexceptions -O3 -march=pentium4 -pipe -fomit-frame-pointer 
 DEF = $(FEATURES) 
-#SWIG = /home/bpeng/tmp/swig/bin/swig -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525 -nodefault 
-SWIG = swig -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525 -nodefault 
+SWIG = /home/bpeng/tmp/swig/bin/swig -templatereduce -shadow -python -keyword -w-503,-312,-511,-362,-383,-384,-389,-315,-525 -nodefaultctor -c++ 
+#SWIG = swig -templatereduce -shadow -python -keyword -w-503,-312,-511,-362,-383,-384,-389,-315,-525 -nodefaultctor -c++ 
+#SWIG = swig -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525 -nodefault 
 
 RM = rm -f
 
@@ -101,6 +102,9 @@ baop: _simuPOP_baop.so
 
 all: std op la laop ba baop
 
+swigpyrun.h:
+	$(SWIG) -python -external-runtime swigpyrun.h
+	
 _simuPOP_std.so: $(OBJS) utility_std.o simuPOP_std_wrap.o $(PY_FILES)
 	time $(LINK) -shared  $(OBJS) utility_std.o simuPOP_std_wrap.o $(LIBS) -o _simuPOP_std.so
 
@@ -174,23 +178,22 @@ utility_ba.o: utility.h utility_ba.cpp simupop_cfg.h
 utility_baop.o: utility.h utility_baop.cpp simupop_cfg.h
 	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_baop -DOPTIMIZED -DBINARYALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_baop.cpp -o utility_baop.o
 
-
-utility_std.cpp: utility.cpp
+utility_std.cpp: utility.cpp swigpyrun.h
 	cp -f utility.cpp utility_std.cpp
 
-utility_op.cpp: utility.cpp
+utility_op.cpp: utility.cpp swigpyrun.h
 	cp -f utility.cpp utility_op.cpp
 
-utility_la.cpp: utility.cpp
+utility_la.cpp: utility.cpp swigpyrun.h
 	cp -f utility.cpp utility_la.cpp
 
-utility_laop.cpp: utility.cpp
+utility_laop.cpp: utility.cpp swigpyrun.h
 	cp -f utility.cpp utility_laop.cpp
 	
-utility_ba.cpp: utility.cpp
+utility_ba.cpp: utility.cpp swigpyrun.h
 	cp -f utility.cpp utility_ba.cpp
 
-utility_baop.cpp: utility.cpp
+utility_baop.cpp: utility.cpp swigpyrun.h
 	cp -f utility.cpp utility_baop.cpp
 
 %.o: %.c
@@ -201,4 +204,4 @@ utility_baop.cpp: utility.cpp
 	$(CXX) $(INCLUDES) $(DEF) $(UDEF)  $(CFLAGS) -c $< -o $@
 
 clean:
-	$(RM) $(OBJS) _simuPOP_*.so  *_wrap.cpp core.*
+	$(RM) $(OBJS) _simuPOP_*.so  *_wrap.cpp core.* swigpyrun.h *.o
