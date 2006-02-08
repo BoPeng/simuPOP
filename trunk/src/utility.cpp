@@ -452,17 +452,17 @@ namespace simuPOP
     return is_carrayobject(obj) && carray_type(obj) == 'a';
   }
 
-  PyObject* Int_Vec_As_NumArray(int dim, int* buf)
+  PyObject* Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end)
   {
-    PyObject* res = newcarrayobject(reinterpret_cast<char*>(buf), 'i', dim);
+    PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*begin), 'i', end-begin);
 
     DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to int num array");
     return res;
   }
 
-  PyObject* Double_Vec_As_NumArray(int dim, double* buf)
+  PyObject* Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end)
   {
-    PyObject* res = newcarrayobject(reinterpret_cast<char*>(buf), 'd', dim);
+    PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*begin), 'd', end-begin);
 
     DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to double num array");
     return res;

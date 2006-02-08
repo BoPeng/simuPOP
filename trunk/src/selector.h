@@ -120,14 +120,14 @@ namespace simuPOP
       \param loci the loci index. The genotype of this locus will be axamed.
       \param fitness a dictionary of fitness. The genotype must be in the form of 'a-b'
          for single locus, and 'a-b|c-d|e-f' for multi-locus..
-      \param hasPhase if true, a/b and b/a will have different fitness value. Default to false.
+      \param phase if true, a/b and b/a will have different fitness value. Default to false.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      MapSelector( vectoru loci, const strDict& fitness, bool hasPhase=false,
+      MapSelector( vectoru loci, const strDict& fitness, bool phase=false,
         int stage=PreMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
       Selector<Pop>(stage, begin, end, step, at, rep, grp),
-        m_loci(loci), m_dict(fitness), m_phase(hasPhase)
+        m_loci(loci), m_dict(fitness), m_phase(phase)
       {
       };
 
@@ -582,14 +582,14 @@ namespace simuPOP
       \param loci the loci index. The genotype of this locus will be axamed.
       \param penetrance a dictionary of penetrance. The genotype must be in the form of 'a-b' for single
          locus.
-      \param hasPhase if true, a/b and b/a will have different penetrance value. Default to false.
+      \param phase if true, a/b and b/a will have different penetrance value. Default to false.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      MapPenetrance( vectoru loci, const strDict& penetrance, bool hasPhase=false,
+      MapPenetrance( vectoru loci, const strDict& penetrance, bool phase=false,
         bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
       Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp),
-        m_loci(loci), m_dict(penetrance), m_phase(hasPhase)
+        m_loci(loci), m_dict(penetrance), m_phase(phase)
       {
       };
 
@@ -1058,14 +1058,14 @@ namespace simuPOP
       of quantitative trait. The actual trait value will be N(mean, sigma^2)
       For multiple loci, the form is 'a-b|c-d|e-f' etc.
       \param sigma standard deviation of the environmental facotr N(0,sigma^2).
-      \param hasPhase if true, a/b and b/a will have different qtrait value. Default to false.
+      \param phase if true, a/b and b/a will have different qtrait value. Default to false.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      MapQuanTrait( vectoru loci, const strDict& qtrait, double sigma=0, bool hasPhase=false,
+      MapQuanTrait( vectoru loci, const strDict& qtrait, double sigma=0, bool phase=false,
         int stage=PostMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
       QuanTrait<Pop>(stage, begin, end, step, at, rep, grp),
-        m_loci(loci), m_dict(qtrait), m_sigma(sigma), m_phase(hasPhase)
+        m_loci(loci), m_dict(qtrait), m_sigma(sigma), m_phase(phase)
       {
       };
 

@@ -1376,9 +1376,19 @@ namespace simuPOP
       }
 
       // return reference to fitness vector
+      // CPPONLY
       vectorf& fitness()
       {
         return m_fitness;
+      }
+
+      // this funciton allows fitness to be 
+      // accessed from python.
+      PyObject* arrFitness()
+      {
+        if(m_fitness.size() != m_popSize)
+          m_fitness.resize(m_popSize);
+        return Double_Vec_As_NumArray(m_fitness.begin(), m_fitness.end());
       }
 
       // swap in rhs. (usually a scratch population

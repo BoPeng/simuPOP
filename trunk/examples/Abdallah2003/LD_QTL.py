@@ -4,7 +4,8 @@
 #
 
 import simuOpt
-simuOpt.setOptions(optimized=True, longAllele=False)
+simuOpt.setOptions(optimized=True)
+
 from simuPOP import *
 from simuUtil import *
 from simuRPy import *

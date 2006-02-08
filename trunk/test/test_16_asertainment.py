@@ -45,7 +45,6 @@ class TestAscertainment(unittest.TestCase):
   def testRandomSamle(self):
     'Testing random sampling (imcomplete)'
     (s,) = RandomSample(self.pop, 10)
-    print s
     self.assertEqual(s.popSize(), 10)
     #
     (s,) = RandomSample(self.pop,[2,8])
