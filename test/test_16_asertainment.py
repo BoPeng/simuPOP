@@ -1,83 +1,78 @@
-## #!/usr/bin/env python
-## 
-## ############################################################################
-## #    Copyright (C) 2004 by Bo Peng                                         
-## #    bpeng@rice.edu                                                        
-## #                                                                          
-## #    $LastChangedDate$          
-## #    $Rev$                       
-## #                                                                          
-## #    This program is free software; you can redistribute it and/or modify  
-## #    it under the terms of the GNU General Public License as published by  
-## #    the Free Software Foundation; either version 2 of the License, or     
-## #    (at your option) any later version.                                   
-## #                                                                          
-## #    This program is distributed in the hope that it will be useful,       
-## #    but WITHOUT ANY WARRANTY; without even the implied warranty of        
-## #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         
-## #    GNU General Public License for more details.                          
-## #                                                                          
-## #    You should have received a copy of the GNU General Public License     
-## #    along with this program; if not, write to the                         
-## #    Free Software Foundation, Inc.,                                       
-## #    59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             
-## ############################################################################
-## 
-## # test sampling issues
-## #
-## 
-## from simuUtil import *
-## 
-## simu = simulator(
-##     population(subPop=[100,200], ploidy=2, loci=[5,10],
-##       ancestralDepth=1, maxAllele=9),
-##     randomMating(numOffsprings=2))
-## simu.evolve([
-##     stat( alleleFreq=[0,1], genoFreq=[0,1]),
-##     migrator(rate=[[0.1,0.1],[0.1,0.1]]),
-##     mapPenetrance(locus=0,
-##       penetrance={'1-1':0,'1-2':.7,'2-2':1}),
-##     parentsTagger(),
-##     ],
-##  preOps=[  initByFreq(alleleFreq=[.2,.8], atLoci=[0]),
-##     initByFreq(alleleFreq=[.2]*5, atLoci=range(1, simu.totNumLoci()))   ],
-##  end=4
-## )
-## pop = simu.getPopulation(0)
-## Dump(pop, ancestralPops=True)
-## 
-## # random sampling
-## s = RandomSample(pop, 10)
-## Dump(s[0])
-## 
-## s = RandomSample(pop,[2,8])
-## Dump(s[0])
-## 
-## # case control sampling.
-## s = CaseControlSample(pop, 10,10)
-## Dump(s[0])
-## listVars(s[0].dvars())
-## 
-## s =  CaseControlSample(pop, [5,5],[5,5])
-## Dump(s[0])
-## listVars(s[0].dvars())
-## 
-## # find sibpairs
-## s=AffectedSibpairSample(pop)
-## Dump(s[0])
-## listVars(pop.dvars())
-## 
-## # from each subpop
-## s = AffectedSibpairSample(pop,10)
-## Dump(s[0], ancestralPops=True)
-## listVars(s[0].dvars())
-## s = AffectedSibpairSample(pop,[5,5])
-## Dump(s[0])
-## listVars(s[0].dvars())
-## # 
-## Dump(s[0], ancestralPops=True)
-## 
-## # save to linkage format
-## # SaveLinkage(s[0], output='s0')
-## 
-## SaveRandFam(s[0], output='s0')
+#!/usr/bin/env python
+#
+# Purpose:
+#
+#   Unittest testcases for ascertainment operators
+#
+# Bo Peng (bpeng@rice.edu)
+# 
+# $LastChangedRevision$
+# $LastChangedDate$
+# 
+
+import simuOpt
+simuOpt.setOptions(quiet=True)
+
+from simuPOP import *
+import unittest, os, sys, exceptions
+
+class TestAscertainment(unittest.TestCase):
+
+  def setUp(self):
+    if alleleType() == 'binary':
+      k11, k12, k22 = '0-0', '0-1', '1-1'
+    else:
+      k11, k12, k22 = '1-1', '1-2', '2-2'
+    simu = simulator(
+      population(subPop=[100,200], ploidy=2, loci=[5,10],
+        ancestralDepth=1, maxAllele=MaxAllele),
+      randomMating(numOffspring=2))
+    simu.evolve(
+      [
+        stat( alleleFreq=[0,1], genoFreq=[0,1]),
+        migrator(rate=[[0.1,0.1],[0.1,0.1]]),
+        mapPenetrance(locus=0,
+          penetrance={k11:0,k12:.7,k22:1}),
+        parentsTagger(),
+      ],
+       preOps=[  
+         initByFreq(alleleFreq=[.2,.8], atLoci=[0]),
+         initByFreq(alleleFreq=[.2]*5, atLoci=range(1, simu.totNumLoci()))   ],
+       end=4
+    )
+    self.pop = simu.getPopulation(0)
+  
+  def testRandomSamle(self):
+    'Testing random sampling (imcomplete)'
+    (s,) = RandomSample(self.pop, 10)
+    print s
+    self.assertEqual(s.popSize(), 10)
+    #
+    (s,) = RandomSample(self.pop,[2,8])
+    self.assertEqual(s.subPopSize(0), 2)
+    self.assertEqual(s.subPopSize(1), 8)
+    
+  def testCaseControlSample(self):
+    'Testing case control sampling (imcomplete)'
+    # case control sampling.
+    (s,) = CaseControlSample(self.pop, 10, 10)
+    self.assertEqual(s.subPopSize(0), 10)
+    self.assertEqual(s.subPopSize(1), 10)
+    #
+    (s,) =  CaseControlSample(self.pop, [1,2],[5,6])
+    self.assertEqual(s.subPopSize(0), 3)
+    self.assertEqual(s.subPopSize(1), 11)
+
+  def testAffectedSibpairSample(self):
+    'Testing affected sibpair sampling (imcomplete)'
+    # find sibpairs
+    (s,) = AffectedSibpairSample(self.pop, [2,3])
+    assert s.subPopSize(0) <= 4
+    assert s.subPopSize(1) <= 6
+    # 
+    (s,) = AffectedSibpairSample(self.pop, 2)
+    assert s.subPopSize(0) <= 4
+    
+
+if __name__ == '__main__':
+  unittest.main()

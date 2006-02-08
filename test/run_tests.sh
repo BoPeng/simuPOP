@@ -1,4 +1,9 @@
 #!/bin/sh
+#
+# Run all the tests using different modules
+#
+# Note: you can add an arbitrary argument to stop testing test_20_rpy
+#
 echo ===================================================================
 echo 
 echo   RUNNING TESTS FOR
@@ -8,7 +13,7 @@ echo
 echo 
 SIMUALLELETYPE=binary
 export SIMUALLELETYPE
-if python run_tests.py
+if python run_tests.py $1
 then
   echo SUCCEED
 else
@@ -25,7 +30,7 @@ echo
 echo 
 SIMUALLELETYPE=short
 export SIMUALLELETYPE
-if python run_tests.py
+if python run_tests.py $1
 then
   echo SUCCEED
 else
@@ -42,7 +47,7 @@ echo
 echo 
 SIMUALLELETYPE=long
 export SIMUALLELETYPE
-if python run_tests.py
+if python run_tests.py $1
 then
   echo SUCCEED
 else

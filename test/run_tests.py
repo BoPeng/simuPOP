@@ -8,6 +8,9 @@
 #                         long
 #                         binary
 #
+# NOTE: you can stop testing test_20_rpy with an arbitrary commandline
+#   argument.
+#
 import dircache, re, unittest, sys, os
 
 # Find all files with names like test_MODULE.py.  For each such file,
@@ -19,8 +22,11 @@ tests = unittest.TestSuite()
 for file in dircache.listdir('.'):
   match = re.match("^(test_(.*))\\.py$", file)
   if match:
-    print "Adding test cases in ", match.group(1)
-    module = __import__(match.group(1))
+    m = match.group(1)
+    if len(sys.argv) > 1 and m == 'test_20_rpy':
+      continue
+    print "Adding test cases in ", m
+    module = __import__(m)
     tests.addTest( unittest.defaultTestLoader.loadTestsFromModule( module ) )
 
 # 3. RUN TESTS
