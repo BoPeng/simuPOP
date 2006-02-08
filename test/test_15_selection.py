@@ -199,7 +199,42 @@ class TestSelector(unittest.TestCase):
       preOps=[ initByFreq(alleleFreq=[.5,.5])],
       end=100
     )
-
+  
+  def testMultiLocusMapSelector(self):
+    'Testing basic parameters of selector'
+    pop = population(10, loci=[2])
+    InitByValue(pop, value=[[0,0],[1,1]], proportions=[0.5,0.5])
+    mapSelector(loci=[0,1], 
+      fitness={'0-0|0-0':0, '1-1|1-1':0.25,
+               '0-1|0-1':0.5, '1-0|1-0':0.75}).apply(pop)
+    ft = pop.arrFitness()
+    for ind in range(pop.popSize()):
+      gt = pop.individual(ind).arrGenotype()
+      if gt == [0,0,1,1]:
+        self.assertEqual( ft[ind], 0.5)
+      # note that 10 => 01
+      elif gt == [1,1,0,0]:
+        self.assertEqual( ft[ind], 0.5)
+      elif gt == [0,0,0,0]:
+        self.assertEqual( ft[ind], 0)
+      elif gt == [1,1,1,1]:
+        self.assertEqual( ft[ind], 0.25)
+    # test phase
+    mapSelector(loci=[0,1], phase=True,
+      fitness={'0-0|0-0':0, '1-1|1-1':0.25,
+               '0-1|0-1':0.5, '1-0|1-0':0.75}).apply(pop)
+    ft = pop.arrFitness()
+    for ind in range(pop.popSize()):
+      gt = pop.individual(ind).arrGenotype()
+      if gt == [0,0,1,1]:
+        self.assertEqual( ft[ind], 0.5)
+      # note that 10 != 01
+      elif gt == [1,1,0,0]:
+        self.assertEqual( ft[ind], 0.75)
+      elif gt == [0,0,0,0]:
+        self.assertEqual( ft[ind], 0)
+      elif gt == [1,1,1,1]:
+        self.assertEqual( ft[ind], 0.25)
     
   def testPySelector(self):
     'Testing heterozygous advantage  using pySelector'

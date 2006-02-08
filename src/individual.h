@@ -510,10 +510,21 @@ namespace simuPOP
         return s_genoStruRepository[m_genoStruIdx].m_lociPos[locus];
       }
 
-      /// return loci distance as python Numeric.array object
+      /// expose loci distance 
       PyObject* arrLociPos()
       {
-        return Double_Vec_As_NumArray( totNumLoci(), &(s_genoStruRepository[m_genoStruIdx].m_lociPos[0]));
+        return Double_Vec_As_NumArray( s_genoStruRepository[m_genoStruIdx].m_lociPos.begin(),
+          s_genoStruRepository[m_genoStruIdx].m_lociPos.end() );
+      }
+
+      /// expose loci distance of a chromosome
+      PyObject* arrLociPos(UINT chrom)
+      {
+        CHECKRANGECHROM(chrom);
+
+        return Double_Vec_As_NumArray( 
+          s_genoStruRepository[m_genoStruIdx].m_lociPos.begin() + chromBegin(chrom),
+          s_genoStruRepository[m_genoStruIdx].m_lociPos.begin() + chromEnd(chrom) );
       }
 
       /// number of chromosome

@@ -406,10 +406,10 @@ namespace simuPOP
   bool PyObj_Is_AlleleNumArray(PyObject * obj);
 
   /// CPPONLY
-  PyObject* Int_Vec_As_NumArray(int dim, int* buf);
+  PyObject* Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
 
   /// CPPONLY
-  PyObject* Double_Vec_As_NumArray(int dim, double* buf);
+  PyObject* Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
 
   /// CPPONLY
   PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
