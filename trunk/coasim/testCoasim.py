@@ -74,7 +74,7 @@ class TestCoaSim(unittest.TestCase):
     'Assert properties for all epochs'
     self.assertEqual(epo.start_time(), st)
     self.assertEqual(epo.end_time(), et)
-    print epo.earliest_event()
+    self.assertEqual(epo.earliest_event(), 0)
     
   def testMigrationEvent(self):
     'Testing migration events (epochs.hh, configuration.hh)'
@@ -122,9 +122,9 @@ class TestCoaSim(unittest.TestCase):
       epochs = [ GrowthEpoch(0, 1.2, 0, 0.5)], 
       rho=0.1, Q=0.01, gamma=0.001, growth=0.0001)
     # 
-    self.assertEqual( conf.pop_sizes(), (1,2,3) )
-    # FIXME: not sure why no_leaves is 6
-    self.assertEqual( conf.no_leaves(), 6)
+    self.assertEqual( conf.pop_sizes(), (1000,2000,3000) )
+    # FIXME: is no_leaves always total pop size?
+    self.assertEqual( conf.no_leaves(), 6000)
     self.assertEqual( conf.no_markers(), 2)
     self.assertEqual( conf.position(0), 0.1)
     self.assertEqual( conf.position(1), 0.2)
