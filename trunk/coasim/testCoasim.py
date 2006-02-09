@@ -167,5 +167,481 @@ class TestCoaSim(unittest.TestCase):
     'Testing population'
     # need ARG...
 
+  def testSimulate(self):
+    'Test simulation'
+    # need to translate the following into python
+## 
+## (define markers
+##   (list (snpMarker   0.1 0.1 0.9)
+## 	(snpMarker   0.2 0.1 0.9)
+## 	(traitMarker 0.3 0.18 0.22)
+## 	(msMarker    0.4 0.5 20)
+## 	(snpMarker   0.6 0.1 0.9)))
+## 
+## (define arg (simulate markers 10 :rho 50 :randomSeed 100))
+## 
+## (define seqs (sequences arg))
+## (display seqs)(newline)
+## (newline)
+## 
+## (define retiredIntervals (intervals arg))
+## (define startPositions (map intervalStart retiredIntervals))
+## (define endPositions (map intervalEnd retiredIntervals))
+## (define branchLengths (map totalBranchLength retiredIntervals))
+## (display branchLengths)(newline)
+## (newline)
+## 
+## 
+## (define (print x) (display x)(display " "))
+## (define (combine f g) (lambda (x) (f (g x))))
+## (map (combine print totalBranchLength) (intervals arg))(newline)
+## (map (combine print totalBranchLength) (localTrees arg))(newline)
+## (newline)
+## 
+## (display (simulateSequences markers 10 :rho 50 :randomSeed 100))(newline)
+## 
+## (newline)
+## (display (simulateSequences markers 
+## 			     '(population 1 (merge 0.2
+## 						   (population 1 (sample 10))
+## 						   (population 1 (sample 10))))
+##                              :randomSeed 100))
+## (newline)
+## 
+## (newline)
+## (newline)
+## (display (simulateSequences markers 
+## 			     '(population 1 (merge 0.2
+## 						   (population .2 (sample 10))
+## 						   (population .9 (sample 10))))
+##                              :randomSeed 100))
+## (newline)
+## (newline)
+## (display (simulateSequences markers 
+## 			     '(population 1 (merge 0.2
+## 						   (population p1 .2 (sample 10))
+## 						   (population p2 .9 (sample 10))))
+## 			     :migration '((migration p1 p2 0.1 0 0.2)
+## 					  (migration p2 p1 0.2 0 0.2))
+##                              :randomSeed 100))
+## (newline)
+## 
+## 
+## (newline)
+## (display "now testing validation of incorrect input\n")
+## (display "this will print some error messages\n")
+## (newline)
+## 
+## (catch 'wrongNumberOfArgs
+##        (lambda () (simulate))
+##        (lambda (key . args) (display key)(newline)))
+## 
+## (catch 'wrongNumberOfArgs
+##        (lambda () (simulate markers))
+##        (lambda (key . args) (display key)(newline)))
+## 
+## (catch #t
+##        (lambda () (simulate 0 10))
+##        (lambda (key . args) (display key)(newline)))
+## 
+## (define overlappingMarkers
+##   (list (snpMarker 0 0.1 0.9) (snpMarker 0 0.1 0.9)))
+## (catch 'outOfSequence
+##        (lambda () (simulate overlappingMarkers 10))
+##        (lambda (key . args) (display key)(display " ")(display args)(newline)))
+## 
+## (define outOfSequenceMarkers
+##   (list (snpMarker 0.1 0.1 0.9) (snpMarker 0.0 0.1 0.9)))
+## (catch 'outOfSequence
+##        (lambda () (simulate outOfSequenceMarkers 10))
+##        (lambda (key . args) (display key)(display " ")(display args)(newline)))
+## 
+## (catch 'nonPositiveSampleSize
+##        (lambda () (simulate '() 10))
+##        (lambda (key . args) (display key)(display " ")(display args)(newline)))
+    
+  def testPopulationStructure(self):
+    'Testing population structure'
+    # need to translate the following into python
+## 
+## (load "simulate.scm")
+## (useModules (ice9 receive))
+## 
+## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+## ;;;;;;;;;;; Small test framework ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+## 
+## (defmacro unless (pred . body)
+##   `(if ,pred
+##        '()
+##        (begin
+## 	 ,@body)))
+## 
+## (define (runTest test)
+##   (catch #t
+## 	 (lambda ()
+## 	   (values (apply test '()) #t))
+## 	 (lambda (key . args)
+## 	   (values (list* key args) #f))))
+## 
+## (define (deftestFun name test testPrintedVer expectedRes)
+##   (receive (res goodTestRunP) (runTest test)
+## 	   (unless (and goodTestRunP 
+## 			(equal? res expectedRes))
+## 		   (forceOutput)
+## 		   (format #t "===== Test FAILED: ~a =====~%" name)
+## 		   (format #t "Expected:~%~y~%Got:~%~a~%"
+## 			   expectedRes res))))
+## 
+## (defmacro deftest (name test expectedRes)
+##   `(deftestFun ',name (lambda () ,test) ',test ,expectedRes))
+## 
+## 
+## ;;(deftest TestSuccess 42 42)
+## ;;(deftest TestFail 42 43)
+## ;;(deftest TestFailExeption (throw 'error "hehe") 42)
+## 
+## 
+## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+## ;;;;;;;;;;; Test data and tests ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+## 
+## (deftest compile1
+##   (compile 
+##    '(population p1 1 :beta 77 :epochs ((bottleneck 111 1 2)) (sample 1))
+##    '())
+##   '(:sampleSizes (1) :epochs ((bottleneck 0 1 0 1) (growth 0 77 0 1) (bottleneck 0 111 1 2))))
+## 
+## (deftest compile2
+##   (compile 
+##    '(population p1 5 (merge 11 
+## 			    (population p2 2 :epochs (bottleneck 7 0 5) (sample 2))
+## 			    (population p3 3 (sample 3))))
+##    '((migration p2 p3 0.2 3 5) (migration p2 p3 0.7)))
+##   '(:sampleSizes (2 3)
+## 		  :epochs ((populationMerge 11 0 1)
+## 			   (bottleneck 0 5 11 1)
+## 			   (bottleneck 0 2 0 11)
+## 			   (bottleneck 0 7 0 5)
+## 			   (bottleneck 1 3 0 11)
+## 			   (migration 0 1 0.2 3 5)
+## 			   (migration 0 1 0.7 0 11))))
+## 
+## (deftest compile3
+##   (compile 
+##    '(population p1 7 
+## 		 (merge 22
+## 			(population p2 2 (sample 2))
+## 			(population p3 5 
+## 				    (merge 11
+## 					   (population p4 2 (sample 2))
+## 					   (population p5 3 (sample 3))))))
+##    '())
+##   '(:sampleSizes (2 2 3)
+## 		  :epochs ((populationMerge 22 0 1)
+## 			   (populationMerge 11 1 2)
+## 			   (bottleneck 0 7 22 1)
+## 			   (bottleneck 0 2 0 22)
+## 			   (bottleneck 1 5 11 22)
+## 			   (bottleneck 1 2 0 11) 
+## 			   (bottleneck 2 3 0 11))))
+## 
+## (deftest compile4
+##   (compile 
+##    '(population 1 (sample 1))
+##    '())
+##   '(:sampleSizes (1) :epochs ((bottleneck 0 1 0 1))))
+## 
+## (deftest compile5
+##   (compile 
+##    '(population 1 :epochs () (sample 1))
+##    '())
+##   '(:sampleSizes (1) :epochs ((bottleneck 0 1 0 1))))
+## 
+## (deftest compile6
+##   (compile 
+##    '(population 1 (sample 1))
+##    '())
+##   '(:sampleSizes (1) :epochs ((bottleneck 0 1 0 1))))
+## 
+## (deftest compile7
+##   (compile 
+##    '(population 1 :beta 55 (sample 1))
+##    '())
+##   '(:sampleSizes (1) :epochs ((bottleneck 0 1 0 1) (growth 0 55 0 1))))
+## 
+## 
+## (deftest implicitEnd
+##   (compile
+##    '(population 1 :epochs (bottleneck 2 0.5) (sample 1))
+##    '())
+##   '(:sampleSizes (1) :epochs ((bottleneck 0 1 0 1) (bottleneck 0 2 0.5 1))))
+## 
+## (deftest implicitEnd2
+##   (compile
+##    '(population 1 (merge 1
+## 			 (population 2 :epochs (growth 2 0.5) (sample 1))
+## 		         (population 4 (sample 1))))
+##    '())
+##   '(:sampleSizes (1 1)
+##     :epochs ((populationMerge 1 0 1)
+## 	     (bottleneck 0 1 1 1)
+## 	     (bottleneck 0 2 0  1)
+## 	     (growth 0 2 0.5 1)
+## 	     (bottleneck 1 4 0 1))))
+## 
+## 
+## (deftest implicitEnd3
+##   (compile
+##    '(population 1 :epochs (growth 2 0.5) (sample 1))
+##    '())
+##   '(:sampleSizes (1) :epochs ((bottleneck 0 1 0 1) (growth 0 2 0.5 1))))
+## 
+## 
+## (deftest doubleBottleneck
+##   (compile
+##    '(population 1 :epochs ((bottleneck 2 0.004 0.04) (bottleneck .5 0.04)) (sample 10))
+##    '())
+##   '(:sampleSizes (10) :epochs ((bottleneck 0 1   0     1)
+## 				(bottleneck 0 2   0.004  0.04)
+## 				(bottleneck 0 0.5 0.04  1))))
+##   
+## 
+## ;;;;(deftest compile4
+## ;;;;  (compile 
+## ;;;;   '(population p1 7 (merge 11
+## ;;;;			    (population p2 2 (sample 2))
+## ;;;;			    (population p3 5 (merge 2
+## ;;;;						    (population p4 2 (sample 2))
+## ;;;;						    (population p5 3 (sample 3)))))))
+## ;;;;  '())
+## ;;;;
+## ;;;;(deftest compile5
+## ;;;;  (compile 
+## ;;;;   '(population p1 7 (merge 11
+## ;;;;			    (population p2 2 (sample 2))
+## ;;;;			    (merge 2
+## ;;;;				   (population p4 2 (sample 2))
+## ;;;;				   (population p5 3 (sample 3))))))
+## ;;;;  '())
+## ;;;;
+## ;;;;(deftest compile6
+## ;;;;  (compile 
+## ;;;;   '(population p1 8 (merge 11
+## ;;;;			    (population p2 2 (sample 2)))))
+## ;;;;  '())
+## ;;;;
+## 
+## 
+## (define *epochs0*
+##   '(population :name p1 :size 2 :epochs ((bottleneck 2 0 2)) :subtree (sample 2)))
+## 
+## (define *epochs1* 
+##   '(population 
+##     :name p0
+##     :size 4 
+##     :subtree (merge 2
+## 		    (population :name p1 :size 2 :subtree (sample 2))
+## 		    (population :name p2 :size 2 :subtree (sample 2)))))
+## 
+## (define *epochs2*
+##   '(population :name p1
+## 	       :size 6
+## 	       :subtree (merge 1.5
+## 			       (population :name p2 :size 2 :subtree (sample 2))
+## 			       (population :name p3 :size 4
+## 					   :subtree (merge 1
+## 							   (population :name p4 :size 2
+## 								       :subtree (sample 2))
+## 							   (population :name p5 :size 2
+## 								       :subtree (sample 2)))))))
+## 
+## 
+## (deftest populationTimeFramesTest1
+##   (populationTimeFrames 7 *epochs0*)
+##   '((p1 (0 7))))
+## 
+## (deftest populationTimeFramesTest2
+##   (populationTimeFrames 7 *epochs1*)
+##   '((p0 (2 7)) (p1 (0 2)) (p2 (0 2))))
+## 
+## (deftest populationTimeFramesTest3
+##   (populationTimeFrames 7 *epochs2*)
+##   '((p1 (1.5 7)) (p2 (0 1.5)) (p3 (1 1.5)) (p4 (0 1)) (p5 (0 1))))
+## 
+## 
+## 
+## 
+## (deftest getPopSizesTest
+##   (getPopSizes (getPopulations 1 *epochs2*))
+##   '(6 2 4 2 2))
+## 
+## (deftest findPopIndexTest
+##   (findPopIndex 'p4 (getPopulations 1 (addIndexes *epochs2*)))
+##   1)
+## 
+## 
+## (deftest getMergeTimes0
+##   (getMergeTimes *epochs0*)
+##   '())
+## 
+## (deftest getMergeTimes1 
+##   (getMergeTimes *epochs1*)
+##   '(2))
+## 
+## (deftest getMergeTimes2
+##   (getMergeTimes *epochs2*)
+##   '(1.5 1))
+## 
+## 
+## 
+## (deftest getPopulations1
+##   (getPopulations 1 *epochs0*)
+##   '((population :name p1 :index #f :size 2 :epochs ((bottleneck 2 0 1) (bottleneck 2 0 2))
+## 		:timeFrame (0 1))))
+## 
+## (deftest getPopulations2
+##   (getPopulations 1 *epochs1*)
+##   '((population :name p0 :index #f :size 4 :epochs ((bottleneck 4 2 1)) :timeFrame (2 1))
+##     (population :name p1 :index #f :size 2 :epochs ((bottleneck 2 0 2)) :timeFrame (0 2))
+##     (population :name p2 :index #f :size 2 :epochs ((bottleneck 2 0 2)) :timeFrame (0 2))))
+## 
+## (deftest getPopulations3
+##   (getPopulations 1 *epochs2*)
+##   '((population :name p1 :index #f :size 6 :epochs ((bottleneck 6 1.5 1)) :timeFrame (1.5 1))
+##     (population :name p2 :index #f :size 2 :epochs ((bottleneck 2 0 1.5)) :timeFrame (0 1.5))
+##     (population :name p3 :index #f :size 4 :epochs ((bottleneck 4 1 1.5)) :timeFrame (1 1.5))
+##     (population :name p4 :index #f :size 2 :epochs ((bottleneck 2 0 1)) :timeFrame (0 1))
+##     (population :name p5 :index #f :size 2 :epochs ((bottleneck 2 0 1)) :timeFrame (0 1))))
+## 
+## 
+## 
+## 
+## (deftest collectMerges0
+##   (collectMerges (addIndexes *epochs0*))
+##   '())
+## 
+## (deftest collectMerges1
+##   (collectMerges (addIndexes *epochs1*))
+##   '((populationMerge 2 0 1)))
+## 
+## (deftest collectMerges2
+##   (collectMerges (addIndexes *epochs2*))
+##   '((populationMerge 1.5 0 1) (populationMerge 1 1 2)))
+## 
+## 
+## 
+## (deftest checkMergeTimes0
+##   (checkMergeTimes 1 *epochs0* )
+##   #t)
+## 
+## (deftest checkMergeTimes1
+##   (checkMergeTimes 1 *epochs1*)
+##   #t)
+## 
+## (deftest checkMergeTimes2
+##   (checkMergeTimes 1 *epochs2* )
+##   #t)
+## 
+## (deftest checkMergeTimesError1
+##   (checkMergeTimes 1
+##    '(population :name p1 :size 1 
+## 		:subtree (merge 2
+## 				(population :name p2 :size 2 :subtree (sample 2))
+## 				(population :name p3 :size 4
+## 					    :subtree (merge 2
+## 							    (population :name p4 :size 2
+## 									:subtree(sample 2))
+## 							    (population :name p5 :size 2
+## 									:subtree (sample 2)))))))
+##   #f)
+## 
+## (deftest checkMergeTimesError2
+##   (checkMergeTimes 1
+##    '(population :name p1 :size 2
+## 		:subtree (merge 1
+## 				(population :name p2 :size 2 :subtree (sample 2))
+## 				(population :name p3 :size 4 
+## 					    :subtree (merge 2
+## 							    (population :name p4 :size 2 
+## 									:subtree (sample 2))
+## 							    (population :name p5 :size 2
+## 									:subtree (sample 2)))))))
+##   #f)
+## 
+## 
+## 
+## (deftest noMergeMerge0
+##   (noMergeMerge *epochs0*)
+##   #t)
+## 
+## (deftest noMergeMerge1
+##   (noMergeMerge *epochs1*)
+##   #t)
+## 
+## (deftest noMergeMerge2
+##   (noMergeMerge *epochs2*)
+##   #t)
+## 
+## (deftest noMergeMergeError1
+##   (noMergeMerge
+##    '(population :name p1 :size 1
+## 		:subtree(merge 2
+## 			       (population :name p2 :size 2 :subtree (sample 2))
+## 			       (merge 2
+## 				      (population :name p4 :size 2 :subtree (sample 2))
+## 				      (population :name p5 :size 2 :subtree (sample 2))))))
+##   #f)
+## 
+## 
+    
+  def testMarkers(self):
+    'Testing markers'
+    # need to translate the following into python
+## 
+## (define tm (traitMarker 0.1 0.18 0.22))
+## (define sm (snpMarker   0.2 0.10 0.90))
+## (define mm (msMarker    0.3 0.4 4))
+## 
+## (display tm)(newline)
+## (display sm)(newline)
+## (display mm)(newline)
+## 
+## (display (position tm))(newline)
+## (display (position sm))(newline)
+## (display (position mm))(newline)
+## 
+## 
+## (display (traitMarker? tm))(display (snpMarker? tm))(display (msMarker? tm))
+## (newline)
+## (display (traitMarker? sm))(display (snpMarker? sm))(display (msMarker? sm))
+## (newline)
+## (display (traitMarker? mm))(display (snpMarker? mm))(display (msMarker? mm))
+## (newline)
+    
+  def testEpochs(self):
+    'Testing epochs'
+## 
+## (display (bottleneck 0 0.1 1 2))(newline)
+## (display (growth 0 10 1 2))(newline)
+## (display (migration 0 1 .98 0 1))(newline)
+## (display (populationMerge  .98 0 1))(newline)
+## 
+## (catch 'illegalEpoch
+##        (lambda () (bottleneck 0 0.1 2 1))
+##        (lambda (key . args) (display key)(newline)))
+## 
+## (catch 'illegalEpoch
+##        (lambda () (bottleneck 0 0.1 1 2))
+##        (lambda (key . args) (display key)(newline)))
+## 
+## 
+## (display (bottleneck 0 0.1 1))(newline)
+## (display (growth 0 10 1))(newline)
+## (display (migration 0 1 .98 0 1))(newline)
+## (display (populationMerge  .98 0 1))(newline)
+## (display (populationMerge  .98 0 1 2))(newline)
+    
+
 if __name__ == '__main__':
   unittest.main()
