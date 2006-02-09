@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-basic-offset: 4; -*- 
+/* -*- Mode: C++; c-basic-offset: 4; -*-
  *
  *  CoaSim -- A coalescence process simulator
  *
@@ -13,26 +13,26 @@
 # include "configuration.hh"
 #endif
 
-namespace core {
+namespace core
+{
 
-    class ARG;
+  class ARG;
 
-    class Descender
-    {
+  class Descender
+  {
     public:
-	Descender(const Configuration &conf) : i_conf(conf) {}
-	~Descender() {}
+      Descender(const Configuration &conf) : i_conf(conf) {}
+      ~Descender() {}
 
-	// assign evolution to the ARG as specified by the configuration.
-	// If the traits cannot be assigned according to specification, the
-	// method returns `false' which means that a new ARG should be build
-	// and processed.  If everything goes well, evolve returns `true'.
-	void evolve(ARG &arg) const;
+      // assign evolution to the ARG as specified by the configuration.
+      // If the traits cannot be assigned according to specification, the
+      // method returns `false' which means that a new ARG should be build
+      // and processed.  If everything goes well, evolve returns `true'.
+      void evolve(ARG &arg) const;
 
     private:
-	const Configuration &i_conf;
-    };
+      const Configuration &i_conf;
+  };
 
 }
-
 #endif

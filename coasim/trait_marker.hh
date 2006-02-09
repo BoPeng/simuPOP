@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-basic-offset: 4; -*- 
+/* -*- Mode: C++; c-basic-offset: 4; -*-
  *
  *  CoaSim -- A coalescence process simulator
  *
@@ -13,37 +13,38 @@
 # include "marker.hh"
 #endif
 
-namespace core {
+namespace core
+{
 
-    class TraitMarker : public Marker
-    {
+  class TraitMarker : public Marker
+  {
     public:
-	TraitMarker(double position, double low_freq, double high_freq)
-	    : Marker(position), i_low_freq(low_freq), i_high_freq(high_freq)
-	{ i_values.push_back(0); i_values.push_back(1); }
+      TraitMarker(double position, double low_freq, double high_freq)
+        : Marker(position), i_low_freq(low_freq), i_high_freq(high_freq)
+        { i_values.push_back(0); i_values.push_back(1); }
 
-	virtual Marker *copy() const;
-  
-	virtual bool run_first() const;
+      virtual Marker *copy() const;
 
-	virtual int default_value() const;
+      virtual bool run_first() const;
 
-	virtual void add_value(int value) throw(illegal_value)
-	{ throw illegal_value(); } // don't add to trait markers
+      virtual int default_value() const;
 
-	virtual Mutator *create_mutator(const Configuration &conf,
-					const RetiredInterval &ri) const;
+      virtual void add_value(int value) throw(illegal_value)
+      {                                           // don't add to trait markers
+        throw illegal_value();
+      }
 
-	double low_freq()  const { return i_low_freq; }
-	double high_freq() const { return i_high_freq; }
+      virtual Mutator *create_mutator(const Configuration &conf,
+        const RetiredInterval &ri) const;
 
-	virtual const char * type() const;
+      double low_freq()  const { return i_low_freq; }
+      double high_freq() const { return i_high_freq; }
 
+      virtual const char * type() const;
 
     private:
-	double i_low_freq, i_high_freq; // allowed range of mutation frequencies
-    };
+      double i_low_freq, i_high_freq;             // allowed range of mutation frequencies
+  };
 
 }
-
 #endif

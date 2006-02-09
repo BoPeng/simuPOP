@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-basic-offset: 4; -*- 
+/* -*- Mode: C++; c-basic-offset: 4; -*-
  *
  *  CoaSim -- A coalescence process simulator
  *
@@ -13,33 +13,33 @@
 # include "marker.hh"
 #endif
 
-namespace core {
+namespace core
+{
 
-    class MicroSatelliteMarker : public Marker
-    {
+  class MicroSatelliteMarker : public Marker
+  {
     public:
-	MicroSatelliteMarker(double position, double theta, int K) 
-	    : Marker(position), i_theta(theta), i_K(K)
-	{
-	    assert(i_K > 0);	// FIXME: exception?
-	}
-	virtual Marker *copy() const;
-	virtual bool run_first() const;
+      MicroSatelliteMarker(double position, double theta, int K)
+        : Marker(position), i_theta(theta), i_K(K)
+      {
+        assert(i_K > 0);                          // FIXME: exception?
+      }
+      virtual Marker *copy() const;
+      virtual bool run_first() const;
 
-	virtual int default_value() const;
+      virtual int default_value() const;
 
-	virtual Mutator *create_mutator(const Configuration &conf,
-					const RetiredInterval &ri) const;
-	double theta() const { return i_theta; }
-	int K() const { return i_K; }
+      virtual Mutator *create_mutator(const Configuration &conf,
+        const RetiredInterval &ri) const;
+      double theta() const { return i_theta; }
+      int K() const { return i_K; }
 
-	virtual const char * type() const;
+      virtual const char * type() const;
 
     private:
-	double i_theta; // mutation parameter
-	int i_K;
-    };
+      double i_theta;                             // mutation parameter
+      int i_K;
+  };
 
 }
-
 #endif
