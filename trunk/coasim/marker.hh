@@ -52,9 +52,7 @@ namespace core
         }
       };
 
-      virtual int  mutate(const Node &parent,
-        const Node &child,
-        int parent_allele) = 0;
+      virtual int mutate( const Node &parent, const Node &child, int parent_allele) = 0;
   };
 
   // Exception thrown if we try to add a value to a value set that
@@ -63,6 +61,7 @@ namespace core
   {
     illegal_value() : std::logic_error("illegal marker value.") {}
   };
+
   // Exception thrown if a marker is given a position outside [0,1).
   struct illegal_position : public std::logic_error
   {
@@ -79,12 +78,19 @@ namespace core
 
       virtual ~Marker();
 
-      double position() const { return i_position; }
-      void   position(double position) throw (illegal_position)
+      double position() const
       {
-        if (position < 0 or 1 <= position) throw illegal_position();
-        i_position = position;
+        return m_position;
       }
+
+      void position(double position) 
+      {
+        if (position < 0 or 1 <= position)
+          throw illegal_position();
+
+        m_position = position;
+      }
+
       virtual bool run_first() const = 0;
 
       virtual int default_value() const = 0;
@@ -94,24 +100,31 @@ namespace core
         const RetiredInterval &ri) const = 0;
 
       virtual void to_text(std::ostream &os) const;
+
       virtual const char * type() const = 0;
 
     protected:
-      Marker(double position) throw (illegal_position)
-        : i_position(position)
-        { if (position < 0 or 1 <= position) throw illegal_position(); };
-      double i_position;
-      std::vector<int> i_values;
+
+      Marker(double position) 
+        : m_position(position)
+      {
+        if (position < 0 or 1 <= position)
+          throw illegal_position();
+      };
+
+      double m_position;
+
+      std::vector<int> m_values;
 
       Marker(const Marker&);
 
     private:
+
       // Disable
       Marker &operator = (const Marker&);
   };
 
   inline std::ostream &operator << (std::ostream &os, const Marker &m)
     { m.to_text(os); return os; }
-
 }
 #endif

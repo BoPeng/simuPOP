@@ -21,7 +21,8 @@ namespace core
   class Descender
   {
     public:
-      Descender(const Configuration &conf) : i_conf(conf) {}
+      Descender(const Configuration &conf) : m_conf(conf) {}
+      
       ~Descender() {}
 
       // assign evolution to the ARG as specified by the configuration.
@@ -31,7 +32,8 @@ namespace core
       void evolve(ARG &arg) const;
 
     private:
-      const Configuration &i_conf;
+    
+      const Configuration &m_conf;
   };
 
 }

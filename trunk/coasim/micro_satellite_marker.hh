@@ -20,25 +20,37 @@ namespace core
   {
     public:
       MicroSatelliteMarker(double position, double theta, int K)
-        : Marker(position), i_theta(theta), i_K(K)
+        : Marker(position), m_theta(theta), m_K(K)
       {
-        assert(i_K > 0);                          // FIXME: exception?
+        assert(m_K > 0);                          // FIXME: exception?
       }
+
       virtual Marker *copy() const;
+
       virtual bool run_first() const;
 
       virtual int default_value() const;
 
       virtual Mutator *create_mutator(const Configuration &conf,
         const RetiredInterval &ri) const;
-      double theta() const { return i_theta; }
-      int K() const { return i_K; }
+
+      double theta() const
+      {
+        return m_theta;
+      }
+
+      int K() const
+      {
+        return m_K;
+      }
 
       virtual const char * type() const;
 
     private:
-      double i_theta;                             // mutation parameter
-      int i_K;
+      // mutation parameter
+      double m_theta;
+
+      int m_K;
   };
 
 }
