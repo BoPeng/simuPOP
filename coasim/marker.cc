@@ -13,19 +13,19 @@
 # define IOSTREAM_INCLUDED
 #endif
 
-core::Marker::Marker(const Marker &other)
-: i_position(other.i_position), i_values(other.i_values)
+namespace core
 {
-}
+  Marker::Marker(const Marker &other)
+    : m_position(other.m_position), m_values(other.m_values)
+  {
+  }
 
+  Marker::~Marker()
+  {
+  }
 
-core::Marker::~Marker()
-{
-}
-
-
-void
-core::Marker::to_text(std::ostream &os) const
-{
-  os << this->type();
+  void Marker::to_text(std::ostream &os) const
+  {
+    os << this->type();
+  }
 }

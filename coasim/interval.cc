@@ -50,7 +50,7 @@ namespace
 
 core::Interval::Interval(double start, double end, unsigned int leaf_contacts)
 throw(empty_interval,interval_out_of_range)
-: i_start(start), i_end(end), i_leaf_contacts(leaf_contacts)
+: m_start(start), m_end(end), m_leaf_contacts(leaf_contacts)
 {
   check_empty();
   check_range();
@@ -59,8 +59,8 @@ throw(empty_interval,interval_out_of_range)
 
 void core::Intervals::add(const Interval &i) throw(out_of_sequence)
 {
-  if (i_intervals.size() == 0 or i_intervals.back().end() <= i.start())
-    i_intervals.push_back(i);
+  if (m_intervals.size() == 0 or m_intervals.back().end() <= i.start())
+    m_intervals.push_back(i);
   else
     throw out_of_sequence();
 }
@@ -81,11 +81,11 @@ Intervals::interval_starting_before(double point) const
 {
   Interval dummy_interval(point,1.0);
   std::vector<Interval>::const_iterator itr;
-  itr = lower_bound(i_intervals.begin(),i_intervals.end(), dummy_interval,
+  itr = lower_bound(m_intervals.begin(),m_intervals.end(), dummy_interval,
     interval_start_less());
 
   // itr now points to the first interval that starts at or after point
-  if (itr != i_intervals.begin()) return --itr;
+  if (itr != m_intervals.begin()) return --itr;
   else return itr;
 }
 
@@ -95,15 +95,15 @@ std::vector<Interval>::const_iterator
 Intervals::interval_starting_after(double point) const
 {
   // special case to be able to handle the endpoint
-  if (point == 1.0) return i_intervals.end();
+  if (point == 1.0) return m_intervals.end();
 
   Interval dummy_interval(point,1.0);
   std::vector<Interval>::const_iterator itr;
-  itr = upper_bound(i_intervals.begin(),i_intervals.end(), dummy_interval,
+  itr = upper_bound(m_intervals.begin(),m_intervals.end(), dummy_interval,
     interval_start_less());
 
   // itr now points to the first interval that starts at or after point
-  if (itr != i_intervals.end() and itr->start() == point) return ++itr;
+  if (itr != m_intervals.end() and itr->start() == point) return ++itr;
   else return itr;
 }
 
@@ -115,7 +115,7 @@ interval_predicate_t predicate) const
   using std::bind2nd;   using std::mem_fun_ref;
 
   if (point == 1.0)                               // special case, needed to check for endpoint in 1.0
-    return (i_intervals.back().*predicate)(point);
+    return (m_intervals.back().*predicate)(point);
 
   if (point < 0.0 or 1.0 <= point)
     throw std::out_of_range("checking point out of the [0,1) range.");
@@ -159,12 +159,12 @@ Intervals Intervals::add_ordered_intervals(Intervals const &first,
 Intervals const &second)
 throw(out_of_sequence)
 {
-  if (first.i_intervals.back().overlaps(second.i_intervals.front()))
+  if (first.m_intervals.back().overlaps(second.m_intervals.front()))
     throw out_of_sequence();
 
   Intervals result(first);
-  std::copy(second.i_intervals.begin(), second.i_intervals.end(),
-    std::back_inserter(result.i_intervals));
+  std::copy(second.m_intervals.begin(), second.m_intervals.end(),
+    std::back_inserter(result.m_intervals));
 
   return result;
 }
@@ -186,9 +186,9 @@ throw(out_of_sequence)
 
   Intervals result;
 
-  if (i_intervals.back().start() <= i.i_intervals.front().start())
+  if (m_intervals.back().start() <= i.m_intervals.front().start())
     return add_ordered_intervals(*this,i);
-  else if (i.i_intervals.back().start() <= i_intervals.front().start())
+  else if (i.m_intervals.back().start() <= m_intervals.front().start())
     return add_ordered_intervals(i,*this);
   else
     throw out_of_sequence();
@@ -201,7 +201,7 @@ unsigned int Intervals::leaf_contacts(double point) const
 {
   if (point == 1.0)                               // special case for endpoint in 1.0
   {
-    const Interval &i = i_intervals.back();
+    const Interval &i = m_intervals.back();
     if (i.contains_point(point)) return i.leaf_contacts();
     else return 0;
   }
@@ -233,7 +233,7 @@ throw(illegal_interval)
   // first points to the right-most interval that starts *before*
   // start, or the very first interval if no interval starts before
   // start.  last points to the left-most interval that starts *after*
-  // stop or i_intervals.end()
+  // stop or m_intervals.end()
 
   /* -- handle first ------------------------------------- */
   // if first contains start, we cut [start,first->end) -- or
@@ -283,8 +283,8 @@ Intervals Intervals::merge(const Intervals& i) const
 {
   std::vector<Interval> tmp_merge;
 
-  std::merge(i_intervals.begin(), i_intervals.end(),
-    i.i_intervals.begin(), i.i_intervals.end(),
+  std::merge(m_intervals.begin(), m_intervals.end(),
+    i.m_intervals.begin(), i.m_intervals.end(),
     std::back_inserter(tmp_merge),
     interval_less());
 
@@ -354,7 +354,7 @@ Intervals Intervals::merge(const Intervals& i) const
     std::cout << '[' << itr->start() << ',' << itr->end() << ")\n";
 #endif
 
-  Intervals res; res.i_intervals = res_intervals;
+  Intervals res; res.m_intervals = res_intervals;
   return res;
 }
 
@@ -362,6 +362,6 @@ Intervals Intervals::merge(const Intervals& i) const
 void Intervals::print_(std::ostream &os) const
 {
   std::vector<Interval>::const_iterator i;
-  for (i = i_intervals.begin(); i != i_intervals.end(); ++i)
+  for (i = m_intervals.begin(); i != m_intervals.end(); ++i)
     os << *i << ' ';
 }

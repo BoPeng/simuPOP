@@ -32,6 +32,10 @@ namespace std
   {
     SWIG_exception(SWIG_ValueError, e.what());
   }
+  catch(core::illegal_value e)
+  {
+    SWIG_exception(SWIG_ValueError, e.what());
+  }
   catch(core::empty_interval e)
   {
     SWIG_exception(SWIG_ValueError, e.what());
@@ -47,6 +51,14 @@ namespace std
   catch(core::out_of_sequence e)
   {
     SWIG_exception(SWIG_ValueError, e.what());
+  }
+  catch(std::out_of_range e)
+  {
+    SWIG_exception(SWIG_IndexError, e.what());
+  }
+  catch(core::uninitialized_marker e)
+  {
+    SWIG_exception(SWIG_IndexError, e.what());
   }
   catch(...)
   {
@@ -81,6 +93,7 @@ namespace std
 {
   %template(MarkerVec) vector< core::Marker* >;
   %template(EpochVec)  vector< core::Event* >;
+  %template(timeEvent) pair<double, core::Event*>;
 }
 
 ////////////////////////// SWIG_INIT FUNCTION ///////////////////////
@@ -99,6 +112,7 @@ namespace std
 %}
 
 ////////////////////////// WRAP THESE CLASSES ///////////////////////
+%ignore core::Configuration::Configuration(PopSizeItr, PopSizeItr, MakerItr, MarkerItrm EpochItr, EpochItr, double, double, double, double);
 
 %include "all_markers.hh"
 %include "builder.hh"

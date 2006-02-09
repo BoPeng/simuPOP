@@ -29,48 +29,51 @@
 # define SYS_TIME_H_INCLUDED
 #endif
 
-using namespace core;
-
-ARG *
-core::Simulator::simulate(const Configuration &conf,
-BuilderMonitor *build_callbacks,
-bool keep_empty_intervals,
-unsigned int random_seed)
+namespace core
 {
-  Builder builder(conf);
-  Descender descender(conf);
-  ARG *arg = 0;
 
-  // set rand seed
-  if (!random_seed)
+  ARG * Simulator::simulate(
+    const Configuration &conf,
+    BuilderMonitor *build_callbacks,
+    bool keep_empty_intervals,
+    unsigned int random_seed)
   {
-    // use time if no seed is explicitly given
-    struct timeval tv; struct timezone tz;
-    gettimeofday(&tv,&tz);
-    random_seed = tv.tv_usec;
-  }
-  std::srand(random_seed);
+    Builder builder(conf);
+    Descender descender(conf);
+    ARG *arg = 0;
 
-  try
-  {
+    // set rand seed
+    if (!random_seed)
+    {
+      // use time if no seed is explicitly given
+      struct timeval tv;
+      struct timezone tz;
+      gettimeofday(&tv,&tz);
+      random_seed = tv.tv_usec;
+    }
+    std::srand(random_seed);
 
-    retry:
     try
     {
-      arg = builder.build(build_callbacks, keep_empty_intervals);
-      descender.evolve(*arg);
+      retry:
+      try
+      {
+        arg = builder.build(build_callbacks, keep_empty_intervals);
+        descender.evolve(*arg);
+      }
+      catch(Mutator::retry_arg&)
+      {
+        delete arg;
+        arg = 0;
+        goto retry;
+      }
     }
-    catch (Mutator::retry_arg&)
+    catch(SimulationMonitor::AbortSimulation&)
     {
-      delete arg; arg = 0;
-      goto retry;
+      if (arg)
+        delete arg;
+      arg = 0;
     }
-
+    return arg;
   }
-  catch(SimulationMonitor::AbortSimulation&)
-  {
-    if (arg) delete arg; arg = 0;
-  }
-
-  return arg;
 }

@@ -23,25 +23,25 @@ using namespace core;
 
 void core::Descender::evolve(ARG &arg) const
 {
-  std::vector<RetiredInterval>::const_iterator ri_itr, ri_begin, ri_end;
-  ri_begin = arg.retired_intervals().begin();
-  ri_end   = arg.retired_intervals().end();
+  std::vector<RetiredInterval>::const_iterator rm_itr, rm_begin, rm_end;
+  rm_begin = arg.retired_intervals().begin();
+  rm_end   = arg.retired_intervals().end();
 
   // Both markers and retired intervals are sorted, so we can perform
   // a merge of the two to do the mutating
 
   // Markers to be mutated first
   int m = 0;
-  for (ri_itr = ri_begin; ri_itr != ri_end; ++ri_itr)
+  for (rm_itr = rm_begin; rm_itr != rm_end; ++rm_itr)
   {
-    for (; m < i_conf.no_markers(); ++m)
+    for (; m < m_conf.no_markers(); ++m)
     {
-      if (!i_conf.is_first_marker(m))           continue;
-      if (i_conf.position(m) < ri_itr->start()) continue;
-      if (i_conf.position(m) > ri_itr->end())   break;
+      if (!m_conf.is_first_marker(m))           continue;
+      if (m_conf.position(m) < rm_itr->start()) continue;
+      if (m_conf.position(m) > rm_itr->end())   break;
 
       first_retry:                                // handle retries when wrong freqs
-      try { ri_itr->mutate(i_conf,m); }
+      try { rm_itr->mutate(m_conf,m); }
       catch (Mutator::retry_mutation&)
       {
         goto first_retry;
@@ -51,16 +51,16 @@ void core::Descender::evolve(ARG &arg) const
 
   // Remaining markers
   m = 0;
-  for (ri_itr = ri_begin; ri_itr != ri_end; ++ri_itr)
+  for (rm_itr = rm_begin; rm_itr != rm_end; ++rm_itr)
   {
-    for ( ; m < i_conf.no_markers(); ++m)
+    for ( ; m < m_conf.no_markers(); ++m)
     {
-      if (!i_conf.is_plain_marker(m))           continue;
-      if (i_conf.position(m) < ri_itr->start()) continue;
-      if (i_conf.position(m) > ri_itr->end())   break;
+      if (!m_conf.is_plain_marker(m))           continue;
+      if (m_conf.position(m) < rm_itr->start()) continue;
+      if (m_conf.position(m) > rm_itr->end())   break;
 
       plain_retry:                                // handle retries when wrong freqs
-      try { ri_itr->mutate(i_conf,m); }
+      try { rm_itr->mutate(m_conf,m); }
       catch (Mutator::retry_mutation&)
       {
         goto plain_retry;

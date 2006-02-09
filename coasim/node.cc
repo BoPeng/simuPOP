@@ -49,9 +49,9 @@ using namespace core;
 void
 core::Node::initialize_marker(unsigned int idx, const Marker &m)
 {
-  if (i_states.size() <= idx)
+  if (m_states.size() <= idx)
     throw std::out_of_range("marker index out of range");
-  i_states[idx] = m.default_value();
+  m_states[idx] = m.default_value();
 }
 
 
@@ -73,7 +73,7 @@ throw(std::out_of_range)
 {
   if (point < 0 or 1.0 <= point)
     throw std::out_of_range("Point out of range [0,1).");
-  os << '\'' << i_id << '\'';
+  os << '\'' << m_id << '\'';
   if (print_edge) os << " : " << edge_length;
 }
 
@@ -95,15 +95,15 @@ throw(std::out_of_range)
   // will, so it still works out (althoug we call recursively at
   // little more than strictly necessary)
   double surface = 0.0;
-  if (i_left->intervals().contains_point(point))
+  if (m_left->intervals().contains_point(point))
   {
-    surface += i_left->surface_at_point(point);
-    surface += time() - i_left->time();
+    surface += m_left->surface_at_point(point);
+    surface += time() - m_left->time();
   }
-  if (i_right->intervals().contains_point(point))
+  if (m_right->intervals().contains_point(point))
   {
-    surface += i_right->surface_at_point(point);
-    surface += time() - i_right->time();
+    surface += m_right->surface_at_point(point);
+    surface += time() - m_right->time();
   }
   return surface;
 }
@@ -115,28 +115,28 @@ double edge_length,
 bool print_edge) const
 throw(std::out_of_range)
 {
-  double left_dist  = time() - i_left->time();
-  double right_dist = time() - i_right->time();
+  double left_dist  = time() - m_left->time();
+  double right_dist = time() - m_right->time();
 
-  if (i_left->intervals().contains_point(point)
-    and i_right->intervals().contains_point(point))
+  if (m_left->intervals().contains_point(point)
+    and m_right->intervals().contains_point(point))
   {
     os << '(';
-    i_left->print_tree_at_point(os, point, left_dist, true);
+    m_left->print_tree_at_point(os, point, left_dist, true);
     os << ',';
-    i_right->print_tree_at_point(os, point, right_dist, true);
+    m_right->print_tree_at_point(os, point, right_dist, true);
     os << ')';
     if (print_edge) os << " : " << edge_length;
 
   }
   else
   {
-    if (i_left->intervals().contains_point(point))
-      i_left->print_tree_at_point(os, point,
+    if (m_left->intervals().contains_point(point))
+      m_left->print_tree_at_point(os, point,
         edge_length+left_dist,
         print_edge);
-    if (i_right->intervals().contains_point(point))
-      i_right->print_tree_at_point(os, point,
+    if (m_right->intervals().contains_point(point))
+      m_right->print_tree_at_point(os, point,
         edge_length+right_dist,
         print_edge);
   }
@@ -149,18 +149,18 @@ core::CoalescentNode::mutate_marker(unsigned int idx, Mutator &m)
   if (! (idx < no_states()) )
     throw std::out_of_range("marker index out of range");
 
-  double point = i_conf.position(idx);
+  double point = m_conf.position(idx);
 
-  if (i_left->intervals().contains_point(point))
+  if (m_left->intervals().contains_point(point))
   {
-    set_state(i_left, idx, m.mutate(*this,*i_left,state(idx)));
-    i_left->mutate_marker(idx,m);
+    set_state(m_left, idx, m.mutate(*this,*m_left,state(idx)));
+    m_left->mutate_marker(idx,m);
   }
 
-  if (i_right->intervals().contains_point(point))
+  if (m_right->intervals().contains_point(point))
   {
-    set_state(i_right, idx, m.mutate(*this,*i_right,state(idx)));
-    i_right->mutate_marker(idx,m);
+    set_state(m_right, idx, m.mutate(*this,*m_right,state(idx)));
+    m_right->mutate_marker(idx,m);
   }
 }
 
@@ -174,10 +174,10 @@ throw(std::out_of_range)
   //if (! intervals().contains_point(point)) return 0.0;
 
   double surface = 0.0;
-  if (i_child->intervals().contains_point(point))
+  if (m_child->intervals().contains_point(point))
   {
-    surface += i_child->surface_at_point(point);
-    surface += time() - i_child->time();
+    surface += m_child->surface_at_point(point);
+    surface += time() - m_child->time();
   }
   return surface;
 }
@@ -189,8 +189,8 @@ double edge_length,
 bool print_edge) const
 throw(std::out_of_range)
 {
-  double d = time() - i_child->time();
-  i_child->print_tree_at_point(os, point, edge_length+d, print_edge);
+  double d = time() - m_child->time();
+  m_child->print_tree_at_point(os, point, edge_length+d, print_edge);
 }
 
 
@@ -200,8 +200,8 @@ core::RecombinationNode::mutate_marker(unsigned int idx, Mutator &m)
   if (! (idx < no_states()) )
     throw std::out_of_range("marker index out of range");
 
-  set_state(i_child, idx, m.mutate(*this,*i_child,state(idx)));
-  i_child->mutate_marker(idx,m);
+  set_state(m_child, idx, m.mutate(*this,*m_child,state(idx)));
+  m_child->mutate_marker(idx,m);
 }
 
 
@@ -214,10 +214,10 @@ throw(std::out_of_range)
   //if (! intervals().contains_point(point)) return 0.0;
 
   double surface = 0.0;
-  if (i_child->intervals().contains_point(point))
+  if (m_child->intervals().contains_point(point))
   {
-    surface += i_child->surface_at_point(point);
-    surface += time() - i_child->time();
+    surface += m_child->surface_at_point(point);
+    surface += time() - m_child->time();
   }
   return surface;
 }
@@ -229,8 +229,8 @@ double edge_length,
 bool print_edge) const
 throw(std::out_of_range)
 {
-  double d = time() - i_child->time();
-  i_child->print_tree_at_point(os, point, edge_length+d, print_edge);
+  double d = time() - m_child->time();
+  m_child->print_tree_at_point(os, point, edge_length+d, print_edge);
 }
 
 
@@ -240,27 +240,27 @@ core::GeneConversionNode::mutate_marker(unsigned int idx, Mutator &m)
   if (! (idx < no_states()) )
     throw std::out_of_range("marker index out of range");
 
-  set_state(i_child, idx, m.mutate(*this,*i_child,state(idx)));
-  i_child->mutate_marker(idx,m);
+  set_state(m_child, idx, m.mutate(*this,*m_child,state(idx)));
+  m_child->mutate_marker(idx,m);
 }
 
 
 ARG::~ARG()
 {
   std::vector<Node*>::iterator itr;
-  for (itr = i_leaf_pool.begin(); itr != i_leaf_pool.end(); ++itr)
+  for (itr = m_leaf_pool.begin(); itr != m_leaf_pool.end(); ++itr)
     delete *itr;
-  for (itr = i_node_pool.begin(); itr != i_node_pool.end(); ++itr)
+  for (itr = m_node_pool.begin(); itr != m_node_pool.end(); ++itr)
     delete *itr;
 }
 
 
 LeafNode *ARG::leaf() throw()
 {
-  LeafNode *n = new LeafNode(i_conf, i_no_leaves);
-  n->i_intervals.add(0.0,1.0,1);
-  i_leaf_pool.push_back(n);
-  ++i_no_leaves;
+  LeafNode *n = new LeafNode(m_conf, m_no_leaves);
+  n->m_intervals.add(0.0,1.0,1);
+  m_leaf_pool.push_back(n);
+  ++m_no_leaves;
 
   return n;
 }
@@ -297,7 +297,7 @@ throw(null_child)
   Intervals retired;
   Intervals non_retired;
   Intervals merged = left->intervals() | right->intervals();
-  if (!i_keep_empty) merged = filter_contains_marker(merged, i_conf);
+  if (!m_keep_empty) merged = filter_contains_marker(merged, m_conf);
 
 #if 0
   std::cout << "coalescence -- left: " << left->intervals() << std::endl;
@@ -307,21 +307,21 @@ throw(null_child)
 
   for (int i = 0; i < merged.size(); ++i)
   {
-    if (merged.interval(i).leaf_contacts() < i_no_leaves)
+    if (merged.interval(i).leaf_contacts() < m_no_leaves)
       non_retired.add(merged.interval(i));
-    else if (merged.interval(i).leaf_contacts() == i_no_leaves)
+    else if (merged.interval(i).leaf_contacts() == m_no_leaves)
       retired.add(merged.interval(i));
     else
       assert(false);
   }
 
-  CoalescentNode *n = new CoalescentNode(i_conf,time,left,right,
+  CoalescentNode *n = new CoalescentNode(m_conf,time,left,right,
     non_retired, retired);
 
-  i_node_pool.push_back(n);
+  m_node_pool.push_back(n);
 
   for (int i = 0; i != retired.size(); ++i)
-    i_retired_intervals.push_back(RetiredInterval(retired.interval(i), n));
+    m_retired_intervals.push_back(RetiredInterval(retired.interval(i), n));
 
   return n;
 }
@@ -340,9 +340,9 @@ interval_out_of_range,empty_interval)
     throw null_event();
 
   Intervals left  = child->intervals().copy(0.0,cross_over_point);
-  if (!i_keep_empty) left  = filter_contains_marker(left, i_conf);
+  if (!m_keep_empty) left  = filter_contains_marker(left, m_conf);
   Intervals right = child->intervals().copy(cross_over_point,1.0);
-  if (!i_keep_empty) right = filter_contains_marker(right, i_conf);
+  if (!m_keep_empty) right = filter_contains_marker(right, m_conf);
 
 #if 0
   std::cout << "recombination -- child: " << child->intervals() << std::endl;
@@ -350,11 +350,11 @@ interval_out_of_range,empty_interval)
   std::cout << "recombination -- right: " << right << std::endl;
 #endif
 
-  RecombinationNode *n1 = new RecombinationNode(i_conf,time,child,left,
+  RecombinationNode *n1 = new RecombinationNode(m_conf,time,child,left,
     cross_over_point, true);
-  RecombinationNode *n2 = new RecombinationNode(i_conf,time,child,right,
+  RecombinationNode *n2 = new RecombinationNode(m_conf,time,child,right,
     cross_over_point, false);
-  i_node_pool.push_back(n1); i_node_pool.push_back(n2);
+  m_node_pool.push_back(n1); m_node_pool.push_back(n2);
 
   return std::make_pair(n1,n2);
 }
@@ -378,26 +378,26 @@ interval_out_of_range,empty_interval)
 
   Intervals left  = child->intervals().copy(0.0, conversion_start)
     + child->intervals().copy(conversion_end, 1.0);
-  if (!i_keep_empty) left  = filter_contains_marker(left, i_conf);
+  if (!m_keep_empty) left  = filter_contains_marker(left, m_conf);
 
   Intervals right =
     child->intervals().copy(conversion_start, conversion_end);
-  if (!i_keep_empty) right = filter_contains_marker(right, i_conf);
+  if (!m_keep_empty) right = filter_contains_marker(right, m_conf);
 
 #if 0
   std::cout << "gene-conversion -- left: " << left << std::endl;
   std::cout << "gene-conversion -- right: " << right << std::endl;
 #endif
 
-  GeneConversionNode *n1 = new GeneConversionNode(i_conf,time,child,left,
+  GeneConversionNode *n1 = new GeneConversionNode(m_conf,time,child,left,
     conversion_start,
     conversion_end,
     false);
-  GeneConversionNode *n2 = new GeneConversionNode(i_conf,time,child,right,
+  GeneConversionNode *n2 = new GeneConversionNode(m_conf,time,child,right,
     conversion_start,
     conversion_end,
     true);
-  i_node_pool.push_back(n1); i_node_pool.push_back(n2);
+  m_node_pool.push_back(n1); m_node_pool.push_back(n2);
 
   return std::make_pair(n1,n2);
 
@@ -417,7 +417,7 @@ namespace
 
 void ARG::sort_retired_intervals()
 {
-  sort(i_retired_intervals.begin(), i_retired_intervals.end(),
+  sort(m_retired_intervals.begin(), m_retired_intervals.end(),
     starts_before());
 }
 
@@ -427,16 +427,16 @@ namespace
   class state_printer : public std::unary_function<void,const Node*>
   {
     public:
-      state_printer(std::ostream &os) : i_os(os) {};
+      state_printer(std::ostream &os) : m_os(os) {};
       void operator () (const Node *n)
       {
         for (unsigned int s = 0; s < n->no_states(); ++s)
-          i_os << n->state(s) << ' ';
-        i_os << '\n';
+          m_os << n->state(s) << ' ';
+        m_os << '\n';
       }
 
     private:
-      std::ostream &i_os;
+      std::ostream &m_os;
   };
 }
 
@@ -445,10 +445,10 @@ void ARG::to_text(std::ostream &os) const
 {
   // header...
   os << "# markers: ";
-  for (int i = 0; i < i_conf.no_markers(); ++i)
-    os << i_conf.marker(i) << ' ' << i_conf.position(i) << ' ';
+  for (int i = 0; i < m_conf.no_markers(); ++i)
+    os << m_conf.marker(i) << ' ' << m_conf.position(i) << ' ';
   os << '\n';
 
   // body...
-  for_each(i_leaf_pool.begin(), i_leaf_pool.end(), state_printer(os));
+  for_each(m_leaf_pool.begin(), m_leaf_pool.end(), state_printer(os));
 }

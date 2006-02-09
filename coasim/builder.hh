@@ -30,15 +30,18 @@ namespace core
 
     virtual void coalescence_callback(CoalescentNode *n,
       int k) = 0;
+
     virtual void recombination_callback(RecombinationNode *n1,
       RecombinationNode *n2,
       int k) = 0;
+
     virtual void gene_conversion_callback(GeneConversionNode *n1,
       GeneConversionNode *n2,
       int k) = 0;
 
     virtual void bottleneck_callback(int pop, bool entering,
       double time, int k) = 0;
+
     virtual void growth_callback(int pop, bool entering,
       double time, int k) = 0;
 
@@ -54,7 +57,8 @@ namespace core
   class Builder
   {
     public:
-      Builder(const Configuration &conf) : i_conf(conf) {};
+      Builder(const Configuration &conf) : m_conf(conf) {};
+
       ~Builder() {};
 
       // Builds an ARG.  The ARG is dynamically allocated and must be
@@ -63,7 +67,7 @@ namespace core
         bool keep_empty_intervals = false) const;
 
     private:
-      const Configuration &i_conf;
+      const Configuration &m_conf;
   };
 
 }

@@ -20,8 +20,8 @@ namespace core
   {
     public:
       TraitMarker(double position, double low_freq, double high_freq)
-        : Marker(position), i_low_freq(low_freq), i_high_freq(high_freq)
-        { i_values.push_back(0); i_values.push_back(1); }
+        : Marker(position), m_low_freq(low_freq), m_high_freq(high_freq)
+        { m_values.push_back(0); m_values.push_back(1); }
 
       virtual Marker *copy() const;
 
@@ -29,7 +29,7 @@ namespace core
 
       virtual int default_value() const;
 
-      virtual void add_value(int value) throw(illegal_value)
+      virtual void add_value(int value)
       {                                           // don't add to trait markers
         throw illegal_value();
       }
@@ -37,13 +37,13 @@ namespace core
       virtual Mutator *create_mutator(const Configuration &conf,
         const RetiredInterval &ri) const;
 
-      double low_freq()  const { return i_low_freq; }
-      double high_freq() const { return i_high_freq; }
+      double low_freq()  const { return m_low_freq; }
+      double high_freq() const { return m_high_freq; }
 
       virtual const char * type() const;
 
     private:
-      double i_low_freq, i_high_freq;             // allowed range of mutation frequencies
+      double m_low_freq, m_high_freq;             // allowed range of mutation frequencies
   };
 
 }

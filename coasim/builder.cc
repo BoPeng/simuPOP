@@ -28,11 +28,11 @@ bool keep_empty_intervals) const
 {
   using namespace Distribution_functions;
 
-  std::auto_ptr<ARG> arg(new ARG(i_conf, keep_empty_intervals));
+  std::auto_ptr<ARG> arg(new ARG(m_conf, keep_empty_intervals));
 
   double time = 0.0;
   State state(*arg, callbacks,
-    i_conf.pop_sizes_begin(), i_conf.pop_sizes_end());
+    m_conf.pop_sizes_begin(), m_conf.pop_sizes_end());
 
   Scheduler scheduler;
   unsigned int pop_no;
@@ -41,19 +41,19 @@ bool keep_empty_intervals) const
     j != state.populations().end(); ++j, ++pop_no)
   {
     scheduler.add_event(j->coalescence_event());
-    if (i_conf.growth() > 0)
-      scheduler.add_event(new Growth(pop_no,i_conf.growth(), 0));
+    if (m_conf.growth() > 0)
+      scheduler.add_event(new GrowthEpoch(pop_no,m_conf.growth(), 0));
   }
 
-  if (i_conf.rho() > 0)
-    scheduler.add_event(new RecombinationEvent(i_conf.rho()));
-  if (i_conf.gamma() > 0)
-    scheduler.add_event(new GeneConversionEvent(i_conf.gamma(),
-      i_conf.Q()));
+  if (m_conf.rho() > 0)
+    scheduler.add_event(new RecombinationEvent(m_conf.rho()));
+  if (m_conf.gamma() > 0)
+    scheduler.add_event(new GeneConversionEvent(m_conf.gamma(),
+      m_conf.Q()));
 
   std::vector<Event*>::const_iterator i;
-  i_conf.sort_events();
-  for (i = i_conf.epochs_begin(); i != i_conf.epochs_end(); ++i)
+  m_conf.sort_events();
+  for (i = m_conf.epochs_begin(); i != m_conf.epochs_end(); ++i)
   {
     Event *e = (*i)->copy();
     scheduler.add_event(e);

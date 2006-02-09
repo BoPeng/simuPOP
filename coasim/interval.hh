@@ -51,11 +51,11 @@ namespace core
         throw(empty_interval,interval_out_of_range);
       ~Interval() {}
 
-      double start()  const { return i_start; }
-      double end()    const { return i_end; }
-      double length() const { return i_end - i_start; }
+      double start()  const { return m_start; }
+      double end()    const { return m_end; }
+      double length() const { return m_end - m_start; }
 
-      unsigned int leaf_contacts() const { return i_leaf_contacts; }
+      unsigned int leaf_contacts() const { return m_leaf_contacts; }
 
       // returns whether point is in the interval
       bool contains_point(double point) const;
@@ -63,7 +63,7 @@ namespace core
       bool overlaps(const Interval &i) const;
 
       void print_(std::ostream &os) const
-        { os << '[' << i_start << ':' << i_end << ")<" << i_leaf_contacts << '>'; }
+        { os << '[' << m_start << ':' << m_end << ")<" << m_leaf_contacts << '>'; }
 
       bool operator == (const Interval &i) const;
       bool operator != (const Interval &i) const;
@@ -72,9 +72,9 @@ namespace core
       void check_empty() const throw(empty_interval);
       void check_range() const throw(interval_out_of_range);
 
-      double i_start;
-      double i_end;
-      unsigned int i_leaf_contacts;               // number of leaf nodes that this
+      double m_start;
+      double m_end;
+      unsigned int m_leaf_contacts;               // number of leaf nodes that this
       // interval connects to
   };
 
@@ -86,8 +86,8 @@ namespace core
 
   inline bool Interval::operator == (const Interval &i) const
   {
-    return (i_start == i.i_start) and (i_end == i.i_end)
-      and (i_leaf_contacts == i.i_leaf_contacts);
+    return (m_start == i.m_start) and (m_end == i.m_end)
+      and (m_leaf_contacts == i.m_leaf_contacts);
   }
 
   inline bool Interval::operator != (const Interval &i) const
@@ -117,10 +117,10 @@ namespace core
 
       // these methods looks up the intervals NOT CHECKING if the index is
       // within range!
-      const Interval& interval(int index)     const { return i_intervals[index]; }
+      const Interval& interval(int index)     const { return m_intervals[index]; }
       const Interval& operator [] (int index) const { return interval(index); }
 
-      int size() const { return i_intervals.size(); }
+      int size() const { return m_intervals.size(); }
 
       // checking the predicates on the relevant intervals.  Throws an
       // exception if point is outside [0,1).
@@ -137,7 +137,7 @@ namespace core
       // point).
       unsigned int leaf_contacts(double point) const;
 
-      void reset() { i_intervals.clear(); }
+      void reset() { m_intervals.clear(); }
 
       // copy the intervals between start and stop, trunkating intervals
       // that overlap start and stop.
@@ -160,7 +160,7 @@ namespace core
 
       // INVARIANT: The _intervals vector contains the non-overlapping
       // intervals in sorted order, wrt to < on intervals.
-      std::vector<Interval> i_intervals;
+      std::vector<Interval> m_intervals;
 
       std::vector<Interval>::const_iterator interval_starting_before(double point) const;
       std::vector<Interval>::const_iterator interval_starting_after(double point) const;
@@ -177,13 +177,13 @@ namespace core
 
   inline double Intervals::first_point() const throw(std::out_of_range)
   {
-    if (i_intervals.size() == 0) throw std::out_of_range("no intervals!");
-    return i_intervals.front().start();
+    if (m_intervals.size() == 0) throw std::out_of_range("no intervals!");
+    return m_intervals.front().start();
   }
   inline double Intervals::last_point() const throw(std::out_of_range)
   {
-    if (i_intervals.size() == 0) throw std::out_of_range("no intervals!");
-    return i_intervals.back().end();
+    if (m_intervals.size() == 0) throw std::out_of_range("no intervals!");
+    return m_intervals.back().end();
   }
 
   inline bool Intervals::contains_point(double point) const throw(std::out_of_range)
@@ -193,7 +193,7 @@ namespace core
     if (size() == 0)           return false;
 
     if (point == 1.0)                             // special case, needed to check for endpoint in 1.0
-      return (i_intervals.back().contains_point)(point);
+      return (m_intervals.back().contains_point)(point);
 
     if (point < first_point()) return false;
     if (point > last_point())  return false;
