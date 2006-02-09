@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-basic-offset: 4; -*- 
+/* -*- Mode: C++; c-basic-offset: 4; -*-
  *
  *  CoaSim -- A coalescence process simulator
  *
@@ -12,5 +12,4 @@
 #include "trait_marker.hh"
 #include "snp_marker.hh"
 #include "micro_satellite_marker.hh"
-
 #endif

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-basic-offset: 4; -*- 
+/* -*- Mode: C++; c-basic-offset: 4; -*-
  *
  *  CoaSim -- A coalescence process simulator
  *
@@ -14,17 +14,18 @@
 #endif
 
 core::Marker::Marker(const Marker &other)
-    : i_position(other.i_position), i_values(other.i_values)
+: i_position(other.i_position), i_values(other.i_values)
 {
 }
 
-core::Marker::~Marker() 
+
+core::Marker::~Marker()
 {
 }
 
-void 
+
+void
 core::Marker::to_text(std::ostream &os) const
 {
-    os << this->type();
+  os << this->type();
 }
-

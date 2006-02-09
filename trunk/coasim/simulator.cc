@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-basic-offset: 4; -*- 
+/* -*- Mode: C++; c-basic-offset: 4; -*-
  *
  *  CoaSim -- A coalescence process simulator
  *
@@ -33,39 +33,44 @@ using namespace core;
 
 ARG *
 core::Simulator::simulate(const Configuration &conf,
-			  BuilderMonitor *build_callbacks,
-			  bool keep_empty_intervals,
-			  unsigned int random_seed)
+BuilderMonitor *build_callbacks,
+bool keep_empty_intervals,
+unsigned int random_seed)
 {
-    Builder builder(conf);
-    Descender descender(conf);
-    ARG *arg = 0;
+  Builder builder(conf);
+  Descender descender(conf);
+  ARG *arg = 0;
 
-    // set rand seed
-    if (!random_seed)
-	{
-	    // use time if no seed is explicitly given
-	    struct timeval tv; struct timezone tz;
-	    gettimeofday(&tv,&tz);
-	    random_seed = tv.tv_usec;
-	}
-    std::srand(random_seed);
+  // set rand seed
+  if (!random_seed)
+  {
+    // use time if no seed is explicitly given
+    struct timeval tv; struct timezone tz;
+    gettimeofday(&tv,&tz);
+    random_seed = tv.tv_usec;
+  }
+  std::srand(random_seed);
 
-
-    try {
+  try
+  {
 
     retry:
-	try {
-	    arg = builder.build(build_callbacks, keep_empty_intervals);
-	    descender.evolve(*arg);
-	} catch (Mutator::retry_arg&) {
-	    delete arg; arg = 0;
-	    goto retry;
-	}
-
-    } catch(SimulationMonitor::AbortSimulation&) {
-	if (arg) delete arg; arg = 0;
+    try
+    {
+      arg = builder.build(build_callbacks, keep_empty_intervals);
+      descender.evolve(*arg);
+    }
+    catch (Mutator::retry_arg&)
+    {
+      delete arg; arg = 0;
+      goto retry;
     }
 
-    return arg;
+  }
+  catch(SimulationMonitor::AbortSimulation&)
+  {
+    if (arg) delete arg; arg = 0;
+  }
+
+  return arg;
 }

@@ -12,21 +12,25 @@
 
 namespace std
 {
-  %template()     vector< vector<double> >;
+  %template()     vector< unsigned int >;
 }
 
 
 
-///////////////////////// EXCEPTIONS HANDLING////////////////////////
+///////////////////////// EXCEPTION HANDLING ////////////////////////
 
 %include exception.i
 
-// exceptions will be passed to and corrected handled by python
+// exceptions will be passed to and correctly handled by python
 %exception
 {
   try
   {
     $function
+  }
+  catch(core::illegal_position e)
+  {
+    SWIG_exception(SWIG_ValueError, e.what());
   }
   catch(core::empty_interval e)
   {
@@ -35,6 +39,14 @@ namespace std
   catch(core::interval_out_of_range e)
   {
     SWIG_exception(SWIG_IndexError, e.what());
+  }
+  catch(core::non_pos_pop_size e)
+  {
+    SWIG_exception(SWIG_ValueError, e.what());
+  }
+  catch(core::out_of_sequence e)
+  {
+    SWIG_exception(SWIG_ValueError, e.what());
   }
   catch(...)
   {
@@ -64,6 +76,12 @@ namespace std
 #include "snp_marker.hh"
 #include "trait_marker.hh" 
 %}
+
+namespace std
+{
+  %template(MarkerVec) vector< core::Marker* >;
+  %template(EpochVec)  vector< core::Event* >;
+}
 
 ////////////////////////// SWIG_INIT FUNCTION ///////////////////////
 %inline
@@ -99,3 +117,12 @@ namespace std
 %include "simulator.hh"
 %include "snp_marker.hh"
 %include "trait_marker.hh"
+
+//////////////////////// PYTHON UTILITY FUNCTION /////////////////////
+
+%pythoncode %{
+
+def blah():
+  pass
+  
+%}

@@ -5,8 +5,6 @@ CoaSim/Python installer
 from distutils.core import setup, Extension
 import os, sys 
 
-# 1. use environmental variable if possible
-    
 HEADER_FILES = [
   'all_markers.hh',
   'configuration.hh',
@@ -19,11 +17,9 @@ HEADER_FILES = [
   'builder.hh',
   'dist_funcs.hh',
   'monitor.hh',
-  'test_dist_funcs.hh',
   'compile_options.hh',
   'epochs.hh',
   'node.hh',
-  'testing.hh',
   'interval.hh',
   'retired_interval.hh',
   'trait_marker.hh'
@@ -46,7 +42,6 @@ SOURCE_FILES = [
   'trait_marker.cc'
 ]
 
-
 WRAP_FILE = 'coaSim_wrap.cpp'
 INTERFACE_FILE = 'coaSim.i'
 
@@ -68,6 +63,9 @@ if not os.path.isfile(WRAP_FILE) or \
       if os.system('%s -o %s %s' % (SWIG2, WRAP_FILE, INTERFACE_FILE)) != 0:
         print "None of the swig option sets works, please check if you have SWIG >= 1.3.25 installed"
         sys.exit(1)
+    print
+    print WRAP_FILE, "is generated successfully."
+    print
   except:
     print "Can not generate wrap files. Please check your swig installation."
     raise
@@ -94,7 +92,6 @@ setup(
   py_modules = ['coaSim'],
   ext_modules = [
     Extension('_coaSim',
-      extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++'],
       sources = SOURCE_FILES + [WRAP_FILE]
