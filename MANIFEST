@@ -12734,7 +12734,6 @@ src/operator.h
 src/outputer.h
 src/population.h
 src/recombinator.h
-src/s_new.cpp
 src/selector.h
 src/simuMatPlt.py
 src/simuOpt.py
