@@ -13,7 +13,7 @@ exist) to generate these wrap files.
 # format under a mac. Binary and txt formats are still supported
 # and should suffice most applications.
 #
-# If you do need XML_SUPPORT under mac, you can go to line 42
+# If you do need XML_SUPPORT under mac, you can go to line 53
 # set XML_SUPPORT=True and try to compile.
 #
 XML_SUPPORT = True
@@ -82,14 +82,37 @@ SOURCE_FILES = [
   'src/utility.cpp'
 ]
 
+
+COASIM_HEADER_FILES = [
+  'coasim/all_markers.hh',
+  'coasim/configuration.hh',
+  'coasim/marker.hh',
+  'coasim/simulator.hh',
+  'coasim/builder_events.hh',
+  'coasim/descender.hh',
+  'coasim/micro_satellite_marker.hh',
+  'coasim/snp_marker.hh',
+  'coasim/builder.hh',
+  'coasim/dist_funcs.hh',
+  'coasim/monitor.hh',
+  'coasim/compile_options.hh',
+  'coasim/epochs.hh',
+  'coasim/node.hh',
+  'coasim/interval.hh',
+  'coasim/retired_interval.hh',
+  'coasim/trait_marker.hh'
+]
+
 WRAP_INFO = [
   ['src/simuPOP_std_wrap.cpp', 'src/simuPOP_std.i', ''],
   ['src/simuPOP_op_wrap.cpp', 'src/simuPOP_op.i', '-DOPTIMIZED'],
   ['src/simuPOP_la_wrap.cpp', 'src/simuPOP_la.i', '-DLONGALLELE'],
   ['src/simuPOP_laop_wrap.cpp', 'src/simuPOP_laop.i', '-DLONGALLELE -DOPTIMIZED'],
   ['src/simuPOP_ba_wrap.cpp', 'src/simuPOP_ba.i', '-DBINARYALLELE'],
-  ['src/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED']
+  ['src/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED'],
+  ['src/coaSim_wrap.cpp', 'coasim/coaSim.i', '']
 ]  
+
 
 # if any of the wrap files does not exist
 # or if the wrap files are older than any of the source files.
@@ -120,6 +143,9 @@ if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in range(len(WRAP_INFO))]) o
       for lib in range(1,len(WRAP_INFO)):
         print "Generating wrap file " + WRAP_INFO[lib][0]
         os.system('%s %s -o %s %s' % (SWIG2, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1]))
+    print
+    print "All wrap files are generated successfully."
+    print
   except:
     print "Can not generate wrap files. Please check your swig installation."
     raise
@@ -136,8 +162,26 @@ large and complex evolutionary processes with ease. At a more
 user-friendly level, simuPOP provides an increasing number of built-in
 scripts that perform simulations ranging from implementation of basic 
 population genetics models to generating datasets under complex 
-evolutionary scenarios.
+evolutionary scenarios. simuPOP is currently bundled with a Python
+binding of coaSim.
 """
+
+COASIM_SOURCE_FILES = [
+  'coasim/configuration.cc',
+  'coasim/marker.cc',
+  'coasim/simulator.cc',
+  'coasim/builder_events.cc',
+  'coasim/descender.cc',
+  'coasim/micro_satellite_marker.cc',
+  'coasim/snp_marker.cc',
+  'coasim/builder.cc',
+  'coasim/dist_funcs.cc',
+  'coasim/epochs.cc',
+  'coasim/node.cc',
+  'coasim/interval.cc',
+  'coasim/retired_interval.cc',
+  'coasim/trait_marker.cc'
+]
 
 GSL_FILES = [ 
   'gsl/sys/infnan.c',
@@ -224,10 +268,10 @@ SERIAL_FILES = [
   'src/serialization/polymorphic_iarchive.cpp',
   'src/serialization/polymorphic_oarchive.cpp'
 ]
+
 if XML_SUPPORT: 
   SERIAL_FILES.extend( [
     'src/serialization/basic_xml_archive.cpp',
-    # 'src/serialization/basic_xml_grammar.ipp',
     'src/serialization/xml_grammar.cpp',
     'src/serialization/xml_iarchive.cpp',
     'src/serialization/xml_oarchive.cpp'
@@ -242,6 +286,7 @@ DATA_FILES =  [
   ('share/simuPOP/test', glob.glob('test/test_*.py')),
   ('share/simuPOP/misc', ['misc/README', 'misc/python-mode.el', 'misc/emacs-python.el']),
   ('share/simuPOP/scripts', glob.glob('scripts/*.py')),
+  ('share/simuPOP/test', ['coasim/testCoaSim.py'])
 ]
 
 if not XML_SUPPORT: # using serialization library with xml support
@@ -255,9 +300,9 @@ setup(
   description = "Forward-based population genetics simulation framework",
   long_description = DESCRIPTION, 
   url = "http://bp6.stat.rice.edu:8080/simuPOP",
-  package_dir = {'': 'src'}, 
+  package_dir = {'': 'src' }, 
   py_modules = ['simuPOP', 'simuOpt', 'simuPOP_std', 'simuPOP_op', 'simuPOP_la', 'simuPOP_laop', 
-    'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop'],
+    'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop', 'coaSim'],
   ext_modules = [
     Extension('_simuPOP_std',
       extra_compile_args=['-O3'],
@@ -314,7 +359,13 @@ setup(
       sources = GSL_FILES + SERIAL_FILES + [
         'src/simuPOP_baop_wrap.cpp',
         'src/utility_baop.cpp'] 
-    )
+    ),
+    Extension('_coaSim',
+      extra_compile_args=['-O3'],
+      include_dirs = ["coasim"],
+      libraries = ['stdc++'],
+      sources = COASIM_SOURCE_FILES + [ 'coasim/coaSim_wrap.cpp' ]
+    )    
   ],
   data_files = DATA_FILES
 )
