@@ -83,17 +83,17 @@ namespace core
       }
 
       // Prints the local tree to a stream
-      void print_tree_at_point(std::ostream &os, double point) const
+      void printtree_at_point(std::ostream &os, double point) const
         throw(std::out_of_range)
       {
-        print_tree_at_point(os, point, 0.0,false);
+        printtree_at_point(os, point, 0.0,false);
         os << ';';
       }
 
       // Prints the local tree to a stream
-      virtual void print_tree_at_point(std::ostream &os, double point,
+      virtual void printtree_at_point(std::ostream &os, double point,
         double edge_length,
-        bool print_edge) const
+        bool printedge) const
         throw(std::out_of_range) = 0;
 
       // Calculate the number of leaves hit by the binary tree in point
@@ -254,9 +254,9 @@ namespace core
     virtual double surface_at_point(double point) const
       throw(std::out_of_range);
 
-    virtual void print_tree_at_point(std::ostream &os, double point,
+    virtual void printtree_at_point(std::ostream &os, double point,
       double edge_length,
-      bool print_edge) const
+      bool printedge) const
       throw(std::out_of_range);
 
     virtual void mutate_marker(unsigned int idx, Mutator &m);
@@ -306,9 +306,9 @@ namespace core
           m_retired_intervals.contains_point(point);
       }
 
-      virtual void print_tree_at_point(std::ostream &os, double point,
+      virtual void printtree_at_point(std::ostream &os, double point,
         double edge_length,
-        bool print_edge) const
+        bool printedge) const
         throw(std::out_of_range);
 
       virtual void mutate_marker(unsigned int idx, Mutator &m);
@@ -338,9 +338,9 @@ namespace core
       virtual double surface_at_point(double point) const
         throw(std::out_of_range);
 
-      virtual void print_tree_at_point(std::ostream &os, double point,
+      virtual void printtree_at_point(std::ostream &os, double point,
         double edge_length,
-        bool print_edge) const
+        bool printedge) const
         throw(std::out_of_range);
 
       virtual void mutate_marker(unsigned int idx, Mutator &m);
@@ -372,9 +372,9 @@ namespace core
       virtual double surface_at_point(double point) const
         throw(std::out_of_range);
 
-      virtual void print_tree_at_point(std::ostream &os, double point,
+      virtual void printtree_at_point(std::ostream &os, double point,
         double edge_length,
-        bool print_edge) const
+        bool printedge) const
         throw(std::out_of_range);
 
       virtual void mutate_marker(unsigned int idx, Mutator &m);

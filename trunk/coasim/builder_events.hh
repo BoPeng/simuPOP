@@ -152,7 +152,7 @@ namespace core
       virtual void   update_state(Scheduler &scheduler, State &s,
         double event_time);
 
-      virtual void print_(std::ostream &os) const;
+      virtual void print(std::ostream &os) const;
   };
 
   class RecombinationEvent : public Event
@@ -168,7 +168,7 @@ namespace core
       virtual void   update_state(Scheduler &scheduler, State &s,
         double event_time);
 
-      virtual void print_(std::ostream &os) const;
+      virtual void print(std::ostream &os) const;
 
     private:
       double m_rho;
@@ -188,7 +188,7 @@ namespace core
       virtual void   update_state(Scheduler &scheduler, State &s,
         double event_time);
 
-      virtual void print_(std::ostream &os) const;
+      virtual void print(std::ostream &os) const;
   };
 
   // a merge moves a set of populations to the first and disables
@@ -226,7 +226,7 @@ namespace core
 
       virtual double earliest_event() const;
 
-      virtual void print_(std::ostream &os) const;
+      virtual void print(std::ostream &os) const;
 
     private:
 

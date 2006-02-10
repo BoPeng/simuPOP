@@ -113,7 +113,7 @@ class TestCoaSim(unittest.TestCase):
     
   def testConfiguration(self):
     'Testing configure object (configuration.hh)'
-    conf = Configuration(
+    conf = config(
       popSizes=[1000,2000,3000], 
       markers = [
         SNPMarker(0.1, 0.1, 0.9), 

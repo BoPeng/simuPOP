@@ -59,7 +59,7 @@ namespace core
 
   inline std::ostream & operator << (std::ostream &os, const RetiredInterval &i)
   {
-    i.print_(os);
+    i.print(os);
     return os;
   }
 

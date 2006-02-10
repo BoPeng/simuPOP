@@ -59,12 +59,12 @@ namespace core
     return start_time();
   }
 
-  CoalescenceEpoch::~CoalescenceEpoch()
+  Coalescence::~Coalescence()
   {
     delete m_underlying;
   }
 
-  double CoalescenceEpoch::nested_event_time(State &s, double current_time)
+  double Coalescence::nested_event_time(State &s, double current_time)
   {
     // use start time until we have executed the first event that
     // pushes this to the coalescence event stack.
@@ -73,21 +73,21 @@ namespace core
   }
 
   void
-    CoalescenceEpoch::nested_update_state(Scheduler &scheduler, State &s,
+    Coalescence::nested_update_state(Scheduler &scheduler, State &s,
     double event_time)
   {
     CoalescenceEvent::update_state(scheduler, s, event_time);
   }
 
   double
-    CoalescenceEpoch::event_time(State &s, double current_time)
+    Coalescence::event_time(State &s, double current_time)
   {
     if (current_time < start_time()) return start_time();
     return std::min(nested_event_time(s, current_time), end_time());
   }
 
   void
-    CoalescenceEpoch::update_state(Scheduler &scheduler, State &s,
+    Coalescence::update_state(Scheduler &scheduler, State &s,
     double event_time)
   {
     if (start_time() <= event_time and !m_underlying)
@@ -118,35 +118,35 @@ namespace core
   }
 
   void
-    CoalescenceEpoch::enter_callback(State &s, double current_time)
+    Coalescence::enter_callback(State &s, double current_time)
   {
   }
 
   void
-    CoalescenceEpoch::leave_callback(State &s, double current_time)
+    Coalescence::leave_callback(State &s, double current_time)
   {
   }
 
   double
-    CoalescenceEpoch::earliest_event() const
+    Coalescence::earliest_event() const
   {
     return start_time();
   }
 
   double
-    BottleNeckEpoch::waiting_time(State &s, double c_time)
+    BottleNeck::waiting_time(State &s, double c_time)
   {
     return m_scale_fraction * basic_waiting_time(s, c_time);
   }
 
   Event *
-    BottleNeckEpoch::copy() const
+    BottleNeck::copy() const
   {
-    return new BottleNeckEpoch(*this);
+    return new BottleNeck(*this);
   }
 
   void
-    BottleNeckEpoch::enter_callback(State &s, double current_time)
+    BottleNeck::enter_callback(State &s, double current_time)
   {
     BuilderMonitor *callbacks = s.callbacks();
     if (!callbacks) return;
@@ -156,7 +156,7 @@ namespace core
   }
 
   void
-    BottleNeckEpoch::leave_callback(State &s, double current_time)
+    BottleNeck::leave_callback(State &s, double current_time)
   {
     BuilderMonitor *callbacks = s.callbacks();
     if (!callbacks) return;
@@ -166,15 +166,15 @@ namespace core
   }
 
   void
-    BottleNeckEpoch::print_(std::ostream &os) const
+    BottleNeck::print(std::ostream &os) const
   {
-    os << "BottleNeckEpoch(" << population() << ", "
+    os << "BottleNeck(" << population() << ", "
       << start_time() << ", " << end_time() << ", "
       << m_scale_fraction << ')';
   }
 
   double
-    GrowthEpoch::waiting_time(State &s, double current_time)
+    Growth::waiting_time(State &s, double current_time)
   {
     using namespace Distribution_functions;
     double t_k_star = basic_waiting_time(s, current_time);
@@ -183,13 +183,13 @@ namespace core
   }
 
   Event *
-    GrowthEpoch::copy() const
+    Growth::copy() const
   {
-    return new GrowthEpoch(*this);
+    return new Growth(*this);
   }
 
   void
-    GrowthEpoch::enter_callback(State &s, double current_time)
+    Growth::enter_callback(State &s, double current_time)
   {
     BuilderMonitor *callbacks = s.callbacks();
     if (!callbacks) return;
@@ -198,7 +198,7 @@ namespace core
   }
 
   void
-    GrowthEpoch::leave_callback(State &s, double current_time)
+    Growth::leave_callback(State &s, double current_time)
   {
     BuilderMonitor *callbacks = s.callbacks();
     if (!callbacks) return;
@@ -207,14 +207,14 @@ namespace core
   }
 
   void
-    GrowthEpoch::print_(std::ostream &os) const
+    Growth::print(std::ostream &os) const
   {
-    os << "GrowthEpoch(" << population() << ", "
+    os << "Growth(" << population() << ", "
       << start_time() << ", " << end_time() << ", "
       << m_beta << ')';
   }
 
-  MigrationEpoch::MigrationEpoch(int source, int destination,
+  Migration::Migration(int source, int destination,
     double migration_rate,
     double start_time, double end_time)
     : Epoch(start_time, end_time),
@@ -228,13 +228,13 @@ namespace core
   }
 
   Event *
-    MigrationEpoch::copy() const
+    Migration::copy() const
   {
-    return new MigrationEpoch(*this);
+    return new Migration(*this);
   }
 
   double
-    MigrationEpoch::nested_event_time(State &s, double current_time)
+    Migration::nested_event_time(State &s, double current_time)
   {
     Population &src = s.populations()[m_source];
     unsigned int k = src.size();
@@ -244,7 +244,7 @@ namespace core
   }
 
   void
-    MigrationEpoch::nested_update_state(Scheduler &scheduler, State &s,
+    Migration::nested_update_state(Scheduler &scheduler, State &s,
     double event_time)
   {
     BuilderMonitor *callbacks = s.callbacks();
@@ -258,9 +258,9 @@ namespace core
 
   }
 
-  void MigrationEpoch::print_(std::ostream &os) const
+  void Migration::print(std::ostream &os) const
   {
-    os << "MigrationEpoch(" << source() << ", " << destination() << ", "
+    os << "Migration(" << source() << ", " << destination() << ", "
       << migration_rate() << ", "
       << start_time() << ", " << end_time() << ')';
   }

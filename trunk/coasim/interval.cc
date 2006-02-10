@@ -359,7 +359,7 @@ Intervals Intervals::merge(const Intervals& i) const
 }
 
 
-void Intervals::print_(std::ostream &os) const
+void Intervals::print(std::ostream &os) const
 {
   std::vector<Interval>::const_iterator i;
   for (i = m_intervals.begin(); i != m_intervals.end(); ++i)

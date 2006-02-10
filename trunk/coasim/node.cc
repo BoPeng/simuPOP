@@ -62,15 +62,15 @@ namespace core
     return 0.0;
   }
 
-  void LeafNode::print_tree_at_point(std::ostream &os, double point,
+  void LeafNode::printtree_at_point(std::ostream &os, double point,
     double edge_length,
-    bool print_edge) const
+    bool printedge) const
     throw(std::out_of_range)
   {
     if (point < 0 or 1.0 <= point)
       throw std::out_of_range("Point out of range [0,1).");
     os << '\'' << m_id << '\'';
-    if (print_edge) os << " : " << edge_length;
+    if (printedge) os << " : " << edge_length;
   }
 
   void LeafNode::mutate_marker(unsigned int idx, Mutator &m)
@@ -100,9 +100,9 @@ namespace core
     return surface;
   }
 
-  void CoalescentNode::print_tree_at_point(std::ostream &os, double point,
+  void CoalescentNode::printtree_at_point(std::ostream &os, double point,
     double edge_length,
-    bool print_edge) const
+    bool printedge) const
     throw(std::out_of_range)
   {
     double left_dist  = time() - m_left->time();
@@ -112,23 +112,23 @@ namespace core
       and m_right->intervals().contains_point(point))
     {
       os << '(';
-      m_left->print_tree_at_point(os, point, left_dist, true);
+      m_left->printtree_at_point(os, point, left_dist, true);
       os << ',';
-      m_right->print_tree_at_point(os, point, right_dist, true);
+      m_right->printtree_at_point(os, point, right_dist, true);
       os << ')';
-      if (print_edge) os << " : " << edge_length;
+      if (printedge) os << " : " << edge_length;
 
     }
     else
     {
       if (m_left->intervals().contains_point(point))
-        m_left->print_tree_at_point(os, point,
+        m_left->printtree_at_point(os, point,
           edge_length+left_dist,
-          print_edge);
+          printedge);
       if (m_right->intervals().contains_point(point))
-        m_right->print_tree_at_point(os, point,
+        m_right->printtree_at_point(os, point,
           edge_length+right_dist,
-          print_edge);
+          printedge);
     }
   }
 
@@ -168,13 +168,13 @@ namespace core
     return surface;
   }
 
-  void RecombinationNode::print_tree_at_point(std::ostream &os, double point,
+  void RecombinationNode::printtree_at_point(std::ostream &os, double point,
     double edge_length,
-    bool print_edge) const
+    bool printedge) const
     throw(std::out_of_range)
   {
     double d = time() - m_child->time();
-    m_child->print_tree_at_point(os, point, edge_length+d, print_edge);
+    m_child->printtree_at_point(os, point, edge_length+d, printedge);
   }
 
   void RecombinationNode::mutate_marker(unsigned int idx, Mutator &m)
@@ -202,14 +202,14 @@ namespace core
     return surface;
   }
 
-  void GeneConversionNode::print_tree_at_point(std::ostream &os,
+  void GeneConversionNode::printtree_at_point(std::ostream &os,
     double point,
     double edge_length,
-    bool print_edge) const
+    bool printedge) const
     throw(std::out_of_range)
   {
     double d = time() - m_child->time();
-    m_child->print_tree_at_point(os, point, edge_length+d, print_edge);
+    m_child->printtree_at_point(os, point, edge_length+d, printedge);
   }
 
   void GeneConversionNode::mutate_marker(unsigned int idx, Mutator &m)

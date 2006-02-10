@@ -115,7 +115,7 @@ namespace core
     if (coa_node->intervals().size() > 0) p.push(coa_node);
   }
 
-  void CoalescenceEvent::print_(std::ostream &os) const
+  void CoalescenceEvent::print(std::ostream &os) const
   {
     os << ":CoalescenceEvent(" << m_population << ')';
   }
@@ -166,7 +166,7 @@ namespace core
     }
   }
 
-  void RecombinationEvent::print_(std::ostream &os) const
+  void RecombinationEvent::print(std::ostream &os) const
   {
     os << "RecombinationEvent(" << m_rho << ')';
   }
@@ -230,7 +230,7 @@ namespace core
 
   }
 
-  void GeneConversionEvent::print_(std::ostream &os) const
+  void GeneConversionEvent::print(std::ostream &os) const
   {
     os << "GeneConversionEvent(" << m_gamma << ", " << m_Q << ')';
   }
@@ -277,7 +277,7 @@ namespace core
     return m_merge_time;
   }
 
-  void PopulationMerge::print_(std::ostream &os) const
+  void PopulationMerge::print(std::ostream &os) const
   {
     os << "PopulationMerge(";
     std::vector<int>::const_iterator i = m_populations.begin();

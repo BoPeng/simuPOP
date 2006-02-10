@@ -62,7 +62,7 @@ namespace core
       // returns whether i overlaps this interval
       bool overlaps(const Interval &i) const;
 
-      void print_(std::ostream &os) const
+      void print(std::ostream &os) const
         { os << '[' << m_start << ':' << m_end << ")<" << m_leaf_contacts << '>'; }
 
       bool operator == (const Interval &i) const;
@@ -94,7 +94,7 @@ namespace core
     { return !(*this == i); }
 
   inline std::ostream & operator << (std::ostream &os, const Interval &i)
-    { i.print_(os); return os; }
+    { i.print(os); return os; }
 
   // exception thrown if we try to copy an empty or inverted
   // (stop<=start) sub-interval.
@@ -154,7 +154,7 @@ namespace core
       Intervals add_intervals(const Intervals &i) const throw(out_of_sequence);
       Intervals operator + (const Intervals &i)   const throw(out_of_sequence);
 
-      void print_(std::ostream &os) const;
+      void print(std::ostream &os) const;
 
     private:
 
@@ -220,7 +220,7 @@ namespace core
     { return add_intervals(in); }
 
   inline std::ostream & operator << (std::ostream &os, const Intervals &is)
-    { is.print_(os); return os; }
+    { is.print(os); return os; }
 
 }                                                 // namespace core
 #endif                                            // CORE__INTERVAL_HH_INCLUDED

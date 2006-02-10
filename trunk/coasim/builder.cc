@@ -42,7 +42,7 @@ bool keep_empty_intervals) const
   {
     scheduler.add_event(j->coalescence_event());
     if (m_conf.growth() > 0)
-      scheduler.add_event(new GrowthEpoch(pop_no,m_conf.growth(), 0));
+      scheduler.add_event(new Growth(pop_no,m_conf.growth(), 0));
   }
 
   if (m_conf.rho() > 0)
