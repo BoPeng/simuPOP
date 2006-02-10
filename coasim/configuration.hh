@@ -61,13 +61,13 @@ namespace core
       double event_time)
       = 0;
 
-    virtual void print_(std::ostream &os) const = 0;
+    virtual void print(std::ostream &os) const = 0;
   };
 
   inline std::ostream &
     operator<<(std::ostream &os, const Event &e)
   {
-    e.print_(os);
+    e.print(os);
     return os;
   }
 
@@ -115,60 +115,7 @@ namespace core
   class Configuration
   {
     public:
-
-      // Need more work to make the python binding work,
-      // but this has already broken other (scheme) bindings...
-      // Maybe I should define two constructors?
-      typedef std::vector< unsigned int > PopSizeVec;
       typedef std::vector< unsigned int >::const_iterator pop_size_itr_t;
-      typedef std::vector< Marker* > MarkerVec;
-      typedef std::vector< Event* > EpochVec;
-
-      // template <typename PopSizeVec, typename MarkerVec,  typename EpochVec>
-      Configuration(
-        const PopSizeVec& popSizes,
-        const MarkerVec& markers,
-        const EpochVec&  epochs,
-        double rho,
-        double Q,
-        double gamma,
-        double growth)
-        : m_rho(rho), m_Q(Q), m_gamma(gamma), m_growth(growth)
-      {
-        // quick variable conversion
-        PopSizeVec::const_iterator ps_begin = popSizes.begin();
-        PopSizeVec::const_iterator ps_end = popSizes.end();
-        MarkerVec::const_iterator m_begin = markers.begin();
-        MarkerVec::const_iterator m_end = markers.end();
-        EpochVec::const_iterator e_begin = epochs.begin();
-        EpochVec::const_iterator e_end = epochs.end();
-
-        m_no_markers = m_end - m_begin;
-        m_no_leaves = 0;
-
-        for ( ; ps_begin!=ps_end ; ++ps_begin)
-        {
-          if (*ps_begin <= 0) throw non_pos_pop_size();
-
-          m_pop_sizes.push_back(*ps_begin);
-          m_no_leaves += *ps_begin;
-        }
-
-        m_first_markers = new const Marker* [m_no_markers];
-        for (int m = 0; m < m_no_markers; ++m) m_first_markers[m] = 0;
-
-        m_plain_markers = new const Marker* [m_no_markers];
-        for (int m = 0; m < m_no_markers; ++m) m_plain_markers[m] = 0;
-
-        for (int m = 0; m < m_no_markers; ++m)
-          set_marker(m, *(m_begin++));
-
-        for (int m = 1; m < m_no_markers; ++m)
-          if (position(m-1) >= position(m)) throw out_of_sequence();
-
-        for ( ; e_begin != e_end; ++e_begin)
-          m_events.push_back((*e_begin)->copy());
-      }
 
       // the original constructor
       // Ingored in python binding

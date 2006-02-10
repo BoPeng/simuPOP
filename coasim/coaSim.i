@@ -4,18 +4,6 @@
 //interface file for the python/swig binding of coasim
 //
 //
-/////////////// VECTORS AND MATRICES FOR PARAMETER INPUT/////////////
-
-%include "std_vector.i"
-%include "std_string.i"
-%include "stl.i"
-
-namespace std
-{
-  %template()     vector< unsigned int >;
-}
-
-
 
 ///////////////////////// EXCEPTION HANDLING ////////////////////////
 
@@ -67,7 +55,18 @@ namespace std
 }
 
 
-////////////////////////// INCLUDE FILES ////////////////////////////
+////////////////////// FIX NAMING ISSUES ///////////////////////////////
+
+// print is a python keyword
+%rename(print_) print;
+
+// It is not clear what Migration etc are ...
+%rename(MigrationEpoch) Migration;
+%rename(GrowthEpoch) Growth;
+%rename(BottleNeckEpoch) BottleNeck;
+%rename(CoalescenceEpoch) Coalescence;
+
+////////////////////////// INCLUDE FILES ///////////////////////////////
 
 %{
 #include "all_markers.hh"
@@ -89,28 +88,26 @@ namespace std
 #include "trait_marker.hh" 
 %}
 
+
+/////////////// VECTORS AND MATRICES FOR PARAMETER INPUT/////////////
+
+%include "std_vector.i"
+%include "std_string.i"
+%include "stl.i"
+
 namespace std
 {
+  %template()          vector< unsigned int >;
   %template(MarkerVec) vector< core::Marker* >;
   %template(EpochVec)  vector< core::Event* >;
   %template(timeEvent) pair<double, core::Event*>;
 }
 
-////////////////////////// SWIG_INIT FUNCTION ///////////////////////
-%inline
-%{
-  // required, but we have nothing to initialize yet.
-  bool initialize()
-  {
-    return true;
-  }  
-%}
-
-%init
-%{
-  initialize();
-%}
-
+%inline{
+      typedef std::vector< unsigned int > PopSizeVec;
+      typedef std::vector< core::Marker* > MarkerVec;
+      typedef std::vector< core::Event* > EpochVec;
+};
 ////////////////////////// WRAP THESE CLASSES ///////////////////////
 %ignore core::Configuration::Configuration(PopSizeItr, PopSizeItr, MakerItr, MarkerItrm EpochItr, EpochItr, double, double, double, double);
 
@@ -131,6 +128,51 @@ namespace std
 %include "simulator.hh"
 %include "snp_marker.hh"
 %include "trait_marker.hh"
+
+////////////////////// EXTENDED FUNCTIONS ////////////////////
+
+// it is safer to use another name so that 
+// SWIG can not mix this with the old constructor.
+//
+// I could extend the configration class with %extend,
+// but I am not sure about the sideeffect of extending 
+// an constructor (or if it can be done.)
+// 
+%newobject config;
+
+%inline
+%{
+   core::Configuration& config(
+        const PopSizeVec& popSizes,
+        const MarkerVec& markers,
+        const EpochVec&  epochs,
+        double rho,
+        double Q,
+        double gamma,
+        double growth)
+      {
+        // call the old constructor
+        return *new core::Configuration::Configuration(popSizes.begin(), popSizes.end(),
+          markers.begin(), markers.end(),
+          epochs.begin(), epochs.end(), 
+          rho, Q, gamma, growth);
+      }
+%}
+
+////////////////////////// SWIG_INIT FUNCTION ///////////////////////
+%inline
+%{
+  // required, but we have nothing to initialize yet.
+  bool initialize()
+  {
+    return true;
+  }  
+%}
+
+%init
+%{
+  initialize();
+%}
 
 //////////////////////// PYTHON UTILITY FUNCTION /////////////////////
 

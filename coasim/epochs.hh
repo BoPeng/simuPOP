@@ -64,10 +64,10 @@ namespace core
 
   };
 
-  class MigrationEpoch : public Epoch
+  class Migration : public Epoch
   {
     public:
-      MigrationEpoch(int source, int destination,
+      Migration(int source, int destination,
         double migration_rate,
         double start_time, double end_time);
 
@@ -88,7 +88,7 @@ namespace core
 
       virtual Event *copy() const;
 
-      virtual void print_(std::ostream &os) const;
+      virtual void print(std::ostream &os) const;
 
     private:
 
@@ -101,10 +101,10 @@ namespace core
         double event_time);
   };
 
-  class CoalescenceEpoch : public CoalescenceEvent
+  class Coalescence : public CoalescenceEvent
   {
     public:
-      CoalescenceEpoch(int population, double start_time, double end_time)
+      Coalescence(int population, double start_time, double end_time)
         : CoalescenceEvent(population),
         m_start_time(start_time),
         m_end_time((end_time > 0) ? end_time
@@ -114,7 +114,7 @@ namespace core
         assert(m_start_time >= 0);
         assert(m_start_time < m_end_time);
       }
-      virtual ~CoalescenceEpoch();
+      virtual ~Coalescence();
 
       double start_time() const
       {
@@ -164,12 +164,12 @@ namespace core
 
   };
 
-  class BottleNeckEpoch : public CoalescenceEpoch
+  class BottleNeck : public Coalescence
   {
     public:
-      BottleNeckEpoch(int population, double scale_fraction,
+      BottleNeck(int population, double scale_fraction,
         double start_time, double end_time = -1)
-        : CoalescenceEpoch(population, start_time, end_time),
+        : Coalescence(population, start_time, end_time),
         m_scale_fraction(scale_fraction)
       {
         assert(scale_fraction > 0);
@@ -185,19 +185,19 @@ namespace core
       virtual void enter_callback(State &s, double current_time);
       virtual void leave_callback(State &s, double current_time);
 
-      virtual void print_(std::ostream &os) const;
+      virtual void print(std::ostream &os) const;
     private:
       double m_scale_fraction;
       virtual double waiting_time(State &s, double current_time);
 
   };
 
-  class GrowthEpoch : public CoalescenceEpoch
+  class Growth : public Coalescence
   {
     public:
-      GrowthEpoch(int population, double beta,
+      Growth(int population, double beta,
         double start_time, double end_time = -1)
-        : CoalescenceEpoch(population, start_time, end_time),
+        : Coalescence(population, start_time, end_time),
         m_beta(beta)
       {
         assert(beta > 0);
@@ -214,7 +214,7 @@ namespace core
 
       virtual void leave_callback(State &s, double current_time);
 
-      virtual void print_(std::ostream &os) const;
+      virtual void print(std::ostream &os) const;
 
     private:
       double m_beta;
