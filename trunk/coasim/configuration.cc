@@ -53,8 +53,7 @@ namespace core
 
   Event::~Event() {}
 
-  double
-    Event::earliest_event() const
+  double Event::earliest_event() const
   {
     return 0.0;
   }
@@ -66,14 +65,12 @@ namespace core
       delete *i;
   }
 
-  void
-    Scheduler::add_event(Event *event)
+  void Scheduler::add_event(Event *event)
   {
     m_events.push_back(event);
   }
 
-  void
-    Scheduler::remove_event(Event *event)
+  void Scheduler::remove_event(Event *event)
   {
     std::list<Event*>::iterator i;
     i = find(m_events.begin(), m_events.end(), event);
@@ -81,8 +78,7 @@ namespace core
     m_events.erase(i);
   }
 
-  Scheduler::time_event_t
-    Scheduler::next_event(State &s, double current_time)
+  Scheduler::time_event_t Scheduler::next_event(State &s, double current_time)
   {
     double minimal_time = std::numeric_limits<double>::max();
     Event *earliest_event = 0;

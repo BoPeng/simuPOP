@@ -45,11 +45,6 @@ namespace core
   // -- Abstract class for ARG nodes --------------------------------------
   class Node
   {
-    // explicitly remove chance of copying
-    Node(const Node&);
-
-    Node &operator = (const Node&);
-
     public:
       Node(const Configuration &conf, double time)
         : m_time(time), m_states(-1,conf.no_markers())
@@ -135,6 +130,12 @@ namespace core
       }
 
     private:
+      // explicitly remove chance of copying
+      Node(const Node&);
+
+      Node &operator = (const Node&);
+
+    private:
 
       friend class ARG;
 
@@ -216,16 +217,18 @@ namespace core
       {
         return m_node_pool;
       }
+
       const std::vector<Node*> &leaves()      const
       {
         return m_leaf_pool;
       }
 
     private:
+
       // disable these
       ARG(const ARG&);
 
-      ARG &operator = (const ARG&);
+      ARG& operator = (const ARG&);
 
       const Configuration &m_conf;
 
@@ -307,7 +310,7 @@ namespace core
         double edge_length,
         bool print_edge) const
         throw(std::out_of_range);
-        
+
       virtual void mutate_marker(unsigned int idx, Mutator &m);
 
       Node *const m_left;
@@ -334,12 +337,12 @@ namespace core
 
       virtual double surface_at_point(double point) const
         throw(std::out_of_range);
-        
+
       virtual void print_tree_at_point(std::ostream &os, double point,
         double edge_length,
         bool print_edge) const
         throw(std::out_of_range);
-        
+
       virtual void mutate_marker(unsigned int idx, Mutator &m);
 
       Node *const m_child;
@@ -368,16 +371,16 @@ namespace core
 
       virtual double surface_at_point(double point) const
         throw(std::out_of_range);
-        
+
       virtual void print_tree_at_point(std::ostream &os, double point,
         double edge_length,
         bool print_edge) const
         throw(std::out_of_range);
-        
+
       virtual void mutate_marker(unsigned int idx, Mutator &m);
 
       Node *const m_child;
-      
+
       double m_conversion_start, m_conversion_end;
 
       bool m_is_inside;

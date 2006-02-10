@@ -83,7 +83,7 @@ namespace core
         return m_position;
       }
 
-      void position(double position) 
+      void position(double position)
       {
         if (position < 0 or 1 <= position)
           throw illegal_position();
@@ -105,7 +105,7 @@ namespace core
 
     protected:
 
-      Marker(double position) 
+      Marker(double position)
         : m_position(position)
       {
         if (position < 0 or 1 <= position)

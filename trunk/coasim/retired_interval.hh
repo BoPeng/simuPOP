@@ -33,9 +33,17 @@ namespace core
         : Interval(interval), m_surface(-1.0), m_top_node(top_node)
         { if (top_node == 0) throw null_top_node(); }
 
-      Node *top_node() const { return m_top_node; }
+      Node *top_node() const
+      {
+        return m_top_node;
+      }
+
       double surface() const
-        { if (m_surface < 0.0) calc_surface(); return m_surface; }
+      {
+        if (m_surface < 0.0)
+          calc_surface();
+        return m_surface;
+      }
 
       void mutate(const Configuration &conf, unsigned int marker_index) const;
 
@@ -45,11 +53,15 @@ namespace core
       void calc_surface() const;
 
       mutable double m_surface;
+
       Node *m_top_node;
   };
 
   inline std::ostream & operator << (std::ostream &os, const RetiredInterval &i)
-    { i.print_(os); return os; }
+  {
+    i.print_(os);
+    return os;
+  }
 
 }
 #endif                                            // RETIRED_INTERVAL_HH_INCLUDED
