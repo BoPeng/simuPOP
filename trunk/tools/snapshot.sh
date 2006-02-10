@@ -21,11 +21,17 @@ find . -name '.#*' -exec rm -f {} \;
 find . -name '*~' -exec rm -f {} \;
 find . -name '#*#' -exec rm -f {} \;
 
+# check in if this has not been done
+svn ci -m "daily snapshot on `date`"
+svn update
+
 # snapshot version.
 if test "x$1" == 'x'; then
   SIMUPOP_VER=snapshot
 else
+  # make a tag if release
   SIMUPOP_VER=$1
+  svn copy http://bp6.stat.rice.edu:8080/svn/simuPOP/trunk http://bp6.stat.rice.edu:8080/svn/simuPOP/tag/v$1 -m "Version $1 released at `date`"
 fi
 echo "Building " $SIMUPOP_VER
 SIMUPOP_REV=`svnversion .`
