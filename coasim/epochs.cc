@@ -214,7 +214,7 @@ namespace core
       << m_beta << ')';
   }
 
-  Migration::Migration(int source, int destination,
+  MigrationEpoch::MigrationEpoch(int source, int destination,
     double migration_rate,
     double start_time, double end_time)
     : Epoch(start_time, end_time),
@@ -228,13 +228,13 @@ namespace core
   }
 
   Event *
-    Migration::copy() const
+    MigrationEpoch::copy() const
   {
-    return new Migration(*this);
+    return new MigrationEpoch(*this);
   }
 
   double
-    Migration::nested_event_time(State &s, double current_time)
+    MigrationEpoch::nested_event_time(State &s, double current_time)
   {
     Population &src = s.populations()[m_source];
     unsigned int k = src.size();
@@ -244,7 +244,7 @@ namespace core
   }
 
   void
-    Migration::nested_update_state(Scheduler &scheduler, State &s,
+    MigrationEpoch::nested_update_state(Scheduler &scheduler, State &s,
     double event_time)
   {
     BuilderMonitor *callbacks = s.callbacks();
@@ -258,9 +258,9 @@ namespace core
 
   }
 
-  void Migration::print_(std::ostream &os) const
+  void MigrationEpoch::print_(std::ostream &os) const
   {
-    os << "Migration(" << source() << ", " << destination() << ", "
+    os << "MigrationEpoch(" << source() << ", " << destination() << ", "
       << migration_rate() << ", "
       << start_time() << ", " << end_time() << ')';
   }

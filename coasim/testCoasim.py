@@ -78,7 +78,7 @@ class TestCoaSim(unittest.TestCase):
     
   def testMigrationEvent(self):
     'Testing migration events (epochs.hh, configuration.hh)'
-    a = Migration(source=0, destination=1,
+    a = MigrationEpoch(source=0, destination=1,
       migration_rate=0.001, start_time=0,
       end_time= 0.5)
     #
@@ -597,20 +597,13 @@ class TestCoaSim(unittest.TestCase):
     
   def testMarkers(self):
     'Testing markers'
-    # need to translate the following into python
-## 
-## (define tm (traitMarker 0.1 0.18 0.22))
-## (define sm (snpMarker   0.2 0.10 0.90))
-## (define mm (msMarker    0.3 0.4 4))
-## 
-## (display tm)(newline)
-## (display sm)(newline)
-## (display mm)(newline)
-## 
-## (display (position tm))(newline)
-## (display (position sm))(newline)
-## (display (position mm))(newline)
-## 
+    tm = TraitMarker(0.1, 0.18, 0.22)
+    sm = SNPMarker(0.2, 0.1, 0.9)
+    mm = MicroSatelliteMarker(0.3, 0.4, 4)
+    tm.position()
+    sm.position()
+    mm.position()
+    
 ## 
 ## (display (traitMarker? tm))(display (snpMarker? tm))(display (msMarker? tm))
 ## (newline)
@@ -620,27 +613,17 @@ class TestCoaSim(unittest.TestCase):
 ## (newline)
     
   def testEpochs(self):
-    'Testing epochs'
-## 
-## (display (bottleneck 0 0.1 1 2))(newline)
-## (display (growth 0 10 1 2))(newline)
-## (display (migration 0 1 .98 0 1))(newline)
-## (display (populationMerge  .98 0 1))(newline)
-## 
-## (catch 'illegalEpoch
-##        (lambda () (bottleneck 0 0.1 2 1))
-##        (lambda (key . args) (display key)(newline)))
-## 
-## (catch 'illegalEpoch
-##        (lambda () (bottleneck 0 0.1 1 2))
-##        (lambda (key . args) (display key)(newline)))
-## 
-## 
-## (display (bottleneck 0 0.1 1))(newline)
-## (display (growth 0 10 1))(newline)
-## (display (migration 0 1 .98 0 1))(newline)
-## (display (populationMerge  .98 0 1))(newline)
-## (display (populationMerge  .98 0 1 2))(newline)
+    'Testing epochs (translated from .scm)'
+    a = BottleNeckEpoch(0, 0.1, 1, 2)
+    b = GrowthEpoch(0, 10, 1, 2)
+    c = MigrationEpoch(0, 1, 0.98, 0, 1)
+    # d = PopulationMerge(0.98, 0, 1)
+    BottleNeckEpoch( 0, 0.1, 2, 1)
+    BottleNeckEpoch( 0, 0.1, 1, 2)
+    a = BottleNeckEpoch(0, 0.1, 1)
+    b = GrowthEpoch(0, 10, 1)
+    c = MigrationEpoch(0, 1, 0.98, 0, 1)
+    # d = PopulationMerge(0.98, 0, 1)
     
 
 if __name__ == '__main__':
