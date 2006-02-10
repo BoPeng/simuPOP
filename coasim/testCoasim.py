@@ -170,6 +170,15 @@ class TestCoaSim(unittest.TestCase):
   def testSimulate(self):
     'Test simulation'
     # need to translate the following into python
+    markers = [
+      SNPMarker(0.1, 0.1, 0.9),
+      TraitMarker(0.2, 0.1, 0.9),
+      MicroSatelliteMarker(0.4, 0.5, 20),
+      SNPMarker(0.6, 0.1, 0.9)
+      ]
+    # have not been defined.
+    # arg = simulate(markers, 10, rho=50, randomSeed=100)
+      
 ## 
 ## (define markers
 ##   (list (snpMarker   0.1 0.1 0.9)

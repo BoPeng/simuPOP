@@ -45,7 +45,7 @@ namespace core
   {
     Event()
     {
-      }
+    }
 
     virtual ~Event();
 
@@ -57,7 +57,7 @@ namespace core
     virtual double event_time(State &s, double current_time)
       = 0;
 
-    virtual void   update_state(Scheduler &scheduler, State &s,
+    virtual void update_state(Scheduler &scheduler, State &s,
       double event_time)
       = 0;
 
@@ -85,7 +85,8 @@ namespace core
       time_event_t next_event(State &s, double current_time);
 
     private:
-    std::list<Event*> m_events;
+
+      std::list<Event*> m_events;
 
   };
 
@@ -119,6 +120,7 @@ namespace core
       // but this has already broken other (scheme) bindings...
       // Maybe I should define two constructors?
       typedef std::vector< unsigned int > PopSizeVec;
+      typedef std::vector< unsigned int >::const_iterator pop_size_itr_t;
       typedef std::vector< Marker* > MarkerVec;
       typedef std::vector< Event* > EpochVec;
 
@@ -206,8 +208,6 @@ namespace core
       }
 
       ~Configuration();
-
-      typedef std::vector<unsigned int>::const_iterator pop_size_itr_t;
 
       const std::vector<unsigned int> pop_sizes() const
       {
