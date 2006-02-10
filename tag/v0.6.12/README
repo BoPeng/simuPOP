@@ -1,0 +1,153 @@
+Introduction
+============
+
+SimuPOP is a forward-based population genetics simulation program. Unlike
+coalescence-based simulation programs, simuPOP evolves population(s)
+forward in time -- subject to arbitrary number of gentic and environmental
+forces (mutation, recombination, migration, population size change etc.).
+Easy simulations like most models in standard population genetics books can
+be setup easily, whereas very complicated simulations such as spreading of
+complex diseases, ancient out-of-africa migrations can be built step by
+step by adding appropriate operators (objects that work on populations).
+
+simuPOP is written in C++ and is provided as a Python library. Besides a
+front-end providing an interactive shell and a scripting language, Python
+is used extensively to pass dynamic parameters, calculate complex
+statistics and write operators. This flexibility gives simuPOP the power to
+simulate almost all evolution scenarios. sec:A-Simple-Example illustrates
+roughly how simuPOP works.
+
+
+Basic Concepts
+===============
+
+You should be aware of the following concepts before you start using
+simuPOP:
+
+individual
+    individuals are building blocks of populaitons. Each individual has its
+own genotype (chromosomes and loci), sex, disease status and some other
+auxiliary information. 
+genotype structure
+    refers to the number of chromosomes, number and location of loci on
+each chromosome, name of alleles. This information are shared by all
+individuals in a population. 
+population
+    collection of individuals of the same type (genotypic structure) with
+subpopulation structure. 
+Mating scheme
+    how individuals are chosen and mate during evolution. 
+operator
+    operators are objects that work on populations. They can apply genetic
+forces like mutation, recombination, migration to populations, or calculate
+various statistics, plot dynamics of variables, save populations or
+terminate simulation conditionally. Operators can be 
+
+    * build-in: written in C++, fastest. They do not interact with Python
+    * shell except that some of them set variables that are accessible from
+    * Python.
+    * hybrid: written in C++ but calls python functions when execution. For
+    * example, a hybrid mutator pyMutator will determine if an allele will
+    * be mutated and call a user-defined Python function to mutate it.
+    * pure python: written in python. For example, a varPlotter can plot
+    * python variables that are set by other operators.
+
+simulator
+    simulator manage several replicates of populations and evolve them in a
+way specified by a mating scheme generation by generation, subject to
+arbitrary number/kinds of operators. 
+expression and statement
+    are python expression and statement. They are widely used in simuPOP to
+specify dynamic parameters, calculate statistics etc. A simpler example is
+the newSubPopSizeExpr parameter (for example ``size*1.2'' ) of mating
+schemes that use the result of the expression as new subpop size. 
+
+
+
+
+A simple example
+=================
+
+Let us demonstrate these concepts through a simple example:
+
+Example: simple_example
+
+>>> from simuPOP import *
+
+>>> simu = simulator(
+...     population(size=1000, ploidy=2, loci=[2]),
+...     randomMating(),
+...     rep = 3)
+>>> simu.evolve(
+...     preop = [initByValue([1,2,2,1]) ],  
+...     ops = [
+...         recombinator( rate=0.1),
+...         alleleCounter( haplotypes=[[0,1,1,2],[0,1,2,1]]),
+...         pyEval(expr = r"str(haploNum['0-1|1-2'])+'\t'",
+...             headers=["hap\t"]),
+...         output("\n", rep=REP_LAST)
+...         ],
+...     end=5
+... )
+0_hap 1_hap 2_hap 
+888.0 874.0 892.0 
+835.0 780.0 819.0 
+784.0 724.0 783.0 
+762.0 688.0 757.0 
+769.0 654.0 723.0 
+>>>  
+
+
+This example demonstrates the change of haplotype number when recombination
+is in effect.
+
+    * The import line import simuPOP module (output suppressed).
+    * simulator creates a simulator from a population created by population
+    * function. The population is diploid (ploidy=2), has 1000 individuals
+    * (size=1000) each has two loci on the first chromosome (loci=[2]). The
+    * simulator has three copies of this population (rep=3) and will evolve
+    * through random mating (randomMating()).
+    * simu.evolve evolves these populations subject to the following
+    * operators.
+
+          o preop=[initByValue]: operators in parameter preop (accept a
+list of operators) will be applied to the populations at the beginning of
+evolution. initByValue is an initializer that set the same genotype to all
+individuals. In this case, everyone will have genotype 12/21 (1 2 on the
+first chromosome and 2 1 on the second copy of the chromosome) so linkage
+disequilibrium is 0.25 (maximum possible value).
+          o operators in ops parameter will be applied to all populations
+at each generation. (Not exactly, operators can be inactive at certain
+generations.)
+          o recombinator is a during-mating operator that recombine
+chromosomes with probability 0.1 (an unrealistically high value) during
+mating.
+          o alleleCounter is a post-mating operator that count haplotype 12
+and 21 at locus 0 and locus 1 respectively. The result will be saved in the
+local namespace of each replicate. (_vars[0], _vars[1], _vars[2] if you are
+curious.)
+          o pyEval accepts any python expression, evaluate it in each
+replicates' local namespace and return the result. In this example, pyEval
+get the value of a haplotype '0-1|1-2', print it with a trailing tab.
+          o output is a simple operator that output any string it is given.
+Here, it output a new line at the last replicate. Without this, all output
+will be in one line.
+          o end=5 means evolve 5 generations.
+
+The output is a table of haplotype number for each replicate at each
+generation. All simuPOP scripts will have similar steps. You can add more
+operators to the ops list to build more complicated simulations. Obvious
+choices are mutator, migrator, or some proper visualizer (another pyEval
+operator to call Python's plotting functions) to plot the dynamics of
+variables.
+
+
+Availability
+============
+
+Binary libraries of simuPOP are provided for linux, windows, solaris and
+mac systems. Source code and development documentations are also available
+for easy porting to other platforms. Both source code and binaries can be
+distributed free-of-charge under GPL license. All resources, including a
+user's manual (pdf version) and a discussion forum can be found at the
+simuPOP homepage. 

@@ -1,0 +1,24 @@
+include README INSTALL ChangeLog COPYING TODO AUTHORS simuPOP.release
+include MANIFEST.in setup.py setup.cfg  simuPOP.vcproj 
+include config_solaris.h config_win32.h config_linux.h config_mac.h
+include doc/userGuide.pdf doc/userGuide.py doc/refManual.pdf
+include misc/README misc/python-mode.el misc/emacs-python.el 
+include src/simuPOP.py src/simuOpt.py src/simuUtil.py  src/simuSciPy.py src/simuMatPlt.py  
+include src/simuRPy.py src/simuViewPop.py
+include src/simuPOP_std.py src/simuPOP_op.py
+include src/simuPOP_la.py src/simuPOP_laop.py 
+include src/simuPOP_ba.py src/simuPOP_baop.py 
+include src/swigpyrun.h 
+include src/simuPOP_std_wrap.cpp src/simuPOP_op_wrap.cpp 
+include src/simuPOP_la_wrap.cpp src/simuPOP_laop_wrap.cpp 
+include src/simuPOP_ba_wrap.cpp src/simuPOP_baop_wrap.cpp
+recursive-include test test_*.py 
+recursive-include gsl *.h *.c
+recursive-include boost *
+recursive-include boost/spirit/core *
+recursive-include src  *.cpp *.c *.h *.i *.ipp
+recursive-include scripts *.py
+recursive-include coasim *.hh *.cc
+include coasim/coaSim.i coasim/testCoaSim.py
+prune *.svn/*
+
