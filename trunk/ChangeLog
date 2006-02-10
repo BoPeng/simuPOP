@@ -3,7 +3,9 @@ ChangeLog of simuPOP
 NOTE: Daily snapshot reflects current SVN version. It includes new features and 
   bug fixes, but may be less stable than versioned releases.
 
-version 0.6.12 - available as snapshot
+version 0.6.13 - currently available as snapshot
+
+version 0.6.12 - (Rev 169) - Feb 10, 2006 
   - CHG: 'not enough case/control' in caseControlSample now generates 
          a warning message, rather than exception.
   - CHG: set the default sample saveAs format to 'auto', instead of 'bin'
