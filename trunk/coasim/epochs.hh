@@ -64,10 +64,10 @@ namespace core
 
   };
 
-  class Migration : public Epoch
+  class MigrationEpoch : public Epoch
   {
     public:
-      Migration(int source, int destination,
+      MigrationEpoch(int source, int destination,
         double migration_rate,
         double start_time, double end_time);
 
