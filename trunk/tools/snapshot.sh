@@ -58,12 +58,12 @@ if test -f /var/www/html/simuPOP/download/simuPOP-$SIMUPOP_VER-src.tar.gz ; then
   rm -f /var/www/html/simuPOP/download/simuPOP-$SIMUPOP_VER-src.tar.gz
 fi
 
-# build source distribution
-make_src.sh
-
 # distribute source
 # this file will be used by other batch files
 echo $SIMUPOP_VER > /var/www/html/simuPOP/download/latestversion
+
+# build source distribution
+make_src.sh
 
 # check files
 if test ! -f /var/www/html/simuPOP/download/simuPOP-$SIMUPOP_VER-src.tar.gz ; then
