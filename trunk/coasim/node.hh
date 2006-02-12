@@ -116,6 +116,11 @@ namespace core
         return m_states[s];
       }
 
+      virtual const std::string __repr__() const
+      {
+        return "generic node";
+      }
+
     protected:
       void set_state(unsigned int s, int val)
       {
@@ -211,8 +216,6 @@ namespace core
         return m_leaf_pool.size() + m_node_pool.size();
       }
 
-      void to_text(std::ostream &os) const;
-
       const std::vector<Node*> &inner_nodes()  const
       {
         return m_node_pool;
@@ -223,6 +226,29 @@ namespace core
         return m_leaf_pool;
       }
 
+      std::string __repr__() const
+      {
+        // header...
+        std::string repr = "Markers: ";
+        for (int i = 0; i < m_conf.no_markers(); ++i)
+          repr += m_conf.marker(i).__repr__() + ' ';
+        repr += "\nLeaf Node:\n";
+        
+        for(std::vector<Node*>::const_iterator ln=m_leaf_pool.begin();
+          ln < m_leaf_pool.end(); ++ln)
+          repr += "  " + (*ln)->__repr__() + "\n";
+          
+        repr += "Node Node:\n";
+        
+        for(std::vector<Node*>::const_iterator ln=m_node_pool.begin();
+          ln < m_node_pool.end(); ++ln)
+          for (unsigned int s = 0; s < (*ln)->no_states(); ++s)
+            repr += (*ln)->state(s) << ' ';
+          // repr += "  " + (*ln)->__repr__() + "\n";          
+          
+        return repr;
+      }
+      
     private:
 
       // disable these
@@ -230,7 +256,7 @@ namespace core
 
       ARG& operator = (const ARG&);
 
-      const Configuration &m_conf;
+      const Configuration& m_conf;
 
       bool m_keep_empty;
 

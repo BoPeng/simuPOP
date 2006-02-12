@@ -26,12 +26,6 @@ namespace core
         m_values.push_back(1);
       }
 
-      std::string __repr__()
-      {
-        // can give more information later (like low_freq)
-        return "SNP marker";
-      }
-
       virtual Marker *copy() const;
 
       virtual bool run_first() const;
@@ -57,6 +51,13 @@ namespace core
       }
 
       virtual const char * type() const;
+      
+  virtual std::string __repr__() const
+      {
+        ostringstream os;
+        os << this->type() << "/" << position();
+        return os.str();
+      }
 
     private:
 

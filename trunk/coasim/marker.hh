@@ -22,6 +22,9 @@
 # define CASSERT_INCLUDED
 #endif
 
+#include <sstream>
+using std::ostringstream;
+
 namespace core
 {
 
@@ -76,7 +79,9 @@ namespace core
       // polymorphic copying
       virtual Marker *copy() const = 0;
 
-      virtual ~Marker();
+virtual ~Marker()
+      {
+      }
 
       double position() const
       {
@@ -99,8 +104,8 @@ namespace core
       virtual Mutator *create_mutator(const Configuration &conf,
         const RetiredInterval &ri) const = 0;
 
-      virtual void to_text(std::ostream &os) const;
-
+      virtual std::string __repr__() const =0;
+ 
       virtual const char * type() const = 0;
 
     protected:
@@ -116,7 +121,10 @@ namespace core
 
       std::vector<int> m_values;
 
-      Marker(const Marker&);
+      Marker(const Marker &other)
+    : m_position(other.m_position), m_values(other.m_values)
+  {
+  }
 
     private:
 
@@ -124,7 +132,5 @@ namespace core
       Marker &operator = (const Marker&);
   };
 
-  inline std::ostream &operator << (std::ostream &os, const Marker &m)
-    { m.to_text(os); return os; }
 }
 #endif

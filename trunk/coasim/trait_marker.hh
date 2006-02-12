@@ -42,6 +42,13 @@ namespace core
 
       virtual const char * type() const;
 
+  virtual std::string __repr__() const
+      {
+        ostringstream os;
+        os << this->type() << "/" << position();
+        return os.str();
+      }
+
     private:
       double m_low_freq, m_high_freq;             // allowed range of mutation frequencies
   };

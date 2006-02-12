@@ -408,16 +408,5 @@ namespace core
     };
   }
 
-  void ARG::to_text(std::ostream &os) const
-  {
-    // header...
-    os << "# markers: ";
-    for (int i = 0; i < m_conf.no_markers(); ++i)
-      os << m_conf.marker(i) << ' ' << m_conf.position(i) << ' ';
-    os << '\n';
-
-    // body...
-    for_each(m_leaf_pool.begin(), m_leaf_pool.end(), state_printer(os));
-  }
 
 }

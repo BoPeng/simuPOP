@@ -364,7 +364,7 @@ setup(
       extra_compile_args=['-O3'],
       include_dirs = ["coasim"],
       libraries = ['stdc++'],
-      sources = COASIM_SOURCE_FILES + [ 'coasim/coaSim_wrap.cpp' ]
+      sources = COASIM_SOURCE_FILES + [ 'src/coaSim_wrap.cpp' ]
     )    
   ],
   data_files = DATA_FILES
