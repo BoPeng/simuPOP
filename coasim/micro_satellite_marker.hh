@@ -45,6 +45,13 @@ namespace core
       }
 
       virtual const char * type() const;
+      
+  virtual std::string __repr__() const
+      {
+        ostringstream os;
+        os << this->type() << "/" << position();
+        return os.str();
+      }
 
     private:
       // mutation parameter

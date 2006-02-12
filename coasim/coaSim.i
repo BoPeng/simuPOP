@@ -1,8 +1,7 @@
 %module coaSim
 
 //
-//interface file for the python/swig binding of coasim
-//
+// interface file for the python/swig binding of coasim
 //
 
 ///////////////////////// EXCEPTION HANDLING ////////////////////////
@@ -10,6 +9,7 @@
 %include exception.i
 
 // exceptions will be passed to and correctly handled by python
+
 %exception
 {
   try
@@ -61,10 +61,18 @@
 %rename(print_) print;
 
 // It is not clear what Migration etc are ...
-%rename(MigrationEpoch) Migration;
-%rename(GrowthEpoch) Growth;
-%rename(BottleNeckEpoch) BottleNeck;
-%rename(CoalescenceEpoch) Coalescence;
+%rename(migrationEpoch)     Migration;
+%rename(growthEpoch)        Growth;
+%rename(bottleneckEpoch)    BottleNeck;
+%rename(coalescenceEpoch)   Coalescence;
+
+// shorter names for markers
+%rename(msMarker)           MicroSatelliteMarker;
+%rename(snpMarker)          SNPMarker;
+%rename(traitMarker)        TraitMarker;
+
+// I prefer names starting with small characters.
+%rename(simulator)          Simulator;
 
 ////////////////////////// INCLUDE FILES ///////////////////////////////
 
@@ -108,8 +116,8 @@ namespace std
       typedef std::vector< core::Marker* > MarkerVec;
       typedef std::vector< core::Event* > EpochVec;
 };
+
 ////////////////////////// WRAP THESE CLASSES ///////////////////////
-%ignore core::Configuration::Configuration(PopSizeItr, PopSizeItr, MakerItr, MarkerItrm EpochItr, EpochItr, double, double, double, double);
 
 %include "all_markers.hh"
 %include "builder.hh"
@@ -131,32 +139,29 @@ namespace std
 
 ////////////////////// EXTENDED FUNCTIONS ////////////////////
 
-// it is safer to use another name so that 
-// SWIG can not mix this with the old constructor.
-//
-// I could extend the configration class with %extend,
-// but I am not sure about the sideeffect of extending 
-// an constructor (or if it can be done.)
+// extending using %extend is difficult to do, 
+// wrapping the original class with a new class is too troublesome
+// using a function like this is easiest.
 // 
 %newobject config;
 
 %inline
 %{
-   core::Configuration& config(
-        const PopSizeVec& popSizes,
-        const MarkerVec& markers,
-        const EpochVec&  epochs,
-        double rho,
-        double Q,
-        double gamma,
-        double growth)
-      {
-        // call the old constructor
-        return *new core::Configuration::Configuration(popSizes.begin(), popSizes.end(),
-          markers.begin(), markers.end(),
-          epochs.begin(), epochs.end(), 
-          rho, Q, gamma, growth);
-      }
+  core::Configuration& config(
+    const MarkerVec& markers=MarkerVec(),
+    const PopSizeVec& popSizes=PopSizeVec(),
+    const EpochVec&  epochs=EpochVec(),
+    double rho=0,
+    double Q=0,
+    double gamma=0,
+    double growth=0)
+  {
+    // call the old constructor
+    return *new core::Configuration::Configuration(popSizes.begin(), popSizes.end(),
+      markers.begin(), markers.end(),
+      epochs.begin(), epochs.end(), 
+      rho, Q, gamma, growth);
+  }
 %}
 
 ////////////////////////// SWIG_INIT FUNCTION ///////////////////////
@@ -182,27 +187,8 @@ namespace std
 ## function names have been translated 
 ##  by s/-\(.\)/\U\1/g in vim
 ##
-
 ## Simulate.scm ##########################################
 ## 
-## (useModules (ice9 optargs)
-## 	     (ice9 receive)
-## 	     (ice9 format)
-## 	     (ice9 prettyPrint)
-## 	     (srfi srfi1))
-## 
-## (readSet! keywords 'prefix)
-## 
-## (defmacro unless (pred . body)
-##   `(if ,pred
-##        '()
-##        (begin
-## 	 ,@body)))
-## 
-## 
-## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-## ;;;;;;;;;;; dispatch framework ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-## ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ## 
 ## (define (defdispatchHelper name ast args)
 ##   (lambda (m)

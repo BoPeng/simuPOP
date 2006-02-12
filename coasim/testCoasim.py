@@ -28,9 +28,9 @@ class TestCoaSim(unittest.TestCase):
     # run_first (??)
     self.assertEqual(m.run_first(), run_first)
     
-  def testSNPMarker(self):
+  def testsnpMarker(self):
     'Testing SNP markers'
-    a = SNPMarker(0.11, 0.01, 0.90)
+    a = snpMarker(0.11, 0.01, 0.90)
     # 
     self.assertMarkerProperties(a, pos=0.11, 
       name='snp', default=0, run_first=False)
@@ -41,9 +41,9 @@ class TestCoaSim(unittest.TestCase):
     self.assertRaises(exceptions.ValueError,
       a.add_value, 2)
 
-  def testMicroSatelliteMarker(self):
+  def testmsMarker(self):
     'Testing microsatellite markers'
-    a = MicroSatelliteMarker(0.11, theta=1e-6, K=50)
+    a = msMarker(0.11, theta=1e-6, K=50)
     #
     self.assertMarkerProperties(a, pos=0.11, 
       name='ms', default=0, run_first=False)
@@ -52,9 +52,9 @@ class TestCoaSim(unittest.TestCase):
     self.assertEqual( a.K(), 50)
     # add value should be allowed FIXME: why add_value?
 
-  def testTraitMarker(self):
+  def testtraitMarker(self):
     'Testing trait markers'
-    a = TraitMarker(0.11, low_freq=0.01, high_freq=0.90)
+    a = traitMarker(0.11, low_freq=0.01, high_freq=0.90)
     #
     self.assertMarkerProperties(a, pos=0.11, 
       name='trait', default=0, run_first=True)
@@ -76,9 +76,9 @@ class TestCoaSim(unittest.TestCase):
     self.assertEqual(epo.end_time(), et)
     self.assertEqual(epo.earliest_event(), 0)
     
-  def testMigrationEvent(self):
+  def testmigrationEvent(self):
     'Testing migration events (epochs.hh, configuration.hh)'
-    a = MigrationEpoch(source=0, destination=1,
+    a = migrationEpoch(source=0, destination=1,
       migration_rate=0.001, start_time=0,
       end_time= 0.5)
     #
@@ -87,18 +87,18 @@ class TestCoaSim(unittest.TestCase):
     self.assertEqual(a.destination(), 1)
     self.assertEqual(a.migration_rate(), 0.001)
   
-  def testBottleNeckEpoch(self):
-    'Testing BottleNeckEpoch (epochs.hh)'
-    a = BottleNeckEpoch(population=0,  
+  def testbottleneckEpoch(self):
+    'Testing bottleneckEpoch (epochs.hh)'
+    a = bottleneckEpoch(population=0,  
       scale_fraction=1.2, 
       start_time=0, end_time= 0.5)
     #
     self.assertEpochProperties(a, st=0, et=0.5)
     self.assertEqual( a.scale_fraction(), 1.2)
     
-  def testGrowthEpoch(self):
-    'Testing GrowthEpoch (epochs.hh)'
-    a = GrowthEpoch(population=0,  
+  def testgrowthEpoch(self):
+    'Testing growthEpoch (epochs.hh)'
+    a = growthEpoch(population=0,  
       beta=1.2, start_time=0, end_time= 0.5)
     #
     self.assertEpochProperties(a, st=0, et=0.5)
@@ -116,10 +116,10 @@ class TestCoaSim(unittest.TestCase):
     conf = config(
       popSizes=[1000,2000,3000], 
       markers = [
-        SNPMarker(0.1, 0.1, 0.9), 
-        SNPMarker(0.2, 0.1, 0.9)
+        snpMarker(0.1, 0.1, 0.9), 
+        snpMarker(0.2, 0.1, 0.9)
         ],
-      epochs = [ GrowthEpoch(0, 1.2, 0, 0.5)], 
+      epochs = [ growthEpoch(0, 1.2, 0, 0.5)], 
       rho=0.1, Q=0.01, gamma=0.001, growth=0.0001)
     # 
     self.assertEqual( conf.pop_sizes(), (1000,2000,3000) )
@@ -171,13 +171,26 @@ class TestCoaSim(unittest.TestCase):
     'Test simulation'
     # need to translate the following into python
     markers = [
-      SNPMarker(0.1, 0.1, 0.9),
-      TraitMarker(0.2, 0.1, 0.9),
-      MicroSatelliteMarker(0.4, 0.5, 20),
-      SNPMarker(0.6, 0.1, 0.9)
+      snpMarker(0.1, 0.1, 0.9),
+      traitMarker(0.2, 0.1, 0.9),
+      msMarker(0.4, 0.5, 20),
+      snpMarker(0.6, 0.1, 0.9),
+      snpMarker(0.7, 0.1, 0.9),
+      snpMarker(0.8, 0.1, 0.9),
       ]
+    cfg = config(markers)
     # have not been defined.
-    # arg = simulate(markers, 10, rho=50, randomSeed=100)
+    arg = simulate(cfg)
+    print arg
+    #, 10, rho=50, randomSeed=100)
+    #
+    # NOTE:
+    #
+    # if config(markers) is not saved
+    # the internal structure of config passed to
+    #   arg = simulate( config(markers) )
+    # will be destroyed and arg will not be usable.
+    #
       
 ## 
 ## (define markers
@@ -606,9 +619,9 @@ class TestCoaSim(unittest.TestCase):
     
   def testMarkers(self):
     'Testing markers'
-    tm = TraitMarker(0.1, 0.18, 0.22)
-    sm = SNPMarker(0.2, 0.1, 0.9)
-    mm = MicroSatelliteMarker(0.3, 0.4, 4)
+    tm = traitMarker(0.1, 0.18, 0.22)
+    sm = snpMarker(0.2, 0.1, 0.9)
+    mm = msMarker(0.3, 0.4, 4)
     tm.position()
     sm.position()
     mm.position()
@@ -623,15 +636,15 @@ class TestCoaSim(unittest.TestCase):
     
   def testEpochs(self):
     'Testing epochs (translated from .scm)'
-    a = BottleNeckEpoch(0, 0.1, 1, 2)
-    b = GrowthEpoch(0, 10, 1, 2)
-    c = MigrationEpoch(0, 1, 0.98, 0, 1)
+    a = bottleneckEpoch(0, 0.1, 1, 2)
+    b = growthEpoch(0, 10, 1, 2)
+    c = migrationEpoch(0, 1, 0.98, 0, 1)
     # d = PopulationMerge(0.98, 0, 1)
-    BottleNeckEpoch( 0, 0.1, 2, 1)
-    BottleNeckEpoch( 0, 0.1, 1, 2)
-    a = BottleNeckEpoch(0, 0.1, 1)
-    b = GrowthEpoch(0, 10, 1)
-    c = MigrationEpoch(0, 1, 0.98, 0, 1)
+    bottleneckEpoch( 0, 0.1, 2, 1)
+    bottleneckEpoch( 0, 0.1, 1, 2)
+    a = bottleneckEpoch(0, 0.1, 1)
+    b = growthEpoch(0, 10, 1)
+    c = migrationEpoch(0, 1, 0.98, 0, 1)
     # d = PopulationMerge(0.98, 0, 1)
     
 

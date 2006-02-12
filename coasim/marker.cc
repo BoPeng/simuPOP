@@ -15,17 +15,4 @@
 
 namespace core
 {
-  Marker::Marker(const Marker &other)
-    : m_position(other.m_position), m_values(other.m_values)
-  {
-  }
-
-  Marker::~Marker()
-  {
-  }
-
-  void Marker::to_text(std::ostream &os) const
-  {
-    os << this->type();
-  }
 }

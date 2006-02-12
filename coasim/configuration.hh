@@ -290,6 +290,16 @@ namespace core
       // (if it is fixed).  Prevents
       // incorrect nesting of non-nested
       // epochs...
+ 
+      const std::string __repr__() const
+      {
+        // header...
+        std::string repr = "Markers: ";
+        for (int i = 0; i < no_markers(); ++i)
+          repr += marker(i).__repr__() + ' ';
+        return repr;
+      }
+  
 
     private:
       // Disable these
