@@ -130,12 +130,12 @@ if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in range(len(WRAP_INFO))]) o
     # try the first option set with the first library
     lib = 0
     print "Generating wrap file " + WRAP_INFO[lib][0]
-    if os.system('%s %s -o %s %s' % (SWIG1, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
+    if os.system('%s %s -o %s %s 2> err.log' % (SWIG1, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
       print "Your swig version is not up to date. Trying options with swig <= 1.3.27"
       # all libraries
       for lib in range(len(WRAP_INFO)):
         print "Generating wrap file " + WRAP_INFO[lib][0]
-        if os.system('%s %s -o %s %s' % (SWIG2, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
+        if os.system('%s %s -o %s %s 2> err.log' % (SWIG2, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
           print "None of the swig option sets works, please check if you have SWIG >= 1.3.25 installed"
           sys.exit(1)
     # if OK, generate the rest of them, and I do not expect any error

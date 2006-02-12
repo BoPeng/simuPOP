@@ -58,9 +58,9 @@ if not os.path.isfile(WRAP_FILE) or \
     # generate header file 
     # try the first option set with the first library
     print "Generating wrap file coasim_wrap.cpp"
-    if os.system('%s -o %s %s' % (SWIG1, WRAP_FILE, INTERFACE_FILE)) != 0:
+    if os.system('%s -o %s %s 2> err.log' % (SWIG1, WRAP_FILE, INTERFACE_FILE)) != 0:
       print "Your swig version is not up to date. Trying options with swig <= 1.3.27"
-      if os.system('%s -o %s %s' % (SWIG2, WRAP_FILE, INTERFACE_FILE)) != 0:
+      if os.system('%s -o %s %s 2> err.log' % (SWIG2, WRAP_FILE, INTERFACE_FILE)) != 0:
         print "None of the swig option sets works, please check if you have SWIG >= 1.3.25 installed"
         sys.exit(1)
     print
