@@ -40,8 +40,6 @@ version 0.6.12 - (Rev 169) - Feb 10, 2006
          operators can use a output() operator manually. (sep is originally a bad idea.)
   - NEW: (internal) Adapt the interface file and swig commands to SWIG 1.3.28.
   - CHG: simuComplexDisease.py uses binary modules for SNP markers.
-  - NEW: add an experimental version of coaSim/python into simuPOP. It does not work
-         yet, but should get better soon.
 
 version 0.6.11 - (Rev 119) - Jan 19, 2006
   - DOC: add examples of penetrance operators to the reference manual.
