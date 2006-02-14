@@ -83,25 +83,25 @@ SOURCE_FILES = [
 ]
 
 
-COASIM_HEADER_FILES = [
-  'coasim/all_markers.hh',
-  'coasim/configuration.hh',
-  'coasim/marker.hh',
-  'coasim/simulator.hh',
-  'coasim/builder_events.hh',
-  'coasim/descender.hh',
-  'coasim/micro_satellite_marker.hh',
-  'coasim/snp_marker.hh',
-  'coasim/builder.hh',
-  'coasim/dist_funcs.hh',
-  'coasim/monitor.hh',
-  'coasim/compile_options.hh',
-  'coasim/epochs.hh',
-  'coasim/node.hh',
-  'coasim/interval.hh',
-  'coasim/retired_interval.hh',
-  'coasim/trait_marker.hh'
-]
+## COASIM_HEADER_FILES = [
+##   'coasim/all_markers.hh',
+##   'coasim/configuration.hh',
+##   'coasim/marker.hh',
+##   'coasim/simulator.hh',
+##   'coasim/builder_events.hh',
+##   'coasim/descender.hh',
+##   'coasim/micro_satellite_marker.hh',
+##   'coasim/snp_marker.hh',
+##   'coasim/builder.hh',
+##   'coasim/dist_funcs.hh',
+##   'coasim/monitor.hh',
+##   'coasim/compile_options.hh',
+##   'coasim/epochs.hh',
+##   'coasim/node.hh',
+##   'coasim/interval.hh',
+##   'coasim/retired_interval.hh',
+##   'coasim/trait_marker.hh'
+## ]
 
 WRAP_INFO = [
   ['src/simuPOP_std_wrap.cpp', 'src/simuPOP_std.i', ''],
@@ -110,7 +110,7 @@ WRAP_INFO = [
   ['src/simuPOP_laop_wrap.cpp', 'src/simuPOP_laop.i', '-DLONGALLELE -DOPTIMIZED'],
   ['src/simuPOP_ba_wrap.cpp', 'src/simuPOP_ba.i', '-DBINARYALLELE'],
   ['src/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED'],
-  ['src/coaSim_wrap.cpp', 'coasim/coaSim.i', '']
+##  ['src/coaSim_wrap.cpp', 'coasim/coaSim.i', '']
 ]  
 
 
@@ -166,22 +166,23 @@ evolutionary scenarios. simuPOP is currently bundled with a Python
 binding of coaSim.
 """
 
-COASIM_SOURCE_FILES = [
-  'coasim/configuration.cc',
-  'coasim/marker.cc',
-  'coasim/simulator.cc',
-  'coasim/builder_events.cc',
-  'coasim/descender.cc',
-  'coasim/micro_satellite_marker.cc',
-  'coasim/snp_marker.cc',
-  'coasim/builder.cc',
-  'coasim/dist_funcs.cc',
-  'coasim/epochs.cc',
-  'coasim/node.cc',
-  'coasim/interval.cc',
-  'coasim/retired_interval.cc',
-  'coasim/trait_marker.cc'
-]
+## 
+## COASIM_SOURCE_FILES = [
+##   'coasim/configuration.cc',
+##   'coasim/marker.cc',
+##   'coasim/simulator.cc',
+##   'coasim/builder_events.cc',
+##   'coasim/descender.cc',
+##   'coasim/micro_satellite_marker.cc',
+##   'coasim/snp_marker.cc',
+##   'coasim/builder.cc',
+##   'coasim/dist_funcs.cc',
+##   'coasim/epochs.cc',
+##   'coasim/node.cc',
+##   'coasim/interval.cc',
+##   'coasim/retired_interval.cc',
+##   'coasim/trait_marker.cc'
+## ]
 
 GSL_FILES = [ 
   'gsl/sys/infnan.c',
@@ -283,7 +284,9 @@ DATA_FILES =  [
   ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
     'COPYING', 'TODO', 'simuPOP.release']), 
   ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
-  ('share/simuPOP/test', glob.glob('test/test_*.py') + ['coasim/testCoaSim.py'] ),
+  ('share/simuPOP/test', glob.glob('test/test_*.py') 
+##   + ['coasim/testCoaSim.py'] 
+  ),
   ('share/simuPOP/misc', ['misc/README', 'misc/python-mode.el', 'misc/emacs-python.el']),
   ('share/simuPOP/scripts', glob.glob('scripts/*.py'))
 ]
@@ -301,7 +304,9 @@ setup(
   url = "http://bp6.stat.rice.edu:8080/simuPOP",
   package_dir = {'': 'src' }, 
   py_modules = ['simuPOP', 'simuOpt', 'simuPOP_std', 'simuPOP_op', 'simuPOP_la', 'simuPOP_laop', 
-    'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop', 'coaSim'],
+    'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop'
+##     , 'coaSim'
+    ],
   ext_modules = [
     Extension('_simuPOP_std',
       extra_compile_args=['-O3'],
@@ -359,12 +364,12 @@ setup(
         'src/simuPOP_baop_wrap.cpp',
         'src/utility_baop.cpp'] 
     ),
-    Extension('_coaSim',
-      extra_compile_args=['-O3'],
-      include_dirs = ["coasim"],
-      libraries = ['stdc++'],
-      sources = COASIM_SOURCE_FILES + [ 'src/coaSim_wrap.cpp' ]
-    )    
+##     Extension('_coaSim',
+##       extra_compile_args=['-O3'],
+##       include_dirs = ["coasim"],
+##       libraries = ['stdc++'],
+##       sources = COASIM_SOURCE_FILES + [ 'src/coaSim_wrap.cpp' ]
+##     )    
   ],
   data_files = DATA_FILES
 )
