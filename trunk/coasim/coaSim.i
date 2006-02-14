@@ -77,7 +77,6 @@
 ////////////////////////// INCLUDE FILES ///////////////////////////////
 
 %{
-#include "all_markers.hh"
 #include "builder.hh"
 #include "builder_events.hh"
 #include "compile_options.hh"
@@ -87,13 +86,10 @@
 #include "interval.hh"
 #include "marker.hh"
 #include "epochs.hh"
-#include "micro_satellite_marker.hh"
 #include "monitor.hh"
 #include "node.hh"
 #include "retired_interval.hh"
 #include "simulator.hh"
-#include "snp_marker.hh"
-#include "trait_marker.hh" 
 %}
 
 
@@ -129,13 +125,10 @@ namespace std
 %include "dist_funcs.hh"
 %include "interval.hh"
 %include "epochs.hh"
-%include "micro_satellite_marker.hh"
 %include "monitor.hh"
 %include "node.hh"
 %include "retired_interval.hh"
 %include "simulator.hh"
-%include "snp_marker.hh"
-%include "trait_marker.hh"
 
 ////////////////////// EXTENDED FUNCTIONS ////////////////////
 

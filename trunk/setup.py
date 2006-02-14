@@ -283,10 +283,9 @@ DATA_FILES =  [
   ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
     'COPYING', 'TODO', 'simuPOP.release']), 
   ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
-  ('share/simuPOP/test', glob.glob('test/test_*.py')),
+  ('share/simuPOP/test', glob.glob('test/test_*.py') + ['coasim/testCoaSim.py'] ),
   ('share/simuPOP/misc', ['misc/README', 'misc/python-mode.el', 'misc/emacs-python.el']),
-  ('share/simuPOP/scripts', glob.glob('scripts/*.py')),
-  ('share/simuPOP/test', ['coasim/testCoaSim.py'])
+  ('share/simuPOP/scripts', glob.glob('scripts/*.py'))
 ]
 
 if not XML_SUPPORT: # using serialization library with xml support
