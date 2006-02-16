@@ -212,7 +212,7 @@ namespace simuPOP
           m_maxAllele = pop.maxAllele();
         else if ( m_maxAllele > 0 && m_maxAllele > pop.maxAllele() )
           throw ValueError("maxAllele exceeds population max allele.");
-#endif          
+#endif
 
         DBG_DO(DBG_MUTATOR, cout << "initialize mutator" << endl);
 
@@ -286,9 +286,9 @@ namespace simuPOP
       \param maxAllele maxAllele that can be mutated to. For binary libraries
         allelic states will be [0, maxAllele]. For others, they are [1, maxAllele]
       */
-      KAMMutator(vectorf rate=vectorf(), 
+      KAMMutator(vectorf rate=vectorf(),
         vectori atLoci=vectori(),
-        UINT maxAllele=0, 
+        UINT maxAllele=0,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
@@ -302,7 +302,7 @@ namespace simuPOP
       /// mutate to a state other than current state with equal probability
       virtual void mutate(AlleleRef allele)
       {
-#ifdef BINARYALLELE        
+#ifdef BINARYALLELE
         allele = !allele;
 #else
         Allele new_allele = rng().randInt(this->maxAllele()-1)+1;
@@ -360,7 +360,7 @@ namespace simuPOP
       {
 #ifdef BINARYALLELE
         DBG_WARNING(true, "Symetric stepwise mutation does not work well on two state alleles.");
-#endif        
+#endif
         DBG_ASSERT( fcmp_ge( incProb, 0.) && fcmp_le( incProb, 1.),
           ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
       }
@@ -429,11 +429,11 @@ namespace simuPOP
       {
         DBG_ASSERT( fcmp_ge( incProb, 0.) && fcmp_le( incProb, 1.),
           ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
-        
+
 #ifdef BINARYALLELE
         DBG_WARNING(true, "Generalized stepwise mutation does not work well on two state alleles.");
-#endif   
-        
+#endif
+
         if( func != NULL)                         // use this function
         {
           DBG_ASSERT( PyCallable_Check(func),
