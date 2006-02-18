@@ -96,6 +96,58 @@ class TestMatingSchemes(unittest.TestCase):
       mode=MATE_PoissonDistribution))
     #print cnt
     
+  def testTrajectory(self):
+    'Testing trajectory prediction functions'
+    sel, Ne, freq, h, selection = 0.5, 100, 0.50, 2, 1
+    FreqTrajectoryStochSel(sel, Ne, freq, h, selection)
+    # the second method, forward, with population expansion
+    low, high = 0.5, 0.55
+    mutage, grate, N0, sco = 840, 0.01, 1000000, 0.0
+    FreqTrajectoryForward(low, high, mutage, grate, N0, sco)
+
+  def testControlledMating(self):
+    'Testing controlled mating'
+    # parameters
+    sel, Ne, freq, h, selection = 0.5, 100, 0.50, 2, 1
+    # planned trajectory
+    freq = FreqTrajectoryStochSel(sel, Ne, freq, h, selection)
+    # staring from when?
+    burnin = 100
+    mutAge = len(freq)
+    # trajectory function
+    # 0 ...., 100, 101, .... 100+mutAge
+    #              x         freq
+    def freqRange(gen):
+      if gen <= burnin:
+        # whatever
+        return [0,1]
+      expected = freq[gen-1-burnin]
+      return [expected, expected + 0.05]
+    #
+    # turn On debug
+    #TurnOnDebug(DBG_MATING)
+    simu = simulator( population(Ne, loci=[1], ploidy=2), 
+      controlledMating( matingScheme=randomMating(), 
+        locus=0, allele=StartingAllele+1, freqFunc=freqRange ) 
+      )
+    print "Simulator created"
+    simu.evolve( 
+      preOps=[
+        initByValue([StartingAllele])
+        ],
+      ops=[
+        pointMutator(atLoci=[0], 
+          toAllele=StartingAllele+1, 
+          inds = [0],
+          at = [burnin+1],
+          stage = PreMating),
+        stat(alleleFreq=[0]),
+        pyEval(r'"%%f\n"%%alleleFreq[0][%d]'%StartingAllele)
+      ], 
+      end=burnin+mutAge
+    )
+      
+    
 
 if __name__ == '__main__':
   unittest.main()

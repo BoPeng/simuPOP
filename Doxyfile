@@ -113,6 +113,10 @@ EXCLUDE                = config.h \
                          tools \
                          boost \
                          gsl \
+                         coasim \
+                         coalescent \
+                         selsim \
+                         trajectory \
                          src/serialization \
                          src/simuPOP_*wrap.cpp \
                          src/utility_*.cpp \

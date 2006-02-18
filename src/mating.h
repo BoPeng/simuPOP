@@ -170,6 +170,10 @@ namespace simuPOP
         return "<simuPOP::generic mating scheme>";
       }
 
+      virtual void submitScratch(Pop& pop, Pop& scratch)
+      {
+      }
+
       /// mate: This is not supposed to be called for base Mating class.
       /**
       \param pop Population
@@ -177,7 +181,7 @@ namespace simuPOP
       \param ops during mating operators
       \return return false when mating fail.
       */
-      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop>* >& ops)
+      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop>* >& ops, bool submit)
       {
         throw SystemError("You are not supposed to call base mating scheme.");
       }
@@ -423,13 +427,17 @@ namespace simuPOP
         return "<simuPOP::no mating>";
       }
 
+      virtual void submitScratch(Pop& pop, Pop& scratch)
+      {
+      }
+
       /**
        \brief do the mating. --- no mating :-)
 
        All individuals will be passed to during mating operators but
        no one will die (ignore during mating failing signal).
       */
-      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops)
+      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops, bool submit)
       {
         // apply during mating operators
         if( ! ops.empty() )
@@ -495,6 +503,14 @@ namespace simuPOP
         return "<simuPOP::binomial random selection>";
       }
 
+      virtual void submitScratch(Pop& pop, Pop& scratch)
+      {
+        pop.fitness().clear();
+        // use scratch population,
+        pop.pushAndDiscard(scratch);
+        DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
+      }
+
       /**
        \brief do the mating.
        \param pop population
@@ -502,7 +518,7 @@ namespace simuPOP
        \param ops during mating operators
        \return return false when mating fails.
       */
-      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops)
+      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops, bool submit)
       {
         this->resetNumOffspring();
         // scrtach will have the right structure.
@@ -582,10 +598,9 @@ namespace simuPOP
             DBG_DO(DBG_MATING, m_famSize.push_back( numOS ));
           }                                       // all offspring
         }                                         // all subPopulation.
-        fitness.clear();
-        // use scratch population,
-        pop.pushAndDiscard(scratch);
-        DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
+
+        if(submit)
+          submitScratch(pop, scratch);
         return true;
       }
 
@@ -692,6 +707,14 @@ namespace simuPOP
         return "<simuPOP::sexual random mating>";
       }
 
+      virtual void submitScratch(Pop& pop, Pop& scratch)
+      {
+        pop.fitness().clear();
+        // use scratch population,
+        pop.pushAndDiscard(scratch);
+        DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
+      }
+
       /// do the mating. parameters see Mating::mate .
       /**
       Within each subPopulation, choose male and female randomly
@@ -709,7 +732,7 @@ namespace simuPOP
       - otherwise, RandomMating will return false.
 
       */
-      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops)
+      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops, bool submit)
       {
         bool hasSexChrom = pop.sexChrom();
 
@@ -901,11 +924,8 @@ namespace simuPOP
           }
         }                                         // each subPop
 
-        // clear fitness so it will not be used later
-        fitness.clear();
-        // use scratch populaiton
-        pop.pushAndDiscard(scratch);
-        DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
+        if(submit)
+          submitScratch(pop, scratch);
         return true;
       }
 
@@ -928,6 +948,463 @@ namespace simuPOP
       ///
       vectori m_famSize;
 #endif
+  };
+
+  // simulate trajectory
+
+  vectorf FreqTrajectoryStochSel(
+    double sel,                                   // strength of selection coef  ::8
+    long Ne,                                      // effective population size ::9
+    double freq,                                  // initial freq ::10
+    double dom_h,                                 // strength of dominance ::27
+    int selection                                 // selection ::5
+    )
+  {
+    //
+    // first step, prepeare u:
+    //
+    // probability of zero for traj condition
+    // originally prep_table
+    long   N = Ne;
+    double s = sel*4.0;
+    double h = dom_h;
+
+    vector<double> u(N+1);
+    double ratio = ((1-s/4.0)/(1+s/4.0));
+    vector<double> prod(N);
+    prod[0] = 1;
+
+    for(long i=1;i<N;i++)
+    {
+      if(selection==1)
+        prod[i] = prod[i-1]*ratio;
+      if(selection==2)
+        prod[i] = prod[i-1]*((1-(s)*(1-2*((double)i/N)))/(1+(s)*(1-2*((double)i/N))));
+      if(selection==3)
+        prod[i] = prod[i-1]*( 1 - (s/2.0)*(((double)i/N)+h*(1-2*((double)i/N)) ) )/
+          ( 1 + (s/2.0)*(((double)i/N)+h*(1-2*((double)i/N)) ) );
+    }
+    u[N-1] = prod[N-1];
+    for(long i = N-2; i>0; i--)
+      u[i] = u[i+1] + prod[i];
+    double first= u[1];
+    for(long i=1; i<N; i++)
+      u[i] /= (1.0 + first);
+
+    //
+    // second step
+    //
+    // prepare log look up table, necessary?
+    vector<double> log_lookup(N+1);
+    for(int i=1;i<=N;i++)
+      log_lookup[i] = -(double)N*log((double)i/(i+1));
+
+    //
+    // third step
+    //
+    // start
+    int jump=-1;
+    double weight_up;
+
+    int j = int(double(N)*freq);
+    if((j == 0)||(j>=N))
+      throw " Starting number selected types = 0 or >=N ";
+
+    double * pos_log_ptr = &log_lookup[j];
+    double * neg_log_ptr = &log_lookup[N-j-1];
+    double * u0_pnt_j   = &u[j];
+    double * u0_pnt_jp1 = &u[j+1];
+
+    double lambda_driving = 1+s/4.0;
+    double tot_birth = 2.0;
+    double prob_up = lambda_driving/tot_birth;
+
+    // accumulative t_time
+    double past_traj_time = 0;
+
+    vector<double> traj_time(1, 0);
+    vector<double> traj_freq(1, double(j)/N);
+    vector<double> traj_integral_pos(1, 0);
+    vector<double> traj_integral_neg(1, 0);
+
+    double prev_pos  = 0;
+    double prev_neg  = 0;
+    double t_time = 0;
+
+    traj_time.push_back(0);
+    traj_freq.push_back(0);
+
+    double position_coeff;
+
+    while(true)
+    {
+      traj_integral_pos.back() = prev_pos + t_time*(*pos_log_ptr);
+      traj_integral_neg.back() = prev_neg + t_time*(*neg_log_ptr);
+
+      position_coeff = (double)j * (N-j)/N;
+
+      //Removed Factor of 2
+      t_time = -(1/position_coeff)*log(rng().randUniform01() ) /double(N);
+      past_traj_time += t_time;
+      weight_up = (*u0_pnt_jp1)/(*u0_pnt_j);
+
+      if(selection==2)
+        prob_up = (1+(s)*(1-2*((double)j/N))) / 2.0;
+      if(selection==3)
+        prob_up = ( 1 + (s/2.0)*(((double)j/N) +
+          h*(1-2*(double(j)/N)) ) ) / 2.0 ;
+
+      //Jump
+      if( rng().randUniform01() < prob_up*weight_up)
+      {
+        if(jump==1)
+        {
+          pos_log_ptr++;
+          neg_log_ptr--;
+        }
+        j++;
+        u0_pnt_jp1++;
+        u0_pnt_j++;
+        jump = 1;
+      }
+      else
+      {
+        if(jump==-1)
+        {
+          pos_log_ptr--;
+          neg_log_ptr++;
+        }
+        j--;
+        u0_pnt_jp1--;
+        u0_pnt_j--;
+        jump=-1;
+      }
+
+      prev_pos = traj_integral_pos.back();
+      prev_neg = traj_integral_neg.back();
+      traj_time.back() = past_traj_time;
+      traj_freq.back() = (double)j/N;
+
+      if ( j == 0)
+        break;
+      if ( j == N )
+        cout << "Reach allele N, this should be rare" << endl;
+
+      if ( traj_freq.size() % 10000 == 1)
+        cout << "Size " << traj_freq.size() << " at freq " << traj_freq.back() << endl;
+
+      traj_freq.push_back(0);
+      traj_time.push_back(0);
+      traj_integral_pos.push_back(0);
+      traj_integral_neg.push_back(0);
+    }
+
+    // now we need to translate 4Nt to generations
+    // g = 4Nt, g is generation
+    double maxTime = traj_time.back();
+    vectorf gen_freq( static_cast<size_t>(maxTime * 4 * Ne)+1);
+    size_t ngen = gen_freq.size();
+    int curTime = traj_time.size()-1;
+
+    for(size_t g=0; g<ngen; ++g)
+    {
+      double t = (static_cast<size_t>(maxTime*4*Ne) - g)/(4.*Ne);
+      // find, from the right, most close to t
+      // idea case: x< t <cur
+      while( curTime >= 1 && traj_time[curTime-1] > t)
+        --curTime;
+      gen_freq[g] = traj_freq[curTime-1] +
+        (traj_freq[curTime]-traj_freq[curTime-1])*(t-traj_time[curTime-1]);
+    }
+
+    return gen_freq;
+  }
+
+  /*simulate the sample path of the frequency of disease allele,
+  conditional on non-extinction and non-fixation
+  array of the mutant allele frequency is backword, start from present-day,
+  end at the founding time of the disease
+  But, simulation is forward, start from the past when only one copy
+  of disease allele, until the
+  present-day (if #disease allele <5, poisson dis. conditional
+  on #disease >0, else, normal dis.)*/
+  vectorf FreqTrajectoryForward(double lowbound, double highbound,
+    int disAge, double grate, long N0, double seleCo)
+  {
+    vector<double> DisSamplePath(disAge+1);
+
+    int ftime = disAge;
+    // DisSamplePath is the current allele frequency
+    DisSamplePath[0] = 0;
+
+    int trying=0;
+    while(DisSamplePath[0] <= lowbound || DisSamplePath[0] >= highbound)
+    {
+      if((++trying)%1000==0)
+        cout<<"Trying path "<<trying<<" times\n";
+      double num = 1;
+      //initially 1 copy of mutant allele
+      double Nt = N0*exp(-ftime*grate);
+      double fre = 1/(2*Nt);
+
+      // initial allele frequency
+      DisSamplePath[ftime] = fre;
+
+      // backward in array, but forward in time.
+      for(int gth = ftime-1; gth>= 0; gth--)
+      {
+        // population size at generation gth.
+        Nt = N0*exp(-grate*gth);
+        // number of alleles is less than four, use
+        // poisson approximation.
+        if(num<4)
+        {
+          double lamda;
+          // expected allele frequency: sp(1-p)
+          lamda = (fre + seleCo*fre*(1-fre))*2*Nt;
+          num = rng().randPoisson(lamda);
+          // restart if num<=0
+          if(num<= 0)
+          {
+            DisSamplePath[0] = 0;
+            break;
+          }
+          fre = num/(2*Nt);
+          // restart?
+          if(fre>= 1)
+          {
+            DisSamplePath[0] = 1;
+            break;
+          }
+          DisSamplePath[gth] = fre;
+        }
+        // diffusion process approximation
+        else
+        {
+          // use uniform approximation???
+          double min = seleCo*fre*(1-fre)-sqrt(3*fre*(1-fre)/(2*Nt));
+          double max = seleCo*fre*(1-fre)+sqrt(3*fre*(1-fre)/(2*Nt));
+          double psv = min + (max-min)*rng().randUniform01();
+          fre = fre+psv;
+          if(fre<= 0)
+          {
+            DisSamplePath[0] = 0;
+            break;
+          }
+          if(fre>= 1)
+          {
+            DisSamplePath[0] = 1;
+            break;
+          }
+          num = fre* 2* Nt;
+          DisSamplePath[gth] = fre;
+        }
+      }
+    }                                             // while
+    // reverse the result and return
+    vectorf gen_freq(disAge+1);
+    for(int i=0; i<disAge+1; ++i)
+      gen_freq[i] = DisSamplePath[disAge-i];
+
+    return gen_freq;
+  }
+
+  /**
+    controlled mating
+  */
+  template<class Pop>
+    class ControlledMating : public Mating<Pop>
+  {
+    public:
+
+      /// Controlled mating,
+      /// control allele frequency at a locus.
+      /**
+      \param mating a mating scheme.
+      \param loci  loci at which allele frequency is controlled. Note that
+        controlling the allele frequencies at sveral loci will be
+        very difficult.
+      \param alleles alleles to control at each loci. Should have the
+        same length as loci
+      \param freqFunc frequency boundaries. If the length of loci is
+        1, freqFunc(gen) should return [low, high]. Other eise, it should
+        return [low1, high1, low2, high2, ...].
+      */
+      ControlledMating(
+        Mating<Pop>& matingScheme,
+        vectori loci,
+        vectori alleles,
+        PyObject* freqFunc
+        )
+        : m_loci(loci), m_alleles(alleles),
+        m_freqFunc(freqFunc)
+      {
+        if( m_loci.empty() )
+          throw ValueError("Have to specify a locus (or a loci) to control");
+
+        if( m_alleles.empty() )
+          throw ValueError("Have to specify allele at each locus");
+
+        if(m_loci.size() != m_alleles.size())
+          throw ValueError("Should specify allele for each locus");
+
+        if(m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
+          throw ValueError("Please specify a valid frequency function");
+        else
+          Py_INCREF(m_freqFunc);
+
+        m_matingScheme = matingScheme.clone();
+      }
+
+      /// CPPONLY
+      ControlledMating(const ControlledMating& rhs)
+        : m_loci(rhs.m_loci),
+        m_alleles(rhs.m_alleles),
+        m_freqFunc(rhs.m_freqFunc)
+      {
+        Py_INCREF(m_freqFunc);
+        m_matingScheme = rhs.m_matingScheme->clone();
+      }
+
+      /// destructor
+      ~ControlledMating()
+      {
+        if( m_freqFunc != NULL)
+          Py_DECREF(m_freqFunc);
+        delete m_matingScheme;
+      }
+
+      /// clone() const. Generate a copy of itself and return pointer
+      /// this is to make sure the object is persistent and
+      /// will not be freed by python.
+      virtual Mating<Pop>* clone() const
+      {
+        return new ControlledMating(*this);
+      }
+
+      virtual bool isCompatible( Pop& pop)
+      {
+        return m_matingScheme->isCompatible(pop);
+      }
+
+      /// return name of the mating type
+      virtual string __repr__()
+      {
+        return "<simuPOP::controlled mating>";
+      }
+
+      vectorlu countAlleles(Pop& pop, const vectori& loci, const vectori& alleles)
+      {
+        vectorlu alleleNum(loci.size(), 0L);
+        for(size_t l=0; l < loci.size(); ++l)
+        {
+          int loc = loci[l];
+          Allele ale = alleles[l];
+          // go through all alleles
+          for(GappedAlleleIterator a=pop.alleleBegin(loc),
+            aEnd=pop.alleleEnd(loc); a != aEnd; ++a)
+          {
+            if( AlleleUnsigned(*a) == ale )
+              alleleNum[l]++;
+          }
+        }
+        return alleleNum;
+      }
+
+      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops, bool submit)
+      {
+        // first call the function and get the range
+
+        PyObject* arglist = Py_BuildValue("(i)", pop.gen());
+        PyObject* result = PyEval_CallObject(m_freqFunc, arglist);
+        Py_XDECREF(arglist);
+
+        if( result == NULL)
+        {
+          PyErr_Print();
+          throw ValueError("Function call failed.");
+        }
+
+        vectorf freqRange;
+        PyObj_As_Array(result, freqRange);
+        Py_DECREF(result);
+
+        if( freqRange.size() != 2 * m_loci.size())
+          throw ValueError("Should return low/high for each controlled loci");
+
+        // calculate allele frequen at these loci
+        vectorlu alleleNum = countAlleles(pop, m_loci, m_alleles);
+
+        DBG_DO(DBG_MATING, cout << "Range of allele frequencies at generation "
+          << pop.gen() << " is " << freqRange << endl);
+
+        // compare integer is easier.
+        vectorlu alleleRange(freqRange.size(), 0);
+        for(size_t i=0; i<m_loci.size(); ++i)
+        {
+          if (freqRange[2*i] < 0. )
+            freqRange[2*i] = 0.;
+          if (freqRange[2*i+1] > 1. )
+            freqRange[2*i+1] = 1.;
+
+          if( alleleNum[i] == 0 && freqRange[2*i] > 0. )
+            throw ValueError("No allele exist, and you expect magically appeared alleles?");
+
+          if( freqRange[2*i] > freqRange[2*i+1])
+            throw ValueError("Incorrect frequency range: " + toStr(freqRange[2*i]) +
+              " - " + toStr(freqRange[2*i+1]));
+          
+          alleleRange[2*i] = static_cast<ULONG>(freqRange[2*i]*pop.popSize()*pop.ploidy());
+          if( freqRange[2*i]>0 && alleleRange[2*i] == 0)
+            alleleRange[2*i] = 1;
+          alleleRange[2*i+1] = static_cast<ULONG>(freqRange[2*i+1]*pop.popSize()*pop.ploidy())+1;
+        }
+
+        while(true)
+        {
+          // do the mating
+          m_matingScheme->mate(pop, scratch, ops, false);
+
+          // check allele frequency
+          alleleNum = countAlleles(scratch, m_loci, m_alleles);
+
+          DBG_DO(DBG_MATING, cout << "Mating finished, new count "
+            << alleleNum << " range " << alleleRange << endl);
+          //
+          bool succ = true;
+          for(size_t i=0; i<m_loci.size(); ++i)
+          {
+            if( alleleNum[i] < alleleRange[2*i] || alleleNum[i] > alleleRange[2*i+1] )
+            {
+              succ = false;
+              break;
+            }
+          }
+          // cout << "succ " << succ << "submit " << submit << endl;
+          if( succ && submit)
+          {
+            // cout << "success" << endl;
+            m_matingScheme->submitScratch(pop, scratch);
+            break;
+          }
+        }
+        return true;
+      }
+
+    private:
+
+      /// mating scheme
+      Mating<Pop>* m_matingScheme;
+
+      /// loci at which mating is controlled.
+      vectori m_loci;
+
+      /// allele to be controlled at each locus
+      vectori m_alleles;
+
+      /// function that return an array of frquency range
+      PyObject * m_freqFunc;
+
   };
 
   /**

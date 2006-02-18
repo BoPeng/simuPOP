@@ -1,4 +1,4 @@
-#LyX 1.4.0cvs created this file. For more info see http://www.lyx.org/
+#LyX 1.4.0svn created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -11453,17 +11453,37 @@ function
 \end_layout
 
 \begin_layout Standard
-If you can not accomplish your task with the above normal mutator, you can
- always use this hybrid mutator.
- Mutation rate etc are set just like others and you are supposed to provide
- a python function to return a new allele state given an old state.
- 
+
 \family typewriter
-pyMutator 
+pointMutator, 
 \family default
-will choose an allele as usual and call your function to mutate it to another
- allele.
- Here is an example:
+as its name suggest, does point mutation.
+ It is syntax is:
+\end_layout
+
+\begin_layout LyX-Code
+pointMutator(atLoci, toAllele, atPloidy=[], inds=[], ...)
+\end_layout
+
+\begin_layout Standard
+This mutator will turn alleles at
+\family typewriter
+ atLoci
+\family default
+ on the first chromosome copy to 
+\family typewriter
+toAllele 
+\family default
+for individual 
+\family typewriter
+inds
+\family default
+.
+ You can specify 
+\family typewriter
+atPloidy 
+\family default
+to mutate other, or all ploidy copy.
 \end_layout
 
 \begin_layout Section
