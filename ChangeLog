@@ -10,7 +10,7 @@ version 0.6.13 - currently available as snapshot
          frequency at specified locus/loci fail in specified range.
   - NEW: add test case for controlledMating. (No doc is avaiable yet.)
 
-version 0.6.12 - (Rev 169) - Feb 10, 2006 
+version 0.6.12 - (Rev 186) - Feb 18, 2006 
   - CHG: 'not enough case/control' in caseControlSample now generates 
          a warning message, rather than exception.
   - CHG: set the default sample saveAs format to 'auto', instead of 'bin'
