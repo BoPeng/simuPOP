@@ -161,7 +161,7 @@ namespace simuPOP
       DEVONLY{ m_curRep, gen  are reference to
       glocal shared variables. }
       */
-      Simulator(Pop & population, Mating<Pop>&  mate, string varName = "simuVars",
+      Simulator(Pop & population, Mating<Pop>&  matingScheme, string varName = "simuVars",
         int rep = 1, vectori grp=vectori())
         : m_gen(0), m_curRep(0), m_numRep(rep), m_groups(0),
         m_stopIfOneRepStop(false), m_applyOpToStoppedReps(false)
@@ -171,7 +171,7 @@ namespace simuPOP
 
         DBG_DO(DBG_SIMULATOR, cout << "Creating simulator " << endl);
 
-        m_matingScheme = mate.clone();
+        m_matingScheme = matingScheme.clone();
 
         DBG_DO(DBG_SIMULATOR, cout << "Mating scheme copied" << endl);
 
@@ -245,16 +245,6 @@ namespace simuPOP
           << "these referenced population will not be working now." << endl);
       };
 
-      /// set another mating scheme.
-      void setMatingScheme(Mating<Pop>&  mate)
-      {
-        delete m_matingScheme;
-
-        m_matingScheme = mate.clone();
-
-        DBG_ASSERT(m_matingScheme->isCompatible( this->population(0) ),
-          TypeError, "Mating type is not compatible with current population settings.");
-      }
 
       /// the 'rep' replicate of this simulator
       /**
@@ -559,7 +549,7 @@ namespace simuPOP
 
             try
             {
-              if (!dryrun && !m_matingScheme->mate(curPop(), scratchPop(), activeDurMatingOps))
+              if (!dryrun && !m_matingScheme->mate(curPop(), scratchPop(), activeDurMatingOps, true))
               {
                 DBG_DO(DBG_SIMULATOR, cout << "During-mating Operator stops at replicate "
                   + toStr(curRep()) << endl);
