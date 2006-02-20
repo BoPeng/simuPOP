@@ -9,6 +9,8 @@ version 0.6.13 - currently available as snapshot
   - NEW: Add controlledMating that accept an generation only if allele
          frequency at specified locus/loci fail in specified range.
   - NEW: add test case for controlledMating. (No doc is avaiable yet.)
+  - NEW: implement trajectory simulation follows Slatkin 2001. This 
+         works better than methods from both selSim and geneArtisan.
 
 version 0.6.12 - (Rev 186) - Feb 18, 2006 
   - CHG: 'not enough case/control' in caseControlSample now generates 

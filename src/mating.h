@@ -950,9 +950,178 @@ namespace simuPOP
 #endif
   };
 
-  // simulate trajectory
+  // simulate trajectory using the backward method described in Slatkin 2001.
+  //
+  // The stochastic model is
+  //  Selection:
+  //    AA   Aa     aa
+  //    1    1+s1   1+s2
+  //
+  // Parameters:
+  //
+  //    Nt     a python function that returns population size at each generation.
+  //    T      current generation number. The process will return if it can not
+  //           reach allele zero after T generations.
+  //    freq   current allele frequency of allele a.
+  //    s1     selection coefficient
+  //    s2     strengh of dominance. see above for explanation
+  //
+  // Tracking the allele frequency of allele a.
+  //
+  //
+  vectorf FreqTrajectoryStoch( PyObject* NtFunc, long T,
+    double freq, double s1, double s2)
+  {
+    // is NtFunc callable?
+    if( ! PyCallable_Check(NtFunc) )
+      throw ValueError("NtFunc is not a valid Python function.");
+    else
+      // increase the ref, just to be safe
+      Py_INCREF(NtFunc);
 
-  vectorf FreqTrajectoryStochSel(
+    // get current population size
+    PyObject* arglist = Py_BuildValue("(i)", T);
+    PyObject* result = PyEval_CallObject(NtFunc, arglist);
+    Py_XDECREF(arglist);
+    if( result == NULL)
+    {
+      PyErr_Print();
+      throw ValueError("Function call failed.");
+    }
+    int N;
+    PyObj_As_Int(result, N);
+    Py_DECREF(result);
+
+    // all calculated population size
+    vectorlu Nt(1, N);
+    // copies of allele a at each genertion.
+    vectorlu it(1, static_cast<long>(N*freq));
+    // allele frequency of allele a at each geneation
+    vectorf xt(1, freq);
+    // t is current generation number.
+    long t = T;
+    long idx = 0;
+
+    // a,b,c etc for solving the quadratic equation
+    double a,b,c,b2_4ac,y1,y2,y;
+    while( true )
+    {
+      // get index for time t
+      idx = T-t;
+      // first get N(t-1), if it has not been calculated
+      if( idx+1 >= static_cast<long>( Nt.size() ) )
+      {
+        // first call the function and get the range
+        arglist = Py_BuildValue("(i)", t-1);
+        result = PyEval_CallObject(NtFunc, arglist);
+        Py_XDECREF(arglist);
+        if( result == NULL)
+        {
+          PyErr_Print();
+          throw ValueError("Function call failed.");
+        }
+        PyObj_As_Int(result, N);
+        Py_DECREF(result);
+        Nt.push_back(N);
+      }
+      // given x(t)
+      // calculate y=x(t-1)' by solving an equation
+      //
+      //  x_t = y(1+s2 y+s1 (1-y))/(1+s2 y+2 s1 y(1-y))
+      //
+      if( s1 == 0. && s2 == 0.)
+      {
+        // special case when a = 0.
+        y = xt[idx];
+      }
+      else
+      {
+        a = s2*xt[idx] - 2*s1*xt[idx] - s2 + s1;
+        b = 2*s1*xt[idx] - 1 - s1;
+        c = xt[idx];
+        b2_4ac = b*b-4*a*c;
+
+        if( b2_4ac < 0 )
+          throw ValueError("Quadratic function does not yield a valid solution");
+
+        y1 = (-b+sqrt(b2_4ac))/(2*a);
+        y2 = (-b-sqrt(b2_4ac))/(2*a);
+
+        // choose one of the solutions
+        if( y1 < 0. || y1 > 1.0 )
+        {
+          if( y2 >= 0. && y2 <= 1.0)
+            y = y2;
+          else
+            throw ValueError("None of the solutions is valid");
+        }
+        else
+        {
+          // if y1 is valid
+          if( y2 >= 0. && y2 <= 1.0)
+            throw ValueError("Both solutions are valid. Further decision is needed. y1: " +
+              toStr(y1) + " y2: " + toStr(y2) + " xt: " + toStr(xt[idx]));
+          else
+            y = y1;
+        }
+      }
+
+      if( static_cast<long>(it.size()) < idx+2 )
+      {
+        it.push_back(0);
+        xt.push_back(0);
+      }
+      // y is obtained, is the expected allele frequency for the next generation t-1
+      it[idx+1] = rng().randBinomial( Nt[idx+1], y);
+      xt[idx+1] = it[idx+1]/static_cast<double>(Nt[idx+1]);
+
+      DBG_DO(DBG_DEVEL, cout << "Gen " << t << " expected freq " << y <<
+        " N(t-1) " << Nt[idx+1] << " i(t-1) " << it[idx+1] << endl);
+
+      if( it[idx+1] == 0 )
+      {
+        // need 0, 1, ....,
+        if( it[idx] == 1 )
+          break;
+        else
+        {
+          DBG_DO(DBG_MATING, cout << "Reaching 0, but next gen has more than 1 allele a" << endl);
+          // restart
+          t = T;
+        }
+      }
+      else if( it[idx+1] == Nt[idx+1] )
+        // when the allele get fixed, restart
+      {
+        t = T;
+      }
+      // if not done, but t already reaches T
+      else if( t == 0 )
+      {
+        cout << "Warning: reaching T gnerations. Try again." << endl;
+        t = T;
+      }
+      else
+        // go to next generation
+        t--;
+    }
+    // clean up
+    Py_DECREF(NtFunc);
+    // return a reversed version of xt, without trailing 0
+    // also we may only need part of it since it has been
+    // extended by previous attemps
+    DBG_ASSERT( it[idx+1] == 0, SystemError,
+      "The last generation still has allele a");
+
+    // number of valid generation is idx+1
+    vectorf traj(idx+1);
+    for(long i=0; i<=idx; ++i)
+      traj[i] = xt[idx-i];
+    return traj;
+  }
+
+  // simulate trajectory
+  vectorf FreqTrajectorySelSim(
     double sel,                                   // strength of selection coef  ::8
     long Ne,                                      // effective population size ::9
     double freq,                                  // initial freq ::10
@@ -1353,7 +1522,7 @@ namespace simuPOP
           if( freqRange[2*i] > freqRange[2*i+1])
             throw ValueError("Incorrect frequency range: " + toStr(freqRange[2*i]) +
               " - " + toStr(freqRange[2*i+1]));
-          
+
           alleleRange[2*i] = static_cast<ULONG>(freqRange[2*i]*pop.popSize()*pop.ploidy());
           if( freqRange[2*i]>0 && alleleRange[2*i] == 0)
             alleleRange[2*i] = 1;
