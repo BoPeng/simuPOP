@@ -13,7 +13,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, random
+import unittest, os, sys, random, math
 
 def setGen(pop, off, dad, mom):
   off.setAllele(pop.gen(), 0)
@@ -99,11 +99,72 @@ class TestMatingSchemes(unittest.TestCase):
   def testTrajectory(self):
     'Testing trajectory prediction functions'
     sel, Ne, freq, h, selection = 0.5, 100, 0.50, 2, 1
-    FreqTrajectoryStochSel(sel, Ne, freq, h, selection)
+    FreqTrajectorySelSim(sel, Ne, freq, h, selection)
     # the second method, forward, with population expansion
     low, high = 0.5, 0.55
     mutage, grate, N0, sco = 840, 0.01, 1000000, 0.0
     FreqTrajectoryForward(low, high, mutage, grate, N0, sco)
+
+  def testTrajectoryStoch(self):
+    'Testing the trajectory obtained from backward binomial sampling'
+    TurnOnDebug(DBG_MATING)
+    #TurnOnDebug(DBG_DEVEL)
+    # fitness
+    #   AA     Aa      aa
+    #    1     1+s1    1+s2
+    # constant population size
+    def NtFunc(gen):
+      return 10000
+    # neutral
+    T, freq, s1, s2 = 100000, 0.3, 0., 0.
+    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    # advantageous allele, s2>s1>0 
+    T, freq, s1, s2 = 10000, 0.3, 0., 0.01
+    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    # overdominance, s1 > s2 > 0
+    T, freq, s1, s2 = 10000, 0.3, 0.02, 0.
+    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    # with week purifying selection (additive)
+    T, freq, s1, s2 = 10000, 0.3, -0.0001, -0.0002
+    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    #
+    # population growth
+    def NtFunc(gen):
+      return 1000+10000*math.exp(-0.001*(10000-gen))
+    # neutral
+    T, freq, s1, s2 = 100000, 0.3, 0., 0.
+    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    # advantageous allele, s2>s1>0 
+    T, freq, s1, s2 = 10000, 0.3, 0., 0.01
+    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    # overdominance, s1 > s2 > 0
+    T, freq, s1, s2 = 10000, 0.3, 0.02, 0.
+    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    # with week purifying selection (additive)
+    T, freq, s1, s2 = 10000, 0.3, -0.0001, -0.0002
+    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+
+  def checkRoot(self):
+    'Testing the algorithm'
+    for s1 in [ x/200. - 0.9 for x in range(400) ]:
+      for s2 in [ x/200. - 0.9 for x in range(400) ]:
+        for x in [ x/100. for x in range(0,100)]:
+          a = s2*x-2*s1*x-s2+s1
+          if a == 0:
+            continue
+          b = 2*s1*x - 1 - s1
+          c = x
+          b4ac = b*b-4*a*c
+          if b4ac < 0:
+            raise exceptions.ValueError("b2ac<0")
+          y1 = (-b+math.sqrt(b4ac))/(2*a)
+          y2 = (-b-math.sqrt(b4ac))/(2*a)
+          if (y1 < 0 or y1 > 1) and (y2 < 0 or y2 > 1):
+            print s1,s2,x,a,b,c,y1,y2
+            #raise exceptions.ValueError("no valid solution")
+          if (y1 >= 0 and y1 <= 1) and (y2 >= 0 and y2 <= 1):
+            print "over", s1,s2,x,a,b,c,y1,y2
+            #raise exceptions.ValueError("no valid solution")
 
   def testControlledMating(self):
     'Testing controlled mating'
