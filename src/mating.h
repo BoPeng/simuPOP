@@ -204,18 +204,7 @@ namespace simuPOP
           m_mode == MATE_PoissonDistribution   ||
           m_mode == MATE_BinomialDistribution )))
         {
-          PyObject* arglist = Py_BuildValue("(i)", gen);
-          PyObject* result = PyEval_CallObject(m_numOffspringFunc, arglist);
-          Py_XDECREF(arglist);
-
-          if( result == NULL)
-          {
-            PyErr_Print();
-            throw ValueError("NumOfOffspring function call failed.");
-          }
-
-          PyObj_As_Double(result, numOS);
-          Py_DECREF(result);
+          PyCallFunc(m_numOffspringFunc, "(i)", gen, numOS, PyObj_As_Double);
         }
 
         m_firstOffspring = false;
@@ -330,20 +319,10 @@ namespace simuPOP
           for(size_t i=0; i<pop.numSubPop(); ++i)
             PyTuple_SetItem(curSize, i, PyInt_FromLong( pop.subPopSize(i)));
 
-          PyObject* arglist = Py_BuildValue("(iO)", gen, curSize);
-          PyObject* result = PyEval_CallObject(m_subPopSizeFunc, arglist);
-          Py_XDECREF(curSize);                    // just to be safe
-          Py_XDECREF(arglist);
-
-          if( result == NULL)
-          {
-            PyErr_Print();
-            throw ValueError("Function call failed.");
-          }
-
           vectorf res;
-          PyObj_As_Array(result, res);
-          Py_DECREF(result);
+          PyCallFunc2(m_subPopSizeFunc, "(iO)", gen, curSize,
+            res, PyObj_As_Array);
+          Py_XDECREF(curSize);                    // just to be safe
 
           vectorlu sz(res.size());
 
@@ -980,17 +959,8 @@ namespace simuPOP
       Py_INCREF(NtFunc);
 
     // get current population size
-    PyObject* arglist = Py_BuildValue("(i)", T);
-    PyObject* result = PyEval_CallObject(NtFunc, arglist);
-    Py_XDECREF(arglist);
-    if( result == NULL)
-    {
-      PyErr_Print();
-      throw ValueError("Function call failed.");
-    }
     int N;
-    PyObj_As_Int(result, N);
-    Py_DECREF(result);
+    PyCallFunc(NtFunc, "(i)", T, N, PyObj_As_Int);
 
     // all calculated population size
     vectorlu Nt(1, N);
@@ -1011,17 +981,7 @@ namespace simuPOP
       // first get N(t-1), if it has not been calculated
       if( idx+1 >= static_cast<long>( Nt.size() ) )
       {
-        // first call the function and get the range
-        arglist = Py_BuildValue("(i)", t-1);
-        result = PyEval_CallObject(NtFunc, arglist);
-        Py_XDECREF(arglist);
-        if( result == NULL)
-        {
-          PyErr_Print();
-          throw ValueError("Function call failed.");
-        }
-        PyObj_As_Int(result, N);
-        Py_DECREF(result);
+        PyCallFunc(NtFunc, "(i)", t-1, N, PyObj_As_Int);
         Nt.push_back(N);
       }
       // given x(t)
@@ -1391,31 +1351,32 @@ namespace simuPOP
       /**
       \param mating a mating scheme.
       \param loci  loci at which allele frequency is controlled. Note that
-        controlling the allele frequencies at sveral loci will be
-        very difficult.
+        controlling the allele frequencies at several loci may take a long
+        time.
       \param alleles alleles to control at each loci. Should have the
         same length as loci
-      \param freqFunc frequency boundaries. If the length of loci is
-        1, freqFunc(gen) should return [low, high]. Other eise, it should
-        return [low1, high1, low2, high2, ...].
+      \param freqFunc frequency boundaries. If the length of the return
+        value equals the size of loci, the range for loci will be
+        [value0, value0+range], [value1, value1+range] etc.
+        If the length of the return value is 2 times size of loci, it will
+      be interpreted as [low1, high1, low2, high2 ...]
       */
       ControlledMating(
         Mating<Pop>& matingScheme,
         vectori loci,
         vectori alleles,
-        PyObject* freqFunc
+        PyObject* freqFunc,
+        double range = 0.01
         )
         : m_loci(loci), m_alleles(alleles),
-        m_freqFunc(freqFunc)
+        m_freqFunc(freqFunc),
+        m_range(range)
       {
-        if( m_loci.empty() )
-          throw ValueError("Have to specify a locus (or a loci) to control");
+        DBG_FAILIF( m_loci.empty(), ValueError, "Have to specify a locus (or a loci) to control");
 
-        if( m_alleles.empty() )
-          throw ValueError("Have to specify allele at each locus");
+        DBG_FAILIF( m_alleles.empty(), ValueError, "Have to specify allele at each locus");
 
-        if(m_loci.size() != m_alleles.size())
-          throw ValueError("Should specify allele for each locus");
+        DBG_FAILIF( m_loci.size() != m_alleles.size(), ValueError, "Should specify allele for each locus");
 
         if(m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
           throw ValueError("Please specify a valid frequency function");
@@ -1429,7 +1390,8 @@ namespace simuPOP
       ControlledMating(const ControlledMating& rhs)
         : m_loci(rhs.m_loci),
         m_alleles(rhs.m_alleles),
-        m_freqFunc(rhs.m_freqFunc)
+        m_freqFunc(rhs.m_freqFunc),
+        m_range(rhs.m_range)
       {
         Py_INCREF(m_freqFunc);
         m_matingScheme = rhs.m_matingScheme->clone();
@@ -1483,50 +1445,71 @@ namespace simuPOP
       virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops, bool submit)
       {
         // first call the function and get the range
-
-        PyObject* arglist = Py_BuildValue("(i)", pop.gen());
-        PyObject* result = PyEval_CallObject(m_freqFunc, arglist);
-        Py_XDECREF(arglist);
-
-        if( result == NULL)
-        {
-          PyErr_Print();
-          throw ValueError("Function call failed.");
-        }
-
         vectorf freqRange;
-        PyObj_As_Array(result, freqRange);
-        Py_DECREF(result);
 
-        if( freqRange.size() != 2 * m_loci.size())
-          throw ValueError("Should return low/high for each controlled loci");
+        PyCallFunc( m_freqFunc, "(i)", pop.gen(), 
+          freqRange, PyObj_As_Array);
+      
+        DBG_ASSERT( freqRange.size() == m_loci.size() || freqRange.size() == 2 * m_loci.size(),
+          ValueError, "Length of returned range should have the same or double the number of loci.");
 
+        vectorlu alleleNum;
+        
+#ifndef OPTIMIZED
         // calculate allele frequen at these loci
-        vectorlu alleleNum = countAlleles(pop, m_loci, m_alleles);
+        alleleNum = countAlleles(pop, m_loci, m_alleles);
 
         DBG_DO(DBG_MATING, cout << "Range of allele frequencies at generation "
           << pop.gen() << " is " << freqRange << endl);
+#endif
 
-        // compare integer is easier.
-        vectorlu alleleRange(freqRange.size(), 0);
-        for(size_t i=0; i<m_loci.size(); ++i)
+        // compare integer is easier and more acurate, and we need to make sure
+        // there is one allele when the frequency is greater than 0.
+        vectorlu alleleRange(2*m_loci.size(), 0);
+        if( freqRange.size() == m_loci.size() )
         {
-          if (freqRange[2*i] < 0. )
-            freqRange[2*i] = 0.;
-          if (freqRange[2*i+1] > 1. )
-            freqRange[2*i+1] = 1.;
+          for(size_t i=0; i<m_loci.size(); ++i)
+          {
+            if (freqRange[i] < 0. )
+              freqRange[i] = 0.;
+            if (freqRange[i] > 1. )
+              freqRange[i] = 1.;
 
-          if( alleleNum[i] == 0 && freqRange[2*i] > 0. )
-            throw ValueError("No allele exist, and you expect magically appeared alleles?");
+            alleleRange[2*i] = static_cast<ULONG>(freqRange[i]*pop.popSize()*pop.ploidy());
+            if( freqRange[i]>0 && alleleRange[2*i] == 0)
+              alleleRange[2*i] = 1;
+            // upper bound using range.
+            alleleRange[2*i+1] = static_cast<ULONG>((freqRange[i]+m_range)*pop.popSize()*pop.ploidy())+1;
+#ifndef OPTIMIZED
+        if( alleleNum[i] == 0 && alleleRange[2*i] > 0 )
+          throw ValueError("No allele exists so there is no way to reach specified allele frequency.");
+#endif
+          }
+        }
+        else
+          // returned values are [low1, high1, low2, high2...]
+        {
+          for(size_t i=0; i<m_loci.size(); ++i)
+          {
+            if (freqRange[2*i] < 0. )
+              freqRange[2*i] = 0.;
+            if (freqRange[2*i+1] > 1. )
+              freqRange[2*i+1] = 1.;
 
-          if( freqRange[2*i] > freqRange[2*i+1])
-            throw ValueError("Incorrect frequency range: " + toStr(freqRange[2*i]) +
+            alleleRange[2*i] = static_cast<ULONG>(freqRange[2*i]*pop.popSize()*pop.ploidy());
+
+            DBG_FAILIF( freqRange[2*i] > freqRange[2*i+1], ValueError,
+              "Incorrect frequency range: " + toStr(freqRange[2*i]) +
               " - " + toStr(freqRange[2*i+1]));
 
-          alleleRange[2*i] = static_cast<ULONG>(freqRange[2*i]*pop.popSize()*pop.ploidy());
-          if( freqRange[2*i]>0 && alleleRange[2*i] == 0)
-            alleleRange[2*i] = 1;
-          alleleRange[2*i+1] = static_cast<ULONG>(freqRange[2*i+1]*pop.popSize()*pop.ploidy())+1;
+            if( freqRange[2*i]>0 && alleleRange[2*i] == 0)
+              alleleRange[2*i] = 1;
+            alleleRange[2*i+1] = static_cast<ULONG>(freqRange[2*i+1]*pop.popSize()*pop.ploidy())+1;
+#ifndef OPTIMIZED
+        if( alleleNum[i] == 0 && alleleRange[2*i] > 0 )
+          throw ValueError("No allele exists so there is no way to reach specified allele frequency.");
+#endif
+          }
         }
 
         while(true)
@@ -1574,6 +1557,8 @@ namespace simuPOP
       /// function that return an array of frquency range
       PyObject * m_freqFunc;
 
+      /// range, used when m_freqFunc returns a vector of the same length as m_loci
+      double m_range;
   };
 
   /**

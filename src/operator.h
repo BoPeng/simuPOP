@@ -304,7 +304,6 @@ namespace simuPOP
         m_ostream.setOutput(output, outputExpr);
       }
 
-
       /// get output stream. This function is not exposed to user.
       ostream& getOstream( PyObject* dict=NULL, bool readable=false)
       {
@@ -1084,31 +1083,18 @@ namespace simuPOP
             "Compiled with the wrong version of SWIG?");
 
         // parammeter list, ref count increased
-        PyObject* arglist;
-        if( m_param == NULL)
-          arglist = Py_BuildValue("(O)", popObj);
-        else
-          arglist = Py_BuildValue("(OO)", popObj, m_param);
-
-        // we do not need to catch exceptions here,
-        // our wrapper will do that
-        PyObject* result = PyEval_CallObject(m_func, arglist);
-        // if things goes well....
-        // need to make sure this is correct.
-        Py_DECREF(popObj);
-        // release arglist
-        Py_DECREF(arglist);
-
-        if( result == NULL)
-        {
-          PyErr_Print();
-          throw ValueError("Invalid return from provided function. (Be sure to return True or False)");
-        }
-        // result should be a boolean value
         bool resBool;
-        // defined in utility.h
-        PyObj_As_Bool(result, resBool);
-        Py_DECREF(result);
+        // parenthesis is needed since PyCallFuncX are macros.
+        if( m_param == NULL)
+        {
+          PyCallFunc(m_func, "(O)", popObj, resBool, PyObj_As_Bool);
+        }
+        else
+        {
+          PyCallFunc2(m_func, "(OO)", popObj, m_param, resBool, PyObj_As_Bool);
+        }
+
+        Py_DECREF(popObj);
         return resBool;
       }
 

@@ -90,11 +90,11 @@ namespace simuPOP
       virtual bool applyDuringMating(Pop& pop, typename Pop::IndIterator offspring,
         typename Pop::IndType* dad=NULL, typename Pop::IndType* mom=NULL)
       {
-        if( (dad == NULL && mom==NULL) || 
-            (dad == NULL && m_mode == TAG_Paternal) ||
-            (mom == NULL && m_mode == TAG_Maternal) )
+        if( (dad == NULL && mom==NULL) ||
+          (dad == NULL && m_mode == TAG_Paternal) ||
+          (mom == NULL && m_mode == TAG_Maternal) )
           offspring->setTag( typename Pop::TagType(0,0)  );
-        
+
         if( m_mode == TAG_Paternal )
           offspring->setTag( dad->tag());
         else if( m_mode == TAG_Maternal)
@@ -106,7 +106,7 @@ namespace simuPOP
           else if( mom == NULL)
             offspring->setTag( typename Pop::TagType(dad->tag().first, 0));
           else
-            offspring->setTag( typename Pop::TagType(dad->tag().first, 
+            offspring->setTag( typename Pop::TagType(dad->tag().first,
               mom->tag().first));
         }
         return true;

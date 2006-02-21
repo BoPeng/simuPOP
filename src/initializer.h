@@ -778,12 +778,9 @@ namespace simuPOP
             {
               for(UINT al = 0, alEnd=pop.totNumLoci(); al < alEnd; ++al)
               {
-                PyObject* arglist = Py_BuildValue("(iii)", al, p, sp);
-                PyObject* result = PyEval_CallObject(m_func, arglist);
                 int resInt;
-                PyObj_As_Int(result, resInt);
+                PyCallFunc3( m_func, "(iii)", al, p, sp, resInt, PyObj_As_Int);
                 pop.individual(it,sp).setAllele( static_cast<Allele>(resInt), al, p);
-                Py_DECREF(arglist);
               }
             }
           }
