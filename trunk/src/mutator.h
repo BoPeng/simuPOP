@@ -554,22 +554,9 @@ namespace simuPOP
 
       virtual void mutate(AlleleRef allele)
       {
-        PyObject* arglist = Py_BuildValue("(i)", static_cast<int>(allele) );
-        PyObject* result = PyEval_CallObject(m_func, arglist);
-        Py_DECREF(arglist);
-
-        if( result == NULL)
-        {
-          PyErr_Print();
-          throw ValueError("Function call failed.");
-        }
-
         int resInt;
-        PyObj_As_Int(result, resInt);
-        DBG_DO(DBG_MUTATOR, cout << "Mutate " << static_cast<int>(allele)
-          << " to " << resInt << endl);
+        PyCallFunc(m_func, "(i)", static_cast<int>(allele), resInt, PyObj_As_Int);
         allele = static_cast<Allele>(resInt);
-        Py_DECREF(result);
       }
 
       virtual string __repr__()

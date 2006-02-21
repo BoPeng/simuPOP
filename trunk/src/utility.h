@@ -608,6 +608,53 @@ namespace simuPOP
   PyObject* pyIndObj(void* p);
 
   // ////////////////////////////////////////////////////////////
+  // A macro to call a python function and return value
+  // ////////////////////////////////////////////////////////////
+#define PyCallFunc(func, format, param, retValue, converter) \
+  { /* use local scope variable to avoid redefinition */ \
+    PyObject* arglist = Py_BuildValue(format, param); \
+    PyObject* pyResult = PyEval_CallObject(func, arglist); \
+    Py_XDECREF(arglist); \
+    if( pyResult == NULL) \
+    { \
+       PyErr_Print(); \
+       throw ValueError("Function call failed."); \
+    } \
+    converter(pyResult, retValue); \
+    Py_DECREF(pyResult);  \
+  }
+  
+#define PyCallFunc2(func, format, param1, param2, retValue, converter) \
+  { /* use local scope variable to avoid redefinition */ \
+    PyObject* arglist = Py_BuildValue(format, param1, param2); \
+    PyObject* pyResult = PyEval_CallObject(func, arglist); \
+    Py_XDECREF(arglist); \
+    if( pyResult == NULL) \
+    { \
+       PyErr_Print(); \
+       throw ValueError("Function call failed."); \
+    } \
+    converter(pyResult, retValue); \
+    Py_DECREF(pyResult);  \
+  }
+
+
+#define PyCallFunc3(func, format, param1, param2, param3, retValue, converter) \
+  { /* use local scope variable to avoid redefinition */ \
+    PyObject* arglist = Py_BuildValue(format, param1, param2, param3); \
+    PyObject* pyResult = PyEval_CallObject(func, arglist); \
+    Py_XDECREF(arglist); \
+    if( pyResult == NULL) \
+    { \
+       PyErr_Print(); \
+       throw ValueError("Function call failed."); \
+    } \
+    converter(pyResult, retValue); \
+    Py_DECREF(pyResult);  \
+  }
+
+
+  // ////////////////////////////////////////////////////////////
   // Expression evaluation
   // ////////////////////////////////////////////////////////////
 

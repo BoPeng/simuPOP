@@ -90,7 +90,6 @@ typedef unsigned char* AllelePtr;
 #endif
 #endif
 
-
 typedef std::vector<Allele>::iterator GenoIterator;
 typedef std::vector<Allele>::const_iterator constGenoIterator;
 

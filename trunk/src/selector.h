@@ -441,19 +441,8 @@ namespace simuPOP
           for(UINT p=0; p < pEnd; ++p)
             m_alleles[j++] = ind->allele(m_loci[i], p);
 
-        PyObject* arglist = Py_BuildValue("(O)", m_numArray );
-        PyObject* result = PyEval_CallObject(m_func, arglist);
-        Py_DECREF(arglist);
-        if( result == NULL)
-        {
-          PyErr_Print();
-          throw ValueError("Function call failed.");
-        }
-
         double resDouble;
-        PyObj_As_Double(result, resDouble);
-        DBG_DO(DBG_SELECTOR, cout << "Fitness is " << resDouble << endl);
-        Py_DECREF(result);
+        PyCallFunc(m_func, "(O)", m_numArray, resDouble, PyObj_As_Double);
         return resDouble;
       }
 
@@ -909,24 +898,12 @@ namespace simuPOP
           for(UINT p=0; p < pEnd; ++p)
             m_alleles[j++] = ind->allele(m_loci[i], p);
 
-        PyObject* arglist = Py_BuildValue("(O)", m_numArray );
-        PyObject* result = PyEval_CallObject(m_func, arglist);
-        Py_DECREF(arglist);
-        if( result == NULL)
-        {
-          PyErr_Print();
-          throw ValueError("Function call failed.");
-        }
-
         double resDouble;
-        PyObj_As_Double(result, resDouble);
+        PyCallFunc(m_func, "(O)", m_numArray, resDouble, PyObj_As_Double);
 
-        DBG_DO(DBG_SELECTOR, cout << "Fitness is " << resDouble << endl);
         // make sure the returned value is legitimate.
         DBG_ASSERT( fcmp_ge( resDouble, 0.) && fcmp_le( resDouble, 1.),
           ValueError, "Returned fitness " + toStr(resDouble) + " is out of range [0,1]" );
-
-        Py_DECREF(result);
 
         return resDouble;
       }
@@ -1375,19 +1352,8 @@ namespace simuPOP
           for(UINT p=0; p < pEnd; ++p)
             m_alleles[j++] = ind->allele(m_loci[i], p);
 
-        PyObject* arglist = Py_BuildValue("(O)", m_numArray );
-        PyObject* result = PyEval_CallObject(m_func, arglist);
-        Py_DECREF(arglist);
-        if( result == NULL)
-        {
-          PyErr_Print();
-          throw ValueError("Function call failed.");
-        }
-
         double resDouble;
-        PyObj_As_Double(result, resDouble);
-        DBG_DO(DBG_SELECTOR, cout << "Fitness is " << resDouble << endl);
-        Py_DECREF(result);
+        PyCallFunc(m_func, "(O)", m_numArray, resDouble, PyObj_As_Double);
         return resDouble;
       }
 

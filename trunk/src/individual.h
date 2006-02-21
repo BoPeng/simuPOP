@@ -510,7 +510,7 @@ namespace simuPOP
         return s_genoStruRepository[m_genoStruIdx].m_lociPos[locus];
       }
 
-      /// expose loci distance 
+      /// expose loci distance
       PyObject* arrLociPos()
       {
         return Double_Vec_As_NumArray( s_genoStruRepository[m_genoStruIdx].m_lociPos.begin(),
@@ -522,7 +522,7 @@ namespace simuPOP
       {
         CHECKRANGECHROM(chrom);
 
-        return Double_Vec_As_NumArray( 
+        return Double_Vec_As_NumArray(
           s_genoStruRepository[m_genoStruIdx].m_lociPos.begin() + chromBegin(chrom),
           s_genoStruRepository[m_genoStruIdx].m_lociPos.begin() + chromEnd(chrom) );
       }

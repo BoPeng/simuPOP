@@ -245,7 +245,6 @@ namespace simuPOP
           << "these referenced population will not be working now." << endl);
       };
 
-
       /// the 'rep' replicate of this simulator
       /**
       \param rep number of replicate.

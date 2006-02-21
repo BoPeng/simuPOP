@@ -62,7 +62,7 @@ def rmatrix(mat):
 
 
 class VarPlotter_Base:
-  def __init__(self, nplot, update, title, xlab, ylab, axes, 
+  def __init__(self, nplot, update, title, xlab, ylab, axes, lty, col, 
     mfrow, plotType, saveAs, leaveOpen, dev='', width=0, height=0):
     """
     initialization function of base properties (layout etc)
@@ -71,6 +71,14 @@ class VarPlotter_Base:
     # save parameters
     self.nplot = nplot
     self.axes = axes
+    if lty==[]:
+      self.lty = range(1, nplot+1)
+    else:
+      self.lty = lty
+    if col==[]:
+      self.col = [0]*nplot
+    else:
+      self.col = col
     self.mfrow = mfrow
     self.update = update
     self.title = [title]*self.nplot
@@ -221,7 +229,7 @@ class VarPlotter_NoHis(VarPlotter_Base):
   
   """
   
-  def __init__(self, numRep=1, win=0, ylim=[0,0], update=1, plotType="plot",
+  def __init__(self, numRep=1, win=0, ylim=[0,0], update=1, plotType="plot", lty=[], col=[],
                title="variable", xlab="generation", ylab="", axes=True, mfrow=[1,1],
                byRep=0, saveAs="", leaveOpen=True, level = 20, dev='', width=0, height=0):
     """
@@ -231,10 +239,10 @@ class VarPlotter_NoHis(VarPlotter_Base):
     
     if byRep:
       VarPlotter_Base.__init__(self, numRep, update, title, xlab,
-        ylab, axes, mfrow, plotType, saveAs, leaveOpen, dev, width, height)
+        ylab, axes, lty, col, mfrow, plotType, saveAs, leaveOpen, dev, width, height)
     else:
       VarPlotter_Base.__init__(self, 1, update, title, xlab,
-        ylab, axes, mfrow, plotType, saveAs, leaveOpen, dev, width, height)
+        ylab, axes, lty, col, mfrow, plotType, saveAs, leaveOpen, dev, width, height)
        
     self.numRep = numRep
        
@@ -362,7 +370,7 @@ class VarPlotter_His(VarPlotter_Base):
   
   """
   
-  def __init__(self, varDim=1, numRep=1, win=0, ylim=[0,0], update=1, 
+  def __init__(self, varDim=1, numRep=1, win=0, ylim=[0,0], update=1, lty=[], col=[],
                title="variable", xlab="generation", ylab="", axes=True, mfrow=[1,1],
                byRep=0, byVal=0, separate=False, plotType="plot", level=20,
                saveAs="", leaveOpen=True, dev='', width=0, height=0):
@@ -398,9 +406,14 @@ class VarPlotter_His(VarPlotter_Base):
       else:
         self.data.append(dataAggregator(win, varDim))
         self.byRep = 1
+    
+    if lty==[]:
+      lty = [1]*numRep
+    if col==[]:
+      col = ['black']*numRep
     # initialize base plotter
     VarPlotter_Base.__init__(self, nplot, update, title,
-      xlab, ylab, axes, mfrow, plotType, saveAs, leaveOpen, dev, width, height)
+      xlab, ylab, axes, lty, col, mfrow, plotType, saveAs, leaveOpen, dev, width, height)
     #
     self.varDim = varDim
     self.numRep = numRep
@@ -498,9 +511,10 @@ class VarPlotter_His(VarPlotter_Base):
           r.plot( self.data[rep].gen, self.data[rep].data[0],
             xlab=self.xlab, ylab=self.ylab,axes=self.axes,
             main=self.title[rep], type='l', xlim=self.xlim,
-            ylim=self.ylim, lty=1)
-          for i in range( 1, self.data[rep].recordSize ):        
-            r.lines( self.data[rep].gen, self.data[rep].data[i], type='l', lty=i+1)
+            ylim=self.ylim, lty=self.lty[0], col=self.col[0])
+          for i in range( 1, self.data[rep].recordSize ):
+            r.lines( self.data[rep].gen, self.data[rep].data[i], type='l', lty=self.lty[i],
+              col=self.col[i])
       else:  # use panel for each item of the plot
         height = self.ylim[1] - self.ylim[0]
         newlim = [self.ylim[0], self.ylim[0] + height* self.data[0].recordSize]
@@ -508,11 +522,12 @@ class VarPlotter_His(VarPlotter_Base):
           r.plot( self.data[rep].gen, self.data[rep].data[0],
             xlab=self.xlab, ylab=self.ylab,axes=self.axes,
             main=self.title[rep], type='l', xlim=self.xlim,
-            ylim=newlim, lty=1)
+            ylim=newlim, lty=self.lty[0], col=self.col[0])
           r.abline(h=[newlim[0] + height*x for x in range(0, self.data[rep].recordSize)])
           for i in range( 1, self.data[rep].recordSize ):        
             r.lines( self.data[rep].gen, 
-              [height*i+x for x in self.data[rep].data[i]], type='l', lty=i+1)
+              [height*i+x for x in self.data[rep].data[i]], type='l', lty=self.lty[i],
+              col=self.col[i])
           
     if self.byVal:
       if self.plotType == "image":
@@ -527,9 +542,10 @@ class VarPlotter_His(VarPlotter_Base):
           r.plot( self.data[v].gen, self.data[v].data[0],
             xlab=self.xlab, ylab=self.ylab,axes=self.axes,
             main=self.title[v], type='l', xlim=self.xlim,
-            ylim=self.ylim, lty=1)
+            ylim=self.ylim, lty=self.lty[0], col=self.col[0])
           for i in range( 1, self.data[v].recordSize ):        
-            r.lines( self.data[v].gen, self.data[v].data[i], type='l', lty=i+1)
+            r.lines( self.data[v].gen, self.data[v].data[i], type='l', 
+              lty=self.lty[i], col=self.col[i])
       else:
         height = self.ylim[1] - self.ylim[0]
         newlim = [self.ylim[0], self.ylim[0] + height* self.data[0].recordSize]
@@ -537,11 +553,12 @@ class VarPlotter_His(VarPlotter_Base):
           r.plot( self.data[v].gen, self.data[v].data[0],
             xlab=self.xlab, ylab=self.ylab,axes=self.axes,
             main=self.title[v], type='l', xlim=self.xlim,
-            ylim=newlim, lty=1)
+            ylim=newlim, lty=self.lty[0], col=self.col[0])
           r.abline(h=[newlim[0] + height*x for x in range(0, self.data[rep].recordSize)])
           for i in range( 1, self.data[v].recordSize ):        
             r.lines( self.data[v].gen, 
-              [height*i + x for x in self.data[v].data[i]], type='l', lty=i+1)
+              [height*i + x for x in self.data[v].data[i]], type='l', 
+              lty=self.lty[i], col=self.col[i])
     self.save(gen)
     return True
           
@@ -549,7 +566,7 @@ class VarPlotter_His(VarPlotter_Base):
 #
 class varPlotter(pyOperator):
   def __init__(self, expr, history=True, varDim=1, numRep=1, win=0, ylim=[0,0],
-    update=1, title="", xlab="generation", ylab="",axes=True, 
+    update=1, title="", xlab="generation", ylab="",axes=True, lty=[], col=[],
     mfrow=[1,1], separate=False, byRep=False, byVal=False, plotType="plot",
     level=20, saveAs="", leaveOpen=True, dev='', width=0, height=0, 
     *args, **kwargs):
@@ -559,12 +576,12 @@ class varPlotter(pyOperator):
       self.plotter = VarPlotter_His(numRep=numRep, varDim=varDim, win=win, ylim=ylim,
         update=update, title=title, xlab=xlab, ylab=ylab, axes=axes, mfrow=mfrow,
         byRep=byRep, byVal=byVal, separate=separate, plotType=plotType, 
-        level=level, saveAs=saveAs, 
+        level=level, saveAs=saveAs, lty=lty, col=col,
         leaveOpen=leaveOpen, dev=dev, width=width, height=height)
     else:
       self.plotter = VarPlotter_NoHis(numRep=numRep, win=win, ylim=ylim,
         update=update, title=title, xlab=xlab, ylab=ylab, axes=axes, mfrow=mfrow,
-        byRep=byRep, plotType=plotType, level=level, saveAs=saveAs, 
+        byRep=byRep, plotType=plotType, level=level, saveAs=saveAs, lty=lty, col=col,
         leaveOpen=leaveOpen, dev=dev, width=width, height=height)
     # when apply is called, self.plotter.plot is called
     # *args, **kwargs may be things like rep=, gro=, at=, begin=
@@ -573,13 +590,13 @@ class varPlotter(pyOperator):
 
 # VarPlotter wrapper   
 def VarPlot(value, history=0, varDim=1, numRep=1, win=0, ylim=[0,0],
-  update=1, title="", xlab="generation", ylab="", axes=True,
+  update=1, title="", xlab="generation", ylab="", axes=True, lty=[], col=[],
   mfrow=[1,1], separate=False, byRep=0, byVal=0, plotType="plot",
   level=20, saveAs=""):
   # no history.
   return VarPlotter_NoHis( numRep=1, win=0, ylim=[0,0],
     update=1, title=title, xlab=xlab, ylab=ylab, 
-    plotType=plotType, axes=axes,
+    plotType=plotType, axes=axes, lty=lty, col=col,
     mfrow=[1,1], byRep=0, saveAs=saveAs, level = level).plot(population(0), value)
 
 # 

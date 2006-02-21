@@ -1382,7 +1382,7 @@ namespace simuPOP
         return m_fitness;
       }
 
-      // this funciton allows fitness to be 
+      // this funciton allows fitness to be
       // accessed from python.
       PyObject* arrFitness()
       {
