@@ -113,36 +113,36 @@ class TestMatingSchemes(unittest.TestCase):
     #   AA     Aa      aa
     #    1     1+s1    1+s2
     # constant population size
-    def NtFunc(gen):
-      return 10000
-    # neutral
-    T, freq, s1, s2 = 100000, 0.3, 0., 0.
-    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    # s is default to neutral process
+    path = FreqTrajectoryStoch(T=10000, freq=0.3, N=10000)
     # advantageous allele, s2>s1>0 
-    T, freq, s1, s2 = 10000, 0.3, 0., 0.01
-    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    path = FreqTrajectoryStoch(T=10000, freq=0.3, N=10000, s=[1, 1, 1.01])
     # overdominance, s1 > s2 > 0
-    T, freq, s1, s2 = 10000, 0.3, 0.02, 0.
-    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    path = FreqTrajectoryStoch(T=10000, freq=0.3, N=10000, s=[1, 1.02, 1])
     # with week purifying selection (additive)
-    T, freq, s1, s2 = 10000, 0.3, -0.0001, -0.0002
-    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
-    #
+    path = FreqTrajectoryStoch(T=10000, freq=0.3, N=10000, s=[1, 0.9999, 0.9998])
     # population growth
     def NtFunc(gen):
       return 1000+10000*math.exp(-0.001*(10000-gen))
+    print NtFunc(10000), NtFunc(1000), NtFunc(0)
     # neutral
-    T, freq, s1, s2 = 100000, 0.3, 0., 0.
-    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    path = FreqTrajectoryStoch(T=10000, freq=0.3, NtFunc=NtFunc)
     # advantageous allele, s2>s1>0 
-    T, freq, s1, s2 = 10000, 0.3, 0., 0.01
-    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    path = FreqTrajectoryStoch(T=10000, freq=0.3, NtFunc=NtFunc, s=[1, 1, 1.01])
     # overdominance, s1 > s2 > 0
-    T, freq, s1, s2 = 10000, 0.3, 0.02, 0.
-    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    path = FreqTrajectoryStoch(T=10000, freq=0.3, NtFunc=NtFunc, s=[1, 1.02, 1])
     # with week purifying selection (additive)
-    T, freq, s1, s2 = 10000, 0.3, -0.0001, -0.0002
-    path = FreqTrajectoryStoch(NtFunc, T, freq, s1, s2)
+    path = FreqTrajectoryStoch(T=10000, freq=0.3, NtFunc=NtFunc, s=[1, 0.9999, 0.9998])
+    #
+    # changing selection pressure
+    def sFunc(gen):
+      if gen < 9000:  # previously positive selection
+        return [1, 1.01, 1.02]
+      else:           # then under purifying selection
+        return [1, 0.999, 0.998]
+    # neutral
+    path = FreqTrajectoryStoch(T=10000, freq=0.3, NtFunc=NtFunc, sFunc=sFunc)
+    # print path
 
   def checkRoot(self):
     'Testing the algorithm'
