@@ -932,42 +932,86 @@ namespace simuPOP
   // simulate trajectory using the backward method described in Slatkin 2001.
   //
   // The stochastic model is
-  //  Selection:
   //    AA   Aa     aa
   //    1    1+s1   1+s2
   //
   // Parameters:
   //
-  //    Nt     a python function that returns population size at each generation.
+  //    N      constant population size N
+  //    NtFunc a python function that returns population size at each generation.
   //    T      current generation number. The process will return if it can not
   //           reach allele zero after T generations.
   //    freq   current allele frequency of allele a.
-  //    s1     selection coefficient
-  //    s2     strengh of dominance. see above for explanation
+  //    s      fitness for [AA, Aa, aa] assume constant selection pressure
+  //           s is default to [1,1,1]. I.e, a neutral process
+  //    sFunc  a python function that returns selection pressure at each generation
+  //
+  // Of course, you should specify only one of N/NtFunc and one of s/sFunc
   //
   // Tracking the allele frequency of allele a.
   //
   //
-  vectorf FreqTrajectoryStoch( PyObject* NtFunc, long T,
-    double freq, double s1, double s2)
+  vectorf FreqTrajectoryStoch( long T, double freq, long N=0, PyObject* NtFunc=NULL, 
+    vectorf s=vectorf(), PyObject* sFunc=NULL)
   {
     // is NtFunc callable?
-    if( ! PyCallable_Check(NtFunc) )
-      throw ValueError("NtFunc is not a valid Python function.");
+    if( NtFunc!= NULL )
+    {
+      if( ! PyCallable_Check(NtFunc) )
+        throw ValueError("NtFunc is not a valid Python function.");
+      else
+        // increase the ref, just to be safe
+        Py_INCREF(NtFunc);
+    }
+    
+    // 1, 1+s1, 1+s2
+    double s1, s2;
+    if( sFunc!= NULL )
+    {
+      if( ! PyCallable_Check(sFunc) )
+        throw ValueError("sFunc is not a valid Python function.");
+      else
+        // increase the ref, just to be safe
+        Py_INCREF(sFunc);
+    }
+    else if( s.empty() )
+    // default to [1,1,1]
+    {
+      s1 = 0.;
+      s2 = 0.;
+    }
+    else if( s.size() != 3 || s[0] == 0)
+    {
+      throw ValueError("s should be a vector of length 3. (for AA, Aa and aa)");
+    }
     else
-      // increase the ref, just to be safe
-      Py_INCREF(NtFunc);
-
+    {
+      // convert to the form 1, s1, s2
+      s1 = s[1] / s[0] - 1.;
+      s2 = s[2] / s[0] - 1.;
+    }
+    
     // get current population size
-    int N;
-    PyCallFunc(NtFunc, "(i)", T, N, PyObj_As_Int);
+    int Ntmp;
+    if( NtFunc == NULL)
+      Ntmp = N;
+    else
+    {
+      PyCallFunc(NtFunc, "(i)", T, Ntmp, PyObj_As_Int);
+    }
 
     // all calculated population size
-    vectorlu Nt(1, N);
+    vectorlu Nt(1, Ntmp);
     // copies of allele a at each genertion.
-    vectorlu it(1, static_cast<long>(N*freq));
+    vectorlu it(1, static_cast<long>(Ntmp*freq));
     // allele frequency of allele a at each geneation
     vectorf xt(1, freq);
+    // store calculated fitness s1, s2, if necessary
+    // note that s_T will never be used. 
+    vectorf s1_cache(1,0), s2_cache(1,0);
+    // will be used to store return value of sFunc
+    vectorf s_vec; 
+
     // t is current generation number.
     long t = T;
     long idx = 0;
@@ -981,15 +1025,40 @@ namespace simuPOP
       // first get N(t-1), if it has not been calculated
       if( idx+1 >= static_cast<long>( Nt.size() ) )
       {
-        PyCallFunc(NtFunc, "(i)", t-1, N, PyObj_As_Int);
-        Nt.push_back(N);
+        if( NtFunc != NULL)
+        {
+          PyCallFunc(NtFunc, "(i)", t-1, Ntmp, PyObj_As_Int);
+        }
+        Nt.push_back(Ntmp);
+      }
+      //
+      // get fitness
+      if( sFunc != NULL )
+      {
+        if( idx+1 >= static_cast<long>( s1_cache.size() ) )
+        {
+          PyCallFunc(sFunc, "(i)", t-1, s_vec, PyObj_As_Array);
+          
+          DBG_ASSERT(s_vec.size()==3 || s_vec[0] != 0., ValueError, 
+            "Returned value from sFunc should be a vector of size 3");
+            
+          s1 = s_vec[1]/s_vec[0] - 1.;
+          s2 = s_vec[2]/s_vec[0] - 1.;
+          s1_cache.push_back(s1);
+          s2_cache.push_back(s2);
+        }
+        else
+        {
+          s1 = s1_cache[idx];
+          s2 = s2_cache[idx];
+        }
       }
       // given x(t)
       // calculate y=x(t-1)' by solving an equation
       //
       //  x_t = y(1+s2 y+s1 (1-y))/(1+s2 y+2 s1 y(1-y))
       //
-      if( s1 == 0. && s2 == 0.)
+      if( s1 == 0. && s2 == 0. )
       {
         // special case when a = 0.
         y = xt[idx];
@@ -1066,7 +1135,11 @@ namespace simuPOP
         t--;
     }
     // clean up
-    Py_DECREF(NtFunc);
+    if( NtFunc != NULL)
+      Py_DECREF(NtFunc);
+    if( sFunc != NULL)
+      Py_DECREF(sFunc);
+      
     // return a reversed version of xt, without trailing 0
     // also we may only need part of it since it has been
     // extended by previous attemps
