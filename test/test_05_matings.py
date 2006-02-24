@@ -107,43 +107,47 @@ class TestMatingSchemes(unittest.TestCase):
 
   def testTrajectoryStoch(self):
     'Testing the trajectory obtained from backward binomial sampling'
-    TurnOnDebug(DBG_MATING)
+    #TurnOnDebug(DBG_MATING)
     #TurnOnDebug(DBG_DEVEL)
     # fitness
     #   AA     Aa      aa
     #    1     1+s1    1+s2
     # constant population size
     # s is default to neutral process
-    path = FreqTrajectoryStoch(T=10000, freq=0.3, N=10000)
+    path = FreqTrajectoryStoch(freq=0.3, N=10000)
     # advantageous allele, s2>s1>0 
-    path = FreqTrajectoryStoch(T=10000, freq=0.3, N=10000, s=[1, 1, 1.01])
+    path = FreqTrajectoryStoch(freq=0.3, N=10000, s=[1, 1, 1.01])
     # overdominance, s1 > s2 > 0
-    path = FreqTrajectoryStoch(T=10000, freq=0.3, N=10000, s=[1, 1.02, 1])
+    path = FreqTrajectoryStoch(freq=0.3, N=10000, s=[1, 1.02, 1])
     # with week purifying selection (additive)
-    path = FreqTrajectoryStoch(T=10000, freq=0.3, N=10000, s=[1, 0.9999, 0.9998])
+    path = FreqTrajectoryStoch(freq=0.3, N=10000, s=[1, 0.9999, 0.9998])
     # population growth
     def NtFunc(gen):
-      return 1000+10000*math.exp(-0.001*(10000-gen))
-    print NtFunc(10000), NtFunc(1000), NtFunc(0)
+      return 1000+10000*math.exp(-0.001*(gen))
     # neutral
-    path = FreqTrajectoryStoch(T=10000, freq=0.3, NtFunc=NtFunc)
+    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc)
     # advantageous allele, s2>s1>0 
-    path = FreqTrajectoryStoch(T=10000, freq=0.3, NtFunc=NtFunc, s=[1, 1, 1.01])
+    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc, s=[1, 1, 1.01])
     # overdominance, s1 > s2 > 0
-    path = FreqTrajectoryStoch(T=10000, freq=0.3, NtFunc=NtFunc, s=[1, 1.02, 1])
+    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc, s=[1, 1.02, 1])
     # with week purifying selection (additive)
-    path = FreqTrajectoryStoch(T=10000, freq=0.3, NtFunc=NtFunc, s=[1, 0.9999, 0.9998])
+    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc, s=[1, 0.9999, 0.9998])
     #
     # changing selection pressure
     def sFunc(gen):
-      if gen < 9000:  # previously positive selection
+      if gen > 1000:  # previously positive selection
         return [1, 1.01, 1.02]
       else:           # then under purifying selection
         return [1, 0.999, 0.998]
     # neutral
-    path = FreqTrajectoryStoch(T=10000, freq=0.3, NtFunc=NtFunc, sFunc=sFunc)
+    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc, sFunc=sFunc)
     # print path
 
+  def testTrajectoryMultiStoch(self):
+    'Testing the trajectory obtained from backward binomial sampling'
+    TurnOnDebug(DBG_MATING)
+    path = FreqTrajectoryMultiStoch(freq=[0.3, 0.1], N=10000, s=[1,1,01, 1.02, 1, 1.002, 1.002])
+ 
   def checkRoot(self):
     'Testing the algorithm'
     for s1 in [ x/200. - 0.9 for x in range(400) ]:

@@ -10,7 +10,7 @@
 # $Rev$
 #
 # Known bugs:
-#   None
+#   1. This script uses 
 # 
 
 """
