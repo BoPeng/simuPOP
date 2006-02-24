@@ -929,33 +929,37 @@ namespace simuPOP
 #endif
   };
 
-  // simulate trajectory using the backward method described in Slatkin 2001.
   //
-  // The stochastic model is
-  //    AA   Aa     aa
-  //    1    1+s1   1+s2
+  // simulate trajectories of disease susceptibility loci using an extension of
+  // the backward method described in Slatkin 2001.
   //
   // Parameters:
   //
   //    N      constant population size N
   //    NtFunc a python function that returns population size at each generation.
-  //    T      current generation number. The process will return if it can not
-  //           reach allele zero after T generations.
-  //    freq   current allele frequency of allele a.
-  //    s      fitness for [AA, Aa, aa] assume constant selection pressure
-  //           s is default to [1,1,1]. I.e, a neutral process
+  //           gen is defined in reversed order. NtFunc(0) should be current
+  //           generation number.
+  //    freq   expected allele frequency of allele a.
+  //    s      fitness for [AA, Aa, aa] or [AA, Aa, aa, BB, Bb, bb] for the multi-locus
+  //           case. Assume constant selection pressure. s is default to [1,1,1].
+  //           I.e, a neutral process.
   //    sFunc  a python function that returns selection pressure at each generation
+  //           the function expects a single parameter gen which is defined
+  //           in reversed order.
+  //    T      maximum generation number. The process will restart if it can not
+  //           reach allele zero after T generations. Default to 1,000,000
   //
   // Of course, you should specify only one of N/NtFunc and one of s/sFunc
   //
   // Tracking the allele frequency of allele a.
   //
   //
-  vectorf FreqTrajectoryStoch( long T, double freq, long N=0, PyObject* NtFunc=NULL, 
-    vectorf s=vectorf(), PyObject* sFunc=NULL)
+  vectorf FreqTrajectoryStoch( double freq, long N=0,
+    PyObject* NtFunc=NULL, vectorf s=vectorf(), PyObject* sFunc=NULL,
+    ULONG T=1000000)
   {
     // is NtFunc callable?
-    if( NtFunc!= NULL )
+    if( NtFunc != NULL )
     {
       if( ! PyCallable_Check(NtFunc) )
         throw ValueError("NtFunc is not a valid Python function.");
@@ -963,7 +967,7 @@ namespace simuPOP
         // increase the ref, just to be safe
         Py_INCREF(NtFunc);
     }
-    
+
     // 1, 1+s1, 1+s2
     double s1, s2;
     if( sFunc!= NULL )
@@ -975,7 +979,7 @@ namespace simuPOP
         Py_INCREF(sFunc);
     }
     else if( s.empty() )
-    // default to [1,1,1]
+      // default to [1,1,1]
     {
       s1 = 0.;
       s2 = 0.;
@@ -990,14 +994,14 @@ namespace simuPOP
       s1 = s[1] / s[0] - 1.;
       s2 = s[2] / s[0] - 1.;
     }
-    
+
     // get current population size
     int Ntmp;
     if( NtFunc == NULL)
       Ntmp = N;
     else
     {
-      PyCallFunc(NtFunc, "(i)", T, Ntmp, PyObj_As_Int);
+      PyCallFunc(NtFunc, "(i)", 0, Ntmp, PyObj_As_Int);
     }
 
     // all calculated population size
@@ -1007,27 +1011,24 @@ namespace simuPOP
     // allele frequency of allele a at each geneation
     vectorf xt(1, freq);
     // store calculated fitness s1, s2, if necessary
-    // note that s_T will never be used. 
+    // note that s_T will never be used.
     vectorf s1_cache(1,0), s2_cache(1,0);
     // will be used to store return value of sFunc
-    vectorf s_vec; 
+    vectorf s_vec;
 
     // t is current generation number.
-    long t = T;
-    long idx = 0;
+    ULONG idx = 0;
 
     // a,b,c etc for solving the quadratic equation
     double a,b,c,b2_4ac,y1,y2,y;
     while( true )
     {
-      // get index for time t
-      idx = T-t;
       // first get N(t-1), if it has not been calculated
-      if( idx+1 >= static_cast<long>( Nt.size() ) )
+      if( idx+1 >= Nt.size() )
       {
         if( NtFunc != NULL)
         {
-          PyCallFunc(NtFunc, "(i)", t-1, Ntmp, PyObj_As_Int);
+          PyCallFunc(NtFunc, "(i)", idx+1, Ntmp, PyObj_As_Int);
         }
         Nt.push_back(Ntmp);
       }
@@ -1035,13 +1036,13 @@ namespace simuPOP
       // get fitness
       if( sFunc != NULL )
       {
-        if( idx+1 >= static_cast<long>( s1_cache.size() ) )
+        if( idx+1 >= s1_cache.size() )
         {
-          PyCallFunc(sFunc, "(i)", t-1, s_vec, PyObj_As_Array);
-          
-          DBG_ASSERT(s_vec.size()==3 || s_vec[0] != 0., ValueError, 
+          PyCallFunc(sFunc, "(i)", idx+1, s_vec, PyObj_As_Array);
+
+          DBG_ASSERT(s_vec.size()==3 || s_vec[0] != 0., ValueError,
             "Returned value from sFunc should be a vector of size 3");
-            
+
           s1 = s_vec[1]/s_vec[0] - 1.;
           s2 = s_vec[2]/s_vec[0] - 1.;
           s1_cache.push_back(s1);
@@ -1095,7 +1096,7 @@ namespace simuPOP
         }
       }
 
-      if( static_cast<long>(it.size()) < idx+2 )
+      if( it.size() < idx+2 )
       {
         it.push_back(0);
         xt.push_back(0);
@@ -1103,9 +1104,6 @@ namespace simuPOP
       // y is obtained, is the expected allele frequency for the next generation t-1
       it[idx+1] = rng().randBinomial( Nt[idx+1], y);
       xt[idx+1] = it[idx+1]/static_cast<double>(Nt[idx+1]);
-
-      DBG_DO(DBG_DEVEL, cout << "Gen " << t << " expected freq " << y <<
-        " N(t-1) " << Nt[idx+1] << " i(t-1) " << it[idx+1] << endl);
 
       if( it[idx+1] == 0 )
       {
@@ -1116,30 +1114,30 @@ namespace simuPOP
         {
           DBG_DO(DBG_MATING, cout << "Reaching 0, but next gen has more than 1 allele a" << endl);
           // restart
-          t = T;
+          idx = 0;
         }
       }
       else if( it[idx+1] == Nt[idx+1] )
         // when the allele get fixed, restart
       {
-        t = T;
+        idx = 0;
       }
       // if not done, but t already reaches T
-      else if( t == 0 )
+      else if( idx == T )
       {
         cout << "Warning: reaching T gnerations. Try again." << endl;
-        t = T;
+        idx = 0;
       }
       else
         // go to next generation
-        t--;
+        idx++;
     }
     // clean up
     if( NtFunc != NULL)
       Py_DECREF(NtFunc);
     if( sFunc != NULL)
       Py_DECREF(sFunc);
-      
+
     // return a reversed version of xt, without trailing 0
     // also we may only need part of it since it has been
     // extended by previous attemps
@@ -1148,9 +1146,320 @@ namespace simuPOP
 
     // number of valid generation is idx+1
     vectorf traj(idx+1);
-    for(long i=0; i<=idx; ++i)
+    for(ULONG i=0; i<=idx; ++i)
       traj[i] = xt[idx-i];
     return traj;
+  }
+
+  class trajectory
+  {
+    public:
+      trajectory(size_t nTraj=1):m_freqs(nTraj)
+      {
+      }
+
+      int numTraj()
+      {
+        return m_freqs.size();
+      }
+
+      vectorf& setTraj(const vectorf freq, size_t idx=0)
+      {
+        DBG_FAILIF( idx >= m_freqs.size(), IndexError,
+          "Index out of range");
+
+        m_freqs[idx] = freq;
+      }
+
+      vectorf traj(size_t idx=0)
+      {
+        DBG_FAILIF( idx >= m_freqs.size(), IndexError,
+          "Index out of range");
+
+        return m_freqs[idx];
+      }
+
+      vectorf& trajRef(size_t idx=0)
+      {
+        DBG_FAILIF( idx >= m_freqs.size(), IndexError,
+          "Index out of range");
+
+        return m_freqs[idx];
+      }
+
+    private:
+      // all frequencies
+      vector<vector<double> > m_freqs;
+  };
+
+  //
+  // simulate trajectories of disease susceptibility loci using an extension of
+  // the backward method described in Slatkin 2001.
+  //
+  // Parameters:
+  //
+  //    N      constant population size N
+  //    NtFunc a python function that returns population size at each generation.
+  //           gen is defined in reversed order. NtFunc(0) should be current
+  //           generation number.
+  //    freq   expected allele frequencies of alleles of multiple unlinked loci
+  //    s      constant fitness for [AA, Aa, aa, BB, Bb, bb ...]
+  //    sFunc  a python function that returns selection pressure at each generation
+  //           the function expects parameters gen and freq. gen is current generation
+  //           number and freq is the allele frequency at all loci. This allows
+  //           frequency dependent selection. gen is defined in reversed order.
+  //    T      maximum generation number. The process will restart if it can not
+  //           reach allele zero after T generations. Default to 1,000,000
+  //
+  // Of course, you should specify only one of N/NtFunc and one of s/sFunc
+  //
+  // Tracking the allele frequency of allele a.
+  //
+  //
+  trajectory FreqTrajectoryMultiStoch( vectorf freq=vectorf(), long N=0,
+    PyObject* NtFunc=NULL, vectorf s=vectorf(), PyObject* sFunc=NULL,
+    ULONG T=1000000)
+  {
+    size_t nLoci = freq.size();
+    size_t i, j;
+
+    DBG_ASSERT( nLoci > 0, ValueError, "Number of loci should be at least one");
+
+    trajectory result(nLoci);
+
+    // in the cases of independent and constant selection pressure
+    // easy case.
+    if( sFunc == NULL)
+    {
+      for( i=0; i<nLoci; ++i)
+      {
+        result.setTraj(FreqTrajectoryStoch(freq[i], N, NtFunc,
+          vectorf(s.begin()+3*i, s.begin()+3*(i+1)),
+          NULL, T), i);
+      }
+      return result;
+    }
+
+    // other wise, use a vectorized version of ...
+    // is NtFunc callable?
+    if( NtFunc != NULL )
+    {
+      if( ! PyCallable_Check(NtFunc) )
+        throw ValueError("NtFunc is not a valid Python function.");
+      else
+        // increase the ref, just to be safe
+        Py_INCREF(NtFunc);
+    }
+
+    // sAll will store returned value of sFunc,
+    // convert to 1, 1+s1, 1+s2 format ...
+    vectorf sAll;
+    if( sFunc != NULL )
+    {
+      if( ! PyCallable_Check(sFunc) )
+        throw ValueError("sFunc is not a valid Python function.");
+      else
+        // increase the ref, just to be safe
+        Py_INCREF(sFunc);
+    }
+    else if( s.empty() )
+      // default to [1,1,1]
+    {
+      sAll.resize(nLoci*3, 0.);
+    }
+    else if( s.size() != 3*nLoci)
+    {
+      throw ValueError("s should be a vector of length 3 times number of loci. (for AA, Aa and aa etc)");
+    }
+    else
+    {
+      for(i=0; i<nLoci; ++i)
+      {
+        // convert to the form 1, s1, s2
+        sAll[3*i+1] = s[3*i+1] / s[3*i] - 1.;
+        sAll[3*i+2] = s[3*i+2] / s[3*i] - 1.;
+        sAll[3*i] = 0.;
+      }
+    }
+
+    // get current population size
+    int Ntmp;
+    if( NtFunc == NULL)
+      Ntmp = N;
+    else
+    {
+      PyCallFunc(NtFunc, "(i)", 0, Ntmp, PyObj_As_Int);
+    }
+
+    // all calculated population size
+    vectorlu Nt(1, Ntmp);
+    // copies of allele a at each genertion.
+    vectorlu it(nLoci);
+    for(i=0; i<nLoci; ++i)
+      it[i] = static_cast<long>(Ntmp*freq[i]);
+    // allele frequency of allele a at each geneation
+    vectorf xt(nLoci);
+    for(i=0; i<nLoci; ++i)
+      xt[i] = freq[i];
+
+    ULONG idx = 0;
+
+    // a,b,c etc for solving the quadratic equation
+    double s1,s2,x,a,b,c,b2_4ac,y1,y2,y;
+    // whether or not each locus is done
+    vector<bool> done(nLoci, false);
+    //
+    while( true )
+    {
+      // first get N(t-1), if it has not been calculated
+      if( idx+1 >= Nt.size() )
+      {
+        if( NtFunc != NULL)
+        {
+          PyCallFunc(NtFunc, "(i)", idx+1, Ntmp, PyObj_As_Int);
+        }
+        Nt.push_back(Ntmp);
+      }
+      //
+      // get fitness, since it will change according to
+      // xt, I do not cache the result
+      if( sFunc != NULL )
+      {
+        // compile allele frequency... and pass
+        PyObject* freqObj = Double_Vec_As_NumArray( xt.begin()+nLoci*idx, xt.end()+nLoci*(idx+1) );
+        PyCallFunc2(sFunc, "(iO)", idx+1, freqObj, sAll, PyObj_As_Array);
+
+        DBG_ASSERT(sAll.size()==3*nLoci, ValueError,
+          "Returned value from sFunc should be a vector of size 3");
+
+        for(i=0; i<nLoci; ++i)
+        {
+          // convert to the form 1, s1, s2
+          sAll[3*i+1] = sAll[3*i+1] / sAll[3*i] - 1.;
+          sAll[3*i+2] = sAll[3*i+2] / sAll[3*i] - 1.;
+          sAll[3*i] = 0.;
+        }
+      }
+      //
+      for(i = 0; i<nLoci; ++i)
+      {
+        // allocate space
+        if( it.size() < (idx+2)*nLoci )
+        {
+          for(j=0;j<nLoci;++j)
+          {
+            it.push_back(0);
+            xt.push_back(0);
+          }
+        }
+        // if done
+        if( done[i] )
+        {
+          it[(idx+1)*nLoci+i] = 0;
+          xt[(idx+1)*nLoci+i] = 0.;
+          continue;
+        }
+        // given x(t)
+        // calculate y=x(t-1)' by solving an equation
+        //
+        //  x_t = y(1+s2 y+s1 (1-y))/(1+s2 y+2 s1 y(1-y))
+        //
+        s1 = sAll[i*3+1];
+        s2 = sAll[i*3+2];
+        x  = xt[idx*nLoci+i];
+        if( s1 == 0. && s2 == 0. )
+        {
+          // special case when a = 0.
+          y = x;
+        }
+        else
+        {
+          a = s2*x - 2*s1*x - s2 + s1;
+          b = 2*s1*x - 1 - s1;
+          c = x;
+          b2_4ac = b*b-4*a*c;
+
+          if( b2_4ac < 0 )
+            throw ValueError("Quadratic function does not yield a valid solution");
+
+          y1 = (-b+sqrt(b2_4ac))/(2*a);
+          y2 = (-b-sqrt(b2_4ac))/(2*a);
+
+          // choose one of the solutions
+          if( y1 < 0. || y1 > 1.0 )
+          {
+            if( y2 >= 0. && y2 <= 1.0)
+              y = y2;
+            else
+              throw ValueError("None of the solutions is valid");
+          }
+          else
+          {
+            // if y1 is valid
+            if( y2 >= 0. && y2 <= 1.0)
+              throw ValueError("Both solutions are valid. Further decision is needed. y1: " +
+                toStr(y1) + " y2: " + toStr(y2) + " xt: " + toStr(xt[idx]));
+            else
+              y = y1;
+          }
+        }
+
+        // y is obtained, is the expected allele frequency for the next generation t-1
+        ULONG i_t = rng().randBinomial( Nt[idx+1], y);
+        it[nLoci*(idx+1)+i] = i_t;
+        xt[nLoci*(idx+1)+i] = i_t/static_cast<double>(Nt[idx+1]);
+
+        if( i_t == 0 )
+        {
+          // need 0, 1, ...., good...
+          if( it[idx] == 1 )
+          {
+            done[i] = true;
+          }
+          else
+          {
+            DBG_DO(DBG_MATING, cout << "Reaching 0, but next gen has more than 1 allele a" << endl);
+            // restart
+            idx = 0;
+            break;
+          }
+        }
+        else if( i_t == Nt[idx+1] )
+          // when the allele get fixed, restart
+        {
+          idx = 0;
+          break;
+        }
+      }                                           // end of for each locus
+      // if all done?
+      if( find(done.begin(), done.end(), false) == done.end() )
+        break;
+      //
+      // if not done, but t already reaches T
+      if( idx == T )
+      {
+        cout << "Warning: reaching T gnerations. Try again." << endl;
+        idx = 0;
+      }
+      else
+        // go to next generation
+        idx ++;
+    }
+    // clean up
+    if( NtFunc != NULL)
+      Py_DECREF(NtFunc);
+    if( sFunc != NULL)
+      Py_DECREF(sFunc);
+
+    // number of valid generation is idx+1
+    vectorf traj(idx+1);
+    for(i=0; i<nLoci; ++i)
+    {
+      for(j=0; j<=idx; ++j)
+        traj[j] = xt[nLoci*(idx-j)+i];
+      result.setTraj(traj, i);
+    }
+    return result;
   }
 
   // simulate trajectory
@@ -1520,14 +1829,14 @@ namespace simuPOP
         // first call the function and get the range
         vectorf freqRange;
 
-        PyCallFunc( m_freqFunc, "(i)", pop.gen(), 
+        PyCallFunc( m_freqFunc, "(i)", pop.gen(),
           freqRange, PyObj_As_Array);
-      
+
         DBG_ASSERT( freqRange.size() == m_loci.size() || freqRange.size() == 2 * m_loci.size(),
           ValueError, "Length of returned range should have the same or double the number of loci.");
 
         vectorlu alleleNum;
-        
+
 #ifndef OPTIMIZED
         // calculate allele frequen at these loci
         alleleNum = countAlleles(pop, m_loci, m_alleles);
@@ -1554,8 +1863,8 @@ namespace simuPOP
             // upper bound using range.
             alleleRange[2*i+1] = static_cast<ULONG>((freqRange[i]+m_range)*pop.popSize()*pop.ploidy())+1;
 #ifndef OPTIMIZED
-        if( alleleNum[i] == 0 && alleleRange[2*i] > 0 )
-          throw ValueError("No allele exists so there is no way to reach specified allele frequency.");
+            if( alleleNum[i] == 0 && alleleRange[2*i] > 0 )
+              throw ValueError("No allele exists so there is no way to reach specified allele frequency.");
 #endif
           }
         }
@@ -1579,8 +1888,8 @@ namespace simuPOP
               alleleRange[2*i] = 1;
             alleleRange[2*i+1] = static_cast<ULONG>(freqRange[2*i+1]*pop.popSize()*pop.ploidy())+1;
 #ifndef OPTIMIZED
-        if( alleleNum[i] == 0 && alleleRange[2*i] > 0 )
-          throw ValueError("No allele exists so there is no way to reach specified allele frequency.");
+            if( alleleNum[i] == 0 && alleleRange[2*i] > 0 )
+              throw ValueError("No allele exists so there is no way to reach specified allele frequency.");
 #endif
           }
         }
