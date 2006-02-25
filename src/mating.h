@@ -946,8 +946,9 @@ namespace simuPOP
   //    sFunc  a python function that returns selection pressure at each generation
   //           the function expects a single parameter gen which is defined
   //           in reversed order.
-  //    T      maximum generation number. The process will restart if it can not
-  //           reach allele zero after T generations. Default to 1,000,000
+  //    T      maximum generation number. The process will terminate even if it 
+  //           can not reach allele zero after T generations. Default to 100,000, 
+  //           roughly 2,000,000 years which is longer than human history.
   //
   // Of course, you should specify only one of N/NtFunc and one of s/sFunc
   //
@@ -956,7 +957,7 @@ namespace simuPOP
   //
   vectorf FreqTrajectoryStoch( double freq, long N=0,
     PyObject* NtFunc=NULL, vectorf s=vectorf(), PyObject* sFunc=NULL,
-    ULONG T=1000000)
+    ULONG T=100000)
   {
     // is NtFunc callable?
     if( NtFunc != NULL )
@@ -1125,8 +1126,8 @@ namespace simuPOP
       // if not done, but t already reaches T
       else if( idx == T )
       {
-        cout << "Warning: reaching T gnerations. Try again." << endl;
-        idx = 0;
+        cout << "Warning: reaching T gnerations. Return whatever I have now." << endl;
+        break;
       }
       else
         // go to next generation
@@ -1137,12 +1138,6 @@ namespace simuPOP
       Py_DECREF(NtFunc);
     if( sFunc != NULL)
       Py_DECREF(sFunc);
-
-    // return a reversed version of xt, without trailing 0
-    // also we may only need part of it since it has been
-    // extended by previous attemps
-    DBG_ASSERT( it[idx+1] == 0, SystemError,
-      "The last generation still has allele a");
 
     // number of valid generation is idx+1
     vectorf traj(idx+1);
@@ -1163,23 +1158,27 @@ namespace simuPOP
         return m_freqs.size();
       }
 
-      vectorf& setTraj(const vectorf freq, size_t idx=0)
+      size_t maxLen()
+      {
+        size_t len = 0;
+        for(size_t i=0; i<m_freqs.size(); ++i)
+          if( m_freqs[i].size() > len)
+            len = m_freqs[i].size();
+        return len;
+      }
+
+      void setTraj(const vectorf& freq, size_t idx=0)
       {
         DBG_FAILIF( idx >= m_freqs.size(), IndexError,
           "Index out of range");
 
-        m_freqs[idx] = freq;
+        size_t i;
+        for(i=0; i<freq.size() && freq[i]==0.; i++);
+
+        m_freqs[idx] = vectorf(freq.begin()+i, freq.end());
       }
 
       vectorf traj(size_t idx=0)
-      {
-        DBG_FAILIF( idx >= m_freqs.size(), IndexError,
-          "Index out of range");
-
-        return m_freqs[idx];
-      }
-
-      vectorf& trajRef(size_t idx=0)
       {
         DBG_FAILIF( idx >= m_freqs.size(), IndexError,
           "Index out of range");
@@ -1208,8 +1207,10 @@ namespace simuPOP
   //           the function expects parameters gen and freq. gen is current generation
   //           number and freq is the allele frequency at all loci. This allows
   //           frequency dependent selection. gen is defined in reversed order.
-  //    T      maximum generation number. The process will restart if it can not
-  //           reach allele zero after T generations. Default to 1,000,000
+  //    T      maximum generation number. The process will return if it can not
+  //           reach allele zero after T generations, even if alleles are not fixed.
+  //           Default to 100,000, roughly
+  //           2,000,000 years, longer than human history.
   //
   // Of course, you should specify only one of N/NtFunc and one of s/sFunc
   //
@@ -1218,10 +1219,10 @@ namespace simuPOP
   //
   trajectory FreqTrajectoryMultiStoch( vectorf freq=vectorf(), long N=0,
     PyObject* NtFunc=NULL, vectorf s=vectorf(), PyObject* sFunc=NULL,
-    ULONG T=1000000)
+    ULONG T=100000)
   {
     size_t nLoci = freq.size();
-    size_t i, j;
+    size_t i, j, curI, nextI;
 
     DBG_ASSERT( nLoci > 0, ValueError, "Number of loci should be at least one");
 
@@ -1231,11 +1232,19 @@ namespace simuPOP
     // easy case.
     if( sFunc == NULL)
     {
+      DBG_FAILIF( (!s.empty()) && (s.size() != nLoci*3), 
+        ValueError, "Wrong s length " + toStr(s.size()));
+        
+      vectorf ss(3, 1.);
       for( i=0; i<nLoci; ++i)
       {
-        result.setTraj(FreqTrajectoryStoch(freq[i], N, NtFunc,
-          vectorf(s.begin()+3*i, s.begin()+3*(i+1)),
-          NULL, T), i);
+        if( ! s.empty() )
+          result.setTraj(FreqTrajectoryStoch(freq[i], N, NtFunc,
+            vectorf(s.begin()+3*i, s.begin()+3*(i+1)),
+            NULL, T), i);
+        else
+          result.setTraj(FreqTrajectoryStoch(freq[i], N, NtFunc,
+            ss, NULL, T), i);
       }
       return result;
     }
@@ -1252,7 +1261,7 @@ namespace simuPOP
     }
 
     // sAll will store returned value of sFunc,
-    // convert to 1, 1+s1, 1+s2 format ...
+    // and be converted to 1, 1+s1, 1+s2 format ...
     vectorf sAll;
     if( sFunc != NULL )
     {
@@ -1326,7 +1335,7 @@ namespace simuPOP
       if( sFunc != NULL )
       {
         // compile allele frequency... and pass
-        PyObject* freqObj = Double_Vec_As_NumArray( xt.begin()+nLoci*idx, xt.end()+nLoci*(idx+1) );
+        PyObject* freqObj = Double_Vec_As_NumArray( xt.begin()+nLoci*idx, xt.begin()+nLoci*(idx+1) );
         PyCallFunc2(sFunc, "(iO)", idx+1, freqObj, sAll, PyObj_As_Array);
 
         DBG_ASSERT(sAll.size()==3*nLoci, ValueError,
@@ -1340,23 +1349,28 @@ namespace simuPOP
           sAll[3*i] = 0.;
         }
       }
-      //
+
+      bool restart = false;
+      // handle each locus
       for(i = 0; i<nLoci; ++i)
       {
+        curI = idx*nLoci+i;
+        nextI = (idx+1)*nLoci+i;
+
         // allocate space
         if( it.size() < (idx+2)*nLoci )
         {
           for(j=0;j<nLoci;++j)
           {
             it.push_back(0);
-            xt.push_back(0);
+            xt.push_back(0.);
           }
         }
         // if done
         if( done[i] )
         {
-          it[(idx+1)*nLoci+i] = 0;
-          xt[(idx+1)*nLoci+i] = 0.;
+          it[nextI] = 0;
+          xt[nextI] = 0.;
           continue;
         }
         // given x(t)
@@ -1366,7 +1380,7 @@ namespace simuPOP
         //
         s1 = sAll[i*3+1];
         s2 = sAll[i*3+2];
-        x  = xt[idx*nLoci+i];
+        x  = xt[curI];
         if( s1 == 0. && s2 == 0. )
         {
           // special case when a = 0.
@@ -1405,14 +1419,13 @@ namespace simuPOP
         }
 
         // y is obtained, is the expected allele frequency for the next generation t-1
-        ULONG i_t = rng().randBinomial( Nt[idx+1], y);
-        it[nLoci*(idx+1)+i] = i_t;
-        xt[nLoci*(idx+1)+i] = i_t/static_cast<double>(Nt[idx+1]);
+        it[nextI] = rng().randBinomial( Nt[idx+1], y);
+        xt[nextI] = it[nextI]/static_cast<double>(Nt[idx+1]);
 
-        if( i_t == 0 )
+        if( it[nextI] == 0 )
         {
           // need 0, 1, ...., good...
-          if( it[idx] == 1 )
+          if( it[curI] == 1 )
           {
             done[i] = true;
           }
@@ -1420,30 +1433,45 @@ namespace simuPOP
           {
             DBG_DO(DBG_MATING, cout << "Reaching 0, but next gen has more than 1 allele a" << endl);
             // restart
-            idx = 0;
+            restart = true;
             break;
           }
         }
-        else if( i_t == Nt[idx+1] )
-          // when the allele get fixed, restart
+        else if( it[nextI] == Nt[idx+1] )
         {
-          idx = 0;
+          // when the allele get fixed, restart
+          DBG_DO(DBG_MATING, cout << "Getting fixed, restart" << endl);
+          restart = true;
           break;
         }
       }                                           // end of for each locus
+
+      // break from inside
+      if( restart )
+      {
+        idx = 0;
+        for( j=0; j<nLoci; ++j)
+          done[j] = false;
+        continue;
+      }
+
       // if all done?
       if( find(done.begin(), done.end(), false) == done.end() )
         break;
+
+      DBG_DO(DBG_DEVEL, cout << idx << " freq= " << 
+        vectorf(xt.begin()+idx*nLoci, xt.begin()+(idx+1)*nLoci) <<
+        " s= " << sAll << endl);
       //
       // if not done, but t already reaches T
       if( idx == T )
       {
-        cout << "Warning: reaching T gnerations. Try again." << endl;
-        idx = 0;
+        cout << "Warning: reaching T gnerations. Return whatever I have now." << endl;
+        break;
       }
-      else
-        // go to next generation
-        idx ++;
+      
+      // go to next generation
+      idx ++;
     }
     // clean up
     if( NtFunc != NULL)
