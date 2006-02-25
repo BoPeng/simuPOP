@@ -1083,7 +1083,7 @@ namespace simuPOP
       /// binomial distribution
       UINT randBinomial(UINT n, double p)
       {
-        DBG_FAILIF( n <= 0 , ValueError, "RandInt: n should be positive.");
+        DBG_FAILIF( n <= 0 , ValueError, "RandBinomial: n should be positive.");
 
         return gsl_ran_binomial(m_RNG, p, n);
       }

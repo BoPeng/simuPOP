@@ -146,7 +146,20 @@ class TestMatingSchemes(unittest.TestCase):
   def testTrajectoryMultiStoch(self):
     'Testing the trajectory obtained from backward binomial sampling'
     TurnOnDebug(DBG_MATING)
-    path = FreqTrajectoryMultiStoch(freq=[0.3, 0.1], N=10000, s=[1,1,01, 1.02, 1, 1.002, 1.002])
+    #path = FreqTrajectoryMultiStoch(freq=[0.1], N=10000, 
+    #  s=[1, 1,01, 1.02], T=100000)
+    path = FreqTrajectoryMultiStoch(freq=[0.05, 0.1], N=10000, 
+      s=[1, 1.01, 1.02, 1, 1.002, 1.002], T=100000)
+    # using sFunc
+    def s(gen, freq):
+      if gen > 1000:
+        return [1, 1.01, 1.02, 1, 1.002, 1.002]
+      else:
+        return [1, 0.99, 0.98, 1, 0.999, 0.998]
+    path = FreqTrajectoryMultiStoch(freq=[0.05, 0.1], N=10000, 
+      sFunc=s, T=100000)
+    # then , with frequency dependent?
+    #print path.numTraj(), path.maxLen(), path.traj(0), path.traj(1)
  
   def checkRoot(self):
     'Testing the algorithm'
