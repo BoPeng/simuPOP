@@ -399,7 +399,6 @@ namespace simuPOP
 
   };
 
- 
   /* 
   pause simulation, press any key to stop
   */

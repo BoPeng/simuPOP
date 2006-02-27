@@ -1213,6 +1213,4 @@ namespace simuPOP
 #endif
   }
 
-
-
 }
