@@ -32,7 +32,8 @@ class TestIndividual(unittest.TestCase):
     pop.individual(19, 0)
     pop.individual(79, 1)
     self.assertRaises(exceptions.IndexError, pop.individual, 100)
-    self.assertRaises(exceptions.IndexError, pop.individual, 20, 0)
+    # this one is allowed.
+    pop.individual(20, 0)
     self.assertRaises(exceptions.IndexError, pop.individual, 80, 1)
     self.assertRaises(exceptions.IndexError, pop.individual, 0, 2)
     # 

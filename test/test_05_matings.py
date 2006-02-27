@@ -99,11 +99,11 @@ class TestMatingSchemes(unittest.TestCase):
   def testTrajectory(self):
     'Testing trajectory prediction functions'
     sel, Ne, freq, h, selection = 0.5, 100, 0.50, 2, 1
-    FreqTrajectorySelSim(sel, Ne, freq, h, selection)
+    path = FreqTrajectorySelSim(sel, Ne, freq, h, selection)
     # the second method, forward, with population expansion
     low, high = 0.5, 0.55
     mutage, grate, N0, sco = 840, 0.01, 1000000, 0.0
-    FreqTrajectoryForward(low, high, mutage, grate, N0, sco)
+    path = FreqTrajectoryForward(low, high, mutage, grate, N0, sco)
 
   def testTrajectoryStoch(self):
     'Testing the trajectory obtained from backward binomial sampling'
@@ -185,10 +185,9 @@ class TestMatingSchemes(unittest.TestCase):
 
   def testControlledMating(self):
     'Testing controlled mating'
-    # parameters
-    sel, Ne, freq, h, selection = 0.5, 100, 0.50, 2, 1
     # planned trajectory
-    freq = FreqTrajectoryStochSel(sel, Ne, freq, h, selection)
+    freq = FreqTrajectoryStoch(freq=0.05, 
+      N=100, s=[1,1.01,1.02])
     # staring from when?
     burnin = 100
     mutAge = len(freq)
@@ -204,11 +203,11 @@ class TestMatingSchemes(unittest.TestCase):
     #
     # turn On debug
     #TurnOnDebug(DBG_MATING)
-    simu = simulator( population(Ne, loci=[1], ploidy=2), 
+    simu = simulator( population(100, loci=[1], ploidy=2), 
       controlledMating( matingScheme=randomMating(), 
         locus=0, allele=StartingAllele+1, freqFunc=freqRange ) 
       )
-    print "Simulator created"
+    #print "Simulator created"
     simu.evolve( 
       preOps=[
         initByValue([StartingAllele])
@@ -220,7 +219,7 @@ class TestMatingSchemes(unittest.TestCase):
           at = [burnin+1],
           stage = PreMating),
         stat(alleleFreq=[0]),
-        pyEval(r'"%%f\n"%%alleleFreq[0][%d]'%StartingAllele)
+        #pyEval(r'"%%f\n"%%alleleFreq[0][%d]'%StartingAllele)
       ], 
       end=burnin+mutAge
     )

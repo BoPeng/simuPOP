@@ -25,7 +25,7 @@
 #define _MUTATOR_H
 /**
 \file
-\brief head file of class Mutator:public Operator
+\brief head file of class mutator:public Operator
 */
 #include "operator.h"
 
@@ -51,8 +51,8 @@ namespace simuPOP
 
   @author Bo Peng
   */
-  template<class Pop>
-    class Mutator: public Operator<Pop>
+
+  class mutator: public Operator
   {
     public:
       /** \brief create a mutator
@@ -66,13 +66,13 @@ namespace simuPOP
       rate is specified. Default to all loci.
       \param maxAllele max allowable allele. Interpreted by each sub mutaor class. Default to pop.maxAllele().
       */
-      Mutator( vectorf rate=vectorf(),
+      mutator( vectorf rate=vectorf(),
         vectori atLoci=vectori(),
         UINT maxAllele=0,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        :Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp),
+        :Operator(output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_rate(rate), m_maxAllele(maxAllele), m_atLoci(atLoci),
         m_bt(rng()), m_initialized(false), m_mutCount(0)
       {
@@ -96,14 +96,14 @@ namespace simuPOP
       }
 
       /// destructor
-      virtual ~Mutator()
+      virtual ~mutator()
       {
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Mutator<Pop>(*this);
+        return new mutator(*this);
       }
 
       /// return mutation rate
@@ -161,7 +161,7 @@ namespace simuPOP
       };
 
       /// apply!
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         if( !m_initialized || m_bt.size() != pop.ploidy() * pop.popSize())
         {
@@ -205,7 +205,7 @@ namespace simuPOP
     private:
 
       /// initialize bernulli trial according to pop size etc
-      virtual void initialize(Pop& pop)
+      virtual void initialize(population& pop)
       {
 #ifndef BINARYALLELE
         if( m_maxAllele == 0 )
@@ -274,8 +274,7 @@ namespace simuPOP
   \sa Crow & Kimura 1970
   */
 
-  template<class Pop>
-    class KAMMutator: public Mutator<Pop>
+  class kamMutator: public mutator
   {
     public:
       /// K-Allele Model mutator
@@ -286,18 +285,18 @@ namespace simuPOP
       \param maxAllele maxAllele that can be mutated to. For binary libraries
         allelic states will be [0, maxAllele]. For others, they are [1, maxAllele]
       */
-      KAMMutator(vectorf rate=vectorf(),
+      kamMutator(vectorf rate=vectorf(),
         vectori atLoci=vectori(),
         UINT maxAllele=0,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        :Mutator<Pop>( rate, atLoci, maxAllele,
+        :mutator( rate, atLoci, maxAllele,
         output, outputExpr, stage, begin, end, step, at, rep, grp)
       {
       }
 
-      ~KAMMutator(){}
+      ~kamMutator(){}
 
       /// mutate to a state other than current state with equal probability
       virtual void mutate(AlleleRef allele)
@@ -314,9 +313,9 @@ namespace simuPOP
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new KAMMutator<Pop>(*this);
+        return new kamMutator(*this);
       }
 
       virtual string __repr__()
@@ -335,8 +334,8 @@ namespace simuPOP
 
   \sa Kimura & Ohta 1978
   */
-  template<class Pop>
-    class SMMMutator: public Mutator<Pop>
+
+  class smmMutator: public mutator
   {
     public:
       ///
@@ -349,12 +348,12 @@ namespace simuPOP
       \param atLoci and other parameters: refer to help(mutator), help(baseOperator.__init__)
 
       */
-      SMMMutator(vectorf rate=vectorf(), vectori atLoci=vectori(),
+      smmMutator(vectorf rate=vectorf(), vectori atLoci=vectori(),
         UINT maxAllele=0, double incProb=0.5,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        :Mutator<Pop>( rate, atLoci, maxAllele,
+        :mutator( rate, atLoci, maxAllele,
         output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_incProb(incProb)
       {
@@ -365,7 +364,7 @@ namespace simuPOP
           ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
       }
 
-      ~SMMMutator(){}
+      ~smmMutator(){}
 
       virtual void mutate(AlleleRef allele)
       {
@@ -382,9 +381,9 @@ namespace simuPOP
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new SMMMutator<Pop>(*this);
+        return new smmMutator(*this);
       }
 
       virtual string __repr__()
@@ -404,8 +403,8 @@ namespace simuPOP
 
   \sa Kimura & Ohta 1978
   */
-  template<class Pop>
-    class GSMMutator: public Mutator<Pop>
+
+  class gsmMutator: public mutator
   {
     public:
       ///
@@ -418,12 +417,12 @@ namespace simuPOP
       \param atLoci and other parameters: refer to help(mutator), help(baseOperator.__init__)
       \param func return number of steps. no parameter
       */
-      GSMMutator( vectorf rate=vectorf(), vectori atLoci=vectori(),
+      gsmMutator( vectorf rate=vectorf(), vectori atLoci=vectori(),
         UINT maxAllele=0, double incProb=0.5, double p=0, PyObject* func=NULL,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        :Mutator<Pop>( rate, atLoci, maxAllele,
+        :mutator( rate, atLoci, maxAllele,
         output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_incProb(incProb), m_p(p), m_func(func)
       {
@@ -449,12 +448,12 @@ namespace simuPOP
         }
       }
 
-      ~GSMMutator(){}
+      ~gsmMutator(){}
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new GSMMutator<Pop>(*this);
+        return new gsmMutator(*this);
       }
 
       virtual void mutate(AlleleRef allele)
@@ -513,16 +512,16 @@ namespace simuPOP
   };
 
   /// mixed mutation model . has not been implemented.
-  template<class Pop>
-    class PyMutator: public Mutator<Pop>
+
+  class pyMutator: public mutator
   {
     public:
-      PyMutator(vectorf rate=vectorf(), vectori atLoci=vectori(), UINT maxAllele=0,
+      pyMutator(vectorf rate=vectorf(), vectori atLoci=vectori(), UINT maxAllele=0,
         PyObject* func=NULL,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        :Mutator<Pop>( rate,atLoci, maxAllele,
+        :mutator( rate,atLoci, maxAllele,
         output, outputExpr, stage, begin, end, step, at, rep, grp), m_func(NULL)
       {
         if( !PyCallable_Check(func))
@@ -532,24 +531,24 @@ namespace simuPOP
         m_func = func;
       }
 
-      ~PyMutator()
+      ~pyMutator()
       {
         if( m_func != NULL )
           Py_DECREF(m_func);
       }
 
       /// CPPONLY
-      PyMutator(const PyMutator& rhs):
-      Mutator<Pop>(rhs), m_func(rhs.m_func)
+      pyMutator(const pyMutator& rhs):
+      mutator(rhs), m_func(rhs.m_func)
       {
         if( m_func != NULL )
           Py_INCREF(m_func);
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new PyMutator<Pop>(*this);
+        return new pyMutator(*this);
       }
 
       virtual void mutate(AlleleRef allele)
@@ -573,8 +572,8 @@ namespace simuPOP
   /** mutate specified individuals at specified loci to spcified allele.
   I.e., this is a non-random mutator used to introduce disease etc.
   */
-  template<class Pop>
-    class PointMutator: public Operator<Pop>
+
+  class pointMutator: public Operator
   {
     public:
       /** \brief mutate once
@@ -583,7 +582,7 @@ namespace simuPOP
       \param inds mutate 'inds' individuals
       \param toAllele mutate to 'toAllele'
       */
-      PointMutator(
+      pointMutator(
         vectori atLoci,
         Allele toAllele,
         vectoru atPloidy=vectoru(),
@@ -591,7 +590,7 @@ namespace simuPOP
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        :Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp),
+        :Operator(output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_atLoci(atLoci), m_toAllele(toAllele),
         m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)
       {
@@ -600,18 +599,18 @@ namespace simuPOP
       }
 
       /// destructor
-      virtual ~PointMutator()
+      virtual ~pointMutator()
       {
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new PointMutator<Pop>(*this);
+        return new pointMutator(*this);
       }
 
       /// apply!
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         m_mutCount.resize(pop.totNumLoci(), 0);
         // mutate each mutable locus
@@ -623,7 +622,7 @@ namespace simuPOP
             for( size_t p=0; p<m_atPloidy.size(); ++p)
             {
               m_mutCount[m_atLoci[i]]++;
-              *(pop.individual(*ind).genoBegin(m_atPloidy[p])+m_atLoci[i])= m_toAllele;
+              *(pop.ind(*ind).genoBegin(m_atPloidy[p])+m_atLoci[i])= m_toAllele;
             }
           }
         }                                         // each applicable loci

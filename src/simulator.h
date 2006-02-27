@@ -26,7 +26,7 @@
 
 /**
 \file
-\brief head file of class Simulator and some other utility functions
+\brief head file of class simulator and some other utility functions
 */
 
 #include "simupop_cfg.h"
@@ -82,7 +82,7 @@ namespace simuPOP
   \brief simulator manage several replicates of a population,
     evolve them using given mating scheme and operators.
 
-  Simulators combine three important components of simuPOP:
+  simulators combine three important components of simuPOP:
   population, mating scheme and operators together. A
   simulator is created with an instance of population, a
   replicate number and a mating scheme. It makes 'rep'
@@ -95,7 +95,7 @@ namespace simuPOP
   populations at the begining and end of evolution, whereas
   'operators'will be applied at every generation.
 
-  Simulators separates operators into pre-, during- and post-
+  simulators separates operators into pre-, during- and post-
   mating operators. During evolution, simulator first
   apply all pre-mating operators and then call the mate()
   function of the given mating scheme, which will call
@@ -108,7 +108,7 @@ namespace simuPOP
   function of each operator is called before it is applied
   to the populations.
 
-  Simulators can evolve a given number of generations (the
+  simulators can evolve a given number of generations (the
   'end' parameter of evolve), or evolve indefinitely using
   a certain type of operators called terminators. In this
   case, one or more terminators will check the status of
@@ -122,26 +122,19 @@ namespace simuPOP
   simulation every several generations.
 
   DEVONLY{This is a template class that manage the whole simulation process. It glues
-  three major components of simuPOP together: Population, Mating, Operation.
-  More specifically, a simuPOP<Population> object manages several copies of
-  Population (or one of its subclasses) plus a 'scratch population'; it has
-  a Mating object that knows how to generate next gen; it controls
+  three major components of simuPOP together: population, mating, Operation.
+  More specifically, a simuPOP<population> object manages several copies of
+  population (or one of its subclasses) plus a 'scratch population'; it has
+  a mating object that knows how to generate next gen; it controls
   the evolution process by applying pre- during- and post- mating Operators
   during evolution. }
 
   */
-  template < class Pop >
-    class Simulator : public GenoStruTrait
+  class simulator : public GenoStruTrait
   {
     public:
-      /// expose population type.
-      typedef Pop PopType;
-
-      /// expose individual type
-      typedef typename PopType::IndType IndType;
-
       /// vector of operator pointers.
-      typedef std::vector< Operator< Pop> * > vectorop;
+      typedef std::vector< Operator * > vectorop;
 
     public:
 
@@ -161,7 +154,7 @@ namespace simuPOP
       DEVONLY{ m_curRep, gen  are reference to
       glocal shared variables. }
       */
-      Simulator(Pop & population, Mating<Pop>&  matingScheme, string varName = "simuVars",
+      simulator(population & pop, mating&  matingScheme, string varName = "simuVars",
         int rep = 1, vectori grp=vectori())
         : m_gen(0), m_curRep(0), m_numRep(rep), m_groups(0),
         m_stopIfOneRepStop(false), m_applyOpToStoppedReps(false)
@@ -173,15 +166,15 @@ namespace simuPOP
 
         m_matingScheme = matingScheme.clone();
 
-        DBG_DO(DBG_SIMULATOR, cout << "Mating scheme copied" << endl);
+        DBG_DO(DBG_SIMULATOR, cout << "mating scheme copied" << endl);
 
-        if (!m_matingScheme->isCompatible(population))
+        if (!m_matingScheme->isCompatible(pop))
           throw TypeError
-            ("Mating type is not compatible with current population settings.");
+            ("mating type is not compatible with current population settings.");
 
         // create replicates of given population
-        m_ptrRep = new Pop *[m_numRep];
-        m_scratchPop = new Pop(population);
+        m_ptrRep = new population *[m_numRep];
+        m_scratchPop = new population(pop);
 
         DBG_FAILIF( m_scratchPop == NULL,
           SystemError, "Fail to create scratch population");
@@ -190,7 +183,7 @@ namespace simuPOP
         {
           for (UINT i = 0; i < m_numRep; ++i)
           {
-            m_ptrRep[i] = new Pop(population);
+            m_ptrRep[i] = new population(pop);
 
             DBG_FAILIF( m_ptrRep[i] == NULL,
               SystemError, "Fail to create new replicate");
@@ -216,7 +209,7 @@ namespace simuPOP
         setGen(0);
         // mainVars().setIntVar("gen", 0);
 
-        DBG_DO(DBG_SIMULATOR, cout << "Simulator created" << endl);
+        DBG_DO(DBG_SIMULATOR, cout << "simulator created" << endl);
 
       }
 
@@ -228,7 +221,7 @@ namespace simuPOP
       after the simulator is destroyed, this referenced
       population should *not* be used.
       */
-      ~Simulator()
+      ~simulator()
       {
         // call the destructor of each replicates
         delete m_scratchPop;
@@ -240,7 +233,7 @@ namespace simuPOP
 
         delete m_matingScheme;
 
-        DBG_DO(DBG_SIMULATOR, cout << "Populations have been erased. " << endl
+        DBG_DO(DBG_SIMULATOR, cout << "populations have been erased. " << endl
           << "If you have ever used population() function to access some of the replicates, " << endl
           << "these referenced population will not be working now." << endl);
       };
@@ -255,7 +248,7 @@ namespace simuPOP
         be limited to 'immediate after retrival'.
         If you would like to get a persistent population, use getPopulation(rep)
       */
-      PopType& population(UINT rep)
+      population& pop(UINT rep)
       {
 
         DBG_FAILIF( rep >= m_numRep, IndexError,
@@ -269,19 +262,19 @@ namespace simuPOP
       \param rep number of replicate.
       \return reference to a population.
       */
-      PopType& getPopulation(UINT rep)
+      population& getPopulation(UINT rep)
       {
-        return *new PopType( *m_ptrRep[rep]);
+        return *new population( *m_ptrRep[rep]);
       }
 
       // set population... unsafe!
-      void setPopulation(Pop& pop, UINT rep)
+      void setPopulation(population& pop, UINT rep)
       {
         DBG_FAILIF( rep >= m_numRep, IndexError,
           "replicate index out of range. From 0 to numRep()-1 ");
         // get a copy of population
         delete m_ptrRep[rep];
-        m_ptrRep[rep] = new Pop(pop);
+        m_ptrRep[rep] = new population(pop);
 
         if( pop.genoStru() != this->genoStru() )
         {
@@ -291,7 +284,7 @@ namespace simuPOP
         if( pop.genoStru() != m_scratchPop->genoStru() )
         {
           delete m_scratchPop;
-          m_scratchPop = new Pop(pop);
+          m_scratchPop = new population(pop);
         }
         m_ptrRep[rep]->setRep(rep);
       }
@@ -415,12 +408,12 @@ namespace simuPOP
           << " with ending generation " << end << endl);
 
         DBG_FAILIF(end > 0 && gen() > static_cast<UINT>(end), ValueError,
-          "Population gen is already greater than ending generation.");
+          "population gen is already greater than ending generation.");
 
         DBG_FAILIF( end < 0 && ops.empty(), ValueError,
           "Evolve with unspecified ending generation should have at least one terminator (operator)");
 
-        vectorop preMatingOps, durMatingOps, postMatingOps, activeDurMatingOps;
+        vectorop preMatingOps, durmatingOps, postMatingOps, activeDurmatingOps;
 
         // an operator can belong to more than one groups.
         for (size_t i = 0; i < ops.size(); ++i)
@@ -433,14 +426,14 @@ namespace simuPOP
         // first put in DuringMating operators that can form genotype
         for (size_t i = 0; i < ops.size(); ++i)
           if (ops[i]->canApplyDuringMating() && ops[i]->formOffGenotype())
-            durMatingOps.push_back(ops[i]);
+            durmatingOps.push_back(ops[i]);
 
-        if(durMatingOps.size() > 1)
+        if(durmatingOps.size() > 1)
           cout << "Warning: More than one during mating operators. Make sure they act on different replicates." << endl;
 
         for (size_t i = 0; i < ops.size(); ++i)
           if (ops[i]->canApplyDuringMating() && !ops[i]->formOffGenotype())
-            durMatingOps.push_back(ops[i]);
+            durmatingOps.push_back(ops[i]);
 
         InitClock();
 
@@ -474,7 +467,7 @@ namespace simuPOP
 
           for (m_curRep = 0; m_curRep < m_numRep; m_curRep++)
           {
-            DBG_ASSERT( static_cast<int>(m_curRep) == curPop().rep(), SystemError,
+            DBG_ASSERT( static_cast<int>(m_curRep) == curpopulation().rep(), SystemError,
               "Replicate number does not match");
 
             if(dryrun)
@@ -509,9 +502,9 @@ namespace simuPOP
 
                 try
                 {
-                  if (! preMatingOps[it]->applyWithScratch(curPop(), scratchPop(), PreMating))
+                  if (! preMatingOps[it]->applyWithScratch(curpopulation(), scratchpopulation(), PreMating))
                   {
-                    DBG_DO(DBG_SIMULATOR, cout << "Pre-Mating Operator " + preMatingOps[it]->__repr__() +
+                    DBG_DO(DBG_SIMULATOR, cout << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
                       " stops at replicate " + toStr(curRep()) << endl);
 
                     if(! stop[m_curRep])
@@ -523,7 +516,7 @@ namespace simuPOP
                 }
                 catch(...)
                 {
-                  cout << "Premating operator " << preMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
+                  cout << "PreMating operator " << preMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
                   throw;
                 }
                 ElapsedTime("PreMatingOp: " + preMatingOps[it]->__repr__());
@@ -535,20 +528,20 @@ namespace simuPOP
             if(dryrun)
               cout << "    Start mating." << endl;
 
-            activeDurMatingOps.clear();
-            for(typename vectorop::iterator op=durMatingOps.begin(), opEnd = durMatingOps.end();
+            activeDurmatingOps.clear();
+            for(vectorop::iterator op=durmatingOps.begin(), opEnd = durmatingOps.end();
               op != opEnd; ++op)
             {
               if(dryrun)
                 cout << "      - " << (*op)->__repr__() << (*op)->atRepr() << endl;
 
               if( (*op)->isActive(m_curRep, m_numRep, m_gen, end, grp()))
-                activeDurMatingOps.push_back( *op);
+                activeDurmatingOps.push_back( *op);
             }
 
             try
             {
-              if (!dryrun && !m_matingScheme->mate(curPop(), scratchPop(), activeDurMatingOps, true))
+              if (!dryrun && !m_matingScheme->mate(curpopulation(), scratchpopulation(), activeDurmatingOps, true))
               {
                 DBG_DO(DBG_SIMULATOR, cout << "During-mating Operator stops at replicate "
                   + toStr(curRep()) << endl);
@@ -562,11 +555,11 @@ namespace simuPOP
             }
             catch(...)
             {
-              cout << "Mating or one of the during mating operator throws an exception." << endl << endl;
+              cout << "mating or one of the during mating operator throws an exception." << endl << endl;
               throw;
             }
 
-            ElapsedTime("MatingDone");
+            ElapsedTime("matingDone");
 
             // apply post-mating ops to next gen()
             if (!postMatingOps.empty())
@@ -589,9 +582,9 @@ namespace simuPOP
 
                 try
                 {
-                  if (! postMatingOps[it]-> applyWithScratch(curPop(), scratchPop(), PostMating))
+                  if (! postMatingOps[it]-> applyWithScratch(curpopulation(), scratchpopulation(), PostMating))
                   {
-                    DBG_DO(DBG_SIMULATOR, cout << "Post-Mating Operator " + postMatingOps[it]->__repr__() +
+                    DBG_DO(DBG_SIMULATOR, cout << "Post-mating Operator " + postMatingOps[it]->__repr__() +
                       " stops at replicate " + toStr(curRep()) << endl);
 
                     if(! stop[m_curRep])
@@ -603,7 +596,7 @@ namespace simuPOP
                 }
                 catch(...)
                 {
-                  cout << "Postmating operator " << postMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
+                  cout << "PostMating operator " << postMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
                   throw;
                 }
                 ElapsedTime("PostMatingOp: "+ postMatingOps[it]->__repr__());
@@ -651,7 +644,7 @@ namespace simuPOP
         return true;
       }
 
-      /// apply some ops, geneartion of Population does not change
+      /// apply some ops, geneartion of population does not change
       /// No mating is allowed.
       /**
       \param ops operators that will be applied at all generations.
@@ -703,8 +696,8 @@ namespace simuPOP
               if( ! preMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0, grp(), true))
                 continue;
 
-              preMatingOps[it] -> applyWithScratch(curPop(),
-                scratchPop(), PreMating);
+              preMatingOps[it] -> applyWithScratch(curpopulation(),
+                scratchpopulation(), PreMating);
 
               ElapsedTime("PrePost-preMatingop"+toStr(it));
 
@@ -728,7 +721,7 @@ namespace simuPOP
               if( ! postMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0, grp(), true))
                 continue;
 
-              postMatingOps[it] -> applyWithScratch(curPop(), scratchPop(), PostMating);
+              postMatingOps[it] -> applyWithScratch(curpopulation(), scratchpopulation(), PostMating);
 
               ElapsedTime("PrePost-postMatingop"+toStr(it));
             }
@@ -794,7 +787,7 @@ namespace simuPOP
       'xml' format is most readable and should be used when you would
       like to convert simuPOP populations to other formats.
 
-      \sa global function loadSimulator
+      \sa global function loadsimulator
       */
       void saveSimulator(string filename, string format="auto")
       {
@@ -918,7 +911,7 @@ namespace simuPOP
       // allow str(population) to get something better looking
       string __repr__()
       {
-        return "<Simulator with " + toStr(numRep()) + " replicates>";
+        return "<simulator with " + toStr(numRep()) + " replicates>";
       }
 
     private:
@@ -946,15 +939,15 @@ namespace simuPOP
 
         ar & make_nvp("num_replicates", m_numRep);
 
-        m_ptrRep = new Pop *[m_numRep];
+        m_ptrRep = new population *[m_numRep];
 
         for (UINT i = 0; i < m_numRep; ++i)
         {
-          m_ptrRep[i] = new PopType();
+          m_ptrRep[i] = new population();
           ar & make_nvp("populations", *m_ptrRep[i]);
           m_ptrRep[i]->setRep(i);
         }
-        m_scratchPop = new PopType(*m_ptrRep[0]);
+        m_scratchPop = new population(*m_ptrRep[0]);
         setGenoStruIdx(m_ptrRep[0]->genoStruIdx());
 
         ar & make_nvp("groups", m_groups);
@@ -971,13 +964,13 @@ namespace simuPOP
     private:
 
       /// access current population
-      PopType& curPop()
+      population& curpopulation()
       {
         return *m_ptrRep[m_curRep];
       }
 
       /// access scratch population
-      PopType&  scratchPop()
+      population&  scratchpopulation()
       {
         return *m_scratchPop;
       }
@@ -991,7 +984,7 @@ namespace simuPOP
       UINT m_curRep;
 
       /// mating functor that will do the mating.
-      Mating<Pop>* m_matingScheme;
+      mating* m_matingScheme;
 
       /// number of replicates of population
       UINT m_numRep;
@@ -1000,10 +993,10 @@ namespace simuPOP
       vectori m_groups;
 
       /// replicate pointers
-      Pop **m_ptrRep;
+      population **m_ptrRep;
 
       /// the scratch pop
-      Pop *m_scratchPop;
+      population *m_scratchPop;
 
       /// determine various behaviors of simulator
       /// for example: if stop after one replicate stops
@@ -1018,6 +1011,22 @@ namespace simuPOP
 #endif
 
   };
+
+  simulator& LoadSimulator(const string& file,
+    mating& mate,
+    string format="auto")
+  {
+    population p;
+    simulator * a = new simulator(
+      p, mate );
+#ifndef _NO_SERIALIZATION_
+    a->loadSimulator(file, format);
+    return *a;
+#else
+    cout << "This feature is not supported in this platform" << endl;
+#endif
+    return *a;
+  }
 
 }
 #endif

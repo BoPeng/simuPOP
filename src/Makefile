@@ -37,11 +37,18 @@ LINK = g++
 CFLAGS =  -Wall -fexceptions -O3 -march=pentium4 -pipe -fomit-frame-pointer 
 DEF = $(FEATURES) 
 # for swig 1.3.28 cvs
-SWIG = /home/bpeng/tmp/swig/bin/swig -O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525
+SWIG = swig -O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525
 # for swig 1.3.27
 #SWIG = swig -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525 -nodefault 
 
 RM = rm -f
+
+DEF_std=
+DEF_op=-DOPTIMIZED
+DEF_la=-DLONGALLELE 
+DEF_laop=-DOPTIMIZED -DLONGALLELE 
+DEF_ba=-DBINARYALLELE
+DEF_baop=-DOPTIMIZED -DBINARYALLELE
 
 HEADFILES=../config.h simupop_cfg.h  migrator.h  population.h    simulator.h  terminator.h \
 individual.h   mutator.h   stator.h     utility.h \
@@ -86,8 +93,8 @@ GSL_OBJS= ../gsl/sys/infnan.o ../gsl/sys/coerce.o ../gsl/sys/fdiv.o    ../gsl/sy
 ../gsl/randist/geometric.o ../gsl/randist/binomial.o ../gsl/randist/poisson.o ../gsl/randist/rdgamma.o  \
 ../gsl/randist/chisq.o   ../gsl/randist/gauss.o ../gsl/error.o
 
-
 OBJS = $(GSL_OBJS) $(SERIAL_OBJS)
+
 
 std: _simuPOP_std.so
 
@@ -106,103 +113,110 @@ all: std op la laop ba baop
 swigpyrun.h:
 	$(SWIG) -python -external-runtime swigpyrun.h
 	
-_simuPOP_std.so: $(OBJS) utility_std.o simuPOP_std_wrap.o $(PY_FILES)
-	time $(LINK) -shared  $(OBJS) utility_std.o simuPOP_std_wrap.o $(LIBS) -o _simuPOP_std.so
-
-_simuPOP_op.so: $(OBJS) utility_op.o simuPOP_op_wrap.o $(PY_FILES)
-	time $(LINK) -shared  $(OBJS) utility_op.o simuPOP_op_wrap.o $(LIBS) -o _simuPOP_op.so
-
-_simuPOP_la.so: $(OBJS) utility_la.o simuPOP_la_wrap.o $(PY_FILES)
-	time $(LINK) -shared  $(OBJS) utility_la.o simuPOP_la_wrap.o $(LIBS) -o _simuPOP_la.so
-
-_simuPOP_laop.so: $(OBJS) utility_laop.o simuPOP_laop_wrap.o $(PY_FILES)
-	time $(LINK) -shared  $(OBJS) utility_laop.o  simuPOP_laop_wrap.o $(LIBS) -o _simuPOP_laop.so
-
-_simuPOP_ba.so: $(OBJS) utility_ba.o simuPOP_ba_wrap.o $(PY_FILES)
-	time $(LINK) -shared  $(OBJS) utility_ba.o simuPOP_ba_wrap.o $(LIBS) -o _simuPOP_ba.so
-
-_simuPOP_baop.so: $(OBJS) utility_baop.o simuPOP_baop_wrap.o $(PY_FILES)
-	time $(LINK) -shared  $(OBJS) utility_baop.o  simuPOP_baop_wrap.o $(LIBS) -o _simuPOP_baop.so
-
-simuPOP_std_wrap.o: simuPOP_std_wrap.cpp arraymodule.c
-	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_std $(DEF) $(UDEF) $(CFLAGS) -c $<
-
-simuPOP_op_wrap.o: simuPOP_op_wrap.cpp arraymodule.c
-	$(CXX) $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_op $(DEF) -DOPTIMIZED $(UDEF) $(CFLAGS) -c $<
-
-simuPOP_la_wrap.o: simuPOP_la_wrap.cpp arraymodule.c
-	$(CXX) -g $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_la $(DEF) -DLONGALLELE $(UDEF) $(CFLAGS) -c $<
-
-simuPOP_laop_wrap.o: simuPOP_laop_wrap.cpp arraymodule.c
-	$(CXX) $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_laop $(DEF) -DOPTIMIZED -DLONGALLELE $(UDEF) $(CFLAGS) -c $<
-
-simuPOP_ba_wrap.o: simuPOP_ba_wrap.cpp arraymodule.c
-	$(CXX) -g $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_ba $(DEF) -DBINARYALLELE $(UDEF) $(CFLAGS) -c $<
-
-simuPOP_baop_wrap.o: simuPOP_baop_wrap.cpp arraymodule.c
-	$(CXX) $(INCLUDES)  -DSIMUPOP_MODULE=simuPOP_baop $(DEF) -DOPTIMIZED -DBINARYALLELE $(UDEF) $(CFLAGS) -c $<
-
-
+######################## std
+std_OBJS=utility_std.o  migrator_std.o  population_std.o    simulator_std.o  terminator_std.o \
+individual_std.o   mutator_std.o   stator_std.o     utility_std.o \
+initializer_std.o  operator_std.o  recombinator_std.o  arraymodule.c \
+mating_std.o       outputer_std.o  selector_std.o      tagger_std.o 
+_simuPOP_std.so: $(OBJS) $(std_OBJS) simuPOP_std_wrap.o $(PY_FILES)
+	$(LINK) -shared  $(OBJS) utility_std.o simuPOP_std_wrap.o $(LIBS) -o _simuPOP_std.so
+simuPOP_std_wrap.o: simuPOP_std_wrap.cpp arraymodule.c $(HEADFILES)
+	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_std $(DEF) $(UDEF) $(CFLAGS) -c $<
 simuPOP_std_wrap.cpp: simuPOP_std.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF) -shadow -c++ -python -o simuPOP_std_wrap.cpp simuPOP_std.i
+%_std.o: %.cpp %.h simupop_cfg.h
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_std $(DEF) $(UDEF) $(CFLAGS) -c $< -o $@
+%_std.cpp: %.cpp
+	cp -f $< $@
 
+######################### OP
+op_OBJS=utility_op.o  migrator_op.o  population_op.o    simulator_op.o  terminator_op.o \
+individual_op.o   mutator_op.o   stator_op.o     utility_op.o \
+initializer_op.o  operator_op.o  recombinator_op.o  arraymodule.c \
+mating_op.o       outputer_op.o  selector_op.o      tagger_op.o 
+_simuPOP_op.so: $(OBJS) $(op_OBJS) simuPOP_op_wrap.o $(PY_FILES)
+	$(LINK) -shared  $(OBJS) utility_op.o simuPOP_op_wrap.o $(LIBS) -o _simuPOP_op.so
+simuPOP_op_wrap.o: simuPOP_op_wrap.cpp arraymodule.c  $(HEADFILES)
+	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_op $(DEF) $(UDEF) $(CFLAGS) -c $<
 simuPOP_op_wrap.cpp: simuPOP_op.i simuPOP_common.i $(HEADFILES)
-	$(SWIG) $(DEF) -DOPTIMIZED -shadow -c++ -python -o simuPOP_op_wrap.cpp simuPOP_op.i
+	$(SWIG) $(DEF) -shadow -c++ -python -o simuPOP_op_wrap.cpp simuPOP_op.i
+%_op.o: %.cpp %.h simupop_cfg.h
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_op $(DEF) $(UDEF) $(CFLAGS) -c $< -o $@
+%_op.cpp: %.cpp
+	cp -f $< $@
 
+
+######################### LA
+la_OBJS=utility_la.o  migrator_la.o  population_la.o    simulator_la.o  terminator_la.o \
+individual_la.o   mutator_la.o   stator_la.o     utility_la.o \
+initializer_la.o  operator_la.o  recombinator_la.o  arraymodule.c \
+mating_la.o       outputer_la.o  selector_la.o      tagger_la.o 
+_simuPOP_la.so: $(OBJS) $(la_OBJS) simuPOP_la_wrap.o $(PY_FILES)
+	$(LINK) -shared  $(OBJS) utility_la.o simuPOP_la_wrap.o $(LIBS) -o _simuPOP_la.so
+simuPOP_la_wrap.o: simuPOP_la_wrap.cpp arraymodule.c  $(HEADFILES)
+	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_la $(DEF) $(UDEF) $(CFLAGS) -c $<
 simuPOP_la_wrap.cpp: simuPOP_la.i simuPOP_common.i $(HEADFILES)
-	$(SWIG) $(DEF) -DLONGALLELE -shadow -c++ -python -o simuPOP_la_wrap.cpp simuPOP_la.i
-
+	$(SWIG) $(DEF) -shadow -c++ -python -o simuPOP_la_wrap.cpp simuPOP_la.i
+%_la.o: %.cpp %.h simupop_cfg.h
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_la $(DEF) $(UDEF) $(CFLAGS) -c $< -o $@
+%_la.cpp: %.cpp
+	cp -f $< $@
+	
+######################### LAOP
+laop_OBJS=utility_laop.o  migrator_laop.o  population_laop.o    simulator_laop.o  terminator_laop.o \
+individual_laop.o   mutator_laop.o   stator_laop.o     utility_laop.o \
+initializer_laop.o  operator_laop.o  recombinator_laop.o  arraymodule.c \
+mating_laop.o       outputer_laop.o  selector_laop.o      tagger_laop.o 
+_simuPOP_laop.so: $(OBJS) $(laop_OBJS) simuPOP_laop_wrap.o $(PY_FILES)
+	$(LINK) -shared  $(OBJS) utility_laop.o simuPOP_laop_wrap.o $(LIBS) -o _simuPOP_laop.so
+simuPOP_laop_wrap.o: simuPOP_laop_wrap.cpp arraymodule.c  $(HEADFILES)
+	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_laop $(DEF) $(UDEF) $(CFLAGS) -c $<
 simuPOP_laop_wrap.cpp: simuPOP_laop.i simuPOP_common.i $(HEADFILES)
-	$(SWIG) $(DEF) -DLONGALLELE -DOPTIMIZED -shadow -c++ -python -o simuPOP_laop_wrap.cpp simuPOP_laop.i
-	
+	$(SWIG) $(DEF) -shadow -c++ -python -o simuPOP_laop_wrap.cpp simuPOP_laop.i
+%_laop.o: %.cpp %.h simupop_cfg.h
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_laop $(DEF) $(UDEF) $(CFLAGS) -c $< -o $@
+%_laop.cpp: %.cpp
+	cp -f $< $@
+
+######################### BA
+ba_OBJS=utility_ba.o  migrator_ba.o  population_ba.o    simulator_ba.o  terminator_ba.o \
+individual_ba.o   mutator_ba.o   stator_ba.o     utility_ba.o \
+initializer_ba.o  operator_ba.o  recombinator_ba.o  arraymodule.c \
+mating_ba.o       outputer_ba.o  selector_ba.o      tagger_ba.o 
+_simuPOP_ba.so: $(OBJS) $(ba_OBJS) simuPOP_ba_wrap.o $(PY_FILES)
+	$(LINK) -shared  $(OBJS) utility_ba.o simuPOP_ba_wrap.o $(LIBS) -o _simuPOP_ba.so
+simuPOP_ba_wrap.o: simuPOP_ba_wrap.cpp arraymodule.c   $(HEADFILES)
+	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_ba $(DEF) $(UDEF) $(CFLAGS) -c $<
 simuPOP_ba_wrap.cpp: simuPOP_ba.i simuPOP_common.i $(HEADFILES)
-	$(SWIG) $(DEF) -DBINARYALLELE -shadow -c++ -python -o simuPOP_ba_wrap.cpp simuPOP_ba.i
+	$(SWIG) $(DEF) -shadow -c++ -python -o simuPOP_ba_wrap.cpp simuPOP_ba.i
+%_ba.o: %.cpp %.h simupop_cfg.h
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_ba $(DEF) $(UDEF) $(CFLAGS) -c $< -o $@
+%_ba.cpp: %.cpp
+	cp -f $< $@
 
+
+######################### BAOP
+baop_OBJS=utility_baop.o  migrator_baop.o  population_baop.o    simulator_baop.o  terminator_baop.o \
+individual_baop.o   mutator_baop.o   stator_baop.o     utility_baop.o \
+initializer_baop.o  operator_baop.o  recombinator_baop.o  arraymodule.c \
+mating_baop.o       outputer_baop.o  selector_baop.o      tagger_baop.o 
+_simuPOP_baop.so: $(OBJS) $(baop_OBJS) simuPOP_baop_wrap.o $(PY_FILES)
+	$(LINK) -shared  $(OBJS) utility_baop.o simuPOP_baop_wrap.o $(LIBS) -o _simuPOP_baop.so
+simuPOP_baop_wrap.o: simuPOP_baop_wrap.cpp arraymodule.c  $(HEADFILES)
+	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_baop $(DEF) $(UDEF) $(CFLAGS) -c $<
 simuPOP_baop_wrap.cpp: simuPOP_baop.i simuPOP_common.i $(HEADFILES)
-	$(SWIG) $(DEF) -DBINARYALLELE -DOPTIMIZED -shadow -c++ -python -o simuPOP_baop_wrap.cpp simuPOP_baop.i
+	$(SWIG) $(DEF) -shadow -c++ -python -o simuPOP_baop_wrap.cpp simuPOP_baop.i
+%_baop.o: %.cpp %.h simupop_cfg.h
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_baop $(DEF) $(UDEF) $(CFLAGS) -c $< -o $@
+%_baop.cpp: %.cpp
+	cp -f $< $@
 
-utility_std.o: utility.h utility_std.cpp simupop_cfg.h
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_std $(DEF) $(UDEF) $(CFLAGS) -c utility_std.cpp -o utility_std.o
-
-utility_op.o: utility.h utility_op.cpp simupop_cfg.h
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_op -DOPTIMIZED $(DEF) $(UDEF) $(CFLAGS) -c utility_op.cpp -o utility_op.o
-
-utility_la.o: utility.h utility_la.cpp simupop_cfg.h
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_la -DLONGALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_la.cpp -o utility_la.o
-
-utility_laop.o: utility.h utility_laop.cpp simupop_cfg.h
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_laop -DOPTIMIZED -DLONGALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_laop.cpp -o utility_laop.o
-	
-utility_ba.o: utility.h utility_ba.cpp simupop_cfg.h
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_ba -DBINARYALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_ba.cpp -o utility_ba.o
-
-utility_baop.o: utility.h utility_baop.cpp simupop_cfg.h
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODULE=simuPOP_baop -DOPTIMIZED -DBINARYALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_baop.cpp -o utility_baop.o
-
-utility_std.cpp: utility.cpp swigpyrun.h
-	cp -f utility.cpp utility_std.cpp
-
-utility_op.cpp: utility.cpp swigpyrun.h
-	cp -f utility.cpp utility_op.cpp
-
-utility_la.cpp: utility.cpp swigpyrun.h
-	cp -f utility.cpp utility_la.cpp
-
-utility_laop.cpp: utility.cpp swigpyrun.h
-	cp -f utility.cpp utility_laop.cpp
-	
-utility_ba.cpp: utility.cpp swigpyrun.h
-	cp -f utility.cpp utility_ba.cpp
-
-utility_baop.cpp: utility.cpp swigpyrun.h
-	cp -f utility.cpp utility_baop.cpp
-
+#########################
 %.o: %.c
 	$(CC) $(INCLUDES) $(DEF) $(UDEF) $(CFLAGS) -c $< -o $@
-
-# other cpp's does not change with head file change (serialization cpps)
+%.o: %.c
+	$(CC) $(INCLUDES) $(DEF) $(UDEF) $(CFLAGS) -c $< -o $@
 %.o: %.cpp 
 	$(CXX) $(INCLUDES) $(DEF) $(UDEF)  $(CFLAGS) -c $< -o $@
-
 clean:
-	$(RM) $(OBJS) _simuPOP_*.so  *_wrap.cpp core.* swigpyrun.h *.o
+	$(RM) $(OBJS) _simuPOP_*.so  *_wrap.cpp core.* swigpyrun.h *.o *_std.cpp *_op.cpp *_la.cpp *_laop.cpp *_ba.cpp *_baop.cpp

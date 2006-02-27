@@ -31,14 +31,56 @@ import os, shutil, sys, glob, re
 execfile('simuPOP.release')
 std_macro = [('SIMUPOP_VER', SIMUPOP_VER), 
              ('SIMUPOP_REV', SIMUPOP_REV) ]
+    
+# run swig, modify generated wrap file.
+# determine if the source if newer than _wrap files.
+HEADER_FILES = [
+  'src/simupop_cfg.h',
+  'src/utility.h',
+  'src/individual.h',
+  'src/population.h',
+  'src/simulator.h',
+  'src/mating.h',
+  'src/operator.h',
+  'src/initializer.h',
+  'src/migrator.h',
+  'src/outputer.h',
+  'src/selector.h',
+  'src/stator.h',
+  'src/terminator.h',
+  'src/mutator.h',
+  'src/recombinator.h',
+  'src/tagger.h',
+]
+
+SOURCE_FILES = [
+  'src/utility.cpp',
+  'src/individual.cpp',
+  'src/population.cpp',
+  'src/simulator.cpp',
+  'src/mating.cpp',
+  'src/operator.cpp',
+  'src/initializer.cpp',
+  'src/migrator.cpp',
+  'src/outputer.cpp',
+  'src/selector.cpp',
+  'src/stator.cpp',
+  'src/terminator.cpp',
+  'src/mutator.cpp',
+  'src/recombinator.cpp',
+  'src/tagger.cpp',
+]
+
+# create source file for each module
+MODU_SOURCE_FILES = {'std':[], 'op':[], 'la':[], 'laop':[], 'ba':[], 'baop':[]}
+for modu in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
+  for src in SOURCE_FILES:
+    mod_src = src[:-4] + '_' + modu + '.cpp'
+    shutil.copy(src, mod_src)
+    MODU_SOURCE_FILES[modu].append( mod_src )
+  MODU_SOURCE_FILES[modu].append( 'src/simuPOP_' + modu + '_wrap.cpp' )
   
 if sys.argv[1] not in ['sdist']:
-  shutil.copy('src/utility.cpp', 'src/utility_std.cpp')
-  shutil.copy('src/utility.cpp', 'src/utility_op.cpp')
-  shutil.copy('src/utility.cpp', 'src/utility_la.cpp')
-  shutil.copy('src/utility.cpp', 'src/utility_laop.cpp')
-  shutil.copy('src/utility.cpp', 'src/utility_ba.cpp')
-  shutil.copy('src/utility.cpp', 'src/utility_baop.cpp')
   # checking os type and copy configuration files
   if os.name == 'nt':  # Windows
     shutil.copy('config_win32.h', 'config.h')
@@ -59,49 +101,6 @@ if sys.argv[1] not in ['sdist']:
     except IOError:
       print "Error: Unknown system type. Use configure to generate config.h."
       sys.exit()
-    
-# run swig, modify generated wrap file.
-# determine if the source if newer than _wrap files.
-SOURCE_FILES = [
-  'src/simupop_cfg.h',
-  'src/utility.h',
-  'src/individual.h',
-  'src/population.h',
-  'src/simulator.h',
-  'src/mating.h',
-  'src/operator.h',
-  'src/initializer.h',
-  'src/migrator.h',
-  'src/outputer.h',
-  'src/selector.h',
-  'src/stator.h',
-  'src/terminator.h',
-  'src/mutator.h',
-  'src/recombinator.h',
-  'src/tagger.h',
-  'src/utility.cpp'
-]
-
-
-## COASIM_HEADER_FILES = [
-##   'coasim/all_markers.hh',
-##   'coasim/configuration.hh',
-##   'coasim/marker.hh',
-##   'coasim/simulator.hh',
-##   'coasim/builder_events.hh',
-##   'coasim/descender.hh',
-##   'coasim/micro_satellite_marker.hh',
-##   'coasim/snp_marker.hh',
-##   'coasim/builder.hh',
-##   'coasim/dist_funcs.hh',
-##   'coasim/monitor.hh',
-##   'coasim/compile_options.hh',
-##   'coasim/epochs.hh',
-##   'coasim/node.hh',
-##   'coasim/interval.hh',
-##   'coasim/retired_interval.hh',
-##   'coasim/trait_marker.hh'
-## ]
 
 WRAP_INFO = [
   ['src/simuPOP_std_wrap.cpp', 'src/simuPOP_std.i', ''],
@@ -110,14 +109,13 @@ WRAP_INFO = [
   ['src/simuPOP_laop_wrap.cpp', 'src/simuPOP_laop.i', '-DLONGALLELE -DOPTIMIZED'],
   ['src/simuPOP_ba_wrap.cpp', 'src/simuPOP_ba.i', '-DBINARYALLELE'],
   ['src/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED'],
-##  ['src/coaSim_wrap.cpp', 'coasim/coaSim.i', '']
 ]  
 
 
 # if any of the wrap files does not exist
 # or if the wrap files are older than any of the source files.
 if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in range(len(WRAP_INFO))]) or \
-  (max( [os.path.getmtime(x) for x in SOURCE_FILES] ) > \
+  (max( [os.path.getmtime(x) for x in HEADER_FILES] ) > \
    min( [os.path.getmtime(WRAP_INFO[x][0]) for x in range(len(WRAP_INFO))])):
   try:
     # for swig >= 1.3.28
@@ -165,24 +163,6 @@ population genetics models to generating datasets under complex
 evolutionary scenarios. simuPOP is currently bundled with a Python
 binding of coaSim.
 """
-
-## 
-## COASIM_SOURCE_FILES = [
-##   'coasim/configuration.cc',
-##   'coasim/marker.cc',
-##   'coasim/simulator.cc',
-##   'coasim/builder_events.cc',
-##   'coasim/descender.cc',
-##   'coasim/micro_satellite_marker.cc',
-##   'coasim/snp_marker.cc',
-##   'coasim/builder.cc',
-##   'coasim/dist_funcs.cc',
-##   'coasim/epochs.cc',
-##   'coasim/node.cc',
-##   'coasim/interval.cc',
-##   'coasim/retired_interval.cc',
-##   'coasim/trait_marker.cc'
-## ]
 
 GSL_FILES = [ 
   'gsl/sys/infnan.c',
@@ -285,7 +265,6 @@ DATA_FILES =  [
     'COPYING', 'TODO', 'simuPOP.release']), 
   ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
   ('share/simuPOP/test', glob.glob('test/test_*.py') 
-##   + ['coasim/testCoaSim.py'] 
   ),
   ('share/simuPOP/misc', ['misc/README', 'misc/python-mode.el', 'misc/emacs-python.el']),
   ('share/simuPOP/scripts', glob.glob('scripts/*.py'))
@@ -304,36 +283,28 @@ setup(
   url = "http://bp6.stat.rice.edu:8080/simuPOP",
   package_dir = {'': 'src' }, 
   py_modules = ['simuPOP', 'simuOpt', 'simuPOP_std', 'simuPOP_op', 'simuPOP_la', 'simuPOP_laop', 
-    'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop'
-##     , 'coaSim'
-    ],
+    'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop' ],
   ext_modules = [
     Extension('_simuPOP_std',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_std')] + std_macro,
-      sources = GSL_FILES + SERIAL_FILES + [
-        'src/simuPOP_std_wrap.cpp',
-        'src/utility_std.cpp'] 
+      sources = GSL_FILES + SERIAL_FILES + MODU_SOURCE_FILES['std']
     ),
     Extension('_simuPOP_op',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None)] + std_macro,
-      sources = GSL_FILES + SERIAL_FILES + [
-        'src/simuPOP_op_wrap.cpp',
-        'src/utility_op.cpp'] 
+      sources = GSL_FILES + SERIAL_FILES + MODU_SOURCE_FILES['op']
     ),
     Extension('_simuPOP_la',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None) ] + std_macro,
-      sources = GSL_FILES + SERIAL_FILES + [
-        'src/simuPOP_la_wrap.cpp',
-        'src/utility_la.cpp'] 
+      sources = GSL_FILES + SERIAL_FILES + MODU_SOURCE_FILES['la']
     ),
     Extension('_simuPOP_laop',
       extra_compile_args=['-O3'],
@@ -341,18 +312,14 @@ setup(
       libraries = ['stdc++'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), 
                         ('OPTIMIZED', None) ] + std_macro,
-      sources = GSL_FILES + SERIAL_FILES + [
-        'src/simuPOP_laop_wrap.cpp',
-        'src/utility_laop.cpp'] 
+      sources = GSL_FILES + SERIAL_FILES + MODU_SOURCE_FILES['laop']
     ),
     Extension('_simuPOP_ba',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None) ] + std_macro,
-      sources = GSL_FILES + SERIAL_FILES + [
-        'src/simuPOP_ba_wrap.cpp',
-        'src/utility_ba.cpp'] 
+      sources = GSL_FILES + SERIAL_FILES + MODU_SOURCE_FILES['ba']
     ),
     Extension('_simuPOP_baop',
       extra_compile_args=['-O3'],
@@ -360,16 +327,12 @@ setup(
       libraries = ['stdc++'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None), 
                         ('OPTIMIZED', None) ] + std_macro,
-      sources = GSL_FILES + SERIAL_FILES + [
-        'src/simuPOP_baop_wrap.cpp',
-        'src/utility_baop.cpp'] 
+      sources = GSL_FILES + SERIAL_FILES + MODU_SOURCE_FILES['baop']
     ),
-##     Extension('_coaSim',
-##       extra_compile_args=['-O3'],
-##       include_dirs = ["coasim"],
-##       libraries = ['stdc++'],
-##       sources = COASIM_SOURCE_FILES + [ 'src/coaSim_wrap.cpp' ]
-##     )    
   ],
   data_files = DATA_FILES
 )
+
+for modu in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
+  for src in SOURCE_FILES[modu][:-1]:
+    os.remove(src)

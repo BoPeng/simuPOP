@@ -25,7 +25,7 @@
 #define _TERMINATOR_H
 /**
 \file
-\brief head file of class Terminator: public Operator
+\brief head file of class terminator: public Operator
 */
 #include "operator.h"
 #include "population.h"
@@ -35,25 +35,25 @@
 
 namespace simuPOP
 {
-  template<class Pop>
-    class Terminator: public Operator<Pop>
+
+  class terminator: public Operator
   {
 
     public:
       /// constructor. default to be always active.
-      Terminator(string message = "", string output=">", string outputExpr="",
+      terminator(string message = "", string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp),
+      Operator(output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_message(message)
       {
       };
 
       /// destructor
-      virtual ~Terminator(){};
+      virtual ~terminator(){};
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Terminator<Pop>(*this);
+        return new terminator(*this);
       }
 
       string message()
@@ -76,23 +76,23 @@ namespace simuPOP
   ///
   /// When the condition is true, a shared variable var="terminate" will be
   /// set to current generation.
-  template<class Pop>
-    class TerminateIf: public Terminator<Pop>
+
+  class terminateIf: public terminator
   {
 
     public:
-      TerminateIf(string condition="", string message="", string var="terminate",
+      terminateIf(string condition="", string message="", string var="terminate",
         string output="", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Terminator<Pop>(message, output, outputExpr, stage, begin, end, step, at,
+      terminator(message, output, outputExpr, stage, begin, end, step, at,
         rep, grp), m_expr(condition ), m_var(var)
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new TerminateIf<Pop>(*this);
+        return new terminateIf(*this);
       }
 
       virtual string __repr__()
@@ -101,7 +101,7 @@ namespace simuPOP
       }
 
       /// check all alleles in vector allele if they are fixed.
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         // experssion return true
         m_expr.setLocalDict(pop.dict());
@@ -126,7 +126,7 @@ namespace simuPOP
           return true;
       }
 
-      virtual ~TerminateIf(){};
+      virtual ~terminateIf(){};
 
     private:
       /// alleles to check. If empty, check all alleles.
@@ -145,23 +145,23 @@ namespace simuPOP
   ///
   /// When the condition is true, a shared variable var="terminate" will be
   /// set to current generation.
-  template<class Pop>
-    class ContinueIf: public Terminator<Pop>
+
+  class continueIf: public terminator
   {
 
     public:
-      ContinueIf(string condition="", string message="", string var="terminate",
+      continueIf(string condition="", string message="", string var="terminate",
         string output="", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Terminator<Pop>(message, output, outputExpr, stage, begin, end, step, at,
+      terminator(message, output, outputExpr, stage, begin, end, step, at,
         rep, grp), m_expr(condition ), m_var(var)
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new ContinueIf<Pop>(*this);
+        return new continueIf(*this);
       }
 
       virtual string __repr__()
@@ -170,7 +170,7 @@ namespace simuPOP
       }
 
       /// check all alleles in vector allele if they are fixed.
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         // experssion return true
         m_expr.setLocalDict(pop.dict());
@@ -195,7 +195,7 @@ namespace simuPOP
           return true;
       }
 
-      virtual ~ContinueIf(){};
+      virtual ~continueIf(){};
 
     private:
       /// alleles to check. If empty, check all alleles.

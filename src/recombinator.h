@@ -25,7 +25,7 @@
 #define _RECOMBINATOR_H
 /**
 \file
-\brief head file of class Recombinator:public Operator
+\brief head file of class recombinator:public Operator
 */
 #include "operator.h"
 
@@ -38,7 +38,7 @@ namespace simuPOP
   /**
   \brief  Recombination
 
-  - only works for diploids (and for females in haplodiploids) Population.
+  - only works for diploids (and for females in haplodiploids) population.
 
   - Free recombination between loci. Loci behave completely independently.
 
@@ -60,8 +60,8 @@ namespace simuPOP
   randomly drawn.
 
   */
-  template<class Pop>
-    class Recombinator: public Operator<Pop>
+
+  class recombinator: public Operator
   {
     public:
       /// recombine chromosomes from parents
@@ -86,7 +86,7 @@ namespace simuPOP
       \note there is no recombination between sex chromosomes of male individuals.
       (sexChrom=True).
       */
-      Recombinator(double intensity=-1,
+      recombinator(double intensity=-1,
         vectorf rate=vectorf(),
         vectoru afterLoci=vectoru(),
         double maleIntensity=-1,
@@ -95,7 +95,7 @@ namespace simuPOP
         int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
         :
-      Operator<Pop>( "", "", DuringMating, begin, end, step, at,
+      Operator( "", "", DuringMating, begin, end, step, at,
         rep, grp)
         , m_intensity(intensity), m_maleIntensity(maleIntensity),
         m_rate(rate), m_maleRate(maleRate),
@@ -109,14 +109,14 @@ namespace simuPOP
         this->setFormOffGenotype(true);
       };
 
-      virtual ~Recombinator()
+      virtual ~recombinator()
       {
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Recombinator<Pop>(*this);
+        return new recombinator(*this);
       }
 
       virtual string __repr__()
@@ -127,7 +127,7 @@ namespace simuPOP
       /// this function takes intensity, rate, afterLoci, ...
       /// inputs and return a bernulli trailer and a recBeforeLoci
       /// vector.
-      void prepareRecRates(Pop& pop,
+      void prepareRecRates(population& pop,
         double intensity,
         vectorf rate,
         vectoru afterLoci,                        //
@@ -331,8 +331,8 @@ namespace simuPOP
       // parental chromosomes and set one copy of offspring chromosome
       // bt contains the bernulli trailer
       void recombine(
-        typename Pop::IndType* parent,            // one of the parent
-        typename Pop::IndIterator offspring,      // offspring
+        individual* parent,                       // one of the parent
+        population::IndIterator offspring,        // offspring
         int offPloidy,                            // which offspring ploidy to fill
         BernulliTrials& bt,
         const vectoru& recBeforeLoci,
@@ -417,10 +417,10 @@ namespace simuPOP
         }                                         // no switch
       }
 
-      virtual bool applyDuringMating(Pop& pop,
-        typename Pop::IndIterator offspring,
-        typename Pop::IndType* dad=NULL,
-        typename Pop::IndType* mom=NULL)
+      virtual bool applyDuringMating(population& pop,
+        population::IndIterator offspring,
+        individual* dad=NULL,
+        individual* mom=NULL)
       {
         if( m_recBeforeLoci.empty() )
         {

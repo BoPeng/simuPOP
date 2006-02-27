@@ -25,7 +25,7 @@
 #define _STATOR_H
 /**
 \file
-\brief head file of class Stator:public Operator
+\brief head file of class stator:public Operator
 */
 #include "utility.h"
 #include "population.h"
@@ -55,36 +55,36 @@ namespace simuPOP
   ///
   /// this class will also list ALL statistics and its names?
   ///
-  template<class Pop>
-    class Stator: public Operator<Pop>
+
+  class stator: public Operator
   {
     public:
       /// constructor. default to be always active.
       /// default to have NO output (shared variables will be set.)
       /// phase: if we treat Aa!=aA, default is false, i.e, Aa=aA.
-      Stator(string output="", string outputExpr="",
+      stator(string output="", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp)
+      Operator(output, outputExpr, stage, begin, end, step, at, rep, grp)
       {
       };
 
       /// destructor
-      virtual ~Stator()
+      virtual ~stator()
       {
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Stator<Pop>(*this);
+        return new stator(*this);
       }
   };
 
   /// evaluate an expression.
   ///
-  template<class Pop>
-    class PyEval: public Stator<Pop>
+
+  class pyEval: public stator
   {
     public:
       /** \brief evaluate expr/statments in local replicate namespace
@@ -100,31 +100,31 @@ namespace simuPOP
       \param output default to ">" . i.e., output to standard output.
       for usage of other parameters, see help(baseOperator.__init__)
       */
-      PyEval(const string& expr="", const string& stmts="", const string& preStmts="",
+      pyEval(const string& expr="", const string& stmts="", const string& preStmts="",
         const string& postStmts="", bool exposePop=false, const string& name="",
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL,  int grp=GRP_ALL)
-        :Stator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp),
+        :stator(output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_expr(expr, stmts), m_postExpr("", postStmts), m_exposePop(exposePop), m_name(name)
       {
         if( preStmts != "")
           Expression("", preStmts).evaluate();
       }
 
-      ~PyEval()
+      ~pyEval()
       {
         m_postExpr.evaluate();
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new PyEval<Pop>(*this);
+        return new pyEval(*this);
       }
 
       // check all alleles in vector allele if they are fixed.
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         if(m_exposePop)
         {
@@ -152,7 +152,7 @@ namespace simuPOP
 
       virtual string __repr__()
       {
-        return "<simuPOP::PyEval " + m_name + ">";
+        return "<simuPOP::pyEval " + m_name + ">";
       }
 
       string& name()
@@ -174,8 +174,8 @@ namespace simuPOP
 
   /// evaluate an expression.
   ///
-  template<class Pop>
-    class PyExec: public PyEval<Pop>
+
+  class pyExec: public pyEval
   {
     public:
       /** \brief evaluate statments in local replicate namespace, no return value
@@ -189,25 +189,25 @@ namespace simuPOP
       \param output default to ">" . i.e., output to standard output.
       for usage of other parameters, see help(baseOperator.__init__)
       */
-      PyExec( const string& stmts="", const string & preStmts="", const string& postStmts="",
+      pyExec( const string& stmts="", const string & preStmts="", const string& postStmts="",
         bool exposePop=false, const string& name="",
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL,  int grp=GRP_ALL)
-        :PyEval<Pop>("", stmts, preStmts, postStmts, exposePop, name, "", "",
+        :pyEval("", stmts, preStmts, postStmts, exposePop, name, "", "",
         stage, begin, end, step, at, rep, grp)
       {
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new PyExec<Pop>(*this);
+        return new pyExec(*this);
       }
 
       virtual string __repr__()
       {
-        return "<simuPOP::PyExec " + this->name() + ">";
+        return "<simuPOP::pyExec " + this->name() + ">";
       }
   };
 
@@ -220,7 +220,7 @@ namespace simuPOP
   /// each class defines how to apply the statistics and
   /// provide interface to allow others to retrieve the value.
   /// NOTE: the values are population dependent so these
-  /// values are only meaningful within the same Stat.apply
+  /// values are only meaningful within the same stat.apply
   /// call;
   ///
   /// The design separate the calculation of statistics
@@ -241,8 +241,8 @@ namespace simuPOP
 
   /// CPPONLY
   /// post population sizes etc.
-  template<class Pop>
-    class statPopSize
+
+  class statPopSize
   {
     private:
 
@@ -261,7 +261,7 @@ namespace simuPOP
         m_isActive = true;
       }
 
-      void apply(Pop& pop)
+      void apply(population& pop)
       {
         UINT numSP = pop.numSubPop();
         ULONG popSize = pop.popSize();
@@ -288,8 +288,8 @@ namespace simuPOP
   };
 
   /// CPPONLY
-  template<class Pop>
-    class statNumOfMale
+
+  class statNumOfMale
   {
     private:
 
@@ -347,7 +347,7 @@ namespace simuPOP
         return m_numOfFemale[ subPop ];
       }
 
-      void apply(Pop& pop)
+      void apply(population& pop)
       {
         if(m_numOfMale.empty())
           return;
@@ -361,7 +361,7 @@ namespace simuPOP
         for( size_t sp=0; sp < numSP; ++sp)
         {
           ULONG n = 0;
-          for(typename Pop::IndIterator it = pop.indBegin(sp), itEnd=pop.indEnd(sp);
+          for(population::IndIterator it = pop.indBegin(sp), itEnd=pop.indEnd(sp);
             it < itEnd; ++it)
           {
             if(it->sex() == Male)
@@ -389,8 +389,8 @@ namespace simuPOP
   };
 
   /// CPPONLY
-  template<class Pop>
-    class statNumOfAffected
+
+  class statNumOfAffected
   {
     private:
 
@@ -450,7 +450,7 @@ namespace simuPOP
         return m_numOfUnaffected[ subPop ];
       }
 
-      void apply(Pop& pop)
+      void apply(population& pop)
       {
         if( m_numOfAffected.empty() )
           return;
@@ -463,7 +463,7 @@ namespace simuPOP
         for( size_t sp=0; sp < numSP; ++sp)
         {
           ULONG n = count_if(pop.indBegin( sp ), pop.indEnd( sp ),
-            isAffected<typename Pop::IndType>());
+            isAffected<individual>());
           numOfAffected += n;
           m_numOfAffected[sp] = n;
           pop.setIntVar(subPopVar_String(sp, numOfAffected_String), n);
@@ -491,8 +491,8 @@ namespace simuPOP
   };
 
   /// CPPONLY
-  template<class Pop>
-    class statAlleleFreq
+
+  class statAlleleFreq
   {
     private:
 
@@ -645,7 +645,7 @@ namespace simuPOP
         return al;
       }
 
-      void apply(Pop& pop)
+      void apply(population& pop)
       {
         if( m_atLoci.empty())
           return;
@@ -684,7 +684,7 @@ namespace simuPOP
           vectori& sum = m_alleleNum.back()[loc];
           fill(sum.begin(), sum.end(), 0);
 
-          // for each subPopulation
+          // for each subpopulation
           for( UINT sp=0; sp < numSP;  ++sp)
           {
             vectori& num = m_alleleNum[sp][loc];
@@ -816,31 +816,31 @@ namespace simuPOP
   /// use alleleFreq to get number of alleles
   /// so statNumOfAlleles is just a proxy class
   ///
-  template<class Pop>
-    class statNumOfAlleles
+
+  class statNumOfAlleles
   {
     public:
-      statNumOfAlleles(statAlleleFreq<Pop>& calc, const vectori& atLoci = vectori())
+      statNumOfAlleles(statAlleleFreq& calc, const vectori& atLoci = vectori())
         :m_calc(calc)
       {
         for(vectori::const_iterator it = atLoci.begin(); it != atLoci.end(); ++it)
           m_calc.addLocus(*it, true);
       }
 
-      // do nothing. m_calc.spply will be called by Stat.
-      void apply(Pop& pop)
+      // do nothing. m_calc.spply will be called by stat.
+      void apply(population& pop)
       {
       }
 
     private:
 
       /// a reference to an existing allelefreq calculator
-      statAlleleFreq<Pop>& m_calc;
+      statAlleleFreq& m_calc;
   };
 
   /// CPPONLY
-  template<class Pop>
-    class statHeteroFreq
+
+  class statHeteroFreq
   {
     private:
 
@@ -944,7 +944,7 @@ namespace simuPOP
         return allele < hf.size() ? hf[allele] : 0;
       }
 
-      void apply(Pop& pop)
+      void apply(population& pop)
       {
         if( m_atLoci.empty())
           return;
@@ -973,7 +973,7 @@ namespace simuPOP
           vectori& sum = m_heteroNum[resIdx(i)];
           fill(sum.begin(), sum.end(), 0);
 
-          // for each subPopulation
+          // for each subpopulation
           for( UINT sp=0; sp < numSP;  ++sp)
           {
             vectori& num = m_heteroNum[resIdx(i,sp)];
@@ -1140,15 +1140,15 @@ namespace simuPOP
   };
 
   /// CPPONLY
-  template<class Pop>
-    class statExpHetero
+
+  class statExpHetero
   {
     private:
 
 #define ExpHetero_String "expHetero"
 
     public:
-      statExpHetero(statAlleleFreq<Pop>& alleleFreq, const vectori& expHetero=vectori())
+      statExpHetero(statAlleleFreq& alleleFreq, const vectori& expHetero=vectori())
         : m_alleleFreq(alleleFreq), m_atLoci(expHetero), m_expHetero(0)
       {
         // add expected hetero to m_alleleFreq
@@ -1156,7 +1156,7 @@ namespace simuPOP
           m_alleleFreq.addLocus( expHetero[i]);
       }
 
-      void apply(Pop& pop)
+      void apply(population& pop)
       {
         if( m_atLoci.empty())
           return;
@@ -1177,7 +1177,7 @@ namespace simuPOP
               m_expHetero[sp].resize(loc+1, 0.0);
           }
 
-          // for each subPopulation
+          // for each subpopulation
           for( UINT sp=0; sp < numSP;  ++sp)
           {
             // calculate expected heterozygosity
@@ -1211,7 +1211,7 @@ namespace simuPOP
     private:
 
       /// need this to apply alleleFreq
-      statAlleleFreq<Pop>& m_alleleFreq;
+      statAlleleFreq& m_alleleFreq;
 
       /// heteroFreq
       vectori m_atLoci;
@@ -1223,8 +1223,8 @@ namespace simuPOP
   /// CPPONLY
   /// currently there is no need to expose the result.
   /// may add that later.
-  template<class Pop>
-    class statGenoFreq
+
+  class statGenoFreq
   {
     private:
 
@@ -1237,7 +1237,7 @@ namespace simuPOP
       {
       }
 
-      void apply(Pop& pop)
+      void apply(population& pop)
       {
         if( m_atLoci.empty())
           return;
@@ -1277,7 +1277,7 @@ namespace simuPOP
 
           Allele a, b;
 
-          // for each subPopulation
+          // for each subpopulation
           for( UINT sp=0; sp < numSP;  ++sp)
           {
             DBG_DO(DBG_STAT, cout << "Counting genotypes at locus " <<
@@ -1360,8 +1360,8 @@ namespace simuPOP
   };
 
   /// CPPONLY
-  template<class Pop>
-    class statHaploFreq
+
+  class statHaploFreq
   {
     private:
 
@@ -1443,7 +1443,7 @@ namespace simuPOP
         return m_haploFreq[idx + subPop*m_haplotypes.size() ];
       }
 
-      void apply(Pop& pop)
+      void apply(population& pop)
       {
         if( m_haplotypes.empty())
           return;
@@ -1478,7 +1478,7 @@ namespace simuPOP
           m_haploFreq[h].clear();
         }
 
-        // for each subPopulation
+        // for each subpopulation
         for( UINT sp=0; sp < numSP;  ++sp)
         {
           for(size_t h = 0; h < nHap; ++h)
@@ -1506,7 +1506,7 @@ namespace simuPOP
         // finish count
 
         // calculate haploFreq,
-        // for each subPopulation
+        // for each subpopulation
         for( UINT sp=0; sp < numSP;  ++sp)
         {
           // record both num and freq
@@ -1564,8 +1564,8 @@ namespace simuPOP
   };
 
   /// CPPONLY
-  template<class Pop>
-    class statLD
+
+  class statLD
   {
     private:
 
@@ -1578,7 +1578,7 @@ namespace simuPOP
 
     public:
 
-      statLD(statAlleleFreq<Pop>& alleleFreq, statHaploFreq<Pop>& haploFreq,
+      statLD(statAlleleFreq& alleleFreq, statHaploFreq& haploFreq,
         const intMatrix& LD=intMatrix(), bool midValues=false)
         :m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
         m_LD(LD), m_midValues(midValues)
@@ -1601,7 +1601,7 @@ namespace simuPOP
       }
 
       // calculate, right now,  do not tempt to save values
-      void apply(Pop& pop)
+      void apply(population& pop)
       {
         if( m_LD.empty())
           return;
@@ -1868,10 +1868,10 @@ namespace simuPOP
     private:
 
       /// need to get allele freq
-      statAlleleFreq<Pop>& m_alleleFreq;
+      statAlleleFreq& m_alleleFreq;
 
       /// need to get haplofreq
-      statHaploFreq<Pop>& m_haploFreq;
+      statHaploFreq& m_haploFreq;
 
       /// LD
       intMatrix m_LD;
@@ -1882,8 +1882,8 @@ namespace simuPOP
 
   /// CPPONLY
   /// currently there is no need to retrieve calculated value
-  template<class Pop>
-    class statFst
+
+  class statFst
   {
 
     private:
@@ -1896,7 +1896,7 @@ namespace simuPOP
 #define  AvgFit_String  "AvgFit"
 
     public:
-      statFst(statAlleleFreq<Pop>& alleleFreq, statHeteroFreq<Pop>& heteroFreq,
+      statFst(statAlleleFreq& alleleFreq, statHeteroFreq& heteroFreq,
         const vectori& Fst=vectori(), bool midValues=false)
         : m_alleleFreq(alleleFreq), m_heteroFreq(heteroFreq), m_atLoci(Fst)
       {
@@ -1940,7 +1940,7 @@ namespace simuPOP
         return m_Fit[loc];
       }
 
-      void apply(Pop& pop)
+      void apply(population& pop)
       {
         if( m_atLoci.empty())
           return;
@@ -2051,8 +2051,8 @@ namespace simuPOP
 
     private:
 
-      statAlleleFreq<Pop>& m_alleleFreq;
-      statHeteroFreq<Pop>& m_heteroFreq;
+      statAlleleFreq& m_alleleFreq;
+      statHeteroFreq& m_heteroFreq;
 
       /// Fst
       vectori m_atLoci;
@@ -2072,8 +2072,8 @@ namespace simuPOP
   /// the relatedness measure between two individuals/families
   /// using Queller and Goodnight or Lynch's method.
   /// or internal relatedness values
-  template<class Pop>
-    class statRelatedness
+
+  class statRelatedness
   {
 
     public:
@@ -2084,7 +2084,7 @@ namespace simuPOP
 #define Rel_D2_String      "relD2"
 #define Rel_Rel_String     "relRel"
 
-    private:
+    public:
 
       typedef std::pair<double, double> fraction;
 
@@ -2101,7 +2101,7 @@ namespace simuPOP
       \param method can be REL_Queller, REL_Lynch, REL_IR, REL_D2
       or REL_Rel. Please refer to the manual for details.
       */
-      statRelatedness(statAlleleFreq<Pop>& alleleFreq, const intMatrix& groups=intMatrix(),
+      statRelatedness(statAlleleFreq& alleleFreq, const intMatrix& groups=intMatrix(),
         bool useSubPop=false, const vectori& loci=vectori(), vectori method=vectori(),
         int minScored=10, bool midValues=false):
       m_alleleFreq(alleleFreq), m_groups(groups), m_useSubPop(useSubPop),
@@ -2119,8 +2119,8 @@ namespace simuPOP
       }
 
       // relatedness between individuals
-      fraction relQueller(typename Pop::IndType ind1,
-        typename Pop::IndType ind2)
+      fraction relQueller(individual ind1,
+        individual ind2)
       {
 
         matrix& af = m_alleleFreq.alleleFreqAll();
@@ -2153,8 +2153,8 @@ namespace simuPOP
         return res;
       }
 
-      fraction relLynch(typename Pop::IndType ind1,
-        typename Pop::IndType ind2)
+      fraction relLynch(individual ind1,
+        individual ind2)
       {
         matrix& af = m_alleleFreq.alleleFreqAll();
 
@@ -2204,7 +2204,7 @@ namespace simuPOP
       }
 
       // IR measure for individual ind at specified locus
-      fraction relIR(typename Pop::IndType ind1, int locus)
+      fraction relIR(individual ind1, int locus)
       {
         matrix& af = m_alleleFreq.alleleFreqAll();
         fraction res(0.,0.);
@@ -2222,7 +2222,7 @@ namespace simuPOP
       }
 
       // D2 measure for individual ind at specified locus
-      fraction relD2(typename Pop::IndType ind1, int locus)
+      fraction relD2(individual ind1, int locus)
       {
         fraction res(0.,1.);
         Allele a = ind1.allele(locus, 0);
@@ -2235,8 +2235,8 @@ namespace simuPOP
       }
 
       // REL measure for individual ind at specified locus
-      fraction relRel(typename Pop::IndType ind1,
-        typename Pop::IndType ind2,  int locus)
+      fraction relRel(individual ind1,
+        individual ind2,  int locus)
       {
         matrix& af = m_alleleFreq.alleleFreqAll();
 
@@ -2261,7 +2261,7 @@ namespace simuPOP
 
       // between group i and j if method=REL_Queller and REL_Lynch
       /// for group i and locus j otherwise
-      double groupRelatedness(Pop& pop, int i, int j, int method)
+      double groupRelatedness(population& pop, int i, int j, int method)
       {
         fraction res(0., 0.);
 
@@ -2283,10 +2283,10 @@ namespace simuPOP
           {
             case REL_Queller:
               // from subpop i and j
-              for(typename Pop::IndIterator ind1 = pop.indBegin(sp1);
+              for(population::IndIterator ind1 = pop.indBegin(sp1);
                 ind1 != pop.indEnd(sp1); ++ind1)
               {
-                for(typename Pop::IndIterator ind2 = pop.indBegin(sp2);
+                for(population::IndIterator ind2 = pop.indBegin(sp2);
                   ind2 != pop.indEnd(sp2); ++ind2)
                 {
                   fraction tmp= relQueller(*ind1, *ind2);
@@ -2297,10 +2297,10 @@ namespace simuPOP
               return res.first/res.second;
             case REL_Lynch:
               // from subpop i and j
-              for(typename Pop::IndIterator ind1 = pop.indBegin(sp1);
+              for(population::IndIterator ind1 = pop.indBegin(sp1);
                 ind1 != pop.indEnd(sp1); ++ind1)
               {
-                for(typename Pop::IndIterator ind2 = pop.indBegin(sp2);
+                for(population::IndIterator ind2 = pop.indBegin(sp2);
                   ind2 != pop.indEnd(sp2); ++ind2)
                 {
                   fraction tmp= relLynch(*ind1, *ind2);
@@ -2310,7 +2310,7 @@ namespace simuPOP
               }                                   // lynch
               return res.first/res.second;
             case REL_IR:
-              for(typename Pop::IndIterator ind1 = pop.indBegin(sp1);
+              for(population::IndIterator ind1 = pop.indBegin(sp1);
                 ind1 != pop.indEnd(sp1); ++ind1)
               {
                 fraction tmp= relIR(*ind1, j);
@@ -2319,7 +2319,7 @@ namespace simuPOP
               }                                   // lynch
               return res.first/res.second;
             case REL_D2:
-              for(typename Pop::IndIterator ind1 = pop.indBegin(sp1);
+              for(population::IndIterator ind1 = pop.indBegin(sp1);
                 ind1 != pop.indEnd(sp1); ++ind1)
               {
                 fraction tmp= relD2(*ind1, j);
@@ -2328,10 +2328,10 @@ namespace simuPOP
               }                                   // lynch
               return res.first/res.second;
             case REL_Rel:
-              for(typename Pop::IndIterator ind1 = pop.indBegin(sp1);
+              for(population::IndIterator ind1 = pop.indBegin(sp1);
                 ind1 != pop.indEnd(sp1); ++ind1)
               {
-                for(typename Pop::IndIterator ind2 = ind1 + 1;
+                for(population::IndIterator ind2 = ind1 + 1;
                   ind2 != pop.indEnd(sp1); ++ind2)
                 {
                   fraction tmp= relRel(*ind1, *ind2, j);
@@ -2354,7 +2354,7 @@ namespace simuPOP
                 for(vectori::iterator ind2 = m_groups[j].begin();
                   ind2 != m_groups[j].end(); ++ind2)
                 {
-                  fraction tmp = relQueller(pop.individual(*ind1), pop.individual(*ind2));
+                  fraction tmp = relQueller(pop.ind(*ind1), pop.ind(*ind2));
                   res.first += tmp.first/tmp.second;
                   res.second += 1.;
                 }
@@ -2367,7 +2367,7 @@ namespace simuPOP
                 for(vectori::iterator ind2 = m_groups[j].begin();
                   ind2 != m_groups[j].end(); ++ind2)
                 {
-                  fraction tmp = relLynch(pop.individual(*ind1), pop.individual(*ind2));
+                  fraction tmp = relLynch(pop.ind(*ind1), pop.ind(*ind2));
                   res.first += tmp.first/tmp.second;
                   res.second += 1.;
                 }
@@ -2377,7 +2377,7 @@ namespace simuPOP
               for(vectori::iterator ind1 = m_groups[i].begin();
                 ind1 != m_groups[i].end(); ++ind1)
               {
-                fraction tmp = relIR(pop.individual(*ind1), j);
+                fraction tmp = relIR(pop.ind(*ind1), j);
                 res.first += tmp.first;
                 res.second += tmp.second;
               }
@@ -2386,7 +2386,7 @@ namespace simuPOP
               for(vectori::iterator ind1 = m_groups[i].begin();
                 ind1 != m_groups[i].end(); ++ind1)
               {
-                fraction tmp = relD2(pop.individual(*ind1), j);
+                fraction tmp = relD2(pop.ind(*ind1), j);
                 res.first += tmp.first/tmp.second;
                 res.second += 1.;
               }
@@ -2398,8 +2398,8 @@ namespace simuPOP
                 for(vectori::iterator ind2 = ind1 + 1;
                   ind2 != m_groups[i].end(); ++ind2)
                 {
-                  fraction tmp = relRel(pop.individual(*ind1),
-                    pop.individual(*ind2), j);
+                  fraction tmp = relRel(pop.ind(*ind1),
+                    pop.ind(*ind2), j);
                   res.first += tmp.first;
                   res.second += tmp.second;
                 }
@@ -2411,7 +2411,7 @@ namespace simuPOP
         return 0;
       }
 
-      void apply(Pop& pop)
+      void apply(population& pop)
       {
         if(m_groups.empty())
           return;
@@ -2512,7 +2512,7 @@ namespace simuPOP
     private:
 
       /// need to get allele freq
-      statAlleleFreq<Pop>& m_alleleFreq;
+      statAlleleFreq& m_alleleFreq;
 
       /// method to use
       intMatrix m_groups;
@@ -2533,12 +2533,11 @@ namespace simuPOP
       matrix m_relQueller, m_relLynch, m_relIR, m_relD2, m_relRel;
   };
 
-  template<class Pop>
-    class Stat: public Stator<Pop>
+  class stat: public stator
   {
     public:
 
-      /// create an Stat
+      /// create an stat
       /**
       \param popSize whether or not calculate population sizes. will set numSubPop, subPopSize,
         popSize, subPop[sp]['popSize']
@@ -2609,7 +2608,7 @@ namespace simuPOP
       has proven to be troublesome. In this version, everything should be
       explicitly specified.
       **/
-      Stat(
+      stat(
         bool popSize=false,
         bool numOfMale=false,
         bool numOfAffected=false,
@@ -2633,7 +2632,7 @@ namespace simuPOP
         string output="", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL,  int grp=GRP_ALL)
-        :Stator<Pop>("", outputExpr, stage, begin, end, step, at, rep, grp),
+        :stator("", outputExpr, stage, begin, end, step, at, rep, grp),
       // the order of initialization is meaningful since they may depend on each other
         m_popSize(popSize),
         m_numOfMale(numOfMale),
@@ -2651,20 +2650,20 @@ namespace simuPOP
       {
       }
 
-      ~Stat()
+      ~stat()
       {
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Stat<Pop>(*this);
+        return new stat(*this);
       }
 
       /// count various statistics.
       /// use m_alleles etc to save (potentially) time to
       /// resize all these variables.
-      virtual bool apply(Pop & pop)
+      virtual bool apply(population& pop)
       {
         m_popSize.apply(pop);
         m_numOfMale.apply(pop);
@@ -2686,18 +2685,18 @@ namespace simuPOP
       }
 
     private:
-      statPopSize<Pop> m_popSize;
-      statNumOfMale<Pop> m_numOfMale;
-      statNumOfAffected<Pop> m_numOfAffected;
-      statAlleleFreq<Pop> m_alleleFreq;
-      statNumOfAlleles<Pop> m_numOfAlleles;
-      statHeteroFreq<Pop> m_heteroFreq;
-      statExpHetero<Pop> m_expHetero;
-      statGenoFreq<Pop> m_genoFreq;
-      statHaploFreq<Pop> m_haploFreq;
-      statLD<Pop> m_LD;
-      statFst<Pop> m_Fst;
-      statRelatedness<Pop> m_relatedness;
+      statPopSize m_popSize;
+      statNumOfMale m_numOfMale;
+      statNumOfAffected m_numOfAffected;
+      statAlleleFreq m_alleleFreq;
+      statNumOfAlleles m_numOfAlleles;
+      statHeteroFreq m_heteroFreq;
+      statExpHetero m_expHetero;
+      statGenoFreq m_genoFreq;
+      statHaploFreq m_haploFreq;
+      statLD m_LD;
+      statFst m_Fst;
+      statRelatedness m_relatedness;
   };
 }
 #endif

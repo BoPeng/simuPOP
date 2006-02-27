@@ -25,7 +25,7 @@
 #define _SELECTOR_H
 /**
 \file
-\brief head file of class Selector:public Operator
+\brief head file of class selector:public Operator
 */
 #include "utility.h"
 #include "operator.h"
@@ -51,34 +51,34 @@ namespace simuPOP
   \f$ \frac{f_i}{\sum_{j=1}^N f_j} \f$ to be chosen to be passed
   to the next generation.
 
-  - Random mating with sex (e.g. randomMating): males and females are
+  - Random mating with sex (e.g. randommating): males and females are
   separated and each are chosen as described above.
 
   Please refer to the user's guide for details.
   */
-  template<class Pop>
-    class Selector: public Operator<Pop>
+
+  class selector: public Operator
   {
     public:
       /// constructor. default to be always active.
-      Selector( int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
+      selector( int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        :Operator<Pop>("","",stage, begin, end, step, at, rep, grp)
+        :Operator("","",stage, begin, end, step, at, rep, grp)
       {
       }
 
       /// destructor
-      virtual ~Selector()
+      virtual ~selector()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Selector<Pop>(*this);
+        return new selector(*this);
       }
 
       /// calculate/return w11 etc
-      virtual double indFitness(typename Pop::IndType * ind)
+      virtual double indFitness(individual * ind)
       {
         ///
         throw ValueError("This selector is not supposed to be called directly");
@@ -86,14 +86,14 @@ namespace simuPOP
       }
 
       /// set fitness to all individual
-      bool apply(Pop& pop)
+      bool apply(population& pop)
       {
         vectorf& fitness = pop.fitness();
 
         fitness.resize(pop.popSize());
 
         size_t i=0;
-        for (typename Pop::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
+        for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
           fitness[i++] = indFitness(&*it) ;
 
         return true;
@@ -110,8 +110,8 @@ namespace simuPOP
   map selector. Assign fitness value according to a
   given dictionary.
   */
-  template<class Pop>
-    class MapSelector: public Selector<Pop>
+
+  class mapSelector: public selector
   {
     public:
       /** \brief create a map selector (selection according to genotype at one locus
@@ -123,25 +123,25 @@ namespace simuPOP
       \param phase if true, a/b and b/a will have different fitness value. Default to false.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      MapSelector( vectoru loci, const strDict& fitness, bool phase=false,
+      mapSelector( vectoru loci, const strDict& fitness, bool phase=false,
         int stage=PreMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Selector<Pop>(stage, begin, end, step, at, rep, grp),
+      selector(stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_dict(fitness), m_phase(phase)
       {
       };
 
-      virtual ~MapSelector()
+      virtual ~mapSelector()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new MapSelector(*this);
+        return new mapSelector(*this);
       }
 
       /// currently assuming diploid
-      virtual double indFitness(typename Pop::IndType * ind)
+      virtual double indFitness(individual * ind)
       {
         string key;
 
@@ -188,13 +188,13 @@ namespace simuPOP
   multiple allele selector. This selector group alleles to disease
   and wild type and return fitness to AA,Aa,aa. (A is wildtype).
   */
-  template<class Pop>
-    class MASelector: public Selector<Pop>
+
+  class maSelector: public selector
   {
     public:
       /** \brief create a multiple allele selector (selection according to diseased or wildtype
       alleles)
-      Note that MASelector only work for diploid population now.
+      Note that maSelector only work for diploid population now.
 
       \param locus the locus index. The genotype of this locus will be axamed.
       \param loci the loci index.
@@ -210,27 +210,27 @@ namespace simuPOP
       NOTE that wildtype at all loci are the same.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      MASelector( vectoru loci, const vectorf& fitness, const vectora& wildtype,
+      maSelector( vectoru loci, const vectorf& fitness, const vectora& wildtype,
         int stage=PreMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Selector<Pop>(stage, begin, end, step, at, rep, grp),
+      selector(stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_fitness(fitness), m_wildtype(wildtype)
       {
         DBG_ASSERT( m_fitness.size() == static_cast<UINT>(pow(3, loci.size())),
           ValueError, "Please specify fitness for each combination of genotype.");
       };
 
-      virtual ~MASelector()
+      virtual ~maSelector()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new MASelector(*this);
+        return new maSelector(*this);
       }
 
       /// currently assuming diploid
-      virtual double indFitness(typename Pop::IndType * ind)
+      virtual double indFitness(individual * ind)
       {
         UINT index = 0;
         for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
@@ -274,10 +274,10 @@ namespace simuPOP
    multiple loci selector. This selector takes several selectors and
    multiply their fitness values...
    e.g.
-     mlmSelector( [mapSelector(...), maSelector(...) ])
+     mlmselector( [mapselector(...), maselector(...) ])
    */
-  template<class Pop>
-    class MLSelector: public Selector<Pop>
+
+  class mlSelector: public selector
   {
     public:
 
@@ -286,21 +286,21 @@ namespace simuPOP
 #define SEL_Additive 2
 #define SEL_Heterogeneity 3
 
-      typedef std::vector< Operator< Pop> * > vectorop;
+      typedef std::vector< Operator * > vectorop;
 
     public:
       /** \brief multiple loci selector using a multiplicative model.
 
       \param selectors a list of selectors.
       */
-      MLSelector( const vectorop selectors, int mode = SEL_Multiplicative,
+      mlSelector( const vectorop selectors, int mode = SEL_Multiplicative,
         int stage=PreMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Selector<Pop>(stage, begin, end, step, at, rep, grp),
+      selector(stage, begin, end, step, at, rep, grp),
         m_selectors(0), m_mode(mode)
       {
         DBG_FAILIF( selectors.empty(), ValueError, "Please specify at least one selector.");
-        for(typename vectorop::const_iterator s = selectors.begin(), sEnd=selectors.end(); s != sEnd; ++s)
+        for(vectorop::const_iterator s = selectors.begin(), sEnd=selectors.end(); s != sEnd; ++s)
         {
           DBG_ASSERT( (*s)->__repr__().substr(10,8) == "selector", ValueError,
             "Expecting a list of fitness calculator. Given " + (*s)->__repr__());
@@ -308,43 +308,43 @@ namespace simuPOP
         }
       };
 
-      virtual ~MLSelector()
+      virtual ~mlSelector()
       {
-        for(typename vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end(); s != sEnd; ++s)
+        for(vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end(); s != sEnd; ++s)
           delete *s;
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
         throw ValueError("Multi-loci selector can not be nested.");
       }
 
       /// currently assuming diploid
-      virtual double indFitness(typename Pop::IndType * ind)
+      virtual double indFitness(individual * ind)
       {
         if(m_mode == SEL_Multiplicative )
         {
           double fit = 1;
-          for(typename vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end();
+          for(vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end();
             s != sEnd; ++s)
-          fit *= static_cast<Selector<Pop>* >(*s)->indFitness(ind);
+          fit *= static_cast<selector* >(*s)->indFitness(ind);
           return fit;
         }
         else if(m_mode == SEL_Additive )
         {
           double fit = 1;
-          for(typename vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end();
+          for(vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end();
             s != sEnd; ++s)
-          fit -= 1 - static_cast<Selector<Pop>* >(*s)->indFitness(ind);
+          fit -= 1 - static_cast<selector* >(*s)->indFitness(ind);
           return fit<0?0.:fit;
         }
         else if(m_mode == SEL_Heterogeneity)
           /// fixme
         {
           double fit = 1;
-          for(typename vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end();
+          for(vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end();
             s != sEnd; ++s)
-          fit *= 1 - static_cast<Selector<Pop>* >(*s)->indFitness(ind);
+          fit *= 1 - static_cast<selector* >(*s)->indFitness(ind);
           return 1-fit;
         }
 
@@ -368,8 +368,8 @@ namespace simuPOP
 
   Assign fitness value by calling a user supplied function
   */
-  template<class Pop>
-    class PySelector: public Selector<Pop>
+
+  class pySelector: public selector
   {
     public:
       /** \brief create a python hybrid selector
@@ -381,10 +381,10 @@ namespace simuPOP
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
       /// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
-      PySelector( vectoru loci, PyObject* func,
+      pySelector( vectoru loci, PyObject* func,
         int stage=PreMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Selector<Pop>(stage, begin, end, step, at, rep, grp),
+      selector(stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
       {
         if( !PyCallable_Check(func))
@@ -398,15 +398,15 @@ namespace simuPOP
       };
 
       /// destructor
-      virtual ~PySelector()
+      virtual ~pySelector()
       {
         if( m_func != NULL)
           Py_DECREF(m_func);
       }
 
       /// CPPONLY
-      PySelector(const PySelector& rhs):
-      Selector<Pop>(rhs),
+      pySelector(const pySelector& rhs):
+      selector(rhs),
         m_loci(rhs.m_loci),
         m_func(rhs.m_func),
         m_alleles(rhs.m_alleles),
@@ -417,13 +417,13 @@ namespace simuPOP
           Py_INCREF(m_func);
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new PySelector(*this);
+        return new pySelector(*this);
       }
 
       /// currently assuming diploid
-      virtual double indFitness(typename Pop::IndType * ind)
+      virtual double indFitness(individual * ind)
       {
         if( m_len == 0)
         {
@@ -476,15 +476,15 @@ namespace simuPOP
 
   Please refer to the user's guide for details.
   */
-  template<class Pop>
-    class Penetrance: public Operator<Pop>
+
+  class penetrance: public Operator
   {
     public:
       /// constructor. default to be always active.
       /// default to post mating
-      Penetrance(bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
+      penetrance(bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        :Operator<Pop>("","",stage, begin, end, step, at, rep, grp),
+        :Operator("","",stage, begin, end, step, at, rep, grp),
         m_exposePenetrance(exposePenetrance)
       {
         DBG_FAILIF( exposePenetrance==true && stage==DuringMating, ValueError,
@@ -492,25 +492,25 @@ namespace simuPOP
       }
 
       /// destructor
-      virtual ~Penetrance()
+      virtual ~penetrance()
       {
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Penetrance<Pop>(*this);
+        return new penetrance(*this);
       }
 
       /// calculate/return penetrance etc
-      virtual double penet(typename Pop::IndType * ind)
+      virtual double penet(individual * ind)
       {
         throw ValueError("This penetrance calculator is not supposed to be called directly");
         return 1.;
       }
 
       /// set pentrance to all individuals and record penetrance if requested.
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         double p;
         vectorf pVec;
@@ -519,7 +519,7 @@ namespace simuPOP
         if( m_exposePenetrance )
           pVec.resize(pop.popSize());
 
-        for (typename Pop::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
+        for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
         {
           p = penet(&*it);
           if( m_exposePenetrance)
@@ -537,8 +537,8 @@ namespace simuPOP
       }
 
       /// set penetrance to all individual
-      virtual bool applyDuringMating(Pop& pop, typename Pop::IndIterator offspring,
-        typename Pop::IndType* dad=NULL, typename Pop::IndType* mom=NULL)
+      virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
+        individual* dad=NULL, individual* mom=NULL)
       {
         if( rng().randUniform01() < penet(&*offspring) )
           offspring->setAffected(true);
@@ -561,8 +561,8 @@ namespace simuPOP
   map selector. Assign penetrance value according to a
   given dictionary.
   */
-  template<class Pop>
-    class MapPenetrance: public Penetrance<Pop>
+
+  class mapPenetrance: public penetrance
   {
     public:
       /** \brief create a map penetrance function (penetrance according to genotype at one locus
@@ -574,25 +574,25 @@ namespace simuPOP
       \param phase if true, a/b and b/a will have different penetrance value. Default to false.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      MapPenetrance( vectoru loci, const strDict& penetrance, bool phase=false,
+      mapPenetrance( vectoru loci, const strDict& penet, bool phase=false,
         bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp),
-        m_loci(loci), m_dict(penetrance), m_phase(phase)
+      penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp),
+        m_loci(loci), m_dict(penet), m_phase(phase)
       {
       };
 
-      virtual ~MapPenetrance()
+      virtual ~mapPenetrance()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new MapPenetrance(*this);
+        return new mapPenetrance(*this);
       }
 
       /// currently assuming diploid
-      virtual double penet(typename Pop::IndType * ind)
+      virtual double penet(individual * ind)
       {
         string key;
 
@@ -641,8 +641,8 @@ namespace simuPOP
   multiple allele selector. This selector group alleles to disease
   and wild type and return penetrance to AA,Aa,aa. (A is wildtype).
   */
-  template<class Pop>
-    class MAPenetrance: public Penetrance<Pop>
+
+  class maPenetrance: public penetrance
   {
     public:
       /** \brief create a multiple allele selector (penetrance according to diseased or wildtype
@@ -660,28 +660,28 @@ namespace simuPOP
       default = [1]
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      MAPenetrance( vectoru loci, const vectorf& penetrance, const vectora& wildtype,
+      maPenetrance( vectoru loci, const vectorf& penet, const vectora& wildtype,
         bool exposePenetrance=false,
         int stage=DuringMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp),
-        m_loci(loci), m_penetrance(penetrance), m_wildtype(wildtype)
+      penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp),
+        m_loci(loci), m_penetrance(penet), m_wildtype(wildtype)
       {
         DBG_ASSERT( m_penetrance.size() ==  static_cast<UINT>(pow(3, loci.size())),
           ValueError, "Please specify penetrance for each combination of genotype.");
       };
 
-      virtual ~MAPenetrance()
+      virtual ~maPenetrance()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new MAPenetrance(*this);
+        return new maPenetrance(*this);
       }
 
       /// currently assuming diploid
-      virtual double penet(typename Pop::IndType * ind)
+      virtual double penet(individual * ind)
       {
         UINT index = 0;
         for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
@@ -726,10 +726,10 @@ namespace simuPOP
    multiple loci selector. This selector takes several selectors and
    multiply their penetrance values...
    e.g.
-     mlmPenetrance( [mapPenetrance(...), maPenetrance(...) ])
+     mlmpenetrance( [mappenetrance(...), mapenetrance(...) ])
    */
-  template<class Pop>
-    class MLPenetrance: public Penetrance<Pop>
+
+  class mlPenetrance: public penetrance
   {
     public:
 
@@ -737,7 +737,7 @@ namespace simuPOP
 #define PEN_Additive 2
 #define PEN_Heterogeneity 3
 
-      typedef std::vector< Operator< Pop> * > vectorop;
+      typedef std::vector< Operator * > vectorop;
 
     public:
       /** \brief multiple loci selector using a multiplicative model.
@@ -745,14 +745,14 @@ namespace simuPOP
       \param selectors a list of selectors.
       \param mode one of PEN_Multiplicative, PEN_Additive, PEN_Heterogeneity
       */
-      MLPenetrance( const vectorop peneOps, int mode = PEN_Multiplicative,
+      mlPenetrance( const vectorop peneOps, int mode = PEN_Multiplicative,
         bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp),
+      penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp),
         m_peneOps(0), m_mode(mode)
       {
         DBG_FAILIF( peneOps.empty(), ValueError, "Please specify at least one penetrance operator.");
-        for(typename vectorop::const_iterator s = peneOps.begin(), sEnd=peneOps.end(); s != sEnd; ++s)
+        for(vectorop::const_iterator s = peneOps.begin(), sEnd=peneOps.end(); s != sEnd; ++s)
         {
           DBG_ASSERT( (*s)->__repr__().substr(10,10) == "penetrance", ValueError,
             "Expecting a list of penetrance calculator");
@@ -762,45 +762,45 @@ namespace simuPOP
 
       };
 
-      virtual ~MLPenetrance()
+      virtual ~mlPenetrance()
       {
-        for(typename vectorop::iterator s = m_peneOps.begin(), sEnd=m_peneOps.end(); s != sEnd; ++s)
+        for(vectorop::iterator s = m_peneOps.begin(), sEnd=m_peneOps.end(); s != sEnd; ++s)
           delete *s;
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
         throw ValueError("Multi-loci selector can not be nested.");
       }
 
       /// currently assuming diploid
-      virtual double penet(typename Pop::IndType * ind)
+      virtual double penet(individual * ind)
       {
         if(m_mode == PEN_Multiplicative )
         {
           // x1 x2 x3 ...
           double pen = 1;
-          for(typename vectorop::iterator s = m_peneOps.begin(), sEnd=m_peneOps.end();
+          for(vectorop::iterator s = m_peneOps.begin(), sEnd=m_peneOps.end();
             s != sEnd; ++s)
-          pen *= static_cast<Penetrance<Pop> *>(*s)->penet(ind);
+          pen *= static_cast<penetrance *>(*s)->penet(ind);
           return pen;
         }
         else if(m_mode == PEN_Additive )
         {
           // x1 + x2 + x3
           double pen = 0;
-          for(typename vectorop::iterator s = m_peneOps.begin(), sEnd=m_peneOps.end();
+          for(vectorop::iterator s = m_peneOps.begin(), sEnd=m_peneOps.end();
             s != sEnd; ++s)
-          pen +=  static_cast<Penetrance<Pop> *>(*s)->penet(ind);
+          pen +=  static_cast<penetrance *>(*s)->penet(ind);
           return pen>1?1:pen;
         }
         else if(m_mode == PEN_Heterogeneity )
         {
           // 1-(1-x1)(1-x2)
           double pen = 1;
-          for(typename vectorop::iterator s = m_peneOps.begin(), sEnd=m_peneOps.end();
+          for(vectorop::iterator s = m_peneOps.begin(), sEnd=m_peneOps.end();
             s != sEnd; ++s)
-          pen *= 1 - static_cast<Penetrance<Pop> *>(*s)->penet(ind);
+          pen *= 1 - static_cast<penetrance *>(*s)->penet(ind);
           return 1 - pen;
         }
 
@@ -824,8 +824,8 @@ namespace simuPOP
 
   Assign penetrance value by calling a user supplied function
   */
-  template<class Pop>
-    class PyPenetrance: public Penetrance<Pop>
+
+  class pyPenetrance: public penetrance
   {
     public:
       /** \brief create a python hybrid selector
@@ -837,10 +837,10 @@ namespace simuPOP
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
       /// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
-      PyPenetrance( vectoru loci, PyObject* func, bool exposePenetrance=false,
+      pyPenetrance( vectoru loci, PyObject* func, bool exposePenetrance=false,
         int stage=DuringMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Penetrance<Pop>(exposePenetrance, stage, begin, end, step, at, rep, grp),
+      penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
       {
         if( !PyCallable_Check(func))
@@ -854,7 +854,7 @@ namespace simuPOP
       };
 
       /// destructor
-      virtual ~PyPenetrance()
+      virtual ~pyPenetrance()
       {
         if( m_func != NULL)
           Py_DECREF(m_func);
@@ -863,8 +863,8 @@ namespace simuPOP
       }
 
       /// CPPONLY
-      PyPenetrance(const PyPenetrance& rhs):
-      Penetrance<Pop>(rhs),
+      pyPenetrance(const pyPenetrance& rhs):
+      penetrance(rhs),
         m_loci(rhs.m_loci),
         m_func(rhs.m_func),
         m_alleles(rhs.m_alleles),
@@ -875,13 +875,13 @@ namespace simuPOP
           Py_INCREF(m_func);
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new PyPenetrance(*this);
+        return new pyPenetrance(*this);
       }
 
       /// currently assuming diploid
-      virtual double penet(typename Pop::IndType * ind)
+      virtual double penet(individual * ind)
       {
         int len = m_loci.size() * ind->ploidy();
         if( m_len != len )
@@ -950,35 +950,35 @@ namespace simuPOP
   \f$ \frac{f_i}{\sum_{j=1}^N f_j} \f$ to be chosen to be passed
   to the next generation.
 
-  - Random mating with sex (e.g. randomMating): males and females are
+  - Random mating with sex (e.g. randommating): males and females are
   separated and each are chosen as described above.
 
   Please refer to the user's guide for details.
   */
-  template<class Pop>
-    class QuanTrait: public Operator<Pop>
+
+  class quanTrait: public Operator
   {
     public:
       /// constructor. default to be always active.
-      QuanTrait( int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
+      quanTrait( int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        :Operator<Pop>("","",stage, begin, end, step, at, rep, grp),
+        :Operator("","",stage, begin, end, step, at, rep, grp),
         m_qtrait(0), m_len(0)
       {
       }
 
       /// destructor
-      virtual ~QuanTrait()
+      virtual ~quanTrait()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new QuanTrait<Pop>(*this);
+        return new quanTrait(*this);
       }
 
       /// calculate/return quantitative trait etc
-      virtual double qtrait(typename Pop::IndType * ind)
+      virtual double qtrait(individual * ind)
       {
         ///
         throw ValueError("This quantitative trait calculator is not supposed to be called directly");
@@ -986,7 +986,7 @@ namespace simuPOP
       }
 
       /// set qtrait to all individual
-      bool apply(Pop& pop)
+      bool apply(population& pop)
       {
         if(static_cast<size_t>(m_len) != pop.popSize() )
         {
@@ -996,7 +996,7 @@ namespace simuPOP
         }
 
         size_t i=0;
-        for (typename Pop::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
+        for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
           m_qtrait[i++] = qtrait(&*it) ;
 
         pop.setDoubleVectorVar("qtrait", m_qtrait);
@@ -1023,8 +1023,8 @@ namespace simuPOP
   map selector. Assign qtrait value according to a
   given dictionary.
   */
-  template<class Pop>
-    class MapQuanTrait: public QuanTrait<Pop>
+
+  class mapQuanTrait: public quanTrait
   {
     public:
       /** \brief create a map selector (quantitative trait according to genotype at one locus
@@ -1038,25 +1038,25 @@ namespace simuPOP
       \param phase if true, a/b and b/a will have different qtrait value. Default to false.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      MapQuanTrait( vectoru loci, const strDict& qtrait, double sigma=0, bool phase=false,
+      mapQuanTrait( vectoru loci, const strDict& qtrait, double sigma=0, bool phase=false,
         int stage=PostMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      QuanTrait<Pop>(stage, begin, end, step, at, rep, grp),
+      quanTrait(stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_dict(qtrait), m_sigma(sigma), m_phase(phase)
       {
       };
 
-      virtual ~MapQuanTrait()
+      virtual ~mapQuanTrait()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new MapQuanTrait(*this);
+        return new mapQuanTrait(*this);
       }
 
       /// currently assuming diploid
-      virtual double qtrait(typename Pop::IndType * ind)
+      virtual double qtrait(individual * ind)
       {
         string key;
 
@@ -1106,8 +1106,8 @@ namespace simuPOP
   multiple allele selector. This selector group alleles to disease
   and wild type and return qtrait to AA,Aa,aa. (A is wildtype).
   */
-  template<class Pop>
-    class MAQuanTrait: public QuanTrait<Pop>
+
+  class maQuanTrait: public quanTrait
   {
     public:
       /** \brief create a multiple allele selector (quantitative trait according to diseased or wildtype
@@ -1120,11 +1120,11 @@ namespace simuPOP
          default = [1]
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
-      MAQuanTrait( vectoru loci, const vectorf& qtrait, const vectora& wildtype,
+      maQuanTrait( vectoru loci, const vectorf& qtrait, const vectora& wildtype,
         const vectorf& sigma = vectorf(),
         int stage=PostMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      QuanTrait<Pop>(stage, begin, end, step, at, rep, grp),
+      quanTrait(stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
       {
         if( m_sigma.empty())
@@ -1136,17 +1136,17 @@ namespace simuPOP
       };
 
       /// destructor
-      virtual ~MAQuanTrait()
+      virtual ~maQuanTrait()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new MAQuanTrait(*this);
+        return new maQuanTrait(*this);
       }
 
       /// currently assuming diploid
-      virtual double qtrait(typename Pop::IndType * ind)
+      virtual double qtrait(individual * ind)
       {
         UINT index = 0;
         for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
@@ -1193,10 +1193,10 @@ namespace simuPOP
    multiple loci selector. This selector takes several selectors and
    multiply their qtrait values...
    e.g.
-     mlmQuanTrait( [mapQuanTrait(...), maQuanTrait(...) ])
+     mlmquanTrait( [mapquanTrait(...), maquanTrait(...) ])
    */
-  template<class Pop>
-    class MLQuanTrait: public QuanTrait<Pop>
+
+  class mlQuanTrait: public quanTrait
   {
     public:
 
@@ -1204,21 +1204,21 @@ namespace simuPOP
 #define QT_Additive 2
 
       /// vector of operator pointers.
-      typedef std::vector< Operator< Pop> * > vectorop;
+      typedef std::vector< Operator * > vectorop;
 
     public:
       /** \brief multiple loci selector using a multiplicative model.
 
       \param qtraits a list of qtraits.
       */
-      MLQuanTrait( const vectorop qtraits, int mode = QT_Multiplicative, double sigma=0,
+      mlQuanTrait( const vectorop qtraits, int mode = QT_Multiplicative, double sigma=0,
         int stage=PostMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      QuanTrait<Pop>(stage, begin, end, step, at, rep, grp),
+      quanTrait(stage, begin, end, step, at, rep, grp),
         m_qtraits(0), m_sigma(sigma), m_mode(mode)
       {
         DBG_FAILIF( qtraits.empty(), ValueError, "Please specify at least one selector.");
-        for(typename vectorop::const_iterator s = qtraits.begin(), sEnd=qtraits.end(); s != sEnd; ++s)
+        for(vectorop::const_iterator s = qtraits.begin(), sEnd=qtraits.end(); s != sEnd; ++s)
         {
           DBG_ASSERT( (*s)->__repr__().substr(10,6) == "qtrait", ValueError,
             "Expecting a vector of quantitative trait calculator");
@@ -1227,34 +1227,34 @@ namespace simuPOP
 
       };
 
-      virtual ~MLQuanTrait()
+      virtual ~mlQuanTrait()
       {
-        for(typename vectorop::iterator s = m_qtraits.begin(), sEnd=m_qtraits.end(); s != sEnd; ++s)
+        for(vectorop::iterator s = m_qtraits.begin(), sEnd=m_qtraits.end(); s != sEnd; ++s)
           delete *s;
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
         throw ValueError("Multi-loci selector can not be nested.");
       }
 
       /// currently assuming diploid
-      virtual double qtrait(typename Pop::IndType * ind)
+      virtual double qtrait(individual * ind)
       {
         if(m_mode == QT_Multiplicative )
         {
           double fit = 1;
-          for(typename vectorop::iterator s = m_qtraits.begin(), sEnd=m_qtraits.end();
+          for(vectorop::iterator s = m_qtraits.begin(), sEnd=m_qtraits.end();
             s != sEnd; ++s)
-          fit *= static_cast<QuanTrait<Pop> *>(*s)->qtrait(ind);
+          fit *= static_cast<quanTrait *>(*s)->qtrait(ind);
           return rng().randNormal(fit, m_sigma);
         }
         else if(m_mode == QT_Additive )
         {
           double fit = 0;
-          for(typename vectorop::iterator s = m_qtraits.begin(), sEnd=m_qtraits.end();
+          for(vectorop::iterator s = m_qtraits.begin(), sEnd=m_qtraits.end();
             s != sEnd; ++s)
-          fit +=  static_cast<QuanTrait<Pop> *>(*s)->qtrait(ind);
+          fit +=  static_cast<quanTrait *>(*s)->qtrait(ind);
           return rng().randNormal(fit, m_sigma);
         }
         return 0.;
@@ -1280,8 +1280,8 @@ namespace simuPOP
 
   Assign qtrait value by calling a user supplied function
   */
-  template<class Pop>
-    class PyQuanTrait: public QuanTrait<Pop>
+
+  class pyQuanTrait: public quanTrait
   {
     public:
       /** \brief create a python hybrid selector
@@ -1293,10 +1293,10 @@ namespace simuPOP
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
       /// provide locus and qtrait for 11, 12, 13 (in the form of dictionary)
-      PyQuanTrait( vectoru loci, PyObject* func,
+      pyQuanTrait( vectoru loci, PyObject* func,
         int stage=PostMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      QuanTrait<Pop>(stage, begin, end, step, at, rep, grp),
+      quanTrait(stage, begin, end, step, at, rep, grp),
         m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
       {
         if( !PyCallable_Check(func))
@@ -1309,15 +1309,15 @@ namespace simuPOP
           "Please specify susceptibility loci");
       };
 
-      virtual ~PyQuanTrait()
+      virtual ~pyQuanTrait()
       {
         if( m_func != NULL)
           Py_DECREF(m_func);
       }
 
       /// CPPONLY
-      PyQuanTrait(const PyQuanTrait& rhs):
-      QuanTrait<Pop>(rhs),
+      pyQuanTrait(const pyQuanTrait& rhs):
+      quanTrait(rhs),
         m_loci(rhs.m_loci),
         m_func(rhs.m_func),
         m_alleles(rhs.m_alleles),
@@ -1328,13 +1328,13 @@ namespace simuPOP
           Py_INCREF(m_func);
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new PyQuanTrait(*this);
+        return new pyQuanTrait(*this);
       }
 
       /// currently assuming diploid
-      virtual double qtrait(typename Pop::IndType * ind)
+      virtual double qtrait(individual * ind)
       {
         if( m_len == 0)
         {
@@ -1385,21 +1385,21 @@ namespace simuPOP
   // // ascertainment ........................................
 
   /// thrink population accroding to some outside value
-  template<class Pop>
-    class PySubset: public Operator<Pop>
+
+  class pySubset: public Operator
   {
 
     public:
-      /// create a directMigrator
+      /// create a directmigrator
       /**
       \param keep a carray of the length of population.
       its values will be assigned to info.
       \stage and other parameters please see help(baseOperator.__init__)
       */
-      PySubset( PyObject* keep=NULL,
+      pySubset( PyObject* keep=NULL,
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp)
+        : Operator( "", "", stage, begin, end, step, at, rep, grp)
       {
         DBG_ASSERT( PyObj_Is_IntNumArray(keep), ValueError,
           "Passed vector is not a Python/Numeric int array");
@@ -1408,15 +1408,15 @@ namespace simuPOP
       }
 
       /// destructor
-      virtual ~PySubset()
+      virtual ~pySubset()
       {
         if( m_keep != NULL)
           Py_DECREF(m_keep);
       }
 
       /// CPPONLY
-      PySubset(const PySubset& rhs):
-      Operator<Pop>(rhs),
+      pySubset(const pySubset& rhs):
+      Operator(rhs),
         m_keep(rhs.m_keep)
       {
         if( m_keep != NULL)
@@ -1424,12 +1424,12 @@ namespace simuPOP
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new PySubset<Pop>(*this);
+        return new pySubset(*this);
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
 
         DBG_ASSERT( NumArray_Size(m_keep) >= static_cast<int>(pop.popSize()) ,
@@ -1440,7 +1440,7 @@ namespace simuPOP
         long * id = reinterpret_cast<long*>(NumArray_Data(m_keep));
 
         for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
-          pop.individual(i).setInfo( id[i] );
+          pop.ind(i).setInfo( id[i] );
 
         pop.setSubPopByIndInfo();
         return true;
@@ -1459,8 +1459,8 @@ namespace simuPOP
   /// sample from population and save samples
 
   /// sample operator will generate a new subpopulation in pop namespace.
-  template<class Pop>
-    class Sample: public Operator<Pop>
+
+  class sample: public Operator
   {
 
     public:
@@ -1475,11 +1475,11 @@ namespace simuPOP
       \param format to save sample(s)
       \param stage and other parameters please see help(baseOperator.__init__)
       */
-      Sample( const string& name="sample", const string& nameExpr="", UINT times=1,
+      sample( const string& name="sample", const string& nameExpr="", UINT times=1,
         const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp),
+        : Operator( "", "", stage, begin, end, step, at, rep, grp),
         m_name(name), m_nameExpr(nameExpr,""), m_times(times), m_saveAs(saveAs),
         m_saveAsExpr(saveAsExpr), m_format(format)
       {
@@ -1488,20 +1488,20 @@ namespace simuPOP
       }
 
       /// destructor
-      virtual ~Sample(){};
+      virtual ~sample(){};
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Sample<Pop>(*this);
+        return new sample(*this);
       }
 
-      virtual bool prepareSample(Pop& )
+      virtual bool preparesample(population& )
       {
         return true;
       }
 
-      virtual Pop& drawSample(Pop& pop)
+      virtual population& drawsample(population& pop)
       {
         // keep pop untouched.
         // use ind.info() directly
@@ -1510,7 +1510,7 @@ namespace simuPOP
       }
 
       /// return the samples
-      PyObject* samples(Pop& pop)
+      PyObject* samples(population& pop)
       {
         DBG_FAILIF( m_name.empty() && m_nameExpr.empty(), ValueError,
           "No sample or sample is not saved. (with empty name and nameExpr)");
@@ -1539,17 +1539,17 @@ namespace simuPOP
         }
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         // get info from pop
         // if fail, do nothing.
-        if(! prepareSample(pop) )
+        if(! preparesample(pop) )
           return true;
 
         for(UINT t=0; t<m_times; ++t)
         {
           // info of individuals should be set
-          Pop& sample = drawSample(pop);
+          population& sample = drawsample(pop);
 
           // save sample to local namespace?
           string sampleName="", saveAsName="";
@@ -1607,7 +1607,7 @@ namespace simuPOP
 
       virtual string __repr__()
       {
-        return "<simuPOP::Sample>" ;
+        return "<simuPOP::sample>" ;
       }
 
     private:
@@ -1632,8 +1632,8 @@ namespace simuPOP
   };
 
   /// thrink population accroding to some outside value
-  template<class Pop>
-    class RandomSample: public Sample<Pop>
+
+  class randomSample: public sample
   {
 
     public:
@@ -1654,34 +1654,34 @@ namespace simuPOP
 
       \note ancestral populations will not be copied to the samples
       */
-      RandomSample( vectorlu size=vectorlu(),
+      randomSample( vectorlu size=vectorlu(),
         const string& name="sample", const string& nameExpr="", UINT times=1,
         const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Sample<Pop>(name, nameExpr, times, saveAs, saveAsExpr, format,
+        : sample(name, nameExpr, times, saveAs, saveAsExpr, format,
         stage, begin, end, step, at, rep, grp),
         m_size(size)
       {
       }
 
       /// destructor
-      virtual ~RandomSample(){};
+      virtual ~randomSample(){};
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new RandomSample<Pop>(*this);
+        return new randomSample(*this);
       }
 
       /// value checking
-      virtual bool prepareSample(Pop& pop)
+      virtual bool preparesample(population& pop)
       {
         DBG_FAILIF(m_size.size() == 1 && m_size[0] > pop.popSize(), ValueError,
-          "Sample size > population size. Can not continue.");
+          "sample size > population size. Can not continue.");
 
         DBG_FAILIF( m_size.empty(), ValueError,
-          "Sample size can not be zero/empty for random sampling.");
+          "sample size can not be zero/empty for random sampling.");
 
         DBG_FAILIF( m_size.size() > 1 && m_size.size() != pop.numSubPop(),
           ValueError, "Length of size and number of subpops do not match.");
@@ -1691,13 +1691,13 @@ namespace simuPOP
           for(UINT sp = 0; sp < pop.numSubPop(); ++sp)
           {
             DBG_FAILIF( m_size[sp] > pop.subPopSize(sp), ValueError,
-              "Sample size exceed subpopulation size.");
+              "sample size exceed subpopulation size.");
           }
         }
         return true;
       }
 
-      virtual Pop& drawSample(Pop& pop)
+      virtual population& drawsample(population& pop)
       {
         pop.setIndInfoWithSubPopID();
 
@@ -1715,7 +1715,7 @@ namespace simuPOP
 
           // remove others
           for(size_t i=m_size[0], iEnd=pop.popSize(); i<iEnd; ++i)
-            pop.individual( pick[i] ).setInfo( -1 );
+            pop.ind( pick[i] ).setInfo( -1 );
         }
         else
         {
@@ -1733,7 +1733,7 @@ namespace simuPOP
 
             // remove others
             for(size_t i=m_size[sp]; i<spSize; ++i)
-              pop.individual( pick[i], sp ).setInfo( -1 );
+              pop.ind( pick[i], sp ).setInfo( -1 );
           }                                       // each subpop
         }                                         // else
         return pop.newPopByIndInfo(false);
@@ -1750,8 +1750,8 @@ namespace simuPOP
   };
 
   /// thrink population accroding to some outside value
-  template<class Pop>
-    class CaseControlSample: public Sample<Pop>
+
+  class caseControlSample: public sample
   {
 
     public:
@@ -1770,12 +1770,12 @@ namespace simuPOP
       \param format to save sample(s)
       \param stage and other parameters please see help(baseOperator.__init__)
       */
-      CaseControlSample( const vectori& cases=vectori(), const vectori& controls = vectori(),
+      caseControlSample( const vectori& cases=vectori(), const vectori& controls = vectori(),
         bool spSample=false, const string& name="sample", const string& nameExpr="", UINT times=1,
         const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Sample<Pop>(name, nameExpr, times, saveAs, saveAsExpr, format,
+        : sample(name, nameExpr, times, saveAs, saveAsExpr, format,
         stage, begin, end, step, at, rep, grp),
         m_numCases(cases), m_numControls(controls), m_spSample(spSample),
         m_caseIdx(0), m_controlIdx(0)
@@ -1783,15 +1783,15 @@ namespace simuPOP
       }
 
       /// destructor
-      virtual ~CaseControlSample(){};
+      virtual ~caseControlSample(){};
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new CaseControlSample<Pop>(*this);
+        return new caseControlSample(*this);
       }
 
-      virtual bool prepareSample(Pop& pop )
+      virtual bool preparesample(population& pop )
       {
         if( ! m_spSample )                        // sample from the whole population.
         {
@@ -1800,7 +1800,7 @@ namespace simuPOP
 
           // first get number of affected.
           int numAffected = count_if(pop.indBegin(), pop.indEnd(),
-            isAffected<typename Pop::IndType>());
+            isAffected<individual>());
           int numUnaffected = pop.popSize() - numAffected;
 
           if( m_numCases.size() == 1 && m_numCases[0] > numAffected)
@@ -1818,7 +1818,7 @@ namespace simuPOP
           m_controlIdx[0].resize(numUnaffected);
           for(size_t i=0, j=0, k=0, iEnd = pop.popSize(); i < iEnd; ++i)
           {
-            if( pop.individual(i).affected() )
+            if( pop.ind(i).affected() )
               m_caseIdx[0][j++] = i;
             else
               m_controlIdx[0][k++] = i;
@@ -1839,7 +1839,7 @@ namespace simuPOP
           {
             // first get number of affected.
             numAffected[sp] = count_if(pop.indBegin(sp), pop.indEnd(sp),
-              isAffected<typename Pop::IndType>());
+              isAffected<individual>());
             numUnaffected[sp] = pop.subPopSize(sp) - numAffected[sp];
 
             if( m_numCases[sp] > numAffected[sp])
@@ -1855,7 +1855,7 @@ namespace simuPOP
             m_controlIdx[sp].resize(numUnaffected[sp]);
             for(size_t i=0, j=0, k=0, iEnd = pop.subPopSize(sp); i < iEnd; ++i)
             {
-              if( pop.individual(i,sp).affected() )
+              if( pop.ind(i,sp).affected() )
                 m_caseIdx[sp][j++] = i;
               else
                 m_controlIdx[sp][k++] = i;
@@ -1865,7 +1865,7 @@ namespace simuPOP
         return true;
       }
 
-      virtual Pop& drawSample(Pop& pop)
+      virtual population& drawsample(population& pop)
       {
         if( ! m_spSample)                         // draw sample from the whole population
         {
@@ -1898,24 +1898,24 @@ namespace simuPOP
           for( i=0; i < nCase; ++i)
           {
             nCaseInSP[pop.subPopIndPair(m_caseIdx[0][i]).first]++;
-            pop.individual( m_caseIdx[0][i] ).setInfo( 0 );
+            pop.ind( m_caseIdx[0][i] ).setInfo( 0 );
           }
           // remove others
           for( i= nCase; i < numAffected; ++i)
-            pop.individual( m_caseIdx[0][i] ).setInfo( -1 );
+            pop.ind( m_caseIdx[0][i] ).setInfo( -1 );
 
           // keep first m_size individuals of shuffled indices
           for( i=0; i < nControl; ++i)
           {
             nControlInSP[pop.subPopIndPair(m_controlIdx[0][i]).first]++;
-            pop.individual( m_controlIdx[0][i] ).setInfo( 1 );
+            pop.ind( m_controlIdx[0][i] ).setInfo( 1 );
           }
           // remove others
           for( i= nControl; i < numUnaffected; ++i)
-            pop.individual( m_controlIdx[0][i] ).setInfo( -1 );
+            pop.ind( m_controlIdx[0][i] ).setInfo( -1 );
 
           DBG_DO(DBG_SELECTOR, cout << "Getting sample population" << endl);
-          Pop& sample = pop.newPopByIndInfo(false);
+          population& sample = pop.newPopByIndInfo(false);
 
           sample.setIntVectorVar("nCases", nCaseInSP);
           sample.setIntVectorVar("nControls", nControlInSP);
@@ -1937,21 +1937,21 @@ namespace simuPOP
             // keep first m_size individuals of shuffled indices
             nCase = std::min(m_numCases[sp], static_cast<int>(m_caseIdx[sp].size()));
             for(int i=0; i < nCase; ++i)
-              pop.individual( m_caseIdx[sp][i],sp ).setInfo( 0 );
+              pop.ind( m_caseIdx[sp][i],sp ).setInfo( 0 );
             // remove others
             for(int i= nCase, iEnd= m_caseIdx[sp].size(); i<iEnd; ++i)
-              pop.individual( m_caseIdx[sp][i],sp ).setInfo( -1 );
+              pop.ind( m_caseIdx[sp][i],sp ).setInfo( -1 );
 
             // keep first m_size individuals of shuffled indices
             nControl = std::min(m_numControls[sp], static_cast<int>(m_controlIdx[sp].size()));
             for(int i=0; i < nControl; ++i)
-              pop.individual( m_controlIdx[sp][i],sp ).setInfo( 1 );
+              pop.ind( m_controlIdx[sp][i],sp ).setInfo( 1 );
             // remove others
             for(int i= nControl, iEnd = m_controlIdx[sp].size(); i<iEnd; ++i)
-              pop.individual( m_controlIdx[sp][i],sp ).setInfo( -1 );
+              pop.ind( m_controlIdx[sp][i],sp ).setInfo( -1 );
           }
           // newPop .... but ignore ancestral populations
-          Pop& sample = pop.newPopByIndInfo(false);
+          population& sample = pop.newPopByIndInfo(false);
           sample.setIntVectorVar("nCases", m_numCases);
           sample.setIntVectorVar("nControls", m_numControls);
           return sample;
@@ -1976,8 +1976,8 @@ namespace simuPOP
   };
 
   /// thrink population accroding to some outside value
-  template<class Pop>
-    class AffectedSibpairSample: public Sample<Pop>
+
+  class affectedSibpairSample: public sample
   {
 
     public:
@@ -2000,7 +2000,7 @@ namespace simuPOP
       \param format to save sample(s)
       \param stage and other parameters please see help(baseOperator.__init__)
       */
-      AffectedSibpairSample( vectoru size = vectoru(),
+      affectedSibpairSample( vectoru size = vectoru(),
         bool chooseUnaffected=false,
         bool countOnly=false,
         const string& name="sample", const string& nameExpr="", UINT times=1,
@@ -2009,7 +2009,7 @@ namespace simuPOP
         int stage=PostMating, int begin=0, int end=-1,
         int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Sample<Pop>(name, nameExpr, times, saveAs, saveAsExpr, format,
+        : sample(name, nameExpr, times, saveAs, saveAsExpr, format,
         stage, begin, end, step, at, rep, grp),
         m_size(size), m_affectedness(!chooseUnaffected), m_countOnly(countOnly),
         m_sibpairs(0)
@@ -2017,15 +2017,15 @@ namespace simuPOP
       }
 
       /// destructor
-      virtual ~AffectedSibpairSample(){};
+      virtual ~affectedSibpairSample(){};
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new AffectedSibpairSample<Pop>(*this);
+        return new affectedSibpairSample(*this);
       }
 
-      virtual bool prepareSample(Pop& pop)
+      virtual bool preparesample(population& pop)
       {
         // get tag info for each subpop
         DBG_FAILIF( m_size.size() > 1 && m_size.size() != pop.numSubPop(),
@@ -2049,16 +2049,16 @@ namespace simuPOP
           ULONG spSize = pop.subPopSize(sp);
 
           // get tag and affected status info
-          std::vector<typename Pop::TagType> tags(spSize);
+          std::vector<TagType> tags(spSize);
           std::vector<bool> affected(spSize);
           for(size_t i=0; i < spSize; ++i)
           {
-            tags[i] = pop.individual(i, sp).tag();
-            affected[i] = pop.individual(i, sp).affected();
+            tags[i] = pop.ind(i, sp).tag();
+            affected[i] = pop.ind(i, sp).affected();
           }
 
           // find affected sibpairs, difficult...
-          typename Pop::TagType tag;
+          TagType tag;
           for(size_t i=0; i< spSize; ++i)
           {
             if( affected[i] == m_affectedness )
@@ -2115,7 +2115,7 @@ namespace simuPOP
           return true;
       }
 
-      virtual Pop& drawSample(Pop& pop)
+      virtual population& drawsample(population& pop)
       {
         // parents
         vector< std::pair<ULONG, ULONG> > parents;
@@ -2144,7 +2144,7 @@ namespace simuPOP
             idx[i] = i;
 
           // set all info to -1
-          for(typename Pop::IndIterator ind=pop.indBegin();
+          for(population::IndIterator ind=pop.indBegin();
             ind != pop.indEnd(); ++ind)
           {
             ind->setInfo(-1);
@@ -2169,13 +2169,13 @@ namespace simuPOP
           {
             chosenOff.push_back( (int)(allSibs[ idx[i] ].first) );
             chosenOff.push_back( (int)(allSibs[ idx[i] ].second) );
-            // DBG_ASSERT( pop.individual( allSibs[ idx[i] ].first ).info()==-1,
+            // DBG_ASSERT( pop.ind( allSibs[ idx[i] ].first ).info()==-1,
             //  SystemError, "Duplicate selection");
-            //DBG_ASSERT( pop.individual( allSibs[ idx[i] ].second).info()==-1,
+            //DBG_ASSERT( pop.ind( allSibs[ idx[i] ].second).info()==-1,
             //  SystemError, "Duplicate selection");
-            pop.individual( allSibs[ idx[i] ].first ).setInfo(i);
-            pop.individual( allSibs[ idx[i] ].second ).setInfo(i);
-            typename Pop::TagType tag = pop.individual( allSibs[ idx[i]].first ).tag();
+            pop.ind( allSibs[ idx[i] ].first ).setInfo(i);
+            pop.ind( allSibs[ idx[i] ].second ).setInfo(i);
+            TagType tag = pop.ind( allSibs[ idx[i]].first ).tag();
             chosenPar.push_back( (int)(tag.first) );
             chosenPar.push_back( (int)(tag.second) );
             parents.push_back(
@@ -2188,7 +2188,7 @@ namespace simuPOP
           for( size_t i=0; i<N; ++i)
             nSibpairSP[ pop.subPopIndPair( allSibs[idx[i]].first).first] += 2;
           //
-          DBG_DO(DBG_SELECTOR, cout << "#ind from Population " << nSibpairSP << endl);
+          DBG_DO(DBG_SELECTOR, cout << "#ind from population " << nSibpairSP << endl);
         }
         else                                      // for each subpop
         {
@@ -2203,7 +2203,7 @@ namespace simuPOP
               idx[i] = i;
 
             // set all indices to -1
-            for(typename Pop::IndIterator ind=pop.indBegin(sp); ind != pop.indEnd(sp); ++ind)
+            for(population::IndIterator ind=pop.indBegin(sp); ind != pop.indEnd(sp); ++ind)
               ind->setInfo(-1);
 
             UINT N = std::min(asSize, static_cast<size_t>(m_size[sp]));
@@ -2218,9 +2218,9 @@ namespace simuPOP
               chosenOff.push_back( (int)(sibpairs[ idx[i]].first) );
               chosenOff.push_back( (int)(sibpairs[ idx[i]].second) );
               // sibpairs uses absolute indices, so no sp parameter is rquired.
-              pop.individual( sibpairs[ idx[i]].first ).setInfo(sibID);
-              pop.individual( sibpairs[ idx[i]].second ).setInfo(sibID);
-              typename Pop::TagType tag = pop.individual(sibpairs[ idx[i]].first ).tag();
+              pop.ind( sibpairs[ idx[i]].first ).setInfo(sibID);
+              pop.ind( sibpairs[ idx[i]].second ).setInfo(sibID);
+              TagType tag = pop.ind(sibpairs[ idx[i]].first ).tag();
               chosenPar.push_back( (int)(tag.first) );
               chosenPar.push_back( (int)(tag.second) );
               parents.push_back(
@@ -2233,7 +2233,7 @@ namespace simuPOP
         }                                         // else
         // this is offspring population with copy of ancestral pop
         // (true means keepAncestralPops)
-        Pop & newPop = pop.newPopByIndInfo(true);
+        population & newPop = pop.newPopByIndInfo(true);
 
         newPop.setIntVectorVar("numOffspring", nSibpairSP);
         newPop.setIntVectorVar("chosenOffspring", chosenOff);
@@ -2254,7 +2254,7 @@ namespace simuPOP
         DBG_DO(DBG_SELECTOR, cout << "Working on parent generations." << endl);
 
         // set everyone to -1 (remove them)
-        for(typename Pop::IndIterator ind=newPop.indBegin();
+        for(population::IndIterator ind=newPop.indBegin();
           ind != newPop.indEnd(); ++ind)
         {
           ind->setInfo(-1);
@@ -2264,8 +2264,8 @@ namespace simuPOP
 
         for(size_t i=0; i< parents.size(); ++i)
         {
-          newPop.individual( parents[i].first).setInfo(i);
-          newPop.individual( parents[i].second).setInfo(i);
+          newPop.ind( parents[i].first).setInfo(i);
+          newPop.ind( parents[i].second).setInfo(i);
         }
         DBG_DO(DBG_SELECTOR, cout << "Setting info done." << endl);
 
@@ -2297,8 +2297,8 @@ namespace simuPOP
   };
 
   /// thrink population accroding to some outside value
-  template<class Pop>
-    class PySample: public Sample<Pop>
+
+  class pySample: public sample
   {
 
     public:
@@ -2308,12 +2308,12 @@ namespace simuPOP
       its values will be assigned to info.
       \stage and other parameters please see help(baseOperator.__init__)
       */
-      PySample( PyObject * keep, bool keepAncestralPops,
+      pySample( PyObject * keep, bool keepAncestralPops,
         const string& name="sample", const string& nameExpr="", UINT times=1,
         const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Sample<Pop>(name, nameExpr, times, saveAs, saveAsExpr, format,
+        : sample(name, nameExpr, times, saveAs, saveAsExpr, format,
         stage, begin, end, step, at, rep, grp),
         m_keepAncestralPops(keepAncestralPops)
       {
@@ -2324,15 +2324,15 @@ namespace simuPOP
       }
 
       /// destructor
-      virtual ~PySample()
+      virtual ~pySample()
       {
         if( m_keep != NULL)
           Py_DECREF(m_keep);
       }
 
       /// CPPONLY
-      PySample(const PySample& rhs):
-      Sample<Pop>(rhs),
+      pySample(const pySample& rhs):
+      sample(rhs),
         m_keep(rhs.m_keep)
       {
         if( m_keep != NULL)
@@ -2340,12 +2340,12 @@ namespace simuPOP
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new PySample<Pop>(*this);
+        return new pySample(*this);
       }
 
-      virtual Pop& drawSample(Pop& pop)
+      virtual population& drawsample(population& pop)
       {
         DBG_ASSERT( NumArray_Size(m_keep) >= static_cast<int>(pop.popSize()) ,
           ValueError, "Given subpopid array has a length of "
@@ -2355,7 +2355,7 @@ namespace simuPOP
         long * id = reinterpret_cast<long*>(NumArray_Data(m_keep));
 
         for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
-          pop.individual(i).setInfo( id[i] );
+          pop.ind(i).setInfo( id[i] );
 
         return pop.newPopByIndInfo(m_keepAncestralPops);
       }

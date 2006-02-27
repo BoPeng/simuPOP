@@ -25,7 +25,7 @@
 #define _OUTPUTER_H
 /**
 \file
-\brief head file of class Outputer: public Operator
+\brief head file of class outputer: public Operator
 */
 #include "utility.h"
 #include "operator.h"
@@ -39,50 +39,49 @@ using std::dec;
 namespace simuPOP
 {
   /**
-  \brief Outputer is a (special) subclass of Operator that will output files with
+  \brief outputer is a (special) subclass of Operator that will output files with
   different format.
 
   @author Bo Peng
   */
-  template<class Pop>
-    class Outputer: public Operator<Pop>
+
+  class outputer: public Operator
   {
 
     public:
       /// constructor. default to be always active.
-      Outputer(string output=">", string outputExpr="",
+      outputer(string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Operator<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp)
+      Operator(output, outputExpr, stage, begin, end, step, at, rep, grp)
       {
       };
 
       /// destructor
-      virtual ~Outputer(){};
+      virtual ~outputer(){};
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Outputer<Pop>(*this);
+        return new outputer(*this);
       }
 
   };
 
-  template<class Pop>
-    class OutputHelper: public Outputer<Pop>
+  class outputHelper: public outputer
   {
 
     public:
       ///
-      OutputHelper(string str="\n", string output=">", string outputExpr="",
+      outputHelper(string str="\n", string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Outputer<Pop>( output, outputExpr, stage, begin, end,
+      outputer( output, outputExpr, stage, begin, end,
         step, at, rep, grp), m_string(str)
       {
       }
 
       /// simply output some info
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         ostream& out = this->getOstream(pop.dict());
         out << m_string;
@@ -91,13 +90,13 @@ namespace simuPOP
       }
 
       ///// destructor
-      virtual ~OutputHelper()
+      virtual ~outputHelper()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new OutputHelper<Pop>(*this);
+        return new outputHelper(*this);
       }
 
       /// set output string.
@@ -122,8 +121,8 @@ namespace simuPOP
   };
 
   /// dump the content of a population.
-  template<class Pop>
-    class Dumper: public Outputer<Pop>
+
+  class dumper: public outputer
   {
     public:
       /** \brief dump population
@@ -142,20 +141,20 @@ namespace simuPOP
       \param outputExpr and other parameters: refer to help(baseOperator.__init__)
 
       */
-      Dumper( bool alleleOnly=false, bool infoOnly=false, bool ancestralPops=false, int dispWidth=1, UINT max=100,
+      dumper( bool alleleOnly=false, bool infoOnly=false, bool ancestralPops=false, int dispWidth=1, UINT max=100,
         const vectori& chrom=vectori(), const vectori& loci=vectori(), const vectoru& subPop=vectoru(),
         const vectorlu& indRange=vectorlu(),
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Outputer<Pop>(output, outputExpr, stage, begin, end, step, at, rep, grp),
+      outputer(output, outputExpr, stage, begin, end, step, at, rep, grp),
         m_alleleOnly(alleleOnly), m_infoOnly(infoOnly), m_dispAncestry(ancestralPops), m_width(dispWidth),
         m_chrom(chrom), m_loci(loci), m_subPop(subPop), m_indRange(indRange), m_max(max)
         {}
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Dumper<Pop>(*this);
+        return new dumper(*this);
       }
 
       /// only show alleles (not structure, gene information?
@@ -182,7 +181,7 @@ namespace simuPOP
         m_infoOnly = infoOnly;
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
 
         ostream& out = this->getOstream(pop.dict());
@@ -213,7 +212,7 @@ namespace simuPOP
               out << pop.locusName( pop.absLocusIndex(ch,i) ) << " ";
             out << endl;
           }
-          out << "Population size:\t" << pop.popSize() << endl;
+          out << "population size:\t" << pop.popSize() << endl;
           out << "Number of subPop:\t" << pop.numSubPop() << endl;
           out << "Subpop sizes:   \t";
           for(UINT i=0, iEnd = pop.numSubPop(); i < iEnd;  ++i)
@@ -255,14 +254,14 @@ namespace simuPOP
               }
             }
           }
-          out << "Individual info: " << endl;
+          out << "individual info: " << endl;
           UINT count = 0;
           for(size_t i=0; i < range.size(); i+=2)
           {
             UINT sp = pop.subPopIndPair(range[i]).first;
             out << "sub population " << sp << ":" << endl;
 
-            for( typename Pop::IndIterator ind = pop.indBegin()+range[i]; ind != pop.indBegin()+range[i+1]; ++ind)
+            for( population::IndIterator ind = pop.indBegin()+range[i]; ind != pop.indBegin()+range[i+1]; ++ind)
             {
               out << setw(4) << count++ << ": ";
               ind->display(out, m_width, m_chrom, m_loci);
@@ -270,7 +269,7 @@ namespace simuPOP
 
               if(m_max > 0 && count > m_max && count < pop.popSize())
               {
-                cout << "Population size is " << pop.popSize() << " but dumper() only dump "
+                cout << "population size is " << pop.popSize() << " but dumper() only dump "
                   << m_max << " individuals" << endl
                   << "Use parameter max=-1 to output all individuals." << endl;
                 goto done;
@@ -295,14 +294,14 @@ namespace simuPOP
               pop.useAncestralPop(i+1);
               out << endl << "Ancestry population " << i+1 << endl;
 
-              out << "Population size:\t" << pop.popSize() << endl;
+              out << "population size:\t" << pop.popSize() << endl;
               out << "Number of subPop:\t" << pop.numSubPop() << endl;
               out << "Subpop sizes:   \t";
               for(UINT i=0, iEnd = pop.numSubPop(); i < iEnd;  ++i)
                 out << pop.subPopSize(i) << " ";
               out << endl;
 
-              out << "Individual info: " << endl;
+              out << "individual info: " << endl;
 
               // get individual ranges from subpop
               vectorlu range = m_indRange;
@@ -329,14 +328,14 @@ namespace simuPOP
                   }
                 }
               }
-              out << "Individual info: " << endl;
+              out << "individual info: " << endl;
               UINT count = 0;
               for(size_t i=0; i < range.size(); i+=2)
               {
                 UINT sp = pop.subPopIndPair(range[i]).first;
                 out << "sub population " << sp << ":" << endl;
 
-                for( typename Pop::IndIterator ind = pop.indBegin()+range[i]; ind != pop.indBegin()+range[i+1]; ++ind)
+                for( population::IndIterator ind = pop.indBegin()+range[i]; ind != pop.indBegin()+range[i+1]; ++ind)
                 {
                   out << setw(4) << count++ << ": " ;
                   ind->display(out, m_width, m_chrom, m_loci);
@@ -344,7 +343,7 @@ namespace simuPOP
 
                   if(m_max > 0 && count > m_max && count < pop.popSize())
                   {
-                    cout << "Population size is " << pop.popSize() << " but dumper() only dump "
+                    cout << "population size is " << pop.popSize() << " but dumper() only dump "
                       << m_max << " individuals" << endl
                       << "Use parameter max=-1 to output all individuals." << endl;
                     goto doneAnces;
@@ -364,7 +363,7 @@ namespace simuPOP
         return true;
       }
 
-      virtual ~Dumper(){};
+      virtual ~dumper(){};
 
       virtual string __repr__()
       {
@@ -401,30 +400,30 @@ namespace simuPOP
   };
 
   /// save population to a file
-  template<class Pop>
-    class SavePopulation: public Outputer<Pop>
+
+  class savePopulation: public outputer
   {
     public:
-      SavePopulation( string output="", string outputExpr="",
+      savePopulation( string output="", string outputExpr="",
         string format = "bin", int stage=PostMating, int begin=0, int end=-1,
         int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Outputer<Pop>( "", "", stage, begin, end, step, at, rep, grp),
+      outputer( "", "", stage, begin, end, step, at, rep, grp),
         m_filename(output), m_filenameParser(outputExpr), m_format(format)
       {
         if(output == "" && outputExpr == "")
           throw ValueError("Please specify one of output and outputExpr.");
       }
 
-      ~SavePopulation()
+      ~savePopulation()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new SavePopulation<Pop>(*this);
+        return new savePopulation(*this);
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         string filename;
         if( m_filename != "")
