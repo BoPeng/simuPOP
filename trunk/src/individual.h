@@ -662,10 +662,7 @@ namespace simuPOP
       static vector<GenoStructure> s_genoStruRepository;
   };
 
-  // initialize static variable s)genoStruRepository.
-  vector<GenoStructure> GenoStruTrait::s_genoStruRepository = vector<GenoStructure>();
-
-  /** \brief Basic individual class
+   /** \brief Basic individual class
 
   class individual with
   - genotypic information
@@ -1297,10 +1294,7 @@ namespace simuPOP
 
   };
 
-  // initialize static variables.
-  bool individual::s_flagShallowCopied = false;
-
-  /*
+/*
   #ifndef SWIG
     #ifndef _NO_SERIALIZATION_
       BOOST_CLASS_VERSION(individual, 0)
