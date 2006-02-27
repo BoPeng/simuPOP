@@ -662,7 +662,7 @@ namespace simuPOP
       static vector<GenoStructure> s_genoStruRepository;
   };
 
-   /** \brief Basic individual class
+  /** \brief Basic individual class
 
   class individual with
   - genotypic information
@@ -1294,12 +1294,12 @@ namespace simuPOP
 
   };
 
-/*
-  #ifndef SWIG
-    #ifndef _NO_SERIALIZATION_
-      BOOST_CLASS_VERSION(individual, 0)
+  /*
+    #ifndef SWIG
+      #ifndef _NO_SERIALIZATION_
+        BOOST_CLASS_VERSION(individual, 0)
+      #endif
     #endif
-  #endif
-  */
+    */
 }
 #endif

@@ -63,8 +63,6 @@ namespace simuPOP
     return key + "'}";
   }
 
-  
-
   void  statNumOfMale::apply(population& pop)
   {
     if(m_numOfMale.empty())

@@ -303,7 +303,7 @@ namespace simuPOP
     }                                             // no switch
   }
 
- bool  recombinator::applyDuringMating(population& pop,
+  bool  recombinator::applyDuringMating(population& pop,
     population::IndIterator offspring,
     individual* dad,
     individual* mom)

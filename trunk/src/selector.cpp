@@ -28,7 +28,7 @@
 
 namespace simuPOP
 {
-   double mapSelector::indFitness(individual * ind)
+  double mapSelector::indFitness(individual * ind)
   {
     string key;
 
@@ -55,7 +55,7 @@ namespace simuPOP
   }
 
   /// currently assuming diploid
-   double maSelector::indFitness(individual * ind)
+  double maSelector::indFitness(individual * ind)
   {
     UINT index = 0;
     for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)

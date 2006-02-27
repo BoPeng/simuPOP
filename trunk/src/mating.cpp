@@ -794,7 +794,7 @@ namespace simuPOP
         sAll[3*i] = 0.;
       }
     }
-    
+
     // get current population size
     int Ntmp;
     if( NtFunc == NULL)
