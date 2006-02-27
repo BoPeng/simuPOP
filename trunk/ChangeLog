@@ -11,6 +11,10 @@ version 0.6.13 - currently available as snapshot
   - NEW: add test case for controlledMating. (No doc is avaiable yet.)
   - NEW: implement trajectory simulation follows Slatkin 2001. This 
          works better than methods from both selSim and geneArtisan.
+  - CHG: (internal change) abort the original template design. This 
+         will make the source less flexible but can dramatically improve
+         development time.
+         
 
 version 0.6.12 - (Rev 186) - Feb 18, 2006 
   - CHG: 'not enough case/control' in caseControlSample now generates 

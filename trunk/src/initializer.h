@@ -25,7 +25,7 @@
 #define _INITIALIZER_H
 /**
 \file
-\brief head file of class Initializer:public Operator
+\brief head file of class initializer:public Operator
 */
 #include "utility.h"
 #include "operator.h"
@@ -44,19 +44,19 @@ namespace simuPOP
 
   @author Bo Peng
   */
-  template<class Pop>
-    class Initializer: public Operator<Pop>
+
+  class initializer: public Operator
   {
     public:
       /// constructor. default to be always active.
-      Initializer( const vectoru& subPop=vectoru(),
+      initializer( const vectoru& subPop=vectoru(),
         intMatrix indRange=intMatrix(),
         const vectoru& atLoci = vectoru(),
         int atPloidy = -1,
         double maleFreq=0.5, const vectori& sex = vectori(),
         int stage=PreMating, int begin=0, int end=-1, int step=1,
         vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL)
-        :Operator<Pop>("","", stage, begin, end, step, at, rep, grp),
+        :Operator("","", stage, begin, end, step, at, rep, grp),
         m_subPop(subPop), m_indRange(indRange),
         m_atLoci(atLoci), m_atPloidy(atPloidy),
         m_maleFreq(maleFreq), m_sex(sex)
@@ -73,14 +73,14 @@ namespace simuPOP
       }
 
       /// destructor
-      virtual ~Initializer()
+      virtual ~initializer()
       {
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Initializer<Pop>(*this);
+        return new initializer(*this);
       }
 
       virtual string __repr__()
@@ -88,7 +88,7 @@ namespace simuPOP
         return "<simuPOP::initializer>";
       }
 
-      void setRanges(Pop& pop)
+      void setRanges(population& pop)
       {
         m_ranges = m_indRange;
 
@@ -161,8 +161,8 @@ namespace simuPOP
   };
 
   /// initialize genotype by allele frequency and sex by male frequency
-  template<class Pop>
-    class InitByFreq: public Initializer<Pop>
+
+  class initByFreq: public initializer
   {
     public:
       /** \brief randomly assign alleles according to allele frequency
@@ -187,14 +187,14 @@ namespace simuPOP
       number of individuals, sex will be reused from the beginning.
       \param stages is set to PreMating. Other parameters please see help(baseOperator.__init__)
       */
-      InitByFreq( const matrix& alleleFreq=matrix(),
+      initByFreq( const matrix& alleleFreq=matrix(),
         bool identicalInds=false,  const vectoru& subPop=vectoru(),
         intMatrix indRange = intMatrix(),
         const vectoru& atLoci=vectoru(), int atPloidy=-1,
         double maleFreq=0.5, const vectori& sex = vectori(),
         int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Initializer<Pop>(subPop, indRange, atLoci,
+        : initializer(subPop, indRange, atLoci,
         atPloidy, maleFreq, sex,
         stage, begin, end, step, at, rep, grp),
         m_alleleFreq(alleleFreq), m_identicalInds(identicalInds)
@@ -208,14 +208,14 @@ namespace simuPOP
             throw ValueError("Allele frequencies should add up to one.");
       }
 
-      ~InitByFreq()
+      ~initByFreq()
       {
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new InitByFreq<Pop>(*this);
+        return new initByFreq(*this);
       }
 
       virtual string __repr__()
@@ -223,7 +223,7 @@ namespace simuPOP
         return "<simuPOP::initByFreq>";
       }
 
-      bool apply(Pop& pop)
+      bool apply(population& pop)
       {
         /// initialize m_ranges
         setRanges(pop);
@@ -242,8 +242,8 @@ namespace simuPOP
           DBG_FAILIF( left > pop.popSize() || right > pop.popSize() || left > right ,
             ValueError, "Invaid range boundary: " + toStr(left) + " - " + toStr(right-1));
 
-          // WeightedSampler ws(rng(), incFreq);
-          WeightedSampler ws(rng(), alleleFreq);
+          // Weightedsampler ws(rng(), incFreq);
+          Weightedsampler ws(rng(), alleleFreq);
 
           DBG_ASSERT( fcmp_eq(std::accumulate(alleleFreq.begin(), alleleFreq.end(), 0.), 1),
             SystemError, "Allele frequecies shoudl add up to one.");
@@ -262,13 +262,13 @@ namespace simuPOP
               }
               else                                // only initialize one set of chromosome
               {
-                ws.get(pop.individual(left).genoBegin(this->m_atPloidy),
-                  pop.individual(left).genoEnd(this->m_atPloidy), StartingAllele);
+                ws.get(pop.ind(left).genoBegin(this->m_atPloidy),
+                  pop.ind(left).genoEnd(this->m_atPloidy), StartingAllele);
 
                 for(ULONG ind=left+1; ind != right; ++ind)
-                  copy(pop.individual(left).genoBegin(this->m_atPloidy),
-                    pop.individual(left).genoEnd(this->m_atPloidy),
-                    pop.individual(ind).genoBegin(this->m_atPloidy));
+                  copy(pop.ind(left).genoBegin(this->m_atPloidy),
+                    pop.ind(left).genoEnd(this->m_atPloidy),
+                    pop.ind(ind).genoBegin(this->m_atPloidy));
               }
             }
             else
@@ -290,7 +290,7 @@ namespace simuPOP
                 {
                   UINT a = ws.get() + StartingAllele;
                   for(ULONG ind=left; ind != right; ++ind)
-                    pop.individual(ind).setAllele(a, *locus, this->m_atPloidy);
+                    pop.ind(ind).setAllele(a, *locus, this->m_atPloidy);
                 }
               }
             }
@@ -305,8 +305,8 @@ namespace simuPOP
               else                                // for only one ploidy
               {
                 for(ULONG ind=left; ind != right; ++ind)
-                  ws.get( pop.individual(ind).genoBegin(this->m_atPloidy),
-                    pop.individual(ind).genoEnd(this->m_atPloidy), StartingAllele);
+                  ws.get( pop.ind(ind).genoBegin(this->m_atPloidy),
+                    pop.ind(ind).genoEnd(this->m_atPloidy), StartingAllele);
               }
             }
             else                                  // at certain loci
@@ -321,7 +321,7 @@ namespace simuPOP
               {
                 for(ULONG ind=left; ind != right; ++ind)
                   for(vectoru::iterator locus=this->m_atLoci.begin(); locus != this->m_atLoci.end(); ++locus)
-                    pop.individual(ind).setAllele(ws.get()+StartingAllele, *locus, this->m_atPloidy);
+                    pop.ind(ind).setAllele(ws.get()+StartingAllele, *locus, this->m_atPloidy);
               }
             }
           }
@@ -333,16 +333,16 @@ namespace simuPOP
             for ( ULONG ind = left; ind != right; ++ind)
             {
               if( rng().randUniform01() < this->m_maleFreq )
-                pop.individual(ind).setSex( Male );
+                pop.ind(ind).setSex( Male );
               else
-                pop.individual(ind).setSex( Female );
+                pop.ind(ind).setSex( Female );
             }
           }
           else                                    // use provided sex array
           {
             for ( ULONG ind = left; ind != right; ++ind)
             {
-              pop.individual(ind).setSex( this->nextSex());
+              pop.ind(ind).setSex( this->nextSex());
             }
           }                                       // set sex
         }                                         // range
@@ -360,8 +360,8 @@ namespace simuPOP
   };
 
   /// initialize genotype by value and then copy to all individuals
-  template<class Pop>
-    class InitByValue:public Initializer<Pop>
+
+  class initByValue:public initializer
   {
     public:
       /*** \brief initialize populations by given alleles. Every individual will have the same genotype.
@@ -390,14 +390,14 @@ namespace simuPOP
       number of individuals, sex will be reused from the beginning.
       \param stages is set to PreMating. Other parameters please see help(baseOperator.__init__)
       */
-      InitByValue( intMatrix value=intMatrix(),
+      initByValue( intMatrix value=intMatrix(),
         vectoru atLoci=vectoru(), int atPloidy=-1,
         vectoru subPop=vectoru(), intMatrix indRange=intMatrix(),
         const vectorf& proportions = vectorf(),
         double maleFreq=0.5, const vectori& sex = vectori(),
         int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Initializer<Pop>(subPop, indRange, atLoci, atPloidy, maleFreq, sex,
+        : initializer(subPop, indRange, atLoci, atPloidy, maleFreq, sex,
         stage, begin, end, step, at, rep, grp),
         m_value(value), m_proportion(proportions)
       {
@@ -414,12 +414,12 @@ namespace simuPOP
           ValueError, "Proportion should add up to one.");
       }
 
-      ~InitByValue(){}
+      ~initByValue(){}
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new InitByValue<Pop>(*this);
+        return new initByValue(*this);
       }
 
       virtual string __repr__()
@@ -427,7 +427,7 @@ namespace simuPOP
         return "<simuPOP::initByValue>";
       }
 
-      bool apply(Pop& pop)
+      bool apply(population& pop)
       {
 
         this->initSexIter();
@@ -504,7 +504,7 @@ namespace simuPOP
                 {                                 /// fixme: check length of src?
                   DBG_ASSERT( src.size() == pop.totNumLoci(), ValueError,
                     "Ploidy is specified but the length of alleles do not match length of chromosome. val size: " );
-                  copy(src.begin(), src.end(), pop.individual(ind).genoBegin(this->m_atPloidy));
+                  copy(src.begin(), src.end(), pop.ind(ind).genoBegin(this->m_atPloidy));
                 }
               }
               else                                // with m_loci
@@ -522,20 +522,20 @@ namespace simuPOP
                   DBG_ASSERT( src.size() == this->m_atLoci.size(), ValueError,
                     "Ploidy is specified but the length of alleles do not match length of given allele array.");
                   for(size_t loc = 0; loc != srcSz ;++loc)
-                    *(pop.individual(ind).genoBegin(this->m_atPloidy) +
+                    *(pop.ind(ind).genoBegin(this->m_atPloidy) +
                     this->m_atLoci[loc%lociSz] + loc/lociSz*totNumLoci ) = src[loc];
                 }
               }
               if( this->m_sex.empty())
               {
                 if( rng().randUniform01() < this->m_maleFreq )
-                  pop.individual(ind).setSex( Male );
+                  pop.ind(ind).setSex( Male );
                 else
-                  pop.individual(ind).setSex( Female );
+                  pop.ind(ind).setSex( Female );
               }
               else
               {
-                pop.individual(ind).setSex( this->nextSex() );
+                pop.ind(ind).setSex( this->nextSex() );
               }                                   // set sex
             }
           }
@@ -550,7 +550,7 @@ namespace simuPOP
               ValueError, "Invaid m_ranges boundary: " + toStr(left) + " - " + toStr(right));
 
             size_t srcSz = m_value[0].size(), lociSz=this->m_atLoci.size(), totNumLoci = pop.totNumLoci();
-            WeightedSampler ws(rng(), m_proportion);
+            Weightedsampler ws(rng(), m_proportion);
 
             for (ULONG ind = left; ind < right; ++ind)
             {
@@ -581,7 +581,7 @@ namespace simuPOP
                     copy(m_value[idx].begin(), m_value[idx].end(), pop.indGenoBegin(ind));
                   else                            // only one copy of chromosome
                     copy(m_value[idx].begin(), m_value[idx].end(),
-                      pop.individual(ind).genoBegin(this->m_atPloidy));
+                      pop.ind(ind).genoBegin(this->m_atPloidy));
                 }
               }
               else                                /// atLoci is in effect
@@ -619,7 +619,7 @@ namespace simuPOP
                   {
                     UINT idx = ws.get();
                     for(size_t loc = 0; loc != srcSz ;++loc)
-                      *(pop.individual(ind).genoBegin(this->m_atPloidy)
+                      *(pop.ind(ind).genoBegin(this->m_atPloidy)
                       + this->m_atLoci[loc%lociSz] +
                       loc/lociSz*totNumLoci ) = m_value[idx][loc];
                   }
@@ -628,13 +628,13 @@ namespace simuPOP
               if( this->m_sex.empty())
               {
                 if( rng().randUniform01() < this->m_maleFreq )
-                  pop.individual(ind).setSex( Male );
+                  pop.ind(ind).setSex( Male );
                 else
-                  pop.individual(ind).setSex( Female );
+                  pop.ind(ind).setSex( Female );
               }
               else
               {
-                pop.individual(ind).setSex( this->nextSex() );
+                pop.ind(ind).setSex( this->nextSex() );
               }                                   // set sex
             }
           }
@@ -653,25 +653,25 @@ namespace simuPOP
   };
 
   /// initialize genotype by value and then copy to all individuals
-  template<class Pop>
-    class Spread:public Operator<Pop>
+
+  class spread:public Operator
   {
     public:
       // copy genotype of ind to all individuals in subPop.
-      Spread(ULONG ind, vectoru subPop=vectoru(),
+      spread(ULONG ind, vectoru subPop=vectoru(),
         int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Operator<Pop>("","", stage, begin, end, step, at, rep, grp),
+        : Operator("","", stage, begin, end, step, at, rep, grp),
         m_ind(ind), m_subPop(subPop)
       {
       }
 
-      ~Spread(){}
+      ~spread(){}
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Spread<Pop>(*this);
+        return new spread(*this);
       }
 
       virtual string __repr__()
@@ -679,7 +679,7 @@ namespace simuPOP
         return "<simuPOP::spread genotype>";
       }
 
-      bool apply(Pop& pop)
+      bool apply(population& pop)
       {
         std::pair<UINT, ULONG> p = pop.subPopIndPair(m_ind);
 
@@ -705,8 +705,7 @@ namespace simuPOP
 
   };
 
-  template<class Pop>
-    class PyInit:public Initializer<Pop>
+  class pyInit:public initializer
   {
     public:
       /** \brief initialize populations using given user function.
@@ -724,13 +723,13 @@ namespace simuPOP
       \param atPloidy initialize which copy of chromosomes. Default to all.
       \param stage is et to PreMating. Other parameters please refer to help(baseOperator.__init__)
       */
-      PyInit(PyObject * func,  vectoru subPop=vectoru(),
+      pyInit(PyObject * func,  vectoru subPop=vectoru(),
         vectoru atLoci=vectoru(), int atPloidy=-1,
         intMatrix indRange=intMatrix(),
         double maleFreq=0.5, const vectori& sex = vectori(),
         int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Initializer<Pop>(subPop, indRange, atLoci, atPloidy, maleFreq, sex,
+        : initializer(subPop, indRange, atLoci, atPloidy, maleFreq, sex,
         stage, begin, end, step, at, rep, grp)
       {
         DBG_FAILIF( maleFreq < 0 || maleFreq > 1 ,
@@ -742,23 +741,23 @@ namespace simuPOP
         m_func = func;
       }
 
-      ~PyInit()
+      ~pyInit()
       {
         if( m_func != NULL)
           Py_DECREF(m_func);
       }
 
       /// CPPONLY
-      PyInit(const PyInit& rhs):Initializer<Pop>(rhs), m_func(rhs.m_func)
+      pyInit(const pyInit& rhs):initializer(rhs), m_func(rhs.m_func)
       {
         if( m_func != NULL)
           Py_INCREF(m_func);
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new PyInit<Pop>(*this);
+        return new pyInit(*this);
       }
 
       virtual string __repr__()
@@ -766,7 +765,7 @@ namespace simuPOP
         return "<simuPOP::pyInit>";
       }
 
-      bool apply(Pop& pop)
+      bool apply(population& pop)
       {
         this->initSexIter();
 
@@ -780,7 +779,7 @@ namespace simuPOP
               {
                 int resInt;
                 PyCallFunc3( m_func, "(iii)", al, p, sp, resInt, PyObj_As_Int);
-                pop.individual(it,sp).setAllele( static_cast<Allele>(resInt), al, p);
+                pop.ind(it,sp).setAllele( static_cast<Allele>(resInt), al, p);
               }
             }
           }
@@ -790,7 +789,7 @@ namespace simuPOP
         // (initialize allele need to call randUnif for each locus
         if(this->m_sex.empty())
         {
-          for (typename Pop::IndIterator it = pop.indBegin(), itEnd=pop.indEnd();
+          for (population::IndIterator it = pop.indBegin(), itEnd=pop.indEnd();
             it != itEnd; ++it)
           {
             if( rng().randUniform01() < this->m_maleFreq )
@@ -801,7 +800,7 @@ namespace simuPOP
         }
         else
         {
-          for (typename Pop::IndIterator it = pop.indBegin(), itEnd=pop.indEnd();
+          for (population::IndIterator it = pop.indBegin(), itEnd=pop.indEnd();
             it != itEnd; ++it)
           {
             it->setSex( this->nextSex() );

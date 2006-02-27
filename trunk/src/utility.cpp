@@ -1272,7 +1272,7 @@ namespace simuPOP
   /// will be set by // initialize() function
   /// DO NOT OWN the dictionaries
   SharedVariables g_main_vars, g_module_vars;
-  swig_type_info* g_swigPopType, *g_swigIndType;
+  swig_type_info* g_swigPopType, *g_swigindividual;
 
   SharedVariables& mainVars()
   {
@@ -1291,7 +1291,7 @@ namespace simuPOP
 
   PyObject* pyIndObj(void*p)
   {
-    return SWIG_NewPointerObj(p, g_swigIndType, 0);
+    return SWIG_NewPointerObj(p, g_swigindividual, 0);
   }
 
   // ////////////////////////////////////////////////////////////
@@ -1353,7 +1353,7 @@ namespace simuPOP
       Py_file_input);
 
     if( m_stmts == NULL)
-      throw ValueError("Statement '" + stmts + "' is not valid.");
+      throw ValueError("statement '" + stmts + "' is not valid.");
   }
 
   /// python expression
@@ -1914,10 +1914,10 @@ T Expression::valueAs##TypeName() \
 
   }
 
-  ///////////// Weighted Sampler //////////////
+  ///////////// Weighted sampler //////////////
   /// FIXME: consider adopting R's implementation.
   /// They may be quicker.
-  void WeightedSampler::set(const vectorf& weight)
+  void Weightedsampler::set(const vectorf& weight)
   {
     m_N = weight.size();
 
@@ -2318,8 +2318,8 @@ T Expression::valueAs##TypeName() \
 
     // get population and individual type pointer
     g_swigPopType = SWIG_TypeQuery(PopSWIGType);
-    g_swigIndType = SWIG_TypeQuery(IndSWIGType);
-    if( g_swigPopType == NULL || g_swigIndType == NULL)
+    g_swigindividual = SWIG_TypeQuery(IndSWIGType);
+    if( g_swigPopType == NULL || g_swigindividual == NULL)
       throw SystemError("Can not get population and individual type pointer, your SWIG version may be run.");
 
     /// load carray function and type

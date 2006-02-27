@@ -26,9 +26,10 @@
 
 /**
 \file
-\brief class Individual, IndividualWithAge etc.
+\brief class individual, individualWithAge etc.
 */
 
+#include "simupop_cfg.h"
 #include "utility.h"
 
 #include <boost/serialization/nvp.hpp>
@@ -72,10 +73,10 @@ namespace simuPOP
 
   /** \brief CPPONLY genetic structure. Shared by individuals of one population
 
-  Populations create a copy of GenoStrcture and assign its pointer to each individual.
+  populations create a copy of GenoStrcture and assign its pointer to each individual.
   This strcuture will be destroyed when population is destroyed.
 
-  Population with the same geneotype structure as an old one will use that,
+  population with the same geneotype structure as an old one will use that,
   instead of creating a new one. This is ensured by GenoStructureTrait.
 
   Different populations will have different individuals but comparison, copy etc
@@ -676,10 +677,10 @@ namespace simuPOP
   other individuals will be derived from this class, adding age info etc.
 
   \b Note that
-  - Individual DOES NOT manage memory. It will use a pointer passed from
-  class Population. This causes A LOT of trouble and I have not
+  - individual DOES NOT manage memory. It will use a pointer passed from
+  class population. This causes A LOT of trouble and I have not
   evaluated how much benefic I get.
-  - Individual is a template class taking a tag parameter.
+  - individual is a template class taking a tag parameter.
   tag can be a integer, a pair or any object to track
   individual information. The prolem with our template based
   design + SWIG makes instantiation of mutiple tag types difficult. :-(
@@ -689,7 +690,7 @@ namespace simuPOP
   it is showtimes required that genotypic information within
   one subPop should go together. This is done by
   a shollow_copied flag for each individual and for all
-  individuals. Population might have to re-arrange
+  individuals. population might have to re-arrange
   individuals to solve this problem.
   - output of individual can be adjusted by setOutputDelimeter.
   .
@@ -701,23 +702,12 @@ namespace simuPOP
   setGenoStructure(GenoStructure gs)
   \endcode
   - \c setInfo() and \c info() can be used for any \e temporary purpose.
-  - \c Tag are usually  std::pair(int,int) used by class Tagger to
+  - \c Tag are usually  std::pair(int,int) used by class tagger to
   track informations like pedigree structure.
 
   */
-  template<class Tag>
-    class Individual : public GenoStruTrait
+  class individual : public GenoStruTrait
   {
-
-    public:
-
-      /// type of the tag, which is a template parameter.
-      typedef Tag TagType;
-
-      /// an information field for *temporary* use, its actual meaning
-      /// is not determined. An example is to hold destination subPopulation
-      /// number for migration purpose.
-      typedef INFO InfoType;
 
     protected:
       /// 0: male, 1: female regardless of outside coding
@@ -734,13 +724,13 @@ namespace simuPOP
       ///  @name constructor, destructor etc
       //@{
       /// default constructor, Tag field need a default constructor
-      Individual():m_flags(0),m_info(0)
+      individual():m_flags(0),m_info(0)
       {
       }
 
       /// CPPONLY
       /// copy constructor will be a shallow copied one
-      Individual(const Individual<Tag>& ind) :
+      individual(const individual& ind) :
       GenoStruTrait(ind), m_flags(ind.m_flags),
         m_info(ind.m_info),
         m_tag(ind.m_tag),
@@ -750,7 +740,7 @@ namespace simuPOP
       }
 
       /// destructor. Do nothing.
-      ~Individual()
+      ~individual()
       {
       }
 
@@ -763,13 +753,13 @@ namespace simuPOP
       }
 
       /// shallow copy of an object.
-      Individual& operator= (const Individual& rhs)
+      individual& operator= (const individual& rhs)
       {
         setShallowCopied(true);
 
         /// when the source is being moved. Its relative position may change
         /// so it also becomes shallowCopied.
-        const_cast<Individual&>(rhs).setShallowCopied(true);
+        const_cast<individual&>(rhs).setShallowCopied(true);
 
         m_flags = rhs.m_flags;
         setTag(rhs.tag());
@@ -781,7 +771,7 @@ namespace simuPOP
       }
 
       /// Deep copy! Important!
-      Individual& copyFrom( const Individual& rhs)
+      individual& copyFrom( const individual& rhs)
       {
         m_flags = rhs.m_flags;
         setTag(rhs.tag());
@@ -1072,7 +1062,7 @@ namespace simuPOP
       /** Note that we do not compare info because
          m_info is considered temporary.
       */
-      bool operator== (const Individual& rhs) const
+      bool operator== (const individual& rhs) const
       {
         if( genoStruIdx() != rhs.genoStruIdx() )
           return false;
@@ -1090,14 +1080,14 @@ namespace simuPOP
       }
 
       ///
-      bool operator!= (const Individual& rhs) const
+      bool operator!= (const individual& rhs) const
       {
         return ! (*this == rhs);
       }
 
       // allow compaison of individuals in python
       // only equal or unequal, no greater or less than
-      int __cmp__(const Individual& rhs) const
+      int __cmp__(const individual& rhs) const
       {
         if( genoStruIdx() != rhs.genoStruIdx() )
           return 1;
@@ -1115,7 +1105,7 @@ namespace simuPOP
       /// there is usally no >, < comparison for individuals
       /// if order is required, it is a comparison of info.
       /// this behavior is used in migration.
-      bool operator< (const Individual& rhs) const
+      bool operator< (const individual& rhs) const
       {
         return info() < rhs.info();
       }
@@ -1123,7 +1113,7 @@ namespace simuPOP
       // allow str(population) to get something better looking
       string __repr__()
       {
-        return "<simuPOP::Individual>";
+        return "<simuPOP::individual>";
       }
 
       /// swap individuals
@@ -1138,11 +1128,11 @@ namespace simuPOP
       \param swapContent swapContent or only the pointers.
 
       The guideline is that if we swap individuals across
-      subPopulation, we should swap content. Otherwise,
+      subpopulation, we should swap content. Otherwise,
       swap pointers. (There is no order right now within
-      subPopulation so the later case is rare, at best.
+      subpopulation so the later case is rare, at best.
       */
-      void swap(Individual& ind, bool swapContent=true)
+      void swap(individual& ind, bool swapContent=true)
       {
         if( genoStruIdx() != ind.genoStruIdx() )
           throw SystemError("Can only swap individuals with different geno structure.");
@@ -1308,89 +1298,14 @@ namespace simuPOP
   };
 
   // initialize static variables.
-  template<class Tag> bool Individual< Tag>::s_flagShallowCopied = false;
+  bool individual::s_flagShallowCopied = false;
 
-  /// individual with age info
-  template<class Tag>
-    class IndividualWithAge : public Individual<Tag>
-  {
-
-#define CHECKRANGEAGE(age) DBG_FAILIF( age<0, IndexError, "Age must be non-negative. ");
-
-    public:
-
-      /// get age
-      UINT age() const
-      {
-        return m_age;
-      }
-
-      /// set age
-      void setAge(UINT age)
-      {
-        CHECKRANGEAGE(age);
-
-        m_age = age;
-      }
-
-      /// default constructor
-      IndividualWithAge():Individual<Tag>(),m_age(0){}
-
-      /// copy constructor. will be a shallow copied one
-      IndividualWithAge(const IndividualWithAge<Tag>& ind)
-        :Individual<Tag>(ind) , m_age(ind.m_age)
-      {
-        // some compiles complain if no ::
-        Individual<Tag>::setShallowCopied(true);
-      }
-
-      /// destructor
-      ~IndividualWithAge(){}
-
-      /// swap info. See Individual::swap
-      void swap(IndividualWithAge& ind, bool swapContent=true)
-      {
-        static_cast<Individual<Tag>& >(*this).swap( static_cast<const Individual<Tag>& >( ind));
-
-        std::swap(m_age, ind.m_age);
-
-      }
-
-      // how to copy from another individual?
-      IndividualWithAge& operator= ( const IndividualWithAge& rhs)
-      {
-        static_cast<Individual<Tag>& >(*this) = rhs;
-        setAge(rhs.age());
-        return *this;
-      }
-
-      /// compare if two individuals are the same
-      /// used in case of serialization etc
-      bool operator== (const IndividualWithAge<Tag>& rhs) const
-      {
-        return( age() == rhs.age() && static_cast<const Individual<Tag>& >(*this) == rhs);
-      }
-
-      friend class boost::serialization::access;
-
-      template<class Archive>
-        void serialize(Archive & ar, const UINT version)
-      {
-        ar & boost::serialization::make_nvp("base_individual", boost::serialization::base_object<Individual<Tag> >(*this));
-        ar & make_nvp("age", m_age);
-      }
-
-      void display( ostream& out,
-        int width=1, const vectori& chrom=vectori(), const vectori& loci=vectori() )
-      {
-        out << " A:" << age() ;
-        Individual<Tag>::display(out, width, chrom, loci);
-      }
-
-    private:
-      /// age
-      UINT  m_age;
-
-  };
+  /*
+  #ifndef SWIG
+    #ifndef _NO_SERIALIZATION_
+      BOOST_CLASS_VERSION(individual, 0)
+    #endif
+  #endif
+  */
 }
 #endif

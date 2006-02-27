@@ -44,6 +44,7 @@ using std::string;
 // for operator ticToc
 #include <time.h>
 
+#include "individual.h"
 #include "population.h"
 
 namespace simuPOP
@@ -101,13 +102,9 @@ namespace simuPOP
 
   @author Bo Peng
   */
-  template<class Pop>
-    class Operator
+
+  class Operator
   {
-    public:
-
-      typedef typename Pop::IndType IndType;
-
     public:
 
       /** @name constructor and destructor */
@@ -153,9 +150,9 @@ namespace simuPOP
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Operator<Pop>(*this);
+        return new Operator(*this);
       }
 
       //@}
@@ -184,7 +181,7 @@ namespace simuPOP
       /** GRP_ALL is the default value (applicable to
       all groups. )
             Otherwise, the operator is applicable to ONE group of replicates.
-            groups can be set in Simulator::setGroup()
+            groups can be set in simulator::setGroup()
       */
       void setApplicableGroup(int grp=GRP_ALL)
       {
@@ -274,20 +271,20 @@ namespace simuPOP
 
       ///  providing interface to apply operator before during or after
       ///  mating.
-      virtual bool applyWithScratch(Pop& pop, Pop& scratch, int stage)
+      virtual bool applyWithScratch(population& pop, population& scratch, int stage)
       {
         return apply(pop);
       }
 
       /// apply to one population, does not check if the oeprator is activated.
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         throw SystemError("This function Operator::apply() is not supposed to be called.");
       }
 
       /// give pop, offspring, pop and mom.
-      virtual bool applyDuringMating(Pop& pop, typename Pop::IndIterator offspring,
-        typename Pop::IndType* dad=NULL, typename Pop::IndType* mom=NULL)
+      virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
+        individual* dad=NULL, individual* mom=NULL)
       {
         throw SystemError("ApplyDuringMating: This function is not supposed to be called.");
       }
@@ -402,8 +399,7 @@ namespace simuPOP
 
   };
 
-  template<class Pop>
-    bool Operator<Pop>::isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly )
+  bool Operator::isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly )
   {
     // rep does not match
     if( ( m_rep >= 0 && static_cast<UINT>(m_rep) != rep ) ||
@@ -495,8 +491,7 @@ namespace simuPOP
     return false;
   }
 
-  template<class Pop>
-    void Operator<Pop>::setFlags()
+  void Operator::setFlags()
   {
     RESETFLAG(m_flags, m_flagAtAllGen);
     RESETFLAG(m_flags, m_flagOnlyAtBegin);
@@ -529,8 +524,7 @@ namespace simuPOP
   pause simulation, press any key to stop
   */
 
-  template<class Pop>
-    class Pause: public Operator<Pop>
+  class pause: public Operator
   {
 
     public:
@@ -544,28 +538,28 @@ namespace simuPOP
       \param popName by which name the population is exposed? default to 'pop'
 
       */
-      Pause(bool prompt=true, bool stopOnKeyStroke=false,
+      pause(bool prompt=true, bool stopOnKeyStroke=false,
         bool exposePop=true, string popName="pop",
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_LAST, int grp=GRP_ALL):
-      Operator<Pop>("", "", stage, begin, end, step, at, rep, grp),
+      Operator("", "", stage, begin, end, step, at, rep, grp),
         m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke),
         m_exposePop(exposePop), m_popName(popName)
       {
       }
 
       /// destructor
-      virtual ~Pause(){}
+      virtual ~pause(){}
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Pause(*this);
+        return new pause(*this);
       }
 
       /// simply output some info
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         char a;
 
@@ -643,47 +637,47 @@ namespace simuPOP
   /* 
     None operator, do nothing.
     */
-  template<class Pop>
-    class NoneOp: public Operator<Pop>
+
+  class noneOp: public Operator
   {
 
     public:
       /** \brief do nothing
        */
-      NoneOp( string output=">", string outputExpr="",
+      noneOp( string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=0, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Operator<Pop>("", "", stage, begin, end, step, at, rep, grp)
+      Operator("", "", stage, begin, end, step, at, rep, grp)
       {
       }
 
       /// destructor
-      virtual ~NoneOp()
+      virtual ~noneOp()
       {
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new NoneOp(*this);
+        return new noneOp(*this);
       }
 
       /// simply output some info
       ///  providing interface to apply operator before during or after
       ///  mating.
-      virtual bool applyWithScratch(Pop& pop, Pop& scratch, int stage)
+      virtual bool applyWithScratch(population& pop, population& scratch, int stage)
       {
         return true;
       }
 
       /// give pop, offspring, pop and mom.
-      virtual bool applyDuringMating(Pop& pop, typename Pop::IndIterator offspring,
-        typename Pop::IndType* dad=NULL, typename Pop::IndType* mom=NULL)
+      virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
+        individual* dad=NULL, individual* mom=NULL)
       {
         return true;
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         return true;
       }
@@ -697,8 +691,8 @@ namespace simuPOP
   /* 
    evaluate an expression, call if_op or else_op
    */
-  template<class Pop>
-    class IfElse: public Operator<Pop>
+
+  class ifElse: public Operator
   {
 
     public:
@@ -707,11 +701,11 @@ namespace simuPOP
       \param ifOp if operator, be called when expr is true
       \param elseOp else operator, be called when expr is false
       */
-      IfElse(const string& cond, Operator<Pop>* ifOp=NULL, Operator<Pop>* elseOp = NULL,
+      ifElse(const string& cond, Operator* ifOp=NULL, Operator* elseOp = NULL,
         string output=">", string outputExpr="",
         int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Operator<Pop>("", "", stage, begin, end, step, at, rep, grp),
+      Operator("", "", stage, begin, end, step, at, rep, grp),
         m_cond(cond,""), m_ifOp(NULL), m_elseOp(NULL)
       {
         if( ifOp != NULL)
@@ -721,7 +715,7 @@ namespace simuPOP
       };
 
       /// destructor
-      virtual ~IfElse()
+      virtual ~ifElse()
       {
         if( m_ifOp != NULL)
           delete m_ifOp;
@@ -731,8 +725,8 @@ namespace simuPOP
 
       /// copy constructor
       /// CPPONLY
-      IfElse(const IfElse<Pop>& rhs)
-        : Operator<Pop>(rhs), m_cond(rhs.m_cond), m_ifOp(NULL), m_elseOp(NULL)
+      ifElse(const ifElse& rhs)
+        : Operator(rhs), m_cond(rhs.m_cond), m_ifOp(NULL), m_elseOp(NULL)
       {
         if( rhs.m_ifOp != NULL)
           m_ifOp = rhs.m_ifOp->clone();
@@ -741,15 +735,15 @@ namespace simuPOP
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new IfElse(*this);
+        return new ifElse(*this);
       }
 
       /// simply output some info
       ///  providing interface to apply operator before during or after
       ///  mating.
-      virtual bool applyWithScratch(Pop& pop, Pop& scratch, int stage)
+      virtual bool applyWithScratch(population& pop, population& scratch, int stage)
       {
         m_cond.setLocalDict(pop.dict());
         bool res = m_cond.valueAsBool();
@@ -762,8 +756,8 @@ namespace simuPOP
       }
 
       /// give pop, offspring, pop and mom.
-      virtual bool applyDuringMating(Pop& pop, typename Pop::IndIterator offspring,
-        typename Pop::IndType* dad=NULL, typename Pop::IndType* mom=NULL)
+      virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
+        individual* dad=NULL, individual* mom=NULL)
       {
         m_cond.setLocalDict(pop.dict());
         bool res = m_cond.valueAsBool();
@@ -775,7 +769,7 @@ namespace simuPOP
         return true;
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         m_cond.setLocalDict(pop.dict());
         bool res = m_cond.valueAsBool();
@@ -795,42 +789,42 @@ namespace simuPOP
     private:
       Expression m_cond;
 
-      Operator<Pop>* m_ifOp;
-      Operator<Pop> *m_elseOp;
+      Operator* m_ifOp;
+      Operator *m_elseOp;
   };
 
   /* 
     evaluate an expression, call if_op or else_op
     */
-  template<class Pop>
-    class TicToc: public Operator<Pop>
+
+  class ticToc: public Operator
   {
 
     public:
       /** \brief timer
       if called, output time passed since last calling time.
       */
-      TicToc( string output=">", string outputExpr="",
+      ticToc( string output=">", string outputExpr="",
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp)
+      Operator(">", "", stage, begin, end, step, at, rep, grp)
       {
         time(&m_startTime);
         m_lastTime = m_startTime;
       };
 
       /// destructor
-      virtual ~TicToc()
+      virtual ~ticToc()
       {
       };
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new TicToc(*this);
+        return new ticToc(*this);
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         time_t tmpTime;
 
@@ -869,34 +863,34 @@ namespace simuPOP
   /* 
      set ancestral depth
      */
-  template<class Pop>
-    class SetAncestralDepth: public Operator<Pop>
+
+  class setAncestralDepth: public Operator
   {
 
     public:
       /** \brief timer
       if called, output time passed since last calling time.
       */
-      SetAncestralDepth( int depth, string output=">", string outputExpr="",
+      setAncestralDepth( int depth, string output=">", string outputExpr="",
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp),
+      Operator(">", "", stage, begin, end, step, at, rep, grp),
         m_depth(depth)
       {
       };
 
       /// destructor
-      virtual ~SetAncestralDepth()
+      virtual ~setAncestralDepth()
       {
       };
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new SetAncestralDepth(*this);
+        return new setAncestralDepth(*this);
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         pop.setAncestralDepth(m_depth);
         return true;
@@ -914,34 +908,34 @@ namespace simuPOP
   /* 
      set debug
      */
-  template<class Pop>
-    class TurnOnDebugOp: public Operator<Pop>
+
+  class turnOnDebugOp: public Operator
   {
 
     public:
       /** \brief turn on debug
 
        */
-      TurnOnDebugOp(DBG_CODE code,
+      turnOnDebugOp(DBG_CODE code,
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp),
+      Operator(">", "", stage, begin, end, step, at, rep, grp),
         m_code(code)
       {
       };
 
       /// destructor
-      virtual ~TurnOnDebugOp()
+      virtual ~turnOnDebugOp()
       {
       };
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new TurnOnDebugOp(*this);
+        return new turnOnDebugOp(*this);
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         TurnOnDebug(m_code);
         return true;
@@ -959,34 +953,34 @@ namespace simuPOP
   /* 
      set debug
      */
-  template<class Pop>
-    class TurnOffDebugOp: public Operator<Pop>
+
+  class turnOffDebugOp: public Operator
   {
 
     public:
       /** \brief turn on debug
 
        */
-      TurnOffDebugOp(DBG_CODE code,
+      turnOffDebugOp(DBG_CODE code,
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp),
+      Operator(">", "", stage, begin, end, step, at, rep, grp),
         m_code(code)
       {
       };
 
       /// destructor
-      virtual ~TurnOffDebugOp()
+      virtual ~turnOffDebugOp()
       {
       };
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new TurnOffDebugOp(*this);
+        return new turnOffDebugOp(*this);
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         TurnOffDebug(m_code);
         return true;
@@ -1004,8 +998,8 @@ namespace simuPOP
   /* 
      pyOperator, the ultimate python operator
      */
-  template<class Pop>
-    class PyOperator: public Operator<Pop>
+
+  class pyOperator: public Operator
   {
 
     public:
@@ -1026,11 +1020,11 @@ namespace simuPOP
       this func will take two parameters with pop and then a filehandle to output,
       however, differentiating output, append etc is too troublesome right now.
       */
-      PyOperator(PyObject* func, PyObject* param=NULL,
+      pyOperator(PyObject* func, PyObject* param=NULL,
         int stage=PostMating, bool formOffGenotype=false, bool passOffspringOnly=false,
         int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL):
-      Operator<Pop>(">", "", stage, begin, end, step, at, rep, grp),
+      Operator(">", "", stage, begin, end, step, at, rep, grp),
         m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
       {
         if( !PyCallable_Check(func))
@@ -1046,7 +1040,7 @@ namespace simuPOP
       };
 
       /// destructor
-      virtual ~PyOperator()
+      virtual ~pyOperator()
       {
         Py_DECREF(m_func);
 
@@ -1055,8 +1049,8 @@ namespace simuPOP
       };
 
       /// CPPONLY need a copy operator because of m_func
-      PyOperator(const PyOperator& rhs):
-      Operator<Pop>(rhs),
+      pyOperator(const pyOperator& rhs):
+      Operator(rhs),
         m_func(rhs.m_func),
         m_param(rhs.m_param)
       {
@@ -1067,12 +1061,12 @@ namespace simuPOP
       }
 
       /// this function is very important
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new PyOperator(*this);
+        return new pyOperator(*this);
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         // call the python function, pass the whole population in it.
         // get pop object
@@ -1098,8 +1092,8 @@ namespace simuPOP
         return resBool;
       }
 
-      virtual bool applyDuringMating(Pop& pop, typename Pop::IndIterator offspring,
-        typename Pop::IndType* dad=NULL, typename Pop::IndType* mom=NULL)
+      virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
+        individual* dad=NULL, individual* mom=NULL)
       {
         // get offspring object
         PyObject* offObj = pyIndObj(static_cast<void*>(&(*offspring)));

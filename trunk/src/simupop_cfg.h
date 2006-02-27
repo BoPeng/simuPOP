@@ -97,19 +97,22 @@ typedef std::vector<Allele>::const_iterator constGenoIterator;
 const unsigned long MaxAllele = std::numeric_limits<Allele>::max();
 
 // for swig 2.3.24
-// #define PopSWIGType   "_p_simuPOP__PopulationTsimuPOP__IndividualTstd__pairTfloat_float_t_t_t"
+// #define PopSWIGType   "_p_simuPOP__populationTsimuPOP__individualTstd__pairTfloat_float_t_t_t"
 
 // for swig 2.3.25cvs
-//#define PopSWIGType "_p_simuPOP__PopulationTindividual_t"
-//#define IndSWIGType "_p_simuPOP__IndividualTstd__pairTULONG_ULONG_t_t"
-#define PopSWIGType "simuPOP::Population<simuPOP::Individual<std::pair<unsigned long,unsigned long > > > *"
-#define IndSWIGType "simuPOP::Individual<std::pair<unsigned long,unsigned long > > *"
+//#define PopSWIGType "_p_simuPOP__populationTindividual_t"
+//#define IndSWIGType "_p_simuPOP__individualTstd__pairTULONG_ULONG_t_t"
+#define PopSWIGType "simuPOP::population *"
+#define IndSWIGType "simuPOP::individual *"
 
 enum Sex{ Male = 1, Female = 2};
 
 // info is usually used for subpopulation index.
 // signed short should be enough.
-typedef signed short INFO;
+typedef signed short InfoType;
+
+/// type of the tag, which is a template parameter.
+typedef std::pair<unsigned long,unsigned long>  TagType;
 typedef unsigned long ULONG;
 typedef long LONG;
 
@@ -295,8 +298,8 @@ if(debug(dbgCode)){ expr; }
 #define CHECKRANGELOCUS(chrom, locus) DBG_FAILIF( locus >= numLoci(chrom), IndexError, "locus index (" + toStr(chrom) + ") out of range of 0 - " + toStr(numLoci(chrom)-1))
 #define CHECKRANGEABSLOCUS(locus) DBG_FAILIF(  locus >= totNumLoci(), IndexError, "absolute locus index (" + toStr(locus) + ") out of range of 0 - " + toStr(totNumLoci()-1))
 #define CHECKRANGEGENOSIZE(p) DBG_FAILIF( p>=genoSize(),IndexError, "locus index  (" + toStr(p) + ") out of range of 0 - " + toStr(genoSize()-1))
-#define CHECKRANGESUBPOPMEMBER(ind,sp) DBG_FAILIF( subPopSize(sp)>0 && ind >= subPopSize(sp), IndexError, "individual index (" + toStr(ind) + ") out of range 0 ~" + toStr(subPopSize(sp)-1) + " in subPopulation " + toStr(sp))
-#define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, "Individual index (" + toStr(ind) + ") is out of range of 0 ~ " + toStr(popSize()-1))
+#define CHECKRANGESUBPOPMEMBER(ind,sp) DBG_FAILIF( subPopSize(sp)>0 && ind >= subPopSize(sp), IndexError, "individual index (" + toStr(ind) + ") out of range 0 ~" + toStr(subPopSize(sp)-1) + " in subpopulation " + toStr(sp))
+#define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, "individual index (" + toStr(ind) + ") is out of range of 0 ~ " + toStr(popSize()-1))
 
 }
 #endif

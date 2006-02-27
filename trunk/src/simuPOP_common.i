@@ -126,7 +126,6 @@ namespace std
   %template()      pair<UINT, UINT>;
   // used in populaiton.h
   %template()      pair<UINT, ULONG>;
-
   %template(vectora)     vector<Allele>;
 
 #ifdef LONGALLELE
@@ -205,19 +204,18 @@ namespace std
 
 %ignore std::operator<<(ostream&, const strDict&);
 %ignore std::operator<<(ostream&, const intDict&);
-
 %ignore simuPOP::GappedAlleleIterator;
 
 // the following load a docstring file extracted from doxgen output.
 // there will also be a bunch of %ignore directives as well
 //
-%include "simuPOP_doc.i";
+%rename(individual) ind(ULONG, UINT);
+%rename(population) pop(UINT);
 
+%include "simuPOP_doc.i";
 %include "utility.h"
 %include "individual.h"
 %include "population.h"
-
-
 %include "operator.h"
 
 %newobject simuPOP::Population::newPopByIndInfo;
@@ -225,50 +223,14 @@ namespace std
 %newobject simuPOP::Population::clone;
 %newobject simuPOP::Simulator::getPopulation;
 
-// Starting from SWIG version 1.3.28, typedef needs to be before template
-#if SWIG_VERSION >= 0x010328
-%inline
-%{
-  typedef simuPOP::Individual< std::pair<unsigned long,unsigned long> > individual;
-  typedef simuPOP::Population< individual > pop;
-%}
-#endif
-
-namespace simuPOP
-{  
-  // NOTE: if this changed, you will have to change SWIG name for it
-  // in simupop_cfg.h 
-  %template(individual)         Individual< std::pair<unsigned long,unsigned long> > ;
-  %template(population)         Population<individual>;
-  %template(baseOperator)       Operator< pop >;
-  %template(pyOperator)         PyOperator< pop >;
-}
-
-// SWIG version up to 1.3.27 need this to be after template(population)
-#if SWIG_VERSION < 0x010328
-%inline
-%{
-  typedef simuPOP::Individual< std::pair<unsigned long,unsigned long> > individual;
-  typedef simuPOP::Population< individual > pop;
-%}
-#endif
-
-%{
-  // this piece can not be processed by SWIG so can not
-  // be inlined. 
-#ifndef _NO_SERIALIZATION_
-  // version 0: 
-  BOOST_CLASS_VERSION(individual, 0)
-  BOOST_CLASS_VERSION(pop, 0)
-#endif
-%}
-
 namespace std
 {
-  %template(vectorop)   vector< simuPOP::Operator<pop> * >;
+  %template(vectorop)   vector< simuPOP::Operator * >;
 }
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////
+
+%rename(output) simuPOP::outputHelper;
 
 %include "mating.h"
 %include "simulator.h"
@@ -282,130 +244,10 @@ namespace std
 %include "recombinator.h"
 %include "selector.h"
 
-
-namespace simuPOP
-{
-  // since operator is a keyword for swig, I have to use another name
-  %template(noneOp)              NoneOp< pop >;
-  %template(ifElse)              IfElse< pop >;
-  %template(pause)               Pause< pop >;
-  %template(ticToc)              TicToc< pop >;
-  %template(setAncestralDepth)   SetAncestralDepth< pop >;
-  %template(turnOnDebug)         TurnOnDebugOp< pop >;
-  %template(turnOffDebug)        TurnOffDebugOp< pop >;
-
-  // mating scheme and simulator
-  %template(mating)              Mating< pop >;
-  %template(noMating)            NoMating< pop >;
-  %template(binomialSelection)   BinomialSelection< pop >;
-  %template(randomMating)        RandomMating< pop >;
-  %template(controlledMating)    ControlledMating< pop >;
-  %template(pyMating)            PyMating<pop>;
-
-  %template(simulator)           Simulator< pop >;
-
-  // operators
-
-  %template(outputer)            Outputer< pop >;
-  %template(output)              OutputHelper< pop >;
-  %template(dumper)              Dumper< pop >;
-  %template(savePopulation)      SavePopulation<pop>;
-
-  %template(initializer)         Initializer< pop >;
-  %template(initByFreq)          InitByFreq< pop >;
-  %template(initByValue)         InitByValue< pop >;
-  %template(spread)              Spread< pop >;
-  %template(pyInit)              PyInit< pop >;
-
-  %template(terminator)          Terminator< pop>;
-  %template(terminateIf)         TerminateIf< pop>;
-  %template(continueIf)          ContinueIf< pop>;
-
-  %template(stator)              Stator<pop>;
-  %template(pyEval)              PyEval<pop>;
-  %template(pyExec)              PyExec<pop>;
-  %template(stat)                Stat<pop>;
-
-  %template(tagger)              Tagger<pop>;
-  %template(inheritTagger)       InheritTagger<pop>;
-  %template(parentsTagger)       ParentsTagger<pop>;
-
-  %template(migrator)            Migrator<pop>;
-  %template(pyMigrator)          PyMigrator<pop>;
-  %template(splitSubPop)         SplitSubPop<pop>;
-  %template(mergeSubPops)        MergeSubPops<pop>;
-
-  %template(mutator)             Mutator<pop>;
-  %template(kamMutator)          KAMMutator<pop>;
-  %template(smmMutator)          SMMMutator<pop>;
-  %template(gsmMutator)          GSMMutator<pop>;
-  %template(pyMutator)           PyMutator<pop>;
-  %template(pointMutator)        PointMutator<pop>;
-
-  %template(recombinator)        Recombinator<pop>;
-
-  %template(selector)            Selector<pop>;
-  %template(mapSelector)         MapSelector<pop>;
-  %template(maSelector)          MASelector<pop>;
-  %template(mlSelector)          MLSelector<pop>;
-  %template(pySelector)          PySelector<pop>;
-
-  %template(penetrance)          Penetrance<pop>;
-  %template(mapPenetrance)       MapPenetrance<pop>;
-  %template(maPenetrance)        MAPenetrance<pop>;
-  %template(mlPenetrance)        MLPenetrance<pop>;
-  %template(pyPenetrance)        PyPenetrance<pop>;
-
-  %template(quanTrait)           QuanTrait<pop>;
-  %template(mapQuanTrait)        MapQuanTrait<pop>;
-  %template(maQuanTrait)         MAQuanTrait<pop>;
-  %template(mlQuanTrait)         MLQuanTrait<pop>;
-  %template(pyQuanTrait)         PyQuanTrait<pop>;
-
-  %template(pySubset)            PySubset<pop>;
-  %template(sample)              Sample<pop>;
-  %template(randomSample)        RandomSample<pop>;
-  %template(caseControlSample)   CaseControlSample<pop>;
-  %template(affectedSibpairSample) AffectedSibpairSample<pop>;
-  %template(pySample)            PySample<pop>;
-}
-
 ////////////////////////// SIMUPOP C++ UTILITY FUNCTIONS //////////////////////////
 
 %newobject LoadPopulation;
 %newobject LoadSimulator;
-
-%inline
-%{
-  pop& LoadPopulation(const string& file,
-    const string& format="auto")
-  {
-#ifndef _NO_SERIALIZATION_
-    pop *p = new pop(1);
-    p->loadPopulation(file, format);
-    return *p;
-#else
-    cout << "This feature is not supported in this platform" << endl;
-    return *new pop(1);
-#endif
-  }
-
-  simuPOP::Simulator<pop>& LoadSimulator(const string& file,
-    simuPOP::Mating<pop>& mate,
-    string format="auto")
-  {
-    pop p;
-    simuPOP::Simulator<pop> * a = new simuPOP::Simulator<pop>(
-      p, mate );
-#ifndef _NO_SERIALIZATION_
-    a->loadSimulator(file, format);
-    return *a;
-#else
-    cout << "This feature is not supported in this platform" << endl;
-#endif
-    return *a;
-  }
-%}
 
 
 ////////////////////////// SIMUPOP PYTHON UTILITY FUNCTIONS //////////////////////////
@@ -1097,7 +939,8 @@ new_pySelector.__doc__ = pySelector.__init__.__doc__
 del pySelector.__init__
 pySelector.__init__ = new_pySelector
 
-def new_mapPenetrance(self, locus=-1, loci=[], *args, **kwargs):
+# for backward compatibility, keep long penetrance parameter
+def new_mapPenetrance(self, locus=-1, loci=[], penetrance={}, *args, **kwargs):
   if locus != -1 and type(locus) in [types.IntType, types.LongType]:
     loc = [locus]
   elif type(loci) in [types.IntType, types.LongType]:
@@ -1107,14 +950,14 @@ def new_mapPenetrance(self, locus=-1, loci=[], *args, **kwargs):
   else:
     raise exceptions.TypeError('Please specify locus or loci')
   _swig_setattr(self, mapPenetrance, 'this', 
-    cppModule.new_mapPenetrance(loci=loc, *args, **kwargs))
+    cppModule.new_mapPenetrance(loci=loc, penet=penetrance, *args, **kwargs))
   _swig_setattr(self, mapPenetrance, 'thisown', 1)
  
 new_mapPenetrance.__doc__ = mapPenetrance.__init__.__doc__
 del mapPenetrance.__init__
 mapPenetrance.__init__ = new_mapPenetrance
 
-def new_maPenetrance(self, locus=-1, loci=[], wildtype=[1], *args, **kwargs):
+def new_maPenetrance(self, locus=-1, loci=[], wildtype=[1], penetrance=[], *args, **kwargs):
   if locus != -1 and type(locus) in [types.IntType, types.LongType]:
     loc = [locus]
   elif type(loci) in [types.IntType, types.LongType]:
@@ -1128,7 +971,7 @@ def new_maPenetrance(self, locus=-1, loci=[], wildtype=[1], *args, **kwargs):
   else:
     wt = wildtype
   _swig_setattr(self, maPenetrance, 'this', 
-    cppModule.new_maPenetrance(loci=loc, wildtype=wt, *args, **kwargs))
+    cppModule.new_maPenetrance(loci=loc, wildtype=wt, penet=penetrance, *args, **kwargs))
   _swig_setattr(self, maPenetrance, 'thisown', 1)
  
 new_maPenetrance.__doc__ = maPenetrance.__init__.__doc__

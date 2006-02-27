@@ -41,30 +41,30 @@ namespace simuPOP
 
   @author Bo Peng
   */
-  template<class Pop>
-    class Tagger: public Operator<Pop>
+
+  class tagger: public Operator
   {
 
     public:
       /// constructor. default to be always active but no output.
-      Tagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Operator<Pop>("", "", DuringMating, begin, end, step, at, rep, grp)
+      tagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      Operator("", "", DuringMating, begin, end, step, at, rep, grp)
       {
       };
 
       /// destructor
-      virtual ~Tagger(){};
+      virtual ~tagger(){};
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Tagger<Pop>(*this);
+        return new tagger(*this);
       }
   };
 
   /// inherite tag from parents.
   /// If both parents have tags, use fathers.
-  template<class Pop>
-    class InheritTagger: public Tagger<Pop>
+
+  class inheritTagger: public tagger
   {
     public:
 #define TAG_Paternal   0
@@ -73,27 +73,27 @@ namespace simuPOP
 
     public:
       /// constructor. default to be always active.
-      InheritTagger(int mode=TAG_Paternal, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Tagger<Pop>( begin, end, step, at, rep, grp), m_mode(mode)
+      inheritTagger(int mode=TAG_Paternal, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      tagger( begin, end, step, at, rep, grp), m_mode(mode)
       {
       };
 
-      virtual ~InheritTagger()
+      virtual ~inheritTagger()
       {
       }
 
       virtual string __repr__()
       {
-        return "<simuPOP::inheritTagger>" ;
+        return "<simuPOP::inherittagger>" ;
       }
 
-      virtual bool applyDuringMating(Pop& pop, typename Pop::IndIterator offspring,
-        typename Pop::IndType* dad=NULL, typename Pop::IndType* mom=NULL)
+      virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
+        individual* dad=NULL, individual* mom=NULL)
       {
         if( (dad == NULL && mom==NULL) ||
           (dad == NULL && m_mode == TAG_Paternal) ||
           (mom == NULL && m_mode == TAG_Maternal) )
-          offspring->setTag( typename Pop::TagType(0,0)  );
+          offspring->setTag( TagType(0,0)  );
 
         if( m_mode == TAG_Paternal )
           offspring->setTag( dad->tag());
@@ -102,19 +102,19 @@ namespace simuPOP
         else
         {
           if( dad == NULL )
-            offspring->setTag( typename Pop::TagType(0, mom->tag().first) );
+            offspring->setTag( TagType(0, mom->tag().first) );
           else if( mom == NULL)
-            offspring->setTag( typename Pop::TagType(dad->tag().first, 0));
+            offspring->setTag( TagType(dad->tag().first, 0));
           else
-            offspring->setTag( typename Pop::TagType(dad->tag().first,
+            offspring->setTag( TagType(dad->tag().first,
               mom->tag().first));
         }
         return true;
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new InheritTagger<Pop>(*this);
+        return new inheritTagger(*this);
       }
 
     private:
@@ -128,43 +128,43 @@ namespace simuPOP
   /// inherite tag from parents.
   /// If both parents have tags, use fathers.
   ///
-  template<class Pop>
-    class ParentsTagger: public Tagger<Pop>
+
+  class parentsTagger: public tagger
   {
     public:
       /// constructor. default to be always active.
       /// string can be any string (m_Delimiter will be ignored for this class.)
       ///  %r will be replicate number %g will be generation number.
-      ParentsTagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-      Tagger<Pop>( begin, end, step, at, rep, grp)
+      parentsTagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
+      tagger( begin, end, step, at, rep, grp)
       {
       };
 
-      virtual ~ParentsTagger()
+      virtual ~parentsTagger()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new ParentsTagger<Pop>(*this);
+        return new parentsTagger(*this);
       }
 
       virtual string __repr__()
       {
-        return "<simuPOP::parentsTagger>" ;
+        return "<simuPOP::parentstagger>" ;
       }
 
-      virtual bool applyDuringMating(Pop& pop, typename Pop::IndIterator offspring,
-        typename Pop::IndType* dad=NULL, typename Pop::IndType* mom=NULL)
+      virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
+        individual* dad=NULL, individual* mom=NULL)
       {
 
         if( dad == NULL && mom==NULL) return true;
         else if( dad != NULL && mom==NULL)
-          offspring->setTag( typename Pop::TagType(dad - &*pop.indBegin(),0));
+          offspring->setTag( TagType(dad - &*pop.indBegin(),0));
         else if( dad == NULL && mom!=NULL)
-          offspring->setTag( typename Pop::TagType(0, mom - &*pop.indBegin()));
+          offspring->setTag( TagType(0, mom - &*pop.indBegin()));
         else
-          offspring->setTag( typename Pop::TagType(dad - &*pop.indBegin(),
+          offspring->setTag( TagType(dad - &*pop.indBegin(),
             mom - &*pop.indBegin()));
 
         return true;

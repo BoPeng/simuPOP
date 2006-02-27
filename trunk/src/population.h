@@ -25,7 +25,7 @@
 
 /**
 \file
-\brief head file of class Population
+\brief head file of class population
 */
 
 #include <vector>
@@ -67,27 +67,17 @@ using boost::serialization::make_nvp;
 namespace simuPOP
 {
 
-  /** \brief a collection of individuals with subPopulation structure
+  /** \brief a collection of individuals with subpopulation structure
 
   Please refer to user's Guide for details about this object.
 
   */
-  template< class Ind>
-    class Population : public GenoStruTrait
+  class population : public GenoStruTrait
   {
     public:
 
-      /// expose individual type (template parameter)
-      typedef Ind IndType;
-
       /// individual itertor, used to iterate all individuals.
-      typedef typename vector<IndType>::iterator IndIterator;
-
-      /// individual tag type. (template parameter for Individual )
-      typedef typename IndType::TagType TagType;
-
-      /// individual info type
-      typedef typename IndType::InfoType InfoType;
+      typedef vector<individual>::iterator IndIterator;
 
       /** @name  constructors and destructor */
       //@{
@@ -104,7 +94,7 @@ namespace simuPOP
          also use a nested array to specify loci distance for each chromosome.
          ( [1,2,3,4,5] or [[1,2],[3,4,5]] are both allowed for loci=[2,3])
          The default values are 1, 2, etc. on each chromosome.
-      \param subPop an array of subPopulation sizes. Default value is [size]
+      \param subPop an array of subpopulation sizes. Default value is [size]
       which means a single subpopulation of the whole population. If both
       size and subPop are given, sum of subPop should agree with size.
       \param ancestralDepth number of ancestral populations to keep. Default to 0,
@@ -125,7 +115,7 @@ namespace simuPOP
       \sa simulator, baseOperator, mating schemes
       \test popInit.log \include popInit.log
       */
-      Population( ULONG size=0,
+      population( ULONG size=0,
         UINT ploidy=2,
         const vectoru& loci=vectoru(),
         bool sexChrom=false,
@@ -160,7 +150,7 @@ namespace simuPOP
         DBG_FAILIF(maxAllele == 0, ValueError,
           "maxAllele should be at least 1 (0,1 two states). ")
 
-          DBG_DO( DBG_POPULATION, cout << "Constructor of Population is called\n");
+          DBG_DO( DBG_POPULATION, cout << "Constructor of population is called\n");
 
         // if specify subPop but not m_popSize
         if( !subPop.empty() )
@@ -176,7 +166,7 @@ namespace simuPOP
         // a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
         this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames, lociNames, maxAllele );
 
-        DBG_DO( DBG_DEVEL, cout << "Individual size is " << sizeof(IndType) << '+'
+        DBG_DO( DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
           << sizeof(Allele) << '*' << genoSize() << endl
           << "Info: " << sizeof(InfoType) << ", Tag: " << sizeof(TagType)
           << ", GenoPtr: " << sizeof(Allele*) << ", Flag: " << sizeof(unsigned char)
@@ -193,7 +183,7 @@ namespace simuPOP
           // create genotype vector holding alleles for all individuals.
           m_genotype.resize( m_popGenoSize);
 
-          // set subPopulation indexes, do not allow popsize change
+          // set subpopulation indexes, do not allow popsize change
           setSubPopStru(subPop, false);
 
           // set individual pointers
@@ -206,15 +196,15 @@ namespace simuPOP
             m_inds[i].setGenoStruIdx(this->genoStruIdx());
             m_inds[i].setShallowCopied(false);
           }
-          IndType::clearShallowCopiedFlag();
+          individual::clearShallowCopiedFlag();
         }
         catch(...)
         {
           cout << "You are creating a population of size " << m_popSize << endl
             << " which requires approximately " << static_cast<double>(m_popGenoSize)/1024/1024
-            + static_cast<double>(m_popSize) * sizeof( IndType ) /1024/1024 << "M RAM." << endl;
+            + static_cast<double>(m_popSize) * sizeof( individual ) /1024/1024 << "M RAM." << endl;
           cout << "Memory allocation fail. A population of size 1 is created." << endl;
-          *this = Population(0);
+          *this = population(0);
           throw OutOfMemory("Memory allocation fail");
         }
         // set local variable
@@ -223,7 +213,7 @@ namespace simuPOP
       }
 
       /// CPPONLY copy constructor
-      Population(const Population& rhs):
+      population(const population& rhs):
       GenoStruTrait(rhs),
         m_popSize(rhs.m_popSize),
         m_numSubPop(rhs.m_numSubPop),
@@ -241,7 +231,7 @@ namespace simuPOP
         m_fitness(0)                              // do not copy fitness
       {
         DBG_DO(DBG_POPULATION,
-          cout << "Copy constructor of Population is called\n" << endl);
+          cout << "Copy constructor of population is called\n" << endl);
 
         try
         {
@@ -252,9 +242,9 @@ namespace simuPOP
         {
           cout << "You are creating a population of size " << m_popSize << endl
             << " which requires approximately " << static_cast<double>(m_popGenoSize)/1024/1024
-            + static_cast<double>(m_popSize) * sizeof( IndType ) /1024/1024 << "M RAM." << endl;
+            + static_cast<double>(m_popSize) * sizeof( individual ) /1024/1024 << "M RAM." << endl;
           cout << "Memory allocation fail. A population of size 1 is created." << endl;
-          *this = Population(0);
+          *this = population(0);
           throw OutOfMemory("Memory allocation fail");
         }
 
@@ -265,7 +255,7 @@ namespace simuPOP
         setGenoStruIdx(rhs.genoStruIdx());
 
         // copy genotype one by one so individual genoPtr will not
-        // point outside of subPopulation region.
+        // point outside of subpopulation region.
         GenoIterator ptr = m_genotype.begin();
         UINT step = this->genoSize();
         for(ULONG i=0; i< m_popSize; ++i, ptr+=step)
@@ -273,7 +263,7 @@ namespace simuPOP
           m_inds[i].setGenoPtr( ptr );
           m_inds[i].copyFrom( rhs.m_inds[i]);
         }
-        IndType::clearShallowCopiedFlag();
+        individual::clearShallowCopiedFlag();
 
         // copy ancestral populations
         try
@@ -285,8 +275,8 @@ namespace simuPOP
           {
             popData& lp = m_ancestralPops[ap];
             const popData& rp = rhs.m_ancestralPops[ap];
-            vector<IndType>& linds = lp.m_inds;
-            const vector<IndType>& rinds = rp.m_inds;
+            vector<individual>& linds = lp.m_inds;
+            const vector<individual>& rinds = rp.m_inds;
             GenoIterator lg = lp.m_genotype.begin();
             constGenoIterator rg = rp.m_genotype.begin();
             ULONG ps = rinds.size();
@@ -310,9 +300,9 @@ namespace simuPOP
       }
 
       ///
-      Population& clone(bool keepAncestralPops=true) const
+      population& clone(bool keepAncestralPops=true) const
       {
-        Population& p = *new Population<IndType>(*this);
+        population& p = *new population(*this);
         if( keepAncestralPops == false)
           p.m_ancestralPops.clear();
         return p;
@@ -320,7 +310,7 @@ namespace simuPOP
 
       /// SWAP population
       /// swap the content of two populations
-      void swap(Population& rhs)
+      void swap(population& rhs)
       {
         GenoStruTrait::swap(rhs);
         std::swap(m_popSize, rhs.m_popSize);
@@ -341,11 +331,11 @@ namespace simuPOP
       }
 
       /// destroy a population
-      ~Population()
+      ~population()
       {
 
         DBG_DO(DBG_POPULATION,
-          cout << "Destructor of Population is called" << endl);
+          cout << "Destructor of population is called" << endl);
 
         // geno structure is shared so will not be removed.
       }
@@ -353,12 +343,12 @@ namespace simuPOP
       // allow str(population) to get something better looking
       string __repr__()
       {
-        return "<simuPOP::Population of size " + toStr(popSize()) + ">";
+        return "<simuPOP::population of size " + toStr(popSize()) + ">";
       }
 
       // allow compaison of populations in python
       // only equal or unequal, no greater or less than
-      int __cmp__(const Population& rhs) const
+      int __cmp__(const population& rhs) const
       {
         if( genoStruIdx() != rhs.genoStruIdx() )
           return 1;
@@ -374,7 +364,7 @@ namespace simuPOP
         return 0;
       }
 
-      /// \brief set population/subPopulation given subpopulation sizes
+      /// \brief set population/subpopulation given subpopulation sizes
       ///
       /// \param subPopSize an array of subpopulation sizes
       ///    the population may or may not change according to
@@ -385,15 +375,10 @@ namespace simuPOP
       ///
       /// \return none
       /// \sa migration, mating
-      /// \note this function will be used when setting up new population
-      ///   during the creation of population or during mating (creation
-      ///   of scratch population), users are not supposed to call it
-      ///   directly. (that is why CPPONLY is set)
-      ///
       void setSubPopStru(const vectorlu& newSubPopSizes, bool allowPopSizeChange=false)
       {
         if( allowPopSizeChange && !m_fitness.empty() )
-          throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
+          throw SystemError("individual order can not be changed with non-empty fitness vector\n"
             "Please put selector after migrator or other such operators.");
 
         // case 1: remove all subpopulation structure
@@ -447,7 +432,7 @@ namespace simuPOP
             {
               cout << "You are creating a population of size " << m_popSize << endl
                 << " which requires approximately " << static_cast<double>(m_popGenoSize)/1024/1024
-                + static_cast<double>(m_popSize) * sizeof( IndType ) /1024/1024 << "M RAM." << endl;
+                + static_cast<double>(m_popSize) * sizeof( individual ) /1024/1024 << "M RAM." << endl;
               cout << "Memory allocation fail. " << endl;
               throw OutOfMemory("Memory allocation fail");
             }
@@ -460,7 +445,7 @@ namespace simuPOP
               m_inds[i].setGenoStruIdx(genoStruIdx());
               m_inds[i].setShallowCopied(false);
             }
-            IndType::clearShallowCopiedFlag();
+            individual::clearShallowCopiedFlag();
           }
         }
 
@@ -472,16 +457,16 @@ namespace simuPOP
 
       ///  number of sub populations.
       /**
-       \return number of subPopulations (>=1)
+       \return number of subpopulations (>=1)
        */
       UINT numSubPop() const
       {
         return m_numSubPop;
       }
 
-      /// get size of subPopulation subPop
-      /** \param subPop index of subPopulation (start from 0)
-          \return size of subPopulation subPop
+      /// get size of subpopulation subPop
+      /** \param subPop index of subpopulation (start from 0)
+          \return size of subpopulation subPop
       */
       ULONG subPopSize(UINT subPop) const
       {
@@ -490,8 +475,8 @@ namespace simuPOP
         return m_subPopSize[subPop];
       }
 
-      /// get size of all subPopulations
-      /** \return an array of size of subPopulations
+      /// get size of all subpopulations
+      /** \return an array of size of subpopulations
        */
       vectorlu subPopSizes()
       {
@@ -501,7 +486,7 @@ namespace simuPOP
 
       /** @name indices
         conversion between absoluate indices and relative indices.
-        return of chromomosome/subPopulation indices.
+        return of chromomosome/subpopulation indices.
       */
       //@{
 
@@ -514,11 +499,11 @@ namespace simuPOP
         return m_popSize;
       }
 
-      ///  absolute index of individual at a subPopulation
+      ///  absolute index of individual at a subpopulation
       /**
-        \param index index of individual at subPopulation subPop
+        \param index index of individual at subpopulation subPop
         \param subPop subpopulation index
-        \return absolute index of individual at subPopulation subPop
+        \return absolute index of individual at subpopulation subPop
         \sa subPopIndPair
       */
       ULONG absIndIndex(ULONG ind, UINT subPop) const
@@ -553,7 +538,7 @@ namespace simuPOP
         return loc;
       }
 
-      /// beginning index for subPopulation subPop
+      /// beginning index for subpopulation subPop
       /**
       \param subPop subpopulation index
       \result beginning index of this subpopulation
@@ -568,7 +553,7 @@ namespace simuPOP
         return m_subPopIndex[subPop];
       }
 
-      /// ending index for subPopulation subPop
+      /// ending index for subpopulation subPop
       /**
       \param subPop subpopulation index
       \result ending index of this subpopulation (not in this subpop)
@@ -590,26 +575,23 @@ namespace simuPOP
       */
       //@{
 
-      /// reference to individual ind
-      /**
-      \param ind absolute index of an individual
-      \return reference to an individual
-      */
-      IndType& individual(ULONG ind)
-      {
-        CHECKRANGEIND(ind);
-
-        return m_inds[ind];
-      }
-
-      /// refernce to individual ind in subPopulation subPop
+      /// refernce to individual ind in subpopulation subPop
       /** \param ind individual index within subPop
-          \param subPop subPopulation index
+          \param subPop subpopulation index
           \return reference to an individual
       */
-      IndType& individual(ULONG ind, UINT subPop)
+      individual& ind(ULONG ind, UINT subPop=0)
       {
-        CHECKRANGESUBPOPMEMBER(ind, subPop);
+#ifndef OPTIMIZED
+        if( subPop > 0 )
+        {
+          CHECKRANGESUBPOPMEMBER(ind, subPop);
+        }
+        else
+        {
+          CHECKRANGEIND(ind);
+        }
+#endif
 
         return m_inds[ subPopBegin(subPop) + ind];
       }
@@ -647,12 +629,12 @@ namespace simuPOP
       \param locus
         allele access, given locus, return
        the first allele. ptr++ go the next one.
-       default return the beginning of the first subPopulation,
+       default return the beginning of the first subpopulation,
        also the first of the whole population
 
       \note The order of alleles DOES NOT HAVE TO match the order of
-      individuals. Only the boundary of subPopulations will be respected.
-      Therefore, it is possible to access all alleles within an subPopulation
+      individuals. Only the boundary of subpopulations will be respected.
+      Therefore, it is possible to access all alleles within an subpopulation
       through such iterators.
       */
       GappedAlleleIterator alleleBegin(UINT locus)
@@ -676,7 +658,7 @@ namespace simuPOP
         CHECKRANGEABSLOCUS(locus);
         CHECKRANGESUBPOP(subPop);
 
-        if(IndType::shallowCopiedFlagOn())
+        if(individual::shallowCopiedFlagOn())
           adjustGenoPosition();
 
         return GappedAlleleIterator( m_genotype.begin() + m_subPopIndex[subPop]*genoSize() +
@@ -689,7 +671,7 @@ namespace simuPOP
         CHECKRANGEABSLOCUS(locus);
         CHECKRANGESUBPOP(subPop);
 
-        if(IndType::shallowCopiedFlagOn())
+        if(individual::shallowCopiedFlagOn())
           adjustGenoPosition();
         return GappedAlleleIterator( m_genotype.begin() + m_subPopIndex[subPop+1]*genoSize() +
           locus, totNumLoci());
@@ -707,23 +689,23 @@ namespace simuPOP
         return m_genotype.end();
       }
 
-      ///  CPPONLY allele iterator, go through all allels one by one in a subPopulation
+      ///  CPPONLY allele iterator, go through all allels one by one in a subpopulation
       GenoIterator genoBegin(UINT subPop)
       {
         CHECKRANGESUBPOP(subPop);
 
-        if(IndType::shallowCopiedFlagOn())
+        if(individual::shallowCopiedFlagOn())
           adjustGenoPosition();
 
         return m_genotype.begin() + m_subPopIndex[subPop]*genoSize();
       }
 
-      ///  CPPONLY allele iterator in a subPopulation.
+      ///  CPPONLY allele iterator in a subpopulation.
       GenoIterator genoEnd(UINT subPop)
       {
         CHECKRANGESUBPOP(subPop);
 
-        if(IndType::shallowCopiedFlagOn())
+        if(individual::shallowCopiedFlagOn())
           adjustGenoPosition();
         return m_genotype.begin() + m_subPopIndex[subPop+1]*genoSize();
       }
@@ -765,7 +747,7 @@ namespace simuPOP
       /// their genotypes.
       PyObject* arrGenotype()
       {
-        if(IndType::shallowCopiedFlagOn())
+        if(individual::shallowCopiedFlagOn())
           // adjust position. deep=true
           adjustGenoPosition(true);
 
@@ -779,7 +761,7 @@ namespace simuPOP
       PyObject* arrGenotype(UINT subPop)
       {
         CHECKRANGESUBPOP(subPop);
-        if(IndType::shallowCopiedFlagOn())
+        if(individual::shallowCopiedFlagOn())
           // adjust position. deep=true
           adjustGenoPosition(true);
 
@@ -789,7 +771,7 @@ namespace simuPOP
       //@}
 
       /** @name utility functions
-       set subPopulation, save and load etc.
+       set subpopulation, save and load etc.
       */
       //@{
 
@@ -800,7 +782,7 @@ namespace simuPOP
         // regardness of info type, treat it as int.
         vectori val(m_popSize);
         for(ULONG it=0; it < m_popSize; ++it)
-          val[it] = static_cast<int>(individual(it).info());
+          val[it] = static_cast<int>(ind(it).info());
         // this has to be changed according to info type.
         PyObject* var = setIntVectorVar(name, val);
         Py_INCREF(var);
@@ -814,7 +796,7 @@ namespace simuPOP
         // regardness of info type, treat it as int.
         vectori val(m_popSize);
         for(ULONG it=0; it < m_popSize; ++it)
-          val[it] = static_cast<int>(individual(it).affected());
+          val[it] = static_cast<int>(ind(it).affected());
         // this has to be changed according to info type.
         PyObject* var = setIntVectorVar(name, val);
         Py_INCREF(var);
@@ -832,18 +814,18 @@ namespace simuPOP
       setSubPopByIndInfo()
 
       \param info an array of info values, should have length of pop size
-      \sa Individual::setInfo, Individual::info, info
+      \sa individual::setInfo, individual::info, info
       */
-      void setIndInfo( std::vector<InfoType> info)
+      void setIndInfo( const vectori& info)
       {
         DBG_ASSERT( info.size() == m_popSize, ValueError,
           "Info should have the same length as pop size");
 
         for(ULONG it=0; it < m_popSize; ++it)
-          individual(it).setInfo( info[it] );
+          ind(it).setInfo( static_cast<InfoType>(info[it]) );
       }
 
-      /// set individual info with their subPopulation id.
+      /// set individual info with their subpopulation id.
       /**
       set individual info by subpop id.
       */
@@ -854,7 +836,7 @@ namespace simuPOP
             it -> setInfo(i);
       }
 
-      /// adjust subPopulation according to individual info values
+      /// adjust subpopulation according to individual info values
       /** assume individual has subpop index in their info value and put
       them into corresponding subpopulations.
       \param info optional info that will be used to set sub pop
@@ -868,7 +850,7 @@ namespace simuPOP
           DBG_ASSERT( info.size() == m_popSize, ValueError,
             "Info should have the same length as pop size");
           for(ULONG it=0; it < m_popSize; ++it)
-            individual(it).setInfo( info[it] );
+            ind(it).setInfo( info[it] );
         }
 
         DBG_DO(DBG_POPULATION, cout << "Sorting individuals."<< endl);
@@ -896,7 +878,7 @@ namespace simuPOP
           // allocate new genotype and inds
           ULONG newPopGenoSize = genoSize() * newPopSize;
           vectora newGenotype(newPopGenoSize);
-          vector<IndType> newInds(newPopSize);
+          vector<individual> newInds(newPopSize);
 
           DBG_ASSERT( indEnd()== newPopSize+it, SystemError,
             "Pointer misplaced. ");
@@ -1050,7 +1032,7 @@ namespace simuPOP
       void removeSubPops(const vectoru& subPops=vectoru(), bool shiftSubPopID=true, bool removeEmptySubPops=false)
       {
         if( ! m_fitness.empty() )
-          throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
+          throw SystemError("individual order can not be changed with non-empty fitness vector\n"
             "Please put selector after migrator or other such operators.");
 
 #ifndef OPTIMIZED
@@ -1099,20 +1081,20 @@ namespace simuPOP
       void removeIndividuals(const vectoru& inds=vectoru(), int subPop=-1, bool removeEmptySubPops=false)
       {
         if( ! m_fitness.empty() )
-          throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
+          throw SystemError("individual order can not be changed with non-empty fitness vector\n"
             "Please put selector after migrator or other such operators.");
 
         setIndInfoWithSubPopID();
         if( subPop == -1 )
         {
           for(size_t i = 0; i < inds.size(); ++i)
-            individual(inds[i]).setInfo(-1);      // remove
+            ind(inds[i]).setInfo(-1);             // remove
         }
         else
         {
           for(size_t i = 0; i < inds.size(); ++i)
                                                   // remove
-            individual(inds[i], subPop).setInfo(-1);
+            ind(inds[i], subPop).setInfo(-1);
         }
 
         int oldNumSP = numSubPop();
@@ -1184,7 +1166,7 @@ namespace simuPOP
         bool removeEmptySubPops=false)
       {
         if( ! m_fitness.empty() )
-          throw SystemError("Individual order can not be changed with non-empty fitness vector\n"
+          throw SystemError("individual order can not be changed with non-empty fitness vector\n"
             "Please put selector after migrator or other such operators.");
 
         DBG_FAILIF( order.empty() && rank.empty(), ValueError,
@@ -1226,11 +1208,11 @@ namespace simuPOP
       }
 
       /** form a new population according to info, info can be given directly */
-      Population<Ind>& newPopByIndInfo(bool keepAncestralPops=true,
+      population& newPopByIndInfo(bool keepAncestralPops=true,
         vectori info=vectori(), bool removeEmptySubPops=false)
       {
         // copy the population over (info is also copied)
-        Population<Ind>& pop = this->clone(keepAncestralPops);
+        population& pop = this->clone(keepAncestralPops);
         // and shrink them
         pop.setSubPopByIndInfo(info);
         if( removeEmptySubPops)
@@ -1337,7 +1319,7 @@ namespace simuPOP
         {
           popData& p = m_ancestralPops[ap];
           // set pointers
-          vector<IndType>& inds = p.m_inds;
+          vector<individual>& inds = p.m_inds;
           ULONG ps = inds.size();
           vectora newGenotype(ps*pEnd*newTotNumLoci);
           ptr = newGenotype.begin();
@@ -1365,12 +1347,12 @@ namespace simuPOP
       }
 
       /** get a new population with selected loci */
-      Population<Ind>& newPopWithPartialLoci(
+      population& newPopWithPartialLoci(
         const vectoru& remove=vectoru(),
         const vectoru& keep=vectoru())
       {
         // copy the population over (info is also copied)
-        Population<Ind>* pop = new Population<Ind>(*this);
+        population* pop = new population(*this);
         pop->removeLoci(remove, keep);
         return *pop;
       }
@@ -1395,7 +1377,7 @@ namespace simuPOP
       // if fixRhs is false, leave rhs in broken status
       // if force is true, push current population
       // regardless of m_ancestray settings.
-      void pushAndDiscard(Population<Ind>& rhs, bool force=false)
+      void pushAndDiscard(population& rhs, bool force=false)
       {
         // time consuming!
         DBG_ASSERT( rhs.genoStruIdx() == genoStruIdx(), ValueError,
@@ -1558,7 +1540,7 @@ namespace simuPOP
       }
 
       /// compare two populations
-      bool equalTo(const Population<Ind>& rhs)
+      bool equalTo(const population& rhs)
       {
         return(
           genoStru() == rhs.genoStru() &&
@@ -1570,7 +1552,7 @@ namespace simuPOP
 
       /// CPPONLY
       /// some iterators requires that genotype information is within
-      /// each subPopulation. We need to adjust genotypic info to
+      /// each subpopulation. We need to adjust genotypic info to
       /// obey this.
       void adjustGenoPosition(bool deep=false);
 
@@ -1958,7 +1940,7 @@ namespace simuPOP
         void save(Archive &ar, const UINT version) const
       {
         // deep adjustment: everyone in order
-        const_cast<Population*>(this)->adjustGenoPosition(true);
+        const_cast<population*>(this)->adjustGenoPosition(true);
 
         ar & make_nvp("libraryMaxAllele", MaxAllele);
         DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
@@ -1975,14 +1957,14 @@ namespace simuPOP
         ar & make_nvp("numOfAncestralPops", sz);
         for(size_t i=0; i< m_ancestralPops.size(); ++i)
         {
-          const_cast<Population*>(this)->useAncestralPop(i+1);
+          const_cast<population*>(this)->useAncestralPop(i+1);
           // need to make sure ancestral pop also in order
-          const_cast<Population*>(this)->adjustGenoPosition(true);
+          const_cast<population*>(this)->adjustGenoPosition(true);
           ar & make_nvp("subPop_sizes", m_subPopSize);
           ar & make_nvp("genotype", m_genotype);
           ar & make_nvp("individuals", m_inds);
         }
-        const_cast<Population*>(this)->useAncestralPop(0);
+        const_cast<population*>(this)->useAncestralPop(0);
 
         // save shared variables as string.
         // note that many format are not supported.
@@ -1994,7 +1976,7 @@ namespace simuPOP
         }
         catch(...)
         {
-          cout << "Warning: shared variable is not saved correctly.\nPopulation should still be usable." << endl;
+          cout << "Warning: shared variable is not saved correctly.\npopulation should still be usable." << endl;
         }
       }
 
@@ -2029,7 +2011,7 @@ namespace simuPOP
         if( m_popSize != m_inds.size() )
         {
           cout << "Number of individuals loaded" << m_inds.size() << endl;
-          cout << "Population size" << m_popSize << endl;
+          cout << "population size" << m_popSize << endl;
           throw ValueError("Number of individuals does not match population size.\n"
             "Please use the same (binary, short or long) module to save and load files.");
         }
@@ -2070,7 +2052,7 @@ namespace simuPOP
           // now set pointers
           popData& p = m_ancestralPops.back();
           // set pointers
-          vector<IndType>& inds = p.m_inds;
+          vector<individual>& inds = p.m_inds;
           ULONG ps = inds.size();
           ptr = p.m_genotype.begin();
 
@@ -2094,7 +2076,7 @@ namespace simuPOP
         }
         catch(...)
         {
-          cout << "Warning: shared variable is not loaded correctly.\nPopulation should still be usable." << endl;
+          cout << "Warning: shared variable is not loaded correctly.\npopulation should still be usable." << endl;
         }
 
         // m_fitness was not saved
@@ -2107,10 +2089,10 @@ namespace simuPOP
       /// population size: number of individual
       ULONG m_popSize;
 
-      /// number of subPopulations
+      /// number of subpopulations
       UINT m_numSubPop;
 
-      /// size of each subPopulation
+      /// size of each subpopulation
       vectorlu m_subPopSize;
 
       ///  size of genotypic information of the whole poopulation
@@ -2123,7 +2105,7 @@ namespace simuPOP
       vectora m_genotype;
 
       /// individuals.
-      vector<IndType> m_inds;
+      vector<individual> m_inds;
 
       int m_ancestralDepth;
 
@@ -2139,7 +2121,7 @@ namespace simuPOP
 #endif
         vectorlu m_subPopSize;
         vectora m_genotype;
-        vector<IndType> m_inds;
+        vector<individual> m_inds;
       };
 
       std::deque<popData> m_ancestralPops;
@@ -2157,9 +2139,17 @@ namespace simuPOP
       vectorf m_fitness;
   };
 
+  /*
+  #ifndef SWIG
+    #ifndef _NO_SERIALIZATION_
+      // version 0:
+      BOOST_CLASS_VERSION(pop, 0)
+      #endif
+  #endif
+  */
+
   /// CPPONLY
-  template< class Ind>
-    void Population<Ind>::adjustGenoPosition(bool deep)
+  void population::adjustGenoPosition(bool deep)
   {
 
     // everyone in strict order
@@ -2178,7 +2168,7 @@ namespace simuPOP
       // discard original genotype
       tmpGenotype.swap(m_genotype);
       // set geno pointer
-      IndType::clearShallowCopiedFlag();
+      individual::clearShallowCopiedFlag();
       return;
     }
 
@@ -2226,7 +2216,7 @@ namespace simuPOP
 
       m_inds[ scIndex[0] ].setShallowCopied(false);
       m_inds[ scIndex[1] ].setShallowCopied(false);
-      IndType::clearShallowCopiedFlag();
+      individual::clearShallowCopiedFlag();
       return;
     }
 
@@ -2256,7 +2246,20 @@ namespace simuPOP
       m_inds[ scIndex[i] ].setShallowCopied(false);
     }
 
-    IndType::clearShallowCopiedFlag();
+    individual::clearShallowCopiedFlag();
+  }
+
+  population& LoadPopulation(const string& file,
+    const string& format="auto")
+  {
+#ifndef _NO_SERIALIZATION_
+    population *p = new population(1);
+    p->loadPopulation(file, format);
+    return *p;
+#else
+    cout << "This feature is not supported in this platform" << endl;
+    return *new population(1);
+#endif
   }
 
 }

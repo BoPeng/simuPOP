@@ -157,13 +157,13 @@ namespace simuPOP
 {
 
   /// CPPONLY operator to tell the affected status of an individual
-  template<class IndType>
+  template<class individual>
     class isAffected
   {
     public:
       isAffected(){};
 
-      bool operator() ( const IndType& ind)
+      bool operator() ( const individual& ind)
       {
         return ind.affected();
       }
@@ -173,7 +173,7 @@ namespace simuPOP
 
   The reason why this iterator is called GappedAlleleIterator is that
   when alleles at the same locus are placed in equal distance ( a strategy
-  currently employeed by Population ), this iterator can
+  currently employeed by population ), this iterator can
   iterate through all alleles quickly by moving internal pointer
   \e m_step steps a time.
 
@@ -611,145 +611,146 @@ namespace simuPOP
   // A macro to call a python function and return value
   // ////////////////////////////////////////////////////////////
 #define PyCallFunc(func, format, param, retValue, converter) \
-  { /* use local scope variable to avoid redefinition */ \
-    PyObject* arglist = Py_BuildValue(format, param); \
-    PyObject* pyResult = PyEval_CallObject(func, arglist); \
-    Py_XDECREF(arglist); \
-    if( pyResult == NULL) \
-    { \
-       PyErr_Print(); \
-       throw ValueError("Function call failed."); \
-    } \
-    converter(pyResult, retValue); \
-    Py_DECREF(pyResult);  \
-  }
-  
-#define PyCallFunc2(func, format, param1, param2, retValue, converter) \
-  { /* use local scope variable to avoid redefinition */ \
-    PyObject* arglist = Py_BuildValue(format, param1, param2); \
-    PyObject* pyResult = PyEval_CallObject(func, arglist); \
-    Py_XDECREF(arglist); \
-    if( pyResult == NULL) \
-    { \
-       PyErr_Print(); \
-       throw ValueError("Function call failed."); \
-    } \
-    converter(pyResult, retValue); \
-    Py_DECREF(pyResult);  \
-  }
+{ \
+  /* use local scope variable to avoid redefinition */ \
+  PyObject* arglist = Py_BuildValue(format, param); \
+  PyObject* pyResult = PyEval_CallObject(func, arglist); \
+  Py_XDECREF(arglist); \
+  if( pyResult == NULL) \
+  { \
+    PyErr_Print(); \
+    throw ValueError("Function call failed."); \
+  } \
+  converter(pyResult, retValue); \
+  Py_DECREF(pyResult); \
+}
 
+#define PyCallFunc2(func, format, param1, param2, retValue, converter) \
+{ \
+  /* use local scope variable to avoid redefinition */ \
+  PyObject* arglist = Py_BuildValue(format, param1, param2); \
+  PyObject* pyResult = PyEval_CallObject(func, arglist); \
+  Py_XDECREF(arglist); \
+  if( pyResult == NULL) \
+  { \
+    PyErr_Print(); \
+    throw ValueError("Function call failed."); \
+  } \
+  converter(pyResult, retValue); \
+  Py_DECREF(pyResult); \
+}
 
 #define PyCallFunc3(func, format, param1, param2, param3, retValue, converter) \
-  { /* use local scope variable to avoid redefinition */ \
-    PyObject* arglist = Py_BuildValue(format, param1, param2, param3); \
-    PyObject* pyResult = PyEval_CallObject(func, arglist); \
-    Py_XDECREF(arglist); \
-    if( pyResult == NULL) \
-    { \
-       PyErr_Print(); \
-       throw ValueError("Function call failed."); \
-    } \
-    converter(pyResult, retValue); \
-    Py_DECREF(pyResult);  \
-  }
+{ \
+  /* use local scope variable to avoid redefinition */ \
+  PyObject* arglist = Py_BuildValue(format, param1, param2, param3); \
+  PyObject* pyResult = PyEval_CallObject(func, arglist); \
+  Py_XDECREF(arglist); \
+  if( pyResult == NULL) \
+  { \
+    PyErr_Print(); \
+    throw ValueError("Function call failed."); \
+  } \
+  converter(pyResult, retValue); \
+  Py_DECREF(pyResult); \
+}
 
+        // ////////////////////////////////////////////////////////////
+        // Expression evaluation
+        // ////////////////////////////////////////////////////////////
 
-  // ////////////////////////////////////////////////////////////
-  // Expression evaluation
-  // ////////////////////////////////////////////////////////////
+        /**  \brief expression CPPONLY
 
-  /**  \brief expression CPPONLY
+        This class evaluate python expressions.
 
-  This class evaluate python expressions.
+        */
+        class Expression
+        {
+          public:
+        /// CPPONLY
+              Expression(const string& expr="", const string& stmts="",
+                PyObject* locals=NULL)
+                : m_expr(NULL), m_stmts(NULL), m_locals(locals)
+              {
+                if(m_locals == NULL)
+                  m_locals = mainVars().dict();
 
-  */
-  class Expression
-  {
-    public:
-      /// CPPONLY
-      Expression(const string& expr="", const string& stmts="",
-        PyObject* locals=NULL)
-        : m_expr(NULL), m_stmts(NULL), m_locals(locals)
-      {
-        if(m_locals == NULL)
-          m_locals = mainVars().dict();
+          // empty expression
+          if( expr.empty() && stmts.empty())
+            return;
 
-        // empty expression
-        if( expr.empty() && stmts.empty())
-          return;
+          compileExpr(expr);
+          compileStmts(stmts);
+        }
 
-        compileExpr(expr);
-        compileStmts(stmts);
-      }
+        /// CPPONLY
+        ~Expression();
 
-      /// CPPONLY
-      ~Expression();
+        /// Copy constructor, need to be defined because of ref count issue.
+        Expression(const Expression& rhs);
 
-      /// Copy constructor, need to be defined because of ref count issue.
-      Expression(const Expression& rhs);
+        /// CPPONLY
+        /// set local dictionary
+        void setLocalDict(PyObject* dict)
+        {
+          m_locals = dict;
+        }
 
-      /// CPPONLY
-      /// set local dictionary
-      void setLocalDict(PyObject* dict)
-      {
-        m_locals = dict;
-      }
+        /// CPPONLY
+        bool empty()
+        {
+          return m_expr==NULL && m_stmts==NULL;
+        }
 
-      /// CPPONLY
-      bool empty()
-      {
-        return m_expr==NULL && m_stmts==NULL;
-      }
+        /// CPPONLY
+        void setExpr(const string& expr="")
+        {
+          compileExpr(expr);
+        }
 
-      /// CPPONLY
-      void setExpr(const string& expr="")
-      {
-        compileExpr(expr);
-      }
+        /// CPPONLY
+        void setStmts(const string& stmts="")
+        {
+          compileStmts(stmts);
+        }
 
-      /// CPPONLY
-      void setStmts(const string& stmts="")
-      {
-        compileStmts(stmts);
-      }
+        /// CPPONLY evaluate with PyObject* output
+        PyObject* evaluate();
 
-      /// CPPONLY evaluate with PyObject* output
-      PyObject* evaluate();
+        /// CPPONLY  return bool value
+        bool valueAsBool();
 
-      /// CPPONLY  return bool value
-      bool valueAsBool();
+        /// CPPONLY  return int value
+        int valueAsInt();
 
-      /// CPPONLY  return int value
-      int valueAsInt();
+        /// CPPONLY  return double value
+        double valueAsDouble();
 
-      /// CPPONLY  return double value
-      double valueAsDouble();
+        /// CPPONLY  return string value
+        string valueAsString();
 
-      /// CPPONLY  return string value
-      string valueAsString();
+        /// CPPONLY  return array value
+        vectorf valueAsArray();
 
-      /// CPPONLY  return array value
-      vectorf valueAsArray();
+        /// CPPONLY  return dictionary value
+        strDict valueAsStrDict();
 
-      /// CPPONLY  return dictionary value
-      strDict valueAsStrDict();
+        /// CPPONLY  return dictionary value
+        intDict valueAsIntDict();
 
-      /// CPPONLY  return dictionary value
-      intDict valueAsIntDict();
+      private:
+        /// compile expression into byte code
+        void compileExpr(const string& expr);
 
-    private:
-      /// compile expression into byte code
-      void compileExpr(const string& expr);
+        /// compile statements into byte code
+        void compileStmts(const string& stmts);
 
-      /// compile statements into byte code
-      void compileStmts(const string& stmts);
+        /// compiled code
+        PyObject* m_expr, *m_stmts;
 
-      /// compiled code
-      PyObject* m_expr, *m_stmts;
-
-      /// local namespace
-      PyObject* m_locals;
-  };
+        /// local namespace
+        PyObject* m_locals;
+    };
 
   //////////////////////////////////////////////////////////////
   /// Stream element, can be of different types
@@ -1101,17 +1102,17 @@ namespace simuPOP
   };
 
   // weighted sampling using Walker's alias algorithm
-  class WeightedSampler
+  class Weightedsampler
   {
     public:
       // set up AliasMethod table
-      WeightedSampler(RNG& rng, const vectorf& weight=vectorf(), bool fast=true )
+      Weightedsampler(RNG& rng, const vectorf& weight=vectorf(), bool fast=true )
         :m_RNG(&rng), m_q(0), m_a(0)              // , m_fast(fast)
       {
         set(weight);
       };
 
-      ~WeightedSampler(){};
+      ~Weightedsampler(){};
 
       void set(const vectorf& weight);
 
@@ -1425,7 +1426,6 @@ namespace simuPOP
   /// get a null stream that discard everything
   ostream& cnull();
 
-  /// CPPONLY
   /// set standard output to (default standard Python output)
   void setLogOutput(const string filename="");
 }

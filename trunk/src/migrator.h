@@ -25,7 +25,7 @@
 #define _MIGRATOR_H
 /**
 \file
-\brief head file of class Migrator:public Operator
+\brief head file of class migrator:public Operator
 */
 #include "operator.h"
 #include <list>
@@ -48,8 +48,8 @@ namespace simuPOP
   /**
   @author Bo Peng
   */
-  template<class Pop>
-    class Migrator: public Operator<Pop>
+
+  class migrator: public Operator
   {
 
     public:
@@ -81,11 +81,11 @@ namespace simuPOP
 
       which migrate from subpop a to b with given rate r.
       */
-      Migrator( const matrix& rate, int mode = MigrByProbability,
+      migrator( const matrix& rate, int mode = MigrByProbability,
         vectoru fromSubPop=vectoru(), vectoru toSubPop=vectoru(),
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp),
+        : Operator( "", "", stage, begin, end, step, at, rep, grp),
         m_rate(0), m_mode(0), m_from(fromSubPop), m_to(toSubPop)
       {
 
@@ -99,11 +99,11 @@ namespace simuPOP
       };
 
       /// destructor
-      virtual ~Migrator(){};
+      virtual ~migrator(){};
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new Migrator<Pop>(*this);
+        return new migrator(*this);
       }
 
       /// return rate
@@ -188,16 +188,16 @@ namespace simuPOP
         }
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         // set info of individual
         pop.setIndInfoWithSubPopID();
 
-        typename Pop::IndIterator ind, indEd;
+        population::IndIterator ind, indEd;
 
         vectorlu toIndices(0);
 
-        WeightedSampler ws(rng());
+        Weightedsampler ws(rng());
 
         for(UINT from=0, fromEnd=m_from.size(); from < fromEnd; ++from)
         {
@@ -293,17 +293,17 @@ namespace simuPOP
 
   /** \brief migrate using given info vector
 
-  You can use directMigrator to accomplish any migration: that is to say
+  You can use directmigrator to accomplish any migration: that is to say
   you directly specify subpopulation numbers for each individual and
   this operator will do the rest.
 
   */
-  template<class Pop>
-    class PyMigrator: public Operator<Pop>
+
+  class pyMigrator: public Operator
   {
 
     public:
-      /// create a directMigrator
+      /// create a directmigrator
       /**
       This operator accept a one-dimensional Numeric Python int array. (created by Numeric.array ).
       The contend of the array will be considered as subpopulation id.
@@ -313,10 +313,10 @@ namespace simuPOP
       \param stage is default to PreMating, please refer to help(baseOperator.__init__)
       for details about other parameters.
       */
-      PyMigrator( PyObject* subPopID=NULL,
+      pyMigrator( PyObject* subPopID=NULL,
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp)
+        : Operator( "", "", stage, begin, end, step, at, rep, grp)
       {
         // carray of python list/typle
         DBG_ASSERT( PyObj_Is_IntNumArray(subPopID) ||
@@ -327,25 +327,25 @@ namespace simuPOP
       }
 
       /// destructor
-      virtual ~PyMigrator()
+      virtual ~pyMigrator()
       {
         if( m_subPopID != NULL)
           Py_DECREF(m_subPopID);
       }
 
       /// CPPONLY
-      PyMigrator(const PyMigrator& rhs):Operator<Pop>(rhs), m_subPopID(rhs.m_subPopID)
+      pyMigrator(const pyMigrator& rhs):Operator(rhs), m_subPopID(rhs.m_subPopID)
       {
         if( m_subPopID != NULL)
           Py_INCREF(m_subPopID);
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new PyMigrator<Pop>(*this);
+        return new pyMigrator(*this);
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         if(PyObj_Is_IntNumArray(m_subPopID) )
         {
@@ -357,7 +357,7 @@ namespace simuPOP
           long * id = reinterpret_cast<long*>(NumArray_Data(m_subPopID));
 
           for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
-            pop.individual(i).setInfo( id[i] );
+            pop.ind(i).setInfo( id[i] );
         }
         else
         {
@@ -370,7 +370,7 @@ namespace simuPOP
           for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
           {
             PyObj_As_Int(PySequence_GetItem(m_subPopID, i), id);
-            pop.individual(i).setInfo(id);
+            pop.ind(i).setInfo(id);
           }
         }
         // do migration.
@@ -392,8 +392,8 @@ namespace simuPOP
   /** \brief
    split subpopulation
    */
-  template<class Pop>
-    class SplitSubPop: public Operator<Pop>
+
+  class splitSubPop: public Operator
   {
 
     public:
@@ -406,11 +406,11 @@ namespace simuPOP
          as subPop or proportions. SInce subpop with negative id will be removed.
          You can remove part of a subpop by setting a new negative id.
       */
-      SplitSubPop( UINT which=0,  vectorlu sizes=vectorlu(), vectorf proportions=vectorf(),
+      splitSubPop( UINT which=0,  vectorlu sizes=vectorlu(), vectorf proportions=vectorf(),
         vectoru subPopID=vectoru(),
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp),
+        : Operator( "", "", stage, begin, end, step, at, rep, grp),
         m_which(which), m_subPopSizes(sizes), m_proportions(proportions), m_subPopID(subPopID)
       {
         DBG_FAILIF( sizes.empty() && proportions.empty(), ValueError,
@@ -420,16 +420,16 @@ namespace simuPOP
       }
 
       /// destructor
-      virtual ~SplitSubPop()
+      virtual ~splitSubPop()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new SplitSubPop<Pop>(*this);
+        return new splitSubPop(*this);
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         if( !m_subPopSizes.empty())
           pop.splitSubPop(m_which, m_subPopSizes, m_subPopID);
@@ -461,8 +461,8 @@ namespace simuPOP
   /** \brief
     merge subpopulations
     */
-  template<class Pop>
-    class MergeSubPops: public Operator<Pop>
+
+  class mergeSubPops: public Operator
   {
 
     public:
@@ -470,25 +470,25 @@ namespace simuPOP
       /**
       \param subPops subpops to be merged, default to all subpops.
       */
-      MergeSubPops( vectoru subPops=vectoru(), bool removeEmptySubPops=false,
+      mergeSubPops( vectoru subPops=vectoru(), bool removeEmptySubPops=false,
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
-        : Operator<Pop>( "", "", stage, begin, end, step, at, rep, grp),
+        : Operator( "", "", stage, begin, end, step, at, rep, grp),
         m_subPops(subPops), m_removeEmptySubPops(removeEmptySubPops)
       {
       }
 
       /// destructor
-      virtual ~MergeSubPops()
+      virtual ~mergeSubPops()
       {
       }
 
-      virtual Operator<Pop>* clone() const
+      virtual Operator* clone() const
       {
-        return new MergeSubPops<Pop>(*this);
+        return new mergeSubPops(*this);
       }
 
-      virtual bool apply(Pop& pop)
+      virtual bool apply(population& pop)
       {
         pop.mergeSubPops(m_subPops, m_removeEmptySubPops);
         return true;

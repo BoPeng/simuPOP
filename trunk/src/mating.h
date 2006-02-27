@@ -25,7 +25,7 @@
 #define _MATING_H
 /**
 \file
-\brief head file of class Mating and its subclasses
+\brief head file of class mating and its subclasses
 */
 #include "simupop_cfg.h"
 #include "utility.h"
@@ -40,12 +40,12 @@ using std::string;
 namespace simuPOP
 {
   /**
-  The Mating classes describe various mating scheme --- a required parameter
-  of Simulator.
+  The mating classes describe various mating scheme --- a required parameter
+  of simulator.
 
   */
-  template<class Pop>
-    class Mating
+
+  class mating
   {
     public:
 
@@ -65,13 +65,13 @@ namespace simuPOP
        -  need certain types of individual (age, sex etc)
        -  need resizeable population...
       */
-      virtual bool isCompatible( Pop& pop)
+      virtual bool isCompatible( population& pop)
       {
         return true;
       }
 
       /// constructor
-      Mating(double numOffspring=1.0,
+      mating(double numOffspring=1.0,
         PyObject* numOffspringFunc=NULL,
         UINT maxNumOffspring = 0,
         UINT mode=MATE_NumOffspring,
@@ -111,7 +111,7 @@ namespace simuPOP
           ValueError, "If mode is MATE_BinomialDistribution, maxNumOffspring should be > 1");
       }
 
-      Mating(const Mating& rhs)
+      mating(const mating& rhs)
         : m_numOffspring(rhs.m_numOffspring),
         m_numOffspringFunc(rhs.m_numOffspringFunc),
         m_maxNumOffspring(rhs.m_maxNumOffspring),
@@ -127,7 +127,7 @@ namespace simuPOP
       }
 
       /// destructor
-      virtual ~Mating()
+      virtual ~mating()
       {
         if( m_subPopSizeFunc != NULL)
           Py_DECREF(m_subPopSizeFunc);
@@ -142,25 +142,25 @@ namespace simuPOP
 
       For example:
       \code
-        foo( mate = Mating() )
-        // in C++ implementation, foo keeps a pointer to Mating()
-        // Mating * p = mate;
+        foo( mate = mating() )
+        // in C++ implementation, foo keeps a pointer to mating()
+        // mating * p = mate;
         foo.p->fun()
       \endcode
-      will fail since Mating() is released after the first line
+      will fail since mating() is released after the first line
       being executed.
 
       With the help of clone() const, the C++ implementation can avoid this problem by
       \code
-      foo( Mating* mate = &Mating() )
+      foo( mating* mate = &mating() )
       {
-      Mating * p = mate.clone() const;
+      mating * p = mate.clone() const;
       }
       \endcode
       */
-      virtual Mating* clone() const
+      virtual mating* clone() const
       {
-        return new Mating(*this);
+        return new mating(*this);
       }
 
       /// return name of the mating type
@@ -170,18 +170,18 @@ namespace simuPOP
         return "<simuPOP::generic mating scheme>";
       }
 
-      virtual void submitScratch(Pop& pop, Pop& scratch)
+      virtual void submitScratch(population& pop, population& scratch)
       {
       }
 
-      /// mate: This is not supposed to be called for base Mating class.
+      /// mate: This is not supposed to be called for base mating class.
       /**
-      \param pop Population
+      \param pop population
       \param scratch scratch population
       \param ops during mating operators
       \return return false when mating fail.
       */
-      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop>* >& ops, bool submit)
+      virtual bool mate( population& pop, population& scratch, vector<Operator* >& ops, bool submit)
       {
         throw SystemError("You are not supposed to call base mating scheme.");
       }
@@ -251,10 +251,10 @@ namespace simuPOP
     public:
       /// whether or not to generate offspring genotype
       /// this is true when none of the during-mating operator can do this.
-      bool formOffGenotype(const vector<Operator<Pop>* >& ops)
+      bool formOffGenotype(const vector<Operator* >& ops)
       {
         bool res = true;
-        for( typename vector<Operator<Pop> *>::const_iterator iop = ops.begin(),
+        for( vector<Operator *>::const_iterator iop = ops.begin(),
           iopEnd = ops.end(); iop != iopEnd;  ++iop)
         {
           if( (*iop)->formOffGenotype() )
@@ -270,7 +270,7 @@ namespace simuPOP
       }
 
       /// dealing with pop/subPop size change, copy of structure etc.
-      void prepareScratchPop(Pop& pop, Pop& scratch)
+      void prepareScratchPop(population& pop, population& scratch)
       {
         /// force new subPop size?
         if( m_subPopSize.empty() && m_subPopSizeExpr.empty()
@@ -289,7 +289,7 @@ namespace simuPOP
             ValueError, "number of subPopulaitons must agree. \n Pre: "
             + toStr( pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
         }
-        else if(! m_subPopSizeExpr.empty())       // evaluate subPopulation size
+        else if(! m_subPopSizeExpr.empty())       // evaluate subpopulation size
         {
           m_subPopSizeExpr.setLocalDict( pop.dict());
           vectorf sizef = m_subPopSizeExpr.valueAsArray();
@@ -356,7 +356,7 @@ namespace simuPOP
       ///
       bool m_firstOffspring;
 
-      /// new subPopulation size. mostly used to 'keep' subPopsize
+      /// new subpopulation size. mostly used to 'keep' subPopsize
       /// after migration.
       vectorlu m_subPopSize;
 
@@ -376,28 +376,28 @@ namespace simuPOP
      During mating operator will be applied, but
      the return values are not checked.
   */
-  template<class Pop>
-    class NoMating: public Mating<Pop>
+
+  class noMating: public mating
   {
     public:
 
       /// constructor, no new subPopsize parameter
-      NoMating()
-        :Mating<Pop>(1, NULL, 0, MATE_NumOffspring,
+      noMating()
+        :mating(1, NULL, 0, MATE_NumOffspring,
         vectorlu(),"",NULL)
       {
 
       }
 
       /// destructor
-      ~NoMating(){}
+      ~noMating(){}
 
-      /// clone() const. The same as Mating::clone() const.
-      /** \sa Mating::clone() const
+      /// clone() const. The same as mating::clone() const.
+      /** \sa mating::clone() const
        */
-      virtual Mating<Pop>* clone() const
+      virtual mating* clone() const
       {
-        return new NoMating(*this);
+        return new noMating(*this);
       }
 
       /// return name of the mating type
@@ -406,7 +406,7 @@ namespace simuPOP
         return "<simuPOP::no mating>";
       }
 
-      virtual void submitScratch(Pop& pop, Pop& scratch)
+      virtual void submitScratch(population& pop, population& scratch)
       {
       }
 
@@ -416,14 +416,14 @@ namespace simuPOP
        All individuals will be passed to during mating operators but
        no one will die (ignore during mating failing signal).
       */
-      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops, bool submit)
+      virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
       {
         // apply during mating operators
         if( ! ops.empty() )
         {
-          for(typename Pop::IndIterator it = pop.indBegin(), itEnd = pop.indEnd(); it != itEnd;  ++it)
+          for(population::IndIterator it = pop.indBegin(), itEnd = pop.indEnd(); it != itEnd;  ++it)
           {
-            for( typename vector<Operator<Pop> *>::iterator iop = ops.begin(), iopEnd = ops.end(); iop != iopEnd;  ++iop)
+            for( vector<Operator *>::iterator iop = ops.begin(), iopEnd = ops.end(); iop != iopEnd;  ++iop)
             {
               (*iop)->applyDuringMating(pop, it, NULL, NULL);
             }                                     // all during-mating operators
@@ -445,20 +445,20 @@ namespace simuPOP
     So this works just like a sexless random mating.
     If ploidy is one, this is chromosomal mating.
   */
-  template<class Pop>
-    class BinomialSelection: public Mating<Pop>
+
+  class binomialSelection: public mating
   {
     public:
 
       /// constructor
-      BinomialSelection(double numOffspring=1.,
+      binomialSelection(double numOffspring=1.,
         PyObject* numOffspringFunc=NULL,
         UINT maxNumOffspring=0,
         UINT mode=MATE_NumOffspring,
         vectorlu newSubPopSize=vectorlu(),
         string newSubPopSizeExpr="",
         PyObject* newSubPopSizeFunc=NULL)
-        :Mating<Pop>(numOffspring,
+        :mating(numOffspring,
         numOffspringFunc, maxNumOffspring, mode,
         newSubPopSize, newSubPopSizeExpr,
         newSubPopSizeFunc),
@@ -466,14 +466,14 @@ namespace simuPOP
         {}
 
       /// destructor
-      ~BinomialSelection(){}
+      ~binomialSelection(){}
 
-      /// clone() const. The same as Mating::clone() const.
-      /** \sa Mating::clone() const
+      /// clone() const. The same as mating::clone() const.
+      /** \sa mating::clone() const
        */
-      virtual Mating<Pop>* clone() const
+      virtual mating* clone() const
       {
-        return new BinomialSelection(*this);
+        return new binomialSelection(*this);
       }
 
       /// return name of the mating type
@@ -482,7 +482,7 @@ namespace simuPOP
         return "<simuPOP::binomial random selection>";
       }
 
-      virtual void submitScratch(Pop& pop, Pop& scratch)
+      virtual void submitScratch(population& pop, population& scratch)
       {
         pop.fitness().clear();
         // use scratch population,
@@ -497,7 +497,7 @@ namespace simuPOP
        \param ops during mating operators
        \return return false when mating fails.
       */
-      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops, bool submit)
+      virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
       {
         this->resetNumOffspring();
         // scrtach will have the right structure.
@@ -513,7 +513,7 @@ namespace simuPOP
         /// determine if mate() will generate offspring genotype
         bool formOffGeno = this->formOffGenotype(ops);
 
-        // for each subPopulation
+        // for each subpopulation
         for(UINT sp=0; sp < pop.numSubPop(); ++sp)
         {
           UINT spSize = pop.subPopSize(sp);
@@ -529,30 +529,30 @@ namespace simuPOP
           ULONG spIndEnd = scratch.subPopSize(sp);
           while( spInd < spIndEnd)
           {
-            typename Pop::IndType * parent;
+            individual * parent;
             // choose a parent
             if( !fitness.empty() )
-              parent = &pop.individual( m_sampler.get(), sp);
+              parent = &pop.ind( m_sampler.get(), sp);
             else
-              parent = &pop.individual( rng().randInt(spSize), sp);
+              parent = &pop.ind( rng().randInt(spSize), sp);
 
             // generate m_numOffspring offspring
             UINT numOS, numOSEnd;
             for(numOS=0, numOSEnd = this->numOffspring(pop.gen() ); numOS < numOSEnd;  numOS++)
             {
-              typename Pop::IndIterator it = scratch.indBegin(sp) + spInd++;
+              population::IndIterator it = scratch.indBegin(sp) + spInd++;
 
               if(  formOffGeno )
                 /// use deep copy!!!!!!!
                 it->copyFrom(*parent);
 
               // apply during mating operators
-              for( typename vector<Operator<Pop> *>::iterator iop = ops.begin(),
+              for( vector<Operator *>::iterator iop = ops.begin(),
                 iopEnd = ops.end(); iop != iopEnd;  ++iop)
               {
                 try
                 {
-                  // During Mating operator might reject this offspring.
+                  // During mating operator might reject this offspring.
                   if(!(*iop)->applyDuringMating(pop, it, parent, NULL))
                   {
                     spInd --;
@@ -562,7 +562,7 @@ namespace simuPOP
                 }
                 catch(...)
                 {
-                  cout << "Duringmating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
+                  cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
                   throw;
                 }
               }                                   // all during-mating operators
@@ -576,7 +576,7 @@ namespace simuPOP
             // record family size
             DBG_DO(DBG_MATING, m_famSize.push_back( numOS ));
           }                                       // all offspring
-        }                                         // all subPopulation.
+        }                                         // all subpopulation.
 
         if(submit)
           submitScratch(pop, scratch);
@@ -585,7 +585,7 @@ namespace simuPOP
 
     private:
       /// accumulative fitness
-      WeightedSampler m_sampler;
+      Weightedsampler m_sampler;
 
 #ifndef OPTIMIZED
       ///
@@ -596,7 +596,7 @@ namespace simuPOP
   /**
   basic sexual random mating.
 
-  Within each subPopulation, choose male and female randomly
+  Within each subpopulation, choose male and female randomly
   randmly get one copy of chromosome from father/mother.
 
   require: sexed individual; ploidy == 2
@@ -607,17 +607,16 @@ namespace simuPOP
 
   Otherwise, male and female will be collected and be chosen randomly.
 
-  If there is no male or female in a subPopulation,
+  If there is no male or female in a subpopulation,
   if m_UseSameSexIfUniSex is true, an warning will be generated and same
   sex mating (?) will be used
-  otherwise, RandomMating will return false.
+  otherwise, randomMating will return false.
 
   if there is no during mating operator to copy alleles, a direct copy
   will be used.
   */
 
-  template<class Pop>
-    class RandomMating : public Mating<Pop>
+  class randomMating : public mating
   {
     public:
 
@@ -637,7 +636,7 @@ namespace simuPOP
       \param contWhenUniSex continue when there is only one sex in the population, default to true
 
       */
-      RandomMating( double numOffspring=1.,
+      randomMating( double numOffspring=1.,
         PyObject* numOffspringFunc=NULL,
         UINT maxNumOffspring=0,
         UINT mode=MATE_NumOffspring,
@@ -645,28 +644,28 @@ namespace simuPOP
         PyObject* newSubPopSizeFunc=NULL,
         string newSubPopSizeExpr="",
         bool contWhenUniSex=true)
-        :Mating<Pop>(numOffspring,
+        :mating(numOffspring,
         numOffspringFunc, maxNumOffspring, mode,
         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
         m_contWhenUniSex(contWhenUniSex),
         m_maleIndex(0), m_femaleIndex(0),
         m_maleFitness(0), m_femaleFitness(0),
-        m_maleSampler(rng()), m_femaleSampler(rng())
+        m_malesampler(rng()), m_femalesampler(rng())
       {
       }
 
       /// destructor
-      ~RandomMating(){}
+      ~randomMating(){}
 
       /// clone() const. Generate a copy of itself and return pointer
       /// this is to make sure the object is persistent and
       /// will not be freed by python.
-      virtual Mating<Pop>* clone() const
+      virtual mating* clone() const
       {
-        return new RandomMating(*this);
+        return new randomMating(*this);
       }
 
-      virtual bool isCompatible( Pop& pop)
+      virtual bool isCompatible( population& pop)
       {
         // test if individual has sex
         // if not, will yield compile time error.
@@ -686,7 +685,7 @@ namespace simuPOP
         return "<simuPOP::sexual random mating>";
       }
 
-      virtual void submitScratch(Pop& pop, Pop& scratch)
+      virtual void submitScratch(population& pop, population& scratch)
       {
         pop.fitness().clear();
         // use scratch population,
@@ -694,9 +693,9 @@ namespace simuPOP
         DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
       }
 
-      /// do the mating. parameters see Mating::mate .
+      /// do the mating. parameters see mating::mate .
       /**
-      Within each subPopulation, choose male and female randomly
+      Within each subpopulation, choose male and female randomly
       randmly get one copy of chromosome from father/mother.
 
       require: sexed individual; ploidy == 2
@@ -705,13 +704,13 @@ namespace simuPOP
 
       Otherwise, male and female will be collected and be chosen randomly.
 
-      - If there is no male or female in a subPopulation,
+      - If there is no male or female in a subpopulation,
       - if m_contWhenUniSex is true, an warning will be generated and same
       sex mating (?) will be used
-      - otherwise, RandomMating will return false.
+      - otherwise, randomMating will return false.
 
       */
-      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops, bool submit)
+      virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
       {
         bool hasSexChrom = pop.sexChrom();
 
@@ -732,14 +731,14 @@ namespace simuPOP
 
         UINT numMale, numFemale;
 
-        /// random mating happens within each subPopulation
+        /// random mating happens within each subpopulation
         for(UINT sp=0; sp < pop.numSubPop(); ++sp)
         {
           ULONG spSize = pop.subPopSize(sp);
           if( spSize == 0 ) continue;
 
           numMale = 0;
-          for( typename Pop::IndIterator it=pop.indBegin(sp), itEnd = pop.indEnd(sp); it < itEnd;  ++it)
+          for( population::IndIterator it=pop.indBegin(sp), itEnd = pop.indEnd(sp); it < itEnd;  ++it)
             if(it->sex() == Male)
               numMale ++;
 
@@ -752,7 +751,7 @@ namespace simuPOP
 
           for( ULONG it=pop.subPopBegin(sp), itEnd =pop.subPopEnd(sp); it < itEnd;  it++)
           {
-            if( pop.individual(it).sex() == Male)
+            if( pop.ind(it).sex() == Male)
               m_maleIndex[numMale++] = it;
             else
               m_femaleIndex[numFemale++] = it;
@@ -785,8 +784,8 @@ namespace simuPOP
             for( ind = 0; ind < numFemale; ++ind)
               m_femaleFitness[ind] = fitness[ m_femaleIndex[ind] ];
 
-            m_maleSampler.set(m_maleFitness);
-            m_femaleSampler.set(m_femaleFitness);
+            m_malesampler.set(m_maleFitness);
+            m_femalesampler.set(m_femaleFitness);
           }
 
           // generate scratch.subPopSize(sp) individuals.
@@ -795,41 +794,41 @@ namespace simuPOP
           while( spInd < spIndEnd)
           {
             // randomly choose parents
-            typename Pop::IndType * dad, *mom;
+            individual * dad, *mom;
             RNG& rnd = rng();
 
             if( !fitness.empty() )                // with selection
             {
               // using weidhted sampler.
               if( numMale != 0 )
-                dad = &pop.individual( m_maleIndex[ m_maleSampler.get() ] );
+                dad = &pop.ind( m_maleIndex[ m_malesampler.get() ] );
               else
-                dad = &pop.individual( m_femaleIndex[ m_femaleSampler.get() ] );
+                dad = &pop.ind( m_femaleIndex[ m_femalesampler.get() ] );
 
               if( numFemale != 0 )
-                mom = &pop.individual( m_femaleIndex[ m_femaleSampler.get() ] );
+                mom = &pop.ind( m_femaleIndex[ m_femalesampler.get() ] );
               else
-                mom = &pop.individual( m_maleIndex[ m_maleSampler.get() ]);
+                mom = &pop.ind( m_maleIndex[ m_malesampler.get() ]);
             }
             else
             {
               // using random sample.
               if( numMale != 0 )
-                dad = &pop.individual( m_maleIndex[ rnd.randInt(numMale) ]);
+                dad = &pop.ind( m_maleIndex[ rnd.randInt(numMale) ]);
               else
-                dad = &pop.individual( m_femaleIndex[ rnd.randInt(numFemale) ]);
+                dad = &pop.ind( m_femaleIndex[ rnd.randInt(numFemale) ]);
 
               if( numFemale != 0 )
-                mom = &pop.individual( m_femaleIndex[ rnd.randInt(numFemale) ]);
+                mom = &pop.ind( m_femaleIndex[ rnd.randInt(numFemale) ]);
               else
-                mom = &pop.individual( m_maleIndex[ rnd.randInt(numMale) ]);
+                mom = &pop.ind( m_maleIndex[ rnd.randInt(numMale) ]);
             }
 
             // generate m_numOffspring offspring per mating
             UINT numOS=0, numOSEnd;
             for(numOS=0, numOSEnd = this->numOffspring(pop.gen()); numOS < numOSEnd;  numOS++)
             {
-              typename Pop::IndIterator it = scratch.indBegin(sp) + spInd++;
+              population::IndIterator it = scratch.indBegin(sp) + spInd++;
 
               //
               // assign sex randomly
@@ -871,11 +870,11 @@ namespace simuPOP
               }
 
               /// apply all during mating operators
-              for( typename vector<Operator<Pop> *>::iterator iop = ops.begin(), iopEnd = ops.end(); iop != iopEnd;  ++iop)
+              for( vector<Operator *>::iterator iop = ops.begin(), iopEnd = ops.end(); iop != iopEnd;  ++iop)
               {
                 try
                 {
-                  // During Mating operator might reject this offspring.
+                  // During mating operator might reject this offspring.
                   if(!(*iop)->applyDuringMating(pop, it, dad, mom))
                   {
                     spInd --;
@@ -910,7 +909,7 @@ namespace simuPOP
 
     private:
 
-      /// if no other sex exist in a subPopulation,
+      /// if no other sex exist in a subpopulation,
       /// same sex mating will occur if m_contWhenUniSex is set.
       /// otherwise, an exception will be thrown.
       bool m_contWhenUniSex;
@@ -921,7 +920,7 @@ namespace simuPOP
       vectorf m_maleFitness, m_femaleFitness;
 
       // weighted sampler
-      WeightedSampler m_maleSampler, m_femaleSampler;
+      Weightedsampler m_malesampler, m_femalesampler;
 
 #ifndef OPTIMIZED
       ///
@@ -946,8 +945,8 @@ namespace simuPOP
   //    sFunc  a python function that returns selection pressure at each generation
   //           the function expects a single parameter gen which is defined
   //           in reversed order.
-  //    T      maximum generation number. The process will terminate even if it 
-  //           can not reach allele zero after T generations. Default to 100,000, 
+  //    T      maximum generation number. The process will terminate even if it
+  //           can not reach allele zero after T generations. Default to 100,000,
   //           roughly 2,000,000 years which is longer than human history.
   //
   // Of course, you should specify only one of N/NtFunc and one of s/sFunc
@@ -1232,9 +1231,9 @@ namespace simuPOP
     // easy case.
     if( sFunc == NULL)
     {
-      DBG_FAILIF( (!s.empty()) && (s.size() != nLoci*3), 
+      DBG_FAILIF( (!s.empty()) && (s.size() != nLoci*3),
         ValueError, "Wrong s length " + toStr(s.size()));
-        
+
       vectorf ss(3, 1.);
       for( i=0; i<nLoci; ++i)
       {
@@ -1459,7 +1458,7 @@ namespace simuPOP
       if( find(done.begin(), done.end(), false) == done.end() )
         break;
 
-      DBG_DO(DBG_DEVEL, cout << idx << " freq= " << 
+      DBG_DO(DBG_DEVEL, cout << idx << " freq= " <<
         vectorf(xt.begin()+idx*nLoci, xt.begin()+(idx+1)*nLoci) <<
         " s= " << sAll << endl);
       //
@@ -1469,7 +1468,7 @@ namespace simuPOP
         cout << "Warning: reaching T gnerations. Return whatever I have now." << endl;
         break;
       }
-      
+
       // go to next generation
       idx ++;
     }
@@ -1670,14 +1669,14 @@ namespace simuPOP
   vectorf FreqTrajectoryForward(double lowbound, double highbound,
     int disAge, double grate, long N0, double seleCo)
   {
-    vector<double> DisSamplePath(disAge+1);
+    vector<double> DissamplePath(disAge+1);
 
     int ftime = disAge;
-    // DisSamplePath is the current allele frequency
-    DisSamplePath[0] = 0;
+    // DissamplePath is the current allele frequency
+    DissamplePath[0] = 0;
 
     int trying=0;
-    while(DisSamplePath[0] <= lowbound || DisSamplePath[0] >= highbound)
+    while(DissamplePath[0] <= lowbound || DissamplePath[0] >= highbound)
     {
       if((++trying)%1000==0)
         cout<<"Trying path "<<trying<<" times\n";
@@ -1687,7 +1686,7 @@ namespace simuPOP
       double fre = 1/(2*Nt);
 
       // initial allele frequency
-      DisSamplePath[ftime] = fre;
+      DissamplePath[ftime] = fre;
 
       // backward in array, but forward in time.
       for(int gth = ftime-1; gth>= 0; gth--)
@@ -1705,17 +1704,17 @@ namespace simuPOP
           // restart if num<=0
           if(num<= 0)
           {
-            DisSamplePath[0] = 0;
+            DissamplePath[0] = 0;
             break;
           }
           fre = num/(2*Nt);
           // restart?
           if(fre>= 1)
           {
-            DisSamplePath[0] = 1;
+            DissamplePath[0] = 1;
             break;
           }
-          DisSamplePath[gth] = fre;
+          DissamplePath[gth] = fre;
         }
         // diffusion process approximation
         else
@@ -1727,23 +1726,23 @@ namespace simuPOP
           fre = fre+psv;
           if(fre<= 0)
           {
-            DisSamplePath[0] = 0;
+            DissamplePath[0] = 0;
             break;
           }
           if(fre>= 1)
           {
-            DisSamplePath[0] = 1;
+            DissamplePath[0] = 1;
             break;
           }
           num = fre* 2* Nt;
-          DisSamplePath[gth] = fre;
+          DissamplePath[gth] = fre;
         }
       }
     }                                             // while
     // reverse the result and return
     vectorf gen_freq(disAge+1);
     for(int i=0; i<disAge+1; ++i)
-      gen_freq[i] = DisSamplePath[disAge-i];
+      gen_freq[i] = DissamplePath[disAge-i];
 
     return gen_freq;
   }
@@ -1751,8 +1750,8 @@ namespace simuPOP
   /**
     controlled mating
   */
-  template<class Pop>
-    class ControlledMating : public Mating<Pop>
+
+  class controlledMating : public mating
   {
     public:
 
@@ -1771,8 +1770,8 @@ namespace simuPOP
         If the length of the return value is 2 times size of loci, it will
       be interpreted as [low1, high1, low2, high2 ...]
       */
-      ControlledMating(
-        Mating<Pop>& matingScheme,
+      controlledMating(
+        mating& matingScheme,
         vectori loci,
         vectori alleles,
         PyObject* freqFunc,
@@ -1797,7 +1796,7 @@ namespace simuPOP
       }
 
       /// CPPONLY
-      ControlledMating(const ControlledMating& rhs)
+      controlledMating(const controlledMating& rhs)
         : m_loci(rhs.m_loci),
         m_alleles(rhs.m_alleles),
         m_freqFunc(rhs.m_freqFunc),
@@ -1808,7 +1807,7 @@ namespace simuPOP
       }
 
       /// destructor
-      ~ControlledMating()
+      ~controlledMating()
       {
         if( m_freqFunc != NULL)
           Py_DECREF(m_freqFunc);
@@ -1818,12 +1817,12 @@ namespace simuPOP
       /// clone() const. Generate a copy of itself and return pointer
       /// this is to make sure the object is persistent and
       /// will not be freed by python.
-      virtual Mating<Pop>* clone() const
+      virtual mating* clone() const
       {
-        return new ControlledMating(*this);
+        return new controlledMating(*this);
       }
 
-      virtual bool isCompatible( Pop& pop)
+      virtual bool isCompatible( population& pop)
       {
         return m_matingScheme->isCompatible(pop);
       }
@@ -1834,7 +1833,7 @@ namespace simuPOP
         return "<simuPOP::controlled mating>";
       }
 
-      vectorlu countAlleles(Pop& pop, const vectori& loci, const vectori& alleles)
+      vectorlu countAlleles(population& pop, const vectori& loci, const vectori& alleles)
       {
         vectorlu alleleNum(loci.size(), 0L);
         for(size_t l=0; l < loci.size(); ++l)
@@ -1852,7 +1851,7 @@ namespace simuPOP
         return alleleNum;
       }
 
-      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops, bool submit)
+      virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
       {
         // first call the function and get the range
         vectorf freqRange;
@@ -1930,7 +1929,7 @@ namespace simuPOP
           // check allele frequency
           alleleNum = countAlleles(scratch, m_loci, m_alleles);
 
-          DBG_DO(DBG_MATING, cout << "Mating finished, new count "
+          DBG_DO(DBG_MATING, cout << "mating finished, new count "
             << alleleNum << " range " << alleleRange << endl);
           //
           bool succ = true;
@@ -1956,7 +1955,7 @@ namespace simuPOP
     private:
 
       /// mating scheme
-      Mating<Pop>* m_matingScheme;
+      mating* m_matingScheme;
 
       /// loci at which mating is controlled.
       vectori m_loci;
@@ -1975,7 +1974,7 @@ namespace simuPOP
   random mating
   */
   /*
-    class RandomMating: public Mating
+    class randomMating: public mating
     {
       public:
         /// whether or not the mating scheme will change population
@@ -1983,16 +1982,16 @@ namespace simuPOP
         virtual bool willChangePopSize(){ return false; }
 
         /// constructor
-        RandomMating(){};
+        randomMating(){};
 
   /// destructor
-  ~RandomMating(){};
+  ~randomMating(){};
 
   /// return name of the mating type
   string __repr__(){ return "<simuPOP::random mating>";
   }
 
-  bool operator()( Pop& pop, vector<Operator<Pop> *>& ops) {
+  bool operator()( population& pop, vector<Operator *>& ops) {
   // get current population
 
   // get temporary population
@@ -2005,7 +2004,7 @@ namespace simuPOP
   Polygamy
   */
   /*
-  class Polygamy: public Mating
+  class Polygamy: public mating
   {
     public:
       /// whether or not the mating scheme will change population
@@ -2022,7 +2021,7 @@ namespace simuPOP
   string __repr__(){ return "<simuPOP::polygamy>";
   }
 
-  bool operator()( Pop& pop, vector<Operator<Pop> *>& ops) {
+  bool operator()( population& pop, vector<Operator *>& ops) {
   // get current population
 
   // get temporary population
@@ -2032,7 +2031,7 @@ namespace simuPOP
   };
   */
   /*
-  class Monogamy:public Mating
+  class Monogamy:public mating
   {
   public:
       /// whether or not the mating scheme will change population
@@ -2049,7 +2048,7 @@ namespace simuPOP
   string __repr__(){ return "<simuPOP::monogamy>";
   }
 
-  bool operator()( Pop& pop, vector<Operator<Pop> *>& ops){
+  bool operator()( population& pop, vector<Operator *>& ops){
   // get current population
 
   // get temporary population
@@ -2058,7 +2057,7 @@ namespace simuPOP
   }
   };
 
-  class Polygyny:public Mating
+  class Polygyny:public mating
   {
   public:
   /// whether or not the mating scheme will change population
@@ -2075,7 +2074,7 @@ namespace simuPOP
   string __repr__(){ return "<simuPOP::polygyny>";
   }
 
-  bool operator()( Pop& pop, vector<Operator<Pop> *>& ops){
+  bool operator()( population& pop, vector<Operator *>& ops){
   // get current population
 
   // get temporary population
@@ -2084,7 +2083,7 @@ namespace simuPOP
   }
   };
 
-  class Polyandry: public Mating
+  class Polyandry: public mating
   {
   public:
   /// whether or not the mating scheme will change population
@@ -2101,7 +2100,7 @@ namespace simuPOP
   string __repr__(){ return "<simuPOP::polyandry>";
   }
 
-  bool operator()( Pop& pop, vector<Operator<Pop> *>& ops){
+  bool operator()( population& pop, vector<Operator *>& ops){
   // get current population
 
   // get temporary population
@@ -2115,8 +2114,8 @@ namespace simuPOP
      Hybrid mating scheme.
 
      */
-  template<class Pop>
-    class PyMating: public Mating<Pop>
+
+  class pyMating: public mating
   {
     public:
 
@@ -2141,8 +2140,8 @@ namespace simuPOP
       In this way, you can organize arbitrary complex mating
       scheme (but also with considerable work.)
       */
-      PyMating(PyObject* mateFunc, bool keepSubPopStru=true)
-        :Mating<Pop>(1, NULL, 0, MATE_NumOffspring, vectorlu(),"",NULL),
+      pyMating(PyObject* mateFunc, bool keepSubPopStru=true)
+        :mating(1, NULL, 0, MATE_NumOffspring, vectorlu(),"",NULL),
         m_mateFunc(NULL), m_keepSubPopStru(keepSubPopStru)
       {
         if( ! PyCallable_Check(mateFunc) )
@@ -2153,14 +2152,14 @@ namespace simuPOP
       }
 
       /// destructor
-      ~PyMating()
+      ~pyMating()
       {
         if( m_mateFunc != NULL)
           Py_DECREF(m_mateFunc);
       }
 
-      PyMating(const PyMating& rhs):
-      Mating<Pop>(rhs),
+      pyMating(const pyMating& rhs):
+      mating(rhs),
         m_mateFunc(rhs.m_mateFunc),
         m_keepSubPopStru(rhs.m_keepSubPopStru)
       {
@@ -2168,12 +2167,12 @@ namespace simuPOP
           Py_INCREF(m_mateFunc);
       }
 
-      /// clone() const. The same as Mating::clone() const.
-      /** \sa Mating::clone() const
+      /// clone() const. The same as mating::clone() const.
+      /** \sa mating::clone() const
        */
-      virtual Mating<Pop>* clone() const
+      virtual mating* clone() const
       {
-        return new PyMating(*this);
+        return new pyMating(*this);
       }
 
       /// return name of the mating type
@@ -2188,15 +2187,15 @@ namespace simuPOP
        All individuals will be passed to during mating operators but
        no one will die (ignore during mating failing signal).
       */
-      virtual bool mate( Pop& pop, Pop& scratch, vector<Operator<Pop> *>& ops)
+      virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops)
       {
-        throw SystemError("PyMating is not implemented yet.");
+        throw SystemError("pyMating is not implemented yet.");
         /*
                 /// determine if mate() will generate offspring genotype
                 bool formOffGeno = this->formOffGenotype(ops);
                 // if need to do recombination here
                 size_t btIdx=0;
-                // for use when there is RandomMating need to do recombination
+                // for use when there is randomMating need to do recombination
                 BernulliTrials bt(rng());
 
                 // first: call the function, determine the
@@ -2254,9 +2253,9 @@ namespace simuPOP
         spSize[spIdx]++;
         }
 
-        typename Pop::IndType * dad = &*pop.indBegin() + dadIdx ;
-        typename Pop::IndType * mom = &*pop.indBegin() + momIdx ;
-        typename Pop::IndIterator it = scratch.indBegin() + indIdx;
+        individual * dad = &*pop.indBegin() + dadIdx ;
+        individual * mom = &*pop.indBegin() + momIdx ;
+        population::IndIterator it = scratch.indBegin() + indIdx;
         //
         // assign sex randomly
         int offSex = rng().randInt(2);
@@ -2290,7 +2289,7 @@ namespace simuPOP
         }
 
         // apply during mating operators
-        for( typename vector<Operator<Pop> *>::iterator iop = ops.begin(),
+        for( vector<Operator *>::iterator iop = ops.begin(),
         iopEnd = ops.end(); iop != iopEnd;  ++iop)
         {
         try
@@ -2299,7 +2298,7 @@ namespace simuPOP
         }
         catch(...)
         {
-        cout << "Duringmating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
+        cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
         throw;
         }
         }                                       // all during-mating operators

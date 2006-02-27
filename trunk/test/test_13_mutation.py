@@ -58,7 +58,7 @@ class TestMutator(unittest.TestCase):
       else:
         for i in range(len(freqLow)):
           freq = geno.count(i+1)*1.0 / len(geno)
-          print freq
+          #print freq
           assert freq >= freqLow[i] and freq <= freqHigh[i]
       
   def testMemberFunctions(self):
