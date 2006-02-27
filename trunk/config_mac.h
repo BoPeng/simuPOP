@@ -2,21 +2,21 @@
 /* config.h.in.  Generated from configure.in by autoheader.  */
 
 /* define if bool is a built-in type */
-#define HAVE_BOOL 
+#define HAVE_BOOL
 
 /* define if the compiler supports const_cast<> */
-#define HAVE_CONST_CAST 
+#define HAVE_CONST_CAST
 
 /* Define to 1 if you have the declaration of `acosh', and to 0 if you don't.
-   */
+ */
 #define HAVE_DECL_ACOSH 1
 
 /* Define to 1 if you have the declaration of `atanh', and to 0 if you don't.
-   */
+ */
 #define HAVE_DECL_ATANH 1
 
 /* Define to 1 if you have the declaration of `expm1', and to 0 if you don't.
-   */
+ */
 #define HAVE_DECL_EXPM1 1
 
 /* Define to 1 if you have the declaration of `feenableexcept', and to 0 if
@@ -28,15 +28,15 @@
 /* #undef HAVE_DECL_FESETTRAPENABLE */
 
 /* Define to 1 if you have the declaration of `finite', and to 0 if you don't.
-   */
+ */
 #define HAVE_DECL_FINITE 1
 
 /* Define to 1 if you have the declaration of `frexp', and to 0 if you don't.
-   */
+ */
 #define HAVE_DECL_FREXP 1
 
 /* Define to 1 if you have the declaration of `hypot', and to 0 if you don't.
-   */
+ */
 #define HAVE_DECL_HYPOT 1
 
 /* Define to 1 if you have the declaration of `isfinite', and to 0 if you
@@ -44,23 +44,23 @@
 #define HAVE_DECL_ISFINITE 1
 
 /* Define to 1 if you have the declaration of `isinf', and to 0 if you don't.
-   */
+ */
 #define HAVE_DECL_ISINF 1
 
 /* Define to 1 if you have the declaration of `isnan', and to 0 if you don't.
-   */
+ */
 #define HAVE_DECL_ISNAN 1
 
 /* Define to 1 if you have the declaration of `ldexp', and to 0 if you don't.
-   */
+ */
 #define HAVE_DECL_LDEXP 1
 
 /* Define to 1 if you have the declaration of `log1p', and to 0 if you don't.
-   */
+ */
 /* #undef HAVE_DECL_LOG1P */
 
 /* define if the compiler supports default template parameters */
-#define HAVE_DEFAULT_TEMPLATE_PARAMETERS 
+#define HAVE_DEFAULT_TEMPLATE_PARAMETERS
 
 /* Define if /dev/null exists */
 #define HAVE_DEV_NULL 1
@@ -72,10 +72,10 @@
 /* #undef HAVE_DOPRNT */
 
 /* define if the compiler supports dynamic_cast<> */
-#define HAVE_DYNAMIC_CAST 
+#define HAVE_DYNAMIC_CAST
 
 /* define if the compiler supports exceptions */
-#define HAVE_EXCEPTIONS 
+#define HAVE_EXCEPTIONS
 
 /* have exi success and failure */
 /* #undef HAVE_EXIT_SUCCESS_AND_FAILURE */
@@ -127,10 +127,10 @@
 #define HAVE_MEMSET 1
 
 /* define if the compiler implements namespaces */
-#define HAVE_NAMESPACES 
+#define HAVE_NAMESPACES
 
 /* define if the compiler accepts the new for scoping rules */
-#define HAVE_NEW_FOR_SCOPING 
+#define HAVE_NEW_FOR_SCOPING
 
 /* Define to 1 if you have the `pow' function. */
 #define HAVE_POW 1
@@ -160,7 +160,7 @@
 #define HAVE_STDLIB_H 1
 
 /* define if the compiler supports Standard Template Library */
-#define HAVE_STL 
+#define HAVE_STL
 
 /* Define to 1 if you have the `strdup' function. */
 /* #undef HAVE_STRDUP */
@@ -235,8 +235,6 @@
    code using `volatile' can become incorrect without. Disable with care. */
 /* #undef volatile */
 
-
-
 #if HAVE_EXTENDED_PRECISION_REGISTERS
 #define GSL_COERCE_DBL(x) (gsl_coerce_double(x))
 #else
@@ -296,10 +294,9 @@
 #ifdef __GNUC__
 #define DISCARD_POINTER(p) do { ; } while(p ? 0 : 0);
 #else
-#define DISCARD_POINTER(p) /* ignoring discarded pointer */
+#define DISCARD_POINTER(p)                        /* ignoring discarded pointer */
 #endif
 
 #if defined(GSL_RANGE_CHECK_OFF) || !defined(GSL_RANGE_CHECK)
-#define GSL_RANGE_CHECK 0  /* turn off range checking by default internally */
+#define GSL_RANGE_CHECK 0                         /* turn off range checking by default internally */
 #endif
-
