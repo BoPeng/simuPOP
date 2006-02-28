@@ -1103,7 +1103,6 @@ namespace simuPOP
   statRelatedness::fraction statRelatedness::relQueller(individual ind1,
     individual ind2)
   {
-
     matrix& af = m_alleleFreq.alleleFreqAll();
     statRelatedness::fraction res(0.,0.);
     int numScored = 0;

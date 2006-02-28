@@ -315,7 +315,7 @@ namespace simuPOP
       */
       virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit);
 
-    private:
+    protected:
       /// accumulative fitness
       Weightedsampler m_sampler;
 
@@ -444,7 +444,7 @@ namespace simuPOP
       */
       virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit);
 
-    private:
+    protected:
 
       /// if no other sex exist in a subpopulation,
       /// same sex mating will occur if m_contWhenUniSex is set.
@@ -683,200 +683,63 @@ namespace simuPOP
   };
 
   /**
-  random mating
-  */
-  /*
-    class randomMating: public mating
-    {
-      public:
-        /// whether or not the mating scheme will change population
-        /// size.
-        virtual bool willChangePopSize(){ return false; }
+    binomial random selection
 
-        /// constructor
-        randomMating(){};
+    No sex. Choose one individual from last generation.
 
-  /// destructor
-  ~randomMating(){};
+    1. numOffspring protocol is honored
+    2. population size changes are allowed
+    3. selection is possible.
 
-  /// return name of the mating type
-  string __repr__(){ return "<simuPOP::random mating>";
-  }
-
-  bool operator()( population& pop, vector<Operator *>& ops) {
-  // get current population
-
-  // get temporary population
-
-  return true;
-  }
-  };
-  */
-  /**
-  Polygamy
-  */
-  /*
-  class Polygamy: public mating
-  {
-    public:
-      /// whether or not the mating scheme will change population
-      /// size.
-      virtual bool willChangePopSize(){ return false; }
-
-      /// constructor
-      Polygamy(){};
-
-  /// destructor
-  ~Polygamy(){};
-
-  /// return name of the mating type
-  string __repr__(){ return "<simuPOP::polygamy>";
-  }
-
-  bool operator()( population& pop, vector<Operator *>& ops) {
-  // get current population
-
-  // get temporary population
-
-  return true;
-  }
-  };
-  */
-  /*
-  class Monogamy:public mating
-  {
-  public:
-      /// whether or not the mating scheme will change population
-      /// size.
-      virtual bool willChangePopSize(){ return false; }
-
-      /// constructor
-      Monogamy(){};
-
-  /// destructor
-  ~Monogamy(){};
-
-  /// return name of the mating type
-  string __repr__(){ return "<simuPOP::monogamy>";
-  }
-
-  bool operator()( population& pop, vector<Operator *>& ops){
-  // get current population
-
-  // get temporary population
-
-  return true;
-  }
-  };
-
-  class Polygyny:public mating
-  {
-  public:
-  /// whether or not the mating scheme will change population
-  /// size.
-  virtual bool willChangePopSize(){ return false; }
-
-  /// constructor
-  Polygyny(){};
-
-  /// destructor
-  ~Polygyny(){};
-
-  /// return name of the mating type
-  string __repr__(){ return "<simuPOP::polygyny>";
-  }
-
-  bool operator()( population& pop, vector<Operator *>& ops){
-  // get current population
-
-  // get temporary population
-
-  return true;
-  }
-  };
-
-  class Polyandry: public mating
-  {
-  public:
-  /// whether or not the mating scheme will change population
-  /// size.
-  virtual bool willChangePopSize(){ return false; }
-
-  /// constructor
-  Polyandry(){};
-
-  /// destructor
-  ~Polyandry(){};
-
-  /// return name of the mating type
-  string __repr__(){ return "<simuPOP::polyandry>";
-  }
-
-  bool operator()( population& pop, vector<Operator *>& ops){
-  // get current population
-
-  // get temporary population
-
-  return true;
-  }
-  };
+    So this works just like a sexless random mating.
+    If ploidy is one, this is chromosomal mating.
   */
 
-  /**
-     Hybrid mating scheme.
-
-     */
-
-  class pyMating: public mating
+  class controlledBinomialSelection: public binomialSelection
   {
     public:
 
       /// constructor
-      /** This operator takes only one parameter: a mate function.
-      During mating, this function will be called with pop as parameter.
-      The expected return value should be a list (or carray) of indices
-      to parents in the order of dad1,mom1,dad2,mom2,...
-
-      \param mateFunc a python function that takes a population as parameter and
-      return a list of parental indices. Currently, only diploid population is
-      supported.
-
-      \param keepSubPopStru if true, mating is strictly between subpop and
-      subpopulation structure will be kept. Otherwise, mating is considered
-      as in the big population regardless of subpopulation strcture. The resulting
-      population does not have subpopulation strcture.
-
-      Note that these indices should be absolte indices and mating across
-      subpops is not allowed.
-
-      In this way, you can organize arbitrary complex mating
-      scheme (but also with considerable work.)
-      */
-      pyMating(PyObject* mateFunc, bool keepSubPopStru=true)
-        :mating(1, NULL, 0, MATE_NumOffspring, vectorlu(),"",NULL),
-        m_mateFunc(NULL), m_keepSubPopStru(keepSubPopStru)
+      controlledBinomialSelection(
+        int locus,
+        Allele allele,
+        PyObject* freqFunc,
+        double numOffspring=1.,
+        PyObject* numOffspringFunc=NULL,
+        UINT maxNumOffspring=0,
+        UINT mode=MATE_NumOffspring,
+        vectorlu newSubPopSize=vectorlu(),
+        string newSubPopSizeExpr="",
+        PyObject* newSubPopSizeFunc=NULL)
+        :binomialSelection(numOffspring,
+        numOffspringFunc, maxNumOffspring, mode,
+        newSubPopSize, newSubPopSizeExpr,
+        newSubPopSizeFunc),
+        m_locus(locus),
+        m_allele(allele),
+        m_freqFunc(freqFunc)
       {
-        if( ! PyCallable_Check(mateFunc) )
-          throw ValueError("mateFunc is not a valid Python function.");
+        if(m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
+          throw ValueError("Please specify a valid frequency function");
+        else
+          Py_INCREF(m_freqFunc);
+      }
 
-        Py_XINCREF(mateFunc);
-        m_mateFunc = mateFunc;
+      /// CPPONLY
+      controlledBinomialSelection(const controlledBinomialSelection& rhs)
+        : binomialSelection(rhs),
+        m_locus(rhs.m_locus),
+        m_allele(rhs.m_allele),
+        m_freqFunc(rhs.m_freqFunc)
+      {
+        Py_INCREF(m_freqFunc);
       }
 
       /// destructor
-      ~pyMating()
+      ~controlledBinomialSelection()
       {
-        if( m_mateFunc != NULL)
-          Py_DECREF(m_mateFunc);
-      }
-
-      pyMating(const pyMating& rhs):
-      mating(rhs),
-        m_mateFunc(rhs.m_mateFunc),
-        m_keepSubPopStru(rhs.m_keepSubPopStru)
-      {
-        if( m_mateFunc != NULL)
-          Py_INCREF(m_mateFunc);
+        if( m_freqFunc != NULL)
+          Py_DECREF(m_freqFunc);
       }
 
       /// clone() const. The same as mating::clone() const.
@@ -884,158 +747,195 @@ namespace simuPOP
        */
       virtual mating* clone() const
       {
-        return new pyMating(*this);
+        return new controlledBinomialSelection(*this);
       }
 
       /// return name of the mating type
       virtual string __repr__()
       {
-        return "<simuPOP::hybrid mating scheme>";
+        return "<simuPOP::binomial random selection>";
+      }
+
+      virtual void submitScratch(population& pop, population& scratch)
+      {
+        pop.fitness().clear();
+        // use scratch population,
+        pop.pushAndDiscard(scratch);
+        DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
       }
 
       /**
-       \brief do the mating with specified mating function.
-
-       All individuals will be passed to during mating operators but
-       no one will die (ignore during mating failing signal).
+       \brief do the mating.
+       \param pop population
+       \param scratch scratch population, will be used in this mating scheme.
+       \param ops during mating operators
+       \return return false when mating fails.
       */
-      virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops)
+      virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit);
+
+    private:
+      /// locus at which mating is controlled.
+      int m_locus;
+
+      /// allele to be controlled at each locus
+      Allele m_allele;
+
+      /// function that return an array of frquency range
+      PyObject * m_freqFunc;
+  };
+
+  /**
+  basic sexual random mating.
+
+  Within each subpopulation, choose male and female randomly
+  randmly get one copy of chromosome from father/mother.
+
+  require: sexed individual; ploidy == 2
+
+  apply during mating operators and put into the next generation.
+
+  if ignoreParentsSex is set, parents will be chosen regardless of sex.
+
+  Otherwise, male and female will be collected and be chosen randomly.
+
+  If there is no male or female in a subpopulation,
+  if m_UseSameSexIfUniSex is true, an warning will be generated and same
+  sex mating (?) will be used
+  otherwise, randomMating will return false.
+
+  if there is no during mating operator to copy alleles, a direct copy
+  will be used.
+  */
+
+  class controlledRandomMating : public randomMating
+  {
+    public:
+
+      /// create a random mating scheme
+      /**
+      \param numOffspring, number of offspring or p in some modes
+      \param numOffspringFunc, a python function that determine
+       number of offspring or p depending on mode
+      \param maxNumOffspring used when mode=MATE_BinomialDistribution
+      \param mode one of  MATE_NumOffspring , MATE_NumOffspringEachFamily,
+       MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution
+      \param newSubPopSize an array of subpopulation sizes, should have the same
+      number of subpopulations as current population
+      \param newSubPopSizeExpr an expression that will be evaluated as an array of subpop sizes
+      \param newSubPopSizeFunc an function that have parameter gen and oldSize (current subpop
+      size).
+      \param contWhenUniSex continue when there is only one sex in the population, default to true
+      */
+      controlledRandomMating(
+        int locus,
+        Allele allele,
+        PyObject* freqFunc,
+        double numOffspring=1.,
+        PyObject* numOffspringFunc=NULL,
+        UINT maxNumOffspring=0,
+        UINT mode=MATE_NumOffspring,
+        vectorlu newSubPopSize=vectorlu(),
+        PyObject* newSubPopSizeFunc=NULL,
+        string newSubPopSizeExpr="",
+        bool contWhenUniSex=true)
+        :randomMating(numOffspring,
+        numOffspringFunc, maxNumOffspring, mode,
+        newSubPopSize,
+        newSubPopSizeFunc,
+        newSubPopSizeExpr,
+        contWhenUniSex),
+        m_locus(locus),
+        m_allele(allele),
+        m_freqFunc(freqFunc)
       {
-        throw SystemError("pyMating is not implemented yet.");
-        /*
-                /// determine if mate() will generate offspring genotype
-                bool formOffGeno = this->formOffGenotype(ops);
-                // if need to do recombination here
-                size_t btIdx=0;
-                // for use when there is randomMating need to do recombination
-                BernulliTrials bt(rng());
+        if(m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
+          throw ValueError("Please specify a valid frequency function");
+        else
+          Py_INCREF(m_freqFunc);
+      }
 
-                // first: call the function, determine the
-                // size of next generation.
-                PyObject* popObj=pyPopObj((void*)(&pop));
-        Py_INCREF(popObj);
-        PyObject* arglist = Py_BuildValue("(O)", popObj );
-        PyObject* result = PyEval_CallObject(m_mateFunc, arglist);
+      /// CPPONLY
+      controlledRandomMating(const controlledRandomMating& rhs)
+        : randomMating(rhs),
+        m_locus(rhs.m_locus),
+        m_allele(rhs.m_allele),
+        m_freqFunc(rhs.m_freqFunc)
+      {
+        Py_INCREF(m_freqFunc);
+      }
 
-        // get result (a list)
-        if( ! PySequence_Check(result))
-        throw ValueError("Return value of mateFunc should be a sequence.");
+      /// destructor
+      ~controlledRandomMating()
+      {
+        if( m_freqFunc != NULL)
+          Py_DECREF(m_freqFunc);
+      }
 
-        // get population size
-        ULONG size = PySequence_Size(result);
-        vectorlu spSize = vectorlu(1);
-        spSize[0] = size/2;
+      /// clone() const. Generate a copy of itself and return pointer
+      /// this is to make sure the object is persistent and
+      /// will not be freed by python.
+      virtual mating* clone() const
+      {
+        return new controlledRandomMating(*this);
+      }
 
-        // prepare scratch pop
-        scratch.setSubPopStru(spSize, true);
-        // keep track of subpopulation stru
-        spSize[0] = 0;
+      virtual bool isCompatible( population& pop)
+      {
+        // test if individual has sex
+        // if not, will yield compile time error.
+        pop.indBegin()->sex();
 
-        if( formOffGeno && bt.size() != pop.numChrom()*2*scratch.popSize() )
-        {
-        vectorf rates(1);
-        // for r = 0.5, 'fast bernulli' algorithm does not do
-        rates[0] = 0.5;
-        // 2 is for mom/dad
-        bt.setParameter(rates, pop.numChrom()*2*scratch.popSize());
-        }
-        DBG_DO(DBG_MATING, cout << "doTrial " << endl);
-        if( formOffGeno )
-        bt.doTrial();
+#ifndef OPTIMIZED
+        if( pop.ploidy() != 2 )
+          cout << "Warning: This mating type only works with diploid population." << endl;
+#endif
 
-        //
-        ULONG indIdx = 0;
-        while( indIdx < size/2)
-        {
-        ULONG dadIdx = PyInt_AsLong( PySequence_GetItem(result, indIdx*2) );
-        ULONG momIdx = PyInt_AsLong( PySequence_GetItem(result, indIdx*2+1) );
-
-        if( m_keepSubPopStru)
-        {
-        ULONG spIdx = pop.subPopIndPair(dadIdx).first;
-        ULONG spIdx1 = pop.subPopIndPair(momIdx).first;
-
-        DBG_ASSERT( spIdx == spIdx1, ValueError,
-        "Two parents should come from the same subpopulation.");
-
-        if( spIdx >= spSize.size())
-        spSize.resize(spIdx+1, 0);
-
-        // the offspring is in this subpop.
-        spSize[spIdx]++;
-        }
-
-        individual * dad = &*pop.indBegin() + dadIdx ;
-        individual * mom = &*pop.indBegin() + momIdx ;
-        population::IndIterator it = scratch.indBegin() + indIdx;
-        //
-        // assign sex randomly
-        int offSex = rng().randInt(2);
-        it->setSex( offSex==0?Male:Female);
-
-        if( formOffGeno )
-        {
-        int dadPloidy;
-        int momPloidy;
-        const BitSet& succ = bt.succ(0);
-
-        for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd;  ++ch)
-        {
-
-        //dadPloidy = rng().randInt(2);
-        //momPloidy = rng().randInt(2);
-        dadPloidy = succ[btIdx++];
-        momPloidy = succ[btIdx++];
-
-        DBG_ASSERT((dadPloidy==0 || dadPloidy==1) &&
-        ( momPloidy==0 || momPloidy==1), ValueError,
-        "Ploidy must be 0 or 1");
-
-        copy(dad->genoBegin(dadPloidy, ch),
-        dad->genoEnd(dadPloidy,ch) ,
-        it->genoBegin(0,ch));
-        copy(mom->genoBegin(momPloidy,ch),
-        mom->genoEnd(momPloidy,ch) ,
-        it->genoBegin(1,ch));
-        }
-        }
-
-        // apply during mating operators
-        for( vector<Operator *>::iterator iop = ops.begin(),
-        iopEnd = ops.end(); iop != iopEnd;  ++iop)
-        {
-        try
-        {
-        (*iop)->applyDuringMating(pop, it, dad, mom);
-        }
-        catch(...)
-        {
-        cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
-        throw;
-        }
-        }                                       // all during-mating operators
-        // success
-        indIdx++;
-
-        }                                         // offsrping for each parent
-
-        if(m_keepSubPopStru)
-        scratch.setSubPopStru( spSize, false);
-
-        Py_DECREF(popObj);
-        Py_DECREF(arglist);
-
-        // use scratch populaiton
-        pop.pushAndDiscard(scratch);
-        */
         return true;
       }
 
+      /// return name of the mating type
+      virtual string __repr__()
+      {
+        return "<simuPOP::sexual random mating>";
+      }
+
+      virtual void submitScratch(population& pop, population& scratch)
+      {
+        pop.fitness().clear();
+        // use scratch population,
+        pop.pushAndDiscard(scratch);
+        DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
+      }
+
+      /// do the mating. parameters see mating::mate .
+      /**
+      Within each subpopulation, choose male and female randomly
+      randmly get one copy of chromosome from father/mother.
+
+      require: sexed individual; ploidy == 2
+
+      apply during mating operators and put into the next generation.
+
+      Otherwise, male and female will be collected and be chosen randomly.
+
+      - If there is no male or female in a subpopulation,
+      - if m_contWhenUniSex is true, an warning will be generated and same
+      sex mating (?) will be used
+      - otherwise, controlledRandomMating will return false.
+
+      */
+      virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit);
+
     private:
-      PyObject* m_mateFunc;
 
-      bool m_keepSubPopStru;
+      /// locus at which mating is controlled.
+      int m_locus;
+
+      /// allele to be controlled at each locus
+      Allele m_allele;
+
+      /// function that return an array of frquency range
+      PyObject * m_freqFunc;
   };
-
 }
 #endif
