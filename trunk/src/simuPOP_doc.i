@@ -65,10 +65,10 @@ Usage:
 
 ";
 
-%feature("docstring")  simuPOP::affectedSibpairSample::preparesample " 
+%feature("docstring")  simuPOP::affectedSibpairSample::prepareSample " 
 
 Usage:
-  x.preparesample(&pop)
+  x.prepareSample(&pop)
 
 ";
 
@@ -223,11 +223,6 @@ Arguments:
       
   ops:  during mating operators
 
-Details:
-
-  determine if mate()will generate offspring genotype
-  use deep copy!!!!!!!
-
 Value:
   return false when mating fails.
 
@@ -295,10 +290,10 @@ Usage:
 
 ";
 
-%feature("docstring")  simuPOP::caseControlSample::preparesample " 
+%feature("docstring")  simuPOP::caseControlSample::prepareSample " 
 
 Usage:
-  x.preparesample(&pop)
+  x.prepareSample(&pop)
 
 ";
 
@@ -363,6 +358,89 @@ Usage:
 
 Usage:
   x.~continueIf()
+
+";
+
+%feature("docstring") simuPOP::controlledBinomialSelection "
+
+Details:
+  binomial random selection
+  No sex. Choose one individual from last generation.
+  1. numOffspring protocol is honored 2. population size changes are
+  allowed 3. selection is possible.
+  So this works just like a sexless random mating. If ploidy is one,
+  this is chromosomal mating.
+
+";
+
+%feature("docstring")  simuPOP::controlledBinomialSelection::controlledBinomialSelection " 
+
+constructor
+
+Usage:
+  controlledBinomialSelection(locus, allele, *freqFunc,
+    numOffspring=1., *numOffspringFunc=NULL, maxNumOffspring=0,
+    mode=MATE_NumOffspring, newSubPopSize=[], newSubPopSizeExpr=\"\",
+    *newSubPopSizeFunc=NULL)
+
+";
+
+%ignore simuPOP::controlledBinomialSelection::controlledBinomialSelection(const controlledBinomialSelection &rhs);
+
+%feature("docstring")  simuPOP::controlledBinomialSelection::~controlledBinomialSelection " 
+
+destructor
+
+Usage:
+  x.~controlledBinomialSelection()
+
+";
+
+%feature("docstring")  simuPOP::controlledBinomialSelection::clone " 
+
+ clone() const. The same as mating::clone() const.
+
+Usage:
+  x.clone()
+
+See Also:
+   mating::clone() const
+
+";
+
+%feature("docstring")  simuPOP::controlledBinomialSelection::__repr__ " 
+
+return name of the mating type
+
+Usage:
+  x.__repr__()
+
+";
+
+%feature("docstring")  simuPOP::controlledBinomialSelection::submitScratch " 
+
+Usage:
+  x.submitScratch(&pop, &scratch)
+
+";
+
+%feature("docstring")  simuPOP::controlledBinomialSelection::mate " 
+
+do the mating.
+
+Usage:
+  x.mate(&pop, &scratch, &ops, submit)
+
+Arguments:
+
+  pop:  population
+      
+  scratch:  scratch population, will be used in this mating scheme.
+      
+  ops:  during mating operators
+
+Value:
+  return false when mating fails.
 
 ";
 
@@ -469,6 +547,137 @@ Arguments:
 
 Value:
   return false when mating fail.
+
+";
+
+%feature("docstring") simuPOP::controlledRandomMating "
+
+Details:
+  basic sexual random mating.
+  Within each subpopulation, choose male and female randomly randmly
+  get one copy of chromosome from father/mother.
+  require: sexed individual; ploidy == 2
+  apply during mating operators and put into the next generation.
+  if ignoreParentsSex is set, parents will be chosen regardless of
+  sex.
+  Otherwise, male and female will be collected and be chosen randomly.
+  If there is no male or female in a subpopulation, if
+  m_UseSameSexIfUniSex is true, an warning will be generated and same
+  sex mating (?) will be used otherwise, randomMatingw
+  ill return false.
+  if there is no during mating operator to copy alleles, a direct copy
+  will be used.
+
+";
+
+%feature("docstring")  simuPOP::controlledRandomMating::controlledRandomMating " 
+
+create a random mating scheme
+
+Usage:
+  controlledRandomMating(locus, allele, *freqFunc, numOffspring=1.,
+    *numOffspringFunc=NULL, maxNumOffspring=0, mode=MATE_NumOffspring,
+    newSubPopSize=[], *newSubPopSizeFunc=NULL, newSubPopSizeExpr=\"\",
+    contWhenUniSex=True)
+
+Arguments:
+
+  numOffspring:  
+  number:  of offspring or p in some modes
+      
+  numOffspringFunc:  
+  a:  python function that determine number of offspring or p
+      depending on mode
+      
+  maxNumOffspring:  used when mode=MATE_BinomialDistribution
+      
+  mode:  one of MATE_NumOffspring , MATE_NumOffspringEachFamily,
+      MATE_GeometricDistribution, MATE_PoissonDistribution,
+      MATE_BinomialDistribution
+      
+  newSubPopSize:  an array of subpopulation sizes, should have the
+      same number of subpopulations as current population
+      
+  newSubPopSizeExpr:  an expression that will be evaluated as an array
+      of subpop sizes
+      
+  newSubPopSizeFunc:  an function that have parameter gen and oldSize
+      (current subpop size).
+      
+  contWhenUniSex:  continue when there is only one sex in the
+      population, default to true
+
+";
+
+%ignore simuPOP::controlledRandomMating::controlledRandomMating(const controlledRandomMating &rhs);
+
+%feature("docstring")  simuPOP::controlledRandomMating::~controlledRandomMating " 
+
+destructor
+
+Usage:
+  x.~controlledRandomMating()
+
+";
+
+%feature("docstring")  simuPOP::controlledRandomMating::clone " 
+
+ clone() const. Generate a copy of itself and return pointer this
+is to make sure the object is persistent and will not be freed by
+python.
+
+Usage:
+  x.clone()
+
+";
+
+%feature("docstring")  simuPOP::controlledRandomMating::isCompatible " 
+
+check if the mating type is compatible with population structure
+
+Usage:
+  x.isCompatible(&pop)
+
+Details:
+  possible things to check:need certain types of individual (age,
+  sex etc)
+  need resizeable population...
+
+";
+
+%feature("docstring")  simuPOP::controlledRandomMating::__repr__ " 
+
+return name of the mating type
+
+Usage:
+  x.__repr__()
+
+";
+
+%feature("docstring")  simuPOP::controlledRandomMating::submitScratch " 
+
+Usage:
+  x.submitScratch(&pop, &scratch)
+
+";
+
+%feature("docstring")  simuPOP::controlledRandomMating::mate " 
+
+do the mating. parameters see mating::mate.
+
+Usage:
+  x.mate(&pop, &scratch, &ops, submit)
+
+Details:
+  Within each subpopulation, choose male and female randomly randmly
+  get one copy of chromosome from father/mother.
+  require: sexed individual; ploidy == 2
+  apply during mating operators and put into the next generation.
+  Otherwise, male and female will be collected and be chosen randomly.
+  If there is no male or female in a subpopulation,
+  if m_contWhenUniSex is true, an warning will be generated and same
+  sex mating (?) will be used
+  otherwise, controlledRandomMatingwill return false.
 
 ";
 
@@ -2513,7 +2722,6 @@ Usage:
 Details:
   format 0-0 0-1 0-2, 1-0 1-1 1-2, 2-0, 2-1, 2-2. for mode 1 or 2,
   00,11,22 will be set automatically. regardless of input.
-  set r[i][i]--- may need to extend rate (to add i->i)
 
 ";
 
@@ -4082,8 +4290,6 @@ Details:
   assume individual has subpop index in their info value and put them
   into corresponding subpopulations.
 
-  rebuild index
-
 Note:
   individual with negative info will be removed!
 
@@ -4135,7 +4341,6 @@ Usage:
 
 Details:
   remove empty subpops, this will adjust subPOP ID of other subpops
-  rebuild index
 
 ";
 
@@ -4626,95 +4831,6 @@ activated.
 
 Usage:
   x.apply(&pop)
-
-";
-
-%feature("docstring") simuPOP::pyMating "
-
-Details:
-  Hybrid mating scheme.
-
-";
-
-%feature("docstring")  simuPOP::pyMating::pyMating " 
-
-constructor
-
-Usage:
-  pyMating(*mateFunc, keepSubPopStru=True)
-
-Arguments:
-
-  mateFunc:  a python function that takes a population as parameter
-      and return a list of parental indices. Currently, only diploid
-      population is supported.
-      
-  keepSubPopStru:  if true, mating is strictly between subpop and
-      subpopulation structure will be kept. Otherwise, mating is
-      considered as in the big population regardless of subpopulation
-      strcture. The resulting population does not have subpopulation
-      strcture.
-      
-  Note that these indices should be absolte indices and mating across
-  subpops is not allowed.
-  In this way, you can organize arbitrary complex mating scheme (but
-  also with considerable work.)
-
-Details:
-  This operator takes only one parameter: a mate function. During
-  mating, this function will be called with pop as parameter. The
-  expected return value should be a list (or carray) of indices to
-  parents in the order of dad1,mom1,dad2,mom2,...
-
-";
-
-%feature("docstring")  simuPOP::pyMating::~pyMating " 
-
-destructor
-
-Usage:
-  x.~pyMating()
-
-";
-
-%feature("docstring")  simuPOP::pyMating::pyMating " 
-
-Usage:
-  pyMating(&rhs)
-
-";
-
-%feature("docstring")  simuPOP::pyMating::clone " 
-
- clone() const. The same as mating::clone() const.
-
-Usage:
-  x.clone()
-
-See Also:
-   mating::clone() const
-
-";
-
-%feature("docstring")  simuPOP::pyMating::__repr__ " 
-
-return name of the mating type
-
-Usage:
-  x.__repr__()
-
-";
-
-%feature("docstring")  simuPOP::pyMating::mate " 
-
-do the mating with specified mating function.
-
-Usage:
-  x.mate(&pop, &scratch, &ops)
-
-Details:
-  All individuals will be passed to during mating operators but no one
-  will die (ignore during mating failing signal).
 
 ";
 
@@ -5468,13 +5584,6 @@ Details:
   if m_contWhenUniSex is true, an warning will be generated and same
   sex mating (?) will be used
   otherwise, randomMatingwill return false.
-  
-  determine if any during-mating operator will generate offspring
-  genotype
-  random mating happens within each subpopulation
-  now, all individuals of needToFind sex is collected
-  if selection is on
-  apply all during mating operators
 
 ";
 
@@ -5543,12 +5652,12 @@ Usage:
 
 ";
 
-%feature("docstring")  simuPOP::randomSample::preparesample " 
+%feature("docstring")  simuPOP::randomSample::prepareSample " 
 
 value checking
 
 Usage:
-  x.preparesample(&pop)
+  x.prepareSample(&pop)
 
 ";
 
@@ -5833,6 +5942,13 @@ Usage:
 
 ";
 
+%feature("docstring")  simuPOP::RNG::randMultinomial " 
+
+Usage:
+  x.randMultinomial(N, &p, &n)
+
+";
+
 %feature("docstring")  simuPOP::RNG::randPoisson " 
 
 Poisson distribution.
@@ -5897,10 +6013,10 @@ Usage:
 
 ";
 
-%feature("docstring")  simuPOP::sample::preparesample " 
+%feature("docstring")  simuPOP::sample::prepareSample " 
 
 Usage:
-  x.preparesample(&)
+  x.prepareSample(&)
 
 ";
 
@@ -8048,16 +8164,14 @@ Usage:
 %feature("docstring")  simuPOP::FreqTrajectoryStoch " 
 
 Usage:
-  FreqTrajectoryStoch(freq, N=0, *NtFunc=NULL, s=[], *sFunc=NULL,
-    T=100000)
+  FreqTrajectoryStoch(freq, N, *NtFunc, s, *sFunc, T)
 
 ";
 
 %feature("docstring")  simuPOP::FreqTrajectoryMultiStoch " 
 
 Usage:
-  FreqTrajectoryMultiStoch(freq=[], N=0, *NtFunc=NULL, s=[],
-    *sFunc=NULL, T=100000)
+  FreqTrajectoryMultiStoch(freq, N, *NtFunc, s, *sFunc, T)
 
 ";
 
@@ -8079,7 +8193,7 @@ Usage:
 %feature("docstring")  simuPOP::LoadPopulation " 
 
 Usage:
-  LoadPopulation(&file, &format=\"auto\")
+  LoadPopulation(&file, &format)
 
 ";
 
@@ -8861,16 +8975,14 @@ Usage:
 %feature("docstring")  simuPOP::FreqTrajectoryStoch " 
 
 Usage:
-  FreqTrajectoryStoch(freq, N=0, *NtFunc=NULL, s=[], *sFunc=NULL,
-    T=100000)
+  FreqTrajectoryStoch(freq, N, *NtFunc, s, *sFunc, T)
 
 ";
 
 %feature("docstring")  simuPOP::FreqTrajectoryMultiStoch " 
 
 Usage:
-  FreqTrajectoryMultiStoch(freq=[], N=0, *NtFunc=NULL, s=[],
-    *sFunc=NULL, T=100000)
+  FreqTrajectoryMultiStoch(freq, N, *NtFunc, s, *sFunc, T)
 
 ";
 
@@ -8892,7 +9004,7 @@ Usage:
 %feature("docstring")  simuPOP::LoadPopulation " 
 
 Usage:
-  LoadPopulation(&file, &format=\"auto\")
+  LoadPopulation(&file, &format)
 
 ";
 

@@ -91,7 +91,8 @@ GSL_OBJS= ../gsl/sys/infnan.o ../gsl/sys/coerce.o ../gsl/sys/fdiv.o    ../gsl/sy
 ../gsl/rng/transputer.o ../gsl/rng/zuf.o ../gsl/rng/fishman20.o ../gsl/rng/mrg.o  ../gsl/rng/rand48.o \
 ../gsl/rng/ranlxs.o ../gsl/rng/tt.o ../gsl/randist/nbinomial.o ../gsl/randist/beta.o ../gsl/randist/exponential.o \
 ../gsl/randist/geometric.o ../gsl/randist/binomial.o ../gsl/randist/poisson.o ../gsl/randist/rdgamma.o  \
-../gsl/randist/chisq.o   ../gsl/randist/gauss.o ../gsl/error.o
+../gsl/randist/chisq.o   ../gsl/randist/gauss.o ../gsl/error.o ../gsl/randist/multinomial.o
+
 
 OBJS = $(GSL_OBJS) $(SERIAL_OBJS)
 

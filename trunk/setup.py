@@ -226,6 +226,7 @@ GSL_FILES = [
   'gsl/randist/binomial.c',
   'gsl/randist/poisson.c',
   'gsl/randist/rdgamma.c',
+  'gsl/randist/multinomial.c',
   'gsl/randist/chisq.c',
   'gsl/randist/gauss.c',
   'gsl/error.c' 

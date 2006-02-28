@@ -186,8 +186,8 @@ class TestMatingSchemes(unittest.TestCase):
   def testControlledMating(self):
     'Testing controlled mating'
     # planned trajectory
-    freq = FreqTrajectoryStoch(freq=0.05, 
-      N=100, s=[1,1.01,1.02])
+    freq = FreqTrajectoryStoch(freq=0.05, N=100)
+    #print freq
     # staring from when?
     burnin = 100
     mutAge = len(freq)
@@ -219,12 +219,90 @@ class TestMatingSchemes(unittest.TestCase):
           at = [burnin+1],
           stage = PreMating),
         stat(alleleFreq=[0]),
-        #pyEval(r'"%%f\n"%%alleleFreq[0][%d]'%StartingAllele)
+        # pyEval(r'"%%d %%6.4f\n"%%(gen, 1-alleleFreq[0][%d])'%StartingAllele, begin=burnin)
       ], 
       end=burnin+mutAge
     )
       
+  def testControlledBinomialSelection(self):
+    'Testing controlled mating'
+    # planned trajectory
+    freq = FreqTrajectoryStoch(freq=0.05, N=100)
+    print freq
+    # staring from when?
+    burnin = 100
+    mutAge = len(freq)
+    # trajectory function
+    # 0 ...., 100, 101, .... 100+mutAge
+    #              x         freq
+    def freqRange(gen):
+      if gen <= burnin:
+        return 0
+      else:
+        return freq[gen-1-burnin]
+
+    #
+    # turn On debug
+    #TurnOnDebug(DBG_MATING)
+    simu = simulator( population(100, loci=[1], ploidy=2), 
+      controlledBinomialSelection( locus=0, allele=StartingAllele+1, freqFunc=freqRange ) 
+      )
+    #print "Simulator created"
+    simu.evolve( 
+      preOps=[
+        initByValue([StartingAllele])
+        ],
+      ops=[
+        pointMutator(atLoci=[0], 
+          toAllele=StartingAllele+1, 
+          inds = [0],
+          at = [burnin+1],
+          stage = PreMating),
+        stat(alleleFreq=[0]),
+        pyEval(r'"%%d %%6.4f\n"%%(gen, 1-alleleFreq[0][%d])'%StartingAllele, begin=burnin)
+      ], 
+      end=burnin+mutAge
+    )
     
+  def testControlledRandomMating(self):
+    'Testing controlled mating'
+    # planned trajectory
+    freq = FreqTrajectoryStoch(freq=0.05, N=100)
+    print freq
+    # staring from when?
+    burnin = 100
+    mutAge = len(freq)
+    # trajectory function
+    # 0 ...., 100, 101, .... 100+mutAge
+    #              x         freq
+    def freqRange(gen):
+      if gen <= burnin:
+        return 0
+      else:
+        return freq[gen-1-burnin]
+
+    #
+    # turn On debug
+    #TurnOnDebug(DBG_MATING)
+    simu = simulator( population(100, loci=[1], ploidy=2), 
+      controlledRandomMating( locus=0, allele=StartingAllele+1, freqFunc=freqRange ) 
+      )
+    #print "Simulator created"
+    simu.evolve( 
+      preOps=[
+        initByValue([StartingAllele])
+        ],
+      ops=[
+        pointMutator(atLoci=[0], 
+          toAllele=StartingAllele+1, 
+          inds = [0],
+          at = [burnin+1],
+          stage = PreMating),
+        stat(alleleFreq=[0]),
+        pyEval(r'"%%d %%6.4f\n"%%(gen, 1-alleleFreq[0][%d])'%StartingAllele, begin=burnin)
+      ], 
+      end=burnin+mutAge
+    )
 
 if __name__ == '__main__':
   unittest.main()
