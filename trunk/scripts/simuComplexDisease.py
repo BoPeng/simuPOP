@@ -2,61 +2,73 @@
 #
 # Purpose:  generate dataset for common complex disease 
 #           with certain number of disease susceptibility
-#           loci.
+#           loci. 
 #
 # Bo Peng (bpeng@rice.edu)
 #
 # $LastChangedDate$
 # $Rev$
 #
-# Known bugs:
-#   1. This script uses 
+# Known limitations/bugs:
 # 
+#  * Currently, this script only handles constant selection pressure
+#    and independent multi-locus selection model. 
+#    
 
 """
 
 Introduction
 =============
 
+NOTE: this version (> rev193) of simuComplexDisease.py uses a significantly
+different mechanism to control the allele frequency of disease susceptibility
+loci. I will describe the method briefly here. More details please see 
+an unpublished paper. :-) If you prefer the previous method, you should check
+out revision 193 of this file from the svn/web interface of simupop.sf.net.
+
 This program simulates the evolution of a complex common disease under the 
 influence of mutation, migration, recombination and population size change. 
 Starting from a small founder population, each simulation will go through
-the following four stages:
+the following steps:
 
-  1. Burn-in the population with mutation and recombination
-  2. Introduce disease mutants and make them common with advantagous selection
-  3. Split and grow the population without migration, disease alleles
-     may be under selection pressure.
-  4. Mix subpopulations at given migration level
+  1. Simulate the trajectory of allele frequency using specified disease model.
+  2. After determining mutant age, start simulation several thousands generations
+     before the disease mutants are introduced. 
+  3. Burn-in the population with mutation and recombination
+  4. Introduce disease alleles and evolve the population with pre-simulated 
+     allele frequency.
+  5. Population structure and migration are specified along with demographic
+     models. The population can be split into several equally-sized subpopulations
+     and then evolve independently, or with migration. 
 
 The result of the simulation is a large multi-generation population. To analyze 
 the population, you will typically need to 
 
-  1. Apply a penetrance function to the population and
-     determine the affectedness for each individual
+  1. Apply a penetrance function to the population and determine the affectedness
+    for each individual
 
   2. Draw Population and/or pedigree based samples and save in popular 
      formats so that the samples can be analyzed by other software like
      genehunter.
      
-The program is written in Python using simuPOP modules. For more information,
+The program is written in Python using the simuPOP modules. For more information,
 please visit simuPOP website http://simupop.sourceforge.net .
 
 Genotype structure and disease
 ===============================
 
-With typical settings, each individual will have 20 chromosomes, each having
+With typical settings, each individual will have 10 chromosomes, each having
 20 equal spaced microsatellite or SNP markers. A disease will be caused by 
 several disease susceptibility loci (DSL) between markers. For example, a
 DSL may be .3 unit to the right of marker 25 (the six marker on the second
-chromosome using a zero-based index). Since we assume that fitness is 
-only determined by genotype, not affectedness status or trait value, we 
-do not assign individual affectedness till the sampling stage.
+chromosome). Since we assume that fitness is only determined by genotype, 
+not affectedness status or trait value, we do not assign individual 
+affectedness till the sampling stage.
 
 Evolutionary Scenario
 =====================
 
-The evolutionary process can be divided into four stages:
+The evolutionary process can be divided into three stages:
 
 Burn-in stage
 ------------
@@ -73,30 +85,12 @@ stepwise mutation model for microsattelite and a Juke-Cantor model for
 SNP markers. Recombination is uniform across all markers.
 
 
-Disease-introduction stage
---------------------------
-
-During this relatively short stage, mutants will be introduced to 
-individuals (one DSL per individual). The mutants will be given strong 
-selective advantage so they will reach a high allele frequency quickly. 
-A mutant will be re-introduced if it gets lost due to genetic drift.
-
-Parameters about the lower and upper bound of acceptable allele 
-frequency at each DSL can be given. During this stage, the intensity
-of selective advantage will vary according to allele frequencies 
-at individual DSL. For example, for a DSL that has reached or 
-exceeded the upper bound, it will be subject to no or even negative
-selection pressure. This mechanism will allow all DSL to reach 
-their expected range at the end of this stage.
-
 No-migration stage
 -------------------
 
 The population will be split into 10 subpopulations and starts to grow,
-aiming at 100,000 or more individuals at the end. No migration is allowed
-between subpopulations so population heterogeneity will build up.
-Negative selection may decrease the allele frequency of DSL.
-
+aiming at 100,000 or more individuals at the final generation. No migration 
+is allowed between subpopulations so population heterogeneity will build up.
 
 Mixing stage
 -------------
@@ -104,6 +98,14 @@ Mixing stage
 Individuals from different subpopulations will be able to migrate following
 a circular step-stone model. Population heterogeneity will be reduced to
 a level depending on migration rate and length of this stage.
+
+Introduction of disease
+-----------------------
+
+The disease allele frequency is simulated before the simulation is performed.
+A single disease mutant is introduce to each DSL at simulated mutant-introduction
+generation. The allele frequency then evolve according to the simulated frequency
+trajectory.
 
 
 Statistics Monitored
@@ -115,19 +117,17 @@ A number of statistics will be measured and saved. They are:
   2. Observed heterogeneity before and after mixing
   3. LD (D prime) between markers and between a DSL and surrounding markers
      at the end of each stage.
-  4. Disease allele frequency at the end of each stage.
+  4. Disease allele frequency trajectory.
 
 """
 
 import simuOpt
-import os, sys, exceptions, types
+import os, sys, exceptions, types, math
 
 #
 # declare all options. getParam will use these information to get parameters
 # from a tk/wxPython-based dialog, command line, config file or user input
 #
-# detailed information about these fields is given in the simuPOP reference
-# manual.
 options = [
   {'arg': 'h',
    'longarg': 'help',
@@ -136,17 +136,20 @@ options = [
    'allowedTypes': [types.NoneType, type(True)],
    'jump': -1          # if -h is specified, ignore any other parameters.
   },
+  #
+  # 
+  {'separator': 'Genotype structure:'},  
   {'longarg': 'numChrom=',
-   'default': 20,
+   'default': 10,
    'configName': 'Number of chromosomes',
-   'prompt': 'Number of chromosomes (20):  ',
+   'prompt': 'Number of chromosomes (10):  ',
    'description': 'Number of chromosomes.',
    'allowedTypes': [types.IntType],
    'validate':  simuOpt.valueGT(0)
   },
   {'longarg': 'numLoci=',
    'default': 20,
-   'configName': 'Number of loci on each chromosome',
+   'configName': 'Number of loci on each chrom',
    'prompt': 'Number of loci on each chromosome (20):  ',
    'description': '''Number of loci on each chromosome, current there 
        only equal number of markers on each chromosome is supported.''',
@@ -167,9 +170,9 @@ options = [
    'chooseOneOf': ['microsatellite', 'SNP']
   },
   {'longarg': 'DSL=',
-   'default': [45, 125, 310],
+   'default': [45, 85, 125],
    'configName': 'DSL after marker (0-indexed)',
-   'prompt': 'Enter a list of 0-indexed disease loci ([45,125,310]):  ',
+   'prompt': 'Enter a list of 0-indexed disease loci ([45,85,125]):  ',
    'description': '''A list of loci *after* a marker. For example, 
         35 means a disease locus after the 16th marker on chromosome 2,
         (if numChrom=numLoci=20). The number of DSL is important since
@@ -189,7 +192,10 @@ options = [
         as the location of all DSL.''',
    'allowedTypes': [types.TupleType, types.ListType],
    'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
-  },  
+  },
+  #
+  #
+  {'separator': 'Demographic model:'},
   {'longarg': 'initSize=',
    'default': 10000,
    'configName': 'Initial population size',
@@ -197,86 +203,6 @@ options = [
    'prompt': 'Initial Population size (10000):  ',
    'description': '''Initial population size. This size will be maintained
         till the end of burnin stage''',
-   'validate':  simuOpt.valueGT(0)
-  },
-  # this parameter will not be shown in the dialog, or be prompted
-  # It can only be given through comandline parameter.
-  {'longarg': 'meanInitAllele=',
-   'default': 50,
-   'allowedTypes': [types.IntType, types.LongType],
-   'description': '''Initial haplotype for the markers. This option ignored for SNP markers
-        since 1111..., 2222.... will be used as initial haplotypes. For 
-        microsatellite markers, this number will be the mean of the alleles used.
-        In this simulation, markers will be initialized with one of five haplotypes
-        given by m-2,m-1,m,m+1,m+2 while m is the mean initial allele. ''',
-   'validate':  simuOpt.valueGT(0)
-  }, 
-  {'longarg': 'burnin=',
-   'default': 500,
-   'configName': 'Length of burn-in stage',
-   'allowedTypes': [types.IntType],
-   'prompt': 'Length of burn in stage (500):  ',
-   'description': 'Number of generations of the burn in stage.',
-   'validate':  simuOpt.valueGT(0)
-  },
-  {'longarg': 'introGen=',
-   'default': 50,
-   'configName': 'Length of disease-intro stage',
-   'allowedTypes': [types.IntType],
-   'prompt': 'Length of disease-introduction stage (50):  ',
-   'description': '''Number of generations to introduce the disease
-        Since the disease will be under positive selection during this
-        stage, large introGen will lead to over-common diseases. Note 
-        that the larger the initial population size is, the longer 
-        introGen is required.''',
-   'validate':  simuOpt.valueGT(0),
-  },
-  {'longarg': 'minAlleleFreq=',
-   'default': [0.045],
-   'configName': 'Minimal allele frequency',
-   'allowedTypes': [types.ListType, types.TupleType],
-   'prompt': 'Minimum allele frequency required for each DSL (0.045):  ',
-   'description': '''Mininal allele frequencies required for each DSL.
-        If a number is given, it is assumed to be the lower bound for all
-        DSL.''',
-   'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
-  },
-  {'longarg': 'maxAlleleFreq=',
-   'default': [0.055],
-   'configName': 'Maximum allele frequency',
-   'allowedTypes': [types.ListType, types.TupleType],
-   'prompt': 'Maximum allele frequency required for each DSL (0.055):  ',
-   'description': '''Maximum allele frequencies required for each DSL.
-        If a number is given, it is assumed to be the upper bound for all
-        DSL.''',
-   'validate':  simuOpt.valueListOf( simuOpt.valueBetween(0,1))
-  },
-  {'longarg': 'fitness=',
-   'default': [1,1,1],
-   'configName': 'Fitness of genotype AA,Aa,aa',
-   'allowedTypes': [types.ListType, types.TupleType],
-   'prompt': ':  Fitness of genotype AA,Aa,aa ([1,1,1]): ',
-   'description': '''Fitness of genotype AA,Aa,aa for every DSL after disease introduction
-        stage. This can be an array (default) of fitness values for genotype AA,Aa,aa ( A
-        is wild type) or an array of such array for each DSL.''',
-   'validate':  simuOpt.valueGE(0.),
-  },
-  {'longarg': 'selMultiLocusModel=',
-  'default': 'none',
-  'configName': 'Multi-locus selection model',
-  'prompt': 'Multi-locus selection model (additive): ',
-  'description': '''Model of overall fitness value given fitness values for each DSL.
-        fitness values are Prod(f_i) for multiplicative model and
-        1-Sum(1-f_i) for additive model. ''',
-  'allowedTypes': [types.StringType],
-  'chooseOneOf': [ 'additive', 'multiplicative', 'none']
-  }, 
-  {'longarg': 'numSubPop=',
-   'default': 10,
-   'configName': 'Number of subpopulations to split',
-   'allowedTypes': [types.IntType],
-   'prompt': 'Number of subpopulations to split (10):  ',
-   'description': 'Number of subpopulations to be split into after burnin stage.',
    'validate':  simuOpt.valueGT(0)
   },
   {'longarg': 'finalSize=',
@@ -287,32 +213,62 @@ options = [
    'description': 'Final population size after population expansion.',
    'validate':  simuOpt.valueGT(0)
   }, 
-  {'longarg': 'noMigrGen=',
-   'default': 400,
-   'configName': 'Length of split-and-grow stage',
-   'prompt': 'Length of split-and-grow stage  (400):  ',
-   'allowedTypes': [types.IntType, types.LongType],
-   'description': '''Number of generations when migration is zero. This stage
-        is used to build up population structure.''',
-   'validate':  simuOpt.valueGT(0)
-  },
-  {'longarg': 'mixingGen=',
-   'default': 50,
-   'configName': 'Length of mixing stage',
-   'allowedTypes': [types.IntType, types.LongType],
-   'prompt': 'Length of mixing stage (population admixing) (50):  ',
-   'description': '''Number of generations when migration is present. This stage
-        will mix individuals from subpopulations using an circular stepping stone
-        migration model.''',
-   'validate':  simuOpt.valueGT(0)
-  },
-  {'longarg': 'growth=',
+  {'longarg': 'growthModel=',
    'default': 'exponential',
    'configName': 'Population growth model',
    'prompt': 'Population growth style, linear or exponential. (exponential):  ',
    'description': '''How population is grown from initSize to finalSize.
         Choose between linear and exponential''',
    'chooseOneOf': ['exponential', 'linear'],
+  },
+  {'longarg': 'burninGen=',
+   'default': 3000,
+   'configName': 'Length of burn-in stage',
+   'allowedTypes': [types.IntType],
+   'prompt': 'Length of burn in stage (3000):  ',
+   'description': 'Number of generations of the burn in stage.',
+   'validate':  simuOpt.valueGT(0)
+  },
+  {'longarg': 'splitGen=',
+   'default': 3400,
+   'configName': 'When to split population',
+   'prompt': 'When to split population (3400):  ',
+   'allowedTypes': [types.IntType, types.LongType],
+   'description': '''At which generation to split the population. 
+        The population will start to grow after burnin stage but will
+        not split till this generation. Note that if the disease is 
+        introduced after this stage, it will be in one of subpopulations.
+   ''',
+   'validate':  simuOpt.valueGT(0)
+  },
+  {'longarg': 'mixingGen=',
+   'default': 3400,
+   'configName': 'When to mix population',
+   'allowedTypes': [types.IntType, types.LongType],
+   'prompt': 'When to mix population: (3400):  ',
+   'description': '''At which generation to start mixing (allow migration.
+        This number should be greater than or equal to split gen.''',
+   'validate':  simuOpt.valueGE(0)
+  },
+  {'longarg': 'endingGen=',
+   'default': 4000,
+   'configName': 'Ending generation number',
+   'allowedTypes': [types.IntType, types.LongType],
+   'prompt': 'When to stop the simulation (4000):  ',
+   'description': '''At which generation to stop the simulation.
+        This is the total generation number.''',
+   'validate':  simuOpt.valueGE(0)
+  },
+  #
+  #
+  {'separator': 'Migration parameters:'},  
+  {'longarg': 'numSubPop=',
+   'default': 10,
+   'configName': 'Number of subpopulations to split',
+   'allowedTypes': [types.IntType],
+   'prompt': 'Number of subpopulations to split (10):  ',
+   'description': 'Number of subpopulations to be split into after burnin stage.',
+   'validate':  simuOpt.valueGT(0)
   },
   {'longarg': 'migrModel=',
    'default': 'stepping stone',
@@ -333,6 +289,38 @@ options = [
    'allowedTypes': [types.IntType, types.FloatType],
    'validate':  simuOpt.valueBetween(0,1)
   },
+  #
+  #
+  {'separator': 'Evolutionary parameters:'},
+  {'longarg': 'curAlleleFreq=',
+   'default': [0.05, 0.05, 0.05],
+   'configName': 'Final allele frequencies',
+   'allowedTypes': [types.ListType, types.TupleType],
+   'prompt': 'Allele frequency at the ending generation (0.05,0.05,0.05):  ',
+   'description': '''Current allele frequencies for each DSL.
+        If a number is given, it is assumed to be the frequency
+        for all DSL.''',
+   'validate': simuOpt.valueListOf( simuOpt.valueBetween(0,1))
+  },
+  {'longarg': 'fitness=',
+   'default': [],
+   'configName': 'Fitness of genotype AA,Aa,aa',
+   'allowedTypes': [types.ListType, types.TupleType],
+   'prompt': ':  Fitness of genotype AA,Aa,aa ([]): ',
+   'description': '''Fitness of genotype AA,Aa,aa in the monogenic case, and 
+        [AA Aa aa BB Bb bb ...] in the polygenic case. ''',
+   'validate':  simuOpt.valueGE(0.),
+  },
+  {'longarg': 'selMultiLocusModel=',
+  'default': 'none',
+  'configName': 'Multi-locus selection model',
+  'prompt': 'Multi-locus selection model (additive): ',
+  'description': '''Model of overall fitness value given fitness values for each DSL.
+        fitness values are Prod(f_i) for multiplicative model and
+        1-Sum(1-f_i) for additive model. ''',
+  'allowedTypes': [types.StringType],
+  'chooseOneOf': [ 'additive', 'multiplicative', 'none']
+  }, 
   {'longarg': 'mutaRate=',
    'default': 0.0001,
    'configName': 'Mutation rate',
@@ -345,15 +333,25 @@ options = [
    'validate':  simuOpt.valueBetween(0,1)
   },
   {'longarg': 'recRate=',
-   'default': 0.0005,
+   'default': [0.0005],
    'configName': 'Recombination rate',
-   'allowedTypes': [types.IntType, types.FloatType],
-   'prompt': 'Recombination rate between adjacent markers. (0.0005): ',
-   'description': '''Recombination rate between adjacent markers. Note 
-         that this value will be different between marker and DSL depending
-         on the location of DSL. ''',
-   'validate':  simuOpt.valueBetween(0,1)
+   'allowedTypes': [types.TupleType, types.ListType],
+   'prompt': 'Recombination rate(s). (0.0005): ',
+   'description': '''If a number is given, it is the recombination rate between
+         adjacent markers. If a list is given, it should be the recombination
+         rate between all markers and DSL. For example, if you have two chromosome
+         with 5 markers, and with DSL after 3. The marker/DSL layout is
+           0 1 2 3 x 5    6 7 8 9 10  
+         The specified recombination rate should be those between 
+           0-1, 1-2, 2-3, 3-x, x-5, 6-7, 7-8, 8-9, 9-10.
+         Note that the distance between 3-x, x-5 is smaller than distance
+         between markers.
+   ''',
+   'validate':  simuOpt.valueListOf(simuOpt.valueBetween(0,1))
   },
+  #
+  # 
+  {'separator': 'Miscellaneous:'},
   {'longarg': 'dryrun',
    'default': False,
    'allowedTypes': [types.IntType],
@@ -428,13 +426,11 @@ def outputStatistics(pop, args):
    5. Mean observed heterogeneity at the marker loci
   '''
   # unwrap parameter
-  (burnin, split, mixing, endGen, outfile) = args
+  (split, mixing, endGen, outfile) = args
   # 
   gen = pop.gen()
   # see how long the simulation has been running
-  if gen == burnin:
-    print "Start introducing disease\t\t"
-  elif gen == split:
+  if gen == split:
     print "Start no-migration stage\t\t"
   elif gen == mixing:
     print "Start mixing\t\t"
@@ -485,86 +481,57 @@ def outputStatistics(pop, args):
   Stat(pop, alleleFreq=DSL, LD = ctrDSLLD + noDSLLD, Fst = nonDSL, 
     heteroFreq = range( pop.totNumLoci() ) )
   # output D', allele frequency at split, mixing and endGen
-  if gen in [split, mixing, endGen]:
-    print >> output, "Average Fst estimated from non-DSL at gen %d: %.4f \n" % (gen, pop.dvars().AvgFst)
-    print >> output, "D between DSL %d (chrom %d) and surrounding markers at gen %d" \
-      % (ctrChromDSL, ctrChrom, gen)
-    for ld in ctrDSLLD:
+  print >> output, "Average Fst estimated from non-DSL at gen %d: %.4f \n" % (gen, pop.dvars().AvgFst)
+  print >> output, "D between DSL %d (chrom %d) and surrounding markers at gen %d" \
+    % (ctrChromDSL, ctrChrom, gen)
+  for ld in ctrDSLLD:
+    print >> output, '%.4f ' % pop.dvars().LD[ld[0]][ld[1]],
+  if noDSLChrom > -1 :
+    print >> output, "\n\nD between a center marker %d (chrom %d) and surrounding markers at gen %d" \
+      % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
+    for ld in noDSLLD:
       print >> output, '%.4f ' % pop.dvars().LD[ld[0]][ld[1]],
-    if noDSLChrom > -1 :
-      print >> output, "\n\nD between a center marker %d (chrom %d) and surrounding markers at gen %d" \
-        % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
-      for ld in noDSLLD:
-        print >> output, '%.4f ' % pop.dvars().LD[ld[0]][ld[1]],
-    print >> output, "\n\nD' between DSL %d (chrom %d) and surrounding markers at gen %d" \
-      % (ctrChromDSL, ctrChrom, gen)
-    for ld in ctrDSLLD:
+  print >> output, "\n\nD' between DSL %d (chrom %d) and surrounding markers at gen %d" \
+    % (ctrChromDSL, ctrChrom, gen)
+  for ld in ctrDSLLD:
+    print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
+  if noDSLChrom > -1:
+    print >> output, "\n\nD' between a center marker %d (chrom %d) and surrounding markers at gen %d" \
+      % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
+    for ld in noDSLLD:
       print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
-    if noDSLChrom > -1:
-      print >> output, "\n\nD' between a center marker %d (chrom %d) and surrounding markers at gen %d" \
-        % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
-      for ld in noDSLLD:
-        print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
-    print >> output, "\n\nAllele frequencies\nall\t",
+  print >> output, "\n\nAllele frequencies\nall\t",
+  for d in DSL:
+    print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][StartingAllele]),
+  for sp in range(numSubPop):
+    print >> output, "\n%d\t" % sp,
     for d in DSL:
-      print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][StartingAllele]),
-    for sp in range(numSubPop):
-      print >> output, "\n%d\t" % sp,
-      for d in DSL:
-        print >> output, '%.4f ' % (1. - pop.dvars(sp).alleleFreq[d][StartingAllele]),
-    print >> output, "\n",
-    # hetero frequency
-    AvgHetero = 0
-    for d in range(pop.totNumLoci()):
-      AvgHetero += pop.dvars().heteroFreq[d][0]
-    AvgHetero /= pop.totNumLoci()
-    # save to pop
-    pop.dvars().AvgHetero = AvgHetero
-    # output it
-    print >> output, '\nAverage counted heterozygosity is %.4f.\n' % AvgHetero
-  return True
-
-def dynaAdvSelector(pop):
-  ''' This selector will apply advantage/purifying selection to DSl according
-    to allele frequency at each DSL. minAlleleFreq and maxAlleleFreq
-    are stored in pop.dvars().
-  '''
-  DSL = pop.dvars().DSL
-  # get allele frequencies
-  Stat(pop, alleleFreq=DSL)
-  # gives 1,1.25,1.5 to promote allele if freq < lower cound
-  # gives 1,0.9,0.8 to select agsinst DSL with freq > upper
-  sel = []
-  freq = pop.dvars().alleleFreq
-  # print +- symbol for each DSL to visualize how frequencies are manipulated
-  for i in range(len(DSL)):
-    # positive selection (promote allele)
-    if 1-freq[DSL[i]][StartingAllele] < pop.dvars().minAlleleFreq[i]:
-      print '+',
-      sel.append( maSelector(locus=DSL[i], wildtype=[StartingAllele], fitness=[1,1.5,2]) )
-    # negative selection (select against allele)
-    elif 1-freq[DSL[i]][StartingAllele] > pop.dvars().maxAlleleFreq[i]:
-      print '-',
-      sel.append( maSelector(locus=DSL[i], wildtype=[StartingAllele], fitness=[1,0.9,0.8]) )
-    else:
-    # encourage slightly towards upper bound
-      print ' ',
-      sel.append( maSelector(locus=DSL[i], wildtype=[StartingAllele], fitness=[1,1.02,1.04]) )
-    # apply multi-locus selector, note that this operator will only
-    # set a variable fitness in pop, actual selection happens during mating.
-    if len(sel ) > 0:  # need adjustment (needed if 'else' part is empty)
-      MlSelect( pop, sel, mode=SEL_Multiplicative)
+      print >> output, '%.4f ' % (1. - pop.dvars(sp).alleleFreq[d][StartingAllele]),
+  print >> output, "\n",
+  # hetero frequency
+  AvgHetero = 0
+  for d in range(pop.totNumLoci()):
+    AvgHetero += pop.dvars().heteroFreq[d][0]
+  AvgHetero /= pop.totNumLoci()
+  # save to pop
+  pop.dvars().AvgHetero = AvgHetero
+  # output it
+  print >> output, '\nAverage counted heterozygosity is %.4f.\n' % AvgHetero
   return True
 
 # simulate function, using a single value of mutation, migration,
 # recombination rate
-def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
-    initSize, meanInitAllele, burnin, introGen, minAlleleFreqTmp,
-    maxAlleleFreqTmp, fitnessTmp, mlSelModelTmp, numSubPop, finalSize, noMigrGen,
-    mixingGen, growth, migrModel, mu, mi, rec, dryrun, filename):
+def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp, 
+    initSize, finalSize, growthModel, 
+    burninGen, splitGen, mixingGen, endingGen, 
+    numSubPop, migrModel, migrRate,
+    curAlleleFreqTmp, fitnessTmp, mlSelModelTmp, mutaRate, recRate, 
+    dryrun, filename):
   ''' run a simulation of complex disease with given parameters. 
-  '''
-  ### CHECK PARAMETERS ###
+  '''  
+  ###
+  ### CHECK PARAMETERS
+  ###
   if initSize < len(DSLafter):
     raise exceptions.ValueError("Initial population size is too small. (Less than number of DSL)")
   # expand .5 -> [0.5, 0.5...]
@@ -574,41 +541,59 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     DSLdist = DSLdistTmp
   if len( DSLafter ) != len(DSLdist):
     raise exceptions.ValueError("Please specify DSL distance for each DSL.")
-  # handle minAlleleFreq and maxAlleleFreq
-  # expand 0.5 -> [0.5,0.5,...]
-  if len(minAlleleFreqTmp) == 1:
-    minAlleleFreq = minAlleleFreqTmp * len(DSLafter)
-  elif len(minAlleleFreqTmp) == len(DSLafter):
-    minAlleleFreq = minAlleleFreqTmp
+  numDSL = len(DSLafter)
+  if burninGen > splitGen or splitGen > mixingGen or splitGen > endingGen:
+    raise exceptions.ValueError("Generations should in the order of burnin, split, mixing and ending")
+  # curAlleleFreq expand 0.5 -> [0.5,0.5,...]
+  if len(curAlleleFreqTmp) == 1:
+    curAlleleFreq = curAlleleFreqTmp * len(DSLafter)
+  elif len(curAlleleFreqTmp) == len(DSLafter):
+    curAlleleFreq = curAlleleFreqTmp
   else:
     raise exceptions.ValueError("min allele frequency should be either a number or a list\n" +
       " of the same length as DSLafter")
-  if len(maxAlleleFreqTmp) == 1:
-    maxAlleleFreq = maxAlleleFreqTmp * len(DSLafter)
-  elif len(maxAlleleFreqTmp) == len(DSLafter):
-    maxAlleleFreq = maxAlleleFreqTmp
-  else:
-    raise exceptions.ValueError("max allele frequency should be either a number or a list\n" +
-      " of the same length as DSLafter")
+  # fitness
   fitness = []
-  if type(fitnessTmp[0]) in [types.FloatType, types.IntType]:
-    for d in DSLafter:
-      # fitness is the same for all DSL
-      fitness.append(fitnessTmp)
+  if fitnessTmp == []:  # neutral process
+    fitness = [1]*(numDSL*3)
   else:
-    if len(fitnessTmp) != len(DSL):
+    if len(fitnessTmp) != numDSL*3:
       raise exceptions.ValueError("Please specify fitness for each DSL")
     fitness = fitnessTmp
-  for f in fitness:
-    if len(f) != 3:
-      raise exceptions.ValueError("Fitness values should be an array of length 3. Given " + str(f) )
+  ###
+  ### simulating population frequency
+  ### 
+  # 1. define population size function
+  def popSizeFunc(gen):
+    if gen < burnin:
+      return [initSize]
+    if growthModel == 'linear':
+      inc = (endSize-initSize)/float(endingGen-burninGen)
+      if gen < splitGen:
+        return [int(initSize+inc*(gen-burnin))]
+      else:
+        return [int(initSize+inc*(gen-burnin)/numSubPop)]*numSubPop
+    else:  # exponential
+      rate =  (math.log(endSize)-math.log(initSize))/(end-burnin)
+      if gen < splitGen:
+        return [int(initSize*math.exp((gen-burnin)*rate))]
+      else:
+        return [int(initSize*math.exp((gen-burnin)*rate)/numSubPop)]*numSubPop
+  def popSizeBackward(gen):
+    if gen > endingGen:
+      return initSize
+    else:
+      return popSizeFunc(endingGen-gen)
+  # 2. simulating allele frequency trajectory
   if markerType == 'microsatellite':
     maxAle = 99                   # max allele
   else:
     maxAle = 1                    # SNP (0 and 1)
-  #### translate numChrom, numLoci, DSLafterLoci to
-  #### loci, lociPos, DSL, nonDSL in the usual index
-  #### (count markers along with DSL)
+  ###
+  ### translate numChrom, numLoci, DSLafterLoci to
+  ### loci, lociPos, DSL, nonDSL in the usual index
+  ### (count markers along with DSL)
+  ###
   numDSL = len(DSLafter)
   if len(DSLdist) != numDSL:
     raise exceptions.ValueError("--DSL and --DSLloc has different length.")
@@ -634,14 +619,27 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         loci[ch] += 1
         lociPos[ch].append(loc+1)
       i += 1
-  # non DSL loci, for convenience
+  # non-DSL loci, for convenience
   nonDSL = range(0, reduce(operator.add, loci))
   for loc in DSL:
     nonDSL.remove(loc)
-  #### Change generation duration to 'generation-points'
-  split  = burnin + introGen
+  ###
+  ### simulation trajectory
+  ###
+  ### Change generation duration to 'generation-points'
+  ###
+  split  = burnin 
   mixing = split  + noMigrGen
-  endGen = mixing + mixingGen  
+  endGen = mixing + mixingGen 
+  #
+  # 
+  #
+  #### simulate allele frequency 
+  traj = FreqTrajectoryMultiStoch(freq=curAlleleFreq, 
+    NtFunc=popSizeFunc, fitness=fitness)
+  ## age of mutatants?
+
+  
   #### initialization and mutation
   if maxAle > 1:  # Not SNP
     preOperators = [
@@ -698,16 +696,11 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
       begin=burnin, end=split) 
     )
   #
-  # use selective pressure to let allele frequency reach 
-  # [minAlleleFreq, maxAlleleFreq].
-  operators.append(
-    pyOperator( func=dynaAdvSelector, stage=PreMating, 
-      begin=burnin, end=split) )
   # check if allele frequency has reached desired value (loosely judged by 4/5*min)
   # if not, terminate the simulation.
   for i in range(len(DSL)):
     operators.append(
-      terminateIf("1-alleleFreq[%d][%d]<%f" % (DSL[i], StartingAllele, minAlleleFreq[i]*4/5.),
+      terminateIf("1-alleleFreq[%d][%d]<%f" % (DSL[i], StartingAllele, curAlleleFreq[i]*4/5.),
       at=[split]) )
   #### no migration stage
   if numSubPop > 1:
@@ -788,8 +781,7 @@ def simuComplexDisease( numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     # save DSL info, some operators will use it.
     pop.dvars().DSL = DSL
     pop.dvars().numLoci = numLoci
-    pop.dvars().minAlleleFreq = minAlleleFreq
-    pop.dvars().maxAlleleFreq = maxAlleleFreq
+    pop.dvars().curAlleleFreq = curAlleleFreq
     # clear log file if it exists
     try:
       os.remove(filename+'.log')
@@ -840,31 +832,39 @@ if __name__ == '__main__':
   ############## GET OPTIONS ####################################
   allParam = getOptions()
   # unpack options
-  (numChrom, numLoci, markerType, DSLafter, DSLdist, initSize, 
-    meanInitAllele, burnin, introGen, minAlleleFreq, maxAlleleFreq, 
-    fitness, mlSelModel, numSubPop, finalSize, noMigrGen,
-    mixingGen, growth, migrModel, migrRate, mutaRate, recRate,
+  (numChrom, numLoci, markerType, DSLafter, DSLdist, 
+    #
+    initSize, finalSize, growthModel, 
+    burninGen, splitGen, mixingGen, endingGen, 
+    #
+    numSubPop, migrModel, migrRate,
+    #
+    curAlleleFreq, fitness, selMultiLocusModel,
+    mutaRate, recRate, 
+    #
     dryrun, filename) = allParam
   #
   if markerType == 'SNP':
     simuOpt.setOptions(alleleType='binary')
   else:
     simuOpt.setOptions(alleleType='short')
-  #simuOpt.setOptions(quiet=True)
+    
+  simuOpt.setOptions(quiet=True)
 
   # load simuPOP libraries
   from simuPOP import *
   from simuUtil import *
   #
   # check minimal requirement of simuPOP version
-  if simuRev() < 47  :
-    raise exceptions.SystemError('''This scripts requires simuPOP revision >=47. 
+  if simuRev() < 199  :
+    raise exceptions.SystemError('''This scripts requires simuPOP revision >=199. 
       Please upgrade your simuPOP distribution.''' )
   #
   ################## RUN THE SIMULATION ###############
-  simuComplexDisease( numChrom, numLoci, markerType, 
-    DSLafter, DSLdist, initSize, meanInitAllele, burnin, introGen, 
-    minAlleleFreq, maxAlleleFreq, fitness, mlSelModel, numSubPop, 
-    finalSize, noMigrGen, mixingGen, growth, migrModel, 
-    mutaRate, migrRate, recRate, dryrun, filename)
+  simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdist, 
+    initSize, finalSize, growthModel, 
+    burninGen, splitGen, mixingGen, endingGen, numSubPop, migrModel, migrRate,
+    curAlleleFreq, fitness, selMultiLocusModel, mutaRate, recRate, 
+    dryrun, filename)
+  
   print "Done!"

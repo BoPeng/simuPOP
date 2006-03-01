@@ -14,6 +14,7 @@ version 0.6.13 - currently available as snapshot
   - CHG: (internal change) abort the original template design. This 
          will make the source less flexible but can dramatically improve
          development time.
+  - CHG: add separator to simuOpt's parameter specification.
          
 
 version 0.6.12 - (Rev 186) - Feb 18, 2006 

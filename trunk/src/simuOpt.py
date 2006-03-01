@@ -242,8 +242,11 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False):
     # validate p
     for k in p.keys():
       if not k in ['arg', 'longarg', 'configName', 'allowedTypes', 'prompt', \
-        'jump', 'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', 'chooseFrom']:
+        'jump', 'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', 'chooseFrom',
+        'separator']:
         raise exceptions.ValueError("Unrecognized option entry " + k )
+    if p.has_key('separator'):
+      continue
     val = getParamShortArg(p, processedArgs)
     if val == None:
       val = getParamLongArg(p, processedArgs)
@@ -298,11 +301,16 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False):
 # function to handle all the stuff.
 # Maybe a class approach will be used later.
 #
-def tkGetParam(options, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
+def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
   ''' get options from a given options structure '''
   import Tkinter as tk
   if len(options) == 0:
     raise exceptions.ValueError("Empty field names...")  # some behaviors
+  # remove separators, tk version does not do this
+  options = []
+  for g in opt:
+    if not g.has_key('separator'):
+      options.append(g)
   # values, not the final result
   # first set them with command line options etc
   values = []
@@ -317,7 +325,8 @@ def tkGetParam(options, title = '', description='', details='', checkUnprocessed
     # validate p
     for k in p.keys():
       if not k in ['arg', 'longarg', 'configName', 'allowedTypes', 'prompt', \
-        'jump', 'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', 'chooseFrom']:
+        'jump', 'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', \
+        'chooseFrom', 'separator']:
         raise exceptions.ValueError("Unrecognized option entry " + k )
     val = getParamShortArg(p, processedArgs)
     if val == None:
@@ -555,17 +564,21 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
     # validate p
     for k in p.keys():
       if not k in ['arg', 'longarg', 'configName', 'allowedTypes', 'prompt', \
-        'jump', 'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', 'chooseFrom']:
+        'jump', 'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', \
+        'chooseFrom', 'separator']:
         raise exceptions.ValueError("Unrecognized option entry " + k )
-    val = getParamShortArg(p, processedArgs)
-    if val == None:
-      val = getParamLongArg(p, processedArgs)
-    if val == None:
-      val = getParamConfigFile(p, processedArgs)
-    if val == None:
-      if p.has_key('default'):
-        val = p['default']
-    # ignore jump options
+    if p.has_key('separator'):
+      val = p['separator']
+    else:
+      val = getParamShortArg(p, processedArgs)
+      if val == None:
+        val = getParamLongArg(p, processedArgs)
+      if val == None:
+        val = getParamConfigFile(p, processedArgs)
+      if val == None:
+        if p.has_key('default'):
+          val = p['default']
+      # ignore jump options
     values.append(val)
   # look if any argument was not processed
   if checkUnprocessedArgs:
@@ -590,6 +603,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
     ''' get result and convert values '''
     for g in range(len(entryWidgets)):
       if entryWidgets[g] == None:
+        values[g] = None
         continue
       try:
         # get text from different type of entries
@@ -651,8 +665,10 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
   # top message
   box = wx.BoxSizer(wx.VERTICAL)
   # do not use a very long description please
-  box.Add( wx.StaticText(parent=dlg, id=-1, label='\n'+description), 
-    0, wx.EXPAND | wx.LEFT | wx.ALIGN_CENTER , 50)
+  topLabel = wx.StaticText(parent=dlg, id=-1, label='\n'+description)
+  box.Add( topLabel, 0, wx.EXPAND | wx.LEFT | wx.ALIGN_CENTER , 50)
+  #topLabel.SetForegroundColour('Black')
+  topLabel.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL))
   # add a box for all ...
   paraBox = wx.FlexGridSizer(cols=nCol)
   for b in range(nCol):
@@ -670,7 +686,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
   # chooseFrom count as three
   colParam = 0
   for opt in options:
-    if opt.has_key('configName'):
+    if opt.has_key('configName') or opt.has_key('separator'):
       colParam += 1
     if opt.has_key('chooseFrom'):
       colParam += len( opt['chooseFrom']) -2
@@ -684,12 +700,22 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
   # all entries
   for g in range(len(options)):
     opt = options[g]
-    if not opt.has_key('configName'):
+    if not (opt.has_key('configName') or opt.has_key('separator')) :
       continue
     colIndex = colCount / colParam
+    if opt.has_key('separator'):
+      labelWidgets[g] = wx.StaticText(parent=dlg, id=-1, label=opt['separator'])
+      #labelWidgets[g].SetForegroundColour('Blue')
+      labelWidgets[g].SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD))
+      gridBox[colIndex].Add(labelWidgets[g], 0, wx.ALIGN_LEFT )
+      entryWidgets[g] = None
+      gridBox[colIndex].Add(wx.StaticText(parent=dlg, id=-1, label=''), 1, wx.ALIGN_LEFT )
+      colCount += 1
+      continue
+    else: # configName
+      labelWidgets[g] = wx.StaticText(parent=dlg, id=-1, label=opt['configName'])
+      gridBox[colIndex].Add(labelWidgets[g], 0, wx.ALIGN_LEFT )
     # --------- entryWidget ----------------------------------------------
-    labelWidgets[g] = wx.StaticText(parent=dlg, id=-1, label=opt['configName'])
-    gridBox[colIndex].Add(labelWidgets[g], 0, wx.ALIGN_LEFT )
     # use different entry method for different types
     if opt.has_key('chooseOneOf'):  # single choice
       entryWidgets[g] = wx.Choice(parent=dlg, id=g, choices = opt['chooseOneOf'])
@@ -751,9 +777,14 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
   #app.MainLoop()  # run it!
   # -------- after the run has completed ----------------------------------
   if len(values) == len(options):
-    return values
+    # remove values inserted by separators
+    ret = []
+    for p in range(len(options)):
+      if not options[p].has_key('separator'):
+        ret.append( values[p] )
+    return ret
   else:
-   return []
+    return []
 
 
 # get parameter
@@ -860,7 +891,7 @@ def usage(options, before=''):
   return message
 
 
-def saveConfig(options, file, param):
+def saveConfig(opt, file, param):
   """ 
     extract information from options and form a formated string of usage.
   """
@@ -869,6 +900,11 @@ def saveConfig(options, file, param):
   except:
     print 'Can not open ', file , ' to write.'
     return
+  # remove separators from opt
+  options = []
+  for g in opt:
+    if not g.has_key('separator'):
+      options.append(g)
   if len(options) != len(param):
     raise ValueError("Length of option specification and param should be the same.")
   f.write("# configuration file for program " + sys.argv[0] + "\n")

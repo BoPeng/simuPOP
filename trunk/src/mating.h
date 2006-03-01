@@ -492,7 +492,7 @@ namespace simuPOP
   //
   //
   vectorf FreqTrajectoryStoch( double freq, long N=0,
-    PyObject* NtFunc=NULL, vectorf s=vectorf(), PyObject* sFunc=NULL,
+    PyObject* NtFunc=NULL, vectorf fitness=vectorf(), PyObject* fitnessFunc=NULL,
     ULONG T=100000);
 
   class trajectory
@@ -535,8 +535,8 @@ namespace simuPOP
   //           gen is defined in reversed order. NtFunc(0) should be current
   //           generation number.
   //    freq   expected allele frequencies of alleles of multiple unlinked loci
-  //    s      constant fitness for [AA, Aa, aa, BB, Bb, bb ...]
-  //    sFunc  a python function that returns selection pressure at each generation
+  //    fitness  constant fitness for [AA, Aa, aa, BB, Bb, bb ...]
+  //    fitnessFunc  a python function that returns selection pressure at each generation
   //           the function expects parameters gen and freq. gen is current generation
   //           number and freq is the allele frequency at all loci. This allows
   //           frequency dependent selection. gen is defined in reversed order.
@@ -551,7 +551,7 @@ namespace simuPOP
   //
   //
   trajectory FreqTrajectoryMultiStoch( vectorf freq=vectorf(), long N=0,
-    PyObject* NtFunc=NULL, vectorf s=vectorf(), PyObject* sFunc=NULL,
+    PyObject* NtFunc=NULL, vectorf fitness=vectorf(), PyObject* fitnessFunc=NULL,
     ULONG T=100000);
 
   // simulate trajectory

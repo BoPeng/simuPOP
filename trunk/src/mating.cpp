@@ -512,7 +512,7 @@ namespace simuPOP
   }
 
   vectorf FreqTrajectoryStoch( double freq, long N,
-    PyObject* NtFunc, vectorf s, PyObject* sFunc,
+    PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc,
     ULONG T)
   {
     // is NtFunc callable?
@@ -527,29 +527,29 @@ namespace simuPOP
 
     // 1, 1+s1, 1+s2
     double s1, s2;
-    if( sFunc!= NULL )
+    if( fitnessFunc!= NULL )
     {
-      if( ! PyCallable_Check(sFunc) )
-        throw ValueError("sFunc is not a valid Python function.");
+      if( ! PyCallable_Check(fitnessFunc) )
+        throw ValueError("fitnessFunc is not a valid Python function.");
       else
         // increase the ref, just to be safe
-        Py_INCREF(sFunc);
+        Py_INCREF(fitnessFunc);
     }
-    else if( s.empty() )
+    else if( fitness.empty() )
       // default to [1,1,1]
     {
       s1 = 0.;
       s2 = 0.;
     }
-    else if( s.size() != 3 || s[0] == 0)
+    else if( fitness.size() != 3 || fitness[0] == 0)
     {
       throw ValueError("s should be a vector of length 3. (for AA, Aa and aa)");
     }
     else
     {
       // convert to the form 1, s1, s2
-      s1 = s[1] / s[0] - 1.;
-      s2 = s[2] / s[0] - 1.;
+      s1 = fitness[1] / fitness[0] - 1.;
+      s2 = fitness[2] / fitness[0] - 1.;
     }
 
     // get current population size
@@ -591,11 +591,11 @@ namespace simuPOP
       }
       //
       // get fitness
-      if( sFunc != NULL )
+      if( fitnessFunc != NULL )
       {
         if( idx+1 >= s1_cache.size() )
         {
-          PyCallFunc(sFunc, "(i)", idx+1, s_vec, PyObj_As_Array);
+          PyCallFunc(fitnessFunc, "(i)", idx+1, s_vec, PyObj_As_Array);
 
           DBG_ASSERT(s_vec.size()==3 || s_vec[0] != 0., ValueError,
             "Returned value from sFunc should be a vector of size 3");
@@ -692,8 +692,8 @@ namespace simuPOP
     // clean up
     if( NtFunc != NULL)
       Py_DECREF(NtFunc);
-    if( sFunc != NULL)
-      Py_DECREF(sFunc);
+    if( fitnessFunc != NULL)
+      Py_DECREF(fitnessFunc);
 
     // number of valid generation is idx+1
     vectorf traj(idx+1);
@@ -723,7 +723,7 @@ namespace simuPOP
   }
 
   trajectory FreqTrajectoryMultiStoch( vectorf freq, long N,
-    PyObject* NtFunc, vectorf s, PyObject* sFunc, ULONG T)
+    PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc, ULONG T)
   {
     size_t nLoci = freq.size();
     size_t i, j, curI, nextI;
@@ -734,16 +734,16 @@ namespace simuPOP
 
     // in the cases of independent and constant selection pressure
     // easy case.
-    if( sFunc == NULL)
+    if( fitnessFunc == NULL)
     {
-      DBG_FAILIF( (!s.empty()) && (s.size() != nLoci*3),
-        ValueError, "Wrong s length " + toStr(s.size()));
+      DBG_FAILIF( (!fitness.empty()) && (fitness.size() != nLoci*3),
+        ValueError, "Wrong s length " + toStr(fitness.size()));
 
       for( i=0; i<nLoci; ++i)
       {
-        if( ! s.empty() )
+        if( ! fitness.empty() )
           result.setTraj(FreqTrajectoryStoch(freq[i], N, NtFunc,
-            vectorf(s.begin()+3*i, s.begin()+3*(i+1)),
+            vectorf(fitness.begin()+3*i, fitness.begin()+3*(i+1)),
             NULL, T), i);
         else
           result.setTraj(FreqTrajectoryStoch(freq[i], N, NtFunc,
@@ -766,20 +766,20 @@ namespace simuPOP
     // sAll will store returned value of sFunc,
     // and be converted to 1, 1+s1, 1+s2 format ...
     vectorf sAll;
-    if( sFunc != NULL )
+    if( fitnessFunc != NULL )
     {
-      if( ! PyCallable_Check(sFunc) )
+      if( ! PyCallable_Check(fitnessFunc) )
         throw ValueError("sFunc is not a valid Python function.");
       else
         // increase the ref, just to be safe
-        Py_INCREF(sFunc);
+        Py_INCREF(fitnessFunc);
     }
-    else if( s.empty() )
+    else if( fitness.empty() )
       // default to [1,1,1]
     {
       sAll.resize(nLoci*3, 0.);
     }
-    else if( s.size() != 3*nLoci)
+    else if( fitness.size() != 3*nLoci)
     {
       throw ValueError("s should be a vector of length 3 times number of loci. (for AA, Aa and aa etc)");
     }
@@ -788,8 +788,8 @@ namespace simuPOP
       for(i=0; i<nLoci; ++i)
       {
         // convert to the form 1, s1, s2
-        sAll[3*i+1] = s[3*i+1] / s[3*i] - 1.;
-        sAll[3*i+2] = s[3*i+2] / s[3*i] - 1.;
+        sAll[3*i+1] = fitness[3*i+1] / fitness[3*i] - 1.;
+        sAll[3*i+2] = fitness[3*i+2] / fitness[3*i] - 1.;
         sAll[3*i] = 0.;
       }
     }
@@ -835,11 +835,11 @@ namespace simuPOP
       //
       // get fitness, since it will change according to
       // xt, I do not cache the result
-      if( sFunc != NULL )
+      if( fitnessFunc != NULL )
       {
         // compile allele frequency... and pass
         PyObject* freqObj = Double_Vec_As_NumArray( xt.begin()+nLoci*idx, xt.begin()+nLoci*(idx+1) );
-        PyCallFunc2(sFunc, "(iO)", idx+1, freqObj, sAll, PyObj_As_Array);
+        PyCallFunc2(fitnessFunc, "(iO)", idx+1, freqObj, sAll, PyObj_As_Array);
 
         DBG_ASSERT(sAll.size()==3*nLoci, ValueError,
           "Returned value from sFunc should be a vector of size 3");
@@ -979,8 +979,8 @@ namespace simuPOP
     // clean up
     if( NtFunc != NULL)
       Py_DECREF(NtFunc);
-    if( sFunc != NULL)
-      Py_DECREF(sFunc);
+    if( fitnessFunc != NULL)
+      Py_DECREF(fitnessFunc);
 
     // number of valid generation is idx+1
     vectorf traj(idx+1);

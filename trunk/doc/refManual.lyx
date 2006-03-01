@@ -75,6 +75,7 @@ status collapsed
 
 \begin_layout Standard
 
+
 \backslash
 hspace{1cm}
 \end_layout
@@ -85,6 +86,7 @@ hspace{1cm}
 
 \begin_layout Standard
 
+
 \backslash
 vspace{5in}
 \end_layout
@@ -94,6 +96,7 @@ vspace{5in}
 \end_layout
 
 \begin_layout Standard
+
 {
 \backslash
 large
@@ -107,6 +110,7 @@ textsf Acknowledgements: }
 
 \begin_layout Standard
 
+
 \backslash
 vspace{.2cm}
 \end_layout
@@ -116,6 +120,7 @@ vspace{.2cm}
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 hspace{.3cm} Dr.
@@ -127,6 +132,7 @@ hspace{.3cm} Dr.
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 hspace{.3cm} Dr.
@@ -141,6 +147,7 @@ c cious Balloux
 
 \begin_layout Standard
 
+
 \backslash
 hspace{.3cm} Dr.
  William Amos
@@ -152,6 +159,7 @@ hspace{.3cm} Dr.
 
 \begin_layout Standard
 
+
 \backslash
 hspace{.3cm} SWIG user community
 \end_layout
@@ -162,6 +170,7 @@ hspace{.3cm} SWIG user community
 
 \begin_layout Standard
 
+
 \backslash
 hspace{.3cm} Python user community 
 \end_layout
@@ -171,6 +180,7 @@ hspace{.3cm} Python user community
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 hspace{.3cm} Keck Center for Computational and Structural Biology
@@ -187,6 +197,7 @@ status collapsed
 
 \begin_layout Standard
 
+
 \backslash
 vspace{.7in} 
 \end_layout
@@ -201,6 +212,7 @@ vspace{.7in}
 status collapsed
 
 \begin_layout Standard
+
  
 \backslash
 copyright{} 
@@ -213,6 +225,7 @@ copyright{}
 status collapsed
 
 \begin_layout Standard
+
 
 \backslash
 vspace{.3cm} 
@@ -492,6 +505,7 @@ After installation, you should have the following files and directories
 status open
 
 \begin_layout Standard
+
 simuPOP.py
 \end_layout
 
@@ -514,6 +528,7 @@ options.
 status open
 
 \begin_layout Standard
+
 simuOpt.py
 \end_layout
 
@@ -529,6 +544,7 @@ simuOpt.py
 status collapsed
 
 \begin_layout Standard
+
 simuPOP_std.py, 
 \backslash
 _simuPOP_std.so
@@ -546,6 +562,7 @@ _simuPOP_std.so
 status collapsed
 
 \begin_layout Standard
+
 simuPOP
 \backslash
 _op.py, 
@@ -570,6 +587,7 @@ _op.so
 status open
 
 \begin_layout Standard
+
 simuPOP
 \backslash
 _la.py, 
@@ -610,6 +628,7 @@ fstat
 status open
 
 \begin_layout Standard
+
 simuPOP
 \backslash
 _ba.py, 
@@ -642,6 +661,7 @@ library to simulate large amount of SNP markers.
 status collapsed
 
 \begin_layout Standard
+
 simuUtil.py, simuSciPy.py, simuMatPlt.py, simuRPy.py 
 \end_layout
 
@@ -691,6 +711,7 @@ but uses
 status collapsed
 
 \begin_layout Standard
+
 README, ChangeLog, etc.
 \end_layout
 
@@ -1000,6 +1021,7 @@ individual
 status collapsed
 
 \begin_layout Standard
+
 genotypic structure
 \end_layout
 
@@ -1032,6 +1054,7 @@ tion structure.
 status collapsed
 
 \begin_layout Standard
+
 Mating scheme 
 \end_layout
 
@@ -1131,6 +1154,7 @@ variables are associated with populations.
 status collapsed
 
 \begin_layout Standard
+
 expression and statement
 \end_layout
 
@@ -9699,6 +9723,14 @@ simuOpt
 will choose one or more items from a list of values using a listbox (tk)
  or a combo box (wxPython) .
  
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+separator:
+\family default
+ if specified, a blue label will be used to separate groups of parameters.
 \end_layout
 
 \begin_layout Itemize
