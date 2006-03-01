@@ -15837,6 +15837,7 @@ gsl/randist/chisq.c
 gsl/randist/exponential.c
 gsl/randist/gauss.c
 gsl/randist/geometric.c
+gsl/randist/multinomial.c
 gsl/randist/nbinomial.c
 gsl/randist/poisson.c
 gsl/randist/rdgamma.c

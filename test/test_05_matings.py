@@ -116,22 +116,22 @@ class TestMatingSchemes(unittest.TestCase):
     # s is default to neutral process
     path = FreqTrajectoryStoch(freq=0.3, N=10000)
     # advantageous allele, s2>s1>0 
-    path = FreqTrajectoryStoch(freq=0.3, N=10000, s=[1, 1, 1.01])
+    path = FreqTrajectoryStoch(freq=0.3, N=10000,fitness=[1, 1, 1.01])
     # overdominance, s1 > s2 > 0
-    path = FreqTrajectoryStoch(freq=0.3, N=10000, s=[1, 1.02, 1])
+    path = FreqTrajectoryStoch(freq=0.3, N=10000,fitness=[1, 1.02, 1])
     # with week purifying selection (additive)
-    path = FreqTrajectoryStoch(freq=0.3, N=10000, s=[1, 0.9999, 0.9998])
+    path = FreqTrajectoryStoch(freq=0.3, N=10000,fitness=[1, 0.9999, 0.9998])
     # population growth
     def NtFunc(gen):
       return 1000+10000*math.exp(-0.001*(gen))
     # neutral
     path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc)
     # advantageous allele, s2>s1>0 
-    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc, s=[1, 1, 1.01])
+    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc,fitness=[1, 1, 1.01])
     # overdominance, s1 > s2 > 0
-    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc, s=[1, 1.02, 1])
+    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc,fitness=[1, 1.02, 1])
     # with week purifying selection (additive)
-    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc, s=[1, 0.9999, 0.9998])
+    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc,fitness=[1, 0.9999, 0.9998])
     #
     # changing selection pressure
     def sFunc(gen):
@@ -147,9 +147,9 @@ class TestMatingSchemes(unittest.TestCase):
     'Testing the trajectory obtained from backward binomial sampling'
     TurnOnDebug(DBG_MATING)
     #path = FreqTrajectoryMultiStoch(freq=[0.1], N=10000, 
-    #  s=[1, 1,01, 1.02], T=100000)
+    # fitness=[1, 1,01, 1.02], T=100000)
     path = FreqTrajectoryMultiStoch(freq=[0.05, 0.1], N=10000, 
-      s=[1, 1.01, 1.02, 1, 1.002, 1.002], T=100000)
+     fitness=[1, 1.01, 1.02, 1, 1.002, 1.002], T=100000)
     # using sFunc
     def s(gen, freq):
       if gen > 1000:
