@@ -482,9 +482,13 @@ namespace simuPOP
   //    sFunc  a python function that returns selection pressure at each generation
   //           the function expects a single parameter gen which is defined
   //           in reversed order.
-  //    T      maximum generation number. The process will terminate even if it
+  //    minGen minimal generation number. The process will restart if the trajectory 
+  //           is less than minGen. Default to 0.
+  //    maxGen maximum generation number. The process will terminate or restart if it
   //           can not reach allele zero after T generations. Default to 100,000,
   //           roughly 2,000,000 years which is longer than human history.
+  //    restartIfFail  If the process can not finish after T generations, restart if
+  //           restartIfFail=true, otherwise return. Default to false.
   //
   // Of course, you should specify only one of N/NtFunc and one of s/sFunc
   //
@@ -493,36 +497,7 @@ namespace simuPOP
   //
   vectorf FreqTrajectoryStoch( double freq, long N=0,
     PyObject* NtFunc=NULL, vectorf fitness=vectorf(), PyObject* fitnessFunc=NULL,
-    ULONG T=100000);
-
-  class trajectory
-  {
-    public:
-      trajectory(size_t nTraj=1):m_freqs(nTraj)
-      {
-      }
-
-      int numTraj()
-      {
-        return m_freqs.size();
-      }
-
-      size_t maxLen();
-
-      void setTraj(const vectorf& freq, size_t idx=0);
-
-      vectorf traj(size_t idx=0)
-      {
-        DBG_FAILIF( idx >= m_freqs.size(), IndexError,
-          "Index out of range");
-
-        return m_freqs[idx];
-      }
-
-    private:
-      // all frequencies
-      vector<vector<double> > m_freqs;
-  };
+    ULONG minT=0, ULONG maxT=100000, bool restartIfFail=false);
 
   //
   // simulate trajectories of disease susceptibility loci using an extension of
@@ -540,19 +515,22 @@ namespace simuPOP
   //           the function expects parameters gen and freq. gen is current generation
   //           number and freq is the allele frequency at all loci. This allows
   //           frequency dependent selection. gen is defined in reversed order.
-  //    T      maximum generation number. The process will return if it can not
-  //           reach allele zero after T generations, even if alleles are not fixed.
-  //           Default to 100,000, roughly
-  //           2,000,000 years, longer than human history.
+  //    minGen minimal generation number. The process will restart if the trajectory 
+  //           is less than minGen. Default to 0.
+  //    maxGen maximum generation number. The process will terminate or restart if it
+  //           can not reach allele zero after T generations. Default to 100,000,
+  //           roughly 2,000,000 years which is longer than human history.
+  //    restartIfFail  If the process can not finish after T generations, restart if
+  //           restartIfFail=true, otherwise return. Default to false.
   //
   // Of course, you should specify only one of N/NtFunc and one of s/sFunc
   //
   // Tracking the allele frequency of allele a.
   //
   //
-  trajectory FreqTrajectoryMultiStoch( vectorf freq=vectorf(), long N=0,
+  matrix FreqTrajectoryMultiStoch( vectorf freq=vectorf(), long N=0,
     PyObject* NtFunc=NULL, vectorf fitness=vectorf(), PyObject* fitnessFunc=NULL,
-    ULONG T=100000);
+    ULONG minGen=0, ULONG maxGen=100000, bool restartIfFail=false);
 
   // simulate trajectory
   vectorf FreqTrajectorySelSim(

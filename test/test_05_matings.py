@@ -134,22 +134,22 @@ class TestMatingSchemes(unittest.TestCase):
     path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc,fitness=[1, 0.9999, 0.9998])
     #
     # changing selection pressure
-    def sFunc(gen):
+    def fitnessFunc(gen):
       if gen > 1000:  # previously positive selection
         return [1, 1.01, 1.02]
       else:           # then under purifying selection
         return [1, 0.999, 0.998]
     # neutral
-    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc, sFunc=sFunc)
+    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc, fitnessFunc=fitnessFunc)
     # print path
 
   def testTrajectoryMultiStoch(self):
     'Testing the trajectory obtained from backward binomial sampling'
     TurnOnDebug(DBG_MATING)
     #path = FreqTrajectoryMultiStoch(freq=[0.1], N=10000, 
-    # fitness=[1, 1,01, 1.02], T=100000)
+    # fitness=[1, 1,01, 1.02], maxGen=100000)
     path = FreqTrajectoryMultiStoch(freq=[0.05, 0.1], N=10000, 
-     fitness=[1, 1.01, 1.02, 1, 1.002, 1.002], T=100000)
+     fitness=[1, 1.01, 1.02, 1, 1.002, 1.002], maxGen=100000)
     # using sFunc
     def s(gen, freq):
       if gen > 1000:
@@ -157,7 +157,7 @@ class TestMatingSchemes(unittest.TestCase):
       else:
         return [1, 0.99, 0.98, 1, 0.999, 0.998]
     path = FreqTrajectoryMultiStoch(freq=[0.05, 0.1], N=10000, 
-      sFunc=s, T=100000)
+      fitnessFunc=s, maxGen=100000)
     # then , with frequency dependent?
     #print path.numTraj(), path.maxLen(), path.traj(0), path.traj(1)
  
@@ -228,7 +228,6 @@ class TestMatingSchemes(unittest.TestCase):
     'Testing controlled mating'
     # planned trajectory
     freq = FreqTrajectoryStoch(freq=0.05, N=100)
-    print freq
     # staring from when?
     burnin = 100
     mutAge = len(freq)
@@ -268,7 +267,6 @@ class TestMatingSchemes(unittest.TestCase):
     'Testing controlled mating'
     # planned trajectory
     freq = FreqTrajectoryStoch(freq=0.05, N=100)
-    print freq
     # staring from when?
     burnin = 100
     mutAge = len(freq)

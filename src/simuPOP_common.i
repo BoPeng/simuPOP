@@ -583,7 +583,7 @@ def new_controlledMating(self, matingScheme, freqFunc, locus=-1, loci=[],
     al = [allele]
   elif type(alleles) in [types.IntType, types.LongType]:
     al = [alleles]
-  elif type(alleles) in [types.TupleType, types.ListType] and len(ali)>0:
+  elif type(alleles) in [types.TupleType, types.ListType] and len(alleles)>0:
     al = alleles
   else:
     raise exceptions.TypeError('Please specify allele or alleles')
