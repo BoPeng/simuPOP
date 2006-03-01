@@ -513,7 +513,7 @@ namespace simuPOP
 
   vectorf FreqTrajectoryStoch( double freq, long N,
     PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc,
-    ULONG T)
+    ULONG minGen, ULONG maxGen, bool restartIfFail)
   {
     // is NtFunc callable?
     if( NtFunc != NULL )
@@ -664,10 +664,19 @@ namespace simuPOP
 
       if( it[idx+1] == 0 )
       {
+        if( idx+1 < minGen)
+        {
+          cout << "Path too short. Retrying" << endl;
+          idx = 0;
+          continue;
+        }
         // need 0, 1, ....,
-        if( it[idx] == 1 )
+        else if( it[idx] == 1 )
+        {
+          // success
           break;
-        else
+        }
+        else 
         {
           DBG_DO(DBG_MATING, cout << "Reaching 0, but next gen has more than 1 allele a" << endl);
           // restart
@@ -680,10 +689,19 @@ namespace simuPOP
         idx = 0;
       }
       // if not done, but t already reaches T
-      else if( idx == T )
+      else if( idx == maxGen )
       {
-        cout << "Warning: reaching T gnerations. Return whatever I have now." << endl;
-        break;
+        if( restartIfFail )
+        {
+          idx = 0;
+          cout << "Warning: reaching max gnerations. Restart the process." << endl;
+          continue;
+        }
+        else
+        {
+          cout << "Warning: reaching max gnerations. Return whatever I have now." << endl;
+          break;
+        }
       }
       else
         // go to next generation
@@ -702,35 +720,16 @@ namespace simuPOP
     return traj;
   }
 
-  size_t trajectory::maxLen()
-  {
-    size_t len = 0;
-    for(size_t i=0; i<m_freqs.size(); ++i)
-      if( m_freqs[i].size() > len)
-        len = m_freqs[i].size();
-    return len;
-  }
-
-  void trajectory::setTraj(const vectorf& freq, size_t idx)
-  {
-    DBG_FAILIF( idx >= m_freqs.size(), IndexError,
-      "Index out of range");
-
-    size_t i;
-    for(i=0; i<freq.size() && freq[i]==0.; i++);
-
-    m_freqs[idx] = vectorf(freq.begin()+i, freq.end());
-  }
-
-  trajectory FreqTrajectoryMultiStoch( vectorf freq, long N,
-    PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc, ULONG T)
+  matrix FreqTrajectoryMultiStoch( vectorf freq, long N,
+    PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc, 
+    ULONG minGen, ULONG maxGen, bool restartIfFail)
   {
     size_t nLoci = freq.size();
     size_t i, j, curI, nextI;
 
     DBG_ASSERT( nLoci > 0, ValueError, "Number of loci should be at least one");
 
-    trajectory result(nLoci);
+    matrix result(nLoci);
 
     // in the cases of independent and constant selection pressure
     // easy case.
@@ -742,12 +741,12 @@ namespace simuPOP
       for( i=0; i<nLoci; ++i)
       {
         if( ! fitness.empty() )
-          result.setTraj(FreqTrajectoryStoch(freq[i], N, NtFunc,
+          result[i] = FreqTrajectoryStoch(freq[i], N, NtFunc,
             vectorf(fitness.begin()+3*i, fitness.begin()+3*(i+1)),
-            NULL, T), i);
+            NULL, minGen, maxGen, restartIfFail);
         else
-          result.setTraj(FreqTrajectoryStoch(freq[i], N, NtFunc,
-            vectorf(), NULL, T), i);
+          result[i] = FreqTrajectoryStoch(freq[i], N, NtFunc,
+            vectorf(), NULL, minGen, maxGen, restartIfFail);
       }
       return result;
     }
@@ -927,6 +926,12 @@ namespace simuPOP
 
         if( it[nextI] == 0 )
         {
+          if( idx+1 < minGen )
+          {
+            cout << "Reaching 0, but the path is too short" << endl;
+            restart = true;
+            break;
+          }
           // need 0, 1, ...., good...
           if( it[curI] == 1 )
           {
@@ -950,11 +955,13 @@ namespace simuPOP
       }                                           // end of for each locus
 
       // break from inside
-      if( restart )
+      if( restart || (idx==maxGen && restartIfFail))
       {
         idx = 0;
         for( j=0; j<nLoci; ++j)
           done[j] = false;
+        if(idx == maxGen)
+          cout << "Warning: reaching T generations. Restart the process." << endl;
         continue;
       }
 
@@ -967,9 +974,9 @@ namespace simuPOP
         " s= " << sAll << endl);
       //
       // if not done, but t already reaches T
-      if( idx == T )
-      {
-        cout << "Warning: reaching T gnerations. Return whatever I have now." << endl;
+      if( idx == maxGen )
+      { 
+        cout << "Warning: reaching T generations. Return whatever I have now." << endl;
         break;
       }
 
@@ -988,7 +995,8 @@ namespace simuPOP
     {
       for(j=0; j<=idx; ++j)
         traj[j] = xt[nLoci*(idx-j)+i];
-      result.setTraj(traj, i);
+      for(j=0; j<traj.size() && traj[j]==0.; j++);
+      result[i] = vectorf(traj.begin()+j, traj.end());
     }
     return result;
   }

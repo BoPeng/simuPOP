@@ -124,6 +124,12 @@ A number of statistics will be measured and saved. They are:
 import simuOpt
 import os, sys, exceptions, types, math
 
+try:
+  from rpy import *
+  hasRPy = True
+except:
+  hasRPy = False
+
 #
 # declare all options. getParam will use these information to get parameters
 # from a tk/wxPython-based dialog, command line, config file or user input
@@ -205,7 +211,7 @@ options = [
         till the end of burnin stage''',
    'validate':  simuOpt.valueGT(0)
   },
-  {'longarg': 'finalSize=',
+  {'longarg': 'endingSize=',
    'default': 200000,
    'configName': 'Final population size',
    'prompt': 'Final population size (sum of all subpopulations) (200000):  ',
@@ -217,7 +223,7 @@ options = [
    'default': 'exponential',
    'configName': 'Population growth model',
    'prompt': 'Population growth style, linear or exponential. (exponential):  ',
-   'description': '''How population is grown from initSize to finalSize.
+   'description': '''How population is grown from initSize to endingSize.
         Choose between linear and exponential''',
    'chooseOneOf': ['exponential', 'linear'],
   },
@@ -230,9 +236,9 @@ options = [
    'validate':  simuOpt.valueGT(0)
   },
   {'longarg': 'splitGen=',
-   'default': 3400,
+   'default': 5000,
    'configName': 'When to split population',
-   'prompt': 'When to split population (3400):  ',
+   'prompt': 'When to split population (5000):  ',
    'allowedTypes': [types.IntType, types.LongType],
    'description': '''At which generation to split the population. 
         The population will start to grow after burnin stage but will
@@ -242,19 +248,19 @@ options = [
    'validate':  simuOpt.valueGT(0)
   },
   {'longarg': 'mixingGen=',
-   'default': 3400,
+   'default': 8000,
    'configName': 'When to mix population',
    'allowedTypes': [types.IntType, types.LongType],
-   'prompt': 'When to mix population: (3400):  ',
+   'prompt': 'When to mix population: (8000):  ',
    'description': '''At which generation to start mixing (allow migration.
         This number should be greater than or equal to split gen.''',
    'validate':  simuOpt.valueGE(0)
   },
   {'longarg': 'endingGen=',
-   'default': 4000,
+   'default': 10000,
    'configName': 'Ending generation number',
    'allowedTypes': [types.IntType, types.LongType],
-   'prompt': 'When to stop the simulation (4000):  ',
+   'prompt': 'When to stop the simulation (10000):  ',
    'description': '''At which generation to stop the simulation.
         This is the total generation number.''',
    'validate':  simuOpt.valueGE(0)
@@ -263,10 +269,10 @@ options = [
   #
   {'separator': 'Migration parameters:'},  
   {'longarg': 'numSubPop=',
-   'default': 10,
+   'default': 5,
    'configName': 'Number of subpopulations to split',
    'allowedTypes': [types.IntType],
-   'prompt': 'Number of subpopulations to split (10):  ',
+   'prompt': 'Number of subpopulations to split (5):  ',
    'description': 'Number of subpopulations to be split into after burnin stage.',
    'validate':  simuOpt.valueGT(0)
   },
@@ -291,7 +297,7 @@ options = [
   },
   #
   #
-  {'separator': 'Evolutionary parameters:'},
+  {'separator': 'Disease model:'},
   {'longarg': 'curAlleleFreq=',
    'default': [0.05, 0.05, 0.05],
    'configName': 'Final allele frequencies',
@@ -302,11 +308,33 @@ options = [
         for all DSL.''',
    'validate': simuOpt.valueListOf( simuOpt.valueBetween(0,1))
   },
+  {'longarg': 'minMutAge=',
+   'default': 0,
+   'configName': 'Minimum mutant age',
+   'allowedTypes': [types.IntType, types.LongType],
+   'prompt': 'Minimum mutation age (0)',
+   'description': '''Minimum mutation age. Default to 0. Because the population
+        may be split into subpopulations at splitGen, if the mutation age is too
+        short, it may fall in one of the subpopulations. To void this, you can 
+        set minMutAge to be endingGen - splitGen. Note that all mutants have the same
+        minimum mutant age regardless final allele frequency.'''
+  },
+  {'longarg': 'maxMutAge=',
+   'default': 0,
+   'configName': 'Maximum mutant age',
+   'allowedTypes': [types.IntType, types.LongType],
+   'prompt': 'Maximum mutation age (0)',
+   'description': '''Maximum mutant age. Default to 0, means no max and the real
+        maximum mutant age will be endingGen. However, if you do not want mutant to
+        be generated in the burnin stage. You can set maxMutAge to endingGen-burnin.
+        Note that all mutants have the same maximum mutant age regardless final 
+        allele frequency.'''
+  },
   {'longarg': 'fitness=',
-   'default': [],
+   'default': [1, 1.0001, 1.0002],
    'configName': 'Fitness of genotype AA,Aa,aa',
    'allowedTypes': [types.ListType, types.TupleType],
-   'prompt': ':  Fitness of genotype AA,Aa,aa ([]): ',
+   'prompt': 'Fitness of genotype AA,Aa,aa ([1, 1.0001, 1.0002]): ',
    'description': '''Fitness of genotype AA,Aa,aa in the monogenic case, and 
         [AA Aa aa BB Bb bb ...] in the polygenic case. ''',
    'validate':  simuOpt.valueGE(0.),
@@ -320,7 +348,10 @@ options = [
         1-Sum(1-f_i) for additive model. ''',
   'allowedTypes': [types.StringType],
   'chooseOneOf': [ 'additive', 'multiplicative', 'none']
-  }, 
+  },
+  #
+  #
+  {'separator': 'Evolutionary parameters:'},
   {'longarg': 'mutaRate=',
    'default': 0.0001,
    'configName': 'Mutation rate',
@@ -411,6 +442,61 @@ def getOptions(details=__doc__):
   # return the rest of the parameters
   return allParam[1:-1]
 
+def plotScenario(name, burninGen, splitGen, mixingGen, 
+  endingGen, popSizeFunc, trajectory, legend):
+  ''' plot the simulation scenario '''
+  if not hasRPy:
+    print "Module rpy is not present. Can not draw figure."
+    return
+  r.postscript(name+'.eps')
+  r.par(mar=[5.1, 4.1, 4.1, 4.1])
+  sg = max(min( endingGen - max([len(x) for x in trajectory]) - 1000, burninGen-1000 ), 0)
+  r.plot( x=[0, burninGen], y=[sum(popSizeFunc(0)), sum(popSizeFunc(burninGen))],
+    xlim=[sg, endingGen], ylim=[0, sum(popSizeFunc(endingGen))],
+    xlab='Generations', ylab='Population size', type='l',
+    main='Demographic model and trajectory of disease allele frequency of simulation ' + name, 
+    axes=False)
+  r.box()
+  r.axis(1, [burninGen, splitGen, mixingGen, endingGen],
+    [str(x) for x in  [burninGen, splitGen, mixingGen, endingGen]])
+  r.axis(2)
+  r.abline(v=[burninGen, splitGen, mixingGen, endingGen], lty=3)
+  r.lines(x=[0,endingGen], y=[0,0], lty=1)
+  r.lines( x=range(burninGen, splitGen), y=[sum(popSizeFunc(x)) for x in range(burninGen, splitGen)],
+    type='l')
+  # split
+  if mixingGen > splitGen:
+    for sp in range( len( popSizeFunc(endingGen) )):
+      r.lines( x= range(splitGen, mixingGen),
+        y=[ sum(popSizeFunc(x)[:(sp+1)]) for x in range(splitGen, mixingGen) ],
+        lty=1
+    )
+  if endingGen > mixingGen:
+    for sp in range( len( popSizeFunc(endingGen) )):
+      if sp != len( popSizeFunc(endingGen) ) -1:
+        lineType = 2
+      else:
+        lineType = 1
+      r.lines( x= range(mixingGen, endingGen),
+        y=[ sum(popSizeFunc(x)[:(sp+1)]) for x in range(mixingGen, endingGen) ],
+        lty=lineType
+    )
+  # ploting trajectories
+  r.par(new=True)
+  maxAF = max( [ max(x) for x in trajectory] )
+  r.plot(0, 0, type='n', xlim=[sg, endingGen], ylim=[0,maxAF],
+    axes=False, xlab='', ylab='')
+  r.axis(4)
+  r.mtext('Allele frequency', 4, line=2)
+  col = 1
+  for traj in trajectory:
+    r.lines( x = range( endingGen - len(traj), endingGen ),
+      y=traj, col=col)
+    col += 1
+  r.text( x=sg, y=maxAF, labels=legend, adj=[0,1])
+  r.dev_off()
+  
+  
 def outputStatistics(pop, args): 
   ''' This function will be working with a pyOperator
     to output statistics. Many parameters will be passed,
@@ -426,11 +512,13 @@ def outputStatistics(pop, args):
    5. Mean observed heterogeneity at the marker loci
   '''
   # unwrap parameter
-  (split, mixing, endGen, outfile) = args
+  (burnin, split, mixing, endGen, outfile) = args
   # 
   gen = pop.gen()
   # see how long the simulation has been running
-  if gen == split:
+  if gen == burnin:
+    print "Start population growth\t\t"
+  elif gen == split:
     print "Start no-migration stage\t\t"
   elif gen == mixing:
     print "Start mixing\t\t"
@@ -503,7 +591,7 @@ def outputStatistics(pop, args):
   print >> output, "\n\nAllele frequencies\nall\t",
   for d in DSL:
     print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][StartingAllele]),
-  for sp in range(numSubPop):
+  for sp in range(pop.numSubPop()):
     print >> output, "\n%d\t" % sp,
     for d in DSL:
       print >> output, '%.4f ' % (1. - pop.dvars(sp).alleleFreq[d][StartingAllele]),
@@ -522,10 +610,11 @@ def outputStatistics(pop, args):
 # simulate function, using a single value of mutation, migration,
 # recombination rate
 def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp, 
-    initSize, finalSize, growthModel, 
+    initSize, endingSize, growthModel, 
     burninGen, splitGen, mixingGen, endingGen, 
     numSubPop, migrModel, migrRate,
-    curAlleleFreqTmp, fitnessTmp, mlSelModelTmp, mutaRate, recRate, 
+    curAlleleFreqTmp, minMutAge, maxMutAge, fitnessTmp, mlSelModelTmp, 
+    mutaRate, recRate, 
     dryrun, filename):
   ''' run a simulation of complex disease with given parameters. 
   '''  
@@ -553,47 +642,80 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     raise exceptions.ValueError("min allele frequency should be either a number or a list\n" +
       " of the same length as DSLafter")
   # fitness
-  fitness = []
   if fitnessTmp == []:  # neutral process
-    fitness = [1]*(numDSL*3)
+    fitness = [1,1,1]*numDSL
   else:
-    if len(fitnessTmp) != numDSL*3:
+    # for a single DSL
+    if len(fitnessTmp) == 3:
+      fitness = fitnessTmp*numDSL
+    elif len(fitnessTmp) != numDSL*3:
       raise exceptions.ValueError("Please specify fitness for each DSL")
-    fitness = fitnessTmp
+    else:
+      fitness = fitnessTmp
   ###
   ### simulating population frequency
   ### 
+  print '\n\nSimulating trajectory of allele frequencies'
   # 1. define population size function
-  def popSizeFunc(gen):
-    if gen < burnin:
+  def popSizeFunc(gen, curSize=[]):
+    if gen < burninGen:
       return [initSize]
     if growthModel == 'linear':
-      inc = (endSize-initSize)/float(endingGen-burninGen)
+      inc = (endingSize-initSize)/float(endingGen-burninGen)
       if gen < splitGen:
-        return [int(initSize+inc*(gen-burnin))]
+        return [int(initSize+inc*(gen-burninGen))]
       else:
-        return [int(initSize+inc*(gen-burnin)/numSubPop)]*numSubPop
+        return [int(initSize+inc*(gen-burninGen))/numSubPop]*numSubPop
     else:  # exponential
-      rate =  (math.log(endSize)-math.log(initSize))/(end-burnin)
+      rate =  (math.log(endingSize)-math.log(initSize))/(endingGen-burninGen)
       if gen < splitGen:
-        return [int(initSize*math.exp((gen-burnin)*rate))]
+        return [int(initSize*math.exp((gen-burninGen)*rate))]
       else:
-        return [int(initSize*math.exp((gen-burnin)*rate)/numSubPop)]*numSubPop
+        return [int(initSize*math.exp((gen-burninGen)*rate)/numSubPop)]*numSubPop
   def popSizeBackward(gen):
     if gen > endingGen:
       return initSize
     else:
-      return popSizeFunc(endingGen-gen)
+      return sum(popSizeFunc(endingGen-gen))
   # 2. simulating allele frequency trajectory
+  if maxMutAge == 0:
+    maxMutAge = endingGen
+  elif maxMutAge < minMutAge:
+    raise exceptions.ValueError('maxMutAge needs to be greater than minMutAge.')
+  elif maxMutAge > endingGen:
+    print 'maxMutAge should be smaller than endingGen, set it to endingGen.'
+    maxMutAge = endingGen
+  traj = FreqTrajectoryMultiStoch(freq=curAlleleFreq, 
+    NtFunc=popSizeBackward, fitness=fitness, 
+    minGen=minMutAge, maxGen=maxMutAge, restartIfFail=True)
+  #
+  # 3. plot the simulation scenario
+  plotScenario(filename, burninGen, splitGen, mixingGen,
+    endingGen, popSizeFunc, traj, '''Initial pop size: %d
+Final pop size: %d
+Burnin: %d
+Split at gen: %d
+Mix at gen: %d
+End at gen: %d
+Number of subPop: %d
+
+Current allele freq: %s
+Fitness: %s
+Min mutant age: %d
+Max mutant age: %d ''' % \
+(initSize, endingSize, burninGen, splitGen, mixingGen, endingGen, numSubPop, \
+','.join([str(x) for x in curAlleleFreqTmp]), \
+','.join([str(x) for x in fitnessTmp]), minMutAge, maxMutAge) )
+  print '\n\nTrajectories simulated successfully. Check %s.eps for details ' % filename
+  ###
+  ### translate numChrom, numLoci, DSLafterLoci to
+  ### loci, lociPos, DSL, nonDSL in the usual index
+  ### (count DSL along with markers)
+  ###
   if markerType == 'microsatellite':
     maxAle = 99                   # max allele
   else:
     maxAle = 1                    # SNP (0 and 1)
-  ###
-  ### translate numChrom, numLoci, DSLafterLoci to
-  ### loci, lociPos, DSL, nonDSL in the usual index
-  ### (count markers along with DSL)
-  ###
   numDSL = len(DSLafter)
   if len(DSLdist) != numDSL:
     raise exceptions.ValueError("--DSL and --DSLloc has different length.")
@@ -624,34 +746,16 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
   for loc in DSL:
     nonDSL.remove(loc)
   ###
-  ### simulation trajectory
+  ### initialization 
   ###
-  ### Change generation duration to 'generation-points'
-  ###
-  split  = burnin 
-  mixing = split  + noMigrGen
-  endGen = mixing + mixingGen 
-  #
-  # 
-  #
-  #### simulate allele frequency 
-  traj = FreqTrajectoryMultiStoch(freq=curAlleleFreq, 
-    NtFunc=popSizeFunc, fitness=fitness)
-  ## age of mutatants?
-
-  
-  #### initialization and mutation
   if maxAle > 1:  # Not SNP
     preOperators = [
       # initialize all loci with 5 haplotypes
-      initByValue(value=[[x]*reduce(operator.add, loci) \
-        for x in range(meanInitAllele-2, meanInitAllele+3)],
+      initByValue(value=[[x]*sum(loci) for x in range(48, 53)],
         proportions=[.2]*5), 
       # and then init DSL with all wild type alleles
-      initByValue([1]*len(DSL), atLoci=DSL)
+      initByValue([StartingAllele]*len(DSL), atLoci=DSL)
     ]
-    # symmetric mutation model for microsatellite
-    mutator = smmMutator(rate=mu, maxAllele=maxAle, atLoci=nonDSL)
   else: # SNP
     preOperators = [
       # initialize all loci with two haplotypes (111,222)
@@ -660,55 +764,59 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
       # and then init DSL with all wild type alleles
       initByValue([StartingAllele]*len(DSL), atLoci=DSL)
     ]      
+  ###
+  ### mutation, start from gen 0,
+  ###
+  if maxAle > 1:  # Not SNP
+    # symmetric mutation model for microsatellite
+    mutator = smmMutator(rate=mutaRate, maxAllele=maxAle, atLoci=nonDSL)
+  else:
     # k-allele model for mutation of SNP
-    mutator = kamMutator(rate=mu, maxAllele=1, atLoci=nonDSL)
-  #### burn in stage
-  # mutation and recombination will always be in effective
-  # so we do not have to specify them later
+    mutator = kamMutator(rate=mutaRate, maxAllele=1, atLoci=nonDSL)
+  ###
+  ### Recombination
+  ###
+  if len(recRate) == 1: 
+    rec = recombinator(intensity=recRate[0])
+  else:
+    # rec after ...
+    if len(recRate) != sum(loci) - numChrom:
+      raise exceptions.ValueError("Recombination rate specification is wrong. Please see help file")
+    al = []
+    start = 0
+    for ch in range(numChrom):
+      al.extend( [x+start for x in range(loci(ch) )] )
+      start += loci[ch]
+    rec = recombinator(rate=recRate, afterLoci=al)
+  ###
+  ### output progress
+  ###
   operators = [
-    # mutator, differ by marker type
     mutator, 
-    # recombination, use intensity since loci (include DSL)
-    # are not equally spaced 
-    recombinator(intensity=rec),
+    rec, 
+    stat(alleleFreq=DSL, popSize=True, step=10),
+    pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.3f"%(1-alleleFreq[x]['+str(StartingAllele)+r']) for x in DSL])+"\n"',
+      step=10)
   ]
-  #### disease introduction stage
-  operators.extend( [
-    # need to measure allele frequency at DSL
-    stat(alleleFreq=DSL, popSize=True, begin = burnin),
-    # output progress 
-    pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.3f"%(1-alleleFreq[x]['+str(StartingAllele)+r']) for x in DSL])+"\n"', 
-      begin = burnin) ]
-  )
-  # need five conditional point mutator to
-  # introduce disease. It does not matter that we introduce
-  # mutant specifically to individuel i since individuals
-  # are unordered
-  for i in range(numDSL):
-    # this operator literally says: if there is no DS allele,
-    # introduce one. Note that operator stat has to be called
-    # before this one.
-    #  StartingAllele is pre-defined, it is 0 for binary module
-    #  and 1 for others
+  ###
+  ### introduction of disease mutants
+  ###
+  ###                 endingGen
+  ###      0 1 ...... i_T
+  for i in range( numDSL ):
     operators.append( 
-      ifElse("alleleFreq[%d][%d]==1." % (DSL[i], StartingAllele),
-        pointMutator(atLoci=[DSL[i]], toAllele=StartingAllele+1, inds=[i]),
-      begin=burnin, end=split) 
-    )
-  #
-  # check if allele frequency has reached desired value (loosely judged by 4/5*min)
-  # if not, terminate the simulation.
-  for i in range(len(DSL)):
-    operators.append(
-      terminateIf("1-alleleFreq[%d][%d]<%f" % (DSL[i], StartingAllele, curAlleleFreq[i]*4/5.),
-      at=[split]) )
-  #### no migration stage
+      pointMutator(atLoci=[DSL[i]], toAllele=StartingAllele+1, inds=[i],
+      at = [endingGen - len(traj[i]) + 1] ) ) 
+  ### 
+  ### split to subpopulations
+  ### 
   if numSubPop > 1:
     operators.append( 
-      # split population after burnin, to each sized subpopulations
-      splitSubPop(0, proportions=[1./numSubPop]*numSubPop, at=[split]),
-      )
-  # start selection
+      splitSubPop(0, proportions=[1./numSubPop]*numSubPop, at=[splitGen]),
+    )
+  ###
+  ### selection 
+  ###
   try:
     mlSelModel = {'additive':SEL_Additive, 
       'multiplicative':SEL_Multiplicative,
@@ -720,113 +828,110 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     operators.append( mlSelector(
       # with five multiple-allele selector as parameter
       [ maSelector(locus=DSL[x], wildtype=[StartingAllele], 
-        fitness=fitness[x]) for x in range(len(DSL)) ],
-      mode=mlSelModel, begin=split),
+        fitness=[fitness[3*x],fitness[3*d+1],fitness[3*d+2]]) for x in range(len(DSL)) ],
+      mode=mlSelModel, begin=splitGen),
     )
-  #
-  ### mixing stage
-  # a migrator, stepping stone or island
-  if numSubPop > 1 and migrModel == 'island' and mi > 0:
-    operators.append( migrator(migrIslandRates(mi, numSubPop),
-      mode=MigrByProbability, begin=mixing) )
-  elif numSubPop > 1 and migrModel == 'stepping stone' and mi > 0:
-    operators.append( migrator(migrSteppingStoneRates(mi, numSubPop, circular=True),
-      mode=MigrByProbability, begin=mixing) )
-  #
-  # prepare for sampling:
-  # use last_two numOffspringFunc, simuPOP will produce 2 offspring at 
-  # the last two generations, this is when we should store parental 
-  # information and trace pedigree info
+  ###
+  ### migration
+  ###
+  if numSubPop > 1 and migrModel == 'island' and migrRate > 0:
+    operators.append( migrator(migrIslandRates(migrRate, numSubPop),
+      mode=MigrByProbability, begin=mixingGen) )
+  elif numSubPop > 1 and migrModel == 'stepping stone' and migrRate > 0:
+    operators.append( migrator(migrSteppingStoneRates(migrRate, numSubPop, 
+      circular=True),  mode=MigrByProbability, begin=mixingGen) )
+  ###
+  ### prepare for sampling:
+  ###
   operators.extend([
     # save ancestral populations starting at -2 gen
     setAncestralDepth(1, at=[-2]),
     # track pedigree
     parentsTagger(begin=-2),
-    # terminate simulation is on DSL get lost.
-    terminateIf("True in [alleleFreq[x][%d] == 1 for x in DSL]" % StartingAllele,
-      begin=split), 
-    # output statistics
+  ])
+  ###
+  ### output statistics, track performance
+  ###
+  operators.extend([
     pyOperator(func=outputStatistics, 
-      param = (burnin, split, mixing, endGen, filename+'.log'),
-      at = [burnin, split, mixing, endGen] ), 
-    # Show how long the program has been running.
-    pyEval(r'"Burn-in stage: generation %d\n" % gen ', step = 10, end=burnin),
+      param = (burninGen, splitGen, mixingGen, endingGen, filename+'.log'),
+      at = [burninGen, splitGen, mixingGen, endingGen ] ), 
     # show elapsed time
-    ticToc(at=[burnin, split, mixing, endGen]),
+    ticToc(at=[burninGen, splitGen, mixingGen, endingGen]),
     ]
   )
-  # with all operators, we can set up a simulator
-  # produce two offsprings only at the last generations.
+  ### 
+  ### prepare mating scheme
+  ###
+  ### use last_two numOffspringFunc, simuPOP will produce 2 offspring at 
+  ### the last two generations
+  ###
   def last_two(gen):
-    if gen >= endGen -2:
+    if gen >= endingGen -2:
       return 2
     else:
       return 1
-  # population growth model
-  if growth == 'linear':
-    popSizeFunc = LinearExpansion(initSize, finalSize, endGen,
-      burnin, split, numSubPop)
-  elif growth == 'exponential':
-    popSizeFunc = ExponentialExpansion(initSize, finalSize, endGen,
-      burnin, split, numSubPop)
-  else:
-    raise exceptions.ValueError("Growth model can be one of linear and exponential. Given " + growth)
-  # may need to run several times to
-  # get a valid population (terminate if desired allele frequencyany can not be reached.)
-  fixedCount = 1
-  while(True):
-    # create a simulator
-    pop =  population(subPop=popSizeFunc(0), ploidy=2,
-      loci = loci, maxAllele = maxAle, lociPos = lociPos)
-    # save DSL info, some operators will use it.
-    pop.dvars().DSL = DSL
-    pop.dvars().numLoci = numLoci
-    pop.dvars().curAlleleFreq = curAlleleFreq
-    # clear log file if it exists
-    try:
-      os.remove(filename+'.log')
-    except:
-      pass
-    # start simulation.
-    simu = simulator( pop, 
-      randomMating(
+  # our trajectory is backward time, we need a forward time
+  # func for freqFunc
+  def freqFunc(gen):
+    freq = []
+    for tr in traj:
+      if gen < endingGen - len(tr):
+        freq.append( 0 )
+      else:
+        freq.append( tr[ gen - (endingGen - len(tr)) ] )
+    return freq
+  # create a simulator
+  pop =  population(subPop=popSizeFunc(0), ploidy=2,
+    loci = loci, maxAllele = maxAle, lociPos = lociPos)
+  # save DSL info, some operators will use it.
+  pop.dvars().DSL = DSL
+  pop.dvars().numLoci = numLoci
+  pop.dvars().curAlleleFreq = curAlleleFreq
+  # clear log file if it exists
+  try:
+    os.remove(filename+'.log')
+  except:
+    pass
+  #
+  # start simulation.
+  simu = simulator( pop, 
+    controlledMating( 
+      matingScheme = randomMating(
         newSubPopSizeFunc=popSizeFunc,  # demographic model
         numOffspringFunc=last_two),     # save last two generations
-      rep=1)
-    # evolve! If --dryrun is set, only show info
-    simu.evolve( preOps = preOperators, ops = operators, 
-      end=endGen, dryrun=dryrun )
-    if dryrun:
-      raise exceptions.SystemError("Stop since in dryrun mode.")
-    # if succeed
-    if simu.gen() == endGen + 1:  # if not fixed
-      pop = simu.population(0)
-      # we want to save info on how this population is generated.
-      # This is not required but is a good practise
-      pop.dvars().DSLAfter = DSLafter
-      pop.dvars().DSLdist = DSLdist
-      pop.dvars().initSize = initSize
-      pop.dvars().meanInitAllele = meanInitAllele
-      pop.dvars().finalSize = finalSize
-      pop.dvars().burnin = burnin
-      pop.dvars().introGen = introGen
-      pop.dvars().numSubPop = numSubPop
-      pop.dvars().noMigrGen = noMigrGen
-      pop.dvars().mixingGen = mixingGen
-      pop.dvars().mutationRate = mu
-      pop.dvars().mutationModel = "symmetric stepwise"
-      pop.dvars().migrationRate = mi
-      pop.dvars().migrationModel = "circular stepping stone"
-      pop.dvars().recombinationRate = rec
-      print "Saving population to " + filename + ".bin\n"
-      simu.population(0).savePopulation(filename+'.bin')
-      return True
-    else:
-      print "Population restarted at gen ", simu.gen()
-      print "Overall fixed population ", fixedCount
-      print "Allelefreq ", ( "%.3f " * numDSL + "\n\n") % \
-        tuple([1-simu.dvars(0).alleleFreq[x][1] for x in DSL]) 
-      fixedCount += 1
+      loci=DSL,                         # which loci to control
+      alleles=[StartingAllele+1]*numDSL,# which allele to control
+      freqFunc=freqFunc,                # frequency control function
+      range=0.005                       # allow (f,f+0.005)
+      ),
+    rep=1)
+  # evolve! If --dryrun is set, only show info
+  simu.evolve( preOps = preOperators, ops = operators, 
+    end=endingGen, dryrun=dryrun )
+  if dryrun:
+    raise exceptions.SystemError("Stop since in dryrun mode.")
+  # succeed save information
+  pop = simu.population(0)
+  # we want to save info on how this population is generated.
+  # This is not required but is a good practise
+  pop.dvars().DSLAfter = DSLafter
+  pop.dvars().DSLdist = DSLdist
+  pop.dvars().initSize = initSize
+  pop.dvars().endingSize = endingSize
+  pop.dvars().burninGen = burninGen
+  pop.dvars().splitGen = splitGen
+  pop.dvars().mixingGen = mixingGen
+  pop.dvars().endingGen = endingGen
+  pop.dvars().numSubPop = numSubPop
+  pop.dvars().mutaRate = mutaRate
+  pop.dvars().mutaModel = "symmetric stepwise"
+  pop.dvars().migrRate = migrRate
+  pop.dvars().migrModel = "circular stepping stone"
+  pop.dvars().recRate = recRate
+  print "Saving population to " + filename + ".bin\n"
+  simu.population(0).savePopulation(filename+'.bin')
+  return True
 
 if __name__ == '__main__':
   ############## GET OPTIONS ####################################
@@ -834,12 +939,13 @@ if __name__ == '__main__':
   # unpack options
   (numChrom, numLoci, markerType, DSLafter, DSLdist, 
     #
-    initSize, finalSize, growthModel, 
+    initSize, endingSize, growthModel, 
     burninGen, splitGen, mixingGen, endingGen, 
     #
     numSubPop, migrModel, migrRate,
     #
-    curAlleleFreq, fitness, selMultiLocusModel,
+    curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel,
+    #
     mutaRate, recRate, 
     #
     dryrun, filename) = allParam
@@ -862,9 +968,10 @@ if __name__ == '__main__':
   #
   ################## RUN THE SIMULATION ###############
   simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdist, 
-    initSize, finalSize, growthModel, 
+    initSize, endingSize, growthModel, 
     burninGen, splitGen, mixingGen, endingGen, numSubPop, migrModel, migrRate,
-    curAlleleFreq, fitness, selMultiLocusModel, mutaRate, recRate, 
+    curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel, 
+    mutaRate, recRate, 
     dryrun, filename)
   
   print "Done!"

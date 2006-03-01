@@ -619,7 +619,7 @@ namespace simuPOP
   if( pyResult == NULL) \
   { \
     PyErr_Print(); \
-    throw ValueError("Function call failed."); \
+    throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
   } \
   converter(pyResult, retValue); \
   Py_DECREF(pyResult); \
@@ -634,7 +634,7 @@ namespace simuPOP
   if( pyResult == NULL) \
   { \
     PyErr_Print(); \
-    throw ValueError("Function call failed."); \
+    throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
   } \
   converter(pyResult, retValue); \
   Py_DECREF(pyResult); \
@@ -649,7 +649,7 @@ namespace simuPOP
   if( pyResult == NULL) \
   { \
     PyErr_Print(); \
-    throw ValueError("Function call failed."); \
+    throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
   } \
   converter(pyResult, retValue); \
   Py_DECREF(pyResult); \
