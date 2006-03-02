@@ -892,15 +892,22 @@ Max mutant age: %d ''' % \
   #
   # start simulation.
   simu = simulator( pop, 
-    controlledMating( 
-      matingScheme = randomMating(
-        newSubPopSizeFunc=popSizeFunc,  # demographic model
-        numOffspringFunc=last_two),     # save last two generations
+##     controlledMating( 
+##       matingScheme = randomMating(
+##         newSubPopSizeFunc=popSizeFunc,  # demographic model
+##         numOffspringFunc=last_two),     # save last two generations
+##       loci=DSL,                         # which loci to control
+##       alleles=[StartingAllele+1]*numDSL,# which allele to control
+##       freqFunc=freqFunc,                # frequency control function
+##       range=0.005                       # allow (f,f+0.005)
+##       ),
+    controlledRandomMating(
+      newSubPopSizeFunc=popSizeFunc,  # demographic model
+      numOffspringFunc=last_two,     # save last two generations
       loci=DSL,                         # which loci to control
       alleles=[StartingAllele+1]*numDSL,# which allele to control
-      freqFunc=freqFunc,                # frequency control function
-      range=0.005                       # allow (f,f+0.005)
-      ),
+      freqFunc=freqFunc                # frequency control function
+    ),
     rep=1)
   # evolve! If --dryrun is set, only show info
   simu.evolve( preOps = preOperators, ops = operators, 

@@ -482,7 +482,7 @@ namespace simuPOP
   //    sFunc  a python function that returns selection pressure at each generation
   //           the function expects a single parameter gen which is defined
   //           in reversed order.
-  //    minGen minimal generation number. The process will restart if the trajectory 
+  //    minGen minimal generation number. The process will restart if the trajectory
   //           is less than minGen. Default to 0.
   //    maxGen maximum generation number. The process will terminate or restart if it
   //           can not reach allele zero after T generations. Default to 100,000,
@@ -515,7 +515,7 @@ namespace simuPOP
   //           the function expects parameters gen and freq. gen is current generation
   //           number and freq is the allele frequency at all loci. This allows
   //           frequency dependent selection. gen is defined in reversed order.
-  //    minGen minimal generation number. The process will restart if the trajectory 
+  //    minGen minimal generation number. The process will restart if the trajectory
   //           is less than minGen. Default to 0.
   //    maxGen maximum generation number. The process will terminate or restart if it
   //           can not reach allele zero after T generations. Default to 100,000,
@@ -699,7 +699,7 @@ namespace simuPOP
       {
         if( m_loci.empty() || m_loci.size() != m_alleles.size() )
           throw ValueError("Please specify loci and corresponding alleles");
-          
+
         if(m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
           throw ValueError("Please specify a valid frequency function");
         else

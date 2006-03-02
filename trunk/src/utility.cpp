@@ -388,8 +388,7 @@ namespace simuPOP
       val = vectorf();
       return;
     }
-    if( !PySequence_Check(obj))
-      throw ValueError("Expecting a sequence");
+    DBG_ASSERT( PySequence_Check(obj), ValueError, "PyObj_As_Array: Expecting a sequence");
 
     val.resize( PySequence_Size( obj ));
 

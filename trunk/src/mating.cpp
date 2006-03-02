@@ -1378,18 +1378,20 @@ namespace simuPOP
     // scrtach will have the right structure.
     this->prepareScratchPop(pop, scratch);
 
-    size_t pldy = pop.ploidy(), i, nLoci=m_loci.size();
+    size_t pldy = pop.ploidy(), nLoci=m_loci.size();
+    size_t i;
 
     DBG_DO(DBG_MATING, m_famSize.clear());
 
     DBG_ASSERT( pop.numSubPop() == scratch.numSubPop(), SystemError,
       "Number of subpopulation can not be changed.");
 
+    // expected frequency at each locus
     vectorf expFreq;
-    PyCallFunc( m_freqFunc, "(i)", pop.gen(),
-      expFreq, PyObj_As_Array);
+    PyCallFunc( m_freqFunc, "(i)", pop.gen(), expFreq, PyObj_As_Array);
 
-    // determine expected number of alleles
+    // determine expected number of alleles of each allele
+    // at each subpopulation.
     UINT numSP = pop.numSubPop();
     vectorlu totalAlleles( nLoci );
     vectoru expAlleles( nLoci * numSP );
@@ -1403,10 +1405,11 @@ namespace simuPOP
       if( expFreq[i] > 1. )
         expFreq[i] = 1.;
       totalAlleles[i] = static_cast<ULONG>(expFreq[i]*pop.popSize()*pop.ploidy());
+      // make sure one allele (our seed :-) exists
       if( expFreq[i]>0. && totalAlleles[i] == 0)
         totalAlleles[i] = 1;
 
-      // determine the number alleles at each population.
+      // determine the number alleles at each subpopulation.
       vectorf curFreq( numSP );
       ULONG numOfAlleles=0;
       for( size_t sp=0; sp < numSP; ++sp)
@@ -1420,8 +1423,10 @@ namespace simuPOP
             n++;
         }
         numOfAlleles += n;
-        curFreq[sp] = double(n)/(pop.popSize()*pldy);
+        curFreq[sp] = double(n)/(pop.subPopSize(sp)*pldy);
       }
+
+      DBG_DO(DBG_MATING, cout << "Cur freq " << curFreq << endl);
 
       // if there is no alleles
       if( numOfAlleles == 0 && expFreq[i] > 0.)
@@ -1434,15 +1439,14 @@ namespace simuPOP
       /// step 2: assign these alleles to each subpopulation according to a multi-nomial
       /// distribution with p_i beging allele frequency at each subpopulation.
       // assign these numbers to each subpopulation
-      //rng().randMultinomial(static_cast<unsigned int>(pop.popSize()*expFreq*pldy),
-      //  curFreq, expAlleles.begin()+numSP*i);
+      rng().randMultinomial(static_cast<unsigned int>(pop.popSize()*expFreq[i]*pldy),
+        curFreq, expAlleles.begin()+numSP*i);
     }
 
-    DBG_DO(DBG_DEVEL, cout << "expected alleles " << expAlleles << endl);
+    DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
 
     //
     vectorf& fitness = pop.fitness();
-
     /// determine if mate() will generate offspring genotype
     bool formOffGeno = this->formOffGenotype(ops);
 
@@ -1451,12 +1455,14 @@ namespace simuPOP
     {
       UINT spSize = pop.subPopSize(sp);
 
-      vectori totAllele( nLoci );
-      vectori curAllele( nLoci, 0 );
+      // total allowed disease alleles.
+      vectoru totAllele( nLoci );
+      // currently available disease allele.
+      vectoru curAllele( nLoci, 0 );
       for(i=0; i< nLoci; ++i)
       {
         totAllele[i] = expAlleles[sp+numSP*i];
-        if( totAllele[i] > spSize*pldy)
+        if( totAllele[i] > spSize*pldy )
         {
           cout << "Warning: number of planned affected alleles exceed population size.";
           totAllele[i] = spSize*pldy;
@@ -1466,27 +1472,30 @@ namespace simuPOP
       if( spSize == 0 )
         continue;
 
-      // this is the key of this algorithm.
-      // replacable inds will be used if some of the allele
-      // freq is not satisfied.
-      vector<individual*> replacableInd;
-
       // if selection is on
       if( ! fitness.empty() )
         m_sampler.set( vectorf(fitness.begin()+pop.subPopBegin(sp),
           fitness.begin()+pop.subPopEnd(sp) ) );
 
-      // choose a parent and genreate m_numOffspring offspring
       ULONG spInd = 0;
       ULONG spIndEnd = scratch.subPopSize(sp);
+
       // ploidy
       size_t p;
-      vectori na(nLoci, 0), nu(nLoci, 0);
+      vectori na(nLoci, 0);
+      bool allDone = true;
+      for(i=0; i<nLoci; ++i)
+      {
+        if( totAllele[i] > 0 )
+        {
+          allDone = false;
+          break;
+        }
+      }
       bool hasAff;
-      bool allDone = false;
-      vector<bool> done(nLoci, false);
-      //
-      while( ! allDone )
+      int noAAcount = 0;
+      // start!
+      while( spInd < spIndEnd )
       {
         individual * parent;
         // choose a parent
@@ -1495,101 +1504,113 @@ namespace simuPOP
         else
           parent = &pop.ind( rng().randInt(spSize), sp);
 
-        // generate only one offspring
-        population::IndIterator it;
-        if( spInd == spIndEnd && replacableInd.empty() )
-        {
-          cout << "Warning: allele frequency is not achieved. "<< endl;
-          allDone = true;
-          break;
-        }
-        else if( spInd < spIndEnd )
-        {
-          it = scratch.indBegin(sp) + spInd++;
-        }
-        else
-        {
-          // it = replacableInd.back();
-          replacableInd.pop_back();
-        }
-
-        bool succ=true;
-        if(  formOffGeno )
-          /// use deep copy!!!!!!!
-          it->copyFrom(*parent);
-
-        // apply during mating operators
-        for( vector<Operator *>::iterator iop = ops.begin(),
-          iopEnd = ops.end(); iop != iopEnd;  ++iop)
-        {
-          try
-          {
-            // During mating operator might reject this offspring.
-            if(!(*iop)->applyDuringMating(pop, it, parent, NULL))
-            {
-              spInd -= 1;
-              succ = false;
-              break;
-            }
-          }
-          catch(...)
-          {
-            cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
-            throw;
-          }
-        }
-        // do not use this parent
-        if(! succ)
-          continue;
-
-        // other wise, check nAff, nUnaff
-        hasAff = false;
         for(i=0; i<nLoci; ++i)
+          na[i] = 0;
+        hasAff = false;
+
+        // generate m_numOffspring offspring per mating
+        UINT numOS=0, numOSEnd;
+        for(numOS=0, numOSEnd = this->numOffspring(pop.gen() );
+          numOS < numOSEnd && spInd+numOS < spIndEnd;  numOS++)
         {
-          na[i] = nu[i] = 0;
-          for(p=0; p<pldy; ++p)
+          population::IndIterator it = scratch.indBegin(sp) + spInd + numOS;
+
+          if(  formOffGeno )
+            /// use deep copy!!!!!!!
+            it->copyFrom(*parent);
+
+          // apply during mating operators
+          for( vector<Operator *>::iterator iop = ops.begin(),
+            iopEnd = ops.end(); iop != iopEnd;  ++iop)
           {
-            if( it->allele(m_loci[i], p) == m_alleles[i] )
+            try
             {
-              na[i]++;
-              hasAff = true;
+              // During mating operator might reject this offspring.
+              if(!(*iop)->applyDuringMating(pop, it, parent, NULL))
+              {
+                numOS --;
+                break;
+              }
             }
-            else
-              nu[i]++;
+            catch(...)
+            {
+              cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
+              throw;
+            }
+          }                                       // all during-mating operators
+
+          // success count na, nu
+          for(i=0; i<nLoci; ++i)
+          {
+            for(p=0; p<pldy; ++p)
+            {
+              if( it->allele(m_loci[i], p) == m_alleles[i] )
+              {
+                na[i]++;
+                hasAff = true;
+              }
+            }
           }
+        }                                         // family generated.
+
+        // now check if this family is usable.
+        // later on, we can add more complicated acceptance scheme
+        bool accept = false;
+        // all disease alleles have been satidfied.
+        // only accept unaffected families
+        if( allDone )
+        {
+          if(!hasAff)
+          {
+            // has AA, so no need to compromise
+            noAAcount = -1;
+            accept = true;
+          }
+          // tried 100 times, no AA is found.
+          else if( noAAcount >= 100 )
+          {
+            if(noAAcount == 100)
+              cout << "Warning: there might not be any AA, accept unqualified individuals." << endl;
+            noAAcount++;
+            accept = true;
+          }
+          else if( noAAcount >= 0 )
+            noAAcount ++;
         }
-
-        //DBG_DO(DBG_DEVEL, cout << numOfAlleles << " na " << na
-        //  << " nu " << nu << endl);
-
-        // only accept unaffected....
-        if( hasAff )
+        // otherwise, accept any family that can help.
+        else
         {
           for(i=0; i<nLoci; ++i)
           {
-            // can not add more to done.
-            if( done[i] && na[i] > 0 )
-            {
-              if( spInd == spIndEnd )
-              {
-                //replacableInd.push_back(it);
-                continue;
-              }
-              else
-                spInd --;
-            }
+            // accept the whole family, if we need this allele
+            if( curAllele[i] < totAllele[i] && na[i] > 0 )
+              accept = true;
           }
         }
-        //else
-        //  replacableInd.push_back(&spInd);
+        // reject this family
+        if( ! accept)
+          continue;
 
-        // all during-mating operators
-        // success
-        if( spInd == spIndEnd )
+        // accpet this
+        if( ! allDone)
         {
-          break;
+          allDone = true;
+          for(i=0; i<nLoci; ++i)
+          {
+            curAllele[i] += na[i];
+            if( curAllele[i] < totAllele[i] )
+              allDone = false;
+          }
         }
-      }                                           // all offspring
+
+        // accept
+        DBG_DO(DBG_DEVEL, cout << curAllele << " " << spInd <<  " out of " << spIndEnd << endl);
+
+        // success
+        spInd += numOS;
+      }
+      if( ! allDone )
+        cout << "Can not obtain enough disease alleles at generation " << pop.gen() << endl;
     }                                             // all subpopulation.
 
     if(submit)
@@ -1610,49 +1631,72 @@ namespace simuPOP
     DBG_ASSERT( pop.numSubPop() == scratch.numSubPop(), SystemError,
       "Number of subpopulation can not be changed.");
 
-    size_t pldy = pop.ploidy();
+    size_t pldy = pop.ploidy(), nLoci=m_loci.size();
+    size_t i;
 
     DBG_DO(DBG_MATING, m_famSize.clear());
 
     DBG_ASSERT( pop.numSubPop() == scratch.numSubPop(), SystemError,
       "Number of subpopulation can not be changed.");
 
-    double expectedFreq;
-    PyCallFunc( m_freqFunc, "(i)", pop.gen(),
-      expectedFreq, PyObj_As_Double);
+    // expected frequency at each locus
+    vectorf expFreq;
+    PyCallFunc( m_freqFunc, "(i)", pop.gen(), expFreq, PyObj_As_Array);
 
-    // determine the number of case/control at each population.
+    // determine expected number of alleles of each allele
+    // at each subpopulation.
     UINT numSP = pop.numSubPop();
-    vectorf curFreq( numSP );
-    vectoru nextAlleles( numSP, 0);
-    ULONG numOfAlleles=0;
-    for( size_t sp=0; sp < numSP; ++sp)
+    vectorlu totalAlleles( nLoci );
+    vectoru expAlleles( nLoci * numSP );
+    for(i=0; i< nLoci; ++i)
     {
-      ULONG n=0;
-      // go through all alleles
-      for(GappedAlleleIterator a=pop.alleleBegin(m_loci[0], sp),
-        aEnd=pop.alleleEnd(m_loci[0], sp); a != aEnd; ++a)
+      int locus = m_loci[i];
+      Allele allele = m_alleles[i];
+
+      if( expFreq[i] < 0. )
+        expFreq[i] = 0.;
+      if( expFreq[i] > 1. )
+        expFreq[i] = 1.;
+      totalAlleles[i] = static_cast<ULONG>(expFreq[i]*pop.popSize()*pop.ploidy());
+      // make sure one allele (our seed :-) exists
+      if( expFreq[i]>0. && totalAlleles[i] == 0)
+        totalAlleles[i] = 1;
+
+      // determine the number alleles at each subpopulation.
+      vectorf curFreq( numSP );
+      ULONG numOfAlleles=0;
+      for( size_t sp=0; sp < numSP; ++sp)
       {
-        if( AlleleUnsigned(*a) == m_alleles[0] )
-          n++;
+        ULONG n=0;
+        // go through all alleles
+        for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
+          aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+        {
+          if( AlleleUnsigned(*a) == allele )
+            n++;
+        }
+        numOfAlleles += n;
+        curFreq[sp] = double(n)/(pop.subPopSize(sp)*pldy);
       }
-      numOfAlleles += n;
-      curFreq[sp] = double(n)/(pop.popSize()*pldy);
+
+      DBG_DO(DBG_MATING, cout << "Cur freq " << curFreq << endl);
+
+      // if there is no alleles
+      if( numOfAlleles == 0 && expFreq[i] > 0.)
+        throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
+          " Generation " + toStr(pop.gen()) );
+
+      /// calculate exp number of affected offspring in the next generation.
+      ///
+      /// step 1: totalsize*expFreq is the total number of disease alleles
+      /// step 2: assign these alleles to each subpopulation according to a multi-nomial
+      /// distribution with p_i beging allele frequency at each subpopulation.
+      // assign these numbers to each subpopulation
+      rng().randMultinomial(static_cast<unsigned int>(pop.popSize()*expFreq[i]*pldy),
+        curFreq, expAlleles.begin()+numSP*i);
     }
 
-    // if there is no alleles
-    if( numOfAlleles == 0 && expectedFreq > 0.)
-      throw ValueError("No disease allele exists, but expected allele frequency is greater than 0.\n"
-        " Generation " + toStr(pop.gen()));
-
-    /// calculate expected number of affected offspring in the next generation.
-    ///
-    /// step 1: totalsize*expectedFreq is the total number of disease alleles
-    /// step 2: assign these alleles to each subpopulation according to a multi-nomial
-    /// distribution with p_i beging allele frequency at each subpopulation.
-    // assign these numbers to each subpopulation
-    rng().randMultinomial(static_cast<unsigned int>(pop.popSize()*expectedFreq*pldy),
-      curFreq, nextAlleles);
+    DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
 
     // empty fitness means no selection
     vectorf& fitness = pop.fitness();
@@ -1667,22 +1711,19 @@ namespace simuPOP
     {
       ULONG spSize = pop.subPopSize(sp);
 
-      UINT numAff = nextAlleles[sp];
-
-      if( numAff > spSize*pldy)
+      // total allowed disease alleles.
+      vectoru totAllele( nLoci );
+      // currently available disease allele.
+      vectoru curAllele( nLoci, 0 );
+      for(i=0; i< nLoci; ++i)
       {
-        cout << "Warning: number of planned affected alleles exceed population size.";
-        numAff = spSize*pldy;
+        totAllele[i] = expAlleles[sp+numSP*i];
+        if( totAllele[i] > spSize*pldy )
+        {
+          cout << "Warning: number of planned affected alleles exceed population size.";
+          totAllele[i] = spSize*pldy;
+        }
       }
-
-      UINT numUnaff = spSize*pldy - nextAlleles[sp];
-      // counter of aff/unaff
-      UINT nAff=0, nUnaff = 0;
-
-      // if there are less affected, aff first,...
-      bool firstAffected=numAff<spSize*pldy/2;
-      // if affected has been done (
-      bool firstPartDone = firstAffected? (numAff == 0) : (numUnaff == 0);
 
       if( spSize == 0 ) continue;
 
@@ -1742,10 +1783,19 @@ namespace simuPOP
       ULONG spIndEnd = scratch.subPopSize(sp);
       // ploidy
       size_t p;
-      int na, nu;
-      //
-
-      while( spInd < spIndEnd)
+      vectori na(nLoci, 0);
+      bool allDone = true;
+      for(i=0; i<nLoci; ++i)
+      {
+        if( totAllele[i] > 0 )
+        {
+          allDone = false;
+          break;
+        }
+      }
+      bool hasAff;
+      // start!
+      while( spInd < spIndEnd )
       {
         // randomly choose parents
         individual * dad, *mom;
@@ -1778,13 +1828,16 @@ namespace simuPOP
             mom = &pop.ind( m_maleIndex[ rnd.randInt(numMale) ]);
         }
 
+        for(i=0; i<nLoci; ++i)
+          na[i] = 0;
+        hasAff = false;
+        int noAAcount = 0;
         // generate m_numOffspring offspring per mating
         UINT numOS=0, numOSEnd;
-        for(numOS=0, numOSEnd = this->numOffspring(pop.gen()); numOS < numOSEnd;  numOS++)
+        for(numOS=0, numOSEnd = this->numOffspring(pop.gen());
+          numOS < numOSEnd && spInd+numOS < spIndEnd;  numOS++)
         {
-          population::IndIterator it = scratch.indBegin(sp) + spInd++;
-          // if this family will be accepted
-          bool succ=true;
+          population::IndIterator it = scratch.indBegin(sp) + spInd + numOS;
 
           //
           // assign sex randomly
@@ -1833,8 +1886,7 @@ namespace simuPOP
               // During mating operator might reject this offspring.
               if(!(*iop)->applyDuringMating(pop, it, dad, mom))
               {
-                spInd -= numOS + 1;
-                succ = false;
+                numOS--;
                 break;
               }
             }
@@ -1844,94 +1896,76 @@ namespace simuPOP
               throw;
             }
           }
-          // do not use this parent
-          if(! succ)
-            break;
-
-          // other wise, check calculate nAff, nUnaff
-          na = nu = 0;
-          for(p=0; p<pldy; ++p)
+          // success count na, nu
+          for(i=0; i<nLoci; ++i)
           {
-            if( it->allele(m_loci[0], p) == m_alleles[0] )
-              na++;
-            else
-              nu++;
-          }
-
-          DBG_DO(DBG_DEVEL, cout << numOfAlleles << " na " << na << " nu " << nu
-            << " nAff " << nAff << " unaff " << nUnaff << " " << numAff
-            << " " << numUnaff << endl);
-
-          if( firstAffected )                     // first handle affected
-          {
-            // only accept unaffected....
-            if( firstPartDone )
+            for(p=0; p<pldy; ++p)
             {
-              if( na > 0 )
+              if( it->allele(m_loci[i], p) == m_alleles[i] )
               {
-                spInd -= numOS+1;
-                break;
-              }
-              else
-                nUnaff += nu;
-            }
-            else                                  // first part not done
-            {
-              if( na == 0 )
-              {
-                spInd -= numOS+1;
-                break;
-              }
-              else
-              {
-                nAff += na;
-                nUnaff += nu;
-                if(nAff >= numAff )
-                  firstPartDone = true;
-              }
-            }
-          }
-          else                                    // first handle unaffected
-          {
-            // only accept affected....
-            if( firstPartDone )
-            {
-              if( nu > 0 )
-              {
-                spInd -= numOS+1;
-                break;
-              }
-              else
-                nAff += na;
-            }
-            else                                  // first part not done
-            {
-              if( nu == 0 )
-              {
-                spInd -= numOS+1;
-                break;
-              }
-              else
-              {
-                nAff += na;
-                nUnaff += nu;
-                if(nUnaff >= numUnaff)
-                  firstPartDone = true;
+                na[i]++;
+                hasAff = true;
               }
             }
           }
 
-          // appy operators
-          // success
-          if( spInd == spIndEnd )
+        }                                         // family generated.
+
+        // now check if this family is usable.
+        // later on, we can add more complicated acceptance scheme
+        bool accept = false;
+        // all disease alleles have been satidfied.
+        // only accept unaffected families
+        // otherwise, accept any family that can help.
+        if( allDone )
+        {
+          if(!hasAff)
           {
-            numOS++;
-            break;
+            // has AA, so no need to compromise
+            noAAcount = -1;
+            accept = true;
           }
-        }                                         // each offspring
-        // and then break here since spInd == spIndEnd.
-        // record family size
-        DBG_DO(DBG_MATING, m_famSize.push_back( numOS ));
+          // tried 100 times, no AA is found.
+          else if( noAAcount >= 100 )
+          {
+            if(noAAcount == 100)
+              cout << "Warning: there might not be any AA, accept unqualified individuals." << endl;
+            noAAcount++;
+            accept = true;
+          }
+          else if( noAAcount >= 0 )
+            noAAcount ++;
+        }
+        else
+        {
+          for(i=0; i<nLoci; ++i)
+          {
+            // accept the whole family, if we need this allele
+            if( curAllele[i] < totAllele[i] && na[i] > 0 )
+              accept = true;
+          }
+        }
+        // reject this family
+        if( ! accept)
+          continue;
+
+        // accpet this
+        if( ! allDone)
+        {
+          allDone = true;
+          for(i=0; i<nLoci; ++i)
+          {
+            curAllele[i] += na[i];
+            if( curAllele[i] < totAllele[i] )
+              allDone = false;
+          }
+        }
+
+        // accept
+        DBG_DO(DBG_DEVEL, cout << curAllele << " " << spInd <<  " out of " << spIndEnd << endl);
+
+        // success
+        spInd += numOS;
       }
     }                                             // each subPop
 

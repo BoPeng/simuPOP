@@ -225,7 +225,9 @@ class TestMatingSchemes(unittest.TestCase):
     )
       
   def testControlledBinomialSelection(self):
-    'Testing controlled mating'
+    'Testing controlled bionomial selection'
+    #TurnOnDebug(DBG_MATING)
+    #TurnOnDebug(DBG_DEVEL)
     # planned trajectory
     freq = FreqTrajectoryStoch(freq=0.05, N=100)
     # staring from when?
@@ -234,17 +236,18 @@ class TestMatingSchemes(unittest.TestCase):
     # trajectory function
     # 0 ...., 100, 101, .... 100+mutAge
     #              x         freq
-    def freqRange(gen):
+    def expectedFreq(gen):
       if gen <= burnin:
-        return 0
+        return [0]
       else:
-        return freq[gen-1-burnin]
-
+        #print "Gen ", gen, " exp: ", freq[gen-1-burnin]
+        return [freq[gen-1-burnin]]
     #
     # turn On debug
     #TurnOnDebug(DBG_MATING)
     simu = simulator( population(100, loci=[1], ploidy=2), 
-      controlledBinomialSelection( locus=0, allele=StartingAllele+1, freqFunc=freqRange ) 
+      controlledBinomialSelection( locus=0, 
+        allele=StartingAllele+1, freqFunc=expectedFreq ) 
       )
     #print "Simulator created"
     simu.evolve( 
@@ -258,13 +261,64 @@ class TestMatingSchemes(unittest.TestCase):
           at = [burnin+1],
           stage = PreMating),
         stat(alleleFreq=[0]),
-        pyEval(r'"%%d %%6.4f\n"%%(gen, 1-alleleFreq[0][%d])'%StartingAllele, begin=burnin)
+        #pyEval(r'"%%d %%6.4f\n"%%(gen, 1-alleleFreq[0][%d])'%StartingAllele, begin=burnin),
       ], 
       end=burnin+mutAge
     )
+    #Dump(simu.population(0))
+
+  def testControlledMultiBinomialSelection(self):
+    'Testing the multi-locus version of controlled bionomial selection'
+    #TurnOnDebug(DBG_MATING)
+    #TurnOnDebug(DBG_DEVEL)
+    N = 50
+    # planned trajectory
+    traj = FreqTrajectoryMultiStoch(freq=[0.05, 0.10], N=N)    
+    # staring from when?
+    burnin = 100
+    mutAge = max([len(x) for x in traj])
+    # trajectory function
+    # 0 ...., 100, 101, .... 100+mutAge
+    #              x         traj
+    endingGen = burnin + mutAge
+    def expectedFreq(gen):
+      freq = []
+      for tr in traj:
+        if gen < endingGen - len(tr) + 1:
+          freq.append( 0 )
+        else:
+          freq.append( tr[ gen - (endingGen - len(tr) + 1) ] )
+      return freq
+    #
+    simu = simulator( population(N, loci=[1,1], ploidy=2), 
+      controlledBinomialSelection( loci=[0,1], 
+        alleles=[StartingAllele+1]*2, freqFunc=expectedFreq ) 
+      )
+    #print "Simulator created"
+    simu.evolve( 
+      preOps=[
+        initByValue([StartingAllele]*2)
+        ],
+      ops=[
+        pointMutator(atLoci=[0], 
+          toAllele=StartingAllele+1, 
+          inds = [0],
+          at = [endingGen-len(traj[0])+1],
+          stage = PreMating),
+        pointMutator(atLoci=[1], 
+          toAllele=StartingAllele+1, 
+          inds = [1],
+          at = [endingGen-len(traj[1])+1],
+          stage = PreMating),
+        stat(alleleFreq=[0,1]),
+        pyEval(r'"%%d %%6.4f %%6.4f\n"%%(gen, 1-alleleFreq[0][%d], 1-alleleFreq[1][%d])'%\
+          (StartingAllele, StartingAllele), begin=burnin)
+      ], 
+      end=endingGen
+    )
     
   def testControlledRandomMating(self):
-    'Testing controlled mating'
+    'Testing controlled random mating'
     # planned trajectory
     freq = FreqTrajectoryStoch(freq=0.05, N=100)
     # staring from when?
@@ -300,6 +354,57 @@ class TestMatingSchemes(unittest.TestCase):
         pyEval(r'"%%d %%6.4f\n"%%(gen, 1-alleleFreq[0][%d])'%StartingAllele, begin=burnin)
       ], 
       end=burnin+mutAge
+    )
+    
+  def testControlledMultiRandomMating(self):
+    'Testing the multi-locus version of controlled random mating'
+    #TurnOnDebug(DBG_MATING)
+    #TurnOnDebug(DBG_DEVEL)
+    N = 5000
+    # planned trajectory
+    traj = FreqTrajectoryMultiStoch(freq=[0.05, 0.10], N=N, 
+      maxGen=500, restartIfFail=True)    
+    # staring from when?
+    burnin = 100
+    mutAge = max([len(x) for x in traj])
+    # trajectory function
+    # 0 ...., 100, 101, .... 100+mutAge
+    #              x         traj
+    endingGen = burnin + mutAge
+    def expectedFreq(gen):
+      freq = []
+      for tr in traj:
+        if gen < endingGen - len(tr) + 1:
+          freq.append( 0 )
+        else:
+          freq.append( tr[ gen - (endingGen - len(tr) + 1) ] )
+      return freq
+    #
+    simu = simulator( population(N, loci=[1,1], ploidy=2), 
+      controlledRandomMating( loci=[0,1], 
+        alleles=[StartingAllele+1]*2, freqFunc=expectedFreq ) 
+      )
+    #print "Simulator created"
+    simu.evolve( 
+      preOps=[
+        initByValue([StartingAllele]*2)
+        ],
+      ops=[
+        pointMutator(atLoci=[0], 
+          toAllele=StartingAllele+1, 
+          inds = [0],
+          at = [endingGen-len(traj[0])+1],
+          stage = PreMating),
+        pointMutator(atLoci=[1], 
+          toAllele=StartingAllele+1, 
+          inds = [1],
+          at = [endingGen-len(traj[1])+1],
+          stage = PreMating),
+        stat(alleleFreq=[0,1]),
+        pyEval(r'"%%d %%6.4f %%6.4f\n"%%(gen, 1-alleleFreq[0][%d], 1-alleleFreq[1][%d])'%\
+          (StartingAllele, StartingAllele), begin=burnin)
+      ], 
+      end=endingGen
     )
 
 if __name__ == '__main__':
