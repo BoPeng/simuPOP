@@ -679,8 +679,8 @@ namespace simuPOP
 
       /// constructor
       controlledBinomialSelection(
-        int locus,
-        Allele allele,
+        vectori loci,
+        vectori alleles,
         PyObject* freqFunc,
         double numOffspring=1.,
         PyObject* numOffspringFunc=NULL,
@@ -693,10 +693,13 @@ namespace simuPOP
         numOffspringFunc, maxNumOffspring, mode,
         newSubPopSize, newSubPopSizeExpr,
         newSubPopSizeFunc),
-        m_locus(locus),
-        m_allele(allele),
+        m_loci(loci),
+        m_alleles(alleles),
         m_freqFunc(freqFunc)
       {
+        if( m_loci.empty() || m_loci.size() != m_alleles.size() )
+          throw ValueError("Please specify loci and corresponding alleles");
+          
         if(m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
           throw ValueError("Please specify a valid frequency function");
         else
@@ -706,8 +709,8 @@ namespace simuPOP
       /// CPPONLY
       controlledBinomialSelection(const controlledBinomialSelection& rhs)
         : binomialSelection(rhs),
-        m_locus(rhs.m_locus),
-        m_allele(rhs.m_allele),
+        m_loci(rhs.m_loci),
+        m_alleles(rhs.m_alleles),
         m_freqFunc(rhs.m_freqFunc)
       {
         Py_INCREF(m_freqFunc);
@@ -753,10 +756,10 @@ namespace simuPOP
 
     private:
       /// locus at which mating is controlled.
-      int m_locus;
+      vectori m_loci;
 
       /// allele to be controlled at each locus
-      Allele m_allele;
+      vectori m_alleles;
 
       /// function that return an array of frquency range
       PyObject * m_freqFunc;
@@ -805,8 +808,8 @@ namespace simuPOP
       \param contWhenUniSex continue when there is only one sex in the population, default to true
       */
       controlledRandomMating(
-        int locus,
-        Allele allele,
+        vectori loci,
+        vectori alleles,
         PyObject* freqFunc,
         double numOffspring=1.,
         PyObject* numOffspringFunc=NULL,
@@ -822,8 +825,8 @@ namespace simuPOP
         newSubPopSizeFunc,
         newSubPopSizeExpr,
         contWhenUniSex),
-        m_locus(locus),
-        m_allele(allele),
+        m_loci(loci),
+        m_alleles(alleles),
         m_freqFunc(freqFunc)
       {
         if(m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
@@ -835,8 +838,8 @@ namespace simuPOP
       /// CPPONLY
       controlledRandomMating(const controlledRandomMating& rhs)
         : randomMating(rhs),
-        m_locus(rhs.m_locus),
-        m_allele(rhs.m_allele),
+        m_loci(rhs.m_loci),
+        m_alleles(rhs.m_alleles),
         m_freqFunc(rhs.m_freqFunc)
       {
         Py_INCREF(m_freqFunc);
@@ -907,10 +910,10 @@ namespace simuPOP
     private:
 
       /// locus at which mating is controlled.
-      int m_locus;
+      vectori m_loci;
 
       /// allele to be controlled at each locus
-      Allele m_allele;
+      vectori m_alleles;
 
       /// function that return an array of frquency range
       PyObject * m_freqFunc;
