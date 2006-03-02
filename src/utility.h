@@ -1089,11 +1089,11 @@ namespace simuPOP
         return gsl_ran_binomial(m_RNG, p, n);
       }
 
-      void randMultinomial(unsigned int N, const vectorf& p, vectoru& n)
+      void randMultinomial(unsigned int N, const vectorf& p, vectoru::iterator n)
       {
         // if sum p_i != 1, it will be normalized.
-        n.resize(p.size());
-        gsl_ran_multinomial(m_RNG, p.size(), N, &p[0], &n[0]);
+        // the size of n is not checked!
+        gsl_ran_multinomial(m_RNG, p.size(), N, &p[0], &*n);
       }
 
       /// Poisson distribution
