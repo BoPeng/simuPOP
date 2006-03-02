@@ -676,7 +676,7 @@ namespace simuPOP
           // success
           break;
         }
-        else 
+        else
         {
           DBG_DO(DBG_MATING, cout << "Reaching 0, but next gen has more than 1 allele a" << endl);
           // restart
@@ -721,7 +721,7 @@ namespace simuPOP
   }
 
   matrix FreqTrajectoryMultiStoch( vectorf freq, long N,
-    PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc, 
+    PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc,
     ULONG minGen, ULONG maxGen, bool restartIfFail)
   {
     size_t nLoci = freq.size();
@@ -975,7 +975,7 @@ namespace simuPOP
       //
       // if not done, but t already reaches T
       if( idx == maxGen )
-      { 
+      {
         cout << "Warning: reaching T generations. Return whatever I have now." << endl;
         break;
       }
@@ -1309,7 +1309,8 @@ namespace simuPOP
         alleleRange[2*i+1] = static_cast<ULONG>((freqRange[i]+m_range)*pop.popSize()*pop.ploidy())+1;
 #ifndef OPTIMIZED
         if( alleleNum[i] == 0 && alleleRange[2*i] > 0 )
-          throw ValueError("No allele exists so there is no way to reach specified allele frequency.");
+          throw ValueError("No allele exists so there is no way to reach specified allele frequency.\n"
+            "Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
 #endif
       }
     }
@@ -1334,7 +1335,8 @@ namespace simuPOP
         alleleRange[2*i+1] = static_cast<ULONG>(freqRange[2*i+1]*pop.popSize()*pop.ploidy())+1;
 #ifndef OPTIMIZED
         if( alleleNum[i] == 0 && alleleRange[2*i] > 0 )
-          throw ValueError("No allele exists so there is no way to reach specified allele frequency.");
+          throw ValueError("No allele exists so there is no way to reach specified allele frequency.\n"
+            "Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
 #endif
       }
     }
@@ -1376,48 +1378,67 @@ namespace simuPOP
     // scrtach will have the right structure.
     this->prepareScratchPop(pop, scratch);
 
-    size_t pldy = pop.ploidy();
+    size_t pldy = pop.ploidy(), i, nLoci=m_loci.size();
 
     DBG_DO(DBG_MATING, m_famSize.clear());
 
     DBG_ASSERT( pop.numSubPop() == scratch.numSubPop(), SystemError,
       "Number of subpopulation can not be changed.");
 
-    double expectedFreq;
+    vectorf expFreq;
     PyCallFunc( m_freqFunc, "(i)", pop.gen(),
-      expectedFreq, PyObj_As_Double);
+      expFreq, PyObj_As_Array);
 
-    // determine the number of case/control at each population.
+    // determine expected number of alleles
     UINT numSP = pop.numSubPop();
-    vectorf curFreq( numSP );
-    vectoru nextAlleles( numSP, 0);
-    ULONG numOfAlleles=0;
-    for( size_t sp=0; sp < numSP; ++sp)
+    vectorlu totalAlleles( nLoci );
+    vectoru expAlleles( nLoci * numSP );
+    for(i=0; i< nLoci; ++i)
     {
-      ULONG n=0;
-      // go through all alleles
-      for(GappedAlleleIterator a=pop.alleleBegin(m_locus, sp),
-        aEnd=pop.alleleEnd(m_locus, sp); a != aEnd; ++a)
+      int locus = m_loci[i];
+      Allele allele = m_alleles[i];
+
+      if( expFreq[i] < 0. )
+        expFreq[i] = 0.;
+      if( expFreq[i] > 1. )
+        expFreq[i] = 1.;
+      totalAlleles[i] = static_cast<ULONG>(expFreq[i]*pop.popSize()*pop.ploidy());
+      if( expFreq[i]>0. && totalAlleles[i] == 0)
+        totalAlleles[i] = 1;
+
+      // determine the number alleles at each population.
+      vectorf curFreq( numSP );
+      ULONG numOfAlleles=0;
+      for( size_t sp=0; sp < numSP; ++sp)
       {
-        if( AlleleUnsigned(*a) == m_allele )
-          n++;
+        ULONG n=0;
+        // go through all alleles
+        for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
+          aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+        {
+          if( AlleleUnsigned(*a) == allele )
+            n++;
+        }
+        numOfAlleles += n;
+        curFreq[sp] = double(n)/(pop.popSize()*pldy);
       }
-      numOfAlleles += n;
-      curFreq[sp] = double(n)/(pop.popSize()*pldy);
+
+      // if there is no alleles
+      if( numOfAlleles == 0 && expFreq[i] > 0.)
+        throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
+          " Generation " + toStr(pop.gen()) );
+
+      /// calculate exp number of affected offspring in the next generation.
+      ///
+      /// step 1: totalsize*expFreq is the total number of disease alleles
+      /// step 2: assign these alleles to each subpopulation according to a multi-nomial
+      /// distribution with p_i beging allele frequency at each subpopulation.
+      // assign these numbers to each subpopulation
+      //rng().randMultinomial(static_cast<unsigned int>(pop.popSize()*expFreq*pldy),
+      //  curFreq, expAlleles.begin()+numSP*i);
     }
 
-    // if there is no alleles
-    if( numOfAlleles == 0 && expectedFreq > 0.)
-      throw ValueError("No disease allele exists, but expected allele frequency is greater than 0.");
-
-    /// calculate expected number of affected offspring in the next generation.
-    ///
-    /// step 1: totalsize*expectedFreq is the total number of disease alleles
-    /// step 2: assign these alleles to each subpopulation according to a multi-nomial
-    /// distribution with p_i beging allele frequency at each subpopulation.
-    // assign these numbers to each subpopulation
-    rng().randMultinomial(static_cast<unsigned int>(pop.popSize()*expectedFreq*pldy),
-      curFreq, nextAlleles);
+    DBG_DO(DBG_DEVEL, cout << "expected alleles " << expAlleles << endl);
 
     //
     vectorf& fitness = pop.fitness();
@@ -1429,25 +1450,26 @@ namespace simuPOP
     for(UINT sp=0; sp < pop.numSubPop(); ++sp)
     {
       UINT spSize = pop.subPopSize(sp);
-      UINT numAff = nextAlleles[sp];
 
-      if( numAff > spSize*pldy)
+      vectori totAllele( nLoci );
+      vectori curAllele( nLoci, 0 );
+      for(i=0; i< nLoci; ++i)
       {
-        cout << "Warning: number of planned affected alleles exceed population size.";
-        numAff = spSize*pldy;
+        totAllele[i] = expAlleles[sp+numSP*i];
+        if( totAllele[i] > spSize*pldy)
+        {
+          cout << "Warning: number of planned affected alleles exceed population size.";
+          totAllele[i] = spSize*pldy;
+        }
       }
-
-      UINT numUnaff = spSize*pldy - nextAlleles[sp];
-      // counter of aff/unaff
-      UINT nAff=0, nUnaff = 0;
-
-      // if there are less affected, aff first,...
-      bool firstAffected=numAff<spSize*pldy/2;
-      // if affected has been done (
-      bool firstPartDone = firstAffected? (numAff == 0) : (numUnaff == 0);
 
       if( spSize == 0 )
         continue;
+
+      // this is the key of this algorithm.
+      // replacable inds will be used if some of the allele
+      // freq is not satisfied.
+      vector<individual*> replacableInd;
 
       // if selection is on
       if( ! fitness.empty() )
@@ -1459,9 +1481,12 @@ namespace simuPOP
       ULONG spIndEnd = scratch.subPopSize(sp);
       // ploidy
       size_t p;
-      int na, nu;
+      vectori na(nLoci, 0), nu(nLoci, 0);
+      bool hasAff;
+      bool allDone = false;
+      vector<bool> done(nLoci, false);
       //
-      while( spInd < spIndEnd)
+      while( ! allDone )
       {
         individual * parent;
         // choose a parent
@@ -1470,124 +1495,100 @@ namespace simuPOP
         else
           parent = &pop.ind( rng().randInt(spSize), sp);
 
-        // generate m_numOffspring offspring
-        UINT numOS, numOSEnd;
-        for(numOS=0, numOSEnd = this->numOffspring(pop.gen() ); numOS < numOSEnd;  numOS++)
+        // generate only one offspring
+        population::IndIterator it;
+        if( spInd == spIndEnd && replacableInd.empty() )
         {
-          population::IndIterator it = scratch.indBegin(sp) + spInd++;
+          cout << "Warning: allele frequency is not achieved. "<< endl;
+          allDone = true;
+          break;
+        }
+        else if( spInd < spIndEnd )
+        {
+          it = scratch.indBegin(sp) + spInd++;
+        }
+        else
+        {
+          // it = replacableInd.back();
+          replacableInd.pop_back();
+        }
 
-          bool succ=true;
-          if(  formOffGeno )
-            /// use deep copy!!!!!!!
-            it->copyFrom(*parent);
+        bool succ=true;
+        if(  formOffGeno )
+          /// use deep copy!!!!!!!
+          it->copyFrom(*parent);
 
-          // apply during mating operators
-          for( vector<Operator *>::iterator iop = ops.begin(),
-            iopEnd = ops.end(); iop != iopEnd;  ++iop)
+        // apply during mating operators
+        for( vector<Operator *>::iterator iop = ops.begin(),
+          iopEnd = ops.end(); iop != iopEnd;  ++iop)
+        {
+          try
           {
-            try
+            // During mating operator might reject this offspring.
+            if(!(*iop)->applyDuringMating(pop, it, parent, NULL))
             {
-              // During mating operator might reject this offspring.
-              if(!(*iop)->applyDuringMating(pop, it, parent, NULL))
-              {
-                spInd -= numOS+1;
-                succ = false;
-                break;
-              }
-            }
-            catch(...)
-            {
-              cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
-              throw;
+              spInd -= 1;
+              succ = false;
+              break;
             }
           }
-          // do not use this parent
-          if(! succ)
-            break;
+          catch(...)
+          {
+            cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
+            throw;
+          }
+        }
+        // do not use this parent
+        if(! succ)
+          continue;
 
-          // other wise, check calculate nAff, nUnaff
-          na = nu = 0;
+        // other wise, check nAff, nUnaff
+        hasAff = false;
+        for(i=0; i<nLoci; ++i)
+        {
+          na[i] = nu[i] = 0;
           for(p=0; p<pldy; ++p)
           {
-            if( it->allele(m_locus, p) == m_allele )
-              na++;
+            if( it->allele(m_loci[i], p) == m_alleles[i] )
+            {
+              na[i]++;
+              hasAff = true;
+            }
             else
-              nu++;
+              nu[i]++;
           }
+        }
 
-          DBG_DO(DBG_DEVEL, cout << numOfAlleles << " na " << na << " nu " << nu
-            << " nAff " << nAff << " unaff " << nUnaff << " " << numAff
-            << " " << numUnaff << endl);
+        //DBG_DO(DBG_DEVEL, cout << numOfAlleles << " na " << na
+        //  << " nu " << nu << endl);
 
-          if( firstAffected )                     // first handle affected
+        // only accept unaffected....
+        if( hasAff )
+        {
+          for(i=0; i<nLoci; ++i)
           {
-            // only accept unaffected....
-            if( firstPartDone )
+            // can not add more to done.
+            if( done[i] && na[i] > 0 )
             {
-              if( na > 0 )
+              if( spInd == spIndEnd )
               {
-                spInd -= numOS+1;
-                break;
+                //replacableInd.push_back(it);
+                continue;
               }
               else
-                nUnaff += nu;
-            }
-            else                                  // first part not done
-            {
-              if( na == 0 )
-              {
-                spInd -= numOS+1;
-                break;
-              }
-              else
-              {
-                nAff += na;
-                nUnaff += nu;
-                if(nAff >= numAff )
-                  firstPartDone = true;
-              }
+                spInd --;
             }
           }
-          else                                    // first handle unaffected
-          {
-            // only accept affected....
-            if( firstPartDone )
-            {
-              if( nu > 0 )
-              {
-                spInd -= numOS+1;
-                break;
-              }
-              else
-                nAff += na;
-            }
-            else                                  // first part not done
-            {
-              if( nu == 0 )
-              {
-                spInd -= numOS+1;
-                break;
-              }
-              else
-              {
-                nAff += na;
-                nUnaff += nu;
-                if(nUnaff >= numUnaff)
-                  firstPartDone = true;
-              }
-            }
-          }
+        }
+        //else
+        //  replacableInd.push_back(&spInd);
 
-          // all during-mating operators
-          // success
-          if( spInd == spIndEnd )
-          {
-            numOS++;
-            break;
-          }
-        }                                         // offsrping for each parent
-        // record family size
-        DBG_DO(DBG_MATING, m_famSize.push_back( numOS ));
+        // all during-mating operators
+        // success
+        if( spInd == spIndEnd )
+        {
+          break;
+        }
       }                                           // all offspring
     }                                             // all subpopulation.
 
@@ -1629,10 +1630,10 @@ namespace simuPOP
     {
       ULONG n=0;
       // go through all alleles
-      for(GappedAlleleIterator a=pop.alleleBegin(m_locus, sp),
-        aEnd=pop.alleleEnd(m_locus, sp); a != aEnd; ++a)
+      for(GappedAlleleIterator a=pop.alleleBegin(m_loci[0], sp),
+        aEnd=pop.alleleEnd(m_loci[0], sp); a != aEnd; ++a)
       {
-        if( AlleleUnsigned(*a) == m_allele )
+        if( AlleleUnsigned(*a) == m_alleles[0] )
           n++;
       }
       numOfAlleles += n;
@@ -1641,7 +1642,8 @@ namespace simuPOP
 
     // if there is no alleles
     if( numOfAlleles == 0 && expectedFreq > 0.)
-      throw ValueError("No disease allele exists, but expected allele frequency is greater than 0.");
+      throw ValueError("No disease allele exists, but expected allele frequency is greater than 0.\n"
+        " Generation " + toStr(pop.gen()));
 
     /// calculate expected number of affected offspring in the next generation.
     ///
@@ -1850,7 +1852,7 @@ namespace simuPOP
           na = nu = 0;
           for(p=0; p<pldy; ++p)
           {
-            if( it->allele(m_locus, p) == m_allele )
+            if( it->allele(m_loci[0], p) == m_alleles[0] )
               na++;
             else
               nu++;

@@ -433,12 +433,7 @@ def getOptions(details=__doc__):
     simuOpt.saveConfig(options, allParam[-2]+'.cfg', allParam)
   # --verbose or -v (these is no beautifying of [floats]
   if allParam[-1]:         # verbose
-    for p in range(0, len(options)):
-      if options[p].has_key('configName'):
-        if type(allParam[p]) == types.StringType:
-          print options[p]['configName'], '\t"'+str(allParam[p])+'"'
-        else:
-          print options[p]['configName'], '\t', str(allParam[p])
+    simuOpt.printConfig(options, allParam)
   # return the rest of the parameters
   return allParam[1:-1]
 
@@ -706,7 +701,8 @@ Max mutant age: %d ''' % \
 (initSize, endingSize, burninGen, splitGen, mixingGen, endingGen, numSubPop, \
 ','.join([str(x) for x in curAlleleFreqTmp]), \
 ','.join([str(x) for x in fitnessTmp]), minMutAge, maxMutAge) )
-  print '\n\nTrajectories simulated successfully. Check %s.eps for details ' % filename
+  print '\n\nTrajectories simulated successfully. Their lengths are %s. Check %s.eps for details. ' \
+    % ( ', '.join([ str(len(x)) for x in traj]), filename)
   ###
   ### translate numChrom, numLoci, DSLafterLoci to
   ### loci, lociPos, DSL, nonDSL in the usual index
@@ -795,7 +791,7 @@ Max mutant age: %d ''' % \
     mutator, 
     rec, 
     stat(alleleFreq=DSL, popSize=True, step=10),
-    pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.3f"%(1-alleleFreq[x]['+str(StartingAllele)+r']) for x in DSL])+"\n"',
+    pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x]['+str(StartingAllele)+r']) for x in DSL])+"\n"',
       step=10)
   ]
   ###
@@ -806,7 +802,7 @@ Max mutant age: %d ''' % \
   for i in range( numDSL ):
     operators.append( 
       pointMutator(atLoci=[DSL[i]], toAllele=StartingAllele+1, inds=[i],
-      at = [endingGen - len(traj[i]) + 1] ) ) 
+      at = [endingGen - len(traj[i]) + 1 ], stage=PreMating ) ) 
   ### 
   ### split to subpopulations
   ### 
@@ -876,10 +872,10 @@ Max mutant age: %d ''' % \
   def freqFunc(gen):
     freq = []
     for tr in traj:
-      if gen < endingGen - len(tr):
+      if gen < endingGen - len(tr) + 1:
         freq.append( 0 )
       else:
-        freq.append( tr[ gen - (endingGen - len(tr)) ] )
+        freq.append( tr[ gen - (endingGen - len(tr) + 1) ] )
     return freq
   # create a simulator
   pop =  population(subPop=popSizeFunc(0), ploidy=2,

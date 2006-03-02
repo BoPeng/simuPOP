@@ -304,7 +304,7 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False):
 def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
   ''' get options from a given options structure '''
   import Tkinter as tk
-  if len(options) == 0:
+  if len(opt) == 0:
     raise exceptions.ValueError("Empty field names...")  # some behaviors
   # remove separators, tk version does not do this
   options = []
@@ -603,7 +603,6 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
     ''' get result and convert values '''
     for g in range(len(entryWidgets)):
       if entryWidgets[g] == None:
-        values[g] = None
         continue
       try:
         # get text from different type of entries
@@ -946,6 +945,24 @@ def saveConfig(opt, file, param):
         f.write( " --" + options[p]['longarg'] )
   f.write("\n")
   f.close()
+
+def printConfig(opt, param):
+  """ 
+    Print configuration.
+  """
+  # remove separators from opt
+  options = []
+  for g in opt:
+    if not g.has_key('separator'):
+      options.append(g)
+  if len(options) != len(param):
+    raise ValueError("Length of option specification and param should be the same.")
+  for p in range(0, len(options)):
+    if options[p].has_key('configName'):
+      if type(param[p]) == types.StringType:
+        print options[p]['configName'], '\t"'+str(param[p])+'"'
+      else:
+        print options[p]['configName'], '\t', str(param[p])
 
 # define some validataion functions
 def valueNot(t):
