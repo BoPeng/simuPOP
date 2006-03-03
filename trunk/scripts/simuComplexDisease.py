@@ -637,16 +637,19 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     raise exceptions.ValueError("min allele frequency should be either a number or a list\n" +
       " of the same length as DSLafter")
   # fitness
-  if fitnessTmp == []:  # neutral process
-    fitness = [1,1,1]*numDSL
+  if mlSelModelTmp == 'none':
+    fitness = []
   else:
-    # for a single DSL
-    if len(fitnessTmp) == 3:
-      fitness = fitnessTmp*numDSL
-    elif len(fitnessTmp) != numDSL*3:
-      raise exceptions.ValueError("Please specify fitness for each DSL")
+    if fitnessTmp == []:  # neutral process
+      fitness = [1,1,1]*numDSL
     else:
-      fitness = fitnessTmp
+      # for a single DSL
+      if len(fitnessTmp) == 3:
+        fitness = fitnessTmp*numDSL
+      elif len(fitnessTmp) != numDSL*3:
+        raise exceptions.ValueError("Please specify fitness for each DSL")
+      else:
+        fitness = fitnessTmp
   ###
   ### simulating population frequency
   ### 
@@ -701,7 +704,7 @@ Max mutant age: %d ''' % \
 (initSize, endingSize, burninGen, splitGen, mixingGen, endingGen, numSubPop, \
 ','.join([str(x) for x in curAlleleFreqTmp]), \
 ','.join([str(x) for x in fitnessTmp]), minMutAge, maxMutAge) )
-  print '\n\nTrajectories simulated successfully. Their lengths are %s. Check %s.eps for details. ' \
+  print '\n\nTrajectories simulated successfully. Their lengths are %s.\n Check %s.eps for details. \n\n' \
     % ( ', '.join([ str(len(x)) for x in traj]), filename)
   ###
   ### translate numChrom, numLoci, DSLafterLoci to
@@ -892,21 +895,12 @@ Max mutant age: %d ''' % \
   #
   # start simulation.
   simu = simulator( pop, 
-##     controlledMating( 
-##       matingScheme = randomMating(
-##         newSubPopSizeFunc=popSizeFunc,  # demographic model
-##         numOffspringFunc=last_two),     # save last two generations
-##       loci=DSL,                         # which loci to control
-##       alleles=[StartingAllele+1]*numDSL,# which allele to control
-##       freqFunc=freqFunc,                # frequency control function
-##       range=0.005                       # allow (f,f+0.005)
-##       ),
     controlledRandomMating(
-      newSubPopSizeFunc=popSizeFunc,  # demographic model
-      numOffspringFunc=last_two,     # save last two generations
-      loci=DSL,                         # which loci to control
-      alleles=[StartingAllele+1]*numDSL,# which allele to control
-      freqFunc=freqFunc                # frequency control function
+      newSubPopSizeFunc=popSizeFunc,      # demographic model
+      numOffspringFunc=last_two,          # save last two generations
+      loci=DSL,                           # which loci to control
+      alleles=[StartingAllele+1]*numDSL,  # which allele to control
+      freqFunc=freqFunc                   # frequency control function
     ),
     rep=1)
   # evolve! If --dryrun is set, only show info
@@ -941,16 +935,11 @@ if __name__ == '__main__':
   allParam = getOptions()
   # unpack options
   (numChrom, numLoci, markerType, DSLafter, DSLdist, 
-    #
     initSize, endingSize, growthModel, 
     burninGen, splitGen, mixingGen, endingGen, 
-    #
     numSubPop, migrModel, migrRate,
-    #
     curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel,
-    #
     mutaRate, recRate, 
-    #
     dryrun, filename) = allParam
   #
   if markerType == 'SNP':
