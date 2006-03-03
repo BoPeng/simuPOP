@@ -732,8 +732,11 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
       if opt.has_key('description'):
         entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
       if values[g] != None:
-        for val in values[g]:
-          entryWidgets[g].Check( opt['chooseFrom'].index(val)) 
+        if type(values[g]) in [types.ListType, types.TupleType] and len(values[g])>0:
+          for val in values[g]:
+            entryWidgets[g].Check( opt['chooseFrom'].index(val)) 
+        else:
+          entryWidgets[g].Check( opt['chooseFrom'].index(values[g])) 
       gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND) 
       colCount += len(opt['chooseFrom']) -1
     else: # a edit box
@@ -946,7 +949,7 @@ def saveConfig(opt, file, param):
   f.write("\n")
   f.close()
 
-def printConfig(opt, param):
+def printConfig(opt, param, out=sys.stdout):
   """ 
     Print configuration.
   """
@@ -960,9 +963,9 @@ def printConfig(opt, param):
   for p in range(0, len(options)):
     if options[p].has_key('configName'):
       if type(param[p]) == types.StringType:
-        print options[p]['configName'], '\t"'+str(param[p])+'"'
+        print >> out, options[p]['configName'], '\t"'+str(param[p])+'"'
       else:
-        print options[p]['configName'], '\t', str(param[p])
+        print >> out, options[p]['configName'], '\t', str(param[p])
 
 # define some validataion functions
 def valueNot(t):

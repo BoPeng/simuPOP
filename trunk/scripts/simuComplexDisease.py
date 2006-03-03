@@ -614,7 +614,7 @@ def outputStatistics(pop, args):
 
 # simulate function, using a single value of mutation, migration,
 # recombination rate
-def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp, 
+def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     initSize, endingSize, growthModel, 
     burninGen, splitGen, mixingGen, endingGen, 
     numSubPop, migrModel, migrRate,
