@@ -334,6 +334,9 @@ setup(
   data_files = DATA_FILES
 )
 
-for modu in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
-  for src in SOURCE_FILES[modu][:-1]:
-    os.remove(src)
+# keep the source code of snapshot version since snapshot may be 
+# changed frequently.
+if not SIMUPOP_VER == 'snapshot':
+  for modu in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
+    for src in MODU_SOURCE_FILES[modu][:-1] :
+      os.remove(src)
