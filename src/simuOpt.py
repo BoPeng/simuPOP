@@ -1085,7 +1085,7 @@ elif env_optimized != None:
 else:   # default to false
   _optimized = False
    
-if env_longAllele != None and env_longAllele in ['standard', 'short', 'long', 'binary']:
+if env_longAllele in ['standard', 'short', 'long', 'binary']:
   _longAllele = env_longAllele
 else:
   _longAllele = 'standard'
