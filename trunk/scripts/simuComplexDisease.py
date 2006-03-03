@@ -398,7 +398,17 @@ options = [
    'description': '''Name of simulation, files saved will be 
           name + '.log': statistics output
           name + '.cfg': configuration
-          name + '.bin': saved popuation''',
+          name + .bin/txt/xml: saved popuation''',
+  },
+  {'longarg': 'saveFormat=',
+   'default': 'txt',
+   'allowedTypes': [types.StringType],
+   'configName': 'Format to save population',
+   'prompt': 'Format to save population):  ',
+   'description': '''Format to save population, can be 
+         text, bin or xml. Note that the binary format, although
+         smallest, may not be portable between different machines.''',  
+   'chooseOneOf': [ 'txt', 'bin', 'xml']
   },
   {'arg': 'v',
    'longarg': 'verbose',
@@ -610,7 +620,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     numSubPop, migrModel, migrRate,
     curAlleleFreqTmp, minMutAge, maxMutAge, fitnessTmp, mlSelModelTmp, 
     mutaRate, recRate, 
-    dryrun, filename):
+    dryrun, filename, format):
   ''' run a simulation of complex disease with given parameters. 
   '''  
   ###
@@ -926,8 +936,8 @@ Max mutant age: %d ''' % \
   pop.dvars().migrRate = migrRate
   pop.dvars().migrModel = "circular stepping stone"
   pop.dvars().recRate = recRate
-  print "Saving population to " + filename + ".bin\n"
-  simu.population(0).savePopulation(filename+'.bin')
+  print "Saving population to " + filename + '.' + format + '\n'
+  simu.population(0).savePopulation(filename+'.'+format)
   return True
 
 if __name__ == '__main__':
@@ -940,7 +950,7 @@ if __name__ == '__main__':
     numSubPop, migrModel, migrRate,
     curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel,
     mutaRate, recRate, 
-    dryrun, filename) = allParam
+    dryrun, filename, format) = allParam
   #
   if markerType == 'SNP':
     simuOpt.setOptions(alleleType='binary')
@@ -964,6 +974,6 @@ if __name__ == '__main__':
     burninGen, splitGen, mixingGen, endingGen, numSubPop, migrModel, migrRate,
     curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel, 
     mutaRate, recRate, 
-    dryrun, filename)
+    dryrun, filename, format)
   
   print "Done!"
