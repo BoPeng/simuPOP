@@ -117,6 +117,17 @@ options = [
    'allowedTypes': [types.NoneType, type(True)],
    'jump': -1          # if -h is specified, ignore any other parameters.
   },
+  {'longarg': 'markerType=',
+   'default': 'microsatellite',
+   'allowedTypes': [types.StringType],
+   'configName': 'Marker type used',
+   'prompt': 'Marker type used (microsatellite)',
+   'description': '''Marker type used to generated the sample. This is important
+         since the file formats are not compatible between binary and standard
+         simuPOP modules''',
+   'validate':  simuOpt.valueOneOf([ 'microsatellite', 'SNP']),
+   'chooseOneOf': ['microsatellite', 'SNP']
+  },
   {'longarg': 'dataset=',
    'default': 'simu.bin',
    'allowedTypes': [types.StringType],
@@ -512,11 +523,11 @@ def drawSamples(pop, peneFunc, penePara, numSample, saveFormat, dataDir, reAnaly
           print "Write to linkage format"
           for ch in range(0, pop.numChrom() ):
             SaveLinkage(pop=affected[0], popType='sibpair', output = linDir+"/Aff_%d" % ch,
-              chrom=ch, recombination=pop.dvars().recombinationRate,
+              chrom=ch, recombination=pop.dvars().recRate[0],
               alleleFreq=af, daf=0.1)        
           for ch in range(0,pop.numChrom() ):
             SaveLinkage(pop=unaffected[0], popType='sibpair', output = linDir+"/Unaff_%d" % ch,
-              chrom=ch, recombination=pop.dvars().recombinationRate,                            
+              chrom=ch, recombination=pop.dvars().recRate[0],                            
               alleleFreq=af, daf=0.1)        
         report += '<a href="%sLinkage">unaffected</a>' % relDir
       report += '</li>'
@@ -530,7 +541,7 @@ def drawSamples(pop, peneFunc, penePara, numSample, saveFormat, dataDir, reAnaly
   return report
 
 # apply the TDT method of GeneHunter
-def TDT(geneHunter, DSL, cutoff, dataDir, data, epsFile, jpgFile):
+def TDT(pop, geneHunter, numChrom, DSL, cutoff, dataDir, data, epsFile, jpgFile):
   ''' use TDT method to analyze the results. Has to have rpy installed '''
   if not hasRPy or geneHunter in ['', 'none']:
     return (0,[])
@@ -539,13 +550,13 @@ def TDT(geneHunter, DSL, cutoff, dataDir, data, epsFile, jpgFile):
   print "Applying TDT method to affected sibpairs "
   for ch in range(numChrom):
     inputfile = dataDir+data+ "_%d" % ch
-    if not os.path.isfile(inputfile + ".ped"):
-      print "Ped file ", inputfile+".ped does not exist. Can not apply TDT method."
+    if not os.path.isfile(inputfile + ".pre"):
+      print "Ped file ", inputfile+".pre does not exist. Can not apply TDT method."
       return (0,[])
     # batch file
     f=open("ghTDT.cmd","w")
     f.write("load markers " + inputfile + ".dat\n")
-    f.write("tdt " + inputfile + ".ped\n")
+    f.write("tdt " + inputfile + ".pre\n")
     f.close()
     # run gene hunter
     os.system(geneHunter + " < ghTDT.cmd > res.txt ")
@@ -607,7 +618,7 @@ def TDT(geneHunter, DSL, cutoff, dataDir, data, epsFile, jpgFile):
     return (1,res)  # fail
 
 # apply the Linkage method of GeneHunter
-def Linkage(geneHunter, DSL, cutoff, dataDir, data, epsFile, jpgFile):
+def Linkage(pop, geneHunter, numChrom, DSL, cutoff, dataDir, data, epsFile, jpgFile):
   ''' use Linkage method to analyze the results. Has to have rpy installed '''
   if not hasRPy or geneHunter in ['', 'none']: 
     return (0,[])
@@ -616,14 +627,14 @@ def Linkage(geneHunter, DSL, cutoff, dataDir, data, epsFile, jpgFile):
   print "Applying Linkage (LOD) method to affected sibpairs "
   for ch in range(numChrom):
     inputfile = dataDir+data+ "_%d" % ch
-    if not os.path.isfile(inputfile + ".ped"):
-      print "Ped file ", inputfile+".ped does not exist. Can not apply TDT method."
+    if not os.path.isfile(inputfile + ".pre"):
+      print "Ped file ", inputfile+".pre does not exist. Can not apply TDT method."
       return (0,[])
     # batch file
     f=open("ghLOD.cmd","w")
     f.write("load markers " + inputfile + ".dat\n")
     f.write("single point on\n")
-    f.write("scan pedigrees " + inputfile + ".ped\n")
+    f.write("scan pedigrees " + inputfile + ".pre\n")
     f.write("photo tmp.txt\n")
     f.write("total stat\n")
     f.write("q\n")
@@ -780,9 +791,12 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
   except:
     print "Can not open log file, ignoring. "
   #
-  result = {'mu':pop.dvars().mutationRate, 
-    'mi':pop.dvars().migrationRate, 
-    'rec':pop.dvars().recombinationRate}
+  result = {
+    'DSLafter':pop.dvars().DSLAfter,
+    'DSL':pop.dvars().DSL,
+    'mu':pop.dvars().mutaRate, 
+    'mi':pop.dvars().migrRate, 
+    'rec':pop.dvars().recRate[0]}
   # save Fst, Het in res
   result['Fst'] = pop.dvars().AvgFst
   result['AvgHet'] = pop.dvars().AvgHetero
@@ -796,10 +810,10 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
   (suc,ldres) = plotLD(pop, epsFile, jpgFile)
   if suc > 0 : # eps file successfully generated
     summary += """<p>D' measures on two chromosomes with/without DSL at the last gen: 
-    <a href="%s/LD_%s.eps">LD.eps</a></p>\n""" % (dataset, dataset)
+    <a href="%s/LD_%s.eps">LD_%s.eps</a></p>\n""" % (outputDir, dataset, dataset)
   if suc > 1 : # jpg file is generated
     summary += '''<img src="%s/LD_%s.jpg"
-      width=800, height=600>'''  % (dataset, dataset)
+      width=800, height=600>'''  % (outputDir, dataset)
   result['DpDSL'] = ldres['DpDSL']
   result['DpNon'] = ldres['DpNon']
   result['DDSL'] = ldres['DDSL']
@@ -828,7 +842,7 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
       _mkdir(penDir)
 
       # if there is a valid gene hunter program, run it
-      (suc,res) = TDT(geneHunter, pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
+      (suc,res) = TDT(pop, geneHunter, pop.numChrom(), pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
         penDir, "/Linkage/Aff", penDir + "/TDT.eps", penDir + "/TDT.jpg")
       #  if suc > 0 : # eps file succe
       if suc > 0 : # eps file successfully generated
@@ -838,7 +852,7 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
       # keep some numbers depending on the penetrance model
       result['TDT_%s_%d' % (peneFunc[p], sn)] = res
       # then the Linkage method
-      (suc,res) = Linkage(geneHunter, pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
+      (suc,res) = Linkage(pop, geneHunter, pop.numChrom(), pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
         penDir, "/Linkage/Aff", penDir + "/LOD.eps", penDir + "/LOD.jpg")
       #  if suc > 0 : # eps file succe
       if suc > 0 : # eps file successfully generated
@@ -853,9 +867,14 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
 if __name__ == '__main__':
   allParam = getOptions()
   # unpack options
-  ( dataset, saveFormat, peneFunc, peneParaTmp, N, numSample, outputDir,
+  ( markerType, dataset, saveFormat, peneFunc, peneParaTmp, N, numSample, outputDir,
     geneHunter, reAnalyzeOnly) = allParam
   # load simuPOP libraries
+  if markerType == 'microsatellite':
+    simuOpt.setOptions(alleleType='short', quiet=True)
+  else:
+    simuOpt.setOptions(alleleType='binary', quiet=True)
+  #
   from simuPOP import *
   from simuUtil import *
   # detect simuPOP version
@@ -892,7 +911,7 @@ if __name__ == '__main__':
         expandedPenePara.append( x )
   #
   # outputDir should already exist
-  (text, result) =  analyzePopulation(dataset,
+  (text, res) =  analyzePopulation(dataset,
     expandedPeneFunc, expandedPenePara, N, numSample, outputDir, 
     geneHunter, reAnalyzeOnly)
   #
@@ -918,17 +937,7 @@ if __name__ == '__main__':
   <ul>''' % (sys.argv[0], time.asctime()) )
   # write out parameters
   # start from options[1]
-  for i in range(1, len(options)-1):
-    # check type
-    if options[i].has_key('configName'):
-      if type( allParam[i-1]) in [types.TupleType, types.ListType]:
-        summary.write('''<li><b>%s:</b>    %s</li>\n''' % \
-          (options[i]['configName'], 
-          ', '.join( map(str, allParam[i-1]))))
-      else:
-        summary.write('''<li><b>%s:</b>    %s</li>\n''' % \
-          (options[i]['configName'], 
-          str(allParam[i-1])))
+  simuOpt.printConfig(options[1:-2], allParam, summary )
   # a table built from res which has
   # idx, muta, migr, rec, af?, Fst, Het, TDT?
   summary.write('''
@@ -952,7 +961,7 @@ if __name__ == '__main__':
   <th>D'(dsl)</th> <th>D (dsl)</th>
   <th>D'(non)</th> <th>D (non)</th>
   ''')
-  for i in range(len(DSLafter)):
+  for i in range(len(res['DSL'])):
     summary.write('<th>allele Frq%d</th>'%(i+1))
   #
   # has TDT and some penetrance function
@@ -967,8 +976,7 @@ if __name__ == '__main__':
   summary.write('</tr>')
   #
   # end of headers, now result
-  summary.write('''<tr><td><a href="#pop_%d">%d</a></td> ''' \
-    % (res['id'], res['id']))    
+  summary.write('''<tr><td><a href="#pop_1">1</a></td> ''' )
   summary.write('<td>%.5g</td>' % res['mu'])
   summary.write('<td>%.5g</td>' % res['mi'])
   summary.write('<td>%.5g</td>' % res['rec'])
@@ -978,7 +986,7 @@ if __name__ == '__main__':
   summary.write('<td>%.3g</td>' % res['DDSL'])
   summary.write('<td>%.3g</td>' % res['DpNon'])
   summary.write('<td>%.3g</td>' % res['DNon'])
-  for i in range(len(DSLafter)):
+  for i in range(len(res['DSL'])):
     summary.write('<td>%.3f</td>'% res['alleleFreq'][i] )
   # for each penetrance function
   if len(peneFunc) > 0:
