@@ -438,9 +438,14 @@ def getOptions(details=__doc__):
   if allParam[0]:  
     print simuOpt.usage(options, __doc__)
     sys.exit(0)
+  # change current directory, all files wil be saved here.
+  try:
+    os.mkdir(allParam[-3])
+  except:
+    pass
   # --saveConfig
-  if allParam[-2] != None: # saveConfig
-    simuOpt.saveConfig(options, allParam[-2]+'.cfg', allParam)
+  if allParam[-3] != None: # saveConfig
+    simuOpt.saveConfig(options, os.path.join(allParam[-3], allParam[-3]+'.cfg'), allParam)
   # --verbose or -v (these is no beautifying of [floats]
   if allParam[-1]:         # verbose
     simuOpt.printConfig(options, allParam)
@@ -837,7 +842,7 @@ Max mutant age: %d ''' % \
     operators.append( mlSelector(
       # with five multiple-allele selector as parameter
       [ maSelector(locus=DSL[x], wildtype=[StartingAllele], 
-        fitness=[fitness[3*x],fitness[3*d+1],fitness[3*d+2]]) for x in range(len(DSL)) ],
+        fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) for x in range(len(DSL)) ],
       mode=mlSelModel, begin=splitGen),
     )
   ###
@@ -922,7 +927,7 @@ Max mutant age: %d ''' % \
   pop = simu.population(0)
   # we want to save info on how this population is generated.
   # This is not required but is a good practise
-  pop.dvars().DSLAfter = DSLafter
+  pop.dvars().DSLafter = DSLafter
   pop.dvars().DSLdist = DSLdist
   pop.dvars().initSize = initSize
   pop.dvars().endingSize = endingSize
@@ -937,6 +942,7 @@ Max mutant age: %d ''' % \
   pop.dvars().migrModel = "circular stepping stone"
   pop.dvars().recRate = recRate
   print "Saving population to " + filename + '.' + format + '\n'
+  TurnOnDebug(DBG_UTILITY)
   simu.population(0).savePopulation(filename+'.'+format)
   return True
 
@@ -974,6 +980,6 @@ if __name__ == '__main__':
     burninGen, splitGen, mixingGen, endingGen, numSubPop, migrModel, migrRate,
     curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel, 
     mutaRate, recRate, 
-    dryrun, filename, format)
+    dryrun, os.path.join(filename, filename), format)
   
   print "Done!"

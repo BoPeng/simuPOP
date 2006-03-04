@@ -254,12 +254,7 @@ def getOptions(details=__doc__):
     simuOpt.saveConfig(options, allParam[-2], allParam)
   # --verbose or -v (these is no beautifying of [floats]
   if allParam[-1]:         # verbose
-    for p in range(0, len(options)):
-      if options[p].has_key('configName'):
-        if type(allParam[p]) == types.StringType:
-          print options[p]['configName'], '\t"'+str(allParam[p])+'"'
-        else:
-          print options[p]['configName'], '\t', str(allParam[p])
+    simuOpt.printConfig(options, allParam)
   # return the rest of the parameters
   return allParam[1:-2]
 
@@ -315,7 +310,6 @@ def plotLD(pop, epsFile, jpgFile):
       r.plot( 0, 0, main="There is no chromosome without DSL",
         xlab="marker location", ylab="D'", type='b', ylim=[0,1])    
       r.dev_off()
-
   # try to get a jpg file
   try:
     if os.system("convert -rotate 90 %s %s " % (epsFile, jpgFile) ) == 0:
@@ -541,14 +535,14 @@ def drawSamples(pop, peneFunc, penePara, numSample, saveFormat, dataDir, reAnaly
   return report
 
 # apply the TDT method of GeneHunter
-def TDT(pop, geneHunter, numChrom, DSL, cutoff, dataDir, data, epsFile, jpgFile):
+def TDT(pop, geneHunter, cutoff, dataDir, data, epsFile, jpgFile):
   ''' use TDT method to analyze the results. Has to have rpy installed '''
   if not hasRPy or geneHunter in ['', 'none']:
     return (0,[])
   # write a batch file and call gh
   allPvalue = []
   print "Applying TDT method to affected sibpairs "
-  for ch in range(numChrom):
+  for ch in range(pop.numChrom()):
     inputfile = dataDir+data+ "_%d" % ch
     if not os.path.isfile(inputfile + ".pre"):
       print "Ped file ", inputfile+".pre does not exist. Can not apply TDT method."
@@ -593,19 +587,19 @@ def TDT(pop, geneHunter, numChrom, DSL, cutoff, dataDir, data, epsFile, jpgFile)
     os.unlink('ghTDT.cmd')
   except:
     pass
-  # now, we need to see how TDT works with a set of p-values around DSL
-  # DSL is global
+  # now, we need to see how TDT works with a set of p-values around pop.dvars().DSL
+  # pop.dvars().DSL is global
   res = []
-  for d in DSL: 
+  for d in pop.dvars().DSL: 
     res.append( max(allPvalue[(d-2):(d+2)]))
   # use R to draw a picture
   r.postscript(file=epsFile, width=6, height=4)
   r.plot(allPvalue, main="-log10(P-value) at each marker (TDT method)",
     xlab="chromosome/markers", ylab="-log10 p-value", type='l', axes=False, ylim=[0.01, 5])
   r.box()
-  r.abline( v = [DSLafter[g]+DSLdist[g] for g in range(len(DSL))], lty=3)
+  r.abline( v = [pop.dvars().DSLafter[g]+pop.dvars().DSLdist[g] for g in range(len(pop.dvars().DSL))], lty=3)
   r.abline( h = cutoff )                       
-  r.axis(1, [pop.dvars().numLoci*x for x in range(numChrom)], [str(x+1) for x in range(numChrom)])
+  r.axis(1, [pop.dvars().numLoci*x for x in range(pop.numChrom())], [str(x+1) for x in range(pop.numChrom())])
   r.axis(2)
   r.dev_off()
   # try to get a jpg file
@@ -618,14 +612,14 @@ def TDT(pop, geneHunter, numChrom, DSL, cutoff, dataDir, data, epsFile, jpgFile)
     return (1,res)  # fail
 
 # apply the Linkage method of GeneHunter
-def Linkage(pop, geneHunter, numChrom, DSL, cutoff, dataDir, data, epsFile, jpgFile):
+def Linkage(pop, geneHunter, cutoff, dataDir, data, epsFile, jpgFile):
   ''' use Linkage method to analyze the results. Has to have rpy installed '''
   if not hasRPy or geneHunter in ['', 'none']: 
     return (0,[])
   # write a batch file and call gh
   allPvalue = []
   print "Applying Linkage (LOD) method to affected sibpairs "
-  for ch in range(numChrom):
+  for ch in range(pop.numChrom()):
     inputfile = dataDir+data+ "_%d" % ch
     if not os.path.isfile(inputfile + ".pre"):
       print "Ped file ", inputfile+".pre does not exist. Can not apply TDT method."
@@ -685,16 +679,16 @@ def Linkage(pop, geneHunter, numChrom, DSL, cutoff, dataDir, data, epsFile, jpgF
   # now, we need to see how Linkage works with a set of p-values around DSL
   # DSL is global
   res = []
-  for d in DSL: 
+  for d in pop.dvars().DSL: 
     res.append( max(allPvalue[(d-2):(d+2)]))
   # use R to draw a picture
   r.postscript(file=epsFile, width=6, height=4)
   r.plot(allPvalue, main="-log10(P-value) at each marker (LOD method)", ylim=[0.01,5], 
     xlab="chromosome/markers", ylab="-log10 p-value", type='l', axes=False)
   r.box()
-  r.abline( v = [DSLafter[g]+DSLdist[g] for g in range(len(DSL))], lty=3)
+  r.abline( v = [pop.dvars().DSLafter[g]+pop.dvars().DSLdist[g] for g in range(len(pop.dvars().DSL))], lty=3)
   r.abline( h = cutoff )                       
-  r.axis(1, [pop.dvars().numLoci*x for x in range(numChrom)], [str(x+1) for x in range(numChrom)])
+  r.axis(1, [pop.dvars().numLoci*x for x in range(pop.numChrom())], [str(x+1) for x in range(pop.numChrom())])
   r.axis(2)
   r.dev_off()
   # try to get a jpg file
@@ -792,7 +786,7 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
     print "Can not open log file, ignoring. "
   #
   result = {
-    'DSLafter':pop.dvars().DSLAfter,
+    'DSLafter':pop.dvars().DSLafter,
     'DSL':pop.dvars().DSL,
     'mu':pop.dvars().mutaRate, 
     'mi':pop.dvars().migrRate, 
@@ -838,21 +832,22 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
       print "Processing sample %s%d" % ( peneFunc[p], sn)
       # save these samples
       penDir = outputDir + "/" + peneFunc[p] + str(sn)
-      relDir = '%s/%s%d/' % (dataset, peneFunc[p], sn)
+      relDir = '%s/%s%d/' % (outputDir, peneFunc[p], sn)
       _mkdir(penDir)
 
       # if there is a valid gene hunter program, run it
-      (suc,res) = TDT(pop, geneHunter, pop.numChrom(), pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
+      (suc,res) = TDT(pop, geneHunter, -math.log10(0.05/pop.totNumLoci()), 
         penDir, "/Linkage/Aff", penDir + "/TDT.eps", penDir + "/TDT.jpg")
       #  if suc > 0 : # eps file succe
       if suc > 0 : # eps file successfully generated
-        summary += """<h4>TDT analysis for affected sibpair data:  <a href="%s/TDT.eps">TDT.eps</a>""" % relDir
+        summary += """<h4>TDT analysis for affected sibpair data: 
+          <a href="%s/TDT.eps">TDT.eps</a>""" % relDir
       if suc > 1 : # jpg file is generated
         summary += '''<p><img src="%s/TDT.jpg" width=800, height=600></p>''' % relDir
       # keep some numbers depending on the penetrance model
       result['TDT_%s_%d' % (peneFunc[p], sn)] = res
       # then the Linkage method
-      (suc,res) = Linkage(pop, geneHunter, pop.numChrom(), pop.dvars().DSL, -math.log10(0.05/pop.totNumLoci()), 
+      (suc,res) = Linkage(pop, geneHunter, -math.log10(0.05/pop.totNumLoci()), 
         penDir, "/Linkage/Aff", penDir + "/LOD.eps", penDir + "/LOD.jpg")
       #  if suc > 0 : # eps file succe
       if suc > 0 : # eps file successfully generated
@@ -861,7 +856,7 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
         summary += '''<p><img src="%s/LOD.jpg" width=800, height=600></p>''' % relDir
       # keep some numbers depending on the penetrance model
       result['LOD_%s_%d' % (peneFunc[p], sn)] = res
-  return (summary, result)
+  return (pop, summary, result)
 
 
 if __name__ == '__main__':
@@ -911,7 +906,7 @@ if __name__ == '__main__':
         expandedPenePara.append( x )
   #
   # outputDir should already exist
-  (text, res) =  analyzePopulation(dataset,
+  (pop, text, res) =  analyzePopulation(dataset,
     expandedPeneFunc, expandedPenePara, N, numSample, outputDir, 
     geneHunter, reAnalyzeOnly)
   #
@@ -934,14 +929,14 @@ if __name__ == '__main__':
   <h1>Output of %s</h1>
   <p><b>Time of simulation: </b> %s </p>
   <h2>Parameters </h2>
-  <ul>''' % (sys.argv[0], time.asctime()) )
+  <ul><pre>''' % (sys.argv[0], time.asctime()) )
   # write out parameters
   # start from options[1]
   simuOpt.printConfig(options[1:-2], allParam, summary )
   # a table built from res which has
   # idx, muta, migr, rec, af?, Fst, Het, TDT?
   summary.write('''
-  </ul>
+  </pre></ul>
   <h2>Summary of datasets </h2>
   <p>The following table lists population id, mutation rate, migration
   rate, recombination rate, Fst, average heterozygosity, highest D'/D between a 
@@ -1002,7 +997,7 @@ if __name__ == '__main__':
         for num in range(numSample): # samples
           plusMinus = ''
           for pvalue in res[met+'_'+p+'_'+str(num)]:
-            if pvalue > -math.log10(0.05/(numChrom*pop.dvars().numLoci)):
+            if pvalue > -math.log10(0.05/(pop.numChrom()*pop.totNumLoci())):
               plusMinus += '+'
             else:
               plusMinus += '-'

@@ -414,7 +414,7 @@ class popStatDialog(wx.Dialog):
     
     
   def setGeneralInfo(self):
-    if self.pop == None:
+    if not self.pop:
       self.txt_popGeneralInfo.SetValue('Press "Load" button to load a population')
       return
     # set population info
@@ -490,7 +490,7 @@ Number of ancestral population: %d
       pass
   
   def setGenotypeInfo(self):
-    if self.pop != None:
+    if self.pop:
       self.listbox_loci.Set([self.pop.locusName(i) for i in range(self.pop.totNumLoci())])
       self.listbox_loci.SetSelection(0)
       self.listbox_subPop.Set(['all subpops']+["Subpop "+str(i) for i in range(self.pop.numSubPop())])
@@ -538,7 +538,7 @@ Number of ancestral population: %d
       self.grid_genotype.ForceRefresh()
     
   def setStatisticsInfo(self):
-    if self.pop != None:
+    if self.pop:
       lociList = [self.pop.locusName(i) for i in range(self.pop.totNumLoci())]
       self.listbox_num_allele.Set(lociList)
       self.listbox_allelefreq.Set(lociList)
