@@ -1111,6 +1111,38 @@ namespace simuPOP
     return d;
   }
 
+  void save_tuple(string& str, PyObject* args)
+  {
+    str += 't';                                   // dictionary
+    int len = PyTuple_Size(args);
+    // save length
+    str += toStr(len) + ' ';
+    // save items
+    for (int i = 0; i < len; i++)
+    {
+      PyObject* elem = PyTuple_GET_ITEM((PyTupleObject *)args, i);
+      saveObj(str, elem);
+    }
+  }
+
+  PyObject* load_tuple(const string& vars, size_t& offset)
+  {
+    // skip 't'
+    offset++;
+    // search for blank
+    int l = 0;
+    while( vars[offset+l] != ' ') l++;
+    int len = atoi(vars.substr(offset, l).c_str());
+    offset += l + 1;
+    PyObject * d = PyTuple_New(len);
+    for(int i=0; i<len; ++i)
+    {
+      PyObject* elem = loadObj(vars, offset);
+      PyTuple_SET_ITEM(d, i, elem);
+    }
+    return d;
+  }
+
   // can not save or load binary carray.
   /*
   void save_carray(string& str, PyObject* args)
@@ -1144,66 +1176,33 @@ namespace simuPOP
   {
     PyTypeObject *type;
 
-    if (args == Py_None)
+    if(args == Py_None)
     {
       save_none(str);
       return;
     }
 
     type = args->ob_type;
-
-    switch (type->tp_name[0])
+    if (type == &PyInt_Type)
+      save_int(str, args);
+    else if (type == &PyDict_Type)
+      save_dict(str, args);
+    else if (type == &PyString_Type)
+      save_string(str, args);
+    else if (type == &PyLong_Type)
+      save_long(str, args);
+    else if (type == &PyList_Type)
+      save_list(str, args);
+    else if (type == &PyTuple_Type)
+      save_tuple(str, args);
+    else if (type == &PyFloat_Type)
+      save_float(str, args);
+    else
     {
-      case 'i':
-        if (type == &PyInt_Type)
-        {
-          save_int(str, args);
-          return;
-        }
-        break;
-      case 'd':
-        if (type == &PyDict_Type)
-        {
-          save_dict(str, args);
-          return;
-        }
-      case 's':
-        if (type == &PyString_Type)
-        {
-          save_string(str, args);
-          return;
-        }
-        break;
-      case 'l':
-        if (type == &PyLong_Type)
-        {
-          save_long(str, args);
-          return;
-        }
-        else if (type == &PyList_Type)
-        {
-          save_list(str, args);
-          return;
-        }
-        break;
-        // case 'a':
-        //  if (type == &Arraytype)
-        //  {
-        //    save_carray(str, args);
-        //    return;
-        //  }
-        //  break;
-      case 'f':
-        if (type == &PyFloat_Type)
-        {
-          save_float(str, args);
-          return;
-        }
-        break;
+      // some other unknown type
+      DBG_DO(DBG_UTILITY, cout << "Warning: object of type '" + toStr(type->tp_name) + "' cannot be saved. Use none.");
+      save_none(str);
     }
-    // some other unknown type
-    DBG_DO(DBG_UTILITY, cout << "Warning: object of type '" + toStr(type->tp_name) + "' cannot be saved. Use none.");
-    save_none(str);
   }
 
   PyObject* loadObj(const string& vars, size_t& offset)
@@ -1222,8 +1221,8 @@ namespace simuPOP
         return load_long(vars, offset);
       case 'L':
         return load_list(vars, offset);
-        // case 'a':
-        //  return load_carray(vars, offset);
+      case 't':
+        return load_tuple(vars, offset);
       case 'n':
         return load_none(vars, offset);
       default:
