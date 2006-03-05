@@ -200,7 +200,7 @@ options = [
    'validate':  simuOpt.valueValidDir()
   },
   {'longarg': 'geneHunter=',
-   'default': '',
+   'default': 'gh',
    'allowedTypes': [types.StringType],
    'configName': 'Location of gene hunter',
    'prompt': 'Provide location of gene hunter ():  ',
@@ -250,8 +250,7 @@ def getOptions(details=__doc__):
     print simuOpt.usage(options, __doc__)
     sys.exit(0)
   # --saveConfig
-  if allParam[-2] != None: # saveConfig
-    simuOpt.saveConfig(options, allParam[-2], allParam)
+  simuOpt.saveConfig(options, allParam[-2], allParam)
   # --verbose or -v (these is no beautifying of [floats]
   if allParam[-1]:         # verbose
     simuOpt.printConfig(options, allParam)
@@ -938,61 +937,32 @@ if __name__ == '__main__':
   summary.write('''
   </pre></ul>
   <h2>Summary of datasets </h2>
-  <p>The following table lists population id, mutation rate, migration
-  rate, recombination rate, Fst, average heterozygosity, highest D'/D between a 
-  DSL and all surrounding markers (not necessarily its cloest marker), highest
-  D'/D between a marker with its surrounding markers on a chromsome without
-  DSL, allele frequency at DSL, -log10 p-values (TDT method and Linkage method, + for
-  exceeds and - for less than cutoff value -log10(pvalue/total number of loci) ) at
-  all relevant DSL. The cutoff is chosen as -log10(0.05/number of loci) which is the 
-  Bonferroni correction. Other statistics include K (population prevalence), Ks (sibling 
-  recurrance risk), Ls=Ks/K (lambda_s, sibling recurrance ratio), P11 (P(NN | affected)),
-  P12 (P(NS | affected)), P13 (P(SS|affected)), F' = P(disease allele | affected) = 
-  allele frequency among affected individuals.</p>
-  <table border="1">
-  <tr><th>id </th>
-  <th>mu</th>  <th>mi</th>   <th>rec</th>
-  <th>Fst</th> <th>Het</th> 
-  <th>D'(dsl)</th> <th>D (dsl)</th>
-  <th>D'(non)</th> <th>D (non)</th>
   ''')
   for i in range(len(res['DSL'])):
     summary.write('<th>allele Frq%d</th>'%(i+1))
   #
   # has TDT and some penetrance function
-  if len(peneFunc) > 0:
-    for p in peneFunc:
-      summary.write('<th>K</th><th>Ks</th><th>Ks/K</th>')
-      summary.write('<th>P11</th><th>P12</th><th>P22</th>')
-      summary.write("<th>F'</th>")
-      for met in ['TDT', 'LOD']:
-        for num in range(numSample): # samples
-          summary.write('<th>%s:%s-%d</th>'%(p,met,num))
-  summary.write('</tr>')
-  #
-  # end of headers, now result
-  summary.write('''<tr><td><a href="#pop_1">1</a></td> ''' )
-  summary.write('<td>%.5g</td>' % res['mu'])
-  summary.write('<td>%.5g</td>' % res['mi'])
-  summary.write('<td>%.5g</td>' % res['rec'])
-  summary.write('<td>%.3g</td>' % res['Fst'])
-  summary.write('<td>%.3g</td>' % res['AvgHet'])
-  summary.write('<td>%.3g</td>' % res['DpDSL'])
-  summary.write('<td>%.3g</td>' % res['DDSL'])
-  summary.write('<td>%.3g</td>' % res['DpNon'])
-  summary.write('<td>%.3g</td>' % res['DNon'])
+  summary.write('mu: %.5g<br>' % res['mu'])
+  summary.write('mi: %.5g<br>' % res['mi'])
+  summary.write('rec: %.5g<br>' % res['rec'])
+  summary.write('Fst: %.3g<br>' % res['Fst'])
+  summary.write('AvgHet: %.3g<br>' % res['AvgHet'])
+  summary.write("D' (DSL)%.3g<br>" % res['DpDSL'])
+  summary.write("D (DSL) %.3g<br>" % res['DDSL'])
+  summary.write("D' (non-DSL) %.3g<br>" % res['DpNon'])
+  summary.write('D (non-DSL) %.3g<br>' % res['DNon'])
   for i in range(len(res['DSL'])):
-    summary.write('<td>%.3f</td>'% res['alleleFreq'][i] )
+    summary.write('Allelefreq: %.3f<br>'% res['alleleFreq'][i] )
   # for each penetrance function
   if len(peneFunc) > 0:
     for p in peneFunc: # penetrance function
-      summary.write('<td>%.3g</td>' % res[p+'_K'])
-      summary.write('<td>%.3g</td>' % res[p+'_Ks'])
-      summary.write('<td>%.3g</td>' % res[p+'_Ls'])
-      summary.write('<td>' + ','.join( ['%.3g'%x for x in res[p+'_P11'] ]) + '</td>')
-      summary.write('<td>' + ','.join( ['%.3g'%x for x in res[p+'_P12'] ]) + '</td>')
-      summary.write('<td>' + ','.join( ['%.3g'%x for x in res[p+'_P22'] ]) + '</td>')
-      summary.write('<td>' + ','.join( ['%.3g'%x for x in res[p+'_Fprime'] ]) + '</td>')
+      summary.write('K %.3g<br>' % res[p+'_K'])
+      summary.write('Ks %.3g<br>' % res[p+'_Ks'])
+      summary.write('Ls %.3g<br>' % res[p+'_Ls'])
+      summary.write('P11' + ','.join( ['%.3g'%x for x in res[p+'_P11'] ]) + '<br>')
+      summary.write('P12' + ','.join( ['%.3g'%x for x in res[p+'_P12'] ]) + '<br>')
+      summary.write('P22' + ','.join( ['%.3g'%x for x in res[p+'_P22'] ]) + '<br>')
+      summary.write("F'" + ','.join( ['%.3g'%x for x in res[p+'_Fprime'] ]) + '<br>')
       for met in ['TDT', 'LOD']:
         for num in range(numSample): # samples
           plusMinus = ''
@@ -1001,10 +971,8 @@ if __name__ == '__main__':
               plusMinus += '+'
             else:
               plusMinus += '-'
-          summary.write('<td>'+plusMinus+'</td>')
-  summary.write('''</tr>''')
-  # the middle (big) and last piece) 
-  summary.write('''</table>
+          summary.write(''+plusMinus+'<br>')
+  summary.write('''
    %s 
    <h2>Usage of %s</h2>
    <pre>%s </pre>
