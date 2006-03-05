@@ -702,7 +702,11 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     NtFunc=popSizeBackward, fitness=fitness, 
     minGen=minMutAge, maxGen=maxMutAge, restartIfFail=True)
   #
-  # 3. plot the simulation scenario
+  # 3. save and plot the simulation scenario
+  tfile = open(filename+'.traj', 'w')
+  for t in traj:
+    tfile.write(', '.join([str(x) for x in t])+'\n')
+  tfile.close()
   plotScenario(filename, burninGen, splitGen, mixingGen,
     endingGen, popSizeFunc, traj, '''Initial pop size: %d
 Final pop size: %d
