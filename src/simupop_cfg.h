@@ -30,6 +30,9 @@
 #ifndef _SIMUPOP_CONFIG_H
 #define _SIMUPOP_CONFIG_H
 
+// this one causes compile warning...
+#undef _POSIX_C_SOURCE
+
 // include the sytem wide config.h
 // Note: there is some strange #include problem if cmath is included later.
 #include <cmath>

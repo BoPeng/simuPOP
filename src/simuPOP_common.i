@@ -381,17 +381,12 @@ def PyMigrate(pop, *args, **kwargs):
 PyMigrate.__doc__ = "Function version of operator pyMigrate whose __init__ function is \n" + pyMigrator.__init__.__doc__
 
 def SplitSubPop(pop, *args, **kwargs):
-  pop.splitSubPop(*args, **kwargs)
+  splitSubPop(*args, **kwargs).apply(pop)
 
 SplitSubPop.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + population.splitSubPop.__doc__
 
-def SplitSubPopByProportion(pop, *args, **kwargs):
-  pop.splitSubPopByProportion(*args, **kwargs)
-
-SplitSubPopByProportion.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + population.splitSubPopByProportion.__doc__
-
 def MergeSubPops(pop, *args, **kwargs):
-  pop.mergeSubPops(*args, **kwargs).apply(pop)
+  mergeSubPops(*args, **kwargs).apply.apply(pop)
   
 MergeSubPops.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + population.mergeSubPops.__doc__
 

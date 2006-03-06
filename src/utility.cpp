@@ -132,7 +132,16 @@ namespace simuPOP
     else                                          // set all
       g_dbgCode.set();
 #endif
-
+  }
+  
+  /// set debug area, default to turn all code on
+  void TurnOnDebugWithName(string code)
+  {
+#ifndef OPTIMIZED
+    for(int i=0; i < DBG_CODE_LENGTH; ++i)
+      if( code == g_dbgString[i])
+        TurnOnDebug(static_cast<DBG_CODE>(i));
+#endif
   }
 
   /// turn off debug, default to turn all code off
@@ -150,7 +159,6 @@ namespace simuPOP
 #else
     cout << "Debug info is ignored in optimized mode." << endl;
 #endif
-
   }
 
 #ifndef OPTIMIZED
@@ -183,6 +191,7 @@ namespace simuPOP
   {
     return g_dbgString[code];
   }
+
 
   //////////////////////////////////////////////////////////////
   /// Some common functions/templates

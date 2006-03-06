@@ -44,6 +44,10 @@ else:
     % (simuOptions['AlleleType'], simuOptions['Optimized'])
   from simuPOP_std import *
 
+if simuOptions['Debug'] != []:
+  for g in simuOptions['Debug']:
+    TurnOnDebugWithName(g)
+
 if not simuOptions['Quiet']:
   print "simuPOP : Copyright (c) 2004-2005 Bo Peng"
   # compile date, compiler etc are macros that are replaced during compile time.

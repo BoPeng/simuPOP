@@ -14,7 +14,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 import unittest, time, exceptions
 
-class TestMigration(unittest.TestCase):
+class TestMigrator(unittest.TestCase):
   
   def testMigrateByCounts(self):
     'Testing migrate by counts'
@@ -125,6 +125,28 @@ class TestMigration(unittest.TestCase):
     assert ind1 == pop.individual(2).arrGenotype()
     self.assertRaises(exceptions.ValueError, 
       PyMigrate, pop, [0,0,2,2,2,2,1,1])
+    
+  def testSplitSubPop(self):
+    'Testing population split'
+    pop = population(size=10, loci=[2,6])
+    InitByFreq(pop, [.2,.4,.4])
+    genotype = list(pop.arrGenotype())
+    SplitSubPop(pop, which=0, sizes=[2,8], randomize=False)
+    # individual untouched
+    self.assertEqual(pop.arrGenotype(), genotype)
+    # split, with randomization
+    SplitSubPop(pop, which=1, sizes=[6,2], randomize=True)
+    self.assertNotEqual(pop.arrGenotype(), genotype)
+    
+
+  def testMergeSubPop(self):
+    'Testing population merge'
+    pop = population(subPop=[2,4,4], loci=[2,6])
+    MergeSubPops(pop, subPops=[0,2])
+    self.assertEqual(pop.subPopSizes(), (6,4,0))
+    MergeSubPops(pop, subPops=[0,1], removeEmptySubPops=True)
+    self.assertEqual(pop.subPopSizes(), (10,))
+    
     
 if __name__ == '__main__':
   unittest.main()

@@ -104,7 +104,7 @@ simuPOP_std_wrap.o: simuPOP_std_wrap.cpp $(HEADFILES)
 simuPOP_std_wrap.cpp: simuPOP_std.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) -shadow -c++ -python -o simuPOP_std_wrap.cpp simuPOP_std.i
 %_std.o: %.cpp %.h simupop_cfg.h utility.h
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_std $(CFLAGS) -c $< -o $@
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_std $(DEF_std) $(CFLAGS) -c $< -o $@
 %_std.cpp: %.cpp
 	cp -f $< $@
 
@@ -120,7 +120,7 @@ simuPOP_op_wrap.o: simuPOP_op_wrap.cpp $(HEADFILES)
 simuPOP_op_wrap.cpp: simuPOP_op.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF_std) -shadow -c++ -python -o simuPOP_op_wrap.cpp simuPOP_op.i
 %_op.o: %.cpp %.h simupop_cfg.h utility.h
-	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_op $(DEF_std) $(CFLAGS) -c $< -o $@
+	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_op $(DEF_op) $(CFLAGS) -c $< -o $@
 %_op.cpp: %.cpp
 	cp -f $< $@
 
