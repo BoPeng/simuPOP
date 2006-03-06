@@ -1066,6 +1066,7 @@ def valueListOf(t):
 
 env_optimized = os.getenv('SIMUOPTIMIZED')
 env_longAllele = os.getenv('SIMUALLELETYPE')
+env_debug = os.getenv('SIMUDEBUG')
 
 [par_optimized] = termGetParam([{'longarg':'optimized', \
   'configName':'optimized', 'default':''}], False)
@@ -1093,15 +1094,20 @@ if env_longAllele in ['standard', 'short', 'long', 'binary']:
 else:
   _longAllele = 'standard'
   
-simuOptions = {'Optimized':_optimized, 'AlleleType':_longAllele, 'Quiet':par_quiet}
+simuOptions = {'Optimized':_optimized, 'AlleleType':_longAllele, 'Debug':[], 'Quiet':par_quiet}
 
-def setOptions(optimized=None, alleleType=None, quiet=None):
+if env_debug != None:
+  simuOptions['Debug'].extend( env_debug.split(',') )  
+
+def setOptions(optimized=None, alleleType=None, quiet=None, debug=[]):
   if optimized in [True, False]:
     simuOptions['Optimized'] = optimized
   if alleleType in ['standard', 'long', 'binary', 'short']:
     simuOptions['AlleleType'] = alleleType
   if quiet in [True, False]:
     simuOptions['Quiet'] = quiet
+  if len(debug) > 0:
+    aimuOptions['Debug'].extend(debug)
   
 # short = standard
 if simuOptions['AlleleType'] == 'standard':

@@ -82,6 +82,9 @@ namespace simuPOP
   /// set debug code, default to turn all code on
   void TurnOnDebug(DBG_CODE code=DBG_ALL);
 
+  /// set debug code, using name
+  void TurnOnDebugWithName(string code);
+
   /// turn off debug, default to turn all code off
   void TurnOffDebug(DBG_CODE code=DBG_ALL);
 

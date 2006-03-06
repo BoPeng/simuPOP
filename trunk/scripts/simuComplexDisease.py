@@ -973,7 +973,7 @@ if __name__ == '__main__':
   else:
     simuOpt.setOptions(alleleType='short')
     
-  simuOpt.setOptions(quiet=True)
+  #simuOpt.setOptions(quiet=True)
 
   # load simuPOP libraries
   from simuPOP import *
