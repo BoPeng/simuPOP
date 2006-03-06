@@ -224,10 +224,12 @@ namespace simuPOP
       */
       splitSubPop( UINT which=0,  vectorlu sizes=vectorlu(), vectorf proportions=vectorf(),
         vectoru subPopID=vectoru(),
+        bool randomize=true,
         int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
         int rep=REP_ALL, int grp=GRP_ALL)
         : Operator( "", "", stage, begin, end, step, at, rep, grp),
-        m_which(which), m_subPopSizes(sizes), m_proportions(proportions), m_subPopID(subPopID)
+        m_which(which), m_subPopSizes(sizes), m_proportions(proportions),
+        m_subPopID(subPopID), m_randomize(randomize)
       {
         DBG_FAILIF( sizes.empty() && proportions.empty(), ValueError,
           "Please specify one of subPop and proportions.");
@@ -245,14 +247,7 @@ namespace simuPOP
         return new splitSubPop(*this);
       }
 
-      virtual bool apply(population& pop)
-      {
-        if( !m_subPopSizes.empty())
-          pop.splitSubPop(m_which, m_subPopSizes, m_subPopID);
-        else
-          pop.splitSubPopByProportion(m_which, m_proportions, m_subPopID);
-        return true;
-      }
+      virtual bool apply(population& pop);
 
       virtual string __repr__()
       {
@@ -272,6 +267,12 @@ namespace simuPOP
       /// subpopulation id, optional
       vectoru m_subPopID;
 
+      /// random split
+      /// randomize population before split.
+      /// this is because some mating schemes generate
+      /// individuals non-randomly, for example,
+      /// put affected individuals at the beginning.
+      bool m_randomize;
   };
 
   /** \brief

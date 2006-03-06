@@ -1679,8 +1679,6 @@ namespace simuPOP
         curFreq[sp] = double(n)/(pop.subPopSize(sp)*pldy);
       }
 
-      DBG_DO(DBG_MATING, cout << "Cur freq " << curFreq << endl);
-
       // if there is no alleles
       if( numOfAlleles == 0 && expFreq[i] > 0.)
         throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
@@ -1694,6 +1692,10 @@ namespace simuPOP
       // assign these numbers to each subpopulation
       rng().randMultinomial(static_cast<unsigned int>(pop.popSize()*expFreq[i]*pldy),
         curFreq, expAlleles.begin()+numSP*i);
+      
+      DBG_DO(DBG_MATING, cout << "DSL " << i << " Cur freq: " << curFreq << " New num " 
+        << vectori(expAlleles.begin()+numSP*i, expAlleles.begin()+numSP*(i+1)) << endl);
+
     }
 
     DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
