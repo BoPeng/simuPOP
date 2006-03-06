@@ -704,8 +704,10 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
   #
   # 3. save and plot the simulation scenario
   tfile = open(filename+'.traj', 'w')
+  tfile.write('Simulated trajectories:\n')
   for t in traj:
     tfile.write(', '.join([str(x) for x in t])+'\n')
+  tfile.write('Observed allele frequency (generation, population size, allele frequencies)\n')
   tfile.close()
   plotScenario(filename, burninGen, splitGen, mixingGen,
     endingGen, popSizeFunc, traj, '''Initial pop size: %d
@@ -813,8 +815,12 @@ Max mutant age: %d ''' % \
     mutator, 
     rec, 
     stat(alleleFreq=DSL, popSize=True, step=10),
+    # output to screen
     pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x]['+str(StartingAllele)+r']) for x in DSL])+"\n"',
-      step=10)
+      step=10),
+    # output to file (append)
+    pyEval( expr=r'"%d %d " %(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x]['+str(StartingAllele)+r']) for x in DSL])+"\n"',
+      output='>>>'+filename+'.traj')
   ]
   ###
   ### introduction of disease mutants

@@ -259,7 +259,9 @@ def getOptions(details=__doc__):
 
 # plot the LD values for the sample.
 def plotLD(pop, epsFile, jpgFile):
-  ''' plot LD values in R and convert to jpg if possible '''
+  ''' plot LD values in R and convert to jpg if possible,
+    all the values are stored in pop.dvars() '''
+  vars = pop.dvars()
   # return max LD
   res = {}
   # dist: distance (location) of marker
@@ -267,40 +269,40 @@ def plotLD(pop, epsFile, jpgFile):
   dist = []
   ldprime = [] # D'
   ldvalue = [] # D
-  for ld in pop.dvars().ctrDSLLD:
-    if ld[1] == pop.dvars().ctrChromDSL:
+  for ld in vars.ctrDSLLD:
+    if ld[1] == vars.ctrChromDSL:
       dist.append(pop.locusPos(ld[0]))
     else:
       dist.append(pop.locusPos(ld[1]))
-    ldprime.append(pop.dvars().LD_prime[ld[0]][ld[1]])
-    ldvalue.append(pop.dvars().LD[ld[0]][ld[1]])
+    ldprime.append(vars.LD_prime[ld[0]][ld[1]])
+    ldvalue.append(vars.LD[ld[0]][ld[1]])
   res['DpDSL'] = max(ldprime)
   res['DDSL'] = max(ldvalue)
   if hasRPy:
     r.postscript(file=epsFile, width=8, height=8)
     r.par(mfrow=[2,1])
-    r.plot( dist, ldprime, main="D' between DSL and other markers on chrom %d" % (pop.dvars().ctrChrom+1),
+    r.plot( dist, ldprime, main="D' between DSL and other markers on chrom %d" % (vars.ctrChrom+1),
       xlab="marker location", ylab="D'", type='b', ylim=[0,1])
-    r.abline( v = pop.locusPos(pop.dvars().ctrChromDSL), lty=3 )
-    r.axis( 1, [pop.locusPos(pop.dvars().ctrChromDSL)], ['DSL'])
+    r.abline( v = pop.locusPos(vars.ctrChromDSL), lty=3 )
+    r.axis( 1, [pop.locusPos(vars.ctrChromDSL)], ['DSL'])
   dist = [] 
   ldprime = []  # D'
   ldvalue = []  # D
-  if pop.dvars().noDSLChrom > -1:
-    for ld in pop.dvars().noDSLLD:
-      if ld[1] == pop.chromBegin(pop.dvars().noDSLChrom) + pop.dvars().numLoci/2:
+  if vars.noDSLChrom > -1:
+    for ld in vars.noDSLLD:
+      if ld[1] == pop.chromBegin(vars.noDSLChrom) + vars.numLoci/2:
         dist.append(pop.locusPos(ld[0]))
       else:
         dist.append(pop.locusPos(ld[1]))
-      ldprime.append(pop.dvars().LD_prime[ld[0]][ld[1]])    
-      ldvalue.append(pop.dvars().LD[ld[0]][ld[1]])    
+      ldprime.append(vars.LD_prime[ld[0]][ld[1]])    
+      ldvalue.append(vars.LD[ld[0]][ld[1]])    
     res['DpNon'] = max(ldprime)
     res['DNon'] = max(ldvalue)
     if hasRPy:
       r.plot( dist, ldprime, main="D' between marker %d and other markers on chrom %d" \
-        % (pop.dvars().numLoci/2+1, pop.dvars().noDSLChrom+1),
+        % (vars.numLoci/2+1, vars.noDSLChrom+1),
         xlab="marker location", ylab="D'", type='b', ylim=[0,1])    
-      r.abline( v = pop.locusPos(pop.chromBegin(pop.dvars().noDSLChrom)+pop.dvars().numLoci/2), lty=3 )
+      r.abline( v = pop.locusPos(pop.chromBegin(vars.noDSLChrom)+vars.numLoci/2), lty=3 )
       r.dev_off()
   else:
     res['DpNon'] = 0
