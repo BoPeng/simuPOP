@@ -218,4 +218,22 @@ namespace simuPOP
     return true;
   }
 
+  bool splitSubPop::apply(population& pop)
+  {
+    // randomize indiviudlas
+    if(m_randomize)
+    {
+      // random shuffle individuals
+      ULONG N = pop.subPopSize(m_which);
+      for(ULONG it=0; it<pop.subPopSize(m_which); ++it)
+        pop.ind(it, m_which).setInfo(rng().randInt(N) );
+      std::sort(pop.indBegin(m_which), pop.indEnd(m_which));
+    }
+    if( !m_subPopSizes.empty())
+      pop.splitSubPop(m_which, m_subPopSizes, m_subPopID);
+    else
+      pop.splitSubPopByProportion(m_which, m_proportions, m_subPopID);
+    return true;
+  }
+
 }
