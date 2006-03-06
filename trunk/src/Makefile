@@ -100,7 +100,7 @@ mating_std.o  outputer_std.o selector_std.o  tagger_std.o
 _simuPOP_std.so: $(OBJS) $(std_OBJS) simuPOP_std_wrap.o 
 	$(LINK) -shared $(OBJS) $(std_OBJS) simuPOP_std_wrap.o -o _simuPOP_std.so
 simuPOP_std_wrap.o: simuPOP_std_wrap.cpp $(HEADFILES)
-	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_std $(CFLAGS) -c $<
+	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_std $(DEF_std) $(CFLAGS) -c $<
 simuPOP_std_wrap.cpp: simuPOP_std.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) -shadow -c++ -python -o simuPOP_std_wrap.cpp simuPOP_std.i
 %_std.o: %.cpp %.h simupop_cfg.h utility.h
@@ -116,9 +116,9 @@ mating_op.o  outputer_op.o selector_op.o  tagger_op.o
 _simuPOP_op.so: $(OBJS) $(op_OBJS) simuPOP_op_wrap.o 
 	$(LINK) -shared $(OBJS) $(op_OBJS) simuPOP_op_wrap.o -o _simuPOP_op.so
 simuPOP_op_wrap.o: simuPOP_op_wrap.cpp $(HEADFILES)
-	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_op $(DEF_std) $(CFLAGS) -c $<
+	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_op $(DEF_op) $(CFLAGS) -c $<
 simuPOP_op_wrap.cpp: simuPOP_op.i simuPOP_common.i $(HEADFILES)
-	$(SWIG) $(DEF_std) -shadow -c++ -python -o simuPOP_op_wrap.cpp simuPOP_op.i
+	$(SWIG) $(DEF_op) -shadow -c++ -python -o simuPOP_op_wrap.cpp simuPOP_op.i
 %_op.o: %.cpp %.h simupop_cfg.h utility.h
 	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_op $(DEF_op) $(CFLAGS) -c $< -o $@
 %_op.cpp: %.cpp
