@@ -993,7 +993,7 @@ static int array_print(arrayobject *a, FILE *fp, int flags)
     fprintf(fp, "[]");
     return ok;
   }
-  fprintf(fp, "[", a->ob_descr->typecode);
+  fprintf(fp, "[");
   for (i = 0; i < len && ok == 0; i++)
   {
     if (i > 0)
