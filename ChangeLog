@@ -20,6 +20,7 @@ version 0.6.13 - currently available as snapshot
   - CHG: simuComplexDisease.py has been re-written.
   - NEW: add TurnOnDebugWithName(name) and the ability to set SIMUDEBUG
          to turn on certain debug mode.
+  - BUG: fixed a bug about s_shallowCopied flag of population.
          
 
 version 0.6.12 - (Rev 186) - Feb 18, 2006 

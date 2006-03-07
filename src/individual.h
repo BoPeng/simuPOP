@@ -1159,20 +1159,6 @@ namespace simuPOP
       /// @name misc (only relevant to developers.
       //@{
 
-      /// globally if any individual is shallow copied
-      /// CPPONLY
-      static bool shallowCopiedFlagOn()
-      {
-        return s_flagShallowCopied;
-      }
-
-      /// unset shallowCopied for all individuals
-      /// CPPONLY
-      static void clearShallowCopiedFlag()
-      {
-        s_flagShallowCopied = false;
-      }
-
       /// is this individual a result of shallow copy?
       /// CPPONLY
       bool shallowCopied() const
@@ -1185,11 +1171,7 @@ namespace simuPOP
       void setShallowCopied(bool shallowCopied)
       {
         if( shallowCopied )
-        {
           SETFLAG(m_flags, m_flagShallowCopied);
-          /// the order of the while population might be incorrect now.
-          s_flagShallowCopied = true;
-        }
         else
           RESETFLAG(m_flags, m_flagShallowCopied);
       }
@@ -1288,9 +1270,6 @@ namespace simuPOP
 
       /// pointer to genotype.
       GenoIterator m_genoPtr;
-
-      /// shallow copied flag
-      static bool s_flagShallowCopied;
 
   };
 

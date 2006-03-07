@@ -53,7 +53,8 @@ namespace simuPOP
     m_grp(-1),
     m_gen(0),
     m_curAncestralPop(0),
-    m_fitness(0)
+    m_fitness(0),
+    m_shallowCopied(false)
   {
     DBG_FAILIF(maxAllele > MaxAllele, ValueError,
       "maxAllele is bigger than maximum allowed allele state of this library (" + toStr(MaxAllele) +
@@ -108,7 +109,6 @@ namespace simuPOP
         m_inds[i].setGenoStruIdx(this->genoStruIdx());
         m_inds[i].setShallowCopied(false);
       }
-      individual::clearShallowCopiedFlag();
     }
     catch(...)
     {
@@ -139,7 +139,8 @@ namespace simuPOP
     m_grp(-1),
     m_gen(0),
     m_curAncestralPop(rhs.m_curAncestralPop),
-    m_fitness(0)                                  // do not copy fitness
+    m_fitness(0),                                 // do not copy fitness
+    m_shallowCopied(false)
   {
     DBG_DO(DBG_POPULATION,
       cout << "Copy constructor of population is called\n" << endl);
@@ -174,7 +175,6 @@ namespace simuPOP
       m_inds[i].setGenoPtr( ptr );
       m_inds[i].copyFrom( rhs.m_inds[i]);
     }
-    individual::clearShallowCopiedFlag();
 
     // copy ancestral populations
     try
@@ -296,7 +296,7 @@ namespace simuPOP
           m_inds[i].setGenoStruIdx(genoStruIdx());
           m_inds[i].setShallowCopied(false);
         }
-        individual::clearShallowCopiedFlag();
+        m_shallowCopied=false;
       }
     }
 
@@ -319,6 +319,7 @@ namespace simuPOP
     DBG_DO(DBG_POPULATION, cout << "Sorting individuals."<< endl);
     // sort individuals first
     std::sort(indBegin(), indEnd());
+    setShallowCopied(true);
 
     // sort individuals first
     // remove individuals with negative index.
@@ -362,6 +363,7 @@ namespace simuPOP
 
       m_popSize = newPopSize;
       m_popGenoSize = newPopGenoSize;
+      setShallowCopied(false);
     }
 
     if( m_inds.empty())
@@ -552,7 +554,6 @@ namespace simuPOP
     }
     if(removeEmptySubPops)
       this->removeEmptySubPops();
-
   }
 
   void population::mergeSubPops(vectoru subPops, bool removeEmptySubPops)
@@ -774,6 +775,7 @@ namespace simuPOP
       }
       p.m_genotype.swap(newGenotype);
     }                                             // all ancestral
+    setShallowCopied(false);
   }
 
   /** get a new population with selected loci */
@@ -934,7 +936,6 @@ namespace simuPOP
     UINT i = 1;
     for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
       m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
-
   }
 
   void population::savePopulation(const string& filename, const string& format)
@@ -1103,6 +1104,8 @@ namespace simuPOP
   /// CPPONLY
   void population::adjustGenoPosition(bool deep)
   {
+    DBG_DO(DBG_POPULATION, cout << "Adjust geno position " << endl);
+
     // everyone in strict order
     if(deep)
     {
@@ -1119,7 +1122,7 @@ namespace simuPOP
       // discard original genotype
       tmpGenotype.swap(m_genotype);
       // set geno pointer
-      individual::clearShallowCopiedFlag();
+      setShallowCopied(false);
       return;
     }
 
@@ -1146,7 +1149,11 @@ namespace simuPOP
       }
     }
 
-    if( scIndex.empty()) return;
+    if( scIndex.empty())
+    {
+      setShallowCopied(false);
+      return;
+    }
 
     /// to further save time, deal with a special case that there are
     /// only two shallowCopied individuals
@@ -1167,7 +1174,7 @@ namespace simuPOP
 
       m_inds[ scIndex[0] ].setShallowCopied(false);
       m_inds[ scIndex[1] ].setShallowCopied(false);
-      individual::clearShallowCopiedFlag();
+      setShallowCopied(false);
       return;
     }
 
@@ -1196,8 +1203,8 @@ namespace simuPOP
         indGenoBegin( scIndex[i] ));
       m_inds[ scIndex[i] ].setShallowCopied(false);
     }
-
-    individual::clearShallowCopiedFlag();
+    setShallowCopied(false);
+    return;
   }
 
   population& LoadPopulation(const string& file,
@@ -1212,5 +1219,4 @@ namespace simuPOP
     return *new population(1);
 #endif
   }
-
 }
