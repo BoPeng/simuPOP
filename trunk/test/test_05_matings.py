@@ -311,8 +311,8 @@ class TestMatingSchemes(unittest.TestCase):
           at = [endingGen-len(traj[1])+1],
           stage = PreMating),
         stat(alleleFreq=[0,1]),
-        pyEval(r'"%%d %%6.4f %%6.4f\n"%%(gen, 1-alleleFreq[0][%d], 1-alleleFreq[1][%d])'%\
-          (StartingAllele, StartingAllele), begin=burnin)
+        #pyEval(r'"%%d %%6.4f %%6.4f\n"%%(gen, 1-alleleFreq[0][%d], 1-alleleFreq[1][%d])'%\
+        #  (StartingAllele, StartingAllele), begin=burnin)
       ], 
       end=endingGen
     )
@@ -329,10 +329,9 @@ class TestMatingSchemes(unittest.TestCase):
     #              x         freq
     def freqRange(gen):
       if gen <= burnin:
-        return 0
+        return [0]
       else:
-        return freq[gen-1-burnin]
-
+        return [freq[gen-1-burnin]]
     #
     # turn On debug
     #TurnOnDebug(DBG_MATING)
@@ -351,7 +350,7 @@ class TestMatingSchemes(unittest.TestCase):
           at = [burnin+1],
           stage = PreMating),
         stat(alleleFreq=[0]),
-        pyEval(r'"%%d %%6.4f\n"%%(gen, 1-alleleFreq[0][%d])'%StartingAllele, begin=burnin)
+        #pyEval(r'"%%d %%6.4f\n"%%(gen, 1-alleleFreq[0][%d])'%StartingAllele, begin=burnin)
       ], 
       end=burnin+mutAge
     )
@@ -401,8 +400,8 @@ class TestMatingSchemes(unittest.TestCase):
           at = [endingGen-len(traj[1])+1],
           stage = PreMating),
         stat(alleleFreq=[0,1]),
-        pyEval(r'"%%d %%6.4f %%6.4f\n"%%(gen, 1-alleleFreq[0][%d], 1-alleleFreq[1][%d])'%\
-          (StartingAllele, StartingAllele), begin=burnin)
+        #pyEval(r'"%%d %%6.4f %%6.4f\n"%%(gen, 1-alleleFreq[0][%d], 1-alleleFreq[1][%d])'%\
+        #  (StartingAllele, StartingAllele), begin=burnin)
       ], 
       end=endingGen
     )

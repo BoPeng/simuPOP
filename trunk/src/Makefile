@@ -14,11 +14,11 @@ SERIAL_SRC=serialization
 CC = gcc
 CXX = g++
 LINK = g++ 
-CFLAGS = -Wall -fexceptions -O3 -pipe -fomit-frame-pointer -fPIC
+CFLAGS = -Wall -pthread -fno-strict-aliasing -DNDEBUG -O3 -g  -fPIC 
 # for swig 1.3.28 cvs
-#SWIG = swig -O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525
+SWIG = swig -O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525
 # for swig 1.3.27
-SWIG = swig -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525 -nodefault 
+#SWIG = swig -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525 -nodefault 
 
 RM = rm -f
 
@@ -103,7 +103,7 @@ simuPOP_std_wrap.o: simuPOP_std_wrap.cpp $(HEADFILES)
 	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_std $(DEF_std) $(CFLAGS) -c $<
 simuPOP_std_wrap.cpp: simuPOP_std.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) -shadow -c++ -python -o simuPOP_std_wrap.cpp simuPOP_std.i
-%_std.o: %.cpp %.h simupop_cfg.h utility.h swigpyrun.h
+%_std.o: %_std.cpp %_std.h simupop_cfg.h utility.h swigpyrun.h
 	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_std $(DEF_std) $(CFLAGS) -c $< -o $@
 %_std.cpp: %.cpp
 	cp -f $< $@
@@ -119,7 +119,7 @@ simuPOP_op_wrap.o: simuPOP_op_wrap.cpp $(HEADFILES)
 	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_op $(DEF_op) $(CFLAGS) -c $<
 simuPOP_op_wrap.cpp: simuPOP_op.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF_op) -shadow -c++ -python -o simuPOP_op_wrap.cpp simuPOP_op.i
-%_op.o: %.cpp %.h simupop_cfg.h utility.h swigpyrun.h
+%_op.o: %_op.cpp %_op.h simupop_cfg.h utility.h swigpyrun.h
 	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_op $(DEF_op) $(CFLAGS) -c $< -o $@
 %_op.cpp: %.cpp
 	cp -f $< $@
@@ -136,7 +136,7 @@ simuPOP_la_wrap.o: simuPOP_la_wrap.cpp $(HEADFILES)
 	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_la $(DEF_la) $(CFLAGS) -c $<
 simuPOP_la_wrap.cpp: simuPOP_la.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF_la) -shadow -c++ -python -o simuPOP_la_wrap.cpp simuPOP_la.i
-%_la.o: %.cpp %.h simupop_cfg.h utility.h swigpyrun.h
+%_la.o: %_la.cpp %_la.h simupop_cfg.h utility.h swigpyrun.h
 	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_la $(DEF_la) $(CFLAGS) -c $< -o $@
 %_la.cpp: %.cpp
 	cp -f $< $@
@@ -152,7 +152,7 @@ simuPOP_laop_wrap.o: simuPOP_laop_wrap.cpp $(HEADFILES)
 	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_laop $(DEF_laop) $(CFLAGS) -c $<
 simuPOP_laop_wrap.cpp: simuPOP_laop.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF_laop) -shadow -c++ -python -o simuPOP_laop_wrap.cpp simuPOP_laop.i
-%_laop.o: %.cpp %.h simupop_cfg.h utility.h swigpyrun.h
+%_laop.o: %_laop.cpp %_laop.h simupop_cfg.h utility.h swigpyrun.h
 	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_laop $(DEF_laop) $(CFLAGS) -c $< -o $@
 %_laop.cpp: %.cpp
 	cp -f $< $@
@@ -168,7 +168,7 @@ simuPOP_ba_wrap.o: simuPOP_ba_wrap.cpp $(HEADFILES)
 	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_ba $(DEF_ba) $(CFLAGS) -c $<
 simuPOP_ba_wrap.cpp: simuPOP_ba.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF_ba) -shadow -c++ -python -o simuPOP_ba_wrap.cpp simuPOP_ba.i
-%_ba.o: %.cpp %.h simupop_cfg.h utility.h swigpyrun.h
+%_ba.o: %_ba.cpp %_ba.h simupop_cfg.h utility.h swigpyrun.h
 	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_ba $(DEF_ba) $(CFLAGS) -c $< -o $@
 %_ba.cpp: %.cpp
 	cp -f $< $@
@@ -185,7 +185,7 @@ simuPOP_baop_wrap.o: simuPOP_baop_wrap.cpp $(HEADFILES)
 	$(CXX) -g $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_baop $(DEF_baop) $(CFLAGS) -c $<
 simuPOP_baop_wrap.cpp: simuPOP_baop.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF_baop) -shadow -c++ -python -o simuPOP_baop_wrap.cpp simuPOP_baop.i
-%_baop.o: %.cpp %.h simupop_cfg.h utility.h swigpyrun.h
+%_baop.o: %_baop.cpp %_baop.h simupop_cfg.h utility.h swigpyrun.h
 	$(CXX) $(INCLUDES) -DSIMUPOP_MODUE=simuPOP_baop $(DEF_baop) $(CFLAGS) -c $< -o $@
 %_baop.cpp: %.cpp
 	cp -f $< $@
@@ -198,4 +198,4 @@ simuPOP_baop_wrap.cpp: simuPOP_baop.i simuPOP_common.i $(HEADFILES)
 %.o: %.cpp 
 	$(CXX) $(INCLUDES) $(CFLAGS) -c $< -o $@
 clean:
-	$(RM) $(OBJS) _simuPOP_*.so *_wrap.cpp core.* swigpyrun.h *.o *_std.cpp *_op.cpp *_la.cpp *_laop.cpp *_ba.cpp *_baop.cpp
+	$(RM) _simuPOP_*.so *_wrap.cpp core.* swigpyrun.h *.o *_std.cpp *_op.cpp *_la.cpp *_laop.cpp *_ba.cpp *_baop.cpp
