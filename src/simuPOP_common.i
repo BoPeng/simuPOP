@@ -386,7 +386,7 @@ def SplitSubPop(pop, *args, **kwargs):
 SplitSubPop.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + population.splitSubPop.__doc__
 
 def MergeSubPops(pop, *args, **kwargs):
-  mergeSubPops(*args, **kwargs).apply.apply(pop)
+  mergeSubPops(*args, **kwargs).apply(pop)
   
 MergeSubPops.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + population.mergeSubPops.__doc__
 

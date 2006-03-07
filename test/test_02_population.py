@@ -11,7 +11,7 @@
 # 
 
 import simuOpt
-simuOpt.setOptions(quiet=True)
+#simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
 import unittest, os, sys, exceptions
@@ -267,7 +267,7 @@ class TestPopulation(unittest.TestCase):
     pop.setSubPopStru([5,6,7], False)
     pop.arrGenotype()[:] = range(pop.popSize())
     # function form
-    SplitSubPop(pop, 1, [2,4], subPopID=[4,1])
+    SplitSubPop(pop, 1, [2,4], subPopID=[4,1], randomize=False)
     self.assertEqual(pop.subPopSizes(), (5,4,7,0,2))
     self.assertGenotype(pop, 0, [0,1,2,3,4])
     self.assertGenotype(pop, 1, [7,8,9,10])
@@ -303,7 +303,7 @@ class TestPopulation(unittest.TestCase):
     # recover population
     pop.setSubPopStru([5,6,7], False)
     pop.arrGenotype()[:] = range(pop.popSize())
-    SplitSubPopByProportion(pop, 1, [2/5.,3/5.], subPopID=[4,1])
+    SplitSubPop(pop, 1, proportions=[2/5.,3/5.], subPopID=[4,1], randomize=False)
     self.assertEqual(pop.subPopSizes(), (5,4,7,0,2))
     self.assertGenotype(pop, 0, [0,1,2,3,4])
     self.assertGenotype(pop, 1, [7,8,9,10])
@@ -312,10 +312,10 @@ class TestPopulation(unittest.TestCase):
     self.assertGenotype(pop, 4, [5,6])
     # proportion does not add up to one?
     self.assertRaises(exceptions.ValueError,
-      SplitSubPopByProportion, pop, 1, [2/3.,2/3.], subPopID=[4,1])
+      SplitSubPop, pop, 1, proportions=[2/3.,2/3.], subPopID=[4,1])
     # if given subPopID is already used?
     print "A warning should be issued"
-    SplitSubPopByProportion(pop, 0, [2/5.,3/5.], subPopID=[2,3])
+    SplitSubPop(pop, 0, proportions=[2/5.,3/5.], subPopID=[2,3])
     #
     # split by proportion
    
