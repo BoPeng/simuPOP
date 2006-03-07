@@ -32,7 +32,7 @@ DEF_baop=-DOPTIMIZED -DBINARYALLELE
 HEADFILES=../config.h simupop_cfg.h migrator.h population.h simulator.h terminator.h \
 individual.h mutator.h stator.h  utility.h \
 initializer.h operator.h recombinator.h arraymodule.c \
-mating.h  outputer.h selector.h  tagger.h 
+mating.h  outputer.h selector.h  tagger.h swigpyrun.h
 
 SERIAL_OBJS= \
 $(SERIAL_SRC)/basic_archive.o \
