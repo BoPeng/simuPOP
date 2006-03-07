@@ -158,16 +158,14 @@ namespace simuPOP
         std::swap(m_gen, rhs.m_gen);
         std::swap(m_curAncestralPop, rhs.m_curAncestralPop);
         m_fitness.swap(rhs.m_fitness);
+        std::swap(m_shallowCopied, rhs.m_shallowCopied);
       }
 
       /// destroy a population
       ~population()
       {
-
         DBG_DO(DBG_POPULATION,
           cout << "Destructor of population is called" << endl);
-
-        // geno structure is shared so will not be removed.
       }
 
       // allow str(population) to get something better looking
@@ -334,6 +332,18 @@ namespace simuPOP
         return m_inds[ subPopBegin(subPop) + ind];
       }
 
+      /// CPPONLY
+      bool shallowCopied()
+      {
+        return m_shallowCopied;
+      }
+
+      /// CPPONLY
+      void setShallowCopied(bool s)
+      {
+        m_shallowCopied = s;
+      }
+
       /// CPPONLY individual iterator: without subPop info
       IndIterator indBegin()
       {
@@ -396,7 +406,7 @@ namespace simuPOP
         CHECKRANGEABSLOCUS(locus);
         CHECKRANGESUBPOP(subPop);
 
-        if(individual::shallowCopiedFlagOn())
+        if(shallowCopied())
           adjustGenoPosition();
 
         return GappedAlleleIterator( m_genotype.begin() + m_subPopIndex[subPop]*genoSize() +
@@ -409,8 +419,9 @@ namespace simuPOP
         CHECKRANGEABSLOCUS(locus);
         CHECKRANGESUBPOP(subPop);
 
-        if(individual::shallowCopiedFlagOn())
+        if(shallowCopied())
           adjustGenoPosition();
+
         return GappedAlleleIterator( m_genotype.begin() + m_subPopIndex[subPop+1]*genoSize() +
           locus, totNumLoci());
       }
@@ -432,7 +443,7 @@ namespace simuPOP
       {
         CHECKRANGESUBPOP(subPop);
 
-        if(individual::shallowCopiedFlagOn())
+        if(shallowCopied())
           adjustGenoPosition();
 
         return m_genotype.begin() + m_subPopIndex[subPop]*genoSize();
@@ -443,7 +454,7 @@ namespace simuPOP
       {
         CHECKRANGESUBPOP(subPop);
 
-        if(individual::shallowCopiedFlagOn())
+        if(shallowCopied())
           adjustGenoPosition();
         return m_genotype.begin() + m_subPopIndex[subPop+1]*genoSize();
       }
@@ -485,7 +496,7 @@ namespace simuPOP
       /// their genotypes.
       PyObject* arrGenotype()
       {
-        if(individual::shallowCopiedFlagOn())
+        if(shallowCopied())
           // adjust position. deep=true
           adjustGenoPosition(true);
 
@@ -499,7 +510,7 @@ namespace simuPOP
       PyObject* arrGenotype(UINT subPop)
       {
         CHECKRANGESUBPOP(subPop);
-        if(individual::shallowCopiedFlagOn())
+        if(shallowCopied())
           // adjust position. deep=true
           adjustGenoPosition(true);
 
@@ -1071,6 +1082,7 @@ namespace simuPOP
 
         // m_fitness was not saved
         m_fitness = vectorf();
+        m_shallowCopied = false;
       }
 
       BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -1127,6 +1139,9 @@ namespace simuPOP
 
       /// fitness
       vectorf m_fitness;
+
+      /// whether or not individual genotype is in order
+      bool m_shallowCopied;
   };
 
   /*

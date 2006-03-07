@@ -29,7 +29,4 @@ namespace simuPOP
 {
   // initialize static variable s)genoStruRepository.
   vector<GenoStructure> GenoStruTrait::s_genoStruRepository = vector<GenoStructure>();
-
-  // initialize static variables.
-  bool individual::s_flagShallowCopied = false;
 }

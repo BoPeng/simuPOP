@@ -131,11 +131,14 @@ class TestMigrator(unittest.TestCase):
     pop = population(size=10, loci=[2,6])
     InitByFreq(pop, [.2,.4,.4])
     genotype = list(pop.arrGenotype())
+    Dump(pop)
     SplitSubPop(pop, which=0, sizes=[2,8], randomize=False)
+    Dump(pop)
     # individual untouched
     self.assertEqual(pop.arrGenotype(), genotype)
     # split, with randomization
     SplitSubPop(pop, which=1, sizes=[6,2], randomize=True)
+    Dump(pop)
     self.assertNotEqual(pop.arrGenotype(), genotype)
     
 

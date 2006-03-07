@@ -228,6 +228,9 @@ namespace simuPOP
       for(ULONG it=0; it<pop.subPopSize(m_which); ++it)
         pop.ind(it, m_which).setInfo(rng().randInt(N) );
       std::sort(pop.indBegin(m_which), pop.indEnd(m_which));
+      // not actully required since spliSubPop will do this.
+      // this is to remind myself this step is important.
+      pop.setShallowCopied(true);
     }
     if( !m_subPopSizes.empty())
       pop.splitSubPop(m_which, m_subPopSizes, m_subPopID);

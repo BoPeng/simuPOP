@@ -1379,7 +1379,7 @@ namespace simuPOP
     this->prepareScratchPop(pop, scratch);
 
     size_t pldy = pop.ploidy(), nLoci=m_loci.size();
-    size_t i;
+    size_t i, p;
 
     DBG_DO(DBG_MATING, m_famSize.clear());
 
@@ -1415,12 +1415,21 @@ namespace simuPOP
       for( size_t sp=0; sp < numSP; ++sp)
       {
         ULONG n=0;
-        // go through all alleles
-        for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
-          aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+        if(pop.shallowCopied())
         {
-          if( AlleleUnsigned(*a) == allele )
-            n++;
+          for(population::IndIterator it=pop.indBegin(sp); it < pop.indEnd(sp); ++it)
+            for(p=0; p<pldy; ++p)
+              if( it->allele(locus, p) == allele )
+                n++;
+        }
+        else
+        {
+          for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
+            aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+          {
+            if( AlleleUnsigned(*a) == allele )
+              n++;
+          }
         }
         numOfAlleles += n;
         curFreq[sp] = double(n)/(pop.subPopSize(sp)*pldy);
@@ -1481,7 +1490,6 @@ namespace simuPOP
       ULONG spIndEnd = scratch.subPopSize(sp);
 
       // ploidy
-      size_t p;
       vectori na(nLoci, 0);
       bool allDone = true;
       for(i=0; i<nLoci; ++i)
@@ -1632,7 +1640,7 @@ namespace simuPOP
       "Number of subpopulation can not be changed.");
 
     size_t pldy = pop.ploidy(), nLoci=m_loci.size();
-    size_t i;
+    size_t i, p;
 
     DBG_DO(DBG_MATING, m_famSize.clear());
 
@@ -1665,17 +1673,29 @@ namespace simuPOP
       // determine the number alleles at each subpopulation.
       vectorf curFreq( numSP );
       ULONG numOfAlleles=0;
+      //
       for( size_t sp=0; sp < numSP; ++sp)
       {
         ULONG n=0;
         // go through all alleles
-        for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
-          aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+        if(pop.shallowCopied())
         {
-          if( AlleleUnsigned(*a) == allele )
-            n++;
+          for(population::IndIterator it=pop.indBegin(sp); it < pop.indEnd(sp); ++it)
+            for(p=0; p<pldy; ++p)
+              if( it->allele(locus, p) == allele )
+                n++;
+        }
+        else
+        {
+          for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
+            aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+          {
+            if( AlleleUnsigned(*a) == allele )
+              n++;
+          }
         }
         numOfAlleles += n;
+
         curFreq[sp] = double(n)/(pop.subPopSize(sp)*pldy);
       }
 
@@ -1692,8 +1712,8 @@ namespace simuPOP
       // assign these numbers to each subpopulation
       rng().randMultinomial(static_cast<unsigned int>(pop.popSize()*expFreq[i]*pldy),
         curFreq, expAlleles.begin()+numSP*i);
-      
-      DBG_DO(DBG_MATING, cout << "DSL " << i << " Cur freq: " << curFreq << " New num " 
+
+      DBG_DO(DBG_MATING, cout << "DSL " << i << " Cur freq: " << curFreq << " New num "
         << vectori(expAlleles.begin()+numSP*i, expAlleles.begin()+numSP*(i+1)) << endl);
 
     }
@@ -1784,7 +1804,6 @@ namespace simuPOP
       ULONG spInd = 0;
       ULONG spIndEnd = scratch.subPopSize(sp);
       // ploidy
-      size_t p;
       vectori na(nLoci, 0);
       bool allDone = true;
       for(i=0; i<nLoci; ++i)
