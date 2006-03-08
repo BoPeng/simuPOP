@@ -814,7 +814,7 @@ Max mutant age: %d ''' % \
   operators = [
     mutator, 
     rec, 
-    stat(alleleFreq=DSL, popSize=True, step=10),
+    stat(alleleFreq=DSL, popSize=True, step=1),
     # output to screen
     pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x]['+str(StartingAllele)+r']) for x in DSL])+"\n"',
       step=10),
