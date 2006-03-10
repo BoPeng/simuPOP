@@ -19,10 +19,6 @@ import unittest, os, sys, exceptions
 class TestAscertainment(unittest.TestCase):
 
   def setUp(self):
-    if alleleType() == 'binary':
-      k11, k12, k22 = '0-0', '0-1', '1-1'
-    else:
-      k11, k12, k22 = '1-1', '1-2', '2-2'
     simu = simulator(
       population(subPop=[100,200], ploidy=2, loci=[5,10],
         ancestralDepth=1, maxAllele=MaxAllele),
@@ -32,7 +28,7 @@ class TestAscertainment(unittest.TestCase):
         stat( alleleFreq=[0,1], genoFreq=[0,1]),
         migrator(rate=[[0.1,0.1],[0.1,0.1]]),
         mapPenetrance(locus=0,
-          penetrance={k11:0,k12:.7,k22:1}),
+          penetrance={'0-0':0,'0-1':.7,'1-1':1}),
         parentsTagger(),
       ],
        preOps=[  

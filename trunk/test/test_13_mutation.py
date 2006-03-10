@@ -35,7 +35,7 @@ class TestMutator(unittest.TestCase):
         self.assertEqual(geno, genotype)
       
   def assertGenotypeFreq(self, pop, freqLow, freqHigh,
-    atLoci=[], subPop=[], indRange=[], atPloidy=[], fromZero=False):
+    atLoci=[], subPop=[], indRange=[], atPloidy=[]):
     'Assert if the genotype has the correct allele frequency'
     geno = getGenotype(pop, atLoci, subPop, indRange, atPloidy)
     if alleleType() == 'binary':
@@ -51,15 +51,9 @@ class TestMutator(unittest.TestCase):
         assert freq0 >= f0[0] and freq0 <= f1[0]
         assert freq1 >= f0[1] and freq1 <= f1[1]
     else:
-      if fromZero:
-        for i in range(len(freqLow)):
-          freq = geno.count(i)*1.0 / len(geno)
-          assert freq >= freqLow[i] and freq <= freqHigh[i]
-      else:
-        for i in range(len(freqLow)):
-          freq = geno.count(i+1)*1.0 / len(geno)
-          #print freq
-          assert freq >= freqLow[i] and freq <= freqHigh[i]
+      for i in range(len(freqLow)):
+        freq = geno.count(i)*1.0 / len(geno)
+        assert freq >= freqLow[i] and freq <= freqHigh[i]
       
   def testMemberFunctions(self):
     'Testing common mutator functions'
@@ -102,7 +96,7 @@ class TestMutator(unittest.TestCase):
     simu.step([ kamMutator(rate=0.1, atLoci=[0,4])])
     # frequency seems to be OK.
     self.assertGenotypeFreq(simu.population(0), 
-      [0.85],[0.95], atLoci=[0,4], fromZero=True)
+      [0.85],[0.95], atLoci=[0,4])
     self.assertGenotype(simu.population(0), 0, 
       atLoci=[1,2,3])
   
@@ -117,13 +111,11 @@ class TestMutator(unittest.TestCase):
     # at loci
     simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
       randomMating(), rep=5)
-    # initialize with 0 or 1
-    simu.population(0).arrGenotype()[:] = 1
     simu.step([ smmMutator(rate=0.2, atLoci=[0,4])])
     # frequency seems to be OK.
     self.assertGenotypeFreq(simu.population(0), 
       [0.85],[0.95], atLoci=[0,4])
-    self.assertGenotype(simu.population(0), 1, 
+    self.assertGenotype(simu.population(0), 0, 
       atLoci=[1,2,3])
     
   def testGsmMutator(self):

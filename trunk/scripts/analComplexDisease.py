@@ -50,7 +50,7 @@ of the penetrance functions:
     At DSL i , penetrance will be computed as
       0, 0, p_i
     for genotype
-      aa, aA, AA  (a is wild type)
+      AA, Aa, aa  (A is wild type)
     where pi are penetrance factors (that can vary between DSL).
 
     The overall penetrance is 
@@ -61,7 +61,7 @@ of the penetrance functions:
     For each DSL, the penetrance is
       0, p/2, p
     for genotype
-      aa, aA, AA
+      AA, Aa, aa
     where the overall penetrance takes the form of
       1 - Prod( 1- P_i)
     This is the heterogeneity model proposed by Neil Risch (1990).
@@ -86,8 +86,8 @@ The datasets will be saved in native simuPOP format and in Linkage format.
 DSL markers will be removed so there will be no marker that is directly 
 linked to the disease.
 
-All files are put under a specified folder. They are organized by population
-and penetrance methods. A html file summary.htm will be automatically 
+All files are put under a specified folder. They are organized by
+penetrance methods. A html file summary.htm will be automatically 
 generated with links to all statistics, datasets etc.
 
 
@@ -95,7 +95,7 @@ Gene mapping
 ============
 
 If the location of genehunter is specified. It will be applied to all affected
-sibpair samples. This is the raw one-locus TDT method with no correct on things
+sibpair samples. This is the raw one-locus TDT method with no correction on things
 like multiple testing.
 
 """

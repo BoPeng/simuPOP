@@ -17,17 +17,6 @@ from simuPOP import *
 import unittest, os, sys, exceptions
 
 class TestSelector(unittest.TestCase):
-  def setUp(self):
-    if alleleType() == 'binary':
-      self.a1, self.a2 = 0, 1
-      self.key11, self.key12, self.key22 = '0-0', '0-1', '1-1'
-      self.freqStr = 'alleleFreq[0][0]'
-      self.wildtype = 0
-    else:
-      self.a1, self.a2 = 1, 2
-      self.key11, self.key12, self.key22 = '1-1', '1-2', '2-2'
-      self.freqStr = 'alleleFreq[0][1]'
-      self.wildtype = 1
 
   def testMapSelectorDirSelection(self):
     'Testing directional selection using a map selector'
@@ -42,9 +31,9 @@ class TestSelector(unittest.TestCase):
       [
         stat( alleleFreq=[0], genoFreq=[0]),
         mapSelector(locus=0, 
-          fitness={self.key11:1, self.key12:0.9, self.key22:.8}),
-        terminateIf(self.freqStr + '< 0.4'),
-        terminateIf(self.freqStr + '< 0.8', begin=50)
+          fitness={'0-0':1, '0-1':0.9, '1-1':.8}),
+        terminateIf('alleleFreq[0][0] < 0.4'),
+        terminateIf('alleleFreq[0][0] < 0.8', begin=50)
       ],
       preOps=[ initByFreq(alleleFreq=[.5,.5])],
       end=100
@@ -64,10 +53,10 @@ class TestSelector(unittest.TestCase):
     simu.evolve(
       [
         stat( alleleFreq=[0], genoFreq=[0]),
-        maSelector(locus=0, wildtype=[self.wildtype], 
+        maSelector(locus=0, wildtype=[0], 
           fitness=[1, 0.9, .8]),
-        terminateIf(self.freqStr + '< 0.4'),
-        terminateIf(self.freqStr + '< 0.8', begin=50)
+        terminateIf('alleleFreq[0][0] < 0.4'),
+        terminateIf('alleleFreq[0][0] < 0.8', begin=50)
       ],
       preOps=[ initByFreq(alleleFreq=[.5,.5])],
       end=100
@@ -95,9 +84,9 @@ class TestSelector(unittest.TestCase):
       [
         stat( alleleFreq=[0], genoFreq=[0]),
         mapSelector(locus=0, 
-          fitness={self.key11:1-s1, self.key12:1, self.key22:1-s2}),
-        terminateIf(self.freqStr + '< 0.5', begin=50),
-        terminateIf(self.freqStr + '> 0.9', begin=50)
+          fitness={'0-0':1-s1, '0-1':1, '1-1':1-s2}),
+        terminateIf('alleleFreq[0][0] < 0.5', begin=50),
+        terminateIf('alleleFreq[0][0] > 0.9', begin=50)
       ],
       preOps=[ initByFreq(alleleFreq=[.5,.5])],
       end=100
@@ -125,10 +114,10 @@ class TestSelector(unittest.TestCase):
     simu.evolve(
       [
         stat( alleleFreq=[0], genoFreq=[0]),
-        maSelector(locus=0, wildtype=self.wildtype, 
+        maSelector(locus=0, wildtype=0, 
           fitness=[1-s1, 1, 1-s2]),
-        terminateIf(self.freqStr + '< 0.5', begin=50),
-        terminateIf(self.freqStr + '> 0.9', begin=50)
+        terminateIf('alleleFreq[0][0] < 0.5', begin=50),
+        terminateIf('alleleFreq[0][0] > 0.9', begin=50)
       ],
       preOps=[ initByFreq(alleleFreq=[.5,.5])],
       end=100
@@ -148,9 +137,9 @@ class TestSelector(unittest.TestCase):
       [
         stat( alleleFreq=[0], genoFreq=[0]),
         mapSelector(locus=0, 
-          fitness={self.key11:1, self.key12:0.8, self.key22:1}),
-        # pyEval(self.freqStr),
-        terminateIf(self.freqStr + '> 0.4 and ' + self.freqStr + ' < 0.6', 
+          fitness={'0-0':1, '0-1':0.8, '1-1':1}),
+        # pyEval('alleleFreq[0][0]'),
+        terminateIf('alleleFreq[0][0] > 0.4 and  alleleFreq[0][0]  < 0.6', 
           begin=50),
       ],
       preOps=[ initByFreq(alleleFreq=[.5,.5])],
@@ -174,10 +163,10 @@ class TestSelector(unittest.TestCase):
     simu.evolve(
       [
         stat( alleleFreq=[0], genoFreq=[0]),
-        maSelector(locus=0, wildtype=self.wildtype, 
+        maSelector(locus=0, wildtype=0, 
           fitness=[1, 0.7, 1]), 
-        #pyEval(self.freqStr),
-        terminateIf(self.freqStr + '> 0.3 and ' + self.freqStr + ' < 0.7', 
+        #pyEval('alleleFreq[0][0]'),
+        terminateIf('alleleFreq[0][0] > 0.3 and  alleleFreq[0][0]  < 0.7', 
           begin=50)
       ],
       preOps=[ initByFreq(alleleFreq=[.5,.5])],
@@ -193,7 +182,7 @@ class TestSelector(unittest.TestCase):
       randomMating() )
     simu.evolve(
       [
-        maSelector(loci=[3,6], wildtype=self.wildtype, 
+        maSelector(loci=[3,6], wildtype=0, 
           fitness=[1, 0.7, 1, 0.99, 0.98, 0.97, 1, 1, 0.5]), 
       ],
       preOps=[ initByFreq(alleleFreq=[.5,.5])],
@@ -242,11 +231,11 @@ class TestSelector(unittest.TestCase):
     s2 = .2
     p = .2/ (.1+.2)
     def sel(arr):
-      if arr == [self.a1, self.a1]:
+      if arr == [0, 0]:
         return 1 - s1
-      elif arr == [self.a1, self.a2]:
+      elif arr == [0, 1]:
         return 1
-      elif arr == [self.a2, self.a1]:
+      elif arr == [1, 0]:
         return 1
       else:
         return 1 - s2
@@ -265,8 +254,8 @@ class TestSelector(unittest.TestCase):
       [
         stat( alleleFreq=[0], genoFreq=[0]),
         pySelector(loci=[0], func=sel),
-        terminateIf(self.freqStr + '< 0.5', begin=50),
-        terminateIf(self.freqStr + '> 0.9', begin=50)
+        terminateIf('alleleFreq[0][0] < 0.5', begin=50),
+        terminateIf('alleleFreq[0][0] > 0.9', begin=50)
       ],
       preOps=[ initByFreq(alleleFreq=[.5,.5])],
       end=100
@@ -283,8 +272,8 @@ class TestSelector(unittest.TestCase):
     simu.evolve(
       [
         mlSelector([
-          mapSelector(locus=0, fitness={self.key11:1,self.key12:1,self.key22:.8}),
-          mapSelector(locus=1, fitness={self.key11:1,self.key12:1,self.key22:.8}),
+          mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+          mapSelector(locus=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
         ], mode=SEL_Additive),
       ],
       preOps=[ initByFreq(alleleFreq=[.2,.8])],
@@ -295,7 +284,7 @@ class TestSelector(unittest.TestCase):
     simu.evolve([
       mlSelector(
         [
-          mapSelector(locus=0, fitness={self.key11:1,self.key12:1,self.key22:.8}),
+          mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
           maSelector(locus=1, wildtype=[1], fitness=[1,1,.8])
         ], mode=SEL_Multiplicative),
       ],

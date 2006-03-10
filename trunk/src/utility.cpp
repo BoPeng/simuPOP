@@ -133,7 +133,7 @@ namespace simuPOP
       g_dbgCode.set();
 #endif
   }
-  
+
   /// set debug area, default to turn all code on
   void TurnOnDebugWithName(string code)
   {
@@ -191,7 +191,6 @@ namespace simuPOP
   {
     return g_dbgString[code];
   }
-
 
   //////////////////////////////////////////////////////////////
   /// Some common functions/templates

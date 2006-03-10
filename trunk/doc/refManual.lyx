@@ -1,4 +1,4 @@
-#LyX 1.4.0svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -4480,7 +4480,7 @@ savePopulation
 \family typewriter
 alleleNames:
 \family default
- Note that allele 0 is reserved for 'missing values'.
+ Names of the alleles.
 \end_layout
 
 \begin_layout Itemize
@@ -9805,17 +9805,6 @@ Several functions and constants are defined for each library
 \begin_layout Itemize
 
 \family typewriter
-StartingAllele
-\family default
- : 0 for binary modules and 1 for others.
- For short and long version of the libraries, 0 allele is reserved for missing
- data.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
 alleleType()
 \family default
 : return 
@@ -14095,11 +14084,18 @@ Number and frequency (proportion) of heterozygotes are calculated for each
 \begin_layout Standard
 
 \family typewriter
-heteroNum[loc][0] 
+\series bold
+HeteroNum[loc]
+\series default
+ 
 \family default
 and
 \family typewriter
- heterFreq[loc][0] 
+ 
+\series bold
+HeterFreq[loc]
+\series default
+ 
 \family default
 is the overall heterozygosity number and frequency.
  I.e., number/frequency of genotype 
@@ -14116,33 +14112,27 @@ is the overall heterozygosity number and frequency.
 \end_layout
 
 \begin_layout Standard
-Note: 
-\end_layout
-
-\begin_layout Itemize
-In the case of binary alleles, 
-\family typewriter
-heteroNum[loc][0] == heteroNum[loc][1]
-\family default
- and this is the overall heterozygosity.
-\end_layout
-
-\begin_layout Itemize
-In the cases of short/long alleles, we assume that there is no 0 allele
- (used for missing values).
- If they do exist, a warning will be given and 
-\family typewriter
-heteroNum[loc][0]
-\family default
- is the 
-\series bold
-overall
-\series default
- heterozygosity.
-\end_layout
-
-\begin_layout Standard
 Variables are:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\series bold
+HeteroNum[loc], subPop[sp]['HeteroNum'][loc]
+\family default
+\series default
+, overall heterozygote number
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\series bold
+HeteroFreq[loc], subPop[sp]['HeteroFreq'][loc]
+\family default
+\series default
+, overall heterozygote frequency
 \end_layout
 
 \begin_layout Itemize

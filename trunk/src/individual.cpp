@@ -35,7 +35,6 @@ namespace simuPOP
     m_lociPos(lociPos), m_chromIndex(loci.size()+1),
     m_alleleNames(alleleNames), m_lociNames(lociNames), m_maxAllele(maxAllele)
   {
-
     DBG_ASSERT( ploidy >= 1, ValueError,
       "Ploidy must be >= 1. Given " + toStr(ploidy) );
 
@@ -89,7 +88,7 @@ namespace simuPOP
     DBG_ASSERT( m_lociNames.size() == m_totNumLoci, ValueError,
       "Loci names, if specified, should be given to every loci");
     DBG_WARNING( (!m_alleleNames.empty()) && m_alleleNames.size() != m_maxAllele+1,
-      "Not all allele names (plus missing) are given. ")
+      "Not all allele names are given. ")
   }
 
   // initialize static variable s)genoStruRepository.

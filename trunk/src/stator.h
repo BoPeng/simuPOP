@@ -508,11 +508,6 @@ namespace simuPOP
           if( m_alleleNum.back()[loc][j] > 0)
             al.push_back(j);
 
-#ifndef BINARYALLELE
-        DBG_WARNING( m_alleleNum.back()[loc][0] != 0,
-          "Having zero (NA) allele, counted as one allele.");
-#endif
-
         DBG_ASSERT( al.size() == static_cast<UINT>(numOfAlleles()[loc]),
           SystemError, "Number of alleles at locus " + toStr(loc)
           + " does not match.Observed "
@@ -601,6 +596,8 @@ namespace simuPOP
 
 #define HeteroNum_String        "heteroNum"
 #define HeteroFreq_String       "heteroFreq"
+#define AllHeteroNum_String     "HeteroNum"
+#define AllHeteroFreq_String    "HeteroFreq"
 #define HomoNum_String          "homoNum"
 #define HomoFreq_String         "homoFreq"
 

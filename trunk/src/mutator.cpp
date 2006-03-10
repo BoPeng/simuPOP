@@ -113,7 +113,7 @@ namespace simuPOP
 #ifdef BINARYALLELE
     allele = !allele;
 #else
-    Allele new_allele = rng().randInt(this->maxAllele()-1)+1;
+    Allele new_allele = rng().randInt(this->maxAllele());
     if(new_allele >= allele)
       allele = new_allele+1;
     else
@@ -153,10 +153,10 @@ namespace simuPOP
     }
     else
     {
-      if( allele - step > StartingAllele )
+      if( allele > step)
         AlleleMinus(allele, step);
       else
-        allele = StartingAllele;
+        allele = 0;
     }
   }
 

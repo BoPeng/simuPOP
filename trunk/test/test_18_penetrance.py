@@ -21,27 +21,15 @@ class TestPenetrance(unittest.TestCase):
   def setUp(self):
     self.pop = population(subPop=[500,100,1000], 
       ploidy=2, loci = [1])
-    if alleleType() == 'binary':
-      InitByValue(self.pop, 
-        value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-        indRange = [[0,125], [125,375],[375,500],[500,550],
-          [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
-      self.a1, self.a2 = 0, 1
-      self.key11, self.key12, self.key22 = '0-0', '0-1', '1-1'
-      self.wildtype = 0
-    else:
-      InitByValue(self.pop, 
-        value = [[1,1],[1,2],[2,2],[1,1],[1,2],[2,2],[1,2],[1,2],[2,2]],
-        indRange = [[0,125], [125,375],[375,500],[500,550],
-          [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
-      self.a1, self.a2 = 1, 2
-      self.key11, self.key12, self.key22 = '1-1', '1-2', '2-2'
-      self.wildtype = 1
- 
+    InitByValue(self.pop, 
+      value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+      indRange = [[0,125], [125,375],[375,500],[500,550],
+        [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
+
   def testMapPenetrance(self):
     'Testing map penetrance'
     MapPenetrance(self.pop, locus=0, 
-      penetrance={self.key11:0, self.key12:1, self.key22:1})
+      penetrance={'0-0':0, '0-1':1, '1-1':1})
     Stat(self.pop, numOfAffected=1)
     self.assertEqual(self.pop.dvars().numOfAffected, 1425)
     self.assertEqual(self.pop.dvars(0).numOfAffected, 375)
@@ -50,7 +38,7 @@ class TestPenetrance(unittest.TestCase):
     #
     # imcomlete penetrance
     MapPenetrance(self.pop, locus=0, 
-      penetrance={self.key11:0, self.key12:.3, self.key22:.5})
+      penetrance={'0-0':0, '0-1':.3, '1-1':.5})
     Stat(self.pop, numOfAffected=1)
     assert abs(self.pop.dvars().numOfAffected -  880*0.3 - 545*0.5) < 100
     assert abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5) < 30
@@ -59,7 +47,7 @@ class TestPenetrance(unittest.TestCase):
     
   def testMaPenetrance(self):
     'Testing multi-allele penetrance'
-    MaPenetrance(self.pop, locus=0, wildtype=self.wildtype,
+    MaPenetrance(self.pop, locus=0, wildtype=0,
       penetrance=[0, 1, 1])
     Stat(self.pop, numOfAffected=1)
     self.assertEqual(self.pop.dvars().numOfAffected, 1425)
@@ -69,7 +57,7 @@ class TestPenetrance(unittest.TestCase):
     #
     # imcomlete penetrance
     self.pop.dvars().clear()
-    MaPenetrance(self.pop, locus=0,  wildtype=self.wildtype,
+    MaPenetrance(self.pop, locus=0,  wildtype=0,
       penetrance=[0, .3, .5])
     Stat(self.pop, numOfAffected=1)
     assert abs(self.pop.dvars().numOfAffected -  880*0.3 - 545*0.5) < 100
@@ -82,7 +70,7 @@ class TestPenetrance(unittest.TestCase):
     pop = population(1000, loci=[3,5])
     InitByFreq(pop, [.3, .7])
     #
-    MaPenetrance(pop, loci=[3,5], wildtype=self.wildtype,
+    MaPenetrance(pop, loci=[3,5], wildtype=0,
       penetrance=[0, .3, .5, 0.3, 0.6, 0.8, 0.1, 1, 0.8])
 
     
@@ -92,30 +80,30 @@ class TestPenetrance(unittest.TestCase):
     InitByFreq(pop, [.3, .7])
     #
     MlPenetrance(pop, [
-      maPenetrance(locus=0,  wildtype=self.wildtype,
+      maPenetrance(locus=0,  wildtype=0,
         penetrance=[0, .3, .5]),
       mapPenetrance(locus=1, 
-        penetrance={self.key11:0, self.key12:1, self.key22:1})
+        penetrance={'0-0':0, '0-1':1, '1-1':1})
       ],
       mode=PEN_Additive
     )
     #
     MlPenetrance(pop, [
-      maPenetrance(locus=2,  wildtype=self.wildtype,
+      maPenetrance(locus=2,  wildtype=0,
         penetrance=[0, .3, .5]),
       mapPenetrance(locus=4, 
-        penetrance={self.key11:0, self.key12:1, self.key22:1})
+        penetrance={'0-0':0, '0-1':1, '1-1':1})
       ],
       mode=PEN_Multiplicative
     )
 
   def testPyPenetrance(self):
     def pen(geno):
-      if geno == [self.a1, self.a1]:
+      if geno == [0, 0]:
         return 0
-      elif geno == [self.a1, self.a2]:
+      elif geno == [0, 1]:
         return 0.5
-      elif geno == [self.a2, self.a1]:
+      elif geno == [1, 0]:
         return 0.5
       else:
         return 1

@@ -205,21 +205,21 @@ class TestMatingSchemes(unittest.TestCase):
     #TurnOnDebug(DBG_MATING)
     simu = simulator( population(100, loci=[1], ploidy=2), 
       controlledMating( matingScheme=randomMating(), 
-        locus=0, allele=StartingAllele+1, freqFunc=freqRange ) 
+        locus=0, allele=1, freqFunc=freqRange ) 
       )
     #print "Simulator created"
     simu.evolve( 
       preOps=[
-        initByValue([StartingAllele])
+        initByValue([0])
         ],
       ops=[
         pointMutator(atLoci=[0], 
-          toAllele=StartingAllele+1, 
+          toAllele=1, 
           inds = [0],
           at = [burnin+1],
           stage = PreMating),
         stat(alleleFreq=[0]),
-        # pyEval(r'"%%d %%6.4f\n"%%(gen, 1-alleleFreq[0][%d])'%StartingAllele, begin=burnin)
+        # pyEval(r'"%d %6.4f\n"%(gen, 1-alleleFreq[0][0])', begin=burnin)
       ], 
       end=burnin+mutAge
     )
@@ -247,21 +247,21 @@ class TestMatingSchemes(unittest.TestCase):
     #TurnOnDebug(DBG_MATING)
     simu = simulator( population(100, loci=[1], ploidy=2), 
       controlledBinomialSelection( locus=0, 
-        allele=StartingAllele+1, freqFunc=expectedFreq ) 
+        allele=1, freqFunc=expectedFreq ) 
       )
     #print "Simulator created"
     simu.evolve( 
       preOps=[
-        initByValue([StartingAllele])
+        initByValue([0])
         ],
       ops=[
         pointMutator(atLoci=[0], 
-          toAllele=StartingAllele+1, 
+          toAllele=1, 
           inds = [0],
           at = [burnin+1],
           stage = PreMating),
         stat(alleleFreq=[0]),
-        #pyEval(r'"%%d %%6.4f\n"%%(gen, 1-alleleFreq[0][%d])'%StartingAllele, begin=burnin),
+        #pyEval(r'"%d %6.4f\n"%(gen, 1-alleleFreq[0][0])', begin=burnin),
       ], 
       end=burnin+mutAge
     )
@@ -292,27 +292,26 @@ class TestMatingSchemes(unittest.TestCase):
     #
     simu = simulator( population(N, loci=[1,1], ploidy=2), 
       controlledBinomialSelection( loci=[0,1], 
-        alleles=[StartingAllele+1]*2, freqFunc=expectedFreq ) 
+        alleles=[1]*2, freqFunc=expectedFreq ) 
       )
     #print "Simulator created"
     simu.evolve( 
       preOps=[
-        initByValue([StartingAllele]*2)
+        initByValue([0]*2)
         ],
       ops=[
         pointMutator(atLoci=[0], 
-          toAllele=StartingAllele+1, 
+          toAllele=1, 
           inds = [0],
           at = [endingGen-len(traj[0])+1],
           stage = PreMating),
         pointMutator(atLoci=[1], 
-          toAllele=StartingAllele+1, 
+          toAllele=1, 
           inds = [1],
           at = [endingGen-len(traj[1])+1],
           stage = PreMating),
         stat(alleleFreq=[0,1]),
-        #pyEval(r'"%%d %%6.4f %%6.4f\n"%%(gen, 1-alleleFreq[0][%d], 1-alleleFreq[1][%d])'%\
-        #  (StartingAllele, StartingAllele), begin=burnin)
+        #pyEval(r'"%d %6.4f %6.4f\n"%(gen, 1-alleleFreq[0][0], 1-alleleFreq[1][0])', begin=burnin)
       ], 
       end=endingGen
     )
@@ -336,21 +335,21 @@ class TestMatingSchemes(unittest.TestCase):
     # turn On debug
     #TurnOnDebug(DBG_MATING)
     simu = simulator( population(100, loci=[1], ploidy=2), 
-      controlledRandomMating( locus=0, allele=StartingAllele+1, freqFunc=freqRange ) 
+      controlledRandomMating( locus=0, allele=1, freqFunc=freqRange ) 
       )
     #print "Simulator created"
     simu.evolve( 
       preOps=[
-        initByValue([StartingAllele])
+        initByValue([0])
         ],
       ops=[
         pointMutator(atLoci=[0], 
-          toAllele=StartingAllele+1, 
+          toAllele=1, 
           inds = [0],
           at = [burnin+1],
           stage = PreMating),
         stat(alleleFreq=[0]),
-        #pyEval(r'"%%d %%6.4f\n"%%(gen, 1-alleleFreq[0][%d])'%StartingAllele, begin=burnin)
+        #pyEval(r'"%d %6.4f\n"%(gen, 1-alleleFreq[0][0])', begin=burnin)
       ], 
       end=burnin+mutAge
     )
@@ -381,27 +380,26 @@ class TestMatingSchemes(unittest.TestCase):
     #
     simu = simulator( population(N, loci=[1,1], ploidy=2), 
       controlledRandomMating( loci=[0,1], 
-        alleles=[StartingAllele+1]*2, freqFunc=expectedFreq ) 
+        alleles=[1]*2, freqFunc=expectedFreq ) 
       )
     #print "Simulator created"
     simu.evolve( 
       preOps=[
-        initByValue([StartingAllele]*2)
+        initByValue([0]*2)
         ],
       ops=[
         pointMutator(atLoci=[0], 
-          toAllele=StartingAllele+1, 
+          toAllele=1, 
           inds = [0],
           at = [endingGen-len(traj[0])+1],
           stage = PreMating),
         pointMutator(atLoci=[1], 
-          toAllele=StartingAllele+1, 
+          toAllele=1, 
           inds = [1],
           at = [endingGen-len(traj[1])+1],
           stage = PreMating),
         stat(alleleFreq=[0,1]),
-        #pyEval(r'"%%d %%6.4f %%6.4f\n"%%(gen, 1-alleleFreq[0][%d], 1-alleleFreq[1][%d])'%\
-        #  (StartingAllele, StartingAllele), begin=burnin)
+        #pyEval(r'"%d %6.4f %6.4f\n"%(gen, 1-alleleFreq[0][0], 1-alleleFreq[1][0])', begin=burnin)
       ], 
       end=endingGen
     )
