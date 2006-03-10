@@ -99,7 +99,7 @@ namespace simuPOP
       \param loci number of loci on each chromosome.
       \param lociPos loci distance on each chromosome. the default values
          are 1,2,etc.
-      \param alleleNames allele names. The first one should be given to 'invalid' allele
+      \param alleleNames allele names
       \param lociNames name of loci
       \param maxAllele maximum possible allele number for all alleles.
       */

@@ -37,31 +37,25 @@ class TestInitialization(unittest.TestCase):
         self.assertEqual(geno, genotype)
 
   def assertGenotypeFreq(self, pop, freqLow, freqHigh,
-    atLoci=[], subPop=[], indRange=[], atPloidy=[], fromZero=False):
+    atLoci=[], subPop=[], indRange=[], atPloidy=[]):
     'Assert if the genotype has the correct allele frequency'
     geno = getGenotype(pop, atLoci, subPop, indRange, atPloidy)
     if alleleType() == 'binary':
       if len(freqLow) == 1:  # only one
         freq0 = geno.count(0)*1.0 / len(geno)
         assert freq0 >= freqLow[0] and freq0 <= freqHigh[0]
-      else:
+      else:  # 0 and 1, but group all other freq.
         f0 = [freqLow[0], sum(freqLow[1:])]
         f1 = [freqHigh[0], sum(freqHigh[1:])]
         freq0 = geno.count(0)*1.0 / len(geno)
         freq1 = geno.count(1)*1.0 / len(geno)
-        #print f0,f1,freq0,freq1
         assert freq0 >= f0[0] and freq0 <= f1[0]
         assert freq1 >= f0[1] and freq1 <= f1[1]
-    else:
-      if fromZero:
-        for i in range(len(freqLow)):
-          freq = geno.count(i)*1.0 / len(geno)
-          assert freq >= freqLow[i] and freq <= freqHigh[i]
-      else:
-        for i in range(len(freqLow)):
-          freq = geno.count(i+1)*1.0 / len(geno)
-          assert freq >= freqLow[i] and freq <= freqHigh[i]
-      
+    else:  # all loci
+      for i in range(len(freqLow)):
+        freq = geno.count(i)*1.0 / len(geno)
+        assert freq >= freqLow[i] and freq <= freqHigh[i]
+   
   def testInitByFreq(self): 
     'Testing operator initByFreq '
     pop = population(subPop=[500,1000, 500], loci=[2,4,2])
@@ -237,8 +231,7 @@ class TestInitialization(unittest.TestCase):
     # by proportion
     InitByValue(pop, value= [ [0]*8, [1]*8 ],
       proportions=[.3,.7])
-    self.assertGenotypeFreq(pop, [0.25, 0.65], [0.35, 0.75],
-      fromZero=True)
+    self.assertGenotypeFreq(pop, [0.25, 0.65], [0.35, 0.75])
     # atPloidy
     self.clearGenotype(pop)
     InitByValue(pop, value=[0]*5 + [1]*3 , atPloidy=1)
@@ -258,8 +251,7 @@ class TestInitialization(unittest.TestCase):
     InitByValue(pop, value=[[0]*3, [1]*3], atLoci=[2,4,5],
       proportions=[.3,.7],  indRange=[[300,600],[700,1000]] )         
     self.assertGenotypeFreq(pop, [0.25, 0.65], [0.35, 0.75],
-      atLoci=[2,4,5], indRange=[[300,600],[700,1000]],
-      fromZero=True)
+      atLoci=[2,4,5], indRange=[[300,600],[700,1000]])
     self.assertGenotype(pop, 0, atLoci=[0,1,3,6,7])
     self.assertGenotype(pop, 0, indRange=[[0,300],[600,700]])
     

@@ -282,16 +282,15 @@ namespace simuPOP
 
       virtual void mutate(AlleleRef allele)
       {
+        // inc
         if( rng().randUniform01() < m_incProb)
         {
           if( AlleleUnsigned(allele) < this->maxAllele() )
             AlleleInc(allele);
         }
-        else
-        {
-          if( allele > StartingAllele )
-            AlleleDec(allele);
-        }
+        // dec
+        else if( allele > 0 )
+          AlleleDec(allele);
       }
 
       /// this function is very important

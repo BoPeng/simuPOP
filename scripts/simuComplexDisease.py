@@ -600,11 +600,11 @@ def outputStatistics(pop, args):
       print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
   print >> output, "\n\nAllele frequencies\nall\t",
   for d in DSL:
-    print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][StartingAllele]),
+    print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][0]),
   for sp in range(pop.numSubPop()):
     print >> output, "\n%d\t" % sp,
     for d in DSL:
-      print >> output, '%.4f ' % (1. - pop.dvars(sp).alleleFreq[d][StartingAllele]),
+      print >> output, '%.4f ' % (1. - pop.dvars(sp).alleleFreq[d][0]),
   print >> output, "\n",
   # hetero frequency
   AvgHetero = 0
@@ -774,7 +774,7 @@ Max mutant age: %d ''' % \
       initByValue(value=[[x]*sum(loci) for x in range(48, 53)],
         proportions=[.2]*5), 
       # and then init DSL with all wild type alleles
-      initByValue([StartingAllele]*len(DSL), atLoci=DSL)
+      initByValue([0]*len(DSL), atLoci=DSL)
     ]
   else: # SNP
     preOperators = [
@@ -782,7 +782,7 @@ Max mutant age: %d ''' % \
       initByValue(value=[[x]*sum(loci) for x in [0,1] ],
         proportions=[.5]*2), 
       # and then init DSL with all wild type alleles
-      initByValue([StartingAllele]*len(DSL), atLoci=DSL)
+      initByValue([0]*len(DSL), atLoci=DSL)
     ]      
   ###
   ### mutation, start from gen 0,
@@ -816,10 +816,10 @@ Max mutant age: %d ''' % \
     rec, 
     stat(alleleFreq=DSL, popSize=True, step=1),
     # output to screen
-    pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x]['+str(StartingAllele)+r']) for x in DSL])+"\n"',
+    pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+"\n"',
       step=10),
     # output to file (append)
-    pyEval( expr=r'"%d %d " %(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x]['+str(StartingAllele)+r']) for x in DSL])+"\n"',
+    pyEval( expr=r'"%d %d " %(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+"\n"',
       output='>>>'+filename+'.traj')
   ]
   ###
@@ -829,7 +829,7 @@ Max mutant age: %d ''' % \
   ###      0 1 ...... i_T
   for i in range( numDSL ):
     operators.append( 
-      pointMutator(atLoci=[DSL[i]], toAllele=StartingAllele+1, inds=[i],
+      pointMutator(atLoci=[DSL[i]], toAllele=1, inds=[i],
       at = [endingGen - len(traj[i]) + 1 ], stage=PreMating ) ) 
   ### 
   ### split to subpopulations
@@ -851,7 +851,7 @@ Max mutant age: %d ''' % \
   if mlSelModel != SEL_None:
     operators.append( mlSelector(
       # with five multiple-allele selector as parameter
-      [ maSelector(locus=DSL[x], wildtype=[StartingAllele], 
+      [ maSelector(locus=DSL[x], wildtype=[0], 
         fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) for x in range(len(DSL)) ],
       mode=mlSelModel, begin=splitGen),
     )
@@ -924,7 +924,7 @@ Max mutant age: %d ''' % \
       newSubPopSizeFunc=popSizeFunc,      # demographic model
       numOffspringFunc=last_two,          # save last two generations
       loci=DSL,                           # which loci to control
-      alleles=[StartingAllele+1]*numDSL,  # which allele to control
+      alleles=[1]*numDSL,                 # which allele to control
       freqFunc=freqFunc                   # frequency control function
     ),
     rep=1)

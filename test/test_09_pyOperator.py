@@ -24,10 +24,7 @@ class TestPyOperator(unittest.TestCase):
   def myFunc(self, pop):
     Stat(pop, alleleFreq=[0])
     # allelic frequency was assigned to be 0.2
-    if alleleType() == 'binary':
-      assert abs(pop.dvars().alleleFreq[0][0] - 0.2) < 0.05
-    else:
-      assert abs(pop.dvars().alleleFreq[0][1] - 0.2) < 0.05
+    assert abs(pop.dvars().alleleFreq[0][0] - 0.2) < 0.05
     return True
     
   def testSimpleFunc(self):
@@ -58,13 +55,9 @@ class TestPyOperator(unittest.TestCase):
     'Testing python operator with parameters'
     InitByFreq(self.pop, [.2, .8])
     simu = simulator(self.pop, randomMating())
-    if alleleType() == 'binary':
-      a1, a2 = 0, 1
-    else:
-      a1, a2 = 1, 2
     simu.evolve( ops=[
-      pyOperator(func=self.myFuncWithParam, param=(a1,.2)),
-      pyOperator(func=self.myFuncWithParam, param=(a2,.8)),
+      pyOperator(func=self.myFuncWithParam, param=(0,.2)),
+      pyOperator(func=self.myFuncWithParam, param=(1,.8)),
       ], 
       end=2
     )

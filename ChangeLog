@@ -21,6 +21,9 @@ version 0.6.13 - currently available as snapshot
   - NEW: add TurnOnDebugWithName(name) and the ability to set SIMUDEBUG
          to turn on certain debug mode.
   - BUG: fixed a bug about s_shallowCopied flag of population.
+  - CHG: Remove starting allele and let all allele start from 0. tests 
+         and scripts have been modified. These changes can make binary
+         and other modules behave the same.
          
 
 version 0.6.12 - (Rev 186) - Feb 18, 2006 

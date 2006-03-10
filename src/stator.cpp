@@ -310,12 +310,14 @@ namespace simuPOP
 
       vectori& sum = m_heteroNum[resIdx(i)];
       fill(sum.begin(), sum.end(), 0);
+      int sumAll = 0;
 
       // for each subpopulation
       for( UINT sp=0; sp < numSP;  ++sp)
       {
         vectori& num = m_heteroNum[resIdx(i,sp)];
         fill(num.begin(), num.end(), 0 );
+        int numAll = 0;
 
         // go through all alleles
         //?>> \todo here we assume diploid population
@@ -329,35 +331,15 @@ namespace simuPOP
           if( AlleleUnsigned(*(a+1)) >= num.size() )
             num.resize(*(a+1)+1);
 
-#ifdef BINARYALLELE
           if( *a != *(a+1) )
           {
-            num[0]++;
-            num[1]++;
+            num[*a]++;
+            num[*(a+1)]++;
+            numAll++;
           }
-#else
-          if( *a != *(a+1) )                      // heterozygote
-          {
-            if( *a == 0 )
-            {
-              DBG_WARNING(true, "Allele zero encountered. heterNum[loc][0] is the overall heterozygote.");
-              num[*(a+1)]++;
-            }
-            else if( *(a+1) == 0)
-            {
-              DBG_WARNING(true, "Allele zero encountered. heterNum[loc][0] is the overall heterozygote.");
-              num[*a]++;
-            }
-            else                                  // none equal to zero
-            {
-              num[*a]++;
-              num[*(a+1)]++;
-            }
-            num[0] ++;                            // overall x != y
-          }
-#endif
         }
 
+        sumAll += numAll;
         // add this number to overall num
         // calculate frequency
         if(numSP > 1)
@@ -394,6 +376,26 @@ namespace simuPOP
             varname =  toStr(HeteroFreq_String) + "[" + toStr(loc) + "]";
             pop.setVar(varname, d);
           }
+
+          // overall hetero
+          varname =  subPopVar_String(sp, AllHeteroNum_String) + "[" + toStr(loc) + "]";
+          d = pop.setIntVar(varname, numAll);
+          if(numSP == 1)
+          {
+            Py_INCREF(d);
+            varname =  toStr(AllHeteroNum_String) + "[" + toStr(loc) + "]";
+            pop.setVar(varname, d);
+          }
+
+          varname = subPopVar_String(sp, AllHeteroFreq_String) + "[" + toStr(loc) + "]";
+          d = pop.setDoubleVar(varname, static_cast<double>(numAll)/pop.subPopSize(sp));
+
+          if(numSP == 1)
+          {
+            Py_INCREF(d);
+            varname =  toStr(AllHeteroFreq_String) + "[" + toStr(loc) + "]";
+            pop.setVar(varname, d);
+          }
         }
       }
 
@@ -411,6 +413,12 @@ namespace simuPOP
 
           varname = string(HeteroFreq_String) + "[" + toStr(loc) + "]";
           pop.setDoubleVectorVar(varname, freq);
+
+          varname = string(AllHeteroNum_String) + "[" + toStr(loc) + "]";
+          pop.setIntVar(varname, sumAll);
+
+          varname = string(AllHeteroFreq_String) + "[" + toStr(loc) + "]";
+          pop.setDoubleVar(varname, static_cast<double>(sumAll)/pop.popSize());
         }
       }                                           // whole population
     }                                             // for all loci

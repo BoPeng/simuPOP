@@ -21,20 +21,9 @@ class TestQuanTrait(unittest.TestCase):
   def setUp(self):
     self.pop = population(subPop=[5000], 
       ploidy=2, loci = [1])
-    if alleleType() == 'binary':
-      InitByValue(self.pop, 
-        value = [[0,0],[0,1],[1,1]],
-        indRange = [[0,1250], [1250,3750],[3750,5000]])
-      self.a1, self.a2 = 0, 1
-      self.key11, self.key12, self.key22 = '0-0', '0-1', '1-1'
-      self.wildtype = 0
-    else:
-      InitByValue(self.pop, 
-        value = [[1,1],[1,2],[2,2]],
-        indRange = [[0,1250], [1250,3750],[3750,5000]])
-      self.a1, self.a2 = 1, 2
-      self.key11, self.key12, self.key22 = '1-1', '1-2', '2-2'
-      self.wildtype = 1
+    InitByValue(self.pop, 
+      value = [[0,0],[0,1],[1,1]],
+      indRange = [[0,1250], [1250,3750],[3750,5000]])
  
   def stdev(self, x):
     'calculate standard devisaion'
@@ -44,22 +33,22 @@ class TestQuanTrait(unittest.TestCase):
   def testMapQuanTrait(self):
     'Testing map qtrait'
     MapQuanTrait(self.pop, locus=0, 
-      qtrait={self.key11:0, self.key12:1, self.key22:2})
+      qtrait={'0-0':0, '0-1':1, '1-1':2})
     self.assertEqual(self.pop.dvars().qtrait, [0]*1250+[1]*2500+[2]*1250)
     # with variance
     MapQuanTrait(self.pop, locus=0, sigma=0.5,
-      qtrait={self.key11:1, self.key12:1, self.key22:1})
+      qtrait={'0-0':1, '0-1':1, '1-1':1})
     assert abs( sum(self.pop.dvars().qtrait)/5000 - 1) < 0.1
     # syandard deviation
     assert abs( self.stdev( self.pop.dvars().qtrait ) - 0.5) < 0.1
     
   def testMaQuanTrait(self):
     'Testing multi-allele qtrait'
-    MaQuanTrait(self.pop, locus=0, wildtype=self.wildtype, sigma=0,
+    MaQuanTrait(self.pop, locus=0, wildtype=0, sigma=0,
       qtrait=[0, 1, 1])
     self.assertEqual(self.pop.dvars().qtrait, [0]*1250+[1]*2500+[1]*1250)
     # with variance
-    MaQuanTrait(self.pop, locus=0, sigma=0.5, wildtype=self.wildtype,
+    MaQuanTrait(self.pop, locus=0, sigma=0.5, wildtype=0,
       qtrait=[0, .3, .5])
     assert abs( sum(self.pop.dvars().qtrait[:1250])/1250 - 0) < 0.1
     assert abs( sum(self.pop.dvars().qtrait[1250:3750])/2500 - 0.3) < 0.1
@@ -69,7 +58,7 @@ class TestQuanTrait(unittest.TestCase):
     assert abs( self.stdev( self.pop.dvars().qtrait[1250:3750] ) - 0.5) < 0.1
     assert abs( self.stdev( self.pop.dvars().qtrait[3750:5000] ) - 0.5) < 0.1
     # different sigma  
-    MaQuanTrait(self.pop, locus=0, sigma=[0.5, 0.8, 1], wildtype=self.wildtype,
+    MaQuanTrait(self.pop, locus=0, sigma=[0.5, 0.8, 1], wildtype=0,
       qtrait=[0, .3, .5])
     assert abs( sum(self.pop.dvars().qtrait[:1250])/1250 - 0) < 0.1
     assert abs( sum(self.pop.dvars().qtrait[1250:3750])/2500 - 0.3) < 0.1
@@ -84,7 +73,7 @@ class TestQuanTrait(unittest.TestCase):
     pop = population(1000, loci=[3,5])
     InitByFreq(pop, [.3, .7])
     #
-    MaQuanTrait(pop, loci=[3,5], wildtype=self.wildtype, sigma=0.5,
+    MaQuanTrait(pop, loci=[3,5], wildtype=0, sigma=0.5,
       qtrait=[0, .3, .5, 0.3, 0.6, 0.8, 0.1, 1, 0.8])
 
     
@@ -94,30 +83,30 @@ class TestQuanTrait(unittest.TestCase):
     InitByFreq(pop, [.3, .7])
     #
     MlQuanTrait(pop, [
-      maQuanTrait(locus=0,  wildtype=self.wildtype, sigma=0.5,
+      maQuanTrait(locus=0,  wildtype=0, sigma=0.5,
         qtrait=[0, .3, .5]),
       mapQuanTrait(locus=1, sigma=1, 
-        qtrait={self.key11:0, self.key12:1, self.key22:1})
+        qtrait={'0-0':0, '0-1':1, '1-1':1})
       ],
       mode=PEN_Additive
     )
     #
     MlQuanTrait(pop, [
-      maQuanTrait(locus=2,  wildtype=self.wildtype, sigma=0.5, 
+      maQuanTrait(locus=2,  wildtype=0, sigma=0.5, 
         qtrait=[0, .3, .5]),
       mapQuanTrait(locus=4, 
-        qtrait={self.key11:0, self.key12:1, self.key22:1})
+        qtrait={'0-0':0, '0-1':1, '1-1':1})
       ],
       mode=PEN_Multiplicative
     )
 
   def testPyQuanTrait(self):
     def qt(geno):
-      if geno == [self.a1, self.a1]:
+      if geno == [0, 0]:
         return random.normalvariate(0, 0.5)
-      elif geno == [self.a1, self.a2]:
+      elif geno == [0, 1]:
         return random.normalvariate(0.5, 1)
-      elif geno == [self.a2, self.a1]:
+      elif geno == [1, 0]:
         return random.normalvariate(0.5, 1)
       else:
         return random.normalvariate(1, 2)
