@@ -502,8 +502,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
        # put default value into the entryWidget
       if values[g] != None:
         # len()>0 to avoid emtpy string with emtpy list
-        if type(values[g]) in [types.ListType, types.TupleType] and len(values[g])>0 \
-          and type(values[g][0]) not in [types.ListType, types.TupleType]:
+        if type(values[g]) in [types.ListType, types.TupleType] and len(values[g])>1:
           entryWidgets[g].insert(0, ', '.join(map(str, values[g])))
         else:
           entryWidgets[g].insert(0,str(values[g]))
@@ -742,8 +741,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
       # put default value into the entryWidget
       txt = ''
       if values[g] != None:
-       if type(values[g]) in [types.ListType, types.TupleType] and len(values[g])>0 \
-         and type(values[g][0]) not in [types.ListType, types.TupleType]:
+       if type(values[g]) in [types.ListType, types.TupleType] and len(values[g])>1:
          txt =  ', '.join(map(str, values[g]))
        else:
          txt = str(values[g])
