@@ -1959,18 +1959,29 @@ namespace simuPOP
         }
         else
         {
-          for(i=0; i<nLoci; ++i)
+          // acceptance scheme
+          if( m_acceptScheme == CM_AcceptOneDSL)
           {
-            // accept the whole family, if we need this allele
-            if( curAllele[i] < totAllele[i] && na[i] > 0 )
+            for(i=0; i<nLoci; ++i)
+            {
+              // accept the whole family, if we need this allele
+              if( curAllele[i] < totAllele[i] && na[i] > 0 )
+                accept = true;
+            }
+          }
+          else if( m_acceptScheme == CM_AcceptAllDSL)
+          {
+            if(hasAff)
               accept = true;
           }
+          else
+            throw ValueError("UNrecognized acceptance scheme");
         }
         // reject this family
         if( ! accept)
           continue;
 
-        // accpet this
+        // accpet this family
         if( ! allDone)
         {
           allDone = true;
@@ -1987,6 +1998,9 @@ namespace simuPOP
 
         // success
         spInd += numOS;
+
+        DBG_WARNING( spInd == spIndEnd && (! allDone),
+          cout << "Offspring generated finished with allele freq unsatisfied." << endl);
       }
     }                                             // each subPop
 
