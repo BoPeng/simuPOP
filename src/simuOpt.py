@@ -478,8 +478,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
       for entry in opt['chooseOneOf']:
         entryWidgets[g].insert(tk.END, str(entry))
       if values[g] != None:
-        if type(values[g]) == types.StringType:
-          entryWidgets[g].select_set( opt['chooseOneOf'].index( values[g]))
+        entryWidgets[g].select_set( opt['chooseOneOf'].index(values[g]))
     elif opt.has_key('chooseFrom'):  # multiple choice
       labelWidgets[g] = tk.Label(root, text=opt['configName'])
       labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
@@ -503,7 +502,8 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
        # put default value into the entryWidget
       if values[g] != None:
         # len()>0 to avoid emtpy string with emtpy list
-        if type(values[g]) in [types.ListType, types.TupleType] and len(values[g])>0:
+        if type(values[g]) in [types.ListType, types.TupleType] and len(values[g])>0 \
+          and type(values[g][0]) not in [types.ListType, types.TupleType]:
           entryWidgets[g].insert(0, ', '.join(map(str, values[g])))
         else:
           entryWidgets[g].insert(0,str(values[g]))
@@ -722,8 +722,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
         entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
       gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND )
       if values[g] != None:
-        if type(values[g]) == types.StringType:
-          entryWidgets[g].SetSelection(opt['chooseOneOf'].index( values[g]))
+        entryWidgets[g].SetSelection(opt['chooseOneOf'].index( values[g]))
       colCount += 1
     elif opt.has_key('chooseFrom'):  # multiple choice
       w,h = labelWidgets[g].GetTextExtent('a')
@@ -743,7 +742,8 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
       # put default value into the entryWidget
       txt = ''
       if values[g] != None:
-       if type(values[g]) in [types.ListType, types.TupleType] and len(values[g])>0:
+       if type(values[g]) in [types.ListType, types.TupleType] and len(values[g])>0 \
+         and type(values[g][0]) not in [types.ListType, types.TupleType]:
          txt =  ', '.join(map(str, values[g]))
        else:
          txt = str(values[g])
