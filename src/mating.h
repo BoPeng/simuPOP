@@ -792,6 +792,11 @@ namespace simuPOP
   {
     public:
 
+#define CM_AcceptOneDSL 0
+#define CM_AcceptAllDSL 1
+
+    public:
+
       /// create a random mating scheme
       /**
       \param numOffspring, number of offspring or p in some modes
@@ -811,6 +816,7 @@ namespace simuPOP
         vectori loci,
         vectori alleles,
         PyObject* freqFunc,
+        int acceptScheme=0,
         double numOffspring=1.,
         PyObject* numOffspringFunc=NULL,
         UINT maxNumOffspring=0,
@@ -827,7 +833,8 @@ namespace simuPOP
         contWhenUniSex),
         m_loci(loci),
         m_alleles(alleles),
-        m_freqFunc(freqFunc)
+        m_freqFunc(freqFunc),
+        m_acceptScheme(acceptScheme)
       {
         if(m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
           throw ValueError("Please specify a valid frequency function");
@@ -840,7 +847,8 @@ namespace simuPOP
         : randomMating(rhs),
         m_loci(rhs.m_loci),
         m_alleles(rhs.m_alleles),
-        m_freqFunc(rhs.m_freqFunc)
+        m_freqFunc(rhs.m_freqFunc),
+        m_acceptScheme(rhs.m_acceptScheme)
       {
         Py_INCREF(m_freqFunc);
       }
@@ -917,6 +925,9 @@ namespace simuPOP
 
       /// function that return an array of frquency range
       PyObject * m_freqFunc;
+
+      /// acceptance scheme
+      int m_acceptScheme;
   };
 }
 #endif
