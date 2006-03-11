@@ -127,6 +127,16 @@ options = [
          simuPOP modules''',
    'validate':  simuOpt.valueOneOf([ 'microsatellite', 'SNP']),
    'chooseOneOf': ['microsatellite', 'SNP']
+  }, 
+  {'longarg': 'wildtype=',
+   'default': 0,
+   'allowedTypes': [types.IntType],
+   'configName': 'Wildtype allele',
+   'prompt': 'Wildtype allele',
+   'description': '''Wildtype should be 0 but microsatellite datasets generated 
+         before rev 225 uses 1 as wildtype. Set this variable to avoid trouble.''',
+   'validate':  simuOpt.valueOneOf([ 0, 1]),
+   'chooseOneOf': [0, 1]
   },
   {'longarg': 'dataset=',
    'default': 'simu.bin',
@@ -259,7 +269,7 @@ def getOptions(details=__doc__):
 
 # plot the LD values for the sample.
 def plotLD(pop, epsFile, jpgFile):
-  ''' plot LD values in R and convert to jpg if possible,
+  ''' plot D' values in R and convert to jpg if possible,
     all the values are stored in pop.dvars() '''
   vars = pop.dvars()
   # return max LD
@@ -322,22 +332,22 @@ def plotLD(pop, epsFile, jpgFile):
 
 # penetrance generator functions. They will return a penetrance function
 # with given penetrance parameter
-def recessive(pen):
+def recessive(pen, wt):
   ''' recessive single-locus, heterogeneity multi-locus '''
   def func(geno):
     val = 1
     for i in range(len(geno)/2):
-      if geno[i*2]+geno[i*2+1] == 4:
+      if geno[i*2]+geno[i*2+1] - 2*wt == 2:
         val *= 1 - pen
     return 1-val
   return func
   
-def additive(pen):
+def additive(pen, wt):
   ''' additive single-locus, heterogeneity multi-locus '''
   def func(geno):
     val = 1
     for i in range(len(geno)/2):
-      val *= 1 - (geno[i*2]+geno[i*2+1]-2)*pen/2.
+      val *= 1 - (geno[i*2]+geno[i*2+1]-2*wt)*pen/2.
     return 1-val
   return func
 
@@ -346,22 +356,16 @@ def additive(pen):
 # NOTE:
 # 
 # 1. geno is the genptype at DSL. For example, if your DSL is [5,10]
-#   geno will be something like [1,2,2,2] where 1,2 is the genotype at 
+#   geno will be something like [0,1,1,1] where 0,1 is the genotype at 
 #   locus 5.
-# 2. allele 0 is reserved for missing data (which you should not have)
-#   In simuComplexDisease.py, 1 for wild type, 2 for mutatnt.
-def custom(pen):
+# 2. in simuComplexDisease.py, 0 is wild type, 1 is disease allele.
+def custom(pen, wt):
   ''' a penetrance function that focus on the first DSL '''
   def func(geno):
-    # the first DSL has full delta 
-    val = 1 - (geno[0]+geno[1]-2)*pen/2.
-    # the other has delta/4 importance.
-    for i in range(1, len(geno)/2):
-      val *= 1 - (geno[i*2]+geno[i*2+1]-2)*pen/8.
-    return 1-val
+    return 1
   return func
 
-def drawSamples(pop, peneFunc, penePara, numSample, saveFormat, dataDir, reAnalyzeOnly ):
+def drawSamples(pop, peneFunc, penePara, wildtype, numSample, saveFormat, dataDir, reAnalyzeOnly ):
   ''' get samples of different type using a penetrance function,
     and save samples in dataDir in saveFormat
     
@@ -381,15 +385,15 @@ def drawSamples(pop, peneFunc, penePara, numSample, saveFormat, dataDir, reAnaly
   if peneFunc.find('recessive') == 0:  # start with recessive
     print "Using recessive penetrance function"
     report += "<h4>Recessive single-locus, heterogeneity multi-locus</h4>\n"
-    penFun = recessive(penePara)
+    penFun = recessive(penePara, wildtype)
   elif peneFunc.find('additive') == 0: # start with additive
     print "Using additive penetrance function"
     report += "<h4>Additive single-locus, heterogeneity multi-locus</h4>\n"
-    penFun = additive(penePara)
+    penFun = additive(penePara, wildtype)
   elif peneFunc.find('custom') == 0: # start with custom
     print "Using customized penetrance function"
     report += "<h4>Customized penetrance function</h4>\n"
-    penFun = custom(penePara)  
+    penFun = custom(penePara, wildtype)  
   # this may or may not be important. Previously, we only
   # set penetrance for the final genetion but linkage methods
   # may need penetrance info for parents as well.
@@ -711,7 +715,7 @@ def _mkdir(d):
     print "Can not make output directory ", d
     sys.exit(1)
 
-def popStat(pop, p):
+def popStat(pop, p, wt):
   ' calculate population statistics '
   # K -- populaiton prevalance
   print "Calculating population statistics "
@@ -729,9 +733,9 @@ def popStat(pop, p):
       for x in range(len(DSL)):
         s1 = pop.individual(ind).allele(DSL[x], 0)
         s2 = pop.individual(ind).allele(DSL[x], 1)
-        if s1 == 1 and s2 == 1:
+        if s1 == wt and s2 == wt:
           P11[x] += 1
-        elif s1 == 2 and s2 == 2:
+        elif s1 == wt+1 and s2 == wt+1:
           P22[x] += 1
         else:
           P12[x] += 1
@@ -754,7 +758,7 @@ def popStat(pop, p):
   return result
    
   
-def analyzePopulation(dataset, peneFunc, penePara, N, 
+def analyzePopulation(dataset, peneFunc, penePara, wildtype, N, 
     numSample, outputDir, geneHunter, reAnalyzeOnly):
   '''
      this function organize all previous functions
@@ -820,6 +824,7 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
   for p in range(len(peneFunc)):
     summ = drawSamples(pop, 
       peneFunc[p], penePara[p], # penetrance and parameter
+      wildtype, 
       numSample,    # number of sample for each setting
       saveFormat,   # save samples in which format
       outputDir,      # directory to save files
@@ -827,7 +832,7 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
     )
     summary += summ
     # calculate population statistics like prevalence
-    result.update( popStat(pop, peneFunc[p]) )
+    result.update( popStat(pop, peneFunc[p], wildtype) )
     # for each sample
     for sn in range(numSample):
       print "Processing sample %s%d" % ( peneFunc[p], sn)
@@ -863,7 +868,8 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
 if __name__ == '__main__':
   allParam = getOptions()
   # unpack options
-  ( markerType, dataset, saveFormat, peneFunc, peneParaTmp, N, numSample, outputDir,
+  ( markerType, wildtype, dataset, saveFormat, peneFunc, 
+    peneParaTmp, N, numSample, outputDir,
     geneHunter, reAnalyzeOnly) = allParam
   # load simuPOP libraries
   if markerType == 'microsatellite':
@@ -908,7 +914,7 @@ if __name__ == '__main__':
   #
   # outputDir should already exist
   (pop, text, res) =  analyzePopulation(dataset,
-    expandedPeneFunc, expandedPenePara, N, numSample, outputDir, 
+    expandedPeneFunc, expandedPenePara, wildtype, N, numSample, outputDir, 
     geneHunter, reAnalyzeOnly)
   #
   # write a report
@@ -956,14 +962,15 @@ if __name__ == '__main__':
   for i in range(len(res['DSL'])):
     summary.write('Allelefreq: %.3f<br>'% res['alleleFreq'][i] )
   # for each penetrance function
-  if len(peneFunc) > 0:
-    for p in peneFunc: # penetrance function
+  if len(expandedPeneFunc) > 0:
+    for p in expandedPeneFunc: # penetrance function
+      summary.write("Penetrance function: %s" % p )
       summary.write('K %.3g<br>' % res[p+'_K'])
       summary.write('Ks %.3g<br>' % res[p+'_Ks'])
       summary.write('Ls %.3g<br>' % res[p+'_Ls'])
-      summary.write('P11' + ','.join( ['%.3g'%x for x in res[p+'_P11'] ]) + '<br>')
-      summary.write('P12' + ','.join( ['%.3g'%x for x in res[p+'_P12'] ]) + '<br>')
-      summary.write('P22' + ','.join( ['%.3g'%x for x in res[p+'_P22'] ]) + '<br>')
+      summary.write('P11: ' + ', '.join( ['%.3g'%x for x in res[p+'_P11'] ]) + '<br>')
+      summary.write('P12: ' + ', '.join( ['%.3g'%x for x in res[p+'_P12'] ]) + '<br>')
+      summary.write('P22: ' + ', '.join( ['%.3g'%x for x in res[p+'_P22'] ]) + '<br>')
       summary.write("F'" + ','.join( ['%.3g'%x for x in res[p+'_Fprime'] ]) + '<br>')
       for met in ['TDT', 'LOD']:
         for num in range(numSample): # samples

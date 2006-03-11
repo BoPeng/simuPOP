@@ -182,7 +182,7 @@ namespace simuPOP
       aa 7  8  9
       The length for such table is 3^(#loci).
       \param wildtype an array of alleles in the wildtype group. Anything else is disease allele.
-      default = [1]
+      default = [0]
       NOTE that wildtype at all loci are the same.
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
@@ -562,7 +562,7 @@ namespace simuPOP
            Aa 4  5  6
            aa 7  8  9
       \param wildtype an array of alleles in the wildtype group. Anything else is disease allele.,
-      default = [1]
+      default = [0]
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
       maPenetrance( vectoru loci, const vectorf& penet, const vectora& wildtype,
@@ -1022,7 +1022,7 @@ namespace simuPOP
       \param qtrait an array of qtrait of AA,Aa,aa. A is the wild type group.
       \param sigma an array of standard deviation for each of the trait genotype (AA, Aa, aa)
       \param wildtype an array of alleles in the wildtype group. Anything else is disease allele.
-         default = [1]
+         default = [0]
       \param output and other parameters please refer to help(baseOperator.__init__)
       */
       maQuanTrait( vectoru loci, const vectorf& qtrait, const vectora& wildtype,

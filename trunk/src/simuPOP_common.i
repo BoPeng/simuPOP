@@ -951,7 +951,7 @@ new_mapSelector.__doc__ = mapSelector.__init__.__doc__
 del mapSelector.__init__
 mapSelector.__init__ = new_mapSelector
 
-def new_maSelector(self, locus=-1, loci=[], wildtype=[1], *args, **kwargs):
+def new_maSelector(self, locus=-1, loci=[], wildtype=[0], *args, **kwargs):
   if locus != -1 and type(locus) in [types.IntType, types.LongType]:
     loc = [locus]
   elif type(loci) in [types.IntType, types.LongType]:
@@ -1007,7 +1007,7 @@ new_mapPenetrance.__doc__ = mapPenetrance.__init__.__doc__
 del mapPenetrance.__init__
 mapPenetrance.__init__ = new_mapPenetrance
 
-def new_maPenetrance(self, locus=-1, loci=[], wildtype=[1], penetrance=[], *args, **kwargs):
+def new_maPenetrance(self, locus=-1, loci=[], wildtype=[0], penetrance=[], *args, **kwargs):
   if locus != -1 and type(locus) in [types.IntType, types.LongType]:
     loc = [locus]
   elif type(loci) in [types.IntType, types.LongType]:
@@ -1062,7 +1062,7 @@ new_mapQuanTrait.__doc__ = mapQuanTrait.__init__.__doc__
 del mapQuanTrait.__init__
 mapQuanTrait.__init__ = new_mapQuanTrait
 
-def new_maQuanTrait(self, locus=-1, loci=[], wildtype=[1], sigma=[0], qtrait=[], *args, **kwargs):
+def new_maQuanTrait(self, locus=-1, loci=[], wildtype=[0], sigma=[0], qtrait=[], *args, **kwargs):
   if locus != -1 and type(locus) in [types.IntType, types.LongType]:
     loc = [locus]
   elif type(loci) in [types.IntType, types.LongType]:
