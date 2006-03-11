@@ -964,7 +964,7 @@ if __name__ == '__main__':
   # for each penetrance function
   if len(expandedPeneFunc) > 0:
     for p in expandedPeneFunc: # penetrance function
-      summary.write("Penetrance function: %s" % p )
+      summary.write("Penetrance function: %s<br>" % p )
       summary.write('K %.3g<br>' % res[p+'_K'])
       summary.write('Ks %.3g<br>' % res[p+'_Ks'])
       summary.write('Ls %.3g<br>' % res[p+'_Ls'])
