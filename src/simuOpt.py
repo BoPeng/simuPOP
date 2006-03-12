@@ -491,8 +491,11 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
       for entry in opt['chooseFrom']:
         entryWidgets[g].insert(tk.END, str(entry))
       if values[g] != None:
-        for val in values[g]:
-          entryWidgets[g].select_set( opt['chooseFrom'].index(val))
+        if type(values[g]) in [types.TupleType, types.ListType]:
+          for val in values[g]:
+            entryWidgets[g].select_set( opt['chooseFrom'].index(val))
+        else:
+          entryWidgets[g].select_set( opt['chooseFrom'].index( values[g] ))
     else:
       labelWidgets[g] = tk.Label(root, text=opt['configName'])
       labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10, sticky=tk.E)
@@ -730,7 +733,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
       if opt.has_key('description'):
         entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
       if values[g] != None:
-        if type(values[g]) in [types.ListType, types.TupleType] and len(values[g])>0:
+        if type(values[g]) in [types.ListType, types.TupleType]:
           for val in values[g]:
             entryWidgets[g].Check( opt['chooseFrom'].index(val)) 
         else:
