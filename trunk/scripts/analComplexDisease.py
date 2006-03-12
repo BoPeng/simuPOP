@@ -225,10 +225,10 @@ options = [
    'description': '''If given in command line, redo the analysis.'''
   },
   {'longarg': 'saveConfig=',
-   'default': sys.argv[0].split('.')[0]+'.cfg',
+   'default': 'anal.cfg',
    'allowedTypes': [types.StringType, types.NoneType],
    'configName': 'Save configuration',
-   'prompt': 'Save current configuration to file (' + sys.argv[0].split('.')[0] + '.cfg):  ',
+   'prompt': 'Save current configuration to file (anal.cfg):  ',
    'description': 'Save current paremeter set to specified file.'
   },
   {'arg': 'v',
@@ -403,6 +403,9 @@ def drawSamples(pop, peneFunc, penePara, wildtype, numSample, saveFormat, dataDi
     PyPenetrance(pop, loci=pop.dvars().DSL, func=penFun)
   # reset population to current generation.
   pop.useAncestralPop(0)
+  #
+  if saveFormat == []:
+    return report
   # 
   report += "<ul>"
   # here we are facing a problem of using which allele frequency for the sample
@@ -746,13 +749,13 @@ def popStat(pop, p, wt):
   result[p+'_P22'] = [ x/N for x in P22 ]
   result[p+'_Fprime'] = [ (P12[x]/2. + P22[x])/N for x in range(len(DSL)) ]
   # Ks = Pr(Xs=1 | Xp=1 ) = Pr(Xs=1, Xp=1) | P(Xp=1)
-  Ks = 0.
+  Xsp = 0.
   for ind in range(pop.popSize()/2):
     s1 = pop.individual(ind*2).affected()
     s2 = pop.individual(ind*2+1).affected()
     if s1 and s2:
-      Ks += 1
-  result[p+'_Ks'] = 2*Ks / pop.dvars().numOfAffected
+      Xsp += 1
+  result[p+'_Ks'] = 2*Xsp / pop.dvars().numOfAffected
   # Lambda = Ks/K
   result[p+'_Ls'] = result[p+'_Ks'] / result[p+'_K']
   return result
@@ -799,7 +802,7 @@ def analyzePopulation(dataset, peneFunc, penePara, wildtype, N,
   # save Fst, Het in res
   result['Fst'] = pop.dvars().AvgFst
   result['AvgHet'] = pop.dvars().AvgHetero
-  result['alleleFreq'] = [1- pop.dvars().alleleFreq[i][1] for i in pop.dvars().DSL]
+  result['alleleFreq'] = [1- pop.dvars().alleleFreq[i][wildtype] for i in pop.dvars().DSL]
   #
   # plot LD, res = 0, fail, 1: eps file, 2: converted to jpg
   epsFile = outputDir + "/LD_" + dataset + ".eps"
@@ -833,6 +836,8 @@ def analyzePopulation(dataset, peneFunc, penePara, wildtype, N,
     summary += summ
     # calculate population statistics like prevalence
     result.update( popStat(pop, peneFunc[p], wildtype) )
+    if saveFormat == []:
+      continue
     # for each sample
     for sn in range(numSample):
       print "Processing sample %s%d" % ( peneFunc[p], sn)
@@ -965,16 +970,18 @@ if __name__ == '__main__':
   if len(expandedPeneFunc) > 0:
     for p in expandedPeneFunc: # penetrance function
       summary.write("Penetrance function: %s<br>" % p )
-      summary.write('K %.3g<br>' % res[p+'_K'])
-      summary.write('Ks %.3g<br>' % res[p+'_Ks'])
-      summary.write('Ls %.3g<br>' % res[p+'_Ls'])
-      summary.write('P11: ' + ', '.join( ['%.3g'%x for x in res[p+'_P11'] ]) + '<br>')
-      summary.write('P12: ' + ', '.join( ['%.3g'%x for x in res[p+'_P12'] ]) + '<br>')
-      summary.write('P22: ' + ', '.join( ['%.3g'%x for x in res[p+'_P22'] ]) + '<br>')
-      summary.write("F'" + ','.join( ['%.3g'%x for x in res[p+'_Fprime'] ]) + '<br>')
+      summary.write('K %.4g<br>' % res[p+'_K'])
+      summary.write('Ks %.4g<br>' % res[p+'_Ks'])
+      summary.write('Ls %.4g<br>' % res[p+'_Ls'])
+      summary.write('P11: ' + ', '.join( ['%.4g'%x for x in res[p+'_P11'] ]) + '<br>')
+      summary.write('P12: ' + ', '.join( ['%.4g'%x for x in res[p+'_P12'] ]) + '<br>')
+      summary.write('P22: ' + ', '.join( ['%.4g'%x for x in res[p+'_P22'] ]) + '<br>')
+      summary.write("F': " + ', '.join( ['%.4g'%x for x in res[p+'_Fprime'] ]) + '<br>')
       for met in ['TDT', 'LOD']:
         for num in range(numSample): # samples
           plusMinus = ''
+          if not res.has_key(met+'_'+p+'_'+str(num)):
+            continue
           for pvalue in res[met+'_'+p+'_'+str(num)]:
             if pvalue > -math.log10(0.05/(pop.numChrom()*pop.totNumLoci())):
               plusMinus += '+'
