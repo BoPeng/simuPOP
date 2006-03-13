@@ -2,6 +2,11 @@ RoadMap of simuPOP
 
 Towards simuPOP 1.0     - Roadmaps  Marked by Easy 1 --- difficult 9. Workload 1 - 9
 
+* Will be done recently
+  4/4 Use chromosome factory to reduce ram use of populations
+  2/2 Add compressed file format to reduce file format
+  
+
 * With high priority
 
 Roadmap: test and documentation:
