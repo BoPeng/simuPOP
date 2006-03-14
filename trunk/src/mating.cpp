@@ -1710,7 +1710,7 @@ namespace simuPOP
       /// step 2: assign these alleles to each subpopulation according to a multi-nomial
       /// distribution with p_i beging allele frequency at each subpopulation.
       // assign these numbers to each subpopulation
-      rng().randMultinomial(static_cast<unsigned int>(pop.popSize()*expFreq[i]*pldy),
+      rng().randMultinomial(static_cast<unsigned int>(scratch.popSize()*expFreq[i]*pldy),
         curFreq, expAlleles.begin()+numSP*i);
 
       DBG_DO(DBG_MATING, cout << "DSL " << i << " Cur freq: " << curFreq << " New num "
