@@ -685,11 +685,6 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         return [int(initSize*math.exp((gen-burninGen)*rate))]
       else:
         return [int(initSize*math.exp((gen-burninGen)*rate)/numSubPop)]*numSubPop
-  def popSizeBackward(gen):
-    if gen > endingGen:
-      return initSize
-    else:
-      return sum(popSizeFunc(endingGen-gen))
   # 2. simulating allele frequency trajectory
   if maxMutAge == 0:
     maxMutAge = endingGen
@@ -698,15 +693,23 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
   elif maxMutAge > endingGen:
     print 'maxMutAge should be smaller than endingGen, set it to endingGen.'
     maxMutAge = endingGen
-  traj = FreqTrajectoryMultiStoch(freq=curAlleleFreq, 
-    NtFunc=popSizeBackward, fitness=fitness, 
-    minGen=minMutAge, maxGen=maxMutAge, restartIfFail=True)
+  # this is defined in simuUtil, a wrapper for
+  # FreqTrajectoryMultiStoch
+  (traj, introGens, trajFunc) = FreqTrajectoryMultiStochWithSubPop(
+    curGen=endingGen,
+    numLoci=len(DSLafter),
+    freq=curAlleleFreq, 
+    NtFunc=popSizeFunc,
+    fitness=fitness, 
+    minMutAge=minMutAge, 
+    maxMutAge=maxMutAge, 
+    restartIfFail=True)
   #
   # 3. save and plot the simulation scenario
   tfile = open(filename+'.traj', 'w')
   tfile.write('Simulated trajectories:\n')
   for t in traj:
-    tfile.write(', '.join([str(x) for x in t])+'\n')
+    tfile.write(', '.join([str(x) for x in t ]) + '\n')
   tfile.write('Observed allele frequency (generation, population size, allele frequencies)\n')
   tfile.close()
   plotScenario(filename, burninGen, splitGen, mixingGen,
@@ -830,7 +833,7 @@ Max mutant age: %d ''' % \
   for i in range( numDSL ):
     operators.append( 
       pointMutator(atLoci=[DSL[i]], toAllele=1, inds=[i],
-      at = [endingGen - len(traj[i]) + 1 ], stage=PreMating ) ) 
+      at = [introGens[i]], stage=PreMating ) ) 
   ### 
   ### split to subpopulations
   ### 
@@ -895,16 +898,6 @@ Max mutant age: %d ''' % \
       return 2
     else:
       return 1
-  # our trajectory is backward time, we need a forward time
-  # func for freqFunc
-  def freqFunc(gen):
-    freq = []
-    for tr in traj:
-      if gen < endingGen - len(tr) + 1:
-        freq.append( 0 )
-      else:
-        freq.append( tr[ gen - (endingGen - len(tr) + 1) ] )
-    return freq
   # create a simulator
   pop =  population(subPop=popSizeFunc(0), ploidy=2,
     loci = loci, maxAllele = maxAle, lociPos = lociPos)
@@ -925,7 +918,7 @@ Max mutant age: %d ''' % \
       numOffspringFunc=last_two,          # save last two generations
       loci=DSL,                           # which loci to control
       alleles=[1]*numDSL,                 # which allele to control
-      freqFunc=freqFunc                   # frequency control function
+      freqFunc=trajFunc                   # frequency control function
     ),
     rep=1)
   # evolve! If --dryrun is set, only show info
@@ -952,7 +945,7 @@ Max mutant age: %d ''' % \
   pop.dvars().migrModel = "circular stepping stone"
   pop.dvars().recRate = recRate
   print "Saving population to " + filename + '.' + format + '\n'
-  TurnOnDebug(DBG_UTILITY)
+  #TurnOnDebug(DBG_UTILITY)
   simu.population(0).savePopulation(filename+'.'+format)
   return True
 

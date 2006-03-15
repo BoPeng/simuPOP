@@ -394,6 +394,9 @@ namespace simuPOP
   void PyObj_As_Array(PyObject *obj, vectorf& val);
 
   /// CPPONLY
+  void PyObj_As_IntArray(PyObject *obj, vectori& val);
+  
+  /// CPPONLY
   void PyObj_As_StrDict(PyObject *obj, strDict& val);
 
   /// CPPONLY
@@ -1097,6 +1100,15 @@ namespace simuPOP
         // if sum p_i != 1, it will be normalized.
         // the size of n is not checked!
         gsl_ran_multinomial(m_RNG, p.size(), N, &p[0], &*n);
+      }
+
+      vectoru randMultinomialVal(unsigned int N, const vectorf& p)
+      {
+        // if sum p_i != 1, it will be normalized.
+        // the size of n is not checked!
+        vectoru val(p.size());
+        gsl_ran_multinomial(m_RNG, p.size(), N, &p[0], &val[0]);
+        return val;
       }
 
       /// Poisson distribution

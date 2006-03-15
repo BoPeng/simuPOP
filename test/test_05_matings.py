@@ -123,41 +123,46 @@ class TestMatingSchemes(unittest.TestCase):
     path = FreqTrajectoryStoch(freq=0.3, N=10000,fitness=[1, 0.9999, 0.9998])
     # population growth
     def NtFunc(gen):
-      return 1000+10000*math.exp(-0.001*(gen))
+      if gen < 5000:
+        return [10000]
+      else:
+        return [10000*math.exp(0.001*(gen-5000))]
     # neutral
-    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc)
+    path = FreqTrajectoryStoch(curGen=10000, freq=0.3, NtFunc=NtFunc)
     # advantageous allele, s2>s1>0 
-    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc,fitness=[1, 1, 1.01])
+    path = FreqTrajectoryStoch(curGen=10000, freq=0.3, NtFunc=NtFunc,fitness=[1, 1, 1.01])
     # overdominance, s1 > s2 > 0
-    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc,fitness=[1, 1.02, 1])
+    path = FreqTrajectoryStoch(curGen=10000, freq=0.3, NtFunc=NtFunc,fitness=[1, 1.02, 1])
     # with week purifying selection (additive)
-    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc,fitness=[1, 0.9999, 0.9998])
+    path = FreqTrajectoryStoch(curGen=10000, freq=0.3, NtFunc=NtFunc,fitness=[1, 0.9999, 0.9998])
     #
     # changing selection pressure
     def fitnessFunc(gen):
-      if gen > 1000:  # previously positive selection
+      if gen < 9000:  # previously positive selection
         return [1, 1.01, 1.02]
       else:           # then under purifying selection
         return [1, 0.999, 0.998]
     # neutral
-    path = FreqTrajectoryStoch(freq=0.3, NtFunc=NtFunc, fitnessFunc=fitnessFunc)
+    path = FreqTrajectoryStoch(curGen=10000, freq=0.3, NtFunc=NtFunc, fitnessFunc=fitnessFunc)
     # print path
 
   def testTrajectoryMultiStoch(self):
     'Testing the trajectory obtained from backward binomial sampling'
-    TurnOnDebug(DBG_MATING)
+    #TurnOnDebug(DBG_MATING)
     #path = FreqTrajectoryMultiStoch(freq=[0.1], N=10000, 
-    # fitness=[1, 1,01, 1.02], maxGen=100000)
+    # fitness=[1, 1,01, 1.02], maxMutAge=100000)
     path = FreqTrajectoryMultiStoch(freq=[0.05, 0.1], N=10000, 
-     fitness=[1, 1.01, 1.02, 1, 1.002, 1.002], maxGen=100000)
+     fitness=[1, 1.01, 1.02, 1, 1.002, 1.002],
+     maxMutAge=100000)
     # using sFunc
     def s(gen, freq):
-      if gen > 1000:
+      if gen < 9000:
         return [1, 1.01, 1.02, 1, 1.002, 1.002]
       else:
         return [1, 0.99, 0.98, 1, 0.999, 0.998]
-    path = FreqTrajectoryMultiStoch(freq=[0.05, 0.1], N=10000, 
-      fitnessFunc=s, maxGen=100000)
+    path = FreqTrajectoryMultiStoch(curGen=10000, 
+      freq=[0.05, 0.1], N=10000, 
+      fitnessFunc=s, maxMutAge=10000)
     # then , with frequency dependent?
     #print path.numTraj(), path.maxLen(), path.traj(0), path.traj(1)
  
@@ -273,7 +278,8 @@ class TestMatingSchemes(unittest.TestCase):
     #TurnOnDebug(DBG_DEVEL)
     N = 50
     # planned trajectory
-    traj = FreqTrajectoryMultiStoch(freq=[0.05, 0.10], N=N)    
+    traj = FreqTrajectoryMultiStoch(
+      freq=[0.05, 0.10], N=N)
     # staring from when?
     burnin = 100
     mutAge = max([len(x) for x in traj])
@@ -281,18 +287,13 @@ class TestMatingSchemes(unittest.TestCase):
     # 0 ...., 100, 101, .... 100+mutAge
     #              x         traj
     endingGen = burnin + mutAge
-    def expectedFreq(gen):
-      freq = []
-      for tr in traj:
-        if gen < endingGen - len(tr) + 1:
-          freq.append( 0 )
-        else:
-          freq.append( tr[ gen - (endingGen - len(tr) + 1) ] )
-      return freq
+    from simuUtil import trajFunc
+    # defined in simuUtil
+    expFreqFunc = trajFunc(endingGen, traj)
     #
     simu = simulator( population(N, loci=[1,1], ploidy=2), 
       controlledBinomialSelection( loci=[0,1], 
-        alleles=[1]*2, freqFunc=expectedFreq ) 
+        alleles=[1]*2, freqFunc=expFreqFunc ) 
       )
     #print "Simulator created"
     simu.evolve( 
@@ -311,7 +312,7 @@ class TestMatingSchemes(unittest.TestCase):
           at = [endingGen-len(traj[1])+1],
           stage = PreMating),
         stat(alleleFreq=[0,1]),
-        #pyEval(r'"%d %6.4f %6.4f\n"%(gen, 1-alleleFreq[0][0], 1-alleleFreq[1][0])', begin=burnin)
+        #pyEval(r'"%d %6.4f %6.4f\n"%(gen, 1-alleleFreq[0][0], 1-alleleFreq[1][0])')
       ], 
       end=endingGen
     )
@@ -361,7 +362,7 @@ class TestMatingSchemes(unittest.TestCase):
     N = 5000
     # planned trajectory
     traj = FreqTrajectoryMultiStoch(freq=[0.05, 0.10], N=N, 
-      maxGen=500, restartIfFail=True)    
+      maxMutAge=500, restartIfFail=True)    
     # staring from when?
     burnin = 100
     mutAge = max([len(x) for x in traj])
@@ -369,14 +370,8 @@ class TestMatingSchemes(unittest.TestCase):
     # 0 ...., 100, 101, .... 100+mutAge
     #              x         traj
     endingGen = burnin + mutAge
-    def expectedFreq(gen):
-      freq = []
-      for tr in traj:
-        if gen < endingGen - len(tr) + 1:
-          freq.append( 0 )
-        else:
-          freq.append( tr[ gen - (endingGen - len(tr) + 1) ] )
-      return freq
+    from simuUtil import trajFunc
+    expectedFreq = trajFunc(endingGen, traj)
     #
     simu = simulator( population(N, loci=[1,1], ploidy=2), 
       controlledRandomMating( loci=[0,1], 
@@ -403,7 +398,44 @@ class TestMatingSchemes(unittest.TestCase):
       ], 
       end=endingGen
     )
-
+    
+  def testFreqTrajWithSubPop(self):
+    'Testing trajctory simulation with subpopulation structure'
+    #TurnOnDebug(DBG_MATING)
+    #TurnOnDebug(DBG_GENERAL)
+    from simuUtil import FreqTrajectoryMultiStochWithSubPop
+    initSize = 10000
+    endingSize = 200000
+    burninGen = 4000
+    splitGen = 6000
+    mixingGen = 9000
+    endingGen = 10000
+    numSubPop = 3
+    numLoci = 5
+    def popSizeFunc(gen, curSize=[]):
+      if gen < burninGen:
+        return [initSize]
+      rate =  (math.log(endingSize)-math.log(initSize))/(endingGen-burninGen)
+      if gen < splitGen:
+        return [int(initSize*math.exp((gen-burninGen)*rate))]
+      else:
+        return [int(initSize*math.exp((gen-burninGen)*rate)/numSubPop)]*numSubPop
+    (traj, gens, trajFunc) = FreqTrajectoryMultiStochWithSubPop(
+      curGen = endingGen,
+      # five dsl, five subpopulation
+      numLoci=numLoci,
+      freq=[0.5]*(numSubPop*5), 
+      NtFunc=popSizeFunc, 
+      fitness=[1, 1.0007, 1.0014]*5, 
+      minMutAge=endingGen-splitGen, 
+      maxMutAge=endingGen-burninGen, 
+      restartIfFail=True)
+    self.assertEqual( len(trajFunc(splitGen)), numLoci*numSubPop)
+    self.assertEqual( len(trajFunc(splitGen-1)), numLoci)
+    for i in range(len(gens)):
+      assert trajFunc(gens[i])[i] > 0
+      assert trajFunc(gens[i]-1)[i] == 0
+  
 if __name__ == '__main__':
   unittest.main()
   sys.exit(0)
