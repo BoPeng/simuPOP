@@ -1527,7 +1527,7 @@ namespace simuPOP
             throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
               " Generation " + toStr(pop.gen()) );
 #endif
-          expAlleles[numSP*i+sp] = static_cast<UINT>(pop.subPopSize(sp)*expFreq[numSP*i+sp]);
+          expAlleles[numSP*i+sp] = static_cast<UINT>(pop.subPopSize(sp)*pldy*expFreq[numSP*i+sp]);
           if( expFreq[numSP*i+sp] > 0. && expAlleles[numSP*i+sp] == 0)
             expAlleles[numSP*i+sp] = 1;
         }
@@ -1841,7 +1841,7 @@ namespace simuPOP
             throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
               " Generation " + toStr(pop.gen()) );
 #endif
-          expAlleles[numSP*i+sp] = static_cast<UINT>(pop.subPopSize(sp)*expFreq[numSP*i+sp] );
+          expAlleles[numSP*i+sp] = static_cast<UINT>(pop.subPopSize(sp)*pldy*expFreq[numSP*i+sp] );
           if( expFreq[numSP*i+sp] > 0. && expAlleles[numSP*i+sp] == 0)
             expAlleles[numSP*i+sp] = 1;
         }
