@@ -511,10 +511,21 @@ namespace simuPOP
     return true;
   }
 
-  vectorf FreqTrajectoryStoch( double freq, long N,
+  vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
     PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc,
-    ULONG minGen, ULONG maxGen, bool restartIfFail)
+    ULONG minMutAge, ULONG maxMutAge, bool restartIfFail)
   {
+    if( curGen >0 && minMutAge > curGen )
+      minMutAge = curGen;
+    if( curGen >0 && maxMutAge > curGen )
+      maxMutAge = curGen;
+
+    DBG_FAILIF( maxMutAge < minMutAge, ValueError, "maxMutAge should >= minMutAge");
+    DBG_FAILIF( curGen == 0 && (NtFunc != NULL || fitnessFunc != NULL),
+      ValueError, "curGen should be > 0 if NtFunc or fitnessFunc is defined.");
+    DBG_FAILIF( curGen > 0 && curGen < maxMutAge, ValueError,
+      "curGen should be >= maxMutAge");
+
     // is NtFunc callable?
     if( NtFunc != NULL )
     {
@@ -553,18 +564,21 @@ namespace simuPOP
     }
 
     // get current population size
-    int Ntmp;
-    if( NtFunc == NULL)
-      Ntmp = N;
-    else
+    vectori Ntmp(1, N);
+    if( NtFunc != NULL)
     {
-      PyCallFunc(NtFunc, "(i)", 0, Ntmp, PyObj_As_Int);
+      PyCallFunc(NtFunc, "(i)", curGen, Ntmp, PyObj_As_IntArray);
+      DBG_ASSERT( Ntmp.size() >= 1, ValueError,
+        "Return value from NtFunc should be an array of size >= 1");
+      // Ntmp[0] will be the total size.
+      for(size_t i=1; i<Ntmp.size(); ++i)
+        Ntmp[0] += Ntmp[i];
     }
 
     // all calculated population size
-    vectorlu Nt(1, Ntmp);
+    vectorlu Nt(1, Ntmp[0]);
     // copies of allele a at each genertion.
-    vectorlu it(1, static_cast<long>(Ntmp*freq));
+    vectorlu it(1, static_cast<long>(Ntmp[0]*freq));
     // allele frequency of allele a at each geneation
     vectorf xt(1, freq);
     // store calculated fitness s1, s2, if necessary
@@ -585,9 +599,14 @@ namespace simuPOP
       {
         if( NtFunc != NULL)
         {
-          PyCallFunc(NtFunc, "(i)", idx+1, Ntmp, PyObj_As_Int);
+          PyCallFunc(NtFunc, "(i)", curGen-idx-1, Ntmp, PyObj_As_IntArray);
+          DBG_ASSERT( Ntmp.size() >= 1, ValueError,
+            "Return value from NtFunc should be an array of size >= 1");
+          // Ntmp[0] will be the total size.
+          for(size_t i=1; i<Ntmp.size(); ++i)
+            Ntmp[0] += Ntmp[i];
         }
-        Nt.push_back(Ntmp);
+        Nt.push_back(Ntmp[0]);
       }
       //
       // get fitness
@@ -595,7 +614,7 @@ namespace simuPOP
       {
         if( idx+1 >= s1_cache.size() )
         {
-          PyCallFunc(fitnessFunc, "(i)", idx+1, s_vec, PyObj_As_Array);
+          PyCallFunc(fitnessFunc, "(i)", curGen-idx-1, s_vec, PyObj_As_Array);
 
           DBG_ASSERT(s_vec.size()==3 || s_vec[0] != 0., ValueError,
             "Returned value from sFunc should be a vector of size 3");
@@ -664,7 +683,7 @@ namespace simuPOP
 
       if( it[idx+1] == 0 )
       {
-        if( idx+1 < minGen)
+        if( idx < minMutAge)
         {
           cout << "Path too short. Retrying" << endl;
           idx = 0;
@@ -689,17 +708,17 @@ namespace simuPOP
         idx = 0;
       }
       // if not done, but t already reaches T
-      else if( idx == maxGen )
+      else if( idx == maxMutAge )
       {
         if( restartIfFail )
         {
           idx = 0;
-          cout << "Warning: reaching max gnerations. Restart the process." << endl;
+          DBG_DO(DBG_GENERAL, cout << "Warning: reaching max gnerations. Restart the process." << endl);
           continue;
         }
         else
         {
-          cout << "Warning: reaching max gnerations. Return whatever I have now." << endl;
+          DBG_DO(DBG_GENERAL, cout << "Warning: reaching max gnerations. Return whatever I have now." << endl);
           break;
         }
       }
@@ -720,14 +739,25 @@ namespace simuPOP
     return traj;
   }
 
-  matrix FreqTrajectoryMultiStoch( vectorf freq, long N,
+  matrix FreqTrajectoryMultiStoch( ULONG curGen,
+    vectorf freq, long N,
     PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc,
-    ULONG minGen, ULONG maxGen, bool restartIfFail)
+    ULONG minMutAge, ULONG maxMutAge, bool restartIfFail)
   {
     size_t nLoci = freq.size();
     size_t i, j, curI, nextI;
 
+    if( curGen >0 && minMutAge > curGen )
+      minMutAge = curGen;
+    if( curGen >0 && maxMutAge > curGen )
+      maxMutAge = curGen;
+
+    DBG_ASSERT( minMutAge <= maxMutAge, ValueError, "minMutAge should be <= maxMutAge. ");
     DBG_ASSERT( nLoci > 0, ValueError, "Number of loci should be at least one");
+    DBG_FAILIF( curGen == 0 && (NtFunc != NULL || fitnessFunc != NULL),
+      ValueError, "curGen should be > 0 if NtFunc or fitnessFunc is defined.");
+    DBG_FAILIF( curGen > 0 && curGen < maxMutAge, ValueError,
+      "curGen should be >= maxMutAge");
 
     matrix result(nLoci);
 
@@ -741,12 +771,12 @@ namespace simuPOP
       for( i=0; i<nLoci; ++i)
       {
         if( ! fitness.empty() )
-          result[i] = FreqTrajectoryStoch(freq[i], N, NtFunc,
+          result[i] = FreqTrajectoryStoch(curGen, freq[i], N, NtFunc,
             vectorf(fitness.begin()+3*i, fitness.begin()+3*(i+1)),
-            NULL, minGen, maxGen, restartIfFail);
+            NULL, minMutAge, maxMutAge, restartIfFail);
         else
-          result[i] = FreqTrajectoryStoch(freq[i], N, NtFunc,
-            vectorf(), NULL, minGen, maxGen, restartIfFail);
+          result[i] = FreqTrajectoryStoch(curGen, freq[i], N, NtFunc,
+            vectorf(), NULL, minMutAge, maxMutAge, restartIfFail);
       }
       return result;
     }
@@ -794,20 +824,23 @@ namespace simuPOP
     }
 
     // get current population size
-    int Ntmp;
-    if( NtFunc == NULL)
-      Ntmp = N;
-    else
+    vectori Ntmp(1, N);
+    if( NtFunc != NULL)
     {
-      PyCallFunc(NtFunc, "(i)", 0, Ntmp, PyObj_As_Int);
+      PyCallFunc(NtFunc, "(i)", curGen, Ntmp, PyObj_As_IntArray);
+      DBG_ASSERT( Ntmp.size() >= 1, ValueError,
+        "Return value from NtFunc should be an array of size >= 1");
+      // Ntmp[0] will be the total size.
+      for(size_t i=1; i<Ntmp.size(); ++i)
+        Ntmp[0] += Ntmp[i];
     }
 
     // all calculated population size
-    vectorlu Nt(1, Ntmp);
+    vectorlu Nt(1, Ntmp[0]);
     // copies of allele a at each genertion.
     vectorlu it(nLoci);
     for(i=0; i<nLoci; ++i)
-      it[i] = static_cast<long>(Ntmp*freq[i]);
+      it[i] = static_cast<long>(Ntmp[0]*freq[i]);
     // allele frequency of allele a at each geneation
     vectorf xt(nLoci);
     for(i=0; i<nLoci; ++i)
@@ -827,9 +860,14 @@ namespace simuPOP
       {
         if( NtFunc != NULL)
         {
-          PyCallFunc(NtFunc, "(i)", idx+1, Ntmp, PyObj_As_Int);
+          PyCallFunc(NtFunc, "(i)", curGen-idx-1, Ntmp, PyObj_As_IntArray);
+          DBG_ASSERT( Ntmp.size() >= 1, ValueError,
+            "Return value from NtFunc should be an array of size >= 1");
+          // Ntmp[0] will be the total size.
+          for(size_t i=1; i<Ntmp.size(); ++i)
+            Ntmp[0] += Ntmp[i];
         }
-        Nt.push_back(Ntmp);
+        Nt.push_back(Ntmp[0]);
       }
       //
       // get fitness, since it will change according to
@@ -838,7 +876,7 @@ namespace simuPOP
       {
         // compile allele frequency... and pass
         PyObject* freqObj = Double_Vec_As_NumArray( xt.begin()+nLoci*idx, xt.begin()+nLoci*(idx+1) );
-        PyCallFunc2(fitnessFunc, "(iO)", idx+1, freqObj, sAll, PyObj_As_Array);
+        PyCallFunc2(fitnessFunc, "(iO)", curGen-idx-1, freqObj, sAll, PyObj_As_Array);
 
         DBG_ASSERT(sAll.size()==3*nLoci, ValueError,
           "Returned value from sFunc should be a vector of size 3");
@@ -926,7 +964,7 @@ namespace simuPOP
 
         if( it[nextI] == 0 )
         {
-          if( idx+1 < minGen )
+          if( idx < minMutAge )
           {
             cout << "Reaching 0, but the path is too short" << endl;
             restart = true;
@@ -955,12 +993,12 @@ namespace simuPOP
       }                                           // end of for each locus
 
       // break from inside
-      if( restart || (idx==maxGen && restartIfFail))
+      if( restart || (idx==maxMutAge && restartIfFail))
       {
         idx = 0;
         for( j=0; j<nLoci; ++j)
           done[j] = false;
-        if(idx == maxGen)
+        if(idx == maxMutAge)
           cout << "Warning: reaching T generations. Restart the process." << endl;
         continue;
       }
@@ -974,7 +1012,7 @@ namespace simuPOP
         " s= " << sAll << endl);
       //
       // if not done, but t already reaches T
-      if( idx == maxGen )
+      if( idx == maxMutAge )
       {
         cout << "Warning: reaching T generations. Return whatever I have now." << endl;
         break;
@@ -1393,63 +1431,111 @@ namespace simuPOP
     // determine expected number of alleles of each allele
     // at each subpopulation.
     UINT numSP = pop.numSubPop();
-    vectorlu totalAlleles( nLoci );
+
     vectoru expAlleles( nLoci * numSP );
-    for(i=0; i< nLoci; ++i)
+    if( numSP > 1 && expFreq.size() == nLoci )
+      // exp frequencies in subpopulation is not specified.
     {
-      int locus = m_loci[i];
-      Allele allele = m_alleles[i];
-
-      if( expFreq[i] < 0. )
-        expFreq[i] = 0.;
-      if( expFreq[i] > 1. )
-        expFreq[i] = 1.;
-      totalAlleles[i] = static_cast<ULONG>(expFreq[i]*pop.popSize()*pop.ploidy());
-      // make sure one allele (our seed :-) exists
-      if( expFreq[i]>0. && totalAlleles[i] == 0)
-        totalAlleles[i] = 1;
-
-      // determine the number alleles at each subpopulation.
-      vectorf curFreq( numSP );
-      ULONG numOfAlleles=0;
-      for( size_t sp=0; sp < numSP; ++sp)
+      vectorlu totalAlleles( nLoci );
+      for(i=0; i< nLoci; ++i)
       {
-        ULONG n=0;
-        if(pop.shallowCopied())
+        int locus = m_loci[i];
+        Allele allele = m_alleles[i];
+
+        if( expFreq[i] < 0. )
+          expFreq[i] = 0.;
+        if( expFreq[i] > 1. )
+          expFreq[i] = 1.;
+        totalAlleles[i] = static_cast<ULONG>(expFreq[i]*pop.popSize()*pop.ploidy());
+        // make sure one allele (our seed :-) exists
+        if( expFreq[i]>0. && totalAlleles[i] == 0)
+          totalAlleles[i] = 1;
+
+        // determine the number alleles at each subpopulation.
+        vectorf curFreq( numSP );
+        ULONG numOfAlleles=0;
+        for( size_t sp=0; sp < numSP; ++sp)
         {
-          for(population::IndIterator it=pop.indBegin(sp); it < pop.indEnd(sp); ++it)
-            for(p=0; p<pldy; ++p)
-              if( it->allele(locus, p) == allele )
-                n++;
-        }
-        else
-        {
-          for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
-            aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+          ULONG n=0;
+          if(pop.shallowCopied())
           {
-            if( AlleleUnsigned(*a) == allele )
-              n++;
+            for(population::IndIterator it=pop.indBegin(sp); it < pop.indEnd(sp); ++it)
+              for(p=0; p<pldy; ++p)
+                if( it->allele(locus, p) == allele )
+                  n++;
           }
+          else
+          {
+            for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
+              aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+            {
+              if( AlleleUnsigned(*a) == allele )
+                n++;
+            }
+          }
+          numOfAlleles += n;
+          curFreq[sp] = double(n)/(pop.subPopSize(sp)*pldy);
         }
-        numOfAlleles += n;
-        curFreq[sp] = double(n)/(pop.subPopSize(sp)*pldy);
+
+        DBG_DO(DBG_MATING, cout << "Cur freq " << curFreq << endl);
+
+        // if there is no alleles
+        if( numOfAlleles == 0 && expFreq[i] > 0.)
+          throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
+            " Generation " + toStr(pop.gen()) );
+
+        /// calculate exp number of affected offspring in the next generation.
+        ///
+        /// step 1: totalsize*expFreq is the total number of disease alleles
+        /// step 2: assign these alleles to each subpopulation according to a multi-nomial
+        /// distribution with p_i beging allele frequency at each subpopulation.
+        // assign these numbers to each subpopulation
+        rng().randMultinomial(static_cast<unsigned int>(pop.popSize()*expFreq[i]*pldy),
+          curFreq, expAlleles.begin()+numSP*i);
       }
+    }
+    else if( expFreq.size() == numSP*nLoci )      // simpler case, one subpopulation, or with gieven allele frequency
+    {
+      for(i=0; i< nLoci; ++i)
+      {
+        for( size_t sp=0; sp < numSP; ++sp)
+        {
+#ifndef OPTIMIZED
+          int locus = m_loci[i];
+          Allele allele = m_alleles[i];
+          ULONG n=0;
+          // go through all alleles
+          if(pop.shallowCopied())
+          {
+            for(population::IndIterator it=pop.indBegin(sp); it < pop.indEnd(sp); ++it)
+              for(p=0; p<pldy; ++p)
+                if( it->allele(locus, p) == allele )
+                  n++;
+          }
+          else
+          {
+            for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
+              aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+            {
+              if( AlleleUnsigned(*a) == allele )
+                n++;
+            }
+          }
 
-      DBG_DO(DBG_MATING, cout << "Cur freq " << curFreq << endl);
-
-      // if there is no alleles
-      if( numOfAlleles == 0 && expFreq[i] > 0.)
-        throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
-          " Generation " + toStr(pop.gen()) );
-
-      /// calculate exp number of affected offspring in the next generation.
-      ///
-      /// step 1: totalsize*expFreq is the total number of disease alleles
-      /// step 2: assign these alleles to each subpopulation according to a multi-nomial
-      /// distribution with p_i beging allele frequency at each subpopulation.
-      // assign these numbers to each subpopulation
-      rng().randMultinomial(static_cast<unsigned int>(pop.popSize()*expFreq[i]*pldy),
-        curFreq, expAlleles.begin()+numSP*i);
+          // if there is no alleles
+          if( n == 0 && expFreq[numSP*i+sp] > 0.)
+            throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
+              " Generation " + toStr(pop.gen()) );
+#endif
+          expAlleles[numSP*i+sp] = static_cast<UINT>(pop.subPopSize(sp)*expFreq[numSP*i+sp]);
+          if( expFreq[numSP*i+sp] > 0. && expAlleles[numSP*i+sp] == 0)
+            expAlleles[numSP*i+sp] = 1;
+        }
+      }                                           // each locus
+    }
+    else
+    {
+      throw ValueError("Returned expected frequency has wrong length");
     }
 
     DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
@@ -1651,71 +1737,119 @@ namespace simuPOP
     vectorf expFreq;
     PyCallFunc( m_freqFunc, "(i)", pop.gen(), expFreq, PyObj_As_Array);
 
+    DBG_DO(DBG_MATING, cout << "expected freq " << expFreq << endl);
     // determine expected number of alleles of each allele
     // at each subpopulation.
     UINT numSP = pop.numSubPop();
-    vectorlu totalAlleles( nLoci );
+
     vectoru expAlleles( nLoci * numSP );
-    for(i=0; i< nLoci; ++i)
+    if( numSP > 1 && expFreq.size() == nLoci )
+      // exp frequencies in subpopulation is not specified.
     {
-      int locus = m_loci[i];
-      Allele allele = m_alleles[i];
-
-      if( expFreq[i] < 0. )
-        expFreq[i] = 0.;
-      if( expFreq[i] > 1. )
-        expFreq[i] = 1.;
-      totalAlleles[i] = static_cast<ULONG>(expFreq[i]*pop.popSize()*pop.ploidy());
-      // make sure one allele (our seed :-) exists
-      if( expFreq[i]>0. && totalAlleles[i] == 0)
-        totalAlleles[i] = 1;
-
-      // determine the number alleles at each subpopulation.
-      vectorf curFreq( numSP );
-      ULONG numOfAlleles=0;
-      //
-      for( size_t sp=0; sp < numSP; ++sp)
+      vectorlu totalAlleles( nLoci );
+      for(i=0; i< nLoci; ++i)
       {
-        ULONG n=0;
-        // go through all alleles
-        if(pop.shallowCopied())
+        int locus = m_loci[i];
+        Allele allele = m_alleles[i];
+
+        if( expFreq[i] < 0. )
+          expFreq[i] = 0.;
+        if( expFreq[i] > 1. )
+          expFreq[i] = 1.;
+        totalAlleles[i] = static_cast<ULONG>(expFreq[i]*pop.popSize()*pop.ploidy());
+        // make sure one allele (our seed :-) exists
+        if( expFreq[i]>0. && totalAlleles[i] == 0)
+          totalAlleles[i] = 1;
+
+        // determine the number alleles at each subpopulation.
+        vectorf curFreq( numSP );
+        ULONG numOfAlleles=0;
+        //
+        for( size_t sp=0; sp < numSP; ++sp)
         {
-          for(population::IndIterator it=pop.indBegin(sp); it < pop.indEnd(sp); ++it)
-            for(p=0; p<pldy; ++p)
-              if( it->allele(locus, p) == allele )
-                n++;
-        }
-        else
-        {
-          for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
-            aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+          ULONG n=0;
+          // go through all alleles
+          if(pop.shallowCopied())
           {
-            if( AlleleUnsigned(*a) == allele )
-              n++;
+            for(population::IndIterator it=pop.indBegin(sp); it < pop.indEnd(sp); ++it)
+              for(p=0; p<pldy; ++p)
+                if( it->allele(locus, p) == allele )
+                  n++;
           }
+          else
+          {
+            for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
+              aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+            {
+              if( AlleleUnsigned(*a) == allele )
+                n++;
+            }
+          }
+          numOfAlleles += n;
+
+          curFreq[sp] = double(n)/(pop.subPopSize(sp)*pldy);
         }
-        numOfAlleles += n;
 
-        curFreq[sp] = double(n)/(pop.subPopSize(sp)*pldy);
+        // if there is no alleles
+        if( numOfAlleles == 0 && expFreq[i] > 0.)
+          throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
+            " Generation " + toStr(pop.gen()) );
+
+        /// calculate exp number of affected offspring in the next generation.
+        ///
+        /// step 1: totalsize*expFreq is the total number of disease alleles
+        /// step 2: assign these alleles to each subpopulation according to a multi-nomial
+        /// distribution with p_i beging allele frequency at each subpopulation.
+        // assign these numbers to each subpopulation
+        rng().randMultinomial(static_cast<unsigned int>(scratch.popSize()*expFreq[i]*pldy),
+          curFreq, expAlleles.begin()+numSP*i);
+
+        DBG_DO(DBG_MATING, cout << "DSL " << i << " Cur freq: " << curFreq << " New num "
+          << vectori(expAlleles.begin()+numSP*i, expAlleles.begin()+numSP*(i+1)) << endl);
       }
+    }
+    else if( expFreq.size() == numSP*nLoci )      // simpler case, one subpopulation, or with gieven allele frequency
+    {
+      for(i=0; i< nLoci; ++i)
+      {
+        for( size_t sp=0; sp < numSP; ++sp)
+        {
+#ifndef OPTIMIZED
+          int locus = m_loci[i];
+          Allele allele = m_alleles[i];
+          ULONG n=0;
+          // go through all alleles
+          if(pop.shallowCopied())
+          {
+            for(population::IndIterator it=pop.indBegin(sp); it < pop.indEnd(sp); ++it)
+              for(p=0; p<pldy; ++p)
+                if( it->allele(locus, p) == allele )
+                  n++;
+          }
+          else
+          {
+            for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
+              aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+            {
+              if( AlleleUnsigned(*a) == allele )
+                n++;
+            }
+          }
 
-      // if there is no alleles
-      if( numOfAlleles == 0 && expFreq[i] > 0.)
-        throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
-          " Generation " + toStr(pop.gen()) );
-
-      /// calculate exp number of affected offspring in the next generation.
-      ///
-      /// step 1: totalsize*expFreq is the total number of disease alleles
-      /// step 2: assign these alleles to each subpopulation according to a multi-nomial
-      /// distribution with p_i beging allele frequency at each subpopulation.
-      // assign these numbers to each subpopulation
-      rng().randMultinomial(static_cast<unsigned int>(scratch.popSize()*expFreq[i]*pldy),
-        curFreq, expAlleles.begin()+numSP*i);
-
-      DBG_DO(DBG_MATING, cout << "DSL " << i << " Cur freq: " << curFreq << " New num "
-        << vectori(expAlleles.begin()+numSP*i, expAlleles.begin()+numSP*(i+1)) << endl);
-
+          // if there is no alleles
+          if( n == 0 && expFreq[numSP*i+sp] > 0.)
+            throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
+              " Generation " + toStr(pop.gen()) );
+#endif
+          expAlleles[numSP*i+sp] = static_cast<UINT>(pop.subPopSize(sp)*expFreq[numSP*i+sp] );
+          if( expFreq[numSP*i+sp] > 0. && expAlleles[numSP*i+sp] == 0)
+            expAlleles[numSP*i+sp] = 1;
+        }
+      }                                           // each locus
+    }
+    else
+    {
+      throw ValueError("Returned expected frequency has wrong length");
     }
 
     DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);

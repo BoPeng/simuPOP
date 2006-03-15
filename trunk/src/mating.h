@@ -471,9 +471,11 @@ namespace simuPOP
   //
   // Parameters:
   //
+  //    curGen current generation number
   //    N      constant population size N
   //    NtFunc a python function that returns population size at each generation.
-  //           gen is defined in reversed order. NtFunc(0) should be current
+  //           It should return an array of subpop sizes. 
+  //           gen is defined in forward order. NtFunc(maxGen) should be current
   //           generation number.
   //    freq   expected allele frequency of allele a.
   //    s      fitness for [AA, Aa, aa] or [AA, Aa, aa, BB, Bb, bb] for the multi-locus
@@ -482,9 +484,9 @@ namespace simuPOP
   //    sFunc  a python function that returns selection pressure at each generation
   //           the function expects a single parameter gen which is defined
   //           in reversed order.
-  //    minGen minimal generation number. The process will restart if the trajectory
+  //    minMutAge minimal generation number. The process will restart if the trajectory
   //           is less than minGen. Default to 0.
-  //    maxGen maximum generation number. The process will terminate or restart if it
+  //    maxMutAge maximum generation number. The process will terminate or restart if it
   //           can not reach allele zero after T generations. Default to 100,000,
   //           roughly 2,000,000 years which is longer than human history.
   //    restartIfFail  If the process can not finish after T generations, restart if
@@ -495,9 +497,9 @@ namespace simuPOP
   // Tracking the allele frequency of allele a.
   //
   //
-  vectorf FreqTrajectoryStoch( double freq, long N=0,
+  vectorf FreqTrajectoryStoch( ULONG curGen=0, double freq=0, long N=0,
     PyObject* NtFunc=NULL, vectorf fitness=vectorf(), PyObject* fitnessFunc=NULL,
-    ULONG minT=0, ULONG maxT=100000, bool restartIfFail=false);
+    ULONG minMutAge=0, ULONG maxMutAge=100000, bool restartIfFail=false);
 
   //
   // simulate trajectories of disease susceptibility loci using an extension of
@@ -505,19 +507,20 @@ namespace simuPOP
   //
   // Parameters:
   //
+  //    curGen current generation number
   //    N      constant population size N
   //    NtFunc a python function that returns population size at each generation.
-  //           gen is defined in reversed order. NtFunc(0) should be current
-  //           generation number.
+  //           gen is defined in forwrd order. NtFunc(curGen) should be current
+  //           generation number. NtFunc should return an array of size of subpops.
   //    freq   expected allele frequencies of alleles of multiple unlinked loci
   //    fitness  constant fitness for [AA, Aa, aa, BB, Bb, bb ...]
   //    fitnessFunc  a python function that returns selection pressure at each generation
   //           the function expects parameters gen and freq. gen is current generation
   //           number and freq is the allele frequency at all loci. This allows
-  //           frequency dependent selection. gen is defined in reversed order.
-  //    minGen minimal generation number. The process will restart if the trajectory
+  //           frequency dependent selection. gen is defined in forward order.
+  //    minMutAge minimal generation number. The process will restart if the trajectory
   //           is less than minGen. Default to 0.
-  //    maxGen maximum generation number. The process will terminate or restart if it
+  //    maxMutAge maximum generation number. The process will terminate or restart if it
   //           can not reach allele zero after T generations. Default to 100,000,
   //           roughly 2,000,000 years which is longer than human history.
   //    restartIfFail  If the process can not finish after T generations, restart if
@@ -528,9 +531,16 @@ namespace simuPOP
   // Tracking the allele frequency of allele a.
   //
   //
-  matrix FreqTrajectoryMultiStoch( vectorf freq=vectorf(), long N=0,
-    PyObject* NtFunc=NULL, vectorf fitness=vectorf(), PyObject* fitnessFunc=NULL,
-    ULONG minGen=0, ULONG maxGen=100000, bool restartIfFail=false);
+  matrix FreqTrajectoryMultiStoch( 
+    ULONG curGen=0,
+    vectorf freq=vectorf(), 
+    long N=0,
+    PyObject* NtFunc=NULL, 
+    vectorf fitness=vectorf(), 
+    PyObject* fitnessFunc=NULL,
+    ULONG minMutAge=0,
+    ULONG maxMutAge=100000, 
+    bool restartIfFail=false);
 
   // simulate trajectory
   vectorf FreqTrajectorySelSim(

@@ -404,7 +404,23 @@ namespace simuPOP
     for(size_t i=0, iEnd=val.size(); i<iEnd; ++i)
       PyObj_As_Double(PySequence_GetItem(obj, i), val[i]);
   }
+  
+  void PyObj_As_IntArray(PyObject* obj, vectori& val)
+  {
+    if(obj==NULL)
+    {
+      val = vectori();
+      return;
+    }
+    DBG_ASSERT( PySequence_Check(obj), ValueError, "PyObj_As_IntArray: Expecting a sequence");
 
+    val.resize( PySequence_Size( obj ));
+
+    // assign values
+    for(size_t i=0, iEnd=val.size(); i<iEnd; ++i)
+      PyObj_As_Int(PySequence_GetItem(obj, i), val[i]);
+  }
+  
   void PyObj_As_IntDict(PyObject* obj, intDict& val)
   {
     if(obj==NULL)

@@ -1211,7 +1211,134 @@ def LoadCSV(file):
   pop.pushAndDiscard(offPop)
   pop.setMaxAllele(maxAllele)  
   return pop
+  
+def trajFunc(endingGen, traj):
+  ''' return freq at each generation from a 
+    simulated trajctories. '''
+  def func(gen):
+    freq = []
+    for tr in traj:
+      if gen < endingGen - len(tr) + 1:
+        freq.append( 0 )
+      else:
+        freq.append( tr[ gen - (endingGen - len(tr) + 1) ] )
+    return freq
+  return func
 
+FT_WithSubPop = 0
+FT_IgnoreSubPop = 1
+
+def FreqTrajectoryMultiStochWithSubPop(
+    curGen, 
+    numLoci,
+    freq, 
+    NtFunc, 
+    fitness, 
+    minMutAge, 
+    maxMutAge,
+    mode = FT_WithSubPop,
+    restartIfFail=True):
+  ''' Simulate frequency trajectory with subpopulation structure,
+    migration is currently ignored. The essential part of this 
+    script is to simulate the trajectory of each subpopulation 
+    independently by calling FreqTrajectoryMultiStoch with properly
+    wrapped NtFunc function. 
+
+    mode = FT_WithSubPop is the default. When freq is the same length 
+      of the number of loci. The allele frequency at the last 
+      generation will be multi-nomially distributed. If freq
+      for each subpop is specified in the order of loc1-sp1, loc1-sp2, ..
+        loc2-sp1, .... This freq will be used directly.
+    If mode = FT_IgnoreSubPop, subpop will be ignored.
+    
+    This script assume a single-split model of NtFunc
+  '''
+  numSP = len(NtFunc(curGen))
+  if numSP == 1 or mode == FT_IgnoreSubPop:
+    traj = FreqTrajectoryMultiStoch(
+        curGen=curGen,
+        freq=freq, 
+        NtFunc=NtFunc, 
+        fitness=fitness, 
+        minMutAge=minMutAge, 
+        maxMutAge=maxMutAge, 
+        restartIfFail=restartIfFail)
+    return (traj, [curGen-len(x)+1 for x in traj], trajFunc(curGen, traj))
+  # other wise, do it in two stages
+  split = curGen;
+  while(True):
+    if len(NtFunc(split)) == 1:
+      break
+    split -= 1
+  split += 1
+  # now, NtFunc(split) has subpopulations
+  # 
+  # for each subpopulation
+  if len(freq) == numSP*numLoci:
+    freqAll = freq
+  elif len(freq) == numLoci:
+    freqAll = [0]*(numLoci*numSP)
+    for i in range(numLoci):
+      wt = NtFunc(curGen)
+      ps = sum(wt)
+      # total allele number
+      totNum = int(freq[i]*ps)
+      # in subpopulations, according to population size
+      num = rng().randMultinomialVal(totNum, [x/float(ps) for x in wt])
+      for sp in range(numSP):
+        freqAll[sp+i*numSP] = num[sp]/float(wt[sp])
+  else:
+    raise exceptions.ValueError("Wrong freq length")
+  spTraj = []
+  for sp in range(numSP):
+    # FreqTraj... will probe Nt for the next geneartion.
+    def spPopSize(gen):
+      if gen < split:
+        return [NtFunc(split-1)[0]]
+      else:
+        return [NtFunc(gen)[sp]]
+    spTraj.extend( FreqTrajectoryMultiStoch(
+      curGen=curGen,
+      freq=[freqAll[sp+x*numSP] for x in range(numLoci)], 
+      NtFunc=spPopSize, 
+      fitness=fitness,
+      minMutAge=curGen-split, 
+      maxMutAge=curGen-split, 
+      restartIfFail=False) )
+  # add all trajectories
+  traj = []
+  for i in range(numLoci):
+    traj.append([])
+    for g in range(split, curGen+1):
+      totAllele = sum( [
+        spTraj[sp+i*numSP][g-split] * NtFunc(g)[sp] for sp in range(numSP) ])
+      traj[i].append( totAllele / sum(NtFunc(g)) )
+  trajBeforeSplit = FreqTrajectoryMultiStoch(
+    curGen=split,
+    freq=[traj[i][0] for i in range(numLoci)], 
+    NtFunc=NtFunc, 
+    fitness=fitness,
+    minMutAge=minMutAge-len(traj[0])+1, 
+    maxMutAge=maxMutAge-len(traj[0])+1, 
+    restartIfFail=True) 
+  def trajFuncWithSubPop(gen):
+    if gen >= split:
+      return [spTraj[x][gen-split] for x in range(numLoci*numSP)]
+    else:
+      freq = []
+      for tr in trajBeforeSplit:
+        if gen < split - len(tr) + 1:
+          freq.append( 0 )
+        else:
+          freq.append( tr[ gen - (split - len(tr) + 1) ] )
+    return freq
+  trajAll = []
+  for i in range(numLoci):
+    trajAll.append( [] )
+    trajAll[i].extend(trajBeforeSplit[i])
+    trajAll[i].extend(traj[i][1:])  
+  # how exactly should I return a trajectory?
+  return (trajAll, [curGen-len(x)+1 for x in trajAll ], trajFuncWithSubPop)
 
 if __name__ == "__main__":
   pass
