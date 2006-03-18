@@ -235,16 +235,10 @@ class TestStat(unittest.TestCase):
     'Testing calculation of Fst value'  
     pop = population(subPop=[500,100,1000], 
       ploidy=2, loci = [1])
-    if alleleType() == 'binary':
-      InitByValue(pop, 
-        value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-        indRange = [[0,125], [125,375],[375,500],[500,550],
-          [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
-    else:
-      InitByValue(pop, 
-        value = [[1,1],[1,2],[2,2],[1,1],[1,2],[2,2],[1,2],[1,2],[2,2]],
-        indRange = [[0,125], [125,375],[375,500],[500,550],
-          [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
+    InitByValue(pop, 
+      value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+      indRange = [[0,125], [125,375],[375,500],[500,550],
+        [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
     #SaveFstat(simu.population(0), "p1.dat", maxAllele=2)
     # Fst is compaared with result from Fstat.
     #
