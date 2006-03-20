@@ -848,11 +848,12 @@ def SaveLinkage(pop, chrom, popType='sibpair', output='', outputExpr='', alleleF
       return 2
     else:
       return 1
-  # alleles string
+  # alleles string, since simuPOP allele starts from 0, add 1 to avoid
+  # being treated as missing data.
   def genoStr(ind):
     string = ''
     for marker in markers:
-      string += "%d %d " % (ind.allele(marker, 0), ind.allele(marker, 1))
+      string += "%d %d " % (ind.allele(marker, 0)+1, ind.allele(marker, 1)+1)
     return string
   if popType == "sibpair":
     # number of pedigrees
