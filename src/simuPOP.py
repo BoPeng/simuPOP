@@ -49,7 +49,7 @@ if simuOptions['Debug'] != []:
     TurnOnDebugWithName(g)
 
 if not simuOptions['Quiet']:
-  print "simuPOP : Copyright (c) 2004-2005 Bo Peng"
+  print "simuPOP : Copyright (c) 2004-2006 Bo Peng"
   # compile date, compiler etc are macros that are replaced during compile time.
   print ("Version %s (Revision %d, %s) for Python %s" % (simuVer(), simuRev(), compileDate(),
     compilePyVersion() ))
