@@ -823,9 +823,9 @@ def SaveLinkage(pop, chrom, popType='sibpair', output='', outputExpr='', alleleF
     af = alleleFreq
   for marker in markers:
     # now, 3 for numbered alleles
-    numAllele = len(af[marker])-1
+    numAllele = len(af[marker])
     dataFile.write( '3 %d << Marker%d_%d \n' % (numAllele, chrom, pop.chromLocusPair(marker)[1]) )
-    dataFile.write( ''.join(['%.6f ' % af[marker][ale] for ale in range(1, numAllele+1)]) + ' << gene frequencies\n' )
+    dataFile.write( ''.join(['%.6f ' % af[marker][ale] for ale in range(numAllele)]) + ' << gene frequencies\n' )
   # sex-difference
   # interference
   dataFile.write('0 0 << sex difference, interference\n')
