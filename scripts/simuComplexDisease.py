@@ -781,7 +781,7 @@ Max mutant age: %d ''' % \
     ]
   else: # SNP
     preOperators = [
-      # initialize all loci with two haplotypes (111,222)
+      # initialize all loci with two haplotypes (0001,111)
       initByValue(value=[[x]*sum(loci) for x in [0,1] ],
         proportions=[.5]*2), 
       # and then init DSL with all wild type alleles
@@ -817,9 +817,9 @@ Max mutant age: %d ''' % \
   operators = [
     mutator, 
     rec, 
-    stat(alleleFreq=DSL, popSize=True, step=1),
+    stat(alleleFreq=DSL, popSize=True, LD=[DSL[0], DSL[0]+1], step=1),
     # output to screen
-    pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+"\n"',
+    pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+" %f\n"%LD_prime[DSL[0]][DSL[0]+1]',
       step=10),
     # output to file (append)
     pyEval( expr=r'"%d %d " %(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+"\n"',
