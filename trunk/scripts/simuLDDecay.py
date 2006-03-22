@@ -128,9 +128,9 @@ if useRPy:
 else:
   plotter = noneOp()
   
-# everyone will have the same genotype: 12/21
+# everyone will have the same genotype: 01/10
 simu.evolve(
-  preOps = [initByValue([1,2,2,1])],
+  preOps = [initByValue([0,1,1,0])],
   ops = [
     recombinator( rate = recRate),
     stat( alleleFreq=[0], LD=[0,1] ),
