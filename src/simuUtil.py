@@ -593,12 +593,10 @@ def SaveFstat(pop, output='', outputExpr='', maxAllele=0):
       p1 = 2*gs*ind        # begining of first hemo copy
       p2 = 2*gs*ind + gs   # second
       for al in range(0, gs): # allele
-        ale1 = gt[p1+al]
-        ale2 = gt[p2+al]
-        if ale1 == 0 or ale2 == 0:
-          f.write('%%%dd' % (2*nd) % 0 )
-        else:
-          f.write('%%0%dd%%0%dd ' % (nd, nd) % (ale1, ale2))
+        # change from 0 based allele to 1 based allele 
+        ale1 = gt[p1+al]+1
+        ale2 = gt[p2+al]+1
+        f.write('%%0%dd%%0%dd ' % (nd, nd) % (ale1, ale2))
       f.write( "\n")
   f.close()  
 
