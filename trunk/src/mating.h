@@ -491,15 +491,23 @@ namespace simuPOP
   //           roughly 2,000,000 years which is longer than human history.
   //    restartIfFail  If the process can not finish after T generations, restart if
   //           restartIfFail=true, otherwise return. Default to false.
+  //    maxAttempts    How many times to try to get a valid path? Default 1000
   //
   // Of course, you should specify only one of N/NtFunc and one of s/sFunc
   //
   // Tracking the allele frequency of allele a.
   //
   //
-  vectorf FreqTrajectoryStoch( ULONG curGen=0, double freq=0, long N=0,
-    PyObject* NtFunc=NULL, vectorf fitness=vectorf(), PyObject* fitnessFunc=NULL,
-    ULONG minMutAge=0, ULONG maxMutAge=100000, bool restartIfFail=false);
+  vectorf FreqTrajectoryStoch( ULONG curGen=0, 
+    double freq=0, 
+    long N=0,
+    PyObject* NtFunc=NULL, 
+    vectorf fitness=vectorf(), 
+    PyObject* fitnessFunc=NULL,
+    ULONG minMutAge=0, 
+    ULONG maxMutAge=100000, 
+    bool restartIfFail=false,
+    long maxAttempts=1000);
 
   //
   // simulate trajectories of disease susceptibility loci using an extension of
@@ -525,6 +533,7 @@ namespace simuPOP
   //           roughly 2,000,000 years which is longer than human history.
   //    restartIfFail  If the process can not finish after T generations, restart if
   //           restartIfFail=true, otherwise return. Default to false.
+  //     maxAttempts    How many times to try to get a valid path? Default 10000
   //
   // Of course, you should specify only one of N/NtFunc and one of s/sFunc
   //
@@ -540,7 +549,8 @@ namespace simuPOP
     PyObject* fitnessFunc=NULL,
     ULONG minMutAge=0,
     ULONG maxMutAge=100000, 
-    bool restartIfFail=false);
+    bool restartIfFail=false,
+    long maxAttempts=1000);
 
   // simulate trajectory
   vectorf FreqTrajectorySelSim(

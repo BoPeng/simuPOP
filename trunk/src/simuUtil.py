@@ -1224,8 +1224,6 @@ def trajFunc(endingGen, traj):
     return freq
   return func
 
-FT_WithSubPop = 0
-FT_IgnoreSubPop = 1
 
 def FreqTrajectoryMultiStochWithSubPop(
     curGen, 
@@ -1235,7 +1233,7 @@ def FreqTrajectoryMultiStochWithSubPop(
     fitness, 
     minMutAge, 
     maxMutAge,
-    mode = FT_WithSubPop,
+    mode = 'multinomial',
     restartIfFail=True):
   ''' Simulate frequency trajectory with subpopulation structure,
     migration is currently ignored. The essential part of this 
@@ -1243,17 +1241,21 @@ def FreqTrajectoryMultiStochWithSubPop(
     independently by calling FreqTrajectoryMultiStoch with properly
     wrapped NtFunc function. 
 
-    mode = FT_WithSubPop is the default. When freq is the same length 
+    If mode = 'multinomial' (default) When freq is the same length 
       of the number of loci. The allele frequency at the last 
       generation will be multi-nomially distributed. If freq
       for each subpop is specified in the order of loc1-sp1, loc1-sp2, ..
         loc2-sp1, .... This freq will be used directly.
-    If mode = FT_IgnoreSubPop, subpop will be ignored.
+    If mode = 'exponential'. The number of disease alleles
+      will be proportional to the interval lengths of 0 x x x 1 while x are 
+      uniform [0,1]. The distribution of interval lengths, are roughly 
+      exponential (conditional on overall length 1). '
+    If mode = 'none', subpop will be ignored.
     
     This script assume a single-split model of NtFunc
   '''
   numSP = len(NtFunc(curGen))
-  if numSP == 1 or mode == FT_IgnoreSubPop:
+  if numSP == 1 or mode == 'none':
     traj = FreqTrajectoryMultiStoch(
         curGen=curGen,
         freq=freq, 
@@ -1262,6 +1264,9 @@ def FreqTrajectoryMultiStochWithSubPop(
         minMutAge=minMutAge, 
         maxMutAge=maxMutAge, 
         restartIfFail=restartIfFail)
+    if len(traj) == 0:
+      print "Failed to generate trajectory. You may need to set a different set of parameters."
+      sys.exit(1)
     return (traj, [curGen-len(x)+1 for x in traj], trajFunc(curGen, traj))
   # other wise, do it in two stages
   split = curGen;
@@ -1277,15 +1282,31 @@ def FreqTrajectoryMultiStochWithSubPop(
     freqAll = freq
   elif len(freq) == numLoci:
     freqAll = [0]*(numLoci*numSP)
-    for i in range(numLoci):
-      wt = NtFunc(curGen)
-      ps = sum(wt)
-      # total allele number
-      totNum = int(freq[i]*ps)
-      # in subpopulations, according to population size
-      num = rng().randMultinomialVal(totNum, [x/float(ps) for x in wt])
-      for sp in range(numSP):
-        freqAll[sp+i*numSP] = num[sp]/float(wt[sp])
+    if mode == 'multinomial':
+      for i in range(numLoci):
+        wt = NtFunc(curGen)
+        ps = sum(wt)
+        # total allele number
+        totNum = int(freq[i]*ps)
+        # in subpopulations, according to population size
+        num = rng().randMultinomialVal(totNum, [x/float(ps) for x in wt])
+        for sp in range(numSP):
+          freqAll[sp+i*numSP] = num[sp]/float(wt[sp])
+    elif mode == 'exponential':
+      for i in range(numLoci):
+        wt = NtFunc(curGen)
+        # total allele number
+        totNum = int(freq[i]*sum(wt))
+        while(True):
+          # get [ x x x x x ] while x is uniform [0,1]
+          num = [0,1]+[rng().randUniform01() for x in range(numSP-1)]
+          num.sort()
+          for sp in range(numSP):
+            freqAll[sp+i*numSP] = (num[sp+1]-num[sp])*totNum/wt[sp]
+          if max(freqAll) < 1:
+            break;
+    else:
+      print "Wrong mode parameter is used: ", mode
   else:
     raise exceptions.ValueError("Wrong freq length")
   spTraj = []
@@ -1296,14 +1317,19 @@ def FreqTrajectoryMultiStochWithSubPop(
         return [NtFunc(split-1)[0]]
       else:
         return [NtFunc(gen)[sp]]
-    spTraj.extend( FreqTrajectoryMultiStoch(
+    t = FreqTrajectoryMultiStoch(
       curGen=curGen,
       freq=[freqAll[sp+x*numSP] for x in range(numLoci)], 
       NtFunc=spPopSize, 
       fitness=fitness,
       minMutAge=curGen-split, 
       maxMutAge=curGen-split, 
-      restartIfFail=False) )
+      restartIfFail=False) 
+    # failed to generate one of the trajectory
+    if 0 in [len(x) for x in t]:
+      print "Failed to generate trajectory. You may need to set a different set of parameters."
+      sys.exit(1)
+    spTraj.extend(t)
   # add all trajectories
   traj = []
   for i in range(numLoci):
