@@ -513,7 +513,7 @@ namespace simuPOP
 
   vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
     PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc,
-    ULONG minMutAge, ULONG maxMutAge, bool restartIfFail)
+    ULONG minMutAge, ULONG maxMutAge, bool restartIfFail, long maxAttempts)
   {
     if( curGen >0 && minMutAge > curGen )
       minMutAge = curGen;
@@ -591,9 +591,18 @@ namespace simuPOP
     ULONG idx = 0;
 
     // a,b,c etc for solving the quadratic equation
+    long failedCount = 0;
+    long tooLongCount = 0;
+    long tooShortCount = 0;
+    long invalidCount = 0;
+    // a,b,c etc for solving the quadratic equation
     double a,b,c,b2_4ac,y1,y2,y;
     while( true )
     {
+      // if too many fails
+      if( failedCount >= maxAttempts)
+        break;
+        
       // first get N(t-1), if it has not been calculated
       if( idx+1 >= Nt.size() )
       {
@@ -686,6 +695,8 @@ namespace simuPOP
         if( idx < minMutAge)
         {
           cout << "Path too short. Retrying" << endl;
+          failedCount ++;
+          tooShortCount ++;
           idx = 0;
           continue;
         }
@@ -698,13 +709,17 @@ namespace simuPOP
         else
         {
           DBG_DO(DBG_MATING, cout << "Reaching 0, but next gen has more than 1 allele a" << endl);
+          invalidCount ++;
+          failedCount ++;
           // restart
           idx = 0;
         }
       }
       else if( it[idx+1] == Nt[idx+1] )
-        // when the allele get fixed, restart
+      // when the allele get fixed, restart
       {
+        failedCount ++;
+        invalidCount ++;
         idx = 0;
       }
       // if not done, but t already reaches T
@@ -713,6 +728,8 @@ namespace simuPOP
         if( restartIfFail )
         {
           idx = 0;
+          failedCount ++;
+          tooLongCount ++;
           DBG_DO(DBG_GENERAL, cout << "Warning: reaching max gnerations. Restart the process." << endl);
           continue;
         }
@@ -726,6 +743,14 @@ namespace simuPOP
         // go to next generation
         idx++;
     }
+    // report potential problems
+    if( tooLongCount > 0 )
+        cout << "Trajectories regenerated due to long path: " << tooLongCount << " times. " << endl;
+    if( tooShortCount > 0 )
+        cout << "Trajectories regenerated due to short path: " << tooShortCount << " times. " << endl;
+    if( invalidCount > 0 )
+        cout << "Trajectories regenerated due to invalid path: " << invalidCount << " times. " << endl;
+  
     // clean up
     if( NtFunc != NULL)
       Py_DECREF(NtFunc);
@@ -734,15 +759,19 @@ namespace simuPOP
 
     // number of valid generation is idx+1
     vectorf traj(idx+1);
-    for(ULONG i=0; i<=idx; ++i)
-      traj[i] = xt[idx-i];
+    if( failedCount < maxAttempts ) 
+    {
+      for(ULONG i=0; i<=idx; ++i)
+        traj[i] = xt[idx-i];
+    }
     return traj;
   }
 
   matrix FreqTrajectoryMultiStoch( ULONG curGen,
     vectorf freq, long N,
     PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc,
-    ULONG minMutAge, ULONG maxMutAge, bool restartIfFail)
+    ULONG minMutAge, ULONG maxMutAge, bool restartIfFail, 
+    long maxAttempts)
   {
     size_t nLoci = freq.size();
     size_t i, j, curI, nextI;
@@ -773,10 +802,10 @@ namespace simuPOP
         if( ! fitness.empty() )
           result[i] = FreqTrajectoryStoch(curGen, freq[i], N, NtFunc,
             vectorf(fitness.begin()+3*i, fitness.begin()+3*(i+1)),
-            NULL, minMutAge, maxMutAge, restartIfFail);
+            NULL, minMutAge, maxMutAge, restartIfFail, maxAttempts);
         else
           result[i] = FreqTrajectoryStoch(curGen, freq[i], N, NtFunc,
-            vectorf(), NULL, minMutAge, maxMutAge, restartIfFail);
+            vectorf(), NULL, minMutAge, maxMutAge, restartIfFail, maxAttempts);
       }
       return result;
     }
@@ -848,6 +877,10 @@ namespace simuPOP
 
     ULONG idx = 0;
 
+    long failedCount = 0;
+    long tooLongCount = 0;
+    long tooShortCount = 0;
+    long invalidCount = 0;
     // a,b,c etc for solving the quadratic equation
     double s1,s2,x,a,b,c,b2_4ac,y1,y2,y;
     // whether or not each locus is done
@@ -855,6 +888,10 @@ namespace simuPOP
     //
     while( true )
     {
+      // if too many fails
+      if( failedCount >= maxAttempts)
+        break;
+
       // first get N(t-1), if it has not been calculated
       if( idx+1 >= Nt.size() )
       {
@@ -966,7 +1003,7 @@ namespace simuPOP
         {
           if( idx < minMutAge )
           {
-            cout << "Reaching 0, but the path is too short" << endl;
+            tooShortCount ++;
             restart = true;
             break;
           }
@@ -977,8 +1014,8 @@ namespace simuPOP
           }
           else
           {
-            DBG_DO(DBG_MATING, cout << "Reaching 0, but next gen has more than 1 allele a" << endl);
             // restart
+            invalidCount ++;
             restart = true;
             break;
           }
@@ -986,7 +1023,7 @@ namespace simuPOP
         else if( it[nextI] == Nt[idx+1] )
         {
           // when the allele get fixed, restart
-          DBG_DO(DBG_MATING, cout << "Getting fixed, restart" << endl);
+          invalidCount ++;
           restart = true;
           break;
         }
@@ -995,11 +1032,12 @@ namespace simuPOP
       // break from inside
       if( restart || (idx==maxMutAge && restartIfFail))
       {
+        failedCount ++;
         idx = 0;
         for( j=0; j<nLoci; ++j)
           done[j] = false;
         if(idx == maxMutAge)
-          cout << "Warning: reaching T generations. Restart the process." << endl;
+          tooLongCount ++;
         continue;
       }
 
@@ -1021,6 +1059,14 @@ namespace simuPOP
       // go to next generation
       idx ++;
     }
+    // report potential problems
+    if( tooLongCount > 0 )
+        cout << "Trajectories regenerated due to long path: " << tooLongCount << " times. " << endl;
+    if( tooShortCount > 0 )
+        cout << "Trajectories regenerated due to short path: " << tooShortCount << " times. " << endl;
+    if( invalidCount > 0 )
+        cout << "Trajectories regenerated due to invalid path: " << invalidCount << " times. " << endl;
+        
     // clean up
     if( NtFunc != NULL)
       Py_DECREF(NtFunc);
@@ -1028,13 +1074,16 @@ namespace simuPOP
       Py_DECREF(fitnessFunc);
 
     // number of valid generation is idx+1
-    vectorf traj(idx+1);
-    for(i=0; i<nLoci; ++i)
+    if( failedCount < maxAttempts ) 
     {
-      for(j=0; j<=idx; ++j)
-        traj[j] = xt[nLoci*(idx-j)+i];
-      for(j=0; j<traj.size() && traj[j]==0.; j++);
-      result[i] = vectorf(traj.begin()+j, traj.end());
+      vectorf traj(idx+1);
+      for(i=0; i<nLoci; ++i)
+      {
+        for(j=0; j<=idx; ++j)
+          traj[j] = xt[nLoci*(idx-j)+i];
+        for(j=0; j<traj.size() && traj[j]==0.; j++);
+        result[i] = vectorf(traj.begin()+j, traj.end());
+      }
     }
     return result;
   }
