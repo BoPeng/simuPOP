@@ -694,7 +694,7 @@ namespace simuPOP
       {
         if( idx < minMutAge)
         {
-          cout << "Path too short. Retrying" << endl;
+          // cout << "Path too short. Retrying" << endl;
           failedCount ++;
           tooShortCount ++;
           idx = 0;
@@ -1052,7 +1052,7 @@ namespace simuPOP
       // if not done, but t already reaches T
       if( idx == maxMutAge )
       {
-        cout << "Warning: reaching T generations. Return whatever I have now." << endl;
+        DBG_DO(DBG_MATING, cout << "Warning: reaching T generations. Return whatever I have now." << endl);
         break;
       }
 
