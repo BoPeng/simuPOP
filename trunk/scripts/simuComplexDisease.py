@@ -296,19 +296,19 @@ options = [
    'validate':  simuOpt.valueBetween(0,1)
   },
   {'longarg': 'alleleDistInSubPop=',
-   'default': 'exponential',
+   'default': 'uneven',
    'configName': 'Allele distribution in subpopulations',
    'prompt': 'Allele distribution in subpopulations (exponential):  ',
    'description': '''If disease allele frequencies in each subpopulation are
         not specified, how to distribute disease alleles in subpopulations.
-        If 'multinomial' is chose, number of disease alleles will be distributed
+        If 'even' is chose, number of disease alleles will be distributed
         according to a multinomial distribution so is largely even among 
         subpopulations. If 'exponential' is chosen, the number of disease alleles
         will be proportional to the interval lengths of 0 x x x 1 while x are uniform
         [0,1]. The distribution of interval lengths, are roughly exponential 
         (conditional on overall length 1). ''',
-   'validate':  simuOpt.valueOneOf(['multinomial', 'exponential']),
-   'chooseOneOf': ['multinomial', 'exponential']
+   'validate':  simuOpt.valueOneOf(['even', 'uneven']),
+   'chooseOneOf': ['even', 'uneven']
   },
   #
   #

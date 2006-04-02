@@ -1233,7 +1233,7 @@ def FreqTrajectoryMultiStochWithSubPop(
     fitness, 
     minMutAge, 
     maxMutAge,
-    mode = 'multinomial',
+    mode = 'uneven',
     restartIfFail=True):
   ''' Simulate frequency trajectory with subpopulation structure,
     migration is currently ignored. The essential part of this 
@@ -1241,12 +1241,12 @@ def FreqTrajectoryMultiStochWithSubPop(
     independently by calling FreqTrajectoryMultiStoch with properly
     wrapped NtFunc function. 
 
-    If mode = 'multinomial' (default) When freq is the same length 
+    If mode = 'even' (default) When freq is the same length 
       of the number of loci. The allele frequency at the last 
       generation will be multi-nomially distributed. If freq
       for each subpop is specified in the order of loc1-sp1, loc1-sp2, ..
         loc2-sp1, .... This freq will be used directly.
-    If mode = 'exponential'. The number of disease alleles
+    If mode = 'uneven'. The number of disease alleles
       will be proportional to the interval lengths of 0 x x x 1 while x are 
       uniform [0,1]. The distribution of interval lengths, are roughly 
       exponential (conditional on overall length 1). '
@@ -1282,7 +1282,7 @@ def FreqTrajectoryMultiStochWithSubPop(
     freqAll = freq
   elif len(freq) == numLoci:
     freqAll = [0]*(numLoci*numSP)
-    if mode == 'multinomial':
+    if mode == 'even':
       for i in range(numLoci):
         wt = NtFunc(curGen)
         ps = sum(wt)
@@ -1292,7 +1292,7 @@ def FreqTrajectoryMultiStochWithSubPop(
         num = rng().randMultinomialVal(totNum, [x/float(ps) for x in wt])
         for sp in range(numSP):
           freqAll[sp+i*numSP] = num[sp]/float(wt[sp])
-    elif mode == 'exponential':
+    elif mode == 'uneven':
       for i in range(numLoci):
         wt = NtFunc(curGen)
         # total allele number
@@ -1364,6 +1364,29 @@ def FreqTrajectoryMultiStochWithSubPop(
     trajAll[i].extend(traj[i][1:])  
   # how exactly should I return a trajectory?
   return (trajAll, [curGen-len(x)+1 for x in trajAll ], trajFuncWithSubPop)
+
+def caseControl(pop, loci):
+  ''' perform case control test at loci 
+  This function assumes that pop has two subpopulations, cases
+  and controls, and have 0 as wildtype and 1 as disease allele 
+  It returns a set of p-values at each locus. 
+  '''
+  # 
+  if type(pop) == type(''):
+    pop = LoadPopulation(pop)
+  #
+  # allele frequency
+  Stat(pop, alleleFreq=loci)
+  # at each locus
+  for loc in loci:
+    caseFreq = pop.dvars(0).alleleFreq[loc]
+    if len(caseFreq) == 1:
+      caseFreq.append(0)
+    contFreq = pop.dvars(1).alleleFreq[loc]
+    if len(contFreq) == 1:
+      contFreq.append(0)
+  #
+
 
 if __name__ == "__main__":
   pass
