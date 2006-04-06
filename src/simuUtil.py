@@ -1269,6 +1269,7 @@ def FreqTrajectoryMultiStochWithSubPop(
       sys.exit(1)
     return (traj, [curGen-len(x)+1 for x in traj], trajFunc(curGen, traj))
   # other wise, do it in two stages
+  # get the split generation.
   split = curGen;
   while(True):
     if len(NtFunc(split)) == 1:
@@ -1317,18 +1318,23 @@ def FreqTrajectoryMultiStochWithSubPop(
         return [NtFunc(split-1)[0]]
       else:
         return [NtFunc(gen)[sp]]
-    t = FreqTrajectoryMultiStoch(
-      curGen=curGen,
-      freq=[freqAll[sp+x*numSP] for x in range(numLoci)], 
-      NtFunc=spPopSize, 
-      fitness=fitness,
-      minMutAge=curGen-split, 
-      maxMutAge=curGen-split, 
-      restartIfFail=False) 
-    # failed to generate one of the trajectory
-    if 0 in [len(x) for x in t]:
-      print "Failed to generate trajectory. You may need to set a different set of parameters."
-      sys.exit(1)
+    while True:
+      t = FreqTrajectoryMultiStoch(
+        curGen=curGen,
+        freq=[freqAll[sp+x*numSP] for x in range(numLoci)], 
+        NtFunc=spPopSize, 
+        fitness=fitness,
+        minMutAge=curGen-split, 
+        maxMutAge=curGen-split, 
+        restartIfFail=False) 
+        # failed to generate one of the trajectory
+      if 0 in [len(x) for x in t]:
+        print "Failed to generate trajectory. You may need to set a different set of parameters."
+        sys.exit(1)
+      if 0 in [x[0] for x in t]:
+        print "Subpop return 0 index. restart "
+      else:
+        break;
     spTraj.extend(t)
   # add all trajectories
   traj = []
@@ -1338,6 +1344,8 @@ def FreqTrajectoryMultiStochWithSubPop(
       totAllele = sum( [
         spTraj[sp+i*numSP][g-split] * NtFunc(g)[sp] for sp in range(numSP) ])
       traj[i].append( totAllele / sum(NtFunc(g)) )
+  # 
+  print "Starting allele frequency (at split) ", [traj[i][0] for i in range(numLoci)]
   trajBeforeSplit = FreqTrajectoryMultiStoch(
     curGen=split,
     freq=[traj[i][0] for i in range(numLoci)], 
@@ -1346,6 +1354,8 @@ def FreqTrajectoryMultiStochWithSubPop(
     minMutAge=minMutAge-len(traj[0])+1, 
     maxMutAge=maxMutAge-len(traj[0])+1, 
     restartIfFail=True) 
+  if 0 in [len(x) for x in trajBeforeSplit]:
+    print "Failed to generated trajectory. (Tried more than 1000 times)"
   def trajFuncWithSubPop(gen):
     if gen >= split:
       return [spTraj[x][gen-split] for x in range(numLoci*numSP)]
