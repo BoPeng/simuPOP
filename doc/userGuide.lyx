@@ -1,4 +1,4 @@
-#LyX 1.4.0cvs created this file. For more info see http://www.lyx.org/
+#LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -73,9 +73,10 @@ status open
 
 \begin_layout Standard
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Standard
+
 
 \backslash
 hspace{1cm}
@@ -87,6 +88,7 @@ hspace{1cm}
 
 \begin_layout Standard
 
+
 \backslash
 vspace{5in}
 \end_layout
@@ -96,6 +98,7 @@ vspace{5in}
 \end_layout
 
 \begin_layout Standard
+
 {
 \backslash
 large
@@ -109,6 +112,7 @@ textsf Acknowledgements: }
 
 \begin_layout Standard
 
+
 \backslash
 vspace{.2cm}
 \end_layout
@@ -118,6 +122,7 @@ vspace{.2cm}
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 hspace{.3cm} Dr.
@@ -130,11 +135,12 @@ hspace{.3cm} Dr.
 
 \begin_layout Standard
 
+
 \backslash
 hspace{.3cm} Dr.
  Fran
 \backslash
-c cious Balloux
+c cois Balloux
 \end_layout
 
 \begin_layout Standard
@@ -142,6 +148,7 @@ c cious Balloux
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 hspace{.3cm} Dr.
@@ -154,6 +161,7 @@ hspace{.3cm} Dr.
 
 \begin_layout Standard
 
+
 \backslash
 hspace{.3cm} SWIG user community
 \end_layout
@@ -164,6 +172,7 @@ hspace{.3cm} SWIG user community
 
 \begin_layout Standard
 
+
 \backslash
 hspace{.3cm} Python user community 
 \end_layout
@@ -173,6 +182,7 @@ hspace{.3cm} Python user community
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 hspace{.3cm} Keck Center for Computational and Structural Biology
@@ -189,6 +199,7 @@ status collapsed
 
 \begin_layout Standard
 
+
 \backslash
 vspace{.7in} 
 \end_layout
@@ -203,6 +214,7 @@ vspace{.7in}
 status collapsed
 
 \begin_layout Standard
+
  
 \backslash
 copyright{} 
@@ -215,6 +227,7 @@ copyright{}
 status collapsed
 
 \begin_layout Standard
+
 
 \backslash
 vspace{.3cm} 
@@ -1653,6 +1666,7 @@ individual
 status collapsed
 
 \begin_layout Standard
+
 genotypic structure
 \end_layout
 
@@ -1685,6 +1699,7 @@ tion structure.
 status collapsed
 
 \begin_layout Standard
+
 Mating scheme 
 \end_layout
 

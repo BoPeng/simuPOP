@@ -67,11 +67,11 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status collapsed
+status open
 
 \begin_layout Standard
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Standard
 
@@ -138,7 +138,7 @@ hspace{.3cm} Dr.
 hspace{.3cm} Dr.
  Fran
 \backslash
-c cious Balloux
+c cois Balloux
 \end_layout
 
 \begin_layout Standard
