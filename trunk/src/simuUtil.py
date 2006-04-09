@@ -1354,8 +1354,9 @@ def FreqTrajectoryMultiStochWithSubPop(
     minMutAge=minMutAge-len(traj[0])+1, 
     maxMutAge=maxMutAge-len(traj[0])+1, 
     restartIfFail=True) 
-  if 0 in [len(x) for x in trajBeforeSplit]:
+  if 1 in [len(x) for x in trajBeforeSplit]:
     print "Failed to generated trajectory. (Tried more than 1000 times)"
+    sys.exit(0)
   def trajFuncWithSubPop(gen):
     if gen >= split:
       return [spTraj[x][gen-split] for x in range(numLoci*numSP)]
@@ -1374,28 +1375,6 @@ def FreqTrajectoryMultiStochWithSubPop(
     trajAll[i].extend(traj[i][1:])  
   # how exactly should I return a trajectory?
   return (trajAll, [curGen-len(x)+1 for x in trajAll ], trajFuncWithSubPop)
-
-def caseControl(pop, loci):
-  ''' perform case control test at loci 
-  This function assumes that pop has two subpopulations, cases
-  and controls, and have 0 as wildtype and 1 as disease allele 
-  It returns a set of p-values at each locus. 
-  '''
-  # 
-  if type(pop) == type(''):
-    pop = LoadPopulation(pop)
-  #
-  # allele frequency
-  Stat(pop, alleleFreq=loci)
-  # at each locus
-  for loc in loci:
-    caseFreq = pop.dvars(0).alleleFreq[loc]
-    if len(caseFreq) == 1:
-      caseFreq.append(0)
-    contFreq = pop.dvars(1).alleleFreq[loc]
-    if len(contFreq) == 1:
-      contFreq.append(0)
-  #
 
 
 if __name__ == "__main__":
