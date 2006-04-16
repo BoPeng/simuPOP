@@ -446,7 +446,7 @@ namespace simuPOP
     return true;
   }
 
-  void simulator::saveSimulator(string filename, string format)
+  void simulator::saveSimulator(string filename, string format) const
   {
     ofstream ofs(filename.c_str());
     if(!ofs)

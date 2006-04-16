@@ -32,14 +32,6 @@
 #include "utility.h"
 #include "simupop_cfg.h"
 
-#include <boost/serialization/nvp.hpp>
-#include <boost/serialization/utility.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/version.hpp>
-#include <boost/serialization/split_member.hpp>
-#include <boost/serialization/split_free.hpp>
-using boost::serialization::make_nvp;
-
 //
 // the following is required by a vc7.1 bug.
 #if  defined(_WIN32) || defined(__WIN32__)
@@ -49,6 +41,15 @@ using boost::serialization::make_nvp;
 using std::ofstream;
 using std::ifstream;
 #endif                                            // win32
+
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/version.hpp>
+#include <boost/serialization/tracking.hpp>
+#include <boost/serialization/split_member.hpp>
+#include <boost/serialization/split_free.hpp>
+using boost::serialization::make_nvp;
 
 #include <iterator>
 using std::ostream;
@@ -65,7 +66,6 @@ using std::dec;
 
 #include <numeric>
 using std::pair;
-
 
 namespace simuPOP
 {
@@ -568,6 +568,15 @@ namespace simuPOP
       static vector<GenoStructure> s_genoStruRepository;
   };
 
+}
+
+
+#ifndef SWIG
+BOOST_CLASS_TRACKING(simuPOP::GenoStruTrait, track_never)
+#endif
+
+namespace simuPOP
+{
   /** \brief Basic individual class
 
   class individual with

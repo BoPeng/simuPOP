@@ -249,6 +249,12 @@ SERIAL_FILES = [
   'src/serialization/void_cast.cpp',
   'src/serialization/polymorphic_iarchive.cpp',
   'src/serialization/polymorphic_oarchive.cpp'
+  'src/serialization/stl_port.cpp',
+  'src/serialization/basic_pointer_iserializer.cpp',
+  'src/serialization/basic_iserializer.cpp',
+  'src/serialization/basic_oserializer.cpp',
+  'src/serialization/basic_pointer_oserializer.cpp',
+  'src/serialization/basic_archive_impl.cpp'
 ]
 
 if XML_SUPPORT: 

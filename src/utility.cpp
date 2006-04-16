@@ -2478,7 +2478,6 @@ T Expression::valueAs##TypeName() \
   vector<unsigned char> compress(const vectora & genotype)
   {
     int level=Z_DEFAULT_COMPRESSION;
-    int err;
     z_stream zst;
 
 #define CHUNK 16384
@@ -2533,7 +2532,7 @@ T Expression::valueAs##TypeName() \
         if (ret == Z_STREAM_ERROR)
           throw SystemError("Failed to compress output");
         outSize += CHUNK - zst.avail_out;
-        if ( zst.abail_out == 0 )
+        if ( zst.avail_out == 0 )
           output.resize(outSize + CHUNK);
       } while( zst.avail_out == 0);
     } while(flush != Z_FINISH);
