@@ -26,6 +26,7 @@
 \brief implementation of some utility functions.
 */
 
+#include "Python.h"
 #include <cstdlib>
 #include "time.h"
 
@@ -44,12 +45,22 @@ using std::ifstream;
 using std::ofstream;
 
 // for PySys_WriteStdout and python expressions
-#include "Python.h"
 #include "swigpyrun.h"
 
 // compile and eval enables compiling string to byte code
 #include "compile.h"
 #include "eval.h"
+
+// for compress/uncompress support when files are saved
+#include "zlib.h"
+#if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
+#  include <fcntl.h>
+#  include <io.h>
+#  define SET_BINARY_MODE(file) setmode(fileno(file), O_BINARY)
+#else
+#  define SET_BINARY_MODE(file)
+#endif
+#define CHUNK 16384
 
 // for kbhit
 #if  defined(_WIN32) || defined(__WIN32__)
@@ -404,7 +415,7 @@ namespace simuPOP
     for(size_t i=0, iEnd=val.size(); i<iEnd; ++i)
       PyObj_As_Double(PySequence_GetItem(obj, i), val[i]);
   }
-  
+
   void PyObj_As_IntArray(PyObject* obj, vectori& val)
   {
     if(obj==NULL)
@@ -420,7 +431,7 @@ namespace simuPOP
     for(size_t i=0, iEnd=val.size(); i<iEnd; ++i)
       PyObj_As_Int(PySequence_GetItem(obj, i), val[i]);
   }
-  
+
   void PyObj_As_IntDict(PyObject* obj, intDict& val)
   {
     if(obj==NULL)
@@ -2463,4 +2474,158 @@ T Expression::valueAs##TypeName() \
     return PLATFORM;
   }
 
+  // depend on allele type, we have to do different things
+#ifdef BINARYALLELE
+  vector<unsigned char> compress(const vectora & genotype)
+  {
+    int level=Z_DEFAULT_COMPRESSION;
+    int err;
+    z_stream zst;
+
+#define CHUNK 16384
+
+    // it is a pity that we do not know the physical buffer of vectora here
+    // and have to copy things around.
+    size_t len = genotype.size();
+    size_t begin = 0;
+    size_t end = 0;
+    vector<unsigned char> input(CHUNK);
+
+    // output
+    vector<unsigned char> output(CHUNK);
+    output.reserve(len/10);
+    size_t outSize = 0;
+    zst.avail_out = CHUNK;
+
+    // others
+    zst.zalloc = Z_NULL;
+    zst.zfree = Z_NULL;
+    zst.opaque = Z_NULL;
+
+    // call deflatInit
+    if(deflateInit(&zst, level) != Z_OK)
+      throw SystemError("Failed to compress output");
+
+    int ret;
+    int flush;
+    do
+    {
+      // copy things in
+      if (begin + CHUNK < len)
+      {
+        end = begin + CHUNK;
+        flush = Z_NO_FLUSH;
+      }
+      else
+      {
+        end = len;
+        flush = Z_FINISH;
+      }
+      zst.avail_in = end - begin;
+      for(size_t i = 0; i < zst.avail_in; ++i)
+        input[i] = genotype[begin+i];
+      zst.next_in = &input[0];
+
+      // next_in is set ... deflat compress output is filled
+      do
+      {
+        zst.next_out = &output[outSize];
+        ret = deflate(&zst, flush);
+        if (ret == Z_STREAM_ERROR)
+          throw SystemError("Failed to compress output");
+        outSize += CHUNK - zst.avail_out;
+        if ( zst.abail_out == 0 )
+          output.resize(outSize + CHUNK);
+      } while( zst.avail_out == 0);
+    } while(flush != Z_FINISH);
+    DBG_ASSERT( zst.avail_in == 0, SystemError,
+      "Should have input end");
+    DBG_ASSERT( ret == Z_STREAM_END, SystemError,
+      "Should have stream end");
+    deflateEnd(&zst);
+    output.resize(outSize);
+    return output;
+  }
+
+#else
+
+  vector<unsigned char> compress(const vectora & genotype)
+  {
+    int level=Z_DEFAULT_COMPRESSION;
+    z_stream zst;
+
+#define CHUNK 16384
+
+    // treat as raw string
+    int length = genotype.size()*sizeof(Allele);
+    zst.avail_in = length;
+    zst.next_in = reinterpret_cast<unsigned char*>(
+      const_cast<Allele*>(&genotype[0]));
+
+    // output
+    vector<unsigned char> output(CHUNK);
+    output.reserve(length/10);
+    size_t outSize = 0;
+    zst.avail_out = CHUNK;
+
+    // others
+    zst.zalloc = Z_NULL;
+    zst.zfree = Z_NULL;
+
+    // call deflatInit
+    if(deflateInit(&zst, level) != Z_OK)
+      throw SystemError("Failed to compress output");
+
+    // next_in is set ... deflat compress output is filled
+    int ret;
+    do
+    {
+      zst.avail_out = CHUNK;
+      zst.next_out = &output[outSize];
+      ret = deflate(&zst, Z_FINISH);
+      DBG_FAILIF(ret == Z_STREAM_ERROR, 
+        SystemError, "Failed to compress genotype");
+      // finish
+      outSize += CHUNK - zst.avail_out;
+      if (zst.avail_out == 0)
+        output.resize(outSize + CHUNK);
+    } while( zst.avail_out == 0);
+    DBG_ASSERT( zst.avail_in == 0, SystemError,
+      "Should have input end");
+    DBG_ASSERT( ret == Z_STREAM_END, SystemError,
+      "Should have stream end");
+    deflateEnd(&zst);
+    output.resize(outSize);
+    return output;
+  }
+#endif
+
+  vectora decompress(const vector<unsigned char> & data)
+  {
+    z_stream zst;
+    zst.zalloc = Z_NULL;
+    zst.zfree = Z_NULL;
+    zst.opaque = Z_NULL;
+    zst.avail_in = data.size();
+    zst.next_in = const_cast<unsigned char*>(&data[0]);
+    vectora out;
+    out.reserve(data.size()*10);
+    vector<unsigned char> output(CHUNK);
+
+    if (inflateInit(&zst))
+      throw SystemError("Can not decompress");
+
+    int ret;
+    do
+    {
+      zst.avail_out = CHUNK;
+      zst.next_out = &output[0];
+      ret = inflate(&zst, Z_NO_FLUSH);
+      for(size_t i=0; i < CHUNK - zst.avail_out; ++i)
+        out.push_back(output[i]);
+    } while (ret != Z_STREAM_END);
+
+    inflateEnd(&zst);
+    return out;
+  }
 }
