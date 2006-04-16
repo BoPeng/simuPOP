@@ -54,6 +54,7 @@ using std::deque;
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/split_free.hpp>
+#include <boost/serialization/version.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #ifndef __NO_XML_SUPPORT__
@@ -949,7 +950,15 @@ namespace simuPOP
         ar & make_nvp("subPop_sizes", m_subPopSize);
         DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
         // save all type of genotype array in integer format
-        ar & make_nvp("genotype", m_genotype);
+        if ( version > 0 )                        // compress
+        {
+          vector<unsigned char> data = compress(m_genotype);
+          ar & make_nvp("compressed_genotype", data);
+        }
+        else                                      // old, uncompressed
+        {
+          ar & make_nvp("genotype", m_genotype);
+        }
         DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
         ar & make_nvp("individuals", m_inds);
         DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
@@ -962,7 +971,15 @@ namespace simuPOP
           // need to make sure ancestral pop also in order
           const_cast<population*>(this)->adjustGenoPosition(true);
           ar & make_nvp("subPop_sizes", m_subPopSize);
-          ar & make_nvp("genotype", m_genotype);
+          if ( version > 0 )                      // compress
+          {
+            vector<unsigned char> data = compress(m_genotype);
+            ar & make_nvp("compressed_genotype", data);
+          }
+          else                                    // old, uncompressed
+          {
+            ar & make_nvp("genotype", m_genotype);
+          }
           ar & make_nvp("individuals", m_inds);
         }
         const_cast<population*>(this)->useAncestralPop(0);
@@ -998,7 +1015,16 @@ namespace simuPOP
         ar & make_nvp("subPop_sizes", m_subPopSize);
         DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
         // load genotype in int format first
-        ar & make_nvp("genotype", m_genotype);
+        if (version > 0)                          // load compressed genotype
+        {
+          vector<unsigned char> data;
+          ar & make_nvp("compressed_genotype", data);
+          m_genotype = decompress(data);
+        }
+        else
+        {
+          ar & make_nvp("genotype", m_genotype);
+        }
         DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
         ar & make_nvp("individuals", m_inds);
 
@@ -1046,7 +1072,16 @@ namespace simuPOP
         {
           popData pd;
           ar & make_nvp("subPop_sizes", pd.m_subPopSize);
-          ar & make_nvp("genotype", pd.m_genotype);
+          if ( version > 0 )
+          {
+            vector<unsigned char> data;
+            ar & make_nvp("compressed_genotype", data);
+            pd.m_genotype = decompress(data);
+          }
+          else
+          {
+            ar & make_nvp("genotype", pd.m_genotype);
+          }
           ar & make_nvp("individuals", pd.m_inds);
           // set pointer after copy this thing again (push_back)
           m_ancestralPops.push_back(pd);
@@ -1144,17 +1179,14 @@ namespace simuPOP
       bool m_shallowCopied;
   };
 
-  /*
-  #ifndef SWIG
-    #ifndef _NO_SERIALIZATION_
-      // version 0:
-      BOOST_CLASS_VERSION(pop, 0)
-      #endif
-  #endif
-  */
 
-  population& LoadPopulation(const string& file,
-    const string& format="auto");
+    population& LoadPopulation(const string& file, const string& format="auto");
 
 }
+
+#ifndef SWIG
+#ifndef _NO_SERIALIZATION_
+  BOOST_CLASS_VERSION(simuPOP::population, 1)
+  #endif
+  #endif
 #endif
