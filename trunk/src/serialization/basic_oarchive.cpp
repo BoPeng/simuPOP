@@ -19,27 +19,39 @@
 
 // including this here to work around an ICC in intel 7.0
 // normally this would be part of basic_oarchive.hpp below.
+#define BOOST_ARCHIVE_SOURCE
 #include <boost/archive/basic_archive.hpp>
 
 #include <boost/archive/detail/basic_oserializer.hpp>
 #include <boost/archive/detail/basic_pointer_oserializer.hpp>
 #include <boost/archive/detail/basic_oarchive.hpp>
-
-#include <boost/serialization/extended_type_info.hpp>
+#include <boost/archive/detail/basic_archive_impl.hpp>
 #include <boost/archive/archive_exception.hpp>
+
+#ifdef BOOST_MSVC
+#  pragma warning(push)
+#  pragma warning(disable : 4251 4231 4660 4275)
+#endif
 
 using namespace boost::serialization;
 
 namespace boost {
+namespace serialization {
+    class extended_type_info;
+}
 namespace archive {
 namespace detail {
 
 class basic_oserializer;
 class basic_pointer_oserializer;
 
-class basic_oarchive_impl
+class basic_oarchive_impl :
+    public basic_archive_impl
 {
     friend class basic_oarchive;
+
+    unsigned int m_flags;
+
     //////////////////////////////////////////////////////////////////////
     // information about each serialized object saved
     // keyed on address, class_id
@@ -128,7 +140,9 @@ class basic_oarchive_impl
     // whose data itself is now pending serialization
     const void * pending_object;
     const basic_oserializer * pending_bos;
-    basic_oarchive_impl() :
+
+    basic_oarchive_impl(unsigned int flags) :
+        m_flags(flags),
         pending_object(NULL),
         pending_bos(NULL)
     {}
@@ -137,7 +151,8 @@ class basic_oarchive_impl
     find(const basic_oserializer & bos);
     const basic_oserializer *  
     find(const serialization::extended_type_info &ti) const;
-public:
+
+//public:
     const cobject_type &
     register_type(const basic_oserializer & bos);
     void save_object(
@@ -150,7 +165,6 @@ public:
         const void * t, 
         const basic_pointer_oserializer * bpos
     );
-
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -167,7 +181,7 @@ basic_oarchive_impl::find(const serialization::extended_type_info & ti) const {
             return false;
         }
         // returns true if objects should be tracked
-        bool tracking() const {
+        bool tracking(const unsigned int) const {
             assert(false);
             return false;
         }
@@ -187,8 +201,8 @@ basic_oarchive_impl::find(const serialization::extended_type_info & ti) const {
             assert(false);
         }
     public:
-        bosarg(const serialization::extended_type_info & type_) :
-          boost::archive::detail::basic_oserializer(type_)
+        bosarg(const serialization::extended_type_info & eti) :
+          boost::archive::detail::basic_oserializer(eti)
         {}
     };
     bosarg bos(ti);
@@ -242,14 +256,14 @@ basic_oarchive_impl::save_object(
     if(bos.class_info()){
         if( ! co.initialized){
             ar.vsave(class_id_optional_type(co.class_id));
-            ar.vsave(tracking_type(bos.tracking()));
+            ar.vsave(tracking_type(bos.tracking(m_flags)));
             ar.vsave(version_type(bos.version()));
             (const_cast<cobject_type &>(co)).initialized = true;
         }
     }
 
     // we're not tracking this type of object
-    if(! bos.tracking()){
+    if(! bos.tracking(m_flags)){
         // just windup the preamble - no object id to write
         ar.end_preamble();
         // and save the data
@@ -297,17 +311,17 @@ basic_oarchive_impl::save_pointer(
     const basic_pointer_oserializer * bpos_ptr
 ){
     const basic_oserializer & bos = bpos_ptr->get_basic_serializer();
-    unsigned int original_count = cobject_info_set.size();
+    std::size_t original_count = cobject_info_set.size();
     const cobject_type & co = register_type(bos);
     if(! co.initialized){
         ar.vsave(co.class_id);
         // if its a previously unregistered class 
         if((cobject_info_set.size() > original_count)){
             if(bos.is_polymorphic()){
-                const serialization::extended_type_info *eti = & bos.type;
+                const serialization::extended_type_info *eti = & bos.get_eti();
                 const char * key = NULL;
                 if(NULL != eti)
-                    key = eti->key;
+                    key = eti->get_key();
                 if(NULL != key){
                     // the following is required by IBM C++ compiler which
                     // makes a copy when passing a non-const to a const.  This
@@ -325,7 +339,7 @@ basic_oarchive_impl::save_pointer(
             }
         }
         if(bos.class_info()){
-            ar.vsave(tracking_type(bos.tracking()));
+            ar.vsave(tracking_type(bos.tracking(m_flags)));
             ar.vsave(version_type(bos.version()));
         }
         (const_cast<cobject_type &>(co)).initialized = true;
@@ -335,7 +349,7 @@ basic_oarchive_impl::save_pointer(
     }
 
     // if we're not tracking
-    if(! bos.tracking()){
+    if(! bos.tracking(m_flags)){
         // just save the data itself
         ar.end_preamble();
         state_saver<const void *> x(pending_object);
@@ -378,33 +392,72 @@ basic_oarchive_impl::save_pointer(
 //////////////////////////////////////////////////////////////////////
 // implementation of basic_oarchive functions
 
-basic_oarchive::basic_oarchive()
-    : pimpl(new basic_oarchive_impl)
+BOOST_ARCHIVE_DECL(BOOST_PP_EMPTY()) 
+basic_oarchive::basic_oarchive(unsigned int flags)
+    : pimpl(new basic_oarchive_impl(flags))
 {}
 
+BOOST_ARCHIVE_DECL(BOOST_PP_EMPTY()) 
 basic_oarchive::~basic_oarchive()
 {
     delete pimpl;
 }
 
-void basic_oarchive::save_object(
+BOOST_ARCHIVE_DECL(void) 
+basic_oarchive::save_object(
     const void *x, 
     const basic_oserializer & bos
 ){
     pimpl->save_object(*this, x, bos);
 }
 
-void basic_oarchive::save_pointer(
+BOOST_ARCHIVE_DECL(void) 
+basic_oarchive::save_pointer(
     const void * t, 
     const basic_pointer_oserializer * bpos_ptr
 ){
     pimpl->save_pointer(*this, t, bpos_ptr);
 }
 
-void basic_oarchive::register_basic_serializer(const basic_oserializer & bos){
+BOOST_ARCHIVE_DECL(void) 
+basic_oarchive::register_basic_serializer(const basic_oserializer & bos){
     pimpl->register_type(bos);
+}
+
+BOOST_ARCHIVE_DECL(void) 
+basic_oarchive::lookup_basic_helper(
+    const boost::serialization::extended_type_info * const eti,
+    shared_ptr<void> & sph
+){
+    pimpl->lookup_helper(eti, sph);
+}
+
+BOOST_ARCHIVE_DECL(void) 
+basic_oarchive::insert_basic_helper(
+    const boost::serialization::extended_type_info * const eti,
+    shared_ptr<void> & sph
+){
+    pimpl->insert_helper(eti, sph);
+}
+
+BOOST_ARCHIVE_DECL(unsigned int)
+basic_oarchive::get_library_version() const{
+    return ARCHIVE_VERSION();
+}
+
+BOOST_ARCHIVE_DECL(unsigned int)
+basic_oarchive::get_flags() const{
+    return pimpl->m_flags;
+}
+
+BOOST_ARCHIVE_DECL(void) 
+basic_oarchive::end_preamble(){
 }
 
 } // namespace detail
 } // namespace archive
 } // namespace boost
+
+#ifdef BOOST_MSVC
+#pragma warning(pop)
+#endif

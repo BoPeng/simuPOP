@@ -12,6 +12,7 @@
 #  pragma warning (disable : 4786) // too long name, harmless warning
 #endif
 
+#define BOOST_ARCHIVE_SOURCE
 #include <boost/archive/impl/basic_xml_grammar.hpp>
 
 using namespace boost::spirit;

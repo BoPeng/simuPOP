@@ -1,5 +1,5 @@
 /////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////8
-// text_iarchive.cpp:
+// basic_iserializer.cpp:
 
 // (C) Copyright 2002 Robert Ramey - http://www.rrsd.com . 
 // Use, modification and distribution is subject to the Boost Software
@@ -9,19 +9,23 @@
 //  See http://www.boost.org for updates, documentation, and revision history.
 
 #define BOOST_ARCHIVE_SOURCE
-#include <boost/archive/text_iarchive.hpp>
-
-// explicitly instantiate for this type of text stream
-#include <boost/archive/impl/basic_text_iarchive.ipp>
-#include <boost/archive/impl/text_iarchive_impl.ipp>
-#include <boost/archive/impl/archive_pointer_iserializer.ipp>
+#include <boost/archive/detail/basic_iserializer.hpp>
 
 namespace boost {
 namespace archive {
+namespace detail {
 
-template class basic_text_iarchive<text_iarchive> ;
-template class text_iarchive_impl<text_iarchive> ;
-template class detail::archive_pointer_iserializer<text_iarchive> ;
+BOOST_ARCHIVE_DECL(BOOST_PP_EMPTY()) 
+basic_iserializer::basic_iserializer(
+    const boost::serialization::extended_type_info & eti
+) :
+    basic_serializer(eti), 
+    bpis(NULL)
+{}
 
+BOOST_ARCHIVE_DECL(BOOST_PP_EMPTY()) 
+basic_iserializer::~basic_iserializer(){}
+
+} // namespace detail
 } // namespace archive
 } // namespace boost
