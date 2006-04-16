@@ -14,6 +14,7 @@
 
 #include <ostream>
 
+#define BOOST_ARCHIVE_SOURCE
 #include <boost/archive/polymorphic_oarchive.hpp>
 
 // explicitly instantiate for this type of text stream
@@ -24,5 +25,5 @@ namespace archive {
 
 template class detail::archive_pointer_oserializer<polymorphic_oarchive> ;
 
-} // namespace serialization
+} // namespace archive
 } // namespace boost

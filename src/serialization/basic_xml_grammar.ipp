@@ -92,7 +92,7 @@ struct assign_impl<std::wstring> {
 #endif
 
 template<class T>
-assign_impl<T> assign_obect(T &t){
+assign_impl<T> assign_object(T &t){
     return assign_impl<T>(t);
 } 
 
@@ -196,6 +196,7 @@ bool basic_xml_grammar<CharType>::parse_start_tag(
             archive_exception(archive_exception::stream_error)
         );
     }
+    rv.class_name.resize(0);
     return my_parse(is, STag);
 }
 
@@ -230,24 +231,31 @@ bool basic_xml_grammar<CharType>::parse_string(IStream & is, StringType & s) {
 template<class CharType>
 basic_xml_grammar<CharType>::basic_xml_grammar(){
     init_chset();
+
     S =
         +(Sch)
     ;
-    Name =
-        (Letter | '_' | ':')
-        >> *(NameChar)
-    ;
 
+    // refactoring to workaround template depth on darwin
+    NameHead = (Letter | '_' | ':');
+    NameTail = *NameChar ;
+    Name =
+      NameHead >> NameTail
+    ;
 
     Eq =
         !S >> '=' >> !S
     ;
 
+    AttributeList = 
+        *(S >> Attribute)
+    ;
+    
     STag =
         !S
         >> '<'
-        >> Name  [assign_obect(rv.object_name)]
-        >> *(S >> Attribute)
+        >> Name  [assign_object(rv.object_name)]
+        >> AttributeList
         >> !S
         >> '>'
     ;
@@ -255,13 +263,15 @@ basic_xml_grammar<CharType>::basic_xml_grammar(){
     ETag =
         !S
         >> "</"
-        >> Name [assign_obect(rv.object_name)]
+        >> Name [assign_object(rv.object_name)]
         >> !S 
         >> '>'
     ;
 
-    CharData = 
-        (*(anychar_p - chset_p(L"&<"))) [
+    // refactoring to workaround template depth on darwin
+    CharDataChars = *(anychar_p - chset_p(L"&<"));
+    CharData =  
+        CharDataChars [
             append_string<
                 StringType, 
                 BOOST_DEDUCED_TYPENAME std::basic_string<CharType>::const_iterator
@@ -278,11 +288,11 @@ basic_xml_grammar<CharType>::basic_xml_grammar(){
     ;
     CharRef = CharRef1 | CharRef2 ;
 
-    AmpRef = str_p(L"&amp;")[append_lit<StringType, '&'>(rv.contents)];
-    LTRef = str_p(L"&lt;")[append_lit<StringType, '<'>(rv.contents)];
-    GTRef = str_p(L"&gt;")[append_lit<StringType, '>'>(rv.contents)];
-    AposRef = str_p(L"&apos;")[append_lit<StringType, '\''>(rv.contents)];
-    QuoteRef = str_p(L"&quot;")[append_lit<StringType, '"'>(rv.contents)];
+    AmpRef = str_p(L"&amp;")[append_lit<StringType, L'&'>(rv.contents)];
+    LTRef = str_p(L"&lt;")[append_lit<StringType, L'<'>(rv.contents)];
+    GTRef = str_p(L"&gt;")[append_lit<StringType, L'>'>(rv.contents)];
+    AposRef = str_p(L"&apos;")[append_lit<StringType, L'\''>(rv.contents)];
+    QuoteRef = str_p(L"&quot;")[append_lit<StringType, L'"'>(rv.contents)];
 
     Reference =
         AmpRef
@@ -299,33 +309,47 @@ basic_xml_grammar<CharType>::basic_xml_grammar(){
     ;
 
     ClassIDAttribute = 
-        str_p(CLASS_ID) >> *(NameChar)
+        str_p(CLASS_ID()) >> NameTail
         >> Eq 
         >> L'"'
-        >> int_p [assign_obect(rv.class_id.t)]
+        >> int_p [assign_object(rv.class_id.t)]
         >> L'"'
-    ;
+      ;
 
     ObjectIDAttribute = 
-        ( str_p(OBJECT_ID) | str_p(OBJECT_REFERENCE) )
-        >> *(NameChar)
+        (str_p(OBJECT_ID()) | str_p(OBJECT_REFERENCE()) )
+        >> NameTail
         >> Eq 
         >> L'"'
         >> L'_'
-        >> uint_p [assign_obect(rv.object_id.t)]
+        >> uint_p [assign_object(rv.object_id.t)]
         >> L'"'
     ;
-
+        
+    AmpName = str_p(L"&amp;")[append_lit<StringType, L'&'>(rv.class_name)];
+    LTName = str_p(L"&lt;")[append_lit<StringType, L'<'>(rv.class_name)];
+    GTName = str_p(L"&gt;")[append_lit<StringType, L'>'>(rv.class_name)];
+    ClassNameChar = 
+        AmpName
+        | LTName
+        | GTName
+        | (anychar_p - chset_p(L"\"")) [append_char<StringType>(rv.class_name)]
+    ;
+    
+    ClassName =
+        * ClassNameChar
+    ;
+    
     ClassNameAttribute = 
-        str_p(CLASS_NAME) 
+        str_p(CLASS_NAME()) 
         >> Eq 
         >> L'"'
-        >> Name [assign_obect(rv.class_name)]
+        >> ClassName
         >> L'"'
     ;
 
     TrackingAttribute = 
-        str_p(TRACKING)
+        str_p(TRACKING())
         >> Eq
         >> L'"'
         >> uint_p [assign_level(rv.tracking_level)]
@@ -333,10 +357,10 @@ basic_xml_grammar<CharType>::basic_xml_grammar(){
     ;
 
     VersionAttribute = 
-        str_p(VERSION)
+        str_p(VERSION())
         >> Eq
         >> L'"'
-        >> uint_p [assign_obect(rv.version.t)]
+        >> uint_p [assign_object(rv.version.t)]
         >> L'"'
     ;
 
@@ -357,6 +381,7 @@ basic_xml_grammar<CharType>::basic_xml_grammar(){
         | UnusedAttribute
     ;
 
+    XMLDeclChars = *(anychar_p - chset_p(L"?>"));
     XMLDecl =
         !S
         >> str_p(L"<?xml")
@@ -364,15 +389,16 @@ basic_xml_grammar<CharType>::basic_xml_grammar(){
         >> str_p(L"version")
         >> Eq
         >> str_p(L"\"1.0\"")
-        >> *(anychar_p - chset_p(L"?>"))
+        >> XMLDeclChars
         >> !S
         >> str_p(L"?>")
     ;
 
+    DocTypeDeclChars = *(anychar_p - chset_p(L">"));
     DocTypeDecl =
         !S
         >> str_p(L"<!DOCTYPE")
-        >> *(anychar_p - chset_p(L">"))
+        >> DocTypeDeclChars
         >> L'>'
     ;
 
@@ -380,7 +406,7 @@ basic_xml_grammar<CharType>::basic_xml_grammar(){
         str_p(L"signature") 
         >> Eq 
         >> L'"'
-        >> Name [assign_obect(rv.class_name)]
+        >> Name [assign_object(rv.class_name)]
         >> L'"'
     ;
     
@@ -411,7 +437,7 @@ void basic_xml_grammar<CharType>::init(IStream & is){
         boost::throw_exception(
             xml_archive_exception(xml_archive_exception::xml_archive_parsing_error)
         );
-    if(! std::equal(rv.class_name.begin(), rv.class_name.end(), ARCHIVE_SIGNATURE))
+    if(! std::equal(rv.class_name.begin(), rv.class_name.end(), ARCHIVE_SIGNATURE()))
         boost::throw_exception(
             archive_exception(archive_exception::invalid_signature)
         );
