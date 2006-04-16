@@ -27,8 +27,8 @@
 \file
 \brief head file of class terminator: public Operator
 */
-#include "operator.h"
 #include "population.h"
+#include "operator.h"
 
 #include <iostream>
 #include <iomanip>

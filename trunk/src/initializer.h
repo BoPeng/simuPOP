@@ -34,7 +34,6 @@
 using std::string;
 using std::accumulate;
 
-#include "Python.h"
 
 namespace simuPOP
 {

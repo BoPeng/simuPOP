@@ -29,8 +29,8 @@
 \brief head file of class simulator and some other utility functions
 */
 
-#include "simupop_cfg.h"
 #include "utility.h"
+#include "simupop_cfg.h"
 #include "mating.h"
 #include "operator.h"
 

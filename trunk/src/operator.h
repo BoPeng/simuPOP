@@ -27,8 +27,8 @@
 \file
 \brief head file of class Operator
 */
-#include "simupop_cfg.h"
 #include "utility.h"
+#include "simupop_cfg.h"
 
 #include <iostream>
 #include <iomanip>
