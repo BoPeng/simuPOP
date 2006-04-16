@@ -55,6 +55,13 @@ $(SERIAL_SRC)/extended_type_info_typeid.o \
 $(SERIAL_SRC)/void_cast.o \
 $(SERIAL_SRC)/polymorphic_iarchive.o \
 $(SERIAL_SRC)/polymorphic_oarchive.o \
+$(SERIAL_SRC)/stl_port.o \
+$(SERIAL_SRC)/basic_pointer_iserializer.o \
+$(SERIAL_SRC)/basic_iserializer.o \
+$(SERIAL_SRC)/basic_oserializer.o \
+$(SERIAL_SRC)/basic_pointer_oserializer.o \
+$(SERIAL_SRC)/basic_archive_impl.o
+
 
 
 GSL_OBJS= ../gsl/sys/infnan.o ../gsl/sys/coerce.o ../gsl/sys/fdiv.o ../gsl/sys/pow_int.o \

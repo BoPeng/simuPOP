@@ -41,11 +41,6 @@ using std::vector;
 using std::fill;
 using std::swap;
 
-#include <boost/serialization/nvp.hpp>
-#include <boost/serialization/utility.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/split_member.hpp>
-#include <boost/serialization/split_free.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #ifndef __NO_XML_SUPPORT__
@@ -55,6 +50,12 @@ using std::swap;
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 using boost::serialization::make_nvp;
+
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/split_member.hpp>
+#include <boost/serialization/split_free.hpp>
 
 #ifndef OPTIMIZED
 #include <time.h>                                 // for clock() function
@@ -389,7 +390,7 @@ namespace simuPOP
 
       \sa global function loadsimulator
       */
-      void saveSimulator(string filename, string format="auto");
+      void saveSimulator(string filename, string format="auto") const;
 
       /// CPPONLY load simulator from a file
       /**

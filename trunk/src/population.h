@@ -38,8 +38,6 @@ using std::pair;
 #include <functional>
 using std::equal_to;
 
-#include "individual.h"
-
 #include <fstream>
 using std::ifstream;
 using std::ofstream;
@@ -49,12 +47,6 @@ using std::ofstream;
 #include <deque>
 using std::deque;
 
-#include <boost/serialization/nvp.hpp>
-#include <boost/serialization/utility.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/split_member.hpp>
-#include <boost/serialization/split_free.hpp>
-#include <boost/serialization/version.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #ifndef __NO_XML_SUPPORT__
@@ -63,7 +55,15 @@ using std::deque;
 #endif
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/split_member.hpp>
+#include <boost/serialization/split_free.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/version.hpp>
 using boost::serialization::make_nvp;
+
+#include "individual.h"
 
 namespace simuPOP
 {
@@ -721,7 +721,7 @@ namespace simuPOP
       like to convert simuPOP populations to other formats.
       \sa global function loadPopulation
       */
-      void savePopulation(const string& filename, const string& format="auto");
+      void savePopulation(const string& filename, const string& format="auto") const;
 
       /// CPPONLY load population from a file
       /**
@@ -942,10 +942,12 @@ namespace simuPOP
         void save(Archive &ar, const UINT version) const
       {
         // deep adjustment: everyone in order
-        const_cast<population*>(this)->adjustGenoPosition(true);
+        //const_cast<population*>(this)->adjustGenoPosition(true);
 
         ar & make_nvp("libraryMaxAllele", MaxAllele);
+
         DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
+        // GenoStructure genoStru = this->genoStru();
         ar & make_nvp("geno_structure", this->genoStru());
         ar & make_nvp("subPop_sizes", m_subPopSize);
         DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
@@ -1179,14 +1181,14 @@ namespace simuPOP
       bool m_shallowCopied;
   };
 
-
-    population& LoadPopulation(const string& file, const string& format="auto");
+  population& LoadPopulation(const string& file, const string& format="auto");
 
 }
 
+
 #ifndef SWIG
 #ifndef _NO_SERIALIZATION_
-  BOOST_CLASS_VERSION(simuPOP::population, 1)
-  #endif
-  #endif
+BOOST_CLASS_VERSION(simuPOP::population, 1)
+#endif
+#endif
 #endif

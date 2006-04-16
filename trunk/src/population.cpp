@@ -936,7 +936,7 @@ namespace simuPOP
       m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
   }
 
-  void population::savePopulation(const string& filename, const string& format)
+  void population::savePopulation(const string& filename, const string& format) const
   {
     ofstream ofs(filename.c_str());
 
