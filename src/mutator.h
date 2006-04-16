@@ -27,10 +27,9 @@
 \file
 \brief head file of class mutator:public Operator
 */
+/// for hybrid mutator
 #include "operator.h"
 
-/// for hybrid mutator
-#include "Python.h"
 
 namespace simuPOP
 {

@@ -43,6 +43,7 @@ include:
 * BernulliTrials
 */
 
+#include "Python.h"
 #include "simupop_cfg.h"
 
 #include <iostream>
@@ -70,7 +71,6 @@ using std::setw;
 #include "boost/dynamic_bitset.hpp"
 typedef boost::dynamic_bitset<> BitSet;
 
-#include "Python.h"
 
 namespace simuPOP
 {
@@ -1450,7 +1450,6 @@ namespace simuPOP
 
   /// set standard output to (default standard Python output)
   void setLogOutput(const string filename="");
-
 
   // compress genotype for storage
   vector<unsigned char> compress(const vectora & genotype);

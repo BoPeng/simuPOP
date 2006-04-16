@@ -44,9 +44,6 @@ using std::max;
 #include <iomanip>
 using std::setprecision;
 
-// for eval of string
-#include "Python.h"
-
 namespace simuPOP
 {
   /// NOTE: the default output for stator is "", i.e., no output

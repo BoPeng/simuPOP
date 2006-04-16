@@ -26,11 +26,10 @@
 \brief implementation of some utility functions.
 */
 
-#include "Python.h"
+#include "utility.h"
 #include <cstdlib>
 #include "time.h"
 
-#include "utility.h"
 
 #include <bitset>
 typedef std::bitset<DBG_CODE_LENGTH> DbgBitSet;
@@ -2546,6 +2545,36 @@ T Expression::valueAs##TypeName() \
     output.resize(outSize);
     return output;
   }
+  
+  vectora decompress(const vector<unsigned char> & data)
+  {
+    z_stream zst;
+    zst.zalloc = Z_NULL;
+    zst.zfree = Z_NULL;
+    zst.opaque = Z_NULL;
+    zst.avail_in = data.size();
+    zst.next_in = const_cast<unsigned char*>(&data[0]);
+    vectora out;
+    out.reserve(data.size()*10);
+    vector<unsigned char> output(CHUNK);
+
+    if (inflateInit(&zst))
+      throw SystemError("Can not decompress");
+
+    int ret;
+    do
+    {
+      zst.avail_out = CHUNK;
+      zst.next_out = &output[0];
+      ret = inflate(&zst, Z_NO_FLUSH);
+      // every byte is 0, or 1 ...
+      for(size_t i=0; i < CHUNK - zst.avail_out; ++i)
+        out.push_back(output[i]);
+    } while (ret != Z_STREAM_END);
+
+    inflateEnd(&zst);
+    return out;
+  }
 
 #else
 
@@ -2598,7 +2627,6 @@ T Expression::valueAs##TypeName() \
     output.resize(outSize);
     return output;
   }
-#endif
 
   vectora decompress(const vector<unsigned char> & data)
   {
@@ -2610,7 +2638,7 @@ T Expression::valueAs##TypeName() \
     zst.next_in = const_cast<unsigned char*>(&data[0]);
     vectora out;
     out.reserve(data.size()*10);
-    vector<unsigned char> output(CHUNK);
+    vector<unsigned char> output(CHUNK*sizeof(Allele));
 
     if (inflateInit(&zst))
       throw SystemError("Can not decompress");
@@ -2618,14 +2646,17 @@ T Expression::valueAs##TypeName() \
     int ret;
     do
     {
-      zst.avail_out = CHUNK;
+      zst.avail_out = CHUNK*sizeof(Allele);
       zst.next_out = &output[0];
       ret = inflate(&zst, Z_NO_FLUSH);
-      for(size_t i=0; i < CHUNK - zst.avail_out; ++i)
-        out.push_back(output[i]);
+      // every byte is 0, or 1 ...
+      for(size_t i=0; i < CHUNK*sizeof(Allele) - zst.avail_out; i+=sizeof(Allele))
+        out.push_back(*(reinterpret_cast<Allele*>(&output[i])));
     } while (ret != Z_STREAM_END);
 
     inflateEnd(&zst);
     return out;
   }
+
+#endif
 }

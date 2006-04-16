@@ -28,6 +28,7 @@
 \brief head file of class population
 */
 
+#include "utility.h"
 #include <vector>
 #include <numeric>
 using std::vector;
@@ -37,7 +38,6 @@ using std::pair;
 #include <functional>
 using std::equal_to;
 
-#include "utility.h"
 #include "individual.h"
 
 #include <fstream>

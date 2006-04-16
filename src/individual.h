@@ -29,8 +29,8 @@
 \brief class individual, individualWithAge etc.
 */
 
-#include "simupop_cfg.h"
 #include "utility.h"
+#include "simupop_cfg.h"
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/utility.hpp>
@@ -66,7 +66,6 @@ using std::dec;
 #include <numeric>
 using std::pair;
 
-#include "Python.h"
 
 namespace simuPOP
 {
