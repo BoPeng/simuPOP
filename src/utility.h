@@ -1456,5 +1456,8 @@ namespace simuPOP
   
   // uncompress 
   vectora decompress(const vector<unsigned char> & data);
+
+  // check if a file is a gzipped file
+  bool isGzipped(const string & filename);
 }
 #endif

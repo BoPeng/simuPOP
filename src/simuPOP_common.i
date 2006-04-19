@@ -287,11 +287,11 @@ def LoadSimulatorFromPops( pops, mating):
     simu.setPopulation(pops[i], i)
   return simu
 
-def SavePopulations(pops, file, format='auto'):
+def SavePopulations(pops, file, format='auto', compress=True):
   simu = simulator(population(1), noMating(), rep=len(pops))
   for i in range(0, len(pops)):
     simu.setPopulation(pops[i], i)
-  simu.saveSimulator(file, format)
+  simu.saveSimulator(file, format, compress)
 
 def LoadPopulations(file, format='auto'):
   simu = LoadSimulator(file, noMating(), format);

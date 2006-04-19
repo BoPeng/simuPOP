@@ -10,6 +10,7 @@ BOOST_INC = -I../
 GSL_INC = -I../
 INCLUDES= -I. $(PYTHON_INC) $(BOOST_INC) $(GSL_INC)
 SERIAL_SRC=serialization
+IOSTREAMS_SRC=iostreams
 
 CC = gcc
 CXX = g++
@@ -62,7 +63,10 @@ $(SERIAL_SRC)/basic_oserializer.o \
 $(SERIAL_SRC)/basic_pointer_oserializer.o \
 $(SERIAL_SRC)/basic_archive_impl.o
 
-
+IOSTREAMS_OBJS = \
+$(IOSTREAMS_SRC)/file_descriptor.o \
+$(IOSTREAMS_SRC)/mapped_file.o \
+$(IOSTREAMS_SRC)/zlib.o
 
 GSL_OBJS= ../gsl/sys/infnan.o ../gsl/sys/coerce.o ../gsl/sys/fdiv.o ../gsl/sys/pow_int.o \
 ../gsl/sys/fcmp.o ../gsl/specfunc/psi.o ../gsl/specfunc/trig.o ../gsl/specfunc/exp.o \
@@ -80,7 +84,7 @@ GSL_OBJS= ../gsl/sys/infnan.o ../gsl/sys/coerce.o ../gsl/sys/fdiv.o ../gsl/sys/p
 ../gsl/randist/chisq.o ../gsl/randist/gauss.o ../gsl/error.o ../gsl/randist/multinomial.o
 
 
-OBJS = $(GSL_OBJS) $(SERIAL_OBJS)
+OBJS = $(GSL_OBJS) $(SERIAL_OBJS) $(IOSTREAMS_OBJS)
 
 std: _simuPOP_std.so
 

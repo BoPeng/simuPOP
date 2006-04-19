@@ -23,11 +23,18 @@
 
 #include "simulator.h"
 
+// for file compression
+#include <boost/iostreams/filtering_stream.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+#include <boost/iostreams/device/file.hpp>
+
+namespace io = boost::iostreams;
+
 namespace simuPOP
 {
 
   simulator::simulator(population & pop,
-    mating&  matingScheme, 
+    mating&  matingScheme,
     int rep , vectori grp)
     : m_gen(0), m_curRep(0), m_numRep(rep), m_groups(0),
     m_stopIfOneRepStop(false), m_applyOpToStoppedReps(false)
@@ -446,9 +453,13 @@ namespace simuPOP
     return true;
   }
 
-  void simulator::saveSimulator(string filename, string format) const
+  void simulator::saveSimulator(string filename, string format, bool compress) const
   {
-    ofstream ofs(filename.c_str());
+    io::filtering_ostream ofs;
+    if(compress)
+      ofs.push(io::gzip_compressor());
+    ofs.push(io::file_sink(filename));
+
     if(!ofs)
       throw ValueError("Can not open file " + filename );
 
@@ -470,16 +481,16 @@ namespace simuPOP
       oa << *this;
     }
     else
-    {
-      ofs.close();
       throw ValueError("Wrong format type. Use one of text, xml, bin.");
-    }
-    ofs.close();
   }
 
   void simulator::loadSimulator(string filename, string format)
   {
-    ifstream ifs(filename.c_str());
+    io::filtering_istream ifs;
+    if(isGzipped(filename))
+      ifs.push(io::gzip_decompressor());
+    ifs.push(io::file_source(filename));
+
     // do not need to test again
     if(!ifs)
       throw ValueError("Can not open file " + filename );
@@ -509,13 +520,16 @@ namespace simuPOP
     catch(...)
     {
       // first close the file handle.
-      ifs.close();
 
       DBG_DO(DBG_POPULATION,
         cout << "Can not determine file type, or file type is wrong. Trying different ways." << endl);
 
       // open a fresh ifstream
-      ifstream ifbin(filename.c_str());
+      io::filtering_istream ifbin;
+      if(isGzipped(filename))
+        ifbin.push(io::gzip_decompressor());
+      ifbin.push(io::file_source(filename));
+
       // try to load the file using different iarchives.
       try                                         // binary?
       {
@@ -524,8 +538,11 @@ namespace simuPOP
       }
       catch(...)                                  // not binary, text?
       {
-        ifbin.close();
-        ifstream iftxt(filename.c_str());
+        io::filtering_istream iftxt;
+        if(isGzipped(filename))
+          iftxt.push(io::gzip_decompressor());
+        iftxt.push(io::file_source(filename));
+
         try
         {
           boost::archive::text_iarchive ia(iftxt);
@@ -533,9 +550,11 @@ namespace simuPOP
         }
         catch(...)                                // then xml?
         {
-          iftxt.close();
 #ifndef __NO_XML_SUPPORT__
-          ifstream ifxml(filename.c_str());
+          io::filtering_istream ifxml;
+          if(isGzipped(filename))
+            ifxml.push(io::gzip_decompressor());
+          ifxml.push(io::file_source(filename));
           try
           {
             boost::archive::xml_iarchive ia(ifxml);
@@ -543,7 +562,6 @@ namespace simuPOP
           }
           catch(...)
           {
-            ifxml.close();
             throw ValueError("Failed to load simulator. Your file may be corrupted, "
               "or being a copy of non-transferrable file (.bin)");
           }
