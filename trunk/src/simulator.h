@@ -390,7 +390,7 @@ namespace simuPOP
 
       \sa global function loadsimulator
       */
-      void saveSimulator(string filename, string format="auto") const;
+      void saveSimulator(string filename, string format="auto", bool compress=true) const;
 
       /// CPPONLY load simulator from a file
       /**

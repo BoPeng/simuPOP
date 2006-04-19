@@ -721,7 +721,7 @@ namespace simuPOP
       like to convert simuPOP populations to other formats.
       \sa global function loadPopulation
       */
-      void savePopulation(const string& filename, const string& format="auto") const;
+      void savePopulation(const string& filename, const string& format="auto", bool compress=true) const;
 
       /// CPPONLY load population from a file
       /**

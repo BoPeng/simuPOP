@@ -30,7 +30,6 @@
 #include <cstdlib>
 #include "time.h"
 
-
 #include <bitset>
 typedef std::bitset<DBG_CODE_LENGTH> DbgBitSet;
 
@@ -2544,7 +2543,7 @@ T Expression::valueAs##TypeName() \
     output.resize(outSize);
     return output;
   }
-  
+
   vectora decompress(const vector<unsigned char> & data)
   {
     z_stream zst;
@@ -2611,7 +2610,7 @@ T Expression::valueAs##TypeName() \
       zst.avail_out = CHUNK;
       zst.next_out = &output[outSize];
       ret = deflate(&zst, Z_FINISH);
-      DBG_FAILIF(ret == Z_STREAM_ERROR, 
+      DBG_FAILIF(ret == Z_STREAM_ERROR,
         SystemError, "Failed to compress genotype");
       // finish
       outSize += CHUNK - zst.avail_out;
@@ -2657,5 +2656,21 @@ T Expression::valueAs##TypeName() \
     return out;
   }
 
+  // GZIP	\037\213	http://www.ietf.org/rfc/rfc1952.txt
+  bool isGzipped(const string & filename)
+  {
+    // paranoia check
+    if (filename.empty())
+      return false;
+
+    ifstream ifs(filename.c_str());
+    if (!ifs)
+      // Couldn't open file...
+      return false;
+
+    string str;
+    getline(ifs, str);
+    return str.substr(0,2) == "\037\213";
+  }
 #endif
 }
