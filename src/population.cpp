@@ -946,26 +946,28 @@ namespace simuPOP
   void population::savePopulation(const string& filename, const string& format, bool compress) const
   {
     io::filtering_ostream ofs;
-    if(compress)
+    // get file extension
+    string ext = fileExtension(filename);
+    if(compress || (ext.size() > 3 && ext.substr(ext.size() - 3, 3) == ".gz"))
       ofs.push(io::gzip_compressor());
     ofs.push(io::file_sink(filename));
 
     if(!ofs)
       throw ValueError("Can not open file " + filename );
 
-    if( format == "text" || (format == "auto" && filename.substr(filename.size()-4,4) == ".txt" ))
+    if( format == "text" || (format == "auto" && (ext == "txt" || ext == "txt.gz" )))
     {
       boost::archive::text_oarchive oa(ofs);
       oa << *this;
     }
 #ifndef __NO_XML_SUPPORT__
-    else if (format == "xml" || (format == "auto" && filename.substr(filename.size()-4,4) == ".xml" ) )
+    else if (format == "xml" || (format == "auto" && (ext == "xml" || ext == "xml.gz" )))
     {
       boost::archive::xml_oarchive oa(ofs);
       oa << boost::serialization::make_nvp("population",*this);
     }
 #endif
-    else if (format == "bin" ||  (format == "auto" && filename.substr(filename.size()-4,4) == ".bin" ))
+    else if (format == "bin" ||  (format == "auto" && (ext == "bin" || ext == "bin.gz" )))
     {
       boost::archive::binary_oarchive oa(ofs);
       oa << *this;
@@ -981,27 +983,29 @@ namespace simuPOP
     if(gzipped)
       ifs.push(io::gzip_decompressor());
     ifs.push(io::file_source(filename));
-
     // do not have to test again.
     if(!ifs)
       throw ValueError("Can not open file " + filename );
 
+    // get file extension
+    string ext = fileExtension(filename);
+    
     // try to load the file, according to file extension.
     try
     {
-      if( format == "text" || (format == "auto" && filename.substr(filename.size()-4,4) == ".txt" ))
+      if( format == "text" || (format == "auto" && (ext == "txt" || ext == "txt.gz" ) ))
       {
         boost::archive::text_iarchive ia(ifs);
         ia >> *this;
       }
 #ifndef __NO_XML_SUPPORT__
-      else if (format == "xml" ||  (format == "auto" && filename.substr(filename.size()-4,4) == ".xml" ))
+      else if (format == "xml" ||  (format == "auto" && (ext == "xml" || ext == "xml.gz" ) ))
       {
         boost::archive::xml_iarchive ia(ifs);
         ia >> boost::serialization::make_nvp("population",*this);
       }
 #endif
-      else if (format == "bin" || (format == "auto" && filename.substr(filename.size()-4,4) == ".bin" ) )
+      else if (format == "bin" || (format == "auto" && (ext == "bin" || ext == "bin.gz" ) ))
       {
         boost::archive::binary_iarchive ia(ifs);
         ia >> *this;

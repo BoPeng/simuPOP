@@ -35,6 +35,9 @@ version 0.6.13 - currently available as snapshot
 				         bin: 51M,  10s load, 70s write
 				 Since load operation tends to happen more often than save,
 				 this actual write time seems to be acceptable.
+	- NEW: let simuPOP handles file.txt.gz extensions directly. Using .gz will
+		     be equilivalent to compress=True (although compress=True does not
+				 add .gz extension to the filename supplied. )
 				 
 
 version 0.6.12 - (Rev 186) - Feb 18, 2006 

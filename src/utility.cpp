@@ -2673,4 +2673,20 @@ T Expression::valueAs##TypeName() \
     getline(ifs, str);
     return str.substr(0,2) == "\037\213";
   }
+
+  const string fileExtension(const string & filename)
+  {
+    const string::size_type last_slash = filename.rfind('/');
+    string::size_type last_dot;
+    if (filename.size() > 3 && filename.substr(filename.size()-3,3) == ".gz")
+      last_dot = filename.rfind('.', filename.size()-4);
+    else
+      last_dot = filename.rfind('.');
+    if (last_dot != string::npos &&
+      (last_slash == string::npos || last_dot > last_slash))
+      return filename.substr(last_dot + 1,
+        filename.size() - (last_dot + 1));
+    else
+      return string();
+  }
 }
