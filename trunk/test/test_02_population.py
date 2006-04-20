@@ -520,8 +520,8 @@ class TestPopulation(unittest.TestCase):
         alleleNames=['1','2']) 
       InitByFreq(pop, [.2, .8])
     # .xml format may not be available (under mac)
-    for file in ['a.txt', 'a.bin', 'a.xml']:
-      if file == 'a.xml' and not supportXML():
+    for file in ['a.txt', 'a.bin', 'a.xml', 'a.txt.gz', 'a.bin.gz', 'a.xml.gz']:
+      if (file == 'a.xml' or file == 'a.xml.gz') and not supportXML():
         continue
       pop.savePopulation(file, compress=False)
       assert os.path.isfile(file)
@@ -531,6 +531,7 @@ class TestPopulation(unittest.TestCase):
       assert os.path.isfile(file)
       pop1 = LoadPopulation(file)
       os.remove(file)
+    # can load file with wrong extension
     # can load file with wrong extension
     pop.savePopulation('a.txt', format='bin')
     pop1 = LoadPopulation('a.txt')

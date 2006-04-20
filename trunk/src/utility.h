@@ -1459,5 +1459,8 @@ namespace simuPOP
 
   // check if a file is a gzipped file
   bool isGzipped(const string & filename);
+
+  // file extension, including .gz
+  const string fileExtension(const string & filename);
 }
 #endif

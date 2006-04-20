@@ -12316,6 +12316,10 @@ src/utility_la.cpp
 src/utility_laop.cpp
 src/utility_op.cpp
 src/utility_std.cpp
+src/iostreams/bzip2.cpp
+src/iostreams/file_descriptor.cpp
+src/iostreams/mapped_file.cpp
+src/iostreams/zlib.cpp
 src/serialization/basic_archive.cpp
 src/serialization/basic_archive_impl.cpp
 src/serialization/basic_iarchive.cpp
@@ -12354,7 +12358,6 @@ src/serialization/xml_oarchive.cpp
 src/serialization/xml_wgrammar.cpp
 src/serialization/xml_wiarchive.cpp
 src/serialization/xml_woarchive.cpp
-src/serialization/polymorphic_oarchive.cppsrc/serialization/stl_port.cpp
 test/test_00_carray.py
 test/test_01_individual.py
 test/test_02_population.py
