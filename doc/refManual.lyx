@@ -67,11 +67,11 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Standard
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -3621,7 +3621,7 @@ p.savePopulation
 
 \end_inset
 
-( filename, format='auto')
+( filename, format='auto', compress=True)
 \end_layout
 
 \end_inset
@@ -3652,7 +3652,7 @@ Save a population.
 \begin_layout Standard
 
 \family typewriter
-SavePopulation( pop, filename, format='auto')
+SavePopulation( pop, filename, format='auto', compress=True)
 \end_layout
 
 \end_inset
@@ -6331,6 +6331,23 @@ preview false
 \end_layout
 
 \begin_layout Standard
+Populations are by default compressed in gzip format.
+ If you are interested in viewing the content of the file, you can use 
+\family typewriter
+compress=False
+\family default
+ when saving a populaton, or decompress the saved files using 
+\family typewriter
+gzip -d 
+\family default
+command.
+ Note that although compressed file format will save a lot of disk spaces,
+ and are usually loaded faster, it will take 2 to 3 more times to save a
+ population.
+ 
+\end_layout
+
+\begin_layout Standard
 Populations can also be saved in other formats such as FSTAT so that they
  can be directly analyzed by other programs.
  These formats are not supported internally.
@@ -6401,7 +6418,7 @@ SavePopulations
 
 \end_inset
 
-([pop1,pop2,...,], filename, format='auto')
+([pop1,pop2,...,], filename, format='auto', compress=True)
 \end_layout
 
 \begin_layout Itemize

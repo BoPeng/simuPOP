@@ -28,6 +28,14 @@ version 0.6.13 - currently available as snapshot
 		     boost::iostream for instant file compression.
 	- NEW: File format change that compress population genotype before it is
 		     saved. This will greatly reduce the file size of saved populations.
+	- NEW: add compress=True option to savePopulation(). For a large file:
+		     Before: txt: 496M, 58s load, 24s write
+				         bin: 169M, 19s load, ? write
+				 Now:    txt: 66M,  25s load, 125s save
+				         bin: 51M,  10s load, 70s write
+				 Since load operation tends to happen more often than save,
+				 this actual write time seems to be acceptable.
+				 
 
 version 0.6.12 - (Rev 186) - Feb 18, 2006 
   - CHG: 'not enough case/control' in caseControlSample now generates 
