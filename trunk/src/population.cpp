@@ -977,7 +977,8 @@ namespace simuPOP
   void population::loadPopulation(const string& filename, const string& format)
   {
     io::filtering_istream ifs;
-    if(isGzipped(filename))
+    bool gzipped = isGzipped(filename);
+    if(gzipped)
       ifs.push(io::gzip_decompressor());
     ifs.push(io::file_source(filename));
 
@@ -1017,7 +1018,7 @@ namespace simuPOP
 
       // open a fresh ifstream
       io::filtering_istream ifbin;
-      if(isGzipped(filename))
+      if(gzipped)
         ifbin.push(io::gzip_decompressor());
       ifbin.push(io::file_source(filename));
 
@@ -1030,7 +1031,7 @@ namespace simuPOP
       catch(...)                                  // not binary, text?
       {
         io::filtering_istream iftxt;
-        if(isGzipped(filename))
+        if(gzipped)
           iftxt.push(io::gzip_decompressor());
         iftxt.push(io::file_source(filename));
         try
@@ -1042,7 +1043,7 @@ namespace simuPOP
         {
 #ifndef __NO_XML_SUPPORT__
           io::filtering_istream ifxml;
-          if(isGzipped(filename))
+          if(gzipped)
             ifxml.push(io::gzip_decompressor());
           ifxml.push(io::file_source(filename));
           try

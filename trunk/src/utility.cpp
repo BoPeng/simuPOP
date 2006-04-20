@@ -2655,6 +2655,7 @@ T Expression::valueAs##TypeName() \
     inflateEnd(&zst);
     return out;
   }
+#endif
 
   // GZIP	\037\213	http://www.ietf.org/rfc/rfc1952.txt
   bool isGzipped(const string & filename)
@@ -2672,5 +2673,4 @@ T Expression::valueAs##TypeName() \
     getline(ifs, str);
     return str.substr(0,2) == "\037\213";
   }
-#endif
 }

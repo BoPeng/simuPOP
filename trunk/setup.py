@@ -248,7 +248,7 @@ SERIAL_FILES = [
   'src/serialization/text_oarchive.cpp',
   'src/serialization/void_cast.cpp',
   'src/serialization/polymorphic_iarchive.cpp',
-  'src/serialization/polymorphic_oarchive.cpp'
+  'src/serialization/polymorphic_oarchive.cpp',
   'src/serialization/stl_port.cpp',
   'src/serialization/basic_pointer_iserializer.cpp',
   'src/serialization/basic_iserializer.cpp',
@@ -256,6 +256,14 @@ SERIAL_FILES = [
   'src/serialization/basic_pointer_oserializer.cpp',
   'src/serialization/basic_archive_impl.cpp'
 ]
+
+IOSTREAMS_FILES = [
+  # 'src/iostreams/bzip2.cpp',
+  'src/iostreams/mapped_file.cpp',
+  'src/iostreams/file_descriptor.cpp',
+  'src/iostreams/zlib.cpp'
+]
+
 
 if XML_SUPPORT: 
   SERIAL_FILES.extend( [
@@ -266,13 +274,14 @@ if XML_SUPPORT:
     ]
   )
 
+SRC_FILES = GSL_FILES + SERIAL_FILES + IOSTREAMS_FILES
+
 # find all test files
 DATA_FILES =  [
   ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
     'COPYING', 'TODO', 'simuPOP.release']), 
   ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
-  ('share/simuPOP/test', glob.glob('test/test_*.py') 
-  ),
+  ('share/simuPOP/test', glob.glob('test/test_*.py')),
   ('share/simuPOP/misc', ['misc/README', 'misc/python-mode.el', 'misc/emacs-python.el']),
   ('share/simuPOP/scripts', glob.glob('scripts/*.py'))
 ]
@@ -297,21 +306,21 @@ setup(
       include_dirs = ["."],
       libraries = ['stdc++', 'z'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_std')] + std_macro,
-      sources = GSL_FILES + SERIAL_FILES + MODU_SOURCE_FILES['std']
+      sources = SRC_FILES + MODU_SOURCE_FILES['std']
     ),
     Extension('_simuPOP_op',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++', 'z'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None)] + std_macro,
-      sources = GSL_FILES + SERIAL_FILES + MODU_SOURCE_FILES['op']
+      sources = SRC_FILES + MODU_SOURCE_FILES['op']
     ),
     Extension('_simuPOP_la',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++', 'z'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None) ] + std_macro,
-      sources = GSL_FILES + SERIAL_FILES + MODU_SOURCE_FILES['la']
+      sources = SRC_FILES + MODU_SOURCE_FILES['la']
     ),
     Extension('_simuPOP_laop',
       extra_compile_args=['-O3'],
@@ -319,14 +328,14 @@ setup(
       libraries = ['stdc++', 'z'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), 
                         ('OPTIMIZED', None) ] + std_macro,
-      sources = GSL_FILES + SERIAL_FILES + MODU_SOURCE_FILES['laop']
+      sources = SRC_FILES + MODU_SOURCE_FILES['laop']
     ),
     Extension('_simuPOP_ba',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
       libraries = ['stdc++', 'z'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None) ] + std_macro,
-      sources = GSL_FILES + SERIAL_FILES + MODU_SOURCE_FILES['ba']
+      sources = SRC_FILES + MODU_SOURCE_FILES['ba']
     ),
     Extension('_simuPOP_baop',
       extra_compile_args=['-O3'],
@@ -334,7 +343,7 @@ setup(
       libraries = ['stdc++', 'z'],
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None), 
                         ('OPTIMIZED', None) ] + std_macro,
-      sources = GSL_FILES + SERIAL_FILES + MODU_SOURCE_FILES['baop']
+      sources = SRC_FILES + MODU_SOURCE_FILES['baop']
     ),
   ],
   data_files = DATA_FILES

@@ -523,10 +523,13 @@ class TestPopulation(unittest.TestCase):
     for file in ['a.txt', 'a.bin', 'a.xml']:
       if file == 'a.xml' and not supportXML():
         continue
-      pop.savePopulation(file)
+      pop.savePopulation(file, compress=False)
       assert os.path.isfile(file)
       pop1 = LoadPopulation(file)
       self.assertEqual(pop, pop1)
+      pop.savePopulation(file, compress=True)
+      assert os.path.isfile(file)
+      pop1 = LoadPopulation(file)
       os.remove(file)
     # can load file with wrong extension
     pop.savePopulation('a.txt', format='bin')
