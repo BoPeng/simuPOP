@@ -3,7 +3,9 @@ ChangeLog of simuPOP
 NOTE: Daily snapshot reflects current SVN version. It includes new features and 
   bug fixes, but may be less stable than versioned releases.
 
-version 0.6.13 - currently available as snapshot
+version 0.6.14 - Currently available as daily snapshot
+
+version 0.6.13 - (Rev 278) - Apr. 20, 2006
   - NEW: Add trajectory simulation functions follows those from selSim
          and geneArtisan.
   - NEW: Add controlledMating that accept an generation only if allele
