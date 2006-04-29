@@ -3,37 +3,32 @@ simuPOP installer
 
 In case that you have modified the C++ code, or you are
 checking out simuPOP from svn repository, you need to 
-install swig >= 1.3.23 (and remove src/*wrap.cpp if they
-exist) to generate these wrap files.
+install swig >= 1.3.27 to generate the wrap files.
+
 """
 
+from distutils.core import setup, Extension
+import os, shutil, sys, glob, re
 #
 # XML_SUPPORT will be disabled for mac machines due to a bug
 # in mac/gcc. You will not be able to save population in xml 
 # format under a mac. Binary and txt formats are still supported
 # and should suffice most applications.
 #
-# If you do need XML_SUPPORT under mac, you can go to line 53
-# set XML_SUPPORT=True and try to compile.
+# If you do need XML_SUPPORT under mac, you can 
+# set XML_SUPPORT = True and try to compile.
 #
-XML_SUPPORT = True
+if os.name == 'posix' and os.uname()[0] == 'Darwin':
+  XML_SUPPORT = False
+else:
+  XML_SUPPORT = True
 
-#########################################################
-
-from distutils.core import setup, Extension
-
-import os, shutil, sys, glob, re
-
-# handle version and revision
-# 1. use environmental variable if possible
-#
 # for every official release, there will be a file recording release info
 execfile('simuPOP.release')
 std_macro = [('SIMUPOP_VER', SIMUPOP_VER), 
              ('SIMUPOP_REV', SIMUPOP_REV) ]
     
-# run swig, modify generated wrap file.
-# determine if the source if newer than _wrap files.
+# Source files
 HEADER_FILES = [
   'src/simupop_cfg.h',
   'src/utility.h',
@@ -92,7 +87,6 @@ if sys.argv[1] not in ['sdist']:
       shutil.copy('config_solaris.h', 'config.h')
     elif sysName == 'Darwin':  # MacOS
       shutil.copy('config_mac.h', 'config.h')
-      XML_SUPPORT = False
   else:
     try:
       open('config.h')
@@ -110,7 +104,6 @@ WRAP_INFO = [
   ['src/simuPOP_ba_wrap.cpp', 'src/simuPOP_ba.i', '-DBINARYALLELE'],
   ['src/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED'],
 ]  
-
 
 # if any of the wrap files does not exist
 # or if the wrap files are older than any of the source files.
@@ -264,7 +257,6 @@ IOSTREAMS_FILES = [
   'src/iostreams/zlib.cpp'
 ]
 
-
 if XML_SUPPORT: 
   SERIAL_FILES.extend( [
     'src/serialization/basic_xml_archive.cpp',
@@ -275,6 +267,8 @@ if XML_SUPPORT:
   )
 
 SRC_FILES = GSL_FILES + SERIAL_FILES + IOSTREAMS_FILES
+
+LIBRARIES = ['stdc++', 'z']
 
 # find all test files
 DATA_FILES =  [
@@ -294,9 +288,9 @@ setup(
   version = SIMUPOP_VER,
   author = "Bo Peng",
   author_email = "bpeng@rice.edu",
-  description = "Forward-based population genetics simulation framework",
+  description = "Forward-time population genetics simulation environment",
   long_description = DESCRIPTION, 
-  url = "http://bp6.stat.rice.edu:8080/simuPOP",
+  url = "http://simupop.sourceforge.net",
   package_dir = {'': 'src' }, 
   py_modules = ['simuPOP', 'simuOpt', 'simuPOP_std', 'simuPOP_op', 'simuPOP_la', 'simuPOP_laop', 
     'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop' ],
@@ -304,28 +298,28 @@ setup(
     Extension('_simuPOP_std',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
-      libraries = ['stdc++', 'z'],
+      libraries = LIBRARIES,
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_std')] + std_macro,
       sources = SRC_FILES + MODU_SOURCE_FILES['std']
     ),
     Extension('_simuPOP_op',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
-      libraries = ['stdc++', 'z'],
+      libraries = LIBRARIES,
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None)] + std_macro,
       sources = SRC_FILES + MODU_SOURCE_FILES['op']
     ),
     Extension('_simuPOP_la',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
-      libraries = ['stdc++', 'z'],
+      libraries = LIBRARIES,
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None) ] + std_macro,
       sources = SRC_FILES + MODU_SOURCE_FILES['la']
     ),
     Extension('_simuPOP_laop',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
-      libraries = ['stdc++', 'z'],
+      libraries = LIBRARIES,
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), 
                         ('OPTIMIZED', None) ] + std_macro,
       sources = SRC_FILES + MODU_SOURCE_FILES['laop']
@@ -333,14 +327,14 @@ setup(
     Extension('_simuPOP_ba',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
-      libraries = ['stdc++', 'z'],
+      libraries = LIBRARIES,
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None) ] + std_macro,
       sources = SRC_FILES + MODU_SOURCE_FILES['ba']
     ),
     Extension('_simuPOP_baop',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
-      libraries = ['stdc++', 'z'],
+      libraries = LIBRARIES,
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None), 
                         ('OPTIMIZED', None) ] + std_macro,
       sources = SRC_FILES + MODU_SOURCE_FILES['baop']

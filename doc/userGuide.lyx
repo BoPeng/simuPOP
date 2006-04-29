@@ -296,8 +296,9 @@ simuPOP also comes with an increasing number of pre-defined simulation scenarios
 
 \begin_layout Abstract
 This user's guide covers the basic usage of simuPOP, including installation,
- starting,, introduction to built-in scripts and how to write simuPOP scruots.
- Detailed information about simuPOP components is available in the 
+ starting,, introduction to built-in scripts and writting simuPOP scripts.
+ Detailed information about simuPOP components, functions and operators
+ is available in the 
 \emph on
 simuPOP Reference Manual.
 
@@ -390,7 +391,7 @@ simuPOP does not aim at any specific result or outcome.
  users will have to learn how to use the environment (various Python IDE)
  and how to programming in this language (Python and simuPOP module).
  A graphic user interface of simuPOP is planned but will not be available
- very soon (outside help needed).
+ any time soon.
  
 \end_layout
 
@@ -480,226 +481,7 @@ Features
 \begin_layout Standard
 Although you do not have to know these to use the provided scripts, you
  may be wondering what simuPOP can and can not do.
- Breifly, simuPOP provides:
-\end_layout
-
-\begin_layout Itemize
-Populations with one-level subpopulation structure.
- (no explicit family structure) There is no limit on ploidy, number of chromosom
-es, number of loci and population size.
- (depends on available RAM).
- A population can hold arbitrary number of ancestral generations (default
- to none) for easy pedigree analysis.
- Populations can be saved and loaded in text, binary, XML, Fstat, GC formats.
- Methods to deal with other formats are provided.
- Population/subpopulation sizes can be changed during mating.
- Subpopulations can be created/changed as a result of migration.
- 
-\end_layout
-
-\begin_layout Itemize
-Several replicates of populations can be evolved simultaneously.
- Mating schemes include random mating, binomial selection etc.
- Number of offsprings per mating can be dynamic.
- 
-\end_layout
-
-\begin_layout Itemize
-A wide variety of operators are provided.
- They can act on the populations at selected generations, at different stages
- of a life-cycle, on different replicate or replicate group.
- Support arbitrary migration model; K-allele, stepwise and generalized stepwise
- mutation models; uniform or non-uniform (differ-by-loci) recombinations;
- many single-locus selection model and multiplicative/additive multi-loci
- selection models.
- Hybrid operators are usually provided to model arbitrary mutation, selection
- models.
-\end_layout
-
-\begin_layout Itemize
-Built-in support for allele, genotype, heterozygote, haplotype number/frequency
- calculation, as well as some more complicated statistics like 
-\begin_inset Formula $F_{st}$
-\end_inset
-
-.
- Other statistics can be calculated from these basic statistics.
-\end_layout
-
-\begin_layout Itemize
-Visualization through Python/SciPY, Python/MatPlotLib or RPy (use R through
- Python).
- R/Rpy is recommended.
-\end_layout
-
-\begin_layout Standard
-A more comprehensice feature list can be found in the 
-\emph on
-simuPOP Reference Manual
-\emph default
-.
-\end_layout
-
-\begin_layout Section
-Comparison to Coalescence-Based Approaches
-\end_layout
-
-\begin_layout Standard
-The basic idea of Coalescent simulations (
-\begin_inset LatexCommand \citealt{Kingman1982}
-
-\end_inset
-
-) is to trace the sample back in time, coalesce individuals to their common
- ancestor according to a stochastic processes characterized by mutation,
- recombination etc.
- After the common ancestor of all individuals is found, the simulation go
- forward in time and specify the type of each branch.
- Such simulations can deal with a number of mutation, recombination, migration,
- and population size change models.
- Because such simulations work directly on samples, they can obtain large
- samples quickly.
- 
-\end_layout
-
-\begin_layout Standard
-Among these simulatable models, coalescent-based simulations can deal with
- mutation and migration quite well but less optimal for population size
- change.
- Available programs typically only deal with exponential growth/shrink of
- population size.
- This might be an artifact of program interface though, because it is difficult
- to specify complicated population size changes.
- Due to theoretical limitations, such simulations can only simulate neutral
- processes, i.e., no selection is allowed.
- 
-\end_layout
-
-\begin_layout Standard
-Some coalescent-type processes that can simulate non-neutral processes are
- proposed, including ancestral selection graph (ASG, 
-\begin_inset LatexCommand \citealt{Krone1997}
-
-\end_inset
-
-), ancestral influence graph (AIG, 
-\begin_inset LatexCommand \citealt{Donnelly1999}
-
-\end_inset
-
-) and complex selection graph (CSG, 
-\begin_inset LatexCommand \citealt{Fearnhead2003}
-
-\end_inset
-
-).
- However, these are specialized processes that do not seem to work well
- with other models such as migration and population size change.
- None of the currently available simulation program provides these models.
-\end_layout
-
-\begin_layout Standard
-Coalescent-based simulations have the following drawbacks:
-\end_layout
-
-\begin_layout Itemize
-cannot provide history of population statistics.
- Coalescent-based simulations are driven by coalescent events, not by generation
-s.
- Individuals that are not related to the final gene tree are ignored.
- The effective 'sample size' of previous generations shrink quickly and
- cannot provide good allele frequency estimates.
- 
-\end_layout
-
-\begin_layout Itemize
-cannot handle selection, at least with currently available software.
-\end_layout
-
-\begin_layout Itemize
-cannot handle very complex simulations.
- Due to the complexity of coalescent theory, it is not easy to add unusual
- genetic/environmental forces to a coalescent-based program.
- This is why every such program has a clear limit what can be simulated.
- 
-\end_layout
-
-\begin_layout Itemize
-Maybe most importantly, the back-in-time approach of coalescent simulation
- is counterintuitive and not suitable for some studies.
- For example, it is difficult, if possible at all, to think of a coalescent
- process that simulate this simple scenario: given two populations with
- different initial allele frequencies and allow certain level of migrate,
- what will the allele frequency be in our sample? I am not an expert on
- coalescent, but I guess the existence of a virtual common ancestor for
- all individuals limits the power of coalescent-based simulations.
-\end_layout
-
-\begin_layout Standard
-Forward-based simulations are in general considered traditional.
- They create an initial population; evolve it forward in time, subject to
- various kind of genetic or environmental forces.
- Samples are drawn from the last generation(s).
- The drawback of this approach is clear: realistic simulations of large
- populations are too computationally intensive, and most of the CPU power
- will be `wasted' on unrelated individuals when we simulate rare diseases.
- This is why most recent simulation programs are coalescent-based.
- 
-\end_layout
-
-\begin_layout Standard
-However, forward-based simulations do not have any of the drawbacks as mentioned
- above for coalescent-based simulations.
- They are easy to understand because they agree with our usual understanding
- of evolution.
- The biggest advantage of forward simulations is that they can simulate
- arbitrary complex evolutionary processes.
- Since such simulations work on the whole population step by step, it is
- easy to trace the population statistics closely.
- Arbitrary genetic or environmental forces can be applied at arbitrary intensity
- and frequency.
- However, realistic forward-based simulations require large population size
- and long generations.
- This consequently requires large RAM and fast CPU.
- This is why forward simulations were not able to simulate large populations
- and were used primarily for demonstration purposes.
-\end_layout
-
-\begin_layout Standard
-Fortunately, the power of personal computers has improved dramatically which
- makes such simulations a lot more feasible than that of several years ago.
- After aggressive optimization, as of writing, simuPOP can handle a simulation
- of 400,000 individuals under the forces of mutation, recombination, migration
- on a PC equipped with 2.8G Pentium IV processor and 1G reasanably fast.
- (around 30s per generation.)
-\end_layout
-
-\begin_layout Section
-Design
-\end_layout
-
-\begin_layout Standard
-simuPOP is written in C++ and uses 
-\begin_inset LatexCommand \htmlurl[python]{http://www.python.org}
-
-\end_inset
-
- as its user interface and extension language.
- Users can develop/debug simulations using Python shell interactively and
- run them as python scripts.
- Python expressions, statements can be used to pass dynamic variables, calculate
- population statistics, call hybrid operators (will explain later) or write
- operators from scratch.
- This flexibility gives simuPOP the power to simulate almost all evolutionary
- scenarios.
-\end_layout
-
-\begin_layout Section
-simuPOP Features
-\end_layout
-
-\begin_layout Standard
-Currently, simuPOP provides the following features:
+ Currently, simuPOP provides the following features:
 \end_layout
 
 \begin_layout Itemize
@@ -822,6 +604,144 @@ Built-in ascertainment methods
 Maybe most importantly: 
 \emph on
 a complete and detailed reference manual!
+\end_layout
+
+\begin_layout Section
+Comparison to Coalescence-Based Approaches
+\end_layout
+
+\begin_layout Standard
+The basic idea of Coalescent simulations (
+\begin_inset LatexCommand \citealt{Kingman1982}
+
+\end_inset
+
+) is to trace the sample back in time, coalesce individuals to their common
+ ancestor according to a stochastic processes characterized by mutation,
+ recombination etc.
+ After the common ancestor of all individuals is found, the simulation go
+ forward in time and specify the type of each branch.
+ Such simulations can deal with a number of mutation, recombination, migration,
+ and population size change models.
+ Because such simulations work directly on samples, they can obtain large
+ samples quickly.
+ 
+\end_layout
+
+\begin_layout Standard
+Among these simulatable models, coalescent-based simulations can deal with
+ mutation and migration quite well but less optimal for population size
+ change.
+ Available programs typically only deal with exponential growth/shrink of
+ population size.
+ This might be an artifact of program interface though, because it is difficult
+ to specify complicated population size changes.
+ Due to theoretical limitations, such simulations can only simulate neutral
+ processes, i.e., no selection is allowed.
+ 
+\end_layout
+
+\begin_layout Standard
+Some coalescent-type processes that can simulate non-neutral processes are
+ proposed, including ancestral selection graph (ASG, 
+\begin_inset LatexCommand \citealt{Krone1997}
+
+\end_inset
+
+), ancestral influence graph (AIG, 
+\begin_inset LatexCommand \citealt{Donnelly1999}
+
+\end_inset
+
+) and complex selection graph (CSG, 
+\begin_inset LatexCommand \citealt{Fearnhead2003}
+
+\end_inset
+
+).
+ However, these are specialized processes that do not seem to work well
+ with other models such as migration and population size change.
+ None of the currently available simulation program provides these models.
+\end_layout
+
+\begin_layout Standard
+Coalescent-based simulations have the following drawbacks:
+\end_layout
+
+\begin_layout Itemize
+can simulate haploid sequence only
+\end_layout
+
+\begin_layout Itemize
+cannot provide history of population statistics.
+ Coalescent-based simulations are driven by coalescent events, not by generation
+s.
+ Individuals that are not related to the final gene tree are ignored.
+ The effective 'sample size' of previous generations shrink quickly and
+ cannot provide good allele frequency estimates.
+ 
+\end_layout
+
+\begin_layout Itemize
+cannot handle selection, at least with currently available software.
+\end_layout
+
+\begin_layout Itemize
+cannot handle very complex simulations.
+ Due to the complexity of coalescent theory, it is not easy to add unusual
+ genetic/environmental forces to a coalescent-based program.
+ This is why every such program has a clear limit what can be simulated.
+ 
+\end_layout
+
+\begin_layout Itemize
+Maybe most importantly, the back-in-time approach of coalescent simulation
+ is counterintuitive and not suitable for some studies.
+ For example, it is difficult, if possible at all, to think of a coalescent
+ process that simulate this simple scenario: given two populations with
+ different initial allele frequencies and allow certain level of migrate,
+ what will the allele frequency be in our sample? I am not an expert on
+ coalescent, but I guess the existence of a virtual common ancestor for
+ all individuals limits the power of coalescent-based simulations.
+\end_layout
+
+\begin_layout Standard
+Forward-based simulations are in general considered traditional.
+ They create an initial population; evolve it forward in time, subject to
+ various kind of genetic or environmental forces.
+ Samples are drawn from the last generation(s).
+ The drawback of this approach is clear: realistic simulations of large
+ populations are too computationally intensive, and most of the CPU power
+ will be `wasted' on unrelated individuals when we simulate rare diseases.
+ This is why most recent simulation programs are coalescent-based.
+ 
+\end_layout
+
+\begin_layout Standard
+However, forward-based simulations do not have any of the drawbacks as mentioned
+ above for coalescent-based simulations.
+ They are easy to understand because they agree with our usual understanding
+ of evolution.
+ The biggest advantage of forward simulations is that they can simulate
+ arbitrary complex evolutionary processes.
+ Since such simulations work on the whole population step by step, it is
+ easy to trace the population statistics closely.
+ Arbitrary genetic or environmental forces can be applied at arbitrary intensity
+ and frequency.
+ However, realistic forward-based simulations require large population size
+ and long generations.
+ This consequently requires large RAM and fast CPU.
+ This is why forward simulations were not able to simulate large populations
+ and were used primarily for demonstration purposes.
+\end_layout
+
+\begin_layout Standard
+Fortunately, the power of personal computers has improved dramatically which
+ makes such simulations a lot more feasible than that of several years ago.
+ After aggressive optimization, as of writing, simuPOP can handle a simulation
+ of 400,000 individuals under the forces of mutation, recombination, migration
+ on a PC equipped with 2.8G Pentium IV processor and 1G reasanably fast.
+ (around 30s per generation.)
 \end_layout
 
 \begin_layout Section
