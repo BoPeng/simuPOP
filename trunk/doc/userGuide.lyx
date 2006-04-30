@@ -361,8 +361,8 @@ simuPOP
  simuPOP allows users to control every aspects of the evolutionary process
  and observe the details at each generation.
  For example, users can start with a population of identical individuals,
- manually introduce a mutant and observe the spreading of this mutant in
- the population from generation to generation.
+ manually introduce a mutant and observe the spread of this mutant in the
+ population from generation to generation.
  Population substructure, recombination, migration, selection etc can be
  added to the simulation as needed.
  
@@ -389,7 +389,7 @@ simuPOP does not aim at any specific result or outcome.
  to assemble a simulation and study its properties.
  Just like any such programming environments such as R/Splus and Matlab,
  users will have to learn how to use the environment (various Python IDE)
- and how to programming in this language (Python and simuPOP module).
+ and how to program in this language (Python and the simuPOP module).
  A graphic user interface of simuPOP is planned but will not be available
  any time soon.
  
@@ -397,24 +397,7 @@ simuPOP does not aim at any specific result or outcome.
 
 \begin_layout Standard
 On the other hand, simuPOP also has an increasing number of built-in scripts.
- They fall into the following categories:
-\end_layout
-
-\begin_layout Itemize
-Realizations of simple genetic models from standard population genetics
- textbooks,
-\end_layout
-
-\begin_layout Itemize
-Generating datasets under various evolutionary assumptions,
-\end_layout
-
-\begin_layout Itemize
-tools to convert between data formats, apply gene mapping methods etc
-\end_layout
-
-\begin_layout Standard
-These script are written in simuPOP/Python language and can be used without
+ These script are written in simuPOP/Python language and can be used without
  knowing their underlying machanisim.
  It is strongly recommended that users of simuPOP submit their own scripts
  to his collection and make simuPOP more and more accessible to time-limited
@@ -432,10 +415,9 @@ Teaching tool for population genetic courses.
  of scripts distributed with simuPOP.
  Compared to other existing programs, the biggest advantage of simuPOP is
  its flexibility.
- There is no limit on the complexity of the simulation and student can change
- the script and try new things (such as viewing another statistics or adding
- another genetic force) at will.
- 
+ There is no limit on the complexity of the simulation and students can
+ change the script and try new things (such as viewing another statistics
+ or adding another genetic force) at will.
 \end_layout
 
 \begin_layout Itemize

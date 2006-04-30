@@ -1,11 +1,8 @@
 #
 # This script will genreate code/result pieces
-# that will be inserted into user's guide
+# that will be inserted into simuPOP user's guide
+# and reference manual
 # 
-# F11 will be used to generate a seemingly interactive
-# version.
-#
-#
 # #file_begin file
 #
 # #file_end file
