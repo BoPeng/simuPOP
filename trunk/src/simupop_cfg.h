@@ -130,99 +130,99 @@ typedef std::map<int, double>              intDict;
 
 namespace simuPOP
 {
-  /// exception handler. Exceptions will be passed to Python.
-  class Exception
-  {
-    public:
+	/// exception handler. Exceptions will be passed to Python.
+	class Exception
+	{
+		public:
 
-      /// constructor
-      /// \param msg error message
-      Exception(string msg):m_msg(msg){}
+			/// constructor
+			/// \param msg error message
+			Exception(string msg):m_msg(msg){}
 
-      /// return error message
-      const char* message(){ return m_msg.c_str(); }
+			/// return error message
+			const char* message(){ return m_msg.c_str(); }
 
-      virtual ~Exception(){};
+			virtual ~Exception(){};
 
-    private:
-      /// error message
-      string m_msg;
-  };
+		private:
+			/// error message
+			string m_msg;
+	};
 
-  /// exception, thrown if out of memory
-  class OutOfMemory: public Exception
-  {
-    public:
-      OutOfMemory(string msg):Exception(msg){};
-  };
+	/// exception, thrown if out of memory
+	class OutOfMemory: public Exception
+	{
+		public:
+			OutOfMemory(string msg):Exception(msg){};
+	};
 
-  /// exception, thrown if file io failure
-  class IOError: public Exception
-  {
-    public:
-      IOError(string msg):Exception(msg){};
-  };
+	/// exception, thrown if file io failure
+	class IOError: public Exception
+	{
+		public:
+			IOError(string msg):Exception(msg){};
+	};
 
-  /// exception, thrown if index out of range
-  class IndexError: public Exception
-  {
-    public:
-      IndexError(string msg):Exception(msg){};
-  };
+	/// exception, thrown if index out of range
+	class IndexError: public Exception
+	{
+		public:
+			IndexError(string msg):Exception(msg){};
+	};
 
-  /// exception, thrown if type mismatch
-  class TypeError: public Exception
-  {
-    public:
-      TypeError(string msg):Exception(msg){};
-  };
+	/// exception, thrown if type mismatch
+	class TypeError: public Exception
+	{
+		public:
+			TypeError(string msg):Exception(msg){};
+	};
 
-  /// exception, thrown if value of range etc
-  class ValueError: public Exception
-  {
-    public:
-      ValueError(string msg):Exception(msg){};
-  };
+	/// exception, thrown if value of range etc
+	class ValueError: public Exception
+	{
+		public:
+			ValueError(string msg):Exception(msg){};
+	};
 
-  /// exception, thrown if system error occurs
-  class SystemError: public Exception
-  {
-    public:
-      SystemError(string msg):Exception(msg){};
-  };
+	/// exception, thrown if system error occurs
+	class SystemError: public Exception
+	{
+		public:
+			SystemError(string msg):Exception(msg){};
+	};
 
-  // define DEBUG codes
-  // DEbUG_CODE_LENGTH should be the number of debug codes
+	// define DEBUG codes
+	// DEbUG_CODE_LENGTH should be the number of debug codes
 #define DBG_CODE_LENGTH 20
 
-  enum DBG_CODE
-  {
-    DBG_ALL=0,
-    DBG_GENERAL=1,
-    DBG_UTILITY=2,
-    DBG_OPERATOR=3,
-    DBG_SIMULATOR=4,
-    DBG_INDIVIDUAL=5,
-    DBG_OUTPUTER=6,
-    DBG_MUTATOR=7,
-    DBG_RECOMBINATOR=8,
-    DBG_INITIALIZER=9,
-    DBG_POPULATION=10,
-    DBG_STAT=11,
-    DBG_TERMINATOR=12,
-    DBG_TAGGER=13,
-    DBG_VISUALIZER=14,
-    DBG_SELECTOR=15,
-    DBG_MATING=16,
-    DBG_MIGRATOR=17,
-    DBG_PROFILE=18,
-    DBG_DEVEL=19
-  };
+	enum DBG_CODE
+	{
+		DBG_ALL=0,
+		DBG_GENERAL=1,
+		DBG_UTILITY=2,
+		DBG_OPERATOR=3,
+		DBG_SIMULATOR=4,
+		DBG_INDIVIDUAL=5,
+		DBG_OUTPUTER=6,
+		DBG_MUTATOR=7,
+		DBG_RECOMBINATOR=8,
+		DBG_INITIALIZER=9,
+		DBG_POPULATION=10,
+		DBG_STAT=11,
+		DBG_TERMINATOR=12,
+		DBG_TAGGER=13,
+		DBG_VISUALIZER=14,
+		DBG_SELECTOR=15,
+		DBG_MATING=16,
+		DBG_MIGRATOR=17,
+		DBG_PROFILE=18,
+		DBG_DEVEL=19
+	};
 
-  // DBG_NAMES are defined in utility.cpp
-  // if you add any debug code here, you need to add its name
-  // in utility.cpp as well. Otherwise, turnOnDebug, turnOffDebug
-  // etc will be function well.
+	// DBG_NAMES are defined in utility.cpp
+	// if you add any debug code here, you need to add its name
+	// in utility.cpp as well. Otherwise, turnOnDebug, turnOffDebug
+	// etc will be function well.
 
 #define REP_ALL             -2
 #define REP_CUR             -2
@@ -231,36 +231,36 @@ namespace simuPOP
 #define PreMating            1
 #define DuringMating         2
 #define PostMating           4
-  // combinations of mating scheme.
+	// combinations of mating scheme.
 #define PrePostMating        (PreMating+PostMating)
 #define PreDuringMating      (PreMating+DuringMating)
 #define DuringPostMating     (DuringMating+PostMating)
 #define PreDuringPostMating  (PreMating+DuringMating+PostMating)
 
-  // used to set local variables
+	// used to set local variables
 #define subPopVar_String(sp, var) (string("subPop[") + toStr(sp) + "]{\'" + var + "\'}")
 
-  // standard library
+	// standard library
 #ifndef OPTIMIZED
 
 #define DBG_ASSERT(cond, exception, message) \
 if(!(cond)) \
 { \
-  throw exception( \
-  toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
+	throw exception( \
+	toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
 }
 
 #define DBG_FAILIF(cond, exception, message) \
 if(cond) \
 { \
-  throw exception( \
-  toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
+	throw exception( \
+	toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
 }
 
 #define DBG_WARNING(cond, message) \
 if(cond) \
 { \
-  cout << "Warning (line " << __LINE__ << " in " << __FILE__ << "): " << message << endl; \
+	cout << "Warning (line " << __LINE__ << " in " << __FILE__ << "): " << message << endl; \
 }
 
 #define DBG_DO(dbgCode, expr) \
@@ -268,7 +268,7 @@ if(debug(dbgCode)){ expr; }
 
 #define DBG_DO_( expr) expr
 
-#else                                           // optimized mode
+#else										  // optimized mode
 
 #define DBG_ASSERT(cond, exception, message)
 #define DBG_FAILIF(cond, exception, message)
@@ -277,9 +277,9 @@ if(debug(dbgCode)){ expr; }
 #define DBG_DO_(expr)
 #endif
 
-        // definition for all mode
+				// definition for all mode
 
-        // epsilon when during floating point comparison
+				// epsilon when during floating point comparison
 #define cmp_epsilon (1.e-9)
 
 #define CLEARFLAG(var) (var = 0)
@@ -287,7 +287,7 @@ if(debug(dbgCode)){ expr; }
 #define RESETFLAG(var, flag) (var &= ~flag)
 #define ISSETFLAG(var, flag) (var & flag)
 
-        // check range.
+				// check range.
 #define CHECKRANGEPLOIDY(p)  DBG_FAILIF( p>=ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy()-1))
 #define CHECKRANGESEX(sex) DBG_FAILIF( sex!=Male && sex!=Female, IndexError, "Wrong sex info. Male " + toStr(Male) + " or Fenamle "  + toStr(Female) + " only.")
 #define CHECKRANGESUBPOP(subPop) DBG_FAILIF ( subPop >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  - " + toStr(numSubPop()-1))

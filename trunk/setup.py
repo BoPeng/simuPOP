@@ -113,7 +113,7 @@ if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in range(len(WRAP_INFO))]) o
   try:
     # for swig >= 1.3.28
     SWIG1 = 'swig -O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
-    # for swig <= 1.3.27, >= 1.3.25
+    # for swig from 1.3.25 to 1.3.27
     SWIG2 = 'swig -shadow -c++ -python -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525'
     # generate header file 
     print "Generating external runtime header file..."
@@ -251,7 +251,6 @@ SERIAL_FILES = [
 ]
 
 IOSTREAMS_FILES = [
-  # 'src/iostreams/bzip2.cpp',
   'src/iostreams/mapped_file.cpp',
   'src/iostreams/file_descriptor.cpp',
   'src/iostreams/zlib.cpp'
