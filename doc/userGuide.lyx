@@ -411,8 +411,6 @@ As a summary, simuPOP is suitable for the following applications:
 
 \begin_layout Itemize
 Teaching tool for population genetic courses.
- Teachers can write their own scripts or choose from an increasing number
- of scripts distributed with simuPOP.
  Compared to other existing programs, the biggest advantage of simuPOP is
  its flexibility.
  There is no limit on the complexity of the simulation and students can
@@ -422,16 +420,6 @@ Teaching tool for population genetic courses.
 
 \begin_layout Itemize
 Generating samples that can be analyzed by other programs.
- simuPOP is capable of sampling from populations and outputting them in
- many different formats.
- However, it is totally up to the user to generate proper populations from
- which the sample will be drawn.
- Things that need to be considered includes population size, genotype of
- starting population(s), mutation, migration, recombination, selection and
- their magnitude, number of generations to evolve, statistical property
- to achieve etc.
- Some scripts are provided to generate datasets under quite complicated
- evolutionary settings.
  
 \end_layout
 
@@ -446,24 +434,12 @@ ns frown.
  Forward-based simulation does not have this problem, at a cost of performance.
 \end_layout
 
-\begin_layout Standard
-This user's guide convers the basic usage of simuPOP, including installation,
- starting, and introduction to some built-in scripts.
- Details about simuPOP/Python language will be given in 
-\emph on
-the simuPOP reference manual
-\emph default
-.
-\end_layout
-
 \begin_layout Section
 Features
 \end_layout
 
 \begin_layout Standard
-Although you do not have to know these to use the provided scripts, you
- may be wondering what simuPOP can and can not do.
- Currently, simuPOP provides the following features:
+Currently, simuPOP provides the following features:
 \end_layout
 
 \begin_layout Itemize
@@ -735,256 +711,7 @@ After installation, you should have the following files and directories
 \end_layout
 
 \begin_layout Description
-\begin_inset ERT
-status open
 
-\begin_layout Standard
-
-simuPOP.py
-\end_layout
-
-\end_inset
-
- The wrapper library of real simuPOP libraries.
- It loads appropriate library according to
-\family typewriter
- 
-\family default
-command line, environment variable or 
-\family typewriter
-simuOpt 
-\family default
-options.
-\end_layout
-
-\begin_layout Description
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-simuOpt.py
-\end_layout
-
-\end_inset
-
- simuPOP options.
- Allow simuPOP to load standard/optimized, short/long allele version of
- the library.
-\end_layout
-
-\begin_layout Description
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
-simuPOP_std.py, 
-\backslash
-_simuPOP_std.so
-\end_layout
-
-\end_inset
-
- The python/C++ portion of the standard library, file extension is platform
- dependent.
- Usually installed under site-packages.
-\end_layout
-
-\begin_layout Description
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
-simuPOP
-\backslash
-_op.py, 
-\backslash
-_simuPOP
-\backslash
-_op.so
-\end_layout
-
-\end_inset
-
- Optimized version of the library.
- This library does not have any parameter check, boundary check, debugging
- info and can be 50% faster than the standard library.
- It is highly recommended that you use this library after you make sure
- the simulation runs correctly with the standard library.
- Usually installed under site-packages.
-\end_layout
-
-\begin_layout Description
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-simuPOP
-\backslash
-_la.py, 
-\backslash
-_simuPOP
-\backslash
-_la.so, simuPOP
-\backslash
-_laop.py, 
-\backslash
-_simuPOP
-\backslash
-_laop.so
-\end_layout
-
-\end_inset
-
- Long-allele (standard/optimized) version of the library.
- simuPOP's locus, by default, has at most 255 alleles.
- If this imposes a restriction to your application, you can use 
-\family typewriter
-simuPOP_la
-\family default
- instead of the standard library.
- This library uses 4 bytes to store an allele so the memory usage is roughly
- four times of the standard library.
- Note that many currently available population programs have their own max
- allele limits.
- For example, current version of 
-\family typewriter
-fstat
-\family default
- can handle at most 999 alleles.
-\end_layout
-
-\begin_layout Description
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-simuPOP
-\backslash
-_ba.py, 
-\backslash
-_simuPOP
-\backslash
-_ba.so, simuPOP
-\backslash
-_baop.py, 
-\backslash
-_simuPOP
-\backslash
-_baop.so
-\end_layout
-
-\end_inset
-
- Binary-allele (standard/optimized) version of the library.
- This library uses a bit to store an allele so the memory usage is roughly
- one eighth of the standard library.
- Obviously, this is 
-\emph on
-the 
-\emph default
-library to simulate large amount of SNP markers.
-\end_layout
-
-\begin_layout Description
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
-simuUtil.py, simuSciPy.py, simuMatPlt.py, simuRPy.py 
-\end_layout
-
-\end_inset
-
- 
-\family typewriter
-simuUtil.py
-\family default
- includes some (and will have more) frequently used operators and functions
- to calculate popular population statistics.
- 
-\family typewriter
-simuSciPy.py 
-\family default
-including a 
-\family typewriter
-varPlotter 
-\family default
-to plot variables using the 
-\family typewriter
-gplt 
-\family default
-package of
-\family typewriter
- SciPy
-\family default
-.
- 
-\family typewriter
-simuMatPlt 
-\family default
-is the same 
-\family typewriter
-varPlotter 
-\family default
-but uses
-\family typewriter
- matplotlib
-\family default
- package.
- These are usually installed under site-packages.
-\end_layout
-
-\begin_layout Description
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
-README, ChangeLog, etc.
-\end_layout
-
-\end_inset
-
- Standard readme, installation, license notification files, etc.
- Installed under 
-\family typewriter
-share/simuPOP
-\family default
- of 
-\family typewriter
-/usr
-\family default
- or Python root.
-\end_layout
-
-\begin_layout Description
-doc this file in PDF format and 
-\family typewriter
-userGuide.py
-\family default
-.
- Installed under share/simuPOP.
-\end_layout
-
-\begin_layout Description
-test test scripts.
- 
-\end_layout
-
-\begin_layout Description
-misc some utilities to help you use simuPOP.
- See 
-\family typewriter
-README
-\family default
- under this directory for details.
- Installed under share/simuPOP.
 \end_layout
 
 \begin_layout Standard
@@ -1510,7 +1237,7 @@ Due to the open-source nature of Python, there are many variants of Python.
 \end_layout
 
 \begin_layout Standard
-simuPOP is developed under the newest Python (version 2.4.1 since simuPOP0.6.5)
+simuPOP is developed under the newest Python (version 2.4.1 since simuPOP-0.6.5)
  but binary libraries are sometimes compiled using earlier versions.
  As a guideline, you should
 \end_layout
