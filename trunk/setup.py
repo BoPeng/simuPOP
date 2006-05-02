@@ -8,6 +8,7 @@ install swig >= 1.3.27 to generate the wrap files.
 """
 
 from distutils.core import setup, Extension
+from distutils.ccompiler import *
 import os, shutil, sys, glob, re
 #
 # XML_SUPPORT will be disabled for mac machines due to a bug
@@ -157,6 +158,13 @@ evolutionary scenarios. simuPOP is currently bundled with a Python
 binding of coaSim.
 """
 
+def buildStaticLibrary(sourceFiles, libName, libDir):
+  '''Build libraries to be linked to simuPOP modules'''
+  # get a c compiler
+  comp = new_compiler()
+  objFiles = comp.compile(sourceFiles)
+  comp.create_static_lib(objFiles, libName, libDir)
+      
 GSL_FILES = [ 
   'gsl/sys/infnan.c',
   'gsl/sys/coerce.c',
@@ -225,6 +233,7 @@ GSL_FILES = [
   'gsl/error.c' 
 ]
 
+
 SERIAL_FILES = [
   'src/serialization/basic_archive.cpp',
   'src/serialization/basic_iarchive.cpp',
@@ -265,9 +274,12 @@ if XML_SUPPORT:
     ]
   )
 
-SRC_FILES = GSL_FILES + SERIAL_FILES + IOSTREAMS_FILES
+print "Building supporting libraries (gsl, boost/serialization, boost/iostreams) "
+buildStaticLibrary(GSL_FILES, 'gsl', 'build')
+buildStaticLibrary(SERIAL_FILES, 'serial', 'build')
+buildStaticLibrary(IOSTREAMS_FILES, 'iostreams', 'build')
 
-LIBRARIES = ['stdc++', 'z']
+LIBRARIES = ['stdc++', 'z', 'gsl', 'serial', 'iostreams']
 
 # find all test files
 DATA_FILES =  [
@@ -297,46 +309,52 @@ setup(
     Extension('_simuPOP_std',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
+      library_dirs = ['build'],
       libraries = LIBRARIES,
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_std')] + std_macro,
-      sources = SRC_FILES + MODU_SOURCE_FILES['std']
+      sources = MODU_SOURCE_FILES['std']
     ),
     Extension('_simuPOP_op',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
+      library_dirs = ['build'],
       libraries = LIBRARIES,
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None)] + std_macro,
-      sources = SRC_FILES + MODU_SOURCE_FILES['op']
+      sources = MODU_SOURCE_FILES['op']
     ),
     Extension('_simuPOP_la',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
+      library_dirs = ['build'],
       libraries = LIBRARIES,
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None) ] + std_macro,
-      sources = SRC_FILES + MODU_SOURCE_FILES['la']
+      sources = MODU_SOURCE_FILES['la']
     ),
     Extension('_simuPOP_laop',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
+      library_dirs = ['build'],
       libraries = LIBRARIES,
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), 
                         ('OPTIMIZED', None) ] + std_macro,
-      sources = SRC_FILES + MODU_SOURCE_FILES['laop']
+      sources = MODU_SOURCE_FILES['laop']
     ),
     Extension('_simuPOP_ba',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
+      library_dirs = ['build'],
       libraries = LIBRARIES,
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None) ] + std_macro,
-      sources = SRC_FILES + MODU_SOURCE_FILES['ba']
+      sources = MODU_SOURCE_FILES['ba']
     ),
     Extension('_simuPOP_baop',
       extra_compile_args=['-O3'],
       include_dirs = ["."],
+      library_dirs = ['build'],
       libraries = LIBRARIES,
       define_macros = [ ('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None), 
                         ('OPTIMIZED', None) ] + std_macro,
-      sources = SRC_FILES + MODU_SOURCE_FILES['baop']
+      sources = MODU_SOURCE_FILES['baop']
     ),
   ],
   data_files = DATA_FILES
