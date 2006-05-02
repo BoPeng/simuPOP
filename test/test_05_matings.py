@@ -166,28 +166,6 @@ class TestMatingSchemes(unittest.TestCase):
     # then , with frequency dependent?
     #print path.numTraj(), path.maxLen(), path.traj(0), path.traj(1)
  
-  def checkRoot(self):
-    'Testing the algorithm'
-    for s1 in [ x/200. - 0.9 for x in range(400) ]:
-      for s2 in [ x/200. - 0.9 for x in range(400) ]:
-        for x in [ x/100. for x in range(0,100)]:
-          a = s2*x-2*s1*x-s2+s1
-          if a == 0:
-            continue
-          b = 2*s1*x - 1 - s1
-          c = x
-          b4ac = b*b-4*a*c
-          if b4ac < 0:
-            raise exceptions.ValueError("b2ac<0")
-          y1 = (-b+math.sqrt(b4ac))/(2*a)
-          y2 = (-b-math.sqrt(b4ac))/(2*a)
-          if (y1 < 0 or y1 > 1) and (y2 < 0 or y2 > 1):
-            print s1,s2,x,a,b,c,y1,y2
-            #raise exceptions.ValueError("no valid solution")
-          if (y1 >= 0 and y1 <= 1) and (y2 >= 0 and y2 <= 1):
-            print "over", s1,s2,x,a,b,c,y1,y2
-            #raise exceptions.ValueError("no valid solution")
-
   def testControlledMating(self):
     'Testing controlled mating'
     # planned trajectory
