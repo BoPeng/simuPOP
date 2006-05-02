@@ -8,8 +8,9 @@ install swig >= 1.3.27 to generate the wrap files.
 """
 
 from distutils.core import setup, Extension
-from distutils.ccompiler import *
-import os, shutil, sys, glob, re
+from distutils.ccompiler import new_compiler
+
+import os, shutil, sys, glob, re, optparse
 #
 # XML_SUPPORT will be disabled for mac machines due to a bug
 # in mac/gcc. You will not be able to save population in xml 
@@ -158,11 +159,11 @@ evolutionary scenarios. simuPOP is currently bundled with a Python
 binding of coaSim.
 """
 
-def buildStaticLibrary(sourceFiles, libName, libDir):
+def buildStaticLibrary(sourceFiles, libName, libDir, compiler):
   '''Build libraries to be linked to simuPOP modules'''
   # get a c compiler
-  comp = new_compiler()
-  objFiles = comp.compile(sourceFiles)
+  comp = new_compiler(compiler=compiler, verbose=True)
+  objFiles = comp.compile(sourceFiles, include_dirs=['.'])
   comp.create_static_lib(objFiles, libName, libDir)
       
 GSL_FILES = [ 
@@ -275,9 +276,18 @@ if XML_SUPPORT:
   )
 
 print "Building supporting libraries (gsl, boost/serialization, boost/iostreams) "
-buildStaticLibrary(GSL_FILES, 'gsl', 'build')
-buildStaticLibrary(SERIAL_FILES, 'serial', 'build')
-buildStaticLibrary(IOSTREAMS_FILES, 'iostreams', 'build')
+# parse options and look for --compiler
+parser = optparse.OptionParser()
+parser.add_option('', '--compiler')
+(options, args) = parser.parse_args()
+# get a c compiler
+if not options.compiler:
+  print "Using default compiler"
+else:
+  print "Using compiler ", options.compiler
+buildStaticLibrary(GSL_FILES, 'gsl', 'build', options.compiler)
+buildStaticLibrary(SERIAL_FILES, 'serial', 'build', options.compiler)
+buildStaticLibrary(IOSTREAMS_FILES, 'iostreams', 'build', options.compiler)
 
 LIBRARIES = ['stdc++', 'z', 'gsl', 'serial', 'iostreams']
 
