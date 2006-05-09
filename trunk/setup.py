@@ -289,7 +289,15 @@ buildStaticLibrary(GSL_FILES, 'gsl', 'build', options.compiler)
 buildStaticLibrary(SERIAL_FILES, 'serial', 'build', options.compiler)
 buildStaticLibrary(IOSTREAMS_FILES, 'iostreams', 'build', options.compiler)
 
-LIBRARIES = ['stdc++', 'z', 'gsl', 'serial', 'iostreams']
+LIBRARIES = ['stdc++', 'gsl', 'serial', 'iostreams']
+
+if os.name == 'nt':
+  # PLEASE: get zlib1.dll from www.zlib.org and unpack to c:/windows
+  LIBRARIES += ['zlib1']
+  EXTRA_COMPILER_ARGS = ['-O3', '-Lc:/windows']
+else:
+  LIBRARYIES += ['z']
+  EXTRA_COMPILER_ARGS = ['-O3']
 
 # find all test files
 DATA_FILES =  [
@@ -317,7 +325,7 @@ setup(
     'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop' ],
   ext_modules = [
     Extension('_simuPOP_std',
-      extra_compile_args=['-O3'],
+      extra_compile_args = EXTRA_COMPILER_ARGS,
       include_dirs = ["."],
       library_dirs = ['build'],
       libraries = LIBRARIES,
@@ -325,7 +333,7 @@ setup(
       sources = MODU_SOURCE_FILES['std']
     ),
     Extension('_simuPOP_op',
-      extra_compile_args=['-O3'],
+      extra_compile_args = EXTRA_COMPILER_ARGS,
       include_dirs = ["."],
       library_dirs = ['build'],
       libraries = LIBRARIES,
@@ -333,7 +341,7 @@ setup(
       sources = MODU_SOURCE_FILES['op']
     ),
     Extension('_simuPOP_la',
-      extra_compile_args=['-O3'],
+      extra_compile_args = EXTRA_COMPILER_ARGS,
       include_dirs = ["."],
       library_dirs = ['build'],
       libraries = LIBRARIES,
@@ -341,7 +349,7 @@ setup(
       sources = MODU_SOURCE_FILES['la']
     ),
     Extension('_simuPOP_laop',
-      extra_compile_args=['-O3'],
+      extra_compile_args = EXTRA_COMPILER_ARGS,
       include_dirs = ["."],
       library_dirs = ['build'],
       libraries = LIBRARIES,
@@ -350,7 +358,7 @@ setup(
       sources = MODU_SOURCE_FILES['laop']
     ),
     Extension('_simuPOP_ba',
-      extra_compile_args=['-O3'],
+      extra_compile_args = EXTRA_COMPILER_ARGS,
       include_dirs = ["."],
       library_dirs = ['build'],
       libraries = LIBRARIES,
@@ -358,7 +366,7 @@ setup(
       sources = MODU_SOURCE_FILES['ba']
     ),
     Extension('_simuPOP_baop',
-      extra_compile_args=['-O3'],
+      extra_compile_args = EXTRA_COMPILER_ARGS,
       include_dirs = ["."],
       library_dirs = ['build'],
       libraries = LIBRARIES,
