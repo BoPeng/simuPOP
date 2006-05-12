@@ -289,15 +289,8 @@ buildStaticLibrary(GSL_FILES, 'gsl', 'build', options.compiler)
 buildStaticLibrary(SERIAL_FILES, 'serial', 'build', options.compiler)
 buildStaticLibrary(IOSTREAMS_FILES, 'iostreams', 'build', options.compiler)
 
-LIBRARIES = ['stdc++', 'gsl', 'serial', 'iostreams']
-
-if os.name == 'nt':
-  # PLEASE: get zlib1.dll from www.zlib.org and unpack to c:/windows
-  LIBRARIES += ['zlib1']
-  EXTRA_COMPILER_ARGS = ['-O3', '-Lc:/windows']
-else:
-  LIBRARYIES += ['z']
-  EXTRA_COMPILER_ARGS = ['-O3']
+LIBRARIES = ['stdc++', 'gsl', 'serial', 'iostreams', 'z']
+EXTRA_COMPILER_ARGS = ['-O3']
 
 # find all test files
 DATA_FILES =  [
