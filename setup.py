@@ -162,7 +162,7 @@ binding of coaSim.
 def buildStaticLibrary(sourceFiles, libName, libDir, compiler):
   '''Build libraries to be linked to simuPOP modules'''
   # get a c compiler
-  comp = new_compiler(compiler=compiler, verbose=True)
+  comp = new_compiler(compiler=compiler, verbose=True, output_dir='build')
   objFiles = comp.compile(sourceFiles, include_dirs=['.'])
   comp.create_static_lib(objFiles, libName, libDir)
       
