@@ -49,14 +49,17 @@ using std::ofstream;
 #include "compile.h"
 #include "eval.h"
 
-// for compress/uncompress support when files are saved
-#include "zlib.h"
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #  include <fcntl.h>
 #  include <io.h>
 #  define SET_BINARY_MODE(file) setmode(fileno(file), O_BINARY)
+// Use an embeded zlib, to avoid troubles of linking to 
+// static/shared libraries under windows.
+#include "zlib/zlib.h"
 #else
 #  define SET_BINARY_MODE(file)
+// use system zlib
+#include "zlib.h"
 #endif
 #define CHUNK 16384
 
