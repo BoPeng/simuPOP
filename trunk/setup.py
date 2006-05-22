@@ -25,6 +25,14 @@ if os.name == 'posix' and os.uname()[0] == 'Darwin':
 else:
   XML_SUPPORT = True
 
+# under windows, the difference between mingw/cygwin static/shared
+# and different versions of zlib really makes a mess. I am embedding
+# a zlib under this system
+if os.name == 'nt':
+  EMBED_ZLIB = True
+else:
+  EMBED_ZLIB = False
+
 # for every official release, there will be a file recording release info
 execfile('simuPOP.release')
 std_macro = [('SIMUPOP_VER', SIMUPOP_VER), 
@@ -267,6 +275,24 @@ IOSTREAMS_FILES = [
   'src/iostreams/zlib.cpp'
 ]
 
+# after hacking around cygwin/mingw zlib1.dll mgwz.dll,
+# I decide to embed zlib. This is not a good choice but
+# I am tired of the extra complexities.
+ZLIB_FILES = [
+  'zlib/adler32.c',
+  'zlib/compress.c',
+  'zlib/crc32.c',
+  'zlib/deflate.c',
+  'zlib/gzio.c',
+  'zlib/inffast.c',
+  'zlib/inflate.c',
+  'zlib/infback.c',
+  'zlib/inftrees.c',
+  'zlib/trees.c',
+  'zlib/uncompr.c',
+  'zlib/zutil.c',
+]
+
 if XML_SUPPORT: 
   SERIAL_FILES.extend( [
     'src/serialization/basic_xml_archive.cpp',
@@ -290,7 +316,12 @@ buildStaticLibrary(GSL_FILES, 'gsl', 'build', options.compiler)
 buildStaticLibrary(SERIAL_FILES, 'serial', 'build', options.compiler)
 buildStaticLibrary(IOSTREAMS_FILES, 'iostreams', 'build', options.compiler)
 
-LIBRARIES = ['stdc++', 'gsl', 'serial', 'iostreams', 'z']
+if EMBED_ZLIB:
+  buildStaticLibrary(ZLIB_FILES, 'embeded_zlib', 'build', options.compiler)
+  LIBRARIES = ['stdc++', 'gsl', 'serial', 'iostreams', 'embeded_zlib']
+else:
+  LIBRARIES = ['stdc++', 'gsl', 'serial', 'iostreams', 'z']
+
 EXTRA_COMPILER_ARGS = ['-O3']
 
 # find all test files
