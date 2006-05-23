@@ -302,16 +302,12 @@ if XML_SUPPORT:
     ]
   )
 
-print "Building supporting libraries (gsl, boost/serialization, boost/iostreams) "
+print "Building supporting libraries..."
 # parse options and look for --compiler
 parser = optparse.OptionParser()
 parser.add_option('', '--compiler')
 (options, args) = parser.parse_args()
 # get a c compiler
-if not options.compiler:
-  print "Using default compiler"
-else:
-  print "Using compiler ", options.compiler
 buildStaticLibrary(GSL_FILES, 'gsl', 'build', options.compiler)
 buildStaticLibrary(SERIAL_FILES, 'serial', 'build', options.compiler)
 buildStaticLibrary(IOSTREAMS_FILES, 'iostreams', 'build', options.compiler)
