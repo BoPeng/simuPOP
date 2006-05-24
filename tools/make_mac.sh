@@ -16,7 +16,7 @@ ssh apple-20-147 '/bin/rm -rf temp &&  mkdir temp && /bin/rm -rf simuPOP'
 scp /var/www/html/simuPOP/download/simuPOP-$VER-src.tar.gz apple-20-147:temp
 
 UNCOMPRESS="tar zxf simuPOP-$VER-src.tar.gz"
-BUILD="perl -pi.bak -e 's/WITH_SERIALIZATION=1/WITH_SERIALIZATION=0/' setup.py; python setup.py bdist --format=gztar"
+BUILD="perl -pi.bak -e 's/WITH_SERIALIZATION=1/WITH_SERIALIZATION=0/' setup.py; python setup.py bdist_dumb"
 ssh -X apple-20-147.stat.rice.edu "cd temp && $UNCOMPRESS && cd simuPOP-$VER && $BUILD"
 scp apple-20-147:temp/simuPOP-$VER/dist/* /var/www/html/simuPOP/download/
 
