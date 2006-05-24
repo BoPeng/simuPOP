@@ -728,11 +728,11 @@ Things can get complicated when you have an earlier/later versions of OS
 installation
 \family default
  section of simuPOP homepage will have detailed instruction on it.
- (In most cases, a single command 
+ (A single command 
 \family typewriter
 python setup.py instal
 \family default
- will suffice.) 
+ will usually suffice.) 
 \end_layout
 
 \begin_layout Standard
@@ -1263,18 +1263,6 @@ button.
  If any of the input is invalid, its label will be changed to red and you
  should fix the error before continuing.
  
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename log/LDDecay.png
-	lyxscale 20
-	width 4in
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
