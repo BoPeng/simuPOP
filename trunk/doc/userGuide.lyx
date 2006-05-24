@@ -277,8 +277,8 @@ simuPOP can be used at two levels.
  number of building blocks (populations, mating schemes, various genetic
  forces in the form of functions, operators, simulators and gene mapping
  methods) to construct a simulation.
- This provides a R or Matlab-like environment where users can interactively
- create, manipulate and evolve populations; monitor and visualize population
+ This provides a R/S-Plus or Matlab-like environment where users can interactive
+ly create, manipulate and evolve populations; monitor and visualize population
  statistics and apply gene mapping methods.
  The full power of simuPOP and Python (even R) can be utilized to simulate
  arbitrarily complex evolutionary scenarios.
@@ -296,7 +296,8 @@ simuPOP also comes with an increasing number of pre-defined simulation scenarios
 
 \begin_layout Abstract
 This user's guide covers the basic usage of simuPOP, including installation,
- starting,, introduction to built-in scripts and writting simuPOP scripts.
+ basic usage, brief introduction to built-in scripts, and how to write simuPOP
+ scripts.
  Detailed information about simuPOP components, functions and operators
  is available in the 
 \emph on
@@ -390,8 +391,8 @@ simuPOP does not aim at any specific result or outcome.
  Just like any such programming environments such as R/Splus and Matlab,
  users will have to learn how to use the environment (various Python IDE)
  and how to program in this language (Python and the simuPOP module).
- A graphic user interface of simuPOP is planned but will not be available
- any time soon.
+ A graphic user interface of simuPOP is planned but its usefulness is in
+ doubt (just like the R/GUI) and will not be available any time soon.
  
 \end_layout
 
@@ -419,11 +420,6 @@ Teaching tool for population genetic courses.
 \end_layout
 
 \begin_layout Itemize
-Generating samples that can be analyzed by other programs.
- 
-\end_layout
-
-\begin_layout Itemize
 Observe the dynamics of population evolution.
  This is where the power of simuPOP lies and is where coalescent-based simulatio
 ns frown.
@@ -432,6 +428,16 @@ ns frown.
  It is therefore impractical to trace the population properties of ancestral
  populations.
  Forward-based simulation does not have this problem, at a cost of performance.
+\end_layout
+
+\begin_layout Itemize
+Generating samples that can be analyzed by other programs.
+ This area is dominated by coalescent-based methods, but the facts that
+ coalescent-based methods can not simulate complex (non-additive) selection
+ or penetrance models and supports, at least till now, only one disease
+ susceptibility locus, make it unsutable to simulate the evolution of complex
+ human diseases.
+ A simuPOP script simuComplexDisease.py provides a powerful alternative.
 \end_layout
 
 \begin_layout Section
@@ -555,7 +561,8 @@ Operators to calculate quantitative trait, penetrance and draw samples from
 \end_layout
 
 \begin_layout Itemize
-Built-in ascertainment methods
+Built-in ascertainment methods including case/control, affected sibpair,
+ random sample.
 \end_layout
 
 \begin_layout Itemize
@@ -564,276 +571,8 @@ Maybe most importantly:
 a complete and detailed reference manual!
 \end_layout
 
-\begin_layout Section
-Comparison to Coalescence-Based Approaches
-\end_layout
-
-\begin_layout Standard
-The basic idea of Coalescent simulations (
-\begin_inset LatexCommand \citealt{Kingman1982}
-
-\end_inset
-
-) is to trace the sample back in time, coalesce individuals to their common
- ancestor according to a stochastic processes characterized by mutation,
- recombination etc.
- After the common ancestor of all individuals is found, the simulation go
- forward in time and specify the type of each branch.
- Such simulations can deal with a number of mutation, recombination, migration,
- and population size change models.
- Because such simulations work directly on samples, they can obtain large
- samples quickly.
- 
-\end_layout
-
-\begin_layout Standard
-Among these simulatable models, coalescent-based simulations can deal with
- mutation and migration quite well but less optimal for population size
- change.
- Available programs typically only deal with exponential growth/shrink of
- population size.
- This might be an artifact of program interface though, because it is difficult
- to specify complicated population size changes.
- Due to theoretical limitations, such simulations can only simulate neutral
- processes, i.e., no selection is allowed.
- 
-\end_layout
-
-\begin_layout Standard
-Some coalescent-type processes that can simulate non-neutral processes are
- proposed, including ancestral selection graph (ASG, 
-\begin_inset LatexCommand \citealt{Krone1997}
-
-\end_inset
-
-), ancestral influence graph (AIG, 
-\begin_inset LatexCommand \citealt{Donnelly1999}
-
-\end_inset
-
-) and complex selection graph (CSG, 
-\begin_inset LatexCommand \citealt{Fearnhead2003}
-
-\end_inset
-
-).
- However, these are specialized processes that do not seem to work well
- with other models such as migration and population size change.
- None of the currently available simulation program provides these models.
-\end_layout
-
-\begin_layout Standard
-Coalescent-based simulations have the following drawbacks:
-\end_layout
-
-\begin_layout Itemize
-can simulate haploid sequence only
-\end_layout
-
-\begin_layout Itemize
-cannot provide history of population statistics.
- Coalescent-based simulations are driven by coalescent events, not by generation
-s.
- Individuals that are not related to the final gene tree are ignored.
- The effective 'sample size' of previous generations shrink quickly and
- cannot provide good allele frequency estimates.
- 
-\end_layout
-
-\begin_layout Itemize
-cannot handle selection, at least with currently available software.
-\end_layout
-
-\begin_layout Itemize
-cannot handle very complex simulations.
- Due to the complexity of coalescent theory, it is not easy to add unusual
- genetic/environmental forces to a coalescent-based program.
- This is why every such program has a clear limit what can be simulated.
- 
-\end_layout
-
-\begin_layout Itemize
-Maybe most importantly, the back-in-time approach of coalescent simulation
- is counterintuitive and not suitable for some studies.
- For example, it is difficult, if possible at all, to think of a coalescent
- process that simulate this simple scenario: given two populations with
- different initial allele frequencies and allow certain level of migrate,
- what will the allele frequency be in our sample? I am not an expert on
- coalescent, but I guess the existence of a virtual common ancestor for
- all individuals limits the power of coalescent-based simulations.
-\end_layout
-
-\begin_layout Standard
-Forward-based simulations are in general considered traditional.
- They create an initial population; evolve it forward in time, subject to
- various kind of genetic or environmental forces.
- Samples are drawn from the last generation(s).
- The drawback of this approach is clear: realistic simulations of large
- populations are too computationally intensive, and most of the CPU power
- will be `wasted' on unrelated individuals when we simulate rare diseases.
- This is why most recent simulation programs are coalescent-based.
- 
-\end_layout
-
-\begin_layout Standard
-However, forward-based simulations do not have any of the drawbacks as mentioned
- above for coalescent-based simulations.
- They are easy to understand because they agree with our usual understanding
- of evolution.
- The biggest advantage of forward simulations is that they can simulate
- arbitrary complex evolutionary processes.
- Since such simulations work on the whole population step by step, it is
- easy to trace the population statistics closely.
- Arbitrary genetic or environmental forces can be applied at arbitrary intensity
- and frequency.
- However, realistic forward-based simulations require large population size
- and long generations.
- This consequently requires large RAM and fast CPU.
- This is why forward simulations were not able to simulate large populations
- and were used primarily for demonstration purposes.
-\end_layout
-
-\begin_layout Standard
-Fortunately, the power of personal computers has improved dramatically which
- makes such simulations a lot more feasible than that of several years ago.
- After aggressive optimization, as of writing, simuPOP can handle a simulation
- of 400,000 individuals under the forces of mutation, recombination, migration
- on a PC equipped with 2.8G Pentium IV processor and 1G reasanably fast.
- (around 30s per generation.)
-\end_layout
-
-\begin_layout Section
-Starting simuPOP
-\end_layout
-
-\begin_layout Standard
-After installation, you should have the following files and directories
-\end_layout
-
-\begin_layout Description
-
-\end_layout
-
-\begin_layout Standard
-You should be able to load simuPOP library by running command 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/importSimuPOP.log}
-preview false
-
-\end_inset
-
-from python interactive shell.
- If simuPOP is located but python reports an error, please see simuPOP FAQ
- and/or post to simuPOP forum.
-\end_layout
-
-\begin_layout Standard
-Several python GUI are available including ActivePython IDE, IDLE but the
- most convenient one is emacs (not surprisingly!).
- Through the time of developing simuPOP, I have written several emacs extensions
- to simplify the use of python within emacs.
- You can find them under the 
-\family typewriter
-misc 
-\family default
-directory if you are interested.
- 
-\end_layout
-
-\begin_layout Section
-simuPOP libraries
-\end_layout
-
-\begin_layout Standard
-simuPOP is composed of six libraries: stdandard short, long and binary alleles,
- plus their optimized counterparts.
- The standard libraries use 1 byte to store each allele which limits the
- possible allele states to 256.
- This is enough most of the times but not so if you need to simulate models
- like the infinite allele model.
- In those cases, you should use the long allele version of the libraries.
- Long allele libraries use 4 bytes for each allele and can have 
-\begin_inset Formula $2^{32}$
-\end_inset
-
- possible allele states.
- On the other hand, if you would like to simulate a large number of binary
- (SNP) markers, binary libraries can save you a lot of RAM.
- Due to the additional cost of accessing alleles as bits, binary modules
- will be around 10% slower than other libraries.
- 
-\end_layout
-
-\begin_layout Standard
-Standard libraries have detailed debug and run-time validation mechanisum
- to make sure the simulations run correctly.
- Whenver something unusual is detected, simuPOP would terminate with detailed
- error messages.
- The cost of such operations varies from simulation to simulation but can
- be severe under some extreme circumstances.
- Because of this, optimized versions for all libraries are provided.
- They bypass all parameter checking and run-time validations and will simply
- crash if things go wrong.
- It is recommended that you use standard libraries whenever possible and
- only use the optimized version when performance if needed and you are confidenc
-e that your simulation is running as expected.
-\end_layout
-
-\begin_layout Standard
-You can control the use of libraries in the following ways:
-\end_layout
-
-\begin_layout Itemize
-Set environment variable SIMUALLELETYPE to be 'short', 'long' or 'binary',
- and SIMUOPTIMIZED to use the optimized libraries.
-\end_layout
-
-\begin_layout Itemize
-Before you load simuPOP, set options using 
-\family typewriter
-simuOpt.setOptions
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/importSimuPOPOpt.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-If you are running a simuPOP script that conforms to simuPOP conversion,
- you should be able to run load optimized library using command line option
- 
-\family typewriter
---optimized
-\family default
-.
- 
-\end_layout
-
-\begin_layout Standard
-You can tell which library is loaded from its initial output.
- For example, 
-\end_layout
-
 \begin_layout LyX-Code
-Maximum allele number per locus is 255.
-\end_layout
 
-\begin_layout LyX-Code
-You are running in standard mode with strict boundary check etc.
- 
-\end_layout
-
-\begin_layout Standard
-indicates that standard short-allele library is loaded.
 \end_layout
 
 \begin_layout Section
@@ -936,21 +675,6 @@ Copy one of the scripts as a template and modify it.
  
 \end_layout
 
-\begin_layout Itemize
-For each operator you will use, it is recommended that you write a short
- script to test it and know how it works.
- Assembling the operator to your script after you have some confidence in
- it.
- Such short scripts can often be found under the 
-\family typewriter
-test 
-\family default
-directory where every feature of simuPOP are tested through many small test
- cases.
- (Work in progress.
- )
-\end_layout
-
 \begin_layout Section
 Availability
 \end_layout
@@ -973,363 +697,17 @@ simuPOP
 Installing simuPOP
 \end_layout
 
-\begin_layout Standard
-Compiled libraries for Linux, windows XP, Solaris and MacOSX are provided.
- In most cases, you will only need to download simuPOP and follow the usual
- installation process of your platform.
- Things can get complicated when you have an earlier/later versions of OS
- or Python and have to compile simuPOP from source.
- The 
-\family typewriter
-installation
-\family default
- section of simuPOP homepage will have detailed instruction on it.
- 
-\end_layout
-
-\begin_layout Standard
-Python has a large number of modules.
- For simple tasks like dataset generation, simuPOP modules alone are enough.
- However, it is highly recommended that you install R and RPy so that you
- can make use simuPOP's plotting capacity.
- You can also make use of many of R's genetic packages to performe statistical
- analysis.
- By default, simuPOP uses Tkinter to get parameters (the parameter dialog).
- It will use wxPython automatically if wxPython is available.
- A bunch of other GUI improvements will also be available, the best one
- may be 
-\family typewriter
-listVars() 
-\family default
-which list all variables in a nice tree format,
-\family typewriter
- 
-\family default
-instead of a long indented list when wxPython is not available.
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="8" columns="2">
-<features>
-<column alignment="left" valignment="top" width="0">
-<column alignment="left" valignment="top" leftline="true" width="0">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-component
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-usage
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Python
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-required
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-simuPOP libraries
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-required
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-R and RPy
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-optional but highly recommended
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-wxPython
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-optional but highly recommended 
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Python Numeric module
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-optional (Easier numeric manipulation.
- rpy will work better with this module.
- )
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Python SciPy module
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-optional (Use simuSciPy to plot when R is not available) imcomplete support
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Python MatPlotLib module
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-optional (use simuMatPlt.py to plot when R is not available) imcomplete support
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In this guide, I will only show you how to install Python, simuPOP (and
- optionally R and RPy) under windows.
-\end_layout
-
-\begin_layout Section
-Installing Python
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-simuPOP
-\family default
-\noun on
- 
-\noun default
-works as a python library so a working version of python is required.
- Although Python
-\begin_inset LatexCommand \index{Python}
-
-\end_inset
-
- is widely available on Linux/Mac systems, it is not so popular among windows
- users.
- 
-\end_layout
-
-\begin_layout Standard
-Due to the open-source nature of Python, there are many variants of Python.
- For windows system, you can use 
-\begin_inset LatexCommand \htmlurl[official python ]{http://www.python.org}
-
-\end_inset
-
-, 
-\begin_inset LatexCommand \htmlurl[ActivePython]{http://www.activestate.com/Products/ActivePython/}
-
-\end_inset
-
- (not GPL) or 
-\begin_inset LatexCommand \htmlurl[enthought python]{http://www.enthought.com/python/}
-
-\end_inset
-
-.
- The last one is very interesting since it contains many packages such as
- Numeric and SciPY so you do not have to install them separately.
- The installation should be quite straightforward and takes less than five
- minutes.
-\end_layout
-
-\begin_layout Standard
-simuPOP is developed under the newest Python (version 2.4.1 since simuPOP-0.6.5)
- but binary libraries are sometimes compiled using earlier versions.
- As a guideline, you should
-\end_layout
-
-\begin_layout Itemize
-use a python version that matches the version used to compile the simuPOP
- library.
- (Version mismatch may or may not cause problem.)
-\end_layout
-
-\begin_layout Itemize
-use the newest python if you would like to compile simuPOP from source.
- (usually a 
-\family typewriter
-> python setup.py install 
-\family default
-away ).
-\end_layout
-
-\begin_layout Section
-Installing R and RPy
-\end_layout
-
-\begin_layout Standard
-simuPOP itself does not provide data plotting capacity.
- I do not have to do so since Python provides many packages to do this.
- As a statistician, I am mostly familiar with R so I use R extensively for
- visualization and many times data process.
- To use the full power of simuPOP, it is highly recommended that you install
- R and a Python package RPy that provide communication between Python/simuPOP
- and R.
- 
-\end_layout
-
-\begin_layout Standard
-Download R from 
-\begin_inset LatexCommand \htmlurl[R-project homepage]{http://www.r-project.org/}
-
-\end_inset
-
- and install R for windows.
- The process is easy.
- However, it is recommended that you check the highest version of R that
- RPy can support first and install that R version.
- 
-\end_layout
-
-\begin_layout Standard
-Download Rpy windows binary from 
-\begin_inset LatexCommand \htmlurl[rPY]{http://rpy.sourceforge.net/}
-
-\end_inset
-
-
-\begin_inset LatexCommand \index{rPY}
-
-\end_inset
-
- and install RPy for windows.
- Make sure to pick the binary with correct python and R version.
- 
-\end_layout
-
-\begin_layout Standard
-After you installed Python, R and Rpy, open a python terminal ( or GUI)
- and type the following command in to see if Rpy is working well.
- Note that on Linux/Mac systems, the default R installation does not support
- RPy, you will have to rebuild R from source (use 
-\family typewriter
---enable-shlib
-\family default
- option).
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/testRPy.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Installing simuPOP
 \end_layout
 
 \begin_layout Standard
-Download the latest simuPOP binary that matches your python distribution
- from simuPOP homepage.
- For example, if you have enthough Python 2.3.3 installed, you should download
- 
+Compiled libraries for Linux (RHEL4 and Mandriva), windows XP, Solaris and
+ MacOSX are provided.
+ In most cases, you will only need to download simuPOP and follow the usual
+ installation process of your platform.
+ For example, if you use a windows system and have Python 2.3.3 installed,
+ you should download 
 \family typewriter
 simupop-x.x.x-py23-win32.exe
 \family default
@@ -1342,12 +720,56 @@ file to install.
  
 \end_layout
 
+\begin_layout Standard
+Things can get complicated when you have an earlier/later versions of OS
+ or Python and have to compile simuPOP from source.
+ The 
+\family typewriter
+installation
+\family default
+ section of simuPOP homepage will have detailed instruction on it.
+ (In most cases, a single command 
+\family typewriter
+python setup.py instal
+\family default
+ will suffice.) 
+\end_layout
+
+\begin_layout Standard
+Python has a large number of modules.
+ For simple tasks like dataset generation, simuPOP modules alone are enough.
+ However, it is highly recommended that you install 
+\end_layout
+
+\begin_layout Itemize
+a python module rpy and R so that you can make use simuPOP's plotting capacity.
+ You can also make use of many of R's genetic packages to performe statistical
+ analysis.
+ 
+\end_layout
+
+\begin_layout Itemize
+By default, simuPOP uses Tkinter to get parameters (the parameter dialog).
+ It will use wxPython automatically if wxPython is available.
+ A bunch of other GUI improvements will also be available, the best one
+ may be 
+\family typewriter
+listVars() 
+\family default
+which list all population variables in a nice tree format,
+\family typewriter
+ 
+\family default
+instead of a long indented list when wxPython is not available.
+\end_layout
+
 \begin_layout Section
 Starting simuPOP
 \end_layout
 
 \begin_layout Standard
-After installation, you should have the following files and directories:
+After installation, you will have the following files and directories (use
+ windows as an example)
 \end_layout
 
 \begin_layout Itemize
@@ -1366,12 +788,7 @@ Lib
 site-packages
 \family default
 .
- These are simuPOP libraries.
- You may want to have a look at files like 
-\family typewriter
-simuUtil.py, simuRPy.py
-\family default
- but you should not change these files.
+ These are simuPOP modules.
 \end_layout
 
 \begin_layout Itemize
@@ -1387,7 +804,7 @@ simuPOP
 \backslash
 doc
 \family default
-: docmentations in pdf format and sample scripts.
+: docmentations in pdf format.
 \end_layout
 
 \begin_layout Itemize
@@ -1397,61 +814,38 @@ c:
 \backslash
 python
 \backslash
-shared
+share
 \backslash
 simuPOP
 \backslash
 test: 
 \family default
-some test scripts.
- 
+all unit test cases.
+ You can run run_tests.py to test if your simuPOP installation is correct.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-\series bold
-\emph on
 c:
 \backslash
 python
 \backslash
-shared
+share
 \backslash
 simuPOP
 \backslash
-scripts:
+scripts
+\series bold
+\emph on
+:
 \emph default
  
 \family default
 \series default
 This directory has all the built-in scripts.
- These will be the main focus of this guide.
- To start these scripts, you can either
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
-double click the icon
-\end_layout
-
-\begin_layout Itemize
-add this path to windows
-\family typewriter
- PATH
-\family default
- if you work in a DOS cmd window (Start->Run->cmd)
-\end_layout
-
-\begin_layout Itemize
-add this path to
-\family typewriter
- PYTHONPATH 
-\family default
-if you want to source them from a Python shell.
-\end_layout
-
-\end_deeper
 \begin_layout Standard
 You should be able to load simuPOP library by running command 
 \end_layout
@@ -1658,6 +1052,100 @@ You can refer to the
 simuPOP user's guide
 \emph default
  for a simple example.
+\end_layout
+
+\begin_layout Section
+simuPOP libraries
+\end_layout
+
+\begin_layout Standard
+simuPOP is composed of six libraries: stdandard short, long and binary alleles,
+ plus their optimized counterparts.
+ The standard libraries use 1 byte to store each allele which limits the
+ possible allele states to 256.
+ This is enough most of the times but not so if you need to simulate models
+ like the infinite allele model.
+ In those cases, you should use the long allele version of the libraries.
+ Long allele libraries use 4 bytes for each allele and can have 
+\begin_inset Formula $2^{32}$
+\end_inset
+
+ possible allele states.
+ On the other hand, if you would like to simulate a large number of binary
+ (SNP) markers, binary libraries can save you a lot of RAM.
+ Due to the additional cost of accessing alleles as bits, binary modules
+ will be around 10% slower than other libraries.
+ 
+\end_layout
+
+\begin_layout Standard
+Standard libraries have detailed debug and run-time validation mechanisum
+ to make sure the simulations run correctly.
+ Whenver something unusual is detected, simuPOP would terminate with detailed
+ error messages.
+ The cost of such operations varies from simulation to simulation but can
+ be severe under some extreme circumstances.
+ Because of this, optimized versions for all libraries are provided.
+ They bypass all parameter checking and run-time validations and will simply
+ crash if things go wrong.
+ It is recommended that you use standard libraries whenever possible and
+ only use the optimized version when performance if needed and you are confidenc
+e that your simulation is running as expected.
+\end_layout
+
+\begin_layout Standard
+You can control the use of libraries in the following ways:
+\end_layout
+
+\begin_layout Itemize
+Set environment variable SIMUALLELETYPE to be 'short', 'long' or 'binary',
+ and SIMUOPTIMIZED to use the optimized libraries.
+\end_layout
+
+\begin_layout Itemize
+Before you load simuPOP, set options using 
+\family typewriter
+simuOpt.setOptions
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/importSimuPOPOpt.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+If you are running a simuPOP script that conforms to simuPOP conversion,
+ you should be able to run load optimized library using command line option
+ 
+\family typewriter
+--optimized
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+You can tell which library is loaded from its initial output.
+ For example, 
+\end_layout
+
+\begin_layout LyX-Code
+Maximum allele number per locus is 255.
+\end_layout
+
+\begin_layout LyX-Code
+You are running in standard mode with strict boundary check etc.
+ 
+\end_layout
+
+\begin_layout Standard
+indicates that standard short-allele library is loaded.
 \end_layout
 
 \begin_layout Chapter

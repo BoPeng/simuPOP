@@ -76,7 +76,8 @@ make_linux.sh
 
 make_win.sh
 
-make_sol.sh
+# the solaris test system is currently not usable
+#make_sol.sh
 
 make_mdk.sh
 

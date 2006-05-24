@@ -209,7 +209,9 @@ Linux-Solaris-MacOSX System
     > python setup.py install --home=/path/to/simuPOP
   and then set PYTHONPATH to where simuPOP locates.
   
-
+  Note that you may need to use command like
+    > python setup.py config --include-dirs=/usr/include/linux install
+  if zlib.h is not in standard directories.
 
 test simuPOP
 ===============
