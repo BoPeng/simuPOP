@@ -21,34 +21,9 @@ if not os.path.isdir('log'):
   except:
     print "Failed to make output directory log"
     sys.exit(1)
-  
 
 #
 #file log/importSimuPOP.log
-from simuPOP import *
-#end
-
-#file log/testRPy.log
-from simuRPy import *
-r.seq(1,10,2)
-r.plot([1,2,3], type='l')
-#end
-
-
-# we assume that ../scripts/ is the path to simuLDDecay.py
-import sys
-
-#PS ../scripts/simuLDDecay.py --help > log/LDDecayHelp.log
-#PS ../scripts/simuLDDecay.py --noDialog --size=1000 --endGen=50 --recRate=0.01 --replicate=5 --saveFigure=LDDecay 
-#PS mv LDDecay50.eps log/LDDecay.eps
-#PS convert -rotate 90 log/LDDecay.eps log/LDDecay.png
-#PS /bin/rm -f log/LDDecay.eps
-#PS ../scripts/simuComplexDisease.py --help > log/simuComplexDisease.log
-
-
-#file log/importSimuPOPOpt.log
-import simuOpt
-simuOpt.setOptions(optimized=False, longAllele=True)
 from simuPOP import *
 #end
 
@@ -58,26 +33,37 @@ sys.path.append('/path/to/simuPOP')
 from simuPOP import *
 #end
 
+#file log/importSimuPOPOpt.log
+import simuOpt
+simuOpt.setOptions(optimized=False, alleleType='long', quiet=True)
+from simuPOP import *
+#end
+
 #file log/simpleExample.log
 from simuPOP import *
-from simuUtil import *
+from simuRPy import *
 simu = simulator(
     population(size=1000, ploidy=2, loci=[2]),
     randomMating(),
     rep = 3)
 simu.evolve(
-    preOps = [initByValue([1,2,2,1]) ],  
+    preOps = [initByValue([1,2,2,1])],  
     ops = [
-        recombinator( rate=0.1),
-        stat( haploFreq=[[0,1]]),
-        pyEval(r"'%5.0f\t' % haploNum['0-1']['1-2']"),
-        endl(rep=REP_LAST)
-        ],
-    end=5
+        recombinator(rate=0.1),
+        stat(LD=[0,1]),
+        varPlotter('LD[0][1]', numRep=3,
+                   ylim=[0,.25], xlab='generation',
+                   ylab='D', title='LD Decay'),
+        pyEval(r"'%3d   ' % gen", rep=0, step=25),
+        pyEval(r"'%f    ' % LD[0][1]", step=25),
+        pyEval(r"'\n'", rep=REP_LAST, step=25)
+    ],
+    end=100
 )
-
+r.dev_print(file='log/LDdecay.eps')
 #end
-
+#PS epstopdf log/LDdecay.eps
+r.dev_off()
 
 
 #file log/genoStru.log

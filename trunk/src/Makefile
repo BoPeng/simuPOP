@@ -4,18 +4,18 @@
 # This is an alternative way to 'python setup.py build', using this
 # can save some compile time.
 # 
-# I include path for two systems, but for convenience.
+# I include path for two systems, only for convenience.
 PYTHON_INC = -I/usr/include/python2.3/ -I/usr/local/python-2.3.3/include/python2.3
 BOOST_INC = -I../
 GSL_INC = -I../
 INCLUDES= -I. $(PYTHON_INC) $(BOOST_INC) $(GSL_INC)
 SERIAL_SRC=serialization
 IOSTREAMS_SRC=iostreams
-
+REV := $(shell svnversion ..)
 CC = gcc
 CXX = g++
 LINK = g++ -lz
-CFLAGS = -Wall -pthread -fno-strict-aliasing -DNDEBUG -O3 -g  -fPIC 
+CFLAGS = -Wall -pthread -fno-strict-aliasing -DNDEBUG -O3 -g  -fPIC -DSIMUPOP_REV=$(REV)
 # for swig 1.3.28 cvs
 SWIG = swig -O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525
 # for swig 1.3.27
