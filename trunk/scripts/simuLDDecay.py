@@ -1,15 +1,11 @@
 #!/usr/bin/env python
 #
-# Demonstrate the decay of linkage disequilibrium between loci
+# Demonstrate the decay of linkage disequilibrium 
 #
 # Author: Bo Peng (bpeng@rice.edu)
 #
 # $LastChangedDate$
 # $Rev$ 
-
-# 
-# OPTIONS:
-#
 
 """
 This program demonstrate the decay of linkage disequilibrium.
@@ -80,7 +76,6 @@ options = [
 
 
 from simuPOP import *
-from simuUtil import *
 
 try:
   from simuRPy import *
@@ -135,9 +130,9 @@ simu.evolve(
     recombinator( rate = recRate),
     stat( alleleFreq=[0], LD=[0,1] ),
     pyEval(r"'%.4f\t' % LD[0][1]"),
-    endl(rep=REP_LAST),
+    pyEval(r"'\n'", rep=REP_LAST),
     plotter
-    ],
+  ],
   end=endGen
 )
 
