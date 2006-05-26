@@ -3,15 +3,9 @@
 # user's guide
 #LYX=/usr/local/bin/lyx14
 LYX=/usr/local/bin/lyx
-./convFigRule.pl userGuide.lyx >  userGuidePost.lyx
-$LYX --export latex userGuidePost.lyx
-mv -f userGuidePost.tex userGuide.tex
-perl -pi.bak -e 's/\\IfFileExists{url.sty}{\\usepackage{url}}//' userGuide.tex
-perl -pi.bak -e 's/{\\newcommand{\\url}{\\texttt}}//' userGuide.tex
-
+$LYX --export latex userGuide.lyx
 tools/mkhowto --pdf userGuide.tex
 /bin/cp -f userGuide.pdf /var/www/html/simuPOP_doc
-/bin/rm -f userGuidePost.lyx
 
 mkdir -p /var/www/html/simuPOP_doc/userGuide
 
@@ -27,16 +21,9 @@ perl -pi.bak -e 's,\/home\/bpeng\/research\/simupop\/doc\/\/,,g' /var/www/html/s
 
 # reference manual
 
-./convFigRule.pl refManual.lyx >  refManualPost.lyx
-$LYX --export latex refManualPost.lyx
-/bin/mv -f refManualPost.tex refManual.tex
-perl -pi.bak -e 's/\\IfFileExists{url.sty}{\\usepackage{url}}//' refManual.tex
-perl -pi.bak -e 's/{\\newcommand{\\url}{\\texttt}}//' refManual.tex
-
+$LYX --export latex refManual.lyx
 tools/mkhowto --pdf refManual.tex
 /bin/cp -f refManual.pdf /var/www/html/simuPOP_doc
-rm -f refManualPost.lyx
-
 
 mkdir -p /var/www/html/simuPOP_doc/refManual
 latex2html  -show_section_numbers -auto_navigation \
