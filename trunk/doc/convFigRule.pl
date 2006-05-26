@@ -9,7 +9,7 @@ undef $/;
 
 $whole = <>;
 
-$whole =~ s/\\begin_inset Include \\verbatiminput{(.*?)\.log}\s*preview false\s*\\end_inset/\\begin_inset ERT\n status Collapsed \n\n\\layout Standard\n\\backslash\nvspace{.5cm}\n\\backslash\nhrule\n\\layout Standard\n\n\\end_inset\n\n \\series bold\nExample: \n\\series default\n\1\n\\layout Standard\n\n\n\\begin_inset ERT\n status Collapsed\n\n\\layout Standard\n\\layout Standard\n\\backslash \nvspace{.1cm} \n\\backslash \nhrule \n\\layout Standard\n\n\\end_inset\n\\begin_inset Include \\verbatiminput{\1\.log}\n\npreview false\n\n\\end_inset \n\n\\begin_inset ERT\n status Collapsed\n \n\\layout Standard\n\n\\layout Standard\n\n\\backslash \nhrule \n\\backslash \nvspace{.5cm} \n\\layout Standard\n\n\\end_inset\n /gsi; 
+$whole =~ s/\\begin_inset Include \\verbatiminput{(.*?)\.log}\s*preview false\s*\\end_inset/\\begin_layout Standard\n\\begin_inset Float algorithm\nwide false\nsideways false\nstatus open\n\n\\begin_layout Caption\n\1\\end_layout\n\n\\begin_layout Standard\n\\begin_inset Include \\verbatiminput{\1\.log}\n\npreview false\n\n\\end_inset \n\n\\end_layout\n\n\\end_inset\n\\end_layout /gsi; 
 
 #$whole =~ s/\\IfFileExists{url.sty}{\\usepackage{url}}\n\s*{\\newcommand{\\url}{\\texttt}}//si;
 

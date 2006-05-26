@@ -69,14 +69,14 @@ r.dev_off()
 #file log/genoStru.log
 # create a population, most parameters have default values
 pop = population(size=5, ploidy=2, loci=[5,10],
-    lociDist=[range(0,5),range(0,20,2)],
+    lociPos=[range(0,5),range(0,20,2)],
     alleleNames=['_','A','C','T','G'],
     subPop=[2,3], maxAllele=4)
 print pop.popSize()
 print pop.ploidy()
 print pop.ploidyName()
 print pop.numChrom()
-print pop.locusDist(2)
+print pop.locusPos(2)
 print pop.alleleName(1)
 #end
 
