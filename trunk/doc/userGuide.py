@@ -98,9 +98,6 @@ print pop.chromLocusPair(7)
 print pop.absLocusIndex(1,1)
 #end
 
-#file log/helpPopInit.log
-help(population.__init__)
-#end
 
 #file log/popInit.log
 # a Wright-Fisher population
@@ -113,7 +110,7 @@ pop = population(size=10, ploidy=2, loci=[5, 7], subPop=[2, 8])
 # a population with SNP markers (with names A,C,T,G
 #  range() are python functions
 pop = population(size=5, ploidy=2, loci=[5,10],
-    lociDist=[range(0,5),range(0,20,2)],
+    lociPos=[range(0,5),range(0,20,2)],
     alleleNames=['_','A','C','T','G'],
     subPop=[2,3], maxAllele=4)
 InitByFreq(pop, [.25]*4)
@@ -123,6 +120,7 @@ InitByFreq(pop, [.25]*4)
 #file log/popSaveLoad.log
 # save it in various formats, default format is "txt"
 pop.savePopulation("pop.txt")
+pop.savePopulation("pop.txt", compress=False)
 pop.savePopulation("pop.xml", format="xml")
 pop.savePopulation("pop.bin", format="bin")
 
@@ -203,9 +201,9 @@ Dump( RandomSample(pop, 3)[0])
 
 #file log/popVars.log
 from simuUtil import listVars
-listVars(pop.vars(), useWxPython=False)
+ListVars(pop.vars(), useWxPython=False)
 Stat(pop, popSize=1, alleleFreq=[0])
-listVars(pop.vars(), useWxPython=False)
+ListVars(pop.vars(), useWxPython=False)
 # print number of allele 1 at locus 0
 print pop.vars()['alleleNum'][0][1]
 print pop.dvars().alleleNum[0][1]
@@ -214,7 +212,7 @@ print pop.dvars().alleleNum[0][1]
 #file log/localNamespace.log
 print pop.evaluate('alleleNum[0][1] + alleleNum[0][2]')
 pop.execute('newPopSize=int(popSize*1.5)')
-listVars(pop.vars(), level=1, useWxPython=False)
+ListVars(pop.vars(), level=1, useWxPython=False)
 # this variable is 'local' to the population and is
 # not available in the main namespace
 newPopSize
