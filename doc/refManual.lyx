@@ -627,6 +627,10 @@ preview false
 
 \end_layout
 
+\begin_layout Section
+Genotype structure functions
+\end_layout
+
 \begin_layout Standard
 A full list of genotypic structure related functions, please use 
 \family typewriter
@@ -1104,7 +1108,7 @@ set maximum allele state for all loci
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Sex chromosome
 \end_layout
 
@@ -1169,6 +1173,10 @@ population
  all have the same genotypic structure.
  A population can store arbitrary number of ancestral populations to facilitate
  pedigree analysis.
+\end_layout
+
+\begin_layout Section
+Population overview
 \end_layout
 
 \begin_layout Standard
@@ -1267,6 +1275,10 @@ Population has a large number of member functions, ranging from reviewing
  As a matter of fact, you will only use a small portion of these functions
  unless you need to write pure python functions/operators that involves
  complicated manipulation of populations.
+\end_layout
+
+\begin_layout Section
+Population related functions
 \end_layout
 
 \begin_layout Standard
@@ -3518,7 +3530,7 @@ LoadPopulation
 \family typewriter
 LoadFstat
 \family default
- etc to load a population from saved image file.
+ etc to load a population from a saved file.
  
 \end_layout
 
@@ -3572,38 +3584,12 @@ population
 
 \family default
  function, you need to run 
+\end_layout
+
+\begin_layout LyX-Code
+
 \family typewriter
 help(population.__init__)
-\family default
-:
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-log/helpPopInit
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/helpPopInit.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -3632,15 +3618,15 @@ size
 \family typewriter
 loci:
 \family default
- number of loci on each chromosomes.
+ number of loci on each chromosome.
  The length of parameter 
 \family typewriter
 loci 
 \family default
 determines number of chromosomes.
  The last chromosome can be sex chromosome.
- In this case, please specify the maximum number of loci on X or Y.
- I.e., if there are 1 loci on Y chromosme and 0 on X chromosome, use 1.
+ In this case, please specify the maximum number of loci on X and Y.
+ I.e., if there are 3 loci on Y chromosme and 5 on X chromosome, use 5.
  
 \end_layout
 
@@ -3682,8 +3668,7 @@ loci=[2,3]
  simuPOP does not assume a unit for these locations, although they are usually
  intepreted as base pairs or centiMorgans, depending on types of simulation
  being performed.
- Currently, loci distance (actually loci location) is used only for specifying
- recombination intensity.
+ Currently, loci location is used only for specifying recombination intensity.
  The actual recombination rate is intensity times loci distance between
  adjacent loci.
 \end_layout
@@ -3720,6 +3705,7 @@ savePopulation
 alleleNames:
 \family default
  Names of the alleles.
+ They are used only for output.
 \end_layout
 
 \begin_layout Itemize
@@ -3738,15 +3724,45 @@ maxAllele
 maxAllele 
 \family default
 but not larger.
- Please note that there are two set of simuPOP libraries: one standard and
- one long-allele.
- On most platforms, standard library has max allele state 127 and long-allele
- library has max allele state 
-\begin_inset Formula $2^{32}-1$
+ Note that this number is thee number of allele states minus 1 since allele
+ number starts from 0.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset LatexCommand \ref{alg:population-init}
+
 \end_inset
 
-.
- 
+ shows a few examples of using the population function to create populations.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{alg:population-init}
+
+\end_inset
+
+Use of population function
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/popInit.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -3839,47 +3855,39 @@ simulator::evolve
 apply() 
 \family default
 function of these operators at appropriate times.
- For example
-\end_layout
-
-\begin_layout LyX-Code
-simu.evolve(
-\end_layout
-
-\begin_layout LyX-Code
-  preOps = [initByFreq([.8, .2])],
-\end_layout
-
-\begin_layout LyX-Code
-  ops=[
-\end_layout
-
-\begin_layout LyX-Code
-    stat( alleleFreq=[0,1], Fst=[1], step = 10),
-\end_layout
-
-\begin_layout LyX-Code
-    kamMutator( rate = .0001, rep = 1),
-\end_layout
-
-\begin_layout LyX-Code
-    kamMutator( rate = .001, rep = 2)
-\end_layout
-
-\begin_layout LyX-Code
-  ], 
-\end_layout
-
-\begin_layout LyX-Code
-  end = 100
-\end_layout
-
-\begin_layout LyX-Code
-)
+ 
 \end_layout
 
 \begin_layout Standard
-will create operators 
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{alg:popAndOp}
+
+\end_inset
+
+Population and operators
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/popAndOperator.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For example, operators 
 \family typewriter
 initByFreq, stat 
 \family default
@@ -3887,6 +3895,11 @@ and two copies of
 \family typewriter
 kamMutator
 \family default
+ are created in example 
+\begin_inset LatexCommand \ref{alg:popAndOp}
+
+\end_inset
+
 .
  During evolution, 
 \family typewriter
@@ -3904,7 +3917,7 @@ kamMutator
 \family typewriter
 kamMutator 
 \family default
-on the second replicate at every generation; apply 
+to the second replicate at every generation; apply 
 \family typewriter
 stat 
 \family default
@@ -3913,7 +3926,7 @@ to count allele frequency and calculate
 \end_inset
 
  every 10 generations.
- More details about operators will be introduced later.
+ More details about operators will be described later.
 \end_layout
 
 \begin_layout Standard
@@ -3958,7 +3971,7 @@ sideways false
 status open
 
 \begin_layout Caption
-log/InitByFreq
+Function InitByFreq
 \end_layout
 
 \begin_layout Standard
@@ -3976,7 +3989,7 @@ preview false
 \end_layout
 
 \begin_layout LyX-Code
-InitByFreq(pop, [.3, .2, .5] )
+
 \end_layout
 
 \begin_layout Standard
@@ -4066,19 +4079,17 @@ initByFreq
 \end_layout
 
 \end_deeper
-\begin_layout Subsubsection*
-Operator 
-\family typewriter
-initByFreq
-\family default
- and
-\family typewriter
- dumper
-\end_layout
-
 \begin_layout Standard
-These two operators (and their associated functions) will be used frequently
- in this manual.
+Because 
+\family typewriter
+initByFreq 
+\family default
+and 
+\family typewriter
+dumper
+\family default
+ will be frequently used in this manual, I will briefly describe them here.
+ 
 \end_layout
 
 \begin_layout Itemize
@@ -4094,7 +4105,7 @@ initByFreq
  takes an array of probabilities (must add up to one).
  When applying to a population, each allele will be assigned 
 \family typewriter
-1,2,3,...
+0,1,2,3,...
 
 \family default
  etc according to the provided probabilities.
@@ -4143,11 +4154,12 @@ Dump
 \end_layout
 
 \begin_layout Standard
-The following example demonstrate the use of these two operators:
-\end_layout
+Example 
+\begin_inset LatexCommand \ref{alg:Operator-dumper-and-initByFreq}
 
-\begin_layout Standard
+\end_inset
 
+ demonstrates the use of these two operators:
 \end_layout
 
 \begin_layout Standard
@@ -4157,7 +4169,11 @@ sideways false
 status open
 
 \begin_layout Caption
-log/dumpPop
+\begin_inset LatexCommand \label{alg:Operator-dumper-and-initByFreq}
+
+\end_inset
+
+Operator dumper and initByFreq
 \end_layout
 
 \begin_layout Standard
@@ -4183,40 +4199,80 @@ Population Structure
 \end_layout
 
 \begin_layout Standard
-subpopulation structure can be accessed through the following functions:
+subpopulation structure can be accessed through the following member functions:
  
+\end_layout
+
+\begin_layout Itemize
+
 \family typewriter
-popSize
+pop.popSize
 \begin_inset LatexCommand \index{population!popSize}
 
 \end_inset
 
-(), numSubPop
+()
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.numSubPop
 \begin_inset LatexCommand \index{population!numSubPop}
 
 \end_inset
 
-(), subPopSize
+()
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.subPopSize
 \begin_inset LatexCommand \index{population!subPopSize}
 
 \end_inset
 
-(sp), subPopBegin
+(sp)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.subPopBegin
 \begin_inset LatexCommand \index{population!dubPopBegin}
 
 \end_inset
 
-(sp), subPopEnd
+(sp)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.subPopEnd
 \begin_inset LatexCommand \index{population!subPopEnd}
 
 \end_inset
 
-(sp), subPopIndPair
+(sp)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.subPopIndPair
 \begin_inset LatexCommand \index{population!subPopIndPair}
 
 \end_inset
 
-(), absIndIndex
+()
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.absIndIndex
 \begin_inset LatexCommand \index{population!absIndIndex}
 
 \end_inset
@@ -4226,17 +4282,13 @@ popSize
 \end_layout
 
 \begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float algorithm
 wide false
 sideways false
 status open
 
 \begin_layout Caption
-log/popStru
+population structure functions
 \end_layout
 
 \begin_layout Standard
@@ -4275,76 +4327,160 @@ rearrangeByIndInfo
 rearrange individuals in the order of their info values.
  Similar functions are
 \family typewriter
- pop.setIndInfo
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.setIndInfo
 \begin_inset LatexCommand \index{population!setIndInfo}
 
 \end_inset
 
-(), pop.setIndInfoWithSubPopID
+(info), 
+\family default
+set individual info using a vector of size of the population
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.setIndInfoWithSubPopID
 \begin_inset LatexCommand \index{population!setIndInfoWithSubPopID}
 
 \end_inset
 
-(), pop.setSubPopByIndInfo
+()
+\family default
+, use subpopulation id to set individual info
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.setSubPopByIndInfo
 \begin_inset LatexCommand \index{population!setSubPopByIndInfo}
 
 \end_inset
 
-(), pop.spliSubPopByProportion
-\begin_inset LatexCommand \index{population!spliSubPopByProportion}
+()
+\family default
+, rearrange individual and set subpopulation structure according individual
+ info values
+\end_layout
 
-\end_inset
+\begin_layout Itemize
 
-(), pop.removeEmptySubPops
+\family typewriter
+pop.removeEmptySubPops
 \begin_inset LatexCommand \index{population!removeEmptySubPops}
 
 \end_inset
 
 ()
 \family default
-,
+, remove empty subpopulations.
+
 \family typewriter
- pop.removeSubPops
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.removeSubPops
 \begin_inset LatexCommand \index{population!removeSubPops}
 
 \end_inset
 
-(), pop.reorderSubPops
+(subPops), 
+\family default
+remove subpopulation
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.reorderSubPops
 \begin_inset LatexCommand \index{population!reorderSubPops}
 
 \end_inset
 
-()
+(order, rank, removeEmptySubPops=False)
 \family default
 , 
+\end_layout
+
+\begin_layout Itemize
+
 \family typewriter
 pop.newPopByIndInfo
 \begin_inset LatexCommand \index{population!newPopByIndInfo}
 
 \end_inset
 
-(), pop.removeLoci
+(keepAncestralPops=True, info=[]), 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.removeLoci
 \begin_inset LatexCommand \index{population!removeLoci}
 
 \end_inset
 
-(),
+(remove=[], keep=[]),
 \family default
- 
+ remove some loci from the population
+\end_layout
+
+\begin_layout Itemize
+
 \family typewriter
 pop.newPopWithPartialLoci
 \begin_inset LatexCommand \index{population!newPopWithPartialLoci}
 
 \end_inset
 
-(), pop.splitSubPop
+(remove=[], keep=[]), 
+\family default
+return a new reduced population
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.splitSubPop
 \begin_inset LatexCommand \index{population!splitSubPop}
 
 \end_inset
 
-(which, subPopSizes, subPopID),
+(which, subPopSizes, subPopID), 
 \family default
- 
+split subpopulation 
+\family typewriter
+which
+\family default
+ according to subPopSizes
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.spliSubPopByProportion
+\begin_inset LatexCommand \index{population!spliSubPopByProportion}
+
+\end_inset
+
+(which, proportions, subPopID), 
+\family default
+use proportion
+\end_layout
+
+\begin_layout Itemize
+
 \family typewriter
 pop.mergeSubPop
 \begin_inset LatexCommand \index{population!mergeSubPop}
@@ -4353,6 +4489,8 @@ pop.mergeSubPop
 
 (subPops).
  
+\family default
+merge subpopulations
 \end_layout
 
 \begin_layout Standard
@@ -4362,6 +4500,50 @@ These functions may look useful and appealing but you will almost never
  user-friendly way.
  Only when you begin to write your own operators will you have to read about
  the details of these functions.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset LatexCommand \ref{alg:population-structure-functions}
+
+\end_inset
+
+ demonostrate the use of functions 
+\family typewriter
+setIndInfo, setSubPopByInfInfo 
+\family default
+and 
+\family typewriter
+removeLoci.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{alg:population-structure-functions}
+
+\end_inset
+
+population structure functions
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/popStruManip.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -4441,7 +4623,7 @@ sideways false
 status open
 
 \begin_layout Caption
-log/ind
+Individual member functions
 \end_layout
 
 \begin_layout Standard
@@ -5153,7 +5335,12 @@ stat
 \family default
  operator calculates many population statistics and store results in population
  namespace.
- The following example demonstrates how 
+ Example 
+\begin_inset LatexCommand \ref{sub:Population-Variables}
+
+\end_inset
+
+ demonstrates how 
 \family typewriter
 stat 
 \family default
@@ -5208,7 +5395,7 @@ dvars()
 \family typewriter
 a.allaleFreq[0]
 \family default
- is a lot easier to handle than 
+ is a lot easier to read than 
 \family typewriter
 a['alleleFre'][0]
 \family default
@@ -5229,7 +5416,29 @@ defined in
 \family typewriter
 simuUtil 
 \family default
-is used to display the variables.
+can be used to display the variables.
+ With wxPython installed, this function will open a nice window with a tree
+ representing the variables.
+ Without wxPython (or use parameter 
+\family typewriter
+useWxPython=False
+\family default
+), variables will be displayed in a indented form.
+ Several parameters can be used to limit your display.
+ They are
+\end_layout
+
+\begin_layout Itemize
+level: level of tree, further nested variables will not be displayed
+\end_layout
+
+\begin_layout Itemize
+name: name of variable to display.
+ 
+\end_layout
+
+\begin_layout Itemize
+subPop: whether or not display variables for each subpopulations
 \end_layout
 
 \begin_layout Standard
@@ -5243,7 +5452,11 @@ sideways false
 status open
 
 \begin_layout Caption
-log/popVars
+\begin_inset LatexCommand \label{alg:Population-variables}
+
+\end_inset
+
+Population variables
 \end_layout
 
 \begin_layout Standard
@@ -5291,7 +5504,7 @@ sideways false
 status open
 
 \begin_layout Caption
-log/localNamespace
+Local namespaces of populations
 \end_layout
 
 \begin_layout Standard
