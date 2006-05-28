@@ -70,8 +70,8 @@ r.dev_off()
 # create a population, most parameters have default values
 pop = population(size=5, ploidy=2, loci=[5,10],
     lociPos=[range(0,5),range(0,20,2)],
-    alleleNames=['_','A','C','T','G'],
-    subPop=[2,3], maxAllele=4)
+    alleleNames=['A','C','T','G'],
+    subPop=[2,3], maxAllele=3)
 print pop.popSize()
 print pop.ploidy()
 print pop.ploidyName()
@@ -111,10 +111,134 @@ pop = population(size=10, ploidy=2, loci=[5, 7], subPop=[2, 8])
 #  range() are python functions
 pop = population(size=5, ploidy=2, loci=[5,10],
     lociPos=[range(0,5),range(0,20,2)],
-    alleleNames=['_','A','C','T','G'],
-    subPop=[2,3], maxAllele=4)
-InitByFreq(pop, [.25]*4)
+    alleleNames=['A','C','T','G'],
+    subPop=[2,3], maxAllele=3)
 #end
+
+#file log/popAndOperator.log
+simu = simulator(pop, randomMating(), rep=3)
+simu.evolve(
+  preOps = [ initByFreq([.8, .2])],
+  ops = [
+    stat(alleleFreq=[0,1], Fst=[1], step=10),
+    kamMutator(rate=0.001, rep=1),
+    kamMutator(rate=0.0001, rep=2)
+  ],
+  end=10
+)
+#end
+
+
+#file log/InitByFreq.log
+def InitByFreq(pop, *args, **kwargs):
+  initByFreq(*args, **kwargs).apply(pop)
+
+InitByFreq(pop, [.2, .3, .4, .1])
+#end
+
+
+#file log/dumpPop.log
+# .apply form
+pop = population(size=5, ploidy=2, loci=[5,10],
+    lociPos=[range(0,5),range(0,20,2)],
+    alleleNames=['A','C','T','G'],
+    subPop=[2,3], maxAllele=3)
+initByFreq([.2, .3, .4, .1]).apply(pop)
+# function form
+Dump(pop)
+#end
+
+
+
+#file log/popStru.log
+print pop.popSize()
+print pop.numSubPop()
+print pop.subPopSize(0)
+print pop.subPopSizes()
+print pop.subPopBegin(1)
+print pop.subPopEnd(1)
+print pop.subPopIndPair(3)
+print pop.absIndIndex(1,1)
+#end
+
+#file log/popStruManip.log
+pop.setIndInfo([1,2,2,3,1])
+pop.setSubPopByIndInfo()
+pop.removeLoci(keep=range(2,7))
+Dump(pop)
+#end
+
+
+
+#file log/ind.log
+# get an individual
+ind = pop.individual(9)
+# oops, wrong index
+ind = pop.individual(3)
+# you can access genotypic structure info
+print ind.ploidy()
+print ind.numChrom()
+# ...
+# as well as genotype
+print ind.allele(1) 
+ind.setAllele(1,5)
+print ind.allele(1)
+# you can also use an overloaded function
+# with a second parameter being the ploidy index
+print ind.allele(1,1) # second locus at the second copy of chromosome
+# other information
+print ind.affected()
+print ind.affectedChar()
+ind.setAffected(1)
+print ind.affectedChar()
+print ind.sexChar()
+#end
+
+
+
+#file log/popVars.log
+from simuUtil import ListVars
+ListVars(pop.vars(), useWxPython=False)
+Stat(pop, popSize=1, alleleFreq=[0])
+# subPop is True by default, use name to limit the variables to display
+ListVars(pop.vars(), useWxPython=False, subPop=False, name='alleleFreq')
+# print number of allele 1 at locus 0
+print pop.vars()['alleleNum'][0][1]
+print pop.dvars().alleleNum[0][1]
+print pop.dvars().alleleFreq[0]
+#end
+
+
+#file log/localNamespace.log
+print pop.evaluate('alleleNum[0][1] + alleleNum[0][2]')
+pop.execute('newPopSize=int(popSize*1.5)')
+ListVars(pop.vars(), level=1, useWxPython=False)
+# this variable is 'local' to the population and is
+# not available in the main namespace
+newPopSize
+#end
+
+
+#turnOnDebug(DBG_SIMULATOR)
+#turnOnDebug(DBG_UTILITY)
+
+#file log/expr.log
+simu = simulator(population(10),noMating(), rep=2)
+# evaluate an expression in different areas
+print simu.vars(0)
+print simu.population(0).evaluate("grp*2")
+print simu.population(1).evaluate("grp*2")
+print simu.population(0).evaluate("gen+1")
+# a statement (no return value)
+simu.population(0).execute("myRep=2+rep*rep")
+simu.population(1).execute("myRep=2*rep")
+print simu.vars(0)
+#end
+#file log/expreval.log
+simu.step([ pyExec("myRep=2+rep*rep") ])
+print simu.vars(0)
+#end
+
 
 
 #file log/popSaveLoad.log
@@ -142,101 +266,11 @@ os.remove('pop.dat')
 os.remove('pop.txt')
 
 
-#file log/InitByFreq.log
-def InitByFreq(pop, *args, **kwargs):
-  initByFreq(*args, **kwargs).apply(pop)
-
-InitByFreq(pop, [.2, .3, .4, .1])
-#end
-
-
-#file log/dumpPop.log
-# .apply form
-initByFreq([.2, .3, .4, .1]).apply(pop)
-# function form
-Dump(pop)
-#end
-
-#file log/popStru.log
-print pop.popSize()
-print pop.numSubPop()
-print pop.subPopSize(0)
-print pop.subPopSizes()
-print pop.subPopBegin(1)
-print pop.subPopEnd(1)
-print pop.subPopIndPair(3)
-print pop.absIndIndex(1,1)
-#end
-
-#file log/ind.log
-# get an individual
-ind = pop.individual(9)
-# oops, wrong index
-ind = pop.individual(3)
-# you can access genotypic structure info
-print ind.ploidy()
-print ind.numChrom()
-# ...
-# as well as genotype
-print ind.allele(1) 
-ind.setAllele(1,5)
-print ind.allele(1)
-# you can also use an overloaded function
-# with a second parameter being the ploidy index
-print ind.allele(1,1) # second locus at the second copy of chromosome
-# other information
-print ind.affected()
-print ind.affectedChar()
-ind.setAffected(1)
-print ind.affectedChar()
-print ind.sexChar()
-#end
-
 #file log/randomSample.log
 # random sample
 # [0]: RandomSample already return
 #  a list of samples even if times=1 (default)
 Dump( RandomSample(pop, 3)[0])
-#end
-
-#file log/popVars.log
-from simuUtil import listVars
-ListVars(pop.vars(), useWxPython=False)
-Stat(pop, popSize=1, alleleFreq=[0])
-ListVars(pop.vars(), useWxPython=False)
-# print number of allele 1 at locus 0
-print pop.vars()['alleleNum'][0][1]
-print pop.dvars().alleleNum[0][1]
-#end
-
-#file log/localNamespace.log
-print pop.evaluate('alleleNum[0][1] + alleleNum[0][2]')
-pop.execute('newPopSize=int(popSize*1.5)')
-ListVars(pop.vars(), level=1, useWxPython=False)
-# this variable is 'local' to the population and is
-# not available in the main namespace
-newPopSize
-#end
-
- 
-#turnOnDebug(DBG_SIMULATOR)
-#turnOnDebug(DBG_UTILITY)
-
-#file log/expr.log
-simu = simulator(population(10),noMating(), rep=2)
-# evaluate an expression in different areas
-print simu.vars(0)
-print simu.population(0).evaluate("grp*2")
-print simu.population(1).evaluate("grp*2")
-print simu.population(0).evaluate("gen+1")
-# a statement (no return value)
-simu.population(0).execute("myRep=2+rep*rep")
-simu.population(1).execute("myRep=2*rep")
-print simu.vars(0)
-#end
-#file log/expreval.log
-simu.step([ pyExec("myRep=2+rep*rep") ])
-print simu.vars(0)
 #end
 
 #file log/calcStat.log

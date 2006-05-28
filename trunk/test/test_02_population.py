@@ -81,10 +81,7 @@ class TestPopulation(unittest.TestCase):
       population, loci=[2], lociNames=['1', '2' , '3'])
     # allele names, should only gives warning
     population(10, alleleNames=['_'])
-    if alleleType() == 'binary':
-      population(10, maxAllele=1, alleleNames=['A', 'B'])
-    else:
-      population(10, maxAllele=2, alleleNames=['_', 'A', 'B'])
+    population(10, maxAllele=1, alleleNames=['A', 'B'])
     # sex chrom, 2 does not trigger type error
     p = population(loci=[2], sexChrom=2)
     self.assertEqual( p.sexChrom(), True)
@@ -107,7 +104,7 @@ class TestPopulation(unittest.TestCase):
     if alleleType() != 'binary':
       pop = population(size=100, ploidy=2, loci=[5, 7], 
         subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-        maxAllele=4, alleleNames=['_','A','C','T','G']) 
+        maxAllele=3, alleleNames=['A','C','T','G']) 
     else:
       pop = population(size=100, ploidy=2, loci=[5, 7], 
         subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
@@ -154,12 +151,11 @@ class TestPopulation(unittest.TestCase):
       # 5 is passed to be function as bool
       self.assertEqual(pop.alleleName(5), '2')
     else:
-      self.assertEqual(pop.alleleName(0), '_')
-      self.assertEqual(pop.alleleName(1), 'A')
-      self.assertEqual(pop.alleleName(2), 'C')
-      self.assertEqual(pop.alleleName(3), 'T')
-      self.assertEqual(pop.alleleName(4), 'G')
-      self.assertRaises(exceptions.IndexError, pop.alleleName, 5)
+      self.assertEqual(pop.alleleName(0), 'A')
+      self.assertEqual(pop.alleleName(1), 'C')
+      self.assertEqual(pop.alleleName(2), 'T')
+      self.assertEqual(pop.alleleName(3), 'G')
+      self.assertRaises(exceptions.IndexError, pop.alleleName, 4)
     # loci name, default, the name will be used by other programs
     # or file format, so we set it to be one based.
     self.assertEqual(pop.locusName(0), 'loc1-1')
