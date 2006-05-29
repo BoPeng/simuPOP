@@ -55,6 +55,8 @@ sys.stderr = oldErr
 
 outFile.close()
 
+print "Finished executing ", sys.argv[1]
+
 # separate this file using a perl script
 perlscript = open(perlFile, 'w')
 perlscript.write(r'''#!/usr/bin/perl
