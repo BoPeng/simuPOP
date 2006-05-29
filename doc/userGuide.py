@@ -137,12 +137,13 @@ InitByFreq(pop, [.2, .3, .4, .1])
 #end
 
 
+
 #file log/dumpPop.log
-# .apply form
 pop = population(size=5, ploidy=2, loci=[5,10],
     lociPos=[range(0,5),range(0,20,2)],
     alleleNames=['A','C','T','G'],
     subPop=[2,3], maxAllele=3)
+# .apply form
 initByFreq([.2, .3, .4, .1]).apply(pop)
 # function form
 Dump(pop)
@@ -219,6 +220,29 @@ newPopSize
 #end
 
 
+#file log/ancestralPop.log
+simu = simulator(population(10000, loci=[2]), randomMating())
+simu.evolve(
+  ops = [
+    setAncestralDepth(5, at=[-5]),
+    kamMutator(rate=0.01, atLoci=[0], maxAllele=1),
+    kamMutator(rate=0.001, atLoci=[1], maxAllele=1)
+  ],
+  end = 20
+)
+pop = simu.population(0)
+# start from current generation
+for i in range(pop.ancestralDepth()+1):
+  pop.useAncestralPop(i)
+  Stat(pop, alleleFreq=[0,1])
+  print '%d   %5f   %5f' % (i, pop.dvars().alleleFreq[0][1], pop.dvars().alleleFreq[1][1])
+
+# restore to the current generation  
+pop.useAncestralPop(0)  
+#end
+
+
+
 #turnOnDebug(DBG_SIMULATOR)
 #turnOnDebug(DBG_UTILITY)
 
@@ -240,7 +264,7 @@ print simu.vars(0)
 #end
 
 
-
+pop = population(1000, loci=[2])
 #file log/popSaveLoad.log
 # save it in various formats, default format is "txt"
 pop.savePopulation("pop.txt")

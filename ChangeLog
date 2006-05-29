@@ -5,8 +5,10 @@ NOTE: Daily snapshot reflects current SVN version. It includes new features and
 
 BUG:
   - alleleFreq is not fully updated ...
+  - save populations with ancestral pop crashes.
 
-version 0.6.14 - Currently available as daily snapshot
+version 0.6.14 - Towards 0.7.o
+  - NEW: user's guide and reference manual revision
 
 version 0.6.13 - (Rev 278) - Apr. 20, 2006
   - NEW: Add trajectory simulation functions follows those from selSim
