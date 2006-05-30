@@ -951,16 +951,7 @@ namespace simuPOP
 				ar & make_nvp("geno_structure", this->genoStru());
 				ar & make_nvp("subPop_sizes", m_subPopSize);
 				DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
-				// save all type of genotype array in integer format
-				if ( version > 0 )				  // compress
-				{
-					vector<unsigned char> data = compress(m_genotype);
-					ar & make_nvp("compressed_genotype", data);
-				}
-				else							  // old, uncompressed
-				{
-					ar & make_nvp("genotype", m_genotype);
-				}
+				ar & make_nvp("genotype", m_genotype);
 				DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
 				ar & make_nvp("individuals", m_inds);
 				DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
@@ -973,15 +964,7 @@ namespace simuPOP
 					// need to make sure ancestral pop also in order
 					const_cast<population*>(this)->adjustGenoPosition(true);
 					ar & make_nvp("subPop_sizes", m_subPopSize);
-					if ( version > 0 )			  // compress
-					{
-						vector<unsigned char> data = compress(m_genotype);
-						ar & make_nvp("compressed_genotype", data);
-					}
-					else						  // old, uncompressed
-					{
-						ar & make_nvp("genotype", m_genotype);
-					}
+					ar & make_nvp("genotype", m_genotype);
 					ar & make_nvp("individuals", m_inds);
 				}
 				const_cast<population*>(this)->useAncestralPop(0);
@@ -1016,17 +999,7 @@ namespace simuPOP
 				ar & make_nvp("geno_structure", stru);
 				ar & make_nvp("subPop_sizes", m_subPopSize);
 				DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
-				// load genotype in int format first
-				if (version > 0)				  // load compressed genotype
-				{
-					vector<unsigned char> data;
-					ar & make_nvp("compressed_genotype", data);
-					m_genotype = decompress(data);
-				}
-				else
-				{
-					ar & make_nvp("genotype", m_genotype);
-				}
+				ar & make_nvp("genotype", m_genotype);
 				DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
 				ar & make_nvp("individuals", m_inds);
 
@@ -1074,16 +1047,7 @@ namespace simuPOP
 				{
 					popData pd;
 					ar & make_nvp("subPop_sizes", pd.m_subPopSize);
-					if ( version > 0 )
-					{
-						vector<unsigned char> data;
-						ar & make_nvp("compressed_genotype", data);
-						pd.m_genotype = decompress(data);
-					}
-					else
-					{
-						ar & make_nvp("genotype", pd.m_genotype);
-					}
+					ar & make_nvp("genotype", pd.m_genotype);
 					ar & make_nvp("individuals", pd.m_inds);
 					// set pointer after copy this thing again (push_back)
 					m_ancestralPops.push_back(pd);
@@ -1188,7 +1152,8 @@ namespace simuPOP
 
 #ifndef SWIG
 #ifndef _NO_SERIALIZATION_
-BOOST_CLASS_VERSION(simuPOP::population, 1)
+// version 0: base
+BOOST_CLASS_VERSION(simuPOP::population, 0)
 #endif
 #endif
 #endif

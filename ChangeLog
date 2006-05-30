@@ -5,9 +5,8 @@ NOTE: Daily snapshot reflects current SVN version. It includes new features and
 
 BUG:
   - alleleFreq is not fully updated ...
-  - save populations with ancestral pop crashes.
 
-version 0.6.14 - Towards 0.7.o
+version 0.6.14 - Towards 0.7.0
   - NEW: user's guide and reference manual revision
 
 version 0.6.13 - (Rev 278) - Apr. 20, 2006
@@ -32,19 +31,19 @@ version 0.6.13 - (Rev 278) - Apr. 20, 2006
          and scripts have been modified. These changes can make binary
          and other modules behave the same.
   - CHG: (internal change) upgrade to boost 1.33.1. This allows me to use
-		     boost::iostream for instant file compression.
-	- NEW: File format change that compress population genotype before it is
-		     saved. This will greatly reduce the file size of saved populations.
-	- NEW: add compress=True option to savePopulation(). For a large file:
-		     Before: txt: 496M, 58s load, 24s write
-				         bin: 169M, 19s load, ? write
-				 Now:    txt: 66M,  25s load, 125s save
-				         bin: 51M,  10s load, 70s write
-				 Since load operation tends to happen more often than save,
-				 this actual write time seems to be acceptable.
-	- NEW: let simuPOP handles file.txt.gz extensions directly. Using .gz will
-		     be equilivalent to compress=True (although compress=True does not
-				 add .gz extension to the filename supplied. )
+         boost::iostream for instant file compression.
+  - NEW: File format change that compress population genotype before it is
+         saved. This will greatly reduce the file size of saved populations.
+  - NEW: add compress=True option to savePopulation(). For a large file:
+         Before: txt: 496M, 58s load, 24s write
+		         xml: 169M, 19s load, ? write
+		 Now:    txt: 66M,  25s load, 125s save
+		         bin: 51M,  10s load, 70s write
+		 Since load operation tends to happen more often than save,
+		 this increased write time seems to be acceptable.
+  - NEW: let simuPOP handles file.txt.gz extensions directly. Using .gz will
+         be equilivalent to compress=True (although compress=True does not
+         add .gz extension to the filename supplied. )
 				 
 
 version 0.6.12 - (Rev 186) - Feb 18, 2006 

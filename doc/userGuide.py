@@ -264,9 +264,12 @@ print simu.vars(0)
 #end
 
 
-pop = population(1000, loci=[2])
+# Note that I can not use pop now, since it is
+# obtained from simu.population(0) which is invalid now.
+
 #file log/popSaveLoad.log
 # save it in various formats, default format is "txt"
+pop = population(1000, loci=[2, 5, 10])
 pop.savePopulation("pop.txt")
 pop.savePopulation("pop.txt", compress=False)
 pop.savePopulation("pop.xml", format="xml")
@@ -302,59 +305,6 @@ Stat(pop, popSize=1, alleleFreq=range(0, pop.totNumLoci()),
   heteroFreq=range(0,pop.totNumLoci()), Fst=[0])
 #end
 
-#file log/calcFstH.log
-def calc_Fst_H(pop, alleles):
-  """ calculate expected heterozygosities at given loci
-    Formula etc please refer to user's manual
-  """
-  s = pop.dvars()
-  if len(alleles) == 0:
-    raise exceptions.ValueError("Please specify alleles on which to calculate Fst_H")
-
-  # FIXME: need better interface.
-  for l in alleles:   # of form [locus, allele, allele ...]
-    if (type(l) != type([]) and type(l) != type(())) or len(l) <= 1:
-      raise exceptions.ValueError("Format [ [ locus, allele,...]. [...] ]");
-    
-    s.Fst_H = {}
-    s.Fis_H = {}
-    s.Fit_H = {}
-    loc = l[0]
-    for ale in l[1:]:
-      # calculate Fst_H for each loc, ale pair.
-      # H_I based on observed heterozygosities in individuals in subpopulations
-      H_I = 0.0
-      H_S = 0.0
-      for sp in range(0, s.numSubPop):
-        H_I = H_I + s.subPopSize[sp]*s.subPop[sp]['heteroFreq'][loc][ale]
-        H_S = H_S + s.subPopSize[sp]*s.subPop[sp]['heteroFreq'][loc][0]
-      H_I = H_I / s.popSize
-      H_S = H_S / s.popSize
-      H_T = s.heteroFreq[loc][0]
-      s.Fst_H['%d-%d' % (loc,ale)] = (H_T - H_S)/H_T
-      s.Fis_H['%d-%d' % (loc,ale)] = (H_S - H_I)/H_S
-      s.Fit_H['%d-%d' % (loc,ale)] = (H_T - H_I)/H_T
-#end
-
-#file log/wrapFstH.log
-def Fst_H(alleles,**kwargs):
-  parm = ''  
-  for (k,v) in kwargs.items():
-    parm += ' , ' + str(k) + '=' + str(v)
-  #  calc_Fst_H(loci= loci?, rep=rep)
-  cmd = r'pyExec( exposePop=1, stmts=r"""calc_Fst_H(pop=pop, alleles= ' + \
-    str(alleles) + ')""", %s)' % parm
-  # print cmd
-  return eval( cmd )
-#end
-
-#file log/useFstH.log
-simu.apply([ initByFreq([.3,.5,.2]), 
-  stat(popSize=1, heteroFreq=[0]), 
-  Fst_H([[0,1,2]]) ] )
-listVars(simu.vars(0), level=1, useWxPython=False)
-#end
-
 
 
 #file log/operatorstages.log
@@ -381,27 +331,42 @@ from simuUtil import *
 simu = simulator(population(1),binomialSelection(), rep=4,
                  grp=[1,2,1,2])
 simu.apply([ pyEval(r"grp+3", grp=1),
-             pyEval(r"grp+6", grp=2), tab(), endl() ])
+             pyEval(r"grp+6", grp=2),
+             output('\n', rep=REP_LAST)]
+)
 #end
 
 #file log/operatoroutput.log
-simu = simulator(population(100),randomMating(), rep=2)
-simu.step([ stat(alleleFreq=[0], output=">"), 
-    tab(), endl() ],
-    preOps=[initByFreq([0.2,.8])])
+simu = simulator(population(100), randomMating(), rep=2)
+simu.step(
+  preOps=[
+    initByFreq([0.2, 0.8], rep=0),
+    initByFreq([0.5, 0.5], rep=1) ],
+  ops = [
+    stat(alleleFreq=[0]),
+    pyEval('alleleFreq[0][0]', output='a.txt')
+  ]
+)
+# only from rep 1
+print open('a.txt').read()
 
-# output to another file (I use outfile since this is used by tab and endl
-outfile="a.txt"
-simu.step([ stat(alleleFreq=[0], output=outfile), 
-    output("\t", output=outfile),
-    output("\n", output=outfile, rep=REP_LAST) ],
-    preOps=[initByFreq([0.2,.8])])
+simu.step(
+  ops = [
+    stat(alleleFreq=[0]),
+    pyEval('alleleFreq[0][0]', output='>>a.txt')
+  ])
+# from both rep0 and rep1
 print open("a.txt").read()
-outfile=">>a.txt"
-simu.step([ stat(alleleFreq=[0], output=outfile), 
+
+outfile='>>>a.txt'
+simu.step(
+  ops = [
+    stat(alleleFreq=[0]),
+    pyEval('alleleFreq[0][0]', output=outfile),
     output("\t", output=outfile),
-    output("\n", output=outfile, rep=REP_LAST) ],
-    preOps=[initByFreq([0.2,.8])])
+    output("\n", output=outfile, rep=0)
+  ],
+)
 print open("a.txt").read()
 #end
 
@@ -409,9 +374,12 @@ os.remove('a.txt')
 
 #file log/operatoroutputexpr.log
 outfile="'>>a'+str(rep)+'.txt'"
-simu.step([ stat(alleleFreq=[0], outputExpr=outfile), 
-    output("\n", outputExpr=outfile) ],
-    preOps=[initByFreq([0.2,.8])])
+simu.step(
+  ops = [
+    stat(alleleFreq=[0]),
+    pyEval('alleleFreq[0][0]', outputExpr=outfile)
+  ]
+)
 print open("a0.txt").read()
 print open("a1.txt").read()
 #end
@@ -433,9 +401,6 @@ os.remove('a0.txt')
 os.remove('a1.txt')
 
 #file log/pyOperator.log
-from simuRPy import *
-import time
-
 def dynaMutator(pop, param):
   ''' this mutator mutate common loci with low mutation rate
   and rare loci with high mutation rate, as an attempt to
@@ -450,9 +415,13 @@ def dynaMutator(pop, param):
     else:
       KamMutate(pop, maxAllele=2, rate=mu2, atLoci=[i])
   return True
+#end
 
-pop = population(size=10000, ploidy=2, loci=[2, 3])    
+#file log/pyOperatorUse.log
+pop = population(size=10000, ploidy=2, loci=[2, 3])
+
 simu = simulator(pop, randomMating())
+
 simu.evolve(
   preOps = [ 
     initByFreq( [.6, .4], atLoci=[0,2,4]),
@@ -460,21 +429,14 @@ simu.evolve(
   ops = [ 
     pyOperator( func=dynaMutator, param=(.5, .1, 0) ),
     stat(alleleFreq=range(5)),
-    varPlotter('(alleleFreq[0][2],alleleFreq[1][2])', 
-      title='allele frequency at loci 0 and 1',
-      update=5, varDim=2),
+    pyEval(r'"%f\t%f\n"%(alleleFreq[0][1],alleleFreq[1][1])', step=10)
     ],
   end = 30
 )        
-print "The R window will be closed after five seconds..."
-time.sleep(5)
-
-
 #end
 
 
 #file log/initByFreq.log
-help(initByFreq.__init__)
 simu = simulator( population(subPop=[2,3], loci=[5,7]),
     randomMating(), rep=1)
 simu.apply([
@@ -490,7 +452,6 @@ simu.apply([
 #end
 
 #file log/pyInit.log
-help(pyInit.__init__)
 def initAllele(ind, p, sp):
   return sp + ind + p
 
@@ -499,27 +460,17 @@ simu.apply([
     dumper(alleleOnly=True, dispWidth=2)])
 #end
 
-#file log/migratorhelp.log
-help(migrator.__init__)
-#end
 
 #file log/pyMigrator.log
-help(pyMigrator.__init__)
-
 simu = simulator(population(subPop=[2,3], loci=[2,5]),
     randomMating())
 # an Numeric array, force to Int type
-spID = carray('i',[2,2,1,1,0])
+spID = [2,2,1,1,0]
 simu.apply( [
     initByFreq([.2,.4,.4]), 
     dumper(alleleOnly=True, stage=PrePostMating),
     pyMigrator(subPopID=spID)
     ])
-
-#end
-
-#file log/mutatorhelp.log
-help(mutator.__init__)
 #end
 
 #file log/kamMutator.log
@@ -563,9 +514,6 @@ simu.apply([
   dumper(alleleOnly=True)])
 #end
 
-#file log/recombinatorhelp.log
-help(recombinator.__init__)
-#end
 
 #file log/recombinator.log
 simu = simulator(population(4, loci=[4,5,6]),
@@ -584,9 +532,6 @@ simu.step([
 )
 #end
 
-#file log/selectorhelp.log
-help(basicSelector.__init__)
-#end
 
 #file log/basicSelector.log
 simu = simulator(
@@ -596,8 +541,8 @@ s1 = .1
 s2 = .2
 simu.evolve([
     stat( alleleFreq=[0], genoFreq=[0]),
-    basicSelector(locus=0, fitness={'1-1':(1-s1), '1-2':1, '2-2':(1-s2)}),
-    pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=10)
+    mapSelector(locus=0, fitness={'0-0':(1-s1), '0-1':1, '1-1':(1-s2)}),
+    pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
     ],
     preOps=[  initByFreq(alleleFreq=[.2,.8])],
     end=300)
@@ -620,14 +565,13 @@ def sel(arr):
   else:
     return 1 - s2
 
-
 # test func
-print sel(carray('B',[1,1]))
+print sel([1,1])
 
 simu.evolve([
     stat( alleleFreq=[0], genoFreq=[0]),
     pySelector(loci=[0,1],func=sel),
-    pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=10)
+    pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=25)
     ],
     preOps=[  initByFreq(alleleFreq=[.2,.8])],
     end=100)
@@ -638,15 +582,12 @@ simu = simulator(population(subPop=[2,3], loci=[3,4]),
     randomMating())
 simu.apply([
     initByFreq([.3,.5,.2]),
-    pySubset( carray('i',[1,0,0,1,0]) ),
+    pySubset( [1,-1,-1,1,-1] ),
     dumper(alleleOnly=True, stage=PrePostMating)
    ])
 #end
 
 
-#file log/expressionhelp.log
-help(pyEval.__init__)
-#end
 
 #turnOnDebug(DBG_ALL)
 #turnOnDebug(DBG_SIMULATOR)
@@ -752,14 +693,14 @@ for n in range(1,10):
 
 
 #file log/extgenostru.log
-pop=population(1, loci=[2,3,4])
+pop = population(1, loci=[2,3,4])
 print pop.numLoci(1)
-print pop.locusDist(2)
-dis = pop.arrLociDist()
+print pop.locusPos(2)
+dis = pop.arrLociPos()
 print dis
 dis[2] = 0.5
-print pop.locusDist(2)
-print pop.arrLociDist()
+print pop.locusPos(2)
+print pop.arrLociPos()
 #end
 
 #file log/extgenotype.log
@@ -769,11 +710,11 @@ ind = pop.individual(0)
 print ind.allele(1,1)
 ind.setAllele(3,1,1)
 Dump(pop, alleleOnly=1)
-a = ind.arrAlleles()
+a = ind.arrGenotype()
 print a
-a = ind.arrAlleles(1)
+a = ind.arrGenotype(1)
 print a
-a = ind.arrAlleles(1,2)
+a = ind.arrGenotype(1,2)
 print a
 a[2]=4
 # the allele on the third chromosome has been changed

@@ -1450,12 +1450,6 @@ namespace simuPOP
 	/// set standard output to (default standard Python output)
 	void setLogOutput(const string filename="");
 
-	// compress genotype for storage
-	vector<unsigned char> compress(const vectora & genotype);
-
-	// uncompress
-	vectora decompress(const vector<unsigned char> & data);
-
 	// check if a file is a gzipped file
 	bool isGzipped(const string & filename);
 
