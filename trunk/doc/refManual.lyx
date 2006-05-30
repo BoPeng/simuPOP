@@ -3826,7 +3826,24 @@ will get a reference to one of the replicates.
 pop
 \family default
  reference.
- If you would like to get a real copy, use
+ Note that this pop reference will become invalid when the simulator is
+ distroyed so the following calling sequence will crash python.
+\end_layout
+
+\begin_layout LyX-Code
+pop = simu.population(idx)
+\end_layout
+
+\begin_layout LyX-Code
+simu = simulator(....)
+\end_layout
+
+\begin_layout LyX-Code
+pop.savePopulation(....)
+\end_layout
+
+\begin_layout Standard
+If you would like to get a real copy, use
 \end_layout
 
 \begin_layout LyX-Code
@@ -5721,7 +5738,12 @@ A typical use of this function is demonstrated in example
  Two kamMutator with different mutation rates are applied to these two loci.
  Five most recent populations are kept.
  The allele frequencies at these generations are calculated afterwards.
- (Note that this is not the best way to exam the changes of allele frequencies.)
+ (Note that this is not the best way to exam the changes of allele frequencies,
+ a 
+\family typewriter
+stat
+\family default
+ operator should be used.)
 \end_layout
 
 \begin_layout Standard
@@ -5749,22 +5771,6 @@ preview false
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout LyX-Code
- 
-\end_layout
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout LyX-Code
 
 \end_layout
 
@@ -5820,7 +5826,7 @@ savePopulation
 
 \end_inset
 
-(file, format)
+(file, format, compress=True)
 \family default
  member function, global 
 \family typewriter
@@ -5829,13 +5835,9 @@ SavePopulation
 
 \end_inset
 
-(pop, file, format) 
+(pop, file, format)
 \family default
-(in 
-\family typewriter
-simuUtil.py
-\family default
-) and 
+ and 
 \family typewriter
 LoadPopulation
 \family default
@@ -5918,7 +5920,7 @@ sideways false
 status open
 
 \begin_layout Caption
-log/popSaveLoad
+Save and load population
 \end_layout
 
 \begin_layout Standard
@@ -5946,10 +5948,6 @@ compress=False
 gzip -d 
 \family default
 command.
- Note that although compressed file format will save a lot of disk spaces,
- and are usually loaded faster, it will take 2 to 3 more times to save a
- population.
- 
 \end_layout
 
 \begin_layout Standard
@@ -5964,49 +5962,7 @@ Populations can also be saved in other formats such as FSTAT so that they
 simuUtil.py
 \family default
 .
- Note that these formats may not keep full information of simuPOP population
- so loaded population may not reflect the original population.
-\end_layout
-
-\begin_layout Standard
-The following example demonstrates how to use 
-\family typewriter
-SaveFstat
-\begin_inset LatexCommand \index{function!SaveFstat}
-
-\end_inset
-
  
-\family default
-and 
-\family typewriter
-LoadFstat
-\begin_inset LatexCommand \index{function!LoadFstat}
-
-\end_inset
-
-
-\family default
- functions.
- There is also an operator version of 
-\family typewriter
-SaveFstat
-\family default
-: 
-\family typewriter
-saveFstat
-\family default
-
-\begin_inset LatexCommand \index{operator!saveFstat}
-
-\end_inset
-
-.
- The source code can be find in 
-\family typewriter
-simuUtil.py
-\family default
- which provides a good example when you export to other formats.
 \end_layout
 
 \begin_layout Standard
@@ -6044,7 +6000,7 @@ Shared variables will also be saved (except for big objects like samples).
  On the other hand, you may want to save key parameters used to generate
  this population in the local namespace so that you will know these parameters
  after the population is loaded.
- For example, you can
+ For example, you can 
 \end_layout
 
 \begin_layout LyX-Code
@@ -6166,8 +6122,8 @@ number of offsprings or
 
  for a random distribution.
  default to 1.
- This parameter determines number of offsprings a mating will produce so
- it determines family size.
+ This parameter determines number of offsprings a mating event will produce
+ so it determines family size.
 \end_layout
 
 \begin_layout Itemize
@@ -6197,7 +6153,7 @@ maxNumOffsprings
 
  
 \family default
-used when numOffsprings is generated from a poisson or binomial distribution.
+used when numOffsprings is generated from a binomial distribution.
 \end_layout
 
 \begin_layout Itemize
@@ -6216,7 +6172,7 @@ mode
 \family default
 One of 
 \family typewriter
-MATE_NumOffsprings, MATE_NumOffspringsEachFamily, MATE_GeometricDistribution,
+MATE_NumOffspring, MATE_NumOffspringsEachFamily, MATE_GeometricDistribution,
  MATE_PoissonDistribution, MATE_BinomialDistribution
 \family default
 .
@@ -6263,7 +6219,7 @@ newSubPopSizeFunc
  Added for more convenience.
  This should be a function that accept a int parameter (generation), an
  array of current population size and return an array of subpopulation sizes.
- This is sometimes easier to use than the expression version of this parameter.
+ This is usually easier to use than the expression version of this parameter.
 \end_layout
 
 \begin_layout Section
@@ -6383,7 +6339,12 @@ P\left(k\right)=\frac{p^{k-1}}{\left(k-1\right)!}e^{-p}\quad\textrm{ for }k\geq1
 
 \end_inset
 
+Since the mean of this shifted Poisson distribution is 
+\begin_inset Formula $p+1$
+\end_inset
 
+, you need to specify, for example, 2, if you want a mean family size 3.
+ (FIXME: this part needs more consideration.)
 \end_layout
 
 \begin_layout Itemize
@@ -6856,6 +6817,1169 @@ not
 \end_layout
 
 \begin_layout Chapter
+Operators
+\end_layout
+
+\begin_layout Standard
+Operators are objects that act on populations.
+ They (there are exceptions) can be applied to populations directly using
+ 
+\family typewriter
+apply
+\family default
+() member function, but most of the time they are managed and applied by
+ a simulator.
+\end_layout
+
+\begin_layout Section
+Type of operators
+\end_layout
+
+\begin_layout Standard
+There are three kinds of operators:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+built-in:
+\emph default
+ written in C++, fastest.
+ They do not interact with Python shell except that some of them set variables
+ that are accessible from Python.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+hybrid
+\emph default
+
+\begin_inset LatexCommand \index{hybrid}
+
+\end_inset
+
+: written in C++ but calls python function during simulation.
+ Less efficient.
+ For example, a hybrid mutator 
+\family typewriter
+pyMutator 
+\family default
+will determine if an allele will be mutated and call a user--defined Python
+ function to mutate it.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+pure python
+\emph default
+: written in python.
+ Same speed as python.
+ For example, a 
+\family typewriter
+varPlotter
+\begin_inset LatexCommand \index{varPlotter}
+
+\end_inset
+
+
+\family default
+ can plot python variables that are set by other operators.
+\end_layout
+
+\begin_layout Standard
+You do not have to know the type of an operator to use them.
+ The interface of them are all the same.
+ Note that although it is possible to write pure python operators to operate
+ directly on populations, it might work very slowly compared to the built-in
+ ones.
+\end_layout
+
+\begin_layout Subsection
+Applicable Stages
+\begin_inset LatexCommand \index{applicable stage}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Operators can be applied at different stage(s) of a life cycle.
+ More specifically, at pre-, during- or post mating stage(s).
+ Note that it is possible for an operator to apply multiple times in a life
+ cycle.
+ For example, an save-to-file operator might be applied before and after
+ mating to trace parental information.
+ Applicable stages are usually set by default but you can change it by setting
+ 
+\family typewriter
+stage=(PreMating|PostMating|DuringMating|PrePostMating) 
+\family default
+parameter.
+ Note that some operators ignore 
+\family typewriter
+stage 
+\family default
+parameter since they only work at one stage.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Operator stage
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/operatorstages.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Active Generations
+\end_layout
+
+\begin_layout Standard
+Operators do not have to be applied at all generations.
+ You can specify starting generation, ending generation, gaps between applicable
+ generations, or even specific generations to apply.
+ For example, you might want to start applying migrations after certain
+ burn-in generation; or you want to calculate every 10 generations.
+ Operators take the following parameters during initialization:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+begin
+\begin_inset LatexCommand \index{begin}
+
+\end_inset
+
+ 
+\family default
+start generation.
+ default to 1.
+ negative number is interpreted as endGeneration + begin 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+end
+\begin_inset LatexCommand \index{end}
+
+\end_inset
+
+
+\family default
+ stop applying after this generation.
+ negative number is allowed
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+step
+\begin_inset LatexCommand \index{step}
+
+\end_inset
+
+ 
+\family default
+number of generations between active generations.
+ default to 1 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+at
+\begin_inset LatexCommand \index{at}
+
+\end_inset
+
+
+\family default
+ an array of active generations.
+ If given, begin, end, step will be ignored.
+\end_layout
+
+\begin_layout Standard
+For example
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Set active generations of an operator
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/operatorgen.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The last example displays variable 
+\family typewriter
+gen 
+\family default
+for each replicate.
+ Note that you can use negative generation number whenever you specifies
+ the 
+\family typewriter
+end
+\family default
+ parameter of evolve.
+ In this case, generation -1 is the last generation (end), -2 is end-1,
+ and so on.
+\end_layout
+
+\begin_layout Subsection
+Replicates and Groups
+\end_layout
+
+\begin_layout Standard
+Most operators are applied to every replicate of a simulator during evolution.
+ However, you can apply operators to one or a group of replicates only.
+ For example, you can initialize different replicates with different initial
+ values and then start evolution.
+ c.f.
+
+\family typewriter
+ simulator::setGroup 
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The most useful example is 
+\end_layout
+
+\begin_layout LyX-Code
+output('
+\backslash
+n',rep=REP_LAST)
+\end_layout
+
+\begin_layout Standard
+that will output 
+\family typewriter
+
+\backslash
+n 
+\family default
+at the end of each generation.
+ Here is an example of using replicate groups:
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Replicate group
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/operatorgrp.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Output Specification
+\end_layout
+
+\begin_layout Standard
+Operators can have outputs.
+ Output can be standard output (terminal) or a file, which can be constant,
+ or change with generation or replicate.
+ Different operators can append to the same file to form table-like outputs.
+ 
+\end_layout
+
+\begin_layout Standard
+Filename can have the following format:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+'filename'
+\family default
+ this file will be closed after each use.
+ I.e., if several operators output to the same file, only the last one will
+ succeed.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+'>filename' 
+\family default
+the same as 'filename'
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+'>>filename' 
+\family default
+The file will be created at the beginning of evolution (
+\family typewriter
+simulator::evolve
+\family default
+) and close at the end.
+ Several operators can output to this file to form a table.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+'>>>filename' 
+\family default
+The same as 
+\family typewriter
+'>>filename'
+\family default
+ except that the file will not be cleared at the beginning of evolution
+ if it is not empty.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+'>'
+\family default
+ out put to standard output.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+'' 
+\family default
+suppress output.
+\end_layout
+
+\begin_layout Standard
+The following example shows the difference between 
+\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
+>
+\begin_inset Quotes erd
+\end_inset
+
+
+\family default
+ and 
+\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
+>>
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+log/operatoroutput
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/operatoroutput.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the first simulator, all operators uses 
+\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
+a.txt
+\begin_inset Quotes erd
+\end_inset
+
+
+\family default
+ (the same as 
+\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
+>a.txt
+\begin_inset Quotes erd
+\end_inset
+
+
+\family default
+).
+ This file is repeatedly covered by other operators so what we finally get
+ is a newline written by 
+\family typewriter
+output(
+\begin_inset Quotes eld
+\end_inset
+
+
+\backslash
+n
+\begin_inset Quotes erd
+\end_inset
+
+)
+\family default
+.
+ The second simulator works fine by using 
+\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
+>>a.txt
+\begin_inset Quotes erd
+\end_inset
+
+
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Output filename does not have to be fixed.
+ If 
+\family typewriter
+outputExpr 
+\family default
+parameter is used (
+\family typewriter
+output
+\family default
+ will be ignored), it will be evaluated when a filename is needed.
+ This is useful when you need to write to different files for different
+ replicate/generations.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+log/operatoroutputexpr
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/operatoroutputexpr.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Python expression and statistics calculation
+\end_layout
+
+\begin_layout Subsection
+Expressions and Statements
+\end_layout
+
+\begin_layout Standard
+Expressions are used extensively in operators so basic knowldege of python
+ is required.
+ If you know almost nothing about Python, please spend some time on the
+ Python tutorial from python website.
+\end_layout
+
+\begin_layout Standard
+Unlike C/C++, assignments in Python do not return values.
+ This is the biggest difference between Python expression and statement:
+\end_layout
+
+\begin_layout Itemize
+expressions consist of constants, variables, operators, functions, but 
+\emph on
+no 
+\emph default
+assignments, condition, loop etc.
+ Expression returns a value when executed.
+ An example of expression is 
+\family typewriter
+range(1,5)+10 
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+statements consist of arbitrary valid python code.
+ Statement does 
+\emph on
+not
+\emph default
+ return a value when executed.
+ An example of statement is 
+\family typewriter
+a=range(1,5)
+\family default
+ .
+\end_layout
+
+\begin_layout Subsection
+simuPOP variables
+\end_layout
+
+\begin_layout Standard
+All populations have their own attached variables.
+ We have seen the structure of a population dictionary: it starts empty
+ and will have many variables created by various operators.
+ You can access local namespace of each replicate through a simulator's
+ 
+\family typewriter
+vars(rep) 
+\family default
+function:
+\end_layout
+
+\begin_layout LyX-Code
+simu.vars(0)        simu.vars(1) ...
+      // replicate
+\end_layout
+
+\begin_layout LyX-Code
+  popSize             popSize            // local namespace
+\end_layout
+
+\begin_layout LyX-Code
+  alleleFreq[0]       alleleFreq[0]      // allele frequency at locus 1
+\end_layout
+
+\begin_layout LyX-Code
+  alleleFreq[1]       alleleFreq[1]      // at locus 2
+\end_layout
+
+\begin_layout LyX-Code
+  ...
+                 ....
+\end_layout
+
+\begin_layout LyX-Code
+  subPop[0]           subPop[0]          // subpop namespace
+\end_layout
+
+\begin_layout LyX-Code
+    popSize             popSize          // subpopulation 1 size
+\end_layout
+
+\begin_layout LyX-Code
+    allaleFreq[0]       allaleFreq[0]    // allele frequency at locus 1
+\end_layout
+
+\begin_layout LyX-Code
+    ...
+                 ...
+\end_layout
+
+\begin_layout LyX-Code
+  subPop[1]           subPop[1]          // variables for subpop 2
+\end_layout
+
+\begin_layout LyX-Code
+    ...
+                 ...
+\end_layout
+
+\begin_layout Standard
+It is important to know that
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simulator::vars(0), vars(1) 
+\family default
+etc are the 
+\emph on
+local namespaces
+\emph default
+ for each replicate.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+subPop[0], subPop[1] 
+\family default
+etc have almost the same set of keys as those for the whole population.
+ This is because 
+\family typewriter
+stat
+\family default
+ operator calculate statistics of each replicate of population, and all
+ subpopulations.
+\end_layout
+
+\begin_layout Standard
+To list these variables, you can use the 
+\family typewriter
+ListVars() 
+\family default
+function defined in 
+\family typewriter
+simuUtil.py
+\family default
+.
+ For example
+\end_layout
+
+\begin_layout LyX-Code
+ListVars(simu.vars(0), level=2)
+\end_layout
+
+\begin_layout Standard
+list all variables for the first replicate.
+ 
+\family typewriter
+Level=2
+\family default
+ stops 
+\family typewriter
+ListVars
+\family default
+ from expanding lists and dictionaries after two levels.
+ 
+\end_layout
+
+\begin_layout Standard
+Two functions can be used to access simulator and population variables:
+ 
+\family typewriter
+vars()
+\family default
+ and
+\family typewriter
+ dvars()
+\family default
+.
+ We have known 
+\family typewriter
+population::vars() 
+\family default
+and 
+\family typewriter
+population::dvars()
+\family default
+, 
+\family typewriter
+simulator::vars() 
+\family default
+and 
+\family typewriter
+simulator::dvars()
+\family default
+ work in almost the same way.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simulator::vars(rep
+\family default
+),
+\family typewriter
+ dvars(rep):
+\family default
+ return replicate 
+\family typewriter
+rep
+\family default
+'s local namespace
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simulator::vars(rep, subPop
+\family default
+),
+\family typewriter
+ dvars(rep, subPop):
+\family default
+ return the namespace of
+\family typewriter
+ subPop
+\family default
+ subpopulation of replicate 
+\family typewriter
+rep.
+\end_layout
+
+\begin_layout Standard
+The return values of
+\family typewriter
+ vars() 
+\family default
+and 
+\family typewriter
+dvars() 
+\family default
+are different.
+ 
+\family typewriter
+vars()
+\family default
+ returns a Python dictionary.
+ You should access their keys in the usual Python way.
+ 
+\family typewriter
+dvars() 
+\family default
+returns a 'wrapped' Python dictionary.
+ You can access dictionary keys as attributes.
+ 
+\family typewriter
+dvars() 
+\family default
+is usually considered to be easier to use.
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+evaluate
+\begin_inset LatexCommand \index{calculate}
+
+\end_inset
+
+ 
+\family default
+function and 
+\family typewriter
+pyEval
+\begin_inset LatexCommand \index{calc}
+
+\end_inset
+
+ 
+\family default
+and
+\family typewriter
+ pyExec
+\begin_inset LatexCommand \index{pyExec}
+
+\end_inset
+
+
+\family default
+ operators
+\end_layout
+
+\begin_layout Standard
+Function 
+\family typewriter
+population::evaluate 
+\family default
+and operator 
+\family typewriter
+pyEval/pyExec 
+\family default
+will work in local namespaces.
+ For example, if there are 
+\family typewriter
+a
+\family default
+ and 
+\family typewriter
+b
+\family default
+ in the main namespace and 
+\family typewriter
+a
+\family default
+ in 
+\family typewriter
+pop
+\family default
+, 
+\family typewriter
+pop.evaluate('a')
+\family default
+ will return 
+\family typewriter
+pop.vars()['a']
+\family default
+, 
+\family typewriter
+pop.evaluate('b') 
+\family default
+will return global 
+\family typewriter
+b
+\family default
+ since there is no 
+\family typewriter
+b
+\family default
+ in the local namespace.
+ It this is still too abstract, here is a real example
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+python expression
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/expr.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simulator 
+\family default
+creates a simulator with two replicates 0 and 1.
+ 
+\end_layout
+
+\begin_layout Itemize
+We evaluate 
+\family typewriter
+grp*2
+\family default
+ in different replicates and get different results.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+gen 
+\family default
+is not in either replicate's namespace so the global one will be used.
+\end_layout
+
+\begin_layout Itemize
+Using statements can create variables in local namespaces.
+ (You can use 
+\family typewriter
+global 
+\family default
+statement to create global variable if you are familiar with python.)
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+pyEval/pyExec 
+\family default
+operators execute python expression/statements, 
+\emph on
+using local namespaces
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pyEval 
+\family default
+(operator) evaluate a Python expression and return its value, optional execute
+ a list of statements beforehand.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pyExec 
+\family default
+(operator) execute a list of statements in the form of a multi-line string.
+ No return value or output.
+\end_layout
+
+\begin_layout Standard
+Here, 
+\family typewriter
+expr
+\family default
+ is a simple string containing an expression that will return a value when
+ executed; 
+\family typewriter
+stmts 
+\family default
+is a string of statements, separated by 
+\family typewriter
+'
+\backslash
+n'
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+For example, you can return a string of 
+\begin_inset Quotes eld
+\end_inset
+
+gen:rep
+\begin_inset Quotes erd
+\end_inset
+
+ using the following function
+\end_layout
+
+\begin_layout LyX-Code
+pop.evaluate(r
+\begin_inset Quotes eld
+\end_inset
+
+'%d:%d' % (gen,rep)
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+but if you would like to change/create variables, you have to use statements
+ like
+\end_layout
+
+\begin_layout LyX-Code
+pop.evalulate(r
+\begin_inset Quotes eld
+\end_inset
+
+myval
+\begin_inset Quotes erd
+\end_inset
+
+, stmts=r
+\begin_inset Quotes erd
+\end_inset
+
+myval=rep+1
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+Since you are executing Python statements, you can of course do it directly
+ in python.
+ For example, the above function does exactly the following
+\end_layout
+
+\begin_layout LyX-Code
+pop.vars()['myval'] = pop.vars()['rep'] + 1
+\end_layout
+
+\begin_layout LyX-Code
+pop.vars()['myvar']
+\end_layout
+
+\begin_layout Standard
+As a matter of fact, we seldom use 
+\family typewriter
+evaluate
+\family default
+ function directly (maybe for debuging), usually
+\end_layout
+
+\begin_layout Itemize
+we use expressions for dynamic parameters.
+ For example:
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+newSubPopSizeExpr=
+\begin_inset Quotes erd
+\end_inset
+
+range(10,20)*1.2
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+outputExpr= ' 
+\begin_inset Quotes erd
+\end_inset
+
+saveAt%s.txt
+\begin_inset Quotes erd
+\end_inset
+
+ % gen'
+\end_layout
+
+\begin_layout Standard
+These parameters will be evaluated whenever they are referred.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+we use expression/statements in
+\family typewriter
+ pyEval/pyExec 
+\family default
+operators.
+ These statements will work in local namespaces.
+ For example:
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Expression evaluation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/expreval.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because of the interactive nature of python, it is very easy to write short
+ programs, quote them in 
+\family typewriter
+r'''program''' 
+\family default
+and put them in to 
+\family typewriter
+pyEval/pyExec 
+\family default
+operators.
+\end_layout
+
+\begin_layout Chapter
 Simulator
 \begin_inset LatexCommand \index{Simulator}
 
@@ -7325,17 +8449,13 @@ LoadSimulator
 \end_layout
 
 \begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float algorithm
 wide false
 sideways false
 status open
 
 \begin_layout Caption
-log/simulatorsaveload
+save and load a simulator
 \end_layout
 
 \begin_layout Standard
@@ -7430,1512 +8550,10 @@ SimulatorFromFiles(files, mating)
 \end_layout
 
 \begin_layout Chapter
-Operators
-\end_layout
-
-\begin_layout Standard
-Operators are objects that act on populations.
- They (there are exceptions) can be applied to populations directly using
- 
-\family typewriter
-apply
-\family default
-() member function, but most of the time they are managed and applied by
- a simulator.
-\end_layout
-
-\begin_layout Section
-Type of operators
-\end_layout
-
-\begin_layout Standard
-There are three kinds of operators:
-\end_layout
-
-\begin_layout Itemize
-
-\emph on
-built-in:
-\emph default
- written in C++, fastest.
- They do not interact with Python shell except that some of them set variables
- that are accessible from Python.
-\end_layout
-
-\begin_layout Itemize
-
-\emph on
-hybrid
-\emph default
-
-\begin_inset LatexCommand \index{hybrid}
-
-\end_inset
-
-: written in C++ but calls python function when execution.
- Less efficient.
- For example, a hybrid mutator 
-\family typewriter
-pyMutator 
-\family default
-will determine if an allele will be mutated and call a user--defined Python
- function to mutate it.
-\end_layout
-
-\begin_layout Itemize
-
-\emph on
-pure python
-\emph default
-: written in python.
- Same speed as python.
- For example, a 
-\family typewriter
-varPlotter
-\begin_inset LatexCommand \index{varPlotter}
-
-\end_inset
-
-
-\family default
- can plot python variables that are set by other operators.
-\end_layout
-
-\begin_layout Standard
-You do not have to know the type of an operator to use them.
- The interface of them are all the same.
- Note that although it is possible to write pure python operators to operate
- directly on populations, it might work very slowly compared to the built-in
- ones.
- If you believe some operators are important, please post to the simuPOP
- forum and I will see if I can implement it internally.
- It would be best if you have a working python version of the operator.
-\end_layout
-
-\begin_layout Subsection
-Applicable Stages
-\begin_inset LatexCommand \index{applicable stage}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Operators can be applied at different stage(s) of a life cycle.
- More specifically, at pre-, during- or post mating stage(s).
- Note that it is possible for an operator to apply multiple times in a life
- cycle.
- For example, an save-to-file operator might be applied before and after
- mating to trace parental information.
- Applicable stages are usually set by default but you can change it by setting
- 
-\family typewriter
-stage=(PreMating|PostMating|DuringMating|PrePostMating) 
-\family default
-parameter.
- Note that some operators ignore 
-\family typewriter
-stage 
-\family default
-parameter since they have to work at a certain stage.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-log/operatorstages
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatorstages.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Active Generations
-\end_layout
-
-\begin_layout Standard
-Operators do not have to be applied at all generations.
- You can specify starting generation, ending generation, gaps between applicable
- generations, or even specific generations to apply.
- For example, you might want to start applying migrations after certain
- heat-up generation; or you want to calculate every 10 generations.
- Operators take the following parameters during initialization:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-begin
-\begin_inset LatexCommand \index{begin}
-
-\end_inset
-
- 
-\family default
-start generation.
- default to 1.
- negative number is interpreted as endGeneration + begin 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-end
-\begin_inset LatexCommand \index{end}
-
-\end_inset
-
-
-\family default
- stop applying after this generation.
- negative number is allowed
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-step
-\begin_inset LatexCommand \index{step}
-
-\end_inset
-
- 
-\family default
-number of generations between active generations.
- default to 1 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-at
-\begin_inset LatexCommand \index{at}
-
-\end_inset
-
-
-\family default
- an array of active generations.
- If given, begin, end, step will be ignored.
-\end_layout
-
-\begin_layout Standard
-For example
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-log/operatorgen
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatorgen.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The last example displays variable 
-\family typewriter
-gen 
-\family default
-for each replicate (actually all get from global namespace since 
-\family typewriter
-gen 
-\family default
-is shared by all replicates).
- Note that you can use negative generation number whenever you specifies
- the 
-\family typewriter
-end
-\family default
- parameter of evolve.
- In this case, generation -1 is the last generation (end), -2 is end -1,
- and so on.
-\end_layout
-
-\begin_layout Subsection
-Replicates and Groups
-\end_layout
-
-\begin_layout Standard
-Most operators are applied to every replicate of a simulator during evolution.
- However, you can apply operators to one or a group of replicates only.
- For example, you can initialize different replicates with different initial
- values and then start evolution.
- c.f.
-
-\family typewriter
- simulator::setGroup 
-\family default
-.
- 
-\end_layout
-
-\begin_layout Standard
-The most useful example is 
-\end_layout
-
-\begin_layout LyX-Code
-output('
-\backslash
-n',rep=REP_LAST)
-\end_layout
-
-\begin_layout Standard
-that will output 
-\family typewriter
-
-\backslash
-n 
-\family default
-at the end of each generation.
- It is so frequently used so I have wrapped it as a pure python operator
- in 
-\family typewriter
-simuUtil.py.
-\end_layout
-
-\begin_layout Standard
-Here is an example of using replicate groups:
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-log/operatorgrp
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatorgrp.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Output Specification
-\end_layout
-
-\begin_layout Standard
-Operators can have outputs.
- Output can be standard output (terminal) or a file, which can be constant,
- or change with generation or replicate.
- Different operators can append to the same file to form table-like outputs.
- 
-\end_layout
-
-\begin_layout Standard
-Filename can have the following format:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-'filename'
-\family default
- this file will be closed after each use.
- I.e., if several operators output to the same file, only the last one will
- succeed.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-'>filename' 
-\family default
-the same as 'filename'
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-'>>filename' 
-\family default
-The file will be created at the beginning of evolution (
-\family typewriter
-simulator::evolve
-\family default
-) and close at the end.
- Several operators can output to this file to form a table.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-'>>>filename' 
-\family default
-The same as 
-\family typewriter
-'>>filename'
-\family default
- except that the file will not be cleared at the beginning of evolution
- if it is not empty.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-'>'
-\family default
- out put to standard output.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-'' 
-\family default
-suppress output.
-\end_layout
-
-\begin_layout Standard
-The following example shows the difference between 
-\family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
->
-\begin_inset Quotes erd
-\end_inset
-
-
-\family default
- and 
-\family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
->>
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-log/operatoroutput
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatoroutput.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In the first simulator, all operators uses 
-\family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
-a.txt
-\begin_inset Quotes erd
-\end_inset
-
-
-\family default
- (the same as 
-\family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
->a.txt
-\begin_inset Quotes erd
-\end_inset
-
-
-\family default
-).
- This file is repeatedly covered by other operators so what we finally get
- is a newline written by 
-\family typewriter
-output(
-\begin_inset Quotes eld
-\end_inset
-
-
-\backslash
-n
-\begin_inset Quotes erd
-\end_inset
-
-)
-\family default
-.
- The second simulator works fine by using 
-\family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
->>a.txt
-\begin_inset Quotes erd
-\end_inset
-
-
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-Output filename does not have to be fixed.
- If 
-\family typewriter
-outputExpr 
-\family default
-parameter is used (
-\family typewriter
-output
-\family default
- will be ignored), it will be evaluated when a filename is needed.
- This is useful when you need to write to different files for different
- replicate/generations.
- 
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-log/operatoroutputexpr
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatoroutputexpr.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Python expression and statistics calculation
-\end_layout
-
-\begin_layout Subsection
-Expressions and Statements
-\end_layout
-
-\begin_layout Standard
-Expressions are used extensively in operators so basic knowldege of python
- is required.
- If you know almost nothing about Python, please spend some time on the
- Python tutorial from python website.
-\end_layout
-
-\begin_layout Standard
-Unlikely C/C++, assignments in Python do not return values.
- This is the biggest difference between Python expression and statement:
-\end_layout
-
-\begin_layout Itemize
-expressions consist of constants, variables, operators, functions, but 
-\emph on
-no 
-\emph default
-assignments, condition, loop etc.
- Expression returns a value when executed.
- An example of expression is 
-\family typewriter
-range(1,5)+10 
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-statements consist of arbitrary valid python code.
- Statement does 
-\emph on
-not
-\emph default
- return a value when executed.
- An example of statement is 
-\family typewriter
-a=range(1,5)
-\family default
- .
-\end_layout
-
-\begin_layout Subsection
-simuPOP variables
-\end_layout
-
-\begin_layout Standard
-All populations have their own attached variables.
- We have seen the structure of a population dictionary: it starts empty
- and will have many variables created by various operators.
- You can access local namespace of each replicate through a simulator's
- 
-\family typewriter
-vars(rep) 
-\family default
-function:
-\end_layout
-
-\begin_layout LyX-Code
-simu.vars(0)        simu.vars(1) ...
-      // replicate
-\end_layout
-
-\begin_layout LyX-Code
-  popSize             popSize            // local namespace
-\end_layout
-
-\begin_layout LyX-Code
-  alleleFreq[0]       alleleFreq[0]      // allele frequency at locus 1
-\end_layout
-
-\begin_layout LyX-Code
-  alleleFreq[1]       alleleFreq[1]      // at locus 2
-\end_layout
-
-\begin_layout LyX-Code
-  ...
-                 ....
-\end_layout
-
-\begin_layout LyX-Code
-  subPop[0]           subPop[0]          // subpop namespace
-\end_layout
-
-\begin_layout LyX-Code
-    popSize             popSize          // subpopulation 1 size
-\end_layout
-
-\begin_layout LyX-Code
-    allaleFreq[0]       allaleFreq[0]    // allele frequency at locus 1
-\end_layout
-
-\begin_layout LyX-Code
-    ...
-                 ...
-\end_layout
-
-\begin_layout LyX-Code
-  subPop[1]           subPop[1]          // variables for subpop 2
-\end_layout
-
-\begin_layout LyX-Code
-    ...
-                 ...
-\end_layout
-
-\begin_layout Standard
-It is important to know that
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simulator::vars[0], vars[1] 
-\family default
-etc are the 
-\emph on
-local namespaces
-\emph default
- for each replicate.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-subPop[0], subPop[1] 
-\family default
-etc have almost the same set of keys as those for the whole population.
- This is because 
-\family typewriter
-stat
-\family default
- operator calculate statistics of each replicate of population, and all
- subpopulations.
-\end_layout
-
-\begin_layout Standard
-To list these variables, you can use the 
-\family typewriter
-ListVars() 
-\family default
-function defined in 
-\family typewriter
-simuUtil.py
-\family default
-.
- For example
-\end_layout
-
-\begin_layout LyX-Code
-ListVars(simu.vars(0), level=2)
-\end_layout
-
-\begin_layout Standard
-list all variables for the first replicate.
- 
-\family typewriter
-Level=2
-\family default
- stops 
-\family typewriter
-ListVars
-\family default
- from expanding lists and dictionaries after two levels.
- 
-\end_layout
-
-\begin_layout Standard
-Two functions can be used to access simulator and population variables:
- 
-\family typewriter
-vars()
-\family default
- and
-\family typewriter
- dvars()
-\family default
-.
- We have known 
-\family typewriter
-population::vars() 
-\family default
-and 
-\family typewriter
-population::dvars()
-\family default
-, 
-\family typewriter
-simulator::vars() 
-\family default
-and 
-\family typewriter
-simulator::dvars()
-\family default
- work in almost the same way.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simulator::vars(rep
-\family default
-),
-\family typewriter
- dvars(rep):
-\family default
- return replicate 
-\family typewriter
-rep
-\family default
-'s local namespace
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simulator::vars(rep, subPop
-\family default
-),
-\family typewriter
- dvars(rep, subPop):
-\family default
- return the namespace of
-\family typewriter
- subPop
-\family default
- subpopulation of replicate 
-\family typewriter
-rep.
-\end_layout
-
-\begin_layout Standard
-The return values of
-\family typewriter
- vars() 
-\family default
-and 
-\family typewriter
-dvars() 
-\family default
-are different.
- 
-\family typewriter
-vars()
-\family default
- returns a Python dictionary.
- You should access their keys in the usual Python way.
- 
-\family typewriter
-dvars() 
-\family default
-returns a 'wrapped' Python dictionary.
- You can access dictionary keys as attributes.
- 
-\family typewriter
-dvars() 
-\family default
-is usually considered to be easier to use.
-\end_layout
-
-\begin_layout Subsection
-
-\family typewriter
-evaluate
-\begin_inset LatexCommand \index{calculate}
-
-\end_inset
-
- 
-\family default
-function and 
-\family typewriter
-pyEval
-\begin_inset LatexCommand \index{calc}
-
-\end_inset
-
- 
-\family default
-and
-\family typewriter
- pyExec
-\begin_inset LatexCommand \index{pyExec}
-
-\end_inset
-
-
-\family default
- operators
-\end_layout
-
-\begin_layout Standard
-Function 
-\family typewriter
-population::evaluate 
-\family default
-and operator 
-\family typewriter
-pyEval/pyExec 
-\family default
-will work in local namespaces.
- For example, if there are 
-\family typewriter
-a
-\family default
- and 
-\family typewriter
-b
-\family default
- in the main namespace and 
-\family typewriter
-a
-\family default
- in 
-\family typewriter
-pop
-\family default
-, 
-\family typewriter
-pop.evaluate('a')
-\family default
- will return 
-\family typewriter
-pop.vars()['a']
-\family default
-, 
-\family typewriter
-pop.evaluate('b') 
-\family default
-will return global 
-\family typewriter
-b
-\family default
- since there is no 
-\family typewriter
-b
-\family default
- in the local namespace.
- It this is still too abstract, here is a real example
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-log/exprvarsrep
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/exprvarsrep.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simulator 
-\family default
-creates a simulator with two replicates 0 and 1.
- 
-\end_layout
-
-\begin_layout Itemize
-We evaluate 
-\family typewriter
-grp*2
-\family default
- in different replicates and get different results.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gen 
-\family default
-is not in either replicate's namespace so the global one will be used.
-\end_layout
-
-\begin_layout Itemize
-Using statements can create variables in local namespaces.
- (You can use 
-\family typewriter
-global 
-\family default
-statement to create global variable if you are familiar with python.)
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-pyEval/pyExec 
-\family default
-operators execute python expression/statements, 
-\emph on
-using local namespaces
-\emph default
-.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pyEval 
-\family default
-(operator) evaluate a Python expression and return its value, optional execute
- a list of statements beforehand.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pyExec 
-\family default
-(operator) execute a list of statements in the form of a multi-line string.
- No return value or output.
-\end_layout
-
-\begin_layout Standard
-Here, 
-\family typewriter
-expr
-\family default
- is a simple string containing an expression that will return a value when
- executed; 
-\family typewriter
-stmts 
-\family default
-is a string of statements, separated by 
-\family typewriter
-'
-\backslash
-n'
-\family default
-.
- 
-\end_layout
-
-\begin_layout Standard
-For example, you can return a string of 
-\begin_inset Quotes eld
-\end_inset
-
-gen:rep
-\begin_inset Quotes erd
-\end_inset
-
- using the following function
-\end_layout
-
-\begin_layout LyX-Code
-pop.evaluate(r
-\begin_inset Quotes eld
-\end_inset
-
-'%d:%d' % (gen,rep)
-\begin_inset Quotes erd
-\end_inset
-
-)
-\end_layout
-
-\begin_layout Standard
-but if you would like to change/create variables, you have to use statements
- like
-\end_layout
-
-\begin_layout LyX-Code
-pop.evalulate(r
-\begin_inset Quotes eld
-\end_inset
-
-myval
-\begin_inset Quotes erd
-\end_inset
-
-, stmts=r
-\begin_inset Quotes erd
-\end_inset
-
-myval=rep+1
-\begin_inset Quotes erd
-\end_inset
-
-)
-\end_layout
-
-\begin_layout Standard
-Since you are executing Python statements, you can of course do it directly
- in python.
- For example, the above function does exactly the following
-\end_layout
-
-\begin_layout LyX-Code
-pop.vars()['myval'] = pop.vars()['rep'] + 1
-\end_layout
-
-\begin_layout LyX-Code
-pop.vars()['myvar']
-\end_layout
-
-\begin_layout Standard
-As a matter of fact, we seldom use 
-\family typewriter
-evaluate
-\family default
- function directly (maybe for debuging), usually
-\end_layout
-
-\begin_layout Itemize
-we use expressions for dynamic parameters.
- For example:
-\end_layout
-
-\begin_deeper
-\begin_layout LyX-Code
-newSubPopSizeExpr=
-\begin_inset Quotes erd
-\end_inset
-
-range(10,20)*1.2
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
-
-\begin_layout LyX-Code
-outputExpr= ' 
-\begin_inset Quotes erd
-\end_inset
-
-saveAt%s.txt
-\begin_inset Quotes erd
-\end_inset
-
- % gen'
-\end_layout
-
-\begin_layout Standard
-These parameters will be evaluated whenever they are referred.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-we use expression/statements in
-\family typewriter
- pyEval/pyExec 
-\family default
-operators.
- These statements will work in local namespaces.
- For example:
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-log/expreval
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/expreval.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Because of the interactive nature of python, it is very easy to write short
- programs, quote them in 
-\family typewriter
-r'''program''' 
-\family default
-and put them in to 
-\family typewriter
-pyEval/pyExec 
-\family default
-operators.
-\end_layout
-
-\begin_layout Subsection
-Calculate new statistics
-\end_layout
-
-\begin_layout Standard
-simuPOP provides many built-in or pure-Python operators that can calcualte
- various statistics.
- If you can not find the one you need, you can calculate them by yourself.
- Firstly, you need to 
-\end_layout
-
-\begin_layout Subsubsection*
-Check if your statistics can be calcualted based on exisiting statistics
-\end_layout
-
-\begin_layout Standard
-Most statistics can be calcualted from basic quantities like allele frequencies.
- This chapter will only deal with this case.
- Please refer to chapter 'extending simuPOP' for methods to access arbitrary
- population information.
-\end_layout
-
-\begin_layout Subsubsection*
-calculate them with existing operators
-\end_layout
-
-\begin_layout Standard
-Run a simple simulation and generate the statistics you need.
- For example: 
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-log/calcStat
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/calcStat.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout Subsubsection*
-know how to acess these variables
-\end_layout
-
-\begin_layout Standard
-For example, use 
-\end_layout
-
-\begin_layout LyX-Code
-s = simu.dvars(1)
-\end_layout
-
-\begin_layout LyX-Code
-a.haploNum['1-2|1-2']
-\end_layout
-
-\begin_layout Subsubsection*
-Write a function to calculate your statistics
-\end_layout
-
-\begin_layout Standard
-Once you know how to access the basic statistics, you can write a function
- to calculate your own statistics based on them.
- For example, the following function calculate 
-\begin_inset Formula $F_{st}$
-\end_inset
-
-, 
-\begin_inset Formula $F_{is}$
-\end_inset
-
-, 
-\begin_inset Formula $F_{it}$
-\end_inset
-
- based on heterozygosities calculated by 
-\family typewriter
-stat
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-log/calcFstH
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/calcFstH.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This function calculate and set 
-\family typewriter
-heter_obs
-\family default
-.
- It is recommeneded that you always use 
-\family typewriter
-rep
-\family default
- and 
-\family typewriter
-subPop
-\family default
- parameters so that your function can be applied to any population/subpopulation
- at any replicate.
- 
-\end_layout
-
-\begin_layout Standard
-You can use this function to calculate observed heterozygosity for any populatio
-n/subpopulation like
-\end_layout
-
-\begin_layout LyX-Code
-calc_Fst_H(pop, 1)
-\end_layout
-
-\begin_layout Standard
-If you would like to calculate this statistics as an operator (set 
-\family typewriter
-heter_obs 
-\family default
-automatically), you need to 
-\end_layout
-
-\begin_layout Subsubsection*
-Wrap this function as an operator (optional)
-\end_layout
-
-\begin_layout Standard
-The basic idea is that you use a function that return an appropriate 
-\family typewriter
-pyExec 
-\family default
-opertor.
- This part is a bit more involved.
- If you can not understand the following code, give up or read more at 'extendin
-g simuPOP' chapter.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-log/wrapFstH
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/wrapFstH.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Some notes:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-kwargs 
-\family default
-and 
-\family typewriter
-parm 
-\family default
-are used to pass additional parameters (at, begin, output etc) to pyExec
- operator.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-cmd
-\family default
- is the 
-\family typewriter
-pyExec 
-\family default
-operator we would like to get.
- We use 
-\family typewriter
-pyExec 
-\family default
-since statistics calculators usually do not return values.
-\end_layout
-
-\begin_layout Itemize
-It is always a good idea to 
-\family typewriter
-print cmd 
-\family default
-and make sure you have the right syntax for your 
-\family typewriter
-pyExec 
-\family default
-operator.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-exposePop=1 
-\family default
-is used to set a variable 
-\family typewriter
-pop
-\family default
- in local namespace.
- 
-\end_layout
-
-\begin_layout Itemize
-Finally, use 
-\family typewriter
-eval 
-\family default
-to return the operator.
-\end_layout
-
-\begin_layout Subsubsection*
-Use the opeator (optional)
-\end_layout
-
-\begin_layout Standard
-Use the operator 
-\family typewriter
-hetero
-\family default
- just like any other operator:
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-log/useFstH
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/useFstH.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
 Writing simuPOP scripts
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Conventions of simuPOP scripts
 \end_layout
 
@@ -9121,7 +8739,7 @@ Note that these scripts, if proper written, can also be imported.
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Parameter handling and user input 
 \end_layout
 
@@ -10080,8 +9698,47 @@ lated functions.
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+define a python operator
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/pyOperator.log}
 preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+use of python operator
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/pyOperatorUse.log}
+preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -10409,8 +10066,26 @@ Here is an example of using
 alleleFreq
 \family default
 :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Init by freq
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/initByFreq.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -10460,8 +10135,23 @@ atLoci
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Init by value
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/initByValue.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -10564,8 +10254,23 @@ pyInit
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Init by value
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/pyInit.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -10728,15 +10433,6 @@ are default to all subpopulations.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/migratorhelp.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 An detailed example can be found in 'some real examples' -> 'complex Migration
  Scheme' section.
 \end_layout
@@ -10854,8 +10550,26 @@ pyMigrator
 \family default
  then complete migration according its content.
  For example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+pyMigrator
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/pyMigrator.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -10986,12 +10700,6 @@ Mutation
 \end_layout
 
 \begin_layout Standard
-All mutators have the common interface as shown below: 
-\begin_inset Include \verbatiminput{log/mutatorhelp.log}
-preview false
-
-\end_inset
-
 
 \family typewriter
 rate
@@ -11094,8 +10802,23 @@ maxAllele
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+kamMutator
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/kamMutator.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -11173,8 +10896,26 @@ The following example demonstrate the use of
 maxAllele 
 \family default
 which is defaulted to 99 in this case.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Caption
+smmMutator
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/smmMutator.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -11252,8 +10993,26 @@ implements both models.
 
  should be provided and the operator will act as a geometric generalized
  stepwise model.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+gsmMutator
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/gsmMutator.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -11295,8 +11054,23 @@ will choose an allele as usual and call your function to mutate it to another
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+pyMutator
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/pyMutator.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -11452,15 +11226,6 @@ and
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/recombinatorhelp.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 The following example forces recombination (with rate 1, an unrealistic
  value since the maximum recombination rate should be .5) at loci 2,6 and
  10.
@@ -11471,8 +11236,23 @@ parentsTagger
 to mark the parents of each individual so you can (if you have enough patience)
  see exactly how recombination works.
  
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Recombinator
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/recombinator.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -11732,15 +11512,6 @@ mapSelector
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/selectorhelp.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 The following example is a typical example of heterozygote superiority.
  When 
 \begin_inset Formula $w_{11}<w_{12}>w_{22},$
@@ -11774,8 +11545,26 @@ Which is
 
 ).
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+map selector
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/basicSelector.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -12210,8 +11999,26 @@ pySelector
 sel
 \family default
  function only uses the first one.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+python selector
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/pySelector.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -13308,9 +13115,26 @@ controls
 \begin_layout Standard
 The following example shows how to draw a random sample (without replacement
  of course) from an existing population.
- 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+random sample
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/randomSample.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -14807,15 +14631,6 @@ varPlotter
  uses this feature to initialize R plot and save plot to a file when finished.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/expressionhelp.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Operator (hybrid) 
 \family typewriter
@@ -15157,20 +14972,7 @@ preview false
 \end_layout
 
 \begin_layout Standard
-and one of its output figure:
-\end_layout
-
-\begin_layout Standard
 \align center
-\begin_inset Graphics
-	filename ../../log/simuDemo16
-	lyxscale 40
-	width 5in
-	height 4in
-	clip
-
-\end_inset
-
 
 \end_layout
 
@@ -15281,28 +15083,6 @@ str1
 ,...
  etc will be used.
  Otherwise, the length of legend has to be the same as data size.
-\end_layout
-
-\begin_layout Standard
-The difference between 
-\family typewriter
-simuSci.Py 
-\family default
-and 
-\family typewriter
-simuMatPlt.py
-\family default
- is that they use different plotting engine.
- The following example shows an example:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/scipy.log}
-preview false
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -15702,6 +15482,16 @@ Use dryrun to exam simulator first.
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Conditional operator
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/ifElse.log}
 preview false
 
@@ -15709,15 +15499,6 @@ preview false
 
 
 \end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename ../../ifElse50
-	lyxscale 40
-	width 5in
-	height 4in
-	clip
 
 \end_inset
 
@@ -15895,8 +15676,23 @@ Random number generator is a tricky business.
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Random number generator
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/rng.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -15931,8 +15727,23 @@ does not have many member functions and it might be tricky to use them correctly
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Random number generator
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/rngrand.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -16294,8 +16105,23 @@ The following example shows how to change locus distance through this function.
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+geno stru
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/extgenostru.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -16377,8 +16203,23 @@ pop
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+genotype
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/extgenotype.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -16391,8 +16232,26 @@ Sex, affected status can be accessed through
 sex, setSex, affected, setAffected 
 \family default
 functions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Caption
+genotype
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/extother.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -16528,8 +16387,23 @@ tab
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Tab operator
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/tab.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -16598,8 +16472,23 @@ saves a population in FSTAT format.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/saveInFstatFormat.log}
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+genotype
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/extother.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -16640,8 +16529,23 @@ operator:
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+save fstat
+\end_layout
+
+\begin_layout Standard
 \begin_inset Include \verbatiminput{log/saveFstat.log}
 preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 

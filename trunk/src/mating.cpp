@@ -102,8 +102,7 @@ namespace simuPOP
 		}
 		else if( m_mode == MATE_PoissonDistribution)
 		{
-			DBG_FAILIF( fcmp_lt(numOS, 0) || fcmp_gt(numOS, 1.), ValueError,
-				"P for a Poisson distribution should be within [0,1], given " + toStr(numOS));
+            // FIXME: numOS is no longer the average.
 			UINT nos = rng().randPoisson(numOS)+1;
 			return nos;
 		}

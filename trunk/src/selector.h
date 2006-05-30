@@ -1301,33 +1301,19 @@ namespace simuPOP
 			its values will be assigned to info.
 			\stage and other parameters please see help(baseOperator.__init__)
 			*/
-			pySubset( PyObject* keep=NULL,
+			pySubset(const vectori& keep=vectori(),
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
-				: Operator( "", "", stage, begin, end, step, at, rep, grp)
+				int rep=REP_ALL, int grp=GRP_ALL) : 
+				Operator( "", "", stage, begin, end, step, at, rep, grp),
+				m_keep(keep)
 			{
-				DBG_ASSERT( PyObj_Is_IntNumArray(keep), ValueError,
-					"Passed vector is not a Python/Numeric int array");
-				Py_INCREF(keep);
-				m_keep = keep;
 			}
 
 			/// destructor
 			virtual ~pySubset()
 			{
-				if( m_keep != NULL)
-					Py_DECREF(m_keep);
 			}
-
-			/// CPPONLY
-			pySubset(const pySubset& rhs):
-			Operator(rhs),
-				m_keep(rhs.m_keep)
-			{
-				if( m_keep != NULL)
-					Py_INCREF(m_keep);
-			}
-
+		
 			/// this function is very important
 			virtual Operator* clone() const
 			{
@@ -1336,16 +1322,13 @@ namespace simuPOP
 
 			virtual bool apply(population& pop)
 			{
-
-				DBG_ASSERT( NumArray_Size(m_keep) >= static_cast<int>(pop.popSize()) ,
+				DBG_ASSERT( m_keep.size() >= pop.popSize() ,
 					ValueError, "Given subpopid array has a length of "
-					+ toStr( NumArray_Size(m_keep)) + " which is less than population size "
+					+ toStr( m_keep.size()) + " which is less than population size "
 					+ toStr(pop.popSize()));
 
-				long * id = reinterpret_cast<long*>(NumArray_Data(m_keep));
-
 				for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
-					pop.ind(i).setInfo( id[i] );
+					pop.ind(i).setInfo( m_keep[i] );
 
 				pop.setSubPopByIndInfo();
 				return true;
@@ -1357,8 +1340,7 @@ namespace simuPOP
 			}
 
 		private:
-			PyObject* m_keep;
-
+			vectori m_keep;
 	};
 
 	/// sample from population and save samples
