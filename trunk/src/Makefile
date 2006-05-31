@@ -13,9 +13,9 @@ SERIAL_SRC=serialization
 IOSTREAMS_SRC=iostreams
 REV := $(shell svnversion ..)
 CC = gcc
-CXX = g++
+CXX = g++ 
 LINK = g++ -lz
-CFLAGS = -Wall -pthread -fno-strict-aliasing -DNDEBUG -O3 -g  -fPIC -DSIMUPOP_REV=$(REV)
+CFLAGS = -Wall -pthread -fno-strict-aliasing -DNDEBUG -O3  -fPIC -DSIMUPOP_REV=$(REV)
 # for swig 1.3.28 cvs
 SWIG = swig -O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525
 # for swig 1.3.27
