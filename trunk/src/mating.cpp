@@ -330,6 +330,8 @@ namespace simuPOP
 		bool formOffGeno = this->formOffGenotype(ops);
 
 		UINT numMale, numFemale;
+        // cache chromBegin, chromEnd for better performance.
+        const vectoru & chIdx = pop.chromIndex();
 
 		/// random mating happens within each subpopulation
 		for(UINT sp=0; sp < pop.numSubPop(); ++sp)
@@ -391,6 +393,10 @@ namespace simuPOP
 			// generate scratch.subPopSize(sp) individuals.
 			ULONG spInd = 0;
 			ULONG spIndEnd = scratch.subPopSize(sp);
+            // in case that mating will form genotype and we need 
+            // free recombination between chromosomes.
+            BernulliTrials bt(rng(), vectorf(1, 0.5), 2*pop.numChrom());
+            
 			while( spInd < spIndEnd)
 			{
 				// randomly choose parents
@@ -440,25 +446,29 @@ namespace simuPOP
 
 					if( formOffGeno )			  // use the default no recombination random mating.
 					{
-												  // initialize to avoid compiler complains
-						int dadPloidy=0, momPloidy=1;
+                        const BitSet& bs = bt.trial();
 
-						for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd;  ++ch)
+		    			// initialize to avoid compiler complains
+						int dadPloidy=0, momPloidy=0;
+                		GenoIterator cd[2], cm[2], offd, offm;
+                		cd[0] = dad->genoBegin(0);
+                        cd[1] = dad->genoBegin(1);
+                		cm[0] = mom->genoBegin(0);
+                        cm[1] = mom->genoBegin(1);
+                        offd = it->genoBegin(0);
+                        offm = it->genoBegin(1);
+
+                        for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd;  ++ch)
 						{
-							dadPloidy = rnd.randInt(2);
-							momPloidy = rnd.randInt(2);
-
-							DBG_ASSERT((dadPloidy==0 || dadPloidy==1) &&
-								( momPloidy==0 || momPloidy==1), ValueError,
-								"Ploidy must be 0 or 1");
-
-							copy(dad->genoBegin(dadPloidy, ch),
-								dad->genoEnd(dadPloidy,ch) ,
-								it->genoBegin(0,ch));
-							copy(mom->genoBegin(momPloidy,ch),
-								mom->genoEnd(momPloidy,ch) ,
-								it->genoBegin(1,ch));
+							dadPloidy = bs[ch];
+							momPloidy = bs[ch];
+                            for(size_t gt = chIdx[ch]; gt < chIdx[ch+1]; ++gt)
+                            {
+                                offd[gt] = cd[dadPloidy][gt];
+                                offm[gt] = cm[momPloidy][gt];
+                            }
 						}
+                        
 
 						// last chromosome (sex chromosomes)
 						if( hasSexChrom )
