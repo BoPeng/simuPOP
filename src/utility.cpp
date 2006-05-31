@@ -2097,7 +2097,7 @@ T Expression::valueAs##TypeName() \
 					if( ((ri >> bit) & 0x1) == 1)
 						succ.set(i);
 					bit++;
-				}
+			    }
 			}
 			else if( m_N > 100)
 			{

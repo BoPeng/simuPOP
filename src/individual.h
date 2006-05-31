@@ -446,6 +446,12 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_numChrom;
 			}
 
+            /// chromosome index
+            const vectoru& chromIndex() const
+            {
+                return s_genoStruRepository[m_genoStruIdx].m_chromIndex;
+            }
+            
 			/// chromosome index of chromosome \c chrom
 			UINT chromBegin(UINT chrom) const
 			{

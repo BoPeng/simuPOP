@@ -1,24 +1,24 @@
 /***************************************************************************
- *   Copyright (C) 2004 by Bo Peng                                         *
- *   bpeng@rice.edu                                                        *
- *                                                                         *
+ *   Copyright (C) 2004 by Bo Peng										 *
+ *   bpeng@rice.edu														*
+ *																		 *
  *   $LastChangedDate: 2006-02-21 15:27:25 -0600 (Tue, 21 Feb 2006) $
  *   $Rev: 191 $
  *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   the Free Software Foundation; either version 2 of the License, or	 *
+ *   (at your option) any later version.								   *
+ *																		 *
+ *   This program is distributed in the hope that it will be useful,	   *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of		*
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the		 *
+ *   GNU General Public License for more details.						  *
+ *																		 *
+ *   You should have received a copy of the GNU General Public License	 *
+ *   along with this program; if not, write to the						 *
+ *   Free Software Foundation, Inc.,									   *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.			 *
  ***************************************************************************/
 
 #include "recombinator.h"
@@ -225,7 +225,7 @@ namespace simuPOP
 		// use which copy of chromosome
 		GenoIterator cp[2], curCp, off;
 
-		const BitSet& bs =  bt.trial();
+		const BitSet& bs = bt.trial();
 
 		size_t sz = recBeforeLoci.size();
 
@@ -238,17 +238,18 @@ namespace simuPOP
 		BitSet::size_type pos = bs.find_first();
 		BitSet::size_type newpos = 0;
 
+		cp[0] = parent->genoBegin(0);
+		cp[1] = parent->genoBegin(1);
+		off = offspring->genoBegin(offPloidy);
 		// there is some recombination
 		if(pos !=  BitSet::npos)
 		{
-			cp[0] = parent->genoBegin(0);
-			cp[1] = parent->genoBegin(1);
-			off = offspring->genoBegin(offPloidy);
 			// make use of the last unused 1/2.
 			curCp = cp[initCp];
 
 			// copy from 0 to the first occurance
-			copy(curCp, curCp+recBeforeLoci[pos], off);
+            for(size_t gt = 0; gt < recBeforeLoci[pos]; ++gt)
+                off[gt] = curCp[gt];
 			m_recCount[recBeforeLoci[pos]-1]++;
 
 			// then switch to another chromosome copy
@@ -259,9 +260,8 @@ namespace simuPOP
 			{
 				// copy to offspring
 				// element curCp+newpos+1 will not be copied. [) effect
-				copy(curCp+recBeforeLoci[pos],
-					curCp+recBeforeLoci[newpos],
-					off+recBeforeLoci[pos]);
+				for(size_t gt = recBeforeLoci[pos]; gt < recBeforeLoci[newpos]; gt++)
+					off[gt] = curCp[gt];
 				m_recCount[recBeforeLoci[newpos]-1]++;
 				pos = newpos;
 				// switch
@@ -271,10 +271,8 @@ namespace simuPOP
 			// copy the last piece
 			// NOTE: we should make sure recBeforeLoci.back()
 			// refer to the end of the chromosome
-
-			copy(curCp + recBeforeLoci[pos],
-				curCp + recBeforeLoci.back(),
-				off + recBeforeLoci[pos]);
+			for(size_t gt = recBeforeLoci[pos]; gt < recBeforeLoci.back(); gt++)
+				off[gt] = curCp[gt];
 
 			if(setSex)
 			{
@@ -287,9 +285,10 @@ namespace simuPOP
 		// if no switch is needed, copy the entire chromosome
 		else
 		{
-			copy(parent->genoBegin(initCp),
-				parent->genoEnd(initCp),
-				offspring->genoBegin(offPloidy));
+            GenoIterator par = parent->genoBegin(initCp);
+            GenoIterator off = offspring->genoBegin(offPloidy);
+            for(size_t gt = 0, gtEnd = offspring->totNumLoci(); gt < gtEnd; ++gt)
+                off[gt] = par[gt];
 
 			if( setSex )
 			{
