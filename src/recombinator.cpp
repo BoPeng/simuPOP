@@ -222,82 +222,120 @@ namespace simuPOP
 		const vectoru& recBeforeLoci,
 		bool setSex)
 	{
-		// use which copy of chromosome
-		GenoIterator cp[2], curCp, off;
-
-		const BitSet& bs = bt.trial();
-
-		size_t sz = recBeforeLoci.size();
-
-		int initCp = bs[sz-1]?0:1;
-
-		// the last one does not count, because it determines
-		// the initial copy of paternal chromosome
-		const_cast<BitSet&>(bs).reset(sz-1);
-
-		BitSet::size_type pos = bs.find_first();
-		BitSet::size_type newpos = 0;
-
-		cp[0] = parent->genoBegin(0);
-		cp[1] = parent->genoBegin(1);
-		off = offspring->genoBegin(offPloidy);
-		// there is some recombination
-		if(pos !=  BitSet::npos)
+		// the old forward-search method, use as default
+		if(m_method==0)
 		{
-			// make use of the last unused 1/2.
-			curCp = cp[initCp];
+			// use which copy of chromosome
+			GenoIterator cp[2], curCp, off;
 
-			// copy from 0 to the first occurance
-            for(size_t gt = 0; gt < recBeforeLoci[pos]; ++gt)
-                off[gt] = curCp[gt];
-			m_recCount[recBeforeLoci[pos]-1]++;
+			const BitSet& bs = bt.trial();
 
-			// then switch to another chromosome copy
-			curCp = (curCp == cp[0]) ? cp[1] : cp[0];
+			size_t sz = recBeforeLoci.size();
 
-			// next ...
-			while( (newpos = bs.find_next(pos)) != BitSet::npos )
+			int initCp = bs[sz-1]?0:1;
+
+			// the last one does not count, because it determines
+			// the initial copy of paternal chromosome
+			const_cast<BitSet&>(bs).reset(sz-1);
+
+			BitSet::size_type pos = bs.find_first();
+			BitSet::size_type newpos = 0;
+
+			cp[0] = parent->genoBegin(0);
+			cp[1] = parent->genoBegin(1);
+			off = offspring->genoBegin(offPloidy);
+			// there is some recombination
+			if(pos !=  BitSet::npos)
 			{
-				// copy to offspring
-				// element curCp+newpos+1 will not be copied. [) effect
-				for(size_t gt = recBeforeLoci[pos]; gt < recBeforeLoci[newpos]; gt++)
+				// make use of the last unused 1/2.
+				curCp = cp[initCp];
+
+				// copy from 0 to the first occurance
+				for(size_t gt = 0; gt < recBeforeLoci[pos]; ++gt)
 					off[gt] = curCp[gt];
-				m_recCount[recBeforeLoci[newpos]-1]++;
-				pos = newpos;
-				// switch
+				m_recCount[recBeforeLoci[pos]-1]++;
+
+				// then switch to another chromosome copy
 				curCp = (curCp == cp[0]) ? cp[1] : cp[0];
+
+				// next ...
+				while( (newpos = bs.find_next(pos)) != BitSet::npos )
+				{
+					// copy to offspring
+					// element curCp+newpos+1 will not be copied. [) effect
+					for(size_t gt = recBeforeLoci[pos]; gt < recBeforeLoci[newpos]; gt++)
+						off[gt] = curCp[gt];
+					m_recCount[recBeforeLoci[newpos]-1]++;
+					pos = newpos;
+					// switch
+					curCp = (curCp == cp[0]) ? cp[1] : cp[0];
+				}
+
+				// copy the last piece
+				// NOTE: we should make sure recBeforeLoci.back()
+				// refer to the end of the chromosome
+				for(size_t gt = recBeforeLoci[pos]; gt < recBeforeLoci.back(); gt++)
+					off[gt] = curCp[gt];
+
+				if(setSex)
+				{
+					if( curCp == cp[0])
+						offspring->setSex(Female);
+					else
+						offspring->setSex(Male);
+				}
 			}
-
-			// copy the last piece
-			// NOTE: we should make sure recBeforeLoci.back()
-			// refer to the end of the chromosome
-			for(size_t gt = recBeforeLoci[pos]; gt < recBeforeLoci.back(); gt++)
-				off[gt] = curCp[gt];
-
-			if(setSex)
+			// if no switch is needed, copy the entire chromosome
+			else
 			{
-				if( curCp == cp[0])
-					offspring->setSex(Female);
-				else
-					offspring->setSex(Male);
-			}
+				GenoIterator par = parent->genoBegin(initCp);
+				GenoIterator off = offspring->genoBegin(offPloidy);
+				for(size_t gt = 0, gtEnd = offspring->totNumLoci(); gt < gtEnd; ++gt)
+					off[gt] = par[gt];
+
+				if( setSex )
+				{
+					if( initCp == 0)			  // X of XY
+						offspring->setSex(Female);
+					else
+						offspring->setSex(Male);
+				}
+			}									  // no switch
 		}
-		// if no switch is needed, copy the entire chromosome
+		// the new bit by bit method, added for testing purpose
 		else
 		{
-            GenoIterator par = parent->genoBegin(initCp);
-            GenoIterator off = offspring->genoBegin(offPloidy);
-            for(size_t gt = 0, gtEnd = offspring->totNumLoci(); gt < gtEnd; ++gt)
-                off[gt] = par[gt];
+			// use which copy of chromosome
+			GenoIterator cp[2], off;
+			cp[0] = parent->genoBegin(0);
+			cp[1] = parent->genoBegin(1);
+			off = offspring->genoBegin(offPloidy);
 
-			if( setSex )
+			// get a new set of values.
+			const BitSet& bs = bt.trial();
+
+			int curCp = bs[sz-1]?0:1;
+
+			for(size_t gt = 0, bl=0, gtEnd = recBeforeLoci.back(); gt < gtEnd; ++gt)
 			{
-				if( initCp == 0)				  // X of XY
+				off[gt] = cp[curCp][gt];
+				// 2 4 x16 (x means recombine)
+				if(gt+1 == recBeforeLoci[bl])
+				{
+					if(bs[bl])
+						curCp = (curCp+1)%2;
+					++bl;
+				}
+			}
+			if(setSex)
+			{
+				if( curCp == 0)
 					offspring->setSex(Female);
 				else
 					offspring->setSex(Male);
 			}
-		}										  // no switch
+									  // no switch
+		} // method 1
 	}
 
 	bool  recombinator::applyDuringMating(population& pop,
