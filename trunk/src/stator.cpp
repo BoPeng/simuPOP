@@ -137,6 +137,10 @@ namespace simuPOP
 		if( m_atLoci.empty())
 			return;
 
+		pop.removeVar(NumOfAlleles_String);
+		pop.removeVar(AlleleNum_String);
+		pop.removeVar(AlleleFreq_String);
+
 		UINT numSP = pop.numSubPop();
 		UINT numLoci = m_atLoci.size();
 
@@ -275,7 +279,7 @@ namespace simuPOP
 			}
 			if(numSP>1)
 			{
-				pop.setIntVectorVar( NumOfAlleles_String, m_numOfAlleles.back());
+				pop.setIntVectorVar(NumOfAlleles_String, m_numOfAlleles.back());
 			}
 		}
 	}
@@ -285,6 +289,13 @@ namespace simuPOP
 		if( m_atLoci.empty())
 			return;
 
+		pop.removeVar(HeteroNum_String);
+		pop.removeVar(HeteroFreq_String);
+		pop.removeVar(AllHeteroNum_String);
+		pop.removeVar(AllHeteroFreq_String);
+		pop.removeVar(HomoNum_String);
+		pop.removeVar(HomoFreq_String);
+		
 		UINT numSP = pop.numSubPop();
 		UINT numLoci = m_atLoci.size();
 
@@ -463,6 +474,8 @@ namespace simuPOP
 		if( m_atLoci.empty())
 			return;
 
+		pop.removeVar(ExpHetero_String);
+
 		UINT numSP = pop.numSubPop();
 		UINT numLoci = m_atLoci.size();
 
@@ -515,6 +528,9 @@ namespace simuPOP
 		if( m_atLoci.empty())
 			return;
 
+		pop.removeVar(GenotypeNum_String);
+		pop.removeVar(GenotypeFreq_String);
+		
 		UINT numSP = pop.numSubPop();
 		ULONG popSize = pop.popSize();
 
@@ -629,6 +645,9 @@ namespace simuPOP
 		if( m_haplotypes.empty())
 			return;
 
+		pop.removeVar(HaplotypeNum_String);
+		pop.removeVar(HaplotypeFreq_String);
+
 		UINT nHap = m_haplotypes.size();
 
 		// first time?
@@ -736,6 +755,13 @@ namespace simuPOP
 	{
 		if( m_LD.empty())
 			return;
+
+		pop.removeVar(LD_String);
+		pop.removeVar(LDPRIME_String);
+		pop.removeVar(R2_String);
+		pop.removeVar(AvgLD_String);
+		pop.removeVar(AvgLDPRIME_String);
+		pop.removeVar(AvgR2_String);
 
 		UINT numSP = pop.numSubPop();
 		UINT nLD = m_LD.size();
@@ -1000,6 +1026,10 @@ namespace simuPOP
 	{
 		if( m_atLoci.empty())
 			return;
+
+		pop.removeVar(Fst_String);
+		pop.removeVar(Fis_String);
+		pop.removeVar(Fit_String);
 
 		m_Fst.clear();
 		m_Fit.clear();
@@ -1401,6 +1431,12 @@ namespace simuPOP
 	{
 		if(m_groups.empty())
 			return;
+
+		pop.removeVar(Rel_Queller_String);
+		pop.removeVar(Rel_Lynch_String);
+		pop.removeVar(Rel_IR_String);
+		pop.removeVar(Rel_D2_String);
+		pop.removeVar(Rel_Rel_String);
 
 		// calculate relatendness values between two groups
 		UINT nGroups;

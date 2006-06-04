@@ -557,6 +557,16 @@ class TestPopulation(unittest.TestCase):
     self.assertEqual( pop1.dvars().x, 1)
     pop1.dvars().y = 2
     self.assertEqual(pop.vars().has_key('y'), False)
+    # test if a variable will be fully updated (a previous bug)
+    # If a vector has 16 numbers, and then it will have a value
+    # of 10 numbers, will the rest of the 6 numbers be removed?
+    pop = population(1000, loci=[2,4])
+    InitByFreq(pop, [.2, .3, .5])
+    Stat(pop, alleleFreq=range(0,6))
+    self.assertEqual(len(pop.dvars().alleleFreq), 6)
+    pop.removeLoci(remove=[0,4])
+    Stat(pop, alleleFreq=range(0,4))
+    self.assertEqual(len(pop.dvars().alleleFreq), 4)
 
   def testAncestry(self):
     'Testing ancestral population related functions'

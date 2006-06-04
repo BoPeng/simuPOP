@@ -1303,8 +1303,8 @@ namespace simuPOP
 			*/
 			pySubset(const vectori& keep=vectori(),
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL) : 
-				Operator( "", "", stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL) :
+			Operator( "", "", stage, begin, end, step, at, rep, grp),
 				m_keep(keep)
 			{
 			}
@@ -1313,7 +1313,7 @@ namespace simuPOP
 			virtual ~pySubset()
 			{
 			}
-		
+
 			/// this function is very important
 			virtual Operator* clone() const
 			{

@@ -222,120 +222,35 @@ namespace simuPOP
 		const vectoru& recBeforeLoci,
 		bool setSex)
 	{
-		// the old forward-search method, use as default
-		if(m_method==0)
+		// use which copy of chromosome
+		GenoIterator cp[2], off;
+		cp[0] = parent->genoBegin(0);
+		cp[1] = parent->genoBegin(1);
+		off = offspring->genoBegin(offPloidy);
+
+		// get a new set of values.
+		const BoolResults& bs = bt.trial();
+
+		int curCp = bs[bs.size()-1]?0:1;
+
+		for(size_t gt = 0, bl=0, gtEnd = recBeforeLoci.back(); gt < gtEnd; ++gt)
 		{
-			// use which copy of chromosome
-			GenoIterator cp[2], curCp, off;
-
-			const BitSet& bs = bt.trial();
-
-			size_t sz = recBeforeLoci.size();
-
-			int initCp = bs[sz-1]?0:1;
-
-			// the last one does not count, because it determines
-			// the initial copy of paternal chromosome
-			const_cast<BitSet&>(bs).reset(sz-1);
-
-			BitSet::size_type pos = bs.find_first();
-			BitSet::size_type newpos = 0;
-
-			cp[0] = parent->genoBegin(0);
-			cp[1] = parent->genoBegin(1);
-			off = offspring->genoBegin(offPloidy);
-			// there is some recombination
-			if(pos !=  BitSet::npos)
+			off[gt] = cp[curCp][gt];
+			// 2 4 x16 (x means recombine)
+			if(gt+1 == recBeforeLoci[bl])
 			{
-				// make use of the last unused 1/2.
-				curCp = cp[initCp];
-
-				// copy from 0 to the first occurance
-				for(size_t gt = 0; gt < recBeforeLoci[pos]; ++gt)
-					off[gt] = curCp[gt];
-				m_recCount[recBeforeLoci[pos]-1]++;
-
-				// then switch to another chromosome copy
-				curCp = (curCp == cp[0]) ? cp[1] : cp[0];
-
-				// next ...
-				while( (newpos = bs.find_next(pos)) != BitSet::npos )
-				{
-					// copy to offspring
-					// element curCp+newpos+1 will not be copied. [) effect
-					for(size_t gt = recBeforeLoci[pos]; gt < recBeforeLoci[newpos]; gt++)
-						off[gt] = curCp[gt];
-					m_recCount[recBeforeLoci[newpos]-1]++;
-					pos = newpos;
-					// switch
-					curCp = (curCp == cp[0]) ? cp[1] : cp[0];
-				}
-
-				// copy the last piece
-				// NOTE: we should make sure recBeforeLoci.back()
-				// refer to the end of the chromosome
-				for(size_t gt = recBeforeLoci[pos]; gt < recBeforeLoci.back(); gt++)
-					off[gt] = curCp[gt];
-
-				if(setSex)
-				{
-					if( curCp == cp[0])
-						offspring->setSex(Female);
-					else
-						offspring->setSex(Male);
-				}
+				if(bs[bl])
+					curCp = (curCp+1)%2;
+				++bl;
 			}
-			// if no switch is needed, copy the entire chromosome
-			else
-			{
-				GenoIterator par = parent->genoBegin(initCp);
-				GenoIterator off = offspring->genoBegin(offPloidy);
-				for(size_t gt = 0, gtEnd = offspring->totNumLoci(); gt < gtEnd; ++gt)
-					off[gt] = par[gt];
-
-				if( setSex )
-				{
-					if( initCp == 0)			  // X of XY
-						offspring->setSex(Female);
-					else
-						offspring->setSex(Male);
-				}
-			}									  // no switch
 		}
-		// the new bit by bit method, added for testing purpose
-		else
+		if(setSex)
 		{
-			// use which copy of chromosome
-			GenoIterator cp[2], off;
-			cp[0] = parent->genoBegin(0);
-			cp[1] = parent->genoBegin(1);
-			off = offspring->genoBegin(offPloidy);
-
-			// get a new set of values.
-			const BitSet& bs = bt.trial();
-
-			int curCp = bs[sz-1]?0:1;
-
-			for(size_t gt = 0, bl=0, gtEnd = recBeforeLoci.back(); gt < gtEnd; ++gt)
-			{
-				off[gt] = cp[curCp][gt];
-				// 2 4 x16 (x means recombine)
-				if(gt+1 == recBeforeLoci[bl])
-				{
-					if(bs[bl])
-						curCp = (curCp+1)%2;
-					++bl;
-				}
-			}
-			if(setSex)
-			{
-				if( curCp == 0)
-					offspring->setSex(Female);
-				else
-					offspring->setSex(Male);
-			}
-									  // no switch
-		} // method 1
+			if( curCp == 0)						  // X from dad
+				offspring->setSex(Female);
+			else
+				offspring->setSex(Male);
+		}
 	}
 
 	bool  recombinator::applyDuringMating(population& pop,
@@ -343,6 +258,7 @@ namespace simuPOP
 		individual* dad,
 		individual* mom)
 	{
+		// first time setup
 		if( m_recBeforeLoci.empty() )
 		{
 			// prepare m_bt
@@ -351,7 +267,8 @@ namespace simuPOP
 			// female does not determine sex
 			prepareRecRates(pop, m_intensity, m_rate, m_afterLoci,
 				false, m_recBeforeLoci, vecP);
-			m_bt.setParameter(vecP, pop.popSize()*pop.ploidy());
+
+			m_bt.setParameter(vecP, pop.popSize());
 
 			vecP.clear();
 			// male case is most complicated.
@@ -365,7 +282,7 @@ namespace simuPOP
 			// prepare male recombination
 			prepareRecRates(pop, maleIntensity, maleRate, maleAfterLoci,
 				m_setSex, m_maleRecBeforeLoci, vecP);
-			m_maleBt.setParameter(vecP, pop.popSize()*pop.ploidy());
+			m_maleBt.setParameter(vecP, pop.popSize());
 		}
 
 		recombine(mom, offspring, 0, m_bt, m_recBeforeLoci, false);

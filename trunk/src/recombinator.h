@@ -92,7 +92,6 @@ namespace simuPOP
 				double maleIntensity=-1,
 				vectorf maleRate=vectorf(),
 				vectoru maleAfterLoci=vectoru(),
-				int method=1,
 				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL)
 				:
@@ -102,7 +101,7 @@ namespace simuPOP
 				m_rate(rate), m_maleRate(maleRate),
 				m_afterLoci(afterLoci), m_maleAfterLoci(maleAfterLoci),
 				m_recBeforeLoci(0), m_maleRecBeforeLoci(0),
-				m_bt(rng()), m_maleBt(rng()), m_recCount(0), m_method(method)
+				m_bt(rng()), m_maleBt(rng()), m_recCount(0)
 			{
 				// tells mating schemes that this operator will form
 				// the genotype of offspring so they do not have to
@@ -189,9 +188,6 @@ namespace simuPOP
 
 			/// report the number of recombination events
 			vectoru m_recCount;
-
-			/// which recombine method to use
-			int m_method;
 	};
 
 }
