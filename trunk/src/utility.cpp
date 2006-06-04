@@ -2068,20 +2068,10 @@ T Expression::valueAs##TypeName() \
 			{
 				// treat a randInt as random bits and set them directly.
 				// I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
-				succ.clear();
-				size_t numblock = m_N/BitSet::bits_per_block;
-				vector<BitSet::block_type> first_blocks(numblock);
-				for(size_t i=0; i<numblock; ++i)
-					first_blocks[i] = rng().randInt(~BitSet::block_type(0));
-				succ.append(first_blocks.begin(), first_blocks.end());
-				// last block
-				BitSet::block_type last_block = rng().randInt(~BitSet::block_type(0));
-				for(size_t i=0; i < m_N - numblock*BitSet::bits_per_block; ++i)
-				{
-					// assign many bits a time.
-					if((last_block >> i) & 0x1)
-						succ.set(numblock*BitSet::bits_per_block+i);
-				}
+				vector<BitSet::block_type> blocks(succ.num_blocks());
+				for(size_t i=0; i<blocks.size(); ++i)
+					blocks[i] = rng().randInt(~BitSet::block_type(0));
+				from_block_range(blocks.begin(), blocks.end(), succ);
 			}
 			else if( m_N > 100)
 			{

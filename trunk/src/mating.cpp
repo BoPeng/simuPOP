@@ -269,7 +269,7 @@ namespace simuPOP
 				{
 					population::IndIterator it = scratch.indBegin(sp) + spInd++;
 
-					if(  formOffGeno )
+					if(formOffGeno)
 						/// use deep copy!!!!!!!
 						it->copyFrom(*parent);
 
@@ -450,10 +450,11 @@ namespace simuPOP
 
 					if( formOffGeno )			  // use the default no recombination random mating.
 					{
-						const BoolResults& bs = bt.trial();
+						bt.trial();
+						const BitSet& bs = bt.succ(0);
 
 						// initialize to avoid compiler complains
-						int dadPloidy=0, momPloidy=0;
+						BoolResults::value_type dadPloidy=0, momPloidy=0;
 						GenoIterator cd[2], cm[2], offd, offm;
 						cd[0] = dad->genoBegin(0);
 						cd[1] = dad->genoBegin(1);
@@ -462,10 +463,10 @@ namespace simuPOP
 						offd = it->genoBegin(0);
 						offm = it->genoBegin(1);
 
-						for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd;  ++ch)
+						for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd; ++ch)
 						{
 							dadPloidy = bs[ch];
-							momPloidy = bs[ch];
+							momPloidy = bs[ch+chEnd];
 							for(size_t gt = chIdx[ch]; gt < chIdx[ch+1]; ++gt)
 							{
 								offd[gt] = cd[dadPloidy][gt];
