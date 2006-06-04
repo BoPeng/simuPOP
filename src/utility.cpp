@@ -2068,36 +2068,20 @@ T Expression::valueAs##TypeName() \
 			{
 				// treat a randInt as random bits and set them directly.
 				// I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
-				unsigned long max = rng().max();
-				int block;
-				unsigned long ri;
-				if( max == 0xFFFFFFFF)
+				succ.clear();
+				size_t numblock = m_N/BitSet::bits_per_block;
+				vector<BitSet::block_type> first_blocks(numblock);
+				for(size_t i=0; i<numblock; ++i)
+					first_blocks[i] = rng().randInt(~BitSet::block_type(0));
+				succ.append(first_blocks.begin(), first_blocks.end());
+				// last block
+				BitSet::block_type last_block = rng().randInt(~BitSet::block_type(0));
+				for(size_t i=0; i < m_N - numblock*BitSet::bits_per_block; ++i)
 				{
-					block = 32;
-					ri = rng().randGet();
-				}
-				else
-				{
-					block = 16;
-					ri = rng().randInt(0xFFFF);
-				}
-				// loop
-				int bit = 0;
-				for(UINT i=0; i < m_N; ++i)
-				{
-					if(bit == block)			  // generate a block
-					{
-						if(block == 32)
-							ri = rng().randGet();
-						else
-							ri = rng().randInt(0xFFFF);
-						bit = 0;
-					}
 					// assign many bits a time.
-					if( ((ri >> bit) & 0x1) == 1)
-						succ.set(i);
-					bit++;
-			    }
+					if((last_block >> i) & 0x1)
+						succ.set(numblock*BitSet::bits_per_block+i);
+				}
 			}
 			else if( m_N > 100)
 			{
@@ -2137,7 +2121,7 @@ T Expression::valueAs##TypeName() \
 	}
 
 	/// get a trial corresponding to m_prob.
-	const BitSet& BernulliTrials::trial()
+	const BoolResults& BernulliTrials::trial()
 	{
 		if(m_cur == m_N )						  // reach the last trial
 			doTrial();
@@ -2145,7 +2129,7 @@ T Expression::valueAs##TypeName() \
 		// this can be slow. may be we should use vector<bool> since m_prob is
 		// usually not long.
 		for(size_t cl = 0, clEnd = m_prob.size(); cl < clEnd; ++cl)
-			m_bitSet.set( cl, m_table[cl][m_cur] );
+			m_bitSet[cl] = m_table[cl][m_cur];
 
 		m_cur++;
 		return m_bitSet;

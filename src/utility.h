@@ -69,7 +69,11 @@ using std::setw;
 
 /// for bernulli trials.
 #include "boost/dynamic_bitset.hpp"
+// this is not necessarily the fastest, but it
+// will save some RAM.
 typedef boost::dynamic_bitset<> BitSet;
+// I can use BitSet, but vector<char> is faster
+typedef vector<char> BoolResults;
 
 namespace simuPOP
 {
@@ -1355,7 +1359,7 @@ namespace simuPOP
 			/// return the result of m_cur trial.
 			/// if necessary, do trail again.
 			/// CPPONLY
-			const BitSet& trial();
+			const BoolResults& trial();
 
 			/// return succeed trials for p[index]
 			/// fail when m_cur is not 0. (i.e., has retrieve the table through trial()
@@ -1402,8 +1406,7 @@ namespace simuPOP
 			/// result to be returned.
 			/// if we do need a result in bitset format. (each row)
 			/// return this guy.
-			BitSet m_bitSet;
-
+			BoolResults m_bitSet;
 	};
 
 	/// currently, return a global RNG.

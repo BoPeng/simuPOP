@@ -102,7 +102,7 @@ namespace simuPOP
 		}
 		else if( m_mode == MATE_PoissonDistribution)
 		{
-            // FIXME: numOS is no longer the average.
+			// FIXME: numOS is no longer the average.
 			UINT nos = rng().randPoisson(numOS)+1;
 			return nos;
 		}
@@ -327,31 +327,34 @@ namespace simuPOP
 		vectorf& fitness = pop.fitness();
 
 		/// determine if any during-mating operator will generate offspring genotype
+		/// so mating scheme does not have to do it.
 		bool formOffGeno = this->formOffGenotype(ops);
 
 		UINT numMale, numFemale;
-        // cache chromBegin, chromEnd for better performance.
-        const vectoru & chIdx = pop.chromIndex();
+
+		// cache chromBegin, chromEnd for better performance.
+		const vectoru & chIdx = pop.chromIndex();
 
 		/// random mating happens within each subpopulation
 		for(UINT sp=0; sp < pop.numSubPop(); ++sp)
 		{
 			ULONG spSize = pop.subPopSize(sp);
-			if( spSize == 0 ) continue;
+			if( spSize == 0 )
+				continue;
 
 			numMale = 0;
-			for( population::IndIterator it=pop.indBegin(sp), itEnd = pop.indEnd(sp); it < itEnd;  ++it)
+			for(population::IndIterator it=pop.indBegin(sp), itEnd = pop.indEnd(sp); it < itEnd; ++it)
 				if(it->sex() == Male)
 					numMale ++;
 
-			// to gain some performance, allocate memory at first.
+			// allocate memory at first for performance reasons
 			m_maleIndex.resize(numMale);
 			m_femaleIndex.resize(spSize-numMale);
 
 			numMale = 0;
 			numFemale = 0;
 
-			for( ULONG it=pop.subPopBegin(sp), itEnd =pop.subPopEnd(sp); it < itEnd;  it++)
+			for( ULONG it = pop.subPopBegin(sp), itEnd = pop.subPopEnd(sp); it < itEnd;  it++)
 			{
 				if( pop.ind(it).sex() == Male)
 					m_maleIndex[numMale++] = it;
@@ -379,7 +382,7 @@ namespace simuPOP
 				size_t ind;
 
 				DBG_ASSERT( fitness.size() == pop.popSize(),
-					ValueError, "Length of var fitness should equal to popsize");
+					ValueError, "Length of var fitness should equal to pop size");
 
 				for( ind = 0; ind < numMale; ++ind)
 					m_maleFitness[ind] = fitness[ m_maleIndex[ind] ];
@@ -393,10 +396,11 @@ namespace simuPOP
 			// generate scratch.subPopSize(sp) individuals.
 			ULONG spInd = 0;
 			ULONG spIndEnd = scratch.subPopSize(sp);
-            // in case that mating will form genotype and we need 
-            // free recombination between chromosomes.
-            BernulliTrials bt(rng(), vectorf(1, 0.5), 2*pop.numChrom());
-            
+
+			// in case that mating will form genotype and we need
+			// free recombination between chromosomes.
+			BernulliTrials bt(rng(), vectorf(1, 0.5), 2*pop.numChrom());
+
 			while( spInd < spIndEnd)
 			{
 				// randomly choose parents
@@ -446,31 +450,30 @@ namespace simuPOP
 
 					if( formOffGeno )			  // use the default no recombination random mating.
 					{
-                        const BitSet& bs = bt.trial();
+						const BoolResults& bs = bt.trial();
 
-		    			// initialize to avoid compiler complains
+						// initialize to avoid compiler complains
 						int dadPloidy=0, momPloidy=0;
-                		GenoIterator cd[2], cm[2], offd, offm;
-                		cd[0] = dad->genoBegin(0);
-                        cd[1] = dad->genoBegin(1);
-                		cm[0] = mom->genoBegin(0);
-                        cm[1] = mom->genoBegin(1);
-                        offd = it->genoBegin(0);
-                        offm = it->genoBegin(1);
+						GenoIterator cd[2], cm[2], offd, offm;
+						cd[0] = dad->genoBegin(0);
+						cd[1] = dad->genoBegin(1);
+						cm[0] = mom->genoBegin(0);
+						cm[1] = mom->genoBegin(1);
+						offd = it->genoBegin(0);
+						offm = it->genoBegin(1);
 
-                        for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd;  ++ch)
+						for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd;  ++ch)
 						{
 							dadPloidy = bs[ch];
 							momPloidy = bs[ch];
-                            for(size_t gt = chIdx[ch]; gt < chIdx[ch+1]; ++gt)
-                            {
-                                offd[gt] = cd[dadPloidy][gt];
-                                offm[gt] = cm[momPloidy][gt];
-                            }
+							for(size_t gt = chIdx[ch]; gt < chIdx[ch+1]; ++gt)
+							{
+								offd[gt] = cd[dadPloidy][gt];
+								offm[gt] = cm[momPloidy][gt];
+							}
 						}
-                        
 
-						// last chromosome (sex chromosomes)
+						// last chromosome (sex chromosomes) determine sex
 						if( hasSexChrom )
 						{
 							if( dadPloidy == 1)	  // Y of XY
