@@ -258,6 +258,8 @@ namespace simuPOP
 		individual* dad,
 		individual* mom)
 	{
+		DBG_ASSERT(dad && mom, ValueError, "Either dad or mom is NULL");
+
 		// first time setup
 		if( m_recBeforeLoci.empty() )
 		{
