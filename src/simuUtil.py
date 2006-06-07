@@ -1276,6 +1276,11 @@ def FreqTrajectoryMultiStochWithSubPop(
       break
     split -= 1
   split += 1
+  # set default for min/max mutage
+  if minMutAge < split:
+    minMutAge = split
+  if maxMutAge == 0: 
+    maxMutAge = endGen
   # now, NtFunc(split) has subpopulations
   # 
   # for each subpopulation

@@ -18,8 +18,8 @@ Introduction
 =============
 
 This program simulates the evolution of a chromosome with SNP markers, under 
-the influence of mutation, migration, recombination and population 
-size change. Starting from a small founder population, each simulation will go
+the influence of mutation, migration, recombination and population size 
+change. Starting from a small founder population, each simulation will go
 through the following three stages:
 
   1. Burn-in the population with mutation and recombination
@@ -33,9 +33,14 @@ function and output to other recombination-estimation programs.
 The program is written in Python using simuPOP modules. For more information,
 please visit simuPOP website http://simupop.sourceforge.net .
 
+Users can learn from this script how to write simuPOP populations into
+another format.
+
 """
 
 import simuOpt
+simuOpt.setOptions(quiet=True)
+
 from simuPOP import *
 from simuUtil import *
 import os, sys, types, exceptions, os.path 
@@ -71,44 +76,44 @@ options = [
    'validate':  simuOpt.valueListOf(types.FloatType)
   },
   {'longarg': 'initSize=',
-   'default': 5000,
+   'default': 500,
    'configName': 'Initial population size',
    'allowedTypes': [types.IntType, types.LongType],
-   'prompt': 'Initial Population size (5000):  ',
+   'prompt': 'Initial Population size (500):  ',
    'description': '''Initial population size. This size will be maintained
         till the end of burnin stage''',
    'validate':  simuOpt.valueGT(0)
   },
   {'longarg': 'finalSize=',
-   'default': 200000,
+   'default': 20000,
    'configName': 'Final population size',
-   'prompt': 'Final population size (sum of all subpopulations) (200000):  ',
+   'prompt': 'Final population size (sum of all subpopulations) (20000):  ',
    'allowedTypes': [types.IntType, types.LongType],
    'description': 'Final population size after population expansion.',
    'validate':  simuOpt.valueGT(0)
   }, 
   {'longarg': 'burnin=',
-   'default': 2000,
+   'default': 200,
    'configName': 'Length of burn-in stage',
    'allowedTypes': [types.IntType],
-   'prompt': 'Length of burn in stage (2000):  ',
+   'prompt': 'Length of burn in stage (200):  ',
    'description': 'Number of generations of the burn in stage.',
    'validate':  simuOpt.valueGT(0)
   },
   {'longarg': 'noMigrGen=',
-   'default': 1500,
+   'default': 150,
    'configName': 'Length of split-and-grow stage',
-   'prompt': 'Length of split-and-grow stage  (1500):  ',
+   'prompt': 'Length of split-and-grow stage  (150):  ',
    'allowedTypes': [types.IntType, types.LongType],
    'description': '''Number of generations when migration is zero. This stage
         is used to build up population structure.''',
    'validate':  simuOpt.valueGT(0)
   },
   {'longarg': 'mixingGen=',
-   'default': 500,
+   'default': 50,
    'configName': 'Length of mixing stage',
    'allowedTypes': [types.IntType, types.LongType],
-   'prompt': 'Length of mixing stage (population admixing) (500):  ',
+   'prompt': 'Length of mixing stage (population admixing) (50):  ',
    'description': '''Number of generations when migration is present. This stage
         will mix individuals from subpopulations using an circular stepping stone
         migration model.''',
@@ -149,9 +154,9 @@ options = [
    'validate':  simuOpt.valueBetween(0,1)
   },
   {'longarg': 'mutaRate=',
-   'default': 1e-5,
+   'default': 1e-4,
    'configName': 'Mutation rate',
-   'prompt': 'Mutation rate. (1e-5):  ',
+   'prompt': 'Mutation rate. (1e-4):  ',
    'allowedTypes': [types.IntType, types.FloatType],
    'description': '''Mutation rate''',
    'validate': simuOpt.valueBetween(0,1)
@@ -254,13 +259,14 @@ def SaveLDhat(pop, filename):
   ' save in .seq and .loc files that can be handled by LDhat directly '
   m = 100  # 100 characters each line
   seq = open(filename+'.seq', 'w')
-  # haplotype [hased data
+  # haplotype phased data
   seq.write('%d %d %d\n' % (pop.popSize()*pop.ploidy(), pop.totNumLoci(), 1) )
   # output each haplotype
   for i in range(pop.popSize()):
     ind = pop.individual(i)
     for p in range(pop.ploidy()):
       seq.write('>genotype_%d_%d\n' % (i, p))
+			# use of arrGenotype is more efficient than repeated calls to allele() etc
       gt = ind.arrGenotype(p)
       for line in range(len(gt)/m):
         if m*(line +1) <= len(gt):
@@ -277,13 +283,9 @@ def SaveLDhat(pop, filename):
         
   
 # simulate function, 
-def simuHotSpot( numLoci, lociPos, 
-    initSize, finalSize,
-    burnin, noMigrGen, mixingGen, 
-    growth, numSubPop, migrModel, 
-    migrRate, mutaRate, recRate,
-    sampleSize, numSample, sampleName,
-    outputDir, dryrun):
+def simuHotSpot( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixingGen, 
+    growth, numSubPop, migrModel, migrRate, mutaRate, recRate,
+    sampleSize, numSample, sampleName, outputDir, dryrun):
   ''' run the simulation, parameters are:
     numLoci:    number of SNP loci on the only chromosome
     lociPos:    loci position on the chromosome. Should be in 

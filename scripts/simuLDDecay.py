@@ -8,7 +8,8 @@
 # $Rev$ 
 
 """
-This program demonstrate the decay of linkage disequilibrium.
+This program demonstrate the decay of linkage disequilibrium due 
+to recombination.
 """
 
 import simuOpt, os, sys, types, time

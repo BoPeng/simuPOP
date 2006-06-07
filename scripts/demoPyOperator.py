@@ -4,7 +4,8 @@
 
 This is a small example of how to use pyOperator to do
 custimized mating and condition checking (terminator) 
-etc.
+etc. This is *not* the efficient way to do that since
+everything can be handled using a post-mating operator.
 
 Evolution scenario:
 
@@ -15,26 +16,13 @@ to the other copy.
   x x x - - - - -   ==>  x x x x x - - -
   x x x x x - - -   ==>  x x x x x - - -
 
-Assume population size N (number of chromosomes 2N)
-  i     -- double x
-  j     -- single x
-  N-i-j -- no x
-
-Evole to in the next generation
-  i+j   -- double x
-  N-i-j -- no x
-
-k  = 2*i + j
-k' = k+j = 2*i+2*j
-
-Note that
-  P(k'|k) = Multinomial(k-k'/2,k'-k,N-k'/2)/Binomial(2M,k)*2^(k'-k)
-    for 2 ceiling(k/2) <= k <= 2 min(k, N)
-
 Purpose of simulation:
 
   Given N, random mating, how many generations to 
   reach all X status?
+
+Note that many simulations will fail because all x
+chromosomes disappeared because of genetic drift.
   
 """
 
@@ -59,10 +47,10 @@ options = [
   },
   {'arg': 'r:',
    'longarg': 'rep=',
-   'default': 1000,
+   'default': 100,
    'configName': 'Replicates',
    'allowedTypes': [types.IntType, types.LongType],
-   'prompt': 'Replicats: (1000) ',
+   'prompt': 'Replicats: (100) ',
    'description': '''Replicates''',
    'validate':  simuOpt.valueGT(0)
   }
@@ -94,12 +82,15 @@ def allTwos(pop):
   # terminate if all 1 (set flag to fail
   if geno == pop.popSize()*2:   # all 1
     pop.dvars().succ = False
+		# return false to terminate simulation
     return False
   # terminate if all 2 (set flag to success)
   elif geno == pop.popSize()*4: # all 2
     pop.dvars().succ = True
+		# return false to terminate simulation
     return False
   else:
+		# return true to continue simulation
     return True
      
 def simu(N):
@@ -116,7 +107,7 @@ def simu(N):
       pyOperator(func=allTwos),
     ]
   )
-  return (simu.dvars(0).succ, simu.population(0).gen())
+  return (simu.dvars(0).succ, simu.gen())
 
 if __name__ == '__main__':
   allParam = simuOpt.getParam(options,

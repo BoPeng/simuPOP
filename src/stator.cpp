@@ -295,7 +295,7 @@ namespace simuPOP
 		pop.removeVar(AllHeteroFreq_String);
 		pop.removeVar(HomoNum_String);
 		pop.removeVar(HomoFreq_String);
-		
+
 		UINT numSP = pop.numSubPop();
 		UINT numLoci = m_atLoci.size();
 
@@ -530,7 +530,7 @@ namespace simuPOP
 
 		pop.removeVar(GenotypeNum_String);
 		pop.removeVar(GenotypeFreq_String);
-		
+
 		UINT numSP = pop.numSubPop();
 		ULONG popSize = pop.popSize();
 

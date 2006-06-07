@@ -589,8 +589,8 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
         '--quiet', '--noDialog', '--useTkinter']) \
         and (not i in processedArgs):
         raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
-  #
-  app = wx.App()
+  # parameter 0 prevents wxPython from open a separate window for stdout and stderr
+  app = wx.App(0)
   dlg = wx.Dialog(parent=None, id=-1, title=title)
   entryWidgets = [None]*len(options)
   labelWidgets = [None]*len(options)

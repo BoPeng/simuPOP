@@ -465,6 +465,7 @@ namespace simuPOP
 
 						for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd; ++ch)
 						{
+							// bs is 2*totNumLoci() long
 							dadPloidy = bs[ch];
 							momPloidy = bs[ch+chEnd];
 							for(size_t gt = chIdx[ch]; gt < chIdx[ch+1]; ++gt)
@@ -746,7 +747,7 @@ namespace simuPOP
 				}
 				else
 				{
-					DBG_DO(DBG_GENERAL, cout << "Warning: reaching max gnerations. Return whatever I have now." << endl);
+					//DBG_DO(DBG_GENERAL, cout << "Warning: reaching max gnerations. Return whatever I have now." << endl);
 					break;
 				}
 			}
