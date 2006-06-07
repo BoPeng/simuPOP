@@ -41,7 +41,7 @@ except:
   print "Rpy can not be loaded. Please verify your rpy installation. "
   print "If you are using a rpy version that reuires Python Numeric package. "
   print "Please install Numeric first. "
-  raise exceptions.ImportError("Failed to import rpy package.")
+  raise ImportError("Failed to import rpy package. (You will need rpy>=0.99)")
   
 
 import os, sys, math, random

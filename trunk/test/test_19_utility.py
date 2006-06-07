@@ -20,8 +20,8 @@ class TestRNG(unittest.TestCase):
 
   def testSetRNG(self):
     'Testing all RNG types'
-    for rg in listAllRNG():
-      setRNG(rg)
+    for rg in ListAllRNG():
+      SetRNG(rg)
 
   def testDefaultRNG(self):
     'Testing default RNG'

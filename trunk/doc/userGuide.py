@@ -676,9 +676,9 @@ simu.evolve(
 #end
 
 #file log/rng.log
-print listAllRNG()
+print ListAllRNG()
 print rng().name()
-setRNG("ranlux389")
+SetRNG("ranlux389", seed=10)
 print rng().name()
 #end
 

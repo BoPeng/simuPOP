@@ -15672,7 +15672,8 @@ Random number generator is a tricky business.
 
 ) and you can choose any of the 61 RNGs, if you really know what the differences
  between them.
- (I do not, except that some of them are really bad but fast.) 
+ (I do not, except that some of them are really bad but fast.) Note that
+ RNG that can not generate a full range of integers are removed.
 \end_layout
 
 \begin_layout Standard
@@ -15723,7 +15724,12 @@ function to get the random number generator of simuPOP.
 rng() 
 \family default
 does not have many member functions and it might be tricky to use them correctly.
- (This object is not designed to be used at the Python level.)
+ (This object is not designed to be used at the Python level.
+ For a full list of member functions, check 
+\family typewriter
+src/utility.h
+\family default
+)
 \end_layout
 
 \begin_layout Standard

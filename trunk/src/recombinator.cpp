@@ -128,7 +128,6 @@ namespace simuPOP
 				if( ch == chEnd - 1 && sexChrom )
 				{
 					vecP.push_back(0.5);
-					// this is meaningless.
 					recBeforeLoci.push_back( pop.totNumLoci());
 					break;
 				}
@@ -232,6 +231,7 @@ namespace simuPOP
 		const BoolResults& bs = bt.trial();
 
 		int curCp = bs[bs.size()-1]?0:1;
+		const_cast<BoolResults&>(bs)[bs.size()-1] = false;
 
 		for(size_t gt = 0, bl=0, gtEnd = recBeforeLoci.back(); gt < gtEnd; ++gt)
 		{
@@ -240,7 +240,10 @@ namespace simuPOP
 			if(gt+1 == recBeforeLoci[bl])
 			{
 				if(bs[bl])
+				{
 					curCp = (curCp+1)%2;
+					DBG_DO_(m_recCount[bl]++);
+				}
 				++bl;
 			}
 		}
