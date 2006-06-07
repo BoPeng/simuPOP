@@ -71,7 +71,7 @@ using std::setw;
 #include "boost/dynamic_bitset.hpp"
 // this is not necessarily the fastest, but it
 // will save some RAM.
-typedef boost::dynamic_bitset<> BitSet;
+typedef boost::dynamic_bitset<unsigned long int> BitSet;
 // I can use BitSet, but vector<char> is faster
 typedef vector<char> BoolResults;
 
@@ -1413,9 +1413,15 @@ namespace simuPOP
 	RNG& rng();
 
 	/// set random number generator
+	void SetRNG(const string rng="", unsigned long seed=0);
+
+	/// for backward compatibilit, will remove later
 	void setRNG(const string rng="", unsigned long seed=0);
 
 	/// list all available RNG.
+	vectorstr ListAllRNG();
+
+	/// for backward compatibility, will remove later
 	vectorstr listAllRNG();
 
 	//////////////////////////////////////////////////////////////

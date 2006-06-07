@@ -218,9 +218,9 @@ class TestRecombinator(unittest.TestCase):
     pop = population(size=N, loci=[2,5], sexChrom=True)
     # male   1 3
     # female 1 2
-    InitByValue(pop, indRange=[0,N/2-1], sex=[Male]*(N/2), atPloidy=0, value=[a1]*7)
-    InitByValue(pop, indRange=[0,N/2-1], sex=[Male]*(N/2), atPloidy=1, value=[a1]*2+[a3]*5)
-    InitByValue(pop, indRange=[N/2,N-1], sex=[Female]*(N/2), value=[a1]*7+[a2]*7)
+    InitByValue(pop, indRange=[0,N/2], sex=[Male]*(N/2), atPloidy=0, value=[a1]*7)
+    InitByValue(pop, indRange=[0,N/2], sex=[Male]*(N/2), atPloidy=1, value=[a1]*2+[a3]*5)
+    InitByValue(pop, indRange=[N/2,N], sex=[Female]*(N/2), value=[a1]*7+[a2]*7)
     # now let us recombine
     simu = simulator(pop, randomMating())
     simu.evolve( [ recombinator(rate=r) ], end=100)

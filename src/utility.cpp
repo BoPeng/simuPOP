@@ -1904,6 +1904,7 @@ T Expression::valueAs##TypeName() \
 
 			for (t = t0; *t != 0; t++)
 			{
+				// require that a RNG can generate full range of integer from 0 to the max of unsigned long int
 				if (strcmp (rng, (*t)->name) == 0)
 				{
 					// free current RNG
@@ -1911,13 +1912,16 @@ T Expression::valueAs##TypeName() \
 						gsl_rng_free(m_RNG);
 
 					m_RNG = gsl_rng_alloc( *t );
+
+					DBG_ASSERT(gsl_rng_max(m_RNG) >= MaxRandomNumber && gsl_rng_min(m_RNG) == 0,
+						ValueError, "You chosen random number generator can not generate full range of int.");
 					break;
 				}
 			}
 
 			if ( *t == 0 )
 				throw SystemError("GSL_RNG_TYPE=" + toStr(rng)
-					+ " not recognized\n c.f. listAllRNG()" );
+					+ " not recognized or can not generate full range (0-2^32-1) of integers.\n c.f. ListAllRNG()" );
 		}
 		else
 		{
@@ -2007,6 +2011,47 @@ T Expression::valueAs##TypeName() \
 	}
 
 	////////////// Bernulli trials ///////////
+	/*
+	#include <cstddef>
+	#include "boost/iterator/iterator_facade.hpp"
+	template<typename v>
+	class rng_iterator_impl : public boost::iterator_facade<
+		rng_iterator_impl<v>,
+		v,
+		boost::random_access_traversal_tag>
+	{
+	std::size_t count;
+	mutable v val;
+
+	public:
+	rng_iterator_impl(): count(0), val(0) {}
+	explicit rng_iterator_impl(v c): count(c), val(0) { }
+
+	private:
+
+	friend class boost::iterator_core_access;
+
+	value_type& dereference() const { return val=generate(); }
+
+	bool equal(rng_iterator_impl const& rhs) const {
+	return count == rhs.count;
+	}
+
+	void increment() { ++count; }
+
+	void decrement() { --count; }
+
+	void advance(difference_type n) { count+=n; }
+
+	difference_type distance_to(rng_iterator_impl const & r) const {
+	return r.count - count;
+	}
+	v generate() const;
+	}
+	};
+
+	typedef rng_iterator_impl<BitSet::block_type> rng_iterator;
+	*/
 
 	BernulliTrials::BernulliTrials(RNG& rng)
 		:m_RNG(&rng), m_N(0), m_prob(0), m_table(0),
@@ -2073,10 +2118,10 @@ T Expression::valueAs##TypeName() \
 				size_t numblock = succ.num_blocks()-1;
 				vector<BitSet::block_type> blocks(numblock);
 				for(size_t i=0; i<numblock; ++i)
-					blocks[i] = rng().randInt(~BitSet::block_type(0));
+					blocks[i] = rng().randGet();
 				from_block_range(blocks.begin(), blocks.end(), succ);
-				// last block
-				BitSet::block_type last_block = rng().randInt(~BitSet::block_type(0));
+				// last block, block_type is predefined to unsigned long
+				BitSet::block_type last_block = rng().randGet();
 				for(size_t i=0; i < m_N - numblock*BitSet::bits_per_block; ++i)
 				{
 					if((last_block >> i) & 0x1)
@@ -2159,24 +2204,42 @@ T Expression::valueAs##TypeName() \
 
 	/// set global rng
 	/// this is temporary since rng() might not exist in the future
-	void setRNG(const string r, unsigned long seed)
+	void SetRNG(const string r, unsigned long seed)
 	{
 		rng().setRNG(r.c_str(), seed);
 	}
 
+	void setRNG(const string r, unsigned long seed)
+	{
+		DBG_WARNING(true, "This function has been renamed to SetRNG() and will be removed at the next major release");
+		rng().setRNG(r.c_str(), seed);
+	}
+
 	/// list all available RNG.
-	vectorstr listAllRNG()
+	vectorstr ListAllRNG()
 	{
 		vectorstr list;
 
 		const gsl_rng_type **t, **t0;
+		gsl_rng * rng;
 
 		t0 = gsl_rng_types_setup();
 
 		for(t=t0; *t !=0; t++)
-			list.push_back((*t)->name);
+		{
+			rng = gsl_rng_alloc( *t );
+			if (gsl_rng_min(rng) == 0 and gsl_rng_max(rng) >= MaxRandomNumber)
+				list.push_back((*t)->name);
+			gsl_rng_free(rng);
+		}
 
 		return list;
+	}
+
+	vectorstr listAllRNG()
+	{
+		DBG_WARNING(true, "This function has been renamed to SetRNG() and will be removed at the next major release");
+		return ListAllRNG();
 	}
 
 	/// show turned on bits
@@ -2293,6 +2356,7 @@ T Expression::valueAs##TypeName() \
 			cout.rdbuf( outputFile->rdbuf());
 		}
 	}
+
 	/** This file is used to initialize simuPOP when being load into
 	   python. The swig interface file will has a init% % entry to
 	   include this file. */
@@ -2334,6 +2398,7 @@ T Expression::valueAs##TypeName() \
 
 		return true;
 	}
+
 	/* !COMPILER */
 
 	// record COMPILER, PY_VERSION and __DATE__ , these info will
@@ -2477,4 +2542,5 @@ T Expression::valueAs##TypeName() \
 		else
 			return string();
 	}
+
 }
