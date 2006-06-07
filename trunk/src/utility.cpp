@@ -1931,7 +1931,8 @@ T Expression::valueAs##TypeName() \
 		// set seed
 		if( seed == 0 )
 			gsl_rng_set(m_RNG, static_cast<UINT>(time(0)));
-
+		else
+			gsl_rng_set(m_RNG, seed);
 	}
 
 	///////////// Weighted sampler //////////////
@@ -2068,10 +2069,19 @@ T Expression::valueAs##TypeName() \
 			{
 				// treat a randInt as random bits and set them directly.
 				// I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
-				vector<BitSet::block_type> blocks(succ.num_blocks());
-				for(size_t i=0; i<blocks.size(); ++i)
+				// first several blocks
+				size_t numblock = succ.num_blocks()-1;
+				vector<BitSet::block_type> blocks(numblock);
+				for(size_t i=0; i<numblock; ++i)
 					blocks[i] = rng().randInt(~BitSet::block_type(0));
 				from_block_range(blocks.begin(), blocks.end(), succ);
+				// last block
+				BitSet::block_type last_block = rng().randInt(~BitSet::block_type(0));
+				for(size_t i=0; i < m_N - numblock*BitSet::bits_per_block; ++i)
+				{
+					if((last_block >> i) & 0x1)
+						succ.set(numblock*BitSet::bits_per_block+i);
+				}
 			}
 			else if( m_N > 100)
 			{

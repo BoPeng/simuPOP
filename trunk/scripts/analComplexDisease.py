@@ -129,14 +129,14 @@ options = [
    'chooseOneOf': ['microsatellite', 'SNP']
   }, 
   {'longarg': 'wildtype=',
-   'default': 0,
+   'default': '0',
    'allowedTypes': [types.IntType],
    'configName': 'Wildtype allele',
    'prompt': 'Wildtype allele',
    'description': '''Wildtype should be 0 but microsatellite datasets generated 
          before rev 225 uses 1 as wildtype. Set this variable to avoid trouble.''',
    'validate':  simuOpt.valueOneOf([ 0, 1]),
-   'chooseOneOf': [0, 1]
+   'chooseOneOf': ['0', '1']
   },
   {'longarg': 'dataset=',
    'default': 'simu.bin',

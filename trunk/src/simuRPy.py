@@ -34,6 +34,8 @@ and some utility class for plotting.
 from exceptions import *
 
 try:
+  import rpy_options
+  rpy_options.set_options(VERBOSE = False)
   from rpy import *
 except:
   print "Rpy can not be loaded. Please verify your rpy installation. "
