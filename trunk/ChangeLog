@@ -6,10 +6,11 @@ NOTE: Daily snapshot reflects current SVN version. It includes new features and
 BUG:
   - All known bugs have been updated
 
-version 0.6.14 - Towards 0.7.0
-  - NEW: user's guide and reference manual revision
+version 0.6.14 - (Rev 341) - June 06, 2006
+  - CHG: user's guide and reference manual revision
   - NEW: add a local scons build system for developers
   - BUG: fix the variable update bug.
+  - BUG: fix setRNG(seed) bug.
 
 version 0.6.13 - (Rev 278) - Apr. 20, 2006
   - NEW: Add trajectory simulation functions follows those from selSim
