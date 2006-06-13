@@ -1277,10 +1277,13 @@ def FreqTrajectoryMultiStochWithSubPop(
     split -= 1
   split += 1
   # set default for min/max mutage
-  if minMutAge < split:
+  if minMutAge < curGen - split:
     minMutAge = split
   if maxMutAge == 0: 
     maxMutAge = endGen
+  if minMutAge > maxMutAge:
+    print "Minimal mutant age %d is larger then maximum age %d" % (minMutAge, maxMutAge)
+    sys.exit(1)
   # now, NtFunc(split) has subpopulations
   # 
   # for each subpopulation
@@ -1313,10 +1316,18 @@ def FreqTrajectoryMultiStochWithSubPop(
             break;
     else:
       print "Wrong mode parameter is used: ", mode
+    print "Using ", mode, "distribution of alleles at the last generation"
+    print "Frequencies at the last generation: sp0-loc0, loc1, ..., sp1-loc0,..."
+    for sp in range(numSP):
+      print "SP ", sp, ': ',
+      for i in range(numLoci):
+        print "%.3f " % freqAll[sp+i*numSP],
+      print
   else:
     raise exceptions.ValueError("Wrong freq length")
   spTraj = []
   for sp in range(numSP):
+    print "Generting trajectory for subpopulation %d (generation %d - %d)" % (sp, split, curGen)
     # FreqTraj... will probe Nt for the next geneartion.
     def spPopSize(gen):
       if gen < split:
@@ -1340,6 +1351,7 @@ def FreqTrajectoryMultiStochWithSubPop(
         print "Subpop return 0 index. restart "
       else:
         break;
+    # now spTraj has SP0: loc0,1,2..., SP1 loc 0,1,2,..., ...
     spTraj.extend(t)
   # add all trajectories
   traj = []
@@ -1347,10 +1359,11 @@ def FreqTrajectoryMultiStochWithSubPop(
     traj.append([])
     for g in range(split, curGen+1):
       totAllele = sum( [
-        spTraj[sp+i*numSP][g-split] * NtFunc(g)[sp] for sp in range(numSP) ])
+        spTraj[sp*numLoci+i][g-split] * NtFunc(g)[sp] for sp in range(numSP) ])
       traj[i].append( totAllele / sum(NtFunc(g)) )
   # 
   print "Starting allele frequency (at split) ", [traj[i][0] for i in range(numLoci)]
+  print "Generating combined trajsctory with range: ", minMutAge, " - ", maxMutAge
   trajBeforeSplit = FreqTrajectoryMultiStoch(
     curGen=split,
     freq=[traj[i][0] for i in range(numLoci)], 
