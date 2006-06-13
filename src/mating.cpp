@@ -1873,7 +1873,7 @@ namespace simuPOP
 		{
 			for(i=0; i< nLoci; ++i)
 			{
-				for( size_t sp=0; sp < numSP; ++sp)
+				for(size_t sp=0; sp < numSP; ++sp)
 				{
 #ifndef OPTIMIZED
 					int locus = m_loci[i];
