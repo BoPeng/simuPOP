@@ -1325,7 +1325,7 @@ def FreqTrajectoryMultiStochWithSubPop(
       print
   else:
     raise exceptions.ValueError("Wrong freq length")
-  spTraj = []
+  spTraj = [0]*numSP*numLoci
   for sp in range(numSP):
     print "Generting trajectory for subpopulation %d (generation %d - %d)" % (sp, split, curGen)
     # FreqTraj... will probe Nt for the next geneartion.
@@ -1352,14 +1352,15 @@ def FreqTrajectoryMultiStochWithSubPop(
       else:
         break;
     # now spTraj has SP0: loc0,1,2..., SP1 loc 0,1,2,..., ...
-    spTraj.extend(t)
+    for i in range(numLoci):
+      spTraj[sp+i*numSP] = t[i]
   # add all trajectories
   traj = []
   for i in range(numLoci):
     traj.append([])
     for g in range(split, curGen+1):
       totAllele = sum( [
-        spTraj[sp*numLoci+i][g-split] * NtFunc(g)[sp] for sp in range(numSP) ])
+        spTraj[sp+i*numSP][g-split] * NtFunc(g)[sp] for sp in range(numSP) ])
       traj[i].append( totAllele / sum(NtFunc(g)) )
   # 
   print "Starting allele frequency (at split) ", [traj[i][0] for i in range(numLoci)]
