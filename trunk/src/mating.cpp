@@ -714,7 +714,7 @@ namespace simuPOP
 					continue;
 				}
 				// need 0, 1, ....,
-				else if( it[idx] == 1 )
+				else if( it[idx] == 1 || allowFixation)
 				{
 					// success
 					break;

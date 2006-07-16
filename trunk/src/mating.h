@@ -493,7 +493,8 @@ namespace simuPOP
 	//           restartIfFail=true, otherwise return. Default to false.
 	//    maxAttempts    How many times to try to get a valid path? Default 1000
 	//    allowFixation  return the trajectory, if fixation instead of absorption is 
-	//           achieve. Default to false.
+	//           achieve. Default to false. This option has a side effect to consider
+    //           0, 2, .. as valid trajectory, and should not be used for simulations.
 	//
 	// Of course, you should specify only one of N/NtFunc and one of s/sFunc
 	//
