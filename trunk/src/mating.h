@@ -492,6 +492,8 @@ namespace simuPOP
 	//    restartIfFail  If the process can not finish after T generations, restart if
 	//           restartIfFail=true, otherwise return. Default to false.
 	//    maxAttempts    How many times to try to get a valid path? Default 1000
+	//    allowFixation  return the trajectory, if fixation instead of absorption is 
+	//           achieve. Default to false.
 	//
 	// Of course, you should specify only one of N/NtFunc and one of s/sFunc
 	//
@@ -506,8 +508,10 @@ namespace simuPOP
 		PyObject* fitnessFunc=NULL,
 		ULONG minMutAge=0,
 		ULONG maxMutAge=100000,
+        int ploidy=2,
 		bool restartIfFail=false,
-		long maxAttempts=1000);
+		long maxAttempts=1000,
+		bool allowFixation=false);
 
 	//
 	// simulate trajectories of disease susceptibility loci using an extension of
@@ -533,7 +537,8 @@ namespace simuPOP
 	//           roughly 2,000,000 years which is longer than human history.
 	//    restartIfFail  If the process can not finish after T generations, restart if
 	//           restartIfFail=true, otherwise return. Default to false.
-	//     maxAttempts    How many times to try to get a valid path? Default 10000
+    //    ploidy    Number of chromosomes will be N*ploidy
+	//    maxAttempts    How many times to try to get a valid path? Default 10000
 	//
 	// Of course, you should specify only one of N/NtFunc and one of s/sFunc
 	//
@@ -549,6 +554,7 @@ namespace simuPOP
 		PyObject* fitnessFunc=NULL,
 		ULONG minMutAge=0,
 		ULONG maxMutAge=100000,
+        int ploidy=2,
 		bool restartIfFail=false,
 		long maxAttempts=1000);
 
