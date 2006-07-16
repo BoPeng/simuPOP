@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 PROJECT_NAME           = "simuPOP: forward-based simulator for population genetists"
 PROJECT_NUMBER         = "version: $(SIMUPOP_VER), Rev $(SIMUPOP_REV)"
-OUTPUT_DIRECTORY       = /var/www/html/simuPOP_doc/doc
+OUTPUT_DIRECTORY       = $(SIMUPOP_DOC_DIR)
 OUTPUT_LANGUAGE        = English
 USE_WINDOWS_ENCODING   = NO
 BRIEF_MEMBER_DESC      = YES
@@ -112,11 +112,8 @@ EXCLUDE                = config.h \
                          test \
                          tools \
                          boost \
+						 zlib \
                          gsl \
-                         coasim \
-                         coalescent \
-                         selsim \
-                         trajectory \
                          src/serialization \
                          src/simuPOP_*wrap.cpp \
                          src/utility_*.cpp \
