@@ -13,108 +13,109 @@ env = Environment()
 env.Append(CPPPATH = ['/usr/include/python2.3/', '/usr/local/python-2.3.3/include/python2.3', '..'])
 
 env.Append(CCFLAGS = ['-Wall', '-pthread', '-fno-strict-aliasing', '-DNDEBUG', '-O3', '-fPIC', \
-  '-DSIMUPOP_REV=%s' % os.popen('svnversion ..').read().strip() ])
+    '-DSIMUPOP_REV=%s' % os.popen('svnversion ..').read().strip() ])
 
 # for swig 1.3.28 cvs
 SWIG = 'swig -O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
 
 # build static libraries
 if 'serial' in BUILD_TARGETS:
-  serial = env.StaticLibrary(
-    target = 'serial',
-    source = ['serialization/%s'%x for x in Split('''
-      basic_archive.cpp
-      basic_xml_archive.cpp
-      basic_iarchive.cpp
-      basic_oarchive.cpp
-      basic_serializer_map.cpp
-      basic_text_iprimitive.cpp
-      basic_text_oprimitive.cpp
-      text_iarchive.cpp
-      text_oarchive.cpp
-      binary_iarchive.cpp
-      binary_oarchive.cpp
-      xml_grammar.cpp
-      xml_iarchive.cpp
-      xml_oarchive.cpp
-      extended_type_info.cpp
-      extended_type_info_no_rtti.cpp
-      extended_type_info_typeid.cpp
-      void_cast.cpp
-      polymorphic_iarchive.cpp
-      polymorphic_oarchive.cpp
-      stl_port.cpp
-      basic_pointer_iserializer.cpp
-      basic_iserializer.cpp
-      basic_oserializer.cpp
-      basic_pointer_oserializer.cpp
-      basic_archive_impl.cpp
-    ''')]
-  )
-  Alias('serial', serial)
-  
+    serial = env.StaticLibrary(
+        target = 'serial',
+        source = ['serialization/%s'%x for x in Split('''
+            basic_archive.cpp
+            basic_xml_archive.cpp
+            basic_iarchive.cpp
+            basic_oarchive.cpp
+            basic_serializer_map.cpp
+            basic_text_iprimitive.cpp
+            basic_text_oprimitive.cpp
+            text_iarchive.cpp
+            text_oarchive.cpp
+            binary_iarchive.cpp
+            binary_oarchive.cpp
+            xml_grammar.cpp
+            xml_iarchive.cpp
+            xml_oarchive.cpp
+            extended_type_info.cpp
+            extended_type_info_no_rtti.cpp
+            extended_type_info_typeid.cpp
+            void_cast.cpp
+            polymorphic_iarchive.cpp
+            polymorphic_oarchive.cpp
+            stl_port.cpp
+            basic_pointer_iserializer.cpp
+            basic_iserializer.cpp
+            basic_oserializer.cpp
+            basic_pointer_oserializer.cpp
+            basic_archive_impl.cpp
+        ''')]
+    )
+    Alias('serial', serial)
+    
 # iostreams
 if 'iostreams' in BUILD_TARGETS:
-  iostreams = env.StaticLibrary(
-    target = 'iostreams',
-    source = ['iostreams/%s'%x for x in ['file_descriptor.cpp', 'mapped_file.cpp', 'zlib.cpp']]
-  )
-  Alias('iostreams', iostreams)
+    iostreams = env.StaticLibrary(
+        target = 'iostreams',
+        source = ['iostreams/%s'%x for x in ['file_descriptor.cpp', 'mapped_file.cpp', 'zlib.cpp']]
+    )
+    Alias('iostreams', iostreams)
 
 # GSL
 if 'gsl' in BUILD_TARGETS:
-  gsl = env.StaticLibrary(
-    target = 'gsl',
-    source = ['../gsl/%s'%x for x in Split('''
-      sys/infnan.c sys/coerce.c sys/fdiv.c sys/pow_int.c
-      sys/fcmp.c specfunc/psi.c specfunc/trig.c specfunc/exp.c
-      specfunc/log.c specfunc/erfc.c specfunc/zeta.c specfunc/elementary.c
-      specfunc/gamma.c rng/borosh13.c rng/fishman2x.c rng/mt.c rng/rand.c
-      rng/ranmar.c rng/types.c rng/cmrg.c rng/gfsr4.c rng/r250.c
-      rng/random.c rng/rng.c rng/uni32.c rng/coveyou.c rng/knuthran2.c
-      rng/ran0.c rng/randu.c rng/slatec.c rng/uni.c rng/default.c
-      rng/knuthran.c rng/ran1.c rng/ranf.c rng/taus113.c rng/vax.c
-      rng/file.c rng/lecuyer21.c rng/ran2.c rng/ranlux.c rng/taus.c
-      rng/waterman14.c rng/fishman18.c rng/minstd.c rng/ran3.c rng/ranlxd.c
-      rng/transputer.c rng/zuf.c rng/fishman20.c rng/mrg.c rng/rand48.c
-      rng/ranlxs.c rng/tt.c randist/nbinomial.c randist/beta.c randist/exponential.c
-      randist/geometric.c randist/binomial.c randist/poisson.c randist/rdgamma.c
-      randist/chisq.c randist/gauss.c error.c randist/multinomial.o
-  ''')]
-  )
-  Alias('gsl', gsl)
+    gsl = env.StaticLibrary(
+        target = 'gsl',
+        source = ['../gsl/%s'%x for x in Split('''
+            sys/infnan.c sys/coerce.c sys/fdiv.c sys/pow_int.c
+            sys/fcmp.c specfunc/psi.c specfunc/trig.c specfunc/exp.c
+            specfunc/log.c specfunc/erfc.c specfunc/zeta.c specfunc/elementary.c
+            specfunc/gamma.c rng/borosh13.c rng/fishman2x.c rng/mt.c rng/rand.c
+            rng/ranmar.c rng/types.c rng/cmrg.c rng/gfsr4.c rng/r250.c
+            rng/random.c rng/rng.c rng/uni32.c rng/coveyou.c rng/knuthran2.c
+            rng/ran0.c rng/randu.c rng/slatec.c rng/uni.c rng/default.c
+            rng/knuthran.c rng/ran1.c rng/ranf.c rng/taus113.c rng/vax.c
+            rng/file.c rng/lecuyer21.c rng/ran2.c rng/ranlux.c rng/taus.c
+            rng/waterman14.c rng/fishman18.c rng/minstd.c rng/ran3.c rng/ranlxd.c
+            rng/transputer.c rng/zuf.c rng/fishman20.c rng/mrg.c rng/rand48.c
+            rng/ranlxs.c rng/tt.c randist/nbinomial.c randist/beta.c randist/exponential.c
+            randist/geometric.c randist/binomial.c randist/poisson.c randist/rdgamma.c
+            randist/chisq.c randist/gauss.c error.c randist/multinomial.o
+    ''')]
+    )
+    Alias('gsl', gsl)
 
 env.Command('swigpyrun.h', None, ['swig -python -external-runtime $TARGET'])
 
 #
 DEF = {
-  'std': [],
-  'op': ['-DOPTIMIZED'],
-  'la': ['-DLONGALLELE'],
-  'laop': ['-DOPTIMIZED', '-DLONGALLELE'],
-  'ba': ['-DBINARYALLELE'],
-  'baop': ['-DOPTIMIZED', '-DBINARYALLELE']
+    'std': [],
+    'op': ['-DOPTIMIZED'],
+    'la': ['-DLONGALLELE'],
+    'laop': ['-DOPTIMIZED', '-DLONGALLELE'],
+    'ba': ['-DBINARYALLELE'],
+    'baop': ['-DOPTIMIZED', '-DBINARYALLELE']
 }
 env_mod = {}
 target_mod = {}
 for mod in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
-  env_mod[mod] = env.Copy()
-  env_mod[mod].Append(CCFLAGS = DEF[mod])
-  env_mod[mod].Append(LIBPATH = ['.'])
-  src = Split('''utility migrator population simulator terminator
-        individual mutator stator initializer operator recombinator
-        mating outputer selector tagger''') 
-  for file in src:
-    env.Command('%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
-  env.Command('simuPOP_%s_wrap.cpp'%mod, 'simuPOP_%s.i'%mod, ['%s %s -o $TARGET $SOURCE'%(SWIG, ' '.join(DEF[mod]))])
-  env.Depends('simuPOP_%s_wrap.cpp'%mod, ['%s.h' % x for x in src])
-  target_mod[mod] = env_mod[mod].SharedLibrary(
-    target = mod,
-    source = ['%s_%s.cpp' % (x, mod) for x in src] + ['simuPOP_%s_wrap.cpp'%mod],
-    LIBS = ['serial', 'iostreams', 'gsl', 'z'],
-  )
-  env.Command('_simuPOP_%s.so'%mod, target_mod[mod], [Move('$TARGET', '$SOURCE')])
-  Alias(mod, '_simuPOP_%s.so'%mod)
-  Alias('all', '_simuPOP_%s.so'%mod)
+    env_mod[mod] = env.Copy()
+    env_mod[mod].Append(CCFLAGS = DEF[mod])
+    env_mod[mod].Append(LIBPATH = ['.'])
+    src = Split('''utility migrator population simulator terminator
+                individual mutator stator initializer operator recombinator
+                mating outputer selector tagger''') 
+    for file in src:
+        env.Command('%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
+    env.Command(['simuPOP_%s_wrap.cpp'%mod, 'simuPOP_%s.py'%mod], 'simuPOP_%s.i'%mod, 
+        ['%s %s -o $TARGET $SOURCE'%(SWIG, ' '.join(DEF[mod]))])
+    env.Depends('simuPOP_%s_wrap.cpp'%mod, ['%s.h' % x for x in src])
+    target_mod[mod] = env_mod[mod].SharedLibrary(
+        target = mod,
+        source = ['%s_%s.cpp' % (x, mod) for x in src] + ['simuPOP_%s_wrap.cpp'%mod],
+        LIBS = ['serial', 'iostreams', 'gsl', 'z'],
+    )
+    env.Command('_simuPOP_%s.so'%mod, target_mod[mod], [Move('$TARGET', '$SOURCE')])
+    Alias(mod, ['_simuPOP_%s.so'%mod, '_simuPOP_%s.py'%mod])
+    Alias('all', ['_simuPOP_%s.so'%mod, '_simuPOP_%s.py'%mod])
 
-Default(target_mod['std'])
+Default(['_simuPOP_std.so', 'simuPOP_std.py'])

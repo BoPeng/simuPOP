@@ -525,7 +525,8 @@ namespace simuPOP
 
 	vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
 		PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc,
-		ULONG minMutAge, ULONG maxMutAge, bool restartIfFail, long maxAttempts)
+		ULONG minMutAge, ULONG maxMutAge, int ploidy,
+        bool restartIfFail, long maxAttempts, bool allowFixation)
 	{
 		if( curGen >0 && minMutAge > curGen )
 			minMutAge = curGen;
@@ -590,7 +591,7 @@ namespace simuPOP
 		// all calculated population size
 		vectorlu Nt(1, Ntmp[0]);
 		// copies of allele a at each genertion.
-		vectorlu it(1, static_cast<long>(Ntmp[0]*freq));
+		vectorlu it(1, static_cast<long>(ploidy*Ntmp[0]*freq));
 		// allele frequency of allele a at each geneation
 		vectorf xt(1, freq);
 		// store calculated fitness s1, s2, if necessary
@@ -699,8 +700,8 @@ namespace simuPOP
 				xt.push_back(0);
 			}
 			// y is obtained, is the expected allele frequency for the next generation t-1
-			it[idx+1] = rng().randBinomial( Nt[idx+1], y);
-			xt[idx+1] = it[idx+1]/static_cast<double>(Nt[idx+1]);
+			it[idx+1] = rng().randBinomial(ploidy*Nt[idx+1], y);
+			xt[idx+1] = it[idx+1]/static_cast<double>(ploidy*Nt[idx+1]);
 
 			if( it[idx+1] == 0 )
 			{
@@ -727,12 +728,17 @@ namespace simuPOP
 					idx = 0;
 				}
 			}
-			else if( it[idx+1] == Nt[idx+1] )
+			else if( it[idx+1] == ploidy*Nt[idx+1] )
 				// when the allele get fixed, restart
 			{
-				failedCount ++;
-				invalidCount ++;
-				idx = 0;
+				if(allowFixation)
+				{
+					break;
+				} else {
+					failedCount ++;
+					invalidCount ++;
+					idx = 0;
+				}
 			}
 			// if not done, but t already reaches T
 			else if( idx == maxMutAge )
@@ -779,11 +785,12 @@ namespace simuPOP
 		return traj;
 	}
 
+
 	matrix FreqTrajectoryMultiStoch( ULONG curGen,
 		vectorf freq, long N,
 		PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc,
-		ULONG minMutAge, ULONG maxMutAge, bool restartIfFail,
-		long maxAttempts)
+		ULONG minMutAge, ULONG maxMutAge, int ploidy,
+        bool restartIfFail, long maxAttempts)
 	{
 		size_t nLoci = freq.size();
 		size_t i, j, curI, nextI;
@@ -814,10 +821,10 @@ namespace simuPOP
 				if( ! fitness.empty() )
 					result[i] = FreqTrajectoryStoch(curGen, freq[i], N, NtFunc,
 						vectorf(fitness.begin()+3*i, fitness.begin()+3*(i+1)),
-						NULL, minMutAge, maxMutAge, restartIfFail, maxAttempts);
+						NULL, minMutAge, maxMutAge, ploidy, restartIfFail, maxAttempts);
 				else
 					result[i] = FreqTrajectoryStoch(curGen, freq[i], N, NtFunc,
-						vectorf(), NULL, minMutAge, maxMutAge, restartIfFail, maxAttempts);
+						vectorf(), NULL, minMutAge, maxMutAge, ploidy, restartIfFail, maxAttempts);
 			}
 			return result;
 		}
@@ -826,7 +833,7 @@ namespace simuPOP
 		// is NtFunc callable?
 		if( NtFunc != NULL )
 		{
-			if( ! PyCallable_Check(NtFunc) )
+			if( !PyCallable_Check(NtFunc) )
 				throw ValueError("NtFunc is not a valid Python function.");
 			else
 				// increase the ref, just to be safe
@@ -838,7 +845,7 @@ namespace simuPOP
 		vectorf sAll;
 		if( fitnessFunc != NULL )
 		{
-			if( ! PyCallable_Check(fitnessFunc) )
+			if( !PyCallable_Check(fitnessFunc) )
 				throw ValueError("sFunc is not a valid Python function.");
 			else
 				// increase the ref, just to be safe
@@ -881,7 +888,7 @@ namespace simuPOP
 		// copies of allele a at each genertion.
 		vectorlu it(nLoci);
 		for(i=0; i<nLoci; ++i)
-			it[i] = static_cast<long>(Ntmp[0]*freq[i]);
+			it[i] = static_cast<long>(ploidy*Ntmp[0]*freq[i]);
 		// allele frequency of allele a at each geneation
 		vectorf xt(nLoci);
 		for(i=0; i<nLoci; ++i)
@@ -1008,8 +1015,8 @@ namespace simuPOP
 				}
 
 				// y is obtained, is the expected allele frequency for the next generation t-1
-				it[nextI] = rng().randBinomial( Nt[idx+1], y);
-				xt[nextI] = it[nextI]/static_cast<double>(Nt[idx+1]);
+				it[nextI] = rng().randBinomial(ploidy*Nt[idx+1], y);
+				xt[nextI] = it[nextI]/static_cast<double>(ploidy*Nt[idx+1]);
 
 				if( it[nextI] == 0 )
 				{
@@ -1032,7 +1039,7 @@ namespace simuPOP
 						break;
 					}
 				}
-				else if( it[nextI] == Nt[idx+1] )
+				else if( it[nextI] == ploidy*Nt[idx+1] )
 				{
 					// when the allele get fixed, restart
 					invalidCount ++;
@@ -1099,6 +1106,7 @@ namespace simuPOP
 		}
 		return result;
 	}
+
 
 	// simulate trajectory
 	vectorf FreqTrajectorySelSim(
