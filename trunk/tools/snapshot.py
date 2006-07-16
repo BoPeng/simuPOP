@@ -44,7 +44,7 @@ def commitModification():
     ''' if there are changes, commit it '''
     if cmdOutput('svn diff') != '':
         os.system('svn ci -m "automatic checkin on %s"' % time.asctime())
-    os.command('svn update')
+    os.system('svn update')
 
 
 def checkRevision():
