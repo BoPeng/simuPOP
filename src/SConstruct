@@ -9,7 +9,10 @@
 # 
 import os, sys
 
-env = Environment()
+dest_dir = /home/bpeng/PythonModules/lib64/python2.3/site-packages/
+share_dir = /home/bpeng/PythonModules/share/simuPOP
+
+env = Environment(ENV={'PATH':os.environ['PATH']})
 env.Append(CPPPATH = ['/usr/include/python2.3/', '/usr/local/python-2.3.3/include/python2.3', '..'])
 
 env.Append(CCFLAGS = ['-Wall', '-pthread', '-fno-strict-aliasing', '-DNDEBUG', '-O3', '-fPIC', \
@@ -117,5 +120,15 @@ for mod in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
     env.Command('_simuPOP_%s.so'%mod, target_mod[mod], [Move('$TARGET', '$SOURCE')])
     Alias(mod, ['_simuPOP_%s.so'%mod, '_simuPOP_%s.py'%mod])
     Alias('all', ['_simuPOP_%s.so'%mod, '_simuPOP_%s.py'%mod])
+    for file in ['_simuPOP_%s.so'%mod, '_simuPOP_%s.py'%mod]:
+        env.install(os.path.join(dest_dir, file), file)
+        alias('install', os.path.join(dest_dir, file))
+
+for file in ['simuRPy.py', 'simuUtil.py', 'simuViewPop.py', 'simuMatPlt.py',
+    'simuPOP.py', 'simuOpt.py']:
+    env.install(os.path.join(dest_dir, file), file)
+    alias('install', os.path.join(dest_dir, file))
+
+# install to share directory, later.
 
 Default(['_simuPOP_std.so', 'simuPOP_std.py'])
