@@ -9,8 +9,8 @@
 # 
 import os, sys
 
-dest_dir = /home/bpeng/PythonModules/lib64/python2.3/site-packages/
-share_dir = /home/bpeng/PythonModules/share/simuPOP
+dest_dir = r'/home/bpeng/PythonModules/lib64/python2.3/site-packages/'
+share_dir = r'/home/bpeng/PythonModules/share/simuPOP'
 
 env = Environment(ENV={'PATH':os.environ['PATH']})
 env.Append(CPPPATH = ['/usr/include/python2.3/', '/usr/local/python-2.3.3/include/python2.3', '..'])
@@ -22,7 +22,7 @@ env.Append(CCFLAGS = ['-Wall', '-pthread', '-fno-strict-aliasing', '-DNDEBUG', '
 SWIG = 'swig -O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
 
 # build static libraries
-if 'serial' in BUILD_TARGETS:
+if 'serial' in BUILD_TARGETS or not os.path.isfile('libserial.a'):
     serial = env.StaticLibrary(
         target = 'serial',
         source = ['serialization/%s'%x for x in Split('''
@@ -57,7 +57,7 @@ if 'serial' in BUILD_TARGETS:
     Alias('serial', serial)
     
 # iostreams
-if 'iostreams' in BUILD_TARGETS:
+if 'iostreams' in BUILD_TARGETS or not os.path.isfile('libiostreams.a'):
     iostreams = env.StaticLibrary(
         target = 'iostreams',
         source = ['iostreams/%s'%x for x in ['file_descriptor.cpp', 'mapped_file.cpp', 'zlib.cpp']]
@@ -65,7 +65,7 @@ if 'iostreams' in BUILD_TARGETS:
     Alias('iostreams', iostreams)
 
 # GSL
-if 'gsl' in BUILD_TARGETS:
+if 'gsl' in BUILD_TARGETS or not os.path.isfile('libgsl.a'):
     gsl = env.StaticLibrary(
         target = 'gsl',
         source = ['../gsl/%s'%x for x in Split('''
@@ -82,7 +82,7 @@ if 'gsl' in BUILD_TARGETS:
             rng/transputer.c rng/zuf.c rng/fishman20.c rng/mrg.c rng/rand48.c
             rng/ranlxs.c rng/tt.c randist/nbinomial.c randist/beta.c randist/exponential.c
             randist/geometric.c randist/binomial.c randist/poisson.c randist/rdgamma.c
-            randist/chisq.c randist/gauss.c error.c randist/multinomial.o
+            randist/chisq.c randist/gauss.c error.c randist/multinomial.c
     ''')]
     )
     Alias('gsl', gsl)
@@ -111,6 +111,8 @@ for mod in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
         env.Command('%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
     env.Command(['simuPOP_%s_wrap.cpp'%mod, 'simuPOP_%s.py'%mod], 'simuPOP_%s.i'%mod, 
         ['%s %s -o $TARGET $SOURCE'%(SWIG, ' '.join(DEF[mod]))])
+    env.Depends('simuPOP_%s.i'%mod, 'simuPOP_common.i')
+    env.Depends('simuPOP_%s_wrap.cpp'%mod, 'simuPOP_%s.i'%mod)
     env.Depends('simuPOP_%s_wrap.cpp'%mod, ['%s.h' % x for x in src])
     target_mod[mod] = env_mod[mod].SharedLibrary(
         target = mod,
@@ -120,15 +122,15 @@ for mod in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
     env.Command('_simuPOP_%s.so'%mod, target_mod[mod], [Move('$TARGET', '$SOURCE')])
     Alias(mod, ['_simuPOP_%s.so'%mod, '_simuPOP_%s.py'%mod])
     Alias('all', ['_simuPOP_%s.so'%mod, '_simuPOP_%s.py'%mod])
-    for file in ['_simuPOP_%s.so'%mod, '_simuPOP_%s.py'%mod]:
-        env.install(os.path.join(dest_dir, file), file)
-        alias('install', os.path.join(dest_dir, file))
+    for file in ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod]:
+        env.InstallAs(os.path.join(dest_dir, file), file)
+        Alias('install', os.path.join(dest_dir, file))
 
 for file in ['simuRPy.py', 'simuUtil.py', 'simuViewPop.py', 'simuMatPlt.py',
     'simuPOP.py', 'simuOpt.py']:
-    env.install(os.path.join(dest_dir, file), file)
-    alias('install', os.path.join(dest_dir, file))
+    env.InstallAs(os.path.join(dest_dir, file), file)
+    Alias('install', os.path.join(dest_dir, file))
 
 # install to share directory, later.
 
-Default(['_simuPOP_std.so', 'simuPOP_std.py'])
+Default('install')

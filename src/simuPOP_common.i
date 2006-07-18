@@ -383,22 +383,22 @@ PyMigrate.__doc__ = "Function version of operator pyMigrate whose __init__ funct
 def SplitSubPop(pop, *args, **kwargs):
   splitSubPop(*args, **kwargs).apply(pop)
 
-SplitSubPop.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + population.splitSubPop.__doc__
+SplitSubPop.__doc__ = "Function version of operator splitSubPops whose __init__ function is \n" + splitSubPop.__init__.__doc__
 
 def MergeSubPops(pop, *args, **kwargs):
   mergeSubPops(*args, **kwargs).apply(pop)
   
-MergeSubPops.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + population.mergeSubPops.__doc__
+MergeSubPops.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + mergeSubPops.__init__.__doc__
 
 def RemoveSubPops(pop, *args, **kwargs):
   pop.removeSubPops(*args, **kwargs)
   
-RemoveSubPops.__doc__ = "Function versionof member function population::removeSubPop with help info:\n" + population.removeSubPops.__doc__
+#RemoveSubPops.__doc__ = "Function versionof member function population::removeSubPop with help info:\n" + population.removeSubPops.__doc__
 
 def RemoveEmptySubPops(pop, *args, **kwargs):
   pop.removeEmptySubPops(*args, **kwargs)
   
-RemoveEmptySubPops.__doc__ = "Function versionof member function population::removeEmptySubPops with help info:\n" + population.removeEmptySubPops.__doc__
+#RemoveEmptySubPops.__doc__ = "Function versionof member function population::removeEmptySubPops with help info:\n" + population.removeEmptySubPops.__doc__
 
 def MapSelect(pop, *args, **kwargs):
   mapSelector(stage=PostMating, *args, **kwargs).apply(pop)
@@ -504,12 +504,12 @@ def AffectedSibpairSample(pop, *args, **kwargs):
 def SavePopulation(pop, *args, **kwargs):
   pop.savePopulation(*args, **kwargs)
 
-SavePopulation.__doc__ = "Function versionof member function population::savePopulation with help info:\n" + population.savePopulation.__doc__
+#SavePopulation.__doc__ = "Function versionof member function population::savePopulation with help info:\n" + population.savePopulation.__doc__
 
 def SaveSimulator(simu, *args, **kwargs):
   simu.saveSimulator(*args, **kwargs)
   
-SaveSimulator.__doc__ = "Function versionof member function simulator::saveSimulator with help info:\n" + simulator.saveSimulator.__doc__
+#SaveSimulator.__doc__ = "Function versionof member function simulator::saveSimulator with help info:\n" + simulator.saveSimulator.__doc__
 
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
 def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False, 
