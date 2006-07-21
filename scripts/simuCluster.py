@@ -121,7 +121,7 @@ def getJobs():
     return
 
 
-def getScript(name):
+def getScript(name, options):
     ''' return the script for simulation 'name' '''
     if not globals().has_key('script'):
         print 'Vairable script is not defined'
@@ -131,22 +131,18 @@ def getScript(name):
         # a dictionary
         if job['name'] == name:
             s = script
-            print alljobs, job
-            for k,v in job.items():
+            for k,v in (job.items() + options.items()):
                 # subsitute in script
-                if '"' in 'v':
-                    s = re.sub(r'\$%s\s' % k, "'%s' " % v, s)
-                    s = re.sub(r'\$\{%s\}' % k, "'%s' " % v, s)
+                if True in [x in str(v) for x in [' ', '*', ',', '[', ']']]:
+                    if '"' in str(v):
+                        quote = '"'
+                    else:
+                        quote = "'"
+                    s = re.sub(r'\$%s(\W)' % k, r"%s%s%s\1" % (quote, str(v), quote), s)
+                    s = re.sub(r'\$\{%s\}' % k, "%s%s%s" % (quote, str(v), quote), s)
                 else:
-                    s = re.sub(r'\$%s\s' % k, '"%s" ' % v, s)
-                    s = re.sub(r'\$\{%s\}' % k, '"%s" ' % v, s)
-            for k, v in options.items():
-                if '"' in 'v':
-                    s = re.sub(r'\$%s\s' % k, "'%s' " % v, s)
-                    s = re.sub(r'\$\{%s\}' % k, "'%s' " % v, s)
-                else:
-                    s = re.sub(r'\$%s\s' % k, '"%s" ' % v, s)
-                    s = re.sub(r'\$\{%s\}' % k, '"%s" ' % v, s)
+                    s = re.sub(r'\$%s(\W)' % k, r"%s\1" % str(v), s)
+                    s = re.sub(r'\$\{%s\}' % k, str(v), s)
             return s
 
 
@@ -161,7 +157,7 @@ def allJobs():
 if __name__ == '__main__':
     # get pptions
     # options can can be used to subst fields in script
-    options = {}
+    options = {'time':96}
     simuList = 'simulation.lst'
     proc_jobs = []
     run = False
@@ -200,12 +196,12 @@ if __name__ == '__main__':
     execfile(simuList)
     #
     getJobs()
-    print alljobs
     # 
     if proc_jobs == 'all':
         proc_jobs = allJobs()
     #
     # submit some jobs
+    print options
     scan = re.compile('(\w+[^\d]+)(\d+)-(\d+)')
     for j in args:
         if j[:2] == '--' and '=' in j:
@@ -226,12 +222,13 @@ if __name__ == '__main__':
             print ' '.join(proc_jobs)
         elif len(proc_jobs) == 1:
             print "\nList script", proc_jobs[0]
-            print getScript(proc_jobs[0])
+            print getScript(proc_jobs[0], options)
     else:
         # submit the jobs
         for job in proc_jobs:
             pbs = open(job + '.pbs', 'w')
-            print >> pbs, getScript(job)
+            print >> pbs, getScript(job, options)
             pbs.close()
-            os.system('qsub ' + job + '.pbs')
+            print "Submitting job via 'qsub %s.pbs'" % job 
+            os.system('qsub %s.pbs' % job)
 
