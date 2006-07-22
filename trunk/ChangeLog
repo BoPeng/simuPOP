@@ -6,6 +6,17 @@ NOTE: Daily snapshot reflects current SVN version. It includes new features and
 BUG:
   - All known bugs have been updated
 
+version 0.7.1 
+  - Fix a bug in backward trajectory simulation
+  - change the release/snapsot generating process
+  - add script/simuCluster.py which assists submission of jobs on cluster
+	machines.
+
+version 0.7.0 - (Release 0.6.15, July, 2006)
+  - Check all scripts and test cases
+  - Check document
+  - release
+
 version 0.6.14 - (Rev 341) - June 06, 2006
   - CHG: user's guide and reference manual revision
   - NEW: add a local scons build system for developers

@@ -197,8 +197,9 @@ if __name__ == '__main__':
     #
     getJobs()
     # 
+    all_jobs = allJobs()
     if proc_jobs == 'all':
-        proc_jobs = allJobs()
+        proc_jobs = all_jobs
     #
     # submit some jobs
     print options
@@ -219,16 +220,22 @@ if __name__ == '__main__':
     #
     if not run:
         if len(proc_jobs) > 1:
-            print ' '.join(proc_jobs)
+            print ' '.join(filter(lambda x: x in all_jobs, proc_jobs))
         elif len(proc_jobs) == 1:
-            print "\nList script", proc_jobs[0]
-            print getScript(proc_jobs[0], options)
+            if proc_jobs[0] in all_jobs:
+                print "\nList script", proc_jobs[0]
+                print getScript(proc_jobs[0], options)
+            else:
+                print "\nJob %s does not exist. " % proc_jobs[0]
     else:
         # submit the jobs
         for job in proc_jobs:
-            pbs = open(job + '.pbs', 'w')
-            print >> pbs, getScript(job, options)
-            pbs.close()
-            print "Submitting job via 'qsub %s.pbs'" % job 
-            os.system('qsub %s.pbs' % job)
+            if job in all_jobs:
+                pbs = open(job + '.pbs', 'w')
+                print >> pbs, getScript(job, options)
+                pbs.close()
+                print "Submitting job via 'qsub %s.pbs'" % job 
+                os.system('qsub %s.pbs' % job)
+            else:
+                print "Job %s does not exist" % job
 
