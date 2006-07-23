@@ -54,9 +54,9 @@ class TestAscertainment(unittest.TestCase):
     self.assertEqual(s.subPopSize(0), 10)
     self.assertEqual(s.subPopSize(1), 10)
     #
-    (s,) =  CaseControlSample(self.pop, [1,2],[5,6])
+    (s,) =  CaseControlSample(self.pop, [1,2],[5,4])
     self.assertEqual(s.subPopSize(0), 3)
-    self.assertEqual(s.subPopSize(1), 11)
+    self.assertEqual(s.subPopSize(1), 9)
 
   def testAffectedSibpairSample(self):
     'Testing affected sibpair sampling (imcomplete)'
