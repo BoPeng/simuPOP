@@ -1033,6 +1033,13 @@ namespace simuPOP
 				return gsl_rng_name(m_RNG);
 			}
 
+			unsigned int seed()
+			{
+				return m_seed;
+			}
+			
+			unsigned int generateRandomSeed();
+			
 			unsigned long int max()
 			{
 				return gsl_rng_max(m_RNG);
@@ -1124,6 +1131,9 @@ namespace simuPOP
 
 			/// global random number generator
 			gsl_rng * m_RNG;
+
+			/// seed used
+			unsigned int m_seed;
 	};
 
 	// weighted sampling using Walker's alias algorithm
