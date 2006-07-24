@@ -2109,7 +2109,6 @@ T Expression::valueAs##TypeName() \
 			// clear previous result
 			BitSet& succ = m_table[cl];
 			succ.reset();
-
 			if( m_prob[cl] == 0.5)				  // random 0,1 bit, this will be quicker
 			{
 				// treat a randInt as random bits and set them directly.
@@ -2117,11 +2116,25 @@ T Expression::valueAs##TypeName() \
 				// first several blocks
 				size_t numblock = succ.num_blocks()-1;
 				vector<BitSet::block_type> blocks(numblock);
-				for(size_t i=0; i<numblock; ++i)
-					blocks[i] = static_cast<int16_t>(rng().randGet());
+				BitSet::block_type tmp;
+				for(size_t i=0; i<numblock; ++i) {
+					// even if the block size is large (I can not set it to int16_t)
+					// I only take the last 16 bit of a rng 
+					blocks[i] = 0;
+					for(size_t b=0; b<sizeof(BitSet::block_type)/2; ++b) {
+						// blocks[i] = static_cast<int16_t>(rng().randGet());
+						tmp = rng().randInt(0xFFFF);
+		                blocks[i] |= (0xFFFF & tmp) << (b*16);
+					}
+				}
 				from_block_range(blocks.begin(), blocks.end(), succ);
 				// last block, block_type is predefined to unsigned long
-				BitSet::block_type last_block = rng().randGet();
+				BitSet::block_type last_block = 0;
+				for(size_t b=0; b<sizeof(BitSet::block_type)/2; ++b) {
+					// blocks[i] = static_cast<int16_t>(rng().randGet());
+					tmp = rng().randInt(0xFFFF);
+					last_block |= (0xFFFF & tmp) << (b*16);
+				}
 				for(size_t i=0; i < m_N - numblock*BitSet::bits_per_block; ++i)
 				{
 					if((last_block >> i) & 0x1)
@@ -2150,7 +2163,7 @@ T Expression::valueAs##TypeName() \
 				}
 			}
 			else								  // other cases, use the straight-forward method
-			{
+			{ 
 				double p = m_prob[cl];
 				for(UINT i = 0; i < m_N; ++i)
 					if( m_RNG->randUniform01() < p )

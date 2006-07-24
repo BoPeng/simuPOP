@@ -120,7 +120,7 @@ class TestRecombinator(unittest.TestCase):
       a1, a2 = 0, 1
     else:
       a1, a2 = 1, 2
-    pop = population(10000, loci=[2,3,2])
+    pop = population(100000, loci=[2,3,2])
     InitByValue(pop, value=[a1]*7+[a2]*7)
     simu = simulator(pop, randomMating())
     #TurnOnDebug(DBG_RECOMBINATOR)
@@ -142,12 +142,8 @@ class TestRecombinator(unittest.TestCase):
     'Testing table 4 of H&C 3nd edition P49 '
     N = 10000
     r = 0.1
-    if alleleType() == 'binary':
-      a1, a2 = 0, 1
-    else:
-      a1, a2 = 1, 2
-    genoDad = [[a1,a1],[a1,a1],[a1,a1],[a1,a1],[a1,a2],[a1,a2],[a1,a2],[a2,a1],[a2,a1],[a2,a2]]
-    genoMom = [[a1,a1],[a1,a2],[a2,a1],[a2,a2],[a1,a2],[a2,a1],[a2,a2],[a2,a1],[a2,a2],[a2,a2]]
+    genoDad = [[0,0],[0,0],[0,0],[0,0],[0,1],[0,1],[0,1],[1,0],[1,0],[1,1]]
+    genoMom = [[0,0],[0,1],[1,0],[1,1],[0,1],[1,0],[1,1],[1,0],[1,1],[1,1]]
     prop = [ [1, 0, 0, 0], [.5, .5, 0, 0], [.5, 0, 0.5, 0],
       [0.5-r/2, r/2, r/2, 0.5-r/2], [0, 1, 0, 0], [r/2, .5-r/2, .5-r/2, r/2], 
       [0, .5, 0, .5], [0, 0, 1, 0], [0, 0, .5, .5], [0, 0, 0, 1] ]
@@ -160,10 +156,10 @@ class TestRecombinator(unittest.TestCase):
             stat(haploFreq=[0,1]) 
           ])
       hf = simu.dvars(0).haploFreq['0-1']
-      assert not ((hf.setdefault('%s-%s'%(a1,a1),0) - prop[i][0]) > 0.01 or \
-        (hf.setdefault('%s-%s'%(a1,a2),0) - prop[i][1]) > 0.01 or \
-        (hf.setdefault('%s-%s'%(a2,a1),0) - prop[i][2]) > 0.01 or \
-        (hf.setdefault('%s-%s'%(a2,a2),0) - prop[i][3]) > 0.01), \
+      assert not ((hf.setdefault('0-0',0) - prop[i][0]) > 0.01 or \
+        (hf.setdefault('0-1',0) - prop[i][1]) > 0.01 or \
+        (hf.setdefault('1-0',0) - prop[i][2]) > 0.01 or \
+        (hf.setdefault('1-1',0) - prop[i][3]) > 0.01), \
         "Recombination results in potentially wrong proportions." +  \
         str( genoDad[i]) + ' crossing ' + str(genoMom[i])
       
@@ -199,10 +195,10 @@ class TestRecombinator(unittest.TestCase):
     simu.evolve( [ rec ], end=G)
     # number of recombination event should be bionomial(ploidy*N*r, 0.1) with mean 10000
     # at end should be bionomial(ploidy*N*r, 0.5)
-    assert abs( rec.recCount(0) - 2*N*r*G ) < 200, \
-      'Number of recombination event is not as expected.'
+    assert abs( rec.recCount(0) - 2*N*r*G ) < 100, \
+      'Number of recombination event is not as expected. %d %d' % (rec.recCount(0), 2*N*r*G)
     assert abs( rec.recCount(9) - 2*N*0.5*G ) < 2000, \
-      'Number of recombination event is not as expected.'
+      'Number of recombination event is not as expected. %d %d' % (rec.recCount(9), 2*N*0.5*G)
     
 
   def testNoMaleRec(self):
