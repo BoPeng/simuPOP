@@ -12,6 +12,8 @@ version 0.7.1
   - NEW: add script/simuCluster.py which assists submission of jobs on cluster
 	machines.
   - BUG: fix a random number generator bug on 64 bit machines.
+  - NEW: random number seed is generated in a much better way, and is
+		retrievable.
 
 version 0.7.0 - (Release 0.6.15, July, 2006)
   - Check all scripts and test cases

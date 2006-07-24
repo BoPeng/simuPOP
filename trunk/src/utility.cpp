@@ -1889,6 +1889,26 @@ T Expression::valueAs##TypeName() \
 		gsl_rng_free(m_RNG);
 	}
 
+	unsigned int RNG::generateRandomSeed()
+	{
+		// now, I need to work hard to get a good seed, considering 
+		// the use of clusters, and several jobs may be started at the same
+		// time
+		unsigned int seed;
+		FILE *devrandom;
+		if ((devrandom = fopen("/dev/random", "r")) != NULL) {
+			fread(&seed, sizeof(seed), 1, devrandom);
+			fclose(devrandom);
+		}
+		else 
+		{	
+			// this is not the best method, but I am out of ideas
+			// of portable ways to add some other noises
+			seed = static_cast<unsigned int>(time(NULL));
+		}
+		return seed;		
+	}
+	
 	/// choose an random number generator.
 	/// This can be done by setting GSL_RNG_TYPE as well.
 	void RNG::setRNG(const char * rng, unsigned long seed)
@@ -1932,11 +1952,14 @@ T Expression::valueAs##TypeName() \
 			m_RNG = gsl_rng_alloc( gsl_rng_mt19937 );
 		}
 
-		// set seed
+		// generate seed
 		if( seed == 0 )
-			gsl_rng_set(m_RNG, static_cast<UINT>(time(0)));
+			m_seed = generateRandomSeed();
 		else
-			gsl_rng_set(m_RNG, seed);
+			m_seed = seed;
+
+		// set seed
+		gsl_rng_set(m_RNG, m_seed);
 	}
 
 	///////////// Weighted sampler //////////////
