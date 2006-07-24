@@ -7,10 +7,11 @@ BUG:
   - All known bugs have been updated
 
 version 0.7.1 
-  - Fix a bug in backward trajectory simulation
-  - change the release/snapsot generating process
-  - add script/simuCluster.py which assists submission of jobs on cluster
+  - BUG: Fix a bug in backward trajectory simulation
+  - CHG: change the release/snapsot generating process
+  - NEW: add script/simuCluster.py which assists submission of jobs on cluster
 	machines.
+  - BUG: fix a random number generator bug on 64 bit machines.
 
 version 0.7.0 - (Release 0.6.15, July, 2006)
   - Check all scripts and test cases

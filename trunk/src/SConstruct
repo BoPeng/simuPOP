@@ -109,9 +109,9 @@ for mod in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
                 mating outputer selector tagger''') 
     for file in src:
         env.Command('%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
+    env.Depends('simuPOP_%s.i'%mod, ['simuPOP_common.i', 'simuPOP_doc.i'])
     env.Command(['simuPOP_%s_wrap.cpp'%mod, 'simuPOP_%s.py'%mod], 'simuPOP_%s.i'%mod, 
         ['%s %s -o $TARGET $SOURCE'%(SWIG, ' '.join(DEF[mod]))])
-    env.Depends('simuPOP_%s.i'%mod, 'simuPOP_common.i')
     env.Depends('simuPOP_%s_wrap.cpp'%mod, 'simuPOP_%s.i'%mod)
     env.Depends('simuPOP_%s_wrap.cpp'%mod, ['%s.h' % x for x in src])
     target_mod[mod] = env_mod[mod].SharedLibrary(
@@ -120,8 +120,8 @@ for mod in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
         LIBS = ['serial', 'iostreams', 'gsl', 'z'],
     )
     env.Command('_simuPOP_%s.so'%mod, target_mod[mod], [Move('$TARGET', '$SOURCE')])
-    Alias(mod, ['_simuPOP_%s.so'%mod, '_simuPOP_%s.py'%mod])
-    Alias('all', ['_simuPOP_%s.so'%mod, '_simuPOP_%s.py'%mod])
+    Alias(mod, ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod])
+    Alias('all', ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod])
     for file in ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod]:
         env.InstallAs(os.path.join(dest_dir, file), file)
         Alias('install', os.path.join(dest_dir, file))

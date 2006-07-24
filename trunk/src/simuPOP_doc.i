@@ -101,52 +101,6 @@ Usage:
 
 ";
 
-%ignore simuPOP::BernulliTrials;
-
-%ignore simuPOP::BernulliTrials::BernulliTrials(RNG &rng);
-
-%ignore simuPOP::BernulliTrials::BernulliTrials(RNG &rng, const vectorf &prob, ULONG trials);
-
-%ignore simuPOP::BernulliTrials::~BernulliTrials();
-
-%ignore simuPOP::BernulliTrials::size() ;
-
-%feature("docstring")  simuPOP::BernulliTrials::prob " 
-
-Usage:
-  x.prob()
-
-";
-
-%ignore simuPOP::BernulliTrials::setParameter(const vectorf &prob, ULONG trials);
-
-%ignore simuPOP::BernulliTrials::doTrial();
-
-%ignore simuPOP::BernulliTrials::curTrial();
-
-%feature("docstring")  simuPOP::BernulliTrials::trial " 
-
-get a trial corresponding to m_prob.
-
-Usage:
-  x.trial()
-
-";
-
-%feature("docstring")  simuPOP::BernulliTrials::succ " 
-
-return succeed trials for p[index] fail when m_cur is not 0. (i.e.,
-has retrieve the table through trial()C
-PPONLY
-
-Usage:
-  x.succ(index)
-
-";
-
-%ignore simuPOP::BernulliTrials::probabilities();
-
-%ignore simuPOP::BernulliTrials::numTrials();
 
 %feature("docstring") simuPOP::binomialSelection "
 
