@@ -1283,7 +1283,6 @@ namespace simuPOP
 			// bool m_fast;
 	};
 
-	/// CPPONLY
 	/// this class encapsulate behavior of a sequence of Bernulli trial.
 	/// the main idea is that when doing a sequence of Bernulli trials
 	/// of the same probability, we can first use a binomial distribution
@@ -1365,6 +1364,9 @@ namespace simuPOP
 			/// fail when m_cur is not 0. (i.e., has retrieve the table through trial()
 			/// CPPONLY
 			const BitSet& succ(UINT index);
+
+			/// return the succ rate for one index, used for verification pruposes
+			double succRate(UINT index);
 
 			/// CPPONLY
 			vectorf probabilities()

@@ -2118,7 +2118,7 @@ T Expression::valueAs##TypeName() \
 				size_t numblock = succ.num_blocks()-1;
 				vector<BitSet::block_type> blocks(numblock);
 				for(size_t i=0; i<numblock; ++i)
-					blocks[i] = rng().randGet();
+					blocks[i] = static_cast<int16_t>(rng().randGet());
 				from_block_range(blocks.begin(), blocks.end(), succ);
 				// last block, block_type is predefined to unsigned long
 				BitSet::block_type last_block = rng().randGet();
@@ -2192,6 +2192,12 @@ T Expression::valueAs##TypeName() \
 		return m_table[index];
 	}
 
+	double BernulliTrials::succRate(UINT index)
+	{
+		return m_table[index].count()/static_cast<double>(m_table[index].size());
+	}
+
+	
 	/// random number generator. a global variable.
 	/// there might be multiple RNG later.
 	RNG g_RNG;

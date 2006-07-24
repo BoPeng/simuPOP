@@ -335,7 +335,7 @@ setup(
   url = "http://simupop.sourceforge.net",
   package_dir = {'': 'src' }, 
   py_modules = ['simuPOP', 'simuOpt', 'simuPOP_std', 'simuPOP_op', 'simuPOP_la', 'simuPOP_laop', 
-    'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop' ],
+    'simuPOP_ba', 'simuPOP_baop', 'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop' ],
   ext_modules = [
     Extension('_simuPOP_std',
       extra_compile_args = EXTRA_COMPILER_ARGS,
