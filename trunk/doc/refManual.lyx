@@ -15756,6 +15756,22 @@ preview false
 
 \end_layout
 
+\begin_layout Standard
+Since simuPOP 0.7.1, RNGs are seeded from 
+\family typewriter
+/dev/random 
+\family default
+if this device is available.
+ The seed can also be retrieved using rng().seed() function, which should
+ be saved for serious simulations.
+\end_layout
+
+\begin_layout Standard
+Under the systems such as windows where no /dev/random is available, system
+ time is used.
+ Suggestions are welcome.
+\end_layout
+
 \begin_layout Section
 Debug-related operators/functions
 \end_layout
