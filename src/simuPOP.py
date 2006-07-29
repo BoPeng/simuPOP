@@ -26,41 +26,47 @@
 
 # get options
 from simuOpt import simuOptions
+import os
 
 if simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'short':
-  from simuPOP_std import *
+    from simuPOP_std import *
 elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'short':
-  from simuPOP_op import * 
+    from simuPOP_op import * 
 elif simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'long':
-  from simuPOP_la import *
+    from simuPOP_la import *
 elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'long':
-  from simuPOP_laop import *
+    from simuPOP_laop import *
 elif simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'binary':
-  from simuPOP_ba import * 
+    from simuPOP_ba import * 
 elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'binary':
-  from simuPOP_baop import *
+    from simuPOP_baop import *
 else:
-  print "Warning: options unrecognized (AlleleType=%s, Optimized=%d). Use standard library. " \
-    % (simuOptions['AlleleType'], simuOptions['Optimized'])
-  from simuPOP_std import *
+    print "Warning: options unrecognized (AlleleType=%s, Optimized=%d). Use standard library. " \
+        % (simuOptions['AlleleType'], simuOptions['Optimized'])
+    from simuPOP_std import *
 
 if simuOptions['Debug'] != []:
-  for g in simuOptions['Debug']:
-    TurnOnDebugWithName(g)
+    for g in simuOptions['Debug']:
+        TurnOnDebugWithName(g)
+
+# seed rng() if necessay
+if not os.path.isfile('/etc/urandom') and not os.path.isfile('/etc/random'):
+    import time, random, sys
+    rng().setSeed(int(time.time() + random.randint(0, sys.maxint)) % sys.maxint)
 
 if not simuOptions['Quiet']:
-  print "simuPOP : Copyright (c) 2004-2006 Bo Peng"
-  # compile date, compiler etc are macros that are replaced during compile time.
-  print ("Version %s (Revision %d, %s) for Python %s" % (simuVer(), simuRev(), compileDate(),
-    compilePyVersion() ))
-  print compileCompiler()
-  print "Random Number Generator is set to %s with random seed %x" % (rng().name(), rng().seed())
-  # MaxAllele + 1 since 0 is one of the allelic states
-  print "This is the %s allele version with %d maximum allelic states." % (alleleType(), MaxAllele+1)
-  if optimized():
-    print "You are running in optimized mode at maximum speed."
-  else:
-    print "You are running in standard mode with strict boundary check etc."
-  print "For more information, please visit http://simupop.sourceforge.net,"
-  print "or email simupop-list@lists.sourceforge.net (subscription required)."
+    print "simuPOP : Copyright (c) 2004-2006 Bo Peng"
+    # compile date, compiler etc are macros that are replaced during compile time.
+    print ("Version %s (Revision %d, %s) for Python %s" % (simuVer(), simuRev(), compileDate(),
+        compilePyVersion() ))
+    print compileCompiler()
+    print "Random Number Generator is set to %s with random seed 0x%08x" % (rng().name(), rng().seed())
+    # MaxAllele + 1 since 0 is one of the allelic states
+    print "This is the %s allele version with %d maximum allelic states." % (alleleType(), MaxAllele+1)
+    if optimized():
+        print "You are running in optimized mode at maximum speed."
+    else:
+        print "You are running in standard mode with strict boundary check etc."
+    print "For more information, please visit http://simupop.sourceforge.net,"
+    print "or email simupop-list@lists.sourceforge.net (subscription required)."
 

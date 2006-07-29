@@ -454,7 +454,7 @@ namespace simuPOP
 						const BitSet& bs = bt.succ(0);
 
 						// initialize to avoid compiler complains
-						BoolResults::value_type dadPloidy=0, momPloidy=0;
+						int dadPloidy=0, momPloidy=0;
 						GenoIterator cd[2], cm[2], offd, offm;
 						cd[0] = dad->genoBegin(0);
 						cd[1] = dad->genoBegin(1);

@@ -1037,6 +1037,12 @@ namespace simuPOP
 			{
 				return m_seed;
 			}
+
+			void setSeed(unsigned int seed)
+			{
+				m_seed = seed;
+				setRNG(name(), m_seed);
+			}
 			
 			unsigned int generateRandomSeed();
 			

@@ -1896,7 +1896,11 @@ T Expression::valueAs##TypeName() \
 		// time
 		unsigned int seed;
 		FILE *devrandom;
-		if ((devrandom = fopen("/dev/random", "r")) != NULL) {
+		if ((devrandom = fopen("/dev/urandom", "r")) != NULL) {
+			fread(&seed, sizeof(seed), 1, devrandom);
+			fclose(devrandom);
+		}
+		else if ((devrandom = fopen("/dev/random", "r")) != NULL) {
 			fread(&seed, sizeof(seed), 1, devrandom);
 			fclose(devrandom);
 		}
