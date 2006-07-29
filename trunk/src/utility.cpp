@@ -1889,12 +1889,12 @@ T Expression::valueAs##TypeName() \
 		gsl_rng_free(m_RNG);
 	}
 
-	unsigned int RNG::generateRandomSeed()
+	unsigned long RNG::generateRandomSeed()
 	{
 		// now, I need to work hard to get a good seed, considering 
 		// the use of clusters, and several jobs may be started at the same
 		// time
-		unsigned int seed;
+		unsigned long seed;
 		FILE *devrandom;
 		if ((devrandom = fopen("/dev/urandom", "r")) != NULL) {
 			fread(&seed, sizeof(seed), 1, devrandom);
@@ -1908,7 +1908,7 @@ T Expression::valueAs##TypeName() \
 		{	
 			// this is not the best method, but I am out of ideas
 			// of portable ways to add some other noises
-			seed = static_cast<unsigned int>(time(NULL));
+			seed = static_cast<unsigned long>(time(NULL));
 		}
 		return seed;		
 	}
