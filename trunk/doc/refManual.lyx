@@ -15757,19 +15757,28 @@ preview false
 \end_layout
 
 \begin_layout Standard
-Since simuPOP 0.7.1, RNGs are seeded from 
-\family typewriter
-/dev/random 
-\family default
-if this device is available.
- The seed can also be retrieved using rng().seed() function, which should
- be saved for serious simulations.
+Since simuPOP 0.7.1, RNGs are seeded in the following order:
+\end_layout
+
+\begin_layout Itemize
+use random number from /dev/urandom if it is available
+\end_layout
+
+\begin_layout Itemize
+use random number from /dev/random if it is available
+\end_layout
+
+\begin_layout Itemize
+use python expression (random.randint(0, sys.maxint) + int(time.time())) %
+ sys.maxint .
+ This method is used only when simuPOP is first loaded so if you are going
+ to set random number generator by youself, the relevant code in simuPOP.py
+ is recommended.
 \end_layout
 
 \begin_layout Standard
-Under the systems such as windows where no /dev/random is available, system
- time is used.
- Suggestions are welcome.
+The seed can also be retrieved using rng().seed() function, which should
+ be saved for serious simulations.
 \end_layout
 
 \begin_layout Section
