@@ -52,13 +52,7 @@ if simuOptions['Debug'] != []:
 # seed rng() if necessay
 if not os.path.isfile('/etc/urandom') and not os.path.isfile('/etc/random'):
     import time, random, sys
-    # potential overflow error to C/unsigned int
-    try:
-        # 31 bit
-        rng().setSeed(int(time.time() + random.randint(0, sys.maxint)) % 0x8FFFFFFF)
-    except:
-        # 15 bit
-        rng().setSeed(int(time.time() + random.randint(0, sys.maxint)) % 0x8FFF)
+    rng().setSeed(int(time.time() + random.randint(0, rng().maxSeed())) % rng().maxSeed())
 
 if not simuOptions['Quiet']:
     print "simuPOP : Copyright (c) 2004-2006 Bo Peng"

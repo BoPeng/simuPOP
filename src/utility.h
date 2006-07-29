@@ -1033,20 +1033,25 @@ namespace simuPOP
 				return gsl_rng_name(m_RNG);
 			}
 
-			unsigned int seed()
+			unsigned long seed()
 			{
 				return m_seed;
 			}
 
-			void setSeed(unsigned int seed)
+			unsigned long maxSeed()
+			{
+				return std::numeric_limits<unsigned long>::max();
+			}
+
+			void setSeed(unsigned long seed)
 			{
 				m_seed = seed;
 				setRNG(name(), m_seed);
 			}
 			
-			unsigned int generateRandomSeed();
+			unsigned long generateRandomSeed();
 			
-			unsigned long int max()
+			unsigned long max()
 			{
 				return gsl_rng_max(m_RNG);
 			}
@@ -1139,7 +1144,7 @@ namespace simuPOP
 			gsl_rng * m_RNG;
 
 			/// seed used
-			unsigned int m_seed;
+			unsigned long m_seed;
 	};
 
 	// weighted sampling using Walker's alias algorithm
