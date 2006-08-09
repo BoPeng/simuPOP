@@ -46,6 +46,33 @@ class TestRNG(unittest.TestCase):
     # output stuff
     setLogOutput()
     os.remove('session.log')
+
+	def testBernulliTrials(self):
+		'Testing bernullitrials'
+		rg = rng()
+		p = [0.00001, 0.001, 0.5, 0.99]
+		N = 1000000
+		bt = BernulliTrials(rg, p, N)
+		bt.doTrial()
+		for i in range(len(p)):
+			prop = bt.succProp(i)
+			# binomial, mean p, variance = p(1-p)/n
+			std = math.sqrt(p[i]*(1.-p[i])/N)
+			assert  prop > p - 4*std and prop < p - 4*std
+
+	def testSeed(self):
+		'repeated set rng() without seed, and see if the seed repeat'
+		seed = []
+		for i in 1000:
+			SetRNG(ListAllRNG()[0])
+			sd = rng.seed()
+			assert sd not in seed
+			seed.append(sd)
+		# test set seed
+		for i in 1000:
+			SetRNG(ListAllRNG()[0], i)
+			self.assertEqual(rng().seed(), i)
+			
   
 if __name__ == '__main__':
   unittest.main()
