@@ -1388,6 +1388,11 @@ namespace simuPOP
 
 			/// return the succ rate for one index, used for verification pruposes
 			double succRate(UINT index);
+			
+			/// return the succ rate for current trial, used for verification pruposes
+			double trialRate();
+
+			/// CPPONLY
 
 			/// CPPONLY
 			vectorf probabilities()
