@@ -2135,7 +2135,12 @@ T Expression::valueAs##TypeName() \
 		{
 			// clear previous result
 			BitSet& succ = m_table[cl];
-			if( m_prob[cl] == 0.5)				  // random 0,1 bit, this will be quicker
+            double prob = m_prob[cl];
+            if(prob == 0.)
+            {
+                succ.reset();
+            }
+			else if( prob == 0.5)				  // random 0,1 bit, this will be quicker
 			{
 				// set to 0..
 				succ.reset();
@@ -2170,7 +2175,7 @@ T Expression::valueAs##TypeName() \
 				}
 			}
 			// algorithm i Sheldon Ross' book simulation (4ed), page 54
-			else if( m_prob[cl] < 0.5)
+			else if( prob < 0.5)
 			{
 				// set all to 0, then set some to 1
 				succ.reset();
@@ -2179,22 +2184,27 @@ T Expression::valueAs##TypeName() \
 				while( true )
 				{
 					// i moves at least one.
-					i += m_RNG->randGeometric(m_prob[cl]);
+					i += m_RNG->randGeometric(prob);
 					if ( i <= m_N ) 
 						succ.set(i-1);
 					else
 						break;
 				}
 			}
-			else // m_proc[cl] > 0.5
+            else if(prob == 1.)
+            {
+                succ.set();
+            }
+			else // 1 > m_proc[cl] > 0.5
 			{
 				// set all to 1, and then unset some.
 				succ.set();
 				// it may make sense to limit the use of this method to low p,
 				UINT i = 0;
+				prob = 1. - prob;
 				while( true )
 				{
-					i += m_RNG->randGeometric(m_prob[cl]);
+					i += m_RNG->randGeometric(prob);
 					if ( i <= m_N ) 
 						succ.reset(i-1);
 					else
@@ -2242,6 +2252,13 @@ T Expression::valueAs##TypeName() \
 		return m_table[index].count()/static_cast<double>(m_table[index].size());
 	}
 
+	double BernulliTrials::trialRate()
+	{
+		UINT count = 0;
+		for(size_t cl = 0, clEnd = m_prob.size(); cl < clEnd; ++cl)
+			count += m_table[cl][m_cur-1]?1:0;
+		return count/static_cast<double>(m_prob.size());
+	}
 	
 	/// random number generator. a global variable.
 	/// there might be multiple RNG later.
