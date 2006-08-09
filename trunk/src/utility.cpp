@@ -2135,9 +2135,10 @@ T Expression::valueAs##TypeName() \
 		{
 			// clear previous result
 			BitSet& succ = m_table[cl];
-			succ.reset();
 			if( m_prob[cl] == 0.5)				  // random 0,1 bit, this will be quicker
 			{
+				// set to 0..
+				succ.reset();
 				// treat a randInt as random bits and set them directly.
 				// I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
 				// first several blocks
@@ -2151,7 +2152,7 @@ T Expression::valueAs##TypeName() \
 					for(size_t b=0; b<sizeof(BitSet::block_type)/2; ++b) {
 						// blocks[i] = static_cast<int16_t>(rng().randGet());
 						tmp = rng().randInt(0xFFFF);
-		                blocks[i] |= (0xFFFF & tmp) << (b*16);
+		        blocks[i] |= (0xFFFF & tmp) << (b*16);
 					}
 				}
 				from_block_range(blocks.begin(), blocks.end(), succ);
@@ -2168,33 +2169,37 @@ T Expression::valueAs##TypeName() \
 						succ.set(numblock*BitSet::bits_per_block+i);
 				}
 			}
-			else if( m_N > 100)
+			// algorithm i Sheldon Ross' book simulation (4ed), page 54
+			else if( m_prob[cl] < 0.5)
 			{
+				// set all to 0, then set some to 1
+				succ.reset();
 				// it may make sense to limit the use of this method to low p,
-				// but it rurns out that this may be a good idea.
-				// number of success trials
-				// M should be 0...m_N
-				ULONG  M = m_RNG->randBinomial( m_N, m_prob[cl] );
-
-				ULONG loc;
-
-				// randomly choose events
-				for(UINT i=0; i<M; ++i)
+				UINT i = 0;
+				while( true )
 				{
-					// choose among [0,m_N)
-					do
-					{
-						loc = m_RNG->randInt(m_N);
-					}while( succ[loc] );
-					succ.set(loc);
+					// i moves at least one.
+					i += m_RNG->randGeometric(m_prob[cl]);
+					if ( i <= m_N ) 
+						succ.set(i-1);
+					else
+						break;
 				}
 			}
-			else								  // other cases, use the straight-forward method
-			{ 
-				double p = m_prob[cl];
-				for(UINT i = 0; i < m_N; ++i)
-					if( m_RNG->randUniform01() < p )
-						succ.set(i);
+			else // m_proc[cl] > 0.5
+			{
+				// set all to 1, and then unset some.
+				succ.set();
+				// it may make sense to limit the use of this method to low p,
+				UINT i = 0;
+				while( true )
+				{
+					i += m_RNG->randGeometric(m_prob[cl]);
+					if ( i <= m_N ) 
+						succ.reset(i-1);
+					else
+						break;
+				}
 			}
 		}
 		m_cur = 0;
