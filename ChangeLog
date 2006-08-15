@@ -4,13 +4,15 @@ NOTE: Daily snapshot reflects current SVN version. It includes new features and
   bug fixes, but may be less stable than versioned releases.
 
 BUG:
-  - All known bugs have been updated
+  - All known bugs have been fixed.
 
-version 0.7.1 
+version 0.7.2 -
+
+version 0.7.1 - (Rev 378) - Aug 14, 2006
   - BUG: Fix a bug in backward trajectory simulation
   - CHG: change the release/snapsot generating process
   - NEW: add script/simuCluster.py which assists submission of jobs on cluster
-	machines.
+		machines.
   - BUG: fix a random number generator bug on 64 bit machines.
   - NEW: random number seed is generated in a much better way, and is
 		retrievable.
