@@ -82,6 +82,7 @@ def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
                         geno.append( arr[ gs*i + p*tl +loc] )
     return geno
 
+
 def _listVars(var, level=-1, name='', subPop=True, indent=0, curLevel=0):
     ''' called by listVars. Will list variables recursively'''
     if type(var) == type( dw({}) ):
@@ -142,6 +143,7 @@ def _listVars(var, level=-1, name='', subPop=True, indent=0, curLevel=0):
             print ']'
         else:
             print ' '*indent, var
+
 
 def ListVars(var, level=-1, name='', subPop=True, useWxPython=True):
     ''' 
@@ -226,6 +228,7 @@ def LinearExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bott
             return [int(tot/numSubPop)]*numSubPop
     return func
 
+
 def ExponentialExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
     ''' Exponentially expand population size from intiSize to endSize
         after burnin, split the population at generation split.
@@ -271,6 +274,7 @@ def InstantExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bot
             return [int(tot/numSubPop)]*numSubPop        
     return func
 
+
 # for internal use only
 def testDemoFunc(end, func):
     g = range(end)
@@ -278,6 +282,7 @@ def testDemoFunc(end, func):
             max( [ sum(func(x)) for x in g])]
     r.plot(g, [sum(func(x)) for x in g], ylim=rng, type='l', xlab='gen', ylab='subPopSize(0)')
     r.lines(g, [func(x)[0] for x in g], type='l', xlab='gen', ylab='subPopSize(0)', lty=2)
+
 
 # migration rate matrix generators
 def migrIslandRates(r, n):
@@ -353,6 +358,7 @@ def tab(output=">", outputExpr="", **kwargs):
     # print cmd
     return eval(cmd)
 
+
 def endl(output=">", outputExpr="", **kwargs):
     parm = ''    
     for (k,v) in kwargs.items():
@@ -367,8 +373,7 @@ def endl(output=">", outputExpr="", **kwargs):
 # used by varPlotters
 class dataAggregator:
     """
-    collect variables so that plotters can
-    plot them all at once
+    collect variables so that plotters can plot them all at once
 
     You can of course put it in other uses
 
@@ -387,9 +392,9 @@ class dataAggregator:
         a.ready()    # if all column has the same length, so data is ready
         
     Internal data storage:
-        self.gen        [ .... ]
-        self.data     column1 [ ...... ]
-                                column2 [ ...... ]
+        self.gen    [ .... ]
+        self.data   column1 [ ...... ]
+                    column2 [ ...... ]
                                 .......
     each record is pushed at the end of 
     """ 
@@ -516,7 +521,6 @@ class dataAggregator:
                     raise exceptions.ValueError("Appending data with wrong idx")
 
 
-
 # data collector
 #
 def CollectValue(pop, gen, expr, name):
@@ -525,6 +529,7 @@ def CollectValue(pop, gen, expr, name):
     if not d.has_key(name):
         d[name] = {}
     d[name][gen] = value
+
 
 # wrapper
 def collector(name, expr, **kwargs):
@@ -541,7 +546,8 @@ def collector(name, expr, **kwargs):
         % ( parm, expr, name) 
     #print opt
     return eval(opt)
-    
+
+
 # save file in FSTAT format     
 def SaveFstat(pop, output='', outputExpr='', maxAllele=0):
     if output != '':
@@ -600,6 +606,7 @@ def SaveFstat(pop, output='', outputExpr='', maxAllele=0):
             f.write( "\n")
     f.close()    
 
+
 # operator version of the function SaveFstat
 def saveFstat(output='', outputExpr='', **kwargs):
     # deal with additional arguments
@@ -617,6 +624,7 @@ def saveFstat(output='', outputExpr='', **kwargs):
 
 # used to parse name
 import re
+
 
 # load population from fstat file 'file'
 # since fstat does not have chromosome structure
@@ -737,7 +745,6 @@ def LoadGCData(file, loci=[]):
             popGT[2*gs*ind + gs + al] = int(gt[ind][al*2+3])
     return pop
 
-
 #        
 def SaveLinkage(pop, chrom, popType='sibpair', output='', outputExpr='', alleleFreq=[], 
      recombination=0.00001, penetrance=[0,0.25,0.5], exclude=[], pre=True, daf=0.001):
@@ -806,7 +813,8 @@ def SaveLinkage(pop, chrom, popType='sibpair', output='', outputExpr='', alleleF
 0 0 0 0 << mutsys, mutmale, mutfemale, disequil
 '''    % (len(markers)+1) )
     # order of loci, allegro does not welcome comments after this line.
-    dataFile.write( ' '.join( [str(m+1) for m in range(len(markers))]) + "\n")
+    # we need one more than the number of markers (including disease marker)
+    dataFile.write( ' '.join( [str(m+1) for m in range(len(markers) + 1)]) + "\n")
     # describe affected status
     dataFile.write( "1 2 << affection status code, number of alleles\n")
     dataFile.write( "%f %f << gene frequency\n" % ( 1-daf, daf) )
@@ -987,6 +995,7 @@ def SaveLinkage(pop, chrom, popType='sibpair', output='', outputExpr='', alleleF
     # close all files
     pedFile.close()    
 
+
 # operator version of saveLinkage
 def saveLinkage(output='', outputExpr='', **kwargs):
     "An operator to save population in linkage format"
@@ -1002,7 +1011,6 @@ def saveLinkage(output='', outputExpr='', **kwargs):
         outputExpr=r"""%s""" )\'\'\')''' % ( parm, output, outputExpr) 
     # print opt
     return eval(opt)
-
 
 
 def SaveCSV(pop, output='', outputExpr='', exclude=[], **kwargs):
@@ -1210,7 +1218,8 @@ def LoadCSV(file):
     pop.pushAndDiscard(offPop)
     pop.setMaxAllele(maxAllele)    
     return pop
-    
+
+
 def trajFunc(endingGen, traj):
     ''' return freq at each generation from a 
         simulated trajctories. '''
@@ -1398,6 +1407,159 @@ def FreqTrajectoryMultiStochWithSubPop(
         trajAll[i].extend(traj[i][1:])    
     # how exactly should I return a trajectory?
     return (trajAll, [curGen-len(x)+1 for x in trajAll ], trajFuncWithSubPop)
+
+
+def TDT_gh(file, loci=[]):
+    ''' 
+    Analyze data using genehunter/TDT. Note that this function may not work under 
+    platforms other than linux, and may not work with your version of genehunter.
+    As a matter of fact, it is almost unrelated to simuPOP and is provided only
+    as an example how to use python to analyze data.
+    
+    Parameters:
+        file: file to analyze. This function will look for file.dat and file.pre 
+            in linkage format.
+        loci: a list of loci at which p-value will be returned. If the list is empty,
+            all p-values are returned.
+        gh: name (or full path) of genehunter executable. Default to 'gh'
+
+    Return value:
+        A list (for each chromosome) of list (for each locus) of p-values.
+    '''
+    if not os.path.isfile(file + '.dat') or not os.path.isfile(file + '.pre'):
+        print 'Data (%s.dat) or pedigree (%s.pre) file does not exist' % (file, file)
+        sys.exit(2)
+    # open the pipe for gh
+    fin, fout = os.popen2(gh)
+    # write to fin
+    print >> fin, 'load markers %s.dat' % file
+    print >> fin, 'tdt %s.pre' % file
+    print >> fin, 'q'
+    fin.close()
+    # read output 
+    # get only loc number and p-value
+    scan = re.compile('loc(\d+)\s+- Allele \d+\s+\d+\s+\d+\s+[\d.]+\s+([\d.]+)\s*.*')
+    minPvalue = {}
+    for l in fout.readlines():
+        try:
+            # get minimal p-value for all alleles at each locus
+            # GH output: (for 20 markers)
+            # marker loc1  <- locus 0
+            # ...
+            # marker loc19 <- locus 18
+            # 
+            (loc, pvalue) = scan.match(l).groups()
+            idx = int(loc) - 1
+            pvalue = float(pvalue)
+            if not minPvalue.has_key(idx):
+                minPvalue[idx] = pvalue
+            elif minPvalue[idx] > pvalue:
+                minPvalue[idx] = pvalue
+        except:
+            # does not match
+            continue
+    fout.close()
+    if loci == []:
+        # dict to list
+        return [minPvalue[x] for x in range(len(minPvalue))]
+    else:
+        return [minPvalue[x] for x in loci]
+
+
+def LOD_gh(file, loci=[], gh='gh'):
+    ''' 
+    Analyze data using the linkage method of genehunter. Note that this function may not 
+    work under platforms other than linux, and may not work with your version of 
+    genehunter. As a matter of fact, it is almost unrelated to simuPOP and is provided 
+    only as an example how to use python to analyze data.
+
+    Parameters:
+        file: file to analyze. This function will look for file.dat and file.pre 
+            in linkage format.
+        loci: a list of loci at which p-value will be returned. If the list is empty,
+            all p-values are returned.
+        gh: name (or full path) of genehunter executable. Default to 'gh'
+
+    Return value:
+        A list (for each chromosome) of list (for each locus) of p-values.    
+    '''
+    if not os.path.isfile(file + '.dat') or not os.path.isfile(file + '.pre'):
+        print 'Data (%s.dat) or pedigree (%s.pre) file does not exist' % (file, file)
+        sys.exit(2)
+    # open the pipe for gh
+    fin, fout = os.popen2(gh)
+    # write to fin
+    print >> fin, 'load markers %s.dat' % file
+    print >> fin, 'single point on'
+    print >> fin, 'scan pedigrees %s.pre' % file
+    print >> fin, 'photo tmp.txt'
+    print >> fin, 'total stat'
+    print >> fin, 'q'
+    fin.close()
+    # read output 
+    # get only loc number and p-value
+    scan = re.compile('loc(\d+)\s+[^\s]+\s+[^\s]+\s+([^\s]+)\s*.*')
+    minPvalue = {}
+    start = 0
+    for l in fout.readlines():
+        if "Totalling pedigrees:" in l:
+            start = 1
+        if not start:
+            continue
+        try:
+            # get minimal p-value for all alleles at each locus
+            (loc, pvalue) = scan.match(l).groups()
+            #print loc, pvalue
+            minPvalue[int(loc)-1] = float(pvalue)
+        except:
+            # does not match
+            continue
+    fout.close()
+    if loci == []:
+        # dict to list
+        return [minPvalue[x] for x in range(len(minPvalue))]
+    else:
+        return [minPvalue[x] for x in loci]
+
+
+
+def ChiSq_test(pop, loci=[]):
+    ''' perform case control test at loci 
+
+    Parameters;
+        pop: population in simuPOP format. This function assumes that pop has two 
+            subpopulations, cases and controls, and have 0 as wildtype and 1 as 
+            disease allele. pop can also be an loaded population object.
+        loci: At loci to return p-value. Can be empty.
+        
+    Return value:
+        A list of p-value at each locus.
+
+    Note: this function requires rpy module.
+    '''
+    # 
+    if type(pop) == type(''):
+        pop = LoadPopulation(pop)
+    # at each locus
+    pvalue = []
+    if loci == []:
+        loci = range(pop.totNumLoci())
+    for ch in range(len(loci)):
+        p = []
+        for locus in loci[ch]:
+            # allele frequency
+            loc = pop.absLocusIndex(ch, locus)
+            Stat(pop, alleleFreq=[loc])
+            caseNum = pop.dvars(0).alleleNum[loc]
+            if len(caseNum) == 1:
+                caseNum.append(0)
+            contNum = pop.dvars(1).alleleNum[loc]
+            if len(contNum) == 1:
+                contNum.append(0)
+            p.append(r.chisq_test( r.matrix( caseNum+contNum, ncol=2) )['p.value'])
+        # get p-values using R's x2 function
+        pvalue.append(p)
+    return pvalue
 
 
 if __name__ == "__main__":
