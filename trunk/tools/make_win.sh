@@ -13,7 +13,7 @@
 
 
 # start vm
-vmrun start /vmware/winXPPro/Windows\ XP\ Professional.vmx
+vmrun start /vmware/WinXPPro/Windows\ XP\ Professional.vmx
 sleep 30
 
 VER=`cat /var/www/html/simuPOP/download/latestversion`
