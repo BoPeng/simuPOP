@@ -1,0 +1,3141 @@
+#LyX 1.4.2svn created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass manual
+\begin_preamble
+\usepackage{graphicx}
+\usepackage{epsfig}
+
+\floatname{algorithm}{Example}
+
+\renewcommand{\py@ptsize}{12pt}
+
+\setreleaseinfo{Release 0.7.0 (\mbox{$$Rev$$})}
+\authoraddress{
+{\bf Department of Statistics, Rice University}\\
+{\bf Email: }{\textsf bpeng@rice.edu}\\
+{\bf URL: }{\textsf http://simupop.sourceforge.net} \\
+{\bf Mailing List: }{\textsf simupop-list@lists.sourceforge.net}
+}
+\author{Bo Peng}
+\date{December 2004\\
+\hfill{}\\
+Last modified \\
+\today }
+
+\ifhtml
+\chapter*{Front Matter\label{front}}
+\fi
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme default
+\graphics default
+\float_placement h
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\cite_engine natbib_authoryear
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes true
+\end_header
+
+\begin_body
+
+\begin_layout Title
+s
+\begin_inset Formula $ $
+\end_inset
+
+imuPOP User's Guide
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "c"
+hor_pos "c"
+has_inner_box 1
+inner_pos "c"
+use_parbox 0
+width "100col%"
+special "none"
+height "1pt"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+hspace{1cm}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+vspace{5in}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+{
+\backslash
+large
+\backslash
+textsf Acknowledgements: }
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+vspace{.2cm}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Dr.
+ Marek Kimmel
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Dr.
+ Fran
+\backslash
+c cois Balloux
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Dr.
+ William Amos
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} SWIG user community
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Python user community 
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Keck Center for Computational and Structural Biology
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+vspace{.7in} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+ 
+\backslash
+copyright{} 
+\end_layout
+
+\end_inset
+
+ 2004-2006 Bo Peng 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+vspace{.3cm} 
+\backslash
+hrule 
+\backslash
+vspace{0.1cm} 
+\end_layout
+
+\end_inset
+
+Permission is granted to make and distribute verbatim copies of this manual
+ provided the copyright notice and this permission notice are preserved
+ on all copies.
+ Permission is granted to copy and distribute modified versions of this
+ manual under the conditions for verbatim copying, provided also that the
+ sections entitled Copying and GNU General Public License are included exactly
+ as in the original, and provided that the entire resulting derived work
+ is distributed under the terms of a permission notice identical to this
+ one.
+ Permission is granted to copy and distribute translations of this manual
+ into another language, under the above conditions for modified versions,
+ except that this permission notice may be stated in a translation approved
+ by the Free Software Foundation.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+simuPOP is a forward-time population genetics simulation environment.
+ Unlike coalescent-based programs, simuPOP evolves populations forward in
+ time, subject to arbitrary number of genetic and environmental forces such
+ as mutation, recombination, migration and population/subpopulation size
+ changes.
+ Statistics of populations can be calculated and visualized dynamically
+ which makes simuPOP an ideal tool to demonstrate population genetics models;
+ generate datasets under various evolutionary settings, and more importantly,
+ study complex evolutionary processes and evaluate gene mapping methods.
+\end_layout
+
+\begin_layout Abstract
+simuPOP can be used at two levels.
+ The core of simuPOP is a scripting language (Python) that provides a large
+ number of building blocks (populations, mating schemes, various genetic
+ forces in the form of functions, operators, simulators and gene mapping
+ methods) to construct a simulation.
+ This provides a R/S-Plus or Matlab-like environment where users can interactive
+ly create, manipulate and evolve populations; monitor and visualize population
+ statistics and apply gene mapping methods.
+ The full power of simuPOP and Python (even R) can be utilized to simulate
+ arbitrarily complex evolutionary scenarios.
+\end_layout
+
+\begin_layout Abstract
+simuPOP also comes with an increasing number of pre-defined simulation scenarios.
+ If one of them happens to fit your need, all you need to do is running
+ the script file with appropriate parameters.
+ No knowledge of Python or simuPOP is required.
+ To make simuPOP readily usable for time-limited users, users of simuPOP
+ are strongly encouraged to submit their simulations to this collection.
+ 
+\end_layout
+
+\begin_layout Abstract
+This user's guide covers the basic usage of simuPOP, including installation,
+ basic usage, brief introduction to built-in scripts, and how to write simuPOP
+ scripts.
+ Detailed information about simuPOP components, functions and operators
+ is available in the 
+\emph on
+simuPOP Reference Manual.
+
+\emph default
+ All resources, including a pdf version of this guide and a discussion forum
+ can be found at the simuPOP homepage 
+\family typewriter
+http://simupop.sourceforge.net
+\family default
+.
+\end_layout
+
+\begin_layout Abstract
+
+\series bold
+How to cite simuPOP: 
+\end_layout
+
+\begin_deeper
+\begin_layout Quote
+Bo Peng and Marek Kimmal (2005) simuPOP: a forward-time population genetics
+ simulation environment.
+
+\emph on
+ bioinformatics
+\emph default
+, 
+\series bold
+21
+\series default
+(18): 3686-3687
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Introduction
+\end_layout
+
+\begin_layout Section
+What is simuPOP?
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+simuPOP
+\family default
+ is a forward-time population genetics simulation environment.
+ Unlike coalescent-based simulation programs, simuPOP evolves population(s)
+ forward in time, subject to arbitrary number of genetic and environmental
+ forces (mutation, recombination, migration, population size change etc.).
+ simuPOP allows users to control every aspects of the evolutionary process
+ and observe the details at each generation.
+ For example, users can start with a population of identical individuals,
+ manually introduce a mutant and observe the spread of this mutant in the
+ population from generation to generation.
+ Population substructure, recombination, migration, selection etc can be
+ added to the simulation as needed.
+ 
+\end_layout
+
+\begin_layout Standard
+simuPOP consists of a number of Python objects and functions, including
+ populations that store and provide access to individual genotypes; mating
+ schemes that determine how populations evolve to the next generation; operators
+ that manipulate populations and calculate population statistics; simulators
+ that coordinate the evolution process and functions that perform tasks
+ ranging from saving/loading populations to doing gene mapping.
+ It is user's responsibility to write a Python script to glue these pieces
+ together and form a simulation.
+ Since these modules are mostly independent to each other, it is easy to
+ add additional operators to an existing simulation.
+ There is no limit on the number of operators, and thus no limit on the
+ complexity of a simulation.
+\end_layout
+
+\begin_layout Standard
+simuPOP does not aim at any specific result or outcome.
+ It is more like a workshop, where users use various components and tools
+ to assemble a simulation and study its properties.
+ Just like any such programming environments such as R/Splus and Matlab,
+ users will have to learn how to use the environment (various Python IDE)
+ and how to program in this language (Python and the simuPOP module).
+ A graphic user interface of simuPOP is planned but its usefulness is in
+ doubt (just like the R/GUI) and will not be available any time soon.
+ 
+\end_layout
+
+\begin_layout Standard
+On the other hand, simuPOP also has an increasing number of built-in scripts.
+ These script are written in simuPOP/Python language and can be used without
+ knowing their underlying machanisim.
+ It is strongly recommended that users of simuPOP submit their own scripts
+ to his collection and make simuPOP more and more accessible to time-limited
+ users.
+ 
+\end_layout
+
+\begin_layout Standard
+As a summary, simuPOP is suitable for the following applications:
+\end_layout
+
+\begin_layout Itemize
+Teaching tool for population genetic courses.
+ Compared to other existing programs, the biggest advantage of simuPOP is
+ its flexibility.
+ There is no limit on the complexity of the simulation and students can
+ change the script and try new things (such as viewing another statistics
+ or adding another genetic force) at will.
+\end_layout
+
+\begin_layout Itemize
+Observe the dynamics of population evolution.
+ This is where the power of simuPOP lies and is where coalescent-based simulatio
+ns frown.
+ Coalescent, by its nature, focus only on samples, and ignore genealogy
+ information that are irrelevant to the final sample.
+ It is therefore impractical to trace the population properties of ancestral
+ populations.
+ Forward-based simulation does not have this problem, at a cost of performance.
+\end_layout
+
+\begin_layout Itemize
+Generating samples that can be analyzed by other programs.
+ This area is dominated by coalescent-based methods, but the facts that
+ coalescent-based methods can not simulate complex (non-additive) selection
+ or penetrance models and supports, at least till now, only one disease
+ susceptibility locus, make it unsutable to simulate the evolution of complex
+ human diseases.
+ A simuPOP script simuComplexDisease.py provides a powerful alternative.
+\end_layout
+
+\begin_layout Section
+Features
+\end_layout
+
+\begin_layout Standard
+Currently, simuPOP provides the following features:
+\end_layout
+
+\begin_layout Itemize
+Population with one-level subpopulation structure.
+ (no explicit family structure) There is no limit on ploidy, number of chromosom
+es, number of loci and population size.
+ (depends on available RAM).
+ Sex chromosomes can be modeled.
+\end_layout
+
+\begin_layout Itemize
+Allele can be short (<255 allelic states), long (at least 
+\begin_inset Formula $2^{32}$
+\end_inset
+
+ allelic states) or binary (0 or 1).
+ Binary alleles are stored as bits so a large number of SNP markers can
+ be simulated.
+\end_layout
+
+\begin_layout Itemize
+A population can hold arbitrary number of ancestral generations (default
+ to none) for easy pedigree analysis.
+ 
+\end_layout
+
+\begin_layout Itemize
+Population/subpopulation sizes can be changed during mating.
+ Subpopulations can be created/changed as a result of migration.
+ 
+\end_layout
+
+\begin_layout Itemize
+Several replicates of populations can be evolved simultaneously.
+ 
+\end_layout
+
+\begin_layout Itemize
+Mating schemes include random mating, binomial selection etc.
+ Number of offsprings per mating can be constant, or follow a random distributio
+n.
+\end_layout
+
+\begin_layout Itemize
+Populations can be saved and loaded in text, binary, XML, Fstat, GC formats.
+ Methods to deal with other formats are provided.
+ 
+\end_layout
+
+\begin_layout Itemize
+Simulation can be paused, saved and resumed easily.
+\end_layout
+
+\begin_layout Itemize
+Easy developing/debugging using Python interactive shell, or run in batch
+ as python scripts.
+\end_layout
+
+\begin_layout Itemize
+A wide variety of operators are provided.
+ They can act on the populations at selected generations, at different stages
+ of a life-cycle, on different replicate or replicate group.
+ 
+\end_layout
+
+\begin_layout Itemize
+Built-in operators for arbitrary migration model.
+ 
+\end_layout
+
+\begin_layout Itemize
+Operators for 
+\begin_inset Formula $k$
+\end_inset
+
+-allele, stepwise and generalized stepwise mutation models.
+ Hybrid operators can be used for more complicated mutation models.
+\end_layout
+
+\begin_layout Itemize
+Support uniform or non-uniform (differ-by-loci) recombinations.
+ Male/female individuals can have different recombination rates/intensities.
+ 
+\end_layout
+
+\begin_layout Itemize
+Support many single-locus selection model and multiplicative/additive multi-loci
+ selection models.
+ Hybrid operator is provided for arbitrary selection model.
+\end_layout
+
+\begin_layout Itemize
+Built-in support for allele, genotype, heterozygote, haplotype number/frequency
+ calculation.
+ As well as some more complicated statistics like 
+\begin_inset Formula $F_{st}$
+\end_inset
+
+.
+ Other statistics can be calculated from these basic statistics.
+\end_layout
+
+\begin_layout Itemize
+Has support for plotting through Python/SciPY, Python/MatPlotLib or RPy
+ (use R through Python).
+ R/Rpy is recommended.
+ 
+\end_layout
+
+\begin_layout Itemize
+Operators to calculate quantitative trait, penetrance and draw samples from
+ current population.
+\end_layout
+
+\begin_layout Itemize
+Built-in ascertainment methods including case/control, affected sibpair,
+ random sample.
+\end_layout
+
+\begin_layout Itemize
+Maybe most importantly: 
+\emph on
+a complete and detailed reference manual!
+\end_layout
+
+\begin_layout Section
+Availability
+\end_layout
+
+\begin_layout Standard
+Binary libraries of 
+\family typewriter
+simuPOP
+\family default
+ are provided for linux, windows, solaris and mac systems.
+ Source code and development documentations are also available for easy
+ porting to other platforms.
+ Both source code and binaries can be distributed free-of-charge under GPL
+ license.
+ All resources, including a pdf version of this manual and a discussion
+ forum can be found at the simuPOP homepage.
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Section
+Naming Conventions
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+simuPOP
+\family default
+ follows the following naming conventions.
+\end_layout
+
+\begin_layout Itemize
+Classes (objects), member functions and parameter names start with small
+ character and use capital character for the first character of each word
+ afterwards.
+ For example
+\end_layout
+
+\begin_layout LyX-Code
+population, population::subPopSize(), individual::setInfo()
+\end_layout
+
+\begin_layout Itemize
+Standalone functions start with capital character.
+ This is how you can differ an operator from its function version.
+ For example, 
+\family typewriter
+initByFreq
+\family default
+ is an operator and
+\family typewriter
+ InitByFreq(pop, vars)
+\family default
+ is its function version (equivalent to 
+\family typewriter
+initByFreq(vars).apply(pop)
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Constants start with Capital characters.
+ For example
+\end_layout
+
+\begin_layout LyX-Code
+MigrByProportion, StatNumOfFemale
+\end_layout
+
+\begin_layout Itemize
+The following words in function names are abbreviated:
+\end_layout
+
+\begin_layout LyX-Code
+dist (distance),  info (information), migr (migration), subPop (subpopulation),
+ 
+\newline
+(rep) replicate, gen (generation), grp (group(s)), ops (operators), 
+\newline
+expr
+ (expression), stmts (statements) 
+\end_layout
+
+\begin_layout Section
+How to read this manual
+\end_layout
+
+\begin_layout Standard
+There are a lot of functions/operators in simuPOP and there is no reason
+ you should memorize all of them.
+ (I admit that I can not.) If you are a first time simuPOP user, my suggestion
+ is that you read through this manual quickly only to get the big picture
+ of how simuPOP works and what simuPOP can do.
+ Then, if you decide to write some simulations, you should
+\end_layout
+
+\begin_layout Itemize
+Read some examples under 
+\family typewriter
+scripts 
+\family default
+directory.
+ From easy to difficult, you can read 
+\family typewriter
+simuLDDecay.py, simuCDCV.py 
+\family default
+and 
+\family typewriter
+simuComplexDisease.py.
+ 
+\end_layout
+
+\begin_layout Itemize
+Copy one of the scripts as a template and modify it.
+ For whatever function/operator you need, read the relevant sections in
+ detail.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Chapter
+Installing simuPOP
+\end_layout
+
+\begin_layout Section
+Installing simuPOP
+\end_layout
+
+\begin_layout Standard
+Compiled libraries for Linux (RHEL4 and Mandriva), windows XP, Solaris and
+ MacOSX are provided.
+ In most cases, you will only need to download simuPOP and follow the usual
+ installation process of your platform.
+ For example, if you use a windows system and have Python 2.3.3 installed,
+ you should download 
+\family typewriter
+simupop-x.x.x-py23-win32.exe
+\family default
+.
+ Double clike the 
+\family typewriter
+.exe 
+\family default
+file to install.
+ 
+\end_layout
+
+\begin_layout Standard
+Things can get complicated when you have an earlier/later versions of OS
+ or Python and have to compile simuPOP from source.
+ The 
+\family typewriter
+installation
+\family default
+ section of simuPOP homepage will have detailed instruction on it.
+ (A single command 
+\family typewriter
+python setup.py instal
+\family default
+ will usually suffice.) 
+\end_layout
+
+\begin_layout Standard
+Python has a large number of modules.
+ For simple tasks like dataset generation, simuPOP modules alone are enough.
+ However, it is highly recommended that you install 
+\end_layout
+
+\begin_layout Itemize
+R and python module rpy: although other ploting modules/methods can be used,
+ simuPOP mainly uses R for this purpose.
+ The advantage of this method is that R is not only an excellent plotting
+ tool, but also a widely used statistical analysis package.
+ It also has some genetic packages that can be used to analyze simuPOP generated
+ datasets.
+\end_layout
+
+\begin_layout Itemize
+wxPython: By default, simuPOP uses Tkinter to get parameters (the parameter
+ dialog).
+ It will use wxPython automatically if wxPython is available.
+ This will enable a bunch of other GUI improvements including a nicer version
+ of 
+\family typewriter
+listVars() 
+\family default
+function.
+ 
+\end_layout
+
+\begin_layout Section
+Starting simuPOP
+\end_layout
+
+\begin_layout Standard
+After installation, you will have the following files and directories (use
+ windows as an example)
+\end_layout
+
+\begin_layout Itemize
+Many 
+\family typewriter
+simuXXX.py
+\family default
+ files under 
+\family typewriter
+c:
+\backslash
+python23
+\backslash
+Lib
+\backslash
+site-packages
+\family default
+.
+ These are simuPOP modules.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+c:
+\backslash
+python23
+\backslash
+share
+\backslash
+simuPOP
+\backslash
+doc
+\family default
+: docmentations in pdf format.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+c:
+\backslash
+python23
+\backslash
+share
+\backslash
+simuPOP
+\backslash
+test: 
+\family default
+all unit test cases.
+ You can run run_tests.py to test if your simuPOP installation is correct.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+c:
+\backslash
+python23
+\backslash
+share
+\backslash
+simuPOP
+\backslash
+scripts
+\series bold
+\emph on
+:
+\emph default
+ 
+\family default
+\series default
+This directory has all the built-in scripts.
+\end_layout
+
+\begin_layout Standard
+You should be able to load simuPOP library by running command 
+\family typewriter
+import simuPOP 
+\family default
+(example 
+\begin_inset LatexCommand \ref{alg:Import-simuPOP-module}
+
+\end_inset
+
+) from python interactive shell.
+ From the initial output, you can see the version (and revision number)
+ of simuPOP, type of module, random number generator, etc.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{alg:Import-simuPOP-module}
+
+\end_inset
+
+Import simuPOP module
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/importSimuPOP.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In case that you do not have administrative previledge, you may not be able
+ to install simuPOP to the system python directory.
+ In this case, you can install simuPOP locally and load simuPOP as shown
+ in example 
+\begin_inset LatexCommand \ref{alg:Import-simuPOP-module-add-path}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{alg:Import-simuPOP-module-add-path}
+
+\end_inset
+
+Import locally installed simuPOP module
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/addSysPath.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+simuPOP libraries
+\end_layout
+
+\begin_layout Standard
+simuPOP is composed of six libraries: stdandard short, long and binary alleles,
+ plus their optimized counterparts.
+ The short libraries use 1 byte to store each allele which limits the possible
+ allele states to 256.
+ This is enough most of the times but not so if you need to simulate models
+ like the infinite allele model.
+ In those cases, you should use the long allele version of the modules.
+ Long allele libraries use at least 4 bytes for each allele and can have
+ 
+\begin_inset Formula $2^{32}$
+\end_inset
+
+ possible allele states.
+ On the other hand, if you would like to simulate a large number of binary
+ (SNP) markers, binary libraries can save you a lot of RAM.
+ Due to the additional cost of accessing alleles as bits, binary modules
+ will be around 10% slower than other libraries.
+ 
+\end_layout
+
+\begin_layout Standard
+Standard libraries have detailed debug and run-time validation mechanisum
+ to make sure the simulations run correctly.
+ Whenever something unusual is detected, simuPOP would terminate with detailed
+ error messages.
+ The cost of such run-time cheching varies from simulation to simulation
+ but can be high under some extreme circumstances.
+ Because of this, optimized versions for all libraries are provided.
+ They bypass all parameter checking and run-time validations and will simply
+ crash if things go wrong.
+ It is recommended that you use standard libraries whenever possible and
+ only use the optimized version when performance if needed and you are confidenc
+e that your simulation is running as expected.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+set options through simuOpt
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/importSimuPOPOpt.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can control the choice of modules in the following ways:
+\end_layout
+
+\begin_layout Itemize
+Set environment variable 
+\family typewriter
+SIMUALLELETYPE
+\family default
+ to be 'short', 'long' or 'binary', or 
+\family typewriter
+SIMUOPTIMIZED
+\family default
+ to use the optimized modules.
+ The default module is the standard short module.
+\end_layout
+
+\begin_layout Itemize
+Before you load simuPOP, set options using 
+\family typewriter
+simuOpt.setOptions(optimized, alleleType, quiet, debug)
+\family default
+.
+ 
+\family typewriter
+alleleType
+\family default
+ can be 
+\family typewriter
+short, long 
+\family default
+or 
+\family typewriter
+binary.
+
+\family default
+ 
+\family typewriter
+quiet
+\family default
+ means suppress initial output, and 
+\family typewriter
+debug
+\family default
+ should be a list of debug options specified by listDebugCode().
+\end_layout
+
+\begin_layout Itemize
+If you are running a simuPOP script that conforms to simuPOP convension,
+ you should be able to use optimized library using command line option 
+\family typewriter
+--optimized
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Chapter
+simuPOP components
+\end_layout
+
+\begin_layout Standard
+The core of simuPOP is a scripting language based on the Python programming
+ language/environment.
+ Like any other python module, you can start a python session, import simuPOP
+ module, create and evolve populations interactively.
+ Or, you can create a python script and run it as a batch file.
+ 
+\end_layout
+
+\begin_layout Standard
+In this chapter, I will briefly explain each component and demonstrate them
+ with an simple example.
+ Detailed info about each components is given in the simuPOP reference manual.
+\end_layout
+
+\begin_layout Section
+Important simuPOP concepts
+\end_layout
+
+\begin_layout Standard
+simuPOP consists of the following components.
+ It is important that you know what they are and how they are related.
+ In this chapter, I will briefly explain each component and explain each
+ of them in detail.
+\end_layout
+
+\begin_layout Description
+individual
+\begin_inset LatexCommand \index{individual}
+
+\end_inset
+
+ individuals are building blocks of populations.
+ Each individual has its own genotype (chromosomes and loci), sex, disease
+ status and some other auxiliary information.
+\end_layout
+
+\begin_layout Description
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+genotypic structure
+\end_layout
+
+\end_inset
+
+
+\begin_inset LatexCommand \index{genotype structure}
+
+\end_inset
+
+ refers to the number of chromosomes, number and location of loci on each
+ chromosome, name of alleles, maximum number of alleles.
+ Individuals in the same population must have the same genotypic structure.
+\end_layout
+
+\begin_layout Description
+population
+\begin_inset LatexCommand \index{population}
+
+\end_inset
+
+ collection of individuals of the same type (genotypic structure) with subpopula
+tion structure.
+ A population object is associated with some variables that store population
+ statistics calculated by operators.
+\end_layout
+
+\begin_layout Description
+variables are associated with populations.
+ They are dynamically generated by operators and can be accessed from Python
+ namespace.
+ This is how users obtain population statistics during evolution.
+\end_layout
+
+\begin_layout Description
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+Mating scheme 
+\end_layout
+
+\end_inset
+
+ how individuals are chosen and mated during evolution.
+ 
+\end_layout
+
+\begin_layout Description
+operator
+\begin_inset LatexCommand \index{operator}
+
+\end_inset
+
+ operators are objects that manipulate populations.
+ They can apply genetic forces like mutation, recombination, migration to
+ populations, calculate population statistics, plot dynamics of variables,
+ save populations or terminate simulation conditionally.
+ Operators can be
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+built-in: 
+\family default
+written in C++, fastest.
+ They do not interact with Python shell except that some of them set variables
+ that are accessible from Python.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+hybrid
+\begin_inset LatexCommand \index{hybrid}
+
+\end_inset
+
+:
+\family default
+ written in C++ but calls python functions during execution.
+ For example, a hybrid mutator 
+\family typewriter
+pyMutator 
+\family default
+will determine if an allele will be mutated and call a user-defined Python
+ function to mutate it.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pure python:
+\family default
+ written in python.
+ For example, a 
+\family typewriter
+varPlotter
+\family default
+ operator can plot python variables that are set by other operators.
+\end_layout
+
+\begin_layout Description
+simulator
+\begin_inset LatexCommand \index{simulator}
+
+\end_inset
+
+ simulator manage several replicates of 
+\emph on
+populations
+\emph default
+ and evolve them in a way specified by a
+\emph on
+ mating scheme
+\emph default
+ generation by generation, subject to arbitrary number/kinds of 
+\emph on
+operators
+\emph default
+.
+ There is nothing stops you from evolving an population manually but simulator
+ simplifies this process a lot.
+\end_layout
+
+\begin_layout Description
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+expression and statement
+\end_layout
+
+\end_inset
+
+ are python expression
+\begin_inset LatexCommand \index{expression}
+
+\end_inset
+
+ and statement
+\begin_inset LatexCommand \index{statement}
+
+\end_inset
+
+.
+ They are widely used in 
+\family typewriter
+simuPOP
+\family default
+ to specify dynamic parameters, calculate statistics etc.
+ 
+\end_layout
+
+\begin_layout Section
+A simple example
+\begin_inset LatexCommand \label{sec:A-Simple-Example}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let us demonstrate these concepts through a simple example.
+ The following is a log file of an interactive Python session.
+ User input text after the 
+\family typewriter
+>>>
+\family default
+ prompt and Python will intepret and run your command interactively.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{alg:A-simple-example}
+
+\end_inset
+
+A simple example
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/simpleExample.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This example demonstrates the dynamics of linkage disequilibrium when recombinat
+ion is in effect.
+\end_layout
+
+\begin_layout Itemize
+The 
+\family typewriter
+import
+\family default
+ line import simuPOP module (output suppressed).
+ 
+\family typewriter
+simuRPy 
+\family default
+defines a pure-python operator 
+\family typewriter
+varPlotter
+\family default
+ that plot given variable using R.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simulator 
+\family default
+creates a simulator from a population created by the 
+\family typewriter
+population 
+\family default
+function.
+ The population is diploid (
+\family typewriter
+ploidy=2
+\family default
+), has 1000 individuals (
+\family typewriter
+size=1000
+\family default
+) each has two loci on the first chromosome (
+\family typewriter
+loci=[2]
+\family default
+).
+ The simulator has three copies of this population (
+\family typewriter
+rep=3
+\family default
+) and will evolve through random mating (
+\family typewriter
+randomMating()
+\family default
+).
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simu.evolve
+\family default
+ evolves these populations subject to the following operators.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+preop=[initByValue]
+\family default
+: operators in parameter 
+\family typewriter
+preop 
+\family default
+(accept a list of operators) will be applied to the populations at the beginning
+ of evolution.
+ 
+\family typewriter
+initByValue
+\family default
+ is an 
+\family typewriter
+initializer 
+\family default
+that set the same genotype to all individuals.
+ In this case, everyone will have
+\family typewriter
+ 
+\family default
+genotype
+\family typewriter
+ 12/21
+\family default
+ (
+\family typewriter
+1 2 
+\family default
+on the first chromosome and 
+\family typewriter
+2 1
+\family default
+ on the second copy of the chromosome) so linkage disequilibrium is 0.25
+ (maximum possible value).
+\end_layout
+
+\begin_layout Itemize
+operators in 
+\family typewriter
+ops 
+\family default
+parameter will be applied to all populations at each generation.
+ (Not exactly, operators can be inactive at certain generations.)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+recombinator 
+\family default
+is a
+\emph on
+ during-mating operator
+\family typewriter
+\emph default
+ 
+\family default
+that recombine chromosomes with probability 0.1 (an unrealistically high
+ value) during mating.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+stat 
+\family default
+is a 
+\emph on
+post-mating 
+\emph default
+operator.
+ Parameter
+\emph on
+ 
+\family typewriter
+\emph default
+LD=[0,1]
+\family default
+ tells the operator to calculate the linkage disequilibrium between locus
+ 0 and 1 (note the 0 index of loci).
+ When this operator is applied to a population, it will calcuate the LD
+ for the population and store the result in the population's local variable
+ namespace.
+
+\emph on
+ 
+\emph default
+For this specific case, variables LD, LD_prime and R2 will be set.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+varPlotter
+\family default
+ is a pure python operator that plot variable 
+\family typewriter
+LD[0][1]
+\family default
+ for each replicate of the populations.
+ Title, labels on the 
+\begin_inset Formula $x$
+\end_inset
+
+, 
+\begin_inset Formula $y$
+\end_inset
+
+ axis, and a wealth of other options can be set.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pyEval 
+\family default
+accepts any python expression, evaluate it in each replicates' local namespace
+ and return the result.
+ In this example, 
+\family typewriter
+pyEval 
+\family default
+get the value of 
+\family typewriter
+gen
+\family default
+ (generation number), 
+\family typewriter
+LD[0][1] 
+\family default
+and print them.
+ Note the we use 
+\family typewriter
+rep 
+\family default
+parameter to let operators apply to first (
+\family typewriter
+rep=0
+\family default
+), last (
+\family typewriter
+rep=REP_LAST
+\family default
+) or all (no 
+\family typewriter
+rep
+\family default
+) replicates and result in a table.
+ We also use step=25 to apply these operators at 25 generations interval.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+end=100:
+\family default
+ evolve 100 generations (actually 0 - 100, 101 generations).
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+r.dev_print
+\family default
+: is a direct call to the rpy module.
+ This line saves the figure to a file ld/LDdecay.eps.
+ Note that 
+\family typewriter
+'.' 
+\family default
+in R function names need to be replaced by 
+\family typewriter
+'_'
+\family default
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+The output is a table of LD values of each replicate at 0, 25, 50, 57 and
+ 100 generations, as well as a figure at generation 100 (figure ).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+LD decay example: saved figure at generation 100
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename log/LDdecay.pdf
+	lyxscale 20
+	width 6in
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All simuPOP scripts will have similar steps.
+ You can add more operators to the 
+\family typewriter
+ops 
+\family default
+list to build more complicated simulations.
+ Obvious choices are 
+\family typewriter
+mutator
+\family default
+, 
+\family typewriter
+migrator
+\family default
+, or some proper visualizer to plot the dynamics of variables.
+\end_layout
+
+\begin_layout Section
+Genotype structure
+\end_layout
+
+\begin_layout Standard
+Genotypic structure refers to the number of copies of basic number of chromosome
+s
+\family typewriter
+, 
+\family default
+number of chromosomes, existence of sex chromosome, number of loci on each
+ chromosome, locus location on chromosome and allele names.
+ It presents the common genetic configureation for all the individuals in
+ a population.
+ Note that loci are usually accessed by their absolute index regardless
+ of chromosome structure.
+\end_layout
+
+\begin_layout Standard
+Individuals in the same population share the same genotypic structure.
+ Consequently, 
+\emph on
+genotypic information can be retrieved from individual, population and simulator
+\emph default
+ (consists of populations with the same genotypic structure)
+\emph on
+ level
+\emph default
+.
+ Although there are a number of genotype structure related function (see
+ reference manual for details), you seldom need to use them directly.
+ 
+\end_layout
+
+\begin_layout Section
+Population
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+population
+\begin_inset LatexCommand \index{population}
+
+\end_inset
+
+
+\family default
+ objects are essential to simuPOP.
+ They are composed of subpopulations each with certain number of individuals,
+ all have the same genotypic structure.
+ A population can store arbitrary number of ancestral populations to facilitate
+ pedigree analysis.
+\end_layout
+
+\begin_layout Standard
+simuPOP uses one-level population structure.
+ That is to say, there is no sub-subpopulation or families in subpopulations.
+ Mating is within subpopulations only.
+ Exchange of genetic information across subpopulations can only be done
+ through migration.
+ Population and subpopulation sizes can be changed, as a result of mating
+ or migration.
+\end_layout
+
+\begin_layout Standard
+A very important feature of this population object is that you can store
+ many generations of the population in a single population object.
+ You can choose to store all or a limited number of generations during evolution.
+ In the latter case, the olddest generation will be removed if a new genertion
+ is pushed in and the number of stored generations has exceeded the specified
+ level.
+\end_layout
+
+\begin_layout Standard
+simuPOP provides a large number of population related functions, they are
+ used to
+\end_layout
+
+\begin_layout Itemize
+access genotype structure
+\end_layout
+
+\begin_layout Itemize
+access invididuals and their genotypes
+\end_layout
+
+\begin_layout Itemize
+manipulate subpopulations
+\end_layout
+
+\begin_layout Itemize
+access ancestral generations
+\end_layout
+
+\begin_layout Itemize
+manipulate genotype
+\end_layout
+
+\begin_layout Itemize
+sample (subset) from the population
+\end_layout
+
+\begin_layout Itemize
+access population variables
+\end_layout
+
+\begin_layout Itemize
+save/load populations in various formats
+\end_layout
+
+\begin_layout Standard
+Again, you usually do not need to use these functions explicitly unless
+ you need to write pure python functions/operators that involves complicated
+ manipulation of populations.
+\end_layout
+
+\begin_layout Section
+\begin_inset LatexCommand \label{sub:Individuals}
+
+\end_inset
+
+Individuals
+\end_layout
+
+\begin_layout Standard
+Individuals can not be created without population.
+ You can create a population and access its individuals through the 
+\family typewriter
+individual
+\begin_inset LatexCommand \index{population!individual}
+
+\end_inset
+
+()
+\family default
+ function.
+ The returned 
+\family typewriter
+individual 
+\family default
+object has its own member functions, with which you can 
+\end_layout
+
+\begin_layout Itemize
+access genotype structure
+\end_layout
+
+\begin_layout Itemize
+retrieve/set genotype
+\end_layout
+
+\begin_layout Itemize
+retrieve/set sex, affected status and some other auxiliary information
+\end_layout
+
+\begin_layout Section
+\begin_inset LatexCommand \label{sub:Population-Variables}
+
+\end_inset
+
+Population Variables
+\end_layout
+
+\begin_layout Standard
+Populations are associated with python variables.
+ These variables are usually set by various operators.
+ For example, 
+\family typewriter
+stat
+\begin_inset LatexCommand \index{operator!stat}
+
+\end_inset
+
+
+\family default
+ operator calculates many population statistics and store results in population
+ namespace.
+ However, you can also make use of this mechanisum to pass parameters, store
+ variables etc.
+ The interface functions are 
+\family typewriter
+population::vars
+\begin_inset LatexCommand \index{population!vars}
+
+\end_inset
+
+() 
+\family default
+and 
+\family typewriter
+population::
+\begin_inset LatexCommand \index{population!population}
+
+\end_inset
+
+dvars() 
+\family default
+function.
+ They are identical except that 
+\family typewriter
+vars()
+\family default
+ returns a python dictionary and 
+\family typewriter
+dvars()
+\family default
+ returns a wrapper class so that you can access this dictionary as attributes.
+ For example, 
+\family typewriter
+pop.vars()['alleleFreq'][0] is the same as pop.dvars().alleleFreq[0]
+\family default
+.
+ To have a look at all associated variables with a population, you can print
+ pop.vars(), or better pass 
+\family typewriter
+pop.vars() 
+\family default
+to a function 
+\family typewriter
+ListVars()
+\family default
+.
+ A nice GUI will be used if wxPython is installed.
+\end_layout
+
+\begin_layout Standard
+It is important to know that this dictionary forms a local namespace in
+ which experssions can be evaluated.
+ As we can see from example 
+\begin_inset LatexCommand \ref{alg:A-simple-example}
+
+\end_inset
+
+, the same expression 
+\family typewriter
+``'%f ' % LD[0][1]'' 
+\family default
+can be evaluated in each population's local namespace and yield different
+ results.
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout Section
+Mating Scheme
+\begin_inset LatexCommand \index{mating scheme}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Mating schemes specify how to generate offspring from the current population.
+ It must be provided when a simulator is created.
+ Mating can perform the following tasks:
+\end_layout
+
+\begin_layout Itemize
+change population/subpopulation sizes.
+ This is where demographic models are handled in simuPOP.
+ There are a few methods to control population sizes.
+ The most flexible one is through a user-provided function that returns
+ population (subpopulation) sizes at each generation.
+\end_layout
+
+\begin_layout Itemize
+Randomly choose parent(s) to generate offsprings to fill the next generation.
+ The number of offspring per mating event can be controlled.
+ This can be a fixed number (default to 1), or a random number following
+ one of geometric, poisson or binomial distribution.
+\end_layout
+
+\begin_layout Itemize
+During-mating operators are applied to all offsprings.
+ The most commonly used during mating operator is a recombinator that can
+ recombine parental chromosomes and form offspring genotype.
+\end_layout
+
+\begin_layout Itemize
+Apply selection if applicable.
+ If individual fitness are given (usually returned by a selector operator),
+ a mating scheme will choose an individual to mate, according to its relative
+ fitness.
+\end_layout
+
+\begin_layout Standard
+A few mating schemes are available, among which 
+\family typewriter
+randomMating()
+\family default
+ is the most important.
+\end_layout
+
+\begin_layout Section
+Operators
+\end_layout
+
+\begin_layout Standard
+Operators are objects that act on populations.
+ They (there are exceptions) can be applied to populations directly, but
+ most of the time they are managed and applied by a simulator.
+ There are three kinds of operators:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+built-in:
+\emph default
+ written in C++, fastest.
+ They do not interact with Python shell except that some of them set variables
+ that are accessible from Python.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+hybrid
+\emph default
+
+\begin_inset LatexCommand \index{hybrid}
+
+\end_inset
+
+: written in C++ but calls python function when execution.
+ Less efficient.
+ For example, a hybrid mutator 
+\family typewriter
+pyMutator 
+\family default
+will determine if an allele will be mutated and call a user--defined Python
+ function to mutate it.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+pure python
+\emph default
+: written in python.
+ Same speed as python.
+ For example, a 
+\family typewriter
+varPlotter
+\begin_inset LatexCommand \index{varPlotter}
+
+\end_inset
+
+
+\family default
+ can plot python variables that are set by other operators.
+\end_layout
+
+\begin_layout Standard
+You do not have to know the type of an operator to use them.
+ The interface of them are all the same.
+ Namely, the all except a standard set of parameters, and are used in the
+ same fashion.
+ Such parameters include 
+\family typewriter
+rep, grp, begin, step, end
+\family default
+ and 
+\family typewriter
+at
+\family default
+.
+ The first two indicate that the operator only applies to one or a group
+ of replciates, and the rest control which generation(s) the operator will
+ be applied to.
+ There are also parameters that redirect operator output to files.
+ For details please refer to the reference manual.
+\end_layout
+
+\begin_layout Standard
+A simuPOP life cycle (each generation) can be divided into pre-mating, during-ma
+ting and post-mating and an operator can be applied to one or more of them.
+ For example, a 
+\family typewriter
+stat
+\family default
+ operator usually applies post-mating, but if you prefer, you can change
+ its 
+\family typewriter
+stage
+\family default
+ parameter to 
+\family typewriter
+preMating 
+\family default
+and apply it pre-mating.
+\end_layout
+
+\begin_layout Section
+Simulator
+\end_layout
+
+\begin_layout Standard
+Simulators combine three important components of simuPOP: population, mating
+ scheme and operators together.
+ A simulator is usually created with an instance of population, a replicate
+ number and a mating scheme.
+ It makes '
+\family typewriter
+rep
+\family default
+' replicates of this population and control the evolution process of these
+ populations.
+\end_layout
+
+\begin_layout Standard
+The most important function of a simulator is 
+\family typewriter
+evolve()
+\family default
+.
+ It accepts arrays of operators as its parameters, among which, '
+\family typewriter
+preOps
+\family default
+
+\begin_inset LatexCommand \index{simulato!preOps}
+
+\end_inset
+
+' and '
+\family typewriter
+postOps
+\family default
+
+\begin_inset LatexCommand \index{simulator!postOps}
+
+\end_inset
+
+' will be applied to the populations at the begining/end of evolution, whereas
+ '
+\family typewriter
+ops
+\family default
+' will be applied at every generation.
+ Of course, a simulator will probe and respect each operator's 
+\family typewriter
+rep, grp, begin, end, step, at, stage
+\family default
+ properties and act accordingly.
+ 
+\end_layout
+
+\begin_layout Chapter
+Programming simuPOP
+\end_layout
+
+\begin_layout Section
+conventions of simuPOP scripts
+\end_layout
+
+\begin_layout Standard
+Although you can treat simuPOP as a regular python module and use it in
+ whatever way you have got used to, all bundled simuPOP scripts follow the
+ same set of conventions.
+ If you follow the style guid, your simuPOP script should be able to 
+\end_layout
+
+\begin_layout Itemize
+use a dialog to input parameters (when tkinter or wxPython is installed)
+\end_layout
+
+\begin_layout Itemize
+use -h or --help to view help information and description of options 
+\end_layout
+
+\begin_layout Itemize
+use 
+\family typewriter
+--noDialog 
+\family default
+to suppress parameter dialog and input parameters through short or long
+ command line arguments, a configuration file, or input when being prompted.
+ A default value will be used if you press enter directly.
+\end_layout
+
+\begin_layout Itemize
+be able to save currently used parameters into a configuration file (
+\family typewriter
+--saveConfig
+\family default
+) and reuse it through (
+\family typewriter
+-c
+\family default
+ or
+\family typewriter
+ --config
+\family default
+ option)
+\end_layout
+
+\begin_layout Standard
+Let us look at one example 
+\family typewriter
+simuLDDecay.py
+\family default
+ closely.
+ This is one of the scripts located in 
+\family typewriter
+c:
+\backslash
+python
+\backslash
+share
+\backslash
+simuPOP
+\backslash
+scripts
+\backslash
+
+\family default
+.
+ You can run this script as follows:
+\end_layout
+
+\begin_layout Itemize
+use command '
+\family typewriter
+simuLDDecay.py
+\family default
+' or double click the program
+\end_layout
+
+\begin_layout Itemize
+click the help button on the dialog, or run 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+> simuLDDecay.py -h
+\end_layout
+
+\begin_layout Standard
+to view help information.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+enter parameters in a parameter dialog, or use short or long command arguments
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+> simuLDDecay.py -s 500 -e 10 --recRate 0.1 --numRep 5 --noDialog
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+use the optimized module by
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+> simuLDDecay.py --optimized
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+save the parameters to a config file
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+> simuLDDecay.py --quiet -s 500 -e 10 --saveConfig decay.cfg
+\end_layout
+
+\begin_layout Standard
+this will result in a config file 
+\family typewriter
+decay.cfg
+\family default
+ with these parameters.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+and of course use
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+> simuLDDecay.py --config decay.cfg
+\end_layout
+
+\begin_layout Standard
+to load parameters from the config file.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Structure of simuPOP scripts
+\end_layout
+
+\begin_layout Standard
+To achieve all the above, you need to write your scripts in the following
+ order:
+\end_layout
+
+\begin_layout Enumerate
+First line:
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+#!/usr/bin/env python
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Write the introduction of the whole script in a module-wise doc string.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+'''
+\end_layout
+
+\begin_layout LyX-Code
+This script will ....
+\end_layout
+
+\begin_layout LyX-Code
+'''
+\end_layout
+
+\begin_layout Standard
+These comments can be accessed as module 
+\family typewriter
+__doc__ 
+\family default
+and will be displayed as help message.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Define an option data structure.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+options = [ 
+\end_layout
+
+\begin_layout LyX-Code
+...
+ a dictionary of all user input parameters ...
+\end_layout
+
+\begin_layout LyX-Code
+]
+\end_layout
+
+\begin_layout Standard
+These parameters will be handled by simuPOP automatically.
+ Users will be able to set them through command line, configuration file,
+ Tkinter- or wxPython-based GUI.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Optional auxillary functions
+\end_layout
+
+\begin_layout Enumerate
+Optional main evolution function
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+def simulation(....)
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Executable part:
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+if __name__ == '__main__':  
+\end_layout
+
+\begin_layout LyX-Code
+  allParam = simuOpt.getParam(options,
+\end_layout
+
+\begin_layout LyX-Code
+    ''' A short description ''', __doc__)
+\end_layout
+
+\begin_layout LyX-Code
+  # if user press cancel,
+\end_layout
+
+\begin_layout LyX-Code
+  if len(allParam) == 0:
+\end_layout
+
+\begin_layout LyX-Code
+    sys.exit(1)
+\end_layout
+
+\begin_layout LyX-Code
+  # -h or --help
+\end_layout
+
+\begin_layout LyX-Code
+  if allParam[0]:  
+\end_layout
+
+\begin_layout LyX-Code
+    print simuOpt.usage(options, __doc__)
+\end_layout
+
+\begin_layout LyX-Code
+    sys.exit(0)
+\end_layout
+
+\begin_layout LyX-Code
+  # sace configuration, something like
+\end_layout
+
+\begin_layout LyX-Code
+  if allParam[-2] != None:
+\end_layout
+
+\begin_layout LyX-Code
+     simuOpt.saveConfig(options, allParam[-2]+'.cfg', allParam)  
+\end_layout
+
+\begin_layout LyX-Code
+  # get the parameters, something like
+\end_layout
+
+\begin_layout LyX-Code
+  N = allParam[1]
+\end_layout
+
+\begin_layout LyX-Code
+  # run the simulation
+\end_layout
+
+\begin_layout LyX-Code
+  simulation(N) 
+\end_layout
+
+\begin_layout LyX-Code
+  
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+You will notice that 
+\family typewriter
+simuOpt 
+\family default
+does all the housekeeping things for you, including parameter reading, conversio
+n, validation, print usage, save configuration file.
+ Since most of the parts are pretty standard, you can actually copy any
+ of the scripts under the 
+\family typewriter
+scripts 
+\family default
+directory as a template for your new script.
+ For a complete reference of the Options structure, please refer to the
+ reference manual.
+\end_layout
+
+\begin_layout Section
+Using simuPOP operators
+\end_layout
+
+\begin_layout Standard
+simuPOP is large, consisting of more than 80 operators and various functions
+ that covers all important aspects of genetic studies.
+ These includes mutation (
+\emph on
+k
+\emph default
+-allele, stepwise, generalized stepwise), migration (arbitrary, can create
+ new subpopulation), recombination (uniform or nonuniform), quantitative
+ trait, selection, penetrance (single or multi-locus, hybrid), ascertainment
+ (case-control, affected sibpairs, random), statistics calculation (allele,
+ genotype, haplotype, heterozygote number and frequency; expected heterozygosity
+; bi-allelic and multi-allelic 
+\begin_inset Formula $D$
+\end_inset
+
+, 
+\begin_inset Formula $D'$
+\end_inset
+
+ and 
+\begin_inset Formula $r^{2}$
+\end_inset
+
+ linkage disequilibrium measures; 
+\begin_inset Formula $F_{st}$
+\end_inset
+
+, 
+\begin_inset Formula $F_{it}$
+\end_inset
+
+ and 
+\begin_inset Formula $F_{is}$
+\end_inset
+
+); pedigree tracing, visualization (using R or other Python modules), load/save
+ in text, XML, Fstat or Linkage format.
+ Each of these operators accept a number of parameters that allow it to
+ be applied at any given stage of a life-cycle, at any generation and so
+ on.
+ 
+\end_layout
+
+\begin_layout Subsection
+Use of hybrid opertor
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:hybrid-operator}
+
+\end_inset
+
+An example of hybrid operators
+\end_layout
+
+\begin_layout Standard
+def myPenetrance(geno):
+\end_layout
+
+\begin_layout Standard
+  'return penetrance given genotype at spcified disease loci'
+\end_layout
+
+\begin_layout Standard
+  if geno.count(1) < 3:
+\end_layout
+
+\begin_layout Standard
+    return 0.
+\end_layout
+
+\begin_layout Standard
+  else:
+\end_layout
+
+\begin_layout Standard
+    return 1-(1-(geno[0]+geno[1])*0.25)* 
+\backslash
+
+\end_layout
+
+\begin_layout Standard
+      (1-(geno[2]+geno[3])*0.25)*(1-(geno[4]+geno[5])*0.25)
+\end_layout
+
+\begin_layout Standard
+# now, use this function in a hybrid operator as follows
+\end_layout
+
+\begin_layout Standard
+pyPenetrance( atLoci=[10,20,30], func=myPenetrance)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Despite the large number of built-in operators, it is obviously not possible
+ to implement every genetics models available.
+ For example, although simuPOP provides several penetrance models, a user
+ may want to try a customized one.
+ In this case, one can use a simuPOP feature called 
+\emph on
+hybrid operator
+\emph default
+.
+ Such operators accept a Python function and will call this function with
+ appropriate parameter(s) when needed.
+ For example, Algorithm 
+\begin_inset LatexCommand \ref{cap:hybrid-operator}
+
+\end_inset
+
+ defines a three-locus heterogeneity penetrance model 
+\begin_inset LatexCommand \citep{Risch1990}
+
+\end_inset
+
+ that yields positive penetrance only when at least two disease susceptibility
+ alleles are available.
+ The underlying mechanism of this operator is that for each individual,
+ simuPOP will collect genotype at specified loci (
+\family typewriter
+atLoci
+\family default
+) and send them to function 
+\family typewriter
+myPenetrance
+\family default
+ and evaluate.
+ The return value will be used as the penetrance value of the individual.
+ 
+\end_layout
+
+\begin_layout Subsection
+Use of pure python operator
+\end_layout
+
+\begin_layout Standard
+If hybrid operators are still not flexible enough, it is possible to write
+ operators in Python.
+ Such operators will have full access to the evolving population, and can
+ therefore perform arbitrary operations to it.
+ For example, one can define a frequency-dependent selection operator (see
+ Algorithm 
+\begin_inset LatexCommand \ref{cap:pyOpeartor}
+
+\end_inset
+
+) that have different selection pressures depending on current disease allele
+ frequency.
+ Of course, to use such operators, one should have a deeper understanding
+ of simuPOP.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:pyOpeartor}
+
+\end_inset
+
+A frequency dependent selection operator
+\end_layout
+
+\begin_layout Standard
+def freqDependSelector(pop):
+\end_layout
+
+\begin_layout Standard
+  ''' This selector will try to control disease allele
+\end_layout
+
+\begin_layout Standard
+  frequency by applying advantage/purifying selection 
+\end_layout
+
+\begin_layout Standard
+  to DSL according to allele frequency at each DSL.
+ '''
+\end_layout
+
+\begin_layout Standard
+  # parameters are stored with population
+\end_layout
+
+\begin_layout Standard
+  DSL = pop.dvars().DSL
+\end_layout
+
+\begin_layout Standard
+  # Calculate allele frequency
+\end_layout
+
+\begin_layout Standard
+  Stat(pop, alleleFreq=[DSL])
+\end_layout
+
+\begin_layout Standard
+  # apply advantage/purifying selection accordingly
+\end_layout
+
+\begin_layout Standard
+  if 1-pop.dvars().alleleFreq[DSL][1] < pop.dvars().minAlleleFreq:
+\end_layout
+
+\begin_layout Standard
+    MaSelector(pop, locus=DSL, fitness=[1,1.5,2])
+\end_layout
+
+\begin_layout Standard
+  elif 1-pop.dvars().alleleFreq[DSL][1] > pop.dvars().maxAlleleFreq:
+\end_layout
+
+\begin_layout Standard
+    MaSelector(pop, locus=DSL, fitness=[1,0.9,0.8])
+\end_layout
+
+\begin_layout Standard
+  return True
+\end_layout
+
+\begin_layout Standard
+#
+\end_layout
+
+\begin_layout Standard
+# Then, use this operator like
+\end_layout
+
+\begin_layout Standard
+pyOperator(func=freqDependSelector, begin=100, end=200)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Some Real Examples
+\end_layout
+
+\begin_layout Section
+Decay of Linkage Disequilibrium
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/expLD.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hopefully, the program is not too difficult to understand.
+ 
+\end_layout
+
+\begin_layout Section
+Recombinator, Mutator, Migrator ...
+\end_layout
+
+\begin_layout Standard
+Here is an example when all genetic forces are in effect:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/expcomplex.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Complex Migration Scheme
+\end_layout
+
+\begin_layout Standard
+The following is a demonstration of dynamic population number/size change.
+ Based on the same idea, we can simulate very complicated models like the
+ 'out of africa' model.
+ Here is what this model does:
+\end_layout
+
+\begin_layout Itemize
+There are 6 cities along a line.
+\end_layout
+
+\begin_layout Itemize
+Migration happens only between adjacent cities at a rate of 0.1 (0.05 each
+ if there are two adjacent cities).
+\end_layout
+
+\begin_layout Itemize
+Population size at each city will grow by a factor of 1.2 each time.
+ But when the subpopulation size exceeds 1000, starvation :-) will cut the
+ subpop size by half.
+\end_layout
+
+\begin_layout Itemize
+Initially, everyone is in the 3th city.
+\end_layout
+
+\begin_layout Standard
+The following script describe the rules almost literally:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/expmigration.log}
+preview false
+
+\end_inset
+
+and you can see the change of population number/sizes clearly.
+\end_layout
+
+\begin_layout Standard
+It should not be difficult to add recombinator, selectors to this model.
+ Tracing the spreading of genetic diseases should also be possible, but
+ this is out of the scope of this user's guide.
+\end_layout
+
+\begin_layout Section
+Association Mapping with Genomic Control
+\end_layout
+
+\begin_layout Standard
+This example demonstrates how to generate SNP datasets and analyze them
+ using genomic control method.
+ 
+\begin_inset LatexCommand \citep{Devlin1999,Devlin2001}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are several other applications that can generate SNP datasets (e.g.
+ SNPsim 
+\begin_inset LatexCommand \citet{Posada2003}
+
+\end_inset
+
+).
+ These methods are coalescent based and can simulate datasets under certain
+ mutation and recombination models.
+ It would be easy to generate datasets using these applications but simuPOP
+ has the following advantages:
+\end_layout
+
+\begin_layout Itemize
+simuPOP can keep track of details of ancestral generations so it is possible
+ to perform various analysis multiple times.
+ For example, you can trace the formation of haplotype blocks or test the
+ power of association method as a function of generation.
+\end_layout
+
+\begin_layout Itemize
+simuPOP can simulate selection and many other complicated scenarios.
+ It is easy to add more genetic forces and observe their impact on your
+ study.
+\end_layout
+
+\begin_layout Subsection
+Genotypic structure and Initial Population (incomplete)
+\end_layout
+
+\begin_layout Standard
+For SNP datasets, we can simulate loci with two (1/2) or four (A/C/T/G)
+ allelic states.
+ Since we will have at most 2 alleleic states at each locus and it does
+ not matter exactly what two states a lcous has, the first one makes more
+ sense.
+ If you would like to simulate four allelic states, you will have to use
+ the 
+\family typewriter
+states 
+\family default
+option of mutators so that alleles will mutate back and force in these states.
+ 
+\end_layout
+
+\begin_layout Standard
+This example will initialize the population with genotype of a single individual.
+ Linkage disequlibrium is at its highest at first and will break down with
+ time.
+ Note that we need to make sure initial individuals are heterozygous at
+ disease susceptibility locus so LD will exist between this locus and others.
+\end_layout
+
+\begin_layout Subsection
+Mutation model
+\end_layout
+
+\begin_layout Standard
+Coalescent based applications usually use 'infiite-site model
+\begin_inset LatexCommand \index{mutation!infinite site model'}
+
+\end_inset
+
+' to perform mutation.
+ In such simulations, once a mutation happens on the coalescent tree, it
+ will definitely be passed to the final generation.
+ This makes infinite-site model very appealing both in theory and in practics.
+ However, in a forward-based simulation, a mutation may get lost very quickly
+ so what is 'infinite-site' becomes unclear.
+ There is also no sensible choice how to implement this model: 'mutation
+ will not happen at a site that has been mutated before' does not make sense
+ in biolody!
+\end_layout
+
+\begin_layout Standard
+To avoid these troubles, I choose a Juke-Cantor model 
+\begin_inset LatexCommand \citet{Jukes1969}
+
+\end_inset
+
+ (essentially a K-allele model) with two allelic states.
+ I.e., allele 1 and 2 will mutate to each other with equal probability.
+ 
+\end_layout
+
+\begin_layout Subsection
+Recombination
+\end_layout
+
+\begin_layout Standard
+Uniform recombination with rate 0.0001 will be used.
+ Although non-uniform recombination can be applied easily.
+ (Use the array form of parameter 
+\family typewriter
+rate
+\family default
+.)
+\end_layout
+
+\begin_layout Section
+Does rapid population growth lead to common disease/common variant in human
+ population?
+\end_layout
+
+\begin_layout Standard
+Reich and Lander's 2001 paper ``On the allelic spectrum of human disease''
+ ( Trends in Genetics, 17(0):502-510) proposed a population genetics framework
+ to model the evolution of allelic spectra.
+ The model is based on the fact that human population grew quickly from
+ around 10,000 to 6 billion in 18,000 -150,000 years.
+ His analysis showed that at the founder population, both common and rare
+ diseases have simple spectra.
+ After the sudden expansion of population size, the allelic spectra of simple
+ diseases become complex; while those of complex diseases remained simple.
+\end_layout
+
+\begin_layout Standard
+I will use simuPOP to simulate this evolution process and observe the allelic
+ spectra of both diseases.
+\end_layout
+
+\begin_layout Subsection
+Population expansion
+\end_layout
+
+\begin_layout Standard
+The initial population size is set to 10,000, as suggested in the paper.
+ The simulation will evolve 500 generations with constant population size
+ to reach mutation-selection equilibrium.
+ Then, the population size will increase by around 20,000 every 10 generations
+ and reach 1,000,000 at generation 1000.
+ The population growth takes around 12,500 years if we assume 25 years per
+ generation.
+ Other growth patterns are also simulated.
+\end_layout
+
+\begin_layout Standard
+Actually human population took 720 ~ 6000 generations to reach a population
+ of size 6 billion.
+ There is no way to simulate such a huge population -- the biggest population
+ my workstation (equipped with 2G RAM) can handle is around 50 million.
+ However, mating of really human population is far from random which implies
+ a much smaller effected population size.
+ As it turns out, a final population size of 1 million is enough to demonstrate
+ the model.
+\end_layout
+
+\begin_layout Subsection
+Mutation model
+\end_layout
+
+\begin_layout Standard
+The maximum number of alleles at each locus is set to be 255, a number that
+ is hopefully big enough to mimic the infinite allele model.
+ Allele 1 is the wild type (
+\begin_inset Formula $A$
+\end_inset
+
+) and all others are disease alleles (
+\begin_inset Formula $a$
+\end_inset
+
+).
+ The 
+\begin_inset Formula $k-$
+\end_inset
+
+allele mutation model is used.
+ That is to say, an allele can mutate to any other allele with equal probability.
+ An immediate implication of this model is that 
+\begin_inset Formula $P\left(A\rightarrow a\right)\gg P\left(a\rightarrow A\right)$
+\end_inset
+
+ since there are many more 
+\begin_inset Formula $a$
+\end_inset
+
+ than 
+\begin_inset Formula $A$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The mutation rate is set to 
+\begin_inset Formula $\mu=3.2\times10^{-5}$
+\end_inset
+
+ per locus per generation, the same for common and complex disease, and
+ regardless of current allelic state.
+ This rate is not 
+\begin_inset Formula $P\left(A\rightarrow a\right)$
+\end_inset
+
+.
+ Instead, it is `probability to mutate' regardless of current allelic state.
+ Consequently, 
+\begin_inset Formula \[
+P\left(A\rightarrow a\right)=P\left(A\rightarrow a\mid A\right)P\left(A\right)P\left(\textrm{mutate}\right)=\mu p\]
+
+\end_inset
+
+since 
+\begin_inset Formula $P\left(A\rightarrow a\right)=1$
+\end_inset
+
+ and 
+\begin_inset Formula $P\left(A\right)$
+\end_inset
+
+ is the allele frequency of allele 
+\begin_inset Formula $A$
+\end_inset
+
+.
+ For rare disease, 
+\begin_inset Formula $p\sim1$
+\end_inset
+
+ so 
+\begin_inset Formula $\mu\sim P\left(A\rightarrow a\right)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Note that I can also use 
+\begin_inset Formula $\mu=3.2\times10^{-6}$
+\end_inset
+
+ as suggested in the paper, at a cost of longer simulation time.
+\end_layout
+
+\begin_layout Subsection
+Selection on a common and a rare disease 
+\end_layout
+
+\begin_layout Standard
+Two diseases are simulated: a common disease with initial allele frequency
+ of 
+\begin_inset Formula $f_{0}=0.2$
+\end_inset
+
+; and a rare disease with initial allele frequency of 
+\begin_inset Formula $f_{0}=0.001$
+\end_inset
+
+.
+ The diseases are unlinked in the sense that their corresponding loci reside
+ on separated chromosomes.
+ The allelic spectra of both diseases are set to be 
+\begin_inset Formula $\left[.9,.02,.02,.02,.02,.02\right]$
+\end_inset
+
+.
+ I.e., one allele accounts for 90% of the disease cases.
+ 
+\end_layout
+
+\begin_layout Standard
+Both diseases are recessive in that their fitness values are 
+\begin_inset Formula $\left[1,1,1-s\right]$
+\end_inset
+
+ for genotype 
+\begin_inset Formula $AA$
+\end_inset
+
+, 
+\begin_inset Formula $Aa$
+\end_inset
+
+ and 
+\begin_inset Formula $aa$
+\end_inset
+
+ respectively.
+ 
+\begin_inset Formula $s_{c}=0.1$
+\end_inset
+
+ , 
+\begin_inset Formula $s_{r}=0.9$
+\end_inset
+
+ are used in the simulation which imply weak selection on the common disease
+ and strong selection on the rare disease.
+ If an individual has both diseases, his fitness value follows a multiplicative
+ model, i.e., 
+\begin_inset Formula $\left(1-s_{c}\right)\times\left(1-s_{r}\right)=0.09$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The choice of 
+\begin_inset Formula $s_{c}$
+\end_inset
+
+ and 
+\begin_inset Formula $s_{r}$
+\end_inset
+
+ seems to be appropriate because allele frequencies of disease alleles for
+ both diseases remain largely unchanged during the first 500 generations.
+ This suggests that both diseases are in mutation-selection equilibrium.
+\end_layout
+
+\begin_layout Subsection
+Implementation
+\end_layout
+
+\begin_layout Standard
+The python script is short and well commented.
+ It translates the above specifications word by word into Python/simuPOP.
+ The plots are drawn by R.
+ All I did was assign variables to R workspace by 
+\family typewriter
+r.assign
+\family default
+ function and execute a big trunk of 
+\family typewriter
+R 
+\family default
+code through 
+\family typewriter
+r(`')
+\family default
+ function.
+ This part of source code is omited since it is irrelevant to simuPOP.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/reich.py}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Results
+\end_layout
+
+\begin_layout Standard
+The simulation results match Reich's paper well.
+ The allelic spectra of common disease remain largely unchanged during simulatio
+n while rare disease spectra become complex over time.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{log/simuComplexDisease.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \bibtex[bibtotoc,plainnat]{all}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \printindex{}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
