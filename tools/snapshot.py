@@ -72,7 +72,7 @@ def writeVersionFile(release):
 def makeReleaseTag(release):
     cmd = 'svn copy https://svn.sourceforge.net/svnroot/simupop/trunk ' + \
         'https://svn.sourceforge.net/svnroot/simupop/tag/v%s' % release + \
-        '-m "Version $% released at %s"' % (release, time.asctime())
+        ' -m "Version %s released at %s"' % (release, time.asctime())
     print cmd
     os.system(cmd)
 
