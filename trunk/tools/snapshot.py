@@ -70,8 +70,8 @@ def writeVersionFile(release):
     
 
 def makeReleaseTag(release):
-    os.system('svn copy http://bp6.stat.rice.edu:8080/svn/simuPOP/trunk ' + \
-        'http://bp6.stat.rice.edu:8080/svn/simuPOP/tag/v%s' % release + \
+    os.system('svn copy https://svn.sourceforge.net/svnroot/simupop/trunk ' + \
+        'https://svn.sourceforge.net/svnroot/simupop/tag/v%s' % release + \
         '-m "Version $% released at %s"' % (release, time.asctime()))
 
 
