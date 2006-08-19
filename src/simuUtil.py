@@ -1409,7 +1409,7 @@ def FreqTrajectoryMultiStochWithSubPop(
     return (trajAll, [curGen-len(x)+1 for x in trajAll ], trajFuncWithSubPop)
 
 
-def TDT_gh(file, loci=[]):
+def TDT_gh(file, loci=[], gh='gh'):
     ''' 
     Analyze data using genehunter/TDT. Note that this function may not work under 
     platforms other than linux, and may not work with your version of genehunter.
@@ -1523,7 +1523,7 @@ def LOD_gh(file, loci=[], gh='gh'):
 
 
 
-def ChiSq_test(pop, loci=[]):
+def ChiSq_test(pop, r, loci=[]):
     ''' perform case control test at loci 
 
     Parameters;
@@ -1543,7 +1543,7 @@ def ChiSq_test(pop, loci=[]):
     # at each locus
     pvalue = []
     if loci == []:
-        loci = range(pop.totNumLoci())
+        loci = [range(pop.numLoci(x)) for x in range(pop.numChrom())]
     for ch in range(len(loci)):
         p = []
         for locus in loci[ch]:
