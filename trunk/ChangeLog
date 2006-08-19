@@ -3,12 +3,12 @@ ChangeLog of simuPOP
 NOTE: Daily snapshot reflects current SVN version. It includes new features and 
   bug fixes, but may be less stable than versioned releases.
 
-BUG:
+BUGS:
   - All known bugs have been fixed.
 
-version 0.7.2 -
+version 0.7.2 - Currently available as svn snapshot
 
-version 0.7.1 - (Rev 378) - Aug 14, 2006
+version 0.7.1 - (Rev 378) - Aug 20, 2006
   - BUG: Fix a bug in backward trajectory simulation
   - CHG: change the release/snapsot generating process
   - NEW: add script/simuCluster.py which assists submission of jobs on cluster
@@ -16,6 +16,8 @@ version 0.7.1 - (Rev 378) - Aug 14, 2006
   - BUG: fix a random number generator bug on 64 bit machines.
   - NEW: random number seed is generated in a much better way, and is
 		retrievable.
+  - CHG: fix analComplexDisease.py which was not up to date with 
+		simuComplexDisease.py
 
 version 0.7.0 - (Release 0.6.15, July, 2006)
   - Check all scripts and test cases
