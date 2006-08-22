@@ -312,14 +312,14 @@ namespace simuPOP
 			m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 	}
 
-	void population::setSubPopByIndInfo(vectori info)
+	void population::setSubPopByIndID(vectori info)
 	{
 		if( !info.empty())
 		{
 			DBG_ASSERT( info.size() == m_popSize, ValueError,
 				"Info should have the same length as pop size");
 			for(ULONG it=0; it < m_popSize; ++it)
-				ind(it).setInfo( info[it] );
+				ind(it).setSubPopID( info[it] );
 		}
 
 		DBG_DO(DBG_POPULATION, cout << "Sorting individuals."<< endl);
@@ -329,19 +329,19 @@ namespace simuPOP
 
 		// sort individuals first
 		// remove individuals with negative index.
-		if( indBegin()->info() < 0 )
+		if( indBegin()->subPopID() < 0 )
 		{
 			// popsize etc will be changed.
 			ULONG newPopSize = m_popSize;
 			IndIterator it=indBegin();
 			for(; it != indEnd();  ++it)
 			{
-				if( it->info() < 0 )
+				if( it->subPopID() < 0 )
 					newPopSize -- ;
 				else
 					break;
 			}
-			// 'it' now point to the one with positive info()
+			// 'it' now point to the one with positive subPopID()
 
 			DBG_DO(DBG_POPULATION, cout << "New pop size" << newPopSize << endl);
 
@@ -381,14 +381,14 @@ namespace simuPOP
 		else
 		{
 			// reset indices etc.
-			m_numSubPop = static_cast<UINT>(m_inds.back().info())+1;
+			m_numSubPop = static_cast<UINT>(m_inds.back().subPopID())+1;
 			m_subPopSize.resize(m_numSubPop);
 			m_subPopIndex.resize(m_numSubPop+1);
 
 			// check subpop size
 			fill(m_subPopSize.begin(), m_subPopSize.end(), 0);
 			for(IndIterator it = indBegin(), itEnd = indEnd(); it < itEnd;  ++it)
-				m_subPopSize[ static_cast<UINT>(it->info()) ] ++;
+				m_subPopSize[ static_cast<UINT>(it->subPopID()) ] ++;
 		}
 		/// rebuild index
 		size_t i = 1;
@@ -409,7 +409,7 @@ namespace simuPOP
 			return;
 
 		// set initial info
-		setIndInfoWithSubPopID();
+		setIndSubPopIDWithID();
 
 		UINT spID;
 		if(subPopID.empty())					  // starting sp number
@@ -437,10 +437,10 @@ namespace simuPOP
 						spID = subPopID[newSPIdx];
 				}
 			}
-			ind->setInfo(spID);
+			ind->setSubPopID(spID);
 			sz++;
 		}
-		setSubPopByIndInfo();
+		setSubPopByIndID();
 	}
 
 	void population::splitSubPopByProportion(UINT which, vectorf proportions, vectoru subPopID)
@@ -494,7 +494,7 @@ namespace simuPOP
 			DBG_WARNING(*sp >= m_numSubPop, "Subpopulation" + toStr(*sp) + " does not exist.");
 		}
 #endif
-		setIndInfoWithSubPopID();
+		setIndSubPopIDWithID();
 		int shift=0;
 		for( size_t sp = 0; sp < m_numSubPop; ++sp)
 		{
@@ -502,20 +502,20 @@ namespace simuPOP
 			{
 				shift++;
 				for(IndIterator ind = indBegin(sp); ind != indEnd(sp); ++ind)
-					ind->setInfo(-1);			  // remove
+					ind->setSubPopID(-1);			  // remove
 			}
 			// other subpop shift left
 			else if(shiftSubPopID)
 			{
 				for(IndIterator ind = indBegin(sp); ind != indEnd(sp); ++ind)
-					ind->setInfo(sp-shift);		  // shift left
+					ind->setSubPopID(sp-shift);		  // shift left
 			}
 		}
 
 		UINT pendingEmptySubPops = 0;
 		for(UINT i=m_numSubPop-1; i>=0 && (subPopSize(i) == 0
 			|| find( subPops.begin(), subPops.end(), i) != subPops.end()); --i, ++pendingEmptySubPops);
-		setSubPopByIndInfo();
+		setSubPopByIndID();
 		// what to do with pending empty subpops?
 		if( pendingEmptySubPops != 0 && ! removeEmptySubPops )
 		{
@@ -534,21 +534,21 @@ namespace simuPOP
 			throw SystemError("individual order can not be changed with non-empty fitness vector\n"
 				"Please put selector after migrator or other such operators.");
 
-		setIndInfoWithSubPopID();
+		setIndSubPopIDWithID();
 		if( subPop == -1 )
 		{
 			for(size_t i = 0; i < inds.size(); ++i)
-				ind(inds[i]).setInfo(-1);		  // remove
+				ind(inds[i]).setSubPopID(-1);		  // remove
 		}
 		else
 		{
 			for(size_t i = 0; i < inds.size(); ++i)
 												  // remove
-				ind(inds[i], subPop).setInfo(-1);
+				ind(inds[i], subPop).setSubPopID(-1);
 		}
 
 		int oldNumSP = numSubPop();
-		setSubPopByIndInfo();
+		setSubPopByIndID();
 		int pendingEmptySubPops = oldNumSP - numSubPop();
 		// what to do with pending empty subpops?
 		if( pendingEmptySubPops != 0 && ! removeEmptySubPops )
@@ -565,7 +565,7 @@ namespace simuPOP
 	void population::mergeSubPops(vectoru subPops, bool removeEmptySubPops)
 	{
 		// set initial info
-		setIndInfoWithSubPopID();
+		setIndSubPopIDWithID();
 
 		// merge all subpopulations
 		if(subPops.empty())
@@ -581,10 +581,10 @@ namespace simuPOP
 		{
 			if( find( subPops.begin(), subPops.end(), sp) != subPops.end())
 				for(IndIterator ind = indBegin(sp); ind != indEnd(sp); ++ind)
-					ind->setInfo(id);
+					ind->setSubPopID(id);
 		}
 		int oldNumSP = numSubPop();
-		setSubPopByIndInfo();
+		setSubPopByIndID();
 		int pendingEmptySubPops = oldNumSP - numSubPop();
 		// what to do with pending empty subpops?
 		if( pendingEmptySubPops != 0 && ! removeEmptySubPops )
@@ -627,7 +627,7 @@ namespace simuPOP
 				if(order[i] >= numSubPop())
 					continue;
 				for(IndIterator ind = indBegin(order[i]); ind != indEnd(order[i]); ++ind)
-					ind->setInfo(i);
+					ind->setSubPopID(i);
 			}
 		}
 		else
@@ -637,21 +637,21 @@ namespace simuPOP
 				if(i >= numSubPop())
 					continue;
 				for(IndIterator ind = indBegin(i); ind != indEnd(i); ++ind)
-					ind->setInfo(rank[i]);
+					ind->setSubPopID(rank[i]);
 			}
 		}
 		// reset ...
-		setSubPopByIndInfo();
+		setSubPopByIndID();
 	}
 
 	/** form a new population according to info, info can be given directly */
-	population& population::newPopByIndInfo(bool keepAncestralPops,
+	population& population::newPopByIndID(bool keepAncestralPops,
 		vectori info, bool removeEmptySubPops)
 	{
 		// copy the population over (info is also copied)
 		population& pop = this->clone(keepAncestralPops);
 		// and shrink them
-		pop.setSubPopByIndInfo(info);
+		pop.setSubPopByIndID(info);
 		if( removeEmptySubPops)
 			pop.removeEmptySubPops();
 		return pop;

@@ -1,4 +1,4 @@
-#LyX 1.4.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -1211,7 +1211,7 @@ pySubset
 can shrink population size.
  It removes individuals according to their 
 \family typewriter
-info() 
+subPopID() 
 \family default
 status.
  (Will explain later.) This can be used to model sudden population decrease
@@ -1951,7 +1951,7 @@ p.exposeInfo
 
 \end_inset
 
-( name='info')
+( name='info') (FIXME)
 \end_layout
 
 \end_inset
@@ -2026,7 +2026,7 @@ Expose (not editable) the effectedness field of all individuals
 \begin_layout Standard
 
 \family typewriter
-p.setIndInfo
+p.setIndSubPopID
 \begin_inset LatexCommand \index{population!setIndInfo}
 
 \end_inset
@@ -2068,7 +2068,7 @@ Set info field of all individuals using an array of size
 \begin_layout Standard
 
 \family typewriter
-p.setIndInfoWithSubPopID
+p.setIndSubPopIDWithID
 \begin_inset LatexCommand \index{population!setIndInfoWithSubPopID}
 
 \end_inset
@@ -2109,7 +2109,7 @@ Fill info field of all individuals using their respective subpopulation
 \begin_layout Standard
 
 \family typewriter
-p.setSubPopByIndInfo
+p.setSubPopByIndID
 \begin_inset LatexCommand \index{population!setSubPopByIndInfo}
 
 \end_inset
@@ -4353,7 +4353,7 @@ info
  times.
  For example, function 
 \family typewriter
-rearrangeByIndInfo
+rearrangeByIndID
 \begin_inset LatexCommand \index{population!rearrangeByIndInfo}
 
 \end_inset
@@ -4369,7 +4369,7 @@ rearrange individuals in the order of their info values.
 \begin_layout Itemize
 
 \family typewriter
-pop.setIndInfo
+pop.setIndSubPopID
 \begin_inset LatexCommand \index{population!setIndInfo}
 
 \end_inset
@@ -4382,7 +4382,7 @@ set individual info using a vector of size of the population
 \begin_layout Itemize
 
 \family typewriter
-pop.setIndInfoWithSubPopID
+pop.setIndSubPopIDWithID
 \begin_inset LatexCommand \index{population!setIndInfoWithSubPopID}
 
 \end_inset
@@ -4395,7 +4395,7 @@ pop.setIndInfoWithSubPopID
 \begin_layout Itemize
 
 \family typewriter
-pop.setSubPopByIndInfo
+pop.setSubPopByIndID
 \begin_inset LatexCommand \index{population!setSubPopByIndInfo}
 
 \end_inset
@@ -4451,7 +4451,7 @@ pop.reorderSubPops
 \begin_layout Itemize
 
 \family typewriter
-pop.newPopByIndInfo
+pop.newPopByIndID
 \begin_inset LatexCommand \index{population!newPopByIndInfo}
 
 \end_inset
@@ -4547,7 +4547,7 @@ Example
 
  demonostrate the use of functions 
 \family typewriter
-setIndInfo, setSubPopByInfInfo 
+setIndSubPopID, setSubPopByIndID 
 \family default
 and 
 \family typewriter
@@ -5305,7 +5305,7 @@ Set affectedness status.
 \begin_layout Standard
 
 \family typewriter
-i.info()
+i.subPopID()
 \end_layout
 
 \end_inset
@@ -5327,7 +5327,7 @@ Return the info field of an individual
 \begin_layout Standard
 
 \family typewriter
-i.setInfo()
+i.setSubPopID()
 \end_layout
 
 \end_inset
@@ -12868,7 +12868,7 @@ The function form of these operators are a bit different from others.
 \begin_layout Subsection
 function 
 \family typewriter
-population::shrinkByIndInfo
+population::shrinkByIndID
 \begin_inset LatexCommand \index{thrinkByIndInfo}
 
 \end_inset
@@ -12879,7 +12879,7 @@ population::shrinkByIndInfo
 \begin_layout Standard
 This function look at the 
 \family typewriter
-info() 
+subPopID() 
 \family default
 field of each individual and remove anyone with value 0.
  
@@ -12910,7 +12910,7 @@ PySubset
 \begin_layout Standard
 This operator shrink a population according to a given array or the 
 \family typewriter
-info()
+subPopID()
 \family default
  value of each indvidual.
  Subpopulations are kept intact.
@@ -12958,7 +12958,7 @@ Sample
 \family default
  if you already set info for each individual using 
 \family typewriter
-setInfo
+setSubPopID
 \begin_inset LatexCommand \index{population!setInfo}
 
 \end_inset

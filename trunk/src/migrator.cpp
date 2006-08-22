@@ -99,7 +99,7 @@ namespace simuPOP
 	bool migrator::apply(population& pop)
 	{
 		// set info of individual
-		pop.setIndInfoWithSubPopID();
+		pop.setIndSubPopIDWithID();
 
 		population::IndIterator ind, indEd;
 
@@ -136,7 +136,7 @@ namespace simuPOP
 					// rateSize = toSize + 1, ignore i->1 (last one)
 					//  toIndex < toSize
 					if( toIndex < toSize && m_to[toIndex] != spFrom )
-						ind->setInfo( m_to[toIndex] );
+						ind->setSubPopID( m_to[toIndex] );
 				}
 				continue;
 			}
@@ -171,12 +171,12 @@ namespace simuPOP
 			ind = pop.indBegin(spFrom);
 			// set info
 			for(UINT i=0; i<spSize; ++i)
-				(ind + i )->setInfo( toIndices[i] );
+				(ind + i )->setSubPopID( toIndices[i] );
 		}										  /// for all subPop.
 
 		// do migration.
 		// true: rearrange individuals
-		pop.setSubPopByIndInfo();
+		pop.setSubPopByIndID();
 
 		return true;
 	}
@@ -193,7 +193,7 @@ namespace simuPOP
 			long * id = reinterpret_cast<long*>(NumArray_Data(m_subPopID));
 
 			for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
-				pop.ind(i).setInfo( id[i] );
+				pop.ind(i).setSubPopID( id[i] );
 		}
 		else
 		{
@@ -206,12 +206,12 @@ namespace simuPOP
 			for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
 			{
 				PyObj_As_Int(PySequence_GetItem(m_subPopID, i), id);
-				pop.ind(i).setInfo(id);
+				pop.ind(i).setSubPopID(id);
 			}
 		}
 		// do migration.
 		// true: rearrange individuals
-		pop.setSubPopByIndInfo();
+		pop.setSubPopByIndID();
 		return true;
 	}
 
@@ -223,7 +223,7 @@ namespace simuPOP
 			// random shuffle individuals
 			ULONG N = pop.subPopSize(m_which);
 			for(ULONG it=0; it<pop.subPopSize(m_which); ++it)
-				pop.ind(it, m_which).setInfo(rng().randInt(N) );
+				pop.ind(it, m_which).setSubPopID(rng().randInt(N) );
 			std::sort(pop.indBegin(m_which), pop.indEnd(m_which));
 			// not actully required since spliSubPop will do this.
 			// this is to remind myself this step is important.

@@ -420,7 +420,7 @@ class TestPopulation(unittest.TestCase):
     arr[:] = range(pop.popSize())
     oldPop = pop.clone()
     #
-    pop1 = pop.newPopByIndInfo(info=[-1,0,1,1,2,1,1,2,-1,0])
+    pop1 = pop.newPopByIndID(info=[-1,0,1,1,2,1,1,2,-1,0])
     self.assertEqual( pop, oldPop)
     self.assertEqual( pop1.subPopSizes(), (2,4,2))
     # subpop will be shifted
@@ -462,13 +462,13 @@ class TestPopulation(unittest.TestCase):
   def testPopInfo(self):
     'Testing population info related functions'
     pop = population(subPop=[1,2])
-    pop.setIndInfoWithSubPopID()
+    pop.setIndSubPopIDWithID()
     self.assertEqual(pop.exposeIndInfo(), [0,1,1])
     #
-    pop.setIndInfo([3,4,5])
+    pop.setIndSubPopID([3,4,5])
     self.assertEqual(pop.exposeIndInfo(), [3,4,5])
     self.assertRaises(exceptions.ValueError, 
-      pop.setIndInfo, [2,3])      
+      pop.setIndSubPopID, [2,3])      
     #
     pop.individual(1).setAffected(True)
     self.assertEqual(pop.exposeAffectedness(), [0,1,0])

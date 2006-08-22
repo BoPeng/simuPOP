@@ -635,7 +635,7 @@ namespace simuPOP
 	\code
 	setGenoStructure(GenoStructure gs)
 	\endcode
-	- \c setInfo() and \c info() can be used for any \e temporary purpose.
+	- \c setSubPopID() and \c subPopID() can be used for any \e temporary purpose.
 	- \c Tag are usually  std::pair(int,int) used by class tagger to
 	track informations like pedigree structure.
 
@@ -658,7 +658,7 @@ namespace simuPOP
 			///  @name constructor, destructor etc
 			//@{
 			/// default constructor, Tag field need a default constructor
-			individual():m_flags(0),m_info(0)
+			individual():m_flags(0),m_subPopID(0)
 			{
 			}
 
@@ -666,7 +666,7 @@ namespace simuPOP
 			/// copy constructor will be a shallow copied one
 			individual(const individual& ind) :
 			GenoStruTrait(ind), m_flags(ind.m_flags),
-				m_info(ind.m_info),
+				m_subPopID(ind.m_subPopID),
 				m_tag(ind.m_tag),
 				m_genoPtr(ind.m_genoPtr)
 			{
@@ -697,7 +697,7 @@ namespace simuPOP
 
 				m_flags = rhs.m_flags;
 				setTag(rhs.tag());
-				setInfo(rhs.info());
+				setSubPopID(rhs.subPopID());
 				setGenoPtr(rhs.genoPtr());
 				// also copy genoStru pointer...
 				this->setGenoStruIdx(rhs.genoStruIdx());
@@ -709,7 +709,7 @@ namespace simuPOP
 			{
 				m_flags = rhs.m_flags;
 				setTag(rhs.tag());
-				setInfo(rhs.info());
+				setSubPopID(rhs.subPopID());
 				copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
 				// also copy genoStru pointer...
 				this->setGenoStruIdx(rhs.genoStruIdx());
@@ -926,17 +926,33 @@ namespace simuPOP
 					RESETFLAG(m_flags, m_flagAffected);
 			}
 
-			/// get info
-			InfoType info() const
+			/// get subpop id
+			SubPop_ID subPopID() const
 			{
-				return m_info;
+				return m_subPopID;
+			}
+			
+			/// set subpop if
+			void setSubPopID(SubPop_ID id)
+			{
+				m_subPopID = id;
+			}
+			
+			/*
+			/// get info
+			InfoType subPopID(UINT index) const
+			{
+				CHECKRANGEINFO(index);
+				return m_subPopID[index];
 			}
 
 			/// set info
-			void setInfo(InfoType info)
+			void setSubPopID(InfoType info, UINT index)
 			{
-				m_info = info;
+				CHECKRANGEINFO(index);
+				m_subPopID[index] = info;
 			}
+			*/
 
 			/// start of alleles
 			/// CPPONLY
@@ -994,7 +1010,7 @@ namespace simuPOP
 			//@{
 			/// compare if two individuals are the same used in case of serialization etc
 			/** Note that we do not compare info because
-			   m_info is considered temporary.
+			   m_subPopID is considered temporary.
 			*/
 			bool operator== (const individual& rhs) const
 			{
@@ -1041,7 +1057,7 @@ namespace simuPOP
 			/// this behavior is used in migration.
 			bool operator< (const individual& rhs) const
 			{
-				return info() < rhs.info();
+				return subPopID() < rhs.subPopID();
 			}
 
 			// allow str(population) to get something better looking
@@ -1072,7 +1088,7 @@ namespace simuPOP
 					throw SystemError("Can only swap individuals with different geno structure.");
 
 				std::swap(m_tag, ind.m_tag);
-				std::swap(m_info, ind.m_info);
+				std::swap(m_subPopID, ind.m_subPopID);
 
 				if(swapContent)
 				{
@@ -1117,7 +1133,7 @@ namespace simuPOP
 			void display( ostream& out, int width=1, const vectori& chrom=vectori(), const vectori& loci=vectori() )
 			{
 				out << tag() << " " << sexChar() << affectedChar() << " ";
-				DBG_DO(DBG_POPULATION, out <<  info() << " ");
+				DBG_DO(DBG_POPULATION, out <<  subPopID() << " ");
 				for(UINT p=0, pEnd = ploidy(); p < pEnd;  ++p)
 				{
 					//      copy( genoBegin()+i, genoBegin()+i+totNumLoci(),
@@ -1172,7 +1188,7 @@ namespace simuPOP
 				ar & boost::serialization::make_nvp("affected",b);
 
 				ar & make_nvp("tag", m_tag);
-				ar & make_nvp("info", m_info);
+				ar & make_nvp("info", m_subPopID);
 			}
 
 			template<class Archive>
@@ -1188,7 +1204,7 @@ namespace simuPOP
 				RESETFLAG(m_flags, m_flagShallowCopied);
 
 				ar & make_nvp("tag", m_tag);
-				ar & make_nvp("info", m_info);
+				ar & make_nvp("info", m_subPopID);
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -1200,7 +1216,7 @@ namespace simuPOP
 			unsigned char m_flags;
 
 			/// temporary information
-			InfoType m_info;
+			InfoType m_subPopID;
 
 			/// tag
 			TagType m_tag;
