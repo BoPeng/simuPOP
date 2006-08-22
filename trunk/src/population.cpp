@@ -87,7 +87,7 @@ namespace simuPOP
 
 		DBG_DO( DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
 			<< sizeof(Allele) << '*' << genoSize() << endl
-			<< "Info: " << sizeof(InfoType) << ", Tag: " << sizeof(TagType)
+			<< "Info: " << sizeof(SubPop_ID) << ", Tag: " << sizeof(TagType)
 			<< ", GenoPtr: " << sizeof(Allele*) << ", Flag: " << sizeof(unsigned char)
 			<< ", plus genoStru" << endl );
 

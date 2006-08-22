@@ -107,7 +107,7 @@ enum Sex{ Male = 1, Female = 2};
 
 // info is usually used for subpopulation index.
 // signed short should be enough.
-typedef signed short InfoType;
+//typedef signed short InfoType;
 typedef signed short SubPop_ID;
 
 /// type of the tag, which is a template parameter.

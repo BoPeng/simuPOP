@@ -1216,7 +1216,7 @@ namespace simuPOP
 			unsigned char m_flags;
 
 			/// temporary information
-			InfoType m_subPopID;
+			SubPop_ID m_subPopID;
 
 			/// tag
 			TagType m_tag;
