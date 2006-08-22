@@ -89,7 +89,7 @@ namespace simuPOP
 			/// CPPONLY serialization library requires a default constructor
 			GenoStructure():m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
 				m_numLoci(0), m_sexChrom(false), m_lociPos(0), m_chromIndex(0),
-				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoLength(0)
+				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoSize(0)
 				{}
 
 			/** \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
@@ -105,7 +105,7 @@ namespace simuPOP
 			*/
 			GenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 				const vectorf& lociPos, const vectorstr& alleleNames,
-				const vectorstr& lociNames, UINT maxAllele, UINT infoLength);
+				const vectorstr& lociNames, UINT maxAllele, UINT infoSize);
 
 			/// copy constructor
 			/// CPPONLY
@@ -121,7 +121,7 @@ namespace simuPOP
 				m_alleleNames(rhs.m_alleleNames),
 				m_lociNames(rhs.m_lociNames),
 				m_maxAllele(rhs.m_maxAllele),
-				m_infoLength(rhs.m_infoLength)
+				m_infoSize(rhs.m_infoSize)
 			{
 			}
 
@@ -136,7 +136,7 @@ namespace simuPOP
 					( m_alleleNames == rhs.m_alleleNames) &&
 					( m_lociNames == rhs.m_lociNames) &&
 					( m_maxAllele == rhs.m_maxAllele) && 
-					( m_infoLength == rhs.m_infoLength) ))
+					( m_infoSize == rhs.m_infoSize) ))
 					return true;
 				else
 					return false;
@@ -191,7 +191,7 @@ namespace simuPOP
 				ar & make_nvp("allele_name", m_alleleNames);
 				ar & make_nvp("loci_name", m_lociNames);
 				ar & make_nvp("max_allele", m_maxAllele);
-				ar & make_nvp("info_length", m_infoLength);
+				ar & make_nvp("info_length", m_infoSize);
 			}
 
 			template<class Archive>
@@ -220,7 +220,7 @@ namespace simuPOP
 				m_totNumLoci = m_chromIndex[m_numChrom];
 				m_genoSize = m_totNumLoci*m_ploidy;
 				if(version > 1)
-					ar & make_nvp("info_length", m_infoLength);
+					ar & make_nvp("info_length", m_infoSize);
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -259,7 +259,7 @@ namespace simuPOP
 			UINT m_maxAllele;
 
 			/// length of information field
-			UINT m_infoLength;
+			UINT m_infoSize;
 
 			friend class GenoStruTrait;
 	};
@@ -270,7 +270,7 @@ namespace simuPOP
 // set version for GenoStructure class
 // version 0: base
 // version 1: add sexChrom indicator
-// version 2: add infoLength 
+// version 2: add infoSize 
 BOOST_CLASS_VERSION(simuPOP::GenoStructure, 2)
 #endif
 
@@ -299,7 +299,7 @@ namespace simuPOP
 			/// CPPONLY
 			void setGenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 				const vectorf& lociPos, const vectorstr& alleleNames,
-				const vectorstr& lociNames, UINT maxAllele, UINT infoLength);
+				const vectorstr& lociNames, UINT maxAllele, UINT infoSize);
 
 			/// set an existing geno structure, simply use it
 			/// This is NOT efficient! (but has to be used when, for example,
@@ -556,9 +556,9 @@ namespace simuPOP
 			}
 
 			/// get info length
-			UINT infoLength() const
+			UINT infoSize() const
 			{
-				return s_genoStruRepository[m_genoStruIdx].m_infoLength;
+				return s_genoStruRepository[m_genoStruIdx].m_infoSize;
 			}
 			
 			void swap(GenoStruTrait& rhs)
@@ -668,7 +668,8 @@ namespace simuPOP
 			GenoStruTrait(ind), m_flags(ind.m_flags),
 				m_subPopID(ind.m_subPopID),
 				m_tag(ind.m_tag),
-				m_genoPtr(ind.m_genoPtr)
+				m_genoPtr(ind.m_genoPtr),
+				m_infoPtr(ind.m_infoPtr)
 			{
 				setShallowCopied(true);
 			}
@@ -686,6 +687,13 @@ namespace simuPOP
 				m_genoPtr = pos;
 			}
 
+			/// CPPONLY
+			/// set pointer to individual info
+			void setInfoPtr(InfoType* pos)
+			{
+				m_infoPtr = pos;
+			}
+			
 			/// shallow copy of an object.
 			individual& operator= (const individual& rhs)
 			{
@@ -699,6 +707,7 @@ namespace simuPOP
 				setTag(rhs.tag());
 				setSubPopID(rhs.subPopID());
 				setGenoPtr(rhs.genoPtr());
+				setInfoPtr(rhs.infoPtr());
 				// also copy genoStru pointer...
 				this->setGenoStruIdx(rhs.genoStruIdx());
 				return *this;
@@ -711,6 +720,7 @@ namespace simuPOP
 				setTag(rhs.tag());
 				setSubPopID(rhs.subPopID());
 				copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
+				copy(rhs.infoBegin(), rhs.infoEnd(), infoBegin());
 				// also copy genoStru pointer...
 				this->setGenoStruIdx(rhs.genoStruIdx());
 				setShallowCopied(false);
@@ -728,6 +738,12 @@ namespace simuPOP
 				return m_genoPtr;
 			}
 
+			/// CPPONLY
+			InfoType* infoPtr() const
+			{
+				return m_infoPtr;
+			}
+			
 			//@}
 			/// @name allele, tag, info get/set functions
 			//@{
@@ -756,9 +772,16 @@ namespace simuPOP
 			{
 				CHECKRANGEPLOIDY(p);
 
-				return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci() +chromBegin(ch),
+				return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci() + chromBegin(ch),
 					m_genoPtr + p*totNumLoci() +chromEnd(ch));
 			}
+
+			PyObject* arrInfo()
+			{
+				return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + infoSize() );
+			}
+
+			
 			/// get allele from an index
 			/** \param index index from the beginning of genotypic info
 			 */
@@ -938,21 +961,19 @@ namespace simuPOP
 				m_subPopID = id;
 			}
 			
-			/*
 			/// get info
-			InfoType subPopID(UINT index) const
+			InfoType info(UINT index) const
 			{
 				CHECKRANGEINFO(index);
-				return m_subPopID[index];
+				return m_infoPtr[index];
 			}
 
 			/// set info
-			void setSubPopID(InfoType info, UINT index)
+			void setInfo(InfoType info, UINT index)
 			{
 				CHECKRANGEINFO(index);
-				m_subPopID[index] = info;
+				m_infoPtr[index] = info;
 			}
-			*/
 
 			/// start of alleles
 			/// CPPONLY
@@ -1004,6 +1025,20 @@ namespace simuPOP
 				CHECKRANGECHROM(chrom);
 				return m_genoPtr + p*totNumLoci() + chromEnd(chrom);
 			}
+			
+			/// start of info
+			/// CPPONLY
+			InfoType * infoBegin() const
+			{
+				return m_infoPtr;
+			}
+
+			/// end of info
+			/// CPPONLY
+			InfoType * infoEnd() const
+			{
+				return m_infoPtr + infoSize();
+			}
 
 			//@}
 			/// @name copy, comparison, swap operations to objects.
@@ -1021,6 +1056,10 @@ namespace simuPOP
 					|| ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
 					|| ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) )
 					return false;
+					
+				for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
+					if( info(i) != rhs.info(i) )
+						return false;
 
 				for( UINT i=0, iEnd = genoSize(); i < iEnd;  ++i)
 					if( allele(i) != rhs.allele(i) )
@@ -1044,6 +1083,10 @@ namespace simuPOP
 
 				if( tag() != rhs.tag() || m_flags != rhs.m_flags )
 					return 1;
+
+				for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
+					if( info(i) != rhs.info(i) )
+						return 1;
 
 				for( UINT i=0, iEnd = genoSize(); i < iEnd;  ++i)
 					if( allele(i) != rhs.allele(i) )
@@ -1089,6 +1132,7 @@ namespace simuPOP
 
 				std::swap(m_tag, ind.m_tag);
 				std::swap(m_subPopID, ind.m_subPopID);
+				std::swap(m_infoPtr, ind.m_infoPtr);
 
 				if(swapContent)
 				{
@@ -1188,7 +1232,6 @@ namespace simuPOP
 				ar & boost::serialization::make_nvp("affected",b);
 
 				ar & make_nvp("tag", m_tag);
-				ar & make_nvp("info", m_subPopID);
 			}
 
 			template<class Archive>
@@ -1204,7 +1247,9 @@ namespace simuPOP
 				RESETFLAG(m_flags, m_flagShallowCopied);
 
 				ar & make_nvp("tag", m_tag);
-				ar & make_nvp("info", m_subPopID);
+
+				if (version < 0)
+					ar & make_nvp("info", m_subPopID);
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -1223,15 +1268,18 @@ namespace simuPOP
 
 			/// pointer to genotype.
 			GenoIterator m_genoPtr;
-
+			
+			/// pointer to info
+			InfoType * m_infoPtr;
 	};
 
-	/*
-	  #ifndef SWIG
-		#ifndef _NO_SERIALIZATION_
-		  BOOST_CLASS_VERSION(individual, 0)
-		#endif
-	  #endif
-	  */
 }
+
+#ifndef SWIG
+// set version for GenoStructure class
+// version 0: base
+// version 1: add sexChrom indicator
+// version 2: add infoSize 
+BOOST_CLASS_VERSION(simuPOP::individual, 1)
+#endif
 #endif
