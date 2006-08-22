@@ -112,6 +112,12 @@ namespace simuPOP
 			X-X is chromosome-loci index starting from 1. This info is rarely used.
 			\param maxAllele maximum allele number. Default to the max allowed allele states
 			of current library (standard or long allele version)
+			\param infoLength: length of information field that will be attached to each
+			individual. For example, if you need to record the parents of each individual
+			you will need two, if you need to record the age of individual, you need an additional
+			one. Other possibilities include offspring ids etc. Note that you have to plan
+			this ahead of time since, for example, tagger will need to know what info unit 
+			to use. Default to none.
 			\return no return value. Exception will be thrown is wrong parameters are given.
 			\sa simulator, baseOperator, mating schemes
 			\test popInit.log \include popInit.log
@@ -125,7 +131,8 @@ namespace simuPOP
 				int ancestralDepth=0,
 				const vectorstr& alleleNames=vectorstr(),
 				const vectorstr& lociNames=vectorstr(),
-				UINT maxAllele = MaxAllele );
+				UINT maxAllele = MaxAllele,
+				UINT infoLength = 0);
 
 			/// CPPONLY copy constructor
 			population(const population& rhs);
@@ -158,6 +165,7 @@ namespace simuPOP
 				std::swap(m_grp, rhs.m_grp);
 				std::swap(m_gen, rhs.m_gen);
 				std::swap(m_curAncestralPop, rhs.m_curAncestralPop);
+				// FIXME: remove m_fitness, use generalized info field.
 				m_fitness.swap(rhs.m_fitness);
 				std::swap(m_shallowCopied, rhs.m_shallowCopied);
 			}
