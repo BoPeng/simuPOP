@@ -112,7 +112,7 @@ namespace simuPOP
 			X-X is chromosome-loci index starting from 1. This info is rarely used.
 			\param maxAllele maximum allele number. Default to the max allowed allele states
 			of current library (standard or long allele version)
-			\param infoLength: length of information field that will be attached to each
+			\param infoSize: length of information field that will be attached to each
 			individual. For example, if you need to record the parents of each individual
 			you will need two, if you need to record the age of individual, you need an additional
 			one. Other possibilities include offspring ids etc. Note that you have to plan
@@ -132,7 +132,7 @@ namespace simuPOP
 				const vectorstr& alleleNames=vectorstr(),
 				const vectorstr& lociNames=vectorstr(),
 				UINT maxAllele = MaxAllele,
-				UINT infoLength = 0);
+				UINT infoSize = 0);
 
 			/// CPPONLY copy constructor
 			population(const population& rhs);
@@ -1112,8 +1112,12 @@ namespace simuPOP
 			/// index to subPop \todo change to vectorl
 			vectorlu m_subPopIndex;
 
+
 			/// pool of genotypic information
 			vectora m_genotype;
+
+			/// information
+			vector<InfoType> m_info;
 
 			/// individuals.
 			vector<individual> m_inds;

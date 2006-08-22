@@ -422,6 +422,9 @@ namespace simuPOP
 
 	/// CPPONLY
 	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
+	
+	/// CPPONLY
+	PyObject* Info_Vec_As_NumArray(InfoType* begin, InfoType* end);
 
 	/// CPPONLY
 	int NumArray_Size(PyObject* obj);
