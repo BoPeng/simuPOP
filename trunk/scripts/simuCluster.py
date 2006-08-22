@@ -202,7 +202,6 @@ if __name__ == '__main__':
         proc_jobs = all_jobs
     #
     # submit some jobs
-    print options
     scan = re.compile('(\w+[^\d]+)(\d+)-(\d+)')
     for j in args:
         if j[:2] == '--' and '=' in j:

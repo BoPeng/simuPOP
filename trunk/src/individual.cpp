@@ -27,10 +27,11 @@ namespace simuPOP
 {
 	GenoStructure::GenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 		const vectorf& lociPos, const vectorstr& alleleNames,
-		const vectorstr& lociNames, UINT maxAllele)
+		const vectorstr& lociNames, UINT maxAllele, UINT infoLength)
 		:m_ploidy(ploidy),  m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom),
 		m_lociPos(lociPos), m_chromIndex(loci.size()+1),
-		m_alleleNames(alleleNames), m_lociNames(lociNames), m_maxAllele(maxAllele)
+		m_alleleNames(alleleNames), m_lociNames(lociNames), 
+		m_maxAllele(maxAllele), m_infoLength(infoLength)
 	{
 		DBG_ASSERT( ploidy >= 1, ValueError,
 			"Ploidy must be >= 1. Given " + toStr(ploidy) );
@@ -93,7 +94,7 @@ namespace simuPOP
 
 	void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 		const vectorf& lociPos, const vectorstr& alleleNames,
-		const vectorstr& lociNames, UINT maxAllele)
+		const vectorstr& lociNames, UINT maxAllele, UINT infoLength)
 	{
 		/// only allow for TraitMaxIndex-1 different genotype structures
 		/// As a matter of fact, most simuPOP scripts have only one
@@ -107,7 +108,7 @@ namespace simuPOP
 		}
 
 		GenoStructure tmp = GenoStructure( ploidy, loci, sexChrom,
-			lociPos, alleleNames, lociNames, maxAllele);
+			lociPos, alleleNames, lociNames, maxAllele, infoLength);
 
 		for(TraitIndexType it = 0; it < s_genoStruRepository.size();
 			++it)

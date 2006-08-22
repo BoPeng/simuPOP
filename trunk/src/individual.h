@@ -89,7 +89,7 @@ namespace simuPOP
 			/// CPPONLY serialization library requires a default constructor
 			GenoStructure():m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
 				m_numLoci(0), m_sexChrom(false), m_lociPos(0), m_chromIndex(0),
-				m_alleleNames(), m_lociNames(), m_maxAllele()
+				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoLength(0)
 				{}
 
 			/** \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
@@ -101,10 +101,11 @@ namespace simuPOP
 			\param alleleNames allele names
 			\param lociNames name of loci
 			\param maxAllele maximum possible allele number for all alleles.
+			\param length of info field
 			*/
 			GenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 				const vectorf& lociPos, const vectorstr& alleleNames,
-				const vectorstr& lociNames, UINT maxAllele);
+				const vectorstr& lociNames, UINT maxAllele, UINT infoLength);
 
 			/// copy constructor
 			/// CPPONLY
@@ -119,7 +120,8 @@ namespace simuPOP
 				m_chromIndex(rhs.m_chromIndex),
 				m_alleleNames(rhs.m_alleleNames),
 				m_lociNames(rhs.m_lociNames),
-				m_maxAllele(rhs.m_maxAllele)
+				m_maxAllele(rhs.m_maxAllele),
+				m_infoLength(rhs.m_infoLength)
 			{
 			}
 
@@ -133,7 +135,8 @@ namespace simuPOP
 					( m_lociPos == rhs.m_lociPos) &&
 					( m_alleleNames == rhs.m_alleleNames) &&
 					( m_lociNames == rhs.m_lociNames) &&
-					( m_maxAllele == rhs.m_maxAllele) ) )
+					( m_maxAllele == rhs.m_maxAllele) && 
+					( m_infoLength == rhs.m_infoLength) ))
 					return true;
 				else
 					return false;
@@ -188,6 +191,7 @@ namespace simuPOP
 				ar & make_nvp("allele_name", m_alleleNames);
 				ar & make_nvp("loci_name", m_lociNames);
 				ar & make_nvp("max_allele", m_maxAllele);
+				ar & make_nvp("info_length", m_infoLength);
 			}
 
 			template<class Archive>
@@ -198,7 +202,7 @@ namespace simuPOP
 				ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
 				// after simuPOP 0.6.8, we have m_sexChrom
 				// before that, there is no sex chromosome
-				if( version > 0)
+				if(version > 0)
 					ar & make_nvp("sex_chromosome", m_sexChrom);
 				else
 					m_sexChrom = false;
@@ -210,11 +214,13 @@ namespace simuPOP
 				// build chromosome index
 				m_chromIndex.resize(m_numLoci.size()+1);
 				ULONG i;
-				for (m_chromIndex[0] = 0, i = 1; i <= m_numChrom; ++i)
+				for(m_chromIndex[0] = 0, i = 1; i <= m_numChrom; ++i)
 					m_chromIndex[i] = m_chromIndex[i - 1] + m_numLoci[i - 1];
 
 				m_totNumLoci = m_chromIndex[m_numChrom];
 				m_genoSize = m_totNumLoci*m_ploidy;
+				if(version > 1)
+					ar & make_nvp("info_length", m_infoLength);
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -252,9 +258,11 @@ namespace simuPOP
 			/// max allele
 			UINT m_maxAllele;
 
+			/// length of information field
+			UINT m_infoLength;
+
 			friend class GenoStruTrait;
 	};
-
 }
 
 
@@ -262,7 +270,8 @@ namespace simuPOP
 // set version for GenoStructure class
 // version 0: base
 // version 1: add sexChrom indicator
-BOOST_CLASS_VERSION(simuPOP::GenoStructure, 1)
+// version 2: add infoLength 
+BOOST_CLASS_VERSION(simuPOP::GenoStructure, 2)
 #endif
 
 namespace simuPOP
@@ -290,7 +299,7 @@ namespace simuPOP
 			/// CPPONLY
 			void setGenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 				const vectorf& lociPos, const vectorstr& alleleNames,
-				const vectorstr& lociNames, UINT maxAllele);
+				const vectorstr& lociNames, UINT maxAllele, UINT infoLength);
 
 			/// set an existing geno structure, simply use it
 			/// This is NOT efficient! (but has to be used when, for example,
@@ -546,6 +555,12 @@ namespace simuPOP
 				s_genoStruRepository[m_genoStruIdx].m_maxAllele = maxAllele;
 			}
 
+			/// get info length
+			UINT infoLength() const
+			{
+				return s_genoStruRepository[m_genoStruIdx].m_infoLength;
+			}
+			
 			void swap(GenoStruTrait& rhs)
 			{
 				std::swap(m_genoStruIdx, rhs.m_genoStruIdx);
