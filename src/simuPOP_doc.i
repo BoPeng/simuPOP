@@ -4195,10 +4195,10 @@ Details:
 
 ";
 
-%feature("docstring")  simuPOP::population::setIndInfo " 
+%feature("docstring")  simuPOP::population::setSubPopID " 
 
 Usage:
-  x.setIndInfo(&info)
+  x.setSubPopID(&info)
 
 Arguments:
 
@@ -4208,7 +4208,7 @@ Details:
   This function set info field of all individuals. Info can be used to
   sort individuals and set subpopulations. Therefore, the following
   code will do a migration:
-  setIndInfo([ an_array_of_info_value ])
+  setSubPopID([ an_array_of_info_value ])
    setSubPopByIndInfo()
 
 See Also:
@@ -4217,12 +4217,12 @@ See Also:
 
 ";
 
-%feature("docstring")  simuPOP::population::setIndInfoWithSubPopID " 
+%feature("docstring")  simuPOP::population::setSubPopIDWithSubPopID " 
 
 set individual info with their subpopulation id.
 
 Usage:
-  x.setIndInfoWithSubPopID()
+  x.setSubPopIDWithSubPopID()
 
 Details:
   set individual info by subpop id.

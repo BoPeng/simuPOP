@@ -1328,9 +1328,9 @@ namespace simuPOP
 					+ toStr(pop.popSize()));
 
 				for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
-					pop.ind(i).setInfo( m_keep[i] );
+					pop.ind(i).setSubPopID( m_keep[i] );
 
-				pop.setSubPopByIndInfo();
+				pop.setSubPopByIndID();
 				return true;
 			}
 
@@ -1680,9 +1680,9 @@ namespace simuPOP
 				long * id = reinterpret_cast<long*>(NumArray_Data(m_keep));
 
 				for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
-					pop.ind(i).setInfo( id[i] );
+					pop.ind(i).setSubPopID( id[i] );
 
-				return pop.newPopByIndInfo(m_keepAncestralPops);
+				return pop.newPopByIndID(m_keepAncestralPops);
 			}
 
 			virtual string __repr__()

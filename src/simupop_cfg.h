@@ -108,6 +108,7 @@ enum Sex{ Male = 1, Female = 2};
 // info is usually used for subpopulation index.
 // signed short should be enough.
 typedef signed short InfoType;
+typedef signed short SubPop_ID;
 
 /// type of the tag, which is a template parameter.
 typedef std::pair<unsigned long,unsigned long>  TagType;
@@ -298,6 +299,7 @@ if(debug(dbgCode)){ expr; }
 #define CHECKRANGEGENOSIZE(p) DBG_FAILIF( p>=genoSize(),IndexError, "locus index  (" + toStr(p) + ") out of range of 0 - " + toStr(genoSize()-1))
 #define CHECKRANGESUBPOPMEMBER(ind,sp) DBG_FAILIF( subPopSize(sp)>0 && ind >= subPopSize(sp), IndexError, "individual index (" + toStr(ind) + ") out of range 0 ~" + toStr(subPopSize(sp)-1) + " in subpopulation " + toStr(sp))
 #define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, "individual index (" + toStr(ind) + ") is out of range of 0 ~ " + toStr(popSize()-1))
+#define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= indLength(), IndexError, "indo index (" + toStr(ind) + ") is out of rage of 0 ~ " + toStr(infoLength()-1))
 
 }
 #endif

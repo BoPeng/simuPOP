@@ -248,7 +248,7 @@ namespace simuPOP
 
 	population& randomSample::drawsample(population& pop)
 	{
-		pop.setIndInfoWithSubPopID();
+		pop.setIndSubPopIDWithID();
 
 		if( m_size.size() == 1)
 		{
@@ -264,7 +264,7 @@ namespace simuPOP
 
 			// remove others
 			for(size_t i=m_size[0], iEnd=pop.popSize(); i<iEnd; ++i)
-				pop.ind( pick[i] ).setInfo( -1 );
+				pop.ind( pick[i] ).setSubPopID( -1 );
 		}
 		else
 		{
@@ -282,10 +282,10 @@ namespace simuPOP
 
 				// remove others
 				for(size_t i=m_size[sp]; i<spSize; ++i)
-					pop.ind( pick[i], sp ).setInfo( -1 );
+					pop.ind( pick[i], sp ).setSubPopID( -1 );
 			}									  // each subpop
 		}										  // else
-		return pop.newPopByIndInfo(false);
+		return pop.newPopByIndID(false);
 	}
 
 	bool caseControlSample::prepareSample(population& pop )
@@ -395,24 +395,24 @@ namespace simuPOP
 			for( i=0; i < nCase; ++i)
 			{
 				nCaseInSP[pop.subPopIndPair(m_caseIdx[0][i]).first]++;
-				pop.ind( m_caseIdx[0][i] ).setInfo( 0 );
+				pop.ind( m_caseIdx[0][i] ).setSubPopID( 0 );
 			}
 			// remove others
 			for( i= nCase; i < numAffected; ++i)
-				pop.ind( m_caseIdx[0][i] ).setInfo( -1 );
+				pop.ind( m_caseIdx[0][i] ).setSubPopID( -1 );
 
 			// keep first m_size individuals of shuffled indices
 			for( i=0; i < nControl; ++i)
 			{
 				nControlInSP[pop.subPopIndPair(m_controlIdx[0][i]).first]++;
-				pop.ind( m_controlIdx[0][i] ).setInfo( 1 );
+				pop.ind( m_controlIdx[0][i] ).setSubPopID( 1 );
 			}
 			// remove others
 			for( i= nControl; i < numUnaffected; ++i)
-				pop.ind( m_controlIdx[0][i] ).setInfo( -1 );
+				pop.ind( m_controlIdx[0][i] ).setSubPopID( -1 );
 
 			DBG_DO(DBG_SELECTOR, cout << "Getting sample population" << endl);
-			population& sample = pop.newPopByIndInfo(false);
+			population& sample = pop.newPopByIndID(false);
 
 			sample.setIntVectorVar("nCases", nCaseInSP);
 			sample.setIntVectorVar("nControls", nControlInSP);
@@ -434,21 +434,21 @@ namespace simuPOP
 				// keep first m_size individuals of shuffled indices
 				nCase = std::min(m_numCases[sp], static_cast<int>(m_caseIdx[sp].size()));
 				for(int i=0; i < nCase; ++i)
-					pop.ind( m_caseIdx[sp][i],sp ).setInfo( 0 );
+					pop.ind( m_caseIdx[sp][i],sp ).setSubPopID( 0 );
 				// remove others
 				for(int i= nCase, iEnd= m_caseIdx[sp].size(); i<iEnd; ++i)
-					pop.ind( m_caseIdx[sp][i],sp ).setInfo( -1 );
+					pop.ind( m_caseIdx[sp][i],sp ).setSubPopID( -1 );
 
 				// keep first m_size individuals of shuffled indices
 				nControl = std::min(m_numControls[sp], static_cast<int>(m_controlIdx[sp].size()));
 				for(int i=0; i < nControl; ++i)
-					pop.ind( m_controlIdx[sp][i],sp ).setInfo( 1 );
+					pop.ind( m_controlIdx[sp][i],sp ).setSubPopID( 1 );
 				// remove others
 				for(int i= nControl, iEnd = m_controlIdx[sp].size(); i<iEnd; ++i)
-					pop.ind( m_controlIdx[sp][i],sp ).setInfo( -1 );
+					pop.ind( m_controlIdx[sp][i],sp ).setSubPopID( -1 );
 			}
 			// newPop .... but ignore ancestral populations
-			population& sample = pop.newPopByIndInfo(false);
+			population& sample = pop.newPopByIndID(false);
 			sample.setIntVectorVar("nCases", m_numCases);
 			sample.setIntVectorVar("nControls", m_numControls);
 			return sample;
@@ -577,7 +577,7 @@ namespace simuPOP
 			for(population::IndIterator ind=pop.indBegin();
 				ind != pop.indEnd(); ++ind)
 			{
-				ind->setInfo(-1);
+				ind->setSubPopID(-1);
 			}
 
 			// sample sibpairs
@@ -603,8 +603,8 @@ namespace simuPOP
 				//  SystemError, "Duplicate selection");
 				//DBG_ASSERT( pop.ind( allSibs[ idx[i] ].second).info()==-1,
 				//  SystemError, "Duplicate selection");
-				pop.ind( allSibs[ idx[i] ].first ).setInfo(i);
-				pop.ind( allSibs[ idx[i] ].second ).setInfo(i);
+				pop.ind( allSibs[ idx[i] ].first ).setSubPopID(i);
+				pop.ind( allSibs[ idx[i] ].second ).setSubPopID(i);
 				TagType tag = pop.ind( allSibs[ idx[i]].first ).tag();
 				chosenPar.push_back( (int)(tag.first) );
 				chosenPar.push_back( (int)(tag.second) );
@@ -634,7 +634,7 @@ namespace simuPOP
 
 				// set all indices to -1
 				for(population::IndIterator ind=pop.indBegin(sp); ind != pop.indEnd(sp); ++ind)
-					ind->setInfo(-1);
+					ind->setSubPopID(-1);
 
 				UINT N = std::min(asSize, static_cast<size_t>(m_size[sp]));
 
@@ -648,8 +648,8 @@ namespace simuPOP
 					chosenOff.push_back( (int)(sibpairs[ idx[i]].first) );
 					chosenOff.push_back( (int)(sibpairs[ idx[i]].second) );
 					// sibpairs uses absolute indices, so no sp parameter is rquired.
-					pop.ind( sibpairs[ idx[i]].first ).setInfo(sibID);
-					pop.ind( sibpairs[ idx[i]].second ).setInfo(sibID);
+					pop.ind( sibpairs[ idx[i]].first ).setSubPopID(sibID);
+					pop.ind( sibpairs[ idx[i]].second ).setSubPopID(sibID);
 					TagType tag = pop.ind(sibpairs[ idx[i]].first ).tag();
 					chosenPar.push_back( (int)(tag.first) );
 					chosenPar.push_back( (int)(tag.second) );
@@ -663,7 +663,7 @@ namespace simuPOP
 		}										  // else
 		// this is offspring population with copy of ancestral pop
 		// (true means keepAncestralPops)
-		population & newPop = pop.newPopByIndInfo(true);
+		population & newPop = pop.newPopByIndID(true);
 
 		newPop.setIntVectorVar("numOffspring", nSibpairSP);
 		newPop.setIntVectorVar("chosenOffspring", chosenOff);
@@ -687,19 +687,19 @@ namespace simuPOP
 		for(population::IndIterator ind=newPop.indBegin();
 			ind != newPop.indEnd(); ++ind)
 		{
-			ind->setInfo(-1);
+			ind->setSubPopID(-1);
 		}
 
 		DBG_DO(DBG_SELECTOR, cout << parents.size()*2 << " parents will be kept. " << endl);
 
 		for(size_t i=0; i< parents.size(); ++i)
 		{
-			newPop.ind( parents[i].first).setInfo(i);
-			newPop.ind( parents[i].second).setInfo(i);
+			newPop.ind( parents[i].first).setSubPopID(i);
+			newPop.ind( parents[i].second).setSubPopID(i);
 		}
 		DBG_DO(DBG_SELECTOR, cout << "Setting info done." << endl);
 
-		newPop.setSubPopByIndInfo();
+		newPop.setSubPopByIndID();
 		// do not allow to change newPop size. ONLY subpop structure.
 		DBG_DO( DBG_SELECTOR, cout << "Set structure " << tmp << endl);
 		newPop.setSubPopStru(tmp, false);

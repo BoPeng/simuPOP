@@ -540,7 +540,7 @@ namespace simuPOP
 				// regardness of info type, treat it as int.
 				vectori val(m_popSize);
 				for(ULONG it=0; it < m_popSize; ++it)
-					val[it] = static_cast<int>(ind(it).info());
+					val[it] = static_cast<int>(ind(it).subPopID());
 				// this has to be changed according to info type.
 				PyObject* var = setIntVectorVar(name, val);
 				Py_INCREF(var);
@@ -567,31 +567,31 @@ namespace simuPOP
 			sort individuals and set subpopulations. Therefore, the following code
 			will do a migration:
 
-			setIndInfo([ an_array_of_info_value ])
+			setIndSubPopID([ an_array_of_info_value ])
 
-			setSubPopByIndInfo()
+			setSubPopByIndID()
 
 			\param info an array of info values, should have length of pop size
-			\sa individual::setInfo, individual::info, info
+			\sa individual::setSubPopID, individual::subPopID
 			*/
-			void setIndInfo( const vectori& info)
+			void setIndSubPopID( const vectori& info)
 			{
 				DBG_ASSERT( info.size() == m_popSize, ValueError,
 					"Info should have the same length as pop size");
 
 				for(ULONG it=0; it < m_popSize; ++it)
-					ind(it).setInfo( static_cast<InfoType>(info[it]) );
+					ind(it).setSubPopID( static_cast<SubPop_ID>(info[it]) );
 			}
 
 			/// set individual info with their subpopulation id.
 			/**
 			set individual info by subpop id.
 			*/
-			void setIndInfoWithSubPopID()
+			void setIndSubPopIDWithID()
 			{
 				for( UINT i=0, iEnd = numSubPop(); i < iEnd;  ++i)
 					for( IndIterator it = indBegin(i), itEnd = indEnd(i); it != itEnd;  ++it)
-						it -> setInfo(i);
+						it -> setSubPopID(i);
 			}
 
 			/// adjust subpopulation according to individual info values
@@ -599,9 +599,9 @@ namespace simuPOP
 			them into corresponding subpopulations.
 			\param info optional info that will be used to set sub pop
 			\note individual with negative info will be removed!
-			\sa setInfo,
+			\sa setIndSubPopID,
 			*/
-			void setSubPopByIndInfo(vectori info=vectori());
+			void setSubPopByIndID(vectori info=vectori());
 
 			/// split population
 			/** split subpopulation 'which' into subpopulations with size specified in subPops,
@@ -652,7 +652,7 @@ namespace simuPOP
 				bool removeEmptySubPops=false);
 
 			/** form a new population according to info, info can be given directly */
-			population& newPopByIndInfo(bool keepAncestralPops=true,
+			population& newPopByIndID(bool keepAncestralPops=true,
 				vectori info=vectori(), bool removeEmptySubPops=false);
 
 			void removeLoci( const vectoru& remove=vectoru(), const vectoru& keep=vectoru());
