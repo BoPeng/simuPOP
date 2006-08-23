@@ -109,6 +109,8 @@ enum Sex{ Male = 1, Female = 2};
 // signed short should be enough.
 // if this is changed Info_Var_As_Numarray in utility.cpp also needs to be changed.
 typedef double InfoType;
+typedef std::vector<double>::iterator InfoIterator;
+typedef std::vector<double>::const_iterator InfoConstIterator;
 typedef signed short SubPop_ID;
 
 /// type of the tag, which is a template parameter.

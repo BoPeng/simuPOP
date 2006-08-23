@@ -218,12 +218,12 @@ namespace std
 %include "population.h"
 %include "operator.h"
 
-// %extend simuPOP::population
-// {
-//     //%template(setIndInfo) setIndInfo<int>;
-//     %template(setIndInfo) setIndInfo<double>;
-// };
-// 
+%extend simuPOP::population
+{
+    %template(setIndInfo) setIndInfo<vectori>;
+    %template(setIndInfo) setIndInfo<vectorf>;
+};
+ 
 
 %newobject simuPOP::Population::newPopByIndInfo;
 %newobject simuPOP::Population::newPopWithPartialLoci;

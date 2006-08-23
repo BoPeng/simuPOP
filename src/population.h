@@ -533,20 +533,6 @@ namespace simuPOP
 			*/
 			//@{
 
-			/** brief return individual info in pop namespace
-			 */
-			PyObject* exposeIndInfo(string name="info")
-			{
-				// regardness of info type, treat it as int.
-				vectori val(m_popSize);
-				for(ULONG it=0; it < m_popSize; ++it)
-					val[it] = static_cast<int>(ind(it).subPopID());
-				// this has to be changed according to info type.
-				PyObject* var = setIntVectorVar(name, val);
-				Py_INCREF(var);
-				return var;
-			}
-
 			/** brief return individual affected status in pop namespace
 			 */
 			PyObject* exposeAffectedness(string name="affected")
@@ -691,33 +677,72 @@ namespace simuPOP
 
 			int requestInfoField(const string name);
 
-			// for some reason, I can not use template vector<T> etc
-			// the type is not understood.
-			void setIndInfo(const vectori& info, UINT index)
+			/// set info for all individuals
+			template<class T>
+			void setIndInfo(const T& info, UINT index)
 			{
 				CHECKRANGEINFO(index);
 				DBG_ASSERT(info.size() == popSize(), IndexError,
 					"Size of info should be the same as population size");
 				UINT is = infoSize();
-				vectori::const_iterator infoIter = info.begin();
+				typename T::const_iterator infoIter = info.begin();
 				for(vector<InfoType>::iterator ptr=m_info.begin() + index;
 					ptr != m_info.end() + index; ptr += is)
 					*ptr = static_cast<InfoType>(*infoIter++);
+			}
+
+			/// info iterator
+			GappedInfoIterator infoBegin(UINT index)
+			{
+				CHECKRANGEINFO(index);
+				return GappedInfoIterator(m_info.begin()+index, infoSize());
 			}
 			
-			void setIndInfo(const vectorf& info, UINT index)
+			GappedInfoIterator infoEnd(UINT index)
 			{
 				CHECKRANGEINFO(index);
-				DBG_ASSERT(info.size() == popSize(), IndexError,
-					"Size of info should be the same as population size");
-				UINT is = infoSize();
-				vectorf::const_iterator infoIter = info.begin();
-				for(vector<InfoType>::iterator ptr=m_info.begin() + index;
-					ptr != m_info.end() + index; ptr += is)
-					*ptr = static_cast<InfoType>(*infoIter++);
+				return GappedInfoIterator(m_info.begin()+index+m_info.size(), infoSize());
 			}
+			
+			/// info iterator
+			GappedInfoIterator infoBegin(UINT index, UINT subPop)
+			{
+				CHECKRANGEINFO(index);
+				CHECKRANGESUBPOP(subPop);
 
+				if(shallowCopied())
+					adjustGenoPosition();
 
+				return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop]*infoSize(), infoSize());
+			}
+		
+			PyObject* arrIndInfo()
+			{
+				return Info_Vec_As_NumArray(m_info.begin(), m_info.end());
+			}	
+
+			PyObject* arrIndInfo(UINT subPop)
+			{
+				CHECKRANGESUBPOP(subPop);
+
+				if(shallowCopied())
+					adjustGenoPosition();
+
+				return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop]*infoSize(), 
+					m_info.begin() + m_subPopIndex[subPop+1]*infoSize());
+			}
+			
+			GappedInfoIterator infoEnd(UINT index, UINT subPop)
+			{
+				CHECKRANGEINFO(index);
+				CHECKRANGESUBPOP(subPop);
+
+				if(shallowCopied())
+					adjustGenoPosition();
+
+				return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop+1]*infoSize(), infoSize());
+			}
+			
 			/// set ancestral depth, can be -1
 			void setAncestralDepth(int depth);
 
