@@ -112,7 +112,7 @@ namespace simuPOP
 			X-X is chromosome-loci index starting from 1. This info is rarely used.
 			\param maxAllele maximum allele number. Default to the max allowed allele states
 			of current library (standard or long allele version)
-			\param infoSize: length of information field that will be attached to each
+			\param infoName: name of information fields that will be attached to each
 			individual. For example, if you need to record the parents of each individual
 			you will need two, if you need to record the age of individual, you need an additional
 			one. Other possibilities include offspring ids etc. Note that you have to plan
@@ -132,7 +132,7 @@ namespace simuPOP
 				const vectorstr& alleleNames=vectorstr(),
 				const vectorstr& lociNames=vectorstr(),
 				UINT maxAllele = MaxAllele,
-				UINT infoSize = 0);
+				const vectorstr& infoName = vectorstr());
 
 			/// CPPONLY copy constructor
 			population(const population& rhs);
@@ -689,6 +689,35 @@ namespace simuPOP
 				return m_ancestralPops.size();
 			}
 
+			int requestInfoField(const string name);
+
+			// for some reason, I can not use template vector<T> etc
+			// the type is not understood.
+			void setIndInfo(const vectori& info, UINT index)
+			{
+				CHECKRANGEINFO(index);
+				DBG_ASSERT(info.size() == popSize(), IndexError,
+					"Size of info should be the same as population size");
+				UINT is = infoSize();
+				vectori::const_iterator infoIter = info.begin();
+				for(vector<InfoType>::iterator ptr=m_info.begin() + index;
+					ptr != m_info.end() + index; ptr += is)
+					*ptr = static_cast<InfoType>(*infoIter++);
+			}
+			
+			void setIndInfo(const vectorf& info, UINT index)
+			{
+				CHECKRANGEINFO(index);
+				DBG_ASSERT(info.size() == popSize(), IndexError,
+					"Size of info should be the same as population size");
+				UINT is = infoSize();
+				vectorf::const_iterator infoIter = info.begin();
+				for(vector<InfoType>::iterator ptr=m_info.begin() + index;
+					ptr != m_info.end() + index; ptr += is)
+					*ptr = static_cast<InfoType>(*infoIter++);
+			}
+
+
 			/// set ancestral depth, can be -1
 			void setAncestralDepth(int depth);
 
@@ -1112,7 +1141,6 @@ namespace simuPOP
 			/// index to subPop \todo change to vectorl
 			vectorlu m_subPopIndex;
 
-
 			/// pool of genotypic information
 			vectora m_genotype;
 
@@ -1136,6 +1164,7 @@ namespace simuPOP
 #endif
 				vectorlu m_subPopSize;
 				vectora m_genotype;
+				vector<InfoType> m_info;
 				vector<individual> m_inds;
 			};
 

@@ -42,7 +42,7 @@ namespace simuPOP
 		const vectorstr& alleleNames,
 		const vectorstr& lociNames,
 		UINT maxAllele,
-		UINT infoSize)
+		const vectorstr& infoName)
 		:
 	GenoStruTrait(),
 		m_popSize(size),
@@ -51,6 +51,7 @@ namespace simuPOP
 		m_popGenoSize(0),
 		m_subPopIndex(subPop.size()+1),
 		m_genotype(0),							  // resize later
+		m_info(0),
 		m_inds(0),								  // default constructor will be called.
 		m_ancestralDepth(ancestralDepth),
 		m_vars(NULL, true),						  // invalid shared variables initially
@@ -67,9 +68,9 @@ namespace simuPOP
 			")\nPlease use simuOpt.setOptions(longAllele=True) to use the long allele version of simuPOP.");
 
 		DBG_FAILIF(maxAllele == 0, ValueError,
-			"maxAllele should be at least 1 (0,1 two states). ")
+			"maxAllele should be at least 1 (0,1 two states). ");
 
-			DBG_DO( DBG_POPULATION, cout << "Constructor of population is called\n");
+		DBG_DO( DBG_POPULATION, cout << "Constructor of population is called\n");
 
 		// if specify subPop but not m_popSize
 		if( !subPop.empty() )
@@ -83,7 +84,7 @@ namespace simuPOP
 
 		// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 		// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
-		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames, lociNames, maxAllele, infoSize);
+		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames, lociNames, maxAllele, infoName);
 
 		DBG_DO( DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
 			<< sizeof(Allele) << '*' << genoSize() << endl
@@ -102,18 +103,25 @@ namespace simuPOP
 			// create genotype vector holding alleles for all individuals.
 			m_genotype.resize( m_popGenoSize);
 
+			/// allocate info
+			int is = infoSize();
+			DBG_ASSERT(is == infoName.size(), SystemError, "Wrong geno structure");
+			m_info.resize(m_popSize*is);
+
 			// set subpopulation indexes, do not allow popsize change
 			setSubPopStru(subPop, false);
 
 			// set individual pointers
 			// reset individual pointers
 			GenoIterator ptr = m_genotype.begin();
+			InfoType * infoPtr = &*m_info.begin();
 			UINT step = genoSize();
-			for(ULONG i=0; i< m_popSize; ++i, ptr+=step)
+			for(ULONG i=0; i< m_popSize; ++i, ptr+=step, infoPtr+=is)
 			{
-				m_inds[i].setGenoPtr( ptr );
+				m_inds[i].setGenoPtr(ptr);
 				m_inds[i].setGenoStruIdx(this->genoStruIdx());
 				m_inds[i].setShallowCopied(false);
+				m_inds[i].setInfoPtr(infoPtr);
 			}
 		}
 		catch(...)
@@ -138,6 +146,7 @@ namespace simuPOP
 		m_popGenoSize(rhs.m_popGenoSize),
 		m_subPopIndex(rhs.m_subPopIndex),
 		m_genotype(0),
+		m_info(0),
 		m_inds(0),
 		m_ancestralDepth(rhs.m_ancestralDepth),
 		m_vars(rhs.m_vars),						  // variables will be copied
@@ -155,6 +164,7 @@ namespace simuPOP
 		{
 			m_inds.resize(rhs.m_popSize);
 			m_genotype.resize(rhs.m_popGenoSize);
+			m_info.resize(rhs.m_popSize*infoSize());
 		}
 		catch(...)
 		{
@@ -175,10 +185,13 @@ namespace simuPOP
 		// copy genotype one by one so individual genoPtr will not
 		// point outside of subpopulation region.
 		GenoIterator ptr = m_genotype.begin();
+		InfoType * infoPtr = &*m_info.begin();
 		UINT step = this->genoSize();
-		for(ULONG i=0; i< m_popSize; ++i, ptr+=step)
+		UINT infoStep = this->infoSize();
+		for(ULONG i=0; i< m_popSize; ++i, ptr+=step, infoPtr+=infoStep)
 		{
 			m_inds[i].setGenoPtr( ptr );
+			m_inds[i].setInfoPtr( infoPtr );
 			m_inds[i].copyFrom( rhs.m_inds[i]);
 		}
 
@@ -192,14 +205,23 @@ namespace simuPOP
 			{
 				popData& lp = m_ancestralPops[ap];
 				const popData& rp = rhs.m_ancestralPops[ap];
+				
 				vector<individual>& linds = lp.m_inds;
 				const vector<individual>& rinds = rp.m_inds;
+				
 				GenoIterator lg = lp.m_genotype.begin();
 				constGenoIterator rg = rp.m_genotype.begin();
+				
+				InfoType * li = &*lp.m_info.begin();
+				const InfoType * ri = &*rp.m_info.begin();
+				
 				ULONG ps = rinds.size();
 
-				for(ULONG i=0; i<ps; ++i)
+				for(ULONG i=0; i<ps; ++i) 
+				{
 					linds[i].setGenoPtr( rinds[i].genoPtr() - rg + lg );
+					linds[i].setInfoPtr( rinds[i].infoPtr() - ri + li );
+				}
 			}
 		}
 		catch(...)
@@ -713,7 +735,7 @@ namespace simuPOP
 
 		// new geno structure is in effective now!
 		this->setGenoStructure(this->ploidy(), newNumLoci, this->sexChrom(), newLociDist,
-			this->alleleNames(), newLociNames, this->maxAllele(), this->infoSize() );
+			this->alleleNames(), newLociNames, this->maxAllele(), this->infoNames() );
 		// prepare data
 		//
 		// keep m_popSize;
@@ -865,6 +887,33 @@ namespace simuPOP
 			rhs.m_subPopIndex[1] = rhs.m_popSize;
 			// no need to set genoPtr or genoStru()
 		}
+	}
+
+	/// request info field
+	/// code: 
+	int population::requestInfoField(const string name)
+	{
+		// if this field does not yet exist, create a new one
+		int index = getInfoField(name);
+		if (index >= 0)
+			return index;
+			
+		/// the code does not exist yet,
+		/// crete a new one
+		index = addInfoField(name);
+		///
+		vector<InfoType> newInfo((index+1)*popSize());
+		/// copy the old stuff in
+		InfoType * ptr = &*newInfo.begin();
+		for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
+		{
+			if(index>0)
+				copy(ind->infoBegin(), ind->infoBegin() + index, ptr);
+			ind->setInfoPtr(ptr);
+			ptr += index + 1;
+		}
+		m_info.swap(newInfo);
+		return index;
 	}
 
 	/// set ancestral depth, can be -1

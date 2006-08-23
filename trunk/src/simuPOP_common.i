@@ -137,7 +137,7 @@ namespace std
   %template()     vector<int>;
   %template()     vector<LONG>;
   %template()     vector<ULONG>;
-  %template()     vector<INFO>;
+  %template()     vector<InfoType>;
   %template()     vector<double>;
   %template()     vector<string>;
 
@@ -217,6 +217,13 @@ namespace std
 %include "individual.h"
 %include "population.h"
 %include "operator.h"
+
+// %extend simuPOP::population
+// {
+//     //%template(setIndInfo) setIndInfo<int>;
+//     %template(setIndInfo) setIndInfo<double>;
+// };
+// 
 
 %newobject simuPOP::Population::newPopByIndInfo;
 %newobject simuPOP::Population::newPopWithPartialLoci;
@@ -514,7 +521,7 @@ def SaveSimulator(simu, *args, **kwargs):
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
 def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False, 
   lociPos=[], subPop=[], ancestralDepth=0, alleleNames=[], lociNames=[],
-  maxAllele=MaxAllele):
+  maxAllele=MaxAllele, infoName=[]):
     ld = lociPos
     if len(lociPos) > 0 and type(lociPos[0]) in [types.TupleType, types.ListType]:
        ld = []
@@ -529,7 +536,7 @@ def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False,
          ln.extend( lociNames[i])
     _swig_setattr(self, population, 'this', 
       cppModule.new_population(size, ploidy, loci, sexChrom, ld, subPop, 
-        ancestralDepth, alleleNames, ln, maxAllele))
+        ancestralDepth, alleleNames, ln, maxAllele, infoName))
     _swig_setattr(self, population, 'thisown', 1)
 
 new_population.__doc__ = population.__init__.__doc__
