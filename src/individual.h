@@ -89,7 +89,7 @@ namespace simuPOP
 			/// CPPONLY serialization library requires a default constructor
 			GenoStructure():m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
 				m_numLoci(0), m_sexChrom(false), m_lociPos(0), m_chromIndex(0),
-				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoSize(0)
+				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoName(0)
 				{}
 
 			/** \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
@@ -105,7 +105,7 @@ namespace simuPOP
 			*/
 			GenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 				const vectorf& lociPos, const vectorstr& alleleNames,
-				const vectorstr& lociNames, UINT maxAllele, UINT infoSize);
+				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoName);
 
 			/// copy constructor
 			/// CPPONLY
@@ -121,7 +121,7 @@ namespace simuPOP
 				m_alleleNames(rhs.m_alleleNames),
 				m_lociNames(rhs.m_lociNames),
 				m_maxAllele(rhs.m_maxAllele),
-				m_infoSize(rhs.m_infoSize)
+				m_infoName(rhs.m_infoName)
 			{
 			}
 
@@ -136,7 +136,7 @@ namespace simuPOP
 					( m_alleleNames == rhs.m_alleleNames) &&
 					( m_lociNames == rhs.m_lociNames) &&
 					( m_maxAllele == rhs.m_maxAllele) && 
-					( m_infoSize == rhs.m_infoSize) ))
+					( m_infoName == rhs.m_infoName) ))
 					return true;
 				else
 					return false;
@@ -191,7 +191,7 @@ namespace simuPOP
 				ar & make_nvp("allele_name", m_alleleNames);
 				ar & make_nvp("loci_name", m_lociNames);
 				ar & make_nvp("max_allele", m_maxAllele);
-				ar & make_nvp("info_length", m_infoSize);
+				ar & make_nvp("info_name", m_infoName);
 			}
 
 			template<class Archive>
@@ -220,7 +220,7 @@ namespace simuPOP
 				m_totNumLoci = m_chromIndex[m_numChrom];
 				m_genoSize = m_totNumLoci*m_ploidy;
 				if(version > 1)
-					ar & make_nvp("info_length", m_infoSize);
+					ar & make_nvp("info_name", m_infoName);
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -258,8 +258,8 @@ namespace simuPOP
 			/// max allele
 			UINT m_maxAllele;
 
-			/// length of information field
-			UINT m_infoSize;
+			/// name of the information field
+			vectorstr m_infoName;
 
 			friend class GenoStruTrait;
 	};
@@ -299,7 +299,7 @@ namespace simuPOP
 			/// CPPONLY
 			void setGenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 				const vectorf& lociPos, const vectorstr& alleleNames,
-				const vectorstr& lociNames, UINT maxAllele, UINT infoSize);
+				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoName);
 
 			/// set an existing geno structure, simply use it
 			/// This is NOT efficient! (but has to be used when, for example,
@@ -558,7 +558,41 @@ namespace simuPOP
 			/// get info length
 			UINT infoSize() const
 			{
-				return s_genoStruRepository[m_genoStruIdx].m_infoSize;
+				return s_genoStruRepository[m_genoStruIdx].m_infoName.size();
+			}
+			
+			vectorstr infoNames() const
+			{
+				return s_genoStruRepository[m_genoStruIdx].m_infoName;
+			}
+
+			string infoName(UINT idx) const
+			{
+				CHECKRANGEINFO(idx);
+				return s_genoStruRepository[m_genoStruIdx].m_infoName[idx];
+			}
+			
+			/// return the index of field name, return -1 if not found.
+			int getInfoField(const string& name) const
+			{	
+				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoName;
+				
+				for(UINT i=0; i< names.size(); ++i)
+				{
+					if(names[i] == name)
+						return i;
+				}
+				return -1;
+			}
+			
+			/// add a new information field
+			/// NOTE: should only be called by population::requestInfoField
+			/// return the index of the newly added field
+			int addInfoField(const string& name)
+			{
+				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoName;
+				names.push_back(name);
+				return names.size()-1;
 			}
 			
 			void swap(GenoStruTrait& rhs)
