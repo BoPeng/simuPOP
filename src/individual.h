@@ -210,6 +210,8 @@ namespace simuPOP
 				ar & make_nvp("allele_name", m_alleleNames);
 				ar & make_nvp("loci_name", m_lociNames);
 				ar & make_nvp("max_allele", m_maxAllele);
+				if(version > 1)
+					ar & make_nvp("info_name", m_infoName);
 
 				// build chromosome index
 				m_chromIndex.resize(m_numLoci.size()+1);
@@ -219,8 +221,6 @@ namespace simuPOP
 
 				m_totNumLoci = m_chromIndex[m_numChrom];
 				m_genoSize = m_totNumLoci*m_ploidy;
-				if(version > 1)
-					ar & make_nvp("info_name", m_infoName);
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
