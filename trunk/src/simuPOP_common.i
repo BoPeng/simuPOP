@@ -1,24 +1,24 @@
 ///////////////////////////////////////////////////////////////////
-//   Copyright (C) 2004 by Bo Peng                                         
-//   bpeng@rice.edu                                                        
-//                                                                         
-//   $LastChangedDate$
-//   $Rev$
-//                                                                         
-//   This program is free software; you can redistribute it and/or modify  
-//   it under the terms of the GNU General Public License as published by  
-//   the Free Software Foundation; either version 2 of the License, or     
-//   (at your option) any later version.                                   
-//                                                                         
-//   This program is distributed in the hope that it will be useful,       
-//   but WITHOUT ANY WARRANTY; without even the implied warranty of        
-//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         
-//   GNU General Public License for more details.                          
-//                                                                         
-//   You should have received a copy of the GNU General Public License     
-//   along with this program; if not, write to the                         
-//   Free Software Foundation, Inc.,                                       
-//   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             
+//     Copyright (C) 2004 by Bo Peng                                                                                 
+//     bpeng@rice.edu                                                                                                                
+//                                                                                                                                                 
+//     $LastChangedDate$
+//     $Rev$
+//                                                                                                                                                 
+//     This program is free software; you can redistribute it and/or modify    
+//     it under the terms of the GNU General Public License as published by    
+//     the Free Software Foundation; either version 2 of the License, or         
+//     (at your option) any later version.                                                                     
+//                                                                                                                                                 
+//     This program is distributed in the hope that it will be useful,             
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of                
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the                 
+//     GNU General Public License for more details.                                                    
+//                                                                                                                                                 
+//     You should have received a copy of the GNU General Public License         
+//     along with this program; if not, write to the                                                 
+//     Free Software Foundation, Inc.,                                                                             
+//     59 Temple Place - Suite 330, Boston, MA    02111-1307, USA.                         
 //
 ///////////////////////////////////////////////////////////////////
 
@@ -122,40 +122,40 @@ extern "C"
 
 namespace std
 {
-  // used in invidiaul.h
-  %template()      pair<UINT, UINT>;
-  // used in populaiton.h
-  %template()      pair<UINT, ULONG>;
-  %template(vectora)     vector<Allele>;
+    // used in invidiaul.h
+    %template()            pair<UINT, UINT>;
+    // used in populaiton.h
+    %template()            pair<UINT, ULONG>;
+    %template(vectora)         vector<Allele>;
 
 #ifdef LONGALLELE
 #define vectoru vectora
 #else
-  %template(vectoru)     vector<UINT>;
+    %template(vectoru)         vector<UINT>;
 #endif
 
-  %template()     vector<int>;
-  %template()     vector<LONG>;
-  %template()     vector<ULONG>;
-  %template()     vector<InfoType>;
-  %template()     vector<double>;
-  %template()     vector<string>;
+    %template()         vector<int>;
+    %template()         vector<LONG>;
+    %template()         vector<ULONG>;
+    %template()         vector<InfoType>;
+    %template()         vector<double>;
+    %template()         vector<string>;
 
-  %template()     pair<string, double>;
-  %template()     map<string, double>;
+    %template()         pair<string, double>;
+    %template()         map<string, double>;
 
-  %template()     pair<ULONG, ULONG>;
-  %template()     vector<pair<ULONG, ULONG> >;
+    %template()         pair<ULONG, ULONG>;
+    %template()         vector<pair<ULONG, ULONG> >;
 
-  %template()     vector< vector<int> >;
-  %template()     vector< vector<double> >;
+    %template()         vector< vector<int> >;
+    %template()         vector< vector<double> >;
 }
 
 
 ////////////////////////// SWIG_INIT FUNCTION //////////////////////////
 %init
 %{
-  simuPOP::initialize();
+    simuPOP::initialize();
 %}
 
 
@@ -165,38 +165,38 @@ namespace std
 
 %exception
 {
-  try
-  {
-    $function
-  }
-  catch(simuPOP::OutOfMemory e)
-  {
-    SWIG_exception(SWIG_MemoryError, e.message());
-  }
-  catch(simuPOP::IOError e)
-  {
-    SWIG_exception(SWIG_IOError, e.message());
-  }
-  catch(simuPOP::IndexError e)
-  {
-    SWIG_exception(SWIG_IndexError, e.message());
-  }
-  catch(simuPOP::TypeError e)
-  {
-    SWIG_exception(SWIG_TypeError, e.message());
-  }
-  catch(simuPOP::ValueError e)
-  {
-    SWIG_exception(SWIG_ValueError, e.message());
-  }
-  catch(simuPOP::SystemError e)
-  {
-    SWIG_exception(SWIG_SystemError, e.message());
-  }
-  catch(...)
-  {
-    SWIG_exception(SWIG_RuntimeError, "Unknown runtime error happened.");
-  }
+    try
+    {
+        $function
+    }
+    catch(simuPOP::OutOfMemory e)
+    {
+        SWIG_exception(SWIG_MemoryError, e.message());
+    }
+    catch(simuPOP::IOError e)
+    {
+        SWIG_exception(SWIG_IOError, e.message());
+    }
+    catch(simuPOP::IndexError e)
+    {
+        SWIG_exception(SWIG_IndexError, e.message());
+    }
+    catch(simuPOP::TypeError e)
+    {
+        SWIG_exception(SWIG_TypeError, e.message());
+    }
+    catch(simuPOP::ValueError e)
+    {
+        SWIG_exception(SWIG_ValueError, e.message());
+    }
+    catch(simuPOP::SystemError e)
+    {
+        SWIG_exception(SWIG_SystemError, e.message());
+    }
+    catch(...)
+    {
+        SWIG_exception(SWIG_RuntimeError, "Unknown runtime error happened.");
+    }
 }
 
 
@@ -220,8 +220,10 @@ namespace std
 
 %extend simuPOP::population
 {
-    %template(setIndInfo) setIndInfo<vectori>;
-    %template(setIndInfo) setIndInfo<vectorf>;
+        %template(setIndInfo) setIndInfo<vectori, UINT>;
+        %template(setIndInfo) setIndInfo<vectorf, UINT>;
+        %template(setIndInfo) setIndInfo<vectori>;
+        %template(setIndInfo) setIndInfo<vectorf>;
 };
  
 
@@ -232,7 +234,7 @@ namespace std
 
 namespace std
 {
-  %template(vectorop)   vector< simuPOP::Operator * >;
+    %template(vectorop)     vector< simuPOP::Operator * >;
 }
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////
@@ -263,49 +265,49 @@ namespace std
 import exceptions, types
 
 class dw(object):
-  def __init__(self, var):
-    try:
-      self.__dict__ = var
-    except exceptions.TypeError:
-      raise exceptions.TypeError("The returned value is not a dictionary.\nNote: simu.vars() is a list so simu.dvars() is not allowed. \n  Use simu.dvars(rep) for population namespace.")
-  def clear(self):
-    self.__dict__.clear()
-  def __repr__(self):
-    return str(self.__dict__)
+    def __init__(self, var):
+        try:
+            self.__dict__ = var
+        except exceptions.TypeError:
+            raise exceptions.TypeError("The returned value is not a dictionary.\nNote: simu.vars() is a list so simu.dvars() is not allowed. \n    Use simu.dvars(rep) for population namespace.")
+    def clear(self):
+        self.__dict__.clear()
+    def __repr__(self):
+        return str(self.__dict__)
 
 def dvars(self, *args, **kwargs):
-  return dw(self.vars(*args, **kwargs))
+    return dw(self.vars(*args, **kwargs))
 
 population.dvars = dvars
 simulator.dvars = dvars
 
 def LoadSimulatorFromFiles( files, mating):
-  simu = simulator(population(1), mating, rep=len(files))
-  # now, replace simu.population with pops
-  for i in range(0, len(files)):
-    pop = LoadPopulation(files[i])
-    simu.setPopulation(pop, i)
-  return simu
+    simu = simulator(population(1), mating, rep=len(files))
+    # now, replace simu.population with pops
+    for i in range(0, len(files)):
+        pop = LoadPopulation(files[i])
+        simu.setPopulation(pop, i)
+    return simu
 
 def LoadSimulatorFromPops( pops, mating):
-  simu = simulator(population(1), mating, rep=len(pops))
-  # now, replace simu.population with pops
-  for i in range(0, len(pops)):
-    simu.setPopulation(pops[i], i)
-  return simu
+    simu = simulator(population(1), mating, rep=len(pops))
+    # now, replace simu.population with pops
+    for i in range(0, len(pops)):
+        simu.setPopulation(pops[i], i)
+    return simu
 
 def SavePopulations(pops, file, format='auto', compress=True):
-  simu = simulator(population(1), noMating(), rep=len(pops))
-  for i in range(0, len(pops)):
-    simu.setPopulation(pops[i], i)
-  simu.saveSimulator(file, format, compress)
+    simu = simulator(population(1), noMating(), rep=len(pops))
+    for i in range(0, len(pops)):
+        simu.setPopulation(pops[i], i)
+    simu.saveSimulator(file, format, compress)
 
 def LoadPopulations(file, format='auto'):
-  simu = LoadSimulator(file, noMating(), format);
-  pops = []
-  for i in range(0, simu.numRep()):
-    pops.append( simu.getPopulation(i))
-  return pops
+    simu = LoadSimulator(file, noMating(), format);
+    pops = []
+    for i in range(0, simu.numRep()):
+        pops.append( simu.getPopulation(i))
+    return pops
 
 #### /////////////////// FUNCTION COUNTERPART OF OPERATORS ////////////////////////////
 
@@ -313,230 +315,232 @@ def LoadPopulations(file, format='auto'):
 #
 # functions to corresponding operators
 def Dump(pop, *args, **kwargs):
-  dumper(*args, **kwargs).apply(pop)
+    dumper(*args, **kwargs).apply(pop)
 
 Dump.__doc__ = "Function version of operator dump whose __init__ function is \n" + dumper.__init__.__doc__
 
 def InitByFreq(pop, *args, **kwargs):
-  initByFreq(*args, **kwargs).apply(pop)
+    initByFreq(*args, **kwargs).apply(pop)
 
 InitByFreq.__doc__ = "Function version of operator initByFreq whose __init__ function is \n" + initByFreq.__init__.__doc__
 
 def InitByValue(pop, *args, **kwargs):
-  initByValue(*args, **kwargs).apply(pop)
+    initByValue(*args, **kwargs).apply(pop)
 
 InitByValue.__doc__ = "Function version of operator initByValue whose __init__ function is \n" + initByValue.__init__.__doc__
 
 def PyInit(pop, *args, **kwargs):
-  pyInit(*args, **kwargs).apply(pop)
-  
+    pyInit(*args, **kwargs).apply(pop)
+    
 PyInit.__doc__ = "Function version of operator pyInit whose __init__ function is \n" + pyInit.__init__.__doc__
 
-def Spread(pop,  *args, **kwargs):
-  spread(*args, **kwargs).apply(pop)
+def Spread(pop,    *args, **kwargs):
+    spread(*args, **kwargs).apply(pop)
 
 Spread.__doc__ = "Function version of operator spread whose __init__ function is \n" + spread.__init__.__doc__
 
 def PyEval(pop, *args, **kwargs):
-  pyEval(*args, **kwargs).apply(pop)
+    pyEval(*args, **kwargs).apply(pop)
 
 PyEval.__doc__ = "Function version of operator pyEval whose __init__ function is \n" + pyEval.__init__.__doc__
 
 def PyExec(pop, *args, **kwargs):
-  pyExec(*args, **kwargs).apply(pop)
-   
+    pyExec(*args, **kwargs).apply(pop)
+     
 PyExec.__doc__ = "Function version of operator pyExec whose __init__ function is \n" + pyExec.__init__.__doc__
 
 def Stat(pop, *args, **kwargs):
-  stat(*args, **kwargs).apply(pop)
-  
+    stat(*args, **kwargs).apply(pop)
+    
 Stat.__doc__ = "Function version of operator stat whose __init__ function is \n" + stat.__init__.__doc__
 
 def KamMutate(pop, *args, **kwargs):
-  kamMutator(*args, **kwargs).apply(pop)
-  
+    kamMutator(*args, **kwargs).apply(pop)
+    
 KamMutate.__doc__ = "Function version of operator kamMutator whose __init__ function is \n" + kamMutator.__init__.__doc__
 
 def SmmMutate(pop, *args, **kwargs):
-  smmMutator(*args, **kwargs).apply(pop)
-  
+    smmMutator(*args, **kwargs).apply(pop)
+    
 SmmMutate.__doc__ = "Function version of operator smmMutator whose __init__ function is \n" + smmMutator.__init__.__doc__
 
 def GsmMutate(pop, *args, **kwargs):
-  gsmMutator(*args, **kwargs).apply(pop)
-  
+    gsmMutator(*args, **kwargs).apply(pop)
+    
 GsmMutate.__doc__ = "Function version of operator gsmMutator whose __init__ function is \n" + gsmMutator.__init__.__doc__
 
 def PyMutate(pop, *args, **kwargs):
-  pyMutator(*args, **kwargs).apply(pop)
+    pyMutator(*args, **kwargs).apply(pop)
 
 PyMutate.__doc__ = "Function version of operator pyMutator whose __init__ function is \n" + pyMutator.__init__.__doc__
 
 def PointMutate(pop, *args, **kwargs):
-  pointMutator(*args, **kwargs).apply(pop)
+    pointMutator(*args, **kwargs).apply(pop)
  
 #PointMutate.__doc__ = "Function version of operator pointMutator whose __init__ function is \n" + pointMutator.__init__.__doc__
 
 def Migrate(pop, *args, **kwargs):
-  migrator(*args, **kwargs).apply(pop)
+    migrator(*args, **kwargs).apply(pop)
 
 Migrate.__doc__ = "Function version of operator migrator whose __init__ function is \n" + migrator.__init__.__doc__
 
 def PyMigrate(pop, *args, **kwargs):
-  pyMigrator(*args, **kwargs).apply(pop)
+    pyMigrator(*args, **kwargs).apply(pop)
 
 PyMigrate.__doc__ = "Function version of operator pyMigrate whose __init__ function is \n" + pyMigrator.__init__.__doc__
 
 def SplitSubPop(pop, *args, **kwargs):
-  splitSubPop(*args, **kwargs).apply(pop)
+    splitSubPop(*args, **kwargs).apply(pop)
 
 SplitSubPop.__doc__ = "Function version of operator splitSubPops whose __init__ function is \n" + splitSubPop.__init__.__doc__
 
 def MergeSubPops(pop, *args, **kwargs):
-  mergeSubPops(*args, **kwargs).apply(pop)
-  
+    mergeSubPops(*args, **kwargs).apply(pop)
+    
 MergeSubPops.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + mergeSubPops.__init__.__doc__
 
 def RemoveSubPops(pop, *args, **kwargs):
-  pop.removeSubPops(*args, **kwargs)
-  
+    pop.removeSubPops(*args, **kwargs)
+    
 #RemoveSubPops.__doc__ = "Function versionof member function population::removeSubPop with help info:\n" + population.removeSubPops.__doc__
 
 def RemoveEmptySubPops(pop, *args, **kwargs):
-  pop.removeEmptySubPops(*args, **kwargs)
-  
+    pop.removeEmptySubPops(*args, **kwargs)
+    
 #RemoveEmptySubPops.__doc__ = "Function versionof member function population::removeEmptySubPops with help info:\n" + population.removeEmptySubPops.__doc__
 
 def MapSelect(pop, *args, **kwargs):
-  mapSelector(stage=PostMating, *args, **kwargs).apply(pop)
-  
+    mapSelector(stage=PostMating, *args, **kwargs).apply(pop)
+    
 MapSelect.__doc__ = "Function version of operator mapSelect whose __init__ function is \n" + mapSelector.__init__.__doc__
 
 def MaSelect(pop, *args, **kwargs):
-  maSelector(stage=PostMating, *args, **kwargs).apply(pop)
-  
+    maSelector(stage=PostMating, *args, **kwargs).apply(pop)
+    
 MaSelect.__doc__ = "Function version of operator maSelect whose __init__ function is \n" + maSelector.__init__.__doc__
 
 def MlSelect(pop, *args, **kwargs):
-  mlSelector(stage=PostMating, *args, **kwargs).apply(pop)
-  
+    mlSelector(stage=PostMating, *args, **kwargs).apply(pop)
+    
 MlSelect.__doc__ = "Function version of operator mlSelect whose __init__ function is \n" + mlSelector.__init__.__doc__
 
 def PySelect(pop, *args, **kwargs):
-  pySelector(stage=PostMating, *args, **kwargs).apply(pop)
-  
+    pySelector(stage=PostMating, *args, **kwargs).apply(pop)
+    
 PySelect.__doc__ = "Function version of operator pySelect whose __init__ function is \n" + pySelector.__init__.__doc__
 
 def MapPenetrance(pop, *args, **kwargs):
-  mapPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
-  
+    mapPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
+    
 MapPenetrance.__doc__ = "Function version of operator mapPenetrance whose __init__ function is \n" + mapPenetrance.__init__.__doc__
 
 def MaPenetrance(pop, *args, **kwargs):
-  maPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
-  
+    maPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
+    
 MaPenetrance.__doc__ = "Function version of operator maPenetrance whose __init__ function is \n" + maPenetrance.__init__.__doc__
 
 def MlPenetrance(pop, *args, **kwargs):
-  mlPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
-  
+    mlPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
+    
 MlPenetrance.__doc__ = "Function version of operator mlPenetrance whose __init__ function is \n" + mlPenetrance.__init__.__doc__
 
 def PyPenetrance(pop, *args, **kwargs):
-  pyPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
-  
+    pyPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
+    
 PyPenetrance.__doc__ = "Function version of operator pyPenetrance whose __init__ function is \n" + pyPenetrance.__init__.__doc__
 
 def MapQuanTrait(pop, *args, **kwargs):
-  mapQuanTrait(*args, **kwargs).apply(pop)
-  
+    mapQuanTrait(*args, **kwargs).apply(pop)
+    
 MapQuanTrait.__doc__ = "Function version of operator mapQuanTrait whose __init__ function is \n" + mapQuanTrait.__init__.__doc__
 
 def MaQuanTrait(pop, *args, **kwargs):
-  maQuanTrait(*args, **kwargs).apply(pop)
-  
+    maQuanTrait(*args, **kwargs).apply(pop)
+    
 MaQuanTrait.__doc__ = "Function version of operator maQuanTrait whose __init__ function is \n" + maQuanTrait.__init__.__doc__
 
 def MlQuanTrait(pop, *args, **kwargs):
-  mlQuanTrait(*args, **kwargs).apply(pop)
-  
+    mlQuanTrait(*args, **kwargs).apply(pop)
+    
 MlQuanTrait.__doc__ = "Function version of operator mlQuanTrait whose __init__ function is \n" + mlQuanTrait.__init__.__doc__
 
 def PyQuanTrait(pop, *args, **kwargs):
-  pyQuanTrait(*args, **kwargs).apply(pop)
+    pyQuanTrait(*args, **kwargs).apply(pop)
 
 PyQuanTrait.__doc__ = "Function version of operator pyQuanTrait whose __init__ function is \n" + pyQuanTrait.__init__.__doc__
 
 # meaningless
 #def TicToc(pop, *args, **kwargs):
-#  ticToc(*args, **kwargs).apply(pop)
+#    ticToc(*args, **kwargs).apply(pop)
  
 #TicToc.__doc__ = "Function version of operator ticToc whose __init__ function is \n" + ticToc.__init__.__doc__
 
 def Sample(pop, *args, **kwargs):
-  s = sample(*args, **kwargs)
-  s.apply(pop)
-  return s.sample(pop)
+    s = sample(*args, **kwargs)
+    s.apply(pop)
+    return s.sample(pop)
 
 Sample.__doc__ = "Function version of operator sample whose __init__function is \n" + sample.__init__.__doc__
 
 def RandomSample(pop, *args, **kwargs):
-  s = randomSample(*args, **kwargs)
-  s.apply(pop)
-  return s.samples(pop) 
+    s = randomSample(*args, **kwargs)
+    s.apply(pop)
+    return s.samples(pop) 
 
 RandomSample.__doc__ = "Function version of operator randomSample whose __init__function is \n" + randomSample.__init__.__doc__
 
 def CaseControlSample(pop, *args, **kwargs):
-  s = caseControlSample(*args, **kwargs)
-  s.apply(pop)
-  return s.samples(pop)
+    s = caseControlSample(*args, **kwargs)
+    s.apply(pop)
+    return s.samples(pop)
 
 CaseControlSample.__doc__ = "Function version of operator caseControlSample whose __init__function is \n" + caseControlSample.__init__.__doc__
 
 def PySample(pop, *args, **kwargs):
-  s = pySample(*args, **kwargs)
-  s.apply(pop)
-  return s.samples(pop)
+    s = pySample(*args, **kwargs)
+    s.apply(pop)
+    return s.samples(pop)
 
 PySample.__doc__ = "Function version of operator pySample whose __init__function is \n" + pySample.__init__.__doc__
 
 def AffectedSibpairSample(pop, *args, **kwargs):
-  s = affectedSibpairSample(*args, **kwargs)
-  s.apply(pop)
-  return s.samples(pop)
+    s = affectedSibpairSample(*args, **kwargs)
+    s.apply(pop)
+    return s.samples(pop)
 
 #AffectedSibpairSample.__doc__ = "Function version of operator affectedSibpairSample whose __init__function is \n" + affectedSibpairSample.__init__.__doc__
 
 def SavePopulation(pop, *args, **kwargs):
-  pop.savePopulation(*args, **kwargs)
+    pop.savePopulation(*args, **kwargs)
 
 #SavePopulation.__doc__ = "Function versionof member function population::savePopulation with help info:\n" + population.savePopulation.__doc__
 
 def SaveSimulator(simu, *args, **kwargs):
-  simu.saveSimulator(*args, **kwargs)
-  
+    simu.saveSimulator(*args, **kwargs)
+    
 #SaveSimulator.__doc__ = "Function versionof member function simulator::saveSimulator with help info:\n" + simulator.saveSimulator.__doc__
 
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
 def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False, 
-  lociPos=[], subPop=[], ancestralDepth=0, alleleNames=[], lociNames=[],
-  maxAllele=MaxAllele, infoName=[]):
+    lociPos=[], subPop=[], ancestralDepth=0, alleleNames=[], lociNames=[],
+    maxAllele=MaxAllele, infoName=[]):
+    if type(infoName) not in (type([]), type(())):
+        raise exceptions.ValueError('infoName needs to be an array')
     ld = lociPos
     if len(lociPos) > 0 and type(lociPos[0]) in [types.TupleType, types.ListType]:
-       ld = []
-       for i in range(0, len(lociPos)):
-         if len(lociPos[i]) != loci[i]:
-           raise exceptions.ValueError("Loci position specification for chromosome %d is wrong" % i)
-         ld.extend( lociPos[i])
+        ld = []
+        for i in range(0, len(lociPos)):
+            if len(lociPos[i]) != loci[i]:
+                raise exceptions.ValueError("Loci position specification for chromosome %d is wrong" % i)
+            ld.extend( lociPos[i])
     ln = lociNames
     if len(lociNames) > 0 and type(lociNames[0]) in [types.TupleType, types.ListType]:
-       ln = []
-       for i in range(0, len(lociNames)):
-         ln.extend( lociNames[i])
+        ln = []
+        for i in range(0, len(lociNames)):
+            ln.extend( lociNames[i])
     _swig_setattr(self, population, 'this', 
-      cppModule.new_population(size, ploidy, loci, sexChrom, ld, subPop, 
-        ancestralDepth, alleleNames, ln, maxAllele, infoName))
+        cppModule.new_population(size, ploidy, loci, sexChrom, ld, subPop, 
+            ancestralDepth, alleleNames, ln, maxAllele, infoName))
     _swig_setattr(self, population, 'thisown', 1)
 
 new_population.__doc__ = population.__init__.__doc__
@@ -545,25 +549,25 @@ population.__init__ = new_population
 
 
 def new_dumper(self, chrom=[], subPop=[], indRange=[], *args, **kwargs):
-  # param chrom
-  if type(chrom) == types.IntType:
-    ch = [chrom]
-  else:
-    ch = chrom
-  # parameter subPop
-  if type(subPop) == types.IntType:
-    sp = [subPop]
-  else:
-    sp = subPop
-  # parameter indRange
-  ir = indRange
-  if len(indRange) > 0 and type(indRange[0]) in [types.TupleType, types.ListType]:
-    ir = []
-    for i in indRange:
-      ir.extend(i)
-  _swig_setattr(self, dumper, 'this', 
-    cppModule.new_dumper(chrom=ch, subPop=sp, indRange=ir, *args, **kwargs))
-  _swig_setattr(self, dumper, 'thisown', 1)
+    # param chrom
+    if type(chrom) == types.IntType:
+        ch = [chrom]
+    else:
+        ch = chrom
+    # parameter subPop
+    if type(subPop) == types.IntType:
+        sp = [subPop]
+    else:
+        sp = subPop
+    # parameter indRange
+    ir = indRange
+    if len(indRange) > 0 and type(indRange[0]) in [types.TupleType, types.ListType]:
+        ir = []
+        for i in indRange:
+            ir.extend(i)
+    _swig_setattr(self, dumper, 'this', 
+        cppModule.new_dumper(chrom=ch, subPop=sp, indRange=ir, *args, **kwargs))
+    _swig_setattr(self, dumper, 'thisown', 1)
  
 new_dumper.__doc__ = dumper.__init__.__doc__
 del dumper.__init__
@@ -571,109 +575,109 @@ dumper.__init__ = new_dumper
 
 
 def new_controlledMating(self, matingScheme, freqFunc, locus=-1, loci=[], 
-  allele=-1, alleles=[], *args, **kwargs):
-  # parameter locus
-  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-    loc = [locus]
-  elif type(loci) in [types.IntType, types.LongType]:
-    loc = [loci]
-  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-    loc = loci
-  else:
-    raise exceptions.TypeError('Please specify locus or loci')
-  if allele != -1 and type(allele) in [types.IntType, types.LongType]:
-    al = [allele]
-  elif type(alleles) in [types.IntType, types.LongType]:
-    al = [alleles]
-  elif type(alleles) in [types.TupleType, types.ListType] and len(alleles)>0:
-    al = alleles
-  else:
-    raise exceptions.TypeError('Please specify allele or alleles')
-  _swig_setattr(self, controlledMating, 'this', 
-    cppModule.new_controlledMating(matingScheme=matingScheme, 
-      loci=loc, alleles=al, freqFunc=freqFunc, *args, **kwargs))
-  _swig_setattr(self, controlledMating, 'thisown', 1)
+    allele=-1, alleles=[], *args, **kwargs):
+    # parameter locus
+    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        raise exceptions.TypeError('Please specify locus or loci')
+    if allele != -1 and type(allele) in [types.IntType, types.LongType]:
+        al = [allele]
+    elif type(alleles) in [types.IntType, types.LongType]:
+        al = [alleles]
+    elif type(alleles) in [types.TupleType, types.ListType] and len(alleles)>0:
+        al = alleles
+    else:
+        raise exceptions.TypeError('Please specify allele or alleles')
+    _swig_setattr(self, controlledMating, 'this', 
+        cppModule.new_controlledMating(matingScheme=matingScheme, 
+            loci=loc, alleles=al, freqFunc=freqFunc, *args, **kwargs))
+    _swig_setattr(self, controlledMating, 'thisown', 1)
  
 new_controlledMating.__doc__ = controlledMating.__init__.__doc__
 del controlledMating.__init__
 controlledMating.__init__ = new_controlledMating
 
 def new_controlledBinomialSelection(self, freqFunc, locus=-1, loci=[], 
-  allele=-1, alleles=[], *args, **kwargs):
-  # parameter locus
-  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-    loc = [locus]
-  elif type(loci) in [types.IntType, types.LongType]:
-    loc = [loci]
-  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-    loc = loci
-  else:
-    raise exceptions.TypeError('Please specify locus or loci')
-  if allele != -1 and type(allele) in [types.IntType, types.LongType]:
-    al = [allele]
-  elif type(alleles) in [types.IntType, types.LongType]:
-    al = [alleles]
-  elif type(alleles) in [types.TupleType, types.ListType] and len(alleles)>0:
-    al = alleles
-  else:
-    raise exceptions.TypeError('Please specify allele or alleles')
-  _swig_setattr(self, controlledBinomialSelection, 'this', 
-    cppModule.new_controlledBinomialSelection( loci=loc, alleles=al,
-    freqFunc=freqFunc, *args, **kwargs))
-  _swig_setattr(self, controlledBinomialSelection, 'thisown', 1)
+    allele=-1, alleles=[], *args, **kwargs):
+    # parameter locus
+    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        raise exceptions.TypeError('Please specify locus or loci')
+    if allele != -1 and type(allele) in [types.IntType, types.LongType]:
+        al = [allele]
+    elif type(alleles) in [types.IntType, types.LongType]:
+        al = [alleles]
+    elif type(alleles) in [types.TupleType, types.ListType] and len(alleles)>0:
+        al = alleles
+    else:
+        raise exceptions.TypeError('Please specify allele or alleles')
+    _swig_setattr(self, controlledBinomialSelection, 'this', 
+        cppModule.new_controlledBinomialSelection( loci=loc, alleles=al,
+        freqFunc=freqFunc, *args, **kwargs))
+    _swig_setattr(self, controlledBinomialSelection, 'thisown', 1)
  
 new_controlledBinomialSelection.__doc__ = controlledBinomialSelection.__init__.__doc__
 del controlledBinomialSelection.__init__
 controlledBinomialSelection.__init__ = new_controlledBinomialSelection
 
 def new_controlledRandomMating(self, freqFunc, locus=-1, loci=[], 
-  allele=-1, alleles=[], *args, **kwargs):
-  # parameter locus
-  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-    loc = [locus]
-  elif type(loci) in [types.IntType, types.LongType]:
-    loc = [loci]
-  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-    loc = loci
-  else:
-    raise exceptions.TypeError('Please specify locus or loci')
-  if allele != -1 and type(allele) in [types.IntType, types.LongType]:
-    al = [allele]
-  elif type(alleles) in [types.IntType, types.LongType]:
-    al = [alleles]
-  elif type(alleles) in [types.TupleType, types.ListType] and len(alleles)>0:
-    al = alleles
-  else:
-    raise exceptions.TypeError('Please specify allele or alleles')
-  _swig_setattr(self, controlledRandomMating, 'this', 
-    cppModule.new_controlledRandomMating( loci=loc, alleles=al, 
-    freqFunc=freqFunc, *args, **kwargs))
-  _swig_setattr(self, controlledRandomMating, 'thisown', 1)
+    allele=-1, alleles=[], *args, **kwargs):
+    # parameter locus
+    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        raise exceptions.TypeError('Please specify locus or loci')
+    if allele != -1 and type(allele) in [types.IntType, types.LongType]:
+        al = [allele]
+    elif type(alleles) in [types.IntType, types.LongType]:
+        al = [alleles]
+    elif type(alleles) in [types.TupleType, types.ListType] and len(alleles)>0:
+        al = alleles
+    else:
+        raise exceptions.TypeError('Please specify allele or alleles')
+    _swig_setattr(self, controlledRandomMating, 'this', 
+        cppModule.new_controlledRandomMating( loci=loc, alleles=al, 
+        freqFunc=freqFunc, *args, **kwargs))
+    _swig_setattr(self, controlledRandomMating, 'thisown', 1)
  
 new_controlledRandomMating.__doc__ = controlledRandomMating.__init__.__doc__
 del controlledRandomMating.__init__
 controlledRandomMating.__init__ = new_controlledRandomMating
 
 def mutator_setRate(self, rate, atLoci=[], *args, **kwargs):
-  # rate -> [rate] if needed
-  if type(rate)  in [types.IntType, types.FloatType]:
-    r = [rate]
-  else:
-    r = rate
-  return cppModule.mutator_setRate(self, r, atLoci, *args, **kwargs)
+    # rate -> [rate] if needed
+    if type(rate)    in [types.IntType, types.FloatType]:
+        r = [rate]
+    else:
+        r = rate
+    return cppModule.mutator_setRate(self, r, atLoci, *args, **kwargs)
 
 del mutator.setRate
 mutator.setRate = mutator_setRate
 
 def new_kamMutator(self, rate=[], *args, **kwargs):
-  # parameter rate
-  if type(rate) in [types.IntType, types.FloatType]:
-    r = [rate]
-  else:
-    r = rate
-  _swig_setattr(self, kamMutator, 'this', 
-    cppModule.new_kamMutator(rate=r, *args, **kwargs))
-  _swig_setattr(self, kamMutator, 'thisown', 1)
+    # parameter rate
+    if type(rate) in [types.IntType, types.FloatType]:
+        r = [rate]
+    else:
+        r = rate
+    _swig_setattr(self, kamMutator, 'this', 
+        cppModule.new_kamMutator(rate=r, *args, **kwargs))
+    _swig_setattr(self, kamMutator, 'thisown', 1)
  
 new_kamMutator.__doc__ = kamMutator.__init__.__doc__
 del kamMutator.__init__
@@ -682,14 +686,14 @@ kamMutator.__init__ = new_kamMutator
 
 
 def new_smmMutator(self, rate=[], *args, **kwargs):
-  # parameter rate
-  if type(rate) in [types.IntType, types.FloatType]:
-    r = [rate]
-  else:
-    r = rate
-  _swig_setattr(self, smmMutator, 'this', 
-    cppModule.new_smmMutator(rate=r, *args, **kwargs))
-  _swig_setattr(self, smmMutator, 'thisown', 1)
+    # parameter rate
+    if type(rate) in [types.IntType, types.FloatType]:
+        r = [rate]
+    else:
+        r = rate
+    _swig_setattr(self, smmMutator, 'this', 
+        cppModule.new_smmMutator(rate=r, *args, **kwargs))
+    _swig_setattr(self, smmMutator, 'thisown', 1)
  
 new_smmMutator.__doc__ = smmMutator.__init__.__doc__
 del smmMutator.__init__
@@ -698,14 +702,14 @@ smmMutator.__init__ = new_smmMutator
 
 
 def new_gsmMutator(self, rate=[], *args, **kwargs):
-  # parameter rate
-  if type(rate) in [types.IntType, types.FloatType]:
-    r = [rate]
-  else:
-    r = rate
-  _swig_setattr(self, gsmMutator, 'this', 
-    cppModule.new_gsmMutator(rate=r, *args, **kwargs))
-  _swig_setattr(self, gsmMutator, 'thisown', 1)
+    # parameter rate
+    if type(rate) in [types.IntType, types.FloatType]:
+        r = [rate]
+    else:
+        r = rate
+    _swig_setattr(self, gsmMutator, 'this', 
+        cppModule.new_gsmMutator(rate=r, *args, **kwargs))
+    _swig_setattr(self, gsmMutator, 'thisown', 1)
  
 new_gsmMutator.__doc__ = gsmMutator.__init__.__doc__
 del gsmMutator.__init__
@@ -714,14 +718,14 @@ gsmMutator.__init__ = new_gsmMutator
 
 
 def new_pyMutator(self, rate=[], *args, **kwargs):
-  # parameter rate
-  if type(rate) in [types.IntType, types.FloatType]:
-    r = [rate]
-  else:
-    r = rate
-  _swig_setattr(self, pyMutator, 'this', 
-    cppModule.new_pyMutator(rate=r, *args, **kwargs))
-  _swig_setattr(self, pyMutator, 'thisown', 1)
+    # parameter rate
+    if type(rate) in [types.IntType, types.FloatType]:
+        r = [rate]
+    else:
+        r = rate
+    _swig_setattr(self, pyMutator, 'this', 
+        cppModule.new_pyMutator(rate=r, *args, **kwargs))
+    _swig_setattr(self, pyMutator, 'thisown', 1)
  
 new_pyMutator.__doc__ = pyMutator.__init__.__doc__
 del pyMutator.__init__
@@ -729,29 +733,29 @@ pyMutator.__init__ = new_pyMutator
 
 
 def new_migrator(self, rate, fromSubPop=[], toSubPop=[], *args, **kwargs):
-  # parameter rate
-  r = rate
-  if type(rate) in  [types.IntType, types.LongType, types.FloatType]:
-    r = [[rate]]
-  # if a single vector, [a,b] ==> [[a,b]]
-  if type(rate) in [types.ListType, types.TupleType, types.FloatType]:
-    if len(rate) == 0:
-      raise exceptions.ValueError('Migration rate can not be empty')
-    elif type(rate[0]) in [types.IntType, types.LongType, types.FloatType]:
-      r = [rate]      
-  # parameter fromSubPop
-  if type(fromSubPop) in [types.IntType, types.LongType]:
-    fs = [fromSubPop]
-  else:
-    fs = fromSubPop
-  # parameter toSubPop
-  if type(toSubPop) in  [types.IntType, types.LongType]:
-    ts = [toSubPop]
-  else:
-    ts = toSubPop
-  _swig_setattr(self, migrator, 'this', 
-    cppModule.new_migrator(rate=r, fromSubPop=fs, toSubPop=ts, *args, **kwargs))
-  _swig_setattr(self, migrator, 'thisown', 1)
+    # parameter rate
+    r = rate
+    if type(rate) in    [types.IntType, types.LongType, types.FloatType]:
+        r = [[rate]]
+    # if a single vector, [a,b] ==> [[a,b]]
+    if type(rate) in [types.ListType, types.TupleType, types.FloatType]:
+        if len(rate) == 0:
+            raise exceptions.ValueError('Migration rate can not be empty')
+        elif type(rate[0]) in [types.IntType, types.LongType, types.FloatType]:
+            r = [rate]            
+    # parameter fromSubPop
+    if type(fromSubPop) in [types.IntType, types.LongType]:
+        fs = [fromSubPop]
+    else:
+        fs = fromSubPop
+    # parameter toSubPop
+    if type(toSubPop) in    [types.IntType, types.LongType]:
+        ts = [toSubPop]
+    else:
+        ts = toSubPop
+    _swig_setattr(self, migrator, 'this', 
+        cppModule.new_migrator(rate=r, fromSubPop=fs, toSubPop=ts, *args, **kwargs))
+    _swig_setattr(self, migrator, 'thisown', 1)
  
 new_migrator.__doc__ = migrator.__init__.__doc__
 del migrator.__init__
@@ -760,33 +764,33 @@ migrator.__init__ = new_migrator
 
 
 def new_recombinator(self, intensity=-1, rate=[], afterLoci=[], 
-  maleIntensity=-1, maleRate=[], maleAfterLoci=[], *args, **kwargs):
-  # parameter rate
-  if type(rate) in [types.IntType, types.FloatType]:
-    if len(afterLoci) > 0:
-      r = [rate]*len(afterLoci)
+    maleIntensity=-1, maleRate=[], maleAfterLoci=[], *args, **kwargs):
+    # parameter rate
+    if type(rate) in [types.IntType, types.FloatType]:
+        if len(afterLoci) > 0:
+            r = [rate]*len(afterLoci)
+        else:
+            r = [rate]
     else:
-      r = [rate]
-  else:
-    r = rate
-  # parameter maleRate
-  if type(maleRate) in [types.IntType, types.FloatType]:
-    if len(maleAfterLoci) > 0:
-      mr = [maleRate]*len(maleAfterLoci)
-    elif len(afterLoci) > 0:
-      mr = [maleRate]*len(afterLoci)
+        r = rate
+    # parameter maleRate
+    if type(maleRate) in [types.IntType, types.FloatType]:
+        if len(maleAfterLoci) > 0:
+            mr = [maleRate]*len(maleAfterLoci)
+        elif len(afterLoci) > 0:
+            mr = [maleRate]*len(afterLoci)
+        else:
+            mr = [maleRate]
     else:
-      mr = [maleRate]
-  else:
-    mr = maleRate
+        mr = maleRate
 
-  _swig_setattr(self, recombinator, 'this', 
-    cppModule.new_recombinator(intensity=intensity, 
-    rate=r, afterLoci=afterLoci, 
-    maleIntensity=maleIntensity, 
-    maleRate=mr, maleAfterLoci=maleAfterLoci, 
-    *args, **kwargs))
-  _swig_setattr(self, recombinator, 'thisown', 1)
+    _swig_setattr(self, recombinator, 'this', 
+        cppModule.new_recombinator(intensity=intensity, 
+        rate=r, afterLoci=afterLoci, 
+        maleIntensity=maleIntensity, 
+        maleRate=mr, maleAfterLoci=maleAfterLoci, 
+        *args, **kwargs))
+    _swig_setattr(self, recombinator, 'thisown', 1)
  
 new_recombinator.__doc__ = recombinator.__init__.__doc__
 del recombinator.__init__
@@ -795,19 +799,19 @@ recombinator.__init__ = new_recombinator
 
 
 def new_initByFreq(self, alleleFreq=[], indRange=[], *args, **kwargs):
-  # parameter alleleFreq
-  if len(alleleFreq) > 0 and type(alleleFreq[0]) in [types.IntType, types.LongType, types.FloatType]:
-    af = [alleleFreq]
-  else:
-    af = alleleFreq
-  # parameter indRange
-  if len(indRange) > 0 and type(indRange[0]) in  [types.IntType, types.LongType]:
-    ir = [indRange]
-  else:
-    ir = indRange
-  _swig_setattr(self, initByFreq, 'this', 
-    cppModule.new_initByFreq(alleleFreq=af, indRange=ir, *args, **kwargs))
-  _swig_setattr(self, initByFreq, 'thisown', 1)
+    # parameter alleleFreq
+    if len(alleleFreq) > 0 and type(alleleFreq[0]) in [types.IntType, types.LongType, types.FloatType]:
+        af = [alleleFreq]
+    else:
+        af = alleleFreq
+    # parameter indRange
+    if len(indRange) > 0 and type(indRange[0]) in    [types.IntType, types.LongType]:
+        ir = [indRange]
+    else:
+        ir = indRange
+    _swig_setattr(self, initByFreq, 'this', 
+        cppModule.new_initByFreq(alleleFreq=af, indRange=ir, *args, **kwargs))
+    _swig_setattr(self, initByFreq, 'thisown', 1)
  
 new_initByFreq.__doc__ = initByFreq.__init__.__doc__
 del initByFreq.__init__
@@ -815,19 +819,19 @@ initByFreq.__init__ = new_initByFreq
 
 
 def new_initByValue(self, value=[], indRange=[], *args, **kwargs):
-  # parameter value
-  if len(value) > 0 and type(value[0]) in [types.IntType, types.LongType]:
-    val = [value]
-  else:
-    val = value
-  # parameter indRange
-  if len(indRange) > 0 and type(indRange[0]) in  [types.IntType, types.LongType]:
-    ir = [indRange]
-  else:
-    ir = indRange
-  _swig_setattr(self, initByValue, 'this', 
-    cppModule.new_initByValue(value=val, indRange=ir, *args, **kwargs))
-  _swig_setattr(self, initByValue, 'thisown', 1)
+    # parameter value
+    if len(value) > 0 and type(value[0]) in [types.IntType, types.LongType]:
+        val = [value]
+    else:
+        val = value
+    # parameter indRange
+    if len(indRange) > 0 and type(indRange[0]) in    [types.IntType, types.LongType]:
+        ir = [indRange]
+    else:
+        ir = indRange
+    _swig_setattr(self, initByValue, 'this', 
+        cppModule.new_initByValue(value=val, indRange=ir, *args, **kwargs))
+    _swig_setattr(self, initByValue, 'thisown', 1)
  
 new_initByValue.__doc__ = initByValue.__init__.__doc__
 del initByValue.__init__
@@ -835,14 +839,14 @@ initByValue.__init__ = new_initByValue
 
 
 def new_pyInit(self, indRange=[], *args, **kwargs):
-  # parameter indRange
-  if len(indRange) > 0 and type(indRange[0]) in  [types.IntType, types.LongType]:
-    ir = [indRange]
-  else:
-    ir = indRange
-  _swig_setattr(self, pyInit, 'this', 
-    cppModule.new_pyInit(indRange=ir, *args, **kwargs))
-  _swig_setattr(self, pyInit, 'thisown', 1)
+    # parameter indRange
+    if len(indRange) > 0 and type(indRange[0]) in    [types.IntType, types.LongType]:
+        ir = [indRange]
+    else:
+        ir = indRange
+    _swig_setattr(self, pyInit, 'this', 
+        cppModule.new_pyInit(indRange=ir, *args, **kwargs))
+    _swig_setattr(self, pyInit, 'thisown', 1)
  
 new_pyInit.__doc__ = pyInit.__init__.__doc__
 del pyInit.__init__
@@ -852,36 +856,36 @@ pyInit.__init__ = new_pyInit
 
 
 def new_stat(self, haploFreq=[], LD=[], relGroups=[], relMethod=[], *args, **kwargs):
-  # parameter haploFreq
-  if len(haploFreq) > 0 and type(haploFreq[0]) in [types.IntType, types.LongType]:
-    hf = [haploFreq]
-  else:
-    hf = haploFreq
-  # parameter LD
-  if len(LD) > 0 and type(LD[0]) in  [types.IntType, types.LongType]:
-    ld = [LD]
-  else:
-    ld = LD
-  # parameter relGroups
-  if relGroups == []:
-    rg = [[]]
-    useSubPop = True
-  elif len(relGroups) > 0 and type(relGroups[0]) in  [types.IntType, types.LongType]:
-    rg = [relGroups]
-    useSubPop = True
-  else:
-    rg = relGroups
-    useSubPop = False
-  # parameter relMethod
-  if type(relMethod) in [types.IntType, types.LongType]:
-    rm = [relGroups]
-  else:
-    rm = relGroups
+    # parameter haploFreq
+    if len(haploFreq) > 0 and type(haploFreq[0]) in [types.IntType, types.LongType]:
+        hf = [haploFreq]
+    else:
+        hf = haploFreq
+    # parameter LD
+    if len(LD) > 0 and type(LD[0]) in    [types.IntType, types.LongType]:
+        ld = [LD]
+    else:
+        ld = LD
+    # parameter relGroups
+    if relGroups == []:
+        rg = [[]]
+        useSubPop = True
+    elif len(relGroups) > 0 and type(relGroups[0]) in    [types.IntType, types.LongType]:
+        rg = [relGroups]
+        useSubPop = True
+    else:
+        rg = relGroups
+        useSubPop = False
+    # parameter relMethod
+    if type(relMethod) in [types.IntType, types.LongType]:
+        rm = [relGroups]
+    else:
+        rm = relGroups
 
-  _swig_setattr(self, stat, 'this', 
-    cppModule.new_stat(haploFreq=hf, LD=ld, relGroups=rg, relBySubPop=useSubPop,
-      relMethod = rm, *args, **kwargs))
-  _swig_setattr(self, stat, 'thisown', 1)
+    _swig_setattr(self, stat, 'this', 
+        cppModule.new_stat(haploFreq=hf, LD=ld, relGroups=rg, relBySubPop=useSubPop,
+            relMethod = rm, *args, **kwargs))
+    _swig_setattr(self, stat, 'thisown', 1)
  
 new_stat.__doc__ = stat.__init__.__doc__
 del stat.__init__
@@ -890,13 +894,13 @@ stat.__init__ = new_stat
 
 
 def new_randomSample(self, size=[], *args, **kwargs):
-  if type(size) in [types.IntType, types.LongType]:
-    sz=[size]
-  else:
-    sz = size
-  _swig_setattr(self, randomSample, 'this', 
-    cppModule.new_randomSample(size=sz, *args, **kwargs))
-  _swig_setattr(self, randomSample, 'thisown', 1)
+    if type(size) in [types.IntType, types.LongType]:
+        sz=[size]
+    else:
+        sz = size
+    _swig_setattr(self, randomSample, 'this', 
+        cppModule.new_randomSample(size=sz, *args, **kwargs))
+    _swig_setattr(self, randomSample, 'thisown', 1)
  
 new_randomSample.__doc__ = randomSample.__init__.__doc__
 del randomSample.__init__
@@ -904,22 +908,22 @@ randomSample.__init__ = new_randomSample
 
 
 def new_caseControlSample(self, cases=[], controls=[], *args, **kwargs):
-  if type(cases) in [types.IntType, types.LongType]:
-    ca = [cases]
-    spSample = False
-  else:
-    ca = cases
-    spSample = True
-  if type(controls) in [types.IntType, types.LongType]:
-    ct = [controls]
-    spSample = False
-  else:
-    ct = controls
-    spSample = True
-  _swig_setattr(self, caseControlSample, 'this', 
-    cppModule.new_caseControlSample(cases=ca, controls=ct, 
-      spSample=spSample, *args, **kwargs))
-  _swig_setattr(self, caseControlSample, 'thisown', 1)
+    if type(cases) in [types.IntType, types.LongType]:
+        ca = [cases]
+        spSample = False
+    else:
+        ca = cases
+        spSample = True
+    if type(controls) in [types.IntType, types.LongType]:
+        ct = [controls]
+        spSample = False
+    else:
+        ct = controls
+        spSample = True
+    _swig_setattr(self, caseControlSample, 'this', 
+        cppModule.new_caseControlSample(cases=ca, controls=ct, 
+            spSample=spSample, *args, **kwargs))
+    _swig_setattr(self, caseControlSample, 'thisown', 1)
  
 new_caseControlSample.__doc__ = caseControlSample.__init__.__doc__
 del caseControlSample.__init__
@@ -928,13 +932,13 @@ caseControlSample.__init__ = new_caseControlSample
 
 
 def new_affectedSibpairSample(self,size=[], *args, **kwargs):
-  if type(size) in [types.IntType, types.LongType]:
-    sz=[size]
-  else:
-    sz = size
-  _swig_setattr(self, affectedSibpairSample, 'this', 
-    cppModule.new_affectedSibpairSample(size=sz, *args, **kwargs))
-  _swig_setattr(self, affectedSibpairSample, 'thisown', 1)
+    if type(size) in [types.IntType, types.LongType]:
+        sz=[size]
+    else:
+        sz = size
+    _swig_setattr(self, affectedSibpairSample, 'this', 
+        cppModule.new_affectedSibpairSample(size=sz, *args, **kwargs))
+    _swig_setattr(self, affectedSibpairSample, 'thisown', 1)
  
 new_affectedSibpairSample.__doc__ = affectedSibpairSample.__init__.__doc__
 del affectedSibpairSample.__init__
@@ -942,55 +946,55 @@ affectedSibpairSample.__init__ = new_affectedSibpairSample
 
 
 def new_mapSelector(self, locus=-1, loci=[], *args, **kwargs):
-  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-    loc = [locus]
-  elif type(loci) in [types.IntType, types.LongType]:
-    loc = [loci]
-  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-    loc = loci
-  else:
-    raise exceptions.TypeError('Please specify locus or loci')
-  _swig_setattr(self, mapSelector, 'this', 
-    cppModule.new_mapSelector(loci=loc, *args, **kwargs))
-  _swig_setattr(self, mapSelector, 'thisown', 1)
+    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        raise exceptions.TypeError('Please specify locus or loci')
+    _swig_setattr(self, mapSelector, 'this', 
+        cppModule.new_mapSelector(loci=loc, *args, **kwargs))
+    _swig_setattr(self, mapSelector, 'thisown', 1)
  
 new_mapSelector.__doc__ = mapSelector.__init__.__doc__
 del mapSelector.__init__
 mapSelector.__init__ = new_mapSelector
 
 def new_maSelector(self, locus=-1, loci=[], wildtype=[0], *args, **kwargs):
-  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-    loc = [locus]
-  elif type(loci) in [types.IntType, types.LongType]:
-    loc = [loci]
-  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-    loc = loci
-  else:
-    raise exceptions.TypeError('Please specify locus or loci')
-  if type(wildtype) in [types.IntType, types.LongType]:
-    wt = [wildtype]
-  else:
-    wt = wildtype
-  _swig_setattr(self, maSelector, 'this', 
-    cppModule.new_maSelector(loci=loc, wildtype=wt, *args, **kwargs))
-  _swig_setattr(self, maSelector, 'thisown', 1)
+    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        raise exceptions.TypeError('Please specify locus or loci')
+    if type(wildtype) in [types.IntType, types.LongType]:
+        wt = [wildtype]
+    else:
+        wt = wildtype
+    _swig_setattr(self, maSelector, 'this', 
+        cppModule.new_maSelector(loci=loc, wildtype=wt, *args, **kwargs))
+    _swig_setattr(self, maSelector, 'thisown', 1)
  
 new_maSelector.__doc__ = maSelector.__init__.__doc__
 del maSelector.__init__
 maSelector.__init__ = new_maSelector
 
 def new_pySelector(self, locus=-1, loci=[], *args, **kwargs):
-  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-    loc = [locus]
-  elif type(loci) in [types.IntType, types.LongType]:
-    loc = [loci]
-  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-    loc = loci
-  else:
-    raise exceptions.TypeError('Please specify locus or loci')
-  _swig_setattr(self, pySelector, 'this', 
-    cppModule.new_pySelector(loci=loc, *args, **kwargs))
-  _swig_setattr(self, pySelector, 'thisown', 1)
+    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        raise exceptions.TypeError('Please specify locus or loci')
+    _swig_setattr(self, pySelector, 'this', 
+        cppModule.new_pySelector(loci=loc, *args, **kwargs))
+    _swig_setattr(self, pySelector, 'thisown', 1)
  
 new_pySelector.__doc__ = pySelector.__init__.__doc__
 del pySelector.__init__
@@ -998,116 +1002,116 @@ pySelector.__init__ = new_pySelector
 
 # for backward compatibility, keep long penetrance parameter
 def new_mapPenetrance(self, locus=-1, loci=[], penetrance={}, *args, **kwargs):
-  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-    loc = [locus]
-  elif type(loci) in [types.IntType, types.LongType]:
-    loc = [loci]
-  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-    loc = loci
-  else:
-    raise exceptions.TypeError('Please specify locus or loci')
-  _swig_setattr(self, mapPenetrance, 'this', 
-    cppModule.new_mapPenetrance(loci=loc, penet=penetrance, *args, **kwargs))
-  _swig_setattr(self, mapPenetrance, 'thisown', 1)
+    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        raise exceptions.TypeError('Please specify locus or loci')
+    _swig_setattr(self, mapPenetrance, 'this', 
+        cppModule.new_mapPenetrance(loci=loc, penet=penetrance, *args, **kwargs))
+    _swig_setattr(self, mapPenetrance, 'thisown', 1)
  
 new_mapPenetrance.__doc__ = mapPenetrance.__init__.__doc__
 del mapPenetrance.__init__
 mapPenetrance.__init__ = new_mapPenetrance
 
 def new_maPenetrance(self, locus=-1, loci=[], wildtype=[0], penetrance=[], *args, **kwargs):
-  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-    loc = [locus]
-  elif type(loci) in [types.IntType, types.LongType]:
-    loc = [loci]
-  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-    loc = loci
-  else:
-    raise exceptions.TypeError('Please specify locus or loci')
-  if type(wildtype) in [types.IntType, types.LongType]:
-    wt = [wildtype]
-  else:
-    wt = wildtype
-  _swig_setattr(self, maPenetrance, 'this', 
-    cppModule.new_maPenetrance(loci=loc, wildtype=wt, penet=penetrance, *args, **kwargs))
-  _swig_setattr(self, maPenetrance, 'thisown', 1)
+    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        raise exceptions.TypeError('Please specify locus or loci')
+    if type(wildtype) in [types.IntType, types.LongType]:
+        wt = [wildtype]
+    else:
+        wt = wildtype
+    _swig_setattr(self, maPenetrance, 'this', 
+        cppModule.new_maPenetrance(loci=loc, wildtype=wt, penet=penetrance, *args, **kwargs))
+    _swig_setattr(self, maPenetrance, 'thisown', 1)
  
 new_maPenetrance.__doc__ = maPenetrance.__init__.__doc__
 del maPenetrance.__init__
 maPenetrance.__init__ = new_maPenetrance
 
 def new_pyPenetrance(self, locus=-1, loci=[], *args, **kwargs):
-  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-    loc = [locus]
-  elif type(loci) in [types.IntType, types.LongType]:
-    loc = [loci]
-  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-    loc = loci
-  else:
-    raise exceptions.TypeError('Please specify locus or loci')
-  _swig_setattr(self, pyPenetrance, 'this', 
-    cppModule.new_pyPenetrance(loci=loc, *args, **kwargs))
-  _swig_setattr(self, pyPenetrance, 'thisown', 1)
+    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        raise exceptions.TypeError('Please specify locus or loci')
+    _swig_setattr(self, pyPenetrance, 'this', 
+        cppModule.new_pyPenetrance(loci=loc, *args, **kwargs))
+    _swig_setattr(self, pyPenetrance, 'thisown', 1)
  
 new_pyPenetrance.__doc__ = pyPenetrance.__init__.__doc__
 del pyPenetrance.__init__
 pyPenetrance.__init__ = new_pyPenetrance
 
 def new_mapQuanTrait(self, locus=-1, loci=[], *args, **kwargs):
-  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-    loc = [locus]
-  elif type(loci) in [types.IntType, types.LongType]:
-    loc = [loci]
-  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-    loc = loci
-  else:
-    raise exceptions.TypeError('Please specify locus or loci')
-  _swig_setattr(self, mapQuanTrait, 'this', 
-    cppModule.new_mapQuanTrait(loci=loc, *args, **kwargs))
-  _swig_setattr(self, mapQuanTrait, 'thisown', 1)
+    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        raise exceptions.TypeError('Please specify locus or loci')
+    _swig_setattr(self, mapQuanTrait, 'this', 
+        cppModule.new_mapQuanTrait(loci=loc, *args, **kwargs))
+    _swig_setattr(self, mapQuanTrait, 'thisown', 1)
  
 new_mapQuanTrait.__doc__ = mapQuanTrait.__init__.__doc__
 del mapQuanTrait.__init__
 mapQuanTrait.__init__ = new_mapQuanTrait
 
 def new_maQuanTrait(self, locus=-1, loci=[], wildtype=[0], sigma=[0], qtrait=[], *args, **kwargs):
-  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-    loc = [locus]
-  elif type(loci) in [types.IntType, types.LongType]:
-    loc = [loci]
-  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-    loc = loci
-  else:
-    raise exceptions.TypeError('Please specify locus or loci')
-  if type(wildtype) in [types.IntType, types.LongType]:
-    wt = [wildtype]
-  else:
-    wt = wildtype
-  if type(sigma) in [types.IntType, types.LongType, types.FloatType]:
-    s = [sigma]*len(qtrait)
-  elif len(sigma) == 1:
-    s = sigma*len(qtrait)
-  else:
-    s = sigma
-  _swig_setattr(self, maQuanTrait, 'this', 
-    cppModule.new_maQuanTrait(loci=loc, wildtype=wt, sigma=s, qtrait=qtrait, *args, **kwargs))
-  _swig_setattr(self, maQuanTrait, 'thisown', 1)
+    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        raise exceptions.TypeError('Please specify locus or loci')
+    if type(wildtype) in [types.IntType, types.LongType]:
+        wt = [wildtype]
+    else:
+        wt = wildtype
+    if type(sigma) in [types.IntType, types.LongType, types.FloatType]:
+        s = [sigma]*len(qtrait)
+    elif len(sigma) == 1:
+        s = sigma*len(qtrait)
+    else:
+        s = sigma
+    _swig_setattr(self, maQuanTrait, 'this', 
+        cppModule.new_maQuanTrait(loci=loc, wildtype=wt, sigma=s, qtrait=qtrait, *args, **kwargs))
+    _swig_setattr(self, maQuanTrait, 'thisown', 1)
  
 new_maQuanTrait.__doc__ = maQuanTrait.__init__.__doc__
 del maQuanTrait.__init__
 maQuanTrait.__init__ = new_maQuanTrait
 
 def new_pyQuanTrait(self, locus=-1, loci=[], *args, **kwargs):
-  if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-    loc = [locus]
-  elif type(loci) in [types.IntType, types.LongType]:
-    loc = [loci]
-  elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-    loc = loci
-  else:
-    raise exceptions.TypeError('Please specify locus or loci')
-  _swig_setattr(self, pyQuanTrait, 'this', 
-    cppModule.new_pyQuanTrait(loci=loc, *args, **kwargs))
-  _swig_setattr(self, pyQuanTrait, 'thisown', 1)
+    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        raise exceptions.TypeError('Please specify locus or loci')
+    _swig_setattr(self, pyQuanTrait, 'this', 
+        cppModule.new_pyQuanTrait(loci=loc, *args, **kwargs))
+    _swig_setattr(self, pyQuanTrait, 'thisown', 1)
  
 new_pyQuanTrait.__doc__ = pyQuanTrait.__init__.__doc__
 del pyQuanTrait.__init__

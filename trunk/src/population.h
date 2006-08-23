@@ -157,6 +157,7 @@ namespace simuPOP
 				std::swap(m_popGenoSize, rhs.m_popGenoSize);
 				m_subPopIndex.swap(rhs.m_subPopIndex);
 				m_genotype.swap(rhs.m_genotype);
+				m_info.swap(rhs.m_info);
 				m_inds.swap(rhs.m_inds);
 				std::swap(m_ancestralDepth, rhs.m_ancestralDepth);
 				m_vars.swap(rhs.m_vars);
@@ -560,13 +561,13 @@ namespace simuPOP
 			\param info an array of info values, should have length of pop size
 			\sa individual::setSubPopID, individual::subPopID
 			*/
-			void setIndSubPopID( const vectori& info)
+			void setIndSubPopID( const vectori& id)
 			{
-				DBG_ASSERT( info.size() == m_popSize, ValueError,
+				DBG_ASSERT( id.size() == m_popSize, ValueError,
 					"Info should have the same length as pop size");
 
 				for(ULONG it=0; it < m_popSize; ++it)
-					ind(it).setSubPopID( static_cast<SubPop_ID>(info[it]) );
+					ind(it).setSubPopID( static_cast<SubPop_ID>(id[it]) );
 			}
 
 			/// set individual info with their subpopulation id.
@@ -587,7 +588,7 @@ namespace simuPOP
 			\note individual with negative info will be removed!
 			\sa setIndSubPopID,
 			*/
-			void setSubPopByIndID(vectori info=vectori());
+			void setSubPopByIndID(vectori id=vectori());
 
 			/// split population
 			/** split subpopulation 'which' into subpopulations with size specified in subPops,
@@ -639,7 +640,8 @@ namespace simuPOP
 
 			/** form a new population according to info, info can be given directly */
 			population& newPopByIndID(bool keepAncestralPops=true,
-				vectori info=vectori(), bool removeEmptySubPops=false);
+				const vectori& id=vectori(),
+				bool removeEmptySubPops=false);
 
 			void removeLoci( const vectoru& remove=vectoru(), const vectoru& keep=vectoru());
 
@@ -678,8 +680,8 @@ namespace simuPOP
 			int requestInfoField(const string name);
 
 			/// set info for all individuals
-			template<class T>
-			void setIndInfo(const T& info, UINT index)
+			template<typename T, typename T1>
+			void setIndInfo(const T& info, T1 index)
 			{
 				CHECKRANGEINFO(index);
 				DBG_ASSERT(info.size() == popSize(), IndexError,
@@ -689,6 +691,16 @@ namespace simuPOP
 				for(vector<InfoType>::iterator ptr=m_info.begin() + index;
 					ptr != m_info.end() + index; ptr += is)
 					*ptr = static_cast<InfoType>(*infoIter++);
+			}
+			
+			template<class T>
+			void setIndInfo(const T& info, const string& name)
+			{
+				int idx = infoIdx(name);
+				DBG_ASSERT(idx>=0, IndexError, 
+					"Info name " + name + " is not a valid info field name");
+	
+				setIndInfo<T, UINT>(info, idx);
 			}
 
 			/// info iterator
