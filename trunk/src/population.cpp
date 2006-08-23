@@ -522,7 +522,7 @@ namespace simuPOP
 		// check if subPops are valid
 		for( vectoru::const_iterator sp = subPops.begin(); sp < subPops.end(); ++sp)
 		{
-			DBG_WARNING(*sp >= m_numSubPop, "Subpopulation" + toStr(*sp) + " does not exist.");
+			DBG_WARNING(*sp >= m_numSubPop, "Subpopulation " + toStr(*sp) + " does not exist.");
 		}
 #endif
 		setIndSubPopIDWithID();

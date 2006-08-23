@@ -1026,6 +1026,8 @@ namespace simuPOP
 				ar & make_nvp("subPop_sizes", m_subPopSize);
 				DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
 				ar & make_nvp("genotype", m_genotype);
+				DBG_DO(DBG_POPULATION, cout << "Handling information" << endl);
+				ar & make_nvp("info", m_info);
 				DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
 				ar & make_nvp("individuals", m_inds);
 				DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
@@ -1039,6 +1041,7 @@ namespace simuPOP
 					const_cast<population*>(this)->adjustGenoPosition(true);
 					ar & make_nvp("subPop_sizes", m_subPopSize);
 					ar & make_nvp("genotype", m_genotype);
+					ar & make_nvp("info", m_info);
 					ar & make_nvp("individuals", m_inds);
 				}
 				const_cast<population*>(this)->useAncestralPop(0);
@@ -1074,6 +1077,11 @@ namespace simuPOP
 				ar & make_nvp("subPop_sizes", m_subPopSize);
 				DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
 				ar & make_nvp("genotype", m_genotype);
+				if ( version > 0)
+				{
+					DBG_DO(DBG_POPULATION, cout << "Handling info" << endl);
+					ar & make_nvp("info", m_info);
+				}
 				DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
 				ar & make_nvp("individuals", m_inds);
 
@@ -1083,6 +1091,8 @@ namespace simuPOP
 
 				m_numSubPop = m_subPopSize.size();
 				m_popSize = accumulate(m_subPopSize.begin(), m_subPopSize.end(), 0L);
+
+				DBG_FAILIF(m_info.size() != m_popSize*infoSize(), ValueError, "Wgong size of info vector");
 
 				if( m_popSize != m_inds.size() )
 				{
@@ -1104,10 +1114,13 @@ namespace simuPOP
 				// assign genotype location and set structure information for individuals
 				GenoIterator ptr = m_genotype.begin();
 				UINT step = genoSize();
-				for(ULONG i=0; i< m_popSize; ++i, ptr+=step)
+				InfoIterator infoPtr = m_info.begin();
+				UINT infoStep = infoSize();
+				for(ULONG i=0; i< m_popSize; ++i, ptr += step, infoPtr += infoStep)
 				{
 					m_inds[i].setGenoStruIdx(genoStruIdx());
 					m_inds[i].setGenoPtr( ptr );
+					m_inds[i].setInfoPtr( infoPtr );
 				}
 				m_ancestralDepth = 0;
 				m_ancestralPops.clear();
@@ -1122,6 +1135,8 @@ namespace simuPOP
 					popData pd;
 					ar & make_nvp("subPop_sizes", pd.m_subPopSize);
 					ar & make_nvp("genotype", pd.m_genotype);
+					if ( version > 0)
+						ar & make_nvp("info", pd.m_info);
 					ar & make_nvp("individuals", pd.m_inds);
 					// set pointer after copy this thing again (push_back)
 					m_ancestralPops.push_back(pd);
@@ -1131,10 +1146,12 @@ namespace simuPOP
 					vector<individual>& inds = p.m_inds;
 					ULONG ps = inds.size();
 					ptr = p.m_genotype.begin();
+					infoPtr = p.m_info.begin();
 
-					for(ULONG i=0; i< ps; ++i, ptr+=step)
+					for(ULONG i=0; i< ps; ++i, ptr+=step, infoPtr += infoStep)
 					{
 						inds[i].setGenoPtr( ptr );
+						inds[i].setInfoPtr( infoPtr );
 						// set new genoStructure
 						inds[i].setGenoStruIdx(genoStruIdx());
 						// fresh copy so clear shallowcopied flag.
@@ -1231,7 +1248,8 @@ namespace simuPOP
 #ifndef SWIG
 #ifndef _NO_SERIALIZATION_
 // version 0: base
-BOOST_CLASS_VERSION(simuPOP::population, 0)
+// version 1: save info
+BOOST_CLASS_VERSION(simuPOP::population, 1)
 #endif
 #endif
 #endif
