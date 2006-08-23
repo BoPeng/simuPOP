@@ -496,7 +496,7 @@ namespace simuPOP
 		return res;
 	}
 
-	PyObject* Info_Vec_As_NumArray(InfoType* begin, InfoType* end)
+	PyObject* Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end)
 	{
 		PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*begin), 'd', end-begin);
 		DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to info num array");

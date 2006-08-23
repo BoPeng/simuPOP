@@ -558,6 +558,37 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.infoNames(), ('age',))
         ind = pop.individual(0)
         self.assertRaises(exceptions.IndexError, ind.info, 1)
+        # can set more names
+        pop = population(10, infoName=['age', 'fitness', 'trait1'])
+        self.assertEqual(pop.infoName(0), 'age')
+        self.assertEqual(pop.infoName(2), 'trait1')
+        self.assertRaises(exceptions.IndexError, pop.infoName, 3)
+        self.assertEqual(pop.infoNames(), ('age', 'fitness', 'trait1'))
+        # can set and read each info
+        pop.setIndInfo(range(10), 0)
+        pop.setIndInfo(range(10,20), 1)
+        pop.setIndInfo(range(20,30), 2)
+        self.assertRaises(exceptions.IndexError, pop.setIndInfo, range(30,40), 3)
+        for i in range(3):
+            for j in range(10):
+                self.assertEqual(pop.individual(j).info(i), i*10+j)
+        ind = pop.individual(0)
+        self.assertEqual(ind.arrInfo(), (0,10,20))
+        self.assertEqual(pop.arrIndInfo()[:8], (0,10,20,1,11,21,2,12))
+        # by subpop
+        self.assertEqual(pop.arrIndInfo(0)[:8], (0,10,20,1,11,21,2,12))
+        self.assertRaises(exceptions.IndexError, pop.arrIndInfo, 1)
+        # access by name
+        #pop.setIndInfo(range(30,40), 'sex')
+        #pop.arrIndInfo('sex')
+        self.assertRaises(exceptions.IndexError, ind.info, 'sex')
+        ind.setInfo(18, 'age')
+        self.assertEqual(ind.info('age'), 18)
+        #
+        pop = population(10, infoName=['age'])
+        self.assertEqual(pop.infoNames(), ('age',))
+        self.assertEqual(pop.infoSize(), 1)
+        ind = pop.individual(0)
         # set info
         ind.setInfo(2, 0)
         # get info

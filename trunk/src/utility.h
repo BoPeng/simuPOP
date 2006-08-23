@@ -177,7 +177,7 @@ namespace simuPOP
 
 	/** \brief CPPONLY iterator to access an allele across all ploidy and individuals.
 
-	The reason why this iterator is called GappedAlleleIterator is that
+	The reason why this iterator is called GappedIterator is that
 	when alleles at the same locus are placed in equal distance ( a strategy
 	currently employeed by population ), this iterator can
 	iterate through all alleles quickly by moving internal pointer
@@ -185,7 +185,7 @@ namespace simuPOP
 
 	e.g. the following code set alleles at the first locus all to 2.
 	\code
-	for(GappedAlleleIterator it=pop.alleleBegin(0),
+	for(GappedIterator it=pop.alleleBegin(0),
 	itEnd = pop.alleleEnd(0); it < itEnd;  ++it)
 	*it = 2;
 	\endcode
@@ -196,37 +196,38 @@ namespace simuPOP
 	\note note that it+1 is not the next locus, but the next allele on the next
 	chromosome.
 	*/
-	class GappedAlleleIterator
+	template<typename T, typename Ref, typename Ptr>
+	class GappedIterator
 	{
 		public:
 
 			typedef std::random_access_iterator_tag iterator_category;
-			typedef Allele                     value_type;
+			typedef T                          value_type;
 			typedef int                        difference_type;
-			typedef AlleleRef                  reference;
-			typedef GenoIterator               pointer;
+			typedef Ref                        reference;
+			typedef Ptr                        pointer;
 
 			/// CPPONLY
-			GappedAlleleIterator():m_step(1)
+			GappedIterator():m_step(1)
 			// , m_ptr(NULL) // do not initialize reference.
 			{
 			}
 
 			/// CPPONLY
-			GappedAlleleIterator( pointer p, difference_type s = 1)
+			GappedIterator( pointer p, difference_type s = 1)
 				:m_step(s), m_ptr(p)
 			{
 			}
 
 			/// CPPONLY
-			GappedAlleleIterator(const GappedAlleleIterator& rhs)
+			GappedIterator(const GappedIterator& rhs)
 			{
 				m_ptr = rhs.m_ptr;
 				m_step = rhs.m_step;
 			}
 
 			/// CPPONLY
-			GappedAlleleIterator& operator= (const GappedAlleleIterator& rhs)
+			GappedIterator& operator= (const GappedIterator& rhs)
 			{
 				m_ptr = rhs.m_ptr;
 				m_step = rhs.m_step;
@@ -234,7 +235,7 @@ namespace simuPOP
 			}
 
 			/// CPPONLY
-			~GappedAlleleIterator()
+			~GappedIterator()
 			{
 			}
 
@@ -263,54 +264,54 @@ namespace simuPOP
 			}
 
 			/// CPPONLY
-			GappedAlleleIterator operator++ (difference_type)
+			GappedIterator operator++ (difference_type)
 			{
-				GappedAlleleIterator tmp = *this;
+				GappedIterator tmp = *this;
 				m_ptr += m_step;
 				return tmp;
 			}
 
 			/// CPPONLY
-			GappedAlleleIterator & operator++ ()
+			GappedIterator & operator++ ()
 			{
 				m_ptr += m_step;
 				return *this;
 			}
 
 			/// CPPONLY
-			GappedAlleleIterator operator-- (difference_type)
+			GappedIterator operator-- (difference_type)
 			{
-				GappedAlleleIterator tmp = *this;
+				GappedIterator tmp = *this;
 
 				m_ptr -= m_step;
 				return tmp;
 			}
 
 			/// CPPONLY
-			GappedAlleleIterator & operator-- ()
+			GappedIterator & operator-- ()
 			{
 				m_ptr -= m_step;
 				return *this;
 			}
 
 			/// CPPONLY
-			GappedAlleleIterator & operator+= (difference_type diff)
+			GappedIterator & operator+= (difference_type diff)
 			{
 				m_ptr += diff * m_step;
 				return *this;
 			}
 
 			/// CPPONLY
-			GappedAlleleIterator & operator-=(difference_type diff)
+			GappedIterator & operator-=(difference_type diff)
 			{
 				m_ptr -= diff * m_step;
 				return *this;
 			}
 
 			/// CPPONLY
-			GappedAlleleIterator operator+ (difference_type diff)
+			GappedIterator operator+ (difference_type diff)
 			{
-				GappedAlleleIterator tmp = *this;
+				GappedIterator tmp = *this;
 
 				tmp += diff;
 				return tmp;
@@ -318,52 +319,52 @@ namespace simuPOP
 			}
 
 			/// CPPONLY
-			GappedAlleleIterator operator- (difference_type diff)
+			GappedIterator operator- (difference_type diff)
 			{
-				GappedAlleleIterator tmp = *this;
+				GappedIterator tmp = *this;
 
 				tmp -= diff;
 				return tmp;
 			}
 
 			/// CPPONLY
-			difference_type operator- (GappedAlleleIterator rhs)
+			difference_type operator- (GappedIterator rhs)
 			{
 				return (m_ptr - rhs.m_ptr)/m_step;
 			}
 
 			/// CPPONLY
-			bool operator== ( const GappedAlleleIterator & rhs)
+			bool operator== ( const GappedIterator & rhs)
 			{
 				return (m_ptr == rhs.m_ptr);
 			}
 
 			/// CPPONLY
-			bool operator!= ( const GappedAlleleIterator&  rhs)
+			bool operator!= ( const GappedIterator&  rhs)
 			{
 				return (m_ptr != rhs.m_ptr);
 			}
 
 			/// CPPONLY
-			bool operator>= ( const GappedAlleleIterator & rhs)
+			bool operator>= ( const GappedIterator & rhs)
 			{
 				return (m_ptr >= rhs.m_ptr);
 			}
 
 			/// CPPONLY
-			bool operator<= ( const GappedAlleleIterator & rhs)
+			bool operator<= ( const GappedIterator & rhs)
 			{
 				return (m_ptr <= rhs.m_ptr);
 			}
 
 			/// CPPONLY
-			bool operator> ( const GappedAlleleIterator & rhs)
+			bool operator> ( const GappedIterator & rhs)
 			{
 				return (m_ptr > rhs.m_ptr);
 			}
 
 			/// CPPONLY
-			bool operator< ( const GappedAlleleIterator & rhs)
+			bool operator< ( const GappedIterator & rhs)
 			{
 				return (m_ptr < rhs.m_ptr);
 			}
@@ -376,6 +377,9 @@ namespace simuPOP
 			pointer m_ptr;
 
 	};
+
+	typedef GappedIterator<Allele, AlleleRef, GenoIterator> GappedAlleleIterator;
+	typedef GappedIterator<InfoType, InfoType&, InfoIterator> GappedInfoIterator;
 
 	// ////////////////////////////////////////////////////////////
 	// / Shared variables
@@ -424,7 +428,7 @@ namespace simuPOP
 	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 	
 	/// CPPONLY
-	PyObject* Info_Vec_As_NumArray(InfoType* begin, InfoType* end);
+	PyObject* Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end);
 
 	/// CPPONLY
 	int NumArray_Size(PyObject* obj);

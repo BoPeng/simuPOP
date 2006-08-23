@@ -113,7 +113,7 @@ namespace simuPOP
 		for(TraitIndexType it = 0; it < s_genoStruRepository.size();
 			++it)
 		{
-												  // object comparison
+			// object comparison
 			if( s_genoStruRepository[it] == tmp )
 			{
 				m_genoStruIdx = it;

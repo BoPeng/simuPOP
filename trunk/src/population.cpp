@@ -104,7 +104,7 @@ namespace simuPOP
 			m_genotype.resize( m_popGenoSize);
 
 			/// allocate info
-			int is = infoSize();
+			size_t is = infoSize();
 			DBG_ASSERT(is == infoName.size(), SystemError, "Wrong geno structure");
 			m_info.resize(m_popSize*is);
 
@@ -114,7 +114,7 @@ namespace simuPOP
 			// set individual pointers
 			// reset individual pointers
 			GenoIterator ptr = m_genotype.begin();
-			InfoType * infoPtr = &*m_info.begin();
+			InfoIterator infoPtr = m_info.begin();
 			UINT step = genoSize();
 			for(ULONG i=0; i< m_popSize; ++i, ptr+=step, infoPtr+=is)
 			{
@@ -185,7 +185,7 @@ namespace simuPOP
 		// copy genotype one by one so individual genoPtr will not
 		// point outside of subpopulation region.
 		GenoIterator ptr = m_genotype.begin();
-		InfoType * infoPtr = &*m_info.begin();
+		InfoIterator infoPtr = m_info.begin();
 		UINT step = this->genoSize();
 		UINT infoStep = this->infoSize();
 		for(ULONG i=0; i< m_popSize; ++i, ptr+=step, infoPtr+=infoStep)
@@ -212,8 +212,8 @@ namespace simuPOP
 				GenoIterator lg = lp.m_genotype.begin();
 				constGenoIterator rg = rp.m_genotype.begin();
 				
-				InfoType * li = &*lp.m_info.begin();
-				const InfoType * ri = &*rp.m_info.begin();
+				InfoIterator li = lp.m_info.begin();
+				InfoConstIterator ri = rp.m_info.begin();
 				
 				ULONG ps = rinds.size();
 
@@ -894,7 +894,7 @@ namespace simuPOP
 	int population::requestInfoField(const string name)
 	{
 		// if this field does not yet exist, create a new one
-		int index = getInfoField(name);
+		int index = infoIdx(name);
 		if (index >= 0)
 			return index;
 			
@@ -904,7 +904,7 @@ namespace simuPOP
 		///
 		vector<InfoType> newInfo((index+1)*popSize());
 		/// copy the old stuff in
-		InfoType * ptr = &*newInfo.begin();
+		InfoIterator ptr = newInfo.begin();
 		for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
 		{
 			if(index>0)

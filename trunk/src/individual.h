@@ -573,7 +573,7 @@ namespace simuPOP
 			}
 			
 			/// return the index of field name, return -1 if not found.
-			int getInfoField(const string& name) const
+			int infoIdx(const string& name) const
 			{	
 				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoName;
 				
@@ -723,7 +723,7 @@ namespace simuPOP
 
 			/// CPPONLY
 			/// set pointer to individual info
-			void setInfoPtr(InfoType* pos)
+			void setInfoPtr(InfoIterator pos)
 			{
 				m_infoPtr = pos;
 			}
@@ -773,7 +773,7 @@ namespace simuPOP
 			}
 
 			/// CPPONLY
-			InfoType* infoPtr() const
+			InfoIterator infoPtr() const
 			{
 				return m_infoPtr;
 			}
@@ -1008,7 +1008,25 @@ namespace simuPOP
 				CHECKRANGEINFO(index);
 				m_infoPtr[index] = info;
 			}
+			
+			/// get info
+			InfoType info(const string& name) const
+			{
+				int idx = infoIdx(name);
+				DBG_ASSERT(idx>=0, IndexError, 
+					"Info name " + name + " is not a valid info field name");
+				return m_infoPtr[idx];
+			}
 
+			/// set info
+			void setInfo(InfoType info, const string& name)
+			{
+				int idx = infoIdx(name);
+				DBG_ASSERT(idx>=0, IndexError, 
+					"Info name " + name + " is not a valid info field name");
+				m_infoPtr[idx] = info;
+			}
+			
 			/// start of alleles
 			/// CPPONLY
 			GenoIterator genoBegin() const
@@ -1062,14 +1080,14 @@ namespace simuPOP
 			
 			/// start of info
 			/// CPPONLY
-			InfoType * infoBegin() const
+			InfoIterator infoBegin() const
 			{
 				return m_infoPtr;
 			}
 
 			/// end of info
 			/// CPPONLY
-			InfoType * infoEnd() const
+			InfoIterator infoEnd() const
 			{
 				return m_infoPtr + infoSize();
 			}
@@ -1304,7 +1322,7 @@ namespace simuPOP
 			GenoIterator m_genoPtr;
 			
 			/// pointer to info
-			InfoType * m_infoPtr;
+			InfoIterator m_infoPtr;
 	};
 
 }
