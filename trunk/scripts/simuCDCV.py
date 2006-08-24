@@ -537,7 +537,7 @@ def simuCDCV( numDSL, initSpec, selModel,
   if resume == '':
     simu = simulator(   
       population(subPop=incFunc(0), loci=[1]*(numDSL),
-        maxAllele = maxAllele),  
+        maxAllele = maxAllele, infoFields=['fitness']),  
       randomMating(newSubPopSizeFunc=incFunc)
     )
   else:
