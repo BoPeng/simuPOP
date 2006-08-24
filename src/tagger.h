@@ -90,28 +90,46 @@ namespace simuPOP
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL)
 			{
-				if( (dad == NULL && mom==NULL) ||
-					(dad == NULL && m_mode == TAG_Paternal) ||
-					(mom == NULL && m_mode == TAG_Maternal) )
-					offspring->setTag( TagType(0,0)  );
-
-				if( m_mode == TAG_Paternal )
-					offspring->setTag( dad->tag());
+				UINT id1=0, id2=0;
+				if (m_mode == TAG_Paternal)
+					id1 = pop.infoIdx("paternal_tag");
+				else if (m_mode == TAG_Maternal)
+					id1 = pop.infoIdx("maternal_tag");
+				else
+				{
+					id1 = pop.infoIdx("paternal_tag");
+					id2 = pop.infoIdx("maternal_tag");
+				}
+				
+				if( m_mode == TAG_Paternal)
+				{
+					if (dad == NULL)
+						offspring->setInfo(0, id1);
+					else
+						offspring->setInfo(dad->info(id1), id1);
+				}
 				else if( m_mode == TAG_Maternal)
-					offspring->setTag( mom->tag());
+				{
+					if (mom == NULL)
+						offspring->setInfo(0, id1);
+					else
+						offspring->setInfo(mom->info(id1), id1);
+				}
 				else
 				{
 					if( dad == NULL )
-						offspring->setTag( TagType(0, mom->tag().first) );
-					else if( mom == NULL)
-						offspring->setTag( TagType(dad->tag().first, 0));
+						offspring->setInfo(0, id1);
 					else
-						offspring->setTag( TagType(dad->tag().first,
-							mom->tag().first));
+						offspring->setInfo(dad->info("tag_father"), id1);
+					if( mom == NULL)
+						offspring->setInfo(0, id2);
+					else
+						offspring->setInfo(mom->info("tag_father"), id2);
 				}
 				return true;
 			}
 
+		
 			virtual Operator* clone() const
 			{
 				return new inheritTagger(*this);
@@ -157,21 +175,21 @@ namespace simuPOP
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL)
 			{
-
-				if( dad == NULL && mom==NULL) return true;
-				else if( dad != NULL && mom==NULL)
-					offspring->setTag( TagType(dad - &*pop.indBegin(),0));
-				else if( dad == NULL && mom!=NULL)
-					offspring->setTag( TagType(0, mom - &*pop.indBegin()));
+				UINT id1 = pop.infoIdx("father_idx");
+				UINT id2 = pop.infoIdx("mother_idx");
+				
+				if(dad == NULL)
+					offspring->setInfo(0, id1);
 				else
-					offspring->setTag( TagType(dad - &*pop.indBegin(),
-						mom - &*pop.indBegin()));
+					offspring->setInfo(dad - &*pop.indBegin(), id1);
+				
+				if( mom == NULL)
+					offspring->setInfo(0, id2);
+				else
+					offspring->setInfo(mom - &*pop.indBegin(), id2);
 
 				return true;
-
 			}
-
 	};
-
 }
 #endif

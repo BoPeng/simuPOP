@@ -902,7 +902,9 @@ namespace simuPOP
 	}
 
 	/// request info field
-	/// code: 
+	/// code: In this version, I do not allow dynamic addition
+	/// of information field
+	/*
 	int population::requestInfoField(const string name)
 	{
 		// if this field does not yet exist, create a new one
@@ -927,6 +929,7 @@ namespace simuPOP
 		m_info.swap(newInfo);
 		return index;
 	}
+	*/
 
 	/// set ancestral depth, can be -1
 	void population::setAncestralDepth(int depth)
