@@ -916,7 +916,8 @@ Max mutant age: %d ''' % \
       return 1
   # create a simulator
   pop =  population(subPop=popSizeFunc(0), ploidy=2,
-    loci = loci, maxAllele = maxAle, lociPos = lociPos)
+    loci = loci, maxAllele = maxAle, lociPos = lociPos,
+    infoFields=['fitness'])
   # save DSL info, some operators will use it.
   pop.dvars().DSL = DSL
   pop.dvars().numLoci = numLoci
