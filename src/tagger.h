@@ -29,6 +29,9 @@
 */
 #include "operator.h"
 
+const string TAG_InheritFields[2] = {"paternal_tag", "maternal_tag"};
+const string TAG_ParentsFields[2] = {"father_idx", "mother_idx"};
+
 namespace simuPOP
 {
 	/**
@@ -42,13 +45,17 @@ namespace simuPOP
 	@author Bo Peng
 	*/
 
+
 	class tagger: public Operator
 	{
 
 		public:
 			/// constructor. default to be always active but no output.
-			tagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			Operator("", "", DuringMating, begin, end, step, at, rep, grp)
+			tagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), 
+				int rep=REP_ALL, int grp=GRP_ALL, 
+				// this is not nice, but is the only way I know how to initialize this array.
+				const vectorstr& infoFields=vectorstr()):
+			Operator("", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
 			{
 			};
 
@@ -73,8 +80,10 @@ namespace simuPOP
 
 		public:
 			/// constructor. default to be always active.
-			inheritTagger(int mode=TAG_Paternal, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			tagger( begin, end, step, at, rep, grp), m_mode(mode)
+			inheritTagger(int mode=TAG_Paternal, int begin=0, int end=-1, int step=1, 
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
+				const vectorstr& infoFields=vectorstr(TAG_InheritFields, TAG_InheritFields+2)):
+			tagger( begin, end, step, at, rep, grp, infoFields), m_mode(mode)
 			{
 			};
 
@@ -92,13 +101,13 @@ namespace simuPOP
 			{
 				UINT id1=0, id2=0;
 				if (m_mode == TAG_Paternal)
-					id1 = pop.infoIdx("paternal_tag");
+					id1 = pop.infoIdx(infoField(0));
 				else if (m_mode == TAG_Maternal)
-					id1 = pop.infoIdx("maternal_tag");
+					id1 = pop.infoIdx(infoField(1));
 				else
 				{
-					id1 = pop.infoIdx("paternal_tag");
-					id2 = pop.infoIdx("maternal_tag");
+					id1 = pop.infoIdx(infoField(0));
+					id2 = pop.infoIdx(infoField(1));
 				}
 				
 				if( m_mode == TAG_Paternal)
@@ -120,11 +129,11 @@ namespace simuPOP
 					if( dad == NULL )
 						offspring->setInfo(0, id1);
 					else
-						offspring->setInfo(dad->info("tag_father"), id1);
+						offspring->setInfo(dad->info(id1), id1);
 					if( mom == NULL)
 						offspring->setInfo(0, id2);
 					else
-						offspring->setInfo(mom->info("tag_father"), id2);
+						offspring->setInfo(mom->info(id2), id2);
 				}
 				return true;
 			}
@@ -153,8 +162,9 @@ namespace simuPOP
 			/// constructor. default to be always active.
 			/// string can be any string (m_Delimiter will be ignored for this class.)
 			///  %r will be replicate number %g will be generation number.
-			parentsTagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			tagger( begin, end, step, at, rep, grp)
+			parentsTagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(TAG_ParentsFields, TAG_ParentsFields+2)):
+			tagger( begin, end, step, at, rep, grp, infoFields)
 			{
 			};
 
@@ -175,8 +185,8 @@ namespace simuPOP
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL)
 			{
-				UINT id1 = pop.infoIdx("father_idx");
-				UINT id2 = pop.infoIdx("mother_idx");
+				UINT id1 = pop.infoIdx(infoField(0));
+				UINT id2 = pop.infoIdx(infoField(1));
 				
 				if(dad == NULL)
 					offspring->setInfo(0, id1);

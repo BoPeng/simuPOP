@@ -53,8 +53,8 @@ namespace simuPOP
 				int atPloidy = -1,
 				double maleFreq=0.5, const vectori& sex = vectori(),
 				int stage=PreMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL)
-				:Operator("","", stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
+				:Operator("","", stage, begin, end, step, at, rep, grp, infoFields),
 				m_subPop(subPop), m_indRange(indRange),
 				m_atLoci(atLoci), m_atPloidy(atPloidy),
 				m_maleFreq(maleFreq), m_sex(sex)
@@ -157,10 +157,10 @@ namespace simuPOP
 				const vectoru& atLoci=vectoru(), int atPloidy=-1,
 				double maleFreq=0.5, const vectori& sex = vectori(),
 				int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				: initializer(subPop, indRange, atLoci,
 				atPloidy, maleFreq, sex,
-				stage, begin, end, step, at, rep, grp),
+				stage, begin, end, step, at, rep, grp, infoFields),
 				m_alleleFreq(alleleFreq), m_identicalInds(identicalInds)
 			{
 
@@ -236,9 +236,9 @@ namespace simuPOP
 				const vectorf& proportions = vectorf(),
 				double maleFreq=0.5, const vectori& sex = vectori(),
 				int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				: initializer(subPop, indRange, atLoci, atPloidy, maleFreq, sex,
-				stage, begin, end, step, at, rep, grp),
+				stage, begin, end, step, at, rep, grp, infoFields),
 				m_value(value), m_proportion(proportions)
 			{
 				DBG_FAILIF( maleFreq < 0 || maleFreq > 1 ,
@@ -285,8 +285,8 @@ namespace simuPOP
 			// copy genotype of ind to all individuals in subPop.
 			spread(ULONG ind, vectoru subPop=vectoru(),
 				int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
-				: Operator("","", stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
+				: Operator("","", stage, begin, end, step, at, rep, grp, infoFields),
 				m_ind(ind), m_subPop(subPop)
 			{
 			}
@@ -353,9 +353,9 @@ namespace simuPOP
 				intMatrix indRange=intMatrix(),
 				double maleFreq=0.5, const vectori& sex = vectori(),
 				int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				: initializer(subPop, indRange, atLoci, atPloidy, maleFreq, sex,
-				stage, begin, end, step, at, rep, grp)
+				stage, begin, end, step, at, rep, grp, infoFields)
 			{
 				DBG_FAILIF( maleFreq < 0 || maleFreq > 1 ,
 					IndexError, "male frequency in the population should be in the range of [0,1]");

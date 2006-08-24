@@ -33,6 +33,8 @@
 #include <numeric>
 using std::min;
 
+const string ASC_AS_Fields[2] = {"father_idx", "mother_idx"};
+
 namespace simuPOP
 {
 	/** \brief selection
@@ -62,8 +64,8 @@ namespace simuPOP
 		public:
 			/// constructor. default to be always active.
 			selector( int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
-				:Operator("","",stage, begin, end, step, at, rep, grp)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr(1, "fitness"))
+				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields)
 			{
 			}
 
@@ -88,7 +90,7 @@ namespace simuPOP
 			/// set fitness to all individual
 			bool apply(population& pop)
 			{
-				UINT fit_id = pop.infoIdx("fitness");
+				UINT fit_id = pop.infoIdx(this->infoField(0));
 				GappedInfoIterator fitness = pop.infoBegin(fit_id);
 
 				for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
@@ -125,8 +127,9 @@ namespace simuPOP
 			*/
 			mapSelector( vectoru loci, const strDict& fitness, bool phase=false,
 				int stage=PreMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			selector(stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(1, "fitness")):
+			selector(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_dict(fitness), m_phase(phase)
 			{
 			};
@@ -188,8 +191,9 @@ namespace simuPOP
 			*/
 			maSelector( vectoru loci, const vectorf& fitness, const vectora& wildtype,
 				int stage=PreMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			selector(stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
+				const vectorstr& infoFields=vectorstr(1, "fitness")):
+			selector(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_fitness(fitness), m_wildtype(wildtype)
 			{
 				DBG_ASSERT( m_fitness.size() == static_cast<UINT>(pow(3, loci.size())),
@@ -250,8 +254,9 @@ namespace simuPOP
 			*/
 			mlSelector( const vectorop selectors, int mode = SEL_Multiplicative,
 				int stage=PreMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			selector(stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(1, "fitness")):
+			selector(stage, begin, end, step, at, rep, grp, infoFields),
 				m_selectors(0), m_mode(mode)
 			{
 				DBG_FAILIF( selectors.empty(), ValueError, "Please specify at least one selector.");
@@ -309,8 +314,9 @@ namespace simuPOP
 			/// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
 			pySelector( vectoru loci, PyObject* func,
 				int stage=PreMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			selector(stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(1, "fitness")):
+			selector(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
 			{
 				if( !PyCallable_Check(func))
@@ -388,9 +394,9 @@ namespace simuPOP
 			/// constructor. default to be always active.
 			/// default to post mating
 			penetrance(bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
-				:Operator("","",stage, begin, end, step, at, rep, grp),
-				m_exposePenetrance(exposePenetrance)
+				int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(1, "penetrance"))
+				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields)
 			{
 				DBG_FAILIF( exposePenetrance==true && stage==DuringMating, ValueError,
 					"Can not expose penetrance values when applied as a during mating operator.");
@@ -418,25 +424,19 @@ namespace simuPOP
 			virtual bool apply(population& pop)
 			{
 				double p;
-				vectorf pVec;
-				size_t i=0;
 
-				if( m_exposePenetrance )
-					pVec.resize(pop.popSize());
-
+				UINT idx = pop.infoIdx(infoField(0));
+				GappedInfoIterator penIt = pop.infoBegin(idx);
 				for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
 				{
 					p = penet(&*it);
-					if( m_exposePenetrance)
-						pVec[i++] = p;
 
 					if( rng().randUniform01() < p )
 						it->setAffected(true);
 					else
 						it->setAffected(false);
+					*penIt++ = p;
 				}
-				if( m_exposePenetrance)
-					pop.setDoubleVectorVar("penetrance", pVec);
 
 				return true;
 			}
@@ -456,9 +456,6 @@ namespace simuPOP
 			{
 				return "<simuPOP::penetrance>" ;
 			}
-
-		private:
-			bool m_exposePenetrance;
 	};
 
 	/** \brief penetrance according to genotype at one locus
@@ -481,8 +478,9 @@ namespace simuPOP
 			*/
 			mapPenetrance( vectoru loci, const strDict& penet, bool phase=false,
 				bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(1, "penetrance")):
+			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_dict(penet), m_phase(phase)
 			{
 			};
@@ -568,8 +566,9 @@ namespace simuPOP
 			maPenetrance( vectoru loci, const vectorf& penet, const vectora& wildtype,
 				bool exposePenetrance=false,
 				int stage=DuringMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(1, "penetrance")):
+			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_penetrance(penet), m_wildtype(wildtype)
 			{
 				DBG_ASSERT( m_penetrance.size() ==  static_cast<UINT>(pow(3, loci.size())),
@@ -652,8 +651,9 @@ namespace simuPOP
 			*/
 			mlPenetrance( const vectorop peneOps, int mode = PEN_Multiplicative,
 				bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
+				const vectorstr& infoFields=vectorstr(1, "penetrance")):
+			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
 				m_peneOps(0), m_mode(mode)
 			{
 				DBG_FAILIF( peneOps.empty(), ValueError, "Please specify at least one penetrance operator.");
@@ -744,8 +744,9 @@ namespace simuPOP
 			/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
 			pyPenetrance( vectoru loci, PyObject* func, bool exposePenetrance=false,
 				int stage=DuringMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(1, "penetrance")):
+			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
 			{
 				if( !PyCallable_Check(func))
@@ -866,9 +867,8 @@ namespace simuPOP
 		public:
 			/// constructor. default to be always active.
 			quanTrait( int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
-				:Operator("","",stage, begin, end, step, at, rep, grp),
-				m_qtrait(0), m_len(0)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr(1, "qtrait"))
+				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields)
 			{
 			}
 
@@ -893,18 +893,11 @@ namespace simuPOP
 			/// set qtrait to all individual
 			bool apply(population& pop)
 			{
-				if(static_cast<size_t>(m_len) != pop.popSize() )
-				{
-					m_len = pop.popSize();
-					m_qtrait.resize(m_len);
-					// fill(m_qtrait.begin(), m_qtrait.end(), 0.0);
-				}
-
-				size_t i=0;
+				UINT idx = pop.infoIdx(infoField(0));
+				GappedInfoIterator traitIt = pop.infoBegin(idx);
 				for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
-					m_qtrait[i++] = qtrait(&*it) ;
+					*traitIt++ = qtrait(&*it) ;
 
-				pop.setDoubleVectorVar("qtrait", m_qtrait);
 				return true;
 			}
 
@@ -912,15 +905,6 @@ namespace simuPOP
 			{
 				return "<simuPOP::qtrait::quantitative trait>" ;
 			}
-
-		private:
-
-			/// qtrait values
-			vectorf m_qtrait;
-
-			/// length of qtrait values
-			int m_len;
-
 	};
 
 	/** \brief quantitative trait according to genotype at one locus
@@ -945,8 +929,9 @@ namespace simuPOP
 			*/
 			mapQuanTrait( vectoru loci, const strDict& qtrait, double sigma=0, bool phase=false,
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			quanTrait(stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(1, "qtrait")):
+			quanTrait(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_dict(qtrait), m_sigma(sigma), m_phase(phase)
 			{
 			};
@@ -1028,8 +1013,9 @@ namespace simuPOP
 			maQuanTrait( vectoru loci, const vectorf& qtrait, const vectora& wildtype,
 				const vectorf& sigma = vectorf(),
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			quanTrait(stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(1, "qtrait")):
+			quanTrait(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
 			{
 				if( m_sigma.empty())
@@ -1118,8 +1104,9 @@ namespace simuPOP
 			*/
 			mlQuanTrait( const vectorop qtraits, int mode = QT_Multiplicative, double sigma=0,
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			quanTrait(stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(1, "qtrait")):
+			quanTrait(stage, begin, end, step, at, rep, grp, infoFields),
 				m_qtraits(0), m_sigma(sigma), m_mode(mode)
 			{
 				DBG_FAILIF( qtraits.empty(), ValueError, "Please specify at least one selector.");
@@ -1200,8 +1187,9 @@ namespace simuPOP
 			/// provide locus and qtrait for 11, 12, 13 (in the form of dictionary)
 			pyQuanTrait( vectoru loci, PyObject* func,
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			quanTrait(stage, begin, end, step, at, rep, grp),
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(1, "qtrait")):
+			quanTrait(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
 			{
 				if( !PyCallable_Check(func))
@@ -1303,8 +1291,8 @@ namespace simuPOP
 			*/
 			pySubset(const vectori& keep=vectori(),
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL) :
-			Operator( "", "", stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()) :
+			Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_keep(keep)
 			{
 			}
@@ -1365,8 +1353,8 @@ namespace simuPOP
 			sample( const string& name="sample", const string& nameExpr="", UINT times=1,
 				const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
-				: Operator( "", "", stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
+				: Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_name(name), m_nameExpr(nameExpr,""), m_times(times), m_saveAs(saveAs),
 				m_saveAsExpr(saveAsExpr), m_format(format)
 			{
@@ -1454,9 +1442,9 @@ namespace simuPOP
 				const string& name="sample", const string& nameExpr="", UINT times=1,
 				const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-				stage, begin, end, step, at, rep, grp),
+				stage, begin, end, step, at, rep, grp, infoFields),
 				m_size(size)
 			{
 			}
@@ -1510,9 +1498,9 @@ namespace simuPOP
 				bool spSample=false, const string& name="sample", const string& nameExpr="", UINT times=1,
 				const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-				stage, begin, end, step, at, rep, grp),
+				stage, begin, end, step, at, rep, grp, infoFields),
 				m_numCases(cases), m_numControls(controls), m_spSample(spSample),
 				m_caseIdx(0), m_controlIdx(0)
 			{
@@ -1581,9 +1569,10 @@ namespace simuPOP
 				const string& format="auto",
 				int stage=PostMating, int begin=0, int end=-1,
 				int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
+				int rep=REP_ALL, int grp=GRP_ALL, 
+				const vectorstr& infoFields=vectorstr(ASC_AS_Fields, ASC_AS_Fields+2))
 				: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-				stage, begin, end, step, at, rep, grp),
+				stage, begin, end, step, at, rep, grp, infoFields),
 				m_size(size), m_affectedness(!chooseUnaffected), m_countOnly(countOnly),
 				m_sibpairs(0)
 			{
@@ -1640,9 +1629,9 @@ namespace simuPOP
 				const string& name="sample", const string& nameExpr="", UINT times=1,
 				const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-				stage, begin, end, step, at, rep, grp),
+				stage, begin, end, step, at, rep, grp, infoFields),
 				m_keepAncestralPops(keepAncestralPops)
 			{
 				DBG_ASSERT( PyObj_Is_IntNumArray(keep), ValueError,

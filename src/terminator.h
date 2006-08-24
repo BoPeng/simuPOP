@@ -42,8 +42,8 @@ namespace simuPOP
 		public:
 			/// constructor. default to be always active.
 			terminator(string message = "", string output=">", string outputExpr="",
-				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			Operator(output, outputExpr, stage, begin, end, step, at, rep, grp),
+				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			Operator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 				m_message(message)
 			{
 			};
@@ -84,7 +84,7 @@ namespace simuPOP
 			terminateIf(string condition="", string message="", string var="terminate",
 				string output="", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL):
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
 			terminator(message, output, outputExpr, stage, begin, end, step, at,
 				rep, grp), m_expr(condition ), m_var(var)
 			{
@@ -153,7 +153,7 @@ namespace simuPOP
 			continueIf(string condition="", string message="", string var="terminate",
 				string output="", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL):
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
 			terminator(message, output, outputExpr, stage, begin, end, step, at,
 				rep, grp), m_expr(condition ), m_var(var)
 			{

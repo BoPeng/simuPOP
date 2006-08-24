@@ -93,10 +93,9 @@ namespace simuPOP
 				vectorf maleRate=vectorf(),
 				vectoru maleAfterLoci=vectoru(),
 				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				:
-			Operator( "", "", DuringMating, begin, end, step, at,
-				rep, grp)
+			Operator( "", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
 				, m_intensity(intensity), m_maleIntensity(maleIntensity),
 				m_rate(rate), m_maleRate(maleRate),
 				m_afterLoci(afterLoci), m_maleAfterLoci(maleAfterLoci),

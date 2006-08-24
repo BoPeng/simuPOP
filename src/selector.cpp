@@ -457,8 +457,8 @@ namespace simuPOP
 
 	bool affectedSibpairSample::prepareSample(population& pop)
 	{
-		m_father_id = pop.infoIdx("father_idx");
-		m_mother_id = pop.infoIdx("mother_idx");
+		m_father_id = pop.infoIdx(infoField(0));
+		m_mother_id = pop.infoIdx(infoField(1));
 
 		// get parental index for each subpop
 		DBG_FAILIF( m_size.size() > 1 && m_size.size() != pop.numSubPop(),
