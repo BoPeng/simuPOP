@@ -2618,4 +2618,38 @@ T Expression::valueAs##TypeName() \
 			return string();
 	}
 
+#ifndef OPTIMIZED
+    bool testGappedIterator()
+    {
+        vector<InfoType> a(20);
+        size_t i;
+        for(i=0; i<20; ++i)
+            a[i] = i;
+        
+        // access to the right elements?
+        GappedInfoIterator a5(a.begin(), 5);
+        for(i=0; i<4; ++i)
+            if(*a5++ != i*5)
+                return false;
+
+        // not start from the first?
+        GappedInfoIterator a4(a.begin()+1, 4);
+        for(i=0; i<4; ++i)
+            if(*a4++ != 1+i*4)
+                return false;
+
+        // can I get a vector from it?
+        vector<InfoType> b( GappedInfoIterator(a.begin()+1, 4),
+            GappedInfoIterator(a.end()+1, 4));
+        vector<InfoType>::iterator it = b.begin();
+        for(i=0; it != b.end(); ++it, ++i)
+            if(*it != 1+i*4)
+                return false;
+
+        return true;
+    }
+    
+#endif
+
+
 }

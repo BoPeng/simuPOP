@@ -87,6 +87,10 @@ class TestRNG(unittest.TestCase):
         sd = random.randint(100, 10000)
         SetRNG(name, sd)
         self.assertEqual(rng().seed(), sd)
+
+    def testGappedIterator(self):
+        'Test gapped iterator (internal)'
+        self.assertEqual(testGappedIterator(), True)
             
     
 if __name__ == '__main__':
