@@ -647,23 +647,22 @@ class TestPopulation(unittest.TestCase):
         ind.setInfo(18, 'age')
         self.assertEqual(ind.info('age'), 18)
         #
-        pop = population(10, infoName=['age'])
-        self.assertEqual(pop.infoNames(), ('age',))
-        self.assertEqual(pop.infoSize(), 1)
+        pop = population(10, infoName=['age', 'fitness'])
+        self.assertEqual(pop.infoNames(), ('age', 'fitness'))
+        self.assertEqual(pop.infoSize(), 2)
         ind = pop.individual(0)
         # set info
         ind.setInfo(2, 0)
         self.assertEqual(ind.info('age'), 2)
         # get info
         self.assertEqual(ind.info(0), 2)
-        self.assertEqual(ind.infoSize(), 1)
         # create another field
-        self.assertEqual(pop.requestInfoField('age'), 0)
+        self.assertEqual(pop.infoIdx('age'), 0)
         # set values
         pop.setIndInfo([1, 2,3,4,5,6,7,8,9,10], 0)
         for i in range(10):
             self.assertEqual(pop.individual(i).info(0), i+1)
-        self.assertEqual(pop.requestInfoField('fitness'), 1)
+        self.assertEqual(pop.infoIdx('fitness'), 1)
         # adding fitness should not interfere with age.
         for i in range(10):
             self.assertEqual(pop.individual(i).info(0), i+1)

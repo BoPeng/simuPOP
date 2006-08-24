@@ -573,7 +573,7 @@ namespace simuPOP
 			}
 			
 			/// return the index of field name, return -1 if not found.
-			int infoIdx(const string& name) const
+			UINT infoIdx(const string& name) const
 			{	
 				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoName;
 				
@@ -582,18 +582,24 @@ namespace simuPOP
 					if(names[i] == name)
 						return i;
 				}
-				return -1;
+				DBG_ASSERT(false, IndexError, "Info field " + name + " is not found. " 
+					"Plese use infoName=['" + name + "'] option of population() to add it.");
+				// this should never be reached.
+				return 0;
 			}
 			
 			/// add a new information field
 			/// NOTE: should only be called by population::requestInfoField
 			/// return the index of the newly added field
+			/*
+			/// Right now, do not allow dynamic addition of these fields.
 			int addInfoField(const string& name)
 			{
 				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoName;
 				names.push_back(name);
 				return names.size()-1;
 			}
+			*/
 			
 			void swap(GenoStruTrait& rhs)
 			{
@@ -639,7 +645,7 @@ namespace simuPOP
 	- genotypic information
 	- shared genotypic structure info (through a GenoStructure pointer)
 	- flags about sex, affected status
-	- an internal info field and a tag field of any type (template)
+	- an internal info field 
 	.
 
 	other individuals will be derived from this class, adding age info etc.
@@ -648,10 +654,6 @@ namespace simuPOP
 	- individual DOES NOT manage memory. It will use a pointer passed from
 	class population. This causes A LOT of trouble and I have not
 	evaluated how much benefic I get.
-	- individual is a template class taking a tag parameter.
-	tag can be a integer, a pair or any object to track
-	individual information. The prolem with our template based
-	design + SWIG makes instantiation of mutiple tag types difficult. :-(
 	- operator = uses shallow copy. This is required by
 	sort algorithm since otherwise individuals are
 	non-copiable. However, in population memory management,
@@ -670,8 +672,6 @@ namespace simuPOP
 	setGenoStructure(GenoStructure gs)
 	\endcode
 	- \c setSubPopID() and \c subPopID() can be used for any \e temporary purpose.
-	- \c Tag are usually  std::pair(int,int) used by class tagger to
-	track informations like pedigree structure.
 
 	*/
 	class individual : public GenoStruTrait
@@ -691,7 +691,7 @@ namespace simuPOP
 
 			///  @name constructor, destructor etc
 			//@{
-			/// default constructor, Tag field need a default constructor
+			/// default constructor, 
 			individual():m_flags(0),m_subPopID(0)
 			{
 			}
@@ -701,7 +701,6 @@ namespace simuPOP
 			individual(const individual& ind) :
 			GenoStruTrait(ind), m_flags(ind.m_flags),
 				m_subPopID(ind.m_subPopID),
-				m_tag(ind.m_tag),
 				m_genoPtr(ind.m_genoPtr),
 				m_infoPtr(ind.m_infoPtr)
 			{
@@ -738,7 +737,6 @@ namespace simuPOP
 				const_cast<individual&>(rhs).setShallowCopied(true);
 
 				m_flags = rhs.m_flags;
-				setTag(rhs.tag());
 				setSubPopID(rhs.subPopID());
 				setGenoPtr(rhs.genoPtr());
 				setInfoPtr(rhs.infoPtr());
@@ -751,7 +749,6 @@ namespace simuPOP
 			individual& copyFrom( const individual& rhs)
 			{
 				m_flags = rhs.m_flags;
-				setTag(rhs.tag());
 				setSubPopID(rhs.subPopID());
 				copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
 				copy(rhs.infoBegin(), rhs.infoEnd(), infoBegin());
@@ -779,7 +776,7 @@ namespace simuPOP
 			}
 			
 			//@}
-			/// @name allele, tag, info get/set functions
+			/// @name allele, info get/set functions
 			//@{
 
 			/// return genotype as python Numeric.array object
@@ -910,24 +907,6 @@ namespace simuPOP
 				CHECKRANGECHROM(ch);
 
 				*(m_genoPtr + index + p*totNumLoci() + chromBegin(ch) ) = allele;
-			}
-
-			/// return tag
-			TagType tag() const
-			{
-				return m_tag;
-			}
-
-			/// set tag
-			void setTag(TagType tag)
-			{
-				m_tag = tag;
-			}
-
-			/// set a single number?
-			void setTag(int tag)
-			{
-				m_tag = TagType(tag, 0);
 			}
 
 			/// sex?
@@ -1104,8 +1083,7 @@ namespace simuPOP
 				if( genoStruIdx() != rhs.genoStruIdx() )
 					return false;
 
-				if( tag() != rhs.tag()
-					|| ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
+				if(ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
 					|| ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) )
 					return false;
 					
@@ -1133,7 +1111,7 @@ namespace simuPOP
 				if( genoStruIdx() != rhs.genoStruIdx() )
 					return 1;
 
-				if( tag() != rhs.tag() || m_flags != rhs.m_flags )
+				if( m_flags != rhs.m_flags )
 					return 1;
 
 				for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
@@ -1182,7 +1160,6 @@ namespace simuPOP
 				if( genoStruIdx() != ind.genoStruIdx() )
 					throw SystemError("Can only swap individuals with different geno structure.");
 
-				std::swap(m_tag, ind.m_tag);
 				std::swap(m_subPopID, ind.m_subPopID);
 				std::swap(m_infoPtr, ind.m_infoPtr);
 
@@ -1228,7 +1205,7 @@ namespace simuPOP
 			/// CPPONLY
 			void display( ostream& out, int width=1, const vectori& chrom=vectori(), const vectori& loci=vectori() )
 			{
-				out << tag() << " " << sexChar() << affectedChar() << " ";
+				out << sexChar() << affectedChar() << " ";
 				DBG_DO(DBG_POPULATION, out <<  subPopID() << " ");
 				for(UINT p=0, pEnd = ploidy(); p < pEnd;  ++p)
 				{
@@ -1282,8 +1259,6 @@ namespace simuPOP
 
 				b= ISSETFLAG(m_flags, m_flagAffected);
 				ar & boost::serialization::make_nvp("affected",b);
-
-				ar & make_nvp("tag", m_tag);
 			}
 
 			template<class Archive>
@@ -1298,10 +1273,12 @@ namespace simuPOP
 
 				RESETFLAG(m_flags, m_flagShallowCopied);
 
-				ar & make_nvp("tag", m_tag);
-
-				if (version < 0)
+				if (version < 1)
+				{
+					std::pair<int, int> tag;
+					ar & make_nvp("tag", tag);
 					ar & make_nvp("info", m_subPopID);
+				}
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -1314,9 +1291,6 @@ namespace simuPOP
 
 			/// temporary information
 			SubPop_ID m_subPopID;
-
-			/// tag
-			TagType m_tag;
 
 			/// pointer to genotype.
 			GenoIterator m_genoPtr;

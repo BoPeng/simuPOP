@@ -457,7 +457,10 @@ namespace simuPOP
 
 	bool affectedSibpairSample::prepareSample(population& pop)
 	{
-		// get tag info for each subpop
+		m_father_id = pop.infoIdx("father_idx");
+		m_mother_id = pop.infoIdx("mother_idx");
+
+		// get parental index for each subpop
 		DBG_FAILIF( m_size.size() > 1 && m_size.size() != pop.numSubPop(),
 			ValueError,
 			"Length of array size and number of subpopulations do not match.");
@@ -478,23 +481,24 @@ namespace simuPOP
 			ULONG spBegin = pop.subPopBegin(sp);
 			ULONG spSize = pop.subPopSize(sp);
 
-			// get tag and affected status info
-			std::vector<TagType> tags(spSize);
+			// get parents and affected status info
+			std::vector< std::pair<ULONG, ULONG> > tags(spSize);
 			std::vector<bool> affected(spSize);
 			for(size_t i=0; i < spSize; ++i)
 			{
-				tags[i] = pop.ind(i, sp).tag();
+				tags[i].first  = static_cast<ULONG>(pop.ind(i, sp).info(m_father_id));
+				tags[i].second = static_cast<ULONG>(pop.ind(i, sp).info(m_mother_id));
 				affected[i] = pop.ind(i, sp).affected();
 			}
 
 			// find affected sibpairs, difficult...
-			TagType tag;
+			std::pair<ULONG, ULONG> tag;
 			for(size_t i=0; i< spSize; ++i)
 			{
 				if( affected[i] == m_affectedness )
 				{
 					tag = tags[i];
-					// ignore father = monther which is used when no opposite
+					// ignore father = mother which is used when no opposite
 					// sex exist when mating.
 					if(tag.first == tag.second)
 						continue;
@@ -605,7 +609,9 @@ namespace simuPOP
 				//  SystemError, "Duplicate selection");
 				pop.ind( allSibs[ idx[i] ].first ).setSubPopID(i);
 				pop.ind( allSibs[ idx[i] ].second ).setSubPopID(i);
-				TagType tag = pop.ind( allSibs[ idx[i]].first ).tag();
+				std::pair<ULONG, ULONG> tag;
+				tag.first = static_cast<ULONG>(pop.ind( allSibs[ idx[i]].first ).info(m_father_id));
+				tag.second= static_cast<ULONG>(pop.ind( allSibs[ idx[i]].first ).info(m_mother_id));
 				chosenPar.push_back( (int)(tag.first) );
 				chosenPar.push_back( (int)(tag.second) );
 				parents.push_back(
@@ -650,7 +656,9 @@ namespace simuPOP
 					// sibpairs uses absolute indices, so no sp parameter is rquired.
 					pop.ind( sibpairs[ idx[i]].first ).setSubPopID(sibID);
 					pop.ind( sibpairs[ idx[i]].second ).setSubPopID(sibID);
-					TagType tag = pop.ind(sibpairs[ idx[i]].first ).tag();
+					std::pair<ULONG, ULONG> tag;
+					tag.first = pop.ind(sibpairs[ idx[i]].first ).info(m_father_id);
+					tag.second= pop.ind(sibpairs[ idx[i]].first ).info(m_mother_id);
 					chosenPar.push_back( (int)(tag.first) );
 					chosenPar.push_back( (int)(tag.second) );
 					parents.push_back(

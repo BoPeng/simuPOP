@@ -677,7 +677,7 @@ namespace simuPOP
 				return m_ancestralPops.size();
 			}
 
-			int requestInfoField(const string name);
+			// int requestInfoField(const string name);
 
 			/// set info for all individuals
 			template<typename T, typename T1>

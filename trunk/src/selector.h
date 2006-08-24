@@ -1619,6 +1619,9 @@ namespace simuPOP
 			/// sibs for all subpopulations
 			vector< vector< std::pair<ULONG, ULONG> > > m_sibpairs;
 
+			/// index to fields
+			UINT m_father_id, m_mother_id;
+
 	};
 
 	/// thrink population accroding to some outside value
