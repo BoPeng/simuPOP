@@ -126,6 +126,7 @@ typedef std::vector<UINT>                  vectoru;
 typedef std::vector<ULONG>                 vectorlu;
 typedef std::vector<std::string>           vectorstr;
 typedef std::vector<std::vector<int > >    intMatrix;
+typedef std::vector<InfoType>              vectorinfo;
 typedef std::vector<std::vector<double > > matrix;
 
 #include <map>

@@ -2621,7 +2621,7 @@ T Expression::valueAs##TypeName() \
 #ifndef OPTIMIZED
     bool testGappedIterator()
     {
-        vector<InfoType> a(20);
+        vectorinfo a(20);
         size_t i;
         for(i=0; i<20; ++i)
             a[i] = i;
@@ -2639,9 +2639,9 @@ T Expression::valueAs##TypeName() \
                 return false;
 
         // can I get a vector from it?
-        vector<InfoType> b( GappedInfoIterator(a.begin()+1, 4),
+        vectorinfo b( GappedInfoIterator(a.begin()+1, 4),
             GappedInfoIterator(a.end()+1, 4));
-        vector<InfoType>::iterator it = b.begin();
+        vectorinfo::iterator it = b.begin();
         for(i=0; it != b.end(); ++it, ++i)
             if(*it != 1+i*4)
                 return false;
