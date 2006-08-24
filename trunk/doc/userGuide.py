@@ -163,8 +163,8 @@ print pop.absIndIndex(1,1)
 #end
 
 #file log/popStruManip.log
-pop.setIndInfo([1,2,2,3,1])
-pop.setSubPopByIndInfo()
+pop.setIndSubPopID([1,2,2,3,1])
+pop.setSubPopByIndID()
 pop.removeLoci(keep=range(2,7))
 Dump(pop)
 #end
@@ -516,7 +516,8 @@ simu.apply([
 
 
 #file log/recombinator.log
-simu = simulator(population(4, loci=[4,5,6]),
+simu = simulator(population(4, loci=[4,5,6], 
+    infoFields=['father_idx', 'mother_idx']),
     randomMating())
 simu.step([
   parentsTagger(),
@@ -535,7 +536,7 @@ simu.step([
 
 #file log/basicSelector.log
 simu = simulator(
-    population(size=1000, ploidy=2, loci=[1]),
+    population(size=1000, ploidy=2, loci=[1], infoFields=['fitness']),
     randomMating())
 s1 = .1
 s2 = .2
@@ -550,8 +551,8 @@ simu.evolve([
 
 #file log/pySelector.log
 simu = simulator(
-    population(size=1000, ploidy=2, loci=[3]),
-    randomMating() )
+    population(size=1000, ploidy=2, loci=[3], infoFields=['fitness'] ),
+    randomMating())
 
 s1 = .2
 s2 = .3
@@ -578,7 +579,7 @@ simu.evolve([
 #end
 
 #file log/pySubset.log
-simu = simulator(population(subPop=[2,3], loci=[3,4]),
+simu = simulator(population(subPop=[2,3], loci=[3,4], infoFields=['fitness']),
     randomMating())
 simu.apply([
     initByFreq([.3,.5,.2]),
@@ -618,32 +619,6 @@ simu.evolve([
 #PS convert log/simuDemo16.eps log/simuDemo16.png
 #PS /bin/rm -f log/simuDemo*.eps
 
-#file log/scipy.log
-from simuUtil import *
-from simuSciPy import *
-pop = population(size=200, ploidy=2, loci=[3,4],
-                 subPop=[50,50,100])
-simu = simulator(pop, randomMating())
-migr = migrator([[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-                mode=MigrByProbability)
-pSize = stat(popSize=1, stage=PreMating)
-show = pyEval(r"str(subPopSize)+'\n'")
-
-pPlot = varPlotter(expr='subPopSize', win=10, update=5, title='subPop size',
-    ytitle='size', legend=["rep"], saveAs="log/subpop.png")
-
-simu.setGen(0)
-simu.evolve([
-   pSize,
-   migr,
-   show,
-   pPlot,
-   ],
-   end=20
-)
-
-#end
-
 #file log/ifElse.log
 from simuRPy import *
 from simuUtil import *
@@ -678,7 +653,7 @@ simu.evolve(
 #file log/rng.log
 print ListAllRNG()
 print rng().name()
-SetRNG("ranlux389", seed=10)
+SetRNG("taus2", seed=10)
 print rng().name()
 #end
 
@@ -939,13 +914,15 @@ def changeSPSize(gen, oldSize):
   return size
 
 # migration between subpopulaitons
-import Numeric
-rates = Numeric.array([[0.]*nc]*nc)
+import numpy
+rates = numpy.array([[0.]*nc]*nc)
 for i in range(1,nc-1):
-  rates[i,i+1]=0.05
-  rates[i,i-1]=0.05
-rates[0,1] = 0.1
-rates[nc-1,nc-2] = 0.1
+  rates[i][i+1]=0.05
+  rates[i][i-1]=0.05
+
+#
+rates[0][1] = 0.1
+rates[nc-1][nc-2] = 0.1
 
 # print rates
 print rates

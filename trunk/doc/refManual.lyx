@@ -8,7 +8,7 @@
 
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.7.0 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.7.2 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Statistics, Rice University}\\
 {\bf Email: }{\textsf bpeng@rice.edu}\\
@@ -5927,7 +5927,7 @@ ind.info(idx or name),
 \family default
  
 \family typewriter
-pop.getIndInfo(idx or name), 
+pop.getIndInfo(idx or name, [subPop]), 
 \family default
 or 
 \family typewriter
@@ -5968,7 +5968,7 @@ for i in range(pop.subPopSize(2)):
 \end_layout
 
 \begin_layout LyX-Code
-  # note that arr is writable.
+  # note again that arr is writable.
 \end_layout
 
 \begin_layout LyX-Code
@@ -15112,6 +15112,8 @@ simuMatPlt.py
 \family default
 as well but they are lack of subplot capacity (so the usages are different)
  due to the limit of SciPy/gplt and MatPlotLib's plotting capacity.
+ Also note as of Apr, 2006, the development of gplt in scipy is stopped
+ so support of simuPOP/simuSciPy is stopped as well.
 \end_layout
 
 \begin_layout Subsection
