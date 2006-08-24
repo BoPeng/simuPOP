@@ -227,7 +227,7 @@ class TestPopulation(unittest.TestCase):
         pop.setSubPopStru(newSubPopSizes=[10, 20], allowPopSizeChange=True)
         self.assertEqual( pop.subPopSizes(), (10, 20) )
         #
-        pop = population(size=10, infoName=['age'])
+        pop = population(size=10, infoFields=['age'])
         pop.setIndInfo(range(10), 'age')
         pop.setSubPopStru(newSubPopSizes=[2,8], allowPopSizeChange=False)
         for i in range(10):
@@ -246,13 +246,13 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual( pop, pop1a)
         self.assertEqual( pop1, popa)
         # test if info is swapped
-        pop = population(10, infoName=['age'])
+        pop = population(10, infoFields=['age'])
         pop.setIndInfo(range(10), 'age')
-        pop1 = population(5, infoName=['fitness'])
+        pop1 = population(5, infoFields=['fitness'])
         pop1.setIndInfo(range(10,15), 'fitness')
         pop.swap(pop1)
-        self.assertEqual(pop.infoName(0), 'fitness')
-        self.assertEqual(pop1.infoName(0), 'age')
+        self.assertEqual(pop.infoField(0), 'fitness')
+        self.assertEqual(pop1.infoField(0), 'age')
         self.assertEqual(pop.arrIndInfo(), range(10,15))
         self.assertEqual(pop1.arrIndInfo(), range(10))
         self.assertEqual(pop.popSize(), 5)
@@ -368,7 +368,7 @@ class TestPopulation(unittest.TestCase):
         print "A warning should be issued"
         pop.removeSubPops([8])
         # see if remove subPOp change info
-        pop = population(subPop=[2,4,5], infoName=['age'])
+        pop = population(subPop=[2,4,5], infoFields=['age'])
         self.assertEqual( pop.numSubPop(), 3)
         pop.setIndInfo(range(11), 0)
         self.assertEqual(pop.arrIndInfo(), range(11))
@@ -397,7 +397,7 @@ class TestPopulation(unittest.TestCase):
         self.assertGenotype(pop, 0, [0])
         self.assertGenotype(pop, 1, [3,4,5])
         # see if remove individual change info
-        pop = population(subPop=[2,4,5], infoName=['age'])
+        pop = population(subPop=[2,4,5], infoFields=['age'])
         pop.setIndInfo(range(11), 0)
         pop.removeIndividuals([2,3,4,5])
         self.assertEqual(pop.subPopSizes(), (2,0,5))
@@ -428,7 +428,7 @@ class TestPopulation(unittest.TestCase):
         # subpop will be shifted
         self.assertGenotype(pop, 0, [0,1,2,3,4,5])
         # see if merging affect individual id.
-        pop = population(subPop=[2,4,5], infoName=['age'])
+        pop = population(subPop=[2,4,5], infoFields=['age'])
         pop.setIndInfo(range(11), 0)
         pop.mergeSubPops([0,2], removeEmptySubPops=True)
         self.assertEqual(pop.subPopSizes(), (7,4))
@@ -463,7 +463,7 @@ class TestPopulation(unittest.TestCase):
         self.assertGenotype(pop, 2, [6,7,8,9])
         self.assertGenotype(pop, 3, [1,2])
         # reorder does not change info
-        pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1], infoName=['age'])
+        pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1], infoFields=['age'])
         pop.setIndInfo(range(10), 'age')
         #
         pop.reorderSubPops(rank=[1,3,0,2])
@@ -491,7 +491,7 @@ class TestPopulation(unittest.TestCase):
         pop1.individual(0).setAllele(1, 0)
         self.assertNotEqual(pop.individual(0).allele(0), 1)
         # does new pop keeps info
-        pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1], infoName=['age'])
+        pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1], infoFields=['age'])
         pop.setIndInfo(range(10),'age')
         pop1 = pop.newPopByIndID(id=[-1,8,7,6,5,4,3,2,1,-1], removeEmptySubPops=True)
         self.assertEqual(pop1.popSize(), 8)
@@ -563,14 +563,14 @@ class TestPopulation(unittest.TestCase):
             pop = population(size=10, ploidy=2, loci=[5, 7], 
                 subPop=[2, 8], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=4, alleleNames=['_','A','C','T','G'],
-                infoName=['age', 'fitness']) 
+                infoFields=['age', 'fitness']) 
             InitByFreq(pop, [.2, .3, .5])
             pop.setIndInfo(range(10), 'age')
             pop.setIndInfo(range(100, 110), 'fitness')
         else:
             pop = population(size=10, ploidy=2, loci=[5, 7], 
                 subPop=[2, 8], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-                alleleNames=['1','2'], infoName=['age', 'fitness']) 
+                alleleNames=['1','2'], infoFields=['age', 'fitness']) 
             InitByFreq(pop, [.2, .8])
             pop.setIndInfo(range(10), 'age')
             pop.setIndInfo(range(100, 110), 'fitness')
@@ -614,18 +614,18 @@ class TestPopulation(unittest.TestCase):
         ind = pop.individual(0)
         self.assertRaises(exceptions.IndexError, ind.info, 0)
         # give name
-        self.assertRaises(exceptions.ValueError, population, infoName='age')
-        pop = population(10, infoName=['age'])
-        self.assertEqual(pop.infoName(0), 'age')
-        self.assertEqual(pop.infoNames(), ('age',))
+        self.assertRaises(exceptions.ValueError, population, infoFields='age')
+        pop = population(10, infoFields=['age'])
+        self.assertEqual(pop.infoField(0), 'age')
+        self.assertEqual(pop.infoFields(), ('age',))
         ind = pop.individual(0)
         self.assertRaises(exceptions.IndexError, ind.info, 1)
         # can set more names
-        pop = population(10, infoName=['age', 'fitness', 'trait1'])
-        self.assertEqual(pop.infoName(0), 'age')
-        self.assertEqual(pop.infoName(2), 'trait1')
-        self.assertRaises(exceptions.IndexError, pop.infoName, 3)
-        self.assertEqual(pop.infoNames(), ('age', 'fitness', 'trait1'))
+        pop = population(10, infoFields=['age', 'fitness', 'trait1'])
+        self.assertEqual(pop.infoField(0), 'age')
+        self.assertEqual(pop.infoField(2), 'trait1')
+        self.assertRaises(exceptions.IndexError, pop.infoField, 3)
+        self.assertEqual(pop.infoFields(), ('age', 'fitness', 'trait1'))
         # can set and read each info
         pop.setIndInfo(range(10), 0)
         pop.setIndInfo(range(10,20), 1)
@@ -647,8 +647,8 @@ class TestPopulation(unittest.TestCase):
         ind.setInfo(18, 'age')
         self.assertEqual(ind.info('age'), 18)
         #
-        pop = population(10, infoName=['age', 'fitness'])
-        self.assertEqual(pop.infoNames(), ('age', 'fitness'))
+        pop = population(10, infoFields=['age', 'fitness'])
+        self.assertEqual(pop.infoFields(), ('age', 'fitness'))
         self.assertEqual(pop.infoSize(), 2)
         ind = pop.individual(0)
         # set info
@@ -753,10 +753,10 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.arrGenotype(), gt1)
         #
         # test if ind info is saved with ancestral populations
-        pop = population(10, ancestralDepth=2, infoName=['age', 'fitness'])
+        pop = population(10, ancestralDepth=2, infoFields=['age', 'fitness'])
         pop.setIndInfo(range(10), 'age')
         pop.setIndInfo(range(10, 20), 'fitness')
-        pop1 = population(20, infoName=['age', 'fitness'])
+        pop1 = population(20, infoFields=['age', 'fitness'])
         pop1.setIndInfo(range(100, 120), 'age')
         pop1.setIndInfo(range(110, 130), 'fitness')
         pop.pushAndDiscard(pop1)

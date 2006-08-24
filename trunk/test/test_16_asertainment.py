@@ -22,7 +22,7 @@ class TestAscertainment(unittest.TestCase):
     simu = simulator(
       population(subPop=[100,200], ploidy=2, loci=[5,10],
         ancestralDepth=1, maxAllele=MaxAllele, 
-        infoName=['fitness', 'father_idx', 'mother_idx']),
+        infoFields=['fitness', 'father_idx', 'mother_idx']),
       randomMating(numOffspring=2))
     simu.evolve(
       [
