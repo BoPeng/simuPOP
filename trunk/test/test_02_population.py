@@ -670,6 +670,16 @@ class TestPopulation(unittest.TestCase):
         pop.setIndInfo(range(50,60), 'fitness')
         for i in range(10):
             self.assertEqual(pop.individual(i).info('fitness'), i+50)
+        # 
+        #  test getIndInfo
+        pop = population(subPop=[4,6], infoFields=['age', 'fitness'])
+        pop.setIndInfo(range(10), 'age')
+        pop.setIndInfo(range(100, 110), 'fitness')
+        self.assertEqual(pop.getIndInfo('age'), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.getIndInfo('fitness'), tuple([float(x) for x in range(100, 110)]))
+        self.assertEqual(pop.getIndInfo('age', 1), tuple([float(x) for x in range(4, 10)]))
+        self.assertEqual(pop.getIndInfo('fitness', 0), tuple([float(x) for x in range(100, 104)]))
+
 
         
     def testPopVars(self):

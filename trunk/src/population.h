@@ -663,39 +663,39 @@ namespace simuPOP
 
 			/// set info for all individuals
 			template<typename T, typename T1>
-			void setIndInfo(const T& info, T1 index)
+			void setIndInfo(const T& values, T1 idx)
 			{
-				CHECKRANGEINFO(index);
-				DBG_ASSERT(info.size() == popSize(), IndexError,
-					"Size of info should be the same as population size");
+				CHECKRANGEINFO(idx);
+				DBG_ASSERT(values.size() == popSize(), IndexError,
+					"Size of values should be the same as population size");
 				UINT is = infoSize();
-				typename T::const_iterator infoIter = info.begin();
-				for(vector<InfoType>::iterator ptr=m_info.begin() + index;
-					ptr != m_info.end() + index; ptr += is)
+				typename T::const_iterator infoIter = values.begin();
+				for(vectorinfo::iterator ptr=m_info.begin() + idx;
+					ptr != m_info.end() + idx; ptr += is)
 					*ptr = static_cast<InfoType>(*infoIter++);
 			}
 			
 			template<class T>
-			void setIndInfo(const T& info, const string& name)
+			void setIndInfo(const T& values, const string& name)
 			{
 				int idx = infoIdx(name);
 				DBG_ASSERT(idx>=0, IndexError, 
-					"Info name " + name + " is not a valid info field name");
+					"Info name " + name + " is not a valid values field name");
 	
-				setIndInfo<T, UINT>(info, idx);
+				setIndInfo<T, UINT>(values, idx);
 			}
 
 			/// info iterator
-			GappedInfoIterator infoBegin(UINT index)
+			GappedInfoIterator infoBegin(UINT idx)
 			{
-				CHECKRANGEINFO(index);
-				return GappedInfoIterator(m_info.begin()+index, infoSize());
+				CHECKRANGEINFO(idx);
+				return GappedInfoIterator(m_info.begin()+idx, infoSize());
 			}
 			
-			GappedInfoIterator infoEnd(UINT index)
+			GappedInfoIterator infoEnd(UINT idx)
 			{
-				CHECKRANGEINFO(index);
-				return GappedInfoIterator(m_info.begin()+index+m_info.size(), infoSize());
+				CHECKRANGEINFO(idx);
+				return GappedInfoIterator(m_info.begin()+idx+m_info.size(), infoSize());
 			}
 			
 			/// info iterator
@@ -709,7 +709,42 @@ namespace simuPOP
 
 				return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop]*infoSize(), infoSize());
 			}
+			
+			GappedInfoIterator infoEnd(UINT index, UINT subPop)
+			{
+				CHECKRANGEINFO(index);
+				CHECKRANGESUBPOP(subPop);
+
+				if(shallowCopied())
+					adjustGenoPosition();
+
+				return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop+1]*infoSize(), infoSize());
+			}
 		
+			
+			vectorinfo getIndInfo(UINT idx)
+			{
+				return vectorinfo(infoBegin(idx), infoEnd(idx));
+			}
+			
+			vectorinfo getIndInfo(const string& name)
+			{
+				UINT idx = infoIdx(name);
+				return vectorinfo(infoBegin(idx), infoEnd(idx));
+			}
+			
+
+			vectorinfo getIndInfo(UINT idx, UINT subPop)
+			{
+				return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
+			}
+			
+			vectorinfo getIndInfo(const string& name, UINT subPop)
+			{
+				UINT idx = infoIdx(name);
+				return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
+			}
+			
 			PyObject* arrIndInfo()
 			{
 				return Info_Vec_As_NumArray(m_info.begin(), m_info.end());
@@ -725,18 +760,9 @@ namespace simuPOP
 				return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop]*infoSize(), 
 					m_info.begin() + m_subPopIndex[subPop+1]*infoSize());
 			}
-			
-			GappedInfoIterator infoEnd(UINT index, UINT subPop)
-			{
-				CHECKRANGEINFO(index);
-				CHECKRANGESUBPOP(subPop);
 
-				if(shallowCopied())
-					adjustGenoPosition();
-
-				return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop+1]*infoSize(), infoSize());
-			}
 			
+		
 			/// set ancestral depth, can be -1
 			void setAncestralDepth(int depth);
 
@@ -1179,7 +1205,7 @@ namespace simuPOP
 			vectora m_genotype;
 
 			/// information
-			vector<InfoType> m_info;
+			vectorinfo m_info;
 
 			/// individuals.
 			vector<individual> m_inds;
@@ -1198,7 +1224,7 @@ namespace simuPOP
 #endif
 				vectorlu m_subPopSize;
 				vectora m_genotype;
-				vector<InfoType> m_info;
+				vectorinfo m_info;
 				vector<individual> m_inds;
 			};
 

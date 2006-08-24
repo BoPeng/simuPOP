@@ -975,17 +975,17 @@ namespace simuPOP
 			}
 			
 			/// get info
-			InfoType info(UINT index) const
+			InfoType info(UINT idx) const
 			{
-				CHECKRANGEINFO(index);
-				return m_infoPtr[index];
+				CHECKRANGEINFO(idx);
+				return m_infoPtr[idx];
 			}
 
 			/// set info
-			void setInfo(InfoType info, UINT index)
+			void setInfo(InfoType value, UINT idx)
 			{
-				CHECKRANGEINFO(index);
-				m_infoPtr[index] = info;
+				CHECKRANGEINFO(idx);
+				m_infoPtr[idx] = value;
 			}
 			
 			/// get info
@@ -998,12 +998,12 @@ namespace simuPOP
 			}
 
 			/// set info
-			void setInfo(InfoType info, const string& name)
+			void setInfo(InfoType value, const string& name)
 			{
 				int idx = infoIdx(name);
 				DBG_ASSERT(idx>=0, IndexError, 
 					"Info name " + name + " is not a valid info field name");
-				m_infoPtr[idx] = info;
+				m_infoPtr[idx] = value;
 			}
 			
 			/// start of alleles

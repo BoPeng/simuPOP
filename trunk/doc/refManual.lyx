@@ -707,7 +707,7 @@ Genotypic structure related functions
 
 \begin_layout Standard
 \begin_inset Tabular
-<lyxtabular version="3" rows="19" columns="2">
+<lyxtabular version="3" rows="22" columns="2">
 <features islongtable="true">
 <column alignment="left" valignment="top" leftline="true" width="0">
 <column alignment="left" valignment="top" leftline="true" rightline="true" width="0">
@@ -1131,6 +1131,78 @@ set maximum allele state for all loci
 \end_inset
 </cell>
 </row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+infoIdx(name)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+index of the field 
+\family typewriter
+name
+\family default
+.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+infoField(idx)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+name of the field 
+\family typewriter
+idx
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+infoFields()
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+all information fields
+\end_layout
+
+\end_inset
+</cell>
+</row>
 </lyxtabular>
 
 \end_inset
@@ -1182,6 +1254,83 @@ It is assumed that male has XY and female has XX chromosomes.
  The sex chromosomes of male individuals will be arranged in the order of
  XY.
  
+\end_layout
+
+\begin_layout Section
+Information fields
+\end_layout
+
+\begin_layout Standard
+An individual will by default have genotype, sex and affectedness information,
+ but other information is needed for some operations.
+ For example, the fitness value of an individual is needed for selection,
+ one or more trait values may be needed to calculate quantitative traits;
+ and age may be needed if age-dependent mating schemes are used.
+ Since the need for information fields varies from simulation to simulation,
+ simuPOP does not fix the amount of information fields, and allow users
+ to specify these fields during the construction of populations.
+\end_layout
+
+\begin_layout Standard
+Operators may require certain information field to work properly.
+ For example, all selectors require field 
+\family typewriter
+fitness 
+\family default
+to store evaluated fitness values for each individual.
+ 
+\family typewriter
+parentTagger
+\family default
+ needs 
+\family typewriter
+father_idx 
+\family default
+and 
+\family typewriter
+mother_idx 
+\family default
+to store index of the parents of each individual in the parental generation.
+ You do need to add these fields to the 
+\family typewriter
+infoFields 
+\family default
+parameter of the population constructor.
+ If you forget, an error message will appear and tells you to add certain
+ field when a field is needed by some operators.
+\end_layout
+
+\begin_layout Standard
+The information fields can be access from each individual (c.f.
+ 
+\family typewriter
+info(idx), info(name), setInfo(value, idx), setInfo(value, name), arrInfo()
+\family default
+ of individuals), or from the population as a whole (c.f.
+ 
+\family typewriter
+setindInfo(value), arrIndInfo(subPop)
+\family default
+).
+ Some operators allows you to specify which information field(s) to use.
+ Just to show what you can do with information fields, one can
+\end_layout
+
+\begin_layout Itemize
+create a population with 5 trait values and some risk factors
+\end_layout
+
+\begin_layout Itemize
+assign risk factors (environmental maybe) manually, or through some operators
+\end_layout
+
+\begin_layout Itemize
+calculate each trait values using different quantitative trait operators,
+ some gene may contribute to more than one trait values
+\end_layout
+
+\begin_layout Itemize
+calualte a final trait values from these information fields.
 \end_layout
 
 \begin_layout Chapter
@@ -1348,7 +1497,7 @@ Population related functions
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="54" columns="3">
+<lyxtabular version="3" rows="55" columns="3">
 <features islongtable="true" firstHeadBottomDL="true" headBottomDL="true">
 <column alignment="left" valignment="top" leftline="true" width="0">
 <column alignment="left" valignment="top" leftline="true" width="0" special="|p{2in}|">
@@ -1976,12 +2125,12 @@ Return an editable array of all genotype of a subpopulation.
 \begin_layout Standard
 
 \family typewriter
-p.exposeInfo
-\begin_inset LatexCommand \index{population!exposeInfo}
+p.arrInfo
+\begin_inset LatexCommand \index{population!arrIndInfo}
 
 \end_inset
 
-( name='info') (FIXME)
+(sp)
 \end_layout
 
 \end_inset
@@ -1990,7 +2139,46 @@ p.exposeInfo
 \begin_inset Text
 
 \begin_layout Standard
-Expose (not editable) the info field of all individuals
+Return the editable array of all information field of a subpopulation (default
+ to the whole population).
+ Note that the order of individuals within each subpopulation is not hornored.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+p.setIndInfo
+\begin_inset LatexCommand \index{population!setIndInfo}
+
+\end_inset
+
+(values, [subPop])
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Set indifivual information for the given information field (index or name),
+ for the given subpopulation (default to all population).
 \end_layout
 
 \end_inset
@@ -4738,7 +4926,7 @@ Individual related functions
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="24" columns="2">
+<lyxtabular version="3" rows="25" columns="2">
 <features islongtable="true">
 <column alignment="left" valignment="top" leftline="true" width="0" special="|p{2in}|">
 <column alignment="left" valignment="top" leftline="true" rightline="true" width="0" special="p{4.5in}|">
@@ -5105,7 +5293,7 @@ p
 \begin_layout Standard
 
 \family typewriter
-i.tag()
+i.info(idx or name)
 \end_layout
 
 \end_inset
@@ -5114,11 +5302,15 @@ i.tag()
 \begin_inset Text
 
 \begin_layout Standard
-Return the tag of an individual.
- SimuPOP does not gurantee the type of tag.
- Currently, the tag is a pair of int that is usually used to record the
- parents of the individual.
- 
+Get the the value of info field (indexed by 
+\family typewriter
+idx
+\family default
+ or 
+\family typewriter
+name
+\family default
+).
 \end_layout
 
 \end_inset
@@ -5131,7 +5323,7 @@ Return the tag of an individual.
 \begin_layout Standard
 
 \family typewriter
-i.setTag(tag)
+i.setInfo(value, idx or name)
 \end_layout
 
 \end_inset
@@ -5140,7 +5332,35 @@ i.setTag(tag)
 \begin_inset Text
 
 \begin_layout Standard
-Set the tag.
+Set the value of info field (indexed by 
+\family typewriter
+idx 
+\family default
+or 
+\family typewriter
+name)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+i.arrInfo()
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Return an editable array of all information fields.
 \end_layout
 
 \end_inset
@@ -5633,6 +5853,126 @@ n.
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Section
+Information fields
+\end_layout
+
+\begin_layout Standard
+From a user's point of view, the information fields are arranged as follows:
+\end_layout
+
+\begin_layout LyX-Code
+ind1: f1, f2, f3...
+ ind2: f1, f2, f3 ...
+\end_layout
+
+\begin_layout Standard
+For each individual, 
+\family typewriter
+ind.arrInfo()
+\family default
+ will return 
+\family typewriter
+f1, f2, f3, ...
+
+\family default
+ etc for that individual.
+ From a population point of view, 
+\family typewriter
+pop.arrIndInfo([subPop])
+\family default
+ will return a list of 
+\family typewriter
+f1, f2, f3, ..., f1, f2, f3, ...
+\family default
+.
+ Note that the order of individuals may not be kept in this (sub)population-wise
+ array.
+ That is to say, 
+\family typewriter
+pop.arrIndInfo()[0] 
+\family default
+does not have to be the first field of the first individual.
+ This property is also true for 
+\family typewriter
+setIndInfo(values, idx or name).
+
+\family default
+ That is to say, if you want to set information field for individuals in
+ a population unordered, you can use 
+\end_layout
+
+\begin_layout LyX-Code
+setIndInfo(values, idx)
+\end_layout
+
+\begin_layout Standard
+Otherwise, you will have to use the less efficient way:
+\end_layout
+
+\begin_layout LyX-Code
+for i in range(pop.popSize()):
+\end_layout
+
+\begin_layout LyX-Code
+    pop.individual(i).setInfo(values[i], idx)
+\end_layout
+
+\begin_layout Standard
+To retrieve the values of information fields, you can use 
+\family typewriter
+ind.info(idx or name),
+\family default
+ 
+\family typewriter
+pop.getIndInfo(idx or name), 
+\family default
+or 
+\family typewriter
+pop.arrIndInfo()
+\family default
+.
+ Note that 
+\family typewriter
+getIndInfo
+\family default
+ is more convenient but it is less efficient (fields must be copied out)
+ than 
+\family typewriter
+arrIndInfo.
+ 
+\family default
+To handle the return value of 
+\family typewriter
+arrIndInfo, 
+\family default
+you would usually do:
+\end_layout
+
+\begin_layout LyX-Code
+idx = pop.infoIdx('trait2')
+\end_layout
+
+\begin_layout LyX-Code
+step = pop.infoSize()
+\end_layout
+
+\begin_layout LyX-Code
+arr = pop.arrIndInfo(subPop=2)
+\end_layout
+
+\begin_layout LyX-Code
+for i in range(pop.subPopSize(2)):
+\end_layout
+
+\begin_layout LyX-Code
+  # note that arr is writable.
+\end_layout
+
+\begin_layout LyX-Code
+  arr[idx + step*i] = something
 \end_layout
 
 \begin_layout Section

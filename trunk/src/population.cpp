@@ -368,7 +368,7 @@ namespace simuPOP
 			// allocate new genotype and inds
 			ULONG newPopGenoSize = genoSize() * newPopSize;
 			vectora newGenotype(newPopGenoSize);
-			vector<InfoType> newInfo(newPopSize*infoSize());
+			vectorinfo newInfo(newPopSize*infoSize());
 			vector<individual> newInds(newPopSize);
 
 			DBG_ASSERT( indEnd()== newPopSize+it, SystemError,
@@ -897,7 +897,7 @@ namespace simuPOP
 		/// crete a new one
 		index = addInfoField(name);
 		///
-		vector<InfoType> newInfo((index+1)*popSize());
+		vectorinfo newInfo((index+1)*popSize());
 		/// copy the old stuff in
 		InfoIterator ptr = newInfo.begin();
 		for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
@@ -1178,9 +1178,9 @@ namespace simuPOP
 		if(deep)
 		{
 			vectora tmpGenotype(m_popGenoSize);
-			vector<InfoType> tmpInfo(m_popSize*infoSize());
+			vectorinfo tmpInfo(m_popSize*infoSize());
 			vectora::iterator it = tmpGenotype.begin();
-			vector<InfoType>::iterator infoPtr = tmpInfo.begin();
+			vectorinfo::iterator infoPtr = tmpInfo.begin();
 			UINT is = infoSize();
 
 			for(IndIterator ind=indBegin(), indEd=indEnd(); ind!=indEd; ++ind)
@@ -1265,7 +1265,7 @@ namespace simuPOP
 		/// save genotypic info
 		vectora scGeno(scIndex.size() * totNumLoci() * ploidy());
 		vector<GenoIterator> scPtr( scIndex.size() );
-		vector<InfoType> scInfo(scIndex.size() * infoSize());
+		vectorinfo scInfo(scIndex.size() * infoSize());
 		vector<InfoIterator> scInfoPtr( scIndex.size() );
 
 		size_t i, iEnd;
