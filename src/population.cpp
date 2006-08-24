@@ -42,7 +42,7 @@ namespace simuPOP
 		const vectorstr& alleleNames,
 		const vectorstr& lociNames,
 		UINT maxAllele,
-		const vectorstr& infoName)
+		const vectorstr& infoFields)
 		:
 	GenoStruTrait(),
 		m_popSize(size),
@@ -84,7 +84,7 @@ namespace simuPOP
 
 		// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 		// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
-		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames, lociNames, maxAllele, infoName);
+		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames, lociNames, maxAllele, infoFields);
 
 		DBG_DO( DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
 			<< sizeof(Allele) << '*' << genoSize() << endl
@@ -105,7 +105,7 @@ namespace simuPOP
 
 			/// allocate info
 			size_t is = infoSize();
-			DBG_ASSERT(is == infoName.size(), SystemError, "Wrong geno structure");
+			DBG_ASSERT(is == infoFields.size(), SystemError, "Wrong geno structure");
 			m_info.resize(m_popSize*is);
 
 			// set subpopulation indexes, do not allow popsize change
@@ -745,7 +745,7 @@ namespace simuPOP
 
 		// new geno structure is in effective now!
 		this->setGenoStructure(this->ploidy(), newNumLoci, this->sexChrom(), newLociDist,
-			this->alleleNames(), newLociNames, this->maxAllele(), this->infoNames() );
+			this->alleleNames(), newLociNames, this->maxAllele(), this->infoFields() );
 		// prepare data
 		//
 		// keep m_popSize;

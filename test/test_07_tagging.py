@@ -20,7 +20,7 @@ class  TestTagger(unittest.TestCase):
     'Testing parents tagger.'
     simu = simulator( 
       population(size=20, ploidy=2, loci=[2,4], subPop=[5,15],
-          infoName=['father_idx', 'mother_idx']),
+          infoFields=['father_idx', 'mother_idx']),
       randomMating(numOffspring=2))
     simu.step([parentsTagger()])
     pop = simu.population(0)
@@ -37,7 +37,7 @@ class  TestTagger(unittest.TestCase):
     # the game is not:
     # who is the offspring of one parent?
     pop = population(size=20, ploidy=2, loci=[2,4], subPop=[5,15], 
-        infoName=['paternal_tag', 'maternal_tag'])
+        infoFields=['paternal_tag', 'maternal_tag'])
     pop.individual(0).setInfo(1, 'paternal_tag')
     pop.individual(5).setInfo(2, 'paternal_tag')
     simu = simulator( pop, randomMating())

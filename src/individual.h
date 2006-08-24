@@ -89,7 +89,7 @@ namespace simuPOP
 			/// CPPONLY serialization library requires a default constructor
 			GenoStructure():m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
 				m_numLoci(0), m_sexChrom(false), m_lociPos(0), m_chromIndex(0),
-				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoName(0)
+				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0)
 				{}
 
 			/** \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
@@ -105,7 +105,7 @@ namespace simuPOP
 			*/
 			GenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 				const vectorf& lociPos, const vectorstr& alleleNames,
-				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoName);
+				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields);
 
 			/// copy constructor
 			/// CPPONLY
@@ -121,7 +121,7 @@ namespace simuPOP
 				m_alleleNames(rhs.m_alleleNames),
 				m_lociNames(rhs.m_lociNames),
 				m_maxAllele(rhs.m_maxAllele),
-				m_infoName(rhs.m_infoName)
+				m_infoFields(rhs.m_infoFields)
 			{
 			}
 
@@ -136,7 +136,7 @@ namespace simuPOP
 					( m_alleleNames == rhs.m_alleleNames) &&
 					( m_lociNames == rhs.m_lociNames) &&
 					( m_maxAllele == rhs.m_maxAllele) && 
-					( m_infoName == rhs.m_infoName) ))
+					( m_infoFields == rhs.m_infoFields) ))
 					return true;
 				else
 					return false;
@@ -191,7 +191,7 @@ namespace simuPOP
 				ar & make_nvp("allele_name", m_alleleNames);
 				ar & make_nvp("loci_name", m_lociNames);
 				ar & make_nvp("max_allele", m_maxAllele);
-				ar & make_nvp("info_name", m_infoName);
+				ar & make_nvp("info_name", m_infoFields);
 			}
 
 			template<class Archive>
@@ -211,7 +211,7 @@ namespace simuPOP
 				ar & make_nvp("loci_name", m_lociNames);
 				ar & make_nvp("max_allele", m_maxAllele);
 				if(version > 1)
-					ar & make_nvp("info_name", m_infoName);
+					ar & make_nvp("info_name", m_infoFields);
 
 				// build chromosome index
 				m_chromIndex.resize(m_numLoci.size()+1);
@@ -259,7 +259,7 @@ namespace simuPOP
 			UINT m_maxAllele;
 
 			/// name of the information field
-			vectorstr m_infoName;
+			vectorstr m_infoFields;
 
 			friend class GenoStruTrait;
 	};
@@ -299,7 +299,7 @@ namespace simuPOP
 			/// CPPONLY
 			void setGenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 				const vectorf& lociPos, const vectorstr& alleleNames,
-				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoName);
+				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields);
 
 			/// set an existing geno structure, simply use it
 			/// This is NOT efficient! (but has to be used when, for example,
@@ -558,24 +558,24 @@ namespace simuPOP
 			/// get info length
 			UINT infoSize() const
 			{
-				return s_genoStruRepository[m_genoStruIdx].m_infoName.size();
+				return s_genoStruRepository[m_genoStruIdx].m_infoFields.size();
 			}
 			
-			vectorstr infoNames() const
+			vectorstr infoFields() const
 			{
-				return s_genoStruRepository[m_genoStruIdx].m_infoName;
+				return s_genoStruRepository[m_genoStruIdx].m_infoFields;
 			}
 
-			string infoName(UINT idx) const
+			string infoField(UINT idx) const
 			{
 				CHECKRANGEINFO(idx);
-				return s_genoStruRepository[m_genoStruIdx].m_infoName[idx];
+				return s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
 			}
 			
 			/// return the index of field name, return -1 if not found.
 			UINT infoIdx(const string& name) const
 			{	
-				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoName;
+				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
 				
 				for(UINT i=0; i< names.size(); ++i)
 				{
@@ -583,7 +583,7 @@ namespace simuPOP
 						return i;
 				}
 				DBG_ASSERT(false, IndexError, "Info field " + name + " is not found. " 
-					"Plese use infoName=['" + name + "'] option of population() to add it.");
+					"Plese use infoFields=['" + name + "'] option of population() to add it.");
 				// this should never be reached.
 				return 0;
 			}
@@ -595,7 +595,7 @@ namespace simuPOP
 			/// Right now, do not allow dynamic addition of these fields.
 			int addInfoField(const string& name)
 			{
-				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoName;
+				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
 				names.push_back(name);
 				return names.size()-1;
 			}

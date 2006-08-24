@@ -523,9 +523,9 @@ def SaveSimulator(simu, *args, **kwargs):
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
 def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False, 
     lociPos=[], subPop=[], ancestralDepth=0, alleleNames=[], lociNames=[],
-    maxAllele=MaxAllele, infoName=[]):
-    if type(infoName) not in (type([]), type(())):
-        raise exceptions.ValueError('infoName needs to be an array')
+    maxAllele=MaxAllele, infoFields=[]):
+    if type(infoFields) not in (type([]), type(())):
+        raise exceptions.ValueError('infoFields needs to be an array')
     ld = lociPos
     if len(lociPos) > 0 and type(lociPos[0]) in [types.TupleType, types.ListType]:
         ld = []
@@ -540,7 +540,7 @@ def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False,
             ln.extend( lociNames[i])
     _swig_setattr(self, population, 'this', 
         cppModule.new_population(size, ploidy, loci, sexChrom, ld, subPop, 
-            ancestralDepth, alleleNames, ln, maxAllele, infoName))
+            ancestralDepth, alleleNames, ln, maxAllele, infoFields))
     _swig_setattr(self, population, 'thisown', 1)
 
 new_population.__doc__ = population.__init__.__doc__
