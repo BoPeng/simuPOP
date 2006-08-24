@@ -21,9 +21,11 @@ class TestSelector(unittest.TestCase):
   def testMapSelectorDirSelection(self):
     'Testing directional selection using a map selector'
     # specify relative fitness: w11, w12/w21, w22
+    # NOTE: use spare here to make sure that slector will work
+    # when more than one information fields are available.
     simu = simulator(
       population(size=1000, ploidy=2, loci=[1], 
-      infoFields=['fitness']),
+      infoFields=['fitness', 'spare']),
       randomMating() )
     # 1. directional selection
     #   w11 > w12 > w22
@@ -47,7 +49,7 @@ class TestSelector(unittest.TestCase):
     # specify relative fitness: w11, w12/w21, w22
     simu = simulator(
       population(size=1000, ploidy=2, loci=[1], 
-      infoFields=['fitness']),
+      infoFields=['fitness', 'spare']),
       randomMating() )
     # 1. directional selection
     #   w11 > w12 > w22
@@ -71,7 +73,7 @@ class TestSelector(unittest.TestCase):
     # specify relative fitness: w11, w12/w21, w22
     simu = simulator(
       population(size=1000, ploidy=2, loci=[1], 
-      infoFields=['fitness']),
+      infoFields=['fitness', 'spare']),
       randomMating() )
     s1 = .1
     s2 = .2
@@ -105,7 +107,7 @@ class TestSelector(unittest.TestCase):
     # specify relative fitness: w11, w12/w21, w22
     simu = simulator(
       population(size=1000, ploidy=2, loci=[1], 
-      infoFields=['fitness']),
+      infoFields=['fitness', 'spare']),
       randomMating() )
     # 2. heterozygote superiority
     #   w11 < w12, w12 > w22
@@ -133,7 +135,7 @@ class TestSelector(unittest.TestCase):
     'Testing heterozygous disadvantage using map selector'
     simu = simulator(
       population(size=1000, ploidy=2, loci=[1], 
-      infoFields=['fitness']),
+      infoFields=['fitness', 'spare']),
       randomMating() )
     # 2. heterozygote inferiority
     #   w11 > w12, w12 < w22
@@ -161,7 +163,7 @@ class TestSelector(unittest.TestCase):
     # specify relative fitness: w11, w12/w21, w22
     simu = simulator(
       population(size=1000, ploidy=2, loci=[1], 
-      infoFields=['fitness']),
+      infoFields=['fitness', 'spare']),
       randomMating() )
     # 2. heterozygote inferiority
     #   w11 > w12, w12 < w22
@@ -185,7 +187,7 @@ class TestSelector(unittest.TestCase):
     'Testing the multi-locus version of the maSelector'
     simu = simulator(
       population(size=1000, ploidy=2, loci=[3,6], 
-      infoFields=['fitness']),
+      infoFields=['fitness', 'spare']),
       randomMating() )
     simu.evolve(
       [
@@ -251,7 +253,7 @@ class TestSelector(unittest.TestCase):
     #
     simu = simulator(
       population(size=1000, ploidy=2, loci=[1], 
-      infoFields=['fitness']),
+      infoFields=['fitness', 'spare']),
       randomMating() )
     # 2. heterozygote superiority
     #   w11 < w12, w12 > w22
@@ -278,7 +280,7 @@ class TestSelector(unittest.TestCase):
     'Testing multi-locus selector'
     simu = simulator(
       population(size=1000, ploidy=2, loci=[2], 
-      infoFields=['fitness']),
+      infoFields=['fitness', 'spare']),
       randomMating())
     simu.evolve(
       [

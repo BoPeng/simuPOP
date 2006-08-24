@@ -473,6 +473,36 @@ maxAllele
 )
 \end_layout
 
+\begin_layout Itemize
+name of the information fields (c.f.
+ 
+\family typewriter
+infoField
+\begin_inset LatexCommand \index{GenoStruTrait!infoField}
+
+\end_inset
+
+(idx), infoFields
+\begin_inset LatexCommand \index{GenoStruTrait!infoFields}
+
+\end_inset
+
+() 
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Here information fields refer to the numbers attached to each individual,
+ such as fitness value, parent index, age etc.
+ Individuals may need some information fields to use certain operators.
+ For example, 
+\family typewriter
+'fitness'
+\family default
+ field is required by all selectors.
+\end_layout
+
 \begin_layout Standard
 Example 
 \begin_inset LatexCommand \ref{alg:Genotype-structure-functions}

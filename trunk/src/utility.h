@@ -35,7 +35,7 @@ The classes that are implemented here (also in utility.cpp)
 include:
 * SharedVariables
 * Expression
-* GappedAlleleIterator
+* GappedIterator
 * StreamElem
 * StreamManager
 * StreamProvider
@@ -381,6 +381,9 @@ namespace simuPOP
 	typedef GappedIterator<Allele, AlleleRef, GenoIterator> GappedAlleleIterator;
 	typedef GappedIterator<InfoType, InfoType&, InfoIterator> GappedInfoIterator;
 
+#ifndef OPTIMIZED
+    bool testGappedIterator();
+#endif
 	// ////////////////////////////////////////////////////////////
 	// / Shared variables
 	// ////////////////////////////////////////////////////////////
@@ -1500,4 +1503,5 @@ namespace simuPOP
 	// file extension, including .gz
 	const string fileExtension(const string & filename);
 }
+
 #endif
