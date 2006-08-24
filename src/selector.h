@@ -88,14 +88,14 @@ namespace simuPOP
 			/// set fitness to all individual
 			bool apply(population& pop)
 			{
-				vectorf& fitness = pop.fitness();
+				UINT fit_id = pop.infoIdx("fitness");
+				GappedInfoIterator fitness = pop.infoBegin(fit_id);
 
-				fitness.resize(pop.popSize());
-
-				size_t i=0;
 				for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
-					fitness[i++] = indFitness(&*it) ;
+					*fitness++ = indFitness(&*it) ;
 
+				// indicate selection is on.
+				pop.setBoolVar("selection", true);
 				return true;
 			}
 

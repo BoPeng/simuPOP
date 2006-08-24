@@ -166,8 +166,6 @@ namespace simuPOP
 				std::swap(m_grp, rhs.m_grp);
 				std::swap(m_gen, rhs.m_gen);
 				std::swap(m_curAncestralPop, rhs.m_curAncestralPop);
-				// FIXME: remove m_fitness, use generalized info field.
-				m_fitness.swap(rhs.m_fitness);
 				std::swap(m_shallowCopied, rhs.m_shallowCopied);
 			}
 
@@ -649,22 +647,6 @@ namespace simuPOP
 			population& newPopWithPartialLoci(
 				const vectoru& remove=vectoru(),
 				const vectoru& keep=vectoru());
-
-			// return reference to fitness vector
-			// CPPONLY
-			vectorf& fitness()
-			{
-				return m_fitness;
-			}
-
-			// this funciton allows fitness to be
-			// accessed from python.
-			PyObject* arrFitness()
-			{
-				if(m_fitness.size() != m_popSize)
-					m_fitness.resize(m_popSize);
-				return Double_Vec_As_NumArray(m_fitness.begin(), m_fitness.end());
-			}
 
 			// swap in rhs. (usually a scratch population
 			// if fixRhs is false, leave rhs in broken status
@@ -1172,8 +1154,6 @@ namespace simuPOP
 					cout << "Warning: shared variable is not loaded correctly.\npopulation should still be usable." << endl;
 				}
 
-				// m_fitness was not saved
-				m_fitness = vectorf();
 				m_shallowCopied = false;
 			}
 
@@ -1232,9 +1212,6 @@ namespace simuPOP
 
 			/// current ancestral depth
 			int m_curAncestralPop;
-
-			/// fitness
-			vectorf m_fitness;
 
 			/// whether or not individual genotype is in order
 			bool m_shallowCopied;

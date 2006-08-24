@@ -22,7 +22,8 @@ class TestSelector(unittest.TestCase):
     'Testing directional selection using a map selector'
     # specify relative fitness: w11, w12/w21, w22
     simu = simulator(
-      population(size=1000, ploidy=2, loci=[1]),
+      population(size=1000, ploidy=2, loci=[1], 
+      infoFields=['fitness']),
       randomMating() )
     # 1. directional selection
     #   w11 > w12 > w22
@@ -45,7 +46,8 @@ class TestSelector(unittest.TestCase):
     'Testing directional selection using a multi-allele selector'
     # specify relative fitness: w11, w12/w21, w22
     simu = simulator(
-      population(size=1000, ploidy=2, loci=[1]),
+      population(size=1000, ploidy=2, loci=[1], 
+      infoFields=['fitness']),
       randomMating() )
     # 1. directional selection
     #   w11 > w12 > w22
@@ -68,7 +70,8 @@ class TestSelector(unittest.TestCase):
     'Testing heterozygous advantage using map selector'
     # specify relative fitness: w11, w12/w21, w22
     simu = simulator(
-      population(size=1000, ploidy=2, loci=[1]),
+      population(size=1000, ploidy=2, loci=[1], 
+      infoFields=['fitness']),
       randomMating() )
     s1 = .1
     s2 = .2
@@ -101,7 +104,8 @@ class TestSelector(unittest.TestCase):
     p = .2/ (.1+.2)
     # specify relative fitness: w11, w12/w21, w22
     simu = simulator(
-      population(size=1000, ploidy=2, loci=[1]),
+      population(size=1000, ploidy=2, loci=[1], 
+      infoFields=['fitness']),
       randomMating() )
     # 2. heterozygote superiority
     #   w11 < w12, w12 > w22
@@ -128,7 +132,8 @@ class TestSelector(unittest.TestCase):
   def testMapSelectorHeteroDisadv(self):
     'Testing heterozygous disadvantage using map selector'
     simu = simulator(
-      population(size=1000, ploidy=2, loci=[1]),
+      population(size=1000, ploidy=2, loci=[1], 
+      infoFields=['fitness']),
       randomMating() )
     # 2. heterozygote inferiority
     #   w11 > w12, w12 < w22
@@ -155,7 +160,8 @@ class TestSelector(unittest.TestCase):
     p = .2/ (.1+.2)
     # specify relative fitness: w11, w12/w21, w22
     simu = simulator(
-      population(size=1000, ploidy=2, loci=[1]),
+      population(size=1000, ploidy=2, loci=[1], 
+      infoFields=['fitness']),
       randomMating() )
     # 2. heterozygote inferiority
     #   w11 > w12, w12 < w22
@@ -178,7 +184,8 @@ class TestSelector(unittest.TestCase):
   def testMultiLocusMaSelector(self):
     'Testing the multi-locus version of the maSelector'
     simu = simulator(
-      population(size=1000, ploidy=2, loci=[3,6]),
+      population(size=1000, ploidy=2, loci=[3,6], 
+      infoFields=['fitness']),
       randomMating() )
     simu.evolve(
       [
@@ -191,12 +198,14 @@ class TestSelector(unittest.TestCase):
   
   def testMultiLocusMapSelector(self):
     'Testing basic parameters of selector'
-    pop = population(10, loci=[2])
+    pop = population(10, loci=[2], 
+      infoFields=['fitness'])
     InitByValue(pop, value=[[0,0],[1,1]], proportions=[0.5,0.5])
     mapSelector(loci=[0,1], 
       fitness={'0-0|0-0':0, '1-1|1-1':0.25,
                '0-1|0-1':0.5, '1-0|1-0':0.75}).apply(pop)
-    ft = pop.arrFitness()
+    # there is only one field, so fitness is continuous
+    ft = pop.arrIndInfo()
     for ind in range(pop.popSize()):
       gt = pop.individual(ind).arrGenotype()
       if gt == [0,0,1,1]:
@@ -212,7 +221,7 @@ class TestSelector(unittest.TestCase):
     mapSelector(loci=[0,1], phase=True,
       fitness={'0-0|0-0':0, '1-1|1-1':0.25,
                '0-1|0-1':0.5, '1-0|1-0':0.75}).apply(pop)
-    ft = pop.arrFitness()
+    ft = pop.arrIndInfo()
     for ind in range(pop.popSize()):
       gt = pop.individual(ind).arrGenotype()
       if gt == [0,0,1,1]:
@@ -241,7 +250,8 @@ class TestSelector(unittest.TestCase):
         return 1 - s2
     #
     simu = simulator(
-      population(size=1000, ploidy=2, loci=[1]),
+      population(size=1000, ploidy=2, loci=[1], 
+      infoFields=['fitness']),
       randomMating() )
     # 2. heterozygote superiority
     #   w11 < w12, w12 > w22
@@ -267,7 +277,8 @@ class TestSelector(unittest.TestCase):
   def testMlSelector(self):
     'Testing multi-locus selector'
     simu = simulator(
-      population(size=1000, ploidy=2, loci=[2]),
+      population(size=1000, ploidy=2, loci=[2], 
+      infoFields=['fitness']),
       randomMating())
     simu.evolve(
       [

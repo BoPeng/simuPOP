@@ -60,7 +60,6 @@ namespace simuPOP
 		m_grp(-1),
 		m_gen(0),
 		m_curAncestralPop(0),
-		m_fitness(0),
 		m_shallowCopied(false)
 	{
 		DBG_FAILIF(maxAllele > MaxAllele, ValueError,
@@ -154,7 +153,6 @@ namespace simuPOP
 		m_grp(-1),
 		m_gen(0),
 		m_curAncestralPop(rhs.m_curAncestralPop),
-		m_fitness(0),							  // do not copy fitness
 		m_shallowCopied(false)
 	{
 		DBG_DO(DBG_POPULATION,
@@ -256,10 +254,6 @@ namespace simuPOP
 
 	void population::setSubPopStru(const vectorlu& newSubPopSizes, bool allowPopSizeChange)
 	{
-		if( allowPopSizeChange && !m_fitness.empty() )
-			throw SystemError("individual order can not be changed with non-empty fitness vector\n"
-				"Please put selector after migrator or other such operators.");
-
 		// case 1: remove all subpopulation structure
 		// do not change population size
 		// individuals are valid....
@@ -514,10 +508,6 @@ namespace simuPOP
 
 	void population::removeSubPops(const vectoru& subPops, bool shiftSubPopID, bool removeEmptySubPops)
 	{
-		if( ! m_fitness.empty() )
-			throw SystemError("individual order can not be changed with non-empty fitness vector\n"
-				"Please put selector after migrator or other such operators.");
-
 #ifndef OPTIMIZED
 		// check if subPops are valid
 		for( vectoru::const_iterator sp = subPops.begin(); sp < subPops.end(); ++sp)
@@ -562,10 +552,6 @@ namespace simuPOP
 
 	void population::removeIndividuals(const vectoru& inds, int subPop, bool removeEmptySubPops)
 	{
-		if( ! m_fitness.empty() )
-			throw SystemError("individual order can not be changed with non-empty fitness vector\n"
-				"Please put selector after migrator or other such operators.");
-
 		setIndSubPopIDWithID();
 		if( subPop == -1 )
 		{
@@ -634,10 +620,6 @@ namespace simuPOP
 	void population::reorderSubPops(const vectoru& order, const vectoru& rank,
 		bool removeEmptySubPops)
 	{
-		if( ! m_fitness.empty() )
-			throw SystemError("individual order can not be changed with non-empty fitness vector\n"
-				"Please put selector after migrator or other such operators.");
-
 		DBG_FAILIF( order.empty() && rank.empty(), ValueError,
 			"Please specify one of order or rank.");
 
@@ -876,7 +858,6 @@ namespace simuPOP
 		m_genotype.swap( rhs.m_genotype);
 		m_info.swap( rhs.m_info);
 		m_inds.swap(rhs.m_inds);
-		m_fitness.swap(rhs.m_fitness);
 #ifndef OPTIMIZED
 		DBG_FAILIF( rhsStartingGenoPtr != m_genotype.begin(),
 			SystemError, "Starting genoptr has been changed.");
