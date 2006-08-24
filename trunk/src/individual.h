@@ -582,7 +582,7 @@ namespace simuPOP
 					if(names[i] == name)
 						return i;
 				}
-				DBG_ASSERT(false, IndexError, "Info field " + name + " is not found. " 
+				DBG_ASSERT(false, IndexError, "Info field '" + name + "' is not found. " 
 					"Plese use infoFields=['" + name + "'] option of population() to add it.");
 				// this should never be reached.
 				return 0;

@@ -235,7 +235,13 @@ namespace simuPOP
 		DBG_ASSERT( pop.numSubPop() == scratch.numSubPop(), SystemError,
 			"Number of subpopulation can not be changed.");
 
-		vectorf& fitness = pop.fitness();
+		GappedInfoIterator fitness;
+        bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+        if (selectionOn)
+        {
+            UINT fit_id = pop.infoIdx("fitness");
+	    	fitness = pop.infoBegin(fit_id);
+        }
 
 		/// determine if mate() will generate offspring genotype
 		bool formOffGeno = this->formOffGenotype(ops);
@@ -247,9 +253,9 @@ namespace simuPOP
 			if( spSize == 0 ) continue;
 
 			// if selection is on
-			if( ! fitness.empty() )
-				m_sampler.set( vectorf(fitness.begin()+pop.subPopBegin(sp),
-					fitness.begin()+pop.subPopEnd(sp) ) );
+			if( selectionOn )
+				m_sampler.set( vectorf(fitness+pop.subPopBegin(sp),
+					fitness+pop.subPopEnd(sp) ) );
 
 			// choose a parent and genreate m_numOffspring offspring
 			ULONG spInd = 0;
@@ -258,7 +264,7 @@ namespace simuPOP
 			{
 				individual * parent;
 				// choose a parent
-				if( !fitness.empty() )
+				if(selectionOn )
 					parent = &pop.ind( m_sampler.get(), sp);
 				else
 					parent = &pop.ind( rng().randInt(spSize), sp);
@@ -324,7 +330,13 @@ namespace simuPOP
 			"Number of subpopulation can not be changed.");
 
 		// empty fitness means no selection
-		vectorf& fitness = pop.fitness();
+		GappedInfoIterator fitness;
+        bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+        if (selectionOn)
+        {
+            UINT fit_id = pop.infoIdx("fitness");
+	    	fitness = pop.infoBegin(fit_id);
+        }
 
 		/// determine if any during-mating operator will generate offspring genotype
 		/// so mating scheme does not have to do it.
@@ -374,15 +386,12 @@ namespace simuPOP
 				"Wrong number of male/female.");
 
 			/// if selection is on
-			if( ! fitness.empty() )
+			if( selectionOn)
 			{
 				m_maleFitness.resize(numMale);
 				m_femaleFitness.resize(numFemale);
 
 				size_t ind;
-
-				DBG_ASSERT( fitness.size() == pop.popSize(),
-					ValueError, "Length of var fitness should equal to pop size");
 
 				for( ind = 0; ind < numMale; ++ind)
 					m_maleFitness[ind] = fitness[ m_maleIndex[ind] ];
@@ -407,7 +416,7 @@ namespace simuPOP
 				individual * dad, *mom;
 				RNG& rnd = rng();
 
-				if( !fitness.empty() )			  // with selection
+				if( selectionOn)			  // with selection
 				{
 					// using weidhted sampler.
 					if( numMale != 0 )
@@ -1610,7 +1619,13 @@ namespace simuPOP
 		DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
 
 		//
-		vectorf& fitness = pop.fitness();
+		GappedInfoIterator fitness;
+        bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+        if (selectionOn)
+        {
+            UINT fit_id = pop.infoIdx("fitness");
+	    	fitness = pop.infoBegin(fit_id);
+        }
 		/// determine if mate() will generate offspring genotype
 		bool formOffGeno = this->formOffGenotype(ops);
 
@@ -1637,9 +1652,9 @@ namespace simuPOP
 				continue;
 
 			// if selection is on
-			if( ! fitness.empty() )
-				m_sampler.set( vectorf(fitness.begin()+pop.subPopBegin(sp),
-					fitness.begin()+pop.subPopEnd(sp) ) );
+			if( selectionOn )
+				m_sampler.set( vectorf(fitness + pop.subPopBegin(sp),
+					fitness+ pop.subPopEnd(sp) ) );
 
 			ULONG spInd = 0;
 			ULONG spIndEnd = scratch.subPopSize(sp);
@@ -1662,7 +1677,7 @@ namespace simuPOP
 			{
 				individual * parent;
 				// choose a parent
-				if( !fitness.empty() )
+				if( selectionOn)
 					parent = &pop.ind( m_sampler.get(), sp);
 				else
 					parent = &pop.ind( rng().randInt(spSize), sp);
@@ -1780,6 +1795,7 @@ namespace simuPOP
 			submitScratch(pop, scratch);
 		return true;
 	}
+
 
 	bool controlledRandomMating::mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
 	{
@@ -1924,7 +1940,13 @@ namespace simuPOP
 		DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
 
 		// empty fitness means no selection
-		vectorf& fitness = pop.fitness();
+		GappedInfoIterator fitness;
+        bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+        if (selectionOn)
+        {
+            UINT fit_id = pop.infoIdx("fitness");
+	    	fitness = pop.infoBegin(fit_id);
+        }
 
 		/// determine if any during-mating operator will generate offspring genotype
 		bool formOffGeno = this->formOffGenotype(ops);
@@ -1984,15 +2006,12 @@ namespace simuPOP
 				"Wrong number of male/female.");
 
 			/// if selection is on
-			if( ! fitness.empty() )
+			if( selectionOn)
 			{
 				m_maleFitness.resize(numMale);
 				m_femaleFitness.resize(numFemale);
 
 				size_t ind;
-
-				DBG_ASSERT( fitness.size() == pop.popSize(),
-					ValueError, "Length of var fitness should equal to popsize");
 
 				for( ind = 0; ind < numMale; ++ind)
 					m_maleFitness[ind] = fitness[ m_maleIndex[ind] ];
@@ -2025,7 +2044,7 @@ namespace simuPOP
 				individual * dad, *mom;
 				RNG& rnd = rng();
 
-				if( !fitness.empty() )			  // with selection
+				if( selectionOn )			  // with selection
 				{
 					// using weidhted sampler.
 					if( numMale != 0 )
