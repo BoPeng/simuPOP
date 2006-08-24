@@ -20,7 +20,7 @@ class TestQuanTrait(unittest.TestCase):
   
   def setUp(self):
     self.pop = population(subPop=[5000], 
-      ploidy=2, loci = [1])
+      ploidy=2, loci = [1], infoFields=['qtrait'])
     InitByValue(self.pop, 
       value = [[0,0],[0,1],[1,1]],
       indRange = [[0,1250], [1250,3750],[3750,5000]])
@@ -34,43 +34,42 @@ class TestQuanTrait(unittest.TestCase):
     'Testing map qtrait'
     MapQuanTrait(self.pop, locus=0, 
       qtrait={'0-0':0, '0-1':1, '1-1':2})
-    self.assertEqual(self.pop.dvars().qtrait, [0]*1250+[1]*2500+[2]*1250)
+    self.assertEqual(self.pop.arrIndInfo(), [0]*1250+[1]*2500+[2]*1250)
     # with variance
     MapQuanTrait(self.pop, locus=0, sigma=0.5,
       qtrait={'0-0':1, '0-1':1, '1-1':1})
-    assert abs( sum(self.pop.dvars().qtrait)/5000 - 1) < 0.1
+    assert abs( sum(self.pop.arrIndInfo())/5000 - 1) < 0.1
     # syandard deviation
-    assert abs( self.stdev( self.pop.dvars().qtrait ) - 0.5) < 0.1
+    assert abs( self.stdev( self.pop.arrIndInfo() ) - 0.5) < 0.1
     
   def testMaQuanTrait(self):
     'Testing multi-allele qtrait'
-    MaQuanTrait(self.pop, locus=0, wildtype=0, sigma=0,
-      qtrait=[0, 1, 1])
-    self.assertEqual(self.pop.dvars().qtrait, [0]*1250+[1]*2500+[1]*1250)
+    MaQuanTrait(self.pop, locus=0, wildtype=0, sigma=0, qtrait=[0, 1, 1])
+    self.assertEqual(self.pop.arrIndInfo(), [0]*1250+[1]*2500+[1]*1250)
     # with variance
     MaQuanTrait(self.pop, locus=0, sigma=0.5, wildtype=0,
       qtrait=[0, .3, .5])
-    assert abs( sum(self.pop.dvars().qtrait[:1250])/1250 - 0) < 0.1
-    assert abs( sum(self.pop.dvars().qtrait[1250:3750])/2500 - 0.3) < 0.1
-    assert abs( sum(self.pop.dvars().qtrait[3750:5000])/1250 - 0.5) < 0.1
+    assert abs( sum(self.pop.arrIndInfo()[:1250])/1250 - 0) < 0.1
+    assert abs( sum(self.pop.arrIndInfo()[1250:3750])/2500 - 0.3) < 0.1
+    assert abs( sum(self.pop.arrIndInfo()[3750:5000])/1250 - 0.5) < 0.1
     # syandard deviation
-    assert abs( self.stdev( self.pop.dvars().qtrait[:1250] ) - 0.5) < 0.1
-    assert abs( self.stdev( self.pop.dvars().qtrait[1250:3750] ) - 0.5) < 0.1
-    assert abs( self.stdev( self.pop.dvars().qtrait[3750:5000] ) - 0.5) < 0.1
+    assert abs( self.stdev( self.pop.arrIndInfo()[:1250] ) - 0.5) < 0.1
+    assert abs( self.stdev( self.pop.arrIndInfo()[1250:3750] ) - 0.5) < 0.1
+    assert abs( self.stdev( self.pop.arrIndInfo()[3750:5000] ) - 0.5) < 0.1
     # different sigma  
     MaQuanTrait(self.pop, locus=0, sigma=[0.5, 0.8, 1], wildtype=0,
       qtrait=[0, .3, .5])
-    assert abs( sum(self.pop.dvars().qtrait[:1250])/1250 - 0) < 0.1
-    assert abs( sum(self.pop.dvars().qtrait[1250:3750])/2500 - 0.3) < 0.1
-    assert abs( sum(self.pop.dvars().qtrait[3750:5000])/1250 - 0.5) < 0.15
+    assert abs( sum(self.pop.arrIndInfo()[:1250])/1250 - 0) < 0.1
+    assert abs( sum(self.pop.arrIndInfo()[1250:3750])/2500 - 0.3) < 0.1
+    assert abs( sum(self.pop.arrIndInfo()[3750:5000])/1250 - 0.5) < 0.15
     # syandard deviation
-    assert abs( self.stdev( self.pop.dvars().qtrait[:1250] ) - 0.5) < 0.1
-    assert abs( self.stdev( self.pop.dvars().qtrait[1250:3750] ) - 0.8) < 0.1
-    assert abs( self.stdev( self.pop.dvars().qtrait[3750:5000] ) - 1.0) < 0.1
+    assert abs( self.stdev( self.pop.arrIndInfo()[:1250] ) - 0.5) < 0.1
+    assert abs( self.stdev( self.pop.arrIndInfo()[1250:3750] ) - 0.8) < 0.1
+    assert abs( self.stdev( self.pop.arrIndInfo()[3750:5000] ) - 1.0) < 0.1
     
   def testMultiLocusMaQuanTrait(self):
     'Test the multi-locus version of maQTrait'
-    pop = population(1000, loci=[3,5])
+    pop = population(1000, loci=[3,5], infoFields=['qtrait'])
     InitByFreq(pop, [.3, .7])
     #
     MaQuanTrait(pop, loci=[3,5], wildtype=0, sigma=0.5,
@@ -79,7 +78,7 @@ class TestQuanTrait(unittest.TestCase):
     
   def testMlQuanTrait(self):
     'Testing multi-locus qtrait'
-    pop = population(1000, loci=[3,5])
+    pop = population(1000, loci=[3,5], infoFields=['qtrait'])
     InitByFreq(pop, [.3, .7])
     #
     MlQuanTrait(pop, [
@@ -111,16 +110,16 @@ class TestQuanTrait(unittest.TestCase):
       else:
         return random.normalvariate(1, 2)
     PyQuanTrait(self.pop, loci=[0], func=qt)
-    assert abs( sum(self.pop.dvars().qtrait[:1250])/1250 - 0) < 0.1
-    assert abs( sum(self.pop.dvars().qtrait[1250:3750])/2500 - 0.5) < 0.1
-    assert abs( sum(self.pop.dvars().qtrait[3750:5000])/1250 - 1) < 0.3
+    assert abs( sum(self.pop.arrIndInfo()[:1250])/1250 - 0) < 0.1
+    assert abs( sum(self.pop.arrIndInfo()[1250:3750])/2500 - 0.5) < 0.1
+    assert abs( sum(self.pop.arrIndInfo()[3750:5000])/1250 - 1) < 0.3
     # syandard deviation
-    assert abs( self.stdev( self.pop.dvars().qtrait[:1250] ) - 0.5) < 0.1
-    assert abs( self.stdev( self.pop.dvars().qtrait[1250:3750] ) - 1) < 0.3
-    assert abs( self.stdev( self.pop.dvars().qtrait[3750:5000] ) - 2) < 0.3
+    assert abs( self.stdev( self.pop.arrIndInfo()[:1250] ) - 0.5) < 0.1
+    assert abs( self.stdev( self.pop.arrIndInfo()[1250:3750] ) - 1) < 0.3
+    assert abs( self.stdev( self.pop.arrIndInfo()[3750:5000] ) - 2) < 0.3
     #
     # multi-locus
-    pop = population(1000, loci=[3,5])
+    pop = population(1000, loci=[3,5], infoFields=['qtrait'])
     InitByFreq(pop, [.3, .7])
     def qt1(geno):
       assert len(geno) == 4

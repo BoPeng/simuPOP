@@ -133,10 +133,10 @@ namespace simuPOP
 			*/
 			Operator(string output, string outputExpr, int stage,
 				int begin, int end, int step, vectorl at,
-				int rep, int grp):
+				int rep, int grp, const vectorstr& infoFields):
 			m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at),
 				m_flags(0), m_rep(rep), m_grp(grp),
-				m_ostream(output, outputExpr)
+				m_ostream(output, outputExpr), m_infoFields(infoFields)
 			{
 				DBG_FAILIF(step<=0, ValueError, "step need to be at least one");
 
@@ -252,6 +252,14 @@ namespace simuPOP
 				return ISSETFLAG(m_flags, m_flagPreMating) || ISSETFLAG(m_flags, m_flagPostMating);
 			}
 
+			/// get the information field specified by user (or by default)
+			string infoField(UINT idx)
+			{
+				DBG_ASSERT(idx < m_infoFields.size(), IndexError, "Given info index " + toStr(idx) + 
+					" is out of range of 0 ~ " + toStr(m_infoFields.size()));
+				return m_infoFields[idx];
+			}
+			
 			/// CPPONLY
 			/// if the operator will form genotype of offspring.
 			/// if none of the during mating operator can form offspring, default will be used
@@ -397,6 +405,8 @@ namespace simuPOP
 			/// the output stream
 			StreamProvider m_ostream;
 
+			/// information fields that will be used by this operator
+			vectorstr m_infoFields;
 	};
 
 	/* 
@@ -421,8 +431,8 @@ namespace simuPOP
 				bool exposePop=true, string popName="pop",
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_LAST, int grp=GRP_ALL):
-			Operator("", "", stage, begin, end, step, at, rep, grp),
+				int rep=REP_LAST, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			Operator("", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke),
 				m_exposePop(exposePop), m_popName(popName)
 			{
@@ -525,8 +535,8 @@ namespace simuPOP
 			 */
 			noneOp( string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=0, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL):
-			Operator("", "", stage, begin, end, step, at, rep, grp)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			Operator("", "", stage, begin, end, step, at, rep, grp, infoFields)
 			{
 			}
 
@@ -583,8 +593,8 @@ namespace simuPOP
 			ifElse(const string& cond, Operator* ifOp=NULL, Operator* elseOp = NULL,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL):
-			Operator("", "", stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			Operator("", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_cond(cond,""), m_ifOp(NULL), m_elseOp(NULL)
 			{
 				if( ifOp != NULL)
@@ -685,8 +695,8 @@ namespace simuPOP
 			*/
 			ticToc( string output=">", string outputExpr="",
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL):
-			Operator(">", "", stage, begin, end, step, at, rep, grp)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields)
 			{
 				time(&m_startTime);
 				m_lastTime = m_startTime;
@@ -752,8 +762,8 @@ namespace simuPOP
 			*/
 			setAncestralDepth( int depth, string output=">", string outputExpr="",
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL):
-			Operator(">", "", stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_depth(depth)
 			{
 			};
@@ -797,8 +807,8 @@ namespace simuPOP
 			 */
 			turnOnDebugOp(DBG_CODE code,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL):
-			Operator(">", "", stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_code(code)
 			{
 			};
@@ -842,8 +852,8 @@ namespace simuPOP
 			 */
 			turnOffDebugOp(DBG_CODE code,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL):
-			Operator(">", "", stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_code(code)
 			{
 			};
@@ -902,8 +912,8 @@ namespace simuPOP
 			pyOperator(PyObject* func, PyObject* param=NULL,
 				int stage=PostMating, bool formOffGenotype=false, bool passOffspringOnly=false,
 				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL):
-			Operator(">", "", stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
 			{
 				if( !PyCallable_Check(func))

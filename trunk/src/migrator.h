@@ -84,8 +84,8 @@ namespace simuPOP
 			migrator( const matrix& rate, int mode = MigrByProbability,
 				vectoru fromSubPop=vectoru(), vectoru toSubPop=vectoru(),
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
-				: Operator( "", "", stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
+				: Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_rate(0), m_mode(0), m_from(fromSubPop), m_to(toSubPop)
 			{
 
@@ -163,8 +163,8 @@ namespace simuPOP
 			*/
 			pyMigrator( PyObject* subPopID=NULL,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
-				: Operator( "", "", stage, begin, end, step, at, rep, grp)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
+				: Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields)
 			{
 				// carray of python list/typle
 				DBG_ASSERT( PyObj_Is_IntNumArray(subPopID) ||
@@ -226,8 +226,8 @@ namespace simuPOP
 				vectoru subPopID=vectoru(),
 				bool randomize=true,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
-				: Operator( "", "", stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
+				: Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_which(which), m_subPopSizes(sizes), m_proportions(proportions),
 				m_subPopID(subPopID), m_randomize(randomize)
 			{
@@ -289,8 +289,8 @@ namespace simuPOP
 			*/
 			mergeSubPops( vectoru subPops=vectoru(), bool removeEmptySubPops=false,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL)
-				: Operator( "", "", stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
+				: Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_subPops(subPops), m_removeEmptySubPops(removeEmptySubPops)
 			{
 			}

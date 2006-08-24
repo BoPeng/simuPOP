@@ -20,7 +20,7 @@ class TestPenetrance(unittest.TestCase):
   
   def setUp(self):
     self.pop = population(subPop=[500,100,1000], 
-      ploidy=2, loci = [1])
+      ploidy=2, loci = [1], infoFields=['penetrance'])
     InitByValue(self.pop, 
       value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
       indRange = [[0,125], [125,375],[375,500],[500,550],
@@ -67,7 +67,7 @@ class TestPenetrance(unittest.TestCase):
     
   def testMultiLocusMaPenetrance(self):
     'Test the multi-locus version of maPenetrance'
-    pop = population(1000, loci=[3,5])
+    pop = population(1000, loci=[3,5], infoFields=['penetrance'])
     InitByFreq(pop, [.3, .7])
     #
     MaPenetrance(pop, loci=[3,5], wildtype=0,
@@ -76,7 +76,7 @@ class TestPenetrance(unittest.TestCase):
     
   def testMlPenetrance(self):
     'Testing multi-locus penetrance'
-    pop = population(1000, loci=[3,5])
+    pop = population(1000, loci=[3,5], infoFields=['penetrance'])
     InitByFreq(pop, [.3, .7])
     #
     MlPenetrance(pop, [

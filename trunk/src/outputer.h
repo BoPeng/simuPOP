@@ -52,8 +52,8 @@ namespace simuPOP
 			/// constructor. default to be always active.
 			outputer(string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL):
-			Operator(output, outputExpr, stage, begin, end, step, at, rep, grp)
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			Operator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields)
 			{
 			};
 
@@ -74,9 +74,9 @@ namespace simuPOP
 			///
 			outputHelper(string str="\n", string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL):
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
 			outputer( output, outputExpr, stage, begin, end,
-				step, at, rep, grp), m_string(str)
+				step, at, rep, grp, infoFields), m_string(str)
 			{
 			}
 
@@ -146,8 +146,8 @@ namespace simuPOP
 				const vectorlu& indRange=vectorlu(),
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL):
-			outputer(output, outputExpr, stage, begin, end, step, at, rep, grp),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			outputer(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 				m_alleleOnly(alleleOnly), m_infoOnly(infoOnly), m_dispAncestry(ancestralPops), m_width(dispWidth),
 				m_chrom(chrom), m_loci(loci), m_subPop(subPop), m_indRange(indRange), m_max(max)
 				{}
@@ -407,8 +407,8 @@ namespace simuPOP
 		public:
 			savePopulation( string output="", string outputExpr="",
 				string format = "bin", int stage=PostMating, int begin=0, int end=-1,
-				int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL):
-			outputer( "", "", stage, begin, end, step, at, rep, grp),
+				int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			outputer( "", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_filename(output), m_filenameParser(outputExpr), m_format(format)
 			{
 				if(output == "" && outputExpr == "")
