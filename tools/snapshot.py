@@ -53,7 +53,7 @@ def checkRevision():
     else:
         rev = None
     # check revision number
-    cur_rev = cmdOutput('svnversion')
+    cur_rev = cmdOutput('svnversion .')
     #
     # write to the file
     file = open(last_revision_file, 'w')
