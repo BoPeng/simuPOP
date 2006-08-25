@@ -17977,8 +17977,6 @@ boost/wave/util/.svn/wcprops/symbol_table.hpp.svn-work
 boost/wave/util/.svn/wcprops/time_conversion_helper.hpp.svn-work
 boost/wave/util/.svn/wcprops/transform_iterator.hpp.svn-work
 boost/wave/util/.svn/wcprops/unput_queue_iterator.hpp.svn-work
-doc/refManual.pdf
-doc/userGuide.pdf
 doc/userGuide.py
 gsl/error.c
 gsl/gsl_errno.h
@@ -18083,8 +18081,6 @@ scripts/simuComplexDisease.py
 scripts/simuLDDecay.py
 scripts/simuRecHotSpot.py
 src/arraymodule.c
-src/arraymodule_std.c
-src/coaSim.py
 src/individual.cpp
 src/individual.h
 src/individual_ba.cpp
@@ -18234,7 +18230,6 @@ src/utility_la.cpp
 src/utility_laop.cpp
 src/utility_op.cpp
 src/utility_std.cpp
-src/iostreams/bzip2.cpp
 src/iostreams/file_descriptor.cpp
 src/iostreams/mapped_file.cpp
 src/iostreams/zlib.cpp
