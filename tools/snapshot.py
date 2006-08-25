@@ -116,6 +116,7 @@ if __name__ == '__main__':
     force_build = False
     release = 'snapshot'
     actions = []
+    actions_exclude = []
     all_actions = ['svn', 'doc', 'src', 'linux', 'mac', 'win', 'sol']
 
     ## Parse the command line
@@ -128,6 +129,7 @@ Options:
     --release=version       release simupop with version number
     --actions=%s
                             actions to run, default to all
+    --exclude=%s            exclude some actions.
 ''' % (','.join(all_actions))
             sys.exit(0)
         elif op == '--force-build':
@@ -137,6 +139,8 @@ Options:
             release = op[10:]
         elif op[:9] == '--actions':
             actions = op[10:].split(',')
+        elif op[:9] == '--exclude':
+            actions_exclude = op[10:].split(',')
         else:
             print "Unknown option", op
             sys.exit(1)
@@ -147,6 +151,8 @@ Options:
             if act not in all_actions:
                 print "Wrong action %s " % act
                 sys.exit(1)
+    for act in actions_exclude:
+        actions.remove(act)
     # go to top directory
     os.chdir('..')
     print 'Entering ', os.getcwd()
