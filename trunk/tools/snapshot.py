@@ -99,17 +99,20 @@ def buildDocument():
     print 'Entering ', os.getcwd()
 
 
-def buildTarget(dest, script, message):
+def buildTarget(dest, script, message, wait=os.P_WAIT):
     dest_file = os.path.join(download_directory, dest % release)
     print 'Building %s...' % dest_file
     if os.path.isfile(dest_file):
         os.remove(dest_file)
     #
-    os.system('sh ' + script)
+    try:
+        os.spawnv(wait, 'sh', script)
+    except:
+        print "Can not start process %s " % script
     #
-    if not os.path.isfile(dest_file):
-        print 'Can not find %s' % dest_file, message
-        sys.exit(1)
+    #if not os.path.isfile(dest_file):
+    #    print 'Can not find %s' % dest_file, message
+    #    sys.exit(1)
 
 
 if __name__ == '__main__':
@@ -117,7 +120,7 @@ if __name__ == '__main__':
     release = 'snapshot'
     actions = []
     actions_exclude = []
-    all_actions = ['svn', 'doc', 'src', 'linux', 'mac', 'win', 'sol']
+    all_actions = ['svn', 'doc', 'src', 'linux', 'mac', 'mdk', 'win', 'sol']
 
     ## Parse the command line
     for op in sys.argv[1:]:   # default shell/for list is $*, the options
@@ -152,7 +155,8 @@ Options:
                 print "Wrong action %s " % act
                 sys.exit(1)
     for act in actions_exclude:
-        actions.remove(act)
+        if act in actions:
+            actions.remove(act)
     # go to top directory
     os.chdir('..')
     print 'Entering ', os.getcwd()
@@ -184,14 +188,14 @@ Options:
     if 'src' in actions:
         buildTarget('simuPOP-%s-src.tar.gz', 'make_src.sh', 'Building src fails')
     if 'linux' in actions:
-        buildTarget('simuPOP-%s.linux-i686-py23.tar.gz', 'make_linux.sh', 'Building linux binary fails')
+        buildTarget('simuPOP-%s.linux-i686-py23.tar.gz', 'make_linux.sh', 'Building linux binary fails', os.P_NOWAIT)
     if 'win' in actions:
-        buildTarget('simuPOP-%s.win32-py2.3.exe', 'make_win.sh', 'Building windows binary fails')
+        buildTarget('simuPOP-%s.win32-py2.3.exe', 'make_win.sh', 'Building windows binary fails', os.P_NOWAIT)
     if 'sol' in actions:
-        buildTarget('simuPOP-%s-sol-py23.tar.gz', 'make_sol.sh', 'Building solaris binary fails')
+        buildTarget('simuPOP-%s-sol-py23.tar.gz', 'make_sol.sh', 'Building solaris binary fails', os.P_NOWAIT)
     if 'mdk' in actions:
-        buildTarget('simuPOP-%s-mdk-py23.tar.gz', 'make_mdk.sh', 'Building mandriva binary fails')
+        buildTarget('simuPOP-%s-mdk-py23.tar.gz', 'make_mdk.sh', 'Building mandriva binary fails', os_P_NOWAIT)
     if 'mac' in actions:
-        buildTarget('simuPOP-%s.darwin-7.7.0-PowerMacintosh.tar.gz', 'make_mac.sh', 'Building mac binary fails')
+        buildTarget('simuPOP-%s.darwin-7.7.0-PowerMacintosh.tar.gz', 'make_mac.sh', 'Building mac binary fails', os.P_NOWAIT)
 
     

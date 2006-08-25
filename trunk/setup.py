@@ -34,6 +34,8 @@ else:
 EMBED_ZLIB = True
 
 # for every official release, there will be a file recording release info
+# Othersise, SIMUPOP_VER and SIMUPOP_REV will be provided as environmental
+# variables.
 if os.environ.has_key('SIMUPOP_VER') and os.environ.has_key('SIMUPOP_REV'):
     SIMUPOP_VER = os.environ['SIMUPOP_VER']
     SIMUPOP_REV = os.environ['SIMUPOP_REV']
