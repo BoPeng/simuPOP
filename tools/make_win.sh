@@ -27,5 +27,5 @@ ssh -X -p 8890 vmwin "$UNCOMPRESS && cd simuPOP-$VER && $BUILD23 "
 scp -P 8890 vmwin:simuPOP-$VER/dist/*.exe /var/www/html/simuPOP/download/
 ssh -X -p 8890 vmwin "cd ~; rm -rf simuPOP-$VER && $UNCOMPRESS && cd simuPOP-$VER && $BUILD24"
 scp -P 8890 vmwin:simuPOP-$VER/dist/*.exe /var/www/html/simuPOP/download/
-vmrun suspend /vmware/winXPPro/Windows\ XP\ Professional.vmx
+vmrun suspend /vmware/WinXPPro/Windows\ XP\ Professional.vmx
 
