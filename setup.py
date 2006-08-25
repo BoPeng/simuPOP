@@ -34,7 +34,11 @@ else:
 EMBED_ZLIB = True
 
 # for every official release, there will be a file recording release info
-execfile('simuPOP.release')
+if os.environ.has_key('SIMUPOP_VER') and os.environ.has_key('SIMUPOP_REV'):
+    SIMUPOP_VER = os.environ['SIMUPOP_VER']
+    SIMUPOP_REV = os.environ['SIMUPOP_REV']
+else:
+    execfile('simuPOP.release')
 std_macro = [('SIMUPOP_VER', SIMUPOP_VER), 
              ('SIMUPOP_REV', SIMUPOP_REV) ]
     
