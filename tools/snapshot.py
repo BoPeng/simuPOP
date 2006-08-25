@@ -106,7 +106,7 @@ def buildTarget(dest, script, message, wait=os.P_WAIT):
         os.remove(dest_file)
     #
     try:
-        os.spawnv(wait, 'sh', script)
+        os.spawnv(wait, 'sh', 'sh %s ' % script)
     except:
         print "Can not start process %s " % script
     #
