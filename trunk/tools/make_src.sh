@@ -13,7 +13,6 @@ $SWIG   -o src/simuPOP_std_wrap.cpp src/simuPOP_std.i
 $SWIG   -DOPTIMIZED -o src/simuPOP_op_wrap.cpp src/simuPOP_op.i
 $SWIG   -DLONGALLELE -o src/simuPOP_la_wrap.cpp src/simuPOP_la.i
 $SWIG   -DLONGALLELE -DOPTIMIZED -o src/simuPOP_laop_wrap.cpp src/simuPOP_laop.i
-$SWIG   -o src/coaSim_wrap.cpp coasim/coaSim.i
 
 python setup.py sdist
 cp dist/simuPOP-$VER.tar.gz /var/www/html/simuPOP/download/simuPOP-$VER-src.tar.gz
