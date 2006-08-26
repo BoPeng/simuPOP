@@ -106,7 +106,8 @@ def buildTarget(dest, script, message, wait=os.P_WAIT):
         os.remove(dest_file)
     #
     try:
-        os.spawnv(wait, 'sh', 'sh %s ' % script)
+        print "Running command sh %s" % script
+        os.spawnlp(wait, 'sh', 'sh', script)
     except:
         print "Can not start process %s " % script
     #
@@ -190,11 +191,11 @@ Options:
     if 'linux' in actions:
         buildTarget('simuPOP-%s.linux-i686-py23.tar.gz', 'make_linux.sh', 'Building linux binary fails', os.P_NOWAIT)
     if 'win' in actions:
-        buildTarget('simuPOP-%s.win32-py2.3.exe', 'make_win.sh', 'Building windows binary fails', os.P_NOWAIT)
+        buildTarget('simuPOP-%s.win32-py2.3.exe', 'make_win.sh', 'Building windows binary fails', os.P_WAIT)
     if 'sol' in actions:
         buildTarget('simuPOP-%s-sol-py23.tar.gz', 'make_sol.sh', 'Building solaris binary fails', os.P_NOWAIT)
     if 'mdk' in actions:
-        buildTarget('simuPOP-%s-mdk-py23.tar.gz', 'make_mdk.sh', 'Building mandriva binary fails', os_P_NOWAIT)
+        buildTarget('simuPOP-%s-mdk-py23.tar.gz', 'make_mdk.sh', 'Building mandriva binary fails', os.P_WAIT)
     if 'mac' in actions:
         buildTarget('simuPOP-%s.darwin-7.7.0-PowerMacintosh.tar.gz', 'make_mac.sh', 'Building mac binary fails', os.P_NOWAIT)
 
