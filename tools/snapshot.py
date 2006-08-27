@@ -133,17 +133,17 @@ Options:
     --release=version       release simupop with version number
     --actions=%s
                             actions to run, default to all
-    --exclude=%s            exclude some actions.
+    --exclude=[]            exclude some actions.
 ''' % (','.join(all_actions))
             sys.exit(0)
         elif op == '--force-build':
             force_build = True
-        elif op[:9] == '--release':
+        elif '--release' in op:
             force_build = True
             release = op[10:]
-        elif op[:9] == '--actions':
+        elif '--actions' in op:
             actions = op[10:].split(',')
-        elif op[:9] == '--exclude':
+        elif '--exclude' in op:
             actions_exclude = op[10:].split(',')
         else:
             print "Unknown option", op
