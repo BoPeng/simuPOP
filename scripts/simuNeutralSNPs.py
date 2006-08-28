@@ -213,13 +213,13 @@ def getOptions(details = __doc__):
     if allParam[0]:    
         print simuOpt.usage(options, __doc__)
         sys.exit(0)
-    # --saveConfig
-    if allParam[-2] != None: # saveConfig
+    # --name
+    if allParam[-2] != None: # 
         try:
-            os.makedir(allParam[-2])
-            simuOpt.saveConfig(options, '%s/%s.cfg' % (allParam[-2], allParam[-2]), allParam)
+            os.makedirs(allParam[-3])
         except:
             pass
+        simuOpt.saveConfig(options, '%s/%s.cfg' % (allParam[-3], allParam[-3]), allParam)
     # --verbose or -v (these is no beautifying of [floats]
     if allParam[-1]:                 # verbose
         for p in range(len(options)):
@@ -232,15 +232,17 @@ def getOptions(details = __doc__):
     return allParam[1:-1]
 
 
-def plotAlleleFreq(pop):
+def plotAlleleFreq(pop, param):
     'plot the histogram of allele frequency'
     if not hasRPy:
         return True
     # 
     freq = pop.dvars().alleleFreq
-    freq0 = [freq[i][0] for i in range(pop.totNumLoci())]
-    r.hist(freq0, nclass=50, xlim=[0,1], xlab='frequency', ylab='hist', 
-        main='Histogram of allele frequencies')
+    freq0 = [min(freq[i][0], 1-freq[i][0]) for i in range(pop.totNumLoci())]
+    r.postscript(os.path.join(param[0], '%s_%d.eps' % (param[0], pop.gen())))
+    r.hist(freq0, nclass=50, xlim=[0,0.5], xlab='frequency', ylab='hist', 
+        main='Histogram of allele frequencies at generation %d' % pop.gen())
+    r.dev_off()
 
 
 # simulate function, 
@@ -288,6 +290,8 @@ def simuHotSpot( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixin
         sys.exit(1)
     pop = population(subPop=popSizeFunc(0), ploidy=2,
         loci = [numLoci], maxAllele = 1, lociPos = lociPos)
+    # save name in var
+    pop.dvars().name = name
     # simulator
     simu = simulator( pop, 
         randomMating( newSubPopSizeFunc=popSizeFunc ),
@@ -309,11 +313,13 @@ def simuHotSpot( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixin
             # migration
             migrOp,
             # report statistics
-            stat(popSize=True, alleleFreq=range(pop.totNumLoci()), LD=[0,1], step=10),
+            stat(popSize=True, alleleFreq=range(pop.totNumLoci()), step=10),
             # report progress
-            pyEval(r'"Generation %d, population size %d, allelefre=%.3g, %.3g, LD=%.3g\n" % (gen, popSize, alleleFreq[0][1], alleleFreq[1][1], LD_prime[0][1])', step=10),
+            pyEval(r'"Generation %d, population size %d, allelefre=%.3g, %.3g\n" % (gen, popSize, alleleFreq[0][1], alleleFreq[1][1])', step=10),
             # plot histogram
-            pyOperator(func=plotAlleleFreq, step=50),
+            pyOperator(func=plotAlleleFreq, param=(name,), step=50),
+            # save population every 1000 generations
+            savePopulation(outputExpr="'%s/%s_%d.txt'%(name,name,gen)",step=1000),
             # show elapsed time
             ticToc(at=[ split, mixing, endGen])
             ],
