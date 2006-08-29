@@ -114,6 +114,9 @@ def getJobs():
     for job in joblist.split('\n'):
         # get keys 0, 1, 2, ...
         keys = {}
+        # remove empty lines
+        if sep not in job:
+            continue
         for i,key in enumerate(job.split(sep)):
             keys[str(i)] = key.strip()
         keys['name'] = keys['0']
@@ -162,8 +165,8 @@ if __name__ == '__main__':
     proc_jobs = []
     run = False
     #
-    optlist, args = getopt.getopt(sys.argv[1:], 't:l:s:ahr', 
-      ['list=', 'show=', 'all', 'run', 'help'])
+    optlist, args = getopt.getopt(sys.argv[1:], 't:l:s:ahrq:', 
+      ['list=', 'show=', 'time=', 'all', 'run', 'help'])
     for opt in optlist:
         if opt[0] == '-t' or opt[0] == '--time':
             try:
@@ -175,6 +178,8 @@ if __name__ == '__main__':
                     print opt[1], " is not a valid time name (or number)"
                     sys.exit(1)
             options['time'] = str(time)
+        elif opt[0] in ['-q', '--queue']:
+            options['queue'] = opt[1]
         elif opt[0] == '-l' or opt[0] == '--list':
             simuList = opt[1]
         elif opt[0] in ['-s', '--show']:
