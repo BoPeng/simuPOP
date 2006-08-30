@@ -757,7 +757,7 @@ namespace simuPOP
 					idx = 0;
 					failedCount ++;
 					tooLongCount ++;
-					DBG_DO(DBG_GENERAL, cout << "Warning: reaching max gnerations. Restart the process." << endl);
+					DBG_DO(DBG_GENERAL, cout << "Warning: reaching max gnerations " + toStr(maxMutAge) + ". Restart the process." << endl);
 					continue;
 				}
 				else
@@ -772,9 +772,9 @@ namespace simuPOP
 		}
 		// report potential problems
 		if( tooLongCount > 0 )
-			cout << "Trajectories regenerated due to long path: " << tooLongCount << " times. " << endl;
+			cout << "Trajectories regenerated due to long (> " << maxMutAge << ") path: " << tooLongCount << " times." << endl;
 		if( tooShortCount > 0 )
-			cout << "Trajectories regenerated due to short path: " << tooShortCount << " times. " << endl;
+			cout << "Trajectories regenerated due to short (< " << minMutAge << ") path: " << tooShortCount << " times." << endl;
 		if( invalidCount > 0 )
 			cout << "Trajectories regenerated due to invalid path: " << invalidCount << " times. " << endl;
 
