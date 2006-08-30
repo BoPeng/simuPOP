@@ -298,7 +298,7 @@ options = [
   {'longarg': 'alleleDistInSubPop=',
    'default': 'uneven',
    'configName': 'Allele distribution in subpopulations',
-   'prompt': 'Allele distribution in subpopulations (exponential):  ',
+   'prompt': 'Allele distribution in subpopulations (uneven):  ',
    'description': '''If disease allele frequencies in each subpopulation are
         not specified, how to distribute disease alleles in subpopulations.
         If 'even' is chose, number of disease alleles will be distributed
@@ -307,6 +307,7 @@ options = [
         will be proportional to the interval lengths of 0 x x x 1 while x are uniform
         [0,1]. The distribution of interval lengths, are roughly exponential 
         (conditional on overall length 1). ''',
+   'allowedTypes': [types.StringType],
    'validate':  simuOpt.valueOneOf(['even', 'uneven']),
    'chooseOneOf': ['even', 'uneven']
   },
@@ -352,7 +353,7 @@ options = [
    'prompt': 'Fitness of genotype AA,Aa,aa ([1, 1.0001, 1.0002]): ',
    'description': '''Fitness of genotype AA,Aa,aa in the monogenic case, and 
         [AA Aa aa BB Bb bb ...] in the polygenic case. ''',
-   'validate':  simuOpt.valueGE(0.),
+   'validate':  simuOpt.valueListOf(simuOpt.valueGE(0.)),
   },
   {'longarg': 'selMultiLocusModel=',
   'default': 'none',
