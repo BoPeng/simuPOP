@@ -1004,7 +1004,7 @@ def valueOneOf(t):
                 return True
             if type(item) == types.FunctionType: # a test function
                 if item(val):
-                 return True
+                    return True
         return False
     return func
     
