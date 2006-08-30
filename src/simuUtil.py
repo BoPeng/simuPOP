@@ -1277,8 +1277,9 @@ def FreqTrajectoryMultiStochWithSubPop(
                 minMutAge=minMutAge, 
                 maxMutAge=maxMutAge, 
                 ploidy=ploidy,
-                restartIfFail=restartIfFail)
-        if len(traj) == 1:
+                restartIfFail=True)
+        print traj
+        if len(traj) == 0:
             print "Failed to generate trajectory. You may need to set a different set of parameters."
             print 'Info:'
             print 'curGen: ', curGen
@@ -1289,6 +1290,7 @@ def FreqTrajectoryMultiStochWithSubPop(
             print 'minMutAge: ', minMutAge
             print 'maxMutAge: ', maxMutAge
             print 'ploidy: ', ploidy
+            print 'restart: ', restart
             sys.exit(1)
         return (traj, [curGen-len(x)+1 for x in traj], trajFunc(curGen, traj))
     # other wise, do it in two stages

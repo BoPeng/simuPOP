@@ -228,7 +228,18 @@ if __name__ == '__main__':
         elif len(proc_jobs) == 1:
             if proc_jobs[0] in all_jobs:
                 print "\nList script", proc_jobs[0]
-                print getScript(proc_jobs[0], options)
+                script = getScript(proc_jobs[0], options)
+                pbs = open(proc_jobs[0] + '.pbs', 'w')
+                print >> pbs, script
+                pbs.close()
+                print script
+                if '$' in script:
+                    print 
+                    print "Warning: symbol $ exists in the script, indicating unsubstituted variables"
+                    print
+                    for line in script.split():
+                        if '$' in line:
+                            print '>> ', line
             else:
                 print "\nJob %s does not exist. " % proc_jobs[0]
     else:
