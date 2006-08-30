@@ -1265,6 +1265,9 @@ def FreqTrajectoryMultiStochWithSubPop(
         This script assume a single-split model of NtFunc
     '''
     numSP = len(NtFunc(curGen))
+    if maxMutAge == 0: 
+        maxMutAge = endGen
+    TurnOnDebug(DBG_GENERAL)
     if numSP == 1 or mode == 'none':
         traj = FreqTrajectoryMultiStoch(
                 curGen=curGen,
@@ -1275,8 +1278,17 @@ def FreqTrajectoryMultiStochWithSubPop(
                 maxMutAge=maxMutAge, 
                 ploidy=ploidy,
                 restartIfFail=restartIfFail)
-        if len(traj) == 0:
+        if len(traj) == 1:
             print "Failed to generate trajectory. You may need to set a different set of parameters."
+            print 'Info:'
+            print 'curGen: ', curGen
+            print 'freq: ', freq
+            print 'begin size: ', NtFunc(0)
+            print 'ending size: ', NtFunc(curGen)
+            print 'fitness: ', fitness
+            print 'minMutAge: ', minMutAge
+            print 'maxMutAge: ', maxMutAge
+            print 'ploidy: ', ploidy
             sys.exit(1)
         return (traj, [curGen-len(x)+1 for x in traj], trajFunc(curGen, traj))
     # other wise, do it in two stages
@@ -1290,8 +1302,6 @@ def FreqTrajectoryMultiStochWithSubPop(
     # set default for min/max mutage
     if minMutAge < curGen - split:
         minMutAge = split
-    if maxMutAge == 0: 
-        maxMutAge = endGen
     if minMutAge > maxMutAge:
         print "Minimal mutant age %d is larger then maximum age %d" % (minMutAge, maxMutAge)
         sys.exit(1)
