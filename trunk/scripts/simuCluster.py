@@ -216,10 +216,11 @@ if __name__ == '__main__':
             try:
                 (name, start, end) = scan.match(j).groups()
                 for i in range(int(start), int(end)+1):
-                    if name+str(i) not in proc_jobs:
-                        proc_jobs.append( name+str(i))
+                    for n in ['%s%d' % (name, i), '%s%02d' % (name, i), '%s%03d' % (name, i), '%s%04d' % (name, i)]:
+                        if n not in proc_jobs and n in all_jobs:
+                            proc_jobs.append(n)
             except:
-                if j not in proc_jobs:
+                if j not in proc_jobs and n in all_jobs:
                     proc_jobs.append(j)
     #
     if not run:
