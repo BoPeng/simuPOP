@@ -102,7 +102,7 @@ namespace simuPOP
 			fit *= 1 - static_cast<selector* >(*s)->indFitness(ind);
 			return 1-fit;
 		}
-
+		// this is the case for SEL_none.
 		return 0.0;
 	}
 
