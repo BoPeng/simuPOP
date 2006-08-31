@@ -916,7 +916,7 @@ Max mutant age: %d ''' % \
         else:
             return 1
     # create a simulator
-    pop =    population(subPop=popSizeFunc(0), ploidy=2,
+    pop = population(subPop=popSizeFunc(0), ploidy=2,
         loci = loci, maxAllele = maxAle, lociPos = lociPos,
         infoFields=['fitness'])
     # save DSL info, some operators will use it.
@@ -992,8 +992,8 @@ if __name__ == '__main__':
     from simuUtil import *
     #
     # check minimal requirement of simuPOP version
-    if simuRev() < 199    :
-        raise exceptions.SystemError('''This scripts requires simuPOP revision >=199. 
+    if simuRev() < 425:
+        raise exceptions.SystemError('''This scripts requires simuPOP revision >=425. 
             Please upgrade your simuPOP distribution.''' )
     #
     ################## RUN THE SIMULATION ###############
