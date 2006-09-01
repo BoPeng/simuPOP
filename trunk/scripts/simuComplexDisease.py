@@ -406,6 +406,17 @@ options = [
      'description':    'Only display how simulation will perform.'
      # do not save to config, do not prompt, so this appeared to be an undocumented option.
     },
+    {'longarg': 'savePop=',
+     'default': [],
+     'configName': 'Save population at generations',
+     'allowedTypes': [types.ListType, types.TupleType],
+     'prompt': 'Save populations at generations ([]):',
+     'validate': simuOpt.valueListOf(simuOpt.valueGE(0)),
+     'description': '''A list of generations at which populations are saved, 
+                default to []. It can be used for intermediate analysis, but simulations can
+                not be resumed from this population due to the re-generation of allele 
+                frequency trajectories.''',
+    },
     {'longarg': 'simuName=',
      'default': 'simu',
      'allowedTypes': [types.StringType],
@@ -633,6 +644,7 @@ def outputStatistics(pop, args):
     print >> output, '\nAverage counted heterozygosity is %.4f.\n' % AvgHetero
     return True
 
+
 # simulate function, using a single value of mutation, migration,
 # recombination rate
 def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
@@ -640,8 +652,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreqTmp, minMutAge, maxMutAge, fitnessTmp, mlSelModelTmp, 
-        mutaRate, recRate, 
-        dryrun, filename, format):
+        mutaRate, recRate, dryrun, savePop, filename, format):
     ''' run a simulation of complex disease with given parameters. 
     '''    
     ###
@@ -904,6 +915,10 @@ Max mutant age: %d ''' % \
         ticToc(at=[burninGen, splitGen, mixingGen, endingGen]),
         ]
     )
+    if len(savePop) > 0:
+        # save population at given generations
+        operators.append(savePopulation(outputExpr='os.path.join(simuName, "%s_%d.%s" % (simuName, gen, format))', 
+            at=savePop))
     ### 
     ### prepare mating scheme
     ###
@@ -977,8 +992,7 @@ if __name__ == '__main__':
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel,
-        mutaRate, recRate, 
-        dryrun, filename, format) = allParam
+        mutaRate, recRate, dryrun, savePop, simuName, format) = allParam
     #
     if markerType == 'SNP':
         simuOpt.setOptions(alleleType='binary')
@@ -1002,7 +1016,7 @@ if __name__ == '__main__':
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop, 
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel, 
-        mutaRate, recRate, 
-        dryrun, os.path.join(filename, filename), format)
+        mutaRate, recRate, dryrun, savePop,  
+        os.path.join(simuName, simuName), format)
     
     print "Done!"
