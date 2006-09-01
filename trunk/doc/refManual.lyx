@@ -1497,7 +1497,7 @@ Population related functions
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="57" columns="3">
+<lyxtabular version="3" rows="58" columns="3">
 <features islongtable="true" firstHeadBottomDL="true" headBottomDL="true">
 <column alignment="left" valignment="top" leftline="true" width="0">
 <column alignment="left" valignment="top" leftline="true" width="0" special="|p{2in}|">
@@ -2142,6 +2142,43 @@ p.arrInfo
 Return the editable array of all information field of a subpopulation (default
  to the whole population).
  Note that the order of individuals within each subpopulation is not hornored.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+p.indInfo
+\begin_inset LatexCommand \index{population!indInfo}
+
+\end_inset
+
+(idx or field, [subPop])
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Get information of all individuals (or in a subpopulation), the information
+ does not have to be in the same order as the individuals.
 \end_layout
 
 \end_inset
@@ -4941,10 +4978,6 @@ object also has its own member functions.
 \end_layout
 
 \begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float algorithm
 wide false
 sideways false
@@ -6083,7 +6116,7 @@ for i in range(pop.popSize()):
 \begin_layout Standard
 Note that 
 \family typewriter
-getIndInfo
+indInfo
 \family default
  is more convenient but it is less efficient (fields must be copied out)
  than 
@@ -12604,6 +12637,31 @@ Affected status will be used for statistical purpose, and most importantly,
  You can use two operators: one for fitness/selection, active at every generatio
 n; one for affected status, active only at ascertainment, to avoid unnecessary
  calculation of affected status.
+\end_layout
+
+\begin_layout Standard
+Pentrance values are used to set the affectedness of individuals, and are
+ usually not saved.
+ If you would like to know the penetrance value, you need to
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+addInfoField('penetrance')
+\family default
+ to the population to analyze.
+ (or use infoFields parameter of the population constructor), and
+\end_layout
+
+\begin_layout Itemize
+use e.g.,
+\family typewriter
+ mlPenetrance(...., infoFields=['penetrance'])
+\family default
+ to add penetrance field to the penetrance operator you use.
+ You can choose a name other than 'penetrance' as long as the field name
+ for the operaor and population match.
 \end_layout
 
 \begin_layout Standard
