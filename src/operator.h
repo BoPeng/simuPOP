@@ -252,6 +252,12 @@ namespace simuPOP
 				return ISSETFLAG(m_flags, m_flagPreMating) || ISSETFLAG(m_flags, m_flagPostMating);
 			}
 
+			/// get the number of information fields for this operator
+			UINT infoSize()
+			{
+				return m_infoFields.size();
+			}
+			
 			/// get the information field specified by user (or by default)
 			string infoField(UINT idx)
 			{

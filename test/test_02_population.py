@@ -671,14 +671,14 @@ class TestPopulation(unittest.TestCase):
         for i in range(10):
             self.assertEqual(pop.individual(i).info('fitness'), i+50)
         # 
-        #  test getIndInfo
+        #  test indInfo
         pop = population(subPop=[4,6], infoFields=['age', 'fitness'])
         pop.setIndInfo(range(10), 'age')
         pop.setIndInfo(range(100, 110), 'fitness')
-        self.assertEqual(pop.getIndInfo('age'), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.getIndInfo('fitness'), tuple([float(x) for x in range(100, 110)]))
-        self.assertEqual(pop.getIndInfo('age', 1), tuple([float(x) for x in range(4, 10)]))
-        self.assertEqual(pop.getIndInfo('fitness', 0), tuple([float(x) for x in range(100, 104)]))
+        self.assertEqual(pop.indInfo('age'), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.indInfo('fitness'), tuple([float(x) for x in range(100, 110)]))
+        self.assertEqual(pop.indInfo('age', 1), tuple([float(x) for x in range(4, 10)]))
+        self.assertEqual(pop.indInfo('fitness', 0), tuple([float(x) for x in range(100, 104)]))
         #
         # test reset info fields
         pop = population(size=10, infoFields=['age'])
@@ -687,17 +687,17 @@ class TestPopulation(unittest.TestCase):
         # set values
         pop.setIndInfo(range(10), 'age')
         pop.setIndInfo(range(100, 110), 'fitness')
-        self.assertEqual(pop.getIndInfo('age'), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.getIndInfo('fitness'), tuple([float(x) for x in range(100, 110)]))
+        self.assertEqual(pop.indInfo('age'), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.indInfo('fitness'), tuple([float(x) for x in range(100, 110)]))
         # add an existing field
         self.assertEqual(pop.addInfoField('fitness'), 1)
         # add a new one.
         self.assertEqual(pop.addInfoField('misc'), 2)
         return
         pop.setIndInfo(range(200, 210), 'fitness')
-        self.assertEqual(pop.getIndInfo('age'), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.getIndInfo('fitness'), tuple([float(x) for x in range(100, 110)]))
-        self.assertEqual(pop.getIndInfo('misc'), tuple([float(x) for x in range(200, 210)]))
+        self.assertEqual(pop.indInfo('age'), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.indInfo('fitness'), tuple([float(x) for x in range(100, 110)]))
+        self.assertEqual(pop.indInfo('misc'), tuple([float(x) for x in range(200, 210)]))
 
         
     def testPopVars(self):

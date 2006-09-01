@@ -392,10 +392,13 @@ namespace simuPOP
 	{
 		public:
 			/// constructor. default to be always active.
+			/// infoFields: do not save penetrance inforamtion
+			/// If one field is specified, it will be used to store penetrance
+			/// values.
 			/// default to post mating
 			penetrance(bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, 
-				const vectorstr& infoFields=vectorstr(1, "penetrance"))
+				const vectorstr& infoFields=vectorstr())
 				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields)
 			{
 				DBG_FAILIF( exposePenetrance==true && stage==DuringMating, ValueError,
@@ -425,8 +428,14 @@ namespace simuPOP
 			{
 				double p;
 
-				UINT idx = pop.infoIdx(infoField(0));
-				GappedInfoIterator penIt = pop.infoBegin(idx);
+				bool savePene = infoSize() > 0;
+				
+				GappedInfoIterator penIt;
+				if(savePene)
+				{
+					UINT idx = pop.infoIdx(infoField(0));
+					penIt = pop.infoBegin(idx);
+				}
 				for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
 				{
 					p = penet(&*it);
@@ -435,7 +444,8 @@ namespace simuPOP
 						it->setAffected(true);
 					else
 						it->setAffected(false);
-					*penIt++ = p;
+					if(savePene)
+						*penIt++ = p;
 				}
 
 				return true;
@@ -479,7 +489,7 @@ namespace simuPOP
 			mapPenetrance( vectoru loci, const strDict& penet, bool phase=false,
 				bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
-				const vectorstr& infoFields=vectorstr(1, "penetrance")):
+				const vectorstr& infoFields=vectorstr()):
 			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_dict(penet), m_phase(phase)
 			{
@@ -567,7 +577,7 @@ namespace simuPOP
 				bool exposePenetrance=false,
 				int stage=DuringMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
-				const vectorstr& infoFields=vectorstr(1, "penetrance")):
+				const vectorstr& infoFields=vectorstr()):
 			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_penetrance(penet), m_wildtype(wildtype)
 			{
@@ -652,7 +662,7 @@ namespace simuPOP
 			mlPenetrance( const vectorop peneOps, int mode = PEN_Multiplicative,
 				bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
-				const vectorstr& infoFields=vectorstr(1, "penetrance")):
+				const vectorstr& infoFields=vectorstr()):
 			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
 				m_peneOps(0), m_mode(mode)
 			{
@@ -745,7 +755,7 @@ namespace simuPOP
 			pyPenetrance( vectoru loci, PyObject* func, bool exposePenetrance=false,
 				int stage=DuringMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
-				const vectorstr& infoFields=vectorstr(1, "penetrance")):
+				const vectorstr& infoFields=vectorstr()):
 			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
 			{

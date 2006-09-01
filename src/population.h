@@ -722,24 +722,24 @@ namespace simuPOP
 			}
 		
 			
-			vectorinfo getIndInfo(UINT idx)
+			vectorinfo indInfo(UINT idx)
 			{
 				return vectorinfo(infoBegin(idx), infoEnd(idx));
 			}
 			
-			vectorinfo getIndInfo(const string& name)
+			vectorinfo indInfo(const string& name)
 			{
 				UINT idx = infoIdx(name);
 				return vectorinfo(infoBegin(idx), infoEnd(idx));
 			}
 			
 
-			vectorinfo getIndInfo(UINT idx, UINT subPop)
+			vectorinfo indInfo(UINT idx, UINT subPop)
 			{
 				return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
 			}
 			
-			vectorinfo getIndInfo(const string& name, UINT subPop)
+			vectorinfo indInfo(const string& name, UINT subPop)
 			{
 				UINT idx = infoIdx(name);
 				return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));

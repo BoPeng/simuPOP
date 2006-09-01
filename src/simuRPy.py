@@ -168,8 +168,9 @@ class VarPlotter_Base:
       lt[(i+1)*(self.mfrow[1]+1)-1] = 1
 
     w = 7 * r.par("csi") * 2.54
-    r.layout(r.matrix(lt, byrow=True, nc = self.mfrow[1]+1),
-      widths = ["1"]*self.mfrow[1] + [ r.lcm(w)])
+    r.assign('lt', lt)
+    r('''layout(matrix(lt, byrow=TRUE, nc = %d+1),
+      widths = c(rep("1", %d), lcm(%f)))''' % (self.mfrow[1], self.mfrow[1], w))
     
   def colorBar(self, level, lim):
     " draw a color bar to the right of the plot"
