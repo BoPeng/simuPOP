@@ -549,6 +549,8 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
     # load population
     print "Loading population %s " % dataset
     pop = LoadPopulation(dataset)
+    # we need this field to do analysis.
+    pop.addInfoField('penetrance')
     #
     res.update({
         'dataset':  dataset,
