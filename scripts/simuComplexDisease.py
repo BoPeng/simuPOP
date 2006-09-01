@@ -992,7 +992,7 @@ if __name__ == '__main__':
     from simuUtil import *
     #
     # check minimal requirement of simuPOP version
-    if simuRev() < 425:
+    if simuRev() < 383:
         raise exceptions.SystemError('''This scripts requires simuPOP revision >=425. 
             Please upgrade your simuPOP distribution.''' )
     #
