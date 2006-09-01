@@ -582,8 +582,9 @@ namespace simuPOP
 					if(names[i] == name)
 						return i;
 				}
-				DBG_ASSERT(false, IndexError, "Info field '" + name + "' is not found. " 
-					"Plese use infoFields=['" + name + "'] option of population() to add it.");
+				throw IndexError("Info field '" + name + "' is not found. " 
+					"Plese use infoFields=['" + name + "'] option of population() during construction\n"
+					"or use addInfoField('" + name + "') to add to an existing population.");
 				// this should never be reached.
 				return 0;
 			}
@@ -591,15 +592,21 @@ namespace simuPOP
 			/// add a new information field
 			/// NOTE: should only be called by population::requestInfoField
 			/// return the index of the newly added field
-			/*
 			/// Right now, do not allow dynamic addition of these fields.
-			int addInfoField(const string& name)
+			/// CPPONLY
+			int struAddInfoField(const string& field)
 			{
-				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
-				names.push_back(name);
-				return names.size()-1;
+				vectorstr& fields = s_genoStruRepository[m_genoStruIdx].m_infoFields;
+				fields.push_back(field);
+				return fields.size()-1;
 			}
-			*/
+
+			/// should should only be called from population
+			/// CPPONLY
+			void struSetInfoFields(const vectorstr& fields)
+			{
+				s_genoStruRepository[m_genoStruIdx].m_infoFields = fields;
+			}
 			
 			void swap(GenoStruTrait& rhs)
 			{

@@ -1497,7 +1497,7 @@ Population related functions
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="55" columns="3">
+<lyxtabular version="3" rows="57" columns="3">
 <features islongtable="true" firstHeadBottomDL="true" headBottomDL="true">
 <column alignment="left" valignment="top" leftline="true" width="0">
 <column alignment="left" valignment="top" leftline="true" width="0" special="|p{2in}|">
@@ -2179,6 +2179,80 @@ p.setIndInfo
 \begin_layout Standard
 Set indifivual information for the given information field (index or name),
  for the given subpopulation (default to all population).
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+p.addInfoField
+\begin_inset LatexCommand \index{population!addInfoField}
+
+\end_inset
+
+(field)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Add a information field, for example, 'penetrance', for the analysis of
+ an existing population.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+p.setInfoFields
+\begin_inset LatexCommand \index{population!setInfoFields}
+
+\end_inset
+
+(fields)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+set the information fields of an existing population.
+ The existing fields will be removed.
 \end_layout
 
 \end_inset
@@ -5860,12 +5934,98 @@ Information fields
 \end_layout
 
 \begin_layout Standard
-From a user's point of view, the information fields are arranged as follows:
+The information fields are information that is attached to each individual.
+ For example, an individual may need 
+\family typewriter
+father_idx 
+\family default
+and 
+\family typewriter
+mother_idx
+\family default
+ to track pedigree information, may need 
+\family typewriter
+penetrance 
+\family default
+to set affectedness.
 \end_layout
 
-\begin_layout LyX-Code
-ind1: f1, f2, f3...
- ind2: f1, f2, f3 ...
+\begin_layout Standard
+The information fields is usually set during population creation, in preparation
+ for all the opeartors, using the 
+\family typewriter
+infoFields
+\family default
+ option of population constructor.
+ It can also be set or added by functions
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.setInfoFields(fields)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.addIndField(field)
+\end_layout
+
+\begin_layout Standard
+Note that changing infoField for a simulator is dangerous since all populations
+ in a simulator share the same genotypic structure.
+ You should addIndField to all populations to avoid potential problems.
+\end_layout
+
+\begin_layout Standard
+One can set/retrieve information at the level of individuals
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ind.info(idx or field)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ind.setInfo(idx or field)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ind.arrInfo()
+\end_layout
+
+\begin_layout Standard
+or set the population level
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.indInfo(idx or field, [subPop])
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.setIndInfo(idx or field, [subPop])
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.arrIndInfo([subPop]
+\end_layout
+
+\begin_layout Standard
+Idx or field means that you can use field index obtained from infoIdx(field),
+ or use field name directly.
+ field is easier to use but idx is faster.
 \end_layout
 
 \begin_layout Standard
@@ -5921,20 +6081,7 @@ for i in range(pop.popSize()):
 \end_layout
 
 \begin_layout Standard
-To retrieve the values of information fields, you can use 
-\family typewriter
-ind.info(idx or name),
-\family default
- 
-\family typewriter
-pop.getIndInfo(idx or name, [subPop]), 
-\family default
-or 
-\family typewriter
-pop.arrIndInfo()
-\family default
-.
- Note that 
+Note that 
 \family typewriter
 getIndInfo
 \family default
