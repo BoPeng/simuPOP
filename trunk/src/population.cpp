@@ -882,35 +882,53 @@ namespace simuPOP
 		}
 	}
 
-	/// request info field
-	/// code: In this version, I do not allow dynamic addition
-	/// of information field
-	/*
-	int population::requestInfoField(const string name)
+
+	/// add field
+	int population::addInfoField(const string field)
 	{
-		// if this field does not yet exist, create a new one
-		int index = infoIdx(name);
-		if (index >= 0)
-			return index;
-			
-		/// the code does not exist yet,
-		/// crete a new one
-		index = addInfoField(name);
-		///
-		vectorinfo newInfo((index+1)*popSize());
+		// if this field exists, return directly
+		UINT index;
+		try
+		{
+			index = infoIdx(field);
+			if (m_info.size() == infoSize()*popSize())
+				return index;
+		}
+		catch(IndexError&e)
+		{
+			index = struAddInfoField(field);
+		}
+					
+		/// adjust information size.
+		UINT is = infoSize();
+		vectorinfo newInfo(is*popSize());
 		/// copy the old stuff in
 		InfoIterator ptr = newInfo.begin();
 		for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
 		{
-			if(index>0)
-				copy(ind->infoBegin(), ind->infoBegin() + index, ptr);
+			copy(ind->infoBegin(), ind->infoBegin() + is-1, ptr);
 			ind->setInfoPtr(ptr);
-			ptr += index + 1;
+			ptr += is;
 		}
 		m_info.swap(newInfo);
 		return index;
 	}
-	*/
+
+
+	/// set fields
+	void population::setInfoFields(const vectorstr& fields)
+	{
+		struSetInfoFields(fields);
+					
+		/// reset info vector
+		vectorinfo newInfo(infoSize()*popSize());
+		InfoIterator ptr = newInfo.begin();
+		UINT is = infoSize();
+		for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind, ptr += is)
+			ind->setInfoPtr(ptr);
+		m_info.swap(newInfo);
+	}
+
 
 	/// set ancestral depth, can be -1
 	void population::setAncestralDepth(int depth)

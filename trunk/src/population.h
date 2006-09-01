@@ -761,8 +761,14 @@ namespace simuPOP
 					m_info.begin() + m_subPopIndex[subPop+1]*infoSize());
 			}
 
-			
+			/// add information field to a population
+			/// if the field already exists in the geno structure
+			/// match local info fields with the structure.
+			int addInfoField(const string field);	
 		
+			/// set information fields, remove the old one
+			void setInfoFields(const vectorstr& fields);
+			
 			/// set ancestral depth, can be -1
 			void setAncestralDepth(int depth);
 

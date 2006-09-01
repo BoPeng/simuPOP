@@ -103,7 +103,7 @@ namespace simuPOP
 			return 1-fit;
 		}
 		// this is the case for SEL_none.
-		return 0.0;
+		return 1.0;
 	}
 
 	double pySelector::indFitness(individual * ind)
