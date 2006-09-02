@@ -220,7 +220,7 @@ if __name__ == '__main__':
                         if n not in proc_jobs and n in all_jobs:
                             proc_jobs.append(n)
             except:
-                if j not in proc_jobs and n in all_jobs:
+                if j not in proc_jobs and j in all_jobs:
                     proc_jobs.append(j)
     #
     if not run:
