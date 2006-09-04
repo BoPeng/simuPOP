@@ -129,7 +129,7 @@ Please read the comment before each variable for details about them.
 import simuOpt, simuUtil
 import os, sys, types, exceptions, os.path, operator, time
 try:
-    from rpy import *
+    import rpy
     hasRPy = True
 except:
     print 'Rpy can not be loaded so case control chi-sq test can not be performed'
@@ -309,9 +309,9 @@ outputVars = {
     'R2': 'R^2 measure of Linkage disequilibrium',
     'alleleFreq': 'allele frequency, including DSL',    
     # result of gene mapping methods
-    'LOD': 'p-values obtained using Linkage method, organized by chromosome and loci (nested list)',
-    'TDT': 'p-values obtained using TDT method, organized by chromosome and loci (nested list)',
-    'ChiSq': 'p-values obtained using ChiSq method, organized by chromosome and loci',
+    'LOD': 'p-values obtained using Linkage method, organized by sample, chromosome and loci (nested list)',
+    'TDT': 'p-values obtained using TDT method, organized by sample, chromosome and loci (nested list)',
+    'ChiSq': 'p-values obtained using ChiSq method, organized by sample, chromosome and loci',
 }
 
 # penetrance generator functions. They will return a penetrance function
@@ -419,6 +419,7 @@ def drawCaseControlSamples(pop, numSample, dirPrefix, reAnalyzeOnly):
             print "Write case-control sample %s in simuPOP format: %s" % (ns, sampleFile)
             samples[ns].savePopulation(sampleFile)
     return samples
+
 
 def drawAffectedSibpairSamples(pop, numSample, dirPrefix, reAnalyzeOnly):
     ''' 
@@ -609,7 +610,6 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
     # calculate population statistics like prevalence
     res.update( popStat(pop) )
     #
-    # for each sample
     def lociAtChrom(ch, absLoci=[]):
         if absLoci == []:
             # all loci (compared to pop, we do not have the DSL)
@@ -619,27 +619,32 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
             (c, l) = caseControlSamples[0].chromLocusPair(loc)
             if c == ch:
                 loci.append(l)
-        return loci                
+        return loci           
+    # for each sample
+    res['TDT'] = []
+    res['LOD'] = []
+    res['ChiSq'] = []
     for sn in range(numSample):
-        res['TDT'] = []
-        res['LOD'] = []
+        res['TDT'].append([])
+        res['LOD'].append([])
+        res['ChiSq'].append([])
         print "Processing sample %s%d" % (peneFunc, sn)
         for ch in range(pop.numChrom()):
             if 'TDT' in mappingMethods:
                 print 'Applying TDT method to chromosome %d of sample %d' % (ch, sn)
-                res['TDT'].extend(TDT_gh(
+                res['TDT'][sn].extend(TDT_gh(
                     os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'Linkage', 'Aff_%d' % ch), 
                     loci=lociAtChrom(ch, loci), gh=geneHunter))
             if 'Linkage' in mappingMethods:
                 print 'Applying Linkage method to chromosome %d of sample %d' % (ch, sn)
-                res['LOD'].extend(LOD_gh(
+                res['LOD'][sn].extend(LOD_gh(
                     os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'Linkage', 'Aff_%d' % ch), 
                     loci=lociAtChrom(ch, loci), gh=geneHunter))
         if hasRPy and 'Association' in mappingMethods:
             print 'Applying chi-sq association tests to sample %d' % sn
-            res['ChiSq'].extend(ChiSq_test(
-                os.path.join(outputDir, '%s%d' % (peneFunc, sn), r, 'caseControl.txt'), 
-                loci=loci))
+            res['ChiSq'][sn] = ChiSq_test(
+                os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'caseControl.txt'), 
+                rpy.r, loci=loci)
     return res
 
 
