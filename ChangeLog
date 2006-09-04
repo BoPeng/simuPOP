@@ -4,7 +4,7 @@ NOTE: Daily snapshot reflects current SVN version. It includes new features and
   bug fixes, but may be less stable than versioned releases.
 
 BUGS:
-  - All known bugs have been fixed.
+  - some rpy function does not work due to a rpy bug.
 
 version 0.7.2 - Currently available as svn snapshot
   - CHG: remove demo and support for scipy's gplt package.
@@ -12,7 +12,8 @@ version 0.7.2 - Currently available as svn snapshot
   - CHG: all populations must now explicitly state the information
 		fields for each individual.
   - CHG: all qtrait and penetrance oeprators now use info fields of
-		individuals (they use variable before)
+		individuals (they use variable before). penetrance field is
+		optional.
   - CHG: (Internal) selectors now use info field (fitness) rather than
 		using its own population variable.
 

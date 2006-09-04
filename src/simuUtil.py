@@ -1555,22 +1555,21 @@ def ChiSq_test(pop, r, loci=[]):
     # at each locus
     pvalue = []
     if loci == []:
-        loci = [range(pop.numLoci(x)) for x in range(pop.numChrom())]
-    for ch in range(len(loci)):
-        p = []
-        for locus in loci[ch]:
-            # allele frequency
-            loc = pop.absLocusIndex(ch, locus)
-            Stat(pop, alleleFreq=[loc])
-            caseNum = pop.dvars(0).alleleNum[loc]
-            if len(caseNum) == 1:
-                caseNum.append(0)
-            contNum = pop.dvars(1).alleleNum[loc]
-            if len(contNum) == 1:
-                contNum.append(0)
-            p.append(r.chisq_test( r.matrix( caseNum+contNum, ncol=2) )['p.value'])
-        # get p-values using R's x2 function
-        pvalue.append(p)
+        loci = range(pop.totNumLoci())
+    Stat(pop, alleleFreq=loci)
+    for loc in loci:
+        # allele frequency
+        caseNum = pop.dvars(0).alleleNum[loc]
+        if len(caseNum) == 1:
+            caseNum.append(0)
+        elif len(caseNum) > 2:
+            raise 'ChiSq: non-SNP markers are not supported.'
+        contNum = pop.dvars(1).alleleNum[loc]
+        if len(contNum) == 1:
+            contNum.append(0)
+        elif len(contNum) > 2:
+            raise 'ChiSq: non-SNP markers are not supported.'
+        pvalue.append(r.chisq_test(r.matrix( caseNum+contNum, ncol=2) )['p.value'])
     return pvalue
 
 
