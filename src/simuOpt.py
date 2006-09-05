@@ -732,7 +732,10 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
                 entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
             gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND )
             if values[g] != None:
-                entryWidgets[g].SetSelection(opt['chooseOneOf'].index( values[g]))
+                try:
+                    entryWidgets[g].SetSelection(opt['chooseOneOf'].index(values[g]))
+                except:
+                    raise ValueError('Value: %s is not one of %s.' % (str(values[g]), str(opt['chooseOneOf'])))
             colCount += 1
         elif opt.has_key('chooseFrom'):    # multiple choice
             w,h = labelWidgets[g].GetTextExtent('a')
