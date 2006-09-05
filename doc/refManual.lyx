@@ -9131,7 +9131,7 @@ Introduction to the whole script:
 \end_layout
 
 \begin_layout LyX-Code
-This script will ....
+This script simulates ....
 \end_layout
 
 \begin_layout LyX-Code
@@ -9285,10 +9285,6 @@ Note that these scripts, if proper written, can also be imported.
  simulation function directly.
 \end_layout
 
-\begin_layout LyX-Code
-
-\end_layout
-
 \begin_layout Section
 Parameter handling and user input 
 \end_layout
@@ -9338,7 +9334,25 @@ parameter to read a configuration file and set parameters.
 \end_layout
 
 \begin_layout Enumerate
-Be able to use command line arguments to set parameters as well.
+Be able to use command line arguments to set parameters if 
+\family typewriter
+--useDefault
+\family default
+ is not specified.
+\end_layout
+
+\begin_layout Enumerate
+When 
+\family typewriter
+--noDialog 
+\family default
+and 
+\family typewriter
+--useDefault
+\family default
+ is specified, use default values for all parameters, if they can not be
+ obtained from commandline parameters, configuration file, and have a default
+ value.
 \end_layout
 
 \begin_layout Enumerate
@@ -9671,6 +9685,14 @@ list
 valueValidFile(), valueValidDir():
 \family default
  check if the parameter is a valid file/directory name.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+valueIsNum():
+\family default
+ check if the parameter is a number.
 \end_layout
 
 \begin_layout Itemize
@@ -10055,7 +10077,7 @@ arrXXX
 \family default
  functions should be considered temporary.
  There is no gurantee the underlying array will still be valid after any
- operation.
+ population operation.
  
 \end_layout
 

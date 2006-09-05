@@ -1473,9 +1473,10 @@ def TDT_gh(file, loci=[], gh='gh'):
     fout.close()
     if loci == []:
         # dict to list
-        return [minPvalue[x] for x in range(len(minPvalue))]
+        # if a p-value does not exist (caused e.g. by fixation), return -1
+        return [minPvalue.setdefault(x, -1) for x in range(len(minPvalue))]
     else:
-        return [minPvalue[x] for x in loci]
+        return [minPvalue.setdefault(x, -1) for x in loci]
 
 
 def LOD_gh(file, loci=[], gh='gh'):
@@ -1529,9 +1530,9 @@ def LOD_gh(file, loci=[], gh='gh'):
     fout.close()
     if loci == []:
         # dict to list
-        return [minPvalue[x] for x in range(len(minPvalue))]
+        return [minPvalue.setdefault(x, -1) for x in range(len(minPvalue))]
     else:
-        return [minPvalue[x] for x in loci]
+        return [minPvalue.setdefault(x, -1) for x in loci]
 
 
 
