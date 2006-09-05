@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 
 ############################################################################
-#        Copyright (C) 2004 by Bo Peng                                                                                 
-#        bpeng@rice.edu                                                                                                                
-#                                                                                                                                                    
-#        $LastChangedDate$                    
-#        $Rev$                                             
-#                                                                                                                                                    
-#        This program is free software; you can redistribute it and/or modify    
-#        it under the terms of the GNU General Public License as published by    
-#        the Free Software Foundation; either version 2 of the License, or         
-#        (at your option) any later version.                                                                     
-#                                                                                                                                                    
-#        This program is distributed in the hope that it will be useful,             
-#        but WITHOUT ANY WARRANTY; without even the implied warranty of                
-#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the                 
-#        GNU General Public License for more details.                                                    
-#                                                                                                                                                    
-#        You should have received a copy of the GNU General Public License         
-#        along with this program; if not, write to the                                                 
-#        Free Software Foundation, Inc.,                                                                             
-#        59 Temple Place - Suite 330, Boston, MA    02111-1307, USA.                         
+#        Copyright (C) 2004 by Bo Peng
+#        bpeng@rice.edu
+#
+#        $LastChangedDate$
+#        $Rev$
+#
+#        This program is free software; you can redistribute it and/or modify
+#        it under the terms of the GNU General Public License as published by
+#        the Free Software Foundation; either version 2 of the License, or
+#        (at your option) any later version.
+#
+#        This program is distributed in the hope that it will be useful,
+#        but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+#        GNU General Public License for more details.
+#
+#        You should have received a copy of the GNU General Public License
+#        along with this program; if not, write to the
+#        Free Software Foundation, Inc.,
+#        59 Temple Place - Suite 330, Boston, MA    02111-1307, USA.
 ############################################################################
 
 
@@ -50,7 +50,7 @@ def getParamShortArg(p, processedArgs):
                     except:
                         return None
                 # case 2: -aopt or -a=opt
-                else: 
+                else:
                     if idx+1 in processedArgs:
                         raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
                     try:
@@ -78,6 +78,7 @@ def getParamShortArg(p, processedArgs):
     else:
         return None
 
+
 def getParamLongArg(p, processedArgs):
     ''' get param from long arg '''
     if p.has_key('longarg'):
@@ -98,7 +99,7 @@ def getParamLongArg(p, processedArgs):
                         return val
                     except:
                         return None
-                # case 2 --arg=something                     
+                # case 2 --arg=something
                 else:
                     if sys.argv[idx+1][endChar+2] != '=':
                         raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " is invalid. (--longarg=value)")
@@ -120,7 +121,8 @@ def getParamLongArg(p, processedArgs):
                 return True
     else:
         return None
-    
+
+
 def getParamConfigFile(p, processedArgs):
     ''' get param from configuration file    '''
     if p.has_key('configName'):
@@ -141,8 +143,8 @@ def getParamConfigFile(p, processedArgs):
         # read configuration file
         # deal with () in configName.
         name = p['configName']
-        name = name.replace('(',r'\(')
-        name = name.replace(')',r'\)')
+        name = name.replace('(', r'\(')
+        name = name.replace(')', r'\)')
         scan = re.compile(name+r'\s*=\s*(.*)')
         try:
             file = open(config)
@@ -157,7 +159,7 @@ def getParamConfigFile(p, processedArgs):
                     try:
                         return getParamValue(p, value.strip())
                     except:
-                        return None 
+                        return None
             file.close()
             # get nothing
             return None
@@ -166,9 +168,10 @@ def getParamConfigFile(p, processedArgs):
             return None
     else:
         return None
-    
+
+
 def getParamUserInput(p):
-    '''    get param from user input '''    
+    ''' get param from user input '''
     if p.has_key('prompt'):
         while True:
             value = raw_input('\n'+p['prompt']).strip()
@@ -188,7 +191,8 @@ def getParamUserInput(p):
             return p['default']
         else:
             raise exceptions.ValueError("Can not get param for parameter (no default value): " + str(p['longarg']))
- 
+
+
 def getParamValue(p, val):
     ''' try to get a value from value, raise exception if error happens. '''
     # if we are giving a unicode string, convert!
@@ -199,7 +203,7 @@ def getParamValue(p, val):
                 raise exceptions.ValueError("Value "+str(val)+' does not pass validation')
         return val
     # other wise, need conversion
-    if type(val) in [ types.StringType, types.UnicodeType] :
+    if type(val) in [types.StringType, types.UnicodeType] :
         try:
             val = eval(val)
         except:
@@ -227,7 +231,7 @@ def getParamValue(p, val):
             + p.setdefault('longarg','none') +")")
 
 
-def termGetParam(options, checkUnprocessedArgs=True, verbose=False):
+def termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=False):
     ''' using user input to get param '''
     # get param from short arg
     processedArgs = []
@@ -253,7 +257,10 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False):
         if val == None:
             val = getParamConfigFile(p, processedArgs)
         if val == None:
-            val = getParamUserInput(p)
+            if useDefault and p.has_key('default'):
+                val = p['default']
+            else:
+                val = getParamUserInput(p)
         # should have a valid value now.
         if val == None:
             raise exceptions.ValueError("Failed to get parameter " + p.setdefault("configName",'') + " " + p.setdefault("longarg",''))
@@ -282,12 +289,13 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False):
         and True not in map(lambda x:x.has_key('jumpIfFalse'), option)):
         for i in range(1, len(sys.argv)):
             if (not sys.argv[i] in ['-c', '--config', '--optimized',    '-q', \
-                '--useTkinter', '--quiet', '--noDialog']) \
+                '--useTkinter', '--quiet', '--noDialog', '--useDefault']) \
                 and (not i in processedArgs):
                 raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
     return values
- 
-### 
+
+
+###
 ### currently, I do not want to specify font. Use defaults on each
 ### OS seems to be a better choice.
 #DEFAULT_FONT_FAMILY     = ("MS", "Sans", "Serif")
@@ -342,7 +350,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
     if checkUnprocessedArgs:
         for i in range(1, len(sys.argv)):
             if (not sys.argv[i] in ['-c', '--config', '--optimized', '-q',\
-                '--quiet', '--noDialog', '--useTkinter']) \
+                '--quiet', '--noDialog', '--useTkinter', '--useDefault']) \
                 and (not i in processedArgs):
                 raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
     #
@@ -380,7 +388,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
                     if len(sel) == 1:
                         items = entryWidgets[g].get( sel)
                     else:
-                        items = [] 
+                        items = []
                         for s in sel:
                             items.append( entryWidgets[g].get( s))
                     val = getParamValue( options[g], items)
@@ -418,7 +426,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
         messageFrame.pack(side=TOP, fill=BOTH)
         scrollBar = tk.Scrollbar(messageFrame)
         scrollBar.pack(side=RIGHT, fill=Y)
-        messageWidget = tk.Text(messageFrame, wrap=WORD, 
+        messageWidget = tk.Text(messageFrame, wrap=WORD,
             yscrollcommand=scrollBar.set)
         messageWidget.insert(END, usage(options, details))
         scrollBar.config(command=messageWidget.yview)
@@ -442,7 +450,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
     # all use grid management
     # top message
     # do not use a very long description please
-    tk.Message(root, text=description, width=600).grid(row=0, column=0, 
+    tk.Message(root, text=description, width=600).grid(row=0, column=0,
         columnspan = 2 * nCol, sticky=tk.N+tk.E+tk.S+tk.W, pady=20)
     # find out number of items etc
     colParam = 0
@@ -509,15 +517,15 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
                     entryWidgets[g].insert(0, ', '.join(map(str, values[g])))
                 else:
                     entryWidgets[g].insert(0,str(values[g]))
-        colIndex = colCount /colParam 
+        colIndex = colCount /colParam
         entryWidgets[g].bind("<Return>", doGetText)
         entryWidgets[g].bind("<Escape>", doCancel)
     # help button
     helpButton = tk.Button(root, takefocus=1, text="Help")
     helpButton.bind("<Return>"    , doHelp)
-    helpButton.bind("<Button-1>", doHelp)        
+    helpButton.bind("<Button-1>", doHelp)
     helpButton.grid( column=0, columnspan=nCol, row = colParam+1, pady=20)
-    # ok button 
+    # ok button
     okButton = tk.Button(root, takefocus=1, text="Run!")
     okButton.bind("<Return>"    , doGetText)
     okButton.bind("<Button-1>", doGetText)
@@ -525,7 +533,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
     # cancel button
     cancelButton = tk.Button(root, takefocus=1, text="Cancel")
     cancelButton.bind("<Return>"    , doCancel)
-    cancelButton.bind("<Button-1>", doCancel)    
+    cancelButton.bind("<Button-1>", doCancel)
     cancelButton.grid( column=0, columnspan=2*nCol, row = colParam+1, pady=20)
     # ------------------- time for action! -----------------
     # first un-none
@@ -586,7 +594,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
     if checkUnprocessedArgs:
         for i in range(1, len(sys.argv)):
             if (not sys.argv[i] in ['-c', '--config', '--optimized', '-q',\
-                '--quiet', '--noDialog', '--useTkinter']) \
+                '--quiet', '--noDialog', '--useTkinter', '--useDefault']) \
                 and (not i in processedArgs):
                 raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
     # parameter 0 prevents wxPython from open a separate window for stdout and stderr
@@ -610,12 +618,12 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
                 # get text from different type of entries
                 try:    # an entry box?
                     val = getParamValue( options[g], entryWidgets[g].GetValue())
-                except:    
+                except:
                     try:    # a list box?
                         val = getParamValue( options[g],
                             options[g]['chooseOneOf'][int(entryWidgets[g].GetSelection())])
                     except: # a checklist box?
-                        items = [] 
+                        items = []
                         for s in range(len(options[g]['chooseFrom'])):
                             if entryWidgets[g].IsChecked(s):
                                 items.append( options[g]['chooseFrom'][s])
@@ -680,7 +688,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
     for b in range(nCol):
         gridBox.append( wx.FlexGridSizer(cols=2, vgap=5, hgap=20))
         gridBox[-1].AddGrowableCol(0)
-        gridBox[-1].AddGrowableCol(1)    
+        gridBox[-1].AddGrowableCol(1)
         paraBox.Add( gridBox[-1], 1, wx.EXPAND | wx.ALL, 10)
     box.Add(paraBox, 1, wx.EXPAND | wx.ALL, 10)
     # count numbers of valid parameters..
@@ -735,10 +743,10 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
             if values[g] != None:
                 if type(values[g]) in [types.ListType, types.TupleType]:
                     for val in values[g]:
-                        entryWidgets[g].Check( opt['chooseFrom'].index(val)) 
+                        entryWidgets[g].Check( opt['chooseFrom'].index(val))
                 else:
-                    entryWidgets[g].Check( opt['chooseFrom'].index(values[g])) 
-            gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND) 
+                    entryWidgets[g].Check( opt['chooseFrom'].index(values[g]))
+            gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND)
             colCount += len(opt['chooseFrom']) -1
         else: # a edit box
             # put default value into the entryWidget
@@ -775,7 +783,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
             entryWidgets[g].SetFocus()
             break
     dlg.ShowModal()
-    dlg.Destroy()    
+    dlg.Destroy()
     # we do not actually need a main loop
     #app.MainLoop()    # run it!
     # -------- after the run has completed ----------------------------------
@@ -798,63 +806,65 @@ def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArg
             - configuration file specified by -f file, or
             - prompt for user input
 
-    parameter: 
+    parameter:
         verbose: whether or not print detailed info
 
         checkUnprocessedArgs: check args, avoid misspelling of arg name
 
         options: a list of dictionaries with key
-            arg:    command line argument, conformable to that of 
+            arg:    command line argument, conformable to that of
                         python getopt module. For example, "d:" means
-                        -d name 
-                        
+                        -d name
+
             longarg: command line argument, --arg. For exmaple
                 "mu=". c.f. getopt.
 
             configName: config name in a config file
-            
-            prompt: prompt for user input. If this is empty, 
+
+            prompt: prompt for user input. If this is empty,
                 (and no command line etc), default will be
                 used directly.
-            
+
             default: default value if user hit enter for prompt. Default value can not be none
 
-            allowedTypes: an array of allowed types. Default to string. 
+            allowedTypes: an array of allowed types. Default to string.
                 if type is not string, input will be evaluated and
                 resulting type will be checked.
 
             jump: go to option 'jump'    if current option is True.
                 This is useful for -h (goto -1 (end)) or conditional options
                 where you need only part of the options. goto can not go backwards.
-            
+
             jumpIfFalse: go to option 'jumpIfFalse' if current option is False.
-            
+
         This function will first check command line argument.
         If the argument is available, use its value.
         Otherwise check if a config file is specified. If so,
         get the value from the config file. If both failed,
         prompt user to input a value.
 
-        All input will be checked against types, if exists, an array of 
+        All input will be checked against types, if exists, an array of
         allowed types.
     """
     # check if --noDialog, -h is present
-    # or there is no 'configName' in the options structure 
+    # or there is no 'configName' in the options structure
+    useDefault = '--useDefault' in sys.argv[1:]
     if noDialog or '--noDialog' in sys.argv[1:] or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
         or True not in map(lambda x:x.has_key('configName'), options):
-        return termGetParam(options, doc, verbose)        
+        return termGetParam(options, doc, verbose, useDefault)
     else:
         if useTkinter:
-            return tkGetParam(options, sys.argv[0], doc, details, 
+            return tkGetParam(options, sys.argv[0], doc, details,
                 checkUnprocessedArgs, nCol)
         elif useWxPython:
-            return wxGetParam(options, sys.argv[0], doc, details, 
+            return wxGetParam(options, sys.argv[0], doc, details,
                 checkUnprocessedArgs, nCol)
         else:
-            return termGetParam(options, doc, verbose)     
+            return termGetParam(options, doc, verbose, useDefault)
+
 
 def usage(options, before=''):
-    """ 
+    """
         extract information from options and form a formated string of usage.
     """
     message = ''
@@ -862,17 +872,18 @@ def usage(options, before=''):
         message += '    ' + before + '\n'
     message += '\n' + sys.argv[0] + ' usage:\n'
     message += '    > ' + sys.argv[0] + ' options\n\n'
-    message += '    Options: (-shortoption --longoption configname: description.)\n' 
+    message += '    Options: (-shortoption --longoption configname: description.)\n'
     message += '        -c xxx --config xxx :\n                Load parameters from file xxx\n'
     message += '        --noDialog :\n                Enter parameter from command line\n'
+    message += '        --useDefault :\n                with noDialog, do not prompt for user input, use default values\n'
     message += '        --optimized :\n                Use optimized library (no error checking)\n'
     for p in options:
         message += "        "
         if p.has_key('arg'):
             if p['arg'][-1] == ':':
-                message += '-'+ p['arg'][0:-1] + ' xxx ' 
+                message += '-'+ p['arg'][0:-1] + ' xxx '
             else:
-                message += '-'+ p['arg'] + ' ' 
+                message += '-'+ p['arg'] + ' '
         if p.has_key('longarg'):
             if p['longarg'][-1] == '=':
                 message += '--' + p['longarg'][0:-1] + ' xxx '
@@ -885,7 +896,7 @@ def usage(options, before=''):
             message += p['description']
         message += '\n'
         if p.has_key('default') and p['default'] != None:
-            message +=    '                Default to ' 
+            message +=    '                Default to '
             if type(p['default']) in [types.ListType, types.TupleType]:
                 message += ', '.join(map(str, p['default']))
             else:
@@ -895,7 +906,7 @@ def usage(options, before=''):
 
 
 def saveConfig(opt, file, param):
-    """ 
+    """
         extract information from options and form a formated string of usage.
     """
     try:
@@ -919,14 +930,14 @@ def saveConfig(opt, file, param):
             # write arg and long arg
             if options[p].has_key('arg'):
                 if options[p]['arg'][-1] == ':':
-                    f.write( "# -" + options[p]['arg'][0:-1] 
+                    f.write( "# -" + options[p]['arg'][0:-1]
                         + "=" + str( param[p] ) + "\n")
                 else:
                     f.write( "# -" + options[p]['arg'] + "\n")
             if options[p].has_key('longarg'):
                 if options[p]['longarg'][-1] == '=':
-                    f.write( "# --" + options[p]['longarg'][0:-1] 
-                        + "=" + str( param[p] ) + "\n") 
+                    f.write( "# --" + options[p]['longarg'][0:-1]
+                        + "=" + str( param[p] ) + "\n")
                 else:
                     f.write( "# --" + options[p]['longarg'] + "\n")
             # write description
@@ -940,18 +951,19 @@ def saveConfig(opt, file, param):
         if options[p].has_key('configName') and options[p].has_key('longarg'):
             if options[p]['longarg'][-1] == '=':
                 if str(param[p]).find(",") >= 0:    # has single quote
-                    f.write( " --" + options[p]['longarg'][0:-1] 
-                        + '="' + str( param[p] ) + '"') 
+                    f.write( " --" + options[p]['longarg'][0:-1]
+                        + '="' + str( param[p] ) + '"')
                 else:
-                    f.write( " --" + options[p]['longarg'][0:-1] 
-                        + "='" + str( param[p] ) + "'") 
+                    f.write( " --" + options[p]['longarg'][0:-1]
+                        + "='" + str( param[p] ) + "'")
             else:
                 f.write( " --" + options[p]['longarg'] )
     f.write("\n")
     f.close()
 
+
 def printConfig(opt, param, out=sys.stdout):
-    """ 
+    """
         Print configuration.
     """
     # remove separators from opt
@@ -968,6 +980,7 @@ def printConfig(opt, param, out=sys.stdout):
             else:
                 print >> out, options[p]['configName'], '\t', str(param[p])
 
+
 # define some validataion functions
 def valueNot(t):
     def func(val):
@@ -976,7 +989,8 @@ def valueNot(t):
         else:
             raise exceptions.ValueError("We expect a function valueXXX")
     return func
-    
+
+
 def valueOr(t1, t2):
     def func(val):
         if type(t1) == types.FunctionType and type(t2) == types.FunctionType:
@@ -985,6 +999,7 @@ def valueOr(t1, t2):
             raise exceptions.ValueError("We expect a function valueXXX")
     return func
 
+
 def valueAnd(t1, t2):
     def func(val):
         if type(t1) == types.FunctionType and type(t2) == types.FunctionType:
@@ -992,7 +1007,7 @@ def valueAnd(t1, t2):
         else:
             raise exceptions.ValueError("We expect a function valueXXX")
     return func
-        
+
 
 def valueOneOf(t):
     if not type(t) in [types.ListType, types.TupleType]:
@@ -1007,54 +1022,65 @@ def valueOneOf(t):
                     return True
         return False
     return func
-    
+
+
 def valueTrueFalse():
     return valueOneOf([True, False])
-    
+
+
 def valueBetween(a,b):
     def func(val):
         return val >= a and val <=b
     return func
 
+
 def valueGT(a):
     def func(val):
-        return val > a 
+        return val > a
     return func
+
 
 def valueGE(a):
     def func(val):
-        return val >= a 
+        return val >= a
     return func
+
 
 def valueLT(a):
     def func(val):
-        return val < a 
+        return val < a
     return func
+
 
 def valueLE(a):
     def func(val):
-        return val <= a 
+        return val <= a
     return func
+
 
 def valueIsNum():
     def func(val):
         return type(val) in [types.IntType, types.LongType, types.FloatType]
     return func
 
+
 def valueIsList():
     def func(val):
         return type(val) in [types.ListType, types.TupleType]
     return func
 
+
 def valueValidDir():
     def func(val):
         return os.path.isdir(val)
     return func
-    
+
+
 def valueValidFile():
     def func(val):
         return os.path.isfile(val)
     return func
+
 
 def valueListOf(t):
     def func(val):
@@ -1075,16 +1101,17 @@ def valueListOf(t):
         return True
     return func
 
+
 env_optimized = os.getenv('SIMUOPTIMIZED')
 env_longAllele = os.getenv('SIMUALLELETYPE')
 env_debug = os.getenv('SIMUDEBUG')
 
 [par_optimized] = termGetParam([{'longarg':'optimized', \
-    'configName':'optimized', 'default':''}], False)
+    'configName':'optimized', 'default':''}], False, False)
 [par_quiet] = termGetParam([{'arg':'q','longarg':'quiet', \
-    'default':False}], False)
+    'default':False}], False, False)
 [par_useTkinter] = termGetParam([{'longarg':'useTkinter', \
-        'default':False }], False)
+        'default':False }], False, False)
 
 # remove these parameters from sys.argv
 for arg in ['--optimized', '--quiet', '-q', '--useTkinter']:
@@ -1099,16 +1126,16 @@ elif env_optimized != None:
     _optimized = True
 else:     # default to false
     _optimized = False
-     
+
 if env_longAllele in ['standard', 'short', 'long', 'binary']:
     _longAllele = env_longAllele
 else:
     _longAllele = 'standard'
-    
+
 simuOptions = {'Optimized':_optimized, 'AlleleType':_longAllele, 'Debug':[], 'Quiet':par_quiet}
 
 if env_debug != None:
-    simuOptions['Debug'].extend( env_debug.split(',') )    
+    simuOptions['Debug'].extend( env_debug.split(',') )
 
 def setOptions(optimized=None, alleleType=None, quiet=None, debug=[]):
     if optimized in [True, False]:
@@ -1119,7 +1146,7 @@ def setOptions(optimized=None, alleleType=None, quiet=None, debug=[]):
         simuOptions['Quiet'] = quiet
     if len(debug) > 0:
         aimuOptions['Debug'].extend(debug)
-    
+
 # short = standard
 if simuOptions['AlleleType'] == 'standard':
     simuOptions['AlleleType'] = 'short'
@@ -1128,11 +1155,12 @@ if simuOptions['Optimized'] not in [True, False]:
 
 def requireRevision(rev):
     if simuRev() <= rev:
-        raise exceptions.SystemError('''This script requires simuPOP revision >= %d, 
+        raise exceptions.SystemError('''This script requires simuPOP revision >= %d,
             please upgrade your installation. ''' % rev)
-     
+
 useTkinter = False
 useWxPython = False
+
 
 if not par_useTkinter:
     try:
@@ -1142,6 +1170,7 @@ if not par_useTkinter:
         useWxPython = False
     else:
         useWxPython = True
+
 
 if par_useTkinter or not useWxPython:
     # Tkinter should almost always exists, but ...
