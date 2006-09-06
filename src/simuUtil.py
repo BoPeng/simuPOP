@@ -1536,7 +1536,7 @@ def LOD_gh(file, loci=[], gh='gh'):
 
 
 
-def ChiSq_test(pop, r, loci=[]):
+def ChiSq_test(pop, loci=[]):
     ''' perform case control test at loci 
 
     Parameters;
@@ -1550,7 +1550,12 @@ def ChiSq_test(pop, r, loci=[]):
 
     Note: this function requires rpy module.
     '''
-    # 
+    # I can not load rpy with simuUtil.py, so here it is
+    try:
+        import rpy
+    except:
+        print "RPy module can not be loaded, association test can not be performed"
+        sys.exit(1)
     if type(pop) == type(''):
         pop = LoadPopulation(pop)
     # at each locus
@@ -1570,7 +1575,8 @@ def ChiSq_test(pop, r, loci=[]):
             contNum.append(0)
         elif len(contNum) > 2:
             raise 'ChiSq: non-SNP markers are not supported.'
-        pvalue.append(r.chisq_test(r.matrix( caseNum+contNum, ncol=2) )['p.value'])
+        pvalue.append(rpy.r.chisq_test(rpy.with_mode(rpy.NO_CONVERSION, 
+            rpy.r.matrix)( caseNum+contNum, ncol=2))['p.value'])
     return pvalue
 
 

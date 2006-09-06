@@ -128,13 +128,6 @@ Please read the comment before each variable for details about them.
 
 import simuOpt, simuUtil
 import os, sys, types, exceptions, os.path, operator, time
-try:
-    import rpy
-    hasRPy = True
-except:
-    print 'Rpy can not be loaded so case control chi-sq test can not be performed'
-    hasRPy = False
-
 #
 # declare all options. getParam will use these information to get parameters
 # from a tk/wxPython-based dialog, command line, config file or user input
@@ -640,11 +633,11 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
                 res['LOD'][sn].extend(LOD_gh(
                     os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'Linkage', 'Aff_%d' % ch), 
                     loci=lociAtChrom(ch, loci), gh=geneHunter))
-        if hasRPy and 'Association' in mappingMethods:
+        if 'Association' in mappingMethods:
             print 'Applying chi-sq association tests to sample %d' % sn
             res['ChiSq'][sn] = ChiSq_test(
                 os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'caseControl.txt'), 
-                rpy.r, loci=loci)
+                loci=loci)
     return res
 
 
