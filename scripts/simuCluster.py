@@ -26,10 +26,12 @@ jobs: a list of
     of the keys have to be 'name'. The job will be saved as
     $name.pbs
  
-  Any command line argument --key=value will be used to subsitute
-  the script as well. An except is -t/--time, which can be either
-  a number of short (4), medium (24), long (48) or extended (96),
-  and the corresponding number will be used.
+  Any command line argument key=value (without leading --), and any 
+  environment variables will be used to subsitute
+  the script as well. Excepts are
+    -t/--time, which can be either a number of short (4), medium (24), 
+        long (48) or extended (96), and the corresponding number will be used. 
+    -q/--queue, is the same as queue=xxx
 
 
 joblist: a string of the form
@@ -134,7 +136,7 @@ def getScript(name, options):
         # a dictionary
         if job['name'] == name:
             s = script
-            for k,v in (job.items() + options.items()):
+            for k,v in (job.items() + options.items() + os.environ.items()):
                 # subsitute in script
                 if True in [x in str(v) for x in [' ', '*', ',', '[', ']']]:
                     if '"' in str(v):
@@ -165,7 +167,7 @@ if __name__ == '__main__':
     proc_jobs = []
     run = False
     #
-    optlist, args = getopt.getopt(sys.argv[1:], 't:l:s:ahrq:', 
+    optlist, args = getopt.gnu_getopt(sys.argv[1:], 't:l:s:ahrq:', 
       ['list=', 'show=', 'time=', 'all', 'run', 'help'])
     for opt in optlist:
         if opt[0] == '-t' or opt[0] == '--time':
@@ -209,8 +211,8 @@ if __name__ == '__main__':
     # submit some jobs
     scan = re.compile('(\w+[^\d]+)(\d+)-(\d+)')
     for j in args:
-        if j[:2] == '--' and '=' in j:
-            (key,val) = j[2:].split('=')
+        if '=' in j:
+            (key,val) = j.split('=')
             options[key] = val
         else:
             try:
