@@ -166,9 +166,10 @@ if __name__ == '__main__':
     simuList = 'simulation.lst'
     proc_jobs = []
     run = False
+    force = False
     #
-    optlist, args = getopt.gnu_getopt(sys.argv[1:], 't:l:s:ahrq:', 
-      ['list=', 'show=', 'time=', 'all', 'run', 'help'])
+    optlist, args = getopt.gnu_getopt(sys.argv[1:], 't:l:s:ahrq:f', 
+      ['list=', 'show=', 'time=', 'all', 'run', 'help', 'force'])
     for opt in optlist:
         if opt[0] == '-t' or opt[0] == '--time':
             try:
@@ -190,6 +191,8 @@ if __name__ == '__main__':
             proc_jobs = 'all'
         elif opt[0] in ['-r', '--run']:
             run = True
+        elif opt[0] in ['-f', '--force']:
+            force = True
         elif opt[0] in ['-h', '--help']:
             print Usage
             sys.exit(0)
@@ -238,7 +241,7 @@ if __name__ == '__main__':
                 print script
                 if '$' in script:
                     print 
-                    print "Warning: symbol $ exists in the script, indicating unsubstituted variables"
+                    print 'Warning: symbol $ exists in the script, indicating unsubstituted variables'
                     print
                     for line in script.split():
                         if '$' in line:
@@ -249,11 +252,24 @@ if __name__ == '__main__':
         # submit the jobs
         for job in proc_jobs:
             if job in all_jobs:
+                script = getScript(job, options)
                 pbs = open(job + '.pbs', 'w')
-                print >> pbs, getScript(job, options)
+                print >> pbs, script
                 pbs.close()
-                print "Submitting job via 'qsub %s.pbs'" % job 
-                os.system('qsub %s.pbs' % job)
+                if '$' in script and not force:
+                    print script
+                    print
+                    print 'Warning: symbol $ exists in the script, indicating unsubstituted variables'
+                    print
+                    for line in script.split():
+                        if '$' in line:
+                            print '>> ', line
+                    print
+                    print 'Please check your script, if there is no problem, please use option -f (--force)'
+                    print 'to submit the job'
+                else:
+                    print "Submitting job using command 'qsub %s.pbs'" % job 
+                    os.system('qsub %s.pbs' % job)
             else:
                 print "Job %s does not exist" % job
 
