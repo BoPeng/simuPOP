@@ -233,17 +233,17 @@ if __name__ == '__main__':
             print ' '.join(filter(lambda x: x in all_jobs, proc_jobs))
         elif len(proc_jobs) == 1:
             if proc_jobs[0] in all_jobs:
-                print "\nList script", proc_jobs[0]
-                script = getScript(proc_jobs[0], options)
+                print "\nList pbs_script", proc_jobs[0]
+                pbs_script = getScript(proc_jobs[0], options)
                 pbs = open(proc_jobs[0] + '.pbs', 'w')
-                print >> pbs, script
+                print >> pbs, pbs_script
                 pbs.close()
-                print script
-                if '$' in script:
+                print pbs_script
+                if '$' in pbs_script:
                     print 
-                    print 'Warning: symbol $ exists in the script, indicating unsubstituted variables'
+                    print 'Warning: symbol $ exists in the pbs_script, indicating unsubstituted variables'
                     print
-                    for line in script.split():
+                    for line in pbs_script.split():
                         if '$' in line:
                             print '>> ', line
             else:
@@ -252,24 +252,24 @@ if __name__ == '__main__':
         # submit the jobs
         for job in proc_jobs:
             if job in all_jobs:
-                script = getScript(job, options)
+                pbs_script = getScript(job, options)
                 pbs = open(job + '.pbs', 'w')
-                print >> pbs, script
+                print >> pbs, pbs_script
                 pbs.close()
-                if '$' in script and not force:
-                    print script
+                if '$' in pbs_script and not force:
+                    print pbs_script
                     print
-                    print 'Warning: symbol $ exists in the script, indicating unsubstituted variables'
+                    print 'Warning: symbol $ exists in the pbs_script, indicating unsubstituted variables'
                     print
-                    for line in script.split():
+                    for line in pbs_script.split():
                         if '$' in line:
                             print '>> ', line
                     print
-                    print 'Please check your script, if there is no problem, please use option -f (--force)'
+                    print 'Please check your pbs_script, if there is no problem, please use option -f (--force)'
                     print 'to submit the job'
                 else:
                     print "Submitting job using command 'qsub %s.pbs'" % job 
-                    os.system('qsub %s.pbs' % job)
+                    #os.system('qsub %s.pbs' % job)
             else:
                 print "Job %s does not exist" % job
 
