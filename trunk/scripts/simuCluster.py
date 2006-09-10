@@ -41,8 +41,8 @@ joblist: a string of the form
 separator: separator to separate joblist, default to ':'
 
 
-Either jobs or joblist should exist.
-
+Either jobs or joblist should exist. Note that if you have to use $ in the
+script, use $$ instead.
 
 
 To use this script:
@@ -137,17 +137,21 @@ def getScript(name, options):
         if job['name'] == name:
             s = script
             for k,v in (job.items() + options.items() + os.environ.items()):
+                # first protect double $ sign.
+                s = re.sub(r'\$\$', r'%%%', s)
                 # subsitute in script
                 if True in [x in str(v) for x in [' ', '*', ',', '[', ']']]:
                     if '"' in str(v):
                         quote = '"'
                     else:
                         quote = "'"
-                    s = re.sub(r'\$%s(\W)' % k, r"%s%s%s\1" % (quote, str(v), quote), s)
+                    s = re.sub(r'\$%s([^a-zA-Z])' % k, r"%s%s%s\1" % (quote, str(v), quote), s)
                     s = re.sub(r'\$\{%s\}' % k, "%s%s%s" % (quote, str(v), quote), s)
                 else:
-                    s = re.sub(r'\$%s(\W)' % k, r"%s\1" % str(v), s)
+                    s = re.sub(r'\$%s([^a-zA-Z])' % k, r"%s\1" % str(v), s)
                     s = re.sub(r'\$\{%s\}' % k, str(v), s)
+                # $$ is replaced with single $
+                s = re.sub(r'%%%', r'$', s)
             return s
 
 
