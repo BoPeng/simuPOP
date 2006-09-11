@@ -147,16 +147,14 @@ options = [
     {'separator': 'Genotype structure:'},    
     {'longarg': 'numChrom=',
      'default': 10,
-     'configName': 'Number of chromosomes',
-     'prompt': 'Number of chromosomes (10):    ',
+     'label': 'Number of chromosomes',
      'description': 'Number of chromosomes.',
      'allowedTypes': [types.IntType],
      'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'numLoci=',
      'default': 20,
-     'configName': 'Number of loci on each chrom',
-     'prompt': 'Number of loci on each chromosome (20):    ',
+     'label': 'Number of loci on each chrom',
      'description': '''Number of loci on each chromosome, current there 
              only equal number of markers on each chromosome is supported.''',
      'allowedTypes': [types.IntType],
@@ -164,8 +162,7 @@ options = [
     },
     {'longarg': 'markerType=',
      'default': 'microsatellite',
-     'configName': 'Marker type',
-     'prompt': 'Marker type (microsatellite):    ',
+     'label': 'Marker type',
      'description': '''Type of markers. Can be microsatellite or SNP.
                 Microsatellite markers will be mutated using a symmetric
                 stepwise model while SNP markers will be mutated using a
@@ -177,8 +174,7 @@ options = [
     },
     {'longarg': 'DSL=',
      'default': [45, 85, 125],
-     'configName': 'DSL after marker (0-indexed)',
-     'prompt': 'Enter a list of 0-indexed disease loci ([45,85,125]):    ',
+     'label': 'DSL after marker (0-indexed)',
      'description': '''A list of loci *after* a marker. For example, 
                 35 means a disease locus after the 16th marker on chromosome 2,
                 (if numChrom=numLoci=20). The number of DSL is important since
@@ -190,8 +186,7 @@ options = [
     },
     {'longarg': 'DSLLoc=',
      'default': [.5, .5, .5],
-     'configName': 'DSL location between markers',
-     'prompt': 'Enter the position of each DSL between two markers ([.01,.5,.75]):    ',
+     'label': 'DSL location between markers',
      'description': '''A list of loci location between two markers.
                 Since all disease loci will be *between* equal spaced markers,
                 the location should be between 0 and 1. A single value is acceptable
@@ -204,41 +199,36 @@ options = [
     {'separator': 'Demographic model:'},
     {'longarg': 'initSize=',
      'default': 10000,
-     'configName': 'Initial population size',
+     'label': 'Initial population size',
      'allowedTypes': [types.IntType, types.LongType],
-     'prompt': 'Initial Population size (10000):    ',
      'description': '''Initial population size. This size will be maintained
                 till the end of burnin stage''',
      'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'endingSize=',
      'default': 200000,
-     'configName': 'Final population size',
-     'prompt': 'Final population size (sum of all subpopulations) (200000):    ',
+     'label': 'Final population size',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Final population size after population expansion.',
      'validate':    simuOpt.valueGT(0)
     }, 
     {'longarg': 'growthModel=',
      'default': 'exponential',
-     'configName': 'Population growth model',
-     'prompt': 'Population growth style, linear or exponential. (exponential):    ',
+     'label': 'Population growth model',
      'description': '''How population is grown from initSize to endingSize.
                 Choose between linear and exponential''',
      'chooseOneOf': ['exponential', 'linear'],
     },
     {'longarg': 'burninGen=',
      'default': 3000,
-     'configName': 'Length of burn-in stage',
+     'label': 'Length of burn-in stage',
      'allowedTypes': [types.IntType],
-     'prompt': 'Length of burn in stage (3000):    ',
      'description': 'Number of generations of the burn in stage.',
      'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'splitGen=',
      'default': 5000,
-     'configName': 'When to split population',
-     'prompt': 'When to split population (5000):    ',
+     'label': 'When to split population',
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''At which generation to split the population. 
                 The population will start to grow after burnin stage but will
@@ -249,18 +239,16 @@ options = [
     },
     {'longarg': 'mixingGen=',
      'default': 8000,
-     'configName': 'When to mix population',
+     'label': 'When to mix population',
      'allowedTypes': [types.IntType, types.LongType],
-     'prompt': 'When to mix population: (8000):    ',
      'description': '''At which generation to start mixing (allow migration.
                 This number should be greater than or equal to split gen.''',
      'validate':    simuOpt.valueGE(0)
     },
     {'longarg': 'endingGen=',
      'default': 10000,
-     'configName': 'Ending generation number',
+     'label': 'Ending generation number',
      'allowedTypes': [types.IntType, types.LongType],
-     'prompt': 'When to stop the simulation (10000):    ',
      'description': '''At which generation to stop the simulation.
                 This is the total generation number.''',
      'validate':    simuOpt.valueGE(0)
@@ -270,16 +258,14 @@ options = [
     {'separator': 'Migration parameters:'},    
     {'longarg': 'numSubPop=',
      'default': 5,
-     'configName': 'Number of subpopulations to split',
+     'label': 'Number of subpopulations to split',
      'allowedTypes': [types.IntType],
-     'prompt': 'Number of subpopulations to split (5):    ',
      'description': 'Number of subpopulations to be split into after burnin stage.',
      'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'migrModel=',
      'default': 'stepping stone',
-     'configName': 'Migration model',
-     'prompt': 'Migration model. (stepping stone):    ',
+     'label': 'Migration model',
      'allowedTypes': [types.StringType],
      'description': '''Migration model. Choose between stepping stone (circular),
                 island and none. ''',
@@ -288,8 +274,7 @@ options = [
     }, 
     {'longarg': 'migrRate=',
      'default': 0.0001,
-     'configName': 'Migration rate',
-     'prompt': 'Migration rate during mixing stage. (0.0001):    ',
+     'label': 'Migration rate',
      'description': '''Migration rate during mixing stage. 
                 A circular stepping stone migration model will be used. ''',
      'allowedTypes': [types.IntType, types.FloatType],
@@ -297,8 +282,7 @@ options = [
     },
     {'longarg': 'alleleDistInSubPop=',
      'default': 'uneven',
-     'configName': 'Allele distribution in subpopulations',
-     'prompt': 'Allele distribution in subpopulations (uneven):    ',
+     'label': 'Allele distribution in subpopulations',
      'description': '''If disease allele frequencies in each subpopulation are
                 not specified, how to distribute disease alleles in subpopulations.
                 If 'even' is chose, number of disease alleles will be distributed
@@ -316,9 +300,8 @@ options = [
     {'separator': 'Disease model:'},
     {'longarg': 'curAlleleFreq=',
      'default': [0.05, 0.05, 0.05],
-     'configName': 'Final allele frequencies',
+     'label': 'Final allele frequencies',
      'allowedTypes': [types.ListType, types.TupleType],
-     'prompt': 'Allele frequency at the ending generation (0.05,0.05,0.05):    ',
      'description': '''Current allele frequencies for each DSL.
                 If a number is given, it is assumed to be the frequency
                 for all DSL.''',
@@ -326,9 +309,8 @@ options = [
     },
     {'longarg': 'minMutAge=',
      'default': 0,
-     'configName': 'Minimum mutant age',
+     'label': 'Minimum mutant age',
      'allowedTypes': [types.IntType, types.LongType],
-     'prompt': 'Minimum mutation age (0)',
      'description': '''Minimum mutation age. Default to 0. Because the population
                 may be split into subpopulations at splitGen, if the mutation age is too
                 short, it may fall in one of the subpopulations. To void this, you can 
@@ -337,9 +319,8 @@ options = [
     },
     {'longarg': 'maxMutAge=',
      'default': 0,
-     'configName': 'Maximum mutant age',
+     'label': 'Maximum mutant age',
      'allowedTypes': [types.IntType, types.LongType],
-     'prompt': 'Maximum mutation age (0)',
      'description': '''Maximum mutant age. Default to 0, means no max and the real
                 maximum mutant age will be endingGen. However, if you do not want mutant to
                 be generated in the burnin stage. You can set maxMutAge to endingGen-burnin.
@@ -348,17 +329,15 @@ options = [
     },
     {'longarg': 'fitness=',
      'default': [1, 1.0001, 1.0002],
-     'configName': 'Fitness of genotype AA,Aa,aa',
+     'label': 'Fitness of genotype AA,Aa,aa',
      'allowedTypes': [types.ListType, types.TupleType],
-     'prompt': 'Fitness of genotype AA,Aa,aa ([1, 1.0001, 1.0002]): ',
      'description': '''Fitness of genotype AA,Aa,aa in the monogenic case, and 
                 [AA Aa aa BB Bb bb ...] in the polygenic case. ''',
      'validate':    simuOpt.valueListOf(simuOpt.valueGE(0.)),
     },
     {'longarg': 'selMultiLocusModel=',
     'default': 'none',
-    'configName': 'Multi-locus selection model',
-    'prompt': 'Multi-locus selection model (additive): ',
+    'label': 'Multi-locus selection model',
     'description': '''Model of overall fitness value given fitness values for each DSL.
                 fitness values are Prod(f_i) for multiplicative model and
                 1-Sum(1-f_i) for additive model. ''',
@@ -370,8 +349,7 @@ options = [
     {'separator': 'Evolutionary parameters:'},
     {'longarg': 'mutaRate=',
      'default': 0.0001,
-     'configName': 'Mutation rate',
-     'prompt': 'Mutation rate at non-DSL markers. (0.0001):    ',
+     'label': 'Mutation rate',
      'allowedTypes': [types.IntType, types.FloatType],
      'description': '''Microsatellite markers are mutated using    
                 symmetric stepwise mutation wile SNP markers are mutaed
@@ -381,9 +359,8 @@ options = [
     },
     {'longarg': 'recRate=',
      'default': [0.0005],
-     'configName': 'Recombination rate',
+     'label': 'Recombination rate',
      'allowedTypes': [types.TupleType, types.ListType],
-     'prompt': 'Recombination rate(s). (0.0005): ',
      'description': '''If a number is given, it is the recombination rate between
                  adjacent markers. If a list is given, it should be the recombination
                  rate between all markers and DSL. For example, if you have two chromosome
@@ -408,9 +385,8 @@ options = [
     },
     {'longarg': 'savePop=',
      'default': [],
-     'configName': 'Save population at generations',
+     'label': 'Save population at generations',
      'allowedTypes': [types.ListType, types.TupleType],
-     'prompt': 'Save populations at generations ([]):',
      'validate': simuOpt.valueListOf(simuOpt.valueGE(0)),
      'description': '''A list of generations at which populations are saved, 
                 default to []. It can be used for intermediate analysis, but simulations can
@@ -420,8 +396,7 @@ options = [
     {'longarg': 'simuName=',
      'default': 'simu',
      'allowedTypes': [types.StringType],
-     'configName': 'Simulation name',
-     'prompt': 'Name of the simulation (simu):    ',
+     'label': 'Simulation name',
      'description': '''Name of simulation, files saved will be 
                     name + '.log': statistics output
                     name + '.cfg': configuration
@@ -430,8 +405,7 @@ options = [
     {'longarg': 'saveFormat=',
      'default': 'txt',
      'allowedTypes': [types.StringType],
-     'configName': 'Format to save population',
-     'prompt': 'Format to save population):    ',
+     'label': 'Format to save population',
      'description': '''Format to save population, can be 
                  text, bin or xml. Note that the binary format, although
                  smallest, may not be portable between different machines.''',    

@@ -125,7 +125,7 @@ def getParamLongArg(p, processedArgs):
 
 def getParamConfigFile(p, processedArgs):
     ''' get param from configuration file    '''
-    if p.has_key('configName'):
+    if p.has_key('longarg'):
         try:         # check -c and --config
             idx = sys.argv[1:].index('-c')
             processedArgs.append(idx+1)
@@ -141,10 +141,11 @@ def getParamConfigFile(p, processedArgs):
                 return None
         # OK
         # read configuration file
-        # deal with () in configName.
-        name = p['configName']
-        name = name.replace('(', r'\(')
-        name = name.replace(')', r'\)')
+        # deal with () in label.
+        if p['longarg'][-1] == '=':
+            name = p['lonarg'][0:-1]
+        else:
+            name = p['lonarg']
         scan = re.compile(name+r'\s*=\s*(.*)')
         try:
             file = open(config)
@@ -157,7 +158,7 @@ def getParamConfigFile(p, processedArgs):
                 else:
                     file.close()
                     try:
-                        return getParamValue(p, value.strip())
+                        return getParamValue(p, value.strip('''"'\n'''))
                     except:
                         return None
             file.close()
@@ -172,20 +173,28 @@ def getParamConfigFile(p, processedArgs):
 
 def getParamUserInput(p):
     ''' get param from user input '''
+    # this option is rarely used, and is kept for backward compatibility
     if p.has_key('prompt'):
-        while True:
-            value = raw_input('\n'+p['prompt']).strip()
-            if value == '':
-                value = None    # will use default value
-                break
-            else:
-                try:
-                    return getParam(value)
-                except:
-                    print "Invalid input.\n"
-                    continue
+        prompt = p['prompt']
+    elif p.has_key('label'):
+        prompt = '%s (%s): ' % (p['label'], str(p['default']))
+    elif p.has_key('longarg'):
+        prompt = '--%s (%s): ' % (p['longarg'], str(p['default']))
+    elif p.has_key('shortarg'):
+        prompt = '-%s (%s): ' % (p['shortarg'], str(p['default']))
     else:
-        value = None
+        raise exceptions.ValueError('Do not know how to prompt for user input (no label, longarg etc)')
+    while True:
+        value = raw_input('\n' + prompt)
+        if value == '':
+            value = None    # will use default value
+            break
+        else:
+            try:
+                return getParam(value)
+            except:
+                print "Invalid input.\n"
+                continue
     if value == None:
         if p.has_key('default'):
             return p['default']
@@ -245,7 +254,7 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=F
         p = options[opt]
         # validate p
         for k in p.keys():
-            if not k in ['arg', 'longarg', 'configName', 'allowedTypes', 'prompt', \
+            if not k in ['arg', 'longarg', 'label', 'allowedTypes', 'prompt',\
                 'jump', 'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', 'chooseFrom',
                 'separator']:
                 raise exceptions.ValueError("Unrecognized option entry " + k )
@@ -263,7 +272,7 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=F
                 val = getParamUserInput(p)
         # should have a valid value now.
         if val == None:
-            raise exceptions.ValueError("Failed to get parameter " + p.setdefault("configName",'') + " " + p.setdefault("longarg",''))
+            raise exceptions.ValueError("Failed to get parameter " + p.setdefault("label",'') + " " + p.setdefault("longarg",''))
         values.append( getParamValue(p, val))
         # now we really short have something not None, unless the default is None
         # if a string is fine
@@ -332,7 +341,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
         p = options[opt]
         # validate p
         for k in p.keys():
-            if not k in ['arg', 'longarg', 'configName', 'allowedTypes', 'prompt', \
+            if not k in ['arg', 'longarg', 'label', 'allowedTypes', 'prompt', \
                 'jump', 'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', \
                 'chooseFrom', 'separator']:
                 raise exceptions.ValueError("Unrecognized option entry " + k )
@@ -455,7 +464,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
     # find out number of items etc
     colParam = 0
     for opt in options:
-        if opt.has_key('configName'):
+        if opt.has_key('label'):
             colParam += 1
         if opt.has_key('chooseFrom'):
             colParam += len( opt['chooseFrom']) -1
@@ -470,12 +479,12 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
     # all entries
     for g in range(len(options)):
         opt = options[g]
-        if not opt.has_key('configName'):
+        if not opt.has_key('label'):
             continue
         # --------- entryWidget ----------------------------------------------
         # use different entry method for different types
         if opt.has_key('chooseOneOf'):    # single choice
-            labelWidgets[g] = tk.Label(root, text=opt['configName'])
+            labelWidgets[g] = tk.Label(root, text=opt['label'])
             labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
                 rowspan = len(opt['chooseOneOf']), sticky=tk.E)
             entryWidgets[g] = tk.Listbox(root, width=40, selectmode=tk.SINGLE, \
@@ -488,7 +497,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
             if values[g] != None:
                 entryWidgets[g].select_set( opt['chooseOneOf'].index(values[g]))
         elif opt.has_key('chooseFrom'):    # multiple choice
-            labelWidgets[g] = tk.Label(root, text=opt['configName'])
+            labelWidgets[g] = tk.Label(root, text=opt['label'])
             labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
                 rowspan = len(opt['chooseFrom']), sticky=tk.E)
             entryWidgets[g] = tk.Listbox(root, width=40, selectmode=tk.EXTENDED, \
@@ -505,7 +514,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
                 else:
                     entryWidgets[g].select_set( opt['chooseFrom'].index( values[g] ))
         else:
-            labelWidgets[g] = tk.Label(root, text=opt['configName'])
+            labelWidgets[g] = tk.Label(root, text=opt['label'])
             labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10, sticky=tk.E)
             entryWidgets[g] = tk.Entry(root, width=40)
             entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10)
@@ -573,7 +582,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
         p = options[opt]
         # validate p
         for k in p.keys():
-            if not k in ['arg', 'longarg', 'configName', 'allowedTypes', 'prompt', \
+            if not k in ['arg', 'longarg', 'label', 'allowedTypes', 'prompt', \
                 'jump', 'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', \
                 'chooseFrom', 'separator']:
                 raise exceptions.ValueError("Unrecognized option entry " + k )
@@ -695,7 +704,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
     # chooseFrom count as three
     colParam = 0
     for opt in options:
-        if opt.has_key('configName') or opt.has_key('separator'):
+        if opt.has_key('label') or opt.has_key('separator'):
             colParam += 1
         if opt.has_key('chooseFrom'):
             colParam += len( opt['chooseFrom']) -2
@@ -709,7 +718,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
     # all entries
     for g in range(len(options)):
         opt = options[g]
-        if not (opt.has_key('configName') or opt.has_key('separator')) :
+        if not (opt.has_key('label') or opt.has_key('separator')) :
             continue
         colIndex = colCount / colParam
         if opt.has_key('separator'):
@@ -721,8 +730,8 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
             gridBox[colIndex].Add(wx.StaticText(parent=dlg, id=-1, label=''), 1, wx.ALIGN_LEFT )
             colCount += 1
             continue
-        else: # configName
-            labelWidgets[g] = wx.StaticText(parent=dlg, id=-1, label=opt['configName'])
+        else: # label
+            labelWidgets[g] = wx.StaticText(parent=dlg, id=-1, label=opt['label'])
             gridBox[colIndex].Add(labelWidgets[g], 0, wx.ALIGN_LEFT )
         # --------- entryWidget ----------------------------------------------
         # use different entry method for different types
@@ -822,11 +831,7 @@ def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArg
             longarg: command line argument, --arg. For exmaple
                 "mu=". c.f. getopt.
 
-            configName: config name in a config file
-
-            prompt: prompt for user input. If this is empty,
-                (and no command line etc), default will be
-                used directly.
+            label: config name in a config file
 
             default: default value if user hit enter for prompt. Default value can not be none
 
@@ -850,10 +855,15 @@ def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArg
         allowed types.
     """
     # check if --noDialog, -h is present
-    # or there is no 'configName' in the options structure
+    # or there is no 'label' in the options structure
+    # for backward compatibility, change 'configName' to 'label'
+    for opt in options:
+        if opt.has_key('configName'):
+            print 'Warning: configName is obsolete, please use "label" instead'
+            opt['label'] = a.pop('configname')
     useDefault = '--useDefault' in sys.argv[1:]
     if noDialog or '--noDialog' in sys.argv[1:] or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
-        or True not in map(lambda x:x.has_key('configName'), options):
+        or True not in map(lambda x:x.has_key('label'), options):
         return termGetParam(options, doc, verbose, useDefault)
     else:
         if useTkinter:
@@ -875,7 +885,7 @@ def usage(options, before=''):
         message += '    ' + before + '\n'
     message += '\n' + sys.argv[0] + ' usage:\n'
     message += '    > ' + sys.argv[0] + ' options\n\n'
-    message += '    Options: (-shortoption --longoption configname: description.)\n'
+    message += '    Options: (-shortoption --longoption: description.)\n'
     message += '        -c xxx --config xxx :\n                Load parameters from file xxx\n'
     message += '        --noDialog :\n                Enter parameter from command line\n'
     message += '        --useDefault :\n                with noDialog, do not prompt for user input, use default values\n'
@@ -892,8 +902,8 @@ def usage(options, before=''):
                 message += '--' + p['longarg'][0:-1] + ' xxx '
             else:
                 message += '--' + p['longarg'] + ' '
-        if p.has_key('configName'):
-            message += '(config file entry: ' + p['configName'] + ')'
+        if p.has_key('label'):
+            message += '(config file entry: ' + p['label'] + ')'
         message += ':\n                '
         if p.has_key('description'):
             message += p['description']
@@ -917,41 +927,48 @@ def saveConfig(opt, file, param):
     except:
         print 'Can not open ', file , ' to write.'
         return
-    # remove separators from opt
     options = []
     for g in opt:
+        # execlude separators from opt
         if not g.has_key('separator'):
             options.append(g)
     if len(options) != len(param):
         raise ValueError("Length of option specification and param should be the same.")
-    f.write("# configuration file for program " + sys.argv[0] + "\n")
-    f.write("# saved at " + time.asctime() + "\n")
-    f.write("#\n# options: shortarg, longarg, description and value\n")
+    print >> f, "# configuration file for program", sys.argv[0]
+    print >> f, "# saved at ", time.asctime()
     for p in range(0, len(options)):
-        if options[p].has_key('configName'):
-            f.write("\n")
+        if options[p].has_key('label'):
+            print >> f
             # write arg and long arg
+            if options[p].has_key('label'):
+                print >> f, "# label:\t%s" % options[p]['label']
             if options[p].has_key('arg'):
                 if options[p]['arg'][-1] == ':':
-                    f.write( "# -" + options[p]['arg'][0:-1]
-                        + "=" + str( param[p] ) + "\n")
+                    print >> f, "# shortarg:\t-%s = %s" % (options[p]['arg'][0:-1], str( param[p] ))
                 else:
-                    f.write( "# -" + options[p]['arg'] + "\n")
-            if options[p].has_key('longarg'):
-                if options[p]['longarg'][-1] == '=':
-                    f.write( "# --" + options[p]['longarg'][0:-1]
-                        + "=" + str( param[p] ) + "\n")
-                else:
-                    f.write( "# --" + options[p]['longarg'] + "\n")
+                    print >> f, "# shortarg:\t-%s" % options[p]['arg']
             # write description
             if options[p].has_key('description'):
                 desc = options[p]['description'].splitlines()
+                print >> f, "# description:"
                 for d in desc:
-                    f.write("# " + d.strip() + "\n")
-            f.write(options[p]['configName'] + ' = ' +    str( param[p] ) + '\n')
+                    print >> f, "#\t", d.strip()
+            if options[p].has_key('longarg'):
+                if options[p]['longarg'][-1] == '=':
+                    arg = options[p]['longarg'][0:-1]
+                else:
+                    arg = options[p]['longarg']
+                # write out option value, try to make it python readable
+                if type(param[p]) == type(''):
+                    if "'" in param[p]:
+                        print >> f, '%s = "%s"' % (options[p]['longarg'][0:-1], param[p])
+                    else:
+                        print >> f, "%s = '%s'" % (options[p]['longarg'][0:-1], param[p])
+                else:
+                    print >> f, "%s = %s" % (options[p]['longarg'][0:-1], str(param[p]))
     f.write("\n\n#The same options can be given by command line (subject to minor changes)\n#    --noDialog ")
     for p in range(0, len(options)):
-        if options[p].has_key('configName') and options[p].has_key('longarg'):
+        if options[p].has_key('label') and options[p].has_key('longarg'):
             if options[p]['longarg'][-1] == '=':
                 if str(param[p]).find(",") >= 0:    # has single quote
                     f.write( " --" + options[p]['longarg'][0:-1]
@@ -977,11 +994,11 @@ def printConfig(opt, param, out=sys.stdout):
     if len(options) != len(param):
         raise ValueError("Length of option specification and param should be the same.")
     for p in range(0, len(options)):
-        if options[p].has_key('configName'):
+        if options[p].has_key('label'):
             if type(param[p]) == types.StringType:
-                print >> out, options[p]['configName'], '\t"'+str(param[p])+'"'
+                print >> out, options[p]['label'], '\t"'+str(param[p])+'"'
             else:
-                print >> out, options[p]['configName'], '\t', str(param[p])
+                print >> out, options[p]['label'], '\t', str(param[p])
 
 
 # define some validataion functions
@@ -1110,11 +1127,11 @@ env_longAllele = os.getenv('SIMUALLELETYPE')
 env_debug = os.getenv('SIMUDEBUG')
 
 [par_optimized] = termGetParam([{'longarg':'optimized', \
-    'configName':'optimized', 'default':''}], False, False)
+    'default':''}], False, False, True)
 [par_quiet] = termGetParam([{'arg':'q','longarg':'quiet', \
-    'default':False}], False, False)
+    'default':False}], False, False, True)
 [par_useTkinter] = termGetParam([{'longarg':'useTkinter', \
-        'default':False }], False, False)
+    'default':False }], False, False, True) 
 
 # remove these parameters from sys.argv
 for arg in ['--optimized', '--quiet', '-q', '--useTkinter']:

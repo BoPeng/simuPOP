@@ -39,18 +39,16 @@ options = [
   {'arg': 'N:',
    'longarg': 'N=',
    'default': 10000,
-   'configName': 'Population size',
+   'label': 'Population size',
    'allowedTypes': [types.IntType, types.LongType],
-   'prompt': 'Population size (10000):  ',
    'description': '''Population size. ''',
    'validate':  simuOpt.valueGT(0)
   },
   {'arg': 'r:',
    'longarg': 'rep=',
    'default': 100,
-   'configName': 'Replicates',
+   'label': 'Replicates',
    'allowedTypes': [types.IntType, types.LongType],
-   'prompt': 'Replicats: (100) ',
    'description': '''Replicates''',
    'validate':  simuOpt.valueGT(0)
   }

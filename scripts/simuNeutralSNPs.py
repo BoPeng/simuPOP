@@ -62,16 +62,14 @@ options = [
     },
     {'longarg': 'numLoci=',
      'default': 200,
-     'configName': 'Number of SNP loci',
-     'prompt': 'Number of SNP loci (200):    ',
+     'label': 'Number of SNP loci',
      'description': 'Number of SNP loci',
      'allowedTypes': [types.IntType, types.LongType],
      'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'lociPos=',
      'default': [],
-     'configName': 'Loci position',
-     'prompt': 'Loci position ([]):    ',
+     'label': 'Loci position',
      'description': '''Loci position on the chromosome. Assumed to be in kb
         the unit is not important.''',
      'allowedTypes': [types.ListType, types.TupleType],
@@ -79,33 +77,29 @@ options = [
     },
     {'longarg': 'initSize=',
      'default': 1000,
-     'configName': 'Initial population size',
+     'label': 'Initial population size',
      'allowedTypes': [types.IntType, types.LongType],
-     'prompt': 'Initial Population size (1000):    ',
      'description': '''Initial population size. This size will be maintained
         till the end of burnin stage''',
      'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'finalSize=',
      'default': 100000,
-     'configName': 'Final population size',
-     'prompt': 'Final population size (sum of all subpopulations) (100000): ',
+     'label': 'Final population size',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Final population size after population expansion.',
      'validate':    simuOpt.valueGT(0)
     }, 
     {'longarg': 'burnin=',
      'default': 1000,
-     'configName': 'Length of burn-in stage',
+     'label': 'Length of burn-in stage',
      'allowedTypes': [types.IntType],
-     'prompt': 'Length of burn in stage (1000):    ',
      'description': 'Number of generations of the burn in stage.',
      'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'noMigrGen=',
      'default': 1500,
-     'configName': 'Length of split-and-grow stage',
-     'prompt': 'Length of split-and-grow stage    (1500):    ',
+     'label': 'Length of split-and-grow stage',
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''Number of generations when migration is zero. This stage
                 is used to build up population structure.''',
@@ -113,9 +107,8 @@ options = [
     },
     {'longarg': 'mixingGen=',
      'default': 50,
-     'configName': 'Length of mixing stage',
+     'label': 'Length of mixing stage',
      'allowedTypes': [types.IntType, types.LongType],
-     'prompt': 'Length of mixing stage (population admixing) (50):    ',
      'description': '''Number of generations when migration is present. This stage
                 will mix individuals from subpopulations using an circular stepping stone
                 migration model.''',
@@ -123,24 +116,21 @@ options = [
     },
     {'longarg': 'growth=',
      'default': 'exponential',
-     'configName': 'Population growth model',
-     'prompt': 'Population growth style, linear or exponential. (exponential):    ',
+     'label': 'Population growth model',
      'description': '''How population is grown from initSize to finalSize.
                 Choose between linear and exponential''',
      'chooseOneOf': ['exponential', 'linear'],
     },
     {'longarg': 'numSubPop=',
      'default': 5,
-     'configName': 'Number of subpopulations to split',
+     'label': 'Number of subpopulations to split',
      'allowedTypes': [types.IntType],
-     'prompt': 'Number of subpopulations to split (5): ',
      'description': 'Number of subpopulations to be split into after burnin stage.',
      'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'migrModel=',
      'default': 'stepping stone',
-     'configName': 'Migration model',
-     'prompt': 'Migration model. (stepping stone):    ',
+     'label': 'Migration model',
      'allowedTypes': [types.StringType],
      'description': '''Migration model. Choose between stepping stone (circular),
                 island and none. ''',
@@ -149,25 +139,22 @@ options = [
     }, 
     {'longarg': 'migrRate=',
      'default': 0.,
-     'configName': 'Migration rate',
-     'prompt': 'Migration rate during mixing stage. (0.) ',
+     'label': 'Migration rate',
      'description': '''Migration rate during mixing stage. ''',
      'allowedTypes': [types.IntType, types.FloatType],
      'validate':    simuOpt.valueBetween(0,1)
     },
     {'longarg': 'mutaRate=',
      'default': 1e-4,
-     'configName': 'Mutation rate',
-     'prompt': 'Mutation rate. (1e-4):    ',
+     'label': 'Mutation rate',
      'allowedTypes': [types.IntType, types.FloatType],
      'description': '''Mutation rate''',
      'validate': simuOpt.valueBetween(0,1)
     },
     {'longarg': 'recRate=',
      'default': [1e-4],
-     'configName': 'Recombination rate',
+     'label': 'Recombination rate',
      'allowedTypes': [types.ListType, types.TupleType],
-     'prompt': 'Recombination rate between adjacent markers. (1e-4):',
      'description': '''Recombination rate between adjacent markers. 
         It can be a number or a list with length numLoci-1''',
      'validate':    simuOpt.valueListOf( simuOpt.valueBetween(0,1))
@@ -175,8 +162,7 @@ options = [
     {'longarg': 'name=',
      'default': 'simu',
      'allowedTypes': [types.StringType],
-     'configName': 'Name of the simulation',
-     'prompt': 'Name of the simulation (simu): ',
+     'label': 'Name of the simulation',
      'description': '''Name of the simulation, configuration and output will be saved to a directory
         with the same name''',
     },
@@ -223,11 +209,11 @@ def getOptions(details = __doc__):
     # --verbose or -v (these is no beautifying of [floats]
     if allParam[-1]:                 # verbose
         for p in range(len(options)):
-            if options[p].has_key('configName'):
+            if options[p].has_key('label'):
                 if type(allParam[p]) == types.StringType:
-                    print options[p]['configName'], ':\t"'+str(allParam[p])+'"'
+                    print options[p]['label'], ':\t"'+str(allParam[p])+'"'
                 else:
-                    print options[p]['configName'], ':\t', str(allParam[p])
+                    print options[p]['label'], ':\t', str(allParam[p])
     # return the rest of the parameters
     return allParam[1:-1]
 

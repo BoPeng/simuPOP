@@ -49,16 +49,14 @@ options = [
     },
     {'longarg': 'numDSL=',
      'default': 1,
-     'configName': 'Number of DSL',
-     'prompt': 'Number of DSL for the disease (1):    ',
+     'label': 'Number of DSL',
      'description': '''Number of disease susecptibility loci for the disease.''',
      'allowedTypes': [types.IntType],
      'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'initSpec=',
      'default': [0.9]+[0.02]*5,
-     'configName': 'Initial allelic spectrum',
-     'prompt': 'Initial allelic spectrum for the disease ([0.9]+[.02]*5):    ',
+     'label': 'Initial allelic spectrum',
      'description': '''Initial allelic spectrum for the disease. It will 
                 be the same for all disease susceptibility loci of the disease.
                 The first element should be the allele frequency of the wild type (allele 1)
@@ -68,8 +66,7 @@ options = [
     },
     {'longarg': 'selModel=',
     'default': ['recessive'],
-    'configName': 'Selection model(s)',
-    'prompt': 'selection model for the disease at a single DSL (recessive): ',
+    'label': 'Selection model(s)',
     'description': '''Given selection coef, for recessive model,
                 the fitness values are [1, 1, 1-s] for genotype AA,Aa,aa (A
                 is the wild type). For additive model, the fitness values are
@@ -79,8 +76,7 @@ options = [
  },
  {'longarg': 'selModelAllDSL=',
     'default': 'additive',
-    'configName': 'Multi-locus selection model',
-    'prompt': 'selection model for the disease (additive): ',
+    'label': 'Multi-locus selection model',
     'description': '''Overall fitness values given fitness values for each DSL,
                 fitness values are Prod(f_i) for multiplicative model and
                 1-Sum(1-f_i) for additive model. You can also choose customized. In this
@@ -93,8 +89,7 @@ options = [
  }, 
  {'longarg': 'selCoef=',
      'default': [0.02],
-     'configName': 'Selection coefficient(s)',
-     'prompt': 'Selection coef for the disease. ([0.02]): ',
+     'label': 'Selection coefficient(s)',
      'description': '''Selection coef (s) for the disease.
                 Fitness values will be [1,1,1-s] for the receissive model and
                 [1,1-s/2,1-s] for the additive model. You can specify
@@ -105,8 +100,7 @@ options = [
     },
     {'longarg': 'mutaModel=',
      'default': 'k-allele',
-     'configName': 'Mutation model',
-     'prompt': 'Mutation model. (k-allele):    ',
+     'label': 'Mutation model',
      'allowedTypes': [types.StringType],
      'description': '''Microsatellite markers are mutated using    
                 symmetric stepwise mutation wile SNP markers are mutaed
@@ -117,8 +111,7 @@ options = [
     },
     {'longarg': 'maxAllele=',
      'default': 255,
-     'configName': 'Max allele at each DSL',
-     'prompt': 'Max allele (255):    ',
+     'label': 'Max allele at each DSL',
      'allowedTypes': [types.IntType],
      'description': '''Maximum allele state at each DSL. For stepwise
                 model, 255 is more than enough. For k-allele model, you may
@@ -130,41 +123,36 @@ options = [
     }, 
     {'longarg': 'mutaRate=',
      'default': [0.0001],
-     'configName': 'Mutation rate(s)',
-     'prompt': 'Mutation rate at non-DSL markers. (0.0001):    ',
+     'label': 'Mutation rate(s)',
      'allowedTypes': [types.ListType, types.TupleType],
      'description': '''Mutation rate for all DSL. Can be different for each DSL.''',
      'validate':    simuOpt.valueListOf( simuOpt.valueBetween(0,1))
     },
     {'longarg': 'initSize=',
      'default': 10000,
-     'configName': 'Initial population size',
+     'label': 'Initial population size',
      'allowedTypes': [types.IntType, types.LongType],
-     'prompt': 'Initial Population size (10000):    ',
      'description': '''Initial population size. This size will be maintained
                 till the end of burnin stage''',
      'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'finalSize=',
      'default': 1000000,
-     'configName': 'Final population size',
-     'prompt': 'Final population size (sum of all subpopulations) (1000000):    ',
+     'label': 'Final population size',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Ending population size (after expansion.',
      'validate':    simuOpt.valueGT(0)
     }, 
     {'longarg': 'burnin=',
      'default': 2000,
-     'configName': 'Length of burn-in stage',
+     'label': 'Length of burn-in stage',
      'allowedTypes': [types.IntType],
-     'prompt': 'Length of burn in stage (2000):    ',
      'description': 'Number of generations of the burn in stage.',
      'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'noMigrGen=',
      'default': 400,
-     'configName': 'Length of no-migration stage',
-     'prompt': 'Length of no-migration stage (build up of population structure (400):    ',
+     'label': 'Length of no-migration stage',
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''Number of generations when migration is zero. This stage
                 is used to build up population structure.''',
@@ -172,9 +160,8 @@ options = [
     },
     {'longarg': 'mixingGen=',
      'default': 100,
-     'configName': 'Length of mixing stage',
+     'label': 'Length of mixing stage',
      'allowedTypes': [types.IntType, types.LongType],
-     'prompt': 'Length of mixing stage (population admixing) (100):    ',
      'description': '''Number of generations when migration is present. This stage
                 will mix individuals from subpopulations using an circular stepstone
                 migration model.''',
@@ -182,24 +169,21 @@ options = [
     },    
     {'longarg': 'growth=',
      'default': 'exponential',
-     'configName': 'Population growth model',
-     'prompt': 'Population growth style, linear or exponential. (exponential):    ',
+     'label': 'Population growth model',
      'description': '''How population is grown from initSize to finalSize.
                 Choose between instant, linear and exponential''',
      'chooseOneOf': ['exponential', 'linear', 'instant'],
     },
     {'longarg': 'numSubPop=',
      'default': 1,
-     'configName': 'Number of split subpops',
+     'label': 'Number of split subpops',
      'allowedTypes': [types.IntType],
-     'prompt': 'Number of subpopulations to split (1):    ',
      'description': 'Number of subpopulations to be split into after burnin stage.',
      'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'migrModel=',
      'default': 'none',
-     'configName': 'Migration model',
-     'prompt': 'Mutation model. (none):    ',
+     'label': 'Migration model',
      'allowedTypes': [types.StringType],
      'description': '''Migration model. Choose between stepstone and island.    
                 A stepstone model will be a circular model.''',
@@ -208,8 +192,7 @@ options = [
     }, 
     {'longarg': 'migrRate=',
      'default': 0.05,
-     'configName': 'Migration rate',
-     'prompt': 'Migration rate during mixing stage. ',
+     'label': 'Migration rate',
      'description': '''Migration rate during mixing stage. 
                 Island or circular stepstone migration model can be used. ''',
      'allowedTypes': [types.FloatType, types.IntType],
@@ -217,23 +200,20 @@ options = [
     },
      {'longarg': 'update=',
      'default': 10,
-     'configName': 'Update figure every # gen',
-     'prompt': 'Update figure every # gen (10):    ',
+     'label': 'Update figure every # gen',
      'allowedTypes': [types.IntType],
      'description': '''Update figure every some generation.''',
      'validate':    simuOpt.valueGE(1)
     },    
     {'longarg': 'dispPlot=',
      'default': True,
-     'configName': 'Display plot?',
-     'prompt': 'display plot? (True): ',
+     'label': 'Display plot?',
      'allowedTypes': [types.BooleanType],
      'description': 'If false, do not disply figure.',
     },
     {'longarg': 'saveAt=',
      'default': [x*100 for x in range(1,11)],
-     'configName': 'Save figure at generation',
-     'prompt': 'Save figure at generation ([x*100 for x in range(1,11)]):    ',
+     'label': 'Save figure at generation',
      'allowedTypes': [types.ListType, types.TupleType],
      'description': '''At these generations, figures will be saved, instead of displayed.
                 Note that:
@@ -268,8 +248,7 @@ options = [
     {'longarg': 'name=',
      'default': 'cdcv',
      'allowedTypes': [types.StringType],
-     'configName': 'Name of the simulation',
-     'prompt': 'Name of the configureation (cdcv):    ',
+     'label': 'Name of the simulation',
      'description': 'Base name for configuration (.cfg) log file (.log) and figures (.eps)'
     },
     {'arg': 'v',
@@ -309,11 +288,11 @@ def getOptions(details=__doc__):
     # --verbose or -v 
     if allParam[-1]:                 # verbose
         for p in range(0, len(options)):
-            if options[p].has_key('configName'):
+            if options[p].has_key('label'):
                 if type(allParam[p]) == types.StringType:
-                    print options[p]['configName'], '\t"'+str(allParam[p])+'"'
+                    print options[p]['label'], '\t"'+str(allParam[p])+'"'
                 else:
-                    print options[p]['configName'], '\t', str(allParam[p])
+                    print options[p]['label'], '\t', str(allParam[p])
     # return the rest of the parameters
     return allParam[1:-1]
 
