@@ -143,9 +143,9 @@ def getParamConfigFile(p, processedArgs):
         # read configuration file
         # deal with () in label.
         if p['longarg'][-1] == '=':
-            name = p['lonarg'][0:-1]
+            name = p['longarg'][0:-1]
         else:
-            name = p['lonarg']
+            name = p['longarg']
         scan = re.compile(name+r'\s*=\s*(.*)')
         try:
             file = open(config)
@@ -173,7 +173,7 @@ def getParamConfigFile(p, processedArgs):
 
 def getParamUserInput(p):
     ''' get param from user input '''
-    # this option is rarely used, and is kept for backward compatibility
+    # prompt
     if p.has_key('prompt'):
         prompt = p['prompt']
     elif p.has_key('label'):
@@ -266,7 +266,7 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=F
         if val == None:
             val = getParamConfigFile(p, processedArgs)
         if val == None:
-            if useDefault and p.has_key('default'):
+            if (useDefault or not p.has_key('label')) and p.has_key('default'):
                 val = p['default']
             else:
                 val = getParamUserInput(p)
