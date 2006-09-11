@@ -9443,15 +9443,11 @@ options = [
 \end_layout
 
 \begin_layout LyX-Code
-  { 'arg':'m', 'longarg':'mu', 'configName'='mutationRate', 
+  { 'arg':'m', 'longarg':'mu', 'label'='mutationRate', 
 \end_layout
 
 \begin_layout LyX-Code
     'default':0.005,
-\end_layout
-
-\begin_layout LyX-Code
-    'prompt':'Please enter mutation rate (default 0.005): ',
 \end_layout
 
 \begin_layout LyX-Code
@@ -9553,50 +9549,12 @@ checks the presence of argument pair
 \begin_layout Itemize
 
 \family typewriter
-configName 
+label
 \family default
-is the entry of the parameter in config file.
- This will also be used as the label of input field in a parameter dialog.
- Blanks are allowed.
- Since you will seldom write a config file manually, using a longer name
- will do no harm.
+ will be used as the label of input field in a parameter dialog, and as
+ the prompt for user input.
 \end_layout
 
-\begin_layout Itemize
-
-\family typewriter
-prompt
-\family default
- is prompted when user input is required.
- This is when
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-
-\family typewriter
---noDialog
-\family default
- is used to avoid parameter dialog
-\end_layout
-
-\begin_layout Itemize
-No command line argument is found, 
-\end_layout
-
-\begin_layout Itemize
-no config file is specified, 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-prompt
-\family default
- is not empty
-\end_layout
-
-\end_deeper
 \begin_layout Itemize
 
 \family typewriter

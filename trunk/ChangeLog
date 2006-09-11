@@ -20,6 +20,8 @@ version 0.7.2 - Currently available as svn snapshot
 		reading from stdin, if they can not be obtained from other methods.
   - NEW: simuCluster.py now subst environmental variables, and stops if
 		there is remaining $ in the script.
+  - CHG: make 'configName' and 'prompt' of simuOpt options obsolete, use
+		'label' instead.
 
 version 0.7.1 - (Rev 378) - Aug 20, 2006
   - BUG: Fix a bug in backward trajectory simulation
