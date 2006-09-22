@@ -218,7 +218,7 @@ namespace simuPOP
 					if(numSP == 1)
 					{
 						varname = toStr(AlleleNum_String) + "[" + toStr(loc) + "]";
-						Py_INCREF(d);
+						//Py_INCREF(d);
 						pop.setVar(varname, d);
 					}
 
@@ -229,7 +229,7 @@ namespace simuPOP
 					if(numSP == 1)
 					{
 						varname = toStr(AlleleFreq_String) + "[" + toStr(loc) + "]";
-						Py_INCREF(d);
+						//Py_INCREF(d);
 						pop.setVar(varname, d);
 					}
 				}								  // post
@@ -273,7 +273,7 @@ namespace simuPOP
 					m_numOfAlleles[sp]);
 				if(numSP == 1)
 				{
-					Py_INCREF(d);
+					//Py_INCREF(d);
 					pop.setVar(NumOfAlleles_String, d);
 				}
 			}
