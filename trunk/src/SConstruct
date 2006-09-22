@@ -9,6 +9,11 @@
 # 
 import os, sys
 
+#NOTE:
+# 
+# scons is for quick recompile, so SIMUPOP_REV and SIMUPOP_VER IS NOT CHANGED
+# so a re-compliaction is not needed after a svn commit.
+#
 dest_dir = r'/home/bpeng/PythonModules/lib64/python2.3/site-packages/'
 share_dir = r'/home/bpeng/PythonModules/share/simuPOP'
 
@@ -16,7 +21,8 @@ env = Environment(ENV={'PATH':os.environ['PATH']})
 env.Append(CPPPATH = ['/usr/include/python2.3/', '/usr/local/python-2.3.3/include/python2.3', '..'])
 
 env.Append(CCFLAGS = ['-Wall', '-pthread', '-fno-strict-aliasing', '-DNDEBUG', '-O3', '-fPIC', \
-    '-DSIMUPOP_REV=%s' % os.popen('svnversion ..').read().strip() ])
+    '-DSIMUPOP_REV=9990', '-DSIMUPOP_VER=9.9.9' ])
+#    '-DSIMUPOP_REV=%s' % os.popen('svnversion ..').read().strip() ])
 
 # for swig 1.3.28 cvs
 SWIG = 'swig -O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
