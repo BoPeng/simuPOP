@@ -282,8 +282,13 @@ def getOptions(details=__doc__):
         sys.exit(0)
     #
     # --name
-    if allParam[-2] != None: 
-        simuOpt.saveConfig(options, allParam[-2]+'.cfg', allParam)
+    if allParam[-2] is None: 
+        print "Name of the simulation is invalid"
+        sys.exit(1)
+    else:
+        if not os.path.isdir(allParam[-2]):
+            os.makedirs(allParam[-2])
+        simuOpt.saveConfig(options, os.path.join(allParam[-2], allParam[-2]+'.cfg'), allParam)
     #
     # --verbose or -v 
     if allParam[-1]:                 # verbose
@@ -318,7 +323,7 @@ def getStats(v, highest):
     global allelesBeforeExpansion
     for d in range(numDSL):
         # overall DSA frequency
-        overallFreq.append( 1 - v.alleleFreq[d][1])
+        overallFreq.append( 1 - v.alleleFreq[d][0])
         if overallFreq[-1] == 0. : # no disease allele
             numAllele.append(0)
             effNumAllele.append(0)
@@ -327,11 +332,11 @@ def getStats(v, highest):
             perc5MostCommon.append(0)
             percAncestralAllele.append(0)
             continue
-        num = list(v.alleleNum[d][2:])
+        num = list(v.alleleNum[d][1:])
         # number of alleles
         numAllele.append(len(num) - num.count(0) )
         # effective number of alleles
-        effNumAllele.append(overallFreq[-1]*overallFreq[-1]/sum( [x*x for x in v.alleleFreq[d][2:] ]))
+        effNumAllele.append(overallFreq[-1]*overallFreq[-1]/sum( [x*x for x in v.alleleFreq[d][1:] ]))
         #effNumAllele.append(1./sum( [x*x for x in pop.dvars().alleleFreq[d][1:] ])-1)
         # count percentage of alleles derived from alleles before expansion
         allNum = sum(num)
@@ -365,7 +370,7 @@ def PlotSpectra(pop, param):
     (numDSL, saveAt, highest, plot, plotLabel, name) = param
     # use global logOutput handle
     # this is less efficient but make sure we can see partial results
-    logOutput = open(name+'.log', "a")
+    logOutput = open(os.path.join(name, name+'.log'), "a")
     logOutput.write("%d\t" % pop.gen())
     for sp in range(pop.numSubPop()):
         # unpack result
@@ -400,7 +405,7 @@ def PlotSpectra(pop, param):
     # plot something:
     if pop.gen() in saveAt:
         print "Saving figure in %s%d.eps (instead of displaying it)" % (name,pop.gen())
-        r.postscript(file='%s%d.eps' % (name, pop.gen()), width=6, height=8 )
+        r.postscript(file=os.path.join(name, '%s%d.eps' % (name, pop.gen())), width=6, height=8 )
     #
     # set no conversion mode to save execution time
     set_default_mode(NO_CONVERSION)
@@ -492,7 +497,7 @@ Percent of 1 (5) most allele among all disease alleles''',
 
 
 def simuCDCV( numDSL, initSpec, selModel,
-        selModelAllDSL, selCoef,    mutaModel, maxAllele, mutaRate, 
+        selModelAllDSL, selCoef, mutaModel, maxAllele, mutaRate, 
         initSize, finalSize, burnin, noMigrGen,
         mixingGen, growth, numSubPop, migrModel, migrRate,
         update, dispPlot, saveAt, savePop, resume,
@@ -563,7 +568,7 @@ def simuCDCV( numDSL, initSpec, selModel,
     #            
     # prepare log file, if not in resume mode
     if resume == '':    # not resume
-        logOutput = open(name+'.log', 'w')
+        logOutput = open(os.path.join(name, name+'.log'), 'w')
         logOutput.write("gen\t")
         for d in range(numDSL):
             logOutput.write( 'ne\tn\tf0\tp1\tp5\tanc\t')
@@ -647,7 +652,7 @@ if __name__ == '__main__':
         resumeAtGen, dryrun, name) = allParam
 
     if maxAllele > 255:
-        simuOpt.setOptions(longAllele=True)
+        simuOpt.setOptions(alleleType='long')
     
     from simuPOP import *
     from simuUtil import *

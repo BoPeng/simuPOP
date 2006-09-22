@@ -18,13 +18,8 @@ script: a script that has field $0, $1, $2, ...
    or $name1, $name2, ...
    ${0} or ${name} can be used to separate variables.
 
-jobs: a list of
-    a list which items will be used to substitute $0, $1, ...
+jobs: line with items that will be used to substitute $0, $1, ...
     The job will be saved as $0.pbs
-  or
-    a dictionary with keys to subsitute $name1, $name2, one
-    of the keys have to be 'name'. The job will be saved as
-    $name.pbs
  
   Any command line argument key=value (without leading --), and any 
   environment variables will be used to subsitute
