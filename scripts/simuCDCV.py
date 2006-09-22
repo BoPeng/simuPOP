@@ -543,14 +543,14 @@ def simuCDCV( numDSL, initSpec, selModel,
     # determine selection
     #
     if selModelAllDSL == 'customized':
-        selection = maSelector( loci=range(numDSL), fitness=selCoef, wildtype=[1] )
+        selection = maSelector( loci=range(numDSL), fitness=selCoef, wildtype=[0] )
     else:
         sel = []
         for d in range(numDSL):
             if selModel[d] == 'recessive':
-                sel.append( maSelector(locus=d, fitness=[1,1,1-selCoef[d]], wildtype=[1]))
+                sel.append( maSelector(locus=d, fitness=[1,1,1-selCoef[d]], wildtype=[0]))
             else: 
-                sel.append( maSelector(locus=d, fitness=[1,1-selCoef[d]/2.,1-selCoef[d]], wildtype=[1]))
+                sel.append( maSelector(locus=d, fitness=[1,1-selCoef[d]/2.,1-selCoef[d]], wildtype=[0]))
         # now, the whole selector
         if selModelAllDSL == 'additive':
             selection = mlSelector( sel, mode=SEL_Additive)
@@ -603,7 +603,7 @@ def simuCDCV( numDSL, initSpec, selModel,
             # count allele frequencies at both loci
             stat(popSize=True, alleleFreq=range(numDSL)),
             # report generation and popsize
-            pyEval(r"'%d\t%d\n' % (gen, popSize)", step=50),
+            pyEval(r"'%d\t%d\t%f\n' % (gen, popSize, alleleFreq[0][0])", step=50),
             #
             # record alleles before expansion, used to count percentage of alleles derived
             # from before expansion.
