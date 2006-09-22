@@ -118,7 +118,9 @@ options = [
                 want to have more than 255 alleles especially when expected 
                 effective allele numbers are big. Note that using large maxAllele
                 to mimic infinite allele model will slow down the program 
-                significantly.''',
+                significantly.
+                NOTE: very large maxAllele will significantly slow down the simulation
+                due to the creation of large array as population variable.''',
      'validate':    simuOpt.valueGT(1),
     }, 
     {'longarg': 'mutaRate=',
@@ -601,7 +603,7 @@ def simuCDCV( numDSL, initSpec, selModel,
         ops=[         
             # report population size, for monitoring purpose only
             # count allele frequencies at both loci
-            stat(popSize=True, alleleFreq=range(numDSL)),
+            stat(popSize=True, alleleFreq=range(numDSL), step=update),
             # report generation and popsize
             pyEval(r"'%d\t%d\t%f\n' % (gen, popSize, alleleFreq[0][0])", step=50),
             #
