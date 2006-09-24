@@ -65,29 +65,29 @@ options = [
      'allowedTypes': [types.ListType, types.TupleType],
     },
     {'longarg': 'selModel=',
-    'default': ['recessive'],
-    'label': 'Selection model(s)',
-    'description': '''Given selection coef, for recessive model,
+     'default': ['recessive'],
+     'label': 'Selection model(s)',
+     'description': '''Given selection coef, for recessive model,
                 the fitness values are [1, 1, 1-s] for genotype AA,Aa,aa (A
                 is the wild type). For additive model, the fitness values are
                 [1,1-s/2,1-s]. You can also specify a list of models for each DSL.''' ,
-    'allowedTypes': [types.ListType, types.TupleType],
-    'validate': simuOpt.valueListOf( simuOpt.valueOneOf(['recessive','additive'])),
- },
- {'longarg': 'selModelAllDSL=',
-    'default': 'additive',
-    'label': 'Multi-locus selection model',
-    'description': '''Overall fitness values given fitness values for each DSL,
+     'allowedTypes': [types.ListType, types.TupleType],
+     'validate': simuOpt.valueListOf( simuOpt.valueOneOf(['recessive','additive'])),
+    },
+    {'longarg': 'selModelAllDSL=',
+     'default': 'additive',
+     'label': 'Multi-locus selection model',
+     'description': '''Overall fitness values given fitness values for each DSL,
                 fitness values are Prod(f_i) for multiplicative model and
                 1-Sum(1-f_i) for additive model. You can also choose customized. In this
                 case, you will have to provide your own fitness table in selCoef.
                 For example, for a 2-locus model, you need to provide 
                     [w11,w12,w13,w21,w22,w23,w31,w32,w33] 
                 where, for example, w21 is the fitness value for genotype AaBB.''',
-    'allowedTypes': [types.StringType],
-    'chooseOneOf': [ 'additive', 'multiplicative', 'customized']
- }, 
- {'longarg': 'selCoef=',
+     'allowedTypes': [types.StringType],
+     'chooseOneOf': [ 'additive', 'multiplicative', 'customized']
+    }, 
+    {'longarg': 'selCoef=',
      'default': [0.02],
      'label': 'Selection coefficient(s)',
      'description': '''Selection coef (s) for the disease.
@@ -498,7 +498,7 @@ Percent of 1 (5) most allele among all disease alleles''',
     return True
 
 
-def simuCDCV( numDSL, initSpec, selModel,
+def simuCDCV(numDSL, initSpec, selModel,
         selModelAllDSL, selCoef, mutaModel, maxAllele, mutaRate, 
         initSize, finalSize, burnin, noMigrGen,
         mixingGen, growth, numSubPop, migrModel, migrRate,
@@ -550,14 +550,14 @@ def simuCDCV( numDSL, initSpec, selModel,
         sel = []
         for d in range(numDSL):
             if selModel[d] == 'recessive':
-                sel.append( maSelector(locus=d, fitness=[1,1,1-selCoef[d]], wildtype=[0]))
+                sel.append(maSelector(locus=d, fitness=[1,1,1-selCoef[d]], wildtype=[0]))
             else: 
-                sel.append( maSelector(locus=d, fitness=[1,1-selCoef[d]/2.,1-selCoef[d]], wildtype=[0]))
+                sel.append(maSelector(locus=d, fitness=[1,1-selCoef[d]/2.,1-selCoef[d]], wildtype=[0]))
         # now, the whole selector
         if selModelAllDSL == 'additive':
-            selection = mlSelector( sel, mode=SEL_Additive)
+            selection = mlSelector(sel, mode=SEL_Additive)
         elif selModelAllDSL == 'multiplicative':
-            selection = mlSelector( sel, mode=SEL_Multiplicative)
+            selection = mlSelector(sel, mode=SEL_Multiplicative)
     # migration
     if numSubPop == 1 or migrModel == 'none':
         # no migration
@@ -659,14 +659,17 @@ if __name__ == '__main__':
     from simuPOP import *
     from simuUtil import *
 
-    try:
-        from simuRPy import *
-        r.library('lattice')
-    except:
-        print "RPy module not found. Can not view spectrum history."
-        hasRPy = False
+    if dispPlot:
+        try:
+            from simuRPy import *
+            r.library('lattice')
+        except:
+            print "RPy module not found. Can not view spectrum history."
+            hasRPy = False
+        else:
+            hasRPy = True
     else:
-        hasRPy = True
+        hasRPy = False
         
     # verify parameters, basically, all parameters will be a vector
     # for each DSL. Single values will be copied.
@@ -710,12 +713,13 @@ if __name__ == '__main__':
     #
     #define a function, copied from R homepage figure script
     # this will be used to draw labels of the R-based figures
-    r('''ltitle= function(x,backcolor="#e8c9c1",forecolor="darkred",cex=2,ypos=0.4){
-        plot(x=c(-1,1),y=c(0,1),xlim=c(0,1),ylim=c(0,1),type="n",axes=FALSE)
-        polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col=backcolor,border=NA)
-        text(x=0,y=ypos,pos=4,cex=cex,labels=x,col=forecolor)}''')
+    if hasRPy:
+        r('''ltitle= function(x,backcolor="#e8c9c1",forecolor="darkred",cex=2,ypos=0.4){
+            plot(x=c(-1,1),y=c(0,1),xlim=c(0,1),ylim=c(0,1),type="n",axes=FALSE)
+            polygon(x=c(-2,-2,2,2),y=c(-2,2,2,-2),col=backcolor,border=NA)
+            text(x=0,y=ypos,pos=4,cex=cex,labels=x,col=forecolor)}''')
     # run simulation
-    simuCDCV( numDSL, initSpec,
+    simuCDCV(numDSL, initSpec,
         selModel, selModelAllDSL, selCoef, 
         mutaModel, maxAllele, mutaRate, 
         initSize, finalSize, burnin, noMigrGen,
