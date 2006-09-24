@@ -166,9 +166,11 @@ if __name__ == '__main__':
     proc_jobs = []
     run = False
     force = False
+    # default command to run the job, can be, for example sh
+    command = 'qsub'
     #
-    optlist, args = getopt.gnu_getopt(sys.argv[1:], 't:l:s:ahrq:f', 
-      ['list=', 'show=', 'time=', 'all', 'run', 'help', 'force'])
+    optlist, args = getopt.gnu_getopt(sys.argv[1:], 't:l:s:ahrq:fc:', 
+      ['list=', 'show=', 'time=', 'all', 'run', 'help', 'force', 'command'])
     for opt in optlist:
         if opt[0] == '-t' or opt[0] == '--time':
             try:
@@ -195,6 +197,8 @@ if __name__ == '__main__':
         elif opt[0] in ['-h', '--help']:
             print Usage
             sys.exit(0)
+        elif opt[0] in ['-c', '--command']:
+            command = opt[1]
     #
     #
     if not os.path.isfile(simuList):
@@ -226,49 +230,29 @@ if __name__ == '__main__':
             except:
                 if j not in proc_jobs and j in all_jobs:
                     proc_jobs.append(j)
-    #
-    if not run:
-        if len(proc_jobs) > 1:
-            print ' '.join(filter(lambda x: x in all_jobs, proc_jobs))
-        elif len(proc_jobs) == 1:
-            if proc_jobs[0] in all_jobs:
-                print "\nList script", proc_jobs[0]
-                pbs_script = getScript(proc_jobs[0], options)
-                pbs = open(proc_jobs[0] + '.pbs', 'w')
-                print >> pbs, pbs_script
-                pbs.close()
+    # create .pbs scripts, run them if -r
+    print "Creating .pbs files for job ", ' '.join(proc_jobs)
+    for job in proc_jobs:
+        if job in all_jobs:
+            pbs_script = getScript(job, options)
+            pbs = open(job + '.pbs', 'w')
+            print >> pbs, pbs_script
+            pbs.close()
+            if '$' in pbs_script and not force:
                 print pbs_script
-                if '$' in pbs_script:
-                    print 
-                    print 'Warning: symbol $ exists in the script, indicating unsubstituted variables'
-                    print
-                    for line in pbs_script.split():
-                        if '$' in line:
-                            print '>> ', line
-            else:
-                print "\nJob %s does not exist. " % proc_jobs[0]
-    else:
-        # submit the jobs
-        for job in proc_jobs:
-            if job in all_jobs:
-                pbs_script = getScript(job, options)
-                pbs = open(job + '.pbs', 'w')
-                print >> pbs, pbs_script
-                pbs.close()
-                if '$' in pbs_script and not force:
-                    print pbs_script
-                    print
-                    print 'Warning: symbol $ exists in the script, indicating unsubstituted variables'
-                    print
-                    for line in pbs_script.split():
-                        if '$' in line:
-                            print '>> ', line
-                    print
-                    print 'Please check your pbs_script, if there is no problem, please use option -f (--force)'
-                    print 'to submit the job'
-                else:
-                    print "Submitting job using command 'qsub %s.pbs'" % job 
-                    os.system('qsub %s.pbs' % job)
-            else:
-                print "Job %s does not exist" % job
+                print
+                print 'Warning: symbol $ exists in the script, indicating unsubstituted variables'
+                print
+                for line in pbs_script.split():
+                    if '$' in line:
+                        print '>> ', line
+                print
+                print 'Please check your pbs_script, if there is no problem, please use option -f (--force)'
+                print 'to submit the job'
+                sys.exit(1)
+            if run:
+                print "Submitting job using command 'qsub %s.pbs'" % job 
+                os.system('%s %s.pbs' % (command, job))
+        else:
+            print "Job %s does not exist" % job
 

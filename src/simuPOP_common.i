@@ -117,22 +117,17 @@ extern "C"
 %include "../config.h"
 %include "simupop_cfg.h"
 
-// vectors. Since we are not using them
-// in python, the names are ignored.
-
 namespace std
 {
     // used in invidiaul.h
     %template()            pair<UINT, UINT>;
     // used in populaiton.h
     %template()            pair<UINT, ULONG>;
-    %template(vectora)         vector<Allele>;
+    %template()            vector<Allele>;
 
-#ifdef LONGALLELE
-#define vectoru vectora
-#else
-    %template(vectoru)         vector<UINT>;
-#endif
+//#ifndef LONGALLELE
+    %template()         vector<UINT>;
+//#endif
 
     %template()         vector<int>;
     %template()         vector<LONG>;

@@ -117,7 +117,7 @@ for mod in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
         env.Command('%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
     env.Command(['simuPOP_%s_wrap.cpp'%mod, 'simuPOP_%s.py'%mod], 'simuPOP_%s.i'%mod, 
         ['%s %s -o $TARGET $SOURCE'%(SWIG, ' '.join(DEF[mod]))])
-    env.Depends('simuPOP_%s_wrap.cpp'%mod, ['simuPOP_common.i', 'simuPOP_doc.i', 'simuPOP_%s.i'%mod] + \
+    env.Depends('simuPOP_%s_wrap.cpp'%mod, ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i', 'simuPOP_%s.i'%mod] + \
         ['%s.h' % x for x in src])
     target_mod[mod] = env_mod[mod].SharedLibrary(
         target = mod,
