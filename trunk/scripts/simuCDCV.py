@@ -627,8 +627,6 @@ def simuCDCV(numDSL, initSpec, selModel,
             migration, 
             # visualizer
             pyOperator(func=PlotSpectra, param=(numDSL, saveAt, 50, dispPlot, plotLabel, name), step=update ),
-            # pause when needed
-            #pause(stopOnKeyStroke=True),
             # monitor execution time
             ticToc(step=100),
             ## pause at any user key input (for presentation purpose)

@@ -226,28 +226,8 @@ namespace simuPOP
 				m_isActive = true;
 			}
 
-			void apply(population& pop)
-			{
-				UINT numSP = pop.numSubPop();
-				ULONG popSize = pop.popSize();
-
-				pop.setIntVar(numSubPop_String, numSP);
-				pop.setIntVar(popSize_String, popSize);
-
-				if( !m_isActive)
-					return;
-
-				// type mismatch, can not use subPopSizes() directly.
-				vectori spSize(numSP);
-				for(size_t sp=0; sp < numSP; ++sp)
-					spSize[sp] = pop.subPopSize(sp);
-
-				pop.setIntVectorVar(subPopSize_String, spSize );
-
-				for( size_t sp=0; sp < numSP; ++sp)
-					pop.setIntVar(subPopVar_String(sp, popSize_String), spSize[sp]);
-			}
-
+			bool apply(population& pop);
+		
 		private:
 			bool m_isActive;
 	};
@@ -312,7 +292,7 @@ namespace simuPOP
 				return m_numOfFemale[ subPop ];
 			}
 
-			void apply(population& pop);
+			bool apply(population& pop);
 
 		private:
 			/// whether or not to apply number of male/female
@@ -381,7 +361,7 @@ namespace simuPOP
 				return m_numOfUnaffected[ subPop ];
 			}
 
-			void apply(population& pop);
+			bool apply(population& pop);
 
 		private:
 			/// record the result.
@@ -538,7 +518,7 @@ namespace simuPOP
 				return al;
 			}
 
-			void apply(population& pop);
+			bool apply(population& pop);
 
 		private:
 
@@ -575,8 +555,9 @@ namespace simuPOP
 			}
 
 			// do nothing. m_calc.spply will be called by stat.
-			void apply(population& pop)
+			bool apply(population& pop)
 			{
+                return true;
 			}
 
 		private:
@@ -694,7 +675,7 @@ namespace simuPOP
 				return allele < hf.size() ? hf[allele] : 0;
 			}
 
-			void apply(population& pop);
+			bool apply(population& pop);
 
 		private:
 
@@ -738,7 +719,7 @@ namespace simuPOP
 					m_alleleFreq.addLocus( expHetero[i]);
 			}
 
-			void apply(population& pop);
+			bool apply(population& pop);
 
 		private:
 
@@ -769,7 +750,7 @@ namespace simuPOP
 			{
 			}
 
-			void apply(population& pop);
+			bool apply(population& pop);
 
 		private:
 			/// which genotypes
@@ -863,7 +844,7 @@ namespace simuPOP
 				return m_haploFreq[idx + subPop*m_haplotypes.size() ];
 			}
 
-			void apply(population& pop);
+			bool apply(population& pop);
 
 		private:
 			/// which haplotypes
@@ -916,7 +897,7 @@ namespace simuPOP
 			}
 
 			// calculate, right now,  do not tempt to save values
-			void apply(population& pop);
+			bool apply(population& pop);
 
 		private:
 
@@ -993,7 +974,7 @@ namespace simuPOP
 				return m_Fit[loc];
 			}
 
-			void apply(population& pop);
+			bool apply(population& pop);
 
 		private:
 
@@ -1085,7 +1066,7 @@ namespace simuPOP
 			/// for group i and locus j otherwise
 			double groupRelatedness(population& pop, int i, int j, int method);
 
-			void apply(population& pop);
+			bool apply(population& pop);
 
 		private:
 
@@ -1110,6 +1091,7 @@ namespace simuPOP
 			// save result
 			matrix m_relQueller, m_relLynch, m_relIR, m_relD2, m_relRel;
 	};
+
 
 	class stat: public stator
 	{
@@ -1241,21 +1223,7 @@ namespace simuPOP
 			/// count various statistics.
 			/// use m_alleles etc to save (potentially) time to
 			/// resize all these variables.
-			virtual bool apply(population& pop)
-			{
-				m_popSize.apply(pop);
-				m_numOfMale.apply(pop);
-				m_numOfAffected.apply(pop);
-				m_alleleFreq.apply(pop);
-				m_heteroFreq.apply(pop);
-				m_expHetero.apply(pop);
-				m_genoFreq.apply(pop);
-				m_haploFreq.apply(pop);
-				m_LD.apply(pop);
-				m_Fst.apply(pop);
-				m_relatedness.apply(pop);
-				return true;
-			}
+			virtual bool apply(population& pop);
 
 			virtual string __repr__()
 			{

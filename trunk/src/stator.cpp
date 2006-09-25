@@ -33,8 +33,6 @@ namespace simuPOP
 			if( popObj == NULL)
 				throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
 
-			// I am not quite sure this is necessary
-			// Py_INCREF(popObj);
 			// set dictionary variable pop to this object
 			pop.setVar("pop", popObj);
 		}
@@ -61,10 +59,51 @@ namespace simuPOP
 		return key + "'}";
 	}
 
-	void  statNumOfMale::apply(population& pop)
+
+    bool stat::apply(population& pop)
+    {
+        return (m_popSize.apply(pop) &&
+		    m_numOfMale.apply(pop) &&
+			m_numOfAffected.apply(pop) &&
+			m_alleleFreq.apply(pop) &&
+			m_heteroFreq.apply(pop) &&
+			m_expHetero.apply(pop) &&
+			m_genoFreq.apply(pop) &&
+			m_haploFreq.apply(pop) &&
+			m_LD.apply(pop) &&
+			m_Fst.apply(pop) &&
+			m_relatedness.apply(pop));
+    }
+
+
+    bool statPopSize::apply(population& pop)
+    {	
+        UINT numSP = pop.numSubPop();
+		ULONG popSize = pop.popSize();
+
+		pop.setIntVar(numSubPop_String, numSP);
+		pop.setIntVar(popSize_String, popSize);
+        
+        if( !m_isActive)
+			return true;
+
+		// type mismatch, can not use subPopSizes() directly.
+		vectori spSize(numSP);
+		for(size_t sp=0; sp < numSP; ++sp)
+			spSize[sp] = pop.subPopSize(sp);
+
+		pop.setIntVectorVar(subPopSize_String, spSize);
+
+		for( size_t sp=0; sp < numSP; ++sp)
+	    		pop.setIntVar(subPopVar_String(sp, popSize_String), spSize[sp]);
+        return true;
+    }
+    
+
+	bool statNumOfMale::apply(population& pop)
 	{
 		if(m_numOfMale.empty())
-			return;
+			return true;
 
 		UINT numSP = pop.numSubPop();
 		m_numOfMale.resize(numSP+1);
@@ -95,12 +134,13 @@ namespace simuPOP
 		pop.setIntVar( numOfFemale_String, pop.popSize() - numOfMale);
 		m_numOfMale[numSP] = numOfMale;
 		m_numOfFemale[numSP] = pop.popSize() - numOfMale;
+        return true;
 	}
 
-	void statNumOfAffected::apply(population& pop)
+	bool statNumOfAffected::apply(population& pop)
 	{
 		if( m_numOfAffected.empty() )
-			return;
+			return true;
 
 		ULONG numOfAffected=0;
 		UINT numSP = pop.numSubPop();
@@ -130,12 +170,13 @@ namespace simuPOP
 		pop.setDoubleVar( propOfUnaffected_String, (double)(pop.popSize() - numOfAffected)/pop.popSize());
 		m_numOfAffected[numSP] = numOfAffected;
 		m_numOfUnaffected[numSP] = pop.popSize() - numOfAffected;
+        return true;
 	}
 
-	void statAlleleFreq::apply(population& pop)
+	bool statAlleleFreq::apply(population& pop)
 	{
 		if( m_atLoci.empty())
-			return;
+			return true;
 
 		pop.removeVar(NumOfAlleles_String);
 		pop.removeVar(AlleleNum_String);
@@ -218,6 +259,7 @@ namespace simuPOP
 					if(numSP == 1)
 					{
 						varname = toStr(AlleleNum_String) + "[" + toStr(loc) + "]";
+                        Py_INCREF(d);
 						pop.setVar(varname, d);
 					}
 
@@ -228,6 +270,7 @@ namespace simuPOP
 					if(numSP == 1)
 					{
 						varname = toStr(AlleleFreq_String) + "[" + toStr(loc) + "]";
+                        Py_INCREF(d);
 						pop.setVar(varname, d);
 					}
 				}								  // post
@@ -271,7 +314,7 @@ namespace simuPOP
 					m_numOfAlleles[sp]);
 				if(numSP == 1)
 				{
-					//Py_INCREF(d);
+                    Py_INCREF(d);
 					pop.setVar(NumOfAlleles_String, d);
 				}
 			}
@@ -280,12 +323,13 @@ namespace simuPOP
 				pop.setIntVectorVar(NumOfAlleles_String, m_numOfAlleles.back());
 			}
 		}
+        return true;
 	}
 
-	void statHeteroFreq::apply(population& pop)
+	bool statHeteroFreq::apply(population& pop)
 	{
 		if( m_atLoci.empty())
-			return;
+			return true;
 
 		pop.removeVar(HeteroNum_String);
 		pop.removeVar(HeteroFreq_String);
@@ -465,12 +509,13 @@ namespace simuPOP
 			pop.setIntVectorVar(HomoNum_String, m_homoNum[numSP]);
 			pop.setDoubleVectorVar(HomoFreq_String, m_homoFreq[numSP]);
 		}
+        return true;
 	}
 
-	void statExpHetero::apply(population& pop)
+	bool statExpHetero::apply(population& pop)
 	{
 		if( m_atLoci.empty())
-			return;
+			return true;
 
 		pop.removeVar(ExpHetero_String);
 
@@ -519,12 +564,13 @@ namespace simuPOP
 				m_expHetero[sp]);
 		pop.setDoubleVectorVar(ExpHetero_String,
 			m_expHetero[numSP]);
+        return true;
 	}
 
-	void  statGenoFreq::apply(population& pop)
+	bool statGenoFreq::apply(population& pop)
 	{
 		if( m_atLoci.empty())
-			return;
+			return true;
 
 		pop.removeVar(GenotypeNum_String);
 		pop.removeVar(GenotypeFreq_String);
@@ -636,12 +682,13 @@ namespace simuPOP
 				pop.setIntDictVar( varname, sum[a] );
 			}
 		}
+        return true;
 	}
 
-	void statHaploFreq::apply(population& pop)
+	bool statHaploFreq::apply(population& pop)
 	{
 		if( m_haplotypes.empty())
-			return;
+			return true;
 
 		pop.removeVar(HaplotypeNum_String);
 		pop.removeVar(HaplotypeFreq_String);
@@ -746,13 +793,14 @@ namespace simuPOP
 				}
 			}
 		}
+        return true;
 	}
 
 	// calculate, right now,  do not tempt to save values
-	void statLD::apply(population& pop)
+	bool statLD::apply(population& pop)
 	{
 		if( m_LD.empty())
-			return;
+			return true;
 
 		pop.removeVar(LD_String);
 		pop.removeVar(LDPRIME_String);
@@ -1018,12 +1066,13 @@ namespace simuPOP
 				}								  // length 2
 			}
 		}										  // for all LD
+        return true;
 	}
 
-	void statFst::apply(population& pop)
+	bool statFst::apply(population& pop)
 	{
 		if( m_atLoci.empty())
-			return;
+			return true;
 
 		pop.removeVar(Fst_String);
 		pop.removeVar(Fis_String);
@@ -1131,6 +1180,7 @@ namespace simuPOP
 		pop.setDoubleVar(AvgFst_String, m_avgFst);
 		pop.setDoubleVar(AvgFit_String, m_avgFit);
 		pop.setDoubleVar(AvgFis_String, m_avgFis);
+        return true;
 	}
 
 	// relatedness between individuals
@@ -1425,10 +1475,10 @@ namespace simuPOP
 		return 0;
 	}
 
-	void statRelatedness::apply(population& pop)
+	bool statRelatedness::apply(population& pop)
 	{
 		if(m_groups.empty())
-			return;
+			return true;
 
 		pop.removeVar(Rel_Queller_String);
 		pop.removeVar(Rel_Lynch_String);
@@ -1527,6 +1577,7 @@ namespace simuPOP
 					break;
 			}
 		}										  // for all method
+        return true;
 	}
 
 }

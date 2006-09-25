@@ -947,7 +947,6 @@ namespace simuPOP
 			PyList_Append(obj, item);
 			Py_XDECREF(item);
 		}
-		Py_INCREF(obj);
 		return setVar(name, obj);
 	}
 
@@ -963,7 +962,6 @@ namespace simuPOP
 			PyList_Append(obj, item);
 			Py_XDECREF(item);
 		}
-		Py_INCREF(obj);
 		return setVar(name, obj);
 	}
 
@@ -977,7 +975,6 @@ namespace simuPOP
 				v=PyFloat_FromDouble(i->second));
 			Py_XDECREF(v);
 		}
-		Py_INCREF(obj);
 		return setVar(name, obj);
 	}
 
@@ -993,7 +990,6 @@ namespace simuPOP
 			Py_XDECREF(u);
 			Py_XDECREF(v);
 		}
-		Py_INCREF(obj);
 		return setVar(name, obj);
 	}
 
@@ -1392,17 +1388,23 @@ namespace simuPOP
 		DBG_ASSERT( mainVars().dict() != NULL && m_locals != NULL,
 			ValueError, "Can not evalulate. Dictionary is empty!");
 
+		PyObject * res=NULL;
 		if( m_stmts != NULL)
 		{
-			if( PyEval_EvalCode((PyCodeObject*) m_stmts,
-				mainVars().dict(), m_locals ) == NULL)
+			res = PyEval_EvalCode((PyCodeObject*) m_stmts,
+				mainVars().dict(), m_locals );
+			if(res == NULL)
 			{
 				PyErr_Print();
 				throw SystemError("Evalulation of statements failed");
 			}
+			else
+			{
+				Py_DECREF(res);
+				res = NULL;
+			}
 		}
 
-		PyObject * res=NULL;
 		if( m_expr != NULL)
 		{
 			res = PyEval_EvalCode((PyCodeObject*) m_expr,
