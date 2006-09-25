@@ -32,7 +32,7 @@ class TestPyOperator(unittest.TestCase):
     InitByFreq(self.pop, [.2, .3, .5])
     simu = simulator(self.pop, randomMating())
     simu.evolve( ops=[pyOperator(self.myFunc)], 
-      end=2)
+      end=20)
     
   def testCopyClone(self):
     'Testing copy of python operator'

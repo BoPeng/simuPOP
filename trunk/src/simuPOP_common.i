@@ -536,10 +536,9 @@ def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False,
         ln = []
         for i in range(0, len(lociNames)):
             ln.extend( lociNames[i])
-    _swig_setattr(self, population, 'this', 
+    cppModule.population_swiginit(self,
         cppModule.new_population(size, ploidy, loci, sexChrom, ld, subPop, 
             ancestralDepth, alleleNames, ln, maxAllele, infoFields))
-    _swig_setattr(self, population, 'thisown', 1)
 
 new_population.__doc__ = population.__init__.__doc__
 del population.__init__
@@ -563,9 +562,8 @@ def new_dumper(self, chrom=[], subPop=[], indRange=[], *args, **kwargs):
         ir = []
         for i in indRange:
             ir.extend(i)
-    _swig_setattr(self, dumper, 'this', 
+    cppModule.dumper_swiginit(self,
         cppModule.new_dumper(chrom=ch, subPop=sp, indRange=ir, *args, **kwargs))
-    _swig_setattr(self, dumper, 'thisown', 1)
  
 new_dumper.__doc__ = dumper.__init__.__doc__
 del dumper.__init__
@@ -591,10 +589,9 @@ def new_controlledMating(self, matingScheme, freqFunc, locus=-1, loci=[],
         al = alleles
     else:
         raise exceptions.TypeError('Please specify allele or alleles')
-    _swig_setattr(self, controlledMating, 'this', 
+    cppModule.controlledMating_swiginit(self, 
         cppModule.new_controlledMating(matingScheme=matingScheme, 
             loci=loc, alleles=al, freqFunc=freqFunc, *args, **kwargs))
-    _swig_setattr(self, controlledMating, 'thisown', 1)
  
 new_controlledMating.__doc__ = controlledMating.__init__.__doc__
 del controlledMating.__init__
@@ -619,10 +616,9 @@ def new_controlledBinomialSelection(self, freqFunc, locus=-1, loci=[],
         al = alleles
     else:
         raise exceptions.TypeError('Please specify allele or alleles')
-    _swig_setattr(self, controlledBinomialSelection, 'this', 
+    cppModule.controlledBinomialSelection_swiginit(self,
         cppModule.new_controlledBinomialSelection( loci=loc, alleles=al,
         freqFunc=freqFunc, *args, **kwargs))
-    _swig_setattr(self, controlledBinomialSelection, 'thisown', 1)
  
 new_controlledBinomialSelection.__doc__ = controlledBinomialSelection.__init__.__doc__
 del controlledBinomialSelection.__init__
@@ -647,10 +643,9 @@ def new_controlledRandomMating(self, freqFunc, locus=-1, loci=[],
         al = alleles
     else:
         raise exceptions.TypeError('Please specify allele or alleles')
-    _swig_setattr(self, controlledRandomMating, 'this', 
+    cppModule.controlledRandomMating_swiginit(self,
         cppModule.new_controlledRandomMating( loci=loc, alleles=al, 
         freqFunc=freqFunc, *args, **kwargs))
-    _swig_setattr(self, controlledRandomMating, 'thisown', 1)
  
 new_controlledRandomMating.__doc__ = controlledRandomMating.__init__.__doc__
 del controlledRandomMating.__init__
@@ -673,9 +668,8 @@ def new_kamMutator(self, rate=[], *args, **kwargs):
         r = [rate]
     else:
         r = rate
-    _swig_setattr(self, kamMutator, 'this', 
+    cppModule.kamMutator_swiginit(self,
         cppModule.new_kamMutator(rate=r, *args, **kwargs))
-    _swig_setattr(self, kamMutator, 'thisown', 1)
  
 new_kamMutator.__doc__ = kamMutator.__init__.__doc__
 del kamMutator.__init__
@@ -689,9 +683,8 @@ def new_smmMutator(self, rate=[], *args, **kwargs):
         r = [rate]
     else:
         r = rate
-    _swig_setattr(self, smmMutator, 'this', 
+    cppModule.smmMutator_swiginit(self,
         cppModule.new_smmMutator(rate=r, *args, **kwargs))
-    _swig_setattr(self, smmMutator, 'thisown', 1)
  
 new_smmMutator.__doc__ = smmMutator.__init__.__doc__
 del smmMutator.__init__
@@ -705,9 +698,8 @@ def new_gsmMutator(self, rate=[], *args, **kwargs):
         r = [rate]
     else:
         r = rate
-    _swig_setattr(self, gsmMutator, 'this', 
+    cppModule.gsmMutator_swiginit(self,
         cppModule.new_gsmMutator(rate=r, *args, **kwargs))
-    _swig_setattr(self, gsmMutator, 'thisown', 1)
  
 new_gsmMutator.__doc__ = gsmMutator.__init__.__doc__
 del gsmMutator.__init__
@@ -721,9 +713,8 @@ def new_pyMutator(self, rate=[], *args, **kwargs):
         r = [rate]
     else:
         r = rate
-    _swig_setattr(self, pyMutator, 'this', 
+    cppModule.pyMutator_swiginit(self, 
         cppModule.new_pyMutator(rate=r, *args, **kwargs))
-    _swig_setattr(self, pyMutator, 'thisown', 1)
  
 new_pyMutator.__doc__ = pyMutator.__init__.__doc__
 del pyMutator.__init__
@@ -751,10 +742,9 @@ def new_migrator(self, rate, fromSubPop=[], toSubPop=[], *args, **kwargs):
         ts = [toSubPop]
     else:
         ts = toSubPop
-    _swig_setattr(self, migrator, 'this', 
+    cppModule.migrator_swiginit(self,
         cppModule.new_migrator(rate=r, fromSubPop=fs, toSubPop=ts, *args, **kwargs))
-    _swig_setattr(self, migrator, 'thisown', 1)
- 
+
 new_migrator.__doc__ = migrator.__init__.__doc__
 del migrator.__init__
 migrator.__init__ = new_migrator
@@ -781,14 +771,12 @@ def new_recombinator(self, intensity=-1, rate=[], afterLoci=[],
             mr = [maleRate]
     else:
         mr = maleRate
-
-    _swig_setattr(self, recombinator, 'this', 
+    cppModule.recombinator_swiginit(self,
         cppModule.new_recombinator(intensity=intensity, 
         rate=r, afterLoci=afterLoci, 
         maleIntensity=maleIntensity, 
         maleRate=mr, maleAfterLoci=maleAfterLoci, 
         *args, **kwargs))
-    _swig_setattr(self, recombinator, 'thisown', 1)
  
 new_recombinator.__doc__ = recombinator.__init__.__doc__
 del recombinator.__init__
@@ -807,9 +795,8 @@ def new_initByFreq(self, alleleFreq=[], indRange=[], *args, **kwargs):
         ir = [indRange]
     else:
         ir = indRange
-    _swig_setattr(self, initByFreq, 'this', 
+    cppModule.initByFreq_swiginit(self,
         cppModule.new_initByFreq(alleleFreq=af, indRange=ir, *args, **kwargs))
-    _swig_setattr(self, initByFreq, 'thisown', 1)
  
 new_initByFreq.__doc__ = initByFreq.__init__.__doc__
 del initByFreq.__init__
@@ -827,9 +814,8 @@ def new_initByValue(self, value=[], indRange=[], *args, **kwargs):
         ir = [indRange]
     else:
         ir = indRange
-    _swig_setattr(self, initByValue, 'this', 
+    cppModule.initByValue_swiginit(self,
         cppModule.new_initByValue(value=val, indRange=ir, *args, **kwargs))
-    _swig_setattr(self, initByValue, 'thisown', 1)
  
 new_initByValue.__doc__ = initByValue.__init__.__doc__
 del initByValue.__init__
@@ -842,15 +828,12 @@ def new_pyInit(self, indRange=[], *args, **kwargs):
         ir = [indRange]
     else:
         ir = indRange
-    _swig_setattr(self, pyInit, 'this', 
+    cppModule.pyInit_swiginit(self,
         cppModule.new_pyInit(indRange=ir, *args, **kwargs))
-    _swig_setattr(self, pyInit, 'thisown', 1)
  
 new_pyInit.__doc__ = pyInit.__init__.__doc__
 del pyInit.__init__
 pyInit.__init__ = new_pyInit
-
-
 
 
 def new_stat(self, haploFreq=[], LD=[], relGroups=[], relMethod=[], *args, **kwargs):
@@ -879,8 +862,7 @@ def new_stat(self, haploFreq=[], LD=[], relGroups=[], relMethod=[], *args, **kwa
         rm = [relGroups]
     else:
         rm = relGroups
-
-    _swig_setattr(self, stat, 'this', 
+    cppModule.stat_swiginit(self, 
         cppModule.new_stat(haploFreq=hf, LD=ld, relGroups=rg, relBySubPop=useSubPop,
             relMethod = rm, *args, **kwargs))
     _swig_setattr(self, stat, 'thisown', 1)
@@ -896,9 +878,8 @@ def new_randomSample(self, size=[], *args, **kwargs):
         sz=[size]
     else:
         sz = size
-    _swig_setattr(self, randomSample, 'this', 
+    cppModule.randomSample_swiginit(self,
         cppModule.new_randomSample(size=sz, *args, **kwargs))
-    _swig_setattr(self, randomSample, 'thisown', 1)
  
 new_randomSample.__doc__ = randomSample.__init__.__doc__
 del randomSample.__init__
@@ -918,10 +899,9 @@ def new_caseControlSample(self, cases=[], controls=[], *args, **kwargs):
     else:
         ct = controls
         spSample = True
-    _swig_setattr(self, caseControlSample, 'this', 
+    cppModule.caseControlSample_swiginit(self,
         cppModule.new_caseControlSample(cases=ca, controls=ct, 
             spSample=spSample, *args, **kwargs))
-    _swig_setattr(self, caseControlSample, 'thisown', 1)
  
 new_caseControlSample.__doc__ = caseControlSample.__init__.__doc__
 del caseControlSample.__init__
@@ -934,9 +914,8 @@ def new_affectedSibpairSample(self,size=[], *args, **kwargs):
         sz=[size]
     else:
         sz = size
-    _swig_setattr(self, affectedSibpairSample, 'this', 
+    cppModule.affectedSibpairSample_swiginit(self,
         cppModule.new_affectedSibpairSample(size=sz, *args, **kwargs))
-    _swig_setattr(self, affectedSibpairSample, 'thisown', 1)
  
 new_affectedSibpairSample.__doc__ = affectedSibpairSample.__init__.__doc__
 del affectedSibpairSample.__init__
@@ -952,9 +931,8 @@ def new_mapSelector(self, locus=-1, loci=[], *args, **kwargs):
         loc = loci
     else:
         raise exceptions.TypeError('Please specify locus or loci')
-    _swig_setattr(self, mapSelector, 'this', 
+    cppModule.mapSelector_swiginit(self,
         cppModule.new_mapSelector(loci=loc, *args, **kwargs))
-    _swig_setattr(self, mapSelector, 'thisown', 1)
  
 new_mapSelector.__doc__ = mapSelector.__init__.__doc__
 del mapSelector.__init__
@@ -973,9 +951,8 @@ def new_maSelector(self, locus=-1, loci=[], wildtype=[0], *args, **kwargs):
         wt = [wildtype]
     else:
         wt = wildtype
-    _swig_setattr(self, maSelector, 'this', 
+    cppModule.maSelector_swiginit(self,
         cppModule.new_maSelector(loci=loc, wildtype=wt, *args, **kwargs))
-    _swig_setattr(self, maSelector, 'thisown', 1)
  
 new_maSelector.__doc__ = maSelector.__init__.__doc__
 del maSelector.__init__
@@ -990,9 +967,8 @@ def new_pySelector(self, locus=-1, loci=[], *args, **kwargs):
         loc = loci
     else:
         raise exceptions.TypeError('Please specify locus or loci')
-    _swig_setattr(self, pySelector, 'this', 
+    cppModule.pySelector_swiginit(self, 
         cppModule.new_pySelector(loci=loc, *args, **kwargs))
-    _swig_setattr(self, pySelector, 'thisown', 1)
  
 new_pySelector.__doc__ = pySelector.__init__.__doc__
 del pySelector.__init__
@@ -1008,9 +984,8 @@ def new_mapPenetrance(self, locus=-1, loci=[], penetrance={}, *args, **kwargs):
         loc = loci
     else:
         raise exceptions.TypeError('Please specify locus or loci')
-    _swig_setattr(self, mapPenetrance, 'this', 
+    cppModule.mapPenetrance_swiginit(self,
         cppModule.new_mapPenetrance(loci=loc, penet=penetrance, *args, **kwargs))
-    _swig_setattr(self, mapPenetrance, 'thisown', 1)
  
 new_mapPenetrance.__doc__ = mapPenetrance.__init__.__doc__
 del mapPenetrance.__init__
@@ -1029,9 +1004,8 @@ def new_maPenetrance(self, locus=-1, loci=[], wildtype=[0], penetrance=[], *args
         wt = [wildtype]
     else:
         wt = wildtype
-    _swig_setattr(self, maPenetrance, 'this', 
+    cppModule.maPenetrance_swiginit(self,
         cppModule.new_maPenetrance(loci=loc, wildtype=wt, penet=penetrance, *args, **kwargs))
-    _swig_setattr(self, maPenetrance, 'thisown', 1)
  
 new_maPenetrance.__doc__ = maPenetrance.__init__.__doc__
 del maPenetrance.__init__
@@ -1046,9 +1020,8 @@ def new_pyPenetrance(self, locus=-1, loci=[], *args, **kwargs):
         loc = loci
     else:
         raise exceptions.TypeError('Please specify locus or loci')
-    _swig_setattr(self, pyPenetrance, 'this', 
+    cppModule.pyPenetrance_swiginit(self,
         cppModule.new_pyPenetrance(loci=loc, *args, **kwargs))
-    _swig_setattr(self, pyPenetrance, 'thisown', 1)
  
 new_pyPenetrance.__doc__ = pyPenetrance.__init__.__doc__
 del pyPenetrance.__init__
@@ -1063,9 +1036,8 @@ def new_mapQuanTrait(self, locus=-1, loci=[], *args, **kwargs):
         loc = loci
     else:
         raise exceptions.TypeError('Please specify locus or loci')
-    _swig_setattr(self, mapQuanTrait, 'this', 
+    cppModule.mapQuanTrait_swiginit(self,
         cppModule.new_mapQuanTrait(loci=loc, *args, **kwargs))
-    _swig_setattr(self, mapQuanTrait, 'thisown', 1)
  
 new_mapQuanTrait.__doc__ = mapQuanTrait.__init__.__doc__
 del mapQuanTrait.__init__
@@ -1090,9 +1062,8 @@ def new_maQuanTrait(self, locus=-1, loci=[], wildtype=[0], sigma=[0], qtrait=[],
         s = sigma*len(qtrait)
     else:
         s = sigma
-    _swig_setattr(self, maQuanTrait, 'this', 
+    cppModule.maQuanTrait_swiginit(self,
         cppModule.new_maQuanTrait(loci=loc, wildtype=wt, sigma=s, qtrait=qtrait, *args, **kwargs))
-    _swig_setattr(self, maQuanTrait, 'thisown', 1)
  
 new_maQuanTrait.__doc__ = maQuanTrait.__init__.__doc__
 del maQuanTrait.__init__
@@ -1107,9 +1078,8 @@ def new_pyQuanTrait(self, locus=-1, loci=[], *args, **kwargs):
         loc = loci
     else:
         raise exceptions.TypeError('Please specify locus or loci')
-    _swig_setattr(self, pyQuanTrait, 'this', 
+    cppModule.pyQuanTrait_swiginit(self,
         cppModule.new_pyQuanTrait(loci=loc, *args, **kwargs))
-    _swig_setattr(self, pyQuanTrait, 'thisown', 1)
  
 new_pyQuanTrait.__doc__ = pyQuanTrait.__init__.__doc__
 del pyQuanTrait.__init__

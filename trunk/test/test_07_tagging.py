@@ -14,7 +14,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 import unittest, os, sys, exceptions
 
-class  TestTagger(unittest.TestCase):
+class TestTagger(unittest.TestCase):
   
   def testParentsTagger(self):
     'Testing parents tagger.'

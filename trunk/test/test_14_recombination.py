@@ -195,7 +195,7 @@ class TestRecombinator(unittest.TestCase):
     simu.evolve( [ rec ], end=G)
     # number of recombination event should be bionomial(ploidy*N*r, 0.1) with mean 10000
     # at end should be bionomial(ploidy*N*r, 0.5)
-    assert abs( rec.recCount(0) - 2*N*r*G ) < 100, \
+    assert abs( rec.recCount(0) - 2*N*r*G ) < 150, \
       'Number of recombination event is not as expected. %d %d' % (rec.recCount(0), 2*N*r*G)
     assert abs( rec.recCount(9) - 2*N*0.5*G ) < 2000, \
       'Number of recombination event is not as expected. %d %d' % (rec.recCount(9), 2*N*0.5*G)

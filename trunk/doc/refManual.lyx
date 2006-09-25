@@ -17246,11 +17246,12 @@ It is sometimes desired to write simuPOP extension in C++.
 \end_layout
 
 \begin_layout Itemize
-when a pure Python operator is too slow.
+when you need some other mating scheme
 \end_layout
 
 \begin_layout Itemize
-when you would like to change individual structure
+when you need certain operator that a pure Python implementation would be
+ too slow.
 \end_layout
 
 \begin_layout Itemize
@@ -17264,7 +17265,11 @@ It is not difficult to write simuPOP extension in C++, once you know how
 \end_layout
 
 \begin_layout Itemize
-install the latest version of SWIG (>1,3,24), download simuPOP source 
+install the latest version of SWIG (>1.3.28)
+\end_layout
+
+\begin_layout Itemize
+check out simuPOP source using subversion
 \end_layout
 
 \begin_layout Itemize
@@ -17276,19 +17281,11 @@ to add an operator, make changes in appropriate
 \family typewriter
 .h 
 \family default
-file and add an entry in 
+file, check 
 \family typewriter
-simuPOP.i (simuPOP_common.i)
-\end_layout
-
-\begin_layout Itemize
-to change individual, create or derive an individual type and instantiate
- templates in 
-\family typewriter
-simuPOP.i 
+simuPOP_common.i 
 \family default
-using your own individual type.
- 
+if your operator can not be used.
 \end_layout
 
 \begin_layout Standard
@@ -17296,6 +17293,79 @@ The source code is reasonably well commented with full doxygen based documentati
 on.
  Please post to the simuPOP forum if you encounter any problem while writing
  operators in C++.
+\end_layout
+
+\begin_layout Section
+Debugging
+\end_layout
+
+\begin_layout Subsection
+test scripts
+\end_layout
+
+\begin_layout Standard
+There are many test scripts under the 
+\family typewriter
+test 
+\family default
+directory.
+ It is recommended that you run the test scripts after you install simuPOP.
+ This will make sure that your system is working correctly.
+ To run all tests, run
+\end_layout
+
+\begin_layout LyX-Code
+sh run_tests.sh
+\end_layout
+
+\begin_layout Standard
+Or, if you do not install rpy and r, run
+\end_layout
+
+\begin_layout LyX-Code
+sh run_tests.sh norpy
+\end_layout
+
+\begin_layout Standard
+Please report any failed test.
+\end_layout
+
+\begin_layout Subsection
+Memory leak detection
+\end_layout
+
+\begin_layout Standard
+Python extensions tend to have memory leak problem, caused by the refcount
+ mechanism.
+ If your simuPOP script uses more and more RAM without population size increase,
+ you may have this problem.
+ You may try to disable individual operators and see find out the offending
+ operator if the problem persist.
+ 
+\end_layout
+
+\begin_layout Standard
+Potential simuPOP developers can make use of simuPOP's built-in refcount
+ detection mechanism.
+ To use it,
+\end_layout
+
+\begin_layout Itemize
+Compile python with configure option --with-pydebug .
+ This will enable sys.totalrefcount() etc
+\end_layout
+
+\begin_layout Itemize
+Compile simuPOP with -DPy_REF_DEBUG.
+ This can be done in setup.py, or better in SConstruct.
+\end_layout
+
+\begin_layout Standard
+simulator.evolve will check reference count at the end of each generation
+ and report any increased reference count.
+ Some operators may create python object (like ascertainment operators)
+ but if you see repeated warning at each generation, there is definitely
+ a memory leak.
 \end_layout
 
 \begin_layout Standard

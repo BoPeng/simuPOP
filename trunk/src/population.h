@@ -891,13 +891,6 @@ namespace simuPOP
 				m_vars.removeVar(name);
 			}
 
-#ifndef OPTIMIZED
-			void checkRefCount()
-			{
-				m_vars.checkRefCount();
-			}
-#endif
-
 			/// CPPONLY
 			PyObject* setBoolVar(const string& name, const bool val)
 			{

@@ -199,6 +199,11 @@ namespace simuPOP
 			if(! dryrun)
 				setGen(m_gen);
 
+			// save refcount at the beginning
+#ifdef Py_REF_DEBUG
+			saveRefCount();
+#endif
+
 			for (m_curRep = 0; m_curRep < m_numRep; m_curRep++)
 			{
 				DBG_ASSERT( static_cast<int>(m_curRep) == curpopulation().rep(), SystemError,
@@ -345,6 +350,10 @@ namespace simuPOP
 			// or if all replicates stop, or reach ending gen, stop iteration.
 			// count the number of stopped replicates
 			DBG_DO(DBG_SIMULATOR, cout << endl << "Number of stopped replicates: " << numStopped << endl);
+
+#ifdef Py_REF_DEBUG
+			checkRefCount();
+#endif
 
 			m_gen ++;							  // increase generation!
 			// only if m_gen > end will simulation stop
