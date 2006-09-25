@@ -208,8 +208,8 @@ namespace simuPOP
 			\param maxAllele maxAllele that can be mutated to. For binary libraries
 			  allelic states will be [0, maxAllele]. For others, they are [1, maxAllele]
 			*/
-			kamMutator(vectorf rate=vectorf(),
-				vectori atLoci=vectori(),
+			kamMutator(const vectorf& rate=vectorf(),
+				const vectori& atLoci=vectori(),
 				UINT maxAllele=0,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -457,7 +457,7 @@ namespace simuPOP
 			\param toAllele mutate to 'toAllele'
 			*/
 			pointMutator(
-				vectori atLoci,
+				const vectori& atLoci,
 				Allele toAllele,
 				vectoru atPloidy=vectoru(),
 				vectorlu inds=vectorlu(),

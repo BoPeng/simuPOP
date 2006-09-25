@@ -190,6 +190,29 @@ namespace simuPOP
 		return g_dbgString[code];
 	}
 
+
+#ifdef Py_REF_DEBUG
+	ULONG g_refTotal;
+	// give out at most these many warnings.
+	int g_refWarningCount;
+	
+	// reference connt debug
+	void saveRefCount()
+	{
+		g_refTotal = _Py_RefTotal;
+	}
+
+	void checkRefCount()
+	{
+		if(_Py_RefTotal > g_refTotal and g_refWarningCount-- > 0)
+			cout << "Warning: Ref count increased from " << g_refTotal << " to " << _Py_RefTotal
+				<< "\nThis may be a sign of memory leak, especially when refCount increase"
+                << "\nindefinitely in a loop. Please contact simuPOP deceloper and report"
+                << "\nthe problem.\n" << endl;
+		g_refTotal = _Py_RefTotal;
+	}
+#endif
+
 	//////////////////////////////////////////////////////////////
 	/// Some common functions/templates
 	//////////////////////////////////////////////////////////////
@@ -549,33 +572,6 @@ namespace simuPOP
 		}
 	}
 
-	/// check the ref count of this shared variable recursively.
-	/// report anything that has refcount > 1
-	void SharedVariables::checkRefCount()
-	{
-		checkRefCountRecursive(m_dict);
-	}
-
-	void SharedVariables::checkRefCountRecursive(PyObject * obj)
-	{
-		if(obj->ob_refcnt > 1)
-		{
-			PyObject* repr = PyObject_Repr(obj);
-			cout << obj->ob_refcnt << "\t" << PyString_AsString(repr) << endl;
-			Py_DECREF(repr);
-		}
-		if(PyList_Check(obj))
-			for(int i=0;i<PyList_Size(obj);++i)
-				checkRefCountRecursive(PyList_GetItem(obj,i));
-		if(PyDict_Check(obj))
-		{
-			PyObject *key, *value;
-			int pos = 0;
-
-			while (PyDict_Next(obj, &pos, &key, &value))
-				checkRefCountRecursive(value);
-		}
-	}
 
 	/// setvars C++ ==> Python
 	PyObject* SharedVariables::setVar(const string& name, const PyObject* val)
@@ -2453,6 +2449,10 @@ T Expression::valueAs##TypeName() \
 #ifndef OPTIMIZED
 		// turn on some debug info
 		TurnOnDebug(DBG_GENERAL);
+		// give at most 100 ref count warnings.
+#endif
+#ifdef Py_REF_DEBUG
+		g_refWarningCount = 100;
 #endif
 
 		// SIMUPOP_MODULE is passed as name, but we need it to be quoted.

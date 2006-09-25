@@ -102,6 +102,14 @@ namespace simuPOP
 	/// dbg string for a code
 	string dbgString(DBG_CODE code);
 
+#ifdef Py_REF_DEBUG
+	/// refcount debug
+	void saveRefCount();
+
+	/// check if refcount increase
+	void checkRefCount();
+#endif
+	
 	// ////////////////////////////////////////////////////////////
 	// / Some common functions/templates
 	// ////////////////////////////////////////////////////////////
@@ -497,8 +505,6 @@ namespace simuPOP
 				m_dict = dict;
 			}
 
-			void checkRefCount();
-
 			/// CPPONLY set arbitrary value (type)
 			PyObject* setVar(const string& name, const PyObject* val);
 
@@ -600,9 +606,6 @@ namespace simuPOP
 			void fromString(const string& vars);
 
 		private:
-
-			///
-			void checkRefCountRecursive(PyObject* obj);
 
 			/// the list
 			PyObject * m_dict;

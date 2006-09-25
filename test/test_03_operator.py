@@ -51,21 +51,21 @@ class TestOperator(unittest.TestCase):
       simu = simulator(population(), noMating())
       simu.evolve(ops=[d], end=endGen)
       return simu.population(0).dvars().hist
-    self.assertEqual( getActiveGens(begin=2, end=10), 
+    self.assertEqual(getActiveGens(begin=2, end=10), 
       range(2,11))
-    self.assertEqual( getActiveGens(begin=2, end=10, step=2), 
+    self.assertEqual(getActiveGens(begin=2, end=10, step=2), 
       range(2,11,2))
-    self.assertEqual( getActiveGens(begin=2, step=2), 
+    self.assertEqual(getActiveGens(begin=2, step=2), 
       range(2,22,2))
-    self.assertEqual( getActiveGens(step=2), range(0,22,2))
-    self.assertEqual( getActiveGens(), range(0,21))
-    self.assertEqual( getActiveGens(at=[2,5,9]), [2,5,9])
-    self.assertEqual( getActiveGens(at=[2,5,-1]), [2,5,20])
-    self.assertEqual( getActiveGens(begin=-10), range(11,21))
+    self.assertEqual(getActiveGens(step=2), range(0,22,2))
+    self.assertEqual(getActiveGens(), range(0,21))
+    self.assertEqual(getActiveGens(at=[2,5,9]), [2,5,9])
+    self.assertEqual(getActiveGens(at=[2,5,-1]), [2,5,20])
+    self.assertEqual(getActiveGens(begin=-10), range(11,21))
     # 20=-1, 16=-5
-    self.assertEqual( getActiveGens(begin=-10, end=-5), range(11,17))
+    self.assertEqual(getActiveGens(begin=-10, end=-5), range(11,17))
     # 
-    self.assertEqual( getActiveGens(begin=-10, step=2, end=-5), range(11,17,2))
+    self.assertEqual(getActiveGens(begin=-10, step=2, end=-5), range(11,17,2))
     self.assertRaises( exceptions.ValueError,
       getActiveGens, begin=-10, step=-3, end=-5 )
     

@@ -22,12 +22,14 @@ version 0.7.2 - Currently available as svn snapshot
 		there is remaining $ in the script.
   - CHG: make 'configName' and 'prompt' of simuOpt options obsolete, use
 		'label' instead.
-  - BUG: fix a memory leak bug in stator, and in util.cpp (pyExec)
   - BUG: fix starting allele problem in simuCDCV.py
   - CHG: change the allele type of long module to unsigned short, since
 		2^16 seems to be enough even for long allele cases.
   - NEW: add -c option to simuCluster.py to allow it to se command instead
 		of the default qaub
+  - NEW: add reference count debugging in simulator.evolve (require
+		specially built python.)
+  - BUG: fix memory leaks in stator, util.cpp (pyExec) and simuPOP_common.i
 
 
 version 0.7.1 - (Rev 378) - Aug 20, 2006
