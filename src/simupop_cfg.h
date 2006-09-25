@@ -55,6 +55,7 @@ using std::vector;
 /// since python extension use it as int.
 typedef unsigned int UINT;
 
+#include <stdint.h>
 // NOTE: the change of allele type here may need similar changes
 // in the wrapper file simuPOP_common.i
 #ifdef LONGALLELE
