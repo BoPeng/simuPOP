@@ -650,7 +650,7 @@ namespace simuPOP
 	PyObject* arglist = Py_BuildValue(format, param1, param2); \
 	PyObject* pyResult = PyEval_CallObject(func, arglist); \
 	Py_XDECREF(arglist); \
-	if( pyResult == NULL) \
+	if(pyResult == NULL) \
 	{ \
 		PyErr_Print(); \
 		throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \

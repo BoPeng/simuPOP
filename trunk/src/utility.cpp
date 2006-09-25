@@ -399,8 +399,12 @@ namespace simuPOP
 		val.resize( PySequence_Size( obj ));
 
 		// assign values
-		for(size_t i=0, iEnd=val.size(); i<iEnd; ++i)
-			PyObj_As_Double(PySequence_GetItem(obj, i), val[i]);
+		for(size_t i=0, iEnd=val.size(); i<iEnd; ++i) 
+		{
+			PyObject* item = PySequence_GetItem(obj, i);
+			PyObj_As_Double(item, val[i]);
+			Py_DECREF(item);
+		}
 	}
 
 	void PyObj_As_IntArray(PyObject* obj, vectori& val)
@@ -416,7 +420,11 @@ namespace simuPOP
 
 		// assign values
 		for(size_t i=0, iEnd=val.size(); i<iEnd; ++i)
-			PyObj_As_Int(PySequence_GetItem(obj, i), val[i]);
+		{
+			PyObject * item = PySequence_GetItem(obj, i);
+			PyObj_As_Int(item, val[i]);
+			Py_DECREF(item);
+		}
 	}
 
 	void PyObj_As_IntDict(PyObject* obj, intDict& val)
