@@ -22,7 +22,7 @@ version 0.7.2 - Currently available as svn snapshot
 		there is remaining $ in the script.
   - CHG: make 'configName' and 'prompt' of simuOpt options obsolete, use
 		'label' instead.
-  - BUG: fix a memory leak bug in stator
+  - BUG: fix a memory leak bug in stator, and in util.cpp (pyExec)
   - BUG: fix starting allele problem in simuCDCV.py
   - CHG: change the allele type of long module to unsigned short, since
 		2^16 seems to be enough even for long allele cases.

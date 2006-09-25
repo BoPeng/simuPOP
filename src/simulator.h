@@ -263,7 +263,6 @@ namespace simuPOP
 				// set gen for all replicates
 				for(UINT i=0; i < m_numRep; ++i)
 					m_ptrRep[i]->setGen(gen, true);
-				//  mainVars().setIntVar("gen", gen);
 			}
 
 			/// evolve one step
