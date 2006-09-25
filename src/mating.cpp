@@ -65,6 +65,7 @@ namespace simuPOP
 			ValueError, "If mode is MATE_BinomialDistribution, maxNumOffspring should be > 1");
 	}
 
+
 	UINT mating::numOffspring(int gen )
 	{
 		static double numOS = 0.;
@@ -154,7 +155,7 @@ namespace simuPOP
 			// allow  change of pop size of scratch
 			scratch.setSubPopStru(this->m_subPopSize, true);
 
-			DBG_FAILIF( scratch.numSubPop() != pop.numSubPop() ,
+			DBG_FAILIF(scratch.numSubPop() != pop.numSubPop() ,
 				ValueError, "number of subPopulaitons must agree. \n Pre: "
 				+ toStr( pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
 		}
@@ -181,12 +182,12 @@ namespace simuPOP
 			int gen = pop.gen();
 			//          int gen = mainVars().getVarAsInt("gen");
 			// convert current pop size to a tuple
-			PyObject* curSize = PyTuple_New( pop.numSubPop());
+			PyObject* curSize = PyTuple_New(pop.numSubPop());
 
 			DBG_ASSERT(curSize!=NULL, SystemError, "Can not convert current pop size to a list");
 
 			for(size_t i=0; i<pop.numSubPop(); ++i)
-				PyTuple_SetItem(curSize, i, PyInt_FromLong( pop.subPopSize(i)));
+				PyTuple_SetItem(curSize, i, PyInt_FromLong(pop.subPopSize(i)));
 
 			vectorf res;
 			PyCallFunc2(m_subPopSizeFunc, "(iO)", gen, curSize,

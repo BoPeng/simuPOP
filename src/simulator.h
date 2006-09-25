@@ -271,13 +271,14 @@ namespace simuPOP
 			*/
 			bool step(const vectorop& ops = vectorop(),
 				const vectorop& preOps = vectorop(),
-				const vectorop& postOps = vectorop(), UINT steps=1)
+				const vectorop& postOps = vectorop(), UINT steps=1,
+				bool dryrun=false)
 			{
 				// since end gen itself will be executed
 				// cur = 5,
 				// end = 6
 				// will go two steps.
-				return evolve( ops, preOps, postOps, gen() + steps - 1);
+				return evolve( ops, preOps, postOps, gen() + steps - 1, dryrun);
 			}
 
 			/// evolve till 'end' generation subject to given operators
