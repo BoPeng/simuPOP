@@ -555,10 +555,11 @@ namespace simuPOP
 		PyObject *key = 0, *value = 0;
 
 		int i=0;
-		while (PyDict_Next(rhs.m_dict, &i, &key, &value))
+		while(PyDict_Next(rhs.m_dict, &i, &key, &value))
 		{
-			Py_INCREF(key);
-			Py_INCREF(value);
+			// This is unnecessary....
+			//Py_INCREF(key);
+			//Py_INCREF(value);
 			PyDict_SetItem(m_dict, key,value);
 		}
 	}
@@ -728,6 +729,7 @@ namespace simuPOP
 		return const_cast<PyObject*>(val);
 	}
 
+
 	PyObject* SharedVariables::getVar(const string& name, bool nameError)
 	{
 		DBG_ASSERT( m_dict != NULL, ValueError,
@@ -818,6 +820,7 @@ namespace simuPOP
 			return curChild;
 		}
 	}
+
 
 	void SharedVariables::removeVar(const string& name)
 	{
@@ -2472,7 +2475,9 @@ T Expression::valueAs##TypeName() \
 		// get population and individual type pointer
 		g_swigPopType = SWIG_TypeQuery(PopSWIGType);
 		g_swigindividual = SWIG_TypeQuery(IndSWIGType);
-		if( g_swigPopType == NULL || g_swigindividual == NULL)
+		//
+		// g_swigOperator = SWIG_TypeQuery(OperatorSWIGType);
+		if(g_swigPopType == NULL || g_swigindividual == NULL)
 			throw SystemError("Can not get population and individual type pointer, your SWIG version may be run.");
 
 		/// load carray function and type

@@ -225,6 +225,7 @@ namespace simuPOP
 		return true;
 	}
 
+
 	bool binomialSelection::mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
 	{
 		this->resetNumOffspring();
@@ -2233,4 +2234,40 @@ namespace simuPOP
 		return true;
 	}
 
+	
+	bool pyMating::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	{
+		// scrtach will have the right structure.
+		this->prepareScratchPop(pop, scratch);
+		//
+		// prepare parameters and pass them to user function
+		PyObject* parentalPop = pyPopObj(static_cast<void*>(&pop));
+		PyObject* offspringPop = pyPopObj(static_cast<void*>(&scratch));
+		Py_INCREF(parentalPop);
+		Py_INCREF(offspringPop);
+		
+		if(parentalPop == NULL || offspringPop ==NULL)
+			throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
+				
+		// call the mating function
+		PyObject* arglist = Py_BuildValue("OO", parentalPop, offspringPop);
+		PyObject* pyResult = PyEval_CallObject(m_mateFunc, arglist);
+		Py_DECREF(arglist);
+		if(pyResult == NULL)
+		{
+			PyErr_Print();
+			throw ValueError("Function call failed when calling mating function");
+		}
+		bool res;
+		PyObj_As_Bool(pyResult, res);
+		Py_DECREF(pyResult);
+		Py_DECREF(parentalPop);
+		Py_DECREF(offspringPop);
+
+		// release population objects (check later.)
+		
+		if(submit)
+			submitScratch(pop, scratch);
+		return res;
+	}
 }

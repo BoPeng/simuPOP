@@ -45,7 +45,6 @@ namespace simuPOP
 		DBG_DO(DBG_SIMULATOR, cout << "Creating simulator " << endl);
 
 		m_matingScheme = matingScheme.clone();
-
 		DBG_DO(DBG_SIMULATOR, cout << "mating scheme copied" << endl);
 
 		if (!m_matingScheme->isCompatible(pop))
@@ -87,7 +86,6 @@ namespace simuPOP
 
 		// set generation number for all replicates
 		setGen(0);
-		// mainVars().setIntVar("gen", 0);
 
 		DBG_DO(DBG_SIMULATOR, cout << "simulator created" << endl);
 	}
