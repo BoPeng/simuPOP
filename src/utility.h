@@ -475,7 +475,7 @@ namespace simuPOP
 
 				DBG_ASSERT( m_dict != NULL, SystemError, "Can not create a new dictionary");
 
-				if(! PyDict_Check( m_dict) )
+				if(!PyDict_Check(m_dict))
 					throw SystemError("Invaid dictionary. The local namespace may have been cleared.");
 			}
 

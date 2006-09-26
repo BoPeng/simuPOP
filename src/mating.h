@@ -956,5 +956,80 @@ namespace simuPOP
 			/// acceptance scheme
 			int m_acceptScheme;
 	};
+
+	
+	/**
+	   python mating. 
+	   Parental and offspring generation, along with during mating
+	   operators, are passed to a python function. All mating
+	   are done there, and the resulting population be returned.
+
+	   This process will be slow and should be used mainly for
+	   prototyping or demonstration purposes.
+	*/
+
+	class pyMating: public mating
+	{
+		public:
+
+			/// constructor, no new subPopsize parameter
+			pyMating(PyObject* func=NULL,
+				vectorlu newSubPopSize=vectorlu(),
+				string newSubPopSizeExpr="",
+				PyObject* newSubPopSizeFunc=NULL)
+				:mating(1.0, NULL, 0, MATE_NumOffspring,
+				newSubPopSize, newSubPopSizeExpr,
+				newSubPopSizeFunc)
+			{
+				if( !PyCallable_Check(func))
+					throw ValueError("Passed variable is not a callable python function.");
+
+				Py_XINCREF(func);
+				m_mateFunc = func;
+			}
+
+			/// destructor
+			~pyMating()
+			{
+				Py_XDECREF(m_mateFunc);
+			}
+
+			/// clone() const. The same as mating::clone() const.
+			/** \sa mating::clone() const
+			 */
+			virtual mating* clone() const
+			{
+				return new pyMating(*this);
+			}
+			
+			/// CPPONLY
+			pyMating(const pyMating& rhs):
+				mating(rhs), m_mateFunc(rhs.m_mateFunc)
+			{
+				if(m_mateFunc != NULL )
+					Py_INCREF(m_mateFunc);
+			}
+
+
+			/// return name of the mating type
+			virtual string __repr__()
+			{
+				return "<simuPOP::pyMating>";
+			}
+
+			/**
+			 \brief do the mating. --- no mating :-)
+
+			 All individuals will be passed to during mating operators but
+			 no one will die (ignore during mating failing signal).
+			*/
+			virtual bool mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit);
+			
+		private:
+			PyObject* m_mateFunc;
+		
+	};
+
+
 }
 #endif

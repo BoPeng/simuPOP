@@ -14,7 +14,7 @@ import os, sys
 # scons is for quick recompile, so SIMUPOP_REV and SIMUPOP_VER IS NOT CHANGED
 # so a re-compliaction is not needed after a svn commit.
 #
-debug = False
+debug = True
 if debug and os.path.isdir('/home/bpeng/PythonDebug/'): # debug mode
     pythonPaths = ['/home/bpeng/PythonDebug/include/python2.4/', '..']
     flags = ['-DPy_REF_DEBUG']
