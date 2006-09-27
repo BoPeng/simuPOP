@@ -2243,8 +2243,6 @@ namespace simuPOP
 		// prepare parameters and pass them to user function
 		PyObject* parentalPop = pyPopObj(static_cast<void*>(&pop));
 		PyObject* offspringPop = pyPopObj(static_cast<void*>(&scratch));
-		Py_INCREF(parentalPop);
-		Py_INCREF(offspringPop);
 		
 		if(parentalPop == NULL || offspringPop ==NULL)
 			throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
