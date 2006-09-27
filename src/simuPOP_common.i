@@ -210,6 +210,13 @@ namespace std
 %rename(individual) ind(ULONG, UINT);
 %rename(population) pop(UINT);
 
+%newobject simuPOP::population::newPopByIndInfo;
+%newobject simuPOP::population::newPopWithPartialLoci;
+%newobject simuPOP::population::clone;
+%newobject simuPOP::simulator::getPopulation;
+%newobject simuPOP::operator::clone;
+%newobject simuPOP::stat::clone;
+
 %include "simuPOP_doc.i";
 %include "utility.h"
 %include "individual.h"
@@ -224,11 +231,6 @@ namespace std
         %template(setIndInfo) setIndInfo<vectorf>;
 };
  
-
-%newobject simuPOP::Population::newPopByIndInfo;
-%newobject simuPOP::Population::newPopWithPartialLoci;
-%newobject simuPOP::Population::clone;
-%newobject simuPOP::Simulator::getPopulation;
 
 namespace std
 {
@@ -865,7 +867,6 @@ def new_stat(self, haploFreq=[], LD=[], relGroups=[], relMethod=[], *args, **kwa
     cppModule.stat_swiginit(self, 
         cppModule.new_stat(haploFreq=hf, LD=ld, relGroups=rg, relBySubPop=useSubPop,
             relMethod = rm, *args, **kwargs))
-    _swig_setattr(self, stat, 'thisown', 1)
  
 new_stat.__doc__ = stat.__init__.__doc__
 del stat.__init__

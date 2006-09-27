@@ -693,11 +693,9 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.addInfoField('fitness'), 1)
         # add a new one.
         self.assertEqual(pop.addInfoField('misc'), 2)
-        return
         pop.setIndInfo(range(200, 210), 'fitness')
         self.assertEqual(pop.indInfo('age'), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.indInfo('fitness'), tuple([float(x) for x in range(100, 110)]))
-        self.assertEqual(pop.indInfo('misc'), tuple([float(x) for x in range(200, 210)]))
+        self.assertEqual(pop.indInfo('fitness'), tuple([float(x) for x in range(200, 210)]))
 
         
     def testPopVars(self):

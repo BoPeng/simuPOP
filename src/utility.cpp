@@ -550,26 +550,31 @@ namespace simuPOP
 
 	// copy constructor
 	SharedVariables::SharedVariables(const SharedVariables& rhs)
+		: m_ownVars(rhs.m_ownVars)
 	{
-		m_dict = PyDict_New();
-		PyObject *key = 0, *value = 0;
-
-		int i=0;
-		while(PyDict_Next(rhs.m_dict, &i, &key, &value))
+		if(rhs.m_ownVars)
 		{
-			// This is unnecessary....
-			//Py_INCREF(key);
-			//Py_INCREF(value);
-			PyDict_SetItem(m_dict, key,value);
+			m_dict = PyDict_New();
+			PyObject *key = 0, *value = 0;
+
+			int i=0;
+			while(PyDict_Next(rhs.m_dict, &i, &key, &value))
+			{
+				//Py_INCREF(key);
+				//Py_INCREF(value);
+				PyDict_SetItem(m_dict, key,value);
+			}
 		}
+		else
+			m_dict = rhs.m_dict;			
 	}
 
 	SharedVariables::~SharedVariables()
 	{
-		if( m_ownVars)
+		if(m_ownVars)
 		{
 			PyDict_Clear(m_dict);
-			Py_XDECREF(m_dict);
+			Py_DECREF(m_dict);
 		}
 	}
 
@@ -593,15 +598,21 @@ namespace simuPOP
 		PyObject * curChild = NULL;
 
 		next:
+		// get par[1] (dict), curChild can be null, or borrow ref
 		if( curType == 1 )
 			curChild = PyDict_GetItem(curParent, curKey);
+		// get par[1] (list)
 		else
 			curChild = PyList_GetItem(curParent, curIdx);
-		// get hold ofitem
-		// Py_INCREF(curChild);
+
+		// subPop[0]{'alleleNum'}[0]
+		// curParent:  m_dict
+		// curChild:   m_dirt['subPop']  
 
 		if( name[i] == '[' )					  // we need to put an array in ...
 		{
+			// m_dict['subPop'][0]
+			
 			// look for index
 			s = ++i;
 			for( ; name[i] != ']'; i++)
@@ -610,7 +621,9 @@ namespace simuPOP
 
 			// get index
 			size_t idx = atoi( name.substr(s,i-s).c_str());
-												  // not exist
+			// not exist
+			//
+			// create subPop, ... 
 			if( curChild == NULL || ! PyList_Check(curChild) )
 			{
 				// Py_XDECREF(curChild);
@@ -634,6 +647,7 @@ namespace simuPOP
 					Py_XDECREF(curChild);
 				}
 				else
+					// PyList_SetItem steals ref
 					PyList_SetItem(curParent, curIdx, curChild);
 			}
 			else								  // if exist, if it is a sequence?
@@ -642,7 +656,7 @@ namespace simuPOP
 				/// if the size if enough, get the item
 				if( curSize <= idx )
 				{
-					while(curSize++ < idx+1)
+					while(curSize++ <= idx)
 					{
 						Py_INCREF(Py_None);
 						PyList_Append(curChild, Py_None);
@@ -661,6 +675,9 @@ namespace simuPOP
 		}
 		else if( name[i] == '{' )				  // dictionary
 		{
+			//	curParent = subPop[0]
+			//  curChild = subPop[0]{'alleleNum'}
+
 			bool numKey;
 
 			// look for index,
@@ -683,11 +700,9 @@ namespace simuPOP
 												  // not exist
 			if(curChild == NULL || !PyDict_Check(curChild) )
 			{
-				// Py_XDECREF(curChild);
 				// create dictionary with given key, append
 				curChild = PyDict_New();
 				// keep this
-				// Py_INCREF(curChild);
 
 				if( curChild == NULL)
 					throw  ValueError("Can not create dictionary" + name);
@@ -713,6 +728,8 @@ namespace simuPOP
 		}
 		else									  // end here
 		{
+			// CASE:  'res' = 1
+			//
 			// regardless curChild == NULL
 			// set value in
 			if( curType == 1 )					  // dictionary?
@@ -722,10 +739,8 @@ namespace simuPOP
 			}
 			else
 				PyList_SetItem(curParent, curIdx, const_cast<PyObject*>(val));
+			Py_XDECREF(curKey);
 		}
-		//Py_XDECREF(curParent);
-		//Py_XDECREF(curChild);
-		Py_XDECREF(curKey);
 		return const_cast<PyObject*>(val);
 	}
 

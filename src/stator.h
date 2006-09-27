@@ -1187,7 +1187,7 @@ namespace simuPOP
 				vectori relMethod=vectori(),
 				int relMinScored=10,			  // minimal number of loci required.
 				bool hasPhase=false,
-				bool midValues=false,
+				bool midValues=false, 
 			// regular parameters
 				string output="", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
