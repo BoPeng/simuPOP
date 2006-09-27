@@ -378,6 +378,30 @@ class TestMatingSchemes(unittest.TestCase):
       end=endingGen
     )
     
+    def testPyMating(self):
+        ' test pyMating '
+
+#from simuPOP import *
+#import sys
+#def mate(par, off):
+#    ''' a function that get aprental, offspring generations 
+#        it will select all male and add 1 to their age,
+#        and spread to the generation
+#    '''
+#    print sys.getrefcount(par)
+#    idx = par.infoIdx('age')
+#    print idx
+#    for i in range(par.popSize()):
+#        #par.ind(i).setInfo(1, idx)
+#        ind = par.individual(i)
+#        ind.info(idx),
+#    #print par.info(idx)
+#    return True
+#
+#pop = population(20, loci=[1], infoFields=['age', 'stage'])
+#simu = simulator(pop, pyMating(mate))
+#simu.step([initByValue([1])])
+        
 ##   def testFreqTrajWithSubPop(self):
 ##     'Testing trajctory simulation with subpopulation structure'
 ##     #TurnOnDebug(DBG_MATING)

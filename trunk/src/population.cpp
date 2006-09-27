@@ -188,9 +188,9 @@ namespace simuPOP
 		UINT infoStep = this->infoSize();
 		for(ULONG i=0; i< m_popSize; ++i, ptr+=step, infoPtr+=infoStep)
 		{
-			m_inds[i].setGenoPtr( ptr );
-			m_inds[i].setInfoPtr( infoPtr );
-			m_inds[i].copyFrom( rhs.m_inds[i]);
+			m_inds[i].setGenoPtr(ptr);
+			m_inds[i].setInfoPtr(infoPtr);
+			m_inds[i].copyFrom(rhs.m_inds[i]);
 		}
 
 		// copy ancestral populations

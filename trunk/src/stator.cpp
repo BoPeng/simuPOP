@@ -314,7 +314,7 @@ namespace simuPOP
 					m_numOfAlleles[sp]);
 				if(numSP == 1)
 				{
-                    Py_INCREF(d);
+					Py_INCREF(d);
 					pop.setVar(NumOfAlleles_String, d);
 				}
 			}
@@ -325,6 +325,7 @@ namespace simuPOP
 		}
         return true;
 	}
+
 
 	bool statHeteroFreq::apply(population& pop)
 	{
