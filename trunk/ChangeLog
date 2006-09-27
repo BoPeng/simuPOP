@@ -30,6 +30,7 @@ version 0.7.2 - Currently available as svn snapshot
   - NEW: add reference count debugging in simulator.evolve (require
 		specially built python.)
   - BUG: fix memory leaks in stator, util.cpp (pyExec) and simuPOP_common.i
+  - NEW: add pyMating operator
 
 
 version 0.7.1 - (Rev 378) - Aug 20, 2006
