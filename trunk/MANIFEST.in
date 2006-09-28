@@ -19,7 +19,5 @@ recursive-include boost *
 recursive-include boost/spirit/core *
 recursive-include src  *.cpp *.c *.h *.i *.ipp
 recursive-include scripts *.py
-include coasim/coaSim.i coasim/testCoaSim.py coasim/*.cc coasim/*.hh
-include src/coaSim_wrap.cpp src/coaSim.py
 prune *.svn/*
 
