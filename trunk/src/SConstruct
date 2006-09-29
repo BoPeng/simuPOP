@@ -14,21 +14,44 @@ import os, sys
 # scons is for quick recompile, so SIMUPOP_REV and SIMUPOP_VER IS NOT CHANGED
 # so a re-compliaction is not needed after a svn commit.
 #
-debug = True
-if debug and os.path.isdir('/home/bpeng/PythonDebug/'): # debug mode
-    pythonPaths = ['/home/bpeng/PythonDebug/include/python2.4/', '..']
+
+opts = Options()
+opts.AddOptions(
+    BoolOption('debug', 'whether or not use debug version', False),
+    PathOption('dbg_python_path', 'path to the debug version of python', 
+        '/home/bpeng/PythonDebug/'),
+    PathOption('dbg_python_inc_path', 'path to the include dir of the debug version of python',
+        '/home/bpeng/PythonDebug/include/python2.4/'),
+    PathOption('python_inc_path', 'path to the include dir of the non-debug version of python',
+        '/usr/include/python2.3/')
+)
+
+
+env = Environment(options = opts, ENV={'PATH':os.environ['PATH']})
+
+debug = env['debug']
+
+if debug:
+    BDIR = '../debug'
+    python_path = env['dbg_python_path']
+    pythonPaths = [env['dbg_python_inc_path'], '..', '.']
     flags = ['-DPy_REF_DEBUG']
+    dest_dir = os.path.join(env['dbg_python_path'], 'lib',
+        'python2.4', 'site-packages')
+    share_dir = os.path.join(env['dbg_python_path'], 'share')
 else:
-    pythonPaths = ['/usr/include/python2.3/', '/usr/local/python-2.3.3/include/python2.3', '..']
+    BDIR = '../release/build'
+    pythonPaths = [env['python_inc_path'], '..', '.']
     flags = []
+    # do not install...
+    dest_dir = '../release'
+    share_dir = '../release'
 
-dest_dir = r'/home/bpeng/PythonModules/lib64/python2.3/site-packages/'
-share_dir = r'/home/bpeng/PythonModules/share/simuPOP'
-
-env = Environment(ENV={'PATH':os.environ['PATH']})
+env.BuildDir(BDIR, '.', duplicate = 0)
 env.Append(CPPPATH = pythonPaths)
 
-env.Append(CCFLAGS = ['-Wall', '-pthread', '-fno-strict-aliasing', '-DNDEBUG', '-O3', '-fPIC', \
+env.Append(CCFLAGS = ['-Wall', '-pthread', '-fno-strict-aliasing', '-DNDEBUG', 
+    '-O3', '-fPIC', \
     '-DSIMUPOP_REV=9990', '-DSIMUPOP_VER=9.9.9' ] + flags)
 #    '-DSIMUPOP_REV=%s' % os.popen('svnversion ..').read().strip() ])
 
@@ -36,10 +59,10 @@ env.Append(CCFLAGS = ['-Wall', '-pthread', '-fno-strict-aliasing', '-DNDEBUG', '
 SWIG = 'swig -O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
 
 # build static libraries
-if 'serial' in BUILD_TARGETS or not os.path.isfile('libserial.a'):
+if 'serial' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libserial.a')):
     serial = env.StaticLibrary(
-        target = 'serial',
-        source = ['serialization/%s'%x for x in Split('''
+        target = os.path.join(BDIR, 'serial'),
+        source = [os.path.join(BDIR, 'serialization/%s'%x) for x in Split('''
             basic_archive.cpp
             basic_xml_archive.cpp
             basic_iarchive.cpp
@@ -71,17 +94,17 @@ if 'serial' in BUILD_TARGETS or not os.path.isfile('libserial.a'):
     Alias('serial', serial)
     
 # iostreams
-if 'iostreams' in BUILD_TARGETS or not os.path.isfile('libiostreams.a'):
+if 'iostreams' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libiostreams.a')):
     iostreams = env.StaticLibrary(
-        target = 'iostreams',
-        source = ['iostreams/%s'%x for x in ['file_descriptor.cpp', 'mapped_file.cpp', 'zlib.cpp']]
+        target = os.path.join(BDIR, 'iostreams'),
+        source = [os.path.join(BDIR, 'iostreams/%s'%x) for x in ['file_descriptor.cpp', 'mapped_file.cpp', 'zlib.cpp']]
     )
     Alias('iostreams', iostreams)
 
 # GSL
-if 'gsl' in BUILD_TARGETS or not os.path.isfile('libgsl.a'):
+if 'gsl' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libgsl.a')):
     gsl = env.StaticLibrary(
-        target = 'gsl',
+        target = os.path.join(BDIR, 'gsl'),
         source = ['../gsl/%s'%x for x in Split('''
             sys/infnan.c sys/coerce.c sys/fdiv.c sys/pow_int.c
             sys/fcmp.c specfunc/psi.c specfunc/trig.c specfunc/exp.c
@@ -117,26 +140,32 @@ target_mod = {}
 for mod in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
     env_mod[mod] = env.Copy()
     env_mod[mod].Append(CCFLAGS = DEF[mod])
-    env_mod[mod].Append(LIBPATH = ['.'])
+    env_mod[mod].Append(LIBPATH = [BDIR])
     src = Split('''utility migrator population simulator terminator
                 individual mutator stator initializer operator recombinator
                 mating outputer selector tagger''') 
     for file in src:
-        env.Command('%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
-    env.Command(['simuPOP_%s_wrap.cpp'%mod, 'simuPOP_%s.py'%mod], 'simuPOP_%s.i'%mod, 
+        env.Command('%s/%s_%s.cpp'%(BDIR, file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
+    env.Command([os.path.join(BDIR, x) for x in 
+        ['simuPOP_%s_wrap.cpp'%mod, 'simuPOP_%s.py'%mod]], 
+        'simuPOP_%s.i'%mod, 
         ['%s %s -o $TARGET $SOURCE'%(SWIG, ' '.join(DEF[mod]))])
-    env.Depends('simuPOP_%s_wrap.cpp'%mod, ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i', 'simuPOP_%s.i'%mod] + \
+    env.Depends(os.path.join(BDIR, 'simuPOP_%s_wrap.cpp'%mod), 
+        ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i', 
+        os.path.join(BDIR, 'simuPOP_%s.i'%mod)] + \
         ['%s.h' % x for x in src])
     target_mod[mod] = env_mod[mod].SharedLibrary(
-        target = mod,
-        source = ['%s_%s.cpp' % (x, mod) for x in src] + ['simuPOP_%s_wrap.cpp'%mod],
+        target = os.path.join(BDIR, mod),
+        source = [os.path.join(BDIR, '%s_%s.cpp' % (x, mod)) for x in src] 
+            + [os.path.join(BDIR, 'simuPOP_%s_wrap.cpp'%mod)],
         LIBS = ['serial', 'iostreams', 'gsl', 'z'],
     )
-    env.Command('_simuPOP_%s.so'%mod, target_mod[mod], [Move('$TARGET', '$SOURCE')])
-    Alias(mod, ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod])
-    Alias('all', ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod])
+    env.Command(os.path.join(BDIR, '_simuPOP_%s.so'%mod), 
+        target_mod[mod], [Move('$TARGET', '$SOURCE')])
+    Alias(mod, [os.path.join(BDIR, x) for x in ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod]])
+    Alias('all', [os.path.join(BDIR, '_simuPOP_%s.so'%mod), 'simuPOP_%s.py'%mod])
     for file in ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod]:
-        env.InstallAs(os.path.join(dest_dir, file), file)
+        env.InstallAs(os.path.join(dest_dir, file), os.path.join(BDIR, file))
         Alias('install', os.path.join(dest_dir, file))
 
 for file in ['simuRPy.py', 'simuUtil.py', 'simuViewPop.py', 'simuMatPlt.py',
