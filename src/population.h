@@ -68,6 +68,39 @@ using boost::serialization::make_nvp;
 namespace simuPOP
 {
 
+	class population;
+
+	/// this class implements a Python itertor class that 
+	/// can be used to iterate through individuals in a 
+	/// population.
+	class individualIterator
+	{
+		public:
+			individualIterator(population* pop, ULONG s, ULONG e): 
+				m_population(pop),
+				m_index(s),
+				m_end(e)
+			{
+			}
+
+			individualIterator __iter__()
+			{
+				return *this;
+			}
+			
+			individual& next();
+			
+		private:
+			// an instance of population
+			population* m_population;
+			
+			// current (initialized as strt) index
+			ULONG m_index;
+
+			// ending index
+			ULONG m_end;
+	};
+
 	/** \brief a collection of individuals with subpopulation structure
 
 	Please refer to user's Guide for details about this object.
@@ -340,6 +373,20 @@ namespace simuPOP
 				return m_inds[ subPopBegin(subPop) + ind];
 			}
 
+			individualIterator individuals()
+			{
+				return individualIterator(this, 0, popSize());
+			}
+
+			individualIterator individuals(UINT subPop)
+			{
+#ifndef OPTIMIZED
+				CHECKRANGESUBPOP(subPop);
+#endif
+
+				return individualIterator(this, subPopBegin(subPop), subPopEnd(subPop));
+			}
+			
 			/// CPPONLY
 			bool shallowCopied()
 			{
@@ -1244,6 +1291,7 @@ namespace simuPOP
 
 	population& LoadPopulation(const string& file, const string& format="auto");
 
+	
 }
 
 

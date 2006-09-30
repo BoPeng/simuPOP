@@ -199,6 +199,18 @@ class TestPopulation(unittest.TestCase):
         #
         self.assertEqual(pop.subPopIndPair(21), (1,1) )
         self.assertRaises(exceptions.IndexError, pop.subPopIndPair, 200 )
+
+    def testIterator(self):
+        'Testing the individual iterators'
+        pop = population(loci=[1], subPop=[4,6])
+        for ind in pop.individuals():
+            ind.setAllele(1, 0)
+        for ind in pop.individuals(1):
+            ind.setAllele(2, 0)
+        for ind in pop.individuals(0):
+            self.assertEqual(ind.allele(0), 1)
+        for ind in pop.individuals(1):
+            self.assertEqual(ind.allele(0), 2)
      
     def testSetSubPopStru(self):
         'Testing function setSubPopStru'

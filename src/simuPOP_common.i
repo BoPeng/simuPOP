@@ -167,6 +167,11 @@ namespace std
     {
         $function
     }
+	catch(simuPOP::StopIteration e)
+	{
+        SWIG_SetErrorObj(PyExc_StopIteration, SWIG_Py_Void());
+		SWIG_fail;
+	}
     catch(simuPOP::OutOfMemory e)
     {
         SWIG_exception(SWIG_MemoryError, e.message());
@@ -208,7 +213,6 @@ namespace std
 // there will also be a bunch of %ignore directives as well
 //
 %rename(individual) ind(ULONG, UINT);
-%rename(population) pop(UINT);
 
 %newobject simuPOP::population::newPopByIndInfo;
 %newobject simuPOP::population::newPopWithPartialLoci;
@@ -253,6 +257,36 @@ namespace std
 %include "recombinator.h"
 %include "selector.h"
 
+////////////////////////// Provide a iterator as pop.individuals() ////////////////
+// This part is now implemented at the C++ level (see population.h)
+
+//%pythoncode %{
+//
+//class populationIterator:
+//    def __init__(self, pop):
+//        self.pop = pop
+//        self.index = -1
+//        self.endIndex = pop.popSize()
+//
+//    def __iter__(self):
+//        return self
+//
+//    def next(self):
+//        self.index += 1
+//        if self.index == self.endIndex:
+//            raise StopIteration
+//        else:
+//            return self.pop.individual(self.index)
+//
+//def individuals(self):
+//    '''
+//    Return an iterator iterate over all individuals
+//    '''
+//    return populationIterator(self)
+//
+//population.individuals = individuals
+//%}
+//
 ////////////////////////// SIMUPOP C++ UTILITY FUNCTIONS //////////////////////////
 
 %newobject LoadPopulation;

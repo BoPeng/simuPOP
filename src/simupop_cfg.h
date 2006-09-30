@@ -151,7 +151,14 @@ namespace simuPOP
 			/// error message
 			string m_msg;
 	};
-
+	
+	/// exception, thrown if out of memory
+	class StopIteration: public Exception
+	{
+		public:
+			StopIteration(string msg):Exception(msg){};
+	};
+	
 	/// exception, thrown if out of memory
 	class OutOfMemory: public Exception
 	{

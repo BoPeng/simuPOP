@@ -1,5 +1,3 @@
-# vi:filetype=python:expandtab:tabstop=2:shiftwidth=2
-# 
 # file SConstruct
 #
 # build simuPOP
@@ -137,7 +135,14 @@ DEF = {
 }
 env_mod = {}
 target_mod = {}
-for mod in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
+if 'all' in BUILD_TARGETS:
+    build_mod = ['std', 'op', 'la', 'laop', 'ba', 'baop']
+else:
+    build_mod = []
+    for m in  ['std', 'op', 'la', 'laop', 'ba', 'baop']:
+        if m in BUILD_TARGETS:
+            build_mod.append(m)
+for mod in build_mod:
     env_mod[mod] = env.Copy()
     env_mod[mod].Append(CCFLAGS = DEF[mod])
     env_mod[mod].Append(LIBPATH = [BDIR])
@@ -163,10 +168,13 @@ for mod in ['std', 'op', 'la', 'laop', 'ba', 'baop']:
     env.Command(os.path.join(BDIR, '_simuPOP_%s.so'%mod), 
         target_mod[mod], [Move('$TARGET', '$SOURCE')])
     Alias(mod, [os.path.join(BDIR, x) for x in ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod]])
-    Alias('all', [os.path.join(BDIR, '_simuPOP_%s.so'%mod), 'simuPOP_%s.py'%mod])
+    Alias('all', [os.path.join(BDIR, '_simuPOP_%s.so'%mod), os.path.join(BDIR, 'simuPOP_%s.py'%mod)])
     for file in ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod]:
-        env.InstallAs(os.path.join(dest_dir, file), os.path.join(BDIR, file))
+        #env.InstallAs(os.path.join(dest_dir, file), os.path.join(BDIR, file))
+        env.Command(os.path.join(dest_dir, file), os.path.join(BDIR, file),
+			[Copy('$TARGET', '$SOURCE')])
         Alias('install', os.path.join(dest_dir, file))
+
 
 for file in ['simuRPy.py', 'simuUtil.py', 'simuViewPop.py', 'simuMatPlt.py',
     'simuPOP.py', 'simuOpt.py']:
