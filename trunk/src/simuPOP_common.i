@@ -259,7 +259,9 @@ namespace std
 
 ////////////////////////// Provide a iterator as pop.individuals() ////////////////
 // This part is now implemented at the C++ level (see population.h)
-
+// Performance comparison shows 12.18s vs. 4.10s, the individual(i) method 
+// takes 4.7 to 5.1s
+//
 //%pythoncode %{
 //
 //class populationIterator:
@@ -278,15 +280,15 @@ namespace std
 //        else:
 //            return self.pop.individual(self.index)
 //
-//def individuals(self):
+//def inds(self):
 //    '''
 //    Return an iterator iterate over all individuals
 //    '''
 //    return populationIterator(self)
 //
-//population.individuals = individuals
+//population.inds = inds
 //%}
-//
+
 ////////////////////////// SIMUPOP C++ UTILITY FUNCTIONS //////////////////////////
 
 %newobject LoadPopulation;

@@ -135,13 +135,13 @@ DEF = {
 }
 env_mod = {}
 target_mod = {}
-if 'all' in BUILD_TARGETS:
-    build_mod = ['std', 'op', 'la', 'laop', 'ba', 'baop']
-else:
-    build_mod = []
-    for m in  ['std', 'op', 'la', 'laop', 'ba', 'baop']:
-        if m in BUILD_TARGETS:
-            build_mod.append(m)
+build_mod = []
+for m in  ['std', 'op', 'la', 'laop', 'ba', 'baop']:
+    if m in BUILD_TARGETS:
+        build_mod.append(m)
+if build_mod == [] or  'all' in BUILD_TARGETS:
+	build_mod = ['std', 'op', 'la', 'laop', 'ba', 'baop']
+
 for mod in build_mod:
     env_mod[mod] = env.Copy()
     env_mod[mod].Append(CCFLAGS = DEF[mod])
@@ -151,10 +151,12 @@ for mod in build_mod:
                 mating outputer selector tagger''') 
     for file in src:
         env.Command('%s/%s_%s.cpp'%(BDIR, file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
-    env.Command([os.path.join(BDIR, x) for x in 
-        ['simuPOP_%s_wrap.cpp'%mod, 'simuPOP_%s.py'%mod]], 
+    env.Command(os.path.join(BDIR, 'simuPOP_%s_wrap.cpp'%mod),
         'simuPOP_%s.i'%mod, 
         ['%s %s -o $TARGET $SOURCE'%(SWIG, ' '.join(DEF[mod]))])
+    env.Command(os.path.join(BDIR, 'simuPOP_%s.py'%mod), 
+        'simuPOP_%s.i'%mod, 
+        ['%s %s -outdir %s $SOURCE'%(SWIG, ' '.join(DEF[mod]), BDIR)])
     env.Depends(os.path.join(BDIR, 'simuPOP_%s_wrap.cpp'%mod), 
         ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i', 
         os.path.join(BDIR, 'simuPOP_%s.i'%mod)] + \
