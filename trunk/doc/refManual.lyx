@@ -1497,7 +1497,7 @@ Population related functions
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="58" columns="3">
+<lyxtabular version="3" rows="60" columns="3">
 <features islongtable="true" firstHeadBottomDL="true" headBottomDL="true">
 <column alignment="left" valignment="top" leftline="true" width="0">
 <column alignment="left" valignment="top" leftline="true" width="0" special="|p{2in}|">
@@ -2018,6 +2018,83 @@ p.individual
 
 \begin_layout Standard
 Return an individual from a subpopulation
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset LatexCommand \ref{sub:Individuals}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+p.individuals
+\begin_inset LatexCommand \index{population!individuals}
+
+\end_inset
+
+()
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Return an iterator that can be used to iterate through all individuals
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+p.individuals
+\begin_inset LatexCommand \index{population!individuals}
+
+\end_inset
+
+(subPop)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Return an iterator that can be used to iterate through all individuals in
+ a subpopulation.
 \end_layout
 
 \end_inset
@@ -4962,6 +5039,46 @@ ind
 subPop
 \family default
 'th subpopulation.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+individuals(), individuals(subPop): 
+\family default
+returns an iterator that can be used to iterate through all individuals.
+\end_layout
+
+\begin_layout Standard
+The iterator can simplify the access of individuals, by using
+\end_layout
+
+\begin_layout LyX-Code
+for ind in pop.individuals(2):
+\end_layout
+
+\begin_layout LyX-Code
+  # do something to ind
+\end_layout
+
+\begin_layout LyX-Code
+  print ind.affected()
+\end_layout
+
+\begin_layout Standard
+instead of the older
+\end_layout
+
+\begin_layout LyX-Code
+for i in range(pop.popSize()):
+\end_layout
+
+\begin_layout LyX-Code
+  ind = pop.individual(i)
+\end_layout
+
+\begin_layout LyX-Code
+  print ind.affected()
 \end_layout
 
 \begin_layout Standard

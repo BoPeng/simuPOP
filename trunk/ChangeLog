@@ -31,6 +31,8 @@ version 0.7.2 - Currently available as svn snapshot
 		specially built python.)
   - BUG: fix memory leaks in stator, util.cpp (pyExec) and simuPOP_common.i
   - NEW: add pyMating operator
+  - NEW: add population::individuals() function that can be used to iterate
+		through all individuals (or in a subpopulation).
 
 
 version 0.7.1 - (Rev 378) - Aug 20, 2006

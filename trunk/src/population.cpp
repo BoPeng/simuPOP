@@ -32,6 +32,15 @@ namespace io = boost::iostreams;
 
 namespace simuPOP
 {
+	individual& individualIterator::next()
+	{
+		m_index++;
+		if(m_index == m_end)
+			throw StopIteration("");
+		else
+			return m_population->ind(m_index);
+	}
+
 	population::population( ULONG size,
 		UINT ploidy,
 		const vectoru& loci,
