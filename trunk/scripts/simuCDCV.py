@@ -346,7 +346,7 @@ def getStats(v, highest):
         if len(allelesBeforeExpansion) > 0:
             for al in allelesBeforeExpansion[d]:
                 try:
-                    ancNum += num[al-2]
+                    ancNum += num[al-1]
                 except:
                     pass
         percAncestralAllele.append(ancNum*1./allNum)
