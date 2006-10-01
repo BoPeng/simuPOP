@@ -81,12 +81,13 @@ def makeReleaseTag(release):
 
 def writeReleaseFile(release, revision):
     ' write release file only in release mode '
-    execfile(release_file)
+    res = {}
+    execfile(release_file, res, res)
     file = open(release_file, 'w')
     file.write('''SIMUPOP_VER = "%s"
 SIMUPOP_REV = "%s"''' % (release, revision))
     file.close()
-    return (SIMUPOP_VER, SIMUPOP_REV)
+    return (res['SIMUPOP_VER'], res['SIMUPOP_REV'])
 
 
 def buildDocument():
