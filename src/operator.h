@@ -1087,5 +1087,118 @@ namespace simuPOP
 			bool m_passOffspringOnly;
 	};
 
+
+	/* 
+	   infoOperator that manipulate individuals
+    */
+	class pyIndOperator: public Operator
+	{
+
+		public:
+			/** \brief individual operator that apply a function to each individual
+
+			\param func a python function that accept a individual and perform whatever
+			operation it wants to.
+			\param para any python object that will be passed to func after pop parameter.
+			  Multiple parameter can be passed as a tuple.
+			\param formOffGenotype if stage=DuringMating, set this parameter to false
+			  will disallow random mating to set genotype.
+
+			Note: (FIXME) output to output or outputExpr is not yet supported. Ideally,
+			this func will take two parameters with pop and then a filehandle to output,
+			however, differentiating output, append etc is too troublesome right now.
+			*/
+			pyIndOperator(PyObject* func, PyObject* param=NULL,
+				int stage=PostMating, bool formOffGenotype=false, 
+				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
+				m_func(func), m_param(param)
+			{
+				if( !PyCallable_Check(func))
+					throw ValueError("Passed variable is not a callable python function.");
+
+				// inc reference count
+				Py_XINCREF(func);
+
+				if(param != NULL)
+					Py_XINCREF(param);
+
+				this->setFormOffGenotype(formOffGenotype);
+			};
+
+			/// destructor
+			virtual ~pyIndOperator()
+			{
+				Py_DECREF(m_func);
+
+				if( m_param != NULL)
+					Py_DECREF(m_param);
+			};
+
+			/// CPPONLY need a copy operator because of m_func
+			pyIndOperator(const pyIndOperator& rhs):
+			Operator(rhs),
+				m_func(rhs.m_func),
+				m_param(rhs.m_param)
+			{
+				Py_INCREF( m_func);
+
+				if( m_param != NULL)
+					Py_INCREF( m_param);
+			}
+
+			/// this function is very important
+			virtual Operator* clone() const
+			{
+				return new pyIndOperator(*this);
+			}
+
+			virtual bool apply(population& pop)
+			{
+				// call the python function, pass the each individual to it.
+				// get pop object
+				for(size_t i=0; i<pop.popSize(); ++i) 
+				{
+					PyObject* indObj = pyIndObj(static_cast<void*>(&pop.ind(i)));
+					// if pop is valid?
+					if(indObj == NULL)
+						throw SystemError("Could not pass population to the provided function. \n"
+							"Compiled with the wrong version of SWIG?");
+
+					// parammeter list, ref count increased
+					bool resBool;
+					// parenthesis is needed since PyCallFuncX are macros.
+					if( m_param == NULL)
+					{
+						PyCallFunc(m_func, "(O)", indObj, resBool, PyObj_As_Bool);
+					}
+					else
+					{
+						PyCallFunc2(m_func, "(OO)", indObj, m_param, resBool, PyObj_As_Bool);
+					}
+
+					Py_DECREF(indObj);
+
+					if(!resBool)
+						return false;
+				}
+				return true;
+			}
+
+			virtual string __repr__()
+			{
+				return "<simuPOP::pyIndOperator>";
+			}
+
+		private:
+
+			/// the function
+			PyObject * m_func;
+
+			/// parammeters
+			PyObject * m_param;
+	};
+
 }
 #endif

@@ -34,11 +34,10 @@ namespace simuPOP
 {
 	individual& individualIterator::next()
 	{
-		m_index++;
 		if(m_index == m_end)
 			throw StopIteration("");
 		else
-			return m_population->ind(m_index);
+			return m_population->ind(m_index++);
 	}
 
 	population::population( ULONG size,
@@ -861,11 +860,11 @@ namespace simuPOP
 #endif
 		m_popSize = rhs.m_popSize;
 		m_numSubPop = rhs.m_numSubPop;
-		m_subPopSize.swap( rhs.m_subPopSize);
+		m_subPopSize.swap(rhs.m_subPopSize);
 		m_popGenoSize = rhs.m_popGenoSize;
-		m_subPopIndex.swap( rhs.m_subPopIndex);
-		m_genotype.swap( rhs.m_genotype);
-		m_info.swap( rhs.m_info);
+		m_subPopIndex.swap(rhs.m_subPopIndex);
+		m_genotype.swap(rhs.m_genotype);
+		m_info.swap(rhs.m_info);
 		m_inds.swap(rhs.m_inds);
 #ifndef OPTIMIZED
 		DBG_FAILIF( rhsStartingGenoPtr != m_genotype.begin(),
