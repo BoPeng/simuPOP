@@ -12,7 +12,7 @@ import os, sys, time
 
 last_version_file = '/var/www/html/simuPOP/download/latestversion'
 last_revision_file = '/var/www/html/simuPOP/download/latestrevision'
-release_file = 'simuPOP.release'
+release_file = '/home/bpeng/simuPOP/simuPOP.release'
 download_directory = '/var/www/html/simuPOP/download'
 doc_directory = '/var/www/html/simuPOP_doc/doc'
 
@@ -43,7 +43,9 @@ def removeTempFiles():
 def commitModification():
     ''' if there are changes, commit it '''
     if cmdOutput('svn diff') != '':
-        os.system('svn ci -m "automatic checkin on %s"' % time.asctime())
+        cmd = 'svn ci -m "automatic checkin on %s"' % time.asctime()
+        print cmd
+        os.system(cmd)
     os.system('svn update')
 
 
