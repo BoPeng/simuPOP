@@ -33,6 +33,7 @@ version 0.7.2 - Currently available as svn snapshot
   - NEW: add pyMating operator
   - NEW: add population::individuals() function that can be used to iterate
 		through all individuals (or in a subpopulation).
+  - NEW: add pyIndOperator
 
 
 version 0.7.1 - (Rev 378) - Aug 20, 2006

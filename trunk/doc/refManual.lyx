@@ -10253,6 +10253,11 @@ pyOperator
 
 \end_inset
 
+, pyIndOperator
+\begin_inset LatexCommand \index{operator!pyIndOperator}
+
+\end_inset
+
 
 \end_layout
 
@@ -10565,6 +10570,63 @@ An example of duringMating pyOperator can be found in
 scripts/demoPyOperator.py
 \family default
 .
+\end_layout
+
+\begin_layout Standard
+Another general python operator is 
+\family typewriter
+pyIndOperator
+\family default
+, it is similar to 
+\family typewriter
+pyOpertor
+\family default
+ but it passes the user individuals, rather than the whole population.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+def func(ind, param):
+\end_layout
+
+\begin_layout LyX-Code
+  ind.setInfo(param[0], 'myinfo)
+\end_layout
+
+\begin_layout LyX-Code
+pyIndOperator(func=func, param=(1,))
+\end_layout
+
+\begin_layout Standard
+is the same as
+\end_layout
+
+\begin_layout LyX-Code
+def func(pop, param):
+\end_layout
+
+\begin_layout LyX-Code
+  for ind in pop.individuals():
+\end_layout
+
+\begin_layout LyX-Code
+    ind.setInfo(param[0], 'myinfo')
+\end_layout
+
+\begin_layout LyX-Code
+pyIndOperator(func=func, param=(1,))
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+pyIndOperator
+\family default
+ may have some performance advantage over 
+\family typewriter
+pyOperator
+\family default
+ in some cases.
 \end_layout
 
 \begin_layout Section

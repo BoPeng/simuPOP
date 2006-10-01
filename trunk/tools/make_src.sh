@@ -6,7 +6,7 @@ rm -rf dist
 
 # generate wrap files for other libraries
 #SWIG='swig  -shadow -python -keyword -w-503,-312,-511,-362,-383,-384,-389,-315,-525 -nodefault -c++'
-SWIG='swig -O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
+SWIG='swig -O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-509,-362,-383,-384,-389,-315,-525'
 echo "Generating SWIG wrap files"
 swig -python -external-runtime src/swigpyrun.h
 $SWIG   -o src/simuPOP_std_wrap.cpp src/simuPOP_std.i

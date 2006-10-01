@@ -126,7 +126,7 @@ if __name__ == '__main__':
     release = 'snapshot'
     actions = []
     actions_exclude = []
-    all_actions = ['svn', 'doc', 'src', 'linux', 'mac', 'mdk', 'win', 'sol']
+    all_actions = ['svn', 'doc', 'src', 'linux', 'mac', 'mdk', 'win', 'sol', 'rhel4']
 
     ## Parse the command line
     for op in sys.argv[1:]:   # default shell/for list is $*, the options
@@ -201,15 +201,17 @@ Options:
         buildTarget('simuPOP-%s-src.tar.gz', 'make_src.sh', 'Building src fails')
         # restore it
         writeReleaseFile(old_ver, old_rev)
-    if 'linux' in actions:
-        buildTarget('simuPOP-%s.linux-i686-py23.tar.gz', 'make_linux.sh', 'Building linux binary fails', os.P_NOWAIT)
-    if 'win' in actions:
-        buildTarget('simuPOP-%s.win32-py2.3.exe', 'make_win.sh', 'Building windows binary fails', os.P_WAIT)
     if 'sol' in actions:
         buildTarget('simuPOP-%s-sol-py23.tar.gz', 'make_sol.sh', 'Building solaris binary fails', os.P_NOWAIT)
-    if 'mdk' in actions:
-        buildTarget('simuPOP-%s-mdk-py23.tar.gz', 'make_mdk.sh', 'Building mandriva binary fails', os.P_WAIT)
     if 'mac' in actions:
         buildTarget('simuPOP-%s.darwin-7.7.0-PowerMacintosh.tar.gz', 'make_mac.sh', 'Building mac binary fails', os.P_NOWAIT)
+    if 'linux' in actions:
+        buildTarget('simuPOP-%s.linux-i686-py23.tar.gz', 'make_linux.sh', 'Building linux binary fails', os.P_NOWAIT)
+    if 'rhel4' in actions:
+        buildTarget('simuPOP-%s.linux-i686-py23.tar.gz', 'make_rhel4.sh', 'Building linux binary fails', os.P_WAIT)
+    if 'win' in actions:
+        buildTarget('simuPOP-%s.win32-py2.3.exe', 'make_win.sh', 'Building windows binary fails', os.P_WAIT)
+    if 'mdk' in actions:
+        buildTarget('simuPOP-%s-mdk-py23.tar.gz', 'make_mdk.sh', 'Building mandriva binary fails', os.P_WAIT)
 
     
