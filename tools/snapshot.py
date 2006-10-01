@@ -38,8 +38,8 @@ def removeTempFiles():
                 # force the use of / since miktex uses / even under windows
                 print "Remove file %s..." % os.path.join(root, file)
                 os.remove(os.path.join(root, file))
-
     
+
 def commitModification():
     ''' if there are changes, commit it '''
     if cmdOutput('svn diff') != '':
@@ -49,9 +49,9 @@ def commitModification():
 
 def checkRevision():
     if os.path.isfile(last_revision_file):
-        rev = open(last_revision_file).read()
+        last_rev = open(last_revision_file).read()
     else:
-        rev = None
+        last_rev = None
     # check revision number
     cur_rev = cmdOutput('svnversion .')
     #
@@ -59,7 +59,7 @@ def checkRevision():
     file = open(last_revision_file, 'w')
     file.write(cur_rev)
     file.close()
-    return (rev, cur_rev)
+    return (last_rev, cur_rev)
 
 
 def writeVersionFile(release):
@@ -79,10 +79,12 @@ def makeReleaseTag(release):
 
 def writeReleaseFile(release, revision):
     ' write release file only in release mode '
+    execfile(release_file)
     file = open(release_file, 'w')
     file.write('''SIMUPOP_VER = "%s"
 SIMUPOP_REV = "%s"''' % (release, revision))
     file.close()
+    return (SIMUPOP_VER, SIMUPOP_REV)
 
 
 def buildDocument():
@@ -148,6 +150,7 @@ Options:
         else:
             print "Unknown option", op
             sys.exit(1)
+    # decide what to do ....
     if actions == []:
         actions = all_actions
     else:
@@ -158,25 +161,27 @@ Options:
     for act in actions_exclude:
         if act in actions:
             actions.remove(act)
+    #
     # go to top directory
     os.chdir('..')
-    print 'Entering ', os.getcwd()
-    #
     removeTempFiles()
     #
     if 'svn' in actions:
         # check in unsubmitted changes
         commitModification()
-        #
+    # get the old and new revision number
     (old_rev, revision) = checkRevision()
     #
+    # avoid uncessary rebuild
     if old_rev == revision and not force_build:
         sys.exit(0)
-    if 'svn' in actions:
+    #
+    if 'svn' in actions and release != 'snapshot':
         # if --release, make a tag
-        if release != 'snapshot':
-            makeReleaseTag(release)
-            writeReleaseFile(release, revision)
+        makeReleaseTag(release)
+        writeReleaseFile(release, revision)
+        commitModification()
+    #
     # start building
     print "Building simuPOP revision %s..." % revision
     writeVersionFile(release)
@@ -187,7 +192,12 @@ Options:
     os.chdir('tools')
     print 'Entering ', os.getcwd()
     if 'src' in actions:
+        # make release file
+        # In the case of snapshot, we need to restore it.
+        (old_ver, old_rev) = writeReleaseFile(release, revision)
         buildTarget('simuPOP-%s-src.tar.gz', 'make_src.sh', 'Building src fails')
+        # restore it
+        writeReleaseFile(old_ver, old_rev)
     if 'linux' in actions:
         buildTarget('simuPOP-%s.linux-i686-py23.tar.gz', 'make_linux.sh', 'Building linux binary fails', os.P_NOWAIT)
     if 'win' in actions:
