@@ -192,7 +192,7 @@ namespace simuPOP
 
 
 #ifdef Py_REF_DEBUG
-	ULONG g_refTotal;
+	long g_refTotal;
 	// give out at most these many warnings.
 	int g_refWarningCount;
 	
