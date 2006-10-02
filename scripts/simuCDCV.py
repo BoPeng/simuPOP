@@ -612,7 +612,7 @@ def simuCDCV(numDSL, initSpec, selModel,
             pyExec('global allelesBeforeExpansion\n'+
                 '''for i in range(%d):
                 allelesBeforeExpansion.append([])
-                for a in range(2,len(alleleNum[i])):
+                for a in range(1,len(alleleNum[i])):
                     if alleleNum[i][a] != 0:
                         allelesBeforeExpansion[i].append(a)
                 print "Ancestral alleles before expansion: ", allelesBeforeExpansion[i]''' % \
