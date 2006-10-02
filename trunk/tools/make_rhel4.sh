@@ -24,8 +24,8 @@ scp -P 8892 /var/www/html/simuPOP/download/simuPOP-$VER-src.tar.gz vmrhel4:
 UNCOMPRESS="tar zxf simuPOP-$VER-src.tar.gz"
 BUILD="python setup.py config --include-dirs=/usr/include/linux bdist --formats=gztar,rpm"
 ssh -X -p 8892 vmrhel4 "$UNCOMPRESS && cd simuPOP-$VER && $BUILD"
-scp -P 8892 vmrhel4:simuPOP-$VER/dist/simuPOP-$VER.linux-i686.tar.gz /var/www/html/simuPOP/download/simuPOP-$VER-mdk-py23.tar.gz
-scp -P 8892 vmrhel4:simuPOP-$VER/dist/simuPOP-$VER*86.rpm /var/www/html/simuPOP/download/simuPOP-$VER-mdk-i586-py23.rpm
+scp -P 8892 vmrhel4:simuPOP-$VER/dist/simuPOP-$VER.linux-i686.tar.gz /var/www/html/simuPOP/download/simuPOP-$VER-rhel4-py23.tar.gz
+scp -P 8892 vmrhel4:simuPOP-$VER/dist/simuPOP-$VER*86.rpm /var/www/html/simuPOP/download/simuPOP-$VER-rhel4-i586-py23.rpm
 
 vmrun suspend /vmware/RHEL4/RHEL4.vmx
 
