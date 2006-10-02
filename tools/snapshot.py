@@ -201,8 +201,8 @@ Options:
         buildTarget('simuPOP-%s-src.tar.gz', 'make_src.sh', 'Building src fails')
         # restore it
         writeReleaseFile(old_ver, old_rev)
-    if 'sol' in actions:
-        buildTarget('simuPOP-%s-sol-py23.tar.gz', 'make_sol.sh', 'Building solaris binary fails', os.P_NOWAIT)
+    #if 'sol' in actions:
+    #    buildTarget('simuPOP-%s-sol-py23.tar.gz', 'make_sol.sh', 'Building solaris binary fails', os.P_NOWAIT)
     if 'mac' in actions:
         buildTarget('simuPOP-%s.darwin-7.7.0-PowerMacintosh.tar.gz', 'make_mac.sh', 'Building mac binary fails', os.P_NOWAIT)
     if 'linux' in actions:
