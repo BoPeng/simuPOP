@@ -213,6 +213,7 @@ namespace std
 // there will also be a bunch of %ignore directives as well
 //
 %rename(individual) ind(ULONG, UINT);
+%rename(population) pop(UINT);
 
 %newobject simuPOP::population::newPopByIndInfo;
 %newobject simuPOP::population::newPopWithPartialLoci;
