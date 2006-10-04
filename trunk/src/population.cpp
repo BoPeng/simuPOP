@@ -94,8 +94,8 @@ namespace simuPOP
 		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames, lociNames, maxAllele, infoFields);
 
 		DBG_DO( DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
-			<< sizeof(Allele) << '*' << genoSize() << endl
-			<< "Info: " << sizeof(SubPop_ID) << ", Tag: " << sizeof(TagType)
+			<< sizeof(Allele) << '*' << genoSize() << endl 
+			<< ", infoPtr: " << sizeof(double*) 
 			<< ", GenoPtr: " << sizeof(Allele*) << ", Flag: " << sizeof(unsigned char)
 			<< ", plus genoStru" << endl );
 

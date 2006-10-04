@@ -7,6 +7,8 @@ BUGS:
   - some rpy function does not work due to a rpy bug.
 
 version 0.7.4 - Currently available as svn snapshot
+  - BUG: fix simulator.population() function
+
 
 version 0.7.3 - (Rev 470) Oct 2, 2006
   - CHG: change the allele type of long module to unsigned short, since

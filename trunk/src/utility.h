@@ -1360,7 +1360,6 @@ namespace simuPOP
 			BernulliTrials(RNG& rng);
 
 			///
-			/// CPPONLY
 			BernulliTrials(RNG& rng, const vectorf& prob, ULONG trials);
 
 			///
@@ -1383,7 +1382,6 @@ namespace simuPOP
 			void setParameter(const vectorf& prob, ULONG trials);
 
 			/// generate the trial table, reset m_cur
-			/// CPPONLY
 			void doTrial();
 
 			/// CPPONLY

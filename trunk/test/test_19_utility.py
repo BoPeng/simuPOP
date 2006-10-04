@@ -88,6 +88,14 @@ class TestRNG(unittest.TestCase):
         SetRNG(name, sd)
         self.assertEqual(rng().seed(), sd)
 
+    def testWeightedSampler(self):
+        'Test weighted sampler'
+        sampler = Weightedsampler(rng(), [1, 2, 3, 4])
+        num = []
+        for i in range(100000):
+            num.append(sampler.get())
+        #print [num.count(i) for i in range(4)]
+
     def testGappedIterator(self):
         'Test gapped iterator (internal)'
         self.assertEqual(testGappedIterator(), True)

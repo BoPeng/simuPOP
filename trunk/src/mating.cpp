@@ -400,6 +400,9 @@ namespace simuPOP
 				for( ind = 0; ind < numFemale; ++ind)
 					m_femaleFitness[ind] = fitness[ m_femaleIndex[ind] ];
 
+				DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
+				DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
+
 				m_malesampler.set(m_maleFitness);
 				m_femalesampler.set(m_femaleFitness);
 			}

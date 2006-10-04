@@ -125,7 +125,6 @@ not be very efficient.
 
 %ignore simuPOP::BernulliTrials::BernulliTrials(RNG &rng);
 
-%ignore simuPOP::BernulliTrials::BernulliTrials(RNG &rng, const vectorf &prob, ULONG trials);
 
 %ignore simuPOP::BernulliTrials::~BernulliTrials();
 
@@ -139,8 +138,6 @@ Usage:
 ";
 
 %ignore simuPOP::BernulliTrials::setParameter(const vectorf &prob, ULONG trials);
-
-%ignore simuPOP::BernulliTrials::doTrial();
 
 %ignore simuPOP::BernulliTrials::curTrial();
 
