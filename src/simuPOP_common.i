@@ -209,9 +209,9 @@ namespace std
 %ignore std::operator<<(ostream&, const intDict&);
 %ignore simuPOP::GappedAlleleIterator;
 
-// the following load a docstring file extracted from doxgen output.
-// there will also be a bunch of %ignore directives as well
-//
+// individual and population are type names, and can not be used 
+// as function name. ind and pop are used instead.
+// at the python level, individual and population are better.
 %rename(individual) ind(ULONG, UINT);
 %rename(population) pop(UINT);
 
@@ -222,6 +222,9 @@ namespace std
 %newobject simuPOP::operator::clone;
 %newobject simuPOP::stat::clone;
 
+// the following load a docstring file extracted from doxgen output.
+// there will also be a bunch of %ignore directives as well
+//
 %include "simuPOP_doc.i";
 %include "utility.h"
 %include "individual.h"
