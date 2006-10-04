@@ -48,8 +48,66 @@ class TestSelector(unittest.TestCase):
             if 0 in ind.arrGenotype() or 2 in ind.arrGenotype():
                 assert ind.info('fitness') > 0.25
        
+    def TestAgeOfDistinction(self):
+        '''Testing selection in a long time, this is a long test, and 
+        will not be performed automatically '''
+        import rpy
+        N = 5000
+        p = 0.2
+        m = 1000
+        s = 0.10
+        if os.path.isfile('dist.py'):
+            res = {}
+            execfile('dist.py', res, res)
+            lost = res['lost']
+        else:
+            fixed = 0
+            length_lost = []
+            length_fixed = []
+            for i in range(m):
+                traj = FreqTrajectoryStoch(curGen=200000, fitness=[1, 1+s/2, 1+s], \
+                    freq=p, N=N, restartIfFail=True, allowFixation=True)
+                if traj[0] > 0.5:
+                    fixed += 1
+                    length_fixed.append(len(traj))
+                else:
+                    length_lost.append(len(traj))
+                print len(traj)
+            out = open('dist.py', 'w')
+            fixed = rpy.r.quantile(length_fixed, [0.05, 0.25, 0.5, 0.75, 0.95])
+            lost = rpy.r.quantile(length_lost,  [0.05, 0.25, 0.5, 0.75, 0.95])
+            if len(length_fixed) > 0:
+                print >> out, 'fixed = %s' % str(fixed)
+            if len(length_lost) > 0:
+                print >> out, 'lost = %s' % str(lost)
+            out.close()
+            print open('dist.py').read()
+        # real case
+        simulated = []
+        sel = mlSelector(
+                        [maSelector(loci=[0], wildtype=[0], fitness=[1, 1-s/2, 1-s])],
+                        mode=SEL_Heterogeneity
+                        )
+        # sel = maSelector(loci=[0], wildtype=[0], fitness=[1, 1-s/2, 1-s])]
+        for i in range(100):
+            pop = population(size=N, loci=[1], infoFields=['fitness'])
+            simu = simulator(pop, randomMating())
+            simu.evolve(
+                preOps = [initByFreq([1-p, p])],
+                ops = [
+                    sel,
+                    stat(alleleFreq=[0]),
+                    terminateIf('alleleNum[0][0] == %d*2' % N),
+                    #pyEval(r'"%d\n"%alleleNum[0][0]', step=100)
+                ]
+            )
+            print i, simu.gen()
+            simulated.append(simu.gen())
+            #if simu.gen() < lost[0] or simu.gen() > lost[1]:
+            #    print "Warning: something may be wrong %d outside: [%f %f]. " % (simu.gen(), lost[0], lost[1])
+        print rpy.r.quantile(simulated,  [0.05, 0.25, 0.5, 0.75, 0.95])
 
-    
+        
     
 
     def testMapSelectorDirSelection(self):

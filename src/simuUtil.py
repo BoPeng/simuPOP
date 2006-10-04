@@ -1013,17 +1013,12 @@ def saveLinkage(output='', outputExpr='', **kwargs):
     return eval(opt)
 
 
-def SaveCSV(pop, output='', outputExpr='', exclude=[], **kwargs):
+def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'], 
+        loci=[], **kwargs):
     """ save file in CSV format 
-    This format is used mostly for randTent method.
-    Ihe format is:
-    
-        chromsome #,,,locusName,locusPos,locusName,locusPos,....
-        famID,indID,sex,affectedness,allel1-1,allel1-2,allele2-1,allele2-2,
-        ...
-        ...
-        chromosome # ....
-        
+    fileds: information fields, 'sex' and 'affection' are special fields that 
+        is treated differently.
+    genotype: list of loci to output, default to all.   
     """
     if output != '':
         file = output
@@ -1031,24 +1026,14 @@ def SaveCSV(pop, output='', outputExpr='', exclude=[], **kwargs):
         file = eval(outputExpr, globals(), pop.vars() )
     else:
         raise exceptions.ValueError, "Please specify output or outputExpr"
-    markers = {}
-    for ch in range(0,pop.numChrom()):
-        markers[ch] = []
-        for m in range(0, pop.numLoci(ch)):
-            if not pop.chromBegin(ch) + m in exclude:
-                # record relative location, not excluded
-                markers[ch].append(m)
+    if loci == []:
+        loci = range(0, pop.totNumLoci())
     try:
         out = open( file, "w")
     except exceptions.IOError:
         raise exceptions.IOError, "Can not open file " + file +" to write."
     # keep the content of pieces in strings first
     content = [''] * pop.numChrom()
-    for i in range(0, pop.numChrom()):
-        content[i] +=    'Chromosome ' + str(i+1) + ',,,'
-        for m in markers[i]:
-            content[i] += ",locus%d_%d,%d" % (i+1, m+1, m+1)
-        content[i] += "\n"
     # for each family
     def sexCode(ind):
         if ind.sex() == Male:
@@ -1061,37 +1046,25 @@ def SaveCSV(pop, output='', outputExpr='', exclude=[], **kwargs):
             return 1
         else:
             return 2
-    # alleles string
-    def genoStr(ind, ch):
-        string = ''
-        for marker in markers[ch]:
-            string += ",%d,%d" % (ind.allele(marker, 0, ch), ind.allele(marker, 1, ch))
-        return string
-    # number of pedigrees
-    np = pop.popSize()/2
-    # offspring ID start with popSize.
-    for ch in range(0, pop.numChrom()):
-        for ped in range(0, np):
-            # get parent
-            pop.useAncestralPop(1)
-            # pedigree number, individual ID, dad, mom, first os
-            # next parental sib, maternal sib, sex, proband, disease status
-            par1 = pop.individual(2*ped)
-            content[ch] += "%3d,1,%d,%d" % (ped+1, sexCode(par1), affectedCode(par1))
-            content[ch] += genoStr(par1, ch) + '\n' 
-            par2 = pop.individual(2*ped+1)
-            content[ch] += "%3d,2,%d,%d" % (ped+1, sexCode(par2), affectedCode(par2))
-            content[ch] += genoStr(par2, ch) + '\n' 
-            pop.useAncestralPop(0)
-            off1 = pop.individual(2*ped)
-            content[ch] += "%3d,3,%d,%d" % (ped+1, sexCode(off1), affectedCode(off1))
-            content[ch] += genoStr(off1, ch) + '\n' 
-            off2 = pop.individual(2*ped+1)
-            content[ch] += "%3d,4,%d,%d" % (ped+1, sexCode(off2), affectedCode(off2))
-            content[ch] += genoStr(off2, ch) + '\n' 
-    # write to file
-    for i in range(0, pop.numChrom()):
-        out.write(content[i])
+    # write out header
+    print >> out, 'id, ', ', '.join(fields), ', ',
+    print >> out, ', '.join(['marker%s_1, marker%s_2' % (marker, marker) for marker in loci])
+    # write out
+    id = 1
+    for ind in pop.individuals():
+        print >> out, id,
+        for f in fields:
+            if f == 'sex':
+                print >> out, ', ', sexCode(ind),
+            elif f == 'affection':
+                print >> out, ', ', affectedCode(ind),
+            else:
+                print >> out, ', ', ind.info(f),
+        for marker in loci:
+            for p in range(pop.ploidy()):
+                print >> out, ", %d" % (ind.allele(marker, p) + 1), 
+        print >> out
+        id += 1
     out.close() 
 
 # Load from randFam format (from many input files )
@@ -1099,9 +1072,10 @@ def LoadCSV(file):
     """ 
         load file from randfam CSV format
         file: input file
-        For format description, please see SaveCSV
     """
     # determine files to read
+    # this function is currently defective.
+    return 0
     try:
         f = open(file)
         allLines = f.readlines()
