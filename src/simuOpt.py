@@ -860,7 +860,7 @@ def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArg
     for opt in options:
         if opt.has_key('configName'):
             print 'Warning: configName is obsolete, please use "label" instead'
-            opt['label'] = a.pop('configname')
+            opt['label'] = opt('configName')
     useDefault = '--useDefault' in sys.argv[1:]
     if noDialog or '--noDialog' in sys.argv[1:] or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
         or True not in map(lambda x:x.has_key('label'), options):
