@@ -1196,13 +1196,14 @@ namespace simuPOP
 	}
 
 	/// CPPONLY
-	void population::adjustGenoPosition(bool deep)
+	void population::adjustGenoPosition(bool order)
 	{
 		DBG_DO(DBG_POPULATION, cout << "Adjust geno position " << endl);
 
 		// everyone in strict order
-		if(deep)
+		if(order)
 		{
+		    DBG_DO(DBG_POPULATION, cout << "Refresh all order " << endl);
 			vectora tmpGenotype(m_popGenoSize);
 			vectorinfo tmpInfo(m_popSize*infoSize());
 			vectora::iterator it = tmpGenotype.begin();
@@ -1215,7 +1216,7 @@ namespace simuPOP
 				ind->setGenoPtr(it);
 				copy(ind->infoBegin(), ind->infoEnd(), infoPtr);
 				ind->setInfoPtr(infoPtr);
-				it += this->totNumLoci()*this->ploidy();
+				it += totNumLoci()*ploidy();
 				infoPtr += is;
 				ind->setShallowCopied(false);
 			}
@@ -1252,7 +1253,7 @@ namespace simuPOP
 
 		if( scIndex.empty())
 		{
-			setShallowCopied(false);
+			//setShallowCopied(false);
 			return;
 		}
 
@@ -1262,15 +1263,15 @@ namespace simuPOP
 		{
 			// swap!
 			GenoIterator tmp = m_inds[ scIndex[0] ].genoPtr();
-			m_inds[ scIndex[0] ].setGenoPtr( m_inds[ scIndex[1] ].genoPtr() );
-			m_inds[ scIndex[1] ].setGenoPtr( tmp);
+			m_inds[scIndex[0] ].setGenoPtr( m_inds[ scIndex[1] ].genoPtr() );
+			m_inds[scIndex[1] ].setGenoPtr( tmp);
 
 			Allele tmp1;
 			for(UINT a =0; a < genoSize(); ++a)
 			{
 				tmp1 =  m_inds[ scIndex[0] ].allele(a);
-				m_inds[ scIndex[0] ].setAllele(m_inds[ scIndex[1] ].allele(a), a);
-				m_inds[ scIndex[1] ].setAllele(tmp1, a);
+				m_inds[scIndex[0] ].setAllele(m_inds[ scIndex[1] ].allele(a), a);
+				m_inds[scIndex[1] ].setAllele(tmp1, a);
 			}
 
 			// copy info
@@ -1278,12 +1279,12 @@ namespace simuPOP
 			for(UINT a=0; a < infoSize(); ++a)
 			{
 				tmp2 =  m_inds[ scIndex[0] ].info(a);
-				m_inds[ scIndex[0] ].setInfo(m_inds[ scIndex[1] ].info(a), a);
-				m_inds[ scIndex[1] ].setInfo(tmp2, a);
+				m_inds[scIndex[0] ].setInfo(m_inds[ scIndex[1] ].info(a), a);
+				m_inds[scIndex[1] ].setInfo(tmp2, a);
 			}
 			
-			m_inds[ scIndex[0] ].setShallowCopied(false);
-			m_inds[ scIndex[1] ].setShallowCopied(false);
+			m_inds[scIndex[0] ].setShallowCopied(false);
+			m_inds[scIndex[1] ].setShallowCopied(false);
 			setShallowCopied(false);
 			return;
 		}
@@ -1322,9 +1323,101 @@ namespace simuPOP
 				ind(scIndex[i]).infoBegin());
 			m_inds[ scIndex[i] ].setShallowCopied(false);
 		}
-		setShallowCopied(false);
+		//setShallowCopied(false);
 		return;
 	}
+
+	
+	/// CPPONLY
+	void population::adjustInfoPosition(bool order)
+	{
+		DBG_DO(DBG_POPULATION, cout << "Adjust info position " << endl);
+
+		// everyone in strict order
+		if(order)
+		{
+		    DBG_DO(DBG_POPULATION, cout << "Refresh all order " << endl);
+			vectorinfo tmpInfo(m_popSize*infoSize());
+			vectorinfo::iterator infoPtr = tmpInfo.begin();
+			UINT is = infoSize();
+
+			for(IndIterator ind=indBegin(), indEd=indEnd(); ind!=indEd; ++ind)
+			{
+				copy(ind->infoBegin(), ind->infoEnd(), infoPtr);
+				ind->setInfoPtr(infoPtr);
+				infoPtr += is;
+			}
+			// discard original genotype
+			tmpInfo.swap(m_info);
+			return;
+		}
+
+		/// find out how many individuals are shallow copied.
+		vectorl scIndex(0);
+		ULONG j, k=0, jEnd;
+
+		for(UINT sp=0, spEd = numSubPop(); sp < spEd;  sp++)
+		{
+			InfoIterator spBegin = m_info.begin() + m_subPopIndex[sp]*infoSize();
+			InfoIterator spEnd   = m_info.begin() + m_subPopIndex[sp+1]*infoSize();
+			for( j=0, jEnd = subPopSize(sp); j < jEnd;  j++)
+			{
+				if( m_inds[k].shallowCopied() )
+				{
+					if( m_inds[k].infoBegin() < spBegin
+						|| m_inds[k].infoEnd() > spEnd )
+						/// record individual index and genoPtr
+						scIndex.push_back(k);
+				}
+				k++;
+			}
+		}
+
+		if( scIndex.empty())
+			return;
+
+		/// to further save time, deal with a special case that there are
+		/// only two shallowCopied individuals
+		if( scIndex.size() == 2 )
+		{
+			// copy info
+			InfoType tmp2;
+			for(UINT a=0; a < infoSize(); ++a)
+			{
+				tmp2 =  m_inds[ scIndex[0] ].info(a);
+				m_inds[scIndex[0] ].setInfo(m_inds[ scIndex[1] ].info(a), a);
+				m_inds[scIndex[1] ].setInfo(tmp2, a);
+			}
+			return;
+		}
+
+		/// save genotypic info
+		vectorinfo scInfo(scIndex.size() * infoSize());
+		vector<InfoIterator> scInfoPtr( scIndex.size() );
+
+		size_t i, iEnd;
+
+		for(i=0, iEnd = scIndex.size(); i < iEnd;  i++)
+		{
+			scInfoPtr[i] = m_inds[ scIndex[i]].infoPtr();
+			copy( ind(scIndex[i]).infoBegin(), ind(scIndex[i]).infoEnd(), 
+				scInfo.begin() + i* infoSize());
+		}
+
+		/// sort the pointers!
+		sort( scInfoPtr.begin(), scInfoPtr.end());
+
+		/// copy back.
+		for(i=0, iEnd =scIndex.size(); i < iEnd;  i++)
+		{
+			m_inds[ scIndex[i] ].setInfoPtr( scInfoPtr[i]);
+			copy( scInfo.begin() + i*  infoSize(), scInfo.begin() + (i+1)*  infoSize(),
+				ind(scIndex[i]).infoBegin());
+		}
+		//setShallowCopied(false);
+		return;
+	}
+
 
 	population& LoadPopulation(const string& file,
 		const string& format)

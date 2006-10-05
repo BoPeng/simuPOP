@@ -120,13 +120,13 @@ namespace simuPOP
 												  // all chromosomes
 						if( this->m_atPloidy == -1 )
 						{
-							ws.get( pop.alleleBegin(*locus) + left * pop.ploidy(),
-								pop.alleleBegin(*locus) + (left+1)*pop.ploidy() );
+							ws.get( pop.alleleBegin(*locus, false) + left * pop.ploidy(),
+								pop.alleleBegin(*locus, false) + (left+1)*pop.ploidy() );
 
 							for(ULONG ind=left+1; ind != right; ++ind)
-								copy(pop.alleleBegin(*locus) + left*pop.ploidy(),
-									pop.alleleBegin(*locus) + (left+1)*pop.ploidy(),
-									pop.alleleBegin(*locus) + ind*pop.ploidy());
+								copy(pop.alleleBegin(*locus, false) + left*pop.ploidy(),
+									pop.alleleBegin(*locus, false) + (left+1)*pop.ploidy(),
+									pop.alleleBegin(*locus, false) + ind*pop.ploidy());
 						}
 						else					  // only one of the copies (do it one by one?)
 						{
@@ -156,8 +156,8 @@ namespace simuPOP
 					if( this->m_atPloidy == -1)
 					{
 						for(vectoru::iterator locus=this->m_atLoci.begin(); locus != this->m_atLoci.end(); ++locus)
-							ws.get( pop.alleleBegin(*locus) + left * pop.ploidy(),
-								pop.alleleBegin(*locus) + right * pop.ploidy() );
+							ws.get( pop.alleleBegin(*locus, false) + left * pop.ploidy(),
+								pop.alleleBegin(*locus, false) + right * pop.ploidy() );
 					}
 					else						  // for only one ploidy
 					{

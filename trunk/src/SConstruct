@@ -32,7 +32,7 @@ env = Environment( options=opts,
 # try to debug the mode of python
 if env['debug'] == 'none':
     try:
-        sys.getrefcount(0)
+        sys.gettotalrefcount(0)
         env['debug'] = 'yes'
     except:
         env['debug'] = 'no'
@@ -81,7 +81,9 @@ if 'serial' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libserial
             basic_oserializer.cpp
             basic_pointer_oserializer.cpp
             basic_archive_impl.cpp
-        ''')]
+        ''')],
+		CCFLAGS = ['-O3', '-fPIC'],
+		CPPPATH = ['.', '..'],
     )
     Alias('serial', serial)
     
@@ -89,7 +91,9 @@ if 'serial' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libserial
 if 'iostreams' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libiostreams.a')):
     iostreams = env.StaticLibrary(
         target = os.path.join(BDIR, 'iostreams'),
-        source = [os.path.join(BDIR, 'iostreams/%s'%x) for x in ['file_descriptor.cpp', 'mapped_file.cpp', 'zlib.cpp']]
+        source = [os.path.join(BDIR, 'iostreams/%s'%x) for x in ['file_descriptor.cpp', 'mapped_file.cpp', 'zlib.cpp']],
+		CCFLAGS = ['-O3', '-fPIC'],
+		CPPPATH = ['.', '..'],
     )
     Alias('iostreams', iostreams)
 
@@ -112,7 +116,9 @@ if 'gsl' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libgsl.a')):
             rng/ranlxs.c rng/tt.c randist/nbinomial.c randist/beta.c randist/exponential.c
             randist/geometric.c randist/binomial.c randist/poisson.c randist/rdgamma.c
             randist/chisq.c randist/gauss.c error.c randist/multinomial.c
-    ''')]
+    ''')],
+		CCFLAGS = ['-O3', '-fPIC'],
+		CPPPATH = ['.', '..'],
     )
     Alias('gsl', gsl)
 

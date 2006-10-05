@@ -241,7 +241,10 @@ namespace simuPOP
         bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
 		UINT fit_id = 0;
         if (selectionOn)
+        {
             fit_id = pop.infoIdx("fitness");
+			fitness = pop.infoBegin(fit_id, true);
+        }
 
 		/// determine if mate() will generate offspring genotype
 		bool formOffGeno = this->formOffGenotype(ops);
@@ -255,7 +258,6 @@ namespace simuPOP
 			// if selection is on
 			if( selectionOn )
 			{
-				fitness = pop.infoBegin(fit_id, sp);
 				m_sampler.set( vectorf(fitness+pop.subPopBegin(sp),
 					fitness+pop.subPopEnd(sp) ) );
 			}
@@ -337,7 +339,10 @@ namespace simuPOP
         bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
 		UINT fit_id = 0;
         if (selectionOn)
+        {
             fit_id = pop.infoIdx("fitness");
+			fitness = pop.infoBegin(fit_id, true);
+        }
 
 		/// determine if any during-mating operator will generate offspring genotype
 		/// so mating scheme does not have to do it.
@@ -389,7 +394,6 @@ namespace simuPOP
 			/// if selection is on
 			if( selectionOn)
 			{ 
-				fitness = pop.infoBegin(fit_id, sp);
 				m_maleFitness.resize(numMale);
 				m_femaleFitness.resize(numFemale);
 
@@ -1380,7 +1384,7 @@ namespace simuPOP
 			int loc = loci[l];
 			Allele ale = alleles[l];
 			// go through all alleles
-			for(GappedAlleleIterator a=pop.alleleBegin(loc),
+			for(GappedAlleleIterator a=pop.alleleBegin(loc, false),
 				aEnd=pop.alleleEnd(loc); a != aEnd; ++a)
 			{
 				if( AlleleUnsigned(*a) == ale )
@@ -1549,7 +1553,7 @@ namespace simuPOP
 					}
 					else
 					{
-						for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
+						for(GappedAlleleIterator a=pop.alleleBegin(locus, sp, false),
 							aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
 						{
 							if( AlleleUnsigned(*a) == allele )
@@ -1597,7 +1601,7 @@ namespace simuPOP
 					}
 					else
 					{
-						for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
+						for(GappedAlleleIterator a=pop.alleleBegin(locus, sp, false),
 							aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
 						{
 							if( AlleleUnsigned(*a) == allele )
@@ -1628,7 +1632,10 @@ namespace simuPOP
         bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
 		UINT fit_id = 0;
         if (selectionOn)
+        {
             fit_id = pop.infoIdx("fitness");
+			fitness = pop.infoBegin(fit_id, true);
+        }
 		/// determine if mate() will generate offspring genotype
 		bool formOffGeno = this->formOffGenotype(ops);
 
@@ -1657,7 +1664,6 @@ namespace simuPOP
 			// if selection is on
 			if( selectionOn )
 			{
-				fitness = pop.infoBegin(fit_id, sp);
 				m_sampler.set( vectorf(fitness + pop.subPopBegin(sp),
 					fitness+ pop.subPopEnd(sp) ) );
 			}
@@ -1868,7 +1874,7 @@ namespace simuPOP
 					}
 					else
 					{
-						for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
+						for(GappedAlleleIterator a=pop.alleleBegin(locus, sp, false),
 							aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
 						{
 							if( AlleleUnsigned(*a) == allele )
@@ -1918,7 +1924,7 @@ namespace simuPOP
 					}
 					else
 					{
-						for(GappedAlleleIterator a=pop.alleleBegin(locus, sp),
+						for(GappedAlleleIterator a=pop.alleleBegin(locus, sp, false),
 							aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
 						{
 							if( AlleleUnsigned(*a) == allele )
@@ -1949,7 +1955,10 @@ namespace simuPOP
         bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
 		UINT fit_id = 0;
         if (selectionOn)
+        {
             fit_id = pop.infoIdx("fitness");
+			fitness = pop.infoBegin(fit_id, true);
+        }
 
 		/// determine if any during-mating operator will generate offspring genotype
 		bool formOffGeno = this->formOffGenotype(ops);
@@ -2011,7 +2020,6 @@ namespace simuPOP
 			/// if selection is on
 			if( selectionOn)
 			{
-				fitness = pop.infoBegin(fit_id, sp);
 				m_maleFitness.resize(numMale);
 				m_femaleFitness.resize(numFemale);
 
