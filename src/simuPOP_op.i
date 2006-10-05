@@ -28,4 +28,5 @@
 cppModule = _simuPOP_op
 %}
 
+#define OPTIMIZED
 %include "simuPOP_common.i"

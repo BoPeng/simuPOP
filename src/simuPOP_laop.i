@@ -28,5 +28,7 @@
 cppModule = _simuPOP_laop
 %}
 
+#define LONGALLELE
+#define OPTIMIZED
 %include "simuPOP_common.i"
 
