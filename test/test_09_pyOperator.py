@@ -139,8 +139,8 @@ class TestPyOperator(unittest.TestCase):
             ],
             end = 5
         )
-        self.assertEqual(simu.population(0).indInfo('info1'), tuple([6.0]*10))
-        self.assertEqual(simu.population(0).indInfo('info2'), tuple([12.]*10))
+        self.assertEqual(simu.population(0).indInfo('info1', True), tuple([6.0]*10))
+        self.assertEqual(simu.population(0).indInfo('info2', True), tuple([12.]*10))
             
         
 if __name__ == '__main__':

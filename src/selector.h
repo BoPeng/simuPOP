@@ -91,7 +91,7 @@ namespace simuPOP
 			bool apply(population& pop)
 			{
 				UINT fit_id = pop.infoIdx(this->infoField(0));
-				GappedInfoIterator fitness = pop.infoBegin(fit_id);
+				GappedInfoIterator fitness = pop.infoBegin(fit_id, true);
 
 				for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
 					*fitness++ = indFitness(&*it) ;
@@ -434,7 +434,7 @@ namespace simuPOP
 				if(savePene)
 				{
 					UINT idx = pop.infoIdx(infoField(0));
-					penIt = pop.infoBegin(idx);
+					penIt = pop.infoBegin(idx, true);
 				}
 				for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
 				{
@@ -904,7 +904,8 @@ namespace simuPOP
 			bool apply(population& pop)
 			{
 				UINT idx = pop.infoIdx(infoField(0));
-				GappedInfoIterator traitIt = pop.infoBegin(idx);
+				// we need info to be in order
+				GappedInfoIterator traitIt = pop.infoBegin(idx, true);
 				for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
 					*traitIt++ = qtrait(&*it) ;
 

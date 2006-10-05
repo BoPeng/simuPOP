@@ -129,7 +129,7 @@ class TestMutator(unittest.TestCase):
     # at loci
     simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
       randomMating(), rep=5)
-    simu.population(0).arrGenotype()[:] = 1
+    simu.population(0).arrGenotype(True)[:] = 1
     simu.step([ gsmMutator(rate=0.2, atLoci=[0,4])])
     # frequency? Genometric distribution of step
     #self.assertGenotypeFreq(simu.population(0), 

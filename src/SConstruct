@@ -145,7 +145,7 @@ src = Split('''utility migrator population simulator terminator
 for mod in build_mod:
     for file in src:
         env.Command('%s/%s_%s.cpp'%(BDIR, file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
-    env.Depends(os.path.join(BDIR, 'simuPOP_%s_wrap.cpp'%mod), 
+    env.Depends(os.path.join(BDIR, 'simuPOP_%s.i'%mod), 
         ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i', 
         os.path.join(BDIR, 'simuPOP_%s.i'%mod)] + \
         ['%s.h' % x for x in src])

@@ -78,7 +78,7 @@ class TestCarray(unittest.TestCase):
   def testGenotypeCarray(self):
     'Testing allele carray type returned by arrGenotype'
     pop = population(size=2, loci=[1,2])
-    arr = pop.arrGenotype()
+    arr = pop.arrGenotype(True)
     arr[:] = [0,1,2]*4
     # can print
     # print arr

@@ -142,8 +142,8 @@ namespace simuPOP
 				if( this->m_atLoci.empty())		  // at all loci
 				{
 					if( this->m_atPloidy == -1)
-						ws.get( pop.genoBegin()+left*pop.genoSize(),
-							pop.genoBegin()+right*pop.genoSize());
+						ws.get( pop.genoBegin(false)+left*pop.genoSize(),
+							pop.genoBegin(false)+right*pop.genoSize());
 					else						  // for only one ploidy
 					{
 						for(ULONG ind=left; ind != right; ++ind)

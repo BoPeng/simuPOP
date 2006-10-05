@@ -482,7 +482,7 @@ namespace simuPOP
 			}
 
 			///  CPPONLY allele iterator, go through all allels one by one, without subPop info
-			GenoIterator genoBegin()
+			GenoIterator genoBegin(bool order)
 			{
 				return m_genotype.begin();
 			}
@@ -494,7 +494,7 @@ namespace simuPOP
 			}
 
 			///  CPPONLY allele iterator, go through all allels one by one in a subpopulation
-			GenoIterator genoBegin(UINT subPop)
+			GenoIterator genoBegin(UINT subPop, bool order)
 			{
 				CHECKRANGESUBPOP(subPop);
 
@@ -549,7 +549,7 @@ namespace simuPOP
 			/// get the whole genotype.
 			/// individuals will be in order before exposing
 			/// their genotypes.
-			PyObject* arrGenotype()
+			PyObject* arrGenotype(bool order)
 			{
 				if(shallowCopied())
 					// adjust position. deep=true
@@ -562,14 +562,14 @@ namespace simuPOP
 			/// get the whole genotype.
 			/// individuals will be in order before exposing
 			/// their genotypes.
-			PyObject* arrGenotype(UINT subPop)
+			PyObject* arrGenotype(UINT subPop, bool order)
 			{
 				CHECKRANGESUBPOP(subPop);
 				if(shallowCopied())
 					// adjust position. deep=true
 					adjustGenoPosition(true);
 
-				return Allele_Vec_As_NumArray( genoBegin(subPop), genoEnd(subPop));
+				return Allele_Vec_As_NumArray( genoBegin(subPop, order), genoEnd(subPop));
 			}
 
 			//@}
@@ -733,7 +733,7 @@ namespace simuPOP
 			}
 
 			/// info iterator
-			GappedInfoIterator infoBegin(UINT idx)
+			GappedInfoIterator infoBegin(UINT idx, bool order)
 			{
 				CHECKRANGEINFO(idx);
 				return GappedInfoIterator(m_info.begin()+idx, infoSize());
@@ -746,7 +746,7 @@ namespace simuPOP
 			}
 			
 			/// info iterator
-			GappedInfoIterator infoBegin(UINT index, UINT subPop)
+			GappedInfoIterator infoBegin(UINT index, UINT subPop, bool order)
 			{
 				CHECKRANGEINFO(index);
 				CHECKRANGESUBPOP(subPop);
@@ -769,35 +769,38 @@ namespace simuPOP
 			}
 		
 			
-			vectorinfo indInfo(UINT idx)
+			vectorinfo indInfo(UINT idx, bool order)
 			{
-				return vectorinfo(infoBegin(idx), infoEnd(idx));
+				return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 			}
 			
-			vectorinfo indInfo(const string& name)
+			vectorinfo indInfo(const string& name, bool order)
 			{
 				UINT idx = infoIdx(name);
-				return vectorinfo(infoBegin(idx), infoEnd(idx));
+				return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 			}
 			
 
-			vectorinfo indInfo(UINT idx, UINT subPop)
+			vectorinfo indInfo(UINT idx, UINT subPop, bool order)
 			{
-				return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
+				return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
 			}
 			
-			vectorinfo indInfo(const string& name, UINT subPop)
+			vectorinfo indInfo(const string& name, UINT subPop, bool order)
 			{
 				UINT idx = infoIdx(name);
-				return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
+				return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
 			}
 			
-			PyObject* arrIndInfo()
+			PyObject* arrIndInfo(bool order)
 			{
+				if(shallowCopied())
+					adjustGenoPosition();
+
 				return Info_Vec_As_NumArray(m_info.begin(), m_info.end());
 			}	
 
-			PyObject* arrIndInfo(UINT subPop)
+			PyObject* arrIndInfo(UINT subPop, bool order)
 			{
 				CHECKRANGESUBPOP(subPop);
 

@@ -239,11 +239,9 @@ namespace simuPOP
 
 		GappedInfoIterator fitness;
         bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+		UINT fit_id = 0;
         if (selectionOn)
-        {
-            UINT fit_id = pop.infoIdx("fitness");
-	    	fitness = pop.infoBegin(fit_id);
-        }
+            fit_id = pop.infoIdx("fitness");
 
 		/// determine if mate() will generate offspring genotype
 		bool formOffGeno = this->formOffGenotype(ops);
@@ -256,8 +254,11 @@ namespace simuPOP
 
 			// if selection is on
 			if( selectionOn )
+			{
+				fitness = pop.infoBegin(fit_id, sp);
 				m_sampler.set( vectorf(fitness+pop.subPopBegin(sp),
 					fitness+pop.subPopEnd(sp) ) );
+			}
 
 			// choose a parent and genreate m_numOffspring offspring
 			ULONG spInd = 0;
@@ -334,11 +335,9 @@ namespace simuPOP
 		// empty fitness means no selection
 		GappedInfoIterator fitness;
         bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+		UINT fit_id = 0;
         if (selectionOn)
-        {
-            UINT fit_id = pop.infoIdx("fitness");
-	    	fitness = pop.infoBegin(fit_id);
-        }
+            fit_id = pop.infoIdx("fitness");
 
 		/// determine if any during-mating operator will generate offspring genotype
 		/// so mating scheme does not have to do it.
@@ -389,7 +388,8 @@ namespace simuPOP
 
 			/// if selection is on
 			if( selectionOn)
-			{
+			{ 
+				fitness = pop.infoBegin(fit_id, sp);
 				m_maleFitness.resize(numMale);
 				m_femaleFitness.resize(numFemale);
 
@@ -1626,11 +1626,9 @@ namespace simuPOP
 		//
 		GappedInfoIterator fitness;
         bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+		UINT fit_id = 0;
         if (selectionOn)
-        {
-            UINT fit_id = pop.infoIdx("fitness");
-	    	fitness = pop.infoBegin(fit_id);
-        }
+            fit_id = pop.infoIdx("fitness");
 		/// determine if mate() will generate offspring genotype
 		bool formOffGeno = this->formOffGenotype(ops);
 
@@ -1658,9 +1656,11 @@ namespace simuPOP
 
 			// if selection is on
 			if( selectionOn )
+			{
+				fitness = pop.infoBegin(fit_id, sp);
 				m_sampler.set( vectorf(fitness + pop.subPopBegin(sp),
 					fitness+ pop.subPopEnd(sp) ) );
-
+			}
 			ULONG spInd = 0;
 			ULONG spIndEnd = scratch.subPopSize(sp);
 
@@ -1947,11 +1947,9 @@ namespace simuPOP
 		// empty fitness means no selection
 		GappedInfoIterator fitness;
         bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+		UINT fit_id = 0;
         if (selectionOn)
-        {
-            UINT fit_id = pop.infoIdx("fitness");
-	    	fitness = pop.infoBegin(fit_id);
-        }
+            fit_id = pop.infoIdx("fitness");
 
 		/// determine if any during-mating operator will generate offspring genotype
 		bool formOffGeno = this->formOffGenotype(ops);
@@ -2013,6 +2011,7 @@ namespace simuPOP
 			/// if selection is on
 			if( selectionOn)
 			{
+				fitness = pop.infoBegin(fit_id, sp);
 				m_maleFitness.resize(numMale);
 				m_femaleFitness.resize(numFemale);
 

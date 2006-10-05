@@ -58,7 +58,7 @@ def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
     if len(indRange) > 0:
         if type(indRange[0]) not in [type([]), type(())]:
             indRange = [indRange]
-        arr = pop.arrGenotype()
+        arr = pop.arrGenotype(True)
         for r in indRange:
             for i in range(r[0], r[1]):
                 for p in ploidy:
@@ -66,15 +66,15 @@ def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
                         geno.append( arr[ gs*i + p*tl + loc] )
     elif len(subPop) > 0:
         for sp in subPop:
-            arr = pop.arrGenotype(sp)
+            arr = pop.arrGenotype(sp, True)
             for i in range(pop.subPopSize(sp)):
                 for p in ploidy:
                     for loc in loci:
                         geno.append(arr[ gs*i + p*tl +loc]) 
     else:
-        arr = pop.arrGenotype()
+        arr = pop.arrGenotype(True)
         if len(ploidy) == 0 and len(atLoci) == 0:
-            geno = pop.arrGenotype()
+            geno = pop.arrGenotype(True)
         else:
             for i in range(pop.popSize()):
                 for p in ploidy:
@@ -593,7 +593,7 @@ def SaveFstat(pop, output='', outputExpr='', maxAllele=0):
     for sp in range(0, pop.numSubPop()):
         # genotype of subpopulation sp, individuals are
         # rearranged in perfect order
-        gt = pop.arrGenotype(sp)
+        gt = pop.arrGenotype(sp, True)
         for ind in range(0, pop.subPopSize(sp)):
             f.write("%d " % (sp+1))
             p1 = 2*gs*ind                # begining of first hemo copy
@@ -694,7 +694,7 @@ def LoadFstat(file, loci=[]):
         lociNames=lociNames)
     # 
     gs = pop.totNumLoci()
-    popGT = pop.arrGenotype()
+    popGT = pop.arrGenotype(True)
     for ind in range(0, len(gt)):
         p1 = 2*gs*ind                # begining of first hemo copy
         p2 = 2*gs*ind + gs     # second
@@ -735,7 +735,7 @@ def LoadGCData(file, loci=[]):
     pop = population(size=popSize, ploidy=2, loci=lociNum, maxAllele=2)
     # 
     gs = pop.totNumLoci()
-    popGT = pop.arrGenotype()
+    popGT = pop.arrGenotype(True)
     for ind in range(0, len(gt)):
         pop.individual(ind).setAffected( int(gt[ind][1]))
         p1 = 2*gs*ind                # begining of first hemo copy

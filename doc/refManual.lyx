@@ -2125,7 +2125,7 @@ p.arrGenotype
 
 \end_inset
 
-()
+(order)
 \end_layout
 
 \end_inset
@@ -2167,7 +2167,7 @@ p.arrGenotype
 
 \end_inset
 
-(sp)
+(sp, order)
 \end_layout
 
 \end_inset
@@ -2207,7 +2207,7 @@ p.arrInfo
 
 \end_inset
 
-(sp)
+(sp, order)
 \end_layout
 
 \end_inset
@@ -2245,7 +2245,7 @@ p.indInfo
 
 \end_inset
 
-(idx or field, [subPop])
+(idx or field, subPop, order)
 \end_layout
 
 \end_inset
@@ -2282,7 +2282,7 @@ p.setIndInfo
 
 \end_inset
 
-(values, [subPop])
+(values, subPop)
 \end_layout
 
 \end_inset
@@ -6157,7 +6157,13 @@ or set the population level
 \begin_layout Itemize
 
 \family typewriter
-pop.indInfo(idx or field, [subPop])
+pop.indInfo(idx or field, order)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.indInfo(idx or field, subPop, order)
 \end_layout
 
 \begin_layout Itemize
@@ -6169,13 +6175,33 @@ pop.setIndInfo(idx or field, [subPop])
 \begin_layout Itemize
 
 \family typewriter
-pop.arrIndInfo([subPop]
+pop.arrIndInfo(order)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.arrIndInfo(subPop, order)
 \end_layout
 
 \begin_layout Standard
 Idx or field means that you can use field index obtained from infoIdx(field),
  or use field name directly.
  field is easier to use but idx is faster.
+ Although population information is kept in a population object linearly,
+ there is no gurantee that they are ordered.
+ If you would like to access info individual by individual, passing 
+\family typewriter
+order=True
+\family default
+ will ensure that the returned information fields are ordered by individual
+ order.
+ If you only need to get a summary of some information fields, passing 
+\family typewriter
+order=False 
+\family default
+will speed up the process.
+ 
 \end_layout
 
 \begin_layout Standard

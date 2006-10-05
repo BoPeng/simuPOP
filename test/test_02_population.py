@@ -20,7 +20,7 @@ class TestPopulation(unittest.TestCase):
 
     def assertGenotype(self, pop, subPop, genotype):
         'Assert if the genotype of subPop of pop is genotype '
-        gt = list(pop.arrGenotype(subPop))
+        gt = list(pop.arrGenotype(subPop, True))
         gt.sort()
         if alleleType() == 'binary':
             self.assertEqual(gt, [x>0 for x in genotype])
@@ -265,8 +265,8 @@ class TestPopulation(unittest.TestCase):
         pop.swap(pop1)
         self.assertEqual(pop.infoField(0), 'fitness')
         self.assertEqual(pop1.infoField(0), 'age')
-        self.assertEqual(pop.arrIndInfo(), range(10,15))
-        self.assertEqual(pop1.arrIndInfo(), range(10))
+        self.assertEqual(pop.arrIndInfo(True), range(10,15))
+        self.assertEqual(pop1.arrIndInfo(True), range(10))
         self.assertEqual(pop.popSize(), 5)
         self.assertEqual(pop1.popSize(), 10)
         for i in range(5):
@@ -277,7 +277,7 @@ class TestPopulation(unittest.TestCase):
     def testSplitSubPop(self):
         'Testing function splitSubPop'
         pop = population(subPop=[5,6,7], ploidy=1, loci=[1])
-        arr = pop.arrGenotype()
+        arr = pop.arrGenotype(True)
         # mapArr is separate
         mapArr = list(arr)
         mapArr = range(pop.popSize())
@@ -296,7 +296,7 @@ class TestPopulation(unittest.TestCase):
         #
         # recover population
         pop.setSubPopStru([5,6,7], False)
-        pop.arrGenotype()[:] = range(pop.popSize())
+        pop.arrGenotype(True)[:] = range(pop.popSize())
         # function form
         SplitSubPop(pop, 1, [2,4], subPopID=[4,1], randomize=False)
         self.assertEqual(pop.subPopSizes(), (5,4,7,0,2))
@@ -316,7 +316,7 @@ class TestPopulation(unittest.TestCase):
         'Testing function splitSubPopByProportion'
         # split by proportion -------- 
         pop = population(subPop=[5,6,7], ploidy=1, loci=[1])
-        arr = pop.arrGenotype()
+        arr = pop.arrGenotype(True)
         # mapArr is separate
         mapArr = list(arr)
         mapArr = range(pop.popSize())
@@ -333,7 +333,7 @@ class TestPopulation(unittest.TestCase):
         #
         # recover population
         pop.setSubPopStru([5,6,7], False)
-        pop.arrGenotype()[:] = range(pop.popSize())
+        pop.arrGenotype(True)[:] = range(pop.popSize())
         SplitSubPop(pop, 1, proportions=[2/5.,3/5.], subPopID=[4,1], randomize=False)
         self.assertEqual(pop.subPopSizes(), (5,4,7,0,2))
         self.assertGenotype(pop, 0, [0,1,2,3,4])
@@ -358,7 +358,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual( pop.numSubPop(), 3)
         # remove subpop
         pop = population(subPop=[0,1,0,2,3,0], ploidy=1, loci=[1])
-        arr = pop.arrGenotype()
+        arr = pop.arrGenotype(True)
         # mapArr is separate
         arr[:] = range(pop.popSize())
         pop.removeSubPops([1,2])
@@ -383,15 +383,15 @@ class TestPopulation(unittest.TestCase):
         pop = population(subPop=[2,4,5], infoFields=['age'])
         self.assertEqual( pop.numSubPop(), 3)
         pop.setIndInfo(range(11), 0)
-        self.assertEqual(pop.arrIndInfo(), range(11))
+        self.assertEqual(pop.arrIndInfo(True), range(11))
         pop.removeSubPops([1])
-        self.assertEqual(pop.arrIndInfo(0), range(2))
-        self.assertEqual(pop.arrIndInfo(1), range(6,11))
+        self.assertEqual(pop.arrIndInfo(0, True), range(2))
+        self.assertEqual(pop.arrIndInfo(1, True), range(6,11))
     
     def testRemoveIndividuals(self):
         'Testing function removeIndividuals'
         pop = population(subPop=[0,1,0,2,3,0], ploidy=1, loci=[1])
-        arr = pop.arrGenotype()
+        arr = pop.arrGenotype(True)
         arr[:] = range(pop.popSize())
         #
         pop.removeIndividuals([2])
@@ -413,16 +413,16 @@ class TestPopulation(unittest.TestCase):
         pop.setIndInfo(range(11), 0)
         pop.removeIndividuals([2,3,4,5])
         self.assertEqual(pop.subPopSizes(), (2,0,5))
-        self.assertEqual(pop.arrIndInfo(0), range(2))
-        self.assertEqual(pop.arrIndInfo(2), range(6,11))
+        self.assertEqual(pop.arrIndInfo(0, True), range(2))
+        self.assertEqual(pop.arrIndInfo(2, True), range(6,11))
         # nothing in the middle left
-        self.assertEqual(pop.arrIndInfo(), range(2) + range(6,11))
+        self.assertEqual(pop.arrIndInfo(True), range(2) + range(6,11))
     
     
     def testMergeSubPops(self):
         'Testing function mergeSubPops'
         pop = population(subPop=[0,1,0,2,3,0], ploidy=1, loci=[1])
-        arr = pop.arrGenotype()
+        arr = pop.arrGenotype(True)
         arr[:] = range(pop.popSize())
         #
         pop.mergeSubPops([1,2,4])
@@ -445,14 +445,14 @@ class TestPopulation(unittest.TestCase):
         pop.mergeSubPops([0,2], removeEmptySubPops=True)
         self.assertEqual(pop.subPopSizes(), (7,4))
         # the order may be different
-        self.assertEqual(sum(pop.arrIndInfo(0)), sum(range(2)+range(6,11)))
-        self.assertEqual(pop.arrIndInfo(1), range(2,6))
+        self.assertEqual(sum(pop.arrIndInfo(0, False)), sum(range(2)+range(6,11)))
+        self.assertEqual(pop.arrIndInfo(1, True), range(2,6))
         
 
     def testReorderSubPops(self):
         'Testing function reorderSubPops'
         pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1])
-        arr = pop.arrGenotype()
+        arr = pop.arrGenotype(True)
         arr[:] = range(pop.popSize())
         #
         pop.reorderSubPops(order=[1,3,0,2])
@@ -464,7 +464,7 @@ class TestPopulation(unittest.TestCase):
         self.assertGenotype(pop, 3, [3,4,5])
         # by rank
         pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1])
-        arr = pop.arrGenotype()
+        arr = pop.arrGenotype(True)
         arr[:] = range(pop.popSize())
         #
         pop.reorderSubPops(rank=[1,3,0,2])
@@ -482,13 +482,13 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual( pop.subPopSizes(), (3,1,4,2))
         newInfoSums = [sum([3,4,5]), sum([0]), sum([6,7,8,9]), sum([1,2])]
         for i in range(4):
-            self.assertEqual(sum(pop.arrIndInfo(i)), newInfoSums[i])
+            self.assertEqual(sum(pop.arrIndInfo(i, True)), newInfoSums[i])
         
 
     def testNewPopByIndID(self):
         'Testing function newPopByIndInfo'
         pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1])
-        arr = pop.arrGenotype()
+        arr = pop.arrGenotype(True)
         arr[:] = range(pop.popSize())
         oldPop = pop.clone()
         #
@@ -515,42 +515,42 @@ class TestPopulation(unittest.TestCase):
     def testRemoveLoci(self):
         'Testing function removeLoci'
         pop = population(subPop=[1,2], ploidy=2, loci=[2,3,1])
-        arr = pop.arrGenotype()
+        arr = pop.arrGenotype(True)
         arr[:] = range(pop.totNumLoci())*(pop.popSize()*pop.ploidy())
         pop.removeLoci(remove=[2])
         self.assertEqual( pop.numChrom(), 3)
         self.assertEqual( pop.numLoci(0), 2)
         self.assertEqual( pop.numLoci(1), 2)
         self.assertEqual( pop.numLoci(2), 1)
-        self.assertEqual( pop.arrGenotype().count(2), 0)
+        self.assertEqual( pop.arrGenotype(True).count(2), 0)
         pop.removeLoci(remove=[4])
         self.assertEqual( pop.numChrom(), 2)
         self.assertEqual( pop.numLoci(0), 2)
         self.assertEqual( pop.numLoci(1), 2)
-        self.assertEqual( pop.arrGenotype().count(5), 0)
+        self.assertEqual( pop.arrGenotype(True).count(5), 0)
         # keep
         pop.removeLoci(keep=[1,2])
         self.assertEqual( pop.numChrom(), 2)
         self.assertEqual( pop.numLoci(0), 1)
         self.assertEqual( pop.numLoci(1), 1)
         if alleleType() == 'binary':
-            self.assertEqual( pop.arrGenotype().count(3), 0 )
-            self.assertEqual( pop.arrGenotype().count(1), pop.popSize()*pop.ploidy()*2 )
+            self.assertEqual( pop.arrGenotype(True).count(3), 0 )
+            self.assertEqual( pop.arrGenotype(True).count(1), pop.popSize()*pop.ploidy()*2 )
         else:
-            self.assertEqual( pop.arrGenotype().count(3), pop.popSize()*pop.ploidy() )
-            self.assertEqual( pop.arrGenotype().count(1), pop.popSize()*pop.ploidy() )
+            self.assertEqual( pop.arrGenotype(True).count(3), pop.popSize()*pop.ploidy() )
+            self.assertEqual( pop.arrGenotype(True).count(1), pop.popSize()*pop.ploidy() )
         
     def testArrGenotype(self):
         'Testing function arrGenotype'
         pop = population(loci=[1,2], subPop=[1,2])
-        arr = pop.arrGenotype()
+        arr = pop.arrGenotype(True)
         self.assertEqual( len(arr), pop.genoSize()*pop.popSize())
-        arr = pop.arrGenotype(1)
+        arr = pop.arrGenotype(1, True)
         self.assertEqual( len(arr), pop.genoSize()*pop.subPopSize(1))
         arr[0] = 1
         self.assertEqual( pop.individual(0,1).allele(0), 1)
         self.assertRaises(exceptions.IndexError, 
-            pop.arrGenotype, 2)
+            pop.arrGenotype, 2, True)
         # arr assignment
         arr[:] = 1
         self.assertEqual( pop.individual(0,0).arrGenotype(), [0]*pop.genoSize())
@@ -648,10 +648,10 @@ class TestPopulation(unittest.TestCase):
                 self.assertEqual(pop.individual(j).info(i), i*10+j)
         ind = pop.individual(0)
         self.assertEqual(ind.arrInfo(), (0,10,20))
-        self.assertEqual(pop.arrIndInfo()[:8], (0,10,20,1,11,21,2,12))
+        self.assertEqual(pop.arrIndInfo(True)[:8], (0,10,20,1,11,21,2,12))
         # by subpop
         self.assertEqual(pop.arrIndInfo(0)[:8], (0,10,20,1,11,21,2,12))
-        self.assertRaises(exceptions.IndexError, pop.arrIndInfo, 1)
+        self.assertRaises(exceptions.IndexError, pop.arrIndInfo, 1, True)
         # access by name
         #pop.setIndInfo(range(30,40), 'sex')
         #pop.arrIndInfo('sex')
@@ -687,10 +687,10 @@ class TestPopulation(unittest.TestCase):
         pop = population(subPop=[4,6], infoFields=['age', 'fitness'])
         pop.setIndInfo(range(10), 'age')
         pop.setIndInfo(range(100, 110), 'fitness')
-        self.assertEqual(pop.indInfo('age'), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.indInfo('fitness'), tuple([float(x) for x in range(100, 110)]))
-        self.assertEqual(pop.indInfo('age', 1), tuple([float(x) for x in range(4, 10)]))
-        self.assertEqual(pop.indInfo('fitness', 0), tuple([float(x) for x in range(100, 104)]))
+        self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.indInfo('fitness', True), tuple([float(x) for x in range(100, 110)]))
+        self.assertEqual(pop.indInfo('age', 1, True), tuple([float(x) for x in range(4, 10)]))
+        self.assertEqual(pop.indInfo('fitness', 0, True), tuple([float(x) for x in range(100, 104)]))
         #
         # test reset info fields
         pop = population(size=10, infoFields=['age'])
@@ -699,15 +699,15 @@ class TestPopulation(unittest.TestCase):
         # set values
         pop.setIndInfo(range(10), 'age')
         pop.setIndInfo(range(100, 110), 'fitness')
-        self.assertEqual(pop.indInfo('age'), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.indInfo('fitness'), tuple([float(x) for x in range(100, 110)]))
+        self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.indInfo('fitness', True), tuple([float(x) for x in range(100, 110)]))
         # add an existing field
         self.assertEqual(pop.addInfoField('fitness'), 1)
         # add a new one.
         self.assertEqual(pop.addInfoField('misc'), 2)
         pop.setIndInfo(range(200, 210), 'fitness')
-        self.assertEqual(pop.indInfo('age'), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.indInfo('fitness'), tuple([float(x) for x in range(200, 210)]))
+        self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.indInfo('fitness', True), tuple([float(x) for x in range(200, 210)]))
 
         
     def testPopVars(self):
@@ -736,11 +736,11 @@ class TestPopulation(unittest.TestCase):
         'Testing ancestral population related functions'
         pop = population(subPop=[3,5], loci=[2,3], ancestralDepth=2)
         InitByFreq(pop, [.2,.8])
-        gt = list(pop.arrGenotype())
+        gt = list(pop.arrGenotype(True))
         self.assertEqual(pop.ancestralDepth(), 0)
         pop1 = population(subPop=[2,3], loci=[2,3], ancestralDepth=2)
         InitByFreq(pop1, [.8,.2])
-        gt1 = list(pop1.arrGenotype())
+        gt1 = list(pop1.arrGenotype(True))
         # can not do, because of different genotype
         pop.pushAndDiscard(pop1)
         # pop1 should be empty now
@@ -748,13 +748,13 @@ class TestPopulation(unittest.TestCase):
         # pop should have one ancestry
         self.assertEqual(pop.ancestralDepth(), 1)
         # genotype of pop should be pop1
-        self.assertEqual(pop.arrGenotype(), gt1)
+        self.assertEqual(pop.arrGenotype(True), gt1)
         # use ancestry pop
         pop.useAncestralPop(1)
-        self.assertEqual(pop.arrGenotype(), gt)
+        self.assertEqual(pop.arrGenotype(True), gt)
         # use back
         pop.useAncestralPop(0)
-        self.assertEqual(pop.arrGenotype(), gt1)
+        self.assertEqual(pop.arrGenotype(True), gt1)
         # can not push itself
         self.assertRaises(exceptions.ValueError,
             pop.pushAndDiscard, pop)
@@ -766,7 +766,7 @@ class TestPopulation(unittest.TestCase):
         # push more?
         pop2 = population(subPop=[3,5], loci=[2,3])
         InitByFreq(pop2, [.2,.8])
-        gt2 = list(pop2.arrGenotype())
+        gt2 = list(pop2.arrGenotype(True))
         pop3 = pop2.clone()
         pop.pushAndDiscard(pop2)
         # [ gt2, gt1, gt]
@@ -774,11 +774,11 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop2.popSize(), 0)
         self.assertEqual(pop.ancestralDepth(), 2)
         # 
-        self.assertEqual(pop.arrGenotype(), gt2)
+        self.assertEqual(pop.arrGenotype(True), gt2)
         pop.useAncestralPop(1)
-        self.assertEqual(pop.arrGenotype(), gt1)
+        self.assertEqual(pop.arrGenotype(True), gt1)
         pop.useAncestralPop(2)
-        self.assertEqual(pop.arrGenotype(), gt)
+        self.assertEqual(pop.arrGenotype(True), gt)
         pop.useAncestralPop(0)
         #
         pop.pushAndDiscard(pop3)
@@ -786,9 +786,9 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop3.popSize(), 0)
         self.assertEqual(pop.ancestralDepth(), 2)
         pop.useAncestralPop(1)
-        self.assertEqual(pop.arrGenotype(), gt2)
+        self.assertEqual(pop.arrGenotype(True), gt2)
         pop.useAncestralPop(2)
-        self.assertEqual(pop.arrGenotype(), gt1)
+        self.assertEqual(pop.arrGenotype(True), gt1)
         #
         # test if ind info is saved with ancestral populations
         pop = population(10, ancestralDepth=2, infoFields=['age', 'fitness'])
@@ -800,10 +800,10 @@ class TestPopulation(unittest.TestCase):
         pop.pushAndDiscard(pop1)
         # test info
         self.assertEqual(pop.popSize(), 20)
-        self.assertEqual(pop.arrIndInfo()[:4], [100, 110, 101, 111])
+        self.assertEqual(pop.arrIndInfo(True)[:4], [100, 110, 101, 111])
         pop.useAncestralPop(1)
         self.assertEqual(pop.popSize(), 10)
-        self.assertEqual(pop.arrIndInfo()[:4], [0, 10, 1, 11])
+        self.assertEqual(pop.arrIndInfo(True)[:4], [0, 10, 1, 11])
         
 
 if __name__ == '__main__':
