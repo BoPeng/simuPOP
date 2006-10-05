@@ -28,4 +28,5 @@
 cppModule = _simuPOP_ba
 %}
 
+#define BINARYALLELE
 %include "simuPOP_common.i"

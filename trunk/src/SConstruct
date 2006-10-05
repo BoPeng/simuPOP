@@ -7,55 +7,49 @@
 # 
 import os, sys
 
+# get information from python distutils
+import distutils.sysconfig, os
+vars = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'BASECFLAGS', 'CCSHARED', 'LDSHARED', 
+    'SO', 'LIBDEST')
+for i in range(len(vars)):
+    if vars[i] is None:
+        vars[i] = ""
+(cc, cxx, opt, basecflags, ccshared, ldshared, so_ext, lib_dest) = vars
 #NOTE:
 # 
 # scons is for quick recompile, so SIMUPOP_REV and SIMUPOP_VER IS NOT CHANGED
 # so a re-compliaction is not needed after a svn commit.
 #
-
 opts = Options()
 opts.AddOptions(
-    BoolOption('debug', 'whether or not use debug version', False),
-    PathOption('dbg_python_path', 'path to the debug version of python', 
-        '/home/bpeng/PythonDebug/'),
-    PathOption('dbg_python_inc_path', 'path to the include dir of the debug version of python',
-        '/home/bpeng/PythonDebug/include/python2.4/'),
-    PathOption('python_inc_path', 'path to the include dir of the non-debug version of python',
-        '/usr/include/python2.3/')
+    EnumOption('debug', 'whether or not use debug version', 'none', allowed_values=['yes', 'no', 'none']),
 )
 
+env = Environment( options=opts,
+    ENV={'PATH':os.environ['PATH']},
+    tools=['default', 'swig'])
 
-env = Environment(options = opts, ENV={'PATH':os.environ['PATH']})
-
-debug = env['debug']
-
-if debug:
+# try to debug the mode of python
+if env['debug'] == 'none':
+    try:
+        sys.getrefcount(0)
+        env['debug'] = 'yes'
+    except:
+        env['debug'] = 'no'
+#
+if env['debug'] == 'yes':
     BDIR = '../debug'
-    python_path = env['dbg_python_path']
-    pythonPaths = [env['dbg_python_inc_path'], '..', '.']
-    flags = ['-DPy_REF_DEBUG']
-    dest_dir = os.path.join(env['dbg_python_path'], 'lib',
-        'python2.4', 'site-packages')
-    share_dir = os.path.join(env['dbg_python_path'], 'share')
+    dest_dir = os.path.join(lib_dest, 'site-packages')
+    flags = {'-DPy_REF_DEBUG':None}
 else:
     BDIR = '../release/build'
-    pythonPaths = [env['python_inc_path'], '..', '.']
-    flags = []
-    # do not install...
+    # we may not be able to release ...
     dest_dir = '../release'
-    share_dir = '../release'
-
+    flags = {}
 env.BuildDir(BDIR, '.', duplicate = 0)
-env.Append(CPPPATH = pythonPaths)
-
-env.Append(CCFLAGS = ['-Wall', '-pthread', '-fno-strict-aliasing', '-DNDEBUG', 
-    '-O3', '-fPIC', \
-    '-DSIMUPOP_REV=9990', '-DSIMUPOP_VER=9.9.9' ] + flags)
-#    '-DSIMUPOP_REV=%s' % os.popen('svnversion ..').read().strip() ])
 
 # for swig 1.3.28 cvs
-SWIG = 'swig -O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
-
+env['SWIGFLAGS'] = '-O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
 # build static libraries
 if 'serial' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libserial.a')):
     serial = env.StaticLibrary(
@@ -126,62 +120,68 @@ env.Command('swigpyrun.h', None, ['swig -python -external-runtime $TARGET'])
 
 #
 DEF = {
-    'std': [],
-    'op': ['-DOPTIMIZED'],
-    'la': ['-DLONGALLELE'],
-    'laop': ['-DOPTIMIZED', '-DLONGALLELE'],
-    'ba': ['-DBINARYALLELE'],
-    'baop': ['-DOPTIMIZED', '-DBINARYALLELE']
+    'std': {},
+    'op': {'OPTIMIZED':None},
+    'la': {'LONGALLELE':None},
+    'laop': {'OPTIMIZED':None, 'LONGALLELE':None},
+    'ba': {'BINARYALLELE':None},
+    'baop': {'OPTIMIZED':None, 'BINARYALLELE':None}
 }
-env_mod = {}
-target_mod = {}
+targets = {}
 build_mod = []
-for m in  ['std', 'op', 'la', 'laop', 'ba', 'baop']:
-    if m in BUILD_TARGETS:
-        build_mod.append(m)
-if build_mod == [] or  'all' in BUILD_TARGETS:
-	build_mod = ['std', 'op', 'la', 'laop', 'ba', 'baop']
+
+for key in DEF.keys():
+    DEF[key].update({"SWIG_GLOBAL":None, 'DSIMUPOP_REV':'9990', 'DSIMUPOP_VER':'9.9.9'})
+    DEF[key].update(flags)
+    if key in BUILD_TARGETS:
+        build_mod.append(key)
+if build_mod == [] or 'all' in BUILD_TARGETS:
+    build_mod = DEF.keys()
+
+src = Split('''utility migrator population simulator terminator
+    individual mutator stator initializer operator recombinator
+    mating outputer selector tagger''') 
 
 for mod in build_mod:
-    env_mod[mod] = env.Copy()
-    env_mod[mod].Append(CCFLAGS = DEF[mod])
-    env_mod[mod].Append(LIBPATH = [BDIR])
-    src = Split('''utility migrator population simulator terminator
-                individual mutator stator initializer operator recombinator
-                mating outputer selector tagger''') 
     for file in src:
         env.Command('%s/%s_%s.cpp'%(BDIR, file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
-    env.Command(
-		[os.path.join(BDIR, 'simuPOP_%s_wrap.cpp'%mod),
-		 os.path.join(BDIR, 'simuPOP_%s.py'%mod)],
-        'simuPOP_%s.i'%mod, 
-        ['%s %s -o $TARGET $SOURCE'%(SWIG, ' '.join(DEF[mod]))])
     env.Depends(os.path.join(BDIR, 'simuPOP_%s_wrap.cpp'%mod), 
         ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i', 
         os.path.join(BDIR, 'simuPOP_%s.i'%mod)] + \
         ['%s.h' % x for x in src])
-    target_mod[mod] = env_mod[mod].SharedLibrary(
-        target = os.path.join(BDIR, mod),
+    # 
+    # build shared library
+    targets[mod] = env.SharedLibrary(
+        target = os.path.join(BDIR, '_simuPOP_%s.so'%mod),
         source = [os.path.join(BDIR, '%s_%s.cpp' % (x, mod)) for x in src] 
-            + [os.path.join(BDIR, 'simuPOP_%s_wrap.cpp'%mod)],
+            + [os.path.join(BDIR, 'simuPOP_%s.i'%mod)],
         LIBS = ['serial', 'iostreams', 'gsl', 'z'],
+        CC = cc,
+        SHLINK = ldshared,
+        SHLINKFLAGS = [],
+        SHLIBPREFIX = "",
+        SHLIBSUFFIX = so_ext,
+        LIBPATH = [BDIR],
+        CPPPATH = [distutils.sysconfig.get_python_inc(), '.', '..'],
+        CPPDEFINES = DEF[mod],
+        CPPFLAGS = basecflags + " " + opt
     )
-    env.Command(os.path.join(BDIR, '_simuPOP_%s.so'%mod), 
-        target_mod[mod], [Move('$TARGET', '$SOURCE')])
     Alias(mod, [os.path.join(BDIR, x) for x in ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod]])
     Alias('all', [os.path.join(BDIR, '_simuPOP_%s.so'%mod), os.path.join(BDIR, 'simuPOP_%s.py'%mod)])
-    for file in ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod]:
-        #env.InstallAs(os.path.join(dest_dir, file), os.path.join(BDIR, file))
-        env.Command(os.path.join(dest_dir, file), os.path.join(BDIR, file),
-			[Copy('$TARGET', '$SOURCE')])
-        Alias('install', os.path.join(dest_dir, file))
+    dp1 = env.Install(dest_dir, os.path.join(BDIR, 'simuPOP_%s.py'%mod))
+    dp2 = env.Install(dest_dir, targets[mod])
+    env.Depends(dp1, dp2)
+    Alias('install', dp1)
 
 
 for file in ['simuRPy.py', 'simuUtil.py', 'simuViewPop.py', 'simuMatPlt.py',
     'simuPOP.py', 'simuOpt.py']:
-    env.InstallAs(os.path.join(dest_dir, file), file)
-    Alias('install', os.path.join(dest_dir, file))
+    env.Install(dest_dir, file)
+    Alias('install', dest_dir)
 
 # install to share directory, later.
 
 Default('install')
+
+
+
