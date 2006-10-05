@@ -106,9 +106,32 @@ class TestSelector(unittest.TestCase):
             #if simu.gen() < lost[0] or simu.gen() > lost[1]:
             #    print "Warning: something may be wrong %d outside: [%f %f]. " % (simu.gen(), lost[0], lost[1])
         print rpy.r.quantile(simulated,  [0.05, 0.25, 0.5, 0.75, 0.95])
-
-        
     
+
+    def testSubPopDirSelection(self):
+        'Testing directional selection in s subpopulation using a map selector'
+        #TurnOnDebug(DBG_DEVEL)
+        simu = simulator(
+            population(subPop=[200, 1000], ploidy=2, loci=[1], 
+            infoFields=['fitness', 'spare']),
+            randomMating() )
+        # 1. directional selection
+        #     w11 > w12 > w22
+        #    p -> 1
+        simu.evolve(
+            [
+                stat( alleleFreq=[0], genoFreq=[0]),
+                mapSelector(locus=0, 
+                    fitness={'0-0':1, '0-1':0.9, '1-1':.8}),
+                terminateIf('subPop[1]["alleleFreq"][0][0] < 0.4'),
+                terminateIf('subPop[1]["alleleFreq"][0][0] < 0.8', begin=50)
+            ],
+            preOps=[ initByFreq(alleleFreq=[.5, .5])],
+            end=100
+        )
+        # simulation did not terminate unexpectedly
+        self.assertEqual(simu.gen(), 101)
+
 
     def testMapSelectorDirSelection(self):
         'Testing directional selection using a map selector'
@@ -134,8 +157,9 @@ class TestSelector(unittest.TestCase):
             end=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 101)
-        
+        self.assertEqual(simu.gen(), 101)     
+
+
     def testMaSelectorDirSelection(self):
         'Testing directional selection using a multi-allele selector'
         # specify relative fitness: w11, w12/w21, w22

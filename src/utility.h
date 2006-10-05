@@ -193,7 +193,7 @@ namespace simuPOP
 
 	e.g. the following code set alleles at the first locus all to 2.
 	\code
-	for(GappedIterator it=pop.alleleBegin(0),
+	for(GappedIterator it=pop.alleleBegin(0, true),
 	itEnd = pop.alleleEnd(0); it < itEnd;  ++it)
 	*it = 2;
 	\endcode

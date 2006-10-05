@@ -90,12 +90,13 @@ namespace simuPOP
 				do
 				{
 #ifndef OPTIMIZED
-					AlleleRef ptr = *(pop.alleleBegin( locus ) + pos).ptr();
+					// alleleBegin is *not* ordered, so the mutation is random
+					AlleleRef ptr = *(pop.alleleBegin(locus, false) + pos).ptr();
 					DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << locus
 						<< " of individual " << (pos/pop.ploidy()) << " from " << int(ptr) );
 					mutate(ptr);
 #else
-					mutate( *(pop.alleleBegin( locus ) + pos).ptr() );
+					mutate( *(pop.alleleBegin(locus, false) + pos).ptr() );
 #endif
 					m_mutCount[ locus ]++;
 				}while( (pos = succ.find_next(pos)) != BitSet::npos );
