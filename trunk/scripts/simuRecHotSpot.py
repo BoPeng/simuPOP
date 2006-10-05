@@ -254,7 +254,7 @@ def SaveLDhat(pop, filename):
         for p in range(pop.ploidy()):
             seq.write('>genotype_%d_%d\n' % (i, p))
 			# use of arrGenotype is more efficient than repeated calls to allele() etc
-            gt = ind.arrGenotype(p)
+            gt = ind.arrGenotype(p, True)
             for line in range(len(gt)/m):
                 if m*(line +1) <= len(gt):
                     seq.write( ''.join([str(g) for g in gt[(m*line):(m*(line+1))]]) + '\n')

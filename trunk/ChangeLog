@@ -8,6 +8,15 @@ BUGS:
 
 version 0.7.4 - Currently available as svn snapshot
   - BUG: fix simulator.population() function
+  - BUG: fix a selection bug with subpopulations.
+  - NEW/CHG: add order parameter to population arr function series.
+	Changed functions are:
+		C++ level: population::genoBegin(true), genoBegin(sp, true)
+			population::infoBegin(idx, order), infoBegin(idx, subPop, order)
+		Python level: population::arrGenotype(True), arrGenotype(sp, True)
+			population::indInfo(idx, order), indInfo(idx, subPop, order)
+			population::arrIndInfo(order), arrIndInfo(subPop, order)
+		
 
 
 version 0.7.3 - (Rev 470) Oct 2, 2006

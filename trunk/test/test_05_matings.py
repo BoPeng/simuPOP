@@ -27,10 +27,10 @@ class TestMatingSchemes(unittest.TestCase):
             noMating())
         # during mating operator will be applied
         simu.step( ops=[ pyOperator(func=setGen, stage=DuringMating) ])
-        self.assertEqual( simu.population(0).arrGenotype(),
+        self.assertEqual( simu.population(0).arrGenotype(True),
             [0]*10)
         simu.step( ops=[ pyOperator(func=setGen, stage=DuringMating) ])
-        self.assertEqual( simu.population(0).arrGenotype(),
+        self.assertEqual( simu.population(0).arrGenotype(True),
             [1]*10)
 
     def testBinormialSelection(self):
@@ -395,7 +395,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(20, loci=[1], infoFields=['age', 'stage'])
         simu = simulator(pop, pyMating(mate))
         simu.step([initByValue([1])])
-        self.assertEqual(simu.population(0).indInfo('age'), tuple([1.0]*20))
+        self.assertEqual(simu.population(0).indInfo('age', True), tuple([1.0]*20))
             
         
 ##   def testFreqTrajWithSubPop(self):

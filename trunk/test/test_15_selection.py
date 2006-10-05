@@ -299,7 +299,7 @@ class TestSelector(unittest.TestCase):
             fitness={'0-0|0-0':0, '1-1|1-1':0.25,
                              '0-1|0-1':0.5, '1-0|1-0':0.75}).apply(pop)
         # there is only one field, so fitness is continuous
-        ft = pop.arrIndInfo()
+        ft = pop.arrIndInfo(True)
         for ind in range(pop.popSize()):
             gt = pop.individual(ind).arrGenotype()
             if gt == [0,0,1,1]:
@@ -315,7 +315,7 @@ class TestSelector(unittest.TestCase):
         mapSelector(loci=[0,1], phase=True,
             fitness={'0-0|0-0':0, '1-1|1-1':0.25,
                              '0-1|0-1':0.5, '1-0|1-0':0.75}).apply(pop)
-        ft = pop.arrIndInfo()
+        ft = pop.arrIndInfo(True)
         for ind in range(pop.popSize()):
             gt = pop.individual(ind).arrGenotype()
             if gt == [0,0,1,1]:

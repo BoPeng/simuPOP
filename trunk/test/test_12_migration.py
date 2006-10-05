@@ -118,11 +118,11 @@ class TestMigrator(unittest.TestCase):
     'Testing operator pyMigrator'
     pop = population(subPop=[2,4,4], loci=[2,6])
     InitByFreq(pop, [.2,.4,.4])
-    ind1 = pop.individual(0).arrGenotype()
+    ind1 = pop.individual(0).arrGenotype(True)
     PyMigrate(pop, subPopID=[2,2,0,0,2,2,1,1,1,1])
-    assert ind1 == pop.individual(6).arrGenotype()
+    assert ind1 == pop.individual(6).arrGenotype(True)
     PyMigrate(pop, subPopID=[0,0,2,2,2,2,1,1,1,1])
-    assert ind1 == pop.individual(2).arrGenotype()
+    assert ind1 == pop.individual(2).arrGenotype(True)
     self.assertRaises(exceptions.ValueError, 
       PyMigrate, pop, [0,0,2,2,2,2,1,1])
     
@@ -130,13 +130,13 @@ class TestMigrator(unittest.TestCase):
     'Testing population split'
     pop = population(size=10, loci=[2,6])
     InitByFreq(pop, [.2,.4,.4])
-    genotype = list(pop.arrGenotype())
+    genotype = list(pop.arrGenotype(True))
     SplitSubPop(pop, which=0, sizes=[2,8], randomize=False)
     # individual untouched
-    self.assertEqual(pop.arrGenotype(), genotype)
+    self.assertEqual(pop.arrGenotype(True), genotype)
     # split, with randomization
     SplitSubPop(pop, which=1, sizes=[6,2], randomize=True)
-    self.assertNotEqual(pop.arrGenotype(), genotype)
+    self.assertNotEqual(pop.arrGenotype(True), genotype)
     
 
   def testMergeSubPop(self):

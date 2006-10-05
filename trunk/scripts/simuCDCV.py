@@ -631,6 +631,7 @@ def simuCDCV(numDSL, initSpec, selModel,
             ticToc(step=100),
             ## pause at any user key input (for presentation purpose)
             ## pause(stopOnKeyStroke=1)
+            savePopulation(outputExpr='"%s/%s-%d.txt"%(name, name, gen)', step=3000),
         ],
         end=end,
         dryrun = dryrun

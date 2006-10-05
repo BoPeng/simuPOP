@@ -68,7 +68,7 @@ def offGen(pop, off, dad, mom):
     generate offspring genotype as usual, we just need to change
     1 2 to 2 2.
   '''
-  geno = off.arrGenotype()
+  geno = off.arrGenotype(True)
   if geno[0] + geno[1] == 3: # in the case of 1 2 or 2 1
     geno[0] = 2
     geno[1] = 2
@@ -76,7 +76,7 @@ def offGen(pop, off, dad, mom):
 
 def allTwos(pop):
   ''' see if the genotype of the population is all 2'''
-  geno = sum(pop.arrGenotype())
+  geno = sum(pop.arrGenotype(True))
   # terminate if all 1 (set flag to fail
   if geno == pop.popSize()*2:   # all 1
     pop.dvars().succ = False
