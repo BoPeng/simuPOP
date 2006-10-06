@@ -198,8 +198,10 @@ for mod in build_mod:
     # 
     Alias(mod, targets[mod])
     Alias('all', targets[mod])
-    dp1 = env.Install(dest_dir, os.path.join(BDIR, 'simuPOP_%s.py'%mod))
-    dp2 = env.Install(dest_dir, targets[mod])
+    dp1 = env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py'%mod),
+        os.path.join(BDIR, 'simuPOP_%s.py'%mod))
+    dp2 = env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s.so'%mod), 
+        targets[mod])
     env.Depends(dp1, dp2)
     Alias('install', dp1)
 
