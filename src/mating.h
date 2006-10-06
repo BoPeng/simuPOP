@@ -50,14 +50,14 @@ namespace simuPOP
 		public:
 
 			/// numOffspring: constant, numOffspringFunc: call each time before mating
-#define MATE_NumOffspring           1
+		#define MATE_NumOffspring           1
 			/// call numOffspringFunc each time during mating.
-#define MATE_NumOffspringEachFamily 2
+		#define MATE_NumOffspringEachFamily 2
 			/// numOffspring and numOffsrpingsFunc call each time before mating is
 			/// the p for a geometric distribution
-#define MATE_GeometricDistribution   3
-#define MATE_PoissonDistribution     4
-#define MATE_BinomialDistribution    5
+		#define MATE_GeometricDistribution   3
+		#define MATE_PoissonDistribution     4
+		#define MATE_BinomialDistribution    5
 
 		public:
 			/// check if the mating type is compatible with population structure
@@ -319,10 +319,10 @@ namespace simuPOP
 			/// accumulative fitness
 			Weightedsampler m_sampler;
 
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 			///
 			vectori m_famSize;
-#endif
+		#endif
 	};
 
 	/**
@@ -403,10 +403,10 @@ namespace simuPOP
 				// if not, will yield compile time error.
 				pop.indBegin()->sex();
 
-#ifndef OPTIMIZED
+			#ifndef OPTIMIZED
 				if( pop.ploidy() != 2 )
 					cout << "Warning: This mating type only works with diploid population." << endl;
-#endif
+			#endif
 
 				return true;
 			}
@@ -459,10 +459,10 @@ namespace simuPOP
 			// weighted sampler
 			Weightedsampler m_malesampler, m_femalesampler;
 
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 			///
 			vectori m_famSize;
-#endif
+		#endif
 	};
 
 	//
@@ -492,9 +492,9 @@ namespace simuPOP
 	//    restartIfFail  If the process can not finish after T generations, restart if
 	//           restartIfFail=true, otherwise return. Default to false.
 	//    maxAttempts    How many times to try to get a valid path? Default 1000
-	//    allowFixation  return the trajectory, if fixation instead of absorption is 
+	//    allowFixation  return the trajectory, if fixation instead of absorption is
 	//           achieve. Default to false. This option has a side effect to consider
-    //           0, 2, .. as valid trajectory, and should not be used for simulations.
+	//           0, 2, .. as valid trajectory, and should not be used for simulations.
 	//
 	// Of course, you should specify only one of N/NtFunc and one of s/sFunc
 	//
@@ -509,7 +509,7 @@ namespace simuPOP
 		PyObject* fitnessFunc=NULL,
 		ULONG minMutAge=0,
 		ULONG maxMutAge=100000,
-        int ploidy=2,
+		int ploidy=2,
 		bool restartIfFail=false,
 		long maxAttempts=1000,
 		bool allowFixation=false);
@@ -538,7 +538,7 @@ namespace simuPOP
 	//           roughly 2,000,000 years which is longer than human history.
 	//    restartIfFail  If the process can not finish after T generations, restart if
 	//           restartIfFail=true, otherwise return. Default to false.
-    //    ploidy    Number of chromosomes will be N*ploidy
+	//    ploidy    Number of chromosomes will be N*ploidy
 	//    maxAttempts    How many times to try to get a valid path? Default 10000
 	//
 	// Of course, you should specify only one of N/NtFunc and one of s/sFunc
@@ -555,7 +555,7 @@ namespace simuPOP
 		PyObject* fitnessFunc=NULL,
 		ULONG minMutAge=0,
 		ULONG maxMutAge=100000,
-        int ploidy=2,
+		int ploidy=2,
 		bool restartIfFail=false,
 		long maxAttempts=1000);
 
@@ -819,8 +819,8 @@ namespace simuPOP
 	{
 		public:
 
-#define CM_AcceptOneDSL 0
-#define CM_AcceptAllDSL 1
+		#define CM_AcceptOneDSL 0
+		#define CM_AcceptAllDSL 1
 
 		public:
 
@@ -901,10 +901,10 @@ namespace simuPOP
 				// if not, will yield compile time error.
 				pop.indBegin()->sex();
 
-#ifndef OPTIMIZED
+			#ifndef OPTIMIZED
 				if( pop.ploidy() != 2 )
 					cout << "Warning: This mating type only works with diploid population." << endl;
-#endif
+			#endif
 
 				return true;
 			}
@@ -957,9 +957,8 @@ namespace simuPOP
 			int m_acceptScheme;
 	};
 
-	
 	/**
-	   python mating. 
+	   python mating.
 	   Parental and offspring generation, along with during mating
 	   operators, are passed to a python function. All mating
 	   are done there, and the resulting population be returned.
@@ -1001,15 +1000,14 @@ namespace simuPOP
 			{
 				return new pyMating(*this);
 			}
-			
+
 			/// CPPONLY
 			pyMating(const pyMating& rhs):
-				mating(rhs), m_mateFunc(rhs.m_mateFunc)
+			mating(rhs), m_mateFunc(rhs.m_mateFunc)
 			{
 				if(m_mateFunc != NULL )
 					Py_INCREF(m_mateFunc);
 			}
-
 
 			/// return name of the mating type
 			virtual string __repr__()
@@ -1024,12 +1022,11 @@ namespace simuPOP
 			 no one will die (ignore during mating failing signal).
 			*/
 			virtual bool mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit);
-			
+
 		private:
 			PyObject* m_mateFunc;
-		
-	};
 
+	};
 
 }
 #endif

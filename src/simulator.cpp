@@ -198,9 +198,9 @@ namespace simuPOP
 				setGen(m_gen);
 
 			// save refcount at the beginning
-#ifdef Py_REF_DEBUG
+			#ifdef Py_REF_DEBUG
 			saveRefCount();
-#endif
+			#endif
 
 			for (m_curRep = 0; m_curRep < m_numRep; m_curRep++)
 			{
@@ -349,9 +349,9 @@ namespace simuPOP
 			// count the number of stopped replicates
 			DBG_DO(DBG_SIMULATOR, cout << endl << "Number of stopped replicates: " << numStopped << endl);
 
-#ifdef Py_REF_DEBUG
+			#ifdef Py_REF_DEBUG
 			checkRefCount();
-#endif
+			#endif
 
 			m_gen ++;							  // increase generation!
 			// only if m_gen > end will simulation stop
@@ -475,13 +475,13 @@ namespace simuPOP
 			boost::archive::text_oarchive oa(ofs);
 			oa << *this;
 		}
-#ifndef __NO_XML_SUPPORT__
+		#ifndef __NO_XML_SUPPORT__
 		else if (format == "xml" || (format == "auto" && filename.substr(filename.size()-4,4) == ".xml" ) )
 		{
 			boost::archive::xml_oarchive oa(ofs);
 			oa << boost::serialization::make_nvp("simulator",*this);
 		}
-#endif
+		#endif
 		else if (format == "bin"  ||  (format == "auto" && filename.substr(filename.size()-4,4) == ".bin" ))
 		{
 			boost::archive::binary_oarchive oa(ofs);
@@ -509,13 +509,13 @@ namespace simuPOP
 				boost::archive::text_iarchive ia(ifs);
 				ia >> *this;
 			}
-#ifndef __NO_XML_SUPPORT__
+			#ifndef __NO_XML_SUPPORT__
 			else if( format == "xml"  ||  (format == "auto" && filename.substr(filename.size()-4,4) == ".xml" ))
 			{
 				boost::archive::xml_iarchive ia(ifs);
 				ia >> boost::serialization::make_nvp("simulator", *this);
 			}
-#endif
+			#endif
 			else if (format == "bin" || (format == "auto" && filename.substr(filename.size()-4,4) == ".bin" ) )
 			{
 				boost::archive::binary_iarchive ia(ifs);
@@ -557,7 +557,7 @@ namespace simuPOP
 				}
 				catch(...)						  // then xml?
 				{
-#ifndef __NO_XML_SUPPORT__
+					#ifndef __NO_XML_SUPPORT__
 					io::filtering_istream ifxml;
 					if(isGzipped(filename))
 						ifxml.push(io::gzip_decompressor());
@@ -572,10 +572,10 @@ namespace simuPOP
 						throw ValueError("Failed to load simulator. Your file may be corrupted, "
 							"or being a copy of non-transferrable file (.bin)");
 					}
-#else
+					#else
 					throw ValueError("Failed to load simulator. Your file may be corrupted, "
 						"or being a copy of non-transferrable file (.bin)");
-#endif
+					#endif
 				}								  // try xml
 			}									  // try text
 		}										  // try bin
@@ -587,12 +587,12 @@ namespace simuPOP
 		population p;
 		simulator * a = new simulator(
 			p, mate );
-#ifndef _NO_SERIALIZATION_
+		#ifndef _NO_SERIALIZATION_
 		a->loadSimulator(file, format);
 		return *a;
-#else
+		#else
 		cout << "This feature is not supported in this platform" << endl;
-#endif
+		#endif
 		return *a;
 	}
 

@@ -55,6 +55,7 @@ namespace simuPOP
 	double maSelector::indFitness(individual * ind)
 	{
 		UINT index = 0;
+		bool singleST = m_wildtype.size() == 1;
 		for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
 		{
 			/// get genotype of ind
@@ -64,11 +65,19 @@ namespace simuPOP
 			int numWildtype=0;
 
 			// count number of wildtype
-			if( find(m_wildtype.begin(), m_wildtype.end(), a) != m_wildtype.end() )
-				numWildtype ++;
+			// this improve the performance a little bit
+			if(singleST)
+			{
+				numWildtype = (a==m_wildtype[0]) + (b==m_wildtype[0]);
+			}
+			else
+			{
+				if(find(m_wildtype.begin(), m_wildtype.end(), a) != m_wildtype.end() )
+					numWildtype ++;
 
-			if( find(m_wildtype.begin(), m_wildtype.end(), b) != m_wildtype.end() )
-				numWildtype ++;
+				if(find(m_wildtype.begin(), m_wildtype.end(), b) != m_wildtype.end() )
+					numWildtype ++;
+			}
 
 			index = index*3 + 2-numWildtype;
 		}

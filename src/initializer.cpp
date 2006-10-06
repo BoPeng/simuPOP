@@ -226,12 +226,12 @@ namespace simuPOP
 
 		DBG_DO(DBG_INITIALIZER, cout << "Size of src is " << m_value[0].size() << endl);
 
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 		UINT gSz= m_value[0].size();
 		for(size_t v=1; v< m_value.size(); ++v)
 			if( m_value[v].size() != gSz)
 				throw ValueError("Given values should have the same length (either one copy of chromosomes or the whole genotype.");
-#endif
+		#endif
 
 		setRanges(pop);
 

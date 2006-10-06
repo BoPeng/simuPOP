@@ -28,12 +28,12 @@ namespace simuPOP
 
 	void mutator::initialize(population& pop)
 	{
-#ifndef BINARYALLELE
+		#ifndef BINARYALLELE
 		if( m_maxAllele == 0 )
 			m_maxAllele = pop.maxAllele();
 		else if ( m_maxAllele > 0 && m_maxAllele > pop.maxAllele() )
 			throw ValueError("maxAllele exceeds population max allele.");
-#endif
+		#endif
 
 		DBG_DO(DBG_MUTATOR, cout << "initialize mutator" << endl);
 
@@ -55,11 +55,11 @@ namespace simuPOP
 
 		m_bt.setParameter(m_rate, pop.ploidy() * pop.popSize());
 
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 		for(size_t i=0; i<m_rate.size(); ++i)
 			if( fcmp_lt( m_rate[i], 0.) || fcmp_gt( m_rate[i], 1.) )
 				throw ValueError("Migration rate should be between [0,1], given " + toStr(m_rate[i]));
-#endif
+		#endif
 		m_mutCount.resize(pop.totNumLoci(), 0);
 		m_initialized = true;
 	}
@@ -89,15 +89,15 @@ namespace simuPOP
 			{
 				do
 				{
-#ifndef OPTIMIZED
+					#ifndef OPTIMIZED
 					// alleleBegin is *not* ordered, so the mutation is random
 					AlleleRef ptr = *(pop.alleleBegin(locus, false) + pos).ptr();
 					DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << locus
 						<< " of individual " << (pos/pop.ploidy()) << " from " << int(ptr) );
 					mutate(ptr);
-#else
+					#else
 					mutate( *(pop.alleleBegin(locus, false) + pos).ptr() );
-#endif
+					#endif
 					m_mutCount[ locus ]++;
 				}while( (pos = succ.find_next(pos)) != BitSet::npos );
 			}									  // succ.any
@@ -109,15 +109,15 @@ namespace simuPOP
 	/// mutate to a state other than current state with equal probability
 	void kamMutator::mutate(AlleleRef allele)
 	{
-#ifdef BINARYALLELE
+		#ifdef BINARYALLELE
 		allele = !allele;
-#else
+		#else
 		Allele new_allele = rng().randInt(maxAllele());
 		if(new_allele >= allele)
 			allele = new_allele+1;
 		else
 			allele = new_allele;
-#endif
+		#endif
 	}
 
 	void gsmMutator::mutate(AlleleRef allele)

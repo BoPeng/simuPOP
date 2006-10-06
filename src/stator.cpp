@@ -59,11 +59,10 @@ namespace simuPOP
 		return key + "'}";
 	}
 
-
-    bool stat::apply(population& pop)
-    {
-        return (m_popSize.apply(pop) &&
-		    m_numOfMale.apply(pop) &&
+	bool stat::apply(population& pop)
+	{
+		return (m_popSize.apply(pop) &&
+			m_numOfMale.apply(pop) &&
 			m_numOfAffected.apply(pop) &&
 			m_alleleFreq.apply(pop) &&
 			m_heteroFreq.apply(pop) &&
@@ -73,18 +72,17 @@ namespace simuPOP
 			m_LD.apply(pop) &&
 			m_Fst.apply(pop) &&
 			m_relatedness.apply(pop));
-    }
+	}
 
-
-    bool statPopSize::apply(population& pop)
-    {	
-        UINT numSP = pop.numSubPop();
+	bool statPopSize::apply(population& pop)
+	{
+		UINT numSP = pop.numSubPop();
 		ULONG popSize = pop.popSize();
 
 		pop.setIntVar(numSubPop_String, numSP);
 		pop.setIntVar(popSize_String, popSize);
-        
-        if( !m_isActive)
+
+		if( !m_isActive)
 			return true;
 
 		// type mismatch, can not use subPopSizes() directly.
@@ -95,10 +93,9 @@ namespace simuPOP
 		pop.setIntVectorVar(subPopSize_String, spSize);
 
 		for( size_t sp=0; sp < numSP; ++sp)
-	    		pop.setIntVar(subPopVar_String(sp, popSize_String), spSize[sp]);
-        return true;
-    }
-    
+			pop.setIntVar(subPopVar_String(sp, popSize_String), spSize[sp]);
+		return true;
+	}
 
 	bool statNumOfMale::apply(population& pop)
 	{
@@ -134,7 +131,7 @@ namespace simuPOP
 		pop.setIntVar( numOfFemale_String, pop.popSize() - numOfMale);
 		m_numOfMale[numSP] = numOfMale;
 		m_numOfFemale[numSP] = pop.popSize() - numOfMale;
-        return true;
+		return true;
 	}
 
 	bool statNumOfAffected::apply(population& pop)
@@ -170,7 +167,7 @@ namespace simuPOP
 		pop.setDoubleVar( propOfUnaffected_String, (double)(pop.popSize() - numOfAffected)/pop.popSize());
 		m_numOfAffected[numSP] = numOfAffected;
 		m_numOfUnaffected[numSP] = pop.popSize() - numOfAffected;
-        return true;
+		return true;
 	}
 
 	bool statAlleleFreq::apply(population& pop)
@@ -259,7 +256,7 @@ namespace simuPOP
 					if(numSP == 1)
 					{
 						varname = toStr(AlleleNum_String) + "[" + toStr(loc) + "]";
-                        Py_INCREF(d);
+						Py_INCREF(d);
 						pop.setVar(varname, d);
 					}
 
@@ -270,7 +267,7 @@ namespace simuPOP
 					if(numSP == 1)
 					{
 						varname = toStr(AlleleFreq_String) + "[" + toStr(loc) + "]";
-                        Py_INCREF(d);
+						Py_INCREF(d);
 						pop.setVar(varname, d);
 					}
 				}								  // post
@@ -323,9 +320,8 @@ namespace simuPOP
 				pop.setIntVectorVar(NumOfAlleles_String, m_numOfAlleles.back());
 			}
 		}
-        return true;
+		return true;
 	}
-
 
 	bool statHeteroFreq::apply(population& pop)
 	{
@@ -510,7 +506,7 @@ namespace simuPOP
 			pop.setIntVectorVar(HomoNum_String, m_homoNum[numSP]);
 			pop.setDoubleVectorVar(HomoFreq_String, m_homoFreq[numSP]);
 		}
-        return true;
+		return true;
 	}
 
 	bool statExpHetero::apply(population& pop)
@@ -565,7 +561,7 @@ namespace simuPOP
 				m_expHetero[sp]);
 		pop.setDoubleVectorVar(ExpHetero_String,
 			m_expHetero[numSP]);
-        return true;
+		return true;
 	}
 
 	bool statGenoFreq::apply(population& pop)
@@ -683,7 +679,7 @@ namespace simuPOP
 				pop.setIntDictVar( varname, sum[a] );
 			}
 		}
-        return true;
+		return true;
 	}
 
 	bool statHaploFreq::apply(population& pop)
@@ -794,7 +790,7 @@ namespace simuPOP
 				}
 			}
 		}
-        return true;
+		return true;
 	}
 
 	// calculate, right now,  do not tempt to save values
@@ -1067,7 +1063,7 @@ namespace simuPOP
 				}								  // length 2
 			}
 		}										  // for all LD
-        return true;
+		return true;
 	}
 
 	bool statFst::apply(population& pop)
@@ -1181,7 +1177,7 @@ namespace simuPOP
 		pop.setDoubleVar(AvgFst_String, m_avgFst);
 		pop.setDoubleVar(AvgFit_String, m_avgFit);
 		pop.setDoubleVar(AvgFis_String, m_avgFis);
-        return true;
+		return true;
 	}
 
 	// relatedness between individuals
@@ -1578,7 +1574,7 @@ namespace simuPOP
 					break;
 			}
 		}										  // for all method
-        return true;
+		return true;
 	}
 
 }

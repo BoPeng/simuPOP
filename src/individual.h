@@ -135,7 +135,7 @@ namespace simuPOP
 					( m_lociPos == rhs.m_lociPos) &&
 					( m_alleleNames == rhs.m_alleleNames) &&
 					( m_lociNames == rhs.m_lociNames) &&
-					( m_maxAllele == rhs.m_maxAllele) && 
+					( m_maxAllele == rhs.m_maxAllele) &&
 					( m_infoFields == rhs.m_infoFields) ))
 					return true;
 				else
@@ -152,7 +152,7 @@ namespace simuPOP
 			{
 			}
 
-#if  defined(_WIN32) || defined(__WIN32__)
+		#if  defined(_WIN32) || defined(__WIN32__)
 
 			// due to an weird compiling error fo vc7.1,
 			// if I do not specify these two functions, the ar & process
@@ -174,7 +174,7 @@ namespace simuPOP
 				boost::archive::binary_iarchive ia(ifs);
 				ia >> boost::serialization::make_nvp("geno_structure",*this);
 			}
-#endif									  // win32
+		#endif									  // win32
 
 		private:
 
@@ -270,7 +270,7 @@ namespace simuPOP
 // set version for GenoStructure class
 // version 0: base
 // version 1: add sexChrom indicator
-// version 2: add infoSize 
+// version 2: add infoSize
 BOOST_CLASS_VERSION(simuPOP::GenoStructure, 2)
 #endif
 
@@ -286,8 +286,8 @@ namespace simuPOP
 	{
 		private:
 
-#define TraitIndexType unsigned char
-#define TraitMaxIndex 0xFF
+		#define TraitIndexType unsigned char
+		#define TraitMaxIndex 0xFF
 
 		public:
 			/// constructor, but m_genoStruIdx will be set later.
@@ -560,7 +560,7 @@ namespace simuPOP
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_infoFields.size();
 			}
-			
+
 			vectorstr infoFields() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_infoFields;
@@ -571,24 +571,24 @@ namespace simuPOP
 				CHECKRANGEINFO(idx);
 				return s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
 			}
-			
+
 			/// return the index of field name, return -1 if not found.
 			UINT infoIdx(const string& name) const
-			{	
+			{
 				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
-				
+
 				for(UINT i=0; i< names.size(); ++i)
 				{
 					if(names[i] == name)
 						return i;
 				}
-				throw IndexError("Info field '" + name + "' is not found. " 
+				throw IndexError("Info field '" + name + "' is not found. "
 					"Plese use infoFields=['" + name + "'] option of population() during construction\n"
 					"or use addInfoField('" + name + "') to add to an existing population.");
 				// this should never be reached.
 				return 0;
 			}
-			
+
 			/// add a new information field
 			/// NOTE: should only be called by population::requestInfoField
 			/// return the index of the newly added field
@@ -607,7 +607,7 @@ namespace simuPOP
 			{
 				s_genoStruRepository[m_genoStruIdx].m_infoFields = fields;
 			}
-			
+
 			void swap(GenoStruTrait& rhs)
 			{
 				std::swap(m_genoStruIdx, rhs.m_genoStruIdx);
@@ -652,7 +652,7 @@ namespace simuPOP
 	- genotypic information
 	- shared genotypic structure info (through a GenoStructure pointer)
 	- flags about sex, affected status
-	- an internal info field 
+	- an internal info field
 	.
 
 	other individuals will be derived from this class, adding age info etc.
@@ -698,7 +698,7 @@ namespace simuPOP
 
 			///  @name constructor, destructor etc
 			//@{
-			/// default constructor, 
+			/// default constructor,
 			individual():m_flags(0),m_subPopID(0)
 			{
 			}
@@ -733,7 +733,7 @@ namespace simuPOP
 			{
 				m_infoPtr = pos;
 			}
-			
+
 			/// shallow copy of an object.
 			individual& operator= (const individual& rhs)
 			{
@@ -781,7 +781,7 @@ namespace simuPOP
 			{
 				return m_infoPtr;
 			}
-			
+
 			//@}
 			/// @name allele, info get/set functions
 			//@{
@@ -819,7 +819,6 @@ namespace simuPOP
 				return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + infoSize() );
 			}
 
-			
 			/// get allele from an index
 			/** \param index index from the beginning of genotypic info
 			 */
@@ -974,13 +973,13 @@ namespace simuPOP
 			{
 				return m_subPopID;
 			}
-			
+
 			/// set subpop if
 			void setSubPopID(SubPop_ID id)
 			{
 				m_subPopID = id;
 			}
-			
+
 			/// get info
 			InfoType info(UINT idx) const
 			{
@@ -994,12 +993,12 @@ namespace simuPOP
 				CHECKRANGEINFO(idx);
 				m_infoPtr[idx] = value;
 			}
-			
+
 			/// get info
 			InfoType info(const string& name) const
 			{
 				int idx = infoIdx(name);
-				DBG_ASSERT(idx>=0, IndexError, 
+				DBG_ASSERT(idx>=0, IndexError,
 					"Info name " + name + " is not a valid info field name");
 				return m_infoPtr[idx];
 			}
@@ -1008,11 +1007,11 @@ namespace simuPOP
 			void setInfo(InfoType value, const string& name)
 			{
 				int idx = infoIdx(name);
-				DBG_ASSERT(idx>=0, IndexError, 
+				DBG_ASSERT(idx>=0, IndexError,
 					"Info name " + name + " is not a valid info field name");
 				m_infoPtr[idx] = value;
 			}
-			
+
 			/// start of alleles
 			/// CPPONLY
 			GenoIterator genoBegin() const
@@ -1063,7 +1062,7 @@ namespace simuPOP
 				CHECKRANGECHROM(chrom);
 				return m_genoPtr + p*totNumLoci() + chromEnd(chrom);
 			}
-			
+
 			/// start of info
 			/// CPPONLY
 			InfoIterator infoBegin() const
@@ -1093,7 +1092,7 @@ namespace simuPOP
 				if(ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
 					|| ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) )
 					return false;
-					
+
 				for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
 					if( info(i) != rhs.info(i) )
 						return false;
@@ -1301,18 +1300,19 @@ namespace simuPOP
 
 			/// pointer to genotype.
 			GenoIterator m_genoPtr;
-			
+
 			/// pointer to info
 			InfoIterator m_infoPtr;
 	};
 
 }
 
+
 #ifndef SWIG
 // set version for GenoStructure class
 // version 0: base
 // version 1: add sexChrom indicator
-// version 2: add infoSize 
+// version 2: add infoSize
 BOOST_CLASS_VERSION(simuPOP::individual, 1)
 #endif
 #endif

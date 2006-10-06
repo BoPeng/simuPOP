@@ -65,7 +65,6 @@ namespace simuPOP
 			ValueError, "If mode is MATE_BinomialDistribution, maxNumOffspring should be > 1");
 	}
 
-
 	UINT mating::numOffspring(int gen )
 	{
 		static double numOS = 0.;
@@ -225,7 +224,6 @@ namespace simuPOP
 		return true;
 	}
 
-
 	bool binomialSelection::mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
 	{
 		this->resetNumOffspring();
@@ -238,13 +236,13 @@ namespace simuPOP
 			"Number of subpopulation can not be changed.");
 
 		GappedInfoIterator fitness;
-        bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+		bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
 		UINT fit_id = 0;
-        if (selectionOn)
-        {
-            fit_id = pop.infoIdx("fitness");
+		if (selectionOn)
+		{
+			fit_id = pop.infoIdx("fitness");
 			fitness = pop.infoBegin(fit_id, true);
-        }
+		}
 
 		/// determine if mate() will generate offspring genotype
 		bool formOffGeno = this->formOffGenotype(ops);
@@ -321,7 +319,7 @@ namespace simuPOP
 		return true;
 	}
 
-	bool randomMating::mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	bool randomMating::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
 	{
 		bool hasSexChrom = pop.sexChrom();
 
@@ -335,14 +333,10 @@ namespace simuPOP
 			"Number of subpopulation can not be changed.");
 
 		// empty fitness means no selection
-		GappedInfoIterator fitness;
-        bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+		bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
 		UINT fit_id = 0;
-        if (selectionOn)
-        {
-            fit_id = pop.infoIdx("fitness");
-			fitness = pop.infoBegin(fit_id, true);
-        }
+		if (selectionOn)
+			fit_id = pop.infoIdx("fitness");
 
 		/// determine if any during-mating operator will generate offspring genotype
 		/// so mating scheme does not have to do it.
@@ -369,15 +363,42 @@ namespace simuPOP
 			m_maleIndex.resize(numMale);
 			m_femaleIndex.resize(spSize-numMale);
 
+			/// if selection is on
+			if(selectionOn)
+			{
+				m_maleFitness.resize(numMale);
+				m_femaleFitness.resize(spSize-numMale);
+			}
+
 			numMale = 0;
 			numFemale = 0;
 
-			for( ULONG it = pop.subPopBegin(sp), itEnd = pop.subPopEnd(sp); it < itEnd;  it++)
+			size_t idx=pop.subPopBegin(sp);
+			for(population::IndIterator ind = pop.indBegin(sp), indEnd = pop.indEnd(sp); ind < indEnd; ind++)
 			{
-				if( pop.ind(it).sex() == Male)
-					m_maleIndex[numMale++] = it;
+				if( ind->sex() == Male)
+				{
+					m_maleIndex[numMale] = idx;
+					if(selectionOn)
+						m_maleFitness[numMale] = ind->info(fit_id);
+					numMale++;
+				}
 				else
-					m_femaleIndex[numFemale++] = it;
+				{
+					m_femaleIndex[numFemale] = idx;
+					if(selectionOn)
+						m_femaleFitness[numFemale] = ind->info(fit_id);
+					numFemale++;
+				}
+				idx++;
+			}
+
+			if(selectionOn)
+			{
+				m_malesampler.set(m_maleFitness);
+				m_femalesampler.set(m_femaleFitness);
+				DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
+				DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
 			}
 
 			/// now, all individuals of needToFind sex is collected
@@ -390,26 +411,6 @@ namespace simuPOP
 
 			DBG_ASSERT( numFemale + numMale == spSize, SystemError,
 				"Wrong number of male/female.");
-
-			/// if selection is on
-			if( selectionOn)
-			{ 
-				m_maleFitness.resize(numMale);
-				m_femaleFitness.resize(numFemale);
-
-				size_t ind;
-
-				for( ind = 0; ind < numMale; ++ind)
-					m_maleFitness[ind] = fitness[ m_maleIndex[ind] ];
-				for( ind = 0; ind < numFemale; ++ind)
-					m_femaleFitness[ind] = fitness[ m_femaleIndex[ind] ];
-
-				DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
-				DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
-
-				m_malesampler.set(m_maleFitness);
-				m_femalesampler.set(m_femaleFitness);
-			}
 
 			// generate scratch.subPopSize(sp) individuals.
 			ULONG spInd = 0;
@@ -425,31 +426,31 @@ namespace simuPOP
 				individual * dad, *mom;
 				RNG& rnd = rng();
 
-				if( selectionOn)			  // with selection
+				if( selectionOn)				  // with selection
 				{
 					// using weidhted sampler.
 					if( numMale != 0 )
-						dad = &pop.ind( m_maleIndex[ m_malesampler.get() ] );
+						dad = &pop.ind(m_maleIndex[m_malesampler.get()]);
 					else
-						dad = &pop.ind( m_femaleIndex[ m_femalesampler.get() ] );
+						dad = &pop.ind(m_femaleIndex[m_femalesampler.get()]);
 
 					if( numFemale != 0 )
-						mom = &pop.ind( m_femaleIndex[ m_femalesampler.get() ] );
+						mom = &pop.ind(m_femaleIndex[m_femalesampler.get()]);
 					else
-						mom = &pop.ind( m_maleIndex[ m_malesampler.get() ]);
+						mom = &pop.ind(m_maleIndex[m_malesampler.get()]);
 				}
 				else
 				{
 					// using random sample.
 					if( numMale != 0 )
-						dad = &pop.ind( m_maleIndex[ rnd.randInt(numMale) ]);
+						dad = &pop.ind(m_maleIndex[rnd.randInt(numMale)]);
 					else
-						dad = &pop.ind( m_femaleIndex[ rnd.randInt(numFemale) ]);
+						dad = &pop.ind(m_femaleIndex[rnd.randInt(numFemale)]);
 
 					if( numFemale != 0 )
-						mom = &pop.ind( m_femaleIndex[ rnd.randInt(numFemale) ]);
+						mom = &pop.ind(m_femaleIndex[rnd.randInt(numFemale)]);
 					else
-						mom = &pop.ind( m_maleIndex[ rnd.randInt(numMale) ]);
+						mom = &pop.ind(m_maleIndex[rnd.randInt(numMale)]);
 				}
 
 				// generate m_numOffspring offspring per mating
@@ -463,7 +464,7 @@ namespace simuPOP
 					if( ! hasSexChrom)
 					{
 						int offSex = rnd.randInt(2);
-						it->setSex( offSex==0?Male:Female);
+						it->setSex(offSex==0?Male:Female);
 					}
 
 					if( formOffGeno )			  // use the default no recombination random mating.
@@ -524,7 +525,7 @@ namespace simuPOP
 					}
 					// appy operators
 					// success
-					if( spInd == spIndEnd )
+					if(spInd == spIndEnd)
 					{
 						numOS++;
 						break;
@@ -544,7 +545,7 @@ namespace simuPOP
 	vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
 		PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc,
 		ULONG minMutAge, ULONG maxMutAge, int ploidy,
-        bool restartIfFail, long maxAttempts, bool allowFixation)
+		bool restartIfFail, long maxAttempts, bool allowFixation)
 	{
 		if( curGen >0 && minMutAge > curGen )
 			minMutAge = curGen;
@@ -752,7 +753,9 @@ namespace simuPOP
 				if(allowFixation)
 				{
 					break;
-				} else {
+				}
+				else
+				{
 					failedCount ++;
 					invalidCount ++;
 					idx = 0;
@@ -803,12 +806,11 @@ namespace simuPOP
 		return traj;
 	}
 
-
 	matrix FreqTrajectoryMultiStoch( ULONG curGen,
 		vectorf freq, long N,
 		PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc,
 		ULONG minMutAge, ULONG maxMutAge, int ploidy,
-        bool restartIfFail, long maxAttempts)
+		bool restartIfFail, long maxAttempts)
 	{
 		size_t nLoci = freq.size();
 		size_t i, j, curI, nextI;
@@ -1125,7 +1127,6 @@ namespace simuPOP
 		return result;
 	}
 
-
 	// simulate trajectory
 	vectorf FreqTrajectorySelSim(
 		double sel,								  // strength of selection coef  ::8
@@ -1394,7 +1395,7 @@ namespace simuPOP
 		return alleleNum;
 	}
 
-	bool controlledMating::mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	bool controlledMating::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
 	{
 		// first call the function and get the range
 		vectorf freqRange;
@@ -1407,13 +1408,13 @@ namespace simuPOP
 
 		vectorlu alleleNum;
 
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 		// calculate allele frequen at these loci
 		alleleNum = countAlleles(pop, m_loci, m_alleles);
 
 		DBG_DO(DBG_MATING, cout << "Range of allele frequencies at generation "
 			<< pop.gen() << " is " << freqRange << endl);
-#endif
+		#endif
 
 		// compare integer is easier and more acurate, and we need to make sure
 		// there is one allele when the frequency is greater than 0.
@@ -1432,11 +1433,11 @@ namespace simuPOP
 					alleleRange[2*i] = 1;
 				// upper bound using range.
 				alleleRange[2*i+1] = static_cast<ULONG>((freqRange[i]+m_range)*pop.popSize()*pop.ploidy())+1;
-#ifndef OPTIMIZED
+				#ifndef OPTIMIZED
 				if( alleleNum[i] == 0 && alleleRange[2*i] > 0 )
 					throw ValueError("No allele exists so there is no way to reach specified allele frequency.\n"
 						"Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
-#endif
+				#endif
 			}
 		}
 		else
@@ -1458,11 +1459,11 @@ namespace simuPOP
 				if( freqRange[2*i]>0 && alleleRange[2*i] == 0)
 					alleleRange[2*i] = 1;
 				alleleRange[2*i+1] = static_cast<ULONG>(freqRange[2*i+1]*pop.popSize()*pop.ploidy())+1;
-#ifndef OPTIMIZED
+				#ifndef OPTIMIZED
 				if( alleleNum[i] == 0 && alleleRange[2*i] > 0 )
 					throw ValueError("No allele exists so there is no way to reach specified allele frequency.\n"
 						"Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
-#endif
+				#endif
 			}
 		}
 
@@ -1587,7 +1588,7 @@ namespace simuPOP
 			{
 				for( size_t sp=0; sp < numSP; ++sp)
 				{
-#ifndef OPTIMIZED
+					#ifndef OPTIMIZED
 					int locus = m_loci[i];
 					Allele allele = m_alleles[i];
 					ULONG n=0;
@@ -1613,7 +1614,7 @@ namespace simuPOP
 					if( n == 0 && expFreq[numSP*i+sp] > 0.)
 						throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
 							" Generation " + toStr(pop.gen()) );
-#endif
+					#endif
 					expAlleles[numSP*i+sp] = static_cast<UINT>(pop.subPopSize(sp)*pldy*expFreq[numSP*i+sp]);
 					if( expFreq[numSP*i+sp] > 0. && expAlleles[numSP*i+sp] == 0)
 						expAlleles[numSP*i+sp] = 1;
@@ -1629,13 +1630,13 @@ namespace simuPOP
 
 		//
 		GappedInfoIterator fitness;
-        bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+		bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
 		UINT fit_id = 0;
-        if (selectionOn)
-        {
-            fit_id = pop.infoIdx("fitness");
+		if (selectionOn)
+		{
+			fit_id = pop.infoIdx("fitness");
 			fitness = pop.infoBegin(fit_id, true);
-        }
+		}
 		/// determine if mate() will generate offspring genotype
 		bool formOffGeno = this->formOffGenotype(ops);
 
@@ -1807,7 +1808,6 @@ namespace simuPOP
 		return true;
 	}
 
-
 	bool controlledRandomMating::mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
 	{
 		bool hasSexChrom = pop.sexChrom();
@@ -1910,7 +1910,7 @@ namespace simuPOP
 			{
 				for(size_t sp=0; sp < numSP; ++sp)
 				{
-#ifndef OPTIMIZED
+					#ifndef OPTIMIZED
 					int locus = m_loci[i];
 					Allele allele = m_alleles[i];
 					ULONG n=0;
@@ -1936,7 +1936,7 @@ namespace simuPOP
 					if( n == 0 && expFreq[numSP*i+sp] > 0.)
 						throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
 							" Generation " + toStr(pop.gen()) );
-#endif
+					#endif
 					expAlleles[numSP*i+sp] = static_cast<UINT>(pop.subPopSize(sp)*pldy*expFreq[numSP*i+sp] );
 					if( expFreq[numSP*i+sp] > 0. && expAlleles[numSP*i+sp] == 0)
 						expAlleles[numSP*i+sp] = 1;
@@ -1951,14 +1951,10 @@ namespace simuPOP
 		DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
 
 		// empty fitness means no selection
-		GappedInfoIterator fitness;
-        bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+		bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
 		UINT fit_id = 0;
-        if (selectionOn)
-        {
-            fit_id = pop.infoIdx("fitness");
-			fitness = pop.infoBegin(fit_id, true);
-        }
+		if (selectionOn)
+			fit_id = pop.infoIdx("fitness");
 
 		/// determine if any during-mating operator will generate offspring genotype
 		bool formOffGeno = this->formOffGenotype(ops);
@@ -1994,16 +1990,41 @@ namespace simuPOP
 			// to gain some performance, allocate memory at first.
 			m_maleIndex.resize(numMale);
 			m_femaleIndex.resize(spSize-numMale);
+			/// if selection is on
+			if(selectionOn)
+			{
+				m_maleFitness.resize(numMale);
+				m_femaleFitness.resize(spSize-numMale);
+			}
 
 			numMale = 0;
 			numFemale = 0;
-
-			for( ULONG it=pop.subPopBegin(sp), itEnd =pop.subPopEnd(sp); it < itEnd;  it++)
+			size_t idx=pop.subPopBegin(sp);
+			for(population::IndIterator ind = pop.indBegin(sp), indEnd = pop.indEnd(sp); ind < indEnd; ind++)
 			{
-				if( pop.ind(it).sex() == Male)
-					m_maleIndex[numMale++] = it;
+				if( ind->sex() == Male)
+				{
+					m_maleIndex[numMale] = idx;
+					if(selectionOn)
+						m_maleFitness[numMale] = ind->info(fit_id);
+					numMale++;
+				}
 				else
-					m_femaleIndex[numFemale++] = it;
+				{
+					m_femaleIndex[numFemale] = idx;
+					if(selectionOn)
+						m_femaleFitness[numFemale] = ind->info(fit_id);
+					numFemale++;
+				}
+				idx++;
+			}
+
+			if(selectionOn)
+			{
+				m_malesampler.set(m_maleFitness);
+				m_femalesampler.set(m_femaleFitness);
+				DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
+				DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
 			}
 
 			/// now, all individuals of needToFind sex is collected
@@ -2016,23 +2037,6 @@ namespace simuPOP
 
 			DBG_ASSERT( numFemale + numMale == spSize, SystemError,
 				"Wrong number of male/female.");
-
-			/// if selection is on
-			if( selectionOn)
-			{
-				m_maleFitness.resize(numMale);
-				m_femaleFitness.resize(numFemale);
-
-				size_t ind;
-
-				for( ind = 0; ind < numMale; ++ind)
-					m_maleFitness[ind] = fitness[ m_maleIndex[ind] ];
-				for( ind = 0; ind < numFemale; ++ind)
-					m_femaleFitness[ind] = fitness[ m_femaleIndex[ind] ];
-
-				m_malesampler.set(m_maleFitness);
-				m_femalesampler.set(m_femaleFitness);
-			}
 
 			// generate scratch.subPopSize(sp) individuals.
 			ULONG spInd = 0;
@@ -2056,7 +2060,7 @@ namespace simuPOP
 				individual * dad, *mom;
 				RNG& rnd = rng();
 
-				if( selectionOn )			  // with selection
+				if( selectionOn )				  // with selection
 				{
 					// using weidhted sampler.
 					if( numMale != 0 )
@@ -2244,7 +2248,6 @@ namespace simuPOP
 		return true;
 	}
 
-	
 	bool pyMating::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
 	{
 		// scrtach will have the right structure.
@@ -2253,10 +2256,10 @@ namespace simuPOP
 		// prepare parameters and pass them to user function
 		PyObject* parentalPop = pyPopObj(static_cast<void*>(&pop));
 		PyObject* offspringPop = pyPopObj(static_cast<void*>(&scratch));
-		
+
 		if(parentalPop == NULL || offspringPop ==NULL)
 			throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
-				
+
 		// call the mating function
 		PyObject* arglist = Py_BuildValue("OO", parentalPop, offspringPop);
 		PyObject* pyResult = PyEval_CallObject(m_mateFunc, arglist);
@@ -2273,7 +2276,7 @@ namespace simuPOP
 		Py_DECREF(offspringPop);
 
 		// release population objects (check later.)
-		
+
 		if(submit)
 			submitScratch(pop, scratch);
 		return res;
