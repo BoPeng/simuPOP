@@ -90,14 +90,14 @@ class TestSelector(unittest.TestCase):
                         )
         # sel = maSelector(loci=[0], wildtype=[0], fitness=[1, 1-s/2, 1-s])]
         for i in range(100):
-            pop = population(size=N, loci=[1], infoFields=['fitness'])
+            pop = population(subPop=[200,N], loci=[1], infoFields=['fitness'])
             simu = simulator(pop, randomMating())
             simu.evolve(
-                preOps = [initByFreq([1-p, p])],
+                preOps = [initByFreq([1-p]+[p/10.]*10)],
                 ops = [
                     sel,
                     stat(alleleFreq=[0]),
-                    terminateIf('alleleNum[0][0] == %d*2' % N),
+                    terminateIf('subPop[1]["alleleNum"][0][0] == %d*2' % N),
                     #pyEval(r'"%d\n"%alleleNum[0][0]', step=100)
                 ]
             )

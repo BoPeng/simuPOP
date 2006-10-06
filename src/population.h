@@ -200,6 +200,7 @@ namespace simuPOP
 				std::swap(m_gen, rhs.m_gen);
 				std::swap(m_curAncestralPop, rhs.m_curAncestralPop);
 				std::swap(m_shallowCopied, rhs.m_shallowCopied);
+				std::swap(m_infoOrdered, rhs.m_infoOrdered);
 			}
 
 			/// destroy a population
@@ -398,7 +399,19 @@ namespace simuPOP
 			{
 				m_shallowCopied = s;
 			}
+            
+			/// CPPONLY
+			bool infoOrdered()
+			{
+				return m_infoOrdered;
+			}
 
+			/// CPPONLY
+			void setInfoOrdered(bool s)
+			{
+				m_infoOrdered = s;
+			}
+            
 			/// CPPONLY individual iterator: without subPop info
 			IndIterator indBegin()
 			{
@@ -499,8 +512,11 @@ namespace simuPOP
 			}
 
 			///  CPPONLY allele iterator
-			GenoIterator genoEnd()
+			GenoIterator genoEnd(bool order)
 			{
+				if(order && shallowCopied())
+					adjustGenoPosition(true);
+
 				return m_genotype.end();
 			}
 
@@ -518,9 +534,12 @@ namespace simuPOP
 			}
 
 			///  CPPONLY allele iterator in a subpopulation.
-			GenoIterator genoEnd(UINT subPop)
+			GenoIterator genoEnd(UINT subPop, bool order)
 			{
 				CHECKRANGESUBPOP(subPop);
+				if(shallowCopied())
+					adjustGenoPosition(order);
+
 
 				return m_genotype.begin() + m_subPopIndex[subPop+1]*genoSize();
 			}
@@ -585,7 +604,7 @@ namespace simuPOP
 				if(shallowCopied())
 					adjustGenoPosition(order);
 
-				return Allele_Vec_As_NumArray( genoBegin(subPop, order), genoEnd(subPop));
+				return Allele_Vec_As_NumArray( genoBegin(subPop, order), genoEnd(subPop, order));
 			}
 
 			//@}
@@ -753,14 +772,16 @@ namespace simuPOP
 			GappedInfoIterator infoBegin(UINT idx, bool order)
 			{
 				CHECKRANGEINFO(idx);
-				if(order && shallowCopied())
+				if(order && !infoOrdered())
 					adjustInfoPosition(true);
 				return GappedInfoIterator(m_info.begin()+idx, infoSize());
 			}
 			
-			GappedInfoIterator infoEnd(UINT idx)
+			GappedInfoIterator infoEnd(UINT idx, bool order)
 			{
 				CHECKRANGEINFO(idx);
+				if(order && !infoOrdered())
+					adjustInfoPosition(true);
 				return GappedInfoIterator(m_info.begin()+idx+m_info.size(), infoSize());
 			}
 			
@@ -772,17 +793,21 @@ namespace simuPOP
 				CHECKRANGEINFO(index);
 				CHECKRANGESUBPOP(subPop);
 
-				if(shallowCopied())
+				if(!infoOrdered())
 					adjustInfoPosition(order);
 
 				return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop]*infoSize(), infoSize());
 			}
 			
             /// 
-			GappedInfoIterator infoEnd(UINT index, UINT subPop)
+			GappedInfoIterator infoEnd(UINT index, UINT subPop, bool order)
 			{
 				CHECKRANGEINFO(index);
 				CHECKRANGESUBPOP(subPop);
+
+				if(!infoOrdered())
+					adjustInfoPosition(order);
+
 
 				return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop+1]*infoSize(), infoSize());
 			}
@@ -790,32 +815,32 @@ namespace simuPOP
 			
 			vectorinfo indInfo(UINT idx, bool order)
 			{
-				return vectorinfo(infoBegin(idx, order), infoEnd(idx));
+				return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 			}
 			
 			vectorinfo indInfo(const string& name, bool order)
 			{
 				UINT idx = infoIdx(name);
-				return vectorinfo(infoBegin(idx, order), infoEnd(idx));
+				return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 			}
 			
 
 			vectorinfo indInfo(UINT idx, UINT subPop, bool order)
 			{
-				return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop));
+				return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
 			}
 			
 			vectorinfo indInfo(const string& name, UINT subPop, bool order)
 			{
 				UINT idx = infoIdx(name);
-				return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop));
+				return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
 			}
 			
             /// if order: keep order
             /// otherwise: do not respect subpop info
 			PyObject* arrIndInfo(bool order)
 			{
-				if(order && shallowCopied())
+				if(order && !infoOrdered())
 					adjustInfoPosition(true);
 
 				return Info_Vec_As_NumArray(m_info.begin(), m_info.end());
@@ -827,7 +852,7 @@ namespace simuPOP
 			{
 				CHECKRANGESUBPOP(subPop);
 
-				if(shallowCopied())
+				if(!infoOrdered())
 					adjustInfoPosition(order);
 
 				return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop]*infoSize(), 
@@ -1256,6 +1281,7 @@ namespace simuPOP
 				}
 
 				m_shallowCopied = false;
+                m_infoOrdered = true;
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -1316,9 +1342,22 @@ namespace simuPOP
 
 			/// whether or not individual genotype is in order
 			bool m_shallowCopied;
+
+            /// whether or not information is ordered
+            bool m_infoOrdered;
 	};
 
 	population& LoadPopulation(const string& file, const string& format="auto");
+
+// debug functions that will only be available if SIMUDEBUG is defined
+#ifdef SIMUDEBUG
+    /// get info through ind.info()
+    vectorf testGetinfoFromInd(population& pop);
+
+
+    /// get info through GappedInfoIterator
+    vectorf testGetinfoFromPop(population& pop, bool order);
+#endif
 
 	
 }
@@ -1331,4 +1370,6 @@ namespace simuPOP
 BOOST_CLASS_VERSION(simuPOP::population, 1)
 #endif
 #endif
+
+
 #endif
