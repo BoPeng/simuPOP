@@ -6,6 +6,8 @@
 # can save some compile time.
 # 
 import os, sys
+import SCons.Defaults
+import SCons.Tool
 
 # get information from python distutils
 import distutils.sysconfig, os
@@ -40,16 +42,18 @@ if env['debug'] == 'none':
 if env['debug'] == 'yes':
     BDIR = '../debug'
     dest_dir = os.path.join(lib_dest, 'site-packages')
-    flags = {'-DPy_REF_DEBUG':None}
+    flags = {'Py_REF_DEBUG':None, 'SIMUDEBUG':None}
+    strflags = ' -DPy_REF_DEBUG -DSIMUDEBUG'
 else:
     BDIR = '../release/build'
     # we may not be able to release ...
     dest_dir = '../release'
     flags = {}
+    strflags = ''
 env.BuildDir(BDIR, '.', duplicate = 0)
 
 # for swig 1.3.28 cvs
-env['SWIGFLAGS'] = '-O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
+env['SWIGFLAGS'] = '-O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525' + strflags
 # build static libraries
 if 'serial' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libserial.a')):
     serial = env.StaticLibrary(
@@ -148,14 +152,27 @@ src = Split('''utility migrator population simulator terminator
     individual mutator stator initializer operator recombinator
     mating outputer selector tagger''') 
 
+# def swig_emitter(target, source, env, parent_emitter):
+#     parent_emitter(target, source, env)
+#     env.Depends(target, env['SWIG_SRC_HEADERS'])
+#     return (target, source)
+# 
+# def static_swig_emitter(target, source, env):
+#     return swig_emitter(target, source, env, SCons.Defaults.StaticObjectEmitter)
+# 
+# def shared_swig_emitter(target, source, env):
+#     return swig_emitter(target, source, env, SCons.Defaults.SharedObjectEmitter)
+# 
+# for suffix in Split('.cpp .cc .c'):
+#     env['BUILDERS']['StaticObject'].add_emitter(suffix, static_swig_emitter)
+#     env['BUILDERS']['SharedObject'].add_emitter(suffix, shared_swig_emitter)
+# 
+# env['SWIG_SRC_HEADERS'] =  ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \
+#         ['%s.h' % x for x in src]
+
 for mod in build_mod:
     for file in src:
         env.Command('%s/%s_%s.cpp'%(BDIR, file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
-    env.Depends(os.path.join(BDIR, 'simuPOP_%s.i'%mod), 
-        ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i', 
-        os.path.join(BDIR, 'simuPOP_%s.i'%mod)] + \
-        ['%s.h' % x for x in src])
-    # 
     # build shared library
     targets[mod] = env.SharedLibrary(
         target = os.path.join(BDIR, '_simuPOP_%s.so'%mod),
@@ -168,10 +185,17 @@ for mod in build_mod:
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
         LIBPATH = [BDIR],
-        CPPPATH = [distutils.sysconfig.get_python_inc(), '.', '..'],
+        CPPPATH = [distutils.sysconfig.get_python_inc(), '.'],
         CPPDEFINES = DEF[mod],
-        CPPFLAGS = basecflags + " " + opt
+        # do not put .. (boost etc) in CPPPATH
+        # to speed up search
+        CPPFLAGS = basecflags + " " + opt + ' -I..'
     )
+    env.Depends([os.path.join(BDIR, 'simuPOP_%s_wrap.cc'%mod), targets[mod]], 
+        ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \
+        ['%s.h' % x for x in src])
+    # 
+    #Ignore(targets[mod], '../boost')
     Alias(mod, [os.path.join(BDIR, x) for x in ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod]])
     Alias('all', [os.path.join(BDIR, '_simuPOP_%s.so'%mod), os.path.join(BDIR, 'simuPOP_%s.py'%mod)])
     dp1 = env.Install(dest_dir, os.path.join(BDIR, 'simuPOP_%s.py'%mod))
