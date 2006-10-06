@@ -257,15 +257,15 @@ namespace simuPOP
 			{
 				return m_infoFields.size();
 			}
-			
+
 			/// get the information field specified by user (or by default)
 			string infoField(UINT idx)
 			{
-				DBG_ASSERT(idx < m_infoFields.size(), IndexError, "Given info index " + toStr(idx) + 
+				DBG_ASSERT(idx < m_infoFields.size(), IndexError, "Given info index " + toStr(idx) +
 					" is out of range of 0 ~ " + toStr(m_infoFields.size()));
 				return m_infoFields[idx];
 			}
-			
+
 			/// CPPONLY
 			/// if the operator will form genotype of offspring.
 			/// if none of the during mating operator can form offspring, default will be used
@@ -1087,10 +1087,9 @@ namespace simuPOP
 			bool m_passOffspringOnly;
 	};
 
-
 	/* 
 	   infoOperator that manipulate individuals
-    */
+	*/
 	class pyIndOperator: public Operator
 	{
 
@@ -1109,7 +1108,7 @@ namespace simuPOP
 			however, differentiating output, append etc is too troublesome right now.
 			*/
 			pyIndOperator(PyObject* func, PyObject* param=NULL,
-				int stage=PostMating, bool formOffGenotype=false, 
+				int stage=PostMating, bool formOffGenotype=false,
 				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
 			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
@@ -1158,7 +1157,7 @@ namespace simuPOP
 			{
 				// call the python function, pass the each individual to it.
 				// get pop object
-				for(size_t i=0; i<pop.popSize(); ++i) 
+				for(size_t i=0; i<pop.popSize(); ++i)
 				{
 					PyObject* indObj = pyIndObj(static_cast<void*>(&pop.ind(i)));
 					// if pop is valid?

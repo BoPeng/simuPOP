@@ -124,28 +124,28 @@ namespace simuPOP
 	/// set debug area, default to turn all code on
 	void TurnOnDebug(DBG_CODE code)
 	{
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 		if( code != DBG_ALL )
 			g_dbgCode[static_cast<int>(code)] = true;
 		else									  // set all
 			g_dbgCode.set();
-#endif
+		#endif
 	}
 
 	/// set debug area, default to turn all code on
 	void TurnOnDebugWithName(string code)
 	{
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 		for(int i=0; i < DBG_CODE_LENGTH; ++i)
 			if( code == g_dbgString[i])
 				TurnOnDebug(static_cast<DBG_CODE>(i));
-#endif
+		#endif
 	}
 
 	/// turn off debug, default to turn all code off
 	void TurnOffDebug(DBG_CODE code)
 	{
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 		if( code != DBG_ALL )
 			g_dbgCode[static_cast<int>(code)] = false;
 		else									  // reset all
@@ -154,12 +154,12 @@ namespace simuPOP
 		if( debug( DBG_GENERAL) )
 			cout << "Debug code " << g_dbgString[static_cast<int>(code)]
 				<< " is turned off. cf. ListDebugCode(), TurnOnDebug()." << endl;
-#else
+		#else
 		cout << "Debug info is ignored in optimized mode." << endl;
-#endif
+		#endif
 	}
 
-#ifndef OPTIMIZED
+	#ifndef OPTIMIZED
 	/// test if one code is turned on
 	/// in DEBUG section to make sure it will not be called
 	/// in optimized mode
@@ -167,11 +167,11 @@ namespace simuPOP
 	{
 		return g_dbgCode[code];
 	}
-#endif
+	#endif
 
 	void ListDebugCode()
 	{
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 		cout << "Debug code \t On/Off" << endl;
 
 		for(int i=0; i < DBG_CODE_LENGTH; ++i)
@@ -180,9 +180,9 @@ namespace simuPOP
 		cout << endl;
 		if(debug(DBG_GENERAL))
 			cout << "cf. TurnOnDebug(), TurnOffDebug(). " << endl;
-#else
+		#else
 		cout << "Debug info is ignored in optimized mode." << endl;
-#endif
+		#endif
 	}
 
 	string dbgString(DBG_CODE code)
@@ -190,12 +190,11 @@ namespace simuPOP
 		return g_dbgString[code];
 	}
 
-
-#ifdef Py_REF_DEBUG
+	#ifdef Py_REF_DEBUG
 	long g_refTotal;
 	// give out at most these many warnings.
 	int g_refWarningCount;
-	
+
 	// reference connt debug
 	void saveRefCount()
 	{
@@ -207,17 +206,17 @@ namespace simuPOP
 		if(_Py_RefTotal > g_refTotal and g_refWarningCount-- > 0)
 			cout << "Warning: Ref count increased from " << g_refTotal << " to " << _Py_RefTotal
 				<< "\nThis may be a sign of memory leak, especially when refCount increase"
-                << "\nindefinitely in a loop. Please contact simuPOP deceloper and report"
-                << "\nthe problem.\n" << endl;
+				<< "\nindefinitely in a loop. Please contact simuPOP deceloper and report"
+				<< "\nthe problem.\n" << endl;
 		g_refTotal = _Py_RefTotal;
 	}
-#endif
+	#endif
 
 	//////////////////////////////////////////////////////////////
 	/// Some common functions/templates
 	//////////////////////////////////////////////////////////////
 
-#if  defined(_WIN32) || defined(__WIN32__)
+	#if  defined(_WIN32) || defined(__WIN32__)
 	int simuPOP_kbhit()
 	{
 		return _kbhit();
@@ -228,7 +227,7 @@ namespace simuPOP
 		return getch();
 	}
 
-#else
+	#else
 
 	int simuPOP_kbhit(void)
 	{
@@ -262,7 +261,7 @@ namespace simuPOP
 
 		return ch;
 	}
-#endif
+	#endif
 }
 
 
@@ -422,7 +421,7 @@ namespace simuPOP
 		val.resize( PySequence_Size( obj ));
 
 		// assign values
-		for(size_t i=0, iEnd=val.size(); i<iEnd; ++i) 
+		for(size_t i=0, iEnd=val.size(); i<iEnd; ++i)
 		{
 			PyObject* item = PySequence_GetItem(obj, i);
 			PyObj_As_Double(item, val[i]);
@@ -566,7 +565,7 @@ namespace simuPOP
 			}
 		}
 		else
-			m_dict = rhs.m_dict;			
+			m_dict = rhs.m_dict;
 	}
 
 	SharedVariables::~SharedVariables()
@@ -577,7 +576,6 @@ namespace simuPOP
 			Py_DECREF(m_dict);
 		}
 	}
-
 
 	/// setvars C++ ==> Python
 	PyObject* SharedVariables::setVar(const string& name, const PyObject* val)
@@ -607,12 +605,12 @@ namespace simuPOP
 
 		// subPop[0]{'alleleNum'}[0]
 		// curParent:  m_dict
-		// curChild:   m_dirt['subPop']  
+		// curChild:   m_dirt['subPop']
 
 		if( name[i] == '[' )					  // we need to put an array in ...
 		{
 			// m_dict['subPop'][0]
-			
+
 			// look for index
 			s = ++i;
 			for( ; name[i] != ']'; i++)
@@ -623,7 +621,7 @@ namespace simuPOP
 			size_t idx = atoi( name.substr(s,i-s).c_str());
 			// not exist
 			//
-			// create subPop, ... 
+			// create subPop, ...
 			if( curChild == NULL || ! PyList_Check(curChild) )
 			{
 				// Py_XDECREF(curChild);
@@ -744,7 +742,6 @@ namespace simuPOP
 		return const_cast<PyObject*>(val);
 	}
 
-
 	PyObject* SharedVariables::getVar(const string& name, bool nameError)
 	{
 		DBG_ASSERT( m_dict != NULL, ValueError,
@@ -835,7 +832,6 @@ namespace simuPOP
 			return curChild;
 		}
 	}
-
 
 	void SharedVariables::removeVar(const string& name)
 	{
@@ -1442,17 +1438,17 @@ namespace simuPOP
 	}
 
 	/// returned values.
-#define ExpressionValueAsType(T, TypeName, init) \
-T Expression::valueAs##TypeName() \
-{ \
-	PyObject* res = evaluate(); \
-	if( res==NULL ) \
-	return init; \
-	T val; \
-	PyObj_As_##TypeName(res, val); \
-	Py_XDECREF(res); \
-	return val; \
-}
+	#define ExpressionValueAsType(T, TypeName, init) \
+		T Expression::valueAs##TypeName() \
+		{ \
+			PyObject* res = evaluate(); \
+			if( res==NULL ) \
+			return init; \
+			T val; \
+			PyObj_As_##TypeName(res, val); \
+			Py_XDECREF(res); \
+			return val; \
+		}
 
 		ExpressionValueAsType(bool, Bool, false);
 	ExpressionValueAsType(int, Int, 0);
@@ -1922,28 +1918,30 @@ T Expression::valueAs##TypeName() \
 
 	unsigned long RNG::generateRandomSeed()
 	{
-		// now, I need to work hard to get a good seed, considering 
+		// now, I need to work hard to get a good seed, considering
 		// the use of clusters, and several jobs may be started at the same
 		// time
 		unsigned long seed;
 		FILE *devrandom;
-		if ((devrandom = fopen("/dev/urandom", "r")) != NULL) {
+		if ((devrandom = fopen("/dev/urandom", "r")) != NULL)
+		{
 			fread(&seed, sizeof(seed), 1, devrandom);
 			fclose(devrandom);
 		}
-		else if ((devrandom = fopen("/dev/random", "r")) != NULL) {
+		else if ((devrandom = fopen("/dev/random", "r")) != NULL)
+		{
 			fread(&seed, sizeof(seed), 1, devrandom);
 			fclose(devrandom);
 		}
-		else 
-		{	
+		else
+		{
 			// this is not the best method, but I am out of ideas
 			// of portable ways to add some other noises
 			seed = static_cast<unsigned long>(time(NULL));
 		}
-		return seed;		
+		return seed;
 	}
-	
+
 	/// choose an random number generator.
 	/// This can be done by setting GSL_RNG_TYPE as well.
 	void RNG::setRNG(const char * rng, unsigned long seed)
@@ -2166,11 +2164,11 @@ T Expression::valueAs##TypeName() \
 		{
 			// clear previous result
 			BitSet& succ = m_table[cl];
-            double prob = m_prob[cl];
-            if(prob == 0.)
-            {
-                succ.reset();
-            }
+			double prob = m_prob[cl];
+			if(prob == 0.)
+			{
+				succ.reset();
+			}
 			else if( prob == 0.5)				  // random 0,1 bit, this will be quicker
 			{
 				// set to 0..
@@ -2181,20 +2179,23 @@ T Expression::valueAs##TypeName() \
 				size_t numblock = succ.num_blocks()-1;
 				vector<BitSet::block_type> blocks(numblock);
 				BitSet::block_type tmp;
-				for(size_t i=0; i<numblock; ++i) {
+				for(size_t i=0; i<numblock; ++i)
+				{
 					// even if the block size is large (I can not set it to int16_t)
-					// I only take the last 16 bit of a rng 
+					// I only take the last 16 bit of a rng
 					blocks[i] = 0;
-					for(size_t b=0; b<sizeof(BitSet::block_type)/2; ++b) {
+					for(size_t b=0; b<sizeof(BitSet::block_type)/2; ++b)
+					{
 						// blocks[i] = static_cast<int16_t>(rng().randGet());
 						tmp = rng().randInt(0xFFFF);
-		        blocks[i] |= (0xFFFF & tmp) << (b*16);
+						blocks[i] |= (0xFFFF & tmp) << (b*16);
 					}
 				}
 				from_block_range(blocks.begin(), blocks.end(), succ);
 				// last block, block_type is predefined to unsigned long
 				BitSet::block_type last_block = 0;
-				for(size_t b=0; b<sizeof(BitSet::block_type)/2; ++b) {
+				for(size_t b=0; b<sizeof(BitSet::block_type)/2; ++b)
+				{
 					// blocks[i] = static_cast<int16_t>(rng().randGet());
 					tmp = rng().randInt(0xFFFF);
 					last_block |= (0xFFFF & tmp) << (b*16);
@@ -2216,17 +2217,17 @@ T Expression::valueAs##TypeName() \
 				{
 					// i moves at least one.
 					i += m_RNG->randGeometric(prob);
-					if ( i <= m_N ) 
+					if ( i <= m_N )
 						succ.set(i-1);
 					else
 						break;
 				}
 			}
-            else if(prob == 1.)
-            {
-                succ.set();
-            }
-			else // 1 > m_proc[cl] > 0.5
+			else if(prob == 1.)
+			{
+				succ.set();
+			}
+			else								  // 1 > m_proc[cl] > 0.5
 			{
 				// set all to 1, and then unset some.
 				succ.set();
@@ -2236,7 +2237,7 @@ T Expression::valueAs##TypeName() \
 				while( true )
 				{
 					i += m_RNG->randGeometric(prob);
-					if ( i <= m_N ) 
+					if ( i <= m_N )
 						succ.reset(i-1);
 					else
 						break;
@@ -2290,7 +2291,7 @@ T Expression::valueAs##TypeName() \
 			count += m_table[cl][m_cur-1]?1:0;
 		return count/static_cast<double>(m_prob.size());
 	}
-	
+
 	/// random number generator. a global variable.
 	/// there might be multiple RNG later.
 	RNG g_RNG;
@@ -2464,20 +2465,20 @@ T Expression::valueAs##TypeName() \
 		// tie python stdout to cout
 		setLogOutput();
 
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 		// turn on some debug info
 		TurnOnDebug(DBG_GENERAL);
 		// give at most 100 ref count warnings.
-#endif
-#ifdef Py_REF_DEBUG
+		#endif
+		#ifdef Py_REF_DEBUG
 		g_refWarningCount = 100;
-#endif
+		#endif
 
 		// SIMUPOP_MODULE is passed as name, but we need it to be quoted.
 		// Note that under gcc, I could pass the macro from command line
 		// using \" \" but this trick does not work under VC.
 		// the following process is safer.
-#define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
+		#define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
 
 		// set global dictionary/variable
 		PyObject* mm = PyImport_AddModule(SimuPOP_Module_Name);
@@ -2509,31 +2510,31 @@ T Expression::valueAs##TypeName() \
 	// record COMPILER, PY_VERSION and __DATE__ , these info will
 	// be displayed when simuPOP is loaded.
 
-#ifndef COMPILER
-#ifdef __GNUC__
-#define COMPILER "[GCC " __VERSION__ "]"
-#endif
-#endif										  /* !COMPILER */
+	#ifndef COMPILER
+	#ifdef __GNUC__
+	#define COMPILER "[GCC " __VERSION__ "]"
+	#endif
+	#endif										  /* !COMPILER */
 
-#ifndef COMPILER
-#ifdef __cplusplus
-#define COMPILER "[C++]"
-#else
-#define COMPILER "[C]"
-#endif
-#endif
+	#ifndef COMPILER
+	#ifdef __cplusplus
+	#define COMPILER "[C++]"
+	#else
+	#define COMPILER "[C]"
+	#endif
+	#endif
 
-#ifndef PLATFORM
-#define PLATFORM ""
-#endif
+	#ifndef PLATFORM
+	#define PLATFORM ""
+	#endif
 
 	// these macros will be passed from commandline, if not, use the default
-#ifndef SIMUPOP_REV
-#define REVISION "9999"
-#else
+	#ifndef SIMUPOP_REV
+	#define REVISION "9999"
+	#else
 	// make passed macro to a real string
-#define REVISION MacroQuote(SIMUPOP_REV)
-#endif
+	#define REVISION MacroQuote(SIMUPOP_REV)
+	#endif
 
 	int simuRev()
 	{
@@ -2556,43 +2557,43 @@ T Expression::valueAs##TypeName() \
 
 	string simuVer()
 	{
-#ifndef SIMUPOP_VER
+		#ifndef SIMUPOP_VER
 		return "snapshot";
-#else
+		#else
 		// convert name to a string
 		return MacroQuote(SIMUPOP_VER);
-#endif
+		#endif
 	}
 
 	bool optimized()
 	{
-#ifdef OPTIMIZED
+		#ifdef OPTIMIZED
 		return(true);
-#else
+		#else
 		return(false);
-#endif
+		#endif
 	}
 
 	bool supportXML()
 	{
-#ifdef __NO_XML_SUPPORT__
+		#ifdef __NO_XML_SUPPORT__
 		return false;
-#else
+		#else
 		return true;
-#endif
+		#endif
 	}
 
 	string alleleType()
 	{
-#ifdef LONGALLELE
+		#ifdef LONGALLELE
 		return "long";
-#else
-#ifdef BINARYALLELE
+		#else
+		#ifdef BINARYALLELE
 		return "binary";
-#else
+		#else
 		return "short";
-#endif
-#endif
+		#endif
+		#endif
 	}
 
 	string compileCompiler()
@@ -2648,38 +2649,36 @@ T Expression::valueAs##TypeName() \
 			return string();
 	}
 
-#ifndef OPTIMIZED
-    bool testGappedIterator()
-    {
-        vectorinfo a(20);
-        size_t i;
-        for(i=0; i<20; ++i)
-            a[i] = i;
-        
-        // access to the right elements?
-        GappedInfoIterator a5(a.begin(), 5);
-        for(i=0; i<4; ++i)
-            if(*a5++ != i*5)
-                return false;
+	#ifndef OPTIMIZED
+	bool testGappedIterator()
+	{
+		vectorinfo a(20);
+		size_t i;
+		for(i=0; i<20; ++i)
+			a[i] = i;
 
-        // not start from the first?
-        GappedInfoIterator a4(a.begin()+1, 4);
-        for(i=0; i<4; ++i)
-            if(*a4++ != 1+i*4)
-                return false;
+		// access to the right elements?
+		GappedInfoIterator a5(a.begin(), 5);
+		for(i=0; i<4; ++i)
+			if(*a5++ != i*5)
+				return false;
 
-        // can I get a vector from it?
-        vectorinfo b( GappedInfoIterator(a.begin()+1, 4),
-            GappedInfoIterator(a.end()+1, 4));
-        vectorinfo::iterator it = b.begin();
-        for(i=0; it != b.end(); ++it, ++i)
-            if(*it != 1+i*4)
-                return false;
+		// not start from the first?
+		GappedInfoIterator a4(a.begin()+1, 4);
+		for(i=0; i<4; ++i)
+			if(*a4++ != 1+i*4)
+				return false;
 
-        return true;
-    }
-    
-#endif
+		// can I get a vector from it?
+		vectorinfo b( GappedInfoIterator(a.begin()+1, 4),
+			GappedInfoIterator(a.end()+1, 4));
+		vectorinfo::iterator it = b.begin();
+		for(i=0; it != b.end(); ++it, ++i)
+			if(*it != 1+i*4)
+				return false;
 
+		return true;
+	}
+	#endif
 
 }

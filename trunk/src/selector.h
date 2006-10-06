@@ -127,7 +127,7 @@ namespace simuPOP
 			*/
 			mapSelector( vectoru loci, const strDict& fitness, bool phase=false,
 				int stage=PreMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(1, "fitness")):
 			selector(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_dict(fitness), m_phase(phase)
@@ -240,10 +240,10 @@ namespace simuPOP
 	{
 		public:
 
-#define SEL_None 0
-#define SEL_Multiplicative 1
-#define SEL_Additive 2
-#define SEL_Heterogeneity 3
+		#define SEL_None 0
+		#define SEL_Multiplicative 1
+		#define SEL_Additive 2
+		#define SEL_Heterogeneity 3
 
 			typedef std::vector< Operator * > vectorop;
 
@@ -254,7 +254,7 @@ namespace simuPOP
 			*/
 			mlSelector( const vectorop selectors, int mode = SEL_Multiplicative,
 				int stage=PreMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(1, "fitness")):
 			selector(stage, begin, end, step, at, rep, grp, infoFields),
 				m_selectors(0), m_mode(mode)
@@ -314,7 +314,7 @@ namespace simuPOP
 			/// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
 			pySelector( vectoru loci, PyObject* func,
 				int stage=PreMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(1, "fitness")):
 			selector(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
@@ -397,7 +397,7 @@ namespace simuPOP
 			/// values.
 			/// default to post mating
 			penetrance(bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL, 
+				int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr())
 				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields)
 			{
@@ -429,7 +429,7 @@ namespace simuPOP
 				double p;
 
 				bool savePene = infoSize() > 0;
-				
+
 				GappedInfoIterator penIt;
 				if(savePene)
 				{
@@ -488,7 +488,7 @@ namespace simuPOP
 			*/
 			mapPenetrance( vectoru loci, const strDict& penet, bool phase=false,
 				bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr()):
 			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_dict(penet), m_phase(phase)
@@ -576,7 +576,7 @@ namespace simuPOP
 			maPenetrance( vectoru loci, const vectorf& penet, const vectora& wildtype,
 				bool exposePenetrance=false,
 				int stage=DuringMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr()):
 			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_penetrance(penet), m_wildtype(wildtype)
@@ -647,9 +647,9 @@ namespace simuPOP
 	{
 		public:
 
-#define PEN_Multiplicative 1
-#define PEN_Additive 2
-#define PEN_Heterogeneity 3
+		#define PEN_Multiplicative 1
+		#define PEN_Additive 2
+		#define PEN_Heterogeneity 3
 
 			typedef std::vector< Operator * > vectorop;
 
@@ -754,7 +754,7 @@ namespace simuPOP
 			/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
 			pyPenetrance( vectoru loci, PyObject* func, bool exposePenetrance=false,
 				int stage=DuringMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr()):
 			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
@@ -940,7 +940,7 @@ namespace simuPOP
 			*/
 			mapQuanTrait( vectoru loci, const strDict& qtrait, double sigma=0, bool phase=false,
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(1, "qtrait")):
 			quanTrait(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_dict(qtrait), m_sigma(sigma), m_phase(phase)
@@ -1024,7 +1024,7 @@ namespace simuPOP
 			maQuanTrait( vectoru loci, const vectorf& qtrait, const vectora& wildtype,
 				const vectorf& sigma = vectorf(),
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(1, "qtrait")):
 			quanTrait(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
@@ -1102,8 +1102,8 @@ namespace simuPOP
 	{
 		public:
 
-#define QT_Multiplicative 1
-#define QT_Additive 2
+		#define QT_Multiplicative 1
+		#define QT_Additive 2
 
 			/// vector of operator pointers.
 			typedef std::vector< Operator * > vectorop;
@@ -1115,7 +1115,7 @@ namespace simuPOP
 			*/
 			mlQuanTrait( const vectorop qtraits, int mode = QT_Multiplicative, double sigma=0,
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(1, "qtrait")):
 			quanTrait(stage, begin, end, step, at, rep, grp, infoFields),
 				m_qtraits(0), m_sigma(sigma), m_mode(mode)
@@ -1198,7 +1198,7 @@ namespace simuPOP
 			/// provide locus and qtrait for 11, 12, 13 (in the form of dictionary)
 			pyQuanTrait( vectoru loci, PyObject* func,
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
-				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, 
+				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(1, "qtrait")):
 			quanTrait(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
@@ -1580,7 +1580,7 @@ namespace simuPOP
 				const string& format="auto",
 				int stage=PostMating, int begin=0, int end=-1,
 				int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL, 
+				int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(ASC_AS_Fields, ASC_AS_Fields+2))
 				: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 				stage, begin, end, step, at, rep, grp, infoFields),

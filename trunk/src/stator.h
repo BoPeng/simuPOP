@@ -211,9 +211,9 @@ namespace simuPOP
 	{
 		private:
 
-#define  numSubPop_String   "numSubPop"
-#define  popSize_String     "popSize"
-#define  subPopSize_String  "subPopSize"
+		#define  numSubPop_String   "numSubPop"
+		#define  popSize_String     "popSize"
+		#define  subPopSize_String  "subPopSize"
 
 		public:
 			statPopSize(bool popSize=false)
@@ -227,7 +227,7 @@ namespace simuPOP
 			}
 
 			bool apply(population& pop);
-		
+
 		private:
 			bool m_isActive;
 	};
@@ -238,8 +238,8 @@ namespace simuPOP
 	{
 		private:
 
-#define  numOfMale_String    "numOfMale"
-#define  numOfFemale_String  "numOfFemale"
+		#define  numOfMale_String    "numOfMale"
+		#define  numOfFemale_String  "numOfFemale"
 
 		public:
 
@@ -305,10 +305,10 @@ namespace simuPOP
 	{
 		private:
 
-#define  numOfAffected_String    "numOfAffected"
-#define  propOfAffected_String   "propOfAffected"
-#define  numOfUnaffected_String  "numOfUnaffected"
-#define  propOfUnaffected_String  "propOfUnaffected"
+		#define  numOfAffected_String    "numOfAffected"
+		#define  propOfAffected_String   "propOfAffected"
+		#define  numOfUnaffected_String  "numOfUnaffected"
+		#define  propOfUnaffected_String  "propOfUnaffected"
 
 		public:
 
@@ -374,9 +374,9 @@ namespace simuPOP
 	{
 		private:
 
-#define  NumOfAlleles_String  "numOfAlleles"
-#define  AlleleNum_String     "alleleNum"
-#define  AlleleFreq_String    "alleleFreq"
+		#define  NumOfAlleles_String  "numOfAlleles"
+		#define  AlleleNum_String     "alleleNum"
+		#define  AlleleFreq_String    "alleleFreq"
 
 		public:
 
@@ -504,10 +504,10 @@ namespace simuPOP
 					if( m_alleleNum[subPop][loc][j] != 0)
 						al.push_back(j);
 
-#ifndef BINARYALLELE
+			#ifndef BINARYALLELE
 				DBG_WARNING(m_alleleNum[subPop][loc][0] != 0,
 					"Having zero (NA) allele, counted as one allele.");
-#endif
+			#endif
 
 				DBG_ASSERT( al.size() == static_cast<UINT>(numOfAlleles(subPop)[loc]),
 					SystemError, "Number of alleles at locus " + toStr(loc)
@@ -557,7 +557,7 @@ namespace simuPOP
 			// do nothing. m_calc.spply will be called by stat.
 			bool apply(population& pop)
 			{
-                return true;
+				return true;
 			}
 
 		private:
@@ -572,12 +572,12 @@ namespace simuPOP
 	{
 		private:
 
-#define HeteroNum_String        "heteroNum"
-#define HeteroFreq_String       "heteroFreq"
-#define AllHeteroNum_String     "HeteroNum"
-#define AllHeteroFreq_String    "HeteroFreq"
-#define HomoNum_String          "homoNum"
-#define HomoFreq_String         "homoFreq"
+		#define HeteroNum_String        "heteroNum"
+		#define HeteroFreq_String       "heteroFreq"
+		#define AllHeteroNum_String     "HeteroNum"
+		#define AllHeteroFreq_String    "HeteroFreq"
+		#define HomoNum_String          "homoNum"
+		#define HomoFreq_String         "homoFreq"
 
 			int locusIdx(int loc)
 			{
@@ -708,7 +708,7 @@ namespace simuPOP
 	{
 		private:
 
-#define ExpHetero_String "expHetero"
+		#define ExpHetero_String "expHetero"
 
 		public:
 			statExpHetero(statAlleleFreq& alleleFreq, const vectori& expHetero=vectori())
@@ -741,8 +741,8 @@ namespace simuPOP
 	{
 		private:
 
-#define  GenotypeNum_String   "genoNum"
-#define  GenotypeFreq_String  "genoFreq"
+		#define  GenotypeNum_String   "genoNum"
+		#define  GenotypeFreq_String  "genoFreq"
 
 		public:
 			statGenoFreq(const vectori& genoFreq = vectori(), bool phase=true )
@@ -766,8 +766,8 @@ namespace simuPOP
 	{
 		private:
 
-#define  HaplotypeNum_String    "haploNum"
-#define  HaplotypeFreq_String   "haploFreq"
+		#define  HaplotypeNum_String    "haploNum"
+		#define  HaplotypeFreq_String   "haploFreq"
 			int haploIndex(const vectori& haplo)
 			{
 				// first locate haplo
@@ -865,12 +865,12 @@ namespace simuPOP
 	{
 		private:
 
-#define   LD_String           "ld"
-#define   LDPRIME_String      "ld_prime"
-#define   R2_String           "r2"
-#define   AvgLD_String        "LD"
-#define   AvgLDPRIME_String   "LD_prime"
-#define   AvgR2_String        "R2"
+		#define   LD_String           "ld"
+		#define   LDPRIME_String      "ld_prime"
+		#define   R2_String           "r2"
+		#define   AvgLD_String        "LD"
+		#define   AvgLDPRIME_String   "LD_prime"
+		#define   AvgR2_String        "R2"
 
 		public:
 
@@ -922,12 +922,12 @@ namespace simuPOP
 
 		private:
 
-#define  Fst_String  "Fst"
-#define  Fis_String  "Fis"
-#define  Fit_String  "Fit"
-#define  AvgFst_String  "AvgFst"
-#define  AvgFis_String  "AvgFis"
-#define  AvgFit_String  "AvgFit"
+		#define  Fst_String  "Fst"
+		#define  Fis_String  "Fis"
+		#define  Fit_String  "Fit"
+		#define  AvgFst_String  "AvgFst"
+		#define  AvgFis_String  "AvgFis"
+		#define  AvgFit_String  "AvgFit"
 
 		public:
 			statFst(statAlleleFreq& alleleFreq, statHeteroFreq& heteroFreq,
@@ -990,11 +990,11 @@ namespace simuPOP
 			double m_avgFst, m_avgFit, m_avgFis;
 	};
 
-#define REL_Queller             1
-#define REL_Lynch               2
-#define REL_IR                  3
-#define REL_D2                  4
-#define REL_Rel                 5
+	#define REL_Queller             1
+	#define REL_Lynch               2
+	#define REL_IR                  3
+	#define REL_D2                  4
+	#define REL_Rel                 5
 
 	/// the relatedness measure between two individuals/families
 	/// using Queller and Goodnight or Lynch's method.
@@ -1005,11 +1005,11 @@ namespace simuPOP
 
 		public:
 
-#define Rel_Queller_String "relQueller"
-#define Rel_Lynch_String   "relLynch"
-#define Rel_IR_String      "relIR"
-#define Rel_D2_String      "relD2"
-#define Rel_Rel_String     "relRel"
+		#define Rel_Queller_String "relQueller"
+		#define Rel_Lynch_String   "relLynch"
+		#define Rel_IR_String      "relIR"
+		#define Rel_D2_String      "relD2"
+		#define Rel_Rel_String     "relRel"
 
 		public:
 
@@ -1091,7 +1091,6 @@ namespace simuPOP
 			// save result
 			matrix m_relQueller, m_relLynch, m_relIR, m_relD2, m_relRel;
 	};
-
 
 	class stat: public stator
 	{
@@ -1187,7 +1186,7 @@ namespace simuPOP
 				vectori relMethod=vectori(),
 				int relMinScored=10,			  // minimal number of loci required.
 				bool hasPhase=false,
-				bool midValues=false, 
+				bool midValues=false,
 			// regular parameters
 				string output="", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),

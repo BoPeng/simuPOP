@@ -91,10 +91,10 @@ namespace simuPOP
 	/// turn off debug, default to turn all code off
 	void TurnOffDebug(DBG_CODE code=DBG_ALL);
 
-#ifndef OPTIMIZED
+	#ifndef OPTIMIZED
 	/// test if one code is turned on
 	bool debug(DBG_CODE code);
-#endif
+	#endif
 
 	/// show all dbg codes (print to cout)
 	void ListDebugCode();
@@ -102,14 +102,14 @@ namespace simuPOP
 	/// dbg string for a code
 	string dbgString(DBG_CODE code);
 
-#ifdef Py_REF_DEBUG
+	#ifdef Py_REF_DEBUG
 	/// refcount debug
 	void saveRefCount();
 
 	/// check if refcount increase
 	void checkRefCount();
-#endif
-	
+	#endif
+
 	// ////////////////////////////////////////////////////////////
 	// / Some common functions/templates
 	// ////////////////////////////////////////////////////////////
@@ -124,13 +124,13 @@ namespace simuPOP
 
 	/// very important: re-define floating point comparison
 
-#define fcmp_lt(a,b) (gsl_fcmp(a,b,cmp_epsilon) == -1)
-#define fcmp_le(a,b) (gsl_fcmp(a,b,cmp_epsilon) <= 0 )
-#define fcmp_gt(a,b) (gsl_fcmp(a,b,cmp_epsilon) == 1 )
-#define fcmp_ge(a,b) (gsl_fcmp(a,b,cmp_epsilon) >= 0 )
-#define fcmp_eq(a,b) (gsl_fcmp(a,b,cmp_epsilon) == 0 )
-#define fcmp_ne(a,b) (gsl_fcmp(a,b,cmp_epsilon) != 0 )
-#define f_asBool(a)  (fcmp_ne(a, 0.))
+	#define fcmp_lt(a,b) (gsl_fcmp(a,b,cmp_epsilon) == -1)
+	#define fcmp_le(a,b) (gsl_fcmp(a,b,cmp_epsilon) <= 0 )
+	#define fcmp_gt(a,b) (gsl_fcmp(a,b,cmp_epsilon) == 1 )
+	#define fcmp_ge(a,b) (gsl_fcmp(a,b,cmp_epsilon) >= 0 )
+	#define fcmp_eq(a,b) (gsl_fcmp(a,b,cmp_epsilon) == 0 )
+	#define fcmp_ne(a,b) (gsl_fcmp(a,b,cmp_epsilon) != 0 )
+	#define f_asBool(a)  (fcmp_ne(a, 0.))
 }
 
 
@@ -205,7 +205,7 @@ namespace simuPOP
 	chromosome.
 	*/
 	template<typename T, typename Ref, typename Ptr>
-	class GappedIterator
+		class GappedIterator
 	{
 		public:
 
@@ -389,9 +389,9 @@ namespace simuPOP
 	typedef GappedIterator<Allele, AlleleRef, GenoIterator> GappedAlleleIterator;
 	typedef GappedIterator<InfoType, InfoType&, InfoIterator> GappedInfoIterator;
 
-#ifndef OPTIMIZED
-    bool testGappedIterator();
-#endif
+	#ifndef OPTIMIZED
+	bool testGappedIterator();
+	#endif
 	// ////////////////////////////////////////////////////////////
 	// / Shared variables
 	// ////////////////////////////////////////////////////////////
@@ -437,7 +437,7 @@ namespace simuPOP
 
 	/// CPPONLY
 	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
-	
+
 	/// CPPONLY
 	PyObject* Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end);
 
@@ -632,50 +632,50 @@ namespace simuPOP
 	// ////////////////////////////////////////////////////////////
 	// A macro to call a python function and return value
 	// ////////////////////////////////////////////////////////////
-#define PyCallFunc(func, format, param, retValue, converter) \
-{ \
-	/* use local scope variable to avoid redefinition */ \
-	PyObject* arglist = Py_BuildValue(format, param); \
-	PyObject* pyResult = PyEval_CallObject(func, arglist); \
-	Py_XDECREF(arglist); \
-	if( pyResult == NULL) \
-	{ \
-		PyErr_Print(); \
-		throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
-	} \
-	converter(pyResult, retValue); \
-	Py_DECREF(pyResult); \
-}
+	#define PyCallFunc(func, format, param, retValue, converter) \
+		{ \
+			/* use local scope variable to avoid redefinition */ \
+			PyObject* arglist = Py_BuildValue(format, param); \
+			PyObject* pyResult = PyEval_CallObject(func, arglist); \
+			Py_XDECREF(arglist); \
+			if( pyResult == NULL) \
+			{ \
+				PyErr_Print(); \
+				throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
+			} \
+			converter(pyResult, retValue); \
+			Py_DECREF(pyResult); \
+		}
 
-#define PyCallFunc2(func, format, param1, param2, retValue, converter) \
-{ \
-	/* use local scope variable to avoid redefinition */ \
-	PyObject* arglist = Py_BuildValue(format, param1, param2); \
-	PyObject* pyResult = PyEval_CallObject(func, arglist); \
-	Py_XDECREF(arglist); \
-	if(pyResult == NULL) \
-	{ \
-		PyErr_Print(); \
-		throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
-	} \
-	converter(pyResult, retValue); \
-	Py_DECREF(pyResult); \
-}
+	#define PyCallFunc2(func, format, param1, param2, retValue, converter) \
+		{ \
+			/* use local scope variable to avoid redefinition */ \
+			PyObject* arglist = Py_BuildValue(format, param1, param2); \
+			PyObject* pyResult = PyEval_CallObject(func, arglist); \
+			Py_XDECREF(arglist); \
+			if(pyResult == NULL) \
+			{ \
+				PyErr_Print(); \
+				throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
+			} \
+			converter(pyResult, retValue); \
+			Py_DECREF(pyResult); \
+		}
 
-#define PyCallFunc3(func, format, param1, param2, param3, retValue, converter) \
-{ \
-	/* use local scope variable to avoid redefinition */ \
-	PyObject* arglist = Py_BuildValue(format, param1, param2, param3); \
-	PyObject* pyResult = PyEval_CallObject(func, arglist); \
-	Py_XDECREF(arglist); \
-	if( pyResult == NULL) \
-	{ \
-		PyErr_Print(); \
-		throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
-	} \
-	converter(pyResult, retValue); \
-	Py_DECREF(pyResult); \
-}
+	#define PyCallFunc3(func, format, param1, param2, param3, retValue, converter) \
+		{ \
+			/* use local scope variable to avoid redefinition */ \
+			PyObject* arglist = Py_BuildValue(format, param1, param2, param3); \
+			PyObject* pyResult = PyEval_CallObject(func, arglist); \
+			Py_XDECREF(arglist); \
+			if( pyResult == NULL) \
+			{ \
+				PyErr_Print(); \
+				throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
+			} \
+			converter(pyResult, retValue); \
+			Py_DECREF(pyResult); \
+		}
 
 				// ////////////////////////////////////////////////////////////
 				// Expression evaluation
@@ -1061,9 +1061,9 @@ namespace simuPOP
 				m_seed = seed;
 				setRNG(name(), m_seed);
 			}
-			
+
 			unsigned long generateRandomSeed();
-			
+
 			unsigned long max()
 			{
 				return gsl_rng_max(m_RNG);
@@ -1289,7 +1289,7 @@ namespace simuPOP
 			}
 
 			// print internal table
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 			vectorf q()
 			{
 				return m_q;
@@ -1299,7 +1299,7 @@ namespace simuPOP
 			{
 				return m_a;
 			}
-#endif
+		#endif
 
 		private:
 			/// pointer to a RNG
@@ -1399,7 +1399,7 @@ namespace simuPOP
 
 			/// return the succ rate for one index, used for verification pruposes
 			double succRate(UINT index);
-			
+
 			/// return the succ rate for current trial, used for verification pruposes
 			double trialRate();
 
@@ -1504,5 +1504,4 @@ namespace simuPOP
 	// file extension, including .gz
 	const string fileExtension(const string & filename);
 }
-
 #endif

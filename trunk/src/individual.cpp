@@ -30,7 +30,7 @@ namespace simuPOP
 		const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields)
 		:m_ploidy(ploidy),  m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom),
 		m_lociPos(lociPos), m_chromIndex(loci.size()+1),
-		m_alleleNames(alleleNames), m_lociNames(lociNames), 
+		m_alleleNames(alleleNames), m_lociNames(lociNames),
 		m_maxAllele(maxAllele), m_infoFields(infoFields)
 	{
 		DBG_ASSERT( ploidy >= 1, ValueError,
@@ -62,7 +62,7 @@ namespace simuPOP
 				for (j = 0; j < m_numLoci[i]; j++)
 					m_lociPos[m_chromIndex[i]+j] = j + 1;
 		}
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 		else									  // check loci distance
 		{
 			// loci distance, if specified, chould have length of chromosome.
@@ -74,7 +74,7 @@ namespace simuPOP
 					DBG_FAILIF( j > 0 && fcmp_lt( m_lociPos[m_chromIndex[i]+j], m_lociPos[m_chromIndex[i]+j-1]),
 						ValueError, "Loci distance must be in order.");
 		}
-#endif
+		#endif
 
 		if( m_lociNames.empty())
 		{

@@ -61,14 +61,14 @@ using boost::serialization::make_nvp;
 #include <time.h>								  // for clock() function
 
 #define InitClock(); \
-if(debug(DBG_PROFILE))  m_clock = clock();
+	if(debug(DBG_PROFILE))  m_clock = clock();
 
 #define ElapsedTime(name); \
-if(debug(DBG_PROFILE)) \
-{ \
-	cout << name << ": " << static_cast<double>( clock() - m_clock )/CLOCKS_PER_SEC << "\n"; \
-	m_clock = clock(); \
-}
+	if(debug(DBG_PROFILE)) \
+	{ \
+		cout << name << ": " << static_cast<double>( clock() - m_clock )/CLOCKS_PER_SEC << "\n"; \
+		m_clock = clock(); \
+	}
 #else
 #define InitClock();
 #define ElapsedTime(name);
@@ -500,9 +500,9 @@ namespace simuPOP
 
 			bool m_applyOpToStoppedReps;
 
-#ifndef OPTIMIZED
+		#ifndef OPTIMIZED
 			clock_t m_clock;
-#endif
+		#endif
 
 	};
 

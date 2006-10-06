@@ -54,9 +54,9 @@ namespace simuPOP
 
 		public:
 
-#define MigrByProbability  1
-#define MigrByProportion   2
-#define MigrByCounts       3
+		#define MigrByProbability  1
+		#define MigrByProportion   2
+		#define MigrByCounts       3
 
 		public:
 			/// create a migrator

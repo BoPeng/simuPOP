@@ -70,14 +70,14 @@ namespace simuPOP
 
 	class population;
 
-	/// this class implements a Python itertor class that 
-	/// can be used to iterate through individuals in a 
+	/// this class implements a Python itertor class that
+	/// can be used to iterate through individuals in a
 	/// population.
 	class individualIterator
 	{
 		public:
-			individualIterator(population* pop, ULONG s, ULONG e): 
-				m_population(pop),
+			individualIterator(population* pop, ULONG s, ULONG e):
+			m_population(pop),
 				m_index(s),
 				m_end(e)
 			{
@@ -87,13 +87,13 @@ namespace simuPOP
 			{
 				return *this;
 			}
-			
+
 			individual& next();
-			
+
 		private:
 			// an instance of population
 			population* m_population;
-			
+
 			// current (initialized as strt) index
 			ULONG m_index;
 
@@ -149,7 +149,7 @@ namespace simuPOP
 			individual. For example, if you need to record the parents of each individual
 			you will need two, if you need to record the age of individual, you need an additional
 			one. Other possibilities include offspring ids etc. Note that you have to plan
-			this ahead of time since, for example, tagger will need to know what info unit 
+			this ahead of time since, for example, tagger will need to know what info unit
 			to use. Default to none.
 			\return no return value. Exception will be thrown is wrong parameters are given.
 			\sa simulator, baseOperator, mating schemes
@@ -360,7 +360,7 @@ namespace simuPOP
 			*/
 			individual& ind(ULONG ind, UINT subPop=0)
 			{
-#ifndef OPTIMIZED
+			#ifndef OPTIMIZED
 				if( subPop > 0 )
 				{
 					CHECKRANGESUBPOPMEMBER(ind, subPop);
@@ -369,7 +369,7 @@ namespace simuPOP
 				{
 					CHECKRANGEIND(ind);
 				}
-#endif
+			#endif
 
 				return m_inds[ subPopBegin(subPop) + ind];
 			}
@@ -381,13 +381,13 @@ namespace simuPOP
 
 			individualIterator individuals(UINT subPop)
 			{
-#ifndef OPTIMIZED
+			#ifndef OPTIMIZED
 				CHECKRANGESUBPOP(subPop);
-#endif
+			#endif
 
 				return individualIterator(this, subPopBegin(subPop), subPopEnd(subPop));
 			}
-			
+
 			/// CPPONLY
 			bool shallowCopied()
 			{
@@ -399,7 +399,7 @@ namespace simuPOP
 			{
 				m_shallowCopied = s;
 			}
-            
+
 			/// CPPONLY
 			bool infoOrdered()
 			{
@@ -411,7 +411,7 @@ namespace simuPOP
 			{
 				m_infoOrdered = s;
 			}
-            
+
 			/// CPPONLY individual iterator: without subPop info
 			IndIterator indBegin()
 			{
@@ -453,8 +453,8 @@ namespace simuPOP
 			Therefore, it is possible to access all alleles within an subpopulation
 			through such iterators.
 
-            order = True: indiviudls in order
-            order = false: do not even respect subpops
+			order = True: indiviudls in order
+			order = false: do not even respect subpops
 			*/
 			GappedAlleleIterator alleleBegin(UINT locus, bool order)
 			{
@@ -473,8 +473,8 @@ namespace simuPOP
 			}
 
 			///  CPPONLY allele begin, for given subPopu
-            /// order = True: keep order
-            /// order = false; repect subpop
+			/// order = True: keep order
+			/// order = false; repect subpop
 			GappedAlleleIterator alleleBegin(UINT locus, UINT subPop, bool order)
 			{
 				CHECKRANGEABSLOCUS(locus);
@@ -501,8 +501,8 @@ namespace simuPOP
 			}
 
 			///  CPPONLY allele iterator, go through all allels one by one, without subPop info
-            /// if order, in order
-            /// otherwise, do not even respect subpopulation structure
+			/// if order, in order
+			/// otherwise, do not even respect subpopulation structure
 			GenoIterator genoBegin(bool order)
 			{
 				if(order && shallowCopied())
@@ -521,8 +521,8 @@ namespace simuPOP
 			}
 
 			///  CPPONLY allele iterator, go through all allels one by one in a subpopulation
-            /// if order, keep order
-            /// if not order, respect subpopulation structure
+			/// if order, keep order
+			/// if not order, respect subpopulation structure
 			GenoIterator genoBegin(UINT subPop, bool order)
 			{
 				CHECKRANGESUBPOP(subPop);
@@ -539,7 +539,6 @@ namespace simuPOP
 				CHECKRANGESUBPOP(subPop);
 				if(shallowCopied())
 					adjustGenoPosition(order);
-
 
 				return m_genotype.begin() + m_subPopIndex[subPop+1]*genoSize();
 			}
@@ -579,9 +578,9 @@ namespace simuPOP
 			/// get the whole genotype.
 			/// individuals will be in order before exposing
 			/// their genotypes.
-            ///
-            /// if order, respect order,
-            /// if false, do not repect population structure
+			///
+			/// if order, respect order,
+			/// if false, do not repect population structure
 			PyObject* arrGenotype(bool order)
 			{
 				if(shallowCopied() && order)
@@ -595,9 +594,9 @@ namespace simuPOP
 			/// get the whole genotype.
 			/// individuals will be in order before exposing
 			/// their genotypes.
-            ///
-            /// if order: keep order
-            /// otherwise: respect subpop structure
+			///
+			/// if order: keep order
+			/// otherwise: respect subpop structure
 			PyObject* arrGenotype(UINT subPop, bool order)
 			{
 				CHECKRANGESUBPOP(subPop);
@@ -745,7 +744,7 @@ namespace simuPOP
 
 			/// set info for all individuals
 			template<typename T, typename T1>
-			void setIndInfo(const T& values, T1 idx)
+				void setIndInfo(const T& values, T1 idx)
 			{
 				CHECKRANGEINFO(idx);
 				DBG_ASSERT(values.size() == popSize(), IndexError,
@@ -754,21 +753,21 @@ namespace simuPOP
 				typename T::const_iterator infoIter = values.begin();
 				for(vectorinfo::iterator ptr=m_info.begin() + idx;
 					ptr != m_info.end() + idx; ptr += is)
-					*ptr = static_cast<InfoType>(*infoIter++);
+				*ptr = static_cast<InfoType>(*infoIter++);
 			}
-			
+
 			template<class T>
-			void setIndInfo(const T& values, const string& name)
+				void setIndInfo(const T& values, const string& name)
 			{
 				int idx = infoIdx(name);
-				DBG_ASSERT(idx>=0, IndexError, 
+				DBG_ASSERT(idx>=0, IndexError,
 					"Info name " + name + " is not a valid values field name");
 				setIndInfo<T, UINT>(values, idx);
 			}
 
 			/// info iterator
-            /// if order=true, keep order,
-            /// if flase, do not respect pop structure
+			/// if order=true, keep order,
+			/// if flase, do not respect pop structure
 			GappedInfoIterator infoBegin(UINT idx, bool order)
 			{
 				CHECKRANGEINFO(idx);
@@ -776,7 +775,7 @@ namespace simuPOP
 					adjustInfoPosition(true);
 				return GappedInfoIterator(m_info.begin()+idx, infoSize());
 			}
-			
+
 			GappedInfoIterator infoEnd(UINT idx, bool order)
 			{
 				CHECKRANGEINFO(idx);
@@ -784,10 +783,10 @@ namespace simuPOP
 					adjustInfoPosition(true);
 				return GappedInfoIterator(m_info.begin()+idx+m_info.size(), infoSize());
 			}
-			
+
 			/// info iterator
-            /// oder = true: keep order
-            /// otherwise, respect subpop structure
+			/// oder = true: keep order
+			/// otherwise, respect subpop structure
 			GappedInfoIterator infoBegin(UINT index, UINT subPop, bool order)
 			{
 				CHECKRANGEINFO(index);
@@ -798,8 +797,8 @@ namespace simuPOP
 
 				return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop]*infoSize(), infoSize());
 			}
-			
-            /// 
+
+			///
 			GappedInfoIterator infoEnd(UINT index, UINT subPop, bool order)
 			{
 				CHECKRANGEINFO(index);
@@ -808,46 +807,43 @@ namespace simuPOP
 				if(!infoOrdered())
 					adjustInfoPosition(order);
 
-
 				return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop+1]*infoSize(), infoSize());
 			}
-		
-			
+
 			vectorinfo indInfo(UINT idx, bool order)
 			{
 				return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 			}
-			
+
 			vectorinfo indInfo(const string& name, bool order)
 			{
 				UINT idx = infoIdx(name);
 				return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 			}
-			
 
 			vectorinfo indInfo(UINT idx, UINT subPop, bool order)
 			{
 				return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
 			}
-			
+
 			vectorinfo indInfo(const string& name, UINT subPop, bool order)
 			{
 				UINT idx = infoIdx(name);
 				return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
 			}
-			
-            /// if order: keep order
-            /// otherwise: do not respect subpop info
+
+			/// if order: keep order
+			/// otherwise: do not respect subpop info
 			PyObject* arrIndInfo(bool order)
 			{
 				if(order && !infoOrdered())
 					adjustInfoPosition(true);
 
 				return Info_Vec_As_NumArray(m_info.begin(), m_info.end());
-			}	
+			}
 
-            /// if order: keep order
-            /// otherwise: respect subpop info
+			/// if order: keep order
+			/// otherwise: respect subpop info
 			PyObject* arrIndInfo(UINT subPop, bool order)
 			{
 				CHECKRANGESUBPOP(subPop);
@@ -855,18 +851,18 @@ namespace simuPOP
 				if(!infoOrdered())
 					adjustInfoPosition(order);
 
-				return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop]*infoSize(), 
+				return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop]*infoSize(),
 					m_info.begin() + m_subPopIndex[subPop+1]*infoSize());
 			}
 
 			/// add information field to a population
 			/// if the field already exists in the geno structure
 			/// match local info fields with the structure.
-			int addInfoField(const string field);	
-		
+			int addInfoField(const string field);
+
 			/// set information fields, remove the old one
 			void setInfoFields(const vectorstr& fields);
-			
+
 			/// set ancestral depth, can be -1
 			void setAncestralDepth(int depth);
 
@@ -894,8 +890,8 @@ namespace simuPOP
 			/// some iterators requires that genotype information is within
 			/// each subpopulation. We need to adjust genotypic info to
 			/// obey this.
-            /// order=true: make individuals in order
-            /// order=false: make individuals in each subpopulation
+			/// order=true: make individuals in order
+			/// order=false: make individuals in each subpopulation
 			void adjustGenoPosition(bool order);
 			void adjustInfoPosition(bool order);
 
@@ -1281,7 +1277,7 @@ namespace simuPOP
 				}
 
 				m_shallowCopied = false;
-                m_infoOrdered = true;
+				m_infoOrdered = true;
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -1320,9 +1316,9 @@ namespace simuPOP
 			/// need to store: subPopSize, genotype and m_inds
 			struct popData
 			{
-#ifndef OPTIMIZED
+			#ifndef OPTIMIZED
 				GenoIterator m_startingGenoPtr;
-#endif
+			#endif
 				vectorlu m_subPopSize;
 				vectora m_genotype;
 				vectorinfo m_info;
@@ -1343,23 +1339,21 @@ namespace simuPOP
 			/// whether or not individual genotype is in order
 			bool m_shallowCopied;
 
-            /// whether or not information is ordered
-            bool m_infoOrdered;
+			/// whether or not information is ordered
+			bool m_infoOrdered;
 	};
 
 	population& LoadPopulation(const string& file, const string& format="auto");
 
-// debug functions that will only be available if SIMUDEBUG is defined
-#ifdef SIMUDEBUG
-    /// get info through ind.info()
-    vectorf testGetinfoFromInd(population& pop);
+	// debug functions that will only be available if SIMUDEBUG is defined
+	#ifdef SIMUDEBUG
+	/// get info through ind.info()
+	vectorf testGetinfoFromInd(population& pop);
 
+	/// get info through GappedInfoIterator
+	vectorf testGetinfoFromPop(population& pop, bool order);
+	#endif
 
-    /// get info through GappedInfoIterator
-    vectorf testGetinfoFromPop(population& pop, bool order);
-#endif
-
-	
 }
 
 
@@ -1370,6 +1364,4 @@ namespace simuPOP
 BOOST_CLASS_VERSION(simuPOP::population, 1)
 #endif
 #endif
-
-
 #endif

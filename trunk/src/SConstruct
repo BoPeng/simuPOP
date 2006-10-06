@@ -27,7 +27,7 @@ opts.AddOptions(
     EnumOption('debug', 'whether or not use debug version', 'none', allowed_values=['yes', 'no', 'none']),
 )
 
-env = Environment( options=opts,
+env = Environment(options=opts,
     ENV={'PATH':os.environ['PATH']},
     tools=['default', 'swig'])
 
@@ -54,6 +54,7 @@ env.BuildDir(BDIR, '.', duplicate = 0)
 
 # for swig 1.3.28 cvs
 env['SWIGFLAGS'] = '-O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525' + strflags
+
 # build static libraries
 if 'serial' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libserial.a')):
     serial = env.StaticLibrary(
@@ -137,7 +138,6 @@ DEF = {
     'ba': {'BINARYALLELE':None},
     'baop': {'OPTIMIZED':None, 'BINARYALLELE':None}
 }
-targets = {}
 build_mod = []
 
 for key in DEF.keys():
@@ -170,6 +170,7 @@ src = Split('''utility migrator population simulator terminator
 # env['SWIG_SRC_HEADERS'] =  ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \
 #         ['%s.h' % x for x in src]
 
+targets = {}
 for mod in build_mod:
     for file in src:
         env.Command('%s/%s_%s.cpp'%(BDIR, file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
@@ -195,9 +196,8 @@ for mod in build_mod:
         ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \
         ['%s.h' % x for x in src])
     # 
-    #Ignore(targets[mod], '../boost')
-    Alias(mod, [os.path.join(BDIR, x) for x in ['_simuPOP_%s.so'%mod, 'simuPOP_%s.py'%mod]])
-    Alias('all', [os.path.join(BDIR, '_simuPOP_%s.so'%mod), os.path.join(BDIR, 'simuPOP_%s.py'%mod)])
+    Alias(mod, targets[mod])
+    Alias('all', targets[mod])
     dp1 = env.Install(dest_dir, os.path.join(BDIR, 'simuPOP_%s.py'%mod))
     dp2 = env.Install(dest_dir, targets[mod])
     env.Depends(dp1, dp2)
@@ -210,7 +210,6 @@ for file in ['simuRPy.py', 'simuUtil.py', 'simuViewPop.py', 'simuMatPlt.py',
     Alias('install', dest_dir)
 
 # install to share directory, later.
-
 Default('install')
 
 
