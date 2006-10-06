@@ -131,13 +131,16 @@ class TestPerformance(unittest.TestCase):
             #
             # a second test reveals less existing results
             #   4.24, 6.1, 7.74
-            #   43.9, 65.63, 85.28...
+            #   43.9, 65.63, 85.28
+            #   ...
             # (kind of strange, system load difference?)
             # 
             # Tried to change maleIndex to IndIterator, but
             # the performance is slightly worse. (42,34, 64.35 etc)
             #
-            #
+            # Change maSelector and get a little performance gain of
+            #    4.26, 6.02, 7.65
+            #    43.66, 64.6, 83.77
 
     
 if __name__ == '__main__':
