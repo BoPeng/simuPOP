@@ -465,9 +465,11 @@ namespace simuPOP
 			}
 
 			/// CPPONLY allele iterator
-			GappedAlleleIterator alleleEnd(UINT locus)
+			GappedAlleleIterator alleleEnd(UINT locus, bool order)
 			{
 				CHECKRANGEABSLOCUS( locus);
+				if(order && shallowCopied())
+					adjustGenoPosition(true);
 
 				return GappedAlleleIterator( m_genotype.begin() + locus + m_popGenoSize , totNumLoci());
 			}
@@ -488,13 +490,13 @@ namespace simuPOP
 			}
 
 			///  CPPONLY allele iterator
-			GappedAlleleIterator alleleEnd( UINT locus, UINT subPop)
+			GappedAlleleIterator alleleEnd( UINT locus, UINT subPop, bool order)
 			{
 				CHECKRANGEABSLOCUS(locus);
 				CHECKRANGESUBPOP(subPop);
 
 				if(shallowCopied())
-					adjustGenoPosition(false);
+					adjustGenoPosition(order);
 
 				return GappedAlleleIterator( m_genotype.begin() + m_subPopIndex[subPop+1]*genoSize() +
 					locus, totNumLoci());

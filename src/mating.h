@@ -39,6 +39,60 @@ using std::string;
 
 namespace simuPOP
 {
+	/// the default method to generate offspring from parents
+	///
+	/// This part is separated from the mating schemes, so that it
+	/// can be implemented more cleanly
+	///
+	/// input: parents,
+	/// output: offsprings
+	class offspringGenerator
+	{
+		public:
+			/// constructor, save information from pop and ops to speed up
+			/// the calls to generateOffspring
+			offspringGenerator(population& pop, vector<Operator *>& ops);
+
+			/// generate numOff offspring, or until reach offEnd
+			/// this is because offBegin+numOff may go beyond subpopulation boundary.
+			/// return the ending iterator
+			population::IndIterator generateOffspring(individual* dad, individual* mom, UINT numOff,
+				population::IndIterator offBegin, population::IndIterator offEnd);
+
+			/// generate numOff offspring, or until reach offEnd
+			/// this is because offBegin+numOff may go beyond subpopulation boundary.
+			/// return the ending iterator
+			population::IndIterator copyOffspring(individual* par, UINT numOff,
+				population::IndIterator offBegin, population::IndIterator offEnd);
+
+		private:
+			bool formOffspringGenotype();
+
+		private:
+			// cache random number generator
+			RNG& m_rng;
+
+			// use bernullitrisls with p=0.5 for free recombination
+			BernulliTrials m_bt;
+
+			population& m_pop;
+
+			/// cache during-mating operators
+			vector<Operator *>& m_ops;
+
+			/// see if who will generate offspring genotype
+			bool m_formOffGenotype;
+
+			/// sex chromosome handling
+			bool m_hasSexChrom;
+
+			/// cache ploidy
+			bool m_ploidy;
+
+			// cache chromBegin, chromEnd for better performance.
+			vectoru m_chIdx;
+	};
+
 	/**
 	The mating classes describe various mating scheme --- a required parameter
 	of simulator.
@@ -162,9 +216,6 @@ namespace simuPOP
 			}
 
 		public:
-			/// whether or not to generate offspring genotype
-			/// this is true when none of the during-mating operator can do this.
-			bool formOffGenotype(const vector<Operator* >& ops);
 
 			/// dealing with pop/subPop size change, copy of structure etc.
 			void prepareScratchPop(population& pop, population& scratch);
@@ -559,6 +610,7 @@ namespace simuPOP
 		bool restartIfFail=false,
 		long maxAttempts=1000);
 
+	#ifndef OPTIMIZED
 	// simulate trajectory
 	vectorf FreqTrajectorySelSim(
 		double sel,								  // strength of selection coef  ::8
@@ -578,6 +630,10 @@ namespace simuPOP
 	on #disease >0, else, normal dis.)*/
 	vectorf FreqTrajectoryForward(double lowbound, double highbound,
 		int disAge, double grate, long N0, double seleCo);
+	#endif
+
+	void countAlleles(population& pop, int subpop, const vectori& loci, const vectori& alleles,
+		vectorlu& numAllele);
 
 	/**
 	  controlled mating
@@ -665,8 +721,6 @@ namespace simuPOP
 				return "<simuPOP::controlled mating>";
 			}
 
-			vectorlu countAlleles(population& pop, const vectori& loci, const vectori& alleles);
-
 			virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit);
 
 		private:
@@ -686,6 +740,9 @@ namespace simuPOP
 			/// range, used when m_freqFunc returns a vector of the same length as m_loci
 			double m_range;
 	};
+
+	void getExpectedAlleles(population& pop, vectorf& expFreq, const vectori& loci, const vectori& alleles,
+		vectoru& expAlleles);
 
 	/**
 	  binomial random selection

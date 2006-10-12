@@ -51,6 +51,7 @@ else:
     flags = {}
     strflags = ''
 env.BuildDir(BDIR, '.', duplicate = 0)
+env['BDIR'] = BDIR
 
 # for swig 1.3.28 cvs
 env['SWIGFLAGS'] = '-O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525' + strflags
@@ -58,8 +59,8 @@ env['SWIGFLAGS'] = '-O -templatereduce -shadow -python -keyword -nodefaultctor -
 # build static libraries
 if 'serial' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libserial.a')):
     serial = env.StaticLibrary(
-        target = os.path.join(BDIR, 'serial'),
-        source = [os.path.join(BDIR, 'serialization/%s'%x) for x in Split('''
+        target = '$BDIR/serial',
+        source = ['$BDIR/serialization/%s'%x for x in Split('''
             basic_archive.cpp
             basic_xml_archive.cpp
             basic_iarchive.cpp
@@ -95,8 +96,8 @@ if 'serial' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libserial
 # iostreams
 if 'iostreams' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libiostreams.a')):
     iostreams = env.StaticLibrary(
-        target = os.path.join(BDIR, 'iostreams'),
-        source = [os.path.join(BDIR, 'iostreams/%s'%x) for x in ['file_descriptor.cpp', 'mapped_file.cpp', 'zlib.cpp']],
+        target = '$BDIR/iostreams',
+        source = ['$BDIR/iostreams/%s'%x for x in ['file_descriptor.cpp', 'mapped_file.cpp', 'zlib.cpp']],
 		CCFLAGS = ['-O3', '-fPIC'],
 		CPPPATH = ['.', '..'],
     )
@@ -105,7 +106,7 @@ if 'iostreams' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libios
 # GSL
 if 'gsl' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libgsl.a')):
     gsl = env.StaticLibrary(
-        target = os.path.join(BDIR, 'gsl'),
+        target = '$BDIR/gsl',
         source = ['../gsl/%s'%x for x in Split('''
             sys/infnan.c sys/coerce.c sys/fdiv.c sys/pow_int.c
             sys/fcmp.c specfunc/psi.c specfunc/trig.c specfunc/exp.c
@@ -170,15 +171,13 @@ src = Split('''utility migrator population simulator terminator
 # env['SWIG_SRC_HEADERS'] =  ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \
 #         ['%s.h' % x for x in src]
 
-targets = {}
 for mod in build_mod:
     for file in src:
         env.Command('%s/%s_%s.cpp'%(BDIR, file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
     # build shared library
-    targets[mod] = env.SharedLibrary(
-        target = os.path.join(BDIR, '_simuPOP_%s.so'%mod),
-        source = [os.path.join(BDIR, '%s_%s.cpp' % (x, mod)) for x in src] 
-            + [os.path.join(BDIR, 'simuPOP_%s.i'%mod)],
+    lib = env.SharedLibrary(
+        target = '$BDIR/_simuPOP_%s.so'%mod,
+        source = ['$BDIR/%s_%s.cpp' % (x, mod) for x in src] + ['$BDIR/simuPOP_%s.i'%mod],
         LIBS = ['serial', 'iostreams', 'gsl', 'z'],
         CC = cc,
         SHLINK = ldshared,
@@ -192,16 +191,16 @@ for mod in build_mod:
         # to speed up search
         CPPFLAGS = basecflags + " " + opt + ' -I..'
     )
-    env.Depends([os.path.join(BDIR, 'simuPOP_%s_wrap.cc'%mod), targets[mod]], 
+    env.Depends(['$BDIR/simuPOP_%s_wrap.cc'%mod, lib], 
         ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \
         ['%s.h' % x for x in src])
-    # 
-    Alias(mod, targets[mod])
-    Alias('all', targets[mod])
+    #
+    Alias(mod, lib)
+    Alias('all', lib)
     dp1 = env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py'%mod),
-        os.path.join(BDIR, 'simuPOP_%s.py'%mod))
+		'$BDIR/simuPOP_%s.py'%mod)
     dp2 = env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s.so'%mod), 
-        targets[mod])
+        lib)
     env.Depends(dp1, dp2)
     Alias('install', dp1)
 
