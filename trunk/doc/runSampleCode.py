@@ -7,6 +7,10 @@
 # 
 import code, sys, os
 
+if len(sys.argv) < 2 or sys.argv[1] == '-h':
+    print 'Usage: runSampleCode scriptToRun'
+    sys.exit(0)
+
 outputFile = sys.argv[1].split('.')[0] + '.out'
 perlFile = sys.argv[1].split('.')[0] + '.pl'
 

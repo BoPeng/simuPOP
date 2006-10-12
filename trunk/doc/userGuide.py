@@ -914,8 +914,10 @@ def changeSPSize(gen, oldSize):
   return size
 
 # migration between subpopulaitons
-import numpy
-rates = numpy.array([[0.]*nc]*nc)
+rates = []
+for i in range(nc):
+    rates.append([0.]*nc)
+#
 for i in range(1,nc-1):
   rates[i][i+1]=0.05
   rates[i][i-1]=0.05
@@ -926,7 +928,7 @@ rates[nc-1][nc-2] = 0.1
 
 # print rates
 print rates
-migr = migrator( rate=rates, mode=MigrByProbability)
+migr = migrator(rate=rates, mode=MigrByProbability)
 
 # initially, we need to set everyone to middle subpop
 initMigr = migrator(rate=[[1]], mode=MigrByProportion,

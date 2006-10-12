@@ -388,7 +388,8 @@ simuPOP consists of a number of Python objects and functions, including
 \begin_layout Standard
 simuPOP does not aim at any specific result or outcome.
  It is more like a workshop, where users use various components and tools
- to assemble a simulation and study its properties.
+ to assemble a simulation and study its properties, or manipulated populations
+ without evolving them.
  Just like any such programming environments such as R/Splus and Matlab,
  users will have to learn how to use the environment (various Python IDE)
  and how to program in this language (Python and the simuPOP module).
@@ -402,9 +403,8 @@ On the other hand, simuPOP also has an increasing number of built-in scripts.
  These script are written in simuPOP/Python language and can be used without
  knowing their underlying machanisim.
  It is strongly recommended that users of simuPOP submit their own scripts
- to his collection and make simuPOP more and more accessible to time-limited
- users.
- 
+ to his collection and so other users can learn and adapt their own simulations
+ from these scripts.
 \end_layout
 
 \begin_layout Standard
@@ -451,15 +451,15 @@ Currently, simuPOP provides the following features:
 
 \begin_layout Itemize
 Population with one-level subpopulation structure.
- (no explicit family structure) There is no limit on ploidy, number of chromosom
-es, number of loci and population size.
+ (family structure can be attached as individual information) There is no
+ limit on ploidy, number of chromosomes, number of loci and population size.
  (depends on available RAM).
  Sex chromosomes can be modeled.
 \end_layout
 
 \begin_layout Itemize
-Allele can be short (<255 allelic states), long (at least 
-\begin_inset Formula $2^{32}$
+Allele can be short (<255 allelic states), long ( 
+\begin_inset Formula $2^{16}$
 \end_inset
 
  allelic states) or binary (0 or 1).
@@ -469,7 +469,7 @@ Allele can be short (<255 allelic states), long (at least
 
 \begin_layout Itemize
 A population can hold arbitrary number of ancestral generations (default
- to none) for easy pedigree analysis.
+ to none) for easy pedigree analyses.
  
 \end_layout
 
@@ -514,7 +514,6 @@ A wide variety of operators are provided.
 
 \begin_layout Itemize
 Built-in operators for arbitrary migration model.
- 
 \end_layout
 
 \begin_layout Itemize
@@ -1637,6 +1636,8 @@ population
 \begin_layout Standard
 simuPOP uses one-level population structure.
  That is to say, there is no sub-subpopulation or families in subpopulations.
+ Any complicated structure, however, can be achieve by the use of individual
+ information fields.
  Mating is within subpopulations only.
  Exchange of genetic information across subpopulations can only be done
  through migration.
@@ -1713,9 +1714,9 @@ individual
 
 \end_inset
 
-()
+(), individuals()
 \family default
- function.
+ functions.
  The returned 
 \family typewriter
 individual 
@@ -1732,7 +1733,8 @@ retrieve/set genotype
 \end_layout
 
 \begin_layout Itemize
-retrieve/set sex, affected status and some other auxiliary information
+retrieve/set sex, affected status and some other auxiliary information (informat
+ion fields)
 \end_layout
 
 \begin_layout Section
@@ -1789,11 +1791,19 @@ dvars()
  returns a wrapper class so that you can access this dictionary as attributes.
  For example, 
 \family typewriter
-pop.vars()['alleleFreq'][0] is the same as pop.dvars().alleleFreq[0]
+pop.vars()['alleleFreq'][0] 
+\family default
+is the same as
+\family typewriter
+ pop.dvars().alleleFreq[0]
 \family default
 .
  To have a look at all associated variables with a population, you can print
- pop.vars(), or better pass 
+ 
+\family typewriter
+pop.vars()
+\family default
+, or better pass 
 \family typewriter
 pop.vars() 
 \family default
@@ -2268,7 +2278,7 @@ def simulation(....)
 
 \end_deeper
 \begin_layout Enumerate
-Executable part:
+Executable part (for example):
 \end_layout
 
 \begin_deeper
@@ -2418,7 +2428,7 @@ Use of hybrid opertor
 \begin_inset Float algorithm
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Caption
 \begin_inset LatexCommand \label{cap:hybrid-operator}
@@ -2428,41 +2438,41 @@ status collapsed
 An example of hybrid operators
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
 def myPenetrance(geno):
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   'return penetrance given genotype at spcified disease loci'
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   if geno.count(1) < 3:
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
     return 0.
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   else:
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
     return 1-(1-(geno[0]+geno[1])*0.25)* 
 \backslash
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
       (1-(geno[2]+geno[3])*0.25)*(1-(geno[4]+geno[5])*0.25)
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
 # now, use this function in a hybrid operator as follows
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
 pyPenetrance( atLoci=[10,20,30], func=myPenetrance)
 \end_layout
 
@@ -2535,7 +2545,7 @@ If hybrid operators are still not flexible enough, it is possible to write
 \begin_inset Float algorithm
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Caption
 \begin_inset LatexCommand \label{cap:pyOpeartor}
@@ -2545,72 +2555,72 @@ status collapsed
 A frequency dependent selection operator
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
 def freqDependSelector(pop):
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   ''' This selector will try to control disease allele
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   frequency by applying advantage/purifying selection 
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   to DSL according to allele frequency at each DSL.
  '''
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   # parameters are stored with population
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   DSL = pop.dvars().DSL
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   # Calculate allele frequency
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   Stat(pop, alleleFreq=[DSL])
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   # apply advantage/purifying selection accordingly
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   if 1-pop.dvars().alleleFreq[DSL][1] < pop.dvars().minAlleleFreq:
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
     MaSelector(pop, locus=DSL, fitness=[1,1.5,2])
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   elif 1-pop.dvars().alleleFreq[DSL][1] > pop.dvars().maxAlleleFreq:
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
     MaSelector(pop, locus=DSL, fitness=[1,0.9,0.8])
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
   return True
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
 #
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
 # Then, use this operator like
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
 pyOperator(func=freqDependSelector, begin=100, end=200)
 \end_layout
 
@@ -3059,7 +3069,7 @@ r(`')
 \family default
  function.
  This part of source code is omited since it is irrelevant to simuPOP.
- 
+ (The code may no longer be compatible with the latest simuPOP version.)
 \end_layout
 
 \begin_layout Standard
@@ -3084,14 +3094,6 @@ n while rare disease spectra become complex over time.
 \begin_layout Standard
 \begin_inset Include \verbatiminput{log/simuComplexDisease.log}
 preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset LatexCommand \bibtex[bibtotoc,plainnat]{all}
 
 \end_inset
 
