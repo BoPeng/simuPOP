@@ -1,4 +1,4 @@
-#LyX 1.4.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -11,7 +11,7 @@
 
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.7.0 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.7.3 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Statistics, Rice University}\\
 {\bf Email: }{\textsf bpeng@rice.edu}\\
@@ -56,11 +56,7 @@ Last modified \\
 \begin_body
 
 \begin_layout Title
-s
-\begin_inset Formula $ $
-\end_inset
-
-imuPOP User's Guide
+simuPOP User's Guide
 \end_layout
 
 \begin_layout Standard
@@ -1561,35 +1557,8 @@ in R function names need to be replaced by
 \end_deeper
 \begin_layout Standard
 The output is a table of LD values of each replicate at 0, 25, 50, 57 and
- 100 generations, as well as a figure at generation 100 (figure ).
+ 100 generations, as well as a figure at generation 100.
  
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-LD decay example: saved figure at generation 100
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename log/LDdecay.pdf
-	lyxscale 20
-	width 6in
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
