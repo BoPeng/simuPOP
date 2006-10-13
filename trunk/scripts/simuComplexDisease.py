@@ -124,12 +124,6 @@ A number of statistics will be measured and saved. They are:
 import simuOpt
 import os, sys, exceptions, types, math
 
-try:
-    from rpy import *
-    hasRPy = True
-except:
-    hasRPy = False
-
 #
 # declare all options. getParam will use these information to get parameters
 # from a tk/wxPython-based dialog, command line, config file or user input
@@ -453,60 +447,6 @@ def getOptions(details=__doc__):
     # return the rest of the parameters
     return allParam[1:-1]
 
-def plotScenario(name, burninGen, splitGen, mixingGen, 
-    endingGen, popSizeFunc, trajectory, legend):
-    ''' plot the simulation scenario '''
-    if not hasRPy:
-        print "Module rpy is not present. Can not draw figure."
-        return
-    r.postscript(name+'.eps')
-    r.par(mar=[5.1, 4.1, 4.1, 4.1])
-    sg = max(min( endingGen - max([len(x) for x in trajectory]) - 1000, burninGen-1000 ), 0)
-    r.plot( x=[0, burninGen], y=[sum(popSizeFunc(0)), sum(popSizeFunc(burninGen))],
-        xlim=[sg, endingGen], ylim=[0, sum(popSizeFunc(endingGen))],
-        xlab='Generations', ylab='Population size', type='l',
-        main='Demographic model and trajectory of disease allele frequency of simulation ' + name, 
-        axes=False)
-    r.box()
-    r.axis(1, [burninGen, splitGen, mixingGen, endingGen],
-        [str(x) for x in    [burninGen, splitGen, mixingGen, endingGen]])
-    r.axis(2)
-    r.abline(v=[burninGen, splitGen, mixingGen, endingGen], lty=3)
-    r.lines(x=[0,endingGen], y=[0,0], lty=1)
-    r.lines( x=range(burninGen, splitGen), y=[sum(popSizeFunc(x)) for x in range(burninGen, splitGen)],
-        type='l')
-    # split
-    if mixingGen > splitGen:
-        for sp in range( len( popSizeFunc(endingGen) )):
-            r.lines( x= range(splitGen, mixingGen),
-                y=[ sum(popSizeFunc(x)[:(sp+1)]) for x in range(splitGen, mixingGen) ],
-                lty=1
-        )
-    if endingGen > mixingGen:
-        for sp in range( len( popSizeFunc(endingGen) )):
-            if sp != len( popSizeFunc(endingGen) ) -1:
-                lineType = 2
-            else:
-                lineType = 1
-            r.lines( x= range(mixingGen, endingGen),
-                y=[ sum(popSizeFunc(x)[:(sp+1)]) for x in range(mixingGen, endingGen) ],
-                lty=lineType
-        )
-    # ploting trajectories
-    r.par(new=True)
-    maxAF = max( [ max(x) for x in trajectory] )
-    r.plot(0, 0, type='n', xlim=[sg, endingGen], ylim=[0,maxAF],
-        axes=False, xlab='', ylab='')
-    r.axis(4)
-    r.mtext('Allele frequency', 4, line=2)
-    col = 1
-    for traj in trajectory:
-        r.lines( x = range( endingGen - len(traj), endingGen ),
-            y=traj, col=col)
-        col += 1
-    r.text( x=sg, y=maxAF, labels=legend, adj=[0,1])
-    r.dev_off()
-    
     
 def outputStatistics(pop, args): 
     ''' This function will be working with a pyOperator
@@ -714,22 +654,6 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         tfile.write(', '.join([str(x) for x in t ]) + '\n')
     tfile.write('Observed allele frequency (generation, population size, allele frequencies)\n')
     tfile.close()
-    plotScenario(filename, burninGen, splitGen, mixingGen,
-        endingGen, popSizeFunc, traj, '''Initial pop size: %d
-Final pop size: %d
-Burnin: %d
-Split at gen: %d
-Mix at gen: %d
-End at gen: %d
-Number of subPop: %d
-
-Current allele freq: %s
-Fitness: %s
-Min mutant age: %d
-Max mutant age: %d ''' % \
-(initSize, endingSize, burninGen, splitGen, mixingGen, endingGen, numSubPop, \
-','.join([str(x) for x in curAlleleFreqTmp]), \
-','.join([str(x) for x in fitnessTmp]), minMutAge, maxMutAge) )
     print '\n\nTrajectories simulated successfully. Their lengths are %s.\n Check %s.eps for details. \n\n' \
         % ( ', '.join([ str(len(x)) for x in traj]), filename)
     ###
