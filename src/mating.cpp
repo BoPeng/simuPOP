@@ -373,8 +373,8 @@ namespace simuPOP
 					parent = &pop.ind(rng().randInt(spSize), sp);
 
 				numOS = numOffspring(pop.gen());
-				if(numOS < itEnd-it)
-					numOS = itEnd-it;
+				if(numOS > itEnd - it)
+					numOS = itEnd - it;
 				// record family size, for debug reasons.
 				DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
 				//
@@ -1638,17 +1638,15 @@ namespace simuPOP
 		resetNumOffspring();
 		// scrtach will have the right structure.
 		prepareScratchPop(pop, scratch);
-		offspringGenerator og(pop, ops);
 
 		size_t pldy = pop.ploidy(), nLoci=m_loci.size();
-		size_t i, p;
-
-		UINT numSP = pop.numSubPop();
 
 		// expected frequency at each locus
 		vectorf expFreq;
 		PyCallFunc( m_freqFunc, "(i)", pop.gen(), expFreq, PyObj_As_Array);
+		DBG_DO(DBG_MATING, cout << "expected freq " << expFreq << endl);
 
+		UINT numSP = pop.numSubPop();
 		vectoru expAlleles;
 		getExpectedAlleles(pop, expFreq, m_loci, m_alleles, expAlleles);
 		DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
@@ -1667,27 +1665,27 @@ namespace simuPOP
 			fitness = pop.infoBegin(fit_id, true);
 		}
 
+		offspringGenerator og(pop, ops);
 		// for each subpopulation
 		for(UINT sp=0; sp < pop.numSubPop(); ++sp)
 		{
 			UINT spSize = pop.subPopSize(sp);
+			if( spSize == 0 )
+				continue;
 
 			// total allowed disease alleles.
-			vectoru totAllele( nLoci );
+			vectoru totAllele(nLoci);
 			// currently available disease allele.
-			vectoru curAllele( nLoci, 0 );
-			for(i=0; i< nLoci; ++i)
+			vectoru curAllele(nLoci, 0);
+			for(UINT i=0; i< nLoci; ++i)
 			{
 				totAllele[i] = expAlleles[sp+numSP*i];
-				if( totAllele[i] > spSize*pldy )
+				if(totAllele[i] > spSize*pldy)
 				{
 					cout << "Warning: number of planned affected alleles exceed population size.";
 					totAllele[i] = spSize*pldy;
 				}
 			}
-
-			if( spSize == 0 )
-				continue;
 
 			// if selection is on
 			if( selectionOn )
@@ -1699,14 +1697,15 @@ namespace simuPOP
 			// ploidy
 			vectori na(nLoci, 0);
 			bool freqRequMet = true;
-			for(i=0; i<nLoci; ++i)
+			for(UINT i=0; i<nLoci; ++i)
 			{
-				if( totAllele[i] > 0 )
+				if(totAllele[i] > 0)
 				{
 					freqRequMet = false;
 					break;
 				}
 			}
+			DBG_DO(DBG_MATING, if(freqRequMet) cout << "Frequency requirements met" << endl);
 			bool hasAff;
 			bool stackStage = false;
 			int noAAcount = 0;
@@ -1733,10 +1732,6 @@ namespace simuPOP
 				else
 					parent = &pop.ind( rng().randInt(spSize), sp);
 
-				for(i=0; i<nLoci; ++i)
-					na[i] = 0;
-				hasAff = false;
-
 				//
 				itBegin = it;
 				numOS = numOffspring(pop.gen());
@@ -1744,15 +1739,20 @@ namespace simuPOP
 					numOS = itEnd - it;
 				og.copyOffspring(pop, parent, numOS, it);
 
+				for(UINT i=0; i<nLoci; ++i)
+					na[i] = 0;
+				hasAff = false;
+				noAAcount = 0;
+
 				// count alleles in this family
 				for(population::IndIterator tmp=itBegin; tmp != it; ++tmp)
 				{
 					// success count na, nu
-					for(i=0; i<nLoci; ++i)
+					for(UINT i=0; i<nLoci; ++i)
 					{
-						for(p=0; p<pldy; ++p)
+						for(UINT p=0; p<pldy; ++p)
 						{
-							if( it->allele(m_loci[i], p) == m_alleles[i] )
+							if(tmp->allele(m_loci[i], p) == m_alleles[i] )
 							{
 								na[i]++;
 								hasAff = true;
@@ -1794,7 +1794,7 @@ namespace simuPOP
 						if(hasAff)
 						{
 							// has the right kind of mutant?
-							for(i=0; i<nLoci; ++i)
+							for(UINT i=0; i<nLoci; ++i)
 							{
 								// accept the whole family, if we need this allele
 								if( curAllele[i] < totAllele[i] && na[i] > 0 )
@@ -1820,13 +1820,13 @@ namespace simuPOP
 						it = itBegin;
 						continue;
 					}
-					DBG_DO(DBG_MATING, cout << "Accept " << na << " CUR " << curAllele << " TOT  " << totAllele << endl);
+					DBG_DO(DBG_MATING, cout << "Accept (numOS: " << numOS << ") " << na << " CUR " << curAllele << " TOT  " << totAllele << endl);
 
 					// accpet this family, see if all done.
 					if(!freqRequMet)
 					{
 						freqRequMet = true;
-						for(i=0; i<nLoci; ++i)
+						for(UINT i=0; i<nLoci; ++i)
 						{
 							curAllele[i] += na[i];
 							if(curAllele[i] < totAllele[i])
@@ -1882,7 +1882,7 @@ namespace simuPOP
 					}
 					else						  // do not use stack
 					{
-						for(i=0; i<nLoci; ++i)
+						for(UINT i=0; i<nLoci; ++i)
 						{
 							// accept the whole family, if we need this allele
 							if( curAllele[i] < totAllele[i] && na[i] > 0 )
@@ -1907,7 +1907,7 @@ namespace simuPOP
 					if(!freqRequMet)
 					{
 						freqRequMet = true;
-						for(i=0; i<nLoci; ++i)
+						for(UINT i=0; i<nLoci; ++i)
 						{
 							curAllele[i] += na[i];
 							if( curAllele[i] < totAllele[i] )
@@ -1919,7 +1919,7 @@ namespace simuPOP
 						break;
 				}
 			}									  // nostack scheme
-			if( ! freqRequMet )
+			if(!freqRequMet )
 				cout << "Can not obtain enough disease alleles at generation " << pop.gen() << endl;
 		}										  // all subpopulation.
 
@@ -1939,13 +1939,13 @@ namespace simuPOP
 		prepareScratchPop(pop, scratch);
 
 		size_t pldy = pop.ploidy(), nLoci=m_loci.size();
-		size_t i, p;
+		size_t i;
 
 		// expected frequency at each locus
 		vectorf expFreq;
 		PyCallFunc( m_freqFunc, "(i)", pop.gen(), expFreq, PyObj_As_Array);
-
 		DBG_DO(DBG_MATING, cout << "expected freq " << expFreq << endl);
+		
 		// determine expected number of alleles of each allele
 		// at each subpopulation.
 		UINT numSP = pop.numSubPop();
@@ -1982,7 +1982,7 @@ namespace simuPOP
 			for(i=0; i< nLoci; ++i)
 			{
 				totAllele[i] = expAlleles[sp+numSP*i];
-				if( totAllele[i] > spSize*pldy )
+				if(totAllele[i] > spSize*pldy)
 				{
 					cout << "Warning: number of planned affected alleles exceed population size.";
 					totAllele[i] = spSize*pldy;
@@ -2119,8 +2119,6 @@ namespace simuPOP
 				// generate numOffspring offspring per mating
 				// it moves forward
 				og.generateOffspring(pop, dad, mom, numOS, it);
-
-				DBG_ASSERT(it-itBegin == numOS, SystemError, "Number of offspring does not look right");
 
 				// count alleles in this family
 				// count number of alleles in the family.
