@@ -796,7 +796,8 @@ namespace simuPOP
 				: binomialSelection(rhs),
 				m_loci(rhs.m_loci),
 				m_alleles(rhs.m_alleles),
-				m_freqFunc(rhs.m_freqFunc)
+				m_freqFunc(rhs.m_freqFunc),
+				m_stack()
 			{
 				Py_INCREF(m_freqFunc);
 			}
@@ -848,6 +849,9 @@ namespace simuPOP
 
 			/// function that return an array of frquency range
 			PyObject * m_freqFunc;
+
+			///
+			stack<population::IndIterator> m_stack;
 	};
 
 	/**

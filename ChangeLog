@@ -15,7 +15,12 @@ version 0.7.4 - Currently available as svn snapshot
 		Python level: population::arrGenotype(True), arrGenotype(sp, True)
 			population::indInfo(idx, order), indInfo(idx, subPop, order)
 			population::arrIndInfo(order), arrIndInfo(subPop, order)
+ - NEW: test/test_21_performance is added to keep track of performance
+	improvement.
  - NEW: (minor) performance improvement of randomMating and maSelector.
+ - NEW: significant performance improvement of mating schemes.
+	controlled randomMating: typically 150s => 90s
+	randomMating: 34.45 => 12.68s.
 		
 
 
