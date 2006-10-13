@@ -37,12 +37,15 @@
 using std::max_element;
 using std::string;
 
+#include <stack>
+using std::stack;
+
 namespace simuPOP
 {
 	/// the default method to generate offspring from parents
 	///
-	/// This part is separated from the mating schemes, so that it
-	/// can be implemented more cleanly
+	/// This part is separated from the mating schemes, because mating schemes
+	/// usually only differ by the way parents are choosing.
 	///
 	/// input: parents,
 	/// output: offsprings
@@ -51,33 +54,29 @@ namespace simuPOP
 		public:
 			/// constructor, save information from pop and ops to speed up
 			/// the calls to generateOffspring
-			offspringGenerator(population& pop, vector<Operator *>& ops);
+			offspringGenerator(const population& pop, vector<Operator *>& ops);
 
 			/// generate numOff offspring, or until reach offEnd
 			/// this is because offBegin+numOff may go beyond subpopulation boundary.
 			/// return the ending iterator
-			population::IndIterator generateOffspring(individual* dad, individual* mom, UINT numOff,
-				population::IndIterator offBegin, population::IndIterator offEnd);
+			void generateOffspring(population& pop, individual* dad, individual* mom, UINT numOff,
+				population::IndIterator& offBegin);
 
 			/// generate numOff offspring, or until reach offEnd
 			/// this is because offBegin+numOff may go beyond subpopulation boundary.
 			/// return the ending iterator
-			population::IndIterator copyOffspring(individual* par, UINT numOff,
-				population::IndIterator offBegin, population::IndIterator offEnd);
+			void copyOffspring(population& pop, individual* par, UINT numOff,
+				population::IndIterator& offBegin);
 
 		private:
 			bool formOffspringGenotype();
 
-		private:
-			// cache random number generator
-			RNG& m_rng;
-
+		public:
 			// use bernullitrisls with p=0.5 for free recombination
 			BernulliTrials m_bt;
 
-			population& m_pop;
-
 			/// cache during-mating operators
+			/// we do not cache pop since it may be changed during mating.
 			vector<Operator *>& m_ops;
 
 			/// see if who will generate offspring genotype
@@ -104,14 +103,14 @@ namespace simuPOP
 		public:
 
 			/// numOffspring: constant, numOffspringFunc: call each time before mating
-		#define MATE_NumOffspring           1
+#define MATE_NumOffspring           1
 			/// call numOffspringFunc each time during mating.
-		#define MATE_NumOffspringEachFamily 2
+#define MATE_NumOffspringEachFamily 2
 			/// numOffspring and numOffsrpingsFunc call each time before mating is
 			/// the p for a geometric distribution
-		#define MATE_GeometricDistribution   3
-		#define MATE_PoissonDistribution     4
-		#define MATE_BinomialDistribution    5
+#define MATE_GeometricDistribution   3
+#define MATE_PoissonDistribution     4
+#define MATE_BinomialDistribution    5
 
 		public:
 			/// check if the mating type is compatible with population structure
@@ -208,7 +207,9 @@ namespace simuPOP
 				throw SystemError("You are not supposed to call base mating scheme.");
 			}
 
-			UINT numOffspring(int gen );
+			bool fixedFamilySize();
+
+			ULONG numOffspring(int gen );
 
 			void resetNumOffspring()
 			{
@@ -370,10 +371,10 @@ namespace simuPOP
 			/// accumulative fitness
 			Weightedsampler m_sampler;
 
-		#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 			///
 			vectori m_famSize;
-		#endif
+#endif
 	};
 
 	/**
@@ -454,10 +455,10 @@ namespace simuPOP
 				// if not, will yield compile time error.
 				pop.indBegin()->sex();
 
-			#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 				if( pop.ploidy() != 2 )
 					cout << "Warning: This mating type only works with diploid population." << endl;
-			#endif
+#endif
 
 				return true;
 			}
@@ -510,10 +511,10 @@ namespace simuPOP
 			// weighted sampler
 			Weightedsampler m_malesampler, m_femalesampler;
 
-		#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 			///
 			vectori m_famSize;
-		#endif
+#endif
 	};
 
 	//
@@ -610,7 +611,7 @@ namespace simuPOP
 		bool restartIfFail=false,
 		long maxAttempts=1000);
 
-	#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 	// simulate trajectory
 	vectorf FreqTrajectorySelSim(
 		double sel,								  // strength of selection coef  ::8
@@ -630,7 +631,7 @@ namespace simuPOP
 	on #disease >0, else, normal dis.)*/
 	vectorf FreqTrajectoryForward(double lowbound, double highbound,
 		int disAge, double grate, long N0, double seleCo);
-	#endif
+#endif
 
 	void countAlleles(population& pop, int subpop, const vectori& loci, const vectori& alleles,
 		vectorlu& numAllele);
@@ -876,11 +877,6 @@ namespace simuPOP
 	{
 		public:
 
-		#define CM_AcceptOneDSL 0
-		#define CM_AcceptAllDSL 1
-
-		public:
-
 			/// create a random mating scheme
 			/**
 			\param numOffspring, number of offspring or p in some modes
@@ -918,7 +914,7 @@ namespace simuPOP
 				m_loci(loci),
 				m_alleles(alleles),
 				m_freqFunc(freqFunc),
-				m_acceptScheme(acceptScheme)
+				m_stack()
 			{
 				if(m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
 					throw ValueError("Please specify a valid frequency function");
@@ -932,7 +928,7 @@ namespace simuPOP
 				m_loci(rhs.m_loci),
 				m_alleles(rhs.m_alleles),
 				m_freqFunc(rhs.m_freqFunc),
-				m_acceptScheme(rhs.m_acceptScheme)
+				m_stack()
 			{
 				Py_INCREF(m_freqFunc);
 			}
@@ -958,10 +954,10 @@ namespace simuPOP
 				// if not, will yield compile time error.
 				pop.indBegin()->sex();
 
-			#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 				if( pop.ploidy() != 2 )
 					cout << "Warning: This mating type only works with diploid population." << endl;
-			#endif
+#endif
 
 				return true;
 			}
@@ -1010,8 +1006,8 @@ namespace simuPOP
 			/// function that return an array of frquency range
 			PyObject * m_freqFunc;
 
-			/// acceptance scheme
-			int m_acceptScheme;
+			///
+			stack<population::IndIterator> m_stack;
 	};
 
 	/**

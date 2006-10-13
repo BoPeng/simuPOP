@@ -189,6 +189,7 @@ for mod in build_mod:
         CPPDEFINES = DEF[mod],
         # do not put .. (boost etc) in CPPPATH
         # to speed up search
+		CCFLAGS = ['-O3', '-fPIC'],
         CPPFLAGS = basecflags + " " + opt + ' -I..'
     )
     env.Depends(['$BDIR/simuPOP_%s_wrap.cc'%mod, lib], 

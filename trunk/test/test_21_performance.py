@@ -142,6 +142,69 @@ class TestPerformance(unittest.TestCase):
             #    4.26, 6.02, 7.65
             #    43.66, 64.6, 83.77
 
-    
+    def TestMatingAlgorithm(self):
+        'Test the performance of mating algorithm'
+        sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
+        for N in [40000, 400000]:
+            print "N=%d" % N
+            pop = population(subPop=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
+            c1 = time.clock()
+            simu = simulator(pop, binomialSelection())
+            p = 0.4
+            simu.evolve(
+                preOps = [initByFreq([1-p]+[p/10.]*10)],
+                ops = [],
+                end = 100
+            )
+            c2 = time.clock()
+            print "From ind: %f " % (c2 - c1)
+            print "Random mating"
+            pop = population(subPop=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
+            c1 = time.clock()
+            simu = simulator(pop, randomMating())
+            p = 0.4
+            simu.evolve(
+                preOps = [initByFreq([1-p]+[p/10.]*10)],
+                ops = [],
+                end = 100
+            )
+            c2 = time.clock()
+            print "From ind: %f " % (c2 - c1)
+
+        # The version 0.7.3:
+        #      0.69 (bin), 1.94 (random mating), 14.63, 34.45
+        #      
+        # change indIterator to reference
+        # use iterator comparison
+        # separate generateOffspring function
+        #     
+        #   0.17, 1.26, 1.67 (unbelievable), 12.68 (three fold increase)
+        #   
+
+    def TestSimuComplexDisease(self):
+        ''' recording the runtime of simuComplexDisease.py '''
+        cmd = '''time python /home/bpeng/simuPOP/scripts/simuComplexDisease.py --noDialog
+            --numChrom='8' --optimized
+            --numLoci='10' --markerType='SNP' --DSL='(15, 26, 37, 48)' 
+            --DSLLoc='(0.5, 0.5, 0.5, 0.5)' --initSize='1000' --endingSize='50000' 
+            --growthModel='exponential' --burninGen='300' --splitGen='500' --mixingGen='800' 
+            --endingGen='1000' --numSubPop='1' --migrModel='stepping stone' --migrRate='0.0001'
+            --alleleDistInSubPop='even' --curAlleleFreq="[0.1]*4" --minMutAge='0' --maxMutAge='0'
+            --fitness='(1, 1, 1)' --selMultiLocusModel='none' --mutaRate='0.0001' 
+            --recRate='[0.0005]' --savePop='[]' --simuName='simu' --saveFormat='txt'
+            '''
+        cmd = ' '.join(cmd.split())
+        print cmd
+        os.system(cmd)
+        #
+        # 0.7.3 (ba):         151u, 2min 32s
+        #       (baop):       the same (158u, 2min 39s)
+        #
+        # Use stack (mixed method)
+        # 0.7.4 (baop):       89u, 1min 29s
+        #  direct gepped allele count does oot improve anything
+
+
+        
 if __name__ == '__main__':
     unittest.main()

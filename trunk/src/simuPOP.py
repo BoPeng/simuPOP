@@ -47,6 +47,7 @@ else:
 
 if simuOptions['Debug'] != []:
     for g in simuOptions['Debug']:
+        print "Turn on debug ", g
         TurnOnDebugWithName(g)
 
 # seed rng() if necessay
