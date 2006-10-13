@@ -173,12 +173,21 @@ class TestPerformance(unittest.TestCase):
 
         # The version 0.7.3:
         #      0.69 (bin), 1.94 (random mating), 14.63, 34.45
+        #   binary:
+        #      0.98, 2.41, 17.9, 36.77
         #      
         # change indIterator to reference
         # use iterator comparison
         # separate generateOffspring function
         #     
-        #   0.17, 1.26, 1.67 (unbelievable), 12.68 (three fold increase)
+        # std:
+        #   0.72, 1.96, 15.05, 34.57
+        # binary: 
+        #   0.97, 2.42, 17.22, 39.64
+        # 
+        # STRANGE: I can not reproduce this wonderful result
+        # something went wrong with this run...
+        #   0.17, 1.26, 1.67, 12.68
         #   
 
     def TestSimuComplexDisease(self):
@@ -197,11 +206,11 @@ class TestPerformance(unittest.TestCase):
         print cmd
         os.system(cmd)
         #
-        # 0.7.3 (ba):         151u, 2min 32s
-        #       (baop):       the same (158u, 2min 39s)
+        # 0.7.3  (baop):       the same (134u, 2min 14s)
         #
+        # 0.7.4: use no-stack algorithm: 2min 29s (why more?)
         # Use stack (mixed method)
-        # 0.7.4 (baop):       89u, 1min 29s
+        # 0.7.4 (baop):       89u, 1min 17s
         #  direct gepped allele count does oot improve anything
 
 
