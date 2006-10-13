@@ -2,9 +2,9 @@
  *   Copyright (C) 2004 by Bo Peng                                         *
  *   bpeng@rice.edu                                                        *
  *                                                                         *
- *   $LastChangedDate: 2006-02-21 15:27:25 -0600 (Tue, 21 Feb 2006) $
- *   $Rev: 191 $
- *
+ *   $LastChangedDate: 2006-02-21 15:27:25 -0600 (Tue, 21 Feb 2006)        *
+ *   $Rev: 191$                                                            *
+ *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
@@ -25,8 +25,8 @@
 
 namespace simuPOP
 {
-	offspringGenerator::offspringGenerator(population& pop, vector<Operator *>& ops)
-		: m_rng(rng()), m_bt(rng()), m_pop(pop), m_ops(ops)
+	offspringGenerator::offspringGenerator(const population& pop, vector<Operator *>& ops)
+		: m_bt(rng()), m_ops(ops)
 	{
 		m_formOffGenotype = formOffspringGenotype();
 		m_hasSexChrom = pop.sexChrom();
@@ -38,71 +38,67 @@ namespace simuPOP
 
 	bool offspringGenerator::formOffspringGenotype()
 	{
-		for( vector<Operator *>::const_iterator iop = m_ops.begin(),
-			iopEnd = m_ops.end(); iop != iopEnd;  ++iop)
+		for(vector<Operator *>::const_iterator iop = m_ops.begin();
+			iop != m_ops.end(); ++iop)
 		{
-			if( (*iop)->formOffGenotype() )
+			if((*iop)->formOffGenotype())
 				return false;
 		}
 		return true;
 	}
 
-	population::IndIterator offspringGenerator::copyOffspring(individual* parent, UINT numOff,
-		population::IndIterator offBegin, population::IndIterator offEnd)
+	void offspringGenerator::copyOffspring(population& pop, individual* parent, UINT numOff,
+		population::IndIterator & it)
 	{
-		// generate numOffspring offspring per mating
-		population::IndIterator it = offBegin;
+		// generate numOff offspring per mating, or until it  reaches offEnd
 		UINT count = 0;
-		while(count < numOff && it != offEnd)
+		bool accept = true;
+		while(count < numOff)
 		{
 			if(m_formOffGenotype)
 				/// use deep copy!!!!!!!
 				it->copyFrom(*parent);
 
-			bool accept = true;
+			accept = true;
 			// apply during mating operators
-			for(vector<Operator *>::iterator iop = m_ops.begin(),
-				iopEnd = m_ops.end(); iop != iopEnd;  ++iop)
+			if(!m_ops.empty())
 			{
-				try
+				for(vector<Operator *>::iterator iop = m_ops.begin(),
+					iopEnd = m_ops.end(); iop != iopEnd;  ++iop)
 				{
-					// During mating operator might reject this offspring.
-					if(!(*iop)->applyDuringMating(m_pop, it, parent, NULL))
+					try
 					{
-						accept = false;
-						break;
+						// During mating operator might reject this offspring.
+						if(!(*iop)->applyDuringMating(pop, it, parent, NULL))
+						{
+							accept = false;
+							break;
+						}
 					}
-				}
-				catch(...)
-				{
-					cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
-					throw;
-				}
-			}									  // all during-mating operators
+					catch(...)
+					{
+						cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
+						throw;
+					}
+				}								  // all during-mating operators
+			}
 			if(accept)
 			{
 				it++;
 				count++;
 			}
 		}
-		return it;
 	}
 
-	population::IndIterator offspringGenerator::generateOffspring(individual* dad, individual* mom,
-		UINT numOff, population::IndIterator offBegin, population::IndIterator offEnd)
+	void offspringGenerator::generateOffspring(population& pop, individual* dad, individual* mom,
+		UINT numOff, population::IndIterator& it)
 	{
 		// generate numOffspring offspring per mating
 		UINT count = 0;
-		population::IndIterator it = offBegin;
-		while(count < numOff && it != offEnd)
-		{
-			// assign sex randomly
-			if(!m_hasSexChrom)
-			{
-				int offSex = m_rng.randInt(2);
-				it->setSex(offSex==0?Male:Female);
-			}
+		bool accept = true;
 
+		while(count < numOff)
+		{
 			if(m_formOffGenotype)				  // use the default no recombination random mating.
 			{
 				m_bt.trial();
@@ -132,31 +128,31 @@ namespace simuPOP
 
 				// last chromosome (sex chromosomes) determine sex
 				if(m_hasSexChrom)
-				{
-					if( dadPloidy == 1)			  // Y of XY
-						it->setSex(Male);
-					else
-						it->setSex(Female);
-				}
+					it->setSex(dadPloidy==1?Male:Female);
+				else
+					it->setSex(rng().randInt(2)==0?Male:Female);
 			}
 
-			bool accept = true;
+			accept = true;
 			/// apply all during mating operators
-			for( vector<Operator *>::iterator iop = m_ops.begin(), iopEnd = m_ops.end(); iop != iopEnd;  ++iop)
+			if(!m_ops.empty())
 			{
-				try
+				for( vector<Operator *>::iterator iop = m_ops.begin(), iopEnd = m_ops.end(); iop != iopEnd;  ++iop)
 				{
-					// During mating operator might reject this offspring.
-					if(!(*iop)->applyDuringMating(m_pop, it, dad, mom))
+					try
 					{
-						accept = false;
-						break;
+						// During mating operator might reject this offspring.
+						if(!(*iop)->applyDuringMating(pop, it, dad, mom))
+						{
+							accept = false;
+							break;
+						}
 					}
-				}
-				catch(...)
-				{
-					cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
-					throw;
+					catch(...)
+					{
+						cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
+						throw;
+					}
 				}
 			}
 			if(accept)
@@ -165,28 +161,18 @@ namespace simuPOP
 				count++;
 			}
 		}										  // one offspring is successfully generated
-		return it;
 	}
 
-	mating::mating(double numOffspring,
-		PyObject* numOffspringFunc,
-		UINT maxNumOffspring,
-		UINT mode,
-		vectorlu newSubPopSize,
-		string newSubPopSizeExpr,
-		PyObject* newSubPopSizeFunc)
-		:m_numOffspring(numOffspring),
-		m_numOffspringFunc(NULL),
-		m_maxNumOffspring(maxNumOffspring),
-		m_mode(mode), m_firstOffspring(true),
-		m_subPopSize(newSubPopSize),
-		m_subPopSizeExpr(newSubPopSizeExpr,""),
-		m_subPopSizeFunc(NULL)
+	mating::mating(double numOffspring, PyObject* numOffspringFunc, UINT maxNumOffspring,
+		UINT mode, vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject* newSubPopSizeFunc)
+		: m_numOffspring(numOffspring), m_numOffspringFunc(NULL), m_maxNumOffspring(maxNumOffspring),
+		m_mode(mode), m_firstOffspring(true), m_subPopSize(newSubPopSize),
+		m_subPopSizeExpr(newSubPopSizeExpr,""), m_subPopSizeFunc(NULL)
 	{
 		DBG_FAILIF( !m_subPopSizeExpr.empty() && newSubPopSizeFunc != NULL,
 			ValueError, "Please only specify one of newSubPopSizeExpr and newSubPopSizeFunc.");
 
-		if ( numOffspringFunc != NULL)
+		if(numOffspringFunc != NULL)
 		{
 			if(!PyCallable_Check(numOffspringFunc))
 				throw ValueError("Passed variable is not a callable python function.");
@@ -195,7 +181,7 @@ namespace simuPOP
 			m_numOffspringFunc = numOffspringFunc;
 		}
 
-		if( newSubPopSizeFunc != NULL)
+		if(newSubPopSizeFunc != NULL)
 		{
 			if(!PyCallable_Check(newSubPopSizeFunc))
 				throw ValueError("Passed variable is not a callable python function.");
@@ -208,12 +194,18 @@ namespace simuPOP
 			ValueError, "If mode is MATE_BinomialDistribution, maxNumOffspring should be > 1");
 	}
 
-	UINT mating::numOffspring(int gen )
+	bool mating::fixedFamilySize()
+	{
+		// not eachFamily...
+		return(m_mode == MATE_NumOffspring);
+	}
+
+	ULONG mating::numOffspring(int gen)
 	{
 		static double numOS = 0.;
 
 		// use the same numOffspings each generation
-		if( ! m_firstOffspring && m_mode == MATE_NumOffspring )
+		if(!m_firstOffspring && m_mode == MATE_NumOffspring )
 			return static_cast<UINT>(numOS);
 
 		if(m_numOffspringFunc == NULL)
@@ -266,24 +258,13 @@ namespace simuPOP
 
 	void mating::prepareScratchPop(population& pop, population& scratch)
 	{
-		/// force new subPop size?
-		if( m_subPopSize.empty() && m_subPopSizeExpr.empty()
-			&& m_subPopSizeFunc == NULL )
-		{
-			// use population structure of pop
-			// genotype of scratch pop will not be kept.
+		// use population structure of pop
+		if( m_subPopSize.empty() && m_subPopSizeExpr.empty() && m_subPopSizeFunc == NULL )
 			scratch.setSubPopStru(pop.subPopSizes(), true);
-		}
-		else if(! m_subPopSize.empty())			  // set subPoplation size
-		{
-			// allow  change of pop size of scratch
+		else if(!m_subPopSize.empty())			  // set subPoplation size
 			scratch.setSubPopStru(this->m_subPopSize, true);
-
-			DBG_FAILIF(scratch.numSubPop() != pop.numSubPop() ,
-				ValueError, "number of subPopulaitons must agree. \n Pre: "
-				+ toStr( pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
-		}
-		else if(! m_subPopSizeExpr.empty())		  // evaluate subpopulation size
+		// evaluate from an expression
+		else if(! m_subPopSizeExpr.empty())
 		{
 			m_subPopSizeExpr.setLocalDict( pop.dict());
 			vectorf sizef = m_subPopSizeExpr.valueAsArray();
@@ -292,19 +273,12 @@ namespace simuPOP
 			for(size_t i=0, iEnd = sizef.size(); i<iEnd; i++)
 				sz[i] = static_cast<ULONG>(sizef[i]);
 
-			DBG_DO(DBG_SIMULATOR, cout << "New subpop size " << sz << endl);
-
-			// allow population size change
 			scratch.setSubPopStru(sz, true);
-			DBG_FAILIF( scratch.numSubPop() != pop.numSubPop() ,
-				ValueError, "number of subPopulaitons must agree.\n Pre: "
-				+ toStr( pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
 		}
 		else									  // use m_subPopSizeFunc
 		{
 			// get generation number
 			int gen = pop.gen();
-			//          int gen = mainVars().getVarAsInt("gen");
 			// convert current pop size to a tuple
 			PyObject* curSize = PyTuple_New(pop.numSubPop());
 
@@ -314,30 +288,29 @@ namespace simuPOP
 				PyTuple_SetItem(curSize, i, PyInt_FromLong(pop.subPopSize(i)));
 
 			vectorf res;
-			PyCallFunc2(m_subPopSizeFunc, "(iO)", gen, curSize,
-				res, PyObj_As_Array);
-			Py_XDECREF(curSize);				  // just to be safe
+			PyCallFunc2(m_subPopSizeFunc, "(iO)", gen, curSize, res, PyObj_As_Array);
+			Py_XDECREF(curSize);
 
 			vectorlu sz(res.size());
 
 			for(size_t i=0; i< res.size(); i++)
 				sz[i] = static_cast<ULONG>(res[i]);
 
-			DBG_DO(DBG_SIMULATOR, cout << "New subpop size " << sz << endl);
-
-			// allow  change of pop size of scratch
+			// allow change of pop size of scratch
 			scratch.setSubPopStru(sz, true);
-			DBG_FAILIF( scratch.numSubPop() != pop.numSubPop() ,
-				ValueError, "number of subPopulaitons must agree.\n Pre: "
-				+ toStr( pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
 		}
+		DBG_DO(DBG_SIMULATOR, cout << "New subpop size " << scratch.subPopSizes() << endl);
+
+		DBG_FAILIF( scratch.numSubPop() != pop.numSubPop() ,
+			ValueError, "number of subPopulaitons must agree.\n Pre: "
+			+ toStr( pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
 	}
 
 	// nomating does nothing but applying during-mating operators
-	bool noMating::mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	bool noMating::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
 	{
 		// apply during mating operators
-		if( ! ops.empty() )
+		if(!ops.empty() )
 		{
 			for(population::IndIterator it = pop.indBegin(), itEnd = pop.indEnd(); it != itEnd;  ++it)
 			{
@@ -353,9 +326,9 @@ namespace simuPOP
 	///
 	bool binomialSelection::mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
 	{
-		this->resetNumOffspring();
+		resetNumOffspring();
 		// scrtach will have the right structure.
-		this->prepareScratchPop(pop, scratch);
+		prepareScratchPop(pop, scratch);
 
 		DBG_DO(DBG_MATING, m_famSize.clear());
 
@@ -375,38 +348,37 @@ namespace simuPOP
 		for(UINT sp=0; sp < pop.numSubPop(); ++sp)
 		{
 			UINT spSize = pop.subPopSize(sp);
-			if( spSize == 0 )
+			if(spSize == 0)
 				continue;
 
-			// if selection is on
-			if( selectionOn )
+			if(selectionOn)
 			{
-				// regardless of sex
+				// regardless of sex, get fitness for everyone.
 				m_sampler.set(vectorf(fitness+pop.subPopBegin(sp),
 					fitness+pop.subPopEnd(sp) ) );
 			}
 
-			// choose a parent and genreate m_numOffspring offspring
+			// choose a parent and genereate m_numOffspring offspring
 			population::IndIterator it = scratch.indBegin(sp);
 			population::IndIterator itEnd = scratch.indEnd(sp);
-			while(it!=itEnd)
+			UINT numOS;
+			while(it != itEnd)
 			{
 				individual * parent;
 				// choose a parent
-				if(selectionOn )
-					parent = &pop.ind( m_sampler.get(), sp);
+				if(selectionOn)
+					parent = &pop.ind(m_sampler.get(), sp);
 				else
-					parent = &pop.ind( rng().randInt(spSize), sp);
-				#ifndef OPTIMIZED
-				UINT numOS = numOffspring(pop.gen());
-				if(itEnd-it < numOS)
-					numOS = itEnd - it;
-				// record family size (this may be wrong for the last family)
+					// repeated call of rng() does not matter, since it will be inlined
+					parent = &pop.ind(rng().randInt(spSize), sp);
+
+				numOS = numOffspring(pop.gen());
+				if(numOS < itEnd-it)
+					numOS = itEnd-it;
+				// record family size, for debug reasons.
 				DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
-				#endif
 				//
-				it = og.copyOffspring(parent, numOffspring(pop.gen()),
-					it, itEnd);
+				og.copyOffspring(pop, parent, numOS, it);
 			}									  // all offspring
 		}										  // all subpopulation.
 
@@ -429,7 +401,6 @@ namespace simuPOP
 		if (selectionOn)
 			fit_id = pop.infoIdx("fitness");
 
-		RNG& rnd = rng();
 		offspringGenerator og(pop, ops);
 
 		UINT numMale, numFemale;
@@ -501,7 +472,8 @@ namespace simuPOP
 			// generate scratch.subPopSize(sp) individuals.
 			population::IndIterator it = scratch.indBegin(sp);
 			population::IndIterator itEnd = scratch.indEnd(sp);
-			while(it!=itEnd)
+			UINT numOS;
+			while(it != itEnd)
 			{
 				individual * dad, *mom;
 
@@ -522,27 +494,24 @@ namespace simuPOP
 				{
 					// using random sample.
 					if( numMale != 0 )
-						dad = &pop.ind(m_maleIndex[rnd.randInt(numMale)]);
+						dad = &pop.ind(m_maleIndex[rng().randInt(numMale)]);
 					else
-						dad = &pop.ind(m_femaleIndex[rnd.randInt(numFemale)]);
+						dad = &pop.ind(m_femaleIndex[rng().randInt(numFemale)]);
 
 					if( numFemale != 0 )
-						mom = &pop.ind(m_femaleIndex[rnd.randInt(numFemale)]);
+						mom = &pop.ind(m_femaleIndex[rng().randInt(numFemale)]);
 					else
-						mom = &pop.ind(m_maleIndex[rnd.randInt(numMale)]);
+						mom = &pop.ind(m_maleIndex[rng().randInt(numMale)]);
 				}
 
 				// record family size (this may be wrong for the last family)
-				#ifndef OPTIMIZED
-				UINT numOS = numOffspring(pop.gen());
-				if(itEnd - it < numOS)
+				numOS = numOffspring(pop.gen());
+				if(numOS > itEnd - it)
 					numOS = itEnd - it;
 				// record family size (this may be wrong for the last family)
 				DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
-				#endif
 				//
-				it = og.generateOffspring(dad, mom, numOffspring(pop.gen()),
-					it, itEnd);
+				og.generateOffspring(pop, dad, mom, numOS, it);
 			}
 		}										  // each subPop
 
@@ -588,8 +557,8 @@ namespace simuPOP
 				Py_INCREF(fitnessFunc);
 		}
 		else if( fitness.empty() )
-			// default to [1,1,1]
 		{
+			// default to [1,1,1]
 			s1 = 0.;
 			s2 = 0.;
 		}
@@ -757,8 +726,8 @@ namespace simuPOP
 				}
 			}
 			else if( it[idx+1] == ploidy*Nt[idx+1] )
-				// when the allele get fixed, restart
 			{
+				// when the allele get fixed, restart
 				if(allowFixation)
 				{
 					break;
@@ -881,8 +850,8 @@ namespace simuPOP
 				Py_INCREF(fitnessFunc);
 		}
 		else if( fitness.empty() )
-			// default to [1,1,1]
 		{
+			// default to [1,1,1]
 			sAll.resize(nLoci*3, 0.);
 		}
 		else if( fitness.size() != 3*nLoci)
@@ -1136,7 +1105,7 @@ namespace simuPOP
 		return result;
 	}
 
-	#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 	// simulate trajectory
 	vectorf FreqTrajectorySelSim(
 		double sel,								  // strength of selection coef  ::8
@@ -1386,7 +1355,7 @@ namespace simuPOP
 
 		return gen_freq;
 	}
-	#endif
+#endif
 
 	void countAlleles(population& pop, int subpop, const vectori& loci, const vectori& alleles,
 		vectorlu& alleleNum)
@@ -1448,14 +1417,14 @@ namespace simuPOP
 
 		vectorlu alleleNum;
 
-		#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 		// calculate allele frequen at these loci
 		// do not consider subpop
 		countAlleles(pop, -1, m_loci, m_alleles, alleleNum);
 
 		DBG_DO(DBG_MATING, cout << "Range of allele frequencies at generation "
 			<< pop.gen() << " is " << freqRange << endl);
-		#endif
+#endif
 
 		// compare integer is easier and more acurate, and we need to make sure
 		// there is one allele when the frequency is greater than 0.
@@ -1474,16 +1443,16 @@ namespace simuPOP
 					alleleRange[2*i] = 1;
 				// upper bound using range.
 				alleleRange[2*i+1] = static_cast<ULONG>((freqRange[i]+m_range)*pop.popSize()*pop.ploidy())+1;
-				#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 				if( alleleNum[i] == 0 && alleleRange[2*i] > 0 )
 					throw ValueError("No allele exists so there is no way to reach specified allele frequency.\n"
 						"Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
-				#endif
+#endif
 			}
 		}
 		else
-			// returned values are [low1, high1, low2, high2...]
 		{
+			// returned values are [low1, high1, low2, high2...]
 			for(size_t i=0; i<m_loci.size(); ++i)
 			{
 				if (freqRange[2*i] < 0. )
@@ -1500,11 +1469,11 @@ namespace simuPOP
 				if( freqRange[2*i]>0 && alleleRange[2*i] == 0)
 					alleleRange[2*i] = 1;
 				alleleRange[2*i+1] = static_cast<ULONG>(freqRange[2*i+1]*pop.popSize()*pop.ploidy())+1;
-				#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 				if( alleleNum[i] == 0 && alleleRange[2*i] > 0 )
 					throw ValueError("No allele exists so there is no way to reach specified allele frequency.\n"
 						"Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
-				#endif
+#endif
 			}
 		}
 
@@ -1618,13 +1587,14 @@ namespace simuPOP
 					curFreq, expAlleles.begin()+numSP*i);
 			}
 		}
-		else if( expFreq.size() == numSP*nLoci )  // simpler case, one subpopulation, or with gieven allele frequency
+												  // simpler case, one subpopulation, or with gieven allele frequency
+		else if( expFreq.size() == numSP*nLoci )
 		{
 			for(i=0; i< nLoci; ++i)
 			{
 				for( size_t sp=0; sp < numSP; ++sp)
 				{
-					#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 					int locus = loci[i];
 					Allele allele = alleles[i];
 					ULONG n=0;
@@ -1650,7 +1620,7 @@ namespace simuPOP
 					if( n == 0 && expFreq[numSP*i+sp] > 0.)
 						throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
 							" Generation " + toStr(pop.gen()) );
-					#endif
+#endif
 					expAlleles[numSP*i+sp] = static_cast<UINT>(pop.subPopSize(sp)*pldy*expFreq[numSP*i+sp]);
 					if(expFreq[numSP*i+sp] > 0. && expAlleles[numSP*i+sp] == 0)
 						expAlleles[numSP*i+sp] = 1;
@@ -1663,7 +1633,7 @@ namespace simuPOP
 		}
 	}
 
-	bool controlledBinomialSelection::mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	bool controlledBinomialSelection::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
 	{
 		this->resetNumOffspring();
 		// scrtach will have the right structure.
@@ -1722,17 +1692,15 @@ namespace simuPOP
 				m_sampler.set( vectorf(fitness + pop.subPopBegin(sp),
 					fitness+ pop.subPopEnd(sp) ) );
 			}
-			ULONG spInd = 0;
-			ULONG spIndEnd = scratch.subPopSize(sp);
 
 			// ploidy
 			vectori na(nLoci, 0);
-			bool allDone = true;
+			bool freqRequMet = true;
 			for(i=0; i<nLoci; ++i)
 			{
 				if( totAllele[i] > 0 )
 				{
-					allDone = false;
+					freqRequMet = false;
 					break;
 				}
 			}
@@ -1740,9 +1708,10 @@ namespace simuPOP
 			int noAAcount = 0;
 			// start!
 			population::IndIterator it = scratch.indBegin(sp);
-			population::IndIterator itBegin = it;
 			population::IndIterator itEnd = scratch.indEnd(sp);
-			while(itBegin!=itEnd)
+			population::IndIterator itBegin = it;
+			UINT numOS;
+			while(it != itEnd)
 			{
 				individual * parent;
 				// choose a parent
@@ -1756,8 +1725,11 @@ namespace simuPOP
 				hasAff = false;
 
 				//
-				it = og.copyOffspring(parent, numOffspring(pop.gen()),
-					itBegin, itEnd);
+				itBegin = it;
+				numOS = numOffspring(pop.gen());
+				if(numOS > itEnd - it)
+					numOS = itEnd - it;
+				og.copyOffspring(pop, parent, numOS, it);
 
 				// count alleles in this family
 				for(population::IndIterator tmp=itBegin; tmp != it; ++tmp)
@@ -1781,7 +1753,7 @@ namespace simuPOP
 				bool accept = false;
 				// all disease alleles have been satidfied.
 				// only accept unaffected families
-				if( allDone )
+				if( freqRequMet )
 				{
 					if(!hasAff)
 					{
@@ -1812,27 +1784,24 @@ namespace simuPOP
 				}
 				// reject this family
 				if( ! accept)
+				{
+					it = itBegin;
 					continue;
+				}
 
 				// accpet this
-				if( ! allDone)
+				if( ! freqRequMet)
 				{
-					allDone = true;
+					freqRequMet = true;
 					for(i=0; i<nLoci; ++i)
 					{
 						curAllele[i] += na[i];
 						if( curAllele[i] < totAllele[i] )
-							allDone = false;
+							freqRequMet = false;
 					}
 				}
-
-				// accept
-				DBG_DO(DBG_DEVEL, cout << curAllele << " " << spInd <<  " out of " << spIndEnd << endl);
-
-				// success
-				itBegin = it;
 			}
-			if( ! allDone )
+			if( ! freqRequMet )
 				cout << "Can not obtain enough disease alleles at generation " << pop.gen() << endl;
 		}										  // all subpopulation.
 
@@ -1845,17 +1814,11 @@ namespace simuPOP
 	// This mating scheme is very complicated, it is similar to randomMating, but it tries to control
 	// the mating process so that the total disease allele frequency controlled to pre-specified values.
 	//
-	bool controlledRandomMating::mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	bool controlledRandomMating::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
 	{
-		bool hasSexChrom = pop.sexChrom();
 		this->resetNumOffspring();
 		// scrtach will have the right structure.
 		this->prepareScratchPop(pop, scratch);
-		offspringGenerator og(pop, ops);
-
-		DBG_DO(DBG_MATING, m_famSize.clear());
-		DBG_ASSERT( pop.numSubPop() == scratch.numSubPop(), SystemError,
-			"Number of subpopulation can not be changed.");
 
 		size_t pldy = pop.ploidy(), nLoci=m_loci.size();
 		size_t i, p;
@@ -1864,11 +1827,14 @@ namespace simuPOP
 		vectorf expFreq;
 		PyCallFunc( m_freqFunc, "(i)", pop.gen(), expFreq, PyObj_As_Array);
 
+		/// whether or not use stack.
+		bool useStack = fixedFamilySize();
+		m_stack = stack<population::IndIterator>();
+
 		DBG_DO(DBG_MATING, cout << "expected freq " << expFreq << endl);
 		// determine expected number of alleles of each allele
 		// at each subpopulation.
 		UINT numSP = pop.numSubPop();
-
 		vectoru expAlleles(nLoci * numSP);
 		getExpectedAlleles(pop, expFreq, m_loci, m_alleles, expAlleles);
 		DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
@@ -1879,17 +1845,21 @@ namespace simuPOP
 		if (selectionOn)
 			fit_id = pop.infoIdx("fitness");
 
-		UINT numMale, numFemale;
+		offspringGenerator og(pop, ops);
+		// use to go through offspring generation to count alleles
+		UINT totNumLoci = pop.totNumLoci();
 
+		UINT numMale, numFemale;
 		/// controlled random mating happens within each subpopulation
 		for(UINT sp=0; sp < pop.numSubPop(); ++sp)
 		{
 			ULONG spSize = pop.subPopSize(sp);
-			if( spSize == 0 ) continue;
+			if( spSize == 0 )
+				continue;
 
 			// total allowed disease alleles.
 			vectoru totAllele(nLoci);
-			// currently available disease allele.
+			// currently available disease allele. (in the offspring generation)
 			vectoru curAllele(nLoci, 0);
 			for(i=0; i< nLoci; ++i)
 			{
@@ -1961,65 +1931,86 @@ namespace simuPOP
 			vectori na(nLoci, 0);
 			// it is possible that no disease allele is required
 			// so everyone is accepted
-			bool allDone = true;
+			bool freqRequMet = true;
 			for(i=0; i<nLoci; ++i)
 			{
 				if(totAllele[i] > 0)
 				{
-					allDone = false;
+					freqRequMet = false;
 					break;
 				}
 			}
 			// if a family has disease allele.
 			bool hasAff;
+			bool stackStage = false;
 			// start!
 			population::IndIterator it = scratch.indBegin(sp);
-			population::IndIterator itBegin = it;
 			population::IndIterator itEnd = scratch.indEnd(sp);
-			while(itBegin!=itEnd)
+			population::IndIterator itBegin = it;
+			UINT numOS = 0;
+			while(true)
 			{
+				// the logic is complicated here and I will try to be explicit
+				// if already in the stackStage, it is taken from the stack.
+				if(useStack && stackStage)
+				{
+					if(m_stack.empty())
+						throw SystemError("Go to stack stage with empty stack. Something wrong");
+					it = m_stack.top();
+				}
+
 				// randomly choose parents
 				individual * dad, *mom;
-				RNG& rnd = rng();
 
 				if( selectionOn )				  // with selection
 				{
 					// using weidhted sampler.
 					if( numMale != 0 )
-						dad = &pop.ind( m_maleIndex[ m_malesampler.get() ] );
+						dad = &pop.ind(m_maleIndex[m_malesampler.get()]);
 					else
-						dad = &pop.ind( m_femaleIndex[ m_femalesampler.get() ] );
+						dad = &pop.ind(m_femaleIndex[m_femalesampler.get()]);
 
 					if( numFemale != 0 )
-						mom = &pop.ind( m_femaleIndex[ m_femalesampler.get() ] );
+						mom = &pop.ind(m_femaleIndex[m_femalesampler.get()]);
 					else
-						mom = &pop.ind( m_maleIndex[ m_malesampler.get() ]);
+						mom = &pop.ind(m_maleIndex[m_malesampler.get()]);
 				}
 				else
 				{
 					// using random sample.
 					if( numMale != 0 )
-						dad = &pop.ind( m_maleIndex[ rnd.randInt(numMale) ]);
+						dad = &pop.ind(m_maleIndex[rng().randInt(numMale)]);
 					else
-						dad = &pop.ind( m_femaleIndex[ rnd.randInt(numFemale) ]);
+						dad = &pop.ind(m_femaleIndex[rng().randInt(numFemale)]);
 
-					if( numFemale != 0 )
-						mom = &pop.ind( m_femaleIndex[ rnd.randInt(numFemale) ]);
+					if( numFemale != 0)
+						mom = &pop.ind(m_femaleIndex[rng().randInt(numFemale)]);
 					else
-						mom = &pop.ind( m_maleIndex[ rnd.randInt(numMale) ]);
+						mom = &pop.ind(m_maleIndex[rng().randInt(numMale)]);
 				}
+				// generate m_numOffspring offspring per mating
+				// record family size (this may be wrong for the last family)
+
+				// this is the basic scheme,
+				// use stage 1, stage 2 as described in the paper
+
+				itBegin = it;
+				numOS = numOffspring(pop.gen());
+				if(numOS > itEnd - it)
+					numOS = itEnd - it;
+				// generate numOffspring offspring per mating
+				// it moves forward
+				og.generateOffspring(pop, dad, mom, numOS, it);
+
+				DBG_ASSERT(it-itBegin == numOS, SystemError, "Number of offspring does not look right");
+
+				// count alleles in this family
 				// count number of alleles in the family.
 				for(i=0; i<nLoci; ++i)
 					na[i] = 0;
 				hasAff = false;
 				int noAAcount = 0;
-				// generate m_numOffspring offspring per mating
-				// record family size (this may be wrong for the last family)
-
-				//
-				it = og.generateOffspring(dad, mom, numOffspring(pop.gen()),
-					itBegin, itEnd);
-				// count alleles in this family
+				/*
 				for(population::IndIterator tmp=itBegin; tmp != it; ++tmp)
 				{
 					// success count na, nu
@@ -2027,79 +2018,189 @@ namespace simuPOP
 					{
 						for(p=0; p<pldy; ++p)
 						{
-							if( tmp->allele(m_loci[i], p) == m_alleles[i] )
+							if(tmp->allele(m_loci[i], p) == m_alleles[i])
 							{
 								na[i]++;
-								hasAff = true;
-							}
+				hasAff = true;
+				}
+				}
+				}
+				}								  // family generated.
+				*/
+				// we know that scratch population has ordered linear genotype
+
+				// this, to my surprise, does not improve performance.
+				for(i=0; i<nLoci; ++i)
+				{
+					GenoIterator ptr = itBegin->genoBegin() + m_loci[i];
+					for(size_t j=0; j<numOS*pldy; ++j, ptr += totNumLoci)
+					{
+						if(*ptr == m_alleles[i])
+						{
+							na[i]++;
+							hasAff = true;
 						}
 					}
-				}								  // family generated.
+				}
 
-				// now check if this family is usable.
-				// later on, we can add more complicated acceptance scheme
-				bool accept = false;
-				// all disease alleles have been satidfied.
-				// only accept unaffected families
-				// otherwise, accept any family that can help.
-				if( allDone )
+				if(useStack)
 				{
-					if(!hasAff)
+					// now check if this family is usable.
+					bool accept = false;
+					// all disease alleles have been satidfied.
+					// only accept unaffected families
+					// otherwise, accept any family that can help.
+					if(freqRequMet)
+						// and not it == itEnd, that is to say, we only accept unaffected
 					{
-						// has AA, so no need to compromise
-						noAAcount = -1;
-						accept = true;
+						if(!hasAff)
+						{
+							// has AA, so no need to compromise
+							noAAcount = -1;
+							accept = true;
+						}
+						// tried 100 times, no AA is found.
+						else if(noAAcount >= 100)
+						{
+							if(noAAcount == 100)
+								cout << "Warning: there might not be any AA, accept unqualified individuals." << endl;
+							noAAcount++;
+							accept = true;
+						}
+						else if(noAAcount >= 0)
+							noAAcount ++;
 					}
-					// tried 100 times, no AA is found.
-					else if( noAAcount >= 100 )
+					else
+						// we accept affected helpful ones, and purely unsffected ones,
 					{
-						if(noAAcount == 100)
-							cout << "Warning: there might not be any AA, accept unqualified individuals." << endl;
-						noAAcount++;
-						accept = true;
+						if(hasAff)
+						{
+							// has the right kind of mutant?
+							for(i=0; i<nLoci; ++i)
+							{
+								// accept the whole family, if we need this allele
+								if( curAllele[i] < totAllele[i] && na[i] > 0 )
+								{
+									accept = true;
+									break;
+								}
+							}
+						}
+						else
+						{
+							// in the stack stage, we only accept affected.
+							if(!stackStage)
+								accept = true;
+						}
 					}
-					else if( noAAcount >= 0 )
-						noAAcount ++;
+
+					// reject this family
+					if(!accept)
+					{
+						// it relocate to its begin point
+						// DBG_DO(DBG_MATING, cout << "Reject " << na << endl);
+						it = itBegin;
+						continue;
+					}
+					DBG_DO(DBG_MATING, cout << "Accept " << na << " CUR " << curAllele << " TOT  " << totAllele << endl);
+
+					// accpet this family, see if all done.
+					if(!freqRequMet)
+					{
+						freqRequMet = true;
+						for(i=0; i<nLoci; ++i)
+						{
+							curAllele[i] += na[i];
+							if(curAllele[i] < totAllele[i])
+								freqRequMet = false;
+						}
+					}
+					if(!stackStage && !freqRequMet && !hasAff)
+					{
+						// this family is in stack, might be
+						m_stack.push(itBegin);
+						DBG_DO(DBG_MATING, cout << "Push in stack " << m_stack.size() << endl);
+					}
+					// accepted,
+					if(stackStage)
+					{
+						m_stack.pop();
+						DBG_DO(DBG_MATING, cout << "Pop index " << m_stack.size() << endl);
+					}
+					// see if break
+					if(it == itEnd)
+					{
+						stackStage = true;
+						DBG_DO(DBG_MATING, cout << "Stack stage " << m_stack.size() << endl);
+					}
+					if(freqRequMet && stackStage)
+						break;
 				}
 				else
 				{
-					// acceptance scheme
-					if( m_acceptScheme == CM_AcceptOneDSL)
+					// now check if this family is usable.
+					bool accept = false;
+					// all disease alleles have been satidfied.
+					// only accept unaffected families
+					// otherwise, accept any family that can help.
+					if(freqRequMet)
+					{
+						if(!hasAff)
+						{
+							// has AA, so no need to compromise
+							noAAcount = -1;
+							accept = true;
+						}
+						// tried 100 times, no AA is found.
+						else if(noAAcount >= 100)
+						{
+							if(noAAcount == 100)
+								cout << "Warning: there might not be any AA, accept unqualified individuals." << endl;
+							noAAcount++;
+							accept = true;
+						}
+						else if(noAAcount >= 0)
+							noAAcount ++;
+					}
+					else						  // do not use stack
 					{
 						for(i=0; i<nLoci; ++i)
 						{
 							// accept the whole family, if we need this allele
 							if( curAllele[i] < totAllele[i] && na[i] > 0 )
+							{
 								accept = true;
+								break;
+							}
 						}
 					}
-					else if( m_acceptScheme == CM_AcceptAllDSL)
-					{
-						if(hasAff)
-							accept = true;
-					}
-					else
-						throw ValueError("UNrecognized acceptance scheme");
-				}
-				// reject this family
-				if(!accept)
-					continue;
 
-				// accpet this family
-				if( ! allDone)
-				{
-					allDone = true;
-					for(i=0; i<nLoci; ++i)
+					// reject this family
+					if(!accept)
 					{
-						curAllele[i] += na[i];
-						if( curAllele[i] < totAllele[i] )
-							allDone = false;
+						// it relocate to its begin point
+						// DBG_DO(DBG_MATING, cout << "Reject " << na << endl);
+						it = itBegin;
+						continue;
 					}
-				}
+					DBG_DO(DBG_MATING, if(it-scratch.indBegin(sp)<100) cout << "Accept " << na << endl);
 
-				// success
-				itBegin = it;
-			}
+					// accpet this family, see if all done.
+					if(!freqRequMet)
+					{
+						freqRequMet = true;
+						for(i=0; i<nLoci; ++i)
+						{
+							curAllele[i] += na[i];
+							if( curAllele[i] < totAllele[i] )
+								freqRequMet = false;
+						}
+					}
+					// see if break
+					if(it == itEnd)
+						break;
+				}
+			}									  // nostack scheme
 		}										  // each subPop
 
 		if(submit)
@@ -2140,4 +2241,5 @@ namespace simuPOP
 			submitScratch(pop, scratch);
 		return res;
 	}
+
 }

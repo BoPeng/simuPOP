@@ -658,7 +658,7 @@ namespace simuPOP
 			void setIndSubPopIDWithID()
 			{
 				for( UINT i=0, iEnd = numSubPop(); i < iEnd;  ++i)
-					for( IndIterator it = indBegin(i), itEnd = indEnd(i); it != itEnd;  ++it)
+					for(IndIterator it = indBegin(i), itEnd = indEnd(i); it != itEnd;  ++it)
 						it -> setSubPopID(i);
 			}
 
