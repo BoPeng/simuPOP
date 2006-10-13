@@ -33,7 +33,7 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertEqual( simu.population(0).arrGenotype(True),
             [1]*10)
 
-    def testBinormialSelection(self):
+    def testBinomialSelection(self):
         'Testing binomialSelection mating scheme (FIXME: imcomplete)'
         simu = simulator(population(10, loci=[1], ploidy=1),
             binomialSelection())
@@ -46,7 +46,7 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing means to change population size (FIXME: imcomplete)'
         pass
         
-    def getFamSize(self, mate, endGen=0, size=1000 ):
+    def getFamSize(self, mate, endGen=0, size=1000):
         TurnOnDebug(DBG_MATING)
         simu = simulator(population(size, loci=[1]), mate)
         simu.evolve(ops=[], end=endGen)
@@ -55,23 +55,23 @@ class TestMatingSchemes(unittest.TestCase):
     def testNumOffspring(self):
         'Testing means to control number of offspring (FIXME: check distribution)'
         self.assertEqual( 
-            self.getFamSize( binomialSelection(numOffspring=2) ),
+            self.getFamSize(binomialSelection(numOffspring=2)),
             [2]*500)
         # numOffspringFunc
         def nos(gen):
             return gen%2+1
         self.assertEqual( 
-            self.getFamSize( binomialSelection(numOffspringFunc=nos), endGen=1),
+            self.getFamSize(binomialSelection(numOffspringFunc=nos), endGen=1),
             [2]*500)
         self.assertEqual( 
-            self.getFamSize( binomialSelection(numOffspringFunc=nos), endGen=2),
+            self.getFamSize(binomialSelection(numOffspringFunc=nos), endGen=2),
             [1]*1000)
         # what if each family have different number of offspring?
         # MATE_NumOffspringEachFamily
         def nos(gen):
             return random.randrange(1,4)
         # default mode: the first guess used by all
-        cnt = self.getFamSize( randomMating(numOffspringFunc=nos) )
+        cnt = self.getFamSize(randomMating(numOffspringFunc=nos) )
         assert cnt[0]==cnt[1] and cnt[2]==cnt[3]
         #
         cnt = self.getFamSize( randomMating(numOffspringFunc=nos, 
