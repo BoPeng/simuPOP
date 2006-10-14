@@ -222,7 +222,7 @@ namespace simuPOP
 
 				// go through all alleles
 				for(GappedAlleleIterator a=pop.alleleBegin(loc, sp, false),
-					aEnd=pop.alleleEnd(loc, sp); a != aEnd; ++a)
+					aEnd=pop.alleleEnd(loc, sp, false); a != aEnd; ++a)
 				{
 					if( AlleleUnsigned(*a) >= num.size() )
 						num.resize(*a+1, 0);
@@ -370,7 +370,7 @@ namespace simuPOP
 				// go through all alleles
 				//?>> \todo here we assume diploid population
 				for(GappedAlleleIterator a=pop.alleleBegin(loc, sp, false),
-					aEnd=pop.alleleEnd(loc, sp);
+					aEnd=pop.alleleEnd(loc, sp, false);
 					a != aEnd; a+=2)
 				{
 					if( AlleleUnsigned(*a) >= num.size() )
@@ -617,7 +617,7 @@ namespace simuPOP
 
 				/// go through a single allele for all individual, all diploid
 				for( GappedAlleleIterator it = pop.alleleBegin(loc, sp, false),
-					itEnd = pop.alleleEnd(loc, sp); it != itEnd;  it+=2 )
+					itEnd = pop.alleleEnd(loc, sp, false); it != itEnd;  it+=2 )
 				{
 					a = *it;
 					b = *(it+1);
@@ -734,7 +734,7 @@ namespace simuPOP
 				vectori sampleHap(sz);
 
 				for( GappedAlleleIterator it = pop.alleleBegin(0, sp, false),
-					itEnd = pop.alleleEnd(0, sp); it != itEnd;  ++it )
+					itEnd = pop.alleleEnd(0, sp, false); it != itEnd;  ++it )
 				{
 					for( size_t hap=0; hap < sz; ++hap)
 						sampleHap[hap] = *(it.ptr()+haplotype[hap]);

@@ -1396,7 +1396,7 @@ namespace simuPOP
 				else
 				{
 					for(GappedAlleleIterator a=pop.alleleBegin(loc, subpop, false),
-						aEnd=pop.alleleEnd(loc, subpop); a != aEnd; ++a)
+						aEnd=pop.alleleEnd(loc, subpop, false); a != aEnd; ++a)
 						if(AlleleUnsigned(*a) == ale)
 							alleleNum[l]++;
 				}
@@ -1562,7 +1562,7 @@ namespace simuPOP
 					else
 					{
 						for(GappedAlleleIterator a=pop.alleleBegin(locus, sp, false),
-							aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+							aEnd=pop.alleleEnd(locus, sp, false); a != aEnd; ++a)
 							if( AlleleUnsigned(*a) == allele )
 								n++;
 					}
@@ -1609,7 +1609,7 @@ namespace simuPOP
 					else
 					{
 						for(GappedAlleleIterator a=pop.alleleBegin(locus, sp, false),
-							aEnd=pop.alleleEnd(locus, sp); a != aEnd; ++a)
+							aEnd=pop.alleleEnd(locus, sp, false); a != aEnd; ++a)
 						{
 							if( AlleleUnsigned(*a) == allele )
 								n++;
@@ -1955,7 +1955,6 @@ namespace simuPOP
 
 		/// whether or not use stack.
 		bool useStack = fixedFamilySize();
-		m_stack = stack<population::IndIterator>();
 
 		// empty fitness means no selection
 		bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
@@ -1974,6 +1973,10 @@ namespace simuPOP
 			ULONG spSize = pop.subPopSize(sp);
 			if( spSize == 0 )
 				continue;
+
+			// reset stack each time
+			if(useStack)
+				m_stack = stack<population::IndIterator>();
 
 			// total allowed disease alleles.
 			vectoru totAllele(nLoci);
@@ -2218,7 +2221,7 @@ namespace simuPOP
 						it = itBegin;
 						continue;
 					}
-					DBG_DO(DBG_MATING, cout << "Accept " << na << " CUR " << curAllele << " TOT  " << totAllele << endl);
+					DBG_DO(DBG_DEVEL, cout << "Accept " << na << " CUR " << curAllele << " TOT  " << totAllele << endl);
 
 					// accpet this family, see if all done.
 					if(!freqRequMet)

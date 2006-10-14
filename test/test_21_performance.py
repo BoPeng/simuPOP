@@ -209,6 +209,7 @@ class TestPerformance(unittest.TestCase):
         # 0.7.3  (baop):       the same (134u, 2min 14s)
         #
         # 0.7.4: use no-stack algorithm: 2min 29s (why more?)
+        # 
         # Use stack (mixed method)
         # 0.7.4 (baop):       89u, 1min 17s
         #  direct gepped allele count does oot improve anything
