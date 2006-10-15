@@ -2111,13 +2111,13 @@ namespace simuPOP
 
 	BernulliTrials::BernulliTrials(RNG& rng)
 		:m_RNG(&rng), m_N(0), m_prob(0), m_table(0),
-		m_cur(0), m_bitSet(0)
+		m_cur(0)
 	{
 	}
 
 	BernulliTrials::BernulliTrials(RNG& rng, const vectorf& prob, ULONG trials)
 		:m_RNG(&rng), m_N(trials), m_prob(prob), m_table(prob.size()),
-		m_cur(trials), m_bitSet(prob.size())
+		m_cur(trials)
 	{
 		DBG_FAILIF( trials<=0 , ValueError, "trial number can not be zero.");
 		DBG_FAILIF( prob.empty(), ValueError, "probability table can not be empty.");
@@ -2140,7 +2140,6 @@ namespace simuPOP
 		m_N = trials;
 		m_prob = prob;
 		m_table.resize(m_prob.size());
-		m_bitSet.resize(m_prob.size());
 		m_cur = m_N;							  // will trigger doTrial.
 
 		DBG_FAILIF( trials<=0 , ValueError, "trial number can not be zero.");
@@ -2252,20 +2251,18 @@ namespace simuPOP
 		return m_cur;
 	}
 
-	/// get a trial corresponding to m_prob.
-	const BoolResults& BernulliTrials::trial()
+  	/// get a trial corresponding to m_prob.
+	void BernulliTrials::trial()
 	{
 		if(m_cur == m_N )						  // reach the last trial
 			doTrial();
-
-		// this can be slow. may be we should use vector<bool> since m_prob is
-		// usually not long.
-		for(size_t cl = 0, clEnd = m_prob.size(); cl < clEnd; ++cl)
-			m_bitSet[cl] = m_table[cl][m_cur];
-
-		m_cur++;
-		return m_bitSet;
+        m_cur++;
 	}
+  
+    bool BernulliTrials::trialSucc(size_t idx)
+    {
+        return m_table[idx][m_cur];
+    }
 
 	const BitSet& BernulliTrials::succ(UINT index)
 	{

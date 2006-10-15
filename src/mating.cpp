@@ -31,8 +31,9 @@ namespace simuPOP
 		m_formOffGenotype = formOffspringGenotype();
 		m_hasSexChrom = pop.sexChrom();
 		m_ploidy = pop.ploidy();
+        vectorf prob(2*pop.numChrom(), 0.5);
 		if(m_formOffGenotype)
-			m_bt.setParameter(vectorf(1, 0.5), 2*pop.numChrom());
+			m_bt.setParameter(prob, pop.popSize());
 		m_chIdx = pop.chromIndex();
 	}
 
@@ -101,8 +102,9 @@ namespace simuPOP
 		{
 			if(m_formOffGenotype)				  // use the default no recombination random mating.
 			{
-				m_bt.trial();
-				const BitSet& bs = m_bt.succ(0);
+				//const BoolResults& bs = m_bt.trial();
+                m_bt.trial();
+				// const BitSet& bs = m_bt.succ(0);
 
 				// initialize to avoid compiler complains
 				int dadPloidy=0, momPloidy=0;
@@ -117,8 +119,8 @@ namespace simuPOP
 				for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd; ++ch)
 				{
 					// bs is 2*totNumLoci() long
-					dadPloidy = bs[ch];
-					momPloidy = bs[ch+chEnd];
+					dadPloidy = m_bt.trialSucc(ch); //bs[ch];
+					momPloidy = m_bt.trialSucc(ch+chEnd); // bs[ch+chEnd];
 					for(size_t gt = m_chIdx[ch]; gt < m_chIdx[ch+1]; ++gt)
 					{
 						offd[gt] = cd[dadPloidy][gt];

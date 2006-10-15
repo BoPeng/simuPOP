@@ -213,9 +213,9 @@ namespace simuPOP
 	// this function implement how to recombine
 	// parental chromosomes and set one copy of offspring chromosome
 	// bt contains the bernulli trailer
-	void  recombinator::recombine(
+	void recombinator::recombine(
 		individual* parent,						  // one of the parent
-		population::IndIterator offspring,		  // offspring
+		population::IndIterator& offspring,		  // offspring
 		int offPloidy,							  // which offspring ploidy to fill
 		BernulliTrials& bt,
 		const vectoru& recBeforeLoci,
@@ -228,18 +228,27 @@ namespace simuPOP
 		off = offspring->genoBegin(offPloidy);
 
 		// get a new set of values.
-		const BoolResults& bs = bt.trial();
+		// const BoolResults& bs = bt.trial();
+		bt.trial();
+		int curCp = bt.trialSucc(bt.probSize()-1)?0:1;
+		// the last one does not count, because it determines
+		// the initial copy of paternal chromosome
+		// bt.trialSucc(bs.size()-1) = false;
 
-		int curCp = bs[bs.size()-1]?0:1;
-		const_cast<BoolResults&>(bs)[bs.size()-1] = false;
-
+		// algorithm one:
+		//
+		//  gt: index on chromosomes
+		//  gtEnd: total number of loci
+		//
+		//  at each locus, check if recombine after it, if so
+		//  recombine.
 		for(size_t gt = 0, bl=0, gtEnd = recBeforeLoci.back(); gt < gtEnd; ++gt)
 		{
 			off[gt] = cp[curCp][gt];
 			// 2 4 x16 (x means recombine)
 			if(gt+1 == recBeforeLoci[bl])
 			{
-				if(bs[bl])
+				if( bt.trialSucc(bl))
 				{
 					curCp = (curCp+1)%2;
 					DBG_DO_(m_recCount[bl]++);
@@ -247,16 +256,34 @@ namespace simuPOP
 				++bl;
 			}
 		}
-		if(setSex)
+		/*
+			// algorithm two:
+			//
+			//  gt: index on chromosome
+			//  pos: pos on recombination index
+			//
+			//  for each recombination index, check if recombine.
+			//  if so, recombine, and copy till this point.
+			size_t gt = 0, pos = 0;
+			for(; pos < recBeforeLoci.size(); ++pos)
+			{
+		if(bs[pos])
 		{
-			if( curCp == 0)						  // X from dad
-				offspring->setSex(Female);
-			else
-				offspring->setSex(Male);
+		// copy from 0 to this recombination point
+		for(size_t gtEnd = recBeforeLoci[pos]; gt < gtEnd; ++gt)
+		off[gt] = cp[curCp][gt];
+		curCp = (curCp+1)%2;
 		}
+		}
+		// copy the last piece
+		for(; gt < recBeforeLoci.back(); ++gt)
+		off[gt] = cp[curCp][gt];
+		*/
+		if(setSex)
+			offspring->setSex(curCp==0?Female:Male);
 	}
 
-	bool  recombinator::applyDuringMating(population& pop,
+	bool recombinator::applyDuringMating(population& pop,
 		population::IndIterator offspring,
 		individual* dad,
 		individual* mom)
@@ -264,7 +291,7 @@ namespace simuPOP
 		DBG_ASSERT(dad && mom, ValueError, "Either dad or mom is NULL");
 
 		// first time setup
-		if( m_recBeforeLoci.empty() )
+		if(m_recBeforeLoci.empty())
 		{
 			// prepare m_bt
 			// female
@@ -291,8 +318,7 @@ namespace simuPOP
 		}
 
 		recombine(mom, offspring, 0, m_bt, m_recBeforeLoci, false);
-		recombine(dad, offspring, 1, m_maleBt,
-			m_maleRecBeforeLoci, m_setSex);
+		recombine(dad, offspring, 1, m_maleBt, m_maleRecBeforeLoci, m_setSex);
 		return true;
 	}
 

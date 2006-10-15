@@ -21,7 +21,7 @@
 # .cpp files, and will be available ONLY when SIMUDEBUG is defined
 #
 import simuOpt
-#simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=False, optimized=True)
 
 from simuPOP import *
 import unittest, os, sys, exceptions, time
@@ -192,7 +192,7 @@ class TestPerformance(unittest.TestCase):
 
     def TestSimuComplexDisease(self):
         ''' recording the runtime of simuComplexDisease.py '''
-        cmd = '''time python /home/bpeng/simuPOP/scripts/simuComplexDisease.py --noDialog
+        cmd = '''time python /home/bpeng/simuPOP/test/simuComplexDisease.py --noDialog
             --numChrom='8' --optimized
             --numLoci='10' --markerType='SNP' --DSL='(15, 26, 37, 48)' 
             --DSLLoc='(0.5, 0.5, 0.5, 0.5)' --initSize='1000' --endingSize='50000' 
@@ -213,8 +213,103 @@ class TestPerformance(unittest.TestCase):
         # Use stack (mixed method)
         # 0.7.4 (baop):       89u, 1min 17s
         #  direct gepped allele count does oot improve anything
+        #
+        # Remove rebombinator: 57.5s
 
+    def TestRecombinationAlgorithm0(self):
+        ''' Testing the performance of different recombination algorithms '''
+        # form 0
+        c1 = time.clock()
+        simu = simulator(
+            population(subPop=[1000]*10, loci=[200]),
+            randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution), 
+            rep=1)
+        simu.evolve(
+            preOps = [initByValue([50]*200)],
+            ops = [
+               #recombinator(rate=0.5),
+               smmMutator(rate=0.0001),
+               pyEval(r'"%s\n"%gen', step=100),
+           ],
+           end = 500
+        )
+        c2 = time.clock()
+        print "One chromosome with no recombination: %f " % (c2 - c1)
+    
+    def TestRecombinationAlgorithm1(self):
+        ''' Testing the performance of different recombination algorithms '''
+        # form 1
+        c1 = time.clock()
+        simu = simulator(
+            population(subPop=[1000]*10, loci=[200]),
+            randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution), 
+            rep=1)
+        simu.evolve(
+            preOps = [initByValue([50]*200)],
+            ops = [
+               recombinator(rate=0.5),
+               smmMutator(rate=0.0001),
+               pyEval(r'"%s\n"%gen', step=100),
+           ],
+           end = 500
+        )
+        c2 = time.clock()
+        print "Recombinator with rate 0.5: %f " % (c2 - c1)
+        #
 
+    def TestRecombinationAlgorithm2(self):
+        # form 2
+        c1 = time.clock()
+        simu = simulator(
+            population(subPop=[1000]*10, loci=[1]*200),
+            randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution), 
+            rep=1)
+        simu.evolve(
+            preOps = [initByValue([50]*200)],
+            ops = [
+               smmMutator(rate=0.0001),
+               pyEval(r'"%s\n"%gen', step=100),
+           ],
+           end = 500
+        )
+        c2 = time.clock()
+        print "200 chromosomes: %f " % (c2 - c1)
+    
+    def TestRecombinationAlgorithm3(self):
+        # form 1
+        c1 = time.clock()
+        simu = simulator(
+            population(subPop=[1000]*10, loci=[200]*10),
+            randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution), 
+            rep=1)
+        simu.evolve(
+            preOps = [initByValue([50]*200)],
+            ops = [
+               recombinator(rate=0.0005),
+               smmMutator(rate=0.0001),
+               pyEval(r'"%s\n"%gen', step=10),
+           ],
+           end = 100
+        )
+        c2 = time.clock()
+        print "20x10 with low rec rate: %f " % (c2 - c1)
+        # case 0: no rec, 1 chrom:    6.74
+        # case 1: 0.5 rec, 200 chrom: 49.33
+        # case 2: 200 chrom, no rec:  27.28
+        # case 3: 20 chrom, low rec:  57.06
+        #
+        # algorith2: (rec list first):
+        #
+        # case 1: 48.14s
+        # case 3: 59s
+        #
+        # get trail result directly (no BoolResults)
+        #   case 0: 5.52
+        #   case 1L 47.96
+        #   case 2: 25.83
+        #   case 3: 59.00, 55.8 
+        #
+        # conclusion: accept this.
         
 if __name__ == '__main__':
     unittest.main()

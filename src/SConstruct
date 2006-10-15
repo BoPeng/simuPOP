@@ -153,27 +153,9 @@ src = Split('''utility migrator population simulator terminator
     individual mutator stator initializer operator recombinator
     mating outputer selector tagger''') 
 
-# def swig_emitter(target, source, env, parent_emitter):
-#     parent_emitter(target, source, env)
-#     env.Depends(target, env['SWIG_SRC_HEADERS'])
-#     return (target, source)
-# 
-# def static_swig_emitter(target, source, env):
-#     return swig_emitter(target, source, env, SCons.Defaults.StaticObjectEmitter)
-# 
-# def shared_swig_emitter(target, source, env):
-#     return swig_emitter(target, source, env, SCons.Defaults.SharedObjectEmitter)
-# 
-# for suffix in Split('.cpp .cc .c'):
-#     env['BUILDERS']['StaticObject'].add_emitter(suffix, static_swig_emitter)
-#     env['BUILDERS']['SharedObject'].add_emitter(suffix, shared_swig_emitter)
-# 
-# env['SWIG_SRC_HEADERS'] =  ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \
-#         ['%s.h' % x for x in src]
-
 for mod in build_mod:
     for file in src:
-        env.Command('%s/%s_%s.cpp'%(BDIR, file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
+        env.Command('$BDIR/%s/%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
     # build shared library
     lib = env.SharedLibrary(
         target = '$BDIR/_simuPOP_%s.so'%mod,
