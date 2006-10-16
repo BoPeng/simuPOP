@@ -20,8 +20,8 @@ version 0.7.4 - Currently available as svn snapshot
  - NEW: (minor) performance improvement of randomMating and maSelector.
  - NEW: significant performance improvement of mating schemes.
 	controlled randomMating: typically 150s => 90s
-	randomMating: 34.45 => 12.68s.
-		
+ - NEW: add instruction for using intel c++ compiler, which usually improve
+   performance by 20% to 30%.		
 
 
 version 0.7.3 - (Rev 470) Oct 2, 2006

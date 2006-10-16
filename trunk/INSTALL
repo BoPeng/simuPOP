@@ -5,7 +5,9 @@ Compiled libraries for Linux, windows XP, Solaris and MacOSX are provided.
 In most cases, you will only need to download simuPOP and follow the usual
 installation process of your platform. This file shows you how to install
 simuPOP binaries and other recommended Python components; and how to build
-simuPOP when none of the binaries work for you.
+simuPOP when none of the binaries work for you, or, more importantly,
+if you would like to compile simuPOP using intel C++ for 20% or more
+performance boost.
 
 
 A complete simuPOP environment is consist of the following:
@@ -104,7 +106,7 @@ The procedure is:
   NOTE: if you go not have administrative previlege, use can install R locally
   by using ./configure --prefix=/home/username/R ...
 
-Then, you should build Rpy by  
+Then, you can build Rpy by  
 
   - download the latest Rpy source code
   - unpack, for example 
@@ -124,15 +126,18 @@ There are detailed instructions at wxPython homepage.
 Build simuPOP from Source
 ==========================
 
-In case that none of the compiled libraries works for you, 
-or you want to extend simuPOP in C++, you can build simuPOP 
-from source. 
+There are several reasons to build simuPOP from source. The most important one is
+performance: for example, simuPOP built with intel C++ compiler (icc) usually
+runs 20% to 30% faster than g++ compiled ones. Since intel C++ for linux is 
+free for non-commercial users, using intel C++ is a good choice on linux systems.
+
 
 NOTE:
   If you only need to compile simuPOP, you do not need to install
   SWIG. If you have modified simuPOP source code, you will have to 
   install SWIG to generate wrap files for your new code.
-  
+
+
 Windows system with cygwin/mingw32 g++ compiler (free)
 -------------------------------------------------------
 
@@ -188,7 +193,7 @@ NOTE: for python2.4, you can get error saying
 
 
 Linux-Solaris-MacOSX System
-============================
+-----------------------------
 
 
   1. download and unpack simuPOP source, goto simuPOP-XXX directory
@@ -213,8 +218,44 @@ Linux-Solaris-MacOSX System
     > python setup.py config --include-dirs=/usr/include/linux install
   if zlib.h is not in standard directories.
 
+
+
+Linux using intel C++
+---------------------
+
+Because Python has to be compiled with the same compiler as simuPOP, you will
+have to build python by yourself as well. I assume that you do not want to 
+override system python, so here is what you need to do
+
+  1. download intel C++ compiler (linux, non-commercial version) and install.
+     icc can be installed locally. Note that for 64bit systems, the bin directory
+	 is intel/cce/xxx/bin, not intel/cc/xxx/bin. Make sure you source file
+	 intel/cce/xxx/bin/ccvars.xxx for the shell you use.
+  2. download python source. Run, for example,
+     > tar zxf Python-2.4.3.tgz
+	 > cd Python-2.4.3
+	 > setenv CC icc (for csh)
+	 > setenv CXX icpc (for csh)
+	 > ./configure --with-cxx=icpc --prefix=/home/username/Python24
+     > make
+	 > make install
+  3. build and install simuPOP
+     > cd simuPOP
+	 > /home/username/Python24/bin/python setup.py install 
+
+
+Additional remarks
+-------------------
+
+  1. There is a scons based build system under src. This is recommended for 
+    simuPOP development since 'python setup.py' is slow because it can not 
+	use thread (or multiple	processors).
+  2. Python 2.5 is not yet supported (due to the fact that swig does not
+    support 2.5 yet.)
+
+
 test simuPOP
-===============
+------------
 
 After installation, you can test simuPOP and other components by
 

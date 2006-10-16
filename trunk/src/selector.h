@@ -80,7 +80,7 @@ namespace simuPOP
 			}
 
 			/// calculate/return w11 etc
-			virtual double indFitness(individual * ind)
+			virtual double indFitness(individual *)
 			{
 				///
 				throw ValueError("This selector is not supposed to be called directly");
@@ -893,7 +893,7 @@ namespace simuPOP
 			}
 
 			/// calculate/return quantitative trait etc
-			virtual double qtrait(individual * ind)
+			virtual double qtrait(individual *)
 			{
 				///
 				throw ValueError("This quantitative trait calculator is not supposed to be called directly");
