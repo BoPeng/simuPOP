@@ -31,6 +31,12 @@ env = Environment(options=opts,
     ENV={'PATH':os.environ['PATH']},
     tools=['default', 'swig'])
 
+env['CC'] = cc
+env['CXX'] = cxx
+ccflags = []
+if 'icc' in cc:
+  ccflags = ['-wd981,383,193,177']
+
 # try to debug the mode of python
 if env['debug'] == 'none':
     try:
@@ -39,15 +45,15 @@ if env['debug'] == 'none':
     except:
         env['debug'] = 'no'
 #
+dest_dir = os.path.join(lib_dest, 'site-packages')
 if env['debug'] == 'yes':
     BDIR = '../debug'
-    dest_dir = os.path.join(lib_dest, 'site-packages')
     flags = {'Py_REF_DEBUG':None, 'SIMUDEBUG':None}
     strflags = ' -DPy_REF_DEBUG -DSIMUDEBUG'
 else:
     BDIR = '../release/build'
     # we may not be able to release ...
-    dest_dir = '../release'
+    #dest_dir = '../release'
     flags = {}
     strflags = ''
 env.BuildDir(BDIR, '.', duplicate = 0)
@@ -155,7 +161,7 @@ src = Split('''utility migrator population simulator terminator
 
 for mod in build_mod:
     for file in src:
-        env.Command('$BDIR/%s/%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
+        env.Command('$BDIR/%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
     # build shared library
     lib = env.SharedLibrary(
         target = '$BDIR/_simuPOP_%s.so'%mod,
@@ -171,7 +177,7 @@ for mod in build_mod:
         CPPDEFINES = DEF[mod],
         # do not put .. (boost etc) in CPPPATH
         # to speed up search
-		CCFLAGS = ['-O3', '-fPIC'],
+		CCFLAGS = ['-O3', '-fPIC'] + ccflags,
         CPPFLAGS = basecflags + " " + opt + ' -I..'
     )
     env.Depends(['$BDIR/simuPOP_%s_wrap.cc'%mod, lib], 
@@ -188,9 +194,9 @@ for mod in build_mod:
     Alias('install', dp1)
 
 
-for file in ['simuRPy.py', 'simuUtil.py', 'simuViewPop.py', 'simuMatPlt.py',
+for pyfile in ['simuRPy.py', 'simuUtil.py', 'simuViewPop.py', 'simuMatPlt.py',
     'simuPOP.py', 'simuOpt.py']:
-    env.Install(dest_dir, file)
+    env.Install(dest_dir, pyfile)
     Alias('install', dest_dir)
 
 # install to share directory, later.
