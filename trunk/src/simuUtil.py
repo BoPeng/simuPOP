@@ -1014,11 +1014,18 @@ def saveLinkage(output='', outputExpr='', **kwargs):
 
 
 def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'], 
-        loci=[], **kwargs):
+        loci=[], combine=None, shift=1, **kwargs):
     """ save file in CSV format 
     fileds: information fields, 'sex' and 'affection' are special fields that 
         is treated differently.
     genotype: list of loci to output, default to all.   
+    combine: how to combine the markers. Default to None.
+       A function can be specified, that takes the form 
+         def func(markers):
+             return markers[0]+markers[1]
+    shift: since alleles in simuPOP is 0-based, shift=1 is usually needed to 
+        output alleles starting from allele 1. This parameter is ignored if 
+        combine is used.
     """
     if output != '':
         file = output
@@ -1048,9 +1055,13 @@ def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'],
             return 2
     # write out header
     print >> out, 'id, ', ', '.join(fields), ', ',
-    print >> out, ', '.join(['marker%s_1, marker%s_2' % (marker, marker) for marker in loci])
+    if combine is None:
+        print >> out, ', '.join(['marker%s_1, marker%s_2' % (marker, marker) for marker in loci])
+    else:
+        print >> out, ', '.join(['marker%s' % marker for marker in loci])
     # write out
     id = 1
+    pldy = pop.ploidy()
     for ind in pop.individuals():
         print >> out, id,
         for f in fields:
@@ -1061,8 +1072,11 @@ def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'],
             else:
                 print >> out, ', ', ind.info(f),
         for marker in loci:
-            for p in range(pop.ploidy()):
-                print >> out, ", %d" % (ind.allele(marker, p) + 1), 
+            if combine is None:
+                for p in range(pldy):
+                    print >> out, ", %d" % (ind.allele(marker, p) + shift), 
+            else:
+                print >> out, ", %d" % combine([ind.allele(marker, p) for p in range(pldy)]), 
         print >> out
         id += 1
     out.close() 

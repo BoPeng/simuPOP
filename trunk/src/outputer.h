@@ -331,12 +331,12 @@ namespace simuPOP
 							}
 							out << "individual info: " << endl;
 							UINT count = 0;
-							for(size_t i=0; i < range.size(); i+=2)
+							for(size_t j=0; j < range.size(); j+=2)
 							{
-								UINT sp = pop.subPopIndPair(range[i]).first;
+								UINT sp = pop.subPopIndPair(range[j]).first;
 								out << "sub population " << sp << ":" << endl;
 
-								for( population::IndIterator ind = pop.indBegin()+range[i]; ind != pop.indBegin()+range[i+1]; ++ind)
+								for( population::IndIterator ind = pop.indBegin()+range[j]; ind != pop.indBegin()+range[j+1]; ++ind)
 								{
 									out << setw(4) << count++ << ": " ;
 									ind->display(out, m_width, m_chrom, m_loci);

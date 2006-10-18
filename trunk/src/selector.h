@@ -417,7 +417,7 @@ namespace simuPOP
 			}
 
 			/// calculate/return penetrance etc
-			virtual double penet(individual * ind)
+			virtual double penet(individual *)
 			{
 				throw ValueError("This penetrance calculator is not supposed to be called directly");
 				return 1.;
