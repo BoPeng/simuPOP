@@ -12,32 +12,41 @@
 import os, sys, getopt, re
 
 Usage = '''
-1. create a list file (a python script), that define
+1. create a list file (a python script), that defines
 
-script: a script that has field $0, $1, $2, ...
-   or $name1, $name2, ...
-   ${0} or ${name} can be used to separate variables.
+script: a script that has field $0, $1, $2, ..., $name,
+    and other variables provided through command line or configuration
+    file ($HOME/.simuCluster).
 
-jobs: line with items that will be used to substitute $0, $1, ...
-    The job will be saved as $0.pbs
- 
+joblist: a multi-line string of the form
+      name1: var1: var2:
+      name2: var2: var2:
+   The values will be used to substitute $0, $1, ...
+   The job will be saved as $0.pbs. $0 is also named $name.
+
+
+separator: separator to separate joblist, default to ':'
+
+Note that if you have to use $ in the script, use $$ instead.
+
+The list file can define script and jobs by itself, or simply code 
+like:
+    script = open('job.template').read()
+    jobs = open('jobs').read()
+
+2. use of variables:
+
   Any command line argument key=value (without leading --), and any 
-  environment variables will be used to subsitute
-  the script as well. Excepts are
+  environment variables will be used to subsitute the script as well. 
+  Exceptions are
     -t/--time, which can be either a number of short (4), medium (24), 
         long (48) or extended (96), and the corresponding number will be used. 
     -q/--queue, is the same as queue=xxx
 
-
-joblist: a string of the form
-  name1: var1: var2:
-  name2: var2: var2:
-
-separator: separator to separate joblist, default to ':'
-
-
-Either jobs or joblist should exist. Note that if you have to use $ in the
-script, use $$ instead.
+3. configuration file:
+  You can define machine specific variables in a configuration file 
+  $HOME/.simuCluster. simuCluster.py process this python file and use the
+  variables to subsititute variables in script. 
 
 
 To use this script:
@@ -47,13 +56,13 @@ where options can be:
   -h: help information
   -l: list file, default to simulation.lst
   -t|--time: walltime (number, or short, medium, long, extended)
-  -s|--show: show all jobs
-  -d|--dryrun: does not actually submit job
-  
-  
+  -q|--queue: queue to submit job to
+  -f|--force: submit the job even it has $ in the (resulting) script 
+  -c|--command: command used to submit jobs.
+
 Example of one such script:
 
-    script = """
+script = """
 #!/bin/bash
 #PBS -N $name
 #PBS -l nodes=1:ppn=2:myrinet,walltime=$time:00:00
@@ -68,10 +77,16 @@ cd /shared.scratch/jobs
 # command
 python script.py --opt1=$opt1 --opt2=$opt2
 """
-    jobs = [
-        {'name': 'simu1', 'opt1':1, 'opt2'2},
-        {'name': 'simu2', 'opt1':1, opt2':2}
-    ]
+
+joblist = """
+simu1: 1: 2
+simu2: 2: 1
+"""
+
+Example $HOME/.simuCluster
+
+command = 'bsub -n 1 <'
+queue = 'normal'
 
 '''
 
@@ -82,26 +97,6 @@ def getJobs():
     ''' process jobs or joblist and create alljobs '''
     global alljobs
     alljobs = []
-    if globals().has_key('jobs'):
-        #
-        for job in jobs:
-            # a dictionary
-            if type(job) == type({}):
-                if not job.has_key('name'):
-                    print 'Dictionary job entry does not have key name'
-                    sys.exit(1)
-                else:
-                    alljobs.append(job)
-            elif type(job) in [type([]), type(())]:
-                keys = {}
-                for i,key in enumerate(job):
-                    keys[str(i)] = key
-                keys['name'] = keys['0']
-                alljobs.append(keys)
-        return
-    elif not globals().has_key('joblist'):
-        print 'Either jobs or jobliss has to be defined'
-        sys.exit(1)
     # now process jobs
     if globals().has_key('separator'):
         sep = separator
@@ -158,6 +153,16 @@ def allJobs():
     return names
 
 
+def readConfigFile():
+    ''' read variables from configuration file '''
+    config = os.path.join(os.environ['HOME'], '.simuCluster')
+    tmp = {}
+    res = {}
+    if os.path.isfile(config):
+        execfile(config, tmp, res)
+    return res
+
+
 if __name__ == '__main__':
     # get pptions
     # options can can be used to subst fields in script
@@ -166,8 +171,10 @@ if __name__ == '__main__':
     proc_jobs = []
     run = False
     force = False
+    # read configuration file
+    options.update(readConfigFile())
     # default command to run the job, can be, for example sh
-    command = 'qsub'
+    options['command'] = 'qsub'
     #
     optlist, args = getopt.gnu_getopt(sys.argv[1:], 't:l:s:ahrq:fc:', 
       ['list=', 'show=', 'time=', 'all', 'run', 'help', 'force', 'command'])
@@ -198,8 +205,9 @@ if __name__ == '__main__':
             print Usage
             sys.exit(0)
         elif opt[0] in ['-c', '--command']:
-            command = opt[1]
+            options['command'] = command
     #
+    # this is a special case
     #
     if not os.path.isfile(simuList):
         print 'Simulation list file does not exist'
@@ -251,8 +259,8 @@ if __name__ == '__main__':
                 print 'to submit the job'
                 sys.exit(1)
             if run:
-                print "Submitting job using command 'qsub %s.pbs'" % job 
-                os.system('%s %s.pbs' % (command, job))
+                print "Submitting job using command '%s %s.pbs'" % (options['command'], job)
+                os.system('%s %s.pbs' % (options['command'], job))
         else:
             print "Job %s does not exist" % job
 
