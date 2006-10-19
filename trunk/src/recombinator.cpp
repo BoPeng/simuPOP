@@ -232,7 +232,7 @@ namespace simuPOP
 		int curCp = bt.trialSucc(bt.probSize()-1)?0:1;
 		// the last one does not count, because it determines
 		// the initial copy of paternal chromosome
-		bt.setTrialSucc(bs.size()-1, false);
+		bt.setTrialSucc(bt.probSize()-1, false);
 
 		// algorithm one:
 		//
