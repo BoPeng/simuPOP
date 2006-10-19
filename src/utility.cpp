@@ -2263,6 +2263,12 @@ namespace simuPOP
     {
         return m_table[idx][m_cur];
     }
+	
+    void BernulliTrials::setTrialSucc(size_t idx, bool succ)
+    {
+        return m_table[idx].set(m_cur, succ);
+    }
+
 
 	const BitSet& BernulliTrials::succ(UINT index)
 	{
