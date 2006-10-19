@@ -183,7 +183,7 @@ namespace simuPOP
 			BernulliTrials m_bt, m_maleBt;
 
 			/// whether or not set sex (population having sex chromosome)
-			bool m_setSex;
+			bool m_hasSexChrom;
 
 			/// report the number of recombination events
 			vectoru m_recCount;

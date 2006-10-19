@@ -73,9 +73,9 @@ namespace simuPOP
 	class inheritTagger: public tagger
 	{
 		public:
-		#define TAG_Paternal   0
-		#define TAG_Maternal   1
-		#define TAG_Both       2
+#define TAG_Paternal   0
+#define TAG_Maternal   1
+#define TAG_Both       2
 
 		public:
 			/// constructor. default to be always active.
@@ -96,46 +96,7 @@ namespace simuPOP
 			}
 
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
-				individual* dad=NULL, individual* mom=NULL)
-			{
-				UINT id1=0, id2=0;
-				if (m_mode == TAG_Paternal)
-					id1 = pop.infoIdx(infoField(0));
-				else if (m_mode == TAG_Maternal)
-					id1 = pop.infoIdx(infoField(1));
-				else
-				{
-					id1 = pop.infoIdx(infoField(0));
-					id2 = pop.infoIdx(infoField(1));
-				}
-
-				if( m_mode == TAG_Paternal)
-				{
-					if (dad == NULL)
-						offspring->setInfo(0, id1);
-					else
-						offspring->setInfo(dad->info(id1), id1);
-				}
-				else if( m_mode == TAG_Maternal)
-				{
-					if (mom == NULL)
-						offspring->setInfo(0, id1);
-					else
-						offspring->setInfo(mom->info(id1), id1);
-				}
-				else
-				{
-					if( dad == NULL )
-						offspring->setInfo(0, id1);
-					else
-						offspring->setInfo(dad->info(id1), id1);
-					if( mom == NULL)
-						offspring->setInfo(0, id2);
-					else
-						offspring->setInfo(mom->info(id2), id2);
-				}
-				return true;
-			}
+				individual* dad=NULL, individual* mom=NULL);
 
 			virtual Operator* clone() const
 			{
@@ -181,23 +142,7 @@ namespace simuPOP
 			}
 
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
-				individual* dad=NULL, individual* mom=NULL)
-			{
-				UINT id1 = pop.infoIdx(infoField(0));
-				UINT id2 = pop.infoIdx(infoField(1));
-
-				if(dad == NULL)
-					offspring->setInfo(0, id1);
-				else
-					offspring->setInfo(dad - &*pop.indBegin(), id1);
-
-				if( mom == NULL)
-					offspring->setInfo(0, id2);
-				else
-					offspring->setInfo(mom - &*pop.indBegin(), id2);
-
-				return true;
-			}
+				individual* dad=NULL, individual* mom=NULL);
 	};
 }
 #endif
