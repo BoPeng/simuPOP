@@ -2040,11 +2040,14 @@ namespace simuPOP
 			}
 
 			/// now, all individuals of needToFind sex is collected
-			if( (numMale == 0 || numFemale ==0 ) && !m_contWhenUniSex )
+			if(numMale == 0 || numFemale ==0)
 			{
-				throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
-					"You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
-					"(same sex mating if have to) options to get around this problem.");
+				if(m_contWhenUniSex)
+					cout << "Warning: the subpopulation is uni-sex. Mating will continue with same-sex mate" << endl;
+				else
+					throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
+						"You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
+						"(same sex mating if have to) options to get around this problem.");
 			}
 
 			DBG_ASSERT(numFemale + numMale == spSize, SystemError,

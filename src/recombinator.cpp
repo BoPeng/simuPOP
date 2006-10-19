@@ -229,10 +229,10 @@ namespace simuPOP
 		// get a new set of values.
 		// const BoolResults& bs = bt.trial();
 		bt.trial();
-		int curCp = bt.trialSucc(bt.probSize()-1)?0:1;
+		int curCp = bt.trialSucc(recBeforeLoci.size()-1)?0:1;
 		// the last one does not count, because it determines
 		// the initial copy of paternal chromosome
-		bt.setTrialSucc(bt.probSize()-1, false);
+		bt.setTrialSucc(recBeforeLoci.size()-1, false);
 
 		// algorithm one:
 		//
@@ -279,7 +279,16 @@ namespace simuPOP
 		off[gt] = cp[curCp][gt];
 		*/
 		if(setSex)
-			offspring->setSex(curCp==0?Female:Male);
+		{
+			// sex chrom determination
+			// if curCp (last chromosome) is X, Female, otherwise Male. 
+			// Note that for daddy, the last one is arranged XY
+			if(m_hasSexChrom)
+				offspring->setSex(curCp==0?Female:Male);
+			else
+				offspring->setSex(rng().randInt(2)==0?Male:Female);
+		}
+
 	}
 
 	bool recombinator::applyDuringMating(population& pop,
@@ -303,7 +312,7 @@ namespace simuPOP
 
 			vecP.clear();
 			// male case is most complicated.
-			m_setSex = pop.sexChrom()?true:false;
+			m_hasSexChrom = pop.sexChrom()?true:false;
 			double maleIntensity = (m_maleIntensity != -1 || !m_maleRate.empty() )
 				? m_maleIntensity : m_intensity;
 			vectorf& maleRate = (m_maleIntensity != -1 || !m_maleRate.empty() )
@@ -312,12 +321,13 @@ namespace simuPOP
 				m_afterLoci:m_maleAfterLoci;
 			// prepare male recombination
 			prepareRecRates(pop, maleIntensity, maleRate, maleAfterLoci,
-				m_setSex, m_maleRecBeforeLoci, vecP);
+				m_hasSexChrom, m_maleRecBeforeLoci, vecP);
 			m_maleBt.setParameter(vecP, pop.popSize());
 		}
 
 		recombine(mom, offspring, 0, m_bt, m_recBeforeLoci, false);
-		recombine(dad, offspring, 1, m_maleBt, m_maleRecBeforeLoci, m_setSex);
+		// only set sex once for offspring
+		recombine(dad, offspring, 1, m_maleBt, m_maleRecBeforeLoci, true);
 		return true;
 	}
 

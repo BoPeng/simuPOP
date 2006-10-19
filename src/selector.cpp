@@ -514,7 +514,7 @@ namespace simuPOP
 					// find an individual with the same parents
 					for(size_t j = i+1; j < spSize; ++j)
 					{
-						// ok, find it
+						// ok, find it, sibpair
 						if( affected[j] == m_affectedness && tags[j] == tag )
 						{
 							// use absolute index, so spBegin+...
@@ -566,7 +566,7 @@ namespace simuPOP
 		vectori chosenOff, chosenPar;
 		vectori nSibpairSP(pop.numSubPop());
 
-		if( m_size.size() <= 1 )				  // draw from the whole population
+		if(m_size.size() <= 1)				  // draw from the whole population
 		{
 			DBG_DO(DBG_SELECTOR, cout << "Draw from the whole population." << endl);
 
@@ -576,7 +576,7 @@ namespace simuPOP
 			for(UINT sp =0; sp < pop.numSubPop(); ++sp)
 				allSibs.insert( allSibs.end(), m_sibpairs[sp].begin(), m_sibpairs[sp].end());
 
-			if( !m_size.empty() && m_size[0] > allSibs.size() )
+			if(!m_size.empty() && m_size[0] > allSibs.size())
 				cout << "Warning: Not enough sibpairs to be sampled. Requested "
 					<< m_size[0] << ", existing " << allSibs.size() << endl;
 
@@ -610,22 +610,21 @@ namespace simuPOP
 			// set sibpairs
 			for( size_t i=0; i< N; ++i)
 			{
-				chosenOff.push_back( (int)(allSibs[ idx[i] ].first) );
-				chosenOff.push_back( (int)(allSibs[ idx[i] ].second) );
-				// DBG_ASSERT( pop.ind( allSibs[ idx[i] ].first ).info()==-1,
-				//  SystemError, "Duplicate selection");
-				//DBG_ASSERT( pop.ind( allSibs[ idx[i] ].second).info()==-1,
-				//  SystemError, "Duplicate selection");
+				chosenOff.push_back( int(allSibs[ idx[i] ].first) );
+				chosenOff.push_back( int(allSibs[ idx[i] ].second) );
 				pop.ind( allSibs[ idx[i] ].first ).setSubPopID(i);
 				pop.ind( allSibs[ idx[i] ].second ).setSubPopID(i);
 				std::pair<ULONG, ULONG> tag;
 				tag.first = static_cast<ULONG>(pop.ind( allSibs[ idx[i]].first ).info(m_father_id));
 				tag.second= static_cast<ULONG>(pop.ind( allSibs[ idx[i]].first ).info(m_mother_id));
-				chosenPar.push_back( (int)(tag.first) );
-				chosenPar.push_back( (int)(tag.second) );
+				chosenPar.push_back( int(tag.first) );
+				chosenPar.push_back( int(tag.second) );
 				parents.push_back(
 					std::pair<ULONG, ULONG>((ULONG)(tag.first), (ULONG)(tag.second))
 					);
+				DBG_DO(DBG_SELECTOR, cout << i << ": Off: " << int(allSibs[ idx[i] ].first) << " " <<
+					 int(allSibs[ idx[i] ].second) << " Par: " << pop.ind(allSibs[ idx[i]].first ).info(m_father_id) <<
+					 " " << pop.ind(allSibs[ idx[i]].first ).info(m_mother_id) << endl);
 			}
 
 			// keep the order and count number of selected ones in each subpop
@@ -711,6 +710,14 @@ namespace simuPOP
 
 		for(size_t i=0; i< parents.size(); ++i)
 		{
+			DBG_ASSERT(newPop.ind(parents[i].first).subPopID() == -1, SystemError, 
+				"Duplicate parents are selected: " + toStr(i) + \
+				" This can be caused by uni-sex mating so that one individual can be both " + \
+				" father and mother ");
+			DBG_ASSERT(newPop.ind(parents[i].second).subPopID() == -1, SystemError, 
+				"Duplicate parents are selected: " + toStr(i) + \
+				" This can be caused by uni-sex mating so that one individual can be both " + \
+				" father and mother ");
 			newPop.ind( parents[i].first).setSubPopID(i);
 			newPop.ind( parents[i].second).setSubPopID(i);
 		}
@@ -718,6 +725,7 @@ namespace simuPOP
 
 		newPop.setSubPopByIndID();
 		// do not allow to change newPop size. ONLY subpop structure.
+		// this is why parents can not overlap.
 		DBG_DO( DBG_SELECTOR, cout << "Set structure " << tmp << endl);
 		newPop.setSubPopStru(tmp, false);
 		newPop.useAncestralPop(0);

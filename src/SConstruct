@@ -31,7 +31,7 @@ env = Environment(options=opts,
     ENV={'PATH':os.environ['PATH']},
     tools=['default', 'swig'])
 
-env['CC'] = cc
+env['CC'] = cxx
 env['CXX'] = cxx
 ccflags = []
 if 'icc' in cc:
@@ -148,7 +148,7 @@ DEF = {
 build_mod = []
 
 for key in DEF.keys():
-    DEF[key].update({"SWIG_GLOBAL":None, 'DSIMUPOP_REV':'9990', 'DSIMUPOP_VER':'9.9.9'})
+    DEF[key].update({'SIMUPOP_REV':'9990', 'SIMUPOP_VER':'9.9.9'})
     DEF[key].update(flags)
     if key in BUILD_TARGETS:
         build_mod.append(key)
@@ -166,8 +166,9 @@ for mod in build_mod:
     lib = env.SharedLibrary(
         target = '$BDIR/_simuPOP_%s.so'%mod,
         source = ['$BDIR/%s_%s.cpp' % (x, mod) for x in src] + ['$BDIR/simuPOP_%s.i'%mod],
-        LIBS = ['serial', 'iostreams', 'gsl', 'z'],
+        LIBS = ['serial', 'iostreams', 'gsl', 'z', 'stdc++'],
         CC = cc,
+		CXX = cxx,
         SHLINK = ldshared,
         SHLINKFLAGS = [],
         SHLIBPREFIX = "",
@@ -177,7 +178,7 @@ for mod in build_mod:
         CPPDEFINES = DEF[mod],
         # do not put .. (boost etc) in CPPPATH
         # to speed up search
-		CCFLAGS = ['-O3', '-fPIC'] + ccflags,
+		CCFLAGS = ['-O3'] + ccflags,
         CPPFLAGS = basecflags + " " + opt + ' -I..'
     )
     env.Depends(['$BDIR/simuPOP_%s_wrap.cc'%mod, lib], 
