@@ -36,17 +36,16 @@ namespace simuPOP
 		if( !recBeforeLoci.empty() )
 			return;
 
-		DBG_FAILIF( intensity < 0 && rate.empty(), ValueError,
+		DBG_FAILIF(intensity < 0 && rate.empty(), ValueError,
 			"You should specify intensity, or rate "
 			"(a number or a sequence of recombination rates.)");
 
-		DBG_FAILIF( rate.size() > 1 && afterLoci.empty(), ValueError,
+		DBG_FAILIF(rate.size() > 1 && afterLoci.empty(), ValueError,
 			"When more than one rates are given, afterLoci should be"
 			" explicitly specified.");
 
-		DBG_FAILIF( rate.size() > 1 && rate.size() != afterLoci.size(),
-			ValueError,
-			"If both rates and atLoci are specified, "
+		DBG_FAILIF(rate.size() > 1 && rate.size() != afterLoci.size(),
+			ValueError,	"If both rates and atLoci are specified, "
 			"they should have the same length.");
 
 		bool useLociDist;
@@ -57,7 +56,7 @@ namespace simuPOP
 
 		// first, we create a recBeforeLoci vector
 		// and a recombination rate vector
-		if( afterLoci.empty())
+		if(afterLoci.empty())
 		{
 			size_t vecSize = pop.totNumLoci();
 			if( sexChrom )
@@ -138,19 +137,19 @@ namespace simuPOP
 				{
 					// if this locus will be recombined.
 					pos = find( afterLoci.begin(), afterLoci.end(), index);
-					if( pos != afterLoci.end())
+					if(pos != afterLoci.end())
 					{
-						if( useLociDist )
+						if(useLociDist)
 						{
-							if( intensity > 0 )	  // igore zero rate
+							if(intensity > 0)	  // igore zero rate
 							{
 								vecP.push_back( (pop.locusPos(index+1) - pop.locusPos(index))*intensity);
 								recBeforeLoci.push_back(index+1);
 							}
 						}
-						else if( rate.size() == 1 && ! useLociDist)
+						else if(rate.size() == 1 && ! useLociDist)
 						{
-							if( rate[0] > 0 )	  // ignore zero rate
+							if(rate[0] > 0)	  // ignore zero rate
 							{
 								vecP.push_back( rate[0]);
 								recBeforeLoci.push_back(index+1);
@@ -159,14 +158,14 @@ namespace simuPOP
 						else
 						{
 												  // ignore zero rate
-							if( rate[ pos - afterLoci.begin() ] > 0 )
+							if(rate[pos - afterLoci.begin()] > 0 )
 							{
-								vecP.push_back( rate[ pos - afterLoci.begin() ] );
+								vecP.push_back(rate[pos - afterLoci.begin()]);
 								recBeforeLoci.push_back(index+1);
 							}
 						}
 
-						DBG_ASSERT( fcmp_ge(vecP[vecP.size()-1],0) && fcmp_le(vecP[vecP.size()-1],1),
+						DBG_ASSERT(fcmp_ge(vecP[vecP.size()-1],0) && fcmp_le(vecP[vecP.size()-1], 1),
 							ValueError,
 							"Recombination rate should be in [0,1]. (Maybe your loci distance is too high.)");
 					}
@@ -174,11 +173,11 @@ namespace simuPOP
 				}
 				vecP.push_back(.5);
 
-				if( find( afterLoci.begin(), afterLoci.end(), index) != afterLoci.end() )
+				if(find(afterLoci.begin(), afterLoci.end(), index) != afterLoci.end())
 					cout << "Specified recombination rate for the last locus on a chromosome is discarded." << endl;
 
 				// add between chromosomes....
-				index ++;
+				index++;
 				recBeforeLoci.push_back(index);
 			}
 
@@ -190,13 +189,13 @@ namespace simuPOP
 					" is not used in recombinator. Is it valid?");
 			}
 
-			DBG_ASSERT( vecP.size() == recBeforeLoci.size(), SystemError,
+			DBG_ASSERT(vecP.size() == recBeforeLoci.size(), SystemError,
 				"Rate and before loci should have the same length.");
 
-			DBG_ASSERT( recBeforeLoci.back() == pop.totNumLoci(),
+			DBG_ASSERT(recBeforeLoci.back() == pop.totNumLoci(),
 				SystemError, "The last beforeLoci elem should be total number of loci.");
 
-			DBG_ASSERT( vecP.back() == .5, SystemError,
+			DBG_ASSERT(vecP.back() == .5, SystemError,
 				"The last elem of rate should be half.");
 
 			DBG_DO(DBG_RECOMBINATOR, cout << "Specify after Loci. With rates "
@@ -233,7 +232,7 @@ namespace simuPOP
 		int curCp = bt.trialSucc(bt.probSize()-1)?0:1;
 		// the last one does not count, because it determines
 		// the initial copy of paternal chromosome
-		// bt.trialSucc(bs.size()-1) = false;
+		bt.setTrialSucc(bs.size()-1, false);
 
 		// algorithm one:
 		//
@@ -248,7 +247,7 @@ namespace simuPOP
 			// 2 4 x16 (x means recombine)
 			if(gt+1 == recBeforeLoci[bl])
 			{
-				if( bt.trialSucc(bl))
+				if(bt.trialSucc(bl))
 				{
 					curCp = (curCp+1)%2;
 					DBG_DO_(m_recCount[bl]++);

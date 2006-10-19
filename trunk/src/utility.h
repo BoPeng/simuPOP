@@ -1396,6 +1396,8 @@ namespace simuPOP
 
             bool trialSucc(size_t idx);
             
+			void setTrialSucc(size_t idx, bool succ);
+            
 			/// return succeed trials for p[index]
 			/// fail when m_cur is not 0. (i.e., has retrieve the table through trial()
 			/// CPPONLY
