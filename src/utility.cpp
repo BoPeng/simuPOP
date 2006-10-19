@@ -2266,7 +2266,7 @@ namespace simuPOP
 	
     void BernulliTrials::setTrialSucc(size_t idx, bool succ)
     {
-        return m_table[idx].set(m_cur, succ);
+        m_table[idx].set(m_cur, succ);
     }
 
 
