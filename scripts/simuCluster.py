@@ -171,10 +171,10 @@ if __name__ == '__main__':
     proc_jobs = []
     run = False
     force = False
-    # read configuration file
-    options.update(readConfigFile())
     # default command to run the job, can be, for example sh
     options['command'] = 'qsub'
+    # read configuration file
+    options.update(readConfigFile())
     #
     optlist, args = getopt.gnu_getopt(sys.argv[1:], 't:l:s:ahrq:fc:', 
       ['list=', 'show=', 'time=', 'all', 'run', 'help', 'force', 'command'])
