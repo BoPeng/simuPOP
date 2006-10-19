@@ -15,13 +15,14 @@ version 0.7.4 - Currently available as svn snapshot
 		Python level: population::arrGenotype(True), arrGenotype(sp, True)
 			population::indInfo(idx, order), indInfo(idx, subPop, order)
 			population::arrIndInfo(order), arrIndInfo(subPop, order)
- - NEW: test/test_21_performance is added to keep track of performance
+  - NEW: test/test_21_performance is added to keep track of performance
 	improvement.
- - NEW: (minor) performance improvement of randomMating and maSelector.
- - NEW: significant performance improvement of mating schemes.
+  - NEW: (minor) performance improvement of randomMating and maSelector.
+  - NEW: significant performance improvement of mating schemes.
 	controlled randomMating: typically 150s => 90s
- - NEW: add instruction for using intel c++ compiler, which usually improve
+  - NEW: add instruction for using intel c++ compiler, which usually improve
    performance by 20% to 30%.		
+  - BUG: recombinator set sex in a wrong way.
 
 
 version 0.7.3 - (Rev 470) Oct 2, 2006

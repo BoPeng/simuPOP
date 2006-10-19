@@ -2081,7 +2081,12 @@ namespace simuPOP
 				if(useStack && stackStage)
 				{
 					if(m_stack.empty())
-						throw SystemError("Go to stack stage with empty stack. Something wrong");
+					{
+						DBG_ASSERT(!freqRequMet, SystemError, "Empty stack should only happen when freq requirement is not met.");
+						cout << "Warning: frequency requirement is not met, for subpop " << sp << " at generation "
+							<< pop.gen() << ".\nThis is usually caused by multiple high disease allele frequency." << endl;
+						break;
+					}
 					it = m_stack.top();
 				}
 
@@ -2322,7 +2327,12 @@ namespace simuPOP
 					}
 					// see if break
 					if(it == itEnd)
+					{
+						if(!freqRequMet)
+							cout << "Warning: frequency requirement is not met, for subpop " << sp << " at generation " 
+								<< pop.gen() << ".\nThis is usually caused by multiple high disease allele frequency." << endl;
 						break;
+					}
 				}
 			}									  // nostack scheme
 		}										  // each subPop
