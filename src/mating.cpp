@@ -31,7 +31,7 @@ namespace simuPOP
 		m_formOffGenotype = formOffspringGenotype();
 		m_hasSexChrom = pop.sexChrom();
 		m_ploidy = pop.ploidy();
-        vectorf prob(2*pop.numChrom(), 0.5);
+		vectorf prob(2*pop.numChrom(), 0.5);
 		if(m_formOffGenotype)
 			m_bt.setParameter(prob, pop.popSize());
 		m_chIdx = pop.chromIndex();
@@ -103,7 +103,7 @@ namespace simuPOP
 			if(m_formOffGenotype)				  // use the default no recombination random mating.
 			{
 				//const BoolResults& bs = m_bt.trial();
-                m_bt.trial();
+				m_bt.trial();
 				// const BitSet& bs = m_bt.succ(0);
 
 				// initialize to avoid compiler complains
@@ -119,8 +119,10 @@ namespace simuPOP
 				for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd; ++ch)
 				{
 					// bs is 2*totNumLoci() long
-					dadPloidy = m_bt.trialSucc(ch); //bs[ch];
-					momPloidy = m_bt.trialSucc(ch+chEnd); // bs[ch+chEnd];
+												  //bs[ch];
+					dadPloidy = m_bt.trialSucc(ch);
+												  // bs[ch+chEnd];
+					momPloidy = m_bt.trialSucc(ch+chEnd);
 					for(size_t gt = m_chIdx[ch]; gt < m_chIdx[ch+1]; ++gt)
 					{
 						offd[gt] = cd[dadPloidy][gt];
@@ -1947,7 +1949,7 @@ namespace simuPOP
 		vectorf expFreq;
 		PyCallFunc( m_freqFunc, "(i)", pop.gen(), expFreq, PyObj_As_Array);
 		DBG_DO(DBG_MATING, cout << "expected freq " << expFreq << endl);
-		
+
 		// determine expected number of alleles of each allele
 		// at each subpopulation.
 		UINT numSP = pop.numSubPop();
@@ -2329,7 +2331,7 @@ namespace simuPOP
 					if(it == itEnd)
 					{
 						if(!freqRequMet)
-							cout << "Warning: frequency requirement is not met, for subpop " << sp << " at generation " 
+							cout << "Warning: frequency requirement is not met, for subpop " << sp << " at generation "
 								<< pop.gen() << ".\nThis is usually caused by multiple high disease allele frequency." << endl;
 						break;
 					}

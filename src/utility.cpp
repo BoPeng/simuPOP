@@ -124,28 +124,28 @@ namespace simuPOP
 	/// set debug area, default to turn all code on
 	void TurnOnDebug(DBG_CODE code)
 	{
-		#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 		if( code != DBG_ALL )
 			g_dbgCode[static_cast<int>(code)] = true;
 		else									  // set all
 			g_dbgCode.set();
-		#endif
+#endif
 	}
 
 	/// set debug area, default to turn all code on
 	void TurnOnDebugWithName(string code)
 	{
-		#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 		for(int i=0; i < DBG_CODE_LENGTH; ++i)
 			if( code == g_dbgString[i])
 				TurnOnDebug(static_cast<DBG_CODE>(i));
-		#endif
+#endif
 	}
 
 	/// turn off debug, default to turn all code off
 	void TurnOffDebug(DBG_CODE code)
 	{
-		#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 		if( code != DBG_ALL )
 			g_dbgCode[static_cast<int>(code)] = false;
 		else									  // reset all
@@ -154,12 +154,12 @@ namespace simuPOP
 		if( debug( DBG_GENERAL) )
 			cout << "Debug code " << g_dbgString[static_cast<int>(code)]
 				<< " is turned off. cf. ListDebugCode(), TurnOnDebug()." << endl;
-		#else
+#else
 		cout << "Debug info is ignored in optimized mode." << endl;
-		#endif
+#endif
 	}
 
-	#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 	/// test if one code is turned on
 	/// in DEBUG section to make sure it will not be called
 	/// in optimized mode
@@ -167,11 +167,11 @@ namespace simuPOP
 	{
 		return g_dbgCode[code];
 	}
-	#endif
+#endif
 
 	void ListDebugCode()
 	{
-		#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 		cout << "Debug code \t On/Off" << endl;
 
 		for(int i=0; i < DBG_CODE_LENGTH; ++i)
@@ -180,9 +180,9 @@ namespace simuPOP
 		cout << endl;
 		if(debug(DBG_GENERAL))
 			cout << "cf. TurnOnDebug(), TurnOffDebug(). " << endl;
-		#else
+#else
 		cout << "Debug info is ignored in optimized mode." << endl;
-		#endif
+#endif
 	}
 
 	string dbgString(DBG_CODE code)
@@ -190,7 +190,7 @@ namespace simuPOP
 		return g_dbgString[code];
 	}
 
-	#ifdef Py_REF_DEBUG
+#ifdef Py_REF_DEBUG
 	long g_refTotal;
 	// give out at most these many warnings.
 	int g_refWarningCount;
@@ -210,13 +210,13 @@ namespace simuPOP
 				<< "\nthe problem.\n" << endl;
 		g_refTotal = _Py_RefTotal;
 	}
-	#endif
+#endif
 
 	//////////////////////////////////////////////////////////////
 	/// Some common functions/templates
 	//////////////////////////////////////////////////////////////
 
-	#if  defined(_WIN32) || defined(__WIN32__)
+#if  defined(_WIN32) || defined(__WIN32__)
 	int simuPOP_kbhit()
 	{
 		return _kbhit();
@@ -227,7 +227,7 @@ namespace simuPOP
 		return getch();
 	}
 
-	#else
+#else
 
 	int simuPOP_kbhit(void)
 	{
@@ -261,7 +261,7 @@ namespace simuPOP
 
 		return ch;
 	}
-	#endif
+#endif
 }
 
 
@@ -1438,17 +1438,17 @@ namespace simuPOP
 	}
 
 	/// returned values.
-	#define ExpressionValueAsType(T, TypeName, init) \
-		T Expression::valueAs##TypeName() \
-		{ \
-			PyObject* res = evaluate(); \
-			if( res==NULL ) \
-			return init; \
-			T val; \
-			PyObj_As_##TypeName(res, val); \
-			Py_XDECREF(res); \
-			return val; \
-		}
+#define ExpressionValueAsType(T, TypeName, init) \
+T Expression::valueAs##TypeName() \
+{ \
+	PyObject* res = evaluate(); \
+	if( res==NULL ) \
+	return init; \
+	T val; \
+	PyObj_As_##TypeName(res, val); \
+	Py_XDECREF(res); \
+	return val; \
+}
 
 		ExpressionValueAsType(bool, Bool, false);
 	ExpressionValueAsType(int, Int, 0);
@@ -2251,24 +2251,23 @@ namespace simuPOP
 		return m_cur;
 	}
 
-  	/// get a trial corresponding to m_prob.
+	/// get a trial corresponding to m_prob.
 	void BernulliTrials::trial()
 	{
 		if(m_cur == m_N )						  // reach the last trial
 			doTrial();
-        m_cur++;
+		m_cur++;
 	}
-  
-    bool BernulliTrials::trialSucc(size_t idx)
-    {
-        return m_table[idx][m_cur];
-    }
-	
-    void BernulliTrials::setTrialSucc(size_t idx, bool succ)
-    {
-        m_table[idx].set(m_cur, succ);
-    }
 
+	bool BernulliTrials::trialSucc(size_t idx)
+	{
+		return m_table[idx][m_cur];
+	}
+
+	void BernulliTrials::setTrialSucc(size_t idx, bool succ)
+	{
+		m_table[idx].set(m_cur, succ);
+	}
 
 	const BitSet& BernulliTrials::succ(UINT index)
 	{
@@ -2468,20 +2467,20 @@ namespace simuPOP
 		// tie python stdout to cout
 		setLogOutput();
 
-		#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 		// turn on some debug info
 		TurnOnDebug(DBG_GENERAL);
 		// give at most 100 ref count warnings.
-		#endif
-		#ifdef Py_REF_DEBUG
+#endif
+#ifdef Py_REF_DEBUG
 		g_refWarningCount = 100;
-		#endif
+#endif
 
 		// SIMUPOP_MODULE is passed as name, but we need it to be quoted.
 		// Note that under gcc, I could pass the macro from command line
 		// using \" \" but this trick does not work under VC.
 		// the following process is safer.
-		#define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
+#define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
 
 		// set global dictionary/variable
 		PyObject* mm = PyImport_AddModule(SimuPOP_Module_Name);
@@ -2513,31 +2512,31 @@ namespace simuPOP
 	// record COMPILER, PY_VERSION and __DATE__ , these info will
 	// be displayed when simuPOP is loaded.
 
-	#ifndef COMPILER
-	#ifdef __GNUC__
-	#define COMPILER "[GCC " __VERSION__ "]"
-	#endif
-	#endif										  /* !COMPILER */
+#ifndef COMPILER
+#ifdef __GNUC__
+#define COMPILER "[GCC " __VERSION__ "]"
+#endif
+#endif										  /* !COMPILER */
 
-	#ifndef COMPILER
-	#ifdef __cplusplus
-	#define COMPILER "[C++]"
-	#else
-	#define COMPILER "[C]"
-	#endif
-	#endif
+#ifndef COMPILER
+#ifdef __cplusplus
+#define COMPILER "[C++]"
+#else
+#define COMPILER "[C]"
+#endif
+#endif
 
-	#ifndef PLATFORM
-	#define PLATFORM ""
-	#endif
+#ifndef PLATFORM
+#define PLATFORM ""
+#endif
 
 	// these macros will be passed from commandline, if not, use the default
-	#ifndef SIMUPOP_REV
-	#define REVISION "9999"
-	#else
+#ifndef SIMUPOP_REV
+#define REVISION "9999"
+#else
 	// make passed macro to a real string
-	#define REVISION MacroQuote(SIMUPOP_REV)
-	#endif
+#define REVISION MacroQuote(SIMUPOP_REV)
+#endif
 
 	int simuRev()
 	{
@@ -2560,43 +2559,43 @@ namespace simuPOP
 
 	string simuVer()
 	{
-		#ifndef SIMUPOP_VER
+#ifndef SIMUPOP_VER
 		return "snapshot";
-		#else
+#else
 		// convert name to a string
 		return MacroQuote(SIMUPOP_VER);
-		#endif
+#endif
 	}
 
 	bool optimized()
 	{
-		#ifdef OPTIMIZED
+#ifdef OPTIMIZED
 		return(true);
-		#else
+#else
 		return(false);
-		#endif
+#endif
 	}
 
 	bool supportXML()
 	{
-		#ifdef __NO_XML_SUPPORT__
+#ifdef __NO_XML_SUPPORT__
 		return false;
-		#else
+#else
 		return true;
-		#endif
+#endif
 	}
 
 	string alleleType()
 	{
-		#ifdef LONGALLELE
+#ifdef LONGALLELE
 		return "long";
-		#else
-		#ifdef BINARYALLELE
+#else
+#ifdef BINARYALLELE
 		return "binary";
-		#else
+#else
 		return "short";
-		#endif
-		#endif
+#endif
+#endif
 	}
 
 	string compileCompiler()
@@ -2652,7 +2651,7 @@ namespace simuPOP
 			return string();
 	}
 
-	#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 	bool testGappedIterator()
 	{
 		vectorinfo a(20);
@@ -2682,6 +2681,6 @@ namespace simuPOP
 
 		return true;
 	}
-	#endif
+#endif
 
 }

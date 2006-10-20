@@ -83,14 +83,14 @@ namespace simuPOP
 				if( rate.size() > 1 && !atLoci.empty() && rate.size() != atLoci.size() )
 					throw ValueError("If both rates and atLoci are specified, they should have the same length.");
 
-			#ifdef BINARYALLELE
+#ifdef BINARYALLELE
 				DBG_WARNING( maxAllele > 1, "MaxAllele for binary libraries must be 1");
 				m_maxAllele = 1;
-			#else
+#else
 				DBG_ASSERT( maxAllele <= MaxAllele, ValueError,
 					"The maximum allele number exceeds " + toStr(MaxAllele)
 					+ ". \nIf you need longer allele size, please use simuPOP_la libraries.");
-			#endif
+#endif
 			}
 
 			/// destructor
@@ -132,9 +132,9 @@ namespace simuPOP
 			///
 			void setMaxAllele(UINT maxAllele)
 			{
-			#ifndef BINARYALLELE
+#ifndef BINARYALLELE
 				m_maxAllele = maxAllele;
-			#endif
+#endif
 			}
 
 			/// return mutation count
@@ -269,9 +269,9 @@ namespace simuPOP
 				output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 				m_incProb(incProb)
 			{
-			#ifdef BINARYALLELE
+#ifdef BINARYALLELE
 				DBG_WARNING(true, "Symetric stepwise mutation does not work well on two state alleles.");
-			#endif
+#endif
 				DBG_ASSERT( fcmp_ge( incProb, 0.) && fcmp_le( incProb, 1.),
 					ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
 			}
@@ -340,9 +340,9 @@ namespace simuPOP
 				DBG_ASSERT( fcmp_ge( incProb, 0.) && fcmp_le( incProb, 1.),
 					ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
 
-			#ifdef BINARYALLELE
+#ifdef BINARYALLELE
 				DBG_WARNING(true, "Generalized stepwise mutation does not work well on two state alleles.");
-			#endif
+#endif
 
 				if( func != NULL)				  // use this function
 				{
