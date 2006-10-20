@@ -360,7 +360,7 @@ namespace simuPOP
 			*/
 			individual& ind(ULONG ind, UINT subPop=0)
 			{
-			#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 				if( subPop > 0 )
 				{
 					CHECKRANGESUBPOPMEMBER(ind, subPop);
@@ -369,7 +369,7 @@ namespace simuPOP
 				{
 					CHECKRANGEIND(ind);
 				}
-			#endif
+#endif
 
 				return m_inds[ subPopBegin(subPop) + ind];
 			}
@@ -381,9 +381,9 @@ namespace simuPOP
 
 			individualIterator individuals(UINT subPop)
 			{
-			#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 				CHECKRANGESUBPOP(subPop);
-			#endif
+#endif
 
 				return individualIterator(this, subPopBegin(subPop), subPopEnd(subPop));
 			}
@@ -860,8 +860,8 @@ namespace simuPOP
 			/// add information field to a population
 			/// if the field already exists in the geno structure
 			/// match local info fields with the structure.
-            ///
-            /// the difficult part is for ancestral generations.
+			///
+			/// the difficult part is for ancestral generations.
 			int addInfoField(const string field);
 			void addInfoFields(const vectorstr& fields);
 
@@ -1321,9 +1321,9 @@ namespace simuPOP
 			/// need to store: subPopSize, genotype and m_inds
 			struct popData
 			{
-			#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 				GenoIterator m_startingGenoPtr;
-			#endif
+#endif
 				vectorlu m_subPopSize;
 				vectora m_genotype;
 				vectorinfo m_info;
@@ -1351,13 +1351,13 @@ namespace simuPOP
 	population& LoadPopulation(const string& file, const string& format="auto");
 
 	// debug functions that will only be available if SIMUDEBUG is defined
-	#ifdef SIMUDEBUG
+#ifdef SIMUDEBUG
 	/// get info through ind.info()
 	vectorf testGetinfoFromInd(population& pop);
 
 	/// get info through GappedInfoIterator
 	vectorf testGetinfoFromPop(population& pop, bool order);
-	#endif
+#endif
 
 }
 

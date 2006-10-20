@@ -205,7 +205,7 @@ namespace simuPOP
 
 	// define DEBUG codes
 	// DEbUG_CODE_LENGTH should be the number of debug codes
-	#define DBG_CODE_LENGTH 20
+#define DBG_CODE_LENGTH 20
 
 	enum DBG_CODE
 	{
@@ -236,80 +236,80 @@ namespace simuPOP
 	// in utility.cpp as well. Otherwise, turnOnDebug, turnOffDebug
 	// etc will be function well.
 
-	#define REP_ALL             -2
-	#define REP_CUR             -2
-	#define REP_LAST            -1
-	#define GRP_ALL             -1
-	#define PreMating            1
-	#define DuringMating         2
-	#define PostMating           4
+#define REP_ALL             -2
+#define REP_CUR             -2
+#define REP_LAST            -1
+#define GRP_ALL             -1
+#define PreMating            1
+#define DuringMating         2
+#define PostMating           4
 	// combinations of mating scheme.
-	#define PrePostMating        (PreMating+PostMating)
-	#define PreDuringMating      (PreMating+DuringMating)
-	#define DuringPostMating     (DuringMating+PostMating)
-	#define PreDuringPostMating  (PreMating+DuringMating+PostMating)
+#define PrePostMating        (PreMating+PostMating)
+#define PreDuringMating      (PreMating+DuringMating)
+#define DuringPostMating     (DuringMating+PostMating)
+#define PreDuringPostMating  (PreMating+DuringMating+PostMating)
 
 	// used to set local variables
-	#define subPopVar_String(sp, var) (string("subPop[") + toStr(sp) + "]{\'" + var + "\'}")
+#define subPopVar_String(sp, var) (string("subPop[") + toStr(sp) + "]{\'" + var + "\'}")
 
 	// standard library
-	#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 
-	#define DBG_ASSERT(cond, exception, message) \
-		if(!(cond)) \
-		{ \
-			throw exception( \
-			toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
-		}
+#define DBG_ASSERT(cond, exception, message) \
+if(!(cond)) \
+{ \
+	throw exception( \
+	toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
+}
 
-	#define DBG_FAILIF(cond, exception, message) \
-		if(cond) \
-		{ \
-			throw exception( \
-			toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
-		}
+#define DBG_FAILIF(cond, exception, message) \
+if(cond) \
+{ \
+	throw exception( \
+	toStr(__FILE__)+toStr(":")+toStr(__LINE__)+toStr(" ")+message); \
+}
 
-	#define DBG_WARNING(cond, message) \
-		if(cond) \
-		{ \
-			cout << "Warning (line " << __LINE__ << " in " << __FILE__ << "): " << message << endl; \
-		}
+#define DBG_WARNING(cond, message) \
+if(cond) \
+{ \
+	cout << "Warning (line " << __LINE__ << " in " << __FILE__ << "): " << message << endl; \
+}
 
-	#define DBG_DO(dbgCode, expr) \
-		if(debug(dbgCode)){ expr; }
+#define DBG_DO(dbgCode, expr) \
+if(debug(dbgCode)){ expr; }
 
-	#define DBG_DO_( expr) expr
+#define DBG_DO_( expr) expr
 
-	#else										  // optimized mode
+#else										  // optimized mode
 
-	#define DBG_ASSERT(cond, exception, message)
-	#define DBG_FAILIF(cond, exception, message)
-	#define DBG_WARNING(cond, message)
-	#define DBG_DO(dbgCode, expr)
-	#define DBG_DO_(expr)
-	#endif
+#define DBG_ASSERT(cond, exception, message)
+#define DBG_FAILIF(cond, exception, message)
+#define DBG_WARNING(cond, message)
+#define DBG_DO(dbgCode, expr)
+#define DBG_DO_(expr)
+#endif
 
 				// definition for all mode
 
 				// epsilon when during floating point comparison
-	#define cmp_epsilon (1.e-9)
+#define cmp_epsilon (1.e-9)
 
-	#define CLEARFLAG(var) (var = 0)
-	#define SETFLAG(var, flag) (var |= flag)
-	#define RESETFLAG(var, flag) (var &= ~flag)
-	#define ISSETFLAG(var, flag) (var & flag)
+#define CLEARFLAG(var) (var = 0)
+#define SETFLAG(var, flag) (var |= flag)
+#define RESETFLAG(var, flag) (var &= ~flag)
+#define ISSETFLAG(var, flag) (var & flag)
 
 				// check range.
-	#define CHECKRANGEPLOIDY(p)  DBG_FAILIF( p>=ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy()-1))
-	#define CHECKRANGESEX(sex) DBG_FAILIF( sex!=Male && sex!=Female, IndexError, "Wrong sex info. Male " + toStr(Male) + " or Fenamle "  + toStr(Female) + " only.")
-	#define CHECKRANGESUBPOP(subPop) DBG_FAILIF ( subPop >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  - " + toStr(numSubPop()-1))
-	#define CHECKRANGECHROM(chrom)   DBG_FAILIF ( chrom >= numChrom(), IndexError, "chromosome index (" + toStr(chrom) + ") out of range of 0 - " + toStr(numChrom()-1))
-	#define CHECKRANGELOCUS(chrom, locus) DBG_FAILIF( locus >= numLoci(chrom), IndexError, "locus index (" + toStr(chrom) + ") out of range of 0 - " + toStr(numLoci(chrom)-1))
-	#define CHECKRANGEABSLOCUS(locus) DBG_FAILIF(  locus >= totNumLoci(), IndexError, "absolute locus index (" + toStr(locus) + ") out of range of 0 - " + toStr(totNumLoci()-1))
-	#define CHECKRANGEGENOSIZE(p) DBG_FAILIF( p>=genoSize(),IndexError, "locus index  (" + toStr(p) + ") out of range of 0 - " + toStr(genoSize()-1))
-	#define CHECKRANGESUBPOPMEMBER(ind,sp) DBG_FAILIF( subPopSize(sp)>0 && ind >= subPopSize(sp), IndexError, "individual index (" + toStr(ind) + ") out of range 0 ~" + toStr(subPopSize(sp)-1) + " in subpopulation " + toStr(sp))
-	#define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, "individual index (" + toStr(ind) + ") is out of range of 0 ~ " + toStr(popSize()-1))
-	#define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= infoSize(), IndexError, "indo index (" + toStr(ind) + ") is out of rage of 0 ~ " + toStr(infoSize()-1))
+#define CHECKRANGEPLOIDY(p)  DBG_FAILIF( p>=ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy()-1))
+#define CHECKRANGESEX(sex) DBG_FAILIF( sex!=Male && sex!=Female, IndexError, "Wrong sex info. Male " + toStr(Male) + " or Fenamle "  + toStr(Female) + " only.")
+#define CHECKRANGESUBPOP(subPop) DBG_FAILIF ( subPop >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  - " + toStr(numSubPop()-1))
+#define CHECKRANGECHROM(chrom)   DBG_FAILIF ( chrom >= numChrom(), IndexError, "chromosome index (" + toStr(chrom) + ") out of range of 0 - " + toStr(numChrom()-1))
+#define CHECKRANGELOCUS(chrom, locus) DBG_FAILIF( locus >= numLoci(chrom), IndexError, "locus index (" + toStr(chrom) + ") out of range of 0 - " + toStr(numLoci(chrom)-1))
+#define CHECKRANGEABSLOCUS(locus) DBG_FAILIF(  locus >= totNumLoci(), IndexError, "absolute locus index (" + toStr(locus) + ") out of range of 0 - " + toStr(totNumLoci()-1))
+#define CHECKRANGEGENOSIZE(p) DBG_FAILIF( p>=genoSize(),IndexError, "locus index  (" + toStr(p) + ") out of range of 0 - " + toStr(genoSize()-1))
+#define CHECKRANGESUBPOPMEMBER(ind,sp) DBG_FAILIF( subPopSize(sp)>0 && ind >= subPopSize(sp), IndexError, "individual index (" + toStr(ind) + ") out of range 0 ~" + toStr(subPopSize(sp)-1) + " in subpopulation " + toStr(sp))
+#define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, "individual index (" + toStr(ind) + ") is out of range of 0 ~ " + toStr(popSize()-1))
+#define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= infoSize(), IndexError, "indo index (" + toStr(ind) + ") is out of rage of 0 ~ " + toStr(infoSize()-1))
 
 }
 #endif

@@ -240,10 +240,10 @@ namespace simuPOP
 	{
 		public:
 
-		#define SEL_None 0
-		#define SEL_Multiplicative 1
-		#define SEL_Additive 2
-		#define SEL_Heterogeneity 3
+#define SEL_None 0
+#define SEL_Multiplicative 1
+#define SEL_Additive 2
+#define SEL_Heterogeneity 3
 
 			typedef std::vector< Operator * > vectorop;
 
@@ -647,9 +647,9 @@ namespace simuPOP
 	{
 		public:
 
-		#define PEN_Multiplicative 1
-		#define PEN_Additive 2
-		#define PEN_Heterogeneity 3
+#define PEN_Multiplicative 1
+#define PEN_Additive 2
+#define PEN_Heterogeneity 3
 
 			typedef std::vector< Operator * > vectorop;
 
@@ -1102,8 +1102,8 @@ namespace simuPOP
 	{
 		public:
 
-		#define QT_Multiplicative 1
-		#define QT_Additive 2
+#define QT_Multiplicative 1
+#define QT_Additive 2
 
 			/// vector of operator pointers.
 			typedef std::vector< Operator * > vectorop;

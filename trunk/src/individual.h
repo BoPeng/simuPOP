@@ -9,7 +9,7 @@
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+*   (at your option) any later version.                                   *
  *                                                                         *
  *   This program is distributed in the hope that it will be useful,       *
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
@@ -153,7 +153,7 @@ namespace simuPOP
 			{
 			}
 
-		#if  defined(_WIN32) || defined(__WIN32__)
+#if  defined(_WIN32) || defined(__WIN32__)
 
 			// due to an weird compiling error fo vc7.1,
 			// if I do not specify these two functions, the ar & process
@@ -175,7 +175,7 @@ namespace simuPOP
 				boost::archive::binary_iarchive ia(ifs);
 				ia >> boost::serialization::make_nvp("geno_structure",*this);
 			}
-		#endif									  // win32
+#endif									  // win32
 
 		private:
 
@@ -287,8 +287,8 @@ namespace simuPOP
 	{
 		private:
 
-		#define TraitIndexType unsigned char
-		#define TraitMaxIndex 0xFF
+#define TraitIndexType unsigned char
+#define TraitMaxIndex 0xFF
 
 		public:
 			/// constructor, but m_genoStruIdx will be set later.

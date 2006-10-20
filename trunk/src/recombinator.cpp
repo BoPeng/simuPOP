@@ -45,7 +45,7 @@ namespace simuPOP
 			" explicitly specified.");
 
 		DBG_FAILIF(rate.size() > 1 && rate.size() != afterLoci.size(),
-			ValueError,	"If both rates and atLoci are specified, "
+			ValueError, "If both rates and atLoci are specified, "
 			"they should have the same length.");
 
 		bool useLociDist;
@@ -149,7 +149,7 @@ namespace simuPOP
 						}
 						else if(rate.size() == 1 && ! useLociDist)
 						{
-							if(rate[0] > 0)	  // ignore zero rate
+							if(rate[0] > 0)		  // ignore zero rate
 							{
 								vecP.push_back( rate[0]);
 								recBeforeLoci.push_back(index+1);
@@ -281,7 +281,7 @@ namespace simuPOP
 		if(setSex)
 		{
 			// sex chrom determination
-			// if curCp (last chromosome) is X, Female, otherwise Male. 
+			// if curCp (last chromosome) is X, Female, otherwise Male.
 			// Note that for daddy, the last one is arranged XY
 			if(m_hasSexChrom)
 				offspring->setSex(curCp==0?Female:Male);

@@ -89,10 +89,10 @@ namespace simuPOP
 	/// turn off debug, default to turn all code off
 	void TurnOffDebug(DBG_CODE code=DBG_ALL);
 
-	#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 	/// test if one code is turned on
 	bool debug(DBG_CODE code);
-	#endif
+#endif
 
 	/// show all dbg codes (print to cout)
 	void ListDebugCode();
@@ -100,13 +100,13 @@ namespace simuPOP
 	/// dbg string for a code
 	string dbgString(DBG_CODE code);
 
-	#ifdef Py_REF_DEBUG
+#ifdef Py_REF_DEBUG
 	/// refcount debug
 	void saveRefCount();
 
 	/// check if refcount increase
 	void checkRefCount();
-	#endif
+#endif
 
 	// ////////////////////////////////////////////////////////////
 	// / Some common functions/templates
@@ -122,13 +122,13 @@ namespace simuPOP
 
 	/// very important: re-define floating point comparison
 
-	#define fcmp_lt(a,b) (gsl_fcmp(a,b,cmp_epsilon) == -1)
-	#define fcmp_le(a,b) (gsl_fcmp(a,b,cmp_epsilon) <= 0 )
-	#define fcmp_gt(a,b) (gsl_fcmp(a,b,cmp_epsilon) == 1 )
-	#define fcmp_ge(a,b) (gsl_fcmp(a,b,cmp_epsilon) >= 0 )
-	#define fcmp_eq(a,b) (gsl_fcmp(a,b,cmp_epsilon) == 0 )
-	#define fcmp_ne(a,b) (gsl_fcmp(a,b,cmp_epsilon) != 0 )
-	#define f_asBool(a)  (fcmp_ne(a, 0.))
+#define fcmp_lt(a,b) (gsl_fcmp(a,b,cmp_epsilon) == -1)
+#define fcmp_le(a,b) (gsl_fcmp(a,b,cmp_epsilon) <= 0 )
+#define fcmp_gt(a,b) (gsl_fcmp(a,b,cmp_epsilon) == 1 )
+#define fcmp_ge(a,b) (gsl_fcmp(a,b,cmp_epsilon) >= 0 )
+#define fcmp_eq(a,b) (gsl_fcmp(a,b,cmp_epsilon) == 0 )
+#define fcmp_ne(a,b) (gsl_fcmp(a,b,cmp_epsilon) != 0 )
+#define f_asBool(a)  (fcmp_ne(a, 0.))
 }
 
 
@@ -387,9 +387,9 @@ namespace simuPOP
 	typedef GappedIterator<Allele, AlleleRef, GenoIterator> GappedAlleleIterator;
 	typedef GappedIterator<InfoType, InfoType&, InfoIterator> GappedInfoIterator;
 
-	#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 	bool testGappedIterator();
-	#endif
+#endif
 	// ////////////////////////////////////////////////////////////
 	// / Shared variables
 	// ////////////////////////////////////////////////////////////
@@ -630,50 +630,50 @@ namespace simuPOP
 	// ////////////////////////////////////////////////////////////
 	// A macro to call a python function and return value
 	// ////////////////////////////////////////////////////////////
-	#define PyCallFunc(func, format, param, retValue, converter) \
-		{ \
-			/* use local scope variable to avoid redefinition */ \
-			PyObject* arglist = Py_BuildValue(format, param); \
-			PyObject* pyResult = PyEval_CallObject(func, arglist); \
-			Py_XDECREF(arglist); \
-			if( pyResult == NULL) \
-			{ \
-				PyErr_Print(); \
-				throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
-			} \
-			converter(pyResult, retValue); \
-			Py_DECREF(pyResult); \
-		}
+#define PyCallFunc(func, format, param, retValue, converter) \
+{ \
+	/* use local scope variable to avoid redefinition */ \
+	PyObject* arglist = Py_BuildValue(format, param); \
+	PyObject* pyResult = PyEval_CallObject(func, arglist); \
+	Py_XDECREF(arglist); \
+	if( pyResult == NULL) \
+	{ \
+		PyErr_Print(); \
+		throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
+	} \
+	converter(pyResult, retValue); \
+	Py_DECREF(pyResult); \
+}
 
-	#define PyCallFunc2(func, format, param1, param2, retValue, converter) \
-		{ \
-			/* use local scope variable to avoid redefinition */ \
-			PyObject* arglist = Py_BuildValue(format, param1, param2); \
-			PyObject* pyResult = PyEval_CallObject(func, arglist); \
-			Py_XDECREF(arglist); \
-			if(pyResult == NULL) \
-			{ \
-				PyErr_Print(); \
-				throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
-			} \
-			converter(pyResult, retValue); \
-			Py_DECREF(pyResult); \
-		}
+#define PyCallFunc2(func, format, param1, param2, retValue, converter) \
+{ \
+	/* use local scope variable to avoid redefinition */ \
+	PyObject* arglist = Py_BuildValue(format, param1, param2); \
+	PyObject* pyResult = PyEval_CallObject(func, arglist); \
+	Py_XDECREF(arglist); \
+	if(pyResult == NULL) \
+	{ \
+		PyErr_Print(); \
+		throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
+	} \
+	converter(pyResult, retValue); \
+	Py_DECREF(pyResult); \
+}
 
-	#define PyCallFunc3(func, format, param1, param2, param3, retValue, converter) \
-		{ \
-			/* use local scope variable to avoid redefinition */ \
-			PyObject* arglist = Py_BuildValue(format, param1, param2, param3); \
-			PyObject* pyResult = PyEval_CallObject(func, arglist); \
-			Py_XDECREF(arglist); \
-			if( pyResult == NULL) \
-			{ \
-				PyErr_Print(); \
-				throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
-			} \
-			converter(pyResult, retValue); \
-			Py_DECREF(pyResult); \
-		}
+#define PyCallFunc3(func, format, param1, param2, param3, retValue, converter) \
+{ \
+	/* use local scope variable to avoid redefinition */ \
+	PyObject* arglist = Py_BuildValue(format, param1, param2, param3); \
+	PyObject* pyResult = PyEval_CallObject(func, arglist); \
+	Py_XDECREF(arglist); \
+	if( pyResult == NULL) \
+	{ \
+		PyErr_Print(); \
+		throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
+	} \
+	converter(pyResult, retValue); \
+	Py_DECREF(pyResult); \
+}
 
 				// ////////////////////////////////////////////////////////////
 				// Expression evaluation
@@ -1287,7 +1287,7 @@ namespace simuPOP
 			}
 
 			// print internal table
-		#ifndef OPTIMIZED
+#ifndef OPTIMIZED
 			vectorf q()
 			{
 				return m_q;
@@ -1297,7 +1297,7 @@ namespace simuPOP
 			{
 				return m_a;
 			}
-		#endif
+#endif
 
 		private:
 			/// pointer to a RNG
@@ -1376,11 +1376,11 @@ namespace simuPOP
 				return m_prob;
 			}
 
-            size_t probSize() const
-            {
-                return m_prob.size();
-            }
-            
+			size_t probSize() const
+			{
+				return m_prob.size();
+			}
+
 			/// CPPONLY
 			void setParameter(const vectorf& prob, ULONG trials);
 
@@ -1392,12 +1392,12 @@ namespace simuPOP
 
 			/// if necessary, do trail again.
 			/// CPPONLY
-            void trial();
+			void trial();
 
-            bool trialSucc(size_t idx);
-            
+			bool trialSucc(size_t idx);
+
 			void setTrialSucc(size_t idx, bool succ);
-            
+
 			/// return succeed trials for p[index]
 			/// fail when m_cur is not 0. (i.e., has retrieve the table through trial()
 			/// CPPONLY

@@ -566,7 +566,7 @@ namespace simuPOP
 		vectori chosenOff, chosenPar;
 		vectori nSibpairSP(pop.numSubPop());
 
-		if(m_size.size() <= 1)				  // draw from the whole population
+		if(m_size.size() <= 1)					  // draw from the whole population
 		{
 			DBG_DO(DBG_SELECTOR, cout << "Draw from the whole population." << endl);
 
@@ -623,8 +623,8 @@ namespace simuPOP
 					std::pair<ULONG, ULONG>((ULONG)(tag.first), (ULONG)(tag.second))
 					);
 				DBG_DO(DBG_SELECTOR, cout << i << ": Off: " << int(allSibs[ idx[i] ].first) << " " <<
-					 int(allSibs[ idx[i] ].second) << " Par: " << pop.ind(allSibs[ idx[i]].first ).info(m_father_id) <<
-					 " " << pop.ind(allSibs[ idx[i]].first ).info(m_mother_id) << endl);
+					int(allSibs[ idx[i] ].second) << " Par: " << pop.ind(allSibs[ idx[i]].first ).info(m_father_id) <<
+					" " << pop.ind(allSibs[ idx[i]].first ).info(m_mother_id) << endl);
 			}
 
 			// keep the order and count number of selected ones in each subpop
@@ -710,11 +710,11 @@ namespace simuPOP
 
 		for(size_t i=0; i< parents.size(); ++i)
 		{
-			DBG_ASSERT(newPop.ind(parents[i].first).subPopID() == -1, SystemError, 
+			DBG_ASSERT(newPop.ind(parents[i].first).subPopID() == -1, SystemError,
 				"Duplicate parents are selected: " + toStr(i) + \
 				" This can be caused by uni-sex mating so that one individual can be both " + \
 				" father and mother ");
-			DBG_ASSERT(newPop.ind(parents[i].second).subPopID() == -1, SystemError, 
+			DBG_ASSERT(newPop.ind(parents[i].second).subPopID() == -1, SystemError,
 				"Duplicate parents are selected: " + toStr(i) + \
 				" This can be caused by uni-sex mating so that one individual can be both " + \
 				" father and mother ");
