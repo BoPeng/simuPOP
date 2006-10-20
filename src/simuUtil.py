@@ -1568,5 +1568,261 @@ def ChiSq_test(pop, loci=[]):
     return pvalue
 
 
+
+def SampleLargePedigree(pop, numPedigree, minPedSize=5, minAffected=2, maxOffspring=5,
+     output='', outputExpr='', fields=[], 
+     loci=[], combine=None, shift=1):
+    ''' ascertain large pedigrees, this is implemented in python first, and will be implemented at C++ level
+      later.
+    
+      Assumes: a population with three generations
+      Aim: to get pedigrees related to each grandparents
+      paremeters:
+        pop: population
+        numPedigree: number of pedigrees to sample
+        minPedSize: minimal size of pedigree (total number of family members
+        minAffected: number of affected individuals
+      Output:
+        save in sqtl format, with information fields.
+    '''
+    from sets import Set
+    from random import shuffle
+    if pop.ancestralDepth < 2:
+        print "This population should have at least three generations saved."
+    # step 1. add inforfields for offspring
+    pop.addInfoFields(['pedindex', 'spouse'] + ['offspring%d' % x for x in range(maxOffspring)])
+    # parent generation
+    for ans in (1, 2):
+        pop.useAncestralPop(ans-1)
+        # cache all parental information, need to be in order
+        dad = list(pop.indInfo('father_idx', True))
+        mom = list(pop.indInfo('mother_idx', True))
+        pop.useAncestralPop(ans)
+        for idx,ind in enumerate(pop.individuals()):
+            # find all offspring in the offspring generation
+            if ind.sex() == Male:
+                numOff = min(dad.count(idx), maxOffspring)
+                start = 0
+                for i in range(numOff):
+                    start = dad.index(idx, start)
+                    ind.setInfo(start, 'offspring%d' % i)
+                    start += 1
+            else:
+                numOff = min(mom.count(idx), maxOffspring)
+                start = 0
+                for i in range(numOff):
+                    start = mom.index(idx, start)
+                    ind.setInfo(start, 'offspring%d' % i)
+                    start += 1
+            # print idx, ind.arrInfo()
+            for i in range(numOff, maxOffspring):
+                ind.setInfo(-1, 'offspring%d' % i)
+    # now, for all indvidual, we know their parents, and all offsprings
+    pop.useAncestralPop(2)
+    g3size = pop.popSize();
+    pedindex = 1
+    usedParents = Set()
+    usedChildren = Set()
+    validPedigrees = []
+    for idx in range(g3size):
+        pop.useAncestralPop(2)
+        #
+        pedSize = 1
+        if pop.individual(idx).affected():
+            numAffected = 1
+        else:
+            numAffected = 0
+        parents = filter(lambda x: x!=-1 and x not in usedParents, 
+            [pop.individual(idx).info('offspring%d' % i) for i in range(maxOffspring)])
+        # print idx, parents
+        if len(parents) > 0:
+            # valid pedigree
+            pop.individual(idx).setInfo(pedindex, 'pedindex')
+        else:
+            pedindex += 1
+            continue
+        # go to parent generation
+        pop.useAncestralPop(1)
+        children = []
+        for par in parents:
+            children.extend(filter(lambda x: x!=-1 and x not in usedChildren, [pop.individual(int(par)).info('offspring%d' % i) for i in range(maxOffspring)]))
+        if len(children) == 0:
+            pedindex += 1
+            continue
+        # go to current generation
+        pop.useAncestralPop(0)
+        parentsofchildren = []
+        for child in children:
+            ind = pop.individual(int(child))
+            ind.setInfo(pedindex, 'pedindex')
+            parentsofchildren.append(ind.info('father_idx'))
+            parentsofchildren.append(ind.info('mother_idx'))
+            if ind.affected():
+                numAffected += 1
+            pedSize += 1
+        # go to the parents generation and set pedindex for missing ones
+        pop.useAncestralPop(1)
+        for par in parentsofchildren:
+            ind = pop.individual(int(par))
+            if ind.info('pedindex') == 0:
+                ind.setInfo(pedindex, 'pedindex')
+                pedSize += 1
+                if ind.affected():
+                    numAffected += 1
+        usedParents.union_update(parentsofchildren)
+        usedChildren.union(children)
+        # print 'Pedigree: %d, size: %d, numAffected: %d ' % (pedindex, pedSize, numAffected)
+        if numAffected >= minAffected and pedSize >= minPedSize:
+            validPedigrees.append(pedindex)
+        pedindex += 1
+    pop.useAncestralPop(0)
+    # print the pedigrees
+    if len(validPedigrees) < numPedigree:
+        print "Only %d valid pedigrees are found. " % len(validPedigrees)
+    else:
+        # randomly choose numPedigree of pedigrees
+        shuffle(validPedigrees)
+        validPedigrees = validPedigrees[:numPedigree]
+        validPedigrees.sort()
+    # now, output these pedigrees
+    if len(validPedigrees) == 0:
+        print "No valid pedigree is found. No output"
+        return
+    # print validPedigrees
+    saveLargePedigree(pop, validPedigrees, output=output, outputExpr=outputExpr, 
+        fields=fields, loci=loci, combine=combine, shift=shift)
+    return pop
+            
+
+def saveLargePedigree(pop, pedigrees, output='', outputExpr='', fields=[], 
+        loci=[], combine=None, shift=1, **kwargs):
+    '''
+    save pedigrees from a large population, in csv format
+    '''
+    if output != '':
+        file = output
+    elif outputExpr != '':
+        file = eval(outputExpr, globals(), pop.vars() )
+    else:
+        raise exceptions.ValueError, "Please specify output or outputExpr"
+    if loci == []:
+        loci = range(0, pop.totNumLoci())
+    try:
+        out = open( file, "w")
+    except exceptions.IOError:
+        raise exceptions.IOError, "Can not open file " + file +" to write."
+    # keep the content of pieces in strings first
+    content = [''] * pop.numChrom()
+    # for each family
+    def sexCode(ind):
+        if ind.sex() == Male:
+            return 1
+        else:
+            return 2
+    # disease status: in linkage affected is 2, unaffected is 1
+    def affectedCode(ind):
+        if ind.affected():
+            return 'a'
+        else:
+            return 'u'
+    # write out header
+    print >> out, 'famid, id, fa, mo, sex, aff,',
+    if len(fields) > 0:
+        print >> out, ', '.join(fields), ', ',
+    if combine is None:
+        print >> out, ', '.join(['marker%s_1, marker%s_2' % (marker, marker) for marker in loci])
+    else:
+        print >> out, ', '.join(['marker%s' % marker for marker in loci])
+    # collect all informations
+    pop.useAncestralPop(2)
+    grandparents = []
+    for idx, ind in enumerate(pop.individuals()):
+        if int(ind.info('pedindex')) in pedigrees:
+            grandparents.append([idx, 0, 0, int(ind.info('pedindex'))])
+    print grandparents
+    if len(grandparents) == 0:
+        print "Something wrong. no qualified grandparents for pedigree"
+    pop.useAncestralPop(1)
+    parents = []
+    for idx, ind in enumerate(pop.individuals()):
+        if int(ind.info('pedindex')) in pedigrees:
+            father = int(ind.info('father_idx'))
+            mother = int(ind.info('mother_idx'))
+            # print idx, ind.info('pedindex'), father, mother
+            if father not in [x[0] for x in grandparents]:
+                father = 0
+            if mother not in [x[0] for x in grandparents]:
+                mother = 0
+            # parent can have no parents
+            parents.append([idx, father, mother, int(ind.info('pedindex'))])
+    print parents
+    if len(parents) == 0:
+        print "Something wrong. no qualified parents for pedigree"
+    pop.useAncestralPop(0)
+    children = []
+    for idx, ind in enumerate(pop.individuals()):
+        if int(ind.info('pedindex')) in pedigrees:
+            father = int(ind.info('father_idx'))
+            mother = int(ind.info('mother_idx'))
+            if father not in [x[0] for x in parents]:
+                father = 0
+            if mother not in [x[0] for x in parents]:
+                mother = 0
+            if mother == 0 and father == 0:
+                print "Something wrong, no parent for a child"
+            children.append([idx, father, mother, int(ind.info('pedindex'))])
+    if len(children) == 0:
+        print "Something wrong. no qualified children for pedigree"
+    # write out
+    pldy = pop.ploidy()
+    def writeInd(ind, famID, id, fa, mo):
+        print >> out, '%d, %d, %d, %d, %s, %s' % (famID, id, fa, mo, sexCode(ind), affectedCode(ind)),
+        for f in fields:
+            print >> out, ', ', ind.info(f),
+        for marker in loci:
+            if combine is None:
+                for p in range(pldy):
+                    print >> out, ", %d" % (ind.allele(marker, p) + shift), 
+            else:
+                print >> out, ", %d" % combine([ind.allele(marker, p) for p in range(pldy)]), 
+        print >> out
+    #
+    for ped in pedigrees:
+        # start from grand parents
+        id = 1
+        grandidmap = {0:0}
+        # all grandparents
+        pop.useAncestralPop(2)
+        inds = filter(lambda x: x[-1] == ped, grandparents)
+        if len(inds) == 0:
+            print "Something wrong. No grandparent for pedigree ", ped
+        for ind in inds:
+            writeInd(pop.individual(ind[0]), ped, id, 0, 0)
+            grandidmap[ind[0]] = id
+            id += 1
+        # all parents
+        print grandidmap
+        parentsidmap = {0:0}
+        pop.useAncestralPop(1)
+        inds = filter(lambda x: x[-1] == ped, parents)
+        if len(inds) == 0:
+            print "Something wrong. No parent for pedigree ", ped
+        for ind in inds:
+            writeInd(pop.individual(ind[0]), ped, id, \
+                grandidmap.setdefault(ind[1], 0), grandidmap.setdefault(ind[2], 0))
+            parentsidmap[ind[0]] = id
+            id += 1
+        # all children
+        pop.useAncestralPop(0)
+        inds = filter(lambda x: x[-1] == ped, children)
+        if len(inds) == 0:
+            print "Something wrong. No children for pedigree ", ped
+        for ind in inds:
+            writeInd(pop.individual(ind[0]), ped, id, \
+                parentsidmap.setdefault(ind[1], 0), parentsidmap.setdefault(ind[2], 0))
+            id += 1
+    out.close() 
+
+
 if __name__ == "__main__":
     pass
