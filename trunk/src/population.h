@@ -860,7 +860,10 @@ namespace simuPOP
 			/// add information field to a population
 			/// if the field already exists in the geno structure
 			/// match local info fields with the structure.
+            ///
+            /// the difficult part is for ancestral generations.
 			int addInfoField(const string field);
+			void addInfoFields(const vectorstr& fields);
 
 			/// set information fields, remove the old one
 			void setInfoFields(const vectorstr& fields);

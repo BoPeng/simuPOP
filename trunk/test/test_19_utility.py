@@ -103,5 +103,19 @@ class TestRNG(unittest.TestCase):
         self.assertEqual(testGappedIterator(), True)
             
     
+    def TestLargePedigree(self):
+        'Test getting large pedigree, for simuUtils.ascertainPedigree'
+        import simuUtil
+        pop = population(100, ancestralDepth=2, infoFields=['father_idx', 'mother_idx'])
+        simu = simulator(pop, randomMating(numOffspring=0.3, mode=MATE_GeometricDistribution))
+        simu.evolve(ops=[parentsTagger()], end=5)
+        pop = simu.population(0)
+        #
+        simuUtil.SampleLargePedigree(pop, numPedigree=10, minPedSize=5, minAffected=0, maxOffspring=5,
+            output='ped.csv', loci=[], combine=None)
+
+        
+
+
 if __name__ == '__main__':
     unittest.main()

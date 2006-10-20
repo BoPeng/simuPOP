@@ -913,31 +913,74 @@ namespace simuPOP
 
 		/// adjust information size.
 		UINT is = infoSize();
-		vectorinfo newInfo(is*popSize());
-		/// copy the old stuff in
-		InfoIterator ptr = newInfo.begin();
-		for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
-		{
-			copy(ind->infoBegin(), ind->infoBegin() + is-1, ptr);
-			ind->setInfoPtr(ptr);
-			ptr += is;
-		}
-		m_info.swap(newInfo);
+        for(UINT anc=0; anc <= m_ancestralDepth; anc++)
+        {
+    		vectorinfo newInfo(is*popSize());
+	    	/// copy the old stuff in
+		    InfoIterator ptr = newInfo.begin();
+    		for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
+	    	{
+		    	copy(ind->infoBegin(), ind->infoBegin() + is-1, ptr);
+			    ind->setInfoPtr(ptr);
+    			ptr += is;
+	    	}
+		    m_info.swap(newInfo);
+        }
 		return index;
 	}
+    
+    void population::addInfoFields(const vectorstr& fields)
+	{
+		DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
+            "Info size is wrong")
+        // oldsize
+        UINT os = infoSize();
+        for(vectorstr::const_iterator it=fields.begin(); it!=fields.end(); ++it)
+        {
+    		try
+    		{
+                // has field
+		    	infoIdx(*it);
+		    }
+    		catch(IndexError&e)
+		    {
+			    struAddInfoField(*it);
+    		}
+        }
 
+		/// adjust information size.
+		UINT is = infoSize();
+        for(UINT anc=0; anc <= m_ancestralDepth; anc++)
+        {
+            useAncestralPop(anc);
+    		vectorinfo newInfo(is*popSize(), 0.);
+	    	/// copy the old stuff in
+		    InfoIterator ptr = newInfo.begin();
+    		for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
+	    	{
+		    	copy(ind->infoBegin(), ind->infoBegin() + os, ptr);
+			    ind->setInfoPtr(ptr);
+    			ptr += is;
+	    	}
+		    m_info.swap(newInfo);
+        }
+	}
+    
 	/// set fields
 	void population::setInfoFields(const vectorstr& fields)
 	{
 		struSetInfoFields(fields);
 
 		/// reset info vector
-		vectorinfo newInfo(infoSize()*popSize());
-		InfoIterator ptr = newInfo.begin();
-		UINT is = infoSize();
-		for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind, ptr += is)
-			ind->setInfoPtr(ptr);
-		m_info.swap(newInfo);
+  		UINT is = infoSize();
+        for(UINT anc=0; anc <= m_ancestralDepth; anc++)
+        {
+    		vectorinfo newInfo(is*popSize());
+	    	InfoIterator ptr = newInfo.begin();
+    		for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind, ptr += is)
+	    		ind->setInfoPtr(ptr);
+		    m_info.swap(newInfo);
+        }
 	}
 
 	/// set ancestral depth, can be -1
