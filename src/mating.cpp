@@ -2076,6 +2076,9 @@ namespace simuPOP
 			population::IndIterator itEnd = scratch.indEnd(sp);
 			population::IndIterator itBegin = it;
 			UINT numOS = 0;
+			/// if mor ethan noAAattempt times, no pure homo found,
+			/// accept non-homo cases.
+			int AAattempt = 200;
 			while(true)
 			{
 				// the logic is complicated here and I will try to be explicit
@@ -2129,6 +2132,7 @@ namespace simuPOP
 
 				itBegin = it;
 				numOS = numOffspring(pop.gen());
+				// note that this is still valid in stack stage
 				if(numOS > itEnd - it)
 					numOS = itEnd - it;
 				// generate numOffspring offspring per mating
@@ -2140,7 +2144,6 @@ namespace simuPOP
 				for(i=0; i<nLoci; ++i)
 					na[i] = 0;
 				hasAff = false;
-				int noAAcount = 0;
 				/*
 				for(population::IndIterator tmp=itBegin; tmp != it; ++tmp)
 				{
@@ -2186,20 +2189,19 @@ namespace simuPOP
 					{
 						if(!hasAff)
 						{
-							// has AA, so no need to compromise
-							noAAcount = -1;
+							// has AA, so we have less reason to compromise
+							// but it might still be very difficult to find one,
+							// so we still allow accepting of "wrong" individuals.
+							AAattempt = 10000;
 							accept = true;
 						}
 						// tried 100 times, no AA is found.
-						else if(noAAcount >= 100)
+						else if(AAattempt == 0)
 						{
-							if(noAAcount == 100)
-								cout << "Warning: there might not be any AA, accept unqualified individuals." << endl;
-							noAAcount++;
+							AAattempt = 100;
 							accept = true;
 						}
-						else if(noAAcount >= 0)
-							noAAcount ++;
+						AAattempt --;
 					}
 					else
 						// we accept affected helpful ones, and purely unsffected ones,
@@ -2250,13 +2252,13 @@ namespace simuPOP
 					{
 						// this family is in stack, might be
 						m_stack.push(itBegin);
-						DBG_DO(DBG_MATING, cout << "Push in stack " << m_stack.size() << endl);
+						DBG_DO(DBG_DEVEL, cout << "Push in stack " << m_stack.size() << endl);
 					}
 					// accepted,
 					if(stackStage)
 					{
 						m_stack.pop();
-						DBG_DO(DBG_MATING, cout << "Pop index " << m_stack.size() << endl);
+						DBG_DO(DBG_DEVEL, cout << "Pop index " << m_stack.size() << endl);
 					}
 					// see if break
 					if(it == itEnd)
@@ -2265,7 +2267,10 @@ namespace simuPOP
 						DBG_DO(DBG_MATING, cout << "Stack stage " << m_stack.size() << endl);
 					}
 					if(freqRequMet && stackStage)
+					{
+						DBG_DO(DBG_MATING, cout << "Finish generating offspring" << endl);
 						break;
+					}
 				}
 				else
 				{
@@ -2279,19 +2284,16 @@ namespace simuPOP
 						if(!hasAff)
 						{
 							// has AA, so no need to compromise
-							noAAcount = -1;
+							AAattempt = 10000;
 							accept = true;
 						}
 						// tried 100 times, no AA is found.
-						else if(noAAcount >= 100)
+						else if(AAattempt == 0)
 						{
-							if(noAAcount == 100)
-								cout << "Warning: there might not be any AA, accept unqualified individuals." << endl;
-							noAAcount++;
+							AAattempt = 100;
 							accept = true;
 						}
-						else if(noAAcount >= 0)
-							noAAcount ++;
+						AAattempt --;
 					}
 					else						  // do not use stack
 					{
