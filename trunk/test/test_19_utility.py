@@ -111,8 +111,11 @@ class TestRNG(unittest.TestCase):
         simu.evolve(ops=[parentsTagger()], end=5)
         pop = simu.population(0)
         #
-        simuUtil.SampleLargePedigree(pop, numPedigree=10, minPedSize=5, minAffected=0, maxOffspring=5,
-            output='ped.csv', loci=[], combine=None)
+        def comb(geno):
+            return sum(geno)+1
+        SampleLargePedigree(pop, numPedigree=10, minPedSize=5, minAffected=0, 
+            maxOffspring=5, output='ped', loci=[], combine=comb)
+        simuUtil.VC_merlin('ped')
 
         
 

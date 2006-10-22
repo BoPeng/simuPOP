@@ -896,7 +896,7 @@ namespace simuPOP
 	}
 
 	/// add field
-	int population::addInfoField(const string field)
+	int population::addInfoField(const string field, double init)
 	{
 		// if this field exists, return directly
 		UINT index;
@@ -922,8 +922,9 @@ namespace simuPOP
 			InfoIterator ptr = newInfo.begin();
 			for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
 			{
-				copy(ind->infoBegin(), ind->infoBegin() + is-1, ptr);
+				copy(ind->infoBegin(), ind->infoBegin() + is - 1, ptr);
 				ind->setInfoPtr(ptr);
+                fill(ind->infoBegin() + is - 1, ind->infoEnd(), init);
 				ptr += is;
 			}
 			m_info.swap(newInfo);
@@ -932,7 +933,7 @@ namespace simuPOP
 		return index;
 	}
 
-	void population::addInfoFields(const vectorstr& fields)
+	void population::addInfoFields(const vectorstr& fields, double init)
 	{
 		DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
 			"Info size is wrong")
@@ -964,6 +965,7 @@ namespace simuPOP
 			{
 				copy(ind->infoBegin(), ind->infoBegin() + os, ptr);
 				ind->setInfoPtr(ptr);
+                fill(ind->infoBegin() + os, ind->infoEnd(), init);
 				ptr += is;
 			}
 			m_info.swap(newInfo);
@@ -972,7 +974,7 @@ namespace simuPOP
 	}
 
 	/// set fields
-	void population::setInfoFields(const vectorstr& fields)
+	void population::setInfoFields(const vectorstr& fields, double init)
 	{
 		struSetInfoFields(fields);
 
@@ -982,7 +984,7 @@ namespace simuPOP
 		for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 		{
 			useAncestralPop(anc);
-			vectorinfo newInfo(is*popSize());
+			vectorinfo newInfo(is*popSize(), init);
 			InfoIterator ptr = newInfo.begin();
 			for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind, ptr += is)
 				ind->setInfoPtr(ptr);
