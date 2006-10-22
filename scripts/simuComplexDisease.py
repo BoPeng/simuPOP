@@ -251,7 +251,7 @@ options = [
     #
     {'separator': 'Migration parameters:'},    
     {'longarg': 'numSubPop=',
-     'default': 5,
+     'default': 1,
      'label': 'Number of subpopulations to split',
      'allowedTypes': [types.IntType],
      'description': 'Number of subpopulations to be split into after burnin stage.',
@@ -365,7 +365,38 @@ options = [
                  Note that the distance between 3-x, x-5 is smaller than distance
                  between markers.
      ''',
-     'validate':    simuOpt.valueListOf(simuOpt.valueBetween(0,1))
+     'validate': simuOpt.valueListOf(simuOpt.valueBetween(0,1))
+    },
+    #
+    {'separator': 'Final population preparation:'},
+    {'longarg': 'savedGen=',
+     'default': 2,
+     'label': 'Generations to save',
+     'allowedTypes': [types.IntType, types.LongType],
+     'validate': simuOpt.valueBetween(1, 3),
+     'description': '''How many generations to save in the final population. 1 means no parental 
+                generations, and 3 means grandparent, parent and current generations. Default
+                is two, which is good for sampling schemes like affected sibpair sampling.''',
+    },
+    {'longarg': 'numOffspring=',
+     'default': 2,
+     'allowedTypes': [types.FloatType, types.IntType, types.LongType],
+     'label': 'Number of offspring per mating', 
+     'description': '''Number of offspring in these last generations. 2 is good for affected sibpair. More
+                is needed for the sampling of large pedigrees. The value can be the number of offspring
+                per mating when numOffMode=constant, but can also be parameters for a distribution. Details
+                see description of numOffMode.''',
+     'validate': simuOpt.valueGT(0),
+    },
+    {'longarg': 'numOffMode=',
+     'default': 'constant',
+     'label': 'Mode to determine number of offspring', 
+     'chooseOneOf': [ 'constant', 'geometric'],
+     'allowedTypes': [types.StringType],
+     'description': '''Two ways to determine number of offspring. If constant, numOffspring will be used
+                to generate the same number of offspring per mating event (in the final generations). If
+                'geometric', P(k) = p*(1-p)^(k-1) where p=numOffspring. 0<p<1. The mean number of offspring
+                is 1/p. This mode can be used when you need some large pedigrees.''',
     },
     #
     # 
@@ -566,7 +597,8 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreqTmp, minMutAge, maxMutAge, fitnessTmp, mlSelModelTmp, 
-        mutaRate, recRate, dryrun, savePop, filename, format):
+        mutaRate, recRate, savedGen, numOffspring, numOffMode, 
+        dryrun, savePop, filename, format):
     ''' run a simulation of complex disease with given parameters. 
     '''    
     ###
@@ -606,6 +638,9 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
                 raise exceptions.ValueError("Please specify fitness for each DSL")
             else:
                 fitness = fitnessTmp
+    # number of offspring
+    if numOffMode == 'geometric' and numOffspring > 1:
+        raise exceptions.ValueError("numOffspring is p for a geometric distribution when numOffMode='geometric'. It should be elss than 1.") 
     ###
     ### simulating population frequency
     ### 
@@ -794,15 +829,6 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         operators.append( migrator(migrSteppingStoneRates(migrRate, numSubPop, 
             circular=True),    mode=MigrByProbability, begin=mixingGen) )
     ###
-    ### prepare for sampling:
-    ###
-    operators.extend([
-        # save ancestral populations starting at -2 gen
-        setAncestralDepth(1, at=[-2]),
-        # track pedigree
-        parentsTagger(begin=-2),
-    ])
-    ###
     ### output statistics, track performance
     ###
     operators.extend([
@@ -820,18 +846,18 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ### 
     ### prepare mating scheme
     ###
-    ### use last_two numOffspringFunc, simuPOP will produce 2 offspring at 
-    ### the last two generations
-    ###
-    def last_two(gen):
-        if gen >= endingGen -2:
-            return 2
+    ### use ancestralDepth, 
+    def saveAncestors(gen):
+        if gen >= endingGen - savedGen:
+            return savedGen
         else:
             return 1
-    # create a simulator
+    # create a population, note that I add needed information 
+    # fields father_idx, mother_idx later on, with the hope 
+    # that simulation can run a bit faster without them. 
     pop = population(subPop=popSizeFunc(0), ploidy=2,
         loci = loci, maxAllele = maxAle, lociPos = lociPos,
-        infoFields=['fitness', 'father_idx', 'mother_idx'])
+        infoFields = ['fitness'])
     # save DSL info, some operators will use it.
     pop.dvars().DSL = DSL
     pop.dvars().numLoci = numLoci
@@ -846,7 +872,6 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     simu = simulator( pop, 
         controlledRandomMating(
             newSubPopSizeFunc=popSizeFunc,            # demographic model
-            numOffspringFunc=last_two,                    # save last two generations
             loci=DSL,                                                     # which loci to control
             alleles=[1]*numDSL,                                 # which allele to control
             freqFunc=trajFunc                                     # frequency control function
@@ -854,9 +879,27 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         rep=1)
     # evolve! If --dryrun is set, only show info
     simu.evolve( preOps = preOperators, ops = operators, 
-        end=endingGen, dryrun=dryrun )
+        end=endingGen-savedGen, dryrun=dryrun )
     if dryrun:
         raise exceptions.SystemError("Stop since in dryrun mode.")
+    # prepare for the last several generations
+    # change mating scheme to random mating.
+    #
+    # save saveGen-1 ancestral generations
+    simu.population(0).setAncestralDepth(savedGen-1)
+    simu.population(0).addInfoFields(['father_idx', 'mother_idx'])
+    operators.append(parentsTagger())
+    simu.setMatingScheme(
+        randomMating(
+            newSubPopSizeFunc=popSizeFunc,            # demographic model
+            numOffspring = numOffspring,
+            mode = {'constant': MATE_NumOffspring, 
+                    'geometric': MATE_GeometricDistribution
+                   }[numOffMode]
+        )
+    )
+    # different evolution method for the last few generations
+    simu.evolve(ops=operators, end=endingGen)
     # succeed save information
     pop = simu.population(0)
     # we want to save info on how this population is generated.
@@ -876,6 +919,8 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     pop.dvars().alleleDistInSubPop = alleleDistInSubPop
     pop.dvars().migrModel = "circular stepping stone"
     pop.dvars().recRate = recRate
+    pop.dvars().numOffspring = numOffspring
+    pop.dvars().numOffMode = numOffMode
     print "Saving population to " + filename + '.' + format + '\n'
     #TurnOnDebug(DBG_UTILITY)
     simu.population(0).savePopulation(filename+'.'+format)
@@ -890,7 +935,8 @@ if __name__ == '__main__':
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel,
-        mutaRate, recRate, dryrun, savePop, simuName, format) = allParam
+        mutaRate, recRate, savedGen, numOffspring, numOffMode, 
+        dryrun, savePop, simuName, format) = allParam
     #
     if markerType == 'SNP':
         simuOpt.setOptions(alleleType='binary')
@@ -914,7 +960,7 @@ if __name__ == '__main__':
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop, 
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel, 
-        mutaRate, recRate, dryrun, savePop,  
-        os.path.join(simuName, simuName), format)
+        mutaRate, recRate, savedGen, numOffspring, numOffMode, 
+        dryrun, savePop, os.path.join(simuName, simuName), format)
     
     print "Done!"
