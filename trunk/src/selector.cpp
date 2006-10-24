@@ -274,7 +274,7 @@ namespace simuPOP
 				if(tmp == oldindex.end())
 					it->setInfo(0, fatherIdx);
 				else
-					it->setInfo(tmp - oldindex.begin(), motherIdx);
+					it->setInfo(tmp - oldindex.begin(), fatherIdx);
 				tmp = find(oldindex.begin(), oldindex.end(), it->info(motherIdx));
 				if(tmp == oldindex.end())
 					it->setInfo(0, motherIdx);
@@ -296,6 +296,9 @@ namespace simuPOP
 		UINT motherIdx = pop.infoIdx(motherField);
 
 		DBG_DO(DBG_SELECTOR, cout << "Finding spouse and offspring of all individuals" << endl);
+		DBG_FAILIF(ancestralDepth > pop.ancestralDepth(), ValueError,
+			"The population does not have enough ancestral generations for this operation");
+
 		for(size_t ans = 1; ans <= ancestralDepth; ++ans)
 		{
 			pop.useAncestralPop(ans - 1);
@@ -306,8 +309,8 @@ namespace simuPOP
 			//
 			for(size_t idx = 0; idx < dad.size(); ++idx)
 			{
-				double dadSpouse = pop.ind(static_cast<ULONG>(dad[idx])).info(spouseIdx);
-				double momSpouse = pop.ind(static_cast<ULONG>(mom[idx])).info(spouseIdx);
+				InfoType dadSpouse = pop.ind(static_cast<ULONG>(dad[idx])).info(spouseIdx);
+				InfoType momSpouse = pop.ind(static_cast<ULONG>(mom[idx])).info(spouseIdx);
 				// new case.
 				if(dadSpouse == -1. && momSpouse == -1)
 				{
@@ -583,6 +586,8 @@ namespace simuPOP
 			ValueError,
 			"Length of array size and number of subpopulations do not match.");
 
+		m_validSibs.clear();
+
 		m_father_id = pop.infoIdx(infoField(0));
 		m_mother_id = pop.infoIdx(infoField(1));
 		vectorstr fields(5);
@@ -594,39 +599,43 @@ namespace simuPOP
 		pop.addInfoFields(fields, -1);
 		saveIndIndex(pop, "oldindex");
 		UINT pedindexIdx = pop.infoIdx("pedindex");
-		UINT spouseIdx = pop.infoIdx("spouse");
 		UINT off0Idx = pop.infoIdx("offspring0");
 		UINT off1Idx = pop.infoIdx("offspring1");
+		UINT spouseIdx = pop.infoIdx("spouse");
 
-		//
-		findOffspringAndSpouse(pop, 2, 1, "father_idx", "mother_idx",
+		// 1: one ancestralDepth
+		// 2: two offsprings
+		findOffspringAndSpouse(pop, 1, 2, "father_idx", "mother_idx",
 			"spouse", "offspring");				  // ans = 1, 2
 		//
 		// find sibpairs from the parental generation.
 		pop.useAncestralPop(1);
 		int pedIdx = 0;
 		vectorlu off;
-		m_validSibpairs.resize(pop.numSubPop());
-		for( UINT sp=0; sp < pop.numSubPop(); ++sp)
+		// valid sibpairs for each subpopulation
+		m_validSibs.resize(pop.numSubPop());
+		for( UINT sp = 0; sp < pop.numSubPop(); ++sp)
 		{
-			m_validSibpairs.clear();
+			m_validSibs[sp].clear();
 			for(population::IndIterator it = pop.indBegin(sp); it != pop.indEnd(sp); ++it)
 			{
-				if(it->info(pedindexIdx) > 0)
+				// individual already belongs to another family
+				if(it->info(pedindexIdx) != -1.)
 					continue;
 				double spouse = it->info(spouseIdx);
 				// has spouse, spouse does not belong to anther ped, and two kids
 				if(spouse != -1. && pop.ind(static_cast<UINT>(spouse)).info(pedindexIdx) == -1.
-					&& it->info(off1Idx) != -1)
+					&& it->info(off1Idx) != -1.)
 				{
 					it->setInfo(pedIdx, pedindexIdx);
 					pop.ind(static_cast<UINT>(spouse)).setInfo(pedIdx, pedindexIdx);
 					off.push_back(static_cast<ULONG>(it->info(off0Idx)));
 					off.push_back(static_cast<ULONG>(it->info(off1Idx)));
+					m_validSibs[sp].push_back(pedIdx);
 					pedIdx ++;
-					m_validSibpairs[sp].push_back(pedIdx);
 				}
 			}
+			DBG_DO(DBG_MATING, cout << "Number of sibpairs in subpop " << sp << " is " << m_validSibs[sp].size());
 		}										  // each subpop
 		pop.useAncestralPop(0);
 		for(size_t i = 0; i < off.size()/2; ++i)
@@ -644,45 +653,51 @@ namespace simuPOP
 
 	population& affectedSibpairSample::drawsample(population& pop)
 	{
+		// mark to remove everyone
 		resetSubPopID(pop);
 		vectorlu acceptedSibs;
 
 		if(m_size.size() <= 1)					  // draw from the whole population
 		{
-			/// sibs when m_size.size() <= 1
+			/// collect all families
 			vector<UINT> allSibs;
 
 			for(UINT sp =0; sp < pop.numSubPop(); ++sp)
-				allSibs.insert(allSibs.end(), m_validSibpairs[sp].begin(), m_validSibpairs[sp].end());
+				allSibs.insert(allSibs.end(), m_validSibs[sp].begin(), m_validSibs[sp].end());
 
 			if(!m_size.empty() && m_size[0] > allSibs.size())
 				cout << "Warning: Not enough sibpairs to be sampled. Requested "
 					<< m_size[0] << ", existing " << allSibs.size() << endl;
 
-			UINT N=0;
-			if(m_size.empty() || m_size[0] > allSibs.size() )
+			UINT N = 0;
+			if(m_size.empty() || m_size[0] > allSibs.size())
 				N = allSibs.size();
 			else
+			{
 				N = m_size[0];
-			// sample sibpairs
-			random_shuffle(allSibs.begin(), allSibs.begin());
-			copy(allSibs.begin(), allSibs.begin() + N, acceptedSibs.begin());
+				// random shuffle.
+				random_shuffle(allSibs.begin(), allSibs.end());
+			}
+			acceptedSibs.insert(acceptedSibs.end(), allSibs.begin(), allSibs.begin() + N);
 		}
 		else									  // for each subpop
 		{
 			ULONG sibID = 0;
 			for(UINT sp = 0; sp < pop.numSubPop(); ++sp)
 			{
-				vectorlu & sibpairs = m_validSibpairs[sp];
+				vectorlu & sibpairs = m_validSibs[sp];
 
-				UINT N = std::min(sibpairs.size(), static_cast<size_t>(m_size[sp]));
-
-				// sample sibpairs
-				random_shuffle(sibpairs.begin(), sibpairs.end());
-				copy(sibpairs.begin(), sibpairs.begin() + N, acceptedSibs.end());
+				UINT N = sibpairs.size();
+				if(N > m_size[sp])
+				{
+					N = m_size[sp];
+					// sample sibpairs
+					random_shuffle(sibpairs.begin(), sibpairs.end());
+				}
+				acceptedSibs.insert(acceptedSibs.end(), sibpairs.begin(), sibpairs.begin() + N);
 			}									  // sp
 		}
-		// now, we have acepted sibs, set indinfo in preparation for a new
+		// now, we have acepted sibs, set subpopid in preparation for a new
 		// population
 		pop.useAncestralPop(1);
 
@@ -697,11 +712,15 @@ namespace simuPOP
 		for(size_t i = 0; i < pop.popSize(); ++i)
 		{
 			individual& ind = pop.ind(i);
+			double infoPedIdx = ind.info(pedindexIdx);
+			if(infoPedIdx == -1.)
+				continue;
 			double spouse = ind.info(spouseIdx);
+			// only look forward
 			if(spouse < i)
 				continue;
-			// this family is selected
-			if(find(acceptedSibs.begin(), acceptedSibs.end(), static_cast<ULONG>(ind.info(pedindexIdx))) != acceptedSibs.end())
+			// if this family is selected
+			if(find(acceptedSibs.begin(), acceptedSibs.end(), static_cast<ULONG>(infoPedIdx)) != acceptedSibs.end())
 			{
 				ind.setSubPopID(pedIdx);
 				pop.ind(static_cast<UINT>(spouse)).setSubPopID(pedIdx);
@@ -713,8 +732,8 @@ namespace simuPOP
 		pop.useAncestralPop(0);
 		for(size_t i = 0; i < off.size()/2; ++i)
 		{
-			pop.ind(off[2*i]).setInfo(i, pedindexIdx);
-			pop.ind(off[2*i+1]).setInfo(i, pedindexIdx);
+			pop.ind(off[2*i]).setSubPopID(i);
+			pop.ind(off[2*i+1]).setSubPopID(i);
 		}
 
 		// this is offspring population with copy of ancestral pop
@@ -747,129 +766,131 @@ namespace simuPOP
 		UINT spouseIdx = pop.infoIdx("spouse");
 		UINT fatherIdx = pop.infoIdx("father_idx");
 		UINT motherIdx = pop.infoIdx("mother_idx");
-
 		for(size_t i = 0; i < m_maxOffspring; ++i)
 			offspringIdx[i] = pop.infoIdx(fields[i]);
 		// save old index
 		saveIndIndex(pop, "oldindex");
 		//
 		// 2 means find till grandfather.
-		findOffspringAndSpouse(pop, m_maxOffspring, 2, "father_idx", "mother_idx",
+		findOffspringAndSpouse(pop, 2, m_maxOffspring, "father_idx", "mother_idx",
 			"spouse", "offspring");				  // ans = 1, 2
 		//
 		pop.useAncestralPop(2);
-		size_t g3size = pop.popSize();
-		size_t pedindex = 1;
-		//
+		m_validPedigrees.resize(pop.numSubPop());
+		size_t pedindex = 0;
 		DBG_DO(DBG_SELECTOR, cout << "Finding all three-generation pedigrees" << endl);
-		for(size_t idx=0; idx < g3size; ++idx)
+		for(UINT sp = 0; sp < pop.numSubPop(); ++sp)
 		{
-			pop.useAncestralPop(2);
-			int pedSize = 2;
-			int numAffected = 0;
+			m_validPedigrees[sp].clear();
+			size_t g3start = pop.subPopBegin(sp);
+			size_t g3end = pop.subPopEnd(sp);
 			//
-			// already belong to other pedigree
-			int grandspouse = static_cast<int>(pop.ind(idx).info(spouseIdx));
-			// no spuse? one of grandparents belong to another pedigree?
-			if (grandspouse < 0 || pop.ind(idx).info(pedindexIdx) >= 1 ||
-				pop.ind(grandspouse).info(pedindexIdx) >= 1)
-				continue;
-			if(pop.ind(idx).affected())
-				numAffected ++;
-			if(pop.ind(grandspouse).affected())
-				numAffected ++;
-			//
-			vectorlu parentsTmp;
-			for(size_t x = 0; x < m_maxOffspring; ++x)
+			for(size_t idx = g3start; idx < g3end; ++idx)
 			{
-				int off = static_cast<int>(pop.ind(idx).info(offspringIdx[x]));
-				if (off != -1)
-					parentsTmp.push_back(off);
-			}
-			// parents generation
-			//
-			if(parentsTmp.empty())
-				continue;
-			// go to parent generation
-			pop.useAncestralPop(1);
-			vectorlu spouseofparents;
-			vectorlu childrenTmp;
-			// verify parents
-			vectorlu parents;
-			for(vectorlu::iterator par = parentsTmp.begin(); par != parentsTmp.end(); ++par)
-			{
-				if(pop.ind(*par).info(pedindexIdx) == -1.)
+				pop.useAncestralPop(2);
+				int pedSize = 2;
+				int numAffected = 0;
+				//
+				// already belong to other pedigree
+				int grandspouse = static_cast<int>(pop.ind(idx).info(spouseIdx));
+				// no spuse? one of grandparents belong to another pedigree?
+				if (grandspouse < 0 || pop.ind(idx).info(pedindexIdx) >= 1 ||
+					pop.ind(grandspouse).info(pedindexIdx) >= 1)
+					continue;
+				if(pop.ind(idx).affected())
+					numAffected ++;
+				if(pop.ind(grandspouse).affected())
+					numAffected ++;
+				//
+				vectorlu parentsTmp;
+				for(size_t x = 0; x < m_maxOffspring; ++x)
 				{
-					parents.push_back(*par);
-					pedSize ++;
-					if(pop.ind(*par).affected())
-						numAffected ++;
+					int off = static_cast<int>(pop.ind(idx).info(offspringIdx[x]));
+					if (off != -1)
+						parentsTmp.push_back(off);
 				}
-			}
-			//
-			for(vectorlu::iterator par = parents.begin(); par != parents.end(); ++par)
-			{
-				InfoType spouse = pop.ind(*par).info(spouseIdx);
-				// if there is spouse, add it in
-				if(spouse >= 0.)
+				// parents generation
+				//
+				if(parentsTmp.empty())
+					continue;
+				// go to parent generation
+				pop.useAncestralPop(1);
+				vectorlu spouseofparents;
+				vectorlu childrenTmp;
+				// verify parents
+				vectorlu parents;
+				for(vectorlu::iterator par = parentsTmp.begin(); par != parentsTmp.end(); ++par)
 				{
-					spouseofparents.push_back(static_cast<ULONG>(spouse));
-					pedSize ++;
-					if(pop.ind(static_cast<ULONG>(spouse)).affected())
-						numAffected ++;
-					// there are children only when there is spouse
-					for(size_t x = 0; x < m_maxOffspring; ++x)
+					if(pop.ind(*par).info(pedindexIdx) == -1.)
 					{
-						InfoType off = pop.ind(*par).info(offspringIdx[x]);
-						if (off != -1.)
-							childrenTmp.push_back(static_cast<ULONG>(off));
+						parents.push_back(*par);
+						pedSize ++;
+						if(pop.ind(*par).affected())
+							numAffected ++;
 					}
 				}
-			}
-			if(childrenTmp.empty())
-				continue;
-			pop.useAncestralPop(0);
-			// verify children
-			vectorlu children;
-			for(vectorlu::iterator child = childrenTmp.begin(); child != childrenTmp.end(); ++child)
-			{
-				// unoccupied.
-				if(pop.ind(*child).info(pedindexIdx) == -1.)
+				//
+				for(vectorlu::iterator par = parents.begin(); par != parents.end(); ++par)
 				{
-					children.push_back(*child);
-					pedSize ++;
-					if(pop.ind(*child).affected())
-						numAffected ++;
+					InfoType spouse = pop.ind(*par).info(spouseIdx);
+					// if there is spouse, add it in
+					if(spouse >= 0.)
+					{
+						spouseofparents.push_back(static_cast<ULONG>(spouse));
+						pedSize ++;
+						if(pop.ind(static_cast<ULONG>(spouse)).affected())
+							numAffected ++;
+						// there are children only when there is spouse
+						for(size_t x = 0; x < m_maxOffspring; ++x)
+						{
+							InfoType off = pop.ind(*par).info(offspringIdx[x]);
+							if (off != -1.)
+								childrenTmp.push_back(static_cast<ULONG>(off));
+						}
+					}
 				}
+				if(childrenTmp.empty())
+					continue;
+				pop.useAncestralPop(0);
+				// verify children
+				vectorlu children;
+				for(vectorlu::iterator child = childrenTmp.begin(); child != childrenTmp.end(); ++child)
+				{
+					// unoccupied.
+					if(pop.ind(*child).info(pedindexIdx) == -1.)
+					{
+						children.push_back(*child);
+						pedSize ++;
+						if(pop.ind(*child).affected())
+							numAffected ++;
+					}
+				}
+				if(children.empty())
+					continue;
+				if(pedSize < m_minPedSize || (m_minAffected > 0 && numAffected < m_minAffected))
+					continue;
+				// everything seems to be fine, add them to the family
+				pop.useAncestralPop(2);
+				// grandparents
+				pop.ind(idx).setInfo(pedindex, pedindexIdx);
+				pop.ind(grandspouse).setInfo(pedindex, pedindexIdx);
+				// parents and their spouse
+				pop.useAncestralPop(1);
+				for(vectorlu::iterator it=parents.begin(); it != parents.end(); ++it)
+					pop.ind(*it).setInfo(pedindex, pedindexIdx);
+				// spouse of parents
+				for(vectorlu::iterator it=spouseofparents.begin(); it != spouseofparents.end(); ++it)
+					pop.ind(*it).setInfo(pedindex, pedindexIdx);
+				// now children
+				pop.useAncestralPop(0);
+				for(vectorlu::iterator it=children.begin(); it != children.end(); ++it)
+					pop.ind(*it).setInfo(pedindex, pedindexIdx);
+				// is this family qualified?
+				m_validPedigrees[sp].push_back(boost::tie(pedindex, pedSize));
+				pedindex += 1;
 			}
-			if(children.empty())
-				continue;
-			if(pedSize < m_minPedSize || (m_minAffected > 0 && numAffected < m_minAffected))
-				continue;
-			// everything seems to be fine, add them to the family
-			pop.useAncestralPop(2);
-			// grandparents
-			pop.ind(idx).setInfo(pedindex, pedindexIdx);
-			pop.ind(grandspouse).setInfo(pedindex, pedindexIdx);
-			// parents and their spouse
-			pop.useAncestralPop(1);
-			for(vectorlu::iterator it=parents.begin(); it != parents.end(); ++it)
-				pop.ind(*it).setInfo(pedindex, pedindexIdx);
-			// spouse of parents
-			for(vectorlu::iterator it=spouseofparents.begin(); it != spouseofparents.end(); ++it)
-				pop.ind(*it).setInfo(pedindex, pedindexIdx);
-			// now children
-			pop.useAncestralPop(0);
-			for(vectorlu::iterator it=children.begin(); it != children.end(); ++it)
-				pop.ind(*it).setInfo(pedindex, pedindexIdx);
-			// is this family qualified?
-			m_validPedigrees.push_back(boost::tie(pedindex, pedSize));
-			pedindex += 1;
 		}
 		pop.useAncestralPop(0);
-		// print the pedigrees
-		if(m_validPedigrees.size() < m_size)
-			cout << "Only " << m_validPedigrees.size() << "valid pedigrees are found. " << endl;
 
 		// do not do sampling if countOnly
 		if(m_countOnly)
@@ -882,28 +903,65 @@ namespace simuPOP
 	{
 		// sample sibpairs
 		DBG_DO(DBG_SELECTOR, cout << "Generating sample" << endl);
-		size_t N = m_size;
-		if(m_validPedigrees.size() > m_size)
-			random_shuffle(m_validPedigrees.begin(), m_validPedigrees.end());
-		else
-			N = m_validPedigrees.size();
+		resetSubPopID(pop);
+		pedArray acceptedPeds;
 
-		DBG_DO(DBG_SELECTOR, cout << "Getting " << N << " pedigrees" << endl);
-
-		// clear subpopid.
-		for(size_t anc = 0; anc < 2; ++anc)
+		if(m_size.size() <= 1)					  // draw from the whole population
 		{
-			pop.useAncestralPop(anc);
-			for(size_t i = 0; i<pop.popSize(); ++i)
-				pop.ind(i).setSubPopID(-1);
+			/// collect all families
+			pedArray allPeds;
+
+			for(UINT sp =0; sp < pop.numSubPop(); ++sp)
+				allPeds.insert(allPeds.end(), m_validPedigrees[sp].begin(), m_validPedigrees[sp].end());
+
+			if(!m_size.empty() && m_size[0] > allPeds.size())
+				cout << "Warning: Not enough sibpairs to be sampled. Requested "
+					<< m_size[0] << ", existing " << allPeds.size() << endl;
+
+			random_shuffle(allPeds.begin(), allPeds.end());
+			UINT N = 0;
+			// consider total size.
+			if(m_size.empty() || m_minTotalSize > 0)
+			{
+				size_t totalSize = 0;
+				for(pedArray::iterator it = allPeds.begin(); it != allPeds.end(); ++it, ++N)
+				{
+					totalSize += boost::get<1>(*it);
+					if(totalSize > m_minTotalSize)
+						break;
+				}
+				if(totalSize < m_minTotalSize)
+					cout << "Warning: can not reach min total size" << endl;
+			}
+			else
+				N = m_size[0];
+			acceptedPeds.insert(acceptedPeds.end(), allPeds.begin(), allPeds.begin() + N);
 		}
+		else									  // for each subpop
+		{
+			ULONG sibID = 0;
+			for(UINT sp = 0; sp < pop.numSubPop(); ++sp)
+			{
+				pedArray & peds = m_validPedigrees[sp];
+
+				UINT N = peds.size();
+				if(N > m_size[sp])
+				{
+					N = m_size[sp];
+					// sample sibpairs
+					random_shuffle(peds.begin(), peds.end());
+				}
+				acceptedPeds.insert(acceptedPeds.end(), peds.begin(), peds.begin() + N);
+			}									  // sp
+		}
+
 		//
 		UINT spouseIdx = pop.infoIdx("spouse");
 		UINT pedindexIdx = pop.infoIdx("pedindex");
 		vectorf grandIdx = pop.indInfo(pedindexIdx, true);
 		int newPedID = 0;
 		int grandParID = 0, parentsID = 0;
-		for(pedArray::iterator ped=m_validPedigrees.begin(); ped != m_validPedigrees.begin()+N; ++ped, ++newPedID)
+		for(pedArray::iterator ped = acceptedPeds.begin(); ped != acceptedPeds.end(); ++ped, ++newPedID)
 		{
 			double pedID = boost::get<0>(*ped);
 			// find these offspring....
