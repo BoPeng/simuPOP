@@ -25,6 +25,7 @@ version 0.7.4 - Currently available as svn snapshot
   - BUG: recombinator set sex in a wrong way.
   - NEW: experimental large pedigree sampling largePedigreeSample
   - NEW: experimental support for merlin/vc and merlin regression
+  - CHG (internal): overhaul of ascertainment operators and file save stuff.
 
 
 version 0.7.3 - (Rev 470) Oct 2, 2006
