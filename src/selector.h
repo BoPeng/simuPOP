@@ -1592,7 +1592,7 @@ namespace simuPOP
 			\param format to save sample(s)
 			\param stage and other parameters please see help(baseOperator.__init__)
 			*/
-			affectedSibpairSample( vectoru size = vectoru(),
+			affectedSibpairSample(vectoru size = vectoru(),
 				bool chooseUnaffected=false,
 				bool countOnly=false,
 				const string& name="sample", const string& nameExpr="", UINT times=1,
@@ -1605,7 +1605,7 @@ namespace simuPOP
 				: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 				stage, begin, end, step, at, rep, grp, infoFields),
 				m_size(size), m_affectedness(!chooseUnaffected), m_countOnly(countOnly),
-				m_validSibpairs(0)
+				m_validSibs(0)
 			{
 			}
 
@@ -1637,7 +1637,7 @@ namespace simuPOP
 			bool m_countOnly;
 
 			/// sibs for all subpopulations
-			vector<vectorlu > m_validSibpairs;
+			vector<vectorlu> m_validSibs;
 
 			/// index to fields
 			UINT m_father_id, m_mother_id;
@@ -1667,7 +1667,9 @@ namespace simuPOP
 			\param format to save sample(s)
 			\param stage and other parameters please see help(baseOperator.__init__)
 			*/
-			largePedigreeSample(UINT size=0, UINT maxOffspring=5,
+			largePedigreeSample(vectoru size = vectoru(),
+				UINT minTotalSize=0,
+				UINT maxOffspring=5,
 				UINT minPedSize=5, UINT minAffected=0,
 				bool countOnly=false,
 				const string& name="sample", const string& nameExpr="", UINT times=1,
@@ -1679,7 +1681,7 @@ namespace simuPOP
 				const vectorstr& infoFields=vectorstr(ASC_AS_Fields, ASC_AS_Fields+2))
 				: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 				stage, begin, end, step, at, rep, grp, infoFields),
-				m_size(size), m_maxOffspring(maxOffspring),
+				m_size(size), m_minTotalSize(minTotalSize), m_maxOffspring(maxOffspring),
 				m_minPedSize(minPedSize), m_minAffected(minAffected),
 				m_countOnly(countOnly), m_validPedigrees()
 			{
@@ -1707,7 +1709,10 @@ namespace simuPOP
 			typedef vector<boost::tuple<double, int> > pedArray;
 
 			/// sample size
-			int m_size;
+			vectoru m_size;
+
+			/// control total size
+			int m_minTotalSize;
 
 			///
 			int m_maxOffspring;
@@ -1723,7 +1728,7 @@ namespace simuPOP
 
 			/// sibs for all subpopulations
 			/// we need to also save size information.
-			pedArray m_validPedigrees;
+			vector<pedArray> m_validPedigrees;
 	};
 
 	/// thrink population accroding to some outside value
