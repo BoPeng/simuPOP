@@ -550,6 +550,11 @@ def AffectedSibpairSample(pop, *args, **kwargs):
 
 #AffectedSibpairSample.__doc__ = "Function version of operator affectedSibpairSample whose __init__function is \n" + affectedSibpairSample.__init__.__doc__
 
+def LargePedigreeSample(pop, *args, **kwargs):
+    s = largePedigreeSample(*args, **kwargs)
+    s.apply(pop)
+    return s.samples(pop)
+
 def SavePopulation(pop, *args, **kwargs):
     pop.savePopulation(*args, **kwargs)
 

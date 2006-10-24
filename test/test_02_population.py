@@ -209,8 +209,12 @@ class TestPopulation(unittest.TestCase):
             ind.setAllele(2, 0)
         for ind in pop.individuals(0):
             self.assertEqual(ind.allele(0), 1)
-        for ind in pop.individuals(1):
-            self.assertEqual(ind.allele(0), 2)
+        if alleleType() == 'binary':
+            for ind in pop.individuals(1):
+                self.assertEqual(ind.allele(0), 1)
+        else:
+            for ind in pop.individuals(1):
+                self.assertEqual(ind.allele(0), 2)
      
     def testSetSubPopStru(self):
         'Testing function setSubPopStru'
