@@ -30,6 +30,7 @@
 #include "utility.h"
 #include "operator.h"
 
+#include "boost/tuple/tuple.hpp"
 #include <numeric>
 using std::min;
 
@@ -1405,6 +1406,25 @@ namespace simuPOP
 				return "<simuPOP::sample>" ;
 			}
 
+		protected:
+			/// service functions that can be used by everyone
+
+			/// save the idx of each individual to a filed
+			/// usually 'oldindex'
+			void saveIndIndex(population& pop, const string& indexField="oldindex");
+
+			/// reset father_idx and mother_idx
+			/// using the samed
+			void resetParentalIndex(population& pop, const string& fatherField="father_idx",
+				const string& motherField="mother_idx", const string& indexField="oldindex");
+
+			/// find offspring and spouse
+			void findOffspringAndSpouse(population& pop, int ancestralDepth, int maxOffspring,
+				const string& fatherField, const string& motherField,
+				const string& spouseField, const string& offspringField);
+
+			/// set all sub pop id to -1 (remove)
+			void resetSubPopID(population& pop);
 		private:
 
 			/// name to save sample, default to 'sample'
@@ -1585,7 +1605,7 @@ namespace simuPOP
 				: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 				stage, begin, end, step, at, rep, grp, infoFields),
 				m_size(size), m_affectedness(!chooseUnaffected), m_countOnly(countOnly),
-				m_sibpairs(0)
+				m_validSibpairs(0)
 			{
 			}
 
@@ -1617,7 +1637,7 @@ namespace simuPOP
 			bool m_countOnly;
 
 			/// sibs for all subpopulations
-			vector< vector< std::pair<ULONG, ULONG> > > m_sibpairs;
+			vector<vectorlu > m_validSibpairs;
 
 			/// index to fields
 			UINT m_father_id, m_mother_id;
@@ -1684,6 +1704,8 @@ namespace simuPOP
 			}
 
 		private:
+			typedef vector<boost::tuple<double, int> > pedArray;
+
 			/// sample size
 			int m_size;
 
@@ -1700,7 +1722,8 @@ namespace simuPOP
 			bool m_countOnly;
 
 			/// sibs for all subpopulations
-			vectori m_validPedigrees;
+			/// we need to also save size information.
+			pedArray m_validPedigrees;
 	};
 
 	/// thrink population accroding to some outside value

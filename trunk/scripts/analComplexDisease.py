@@ -505,7 +505,7 @@ def drawLargePedigreeSamples(pop, numSample, dirPrefix):
     def comb(geno):
         return sum(geno)+1
     for ns in range(numSample):
-        sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "affectedSibpairs.txt")
+        sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "largePedigrees.txt")
         _mkdir('%s%d' % (dirPrefix, ns))
         # remove DSL
         samples[ns].removeLoci(remove=pop.dvars().DSL)
@@ -514,10 +514,6 @@ def drawLargePedigreeSamples(pop, numSample, dirPrefix):
         linDir = os.path.join('%s%d' % (dirPrefix, ns), "Linkage")
         _mkdir(linDir)
         for ch in range(0, pop.numChrom() ):
-            print "Write chromosome %d in Linkage format: %s/Aff_%d" % (ch, linDir, ch)
-            SaveLinkage(pop=samples[ns], popType='sibpair', output = linDir+"/Aff_%d" % ch,
-                chrom=ch, recombination=pop.dvars().recRate[0],
-                alleleFreq=af, daf=0.1)    
             print "Write chromosome %d in QTDT format: %s/QTDT_%d" % (ch, linDir, ch)
             SaveQTDT(pop=samples[ns], output = linDir+"/QTDT_%d" % ch,
                 chrom=ch, combine=comb)

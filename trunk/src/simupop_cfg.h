@@ -112,8 +112,6 @@ typedef std::vector<double>::iterator InfoIterator;
 typedef std::vector<double>::const_iterator InfoConstIterator;
 typedef signed short SubPop_ID;
 
-/// type of the tag, which is a template parameter.
-typedef std::pair<unsigned long,unsigned long>  TagType;
 typedef unsigned long ULONG;
 typedef long LONG;
 

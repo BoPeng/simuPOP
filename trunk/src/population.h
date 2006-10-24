@@ -748,6 +748,12 @@ namespace simuPOP
 			{
 				return m_ancestralPops.size();
 			}
+               
+            /// return the current ancestral gen index.
+            int ancestralGen()
+            {   
+                return m_curAncestralPop;
+            }
 
 			// int requestInfoField(const string name);
 
