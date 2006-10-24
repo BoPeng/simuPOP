@@ -1624,6 +1624,85 @@ namespace simuPOP
 
 	};
 
+	class largePedigreeSample: public sample
+	{
+
+		public:
+			/// draw cases and controls
+			/**
+			\param size number of affected sibpairs to be sampled.
+			  Can be a number or an array. If a number is given, it is
+			  the total number of sibpairs, ignoring population structure.
+			  Otherwise, given number of sibpairs are sampled from
+			  subpopulations. If size is unspecified, this operator
+			  will return all affected sibpairs.
+			\param countOnly set variables about number of affected sibpairs,
+			do not actually draw the sample
+			\param name variable name of the sampled population (will be put in pop local namespace)
+			\param nameExpr expression version of name. If both name and nameExpr is empty, do not store pop.
+			\param times how many times to run the sample process? This is usually one, but we
+			may want to take several random samples.
+			\param saveAs filename to save the population.
+			\param saveAsExpr expression for save filename
+			\param format to save sample(s)
+			\param stage and other parameters please see help(baseOperator.__init__)
+			*/
+			largePedigreeSample(UINT size=0, UINT maxOffspring=5,
+				UINT minPedSize=5, UINT minAffected=0,
+				bool countOnly=false,
+				const string& name="sample", const string& nameExpr="", UINT times=1,
+				const string& saveAs="", const string& saveAsExpr="",
+				const string& format="auto",
+				int stage=PostMating, int begin=0, int end=-1,
+				int step=1, vectorl at=vectorl(),
+				int rep=REP_ALL, int grp=GRP_ALL,
+				const vectorstr& infoFields=vectorstr(ASC_AS_Fields, ASC_AS_Fields+2))
+				: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
+				stage, begin, end, step, at, rep, grp, infoFields),
+				m_size(size), m_maxOffspring(maxOffspring),
+				m_minPedSize(minPedSize), m_minAffected(minAffected),
+				m_countOnly(countOnly), m_validPedigrees()
+			{
+			}
+
+			/// destructor
+			virtual ~largePedigreeSample(){};
+
+			/// this function is very important
+			virtual Operator* clone() const
+			{
+				return new largePedigreeSample(*this);
+			}
+
+			virtual bool prepareSample(population& pop);
+
+			virtual population& drawsample(population& pop);
+
+			virtual string __repr__()
+			{
+				return "<simuPOP::affected sibpair sample>" ;
+			}
+
+		private:
+			/// sample size
+			int m_size;
+
+			///
+			int m_maxOffspring;
+
+			///
+			bool m_minPedSize;
+
+			///
+			bool m_minAffected;
+
+			// do not draw sample
+			bool m_countOnly;
+
+			/// sibs for all subpopulations
+			vectori m_validPedigrees;
+	};
+
 	/// thrink population accroding to some outside value
 
 	class pySample: public sample
@@ -1634,9 +1713,10 @@ namespace simuPOP
 			/**
 			\param keep a carray of the length of population.
 			its values will be assigned to info.
+			\param keepAncestralPop: -1 (all), 0 (no), 1(one ancestral pop) and so on.
 			\stage and other parameters please see help(baseOperator.__init__)
 			*/
-			pySample( PyObject * keep, bool keepAncestralPops,
+			pySample( PyObject * keep, int keepAncestralPops=-1,
 				const string& name="sample", const string& nameExpr="", UINT times=1,
 				const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),

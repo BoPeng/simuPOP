@@ -671,13 +671,18 @@ namespace simuPOP
 	}
 
 	/** form a new population according to info, info can be given directly */
-	population& population::newPopByIndID(bool keepAncestralPops,
+	population& population::newPopByIndID(int keepAncestralPops,
 		const vectori& id, bool removeEmptySubPops)
 	{
 		// copy the population over (info is also copied)
 		population& pop = this->clone(keepAncestralPops);
 		// and shrink them
-		pop.setSubPopByIndID(id);
+		for(size_t depth=0; depth <= pop.ancestralDepth(); ++depth)
+		{
+			pop.useAncestralPop(depth);
+			pop.setSubPopByIndID(id);
+		}
+		pop.useAncestralPop(0);
 		if( removeEmptySubPops)
 			pop.removeEmptySubPops();
 		return pop;
@@ -924,7 +929,7 @@ namespace simuPOP
 			{
 				copy(ind->infoBegin(), ind->infoBegin() + is - 1, ptr);
 				ind->setInfoPtr(ptr);
-                fill(ind->infoBegin() + is - 1, ind->infoEnd(), init);
+				fill(ind->infoBegin() + is - 1, ind->infoEnd(), init);
 				ptr += is;
 			}
 			m_info.swap(newInfo);
@@ -965,7 +970,7 @@ namespace simuPOP
 			{
 				copy(ind->infoBegin(), ind->infoBegin() + os, ptr);
 				ind->setInfoPtr(ptr);
-                fill(ind->infoBegin() + os, ind->infoEnd(), init);
+				fill(ind->infoBegin() + os, ind->infoEnd(), init);
 				ptr += is;
 			}
 			m_info.swap(newInfo);
@@ -1028,8 +1033,8 @@ namespace simuPOP
 			pd.m_inds.swap(m_inds);
 			m_curAncestralPop = 0;
 #ifndef OPTIMIZED
-			DBG_FAILIF( pd.m_startingGenoPtr != m_genotype.begin(),
-				SystemError, "Starting genoptr has been changed.");
+			//DBG_FAILIF( pd.m_startingGenoPtr != m_genotype.begin(),
+			//	SystemError, "Starting genoptr has been changed.");
 			pd.m_startingGenoPtr = pd.m_genotype.begin();
 #endif
 			if( idx == 0)

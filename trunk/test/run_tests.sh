@@ -21,6 +21,7 @@ else
   exit 1
 fi
 
+sleep 10
 echo ===================================================================
 echo 
 echo   RUNNING TESTS FOR
@@ -37,6 +38,7 @@ else
   echo SHORT-ALLELS MODULES FAILED
   exit 1
 fi
+sleep 10
 
 echo ===================================================================
 echo 

@@ -1013,6 +1013,116 @@ def saveLinkage(output='', outputExpr='', **kwargs):
     return eval(opt)
 
 
+# save in merlin qtdt format
+def SaveQTDT(pop, chrom, output='', outputExpr='', 
+        exclude=[], fields=[], combine=None, shift=1, **kwargs):
+    """ save population in Linkage format. Currently only
+        support affected sibpairs sampled with affectedSibpairSample
+        operator.
+         
+        pop: population to be saved. Must have ancestralDepth 1.
+            paired individuals are sibs. Parental population are corresponding
+            parents. If pop is a filename, it will be loaded.
+
+        chrom: Which chromosome is saved.
+        
+        output: output.dat, output.map and output.ped will be the qtdt file format
+            
+        outputExpr: expression version of output.
+    """
+    if type(pop) == type(''):
+        pop = LoadPopulation(pop)
+    if output != '':
+        file = output
+    elif outputExpr != '':
+        file = eval(outputExpr, globals(), pop.vars() )
+    else:
+        raise exceptions.ValueError, "Please specify output or outputExpr"
+    # open data file and pedigree file to write.
+    try:
+        datOut = open(file + ".dat", "w")
+        mapOut = open(file + ".map", "w")
+        pedOut = open(file + ".ped", "w")
+    except exceptions.IOError:
+        raise exceptions.IOError, "Can not open file " + file + " to write."
+    # look at excluded loci, are they in this chrom?
+    loci = [pop.chromBegin(chrom)+m for m in range(pop.numLoci(chrom))]
+    for e in exclude:
+        loci.remove(e)
+    #    
+    # write dat file
+    # 
+    print >> datOut, 'A\taffectation'
+    for f in fields:
+        print >> datOut, 'T\t%s' % f
+    if combine is None:
+        for marker in loci:
+            for p in range(pop.ploidy()):
+                print >> datOut, 'M\t%s_%d' % (pop.locusName(marker), p+1)
+    else:
+        for marker in loci:
+            print >> datOut, 'M\t%s' % pop.locusName(marker)
+    datOut.close()
+    #
+    # write map file
+    print >> mapOut, 'CHROMOSOME MARKER POSITION'
+    for marker in loci:
+        print >> mapOut, '%d\t%s\t%f' % (pop.chromLocusPair(marker)[0] + 1, 
+            pop.locusName(marker), pop.locusPos(marker))
+    mapOut.close()
+    #
+    # write ped file
+    def sexCode(ind):
+        if ind.sex() == Male:
+            return 1
+        else:
+            return 2
+    # disease status: in linkage affected is 2, unaffected is 1
+    def affectedCode(ind):
+        if ind.affected():
+            return 'a'
+        else:
+            return 'u'
+    #
+    pldy = pop.ploidy()
+    def writeInd(ind, famID, id, fa, mo):
+        print >> pedOut, '%d, %d, %d, %d, %s, %s' % (famID, id, fa, mo, sexCode(ind), affectedCode(ind)),
+        for f in fields:
+            print >> pedOut, ', ', ind.info(f),
+        for marker in loci:
+            if combine is None:
+                for p in range(pldy):
+                    print >> pedOut, ", %d" % (ind.allele(marker, p) + shift), 
+            else:
+                print >> pedOut, ", %d" % combine([ind.allele(marker, p) for p in range(pldy)]), 
+        print >> pedOut
+    #
+    # number of pedigrees
+    np = pop.popSize()/2
+    for ped in range(0, np):
+        # get parent
+        pop.useAncestralPop(1)
+        # pedigree number, individual ID, dad, mom, first os
+        # next parental sib, maternal sib, sex, proband, disease status
+        writeInd(pop.individual(2*ped), ped+1, 1, 0, 0)
+        writeInd(pop.individual(2*ped + 1), ped +1, 2, 0, 0)
+        # dealing with offspring
+        if pop.individual(2*ped).sex() == Male:
+            dadID = 1
+            momID = 2
+        else:
+            dadID = 2
+            momID = 1
+        pop.useAncestralPop(0)
+        # pedigree number, individual ID, dad, mom, first os
+        # next parental sib, maternal sib, sex, proband, disease status
+        writeInd(pop.individual(2*ped), ped+1, 3, dadID, momID)
+        writeInd(pop.individual(2*ped + 1), ped+1, 4, dadID, momID)
+    # close all files
+    pedOut.close()
+
+
+
 def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'], 
         loci=[], combine=None, shift=1, **kwargs):
     """ save file in CSV format 
@@ -1477,11 +1587,11 @@ def VC_merlin(file):
     return res
 
 
-def Regression_merlin(file):
+def Regression_merlin(file, loci=[], merlin='merlin-regress'):
     ''' run merlin regression method
     '''
     # get information
-    cmd = 'merlin-regress -d %s.dat -p %s.ped -m %s.map -t %s.mdl' % (file, file, file, file)
+    cmd = '%s -d %s.dat -p %s.ped -m %s.map -t %s.mdl' % (merlin, file, file, file, file)
     print "Running", cmd
     fout = os.popen(cmd)
     #
@@ -1497,167 +1607,24 @@ def Regression_merlin(file):
             try:
                 (pos, h2, stdev, info, lod, pvalue) = resline.match(line).groups()
                 assert name is not None
-                res[name]['pos'].append(float(pos))
-                res[name]['h2'].append(float(h2))
-                res[name]['stdev'].append(float(stdev))
-                res[name]['info'].append(float(info))
-                res[name]['lod'].append(float(lod))
+                #res[name]['pos'].append(float(pos))
+                #res[name]['h2'].append(float(h2))
+                #res[name]['stdev'].append(float(stdev))
+                #res[name]['info'].append(float(info))
+                #res[name]['lod'].append(float(lod))
                 res[name]['pvalue'].append(float(pvalue))
+                print ipy
             except AttributeError:
                 pass
     fout.close()
-    out = open(resfile_reg, 'a')
-    print >> out, 'res = ', str(res)
-    out.close()
-
-
-def SampleLargePedigree(pop, numPedigree, minPedSize=5, minAffected=2, maxOffspring=5,
-     output='', outputExpr='', fields=[], 
-     loci=[], combine=None, shift=1):
-    ''' ascertain large pedigrees, this is implemented in python first, and will be implemented at C++ level
-      later.
-    
-      Assumes: a population with three generations
-      Aim: to get pedigrees related to each grandparents
-      paremeters:
-        pop: population
-        numPedigree: number of pedigrees to sample
-        minPedSize: minimal size of pedigree (total number of family members
-        minAffected: number of affected individuals
-      Output:
-        save in sqtl format, with information fields.
-      What we do:
-        first, find the spouse, ofspring of every individual
-        then, set up a three generation pedigree for everyone
-    '''
-    from sets import Set
-    from random import shuffle
-    if pop.ancestralDepth < 2:
-        print "This population should have at least three generations saved."
-    # step 1. add inforfields for offspring
-    pop.addInfoFields(fields=['pedindex', 'spouse'] + \
-        ['offspring%d' % x for x in range(maxOffspring)], init=-1)
-    # parent generation
-    for ans in (1, 2):
-        pop.useAncestralPop(ans-1)
-        # cache all parental information, need to be in order
-        #
-        # the parents of the next generation.
-        dad = list(pop.indInfo('father_idx', True))
-        mom = list(pop.indInfo('mother_idx', True))
-        # now, we go to this generation, and try to find spouse of
-        # each individual.
-        pop.useAncestralPop(ans)
-        for idx,ind in enumerate(pop.individuals()):
-            if ind.info('offspring0') != -1:
-                continue
-            # find spouse
-            # am I someone's dad?
-            if ind.sex() == Male and dad.count(idx) > 0:
-                # idx is 'I', child is the first child
-                child = dad.index(idx)
-                # then find mom.
-                spouse = int(mom[child])
-                father = idx
-                mother = spouse
-            elif ind.sex() == Female and mom.count(idx) > 0:
-                child = mom.index(idx)
-                spouse = int(dad[child])
-                father = spouse
-                mother = idx
-            else:
-                # no spouse, sad
-                continue
-            # spouse is someone else's spouse, even worse
-            if pop.individual(spouse).info('offspring0') != -1:
-                continue
-            # print idx, spouse, child
-            pop.individual(father).setInfo(mother, 'spouse')
-            pop.individual(mother).setInfo(father, 'spouse')
-            # find all offspring in the offspring generation
-            # that have the same 'parents'.
-            # Note that we require the same father and mother.
-            numOff = min(dad.count(father), maxOffspring)
-            off = 0
-            count = 0
-            for i in range(numOff):
-                off = dad.index(father, off)
-                if mom[off] == mother:
-                    pop.individual(father).setInfo(off, 'offspring%d' % count)
-                    pop.individual(mother).setInfo(off, 'offspring%d' % count)
-                    count += 1
-                off += 1
-    # now, for all indvidual, we know their parents, spouse, and all offsprings
-    pop.useAncestralPop(2)
-    g3size = pop.popSize();
-    pedindex = 1
-    usedParents = Set()
-    usedChildren = Set()
-    validPedigrees = []
-    #
-    for idx in range(g3size):
-        pop.useAncestralPop(2)
-        #
-        # already belong to other pedigree
-        grandspouse = pop.individual(idx).info('spouse')
-        # no spuse? one of grandparents belong to another pedigree?
-        if grandspouse < 0 or pop.individual(idx).info('pedindex') >= 1 or pop.individual(int(grandspouse)).info('pedindex') >=1:
-            continue
-        parents = filter(lambda x: x!=-1 and x not in usedParents, 
-            [pop.individual(idx).info('offspring%d' % i) for i in range(maxOffspring)])
-        # print idx, parents
-        if len(parents) == 0:
-            continue
-        # go to parent generation
-        pop.useAncestralPop(1)
-        spouseofparents = []
-        children = []
-        for par in parents:
-            spouse = pop.individual(int(par)).info('spouse')
-            # if there is spouse, add it in
-            if spouse >= 0:
-                spouseofparents.append(spouse)
-                # there are children only when there is spouse
-                children.extend(filter(lambda x: x!=-1 and x not in usedChildren, \
-                    [pop.individual(int(par)).info('offspring%d' % i) for i in range(maxOffspring)]))
-        if len(children) == 0:
-            continue
-        # everything seems to be fine, add them to the family
-        pedSize = 0
-        numAffected = 0
-        for gen, inds in ((2, [idx, grandspouse]), (1, parents + spouseofparents), (0, children)):
-            pop.useAncestralPop(gen)
-            #print gen, inds
-            for ind in [pop.individual(int(x)) for x in inds]:
-                #print ind.arrInfo()
-                ind.setInfo(pedindex, 'pedindex')
-                pedSize += 1
-                if ind.affected():
-                    numAffected += 1
-        usedParents.union_update(parents)
-        usedChildren.union(children)
-        # print 'Pedigree: %d, size: %d, numAffected: %d ' % (pedindex, pedSize, numAffected)
-        if numAffected >= minAffected and pedSize >= minPedSize:
-            validPedigrees.append(pedindex)
-        pedindex += 1
-    pop.useAncestralPop(0)
-    # print the pedigrees
-    if len(validPedigrees) < numPedigree:
-        print "Only %d valid pedigrees are found. " % len(validPedigrees)
+    if loci == []:
+        # dict to list
+        # if a p-value does not exist (caused e.g. by fixation), return -1
+        return [minPvalue.setdefault(x, -1) for x in range(len(minPvalue))]
     else:
-        # randomly choose numPedigree of pedigrees
-        shuffle(validPedigrees)
-        validPedigrees = validPedigrees[:numPedigree]
-        validPedigrees.sort()
-    # now, output these pedigrees
-    if len(validPedigrees) == 0:
-        print "No valid pedigree is found. No output"
-        return
-    # print validPedigrees
-    SaveLargePedigree(pop, validPedigrees, output=output, outputExpr=outputExpr, 
-        fields=fields, loci=loci, combine=combine, shift=shift)
-    return pop
-            
+        return [minPvalue.setdefault(x, -1) for x in loci]
+
+          
 
 def SaveLargePedigree(pop, pedigrees, output='', outputExpr='', fields=[], 
         loci=[], combine=None, shift=1, **kwargs):

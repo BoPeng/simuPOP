@@ -168,10 +168,20 @@ options = [
         or additive single-locus model with heterogeneity multi-locus model. 
         You can define another customized penetrance functions by modifying
         this script. ''',
-     'validate':    simuOpt.valueOneOf(['recessive', 'additive', 'custom']),
+     'validate':    simuOpt.valueOneOf(['recessive', 'additive', 'custom', 'None']),
      'chooseOneOf': [ 'recessive', 'additive', 'custom']
     },
-    {'longarg': 'penePara=',
+    {'longarg': 'qtraitFunc=',
+     'default': 'None',
+     'label': 'Quantitative trait model',
+     'allowedTypes': [types.StringType],
+     'description': '''How to calculate quantitative trait. There is no default
+        function so one has to provide a customized one.
+        ''',
+     'validate':    simuOpt.valueOneOf(['custom', 'None']),
+     'chooseOneOf': [ 'custom', 'None']
+    },
+    {'longarg': 'parameter=',
      'default': [0.5],
      'label': 'Penetrance parameters',
      'description': '''Penetrance parameter for all DSL. An array of parameter 
@@ -188,7 +198,8 @@ options = [
      'label':    'Sample size',
      'allowedTypes':    [types.IntType, types.LongType],
      'description':    '''Size of the samples, that will mean N/4 affected 
-        sibpair families (of size 4), N/2 cases and controls etc. ''',
+        sibpair families (of size 4), N/2 cases and controls. Up to N total number
+        of individuals for large pedigrees.''',
      'validate':    simuOpt.valueGT(1)
     },
     {'longarg': 'numSample=',
@@ -220,24 +231,34 @@ options = [
      'description': '''Location of gene hunter executable. If provided,
         the TDT and Linkage method of genehunter will be applied to 
         affected sibpair samples.'''
+    },    
+    {'longarg': 'merlin=',
+     'default': 'merlin',
+     'allowedTypes': [types.StringType],
+     'label': 'Location of merlin',
+     'description': '''Location of merlin executable. If provided,
+        mer-lin/vc, merlin-regression can be applied to 
+        pedigree-based samples.'''
     },
-    {'longarg': 'mappingMethods=',
-     'default': ['TDT', 'Linkage'],
+    {'longarg': 'analyses=',
+     'default': [],
      'label': 'Gene mapping methods',
      'allowedTypes': [types.TupleType, types.ListType],
      'description': ''' Gene mapping methods to apply. geneHunter is needed for
         TDT and Linkage methods, and R/RPy are needed for chisq association 
         tests.''',
      'allowedTypes': [types.ListType, types.TupleType],
-     'validate':    simuOpt.valueListOf( simuOpt.valueOneOf(['TDT', 'Linkage', 'Association'])),
-     'chooseFrom': [ 'TDT', 'Linkage', 'Association']
+     'chooseFrom': [ 
+        'affectedSibs/TDT', 
+        'affectedSibs/Linkage', 
+        'case-control/Association', 
+        'affectedSibs/merlin-reg',
+        'affectedSibs/merlin-vc',
+        'largePeds/merlin-reg', 
+        'largePeds/merlin-vc',
+        ]
     },
     # another two hidden parameter
-    {'longarg': 'reAnalyzeOnly=',
-     'default': False,
-     'allowedTypes': [type(True)],
-     'description': '''If given in command line, redo the analysis.'''
-    },
     {'longarg': 'saveConfig=',
      'default': 'anal.cfg',
      'allowedTypes': [types.StringType, types.NoneType],
@@ -293,27 +314,31 @@ outputVars = {
     'LOD': 'p-values obtained using Linkage method, organized by sample, chromosome and loci (nested list)',
     'TDT': 'p-values obtained using TDT method, organized by sample, chromosome and loci (nested list)',
     'ChiSq': 'p-values obtained using ChiSq method, organized by sample, chromosome and loci',
+    'VC_sibs': 'p-values for variance components/affected sibpairs',
+    'Reg_sibs': 'p-value for merlin regression/affected sibpairs',
+    'VC_peds': 'p-value for variance components/large pedigree',
+    'Reg_peds': 'p-value for merlin regression/large pedigree',
 }
 
 # penetrance generator functions. They will return a penetrance function
 # with given penetrance parameter
-def recessive(pen):
+def recessive(para):
     ''' recessive single-locus, heterogeneity multi-locus '''
     def func(geno):
         val = 1
         for i in range(len(geno)/2):
             if geno[i*2] + geno[i*2+1] == 2:
-                val *= 1 - pen[i]
+                val *= 1 - para[i]
         return 1-val
     return func
     
 
-def additive(pen):
+def additive(para):
     ''' additive single-locus, heterogeneity multi-locus '''
     def func(geno):
         val = 1
         for i in range(len(geno)/2):
-            val *= 1 - (geno[i*2]+geno[i*2+1])*pen[i]/2.
+            val *= 1 - (geno[i*2]+geno[i*2+1])*para[i]/2.
         return 1-val
     return func
 
@@ -326,10 +351,27 @@ def additive(pen):
 #     geno will be something like [0,1,1,1] where 0,1 is the genotype at 
 #     locus 5 and 1,1 is the genotype at locus 10.
 # 2. in simuComplexDisease.py, 0 is wild type, 1 is disease allele.
-def custom(pen):
-    ''' a penetrance function that focus on the first DSL '''
+def custom(para):
+    ''' quantitative trait '''
     def func(geno):
         return 1
+    return func
+
+
+# this customized qtrait function provide quantitative trait
+# for example2 in the plos paper.
+# The basic form is
+#
+# Q = X1 + X2 + X3 + Env
+# 
+def customQtrait(para):
+    ''' quantitative trait '''
+    def func(geno):
+        x1 = random.normalvariate(geno[0]+geno[1], 0.1)
+        x2 = random.normalvariate(geno[2]+geno[3], 0.1)
+        x3 = random.normalvariate(geno[4]+geno[5], 0.1)
+        x4 = random.normalvariate(0, 0.01)
+        return x1 + x2 + x3 + x4
     return func
 
 
@@ -360,54 +402,42 @@ def getOptions(details=__doc__):
 
 
 
-def drawCaseControlSamples(pop, numSample, dirPrefix, reAnalyzeOnly):
+def drawCaseControlSamples(pop, numSample, dirPrefix):
     ''' 
         pop: population
         numSample: number of samples for each penetrance settings
-        dirPrefix: where to save samples, dirPrefix0/caseControltxt etc
+        dirPrefix: where to save samples, dirPrefix0/caseControl.txt etc
             will be used.
-        reAnalyzeOnly: load populations only
     '''
     samples = []
-    if reAnalyzeOnly:
-        for ns in range(numSample):
-            sampleFile = os.path.join('%s%d' % (dirPrefix, ns), 'caseControl.txt')
-            print "Loading sample ", ns+1, ' of ', numSample
-            try:
-                samples.append(LoadPopulation(sampleFile))
-            except Exception, err:
-                print "Can not load exisiting sample. Can not use --reAnalyzeOnly option"
-                raise err
-    else:
-        print "Generating case control samples..."
-        # get number of affected
-        Stat(pop, numOfAffected=True)
-        print "Number of affected individuals: ", pop.dvars().numOfAffected
-        print "Number of unaffected individuals: ", pop.dvars().numOfUnaffected
-        nCase = min(pop.dvars().numOfAffected , N/2)
-        nControl = min(pop.dvars().numOfUnaffected, N/2)
-        try:
-            samples = CaseControlSample(pop, nCase, nControl, times=numSample)
-        except Exception, err:
-            print "Can not draw case control sample. "
-            print type(err), err
-        for ns in range(len(samples)):
-            # if N=800, 400 case and 400 controls
-            # remove DSL
-            samples[ns].removeLoci(remove=pop.dvars().DSL)
-            sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "caseControl.txt")
-            _mkdir('%s%d' % (dirPrefix, ns))
-            print "Write case-control sample %s in simuPOP format: %s" % (ns, sampleFile)
-            samples[ns].savePopulation(sampleFile)
+    print "Generating case control samples..."
+    # get number of affected
+    Stat(pop, numOfAffected=True)
+    print "Number of affected individuals: ", pop.dvars().numOfAffected
+    print "Number of unaffected individuals: ", pop.dvars().numOfUnaffected
+    nCase = min(pop.dvars().numOfAffected , N/2)
+    nControl = min(pop.dvars().numOfUnaffected, N/2)
+    try:
+        samples = CaseControlSample(pop, nCase, nControl, times=numSample)
+    except Exception, err:
+        print "Can not draw case control sample. "
+        print type(err), err
+    for ns in range(len(samples)):
+        # if N=800, 400 case and 400 controls
+        # remove DSL
+        samples[ns].removeLoci(remove=pop.dvars().DSL)
+        sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "caseControl.txt")
+        _mkdir('%s%d' % (dirPrefix, ns))
+        print "Write case-control sample %s in simuPOP format: %s" % (ns, sampleFile)
+        samples[ns].savePopulation(sampleFile)
     return samples
 
 
-def drawAffectedSibpairSamples(pop, numSample, dirPrefix, reAnalyzeOnly):
+def drawAffectedSibpairSamples(pop, numSample, dirPrefix):
     ''' 
         pop: population
         numSample: number of samples for each penetrance settings
         dirPrefix: dirPrefix0, 1, etc will be used as directories
-        reAnalyzeOnly: load populations only
     '''
     # get allele frequency of no-DSL markers
     af = []
@@ -419,44 +449,78 @@ def drawAffectedSibpairSamples(pop, numSample, dirPrefix, reAnalyzeOnly):
             af.append( pop.dvars().alleleFreq[x] )
     # 
     samples = []
-    if reAnalyzeOnly:
-        for ns in range(numSample):
-            sampleFile = os.path.join('%s%d' % (dirPrefix, ns), 'affectedSibpairs.txt')
-            print "Loading sample ", ns+1, ' of ', numSample
-            try:
-                samples.append(LoadPopulation(sampleFile))
-            except Exception, err:
-                print "Can not load exisiting sample. Can not use --reAnalyzeOnly option"
-                raise err
-    else:
-        print "Generating affected sibpair samples..."
-        try:
-            # get number of affected/unaffected sibpairs
-            # There may not be enough to be sampled
-            AffectedSibpairSample(pop, countOnly=True)
-            nAff = min(pop.dvars().numAffectedSibpairs, N/4)
-            print "Number of (both) affected sibpairs: ", pop.dvars().numAffectedSibpairs
-            samples = AffectedSibpairSample(pop, name='sample1',
-                    size=nAff, times=numSample)
-        except Exception, err:
-            print type(err)
-            print err
-            print "Can not draw affected sibpars."
-        # svae in simuPOP and linkage format
-        for ns in range(numSample):
-            sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "affectedSibpairs.txt")
-            _mkdir('%s%d' % (dirPrefix, ns))
-            # remove DSL
-            samples[ns].removeLoci(remove=pop.dvars().DSL)
-            print "Write affected sibpair sample in simuPOP format: %s " % sampleFile
-            samples[ns].savePopulation(sampleFile)
-            linDir = os.path.join('%s%d' % (dirPrefix, ns), "Linkage")
-            _mkdir(linDir)
-            for ch in range(0, pop.numChrom() ):
-                print "Write to chromosome %d in Linkage format: %s/Aff_%d" % (ch, linDir, ch)
-                SaveLinkage(pop=samples[ns], popType='sibpair', output = linDir+"/Aff_%d" % ch,
-                    chrom=ch, recombination=pop.dvars().recRate[0],
-                    alleleFreq=af, daf=0.1)                
+    print "Generating affected sibpair samples..."
+    try:
+        # get number of affected/unaffected sibpairs
+        # There may not be enough to be sampled
+        AffectedSibpairSample(pop, countOnly=True)
+        nAff = min(pop.dvars().numAffectedSibpairs, N/4)
+        print "Number of (both) affected sibpairs: ", pop.dvars().numAffectedSibpairs
+        samples = AffectedSibpairSample(pop, name='sample1',
+                size=nAff, times=numSample)
+    except Exception, err:
+        print type(err)
+        print err
+        print "Can not draw affected sibpairs."
+    # svae in simuPOP and linkage format
+    # how to combine genotype in sqtl format
+    def comb(geno):
+        return sum(geno)+1
+    for ns in range(numSample):
+        sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "affectedSibpairs.txt")
+        _mkdir('%s%d' % (dirPrefix, ns))
+        # remove DSL
+        samples[ns].removeLoci(remove=pop.dvars().DSL)
+        print "Write affected sibpair sample in simuPOP format: %s " % sampleFile
+        samples[ns].savePopulation(sampleFile)
+        linDir = os.path.join('%s%d' % (dirPrefix, ns), "Linkage")
+        _mkdir(linDir)
+        for ch in range(0, pop.numChrom() ):
+            print "Write chromosome %d in Linkage format: %s/Aff_%d" % (ch, linDir, ch)
+            SaveLinkage(pop=samples[ns], popType='sibpair', output = linDir+"/Aff_%d" % ch,
+                chrom=ch, recombination=pop.dvars().recRate[0],
+                alleleFreq=af, daf=0.1)    
+            print "Write chromosome %d in QTDT format: %s/QTDT_%d" % (ch, linDir, ch)
+            SaveQTDT(pop=samples[ns], output = linDir+"/QTDT_%d" % ch,
+                chrom=ch, combine=comb)
+    return samples
+
+
+def drawLargePedigreeSamples(pop, numSample, dirPrefix):
+    ''' 
+        pop: population
+        numSample: number of samples for each penetrance settings
+        dirPrefix: dirPrefix0, 1, etc will be used as directories
+    '''
+    print "Generating large pedigrees samples..."
+    try:
+        samples = LargePedigreeSample(pop, size=N/10, maxOffspring=5,
+            minPedSize=10, minAffected=0)
+    except Exception, err:
+        print type(err)
+        print err
+        print "Can not drawlarge pedigrees."
+    # svae in simuPOP and linkage format
+    # how to combine genotype in sqtl format
+    def comb(geno):
+        return sum(geno)+1
+    for ns in range(numSample):
+        sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "affectedSibpairs.txt")
+        _mkdir('%s%d' % (dirPrefix, ns))
+        # remove DSL
+        samples[ns].removeLoci(remove=pop.dvars().DSL)
+        print "Write large pedigree sample in simuPOP format: %s " % sampleFile
+        samples[ns].savePopulation(sampleFile)
+        linDir = os.path.join('%s%d' % (dirPrefix, ns), "Linkage")
+        _mkdir(linDir)
+        for ch in range(0, pop.numChrom() ):
+            print "Write chromosome %d in Linkage format: %s/Aff_%d" % (ch, linDir, ch)
+            SaveLinkage(pop=samples[ns], popType='sibpair', output = linDir+"/Aff_%d" % ch,
+                chrom=ch, recombination=pop.dvars().recRate[0],
+                alleleFreq=af, daf=0.1)    
+            print "Write chromosome %d in QTDT format: %s/QTDT_%d" % (ch, linDir, ch)
+            SaveQTDT(pop=samples[ns], output = linDir+"/QTDT_%d" % ch,
+                chrom=ch, combine=comb)
     return samples
 
 
@@ -516,8 +580,8 @@ def popStat(pop):
     return result
      
     
-def analyzePopulation(dataset, peneFunc, penePara, N, 
-        numSample, outputDir, loci, geneHunter, mappingMethods, reAnalyzeOnly):
+def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N, 
+        numSample, outputDir, loci, geneHunter, merlin, analyses):
     '''
     This function organize all previous functions and
         1. Load a population
@@ -548,46 +612,64 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
     #
     # apply penetrance
     nDSL = len(pop.dvars().DSL)
-    if len(penePara) == 1:
-        para = penePara * nDSL
-    elif len(penePara) == nDSL:
-        para = penePara
+    if len(parameter) == 1:
+        para = parameter * nDSL
+    elif len(parameter) == nDSL:
+        para = parameter
     else:
-        print "Length of penetrance parameter should be one or the number of DSL"
+        print "Length of penetrance/quantitative trait parameter should be one or the number of DSL"
         sys.exit(0)
-    if 'recessive' == peneFunc:
-        print "Using recessive penetrance function"
-        func = recessive(para)
-    elif 'additive' == peneFunc:
-        print "Using additive penetrance function"
-        func = additive(para)
-    elif 'custom' == peneFunc:
-        print "Using customized penetrance function"
-        func = custom(para)    
-    else:
-        print "Wrong penetrance function %s " % peneFunc
-        sys.exit(1)
-    # set affectedness for all individuals, including ancestors
-    for i in range(0, pop.ancestralDepth()+1):
-        # apply penetrance function to all current and ancestral generations
-        pop.useAncestralPop(i)
-        PyPenetrance(pop, loci=pop.dvars().DSL, func=func)
-    # reset population to current generation.
-    pop.useAncestralPop(0)
+    if peneFunc != 'None':
+        if 'recessive' == peneFunc:
+            print "Using recessive penetrance function"
+            func = recessive(para)
+        elif 'additive' == peneFunc:
+            print "Using additive penetrance function"
+            func = additive(para)
+        elif 'custom' == peneFunc:
+            print "Using customized penetrance function"
+            func = custom(para)    
+        else:
+            print "Wrong penetrance function %s " % peneFunc
+            sys.exit(1)
+        # set affectedness for all individuals, including ancestors
+        for i in range(0, pop.ancestralDepth()+1):
+            # apply penetrance function to all current and ancestral generations
+            pop.useAncestralPop(i)
+            PyPenetrance(pop, loci=pop.dvars().DSL, func=func)
+        # reset population to current generation.
+        pop.useAncestralPop(0)
+    if qtraitFunc != 'None':
+        pop.addInfoField('qtrait')
+        print "Using customized quantitative trait function"
+        func = customQtrait(para)
+        # set affectedness for all individuals, including ancestors
+        for i in range(0, pop.ancestralDepth()+1):
+            # apply penetrance function to all current and ancestral generations
+            pop.useAncestralPop(i)
+            PyQuanTrait(pop, loci=pop.dvars().DSL, func=func)
+        # reset population to current generation.
+        pop.useAncestralPop(0)
     #
     # now, draw samples 
     # return a sample population, for its chromosome structure
     # (without DSL)
-    caseControlSamples = drawCaseControlSamples(pop, 
-        numSample,        # number of sample for each setting
-        os.path.join(outputDir, peneFunc),   # prefix of dir names
-        reAnalyzeOnly     # whether or not load sample directly
-    )
-    affctedSibpairSamples = drawAffectedSibpairSamples(pop, 
-        numSample,        # number of sample for each setting
-        os.path.join(outputDir, peneFunc),   # prefix of dir names
-        reAnalyzeOnly     # whether or not load sample directly
-    )
+    if True in ['case-control' in x for x in analyses]:
+        caseControlSamples = drawCaseControlSamples(pop, 
+            numSample,        # number of sample for each setting
+            os.path.join(outputDir, peneFunc)   # prefix of dir names
+        )
+    if True in ['affectedSibs' in x for x in analyses]:
+        drawAffectedSibpairSamples(pop, 
+            numSample,        # number of sample for each setting
+            os.path.join(outputDir, peneFunc)   # prefix of dir names
+        )
+    # save in sqtl format.
+    if True in ['merlin' in x for x in analyses]:
+        largePedigreeSamples = drawLargePedigreeSamples(pop,
+            numSample,
+            os.path.join(outputDir, 'largePeds')
+        )
     # calculate population statistics like prevalence
     res.update( popStat(pop) )
     #
@@ -602,38 +684,63 @@ def analyzePopulation(dataset, peneFunc, penePara, N,
                 loci.append(l)
         return loci           
     # for each sample
-    res['TDT'] = []
-    res['LOD'] = []
-    res['ChiSq'] = []
-    for sn in range(numSample):
-        res['TDT'].append([])
-        res['LOD'].append([])
-        res['ChiSq'].append([])
-        print "Processing sample %s%d" % (peneFunc, sn)
-        for ch in range(pop.numChrom()):
-            if 'TDT' in mappingMethods:
+    if 'affectedSibs/TDT' in analyses:
+        res['TDT'] = []
+        for sn in range(numSample):
+            res['TDT'].append([])
+            print "Processing sample %s%d" % (peneFunc, sn)
+            for ch in range(pop.numChrom()):
                 print 'Applying TDT method to chromosome %d of sample %d' % (ch, sn)
                 res['TDT'][sn].extend(TDT_gh(
                     os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'Linkage', 'Aff_%d' % ch), 
                     loci=lociAtChrom(ch, loci), gh=geneHunter))
-            if 'Linkage' in mappingMethods:
+    #
+    if 'affectedSibs/Linkage' in analyses: 
+        res['LOD'] = []
+        for sn in range(numSample):
+            res['LOD'].append([])
+            print "Processing sample %s%d" % (peneFunc, sn)
+            for ch in range(pop.numChrom()):
                 print 'Applying Linkage method to chromosome %d of sample %d' % (ch, sn)
                 res['LOD'][sn].extend(LOD_gh(
                     os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'Linkage', 'Aff_%d' % ch), 
                     loci=lociAtChrom(ch, loci), gh=geneHunter))
-        if 'Association' in mappingMethods:
+    #
+    if 'case-control/Association' in analyses: 
+        res['ChiSq'] = []
+        for sn in range(numSample):
+            res['ChiSq'].append([])
+            print "Processing sample %s%d" % (peneFunc, sn)
             print 'Applying chi-sq association tests to sample %d' % sn
             res['ChiSq'][sn] = ChiSq_test(
                 os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'caseControl.txt'), 
                 loci=loci)
+    if 'affectedSibs/merlin-reg' in analyses:
+        res['Reg_sibs'] = []
+        for sn in range(numSample):
+            res['TDT'].append([])
+            print "Processing sample %s%d" % (peneFunc, sn)
+            for ch in range(pop.numChrom()):
+                print 'Applying merlin-regression to chromosome %d of sample %d' % (ch, sn)
+                res['TDT'][sn].extend(Regression_merlin(
+                    os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'Linkage', 'QTDT_%d' % ch), 
+                    loci=lociAtChrom(ch, loci), merlin=merlin+'-regress'))
+
+    if 'affectedSibs/merlin-vc' in analyses:
+        res['VC_sibs'] = []
+    if 'largePeds/merlin-reg' in analyses: 
+        res['Reg_peds'] = []
+    if 'largePeds/merlin-vc' in analyses:
+        res['VC_peds'] = []
+
     return res
 
 
 if __name__ == '__main__':
     allParam = getOptions()
     # unpack options
-    (markerType, dataset, peneFunc, penePara, N, numSample, outputDir,
-        loci, geneHunter, mappingMethods, reAnalyzeOnly) = allParam
+    (markerType, dataset, peneFunc, qtraitFunc, parameter, N, numSample, outputDir,
+        loci, geneHunter, merlin, analyses) = allParam
     # load simuPOP libraries
     if markerType == 'microsatellite':
         simuOpt.setOptions(alleleType='short', quiet=True)
@@ -643,25 +750,24 @@ if __name__ == '__main__':
     from simuPOP import *
     from simuUtil import *
     #
-    res = analyzePopulation(dataset,
-        peneFunc, penePara, N, numSample, outputDir, 
-        loci, geneHunter, mappingMethods, reAnalyzeOnly)
-    print
-    print "Writing results to file %s/%s.py" % (outputDir, peneFunc)
-    resFile = open(os.path.join(outputDir, '%s.py' % peneFunc), 'w')
-    print >> resFile, "# analysis of population %s, at %s" % (dataset, time.asctime())
-    print >> resFile
-    for key in outputVars.keys():
-        if res.has_key(key):
-            # description
-            print >> resFile, '# %s' % outputVars[key]
-            if type(res[key]) == type(''):
-                print >> resFile, '%s = "%s"' % (key, res[key])
-            else:
-                print >> resFile, '%s = %s' % (key, str(res[key]))
-            print >> resFile
-    resFile.close()
-    print 'Done'
-
+    
+#    res = analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N, numSample, outputDir, 
+#        loci, geneHunter, merlin, analyses)
+#    print
+#    print "Writing results to file %s/%s.py" % (outputDir, peneFunc)
+#    resFile = open(os.path.join(outputDir, '%s.py' % peneFunc), 'w')
+#    print >> resFile, "# analysis of population %s, at %s" % (dataset, time.asctime())
+#    print >> resFile
+#    for key in outputVars.keys():
+#        if res.has_key(key):
+#            # description
+#            print >> resFile, '# %s' % outputVars[key]
+#            if type(res[key]) == type(''):
+#                print >> resFile, '%s = "%s"' % (key, res[key])
+#            else:
+#                print >> resFile, '%s = %s' % (key, str(res[key]))
+#            print >> resFile
+#    resFile.close()
+#    print 'Done'
 
 

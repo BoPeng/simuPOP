@@ -171,11 +171,14 @@ namespace simuPOP
 			population(const population& rhs);
 
 			///
-			population& clone(bool keepAncestralPops=true) const
+			population& clone(int keepAncestralPops=-1) const
 			{
 				population& p = *new population(*this);
-				if( keepAncestralPops == false)
-					p.m_ancestralPops.clear();
+				int oldDepth = m_ancestralDepth;
+				if( keepAncestralPops > 0)
+					// try to remove excessive ancestra generations.
+					p.setAncestralDepth(keepAncestralPops);
+				p.setAncestralDepth(oldDepth);
 				return p;
 			}
 
@@ -719,8 +722,12 @@ namespace simuPOP
 			void reorderSubPops(const vectoru& order=vectoru(), const vectoru& rank=vectoru(),
 				bool removeEmptySubPops=false);
 
-			/** form a new population according to info, info can be given directly */
-			population& newPopByIndID(bool keepAncestralPops=true,
+			/** form a new population according to info, info can be given directly
+				keepAncestralPops=-1: keep all
+				0: only current
+				1: keep one ...
+			*/
+			population& newPopByIndID(int keepAncestralPops=-1,
 				const vectori& id=vectori(),
 				bool removeEmptySubPops=false);
 
