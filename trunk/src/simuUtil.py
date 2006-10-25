@@ -547,9 +547,32 @@ def collector(name, expr, **kwargs):
     #print opt
     return eval(opt)
 
+#########################################################################
+###
+### The following are file import / export (mostly) functions
+###
+### These functions will observe the same interface for convenience
+### some options are not needed, but should be provided (and safely
+### ignored.)
+###
+### 1. pop: population to save, can be a string, in which case
+###    the population will be loaded from a file.
+### 2. output and outputExpr: output filename or pattern.
+### 3. loci: loci to save, default to all loci
+###    If you want to save all loci on a chromosome, use
+###       loci = range(pop.chromBegin(ch), pop.chromEnd(ch))
+### 4. shift: value add to allele number
+### 5. combine: if combine alleles, function to use
+### 6. fields: information fields to save
+###
+### X. additional parameters for each file format
+###
+###
+#########################################################################
 
 # save file in FSTAT format     
-def SaveFstat(pop, output='', outputExpr='', maxAllele=0):
+def SaveFstat(pop, output='', outputExpr='', maxAllele=0, loci=[], shift=1,
+    combine=None):
     if output != '':
         file = output
     elif outputExpr != '':
@@ -561,12 +584,14 @@ def SaveFstat(pop, output='', outputExpr='', maxAllele=0):
         f = open(file, "w")
     except exceptions.IOError:
         raise exceptions.IOError, "Can not open file " + file + " to write."
-    #    
+    #
     # file is opened.
     np = pop.numSubPop()
     if np > 200:
         print "Warning: Current version (2.93) of FSTAT can not handle more than 200 samples"
-    nl = pop.totNumLoci()
+    if loci == []:
+        loci = range(pop.totalNumLoci())
+    nl = len(loci)
     if nl > 100:
         print "Warning: Current version (2.93) of FSTAT can not handle more than 100 loci"
     if maxAllele != 0:
@@ -587,24 +612,26 @@ def SaveFstat(pop, output='', outputExpr='', maxAllele=0):
     # write the first line
     f.write( '%d %d %d %d\n' % (np, nl, nu, nd) )
     # following lines with loci name.
-    for loc in range(0, pop.totNumLoci()):
+    for loc in loci:
         f.write( pop.locusName(loc) +"\n");
-    gs = pop.totNumLoci()
     for sp in range(0, pop.numSubPop()):
         # genotype of subpopulation sp, individuals are
         # rearranged in perfect order
         gt = pop.arrGenotype(sp, True)
         for ind in range(0, pop.subPopSize(sp)):
             f.write("%d " % (sp+1))
-            p1 = 2*gs*ind                # begining of first hemo copy
+            p1 = 2*gs*ind          # begining of first hemo copy
             p2 = 2*gs*ind + gs     # second
-            for al in range(0, gs): # allele
+            for al in loci: # allele
                 # change from 0 based allele to 1 based allele 
-                ale1 = gt[p1+al]+1
-                ale2 = gt[p2+al]+1
-                f.write('%%0%dd%%0%dd ' % (nd, nd) % (ale1, ale2))
+                if combine is None:
+                    ale1 = gt[p1+al] + shift
+                    ale2 = gt[p2+al] + shift
+                    f.write('%%0%dd%%0%dd ' % (nd, nd) % (ale1, ale2))
+                else:
+                    f.write('%%0%dd' % nd % combine([gt[p1+al], gt[p2+al]]))
             f.write( "\n")
-    f.close()    
+    f.close()
 
 
 # operator version of the function SaveFstat
@@ -709,6 +736,7 @@ def LoadFstat(file, loci=[]):
     pop.setMaxAllele(maxAllele)
     return pop
 
+
 # read GC data file in http://wpicr.wpic.pitt.edu/WPICCompGen/genomic_control/genomic_control.htm
 def LoadGCData(file, loci=[]):
     # open file
@@ -746,8 +774,9 @@ def LoadGCData(file, loci=[]):
     return pop
 
 #        
-def SaveLinkage(pop, chrom, popType='sibpair', output='', outputExpr='', alleleFreq=[], 
-     recombination=0.00001, penetrance=[0,0.25,0.5], exclude=[], pre=True, daf=0.001):
+def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
+        fields = [], recombination=0.00001, penetrance=[0,0.25,0.5], 
+        pre=True, daf=0.001):
     """ save population in Linkage format. Currently only
         support affected sibpairs sampled with affectedSibpairSample
         operator.
@@ -756,21 +785,12 @@ def SaveLinkage(pop, chrom, popType='sibpair', output='', outputExpr='', alleleF
             paired individuals are sibs. Parental population are corresponding
             parents. If pop is a filename, it will be loaded.
 
-        chrom: Which chromosome is saved.
-        
-        popType: population type. Can be 'sibpair' or 'bySubPop'. If type is sibpair,
-            pairs of individuals will be considered as sibpairs. If type is bySubPop,
-            individuals in a subpopulation is considered as siblings.
-        
-        output: output.dat and output.ped will be the data and pedigree file.
+       output: output.dat and output.ped will be the data and pedigree file.
             You may need to rename them to be analyzed by LINKAGE. This allows
             saving multiple files.
             
         outputExpr: expression version of output.
 
-
-        exclude: exclude some loci
-        
         pre: True. pedigree format to be fed to makeped
         
         Note:
@@ -786,17 +806,16 @@ def SaveLinkage(pop, chrom, popType='sibpair', output='', outputExpr='', alleleF
         raise exceptions.ValueError, "Please specify output or outputExpr"
     # open data file and pedigree file to write.
     try:
-        dataFile = open(file + ".dat", "w")
+        datOut = open(file + ".dat", "w")
         if pre:
-            pedFile = open(file + ".pre", "w")
+            pedOut = open(file + ".pre", "w")
         else:
-            pedFile = open(file + ".ped", "w")
+            pedOut = open(file + ".ped", "w")
     except exceptions.IOError:
         raise exceptions.IOError, "Can not open file " + file + ".dat/.ped to write."
-    # look at excluded loci, are they in this chrom?
-    markers = [pop.chromBegin(chrom)+m for m in range(pop.numLoci(chrom))]
-    for e in exclude:
-        markers.remove(e)
+    #
+    if loci == []:
+        loci = range(pop.totalNumLoci())
     #    
     # file is opened.
     # write data file
@@ -809,38 +828,34 @@ def SaveLinkage(pop, chrom, popType='sibpair', output='', outputExpr='', alleleF
     # mutmale
     # mutfemale
     # disequil: assume in LD? Yes.
-    dataFile.write( '''%d 0 0 5 << nlocus, risklocus, sexlink, nprogram
+    datOut.write( '''%d 0 0 5 << nlocus, risklocus, sexlink, nprogram
 0 0 0 0 << mutsys, mutmale, mutfemale, disequil
-'''    % (len(markers)+1) )
+'''    % (len(loci)+1) )
     # order of loci, allegro does not welcome comments after this line.
-    # we need one more than the number of markers (including disease marker)
-    dataFile.write( ' '.join( [str(m+1) for m in range(len(markers) + 1)]) + "\n")
+    # we need one more than the number of loci (including disease marker)
+    datOut.write( ' '.join( [str(m+1) for m in range(len(loci) + 1)]) + "\n")
     # describe affected status
-    dataFile.write( "1 2 << affection status code, number of alleles\n")
-    dataFile.write( "%f %f << gene frequency\n" % ( 1-daf, daf) )
-    dataFile.write( "1 << number of factors\n")
-    dataFile.write( "%f %f %f << penetrance\n" % tuple(penetrance) )
+    datOut.write( "1 2 << affection status code, number of alleles\n")
+    datOut.write( "%f %f << gene frequency\n" % ( 1-daf, daf) )
+    datOut.write( "1 << number of factors\n")
+    datOut.write( "%f %f %f << penetrance\n" % tuple(penetrance) )
     # describe each locus
-    if alleleFreq == []: # if not given,
-        # print "Warning: using sample allele frequency."
-        Stat(pop, alleleFreq=markers)
-        af = pop.dvars().alleleFreq
-    else:
-        af = alleleFreq
-    for marker in markers:
+    Stat(pop, alleleFreq=loci)
+    af = pop.dvars().alleleFreq
+    for marker in loci:
         # now, 3 for numbered alleles
         numAllele = len(af[marker])
-        dataFile.write( '3 %d << Marker%d_%d \n' % (numAllele, chrom, pop.chromLocusPair(marker)[1]) )
-        dataFile.write( ''.join(['%.6f ' % af[marker][ale] for ale in range(numAllele)]) + ' << gene frequencies\n' )
+        print >> datOut, '3 %d << %s' % (numAllele, pop.locusName(marker))
+        datOut.write( ''.join(['%.6f ' % af[marker][ale] for ale in range(numAllele)]) + ' << gene frequencies\n' )
     # sex-difference
     # interference
-    dataFile.write('0 0 << sex difference, interference\n')
+    datOut.write('0 0 << sex difference, interference\n')
     # recombination
-    dataFile.write( ''.join(['%f '%recombination]*len(markers)) + ' << recombination rates \n ')
+    datOut.write( ''.join(['%f '%recombination]*len(loci)) + ' << recombination rates \n ')
     # I do not know what they are
-    dataFile.write( "1 0.1 0.1\n")
+    datOut.write( "1 0.1 0.1\n")
     # done!
-    dataFile.close()
+    datOut.close()
     # write pedigree file (affected sibpairs)
     # sex: in linkage, male is 1, female is 2
     def sexCode(ind):
@@ -856,144 +871,45 @@ def SaveLinkage(pop, chrom, popType='sibpair', output='', outputExpr='', alleleF
             return 1
     # alleles string, since simuPOP allele starts from 0, add 1 to avoid
     # being treated as missing data.
-    def genoStr(ind):
-        string = ''
-        for marker in markers:
-            string += "%d %d " % (ind.allele(marker, 0)+1, ind.allele(marker, 1)+1)
-        return string
-    if popType == "sibpair":
-        # number of pedigrees
-        np = pop.popSize()/2
-        for ped in range(0, np):
-            # get parent
-            pop.useAncestralPop(1)
-            # pedigree number, individual ID, dad, mom, first os
-            # next parental sib, maternal sib, sex, proband, disease status
-            par1 = pop.individual(2*ped)
-            if pre:
-                pedFile.write("%3d 1 0 0 %d %d " \
-                    % (ped+1, sexCode(par1), affectedCode(par1)))
+    pldy = pop.ploidy()
+    def writeInd(ind, famID, id, fa, mo):
+        if pre:
+            print >> pedOut, '%d, %d, %d, %d, %s, %s' % (famID, id, fa, mo, sexCode(ind), affectedCode(ind)),
+        else:
+            print >> pedOut, '%d, %d, %d, %d, %s, %s' % (famID, id, fa, mo, sexCode(ind), affectedCode(ind)),
+        for marker in loci:
+            if combine is None:
+                for p in range(pldy):
+                    print >> pedOut, ", %d" % (ind.allele(marker, p) + shift), 
             else:
-                pedFile.write("%3d 1 0 0 3 0 0 %d 0 %d " \
-                    % (ped+1, sexCode(par1), affectedCode(par1)))
-            pedFile.write( genoStr(par1) + '\n' )
-            par2 = pop.individual(2*ped+1)
-            if pre:
-                pedFile.write("%3d 2 0 0 %d %d " \
-                    % (ped+1, sexCode(par2), affectedCode(par2)))
-            else:
-                pedFile.write("%3d 2 0 0 3 0 0 %d 0 %d " \
-                    % (ped+1, sexCode(par2), affectedCode(par2)))
-            pedFile.write( genoStr(par2) + '\n' )
-            # dealing with offspring
-            if par1.sex() == Male:
-                dadID = 1
-                momID = 2
-            else:
-                dadID = 2
-                momID = 1
-            pop.useAncestralPop(0)
-            # pedigree number, individual ID, dad, mom, first os
-            # next parental sib, maternal sib, sex, proband, disease status
-            off1 = pop.individual(2*ped)
-            if pre:
-                pedFile.write("%3d 3 %d %d %d %d " \
-                    % (ped+1, dadID, momID, sexCode(off1), affectedCode(off1)))
-            else:
-                pedFile.write("%3d 3 %d %d 0 4 4 %d 1 %d " \
-                    % (ped+1, dadID, momID, sexCode(off1), affectedCode(off1)))
-            pedFile.write( genoStr(off1) + '\n' )
-            off2 = pop.individual(2*ped+1)
-            if pre:
-                pedFile.write("%3d 4 %d %d %d %d " \
-                    % (ped+1, dadID, momID, sexCode(off2), affectedCode(off2)))
-            else:
-                pedFile.write("%3d 4 %d %d 0 0 0 %d 0 %d " \
-                    % (ped+1, dadID, momID, sexCode(off2), affectedCode(off2)))
-            pedFile.write( genoStr(off2) + '\n' )
-    elif popType == 'bySubPop': # pop type is bySubPop
-        # number of pedigrees
-        np = pop.numSubPop()
-        offset = 0
-        for ped in range(0, np):
-            # ignore empty subpops
-            if pop.subPopSize(ped) == 0:
-                continue
-            # using what index?
-            # if ped 0 is not empty... this guarantees that there is no 0 family ID
-            if ped == 0:    
-                offset = 1
-            # get parent
-            pop.useAncestralPop(1)
-            # pedigree number, individual ID, dad, mom, first os
-            # next parental sib, maternal sib, sex, proband, disease status
-            if pop.subPopSize(ped) > 2:
-                raise exceptions.ValueError("Pedigree " + str(ped) + " has more than two parents.")
-            famID = 1
-            if pop.subPopSize(ped) >= 1:
-                par1 = pop.individual(0, ped)
-                if pre:
-                    pedFile.write("%3d %d 0 0 %d %d " \
-                        % (ped+offset, famID, sexCode(par1), affectedCode(par1)))
-                else:
-                    pedFile.write("%3d %d 0 0 3 0 0 %d 0 %d " \
-                        % (ped+offset, famID, sexCode(par1), affectedCode(par1)))
-                pedFile.write( genoStr(par1) + '\n' )
-                famID += 1
-            if pop.subPopSize(ped) == 2:        # if there are two parents 
-                par2 = pop.individual(1,ped)
-                par2sex = sexCode(par2)
-                if sexCode(par1) == par2sex:
-                    print "Warning: same sex parents at pedigree " + str(ped) 
-                    if sexCode(par1) == Male:
-                        par2sex = Female
-                    else:
-                        par2sex = Male
-                if pre:
-                    pedFile.write("%3d %d 0 0 %d %d " \
-                        % (ped+offset, famID, par2sex, affectedCode(par2)))
-                else:
-                    pedFile.write("%3d %d 0 0 3 0 0 %d 0 %d " \
-                        % (ped+offset, famID, par2sex, affectedCode(par2)))
-                pedFile.write( genoStr(par2) + '\n' )
-                famID += 1
-            # dealing with offspring
-            if famID == 1: # no parents
-                dadID = 0
-                momID = 0
-            elif famID == 2: # one parent
-                if par1.sex() == Male:
-                    dadID = 1
-                    monID = 0
-                else:
-                    dadID = 0
-                    monID = 1
-            else: # two parents
-                if par1.sex() == Male:
-                    dadID = 1
-                    momID = 2
-                else:
-                    dadID = 2
-                    momID = 1
-            pop.useAncestralPop(0)
-            # pedigree number, individual ID, dad, mom, first os
-            # next parental sib, maternal sib, sex, proband, disease status
-            #
-            # can have many offsprings
-            for o in range(0, pop.subPopSize(ped)):
-                off = pop.individual(o,ped)
-                if pre:
-                    pedFile.write("%3d %d %d %d %d %d " \
-                        % (ped+offset, famID, dadID, momID, sexCode(off), affectedCode(off)))
-                else:
-                    pedFile.write("%3d %d %d %d 0 4 4 %d 1 %d " \
-                        % (ped+offset, famID, dadID, momID, sexCode(off), affectedCode(off)))
-                pedFile.write( genoStr(off) + '\n' )
-                famID += 1
-    else:
-        raise exceptions.ValueError("Only popType 'sibpair' and 'bySubPop' are supported.")
-    # close all files
-    pedFile.close()    
+                print >> pedOut, ", %d" % combine([ind.allele(marker, p) for p in range(pldy)]), 
+        print >> pedOut
+    #
+    # get unique pedgree id numbers
+    from sets import Set
+    peds = Set(pop.indInfo('pedindex', False))
+    # do not count peds
+    peds.discard(-1)
+    #
+    newPedIdx = 1
+    for ped in peds:
+        id = 1
+        pastmap = {0:0}
+        # go from generation 2, 1, 0 (for example)
+        for anc in range(pop.ancestralDepth(), -1, -1):
+            newmap = {0:0}
+            pop.useAncestralPop(anc)
+            # find all individual in this pedigree
+            for i in range(pop.popSize()):
+                ind = pop.individual(i)
+                if ind.info('pedindex') == ped:
+                    writeInd(ind, newPedIdx, id, pastmap[int(ind.info('father_idx'))], 
+                        pastmap[int(ind.info('mother_idx'))])
+                    newmap[i] = id
+                    id += 1
+            pastmap = newmap
+        newPedIdx += 1
+    pedOut.close()    
 
 
 # operator version of saveLinkage
@@ -1014,8 +930,8 @@ def saveLinkage(output='', outputExpr='', **kwargs):
 
 
 # save in merlin qtdt format
-def SaveQTDT(pop, chrom, output='', outputExpr='', 
-        exclude=[], fields=[], combine=None, shift=1, **kwargs):
+def SaveQTDT(pop, output='', outputExpr='', loci=[], 
+        fields=[], combine=None, shift=1, **kwargs):
     """ save population in Linkage format. Currently only
         support affected sibpairs sampled with affectedSibpairSample
         operator.
@@ -1046,9 +962,8 @@ def SaveQTDT(pop, chrom, output='', outputExpr='',
     except exceptions.IOError:
         raise exceptions.IOError, "Can not open file " + file + " to write."
     # look at excluded loci, are they in this chrom?
-    loci = [pop.chromBegin(chrom)+m for m in range(pop.numLoci(chrom))]
-    for e in exclude:
-        loci.remove(e)
+    if loci == []:
+        loci = range(0, pop.totNumLoci())
     #    
     # write dat file
     # 
@@ -1098,27 +1013,32 @@ def SaveQTDT(pop, chrom, output='', outputExpr='',
         print >> pedOut
     #
     # number of pedigrees
-    np = pop.popSize()/2
-    for ped in range(0, np):
-        # get parent
-        pop.useAncestralPop(1)
-        # pedigree number, individual ID, dad, mom, first os
-        # next parental sib, maternal sib, sex, proband, disease status
-        writeInd(pop.individual(2*ped), ped+1, 1, 0, 0)
-        writeInd(pop.individual(2*ped + 1), ped +1, 2, 0, 0)
-        # dealing with offspring
-        if pop.individual(2*ped).sex() == Male:
-            dadID = 1
-            momID = 2
-        else:
-            dadID = 2
-            momID = 1
-        pop.useAncestralPop(0)
-        # pedigree number, individual ID, dad, mom, first os
-        # next parental sib, maternal sib, sex, proband, disease status
-        writeInd(pop.individual(2*ped), ped+1, 3, dadID, momID)
-        writeInd(pop.individual(2*ped + 1), ped+1, 4, dadID, momID)
-    # close all files
+    # get unique pedgree id numbers
+    from sets import Set
+    peds = Set(pop.indInfo('pedindex', False))
+    # do not count peds
+    peds.discard(-1)
+    #
+    print "Saving pedigrees ", peds
+    newPedIdx = 1
+    #
+    for ped in peds:
+        id = 1
+        pastmap = {0:0}
+        # go from generation 2, 1, 0 (for example)
+        for anc in range(pop.ancestralDepth(), -1, -1):
+            newmap = {0:0}
+            pop.useAncestralPop(anc)
+            # find all individual in this pedigree
+            for i in range(pop.popSize()):
+                ind = pop.individual(i)
+                if ind.info('pedindex') == ped:
+                    writeInd(ind, newPedIdx, id, pastmap[int(ind.info('father_idx'))], 
+                        pastmap[int(ind.info('mother_idx'))])
+                    newmap[i] = id
+                    id += 1
+            pastmap = newmap
+        newPedIdx += 1
     pedOut.close()
 
 

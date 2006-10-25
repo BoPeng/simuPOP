@@ -439,15 +439,6 @@ def drawAffectedSibpairSamples(pop, numSample, dirPrefix):
         numSample: number of samples for each penetrance settings
         dirPrefix: dirPrefix0, 1, etc will be used as directories
     '''
-    # get allele frequency of no-DSL markers
-    af = []
-    Stat(pop, alleleFreq=range(pop.totNumLoci()))
-    # remember that we will remove DSL, so their allelefreq should 
-    # be removed.
-    for x in range( pop.totNumLoci() ):
-        if x not in pop.dvars().DSL:
-            af.append( pop.dvars().alleleFreq[x] )
-    # 
     samples = []
     print "Generating affected sibpair samples..."
     try:
@@ -476,13 +467,15 @@ def drawAffectedSibpairSamples(pop, numSample, dirPrefix):
         linDir = os.path.join('%s%d' % (dirPrefix, ns), "Linkage")
         _mkdir(linDir)
         for ch in range(0, pop.numChrom() ):
-            print "Write chromosome %d in Linkage format: %s/Aff_%d" % (ch, linDir, ch)
-            SaveLinkage(pop=samples[ns], popType='sibpair', output = linDir+"/Aff_%d" % ch,
-                chrom=ch, recombination=pop.dvars().recRate[0],
-                alleleFreq=af, daf=0.1)    
-            print "Write chromosome %d in QTDT format: %s/QTDT_%d" % (ch, linDir, ch)
-            SaveQTDT(pop=samples[ns], output = linDir+"/QTDT_%d" % ch,
-                chrom=ch, combine=comb)
+            print "Write chromosome %d in Linkage format: %s/Aff_%d" % (ch+1, linDir, ch+1)
+            SaveLinkage(pop=samples[ns], output = linDir+"/Aff_%d" % (ch+1),
+                recombination=pop.dvars().recRate[0],
+                loci = range(samples[ns].chromBegin(ch), samples[ns].chromEnd(ch)), 
+                daf=0.1)    
+            print "Write chromosome %d in QTDT format: %s/QTDT_%d" % (ch+1, linDir, ch+1)
+            SaveQTDT(pop=samples[ns], output = linDir+"/QTDT_%d" % (ch+1),
+                loci = range(samples[ns].chromBegin(ch), samples[ns].chromEnd(ch)),
+                combine=comb)
     return samples
 
 
@@ -494,8 +487,8 @@ def drawLargePedigreeSamples(pop, numSample, dirPrefix):
     '''
     print "Generating large pedigrees samples..."
     try:
-        samples = LargePedigreeSample(pop, size=N/10, maxOffspring=5,
-            minPedSize=10, minAffected=0)
+        samples = LargePedigreeSample(pop, minTotalSize=N, maxOffspring=5,
+            minPedSize=8, minAffected=0)
     except Exception, err:
         print type(err)
         print err
@@ -511,12 +504,13 @@ def drawLargePedigreeSamples(pop, numSample, dirPrefix):
         samples[ns].removeLoci(remove=pop.dvars().DSL)
         print "Write large pedigree sample in simuPOP format: %s " % sampleFile
         samples[ns].savePopulation(sampleFile)
-        linDir = os.path.join('%s%d' % (dirPrefix, ns), "Linkage")
+        linDir = os.path.join('%s%d' % (dirPrefix, ns), "QTDT")
         _mkdir(linDir)
         for ch in range(0, pop.numChrom() ):
-            print "Write chromosome %d in QTDT format: %s/QTDT_%d" % (ch, linDir, ch)
-            SaveQTDT(pop=samples[ns], output = linDir+"/QTDT_%d" % ch,
-                chrom=ch, combine=comb)
+            print "Write chromosome %d in QTDT format: %s/QTDT_%d" % (ch+1, linDir, ch+1)
+            SaveQTDT(pop=samples[ns], output = linDir+"/QTDT_%d" % (ch+1),
+                loci = range(samples[ns].chromBegin(ch), samples[ns].chromEnd(ch)),
+                combine=comb)
     return samples
 
 
@@ -747,8 +741,8 @@ if __name__ == '__main__':
     from simuUtil import *
     #
     
-#    res = analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N, numSample, outputDir, 
-#        loci, geneHunter, merlin, analyses)
+    res = analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N, numSample, outputDir, 
+        loci, geneHunter, merlin, analyses)
 #    print
 #    print "Writing results to file %s/%s.py" % (outputDir, peneFunc)
 #    resFile = open(os.path.join(outputDir, '%s.py' % peneFunc), 'w')
