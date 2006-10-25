@@ -333,11 +333,13 @@ namespace simuPOP
 						{
 							pop.ind(static_cast<ULONG>(dad[idx])).setInfo(idx, offspringIdx[i]);
 							pop.ind(static_cast<ULONG>(mom[idx])).setInfo(idx, offspringIdx[i]);
+							break;
 						}
 					}
 				}
 			}									  // idx
 		}										  // ancestal generations
+		pop.useAncestralPop(0);
 	}
 
 	void sample::resetSubPopID(population& pop)
@@ -844,7 +846,7 @@ namespace simuPOP
 				{
 					InfoType spouse = pop.ind(*par).info(spouseIdx);
 					// if there is spouse, add it in
-					if(spouse >= 0.)
+					if(spouse >= 0. and pop.ind(*par).info(pedindexIdx) == -1.)
 					{
 						spouseofparents.push_back(static_cast<ULONG>(spouse));
 						pedSize ++;
@@ -1017,13 +1019,15 @@ namespace simuPOP
                     ps ++;
 					InfoType spouse = pop.ind(*it).info(spouseIdx);
 					// if there is spouse, add it in
-					if(spouse >= 0)
+					if(spouse != -1)
 					{
 						pop.ind(static_cast<ULONG>(spouse)).setSubPopID(newPedID);
                         ps ++;
+						DBG_ASSERT(pop.ind(static_cast<ULONG>(spouse)).info(pedindexIdx) == pedID,
+							ValueError, "Spouse does not belong to this pedigree, something wrong.");
 						for(size_t x = 0; x < m_maxOffspring; ++x)
 						{
-							InfoType off = pop.ind(grandpar1).info(offspringIdx[x]);
+							InfoType off = pop.ind(*it).info(offspringIdx[x]);
 							if(off != -1)
 								children.push_back(static_cast<ULONG>(off));
 						}

@@ -464,16 +464,14 @@ def drawAffectedSibpairSamples(pop, numSample, dirPrefix):
         samples[ns].removeLoci(remove=pop.dvars().DSL)
         print "Write affected sibpair sample in simuPOP format: %s " % sampleFile
         samples[ns].savePopulation(sampleFile)
-        linDir = os.path.join('%s%d' % (dirPrefix, ns), "Linkage")
-        _mkdir(linDir)
         for ch in range(0, pop.numChrom() ):
-            print "Write chromosome %d in Linkage format: %s/Aff_%d" % (ch+1, linDir, ch+1)
-            SaveLinkage(pop=samples[ns], output = linDir+"/Aff_%d" % (ch+1),
+            print "Write chromosome %d in Linkage format: %s%d/Aff_%d" % (ch+1, dirPrefix, ns, ch+1)
+            SaveLinkage(pop=samples[ns], output = os.path.join("%s%d" % (dirPrefix, ns), "Aff_%d" % (ch+1)),
                 recombination=pop.dvars().recRate[0],
                 loci = range(samples[ns].chromBegin(ch), samples[ns].chromEnd(ch)), 
                 daf=0.1)    
-            print "Write chromosome %d in QTDT format: %s/QTDT_%d" % (ch+1, linDir, ch+1)
-            SaveQTDT(pop=samples[ns], output = linDir+"/QTDT_%d" % (ch+1),
+            print "Write chromosome %d in QTDT format: %s%d/QTDT_%d" % (ch+1,  dirPrefix, ns, ch+1)
+            SaveQTDT(pop=samples[ns], output = os.path.join("%s%d" % (dirPrefix, ns), "QTDT_%d" % (ch+1)),
                 loci = range(samples[ns].chromBegin(ch), samples[ns].chromEnd(ch)),
                 combine=comb)
     return samples
@@ -498,17 +496,15 @@ def drawLargePedigreeSamples(pop, numSample, dirPrefix):
     def comb(geno):
         return sum(geno)+1
     for ns in range(numSample):
-        sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "largePedigrees.txt")
+        sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "largePedigrees.txt") 
         _mkdir('%s%d' % (dirPrefix, ns))
         # remove DSL
         samples[ns].removeLoci(remove=pop.dvars().DSL)
         print "Write large pedigree sample in simuPOP format: %s " % sampleFile
         samples[ns].savePopulation(sampleFile)
-        linDir = os.path.join('%s%d' % (dirPrefix, ns), "QTDT")
-        _mkdir(linDir)
-        for ch in range(0, pop.numChrom() ):
-            print "Write chromosome %d in QTDT format: %s/QTDT_%d" % (ch+1, linDir, ch+1)
-            SaveQTDT(pop=samples[ns], output = linDir+"/QTDT_%d" % (ch+1),
+        for ch in range(0, pop.numChrom()):
+            print "Write chromosome %d in QTDT format: %s%d/QTDT_%d" % (ch+1, dirPrefix, ns, ch+1)
+            SaveQTDT(pop=samples[ns], output = os.path.join("%s%d" % (dirPrefix, ns), "QTDT_%d" % (ch+1)),
                 loci = range(samples[ns].chromBegin(ch), samples[ns].chromEnd(ch)),
                 combine=comb)
     return samples
@@ -647,12 +643,12 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
     if True in ['case-control' in x for x in analyses]:
         caseControlSamples = drawCaseControlSamples(pop, 
             numSample,        # number of sample for each setting
-            os.path.join(outputDir, peneFunc)   # prefix of dir names
+            os.path.join(outputDir, "caseControl")   # prefix of dir names
         )
     if True in ['affectedSibs' in x for x in analyses]:
         drawAffectedSibpairSamples(pop, 
             numSample,        # number of sample for each setting
-            os.path.join(outputDir, peneFunc)   # prefix of dir names
+            os.path.join(outputDir, "affectedSibs")   # prefix of dir names
         )
     # save in sqtl format.
     if True in ['merlin' in x for x in analyses]:
