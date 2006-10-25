@@ -903,8 +903,13 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
             for i in range(pop.popSize()):
                 ind = pop.individual(i)
                 if ind.info('pedindex') == ped:
-                    writeInd(ind, newPedIdx, id, pastmap[int(ind.info('father_idx'))], 
-                        pastmap[int(ind.info('mother_idx'))])
+                    mom = int(ind.info('father_idx'))
+                    dad = int(ind.info('mother_idx'))
+                    if mom == 0:
+                        dad = 0
+                    if dad == 0:
+                        mom = 0
+                    writeInd(ind, newPedIdx, id, pastmap[dad], pastmap[mom])
                     newmap[i] = id
                     id += 1
             pastmap = newmap
@@ -1019,7 +1024,6 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
     # do not count peds
     peds.discard(-1)
     #
-    print "Saving pedigrees ", peds
     newPedIdx = 1
     #
     for ped in peds:
@@ -1033,10 +1037,16 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
             for i in range(pop.popSize()):
                 ind = pop.individual(i)
                 if ind.info('pedindex') == ped:
-                    writeInd(ind, newPedIdx, id, pastmap[int(ind.info('father_idx'))], 
-                        pastmap[int(ind.info('mother_idx'))])
+                    mom = int(ind.info('father_idx'))
+                    dad = int(ind.info('mother_idx'))
+                    if mom == 0:
+                        dad = 0
+                    if dad == 0:
+                        mom = 0
+                    writeInd(ind, newPedIdx, id, pastmap[dad], pastmap[mom])
                     newmap[i] = id
                     id += 1
+            print anc, newmap
             pastmap = newmap
         newPedIdx += 1
     pedOut.close()
@@ -1544,127 +1554,7 @@ def Regression_merlin(file, loci=[], merlin='merlin-regress'):
     else:
         return [minPvalue.setdefault(x, -1) for x in loci]
 
-          
-
-def SaveLargePedigree(pop, pedigrees, output='', outputExpr='', fields=[], 
-        loci=[], combine=None, shift=1, **kwargs):
-    '''
-    save pedigrees from a large population, in sqtl format
-    Given output or putputExpr, the files saved will be
-    $output.dat, $output.ped and $output.map.
-    '''
-    # get maxOffspring
-    maxOffspring = 0
-    while True:
-        try:
-            pop.individual(0).info('offspring%d' % maxOffspring)
-            maxOffspring += 1
-        except:
-            break
-    if output != '':
-        file = output
-    elif outputExpr != '':
-        file = eval(outputExpr, globals(), pop.vars())
-    else:
-        raise exceptions.ValueError, "Please specify output or outputExpr"
-    if loci == []:
-        loci = range(0, pop.totNumLoci())
-    try:
-        datOut = open(file + '.dat', "w")
-        mapOut = open(file + '.map', "w")
-        pedOut = open(file + '.ped', "w")
-    except exceptions.IOError:
-        raise exceptions.IOError, "Can not open file " + file +" to write."
-    # keep the content of pieces in strings first
-    content = [''] * pop.numChrom()
-    # for each family
-    def sexCode(ind):
-        if ind.sex() == Male:
-            return 1
-        else:
-            return 2
-    # disease status: in linkage affected is 2, unaffected is 1
-    def affectedCode(ind):
-        if ind.affected():
-            return 'a'
-        else:
-            return 'u'
-    #
-    # write dat file
-    # 
-    print >> datOut, 'A\taffectation'
-    for f in fields:
-        print >> datOut, 'T\t%s' % f
-    if combine is None:
-        for marker in loci:
-            for p in range(pop.ploidy()):
-                print >> datOut, 'M\tmarker%d_%d' % (marker, p+1)
-    else:
-        for marker in loci:
-            print >> datOut, 'M\tmarker%d' % marker
-    datOut.close()
-    #
-    # write map file
-    print >> mapOut, 'CHROMOSOME MARKER POSITION'
-    for marker in loci:
-        print >> mapOut, '%d\t%s\t%f' % (pop.chromLocusPair(marker)[0] + 1, 
-            pop.locusName(marker), pop.locusPos(marker))
-    mapOut.close()
-    #
-    # write ped file
-    pldy = pop.ploidy()
-    def writeInd(ind, famID, id, fa, mo):
-        print >> pedOut, '%d, %d, %d, %d, %s, %s' % (famID, id, fa, mo, sexCode(ind), affectedCode(ind)),
-        for f in fields:
-            print >> pedOut, ', ', ind.info(f),
-        for marker in loci:
-            if combine is None:
-                for p in range(pldy):
-                    print >> pedOut, ", %d" % (ind.allele(marker, p) + shift), 
-            else:
-                print >> pedOut, ", %d" % combine([ind.allele(marker, p) for p in range(pldy)]), 
-        print >> pedOut
-    #
-    for ped in pedigrees:
-        # start from grand parents
-        id = 1
-        # all grandparents
-        pop.useAncestralPop(2)
-        # find individuals with pedindex such as such
-        grandpar1 = list(pop.indInfo('pedindex', True)).index(ped)
-        grandpar2 = int(pop.individual(grandpar1).info('spouse'))
-        for ind in (grandpar1, grandpar2):
-            writeInd(pop.individual(ind), ped, id, 0, 0)
-            id += 1
-        #
-        parents = filter(lambda x: x != -1,
-            [pop.individual(grandpar1).info('offspring%d' % i) for i in range(maxOffspring)])
-        # all parents (direct offspring)
-        parentsidmap = {0:0}
-        pop.useAncestralPop(1)
-        children = []
-        for par in filter(lambda x:pop.individual(int(x)).info('pedindex') == ped, parents):
-            writeInd(pop.individual(int(par)), ped, id, 1, 2)
-            parentsidmap[par] = id
-            id += 1
-            spouse = pop.individual(int(par)).info('spouse')
-            # if there is spouse, add it in
-            if spouse >= 0:
-                writeInd(pop.individual(int(spouse)), ped, id, 0, 0)
-                parentsidmap[spouse] = id
-                id += 1
-                # there are children only when there is spouse
-                children.extend(filter(lambda x: x!=-1, 
-                    [pop.individual(int(par)).info('offspring%d' % i) for i in range(maxOffspring)]))
-        # all children
-        pop.useAncestralPop(0)
-        for ind in filter(lambda x:pop.individual(int(x)).info('pedindex') == ped, children):
-            writeInd(pop.individual(int(ind)), ped, id, \
-                parentsidmap[pop.individual(int(ind)).info('father_idx')], 
-                parentsidmap[pop.individual(int(ind)).info('mother_idx')])
-            id += 1
-    pedOut.close() 
-
+    
 
 if __name__ == "__main__":
     pass

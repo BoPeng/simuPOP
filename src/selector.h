@@ -1406,7 +1406,7 @@ namespace simuPOP
 				return "<simuPOP::sample>" ;
 			}
 
-		protected:
+		public:
 			/// service functions that can be used by everyone
 
 			/// save the idx of each individual to a filed
