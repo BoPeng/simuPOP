@@ -171,16 +171,7 @@ namespace simuPOP
 			population(const population& rhs);
 
 			///
-			population& clone(int keepAncestralPops=-1) const
-			{
-				population& p = *new population(*this);
-				int oldDepth = m_ancestralDepth;
-				if( keepAncestralPops > 0)
-					// try to remove excessive ancestra generations.
-					p.setAncestralDepth(keepAncestralPops);
-				p.setAncestralDepth(oldDepth);
-				return p;
-			}
+			population& clone(int keepAncestralPops=-1) const;
 
 			/// SWAP population
 			/// swap the content of two populations
@@ -748,12 +739,12 @@ namespace simuPOP
 			{
 				return m_ancestralPops.size();
 			}
-               
-            /// return the current ancestral gen index.
-            int ancestralGen()
-            {   
-                return m_curAncestralPop;
-            }
+
+			/// return the current ancestral gen index.
+			int ancestralGen()
+			{
+				return m_curAncestralPop;
+			}
 
 			// int requestInfoField(const string name);
 

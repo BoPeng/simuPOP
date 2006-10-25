@@ -233,16 +233,20 @@ namespace simuPOP
 		return true;
 	}
 
+
 	void sample::saveIndIndex(population& pop, const string& indexField)
 	{
 		UINT fieldIdx = pop.infoIdx(indexField);
 		for(size_t ans = 0; ans <= pop.ancestralDepth(); ++ans)
 		{
+            pop.useAncestralPop(ans);
 			// need to save old index
 			for(size_t idx = 0; idx < pop.popSize(); ++idx)
 				pop.ind(idx).setInfo(idx, fieldIdx);
 		}
+        pop.useAncestralPop(0);
 	}
+
 
 	void sample::resetParentalIndex(population& pop, const string& fatherField,
 		const string& motherField, const string& indexField)
@@ -412,9 +416,10 @@ namespace simuPOP
 		return pop.newPopByIndID(-1);
 	}
 
+
 	bool caseControlSample::prepareSample(population& pop )
 	{
-		if( ! m_spSample )						  // sample from the whole population.
+		if(!m_spSample)						  // sample from the whole population.
 		{
 			DBG_FAILIF( m_numCases.size() > 1 || m_numControls.size() > 1,
 				ValueError, "Cases, controls need to be a number if sample from the whole population.");
@@ -536,7 +541,7 @@ namespace simuPOP
 				pop.ind( m_controlIdx[0][i] ).setSubPopID( -1 );
 
 			DBG_DO(DBG_SELECTOR, cout << "Getting sample population" << endl);
-			population& sample = pop.newPopByIndID(-1);
+			population& sample = pop.newPopByIndID(0);
 
 			sample.setIntVectorVar("nCases", nCaseInSP);
 			sample.setIntVectorVar("nControls", nControlInSP);
@@ -572,12 +577,13 @@ namespace simuPOP
 					pop.ind( m_controlIdx[sp][i],sp ).setSubPopID( -1 );
 			}
 			// newPop .... but ignore ancestral populations
-			population& sample = pop.newPopByIndID(-1);
+			population& sample = pop.newPopByIndID(0);
 			sample.setIntVectorVar("nCases", m_numCases);
 			sample.setIntVectorVar("nControls", m_numControls);
 			return sample;
 		}
 	}
+
 
 	bool affectedSibpairSample::prepareSample(population& pop)
 	{
@@ -585,7 +591,8 @@ namespace simuPOP
 		DBG_FAILIF( m_size.size() > 1 && m_size.size() != pop.numSubPop(),
 			ValueError,
 			"Length of array size and number of subpopulations do not match.");
-
+	
+		UINT nSibs = 0;
 		m_validSibs.clear();
 
 		m_father_id = pop.infoIdx(infoField(0));
@@ -635,7 +642,9 @@ namespace simuPOP
 					pedIdx ++;
 				}
 			}
-			DBG_DO(DBG_MATING, cout << "Number of sibpairs in subpop " << sp << " is " << m_validSibs[sp].size());
+			DBG_DO(DBG_SELECTOR, cout << "Number of sibpairs in subpop " << sp << " is " 
+                << m_validSibs[sp].size() << endl);
+			nSibs += m_validSibs[sp].size();
 		}										  // each subpop
 		pop.useAncestralPop(0);
 		for(size_t i = 0; i < off.size()/2; ++i)
@@ -643,7 +652,7 @@ namespace simuPOP
 			pop.ind(off[2*i]).setInfo(i, pedindexIdx);
 			pop.ind(off[2*i+1]).setInfo(i, pedindexIdx);
 		}
-
+		pop.setIntVar("numAffectedSibpairs", nSibs);
 		// do not do sampling if countOnly
 		if(m_countOnly)
 			return false;
@@ -752,6 +761,7 @@ namespace simuPOP
 			"At least two ancestral populations are needed to draw large pedigrees");
 		//
 		m_validPedigrees.clear();
+		UINT nPed = 0;
 		//
 		vectorstr fields(3 + m_maxOffspring);
 		vectori offspringIdx(m_maxOffspring);
@@ -889,8 +899,10 @@ namespace simuPOP
 				m_validPedigrees[sp].push_back(boost::tie(pedindex, pedSize));
 				pedindex += 1;
 			}
+			nPed += m_validPedigrees[sp].size();
 		}
 		pop.useAncestralPop(0);
+		pop.setIntVar("numPedigrees", nPed);
 
 		// do not do sampling if countOnly
 		if(m_countOnly)
@@ -955,28 +967,37 @@ namespace simuPOP
 			}									  // sp
 		}
 
+        DBG_DO(DBG_SELECTOR, cout << "Sampling " << acceptedPeds.size() << " pedigrees " << endl);
+
 		//
 		UINT spouseIdx = pop.infoIdx("spouse");
 		UINT pedindexIdx = pop.infoIdx("pedindex");
+		vectori offspringIdx(m_maxOffspring);
+		for(size_t i=0; i<m_maxOffspring; ++i)
+			offspringIdx[i] = pop.infoIdx("offspring" + toStr(i));
+		pop.useAncestralPop(2);
 		vectorf grandIdx = pop.indInfo(pedindexIdx, true);
 		int newPedID = 0;
 		int grandParID = 0, parentsID = 0;
 		for(pedArray::iterator ped = acceptedPeds.begin(); ped != acceptedPeds.end(); ++ped, ++newPedID)
 		{
 			double pedID = boost::get<0>(*ped);
+            DBG_DO(DBG_SELECTOR, cout << "Getting pedigree " << pedID << " of size " << boost::get<1>(*ped) << endl);
+            // real pedsize, for verification purpose
+            int ps = 0;
 			// find these offspring....
 			pop.useAncestralPop(2);
 			// find grandparent
 			vectorf::iterator tmp = find(grandIdx.begin(), grandIdx.end(), pedID);
 			DBG_FAILIF(tmp==grandIdx.end(), ValueError, "Can not find pedigree");
 			//
-			vectori offspringIdx(m_maxOffspring);
-			for(size_t i=0; i<m_maxOffspring; ++i)
-				offspringIdx[i] = pop.infoIdx("offspring" + toStr(i));
 			size_t grandpar1 = tmp - grandIdx.begin();
+            DBG_FAILIF(pop.ind(grandpar1).info(spouseIdx) == -1., SystemError,
+                "Grand parent's spouse is invalid");
 			size_t grandpar2 = static_cast<size_t>(pop.ind(grandpar1).info(spouseIdx));
 			pop.ind(grandpar1).setSubPopID(newPedID);
 			pop.ind(grandpar2).setSubPopID(newPedID);
+            ps += 2;
 			// find parents
 			vectorlu parents;
 			for(size_t x = 0; x < m_maxOffspring; ++x)
@@ -993,11 +1014,13 @@ namespace simuPOP
 				if(pop.ind(*it).info(pedindexIdx) == pedID)
 				{
 					pop.ind(*it).setSubPopID(newPedID);
+                    ps ++;
 					InfoType spouse = pop.ind(*it).info(spouseIdx);
 					// if there is spouse, add it in
 					if(spouse >= 0)
 					{
 						pop.ind(static_cast<ULONG>(spouse)).setSubPopID(newPedID);
+                        ps ++;
 						for(size_t x = 0; x < m_maxOffspring; ++x)
 						{
 							InfoType off = pop.ind(grandpar1).info(offspringIdx[x]);
@@ -1012,8 +1035,13 @@ namespace simuPOP
 			for(vectorlu::iterator it=children.begin(); it != children.end(); ++it)
 			{
 				if(pop.ind(*it).info(pedindexIdx) == pedID)
+                {
 					pop.ind(*it).setSubPopID(newPedID);
+                    ps ++;
+                }
 			}
+            DBG_FAILIF(ps != boost::get<1>(*ped), SystemError, 
+                "Pedigree sizes do not match, estimated " + toStr(boost::get<1>(*ped)) + " real: " + toStr(ps));
 		}
 		population & newPop = pop.newPopByIndID(2);
 		//
