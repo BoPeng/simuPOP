@@ -204,7 +204,7 @@ options = [
     },
     {'longarg': 'numSample=',
      'default': 2,
-     'label':    'Sample number',
+     'label': 'Sample number',
      'allowedTypes':    [types.IntType, types.LongType],
      'description':    '''Number of samples to draw for each penetrance function. ''',
      'validate':    simuOpt.valueGT(0)
@@ -215,30 +215,6 @@ options = [
      'label': 'Output directory',
      'description': 'Directory into which the datasets will be saved. ',
      'validate':    simuOpt.valueValidDir()
-    },
-    {'longarg': 'loci=',
-     'default': [],
-     'allowedTypes': [types.TupleType, types.ListType],
-     'label': 'Loci of concern',
-     'description': '''Loci at which p-values will be calculated and returned. Use
-        [] to return p-values for all loci (excluging DSL)''',
-     'validate':    simuOpt.valueListOf(simuOpt.valueGE(0))
-    },
-    {'longarg': 'geneHunter=',
-     'default': 'gh',
-     'allowedTypes': [types.StringType],
-     'label': 'Location of gene hunter',
-     'description': '''Location of gene hunter executable. If provided,
-        the TDT and Linkage method of genehunter will be applied to 
-        affected sibpair samples.'''
-    },    
-    {'longarg': 'merlin=',
-     'default': 'merlin',
-     'allowedTypes': [types.StringType],
-     'label': 'Location of merlin',
-     'description': '''Location of merlin executable. If provided,
-        mer-lin/vc, merlin-regression can be applied to 
-        pedigree-based samples.'''
     },
     {'longarg': 'analyses=',
      'default': [],
@@ -252,8 +228,8 @@ options = [
         'affectedSibs/TDT', 
         'affectedSibs/Linkage', 
         'case-control/Association', 
-        'affectedSibs/merlin-reg',
-        'affectedSibs/merlin-vc',
+        'qtraitSibs/merlin-reg',
+        'qtraitSibs/merlin-vc',
         'largePeds/merlin-reg', 
         'largePeds/merlin-vc',
         ]
@@ -591,7 +567,7 @@ def popStat(pop):
      
     
 def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N, 
-        numSample, outputDir, loci, geneHunter, merlin, analyses):
+        numSample, outputDir, analyses):
     '''
     This function organize all previous functions and
         1. Load a population
@@ -601,6 +577,45 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
         5. apply TDT, Linkage and chi-sq tests
         6. return a result dictionary
     '''
+    # analyze requirements for the analyses
+    formats = []
+    calcAffectation = False
+    calcQuanTrait = False
+    if 'affectedSibs/TDT' in analyses:
+        formats.append('affectedSibs')
+        calcAffectation = True
+    if 'affectedSibs/Linkage' in analyses: 
+        formats.append('affectedSibs')
+        calcAffectation = True
+    if 'case-control/Association' in analyses: 
+        formats.append('caseControl')
+        calcAffectation = True
+    if 'qtraitSibs/merlin-reg' in analyses:
+        formats.append('qtraitSibs')
+        calcQuanTrait = True
+        calcAffectation = False
+    if 'qtraitSibs/merlin-vc' in analyses:
+        formats.append('qtraitSibs')
+        calcQuanTrait = True
+        calcAffectation = False
+    if 'largePeds/merlin-reg' in analyses: 
+        formats.append('largePeds')
+        calcQuanTrait = True
+    if 'largePeds/merlin-vc' in analyses:
+        formats.append('largePeds')
+        calcQuanTrait = True
+    #
+    if 'qtraitSibs' in formats and 'affectedSibs' in formats:
+        print "quantitative trait sibs and affected sibs analyses conflict with each other"
+        sys.exit(0)
+    #
+    if peneFunc == 'None' and calcAffectation:
+        print "Please choose on peneFunc for the analyses specified"
+        sys.exit(0)
+    if qtraitFunc == 'None' and calcQuanTrait:
+        print "Please choose on qtrait function for the analyses specified"
+        sys.exit(0)
+    #
     res = {}
     # load population
     print "Loading population %s " % dataset
@@ -615,8 +630,8 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
     res.update({
         'dataset':  dataset,
         'logfile':  dataset[0:-4] + '.log',
-        'alleleFreq':   [1- pop.dvars().alleleFreq[i][0] for i in pop.dvars().DSL],
-        'pene==Func':   peneFunc,
+        'alleleFreq': [1- pop.dvars().alleleFreq[i][0] for i in pop.dvars().DSL],
+        'pene==Func': peneFunc,
     })
     # get all the variables from pop
     res.update(pop.vars())
@@ -630,7 +645,8 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
     else:
         print "Length of penetrance/quantitative trait parameter should be one or the number of DSL"
         sys.exit(0)
-    if peneFunc != 'None':
+    # apply penetrance function
+    if calcAffectation:
         if 'recessive' == peneFunc:
             print "Using recessive penetrance function"
             func = recessive(para)
@@ -640,21 +656,19 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
         elif 'custom' == peneFunc:
             print "Using customized penetrance function"
             func = custom(para)    
-        else:
-            print "Wrong penetrance function %s " % peneFunc
-            sys.exit(1)
-        # set affectedness for all individuals, including ancestors
-        for i in range(0, pop.ancestralDepth()+1):
-            # apply penetrance function to all current and ancestral generations
-            pop.useAncestralPop(i)
-            PyPenetrance(pop, loci=pop.dvars().DSL, func=func)
-        # reset population to current generation.
-        pop.useAncestralPop(0)
     else:
-        if True in ['TDT' in x for x in analyses] or \
-            True in ['Linkage' in x for x in analyses] or \
-            True in ['Association' in x for x in analyses]:
-            print "Please choose on peneFunc for the analyses specified"
+        def allTrue(geno):
+            return True
+        print "Setting all individuals as affected for qtrait analyses"
+        func = allTrue
+    # set affectedness for all individuals, including ancestors
+    for i in range(0, pop.ancestralDepth()+1):
+        # apply penetrance function to all current and ancestral generations
+        pop.useAncestralPop(i)
+        PyPenetrance(pop, loci=pop.dvars().DSL, func=func)
+    # reset population to current generation.
+    pop.useAncestralPop(0)
+    #
     if qtraitFunc != 'None':
         pop.addInfoField('qtrait')
         print "Using customized quantitative trait function"
@@ -666,50 +680,34 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
             PyQuanTrait(pop, loci=pop.dvars().DSL, func=func)
         # reset population to current generation.
         pop.useAncestralPop(0)
-    else:
-        if True in ['merlin' in x for x in analyses]:
-            print "Please choose on qtrait function for the analyses specified"
     #
     # now, draw samples 
     # return a sample population, for its chromosome structure
     # (without DSL)
-    if True in ['case-control' in x for x in analyses]:
+    #
+    if 'caseControl' in formats:
         caseControlSamples = drawCaseControlSamples(pop, 
             numSample,        # number of sample for each setting
             os.path.join(outputDir, "caseControl")   # prefix of dir names
         )
-    if True in ['affectedSibs' in x for x in analyses] and \
-        True in ['merlin' in x for x in analyses]:
-        drawTraitSibpairSamples(pop, 
-            numSample,        # number of sample for each setting
-            os.path.join(outputDir, "affectedSibs")
-        )
-    if True in ['affectedSibs' in x for x in analyses] and \
-        True in ['TDT' in x for x in analyses] or \
-        True in ['Linkage' in x for x in analyses]:
+    if 'affectedSibs' in formats:
         drawAffectedSibpairSamples(pop, 
             numSample,        # number of sample for each setting
             os.path.join(outputDir, "affectedSibs")
         )
-    # save in sqtl format.
-    if True in ['largePeds' in x for x in analyses]:
+    if 'qtraitSibs' in formats:
+        drawTraitSibpairSamples(pop, 
+            numSample,        # number of sample for each setting
+            os.path.join(outputDir, "affectedSibs")
+        )
+    if 'largePeds' in formats:
         largePedigreeSamples = drawLargePedigreeSamples(pop,
             numSample,
             os.path.join(outputDir, 'largePeds')
         )
     # calculate population statistics like prevalence
-    res.update( popStat(pop) )
+    res.update(popStat(pop))
     #
-    def lociAtChrom(ch, absLoci=[]):
-        if absLoci == []:
-            # all loci (compared to pop, we do not have the DSL)
-            return range(pop.numLoci(ch))
-        loci = []
-        for loc in absLoci:
-            (c, l) = pop.chromLocusPair(loc)
-            if c == ch:
-                loci.append(l)
-        return loci           
     # for each sample
     if 'affectedSibs/TDT' in analyses:
         res['TDT'] = []
@@ -720,7 +718,7 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
                 print 'Applying TDT method to chromosome %d of sample %d' % ((ch+1), sn)
                 res['TDT'][sn].extend(TDT_gh(
                     os.path.join(outputDir, 'affectedSibs%d' % sn, 'Aff_%d' % (ch+1)),
-                    loci=lociAtChrom(ch, loci), gh=geneHunter))
+                    loci=range(pop.chromBegin(ch), pop.chromEnd(ch)), gh='gh'))
     #
     if 'affectedSibs/Linkage' in analyses: 
         res['LOD'] = []
@@ -731,7 +729,7 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
                 print 'Applying Linkage method to chromosome %d of sample %d' % ((ch+1), sn)
                 res['LOD'][sn].extend(LOD_gh(
                     os.path.join(outputDir, 'affectedSibs%d' % sn, 'Aff_%d' % (ch+1)), 
-                    loci=lociAtChrom(ch, loci), gh=geneHunter))
+                    loci=range(pop.chromBegin(ch), pop.chromEnd(ch)), gh='gh'))
     #
     if 'case-control/Association' in analyses: 
         res['ChiSq'] = []
@@ -741,8 +739,8 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
             print 'Applying chi-sq association tests to sample %d' % sn
             res['ChiSq'][sn] = ChiSq_test(
                 os.path.join(outputDir, 'caseControl%d' % sn, 'caseControl.txt'), 
-                loci=loci)
-    if 'affectedSibs/merlin-reg' in analyses:
+                loci=range(pop.chromBegin(ch), pop.chromEnd(ch)))
+    if 'qtraitSibs/merlin-reg' in analyses:
         res['Reg_sibs'] = []
         for sn in range(numSample):
             res['Reg_sibs'].append([])
@@ -751,9 +749,9 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
                 print 'Applying merlin-regression to chromosome %d of sample %d' % ((ch+1), sn)
                 res['Reg_sibs'][sn].extend(Regression_merlin(
                     os.path.join(outputDir, 'affectedSibs%d' % sn, 'QTDT_%d' % (ch+1)), 
-                    loci=lociAtChrom(ch, loci), merlin=merlin+'-regress'))
+                    loci=range(pop.chromBegin(ch), pop.chromEnd(ch)), merlin='merlin-regress'))
     #
-    if 'affectedSibs/merlin-vc' in analyses:
+    if 'qtraitSibs/merlin-vc' in analyses:
         res['VC_sibs'] = []
         for sn in range(numSample):
             res['VC_sibs'].append([])
@@ -762,7 +760,7 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
                 print 'Applying merlin-regression to chromosome %d of sample %d' % ((ch+1), sn)
                 res['VC_sibs'][sn].extend(VC_merlin(
                     os.path.join(outputDir, 'affectedSibs%d' % sn, 'QTDT_%d' % (ch+1)), 
-                    loci=lociAtChrom(ch, loci), merlin=merlin+'-regress'))
+                    loci=range(pop.chromBegin(ch), pop.chromEnd(ch)), merlin='merlin-regress'))
     #
     if 'largePeds/merlin-reg' in analyses: 
         res['Reg_peds'] = []
@@ -773,7 +771,7 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
                 print 'Applying merlin-regression to chromosome %d of sample %d' % ((ch+1), sn)
                 res['Reg_peds'][sn].extend(Regression_merlin(
                     os.path.join(outputDir, 'largePeds%d' % sn, 'QTDT_%d' % (ch+1)), 
-                    loci=lociAtChrom(ch, loci), merlin=merlin+'-regress'))
+                    loci=range(pop.chromBegin(ch), pop.chromEnd(ch)), merlin='merlin-regress'))
     #
     if 'largePeds/merlin-vc' in analyses:
         res['VC_peds'] = []
@@ -784,7 +782,7 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
                 print 'Applying merlin-regression to chromosome %d of sample %d' % ((ch+1), sn)
                 res['VC_peds'][sn].extend(VC_merlin(
                     os.path.join(outputDir, 'largePeds%d' % sn, 'QTDT_%d' % (ch+1)), 
-                    loci=lociAtChrom(ch, loci), merlin=merlin+'-regress'))
+                    loci=range(pop.chromBegin(ch), pop.chromEnd(ch)), merlin=merlin+'-regress'))
     #
     return res
 
@@ -793,7 +791,7 @@ if __name__ == '__main__':
     allParam = getOptions()
     # unpack options
     (markerType, dataset, peneFunc, qtraitFunc, parameter, N, numSample, outputDir,
-        loci, geneHunter, merlin, analyses) = allParam
+        analyses) = allParam
     # load simuPOP libraries
     if markerType == 'microsatellite':
         simuOpt.setOptions(alleleType='short', quiet=True)
@@ -805,22 +803,22 @@ if __name__ == '__main__':
     #
     
     res = analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N, numSample, outputDir, 
-        loci, geneHunter, merlin, analyses)
-#    print
-#    print "Writing results to file %s/%s.py" % (outputDir, peneFunc)
-#    resFile = open(os.path.join(outputDir, '%s.py' % peneFunc), 'w')
-#    print >> resFile, "# analysis of population %s, at %s" % (dataset, time.asctime())
-#    print >> resFile
-#    for key in outputVars.keys():
-#        if res.has_key(key):
-#            # description
-#            print >> resFile, '# %s' % outputVars[key]
-#            if type(res[key]) == type(''):
-#                print >> resFile, '%s = "%s"' % (key, res[key])
-#            else:
-#                print >> resFile, '%s = %s' % (key, str(res[key]))
-#            print >> resFile
-#    resFile.close()
-#    print 'Done'
+        analyses)
+    print
+    print "Writing results to file %s/res.py" % outputDir
+    resFile = open(os.path.join(outputDir, 'res.py'), 'w')
+    print >> resFile, "# analysis of population %s, at %s" % (dataset, time.asctime())
+    print >> resFile
+    for key in outputVars.keys():
+        if res.has_key(key):
+            # description
+            print >> resFile, '# %s' % outputVars[key]
+            if type(res[key]) == type(''):
+                print >> resFile, '%s = "%s"' % (key, res[key])
+            else:
+                print >> resFile, '%s = %s' % (key, str(res[key]))
+            print >> resFile
+    resFile.close()
+    print 'Done'
 
 
