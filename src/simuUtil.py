@@ -894,22 +894,21 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
     newPedIdx = 1
     for ped in peds:
         id = 1
-        pastmap = {0:0}
+        pastmap = {}
         # go from generation 2, 1, 0 (for example)
         for anc in range(pop.ancestralDepth(), -1, -1):
-            newmap = {0:0}
+            newmap = {}
             pop.useAncestralPop(anc)
             # find all individual in this pedigree
             for i in range(pop.popSize()):
                 ind = pop.individual(i)
                 if ind.info('pedindex') == ped:
-                    mom = int(ind.info('father_idx'))
-                    dad = int(ind.info('mother_idx'))
-                    if mom == 0:
-                        dad = 0
-                    if dad == 0:
-                        mom = 0
-                    writeInd(ind, newPedIdx, id, pastmap[dad], pastmap[mom])
+                    dad = int(ind.info('father_idx'))
+                    mom = int(ind.info('mother_idx'))
+                    if dad == mom and dad != 0:
+                        print "Something wrong with pedigree %d, father and mother idx are the same: %s" % \
+                            (ped, dad)
+                    writeInd(ind, newPedIdx, id, pastmap.setdefault(dad, 0), pastmap.setdefault(mom, 0))
                     newmap[i] = id
                     id += 1
             pastmap = newmap
@@ -972,16 +971,16 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
     #    
     # write dat file
     # 
-    print >> datOut, 'A\taffectation'
+    if 'affectation' in fields:
+        outputAffectation = True
+        fields.remove('affectation')
+        print >> datOut, 'A\taffectation'
+    else:
+        outputAffectation = False
     for f in fields:
         print >> datOut, 'T\t%s' % f
-    if combine is None:
-        for marker in loci:
-            for p in range(pop.ploidy()):
-                print >> datOut, 'M\t%s_%d' % (pop.locusName(marker), p+1)
-    else:
-        for marker in loci:
-            print >> datOut, 'M\t%s' % pop.locusName(marker)
+    for marker in loci:
+        print >> datOut, 'M\t%s' % pop.locusName(marker)
     datOut.close()
     #
     # write map file
@@ -1006,15 +1005,14 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
     #
     pldy = pop.ploidy()
     def writeInd(ind, famID, id, fa, mo):
-        print >> pedOut, '%d, %d, %d, %d, %s, %s' % (famID, id, fa, mo, sexCode(ind), affectedCode(ind)),
+        print >> pedOut, '%d %d %d %d %d' % (famID, id, fa, mo, sexCode(ind)),
+        if outputAffectation:
+            print >> pedOut, affectedCode(ind),
         for f in fields:
-            print >> pedOut, ', ', ind.info(f),
+            print >> pedOut, '%.3f' % ind.info(f),
         for marker in loci:
-            if combine is None:
-                for p in range(pldy):
-                    print >> pedOut, ", %d" % (ind.allele(marker, p) + shift), 
-            else:
-                print >> pedOut, ", %d" % combine([ind.allele(marker, p) for p in range(pldy)]), 
+            for p in range(pldy):
+                print >> pedOut, "%d" % (ind.allele(marker, p) + shift), 
         print >> pedOut
     #
     # number of pedigrees
@@ -1028,25 +1026,23 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
     #
     for ped in peds:
         id = 1
-        pastmap = {0:0}
+        pastmap = {}
         # go from generation 2, 1, 0 (for example)
         for anc in range(pop.ancestralDepth(), -1, -1):
-            newmap = {0:0}
+            newmap = {}
             pop.useAncestralPop(anc)
             # find all individual in this pedigree
             for i in range(pop.popSize()):
                 ind = pop.individual(i)
                 if ind.info('pedindex') == ped:
-                    mom = int(ind.info('father_idx'))
-                    dad = int(ind.info('mother_idx'))
-                    if mom == 0:
-                        dad = 0
-                    if dad == 0:
-                        mom = 0
-                    writeInd(ind, newPedIdx, id, pastmap[dad], pastmap[mom])
+                    dad = int(ind.info('father_idx'))
+                    mom = int(ind.info('mother_idx'))
+                    if dad == mom and dad != 0:
+                        print "Something wrong with pedigree %d, father and mother idx are the same: %s" % \
+                            (ped, dad)
+                    writeInd(ind, newPedIdx, id, pastmap.setdefault(dad, 0), pastmap.setdefault(mom, 0))
                     newmap[i] = id
                     id += 1
-            print anc, newmap
             pastmap = newmap
         newPedIdx += 1
     pedOut.close()
@@ -1483,76 +1479,56 @@ def ChiSq_test(pop, loci=[]):
     return pvalue
 
 
-def VC_merlin(file):
+def VC_merlin(file, loci=[], merlin='merlin'):
     ''' run variance component method 
         file: file.ped, file.dat, file.map and file,mdl are expected.
             file can contain directory name.
     '''
-    res = {}
     cmd = 'merlin -d %s.dat -p %s.ped -m %s.map --pair --vc' % (file, file, file)
-    pheline = re.compile('Phenotype:\s+([0-9a-zA-Z_]+)\s+.*h2\s+=\s+([\d.+-]+)%')
-    resline = re.compile('\s+([\d.+-]+)\s+([\d.+-]+)%\s+([\d.+-]+)\s+([\d.+-]+)\s+([\d.+-]+)')
+    resline = re.compile('\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)')
     print "Running", cmd
     fout = os.popen(cmd)
-    name = None
-    while True:
-        line = fout.readline()
-        if not line:
-            break;
+    pvalues = {}
+    for line in fout.readlines():
         try:
-            (name, h2) = pheline.match(line).groups()
-            res[name] = {'h2all': h2, 'pos':[], 'h2':[], 'chisq':[], 'lod':[], 'pvalue':[]}
+            (pos, h2, chisq, lod, pvalue) = resline.match(line).groups()
+            pvalue[pos] = pvalue
         except AttributeError:
-            try:
-                (pos, h2, chisq, lod, pvalue) = resline.match(line).groups()
-                assert name is not None
-                res[name]['pos'].append(float(pos))
-                res[name]['h2'].append(float(h2))
-                res[name]['chisq'].append(float(chisq))
-                res[name]['lod'].append(float(lod))
-                res[name]['pvalue'].append(float(pvalue))
-            except AttributeError:
-                pass
+            pass
     fout.close()
-    return res
+    print pvalues
+    if loci == []:
+        # dict to list
+        # if a p-value does not exist (caused e.g. by fixation), return -1
+        return [pvalues.setdefault(x, -1) for x in range(len(pvalues))]
+    else:
+        return [pvalues.setdefault(x, -1) for x in loci]
 
 
 def Regression_merlin(file, loci=[], merlin='merlin-regress'):
     ''' run merlin regression method
     '''
     # get information
-    cmd = '%s -d %s.dat -p %s.ped -m %s.map -t %s.mdl' % (merlin, file, file, file, file)
+    cmd = '%s -d %s.dat -p %s.ped -m %s.map' % (merlin, file, file, file)
     print "Running", cmd
     fout = os.popen(cmd)
     #
-    res = {}
-    name = None
-    pheline = re.compile(r'.*Pedigree-Wide Regression Analysis.*-regress-(.+)\).*')
-    resline = re.compile(r'\s+([\d.+-]+)\s+([\d.+-]+)\s+([\d.+-]+)\s+([\d.+-]+)%\s+([\d.+-]+)\s+([\d.+-]+)')
+    pvalues = {}
+    resline = re.compile('\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)')
     for line in fout.readlines():
         try:
-            (name, ) = pheline.match(line).groups()
-            res[name] = {'pos':[], 'h2':[], 'stdev':[], 'info':[], 'lod':[], 'pvalue':[]}
+            (pos, h2, stdev, info, lod, pvalue) = resline.match(line).groups()
+            pvalues[pos] = pvalue
         except AttributeError:
-            try:
-                (pos, h2, stdev, info, lod, pvalue) = resline.match(line).groups()
-                assert name is not None
-                #res[name]['pos'].append(float(pos))
-                #res[name]['h2'].append(float(h2))
-                #res[name]['stdev'].append(float(stdev))
-                #res[name]['info'].append(float(info))
-                #res[name]['lod'].append(float(lod))
-                res[name]['pvalue'].append(float(pvalue))
-                print ipy
-            except AttributeError:
-                pass
+            pass
     fout.close()
+    print pvalues
     if loci == []:
         # dict to list
         # if a p-value does not exist (caused e.g. by fixation), return -1
-        return [minPvalue.setdefault(x, -1) for x in range(len(minPvalue))]
+        return [pvalues.setdefault(x, -1) for x in range(len(pvalues))]
     else:
-        return [minPvalue.setdefault(x, -1) for x in loci]
+        return [pvalues.setdefault(x, -1) for x in loci]
 
     
 

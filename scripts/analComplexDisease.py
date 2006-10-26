@@ -425,7 +425,6 @@ def drawCaseControlSamples(pop, numSample, dirPrefix):
     for ns in range(len(samples)):
         # if N=800, 400 case and 400 controls
         # remove DSL
-        samples[ns].removeLoci(remove=pop.dvars().DSL)
         sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "caseControl.txt")
         _mkdir('%s%d' % (dirPrefix, ns))
         print "Write case-control sample %s in simuPOP format: %s" % (ns, sampleFile)
@@ -455,13 +454,10 @@ def drawAffectedSibpairSamples(pop, numSample, dirPrefix):
         print "Can not draw affected sibpairs."
     # svae in simuPOP and linkage format
     # how to combine genotype in sqtl format
-    def comb(geno):
-        return sum(geno)+1
     for ns in range(numSample):
         sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "affectedSibpairs.txt")
         _mkdir('%s%d' % (dirPrefix, ns))
         # remove DSL
-        samples[ns].removeLoci(remove=pop.dvars().DSL)
         print "Write affected sibpair sample in simuPOP format: %s " % sampleFile
         samples[ns].savePopulation(sampleFile)
         for ch in range(0, pop.numChrom() ):
@@ -470,11 +466,43 @@ def drawAffectedSibpairSamples(pop, numSample, dirPrefix):
                 recombination=pop.dvars().recRate[0],
                 loci = range(samples[ns].chromBegin(ch), samples[ns].chromEnd(ch)), 
                 daf=0.1)    
+    return samples
+
+
+def drawTraitSibpairSamples(pop, numSample, dirPrefix):
+    ''' 
+        pop: population
+        numSample: number of samples for each penetrance settings
+        dirPrefix: dirPrefix0, 1, etc will be used as directories
+    '''
+    samples = []
+    print "Generating affected sibpair samples..."
+    try:
+        # get number of affected/unaffected sibpairs
+        # There may not be enough to be sampled
+        AffectedSibpairSample(pop, countOnly=True)
+        nAff = min(pop.dvars().numAffectedSibpairs, N/4)
+        print "Number of (both) affected sibpairs: ", pop.dvars().numAffectedSibpairs
+        samples = AffectedSibpairSample(pop, name='sample1',
+                size=nAff, times=numSample)
+    except Exception, err:
+        print type(err)
+        print err
+        print "Can not draw affected sibpairs."
+    # svae in simuPOP and linkage format
+    # how to combine genotype in sqtl format
+    for ns in range(numSample):
+        sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "affectedSibpairs.txt")
+        _mkdir('%s%d' % (dirPrefix, ns))
+        # remove DSL
+        print "Write affected sibpair sample in simuPOP format: %s " % sampleFile
+        samples[ns].savePopulation(sampleFile)
+        for ch in range(0, pop.numChrom() ):
             print "Write chromosome %d in QTDT format: %s%d/QTDT_%d" % (ch+1,  dirPrefix, ns, ch+1)
             SaveQTDT(pop=samples[ns], output = os.path.join("%s%d" % (dirPrefix, ns), "QTDT_%d" % (ch+1)),
-                loci = range(samples[ns].chromBegin(ch), samples[ns].chromEnd(ch)),
-                combine=comb)
+                loci = range(samples[ns].chromBegin(ch), samples[ns].chromEnd(ch)), fields=['qtrait'])
     return samples
+
 
 
 def drawLargePedigreeSamples(pop, numSample, dirPrefix):
@@ -485,7 +513,7 @@ def drawLargePedigreeSamples(pop, numSample, dirPrefix):
     '''
     print "Generating large pedigrees samples..."
     try:
-        samples = LargePedigreeSample(pop, minTotalSize=N, maxOffspring=5,
+        samples = LargePedigreeSample(pop, minTotalSize=N, maxOffspring=5, times=numSample, 
             minPedSize=8, minAffected=0)
     except Exception, err:
         print type(err)
@@ -493,20 +521,16 @@ def drawLargePedigreeSamples(pop, numSample, dirPrefix):
         print "Can not drawlarge pedigrees."
     # svae in simuPOP and linkage format
     # how to combine genotype in sqtl format
-    def comb(geno):
-        return sum(geno)+1
     for ns in range(numSample):
         sampleFile = os.path.join('%s%d' % (dirPrefix, ns), "largePedigrees.txt") 
         _mkdir('%s%d' % (dirPrefix, ns))
         # remove DSL
-        samples[ns].removeLoci(remove=pop.dvars().DSL)
         print "Write large pedigree sample in simuPOP format: %s " % sampleFile
         samples[ns].savePopulation(sampleFile)
         for ch in range(0, pop.numChrom()):
             print "Write chromosome %d in QTDT format: %s%d/QTDT_%d" % (ch+1, dirPrefix, ns, ch+1)
             SaveQTDT(pop=samples[ns], output = os.path.join("%s%d" % (dirPrefix, ns), "QTDT_%d" % (ch+1)),
-                loci = range(samples[ns].chromBegin(ch), samples[ns].chromEnd(ch)),
-                combine=comb)
+                loci = range(samples[ns].chromBegin(ch), samples[ns].chromEnd(ch)), fields=['qtrait'])
     return samples
 
 
@@ -581,6 +605,7 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
     # load population
     print "Loading population %s " % dataset
     pop = LoadPopulation(dataset)
+    pop.removeLoci(remove=pop.dvars().DSL)
     # If you decide to have a look at penetrance values
     # add the following line, and add infoFields=['penetrance'] to
     # penetrance operators
@@ -625,6 +650,11 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
             PyPenetrance(pop, loci=pop.dvars().DSL, func=func)
         # reset population to current generation.
         pop.useAncestralPop(0)
+    else:
+        if True in ['TDT' in x for x in analyses] or \
+            True in ['Linkage' in x for x in analyses] or \
+            True in ['Association' in x for x in analyses]:
+            print "Please choose on peneFunc for the analyses specified"
     if qtraitFunc != 'None':
         pop.addInfoField('qtrait')
         print "Using customized quantitative trait function"
@@ -636,6 +666,9 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
             PyQuanTrait(pop, loci=pop.dvars().DSL, func=func)
         # reset population to current generation.
         pop.useAncestralPop(0)
+    else:
+        if True in ['merlin' in x for x in analyses]:
+            print "Please choose on qtrait function for the analyses specified"
     #
     # now, draw samples 
     # return a sample population, for its chromosome structure
@@ -645,13 +678,21 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
             numSample,        # number of sample for each setting
             os.path.join(outputDir, "caseControl")   # prefix of dir names
         )
-    if True in ['affectedSibs' in x for x in analyses]:
+    if True in ['affectedSibs' in x for x in analyses] and \
+        True in ['merlin' in x for x in analyses]:
+        drawTraitSibpairSamples(pop, 
+            numSample,        # number of sample for each setting
+            os.path.join(outputDir, "affectedSibs")
+        )
+    if True in ['affectedSibs' in x for x in analyses] and \
+        True in ['TDT' in x for x in analyses] or \
+        True in ['Linkage' in x for x in analyses]:
         drawAffectedSibpairSamples(pop, 
             numSample,        # number of sample for each setting
-            os.path.join(outputDir, "affectedSibs")   # prefix of dir names
+            os.path.join(outputDir, "affectedSibs")
         )
     # save in sqtl format.
-    if True in ['merlin' in x for x in analyses]:
+    if True in ['largePeds' in x for x in analyses]:
         largePedigreeSamples = drawLargePedigreeSamples(pop,
             numSample,
             os.path.join(outputDir, 'largePeds')
@@ -662,10 +703,10 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
     def lociAtChrom(ch, absLoci=[]):
         if absLoci == []:
             # all loci (compared to pop, we do not have the DSL)
-            return range(caseControlSamples[0].numLoci(ch))
+            return range(pop.numLoci(ch))
         loci = []
         for loc in absLoci:
-            (c, l) = caseControlSamples[0].chromLocusPair(loc)
+            (c, l) = pop.chromLocusPair(loc)
             if c == ch:
                 loci.append(l)
         return loci           
@@ -674,51 +715,77 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
         res['TDT'] = []
         for sn in range(numSample):
             res['TDT'].append([])
-            print "Processing sample %s%d" % (peneFunc, sn)
+            print "Processing sample affectedSibs%d" % sn
             for ch in range(pop.numChrom()):
-                print 'Applying TDT method to chromosome %d of sample %d' % (ch, sn)
+                print 'Applying TDT method to chromosome %d of sample %d' % ((ch+1), sn)
                 res['TDT'][sn].extend(TDT_gh(
-                    os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'Linkage', 'Aff_%d' % ch), 
+                    os.path.join(outputDir, 'affectedSibs%d' % sn, 'Aff_%d' % (ch+1)),
                     loci=lociAtChrom(ch, loci), gh=geneHunter))
     #
     if 'affectedSibs/Linkage' in analyses: 
         res['LOD'] = []
         for sn in range(numSample):
             res['LOD'].append([])
-            print "Processing sample %s%d" % (peneFunc, sn)
+            print "Processing sample affectedSibs%d" % sn
             for ch in range(pop.numChrom()):
-                print 'Applying Linkage method to chromosome %d of sample %d' % (ch, sn)
+                print 'Applying Linkage method to chromosome %d of sample %d' % ((ch+1), sn)
                 res['LOD'][sn].extend(LOD_gh(
-                    os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'Linkage', 'Aff_%d' % ch), 
+                    os.path.join(outputDir, 'affectedSibs%d' % sn, 'Aff_%d' % (ch+1)), 
                     loci=lociAtChrom(ch, loci), gh=geneHunter))
     #
     if 'case-control/Association' in analyses: 
         res['ChiSq'] = []
         for sn in range(numSample):
             res['ChiSq'].append([])
-            print "Processing sample %s%d" % (peneFunc, sn)
+            print "Processing sample caseControl%d" % sn
             print 'Applying chi-sq association tests to sample %d' % sn
             res['ChiSq'][sn] = ChiSq_test(
-                os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'caseControl.txt'), 
+                os.path.join(outputDir, 'caseControl%d' % sn, 'caseControl.txt'), 
                 loci=loci)
     if 'affectedSibs/merlin-reg' in analyses:
         res['Reg_sibs'] = []
         for sn in range(numSample):
-            res['TDT'].append([])
-            print "Processing sample %s%d" % (peneFunc, sn)
+            res['Reg_sibs'].append([])
+            print "Processing sample affectedSibs%d" % sn
             for ch in range(pop.numChrom()):
-                print 'Applying merlin-regression to chromosome %d of sample %d' % (ch, sn)
-                res['TDT'][sn].extend(Regression_merlin(
-                    os.path.join(outputDir, '%s%d' % (peneFunc, sn), 'Linkage', 'QTDT_%d' % ch), 
+                print 'Applying merlin-regression to chromosome %d of sample %d' % ((ch+1), sn)
+                res['Reg_sibs'][sn].extend(Regression_merlin(
+                    os.path.join(outputDir, 'affectedSibs%d' % sn, 'QTDT_%d' % (ch+1)), 
                     loci=lociAtChrom(ch, loci), merlin=merlin+'-regress'))
-
+    #
     if 'affectedSibs/merlin-vc' in analyses:
         res['VC_sibs'] = []
+        for sn in range(numSample):
+            res['VC_sibs'].append([])
+            print "Processing sample affectedSibs%d" % sn
+            for ch in range(pop.numChrom()):
+                print 'Applying merlin-regression to chromosome %d of sample %d' % ((ch+1), sn)
+                res['VC_sibs'][sn].extend(VC_merlin(
+                    os.path.join(outputDir, 'affectedSibs%d' % sn, 'QTDT_%d' % (ch+1)), 
+                    loci=lociAtChrom(ch, loci), merlin=merlin+'-regress'))
+    #
     if 'largePeds/merlin-reg' in analyses: 
         res['Reg_peds'] = []
+        for sn in range(numSample):
+            res['Reg_peds'].append([])
+            print "Processing sample largePeds%d" % sn
+            for ch in range(pop.numChrom()):
+                print 'Applying merlin-regression to chromosome %d of sample %d' % ((ch+1), sn)
+                res['Reg_peds'][sn].extend(Regression_merlin(
+                    os.path.join(outputDir, 'largePeds%d' % sn, 'QTDT_%d' % (ch+1)), 
+                    loci=lociAtChrom(ch, loci), merlin=merlin+'-regress'))
+    #
     if 'largePeds/merlin-vc' in analyses:
         res['VC_peds'] = []
-
+        for sn in range(numSample):
+            res['VC_peds'].append([])
+            print "Processing sample largePeds%d" % sn
+            for ch in range(pop.numChrom()):
+                print 'Applying merlin-regression to chromosome %d of sample %d' % ((ch+1), sn)
+                res['VC_peds'][sn].extend(VC_merlin(
+                    os.path.join(outputDir, 'largePeds%d' % sn, 'QTDT_%d' % (ch+1)), 
+                    loci=lociAtChrom(ch, loci), merlin=merlin+'-regress'))
+    #
     return res
 
 
