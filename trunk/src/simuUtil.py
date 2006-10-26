@@ -894,10 +894,10 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
     newPedIdx = 1
     for ped in peds:
         id = 1
-        pastmap = {}
+        pastmap = {-1:0}
         # go from generation 2, 1, 0 (for example)
         for anc in range(pop.ancestralDepth(), -1, -1):
-            newmap = {}
+            newmap = {-1:0}
             pop.useAncestralPop(anc)
             # find all individual in this pedigree
             for i in range(pop.popSize()):
@@ -1026,10 +1026,11 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
     #
     for ped in peds:
         id = 1
-        pastmap = {}
+        # -1 means no parents
+        pastmap = {-1:0}
         # go from generation 2, 1, 0 (for example)
         for anc in range(pop.ancestralDepth(), -1, -1):
-            newmap = {}
+            newmap = {-1:0}
             pop.useAncestralPop(anc)
             # find all individual in this pedigree
             for i in range(pop.popSize()):
@@ -1037,7 +1038,7 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
                 if ind.info('pedindex') == ped:
                     dad = int(ind.info('father_idx'))
                     mom = int(ind.info('mother_idx'))
-                    if dad == mom and dad != 0:
+                    if dad == mom and dad != -1:
                         print "Something wrong with pedigree %d, father and mother idx are the same: %s" % \
                             (ped, dad)
                     writeInd(ind, newPedIdx, id, pastmap.setdefault(dad, 0), pastmap.setdefault(mom, 0))
@@ -1320,7 +1321,7 @@ def FreqTrajectoryMultiStochWithSubPop(
     return (trajAll, [curGen-len(x)+1 for x in trajAll ], trajFuncWithSubPop)
 
 
-def TDT_gh(file, loci=[], gh='gh'):
+def TDT_gh(file, gh='gh'):
     ''' 
     Analyze data using genehunter/TDT. Note that this function may not work under 
     platforms other than linux, and may not work with your version of genehunter.
@@ -1370,15 +1371,11 @@ def TDT_gh(file, loci=[], gh='gh'):
             # does not match
             continue
     fout.close()
-    if loci == []:
-        # dict to list
-        # if a p-value does not exist (caused e.g. by fixation), return -1
-        return [minPvalue.setdefault(x, -1) for x in range(len(minPvalue))]
-    else:
-        return [minPvalue.setdefault(x, -1) for x in loci]
+    # sort by pos,...
+    return [minPvalue.setdefault(x, -1) for x in range(len(minPvalue))]
 
 
-def LOD_gh(file, loci=[], gh='gh'):
+def LOD_gh(file, gh='gh'):
     ''' 
     Analyze data using the linkage method of genehunter. Note that this function may not 
     work under platforms other than linux, and may not work with your version of 
@@ -1427,15 +1424,12 @@ def LOD_gh(file, loci=[], gh='gh'):
             # does not match
             continue
     fout.close()
-    if loci == []:
-        # dict to list
-        return [minPvalue.setdefault(x, -1) for x in range(len(minPvalue))]
-    else:
-        return [minPvalue.setdefault(x, -1) for x in loci]
+    # dict to list
+    return [minPvalue.setdefault(x, -1) for x in range(len(minPvalue))]
 
 
 
-def ChiSq_test(pop, loci=[]):
+def ChiSq_test(pop):
     ''' perform case control test at loci 
 
     Parameters;
@@ -1458,11 +1452,9 @@ def ChiSq_test(pop, loci=[]):
     if type(pop) == type(''):
         pop = LoadPopulation(pop)
     # at each locus
-    pvalue = []
-    if loci == []:
-        loci = range(pop.totNumLoci())
+    pvalues = []
     Stat(pop, alleleFreq=loci)
-    for loc in loci:
+    for loc in range(pop.totNumLoci()):
         # allele frequency
         caseNum = pop.dvars(0).alleleNum[loc]
         if len(caseNum) == 1:
@@ -1474,38 +1466,37 @@ def ChiSq_test(pop, loci=[]):
             contNum.append(0)
         elif len(contNum) > 2:
             raise 'ChiSq: non-SNP markers are not supported.'
-        pvalue.append(rpy.r.chisq_test(rpy.with_mode(rpy.NO_CONVERSION, 
+        pvalues.append(rpy.r.chisq_test(rpy.with_mode(rpy.NO_CONVERSION, 
             rpy.r.matrix)( caseNum+contNum, ncol=2))['p.value'])
-    return pvalue
+    return pvalues
 
 
-def VC_merlin(file, loci=[], merlin='merlin'):
+def VC_merlin(file, merlin='merlin'):
     ''' run variance component method 
         file: file.ped, file.dat, file.map and file,mdl are expected.
             file can contain directory name.
     '''
     cmd = 'merlin -d %s.dat -p %s.ped -m %s.map --pair --vc' % (file, file, file)
-    resline = re.compile('\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)')
+    resline = re.compile('\s+([\d.+-]+|na)\s+([\d.+-]+|na)%\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)')
     print "Running", cmd
     fout = os.popen(cmd)
-    pvalues = {}
+    pvalues = []
     for line in fout.readlines():
         try:
+            # currently we only record pvalue
             (pos, h2, chisq, lod, pvalue) = resline.match(line).groups()
-            pvalue[pos] = pvalue
+            try:
+                pvalues.append(float(pvalue))
+            except:
+                # na?
+                pvalues.append(-1)
         except AttributeError:
             pass
     fout.close()
-    print pvalues
-    if loci == []:
-        # dict to list
-        # if a p-value does not exist (caused e.g. by fixation), return -1
-        return [pvalues.setdefault(x, -1) for x in range(len(pvalues))]
-    else:
-        return [pvalues.setdefault(x, -1) for x in loci]
+    return pvalues
 
 
-def Regression_merlin(file, loci=[], merlin='merlin-regress'):
+def Regression_merlin(file, merlin='merlin-regress'):
     ''' run merlin regression method
     '''
     # get information
@@ -1513,23 +1504,20 @@ def Regression_merlin(file, loci=[], merlin='merlin-regress'):
     print "Running", cmd
     fout = os.popen(cmd)
     #
-    pvalues = {}
-    resline = re.compile('\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)')
+    pvalues = []
+    resline = re.compile('\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)%\s+([\d.+-]+|na)\s+([\d.+-]+|na)')
     for line in fout.readlines():
         try:
             (pos, h2, stdev, info, lod, pvalue) = resline.match(line).groups()
-            pvalues[pos] = pvalue
+            try:
+                pvalues.append(float(pvalue))
+            except:
+                # na?
+                pvalues.append(-1)
         except AttributeError:
             pass
     fout.close()
-    print pvalues
-    if loci == []:
-        # dict to list
-        # if a p-value does not exist (caused e.g. by fixation), return -1
-        return [pvalues.setdefault(x, -1) for x in range(len(pvalues))]
-    else:
-        return [pvalues.setdefault(x, -1) for x in loci]
-
+    return pvalues
     
 
 if __name__ == "__main__":
