@@ -259,8 +259,10 @@ namespace simuPOP
 		pop.useAncestralPop(pop.ancestralDepth());
 		for(population::IndIterator it=pop.indBegin(); it != pop.indEnd(); ++it)
 		{
-			it->setInfo(0, fatherIdx);
-			it->setInfo(0, motherIdx);
+            // -1 means no parents.
+            // we do not use 0 since 0 is valid 
+			it->setInfo(-1, fatherIdx);
+			it->setInfo(-1, motherIdx);
 		}
 		// for other generations
 		for(size_t ans = 0; ans < pop.ancestralDepth(); ++ans)
@@ -276,12 +278,12 @@ namespace simuPOP
 				vectorf::iterator tmp = find(oldindex.begin(), oldindex.end(), it->info(fatherIdx));
 				// no parents
 				if(tmp == oldindex.end())
-					it->setInfo(0, fatherIdx);
+					it->setInfo(-1, fatherIdx);
 				else
 					it->setInfo(tmp - oldindex.begin(), fatherIdx);
 				tmp = find(oldindex.begin(), oldindex.end(), it->info(motherIdx));
 				if(tmp == oldindex.end())
-					it->setInfo(0, motherIdx);
+					it->setInfo(-1, motherIdx);
 				else
 					it->setInfo(tmp-oldindex.begin(), motherIdx);
 			}
