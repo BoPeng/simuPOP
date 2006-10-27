@@ -29,6 +29,11 @@
 
 import os, sys, exceptions, types, re, time, imp
 
+allowed_keys = ['arg', 'longarg', 'label', 'allowedTypes', 'prompt', 'useDefault', 'jump', \
+    'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', 'chooseFrom', 'separator']
+
+allowed_commandline_options = ['-c', '--config', '--optimized', '-q', '--useTkinter', '--quiet', '--noDialog']
+
 def getParamShortArg(p, processedArgs):
     ''' try to get a param from short arg '''
     if p.has_key('arg'):
@@ -254,9 +259,7 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=F
         p = options[opt]
         # validate p
         for k in p.keys():
-            if not k in ['arg', 'longarg', 'label', 'allowedTypes', 'prompt',\
-                'jump', 'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', 'chooseFrom',
-                'separator']:
+            if not k in allowed_keys:
                 raise exceptions.ValueError("Unrecognized option entry " + k )
         if p.has_key('separator'):
             continue
@@ -266,7 +269,7 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=F
         if val == None:
             val = getParamConfigFile(p, processedArgs)
         if val == None:
-            if (useDefault or not p.has_key('label')) and p.has_key('default'):
+            if (useDefault or (p.has_key('useDefault') and p['useDefault'])) and p.has_key('default'):
                 val = p['default']
             else:
                 val = getParamUserInput(p)
@@ -297,9 +300,7 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=F
     if checkUnprocessedArgs and (True not in map(lambda x:x.has_key('jump'), options) \
         and True not in map(lambda x:x.has_key('jumpIfFalse'), option)):
         for i in range(1, len(sys.argv)):
-            if (not sys.argv[i] in ['-c', '--config', '--optimized',    '-q', \
-                '--useTkinter', '--quiet', '--noDialog', '--useDefault']) \
-                and (not i in processedArgs):
+            if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
                 raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
     return values
 
@@ -341,9 +342,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
         p = options[opt]
         # validate p
         for k in p.keys():
-            if not k in ['arg', 'longarg', 'label', 'allowedTypes', 'prompt', \
-                'jump', 'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', \
-                'chooseFrom', 'separator']:
+            if not k in allowed_keys:
                 raise exceptions.ValueError("Unrecognized option entry " + k )
         val = getParamShortArg(p, processedArgs)
         if val == None:
@@ -358,9 +357,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
     # look if any argument was not processed
     if checkUnprocessedArgs:
         for i in range(1, len(sys.argv)):
-            if (not sys.argv[i] in ['-c', '--config', '--optimized', '-q',\
-                '--quiet', '--noDialog', '--useTkinter', '--useDefault']) \
-                and (not i in processedArgs):
+            if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
                 raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
     #
     def denyWindowManagerClose():
@@ -582,9 +579,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
         p = options[opt]
         # validate p
         for k in p.keys():
-            if not k in ['arg', 'longarg', 'label', 'allowedTypes', 'prompt', \
-                'jump', 'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', \
-                'chooseFrom', 'separator']:
+            if not k in allowed_keys:
                 raise exceptions.ValueError("Unrecognized option entry " + k )
         if p.has_key('separator'):
             val = p['separator']
@@ -602,9 +597,7 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
     # look if any argument was not processed
     if checkUnprocessedArgs:
         for i in range(1, len(sys.argv)):
-            if (not sys.argv[i] in ['-c', '--config', '--optimized', '-q',\
-                '--quiet', '--noDialog', '--useTkinter', '--useDefault']) \
-                and (not i in processedArgs):
+            if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
                 raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
     # parameter 0 prevents wxPython from open a separate window for stdout and stderr
     app = wx.App(0)
@@ -861,10 +854,9 @@ def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArg
         if opt.has_key('configName'):
             print 'Warning: configName is obsolete, please use "label" instead'
             opt['label'] = opt('configName')
-    useDefault = '--useDefault' in sys.argv[1:]
     if noDialog or '--noDialog' in sys.argv[1:] or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
         or True not in map(lambda x:x.has_key('label'), options):
-        return termGetParam(options, doc, verbose, useDefault)
+        return termGetParam(options, doc, verbose)
     else:
         if useTkinter:
             return tkGetParam(options, sys.argv[0], doc, details,
@@ -873,7 +865,7 @@ def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArg
             return wxGetParam(options, sys.argv[0], doc, details,
                 checkUnprocessedArgs, nCol)
         else:
-            return termGetParam(options, doc, verbose, useDefault)
+            return termGetParam(options, doc, verbose)
 
 
 def usage(options, before=''):
@@ -888,7 +880,6 @@ def usage(options, before=''):
     message += '    Options: (-shortoption --longoption: description.)\n'
     message += '        -c xxx --config xxx :\n                Load parameters from file xxx\n'
     message += '        --noDialog :\n                Enter parameter from command line\n'
-    message += '        --useDefault :\n                with noDialog, do not prompt for user input, use default values\n'
     message += '        --optimized :\n                Use optimized library (no error checking)\n'
     for p in options:
         message += "        "

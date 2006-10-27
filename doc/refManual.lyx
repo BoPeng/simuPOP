@@ -9709,6 +9709,22 @@ default
 \begin_layout Itemize
 
 \family typewriter
+useDefault
+\family default
+ use default value without asking, if the value can not be determined from
+ GUI, command line option or config file.
+ This is useful for options that rarely need to be changed.
+ Setting them to 
+\family typewriter
+useDfault
+\family default
+ allows shorter command lines, and easier user input.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
 description 
 \family default
 is the description of this parameter, will be put into usage information.

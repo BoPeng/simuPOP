@@ -344,10 +344,10 @@ def custom(para):
 def customQtrait(para):
     ''' quantitative trait '''
     def func(geno):
-        x1 = random.normalvariate(geno[0]+geno[1], 0.1)
-        x2 = random.normalvariate(geno[2]+geno[3], 0.1)
-        x3 = random.normalvariate(geno[4]+geno[5], 0.1)
-        x4 = random.normalvariate(0, 0.01)
+        x1 = random.normalvariate(geno[0]+geno[1], 0.5)
+        x2 = random.normalvariate(geno[2]+geno[3], 0.5)
+        x3 = random.normalvariate(geno[4]+geno[5], 0.5)
+        x4 = random.normalvariate(0, 0.5)
         return x1 + x2 + x3 + x4
     return func
 
