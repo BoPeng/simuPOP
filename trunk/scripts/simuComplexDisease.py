@@ -131,6 +131,7 @@ import os, sys, exceptions, types, math
 options = [
     {'arg': 'h',
      'longarg': 'help',
+     'useDefault': True,
      'default': False, 
      'description': 'Print this usage message.',
      'allowedTypes': [types.NoneType, type(True)],
@@ -259,6 +260,7 @@ options = [
     },
     {'longarg': 'migrModel=',
      'default': 'stepping stone',
+     'useDefault': True,
      'label': 'Migration model',
      'allowedTypes': [types.StringType],
      'description': '''Migration model. Choose between stepping stone (circular),
@@ -275,6 +277,7 @@ options = [
      'validate':    simuOpt.valueBetween(0,1)
     },
     {'longarg': 'alleleDistInSubPop=',
+     'useDefault': True,
      'default': 'uneven',
      'label': 'Allele distribution in subpopulations',
      'description': '''If disease allele frequencies in each subpopulation are
@@ -371,6 +374,7 @@ options = [
     {'separator': 'Final population preparation:'},
     {'longarg': 'savedGen=',
      'default': 2,
+     'useDefault': True,
      'label': 'Generations to save',
      'allowedTypes': [types.IntType, types.LongType],
      'validate': simuOpt.valueBetween(1, 3),
@@ -380,6 +384,7 @@ options = [
     },
     {'longarg': 'numOffspring=',
      'default': 2,
+     'useDefault': True,
      'allowedTypes': [types.FloatType, types.IntType, types.LongType],
      'label': 'Number of offspring per mating', 
      'description': '''Number of offspring in these last generations. 2 is good for affected sibpair. More
@@ -390,6 +395,7 @@ options = [
     },
     {'longarg': 'numOffMode=',
      'default': 'constant',
+     'useDefault': True,
      'label': 'Mode to determine number of offspring', 
      'chooseOneOf': [ 'constant', 'geometric'],
      'allowedTypes': [types.StringType],
@@ -401,7 +407,18 @@ options = [
     #
     # 
     {'separator': 'Miscellaneous:'},
+    {'longarg': 'simuAge=',
+     'default': 0,
+     'useDefault': True,
+     'allowedTypes': [types.IntType],
+     'validate': simuOpt.valueGE(0),
+     'description': '''Simulate the age of disease mutant given times, and print out the ages,
+                The simulation is not run if a positive number is given. This option is useful
+                when one want to determine minMutAge and maxMutAge for a specific demographic 
+                and fitness model.'''
+    },
     {'longarg': 'dryrun',
+     'useDefault': True,
      'default': False,
      'allowedTypes': [types.IntType],
      'validate':    simuOpt.valueOneOf([True, False]),
@@ -410,6 +427,7 @@ options = [
     },
     {'longarg': 'savePop=',
      'default': [],
+     'useDefault': True,
      'label': 'Save population at generations',
      'allowedTypes': [types.ListType, types.TupleType],
      'validate': simuOpt.valueListOf(simuOpt.valueGE(0)),
@@ -429,6 +447,7 @@ options = [
     },
     {'longarg': 'saveFormat=',
      'default': 'txt',
+     'useDefault': True,
      'allowedTypes': [types.StringType],
      'label': 'Format to save population',
      'description': '''Format to save population, can be 
@@ -438,6 +457,7 @@ options = [
     },
     {'arg': 'v',
      'longarg': 'verbose',
+     'useDefault': True,
      'default': False,
      'allowedTypes': [types.NoneType, types.IntType],
      'description': 'Verbose mode.'
@@ -597,7 +617,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreqTmp, minMutAge, maxMutAge, fitnessTmp, mlSelModelTmp, 
-        mutaRate, recRate, savedGen, numOffspring, numOffMode, 
+        mutaRate, recRate, savedGen, numOffspring, numOffMode, simuAge,
         dryrun, savePop, filename, format):
     ''' run a simulation of complex disease with given parameters. 
     '''    
@@ -671,6 +691,26 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         maxMutAge = endingGen
     # this is defined in simuUtil, a wrapper for
     # FreqTrajectoryMultiStoch
+    if simuAge > 0:
+        mutantAges = []
+        for i in range(simuAge):
+            (traj, introGens, trajFunc) = FreqTrajectoryMultiStochWithSubPop(
+                curGen=endingGen,
+                numLoci=len(DSLafter),
+                freq=curAlleleFreq, 
+                NtFunc=popSizeFunc,
+                fitness=fitness, 
+                minMutAge=minMutAge, 
+                maxMutAge=maxMutAge, 
+                mode=alleleDistInSubPop,
+                restartIfFail=True)
+            mutantAges.append([len(x) for x in traj])
+        print "Simulated trajectory length:"
+        for i,age in enumerate(mutantAges):
+            print 'simu %3d:' % i, ', '.join(['%6d' % x for x in age])
+        mean = [sum([x[col] for x in mutantAges])*1./simuAge for col in range(len(DSLafter))]
+        print "Mean:    ", ', '.join(['%6.1f' % x for x in mean])
+        sys.exit(0)
     (traj, introGens, trajFunc) = FreqTrajectoryMultiStochWithSubPop(
         curGen=endingGen,
         numLoci=len(DSLafter),
@@ -935,7 +975,7 @@ if __name__ == '__main__':
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel,
-        mutaRate, recRate, savedGen, numOffspring, numOffMode, 
+        mutaRate, recRate, savedGen, numOffspring, numOffMode, simuAge,
         dryrun, savePop, simuName, format) = allParam
     #
     if markerType == 'SNP':
@@ -960,7 +1000,7 @@ if __name__ == '__main__':
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop, 
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel, 
-        mutaRate, recRate, savedGen, numOffspring, numOffMode, 
+        mutaRate, recRate, savedGen, numOffspring, numOffMode, simuAge,
         dryrun, savePop, os.path.join(simuName, simuName), format)
     
     print "Done!"
