@@ -269,7 +269,7 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=F
         if val == None:
             val = getParamConfigFile(p, processedArgs)
         if val == None:
-            if (useDefault or (p.has_key('useDefault') and p['useDefault'])) and p.has_key('default'):
+            if (useDefault or (not p.has_key('label')) or (p.has_key('useDefault') and p['useDefault'])) and p.has_key('default'):
                 val = p['default']
             else:
                 val = getParamUserInput(p)
