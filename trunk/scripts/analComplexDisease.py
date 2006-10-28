@@ -137,6 +137,7 @@ import os, sys, types, exceptions, os.path, operator, time
 options = [
     {'arg': 'h',
      'longarg': 'help',
+     'useDefault': True,
      'default': False, 
      'description': 'Print this usage message.',
      'allowedTypes': [types.NoneType, type(True)],

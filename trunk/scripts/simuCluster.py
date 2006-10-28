@@ -259,8 +259,9 @@ if __name__ == '__main__':
                 print 'to submit the job'
                 sys.exit(1)
             if run:
-                print "Submitting job using command '%s %s.pbs'" % (options['command'], job)
-                os.system('%s %s.pbs' % (options['command'], job))
+                command = options['command'].replace('$name', job)
+                print "Submitting job using command '%s %s.pbs'" % (command, job)
+                os.system('%s %s.pbs' % (command, job))
         else:
             print "Job %s does not exist" % job
 

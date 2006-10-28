@@ -821,7 +821,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         stat(alleleFreq=DSL, popSize=True, LD=[DSL[0], DSL[0]+1], step=1),
         # output to screen
         pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+" %f\n"%LD_prime[DSL[0]][DSL[0]+1]',
-            step=10),
+            step=100),
         # output to file (append)
         pyEval( expr=r'"%d %d " %(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+"\n"',
             output='>>>'+filename+'.traj')
