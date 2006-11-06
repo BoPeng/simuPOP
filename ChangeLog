@@ -6,6 +6,8 @@ NOTE: Daily snapshot reflects current SVN version. It includes new features and
 BUGS:
   - some rpy function does not work due to a rpy bug.
 
+version 0.7.5 - Currently available as svn snapshot
+
 version 0.7.4 - (Rev 518) Nov 5, 2006
   - BUG: fix simulator.population() function
   - NEW/CHG: add order parameter to population arr function series.
