@@ -1,0 +1,23 @@
+If you are able to use emacs, please find in the misc directory 
+
+* python-mode.el modified python-mode.el. You should save this to emacs site directory (e.g. /usr/site/emacs/site-lisp ) and cover python-model.el (remove python-mode.elc if exists). The major change is allowing F9 to step through my code and displaying actual code instead of "working on region in file ...".
+
+* emacs.python.el you should put this under your home directory and source it from your ~/.emacs . 
+
+* python.start if you put it somewhere and set environment variable PYTHONSTART to this file. simuPOP will be loaded automatically when you start python.
+
+After these setup, the usual work flow would be (personally highly recommended)
+
+* start emacs and edit a script
+
+emacs myscript.py
+
+* maximize emacs window and run (press Ctrl and x together, and then 3) to split window vertically
+
+C-x 3
+
+* write your script, use F9 to submit a line, F10 to submit slected region, F11 to submit the whole buffer to python window. You can use F12 to switch between script and python window to test-run some commands.
+
+Note that iPython is also recommended by python community.
+
+
