@@ -244,6 +244,7 @@ options = [
     },
     {'arg': 'v',
      'longarg': 'verbose',
+     'useDefault': True,
      'default': False,
      'allowedTypes': [types.NoneType, types.IntType],
      'description': 'Verbose mode.'
@@ -284,10 +285,10 @@ outputVars = {
     'P11': 'Pr( (N,N) | affected ): proportion of NN (normal) genotype among affected individuals',
     'P12': 'Pr( (N,S) | affected ): proportion of NS (normal, susceptible) or SN genotype among affected individuals',
     'P22': 'Pr( (S,S) | affected ): proportion of SS (susceptible) genotype among affected individuals',
-    'LD': 'Linkage disequilibrium',
+    'LD': 'Linkage disequilibrium between DSL and its surrounding markers',
     'LD_prime': "D' measure of Linkage disequilibrium",
     'R2': 'R^2 measure of Linkage disequilibrium',
-    'alleleFreq': 'allele frequency, including DSL',    
+    'alleleFreq': 'allele frequency of DSL',    
     # result of gene mapping methods
     'LOD': 'p-values obtained using Linkage method, organized by sample, chromosome and loci (nested list)',
     'TDT': 'p-values obtained using TDT method, organized by sample, chromosome and loci (nested list)',
@@ -630,6 +631,8 @@ def analyzePopulation(dataset, peneFunc, qtraitFunc, parameter, N,
         'alleleFreq': [1- pop.dvars().alleleFreq[i][0] for i in pop.dvars().DSL],
         'pene==Func': peneFunc,
     })
+    # calculate LD (should be already there, just to make sure)
+    Stat(pop, LD=[[x,x+1] for x in pop.dvars().DSL] + [[x,x+5] for x in pop.dvars().DSL])
     # get all the variables from pop
     res.update(pop.vars())
     #
