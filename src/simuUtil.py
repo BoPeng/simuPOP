@@ -1179,7 +1179,7 @@ def FreqTrajectoryMultiStochWithSubPop(
                 ploidy=ploidy,
                 restartIfFail=True)
         #print traj
-        if len(traj) == 0:
+        if len(traj) < max(2, minMutAge):
             print "Failed to generate trajectory. You may need to set a different set of parameters."
             print 'Info:'
             print 'curGen: ', curGen
