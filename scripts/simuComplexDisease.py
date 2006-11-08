@@ -43,7 +43,7 @@ the following steps:
          models. The population can be split into several equally-sized subpopulations
          and then evolve independently, or with migration. 
 
-NOTE: freeDSL is not yet implemented.
+NOTE: free DSL is not yet implemented.
 
 The result of the simulation is a large multi-generation population. To analyze 
 the population, you will typically need to 
@@ -654,7 +654,7 @@ def outputStatistics(pop, args):
 # simulate function, using a single value of mutation, migration,
 # recombination rate
 def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp, 
-        introFree, selFreeIntensity, initSize, endingSize, growthModel, 
+        initSize, endingSize, growthModel, 
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreqTmp, minMutAge, maxMutAge, fitnessTmp, mlSelModelTmp, 
@@ -1016,7 +1016,7 @@ if __name__ == '__main__':
     allParam = getOptions()
     # unpack options
     (numChrom, numLoci, markerType, DSLafter, DSLdist, 
-        introFree, selFreeIntensity, initSize, endingSize, growthModel, 
+        initSize, endingSize, growthModel, 
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel,
@@ -1041,7 +1041,7 @@ if __name__ == '__main__':
     #
     ################## RUN THE SIMULATION ###############
     simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdist, 
-        introFree, selFreeIntensity, initSize, endingSize, growthModel, 
+        initSize, endingSize, growthModel, 
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop, 
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel, 

@@ -811,7 +811,7 @@ namespace simuPOP
     //      index = 0*3+1
     // second loop
     //      index = 1*3 + 2 = 5
-    double fitOfGeno(const vectori & allgeno, const vectorf & fitness, const vectorf & freq)
+    double fitOfGeno(const vectori & allgeno, const vectorf & fitness, const vectorf::const_iterator & freq)
     {
         int index = 0;
         double fq = 1;
@@ -832,9 +832,8 @@ namespace simuPOP
 
 
     // get individual fitness, accounting interaction
-    void interFitness(const vectorf & fitness, const vectorf & freq, vectorf & sAll)
+    void interFitness(int nLoci, const vectorf & fitness, const vectorf::const_iterator & freq, vectorf & sAll)
     {
-        int nLoci = freq.size();
         sAll.resize(3*nLoci);
         // each locus
         for(size_t loc=0; loc<nLoci; ++loc)
@@ -868,7 +867,7 @@ namespace simuPOP
 			sAll[3*loc+2] = sAll[3*loc+2] / sAll[3*loc] - 1.;
 			sAll[3*loc] = 0.;
         }
-        DBG_DO(DBG_MATING, cout << "fitness " << fitness << " freq " << freq << " sall " << sAll << endl);
+        DBG_DO(DBG_MATING, cout << "fitness " << fitness << " freq " << freq[0] << ", " << freq[1] << ", " << freq[2]  << " sall " << sAll << endl);
     }
 
 
@@ -1037,7 +1036,7 @@ namespace simuPOP
                 else if(sAll.size() == pow(3, nLoci))
                 {
                     // xt is the current allele frequency
-                    interFitness(sAllTmp, xt, sAll);
+                    interFitness(nLoci, sAllTmp, xt.begin()+(idx*nLoci), sAll);
                 }
                 else
                     throw ValueError("Wrong size of fitness vector");
@@ -1045,7 +1044,7 @@ namespace simuPOP
             else if (interaction)
             {
                 // from fitness vector, get sAll using allele frequency        
-                interFitness(fitness, xt, sAll);
+                interFitness(nLoci, fitness, xt.begin()+(idx*nLoci), sAll);
             }
 
 			bool restart = false;
