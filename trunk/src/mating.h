@@ -527,11 +527,11 @@ namespace simuPOP
 	//    N      constant population size N
 	//    NtFunc a python function that returns population size at each generation.
 	//           It should return an array of subpop sizes.
-	//           gen is defined in forward order. NtFunc(maxGen) should be current
+	//           gen is defined in forward order. NtFunc(curGen) should be current
 	//           generation number.
 	//    freq   expected allele frequency of allele a.
-	//    s      fitness for [AA, Aa, aa] or [AA, Aa, aa, BB, Bb, bb] for the multi-locus
-	//           case. Assume constant selection pressure. s is default to [1,1,1].
+	//    s      fitness for [AA, Aa, aa], shoulb be a vector of size 3.
+	//           Assume constant selection pressure. s is default to [1,1,1].
 	//           I.e, a neutral process.
 	//    sFunc  a python function that returns selection pressure at each generation
 	//           the function expects a single parameter gen which is defined

@@ -180,10 +180,10 @@ namespace simuPOP
 			\param loci the loci index.
 			\param fitness For the single locus case, fitness is an array of fitness of AA,Aa,aa. A is the
 			   wild type group. In the case of multiple loci, fitness should be in the order of
-					BB Bb bb
-				 AA 1  2  3
-				 Aa 4  5  6
-			aa 7  8  9
+				   BB Bb bb
+				AA 1  2  3
+				Aa 4  5  6
+	 			aa 7  8  9
 			The length for such table is 3^(#loci).
 			\param wildtype an array of alleles in the wildtype group. Anything else is disease allele.
 			default = [0]
