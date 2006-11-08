@@ -23,8 +23,8 @@ Introduction
 NOTE: this version (> rev193) of simuComplexDisease.py uses a significantly
 different mechanism to control the allele frequency of disease susceptibility
 loci. I will describe the method briefly here. More details please see 
-an unpublished paper. :-) If you prefer the previous method, you should check
-out revision 193 of this file from the svn/web interface of simupop.sf.net.
+an unpublished paper. :-) If you prefer the previous method, you should set all
+your DSL as free DSL, meaning no pre-simulated trajectories.
 
 This program simulates the evolution of a complex common disease under the 
 influence of mutation, migration, recombination and population size change. 
@@ -32,14 +32,18 @@ Starting from a small founder population, each simulation will go through
 the following steps:
 
     1. Simulate the trajectory of allele frequency using specified disease model.
+        except for the free DSL.
     2. After determining mutant age, start simulation several thousands generations
          before the disease mutants are introduced. 
     3. Burn-in the population with mutation and recombination
     4. Introduce disease alleles and evolve the population with pre-simulated 
-         allele frequency.
+         allele frequency. The free DSL will be brought to high allele frequency
+         manually (by strong positive selection.)
     5. Population structure and migration are specified along with demographic
          models. The population can be split into several equally-sized subpopulations
          and then evolve independently, or with migration. 
+
+NOTE: freeDSL is not yet implemented.
 
 The result of the simulation is a large multi-generation population. To analyze 
 the population, you will typically need to 
@@ -50,9 +54,13 @@ the population, you will typically need to
     2. Draw Population and/or pedigree based samples and save in popular 
          formats so that the samples can be analyzed by other software like
          genehunter.
-         
+
+Another script analComplexDisease gives excellent examples on how to perform these tasks.
+Please follow that script to perform your own analyses.
+
 The program is written in Python using the simuPOP modules. For more information,
 please visit simuPOP website http://simupop.sourceforge.net .
+
 
 Genotype structure and disease
 ===============================
@@ -64,6 +72,7 @@ DSL may be .3 unit to the right of marker 25 (the six marker on the second
 chromosome). Since we assume that fitness is only determined by genotype, 
 not affectedness status or trait value, we do not assign individual 
 affectedness till the sampling stage.
+
 
 Evolutionary Scenario
 =====================
@@ -107,6 +116,11 @@ A single disease mutant is introduce to each DSL at simulated mutant-introductio
 generation. The allele frequency then evolve according to the simulated frequency
 trajectory.
 
+However, you can also specify some free DSL, who will evolve in a different manner.
+Namely, they will be brought to high allele frequency in your specified time frame,
+and then evolve freely. This method may fail due to extinction of disease alleles,
+but it has the advantage of being able to simulate linked DSL.
+
 
 Statistics Monitored
 ====================
@@ -115,9 +129,9 @@ A number of statistics will be measured and saved. They are:
 
     1. Fst before and after mixing
     2. Observed heterogeneity before and after mixing
-    3. LD (D prime) between markers and between a DSL and surrounding markers
-         at the end of each stage.
-    4. Disease allele frequency trajectory.
+    3. Disease allele frequency trajectory.
+
+You can add more stat() operator if you need to preserve more information.
 
 """
 
@@ -189,6 +203,36 @@ options = [
      'allowedTypes': [types.TupleType, types.ListType],
      'validate':    simuOpt.valueListOf( simuOpt.valueBetween(0,1))
     },
+#     {'longarg': 'freeDSL=',
+#      'default': [],
+#      # do not expect this option to be used often.
+#      'useDefault': True,
+#      'label': 'DSL that evolve freely',
+#      'description': '''A subset of DSL that will evolve differently. Namely, the trajectories
+#                 will not be pre-simulated. It will be brought to high allele frequency with 
+#                 positive selection and evolve freely afterwards. The disease allele may not
+#                 reach designed allele frequency, or even get lost. However, this option allows
+#                 simulation of linked DSL that can not be simulated otherwise.''',
+#      'allowedTypes': [types.TupleType, types.ListType],
+#      'validate':    simuOpt.valueListOf( simuOpt.valueGT(0) )
+#     },
+#     {'longarg': 'introFree=',
+#      'default': [0,0],
+#      'useDefault': True,
+#      'label': 'When to introduce free DSL',
+#      'description': '''Beginning and ending generation to introduce free DSL.''',
+#      'allowedTypes': [types.TupleType, types.ListType],
+#      'validate': simuOpt.valueListOf(simuOpt.valueGE(0))
+#     },
+#     {'longarg': 'selFreeIntensity=',
+#      'default': 0.5,
+#      'useDefault': True,
+#      'label': 'Intensity of positive selection (free DSL)',
+#      'description': '''Selection coefficient to bring free DSL to their high allele frequency.
+#                 Given s, fitness [1, 1+s/2, 1+s] will be used.''',
+#      'allowedTypes': [types.FloatType, types.IntType],
+#      'validate': simuOpt.valueGT(0)
+#     },    
     #
     #
     {'separator': 'Demographic model:'},
@@ -328,18 +372,33 @@ options = [
      'default': [1, 1.0001, 1.0002],
      'label': 'Fitness of genotype AA,Aa,aa',
      'allowedTypes': [types.ListType, types.TupleType],
-     'description': '''Fitness of genotype AA,Aa,aa in the monogenic case, and 
-                [AA Aa aa BB Bb bb ...] in the polygenic case. ''',
+     'description': '''Fitness of genotype, can be:
+                f1, f2, f3: if one DSL, the fitness for genotype AA, Aa and aa
+                f1, f2, f3: if multiple DSL, the same fitness for each locus
+                [a1, a2, a3, b1, b2, b3, ...] if selMultiLocusModel = 'additive' 
+                    or multiplicative, fitness at each locus. The overall fitness
+                    is determined by selMultiLocusModel
+                [a1, a2, a3, b1, b2, b3, c1, c2, c3, ...] and selMultiLocusModel = interaction.
+                    For example, in the 2-DSL case, the numbers are (by row)
+                        BB Bb bb
+                    AA  a1 a2 a3
+                    Aa  b1 b2 b3
+                    aa  c1 c2 c3
+                3^n numbers are needed for n DSL.
+        ''',
      'validate':    simuOpt.valueListOf(simuOpt.valueGE(0.)),
     },
     {'longarg': 'selMultiLocusModel=',
     'default': 'none',
     'label': 'Multi-locus selection model',
     'description': '''Model of overall fitness value given fitness values for each DSL.
-                fitness values are Prod(f_i) for multiplicative model and
-                1-Sum(1-f_i) for additive model. ''',
+                multiplicative: f =  Prod(f_i)
+                additive: f = 1-Sum(1-f_i)
+                interaction: the intepretation of fitness parameter is different.
+                    see fitness.
+                ''',
     'allowedTypes': [types.StringType],
-    'chooseOneOf': [ 'additive', 'multiplicative', 'none']
+    'chooseOneOf': [ 'additive', 'multiplicative', 'interaction', 'none']
     },
     #
     #
@@ -505,13 +564,9 @@ def outputStatistics(pop, args):
         packed as a tuple.
     
      We need to output
-     1. LD (D') from a central marker to all others on a
-         non-DSL chromosome, at burnin and before and after migration
-     2. LD (D') from a central DSL to all others,
-         at burnin and end
-     3. Fst before and after migration
-     4. allele frequency at DSL 
-     5. Mean observed heterogeneity at the marker loci
+     1. Fst before and after migration
+     2. allele frequency at DSL 
+     3. Mean observed heterogeneity at the marker loci
     '''
     # unwrap parameter
     (burnin, split, mixing, endGen, outfile) = args
@@ -535,61 +590,14 @@ def outputStatistics(pop, args):
     DSL = pop.dvars().DSL
     for loc in DSL:
         nonDSL.remove(loc)
-    # In this analysis, we also need to know
-    # 1. a DSL that is closest to the center of a chromosome
-    toCtrDist = [abs(pop.locusPos(x)-numLoci/2) for x in DSL]
-    ctrChromDSL = DSL[ [x==min(toCtrDist) for x in toCtrDist].index(True)]
-    ctrChrom = pop.chromLocusPair(ctrChromDSL)[0]
-    # 2. first chromosome without DSL
-    try:
-        noDSLChrom = [pop.numLoci(x)==numLoci for x in range(pop.numChrom())].index(True)
-    except:    # there is no such chromosome!
-        noDSLChrom = -1
-    #
-    # loci pairs on the selected chromosomes when calculating LD
-    i = pop.chromBegin( ctrChrom)
-    ctrDSLLD = [ [x, ctrChromDSL] for x in range(i, ctrChromDSL)] + \
-        [ [ctrChromDSL, x] for x in range(ctrChromDSL+1, i+numLoci+1)]
-    if noDSLChrom > -1:
-        i = pop.chromBegin( noDSLChrom)
-        noDSLLD = [ [i+x, i+numLoci/2] for x in range(numLoci/2)] + \
-            [ [i + numLoci/2, i+x] for x in range(numLoci/2+1, numLoci)]
-    else:
-        noDSLLD = []
-    # save these info for later use (a plotting function will
-    # use these info.
-    pop.dvars().ctrChrom = ctrChrom
-    pop.dvars().ctrChromDSL = ctrChromDSL
-    pop.dvars().ctrDSLLD = ctrDSLLD
-    pop.dvars().noDSLChrom = noDSLChrom
-    pop.dvars().noDSLLD = noDSLLD
     #
     #@@@ NOW, output statistics
     # append to output file.
     output = open(outfile, 'a')
     # first, calculate LD and other statistics
-    Stat(pop, alleleFreq=DSL, LD = ctrDSLLD + noDSLLD, Fst = nonDSL, 
-        heteroFreq = range( pop.totNumLoci() ) )
+    Stat(pop, alleleFreq=DSL, Fst = nonDSL, heteroFreq = range(pop.totNumLoci()))
     # output D', allele frequency at split, mixing and endGen
     print >> output, "Average Fst estimated from non-DSL at gen %d: %.4f \n" % (gen, pop.dvars().AvgFst)
-    print >> output, "D between DSL %d (chrom %d) and surrounding markers at gen %d" \
-        % (ctrChromDSL, ctrChrom, gen)
-    for ld in ctrDSLLD:
-        print >> output, '%.4f ' % pop.dvars().LD[ld[0]][ld[1]],
-    if noDSLChrom > -1 :
-        print >> output, "\n\nD between a center marker %d (chrom %d) and surrounding markers at gen %d" \
-            % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
-        for ld in noDSLLD:
-            print >> output, '%.4f ' % pop.dvars().LD[ld[0]][ld[1]],
-    print >> output, "\n\nD' between DSL %d (chrom %d) and surrounding markers at gen %d" \
-        % (ctrChromDSL, ctrChrom, gen)
-    for ld in ctrDSLLD:
-        print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
-    if noDSLChrom > -1:
-        print >> output, "\n\nD' between a center marker %d (chrom %d) and surrounding markers at gen %d" \
-            % (pop.chromBegin(noDSLChrom)+numLoci/2, noDSLChrom, gen)
-        for ld in noDSLLD:
-            print >> output, '%.4f ' % pop.dvars().LD_prime[ld[0]][ld[1]],
     print >> output, "\n\nAllele frequencies\nall\t",
     for d in DSL:
         print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][0]),
@@ -610,10 +618,43 @@ def outputStatistics(pop, args):
     return True
 
 
+# def dynaAdvSelector(pop):
+#     ''' This selector will apply advantage/purifying selection to DSl according
+#         to allele frequency at each DSL. minAlleleFreq and maxAlleleFreq
+#         are stored in pop.dvars().
+#     '''
+#     DSL = pop.dvars().DSL
+#     # get allele frequencies
+#     Stat(pop, alleleFreq=DSL)
+#     # gives 1,1.25,1.5 to promote allele if freq < lower cound
+#     # gives 1,0.9,0.8 to select agsinst DSL with freq > upper
+#     sel = []
+#     freq = pop.dvars().alleleFreq
+#     # print +- symbol for each DSL to visualize how frequencies are manipulated
+#     for i in range(len(DSL)):
+#         # positive selection (promote allele)
+#         if 1-freq[DSL[i]][StartingAllele] < pop.dvars().minAlleleFreq[i]:
+#             print '+',
+#             sel.append( maSelector(locus=DSL[i], wildtype=[StartingAllele], fitness=[1,1.5,2]) )
+#         # negative selection (select against allele)
+#         elif 1-freq[DSL[i]][StartingAllele] > pop.dvars().maxAlleleFreq[i]:
+#             print '-',
+#             sel.append( maSelector(locus=DSL[i], wildtype=[StartingAllele], fitness=[1,0.9,0.8]) )
+#         else:
+#         # encourage slightly towards upper bound
+#             print ' ',
+#             sel.append( maSelector(locus=DSL[i], wildtype=[StartingAllele], fitness=[1,1.02,1.04]) )
+#         # apply multi-locus selector, note that this operator will only
+#         # set a variable fitness in pop, actual selection happens during mating.
+#         if len(sel ) > 0:    # need adjustment (needed if 'else' part is empty)
+#             MlSelect( pop, sel, mode=SEL_Multiplicative)
+#     return True
+
+
 # simulate function, using a single value of mutation, migration,
 # recombination rate
-def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
-        initSize, endingSize, growthModel, 
+def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp, 
+        introFree, selFreeIntensity, initSize, endingSize, growthModel, 
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreqTmp, minMutAge, maxMutAge, fitnessTmp, mlSelModelTmp, 
@@ -647,6 +688,12 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     # fitness
     if mlSelModelTmp == 'none':
         fitness = []
+    elif mlSelModelTmp == 'interaction':
+        if numDSL == 1:
+            raise exceptions.ValueError("Interaction model can only be used with more than one DSL");
+        if len(fitnessTmp) != 3**numDSL:
+            raise exceptions.ValueError("Please specify 3^n fitness values for n DSL");
+        fitness = fitnessTmp
     else:
         if fitnessTmp == []:    # neutral process
             fitness = [1,1,1]*numDSL
@@ -831,10 +878,10 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     ###                                 endingGen
     ###            0 1 ...... i_T
-    for i in range( numDSL ):
+    for i in range(numDSL):
         operators.append( 
             pointMutator(atLoci=[DSL[i]], toAllele=1, inds=[i],
-            at = [introGens[i]], stage=PreMating ) ) 
+                at = [introGens[i]], stage=PreMating ) ) 
     ### 
     ### split to subpopulations
     ### 
@@ -845,20 +892,18 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     ### selection 
     ###
-    try:
+    if mlSelModelTmp in ['additive', 'multiplicative']:
         mlSelModel = {'additive':SEL_Additive, 
-            'multiplicative':SEL_Multiplicative,
-            'none':SEL_None}[mlSelModelTmp]
-    except:
-        raise exceptions.ValueError("Wrong multi-locus seleciton model. " + mlSelModelTmp)
-    
-    if mlSelModel != SEL_None:
+            'multiplicative':SEL_Multiplicative}[mlSelModelTmp]
         operators.append( mlSelector(
             # with five multiple-allele selector as parameter
             [ maSelector(locus=DSL[x], wildtype=[0], 
                 fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) for x in range(len(DSL)) ],
             mode=mlSelModel, begin=splitGen),
         )
+    elif mlSelModelTmp == 'interaction':
+        # multi-allele selector can handle multiple DSL case
+        operators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0]) )
     ###
     ### migration
     ###
@@ -971,7 +1016,7 @@ if __name__ == '__main__':
     allParam = getOptions()
     # unpack options
     (numChrom, numLoci, markerType, DSLafter, DSLdist, 
-        initSize, endingSize, growthModel, 
+        introFree, selFreeIntensity, initSize, endingSize, growthModel, 
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel,
@@ -996,7 +1041,7 @@ if __name__ == '__main__':
     #
     ################## RUN THE SIMULATION ###############
     simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdist, 
-        initSize, endingSize, growthModel, 
+        introFree, selFreeIntensity, initSize, endingSize, growthModel, 
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop, 
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel, 
