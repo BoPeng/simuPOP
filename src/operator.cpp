@@ -146,5 +146,4 @@ namespace simuPOP
 			if( m_atGen[0] == -1 ) SETFLAG(m_flags, m_flagOnlyAtEnd);
 		}
 	}
-
 }

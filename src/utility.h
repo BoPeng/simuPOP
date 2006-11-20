@@ -1488,6 +1488,10 @@ namespace simuPOP
 	/// initialize module simuPOP when using "import simuPOP"
 	bool initialize();
 
+	/// only useful for mpi version.
+	/// FIXME: call it automatically?
+	void finalize();
+
 	bool optimized();
 
 	bool mpi();

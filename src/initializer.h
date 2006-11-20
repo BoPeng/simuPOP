@@ -68,6 +68,7 @@ namespace simuPOP
 					if( m_indRange[i].size() != 2 || m_indRange[i][0] > m_indRange[i][1] )
 						throw ValueError("Expecting a range.");
 				}
+				// no flags to set.				
 			}
 
 			/// destructor

@@ -451,10 +451,17 @@ Currently, simuPOP provides the following features:
 
 \begin_layout Itemize
 Population with one-level subpopulation structure.
- (family structure can be attached as individual information) There is no
- limit on ploidy, number of chromosomes, number of loci and population size.
- (depends on available RAM).
- Sex chromosomes can be modeled.
+ (family structure can be attached as individual information) Sex chromosomes
+ can be modeled.
+\end_layout
+
+\begin_layout Itemize
+There is no limit on ploidy, number of chromosomes, number of loci and populatio
+n size.
+ For single-CPU versions of simuPOP, the size of population is limited by
+ available RAM.
+ The MPI version of simuPOP can spread populations to a cluster of machines
+ and allows simulations of huge populations.
 \end_layout
 
 \begin_layout Itemize
@@ -938,16 +945,23 @@ simuPOP libraries
 \end_layout
 
 \begin_layout Standard
-simuPOP is composed of six libraries: stdandard short, long and binary alleles,
- plus their optimized counterparts.
+simuPOP is composed of twelve libraries: stdandard short, long and binary
+ alleles (3), each of them have standard and optimized (
+\begin_inset Formula $\times2$
+\end_inset
+
+), and single-CPU and Message Passing Interface (MPI) versions (
+\begin_inset Formula $\times2$
+\end_inset
+
+).
  The short libraries use 1 byte to store each allele which limits the possible
  allele states to 256.
  This is enough most of the times but not so if you need to simulate models
  like the infinite allele model.
  In those cases, you should use the long allele version of the modules.
- Long allele libraries use at least 4 bytes for each allele and can have
- 
-\begin_inset Formula $2^{32}$
+ Long allele libraries use 2 bytes for each allele and can have 
+\begin_inset Formula $2^{16}$
 \end_inset
 
  possible allele states.
@@ -971,6 +985,14 @@ Standard libraries have detailed debug and run-time validation mechanisum
  It is recommended that you use standard libraries whenever possible and
  only use the optimized version when performance if needed and you are confidenc
 e that your simulation is running as expected.
+\end_layout
+
+\begin_layout Standard
+There are also MPI versions of these modules.
+ Due to the overhead of inter-CPU communication, the MPI versions are not
+ necessarily much faster than single-CPU modules.
+ However, since the MPI version of the modules spread the populations across
+ notes, they can handle much larger populations then single-CPU modules.
 \end_layout
 
 \begin_layout Standard
@@ -1006,18 +1028,22 @@ Set environment variable
 \family typewriter
 SIMUALLELETYPE
 \family default
- to be 'short', 'long' or 'binary', or 
+ to be 'short', 'long' or 'binary', 
 \family typewriter
 SIMUOPTIMIZED
 \family default
- to use the optimized modules.
+ to use the optimized modules, and 
+\family typewriter
+SIMUMPI
+\family default
+ to use MPI modules.
  The default module is the standard short module.
 \end_layout
 
 \begin_layout Itemize
 Before you load simuPOP, set options using 
 \family typewriter
-simuOpt.setOptions(optimized, alleleType, quiet, debug)
+simuOpt.setOptions(optimized, mpi, alleleType, quiet, debug)
 \family default
 .
  
@@ -1035,6 +1061,19 @@ binary.
 \family default
  
 \family typewriter
+mpi 
+\family default
+can be 
+\family typewriter
+True 
+\family default
+or 
+\family typewriter
+False
+\family default
+.
+ 
+\family typewriter
 quiet
 \family default
  means suppress initial output, and 
@@ -1050,8 +1089,9 @@ If you are running a simuPOP script that conforms to simuPOP convension,
 \family typewriter
 --optimized
 \family default
-.
- 
+, and the MPI version using
+\family typewriter
+ --mpi.
 \end_layout
 
 \begin_layout Chapter
