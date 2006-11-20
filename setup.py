@@ -49,6 +49,10 @@ def getMPIFlags():
     fout.close()
     #
     if output == '':
+        fin, fout, ferr = os.popen3('mpicc -showme')
+        output = fout.read()
+        fout.close()
+    if output == '':
         return {'mpi': False, 'inc_dirs': [], 'lib_dirs': [], 'libs': [],
             'def_macros': [], 'undef_macros': []}
     # now get the include, library dirs and the libs to link with.
