@@ -77,7 +77,7 @@ if not os.path.isfile('/etc/urandom') and not os.path.isfile('/etc/random'):
     import time, random, sys
     rng().setSeed(int(time.time() + random.randint(0, rng().maxSeed())) % rng().maxSeed())
 
-if not simuOptions['Quiet'] and mpiID() == 0:
+if not simuOptions['Quiet'] and mpiRank() == 0:
     if mpi():
         print "simuPOP/MPI : Copyright (c) 2004-2006 Bo Peng"
     else:

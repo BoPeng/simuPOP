@@ -2471,6 +2471,10 @@ T Expression::valueAs##TypeName() \
 		// tie python stdout to cout
 		setLogOutput();
 
+#ifdef SIMUMPI
+		MPI::Init();
+#endif
+
 #ifndef OPTIMIZED
 		// turn on some debug info
 		TurnOnDebug(DBG_GENERAL);
@@ -2583,22 +2587,27 @@ T Expression::valueAs##TypeName() \
 	bool mpi()
 	{
 #ifdef SIMUMPI
-	return(true);
+		return(true);
 #else
-	return(false);
+		return(false);
 #endif
 	}
 
-	int mpiID()
+	int mpiRank()
 	{
 #ifdef SIMUMPI
-	int myid;
-	int error = MPI_Comm_rank(MPI_COMM_WORLD, &myid);
-	DBG_FAILIF(error != 0, SystemError, 
-		"MPI_Comm_rank failed with error code " + toStr(error));
-	return(myid);
+		return MPI::COMM_WORLD.Get_rank();
 #else
-	return(0);
+		return(0);
+#endif
+	}
+
+	int mpiSize()
+	{
+#ifdef SIMUMPI
+		return MPI::COMM_WORLD.Get_size();
+#else
+		return(0);
 #endif
 	}
 	
