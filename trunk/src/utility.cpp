@@ -30,7 +30,7 @@
 #include <cstdlib>
 #include "time.h"
 
-#ifdef MPI
+#ifdef SIMUMPI
 #include "mpi.h"
 #endif
 
@@ -2582,7 +2582,7 @@ T Expression::valueAs##TypeName() \
 
 	bool mpi()
 	{
-#ifdef MPI
+#ifdef SIMUMPI
 	return(true);
 #else
 	return(false);
@@ -2591,11 +2591,11 @@ T Expression::valueAs##TypeName() \
 
 	int mpiID()
 	{
-#ifdef MPI
+#ifdef SIMUMPI
 	int myid;
-	//int error = MPI_Comm_rank(MPI_COMM_WORLD, &myid);
-	//DBG_FAILIF(error != 0, SystemError, 
-	//	"Proc ?: MPI_Comm_rank failed with error code " + toStr(error));
+	int error = MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+	DBG_FAILIF(error != 0, SystemError, 
+		"MPI_Comm_rank failed with error code " + toStr(error));
 	return(myid);
 #else
 	return(0);
