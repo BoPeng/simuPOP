@@ -43,8 +43,8 @@ import shutil, sys, glob, re
 # this is borrowed from pypar, since I do not have access to other
 # MPI implementation, I use mpicc only.
 def getMPIFlags():
-    ''' get and parse result of mpicc -showme'''
-    fin, fout, ferr = os.popen3('mpicc -showme')
+    ''' get and parse result of mpicc -showme or mpicc -show'''
+    fin, fout, ferr = os.popen3('mpicc -show')
     output = fout.read()
     fout.close()
     #
@@ -331,7 +331,6 @@ for modu in MODULES:
         mod_src = src[:-4] + '_' + modu + '.cpp'
         shutil.copy(src, mod_src)
         MODU_INFO[modu]['src'].append(mod_src)
-        print 'adding ', mod_src
     MODU_INFO[modu]['src'].append('src/simuPOP_' + modu + '_wrap.cpp' )
     #MODU_INFO[modu]['src'].extend(GSL_FILES + SERIAL_FILES + IOSTREAMS_FILES)
     if EMBED_ZLIB:
