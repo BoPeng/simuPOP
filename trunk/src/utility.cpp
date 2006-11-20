@@ -30,6 +30,10 @@
 #include <cstdlib>
 #include "time.h"
 
+#ifdef MPI
+#include "mpi.h"
+#endif
+
 #include <bitset>
 typedef std::bitset<DBG_CODE_LENGTH> DbgBitSet;
 
@@ -2576,6 +2580,28 @@ T Expression::valueAs##TypeName() \
 #endif
 	}
 
+	bool mpi()
+	{
+#ifdef MPI
+	return(true);
+#else
+	return(false);
+#endif
+	}
+
+	int mpiID()
+	{
+#ifdef MPI
+	int myid;
+	//int error = MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+	//DBG_FAILIF(error != 0, SystemError, 
+	//	"Proc ?: MPI_Comm_rank failed with error code " + toStr(error));
+	return(myid);
+#else
+	return(0);
+#endif
+	}
+	
 	bool supportXML()
 	{
 #ifdef __NO_XML_SUPPORT__

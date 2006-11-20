@@ -1490,6 +1490,10 @@ namespace simuPOP
 
 	bool optimized();
 
+	bool mpi();
+
+	int mpiID();
+
 	string alleleType();
 
 	/// CPPONLY
