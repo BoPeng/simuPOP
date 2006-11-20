@@ -167,6 +167,13 @@ namespace simuPOP
 			if (ops[i]->canApplyDuringMating() && !ops[i]->formOffGenotype())
 				durmatingOps.push_back(ops[i]);
 
+		// check compatibility of operators
+		for(size_t i = 0; i < ops.size(); ++i)
+		{
+			DBG_ASSERT(ops[i]->isCompatible(curpopulation()), ValueError,
+				"Operator " + ops[i]->__repr__() + " is not compatible.");				
+		}
+		
 		InitClock();
 
 		if( dryrun)
@@ -397,6 +404,9 @@ namespace simuPOP
 				throw TypeError("During-mating operator has to be called by a simulator.");
 			if (ops[i]->canApplyPostMating())
 				postMatingOps.push_back(ops[i]);
+			// check compatibility of operators
+			DBG_ASSERT(ops[i]->isCompatible(curpopulation()), ValueError,
+				"Operator " + ops[i]->__repr__() + " is not compatible.");				
 		}
 
 		// really apply

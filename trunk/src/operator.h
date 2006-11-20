@@ -252,6 +252,53 @@ namespace simuPOP
 				return ISSETFLAG(m_flags, m_flagPreMating) || ISSETFLAG(m_flags, m_flagPostMating);
 			}
 
+			virtual bool isCompatible(const population & pop)
+			{
+#ifdef SIMUMPI
+				DBG_ASSERT(MPIReady(), ValueError,
+					"Operator " + __repr__() + " is not MPI ready. ");
+				return true;					
+#else
+				return true;
+#endif
+			}
+			
+			///
+			bool haploidOnly()
+			{
+				return ISSETFLAG(m_flags, m_flagHaploid);
+			}
+
+			///
+			bool diploidOnly()
+			{
+				return ISSETFLAG(m_flags, m_flagDiploid);
+			}
+
+			///
+			bool MPIReady()
+			{
+				return ISSETFLAG(m_flags, m_flagMPI);
+			}
+			
+						///
+			bool setHaploidOnly()
+			{
+				return SETFLAG(m_flags, m_flagHaploid);
+			}
+
+			///
+			bool setDiploidOnly()
+			{
+				return SETFLAG(m_flags, m_flagDiploid);
+			}
+
+			///
+			bool setMPIReady()
+			{
+				return SETFLAG(m_flags, m_flagMPI);
+			}
+
 			/// get the number of information fields for this operator
 			UINT infoSize()
 			{
@@ -383,6 +430,12 @@ namespace simuPOP
 			static const size_t m_flagOnlyAtBegin    = 16;
 			static const size_t m_flagOnlyAtEnd      = 32;
 			static const size_t m_flagFormOffGenotype= 64;
+			// limited to haploid?
+			static const size_t m_flagHaploid        = 128;
+			// limited to diploid?
+			static const size_t m_flagDiploid        = 256;
+			// can be used for MPI version?
+			static const size_t m_flagMPI            = 512;
 
 		private:
 

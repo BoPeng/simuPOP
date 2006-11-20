@@ -2610,6 +2610,13 @@ T Expression::valueAs##TypeName() \
 		return(0);
 #endif
 	}
+
+	void finalize()
+	{
+#ifdef SIMUMPI
+		MPI::Finalize();
+#endif
+	}
 	
 	bool supportXML()
 	{
