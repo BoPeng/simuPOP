@@ -28,22 +28,44 @@
 from simuOpt import simuOptions
 import os
 
-if simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'short':
-    from simuPOP_std import *
-elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'short':
-    from simuPOP_op import * 
-elif simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'long':
-    from simuPOP_la import *
-elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'long':
-    from simuPOP_laop import *
-elif simuOptions['Optimized'] == False and simuOptions['AlleleType'] == 'binary':
-    from simuPOP_ba import * 
-elif simuOptions['Optimized'] == True and simuOptions['AlleleType'] == 'binary':
-    from simuPOP_baop import *
+if simuOptions['Optimized']:
+    if simuOptions['MPI']:
+        if simuOptions['AlleleType'] == 'short':
+            from simuPOP_opmpi import *
+        elif simuOptions['AlleleType'] == 'long':
+            from simuPOP_laopmpi import *
+        elif simuOptions['AlleleType'] == 'binary':
+            from simuPOP_baopmpi import * 
+        else:
+            from simuPOP_opmpi import *
+    else:
+        if simuOptions['AlleleType'] == 'short':
+            from simuPOP_op import *
+        elif simuOptions['AlleleType'] == 'long':
+            from simuPOP_laop import *
+        elif simuOptions['AlleleType'] == 'binary':
+            from simuPOP_baop import * 
+        else:
+            from simuPOP_op import *
 else:
-    print "Warning: options unrecognized (AlleleType=%s, Optimized=%d). Use standard library. " \
-        % (simuOptions['AlleleType'], simuOptions['Optimized'])
-    from simuPOP_std import *
+    if simuOptions['MPI']:
+        if simuOptions['AlleleType'] == 'short':
+            from simuPOP_mpi import *
+        elif simuOptions['AlleleType'] == 'long':
+            from simuPOP_lampi import *
+        elif simuOptions['AlleleType'] == 'binary':
+            from simuPOP_bampi import * 
+        else:
+            from simuPOP_mpi import *
+    else:
+        if simuOptions['AlleleType'] == 'short':
+            from simuPOP_std import *
+        elif simuOptions['AlleleType'] == 'long':
+            from simuPOP_la import *
+        elif simuOptions['AlleleType'] == 'binary':
+            from simuPOP_ba import * 
+        else:
+            from simuPOP_std import *
 
 if simuOptions['Debug'] != []:
     for g in simuOptions['Debug']:
@@ -55,8 +77,11 @@ if not os.path.isfile('/etc/urandom') and not os.path.isfile('/etc/random'):
     import time, random, sys
     rng().setSeed(int(time.time() + random.randint(0, rng().maxSeed())) % rng().maxSeed())
 
-if not simuOptions['Quiet']:
-    print "simuPOP : Copyright (c) 2004-2006 Bo Peng"
+if not simuOptions['Quiet'] and mpiID() == 0:
+    if mpi():
+        print "simuPOP/MPI : Copyright (c) 2004-2006 Bo Peng"
+    else:
+        print "simuPOP : Copyright (c) 2004-2006 Bo Peng"
     # compile date, compiler etc are macros that are replaced during compile time.
     print ("Version %s (Revision %d, %s) for Python %s" % (simuVer(), simuRev(), compileDate(),
         compilePyVersion() ))
