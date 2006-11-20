@@ -566,6 +566,9 @@ namespace simuPOP
 		long maxAttempts=1000,
 		bool allowFixation=false);
 
+	// a utility function to get marginal fitness given interaction and allele freq
+	vectorf MarginalFitness(int nLoci, const vectorf & fitness, const vectorf & freq);
+
 	//
 	// simulate trajectories of disease susceptibility loci using an extension of
 	// the backward method described in Slatkin 2001.
