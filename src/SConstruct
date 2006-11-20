@@ -31,7 +31,7 @@ env = Environment(options=opts,
     ENV={'PATH':os.environ['PATH']},
     tools=['default', 'swig'])
 
-env['CC'] = cxx
+#env['CC'] = cxx
 env['CXX'] = cxx
 ccflags = []
 if 'icc' in cc:
@@ -174,11 +174,11 @@ for mod in build_mod:
         target = '$BDIR/_simuPOP_%s.so'%mod,
         source = ['$BDIR/%s_%s.cpp' % (x, mod) for x in src] + ['$BDIR/simuPOP_%s.i'%mod],
         LIBS = ['serial', 'iostreams', 'gsl', 'z', 'stdc++'] + \
-			['mpi', 'orte', 'opal', 'dl', 'nsl', 'util', 'm', 'dl'], # for mpi versions
+			['mpi_cxx', 'mpi', 'orte', 'opal', 'dl', 'nsl', 'util', 'm', 'dl'], # for mpi versions
         CC = cc,
 		CXX = cxx,
         SHLINK = ldshared,
-        SHLINKFLAGS = [],
+        SHLINKFLAGS = ['-Wl,--export-dynamic'],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
         LIBPATH = [BDIR, '/usr/local/lib'],

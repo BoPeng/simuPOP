@@ -1492,7 +1492,9 @@ namespace simuPOP
 
 	bool mpi();
 
-	int mpiID();
+	int mpiRank();
+
+	int mpiSize();
 
 	string alleleType();
 

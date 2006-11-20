@@ -43,13 +43,13 @@ import shutil, sys, glob, re
 # this is borrowed from pypar, since I do not have access to other
 # MPI implementation, I use mpicc only.
 def getMPIFlags():
-    ''' get and parse result of mpicc -showme or mpicc -show'''
-    fin, fout, ferr = os.popen3('mpicc -show')
+    ''' get and parse result of mpiCC -showme or mpicc -show'''
+    fin, fout, ferr = os.popen3('mpiCC -show')
     output = fout.read()
     fout.close()
     #
     if output == '':
-        fin, fout, ferr = os.popen3('mpicc -showme')
+        fin, fout, ferr = os.popen3('mpiCC -showme')
         output = fout.read()
         fout.close()
     if output == '':
