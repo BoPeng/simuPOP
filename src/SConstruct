@@ -144,12 +144,12 @@ DEF = {
     'laop': {'OPTIMIZED':None, 'LONGALLELE':None},
     'ba': {'BINARYALLELE':None},
     'baop': {'OPTIMIZED':None, 'BINARYALLELE':None},
-	'mpi': {'MPI': None},
-    'opmpi': {'OPTIMIZED':None, 'MPI': None},
-    'lampi': {'LONGALLELE':None, 'MPI': None},
-    'laopmpi': {'OPTIMIZED':None, 'LONGALLELE':None, 'MPI': None},
-    'bampi': {'BINARYALLELE':None, 'MPI': None},
-    'baopmpi': {'OPTIMIZED':None, 'BINARYALLELE':None, 'MPI': None},
+	'mpi': {'SIMUMPI': None},
+    'opmpi': {'OPTIMIZED':None, 'SIMUMPI': None},
+    'lampi': {'LONGALLELE':None, 'SIMUMPI': None},
+    'laopmpi': {'OPTIMIZED':None, 'LONGALLELE':None, 'SIMUMPI': None},
+    'bampi': {'BINARYALLELE':None, 'SIMUMPI': None},
+    'baopmpi': {'OPTIMIZED':None, 'BINARYALLELE':None, 'SIMUMPI': None},
 }
 build_mod = []
  
