@@ -151,22 +151,22 @@ DEF = {
     'bampi': {'BINARYALLELE':None, 'SIMUMPI': None},
     'baopmpi': {'OPTIMIZED':None, 'BINARYALLELE':None, 'SIMUMPI': None},
 }
-build_mod = []
+MODULES = []
  
  
 for key in DEF.keys():
     DEF[key].update({'SIMUPOP_REV':'9990', 'SIMUPOP_VER':'9.9.9'})
     DEF[key].update(flags)
     if key in BUILD_TARGETS:
-        build_mod.append(key)
-if build_mod == [] or 'all' in BUILD_TARGETS:
-    build_mod = DEF.keys()
+        MODULES.append(key)
+if MODULES == [] or 'all' in BUILD_TARGETS:
+    MODULES = DEF.keys()
 
 src = Split('''utility migrator population simulator terminator
     individual mutator stator initializer operator recombinator
     mating outputer selector tagger''') 
 
-for mod in build_mod:
+for mod in MODULES:
     for file in src:
         env.Command('$BDIR/%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
     # build shared library
@@ -196,7 +196,7 @@ for mod in build_mod:
     Alias(mod, lib)
     Alias('all', lib)
     dp1 = env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py'%mod),
-		'$BDIR/simuPOP_%s.py'%mod)
+		'$BDIR/simuPOP_%s.py' % mod)
     dp2 = env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s.so'%mod), 
         lib)
     env.Depends(dp1, dp2)
