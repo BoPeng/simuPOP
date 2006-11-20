@@ -490,5 +490,7 @@ setup(
 # changed frequently.
 if not SIMUPOP_VER == 'snapshot':
     for modu in MODULES:
-        for src in MODU_INFO[modu]['src'][:-1] :
-            os.remove(src)
+        for src in MODU_INFO[modu]['src']:
+            # if this file is derived.
+            if modu in src:
+                os.remove(src)
