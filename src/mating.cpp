@@ -674,18 +674,18 @@ namespace simuPOP
 				if( b2_4ac < 0 )
 					throw ValueError("Quadratic function does not yield a valid solution");
 
-                // for extremely small a, assume a=0,
-                if( fabs(a) < 1e-8 ) 
-                {
-    				y1 = -c/b;
-                    // y1 should be valid
-	    			y2 = 1000.;
-                }
-                else
-                {
-    				y1 = (-b+sqrt(b2_4ac))/(2*a);
-	    			y2 = (-b-sqrt(b2_4ac))/(2*a);
-                }
+				// for extremely small a, assume a=0,
+				if( fabs(a) < 1e-8 )
+				{
+					y1 = -c/b;
+					// y1 should be valid
+					y2 = 1000.;
+				}
+				else
+				{
+					y1 = (-b+sqrt(b2_4ac))/(2*a);
+					y2 = (-b-sqrt(b2_4ac))/(2*a);
+				}
 
 				// choose one of the solutions
 				if( y1 < 0. || y1 > 1.0 )
@@ -799,79 +799,92 @@ namespace simuPOP
 		return traj;
 	}
 
-    //
-    // for example
-    //      BB  Bb   bb
-    //  AA  0   1    2
-    //  Aa  3   4    5
-    //  aa  6   7    8
-    //
-    // allgeno = [1, 2] = Aa, bb
-    // first loop
-    //      index = 0*3+1
-    // second loop
-    //      index = 1*3 + 2 = 5
-    double fitOfGeno(const vectori & allgeno, const vectorf & fitness, const vectorf::const_iterator & freq)
-    {
-        int index = 0;
-        double fq = 1;
-        for(size_t i=0; i<allgeno.size(); ++i)
-        {
-            if(allgeno[i] == 0)
-                fq *= (1-freq[i])*(1-freq[i]);
-            else if(allgeno[i] == 1)
-                fq *= 2*(1-freq[i])*freq[i];
-            else
-                fq *= freq[i]*freq[i];
-            index = index*3 + allgeno[i];
-            if(fq == 0.)
-                return 0.;
-        }
-        return fitness[index]*fq;
-    }
+	//
+	// for example
+	//      BB  Bb   bb
+	//  AA  0   1    2
+	//  Aa  3   4    5
+	//  aa  6   7    8
+	//
+	// allgeno = [1, 2] = Aa, bb
+	// first loop
+	//      index = 0*3+1
+	// second loop
+	//      index = 1*3 + 2 = 5
+	double fitOfGeno(int loc, const vectori & allgeno, const vectorf & fitness, const vectorf::const_iterator & freq)
+	{
+		int index = 0;
+		double fq = 1;
+		for(size_t i=0; i<allgeno.size(); ++i)
+		{
+			if(i != loc)
+			{
+				if(allgeno[i] == 0)
+					fq *= (1-freq[i])*(1-freq[i]);
+				else if(allgeno[i] == 1)
+					fq *= 2*(1-freq[i])*freq[i];
+				else
+					fq *= freq[i]*freq[i];
+			}
+			index = index*3 + allgeno[i];
+			if(fq == 0.)
+				return 0.;
+		}
+		return fitness[index]*fq;
+	}
 
-
-    // get individual fitness, accounting interaction
-    void interFitness(int nLoci, const vectorf & fitness, const vectorf::const_iterator & freq, vectorf & sAll)
-    {
-        sAll.resize(3*nLoci);
-        // each locus
-        for(size_t loc=0; loc<nLoci; ++loc)
-        {
-            // each genotype AA, Aa and aa,
-            // geno is actually the number of disease allele
-            for(size_t geno=0; geno<3; ++geno)
-            {
-                // iterate through OTHER DSL
-                vectori allgeno(nLoci, 0);
-                // set myself.
-                allgeno[loc] = geno;
-                // iterator through others
-                double f = 0;
-                for(size_t l=0; l<nLoci; ++l)
-                {
-                    if(l==loc)
-                        continue;
-                    // for each DSL, iterator though its genotype
-                    for(size_t g=0; g<3; ++g)
-                    {
-                        allgeno[l] = g;
-                        f += fitOfGeno(allgeno, fitness, freq);
-                    }
-                }
-                // sum over other genotype
-                sAll[loc*3+geno] = f;
-            }
-            // convert to the form 1, s1, s2
-		    sAll[3*loc+1] = sAll[3*loc+1] / sAll[3*loc] - 1.;
+	// get individual fitness, accounting interaction
+	void interFitness(int nLoci, const vectorf & fitness, const vectorf::const_iterator & freq, vectorf & sAll)
+	{
+		sAll.resize(3*nLoci);
+		// each locus
+		for(size_t loc=0; loc<nLoci; ++loc)
+		{
+			// each genotype AA, Aa and aa,
+			// geno is actually the number of disease allele
+			for(size_t geno=0; geno<3; ++geno)
+			{
+				// iterate through OTHER DSL
+				vectori allgeno(nLoci, 0);
+				// set myself.
+				allgeno[loc] = geno;
+				// iterator through others
+				double f = 0;
+				for(size_t it = 0; it < pow(3, nLoci-1); it++)
+				{
+					// assign allgeno
+					size_t num = it;
+					for(size_t l=0; l<nLoci; ++l)
+					{
+						if(l==loc)
+							continue;
+						allgeno[l] = num % 3;
+						num /= 3;
+					}
+					f += fitOfGeno(loc, allgeno, fitness, freq);
+					DBG_DO(DBG_DEVEL, cout << allgeno << " " << fitOfGeno(loc, allgeno, fitness, freq) << " , " );
+				}
+				// sum over other genotype
+				DBG_DO(DBG_DEVEL, cout << loc << " " << geno << " " <<  f << endl);
+				sAll[loc*3+geno] = f;
+			}
+			// convert to the form 1, s1, s2
+			sAll[3*loc+1] = sAll[3*loc+1] / sAll[3*loc] - 1.;
 			sAll[3*loc+2] = sAll[3*loc+2] / sAll[3*loc] - 1.;
 			sAll[3*loc] = 0.;
-        }
-        DBG_DO(DBG_MATING, cout << "fitness " << fitness << " freq " << freq[0] << ", " << freq[1] << ", " << freq[2]  << " sall " << sAll << endl);
-    }
+		}
+		DBG_DO(DBG_MATING, cout << "fitness " << fitness << " freq " << freq[0] << ", " << freq[1] << ", " << freq[2]  << " sall " << sAll << endl);
+	}
 
+	// the python version of interaction Fitness, for convenience purpose.
+	vectorf MarginalFitness(int nLoci, const vectorf & fitness, const vectorf & freq)
+	{
+		vectorf sAll(3, 1);
+		interFitness(nLoci, fitness, freq.begin(), sAll);
+		return sAll;
+	}
 
-    matrix FreqTrajectoryMultiStoch( ULONG curGen,
+	matrix FreqTrajectoryMultiStoch( ULONG curGen,
 		vectorf freq, long N,
 		PyObject* NtFunc, vectorf fitness, PyObject* fitnessFunc,
 		ULONG minMutAge, ULONG maxMutAge, int ploidy,
@@ -925,7 +938,7 @@ namespace simuPOP
 		// sAll will store returned value of sFunc,
 		// and be converted to 1, 1+s1, 1+s2 format ...
 		vectorf sAll;
-        bool interaction = false;
+		bool interaction = false;
 		if( fitnessFunc != NULL )
 		{
 			if( !PyCallable_Check(fitnessFunc) )
@@ -939,7 +952,7 @@ namespace simuPOP
 			// default to [1,1,1]
 			sAll.resize(nLoci*3, 0.);
 		}
-        // independent case
+		// independent case
 		else if( fitness.size() == 3*nLoci)
 		{
 			for(i=0; i<nLoci; ++i)
@@ -950,13 +963,13 @@ namespace simuPOP
 				sAll[3*i] = 0.;
 			}
 		}
-        // interaction case
-        else if (fitness.size() == pow(3, nLoci))
-        {
-            interaction = true;
-        }
-        else
-            throw ValueError("Wrong size of fitness vector");
+		// interaction case
+		else if (fitness.size() == pow(3, nLoci))
+		{
+			interaction = true;
+		}
+		else
+			throw ValueError("Wrong size of fitness vector");
 
 		// get current population size
 		vectori Ntmp(1, N);
@@ -1018,34 +1031,34 @@ namespace simuPOP
 			if( fitnessFunc != NULL )
 			{
 				// compile allele frequency... and pass
-                vectorf sAllTmp;
+				vectorf sAllTmp;
 				PyObject* freqObj = Double_Vec_As_NumArray( xt.begin()+nLoci*idx, xt.begin()+nLoci*(idx+1) );
 				PyCallFunc2(fitnessFunc, "(iO)", curGen-idx-1, freqObj, sAllTmp, PyObj_As_Array);
 
-                if(sAllTmp.size() == 3*nLoci)
-                {
-    				for(i=0; i<nLoci; ++i)
-	    			{
-		    			// convert to the form 1, s1, s2
-			    		sAll[3*i+1] = sAllTmp[3*i+1] / sAllTmp[3*i] - 1.;
-				    	sAll[3*i+2] = sAllTmp[3*i+2] / sAllTmp[3*i] - 1.;
-					    sAll[3*i] = 0.;
-    				}
-                }
-                // interaction case.
-                else if(sAll.size() == pow(3, nLoci))
-                {
-                    // xt is the current allele frequency
-                    interFitness(nLoci, sAllTmp, xt.begin()+(idx*nLoci), sAll);
-                }
-                else
-                    throw ValueError("Wrong size of fitness vector");
-			} 
-            else if (interaction)
-            {
-                // from fitness vector, get sAll using allele frequency        
-                interFitness(nLoci, fitness, xt.begin()+(idx*nLoci), sAll);
-            }
+				if(sAllTmp.size() == 3*nLoci)
+				{
+					for(i=0; i<nLoci; ++i)
+					{
+						// convert to the form 1, s1, s2
+						sAll[3*i+1] = sAllTmp[3*i+1] / sAllTmp[3*i] - 1.;
+						sAll[3*i+2] = sAllTmp[3*i+2] / sAllTmp[3*i] - 1.;
+						sAll[3*i] = 0.;
+					}
+				}
+				// interaction case.
+				else if(sAll.size() == pow(3, nLoci))
+				{
+					// xt is the current allele frequency
+					interFitness(nLoci, sAllTmp, xt.begin()+(idx*nLoci), sAll);
+				}
+				else
+					throw ValueError("Wrong size of fitness vector");
+			}
+			else if (interaction)
+			{
+				// from fitness vector, get sAll using allele frequency
+				interFitness(nLoci, fitness, xt.begin()+(idx*nLoci), sAll);
+			}
 
 			bool restart = false;
 			// handle each locus
@@ -1093,17 +1106,17 @@ namespace simuPOP
 					if( b2_4ac < 0 )
 						throw ValueError("Quadratic function does not yield a valid solution");
 
-                    if( fabs(a) < 1e-8 )
-                    {
-    		    		y1 = -c/b;
-                        // y1 should be valid
-	        			y2 = 1000.;
-                    }
-                    else                        
-                    {
-					    y1 = (-b+sqrt(b2_4ac))/(2*a);
-					    y2 = (-b-sqrt(b2_4ac))/(2*a);
-                    }
+					if( fabs(a) < 1e-8 )
+					{
+						y1 = -c/b;
+						// y1 should be valid
+						y2 = 1000.;
+					}
+					else
+					{
+						y1 = (-b+sqrt(b2_4ac))/(2*a);
+						y2 = (-b-sqrt(b2_4ac))/(2*a);
+					}
 
 					// choose one of the solutions
 					if( y1 < 0. || y1 > 1.0 )
@@ -1216,7 +1229,6 @@ namespace simuPOP
 		}
 		return result;
 	}
-
 
 #ifndef OPTIMIZED
 	// simulate trajectory
@@ -1387,7 +1399,6 @@ namespace simuPOP
 
 		return gen_freq;
 	}
-
 
 	vectorf FreqTrajectoryForward(double lowbound, double highbound,
 		int disAge, double grate, long N0, double seleCo)
