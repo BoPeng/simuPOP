@@ -174,20 +174,20 @@ for mod in build_mod:
         target = '$BDIR/_simuPOP_%s.so'%mod,
         source = ['$BDIR/%s_%s.cpp' % (x, mod) for x in src] + ['$BDIR/simuPOP_%s.i'%mod],
         LIBS = ['serial', 'iostreams', 'gsl', 'z', 'stdc++'] + \
-			['lammpio', 'lamf77mpi', 'mpi', 'lam', 'aio', 'aio', 'util'], # for mpi versions
+			['mpi', 'orte', 'opal', 'dl', 'nsl', 'util', 'm', 'dl'], # for mpi versions
         CC = cc,
 		CXX = cxx,
         SHLINK = ldshared,
         SHLINKFLAGS = [],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
-        LIBPATH = [BDIR],
+        LIBPATH = [BDIR, '/usr/local/lib'],
         CPPPATH = [distutils.sysconfig.get_python_inc(), '.'],
         CPPDEFINES = DEF[mod],
         # do not put .. (boost etc) in CPPPATH
         # to speed up search
 		CCFLAGS = ['-O3'] + ccflags,
-        CPPFLAGS = basecflags + " " + opt + ' -I..'
+        CPPFLAGS = basecflags + " " + opt + ' -I.. -I/usr/local/include/openmpi'
     )
     env.Depends(['$BDIR/simuPOP_%s_wrap.cc'%mod, lib], 
         ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \
