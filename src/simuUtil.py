@@ -1050,7 +1050,7 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
 
 
 
-def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'], 
+def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affectation'], 
         loci=[], combine=None, shift=1, **kwargs):
     """ save file in CSV format 
     fileds: information fields, 'sex' and 'affection' are special fields that 
@@ -1104,7 +1104,7 @@ def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'],
         for f in fields:
             if f == 'sex':
                 print >> out, ', ', sexCode(ind),
-            elif f == 'affection':
+            elif f == 'affectation':
                 print >> out, ', ', affectedCode(ind),
             else:
                 print >> out, ', ', ind.info(f),
