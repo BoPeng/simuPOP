@@ -336,7 +336,7 @@ for modu in MODULES:
         shutil.copy(src, mod_src)
         MODU_INFO[modu]['src'].append(mod_src)
     MODU_INFO[modu]['src'].append('src/simuPOP_' + modu + '_wrap.cpp' )
-    #MODU_INFO[modu]['src'].extend(GSL_FILES + SERIAL_FILES + IOSTREAMS_FILES)
+    MODU_INFO[modu]['src'].extend(GSL_FILES + SERIAL_FILES + IOSTREAMS_FILES)
     if EMBED_ZLIB:
         MODU_INFO[modu]['src'].extend(ZLIB_FILES) 
     # lib
@@ -492,5 +492,5 @@ if not SIMUPOP_VER == 'snapshot':
     for modu in MODULES:
         for src in MODU_INFO[modu]['src']:
             # if this file is derived.
-            if modu in src:
+            if '_'+modu in src:
                 os.remove(src)
