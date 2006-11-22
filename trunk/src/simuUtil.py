@@ -971,10 +971,10 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
     #    
     # write dat file
     # 
-    if 'affectation' in fields:
+    if 'affection' in fields:
         outputAffectation = True
-        fields.remove('affectation')
-        print >> datOut, 'A\taffectation'
+        fields.remove('affection')
+        print >> datOut, 'A\taffection'
     else:
         outputAffectation = False
     for f in fields:
@@ -1050,7 +1050,7 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
 
 
 
-def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affectation'], 
+def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'], 
         loci=[], combine=None, shift=1, **kwargs):
     """ save file in CSV format 
     fileds: information fields, 'sex' and 'affection' are special fields that 
@@ -1104,7 +1104,7 @@ def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affectation'],
         for f in fields:
             if f == 'sex':
                 print >> out, ', ', sexCode(ind),
-            elif f == 'affectation':
+            elif f == 'affection':
                 print >> out, ', ', affectedCode(ind),
             else:
                 print >> out, ', ', ind.info(f),
