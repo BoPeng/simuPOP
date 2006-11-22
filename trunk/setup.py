@@ -488,9 +488,9 @@ setup(
 
 # keep the source code of snapshot version since snapshot may be 
 # changed frequently.
-if not SIMUPOP_VER == 'snapshot':
-    for modu in MODULES:
-        for src in MODU_INFO[modu]['src']:
-            # if this file is derived.
-            if '_'+modu in src:
-                os.remove(src)
+#if not SIMUPOP_VER == 'snapshot':
+#    for modu in MODULES:
+#        for src in MODU_INFO[modu]['src']:
+#            # if this file is derived.
+#            if '_'+modu in src:
+#                os.remove(src)
