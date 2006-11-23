@@ -30,6 +30,6 @@ cppModule = _simuPOP_baopmpi
 
 #define BINARYALLELE
 #define OPTIMIZED
-#define MPI
+#define SIMUMPI
 
 %include "simuPOP_common.i"

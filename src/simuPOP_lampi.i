@@ -29,6 +29,6 @@ cppModule = _simuPOP_lampi
 %}
 
 #define LONGALLELE
-#define MPI
+#define SIMUMPI
 
 %include "simuPOP_common.i"
