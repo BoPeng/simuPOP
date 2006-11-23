@@ -310,6 +310,77 @@ class TestPerformance(unittest.TestCase):
         #   case 3: 59.00, 55.8 
         #
         # conclusion: accept this.
-        
+
+    def TestSerialization(self):
+        import stat
+        pop = LoadPopulation('exp3_0_9.txt') 
+        c1 = time.clock()
+        pop.savePopulation('exp_small.txt', compress=True)
+        c2 = time.clock()
+        print "txt, save, comp: %.1f, size: %.2fM " % (c2 - c1, os.stat('exp_small.txt')[stat.ST_SIZE]/1024./1024.)
+        c1 = time.clock()
+        pop = LoadPopulation('exp_small.txt')
+        c2 = time.clock()
+        print "txt, load, comp: %.1f " % (c2 - c1)
+        c1 = time.clock()
+        pop.savePopulation('exp_large.txt', compress=False)
+        c2 = time.clock()
+        print "txt, save, nocomp: %.1f, size: %.2fM  " % (c2 - c1, os.stat('exp_large.txt')[stat.ST_SIZE]/1024./1024.)
+        c1 = time.clock()
+        pop = LoadPopulation('exp_large.txt')
+        c2 = time.clock()
+        print "txt, load, nocomp: %.1f " % (c2 - c1)
+        #
+        ##
+        c1 = time.clock()
+        pop.savePopulation('exp_small.bin', compress=True)
+        c2 = time.clock()
+        print "bin, save, comp: %.1f, size: %.2fM  " % (c2 - c1, os.stat('exp_small.bin')[stat.ST_SIZE]/1024./1024.)
+        c1 = time.clock()
+        pop = LoadPopulation('exp_small.bin')
+        c2 = time.clock()
+        print "bin, load, comp: %.1f " % (c2 - c1)
+        c1 = time.clock()
+        pop.savePopulation('exp_large.bin', compress=False)
+        c2 = time.clock()
+        print "bin, save, nocomp: %.1f, size: %.2fM  " % (c2 - c1, os.stat('exp_large.bin')[stat.ST_SIZE]/1024./1024.)
+        c1 = time.clock()
+        pop = LoadPopulation('exp_large.bin')
+        c2 = time.clock()
+        print "bin, load, nocomp: %.1f " % (c2 - c1)
+        ##
+        c1 = time.clock()
+        pop.savePopulation('exp_small.xml', compress=True)
+        c2 = time.clock()
+        print "xml, save, comp: %.1f, size: %.2fM  " % (c2 - c1, os.stat('exp_small.xml')[stat.ST_SIZE]/1024./1024.)
+        c1 = time.clock()
+        pop = LoadPopulation('exp_small.xml')
+        c2 = time.clock()
+        print "xml, load, comp: %.1f " % (c2 - c1)
+        c1 = time.clock()
+        pop.savePopulation('exp_large.xml', compress=False)
+        c2 = time.clock()
+        print "xml, save, nocomp: %.1f, size: %.2fM  " % (c2 - c1, os.stat('exp_large.xml')[stat.ST_SIZE]/1024./1024.)
+        c1 = time.clock()
+        pop = LoadPopulation('exp_large.xml')
+        c2 = time.clock()
+        print "xml, load, nocomp: %.1f " % (c2 - c1)
+
+
+#  txt, save, comp: 225.2, size: 112.29M
+#  txt, load, comp: 128.4
+#  txt, save, nocomp: 80.4, size: 1023.27M
+#  txt, load, nocomp: 129.2
+#  bin, save, comp: 155.5, size: 99.22M
+#  bin, load, comp: 30.5
+#  bin, save, nocomp: 23.1, size: 548.83M
+#  bin, load, nocomp: 24.8
+#  xml, save, comp: 842.8, size: 166.50M
+#  xml, load, comp: 1843.7
+#  xml, save, nocomp: 554.7, size: 8432.21M
+#  xml, load, nocomp: 1801.3
+
+
+
 if __name__ == '__main__':
     unittest.main()

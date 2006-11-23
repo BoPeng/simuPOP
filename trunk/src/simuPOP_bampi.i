@@ -28,6 +28,7 @@
 cppModule = _simuPOP_bampi
 %}
 
-#define MPI
 #define BINARYALLELE
+#define SIMUMPI
+
 %include "simuPOP_common.i"

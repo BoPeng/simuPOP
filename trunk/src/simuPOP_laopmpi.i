@@ -30,7 +30,7 @@ cppModule = _simuPOP_laopmpi
 
 #define LONGALLELE
 #define OPTIMIZED
-#define MPI
+#define SIMUMPI
 
 %include "simuPOP_common.i"
 

@@ -28,7 +28,7 @@
 cppModule = _simuPOP_mpi
 %}
 
-#define MPI
+#define SIMUMPI
 
 %include "simuPOP_common.i"
 

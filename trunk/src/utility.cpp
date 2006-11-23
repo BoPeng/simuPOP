@@ -2463,58 +2463,6 @@ T Expression::valueAs##TypeName() \
 		}
 	}
 
-	/** This file is used to initialize simuPOP when being load into
-	   python. The swig interface file will has a init% % entry to
-	   include this file. */
-	bool initialize()
-	{
-		// tie python stdout to cout
-		setLogOutput();
-
-#ifdef SIMUMPI
-		MPI::Init();
-#endif
-
-#ifndef OPTIMIZED
-		// turn on some debug info
-		TurnOnDebug(DBG_GENERAL);
-		// give at most 100 ref count warnings.
-#endif
-#ifdef Py_REF_DEBUG
-		g_refWarningCount = 100;
-#endif
-
-		// SIMUPOP_MODULE is passed as name, but we need it to be quoted.
-		// Note that under gcc, I could pass the macro from command line
-		// using \" \" but this trick does not work under VC.
-		// the following process is safer.
-#define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
-
-		// set global dictionary/variable
-		PyObject* mm = PyImport_AddModule(SimuPOP_Module_Name);
-		g_module_vars = SharedVariables(PyModule_GetDict(mm), false);
-
-		// main dictionary
-		mm = PyImport_AddModule("__main__");
-		g_main_vars = SharedVariables(PyModule_GetDict(mm), false);
-
-		// get population and individual type pointer
-		g_swigPopType = SWIG_TypeQuery(PopSWIGType);
-		g_swigindividual = SWIG_TypeQuery(IndSWIGType);
-		//
-		// g_swigOperator = SWIG_TypeQuery(OperatorSWIGType);
-		if(g_swigPopType == NULL || g_swigindividual == NULL)
-			throw SystemError("Can not get population and individual type pointer, your SWIG version may be run.");
-
-		/// load carray function and type
-		initcarray();
-
-		// set gsl error handler
-		gsl_set_error_handler(& gsl_error_handler);
-
-		return true;
-	}
-
 	/* !COMPILER */
 
 	// record COMPILER, PY_VERSION and __DATE__ , these info will
@@ -2593,10 +2541,12 @@ T Expression::valueAs##TypeName() \
 #endif
 	}
 
+	int g_mpiRank = 0;
+
 	int mpiRank()
 	{
 #ifdef SIMUMPI
-		return MPI::COMM_WORLD.Get_rank();
+		return g_mpiRank;
 #else
 		return(0);
 #endif
@@ -2611,13 +2561,31 @@ T Expression::valueAs##TypeName() \
 #endif
 	}
 
-	void finalize()
+	void mpiFinalize()
 	{
 #ifdef SIMUMPI
 		MPI::Finalize();
 #endif
 	}
 	
+#ifdef SIMUMPI
+	void testMPI()
+	{
+		// test MPI
+		// first: report who I am
+		std::cout << "This is node " << mpiRank() << " of " << mpiSize() << std::endl;
+		// for head node, send message to others
+		int n = 10;
+		double sum = 0;
+		double val = 5;
+		MPI::COMM_WORLD.Bcast(&n, 1, MPI::INT, 0);
+		MPI::COMM_WORLD.Reduce(&val, &sum, 1, MPI::DOUBLE, MPI::SUM, 0);
+		if (mpiRank() == 0)
+			std::cout << "Get the sum of values as (should be n*5) " << sum << std::endl;
+		mpiFinalize();
+	}
+#endif
+
 	bool supportXML()
 	{
 #ifdef __NO_XML_SUPPORT__
@@ -2691,6 +2659,59 @@ T Expression::valueAs##TypeName() \
 				filename.size() - (last_dot + 1));
 		else
 			return string();
+	}
+
+	/** This file is used to initialize simuPOP when being load into
+	   python. The swig interface file will has a init% % entry to
+	   include this file. */
+	bool initialize()
+	{
+		// tie python stdout to cout
+		setLogOutput();
+
+#ifdef SIMUMPI
+		MPI::Init();
+		g_mpiRank = MPI::COMM_WORLD.Get_rank();
+#endif
+
+#ifndef OPTIMIZED
+		// turn on some debug info
+		TurnOnDebug(DBG_GENERAL);
+		// give at most 100 ref count warnings.
+#endif
+#ifdef Py_REF_DEBUG
+		g_refWarningCount = 100;
+#endif
+
+		// SIMUPOP_MODULE is passed as name, but we need it to be quoted.
+		// Note that under gcc, I could pass the macro from command line
+		// using \" \" but this trick does not work under VC.
+		// the following process is safer.
+#define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
+
+		// set global dictionary/variable
+		PyObject* mm = PyImport_AddModule(SimuPOP_Module_Name);
+		g_module_vars = SharedVariables(PyModule_GetDict(mm), false);
+
+		// main dictionary
+		mm = PyImport_AddModule("__main__");
+		g_main_vars = SharedVariables(PyModule_GetDict(mm), false);
+
+		// get population and individual type pointer
+		g_swigPopType = SWIG_TypeQuery(PopSWIGType);
+		g_swigindividual = SWIG_TypeQuery(IndSWIGType);
+		//
+		// g_swigOperator = SWIG_TypeQuery(OperatorSWIGType);
+		if(g_swigPopType == NULL || g_swigindividual == NULL)
+			throw SystemError("Can not get population and individual type pointer, your SWIG version may be run.");
+
+		/// load carray function and type
+		initcarray();
+
+		// set gsl error handler
+		gsl_set_error_handler(& gsl_error_handler);
+
+		return true;
 	}
 
 #ifndef OPTIMIZED

@@ -1490,7 +1490,7 @@ namespace simuPOP
 
 	/// only useful for mpi version.
 	/// FIXME: call it automatically?
-	void finalize();
+	void mpiFinalize();
 
 	bool optimized();
 
@@ -1499,6 +1499,10 @@ namespace simuPOP
 	int mpiRank();
 
 	int mpiSize();
+
+#ifdef SIMUMPI
+	void testMPI();
+#endif
 
 	string alleleType();
 
