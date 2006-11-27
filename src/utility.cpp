@@ -320,15 +320,13 @@ namespace simuPOP
 	/// CPPONLY
 	void PyObj_As_Bool(PyObject *obj, bool& val)
 	{
-		if(obj==NULL)
+		if(obj==NULL || obj == Py_False || obj == Py_None)
 		{
 			val = false;
 			return;
 		}
-		if (obj == Py_True)
+		else if (obj == Py_True)
 			val = true;
-		else if (obj == Py_False)
-			val = false;
 		else
 			val = PyInt_AS_LONG(obj) ? true : false;
 	}
