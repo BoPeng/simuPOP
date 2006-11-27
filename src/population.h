@@ -73,10 +73,13 @@ namespace simuPOP
 	/// this class implements a Python itertor class that
 	/// can be used to iterate through individuals in a
 	/// population.
+	///
+	/// an instance of this class is returned by
+	/// population::individuals() and population::individuals(subPop)
 	class individualIterator
 	{
 		public:
-			individualIterator(population* pop, ULONG s, ULONG e):
+			individualIterator(population* pop, ULONG s, ULONG e) :
 			m_population(pop),
 				m_index(s),
 				m_end(e)
@@ -91,7 +94,7 @@ namespace simuPOP
 			individual& next();
 
 		private:
-			// an instance of population
+			// an instance of the population being iterated.
 			population* m_population;
 
 			// current (initialized as strt) index
@@ -100,6 +103,19 @@ namespace simuPOP
 			// ending index
 			ULONG m_end;
 	};
+
+	/** NOTE TO THE MPI VERSION OF THE POPULATION
+	 *
+	 * The MPI version of simuPOP spread the chromosomes
+	 * across the nodes of a cluster system.
+	 *
+	 * The head node (0) keeps all the individual, variables
+	 * and information fields, but no genotype.
+	 *
+	 * Other nodes (1-...) has one chromosome (0-...) of genotype
+	 * nothing else.
+	 *
+	 **/
 
 	/** \brief a collection of individuals with subpopulation structure
 
@@ -1293,27 +1309,35 @@ namespace simuPOP
 
 		private:
 			/// population size: number of individual
+			/// MPI: in all nodes
 			ULONG m_popSize;
 
 			/// number of subpopulations
+			/// MPI: in all nodes
 			UINT m_numSubPop;
 
 			/// size of each subpopulation
+			/// MPI: in all nodes
 			vectorlu m_subPopSize;
 
 			///  size of genotypic information of the whole poopulation
+			/// MPI: in all nodes, but different for each chromosome.
 			LONG m_popGenoSize;
 
 			/// index to subPop \todo change to vectorl
+			/// MPI: in all nodes
 			vectorlu m_subPopIndex;
 
 			/// pool of genotypic information
+			/// MPI: empty in head node, one chromosome for others.
 			vectora m_genotype;
 
 			/// information
+			/// only in head node
 			vectorinfo m_info;
 
 			/// individuals.
+			/// only in head node?
 			vector<individual> m_inds;
 
 			int m_ancestralDepth;
