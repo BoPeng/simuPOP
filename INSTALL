@@ -314,9 +314,12 @@ scratch, or at least override some system libraries,
        share/mpi/.libs/libmpi.a
        share/mpi/.libs/liblam.a
        share/mpi/cxx/.libs/liblammpi++.a
-     to simuPOP/build. These libraries will override system libraries.
+     to simuPOP/build. These libraries will override system libraries. 
   4. run
-        $ python setup.py install as usual.
+        $ python setup.py install 
+     as usual. For new installations, command ldconfig may be needed to
+     setup path to LAM/MPI libraries.
+	
 
 
 Potential Problem: Other MPI
