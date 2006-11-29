@@ -308,7 +308,7 @@ scratch, or at least override some system libraries,
         $ ./configure --enable-shared --prefix=/usr
         $ make 
      from the top source directory.
-  3. If you have root privilege, run
+  3. If you have root privilege, clear /usr/lib (and lib64)/libmpi* liblam*, run
         $ make install
      to override your existing LAM installation. Otherwise, copy
        share/mpi/.libs/libmpi.a
@@ -319,7 +319,6 @@ scratch, or at least override some system libraries,
         $ python setup.py install 
      as usual. For new installations, command ldconfig may be needed to
      setup path to LAM/MPI libraries.
-	
 
 
 Potential Problem: Other MPI
