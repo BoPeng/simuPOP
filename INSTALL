@@ -5,9 +5,12 @@ Compiled libraries for Linux, windows XP, Solaris and MacOSX are provided.
 In most cases, you will only need to download simuPOP and follow the usual
 installation process of your platform. This file shows you how to install
 simuPOP binaries and other recommended Python components; and how to build
-simuPOP when none of the binaries work for you, or, more importantly,
-if you would like to compile simuPOP using intel C++ for 20% or more
-performance boost.
+simuPOP from source if 
+  1. you need to compile the MPI (message passing interface) version of the
+     modules, or
+  2. you are using a unsupported OS (e.g. mac/intel), or
+  3. you would like to compile simuPOP using intel C++ for 20% or more
+     performance boost.
 
 
 A complete simuPOP environment is consist of the following:
@@ -17,7 +20,7 @@ Required
 
 1. Python   simuPOP is provided as python modules so a working python is 
             required.
-2. simuPOP  the simuPOP modules			
+2. simuPOP  the simuPOP modules            
 
 
 Optional
@@ -126,10 +129,15 @@ There are detailed instructions at wxPython homepage.
 Build simuPOP from Source
 ==========================
 
-There are several reasons to build simuPOP from source. The most important one is
-performance: for example, simuPOP built with intel C++ compiler (icc) usually
-runs 20% to 30% faster than g++ compiled ones. Since intel C++ for linux is 
-free for non-commercial users, using intel C++ is a good choice on linux systems.
+simuPOP has a MPI version that can spread populations over a cluster and simulate
+huge genome like what is used in genome-wide association studies. No binary is 
+provided since there are many different implementations of MPI. You will have to 
+compile by yourself if want to use simuPOP/MPI.
+
+Another good reason to compile simuPOP by yourself is performance. For example, 
+simuPOP built with intel C++ compiler (icc) usually runs 20% to 30% faster than 
+g++ compiled ones. Since intel C++ for linux is free for non-commercial users, using
+intel C++ is a good choice on linux systems.
 
 
 NOTE:
@@ -229,29 +237,86 @@ override system python, so here is what you need to do
 
   1. download intel C++ compiler (linux, non-commercial version) and install.
      icc can be installed locally. Note that for 64bit systems, the bin directory
-	 is intel/cce/xxx/bin, not intel/cc/xxx/bin. Make sure you source file
-	 intel/cce/xxx/bin/ccvars.xxx for the shell you use.
+     is intel/cce/xxx/bin, not intel/cc/xxx/bin. Make sure you source file
+     intel/cce/xxx/bin/ccvars.xxx for the shell you use.
   2. download python source. Run, for example,
      > tar zxf Python-2.4.3.tgz
-	 > cd Python-2.4.3
-	 > setenv CC icc (for csh)
-	 > setenv CXX icpc (for csh)
-	 > ./configure --with-cxx=icpc --prefix=/home/username/Python24
+     > cd Python-2.4.3
+     > setenv CC icc (for csh)
+     > setenv CXX icpc (for csh)
+     > ./configure --with-cxx=icpc --prefix=/home/username/Python24
      > make
-	 > make install
+     > make install
   3. build and install simuPOP
      > cd simuPOP
-	 > /home/username/Python24/bin/python setup.py install 
+     > /home/username/Python24/bin/python setup.py install
+     simuPOP modules will be put under /home/username/Python24/lib(or lib64)/site-packages,
+
+
+Building the MPI version of simuPOP
+-----------------------------------
+
+NOTE: I have have access to LAM/MPI, openMPI and HP/MPI under linux system. The setup.py 
+is created with this limitation. If setup.py does not work for your particular MPI 
+implementation, please modify this script and send me a patch.
+
+  1. do 'module load mpi' or whatever appropriate to make mpiCC available.
+  2. run 'python setup.py build' as usual, with fingers crossed.
+
+Potential Problem 1:
+--------------------
+
+Using a version of HP/MPI, there is no libmpiCC.so and the version of libmpiCC.a is
+not compiled with -fPIC flag. You will get a link error like: 
+
+/usr/bin/ld: /opt/hpmpi/lib/linux_amd64/libmpiCC.a(mpicxx.o): relocation R_X86_64_32 against `__dso_handle' can not be used when making a shared object; recompile with -fPIC
+/opt/hpmpi/lib/linux_amd64/libmpiCC.a: could not read symbols: Bad value
+collect2: ld returned 1 exit status
+error: command 'c++' failed with exit status 1
+
+Solution:
+---------
+
+  1. go to /path/to/hpmpi/arch/lib and copy a directory named mpiCCsrc to your
+     local directory. If you can not find this directory, send an email to your 
+     system admin and ask for it. There should be Makefile, mpicxx.cc and 
+     intercepts.cc under this directory.
+  2. change the last line of Makefile to (add -fPIC)
+        $(CXX) -fPIC -c $< -I$(MPI_ROOT)/include -DHPMP_BUILD_CXXBINDING
+  3. run make and get a local version of libmpiCC.a
+  4. copy libmpiCC.a to directory 'build' under the simuPOP directory, if this 
+     directory does not exist, create one.
+  5. run python setup.py as usual, since -Lbuild is before -L/path/to/hpmpi, 
+     build/libmpiCC.a will be used instead of the system one.
+
+Note: setup.py accepts parameters like --library-dirs=/home/username/mpiCC but 
+-L/home/username/mpiCC is put after system -L options during linking. This is 
+why we need to put libmpiCC.a into simuPOP/build.
+
+
+Potential Problem 2:
+--------------------
+
+MPI module is not built, because mpiCC is not found, or 'mpiCC -show' or 
+'mpiCC -showme' does not work.
+
+Solution:
+---------
+
+setup.py runs 'mpiCC -show', and if failed, 'mpiCC -showme' to get the compiler flags of 
+mpiCC. Check the correct syntax for your mpi distribution and modify setup.py.
 
 
 Additional remarks
 -------------------
 
   1. There is a scons based build system under src. This is recommended for 
-    simuPOP development since 'python setup.py' is slow because it can not 
-	use thread (or multiple	processors).
+     simuPOP development since 'python setup.py' compiles all modules sequentially.
+     Using scons, you can use 'scons -j4 laop install' to recompile only the laop
+     module using 4 threads. Note that the SConstruct file is tailored for my own
+     developing environment and you may need to change some of the settings.
   2. Python 2.5 is not yet supported (due to the fact that swig does not
-    support 2.5 yet.)
+     support 2.5 yet.)
 
 
 test simuPOP
