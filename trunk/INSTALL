@@ -263,9 +263,8 @@ implementation, please modify this script and send me a patch.
   1. do 'module load mpi' or whatever appropriate to make mpiCC available.
   2. run 'python setup.py build' as usual, with fingers crossed.
 
-Potential Problem 1:
---------------------
-
+Potential Problem: HP/MPI
+-------------------------
 Using a version of HP/MPI, there is no libmpiCC.so and the version of libmpiCC.a is
 not compiled with -fPIC flag. You will get a link error like: 
 
@@ -276,7 +275,6 @@ error: command 'c++' failed with exit status 1
 
 Solution:
 ---------
-
   1. go to /path/to/hpmpi/arch/lib and copy a directory named mpiCCsrc to your
      local directory. If you can not find this directory, send an email to your 
      system admin and ask for it. There should be Makefile, mpicxx.cc and 
@@ -294,15 +292,40 @@ Note: setup.py accepts parameters like --library-dirs=/home/username/mpiCC but
 why we need to put libmpiCC.a into simuPOP/build.
 
 
-Potential Problem 2:
---------------------
+Potential Problem: LAM/MPI
+--------------------------
+The same sympton as HP/MPI. liblammpi++.a is not compiled with -fPIC.
 
+
+Solution:
+---------
+Since there is no shared libraries provided by default, you have to build LAM from 
+scratch, or at least override some system libraries,
+  1. Get LAM/MPI source. Redhat/RHEL4 does not provide the source code for its
+     lam package. If you plan to override system LAM package, get the latest 
+     version (7.1.2), otherwise, get a version that matches your system LAM version.
+  2. run 
+        $ ./configure --enable-shared --prefix=/usr
+        $ make 
+     from the top source directory.
+  3. If you have root privilege, run
+        $ make install
+     to override your existing LAM installation. Otherwise, copy
+       share/mpi/.libs/libmpi.a
+       share/mpi/.libs/liblam.a
+       share/mpi/cxx/.libs/liblammpi++.a
+     to simuPOP/build. These libraries will override system libraries.
+  4. run
+        $ python setup.py install as usual.
+
+
+Potential Problem: Other MPI
+----------------------------
 MPI module is not built, because mpiCC is not found, or 'mpiCC -show' or 
 'mpiCC -showme' does not work.
 
 Solution:
 ---------
-
 setup.py runs 'mpiCC -show', and if failed, 'mpiCC -showme' to get the compiler flags of 
 mpiCC. Check the correct syntax for your mpi distribution and modify setup.py.
 
