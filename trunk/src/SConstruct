@@ -165,16 +165,59 @@ if MODULES == [] or 'all' in BUILD_TARGETS:
 src = Split('''utility migrator population simulator terminator
     individual mutator stator initializer operator recombinator
     mating outputer selector tagger''') 
+# this is borrowed from pypar, since I do not have access to other
+# MPI implementation, I use mpicc only.
+def getMPIFlags():
+    ''' get and parse result of mpiCC -showme or mpicc -show'''
+    fin, fout, ferr = os.popen3('mpiCC -show')
+    output = fout.read()
+    fout.close()
+    #
+    if output == '':
+        fin, fout, ferr = os.popen3('mpiCC -showme')
+        output = fout.read()
+        fout.close()
+    if output == '':
+        return {'mpi': False, 'inc_dirs': [], 'lib_dirs': [], 'libs': [],
+            'def_macros': [], 'undef_macros': []}
+    # now get the include, library dirs and the libs to link with.
+    flags = output.split()
+    inc_dirs = []
+    lib_dirs = []
+    libs = []
+    def_macros = []
+    undef_macros = []
+    for f in flags:
+        if f[:2] == '-I':
+            inc_dirs.append(f[2:])
+        elif f[:2] == '-L':
+            lib_dirs.append(f[2:])
+        elif f[:2] == '-l':
+            libs.append(f[2:])
+        elif f[:2] == '-U':
+            undef_macros.append(f[2:])
+        elif f[:2] == '-D':
+            tmp = string.split(f[2:], '=')
+            if len(tmp) == 1:
+                def_macros.append((tmp[0], None))
+            else:
+                def_macros.append(tuple(tmp))
+    return {'mpi': True, 'inc_dirs': inc_dirs, 'lib_dirs': lib_dirs, 'libs':libs,
+            'def_macros': def_macros, 'undef_macros': undef_macros}
+
 
 for mod in MODULES:
     for file in src:
         env.Command('$BDIR/%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
     # build shared library
+	if 'mpi' in mod:
+	    mpi_libs = getMPIFlags()['lib_dirs']
+	else:
+	    mpi_libs = []
     lib = env.SharedLibrary(
         target = '$BDIR/_simuPOP_%s.so'%mod,
         source = ['$BDIR/%s_%s.cpp' % (x, mod) for x in src] + ['$BDIR/simuPOP_%s.i'%mod],
-        LIBS = ['serial', 'iostreams', 'gsl', 'z', 'stdc++'] + \
-			['mpi_cxx', 'mpi', 'orte', 'opal', 'dl', 'nsl', 'util', 'm', 'dl'], # for mpi versions
+        LIBS = ['serial', 'iostreams', 'gsl', 'z', 'stdc++'] + mpi_libs,
         CC = cc,
 		CXX = cxx,
         SHLINK = ldshared,
@@ -187,7 +230,7 @@ for mod in MODULES:
         # do not put .. (boost etc) in CPPPATH
         # to speed up search
 		CCFLAGS = ['-O3'] + ccflags,
-        CPPFLAGS = basecflags + " " + opt + ' -I.. -I/usr/local/include/openmpi'
+        CPPFLAGS = basecflags + " " + opt + ' -I..'
     )
     env.Depends(['$BDIR/simuPOP_%s_wrap.cc'%mod, lib], 
         ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \
