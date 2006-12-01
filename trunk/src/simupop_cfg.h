@@ -63,32 +63,35 @@ typedef unsigned int UINT;
 #ifdef LONGALLELE
 typedef uint16_t  Allele;
 typedef uint16_t& AlleleRef;
-typedef uint16_t* AllelePtr;
 #define AlleleInc(a)  ++(a)
 #define AlleleDec(a)  --(a)
 #define AlleleAdd(a, b) (a)+=(b)
 #define AlleleMinus(a, b) (a)-=(b)
 #define AlleleUnsigned(a) (a)
+
 #else
+
 #ifdef BINARYALLELE
+
 typedef bool Allele;
-typedef vector<bool>::reference AlleleRef;
-typedef vector<bool>::pointer   AllelePtr;
+typedef vector<Allele>::reference AlleleRef;
 // bool type, inc go to 1, dec go to 0
 #define AlleleInc(a)  (a)=true
 #define AlleleDec(a)  (a)=false
 #define AlleleAdd(a, b) (a)=((b)==0?(a):((b)>0?true:false))
 #define AlleleMinus(a, b) (a)=((b)==0?(a):((b)>0?false:true))
 #define AlleleUnsigned(a) (static_cast<unsigned char>(a))
+
 #else
+
 typedef unsigned char  Allele;
 typedef unsigned char& AlleleRef;
-typedef unsigned char* AllelePtr;
 #define AlleleInc(a)  ++(a)
 #define AlleleDec(a)  --(a)
 #define AlleleAdd(a, b) (a)+=(b)
 #define AlleleMinus(a, b) (a)-=(b)
 #define AlleleUnsigned(a) (a)
+
 #endif
 #endif
 

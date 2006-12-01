@@ -1378,14 +1378,11 @@ namespace simuPOP
 
 	population& LoadPopulation(const string& file, const string& format="auto");
 
-	// debug functions that will only be available if SIMUDEBUG is defined
-#ifdef SIMUDEBUG
 	/// get info through ind.info()
 	vectorf testGetinfoFromInd(population& pop);
 
 	/// get info through GappedInfoIterator
 	vectorf testGetinfoFromPop(population& pop, bool order);
-#endif
 
 }
 

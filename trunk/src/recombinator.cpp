@@ -241,43 +241,63 @@ namespace simuPOP
 		//
 		//  at each locus, check if recombine after it, if so
 		//  recombine.
-		for(size_t gt = 0, bl=0, gtEnd = recBeforeLoci.back(); gt < gtEnd; ++gt)
+		if(m_algorithm == 0)
 		{
-			off[gt] = cp[curCp][gt];
-			// 2 4 x16 (x means recombine)
-			if(gt+1 == recBeforeLoci[bl])
+			for(size_t gt = 0, bl=0, gtEnd = recBeforeLoci.back(); gt < gtEnd; ++gt)
 			{
-				if(bt.trialSucc(bl))
+				off[gt] = cp[curCp][gt];
+				// 2 4 x16 (x means recombine)
+				if(gt+1 == recBeforeLoci[bl])
 				{
-					curCp = (curCp+1)%2;
-					DBG_DO_(m_recCount[bl]++);
+					if(bt.trialSucc(bl))
+					{
+						curCp = (curCp+1)%2;
+						DBG_DO_(m_recCount[bl]++);
+					}
+					++bl;
 				}
-				++bl;
 			}
 		}
-		/*
-			// algorithm two:
-			//
+#ifndef BINARYALLELE
+		else
+		{
+			size_t gt = 0, pos = 0;
+			for(; pos < recBeforeLoci.size(); ++pos)
+			{
+				if(bt.trialSucc(pos))
+				{
+					// copy from 0 to this recombination point
+					for(size_t gtEnd = recBeforeLoci[pos]; gt < gtEnd; ++gt)
+						off[gt] = cp[curCp][gt];
+					curCp = (curCp+1)%2;
+				}
+			}
+			// copy the last piece
+			for(; gt < recBeforeLoci.back(); ++gt)
+				off[gt] = cp[curCp][gt];
+		}
+#else
+		else
+		{
 			//  gt: index on chromosome
 			//  pos: pos on recombination index
 			//
 			//  for each recombination index, check if recombine.
 			//  if so, recombine, and copy till this point.
 			size_t gt = 0, pos = 0;
+			size_t gtEnd;
 			for(; pos < recBeforeLoci.size(); ++pos)
 			{
-		if(bs[pos])
-		{
-		// copy from 0 to this recombination point
-		for(size_t gtEnd = recBeforeLoci[pos]; gt < gtEnd; ++gt)
-		off[gt] = cp[curCp][gt];
-		curCp = (curCp+1)%2;
+				if(bt.trialSucc(pos))
+				{
+					copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci[pos] - gt);
+					curCp = (curCp+1)%2;
+				}
+			}
+			// copy the last piece
+			copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci.back() - gt);
 		}
-		}
-		// copy the last piece
-		for(; gt < recBeforeLoci.back(); ++gt)
-		off[gt] = cp[curCp][gt];
-		*/
+#endif
 		if(setSex)
 		{
 			// sex chrom determination
@@ -310,6 +330,12 @@ namespace simuPOP
 
 			m_bt.setParameter(vecP, pop.popSize());
 
+#ifdef BINARYALLELE
+			m_algorithm = 1;
+#else
+			m_algorithm = 0;
+#endif
+			
 			vecP.clear();
 			// male case is most complicated.
 			m_hasSexChrom = pop.sexChrom()?true:false;
@@ -323,6 +349,13 @@ namespace simuPOP
 			prepareRecRates(pop, maleIntensity, maleRate, maleAfterLoci,
 				m_hasSexChrom, m_maleRecBeforeLoci, vecP);
 			m_maleBt.setParameter(vecP, pop.popSize());
+			// choose an algorithm
+			// if recombinations are dense. use the first algorithm
+			// For example 10 chromoes, regular 0.5*10=5
+			// if there are high recombination on chromosomes, ....
+			if ( std::accumulate(vecP.begin(), vecP.end(), 0.) > pop.numChrom())
+				m_algorithm = 0;
+			DBG_DO(DBG_RECOMBINATOR, cout << "Algorithm " << m_algorithm << " is being used " << endl);
 		}
 
 		recombine(mom, offspring, 0, m_bt, m_recBeforeLoci, false);

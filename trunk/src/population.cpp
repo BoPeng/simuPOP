@@ -1543,7 +1543,6 @@ namespace simuPOP
 #endif
 	}
 
-#ifdef SIMUDEBUG
 	vectorf testGetinfoFromInd(population& pop)
 	{
 		vectorf a(pop.popSize());
@@ -1566,5 +1565,4 @@ namespace simuPOP
 			a[i++] = *it;
 		return a;
 	}
-#endif
 }

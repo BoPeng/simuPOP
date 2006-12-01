@@ -89,6 +89,8 @@ using std::max_element;
 using std::find;
 using std::sort;
 using std::greater;
+using std::_Bit_type;
+using std::_S_word_bit;
 
 namespace simuPOP
 {
@@ -2659,6 +2661,198 @@ T Expression::valueAs##TypeName() \
 			return string();
 	}
 
+#ifdef BINARYALLELE
+	std::_Bit_type g_bitMask[std::_S_word_bit];
+
+	// define a good way to copy long genotype sequence
+	void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
+	{
+		DBG_ASSERT(fr._M_offset < _S_word_bit, SystemError,
+			"Your vector<bool> implementation is different...");
+
+		_Bit_type * fr_p = fr._M_p;
+		_Bit_type * to_p = to._M_p;
+		unsigned int fr_off = fr._M_offset;
+		unsigned int to_off = to._M_offset;
+		// cout << "length " << n << " " << fr_off << " " << 
+		//	to_off << std::endl;
+			
+		// if offset is different, can not copy in block.
+		if ( n < _S_word_bit )
+		{
+			for(size_t i=0; i<n; ++i)
+			{
+				// set bit according to from bit
+				if (*fr_p & (1UL << fr_off))
+					*to_p |= (1UL << to_off);
+				else
+					*to_p &= ~(1UL << to_off);
+				// next location 
+				if (fr_off++ == _S_word_bit - 1)
+				{
+					fr_off = 0;
+					++fr_p;
+				}
+				if (to_off++ == _S_word_bit - 1)
+				{
+					to_off = 0;
+					++to_p;
+				}
+			}
+		}
+		else if (fr_off == to_off)
+		{
+			// copy first block, fr_off + 1 bits
+			// xxxABCDE for off=4
+			// what I am doing is
+			// mask[4] = xxx11111
+			// 
+			// from = xxABCDE
+			// to   = xxMNOPQ
+			// mask = xx11111
+			//
+			// from & mask = 00ABCDE
+			// to & ~mask  = yy00000
+			// (from & mask) | (to & ~mask) = yyABCEE
+			_Bit_type mask = g_bitMask[fr_off];
+			*to_p = (*fr_p & mask) | (*to_p & ~mask);
+			size_t rest = n - fr_off - 1;
+			size_t blks = rest / _S_word_bit;
+			for(size_t i=0; i<blks; ++i)
+				*++to_p = *++fr_p;
+			// the rest of the bits?
+			rest -= blks * _S_word_bit;
+			if(rest != 0)
+			{
+				to_p ++;
+				fr_p ++;
+				mask = g_bitMask[_S_word_bit - rest - 1];
+				*to_p = (*fr_p & ~mask) | (*to_p & mask);
+			}
+		}
+		else // fr_off != to_off
+		{
+			_Bit_type maskTo = g_bitMask[to_off];
+			_Bit_type maskFrom = g_bitMask[fr_off];
+			_Bit_type maskFrom1;
+			size_t shift;
+			
+			if( fr_off > to_off)
+			{
+				shift = fr_off - to_off;
+				// from:   xxxABCDEF, maskFrom: 000111111
+				// to:     xxxxxxABC, maskTo:   000000111
+				//   (from & maskFrom) = 000ABCDEF
+				//   >>                  000000ABC
+				//   to * ~ maskTo     = xxxxxx000
+				//   |                 = xxxxxxABC
+				*to_p = ((*fr_p & maskFrom) >> shift) |
+					(*to_p & ~ maskTo);				
+				// now. for other block bits
+				// to other bits
+				size_t rest = n - to_off - 1;
+				size_t blks = rest / _S_word_bit;
+				//
+				//  already copied shift bits
+				// from:   xxxxxxAB, maskFrom:   00000011
+				// from1:  CDEFGHxx, maskFrom:   00000011
+				// from &maskFrom        =  000000AB
+				// <<                    =  AB000000
+				// from1 & ~ maskFrom    =  CDEFGH00
+				// >>                    =  00CDEFGH
+				// |                        = ABCDEFGH
+				maskFrom  = g_bitMask[shift];
+				for(size_t i=0; i<blks; ++i)
+				{
+					to_p++;
+					*to_p = ((*fr_p & maskFrom) << (_S_word_bit - shift)) |	
+						( (*(fr_p+1) & ~ maskFrom) >> shift);
+					fr_p++;
+				}
+				// the rest of the bits?
+				rest -= blks * _S_word_bit;
+				if(rest != 0)
+				{
+					to_p ++;
+					// rest = 5, shift=2
+					// from:     xxxxxxAB, maskFrom: 00000011
+					// from:     CDExxxxx, maskFrom1:00111111
+					// to:       ABCEDxxx, maskTo:   00000111
+					//   from & mask    =  000000AB
+					//     <<           =  AB000000
+					//   from 1 & mask  =  CDE00000
+					//     >>           =  00CDE000
+					//  to * mask      =   00000xxx
+					maskFrom = g_bitMask[shift];
+					maskFrom1 = g_bitMask[rest - shift];
+					maskTo   = g_bitMask[_S_word_bit - rest - 1];
+					*to_p = ((*(fr_p-1) & maskFrom) << (_S_word_bit - shift)) | 
+						((*fr_p & maskFrom1) >> shift) |
+						(*to_p & maskTo) ;
+				}
+			}
+			else
+			{
+				shift = to_off - fr_off;
+				// from:   xxxxxxABC, maskFrom: 00000111
+				// from1:  DExxxxxxx, maskFrom1:01111111
+				// to:     xxxxABCDE, maskTo:   00011111
+				//   (from & maskFrom) =  00000ABC
+				//   <<                   000ABC00
+				//   to * ~ maskTo     =  xxx00000
+				//   |                     =  xxxABC00
+				//  (from2 & ~maskFrom1)= DE000000
+				//   >>                =  000000DE
+				//   |                     =  xxxABCDE
+				maskFrom1 = g_bitMask[_S_word_bit - fr_off - 1];
+				//
+				*to_p = ((*fr_p & maskFrom) << shift) |
+					(*to_p & ~ maskTo) | 
+					( (*(fr_p+1) & ~ maskFrom1) >> (_S_word_bit - shift));
+				//
+				// to other bits
+				size_t rest = n - to_off - 1;
+				size_t blks = rest / _S_word_bit;
+				//
+				//  already copied shift bits
+				// from:   xxABCDEF, maskFrom:   00111111
+				// from1:  GHxxxxxx, maskFrom:   00111111
+				// from &maskFrom        =  00ABCDEF
+				// <<                    =  ABCDEF00
+				// from1 & ~ maskFrom    =  GH000000
+				// >>                    =  000000GH
+				// |                        = ABCDEFGH
+				maskFrom  = g_bitMask[_S_word_bit - shift - 1];
+				for(size_t i=0; i<blks; ++i)
+				{
+					to_p++;
+					fr_p++;
+					*to_p = ((*fr_p & maskFrom) << shift) |	
+						( (*(fr_p+1) & ~ maskFrom) >> (_S_word_bit - shift));
+				}
+				// the rest of the bits?
+				rest -= blks * _S_word_bit;
+				if(rest != 0)
+				{
+					to_p ++;
+					fr_p ++;
+					// rest = 2,
+					// from:     ABCDExxx, maskFrom: 00000111
+					// to:       DExxxxxx, maskTo:   00111111
+					//   from & ~mask   =  ABCDE000
+					//     <<           =  DE000000
+					//  to * mask      =   DExxxxxx
+					maskFrom = g_bitMask[_S_word_bit - rest - shift - 1];
+					maskTo   = g_bitMask[_S_word_bit - rest - 1];
+					*to_p = ((*fr_p & ~maskFrom) << shift) | (*to_p & maskTo) ;
+				}
+			}
+			
+		}
+		
+	}
+#endif
+
 	/** This file is used to initialize simuPOP when being load into
 	   python. The swig interface file will has a init% % entry to
 	   include this file. */
@@ -2670,6 +2864,17 @@ T Expression::valueAs##TypeName() \
 #ifdef SIMUMPI
 		MPI::Init();
 		g_mpiRank = MPI::COMM_WORLD.Get_rank();
+#endif
+
+#ifdef BINARYALLELE
+		// set the bit masks for binaryalleles
+		// for example, if _S_word_bit is 8 (most likely 32), we define
+		// 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
+		for(size_t i=0; i<std::_S_word_bit; ++i)
+		{
+			for(size_t j=0; j <= i; ++j)
+				g_bitMask[i] |= (1UL << j);
+		}
 #endif
 
 #ifndef OPTIMIZED
