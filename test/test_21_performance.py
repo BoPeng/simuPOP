@@ -21,7 +21,7 @@
 # .cpp files, and will be available ONLY when SIMUDEBUG is defined
 #
 import simuOpt
-simuOpt.setOptions(quiet=False, optimized=True)
+simuOpt.setOptions(quiet=False, optimized=False)
 
 from simuPOP import *
 import unittest, os, sys, exceptions, time
@@ -56,17 +56,17 @@ class TestPerformance(unittest.TestCase):
         # Conclusion: (strange)
         # 
         # N=10000
-        # From ind: 0.180000
-        # From pop, no rearrange: 0.190000
-        # From pop, with rearrange: 0.270000
+        # From ind: 0.030000
+        # From pop, no rearrange: 0.030000
+        # From pop, with rearrange: 0.040000
         # N=100000
-        # From ind: 2.400000
-        # From pop, no rearrange: 2.480000
-        # From pop, with rearrange: 3.410000
+        # From ind: 0.910000
+        # From pop, no rearrange: 0.820000
+        # From pop, with rearrange: 1.250000
         # N=1000000
-        # From ind: 25.010000
-        # From pop, no rearrange: 25.980000
-        # From pop, with rearrange: 35.340000
+        # From ind: 10.490000
+        # From pop, no rearrange: 9.710000
+        # From pop, with rearrange: 14.150000
         # 
         # This discourage the use of gappedIteartor
         # and enougrage the use of individual iterator
@@ -129,10 +129,22 @@ class TestPerformance(unittest.TestCase):
             #  42.08, 57.24, 76.16
             #  479, 621, ...
             #
-            # a second test reveals less existing results
-            #   4.24, 6.1, 7.74
-            #   43.9, 65.63, 85.28
-            #   ...
+            # 10/30/2006, op module
+            #
+            # 0.28, 0.33, 0.50
+            # 3.73, 6.95, 9.07
+            # 81.5, ...
+            # 
+            # 10/30/2006, baop module
+            # 0.38, 0.50, 0.69
+            # 5.19, 8.73, 11.43
+            # 86.81, ...
+            # 
+            # 10/30/2006, laop module (is setSex is implemented in bitset)
+            # 0.27, 0.33, 0.5 (0.29, 0.33, 0.52)
+            # 3.98, 7.43, 9.8 (4.5, 7.6, 10.4)
+            # 84.79, ...
+            #
             # (kind of strange, system load difference?)
             # 
             # Tried to change maleIndex to IndIterator, but
@@ -141,6 +153,63 @@ class TestPerformance(unittest.TestCase):
             # Change maSelector and get a little performance gain of
             #    4.26, 6.02, 7.65
             #    43.66, 64.6, 83.77
+            #
+
+    def TestLongGenome(self):
+        'Test the performance of recombination with long genome'
+        sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
+        r = 0.001
+        migr = migrator(rate=[[1-r,r],[r,1-r]])
+        p = 0.4
+        for N in [10000]:
+            print "N=%d" % N
+            pop = population(subPop=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
+            c1 = time.clock()
+            simu = simulator(pop, randomMating())
+            simu.evolve(
+                preOps = [initByFreq([1-p]+[p/10.]*10)],
+                ops = [],
+                end=100
+            )
+            c2 = time.clock()
+            print "Random mating: %f " % (c2 - c1)
+            #
+            # with recombination
+            pop = population(subPop=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
+            c1 = time.clock()
+            simu = simulator(pop, randomMating())
+            simu.evolve(
+                preOps = [initByFreq([1-p]+[p/10.]*10)],
+                ops = [recombinator(rate=0.0001)],
+                end=100
+            )
+            c2 = time.clock()
+            print "Low recombination: %f " % (c2 - c1)
+            # with high recombination
+            pop = population(subPop=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
+            c1 = time.clock()
+            simu = simulator(pop, randomMating())
+            simu.evolve(
+                preOps = [initByFreq([1-p]+[p/10.]*10)],
+                ops = [recombinator(rate=0.5)],
+                end=100
+            )
+            c2 = time.clock()
+            print "High recombination: %f " % (c2 - c1)
+    # binary (before optimization)
+    # 52.93, 76, 103
+    #
+    # after optimization the binaries (use block copying)
+    # 2.52, 28.58, 106.9 (special treatment is given for high recombination rate cases)
+    #                    (otherwise 140.0 s)
+    #
+    # short
+    # 4.38, 33.73, 56.03
+    #
+    # long allele
+    # 5.53, 34.81, 57.75
+    #  
+
 
     def TestMatingAlgorithm(self):
         'Test the performance of mating algorithm'

@@ -100,7 +100,7 @@ namespace simuPOP
 				m_rate(rate), m_maleRate(maleRate),
 				m_afterLoci(afterLoci), m_maleAfterLoci(maleAfterLoci),
 				m_recBeforeLoci(0), m_maleRecBeforeLoci(0),
-				m_bt(rng()), m_maleBt(rng()), m_recCount(0)
+				m_bt(rng()), m_maleBt(rng()), m_recCount(0), m_algorithm(0)
 			{
 				// tells mating schemes that this operator will form
 				// the genotype of offspring so they do not have to
@@ -187,6 +187,9 @@ namespace simuPOP
 
 			/// report the number of recombination events
 			vectoru m_recCount;
+
+			/// algorithm to use (frequent or seldom recombinations)
+			int m_algorithm;
 	};
 
 }

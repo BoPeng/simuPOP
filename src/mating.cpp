@@ -116,6 +116,9 @@ namespace simuPOP
 				offd = it->genoBegin(0);
 				offm = it->genoBegin(1);
 
+#ifndef BINARYALLELE
+				// the easy way to copy things.
+				//
 				for(UINT ch=0, chEnd = dad->numChrom(); ch < chEnd; ++ch)
 				{
 					// bs is 2*totNumLoci() long
@@ -129,6 +132,124 @@ namespace simuPOP
 						offm[gt] = cm[momPloidy][gt];
 					}
 				}
+#else
+				// this has to be optimized...
+				//
+				// 1. try to copy in blocks,
+				// 2. if two chromosomes can be copied together, copy together
+				// 3. if length is short, using the old method.
+				//
+				size_t dadBegin = 0;
+				size_t dadEnd = 0;
+				size_t momBegin = 0;
+				size_t momEnd = 0;
+				// bs is 2*totNumLoci() long,
+				// first chromosome
+				UINT chEnd = dad->numChrom();
+				dadPloidy = m_bt.trialSucc(0);
+				momPloidy = m_bt.trialSucc(chEnd);
+				//
+				int nextDadPloidy;
+				int nextMomPloidy;
+				bool copyDad;
+				bool copyMom;
+				for(UINT ch=0; ch < chEnd; ++ch)
+				{
+					// if it is the last chromosome, copy anyway
+					if (ch == chEnd - 1)
+					{
+						copyDad = true;
+						copyMom = true;
+					}
+					else						  // is there a different chromosome?
+					{
+						nextDadPloidy = m_bt.trialSucc(ch+1);
+						nextMomPloidy = m_bt.trialSucc(ch+1+chEnd);
+						copyDad = dadPloidy != nextDadPloidy;
+						copyMom = momPloidy != nextMomPloidy;
+					}
+					if (copyDad)
+					{
+						// end of this chromosome, is the beginning of the next
+						dadEnd = m_chIdx[ch+1];
+						size_t length = dadEnd - dadBegin;
+						//
+						// less than one block, copy directly (not worth the trouble)
+						/*
+						if(length < std::_S_word_bit)
+						{
+							for(size_t gt = dadBegin; gt < dadEnd; ++gt)
+								offd[gt] = cd[dadPloidy][gt];
+						}
+						else
+							for(size_t gt = dadBegin; gt < dadEnd; ++gt)
+								offd[gt] = cd[dadPloidy][gt];
+						*/
+						// the easiest case, try to get some speed up...
+						if(length == 1)
+							offd[dadBegin] = cd[dadPloidy][dadBegin];
+						else
+							copyGenotype(cd[dadPloidy] + dadBegin, offd + dadBegin, length);
+
+#ifndef OPTIMIZED						
+						// check if the bits are correctly copied
+						if(debug(DBG_MATING))
+						{
+							if(vectora(cd[dadPloidy] + dadBegin, cd[dadPloidy] + dadEnd) != 
+								vectora(offd + dadBegin, offd + dadEnd))
+							{
+								cout << "Copy from " << vectora(cd[dadPloidy] + dadBegin, cd[dadPloidy] + dadEnd) 
+									<< " to " << vectora(offd + dadBegin, offd + dadEnd) << " failed " << endl;
+								GenoIterator d = cd[dadPloidy] + dadBegin;
+								GenoIterator o = offd + dadBegin;
+								cout << "Offsets are " << d._M_offset << " and " << o._M_offset << endl;
+							}
+						}
+#endif
+						if (ch != chEnd -1)
+							dadPloidy = nextDadPloidy;
+						dadBegin = dadEnd;
+					}
+					if (copyMom)
+					{
+						momEnd = m_chIdx[ch+1];
+						size_t length = momEnd - momBegin;
+						//
+						// less than one block, copy directly
+						/*
+						if(length < std::_S_word_bit)
+							for(size_t gt = momBegin; gt < momEnd; ++gt)
+								offm[gt] = cm[momPloidy][gt];
+						else
+							for(size_t gt = momBegin; gt < momEnd; ++gt)
+								offm[gt] = cm[momPloidy][gt];
+						*/
+						// the easiest case, try to get some speed up...
+						if(length == 1)
+							offm[momBegin] = cm[momPloidy][momBegin];
+						else
+							copyGenotype(cm[momPloidy] + momBegin, offm + momBegin, length);
+#ifndef OPTIMIZED						
+						if(debug(DBG_MATING))
+						{
+							if(vectora(cm[momPloidy] + momBegin, cm[momPloidy] + momEnd) != 
+								vectora(offm + momBegin, offm + momEnd))
+							{
+								cout << "Copy from " << vectora(cm[momPloidy] + momBegin, cm[momPloidy] + momEnd) 
+									<< " to " << vectora(offm + momBegin, offm + momEnd) << " failed " << endl;
+								GenoIterator d = cm[momPloidy] + momBegin;
+								GenoIterator o = offm + momBegin;
+								cout << "Offsets are " << d._M_offset << " and " << o._M_offset << endl;
+							}
+						}
+#endif
+
+						if (ch != chEnd -1)
+							momPloidy = nextMomPloidy;
+						momBegin = momEnd;
+					}
+				}
+#endif
 
 				// last chromosome (sex chromosomes) determine sex
 				if(m_hasSexChrom)

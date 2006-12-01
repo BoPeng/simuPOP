@@ -1484,6 +1484,12 @@ namespace simuPOP
 
 	string compilePlatForm();
 
+#ifdef BINARYALLELE
+	// efficiently copy alleles (block by block, rather than 1 by 1)
+	/// CPPONLY
+	void copyGenotype(GenoIterator fr, GenoIterator to, size_t n);
+#endif
+
 	/// CPPONLY
 	/// initialize module simuPOP when using "import simuPOP"
 	bool initialize();
