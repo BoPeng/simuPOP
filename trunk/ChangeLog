@@ -9,6 +9,8 @@ BUGS:
 version 0.7.5 - Currently available as svn snapshot
   - NEW: experimental MPI modules.
   - BUG: None is treated as False now in Py_Object_As_Bool.
+  - NEW: Optimize binary allele handling. Copying of alleles are now
+		faster than regular alleles.
 
 version 0.7.4 - (Rev 518) Nov 5, 2006
   - BUG: fix simulator.population() function
