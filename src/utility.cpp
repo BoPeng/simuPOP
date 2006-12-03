@@ -2250,10 +2250,12 @@ T Expression::valueAs##TypeName() \
 		m_cur = 0;
 	}
 
+
 	UINT BernulliTrials::curTrial()
 	{
 		return m_cur;
 	}
+
 
 	/// get a trial corresponding to m_prob.
 	void BernulliTrials::trial()
@@ -2263,11 +2265,36 @@ T Expression::valueAs##TypeName() \
 		m_cur++;
 	}
 
+
 	bool BernulliTrials::trialSucc(size_t idx)
 	{
 		return m_table[idx][m_cur];
 	}
 
+
+	size_t BernulliTrials::trialFirstSucc()
+	{
+		size_t i = 0;
+		const size_t sz = m_table.size();
+		while(i < sz && m_table[i][m_cur] == 0) 
+			++i;
+		return i >= sz ? npos : i;
+	}
+
+	
+	size_t BernulliTrials::trialNextSucc(size_t pos)
+	{
+		const size_t sz = m_table.size();
+		if (pos >= (sz-1) || sz == 0)
+			return npos;
+
+	    ++pos;
+		while(pos < sz && m_table[pos][m_cur] == 0) 
+			++pos;
+		return pos >= sz ? npos : pos;
+	}
+
+	
 	void BernulliTrials::setTrialSucc(size_t idx, bool succ)
 	{
 		m_table[idx].set(m_cur, succ);
@@ -2847,9 +2874,18 @@ T Expression::valueAs##TypeName() \
 					*to_p = ((*fr_p & ~maskFrom) << shift) | (*to_p & maskTo) ;
 				}
 			}
-			
 		}
-		
+#ifndef OPTIMIZED
+		if(debug(DBG_UTILITY))
+		{
+			if(vectora(fr, fr+n) != vectora(to, to + n))
+			{
+				cout << "Copy from " << vectora(fr, fr + n) 
+					<< " to " << vectora(to, to + n) << " failed " << endl;
+				cout << "Offsets are " << fr._M_offset << " and " << to._M_offset << endl;
+			}
+		}
+#endif		
 	}
 #endif
 

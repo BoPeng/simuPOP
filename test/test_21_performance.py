@@ -21,7 +21,7 @@
 # .cpp files, and will be available ONLY when SIMUDEBUG is defined
 #
 import simuOpt
-simuOpt.setOptions(quiet=False, optimized=False)
+simuOpt.setOptions(quiet=False, optimized=True)
 
 from simuPOP import *
 import unittest, os, sys, exceptions, time
@@ -196,7 +196,7 @@ class TestPerformance(unittest.TestCase):
             )
             c2 = time.clock()
             print "High recombination: %f " % (c2 - c1)
-    # binary (before optimization)
+    # binary (before optimization, copy bits one by one)
     # 52.93, 76, 103
     #
     # after optimization the binaries (use block copying)
@@ -209,6 +209,12 @@ class TestPerformance(unittest.TestCase):
     # long allele
     # 5.53, 34.81, 57.75
     #  
+    #
+    # using the special case for low recombination rate (use search valid algorithm),
+    #
+    # binary: 2.54,  18.37, 104.5
+    # short:  4.44,  21.26, 56.61
+    # long:   5.52m, 22.19, 57.57
 
 
     def TestMatingAlgorithm(self):
@@ -282,6 +288,9 @@ class TestPerformance(unittest.TestCase):
         # Use stack (mixed method)
         # 0.7.4 (baop):       89u, 1min 17s
         #  direct gepped allele count does oot improve anything
+        #
+        # 0.7.5 (fast binary operation)
+        # 44.5u
         #
         # Remove rebombinator: 57.5s
 

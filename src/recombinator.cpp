@@ -258,46 +258,48 @@ namespace simuPOP
 				}
 			}
 		}
-#ifndef BINARYALLELE
 		else
 		{
-			size_t gt = 0, pos = 0;
-			for(; pos < recBeforeLoci.size(); ++pos)
+			size_t gt = 0, gtEnd = 0;
+			size_t pos = bt.trialFirstSucc();
+			// if there is some recombination
+			if (pos != BernulliTrials::npos)
 			{
-				if(bt.trialSucc(pos))
+				// first piece
+#ifndef BINARYALLELE
+				for(; gt < recBeforeLoci[pos]; ++gt)
+					off[gt] = cp[curCp][gt];
+#else
+				gtEnd = recBeforeLoci[pos];
+				copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci[pos] - gt);
+				gt = gtEnd;
+#endif
+				DBG_DO_(m_recCount[pos]++);
+				curCp = (curCp + 1) % 2;
+				// next ...
+				while ((pos = bt.trialNextSucc(pos)) != BernulliTrials::npos)
 				{
-					// copy from 0 to this recombination point
-					for(size_t gtEnd = recBeforeLoci[pos]; gt < gtEnd; ++gt)
+#ifndef BINARYALLELE	
+					// copy from last to this recombination point
+					for(gtEnd = recBeforeLoci[pos]; gt < gtEnd; ++gt)
 						off[gt] = cp[curCp][gt];
+#else
+					gtEnd = recBeforeLoci[pos];
+					copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci[pos] - gt);
+					gt = gtEnd;
+#endif
+					DBG_DO_(m_recCount[pos]++);
 					curCp = (curCp+1)%2;
 				}
 			}
+#ifndef BINARYALLELE
 			// copy the last piece
 			for(; gt < recBeforeLoci.back(); ++gt)
 				off[gt] = cp[curCp][gt];
-		}
 #else
-		else
-		{
-			//  gt: index on chromosome
-			//  pos: pos on recombination index
-			//
-			//  for each recombination index, check if recombine.
-			//  if so, recombine, and copy till this point.
-			size_t gt = 0, pos = 0;
-			size_t gtEnd;
-			for(; pos < recBeforeLoci.size(); ++pos)
-			{
-				if(bt.trialSucc(pos))
-				{
-					copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci[pos] - gt);
-					curCp = (curCp+1)%2;
-				}
-			}
-			// copy the last piece
 			copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci.back() - gt);
-		}
 #endif
+		}
 		if(setSex)
 		{
 			// sex chrom determination
@@ -329,13 +331,13 @@ namespace simuPOP
 				false, m_recBeforeLoci, vecP);
 
 			m_bt.setParameter(vecP, pop.popSize());
-
+/*
 #ifdef BINARYALLELE
 			m_algorithm = 1;
 #else
 			m_algorithm = 0;
 #endif
-			
+*/			
 			vecP.clear();
 			// male case is most complicated.
 			m_hasSexChrom = pop.sexChrom()?true:false;
@@ -355,6 +357,8 @@ namespace simuPOP
 			// if there are high recombination on chromosomes, ....
 			if ( std::accumulate(vecP.begin(), vecP.end(), 0.) > pop.numChrom())
 				m_algorithm = 0;
+			else
+				m_algorithm = 1;
 			DBG_DO(DBG_RECOMBINATOR, cout << "Algorithm " << m_algorithm << " is being used " << endl);
 		}
 
