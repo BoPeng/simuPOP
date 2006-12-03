@@ -18,7 +18,7 @@ import unittest, os, sys, exceptions, time
 
 class TestPerformance(unittest.TestCase):
 
-    def testMPIStart(self):
+    def TestMPIStart(self):
         '''Start mpi'''
         testMPI()
 

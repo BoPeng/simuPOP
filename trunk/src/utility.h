@@ -1396,6 +1396,9 @@ namespace simuPOP
 
 			bool trialSucc(size_t idx);
 
+			size_t trialFirstSucc();
+			size_t trialNextSucc(size_t pos);
+
 			void setTrialSucc(size_t idx, bool succ);
 
 			/// return succeed trials for p[index]
@@ -1422,7 +1425,9 @@ namespace simuPOP
 			{
 				return m_N;
 			}
-
+		public:
+			BOOST_STATIC_CONSTANT(size_t, npos = static_cast<size_t>(-1));
+		
 		private:
 			/// pointer to a random number generator.
 			/// this is in preparation for multiple thread/RNG.
