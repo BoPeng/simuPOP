@@ -11,6 +11,9 @@ version 0.7.5 - Currently available as svn snapshot
   - BUG: None is treated as False now in Py_Object_As_Bool.
   - NEW: Optimize binary allele handling. Copying of alleles are now
 		faster than regular alleles.
+  - NEW: Optimize BernulliTrials and recombination. Recombination
+		under certain conditions is 1/3 faster now.
+
 
 version 0.7.4 - (Rev 518) Nov 5, 2006
   - BUG: fix simulator.population() function
