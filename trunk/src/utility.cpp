@@ -271,6 +271,7 @@ namespace simuPOP
 }
 
 
+
 namespace std
 {
 	/// how to output a dictionary
@@ -307,6 +308,7 @@ namespace std
 		return out;
 	}
 }
+
 
 
 namespace simuPOP
@@ -2250,12 +2252,10 @@ T Expression::valueAs##TypeName() \
 		m_cur = 0;
 	}
 
-
 	UINT BernulliTrials::curTrial()
 	{
 		return m_cur;
 	}
-
 
 	/// get a trial corresponding to m_prob.
 	void BernulliTrials::trial()
@@ -2265,36 +2265,32 @@ T Expression::valueAs##TypeName() \
 		m_cur++;
 	}
 
-
 	bool BernulliTrials::trialSucc(size_t idx)
 	{
 		return m_table[idx][m_cur];
 	}
 
-
 	size_t BernulliTrials::trialFirstSucc()
 	{
 		size_t i = 0;
 		const size_t sz = m_table.size();
-		while(i < sz && m_table[i][m_cur] == 0) 
+		while(i < sz && m_table[i][m_cur] == 0)
 			++i;
 		return i >= sz ? npos : i;
 	}
 
-	
 	size_t BernulliTrials::trialNextSucc(size_t pos)
 	{
 		const size_t sz = m_table.size();
 		if (pos >= (sz-1) || sz == 0)
 			return npos;
 
-	    ++pos;
-		while(pos < sz && m_table[pos][m_cur] == 0) 
+		++pos;
+		while(pos < sz && m_table[pos][m_cur] == 0)
 			++pos;
 		return pos >= sz ? npos : pos;
 	}
 
-	
 	void BernulliTrials::setTrialSucc(size_t idx, bool succ)
 	{
 		m_table[idx].set(m_cur, succ);
@@ -2594,7 +2590,7 @@ T Expression::valueAs##TypeName() \
 		MPI::Finalize();
 #endif
 	}
-	
+
 #ifdef SIMUMPI
 	void testMPI()
 	{
@@ -2701,9 +2697,7 @@ T Expression::valueAs##TypeName() \
 		_Bit_type * to_p = to._M_p;
 		unsigned int fr_off = fr._M_offset;
 		unsigned int to_off = to._M_offset;
-		// cout << "length " << n << " " << fr_off << " " << 
-		//	to_off << std::endl;
-			
+
 		// if offset is different, can not copy in block.
 		if ( n < _S_word_bit )
 		{
@@ -2714,7 +2708,7 @@ T Expression::valueAs##TypeName() \
 					*to_p |= (1UL << to_off);
 				else
 					*to_p &= ~(1UL << to_off);
-				// next location 
+				// next location
 				if (fr_off++ == _S_word_bit - 1)
 				{
 					fr_off = 0;
@@ -2730,21 +2724,20 @@ T Expression::valueAs##TypeName() \
 		else if (fr_off == to_off)
 		{
 			// copy first block, fr_off + 1 bits
-			// xxxABCDE for off=4
+			// ABCDxxxx for off=4
 			// what I am doing is
-			// mask[4] = xxx11111 <==== NOTICE mask[4] has five 1s
-			// mask[16-4-1] = xxxx111111111111 <=== mask[bits-4-1] has 4 zeros.
-			// 
-			// from = xxABCDE
-			// to   = xxMNOPQ
-			// mask = xx11111
+			// mask[4] = xxxx1111 <==== NOTICE mask[4] has four 1s
 			//
-			// from & mask = 00ABCDE
-			// to & ~mask  = yy00000
-			// (from & mask) | (to & ~mask) = yyABCEE
+			//  off = 4,
+			//  from:  ABCDxxxx
+			//  to:    EFGHxxxx
+			// from & ~mask =  ABCD0000
+			// to &    mask  = 0000xxxx
+			// (from & mask) | (to & ~mask) = ABCDxxxx
 			_Bit_type mask = g_bitMask[fr_off];
-			*to_p = (*fr_p & mask) | (*to_p & ~mask);
-			size_t rest = n - fr_off - 1;
+			*to_p = (*fr_p & ~mask) | (*to_p & mask);
+
+			size_t rest = n - (_S_word_bit - fr_off);
 			size_t blks = rest / _S_word_bit;
 			for(size_t i=0; i<blks; ++i)
 				*++to_p = *++fr_p;
@@ -2752,143 +2745,158 @@ T Expression::valueAs##TypeName() \
 			rest -= blks * _S_word_bit;
 			if(rest != 0)
 			{
+				// rest = 3
+				// from:   xxxxxABC
+				// to:     xxxxxCDE
+				// mask:   00000111
+				//    &:   00000ABC
+				//    & :  xxxxx000
+				//    |:   xxxxxABC
 				to_p ++;
 				fr_p ++;
 				// mask has top rest zeros.
-				mask = g_bitMask[_S_word_bit - rest - 1];
-				*to_p = (*fr_p & ~mask) | (*to_p & mask);
+				mask = g_bitMask[rest];
+				*to_p = (*fr_p & mask) | (*to_p & ~mask);
 			}
 		}
-		else // fr_off != to_off
+		else if(fr_off < to_off)
 		{
-			_Bit_type maskTo = g_bitMask[to_off];
 			_Bit_type maskFrom = g_bitMask[fr_off];
+			_Bit_type maskTo = g_bitMask[to_off];
 			_Bit_type maskFrom1;
 			size_t shift;
-			
-			if( fr_off > to_off)
+
+			shift = to_off - fr_off;
+			// fr_off=5, to_off=7, shift=3
+			// from:    ABCxxxxx,  maskFrom: 00011111
+			// to:      Dxxxxxxx,  maskTo:   01111111
+			//   (from & ~maskFrom) = ABC00000
+			//   <<                   C0000000
+			//   to & maskTo        = 0xxxxxxx
+			//   |                  = Cxxxxxxx
+			*to_p = ((*fr_p & ~maskFrom) << shift) |
+				(*to_p & maskTo);
+			// now. for other block bits
+			// to other bits
+			size_t rest = n - (_S_word_bit - to_off);
+			size_t blks = rest / _S_word_bit;
+			//
+			//  already copied to_off+1 bits
+			// from:   ABxxxxxx, maskFrom:    00111111
+			// from1:  xxCDEFGH, maskFrom:    00111111
+			// from & ~maskFrom            =  AB000000
+			// >>                          =  000000AB
+			// from1 & maskFrom            =  00CDEFGH
+			// <<                          =  CDEFGHxx
+			// |                           =  CDEFGHAB
+			maskFrom  = g_bitMask[_S_word_bit - shift];
+			for(size_t i=0; i < blks; ++i)
 			{
-				shift = fr_off - to_off;
-				// fr_off=5, to_off=2, shift=3
-				// from:   xxxABCDEF, maskFrom: 000111111
-				// to:     xxxxxxABC, maskTo:   000000111
-				//   (from & maskFrom) = 000ABCDEF
-				//   >>                  000000ABC
-				//   to * ~ maskTo     = xxxxxx000
-				//   |                 = xxxxxxABC
-				*to_p = ((*fr_p & maskFrom) >> shift) | 
-					(*to_p & ~ maskTo);				
-				// now. for other block bits
-				// to other bits
-				size_t rest = n - to_off - 1;
-				size_t blks = rest / _S_word_bit;
-				//
-				//  already copied to_off+1 bits
-				// from:   xxxxxxAB, maskFrom:   00000011
-				// from1:  CDEFGHxx, maskFrom:   00000011
-				// from &maskFrom        =  000000AB
-				// <<                    =  AB000000
-				// from1 & ~ maskFrom    =  CDEFGH00
-				// >>                    =  00CDEFGH
-				// |                        = ABCDEFGH
-				maskFrom  = g_bitMask[shift-1];
-				for(size_t i=0; i < blks; ++i)
+				to_p++;
+				*to_p = ((*fr_p & ~maskFrom) >> (_S_word_bit - shift)) |
+					( (*(fr_p+1) & maskFrom) << shift);
+				fr_p++;
+			}
+			// the rest of the bits?
+			rest -= blks * _S_word_bit;
+			if(rest != 0)
+			{
+				to_p ++;
+				if (rest <= shift)
 				{
-					to_p++;
-					*to_p = ((*fr_p & maskFrom) << (_S_word_bit - shift)) |	
-						( (*(fr_p+1) & ~ maskFrom) >> shift);
-					fr_p++;
+					// rest = 2, shift = 5
+					// from:  ABCEDxxx, maskfrom: 00000111
+					// to:    xxxxxxAB, maskto:   00000011
+					// & ~                        ABCDE000
+					// >>                         000ABCDE
+					// & naskTo                   000000DE
+					// & ~                        xxxxxx00
+					// |                          xxxxxxDE
+					maskFrom = g_bitMask[_S_word_bit - shift];
+					maskTo   = g_bitMask[rest];
+					*to_p =  (((*(fr_p) & ~maskFrom) >> (_S_word_bit - shift)) & maskTo)
+						| (*to_p & ~maskTo);
 				}
-				// the rest of the bits?
-				rest -= blks * _S_word_bit;
-				if(rest != 0)
+				else
 				{
-					to_p ++;
-					if (rest <= shift)
-					{
-						// rest = 2, shift = 5
-						// from:  xxxABCED, maskfrom: 00011111
-						// to:    ABxxxxxx, maskto:   00111111
-						//   &maskFrom << ~ = ABxxxxxx
-						maskFrom = g_bitMask[shift-1];
-						maskTo   = g_bitMask[_S_word_bit - rest - 1];
-						*to_p =  (((*(fr_p-1) & maskFrom) << (_S_word_bit - shift)) & ~ maskTo) 
-							| (*to_p & maskTo);
-					} 
-					else
-					{
-						// rest = 5, shift = 2
-						// from:     xxxxxxAB, maskFrom: 00000011
-						// from:     CDExxxxx, maskFrom1:00011111
-						// to:       ABCEDxxx, maskTo:   00000111
-						//   from & mask    =  000000AB
-						//     <<           =  AB000000
-						//   from 1 & mask  =  CDE00000
-						//     >>           =  00CDE000
-						//  to * mask      =   00000xxx
-						maskFrom = g_bitMask[shift-1];
-						maskFrom1 = g_bitMask[_S_word_bit - (rest - shift) - 1];
-						maskTo   = g_bitMask[_S_word_bit - rest - 1];
-						*to_p = ((*(fr_p-1) & maskFrom) << (_S_word_bit - shift)) | 
-							((*fr_p & ~ maskFrom1) >> shift) |
-							(*to_p & maskTo) ;
-					}
+					// rest = 5, shift = 2
+					// from:     ABxxxxxx, maskFrom: 00111111
+					// from:     xxxxxCDE, maskFrom1:00000111
+					// to:       xxxCDEAB, maskTo:   00011111
+					//   from & ~ mask  =  AB000000
+					//     >>           =  000000AB .
+					//   from 1 & mask1 =  00000CDE
+					//     <<           =  000CDE00 .
+					//  to * ~mask      =  xxx00000
+					//  |               =  xxxCDEAB
+					maskFrom = g_bitMask[_S_word_bit - shift];
+					maskFrom1= g_bitMask[rest - shift];
+					maskTo   = g_bitMask[rest];
+
+					*to_p =  ((*(fr_p) & ~maskFrom) >> (_S_word_bit - shift)) |
+						((*(fr_p+1) & maskFrom1) << shift) |
+						(*to_p & ~maskTo);
 				}
 			}
-			else
+		}
+		else									  // fr_off > to_off
+		{
+			size_t shift = fr_off - to_off;
+			_Bit_type maskFrom = g_bitMask[fr_off];
+			_Bit_type maskFrom1= g_bitMask[shift];
+			_Bit_type maskTo   = g_bitMask[to_off];
+			// from:   ABCxxxxx, maskFrom: 00011111
+			// from1:  xxxxxxDE, maskFrom1:00000011
+			// to:     DEABCxxx, maskTo:   00011111
+			//
+			*to_p = ((*fr_p & ~maskFrom) >> shift) |
+				( (*(fr_p+1) & maskFrom1) << (_S_word_bit - shift)) |
+				(*to_p & maskTo);
+			to_p ++;
+			fr_p ++;
+			//
+			// to other bits
+			size_t rest = n - (_S_word_bit - to_off);
+			size_t blks = rest / _S_word_bit;
+			//
+			// already copied shift bits
+			// from:   ABCDEFxx, maskFrom:   00000011
+			// from1:  xxxxxxGH, maskFrom:   00000011
+			// to:     GHABCDEF
+			maskFrom  = g_bitMask[shift];
+			for(size_t i=0; i<blks; ++i)
 			{
-				shift = to_off - fr_off;
-				// from:   xxxxxxABC, maskFrom: 00000111
-				// from1:  DExxxxxxx, maskFrom1:01111111
-				// to:     xxxxABCDE, maskTo:   00011111
-				//   (from & maskFrom) =  00000ABC
-				//   <<                   000ABC00
-				//   to * ~ maskTo     =  xxx00000
-				//   |                     =  xxxABC00
-				//  (from2 & ~maskFrom1)= DE000000
-				//   >>                =  000000DE
-				//   |                     =  xxxABCDE
-				maskFrom1 = g_bitMask[_S_word_bit - fr_off - 1];
-				//
-				*to_p = ((*fr_p & maskFrom) << shift) |
-					(*to_p & ~ maskTo) | 
-					( (*(fr_p+1) & ~ maskFrom1) >> (_S_word_bit - shift));
-				//
-				// to other bits
-				size_t rest = n - to_off - 1;
-				size_t blks = rest / _S_word_bit;
-				//
-				//  already copied shift bits
-				// from:   xxABCDEF, maskFrom:   00111111
-				// from1:  GHxxxxxx, maskFrom:   00111111
-				// from &maskFrom        =  00ABCDEF
-				// <<                    =  ABCDEF00
-				// from1 & ~ maskFrom    =  GH000000
-				// >>                    =  000000GH
-				// |                        = ABCDEFGH
-				maskFrom  = g_bitMask[_S_word_bit - shift - 1];
-				for(size_t i=0; i<blks; ++i)
+				*to_p = ((*fr_p & ~maskFrom) >> shift) |
+					( (*(fr_p+1) & maskFrom) << (_S_word_bit - shift));
+				fr_p ++;
+				to_p ++;
+			}
+			// the rest of the bits
+			rest -= blks * _S_word_bit;
+			if(rest != 0)
+			{
+				if (rest < _S_word_bit - shift)
 				{
-					to_p++;
-					fr_p++;
-					*to_p = ((*fr_p & maskFrom) << shift) |	
-						( (*(fr_p+1) & ~ maskFrom) >> (_S_word_bit - shift));
-				}
-				// the rest of the bits?
-				rest -= blks * _S_word_bit;
-				if(rest != 0)
-				{
-					to_p ++;
-					fr_p ++;
-					// rest = 2,
+					// rest = 2, shift = 3,
 					// from:     ABCDExxx, maskFrom: 00000111
-					// to:       DExxxxxx, maskTo:   00111111
-					//   from & ~mask   =  ABCDE000
-					//     <<           =  DE000000
-					//  to * mask      =   DExxxxxx
-					maskFrom = g_bitMask[_S_word_bit - rest - shift - 1];
-					maskTo   = g_bitMask[_S_word_bit - rest - 1];
-					*to_p = ((*fr_p & ~maskFrom) << shift) | (*to_p & maskTo) ;
+					// to:       xxxxxxDE, maskTo:   00000011
+					maskFrom = g_bitMask[shift];
+					maskTo   = g_bitMask[rest];
+					*to_p = (((*fr_p & ~maskFrom) >> shift) & maskTo) |
+						(*to_p & ~maskTo) ;
+				}
+				else
+				{
+					// rest = 5, shift = 6
+					// from:   ABxxxxxx, maskFrom: 00111111
+					// from1:  xxxxxCDE, maskFrom1:00000111
+					// rest:   xxxCDEAB, maskTo:   00011111
+					maskFrom  = g_bitMask[shift];
+					maskFrom1 = g_bitMask[rest - (_S_word_bit - shift)];
+					maskTo    = g_bitMask[rest];
+					*to_p = ((*fr_p & ~maskFrom) >> shift) |
+						((*(fr_p+1) & maskFrom1) << (_S_word_bit - shift)) |
+						(*to_p & ~maskTo);
 				}
 			}
 		}
@@ -2897,12 +2905,12 @@ T Expression::valueAs##TypeName() \
 		{
 			if(vectora(fr, fr+n) != vectora(to, to + n))
 			{
-				cout << "Copy from " << vectora(fr, fr + n) 
+				cout << "Copy from " << vectora(fr, fr + n)
 					<< " to " << vectora(to, to + n) << " failed " << endl;
 				cout << "Offsets are " << fr._M_offset << " and " << to._M_offset << endl;
 			}
 		}
-#endif		
+#endif
 	}
 #endif
 
@@ -2922,10 +2930,11 @@ T Expression::valueAs##TypeName() \
 #ifdef BINARYALLELE
 		// set the bit masks for binaryalleles
 		// for example, if _S_word_bit is 8 (most likely 32), we define
-		// 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
+		// 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
 		for(size_t i=0; i<std::_S_word_bit; ++i)
 		{
-			for(size_t j=0; j <= i; ++j)
+			// g_bitMask[i] is the number of 1 count from right.
+			for(size_t j=0; j < i; ++j)
 				g_bitMask[i] |= (1UL << j);
 		}
 #endif
@@ -2967,6 +2976,14 @@ T Expression::valueAs##TypeName() \
 		// set gsl error handler
 		gsl_set_error_handler(& gsl_error_handler);
 
+#ifndef OPTIMIZED
+#ifdef BINARYALLELE
+		// binary level genotype copy is compiler dependent and may
+		// fail on some systems. Such a test will make sure the binary
+		// library work fine.
+		testCopyGenotype();
+#endif
+#endif
 		return true;
 	}
 
@@ -3000,6 +3017,39 @@ T Expression::valueAs##TypeName() \
 
 		return true;
 	}
+
+#ifdef BINARYALLELE
+	void testCopyGenotype()
+	{
+		vectora from(1000);
+		vectora to(1000);
+		for(size_t i = 0; i<100; ++i)
+		{
+			for(size_t j=0; j<1000; ++j)
+			{
+				from[j] = rng().randInt(2);
+				to[j] = 0;
+			}
+			size_t from_idx = rng().randInt(300);
+			size_t to_idx = rng().randInt(300);
+			if (from_idx > to_idx)
+				continue;
+			size_t length = rng().randInt(500);
+			copyGenotype(from.begin() + from_idx,
+				to.begin() + to_idx, length);
+			if( vectora(from.begin() + from_idx, from.begin() + from_idx + length) !=
+				vectora(to.begin() + to_idx, to.begin() + to_idx + length))
+			{
+				cout << "Copying: " << vectora(from.begin() + from_idx, from.begin() + from_idx + length) << '\n'
+					<<  "Obtain:  " << vectora(to.begin() + to_idx, to.begin() + to_idx + length) << '\n'
+					<<  "Index From: " << from_idx << " to: " << to_idx << " length: " << length << endl;
+				// the error message can not be shown
+				throw SystemError("Allele copy test for your system fails.\n"
+					"Please email simuPOP mailing list with detailed os and compiler information");
+			}
+		}
+	}
+#endif
 #endif
 
 }
