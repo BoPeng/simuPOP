@@ -118,7 +118,7 @@ namespace simuPOP
 			 -  need certain types of individual (age, sex etc)
 			 -  need resizeable population...
 			*/
-			virtual bool isCompatible( population& pop)
+			virtual bool isCompatible(const population& pop) const
 			{
 				return true;
 			}
@@ -449,7 +449,7 @@ namespace simuPOP
 				return new randomMating(*this);
 			}
 
-			virtual bool isCompatible( population& pop)
+			virtual bool isCompatible(const population& pop) const
 			{
 				// test if individual has sex
 				// if not, will yield compile time error.
@@ -714,7 +714,7 @@ namespace simuPOP
 				return new controlledMating(*this);
 			}
 
-			virtual bool isCompatible( population& pop)
+			virtual bool isCompatible(const population& pop) const
 			{
 				return m_matingScheme->isCompatible(pop);
 			}
@@ -955,7 +955,7 @@ namespace simuPOP
 				return new controlledRandomMating(*this);
 			}
 
-			virtual bool isCompatible( population& pop)
+			virtual bool isCompatible(const population& pop) const
 			{
 				// test if individual has sex
 				// if not, will yield compile time error.

@@ -33,7 +33,7 @@ namespace io = boost::iostreams;
 namespace simuPOP
 {
 
-	simulator::simulator(population & pop,
+	simulator::simulator(const population & pop,
 		mating&  matingScheme,
 		int rep , vectori grp)
 		: m_gen(0), m_curRep(0), m_numRep(rep), m_groups(0),
@@ -107,6 +107,17 @@ namespace simuPOP
 			<< "these referenced population will not be working now." << endl);
 	}
 
+
+	simulator * simulator::clone() const
+	{
+		simulator * simu = new simulator(population(0), 
+			*m_matingScheme, m_numRep, m_groups);
+		for(size_t i=1; i < m_numRep; ++i)
+			simu->setPopulation(*m_ptrRep[i], i);
+		return simu;
+	}
+
+	
 	void simulator::setMatingScheme(const mating& matingScheme)
 	{
 		delete m_matingScheme;

@@ -128,6 +128,7 @@ namespace simuPOP
 
 			/// individual itertor, used to iterate all individuals.
 			typedef vector<individual>::iterator IndIterator;
+			typedef vector<individual>::const_iterator ConstIndIterator;
 
 			/** @name  constructors and destructor */
 			//@{
@@ -187,7 +188,7 @@ namespace simuPOP
 			population(const population& rhs);
 
 			///
-			population& clone(int keepAncestralPops=-1) const;
+			population * clone(int keepAncestralPops=-1) const;
 
 			/// SWAP population
 			/// swap the content of two populations
@@ -450,6 +451,35 @@ namespace simuPOP
 				return m_inds.begin() + m_subPopIndex[subPop+1];
 			}
 
+			/// CPPONLY individual iterator: without subPop info
+			ConstIndIterator indBegin() const
+			{
+				return m_inds.begin();
+			}
+
+			/// CPPONLY individual iterator: without subPop info
+			ConstIndIterator indEnd() const
+			{
+				return m_inds.end();
+			}
+
+			/// CPPONLY individual iterator: with subPop info.
+			ConstIndIterator indBegin(UINT subPop) const
+			{
+				CHECKRANGESUBPOP(subPop);
+
+				return m_inds.begin() + absIndIndex(0, subPop);
+			}
+
+			/// CPPONLY individual iterator: with subPop info.
+			ConstIndIterator indEnd(UINT subPop) const
+			{
+				CHECKRANGESUBPOP(subPop);
+
+				return m_inds.begin() + m_subPopIndex[subPop+1];
+			}
+
+			
 			/// allele iterator that access a locus across all copies of chromosomes and individual
 			/** CPPONLY
 			\param locus

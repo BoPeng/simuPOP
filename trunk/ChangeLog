@@ -13,6 +13,7 @@ version 0.7.5 - Currently available as svn snapshot
 		faster than regular alleles.
   - NEW: Optimize BernulliTrials and recombination. Recombination
 		under certain conditions is 1/3 faster now.
+  - NEW: add the missing simulator.clone() function
 
 
 version 0.7.4 - (Rev 518) Nov 5, 2006

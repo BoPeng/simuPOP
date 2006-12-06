@@ -213,12 +213,13 @@ namespace std
 // as function name. ind and pop are used instead.
 // at the python level, individual and population are better.
 %rename(individual) ind(ULONG, UINT);
-%rename(population) pop(UINT);
+%rename(population) pop(UINT) const;
 
 %newobject simuPOP::population::newPopByIndInfo;
 %newobject simuPOP::population::newPopWithPartialLoci;
 %newobject simuPOP::population::clone;
 %newobject simuPOP::simulator::getPopulation;
+%newobject simuPOP::simulator::clone;
 %newobject simuPOP::operator::clone;
 %newobject simuPOP::stat::clone;
 
