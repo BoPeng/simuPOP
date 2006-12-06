@@ -251,8 +251,9 @@ class TestMatingSchemes(unittest.TestCase):
         )
         #Dump(simu.population(0))
 
-    def testControlledMultiBinomialSelection(self):
+    def TestControlledMultiBinomialSelection(self):
         'Testing the multi-locus version of controlled bionomial selection'
+        # THIS TEST IS IGNORED SINCE THE MATING SCHEME HAS NOT BEEN TESTED.
         #TurnOnDebug(DBG_MATING)
         #TurnOnDebug(DBG_DEVEL)
         N = 50
