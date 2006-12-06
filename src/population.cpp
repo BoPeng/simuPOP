@@ -73,7 +73,7 @@ namespace simuPOP
 	{
 		DBG_FAILIF(maxAllele > MaxAllele, ValueError,
 			"maxAllele is bigger than maximum allowed allele state of this library (" + toStr(MaxAllele) +
-			")\nPlease use simuOpt.setOptions(longAllele=True) to use the long allele version of simuPOP.");
+			")\nPlease use simuOpt.setOptions(alleleType='long') to use the long allele version of simuPOP.");
 
 		DBG_FAILIF(maxAllele == 0, ValueError,
 			"maxAllele should be at least 1 (0,1 two states). ");
@@ -247,14 +247,14 @@ namespace simuPOP
 	}
 
 	///
-	population& population::clone(int keepAncestralPops) const
+	population * population::clone(int keepAncestralPops) const
 	{
-		population& p = *new population(*this);
+		population * p = new population(*this);
 		int oldDepth = m_ancestralDepth;
-		if( keepAncestralPops >= 0)
+		if(keepAncestralPops >= 0)
 			// try to remove excessive ancestra generations.
-			p.setAncestralDepth(keepAncestralPops);
-		p.setAncestralDepth(oldDepth);
+			p->setAncestralDepth(keepAncestralPops);
+		p->setAncestralDepth(oldDepth);
 		return p;
 	}
 
@@ -687,7 +687,7 @@ namespace simuPOP
 		const vectori& id, bool removeEmptySubPops)
 	{
 		// copy the population over (info is also copied)
-		population& pop = clone(keepAncestralPops);
+		population & pop = *clone(keepAncestralPops);
 		// and shrink them
 		for(size_t depth=0; depth <= pop.ancestralDepth(); ++depth)
 		{

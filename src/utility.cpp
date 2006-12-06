@@ -2732,7 +2732,8 @@ T Expression::valueAs##TypeName() \
 			// copy first block, fr_off + 1 bits
 			// xxxABCDE for off=4
 			// what I am doing is
-			// mask[4] = xxx11111
+			// mask[4] = xxx11111 <==== NOTICE mask[4] has five 1s
+			// mask[16-4-1] = xxxx111111111111 <=== mask[bits-4-1] has 4 zeros.
 			// 
 			// from = xxABCDE
 			// to   = xxMNOPQ
@@ -2753,6 +2754,7 @@ T Expression::valueAs##TypeName() \
 			{
 				to_p ++;
 				fr_p ++;
+				// mask has top rest zeros.
 				mask = g_bitMask[_S_word_bit - rest - 1];
 				*to_p = (*fr_p & ~mask) | (*to_p & mask);
 			}
@@ -2767,20 +2769,21 @@ T Expression::valueAs##TypeName() \
 			if( fr_off > to_off)
 			{
 				shift = fr_off - to_off;
+				// fr_off=5, to_off=2, shift=3
 				// from:   xxxABCDEF, maskFrom: 000111111
 				// to:     xxxxxxABC, maskTo:   000000111
 				//   (from & maskFrom) = 000ABCDEF
 				//   >>                  000000ABC
 				//   to * ~ maskTo     = xxxxxx000
 				//   |                 = xxxxxxABC
-				*to_p = ((*fr_p & maskFrom) >> shift) |
+				*to_p = ((*fr_p & maskFrom) >> shift) | 
 					(*to_p & ~ maskTo);				
 				// now. for other block bits
 				// to other bits
 				size_t rest = n - to_off - 1;
 				size_t blks = rest / _S_word_bit;
 				//
-				//  already copied shift bits
+				//  already copied to_off+1 bits
 				// from:   xxxxxxAB, maskFrom:   00000011
 				// from1:  CDEFGHxx, maskFrom:   00000011
 				// from &maskFrom        =  000000AB
@@ -2788,8 +2791,8 @@ T Expression::valueAs##TypeName() \
 				// from1 & ~ maskFrom    =  CDEFGH00
 				// >>                    =  00CDEFGH
 				// |                        = ABCDEFGH
-				maskFrom  = g_bitMask[shift];
-				for(size_t i=0; i<blks; ++i)
+				maskFrom  = g_bitMask[shift-1];
+				for(size_t i=0; i < blks; ++i)
 				{
 					to_p++;
 					*to_p = ((*fr_p & maskFrom) << (_S_word_bit - shift)) |	
@@ -2801,21 +2804,35 @@ T Expression::valueAs##TypeName() \
 				if(rest != 0)
 				{
 					to_p ++;
-					// rest = 5, shift=2
-					// from:     xxxxxxAB, maskFrom: 00000011
-					// from:     CDExxxxx, maskFrom1:00111111
-					// to:       ABCEDxxx, maskTo:   00000111
-					//   from & mask    =  000000AB
-					//     <<           =  AB000000
-					//   from 1 & mask  =  CDE00000
-					//     >>           =  00CDE000
-					//  to * mask      =   00000xxx
-					maskFrom = g_bitMask[shift];
-					maskFrom1 = g_bitMask[rest - shift];
-					maskTo   = g_bitMask[_S_word_bit - rest - 1];
-					*to_p = ((*(fr_p-1) & maskFrom) << (_S_word_bit - shift)) | 
-						((*fr_p & maskFrom1) >> shift) |
-						(*to_p & maskTo) ;
+					if (rest <= shift)
+					{
+						// rest = 2, shift = 5
+						// from:  xxxABCED, maskfrom: 00011111
+						// to:    ABxxxxxx, maskto:   00111111
+						//   &maskFrom << ~ = ABxxxxxx
+						maskFrom = g_bitMask[shift-1];
+						maskTo   = g_bitMask[_S_word_bit - rest - 1];
+						*to_p =  (((*(fr_p-1) & maskFrom) << (_S_word_bit - shift)) & ~ maskTo) 
+							| (*to_p & maskTo);
+					} 
+					else
+					{
+						// rest = 5, shift = 2
+						// from:     xxxxxxAB, maskFrom: 00000011
+						// from:     CDExxxxx, maskFrom1:00011111
+						// to:       ABCEDxxx, maskTo:   00000111
+						//   from & mask    =  000000AB
+						//     <<           =  AB000000
+						//   from 1 & mask  =  CDE00000
+						//     >>           =  00CDE000
+						//  to * mask      =   00000xxx
+						maskFrom = g_bitMask[shift-1];
+						maskFrom1 = g_bitMask[_S_word_bit - (rest - shift) - 1];
+						maskTo   = g_bitMask[_S_word_bit - rest - 1];
+						*to_p = ((*(fr_p-1) & maskFrom) << (_S_word_bit - shift)) | 
+							((*fr_p & ~ maskFrom1) >> shift) |
+							(*to_p & maskTo) ;
+					}
 				}
 			}
 			else

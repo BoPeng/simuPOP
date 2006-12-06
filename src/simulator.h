@@ -155,7 +155,7 @@ namespace simuPOP
 			DEVONLY{ m_curRep, gen  are reference to
 			glocal shared variables. }
 			*/
-			simulator(population & pop, mating&  matingScheme,
+			simulator(const population & pop, mating&  matingScheme,
 				int rep = 1, vectori grp=vectori());
 
 			/// destroy a simulator along with all its populations
@@ -168,6 +168,8 @@ namespace simuPOP
 			*/
 			~simulator();
 
+			simulator * clone() const;
+			
 			/// the 'rep' replicate of this simulator
 			/**
 			\param rep number of replicate.
@@ -178,14 +180,14 @@ namespace simuPOP
 			  be limited to 'immediate after retrival'.
 			  If you would like to get a persistent population, use getPopulation(rep)
 			*/
-			population& pop(UINT rep)
+			population& pop(UINT rep) const
 			{
 				DBG_FAILIF( rep >= m_numRep, IndexError,
 					"replicate index out of range. From 0 to numRep()-1 ");
 
 				return *m_ptrRep[rep];
 			}
-
+			
 			/**
 			this function returns a copy of population rep
 			\param rep number of replicate.
