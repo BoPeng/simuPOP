@@ -145,7 +145,6 @@ class TestPerformance(unittest.TestCase):
             # 3.98, 7.43, 9.8 (4.5, 7.6, 10.4)
             # 84.79, ...
             #
-            # (kind of strange, system load difference?)
             # 
             # Tried to change maleIndex to IndIterator, but
             # the performance is slightly worse. (42,34, 64.35 etc)
@@ -210,7 +209,7 @@ class TestPerformance(unittest.TestCase):
     # 5.53, 34.81, 57.75
     #  
     #
-    # using the special case for low recombination rate (use search valid algorithm),
+    # using the special case for low recombination rate (use the search-valid algorithm),
     #
     # binary: 2.54,  18.37, 104.5
     # short:  4.44,  21.26, 56.61
