@@ -2647,6 +2647,7 @@ boost/detail/.svn/wcprops/sp_counted_impl.hpp.svn-work
 boost/detail/.svn/wcprops/templated_streams.hpp.svn-work
 boost/detail/.svn/wcprops/utf8_codecvt_facet.hpp.svn-work
 boost/detail/.svn/wcprops/workaround.hpp.svn-work
+boost/dynamic_bitset/.dynamic_bitset.hpp.swp
 boost/dynamic_bitset/config.hpp
 boost/dynamic_bitset/dynamic_bitset.hpp
 boost/dynamic_bitset/.svn/README.txt
@@ -18378,6 +18379,8 @@ src/serialization/xml_oarchive.cpp
 src/serialization/xml_wgrammar.cpp
 src/serialization/xml_wiarchive.cpp
 src/serialization/xml_woarchive.cpp
+test/run_tests.py
+test/run_tests.sh
 test/test.py
 test/test_00_carray.py
 test/test_01_individual.py
