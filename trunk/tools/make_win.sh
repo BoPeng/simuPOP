@@ -21,11 +21,11 @@ ssh -p 8890 vmwin "/bin/rm -rf simuPOP-$VER.zip simuPOP-$VER.tar.gz simuPOP-$VER
 scp -P 8890 /var/www/html/simuPOP/download/simuPOP-$VER-src.tar.gz vmwin:
 
 UNCOMPRESS="tar zxf simuPOP-$VER-src.tar.gz"
-BUILD23="/cygdrive/c/python23/python.exe setup.py build --compiler=mingw32 bdist_wininst"
+#BUILD23="/cygdrive/c/python23/python.exe setup.py build --compiler=mingw32 bdist_wininst"
 BUILD24="/cygdrive/c/python24/python.exe setup.py build --compiler=mingw32 bdist_wininst"
-ssh -X -p 8890 vmwin "$UNCOMPRESS && cd simuPOP-$VER && $BUILD23 "
+ssh -X -p 8890 vmwin "$UNCOMPRESS && cd simuPOP-$VER && $BUILD24 "
 scp -P 8890 vmwin:simuPOP-$VER/dist/*.exe /var/www/html/simuPOP/download/
-ssh -X -p 8890 vmwin "cd ~; rm -rf simuPOP-$VER && $UNCOMPRESS && cd simuPOP-$VER && $BUILD24"
-scp -P 8890 vmwin:simuPOP-$VER/dist/*.exe /var/www/html/simuPOP/download/
+#ssh -X -p 8890 vmwin "cd ~; rm -rf simuPOP-$VER && $UNCOMPRESS && cd simuPOP-$VER && $BUILD24"
+#scp -P 8890 vmwin:simuPOP-$VER/dist/*.exe /var/www/html/simuPOP/download/
 vmrun suspend /vmware/WinXPPro/Windows\ XP\ Professional.vmx
 
