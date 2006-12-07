@@ -331,7 +331,7 @@ namespace simuPOP
 					// which offspring
 					for(size_t i=1; i < maxOffspring; ++i)
 					{
-						if(pop.ind(dad[idx]).info(offspringIdx[i]) == -1)
+						if(pop.ind(dad[idx]).info(offspringIdx[i]) == -1.)
 						{
 							pop.ind(static_cast<ULONG>(dad[idx])).setInfo(idx, offspringIdx[i]);
 							pop.ind(static_cast<ULONG>(mom[idx])).setInfo(idx, offspringIdx[i]);

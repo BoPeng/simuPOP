@@ -66,7 +66,7 @@ namespace simuPOP
 
 	bool mutator::apply(population& pop)
 	{
-		if( !m_initialized || m_bt.size() != pop.ploidy() * pop.popSize())
+		if( !m_initialized || m_bt.trialSize() != pop.ploidy() * pop.popSize())
 		{
 			initialize(pop);
 			DBG_DO(DBG_MUTATOR, cout << "Mutate at loci " << m_atLoci <<
@@ -80,12 +80,10 @@ namespace simuPOP
 		// mutate each mutable locus
 		for( size_t i=0, iEnd=m_atLoci.size(); i < iEnd; ++i)
 		{
-			const BitSet& succ = m_bt.succ(i);
-
 			int locus = m_atLoci[i];
 
-			BitSet::size_type pos = succ.find_first();
-			if( pos != BitSet::npos)
+			size_t pos = m_bt.trialFirstSucc(i);
+			if( pos != BernulliTrials::npos)
 			{
 				do
 				{
@@ -99,7 +97,7 @@ namespace simuPOP
 					mutate( *(pop.alleleBegin(locus, false) + pos).ptr() );
 #endif
 					m_mutCount[ locus ]++;
-				}while( (pos = succ.find_next(pos)) != BitSet::npos );
+				}while( (pos = m_bt.trialNextSucc(i, pos)) != BernulliTrials::npos );
 			}									  // succ.any
 		}										  // each applicable loci
 
