@@ -60,6 +60,9 @@ using std::ofstream;
 #include <termios.h>
 #endif
 
+#include "boost/pending/lowest_bit.hpp"
+using boost::lowest_bit;
+
 //macros to provide a portable way to make macro-passed string to C++ string
 #define MacroQuote_(x) #x
 #define MacroQuote(x) MacroQuote_(x)
@@ -2073,63 +2076,25 @@ T Expression::valueAs##TypeName() \
 	}
 
 	////////////// Bernulli trials ///////////
-	/*
-	#include <cstddef>
-	#include "boost/iterator/iterator_facade.hpp"
-	template<typename v>
-	class rng_iterator_impl : public boost::iterator_facade<
-		rng_iterator_impl<v>,
-		v,
-		boost::random_access_traversal_tag>
-	{
-	std::size_t count;
-	mutable v val;
 
-	public:
-	rng_iterator_impl(): count(0), val(0) {}
-	explicit rng_iterator_impl(v c): count(c), val(0) { }
-
-	private:
-
-	friend class boost::iterator_core_access;
-
-	value_type& dereference() const { return val=generate(); }
-
-	bool equal(rng_iterator_impl const& rhs) const {
-	return count == rhs.count;
-	}
-
-	void increment() { ++count; }
-
-	void decrement() { --count; }
-
-	void advance(difference_type n) { count+=n; }
-
-	difference_type distance_to(rng_iterator_impl const & r) const {
-	return r.count - count;
-	}
-	v generate() const;
-	}
-	};
-
-	typedef rng_iterator_impl<BitSet::block_type> rng_iterator;
-	*/
+	// this is used for BernulliTrials and copyGenotype
+	std::_Bit_type g_bitMask[std::_S_word_bit];
 
 	BernulliTrials::BernulliTrials(RNG& rng)
 		:m_RNG(&rng), m_N(0), m_prob(0), m_table(0),
-		m_cur(0)
+		m_cur(npos)
 	{
 	}
 
 	BernulliTrials::BernulliTrials(RNG& rng, const vectorf& prob, ULONG trials)
 		:m_RNG(&rng), m_N(trials), m_prob(prob), m_table(prob.size()),
-		m_cur(trials)
+		m_cur(npos)
 	{
-		DBG_FAILIF( trials<=0 , ValueError, "trial number can not be zero.");
-		DBG_FAILIF( prob.empty(), ValueError, "probability table can not be empty.");
+		DBG_FAILIF(trials<=0 , ValueError, "trial number can not be zero.");
+		DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
 
 		// initialize the table
-		for(vector<BitSet>::iterator it=m_table.begin(), itEnd = m_table.end();
+		for(vector<BitSet>::iterator it = m_table.begin(), itEnd = m_table.end();
 			it != itEnd;  ++it)
 		{
 			it->resize(trials);
@@ -2141,15 +2106,15 @@ T Expression::valueAs##TypeName() \
 	{
 	}
 
-	void BernulliTrials::setParameter(const vectorf& prob, ULONG trials)
+	void BernulliTrials::setParameter(const vectorf & prob, ULONG trials)
 	{
 		m_N = trials;
 		m_prob = prob;
 		m_table.resize(m_prob.size());
-		m_cur = m_N;							  // will trigger doTrial.
+		m_cur = npos;							  // will trigger doTrial.
 
-		DBG_FAILIF( trials<=0 , ValueError, "trial number can not be zero.");
-		DBG_FAILIF( prob.empty(), ValueError, "probability table can not be empty.");
+		DBG_FAILIF(trials<=0, ValueError, "trial number can not be zero.");
+		DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
 
 		for(vector<BitSet>::iterator it=m_table.begin(), itEnd = m_table.end();
 			it != itEnd;  ++it)
@@ -2158,9 +2123,39 @@ T Expression::valueAs##TypeName() \
 		}
 	}
 
+	// utility function.
+	void setAll(BitSet & bs, bool v)
+	{
+		BitSet::iterator it = bs.begin();
+		size_t n = bs.size();
+		_Bit_type * ptr = it._M_p;
+		DBG_ASSERT(it._M_offset == 0, SystemError, "Start of a vector<bool> is not 0");
+		size_t blk = n/_S_word_bit;
+		size_t rest = n - blk*_S_word_bit;
+		if(v)
+		{
+			// set all to 1
+			for(size_t i=0; i<blk; ++i)
+				*ptr++ = ~_Bit_type(0UL);
+			if(rest > 0)
+			{
+				*ptr |= g_bitMask[rest];
+				// upper to 0
+				*ptr &= g_bitMask[rest];
+			}
+		}
+		else
+		{
+			for(size_t i=0; i<blk; ++i)
+				*ptr++ = 0UL;
+			if(rest > 0)
+				*ptr = 0; //~g_bitMask[rest];
+		}
+	}
+
 	void BernulliTrials::doTrial()
 	{
-		DBG_ASSERT( m_N != 0, ValueError, "number of trials should be positive");
+		DBG_ASSERT(m_N != 0, ValueError, "number of trials should be positive");
 
 		DBG_DO(DBG_UTILITY, cout << "n=" << m_N << " doTrial, cur trial: " << m_cur << endl );
 
@@ -2172,50 +2167,58 @@ T Expression::valueAs##TypeName() \
 			double prob = m_prob[cl];
 			if(prob == 0.)
 			{
-				succ.reset();
+				setAll(succ, false);
 			}
 			else if( prob == 0.5)				  // random 0,1 bit, this will be quicker
 			{
 				// set to 0..
-				succ.reset();
+				setAll(succ, false);
 				// treat a randInt as random bits and set them directly.
 				// I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
 				// first several blocks
-				size_t numblock = succ.num_blocks()-1;
-				vector<BitSet::block_type> blocks(numblock);
-				BitSet::block_type tmp;
-				for(size_t i=0; i<numblock; ++i)
+				_Bit_type * ptr = succ.begin()._M_p;
+				size_t n = succ.size();
+				_Bit_type tmp;
+				DBG_ASSERT(succ.begin()._M_offset == 0, SystemError, "Start of a vector<bool> is not 0");
+				size_t blk = n/_S_word_bit;
+				size_t rest = n - blk * _S_word_bit;
+				for(size_t i=0; i < blk; ++i)
 				{
 					// even if the block size is large (I can not set it to int16_t)
 					// I only take the last 16 bit of a rng
-					blocks[i] = 0;
-					for(size_t b=0; b<sizeof(BitSet::block_type)/2; ++b)
+					// for the quality of random bits.
+					*ptr = 0;
+					for(size_t b=0; b < _S_word_bit/16; ++b)
 					{
 						// blocks[i] = static_cast<int16_t>(rng().randGet());
 						tmp = rng().randInt(0xFFFF);
-						blocks[i] |= (0xFFFF & tmp) << (b*16);
+						*ptr |= (0xFFFF & tmp) << (b*16);
 					}
+					ptr ++;
 				}
-				from_block_range(blocks.begin(), blocks.end(), succ);
-				// last block, block_type is predefined to unsigned long
-				BitSet::block_type last_block = 0;
-				for(size_t b=0; b<sizeof(BitSet::block_type)/2; ++b)
+				// last block
+				if (rest != 0)
 				{
-					// blocks[i] = static_cast<int16_t>(rng().randGet());
-					tmp = rng().randInt(0xFFFF);
-					last_block |= (0xFFFF & tmp) << (b*16);
-				}
-				for(size_t i=0; i < m_N - numblock*BitSet::bits_per_block; ++i)
-				{
-					if((last_block >> i) & 0x1)
-						succ.set(numblock*BitSet::bits_per_block+i);
+					size_t b = 0;
+					for(b=0; b < rest / 16; ++b)
+					{
+						tmp = rng().randInt(0xFFFF);
+						*ptr |= (0xFFFF & tmp) << (b*16);
+					}
+					// last bits
+					rest -= b*16;
+					if (rest != 0)
+					{
+						tmp = rng().randInt(0xFFFF);
+						*ptr |= (g_bitMask[rest] & tmp) << b*16;
+					}
 				}
 			}
 			// algorithm i Sheldon Ross' book simulation (4ed), page 54
 			else if( prob < 0.5)
 			{
 				// set all to 0, then set some to 1
-				succ.reset();
+				setAll(succ, false);
 				// it may make sense to limit the use of this method to low p,
 				UINT i = 0;
 				while( true )
@@ -2223,19 +2226,19 @@ T Expression::valueAs##TypeName() \
 					// i moves at least one.
 					i += m_RNG->randGeometric(prob);
 					if ( i <= m_N )
-						succ.set(i-1);
+						succ[i-1] = true;
 					else
 						break;
 				}
 			}
 			else if(prob == 1.)
 			{
-				succ.set();
+				setAll(succ, true);
 			}
 			else								  // 1 > m_proc[cl] > 0.5
 			{
 				// set all to 1, and then unset some.
-				succ.set();
+				setAll(succ, true);
 				// it may make sense to limit the use of this method to low p,
 				UINT i = 0;
 				prob = 1. - prob;
@@ -2243,7 +2246,7 @@ T Expression::valueAs##TypeName() \
 				{
 					i += m_RNG->randGeometric(prob);
 					if ( i <= m_N )
-						succ.reset(i-1);
+						succ[i-1] = false;
 					else
 						break;
 				}
@@ -2254,24 +2257,34 @@ T Expression::valueAs##TypeName() \
 
 	UINT BernulliTrials::curTrial()
 	{
+		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
 		return m_cur;
 	}
 
 	/// get a trial corresponding to m_prob.
 	void BernulliTrials::trial()
 	{
-		if(m_cur == m_N )						  // reach the last trial
+		if(m_cur == npos || m_cur == m_N - 1)						  // reach the last trial
 			doTrial();
-		m_cur++;
+		else
+			m_cur++;
+		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
 	}
 
-	bool BernulliTrials::trialSucc(size_t idx)
+	bool BernulliTrials::trialSucc(size_t idx) const
 	{
+		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
 		return m_table[idx][m_cur];
 	}
-
-	size_t BernulliTrials::trialFirstSucc()
+	
+	bool BernulliTrials::trialSucc(size_t idx, size_t cur) const
 	{
+		return m_table[idx][cur];
+	}
+
+	size_t BernulliTrials::probFirstSucc() const
+	{
+		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
 		size_t i = 0;
 		const size_t sz = m_table.size();
 		while(i < sz && m_table[i][m_cur] == 0)
@@ -2279,9 +2292,10 @@ T Expression::valueAs##TypeName() \
 		return i >= sz ? npos : i;
 	}
 
-	size_t BernulliTrials::trialNextSucc(size_t pos)
+	size_t BernulliTrials::probNextSucc(size_t pos) const
 	{
-		const size_t sz = m_table.size();
+		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+		const size_t sz = probSize();
 		if (pos >= (sz-1) || sz == 0)
 			return npos;
 
@@ -2290,34 +2304,101 @@ T Expression::valueAs##TypeName() \
 			++pos;
 		return pos >= sz ? npos : pos;
 	}
+	
+	
+	size_t BernulliTrials::trialFirstSucc(size_t idx) const
+	{
+		const BitSet & bs = m_table[idx];
+		size_t blk = m_N / _S_word_bit;
+		
+		_Bit_type * ptr = bs.begin()._M_p;
+		DBG_ASSERT(bs.begin()._M_offset == 0, SystemError, "Start of a vector<bool> is not 0");
+
+		size_t i = 0;
+		while(i < blk && *ptr++ == 0)
+			++i;
+
+		if (i < blk) // not at the last blk
+		{
+			return i * _S_word_bit + lowest_bit(*(ptr-1));
+		}
+		else // last block?
+		{
+			size_t rest = m_N - blk * _S_word_bit;
+			size_t tmp = *ptr & g_bitMask[rest];
+			if (tmp == 0)
+				return npos;
+			else
+				return blk * _S_word_bit + lowest_bit(tmp);
+		}
+	}
+
+	size_t BernulliTrials::trialNextSucc(size_t idx, size_t pos) const
+	{
+		const BitSet & bs = m_table[idx];
+		if (pos >= (m_N - 1) || m_N == 0)
+			return npos;
+
+		++pos;
+		
+		// first block
+		BitSet::const_iterator it = bs.begin() + pos;
+		_Bit_type * ptr = it._M_p;
+		int offset = it._M_offset;
+		size_t i = ptr - bs.begin()._M_p;
+
+		// mask out bits before pos
+		_Bit_type tmp = *ptr & ~ g_bitMask[offset];
+
+		size_t blk =  m_N / _S_word_bit;
+		if (tmp != 0)
+			return i * _S_word_bit + lowest_bit(tmp);
+		else if (blk == i)
+			// if i is the last block, return no.
+			return npos;
+
+		// now, go from next block
+		++ptr;
+		++i;
+		while(i < blk && *ptr++ == 0)
+			++i;
+
+		if (i < blk) // not at the last blk
+			return i * _S_word_bit + lowest_bit(*(ptr-1));
+		else // last block?
+		{
+			size_t rest = m_N - blk * _S_word_bit;
+			// mask out bits after rest
+			size_t tmp = *ptr & g_bitMask[rest];
+			if (tmp == 0)
+				return npos;
+			else
+				return blk * _S_word_bit + lowest_bit(tmp);
+		}
+	}
 
 	void BernulliTrials::setTrialSucc(size_t idx, bool succ)
 	{
-		m_table[idx].set(m_cur, succ);
+		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+		m_table[idx][m_cur] = succ;
 	}
 
-	const BitSet& BernulliTrials::succ(UINT index)
+	double BernulliTrials::trialSuccRate(UINT index) const
 	{
-		// since m_cur will not change when using succ
-		// doTrial should be called by caller.
-		// if(m_cur == m_N )                             // reach the last trial
-		//  doTrial();
-
-		DBG_FAILIF( index >= m_table.size(), ValueError, "succ: index out of range");
-
-		return m_table[index];
+		// efficiency is not considered here
+		size_t count = 0;
+		for(size_t i=0; i<trialSize(); ++i)
+			if(m_table[index][i])
+				count++;
+		return count/static_cast<double>(m_table[index].size());
 	}
 
-	double BernulliTrials::succRate(UINT index)
+	double BernulliTrials::probSuccRate() const
 	{
-		return m_table[index].count()/static_cast<double>(m_table[index].size());
-	}
-
-	double BernulliTrials::trialRate()
-	{
+		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
 		UINT count = 0;
 		for(size_t cl = 0, clEnd = m_prob.size(); cl < clEnd; ++cl)
-			count += m_table[cl][m_cur-1]?1:0;
+			count += m_table[cl][m_cur]?1:0;
 		return count/static_cast<double>(m_prob.size());
 	}
 
@@ -2369,16 +2450,6 @@ T Expression::valueAs##TypeName() \
 	{
 		DBG_WARNING(true, "This function has been renamed to SetRNG() and will be removed at the next major release");
 		return ListAllRNG();
-	}
-
-	/// show turned on bits
-	vectorlu bitSet(const BitSet& bs)
-	{
-		vectorlu list;
-		for(BitSet::size_type i=0, iEnd = bs.size(); i < iEnd;  i++)
-			if( bs[i] )
-				list.push_back(i);
-		return list;
 	}
 
 	//////////////////////////////////////////////////////////////
@@ -2685,7 +2756,6 @@ T Expression::valueAs##TypeName() \
 	}
 
 #ifdef BINARYALLELE
-	std::_Bit_type g_bitMask[std::_S_word_bit];
 
 	// define a good way to copy long genotype sequence
 	void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
@@ -2927,8 +2997,6 @@ T Expression::valueAs##TypeName() \
 		g_mpiRank = MPI::COMM_WORLD.Get_rank();
 #endif
 
-#ifdef BINARYALLELE
-		// set the bit masks for binaryalleles
 		// for example, if _S_word_bit is 8 (most likely 32), we define
 		// 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
 		for(size_t i=0; i<std::_S_word_bit; ++i)
@@ -2937,7 +3005,6 @@ T Expression::valueAs##TypeName() \
 			for(size_t j=0; j < i; ++j)
 				g_bitMask[i] |= (1UL << j);
 		}
-#endif
 
 #ifndef OPTIMIZED
 		// turn on some debug info

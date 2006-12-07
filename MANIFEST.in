@@ -12,7 +12,7 @@ include src/swigpyrun.h
 include src/simuPOP_std_wrap.cpp src/simuPOP_op_wrap.cpp 
 include src/simuPOP_la_wrap.cpp src/simuPOP_laop_wrap.cpp 
 include src/simuPOP_ba_wrap.cpp src/simuPOP_baop_wrap.cpp
-recursive-include test test_*.py 
+recursive-include test test_*.py run_tests.py run_tests.sh
 recursive-include gsl *.h *.c
 recursive-include zlib *.h *.c
 recursive-include boost *

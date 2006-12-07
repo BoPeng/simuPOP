@@ -68,10 +68,9 @@ using std::setw;
 #include "gsl/gsl_randist.h"
 
 /// for bernulli trials.
-#include "boost/dynamic_bitset.hpp"
-// this is not necessarily the fastest, but it
-// will save some RAM.
-typedef boost::dynamic_bitset<unsigned long int> BitSet;
+// use vector<bool> instead of dynamic_bitset since I can manipulate
+// bits directly in vector<bool>
+typedef vector<bool> BitSet;
 
 namespace simuPOP
 {
@@ -1009,9 +1008,6 @@ namespace simuPOP
 	/// Random number generator
 	//////////////////////////////////////////////////////////////
 
-	/// for output purpose only.
-	vectorlu bitSet(const BitSet&);
-
 	/* \brief random number generator, functor, initializer etc,
 
 	  They can be individual functions but I will need a
@@ -1317,14 +1313,16 @@ namespace simuPOP
 
 	/// this class encapsulate behavior of a sequence of Bernulli trial.
 	/// the main idea is that when doing a sequence of Bernulli trials
-	/// of the same probability, we can first use a binomial distribution
-	/// to calculate the number of trials and then choose events randomly.
+	/// of the same probability, we can use much quicker algorithms
+	/// instead of doing n Bernulli trials
 	///
 	/// For example, when N=10000, p=0.001. The usual way to do N Bin(p)
 	/// trials is to do N randUnif(0,1)<p comparison.
 	///
-	/// using the new method, we can generate number of success M~100
-	/// and then find M locations.
+	/// using the new method, we can use geometric distrubution to find
+	/// the next true event.
+	///
+	/// Also, for the cases of p=0.5, random bits are generated.
 	///
 	/// This class maintain a two dimensional table:
 	/// a vector of probabilities cross expected number of trials
@@ -1341,7 +1339,7 @@ namespace simuPOP
 	/// we can fill up this table very quickly column by column
 	///
 	/// This class will provide easy access to row (each trial) or column
-	/// of this table.
+	/// (called each prob) of this table.
 	///
 	/// if this table is accessed row by row (each trial), a internal index
 	/// is used.
@@ -1366,14 +1364,9 @@ namespace simuPOP
 
 			/// CPPONLY
 			/// return size of trial
-			ULONG size() const
+			ULONG trialSize() const
 			{
 				return m_N;
-			}
-
-			vectorf prob() const
-			{
-				return m_prob;
 			}
 
 			size_t probSize() const
@@ -1394,25 +1387,25 @@ namespace simuPOP
 			/// CPPONLY
 			void trial();
 
-			bool trialSucc(size_t idx);
+			bool trialSucc(size_t idx) const;
 
-			size_t trialFirstSucc();
-			size_t trialNextSucc(size_t pos);
+			bool trialSucc(size_t idx, size_t cur) const;
+
+			// first and next succ across prob
+			size_t probFirstSucc() const;
+			size_t probNextSucc(size_t pos) const;
+
+			// first and next succ across trial
+			size_t trialFirstSucc(size_t idx) const;
+			size_t trialNextSucc(size_t idx, size_t pos) const;
 
 			void setTrialSucc(size_t idx, bool succ);
 
-			/// return succeed trials for p[index]
-			/// fail when m_cur is not 0. (i.e., has retrieve the table through trial()
-			/// CPPONLY
-			const BitSet& succ(UINT index);
-
 			/// return the succ rate for one index, used for verification pruposes
-			double succRate(UINT index);
+			double trialSuccRate(UINT index) const;
 
 			/// return the succ rate for current trial, used for verification pruposes
-			double trialRate();
-
-			/// CPPONLY
+			double probSuccRate() const;
 
 			/// CPPONLY
 			vectorf probabilities()
@@ -1420,13 +1413,8 @@ namespace simuPOP
 				return m_prob;
 			}
 
-			/// CPPONLY
-			ULONG numTrials()
-			{
-				return m_N;
-			}
 		public:
-			BOOST_STATIC_CONSTANT(size_t, npos = static_cast<size_t>(-1));
+			static const size_t npos = static_cast<size_t>(-1);
 		
 		private:
 			/// pointer to a random number generator.
@@ -1451,7 +1439,7 @@ namespace simuPOP
 			vector< BitSet > m_table;
 
 			/// current trial. Used when user want to access the table row by row
-			ULONG m_cur;
+			size_t m_cur;
 	};
 
 	/// currently, return a global RNG.

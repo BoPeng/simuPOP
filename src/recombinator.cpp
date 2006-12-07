@@ -261,7 +261,7 @@ namespace simuPOP
 		else
 		{
 			size_t gt = 0, gtEnd = 0;
-			size_t pos = bt.trialFirstSucc();
+			size_t pos = bt.probFirstSucc();
 			// if there is some recombination
 			if (pos != BernulliTrials::npos)
 			{
@@ -277,7 +277,7 @@ namespace simuPOP
 				DBG_DO_(m_recCount[pos]++);
 				curCp = (curCp + 1) % 2;
 				// next ...
-				while ((pos = bt.trialNextSucc(pos)) != BernulliTrials::npos)
+				while ((pos = bt.probNextSucc(pos)) != BernulliTrials::npos)
 				{
 #ifndef BINARYALLELE	
 					// copy from last to this recombination point

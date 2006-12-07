@@ -213,7 +213,15 @@ class TestPerformance(unittest.TestCase):
     #
     # binary: 2.54,  18.37, 104.5
     # short:  4.44,  21.26, 56.61
-    # long:   5.52m, 22.19, 57.57
+    # long:   5.52,  22.19, 57.57
+    #
+    # Using vector<boo> instead of dynamic_bitset. This is quite strange since I 
+    # can now access blocks directly
+    #
+    # binary: 2.54, 25.48, 117.66
+    # short:  4.53, 28.55, 69.49
+    # long:   5.61, 29.51, 69.91
+    # 
 
 
     def TestMatingAlgorithm(self):

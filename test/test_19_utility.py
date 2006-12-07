@@ -57,7 +57,7 @@ class TestRNG(unittest.TestCase):
         bt = BernulliTrials(rg, p, N)
         bt.doTrial()
         for i in range(len(p)):
-            prop = bt.succRate(i)
+            prop = bt.trialSuccRate(i)
             # binomial, mean p, variance = p(1-p)/n
             std = math.sqrt(p[i]*(1.-p[i])/N)
             assert prop > p[i] - 3*std and prop < p[i] + 3*std
@@ -67,10 +67,32 @@ class TestRNG(unittest.TestCase):
             bt.doTrial()
             for i in range(10):
                 bt.trial();
-                prop = bt.trialRate()
+                prop = bt.probSuccRate()
                 # binomial, mean p, variance = p(1-p)/n
                 std = math.sqrt(pi*(1.-pi)/N)
                 assert prop > pi - 3*std and prop < pi + 3*std
+
+        # test find_first and find_next
+        bt = BernulliTrials(rg, p, N)
+        bt.doTrial()
+        for i in range(len(p)):
+            pos = bt.trialFirstSucc(i)
+            assert pos < N
+            if pos != bt.npos:
+                assert bt.trialSucc(i, pos)
+                for j in range(pos):
+                    assert not bt.trialSucc(i, j)
+                while True:
+                    last_pos = pos
+                    pos = bt.trialNextSucc(i, pos)
+                    if pos == bt.npos:
+                        break;
+                    assert pos < N
+                    assert bt.trialSucc(i, pos)
+                    for j in range(last_pos+1, pos):
+                        assert not bt.trialSucc(i, j)
+                for j in range(pos+1, N):
+                    assert not bt.trialSucc(i, j)
 
 
     def testSeed(self):
