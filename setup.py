@@ -292,7 +292,8 @@ MPIFlags = getMPIFlags()
 
 # create source file for each module
 MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop']
-if MPIFlags['mpi']:
+#if MPIFlags['mpi']:
+if False:
     # feel like compiling mpi version first :-)
     MODULES = ['mpi', 'opmpi', 'lampi', 'laopmpi', 'bampi', 'baopmpi'] + MODULES
 MODU_INFO = {}
