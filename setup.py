@@ -8,19 +8,10 @@ install swig >= 1.3.27 to generate the wrap files.
 """
 import os
 #
-# XML_SUPPORT will be disabled for mac machines due to a bug
-# in mac/gcc. You will not be able to save population in xml 
-# format under a mac. Binary and txt formats are still supported
-# and should suffice most applications.
-#
-# If you do need XML_SUPPORT under mac, you can 
-# set XML_SUPPORT = True and try to compile.
-#
-if os.name == 'posix' and os.uname()[0] == 'Darwin':
-    XML_SUPPORT = False
-else:
-    XML_SUPPORT = True
 
+# this is the toolset to build boost. It is needed because
+# boost libraries have form libboost_xxx-TOOLSET.a
+TOOLSET = 'gcc'
 
 ############################################################################
 #
@@ -86,15 +77,6 @@ def swig_version():
     return map(int, version)
 
 
-def buildStaticLibrary(sourceFiles, libName, libDir, compiler):
-    '''Build libraries to be linked to simuPOP modules'''
-    # get a c compiler
-    print 'Creating library', libName
-    comp = new_compiler(compiler=compiler, verbose=True)
-    objFiles = comp.compile(sourceFiles, include_dirs=['.'])
-    comp.create_static_lib(objFiles, libName, libDir)
-
-
 ############################################################################
 #
 # SOURCE FILES
@@ -138,6 +120,8 @@ SOURCE_FILES = [
     'src/tagger.cpp',
 ]
 
+# since it is troublesome to link to external gsl library,
+# I embed some GSL files with simuPOP. 
 GSL_FILES = [ 
     'gsl/sys/infnan.c',
     'gsl/sys/coerce.c',
@@ -206,65 +190,6 @@ GSL_FILES = [
     'gsl/error.c' 
 ]
 
-SERIAL_FILES = [
-    'src/serialization/basic_archive.cpp',
-    'src/serialization/basic_iarchive.cpp',
-    'src/serialization/basic_oarchive.cpp',
-    'src/serialization/basic_serializer_map.cpp',
-    'src/serialization/basic_text_iprimitive.cpp',
-    'src/serialization/basic_text_oprimitive.cpp',
-    'src/serialization/binary_iarchive.cpp',
-    'src/serialization/binary_oarchive.cpp',
-    'src/serialization/extended_type_info.cpp',
-    'src/serialization/extended_type_info_no_rtti.cpp',
-    'src/serialization/extended_type_info_typeid.cpp',
-    'src/serialization/text_iarchive.cpp',
-    'src/serialization/text_oarchive.cpp',
-    'src/serialization/void_cast.cpp',
-    'src/serialization/polymorphic_iarchive.cpp',
-    'src/serialization/polymorphic_oarchive.cpp',
-    'src/serialization/stl_port.cpp',
-    'src/serialization/basic_pointer_iserializer.cpp',
-    'src/serialization/basic_iserializer.cpp',
-    'src/serialization/basic_oserializer.cpp',
-    'src/serialization/basic_pointer_oserializer.cpp',
-    'src/serialization/basic_archive_impl.cpp'
-]
-
-IOSTREAMS_FILES = [
-    'src/iostreams/mapped_file.cpp',
-    'src/iostreams/file_descriptor.cpp',
-    'src/iostreams/zlib.cpp'
-]
-
-# after hacking around cygwin/mingw zlib1.dll mgwz.dll,
-# I decide to embed zlib. This is not a good choice but
-# I am tired of the extra complexities.
-ZLIB_FILES = [
-    'zlib/adler32.c',
-    'zlib/compress.c',
-    'zlib/crc32.c',
-    'zlib/deflate.c',
-    'zlib/gzio.c',
-    'zlib/inffast.c',
-    'zlib/inflate.c',
-    'zlib/infback.c',
-    'zlib/inftrees.c',
-    'zlib/trees.c',
-    'zlib/uncompr.c',
-    'zlib/zutil.c',
-]
-
-if XML_SUPPORT: 
-    SERIAL_FILES.extend( [
-        'src/serialization/basic_xml_archive.cpp',
-        'src/serialization/xml_grammar.cpp',
-        'src/serialization/xml_iarchive.cpp',
-        'src/serialization/xml_oarchive.cpp'
-        ]
-    )
-
-
 ############################################################################
 #
 # MODULE SETTINGS
@@ -331,12 +256,14 @@ for modu in MODULES:
         shutil.copy(src, mod_src)
         MODU_INFO[modu]['src'].append(mod_src)
     MODU_INFO[modu]['src'].append('src/simuPOP_' + modu + '_wrap.cpp' )
-    MODU_INFO[modu]['src'].extend(GSL_FILES + SERIAL_FILES + IOSTREAMS_FILES)
+    MODU_INFO[modu]['src'].extend(GSL_FILES)
     # lib
     if os.name == 'nt':    # Windows
-        MODU_INFO[modu]['libraries'] = ['zdll', 'stdc++']
+        MODU_INFO[modu]['libraries'] = ['boost_serialization-%s' % TOOLSET, 'boost_iostreams-%s' % TOOLSET, 'stdc++']
+        MODU_INFO[modu]['libraries'].append('zdll')
     else:
-        MODU_INFO[modu]['libraries'] = ['z', 'stdc++']
+        MODU_INFO[modu]['libraries'] = ['boost_serialization-%s' % TOOLSET, 'boost_iostreams-%s' % TOOLSET, 'stdc++']
+        MODU_INFO[modu]['libraries'].append('z')
     MODU_INFO[modu]['include_dirs'] = ['.']
     #
     MODU_INFO[modu]['library_dirs'] = ['build']
@@ -345,8 +272,6 @@ for modu in MODULES:
     MODU_INFO[modu]['define_macros'] = MACROS[modu]
     MODU_INFO[modu]['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])
     MODU_INFO[modu]['undef_macros'] = []
-    if not XML_SUPPORT:
-        MODU_INFO[modu]['define_macros'].append(('__NO_XML_SUPPORT__', None))
     if 'mpi' in modu:
         MODU_INFO[modu]['include_dirs'].extend(MPIFlags['inc_dirs'])
         MODU_INFO[modu]['library_dirs'].extend(MPIFlags['lib_dirs'])

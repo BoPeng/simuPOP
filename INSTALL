@@ -151,6 +151,28 @@ NOTE:
   install SWIG to generate wrap files for your new code.
 
 
+Preparation for all systems
+---------------------------
+
+simuPOP makes heavy use of GSL (GNU Scientific Library) and Boost (>=1.33.1 
+for 0.7.5 plus Boost.MPI for MPI modules). Part of GSL is embedded in simuPOP
+but you will need to install boost by yourself. Please follow the building 
+instruction closely and make boost library available (www.boost.org). It is 
+important that you build boost libraries with -fPIC flag so that they can be
+linked with simuPOP to generate shared libraries. The command line is likely
+to be:
+
+  > bjam -j4 --prefix=/usr "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLSET=gcc" install
+
+As of Dec, 2006, I am using the cvs version of boost since Boost.MPI uses newest 
+features of the serialization library only available in cvs. If you install
+boost locally or to a non-standard location, you will need to use --include-dirs
+and --library-dirs options of setup.py, for example,
+
+  > python setup.py build_ext --include-dirs=/usr/local/include/boost_1-35 \
+      --library-dirs=/usr/local/lib install
+
+
 Windows system with cygwin/mingw32 g++ compiler (free)
 -------------------------------------------------------
 
