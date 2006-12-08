@@ -2081,23 +2081,23 @@ T Expression::valueAs##TypeName() \
 	std::_Bit_type g_bitMask[std::_S_word_bit];
 
 	BernulliTrials::BernulliTrials(RNG& rng)
-		:m_RNG(&rng), m_N(0), m_prob(0), m_table(0),
+		:m_RNG(&rng), m_N(0), m_prob(0), m_table(0), m_pointer(0),
 		m_cur(npos)
 	{
 	}
 
 	BernulliTrials::BernulliTrials(RNG& rng, const vectorf& prob, ULONG trials)
-		:m_RNG(&rng), m_N(trials), m_prob(prob), m_table(prob.size()),
+		:m_RNG(&rng), m_N(trials), m_prob(prob), m_table(prob.size()), m_pointer(prob.size()),
 		m_cur(npos)
 	{
 		DBG_FAILIF(trials<=0 , ValueError, "trial number can not be zero.");
 		DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
 
 		// initialize the table
-		for(vector<BitSet>::iterator it = m_table.begin(), itEnd = m_table.end();
-			it != itEnd;  ++it)
+		for(size_t i = 0; i < probSize(); ++i)
 		{
-			it->resize(trials);
+			m_table[i].resize(trials);
+            m_pointer[i] = m_table[i].begin()._M_p;
 		}
 	}
 
@@ -2111,31 +2111,33 @@ T Expression::valueAs##TypeName() \
 		m_N = trials;
 		m_prob = prob;
 		m_table.resize(m_prob.size());
+        m_pointer.resize(m_prob.size());
 		m_cur = npos;							  // will trigger doTrial.
 
 		DBG_FAILIF(trials<=0, ValueError, "trial number can not be zero.");
 		DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
 
-		for(vector<BitSet>::iterator it=m_table.begin(), itEnd = m_table.end();
-			it != itEnd;  ++it)
+		for(size_t i = 0; i < probSize(); ++i)
 		{
-			it->resize(trials);
+			m_table[i].resize(trials);
+            m_pointer[i] = m_table[i].begin()._M_p;
 		}
 	}
 
 	// utility function.
-	void setAll(BitSet & bs, bool v)
+	void BernulliTrials::setAll(size_t idx, bool v)
 	{
-		BitSet::iterator it = bs.begin();
-		size_t n = bs.size();
-		_Bit_type * ptr = it._M_p;
-		DBG_ASSERT(it._M_offset == 0, SystemError, "Start of a vector<bool> is not 0");
-		size_t blk = n/_S_word_bit;
-		size_t rest = n - blk*_S_word_bit;
+		_Bit_type * ptr = m_pointer[idx];
+		DBG_ASSERT(m_table[idx].begin()._M_offset == 0, SystemError, "Start of a vector<bool> is not 0");
+		DBG_ASSERT(m_table[idx].begin()._M_p == m_pointer[idx],
+            SystemError, "Pointers mismatch");
+        
+		size_t blk = m_N / _S_word_bit;
+		size_t rest = m_N - blk * _S_word_bit;
 		if(v)
 		{
 			// set all to 1
-			for(size_t i=0; i<blk; ++i)
+			for(size_t i = 0; i < blk; ++i)
 				*ptr++ = ~_Bit_type(0UL);
 			if(rest > 0)
 			{
@@ -2146,12 +2148,16 @@ T Expression::valueAs##TypeName() \
 		}
 		else
 		{
-			for(size_t i=0; i<blk; ++i)
+			for(size_t i = 0; i < blk; ++i)
 				*ptr++ = 0UL;
 			if(rest > 0)
 				*ptr = 0; //~g_bitMask[rest];
 		}
 	}
+
+#define setBit(ptr, i)    ( *((ptr)+(i)/_S_word_bit) |= 1UL << ((i) - ((i)/_S_word_bit)*_S_word_bit))
+#define unsetBit(ptr, i)  ( *((ptr)+(i)/_S_word_bit) &= ~ (1UL << ((i) - ((i)/_S_word_bit)*_S_word_bit)))
+#define getBit(ptr, i)    ( *((ptr)+(i)/_S_word_bit) & (1UL << ((i) - ((i)/_S_word_bit)*_S_word_bit)))
 
 	void BernulliTrials::doTrial()
 	{
@@ -2160,28 +2166,25 @@ T Expression::valueAs##TypeName() \
 		DBG_DO(DBG_UTILITY, cout << "n=" << m_N << " doTrial, cur trial: " << m_cur << endl );
 
 		// for each column
-		for(size_t cl = 0, clEnd = m_prob.size(); cl < clEnd; ++cl)
+		for(size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl)
 		{
-			// clear previous result
-			BitSet& succ = m_table[cl];
+            _Bit_type * ptr = m_pointer[cl];
 			double prob = m_prob[cl];
 			if(prob == 0.)
 			{
-				setAll(succ, false);
+				setAll(cl, false);
 			}
 			else if( prob == 0.5)				  // random 0,1 bit, this will be quicker
 			{
 				// set to 0..
-				setAll(succ, false);
+				setAll(cl, false);
 				// treat a randInt as random bits and set them directly.
 				// I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
 				// first several blocks
-				_Bit_type * ptr = succ.begin()._M_p;
-				size_t n = succ.size();
+				// _Bit_type * ptr = succ.begin()._M_p;
 				_Bit_type tmp;
-				DBG_ASSERT(succ.begin()._M_offset == 0, SystemError, "Start of a vector<bool> is not 0");
-				size_t blk = n/_S_word_bit;
-				size_t rest = n - blk * _S_word_bit;
+				size_t blk = m_N / _S_word_bit;
+				size_t rest = m_N - blk * _S_word_bit;
 				for(size_t i=0; i < blk; ++i)
 				{
 					// even if the block size is large (I can not set it to int16_t)
@@ -2218,7 +2221,7 @@ T Expression::valueAs##TypeName() \
 			else if( prob < 0.5)
 			{
 				// set all to 0, then set some to 1
-				setAll(succ, false);
+				setAll(cl, false);
 				// it may make sense to limit the use of this method to low p,
 				UINT i = 0;
 				while( true )
@@ -2226,19 +2229,20 @@ T Expression::valueAs##TypeName() \
 					// i moves at least one.
 					i += m_RNG->randGeometric(prob);
 					if ( i <= m_N )
-						succ[i-1] = true;
+						// succ[i-1] = true;
+                        setBit(ptr, i-1);
 					else
 						break;
 				}
 			}
 			else if(prob == 1.)
 			{
-				setAll(succ, true);
+				setAll(cl, true);
 			}
 			else								  // 1 > m_proc[cl] > 0.5
 			{
 				// set all to 1, and then unset some.
-				setAll(succ, true);
+				setAll(cl, true);
 				// it may make sense to limit the use of this method to low p,
 				UINT i = 0;
 				prob = 1. - prob;
@@ -2246,7 +2250,8 @@ T Expression::valueAs##TypeName() \
 				{
 					i += m_RNG->randGeometric(prob);
 					if ( i <= m_N )
-						succ[i-1] = false;
+                        // succ[i-1] = false;
+						unsetBit(ptr, i-1);
 					else
 						break;
 				}
@@ -2274,20 +2279,20 @@ T Expression::valueAs##TypeName() \
 	bool BernulliTrials::trialSucc(size_t idx) const
 	{
 		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-		return m_table[idx][m_cur];
+		return getBit(m_pointer[idx], m_cur);
 	}
 	
 	bool BernulliTrials::trialSucc(size_t idx, size_t cur) const
 	{
-		return m_table[idx][cur];
+		return getBit(m_pointer[idx], cur);
 	}
 
 	size_t BernulliTrials::probFirstSucc() const
 	{
 		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
 		size_t i = 0;
-		const size_t sz = m_table.size();
-		while(i < sz && m_table[i][m_cur] == 0)
+		const size_t sz = probSize();
+		while(i < sz && !getBit(m_pointer[i], m_cur))
 			++i;
 		return i >= sz ? npos : i;
 	}
@@ -2300,7 +2305,7 @@ T Expression::valueAs##TypeName() \
 			return npos;
 
 		++pos;
-		while(pos < sz && m_table[pos][m_cur] == 0)
+		while(pos < sz && !getBit(m_pointer[pos], m_cur))
 			++pos;
 		return pos >= sz ? npos : pos;
 	}
@@ -2308,11 +2313,8 @@ T Expression::valueAs##TypeName() \
 	
 	size_t BernulliTrials::trialFirstSucc(size_t idx) const
 	{
-		const BitSet & bs = m_table[idx];
 		size_t blk = m_N / _S_word_bit;
-		
-		_Bit_type * ptr = bs.begin()._M_p;
-		DBG_ASSERT(bs.begin()._M_offset == 0, SystemError, "Start of a vector<bool> is not 0");
+		_Bit_type * ptr = m_pointer[idx];
 
 		size_t i = 0;
 		while(i < blk && *ptr++ == 0)
@@ -2380,7 +2382,10 @@ T Expression::valueAs##TypeName() \
 	void BernulliTrials::setTrialSucc(size_t idx, bool succ)
 	{
 		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-		m_table[idx][m_cur] = succ;
+        if(succ)
+    		setBit(m_pointer[idx], m_cur);
+        else
+    		unsetBit(m_pointer[idx], m_cur);
 	}
 
 	double BernulliTrials::trialSuccRate(UINT index) const
@@ -2388,7 +2393,7 @@ T Expression::valueAs##TypeName() \
 		// efficiency is not considered here
 		size_t count = 0;
 		for(size_t i=0; i<trialSize(); ++i)
-			if(m_table[index][i])
+			if(getBit(m_pointer[index], i))
 				count++;
 		return count/static_cast<double>(m_table[index].size());
 	}
@@ -2397,10 +2402,14 @@ T Expression::valueAs##TypeName() \
 	{
 		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
 		UINT count = 0;
-		for(size_t cl = 0, clEnd = m_prob.size(); cl < clEnd; ++cl)
-			count += m_table[cl][m_cur]?1:0;
-		return count/static_cast<double>(m_prob.size());
+		for(size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl)
+			count += getBit(m_pointer[cl], m_cur) ? 1 : 0;
+		return count/static_cast<double>(probSize());
 	}
+
+#undef setBit
+#undef unsetBit
+#undef getBit
 
 	/// random number generator. a global variable.
 	/// there might be multiple RNG later.

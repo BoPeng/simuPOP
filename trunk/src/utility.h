@@ -1359,7 +1359,6 @@ namespace simuPOP
 			BernulliTrials(RNG& rng, const vectorf& prob, ULONG trials);
 
 			///
-			/// CPPONLY
 			~BernulliTrials();
 
 			/// CPPONLY
@@ -1417,6 +1416,9 @@ namespace simuPOP
 			static const size_t npos = static_cast<size_t>(-1);
 		
 		private:
+            void setAll(size_t idx, bool v);
+
+        private:
 			/// pointer to a random number generator.
 			/// this is in preparation for multiple thread/RNG.
 			RNG* m_RNG;
@@ -1437,6 +1439,11 @@ namespace simuPOP
 			/// then for each trial, we only need to compare m_cur with the last element
 			/// and removing them if match.
 			vector< BitSet > m_table;
+
+            /// cache the actual point m_table[i].begin()._M_p and
+            /// access bits through this pointer. This is much faster
+            /// than using the reference interface.
+            vector<std::_Bit_type *> m_pointer;
 
 			/// current trial. Used when user want to access the table row by row
 			size_t m_cur;

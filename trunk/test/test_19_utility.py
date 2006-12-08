@@ -16,7 +16,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 import unittest, os, sys, exceptions
 
-class TestRNG(unittest.TestCase):
+class TestUtility(unittest.TestCase):
 
     def testSetRNG(self):
         'Testing all RNG types'
