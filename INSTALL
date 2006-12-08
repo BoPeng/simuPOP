@@ -185,6 +185,7 @@ Windows system with cygwin/mingw32 g++ compiler (free)
   9. If things go smoothly, you will get a .exe file under dist directory. If you 
     only need to install simuPOP, use
 
+	# FIXME: zlib under windows does not work well. I do not know how to proceed.
     > /cygdrive/c/Python2.3/python.exe setup.py build_ext --compiler=mingw32 \
       --include-dirs=/cygdrive/c/zlib/include --library-dirs=/cygdrive/c/zlib/lib install
 
