@@ -333,7 +333,10 @@ for modu in MODULES:
     MODU_INFO[modu]['src'].append('src/simuPOP_' + modu + '_wrap.cpp' )
     MODU_INFO[modu]['src'].extend(GSL_FILES + SERIAL_FILES + IOSTREAMS_FILES)
     # lib
-    MODU_INFO[modu]['libraries'] = ['z', 'stdc++']
+    if os.name == 'nt':    # Windows
+        MODU_INFO[modu]['libraries'] = ['zdll', 'stdc++']
+    else:
+        MODU_INFO[modu]['libraries'] = ['z', 'stdc++']
     MODU_INFO[modu]['include_dirs'] = ['.']
     #
     MODU_INFO[modu]['library_dirs'] = ['build']

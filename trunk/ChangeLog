@@ -17,6 +17,8 @@ version 0.7.5 - Currently available as svn snapshot
 	    cache internal point for performance purposes. This also fixes a windows
 		dynamic_bitset related bug (never figure out what was wrong).
   - NEW: add the missing simulator.clone() function
+  - CHG: stop embedding zlib since the source does not work under windows.
+		The installation process is changed as well.
 
 
 version 0.7.4 - (Rev 518) Nov 5, 2006
