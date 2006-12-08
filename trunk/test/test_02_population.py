@@ -598,7 +598,6 @@ class TestPopulation(unittest.TestCase):
             assert os.path.isfile(file)
             pop1 = LoadPopulation(file)
             self.assertEqual(pop, pop1)
-            return
             pop.savePopulation(file, compress=True)
             assert os.path.isfile(file)
             pop1 = LoadPopulation(file)
