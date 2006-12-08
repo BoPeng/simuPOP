@@ -21,13 +21,6 @@ if os.name == 'posix' and os.uname()[0] == 'Darwin':
 else:
     XML_SUPPORT = True
 
-# under windows, the difference between mingw/cygwin static/shared
-# and different versions of zlib really make a mess. Under linux,
-# mandrivia uses /usr/include/linux for zlib.h etc but I can not 
-# find a safe way to add this path in. Therefore, I am embedding
-# a zlib under this system. You can change EMBED_ZLIB = False 
-# to use system zlib.
-EMBED_ZLIB = True
 
 ############################################################################
 #
@@ -339,15 +332,9 @@ for modu in MODULES:
         MODU_INFO[modu]['src'].append(mod_src)
     MODU_INFO[modu]['src'].append('src/simuPOP_' + modu + '_wrap.cpp' )
     MODU_INFO[modu]['src'].extend(GSL_FILES + SERIAL_FILES + IOSTREAMS_FILES)
-    if EMBED_ZLIB:
-        MODU_INFO[modu]['src'].extend(ZLIB_FILES) 
     # lib
-    if EMBED_ZLIB:
-        MODU_INFO[modu]['libraries'] = ['stdc++']
-        MODU_INFO[modu]['include_dirs'] = ['.', 'zlib']
-    else:
-        MODU_INFO[modu]['libraries'] = ['z', 'stdc++']
-        MODU_INFO[modu]['include_dirs'] = ['.']
+    MODU_INFO[modu]['libraries'] = ['z', 'stdc++']
+    MODU_INFO[modu]['include_dirs'] = ['.']
     #
     MODU_INFO[modu]['library_dirs'] = ['build']
     MODU_INFO[modu]['extra_compile_args'] = ['-O3']
