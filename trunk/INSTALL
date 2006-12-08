@@ -64,6 +64,11 @@ Windows/ .exe
 Double click the downloaded .exe file, follow the instructions. SimuPOP
 libraries will be installed to the Python site-packages directory. 
 
+If there is error message like 'zlib1.dll' not found. Download official zlib
+dll from www.zlib.org and put zlib1.dll to c:\python2x\Libs\site-packages,
+or somewhere in $PATH.
+
+
 Linux, MacOSX, Solaris / .tar.gz
 ---------------------------------
 
@@ -174,10 +179,14 @@ Windows system with cygwin/mingw32 g++ compiler (free)
 
     > /cygdrive/c/Python2.3/python.exe setup.py build --compiler=mingw32 bdist_wininst
 
-  8. If things go smoothly, you will get a .exe file under dist directory. If you 
+  8. download the official zlib (www.zlib.net) package (compiled dll, with zlib1.dll,
+     lib/zdll.lib, include/zlib.h). Put to, for example, c:\zlib
+
+  9. If things go smoothly, you will get a .exe file under dist directory. If you 
     only need to install simuPOP, use
 
-    > /cygdrive/c/Python2.3/python.exe setup.py build --compiler=mingw32 install
+    > /cygdrive/c/Python2.3/python.exe setup.py build_ext --compiler=mingw32 \
+      --include-dirs=/cygdrive/c/zlib/include --library-dirs=/cygdrive/c/zlib/lib install
 
     If you receive the an error related to missing cc.exe, 
     distutils is having trouble traversing the Cygwin-based symlink from 
