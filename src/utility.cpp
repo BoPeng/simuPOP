@@ -92,8 +92,8 @@ using std::max_element;
 using std::find;
 using std::sort;
 using std::greater;
-using std::_Bit_type;
-using std::_S_word_bit;
+using std::WORDTYPE;
+using std::WORDBIT;
 
 namespace simuPOP
 {
@@ -2078,7 +2078,7 @@ T Expression::valueAs##TypeName() \
 	////////////// Bernulli trials ///////////
 
 	// this is used for BernulliTrials and copyGenotype
-	std::_Bit_type g_bitMask[std::_S_word_bit];
+	std::WORDTYPE g_bitMask[std::WORDBIT];
 
 	BernulliTrials::BernulliTrials(RNG& rng)
 		:m_RNG(&rng), m_N(0), m_prob(0), m_table(0), m_pointer(0),
@@ -2127,18 +2127,18 @@ T Expression::valueAs##TypeName() \
 	// utility function.
 	void BernulliTrials::setAll(size_t idx, bool v)
 	{
-		_Bit_type * ptr = m_pointer[idx];
+		WORDTYPE * ptr = m_pointer[idx];
 		DBG_ASSERT(m_table[idx].begin()._M_offset == 0, SystemError, "Start of a vector<bool> is not 0");
 		DBG_ASSERT(m_table[idx].begin()._M_p == m_pointer[idx],
             SystemError, "Pointers mismatch");
         
-		size_t blk = m_N / _S_word_bit;
-		size_t rest = m_N - blk * _S_word_bit;
+		size_t blk = m_N / WORDBIT;
+		size_t rest = m_N - blk * WORDBIT;
 		if(v)
 		{
 			// set all to 1
 			for(size_t i = 0; i < blk; ++i)
-				*ptr++ = ~_Bit_type(0UL);
+				*ptr++ = ~WORDTYPE(0UL);
 			if(rest > 0)
 			{
 				*ptr |= g_bitMask[rest];
@@ -2155,9 +2155,9 @@ T Expression::valueAs##TypeName() \
 		}
 	}
 
-#define setBit(ptr, i)    ( *((ptr)+(i)/_S_word_bit) |= 1UL << ((i) - ((i)/_S_word_bit)*_S_word_bit))
-#define unsetBit(ptr, i)  ( *((ptr)+(i)/_S_word_bit) &= ~ (1UL << ((i) - ((i)/_S_word_bit)*_S_word_bit)))
-#define getBit(ptr, i)    ( *((ptr)+(i)/_S_word_bit) & (1UL << ((i) - ((i)/_S_word_bit)*_S_word_bit)))
+#define setBit(ptr, i)    ( *((ptr)+(i)/WORDBIT) |= 1UL << ((i) - ((i)/WORDBIT)*WORDBIT))
+#define unsetBit(ptr, i)  ( *((ptr)+(i)/WORDBIT) &= ~ (1UL << ((i) - ((i)/WORDBIT)*WORDBIT)))
+#define getBit(ptr, i)    ( *((ptr)+(i)/WORDBIT) & (1UL << ((i) - ((i)/WORDBIT)*WORDBIT)))
 
 	void BernulliTrials::doTrial()
 	{
@@ -2168,7 +2168,7 @@ T Expression::valueAs##TypeName() \
 		// for each column
 		for(size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl)
 		{
-            _Bit_type * ptr = m_pointer[cl];
+            WORDTYPE * ptr = m_pointer[cl];
 			double prob = m_prob[cl];
 			if(prob == 0.)
 			{
@@ -2181,17 +2181,17 @@ T Expression::valueAs##TypeName() \
 				// treat a randInt as random bits and set them directly.
 				// I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
 				// first several blocks
-				// _Bit_type * ptr = succ.begin()._M_p;
-				_Bit_type tmp;
-				size_t blk = m_N / _S_word_bit;
-				size_t rest = m_N - blk * _S_word_bit;
+				// WORDTYPE * ptr = succ.begin()._M_p;
+				WORDTYPE tmp;
+				size_t blk = m_N / WORDBIT;
+				size_t rest = m_N - blk * WORDBIT;
 				for(size_t i=0; i < blk; ++i)
 				{
 					// even if the block size is large (I can not set it to int16_t)
 					// I only take the last 16 bit of a rng
 					// for the quality of random bits.
 					*ptr = 0;
-					for(size_t b=0; b < _S_word_bit/16; ++b)
+					for(size_t b=0; b < WORDBIT/16; ++b)
 					{
 						// blocks[i] = static_cast<int16_t>(rng().randGet());
 						tmp = rng().randInt(0xFFFF);
@@ -2313,8 +2313,8 @@ T Expression::valueAs##TypeName() \
 	
 	size_t BernulliTrials::trialFirstSucc(size_t idx) const
 	{
-		size_t blk = m_N / _S_word_bit;
-		_Bit_type * ptr = m_pointer[idx];
+		size_t blk = m_N / WORDBIT;
+		WORDTYPE * ptr = m_pointer[idx];
 
 		size_t i = 0;
 		while(i < blk && *ptr++ == 0)
@@ -2322,16 +2322,16 @@ T Expression::valueAs##TypeName() \
 
 		if (i < blk) // not at the last blk
 		{
-			return i * _S_word_bit + lowest_bit(*(ptr-1));
+			return i * WORDBIT + lowest_bit(*(ptr-1));
 		}
 		else // last block?
 		{
-			size_t rest = m_N - blk * _S_word_bit;
+			size_t rest = m_N - blk * WORDBIT;
 			size_t tmp = *ptr & g_bitMask[rest];
 			if (tmp == 0)
 				return npos;
 			else
-				return blk * _S_word_bit + lowest_bit(tmp);
+				return blk * WORDBIT + lowest_bit(tmp);
 		}
 	}
 
@@ -2345,16 +2345,16 @@ T Expression::valueAs##TypeName() \
 		
 		// first block
 		BitSet::const_iterator it = bs.begin() + pos;
-		_Bit_type * ptr = it._M_p;
+		WORDTYPE * ptr = it._M_p;
 		int offset = it._M_offset;
 		size_t i = ptr - bs.begin()._M_p;
 
 		// mask out bits before pos
-		_Bit_type tmp = *ptr & ~ g_bitMask[offset];
+		WORDTYPE tmp = *ptr & ~ g_bitMask[offset];
 
-		size_t blk =  m_N / _S_word_bit;
+		size_t blk =  m_N / WORDBIT;
 		if (tmp != 0)
-			return i * _S_word_bit + lowest_bit(tmp);
+			return i * WORDBIT + lowest_bit(tmp);
 		else if (blk == i)
 			// if i is the last block, return no.
 			return npos;
@@ -2366,16 +2366,16 @@ T Expression::valueAs##TypeName() \
 			++i;
 
 		if (i < blk) // not at the last blk
-			return i * _S_word_bit + lowest_bit(*(ptr-1));
+			return i * WORDBIT + lowest_bit(*(ptr-1));
 		else // last block?
 		{
-			size_t rest = m_N - blk * _S_word_bit;
+			size_t rest = m_N - blk * WORDBIT;
 			// mask out bits after rest
 			size_t tmp = *ptr & g_bitMask[rest];
 			if (tmp == 0)
 				return npos;
 			else
-				return blk * _S_word_bit + lowest_bit(tmp);
+				return blk * WORDBIT + lowest_bit(tmp);
 		}
 	}
 
@@ -2769,16 +2769,16 @@ T Expression::valueAs##TypeName() \
 	// define a good way to copy long genotype sequence
 	void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 	{
-		DBG_ASSERT(fr._M_offset < _S_word_bit, SystemError,
+		DBG_ASSERT(fr._M_offset < WORDBIT, SystemError,
 			"Your vector<bool> implementation is different...");
 
-		_Bit_type * fr_p = fr._M_p;
-		_Bit_type * to_p = to._M_p;
+		WORDTYPE * fr_p = fr._M_p;
+		WORDTYPE * to_p = to._M_p;
 		unsigned int fr_off = fr._M_offset;
 		unsigned int to_off = to._M_offset;
 
 		// if offset is different, can not copy in block.
-		if ( n < _S_word_bit )
+		if ( n < WORDBIT )
 		{
 			for(size_t i=0; i<n; ++i)
 			{
@@ -2788,12 +2788,12 @@ T Expression::valueAs##TypeName() \
 				else
 					*to_p &= ~(1UL << to_off);
 				// next location
-				if (fr_off++ == _S_word_bit - 1)
+				if (fr_off++ == WORDBIT - 1)
 				{
 					fr_off = 0;
 					++fr_p;
 				}
-				if (to_off++ == _S_word_bit - 1)
+				if (to_off++ == WORDBIT - 1)
 				{
 					to_off = 0;
 					++to_p;
@@ -2813,15 +2813,15 @@ T Expression::valueAs##TypeName() \
 			// from & ~mask =  ABCD0000
 			// to &    mask  = 0000xxxx
 			// (from & mask) | (to & ~mask) = ABCDxxxx
-			_Bit_type mask = g_bitMask[fr_off];
+			WORDTYPE mask = g_bitMask[fr_off];
 			*to_p = (*fr_p & ~mask) | (*to_p & mask);
 
-			size_t rest = n - (_S_word_bit - fr_off);
-			size_t blks = rest / _S_word_bit;
+			size_t rest = n - (WORDBIT - fr_off);
+			size_t blks = rest / WORDBIT;
 			for(size_t i=0; i<blks; ++i)
 				*++to_p = *++fr_p;
 			// the rest of the bits?
-			rest -= blks * _S_word_bit;
+			rest -= blks * WORDBIT;
 			if(rest != 0)
 			{
 				// rest = 3
@@ -2840,9 +2840,9 @@ T Expression::valueAs##TypeName() \
 		}
 		else if(fr_off < to_off)
 		{
-			_Bit_type maskFrom = g_bitMask[fr_off];
-			_Bit_type maskTo = g_bitMask[to_off];
-			_Bit_type maskFrom1;
+			WORDTYPE maskFrom = g_bitMask[fr_off];
+			WORDTYPE maskTo = g_bitMask[to_off];
+			WORDTYPE maskFrom1;
 			size_t shift;
 
 			shift = to_off - fr_off;
@@ -2857,8 +2857,8 @@ T Expression::valueAs##TypeName() \
 				(*to_p & maskTo);
 			// now. for other block bits
 			// to other bits
-			size_t rest = n - (_S_word_bit - to_off);
-			size_t blks = rest / _S_word_bit;
+			size_t rest = n - (WORDBIT - to_off);
+			size_t blks = rest / WORDBIT;
 			//
 			//  already copied to_off+1 bits
 			// from:   ABxxxxxx, maskFrom:    00111111
@@ -2868,16 +2868,16 @@ T Expression::valueAs##TypeName() \
 			// from1 & maskFrom            =  00CDEFGH
 			// <<                          =  CDEFGHxx
 			// |                           =  CDEFGHAB
-			maskFrom  = g_bitMask[_S_word_bit - shift];
+			maskFrom  = g_bitMask[WORDBIT - shift];
 			for(size_t i=0; i < blks; ++i)
 			{
 				to_p++;
-				*to_p = ((*fr_p & ~maskFrom) >> (_S_word_bit - shift)) |
+				*to_p = ((*fr_p & ~maskFrom) >> (WORDBIT - shift)) |
 					( (*(fr_p+1) & maskFrom) << shift);
 				fr_p++;
 			}
 			// the rest of the bits?
-			rest -= blks * _S_word_bit;
+			rest -= blks * WORDBIT;
 			if(rest != 0)
 			{
 				to_p ++;
@@ -2891,9 +2891,9 @@ T Expression::valueAs##TypeName() \
 					// & naskTo                   000000DE
 					// & ~                        xxxxxx00
 					// |                          xxxxxxDE
-					maskFrom = g_bitMask[_S_word_bit - shift];
+					maskFrom = g_bitMask[WORDBIT - shift];
 					maskTo   = g_bitMask[rest];
-					*to_p =  (((*(fr_p) & ~maskFrom) >> (_S_word_bit - shift)) & maskTo)
+					*to_p =  (((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) & maskTo)
 						| (*to_p & ~maskTo);
 				}
 				else
@@ -2908,11 +2908,11 @@ T Expression::valueAs##TypeName() \
 					//     <<           =  000CDE00 .
 					//  to * ~mask      =  xxx00000
 					//  |               =  xxxCDEAB
-					maskFrom = g_bitMask[_S_word_bit - shift];
+					maskFrom = g_bitMask[WORDBIT - shift];
 					maskFrom1= g_bitMask[rest - shift];
 					maskTo   = g_bitMask[rest];
 
-					*to_p =  ((*(fr_p) & ~maskFrom) >> (_S_word_bit - shift)) |
+					*to_p =  ((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) |
 						((*(fr_p+1) & maskFrom1) << shift) |
 						(*to_p & ~maskTo);
 				}
@@ -2921,22 +2921,22 @@ T Expression::valueAs##TypeName() \
 		else									  // fr_off > to_off
 		{
 			size_t shift = fr_off - to_off;
-			_Bit_type maskFrom = g_bitMask[fr_off];
-			_Bit_type maskFrom1= g_bitMask[shift];
-			_Bit_type maskTo   = g_bitMask[to_off];
+			WORDTYPE maskFrom = g_bitMask[fr_off];
+			WORDTYPE maskFrom1= g_bitMask[shift];
+			WORDTYPE maskTo   = g_bitMask[to_off];
 			// from:   ABCxxxxx, maskFrom: 00011111
 			// from1:  xxxxxxDE, maskFrom1:00000011
 			// to:     DEABCxxx, maskTo:   00011111
 			//
 			*to_p = ((*fr_p & ~maskFrom) >> shift) |
-				( (*(fr_p+1) & maskFrom1) << (_S_word_bit - shift)) |
+				( (*(fr_p+1) & maskFrom1) << (WORDBIT - shift)) |
 				(*to_p & maskTo);
 			to_p ++;
 			fr_p ++;
 			//
 			// to other bits
-			size_t rest = n - (_S_word_bit - to_off);
-			size_t blks = rest / _S_word_bit;
+			size_t rest = n - (WORDBIT - to_off);
+			size_t blks = rest / WORDBIT;
 			//
 			// already copied shift bits
 			// from:   ABCDEFxx, maskFrom:   00000011
@@ -2946,15 +2946,15 @@ T Expression::valueAs##TypeName() \
 			for(size_t i=0; i<blks; ++i)
 			{
 				*to_p = ((*fr_p & ~maskFrom) >> shift) |
-					( (*(fr_p+1) & maskFrom) << (_S_word_bit - shift));
+					( (*(fr_p+1) & maskFrom) << (WORDBIT - shift));
 				fr_p ++;
 				to_p ++;
 			}
 			// the rest of the bits
-			rest -= blks * _S_word_bit;
+			rest -= blks * WORDBIT;
 			if(rest != 0)
 			{
-				if (rest < _S_word_bit - shift)
+				if (rest < WORDBIT - shift)
 				{
 					// rest = 2, shift = 3,
 					// from:     ABCDExxx, maskFrom: 00000111
@@ -2971,10 +2971,10 @@ T Expression::valueAs##TypeName() \
 					// from1:  xxxxxCDE, maskFrom1:00000111
 					// rest:   xxxCDEAB, maskTo:   00011111
 					maskFrom  = g_bitMask[shift];
-					maskFrom1 = g_bitMask[rest - (_S_word_bit - shift)];
+					maskFrom1 = g_bitMask[rest - (WORDBIT - shift)];
 					maskTo    = g_bitMask[rest];
 					*to_p = ((*fr_p & ~maskFrom) >> shift) |
-						((*(fr_p+1) & maskFrom1) << (_S_word_bit - shift)) |
+						((*(fr_p+1) & maskFrom1) << (WORDBIT - shift)) |
 						(*to_p & ~maskTo);
 				}
 			}
@@ -3006,9 +3006,9 @@ T Expression::valueAs##TypeName() \
 		g_mpiRank = MPI::COMM_WORLD.Get_rank();
 #endif
 
-		// for example, if _S_word_bit is 8 (most likely 32), we define
+		// for example, if WORDBIT is 8 (most likely 32), we define
 		// 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
-		for(size_t i=0; i<std::_S_word_bit; ++i)
+		for(size_t i=0; i<std::WORDBIT; ++i)
 		{
 			// g_bitMask[i] is the number of 1 count from right.
 			for(size_t j=0; j < i; ++j)

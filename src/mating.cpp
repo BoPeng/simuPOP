@@ -176,7 +176,7 @@ namespace simuPOP
 						//
 						// less than one block, copy directly (not worth the trouble)
 						/*
-						if(length < std::_S_word_bit)
+						if(length < std::WORDBIT)
 						{
 							for(size_t gt = dadBegin; gt < dadEnd; ++gt)
 								offd[gt] = cd[dadPloidy][gt];
@@ -217,7 +217,7 @@ namespace simuPOP
 						//
 						// less than one block, copy directly
 						/*
-						if(length < std::_S_word_bit)
+						if(length < std::WORDBIT)
 							for(size_t gt = momBegin; gt < momEnd; ++gt)
 								offm[gt] = cm[momPloidy][gt];
 						else

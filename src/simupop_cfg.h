@@ -40,6 +40,16 @@
 // under parent directory. Included with -I.. option.
 #include "config.h"
 
+// for mac, or earlier version of gcc, _M_word_bit is used
+// while _S_word_bit is used for newer versions
+// to compile for mac, I define
+//    #define _Bit_type_size _M_word_bit
+// in config_mac.h. For other OS, we use _S_word_bit
+#ifndef WORDBIT
+#define WORDBIT _S_word_bit
+#endif
+#define WORDTYPE _Bit_type
+
 #include <string>
 using std::string;
 
