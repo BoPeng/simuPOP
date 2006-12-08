@@ -406,10 +406,10 @@ namespace simuPOP
 	{
 		public:
 			savePopulation( string output="", string outputExpr="",
-				string format = "bin", int stage=PostMating, int begin=0, int end=-1,
+				string format = "bin", bool compress=true, int stage=PostMating, int begin=0, int end=-1,
 				int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
 			outputer( "", "", stage, begin, end, step, at, rep, grp, infoFields),
-				m_filename(output), m_filenameParser(outputExpr), m_format(format)
+				m_filename(output), m_filenameParser(outputExpr), m_format(format), m_compress(compress)
 			{
 				if(output == "" && outputExpr == "")
 					throw ValueError("Please specify one of output and outputExpr.");
@@ -435,7 +435,7 @@ namespace simuPOP
 					filename = m_filenameParser.valueAsString();
 				}
 				DBG_DO(DBG_OUTPUTER, cout << "Save to file " << filename << endl);
-				pop.savePopulation(filename, m_format);
+				pop.savePopulation(filename, m_format, m_compress);
 				return true;
 			}
 
@@ -453,6 +453,9 @@ namespace simuPOP
 
 			/// can specify format, default to 'auto'
 			string m_format;
+
+			/// whether or not compress population
+			bool m_compress;
 	};
 
 }
