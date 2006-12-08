@@ -215,14 +215,49 @@ class TestPerformance(unittest.TestCase):
     # short:  4.44,  21.26, 56.61
     # long:   5.52,  22.19, 57.57
     #
-    # Using vector<boo> instead of dynamic_bitset. This is quite strange since I 
-    # can now access blocks directly
+    # Using vector<bool> for bernulli trials, and cache actual pointers,
     #
-    # binary: 2.54, 25.48, 117.66
-    # short:  4.53, 28.55, 69.49
-    # long:   5.61, 29.51, 69.91
+    # binary: 2.54,  16.05, 100.48
+    # short:  4.52,  18.64, 50.28
+    # long:   5.59,  20.04, 52.00
+    #
+
+
+    def TestBernulliTrials(self):
+        'Test the performance of bernulli trials'
+        rg = rng()
+        p = [0.00001, 0.001, 0.5, 0.99]
+        N = 1000000
+        for pi in p:
+            c1 = time.clock()
+            bt = BernulliTrials(rg, [pi]*100, N)
+            for rep in range(400):
+                bt.doTrial()
+            c2 = time.clock()
+            print "p = %f: %f " % (pi, c2 - c1)
+        #
+    #
+    # 
+    # using vector<bool> as storage engine
+    # 
+    # p = 0.000010: 2.870000
+    # p = 0.001000: 13.650000
+    # p = 0.100000: 1212.650000
+    # p = 0.500000: 139.860000
+    # p = 0.990000: 112.390000
+    #
+    # Using dynamic bitset
+    #
+    # p = 0.000010: 2.500000
+    # p = 0.001000: 14.400000
+    # p = 0.500000: 142.570000
+    # p = 0.990000: 111.770000
+
     # 
 
+        
+   
+            
 
     def TestMatingAlgorithm(self):
         'Test the performance of mating algorithm'

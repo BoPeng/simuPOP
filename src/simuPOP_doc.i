@@ -126,8 +126,6 @@ not be very efficient.
 %ignore simuPOP::BernulliTrials::BernulliTrials(RNG &rng);
 
 
-%ignore simuPOP::BernulliTrials::~BernulliTrials();
-
 %ignore simuPOP::BernulliTrials::size() ;
 
 %feature("docstring")  simuPOP::BernulliTrials::prob " 
