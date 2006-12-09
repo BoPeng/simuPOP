@@ -67,6 +67,8 @@ using std::setw;
 #include "gsl/gsl_rng.h"
 #include "gsl/gsl_randist.h"
 
+using std::WORDTYPE;
+using std::WORDBIT;
 /// for bernulli trials.
 // use vector<bool> instead of dynamic_bitset since I can manipulate
 // bits directly in vector<bool>

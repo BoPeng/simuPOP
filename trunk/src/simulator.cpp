@@ -496,13 +496,11 @@ namespace simuPOP
 			boost::archive::text_oarchive oa(ofs);
 			oa << *this;
 		}
-#ifndef __NO_XML_SUPPORT__
 		else if (format == "xml" || (format == "auto" && filename.substr(filename.size()-4,4) == ".xml" ) )
 		{
 			boost::archive::xml_oarchive oa(ofs);
 			oa << boost::serialization::make_nvp("simulator",*this);
 		}
-#endif
 		else if (format == "bin"  ||  (format == "auto" && filename.substr(filename.size()-4,4) == ".bin" ))
 		{
 			boost::archive::binary_oarchive oa(ofs);

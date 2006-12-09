@@ -17,6 +17,8 @@ for i in range(len(vars)):
     if vars[i] is None:
         vars[i] = ""
 (cc, cxx, opt, basicflags, ccshared, ldshared, so_ext, lib_dest) = vars
+#cc = 'colorgcc'
+#cxx = 'colorgcc'
 #NOTE:
 # 
 # scons is for quick recompile, so SIMUPOP_REV and SIMUPOP_VER IS NOT CHANGED
@@ -97,12 +99,12 @@ DEF = {
     'laop': {'OPTIMIZED':None, 'LONGALLELE':None},
     'ba': {'BINARYALLELE':None},
     'baop': {'OPTIMIZED':None, 'BINARYALLELE':None},
-	'mpi': {'SIMUMPI': None},
-    'opmpi': {'OPTIMIZED':None, 'SIMUMPI': None},
-    'lampi': {'LONGALLELE':None, 'SIMUMPI': None},
-    'laopmpi': {'OPTIMIZED':None, 'LONGALLELE':None, 'SIMUMPI': None},
-    'bampi': {'BINARYALLELE':None, 'SIMUMPI': None},
-    'baopmpi': {'OPTIMIZED':None, 'BINARYALLELE':None, 'SIMUMPI': None},
+# 	'mpi': {'SIMUMPI': None},
+#     'opmpi': {'OPTIMIZED':None, 'SIMUMPI': None},
+#     'lampi': {'LONGALLELE':None, 'SIMUMPI': None},
+#     'laopmpi': {'OPTIMIZED':None, 'LONGALLELE':None, 'SIMUMPI': None},
+#     'bampi': {'BINARYALLELE':None, 'SIMUMPI': None},
+#     'baopmpi': {'OPTIMIZED':None, 'BINARYALLELE':None, 'SIMUMPI': None},
 }
 MODULES = []
  
@@ -170,7 +172,7 @@ for mod in MODULES:
     lib = env.SharedLibrary(
         target = '$BDIR/_simuPOP_%s.so'%mod,
         source = ['$BDIR/%s_%s.cpp' % (x, mod) for x in src] + ['$BDIR/simuPOP_%s.i'%mod],
-        LIBS = ['boost_serialization-gcc', 'boost_iostreams-gcc', 'gsl', 'z', 'stdc++'] + mpi_libs,
+        LIBS = ['boost_serialization-gcc-d', 'boost_iostreams-gcc-d', 'gsl', 'z', 'stdc++'] + mpi_libs,
         CC = cc,
 		CXX = cxx,
         SHLINK = ldshared,
@@ -184,7 +186,7 @@ for mod in MODULES:
         # to speed up search
 		CCFLAGS = ['-O3'] + ccflags,
 		# for performance considerations, do not search boost
-        CPPFLAGS = basicflags + " " + opt + ' -I.. -I/usr/include/boost-1_35'
+        CPPFLAGS = basicflags + " " + opt + ' -I.. -I/usr/include/boost-1_33_1'
     )
     env.Depends(['$BDIR/simuPOP_%s_wrap.cc'%mod, lib], 
         ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \
