@@ -92,8 +92,6 @@ using std::max_element;
 using std::find;
 using std::sort;
 using std::greater;
-using std::WORDTYPE;
-using std::WORDBIT;
 
 namespace simuPOP
 {

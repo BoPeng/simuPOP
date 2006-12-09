@@ -1137,13 +1137,11 @@ namespace simuPOP
 			boost::archive::text_oarchive oa(ofs);
 			oa << *this;
 		}
-#ifndef __NO_XML_SUPPORT__
 		else if (format == "xml" || (format == "auto" && (ext == "xml" || ext == "xml.gz" )))
 		{
 			boost::archive::xml_oarchive oa(ofs);
 			oa << boost::serialization::make_nvp("population",*this);
 		}
-#endif
 		else if (format == "bin" ||  (format == "auto" && (ext == "bin" || ext == "bin.gz" )))
 		{
 			boost::archive::binary_oarchive oa(ofs);
@@ -1175,13 +1173,11 @@ namespace simuPOP
 				boost::archive::text_iarchive ia(ifs);
 				ia >> *this;
 			}
-#ifndef __NO_XML_SUPPORT__
 			else if (format == "xml" ||  (format == "auto" && (ext == "xml" || ext == "xml.gz" ) ))
 			{
 				boost::archive::xml_iarchive ia(ifs);
 				ia >> boost::serialization::make_nvp("population",*this);
 			}
-#endif
 			else if (format == "bin" || (format == "auto" && (ext == "bin" || ext == "bin.gz" ) ))
 			{
 				boost::archive::binary_iarchive ia(ifs);
@@ -1222,7 +1218,6 @@ namespace simuPOP
 				}
 				catch(...)						  // then xml?
 				{
-#ifndef __NO_XML_SUPPORT__
 					io::filtering_istream ifxml;
 					if(gzipped)
 						ifxml.push(io::gzip_decompressor());
@@ -1237,10 +1232,6 @@ namespace simuPOP
 						throw ValueError("Failed to load population. Your file may be corrupted, "
 							"or being a copy of non-transferrable file (.bin)");
 					}
-#else
-					throw ValueError("Failed to load population. Your file may be corrupted, "
-						"or being a copy of non-transferrable file (.bin)");
-#endif
 				}								  // try xml
 			}									  // try text
 		}										  // try bin

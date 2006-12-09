@@ -434,73 +434,60 @@ class TestPerformance(unittest.TestCase):
     def TestSerialization(self):
         import stat
         pop = LoadPopulation('exp3_0_9.txt') 
-        c1 = time.clock()
-        pop.savePopulation('exp_small.txt', compress=True)
-        c2 = time.clock()
-        print "txt, save, comp: %.1f, size: %.2fM " % (c2 - c1, os.stat('exp_small.txt')[stat.ST_SIZE]/1024./1024.)
-        c1 = time.clock()
-        pop = LoadPopulation('exp_small.txt')
-        c2 = time.clock()
-        print "txt, load, comp: %.1f " % (c2 - c1)
-        c1 = time.clock()
-        pop.savePopulation('exp_large.txt', compress=False)
-        c2 = time.clock()
-        print "txt, save, nocomp: %.1f, size: %.2fM  " % (c2 - c1, os.stat('exp_large.txt')[stat.ST_SIZE]/1024./1024.)
-        c1 = time.clock()
-        pop = LoadPopulation('exp_large.txt')
-        c2 = time.clock()
-        print "txt, load, nocomp: %.1f " % (c2 - c1)
+        #pop = population(size=100000, loci=[10]*8, ancestralDepth=2)
+        #InitByFreq(pop, [.2, .8])
+        #simu = simulator(pop, randomMating(), rep=1)
+        #simu.evolve(ops=[], end=2)
+        #pop = simu.population(0)
+        print 'Start saving file'
+        for format in ['txt', 'bin', 'xml']:
+            for comp in [True, False]:
+                if comp:
+                    label = 'small'
+                else:
+                    label = 'large'
+                c1 = time.clock()
+                pop.savePopulation('exp_%s.%s' % (label, format), compress=comp)
+                c2 = time.clock()
+                print "%s, save, %s: %.1f, size: %.2fM " % (format, label, c2 - c1, 
+                    os.stat('exp_%s.%s' % (label, format) )[stat.ST_SIZE]/1024./1024.)
+                c1 = time.clock()
+                pop1 = LoadPopulation('exp_%s.%s' % (label, format))
+                self.assertEqual(pop, pop1)
+                c2 = time.clock()
+                print "%s, load, %s: %.1f " % (format, label, c2 - c1)
+
         #
-        ##
-        c1 = time.clock()
-        pop.savePopulation('exp_small.bin', compress=True)
-        c2 = time.clock()
-        print "bin, save, comp: %.1f, size: %.2fM  " % (c2 - c1, os.stat('exp_small.bin')[stat.ST_SIZE]/1024./1024.)
-        c1 = time.clock()
-        pop = LoadPopulation('exp_small.bin')
-        c2 = time.clock()
-        print "bin, load, comp: %.1f " % (c2 - c1)
-        c1 = time.clock()
-        pop.savePopulation('exp_large.bin', compress=False)
-        c2 = time.clock()
-        print "bin, save, nocomp: %.1f, size: %.2fM  " % (c2 - c1, os.stat('exp_large.bin')[stat.ST_SIZE]/1024./1024.)
-        c1 = time.clock()
-        pop = LoadPopulation('exp_large.bin')
-        c2 = time.clock()
-        print "bin, load, nocomp: %.1f " % (c2 - c1)
-        ##
-        c1 = time.clock()
-        pop.savePopulation('exp_small.xml', compress=True)
-        c2 = time.clock()
-        print "xml, save, comp: %.1f, size: %.2fM  " % (c2 - c1, os.stat('exp_small.xml')[stat.ST_SIZE]/1024./1024.)
-        c1 = time.clock()
-        pop = LoadPopulation('exp_small.xml')
-        c2 = time.clock()
-        print "xml, load, comp: %.1f " % (c2 - c1)
-        c1 = time.clock()
-        pop.savePopulation('exp_large.xml', compress=False)
-        c2 = time.clock()
-        print "xml, save, nocomp: %.1f, size: %.2fM  " % (c2 - c1, os.stat('exp_large.xml')[stat.ST_SIZE]/1024./1024.)
-        c1 = time.clock()
-        pop = LoadPopulation('exp_large.xml')
-        c2 = time.clock()
-        print "xml, load, nocomp: %.1f " % (c2 - c1)
+        #  xml, save, comp: 842.8, size: 166.50M
+        #  xml, load, comp: 1843.7
+        #  xml, save, nocomp: 554.7, size: 8432.21M
+        #  xml, load, nocomp: 1801.3
+        #
+        #  txt, save, comp: 225.2, size: 112.29M
+        #  txt, load, comp: 128.4
+        #  txt, save, nocomp: 80.4, size: 1023.27M
+        #  txt, load, nocomp: 129.2
+        #  bin, save, comp: 155.5, size: 99.22M
+        #  bin, load, comp: 30.5
+        #  bin, save, nocomp: 23.1, size: 548.83M
+        #  bin, load, nocomp: 24.8
+        
+        #
+        # BINARY MODULES
+        # Using the new 32bit/block save/load method
+        #
+        # (default)
+        # txt, save, small: 72.4, size: 98.98M
+        # txt, load, small: 33.9
+        #
+        # txt, save, large: 24.8, size: 234.12M
+        # txt, load, large: 31.8
+        # bin, save, small: 50.4, size: 98.20M
+        # bin, load, small: 16.6
+        # bin, save, large: 8.5, size: 192.96M
+        # bin, load, large: 13.5
 
-
-#  txt, save, comp: 225.2, size: 112.29M
-#  txt, load, comp: 128.4
-#  txt, save, nocomp: 80.4, size: 1023.27M
-#  txt, load, nocomp: 129.2
-#  bin, save, comp: 155.5, size: 99.22M
-#  bin, load, comp: 30.5
-#  bin, save, nocomp: 23.1, size: 548.83M
-#  bin, load, nocomp: 24.8
-#  xml, save, comp: 842.8, size: 166.50M
-#  xml, load, comp: 1843.7
-#  xml, save, nocomp: 554.7, size: 8432.21M
-#  xml, load, nocomp: 1801.3
-
-
+        
 
 if __name__ == '__main__':
     unittest.main()

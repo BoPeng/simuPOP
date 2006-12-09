@@ -172,6 +172,19 @@ and --library-dirs options of setup.py, for example,
   > python setup.py build_ext --include-dirs=/usr/local/include/boost_1-35 \
       --library-dirs=/usr/local/lib install
 
+I did the following to build Boost.MPI,
+  1. download Boost.MPI, it is not part of boost yet
+  2. uncompress to the boost/cvs directory
+  3. strange, need to 
+    > setenv BOOST_BUILD_PATH /path/to/boost/tools/build/v1
+  4. then, go to libs/parallel/build and run
+    > ../../../bjam -j4 --prefix=/usr "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLSET=gcc" install
+  5. copy the header files.
+    > cp -r boost/parallel/ /usr/include/boost-1_35/boost/
+
+
+This is for the re-compiled (with --enable-shared) LAM/MPI 7.0.6
+
 
 Windows system with cygwin/mingw32 g++ compiler (free)
 -------------------------------------------------------

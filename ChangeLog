@@ -6,7 +6,11 @@ NOTE: Daily snapshot reflects current SVN version. It includes new features and
 BUGS:
   - some rpy function does not work due to a rpy bug.
 
-version 0.7.5 - Currently available as svn snapshot
+version 0.7.6 - Currently available as subversion snapshot.
+  -TODO: fix adjustGenotype (efficiency)
+
+
+version 0.7.5 - (Rev 576) Dec 8, 2006
   - NEW: experimental MPI modules.
   - BUG: None is treated as False now in Py_Object_As_Bool.
   - NEW: (internal) Optimize binary allele handling. Copying of alleles are now
