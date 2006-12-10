@@ -7,6 +7,7 @@ BUGS:
   - some rpy function does not work due to a rpy bug.
 
 version 0.7.6 - Currently available as subversion snapshot.
+  -NEW: change file format for binary modules, resulting much faster save/load.
   -TODO: fix adjustGenotype (efficiency)
 
 

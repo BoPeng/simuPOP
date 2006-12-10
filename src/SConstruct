@@ -186,7 +186,7 @@ for mod in MODULES:
         # to speed up search
 		CCFLAGS = ['-O3'] + ccflags,
 		# for performance considerations, do not search boost
-        CPPFLAGS = basicflags + " " + opt + ' -I.. -I/usr/include/boost-1_33_1'
+        CPPFLAGS = basicflags + " " + opt + ' -I.. -I/usr/include/boost-1_35'
     )
     env.Depends(['$BDIR/simuPOP_%s_wrap.cc'%mod, lib], 
         ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \

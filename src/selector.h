@@ -183,7 +183,7 @@ namespace simuPOP
 				   BB Bb bb
 				AA 1  2  3
 				Aa 4  5  6
-	 			aa 7  8  9
+			aa 7  8  9
 			The length for such table is 3^(#loci).
 			\param wildtype an array of alleles in the wildtype group. Anything else is disease allele.
 			default = [0]

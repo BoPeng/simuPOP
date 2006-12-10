@@ -101,7 +101,6 @@ typedef unsigned char& AlleleRef;
 #define AlleleAdd(a, b) (a)+=(b)
 #define AlleleMinus(a, b) (a)-=(b)
 #define AlleleUnsigned(a) (a)
-
 #endif
 #endif
 

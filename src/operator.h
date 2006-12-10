@@ -257,12 +257,12 @@ namespace simuPOP
 #ifdef SIMUMPI
 				DBG_ASSERT(MPIReady(), ValueError,
 					"Operator " + __repr__() + " is not MPI ready. ");
-				return true;					
+				return true;
 #else
 				return true;
 #endif
 			}
-			
+
 			///
 			bool haploidOnly()
 			{
@@ -280,8 +280,8 @@ namespace simuPOP
 			{
 				return ISSETFLAG(m_flags, m_flagMPI);
 			}
-			
-						///
+
+			///
 			bool setHaploidOnly()
 			{
 				return SETFLAG(m_flags, m_flagHaploid);

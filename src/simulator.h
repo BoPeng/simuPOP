@@ -167,7 +167,7 @@ namespace simuPOP
 			~simulator();
 
 			simulator * clone() const;
-			
+
 			/// the 'rep' replicate of this simulator
 			/**
 			\param rep number of replicate.
@@ -185,7 +185,7 @@ namespace simuPOP
 
 				return *m_ptrRep[rep];
 			}
-			
+
 			/**
 			this function returns a copy of population rep
 			\param rep number of replicate.

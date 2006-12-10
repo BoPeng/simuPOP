@@ -279,7 +279,7 @@ namespace simuPOP
 				// next ...
 				while ((pos = bt.probNextSucc(pos)) != BernulliTrials::npos)
 				{
-#ifndef BINARYALLELE	
+#ifndef BINARYALLELE
 					// copy from last to this recombination point
 					for(gtEnd = recBeforeLoci[pos]; gt < gtEnd; ++gt)
 						off[gt] = cp[curCp][gt];
@@ -331,13 +331,13 @@ namespace simuPOP
 				false, m_recBeforeLoci, vecP);
 
 			m_bt.setParameter(vecP, pop.popSize());
-/*
-#ifdef BINARYALLELE
-			m_algorithm = 1;
-#else
-			m_algorithm = 0;
-#endif
-*/			
+			/*
+			#ifdef BINARYALLELE
+						m_algorithm = 1;
+			#else
+						m_algorithm = 0;
+			#endif
+			*/
 			vecP.clear();
 			// male case is most complicated.
 			m_hasSexChrom = pop.sexChrom()?true:false;

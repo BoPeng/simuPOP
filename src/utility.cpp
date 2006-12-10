@@ -2095,7 +2095,7 @@ T Expression::valueAs##TypeName() \
 		for(size_t i = 0; i < probSize(); ++i)
 		{
 			m_table[i].resize(trials);
-            m_pointer[i] = m_table[i].begin()._M_p;
+			m_pointer[i] = m_table[i].begin()._M_p;
 		}
 	}
 
@@ -2109,7 +2109,7 @@ T Expression::valueAs##TypeName() \
 		m_N = trials;
 		m_prob = prob;
 		m_table.resize(m_prob.size());
-        m_pointer.resize(m_prob.size());
+		m_pointer.resize(m_prob.size());
 		m_cur = npos;							  // will trigger doTrial.
 
 		DBG_FAILIF(trials<=0, ValueError, "trial number can not be zero.");
@@ -2118,7 +2118,7 @@ T Expression::valueAs##TypeName() \
 		for(size_t i = 0; i < probSize(); ++i)
 		{
 			m_table[i].resize(trials);
-            m_pointer[i] = m_table[i].begin()._M_p;
+			m_pointer[i] = m_table[i].begin()._M_p;
 		}
 	}
 
@@ -2128,8 +2128,8 @@ T Expression::valueAs##TypeName() \
 		WORDTYPE * ptr = m_pointer[idx];
 		DBG_ASSERT(m_table[idx].begin()._M_offset == 0, SystemError, "Start of a vector<bool> is not 0");
 		DBG_ASSERT(m_table[idx].begin()._M_p == m_pointer[idx],
-            SystemError, "Pointers mismatch");
-        
+			SystemError, "Pointers mismatch");
+
 		size_t blk = m_N / WORDBIT;
 		size_t rest = m_N - blk * WORDBIT;
 		if(v)
@@ -2149,7 +2149,7 @@ T Expression::valueAs##TypeName() \
 			for(size_t i = 0; i < blk; ++i)
 				*ptr++ = 0UL;
 			if(rest > 0)
-				*ptr = 0; //~g_bitMask[rest];
+				*ptr = 0;						  //~g_bitMask[rest];
 		}
 	}
 
@@ -2166,7 +2166,7 @@ T Expression::valueAs##TypeName() \
 		// for each column
 		for(size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl)
 		{
-            WORDTYPE * ptr = m_pointer[cl];
+			WORDTYPE * ptr = m_pointer[cl];
 			double prob = m_prob[cl];
 			if(prob == 0.)
 			{
@@ -2228,7 +2228,7 @@ T Expression::valueAs##TypeName() \
 					i += m_RNG->randGeometric(prob);
 					if ( i <= m_N )
 						// succ[i-1] = true;
-                        setBit(ptr, i-1);
+						setBit(ptr, i-1);
 					else
 						break;
 				}
@@ -2248,7 +2248,7 @@ T Expression::valueAs##TypeName() \
 				{
 					i += m_RNG->randGeometric(prob);
 					if ( i <= m_N )
-                        // succ[i-1] = false;
+						// succ[i-1] = false;
 						unsetBit(ptr, i-1);
 					else
 						break;
@@ -2267,7 +2267,7 @@ T Expression::valueAs##TypeName() \
 	/// get a trial corresponding to m_prob.
 	void BernulliTrials::trial()
 	{
-		if(m_cur == npos || m_cur == m_N - 1)						  // reach the last trial
+		if(m_cur == npos || m_cur == m_N - 1)	  // reach the last trial
 			doTrial();
 		else
 			m_cur++;
@@ -2279,7 +2279,7 @@ T Expression::valueAs##TypeName() \
 		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
 		return getBit(m_pointer[idx], m_cur);
 	}
-	
+
 	bool BernulliTrials::trialSucc(size_t idx, size_t cur) const
 	{
 		return getBit(m_pointer[idx], cur);
@@ -2307,8 +2307,7 @@ T Expression::valueAs##TypeName() \
 			++pos;
 		return pos >= sz ? npos : pos;
 	}
-	
-	
+
 	size_t BernulliTrials::trialFirstSucc(size_t idx) const
 	{
 		size_t blk = m_N / WORDBIT;
@@ -2318,11 +2317,11 @@ T Expression::valueAs##TypeName() \
 		while(i < blk && *ptr++ == 0)
 			++i;
 
-		if (i < blk) // not at the last blk
+		if (i < blk)							  // not at the last blk
 		{
 			return i * WORDBIT + lowest_bit(*(ptr-1));
 		}
-		else // last block?
+		else									  // last block?
 		{
 			size_t rest = m_N - blk * WORDBIT;
 			size_t tmp = *ptr & g_bitMask[rest];
@@ -2340,7 +2339,7 @@ T Expression::valueAs##TypeName() \
 			return npos;
 
 		++pos;
-		
+
 		// first block
 		BitSet::const_iterator it = bs.begin() + pos;
 		WORDTYPE * ptr = it._M_p;
@@ -2363,9 +2362,9 @@ T Expression::valueAs##TypeName() \
 		while(i < blk && *ptr++ == 0)
 			++i;
 
-		if (i < blk) // not at the last blk
+		if (i < blk)							  // not at the last blk
 			return i * WORDBIT + lowest_bit(*(ptr-1));
-		else // last block?
+		else									  // last block?
 		{
 			size_t rest = m_N - blk * WORDBIT;
 			// mask out bits after rest
@@ -2380,10 +2379,10 @@ T Expression::valueAs##TypeName() \
 	void BernulliTrials::setTrialSucc(size_t idx, bool succ)
 	{
 		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-        if(succ)
-    		setBit(m_pointer[idx], m_cur);
-        else
-    		unsetBit(m_pointer[idx], m_cur);
+		if(succ)
+			setBit(m_pointer[idx], m_cur);
+		else
+			unsetBit(m_pointer[idx], m_cur);
 	}
 
 	double BernulliTrials::trialSuccRate(UINT index) const

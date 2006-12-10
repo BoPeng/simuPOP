@@ -133,6 +133,7 @@ namespace simuPOP
 }
 
 
+
 namespace std
 {
 	/// CPPONLY how to output any std::pair
@@ -164,6 +165,7 @@ namespace std
 	ostream& operator<<(ostream& out, const intDict& dict);
 
 }
+
 
 
 namespace simuPOP
@@ -1416,11 +1418,11 @@ namespace simuPOP
 
 		public:
 			static const size_t npos = static_cast<size_t>(-1);
-		
-		private:
-            void setAll(size_t idx, bool v);
 
-        private:
+		private:
+			void setAll(size_t idx, bool v);
+
+		private:
 			/// pointer to a random number generator.
 			/// this is in preparation for multiple thread/RNG.
 			RNG* m_RNG;
@@ -1442,10 +1444,10 @@ namespace simuPOP
 			/// and removing them if match.
 			vector< BitSet > m_table;
 
-            /// cache the actual point m_table[i].begin()._M_p and
-            /// access bits through this pointer. This is much faster
-            /// than using the reference interface.
-            vector<std::_Bit_type *> m_pointer;
+			/// cache the actual point m_table[i].begin()._M_p and
+			/// access bits through this pointer. This is much faster
+			/// than using the reference interface.
+			vector<std::_Bit_type *> m_pointer;
 
 			/// current trial. Used when user want to access the table row by row
 			size_t m_cur;
