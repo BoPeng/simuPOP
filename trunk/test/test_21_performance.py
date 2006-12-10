@@ -479,13 +479,14 @@ class TestPerformance(unittest.TestCase):
         # (default)
         # txt, save, small: 72.4, size: 98.98M
         # txt, load, small: 33.9
-        #
         # txt, save, large: 24.8, size: 234.12M
         # txt, load, large: 31.8
         # bin, save, small: 50.4, size: 98.20M
         # bin, load, small: 16.6
         # bin, save, large: 8.5, size: 192.96M
         # bin, load, large: 13.5
+        # xml, save, small: 191.0, size: 120.16M
+
 
         
 

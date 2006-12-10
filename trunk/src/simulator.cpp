@@ -107,17 +107,15 @@ namespace simuPOP
 			<< "these referenced population will not be working now." << endl);
 	}
 
-
 	simulator * simulator::clone() const
 	{
-		simulator * simu = new simulator(population(0), 
+		simulator * simu = new simulator(population(0),
 			*m_matingScheme, m_numRep, m_groups);
 		for(size_t i=1; i < m_numRep; ++i)
 			simu->setPopulation(*m_ptrRep[i], i);
 		return simu;
 	}
 
-	
 	void simulator::setMatingScheme(const mating& matingScheme)
 	{
 		delete m_matingScheme;
@@ -182,9 +180,9 @@ namespace simuPOP
 		for(size_t i = 0; i < ops.size(); ++i)
 		{
 			DBG_ASSERT(ops[i]->isCompatible(curpopulation()), ValueError,
-				"Operator " + ops[i]->__repr__() + " is not compatible.");				
+				"Operator " + ops[i]->__repr__() + " is not compatible.");
 		}
-		
+
 		InitClock();
 
 		if( dryrun)
@@ -417,7 +415,7 @@ namespace simuPOP
 				postMatingOps.push_back(ops[i]);
 			// check compatibility of operators
 			DBG_ASSERT(ops[i]->isCompatible(curpopulation()), ValueError,
-				"Operator " + ops[i]->__repr__() + " is not compatible.");				
+				"Operator " + ops[i]->__repr__() + " is not compatible.");
 		}
 
 		// really apply

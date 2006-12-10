@@ -477,7 +477,6 @@ namespace simuPOP
 				return m_inds.begin() + m_subPopIndex[subPop+1];
 			}
 
-			
 			/// allele iterator that access a locus across all copies of chromosomes and individual
 			/** CPPONLY
 			\param locus
@@ -1182,42 +1181,36 @@ namespace simuPOP
 				ar & make_nvp("geno_structure", this->genoStru());
 				ar & make_nvp("subPop_sizes", m_subPopSize);
 				DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
-/*                
-#if defined(BINARYALLELE) && defined(BOOST_135)
-				vector<unsigned char> tmp(m_genotype.begin(), m_genotype.end());
-				ar & make_nvp("genotype", tmp);
-*/
 #ifdef BINARYALLELE
-                // version <= 1, direct handling
-                size_t size = m_genotype.size();
-                ar & make_nvp("size", size);
-                WORDTYPE * ptr = m_genotype.begin()._M_p;
-                size_t blks = size / WORDBIT;
-                size_t rest = size - blks * WORDBIT;
-                DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
-                    
-                WORDTYPE tmp, tmp1;
-                for(size_t i=0; i < blks; ++i)
-                {
-                    tmp = *ptr++;
-                    for(size_t j = 0; j < WORDBIT/32; ++j)
-                    {
-                        tmp1 = tmp & 0xFFFFFFFF;
-                        tmp = tmp >> 32;
-                        ar & make_nvp("blocks", tmp1);
-                    }
-                }
-                // last block
-                if (rest > 0)
-                {
-                    tmp = *ptr;
-                    for(size_t j = 0; j <= rest/32; ++j)
-                    {
-                        tmp1 = tmp & 0xFFFFFFFF;
-                        tmp = tmp >> 32;
-                        ar & make_nvp("blocks", tmp1);
-                    }
-                }
+				size_t size = m_genotype.size();
+				ar & make_nvp("size", size);
+				WORDTYPE * ptr = m_genotype.begin()._M_p;
+				size_t blks = size / WORDBIT;
+				size_t rest = size - blks * WORDBIT;
+				DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
+
+				WORDTYPE tmp, tmp1;
+				for(size_t i=0; i < blks; ++i)
+				{
+					tmp = *ptr++;
+					for(size_t j = 0; j < WORDBIT/32; ++j)
+					{
+						tmp1 = tmp & 0xFFFFFFFF;
+						tmp = tmp >> 32;
+						ar & make_nvp("blocks", tmp1);
+					}
+				}
+				// last block
+				if (rest > 0)
+				{
+					tmp = *ptr;
+					for(size_t j = 0; j <= rest/32; ++j)
+					{
+						tmp1 = tmp & 0xFFFFFFFF;
+						tmp = tmp >> 32;
+						ar & make_nvp("blocks", tmp1);
+					}
+				}
 #else
 				ar & make_nvp("genotype", m_genotype);
 #endif
@@ -1235,47 +1228,36 @@ namespace simuPOP
 					// need to make sure ancestral pop also in order
 					const_cast<population*>(this)->adjustGenoPosition(true);
 					ar & make_nvp("subPop_sizes", m_subPopSize);
-/*                    
-#if defined(BINARYALLELE) && defined(BOOST_135)
-					vector<unsigned char> tmp(m_genotype.begin(), m_genotype.end());
-					ar & make_nvp("genotype", tmp);
-*/
 #ifdef BINARYALLELE
-                    // version <= 1, direct handling
-                    if (version <= 1)
-    				    ar & make_nvp("genotype", m_genotype);
-                    else
-                    {
-                        size_t size = m_genotype.size();
-                        ar & make_nvp("size", size);
-                        WORDTYPE * ptr = m_genotype.begin()._M_p;
-                        size_t blks = size / WORDBIT;
-                        size_t rest = size - blks * WORDBIT;
-                        DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
-                        
-                        WORDTYPE tmp, tmp1;
-                        for(size_t i=0; i < blks; ++i)
-                        {
-                            tmp = *ptr++;
-                            for(size_t j = 0; j < WORDBIT/32; ++j)
-                            {
-                                tmp1 = tmp & 0xFFFFFFFF;
-                                tmp = tmp >> 32;
-                                ar & make_nvp("blocks", tmp1);
-                            }
-                        }
-                        // last block
-                        if (rest > 0)
-                        {
-                            tmp = *ptr;
-                            for(size_t j = 0; j <= rest/32; ++j)
-                            {
-                                tmp1 = tmp & 0xFFFFFFFF;
-                                tmp = tmp >> 32;
-                                ar & make_nvp("blocks", tmp1);
-                            }
-                        }
-                    }
+					size_t size = m_genotype.size();
+					ar & make_nvp("size", size);
+					WORDTYPE * ptr = m_genotype.begin()._M_p;
+					size_t blks = size / WORDBIT;
+					size_t rest = size - blks * WORDBIT;
+					DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
+
+					WORDTYPE tmp, tmp1;
+					for(size_t i=0; i < blks; ++i)
+					{
+						tmp = *ptr++;
+						for(size_t j = 0; j < WORDBIT/32; ++j)
+						{
+							tmp1 = tmp & 0xFFFFFFFF;
+							tmp = tmp >> 32;
+							ar & make_nvp("blocks", tmp1);
+						}
+					}
+					// last block
+					if (rest > 0)
+					{
+						tmp = *ptr;
+						for(size_t j = 0; j <= rest/32; ++j)
+						{
+							tmp1 = tmp & 0xFFFFFFFF;
+							tmp = tmp >> 32;
+							ar & make_nvp("blocks", tmp1);
+						}
+					}
 #else
 					ar & make_nvp("genotype", m_genotype);
 #endif
@@ -1307,60 +1289,112 @@ namespace simuPOP
 				if( ma > MaxAllele)
 					cout << "Warning: The population is saved in library with more allele states. \n"
 						<< "Unless all alleles are less than "  << MaxAllele
-						<< ", you should use the long allele library. (c.f. simuOpt.setOptions()\n";
+						<< ", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n";
 
 				GenoStructure  stru;
 				DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
 				ar & make_nvp("geno_structure", stru);
 				ar & make_nvp("subPop_sizes", m_subPopSize);
 				DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
-/*                
-#if defined(BINARYALLELE) && defined(BOOST_135)
-				vector<unsigned char> tmp;
-				ar & make_nvp("genotype", tmp);
-				m_genotype = vectora(tmp.begin(), tmp.end());
-*/
+
+				// the binary genotypes are saved in an efficient way
+				if (version <= 1)
+				{
+					// ar & make_nvp("genotype", m_genotype);
+					vector<unsigned char> tmpgeno;
+					ar & make_nvp("genotype", tmpgeno);
+					m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
+				}
+				// the new version
+				else
+				{
 #ifdef BINARYALLELE
-                // version <= 1, direct handling
-                if (version <= 1)
-				    ar & make_nvp("genotype", m_genotype);
-                else
-                {
-                    size_t size;
-                    ar & make_nvp("size", size);
-                    m_genotype.resize(size);
-                    WORDTYPE * ptr = m_genotype.begin()._M_p;
-                    size_t blks = size / WORDBIT;
-                    size_t rest = size - blks * WORDBIT;
-                    DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
-                    
-                    WORDTYPE tmp, tmp1;
-                    for(size_t i=0; i < blks; ++i)
-                    {
-                        tmp = 0;
-                        for(size_t j = 0; j < WORDBIT/32; ++j)
-                        {
-                            ar & make_nvp("blocks", tmp1);
-                            tmp |= tmp1 << (j * 32);
-                        }
-                        *ptr++ = tmp;
-                    }
-                    // last block
-                    if (rest > 0)
-                    {
-                        tmp = 0;
-                        for(size_t j = 0; j <= rest/32; ++j)
-                        {
-                            ar & make_nvp("blocks", tmp1);
-                            tmp |= tmp1 << (j * 32);
-                        }
-                        *ptr = tmp;
-                    }
-                }
-        
+					// binary from binary
+					if (ma == 1)
+					{
+						DBG_DO(DBG_POPULATION, cout << "Load bin from bin. " << endl);
+						size_t size;
+						ar & make_nvp("size", size);
+						size_t blks = size / WORDBIT;
+						size_t rest = size - blks * WORDBIT;
+
+						m_genotype.resize(size);
+						WORDTYPE tmp, tmp1;
+						WORDTYPE * ptr = m_genotype.begin()._M_p;
+						for(size_t i=0; i < blks; ++i)
+						{
+							tmp = 0;
+							for(size_t j = 0; j < WORDBIT/32; ++j)
+							{
+								ar & make_nvp("blocks", tmp1);
+								tmp |= tmp1 << (j * 32);
+							}
+							*ptr++ = tmp;
+						}
+						// last block
+						if (rest > 0)
+						{
+							tmp = 0;
+							for(size_t j = 0; j <= rest/32; ++j)
+							{
+								ar & make_nvp("blocks", tmp1);
+								tmp |= tmp1 << (j * 32);
+							}
+							*ptr = tmp;
+						}
+					}
+					// binary from others (long types)
+					else
+					{
+						DBG_DO(DBG_POPULATION, cout << "Load bin from long. " << endl);
+						vector<unsigned char> tmpgeno;
+						ar & make_nvp("genotype", tmpgeno);
+						m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
+					}
 #else
-				ar & make_nvp("genotype", m_genotype);
+					// long from binary
+					if (ma == 1)
+					{
+						DBG_DO(DBG_POPULATION, cout << "Load long from bin. " << endl);
+						// for version 2 and higher, archive in 32bit blocks.
+						size_t size;
+						ar & make_nvp("size", size);
+						m_genotype.resize(size);
+						size_t blks = size / 32;
+						size_t rest = size - blks * 32;
+						DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
+
+						GenoIterator ptr = m_genotype.begin();
+						WORDTYPE tmp;
+						for(size_t i=0; i < blks; ++i)
+						{
+							ar & make_nvp("blocks", tmp);
+							for(size_t j = 0; j < 32; ++j)
+							{
+								*ptr++ = tmp & 1UL;
+								tmp = tmp >> 1;
+							}
+						}
+						// last block
+						if (rest > 0)
+						{
+							ar & make_nvp("blocks", tmp);
+							for(size_t j = 0; j < rest; ++j)
+							{
+								*ptr++ = tmp & 1UL;
+								tmp = tmp >> 1;
+							}
+						}
+					}							  // if ma == 1
+					else						  // for non-binary types, ...
+					{
+						DBG_DO(DBG_POPULATION, cout << "Load long from long. " << endl);
+						// long from long
+						ar & make_nvp("genotype", m_genotype);
+					}
 #endif
+				}								  // verion >= 2
+
 				if ( version > 0)
 				{
 					DBG_DO(DBG_POPULATION, cout << "Handling info" << endl);
@@ -1418,52 +1452,100 @@ namespace simuPOP
 				{
 					popData pd;
 					ar & make_nvp("subPop_sizes", pd.m_subPopSize);
-                    /*
-#if defined(BINARYALLELE) && defined(BOOST_135)
-					vector<unsigned char> tmp;
-					ar & make_nvp("genotype", tmp);
-					pd.m_genotype = vectora(tmp.begin(), tmp.end());
-                    */
+					// version <= 1, direct handling
+					if (version <= 1)
+					{
+						// ar & make_nvp("genotype", pd.m_genotype);
+						vector<unsigned char> tmpgeno;
+						ar & make_nvp("genotype", tmpgeno);
+						pd.m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
+					}
+					else
+					{
 #ifdef BINARYALLELE
-                    // version <= 1, direct handling
-                    if (version <= 1)
-					    ar & make_nvp("genotype", pd.m_genotype);
-                    else
-                    {
-                        size_t size;
-                        ar & make_nvp("size", size);
-                        pd.m_genotype.resize(size);
-                        WORDTYPE * ptr = pd.m_genotype.begin()._M_p;
-                        size_t blks = size / WORDBIT;
-                        size_t rest = size - blks * WORDBIT;
-                        DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
-                        
-                        WORDTYPE tmp, tmp1;
-                        for(size_t i=0; i < blks; ++i)
-                        {
-                            tmp = 0;
-                            for(size_t j = 0; j < WORDBIT/32; ++j)
-                            {
-                                ar & make_nvp("blocks", tmp1);
-                                tmp |= tmp1 << (j * 32);
-                            }
-                            *ptr++ = tmp;
-                        }
-                        // last block
-                        if (rest > 0)
-                        {
-                            tmp = 0;
-                            for(size_t j = 0; j <= rest/32; ++j)
-                            {
-                                ar & make_nvp("blocks", tmp1);
-                                tmp |= tmp1 << (j * 32);
-                            }
-                            *ptr = tmp;
-                        }
-                    }
+						// binary from binary
+						if(ma == 1)
+						{
+							DBG_DO(DBG_POPULATION, cout << "Load bin from bin. " << endl);
+							size_t size;
+							ar & make_nvp("size", size);
+							size_t blks = size / WORDBIT;
+							size_t rest = size - blks * WORDBIT;
+
+							pd.m_genotype.resize(size);
+							WORDTYPE * ptr = pd.m_genotype.begin()._M_p;
+							WORDTYPE tmp, tmp1;
+							for(size_t i=0; i < blks; ++i)
+							{
+								tmp = 0;
+								for(size_t j = 0; j < WORDBIT/32; ++j)
+								{
+									ar & make_nvp("blocks", tmp1);
+									tmp |= tmp1 << (j * 32);
+								}
+								*ptr++ = tmp;
+							}
+							// last block
+							if (rest > 0)
+							{
+								tmp = 0;
+								for(size_t j = 0; j <= rest/32; ++j)
+								{
+									ar & make_nvp("blocks", tmp1);
+									tmp |= tmp1 << (j * 32);
+								}
+								*ptr = tmp;
+							}
+						}
+						else
+						{
+							DBG_DO(DBG_POPULATION, cout << "Load bin from long. " << endl);
+							// binary from long types
+							vector<unsigned char> tmpgeno;
+							ar & make_nvp("genotype", tmpgeno);
+							pd.m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
+						}
 #else
-					ar & make_nvp("genotype", pd.m_genotype);
+						if(ma == 1)
+						{
+							DBG_DO(DBG_POPULATION, cout << "Load long from bin. " << endl);
+							// long type from binary
+							size_t size;
+							ar & make_nvp("size", size);
+							size_t blks = size / 32;
+							size_t rest = size - blks * 32;
+							pd.m_genotype.resize(size);
+
+							ptr = pd.m_genotype.begin();
+							WORDTYPE tmp;
+							for(size_t i=0; i < blks; ++i)
+							{
+								ar & make_nvp("blocks", tmp);
+								for(size_t j = 0; j < 32; ++j)
+								{
+									*ptr++ = tmp & 1UL;
+									tmp = tmp >> 1;
+								}
+							}
+							// last block
+							if (rest > 0)
+							{
+								ar & make_nvp("blocks", tmp);
+								for(size_t i=0; i < rest; ++i)
+								{
+									*ptr++ = tmp & 1UL;
+									tmp = tmp >> 1;
+								}
+							}
+						}
+						else
+						{
+							DBG_DO(DBG_POPULATION, cout << "Load long from long. " << endl);
+							// long type from long type.
+							ar & make_nvp("genotype", pd.m_genotype);
+						}
 #endif
+					}
 					if ( version > 0)
 						ar & make_nvp("info", pd.m_info);
 					ar & make_nvp("individuals", pd.m_inds);
@@ -1585,6 +1667,7 @@ namespace simuPOP
 	vectorf testGetinfoFromPop(population& pop, bool order);
 
 }
+
 
 
 #ifndef SWIG

@@ -191,14 +191,14 @@ namespace simuPOP
 						else
 							copyGenotype(cd[dadPloidy] + dadBegin, offd + dadBegin, length);
 
-#ifndef OPTIMIZED						
+#ifndef OPTIMIZED
 						// check if the bits are correctly copied
 						if(debug(DBG_MATING))
 						{
-							if(vectora(cd[dadPloidy] + dadBegin, cd[dadPloidy] + dadEnd) != 
+							if(vectora(cd[dadPloidy] + dadBegin, cd[dadPloidy] + dadEnd) !=
 								vectora(offd + dadBegin, offd + dadEnd))
 							{
-								cout << "Copy from " << vectora(cd[dadPloidy] + dadBegin, cd[dadPloidy] + dadEnd) 
+								cout << "Copy from " << vectora(cd[dadPloidy] + dadBegin, cd[dadPloidy] + dadEnd)
 									<< " to " << vectora(offd + dadBegin, offd + dadEnd) << " failed " << endl;
 								GenoIterator d = cd[dadPloidy] + dadBegin;
 								GenoIterator o = offd + dadBegin;
@@ -229,13 +229,13 @@ namespace simuPOP
 							offm[momBegin] = cm[momPloidy][momBegin];
 						else
 							copyGenotype(cm[momPloidy] + momBegin, offm + momBegin, length);
-#ifndef OPTIMIZED						
+#ifndef OPTIMIZED
 						if(debug(DBG_MATING))
 						{
-							if(vectora(cm[momPloidy] + momBegin, cm[momPloidy] + momEnd) != 
+							if(vectora(cm[momPloidy] + momBegin, cm[momPloidy] + momEnd) !=
 								vectora(offm + momBegin, offm + momEnd))
 							{
-								cout << "Copy from " << vectora(cm[momPloidy] + momBegin, cm[momPloidy] + momEnd) 
+								cout << "Copy from " << vectora(cm[momPloidy] + momBegin, cm[momPloidy] + momEnd)
 									<< " to " << vectora(offm + momBegin, offm + momEnd) << " failed " << endl;
 								GenoIterator d = cm[momPloidy] + momBegin;
 								GenoIterator o = offm + momBegin;

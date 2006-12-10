@@ -621,6 +621,47 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop1, pop3)
         self.assertNotEqual(pop, pop3)
         os.remove('a.txt')        
+
+    def testCrossSaveLoad(self):
+        'Testing population saved by other modules'
+        if alleleType() == 'binary':
+            if os.path.isfile('test_ba.txt'):
+                pop = LoadPopulation('test_ba.txt')
+            else:
+                pop = population(size=10, ploidy=2, loci=[5, 7], 
+                    subPop=[2, 8], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+                    alleleNames=['1', '2'], infoFields=['age', 'fitness'], ancestralDepth=2) 
+                InitByFreq(pop, [.2, .8])
+                pop.setIndInfo(range(10), 'age')
+                pop.setIndInfo(range(100, 110), 'fitness')
+                simu = simulator(pop, randomMating(), rep=1)
+                simu.evolve(ops=[], end=2)
+                simu.population(0).savePopulation('test_ba.txt')
+            # try to load file
+            if os.path.isfile('test_std.txt'):
+                pop1 = LoadPopulation('test_std.txt')
+                self.assertEqual(pop, pop1)
+            if os.path.isfile('test_la.txt'):
+                pop1 = LoadPopulation('test_la.txt')
+                self.assertEqual(pop, pop1)            
+        elif alleleType() == 'short':
+            if os.path.isfile('test_ba.txt'):
+                pop = LoadPopulation('test_ba.txt')
+                pop.savePopulation('test_std.txt')
+            else:
+                return
+            if os.path.isfile('test_la.txt'):
+                pop1 = LoadPopulation('test_la.txt')
+                self.assertEqual(pop, pop1)
+        else:
+            if os.path.isfile('test_ba.txt'):
+                pop = LoadPopulation('test_ba.txt')
+                pop.savePopulation('test_la.txt')
+            else:
+                return
+            if os.path.isfile('test_std.txt'):
+                pop1 = LoadPopulation('test_std.txt')
+                self.assertEqual(pop, pop1)
         
     def testPopInfo(self):
         'Testing info-related functions'

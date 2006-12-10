@@ -267,6 +267,7 @@ namespace simuPOP
 }
 
 
+
 #ifndef SWIG
 // set version for GenoStructure class
 // version 0: base
@@ -639,6 +640,7 @@ namespace simuPOP
 	};
 
 }
+
 
 
 #ifndef SWIG
@@ -1307,6 +1309,7 @@ namespace simuPOP
 	};
 
 }
+
 
 
 #ifndef SWIG
