@@ -1297,15 +1297,12 @@ namespace simuPOP
 				ar & make_nvp("subPop_sizes", m_subPopSize);
 				DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
 
-				// the binary genotypes are saved in an efficient way
 				if (version <= 1)
 				{
-					// ar & make_nvp("genotype", m_genotype);
-					vector<unsigned char> tmpgeno;
-					ar & make_nvp("genotype", tmpgeno);
-					m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
+					ar & make_nvp("genotype", m_genotype);
 				}
 				// the new version
+				// the binary genotypes are saved in an efficient way
 				else
 				{
 #ifdef BINARYALLELE
@@ -1455,10 +1452,7 @@ namespace simuPOP
 					// version <= 1, direct handling
 					if (version <= 1)
 					{
-						// ar & make_nvp("genotype", pd.m_genotype);
-						vector<unsigned char> tmpgeno;
-						ar & make_nvp("genotype", tmpgeno);
-						pd.m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
+						ar & make_nvp("genotype", pd.m_genotype);
 					}
 					else
 					{

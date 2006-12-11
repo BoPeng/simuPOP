@@ -164,6 +164,15 @@ to be:
 
   > bjam -j4 --prefix=/usr "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLSET=gcc" install
 
+Under windows, you command line would be something like (using cygwin/mingw)
+ > bjam -j4 "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLSET=mingw" \
+     -sNO_COMPRESSION=0 -sNO_BZIP2=1 -sNO_ZLIB=0 -sZLIB_INCLUDE=/cygdrive/c/zlib/include \
+	 -sZLIB_LIBRARY=/cygdrive/c/zlib/lib -sZLIB_BINARY=zdll install 
+because compression is disabled by default under windows. Note that this bjam has
+to be compiled using mingw/gcc, and if build/jam_src/build.sh reports errors,
+run dos2unix on it.
+
+ 
 As of Dec, 2006, I am using the cvs version of boost since Boost.MPI uses newest 
 features of the serialization library only available in cvs. If you install
 boost locally or to a non-standard location, you will need to use --include-dirs
