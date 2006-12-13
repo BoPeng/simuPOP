@@ -84,8 +84,8 @@ if 'gsl' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libgsl.a')):
             randist/geometric.c randist/binomial.c randist/poisson.c randist/rdgamma.c
             randist/chisq.c randist/gauss.c error.c randist/multinomial.c
     ''')],
-		CCFLAGS = ['-O3', '-fPIC'],
-		CPPPATH = ['.', '..'],
+        CCFLAGS = ['-O3', '-fPIC'],
+        CPPPATH = ['.', '..'],
     )
     Alias('gsl', gsl)
 
@@ -99,7 +99,7 @@ DEF = {
     'laop': {'OPTIMIZED':None, 'LONGALLELE':None},
     'ba': {'BINARYALLELE':None},
     'baop': {'OPTIMIZED':None, 'BINARYALLELE':None},
-# 	'mpi': {'SIMUMPI': None},
+     'mpi': {'SIMUMPI': None},
 #     'opmpi': {'OPTIMIZED':None, 'SIMUMPI': None},
 #     'lampi': {'LONGALLELE':None, 'SIMUMPI': None},
 #     'laopmpi': {'OPTIMIZED':None, 'LONGALLELE':None, 'SIMUMPI': None},
@@ -165,16 +165,16 @@ for mod in MODULES:
     for file in src:
         env.Command('$BDIR/%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
     # build shared library
-	if 'mpi' in mod:
-	    mpi_libs = getMPIFlags()['lib_dirs']
-	else:
-	    mpi_libs = []
+    if 'mpi' in mod:
+        mpi_libs = getMPIFlags()['libs'] + ['boost_mpi-gcc-mt-d-1_35']
+    else:
+        mpi_libs = []
     lib = env.SharedLibrary(
         target = '$BDIR/_simuPOP_%s.so'%mod,
         source = ['$BDIR/%s_%s.cpp' % (x, mod) for x in src] + ['$BDIR/simuPOP_%s.i'%mod],
         LIBS = ['boost_serialization-gcc-d', 'boost_iostreams-gcc-d', 'gsl', 'z', 'stdc++'] + mpi_libs,
         CC = cc,
-		CXX = cxx,
+        CXX = cxx,
         SHLINK = ldshared,
         SHLINKFLAGS = ['-Wl,--export-dynamic'],
         SHLIBPREFIX = "",
@@ -184,8 +184,8 @@ for mod in MODULES:
         CPPDEFINES = DEF[mod],
         # do not put .. (boost etc) in CPPPATH
         # to speed up search
-		CCFLAGS = ['-O3'] + ccflags,
-		# for performance considerations, do not search boost
+        CCFLAGS = ['-O3'] + ccflags,
+        # for performance considerations, do not search boost
         CPPFLAGS = basicflags + " " + opt + ' -I.. -I/usr/include/boost-1_35'
     )
     env.Depends(['$BDIR/simuPOP_%s_wrap.cc'%mod, lib], 
@@ -195,7 +195,7 @@ for mod in MODULES:
     Alias(mod, lib)
     Alias('all', lib)
     dp1 = env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py'%mod),
-		'$BDIR/simuPOP_%s.py' % mod)
+        '$BDIR/simuPOP_%s.py' % mod)
     dp2 = env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s.so'%mod), 
         lib)
     env.Depends(dp1, dp2)

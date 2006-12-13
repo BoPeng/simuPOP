@@ -46,6 +46,13 @@ include:
 #include "Python.h"
 #include "simupop_cfg.h"
 
+#ifdef SIMUMPI
+#include "boost/parallel/mpi.hpp"
+#ifndef SWIG
+namespace mpi = boost::parallel::mpi;
+#endif
+#endif
+
 #include <iostream>
 using std::ostream;
 using std::iostream;
@@ -1501,13 +1508,13 @@ namespace simuPOP
 	/// initialize module simuPOP when using "import simuPOP"
 	bool initialize();
 
-	/// only useful for mpi version.
-	/// FIXME: call it automatically?
-	void mpiFinalize();
-
 	bool optimized();
 
 	bool mpi();
+
+#ifdef SIMUMPI
+	const mpi::communicator mpiComm();
+#endif
 
 	int mpiRank();
 
