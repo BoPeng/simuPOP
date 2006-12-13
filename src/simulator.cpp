@@ -111,7 +111,7 @@ namespace simuPOP
 	{
 		simulator * simu = new simulator(population(0),
 			*m_matingScheme, m_numRep, m_groups);
-		for(size_t i=1; i < m_numRep; ++i)
+		for(size_t i=0; i < m_numRep; ++i)
 			simu->setPopulation(*m_ptrRep[i], i);
 		return simu;
 	}

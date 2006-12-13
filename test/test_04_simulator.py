@@ -83,7 +83,7 @@ class TestSimulator(unittest.TestCase):
         )
         simu1 = simu.clone()
         for i in range(3):
-            self.assertEqual(simu.population(i), simu.population(i))
+            self.assertEqual(simu.population(i), simu1.population(i))
         
 
     def testGenoStru(self):
