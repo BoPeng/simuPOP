@@ -2640,6 +2640,7 @@ T Expression::valueAs##TypeName() \
 #ifdef SIMUMPI
 	// global MPI communicator
 	// mpi will be finalized if the communicator is destructed.
+	/** this is rediculus */
 	int g_mpiArgc = 0;
 	char * g_mpiArgv = "";
 	char ** g_mpiArgvv = & g_mpiArgv;
