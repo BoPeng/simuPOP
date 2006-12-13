@@ -11,12 +11,12 @@
 
 
 import simuOpt
-simuOpt.setOptions(quiet=False, optimized=False, mpi=True)
+simuOpt.setOptions(quiet=True, optimized=False, mpi=True)
 
 from simuPOP import *
 import unittest, os, sys, exceptions, time
 
-class TestPerformance(unittest.TestCase):
+class TestMPI(unittest.TestCase):
 
     def TestMPIStart(self):
         '''Start mpi'''

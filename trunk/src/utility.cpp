@@ -30,10 +30,6 @@
 #include <cstdlib>
 #include "time.h"
 
-#ifdef SIMUMPI
-#include "mpi.h"
-#endif
-
 #include <bitset>
 typedef std::bitset<DBG_CODE_LENGTH> DbgBitSet;
 
@@ -2641,12 +2637,25 @@ T Expression::valueAs##TypeName() \
 #endif
 	}
 
-	int g_mpiRank = 0;
+#ifdef SIMUMPI
+	// global MPI communicator
+	// mpi will be finalized if the communicator is destructed.
+	int g_mpiArgc = 0;
+	char * g_mpiArgv = "";
+	char ** g_mpiArgvv = & g_mpiArgv;
+	mpi::environment g_mpiEnv(g_mpiArgc, g_mpiArgvv);
+	mpi::communicator g_mpiComm;
+
+	const mpi::communicator mpiComm()
+	{
+		return g_mpiComm;
+	}
+#endif
 
 	int mpiRank()
 	{
 #ifdef SIMUMPI
-		return g_mpiRank;
+		return g_mpiComm.rank();
 #else
 		return(0);
 #endif
@@ -2655,18 +2664,12 @@ T Expression::valueAs##TypeName() \
 	int mpiSize()
 	{
 #ifdef SIMUMPI
-		return MPI::COMM_WORLD.Get_size();
+		return g_mpiComm.size();
 #else
 		return(0);
 #endif
 	}
 
-	void mpiFinalize()
-	{
-#ifdef SIMUMPI
-		MPI::Finalize();
-#endif
-	}
 
 #ifdef SIMUMPI
 	void testMPI()
@@ -2678,11 +2681,10 @@ T Expression::valueAs##TypeName() \
 		int n = 10;
 		double sum = 0;
 		double val = 5;
-		MPI::COMM_WORLD.Bcast(&n, 1, MPI::INT, 0);
-		MPI::COMM_WORLD.Reduce(&val, &sum, 1, MPI::DOUBLE, MPI::SUM, 0);
+		broadcast(mpiComm(), val, 0);
+		reduce(mpiComm(), val, sum, std::plus<double>(), 0);
 		if (mpiRank() == 0)
 			std::cout << "Get the sum of values as (should be n*5) " << sum << std::endl;
-		mpiFinalize();
 	}
 #endif
 
@@ -2997,11 +2999,6 @@ T Expression::valueAs##TypeName() \
 	{
 		// tie python stdout to cout
 		setLogOutput();
-
-#ifdef SIMUMPI
-		MPI::Init();
-		g_mpiRank = MPI::COMM_WORLD.Get_rank();
-#endif
 
 		// for example, if WORDBIT is 8 (most likely 32), we define
 		// 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
