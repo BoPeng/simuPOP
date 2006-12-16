@@ -4,16 +4,9 @@
 #                     with certain number of disease susceptibility
 #                     loci. 
 #
-# Bo Peng (bpeng@rice.edu)
-#
 # $LastChangedDate: 2006-11-08 15:52:33 -0600 (Wed, 08 Nov 2006) $
 # $Rev: 529 $
 #
-# Known limitations/bugs:
-# 
-#    * Currently, this script only handles constant selection pressure
-#        and independent multi-locus selection model. 
-#        
 
 """
 
@@ -24,12 +17,13 @@ Introduction
 This program simulates the evolution of a complex common disease under the 
 effect of mutation, migration, recombination and population size change. 
 Starting from a small founder population, each simulation will go through
-the following four stages:
+the following five stages:
 
     1. Burn-in the population with mutation and recombination
     2. Introduce disease mutants and make them common with advantage selection
-    3. Split and grow the population without migration
-    4. Mix subpopulations at given migration level
+    3. Population starts to expand
+    4. Population Split into subpopulations without migration
+    5. Mix subpopulations at given migration level
 
 
 The major difference between this script and simuComplexDisease.py is that
@@ -65,8 +59,8 @@ The evolutionary process can be divided into several stages. Some of the
 stages can be ignored if you set their starting generations properly (equal
 to the starting generation of the next stage.)
 
-Burn-in stage
-------------
+Burn-in stage ( 0 ==> burninGen )
+---------------------------------
 
 A founder population will be initialized with a small number of haplotypes.
 All DSL will be initialized with wild type alleles ( no disease). This leads
@@ -80,8 +74,8 @@ stepwise mutation model for microsattelite and a Juke-Cantor model for
 SNP markers. Recombination is uniform across all markers.
 
 
-Disease-introduction stage
---------------------------
+Disease-introduction stage (burninGen ==> burninGen + introLen)
+---------------------------------------------------------------
 
 During this relatively short stage, mutants will be introduced to 
 individuals (one DSL per individual). The mutants will be given strong 
@@ -96,40 +90,36 @@ As a matter of fact, most of the simultion time will be spent on this
 trial and restart process.
 
 
-Grow stage
-----------
+single-population stage (burninGen + introLen ==> splitGen)
+------------------------------------------------------------
 
-After disease introduction, the population size starts to grow, with only
-a single population. At the end of this stage, the population will be
-split to several subpopulations, and then, the no-migration stage...
+Population starts to grow after burnin and during disease mutant introduction.
+During this stage, population continue to grow with no subpopulation, till
+the population is split.
 
 
-No-migration stage
--------------------
+No-migration stage (splitGen ==> mixingGen)
+-------------------------------------------
 
 The population will be split into 10 subpopulations and starts to grow,
 aiming at 100,000 or more individuals at the final generation. No migration 
 is allowed between subpopulations so population heterogeneity will build up.
 
-Mixing stage
--------------
+Mixing stage (mixingGen ==> endGen)
+------------------------------------
 
 Individuals from different subpopulations will be able to migrate following
 a circular step-stone model. Population heterogeneity will be reduced to
 a level depending on migration rate and length of this stage.
 
+
 Introduction of disease
------------------------
+=======================
 
-The disease allele frequency is simulated before the simulation is performed.
-A single disease mutant is introduce to each DSL at simulated mutant-introduction
-generation. The allele frequency then evolve according to the simulated frequency
-trajectory.
-
-However, you can also specify some free DSL, who will evolve in a different manner.
-Namely, they will be brought to high allele frequency in your specified time frame,
-and then evolve freely. This method may fail due to extinction of disease alleles,
-but it has the advantage of being able to simulate linked DSL.
+The disease mutants are introduced during the disease introduction stage.
+They will be reintroduced if any of them get lost. Optionally, you can 
+specify some positive selection pressure (a negative introSel value) to
+bring disease mutant to a higher disease allele frequency quickly.
 
 
 Statistics Monitored
@@ -244,26 +234,26 @@ options = [
      'label': 'Population growth model',
      'description': '''How population is grown from initSize to endingSize.
                 Choose between linear and exponential. Population expansion
-                starts from after introGen''',
+                starts from after burninGen''',
      'chooseOneOf': ['exponential', 'linear'],
     },
-    {'longarg': 'introGen=',
+    {'longarg': 'burninGen=',
      'default': 3000,
-     'label': 'When to introduce mutants',
+     'label': 'Length of burnin stage',
      'allowedTypes': [types.IntType],
-     'description': 'When to introduce mutants, it is actually the length of the burn in stage.',
+     'description': '''Length of the burnin stage, also the generation to introduce mutants,
+                population starts to expand after burnin stage.''',
      'validate':    simuOpt.valueGT(0)
     },
-    {'longarg': 'growGen=',
-     'default': 3250,
-     'label': 'When to start population expansion',
+    {'longarg': 'introLen=',
+     'default': 50,
+     'label': 'Length of mutant introduction stage',
      'allowedTypes': [types.IntType],
-     'description': '''When to start population expansion. This indicates the end of
-                disease introduction stage. Diease allele frequencies will be tested
-                here to see if they match designed frequencies. ''',
+     'description': '''Disease mutants are introduced after burnin, for introLen
+                generations. This should be done *before* splitGen, since otherwise
+                all mutants will be introduced to subpopulation 0.''',
      'validate':    simuOpt.valueGT(0),
     },
-
     {'longarg': 'splitGen=',
      'default': 5000,
      'label': 'When to split population',
@@ -412,7 +402,8 @@ options = [
                  The specified recombination rate should be those between 
                      0-1, 1-2, 2-3, 3-x, x-5, 6-7, 7-8, 8-9, 9-10.
                  Note that the distance between 3-x, x-5 is smaller than distance
-                 between markers.
+                 between markers. If the list is too long, remember, that simuPOP dislog 
+                 accept any python expression like [0.0005]*25 + [0.0009]*30.
      ''',
      'validate': simuOpt.valueListOf(simuOpt.valueBetween(0,1))
     },
@@ -546,15 +537,15 @@ def outputStatistics(pop, args):
      3. Mean observed heterogeneity at the marker loci
     '''
     # unwrap parameter
-    (burnin, split, mixing, endGen, outfile) = args
+    (introLen, splitGen, mixingGen, endGen, outfile) = args
     # 
     gen = pop.gen()
     # see how long the simulation has been running
-    if gen == burnin:
+    if gen == introLen:
         print "Start population growth\t\t"
-    elif gen == split:
+    elif gen == splitGen:
         print "Start no-migration stage\t\t"
-    elif gen == mixing:
+    elif gen == mixingGen:
         print "Start mixing\t\t"
     elif gen == endGen:
         print "End of simulation. \n"
@@ -592,6 +583,7 @@ def outputStatistics(pop, args):
     pop.dvars().AvgHetero = AvgHetero
     # output it
     print >> output, '\nAverage counted heterozygosity is %.4f.\n' % AvgHetero
+    output.close()
     return True
 
 
@@ -617,23 +609,21 @@ def dynaAdvSelector(pop, param):
         elif 1-freq[DSL[i]][0] > maxAlleleFreq[i]:
             print '-',
             sel.append( maSelector(locus=DSL[i], wildtype=[0], fitness=[1,0.9,0.8]) )
-        else:
         # encourage slightly towards upper bound
+        else:
             print ' ',
             sel.append( maSelector(locus=DSL[i], wildtype=[0], fitness=[1,1.002,1.004]) )
         # apply multi-locus selector, note that this operator will only
         # set a variable fitness in pop, actual selection happens during mating.
         if len(sel ) > 0:    # need adjustment (needed if 'else' part is empty)
-            MlSelect( pop, sel, mode=SEL_Multiplicative)
+            MlSelect(pop, sel, mode=SEL_Multiplicative)
     print ' '.join(['%.4f' % (1-freq[x][0]) for x in DSL])
     return True
 
 
-# simulate function, using a single value of mutation, migration,
-# recombination rate
 def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp, 
         initSize, endingSize, growthModel, 
-        introGen, growGen, splitGen, mixingGen, endingGen, 
+        burninGen, introLen, splitGen, mixingGen, endingGen, 
         introSel, minAlleleFreqTmp, maxAlleleFreqTmp, 
         numSubPop, migrModel, migrRate,
         fitnessTmp, mlSelModelTmp, 
@@ -654,8 +644,8 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     if len( DSLafter ) != len(DSLdist):
         raise exceptions.ValueError("Please specify DSL distance for each DSL.")
     numDSL = len(DSLafter)
-    if introGen > splitGen or splitGen > mixingGen or splitGen > endingGen:
-        raise exceptions.ValueError("Generations should in the order of burnin, split, mixing and ending")
+    if burninGen  + introLen > splitGen or splitGen > mixingGen or splitGen > endingGen:
+        raise exceptions.ValueError("Generations should in the order of burninGen, introLen, splitGen, mixingGen and ending")
     # fitness
     if mlSelModelTmp == 'none':
         fitness = []
@@ -736,7 +726,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     if maxAle > 1:    # Not SNP
         preOperators = [
-            # initialize all loci with 5 haplotypes
+            # initialize all loci with 10 haplotypes
             initByValue(value=[[x]*sum(loci) for x in range(50, 60)],
                 proportions=[.1]*10), 
             # and then init DSL with all wild type alleles
@@ -744,12 +734,12 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         ]
     else: # SNP
         preOperators = [
-            # initialize all loci with two haplotypes (0001,111)
+            # initialize all loci with two haplotypes (000, 111)
             initByValue(value=[[x]*sum(loci) for x in [0,1] ],
-                proportions=[.5]*2), 
+                proportions=[.5]*2),
             # and then init DSL with all wild type alleles
             initByValue([0]*len(DSL), atLoci=DSL)
-        ]            
+        ]
     ###
     ### mutation, start from gen 0,
     ###
@@ -771,20 +761,23 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         al = []
         start = 0
         for ch in range(numChrom):
-            al.extend( [x+start for x in range(loci(ch) )] )
+            al.extend([x+start for x in range(loci(ch))] )
             start += loci[ch]
         rec = recombinator(rate=recRate, afterLoci=al)
     ###
-    ### output progress
+    ### skip burnin stage when the simulation is restarted.
     ###
     burnin_pop = 'burnin.bin'
     # clear burnin pop from last time.
     if os.path.isfile(burnin_pop):
         os.remove(burnin_pop)
+    ###
+    ### output progress
+    ###
     operators = [
         mutator, 
         rec, 
-        savePopulation(burnin_pop, compress=False, at=[introGen-1]),
+        savePopulation(burnin_pop, compress=False, at=[burninGen-1]),
         stat(alleleFreq=DSL, popSize=True),
         # output to screen
         pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+"\n"',
@@ -809,22 +802,22 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         operators.append( 
             ifElse("alleleFreq[%d][0]==1." % DSL[i],
                 pointMutator(atLoci=[DSL[i]], toAllele=1, inds=[i]),
-            begin=introGen, end=growGen) 
-            )
+            begin=burninGen, end=introLen) 
+        )
     # optionally, the mutants will be given some selective pressure
     # if introSel < 0, mutants will have selective advantage and will
     # reach high allele frequency quickly.
     if introSel != 0:
         operators.append(
             pyOperator(func=dynaAdvSelector, param = (minAlleleFreq, maxAlleleFreq, DSL, introSel), 
-                begin=introGen, end=growGen) )
+                begin=burninGen, end=introLen) )
     #
     operators.append(
         # the simulation will stop if the disease allele frequencies
         # are not within range at the end of this stage
         # this process will continue to the end
         terminateIf("True in [(1.-alleleFreq[x][0] < minAlleleFreq or 1.-alleleFreq[x][0] > maxAlleleFreq) for x in DSL]",
-            begin = growGen), 
+            begin = introLen), 
     )  
     ### 
     ### split to subpopulations
@@ -843,11 +836,11 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             # with five multiple-allele selector as parameter
             [ maSelector(locus=DSL[x], wildtype=[0], 
                 fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) for x in range(len(DSL)) ],
-            mode=mlSelModel, begin=growGen),
+            mode=mlSelModel, begin=introLen),
         )
     elif mlSelModelTmp == 'interaction':
         # multi-allele selector can handle multiple DSL case
-        operators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0], begin=growGen) )
+        operators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0], begin=introLen) )
     ###
     ### migration
     ###
@@ -862,10 +855,10 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     operators.extend([
         pyOperator(func=outputStatistics, 
-            param = (introGen, splitGen, mixingGen, endingGen, filename+'.log'),
-            at = [introGen, splitGen, mixingGen, endingGen ] ), 
+            param = (burninGen, splitGen, mixingGen, endingGen, filename+'.log'),
+            at = [burninGen, splitGen, mixingGen, endingGen ] ), 
         # show elapsed time
-        ticToc(at=[introGen, splitGen, mixingGen, endingGen]),
+        ticToc(at=[burninGen, splitGen, mixingGen, endingGen]),
         ]
     )
     if len(savePop) > 0:
@@ -877,10 +870,10 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     if growthModel == 'linear':
         popSizeFunc = LinearExpansion(initSize, endingSize, endingGen,
-            introGen, splitGen, numSubPop)
+            burninGen, splitGen, numSubPop)
     elif growthModel == 'exponential':
         popSizeFunc = ExponentialExpansion(initSize, endingSize, endingGen,
-            introGen, splitGen, numSubPop)
+            burninGen, splitGen, numSubPop)
     else:
         raise exceptions.ValueError("Growth model can be one of linear and exponential. Given " + growth)   
     ### 
@@ -902,7 +895,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             simu = simulator(pop, randomMating(), rep=1)
             # skip the burnin stage.
             print "Loading %s and skip burnin stage " % burnin_pop
-            simu.setGen(introGen)
+            simu.setGen(burninGen)
             # evolve! If --dryrun is set, only show info
             simu.evolve(ops = operators, end=endingGen - savedGen,
                 dryrun=dryrun )
@@ -958,8 +951,8 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             pop.dvars().DSLdist = DSLdist
             pop.dvars().initSize = initSize
             pop.dvars().endingSize = endingSize
-            pop.dvars().burninGen = introGen
-            pop.dvars().introGen = introGen
+            pop.dvars().burninGen = burninGen
+            pop.dvars().burninGen = burninGen
             pop.dvars().splitGen = splitGen
             pop.dvars().mixingGen = mixingGen
             pop.dvars().endingGen = endingGen
@@ -984,7 +977,7 @@ if __name__ == '__main__':
     # unpack options
     (numChrom, numLoci, markerType, DSLafter, DSLdist, 
         initSize, endingSize, growthModel, 
-        introGen, growGen, splitGen, mixingGen, endingGen, 
+        burninGen, introLen, splitGen, mixingGen, endingGen, 
         introSel, minAlleleFreq, maxAlleleFreq, 
         numSubPop, migrModel, migrRate,
         fitness, selMultiLocusModel,
@@ -1010,7 +1003,7 @@ if __name__ == '__main__':
     ################## RUN THE SIMULATION ###############
     simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdist, 
         initSize, endingSize, growthModel, 
-        introGen, growGen, splitGen, mixingGen, endingGen, 
+        burninGen, introLen, splitGen, mixingGen, endingGen, 
         introSel, minAlleleFreq, maxAlleleFreq, 
         numSubPop, migrModel, migrRate,  
         fitness, selMultiLocusModel, 
