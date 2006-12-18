@@ -2,12 +2,6 @@ RoadMap of simuPOP
 
 Towards simuPOP 1.0     - Roadmaps  Marked by Easy 1 --- difficult 9. Workload 1 - 9
 
-* Will be done recently
-  4/4 Use chromosome factory to reduce ram use of populations
-  2/2 Add compressed file format to reduce file format
-  
-
-* With high priority
 
 Roadmap: test and documentation:
   3/8 document each class whether or not they are suitable only for diploid population.
@@ -29,11 +23,11 @@ DONE  add things like listbox to tkGetParam function. Use wxPython when possible
 
 Roadmap: simuPOP core
  *1/1 Sampling now copy populations and result in high RAM demand
-  5/5 aged population
+DONE  aged population
   8/8 overlapped generations and continuous time reproduction. (mating in aged populations.)
 DONE  sex-difference recombination rate.
   6/4 add other mating scheme. (Folowing easyPOP)
-  6/7 study and improve support for non-diploid individuals.
+  6/7 improve support for non-diploid individuals.
   5/5 profile simuPOP and imporve efficiency (this is *always* needed for a simulation program like simuPOP)
 
 Roadmap: simuUtil
@@ -45,7 +39,7 @@ DONE  add population size change function support like linear growth, exponentia
       Basically simple nested functions. Update reference manual accordingly
   1/1 add a set of popular penetrance functions. It may be better to let user write their own
       function though, since these functions are easy to write but hard to memorize and document.
-  2/2 save linkage of any pedigree. This is very troublesome considering the potentially very 
+DONE  save linkage of any pedigree. This is very troublesome considering the potentially very 
       complicated pedigrees.
   2/2 save and load other popular formats. 
 DONE  add wxPython version of listVars()
