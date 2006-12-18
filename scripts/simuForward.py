@@ -802,7 +802,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         operators.append( 
             ifElse("alleleFreq[%d][0]==1." % DSL[i],
                 pointMutator(atLoci=[DSL[i]], toAllele=1, inds=[i]),
-            begin=burninGen, end=introLen) 
+            begin=burninGen, end = burninGen + introLen) 
         )
     # optionally, the mutants will be given some selective pressure
     # if introSel < 0, mutants will have selective advantage and will
@@ -810,14 +810,16 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     if introSel != 0:
         operators.append(
             pyOperator(func=dynaAdvSelector, param = (minAlleleFreq, maxAlleleFreq, DSL, introSel), 
-                begin=burninGen, end=introLen) )
+                begin=burninGen, end = burninGen + introLen) )
     #
     operators.append(
         # the simulation will stop if the disease allele frequencies
         # are not within range at the end of this stage
-        # this process will continue to the end
         terminateIf("True in [(1.-alleleFreq[x][0] < minAlleleFreq or 1.-alleleFreq[x][0] > maxAlleleFreq) for x in DSL]",
-            begin = introLen), 
+            at = [burninGen + intoLen]), 
+        # terminate if any disease allele get lost
+        terminateIf("True in [alleleFreq[x][0] == 1. for x in DSL]",
+            begin = burninGen + intoLen),
     )  
     ### 
     ### split to subpopulations
@@ -836,11 +838,11 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             # with five multiple-allele selector as parameter
             [ maSelector(locus=DSL[x], wildtype=[0], 
                 fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) for x in range(len(DSL)) ],
-            mode=mlSelModel, begin=introLen),
+            mode=mlSelModel, begin= burninGen + introLen),
         )
     elif mlSelModelTmp == 'interaction':
         # multi-allele selector can handle multiple DSL case
-        operators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0], begin=introLen) )
+        operators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0], begin = burninGen + introLen) )
     ###
     ### migration
     ###
