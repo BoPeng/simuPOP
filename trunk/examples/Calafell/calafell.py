@@ -20,7 +20,7 @@ import math, random
 #   CA - A1:  0.020%
 
 recombine = recombinator(
-  rates = [0.00006, 0.0002],
+  rate = [0.00006, 0.0002],
   afterLoci=[0,1] )
     
 #
@@ -59,7 +59,7 @@ mutate1 =  gsmMutator( atLoci=[1], maxAllele=7, rate=1e-4, func = step)
 #   b2-ca14-a2   60%
 #
 init = initByValue(
-  values = [ [ 1, 3, 1], [2, 4, 2] ],  # two genotypes
+  value = [ [ 0, 2, 0], [1, 3, 1] ],  # two genotypes
   proportions = [.4, .6 ]              # by proportion
 )
 
@@ -91,16 +91,16 @@ LD_Freq = stat(
 # will change with generation. The return values
 # should be an array of subpopulation sizes. In this
 # case, we should return an array of size one.
-def scenario_1(gen,sz):
+def scenario_1(gen,sz=[]):
   return [2000]
 
-def scenario_2(gen,sz):
+def scenario_2(gen,sz=[]):
   return [5000]
 
-def scenario_3(gen,sz):
+def scenario_3(gen,sz=[]):
   return [10000]
 
-def scenario_4(gen,sz):
+def scenario_4(gen,sz=[]):
   if gen < 2786:
     return 2848
   elif gen < 3000: # rapid linear growth
@@ -108,7 +108,7 @@ def scenario_4(gen,sz):
   else:
     return [10000]
 
-def scenario_5(gen, sz):
+def scenario_5(gen, sz=[]):
   if gen < 3400:
     return [3600]
   else:
@@ -134,20 +134,20 @@ def simulation(nRep, scenario, endGen, visualizers=[]):
       mutate02,  # mutate loci 0 and 2
       mutate1,   # mutate locus 1
       # plot LD' between B1 and A1 loci
-      varPlotter("LD_prime['0-2|1-1']", numRep=nRep,
-        step=10, update=10, saveAs="LDprime"),
+      #varPlotter("LD_prime['0-2|1-1']", numRep=nRep,
+      #  step=10, update=10, saveAs="LDprime"),
       # plot allele frequencies of B1 A1 
-      varPlotter("[alleleFreq[0][1], alleleFreq[2][1]]",
-        numRep=nRep, byRep=True, step=10, update=10, varDim=2,
-        ylim=[0,1],saveAs="alleleFreq02"),
+      #varPlotter("[alleleFreq[0][1], alleleFreq[2][1]]",
+      #  numRep=nRep, byRep=True, step=10, update=10, varDim=2,
+      #  ylim=[0,1],saveAs="alleleFreq02"),
       # plot allele frequencies at CA locus
-      varPlotter("alleleFreq[1][1:]",
-        numRep=nRep, byVal=True, step=10, update=10, varDim=7,
-        ylim=[0,1], saveAs="AlleleFreq1"),
+      #varPlotter("alleleFreq[1][1:]",
+      #  numRep=nRep, byVal=True, step=10, update=10, varDim=7,
+      #  ylim=[0,1], saveAs="AlleleFreq1"),
       # keep track of the following values at different
       # generation
-      collector( expr='alleleFreq[1]', name = 'CA_af', 
-        at=[500,1000,1500,2000,2500,3000,3500,4000,4500,5000]),
+      #collector( expr='alleleFreq[1]', name = 'CA_af', 
+      #  at=[500,1000,1500,2000,2500,3000,3500,4000,4500,5000]),
       # report progress
       pyEval(r'"%d\n" % gen',rep=REP_LAST)
       ] + visualizers ,   
