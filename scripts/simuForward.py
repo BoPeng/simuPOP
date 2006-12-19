@@ -778,13 +778,17 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         mutator, 
         rec, 
         savePopulation(burnin_pop, compress=False, at=[burninGen-1]),
-        stat(alleleFreq=DSL, popSize=True),
+        stat(alleleFreq = DSL, popSize =True, end = burninGen, step = 100),
+        stat(alleleFreq = DSL, popSize =True, begin = burninGen, end = burninGen + introLen),
+        stat(alleleFreq = DSL, popSize = True, begin = burninGen + introLen, step = 100),
         # output to screen
         pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+"\n"',
-            step=100),
+            step=100, end = burninGen),
+        pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+"\n"',
+            step=100, begin = burninGen + introLen),
         # output to file (append)
-        pyEval( expr=r'"%d %d " %(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+"\n"',
-            output='>>>'+filename+'.traj')
+        #pyEval( expr=r'"%d %d " %(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+"\n"',
+        #    output='>>>'+filename+'.traj')
     ]
     ###
     ### introduction of disease mutants
@@ -812,15 +816,15 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             pyOperator(func=dynaAdvSelector, param = (minAlleleFreq, maxAlleleFreq, DSL, introSel), 
                 begin=burninGen, end = burninGen + introLen) )
     #
-    operators.append(
+    operators.extend([
         # the simulation will stop if the disease allele frequencies
         # are not within range at the end of this stage
-        terminateIf("True in [(1.-alleleFreq[x][0] < minAlleleFreq or 1.-alleleFreq[x][0] > maxAlleleFreq) for x in DSL]",
-            at = [burninGen + intoLen]), 
+        terminateIf("True in [(1.-alleleFreq[DSL[i]][0] < minAlleleFreq[i] or 1.-alleleFreq[DSL[i]][0] > maxAlleleFreq[i]) for i in range(len(DSL))]",
+            at = [burninGen + introLen]), 
         # terminate if any disease allele get lost
         terminateIf("True in [alleleFreq[x][0] == 1. for x in DSL]",
-            begin = burninGen + intoLen),
-    )  
+            begin = burninGen + introLen),
+    ])  
     ### 
     ### split to subpopulations
     ### 
@@ -860,7 +864,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             param = (burninGen, splitGen, mixingGen, endingGen, filename+'.log'),
             at = [burninGen, splitGen, mixingGen, endingGen ] ), 
         # show elapsed time
-        ticToc(at=[burninGen, splitGen, mixingGen, endingGen]),
+        ticToc(at=[burninGen, burninGen + introLen, splitGen, mixingGen, endingGen]),
         ]
     )
     if len(savePop) > 0:
@@ -909,12 +913,16 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     				infoFields = ['fitness', 'father_idx', 'mother_idx'])
             # save DSL info, some operators will use it.
             pop.dvars().DSL = DSL
+            pop.dvars().minAlleleFreq = minAlleleFreq
+            pop.dvars().maxAlleleFreq = maxAlleleFreq
             pop.dvars().numLoci = numLoci
             simu = simulator(pop, randomMating(), rep=1)
             #
             # evolve! If --dryrun is set, only show info
             simu.evolve( preOps = preOperators, ops = operators, end=endingGen - savedGen,
                 dryrun=dryrun )
+            if dryrun:
+                raise exceptions.SystemError("Stop since in dryrun mode.")
         if simu.gen() != endingGen - savedGen + 1:
             print "Population restarted at gen ", simu.gen()
             print "Overall fixed population ", fixedCount
@@ -922,11 +930,6 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
                 tuple([1-simu.dvars(0).alleleFreq[x][0] for x in DSL]) 
             fixedCount += 1
         else:
-            # evolve! If --dryrun is set, only show info
-            simu.evolve( preOps = preOperators, ops = operators, 
-                end=endingGen-savedGen, dryrun=dryrun )
-            if dryrun:
-                raise exceptions.SystemError("Stop since in dryrun mode.")
             # prepare for the last several generations
             # change mating scheme to random mating.
             #
@@ -962,14 +965,13 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             pop.dvars().mutaRate = mutaRate
             pop.dvars().mutaModel = "symmetric stepwise"
             pop.dvars().migrRate = migrRate
-            pop.dvars().alleleDistInSubPop = alleleDistInSubPop
             pop.dvars().migrModel = "circular stepping stone"
             pop.dvars().recRate = recRate
             pop.dvars().numOffspring = numOffspring
             pop.dvars().numOffMode = numOffMode
             print "Saving population to " + filename + '.' + format + '\n'
             #TurnOnDebug(DBG_UTILITY)
-            simu.population(0).savePopulation(filename+'.'+format)
+            simu.population(0).savePopulation(filename+'.'+format, compress=False)
             break;
     return True
 
@@ -987,7 +989,7 @@ if __name__ == '__main__':
         dryrun, savePop, simuName, format) = allParam
     #
     if markerType == 'SNP':
-        simuOpt.setOptions(alleleType='binary')
+        simuOpt.setOptions(alleleType='short')
     else:
         simuOpt.setOptions(alleleType='short')
         
