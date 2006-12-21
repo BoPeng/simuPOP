@@ -232,6 +232,14 @@ namespace simuPOP
 					if( !m_applyOpToStoppedReps)
 						continue;
 				}
+				
+				// set selection off so that all selector has to be preMating
+				// that is to say, if some one set selection=True in a post mating opertor
+				// it will have no effect
+				DBG_FAILIF(curpopulation().hasVar("selection") && curpopulation().getVarAsBool("selection"),
+					ValueError, "Selection is on from previous generation. Did you use PostMating selector?");
+
+				curpopulation().setBoolVar("selection", false);
 
 				size_t it = 0;					  // asign a value to reduce compiler warning
 
