@@ -162,12 +162,12 @@ important that you build boost libraries with -fPIC flag so that they can be
 linked with simuPOP to generate shared libraries. The command line is likely
 to be:
 
-  > bjam -j4 --prefix=/usr "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLSET=gcc" install
+  > bjam -j4 --prefix=/usr "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLS=gcc" install
 
-Under windows, you command line would be something like (using cygwin/mingw)
- > bjam -j4 "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLSET=mingw" \
-     -sNO_COMPRESSION=0 -sNO_BZIP2=1 -sNO_ZLIB=0 -sZLIB_INCLUDE=/cygdrive/c/zlib/include \
-	 -sZLIB_LIBRARY=/cygdrive/c/zlib/lib -sZLIB_BINARY=zdll install 
+Under windows, you command line would be something like (using mingw)
+ > bjam -j4 "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLS=mingw" \
+     -sNO_COMPRESSION=0 -sNO_BZIP2=1 -sNO_ZLIB=0 -sZLIB_INCLUDE=c:/zlib/include \
+	 -sZLIB_LIBRARY=c:/zlib/lib -sZLIB_BINARY=zdll install 
 because compression is disabled by default under windows. Note that this bjam has
 to be compiled using mingw/gcc, and if build/jam_src/build.sh reports errors,
 run dos2unix on it.
@@ -199,7 +199,8 @@ Windows system with cygwin/mingw32 g++ compiler (free)
 -------------------------------------------------------
 
   1. Use the installer from http://www.cygwin.com/ to install Cygwin, including
-     the g++ compiler and the MingW32 libraries. 
+     the g++ compiler and the MingW32 libraries. Make sure that boost and 
+	 boost-devel are *not* installed.
 
   2. Get pexports from 
       http://www.emmestech.com/software/cygwin/pexports-0.43/pexports-0.43.zip
@@ -253,6 +254,40 @@ NOTE: for python2.4, you can get error saying
   msvcrt70 or msvcrt71 with msvc.
  
 
+Windows system using mingw (without cygwin, recommended)
+--------------------------------------------------------
+
+The problem with cygwin is that it has its own gcc, zlib and boost and it is tricky
+to not use them. Using a system without cygwin, you can
+
+  1. download mingw.exe, choose g++ and install, add c:/mingw/bin to $PATH
+  
+  2. download zlib, unpack to c:\zlib
+  
+  3. download boost, unpack to c:\boost\boost-1_33_1, open a command window
+    > cd \boost\boost-1_33_1\tools\build\jam_src
+	> build.bat
+	copy bjam.exe to c:\boost\boost-1_33_1,
+	> cd \boost\boost-1_33_1
+	> bjam.exe -j4 "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLS=mingw" \
+     -sNO_COMPRESSION=0 -sNO_BZIP2=1 -sNO_ZLIB=0 -sZLIB_INCLUDE=c:/zlib/include \
+	 -sZLIB_LIBRARY=c:/zlib/lib -sZLIB_BINARY=zdll --prefix=c:/boost \
+	 --with-iostreams --with-serialization install 
+	copy zlib/lib to c:/boost/lib to avoid specifying two different paths later.
+	
+  4. download python, install to c:\python24, add c:\python24 to $PATH
+  
+  5. download and unpack simuPOP source to c:\simuPOP
+
+  6. if needed, download swig, unpack to c:\swigwin and add c:\swigwin to $PATH
+
+  7. edit simuPOP\setup.py and see if you have mgw as the TOOLSET, if not change 
+     it.
+
+  8. from simuPOP, do
+     > 
+
+	
 
 Linux-Solaris-MacOSX System
 -----------------------------
