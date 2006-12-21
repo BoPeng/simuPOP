@@ -190,6 +190,15 @@ GSL_FILES = [
     'gsl/error.c' 
 ]
 
+
+SIMUPOP_FILES = [
+    'simuPOP', 
+    'simuOpt', 
+    'simuUtil', 
+    'simuRPy', 
+    'simuViewPop'
+]
+
 ############################################################################
 #
 # MODULE SETTINGS
@@ -215,6 +224,8 @@ if False:
     # feel like compiling mpi version first :-)
     MODULES = ['mpi', 'opmpi', 'lampi', 'laopmpi', 'bampi', 'baopmpi'] + MODULES
 MODU_INFO = {}
+
+SIMUPOP_FILES += ['simuPOP_%s' % x for x in MODULES]
 
 #
 MACROS = {
@@ -259,7 +270,7 @@ for modu in MODULES:
     MODU_INFO[modu]['src'].extend(GSL_FILES)
     # lib
     if os.name == 'nt':    # Windows
-        MODU_INFO[modu]['libraries'] = ['boost_serialization-%s' % TOOLSET, 'boost_iostreams-%s' % TOOLSET, 'stdc++']
+        MODU_INFO[modu]['libraries'] = ['libboost_serialization-mgw-s-1_33_1', 'libboost_iostreams-mgw-s-1_33_1', 'stdc++']
         MODU_INFO[modu]['libraries'].append('zdll')
     else:
         MODU_INFO[modu]['libraries'] = ['boost_serialization-%s' % TOOLSET, 'boost_iostreams-%s' % TOOLSET, 'stdc++']
@@ -267,6 +278,8 @@ for modu in MODULES:
     MODU_INFO[modu]['include_dirs'] = ['.']
     #
     MODU_INFO[modu]['library_dirs'] = ['build']
+    if os.name == 'nt':
+        MODU_INFO[modu]['library_dirs'].append('win32')
     MODU_INFO[modu]['extra_compile_args'] = ['-O3']
     # define_macros
     MODU_INFO[modu]['define_macros'] = MACROS[modu]
@@ -397,17 +410,9 @@ setup(
     long_description = DESCRIPTION, 
     url = "http://simupop.sourceforge.net",
     package_dir = {'': 'src' }, 
-    py_modules = ['simuPOP', 'simuOpt', 'simuUtil', 'simuSciPy', 'simuMatPlt', 'simuRPy', 'simuViewPop'] + \
-        ['simuPOP_%s' % x for x in MODULES],
+    py_modules = SIMUPOP_FILES,
     ext_modules = EXT_MODULES,
     data_files = DATA_FILES
 )
 
-# keep the source code of snapshot version since snapshot may be 
-# changed frequently.
-#if not SIMUPOP_VER == 'snapshot':
-#    for modu in MODULES:
-#        for src in MODU_INFO[modu]['src']:
-#            # if this file is derived.
-#            if '_'+modu in src:
-#                os.remove(src)
+

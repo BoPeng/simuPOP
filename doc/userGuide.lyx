@@ -3665,7 +3665,16 @@ preview false
 \end_layout
 
 \begin_layout Section
-Population structure
+Population structure and migration
+\end_layout
+
+\begin_layout Standard
+It is relatively easy to split and merge populations in simuPOP, but two
+ techinuques need to be combined.
+ First, mating schemes do not split or merge populations and it must population
+ subpopulations from corresponding subpopulations from the ancestral generation.
+ Therefore, population(s) have to be split or merged before mating.
+ 
 \end_layout
 
 \begin_layout Standard
