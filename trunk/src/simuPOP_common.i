@@ -58,6 +58,12 @@ extern "C"
 }
 %}
 
+// this is a dirty hack for the mingw/msvcrt _ctype problem.
+%{
+#ifdef _WIN32
+short ** _imp___ctype = 0;
+#endif
+%}
 
 ////////////////////////// CLEAN EXTRA SYMBOLS //////////////////////////
 
