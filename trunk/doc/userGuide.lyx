@@ -2138,7 +2138,7 @@ Set parameters
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/reich0.py}
+\begin_inset Include \verbatiminput{reich0.py}
 preview false
 
 \end_inset
@@ -2301,6 +2301,8 @@ population()
 \end_inset
 
 .
+ Note that because we use loci with more than 255 allele states, the long
+ allele module is used.
 \end_layout
 
 \begin_layout Standard
@@ -2318,7 +2320,7 @@ Create a simulator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/reich1.py}
+\begin_inset Include \verbatiminput{reich1.py}
 preview false
 
 \end_inset
@@ -2454,7 +2456,7 @@ Run the simulator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/reich2.py}
+\begin_inset Include \verbatiminput{reich2.py}
 preview false
 
 \end_inset
@@ -2472,67 +2474,394 @@ Output statistics
 \end_layout
 
 \begin_layout Standard
+We first want to output total disease allele frequency of each locus.
+ This is easy since 
+\family typewriter
+stat()
+\family default
+ operator can calculate allele frequency for us.
+ What we need to do is use 
+\family typewriter
+stat()
+\family default
+ operator to calculate allele frequency and set variable 
+\family typewriter
+alleleFreq 
+\family default
+(and 
+\family typewriter
+alleleNum
+\family default
+) in each population's local namespace,
+\end_layout
+
+\begin_layout LyX-Code
+stat(alleleFreq=[0,1]),
+\end_layout
+
+\begin_layout Standard
+and then use a 
+\family typewriter
+pyEval 
+\family default
+(python expression) operator to print out the values:
+\end_layout
+
+\begin_layout LyX-Code
+pyEval(r'
+\begin_inset Quotes erd
+\end_inset
+
+%.3f
+\backslash
+t%.3f
+\backslash
+n
+\begin_inset Quotes erd
+\end_inset
+
+ % (1-alleleFreq[0][0], 1-alleleFreq[1][0])')
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+pyEval
+\family default
+ operator can accept any valid python expression so the above expression
+ calculate 
+\begin_inset Formula $f_{0}=\sum_{i=1}^{\infty}f_{i}$
+\end_inset
+
+ at each locus (0 and 1) and print it in the format of 
+\family typewriter
+'%.3f
+\backslash
+t%.3f
+\backslash
+n'
+\family default
+.
+\end_layout
+
+\begin_layout Standard
 There is no operator to calculate effective number of alleles 
 \begin_inset LatexCommand \citep{Reich2001a}
 
 \end_inset
 
  so we need to do that by ourselves, using allele frequencies.
- A python operator is needed
+ The formula to calculate effective number of alleles is
+\begin_inset Formula \[
+n_{e}=\left(\sum_{i}\left(\frac{f_{i}}{f_{0}}\right)^{2}\right)^{-1}\]
+
+\end_inset
+
+where 
+\begin_inset Formula $f_{i}$
+\end_inset
+
+ is the allele frequency of disease allele 
+\begin_inset Formula $i$
+\end_inset
+
+ , and 
+\begin_inset Formula $f_{0}$
+\end_inset
+
+ is defined as above.
+ To calculate 
+\begin_inset Formula $n_{e}$
+\end_inset
+
+ at the first locus, we can use a 
+\family typewriter
+pyEval
+\family default
+ operator (a direct translation of the formula):
+\end_layout
+
+\begin_layout LyX-Code
+pyEval('1./sum([(x/(1-alleleFreq[0][0]))**2 for x in alleleFreq[0][1:]])')
+\end_layout
+
+\begin_layout Standard
+However, this expression looks complicated and can not handle the case when
+ 
+\begin_inset Formula $f_{0}=0$
+\end_inset
+
+.
+ A more complicated, and robust method is using the 
+\family typewriter
+stmts
+\family default
+ parameter of 
+\family typewriter
+pyEval
+\family default
+, which will be evaluated before parameter 
+\family typewriter
+expr
+\family default
+ ,
+\end_layout
+
+\begin_layout LyX-Code
+pyEval(stmts='''ne = [0,0]
+\end_layout
+
+\begin_layout LyX-Code
+for i in range(2):
+\end_layout
+
+\begin_layout LyX-Code
+    freq = alleleFreq[i][1:]
+\end_layout
+
+\begin_layout LyX-Code
+    f0 = 1 - alleleFreq[i][0]
+\end_layout
+
+\begin_layout LyX-Code
+    if f0 == 0:
+\end_layout
+
+\begin_layout LyX-Code
+        ne[i] = 0
+\end_layout
+
+\begin_layout LyX-Code
+    else:
+\end_layout
+
+\begin_layout LyX-Code
+        ne[i] = 1./sum([(x/f0)**2 for x in freq])
+\end_layout
+
+\begin_layout LyX-Code
+''', expr=r'
+\begin_inset Quotes erd
+\end_inset
+
+%.4f
+\backslash
+t%.4f
+\backslash
+n
+\begin_inset Quotes erd
+\end_inset
+
+ % (ne[0], ne[1])')
+\end_layout
+
+\begin_layout Standard
+As you can see, the 
+\family typewriter
+pyEval
+\family default
+ can be really complicated and calculate any statistics.
+ However, if you plan to calculate more statistics, a pure python operator
+ may be easier to write.
+ The simplest form of a python operator is just a python function that accept
+ a population as the first paramter (and an optional parameter),
+\end_layout
+
+\begin_layout LyX-Code
+def ne(pop):
+\end_layout
+
+\begin_layout LyX-Code
+    ' calculate effective number of alleles '
+\end_layout
+
+\begin_layout LyX-Code
+    Stat(pop, alleleFreq=[0,1])
+\end_layout
+
+\begin_layout LyX-Code
+    f0 = [0, 0]
+\end_layout
+
+\begin_layout LyX-Code
+    ne = [0, 0]
+\end_layout
+
+\begin_layout LyX-Code
+    for i in range(2):
+\end_layout
+
+\begin_layout LyX-Code
+        freq = pop.dvars().alleleFreq[i][1:]
+\end_layout
+
+\begin_layout LyX-Code
+        f0[i] = 1 - pop.dvars().alleleFreq[i][0]
+\end_layout
+
+\begin_layout LyX-Code
+        if f0[i] == 0:
+\end_layout
+
+\begin_layout LyX-Code
+            ne[i] = 0
+\end_layout
+
+\begin_layout LyX-Code
+        else:
+\end_layout
+
+\begin_layout LyX-Code
+            ne[i] = 1.
+ / sum([(x/f0[i])**2 for x in freq])
+\end_layout
+
+\begin_layout LyX-Code
+    print '%d
+\backslash
+t%.3f
+\backslash
+t%.3f
+\backslash
+t%.3f
+\backslash
+t%.3f
+\backslash
+n' % (pop.gen(), f0[0], f0[1], ne[0], ne[1])
+\end_layout
+
+\begin_layout LyX-Code
+    return True
+\end_layout
+
+\begin_layout Standard
+Then, you can use this function in a python operator
+\end_layout
+
+\begin_layout LyX-Code
+pyOperator(func=ne, step=5)
+\end_layout
+
+\begin_layout Standard
+The biggest difference between 
+\family typewriter
+pyEval 
+\family default
+and 
+\family typewriter
+pyOperator
+\family default
+ is that 
+\family typewriter
+pyOperator 
+\family default
+is no longer evaluated in the population's local namespace.
+ You will have to get the vars explicitly using the 
+\family typewriter
+pop.dvars()
+\family default
+ function.
+ This also implies that you can do whatever you want to the population.).
+ In this example, the function form of the 
+\family typewriter
+stat
+\family default
+ operator is used to explicitly calculate allele frequency.
+ The results are also explicitly printed using the 
+\family typewriter
+print
+\family default
+ command.
+ The explicities lead to longer, but clearer program.
+ This becomes obvious when you need to calculate and print many statistics.
+\end_layout
+
+\begin_layout Standard
+The following program uses the 
+\family typewriter
+pyOperator
+\family default
+ solution.
+ In this program, user can input two demographic models as command line
+ parameter.
+ Two other operators are used
+\end_layout
+
+\begin_layout Itemize
+A 
+\family typewriter
+ticToc 
+\family default
+operator that prints out elapsed time at every 100 generations
+\end_layout
+
+\begin_layout Itemize
+A 
+\family typewriter
+pause
+\family default
+ opertor that pause the simulation whenever you press a key.
+ You can actually enter a python command shell to examine the results.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{alg:reich3}
+
+\end_inset
+
+The whole program
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{reich3.py}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\lyxline
+
 \end_layout
 
 \begin_layout Section
-conventions of simuPOP scripts
+Option handling
 \end_layout
 
 \begin_layout Standard
-Although you can treat simuPOP as a regular python module and use it in
- whatever way you have got used to, all bundled simuPOP scripts follow the
- same set of conventions.
- If you follow the style guide, your simuPOP script should be able to 
-\end_layout
-
-\begin_layout Itemize
-use a dialog to input parameters (when tkinter or wxPython is installed)
-\end_layout
-
-\begin_layout Itemize
-use -h or --help to view help information and description of options 
-\end_layout
-
-\begin_layout Itemize
-use 
+Everything seems to be perfect until you need to run more simulations with
+ different parameters like initial population size.
+ Editing the script again and again is out of the question.
+ Since this script is a python script, it is tempting to use python modules
+ like 
 \family typewriter
---noDialog 
+getopt
 \family default
-to suppress parameter dialog and input parameters through short or long
- command line arguments, a configuration file, or input when being prompted.
- A default value will be used if you press enter directly.
-\end_layout
-
-\begin_layout Itemize
-be able to save currently used parameters into a configuration file (
+ to parse options from command line.
+ A better choice would be using the 
 \family typewriter
---saveConfig
+simuOpt
 \family default
-) and reuse it through (
-\family typewriter
--c
-\family default
- or
-\family typewriter
- --config
-\family default
- option)
-\end_layout
-
-\begin_layout Standard
-Let us look at one example 
-\family typewriter
-simuLDDecay.py
-\family default
- closely.
- This is one of the scripts located in 
+ module.
+ Using this module properly, your simuPOP should be able to get options
+ from short or long command line option, from a configuration file, from
+ a tkInter of wxPython dialog, or from user input.
+ Taking 
 \family typewriter
 c:
 \backslash
@@ -2544,10 +2873,9 @@ simuPOP
 \backslash
 scripts
 \backslash
-
+simuLDDecay.py
 \family default
-.
- You can run this script as follows:
+ as an example, you can run this script as follows:
 \end_layout
 
 \begin_layout Itemize
@@ -2611,7 +2939,15 @@ decay.cfg
 
 \end_deeper
 \begin_layout Itemize
-and of course use
+and of course use 
+\family typewriter
+-c
+\family default
+ or 
+\family typewriter
+--config
+\family default
+,
 \end_layout
 
 \begin_deeper
@@ -2624,8 +2960,10 @@ to load parameters from the config file.
 \end_layout
 
 \end_deeper
-\begin_layout Section
-Structure of simuPOP scripts
+\begin_layout Standard
+The last function is very useful since you freqently need to run many slightly
+ different simulations, saving a configuration file along with your results
+ will make your life much easier.
 \end_layout
 
 \begin_layout Standard
@@ -2692,101 +3030,36 @@ options = [
 These parameters will be handled by simuPOP automatically.
  Users will be able to set them through command line, configuration file,
  Tkinter- or wxPython-based GUI.
+ The detailed description of this structure is given in simuPOP reference
+ manual.
 \end_layout
 
 \end_deeper
 \begin_layout Enumerate
-Optional auxillary functions
+Main simulation functions
 \end_layout
 
 \begin_layout Enumerate
-Optional main evolution function
+In the executable part of the script (under 
+\family typewriter
+__name__ == '__main__'
+\family default
+), you should call 
+\family typewriter
+simuOpt.getParam
+\family default
+ to let 
+\family typewriter
+simuOpt
+\family default
+ handle all parameter input for you and obtain a list of parameters.
+ You usually need to handle some special cases (
+\family typewriter
+-h, --saveConfig
+\family default
+ etc), and they are all standard.
 \end_layout
 
-\begin_deeper
-\begin_layout LyX-Code
-def simulation(....)
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-Executable part (for example):
-\end_layout
-
-\begin_deeper
-\begin_layout LyX-Code
-if __name__ == '__main__':  
-\end_layout
-
-\begin_layout LyX-Code
-  allParam = simuOpt.getParam(options,
-\end_layout
-
-\begin_layout LyX-Code
-    ''' A short description ''', __doc__)
-\end_layout
-
-\begin_layout LyX-Code
-  # if user press cancel,
-\end_layout
-
-\begin_layout LyX-Code
-  if len(allParam) == 0:
-\end_layout
-
-\begin_layout LyX-Code
-    sys.exit(1)
-\end_layout
-
-\begin_layout LyX-Code
-  # -h or --help
-\end_layout
-
-\begin_layout LyX-Code
-  if allParam[0]:  
-\end_layout
-
-\begin_layout LyX-Code
-    print simuOpt.usage(options, __doc__)
-\end_layout
-
-\begin_layout LyX-Code
-    sys.exit(0)
-\end_layout
-
-\begin_layout LyX-Code
-  # sace configuration, something like
-\end_layout
-
-\begin_layout LyX-Code
-  if allParam[-2] != None:
-\end_layout
-
-\begin_layout LyX-Code
-     simuOpt.saveConfig(options, allParam[-2]+'.cfg', allParam)  
-\end_layout
-
-\begin_layout LyX-Code
-  # get the parameters, something like
-\end_layout
-
-\begin_layout LyX-Code
-  N = allParam[1]
-\end_layout
-
-\begin_layout LyX-Code
-  # run the simulation
-\end_layout
-
-\begin_layout LyX-Code
-  simulation(N) 
-\end_layout
-
-\begin_layout LyX-Code
-  
-\end_layout
-
-\end_deeper
 \begin_layout Standard
 You will notice that 
 \family typewriter
@@ -2800,11 +3073,56 @@ n, validation, print usage, save configuration file.
 scripts 
 \family default
 directory as a template for your new script.
+ The following example 
+\begin_inset LatexCommand \ref{alg:reich4}
+
+\end_inset
+
+ shows the begining and the execution part of the complete 
+\family typewriter
+reich.py
+\family default
+ script, which can be found under the doc directory.
  For a complete reference of the Options structure, please refer to the
  reference manual.
 \end_layout
 
-\begin_layout Section
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{alg:reich4}
+
+\end_inset
+
+Option handling
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \verbatiminput{reich4.py}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\lyxline
+
+\end_layout
+
+\begin_layout Chapter
 Using simuPOP operators
 \end_layout
 
