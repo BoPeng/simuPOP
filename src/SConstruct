@@ -172,7 +172,7 @@ for mod in MODULES:
     lib = env.SharedLibrary(
         target = '$BDIR/_simuPOP_%s.so'%mod,
         source = ['$BDIR/%s_%s.cpp' % (x, mod) for x in src] + ['$BDIR/simuPOP_%s.i'%mod],
-        LIBS = ['boost_serialization-gcc-d', 'boost_iostreams-gcc-d', 'gsl', 'z', 'stdc++'] + mpi_libs,
+        LIBS = ['boost_serialization-gcc34-d', 'boost_iostreams-gcc34-d', 'gsl', 'z', 'stdc++'] + mpi_libs,
         CC = cc,
         CXX = cxx,
         SHLINK = ldshared,
