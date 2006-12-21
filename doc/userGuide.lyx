@@ -1948,7 +1948,7 @@ rep, grp, begin, end, step, at, stage
 \end_layout
 
 \begin_layout Chapter
-Programming simuPOP
+Writing simuPOP scripts
 \end_layout
 
 \begin_layout Standard
@@ -2351,13 +2351,14 @@ initByFreq
 \end_layout
 
 \begin_layout LyX-Code
-# initialize locus 0 (for common disease)             initByFreq(atLoci=[0],
- alleleFreq=C_f),
-\end_layout
+# initialize locus 0 (for common disease)
+\newline
+initByFreq(atLoci=[0], alleleFreq=C_f),
+\newline
 
-\begin_layout LyX-Code
-# initialize locus 1 (for rare disease)             initByFreq(atLoci=[1],
- alleleFreq=R_f),
+# initialize locus 1 (for rare disease)
+\newline
+initByFreq(atLoci=[1], alleleFreq=R_f),
 \end_layout
 
 \begin_layout Section
@@ -3123,7 +3124,7 @@ preview false
 \end_layout
 
 \begin_layout Chapter
-Using simuPOP operators
+Selected topics
 \end_layout
 
 \begin_layout Standard
@@ -3164,14 +3165,49 @@ k
 
 ); pedigree tracing, visualization (using R or other Python modules), load/save
  in text, XML, Fstat or Linkage format.
- Each of these operators accept a number of parameters that allow it to
- be applied at any given stage of a life-cycle, at any generation and so
- on.
- 
+ In this chapter, I will discuss some practical usages of simuPOP.
 \end_layout
 
-\begin_layout Subsection
-Use of hybrid opertor
+\begin_layout Section
+Hybrid and pure-Python operator
+\end_layout
+
+\begin_layout Standard
+Despite the large number of built-in operators, it is obviously not possible
+ to implement every genetics models available.
+ For example, although simuPOP provides several penetrance models, a user
+ may want to try a customized one.
+ In this case, one can use a simuPOP feature called 
+\emph on
+hybrid operator
+\emph default
+.
+ Such operators accept a Python function and will call this function with
+ appropriate parameter(s) when needed.
+ For example, example 
+\begin_inset LatexCommand \ref{cap:hybrid-operator}
+
+\end_inset
+
+ defines a three-locus heterogeneity penetrance model 
+\begin_inset LatexCommand \citep{Risch1990}
+
+\end_inset
+
+ that yields positive penetrance only when at least two disease susceptibility
+ alleles are available.
+ The underlying mechanism of this operator is that for each individual,
+ simuPOP will collect genotype at specified loci (
+\family typewriter
+loci
+\family default
+) and send them to function 
+\family typewriter
+myPenetrance
+\family default
+ and evaluate.
+ The return values are used as the penetrance value of the individual, which
+ is then interpreted as the probability of being affected.
 \end_layout
 
 \begin_layout Standard
@@ -3189,41 +3225,12 @@ An example of hybrid operators
 \end_layout
 
 \begin_layout LyX-Code
-def myPenetrance(geno):
-\end_layout
+\begin_inset Include \verbatiminput{hybrid.py}
+preview false
 
-\begin_layout LyX-Code
-  'return penetrance given genotype at spcified disease loci'
-\end_layout
+\end_inset
 
-\begin_layout LyX-Code
-  if geno.count(1) < 3:
-\end_layout
 
-\begin_layout LyX-Code
-    return 0.
-\end_layout
-
-\begin_layout LyX-Code
-  else:
-\end_layout
-
-\begin_layout LyX-Code
-    return 1-(1-(geno[0]+geno[1])*0.25)* 
-\backslash
-
-\end_layout
-
-\begin_layout LyX-Code
-      (1-(geno[2]+geno[3])*0.25)*(1-(geno[4]+geno[5])*0.25)
-\end_layout
-
-\begin_layout LyX-Code
-# now, use this function in a hybrid operator as follows
-\end_layout
-
-\begin_layout LyX-Code
-pyPenetrance( atLoci=[10,20,30], func=myPenetrance)
 \end_layout
 
 \end_inset
@@ -3232,63 +3239,198 @@ pyPenetrance( atLoci=[10,20,30], func=myPenetrance)
 \end_layout
 
 \begin_layout Standard
-Despite the large number of built-in operators, it is obviously not possible
- to implement every genetics models available.
- For example, although simuPOP provides several penetrance models, a user
- may want to try a customized one.
- In this case, one can use a simuPOP feature called 
-\emph on
-hybrid operator
-\emph default
-.
- Such operators accept a Python function and will call this function with
- appropriate parameter(s) when needed.
- For example, Algorithm 
+Example 
 \begin_inset LatexCommand \ref{cap:hybrid-operator}
 
 \end_inset
 
- defines a three-locus heterogeneity penetrance model 
-\begin_inset LatexCommand \citep{Risch1990}
-
-\end_inset
-
- that yields positive penetrance only when at least two disease susceptibility
- alleles are available.
- The underlying mechanism of this operator is that for each individual,
- simuPOP will collect genotype at specified loci (
+ uses the function form of operator 
 \family typewriter
-atLoci
+pyPenetrance
 \family default
-) and send them to function 
+ and 
 \family typewriter
-myPenetrance
+stat
 \family default
- and evaluate.
- The return value will be used as the penetrance value of the individual.
- 
+ and you should use the operator form in a simulator.
+ In these functions, operators are created with the same set of parameters
+ as their operator form, applied to the population, and are destroyed afterward.
+ For example,
 \end_layout
 
-\begin_layout Subsection
-Use of pure python operator
+\begin_layout LyX-Code
+PyPenetrance(pop, parameters)
 \end_layout
 
 \begin_layout Standard
-If hybrid operators are still not flexible enough, it is possible to write
- operators in Python.
+is the same as
+\end_layout
+
+\begin_layout LyX-Code
+pyPenetrance(parameters).apply(pop)
+\end_layout
+
+\begin_layout Standard
+Of course, parameters 
+\family typewriter
+begin, end, step
+\family default
+ etc become meaningless in the function form.
+ Note that if you need to apply the same operator to dozens of populations,
+ creating one operator and applying it to all populations is more efficient
+ than using the function form, since dozens of operators will be created
+ and destroyed for each population in the latter usage.
+\end_layout
+
+\begin_layout Standard
+If hybrid operators are still not flexible enough, you can write operators
+ in Python.
  Such operators will have full access to the evolving population, and can
- therefore perform arbitrary operations to it.
- For example, one can define a frequency-dependent selection operator (see
- Algorithm 
+ therefore perform arbitrary operations on it.
+ A pure-python operator has been used in the previous chapter where complex
+ statistics are calculated and printed.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
 \begin_inset LatexCommand \ref{cap:pyOpeartor}
 
 \end_inset
 
-) that have different selection pressures depending on current disease allele
+ uses a python operator to define a frequency-dependent selection operator
+ which has different selection pressures depending on current disease allele
  frequency.
- Of course, to use such operators, one should have a deeper understanding
- of simuPOP.
+ In this example, a population is initialized with disease allele frequency
+ 0.3 (allele 1).
+ Then, at each generation, a python function 
+\family typewriter
+freqDependSelector
+\family default
+ is called.
+ This function
+\end_layout
+
+\begin_layout Itemize
+unpact parameters (
+\family typewriter
+DSL, min, max
+\family default
+)
+\end_layout
+
+\begin_layout Itemize
+calculate allele frequency at the disease locus
+\end_layout
+
+\begin_layout Itemize
+if disease allele frequency is less than 
+\family typewriter
+min
+\family default
+, apply a multi-allele selector and give disease allele strong advantage
+ selection;
+\end_layout
+
+\begin_layout Itemize
+if disease allele frequency is greater than 
+\family typewriter
+max
+\family default
+, apply a multi-allele selector and give disease allele strong purifying
+ selection;
+\end_layout
+
+\begin_layout Standard
+The result of this operator, unseen to users, is individual 
+\family typewriter
+fitness 
+\family default
+values set by one of (maybe none of) the multi-allele selector, which will
+ be used by 
+\family typewriter
+randomMating()
+\family default
+ to select individuals accordingly to population the next generation.
+\end_layout
+
+\begin_layout Standard
+One tricky point of this python operator is that although selectors are
  
+\family typewriter
+PreMating
+\family default
+, namely fitness will be calculated before mating, 
+\family typewriter
+pyOperator
+\family default
+ is 
+\family typewriter
+PostMating
+\family default
+.
+ To calculate 
+\family typewriter
+fitness 
+\family default
+before mating, a 
+\family typewriter
+stage=PreMating
+\family default
+ parameter should be used.
+ Otherwise, the fitness will be calculated for the offspring generation,
+ not the current generation, as shown below:
+\end_layout
+
+\begin_layout LyX-Code
+preMating | mating -> offspring generation | postMating, fitness calculated
+\end_layout
+
+\begin_layout LyX-Code
+preMating | mating -> ...
+\end_layout
+
+\begin_layout Standard
+Then, because the simulator clears selection flag at the begining of each
+ generation, the fitness will not be used.
+ Tricky enough, right? The good news is that 
+\end_layout
+
+\begin_layout Itemize
+If you are using non-optimization libraries, simulation will fail if selection
+ flag is on at the beginning of a generation.
+ This prevents the use of post-mating selectors.
+\end_layout
+
+\begin_layout Itemize
+If you are not sure in which order the operators are applied, use the 
+\family typewriter
+dryrun=True
+\family default
+ in the evolve function.
+ 
+\family typewriter
+evolve()
+\family default
+ function will do nothing but printing out when and in which order operators
+ will be applied.
+\end_layout
+
+\begin_layout Standard
+Pure-python operators are extremely flexible and even more complicated form
+ can be used.
+ For example, 
+\family typewriter
+varPlotter
+\family default
+ in 
+\family typewriter
+simuRPy.py
+\family default
+ is a class with an instance of different plotters, and a python operator
+ is used to call one of them.
+ Such advanced usage of pure Python operator is beyond the scope of this
+ guide.
 \end_layout
 
 \begin_layout Standard
@@ -3306,89 +3448,7 @@ A frequency dependent selection operator
 \end_layout
 
 \begin_layout LyX-Code
-def freqDependSelector(pop):
-\end_layout
-
-\begin_layout LyX-Code
-  ''' This selector will try to control disease allele
-\end_layout
-
-\begin_layout LyX-Code
-  frequency by applying advantage/purifying selection 
-\end_layout
-
-\begin_layout LyX-Code
-  to DSL according to allele frequency at each DSL.
- '''
-\end_layout
-
-\begin_layout LyX-Code
-  # parameters are stored with population
-\end_layout
-
-\begin_layout LyX-Code
-  DSL = pop.dvars().DSL
-\end_layout
-
-\begin_layout LyX-Code
-  # Calculate allele frequency
-\end_layout
-
-\begin_layout LyX-Code
-  Stat(pop, alleleFreq=[DSL])
-\end_layout
-
-\begin_layout LyX-Code
-  # apply advantage/purifying selection accordingly
-\end_layout
-
-\begin_layout LyX-Code
-  if 1-pop.dvars().alleleFreq[DSL][1] < pop.dvars().minAlleleFreq:
-\end_layout
-
-\begin_layout LyX-Code
-    MaSelector(pop, locus=DSL, fitness=[1,1.5,2])
-\end_layout
-
-\begin_layout LyX-Code
-  elif 1-pop.dvars().alleleFreq[DSL][1] > pop.dvars().maxAlleleFreq:
-\end_layout
-
-\begin_layout LyX-Code
-    MaSelector(pop, locus=DSL, fitness=[1,0.9,0.8])
-\end_layout
-
-\begin_layout LyX-Code
-  return True
-\end_layout
-
-\begin_layout LyX-Code
-#
-\end_layout
-
-\begin_layout LyX-Code
-# Then, use this operator like
-\end_layout
-
-\begin_layout LyX-Code
-pyOperator(func=freqDependSelector, begin=100, end=200)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Chapter
-Some Real Examples
-\end_layout
-
-\begin_layout Section
-Decay of Linkage Disequilibrium
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/expLD.log}
+\begin_inset Include \verbatiminput{pyOperator.py}
 preview false
 
 \end_inset
@@ -3396,21 +3456,201 @@ preview false
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Information fields
+\end_layout
+
 \begin_layout Standard
-Hopefully, the program is not too difficult to understand.
+Information fields are, in short, double values attached to each individual.
+ Since different applications require different information fields, simuPOP
+ takes a minimal approach in that no information field will be used (to
+ save RAM) by default.
+ When you apply an operator that needs a particular field, and your population
+ does not have it, an error message will be given so that you can add appropriat
+e fields to the 
+\family typewriter
+infoFields 
+\family default
+parameter of 
+\family typewriter
+population()
+\family default
+, or use 
+\family typewriter
+setInfoFields(), addInfoField(), addInfoFields()
+\family default
+ member functions to add them.
+ Commonly used information fields are
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+fitness: 
+\family default
+used by all selectors, and by mating schemes
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+father_idx, mother_id
+\family default
+x: used by taggers to track parental information
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+spouse, pedindex, oldindex:
+\family default
+ used by ascertainment operators to obtain pedigree information.
+\end_layout
+
+\begin_layout Standard
+Besides these standard information fields, you can define any fields for
+ your use.
+ The most frequently used functions are
+\family typewriter
+ individual::setInfo(value, field), individual::info(field), population::setIndI
+nfo(values, field)
+\family default
+ and
+\family typewriter
+ population::indInfo(field).
  
-\end_layout
-
-\begin_layout Section
-Recombinator, Mutator, Migrator ...
+\family default
+Here field can be the name of the field, or an id returned by 
+\family typewriter
+population::infoIdx(field)
+\family default
+.
+ Accessing information fields using indices is faster than using names.
 \end_layout
 
 \begin_layout Standard
-Here is an example when all genetic forces are in effect:
+In the following example (Example 
+\begin_inset LatexCommand \ref{cap:infoFields}
+
+\end_inset
+
+), a proportional hazard model is used to determine the age of onset of
+ an individual with given genotype.
+ Briefly,
+\end_layout
+
+\begin_layout Itemize
+The base hazard is 
+\begin_inset Formula $h_{0}\left(t\right)=\beta_{0}t$
+\end_inset
+
+, the corresponding survival function is 
+\begin_inset Formula $S\left(s\right)=\exp\left(-\int_{0}^{s}h\left(t\right)dt\right)$
+\end_inset
+
+.
+ The age of onset is determined randomly by the survival function.
+ (
+\begin_inset Formula $F\left(x\right)=1-S\left(x\right)$
+\end_inset
+
+ is used in the example.) The relevant functions are 
+\family typewriter
+hazard, cumHazard, cdf, ageOfOnset
+\family default
+.
+ In the last function, 
+\begin_inset Formula $\beta$
+\end_inset
+
+ is the fold change of the hazard function so 
+\begin_inset Formula $h\left(t,\beta\right)=\beta\beta_{0}t$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Date of birth is calculated as 2005 - age, where age is 
+\begin_inset Formula $U\left(0,75\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+The proportional hazard model is
+\begin_inset Formula \[
+h\left(t,X\right)=h_{0}\left(t\right)\exp\left(\beta X\right)\]
+
+\end_inset
+
+where 
+\begin_inset Formula $X$
+\end_inset
+
+ is the number of disease alleles at the given disease susceptibility loci.
+ The age of onset is determined by individual 
+\begin_inset Formula $h\left(t,X\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Affection status is determined by date of birth + age of onset < 2005.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/expcomplex.log}
+The program is pretty self-explainary so I do not comment on the code here.
+ The resulting population has information fields 
+\family typewriter
+DateOfBirth
+\family default
+,
+\family typewriter
+ betaX
+\family default
+ and
+\family typewriter
+ ageOfOnset
+\family default
+.
+ Note that this example does not any operator or simulator, and demonstrate
+ simuPOP's ability to manipulation populations.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:infoFields}
+
+\end_inset
+
+Proportional hazard model and use of information fields
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{infoFields.py}
 preview false
 
 \end_inset
@@ -3418,8 +3658,14 @@ preview false
 
 \end_layout
 
+\begin_layout LyX-Code
+
+\lyxline
+
+\end_layout
+
 \begin_layout Section
-Complex Migration Scheme
+Population structure
 \end_layout
 
 \begin_layout Standard
@@ -3468,7 +3714,227 @@ It should not be difficult to add recombinator, selectors to this model.
 \end_layout
 
 \begin_layout Section
-Association Mapping with Genomic Control
+Sex chromosomes
+\end_layout
+
+\begin_layout Section
+Pedigree tracking
+\end_layout
+
+\begin_layout Standard
+Pedigree tracking is not easy.
+ simuPOP provides the following functions
+\end_layout
+
+\begin_layout Itemize
+If you set ancestral depth of a population to a positive number (default
+ 0), ancestral depth number of ancestral generations will be saved to the
+ population, which makes a total of ancestral depth + 1 generations.
+\end_layout
+
+\begin_layout Itemize
+You can use 
+\family typewriter
+population::useAncestralPop(idx)
+\family default
+ to use current (0), parental (1), grand-parental (2) generations etc.
+ Just remember to call 
+\family typewriter
+population::useAncestralPop(0)
+\family default
+ to set current generation back.
+\end_layout
+
+\begin_layout Itemize
+You can set 
+\family typewriter
+ancestralDepth
+\family default
+ dynamically using operator 
+\family typewriter
+setAncestralDepth.
+
+\family default
+ Usually, this operator is called, for example, as 
+\family typewriter
+setAncestralDepath(at=[-2])
+\family default
+, to allow last several generations to be saved at the end of evolution.
+\end_layout
+
+\begin_layout Itemize
+No parental information is saved by default we usually do not know the parents
+ of an offspring.
+ This can be changed by using the 
+\family typewriter
+father_idx
+\family default
+ and 
+\family typewriter
+mother_idx
+\family default
+ information fields, and an appropriate tagger such as 
+\family typewriter
+parentTagger()
+\family default
+, which is a during mating operator that will record the parents' indices
+ in the parental generation to offspring's information fields.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+randomMating()
+\family default
+ only produce one offspring per mating event.
+ This makes full siblings very unlikely.
+ You usually need to change this at the last several generations.
+\end_layout
+
+\begin_layout Standard
+You can see that generating multi-generation populations are quite different
+ from the usual evolutionary process where random mating is used, and one
+ offspring is generated for each mating event.
+ In practise (see 
+\family typewriter
+scripts/simuComplexDisease.py
+\family default
+), if we need to prepare a population for pedigree sampling, we do something
+ like this
+\end_layout
+
+\begin_layout LyX-Code
+simu.evolve(
+\end_layout
+
+\begin_layout LyX-Code
+    preOps=[...],
+\end_layout
+
+\begin_layout LyX-Code
+    ops = operators,
+\end_layout
+
+\begin_layout LyX-Code
+    end = 1000 - 2
+\end_layout
+
+\begin_layout LyX-Code
+)
+\end_layout
+
+\begin_layout LyX-Code
+# need to do this to all replicate if you have more
+\end_layout
+
+\begin_layout LyX-Code
+simu.population(0).setAncestralDepth(2)
+\end_layout
+
+\begin_layout LyX-Code
+simu.population(0).addInforFields(['father_idx', 'mother_idx'])
+\end_layout
+
+\begin_layout LyX-Code
+operators.append(parentsTagger())
+\end_layout
+
+\begin_layout LyX-Code
+simu.setMatingScheme(randomMating(numOffspring=2))
+\end_layout
+
+\begin_layout LyX-Code
+simu.evolve(ops=operators, end=1000)
+\end_layout
+
+\begin_layout Standard
+That is to say, we separate the simulation into two parts.
+ The first part is geared toward performance and maximum effective population
+ size (use true random mating), and the second part is tweaked for the fianl
+ multi-generation population.
+\end_layout
+
+\begin_layout Standard
+Now, at the end of the simulation, you get a population with multiple generation
+s, with parental information.
+ But it is still not easy to obtain pedigrees.
+ As a matter of fact, since pedigrees can have intersections, it is not
+ even easy to define a pedigree.
+ simuPOP provides two pedigree ascertainment operators
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+AffectedSibpairSample
+\family default
+: sample affected sibpairs, along with their parents from a population.
+ Affection status should have been set by other means such as a penetrance
+ opeartor.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+LargePedigreeSample:
+\family default
+ sample grand parents, their children, and the spouse and children of them.
+ Affection status is ignored, although the minimal number of affected individual
+s in each family can be specified.
+\end_layout
+
+\begin_layout Standard
+If you need to sample more complicated pedigrees, you should first use 
+\family typewriter
+sample::findOffspringAndSpouse 
+\family default
+to locate each individual's offspring and spouse, then use 
+\family typewriter
+useAncestralPop() 
+\family default
+to go through the generations and set 
+\family typewriter
+pedIndex
+\family default
+ for the pedigree you choose, and then use 
+\family typewriter
+setSubPopID()
+\family default
+, 
+\family typewriter
+newPopByIndID()
+\family default
+ to exclude and remove unneeded individuals.
+ 
+\family typewriter
+sample::resetParentalIndex()
+\family default
+ should also be used to reset the 
+\family typewriter
+father_idx 
+\family default
+and 
+\family typewriter
+mother_idx 
+\family default
+fields.
+ Sound complicated? It is complicated! I hope that I can get some better
+ idea and make this process a bit easier, but this is where simuPOP is at
+ right now.
+\end_layout
+
+\begin_layout Standard
+Finally, you can save the sample populations in a pedigree-aware format
+ like Linkage or Merlin/QTDT format.
+ simuPOP can do this easily for you.
+\end_layout
+
+\begin_layout Section
+Save and load to other formats
+\end_layout
+
+\begin_layout Section
+Gene mapping
 \end_layout
 
 \begin_layout Standard
@@ -3582,27 +4048,19 @@ rate
 .)
 \end_layout
 
+\begin_layout Chapter
+Introduction to some bundled scripts
+\end_layout
+
 \begin_layout Section
-Does rapid population growth lead to common disease/common variant in human
- population?
+simuComplexDisease.py
 \end_layout
 
-\begin_layout Subsection
-Results
-\end_layout
-
-\begin_layout Standard
-The simulation results match Reich's paper well.
- The allelic spectra of common disease remain largely unchanged during simulatio
-n while rare disease spectra become complex over time.
+\begin_layout Section
+analComplexDisease.py
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/simuComplexDisease.log}
-preview false
-
-\end_inset
-
 
 \end_layout
 
