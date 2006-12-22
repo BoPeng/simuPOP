@@ -151,8 +151,8 @@ NOTE:
   install SWIG to generate wrap files for your new code.
 
 
-Preparation for all systems
----------------------------
+Preparation for all systems (except for win32)
+----------------------------------------------
 
 simuPOP makes heavy use of GSL (GNU Scientific Library) and Boost (>=1.33.1 
 for 0.7.5 plus Boost.MPI for MPI modules). Part of GSL is embedded in simuPOP
@@ -172,7 +172,6 @@ because compression is disabled by default under windows. Note that this bjam ha
 to be compiled using mingw/gcc, and if build/jam_src/build.sh reports errors,
 run dos2unix on it.
 
- 
 As of Dec, 2006, I am using the cvs version of boost since Boost.MPI uses newest 
 features of the serialization library only available in cvs. If you install
 boost locally or to a non-standard location, you will need to use --include-dirs
@@ -195,52 +194,47 @@ I did the following to build Boost.MPI,
 This is for the re-compiled (with --enable-shared) LAM/MPI 7.0.6
 
 
-Windows system with cygwin/mingw32 g++ compiler (free)
--------------------------------------------------------
+ 
 
-  1. Use the installer from http://www.cygwin.com/ to install Cygwin, including
-     the g++ compiler and the MingW32 libraries. Make sure that boost and 
-	 boost-devel are *not* installed.
+Windows system using mingw (without cygwin, dysfunctional right now)
+--------------------------------------------------------------------
 
-  2. Get pexports from 
-      http://www.emmestech.com/software/cygwin/pexports-0.43/pexports-0.43.zip
-    (if the link does not work, google pexports) and unzip to cygwin/bin.
+The problem with cygwin is that it has its own gcc, zlib and boost and it is tricky
+to not use them. Using a system without cygwin, you can
 
-  3. Find your pythonXX.dll file, where XX is the version of Python you have
-    installed. This is normally in C:\WINDOWS\system32\ or C:\winnt\system32\.
+  1. download mingw.exe, choose g++ and install, add c:/mingw/bin to $PATH
+  
+  2. download zlib, unpack to c:\zlib
+  
+  3. download boost, unpack to c:\boost\boost-1_33_1, you do not have to build
+	it since I put several libs under win32 directory. You can also try to 
+	build the libraries by yourself, but, trust me, it is not easy. (Google
+	by posts to boost user list titled 'Linking to boost::iostreams, furstrated').
 
-  4. Make a .def file from your pythonXX.dll. 
-    > pexports 'C:\WINDOWS\system32\pythonXX.dll' > pythonXX.def
+	If you boost or mingw have ever fixed the problems,  you should be able to
+    > cd \boost\boost-1_33_1\tools\build\jam_src
+	> build.bat
+	copy bjam.exe to c:\boost\boost-1_33_1,
+	> cd \boost\boost-1_33_1
+	> bjam.exe -j4 "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLS=mingw" \
+     -sNO_COMPRESSION=0 -sNO_BZIP2=1 -sNO_ZLIB=0 -sZLIB_INCLUDE=c:/zlib/include \
+	 -sZLIB_LIBRARY=c:/zlib/lib -sZLIB_BINARY=zdll --prefix=c:/boost \
+	 --with-iostreams --with-serialization install
+	
+  4. download python, install to c:\python24, add c:\python24 to $PATH
+  
+  5. download and unpack simuPOP source to c:\simuPOP
 
-  5. Create a static library (libpythonXX.a) and copy it to Python libs directory.
-    > dlltool --dllname pythonXX.dll --def pythonXX.def --output-lib libpythonXX.a
-    copy the generated .a file to c:\pythonXX\libs
-   
-  6. Download simuPOP source package and unpack
-    > tar zxf simuPOP-XXX-src.tar.gz
+  6. if needed, download swig, unpack to c:\swigwin and add c:\swigwin to $PATH
 
-  7. go to simuPOP-XXX directory and run (assue you are using official 
-     Python under c:\Python2.3
-
-    > /cygdrive/c/Python2.3/python.exe setup.py build --compiler=mingw32 bdist_wininst
-
-  8. download the official zlib (www.zlib.net) package (compiled dll, with zlib1.dll,
-     lib/zdll.lib, include/zlib.h). Put to, for example, c:\zlib
-
-  9. If things go smoothly, you will get a .exe file under dist directory. If you 
-    only need to install simuPOP, use
-
-	# FIXME: zlib under windows does not work well. I do not know how to proceed.
-    > /cygdrive/c/Python2.3/python.exe setup.py build_ext --compiler=mingw32 \
-      --include-dirs=/cygdrive/c/zlib/include --library-dirs=/cygdrive/c/zlib/lib install
-
-    If you receive the an error related to missing cc.exe, 
-    distutils is having trouble traversing the Cygwin-based symlink from 
-    /bin/cc.exe to /bin/gcc.exe. The hacky solution to this (until this bugfix 
-    in distutils is fixed) is to delete the symlink and make a real copy :
-
-    > rm /bin/cc.exe
-    > cp /bin/gcc.exe /bin/cc.exe 
+  7. from the simuPOP directory, do
+     > python setup.py build_ext --include-dirs=c:\boost\boost_1_33_1 \
+		bdist_wininst
+	setup.py looks in the win32 directory for boost and zlib libraries. If you 
+	would like to link to your versions of them, remove this directory and add
+	  --library-dirs
+	option to point to your libraries.
+	
 
 NOTE: for python2.4, you can get error saying 
     import error: DSLL load failed: The specified procedure could not be found
@@ -250,44 +244,21 @@ NOTE: for python2.4, you can get error saying
     self.dll_libraries = [] 
   to
     self.dll_libraries = ['msvcrt', 'python' + ''.join(sys.winver.split('.'))]
-  and comment out the following if/else block. This will force simuPOP to use msvcrt, not
-  msvcrt70 or msvcrt71 with msvc.
- 
+  and comment out the following if/else block. This will force simuPOP to use 
+  msvcrt, not msvcrt70 or msvcrt71 with msvc.
 
-Windows system using mingw (without cygwin, recommended)
---------------------------------------------------------
-
-The problem with cygwin is that it has its own gcc, zlib and boost and it is tricky
-to not use them. Using a system without cygwin, you can
-
-  1. download mingw.exe, choose g++ and install, add c:/mingw/bin to $PATH
+NOTE AGAIN: I have used a ugly trick in simuPOP_common.i to avoid this problem.
+This might be the reason why simuPOP i/o does not work....
   
-  2. download zlib, unpack to c:\zlib
-  
-  3. download boost, unpack to c:\boost\boost-1_33_1, open a command window
-    > cd \boost\boost-1_33_1\tools\build\jam_src
-	> build.bat
-	copy bjam.exe to c:\boost\boost-1_33_1,
-	> cd \boost\boost-1_33_1
-	> bjam.exe -j4 "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLS=mingw" \
-     -sNO_COMPRESSION=0 -sNO_BZIP2=1 -sNO_ZLIB=0 -sZLIB_INCLUDE=c:/zlib/include \
-	 -sZLIB_LIBRARY=c:/zlib/lib -sZLIB_BINARY=zdll --prefix=c:/boost \
-	 --with-iostreams --with-serialization install 
-	copy zlib/lib to c:/boost/lib to avoid specifying two different paths later.
-	
-  4. download python, install to c:\python24, add c:\python24 to $PATH
-  
-  5. download and unpack simuPOP source to c:\simuPOP
+NOTE: due to unknown reason, compiled modules crash on file read/write operations.
 
-  6. if needed, download swig, unpack to c:\swigwin and add c:\swigwin to $PATH
 
-  7. edit simuPOP\setup.py and see if you have mgw as the TOOLSET, if not change 
-     it.
+Windows using VC 2005 Express Edition
+-------------------------------------
 
-  8. from simuPOP, do
-     > 
+  1. download Visual C++ express edition, platform SDK and install
 
-	
+  2. download boost, 
 
 Linux-Solaris-MacOSX System
 -----------------------------

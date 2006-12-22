@@ -936,26 +936,31 @@ def saveLinkage(output='', outputExpr='', **kwargs):
 # save in merlin qtdt format
 def SaveQTDT(pop, output='', outputExpr='', loci=[], 
         fields=[], combine=None, shift=1, **kwargs):
-    """ save population in Linkage format. Currently only
-        support affected sibpairs sampled with affectedSibpairSample
-        operator.
+    """ save population in Merlin/QTDT format. The population must have
+        pedindex, father_idx and mother_idx information fields.
          
-        pop: population to be saved. Must have ancestralDepth 1.
-            paired individuals are sibs. Parental population are corresponding
-            parents. If pop is a filename, it will be loaded.
+        pop: population to be saved. If pop is a filename, it will be loaded.
 
-        chrom: Which chromosome is saved.
-        
-        output: output.dat, output.map and output.ped will be the qtdt file format
-            
-        outputExpr: expression version of output.
+        output: base filename. 
+        outputExpr: expression for base filename, will be evaluated in pop's
+            local namespace.
+
+        loci: loci to output
+
+        fields: information fields to output
+
+        combine: an optional function to combine two alleles of a diploid 
+            individual.
+
+        shift: if combine is not given, output two alleles directly, adding
+            this value (default to 1).
     """
     if type(pop) == type(''):
         pop = LoadPopulation(pop)
     if output != '':
         file = output
     elif outputExpr != '':
-        file = eval(outputExpr, globals(), pop.vars() )
+        file = eval(outputExpr, globals(), pop.vars())
     else:
         raise exceptions.ValueError, "Please specify output or outputExpr"
     # open data file and pedigree file to write.
@@ -965,7 +970,6 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
         pedOut = open(file + ".ped", "w")
     except exceptions.IOError:
         raise exceptions.IOError, "Can not open file " + file + " to write."
-    # look at excluded loci, are they in this chrom?
     if loci == []:
         loci = range(0, pop.totNumLoci())
     #    
