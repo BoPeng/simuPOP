@@ -844,7 +844,7 @@ namespace simuPOP
 				{
 					InfoType spouse = pop.ind(*par).info(spouseIdx);
 					// if there is spouse, add it in
-					if(spouse >= 0. and pop.ind(*par).info(pedindexIdx) == -1.)
+					if(spouse >= 0. && pop.ind(*par).info(pedindexIdx) == -1.)
 					{
 						spouseofparents.push_back(static_cast<ULONG>(spouse));
 						pedSize ++;
