@@ -87,8 +87,14 @@ typedef unsigned int UINT;
 // NOTE: the change of allele type here may need similar changes
 // in the wrapper file simuPOP_common.i
 #ifdef LONGALLELE
+#ifdef _MSC_VER
+typedef __int16  Allele;
+typedef __int16& AlleleRef;
+#else
 typedef uint16_t  Allele;
 typedef uint16_t& AlleleRef;
+#endif
+
 #define AlleleInc(a)  ++(a)
 #define AlleleDec(a)  --(a)
 #define AlleleAdd(a, b) (a)+=(b)
