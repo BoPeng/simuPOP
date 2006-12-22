@@ -1167,7 +1167,7 @@ namespace simuPOP
 					}
 				}
 				// interaction case.
-				else if(sAll.size() == pow(3, nLoci))
+				else if(sAll.size() == static_cast<int>(pow(3., nLoci)))
 				{
 					// xt is the current allele frequency
 					interFitness(nLoci, sAllTmp, xt.begin()+(idx*nLoci), sAll);
