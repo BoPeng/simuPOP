@@ -2782,6 +2782,11 @@ The following program uses the
 \family typewriter
 pyOperator
 \family default
+
+\begin_inset LatexCommand \index{pyOperator}
+
+\end_inset
+
  solution.
  In this program, user can input two demographic models as command line
  parameter.
@@ -3064,7 +3069,12 @@ simuOpt
 \begin_layout Standard
 You will notice that 
 \family typewriter
-simuOpt 
+simuOpt
+\begin_inset LatexCommand \index{simuOpt}
+
+\end_inset
+
+ 
 \family default
 does all the housekeeping things for you, including parameter reading, conversio
 n, validation, print usage, save configuration file.
@@ -3169,7 +3179,17 @@ k
 \end_layout
 
 \begin_layout Section
-Hybrid and pure-Python operator
+Hybrid
+\begin_inset LatexCommand \index{Hybrid operator}
+
+\end_inset
+
+ and pure-Python operator
+\begin_inset LatexCommand \index{python operator}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3267,7 +3287,12 @@ is the same as
 \end_layout
 
 \begin_layout LyX-Code
-pyPenetrance(parameters).apply(pop)
+pyPenetrance
+\begin_inset LatexCommand \index{pyPenetrance}
+
+\end_inset
+
+(parameters).apply(pop)
 \end_layout
 
 \begin_layout Standard
@@ -3344,7 +3369,12 @@ max
 \begin_layout Standard
 The result of this operator, unseen to users, is individual 
 \family typewriter
-fitness 
+fitness
+\begin_inset LatexCommand \index{fitness}
+
+\end_inset
+
+ 
 \family default
 values set by one of (maybe none of) the multi-allele selector, which will
  be used by 
@@ -3377,6 +3407,11 @@ before mating, a
 \family typewriter
 stage=PreMating
 \family default
+
+\begin_inset LatexCommand \index{PreMating}
+
+\end_inset
+
  parameter should be used.
  Otherwise, the fitness will be calculated for the offspring generation,
  not the current generation, as shown below:
@@ -3405,12 +3440,22 @@ If you are using non-optimization libraries, simulation will fail if selection
 \begin_layout Itemize
 If you are not sure in which order the operators are applied, use the 
 \family typewriter
-dryrun=True
+dryrun
+\begin_inset LatexCommand \index{dryrun}
+
+\end_inset
+
+=True
 \family default
  in the evolve function.
  
 \family typewriter
-evolve()
+evolve
+\begin_inset LatexCommand \index{evolve}
+
+\end_inset
+
+()
 \family default
  function will do nothing but printing out when and in which order operators
  will be applied.
@@ -3517,17 +3562,41 @@ Besides these standard information fields, you can define any fields for
  your use.
  The most frequently used functions are
 \family typewriter
- individual::setInfo(value, field), individual::info(field), population::setIndI
-nfo(values, field)
+ individual::setInfo
+\begin_inset LatexCommand \index{setInfo}
+
+\end_inset
+
+(value, field), individual::info
+\begin_inset LatexCommand \index{info}
+
+\end_inset
+
+(field), population::setIndInfo
+\begin_inset LatexCommand \index{setIndInfo}
+
+\end_inset
+
+(values, field)
 \family default
  and
 \family typewriter
- population::indInfo(field).
+ population::indInfo
+\begin_inset LatexCommand \index{indInfo}
+
+\end_inset
+
+(field).
  
 \family default
 Here field can be the name of the field, or an id returned by 
 \family typewriter
-population::infoIdx(field)
+population::infoIdx
+\begin_inset LatexCommand \index{infoIdx}
+
+\end_inset
+
+(field)
 \family default
 .
  Accessing information fields using indices is faster than using names.
@@ -3669,61 +3738,375 @@ Population structure and migration
 \end_layout
 
 \begin_layout Standard
-It is relatively easy to split and merge populations in simuPOP, but two
- techinuques need to be combined.
- First, mating schemes do not split or merge populations and it must population
- subpopulations from corresponding subpopulations from the ancestral generation.
- Therefore, population(s) have to be split or merged before mating.
+You first need to understand that mating schemes populate subpopulations
+ from their corresponding ancestral subpopulations one by one, so it can
+ not change number of subpopulations.
+ Split and merge of subpopulations are done by operators 
+\family typewriter
+splitSubPop
+\begin_inset LatexCommand \index{splitSubPop}
+
+\end_inset
+
  
+\family default
+and 
+\family typewriter
+mergeSubPops
+\begin_inset LatexCommand \index{mergeSubPops}
+
+\end_inset
+
+ 
+\family default
+respectively.
+ In example 
+\begin_inset LatexCommand \ref{cap:splitMerge}
+
+\end_inset
+
+, these two operators are used to split and merge subpopulations, but keep
+ total population size untouched.
+ Note that after subpopulation merge, subpopulation 2 still exists, but
+ with size 0.
+ This is used to keep subpopulation id of other subpopulations unchanged.
 \end_layout
 
 \begin_layout Standard
-The following is a demonstration of dynamic population number/size change.
- Based on the same idea, we can simulate very complicated models like the
- 'out of africa' model.
- Here is what this model does:
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:splitMerge}
+
+\end_inset
+
+Population split and merge
 \end_layout
 
-\begin_layout Itemize
-There are 6 cities along a line.
-\end_layout
-
-\begin_layout Itemize
-Migration happens only between adjacent cities at a rate of 0.1 (0.05 each
- if there are two adjacent cities).
-\end_layout
-
-\begin_layout Itemize
-Population size at each city will grow by a factor of 1.2 each time.
- But when the subpopulation size exceeds 1000, starvation :-) will cut the
- subpop size by half.
-\end_layout
-
-\begin_layout Itemize
-Initially, everyone is in the 3th city.
-\end_layout
-
-\begin_layout Standard
-The following script describe the rules almost literally:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/expmigration.log}
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{splitAndMerge.out}
 preview false
 
 \end_inset
 
-and you can see the change of population number/sizes clearly.
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-It should not be difficult to add recombinator, selectors to this model.
- Tracing the spreading of genetic diseases should also be possible, but
- this is out of the scope of this user's guide.
+Migration can change subpopulation size, but not total population size.
+ In example 
+\begin_inset LatexCommand \ref{cap:splitMerge}
+
+\end_inset
+
+, two migrators are used.
+ The first migrator moves individuals from subpopulation 0 to subpopulation
+ 1.
+ The second migrator moves individuals around, with given proportions.
+ For example, the migration rate
+\begin_inset Formula \[
+\left(\begin{array}{ccc}
+0. & 0.2 & 0.4\\
+0. & 0. & 0.1\\
+0.1 & 0.1 & 0.\end{array}\right)\]
+
+\end_inset
+
+means moving 20% of individuals from subpop 0 to 1, 40% of individuals from
+ subpop 0 to 1, and keep 40% (automatically determined).
+ Subpopulation sizes change accordingly.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:splitMigration}
+
+\end_inset
+
+Population split and migration
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{splitMigration.out}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+But what if you need to control total population size? In this case, a demograph
+ic function is needed to specify the size of each subpopulation, at each
+ generation.
+ In example 
+\begin_inset LatexCommand \ref{cap:splitMigration2}
+
+\end_inset
+
+, function 
+\family typewriter
+popSize
+\family default
+ returns exact subpopulation size at each generation, and the population
+ will behave accordingly.
+ It might surprise you that migration can no longer control the size of
+ subpopulation sizes.
+ What exactly happened is that, for example
+\end_layout
+
+\begin_layout Itemize
+subpopulation size = [200, 400, 400], at the beginning of a generation
+\end_layout
+
+\begin_layout Itemize
+apply migrator, subpopulation size changed to [100, 470, 430]
+\end_layout
+
+\begin_layout Itemize
+pre mating operator 
+\family typewriter
+stat
+\family default
+ is applied and report subpopulation sizes
+\end_layout
+
+\begin_layout Itemize
+during mating, with given subpulation sizes 200, 400, 400 of the offspring
+ generation, the mating scheme generate 200 offspring from 100 parents in
+ subpopulation 0, 400 offspring from 470 parents in subpopulation 1, and
+ 400 offspring from 430 parents in subpopulation 2.
+\end_layout
+
+\begin_layout Itemize
+post mating operator 
+\family typewriter
+stat
+\family default
+ is applied and get the new subpopulation size.
+\end_layout
+
+\begin_layout Standard
+This example also demonstrates the use of stage parameter.
+ As a matter of fact, you can use only one 
+\family typewriter
+stat
+\family default
+ operator by using 
+\family typewriter
+stage
+\begin_inset LatexCommand \index{stage}
+
+\end_inset
+
+=PrePostMating
+\family default
+
+\begin_inset LatexCommand \index{PrePostMating}
+
+\end_inset
+
+.
+ If you are confused by the order of operators, use the 
+\family typewriter
+dryrun=True
+\family default
+ parameter of 
+\family typewriter
+evolve
+\family default
+ to check.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:splitMigration2}
+
+\end_inset
+
+Population split with changing population size
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{splitMigration2.out}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You might say, OK, this looks nice, but how can I grow a population with
+ migration acting freely? This is also easy, all you need to do is using
+ the oldSize parameter of a demographic function in a clever way.
+ The underlying story is that
+\end_layout
+
+\begin_layout Itemize
+before mating, a mating scheme calculates current subpopulation sizes
+\end_layout
+
+\begin_layout Itemize
+it calls the given demographic function with current generation number and
+ current subpopulation sizes
+\end_layout
+
+\begin_layout Itemize
+it uses the return value as the new subpopulation sizes.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset LatexCommand \ref{cap:splitMigration3}
+
+\end_inset
+
+ demonstrate an exponentially increase population with free migration between
+ subpopulations.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:splitMigration3}
+
+\end_inset
+
+Population split with changing population size
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{splitMigration3.out}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
 Sex chromosomes
+\end_layout
+
+\begin_layout Standard
+Supports for sex chromosomes are done in simuPOP in the following ways:
+\end_layout
+
+\begin_layout Itemize
+If 
+\family typewriter
+sexChrom
+\begin_inset LatexCommand \index{sexChrom}
+
+\end_inset
+
+=True
+\family default
+ is specified in 
+\family typewriter
+population()
+\family default
+, the last chromosome is assumed to be the sex chromosome.
+ For female, it is 
+\family typewriter
+XX, 
+\family default
+for male, it is 
+\family typewriter
+XY
+\family default
+, in that order.
+\end_layout
+
+\begin_layout Itemize
+During mating, sex of offspring is determined by sex chromosome.
+ (It is otherwise determined randomly with probability 0.5).
+\end_layout
+
+\begin_layout Itemize
+Recombination can not happen between 
+\family typewriter
+X 
+\family default
+and 
+\family typewriter
+Y
+\family default
+ chromosomes.
+ That is to say, offspring can get recombined 
+\family typewriter
+X 
+\family default
+from his/her mother, but untouched 
+\family typewriter
+X
+\family default
+ or 
+\family typewriter
+Y
+\family default
+ from father.
+\end_layout
+
+\begin_layout Standard
+As of version 0.7.5, no other operator recognize sex chromosome.
+ Most notably, 
+\family typewriter
+stat
+\family default
+ counts allele frequencies etc regardless sex chromosome and can not count
+ allele frequency for 
+\family typewriter
+X 
+\family default
+or 
+\family typewriter
+Y
+\family default
+ separately.
+ 
 \end_layout
 
 \begin_layout Section
@@ -3731,8 +4114,7 @@ Pedigree tracking
 \end_layout
 
 \begin_layout Standard
-Pedigree tracking is not easy.
- simuPOP provides the following functions
+simuPOP provides the following functions to manipulate pedigrees
 \end_layout
 
 \begin_layout Itemize
@@ -3744,7 +4126,12 @@ If you set ancestral depth of a population to a positive number (default
 \begin_layout Itemize
 You can use 
 \family typewriter
-population::useAncestralPop(idx)
+population::useAncestralPop
+\begin_inset LatexCommand \index{useAncestralPop}
+
+\end_inset
+
+(idx)
 \family default
  to use current (0), parental (1), grand-parental (2) generations etc.
  Just remember to call 
@@ -3761,12 +4148,17 @@ ancestralDepth
 \family default
  dynamically using operator 
 \family typewriter
-setAncestralDepth.
+setAncestralDepth
+\begin_inset LatexCommand \index{setAncestralDepth}
+
+\end_inset
+
+.
 
 \family default
  Usually, this operator is called, for example, as 
 \family typewriter
-setAncestralDepath(at=[-2])
+setAncestralDepth(at=[-2])
 \family default
 , to allow last several generations to be saved at the end of evolution.
 \end_layout
@@ -3784,7 +4176,12 @@ mother_idx
 \family default
  information fields, and an appropriate tagger such as 
 \family typewriter
-parentTagger()
+parentTagger
+\begin_inset LatexCommand \index{parentTagger}
+
+\end_inset
+
+()
 \family default
 , which is a during mating operator that will record the parents' indices
  in the parental generation to offspring's information fields.
@@ -3793,7 +4190,12 @@ parentTagger()
 \begin_layout Itemize
 
 \family typewriter
-randomMating()
+randomMating
+\begin_inset LatexCommand \index{randomMating}
+
+\end_inset
+
+()
 \family default
  only produce one offspring per mating event.
  This makes full siblings very unlikely.
