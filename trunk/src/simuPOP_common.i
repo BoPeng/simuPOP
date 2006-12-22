@@ -22,8 +22,11 @@
 //
 ///////////////////////////////////////////////////////////////////
 
-// for uint16_t (no longer used now)
-//%include "stdint.i"
+// for uint16_t 
+// msvc does not define stdint.h
+#ifndef _MSC_VER
+%include "stdint.i"
+#endif
 
 ////////////////////////// INCLUDE FILES //////////////////////////
 %{
