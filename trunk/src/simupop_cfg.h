@@ -49,8 +49,10 @@
 
 #define WORDBIT (8*sizeof(unsigned))
 #define WORDTYPE unsigned
+#define BITPTR(ref) ref._Myptr
+#define BITOFF(ref) ref._Myoff
 
-#define __int32 INT32
+#define INT32 __int32
 
 #else
 
@@ -58,7 +60,10 @@
 #define WORDBIT std::_S_word_bit
 #endif
 #define WORDTYPE std::_Bit_type
-#define int32_t INT32
+#define BITPTR(ref) ref._M_p
+#define BITOFF(ref) ref._M_offset
+
+#define INT32 int32_t
 #endif
 
 #include <string>
