@@ -1452,7 +1452,7 @@ namespace simuPOP
 			/// cache the actual point m_table[i].begin()._M_p and
 			/// access bits through this pointer. This is much faster
 			/// than using the reference interface.
-			vector<std::_Bit_type *> m_pointer;
+			vector<WORDTYPE *> m_pointer;
 
 			/// current trial. Used when user want to access the table row by row
 			size_t m_cur;
