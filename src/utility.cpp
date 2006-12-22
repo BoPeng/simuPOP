@@ -2072,7 +2072,7 @@ T Expression::valueAs##TypeName() \
 	////////////// Bernulli trials ///////////
 
 	// this is used for BernulliTrials and copyGenotype
-	std::WORDTYPE g_bitMask[std::WORDBIT];
+	WORDTYPE g_bitMask[WORDBIT];
 
 	BernulliTrials::BernulliTrials(RNG& rng)
 		:m_RNG(&rng), m_N(0), m_prob(0), m_table(0), m_pointer(0),
@@ -2091,7 +2091,7 @@ T Expression::valueAs##TypeName() \
 		for(size_t i = 0; i < probSize(); ++i)
 		{
 			m_table[i].resize(trials);
-			m_pointer[i] = m_table[i].begin()._M_p;
+			m_pointer[i] = BITPTR(m_table[i].begin());
 		}
 	}
 
@@ -2114,7 +2114,7 @@ T Expression::valueAs##TypeName() \
 		for(size_t i = 0; i < probSize(); ++i)
 		{
 			m_table[i].resize(trials);
-			m_pointer[i] = m_table[i].begin()._M_p;
+			m_pointer[i] = BITPTR(m_table[i].begin());
 		}
 	}
 
@@ -2122,8 +2122,8 @@ T Expression::valueAs##TypeName() \
 	void BernulliTrials::setAll(size_t idx, bool v)
 	{
 		WORDTYPE * ptr = m_pointer[idx];
-		DBG_ASSERT(m_table[idx].begin()._M_offset == 0, SystemError, "Start of a vector<bool> is not 0");
-		DBG_ASSERT(m_table[idx].begin()._M_p == m_pointer[idx],
+		DBG_ASSERT(BITOFF(m_table[idx].begin()) == 0, SystemError, "Start of a vector<bool> is not 0");
+		DBG_ASSERT(BITPTR(m_table[idx].begin()) == m_pointer[idx],
 			SystemError, "Pointers mismatch");
 
 		size_t blk = m_N / WORDBIT;
@@ -2175,7 +2175,7 @@ T Expression::valueAs##TypeName() \
 				// treat a randInt as random bits and set them directly.
 				// I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
 				// first several blocks
-				// WORDTYPE * ptr = succ.begin()._M_p;
+				// WORDTYPE * ptr = BITPTR(succ.begin());
 				WORDTYPE tmp;
 				size_t blk = m_N / WORDBIT;
 				size_t rest = m_N - blk * WORDBIT;
@@ -2338,9 +2338,9 @@ T Expression::valueAs##TypeName() \
 
 		// first block
 		BitSet::const_iterator it = bs.begin() + pos;
-		WORDTYPE * ptr = it._M_p;
-		int offset = it._M_offset;
-		size_t i = ptr - bs.begin()._M_p;
+		WORDTYPE * ptr = BITPTR(it);
+		int offset = BITOFF(it);
+		size_t i = ptr - BITPTR(bs.begin());
 
 		// mask out bits before pos
 		WORDTYPE tmp = *ptr & ~ g_bitMask[offset];
@@ -2769,13 +2769,13 @@ T Expression::valueAs##TypeName() \
 	// define a good way to copy long genotype sequence
 	void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 	{
-		DBG_ASSERT(fr._M_offset < WORDBIT, SystemError,
+		DBG_ASSERT(BITOFF(fr) < WORDBIT, SystemError,
 			"Your vector<bool> implementation is different...");
 
-		WORDTYPE * fr_p = fr._M_p;
-		WORDTYPE * to_p = to._M_p;
-		unsigned int fr_off = fr._M_offset;
-		unsigned int to_off = to._M_offset;
+		WORDTYPE * fr_p = BITPTR(fr);
+		WORDTYPE * to_p = BITPTR(to);
+		unsigned int fr_off = BITOFF(fr);
+		unsigned int to_off = BITOFF(to);
 
 		// if offset is different, can not copy in block.
 		if ( n < WORDBIT )
@@ -2986,7 +2986,7 @@ T Expression::valueAs##TypeName() \
 			{
 				cout << "Copy from " << vectora(fr, fr + n)
 					<< " to " << vectora(to, to + n) << " failed " << endl;
-				cout << "Offsets are " << fr._M_offset << " and " << to._M_offset << endl;
+				cout << "Offsets are " << BITOFF(fr) << " and " << BITOFF(to) << endl;
 			}
 		}
 #endif
@@ -3003,7 +3003,7 @@ T Expression::valueAs##TypeName() \
 
 		// for example, if WORDBIT is 8 (most likely 32), we define
 		// 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
-		for(size_t i=0; i<std::WORDBIT; ++i)
+		for(size_t i=0; i<WORDBIT; ++i)
 		{
 			// g_bitMask[i] is the number of 1 count from right.
 			for(size_t j=0; j < i; ++j)
