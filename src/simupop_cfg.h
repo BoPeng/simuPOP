@@ -55,9 +55,9 @@
 #else
 
 #ifndef WORDBIT
-#define WORDBIT _S_word_bit
+#define WORDBIT std::_S_word_bit
 #endif
-#define WORDTYPE _Bit_type
+#define WORDTYPE std::_Bit_type
 #define int32_t INT32
 #endif
 
