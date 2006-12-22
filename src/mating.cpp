@@ -1155,6 +1155,9 @@ namespace simuPOP
 				vectorf sAllTmp;
 				PyObject* freqObj = Double_Vec_As_NumArray( xt.begin()+nLoci*idx, xt.begin()+nLoci*(idx+1) );
 				PyCallFunc2(fitnessFunc, "(iO)", curGen-idx-1, freqObj, sAllTmp, PyObj_As_Array);
+				int pow3 = 1;
+				for(int pp=0; pp<nLoci; ++pp)
+					pow3 *= 3;
 
 				if(sAllTmp.size() == 3*nLoci)
 				{
@@ -1167,7 +1170,7 @@ namespace simuPOP
 					}
 				}
 				// interaction case.
-				else if(sAll.size() == static_cast<int>(pow(3., static_cast<int>(nLoci))))
+				else if(sAll.size() == pow3)
 				{
 					// xt is the current allele frequency
 					interFitness(nLoci, sAllTmp, xt.begin()+(idx*nLoci), sAll);
