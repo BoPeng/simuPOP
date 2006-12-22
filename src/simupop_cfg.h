@@ -88,8 +88,10 @@ typedef unsigned int UINT;
 // in the wrapper file simuPOP_common.i
 #ifdef LONGALLELE
 #ifdef _MSC_VER
-typedef __int16  Allele;
-typedef __int16& AlleleRef;
+// swig can not handle __int16 on windows yet, partly because
+// stdint is not defined under windows
+typedef unsigned  Allele;
+typedef unsigned & AlleleRef;
 #else
 typedef uint16_t  Allele;
 typedef uint16_t& AlleleRef;
@@ -329,7 +331,7 @@ if(debug(dbgCode)){ expr; }
 #define CLEARFLAG(var) (var = 0)
 #define SETFLAG(var, flag) (var |= flag)
 #define RESETFLAG(var, flag) (var &= ~flag)
-#define ISSETFLAG(var, flag) (var & flag)
+#define ISSETFLAG(var, flag) (!!(var & flag))
 
 				// check range.
 #define CHECKRANGEPLOIDY(p)  DBG_FAILIF( p>=ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy()-1))
