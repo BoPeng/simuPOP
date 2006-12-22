@@ -11,7 +11,7 @@ import os
 
 # this is the toolset to build boost. It is needed because
 # boost libraries have form libboost_xxx-TOOLSET.a
-TOOLSET = 'gcc'
+TOOLSET = 'vc80-mt-1_33_1'
 
 ############################################################################
 #
