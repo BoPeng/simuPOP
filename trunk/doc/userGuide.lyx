@@ -4344,15 +4344,424 @@ Finally, you can save the sample populations in a pedigree-aware format
 Save and load to other formats
 \end_layout
 
+\begin_layout Standard
+simuPOP data structure is open in that many functions are provided to access
+ every aspect of the population.
+ This maks it easy to save and load populations in other formats.
+ As an example, I will explain 
+\family typewriter
+SaveTDT
+\family default
+ function in detail here, which is available in 
+\family typewriter
+simuUtil.py
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Although all file formats have different characteristics, 
+\family typewriter
+simuPOP 
+\family default
+tries to provide a uniform interface to them.
+ Common parameters are
+\end_layout
+
+\begin_layout Itemize
+pop: population to save, can be a file name, or a file object (loaded simuPOP
+ population)
+\end_layout
+
+\begin_layout Itemize
+output and outputExpr: output is the base filename, and outputExpr should
+ be evaluated from pop's local namespace.
+\end_layout
+
+\begin_layout Itemize
+loci: loci to output, default is [], meaning output all loci
+\end_layout
+
+\begin_layout Itemize
+fields: information fields to output.
+ 
+\end_layout
+
+\begin_layout Itemize
+combine: a python function, if given, used to combine two alleles at the
+ same locus.
+ For example
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+def comb(geno):
+\end_layout
+
+\begin_layout LyX-Code
+    return geno[0]+geno[1]+1
+\end_layout
+
+\begin_layout Standard
+returns 1 for genotype(0, 0), 2 for genotype (0, 1) and so on.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+shift: default to 1.
+ simuPOP uses 0 based allele and many formats use 1 based allele.
+ Setting shift=1 output (1,2) for genotype (0,1).
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+Merlin/QTDT 
+\family default
+format uses several files to store genotype and phenotype information.
+ Namely a 
+\family typewriter
+.dat
+\family default
+ file for phenotype, 
+\family typewriter
+.map
+\family default
+ file for chromosome structure, and 
+\family typewriter
+.ped 
+\family default
+for pedigree.
+ The population given must have 
+\family typewriter
+pedindex, father_idx 
+\family default
+and 
+\family typewriter
+mother_idx
+\family default
+ information fields to indicate family id and parents of each individual.
+ These information fields will be available if the sample is obtained from
+ 
+\family typewriter
+affectedSibpairSample 
+\family default
+or 
+\family typewriter
+largePedigreeSample 
+\family default
+operators.
+\end_layout
+
+\begin_layout Standard
+The first part of the function is the usual housekeeping part (see example
+ 
+\begin_inset LatexCommand \ref{cap:saveQTDT1}
+
+\end_inset
+
+).
+ It loads population if 
+\family typewriter
+pop
+\family default
+ is a name, evaluate 
+\family typewriter
+outputExpr
+\family default
+ if needed, and open the files to write.
+ This part is likely to be similar for all such functions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:saveQTDT1}
+
+\end_inset
+
+Function SaveQTDT, part one
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{saveQTDT1.py}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Part two of the code (example 
+\begin_inset LatexCommand \ref{cap:saveQTDT2}
+
+\end_inset
+
+) output data file.
+ There are three kinds of phenotype, affection status, trait and markers.
+ We determine if a user wants to output affection from the 
+\family typewriter
+fields 
+\family default
+parameter.
+ We remove 
+\family typewriter
+affection
+\family default
+ from 
+\family typewriter
+fields 
+\family default
+because 
+\family typewriter
+affection
+\family default
+ is not a real information field (that can be retrieved by 
+\family typewriter
+info()
+\family default
+ function).
+ You can learn how to use the 
+\family typewriter
+locusName
+\family default
+ function from this part.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:saveQTDT2}
+
+\end_inset
+
+Function SaveQTDT, part two
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{saveQTDT2.py}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Part three (example 
+\begin_inset LatexCommand \ref{cap:saveQTDT3}
+
+\end_inset
+
+) of the function output a map file.
+ We need to know the chromosome number (+1 to use 1 based index), locus
+ name and locus position, all of which can be retrieved from simple 
+\family typewriter
+simuPOP
+\family default
+ functions.
+ Note that if locus name, position are not given explicitly when a population
+ is created, they all have default values.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:saveQTDT3}
+
+\end_inset
+
+Function SaveQTDT, part three
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{saveQTDT3.py}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The next part (example 
+\begin_inset LatexCommand \ref{cap:saveQTDT4}
+
+\end_inset
+
+) prepares pedigree output.
+ It determines the code to output for sex and affection status.
+ These are likely to be different from format to format so we define explicitly
+ here.
+ The 
+\family typewriter
+writeInd
+\family default
+ output the line for one individual, given family id, id, father and mother.
+ For QTDT format, two alleles of a genotype are outputed separately so the
+ 
+\family typewriter
+combine
+\family default
+ parameter is ignored.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:saveQTDT4}
+
+\end_inset
+
+Function SaveQTDT, part four
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{saveQTDT4.py}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The last part of the code (example 
+\begin_inset LatexCommand \ref{cap:saveQTDT5}
+
+\end_inset
+
+) look most complicated.
+ It first get the 
+\family typewriter
+pedindex 
+\family default
+information field of the whole population, and figure out how many pedigrees
+ to output.
+ Then, it go from ancestral generation 2, 1, 0 and look for individuals
+ within each pedigree.
+ A map is used to map obsolute index to within pedigree index.
+ Of course, this part would be easier if you do not need to handle pedigree,
+ for example, when outputing case control samples.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:saveQTDT5}
+
+\end_inset
+
+Function SaveQTDT, part five
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{saveQTDT5.py}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+clearpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Gene mapping
 \end_layout
 
 \begin_layout Standard
-This example demonstrates how to generate SNP datasets and analyze them
- using genomic control method.
+Once you output your sample into a format that can be processed by other
+ applications, you can handle them in whatever way you want.
+ If you are interested in processing the data in simuPOP (actually, in python),
+ you can use python to call these programs.
  
-\begin_inset LatexCommand \citep{Devlin1999,Devlin2001}
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:mapping}
+
+\end_inset
+
+Example of gene mapping
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{mapping.py}
+preview false
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -4360,107 +4769,52 @@ This example demonstrates how to generate SNP datasets and analyze them
 \end_layout
 
 \begin_layout Standard
-There are several other applications that can generate SNP datasets (e.g.
- SNPsim 
-\begin_inset LatexCommand \citet{Posada2003}
+An example is given in example 
+\begin_inset LatexCommand \ref{cap:mapping}
 
 \end_inset
 
-).
- These methods are coalescent based and can simulate datasets under certain
- mutation and recombination models.
- It would be easy to generate datasets using these applications but simuPOP
- has the following advantages:
-\end_layout
-
-\begin_layout Itemize
-simuPOP can keep track of details of ancestral generations so it is possible
- to perform various analysis multiple times.
- For example, you can trace the formation of haplotype blocks or test the
- power of association method as a function of generation.
-\end_layout
-
-\begin_layout Itemize
-simuPOP can simulate selection and many other complicated scenarios.
- It is easy to add more genetic forces and observe their impact on your
- study.
-\end_layout
-
-\begin_layout Subsection
-Genotypic structure and Initial Population (incomplete)
-\end_layout
-
-\begin_layout Standard
-For SNP datasets, we can simulate loci with two (1/2) or four (A/C/T/G)
- allelic states.
- Since we will have at most 2 alleleic states at each locus and it does
- not matter exactly what two states a lcous has, the first one makes more
- sense.
- If you would like to simulate four allelic states, you will have to use
- the 
+.
+ In this function, 
 \family typewriter
-states 
+merlin
 \family default
-option of mutators so that alleles will mutate back and force in these states.
  
-\end_layout
-
-\begin_layout Standard
-This example will initialize the population with genotype of a single individual.
- Linkage disequlibrium is at its highest at first and will break down with
- time.
- Note that we need to make sure initial individuals are heterozygous at
- disease susceptibility locus so LD will exist between this locus and others.
-\end_layout
-
-\begin_layout Subsection
-Mutation model
-\end_layout
-
-\begin_layout Standard
-Coalescent based applications usually use 'infiite-site model
-\begin_inset LatexCommand \index{mutation!infinite site model'}
+\begin_inset LatexCommand \citep{Abecasis2002}
 
 \end_inset
 
-' to perform mutation.
- In such simulations, once a mutation happens on the coalescent tree, it
- will definitely be passed to the final generation.
- This makes infinite-site model very appealing both in theory and in practics.
- However, in a forward-based simulation, a mutation may get lost very quickly
- so what is 'infinite-site' becomes unclear.
- There is also no sensible choice how to implement this model: 'mutation
- will not happen at a site that has been mutated before' does not make sense
- in biolody!
-\end_layout
-
-\begin_layout Standard
-To avoid these troubles, I choose a Juke-Cantor model 
-\begin_inset LatexCommand \citet{Jukes1969}
-
-\end_inset
-
- (essentially a K-allele model) with two allelic states.
- I.e., allele 1 and 2 will mutate to each other with equal probability.
- 
-\end_layout
-
-\begin_layout Subsection
-Recombination
-\end_layout
-
-\begin_layout Standard
-Uniform recombination with rate 0.0001 will be used.
- Although non-uniform recombination can be applied easily.
- (Use the array form of parameter 
+ is called to process file produced by the 
 \family typewriter
-rate
+SaveQTDT
 \family default
-.)
+ function.
+ The output is fed into a pipe (
+\family typewriter
+popen
+\family default
+) and be filtered by the python 
+\family typewriter
+re 
+\family default
+(regex) module.
+ Only the 
+\begin_inset Formula $p$
+\end_inset
+
+-values are obtained and returned.
 \end_layout
 
 \begin_layout Chapter
 Introduction to some bundled scripts
+\end_layout
+
+\begin_layout Section
+simuCDCV.py
+\end_layout
+
+\begin_layout Section
+simuForward.py
 \end_layout
 
 \begin_layout Section
