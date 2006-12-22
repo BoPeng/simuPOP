@@ -167,7 +167,7 @@ to be:
 Under windows, you command line would be something like (using mingw)
  > bjam -j4 "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLS=mingw" \
      -sNO_COMPRESSION=0 -sNO_BZIP2=1 -sNO_ZLIB=0 -sZLIB_INCLUDE=c:/zlib/include \
-	 -sZLIB_LIBRARY=c:/zlib/lib -sZLIB_BINARY=zdll install 
+	 -sZLIB_LIBPATH=c:/zlib/lib -sZLIB_BINARY=zdll install 
 because compression is disabled by default under windows. Note that this bjam has
 to be compiled using mingw/gcc, and if build/jam_src/build.sh reports errors,
 run dos2unix on it.
