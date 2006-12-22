@@ -958,6 +958,9 @@ namespace simuPOP
 	void interFitness(int nLoci, const vectorf & fitness, const vectorf::const_iterator & freq, vectorf & sAll)
 	{
 		sAll.resize(3*nLoci);
+		int pow3loci = 1;
+		for(int pp=0; pp<(nLoci-1); ++pp)
+			pow3loci *= 3;
 		// each locus
 		for(size_t loc=0; loc<nLoci; ++loc)
 		{
@@ -971,7 +974,7 @@ namespace simuPOP
 				allgeno[loc] = geno;
 				// iterator through others
 				double f = 0;
-				for(size_t it = 0; it < pow(3, nLoci-1); it++)
+				for(size_t it = 0; it < pow3loci; it++)
 				{
 					// assign allgeno
 					size_t num = it;
@@ -1013,6 +1016,9 @@ namespace simuPOP
 	{
 		size_t nLoci = freq.size();
 		size_t i, j, curI, nextI;
+		int pow3loci = 1;
+		for(int pp=0; pp<nLoci; ++pp)
+			pow3loci *= 3;
 
 		if( curGen >0 && minMutAge > curGen )
 			minMutAge = curGen;
@@ -1085,7 +1091,7 @@ namespace simuPOP
 			}
 		}
 		// interaction case
-		else if (fitness.size() == pow(3, nLoci))
+		else if (fitness.size() == pow3loci)
 		{
 			interaction = true;
 		}
