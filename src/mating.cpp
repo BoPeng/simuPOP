@@ -521,7 +521,7 @@ namespace simuPOP
 		DBG_DO(DBG_MATING, m_famSize.clear());
 
 		// empty fitness means no selection
-		bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+		bool selectionOn = pop.hasVar("selection") && pop.getVarAsBool("selection");
 		UINT fit_id = 0;
 		if (selectionOn)
 			fit_id = pop.infoIdx("fitness");
@@ -1903,7 +1903,7 @@ namespace simuPOP
 
 		//
 		GappedInfoIterator fitness;
-		bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+		bool selectionOn = pop.hasVar("selection") && pop.getVarAsBool("selection");
 		UINT fit_id = 0;
 		if (selectionOn)
 		{
@@ -2203,7 +2203,7 @@ namespace simuPOP
 		bool useStack = fixedFamilySize();
 
 		// empty fitness means no selection
-		bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+		bool selectionOn = pop.hasVar("selection") && pop.getVarAsBool("selection");
 		UINT fit_id = 0;
 		if (selectionOn)
 			fit_id = pop.infoIdx("fitness");
