@@ -284,6 +284,8 @@ for modu in MODULES:
     # define_macros
     MODU_INFO[modu]['define_macros'] = MACROS[modu]
     MODU_INFO[modu]['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])
+    if os.name == 'nt':
+        MODU_INFO[modu]['define_macros'].extend([('BOOST_ALL_NO_LIB', None)])
     MODU_INFO[modu]['undef_macros'] = []
     if 'mpi' in modu:
         MODU_INFO[modu]['include_dirs'].extend(MPIFlags['inc_dirs'])
