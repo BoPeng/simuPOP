@@ -202,7 +202,7 @@ namespace simuPOP
 									<< " to " << vectora(offd + dadBegin, offd + dadEnd) << " failed " << endl;
 								GenoIterator d = cd[dadPloidy] + dadBegin;
 								GenoIterator o = offd + dadBegin;
-								cout << "Offsets are " << d._M_offset << " and " << o._M_offset << endl;
+								cout << "Offsets are " << BITOFF(d) << " and " << BITOFF(o) << endl;
 							}
 						}
 #endif
@@ -239,7 +239,7 @@ namespace simuPOP
 									<< " to " << vectora(offm + momBegin, offm + momEnd) << " failed " << endl;
 								GenoIterator d = cm[momPloidy] + momBegin;
 								GenoIterator o = offm + momBegin;
-								cout << "Offsets are " << d._M_offset << " and " << o._M_offset << endl;
+								cout << "Offsets are " << BITOFF(d) << " and " << BITOFF(o) << endl;
 							}
 						}
 #endif
