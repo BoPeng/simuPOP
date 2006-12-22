@@ -2440,7 +2440,7 @@ T Expression::valueAs##TypeName() \
 		for(t=t0; *t !=0; t++)
 		{
 			rng = gsl_rng_alloc( *t );
-			if (gsl_rng_min(rng) == 0 and gsl_rng_max(rng) >= MaxRandomNumber)
+			if (gsl_rng_min(rng) == 0 && gsl_rng_max(rng) >= MaxRandomNumber)
 				list.push_back((*t)->name);
 			gsl_rng_free(rng);
 		}
