@@ -1184,7 +1184,7 @@ namespace simuPOP
 #ifdef BINARYALLELE
 				size_t size = m_genotype.size();
 				ar & make_nvp("size", size);
-				WORDTYPE * ptr = m_genotype.begin()._M_p;
+				WORDTYPE * ptr = BITPTR(m_genotype.begin());
 				size_t blks = size / WORDBIT;
 				size_t rest = size - blks * WORDBIT;
 				DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
@@ -1231,7 +1231,7 @@ namespace simuPOP
 #ifdef BINARYALLELE
 					size_t size = m_genotype.size();
 					ar & make_nvp("size", size);
-					WORDTYPE * ptr = m_genotype.begin()._M_p;
+					WORDTYPE * ptr = BITPTR(m_genotype.begin());
 					size_t blks = size / WORDBIT;
 					size_t rest = size - blks * WORDBIT;
 					DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
@@ -1317,7 +1317,7 @@ namespace simuPOP
 
 						m_genotype.resize(size);
 						WORDTYPE tmp, tmp1;
-						WORDTYPE * ptr = m_genotype.begin()._M_p;
+						WORDTYPE * ptr = BITPTR(m_genotype.begin());
 						for(size_t i=0; i < blks; ++i)
 						{
 							tmp = 0;
@@ -1467,7 +1467,7 @@ namespace simuPOP
 							size_t rest = size - blks * WORDBIT;
 
 							pd.m_genotype.resize(size);
-							WORDTYPE * ptr = pd.m_genotype.begin()._M_p;
+							WORDTYPE * ptr = BITPTR(pd.m_genotype.begin());
 							WORDTYPE tmp, tmp1;
 							for(size_t i=0; i < blks; ++i)
 							{
