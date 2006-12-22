@@ -45,10 +45,18 @@
 // to compile for mac, I define
 //    #define _Bit_type_size _M_word_bit
 // in config_mac.h. For other OS, we use _S_word_bit
+#ifdef _MSC_VER
+
+#define __int32 INT32
+
+#else
+
 #ifndef WORDBIT
 #define WORDBIT _S_word_bit
 #endif
 #define WORDTYPE _Bit_type
+#define int32_t INT32
+#endif
 
 #include <string>
 using std::string;
@@ -109,7 +117,7 @@ typedef std::vector<Allele>::const_iterator constGenoIterator;
 
 // max allowed allele state
 const unsigned long MaxAllele = std::numeric_limits<Allele>::max();
-const unsigned long int MaxRandomNumber = std::numeric_limits<int32_t>::max();
+const unsigned long int MaxRandomNumber = std::numeric_limits<INT32>::max();
 
 #define PopSWIGType "simuPOP::population *"
 #define IndSWIGType "simuPOP::individual *"
