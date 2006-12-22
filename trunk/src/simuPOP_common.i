@@ -22,8 +22,8 @@
 //
 ///////////////////////////////////////////////////////////////////
 
-// for uint16_t
-%include "stdint.i"
+// for uint16_t (no longer used now)
+//%include "stdint.i"
 
 ////////////////////////// INCLUDE FILES //////////////////////////
 %{
@@ -61,7 +61,9 @@ extern "C"
 // this is a dirty hack for the mingw/msvcrt _ctype problem.
 %{
 #ifdef _WIN32
+#ifndef _MSC_VER
 short ** _imp___ctype = 0;
+#endif
 #endif
 %}
 
