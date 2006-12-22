@@ -47,6 +47,9 @@
 // in config_mac.h. For other OS, we use _S_word_bit
 #ifdef _MSC_VER
 
+#define WORDBIT (8*sizeof(unsigned))
+#define WORDTYPE unsigned
+
 #define __int32 INT32
 
 #else
