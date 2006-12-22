@@ -12,6 +12,10 @@ import os
 # this is the toolset to build boost. It is needed because
 # boost libraries have form libboost_xxx-TOOLSET.a
 TOOLSET = 'vc80-mt-1_33_1'
+if os.name == 'nt':
+    use_vc = True
+else:
+    use_vc = False
 
 ############################################################################
 #
@@ -261,12 +265,11 @@ WRAP_INFO = {
 for modu in MODULES:
     # source files
     MODU_INFO[modu] = {}
-    MODU_INFO[modu]['src'] = []
+    MODU_INFO[modu]['src'] = ['src/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:
         mod_src = src[:-4] + '_' + modu + '.cpp'
         shutil.copy(src, mod_src)
         MODU_INFO[modu]['src'].append(mod_src)
-    MODU_INFO[modu]['src'].append('src/simuPOP_' + modu + '_wrap.cpp' )
     MODU_INFO[modu]['src'].extend(GSL_FILES)
     # lib
     if os.name == 'nt':    # Windows
@@ -334,9 +337,13 @@ if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
     if (v1, v2, v3) >= (1, 3, 28):
         # for swig >= 1.3.28
         SWIG = 'swig -O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
+        if use_vc:
+            SWIG += ' -D_MSC_VER'
     elif (v1, v2, v3) >= (1, 3, 25):
         # for swig from 1.3.25 to 1.3.27
         SWIG = 'swig -shadow -c++ -python -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525'
+        if use_vc:
+            SWIG += ' -D_MSC_VER'
     else:
         print 'Swig >= 1.3.25 is required, please upgrade it.'
         sys.exit(1)
