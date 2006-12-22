@@ -365,7 +365,9 @@ library with HAVE_EXTENDED_PRECISION_REGISTERS turned off. */
 /* Substitute gsl functions for missing system functions */
 
 #ifndef HAVE_HYPOT
-#define hypot gsl_hypot
+#ifndef _MSC_VER
+	#define hypot gsl_hypot
+#endif
 #endif
 
 #ifndef HAVE_LOG1P
