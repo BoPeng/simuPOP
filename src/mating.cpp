@@ -461,7 +461,7 @@ namespace simuPOP
 
 		GappedInfoIterator fitness;
 		UINT fit_id = 0;
-		bool selectionOn = pop.hasVar("selection") and pop.getVarAsBool("selection");
+		bool selectionOn = pop.hasVar("selection") && pop.getVarAsBool("selection");
 		if(selectionOn)
 		{
 			fit_id = pop.infoIdx("fitness");
