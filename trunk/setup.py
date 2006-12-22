@@ -270,10 +270,10 @@ for modu in MODULES:
     MODU_INFO[modu]['src'].extend(GSL_FILES)
     # lib
     if os.name == 'nt':    # Windows
-        MODU_INFO[modu]['libraries'] = ['libboost_serialization-mgw-mt-s-1_33_1', 'libboost_iostreams-mgw-mt-s-1_33_1', 'stdc++']
+        MODU_INFO[modu]['libraries'] = ['libboost_serialization-%s' % TOOLSET, 'libboost_iostreams-%s' % TOOLSET]
         MODU_INFO[modu]['libraries'].append('zdll')
     else:
-        MODU_INFO[modu]['libraries'] = ['boost_serialization-%s' % TOOLSET, 'boost_iostreams-%s' % TOOLSET, 'stdc++']
+        MODU_INFO[modu]['libraries'] = ['boost_serialization', 'boost_iostreams', 'stdc++']
         MODU_INFO[modu]['libraries'].append('z')
     MODU_INFO[modu]['include_dirs'] = ['.']
     #
