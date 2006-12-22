@@ -197,7 +197,8 @@ namespace simuPOP
 			selector(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_fitness(fitness), m_wildtype(wildtype)
 			{
-				DBG_ASSERT( m_fitness.size() == static_cast<UINT>(pow(3, loci.size())),
+				DBG_ASSERT( m_fitness.size() == static_cast<UINT>(pow(static_cast<double>(3), 
+					static_cast<double>(loci.size()))),
 					ValueError, "Please specify fitness for each combination of genotype.");
 			};
 
@@ -582,7 +583,8 @@ namespace simuPOP
 			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_penetrance(penet), m_wildtype(wildtype)
 			{
-				DBG_ASSERT( m_penetrance.size() ==  static_cast<UINT>(pow(3, loci.size())),
+				DBG_ASSERT( m_penetrance.size() ==  static_cast<UINT>(pow(static_cast<double>(3),
+					static_cast<double>(loci.size()))),
 					ValueError, "Please specify penetrance for each combination of genotype.");
 			};
 
@@ -1033,7 +1035,8 @@ namespace simuPOP
 				if( m_sigma.empty())
 					m_sigma.resize(3,0.);
 
-				DBG_ASSERT( m_qtrait.size() == static_cast<UINT>(pow(3, loci.size()))
+				DBG_ASSERT( m_qtrait.size() == static_cast<UINT>(pow(static_cast<double>(3), 
+					static_cast<double>(loci.size())))
 					&& m_sigma.size() == m_qtrait.size(),
 					ValueError, "Please specify qtrait for every combination of genotype.");
 			};
