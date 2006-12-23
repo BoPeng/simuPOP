@@ -11,7 +11,7 @@ import os
 
 # this is the toolset to build boost. It is needed because
 # boost libraries have form libboost_xxx-TOOLSET.a
-TOOLSET = 'vc80-mt-1_33_1'
+TOOLSET = 'vc71-mt-1_33_1'
 if os.name == 'nt':
     use_vc = True
 else:
@@ -421,7 +421,8 @@ setup(
     package_dir = {'': 'src' }, 
     py_modules = SIMUPOP_FILES,
     ext_modules = EXT_MODULES,
-    data_files = DATA_FILES
+    data_files = DATA_FILES,
+    package_data = {'': ['win32/msvcp80.dll', 'win32/msvcr80.dll', 'zlib1.dll']}
 )
 
 
