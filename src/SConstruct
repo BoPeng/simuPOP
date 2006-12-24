@@ -191,6 +191,7 @@ for mod in MODULES:
     env.Depends(['$BDIR/simuPOP_%s_wrap.cc'%mod, lib], 
         ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \
         ['%s.h' % x for x in src])
+    env.Depends('utility_%s.cpp'%mod, 'arraymodule.c')
     #
     Alias(mod, lib)
     Alias('all', lib)
@@ -202,7 +203,7 @@ for mod in MODULES:
     Alias('install', dp1)
 
 
-for pyfile in ['simuRPy.py', 'simuUtil.py', 'simuViewPop.py', 'simuMatPlt.py',
+for pyfile in ['simuRPy.py', 'simuUtil.py', 'simuViewPop.py', 
     'simuPOP.py', 'simuOpt.py']:
     env.Install(dest_dir, pyfile)
     Alias('install', dest_dir)
