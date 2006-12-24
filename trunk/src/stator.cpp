@@ -605,7 +605,7 @@ namespace simuPOP
 
 			int loc = m_atLoci[i];
 
-#ifdef BINARYALLELE
+#ifndef BINARYALLELE
 			Allele a, b;
 #else            
 			unsigned short a, b;
