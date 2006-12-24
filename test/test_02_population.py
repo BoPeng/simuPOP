@@ -595,11 +595,11 @@ class TestPopulation(unittest.TestCase):
             if (file == 'a.xml' or file == 'a.xml.gz') and not supportXML():
                 continue
             pop.savePopulation(file, compress=False)
-            assert os.path.isfile(file)
+            assert os.path.isfile(file), "File %s does not exist" % file
             pop1 = LoadPopulation(file)
             self.assertEqual(pop, pop1)
             pop.savePopulation(file, compress=True)
-            assert os.path.isfile(file)
+            assert os.path.isfile(file), "File %s does not exist" % file
             pop1 = LoadPopulation(file)
             self.assertEqual(pop, pop1)
             os.remove(file)
