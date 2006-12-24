@@ -403,8 +403,8 @@ namespace simuPOP
 			apply(postOps, dryrun);
 		}
 
-		// close every opened file (but not append-cross-evolution ones)
-		ostreamManager().closeAll(false);
+		// close every opened file (including append-cross-evolution ones)
+		ostreamManager().closeAll(true);
 		return true;
 	}
 
