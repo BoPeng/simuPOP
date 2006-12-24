@@ -343,12 +343,12 @@ if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
     (v1, v2, v3) = swig_version()
     if (v1, v2, v3) >= (1, 3, 28):
         # for swig >= 1.3.28
-        SWIG = 'swig -O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
+        SWIG = 'swig -O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
         if use_vc:
             SWIG += ' -D_MSC_VER'
     elif (v1, v2, v3) >= (1, 3, 25):
         # for swig from 1.3.25 to 1.3.27
-        SWIG = 'swig -shadow -c++ -python -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525'
+        SWIG = 'swig -shadow -c++ -python -outdir src -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525'
         if use_vc:
             SWIG += ' -D_MSC_VER'
     else:

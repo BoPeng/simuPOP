@@ -685,7 +685,7 @@ namespace simuPOP
 					"Info should have the same length as pop size");
 
 				for(ULONG it=0; it < m_popSize; ++it)
-					ind(it).setSubPopID( static_cast<SubPop_ID>(id[it]) );
+					ind(it).setSubPopID( static_cast<SubPopID>(id[it]) );
 			}
 
 			/// set individual info with their subpopulation id.

@@ -1331,7 +1331,12 @@ namespace simuPOP
 					+ toStr(pop.popSize()));
 
 				for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
-					pop.ind(i).setSubPopID( m_keep[i] );
+				{
+					DBG_ASSERT(static_cast<size_t>(m_keep[i]) <= MaxSubPopID, ValueError,
+						"Subpop id exceeding maximum allowed subpopulations");
+					// subpop id is short
+					pop.ind(i).setSubPopID(static_cast<SubPopID>(m_keep[i]));
+				}
 
 				pop.setSubPopByIndID();
 				return true;
@@ -1795,7 +1800,12 @@ namespace simuPOP
 				long * id = reinterpret_cast<long*>(NumArray_Data(m_keep));
 
 				for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
-					pop.ind(i).setSubPopID( id[i] );
+				{
+					DBG_ASSERT(static_cast<size_t>(id[i]) <= MaxSubPopID, ValueError,
+						"Subpop id exceeding maximum allowed subpopulations");
+					// convert from int to signed short
+					pop.ind(i).setSubPopID(static_cast<SubPopID>(id[i]));
+				}
 
 				return pop.newPopByIndID(m_keepAncestralPops);
 			}
