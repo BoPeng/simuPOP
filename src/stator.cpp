@@ -605,7 +605,11 @@ namespace simuPOP
 
 			int loc = m_atLoci[i];
 
+#ifdef BINARYALLELE
 			Allele a, b;
+#else            
+			unsigned short a, b;
+#endif            
 
 			// for each subpopulation
 			for( UINT sp=0; sp < numSP;  ++sp)
@@ -626,20 +630,12 @@ namespace simuPOP
 					if( !m_phase && a > b )
 						std::swap(a,b);
                     
-#ifndef BINARYALLELE                    
 					if( a >= num.size() )
-#else
-					if( static_cast<size_t>(a) >= num.size() )
-#endif                        
 						num.resize(a+1);
 
 					num[a][b]++;
 
-#ifndef BINARYALLELE                    
 					if( a >= sum.size() )
-#else
-					if( static_cast<size_t>(a) >= sum.size() )
-#endif                        
 						sum.resize(a+1);
 
 					sum[a][b]++;
