@@ -399,10 +399,14 @@ DATA_FILES = [
     ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
         'COPYING', 'TODO', 'simuPOP.release']), 
     ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
-    ('share/simuPOP/test', glob.glob('test/test_*.py')),
+    ('share/simuPOP/test', glob.glob('test/test_*.py') + \
+        ['test/run_tests.py', 'test/run_tests.sh']),
     ('share/simuPOP/misc', ['misc/README', 'misc/python-mode.el', 'misc/emacs-python.el']),
     ('share/simuPOP/scripts', glob.glob('scripts/*.py'))
 ]
+
+if os.name == 'nt':
+    DATA_FILES += [('Lib/site-packages', 'win32/zlib1.dll')]
 
 EXT_MODULES = []
 for modu in MODULES:
@@ -430,7 +434,6 @@ setup(
     py_modules = SIMUPOP_FILES,
     ext_modules = EXT_MODULES,
     data_files = DATA_FILES,
-    package_data = {'': ['win32/msvcp80.dll', 'win32/msvcr80.dll', 'zlib1.dll']}
 )
 
 
