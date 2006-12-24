@@ -1232,8 +1232,7 @@ namespace simuPOP
 					}
 					catch(...)
 					{
-						throw ValueError("Failed to load population. Your file may be corrupted, "
-							"or being a copy of non-transferrable file (.bin)");
+						throw ValueError("Failed to load population " + filename + " in " + format + " format.\n");
 					}
 				}								  // try xml
 			}									  // try text
