@@ -567,7 +567,7 @@ namespace simuPOP
 		bool allowFixation=false);
 
 	// a utility function to get marginal fitness given interaction and allele freq
-	vectorf MarginalFitness(int nLoci, const vectorf & fitness, const vectorf & freq);
+	vectorf MarginalFitness(unsigned nLoci, const vectorf & fitness, const vectorf & freq);
 
 	//
 	// simulate trajectories of disease susceptibility loci using an extension of
