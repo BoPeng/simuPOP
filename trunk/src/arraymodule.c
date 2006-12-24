@@ -105,7 +105,11 @@ a_setitem(arrayobject *ap, int i, PyObject *v)
     if (!PyArg_Parse(v, "h;array item must be integer", &x))
         return -1;
     // force the value to bool to avoid a warning
+#ifdef BINARYALLELE
     *(ap->ob_iterator.ob_iter+i) = (x != 0);
+#else
+    *(ap->ob_iterator.ob_iter+i) = x;
+#endif
     return 0;
 }
 
