@@ -978,13 +978,13 @@ namespace simuPOP
 			}
 
 			/// get subpop id
-			SubPop_ID subPopID() const
+			SubPopID subPopID() const
 			{
 				return m_subPopID;
 			}
 
 			/// set subpop if
-			void setSubPopID(SubPop_ID id)
+			void setSubPopID(SubPopID id)
 			{
 				m_subPopID = id;
 			}
@@ -1305,7 +1305,7 @@ namespace simuPOP
 			unsigned char m_flags;
 
 			/// temporary information
-			SubPop_ID m_subPopID;
+			SubPopID m_subPopID;
 
 			/// pointer to genotype.
 			GenoIterator m_genoPtr;

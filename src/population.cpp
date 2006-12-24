@@ -80,6 +80,9 @@ namespace simuPOP
 
 		DBG_DO( DBG_POPULATION, cout << "Constructor of population is called\n");
 
+		DBG_FAILIF(m_subPopSize.size() > MaxSubPopID, ValueError,
+			"Number of subpopulations exceed maximum allowed subpopulation numbers");
+
 		// if specify subPop but not m_popSize
 		if( !subPop.empty() )
 		{

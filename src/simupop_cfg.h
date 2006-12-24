@@ -146,7 +146,8 @@ enum Sex{ Male = 1, Female = 2};
 typedef double InfoType;
 typedef std::vector<double>::iterator InfoIterator;
 typedef std::vector<double>::const_iterator InfoConstIterator;
-typedef signed short SubPop_ID;
+typedef signed short SubPopID;
+const unsigned long MaxSubPopID = std::numeric_limits<SubPopID>::max();
 
 typedef unsigned long ULONG;
 typedef long LONG;
