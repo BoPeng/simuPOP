@@ -33,6 +33,10 @@ namespace simuPOP
 		m_alleleNames(alleleNames), m_lociNames(lociNames),
 		m_maxAllele(maxAllele), m_infoFields(infoFields)
 	{
+#ifdef BINARYALLELE
+        DBG_ASSERT(maxAllele == 1, ValueError,
+            "max allele must be 1 for binary modules");
+#endif
 		DBG_ASSERT( ploidy >= 1, ValueError,
 			"Ploidy must be >= 1. Given " + toStr(ploidy) );
 

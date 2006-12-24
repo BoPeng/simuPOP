@@ -1721,10 +1721,10 @@ namespace simuPOP
 			int m_maxOffspring;
 
 			///
-			bool m_minPedSize;
+			int m_minPedSize;
 
 			///
-			bool m_minAffected;
+			int m_minAffected;
 
 			// do not draw sample
 			bool m_countOnly;
@@ -1807,7 +1807,7 @@ namespace simuPOP
 		private:
 			PyObject* m_keep;
 
-			bool m_keepAncestralPops;
+			int m_keepAncestralPops;
 	};
 
 }

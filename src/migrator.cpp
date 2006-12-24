@@ -193,7 +193,7 @@ namespace simuPOP
 			long * id = reinterpret_cast<long*>(NumArray_Data(m_subPopID));
 
 			for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
-				pop.ind(i).setSubPopID( id[i] );
+				pop.ind(i).setSubPopID(id[i]);
 		}
 		else
 		{

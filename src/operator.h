@@ -282,21 +282,21 @@ namespace simuPOP
 			}
 
 			///
-			bool setHaploidOnly()
+			void setHaploidOnly()
 			{
-				return SETFLAG(m_flags, m_flagHaploid);
+				SETFLAG(m_flags, m_flagHaploid);
 			}
 
 			///
-			bool setDiploidOnly()
+			void setDiploidOnly()
 			{
-				return SETFLAG(m_flags, m_flagDiploid);
+				SETFLAG(m_flags, m_flagDiploid);
 			}
 
 			///
-			bool setMPIReady()
+		    void setMPIReady()
 			{
-				return SETFLAG(m_flags, m_flagMPI);
+				SETFLAG(m_flags, m_flagMPI);
 			}
 
 			/// get the number of information fields for this operator

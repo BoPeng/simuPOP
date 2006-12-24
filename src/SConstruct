@@ -84,7 +84,7 @@ if 'gsl' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libgsl.a')):
             randist/geometric.c randist/binomial.c randist/poisson.c randist/rdgamma.c
             randist/chisq.c randist/gauss.c error.c randist/multinomial.c
     ''')],
-        CCFLAGS = ['-O3', '-fPIC'],
+        CCFLAGS = ['-O3', '-Wall', '-fPIC'],
         CPPPATH = ['.', '..'],
     )
     Alias('gsl', gsl)
@@ -184,7 +184,7 @@ for mod in MODULES:
         CPPDEFINES = DEF[mod],
         # do not put .. (boost etc) in CPPPATH
         # to speed up search
-        CCFLAGS = ['-O3'] + ccflags,
+        CCFLAGS = ['-O3', '-Wall'] + ccflags,
         # for performance considerations, do not search boost
         CPPFLAGS = basicflags + " " + opt + ' -I.. -I/usr/include/boost-1_35'
     )

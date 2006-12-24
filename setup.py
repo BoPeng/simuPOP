@@ -9,13 +9,16 @@ install swig >= 1.3.27 to generate the wrap files.
 import os
 #
 
-# this is the toolset to build boost. It is needed because
-# boost libraries have form libboost_xxx-TOOLSET.a
-TOOLSET = 'vc71-mt-1_33_1'
+# these are the default toolset to build boost. It is needed 
+# because boost libraries have form libboost_xxx-TOOLSET.a and 
+# I can not use the auto-link feature of boost.
+# 
 if os.name == 'nt':
     use_vc = True
+    TOOLSET = 'vc71-mt-1_33_1'
 else:
     use_vc = False
+    TOOLSET = 'gcc34'
 
 ############################################################################
 #
@@ -273,17 +276,21 @@ for modu in MODULES:
     MODU_INFO[modu]['src'].extend(GSL_FILES)
     # lib
     if os.name == 'nt':    # Windows
-        MODU_INFO[modu]['libraries'] = ['libboost_serialization-%s' % TOOLSET, 'libboost_iostreams-%s' % TOOLSET]
+        MODU_INFO[modu]['libraries'] = ['libboost_serialization-%s' % TOOLSET, 
+            'libboost_iostreams-%s' % TOOLSET]
         MODU_INFO[modu]['libraries'].append('zdll')
     else:
-        MODU_INFO[modu]['libraries'] = ['boost_serialization', 'boost_iostreams', 'stdc++']
+        MODU_INFO[modu]['libraries'] = ['boost_serialization-%s' % TOOLSET, 
+            'boost_iostreams-%s' % TOOLSET, 'stdc++']
         MODU_INFO[modu]['libraries'].append('z')
     MODU_INFO[modu]['include_dirs'] = ['.']
     #
     MODU_INFO[modu]['library_dirs'] = ['build']
     if os.name == 'nt':
         MODU_INFO[modu]['library_dirs'].append('win32')
-    MODU_INFO[modu]['extra_compile_args'] = ['-O3']
+        MODU_INFO[modu]['extra_compile_args'] = ['/O3']
+    else:
+        MODU_INFO[modu]['extra_compile_args'] = ['-O3', '-Wall']
     # define_macros
     MODU_INFO[modu]['define_macros'] = MACROS[modu]
     MODU_INFO[modu]['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])

@@ -169,6 +169,9 @@ namespace std
 	/// CPPONLY how to output a dictionary
 	ostream& operator<<(ostream& out, const intDict& dict);
 
+    /// CPPONLY: 3^n, can not use pow(3, n) because of overloading problem
+    /// in msvc.
+    int pow3(unsigned n);
 }
 
 
@@ -188,6 +191,7 @@ namespace simuPOP
 				return ind.affected();
 			}
 	};
+
 
 	/** \brief CPPONLY iterator to access an allele across all ploidy and individuals.
 
@@ -1213,8 +1217,6 @@ namespace simuPOP
 			// with weight freq
 			ULONG get()
 			{
-				//        if(m_fast)
-				//      {
 				double rN = m_RNG->randUniform01() * m_N;
 
 				size_t K = static_cast<size_t>(rN);
@@ -1225,19 +1227,12 @@ namespace simuPOP
 					return K;
 				else
 					return  m_a[K];
-				//      }
-				//    else
-				//   {
-				//     return biSearch( m_RNG->randUniform01());
-				//   }
 			}
 
 			// sample without replacement from 0,...,n-1,
 			// with weight freq
 			ULONG get(vectorlu& res, ULONG shift=0)
 			{
-				//        if(m_fast)
-				//    {
 				double rN;
 				size_t K;
 
@@ -1254,19 +1249,11 @@ namespace simuPOP
 						*it = m_a[K]+shift;
 				}
 				return 0;
-				//  }
-				//  else
-				//  {
-				//   for( vectorlu::iterator it=res.begin(); it != res.end(); ++it)
-				//     *it = biSearch(m_RNG->randUniform01())+shift;
-				//  }
 			}
 
 			template<class Iterator>
 				ULONG get( Iterator beg, Iterator end,  ULONG shift=0)
 			{
-				//        if(m_fast)
-				//       {
 				double rN;
 				size_t K;
 
@@ -1283,12 +1270,6 @@ namespace simuPOP
 						*it = m_a[K]+shift;
 				}
 				return 0;
-				//     }
-				//   else
-				//   {
-				//     for( Iterator it=beg; it != end; ++it)
-				//       *it = biSearch(m_RNG->randUniform01())+shift;
-				//   }
 			}
 
 			// print internal table
