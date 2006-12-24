@@ -530,8 +530,12 @@ namespace simuPOP
 				else
 					return toStr(static_cast<int>(allele));
 #else
-                // for binary allele, things are easy since m_maxAllele has to be 1.
-                return toStr(static_cast<int>(allele));
+				if( static_cast<unsigned>(allele) < s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() )
+					return s_genoStruRepository[m_genoStruIdx].m_alleleNames[allele];
+				else if(allele)
+					return "1";
+				else
+					return "0";
 #endif
                     
 			}
