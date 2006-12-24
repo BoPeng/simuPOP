@@ -86,9 +86,9 @@ class TestStat(unittest.TestCase):
         assert abs(pop.dvars(1).alleleFreq[0][0] - 13./20) < 1e-5
         assert abs(pop.dvars(1).alleleFreq[0][1] -  7./20) < 1e-5
         self.assertEqual(pop.dvars(1).alleleNum[0], [130, 70])
-        self.assertEqual(pop.dvars(2).alleleFreq[0], [0.3, 0.7])
+        assert abs(pop.dvars(2).alleleFreq[0][0] - 0.3) < 1e-5
+        assert abs(pop.dvars(2).alleleFreq[0][1] - 0.7) < 1e-5
         self.assertEqual(pop.dvars(2).alleleNum[0], [600, 1400])
-        #
         self.assertEqual(pop.dvars().numOfAlleles[0], 2)
         self.assertEqual(pop.dvars(0).numOfAlleles[0], 2)
         self.assertEqual(pop.dvars(1).numOfAlleles[0], 2)
