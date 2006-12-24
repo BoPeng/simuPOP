@@ -288,7 +288,8 @@ for modu in MODULES:
     MODU_INFO[modu]['library_dirs'] = ['build']
     if os.name == 'nt':
         MODU_INFO[modu]['library_dirs'].append('win32')
-        MODU_INFO[modu]['extra_compile_args'] = ['/O3']
+        # msvc does not have O3 option
+        MODU_INFO[modu]['extra_compile_args'] = ['/O2']
     else:
         MODU_INFO[modu]['extra_compile_args'] = ['-O3', '-Wall']
     # define_macros
