@@ -304,6 +304,16 @@ namespace std
 		out<<"}";
 		return out;
 	}
+
+    /// CPPONLY: 3^n, can not use pow(3, n) because of overloading problem
+    /// in msvc.
+    int pow3(unsigned n)
+    {
+        unsigned res = 1;
+        for(unsigned i = 0; i < n; ++i)
+            res *= 3;
+        return res;
+    }
 }
 
 
@@ -2151,7 +2161,8 @@ T Expression::valueAs##TypeName() \
 
 #define setBit(ptr, i)    ( *((ptr)+(i)/WORDBIT) |= 1UL << ((i) - ((i)/WORDBIT)*WORDBIT))
 #define unsetBit(ptr, i)  ( *((ptr)+(i)/WORDBIT) &= ~ (1UL << ((i) - ((i)/WORDBIT)*WORDBIT)))
-#define getBit(ptr, i)    ( *((ptr)+(i)/WORDBIT) & (1UL << ((i) - ((i)/WORDBIT)*WORDBIT)))
+// use a != 0 to avoid compiler warning
+#define getBit(ptr, i)    (( *((ptr)+(i)/WORDBIT) & (1UL << ((i) - ((i)/WORDBIT)*WORDBIT))) != 0)
 
 	void BernulliTrials::doTrial()
 	{

@@ -537,7 +537,9 @@ namespace simuPOP
 				continue;
 
 			numMale = 0;
-			for(population::IndIterator it=pop.indBegin(sp), itEnd = pop.indEnd(sp); it < itEnd; ++it)
+            population::IndIterator it = pop.indBegin(sp);
+            population::IndIterator itEnd = pop.indEnd(sp);
+			for(; it < itEnd; ++it)
 				if(it->sex() == Male)
 					numMale ++;
 
@@ -595,8 +597,8 @@ namespace simuPOP
 				"Wrong number of male/female.");
 
 			// generate scratch.subPopSize(sp) individuals.
-			population::IndIterator it = scratch.indBegin(sp);
-			population::IndIterator itEnd = scratch.indEnd(sp);
+			it = scratch.indBegin(sp);
+			itEnd = scratch.indEnd(sp);
 			UINT numOS;
 			while(it != itEnd)
 			{
@@ -955,7 +957,7 @@ namespace simuPOP
 	}
 
 	// get individual fitness, accounting interaction
-	void interFitness(int nLoci, const vectorf & fitness, const vectorf::const_iterator & freq, vectorf & sAll)
+	void interFitness(unsigned nLoci, const vectorf & fitness, const vectorf::const_iterator & freq, vectorf & sAll)
 	{
 		sAll.resize(3*nLoci);
 		int pow3loci = 1;
@@ -1001,7 +1003,7 @@ namespace simuPOP
 	}
 
 	// the python version of interaction Fitness, for convenience purpose.
-	vectorf MarginalFitness(int nLoci, const vectorf & fitness, const vectorf & freq)
+	vectorf MarginalFitness(unsigned nLoci, const vectorf & fitness, const vectorf & freq)
 	{
 		vectorf sAll(3, 1);
 		interFitness(nLoci, fitness, freq.begin(), sAll);
@@ -2248,7 +2250,9 @@ namespace simuPOP
 			}
 
 			numMale = 0;
-			for( population::IndIterator it=pop.indBegin(sp), itEnd = pop.indEnd(sp); it < itEnd;  ++it)
+            population::IndIterator it=pop.indBegin(sp);
+            population::IndIterator itEnd = pop.indEnd(sp);
+			for(; it < itEnd;  ++it)
 				if(it->sex() == Male)
 					numMale ++;
 
@@ -2323,8 +2327,8 @@ namespace simuPOP
 			bool hasAff;
 			bool stackStage = false;
 			// start!
-			population::IndIterator it = scratch.indBegin(sp);
-			population::IndIterator itEnd = scratch.indEnd(sp);
+			it = scratch.indBegin(sp);
+			itEnd = scratch.indEnd(sp);
 			population::IndIterator itBegin = it;
 			UINT numOS = 0;
 			/// if mor ethan noAAattempt times, no pure homo found,

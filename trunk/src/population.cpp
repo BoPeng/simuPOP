@@ -935,7 +935,7 @@ namespace simuPOP
 			useAncestralPop(oldAncPop);
 			return idx;
 		}
-		catch(IndexError&e)
+		catch(IndexError &)
 		{
 			idx = struAddInfoField(field);
 		}
@@ -988,7 +988,7 @@ namespace simuPOP
 				}
 				useAncestralPop(oldAncPop);
 			}
-			catch(IndexError&e)
+			catch(IndexError &)
 			{
 				struAddInfoField(*it);
 			}

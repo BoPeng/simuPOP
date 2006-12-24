@@ -516,10 +516,11 @@ namespace simuPOP
 			/// return allele name
 			string alleleName(const Allele allele) const
 			{
+#ifndef BINARYALLELE                
 				DBG_FAILIF(allele > s_genoStruRepository[m_genoStruIdx].m_maxAllele,
 					IndexError, "Allele out of range of 0 ~ " +
 					toStr(s_genoStruRepository[m_genoStruIdx].m_maxAllele));
-
+#endif
 				if( allele < s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() )
 				{
 					DBG_FAILIF( allele >= s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() ,
@@ -554,7 +555,12 @@ namespace simuPOP
 
 			void setMaxAllele(UINT maxAllele)
 			{
+#ifdef BINARYALLELE
+                DBG_ASSERT(maxAllele == 1,  ValueError,
+                    "max allele must be 1 for binary modules");
+#else
 				s_genoStruRepository[m_genoStruIdx].m_maxAllele = maxAllele;
+#endif                
 			}
 
 			/// get info length

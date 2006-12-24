@@ -1368,7 +1368,7 @@ namespace simuPOP
 							ar & make_nvp("blocks", tmp);
 							for(size_t j = 0; j < 32; ++j)
 							{
-								*ptr++ = tmp & 1UL;
+								*ptr++ = (tmp & 1UL) != 0;
 								tmp = tmp >> 1;
 							}
 						}
@@ -1378,7 +1378,7 @@ namespace simuPOP
 							ar & make_nvp("blocks", tmp);
 							for(size_t j = 0; j < rest; ++j)
 							{
-								*ptr++ = tmp & 1UL;
+								*ptr++ = (tmp & 1UL) != 0;
 								tmp = tmp >> 1;
 							}
 						}
@@ -1517,7 +1517,7 @@ namespace simuPOP
 								ar & make_nvp("blocks", tmp);
 								for(size_t j = 0; j < 32; ++j)
 								{
-									*ptr++ = tmp & 1UL;
+									*ptr++ = (tmp & 1UL) != 0;
 									tmp = tmp >> 1;
 								}
 							}
@@ -1527,7 +1527,7 @@ namespace simuPOP
 								ar & make_nvp("blocks", tmp);
 								for(size_t i=0; i < rest; ++i)
 								{
-									*ptr++ = tmp & 1UL;
+									*ptr++ = (tmp & 1UL) != 0;
 									tmp = tmp >> 1;
 								}
 							}
