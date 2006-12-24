@@ -1641,7 +1641,7 @@ T Expression::valueAs##TypeName() \
 
 	OstreamManager::~OstreamManager()
 	{
-		closeAll(true);
+		closeAll();
 	}
 
 	ostream* OstreamManager::getOstream( const string& name, bool readable,  bool realAppend, bool useString)
@@ -1693,33 +1693,9 @@ T Expression::valueAs##TypeName() \
 	}
 
 	/// close all files and clean the map
-	void OstreamManager::closeAll(bool closeAppend)
+	void OstreamManager::closeAll()
 	{
-		ostreamMap temp;
-
-		// pick out those really persistent files
-		for(ostreamMapIterator it = m_ostreams.begin(), itEnd = m_ostreams.end(); it != itEnd;  ++it)
-		{
-			if( !closeAppend  && it->second.append() )
-			{
-
-				DBG_DO(DBG_UTILITY, cout << "Do not close file: " << it->first << endl);
-
-				temp.insert( *it );
-				continue;
-			}
-		}
 		m_ostreams.clear();
-		m_ostreams.swap(temp);
-
-		// the destructor of original ostreams will be called but
-		// the original pointers have been set to NULL during the copy constructor to temp.
-		// this is **very** tricky and error prone. I wish I can make it better later.
-
-		// even if we do not close realAppend file, we flush them to make sure we can see them on disk
-		for(ostreamMapIterator it = m_ostreams.begin(), itEnd = m_ostreams.end(); it != itEnd;  ++it)
-			it->second.stream()->flush();
-
 	}
 
 	/// global ostream  manager

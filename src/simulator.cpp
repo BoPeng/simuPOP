@@ -404,7 +404,7 @@ namespace simuPOP
 		}
 
 		// close every opened file (including append-cross-evolution ones)
-		ostreamManager().closeAll(true);
+		ostreamManager().closeAll();
 		return true;
 	}
 

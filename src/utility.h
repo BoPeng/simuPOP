@@ -884,8 +884,7 @@ namespace simuPOP
 			void listAll();
 
 			/// CPPONLY close all files and clean the map
-			/// \param closeAppend if close all files including those persistent after evolution
-			void closeAll(bool closeAppend);
+			void closeAll();
 
 		private:
 
