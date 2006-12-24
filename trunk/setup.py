@@ -406,7 +406,7 @@ DATA_FILES = [
 ]
 
 if os.name == 'nt':
-    DATA_FILES += [('Lib/site-packages', 'win32/zlib1.dll')]
+    DATA_FILES += [('Lib/site-packages', ['win32/zlib1.dll'])]
 
 EXT_MODULES = []
 for modu in MODULES:
