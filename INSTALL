@@ -196,8 +196,8 @@ This is for the re-compiled (with --enable-shared) LAM/MPI 7.0.6
 
  
 
-Windows system using mingw (without cygwin, dysfunctional right now)
---------------------------------------------------------------------
+Windows system using mingw (without cygwin)
+-------------------------------------------
 
 The problem with cygwin is that it has its own gcc, zlib and boost and it is tricky
 to not use them. Using a system without cygwin, you can
@@ -250,15 +250,21 @@ NOTE: for python2.4, you can get error saying
 NOTE AGAIN: I have used a ugly trick in simuPOP_common.i to avoid this problem.
 This might be the reason why simuPOP i/o does not work....
   
-NOTE: due to unknown reason, compiled modules crash on file read/write operations.
 
+Windows using VC++ .NET 2003
+----------------------------
 
-Windows using VC 2005 Express Edition
--------------------------------------
+  1. Find a copy of VC++ 2003 and install. This is the version used to 
+     compile python and is the version VC uses.
 
-  1. download Visual C++ express edition, platform SDK and install
+  2. download boost 1.33.1 and unpack to c:\boost
 
-  2. download boost, 
+  3. in vc command prompt windows,
+    > python setup.py build_ext --include-dirs=c:\boost\boost_1_33_1 bdist_wininst
+
+NOTE: this process is *not* easy for me since I spent *a lot* of time builing
+boost libraries and put them under win32 directory.
+  
 
 Linux-Solaris-MacOSX System
 -----------------------------
