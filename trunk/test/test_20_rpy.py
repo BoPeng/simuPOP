@@ -174,6 +174,8 @@ class TestRPy(unittest.TestCase):
     
     def testVarPlotterNoHistory(self):
         'Testing no history parameter of varPlotter'
+        if not hasRPy:
+            return True
         simu = simulator(
             population(size=200, ploidy=2, loci=[3,4],
                 subPop=[50,50,100]),
