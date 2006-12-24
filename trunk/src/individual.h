@@ -520,7 +520,6 @@ namespace simuPOP
 				DBG_FAILIF(allele > s_genoStruRepository[m_genoStruIdx].m_maxAllele,
 					IndexError, "Allele out of range of 0 ~ " +
 					toStr(s_genoStruRepository[m_genoStruIdx].m_maxAllele));
-#endif
 				if( allele < s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() )
 				{
 					DBG_FAILIF( allele >= s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() ,
@@ -530,6 +529,11 @@ namespace simuPOP
 				}
 				else
 					return toStr(static_cast<int>(allele));
+#else
+                // for binary allele, things are easy since m_maxAllele has to be 1.
+                return toStr(static_cast<int>(allele));
+#endif
+                    
 			}
 
 			/// allele names

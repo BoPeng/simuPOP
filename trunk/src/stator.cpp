@@ -601,7 +601,11 @@ namespace simuPOP
 		for( size_t i=0, iEnd = m_atLoci.size(); i < iEnd;  ++i)
 		{
 			// for each locus, we need to use a vector of dictionaries.
-			vector< intDict> sum;
+#ifndef BINARYALLELE
+			vector<intDict> sum;
+#else
+			vector<intDict> sum(2);
+#endif
 
 			int loc = m_atLoci[i];
 
@@ -613,7 +617,12 @@ namespace simuPOP
 				DBG_DO(DBG_STAT, cout << "Counting genotypes at locus " <<
 					loc << " subPop " << sp << endl);
 
-				vector< intDict> num;
+#ifndef BINARYALLELE
+				vector<intDict> num;
+#else
+				vector<intDict> num(2);
+#endif
+
 
 				/// go through a single allele for all individual, all diploid
 				for( GappedAlleleIterator it = pop.alleleBegin(loc, sp, false),
@@ -624,18 +633,17 @@ namespace simuPOP
 
 					if( !m_phase && a > b )
 						std::swap(a,b);
-
-					// count:
-					// DBG_ASSERT( a < num.size(), SystemError,
-					//  "Allele number " + toStr(int(a)) + " is greater than population maxAllele() (" + toStr(pop.maxAllele()) +")");
-
+#ifndef BINARYALLELE
 					if( a >= num.size() )
 						num.resize(a+1);
+#endif                        
 
 					num[a][b]++;
 
+#ifndef BINARYALLELE
 					if( a >= sum.size() )
 						sum.resize(a+1);
+#endif                        
 
 					sum[a][b]++;
 				}
