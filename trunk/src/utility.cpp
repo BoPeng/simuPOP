@@ -3085,7 +3085,8 @@ T Expression::valueAs##TypeName() \
 		{
 			for(size_t j=0; j<1000; ++j)
 			{
-				from[j] = rng().randInt(2);
+				// use != 0 to reduce compiler warning
+				from[j] = rng().randInt(2) != 0;
 				to[j] = 0;
 			}
 			size_t from_idx = rng().randInt(300);

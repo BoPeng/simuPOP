@@ -286,8 +286,8 @@ namespace simuPOP
 					if( AlleleUnsigned(allele) < this->maxAllele() )
 						AlleleInc(allele);
 				}
-				// dec
-				else if( allele > 0 )
+				// dec (use !=0 instead of > 0 to avoid warning inbinary mode
+				else if( allele != 0 )
 					AlleleDec(allele);
 			}
 
