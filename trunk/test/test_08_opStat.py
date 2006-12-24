@@ -28,7 +28,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars().subPopSize, [200,800])
 
     def testNumOfMale(self):
-        'Tsting counting number of male'
+        'Testing counting number of male'
         pop = population(subPop=[200, 800])
         for i in range(100):
             pop.individual(i,0).setSex(Male)
@@ -46,7 +46,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(1).numOfFemale, 700)
             
     def testNumOfAffected(self):
-        'Tsting counting number of affected individuals'
+        'Testing counting number of affected individuals'
         pop = population(subPop=[200, 800])
         for i in range(100):
             pop.individual(i,0).setAffected(True)
