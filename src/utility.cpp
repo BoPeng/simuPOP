@@ -307,7 +307,7 @@ namespace std
 
     /// CPPONLY: 3^n, can not use pow(3, n) because of overloading problem
     /// in msvc.
-    int pow3(unsigned n)
+    unsigned pow3(unsigned n)
     {
         unsigned res = 1;
         for(unsigned i = 0; i < n; ++i)

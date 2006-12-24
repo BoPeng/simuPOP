@@ -1422,7 +1422,7 @@ namespace simuPOP
 				const string& motherField="mother_idx", const string& indexField="oldindex");
 
 			/// find offspring and spouse
-			void findOffspringAndSpouse(population& pop, int ancestralDepth, int maxOffspring,
+			void findOffspringAndSpouse(population& pop, unsigned ancestralDepth, unsigned maxOffspring,
 				const string& fatherField, const string& motherField,
 				const string& spouseField, const string& offspringField);
 
@@ -1671,9 +1671,10 @@ namespace simuPOP
 			\param stage and other parameters please see help(baseOperator.__init__)
 			*/
 			largePedigreeSample(vectoru size = vectoru(),
-				UINT minTotalSize=0,
-				UINT maxOffspring=5,
-				UINT minPedSize=5, UINT minAffected=0,
+				unsigned minTotalSize=0,
+				unsigned maxOffspring=5,
+				unsigned minPedSize=5, 
+                unsigned minAffected=0,
 				bool countOnly=false,
 				const string& name="sample", const string& nameExpr="", UINT times=1,
 				const string& saveAs="", const string& saveAsExpr="",
@@ -1715,16 +1716,16 @@ namespace simuPOP
 			vectoru m_size;
 
 			/// control total size
-			int m_minTotalSize;
+			unsigned m_minTotalSize;
 
 			///
-			int m_maxOffspring;
+			unsigned m_maxOffspring;
 
 			///
-			int m_minPedSize;
+			unsigned m_minPedSize;
 
 			///
-			int m_minAffected;
+			unsigned m_minAffected;
 
 			// do not draw sample
 			bool m_countOnly;

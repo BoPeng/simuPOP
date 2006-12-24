@@ -149,8 +149,8 @@ namespace simuPOP
 				dadPloidy = m_bt.trialSucc(0);
 				momPloidy = m_bt.trialSucc(chEnd);
 				//
-				int nextDadPloidy;
-				int nextMomPloidy;
+				int nextDadPloidy = 0;
+				int nextMomPloidy = 0;
 				bool copyDad;
 				bool copyMom;
 				for(UINT ch=0; ch < chEnd; ++ch)
@@ -934,7 +934,7 @@ namespace simuPOP
 	//      index = 0*3+1
 	// second loop
 	//      index = 1*3 + 2 = 5
-	double fitOfGeno(int loc, const vectori & allgeno, const vectorf & fitness, const vectorf::const_iterator & freq)
+	double fitOfGeno(unsigned loc, const vectori & allgeno, const vectorf & fitness, const vectorf::const_iterator & freq)
 	{
 		int index = 0;
 		double fq = 1;
@@ -960,9 +960,6 @@ namespace simuPOP
 	void interFitness(unsigned nLoci, const vectorf & fitness, const vectorf::const_iterator & freq, vectorf & sAll)
 	{
 		sAll.resize(3*nLoci);
-		int pow3loci = 1;
-		for(int pp=0; pp<(nLoci-1); ++pp)
-			pow3loci *= 3;
 		// each locus
 		for(size_t loc=0; loc<nLoci; ++loc)
 		{
@@ -976,7 +973,7 @@ namespace simuPOP
 				allgeno[loc] = geno;
 				// iterator through others
 				double f = 0;
-				for(size_t it = 0; it < pow3loci; it++)
+				for(size_t it = 0; it < std::pow3(nLoci-1); it++)
 				{
 					// assign allgeno
 					size_t num = it;
@@ -1018,9 +1015,6 @@ namespace simuPOP
 	{
 		size_t nLoci = freq.size();
 		size_t i, j, curI, nextI;
-		int pow3loci = 1;
-		for(int pp=0; pp<nLoci; ++pp)
-			pow3loci *= 3;
 
 		if( curGen >0 && minMutAge > curGen )
 			minMutAge = curGen;
@@ -1093,7 +1087,7 @@ namespace simuPOP
 			}
 		}
 		// interaction case
-		else if (fitness.size() == pow3loci)
+		else if (fitness.size() == std::pow3(nLoci))
 		{
 			interaction = true;
 		}
@@ -1163,9 +1157,6 @@ namespace simuPOP
 				vectorf sAllTmp;
 				PyObject* freqObj = Double_Vec_As_NumArray( xt.begin()+nLoci*idx, xt.begin()+nLoci*(idx+1) );
 				PyCallFunc2(fitnessFunc, "(iO)", curGen-idx-1, freqObj, sAllTmp, PyObj_As_Array);
-				int pow3 = 1;
-				for(int pp=0; pp<nLoci; ++pp)
-					pow3 *= 3;
 
 				if(sAllTmp.size() == 3*nLoci)
 				{
@@ -1178,7 +1169,7 @@ namespace simuPOP
 					}
 				}
 				// interaction case.
-				else if(sAll.size() == pow3)
+				else if(sAll.size() == std::pow3(nLoci))
 				{
 					// xt is the current allele frequency
 					interFitness(nLoci, sAllTmp, xt.begin()+(idx*nLoci), sAll);

@@ -288,7 +288,8 @@ namespace simuPOP
 		}
 	}
 
-	void sample::findOffspringAndSpouse(population& pop, int ancestralDepth, int maxOffspring,
+	void sample::findOffspringAndSpouse(population& pop, unsigned ancestralDepth, 
+        unsigned maxOffspring,
 		const string& fatherField, const string& motherField,
 		const string& spouseField, const string& offspringField)
 	{
@@ -303,7 +304,7 @@ namespace simuPOP
 		DBG_FAILIF(ancestralDepth > pop.ancestralDepth(), ValueError,
 			"The population does not have enough ancestral generations for this operation");
 
-		for(size_t ans = 1; ans <= ancestralDepth; ++ans)
+		for(unsigned ans = 1; ans <= ancestralDepth; ++ans)
 		{
 			pop.useAncestralPop(ans - 1);
 			vectorf dad = pop.indInfo(fatherIdx, true);
@@ -345,7 +346,7 @@ namespace simuPOP
 	void sample::resetSubPopID(population& pop)
 	{
 		int oldGen = pop.ancestralGen();
-		for(int anc = 0; anc <= pop.ancestralDepth(); ++anc)
+		for(size_t anc = 0; anc <= pop.ancestralDepth(); ++anc)
 		{
 			pop.useAncestralPop(anc);
 			for(population::IndIterator it=pop.indBegin(); it != pop.indEnd(); ++it)
@@ -691,7 +692,6 @@ namespace simuPOP
 		}
 		else									  // for each subpop
 		{
-			ULONG sibID = 0;
 			for(UINT sp = 0; sp < pop.numSubPop(); ++sp)
 			{
 				vectorlu & sibpairs = m_validSibs[sp];
@@ -774,8 +774,6 @@ namespace simuPOP
 		pop.addInfoFields(fields, -1);
 		UINT pedindexIdx = pop.infoIdx("pedindex");
 		UINT spouseIdx = pop.infoIdx("spouse");
-		UINT fatherIdx = pop.infoIdx("father_idx");
-		UINT motherIdx = pop.infoIdx("mother_idx");
 		for(size_t i = 0; i < m_maxOffspring; ++i)
 			offspringIdx[i] = pop.infoIdx(fields[i]);
 		// save old index
@@ -798,8 +796,8 @@ namespace simuPOP
 			for(size_t idx = g3start; idx < g3end; ++idx)
 			{
 				pop.useAncestralPop(2);
-				int pedSize = 2;
-				int numAffected = 0;
+				unsigned pedSize = 2;
+				unsigned numAffected = 0;
 				//
 				// already belong to other pedigree
 				int grandspouse = static_cast<int>(pop.ind(idx).info(spouseIdx));
@@ -951,7 +949,6 @@ namespace simuPOP
 		}
 		else									  // for each subpop
 		{
-			ULONG sibID = 0;
 			for(UINT sp = 0; sp < pop.numSubPop(); ++sp)
 			{
 				pedArray & peds = m_validPedigrees[sp];
@@ -978,7 +975,6 @@ namespace simuPOP
 		pop.useAncestralPop(2);
 		vectorf grandIdx = pop.indInfo(pedindexIdx, true);
 		int newPedID = 0;
-		int grandParID = 0, parentsID = 0;
 		for(pedArray::iterator ped = acceptedPeds.begin(); ped != acceptedPeds.end(); ++ped, ++newPedID)
 		{
 			double pedID = boost::get<0>(*ped);
