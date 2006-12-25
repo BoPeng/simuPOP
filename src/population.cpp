@@ -1128,8 +1128,10 @@ namespace simuPOP
 		io::filtering_ostream ofs;
 		// get file extension
 		string ext = fileExtension(filename);
+#ifndef DISABLE_COMPRESSION		
 		if(compress || (ext.size() > 3 && ext.substr(ext.size() - 3, 3) == ".gz"))
 			ofs.push(io::gzip_compressor());
+#endif			
 		ofs.push(io::file_sink(filename));
 
 		if(!ofs)
@@ -1159,7 +1161,11 @@ namespace simuPOP
 		io::filtering_istream ifs;
 		bool gzipped = isGzipped(filename);
 		if(gzipped)
+#ifdef DISABLE_COMPRESSION
+			throw ValueError("This version of simuPOP can not handle compressed file");
+#else
 			ifs.push(io::gzip_decompressor());
+#endif			
 		ifs.push(io::file_source(filename));
 		// do not have to test again.
 		if(!ifs)
