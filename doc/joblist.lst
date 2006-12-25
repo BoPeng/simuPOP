@@ -1,0 +1,35 @@
+# list file for some simulations, should be processed by
+# scripts/simuCluster.py
+
+script = r"""
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -N $name
+#PBS -q $queue
+#PBS -l walltime=$time:00:00
+#PBS -o $job_dir
+#PBS -e $job_dir
+#
+PYTHONPATH=/home/user/PythonModules/lib64/python2.3/site-packages
+export PYTHONPATH
+cd $job_dir
+[ -d $job_dir ] || mkdir -p $job_dir
+/bin/rm -rf $job_dir/$name
+/bin/mkdir -p $job_dir/$name
+python /home/bpeng/simuPOP/scripts/simuComplexDisease.py --noDialog --optimized \
+      --simuName=$name --numChrom=5 --DSL='[5, 15, 25, 25, 45]' \
+      --splitGen=8000 --numSubPop=1 \
+      --fitness=$1 --alleleDistInSubPop=even \
+      --recRate="0.0005" --curAlleleFreq='[0.2]*5' --numLoci="10" --DSLLoc="(0.5)"  \
+      --initSize="10000" --endingSize="200000" --burninGen="5000" --markerType="SNP" \
+      --growthModel='exponential' --mixingGen="10000" --endingGen="10000" --savePop=[] \
+      --minMutAge=0 --maxMutAge=0 --migrRate="0." --migrModel='stepping stone'\
+      --selMultiLocusModel="additive" --mutaRate=$2" --saveFormat='txt'
+"""
+
+joblist = ''
+
+idx = 0
+for fit in [0.001, 0.0005]:
+	for mut in [0.0001, 0.00001]:
+		joblist += 'jobs_%d: %s*5: %f\n' % (idx, [1, 1+fit/2., 1+fit], mut)

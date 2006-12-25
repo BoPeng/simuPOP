@@ -4890,7 +4890,7 @@ re
 \end_layout
 
 \begin_layout Chapter
-Introduction to some bundled scripts
+Introduction to bundled scripts
 \end_layout
 
 \begin_layout Standard
@@ -4940,13 +4940,13 @@ simuLDDecay.py
 \end_layout
 
 \begin_layout Standard
-This is the simplest scripts under the 
+This is the simplest script under the 
 \family typewriter
 scripts
 \family default
  directory, showing the decay of linkage disequilibrium under recombination.
  It is intended to be a template for many more such simulations for teaching
- population genetics scripts.
+ a population genetics course.
  
 \end_layout
 
@@ -4957,7 +4957,7 @@ demoPyOperator.py
 \end_layout
 
 \begin_layout Standard
-This script demonstrate the use of a during mating python operator.
+This script demonstrate the use of a during-mating pure-Python operator.
  Since such operator will be called very frequently (at each mating event),
  the performance of such operators tend to be bad.
  Since most of the task performed by such an operator can be achieved by
@@ -5049,15 +5049,189 @@ simuCluster.py
 simuCluster.py
 \family default
  helps you manage a large number of simulations on a cluster system.
+ You only need to maintain a single job-description file and 
+\family typewriter
+simuCluster.py 
+\family default
+will help you submit them.
  The command line options are
 \end_layout
 
 \begin_layout LyX-Code
-$ simuCluster.py -l simulation.lst -a -f -r jobs
+$ simuCluster.py -l simulation.lst -a  -r -f key=val jobs 
 \end_layout
 
 \begin_layout Standard
 where
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+-l list:
+\family default
+ a list file (actually a python file) that specifies variale 
+\family typewriter
+script 
+\family default
+and 
+\family typewriter
+joblist
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+-a: 
+\family default
+use all jobs defined in the list file
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+-r:
+\family default
+ run the jobs, by default, this script will only list the jobs and generate
+ job file.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+-f: 
+\family default
+force the execution even if the generated job scripts have 
+\family typewriter
+$ 
+\family default
+character.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+key=val:
+\family default
+ additional subsitution key/value pair that will be used to replace 
+\family typewriter
+$key 
+\family default
+in the job scripts.
+ Commonly used, or machine-specific, 
+\family typewriter
+key=val
+\family default
+ pairs can be defined in a configuration file 
+\family typewriter
+$HOME/.simuCluster
+\family default
+ with content like:
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+command = 'bsub -J $name <'
+\end_layout
+
+\begin_layout LyX-Code
+queue = 'batch'
+\end_layout
+
+\begin_layout LyX-Code
+job_dir = '/scratch/jobs'
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+job: 
+\family default
+a list of jobs, a simple form of regular expression can be used.
+ Namely, 
+\family typewriter
+job1_3 
+\family default
+means 
+\family typewriter
+job1
+\family default
+, 
+\family typewriter
+job2
+\family default
+ and 
+\family typewriter
+job3
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The list file can be any python script, that defines variables
+\family typewriter
+ script 
+\family default
+and 
+\family typewriter
+joblist 
+\family default
+after execution, where 
+\family typewriter
+script
+\family default
+ is a simple script with variables 
+\family typewriter
+$name
+\family default
+ or 
+\family typewriter
+${name}
+\family default
+.
+ and 
+\family typewriter
+joblist
+\family default
+ is a string with lines of comma (can be other charater if you define a
+ variable 
+\family typewriter
+separator
+\family default
+) separated fields, that will be used to replace 
+\family typewriter
+$0 (
+\family default
+also 
+\family typewriter
+$name
+\family default
+, the name of a job)
+\family typewriter
+, $1, $2, ...
+ 
+\family default
+etc.
+\end_layout
+
+\begin_layout Standard
+Then, what 
+\family typewriter
+simuCluster.py
+\family default
+ will do is process this list file, replace 
+\family typewriter
+$name, $var, $1, $2 ...
+
+\family default
+ etc with environmental variables, command line paramters, configuration
+ file and joblist and generate job scripts.
+ If 
+\family typewriter
+-r 
+\family default
+is given, the job will be submitted.
 \end_layout
 
 \begin_layout Section
