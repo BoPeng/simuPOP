@@ -16,9 +16,13 @@ import os
 if os.name == 'nt':
     use_vc = True
     TOOLSET = 'vc71-mt-1_33_1'
+    # under windows, boost/iostreams/gzip decompressor seems
+    # to be broken. has to be disabled by now.
+    disable_compression = True
 else:
     use_vc = False
     TOOLSET = 'gcc34'
+    disable_compression = False
 
 ############################################################################
 #
@@ -295,6 +299,8 @@ for modu in MODULES:
     # define_macros
     MODU_INFO[modu]['define_macros'] = MACROS[modu]
     MODU_INFO[modu]['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])
+    if disable_compression:
+        MODU_INFO[modu]['define_macros'].extend([('DISABLE_COMPRESSION', None)])
     if os.name == 'nt':
         MODU_INFO[modu]['define_macros'].extend([('BOOST_ALL_NO_LIB', None)])
     MODU_INFO[modu]['undef_macros'] = []
