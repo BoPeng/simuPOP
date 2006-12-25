@@ -490,8 +490,10 @@ namespace simuPOP
 	void simulator::saveSimulator(string filename, string format, bool compress) const
 	{
 		io::filtering_ostream ofs;
+#ifndef DISABLE_COMPRESSION		
 		if(compress)
 			ofs.push(io::gzip_compressor());
+#endif			
 		ofs.push(io::file_sink(filename));
 
 		if(!ofs)
@@ -520,7 +522,11 @@ namespace simuPOP
 	{
 		io::filtering_istream ifs;
 		if(isGzipped(filename))
+#ifdef DISABLE_COMPRESSION		
+			throw ValueError("This version of simuPOP can not handle compressed file");
+#else
 			ifs.push(io::gzip_decompressor());
+#endif
 		ifs.push(io::file_source(filename));
 
 		// do not need to test again
@@ -534,13 +540,11 @@ namespace simuPOP
 				boost::archive::text_iarchive ia(ifs);
 				ia >> *this;
 			}
-#ifndef __NO_XML_SUPPORT__
 			else if( format == "xml"  ||  (format == "auto" && filename.substr(filename.size()-4,4) == ".xml" ))
 			{
 				boost::archive::xml_iarchive ia(ifs);
 				ia >> boost::serialization::make_nvp("simulator", *this);
 			}
-#endif
 			else if (format == "bin" || (format == "auto" && filename.substr(filename.size()-4,4) == ".bin" ) )
 			{
 				boost::archive::binary_iarchive ia(ifs);
@@ -582,7 +586,6 @@ namespace simuPOP
 				}
 				catch(...)						  // then xml?
 				{
-#ifndef __NO_XML_SUPPORT__
 					io::filtering_istream ifxml;
 					if(isGzipped(filename))
 						ifxml.push(io::gzip_decompressor());
@@ -597,10 +600,6 @@ namespace simuPOP
 						throw ValueError("Failed to load simulator. Your file may be corrupted, "
 							"or being a copy of non-transferrable file (.bin)");
 					}
-#else
-					throw ValueError("Failed to load simulator. Your file may be corrupted, "
-						"or being a copy of non-transferrable file (.bin)");
-#endif
 				}								  // try xml
 			}									  // try text
 		}										  // try bin
