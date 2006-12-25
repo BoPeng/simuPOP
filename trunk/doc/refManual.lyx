@@ -9243,7 +9243,7 @@ SimulatorFromFiles(files, mating)
 \end_layout
 
 \begin_layout Chapter
-Writing simuPOP scripts
+Option handling
 \end_layout
 
 \begin_layout Section
@@ -11828,6 +11828,22 @@ preview false
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+clearpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Operator (C++) 
 \family typewriter
@@ -11880,6 +11896,22 @@ inds
 atPloidy 
 \family default
 to mutate other, or all ploidy copy.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+clearpage
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -12776,6 +12808,22 @@ preview false
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+clearpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Penetrance
 \begin_inset LatexCommand \index{penetrance}
@@ -13505,6 +13553,22 @@ PyQuanTrait
 
 \begin_layout Standard
 For each individual, user provide a function to calculate quantitative trait.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+clearpage
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -17453,6 +17517,22 @@ outputExpr
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+clearpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 .
  
 \end_layout
@@ -17594,7 +17674,7 @@ simulator.evolve will check reference count at the end of each generation
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \bibtex[bibtotoc,plainnat]{all}
+\begin_inset LatexCommand \bibtex[bibtotoc,plainnat]{bib/all}
 
 \end_inset
 
@@ -17606,10 +17686,6 @@ simulator.evolve will check reference count at the end of each generation
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 
 \end_layout
 

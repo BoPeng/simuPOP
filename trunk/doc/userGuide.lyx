@@ -4927,6 +4927,9 @@ to get the help messages.
 \begin_layout Standard
 In this chapter, I will briefly explain what these scripts do, from a more
  methodology side of view.
+ Be warned, though, that these scripts are less actively maintained than
+ simuPOP core and I mostly rely on user bug report to identify problems
+ in these scripts.
 \end_layout
 
 \begin_layout Section
@@ -5232,6 +5235,66 @@ $name, $var, $1, $2 ...
 -r 
 \family default
 is given, the job will be submitted.
+ Example 
+\begin_inset LatexCommand \ref{cap:joblist}
+
+\end_inset
+
+ gives a sample job list file.
+ Command
+\end_layout
+
+\begin_layout LyX-Code
+$ python scripts/simuCluster.py -l joblist.lst -a
+\end_layout
+
+\begin_layout Standard
+will generate files
+\family typewriter
+ job1.pbs
+\family default
+, ...
+ and if 
+\family typewriter
+-r 
+\family default
+option is given, these files will be submitted using 
+\family typewriter
+qsub job1
+\family default
+, unless you specify another 
+\family typewriter
+command 
+\family default
+variable.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{cap:joblist}
+
+\end_inset
+
+A sample job list file
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{joblist.lst}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -5255,7 +5318,7 @@ This script is used to simulate the evolution of allelic spectra (number
 \end_inset
 
 .
- I used this script for verify two theoretical models proposed by Pritchard
+ I used this script to verify two theoretical models proposed by Pritchard
  
 \begin_inset LatexCommand \citeyearpar{Pritchard2001}
 
@@ -5281,10 +5344,34 @@ This script is used to simulate the evolution of allelic spectra (number
 simuRecHotSpots.py
 \end_layout
 
+\begin_layout Standard
+I wrote this script to simulate the evolution of a chromosome, subject to
+ recombination of uniform recombination rate.
+ Using this script, I would like to see how many recombination hotspots
+ can be observed if there is no physical recombination hotspots, i.e.
+ actual variation of recombination rate on the chromosome.
+ The population is saved in LDhat format to be analyzed by LDhat 
+\begin_inset LatexCommand \citep{Myers2005}
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Subsection
 
 \family typewriter
 simuNeutralSNPs.py
+\end_layout
+
+\begin_layout Standard
+This script is adapted from 
+\family typewriter
+simuRecHotSplots.py
+\family default
+, the main purpose is to observe the evolution of allele frequency under
+ more complicated scenarios than classical population genetics theory can
+ handle.
 \end_layout
 
 \begin_layout Section
