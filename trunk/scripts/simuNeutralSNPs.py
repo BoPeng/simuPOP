@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 #
-# Purpose:    simulate the forming and detecton of recombination
-#     hotspots.
-#
 # Bo Peng (bpeng@rice.edu)
 #
 # $LastChangedDate: 2005-10-20 15:26:39 -0500 (Thu, 20 Oct 2005) $
@@ -232,7 +229,7 @@ def plotAlleleFreq(pop, param):
 
 
 # simulate function, 
-def simuHotSpot( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixingGen, 
+def simulate( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixingGen, 
         growth, numSubPop, migrModel, migrRate, mutaRate, recRate, name, dryrun):
     ''' run the simulation, parameters are:
         numLoci:        number of SNP loci on the only chromosome
@@ -320,5 +317,5 @@ def simuHotSpot( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixin
 
 
 if __name__ == '__main__':
-    simuHotSpot( *getOptions() )
+    simulate( *getOptions() )
     
