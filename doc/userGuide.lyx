@@ -609,6 +609,69 @@ simuPOP
  can be found at the simuPOP homepage.
 \end_layout
 
+\begin_layout Section
+Special notes for windows users
+\end_layout
+
+\begin_layout Standard
+Due to the limits of the windows operating systems, several features are
+ unavailable for a windows system.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+compression of native simuPOP file formats
+\series default
+.
+ Because large populations tend to take lots of disk spaces, simuPOP compresses
+ text, binary or XML output in gzip format by default, despite the slower
+ saving time.
+ Because gzip format is not well supported under windows, this feature is
+ disabled under windows.
+ The 
+\family typewriter
+compress=True
+\family default
+ option of 
+\family typewriter
+savePopulation
+\family default
+ is ignored.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+unique random seed for each simuPOP session
+\series default
+.
+ Under *nix systems, simuPOP reads 
+\family typewriter
+/dev/urandom
+\family default
+ to set random seed and can gurantee different seeds for concurrent simuPOP
+ sessions.
+ Under windows, system time is used to seed the random number generator
+ so two simuPOP sessions may get the same seeds and produce the same results.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+MPI modules.
+
+\series default
+ Although windows port of Message Passing Interface implementations are
+ available, I only have access to Linux multi-processor systems and Linux-based
+ clusters.
+ Therefore, windows MPI modules are not yet supported.
+\end_layout
+
+\begin_layout Standard
+I welcome suggestions on how to make these features available for windows.
+\end_layout
+
 \begin_layout LyX-Code
 
 \end_layout
@@ -4831,7 +4894,23 @@ Introduction to some bundled scripts
 \end_layout
 
 \begin_layout Standard
-Several scripts are bundled with simuPOP.
+Several scripts are bundled with simuPOP, under the 
+\family typewriter
+/usr/share/simuPOP/scripts
+\family default
+ directory under a *nix system and 
+\family typewriter
+c:
+\backslash
+python25
+\backslash
+share
+\backslash
+simuPOP
+\backslash
+scripts
+\family default
+ under windows.
  These scripts all use 
 \family typewriter
 simuOpt
@@ -4851,6 +4930,143 @@ In this chapter, I will briefly explain what these scripts do, from a more
 \end_layout
 
 \begin_layout Section
+Examples and teaching scripts
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+simuLDDecay.py
+\end_layout
+
+\begin_layout Standard
+This is the simplest scripts under the 
+\family typewriter
+scripts
+\family default
+ directory, showing the decay of linkage disequilibrium under recombination.
+ It is intended to be a template for many more such simulations for teaching
+ population genetics scripts.
+ 
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+demoPyOperator.py
+\end_layout
+
+\begin_layout Standard
+This script demonstrate the use of a during mating python operator.
+ Since such operator will be called very frequently (at each mating event),
+ the performance of such operators tend to be bad.
+ Since most of the task performed by such an operator can be achieved by
+ other means (for example a post-mating operator), it is rarely used.
+\end_layout
+
+\begin_layout Section
+Utility scripts
+\end_layout
+
+\begin_layout Standard
+These scripts are not necessarily written in simuPOP.
+ It is written to facilitate the use of simuPOP.
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+simuViewPop.py
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+simuViewPop.py
+\family default
+ is a 
+\family typewriter
+wxPython 
+\family default
+application written to view simuPOP populations.
+ You will need to have 
+\family typewriter
+wxPython
+\family default
+ installed to use it.
+ There are two ways to use this script:
+\end_layout
+
+\begin_layout Itemize
+Import this script and call 
+\family typewriter
+viewPop(pop) 
+\family default
+to view population 
+\family typewriter
+pop
+\end_layout
+
+\begin_layout Itemize
+Run from command line
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ simuViewPop.py /path/to/population.txt
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+This script shows four tabs to show the information of a population
+\end_layout
+
+\begin_layout Itemize
+basic information
+\end_layout
+
+\begin_layout Itemize
+a table view of all genotype
+\end_layout
+
+\begin_layout Itemize
+calculation of statistics, with a tree-view of local name space
+\end_layout
+
+\begin_layout Itemize
+save to other formats
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+simuCluster.py
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+simuCluster.py
+\family default
+ helps you manage a large number of simulations on a cluster system.
+ The command line options are
+\end_layout
+
+\begin_layout LyX-Code
+$ simuCluster.py -l simulation.lst -a -f -r jobs
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Section
+General simulation scripts
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
 simuCDCV.py
 \end_layout
 
@@ -4885,7 +5101,25 @@ This script is used to simulate the evolution of allelic spectra (number
 .
 \end_layout
 
+\begin_layout Subsection
+
+\family typewriter
+simuRecHotSpots.py
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+simuNeutralSNPs.py
+\end_layout
+
 \begin_layout Section
+Simulations of the evolution of complex human diseases
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
 simuForward.py
 \end_layout
 
@@ -4953,7 +5187,9 @@ To save simulation time, population at the end of the burnin stage is reused
  if simulation gets restarted.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
+
+\family typewriter
 simuComplexDisease.py
 \end_layout
 
@@ -4997,7 +5233,9 @@ An obvious advantage of this approach is that the simulation does not have
  can be controlled exactly.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
+
+\family typewriter
 analComplexDisease.py
 \end_layout
 
@@ -5044,10 +5282,6 @@ Linkage, and
 
 \begin_layout Itemize
 Case control association study.
-\end_layout
-
-\begin_layout Standard
-
 \end_layout
 
 \begin_layout Standard
