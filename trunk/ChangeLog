@@ -6,12 +6,15 @@ NOTE: Daily snapshot reflects current SVN version. It includes new features and
 BUGS:
   - some rpy function does not work due to a rpy bug.
 
-version 0.7.6 - Currently available as subversion snapshot.
+version 0.7.7 - Currently available as subversion snapshot.
+
+version 0.7.6 - (Rev 674) Dec 25, 2006
   -NEW: change file format for binary modules, resulting much faster save/load.
   -NEW: fix adjustGenotype (efficiency)
   -BUG: fix simulator::clone(), introduced in 0.7.5
   -NEW: disable compression under windows due to a boost bug.
-  -BUG: make simuRPy works with the latest R and rpy
+  -BUG: make simuRPy works with the latest R and rpy.
+  -NEW: several new chapters in the user's guide.
 
 
 version 0.7.5 - (Rev 576) Dec 8, 2006
