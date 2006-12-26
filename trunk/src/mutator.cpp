@@ -150,7 +150,7 @@ namespace simuPOP
 		}
 		else
 		{
-			if( allele > step)
+			if(allele > step)
 				AlleleMinus(allele, step);
 			else
 				allele = 0;

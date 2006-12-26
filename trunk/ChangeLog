@@ -11,6 +11,7 @@ version 0.7.6 - Currently available as subversion snapshot.
   -NEW: fix adjustGenotype (efficiency)
   -BUG: fix simulator::clone(), introduced in 0.7.5
   -NEW: disable compression under windows due to a boost bug.
+  -BUG: make simuRPy works with the latest R and rpy
 
 
 version 0.7.5 - (Rev 576) Dec 8, 2006

@@ -99,7 +99,7 @@ DEF = {
     'laop': {'OPTIMIZED':None, 'LONGALLELE':None},
     'ba': {'BINARYALLELE':None},
     'baop': {'OPTIMIZED':None, 'BINARYALLELE':None},
-     'mpi': {'SIMUMPI': None},
+#	'mpi': {'SIMUMPI': None},
 #     'opmpi': {'OPTIMIZED':None, 'SIMUMPI': None},
 #     'lampi': {'LONGALLELE':None, 'SIMUMPI': None},
 #     'laopmpi': {'OPTIMIZED':None, 'LONGALLELE':None, 'SIMUMPI': None},
@@ -203,8 +203,7 @@ for mod in MODULES:
     Alias('install', dp1)
 
 
-for pyfile in ['simuRPy.py', 'simuUtil.py', 'simuViewPop.py', 
-    'simuPOP.py', 'simuOpt.py']:
+for pyfile in ['simuRPy.py', 'simuUtil.py', 'simuPOP.py', 'simuOpt.py']:
     env.Install(dest_dir, pyfile)
     Alias('install', dest_dir)
 
