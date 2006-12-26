@@ -6,7 +6,7 @@ checking out simuPOP from svn repository, you need to
 install swig >= 1.3.27 to generate the wrap files.
 
 """
-import os
+import os, sys
 #
 
 # these are the default toolset to build boost. It is needed 
@@ -15,13 +15,17 @@ import os
 # 
 if os.name == 'nt':
     use_vc = True
-    TOOLSET = 'vc71-mt-1_33_1'
+    TOOLSET = '-vc71-mt-1_33_1'
     # under windows, boost/iostreams/gzip decompressor seems
     # to be broken. has to be disabled by now.
     disable_compression = True
-else:
+elif sys.platform == 'darwin':
     use_vc = False
-    TOOLSET = 'gcc34'
+    TOOLSET = ''
+    disable_compression = False
+else:    
+    use_vc = False
+    TOOLSET = '-gcc'
     disable_compression = False
 
 ############################################################################
@@ -279,12 +283,12 @@ for modu in MODULES:
     MODU_INFO[modu]['src'].extend(GSL_FILES)
     # lib
     if os.name == 'nt':    # Windows
-        MODU_INFO[modu]['libraries'] = ['libboost_serialization-%s' % TOOLSET, 
-            'libboost_iostreams-%s' % TOOLSET]
+        MODU_INFO[modu]['libraries'] = ['libboost_serialization%s' % TOOLSET, 
+            'libboost_iostreams%s' % TOOLSET]
         MODU_INFO[modu]['libraries'].append('zdll')
     else:
-        MODU_INFO[modu]['libraries'] = ['boost_serialization-%s' % TOOLSET, 
-            'boost_iostreams-%s' % TOOLSET, 'stdc++']
+        MODU_INFO[modu]['libraries'] = ['boost_serialization%s' % TOOLSET, 
+            'boost_iostreams%s' % TOOLSET, 'stdc++']
         MODU_INFO[modu]['libraries'].append('z')
     MODU_INFO[modu]['include_dirs'] = ['.']
     #
