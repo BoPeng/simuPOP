@@ -362,7 +362,7 @@ if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
         sys.exit(1)
     # generate header file 
     print "Generating external runtime header file..."
-    os.system( 'swig -python -external-runtime swigpyrun.h' )
+    os.system( 'swig -python -external-runtime -outdir src swigpyrun.h' )
     # try the first option set with the first library
     for lib in MODULES:
         print "Generating wrap file " + WRAP_INFO[lib][0]

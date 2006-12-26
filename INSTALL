@@ -406,8 +406,6 @@ Additional remarks
      Using scons, you can use 'scons -j4 laop install' to recompile only the laop
      module using 4 threads. Note that the SConstruct file is tailored for my own
      developing environment and you may need to change some of the settings.
-  2. Python 2.5 is not yet supported (due to the fact that swig does not
-     support 2.5 yet.)
 
 
 test simuPOP
