@@ -32,11 +32,13 @@ and some utility class for plotting.
 """
 
 from exceptions import *
+from math import ceil, sqrt
 
 try:
     import rpy_options
     rpy_options.set_options(VERBOSE = False)
     from rpy import *
+    set_default_mode(NO_CONVERSION)
 except:
     print "Rpy can not be loaded. Please verify your rpy installation. "
     print "If you are using a rpy version that reuires Python Numeric package. "
@@ -44,7 +46,7 @@ except:
     raise ImportError("Failed to import rpy package. (You will need rpy>=0.99)")
     
 
-import os, sys, math, random
+import os, sys
 
 # if under windows, fix a bug with rpy which uses blocking i/o so 
 # R figure will not be refreshed in time
@@ -60,7 +62,8 @@ def rmatrix(mat):
         that can be passed to functions like image
         directly.
     '''
-    return with_mode(NO_CONVERSION, r.do_call)('rbind', mat)
+    #return with_mode(NO_CONVERSION, r.do_call)('rbind', mat)
+    return r.do_call('rbind', mat)
 
 
 class VarPlotter_Base:
@@ -81,7 +84,7 @@ class VarPlotter_Base:
             self.col = [0]*nplot
         else:
             self.col = col
-        self.mfrow = mfrow
+        self.mfrow = [int(x) for x in mfrow]
         self.update = update
         self.title = [title]*self.nplot
         self.xlab = xlab
@@ -142,8 +145,8 @@ class VarPlotter_Base:
             raise ValueError("mfrow is not enough to hold " + str(self.nplot) + " figures")
 
         if self.mfrow == [1,1] and self.nplot > 1:
-            self.mfrow[0] = int(math.ceil(math.sqrt( self.nplot )))
-            self.mfrow[1] = int(math.ceil(self.nplot/float(self.mfrow[0]) ))
+            self.mfrow[0] = int(ceil(sqrt( self.nplot)))
+            self.mfrow[1] = int(ceil(self.nplot/float(self.mfrow[0])))
             if self.mfrow[0] > self.mfrow[1]:
                      self.mfrow.reverse()
                      
@@ -161,13 +164,13 @@ class VarPlotter_Base:
         lt = [0] * ( self.mfrow[0] * (self.mfrow[1]+1))
         for i in range(0, self.mfrow[0]):
             for j in range(0, self.mfrow[1]+1):
-                if    i*self.mfrow[1]+2+j <= self.nplot + 1:
+                if i*self.mfrow[1]+2+j <= self.nplot + 1:
                     lt[i* (self.mfrow[1]+1)+j] = i*self.mfrow[1]+2+j
                 else:
                     lt[i* (self.mfrow[1]+1)+j] = 0    
             lt[(i+1)*(self.mfrow[1]+1)-1] = 1
 
-        w = 7 * r.par("csi") * 2.54
+        w = 7 * with_mode(BASIC_CONVERSION, r.par)("csi") * 2.54
         r.assign('lt', lt)
         r('''layout(matrix(lt, byrow=TRUE, nc = %d+1),
             widths = c(rep("1", %d), lcm(%f)))''' % (self.mfrow[1], self.mfrow[1], w))
@@ -179,7 +182,7 @@ class VarPlotter_Base:
         
         self.color = r.rainbow(level, start=.7, end=.1)
         r.par(mar=mar)
-        levels = r.seq(lim[0], lim[1], length=level)
+        levels = with_mode(BASIC_CONVERSION, r.seq)(lim[0], lim[1], length=level)
         r.plot_new()
         r.plot_window(xlim = [0, 1], ylim = lim,
             xaxs = "i", yaxs = "i")
@@ -319,8 +322,8 @@ class VarPlotter_NoHis(VarPlotter_Base):
                 self.colorBar(self.level, self.zlim)
             d=[]
             for i in range(0,len(data)):
-                d.extend( data[i])
-            r.image( z= r.t(r.matrix( d, ncol=len(data))), 
+                d.extend(data[i])
+            r.image( z= r.t(r.matrix(d, ncol=len(data))), 
                 xlab=self.xlab, axes=self.axes,
                 ylab=self.ylab, main=self.title[rep], col=self.color)
         else: 
@@ -502,12 +505,12 @@ class VarPlotter_His(VarPlotter_Base):
                     self.ylim[1] = yl[1]
 
         if self.byRep:
-            if self.plotType == "image":     # use image
+            if self.plotType == "image":                # use image
                 self.colorBar(self.level, self.ylim)
                 for rep in range(0, self.numRep):
                     r.image(x=self.data[rep].gen, y=range(0, self.data[rep].recordSize),
-                        xlim=self.xlim, z= r.t(r.matrix( self.data[rep].flatData(),
-                        byrow=True, ncol=len(self.data[rep].gen))),xlab=self.xlab,
+                        xlim=self.xlim, z=r.t(r.matrix(self.data[rep].flatData(),
+                        byrow=True, ncol=len(self.data[rep].gen))), xlab=self.xlab,
                         ylab=self.ylab, main=self.title[rep], col=self.color)
             elif self.separate == False or self.data[rep].recordSize == 1:
                 for rep in range(0, self.numRep):
@@ -537,8 +540,9 @@ class VarPlotter_His(VarPlotter_Base):
                 self.colorBar(self.level,self.ylim)
                 for rep in range(0, self.numRep):
                     r.image(x=self.data[rep].gen, y=range(0, self.data[rep].recordSize), 
-                        xlim=self.xlim, z= r.t(r.matrix( self.data[rep].flatData(),axes=self.axes,
-                        byrow=True, ncol=len(self.data[rep].data[0]))),xlab=self.xlab,
+                        xlim=self.xlim, z= r.t(r.matrix(self.data[rep].flatData(),
+                        byrow=True, ncol=len(self.data[rep].data[0]))), xlab=self.xlab,
+                        axes=self.axes, 
                         ylab=self.ylab, main=self.title[rep], col=self.color)
             elif self.separate == False or self.data[rep].recordSize == 1:
                 for v in range(0, self.varDim):
