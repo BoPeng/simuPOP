@@ -159,7 +159,7 @@ def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versio
             inc_path = path
             found_inc = True
         else:   # check path/boost_1_xx_x/boost
-            dirs = glob.glob(os.path.join(path, 'boost-*'))
+            dirs = glob.glob(os.path.join(path, 'boost-*')) + glob.glob(os.path.join(path, 'boost_*'))
             if len(dirs) > 0 and isValidBoostDir(dirs[0]):
                 inc_path = dirs[0]
                 found_inc = True
