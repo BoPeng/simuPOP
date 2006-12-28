@@ -428,7 +428,7 @@ namespace simuPOP
 			virtual void mutate(AlleleRef allele)
 			{
 				int resInt;
-				PyCallFunc(m_func, "(i)", static_cast<int>(allele), resInt, PyObj_As_Int);
+				PyCallFunc(m_func, "(i)", static_cast<unsigned int>(allele), resInt, PyObj_As_Int);
 #ifdef BINARYALLELE                
                 DBG_ASSERT(resInt == 0 || resInt == 1, ValueError,
                     "Can only mutate to 0 or 1 in binary mode.");

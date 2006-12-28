@@ -8,25 +8,31 @@ install swig >= 1.3.27 to generate the wrap files.
 """
 import os, sys
 #
+boost_versions = ['1_33_1', '1_34', '1_35']
 
-# these are the default toolset to build boost. It is needed 
-# because boost libraries have form libboost_xxx-TOOLSET.a and 
-# I can not use the auto-link feature of boost.
+# If setup.py can not find boost libraries, change boost_lib_seach_paths
+# and/or boost_inc_search_paths
 # 
 if os.name == 'nt':
     use_vc = True
-    TOOLSET = '-vc71-mt-1_33_1'
     # under windows, boost/iostreams/gzip decompressor seems
     # to be broken. has to be disabled by now.
     disable_compression = True
-elif sys.platform == 'darwin':
-    use_vc = False
-    TOOLSET = ''
-    disable_compression = False
+    boost_lib_search_paths = [r'win32', 'c:\boost\lib', r'c:\program files\boost\lib']
+    boost_inc_search_paths = [r'c:\boost', r'c:\program files\boost']
+    boost_lib_prefix = 'lib'
+    boost_lib_suffix = '.lib'
 else:    
     use_vc = False
-    TOOLSET = '-gcc'
     disable_compression = False
+    boost_lib_search_paths = ['/usr/lib', '/usr/local/lib']
+    boost_inc_search_paths = ['/usr/include', '/usr/local/include']
+    home = os.environ.get('HOME', None)
+    if home is not None:
+        boost_lib_search_paths.append(os.path.join(home, 'boost'))
+        boost_inc_search_paths.append(os.path.join(home, 'boost'))
+    boost_lib_prefix = 'lib'
+    boost_lib_suffix = '.a'
 
 ############################################################################
 #
@@ -90,6 +96,80 @@ def swig_version():
         print 'Can not obtain swig version, please install swig'
         sys.exit(1)
     return map(int, version)
+
+
+def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versions):
+    ''' look for boost libraries
+      libs: library names
+      lib_paths: try these paths for boost libraries
+      inc_paths: try these paths for boost headers
+      versions:   supported boost versions
+    '''
+    found_lib = False
+    found_inc = False
+    lib_names = []
+    lib_path = None
+    inc_path = None
+    for path in lib_paths:
+        if path is None:
+            continue
+        for lib in libs:
+            # get all the libs, then filter for the right library
+            files = glob.glob(os.path.join(path, '%sboost_%s-*.*' % (lib_prefix, lib)))
+            # check things like libboost_iostreams-gcc-mt-d-1_33_1.a
+            if len(files) > 0:
+                # runtime code includes s,g,y,d,p,n, where we should look for
+                # d,g,y for debug, s,p,n for release
+                lib_files = []
+                for ver in versions:
+                    lib_files += filter(lambda x: re.search('%sboost_%s-\w+-mt-([^dgy]+-)*%s%s' \
+                        % (lib_prefix, lib, ver, lib_suffix), x), files)
+                if len(lib_files) == 0:
+                    # use alternative libraries
+                    for ver in versions:
+                        lib_files += filter(lambda x: re.search('%sboost_%s-[\w-]+%s%s' \
+                            % (lib_prefix, lib, ver, lib_suffix), x), files)
+                if len(lib_files) > 0:
+                    # get xxx-gcc-1_33_1 from /usr/local/lib/libboost_xxx-gcc-1_33_1.a
+                    name = lib_files[0].split(os.sep)[-1][len(lib_prefix):]
+                    lib_names.append(name.split('.')[0])
+                else:
+                    print "No qualified library is found."
+                    break
+        if len(lib_names) == len(libs):
+            found_lib = True
+            lib_path = path
+            break
+    if not found_lib:
+        print "Can not find boost libraries"
+        sys.exit(1)
+    # check version number in boost/version.hpp
+    def isValidBoostDir(dir):
+        version_file = os.path.join(dir, 'boost', 'version.hpp')
+        if not os.path.isfile(version_file):
+            return False
+        version_file_content = open(version_file).read()
+        version_strings = ['#define BOOST_LIB_VERSION "%s"' % ver for ver in versions]
+        return True in [x in version_file_content for x in version_strings]
+    # check for boost header file
+    for path in inc_paths:
+        if path is None:
+            continue
+        if isValidBoostDir(path):
+            inc_path = path
+            found_inc = True
+        else:   # check path/boost_1_xx_x/boost
+            dirs = glob.glob(os.path.join(path, 'boost-*'))
+            if len(dirs) > 0 and isValidBoostDir(dirs[0]):
+                inc_path = dirs[0]
+                found_inc = True
+    # return result
+    if found_inc:
+        return (lib_names, lib_path, inc_path)
+    else:
+        print "Can not find boost libraries"
+        sys.exit(1)
+        
 
 
 ############################################################################
@@ -272,6 +352,12 @@ WRAP_INFO = {
     'baopmpi':['src/simuPOP_baopmpi_wrap.cpp', 'src/simuPOP_baopmpi.i', '-DBINARYALLELE -DOPTIMIZED -DSIMUMPI'],
 }
 
+(boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
+    ['iostreams', 'serialization'], boost_lib_search_paths,
+    boost_lib_prefix, boost_lib_suffix,
+    boost_inc_search_paths, boost_versions)
+
+        
 for modu in MODULES:
     # source files
     MODU_INFO[modu] = {}
@@ -281,20 +367,16 @@ for modu in MODULES:
         shutil.copy(src, mod_src)
         MODU_INFO[modu]['src'].append(mod_src)
     MODU_INFO[modu]['src'].extend(GSL_FILES)
+    MODU_INFO[modu]['libraries'] = boost_lib_names
     # lib
     if os.name == 'nt':    # Windows
-        MODU_INFO[modu]['libraries'] = ['libboost_serialization%s' % TOOLSET, 
-            'libboost_iostreams%s' % TOOLSET]
         MODU_INFO[modu]['libraries'].append('zdll')
     else:
-        MODU_INFO[modu]['libraries'] = ['boost_serialization%s' % TOOLSET, 
-            'boost_iostreams%s' % TOOLSET, 'stdc++']
-        MODU_INFO[modu]['libraries'].append('z')
-    MODU_INFO[modu]['include_dirs'] = ['.']
+        MODU_INFO[modu]['libraries'].extend(['stdc++', 'z'])
+    MODU_INFO[modu]['include_dirs'] = ['.', boost_inc_path]
     #
-    MODU_INFO[modu]['library_dirs'] = ['build']
+    MODU_INFO[modu]['library_dirs'] = ['build', boost_lib_path]
     if os.name == 'nt':
-        MODU_INFO[modu]['library_dirs'].append('win32')
         # msvc does not have O3 option
         MODU_INFO[modu]['extra_compile_args'] = ['/O2']
     else:
@@ -366,7 +448,7 @@ if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
         sys.exit(1)
     # generate header file 
     print "Generating external runtime header file..."
-    os.system( 'swig -python -external-runtime -outdir src swigpyrun.h' )
+    os.system( 'swig -python -outdir src -external-runtime swigpyrun.h' )
     # try the first option set with the first library
     for lib in MODULES:
         print "Generating wrap file " + WRAP_INFO[lib][0]
