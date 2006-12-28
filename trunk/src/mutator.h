@@ -427,7 +427,7 @@ namespace simuPOP
 
 			virtual void mutate(AlleleRef allele)
 			{
-				int resInt;
+				unsigned int resInt;
 				PyCallFunc(m_func, "(i)", static_cast<unsigned int>(allele), resInt, PyObj_As_Int);
 #ifdef BINARYALLELE                
                 DBG_ASSERT(resInt == 0 || resInt == 1, ValueError,
