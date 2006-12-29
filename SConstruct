@@ -30,7 +30,7 @@ for i in range(len(vars)):
 # get compiler and hack options
 from distutils.ccompiler import new_compiler
 comp = new_compiler()
-if comp.__dict__.has_key('initialize'):
+if comp.__dict__.has_key('initialized'):
     comp.initialize()
 if not comp.__dict__.has_key('ldflags_shared'):
     comp.ldflags_shared = ''
