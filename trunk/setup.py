@@ -37,6 +37,8 @@ else:
     boost_lib_prefix = 'lib'
     boost_lib_suffix = '.a'
 
+# if you need to use full path name for swig, change it here.
+SWIG = 'swig'
 
 ############################################################################
 #
