@@ -7,17 +7,20 @@ install swig >= 1.3.27 to generate the wrap files.
 
 """
 import os, sys
-#
+
+# simuPOP works with these boost versions.
 boost_versions = ['1_33_1', '1_34', '1_35']
 
 # If setup.py can not find boost libraries, change boost_lib_seach_paths
-# and/or boost_inc_search_paths
+# and/or boost_inc_search_paths. 
 # 
 if os.name == 'nt':
     use_vc = True
     # under windows, boost/iostreams/gzip decompressor seems
     # to be broken. has to be disabled by now.
     disable_compression = True
+    # win32 is default since 1.33.1 libraries are bundled with simuPOP windows
+    # distribution
     boost_lib_search_paths = [r'win32', 'c:\boost\lib', r'c:\program files\boost\lib']
     boost_inc_search_paths = [r'c:\boost', r'c:\program files\boost']
     boost_lib_prefix = ''
@@ -34,6 +37,7 @@ else:
     boost_lib_prefix = 'lib'
     boost_lib_suffix = '.a'
 
+
 ############################################################################
 #
 # THE FOLLOWING IS NOT SUPPOSED TO BE MODIFIED
@@ -41,12 +45,14 @@ else:
 ############################################################################
 
 from distutils.core import setup, Extension
-from distutils.ccompiler import new_compiler
 
 import shutil, sys, glob, re
 
+#
+# UTILITY FUNCTIONS
+#
 # this is borrowed from pypar, since I do not have access to other
-# MPI implementation, I use mpicc only.
+# MPI implementation, I use mpiCC only.
 def getMPIFlags():
     ''' get and parse result of mpiCC -showme or mpicc -show'''
     fin, fout, ferr = os.popen3('mpiCC -show')
@@ -141,7 +147,8 @@ def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versio
             lib_path = path
             break
     if not found_lib:
-        print "Can not find boost libraries"
+        print "Can not find boost libraries. Please read the front part"
+        print "of setup.py for instructions."
         sys.exit(1)
     # check version number in boost/version.hpp
     def isValidBoostDir(dir):
@@ -167,16 +174,14 @@ def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versio
     if found_inc:
         return (lib_names, lib_path, inc_path)
     else:
-        print "Can not find boost libraries"
+        print "Can not find boost libraries. Please read the front part"
+        print "of setup.py for instructions."
         sys.exit(1)
         
 
-
-############################################################################
 #
 # SOURCE FILES
 #
-############################################################################
 
 HEADER_FILES = [
     'src/simupop_cfg.h',
@@ -293,35 +298,19 @@ SIMUPOP_FILES = [
     'simuRPy', 
 ]
 
-############################################################################
-#
-# MODULE SETTINGS
-#
-############################################################################
 
-# for every official release, there will be a file recording release info
-# Othersise, SIMUPOP_VER and SIMUPOP_REV will be provided as environmental
-# variables.
-if os.environ.has_key('SIMUPOP_VER') and os.environ.has_key('SIMUPOP_REV'):
-        SIMUPOP_VER = os.environ['SIMUPOP_VER']
-        SIMUPOP_REV = os.environ['SIMUPOP_REV']
-else:
-        execfile('simuPOP.release')
+#
+# DETECT BASIC SYSTEM SETTINGS
+#
+
+(boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
+    ['iostreams', 'serialization'], boost_lib_search_paths,
+    boost_lib_prefix, boost_lib_suffix,
+    boost_inc_search_paths, boost_versions)
 
 # explore availability of mpi library
 MPIFlags = getMPIFlags()
 
-# create source file for each module
-MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop']
-#if MPIFlags['mpi']:
-if False:
-    # feel like compiling mpi version first :-)
-    MODULES = ['mpi', 'opmpi', 'lampi', 'laopmpi', 'bampi', 'baopmpi'] + MODULES
-MODU_INFO = {}
-
-SIMUPOP_FILES += ['simuPOP_%s' % x for x in MODULES]
-
-#
 MACROS = {
     'std':    [('SIMUPOP_MODULE', 'simuPOP_std')],
     'op':     [('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None)],
@@ -351,122 +340,6 @@ WRAP_INFO = {
     'bampi':  ['src/simuPOP_bampi_wrap.cpp', 'src/simuPOP_bampi.i', '-DBINARYALLELE -DSIMUMPI'],
     'baopmpi':['src/simuPOP_baopmpi_wrap.cpp', 'src/simuPOP_baopmpi.i', '-DBINARYALLELE -DOPTIMIZED -DSIMUMPI'],
 }
-
-(boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
-    ['iostreams', 'serialization'], boost_lib_search_paths,
-    boost_lib_prefix, boost_lib_suffix,
-    boost_inc_search_paths, boost_versions)
-
-        
-for modu in MODULES:
-    # source files
-    MODU_INFO[modu] = {}
-    MODU_INFO[modu]['src'] = ['src/simuPOP_' + modu + '_wrap.cpp']
-    for src in SOURCE_FILES:
-        mod_src = src[:-4] + '_' + modu + '.cpp'
-        shutil.copy(src, mod_src)
-        MODU_INFO[modu]['src'].append(mod_src)
-    MODU_INFO[modu]['src'].extend(GSL_FILES)
-    MODU_INFO[modu]['libraries'] = boost_lib_names
-    # lib
-    if os.name == 'nt':    # Windows
-        MODU_INFO[modu]['libraries'].append('zdll')
-    else:
-        MODU_INFO[modu]['libraries'].extend(['stdc++', 'z'])
-    MODU_INFO[modu]['include_dirs'] = ['.', boost_inc_path]
-    #
-    MODU_INFO[modu]['library_dirs'] = ['build', boost_lib_path]
-    if os.name == 'nt':
-        # msvc does not have O3 option
-        MODU_INFO[modu]['extra_compile_args'] = ['/O2']
-    else:
-        MODU_INFO[modu]['extra_compile_args'] = ['-O3', '-Wall']
-    # define_macros
-    MODU_INFO[modu]['define_macros'] = MACROS[modu]
-    MODU_INFO[modu]['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])
-    if disable_compression:
-        MODU_INFO[modu]['define_macros'].extend([('DISABLE_COMPRESSION', None)])
-    if os.name == 'nt':
-        MODU_INFO[modu]['define_macros'].extend([('BOOST_ALL_NO_LIB', None)])
-    MODU_INFO[modu]['undef_macros'] = []
-    if 'mpi' in modu:
-        MODU_INFO[modu]['include_dirs'].extend(MPIFlags['inc_dirs'])
-        MODU_INFO[modu]['library_dirs'].extend(MPIFlags['lib_dirs'])
-        MODU_INFO[modu]['libraries'].extend(MPIFlags['libs'])
-        MODU_INFO[modu]['define_macros'].extend(MPIFlags['def_macros'])
-        MODU_INFO[modu]['undef_macros'].extend(MPIFlags['undef_macros'])
-
-
-if sys.argv[1] not in ['sdist']:
-    # checking os type and copy configuration files
-    if os.name == 'nt':    # Windows
-        shutil.copy('config_win32.h', 'config.h')
-    elif os.name == 'posix':
-        sysName = os.uname()[0]
-        if sysName == 'Linux':     # Linux
-            shutil.copy('config_linux.h', 'config.h')
-        elif sysName == 'SunOS': # Solaris
-            shutil.copy('config_solaris.h', 'config.h')
-        elif sysName == 'Darwin':    # MacOS
-            shutil.copy('config_mac.h', 'config.h')
-    else:
-        try:
-            open('config.h')
-            close('config.h')
-            print "Warning: Unknown system type. Using existing config.h"
-        except IOError:
-            print "Error: Unknown system type. Use configure to generate config.h."
-            sys.exit()
-
-
-        
-
-############################################################################
-#
-# Generate Wrapping files
-#
-############################################################################
-
-# if any of the wrap files does not exist
-# or if the wrap files are older than any of the source files.
-if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
-    (max( [os.path.getmtime(x) for x in HEADER_FILES] ) > \
-     min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
-    (v1, v2, v3) = swig_version()
-    if (v1, v2, v3) >= (1, 3, 28):
-        # for swig >= 1.3.28
-        SWIG = 'swig -O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
-        if use_vc:
-            SWIG += ' -D_MSC_VER'
-    elif (v1, v2, v3) >= (1, 3, 25):
-        # for swig from 1.3.25 to 1.3.27
-        SWIG = 'swig -shadow -c++ -python -outdir src -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525'
-        if use_vc:
-            SWIG += ' -D_MSC_VER'
-    else:
-        print 'Swig >= 1.3.25 is required, please upgrade it.'
-        sys.exit(1)
-    # generate header file 
-    print "Generating external runtime header file..."
-    os.system( 'swig -python -outdir src -external-runtime swigpyrun.h' )
-    # try the first option set with the first library
-    for lib in MODULES:
-        print "Generating wrap file " + WRAP_INFO[lib][0]
-        if os.system('%s %s -o %s %s' % (SWIG, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
-            print "Calling swig failed. Please check your swig version."
-            sys.exit(1)
-    print
-    print "All wrap files are generated successfully."
-    print
-
-
-
-############################################################################
-#
-# Build extensions
-#
-############################################################################
-
 
 DESCRIPTION = """
 simuPOP is a forward-time population genetics simulation environment.
@@ -499,32 +372,156 @@ DATA_FILES = [
 if os.name == 'nt':
     DATA_FILES += [('Lib/site-packages', ['win32/zlib1.dll'])]
 
-EXT_MODULES = []
-for modu in MODULES:
-    EXT_MODULES.append(
-        Extension('_simuPOP_%s' % modu,
-            sources = MODU_INFO[modu]['src'],
-            extra_compile_args = MODU_INFO[modu]['extra_compile_args'],
-            include_dirs = MODU_INFO[modu]['include_dirs'],
-            library_dirs = MODU_INFO[modu]['library_dirs'],
-            libraries = MODU_INFO[modu]['libraries'],
-            define_macros = MODU_INFO[modu]['define_macros'],
-            undef_macros = MODU_INFO[modu]['undef_macros'],
-        )
-    )
 
-setup(
-    name = "simuPOP",
-    version = SIMUPOP_VER,
-    author = "Bo Peng",
-    author_email = "bpeng@rice.edu",
-    description = "Forward-time population genetics simulation environment",
-    long_description = DESCRIPTION, 
-    url = "http://simupop.sourceforge.net",
-    package_dir = {'': 'src' }, 
-    py_modules = SIMUPOP_FILES,
-    ext_modules = EXT_MODULES,
-    data_files = DATA_FILES,
-)
+def ModuInfo(modu):
+    res = {}
+    res['src'] =  ['src/simuPOP_' + modu + '_wrap.cpp']
+    for src in SOURCE_FILES:
+        res['src'].append(src[:-4] + '_' + modu + '.cpp')
+    res['src'].extend(GSL_FILES)
+    res['libraries'] = boost_lib_names
+    # lib
+    if os.name == 'nt':    # Windows
+        res['libraries'].append('zdll')
+    else:
+        res['libraries'].extend(['stdc++', 'z'])
+    res['include_dirs'] = ['.', boost_inc_path]
+    #
+    res['library_dirs'] = ['build', boost_lib_path]
+    if os.name == 'nt':
+        # msvc does not have O3 option
+        res['extra_compile_args'] = ['/O2']
+    else:
+        res['extra_compile_args'] = ['-O3', '-Wall']
+    # define_macros
+    res['define_macros'] = MACROS[modu]
+    res['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])
+    if disable_compression:
+        res['define_macros'].extend([('DISABLE_COMPRESSION', None)])
+    if os.name == 'nt':
+        res['define_macros'].extend([('BOOST_ALL_NO_LIB', None)])
+    res['undef_macros'] = []
+    if 'mpi' in modu:
+        res['include_dirs'].extend(MPIFlags['inc_dirs'])
+        res['library_dirs'].extend(MPIFlags['lib_dirs'])
+        res['libraries'].extend(MPIFlags['libs'])
+        res['define_macros'].extend(MPIFlags['def_macros'])
+        res['undef_macros'].extend(MPIFlags['undef_macros'])
+    return res
+
+
+############################################################################
+#
+# Build extensions
+#
+############################################################################
+if __name__ == '__main__':
+    # for every official release, there will be a file recording release info
+    # Othersise, SIMUPOP_VER and SIMUPOP_REV will be provided as environmental
+    # variables.
+    if os.environ.has_key('SIMUPOP_VER') and os.environ.has_key('SIMUPOP_REV'):
+        SIMUPOP_VER = os.environ['SIMUPOP_VER']
+        SIMUPOP_REV = os.environ['SIMUPOP_REV']
+    else:
+        execfile('simuPOP.release')
+    # create source file for each module
+    MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop']
+    #if MPIFlags['mpi']:
+    if False:
+        # feel like compiling mpi version first :-)
+        MODULES = ['mpi', 'opmpi', 'lampi', 'laopmpi', 'bampi', 'baopmpi'] + MODULES
+    SIMUPOP_FILES += ['simuPOP_%s' % x for x in MODULES]
+    #
+    # Generate Wrapping files
+    #
+    # if any of the wrap files does not exist
+    # or if the wrap files are older than any of the source files.
+    if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
+        (max( [os.path.getmtime(x) for x in HEADER_FILES] ) > \
+         min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
+        (v1, v2, v3) = swig_version()
+        if (v1, v2, v3) >= (1, 3, 28):
+            # for swig >= 1.3.28
+            SWIG = 'swig -O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
+            if use_vc:
+                SWIG += ' -D_MSC_VER'
+        elif (v1, v2, v3) >= (1, 3, 25):
+            # for swig from 1.3.25 to 1.3.27
+            SWIG = 'swig -shadow -c++ -python -outdir src -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525'
+            if use_vc:
+                SWIG += ' -D_MSC_VER'
+        else:
+            print 'Swig >= 1.3.25 is required, please upgrade it.'
+            sys.exit(1)
+        # generate header file 
+        print "Generating external runtime header file..."
+        os.system( 'swig -python -outdir src -external-runtime swigpyrun.h' )
+        # try the first option set with the first library
+        for lib in MODULES:
+            print "Generating wrap file " + WRAP_INFO[lib][0]
+            if os.system('%s %s -o %s %s' % (SWIG, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
+                print "Calling swig failed. Please check your swig version."
+                sys.exit(1)
+        print
+        print "All wrap files are generated successfully."
+        print
+    #
+    # checking os type and copy configuration files
+    if os.name == 'nt':    # Windows
+        shutil.copy('config_win32.h', 'config.h')
+    elif os.name == 'posix':
+        sysName = os.uname()[0]
+        if sysName == 'Linux':     # Linux
+            shutil.copy('config_linux.h', 'config.h')
+        elif sysName == 'SunOS': # Solaris
+            shutil.copy('config_solaris.h', 'config.h')
+        elif sysName == 'Darwin':    # MacOS
+            shutil.copy('config_mac.h', 'config.h')
+    else:
+        try:
+            open('config.h')
+            close('config.h')
+            print "Warning: Unknown system type. Using existing config.h"
+        except IOError:
+            print "Error: Unknown system type. Use configure to generate config.h."
+            sys.exit()
+    # copy needed files
+    copied_files = []
+    for modu in MODULES:
+        for src in SOURCE_FILES:
+            mod_src = src[:-4] + '_' + modu + '.cpp'
+            shutil.copy(src, mod_src)
+            copied_files.append(mod_src)
+    # build
+    EXT_MODULES = []
+    for modu in MODULES:
+        EXT_MODULES.append(
+            Extension('_simuPOP_%s' % modu,
+                sources = ModuInfo(modu)['src'],
+                extra_compile_args = ModuInfo(modu)['extra_compile_args'],
+                include_dirs = ModuInfo(modu)['include_dirs'],
+                library_dirs = ModuInfo(modu)['library_dirs'],
+                libraries = ModuInfo(modu)['libraries'],
+                define_macros = ModuInfo(modu)['define_macros'],
+                undef_macros = ModuInfo(modu)['undef_macros'],
+            )
+        )
+    #
+    setup(
+        name = "simuPOP",
+        version = SIMUPOP_VER,
+        author = "Bo Peng",
+        author_email = "bpeng@rice.edu",
+        description = "Forward-time population genetics simulation environment",
+        long_description = DESCRIPTION, 
+        url = "http://simupop.sourceforge.net",
+        package_dir = {'': 'src' }, 
+        py_modules = SIMUPOP_FILES,
+        ext_modules = EXT_MODULES,
+        data_files = DATA_FILES,
+    )
+    # remove copied files
+    for file in copied_files:
+        os.remove(file)
 
 
