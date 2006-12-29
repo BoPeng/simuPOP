@@ -1,248 +1,100 @@
 # file SConstruct
 #
-# A scons based build system for simuPOP. It is better for development 
+# A scons based build system for simuPOP. It is better for development
 # usage because it is a real multi-thread, dependency-based build system
 # that can build part of the simuPOP modules..
 #
-# 
+#
 import os, sys
 import SCons.Defaults
 import SCons.Tool
 
+# do not update version for this development version to avoid rebuild
+SIMUPOP_REV = '9990'
+SIMUPOP_VER = '9.9.9'
+all_modu = ['std', 'op', 'la', 'laop', 'ba', 'baop'] + \
+    ['mpi', 'opmpi', 'lampi', 'laopmpi', 'bampi', 'baopmpi']
 
+# load all the module information from setup.py
+from setup import *
 
 # get information from python distutils
 import distutils.sysconfig, os
-vars = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'BASECFLAGS', 'CCSHARED', 'LDSHARED', 
-    'SO', 'LIBDEST')
+vars = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'BASECFLAGS',
+    'CCSHARED', 'LDSHARED', 'SO', 'LIBDEST')
 for i in range(len(vars)):
     if vars[i] is None:
         vars[i] = ""
 (cc, cxx, opt, basicflags, ccshared, ldshared, so_ext, lib_dest) = vars
 
 
-
-# simuPOP works with these boost versions.
-boost_versions = ['1_33_1', '1_34', '1_35']
-
-# If setup.py can not find boost libraries, change boost_lib_seach_paths
-# and/or boost_inc_search_paths. 
-# 
-if os.name == 'nt':
-    use_vc = True
-    # under windows, boost/iostreams/gzip decompressor seems
-    # to be broken. has to be disabled by now.
-    disable_compression = True
-    # win32 is default since 1.33.1 libraries are bundled with simuPOP windows
-    # distribution
-    boost_lib_search_paths = [r'win32', 'c:\boost\lib', r'c:\program files\boost\lib']
-    boost_inc_search_paths = [r'c:\boost', r'c:\program files\boost']
-    boost_lib_prefix = ''
-    boost_lib_suffix = '.lib'
-else:    
-    use_vc = False
-    disable_compression = False
-    boost_lib_search_paths = ['/usr/lib', '/usr/local/lib']
-    boost_inc_search_paths = ['/usr/include', '/usr/local/include']
-    home = os.environ.get('HOME', None)
-    if home is not None:
-        boost_lib_search_paths.append(os.path.join(home, 'boost'))
-        boost_inc_search_paths.append(os.path.join(home, 'boost'))
-    boost_lib_prefix = 'lib'
-    boost_lib_suffix = '.a'
-
-
-
-
-#cc = 'colorgcc'
-#cxx = 'colorgcc'
-#NOTE:
-# 
-# scons is for quick recompile, so SIMUPOP_REV and SIMUPOP_VER IS NOT CHANGED
-# so a re-compliaction is not needed after a svn commit.
-#
-opts = Options()
-opts.AddOptions(
-    EnumOption('debug', 'whether or not use debug version', 'none', allowed_values=['yes', 'no', 'none']),
-)
-
-env = Environment(options=opts,
-    ENV={'PATH':os.environ['PATH']},
+env = Environment(ENV={'PATH':os.environ['PATH']},
     tools=['default', 'swig'])
 
-#env['CC'] = cxx
-env['CXX'] = cxx
-ccflags = []
-if 'icc' in cc:
-  ccflags = ['-wd981,383,193,177']
-
-# try to debug the mode of python
-if env['debug'] == 'none':
-    try:
-        sys.gettotalrefcount(0)
-        env['debug'] = 'yes'
-    except:
-        env['debug'] = 'no'
-#
-dest_dir = os.path.join(lib_dest, 'site-packages')
-if env['debug'] == 'yes':
-    BDIR = '../debug'
-    flags = {'Py_REF_DEBUG':None, 'SIMUDEBUG':None}
-    strflags = ' -DPy_REF_DEBUG -DSIMUDEBUG'
-else:
-    BDIR = '../release/build'
-    # we may not be able to release ...
-    #dest_dir = '../release'
-    flags = {}
-    strflags = ''
-env.BuildDir(BDIR, '.', duplicate = 0)
-env['BDIR'] = BDIR
+dest_dir  = os.path.join(lib_dest, 'site-packages')
+build_dir = 'build'
+env.BuildDir(build_dir, 'src', duplicate = 0)
+env['build_dir'] = build_dir
 
 # for swig 1.3.28 cvs
-env['SWIGFLAGS'] = '-O -templatereduce -shadow -python -keyword -nodefaultctor -c++ -w-503,-312,-511,-362,-383,-384,-389,-315,-525' + strflags
+env['SWIGFLAGS'] = SWIG_FLAGS
+env.Command('swigpyrun.h', None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS])
 
-# GSL
-if 'gsl' in BUILD_TARGETS or not os.path.isfile(os.path.join(BDIR, 'libgsl.a')):
-    gsl = env.StaticLibrary(
-        target = '$BDIR/gsl',
-        source = ['../gsl/%s'%x for x in Split('''
-            sys/infnan.c sys/coerce.c sys/fdiv.c sys/pow_int.c
-            sys/fcmp.c specfunc/psi.c specfunc/trig.c specfunc/exp.c
-            specfunc/log.c specfunc/erfc.c specfunc/zeta.c specfunc/elementary.c
-            specfunc/gamma.c rng/borosh13.c rng/fishman2x.c rng/mt.c rng/rand.c
-            rng/ranmar.c rng/types.c rng/cmrg.c rng/gfsr4.c rng/r250.c
-            rng/random.c rng/rng.c rng/uni32.c rng/coveyou.c rng/knuthran2.c
-            rng/ran0.c rng/randu.c rng/slatec.c rng/uni.c rng/default.c
-            rng/knuthran.c rng/ran1.c rng/ranf.c rng/taus113.c rng/vax.c
-            rng/file.c rng/lecuyer21.c rng/ran2.c rng/ranlux.c rng/taus.c
-            rng/waterman14.c rng/fishman18.c rng/minstd.c rng/ran3.c rng/ranlxd.c
-            rng/transputer.c rng/zuf.c rng/fishman20.c rng/mrg.c rng/rand48.c
-            rng/ranlxs.c rng/tt.c randist/nbinomial.c randist/beta.c randist/exponential.c
-            randist/geometric.c randist/binomial.c randist/poisson.c randist/rdgamma.c
-            randist/chisq.c randist/gauss.c error.c randist/multinomial.c
-    ''')],
-        CCFLAGS = ['-O3', '-Wall', '-fPIC'],
-        CPPPATH = ['.', '..'],
-    )
-    Alias('gsl', gsl)
+gsl = env.StaticLibrary(
+    target = '$build_dir/gsl',
+    source = GSL_FILES,
+    CCFLAGS = ['-O3', '-Wall', '-fPIC'],
+    CPPPATH = ['.', '..'],
+)
 
-env.Command('swigpyrun.h', None, ['swig -python -external-runtime $TARGET'])
 
-#
-DEF = {
-    'std': {},
-    'op': {'OPTIMIZED':None},
-    'la': {'LONGALLELE':None},
-    'laop': {'OPTIMIZED':None, 'LONGALLELE':None},
-    'ba': {'BINARYALLELE':None},
-    'baop': {'OPTIMIZED':None, 'BINARYALLELE':None},
-#	'mpi': {'SIMUMPI': None},
-#     'opmpi': {'OPTIMIZED':None, 'SIMUMPI': None},
-#     'lampi': {'LONGALLELE':None, 'SIMUMPI': None},
-#     'laopmpi': {'OPTIMIZED':None, 'LONGALLELE':None, 'SIMUMPI': None},
-#     'bampi': {'BINARYALLELE':None, 'SIMUMPI': None},
-#     'baopmpi': {'OPTIMIZED':None, 'BINARYALLELE':None, 'SIMUMPI': None},
-}
 MODULES = []
- 
- 
-for key in DEF.keys():
-    DEF[key].update({'SIMUPOP_REV':'9990', 'SIMUPOP_VER':'9.9.9'})
-    DEF[key].update(flags)
+for key in all_modu:
     if key in BUILD_TARGETS:
         MODULES.append(key)
-if MODULES == [] or 'all' in BUILD_TARGETS:
-    MODULES = DEF.keys()
+    if MODULES == [] or 'all' in BUILD_TARGETS:
+        MODULES = all_modu
 
-src = Split('''utility migrator population simulator terminator
-    individual mutator stator initializer operator recombinator
-    mating outputer selector tagger''')
-
-# this is borrowed from pypar, since I do not have access to other
-# MPI implementation, I use mpicc only.
-def getMPIFlags():
-    ''' get and parse result of mpiCC -showme or mpicc -show'''
-    fin, fout, ferr = os.popen3('mpiCC -show')
-    output = fout.read()
-    fout.close()
-    #
-    if output == '':
-        fin, fout, ferr = os.popen3('mpiCC -showme')
-        output = fout.read()
-        fout.close()
-    if output == '':
-        return {'mpi': False, 'inc_dirs': [], 'lib_dirs': [], 'libs': [],
-            'def_macros': [], 'undef_macros': []}
-    # now get the include, library dirs and the libs to link with.
-    flags = output.split()
-    inc_dirs = []
-    lib_dirs = []
-    libs = []
-    def_macros = []
-    undef_macros = []
-    for f in flags:
-        if f[:2] == '-I':
-            inc_dirs.append(f[2:])
-        elif f[:2] == '-L':
-            lib_dirs.append(f[2:])
-        elif f[:2] == '-l':
-            libs.append(f[2:])
-        elif f[:2] == '-U':
-            undef_macros.append(f[2:])
-        elif f[:2] == '-D':
-            tmp = string.split(f[2:], '=')
-            if len(tmp) == 1:
-                def_macros.append((tmp[0], None))
-            else:
-                def_macros.append(tuple(tmp))
-    return {'mpi': True, 'inc_dirs': inc_dirs, 'lib_dirs': lib_dirs, 'libs':libs,
-            'def_macros': def_macros, 'undef_macros': undef_macros}
-
+def mod_src(file, mod):
+    return file.replace('src', '$build_dir').replace('.cpp', '_%s.cpp' % mod)
 
 for mod in MODULES:
-    for file in src:
-        env.Command('$BDIR/%s_%s.cpp'%(file, mod), '%s.cpp'%file, [Copy('$TARGET', '$SOURCE')])
-    # build shared library
-    if 'mpi' in mod:
-        mpi_libs = getMPIFlags()['libs'] + ['boost_mpi-gcc-mt-d-1_35']
-    else:
-        mpi_libs = []
+    info = ModuInfo(mod)
+    for file in SOURCE_FILES:
+        env.Command(mod_src(file, mod), file, [Copy('$TARGET', '$SOURCE')])
     lib = env.SharedLibrary(
-        target = '$BDIR/_simuPOP_%s.so'%mod,
-        source = ['$BDIR/%s_%s.cpp' % (x, mod) for x in src] + ['$BDIR/simuPOP_%s.i'%mod],
-        LIBS = ['boost_serialization-gcc34-d', 'boost_iostreams-gcc34-d', 'gsl', 'z', 'stdc++'] + mpi_libs,
+        target = '$build_dir/_simuPOP_%s%s' % (mod, so_ext),
+        source = ['$build_dir/simuPOP_%s.i' % mod] + [mod_src(x, mod) for x in SOURCE_FILES],
+        LIBS = info['libraries'] + [gsl],
         CC = cc,
         CXX = cxx,
         SHLINK = ldshared,
         SHLINKFLAGS = ['-Wl,--export-dynamic'],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
-        LIBPATH = [BDIR, '/usr/local/lib'],
-        CPPPATH = [distutils.sysconfig.get_python_inc(), '.'],
-        CPPDEFINES = DEF[mod],
-        # do not put .. (boost etc) in CPPPATH
-        # to speed up search
-        CCFLAGS = ['-O3', '-Wall'] + ccflags,
-        # for performance considerations, do not search boost
-        CPPFLAGS = basicflags + " " + opt + ' -I.. -I/usr/include/boost-1_35'
+        LIBPATH = info['library_dirs'],
+        CPPPATH = [distutils.sysconfig.get_python_inc(), '.', 'src'] + info['include_dirs'],
+        CPPDEFINES = info['define_macros'],
+        CCFLAGS = info['extra_compile_args'],
+        CPPFLAGS = basicflags + " " + opt
     )
-    env.Depends(['$BDIR/simuPOP_%s_wrap.cc'%mod, lib], 
-        ['simupop_cfg.h', 'simuPOP_common.i', 'simuPOP_doc.i'] + \
-        ['%s.h' % x for x in src])
-    env.Depends('utility_%s.cpp'%mod, 'arraymodule.c')
+    env.Depends(['$build_dir/simuPOP_%s_wrap.cc' % mod, lib],
+        ['src/simupop_cfg.h', 'src/simuPOP_common.i', 'src/simuPOP_doc.i'] + \
+        HEADER_FILES)
+    env.Depends('src/utility_%s.cpp' % mod, 'src/arraymodule.c')
     #
     Alias(mod, lib)
     Alias('all', lib)
-    dp1 = env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py'%mod),
-        '$BDIR/simuPOP_%s.py' % mod)
-    dp2 = env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s.so'%mod), 
+    dp1 = env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py' % mod),
+        '$build_dir/simuPOP_%s.py' % mod)
+    dp2 = env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s%s' % (mod, so_ext)),
         lib)
     env.Depends(dp1, dp2)
     Alias('install', dp1)
 
 
-for pyfile in ['simuRPy.py', 'simuUtil.py', 'simuPOP.py', 'simuOpt.py']:
-    env.Install(dest_dir, pyfile)
+for pyfile in SIMUPOP_FILES:
+    env.Install(dest_dir, 'src/%s.py' % pyfile)
     Alias('install', dest_dir)
 
 # install to share directory, later.
