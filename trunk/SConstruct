@@ -73,7 +73,7 @@ def mod_src(file, mod):
 def convert_def(defines):
     new_list = []
     for d in defines:
-        if a[1] is not None:
+        if d[1] is not None:
             new_list.append(d)
         else:
             new_list.append(d[0])
