@@ -77,6 +77,7 @@ def convert_def(defines):
             new_list.append(d)
         else:
             new_list.append(d[0])
+    return new_list
 
 for mod in targets:
     info = ModuInfo(mod)
