@@ -21,11 +21,11 @@ from setup import *
 # get information from python distutils
 import distutils.sysconfig, os
 vars = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'BASECFLAGS',
-    'CCSHARED', 'LDSHARED', 'SO', 'LIBDEST')
+    'CCSHARED', 'LDSHARED', 'SO', 'LIBDEST', 'INCLUDEPY')
 for i in range(len(vars)):
     if vars[i] is None:
         vars[i] = ""
-(cc, cxx, opt, basicflags, ccshared, ldshared, so_ext, lib_dest) = vars
+(cc, cxx, opt, basicflags, ccshared, ldshared, so_ext, lib_dest, python_inc_dir) = vars
 
 env = Environment(ENV={'PATH':os.environ['PATH']},
     tools=['default', 'swig'])
@@ -41,6 +41,11 @@ dest_dir  = os.path.join(lib_dest, 'site-packages')
 build_dir = 'build'
 env.BuildDir(build_dir, 'src', duplicate = 0)
 env['build_dir'] = build_dir
+
+if os.name == 'nt':
+    extra_lib_path = [os.path.join(sys.exec_prefix, 'libs'), 'win32']
+else:
+    extra_lib_path = []
 
 # for swig 1.3.30, but do not use -outdir src, use -outdir . instead
 # because the scons/swig module requires .py in the current directory (a bug, I would say).
@@ -75,8 +80,8 @@ for mod in targets:
         LIBS = info['libraries'] + [gsl],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
-        LIBPATH = info['library_dirs'],
-        CPPPATH = [distutils.sysconfig.get_python_inc(), '.', 'src'] + info['include_dirs'],
+        LIBPATH = info['library_dirs'] + extra_lib_path,
+        CPPPATH = [python_inc_dir, '.', 'src'] + info['include_dirs'],
         CPPDEFINES = info['define_macros'],
         CCFLAGS = info['extra_compile_args'],
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
