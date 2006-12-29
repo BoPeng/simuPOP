@@ -1,13 +1,15 @@
 # file SConstruct
 #
-# build simuPOP
+# A scons based build system for simuPOP. It is better for development 
+# usage because it is a real multi-thread, dependency-based build system
+# that can build part of the simuPOP modules..
 #
-# This is an alternative way to 'python setup.py build', using this
-# can save some compile time.
 # 
 import os, sys
 import SCons.Defaults
 import SCons.Tool
+
+
 
 # get information from python distutils
 import distutils.sysconfig, os
@@ -17,6 +19,41 @@ for i in range(len(vars)):
     if vars[i] is None:
         vars[i] = ""
 (cc, cxx, opt, basicflags, ccshared, ldshared, so_ext, lib_dest) = vars
+
+
+
+# simuPOP works with these boost versions.
+boost_versions = ['1_33_1', '1_34', '1_35']
+
+# If setup.py can not find boost libraries, change boost_lib_seach_paths
+# and/or boost_inc_search_paths. 
+# 
+if os.name == 'nt':
+    use_vc = True
+    # under windows, boost/iostreams/gzip decompressor seems
+    # to be broken. has to be disabled by now.
+    disable_compression = True
+    # win32 is default since 1.33.1 libraries are bundled with simuPOP windows
+    # distribution
+    boost_lib_search_paths = [r'win32', 'c:\boost\lib', r'c:\program files\boost\lib']
+    boost_inc_search_paths = [r'c:\boost', r'c:\program files\boost']
+    boost_lib_prefix = ''
+    boost_lib_suffix = '.lib'
+else:    
+    use_vc = False
+    disable_compression = False
+    boost_lib_search_paths = ['/usr/lib', '/usr/local/lib']
+    boost_inc_search_paths = ['/usr/include', '/usr/local/include']
+    home = os.environ.get('HOME', None)
+    if home is not None:
+        boost_lib_search_paths.append(os.path.join(home, 'boost'))
+        boost_inc_search_paths.append(os.path.join(home, 'boost'))
+    boost_lib_prefix = 'lib'
+    boost_lib_suffix = '.a'
+
+
+
+
 #cc = 'colorgcc'
 #cxx = 'colorgcc'
 #NOTE:
@@ -119,7 +156,8 @@ if MODULES == [] or 'all' in BUILD_TARGETS:
 
 src = Split('''utility migrator population simulator terminator
     individual mutator stator initializer operator recombinator
-    mating outputer selector tagger''') 
+    mating outputer selector tagger''')
+
 # this is borrowed from pypar, since I do not have access to other
 # MPI implementation, I use mpicc only.
 def getMPIFlags():
