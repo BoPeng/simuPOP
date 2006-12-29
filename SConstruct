@@ -34,6 +34,8 @@ if cc != "":
     env['CC'] = cc
 if cxx != "":
     env['CXX'] = cxx
+if ldshared != '':
+    env['SHLINK'] = ldshared
 
 dest_dir  = os.path.join(lib_dest, 'site-packages')
 build_dir = 'build'
@@ -71,8 +73,6 @@ for mod in targets:
         target = '$build_dir/_simuPOP_%s%s' % (mod, so_ext),
         source = ['$build_dir/simuPOP_%s.i' % mod] + [mod_src(x, mod) for x in SOURCE_FILES],
         LIBS = info['libraries'] + [gsl],
-        SHLINK = ldshared,
-        SHLINKFLAGS = ['-Wl,--export-dynamic'],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
         LIBPATH = info['library_dirs'],
