@@ -12,8 +12,8 @@ import SCons.Tool
 # do not update version for this development version to avoid rebuild
 SIMUPOP_REV = '9990'
 SIMUPOP_VER = '9.9.9'
-all_modu = ['std', 'op', 'la', 'laop', 'ba', 'baop'] + \
-    ['mpi', 'opmpi', 'lampi', 'laopmpi', 'bampi', 'baopmpi']
+all_modu = ['std', 'op', 'la', 'laop', 'ba', 'baop']
+mpi_modu = ['mpi', 'opmpi', 'lampi', 'laopmpi', 'bampi', 'baopmpi']
 
 # load all the module information from setup.py
 from setup import *
@@ -27,7 +27,6 @@ for i in range(len(vars)):
         vars[i] = ""
 (cc, cxx, opt, basicflags, ccshared, ldshared, so_ext, lib_dest) = vars
 
-
 env = Environment(ENV={'PATH':os.environ['PATH']},
     tools=['default', 'swig'])
 
@@ -36,29 +35,30 @@ build_dir = 'build'
 env.BuildDir(build_dir, 'src', duplicate = 0)
 env['build_dir'] = build_dir
 
-# for swig 1.3.28 cvs
-env['SWIGFLAGS'] = SWIG_FLAGS
-env.Command('swigpyrun.h', None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS])
+# for swig 1.3.30, but do not use -outdir src, use -outdir . instead
+# because the scons/swig module requires .py in the current directory (a bug, I would say).
+env['SWIGFLAGS'] = SWIG_FLAGS.replace('-outdir src', '-outdir .')
+env.Command('build_dir/swigpyrun.h', None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS.replace('-outdir src', '-outdir .')])
 
 gsl = env.StaticLibrary(
     target = '$build_dir/gsl',
     source = GSL_FILES,
-    CCFLAGS = ['-O3', '-Wall', '-fPIC'],
-    CPPPATH = ['.', '..'],
+    CCFLAGS = opt,
+    CPPPATH = ['.'],
 )
 
-
-MODULES = []
-for key in all_modu:
+targets = []
+for key in all_modu + mpi_modu:
     if key in BUILD_TARGETS:
-        MODULES.append(key)
-    if MODULES == [] or 'all' in BUILD_TARGETS:
-        MODULES = all_modu
+        targets.append(key)
+if targets == [] or 'all' in BUILD_TARGETS:
+    # by default, do not build mpi version
+    targets = all_modu
 
 def mod_src(file, mod):
     return file.replace('src', '$build_dir').replace('.cpp', '_%s.cpp' % mod)
 
-for mod in MODULES:
+for mod in targets:
     info = ModuInfo(mod)
     for file in SOURCE_FILES:
         env.Command(mod_src(file, mod), file, [Copy('$TARGET', '$SOURCE')])
@@ -78,7 +78,7 @@ for mod in MODULES:
         CCFLAGS = info['extra_compile_args'],
         CPPFLAGS = basicflags + " " + opt
     )
-    env.Depends(['$build_dir/simuPOP_%s_wrap.cc' % mod, lib],
+    env.Depends(['$build_dir/simuPOP_%s_wrap$CXXFILESUFFIX' % mod, lib],
         ['src/simupop_cfg.h', 'src/simuPOP_common.i', 'src/simuPOP_doc.i'] + \
         HEADER_FILES)
     env.Depends('src/utility_%s.cpp' % mod, 'src/arraymodule.c')
@@ -86,7 +86,7 @@ for mod in MODULES:
     Alias(mod, lib)
     Alias('all', lib)
     dp1 = env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py' % mod),
-        '$build_dir/simuPOP_%s.py' % mod)
+        'simuPOP_%s.py' % mod)
     dp2 = env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s%s' % (mod, so_ext)),
         lib)
     env.Depends(dp1, dp2)
