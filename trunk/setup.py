@@ -14,6 +14,8 @@ boost_versions = ['1_33_1', '1_34', '1_35']
 # If setup.py can not find boost libraries, change boost_lib_seach_paths
 # and/or boost_inc_search_paths. 
 # 
+# use_vc is used only once to indicate if a portable stdint.h
+# need to be used. (msvc does not ship with stdint.h)
 if os.name == 'nt':
     use_vc = True
     # under windows, boost/iostreams/gzip decompressor seems
@@ -391,9 +393,9 @@ def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
     else:
         res['libraries'].extend(['stdc++', 'z'])
     res['include_dirs'] = ['.', boost_inc_path]
-    if os.name == 'nt':
-	# I have a portable stdint.h for msvc
-	res['include_dirs'].append('win32')
+    if use_vc:
+        # I have a portable stdint.h for msvc
+        res['include_dirs'].append('win32')
     #
     res['library_dirs'] = ['build', boost_lib_path]
     if os.name == 'nt':
