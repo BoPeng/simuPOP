@@ -152,10 +152,8 @@
 #define HAVE_STDDEF_H 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
-// mingw has it, but not msvc
-#ifndef _MSC_VER
-	#define HAVE_STDINT_H 1
-#endif
+// I have a portable stdint.h for msvc
+#define HAVE_STDINT_H 1
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #define HAVE_STDLIB_H 1

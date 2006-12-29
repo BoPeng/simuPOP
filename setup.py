@@ -314,8 +314,6 @@ SIMUPOP_FILES = [
 MPIFlags = getMPIFlags()
 
 SWIG_FLAGS = '-O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
-if use_vc:
-    SWIG_FLAGS += ' -D_MSC_VER'
 SWIG_RUNTIME_FLAGS = '-python -outdir src -external-runtime'
                 
 MACROS = {
@@ -393,6 +391,9 @@ def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
     else:
         res['libraries'].extend(['stdc++', 'z'])
     res['include_dirs'] = ['.', boost_inc_path]
+    if os.name == 'nt':
+	# I have a portable stdint.h for msvc
+	res['include_dirs'].append('win32')
     #
     res['library_dirs'] = ['build', boost_lib_path]
     if os.name == 'nt':
