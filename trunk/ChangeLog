@@ -7,7 +7,9 @@ BUGS:
   - all known bugs have been cleared.
 
 version 0.7.7 - Currently available as subversion snapshot.
-  -NEW: bring scons build system on par with python setup.py
+  -NEW (build): bring scons build system on par with python setup.py
+  -NEW (build): try really hard to search proper boost libraries. One usually
+    does not have to specify boost inc and lib paths to build simuPOP.
   
 
 version 0.7.6 - (Rev 674) Dec 25, 2006
