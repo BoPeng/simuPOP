@@ -311,6 +311,11 @@ SIMUPOP_FILES = [
 # explore availability of mpi library
 MPIFlags = getMPIFlags()
 
+SWIG_FLAGS = '-O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
+if use_vc:
+    SWIG_FLAGS += ' -D_MSC_VER'
+SWIG_RUNTIME_FLAGS = '-python -outdir src -external-runtime'
+                
 MACROS = {
     'std':    [('SIMUPOP_MODULE', 'simuPOP_std')],
     'op':     [('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None)],
@@ -373,7 +378,7 @@ if os.name == 'nt':
     DATA_FILES += [('Lib/site-packages', ['win32/zlib1.dll'])]
 
 
-def ModuInfo(modu):
+def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
     res = {}
     res['src'] =  ['src/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:
@@ -440,26 +445,16 @@ if __name__ == '__main__':
         (max( [os.path.getmtime(x) for x in HEADER_FILES] ) > \
          min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
         (v1, v2, v3) = swig_version()
-        if (v1, v2, v3) >= (1, 3, 28):
-            # for swig >= 1.3.28
-            SWIG = 'swig -O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
-            if use_vc:
-                SWIG += ' -D_MSC_VER'
-        elif (v1, v2, v3) >= (1, 3, 25):
-            # for swig from 1.3.25 to 1.3.27
-            SWIG = 'swig -shadow -c++ -python -outdir src -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525'
-            if use_vc:
-                SWIG += ' -D_MSC_VER'
-        else:
-            print 'Swig >= 1.3.25 is required, please upgrade it.'
+        if (v1, v2, v3) < (1, 3, 30):
+            print 'Swig >= 1.3.30 is required, please upgrade it.'
             sys.exit(1)
         # generate header file 
         print "Generating external runtime header file..."
-        os.system( 'swig -python -outdir src -external-runtime swigpyrun.h' )
+        os.system('swig %s swigpyrun.h' % SWIG_RUNTIME_FLAGS)
         # try the first option set with the first library
         for lib in MODULES:
             print "Generating wrap file " + WRAP_INFO[lib][0]
-            if os.system('%s %s -o %s %s' % (SWIG, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
+            if os.system('%s %s %s -o %s %s' % (SWIG, SWIG_FLAGS, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
                 print "Calling swig failed. Please check your swig version."
                 sys.exit(1)
         print
@@ -495,15 +490,16 @@ if __name__ == '__main__':
     # build
     EXT_MODULES = []
     for modu in MODULES:
+        info = ModuInfo(modu, SIMUPOP_VER=SIMUPOP_VER, SIMUPOP_REV=SIMUPOP_REV)
         EXT_MODULES.append(
             Extension('_simuPOP_%s' % modu,
-                sources = ModuInfo(modu)['src'],
-                extra_compile_args = ModuInfo(modu)['extra_compile_args'],
-                include_dirs = ModuInfo(modu)['include_dirs'],
-                library_dirs = ModuInfo(modu)['library_dirs'],
-                libraries = ModuInfo(modu)['libraries'],
-                define_macros = ModuInfo(modu)['define_macros'],
-                undef_macros = ModuInfo(modu)['undef_macros'],
+                sources = info['src'],
+                extra_compile_args = info['extra_compile_args'],
+                include_dirs = info['include_dirs'],
+                library_dirs = info['library_dirs'],
+                libraries = info['libraries'],
+                define_macros = info['define_macros'],
+                undef_macros = info['undef_macros'],
             )
         )
     #
