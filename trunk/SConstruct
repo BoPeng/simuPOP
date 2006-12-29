@@ -30,7 +30,12 @@ for i in range(len(vars)):
 # get compiler and hack options
 from distutils.ccompiler import new_compiler
 comp = new_compiler()
-comp.initialize()
+if comp.__dict__.has_key('initialize'):
+    comp.initialize()
+if not comp.__dict__.has_key('ldflags_shared'):
+    comp.ldflags_shared = ''
+if not comp.__dict__.has_key('compile_options'):
+    comp.compile_options = []
 
 env = Environment(ENV={'PATH':os.environ['PATH']},
     tools=['default', 'swig'])
