@@ -26,6 +26,11 @@ for i in range(len(vars)):
     if vars[i] is None:
         vars[i] = ""
 (cc, cxx, opt, basicflags, ccshared, ldshared, so_ext, lib_dest, python_inc_dir) = vars
+#
+# get compiler and hack options
+from distutils.ccompiler import new_compiler
+comp = new_compiler()
+comp.initialize()
 
 env = Environment(ENV={'PATH':os.environ['PATH']},
     tools=['default', 'swig'])
@@ -89,10 +94,11 @@ for mod in targets:
         LIBS = info['libraries'] + [gsl],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
+        SHLINKFLAGS = comp.ldflags_shared,
         LIBPATH = info['library_dirs'] + extra_lib_path,
         CPPPATH = [python_inc_dir, '.', 'src'] + info['include_dirs'],
         CPPDEFINES = convert_def(info['define_macros']),
-        CCFLAGS = info['extra_compile_args'],
+        CCFLAGS = info['extra_compile_args'] + comp.compile_options,
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
     )
     env.Depends(['$build_dir/simuPOP_%s_wrap$CXXFILESUFFIX' % mod, lib],
