@@ -18,6 +18,6 @@ recursive-include boost *
 recursive-include boost/spirit/core *
 recursive-include src  *.cpp *.c *.h *.i *.ipp
 recursive-include scripts *.py
-recursive-include win32 *.lib *.dll
+recursive-include win32 *.lib *.dll *.h
 prune *.svn/*
 
