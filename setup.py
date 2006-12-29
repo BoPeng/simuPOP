@@ -313,7 +313,7 @@ SIMUPOP_FILES = [
 # explore availability of mpi library
 MPIFlags = getMPIFlags()
 
-SWIG_FLAGS = '-O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-525'
+SWIG_FLAGS = '-O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
 if use_vc:
     SWIG_FLAGS += ' -D_MSC_VER'
 SWIG_RUNTIME_FLAGS = '-python -outdir src -external-runtime'
