@@ -29,6 +29,11 @@ for i in range(len(vars)):
 
 env = Environment(ENV={'PATH':os.environ['PATH']},
     tools=['default', 'swig'])
+# try to use the compiler used to build python
+if cc != "":
+    env['CC'] = cc
+if cxx != "":
+    env['CXX'] = cxx
 
 dest_dir  = os.path.join(lib_dest, 'site-packages')
 build_dir = 'build'
@@ -43,7 +48,7 @@ env.Command('build_dir/swigpyrun.h', None, ['swig %s $TARGET' % SWIG_RUNTIME_FLA
 gsl = env.StaticLibrary(
     target = '$build_dir/gsl',
     source = GSL_FILES,
-    CCFLAGS = opt,
+    CCFLAGS = ' '.join([opt, ccshared]),
     CPPPATH = ['.'],
 )
 
@@ -66,8 +71,6 @@ for mod in targets:
         target = '$build_dir/_simuPOP_%s%s' % (mod, so_ext),
         source = ['$build_dir/simuPOP_%s.i' % mod] + [mod_src(x, mod) for x in SOURCE_FILES],
         LIBS = info['libraries'] + [gsl],
-        CC = cc,
-        CXX = cxx,
         SHLINK = ldshared,
         SHLINKFLAGS = ['-Wl,--export-dynamic'],
         SHLIBPREFIX = "",
@@ -76,7 +79,7 @@ for mod in targets:
         CPPPATH = [distutils.sysconfig.get_python_inc(), '.', 'src'] + info['include_dirs'],
         CPPDEFINES = info['define_macros'],
         CCFLAGS = info['extra_compile_args'],
-        CPPFLAGS = basicflags + " " + opt
+        CPPFLAGS = ' '.join([basicflags, ccshared, opt])
     )
     env.Depends(['$build_dir/simuPOP_%s_wrap$CXXFILESUFFIX' % mod, lib],
         ['src/simupop_cfg.h', 'src/simuPOP_common.i', 'src/simuPOP_doc.i'] + \
@@ -88,7 +91,7 @@ for mod in targets:
     dp1 = env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py' % mod),
         'simuPOP_%s.py' % mod)
     dp2 = env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s%s' % (mod, so_ext)),
-        lib)
+        lib[0])
     env.Depends(dp1, dp2)
     Alias('install', dp1)
 
