@@ -386,7 +386,8 @@ def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
     for src in SOURCE_FILES:
         res['src'].append(src[:-4] + '_' + modu + '.cpp')
     res['src'].extend(GSL_FILES)
-    res['libraries'] = boost_lib_names
+    # use deep copy
+    res['libraries'] = [x for x in boost_lib_names]
     # lib
     if os.name == 'nt':    # Windows
         res['libraries'].append('zdll')
