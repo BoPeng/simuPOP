@@ -70,6 +70,14 @@ if targets == [] or 'all' in BUILD_TARGETS:
 def mod_src(file, mod):
     return file.replace('src', '$build_dir').replace('.cpp', '_%s.cpp' % mod)
 
+def convert_def(defines):
+    new_list = []
+    for d in defines:
+        if a[1] is not None:
+            new_list.append(d)
+        else:
+            new_list.append(d[0])
+
 for mod in targets:
     info = ModuInfo(mod)
     for file in SOURCE_FILES:
@@ -82,7 +90,7 @@ for mod in targets:
         SHLIBSUFFIX = so_ext,
         LIBPATH = info['library_dirs'] + extra_lib_path,
         CPPPATH = [python_inc_dir, '.', 'src'] + info['include_dirs'],
-        CPPDEFINES = info['define_macros'],
+        CPPDEFINES = convert_def(info['define_macros']),
         CCFLAGS = info['extra_compile_args'],
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
     )
