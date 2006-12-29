@@ -52,8 +52,6 @@
 #define BITPTR(ref) ref._Myptr
 #define BITOFF(ref) ref._Myoff
 
-#define INT32 __int32
-
 #else
 
 #ifndef WORDBIT
@@ -63,7 +61,6 @@
 #define BITPTR(ref) ref._M_p
 #define BITOFF(ref) ref._M_offset
 
-#define INT32 int32_t
 #endif
 
 #include <string>
@@ -81,21 +78,13 @@ using std::vector;
 /// since python extension use it as int.
 typedef unsigned int UINT;
 
-#ifdef HAVE_STDINT_H
+// for msvc, I have a portable stdint.h under win32 directory
 #include <stdint.h>
-#endif
 // NOTE: the change of allele type here may need similar changes
 // in the wrapper file simuPOP_common.i
 #ifdef LONGALLELE
-#ifdef _MSC_VER
-// swig can not handle __int16 on windows yet, partly because
-// stdint is not defined under windows
-typedef unsigned  Allele;
-typedef unsigned & AlleleRef;
-#else
 typedef uint16_t  Allele;
 typedef uint16_t& AlleleRef;
-#endif
 
 #define AlleleInc(a)  ++(a)
 #define AlleleDec(a)  --(a)
@@ -133,7 +122,7 @@ typedef std::vector<Allele>::const_iterator constGenoIterator;
 
 // max allowed allele state
 const unsigned long MaxAllele = std::numeric_limits<Allele>::max();
-const unsigned long int MaxRandomNumber = std::numeric_limits<INT32>::max();
+const unsigned long int MaxRandomNumber = std::numeric_limits<int32_t>::max();
 
 #define PopSWIGType "simuPOP::population *"
 #define IndSWIGType "simuPOP::individual *"
