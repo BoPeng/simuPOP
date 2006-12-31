@@ -149,7 +149,6 @@ def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versio
                     name = lib_files[0].split(os.sep)[-1][len(lib_prefix):]
                     lib_names.append(name.split('.')[0])
                 else:
-                    print "No qualified library is found."
                     break
         if len(lib_names) == len(libs):
             found_lib = True
@@ -158,6 +157,8 @@ def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versio
     if not found_lib:
         print "Can not find boost libraries. Please read the front part"
         print "of setup.py for instructions."
+        print "Library search paths: ", lib_paths
+        print "Include search paths: ", inc_paths
         sys.exit(1)
     # check version number in boost/version.hpp
     def isValidBoostDir(dir):
