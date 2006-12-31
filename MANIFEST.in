@@ -128,6 +128,7 @@ include gsl/specfunc/erfc.c
 include gsl/specfunc/zeta.c
 include gsl/specfunc/elementary.c
 include gsl/specfunc/gamma.c
+include gsl/specfunc/cheb_eval.c
 include gsl/rng/borosh13.c
 include gsl/rng/fishman2x.c
 include gsl/rng/mt.c

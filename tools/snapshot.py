@@ -17,6 +17,8 @@ download_directory = '/var/www/html/simuPOP/download'
 doc_directory = '/var/www/html/simuPOP_doc/doc'
 user_tmp_directory = '/home/bpeng/tmp'
 
+mac_name = 'apple-20-147.stat.rice.edu'
+
 
 def cmdOutput(cmd):
     ''' utility function: run a command and get its output as a string

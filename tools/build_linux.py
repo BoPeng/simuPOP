@@ -11,9 +11,13 @@ def build_linux():
         sys.exit(1)
     # 
     # build
+    print 'Copying source package to user temp directory...'
     os.system('/bin/rm -rf simuPOP-%s' % ver)
+    shutil.copy('%s/simuPOP-%s-src.tar.gz' % (download_directory, ver), 'simuPOP-%s-src.tar.gz' % ver)
+    print 'Unpacking ...'
     os.system('tar zxf simuPOP-%s-src.tar.gz' % ver)
     os.chdir('simuPOP-%s' % ver)
+    print 'Building ...'
     os.system('python setup.py bdist --formats=gztar,rpm')
     # coppy files
     shutil.copy('dist/simuPOP-%s-1.x86_64.rpm' % ver, '%s/simuPOP-%s-1.x86_64.rpm' % (download_directory, ver))
