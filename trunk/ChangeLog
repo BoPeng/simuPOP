@@ -9,6 +9,7 @@ BUGS:
 version 0.7.7 - Currently available as subversion snapshot.
   -NEW (build): bring scons build system on par with python setup.py
   -NEW (build): try really hard to search proper boost libraries. One usually
+  -NEW (build): prune files from source package
     does not have to specify boost inc and lib paths to build simuPOP.
   
 

@@ -196,8 +196,8 @@ include scripts/analComplexDisease.py
 include scripts/simuNeutralSNPs.py
 
 # tests
-include run_tests.py
-include run_tests.sh
+include test/run_tests.py
+include test/run_tests.sh
 include test/test_00_carray.py
 include test/test_01_individual.py
 include test/test_02_population.py
