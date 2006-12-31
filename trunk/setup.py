@@ -6,7 +6,7 @@ checking out simuPOP from svn repository, you need to
 install swig >= 1.3.27 to generate the wrap files.
 
 """
-import os, sys
+import os, sys, shutil, glob, re
 
 # simuPOP works with these boost versions.
 boost_versions = ['1_33_1', '1_34', '1_35']
@@ -34,8 +34,14 @@ else:
     boost_inc_search_paths = ['/usr/include', '/usr/local/include']
     home = os.environ.get('HOME', None)
     if home is not None:
-        boost_lib_search_paths.append(os.path.join(home, 'boost'))
-        boost_inc_search_paths.append(os.path.join(home, 'boost'))
+        dirs = glob.glob(os.path.join(home, 'boost*'))
+        for dir in dirs:
+            if os.path.isdir(os.path.join(dir, 'lib')):
+                boost_lib_search_paths.append(os.path.join(dir, 'lib'))
+            if os.path.isdir(os.path.join(dir, 'include')):
+                boost_inc_search_paths.append(os.path.join(dir, 'include'))
+            else:
+                boost_inc_search_paths.append(dir)
     boost_lib_prefix = 'lib'
     boost_lib_suffix = '.a'
 
@@ -50,7 +56,6 @@ SWIG = 'swig'
 
 from distutils.core import setup, Extension
 
-import shutil, sys, glob, re
 
 #
 # UTILITY FUNCTIONS
@@ -137,7 +142,7 @@ def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versio
                 if len(lib_files) == 0:
                     # use alternative libraries
                     for ver in versions:
-                        lib_files += filter(lambda x: re.search('%sboost_%s-[\w-]+%s%s' \
+                        lib_files += filter(lambda x: re.search('%sboost_%s-[\w-]*%s%s' \
                             % (lib_prefix, lib, ver, lib_suffix), x), files)
                 if len(lib_files) > 0:
                     # get xxx-gcc-1_33_1 from /usr/local/lib/libboost_xxx-gcc-1_33_1.a

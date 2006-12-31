@@ -20,8 +20,8 @@ def build_src():
     # write old release file back
     writeReleaseFile(old_ver, old_rev)
     # coppy files
-    shutil.copy('dist/simuPOP-%s.tar.gz' % ver, '%s/simuPOP-%s.tar.gz' % (download_directory, ver))
-    shutil.copy('dist/simuPOP-%s.zip' % ver, '%s/simuPOP-%s.zip' % (download_directory, ver))
+    shutil.copy('dist/simuPOP-%s.tar.gz' % ver, '%s/simuPOP-%s-src.tar.gz' % (download_directory, ver))
+    shutil.copy('dist/simuPOP-%s.zip' % ver, '%s/simuPOP-%s-src.zip' % (download_directory, ver))
 
 if __name__ == '__main__':
     os.chdir('..')
