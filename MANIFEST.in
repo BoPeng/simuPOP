@@ -1,23 +1,231 @@
-include README INSTALL ChangeLog COPYING TODO AUTHORS simuPOP.release
-include MANIFEST.in setup.py setup.cfg  simuPOP.vcproj 
-include config_solaris.h config_win32.h config_linux.h config_mac.h
-include doc/userGuide.pdf doc/userGuide.py doc/refManual.pdf
-include misc/README misc/python-mode.el misc/emacs-python.el 
-include src/simuPOP.py src/simuOpt.py src/simuUtil.py  src/simuSciPy.py src/simuMatPlt.py  
-include src/simuRPy.py src/simuViewPop.py
-include src/simuPOP_std.py src/simuPOP_op.py
-include src/simuPOP_la.py src/simuPOP_laop.py 
-include src/simuPOP_ba.py src/simuPOP_baop.py 
-include src/swigpyrun.h 
-include src/simuPOP_std_wrap.cpp src/simuPOP_op_wrap.cpp 
-include src/simuPOP_la_wrap.cpp src/simuPOP_laop_wrap.cpp 
-include src/simuPOP_ba_wrap.cpp src/simuPOP_baop_wrap.cpp
-recursive-include test test_*.py run_tests.py run_tests.sh
-recursive-include gsl *.h *.c
-recursive-include boost *
-recursive-include boost/spirit/core *
-recursive-include src  *.cpp *.c *.h *.i *.ipp
-recursive-include scripts *.py
-recursive-include win32 *.lib *.dll *.h
-prune *.svn/*
+# use explicit file list to avoid inclusion of unnecessary files in the source distribution
+#
+# general files
+include README
+include INSTALL
+include ChangeLog
+include COPYING
+include TODO
+include AUTHORS
+include simuPOP.release
+include MANIFEST.in 
+include setup.py
+include SConstruct
 
+# source header files
+include config_solaris.h 
+include config_win32.h 
+include config_linux.h 
+include config_mac.h
+include src/simupop_cfg.h
+include src/utility.h
+include src/individual.h
+include src/population.h
+include src/simulator.h
+include src/mating.h
+include src/operator.h
+include src/initializer.h
+include src/migrator.h
+include src/outputer.h
+include src/selector.h
+include src/stator.h
+include src/terminator.h
+include src/mutator.h
+include src/recombinator.h
+include src/tagger.h
+
+# source files
+include src/arraymodule.c
+include src/utility.cpp
+include src/individual.cpp
+include src/population.cpp
+include src/simulator.cpp
+include src/mating.cpp
+include src/operator.cpp
+include src/initializer.cpp
+include src/migrator.cpp
+include src/outputer.cpp
+include src/selector.cpp
+include src/stator.cpp
+include src/terminator.cpp
+include src/mutator.cpp
+include src/recombinator.cpp
+include src/tagger.cpp
+
+# source generated files
+include src/swigpyrun.h 
+include src/simuPOP_std_wrap.cpp
+include src/simuPOP_op_wrap.cpp 
+include src/simuPOP_la_wrap.cpp
+include src/simuPOP_laop_wrap.cpp 
+include src/simuPOP_ba_wrap.cpp
+include src/simuPOP_baop_wrap.cpp
+include src/simuPOP_mpi_wrap.cpp
+include src/simuPOP_opmpi_wrap.cpp 
+include src/simuPOP_lampi_wrap.cpp
+include src/simuPOP_laopmpi_wrap.cpp 
+include src/simuPOP_bampi_wrap.cpp
+include src/simuPOP_baopmpi_wrap.cpp
+
+# source wrap files
+include src/simuPOP_common.i
+include src/simuPOP_doc.i
+include src/simuPOP_std.i
+include src/simuPOP_op.i
+include src/simuPOP_la.i
+include src/simuPOP_laop.i
+include src/simuPOP_ba.i
+include src/simuPOP_baop.i
+include src/simuPOP_mpi.i
+include src/simuPOP_opmpi.i
+include src/simuPOP_lampi.i
+include src/simuPOP_laopmpi.i
+include src/simuPOP_bampi.i
+include src/simuPOP_baopmpi.i
+
+# source python files (modules)
+include src/simuPOP.py
+include src/simuOpt.py
+include src/simuUtil.py
+include src/simuRPy.py
+
+# gsl files
+include gsl/gsl_machine.h
+include gsl/gsl_sf_exp.h
+include gsl/gsl_sf_erf.h
+include gsl/gsl_sf_pow_int.h
+include gsl/gsl_sf_trig.h
+include gsl/gsl_sf_psi.h
+include gsl/gsl_message.h
+include gsl/gsl_rng.h
+include gsl/gsl_math.h
+include gsl/gsl_sf_result.h
+include gsl/gsl_types.h
+include gsl/specfunc/chebyshev.h
+include gsl/specfunc/eval.h
+include gsl/specfunc/error.h
+include gsl/specfunc/check.h
+include gsl/gsl_nan.h
+include gsl/gsl_precision.h
+include gsl/gsl_randist.h
+include gsl/gsl_pow_int.h
+include gsl/gsl_sf_elementary.h
+include gsl/gsl_errno.h
+include gsl/gsl_sf_zeta.h
+include gsl/gsl_sf_gamma.h
+include gsl/gsl_sf_log.h
+include gsl/gsl_sys.h
+include gsl/sys/infnan.c
+include gsl/sys/coerce.c
+include gsl/sys/fdiv.c
+include gsl/sys/pow_int.c
+include gsl/sys/fcmp.c
+include gsl/specfunc/psi.c
+include gsl/specfunc/trig.c
+include gsl/specfunc/exp.c
+include gsl/specfunc/log.c
+include gsl/specfunc/erfc.c
+include gsl/specfunc/zeta.c
+include gsl/specfunc/elementary.c
+include gsl/specfunc/gamma.c
+include gsl/rng/borosh13.c
+include gsl/rng/fishman2x.c
+include gsl/rng/mt.c
+include gsl/rng/rand.c
+include gsl/rng/ranmar.c
+include gsl/rng/types.c
+include gsl/rng/cmrg.c
+include gsl/rng/gfsr4.c
+include gsl/rng/r250.c
+include gsl/rng/random.c
+include gsl/rng/rng.c
+include gsl/rng/uni32.c
+include gsl/rng/coveyou.c
+include gsl/rng/knuthran2.c
+include gsl/rng/ran0.c
+include gsl/rng/randu.c
+include gsl/rng/slatec.c
+include gsl/rng/uni.c
+include gsl/rng/default.c
+include gsl/rng/knuthran.c
+include gsl/rng/ran1.c
+include gsl/rng/ranf.c
+include gsl/rng/taus113.c
+include gsl/rng/vax.c
+include gsl/rng/file.c
+include gsl/rng/lecuyer21.c
+include gsl/rng/ran2.c
+include gsl/rng/ranlux.c
+include gsl/rng/taus.c
+include gsl/rng/waterman14.c
+include gsl/rng/fishman18.c
+include gsl/rng/minstd.c
+include gsl/rng/ran3.c
+include gsl/rng/ranlxd.c
+include gsl/rng/transputer.c
+include gsl/rng/zuf.c
+include gsl/rng/fishman20.c
+include gsl/rng/mrg.c
+include gsl/rng/rand48.c
+include gsl/rng/ranlxs.c
+include gsl/rng/tt.c
+include gsl/randist/nbinomial.c
+include gsl/randist/beta.c
+include gsl/randist/exponential.c
+include gsl/randist/geometric.c
+include gsl/randist/binomial.c
+include gsl/randist/poisson.c
+include gsl/randist/rdgamma.c
+include gsl/randist/multinomial.c
+include gsl/randist/chisq.c
+include gsl/randist/gauss.c
+include gsl/error.c 
+
+# bundled scripts
+include scripts/simuViewPop.py
+include scripts/simuCDCV.py
+include scripts/simuLDDecay.py
+include scripts/simuRecHotSpot.py
+include scripts/simuCluster.py
+include scripts/demoPyOperator.py
+include scripts/simuForward.py
+include scripts/simuComplexDisease.py
+include scripts/analComplexDisease.py
+include scripts/simuNeutralSNPs.py
+
+# tests
+include run_tests.py
+include run_tests.sh
+include test/test_00_carray.py
+include test/test_01_individual.py
+include test/test_02_population.py
+include test/test_03_operator.py
+include test/test_04_simulator.py
+include test/test_05_matings.py
+include test/test_06_initialization.py
+include test/test_07_tagging.py
+include test/test_08_opStat.py
+include test/test_09_pyOperator.py
+include test/test_10_opIfElse.py
+include test/test_11_opPause.py
+include test/test_12_migration.py
+include test/test_13_mutation.py
+include test/test_14_recombination.py
+include test/test_15_selection.py
+include test/test_16_asertainment.py
+include test/test_17_qtrait.py
+include test/test_18_penetrance.py
+include test/test_19_utility.py
+include test/test_20_rpy.py
+include test/test_21_performance.py
+include test/test_22_mpi.py
+
+# documentations
+include doc/userGuide.pdf
+include doc/userGuide.py
+include doc/refManual.pdf
+
+# misc files
+include misc/README 
+include misc/python-mode.el
+include misc/emacs-python.el 
