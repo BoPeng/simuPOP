@@ -15,6 +15,7 @@ last_revision_file = '/var/www/html/simuPOP/download/latestrevision'
 release_file = '/home/bpeng/simuPOP/simuPOP.release'
 download_directory = '/var/www/html/simuPOP/download'
 doc_directory = '/var/www/html/simuPOP_doc/doc'
+user_tmp_directory = '/home/bpeng/tmp'
 
 
 def cmdOutput(cmd):
