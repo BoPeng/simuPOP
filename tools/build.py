@@ -98,7 +98,7 @@ def build_doc(ver, rev):
     os.environ['SIMUPOP_REV'] = rev
     run('doxygen Doxyfile')
     run('python tools/doxy2swig.py %s/xml/index.xml tmp.i' % doc_directory)
-    run('perl tools/processDocString.pl tmp.i > src/simuPOP/download.i')
+    run('perl tools/processDocString.pl tmp.i > src/simuPOP_doc.i')
     os.remove('tmp.i')
     os.chdir('doc')
 
@@ -143,51 +143,36 @@ def build_x86_64(ver):
     shutil.copy('dist/simuPOP-%s-1.src.rpm' % ver, '%s/simuPOP-%s-1.src.rpm' % (download_directory, ver))
 
 
-def build_mdk(ver):
+def build_vm(ver, vm, vm_port, vm_name):
     # set display, since this script will be launched from crontab.
-    run('vmrun start %s' % mdk_vm)
+    run('vmrun start %s' % vm)
     # wait for the vm to start.
     run('sleep 30')
     run('ssh -p %d %s "/bin/rm -rf simuPOP-%s.zip simuPOP-%s.tar.gz simuPOP-%s"' % \
-        (mdk_port, mdk_vm_name, ver, ver, ver))
+        (vm_port, vm_name, ver, ver, ver))
     run('scp -P %s %s/simuPOP-%s-src.tar.gz %s:' % \
-        (mdk_port, download_directory, ver, mdk_vm_name))
+        (vm_port, download_directory, ver, vm_name))
     #
-    UNCOMPRESS = "tar zxf simuPOP-%s-src.tar.gz" % ver
-    BUILD = "python setup.py config --include-dirs=/usr/include/linux bdist --formats=gztar,rpm"
-    run('ssh -X -p %d %s "%s && cd simuPOP-%s && %s"' % \
-        (mdk_port, mdk_vm_name, UNCOMPRESS, ver, BUILD))
-    run('scp -P %d %s:simuPOP-%s/dist/simuPOP-%s.linux-i686.tar.gz %s/simuPOP-%s-mdk-py23.tar.gz' % \
-        (mdk_port, mdk_vm_name, ver, ver, download_directory, ver))
-    run("scp -P %d '%s:simuPOP-%s/dist/simuPOP-%s*' %s/simuPOP-%s-mdk-py23.tar.gz" % \
-        (mdk_port, mdk_vm_name, ver, ver, download_directory, ver))
-    run('vmrun suspend %s' % mdk_vm)
+    run('ssh -X -p %d %s "tar zxf simuPOP-%s-src.tar.gz && cd simuPOP-%s && python setup.py bdist --formats=gztar,rpm"' % \
+        (vm_port, vm_name, ver, ver))
+    run('scp -P %d %s:simuPOP-%s/dist/simuPOP-%s.linux-i686.tar.gz %s/simuPOP-%s-fedora5-py23.tar.gz' % \
+        (vm_port, vm_name, ver, ver, download_directory, ver))
+    run("scp -P %d '%s:simuPOP-%s/dist/simuPOP-%s*' %s/simuPOP-%s-fedora5-py23.tar.gz" % \
+        (vm_port, vm_name, ver, ver, download_directory, ver))
+    run('vmrun suspend %s' % vm)
 
+
+def build_mdk(ver):
+    build_vm(ver, mdk_vm, mdk_port, mdk_vm_name)
 
 def build_fedora5(ver):
-    # set display, since this script will be launched from crontab.
-    run('vmrun start %s' % fedora5_vm)
-    # wait for the vm to start.
-    run('sleep 30')
-    remove = 'ssh -p %d %s "/bin/rm -rf simuPOP-%s.zip simuPOP-%s.tar.gz simuPOP-%s"' % \
-        (fedora5_port, fedora5_vm_name, ver, ver, ver)
-    print remove
-    run(remove)
-    copy = 'scp -P %s %s/simuPOP-%s-src.tar.gz %s:' % \
-        (fedora5_port, download_directory, ver, fedora5_vm_name)
-    print copy
-    run(copy)
-    #
-    build = 'ssh -X -p %d %s "tar zxf simuPOP-%s-src.tar.gz && cd simuPOP-%s && python setup.py bdist --formats=gztar,rpm"' % \
-        (fedora5_port, fedora5_vm_name, ver, ver)
-    print build
-    run(build)
-    run('scp -P %d %s:simuPOP-%s/dist/simuPOP-%s.linux-i686.tar.gz %s/simuPOP-%s-fedora5-py23.tar.gz' % \
-        (fedora5_port, fedora5_vm_name, ver, ver, download_directory, ver))
-    run("scp -P %d '%s:simuPOP-%s/dist/simuPOP-%s*' %s/simuPOP-%s-fedora5-py23.tar.gz" % \
-        (fedora5_port, fedora5_vm_name, ver, ver, download_directory, ver))
-    run('vmrun suspend %s' % fedora5_vm)
+    build_vm(ver, fedora5_vm, fedora5_port, fedora5_vm_name)
 
+def build_rhel4(ver):
+    build_vm(ver, rhel4_vm, rhel4_port, rhel4_vm_name)
+
+def build_suse(ver):
+    build_vm(ver, suse_vm, suse_port, suse_vm_name)
 
 def build_mac():
     if not os.path.isfile('%s/simuPOP-%s.zip' % (download_directory, ver)):
@@ -210,7 +195,7 @@ if __name__ == '__main__':
     release = 'snapshot'
     actions = []
     dryrun = False
-    all_actions = ['all', 'svn', 'src', 'doc', 'x86_64', 'rhel4', 'mac', 'win', 'mdk', 'sol', 'fedora5']
+    all_actions = ['all', 'svn', 'src', 'doc', 'x86_64', 'rhel4', 'mac', 'win', 'mdk', 'suse', 'sol', 'fedora5']
 
     ## Parse the command line
     for op in sys.argv[1:]:   # default shell/for list is $*, the options
@@ -248,7 +233,7 @@ actions:
         elif '--config' in op:
             config_file = op[9:]
         elif op == 'all':
-            actions.extend(['src', 'x86_64', 'rhel4', 'mac', 'win'])
+            actions.extend(['src', 'x86_64', 'rhel4', 'mac', 'win', 'fedora5', 'suse'])
         elif op in all_actions and op not in actions:
             actions.append(op)
         elif op == '--dryrun':
@@ -281,6 +266,10 @@ actions:
         build_mdk(ver)
     if 'fedora5' in actions:
         build_fedora5(ver)
+    if 'rhel4' in actions:
+        build_rhel4(ver)
+    if 'suse' in actions:
+        build_suse(ver)
     if 'mac' in actions:
         build_mac()
     # 
