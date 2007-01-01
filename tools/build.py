@@ -233,7 +233,7 @@ actions:
         elif '--config' in op:
             config_file = op[9:]
         elif op == 'all':
-            actions.extend(['src', 'x86_64', 'rhel4', 'mac', 'win', 'fedora5', 'suse'])
+            actions.extend(['src', 'doc', 'svn', 'x86_64', 'rhel4', 'mac', 'win', 'fedora5', 'suse'])
         elif op in all_actions and op not in actions:
             actions.append(op)
         elif op == '--dryrun':
