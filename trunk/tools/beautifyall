@@ -1,4 +1,0 @@
-#/bin/csh
-foreach f (*.h *.cpp) 
-  beautify_cpp $f
-end
