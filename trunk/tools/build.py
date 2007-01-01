@@ -19,6 +19,10 @@ def cmdOutput(cmd):
     fout.close()
     return output.strip()
 
+def run(cmd):
+    print cmd
+    if not dryrun:
+        os.system(cmd)
 
 def removeTempFiles():
     ''' remove unnecessary files '''
@@ -39,8 +43,8 @@ def commitModification():
     if cmdOutput('svn diff') != '':
         cmd = 'svn ci -m "automatic checkin on %s"' % time.asctime()
         print cmd
-        os.system(cmd)
-    os.system('svn update')
+        run(cmd)
+    run('svn update')
 
 
 def writeReleaseFile(release, revision):
@@ -83,7 +87,7 @@ def makeReleaseTag(release):
         'https://svn.sourceforge.net/svnroot/simupop/tag/v%s' % release + \
         ' -m "Version %s released at %s"' % (release, time.asctime())
     print cmd
-    os.system(cmd)
+    run(cmd)
 
 
 
@@ -92,9 +96,9 @@ def build_doc(ver, rev):
     os.environ['SIMUPOP_DOC_DIR'] = doc_directory
     os.environ['SIMUPOP_VER'] = ver
     os.environ['SIMUPOP_REV'] = rev
-    os.system('doxygen Doxyfile')
-    os.system('python tools/doxy2swig.py %s/xml/index.xml tmp.i' % doc_directory)
-    os.system('perl tools/processDocString.pl tmp.i > src/simuPOP/download.i')
+    run('doxygen Doxyfile')
+    run('python tools/doxy2swig.py %s/xml/index.xml tmp.i' % doc_directory)
+    run('perl tools/processDocString.pl tmp.i > src/simuPOP/download.i')
     os.remove('tmp.i')
     os.chdir('doc')
 
@@ -112,7 +116,7 @@ def build_src():
     # replace simuPOP.release file
     (old_ver, old_rev) = writeReleaseFile(ver, rev)
     # build source
-    os.system('python setup.py sdist --formats=gztar,zip')
+    run('python setup.py sdist --formats=gztar,zip')
     # write old release file back
     writeReleaseFile(old_ver, old_rev)
     # coppy files
@@ -120,23 +124,69 @@ def build_src():
     shutil.copy('dist/simuPOP-%s.zip' % ver, '%s/simuPOP-%s-src.zip' % (download_directory, ver))
 
 
-def build_x86_64():
+def build_x86_64(ver):
     if not os.path.isfile('%s/simuPOP-%s.zip' % (download_directory, ver)):
         print 'Source package does not exist. Please run build_src.py first'
         sys.exit(1)
     # 
     # build
     print 'Copying source package to user temp directory...'
-    os.system('/bin/rm -rf simuPOP-%s' % ver)
+    run('/bin/rm -rf simuPOP-%s' % ver)
     shutil.copy('%s/simuPOP-%s-src.tar.gz' % (download_directory, ver), 'simuPOP-%s-src.tar.gz' % ver)
     print 'Unpacking ...'
-    os.system('tar zxf simuPOP-%s-src.tar.gz' % ver)
+    run('tar zxf simuPOP-%s-src.tar.gz' % ver)
     os.chdir('simuPOP-%s' % ver)
     print 'Building ...'
-    os.system('python setup.py bdist --formats=gztar,rpm')
+    run('python setup.py bdist --formats=gztar,rpm')
     # coppy files
     shutil.copy('dist/simuPOP-%s-1.x86_64.rpm' % ver, '%s/simuPOP-%s-1.x86_64.rpm' % (download_directory, ver))
     shutil.copy('dist/simuPOP-%s-1.src.rpm' % ver, '%s/simuPOP-%s-1.src.rpm' % (download_directory, ver))
+
+
+def build_mdk(ver):
+    # set display, since this script will be launched from crontab.
+    run('vmrun start %s' % mdk_vm)
+    # wait for the vm to start.
+    run('sleep 30')
+    run('ssh -p %d %s "/bin/rm -rf simuPOP-%s.zip simuPOP-%s.tar.gz simuPOP-%s"' % \
+        (mdk_port, mdk_vm_name, ver, ver, ver))
+    run('scp -P %s %s/simuPOP-%s-src.tar.gz %s:' % \
+        (mdk_port, download_directory, ver, mdk_vm_name))
+    #
+    UNCOMPRESS = "tar zxf simuPOP-%s-src.tar.gz" % ver
+    BUILD = "python setup.py config --include-dirs=/usr/include/linux bdist --formats=gztar,rpm"
+    run('ssh -X -p %d %s "%s && cd simuPOP-%s && %s"' % \
+        (mdk_port, mdk_vm_name, UNCOMPRESS, ver, BUILD))
+    run('scp -P %d %s:simuPOP-%s/dist/simuPOP-%s.linux-i686.tar.gz %s/simuPOP-%s-mdk-py23.tar.gz' % \
+        (mdk_port, mdk_vm_name, ver, ver, download_directory, ver))
+    run("scp -P %d '%s:simuPOP-%s/dist/simuPOP-%s*' %s/simuPOP-%s-mdk-py23.tar.gz" % \
+        (mdk_port, mdk_vm_name, ver, ver, download_directory, ver))
+    run('vmrun suspend %s' % mdk_vm)
+
+
+def build_fedora5(ver):
+    # set display, since this script will be launched from crontab.
+    run('vmrun start %s' % fedora5_vm)
+    # wait for the vm to start.
+    run('sleep 30')
+    remove = 'ssh -p %d %s "/bin/rm -rf simuPOP-%s.zip simuPOP-%s.tar.gz simuPOP-%s"' % \
+        (fedora5_port, fedora5_vm_name, ver, ver, ver)
+    print remove
+    run(remove)
+    copy = 'scp -P %s %s/simuPOP-%s-src.tar.gz %s:' % \
+        (fedora5_port, download_directory, ver, fedora5_vm_name)
+    print copy
+    run(copy)
+    #
+    build = 'ssh -X -p %d %s "tar zxf simuPOP-%s-src.tar.gz && cd simuPOP-%s && python setup.py bdist --formats=gztar,rpm"' % \
+        (fedora5_port, fedora5_vm_name, ver, ver)
+    print build
+    run(build)
+    run('scp -P %d %s:simuPOP-%s/dist/simuPOP-%s.linux-i686.tar.gz %s/simuPOP-%s-fedora5-py23.tar.gz' % \
+        (fedora5_port, fedora5_vm_name, ver, ver, download_directory, ver))
+    run("scp -P %d '%s:simuPOP-%s/dist/simuPOP-%s*' %s/simuPOP-%s-fedora5-py23.tar.gz" % \
+        (fedora5_port, fedora5_vm_name, ver, ver, download_directory, ver))
+    run('vmrun suspend %s' % fedora5_vm)
 
 
 def build_mac():
@@ -145,21 +195,22 @@ def build_mac():
         sys.exit(1)
     #   
     print 'Copying source package to remote machine ...'
-    os.system("ssh %s '/bin/rm -rf temp &&  mkdir temp && /bin/rm -rf simuPOP'" % mac_name)
-    os.system('scp %s/simuPOP-%s-src.tar.gz %s:temp' % (download_directory, ver, mac_name))
+    run("ssh %s '/bin/rm -rf temp &&  mkdir temp && /bin/rm -rf simuPOP'" % mac_name)
+    run('scp %s/simuPOP-%s-src.tar.gz %s:temp' % (download_directory, ver, mac_name))
     #
     print 'Building ...'
     unpack = 'tar zxf simuPOP-%s-src.tar.gz' % ver
     build = 'python setup.py bdist_dumb'
-    os.system('ssh -X %s "cd temp && %s && cd simuPOP-%s && %s"' % (mac_name, unpack, ver, build))
-    os.system('scp %s:temp/simuPOP-%s/dist/* %s' % (mac_name, ver, download_directory))
+    run('ssh -X %s "cd temp && %s && cd simuPOP-%s && %s"' % (mac_name, unpack, ver, build))
+    run('scp %s:temp/simuPOP-%s/dist/* %s' % (mac_name, ver, download_directory))
 
 
 if __name__ == '__main__':
     config_file = 'build.cfg' 
     release = 'snapshot'
     actions = []
-    all_actions = ['all', 'svn', 'src', 'doc', 'x86_64', 'rhel4', 'mac', 'win', 'mdk', 'sol', 'fedora']
+    dryrun = False
+    all_actions = ['all', 'svn', 'src', 'doc', 'x86_64', 'rhel4', 'mac', 'win', 'mdk', 'sol', 'fedora5']
 
     ## Parse the command line
     for op in sys.argv[1:]:   # default shell/for list is $*, the options
@@ -168,6 +219,7 @@ if __name__ == '__main__':
 Options:
     --help                  show this help lines
     --release=version       release simupop with version number, default to snapshot
+    --dryrun                show command, do not run
     --config=file           configuration file
         This configuration file should define:
         last_version_file: a file that has the last version, e.g.  1.7.5
@@ -199,6 +251,8 @@ actions:
             actions.extend(['src', 'x86_64', 'rhel4', 'mac', 'win'])
         elif op in all_actions and op not in actions:
             actions.append(op)
+        elif op == '--dryrun':
+            dryrun = True
         else:
             print "Unknown option", op
             sys.exit(1)
@@ -222,7 +276,11 @@ actions:
     if 'doc' in actions:
         build_doc(ver, rev)
     if 'x86_64' in actions:
-        build_x86_64()
+        build_x86_64(ver)
+    if 'mdk' in actions:
+        build_mdk(ver)
+    if 'fedora5' in actions:
+        build_fedora5(ver)
     if 'mac' in actions:
         build_mac()
     # 

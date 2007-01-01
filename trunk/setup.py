@@ -130,7 +130,7 @@ def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versio
             continue
         for lib in libs:
             # get all the libs, then filter for the right library
-            files = glob.glob(os.path.join(path, '%sboost_%s-*.*' % (lib_prefix, lib)))
+            files = glob.glob(os.path.join(path, '%sboost_%s*.*' % (lib_prefix, lib)))
             # check things like libboost_iostreams-gcc-mt-d-1_33_1.a
             if len(files) > 0:
                 # runtime code includes s,g,y,d,p,n, where we should look for
@@ -142,7 +142,7 @@ def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versio
                 if len(lib_files) == 0:
                     # use alternative libraries
                     for ver in versions:
-                        lib_files += filter(lambda x: re.search('%sboost_%s-[\w-]*%s%s' \
+                        lib_files += filter(lambda x: re.search('%sboost_%s[-\w]*[-%s]*%s' \
                             % (lib_prefix, lib, ver, lib_suffix), x), files)
                 if len(lib_files) > 0:
                     # get xxx-gcc-1_33_1 from /usr/local/lib/libboost_xxx-gcc-1_33_1.a
