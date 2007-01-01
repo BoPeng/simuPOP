@@ -20,6 +20,20 @@ def cmdOutput(cmd):
     return output.strip()
 
 
+def removeTempFiles():
+    ''' remove unnecessary files '''
+    # walk down the file hierarchy
+    modules = ['std', 'op', 'la', 'laop', 'ba', 'baop', \
+        'mpi', 'opmpi', 'lampi', 'laopmpi', 'bampi', 'baopmpi']
+    for root,path,files in os.walk('.'):
+        # check file type
+        for file in files:
+            if True in [('_%s.cpp' % x in file) for x in modules]:
+                # force the use of / since miktex uses / even under windows
+                print "Remove file %s..." % os.path.join(root, file)
+                os.remove(os.path.join(root, file))
+
+
 def commitModification():
     ''' if there are changes, commit it '''
     if cmdOutput('svn diff') != '':
@@ -73,9 +87,11 @@ def makeReleaseTag(release):
 
 
 
-def buildDoc():
+def build_doc(ver, rev):
     ' build doxygen document '
     os.environ['SIMUPOP_DOC_DIR'] = doc_directory
+    os.environ['SIMUPOP_VER'] = ver
+    os.environ['SIMUPOP_REV'] = rev
     os.system('doxygen Doxyfile')
     os.system('python tools/doxy2swig.py %s/xml/index.xml tmp.i' % doc_directory)
     os.system('perl tools/processDocString.pl tmp.i > src/simuPOP/download.i')
@@ -196,6 +212,7 @@ actions:
     (ver, rev, old_ver, old_rev) = setVersionRevision(release)
     #
     os.chdir('..')
+    removeTempFiles()
     if 'svn' in actions:
         commitModification()
         if release != 'snapshot':
@@ -203,7 +220,7 @@ actions:
     if 'src' in actions:
         build_src()
     if 'doc' in actions:
-        build_doc()
+        build_doc(ver, rev)
     if 'x86_64' in actions:
         build_x86_64()
     if 'mac' in actions:
