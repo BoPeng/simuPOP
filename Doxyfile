@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
-PROJECT_NAME           = "simuPOP: forward-based simulator for population genetists"
+PROJECT_NAME           = "simuPOP: a forward-time population genetics simulation framework"
 PROJECT_NUMBER         = "version: $(SIMUPOP_VER), Rev $(SIMUPOP_REV)"
 OUTPUT_DIRECTORY       = /var/www/html/simuPOP_doc/doc
 OUTPUT_LANGUAGE        = English
@@ -112,9 +112,7 @@ EXCLUDE                = config.h \
                          test \
                          tools \
                          boost \
-						 zlib \
                          gsl \
-                         src/serialization \
                          src/simuPOP_*wrap.cpp \
                          src/utility_*.cpp \
                          src/arraymodule.cpp 
