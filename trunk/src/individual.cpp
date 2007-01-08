@@ -27,15 +27,17 @@ namespace simuPOP
 {
 	GenoStructure::GenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 		const vectorf& lociPos, const vectorstr& alleleNames,
-		const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields)
+		const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields,
+		const vectori& chromMap)
 		:m_ploidy(ploidy),  m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom),
 		m_lociPos(lociPos), m_chromIndex(loci.size()+1),
 		m_alleleNames(alleleNames), m_lociNames(lociNames),
-		m_maxAllele(maxAllele), m_infoFields(infoFields)
+		m_maxAllele(maxAllele), m_infoFields(infoFields),
+		m_chromMap(chromMap)
 	{
 #ifdef BINARYALLELE
-        DBG_ASSERT(maxAllele == 1, ValueError,
-            "max allele must be 1 for binary modules");
+		DBG_ASSERT(maxAllele == 1, ValueError,
+			"max allele must be 1 for binary modules");
 #endif
 		DBG_ASSERT( ploidy >= 1, ValueError,
 			"Ploidy must be >= 1. Given " + toStr(ploidy) );
@@ -91,6 +93,11 @@ namespace simuPOP
 			"Loci names, if specified, should be given to every loci");
 		DBG_WARNING( (!m_alleleNames.empty()) && m_alleleNames.size() != m_maxAllele+1,
 			"Not all allele names are given. ")
+
+	#ifdef SIMUMPI
+			if( m_chromMap.empty())
+			m_chromMap = vectori(m_numChrom, 1);
+#endif
 	}
 
 	// initialize static variable s)genoStruRepository.
@@ -98,7 +105,8 @@ namespace simuPOP
 
 	void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 		const vectorf& lociPos, const vectorstr& alleleNames,
-		const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields)
+		const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields,
+		const vectori& chromMap)
 	{
 		/// only allow for TraitMaxIndex-1 different genotype structures
 		/// As a matter of fact, most simuPOP scripts have only one
@@ -112,7 +120,7 @@ namespace simuPOP
 		}
 
 		GenoStructure tmp = GenoStructure( ploidy, loci, sexChrom,
-			lociPos, alleleNames, lociNames, maxAllele, infoFields);
+			lociPos, alleleNames, lociNames, maxAllele, infoFields, chromMap);
 
 		for(TraitIndexType it = 0; it < s_genoStruRepository.size();
 			++it)

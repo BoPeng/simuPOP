@@ -4889,6 +4889,82 @@ re
 -values are obtained and returned.
 \end_layout
 
+\begin_layout Section
+MPI version of simuPOP
+\end_layout
+
+\begin_layout Standard
+The mpi version of simuPOP spread the population across multiple instances
+ of python/simuPOP.
+ These instances (processes) can be execuated on the same physical processor,
+ mutliple cores on the same processor, multiple processoars on the same
+ machine, or multiple nodes on a cluster system.
+ The communication between these processes are done using Message Passing
+ Interface (MPI).
+ I will call these processes as nodes from now on.
+\end_layout
+
+\begin_layout Standard
+When simuPOP/MPI is started, the head node does not store any genotype informati
+on, only auxillary information such as information fields.
+ The chromosomes are spread over multiple nodes according to a chromosome
+ map.
+ For example, for individuals with 23 chromosomes, the first 10 chromosomes
+ can be on the second node, and the rest on the third node.
+ The map is then [10, 13].
+ Three nodes will be used for this simulation.
+\end_layout
+
+\begin_layout Standard
+Chromosome map can be given in several ways:
+\end_layout
+
+\begin_layout Itemize
+By default, each chromosome occupies one node.
+ The map is then [1]*number of chromosomes
+\end_layout
+
+\begin_layout Itemize
+By using parameter 
+\family typewriter
+chromMap
+\family default
+ of population function.
+ This parameter is ignored in non-MPI mode.
+\end_layout
+
+\begin_layout Itemize
+Using 
+\family typewriter
+--chromMap='[2,3,4]' 
+\family default
+as an parameter to simuPOP scripts, 
+\family typewriter
+simuOpt.setOptions(chromMap), 
+\family default
+or set environment variable 
+\family typewriter
+SIMUCHROMMAP
+\family default
+.
+ These usage allows flexibility in setting chromosome map independent of
+ a simuPOP script, and are thus recommended.
+\end_layout
+
+\begin_layout Standard
+It is critical for you to remember how many nodes a simuPOP simulation will
+ need, since the usual way to start the simulation is
+\end_layout
+
+\begin_layout LyX-Code
+$ mpirun -n 4 python /path/to/a/simuPOP/script --mpi --chromMap='[2,3,4]'
+ --other-options
+\end_layout
+
+\begin_layout Standard
+Other than these, everything should work them same as non-MPI modules.
+\end_layout
+
 \begin_layout Chapter
 Introduction to bundled scripts
 \end_layout

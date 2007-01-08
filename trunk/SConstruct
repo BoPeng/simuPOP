@@ -95,7 +95,7 @@ for mod in targets:
         env.Command(mod_src(file, mod), file, [Copy('$TARGET', '$SOURCE')])
     lib = env.SharedLibrary(
         target = '$build_dir/_simuPOP_%s%s' % (mod, so_ext),
-        source = ['$build_dir/simuPOP_%s.i' % mod] + [mod_src(x, mod) for x in SOURCE_FILES],
+        source = [mod_src(x, mod) for x in SOURCE_FILES] + ['$build_dir/simuPOP_%s.i' % mod],
         LIBS = info['libraries'] + [gsl],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,

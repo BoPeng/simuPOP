@@ -90,7 +90,7 @@ namespace simuPOP
 			/// CPPONLY serialization library requires a default constructor
 			GenoStructure():m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
 				m_numLoci(0), m_sexChrom(false), m_lociPos(0), m_chromIndex(0),
-				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0)
+				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0), m_chromMap()
 				{}
 
 			/** \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
@@ -106,7 +106,8 @@ namespace simuPOP
 			*/
 			GenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 				const vectorf& lociPos, const vectorstr& alleleNames,
-				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields);
+				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields,
+				const vectori& chromMap);
 
 			/// copy constructor
 			/// CPPONLY
@@ -122,7 +123,8 @@ namespace simuPOP
 				m_alleleNames(rhs.m_alleleNames),
 				m_lociNames(rhs.m_lociNames),
 				m_maxAllele(rhs.m_maxAllele),
-				m_infoFields(rhs.m_infoFields)
+				m_infoFields(rhs.m_infoFields),
+				m_chromMap(rhs.m_chromMap)
 			{
 			}
 
@@ -137,7 +139,9 @@ namespace simuPOP
 					( m_alleleNames == rhs.m_alleleNames) &&
 					( m_lociNames == rhs.m_lociNames) &&
 					( m_maxAllele == rhs.m_maxAllele) &&
-					( m_infoFields == rhs.m_infoFields) ))
+					( m_infoFields == rhs.m_infoFields) &&
+					( m_chromMap == rhs.m_chromMap)
+					))
 					return true;
 				else
 					return false;
@@ -193,6 +197,7 @@ namespace simuPOP
 				ar & make_nvp("loci_name", m_lociNames);
 				ar & make_nvp("max_allele", m_maxAllele);
 				ar & make_nvp("info_name", m_infoFields);
+				/// do not save load chromosome map
 			}
 
 			template<class Archive>
@@ -222,6 +227,7 @@ namespace simuPOP
 
 				m_totNumLoci = m_chromIndex[m_numChrom];
 				m_genoSize = m_totNumLoci*m_ploidy;
+				/// do not save load chromosome map
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -262,6 +268,9 @@ namespace simuPOP
 			/// name of the information field
 			vectorstr m_infoFields;
 
+			/// chromosome map for mpi modules
+			vectori m_chromMap;
+
 			friend class GenoStruTrait;
 	};
 }
@@ -301,7 +310,8 @@ namespace simuPOP
 			/// CPPONLY
 			void setGenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 				const vectorf& lociPos, const vectorstr& alleleNames,
-				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields);
+				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields,
+				const vectori& chromMap);
 
 			/// set an existing geno structure, simply use it
 			/// This is NOT efficient! (but has to be used when, for example,
@@ -516,7 +526,7 @@ namespace simuPOP
 			/// return allele name
 			string alleleName(const Allele allele) const
 			{
-#ifndef BINARYALLELE                
+#ifndef BINARYALLELE
 				DBG_FAILIF(allele > s_genoStruRepository[m_genoStruIdx].m_maxAllele,
 					IndexError, "Allele out of range of 0 ~ " +
 					toStr(s_genoStruRepository[m_genoStruIdx].m_maxAllele));
@@ -537,7 +547,7 @@ namespace simuPOP
 				else
 					return "0";
 #endif
-                    
+
 			}
 
 			/// allele names
@@ -564,11 +574,11 @@ namespace simuPOP
 			void setMaxAllele(UINT maxAllele)
 			{
 #ifdef BINARYALLELE
-                DBG_ASSERT(maxAllele == 1,  ValueError,
-                    "max allele must be 1 for binary modules");
+				DBG_ASSERT(maxAllele == 1,  ValueError,
+					"max allele must be 1 for binary modules");
 #else
 				s_genoStruRepository[m_genoStruIdx].m_maxAllele = maxAllele;
-#endif                
+#endif
 			}
 
 			/// get info length
@@ -628,6 +638,73 @@ namespace simuPOP
 			{
 				std::swap(m_genoStruIdx, rhs.m_genoStruIdx);
 			}
+
+#ifdef SIMUMPI
+			///
+			vectori chromMap()
+			{
+				return s_genoStruRepository[m_genoStruIdx].m_chromMap;
+			}
+
+			/// return node rank by chromosome number, according to map on setChromMap
+			UINT rankOfChrom(UINT chrom)
+			{
+				vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
+
+				for(size_t i=0, sum = 0; i<map.size(); ++i)
+				{
+					sum += map[i];
+					if(chrom < sum)
+						return i+1;
+				}
+				DBG_FAILIF(true, IndexError, "Chromosome " + toStr(chrom) + " is not on chromosome map");
+			}
+
+			/// return node rank by locus id, according to map on setChromMap
+			UINT rankOfLocus(UINT locus)
+			{
+				return rankOfChrom(chromLocusPair(locus).first);
+			}
+
+			/// begin chromosome for a given rank
+			UINT beginChromOfRank(UINT rank)
+			{
+				if (rank == 1)
+					return 0;
+
+				vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
+
+				DBG_FAILIF(rank <= map.size() && rank > 0, IndexError, "Given rank " + toStr(rank) + " is invalid.");
+				size_t sum = 0;
+				for(size_t i=0; i<rank-1; ++i)
+					sum += map[i];
+				return sum;
+			}
+
+			/// end chromosome for a given rank (actually begin chromosome for the next rank)
+			UINT endChromOfRank(UINT rank)
+			{
+				vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
+
+				DBG_FAILIF(rank <= map.size() && rank > 0, IndexError, "Given rank " + toStr(rank) + " is invalid.");
+				size_t sum = 0;
+				for(size_t i=0; i<rank; ++i)
+					sum += map[i];
+				return sum;
+			}
+
+			/// begin locus for a given rank
+			UINT beginLocusOfRank(UINT rank)
+			{
+				return chromBegin(beginChromOfRank(rank));
+			}
+
+			/// end locus for a given rank
+			UINT endLocusOfRank(UINT rank)
+			{
+				return chromBegin(endLocusOfRank(rank));
+			}
+#endif
 
 		private:
 
