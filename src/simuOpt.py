@@ -32,7 +32,7 @@ import os, sys, exceptions, types, re, time, imp
 allowed_keys = ['arg', 'longarg', 'label', 'allowedTypes', 'prompt', 'useDefault', 'jump', \
     'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', 'chooseFrom', 'separator']
 
-allowed_commandline_options = ['-c', '--config', '--optimized', '--mpi', '-q', '--useTkinter', '--quiet', '--noDialog']
+allowed_commandline_options = ['-c', '--config', '--optimized', '--mpi', '--chromMap', '-q', '--useTkinter', '--quiet', '--noDialog']
 
 def getParamShortArg(p, processedArgs):
     ''' try to get a param from short arg '''
@@ -881,7 +881,8 @@ def usage(options, before=''):
     message += '        -c xxx --config xxx :\n                Load parameters from file xxx\n'
     message += '        --noDialog :\n                Enter parameter from command line\n'
     message += '        --optimized :\n                Use optimized library (no error checking)\n'
-    message += '        --mpi :\n                      Use MPI library\n'
+    message += '        --mpi :\n                      Use MPI module\n'
+    message += '        --chromMap : \n                Chromosome map for MPI module\n'
     for p in options:
         message += "        "
         if p.has_key('arg'):
@@ -1116,6 +1117,7 @@ def valueListOf(t):
 
 env_optimized = os.getenv('SIMUOPTIMIZED')
 env_mpi = os.getenv('SIMUMPI')
+env_chrom_map = os.getenv('SIMUCHROMMAP')
 env_longAllele = os.getenv('SIMUALLELETYPE')
 env_debug = os.getenv('SIMUDEBUG')
 
@@ -1123,13 +1125,15 @@ env_debug = os.getenv('SIMUDEBUG')
     'default':''}], False, False, True)
 [par_mpi] = termGetParam([{'longarg':'mpi', \
     'default':''}], False, False, True)
+[par_chrom_map] = termGetParam([{'longarg':'chromMap', \
+    'default':[]}], False, False, True)
 [par_quiet] = termGetParam([{'arg':'q','longarg':'quiet', \
     'default':False}], False, False, True)
 [par_useTkinter] = termGetParam([{'longarg':'useTkinter', \
     'default':False }], False, False, True) 
 
 # remove these parameters from sys.argv
-for arg in ['--optimized', '--mpi', '--quiet', '-q', '--useTkinter']:
+for arg in ['--optimized', '--mpi', '--chromMap', '--quiet', '-q', '--useTkinter']:
     try:
         sys.argv.remove(arg)
     except:
@@ -1149,21 +1153,30 @@ elif env_mpi != None:
 else:     # default to false
     _mpi = False
 
+if par_chrom_map != []:
+    _chrom_map = par_chrom_map
+elif env_chrom_map != None:
+    _chrom_map = eval(env_chrom_map)
+else:     # default to []
+    _chrom_map = []
+
 if env_longAllele in ['standard', 'short', 'long', 'binary']:
     _longAllele = env_longAllele
 else:
     _longAllele = 'standard'
 
-simuOptions = {'Optimized':_optimized, 'MPI':_mpi, 'AlleleType':_longAllele, 'Debug':[], 'Quiet':par_quiet}
+simuOptions = {'Optimized':_optimized, 'MPI':_mpi, 'ChromMap':_chrom_map, 'AlleleType':_longAllele, 'Debug':[], 'Quiet':par_quiet}
 
 if env_debug != None:
     simuOptions['Debug'].extend( env_debug.split(',') )
 
-def setOptions(optimized=None, mpi=None, alleleType=None, quiet=None, debug=[]):
+def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=None, debug=[]):
     if optimized in [True, False]:
         simuOptions['Optimized'] = optimized
     if mpi in [True, False]:
         simuOptions['MPI'] = mpi
+    if chromMap != []:
+        simuOptions['ChromMap'] = chromMap
     if alleleType in ['standard', 'long', 'binary', 'short']:
         simuOptions['AlleleType'] = alleleType
     if quiet in [True, False]:

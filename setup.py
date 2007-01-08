@@ -313,10 +313,6 @@ SIMUPOP_FILES = [
 # DETECT BASIC SYSTEM SETTINGS
 #
 
-(boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
-    ['iostreams', 'serialization'], boost_lib_search_paths,
-    boost_lib_prefix, boost_lib_suffix,
-    boost_inc_search_paths, boost_versions)
 
 # explore availability of mpi library
 MPIFlags = getMPIFlags()
@@ -387,6 +383,16 @@ if os.name == 'nt':
 
 
 def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
+    if 'mpi' in modu:
+        (boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
+            ['iostreams', 'serialization', 'mpi'], boost_lib_search_paths,
+            boost_lib_prefix, boost_lib_suffix,
+            boost_inc_search_paths, boost_versions)
+    else:
+        (boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
+            ['iostreams', 'serialization'], boost_lib_search_paths,
+            boost_lib_prefix, boost_lib_suffix,
+            boost_inc_search_paths, boost_versions)
     res = {}
     res['src'] =  ['src/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:

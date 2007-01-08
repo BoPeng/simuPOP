@@ -180,7 +180,8 @@ namespace simuPOP
 				const vectorstr& alleleNames=vectorstr(),
 				const vectorstr& lociNames=vectorstr(),
 				UINT maxAllele = MaxAllele,
-				const vectorstr& infoFields = vectorstr());
+				const vectorstr& infoFields = vectorstr(),
+				const vectori& chromMap = vectori());
 
 			/// CPPONLY copy constructor
 			population(const population& rhs);
@@ -1291,7 +1292,7 @@ namespace simuPOP
 						<< "Unless all alleles are less than "  << MaxAllele
 						<< ", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n";
 
-				GenoStructure  stru;
+				GenoStructure stru;
 				DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
 				ar & make_nvp("geno_structure", stru);
 				ar & make_nvp("subPop_sizes", m_subPopSize);
