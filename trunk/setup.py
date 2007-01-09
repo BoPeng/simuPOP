@@ -194,7 +194,7 @@ def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versio
 #
 
 HEADER_FILES = [
-    'src/simupop_cfg.h',
+    'src/simuPOP_cfg.h',
     'src/utility.h',
     'src/genoStru.h',
     'src/individual.h',
