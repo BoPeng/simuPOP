@@ -254,14 +254,23 @@ namespace simuPOP
 	int population::__cmp__(const population& rhs) const
 	{
 		if( genoStruIdx() != rhs.genoStruIdx() )
+		{
+			DBG_DO(DBG_POPULATION, cout << "Genotype structures are different" << endl);
 			return 1;
+		}
 
 		if(popSize() != rhs.popSize() )
+		{
+			DBG_DO(DBG_POPULATION, cout << "Population sizes are different" << endl);
 			return 1;
+		}
 
 		for( ULONG i=0, iEnd = popSize(); i < iEnd; ++i)
 			if( m_inds[i] != rhs.m_inds[i])
+			{
+				DBG_DO(DBG_POPULATION, cout << "Individuals are different" << endl);
 				return 1;
+			}
 
 		// FIXME: also compare ancestral populations
 		return 0;

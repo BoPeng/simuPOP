@@ -19,6 +19,7 @@ include config_linux.h
 include config_mac.h
 include src/simupop_cfg.h
 include src/utility.h
+include src/genoStru.h
 include src/individual.h
 include src/population.h
 include src/simulator.h
@@ -37,6 +38,7 @@ include src/tagger.h
 # source files
 include src/arraymodule.c
 include src/utility.cpp
+include src/genoStru.cpp
 include src/individual.cpp
 include src/population.cpp
 include src/simulator.cpp

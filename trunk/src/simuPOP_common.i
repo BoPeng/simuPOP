@@ -30,6 +30,7 @@
 
 #include "../config.h"
 #include "simupop_cfg.h"
+#include "genoStru.h"
 #include "individual.h"
 #include "population.h"
 #include "operator.h"
@@ -236,6 +237,7 @@ namespace std
 //
 %include "simuPOP_doc.i";
 %include "utility.h"
+%include "genoStru.h"
 %include "individual.h"
 %include "population.h"
 %include "operator.h"

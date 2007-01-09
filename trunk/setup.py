@@ -196,6 +196,7 @@ def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versio
 HEADER_FILES = [
     'src/simupop_cfg.h',
     'src/utility.h',
+    'src/genoStru.h',
     'src/individual.h',
     'src/population.h',
     'src/simulator.h',
@@ -214,6 +215,7 @@ HEADER_FILES = [
 
 SOURCE_FILES = [
     'src/utility.cpp',
+    'src/genoStru.cpp',
     'src/individual.cpp',
     'src/population.cpp',
     'src/simulator.cpp',
