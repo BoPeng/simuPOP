@@ -30,7 +30,7 @@
 */
 
 #include "utility.h"
-#include "simupop_cfg.h"
+#include "simuPOP_cfg.h"
 #include "mating.h"
 #include "operator.h"
 

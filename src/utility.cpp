@@ -99,7 +99,7 @@ namespace simuPOP
 	DbgBitSet g_dbgCode;
 
 	/// debug code string. For output purpose only.
-	/// debug code and DBG_CODE_LENGTH is defined in simupop_cfg.h
+	/// debug code and DBG_CODE_LENGTH is defined in simuPOP_cfg.h
 	string g_dbgString[DBG_CODE_LENGTH] =
 	{
 		"DBG_ALL",

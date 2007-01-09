@@ -17,7 +17,7 @@ include config_solaris.h
 include config_win32.h 
 include config_linux.h 
 include config_mac.h
-include src/simupop_cfg.h
+include src/simuPOP_cfg.h
 include src/utility.h
 include src/genoStru.h
 include src/individual.h
