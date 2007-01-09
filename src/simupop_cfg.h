@@ -313,6 +313,12 @@ if(debug(dbgCode)){ expr; }
 #define DBG_DO_(expr)
 #endif
 
+
+#ifdef SIMUMPI
+#define PENDING_MPI DBG_FAILIF(true, SystemError, "This function is not available in MPI modules")
+#else
+#define PENDING_MPI
+#endif
 				// definition for all mode
 
 				// epsilon when during floating point comparison
