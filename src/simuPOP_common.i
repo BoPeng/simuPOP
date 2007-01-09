@@ -47,6 +47,9 @@
 #include "mutator.h"
 #include "recombinator.h"
 #include "selector.h"
+#include "qtrait.h"
+#include "penetrance.h"
+#include "sampler.h"
 
 %}
 
@@ -271,6 +274,9 @@ namespace std
 %include "mutator.h"
 %include "recombinator.h"
 %include "selector.h"
+%include "qtrait.h"
+%include "penetrance.h"
+%include "sampler.h"
 
 ////////////////////////// Provide a iterator as pop.individuals() ////////////////
 // This part is now implemented at the C++ level (see population.h)
