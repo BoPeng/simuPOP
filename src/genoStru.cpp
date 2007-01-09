@@ -92,10 +92,10 @@ namespace simuPOP
 		DBG_ASSERT( m_lociNames.size() == m_totNumLoci, ValueError,
 			"Loci names, if specified, should be given to every loci");
 		DBG_WARNING( (!m_alleleNames.empty()) && m_alleleNames.size() != m_maxAllele+1,
-			"Not all allele names are given. ")
+			"Not all allele names are given. ");
 
-	#ifdef SIMUMPI
-			if( m_chromMap.empty())
+#ifdef SIMUMPI
+		if( m_chromMap.empty())
 			m_chromMap = vectori(m_numChrom, 1);
 		// begining and end chromosome?
 		UINT rank = mpiRank();
@@ -113,6 +113,24 @@ namespace simuPOP
 			m_endChrom = sum + m_chromMap[i];
 		}
 #endif
+	}
+
+	bool GenoStructure::operator== (const GenoStructure& rhs)
+	{
+		// compare pointer directly will be fastest
+		if(this == &rhs || (
+			( m_ploidy == rhs.m_ploidy) &&
+			( m_numLoci == rhs.m_numLoci) &&
+			( m_sexChrom == rhs.m_sexChrom) &&
+			( m_lociPos == rhs.m_lociPos) &&
+			( m_alleleNames == rhs.m_alleleNames) &&
+			( m_lociNames == rhs.m_lociNames) &&
+			( m_maxAllele == rhs.m_maxAllele) &&
+			( m_infoFields == rhs.m_infoFields)
+			))
+			return true;
+		else
+			return false;
 	}
 
 	// initialize static variable s)genoStruRepository.
@@ -151,6 +169,24 @@ namespace simuPOP
 		s_genoStruRepository.push_back(tmp);
 		// the last one.
 		m_genoStruIdx = s_genoStruRepository.size()-1;
+	}
+
+	void GenoStruTrait::setGenoStructure(GenoStructure& rhs)
+	{
+		for(TraitIndexType it = 0; it < s_genoStruRepository.size();
+			++it)
+		{
+												  // object comparison
+			if( s_genoStruRepository[it] == rhs )
+			{
+				m_genoStruIdx = it;
+				return;
+			}
+		}
+
+		// if not found, make a copy and store it.
+		s_genoStruRepository.push_back( rhs );
+		m_genoStruIdx = s_genoStruRepository.size() - 1;
 	}
 
 	string GenoStruTrait::ploidyName() const
@@ -213,5 +249,64 @@ namespace simuPOP
 #endif
 
 	}
+
+	UINT GenoStruTrait::infoIdx(const string& name) const
+	{
+		vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
+
+		for(UINT i=0; i< names.size(); ++i)
+		{
+			if(names[i] == name)
+				return i;
+		}
+		throw IndexError("Info field '" + name + "' is not found. "
+			"Plese use infoFields=['" + name + "'] option of population() during construction\n"
+			"or use addInfoField('" + name + "') to add to an existing population.");
+		// this should never be reached.
+		return 0;
+	}
+#ifdef SIMUMPI
+	/// return node rank by chromosome number, according to map on setChromMap
+	UINT GenoStruTrait::rankOfChrom(UINT chrom) const
+	{
+		vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
+
+		for(size_t i=0, sum = 0; i<map.size(); ++i)
+		{
+			sum += map[i];
+			if(chrom < sum)
+				return i+1;
+		}
+		DBG_FAILIF(true, IndexError, "Chromosome " + toStr(chrom) + " is not on chromosome map");
+	}
+
+	/// begin chromosome for a given rank
+	UINT GenoStruTrait::beginChromOfRank(UINT rank) const
+	{
+		if (rank == 1)
+			return 0;
+
+		vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
+
+		DBG_ASSERT(rank <= map.size() && rank > 0, IndexError, "Given rank " + toStr(rank) + " is invalid.");
+
+		size_t sum = 0;
+		for(size_t i=0; i<rank-1; ++i)
+			sum += map[i];
+		return sum;
+	}
+
+	/// end chromosome for a given rank (actually begin chromosome for the next rank)
+	UINT GenoStruTrait::endChromOfRank(UINT rank) const
+	{
+		vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
+
+		DBG_ASSERT(rank <= map.size() && rank > 0, IndexError, "Given rank " + toStr(rank) + " is invalid.");
+		size_t sum = 0;
+		for(size_t i=0; i<rank; ++i)
+			sum += map[i];
+		return sum;
+	}
+#endif
 
 }
