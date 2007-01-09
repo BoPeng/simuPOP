@@ -197,7 +197,6 @@ namespace simuPOP
 				std::swap(m_popSize, rhs.m_popSize);
 				std::swap(m_numSubPop, rhs.m_numSubPop);
 				m_subPopSize.swap(rhs.m_subPopSize);
-				std::swap(m_popGenoSize, rhs.m_popGenoSize);
 				m_subPopIndex.swap(rhs.m_subPopIndex);
 				m_genotype.swap(rhs.m_genotype);
 				m_info.swap(rhs.m_info);
@@ -517,7 +516,7 @@ namespace simuPOP
 				if(order && shallowCopied())
 					adjustGenoPosition(true);
 
-				return GappedAlleleIterator( m_genotype.begin() + locus + m_popGenoSize , totNumLoci());
+				return GappedAlleleIterator( m_genotype.begin() + locus + m_popSize*genoSize(), totNumLoci());
 #endif				
 			}
 
@@ -1470,9 +1469,6 @@ namespace simuPOP
 						"Please use the same (binary, short or long) module to save and load files.");
 				}
 
-				m_popGenoSize = totNumLoci() * GenoStruTrait::ploidy()
-					* m_popSize;
-
 				DBG_DO(DBG_POPULATION, cout << "Reconstruct individual genotype" << endl);
 				m_subPopIndex.resize(m_numSubPop + 1);
 				UINT i = 1;
@@ -1649,10 +1645,6 @@ namespace simuPOP
 			/// size of each subpopulation
 			/// MPI: in all nodes
 			vectorlu m_subPopSize;
-
-			///  size of genotypic information of the whole poopulation
-			/// MPI: in all nodes, but different for each chromosome.
-			LONG m_popGenoSize;
 
 			/// index to subPop \todo change to vectorl
 			/// MPI: in all nodes

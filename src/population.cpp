@@ -57,7 +57,6 @@ namespace simuPOP
 		m_popSize(size),
 		m_numSubPop(subPop.size()),
 		m_subPopSize(subPop),
-		m_popGenoSize(0),
 		m_subPopIndex(subPop.size()+1),
 		m_genotype(0),							  // resize later
 		m_info(0),
@@ -96,16 +95,14 @@ namespace simuPOP
 
 		// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 		// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
-		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames, lociNames, maxAllele, infoFields, chromMap);
+		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames, 
+			lociNames, maxAllele, infoFields, chromMap);
 
-		DBG_DO( DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
+		DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
 			<< sizeof(Allele) << '*' << genoSize() << endl
 			<< ", infoPtr: " << sizeof(double*)
 			<< ", GenoPtr: " << sizeof(Allele*) << ", Flag: " << sizeof(unsigned char)
 			<< ", plus genoStru" << endl );
-
-		// size of genotypic data for the whole population
-		m_popGenoSize = totNumLoci() * ploidy * m_popSize;
 
 		try
 		{
@@ -113,8 +110,7 @@ namespace simuPOP
 			m_inds.resize(m_popSize);
 
 			// create genotype vector holding alleles for all individuals.
-			m_genotype.resize( m_popGenoSize);
-
+			m_genotype.resize(m_popSize*genoSize());
 			/// allocate info
 			size_t is = infoSize();
 			DBG_ASSERT(is == infoFields.size(), SystemError, "Wrong geno structure");
@@ -138,9 +134,6 @@ namespace simuPOP
 		}
 		catch(...)
 		{
-			cout << "You are creating a population of size " << m_popSize << endl
-				<< " which requires approximately " << static_cast<double>(m_popGenoSize)/1024/1024
-				+ static_cast<double>(m_popSize) * sizeof( individual ) /1024/1024 << "M RAM." << endl;
 			cout << "Memory allocation fail. A population of size 1 is created." << endl;
 			*this = population(0);
 			throw OutOfMemory("Memory allocation fail");
@@ -155,7 +148,6 @@ namespace simuPOP
 		m_popSize(rhs.m_popSize),
 		m_numSubPop(rhs.m_numSubPop),
 		m_subPopSize(rhs.m_subPopSize),
-		m_popGenoSize(rhs.m_popGenoSize),
 		m_subPopIndex(rhs.m_subPopIndex),
 		m_genotype(0),
 		m_info(0),
@@ -175,14 +167,11 @@ namespace simuPOP
 		try
 		{
 			m_inds.resize(rhs.m_popSize);
-			m_genotype.resize(rhs.m_popGenoSize);
+			m_genotype.resize(m_popSize*genoSize());
 			m_info.resize(rhs.m_popSize*infoSize());
 		}
 		catch(...)
 		{
-			cout << "You are creating a population of size " << m_popSize << endl
-				<< " which requires approximately " << static_cast<double>(m_popGenoSize)/1024/1024
-				+ static_cast<double>(m_popSize) * sizeof( individual ) /1024/1024 << "M RAM." << endl;
 			cout << "Memory allocation fail. A population of size 1 is created." << endl;
 			*this = population(0);
 			throw OutOfMemory("Memory allocation fail");
@@ -320,20 +309,15 @@ namespace simuPOP
 				// genotype and individual info will be kept
 				// but pointers need to be recalibrated.
 				m_popSize = totSize;
-				m_popGenoSize = genoSize() * m_popSize;
 
 				try
 				{
-					m_genotype.resize( m_popGenoSize );
+					m_genotype.resize(m_popSize*genoSize());
 					m_inds.resize(m_popSize);
 					m_info.resize(m_popSize*infoSize());
 				}
 				catch(...)
 				{
-					cout << "You are creating a population of size " << m_popSize << endl
-						<< " which requires approximately " << static_cast<double>(m_popGenoSize)/1024/1024
-						+ static_cast<double>(m_popSize) * sizeof( individual ) /1024/1024 << "M RAM." << endl;
-					cout << "Memory allocation fail. " << endl;
 					throw OutOfMemory("Memory allocation fail");
 				}
 				// reset individual pointers
@@ -394,8 +378,7 @@ namespace simuPOP
 			DBG_DO(DBG_POPULATION, cout << "New pop size" << newPopSize << endl);
 
 			// allocate new genotype and inds
-			ULONG newPopGenoSize = genoSize() * newPopSize;
-			vectora newGenotype(newPopGenoSize);
+			vectora newGenotype(genoSize() * newPopSize);
 			vectorinfo newInfo(newPopSize*infoSize());
 			vector<individual> newInds(newPopSize);
 
@@ -421,7 +404,6 @@ namespace simuPOP
 			m_inds.swap(newInds);
 
 			m_popSize = newPopSize;
-			m_popGenoSize = newPopGenoSize;
 			setShallowCopied(false);
 			setInfoOrdered(true);
 		}
@@ -795,7 +777,6 @@ namespace simuPOP
 				oldPtr += oldTotNumLoci;		  // next ploidy
 			}
 		}
-		m_popGenoSize = newPopGenoSize;
 		m_genotype.swap(newGenotype);
 
 		// ancestral populations?
@@ -887,7 +868,6 @@ namespace simuPOP
 		m_popSize = rhs.m_popSize;
 		m_numSubPop = rhs.m_numSubPop;
 		m_subPopSize.swap(rhs.m_subPopSize);
-		m_popGenoSize = rhs.m_popGenoSize;
 		m_subPopIndex.swap(rhs.m_subPopIndex);
 		m_genotype.swap(rhs.m_genotype);
 		m_info.swap(rhs.m_info);
@@ -909,7 +889,6 @@ namespace simuPOP
 			rhs.m_popSize = rhs.m_inds.size();
 			rhs.m_numSubPop = 1;
 			rhs.m_subPopSize.resize(1, rhs.m_popSize);
-			rhs.m_popGenoSize = genoSize()*rhs.m_popSize;
 			rhs.m_subPopIndex.resize(2,0);
 			rhs.m_subPopIndex[1] = rhs.m_popSize;
 			// no need to set genoPtr or genoStru()
@@ -1086,7 +1065,6 @@ namespace simuPOP
 			if( idx == 0)
 			{									  // restore key paraemeters from data
 				m_popSize = m_inds.size();
-				m_popGenoSize = genoSize() * m_popSize;
 				m_numSubPop = m_subPopSize.size();
 				m_subPopIndex.resize( m_numSubPop + 1);
 				// build subPop index
@@ -1116,7 +1094,6 @@ namespace simuPOP
 #endif
 		// use pd
 		m_popSize = m_inds.size();
-		m_popGenoSize = genoSize() * m_popSize;
 		m_numSubPop = m_subPopSize.size();
 		m_subPopIndex.resize( m_numSubPop + 1);
 		UINT i = 1;
@@ -1306,7 +1283,7 @@ namespace simuPOP
 		if(order)
 		{
 			DBG_DO(DBG_POPULATION, cout << "Refresh all order " << endl);
-			vectora tmpGenotype(m_popGenoSize);
+			vectora tmpGenotype(m_popSize*genoSize());
 			vectorinfo tmpInfo(m_popSize*infoSize());
 			vectora::iterator it = tmpGenotype.begin();
 			vectorinfo::iterator infoPtr = tmpInfo.begin();
