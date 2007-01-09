@@ -97,6 +97,21 @@ namespace simuPOP
 	#ifdef SIMUMPI
 			if( m_chromMap.empty())
 			m_chromMap = vectori(m_numChrom, 1);
+		// begining and end chromosome?
+		UINT rank = mpiRank();
+		if(rank == 1)
+		{
+			m_beginChrom = 0;
+			m_endChrom = m_chromMap[0];
+		}
+		else if(rank > 1)
+		{
+			size_t sum = 0;
+			for(i=0; i < rank-1; ++i)
+				sum += m_chromMap[i];
+			m_beginChrom = sum;
+			m_endChrom = sum + m_chromMap[i];
+		}
 #endif
 	}
 
@@ -136,6 +151,67 @@ namespace simuPOP
 		s_genoStruRepository.push_back(tmp);
 		// the last one.
 		m_genoStruIdx = s_genoStruRepository.size()-1;
+	}
+
+	string GenoStruTrait::ploidyName() const
+	{
+		DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
+			"PloidyName: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
+
+		if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 1)
+			return "haploid";
+		else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 2)
+			return "diploid";
+		else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 3)
+			return "triploid";
+		else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 4)
+			return "tetraploid";
+		else
+			return toStr(s_genoStruRepository[m_genoStruIdx].m_ploidy) + "-polid";
+	}
+
+	std::pair<UINT, UINT> GenoStruTrait::chromLocusPair(UINT locus) const
+	{
+		CHECKRANGEABSLOCUS(locus);
+
+		pair<UINT, UINT> loc;
+
+		for(UINT i=1, iEnd =numChrom(); i <= iEnd;  ++i)
+		{
+			if( s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > locus)
+			{
+				loc.first = i-1;
+				loc.second = locus - s_genoStruRepository[m_genoStruIdx].m_chromIndex[i-1];
+				break;
+			}
+		}
+		return loc;
+	}
+
+	string GenoStruTrait::alleleName(const Allele allele) const
+	{
+#ifndef BINARYALLELE
+		DBG_FAILIF(allele > s_genoStruRepository[m_genoStruIdx].m_maxAllele,
+			IndexError, "Allele out of range of 0 ~ " +
+			toStr(s_genoStruRepository[m_genoStruIdx].m_maxAllele));
+		if( allele < s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() )
+		{
+			DBG_FAILIF( allele >= s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() ,
+				IndexError, "No name for allele " + toStr(static_cast<UINT>(allele)));
+
+			return s_genoStruRepository[m_genoStruIdx].m_alleleNames[allele];
+		}
+		else
+			return toStr(static_cast<int>(allele));
+#else
+		if( static_cast<unsigned>(allele) < s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() )
+			return s_genoStruRepository[m_genoStruIdx].m_alleleNames[allele];
+		else if(allele)
+			return "1";
+		else
+			return "0";
+#endif
+
 	}
 
 }

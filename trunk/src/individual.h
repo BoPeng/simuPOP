@@ -90,7 +90,8 @@ namespace simuPOP
 			/// CPPONLY serialization library requires a default constructor
 			GenoStructure():m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
 				m_numLoci(0), m_sexChrom(false), m_lociPos(0), m_chromIndex(0),
-				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0), m_chromMap()
+				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0),
+				m_chromMap(), m_beginChrom(), m_endChrom()
 				{}
 
 			/** \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
@@ -124,7 +125,9 @@ namespace simuPOP
 				m_lociNames(rhs.m_lociNames),
 				m_maxAllele(rhs.m_maxAllele),
 				m_infoFields(rhs.m_infoFields),
-				m_chromMap(rhs.m_chromMap)
+				m_chromMap(rhs.m_chromMap),
+				m_beginChrom(rhs.m_beginChrom),
+				m_endChrom(rhs.m_endChrom)
 			{
 			}
 
@@ -140,7 +143,9 @@ namespace simuPOP
 					( m_lociNames == rhs.m_lociNames) &&
 					( m_maxAllele == rhs.m_maxAllele) &&
 					( m_infoFields == rhs.m_infoFields) &&
-					( m_chromMap == rhs.m_chromMap)
+					( m_chromMap == rhs.m_chromMap) &&
+					( m_beginChrom == rhs.m_beginChrom) &&
+					( m_endChrom == rhs.m_endChrom)
 					))
 					return true;
 				else
@@ -271,6 +276,12 @@ namespace simuPOP
 			/// chromosome map for mpi modules
 			vectori m_chromMap;
 
+			/// begin chromosome for this node
+			UINT m_beginChrom;
+
+			/// end chromosome for this node
+			UINT m_endChrom;
+
 			friend class GenoStruTrait;
 	};
 }
@@ -376,27 +387,11 @@ namespace simuPOP
 			}
 
 			/// return ploidy
-			string ploidyName() const
-			{
-				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
-					"PloidyName: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
-
-				if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 1)
-					return "haploid";
-				else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 2)
-					return "diploid";
-				else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 3)
-					return "triploid";
-				else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 4)
-					return "tetraploid";
-				else
-					return toStr(s_genoStruRepository[m_genoStruIdx].m_ploidy) + "-polid";
-			}
+			string ploidyName() const;
 
 			/// number of loci on chromosome \c chrom
 			UINT numLoci(UINT chrom) const
 			{
-
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
 					"numLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
@@ -412,6 +407,7 @@ namespace simuPOP
 
 				return s_genoStruRepository[m_genoStruIdx].m_sexChrom;
 			}
+
 			/// return totNumLoci (STATIC)
 			UINT totNumLoci() const
 			{
@@ -505,50 +501,10 @@ namespace simuPOP
 			}
 
 			/// return chrom, locus pair from an absolute locus position.
-			std::pair<UINT, UINT> chromLocusPair(UINT locus) const
-			{
-				CHECKRANGEABSLOCUS(locus);
-
-				pair<UINT, UINT> loc;
-
-				for(UINT i=1, iEnd =numChrom(); i <= iEnd;  ++i)
-				{
-					if( s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > locus)
-					{
-						loc.first = i-1;
-						loc.second = locus - s_genoStruRepository[m_genoStruIdx].m_chromIndex[i-1];
-						break;
-					}
-				}
-				return loc;
-			}
+			std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
 
 			/// return allele name
-			string alleleName(const Allele allele) const
-			{
-#ifndef BINARYALLELE
-				DBG_FAILIF(allele > s_genoStruRepository[m_genoStruIdx].m_maxAllele,
-					IndexError, "Allele out of range of 0 ~ " +
-					toStr(s_genoStruRepository[m_genoStruIdx].m_maxAllele));
-				if( allele < s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() )
-				{
-					DBG_FAILIF( allele >= s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() ,
-						IndexError, "No name for allele " + toStr(static_cast<UINT>(allele)));
-
-					return s_genoStruRepository[m_genoStruIdx].m_alleleNames[allele];
-				}
-				else
-					return toStr(static_cast<int>(allele));
-#else
-				if( static_cast<unsigned>(allele) < s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() )
-					return s_genoStruRepository[m_genoStruIdx].m_alleleNames[allele];
-				else if(allele)
-					return "1";
-				else
-					return "0";
-#endif
-
-			}
+			string alleleName(const Allele allele) const;
 
 			/// allele names
 			vectorstr alleleNames() const
@@ -641,13 +597,13 @@ namespace simuPOP
 
 #ifdef SIMUMPI
 			///
-			vectori chromMap()
+			vectori chromMap() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_chromMap;
 			}
 
 			/// return node rank by chromosome number, according to map on setChromMap
-			UINT rankOfChrom(UINT chrom)
+			UINT rankOfChrom(UINT chrom) const
 			{
 				vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
 
@@ -661,20 +617,21 @@ namespace simuPOP
 			}
 
 			/// return node rank by locus id, according to map on setChromMap
-			UINT rankOfLocus(UINT locus)
+			UINT rankOfLocus(UINT locus) const
 			{
 				return rankOfChrom(chromLocusPair(locus).first);
 			}
 
 			/// begin chromosome for a given rank
-			UINT beginChromOfRank(UINT rank)
+			UINT beginChromOfRank(UINT rank) const
 			{
 				if (rank == 1)
 					return 0;
 
 				vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
 
-				DBG_FAILIF(rank <= map.size() && rank > 0, IndexError, "Given rank " + toStr(rank) + " is invalid.");
+				DBG_ASSERT(rank <= map.size() && rank > 0, IndexError, "Given rank " + toStr(rank) + " is invalid.");
+
 				size_t sum = 0;
 				for(size_t i=0; i<rank-1; ++i)
 					sum += map[i];
@@ -682,11 +639,11 @@ namespace simuPOP
 			}
 
 			/// end chromosome for a given rank (actually begin chromosome for the next rank)
-			UINT endChromOfRank(UINT rank)
+			UINT endChromOfRank(UINT rank) const
 			{
 				vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
 
-				DBG_FAILIF(rank <= map.size() && rank > 0, IndexError, "Given rank " + toStr(rank) + " is invalid.");
+				DBG_ASSERT(rank <= map.size() && rank > 0, IndexError, "Given rank " + toStr(rank) + " is invalid.");
 				size_t sum = 0;
 				for(size_t i=0; i<rank; ++i)
 					sum += map[i];
@@ -694,15 +651,43 @@ namespace simuPOP
 			}
 
 			/// begin locus for a given rank
-			UINT beginLocusOfRank(UINT rank)
+			UINT beginLocusOfRank(UINT rank) const
 			{
 				return chromBegin(beginChromOfRank(rank));
 			}
 
 			/// end locus for a given rank
-			UINT endLocusOfRank(UINT rank)
+			UINT endLocusOfRank(UINT rank) const
 			{
-				return chromBegin(endLocusOfRank(rank));
+				return chromEnd(endChromOfRank(rank)-1);
+			}
+
+			/// begin chromosome for current node
+			UINT beginChrom() const
+			{
+				DBG_FAILIF(mpiRank() == 0, IndexError, "No begin chromosome for head node");
+				return s_genoStruRepository[m_genoStruIdx].m_beginChrom;
+			}
+
+			/// end chromosome for current node
+			UINT endChrom() const
+			{
+				DBG_FAILIF(mpiRank() == 0, IndexError, "No end chromosome for head node");
+				return s_genoStruRepository[m_genoStruIdx].m_endChrom;
+			}
+
+			/// begin locus of current rank
+			UINT beginLocus() const
+			{
+				DBG_FAILIF(mpiRank() == 0, IndexError, "No begin locus for head node");
+				return chromBegin(beginChrom());
+			}
+
+			/// end locus of current rank
+			UINT endLocus() const
+			{
+				DBG_FAILIF(mpiRank() == 0, IndexError, "No end locus for head node");
+				return chromEnd(endChrom()-1);
 			}
 #endif
 
