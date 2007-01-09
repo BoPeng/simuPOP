@@ -29,7 +29,7 @@
 %{
 
 #include "../config.h"
-#include "simupop_cfg.h"
+#include "simuPOP_cfg.h"
 #include "genoStru.h"
 #include "individual.h"
 #include "population.h"
@@ -130,7 +130,7 @@ short ** _imp___ctype = 0;
 %include "std_map.i"
 
 %include "../config.h"
-%include "simupop_cfg.h"
+%include "simuPOP_cfg.h"
 
 namespace std
 {
