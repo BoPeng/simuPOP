@@ -39,7 +39,7 @@ SERIAL_SRC=serialization
 RM = rm -f
 SWIG= swig -keyword -w-312,-401,-503,-511,-362,-383,-384,-389,-315,-525 -nodefault 
 
-HEADFILES=../config.h simupop_cfg.h migrator.h population.h  simulator.h terminator.h \
+HEADFILES=../config.h simuPOP_cfg.h migrator.h population.h  simulator.h terminator.h \
 individual.h  mutator.h  stator.h   utility.h initializer.h operator.h recombinator.h \
 mating.h    outputer.h selector.h   tagger.h 
 
@@ -125,16 +125,16 @@ simuPOP_la_wrap.cpp: simuPOP_la.i simuPOP_common.i $(HEADFILES)
 simuPOP_laop_wrap.cpp: simuPOP_laop.i simuPOP_common.i $(HEADFILES)
 	$(SWIG) $(DEF) -DLONGALLELE -DOPTIMIZED -shadow -c++ -python -o simuPOP_laop_wrap.cpp simuPOP_laop.i
 
-utility_std.o: utility.h utility_std.cpp simupop_cfg.h
+utility_std.o: utility.h utility_std.cpp simuPOP_cfg.h
 	$(CXX) $(INCLUDES) $(DEF) $(UDEF) $(CFLAGS) -c utility_std.cpp -o utility_std.o
 
-utility_op.o: utility.h utility_op.cpp simupop_cfg.h
+utility_op.o: utility.h utility_op.cpp simuPOP_cfg.h
 	$(CXX) $(INCLUDES) -DOPTIMIZED $(DEF) $(UDEF) $(CFLAGS) -c utility_op.cpp -o utility_op.o
 
-utility_la.o: utility.h utility_la.cpp simupop_cfg.h
+utility_la.o: utility.h utility_la.cpp simuPOP_cfg.h
 	$(CXX) $(INCLUDES) -DLONGALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_la.cpp -o utility_la.o
 
-utility_laop.o: utility.h utility_laop.cpp simupop_cfg.h
+utility_laop.o: utility.h utility_laop.cpp simuPOP_cfg.h
 	$(CXX) $(INCLUDES) -DOPTIMIZED -DLONGALLELE $(DEF) $(UDEF) $(CFLAGS) -c utility_laop.cpp -o utility_laop.o
 
 utility_std.cpp: utility.cpp

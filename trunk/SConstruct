@@ -107,7 +107,7 @@ for mod in targets:
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
     )
     env.Depends(['$build_dir/simuPOP_%s_wrap$CXXFILESUFFIX' % mod, lib],
-        ['src/simupop_cfg.h', 'src/simuPOP_common.i', 'src/simuPOP_doc.i'] + \
+        ['src/simuPOP_cfg.h', 'src/simuPOP_common.i', 'src/simuPOP_doc.i'] + \
         HEADER_FILES)
     env.Depends('src/utility_%s.cpp' % mod, 'src/arraymodule.c')
     #
