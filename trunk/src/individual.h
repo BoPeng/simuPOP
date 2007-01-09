@@ -69,7 +69,6 @@ using std::dec;
 #include <numeric>
 using std::pair;
 
-
 namespace simuPOP
 {
 	/** \brief Basic individual class
@@ -161,35 +160,10 @@ namespace simuPOP
 			}
 
 			/// shallow copy of an object.
-			individual& operator= (const individual& rhs)
-			{
-				setShallowCopied(true);
-
-				/// when the source is being moved. Its relative position may change
-				/// so it also becomes shallowCopied.
-				const_cast<individual&>(rhs).setShallowCopied(true);
-
-				m_flags = rhs.m_flags;
-				setSubPopID(rhs.subPopID());
-				setGenoPtr(rhs.genoPtr());
-				setInfoPtr(rhs.infoPtr());
-				// also copy genoStru pointer...
-				this->setGenoStruIdx(rhs.genoStruIdx());
-				return *this;
-			}
+			individual& operator= (const individual& rhs);
 
 			/// Deep copy! Important!
-			individual& copyFrom( const individual& rhs)
-			{
-				m_flags = rhs.m_flags;
-				setSubPopID(rhs.subPopID());
-				copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
-				copy(rhs.infoBegin(), rhs.infoEnd(), infoBegin());
-				// also copy genoStru pointer...
-				this->setGenoStruIdx(rhs.genoStruIdx());
-				setShallowCopied(false);
-				return *this;
-			}
+			individual& copyFrom( const individual& rhs);
 
 			//@}
 			/// @name readonly structural info
@@ -344,15 +318,19 @@ namespace simuPOP
 			/// sex?
 			Sex sex() const
 			{
-				if( ISSETFLAG(m_flags, m_flagFemale) ) return Female;
-				else return Male;
+				if( ISSETFLAG(m_flags, m_flagFemale) )
+					return Female;
+				else
+					return Male;
 			}
 
 			/// return M or F for sex, for display purpose
 			char sexChar() const
 			{
-				if( ISSETFLAG(m_flags, m_flagFemale) ) return 'F';
-				else return 'M';
+				if( ISSETFLAG(m_flags, m_flagFemale) )
+					return 'F';
+				else
+					return 'M';
 			}
 
 			/// set sex
@@ -360,8 +338,10 @@ namespace simuPOP
 			{
 				CHECKRANGESEX(sex);
 
-				if( sex == Male ) RESETFLAG( m_flags, m_flagFemale);
-				else SETFLAG(m_flags, m_flagFemale);
+				if( sex == Male )
+					RESETFLAG( m_flags, m_flagFemale);
+				else
+					SETFLAG(m_flags, m_flagFemale);
 			}
 
 			/// affected?
@@ -510,25 +490,7 @@ namespace simuPOP
 			/** Note that we do not compare info because
 			   m_subPopID is considered temporary.
 			*/
-			bool operator== (const individual& rhs) const
-			{
-				if( genoStruIdx() != rhs.genoStruIdx() )
-					return false;
-
-				if(ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
-					|| ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) )
-					return false;
-
-				for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
-					if( info(i) != rhs.info(i) )
-						return false;
-
-				for( UINT i=0, iEnd = genoSize(); i < iEnd;  ++i)
-					if( allele(i) != rhs.allele(i) )
-						return false;
-
-				return true;
-			}
+			bool operator== (const individual& rhs) const;
 
 			///
 			bool operator!= (const individual& rhs) const
@@ -538,24 +500,7 @@ namespace simuPOP
 
 			// allow compaison of individuals in python
 			// only equal or unequal, no greater or less than
-			int __cmp__(const individual& rhs) const
-			{
-				if( genoStruIdx() != rhs.genoStruIdx() )
-					return 1;
-
-				if( m_flags != rhs.m_flags )
-					return 1;
-
-				for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
-					if( info(i) != rhs.info(i) )
-						return 1;
-
-				for( UINT i=0, iEnd = genoSize(); i < iEnd;  ++i)
-					if( allele(i) != rhs.allele(i) )
-						return 1;
-
-				return 0;
-			}
+			int __cmp__(const individual& rhs) const;
 
 			/// there is usally no >, < comparison for individuals
 			/// if order is required, it is a comparison of info.
@@ -587,31 +532,7 @@ namespace simuPOP
 			swap pointers. (There is no order right now within
 			subpopulation so the later case is rare, at best.
 			*/
-			void swap(individual& ind, bool swapContent=true)
-			{
-				if( genoStruIdx() != ind.genoStruIdx() )
-					throw SystemError("Can only swap individuals with different geno structure.");
-
-				std::swap(m_subPopID, ind.m_subPopID);
-				std::swap(m_infoPtr, ind.m_infoPtr);
-
-				if(swapContent)
-				{
-					Allele tmp;
-					for(UINT i=0, iEnd = genoSize(); i < iEnd;  i++)
-					{
-						tmp = m_genoPtr[i];
-						m_genoPtr[i] = ind.m_genoPtr[i];
-						ind.m_genoPtr[i] = tmp;
-					}
-				}
-				else
-				{
-					setShallowCopied(true);
-					ind.setShallowCopied(true);
-					std::swap(m_genoPtr, ind.m_genoPtr);
-				}
-			}
+			void swap(individual& ind, bool swapContent=true);
 
 			//@}
 			/// @name misc (only relevant to developers.
@@ -635,45 +556,7 @@ namespace simuPOP
 			}
 
 			/// CPPONLY
-			void display( ostream& out, int width=1, const vectori& chrom=vectori(), const vectori& loci=vectori() )
-			{
-				out << sexChar() << affectedChar() << " ";
-				DBG_DO(DBG_POPULATION, out <<  subPopID() << " ");
-				for(UINT p=0, pEnd = ploidy(); p < pEnd;  ++p)
-				{
-					//      copy( genoBegin()+i, genoBegin()+i+totNumLoci(),
-					//        std::ostream_iterator<string>(out, outputSeparator()) );
-					if(chrom.empty() && loci.empty())
-					{
-						for(UINT ch=0, chEnd=numChrom(); ch<chEnd; ++ch)
-						{
-							for(UINT j = 0, jEnd = numLoci(ch); j < jEnd;  ++j)
-								out << setw(width) << alleleChar(j, p, ch);
-							out << " ";
-						}
-					}
-					else if(! chrom.empty() && loci.empty())
-					{
-						for(vectori::const_iterator ch=chrom.begin(); ch != chrom.end(); ++ch)
-						{
-							for(UINT j = 0, jEnd = numLoci(*ch); j < jEnd;  ++j)
-								out << setw(width) << alleleChar(j, p, *ch);
-							out << " ";
-						}
-					}
-					else if( chrom.empty() && ! loci.empty())
-					{
-						for(vectori::const_iterator loc=loci.begin(); loc != loci.end(); ++loc)
-							out << setw(width) << alleleChar(*loc, p);
-						out << " ";
-					}
-					else						  // both specified
-						throw ValueError("Please specify only one of chrom and loci.");
-
-					if( p != pEnd-1)
-						out << "| ";
-				}
-			}
+			void display( ostream& out, int width=1, const vectori& chrom=vectori(), const vectori& loci=vectori() );
 
 			//@}
 		private:

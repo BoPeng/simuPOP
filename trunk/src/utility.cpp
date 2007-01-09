@@ -2666,7 +2666,6 @@ T Expression::valueAs##TypeName() \
 		// first: report who I am
 		std::cout << "This is node " << mpiRank() << " of " << mpiSize() << std::endl;
 		// for head node, send message to others
-		int n = 10;
 		double sum = 0;
 		double val = 5;
 		broadcast(mpiComm(), val, 0);

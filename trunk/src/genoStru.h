@@ -1,5 +1,4 @@
-/*************************enumerate(pop.individuals()):
-# find spose.**************************************************
+/************************************************************************
  *   Copyright (C) 2004 by Bo Peng                                         *
  *   bpeng@rice.edu                                                        *
  *                                                                         *
@@ -9,7 +8,7 @@
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
+ *   (at your option) any later version.                                   *
  *                                                                         *
  *   This program is distributed in the hope that it will be useful,       *
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
@@ -110,44 +109,7 @@ namespace simuPOP
 				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields,
 				const vectori& chromMap);
 
-			/// copy constructor
-			/// CPPONLY
-			GenoStructure(const GenoStructure& rhs) :
-			m_ploidy(rhs.m_ploidy),
-				m_totNumLoci(rhs.m_totNumLoci),
-				m_genoSize(rhs.m_genoSize),
-				m_numChrom(rhs.m_numChrom),
-				m_numLoci(rhs.m_numLoci),
-				m_sexChrom(rhs.m_sexChrom),
-				m_lociPos(rhs.m_lociPos),
-				m_chromIndex(rhs.m_chromIndex),
-				m_alleleNames(rhs.m_alleleNames),
-				m_lociNames(rhs.m_lociNames),
-				m_maxAllele(rhs.m_maxAllele),
-				m_infoFields(rhs.m_infoFields),
-				m_chromMap(rhs.m_chromMap),
-				m_beginChrom(rhs.m_beginChrom),
-				m_endChrom(rhs.m_endChrom)
-			{
-			}
-
-			bool operator== (const GenoStructure& rhs)
-			{
-				// compare pointer directly will be fastest
-				if(this == &rhs || (
-					( m_ploidy == rhs.m_ploidy) &&
-					( m_numLoci == rhs.m_numLoci) &&
-					( m_sexChrom == rhs.m_sexChrom) &&
-					( m_lociPos == rhs.m_lociPos) &&
-					( m_alleleNames == rhs.m_alleleNames) &&
-					( m_lociNames == rhs.m_lociNames) &&
-					( m_maxAllele == rhs.m_maxAllele) &&
-					( m_infoFields == rhs.m_infoFields)
-					))
-					return true;
-				else
-					return false;
-			}
+			bool operator== (const GenoStructure& rhs);
 
 			bool operator!= (const GenoStructure& rhs)
 			{
@@ -327,23 +289,7 @@ namespace simuPOP
 			/// set an existing geno structure, simply use it
 			/// This is NOT efficient! (but has to be used when, for example,
 			/// loading a structure from file
-			void setGenoStructure(GenoStructure& rhs)
-			{
-				for(TraitIndexType it = 0; it < s_genoStruRepository.size();
-					++it)
-				{
-												  // object comparison
-					if( s_genoStruRepository[it] == rhs )
-					{
-						m_genoStruIdx = it;
-						return;
-					}
-				}
-
-				// if not found, make a copy and store it.
-				s_genoStruRepository.push_back( rhs );
-				m_genoStruIdx = s_genoStruRepository.size() - 1;
-			}
+			void setGenoStructure(GenoStructure& rhs);
 
 			/// CPPONLY set index directly
 			void setGenoStruIdx(size_t idx)
@@ -353,14 +299,6 @@ namespace simuPOP
 					toStr( s_genoStruRepository.size() ) );
 				m_genoStruIdx = static_cast<TraitIndexType>(idx);
 			}
-
-			/// no destructure since a pointer will be shared by all indiviudals and a population
-			/// only population will call destroyGenoStructure in its destructor.
-			/// CPPONLY
-			// void destroyGenoStructure()
-			//{
-			//  delete m_genoStruIdx;
-			// }
 
 			/// return the GenoStructure
 			/// CPPONLY
@@ -555,21 +493,7 @@ namespace simuPOP
 			}
 
 			/// return the index of field name, return -1 if not found.
-			UINT infoIdx(const string& name) const
-			{
-				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
-
-				for(UINT i=0; i< names.size(); ++i)
-				{
-					if(names[i] == name)
-						return i;
-				}
-				throw IndexError("Info field '" + name + "' is not found. "
-					"Plese use infoFields=['" + name + "'] option of population() during construction\n"
-					"or use addInfoField('" + name + "') to add to an existing population.");
-				// this should never be reached.
-				return 0;
-			}
+			UINT infoIdx(const string& name) const;
 
 			/// add a new information field
 			/// NOTE: should only be called by population::requestInfoField
@@ -603,18 +527,7 @@ namespace simuPOP
 
 #ifdef SIMUMPI
 			/// return node rank by chromosome number, according to map on setChromMap
-			UINT rankOfChrom(UINT chrom) const
-			{
-				vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
-
-				for(size_t i=0, sum = 0; i<map.size(); ++i)
-				{
-					sum += map[i];
-					if(chrom < sum)
-						return i+1;
-				}
-				DBG_FAILIF(true, IndexError, "Chromosome " + toStr(chrom) + " is not on chromosome map");
-			}
+			UINT rankOfChrom(UINT chrom) const;
 
 			/// return node rank by locus id, according to map on setChromMap
 			UINT rankOfLocus(UINT locus) const
@@ -623,32 +536,10 @@ namespace simuPOP
 			}
 
 			/// begin chromosome for a given rank
-			UINT beginChromOfRank(UINT rank) const
-			{
-				if (rank == 1)
-					return 0;
-
-				vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
-
-				DBG_ASSERT(rank <= map.size() && rank > 0, IndexError, "Given rank " + toStr(rank) + " is invalid.");
-
-				size_t sum = 0;
-				for(size_t i=0; i<rank-1; ++i)
-					sum += map[i];
-				return sum;
-			}
+			UINT beginChromOfRank(UINT rank) const;
 
 			/// end chromosome for a given rank (actually begin chromosome for the next rank)
-			UINT endChromOfRank(UINT rank) const
-			{
-				vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
-
-				DBG_ASSERT(rank <= map.size() && rank > 0, IndexError, "Given rank " + toStr(rank) + " is invalid.");
-				size_t sum = 0;
-				for(size_t i=0; i<rank; ++i)
-					sum += map[i];
-				return sum;
-			}
+			UINT endChromOfRank(UINT rank) const;
 
 			/// begin locus for a given rank
 			UINT beginLocusOfRank(UINT rank) const
@@ -714,7 +605,6 @@ namespace simuPOP
 			/// objects themselves by vector
 			static vector<GenoStructure> s_genoStruRepository;
 	};
-
 }
 
 
@@ -722,5 +612,4 @@ namespace simuPOP
 #ifndef SWIG
 BOOST_CLASS_TRACKING(simuPOP::GenoStruTrait, track_never)
 #endif
-
 #endif
