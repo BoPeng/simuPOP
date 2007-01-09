@@ -31,7 +31,7 @@
 */
 
 #include "utility.h"
-#include "simupop_cfg.h"
+#include "simuPOP_cfg.h"
 
 //
 // the following is required by a vc7.1 bug.

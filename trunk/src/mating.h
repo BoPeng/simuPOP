@@ -28,7 +28,7 @@
 \brief head file of class mating and its subclasses
 */
 #include "utility.h"
-#include "simupop_cfg.h"
+#include "simuPOP_cfg.h"
 #include "population.h"
 #include "operator.h"
 

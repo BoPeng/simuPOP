@@ -44,7 +44,7 @@ include:
 */
 
 #include "Python.h"
-#include "simupop_cfg.h"
+#include "simuPOP_cfg.h"
 
 #ifdef SIMUMPI
 #include "boost/parallel/mpi.hpp"

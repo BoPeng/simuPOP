@@ -39,7 +39,7 @@ using std::endl;
 using std::sort;
 using std::random_shuffle;
 
-#include "simupop_cfg.h"
+#include "simuPOP_cfg.h"
 #include <math.h>
 // using std::sqrt;
 
