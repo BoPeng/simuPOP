@@ -94,6 +94,8 @@ class TestMPI(unittest.TestCase):
         'Testing chromMap set by setOptions'
         # the map is 2, 1, 3
         # use chromMap set by system setOptions
+        if not mpi():
+            return True
         pop = population(10, loci=[1,2,3,4,5,1])
         # chromosomes
         # 0 | 1 2 | 3 4 5 | 6 7 8 9 | 10 11 12 13 14 | 15

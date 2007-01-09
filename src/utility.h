@@ -1372,7 +1372,6 @@ namespace simuPOP
 			UINT curTrial();
 
 			/// if necessary, do trail again.
-			/// CPPONLY
 			void trial();
 
 			bool trialSucc(size_t idx) const;

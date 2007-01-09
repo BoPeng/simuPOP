@@ -438,8 +438,6 @@ Usage:
 
 %ignore simuPOP::BernulliTrials::curTrial();
 
-%ignore simuPOP::BernulliTrials::trial();
-
 %feature("docstring")  simuPOP::BernulliTrials::trialSucc " 
 
 Usage:
@@ -547,8 +545,6 @@ Usage:
 ";
 
 %ignore simuPOP::BernulliTrials::curTrial();
-
-%ignore simuPOP::BernulliTrials::trial();
 
 %feature("docstring")  simuPOP::BernulliTrials::trialSucc " 
 
