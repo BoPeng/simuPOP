@@ -115,7 +115,7 @@ namespace simuPOP
 #endif
 		// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 		// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
-		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames, 
+		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames,
 			lociNames, maxAllele, infoFields, chromMap);
 
 		DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
@@ -134,7 +134,7 @@ namespace simuPOP
 			m_genotype.resize(m_popSize*localGenoSize());
 			/// only head node allocate info
 			size_t is = 0;
-			if (mpiRank() == 0) 
+			if (mpiRank() == 0)
 			{
 				size_t is = infoSize();
 				DBG_ASSERT(is == infoFields.size(), SystemError, "Wrong geno structure");
@@ -150,7 +150,7 @@ namespace simuPOP
 			size_t is = infoSize();
 			DBG_ASSERT(is == infoFields.size(), SystemError, "Wrong geno structure");
 			m_info.resize(m_popSize*is);
-#endif			
+#endif
 
 			// set subpopulation indexes, do not allow popsize change
 			setSubPopStru(subPop, false);
@@ -159,11 +159,11 @@ namespace simuPOP
 			// reset individual pointers
 			GenoIterator ptr = m_genotype.begin();
 			InfoIterator infoPtr = m_info.begin();
-#ifdef SIMUMPI			
+#ifdef SIMUMPI
 			UINT step = localGenoSize();
 #else
 			UINT step = genoSize();
-#endif			
+#endif
 			for(ULONG i=0; i< m_popSize; ++i, ptr+=step, infoPtr+=is)
 			{
 				m_inds[i].setGenoPtr(ptr);
@@ -207,7 +207,7 @@ namespace simuPOP
 		try
 		{
 			m_inds.resize(rhs.m_popSize);
-#ifdef SIMUMPI			
+#ifdef SIMUMPI
 			m_genotype.resize(m_popSize*localGenoSize());
 #else
 			m_genotype.resize(m_popSize*genoSize());
@@ -232,7 +232,7 @@ namespace simuPOP
 		// point outside of subpopulation region.
 		GenoIterator ptr = m_genotype.begin();
 		InfoIterator infoPtr = m_info.begin();
-#ifdef SIMUMPI		
+#ifdef SIMUMPI
 		UINT step = this->localGenoSize();
 #else
 		UINT step = this->genoSize();
@@ -302,7 +302,7 @@ namespace simuPOP
 
 	int population::__cmp__(const population& rhs) const
 	{
-#ifdef SIMUMPI	
+#ifdef SIMUMPI
 		bool res = 0;
 		if( genoStruIdx() != rhs.genoStruIdx() )
 		{
@@ -320,11 +320,11 @@ namespace simuPOP
 		{
 			for( ULONG i=0, iEnd = popSize(); i < iEnd; ++i)
 				if( m_inds[i] != rhs.m_inds[i])
-				{
-					DBG_DO(DBG_POPULATION, cout << "Individuals are different" << endl);
-					res = 1;
-					break;
-				}
+			{
+				DBG_DO(DBG_POPULATION, cout << "Individuals are different" << endl);
+				res = 1;
+				break;
+			}
 		}
 		// now collect result for all nodes
 		bool allRes = 0;
@@ -333,7 +333,7 @@ namespace simuPOP
 		else
 			reduce(mpiComm(), res, std::logical_or<bool>(), 0);
 		broadcast(mpiComm(), !!allRes, 0);
-		
+
 		return allRes;
 #else
 		if( genoStruIdx() != rhs.genoStruIdx() )
@@ -350,13 +350,46 @@ namespace simuPOP
 
 		for( ULONG i=0, iEnd = popSize(); i < iEnd; ++i)
 			if( m_inds[i] != rhs.m_inds[i])
-			{
-				DBG_DO(DBG_POPULATION, cout << "Individuals are different" << endl);
-				return 1;
-			}
+		{
+			DBG_DO(DBG_POPULATION, cout << "Individuals are different" << endl);
+			return 1;
+		}
 
 		return 0;
-#endif		
+#endif
+	}
+
+	PyObject* population::arrGenotype(bool order)
+	{
+		if(shallowCopied() && order)
+			// adjust position. deep=true
+			adjustGenoPosition(true);
+#ifdef SIMUMPI
+		return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end(),
+			totNumLoci(), beginLocus(), endLocus());
+#else
+		// directly expose values. Do not copy data over.
+		return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
+#endif
+	}
+
+	/// get the whole genotype.
+	/// individuals will be in order before exposing
+	/// their genotypes.
+	///
+	/// if order: keep order
+	/// otherwise: respect subpop structure
+	PyObject* population::arrGenotype(UINT subPop, bool order)
+	{
+		CHECKRANGESUBPOP(subPop);
+		if(shallowCopied())
+			adjustGenoPosition(order);
+#ifdef SIMUMPI
+		return Allele_Vec_As_NumArray( genoBegin(subPop, order), genoEnd(subPop, order),
+			totNumLoci(), beginLocus(), endLocus());
+#else
+		return Allele_Vec_As_NumArray( genoBegin(subPop, order), genoEnd(subPop, order));
+#endif
 	}
 
 	void population::setSubPopStru(const vectorlu& newSubPopSizes, bool allowPopSizeChange)
@@ -1198,10 +1231,10 @@ namespace simuPOP
 		io::filtering_ostream ofs;
 		// get file extension
 		string ext = fileExtension(filename);
-#ifndef DISABLE_COMPRESSION		
+#ifndef DISABLE_COMPRESSION
 		if(compress || (ext.size() > 3 && ext.substr(ext.size() - 3, 3) == ".gz"))
 			ofs.push(io::gzip_compressor());
-#endif			
+#endif
 		ofs.push(io::file_sink(filename));
 
 		if(!ofs)
@@ -1234,8 +1267,8 @@ namespace simuPOP
 #ifdef DISABLE_COMPRESSION
 			throw ValueError("This version of simuPOP can not handle compressed file");
 #else
-			ifs.push(io::gzip_decompressor());
-#endif			
+		ifs.push(io::gzip_decompressor());
+#endif
 		ifs.push(io::file_source(filename));
 		// do not have to test again.
 		if(!ifs)
@@ -1384,7 +1417,7 @@ namespace simuPOP
 
 			for(IndIterator ind=indBegin(), indEd=indEnd(); ind!=indEd; ++ind)
 			{
-#ifdef BINARYALLELE				
+#ifdef BINARYALLELE
 				copyGenotype(ind->genoBegin(), it, sz);
 #else
 				copy(ind->genoBegin(), ind->genoEnd(), it);
@@ -1478,11 +1511,11 @@ namespace simuPOP
 		for(i=0, iEnd = scIndex.size(); i < iEnd;  i++)
 		{
 			scPtr[i] = m_inds[ scIndex[i]].genoPtr();
-#ifdef BINARYALLELE			
+#ifdef BINARYALLELE
 			copyGenotype(indGenoBegin(scIndex[i]), scGeno.begin() + i* genoSize(), genoSize());
 #else
 			copy(indGenoBegin(scIndex[i]), indGenoEnd(scIndex[i]), scGeno.begin() + i* genoSize());
-#endif			
+#endif
 			scInfoPtr[i] = m_inds[ scIndex[i]].infoPtr();
 			copy(ind(scIndex[i]).infoBegin(), ind(scIndex[i]).infoEnd(),
 				scInfo.begin() + i* infoSize());
@@ -1498,12 +1531,12 @@ namespace simuPOP
 		for(i=0, iEnd =scIndex.size(); i < iEnd;  i++)
 		{
 			m_inds[ scIndex[i] ].setGenoPtr( scPtr[i]);
-#ifdef BINARYALLELE			
+#ifdef BINARYALLELE
 			copyGenotype(scGeno.begin() + i*genoSize(), indGenoBegin( scIndex[i] ), genoSize());
 #else
 			copy( scGeno.begin() + i*  genoSize(), scGeno.begin() + (i+1)*  genoSize(),
 				indGenoBegin( scIndex[i] ));
-#endif				
+#endif
 			m_inds[ scIndex[i] ].setInfoPtr( scInfoPtr[i]);
 			copy( scInfo.begin() + i*  infoSize(), scInfo.begin() + (i+1)*  infoSize(),
 				ind(scIndex[i]).infoBegin());

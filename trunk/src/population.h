@@ -502,7 +502,7 @@ namespace simuPOP
 				if(order && shallowCopied())
 					adjustGenoPosition(true);
 				return GappedAlleleIterator( m_genotype.begin()+locus, totNumLoci());
-#endif				
+#endif
 			}
 
 			/// CPPONLY allele iterator
@@ -517,7 +517,7 @@ namespace simuPOP
 					adjustGenoPosition(true);
 
 				return GappedAlleleIterator( m_genotype.begin() + locus + m_popSize*genoSize(), totNumLoci());
-#endif				
+#endif
 			}
 
 			///  CPPONLY allele begin, for given subPopu
@@ -536,7 +536,7 @@ namespace simuPOP
 
 				return GappedAlleleIterator( m_genotype.begin() + m_subPopIndex[subPop]*genoSize() +
 					locus, totNumLoci());
-#endif					
+#endif
 			}
 
 			///  CPPONLY allele iterator
@@ -553,7 +553,7 @@ namespace simuPOP
 
 				return GappedAlleleIterator( m_genotype.begin() + m_subPopIndex[subPop+1]*genoSize() +
 					locus, totNumLoci());
-#endif					
+#endif
 			}
 
 			///  CPPONLY allele iterator, go through all allels one by one, without subPop info
@@ -568,7 +568,7 @@ namespace simuPOP
 					adjustGenoPosition(true);
 
 				return m_genotype.begin();
-#endif	
+#endif
 			}
 
 			///  CPPONLY allele iterator
@@ -581,7 +581,7 @@ namespace simuPOP
 					adjustGenoPosition(true);
 
 				return m_genotype.end();
-#endif	
+#endif
 			}
 
 			///  CPPONLY allele iterator, go through all allels one by one in a subpopulation
@@ -592,14 +592,14 @@ namespace simuPOP
 #ifdef SIMUMPI
 				PENDING_MPI;
 #else
-			
+
 				CHECKRANGESUBPOP(subPop);
 
 				if(shallowCopied())
 					adjustGenoPosition(order);
 
 				return m_genotype.begin() + m_subPopIndex[subPop]*genoSize();
-#endif				
+#endif
 			}
 
 			///  CPPONLY allele iterator in a subpopulation.
@@ -613,7 +613,7 @@ namespace simuPOP
 					adjustGenoPosition(order);
 
 				return m_genotype.begin() + m_subPopIndex[subPop+1]*genoSize();
-#endif				
+#endif
 			}
 
 			///  CPPONLY genoIterator --- beginning of individual ind.
@@ -654,19 +654,7 @@ namespace simuPOP
 			///
 			/// if order, respect order,
 			/// if false, do not repect population structure
-			PyObject* arrGenotype(bool order)
-			{
-#ifdef SIMUMPI
-				PENDING_MPI;
-#else
-				if(shallowCopied() && order)
-					// adjust position. deep=true
-					adjustGenoPosition(true);
-
-				// false: directly expose values. Do not copy data over.
-				return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
-#endif				
-			}
+			PyObject* arrGenotype(bool order);
 
 			/// get the whole genotype.
 			/// individuals will be in order before exposing
@@ -674,19 +662,7 @@ namespace simuPOP
 			///
 			/// if order: keep order
 			/// otherwise: respect subpop structure
-			PyObject* arrGenotype(UINT subPop, bool order)
-			{
-#ifdef SIMUMPI
-				PENDING_MPI;
-#else
-			
-				CHECKRANGESUBPOP(subPop);
-				if(shallowCopied())
-					adjustGenoPosition(order);
-
-				return Allele_Vec_As_NumArray( genoBegin(subPop, order), genoEnd(subPop, order));
-#endif				
-			}
+			PyObject* arrGenotype(UINT subPop, bool order);
 
 			//@}
 
@@ -1217,7 +1193,7 @@ namespace simuPOP
 #ifdef SIMUMPI
 				PENDING_MPI;
 #else
-		
+
 				// deep adjustment: everyone in order
 				//const_cast<population*>(this)->adjustGenoPosition(true);
 
@@ -1325,7 +1301,7 @@ namespace simuPOP
 				{
 					cout << "Warning: shared variable is not saved correctly.\npopulation should still be usable." << endl;
 				}
-#endif				
+#endif
 			}
 
 			template<class Archive>
@@ -1334,7 +1310,7 @@ namespace simuPOP
 #ifdef SIMUMPI
 				PENDING_MPI;
 #else
-			
+
 				ULONG ma;
 				ar & make_nvp("libraryMaxAllele", ma);
 
@@ -1628,7 +1604,7 @@ namespace simuPOP
 
 				m_shallowCopied = false;
 				m_infoOrdered = true;
-#endif				
+#endif
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();

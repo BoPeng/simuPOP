@@ -96,7 +96,18 @@ in bounds; that's the responsibility of the caller.
 static PyObject *
 a_getitem(arrayobject *ap, int i)
 {
+#ifdef SIMUMPI
+	UINT trunk = i / ap->ob_iterator.ob_piece_size;
+	UINT idx = i - trunk * ap->ob_iterator.ob_piece_size;
+	PyObject * value = NULL;
+	if (idx >= ap->ob_iterator.ob_piece_begin && idx < ap->ob_iterator.ob_piece_end)
+		value = PyInt_FromLong( *(ap->ob_iterator.ob_iter 
+			+ trunk*(ap->ob_iterator.ob_piece_end - ap->ob_iterator.ob_piece_begin)
+			+ idx - ap->ob_iterator.ob_piece_begin) );
+	// broadcast(mpiComm(), value, mpiRank());
+#else
     return PyInt_FromLong( *(ap->ob_iterator.ob_iter+i) );
+#endif
 }
 
 
@@ -109,11 +120,26 @@ a_setitem(arrayobject *ap, int i, PyObject *v)
          the overflow checking */
     if (!PyArg_Parse(v, "h;array item must be integer", &x))
         return -1;
+#ifdef SIMUMPI
+	UINT trunk = i / ap->ob_iterator.ob_piece_size;
+	UINT idx = i - trunk * ap->ob_iterator.ob_piece_size;
+	if (idx >= ap->ob_iterator.ob_piece_begin && idx < ap->ob_iterator.ob_piece_end)
+	{
+    // force the value to bool to avoid a warning
+#ifdef BINARYALLELE
+	    *(ap->ob_iterator.ob_iter+idx-ap->ob_iterator.ob_piece_begin) = (x != 0);
+#else
+		*(ap->ob_iterator.ob_iter+idx-ap->ob_iterator.ob_piece_begin) = x;
+#endif
+	}
+#else
     // force the value to bool to avoid a warning
 #ifdef BINARYALLELE
     *(ap->ob_iterator.ob_iter+i) = (x != 0);
 #else
     *(ap->ob_iterator.ob_iter+i) = x;
+#endif
+
 #endif
     return 0;
 }
@@ -755,8 +781,14 @@ static PyObject * array_slice(arrayobject *a, int ilow, int ihigh)
     else if (ihigh > a->ob_size)
         ihigh = a->ob_size;
     if( a->ob_descr->typecode == 'a')
+#ifdef SIMUMPI	
         np = (arrayobject *) newcarrayiterobject(a->ob_iterator.ob_iter + ilow,
-            a->ob_iterator.ob_iter + ihigh);
+            a->ob_iterator.ob_iter + ihigh, a->ob_iterator.ob_piece_size, 
+			a->ob_iterator.ob_piece_begin, a->ob_iterator.ob_piece_end);
+#else			
+        np = (arrayobject *) newcarrayiterobject(a->ob_iterator.ob_iter + ilow,
+            a->ob_iterator.ob_iter + ihigh)
+#endif			
     else
         np = (arrayobject *) newcarrayobject(a->ob_iterator.ob_item + ilow*a->ob_descr->itemsize,
             a->ob_descr->typecode, ihigh - ilow);
@@ -1216,13 +1248,16 @@ PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end)
         return PyErr_NoMemory();
     }
     //
-    op->ob_size = end - begin;
-#ifdef SIMUMPI	
-	op->ob_piece_size = s_size;
-	op->ob_piece_begin = s_begin;
-	op->ob_piece_end = s_end;
-#endif	
     op->ob_descr = descriptors;
     op->ob_iterator.ob_iter = begin;
+#ifdef SIMUMPI	
+	op->ob_iterator.ob_piece_size = s_size;
+	op->ob_iterator.ob_piece_begin = s_begin;
+	op->ob_iterator.ob_piece_end = s_end;
+	/// FIXME: make up some virtual size
+    op->ob_size = s_size;
+#else	
+    op->ob_size = end - begin;
+#endif	
     return (PyObject *) op;
 }

@@ -198,7 +198,7 @@ namespace simuPOP
 #ifdef SIMUMPI
 				// which portion is this piece of array in?
 				return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + localGenoSize(),
-					totNumLoci(), locusBegin(), locusEnd());
+					totNumLoci(), beginLocus(), endLocus());
 #else
 				return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
 #endif
@@ -212,7 +212,7 @@ namespace simuPOP
 #ifdef SIMUMPI
 				return Allele_Vec_As_NumArray( m_genoPtr + p*localNumLoci(),
 					m_genoPtr + (p+1)*localNumLoci(),
-					totNumLoci(), locusBegin(), locusEnd());
+					totNumLoci(), beginLocus(), endLocus());
 #else
 				return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci(),
 					m_genoPtr + (p+1)*totNumLoci() );
@@ -227,7 +227,7 @@ namespace simuPOP
 #ifdef SIMUMPI
 				return Allele_Vec_As_NumArray( m_genoPtr + p*localNumLoci() + localChromBegin(ch),
 					m_genoPtr + (p+1)*localNumLoci() + localChromEnd(ch),
-					totNumLoci(), locusBegin(), locusEnd());
+					totNumLoci(), beginLocus(), endLocus());
 #else
 				return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci() + chromBegin(ch),
 					m_genoPtr + p*totNumLoci() +chromEnd(ch));
