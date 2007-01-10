@@ -90,7 +90,11 @@ namespace simuPOP
 			GenoStructure():m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
 				m_numLoci(0), m_sexChrom(false), m_lociPos(0), m_chromIndex(0),
 				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0),
-				m_chromMap(), m_beginChrom(), m_endChrom()
+				m_chromMap()
+#ifdef SIMUMPI
+				, m_beginChrom(0), m_endChrom(0), m_beginLocus(0), m_endLocus(0), 
+				m_localNumLoci(0), m_localGenoSize(0)
+#endif				
 				{}
 
 			/** \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
@@ -236,6 +240,7 @@ namespace simuPOP
 			/// This field is not saved/restored
 			vectori m_chromMap;
 
+#ifdef SIMUMPI			
 			/// begin chromosome for this node
 			/// This field is not saved/restored
 			UINT m_beginChrom;
@@ -243,6 +248,19 @@ namespace simuPOP
 			/// end chromosome for this node
 			/// This field is not saved/restored
 			UINT m_endChrom;
+
+			/// begin locus for this node
+			UINT m_beginLocus;
+
+			/// end locus for this node
+			UINT m_endLocus;
+
+			/// total number of loci at this node
+			UINT m_localNumLoci;
+
+			/// local genotype size
+			UINT m_localGenoSize;
+#endif			
 
 			friend class GenoStruTrait;
 	};
@@ -550,35 +568,41 @@ namespace simuPOP
 			/// end locus for a given rank
 			UINT endLocusOfRank(UINT rank) const
 			{
-				return chromEnd(endChromOfRank(rank)-1);
+				return rank==0?0:chromEnd(endChromOfRank(rank)-1);
 			}
 
 			/// begin chromosome for current node
 			UINT beginChrom() const
 			{
-				DBG_FAILIF(mpiRank() == 0, IndexError, "No begin chromosome for head node");
 				return s_genoStruRepository[m_genoStruIdx].m_beginChrom;
 			}
 
 			/// end chromosome for current node
 			UINT endChrom() const
 			{
-				DBG_FAILIF(mpiRank() == 0, IndexError, "No end chromosome for head node");
 				return s_genoStruRepository[m_genoStruIdx].m_endChrom;
 			}
 
 			/// begin locus of current rank
 			UINT beginLocus() const
 			{
-				DBG_FAILIF(mpiRank() == 0, IndexError, "No begin locus for head node");
-				return chromBegin(beginChrom());
+				return s_genoStruRepository[m_genoStruIdx].m_beginLocus;
 			}
 
 			/// end locus of current rank
 			UINT endLocus() const
 			{
-				DBG_FAILIF(mpiRank() == 0, IndexError, "No end locus for head node");
-				return chromEnd(endChrom()-1);
+				return s_genoStruRepository[m_genoStruIdx].m_endLocus;
+			}
+
+			UINT localNumLoci() const
+			{
+				return s_genoStruRepository[m_genoStruIdx].m_localNumLoci;
+			}
+
+			UINT localGenoSize() const
+			{
+				return s_genoStruRepository[m_genoStruIdx].m_localGenoSize;
 			}
 #endif
 

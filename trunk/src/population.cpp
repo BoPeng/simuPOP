@@ -28,6 +28,11 @@
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/device/file.hpp>
 
+#ifdef SIMUMPI
+#include <boost/parallel/mpi.hpp>
+namespace mpi = boost::parallel::mpi;
+#endif
+
 namespace io = boost::iostreams;
 
 namespace simuPOP
@@ -110,7 +115,11 @@ namespace simuPOP
 			m_inds.resize(m_popSize);
 
 			// create genotype vector holding alleles for all individuals.
+#ifdef SIMUMPI
+			m_genotype.resize(m_popSize*localGenoSize());
+#else
 			m_genotype.resize(m_popSize*genoSize());
+#endif			
 			/// allocate info
 			size_t is = infoSize();
 			DBG_ASSERT(is == infoFields.size(), SystemError, "Wrong geno structure");
@@ -123,7 +132,11 @@ namespace simuPOP
 			// reset individual pointers
 			GenoIterator ptr = m_genotype.begin();
 			InfoIterator infoPtr = m_info.begin();
+#ifdef SIMUMPI			
+			UINT step = localGenoSize();
+#else
 			UINT step = genoSize();
+#endif			
 			for(ULONG i=0; i< m_popSize; ++i, ptr+=step, infoPtr+=is)
 			{
 				m_inds[i].setGenoPtr(ptr);
@@ -167,7 +180,11 @@ namespace simuPOP
 		try
 		{
 			m_inds.resize(rhs.m_popSize);
+#ifdef SIMUMPI			
+			m_genotype.resize(m_popSize*localGenoSize());
+#else
 			m_genotype.resize(m_popSize*genoSize());
+#endif
 			m_info.resize(rhs.m_popSize*infoSize());
 		}
 		catch(...)
@@ -187,7 +204,11 @@ namespace simuPOP
 		// point outside of subpopulation region.
 		GenoIterator ptr = m_genotype.begin();
 		InfoIterator infoPtr = m_info.begin();
+#ifdef SIMUMPI		
+		UINT step = this->localGenoSize();
+#else
 		UINT step = this->genoSize();
+#endif
 		UINT infoStep = this->infoSize();
 		for(ULONG i=0; i< m_popSize; ++i, ptr+=step, infoPtr+=infoStep)
 		{
@@ -253,6 +274,40 @@ namespace simuPOP
 
 	int population::__cmp__(const population& rhs) const
 	{
+#ifdef SIMUMPI	
+		bool res = 0;
+		if( genoStruIdx() != rhs.genoStruIdx() )
+		{
+			DBG_DO(DBG_POPULATION, cout << "Genotype structures are different" << endl);
+			res = 1;
+		}
+
+		if(res == 0 && popSize() != rhs.popSize() )
+		{
+			DBG_DO(DBG_POPULATION, cout << "Population sizes are different" << endl);
+			res = 1;
+		}
+
+		if (res == 0)
+		{
+			for( ULONG i=0, iEnd = popSize(); i < iEnd; ++i)
+				if( m_inds[i] != rhs.m_inds[i])
+				{
+					DBG_DO(DBG_POPULATION, cout << "Individuals are different" << endl);
+					res = 1;
+					break;
+				}
+		}
+		// now collect result for all nodes
+		bool allRes = 0;
+		if (mpiRank() == 0)
+			reduce(mpiComm(), res, allRes, std::logical_or<bool>(), 0);
+		else
+			reduce(mpiComm(), res, std::logical_or<bool>(), 0);
+		broadcast(mpiComm(), !!allRes, 0);
+		
+		return allRes;
+#else
 		if( genoStruIdx() != rhs.genoStruIdx() )
 		{
 			DBG_DO(DBG_POPULATION, cout << "Genotype structures are different" << endl);
@@ -272,8 +327,8 @@ namespace simuPOP
 				return 1;
 			}
 
-		// FIXME: also compare ancestral populations
 		return 0;
+#endif		
 	}
 
 	void population::setSubPopStru(const vectorlu& newSubPopSizes, bool allowPopSizeChange)

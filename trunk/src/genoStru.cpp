@@ -34,6 +34,10 @@ namespace simuPOP
 		m_alleleNames(alleleNames), m_lociNames(lociNames),
 		m_maxAllele(maxAllele), m_infoFields(infoFields),
 		m_chromMap(chromMap)
+#ifdef SIMUMPI
+		, m_beginChrom(0), m_endChrom(0), m_beginLocus(0), m_endLocus(0), 
+		m_localNumLoci(0), m_localGenoSize(0)
+#endif
 	{
 #ifdef BINARYALLELE
 		DBG_ASSERT(maxAllele == 1, ValueError,
@@ -99,7 +103,12 @@ namespace simuPOP
 			m_chromMap = vectori(m_numChrom, 1);
 		// begining and end chromosome?
 		UINT rank = mpiRank();
-		if(rank == 1)
+		if(rank == 0)
+		{
+			m_beginChrom = 0;
+			m_endChrom = 0;
+		}
+		else if(rank == 1)
 		{
 			m_beginChrom = 0;
 			m_endChrom = m_chromMap[0];
@@ -112,6 +121,17 @@ namespace simuPOP
 			m_beginChrom = sum;
 			m_endChrom = sum + m_chromMap[i];
 		}
+		m_beginLocus = m_chromIndex[m_beginChrom];
+		m_endLocus = m_chromIndex[m_endChrom];
+		m_localNumLoci = m_endLocus - m_beginLocus;
+		m_localGenoSize = m_localNumLoci*m_ploidy;
+		DBG_DO(DBG_POPULATION, cout << "rank " << rank 
+			<< " begin Locus " << m_beginLocus
+			<< " end Locus " << m_endLocus
+			<< " begin Chrom " << m_beginChrom
+			<< " ebd Chrom " << m_endChrom
+			<< " local numLoci " << m_localNumLoci
+			<< " loca genosize " << m_localGenoSize << endl);
 #endif
 	}
 
@@ -127,6 +147,8 @@ namespace simuPOP
 			( m_lociNames == rhs.m_lociNames) &&
 			( m_maxAllele == rhs.m_maxAllele) &&
 			( m_infoFields == rhs.m_infoFields)
+			// chromosome map etc are not compared since
+			// they can be different from run to run.
 			))
 			return true;
 		else
@@ -265,6 +287,7 @@ namespace simuPOP
 		// this should never be reached.
 		return 0;
 	}
+
 #ifdef SIMUMPI
 	/// return node rank by chromosome number, according to map on setChromMap
 	UINT GenoStruTrait::rankOfChrom(UINT chrom) const
@@ -283,12 +306,12 @@ namespace simuPOP
 	/// begin chromosome for a given rank
 	UINT GenoStruTrait::beginChromOfRank(UINT rank) const
 	{
-		if (rank == 1)
+		if (rank <= 1)
 			return 0;
 
 		vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
 
-		DBG_ASSERT(rank <= map.size() && rank > 0, IndexError, "Given rank " + toStr(rank) + " is invalid.");
+		DBG_ASSERT(rank <= map.size(), IndexError, "Given rank " + toStr(rank) + " is invalid.");
 
 		size_t sum = 0;
 		for(size_t i=0; i<rank-1; ++i)
@@ -301,9 +324,9 @@ namespace simuPOP
 	{
 		vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
 
-		DBG_ASSERT(rank <= map.size() && rank > 0, IndexError, "Given rank " + toStr(rank) + " is invalid.");
+		DBG_ASSERT(rank <= map.size(), IndexError, "Given rank " + toStr(rank) + " is invalid.");
 		size_t sum = 0;
-		for(size_t i=0; i<rank; ++i)
+		for(size_t i=0; i < rank; ++i)
 			sum += map[i];
 		return sum;
 	}
