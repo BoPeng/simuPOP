@@ -98,6 +98,21 @@ namespace simuPOP
 					ValueError, "If both size and subPop are specified, size should equal to sum(subPop)");
 		}
 
+#ifdef SIMUMPI
+		UINT nodes = chromMap.empty()?(loci.size()+1):(chromMap.size() + 1);
+		if(mpiSize() < nodes)
+		{
+			if (mpiRank() == 0)
+			{
+				cout << "Available nodes: " << mpiSize() << endl;
+				cout << "Number of chromosomes: " << loci.size() << endl;
+				if (!chromMap.empty())
+					cout << "Length of chromosome map: " << chromMap.size() << endl;
+			}
+			throw SystemError("Insufficient nodes. At least " + toStr(nodes) + " (1 + number of chromosomes "
+				"or 1 + length of chromMap ) number of nodes are required\n");
+		}
+#endif
 		// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 		// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
 		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames, 
@@ -117,13 +132,25 @@ namespace simuPOP
 			// create genotype vector holding alleles for all individuals.
 #ifdef SIMUMPI
 			m_genotype.resize(m_popSize*localGenoSize());
+			/// only head node allocate info
+			size_t is = 0;
+			if (mpiRank() == 0) 
+			{
+				size_t is = infoSize();
+				DBG_ASSERT(is == infoFields.size(), SystemError, "Wrong geno structure");
+				m_info.resize(m_popSize*is);
+			}
+			else
+			{
+				m_info.resize(0);
+			}
 #else
 			m_genotype.resize(m_popSize*genoSize());
-#endif			
 			/// allocate info
 			size_t is = infoSize();
 			DBG_ASSERT(is == infoFields.size(), SystemError, "Wrong geno structure");
 			m_info.resize(m_popSize*is);
+#endif			
 
 			// set subpopulation indexes, do not allow popsize change
 			setSubPopStru(subPop, false);
@@ -185,6 +212,7 @@ namespace simuPOP
 #else
 			m_genotype.resize(m_popSize*genoSize());
 #endif
+			// both have 0 length for mpi/non-head node
 			m_info.resize(rhs.m_popSize*infoSize());
 		}
 		catch(...)

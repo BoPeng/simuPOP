@@ -446,7 +446,12 @@ namespace simuPOP
 	PyObject* Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
 
 	/// CPPONLY
+#ifdef SIMUMPI
+	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end, 
+		UINT piece_size, UINT piece_begin, UINT piece_end);
+#else	
 	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
+#endif
 
 	/// CPPONLY
 	PyObject* Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end);
@@ -1493,9 +1498,9 @@ namespace simuPOP
 	const mpi::communicator mpiComm();
 #endif
 
-	int mpiRank();
+	UINT mpiRank();
 
-	int mpiSize();
+	UINT mpiSize();
 
 #ifdef SIMUMPI
 	void testMPI();

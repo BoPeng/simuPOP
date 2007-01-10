@@ -63,6 +63,11 @@ typedef struct arrayobject
         char *ob_item;
         // this will be used by binary type only.
         GenoIterator ob_iter;
+#ifdef SIMUMPI
+		UINT ob_piece_size;
+		UINT ob_piece_begin;
+		UINT ob_piece_end;
+#endif		
     } ob_iterator;
     // description of the type, the exact get and set item functions.
     struct arraydescr *ob_descr;
@@ -457,7 +462,12 @@ carray_init(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
 // declaration only to avoid use of Arraytype
 PyObject * newcarrayobject(char* ptr, char type, int size);
+#ifdef SIMUMPI
+PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end, 
+	UINT s_size, UINT s_begin, UINT s_end);
+#else
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
+#endif
 
 static PyObject * getarrayitem(PyObject *op, int i)
 {
@@ -1189,7 +1199,12 @@ PyObject * newcarrayobject(char* ptr, char type, int size)
 }
 
 
+#ifdef SIMUMPI
+PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end, 
+	UINT s_size, UINT s_begin, UINT s_end)
+#else
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end)
+#endif
 {
     // create an object and copy data
     arrayobject *op;
@@ -1202,6 +1217,11 @@ PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end)
     }
     //
     op->ob_size = end - begin;
+#ifdef SIMUMPI	
+	op->ob_piece_size = s_size;
+	op->ob_piece_begin = s_begin;
+	op->ob_piece_end = s_end;
+#endif	
     op->ob_descr = descriptors;
     op->ob_iterator.ob_iter = begin;
     return (PyObject *) op;

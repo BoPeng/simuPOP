@@ -32,12 +32,13 @@ namespace simuPOP
 		:m_ploidy(ploidy),  m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom),
 		m_lociPos(lociPos), m_chromIndex(loci.size()+1),
 		m_alleleNames(alleleNames), m_lociNames(lociNames),
-		m_maxAllele(maxAllele), m_infoFields(infoFields),
+		m_maxAllele(maxAllele),
+		m_infoFields(infoFields),
 		m_chromMap(chromMap)
-#ifdef SIMUMPI
-		, m_beginChrom(0), m_endChrom(0), m_beginLocus(0), m_endLocus(0), 
+	#ifdef SIMUMPI
+		, m_beginChrom(0), m_endChrom(0), m_beginLocus(0), m_endLocus(0),
 		m_localNumLoci(0), m_localGenoSize(0)
-#endif
+	#endif
 	{
 #ifdef BINARYALLELE
 		DBG_ASSERT(maxAllele == 1, ValueError,
@@ -99,6 +100,10 @@ namespace simuPOP
 			"Not all allele names are given. ");
 
 #ifdef SIMUMPI
+		// no information fields for non-head nodes
+		if (mpiRank() != 0)
+			m_infoFields.clear();
+
 		if( m_chromMap.empty())
 			m_chromMap = vectori(m_numChrom, 1);
 		// begining and end chromosome?
@@ -125,7 +130,11 @@ namespace simuPOP
 		m_endLocus = m_chromIndex[m_endChrom];
 		m_localNumLoci = m_endLocus - m_beginLocus;
 		m_localGenoSize = m_localNumLoci*m_ploidy;
-		DBG_DO(DBG_POPULATION, cout << "rank " << rank 
+		// local chromosome index
+		m_localChromIndex.resize(m_endChrom-m_beginChrom+1);
+		for (m_localChromIndex[0] = 0, i = 1; i <= m_endChrom - m_beginChrom; ++i)
+			m_localChromIndex[i] = m_localChromIndex[i - 1] + m_numLoci[i - 1 + m_beginChrom];
+		DBG_DO(DBG_POPULATION, cout << "rank " << rank
 			<< " begin Locus " << m_beginLocus
 			<< " end Locus " << m_endLocus
 			<< " begin Chrom " << m_beginChrom
