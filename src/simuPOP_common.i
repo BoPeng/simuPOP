@@ -53,9 +53,11 @@
 
 %}
 
-
 ////////////////////////// DEFINE CARRAY //////////////////////////
 %{
+#ifdef SIMUMPI
+#include  <boost/parallel/mpi.hpp>
+#endif
 extern "C"
 {
 #include "arraymodule.c"
