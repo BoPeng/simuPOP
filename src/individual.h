@@ -191,7 +191,17 @@ namespace simuPOP
 			PyObject* arrGenotype()
 			{
 				// this &* is to avoid any possible type mismatch thing.
-				return Allele_Vec_As_NumArray( m_genoPtr, m_genoPtr + genoSize() );
+				// there is some magic here, for MPI module
+				// PyObject are different from node to node, but the
+				// referred value is the same. The right one is used and
+				// the value is boardcasted.
+#ifdef SIMUMPI
+				// which portion is this piece of array in?
+				return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + localGenoSize(),
+					totNumLoci(), locusBegin(), locusEnd());
+#else
+				return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
+#endif
 			}
 
 			/// return genotype as python Numeric.array object
@@ -199,9 +209,14 @@ namespace simuPOP
 			PyObject* arrGenotype(UINT p)
 			{
 				CHECKRANGEPLOIDY(p);
-
+#ifdef SIMUMPI
+				return Allele_Vec_As_NumArray( m_genoPtr + p*localNumLoci(),
+					m_genoPtr + (p+1)*localNumLoci(),
+					totNumLoci(), locusBegin(), locusEnd());
+#else
 				return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci(),
 					m_genoPtr + (p+1)*totNumLoci() );
+#endif
 			}
 
 			/// return genotype as python Numeric.array object
@@ -209,14 +224,26 @@ namespace simuPOP
 			PyObject* arrGenotype(UINT p, UINT ch)
 			{
 				CHECKRANGEPLOIDY(p);
-
+#ifdef SIMUMPI
+				return Allele_Vec_As_NumArray( m_genoPtr + p*localNumLoci() + localChromBegin(ch),
+					m_genoPtr + (p+1)*localNumLoci() + localChromEnd(ch),
+					totNumLoci(), locusBegin(), locusEnd());
+#else
 				return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci() + chromBegin(ch),
 					m_genoPtr + p*totNumLoci() +chromEnd(ch));
+#endif
 			}
 
 			PyObject* arrInfo()
 			{
+#ifdef SIMUMPI
+				if (mpiRank() == 0)
+					return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + infoSize() );
+				else
+					return NULL;
+#else
 				return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + infoSize() );
+#endif
 			}
 
 			/// get allele from an index
@@ -225,8 +252,20 @@ namespace simuPOP
 			Allele allele(UINT index) const
 			{
 				CHECKRANGEGENOSIZE(index);
-
+#ifdef SIMUMPI
+				// find out which node has the allele and broadcast it.
+				UINT p = index / totNumLoci();
+				UINT locus = index - p * totNumLoci();
+				std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
+				UINT rank = rankOfChrom(chIdx.first);
+				Allele val = 0;
+				if (mpiRank() == rank)
+					val = *(m_genoPtr+chIdx.second+p*localNumLoci());
+				broadcast(mpiComm(), val, rank);
+				return val;
+#else
 				return *(m_genoPtr+index);
+#endif
 			}
 
 			/// get allele from an index, on the pth set of chromosome
@@ -237,8 +276,18 @@ namespace simuPOP
 			{
 				CHECKRANGEABSLOCUS(index);
 				CHECKRANGEPLOIDY(p);
-
+#ifdef SIMUMPI
+				UINT locus = index - p * totNumLoci();
+				std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
+				UINT rank = rankOfChrom(chIdx.first);
+				Allele val = 0;
+				if (mpiRank() == rank)
+					val = *(m_genoPtr+chIdx.second-beginLocus()+p*localNumLoci());
+				broadcast(mpiComm(), val, rank);
+				return val;
+#else
 				return *(m_genoPtr+index + p* totNumLoci() );
+#endif
 			}
 
 			Allele allele(UINT index, UINT p, UINT ch) const
@@ -246,15 +295,23 @@ namespace simuPOP
 				CHECKRANGELOCUS(ch, index);
 				CHECKRANGEPLOIDY(p);
 				CHECKRANGECHROM(ch);
-
+#ifdef SIMUMPI
+				UINT rank = rankOfChrom(ch);
+				Allele val = 0;
+				if(mpiRank() == rank)
+					val = *(m_genoPtr+index-beginLocus()+ localChromBegin(ch) + p*localNumLoci());
+				broadcast(mpiComm(), val, rank);
+				return val;
+#else
 				return *(m_genoPtr + index + p* totNumLoci() + chromBegin(ch));
+#endif
 			}
 
 			string alleleChar(UINT index) const
 			{
 				CHECKRANGEGENOSIZE(index);
 
-				return this->alleleName(*(m_genoPtr + index));
+				return this->alleleName(allele(index));
 			}
 
 			/// get allele from an index, on the pth set of chromosome
@@ -266,7 +323,7 @@ namespace simuPOP
 				CHECKRANGEABSLOCUS(index);
 				CHECKRANGEPLOIDY(p);
 
-				return this->alleleName(*(m_genoPtr + index + p* totNumLoci() ));
+				return this->alleleName(allele(index, p));
 			}
 
 			/// get allele from an index, on the pth set of chromosome
@@ -279,8 +336,7 @@ namespace simuPOP
 				CHECKRANGEPLOIDY(p);
 				CHECKRANGECHROM(ch);
 
-				return this->alleleName(*(m_genoPtr + index + p* totNumLoci()
-					+ chromBegin(ch) ) );
+				return this->alleleName(allele(index, p, ch));
 			}
 
 			/// set allele from an index.
@@ -289,8 +345,17 @@ namespace simuPOP
 			void setAllele(Allele allele, UINT index)
 			{
 				CHECKRANGEGENOSIZE(index);
-
+#ifdef SIMUMPI
+				// find out which node has the allele and broadcast it.
+				UINT p = index / totNumLoci();
+				UINT locus = index - p * totNumLoci();
+				std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
+				UINT rank = rankOfChrom(chIdx.first);
+				if (mpiRank() == rank)
+					*(m_genoPtr+chIdx.second+p*localNumLoci()) = allele;
+#else
 				*(m_genoPtr+index) = allele;
+#endif
 			}
 
 			/// set allele from an index.
@@ -302,8 +367,15 @@ namespace simuPOP
 			{
 				CHECKRANGEABSLOCUS(index);
 				CHECKRANGEPLOIDY(p);
-
+#ifdef SIMUMPI
+				UINT locus = index - p * totNumLoci();
+				std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
+				UINT rank = rankOfChrom(chIdx.first);
+				if (mpiRank() == rank)
+					*(m_genoPtr+chIdx.second-beginLocus()+p*localNumLoci()) = allele;
+#else
 				*(m_genoPtr + index+p*totNumLoci()) = allele;
+#endif
 			}
 
 			void setAllele(Allele allele, UINT index, UINT p, UINT ch)
@@ -311,8 +383,13 @@ namespace simuPOP
 				CHECKRANGELOCUS(ch, index);
 				CHECKRANGEPLOIDY(p);
 				CHECKRANGECHROM(ch);
-
+#ifdef SIMUMPI
+				UINT rank = rankOfChrom(ch);
+				if(mpiRank() == rank)
+					*(m_genoPtr+index-beginLocus()+ localChromBegin(ch) + p*localNumLoci()) = allele;
+#else
 				*(m_genoPtr + index + p*totNumLoci() + chromBegin(ch) ) = allele;
+#endif
 			}
 
 			/// sex?
@@ -390,32 +467,60 @@ namespace simuPOP
 			InfoType info(UINT idx) const
 			{
 				CHECKRANGEINFO(idx);
+#ifdef SIMUMPI
+				if (mpiRank()==0)
+					return m_infoPtr[idx];
+				else
+					// info is stored only on head node
+					return 0;
+#else
 				return m_infoPtr[idx];
+#endif
 			}
 
 			/// set info
 			void setInfo(InfoType value, UINT idx)
 			{
 				CHECKRANGEINFO(idx);
-				m_infoPtr[idx] = value;
+#ifdef SIMUMPI
+				if (mpiRank()==0)
+#endif
+					m_infoPtr[idx] = value;
 			}
 
 			/// get info
 			InfoType info(const string& name) const
 			{
-				int idx = infoIdx(name);
-				DBG_ASSERT(idx>=0, IndexError,
-					"Info name " + name + " is not a valid info field name");
-				return m_infoPtr[idx];
+#ifdef SIMUMPI
+				if (mpiRank()==0)
+				{
+#endif
+					int idx = infoIdx(name);
+					DBG_ASSERT(idx>=0, IndexError,
+						"Info name " + name + " is not a valid info field name");
+					return m_infoPtr[idx];
+#ifdef SIMUMPI
+				}
+				else
+					// info is stored only on head node
+					return 0;
+#endif
 			}
 
 			/// set info
 			void setInfo(InfoType value, const string& name)
 			{
-				int idx = infoIdx(name);
-				DBG_ASSERT(idx>=0, IndexError,
-					"Info name " + name + " is not a valid info field name");
-				m_infoPtr[idx] = value;
+#ifdef SIMUMPI
+				if (mpiRank()==0)
+				{
+#endif
+					int idx = infoIdx(name);
+					DBG_ASSERT(idx>=0, IndexError,
+						"Info name " + name + " is not a valid info field name");
+					m_infoPtr[idx] = value;
+#ifdef SIMUMPI
+				}
+#endif
 			}
 
 			/// start of alleles
@@ -429,7 +534,11 @@ namespace simuPOP
 			/// CPPONLY
 			GenoIterator genoEnd() const
 			{
+#ifdef SIMUMPI
+				return m_genoPtr + localGenoSize();
+#else
 				return m_genoPtr + genoSize();
+#endif
 			}
 
 			/// start of allele of the pth set of chromosome
@@ -437,8 +546,11 @@ namespace simuPOP
 			GenoIterator genoBegin(UINT p) const
 			{
 				CHECKRANGEPLOIDY(p);
-
+#ifdef SIMUMPI
+				return m_genoPtr + p*localNumLoci();
+#else
 				return m_genoPtr + p*totNumLoci();
+#endif
 			}
 
 			/// end of allele of the pth set of chromosome
@@ -446,8 +558,11 @@ namespace simuPOP
 			GenoIterator genoEnd(UINT p) const
 			{
 				CHECKRANGEPLOIDY(p);
-
+#ifdef SIMUMPI
+				return m_genoPtr + (p+1)*localNumLoci();
+#else
 				return m_genoPtr + (p+1)*totNumLoci();
+#endif
 			}
 
 			/// start of allele of the pth set of chromosome, chrom ch
@@ -456,8 +571,15 @@ namespace simuPOP
 			{
 				CHECKRANGEPLOIDY(p);
 				CHECKRANGECHROM(chrom);
-
+#ifdef SIMUMPI
+				if (hasChrom(chrom))
+					return m_genoPtr + p*localNumLoci() + localChromBegin(chrom);
+				else
+					// ??? Right treatment?
+					return m_genoPtr;
+#else
 				return m_genoPtr + p*totNumLoci() + chromBegin(chrom);
+#endif
 			}
 
 			/// end of allele of the pth set of chromosome
@@ -466,7 +588,15 @@ namespace simuPOP
 			{
 				CHECKRANGEPLOIDY(p);
 				CHECKRANGECHROM(chrom);
+#ifdef SIMUMPI
+				if (hasChrom(chrom))
+					return m_genoPtr + p*localNumLoci() + localChromEnd(chrom);
+				else
+					// ??? Right treatment?
+					return m_genoPtr;
+#else
 				return m_genoPtr + p*totNumLoci() + chromEnd(chrom);
+#endif
 			}
 
 			/// start of info
@@ -480,6 +610,7 @@ namespace simuPOP
 			/// CPPONLY
 			InfoIterator infoEnd() const
 			{
+				// infoSize is zero for non-head nodes
 				return m_infoPtr + infoSize();
 			}
 
@@ -566,34 +697,48 @@ namespace simuPOP
 			template<class Archive>
 				void save(Archive &ar, const UINT version) const
 			{
-				// ar & boost::serialization::make_nvp("base ptr",
-				//  boost::serialization::base_object<GenoStruTrait>(*this));
-				bool b;
-				b= ISSETFLAG(m_flags, m_flagFemale);
-				ar & boost::serialization::make_nvp("sex",b);
+#ifdef SIMUMPI
+				if(mpiRank() == 0)
+				{
+#endif
+					// ar & boost::serialization::make_nvp("base ptr",
+					//  boost::serialization::base_object<GenoStruTrait>(*this));
+					bool b;
+					b= ISSETFLAG(m_flags, m_flagFemale);
+					ar & boost::serialization::make_nvp("sex",b);
 
-				b= ISSETFLAG(m_flags, m_flagAffected);
-				ar & boost::serialization::make_nvp("affected",b);
+					b= ISSETFLAG(m_flags, m_flagAffected);
+					ar & boost::serialization::make_nvp("affected",b);
+#ifdef SIMUMPI
+				}
+#endif
 			}
 
 			template<class Archive>
 				void load(Archive &ar, const UINT version)
 			{
-				bool b;
-				m_flags = 0;
-				ar & boost::serialization::make_nvp("sex",b);
-				if(b) SETFLAG(m_flags, m_flagFemale);
-				ar & boost::serialization::make_nvp("affected",b);
-				if(b) SETFLAG(m_flags, m_flagAffected);
-
-				RESETFLAG(m_flags, m_flagShallowCopied);
-
-				if (version < 1)
+#ifdef SIMUMPI
+				if(mpiRank() == 0)
 				{
-					std::pair<int, int> tag;
-					ar & make_nvp("tag", tag);
-					ar & make_nvp("info", m_subPopID);
+#endif
+					bool b;
+					m_flags = 0;
+					ar & boost::serialization::make_nvp("sex",b);
+					if(b) SETFLAG(m_flags, m_flagFemale);
+					ar & boost::serialization::make_nvp("affected",b);
+					if(b) SETFLAG(m_flags, m_flagAffected);
+
+					RESETFLAG(m_flags, m_flagShallowCopied);
+
+					if (version < 1)
+					{
+						std::pair<int, int> tag;
+						ar & make_nvp("tag", tag);
+						ar & make_nvp("info", m_subPopID);
+					}
+#ifdef SIMUMPI
 				}
+#endif
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -613,7 +758,6 @@ namespace simuPOP
 			/// pointer to info
 			InfoIterator m_infoPtr;
 	};
-
 }
 
 

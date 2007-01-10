@@ -66,7 +66,12 @@ using boost::lowest_bit;
 // these functions are defined in arraymodule.c which is included
 // in simuPOP_wrap.cpp
 extern "C" PyObject* newcarrayobject(char* buf, char type, int size);
+#ifdef SIMUMPI
+extern "C" PyObject* newcarrayiterobject(GenoIterator begin, GenoIterator end,
+	UINT piece_size, UINT piece_begin, UINT piece_end);
+#else
 extern "C" PyObject* newcarrayiterobject(GenoIterator begin, GenoIterator end);
+#endif
 extern "C" bool   is_carrayobject(PyObject*);
 extern "C" int    carray_length(PyObject*a);
 extern "C" int    carray_itemsize(PyObject*a);
@@ -532,12 +537,24 @@ namespace simuPOP
 		return res;
 	}
 
+#ifdef SIMUMPI
+	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end,
+		UINT piece_size, UINT piece_begin, UINT piece_end)
+	{
+		PyObject* res = newcarrayiterobject(begin, end, piece_size, piece_begin, piece_end);
+		DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to Allele num array");
+		return res;
+	}
+
+#else	
+	
 	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 	{
 		PyObject* res = newcarrayiterobject(begin, end);
 		DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to Allele num array");
 		return res;
 	}
+#endif	
 
 	PyObject* Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end)
 	{
@@ -2640,7 +2657,7 @@ T Expression::valueAs##TypeName() \
 	}
 #endif
 
-	int mpiRank()
+	UINT mpiRank()
 	{
 #ifdef SIMUMPI
 		return g_mpiComm.rank();
@@ -2649,7 +2666,7 @@ T Expression::valueAs##TypeName() \
 #endif
 	}
 
-	int mpiSize()
+	UINT mpiSize()
 	{
 #ifdef SIMUMPI
 		return g_mpiComm.size();

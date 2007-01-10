@@ -62,15 +62,6 @@ extern "C"
 }
 %}
 
-// this is a dirty hack for the mingw/msvcrt _ctype problem.
-%{
-#ifdef _WIN32
-#ifndef _MSC_VER
-short ** _imp___ctype = 0;
-#endif
-#endif
-%}
-
 ////////////////////////// CLEAN EXTRA SYMBOLS //////////////////////////
 
 // do not load these constants in ../config.h

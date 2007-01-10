@@ -91,10 +91,10 @@ namespace simuPOP
 				m_numLoci(0), m_sexChrom(false), m_lociPos(0), m_chromIndex(0),
 				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0),
 				m_chromMap()
-#ifdef SIMUMPI
-				, m_beginChrom(0), m_endChrom(0), m_beginLocus(0), m_endLocus(0), 
-				m_localNumLoci(0), m_localGenoSize(0)
-#endif				
+	#ifdef SIMUMPI
+				, m_beginChrom(0), m_endChrom(0), m_beginLocus(0), m_endLocus(0),
+				m_localNumLoci(0), m_localGenoSize(0), m_localChromIndex(0)
+	#endif
 				{}
 
 			/** \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
@@ -156,46 +156,61 @@ namespace simuPOP
 			template<class Archive>
 				void save(Archive &ar, const UINT version) const
 			{
-				ar & make_nvp("ploidy", m_ploidy);
-				ar & make_nvp("num_of_chrom", m_numChrom);
-				ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
-				ar & make_nvp("sex_chromosome", m_sexChrom);
-				ar & make_nvp("loci_distance_on_chrom", m_lociPos);
-				ar & make_nvp("allele_name", m_alleleNames);
-				ar & make_nvp("loci_name", m_lociNames);
-				ar & make_nvp("max_allele", m_maxAllele);
-				ar & make_nvp("info_name", m_infoFields);
-				/// do not save load chromosome map
+#ifdef SIMUMPI
+				if(mpiRank() == 0)
+				{
+#endif
+					ar & make_nvp("ploidy", m_ploidy);
+					ar & make_nvp("num_of_chrom", m_numChrom);
+					ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
+					ar & make_nvp("sex_chromosome", m_sexChrom);
+					ar & make_nvp("loci_distance_on_chrom", m_lociPos);
+					ar & make_nvp("allele_name", m_alleleNames);
+					ar & make_nvp("loci_name", m_lociNames);
+					ar & make_nvp("max_allele", m_maxAllele);
+					ar & make_nvp("info_name", m_infoFields);
+					/// do not save load chromosome map
+#ifdef SIMUMPI
+				}
+#endif
 			}
 
 			template<class Archive>
 				void load(Archive &ar, const UINT version)
 			{
-				ar & make_nvp("ploidy", m_ploidy);
-				ar & make_nvp("num_of_chrom", m_numChrom);
-				ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
-				// after simuPOP 0.6.8, we have m_sexChrom
-				// before that, there is no sex chromosome
-				if(version > 0)
-					ar & make_nvp("sex_chromosome", m_sexChrom);
-				else
-					m_sexChrom = false;
-				ar & make_nvp("loci_distance_on_chrom", m_lociPos);
-				ar & make_nvp("allele_name", m_alleleNames);
-				ar & make_nvp("loci_name", m_lociNames);
-				ar & make_nvp("max_allele", m_maxAllele);
-				if(version > 1)
-					ar & make_nvp("info_name", m_infoFields);
+#ifdef SIMUMPI
+				if(mpiRank() == 0)
+				{
+#endif
 
-				// build chromosome index
-				m_chromIndex.resize(m_numLoci.size()+1);
-				ULONG i;
-				for(m_chromIndex[0] = 0, i = 1; i <= m_numChrom; ++i)
-					m_chromIndex[i] = m_chromIndex[i - 1] + m_numLoci[i - 1];
+					ar & make_nvp("ploidy", m_ploidy);
+					ar & make_nvp("num_of_chrom", m_numChrom);
+					ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
+					// after simuPOP 0.6.8, we have m_sexChrom
+					// before that, there is no sex chromosome
+					if(version > 0)
+						ar & make_nvp("sex_chromosome", m_sexChrom);
+					else
+						m_sexChrom = false;
+					ar & make_nvp("loci_distance_on_chrom", m_lociPos);
+					ar & make_nvp("allele_name", m_alleleNames);
+					ar & make_nvp("loci_name", m_lociNames);
+					ar & make_nvp("max_allele", m_maxAllele);
+					if(version > 1)
+						ar & make_nvp("info_name", m_infoFields);
 
-				m_totNumLoci = m_chromIndex[m_numChrom];
-				m_genoSize = m_totNumLoci*m_ploidy;
-				/// do not save load chromosome map
+					// build chromosome index
+					m_chromIndex.resize(m_numLoci.size()+1);
+					ULONG i;
+					for(m_chromIndex[0] = 0, i = 1; i <= m_numChrom; ++i)
+						m_chromIndex[i] = m_chromIndex[i - 1] + m_numLoci[i - 1];
+
+					m_totNumLoci = m_chromIndex[m_numChrom];
+					m_genoSize = m_totNumLoci*m_ploidy;
+					/// do not save load chromosome map
+#ifdef SIMUMPI
+				}
+#endif
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -240,7 +255,7 @@ namespace simuPOP
 			/// This field is not saved/restored
 			vectori m_chromMap;
 
-#ifdef SIMUMPI			
+#ifdef SIMUMPI
 			/// begin chromosome for this node
 			/// This field is not saved/restored
 			UINT m_beginChrom;
@@ -260,7 +275,10 @@ namespace simuPOP
 
 			/// local genotype size
 			UINT m_localGenoSize;
-#endif			
+
+			/// loci index
+			vectoru m_localChromIndex;
+#endif
 
 			friend class GenoStruTrait;
 	};
@@ -583,6 +601,16 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_endChrom;
 			}
 
+			UINT localChromBegin(UINT chrom) const
+			{
+				return s_genoStruRepository[m_genoStruIdx].m_localChromIndex[chrom-beginChrom()];
+			}
+
+			UINT localChromEnd(UINT chrom) const
+			{
+				return s_genoStruRepository[m_genoStruIdx].m_localChromIndex[chrom+1-beginChrom()];
+			}
+
 			/// begin locus of current rank
 			UINT beginLocus() const
 			{
@@ -603,6 +631,16 @@ namespace simuPOP
 			UINT localGenoSize() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_localGenoSize;
+			}
+
+			bool hasChrom(UINT chrom) const
+			{
+				return mpiRank() == rankOfChrom(chrom);
+			}
+
+			bool hasLocus(UINT locus) const
+			{
+				return mpiRank() == rankOfLocus(locus);
 			}
 #endif
 
