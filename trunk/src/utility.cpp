@@ -68,7 +68,7 @@ using boost::lowest_bit;
 extern "C" PyObject* newcarrayobject(char* buf, char type, int size);
 #ifdef SIMUMPI
 extern "C" PyObject* newcarrayiterobject(GenoIterator begin, GenoIterator end,
-	UINT piece_size, UINT piece_begin, UINT piece_end);
+	ULONG size, UINT piece_size, UINT piece_begin, UINT piece_end, UINT shift);
 #else
 extern "C" PyObject* newcarrayiterobject(GenoIterator begin, GenoIterator end);
 #endif
@@ -539,9 +539,9 @@ namespace simuPOP
 
 #ifdef SIMUMPI
 	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end,
-		UINT piece_size, UINT piece_begin, UINT piece_end)
+		ULONG size, UINT piece_size, UINT piece_begin, UINT piece_end)
 	{
-		PyObject* res = newcarrayiterobject(begin, end, piece_size, piece_begin, piece_end);
+		PyObject* res = newcarrayiterobject(begin, end, size, piece_size, piece_begin, piece_end, 0);
 		DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to Allele num array");
 		return res;
 	}

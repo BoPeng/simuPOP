@@ -366,7 +366,7 @@ namespace simuPOP
 			adjustGenoPosition(true);
 #ifdef SIMUMPI
 		return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end(),
-			totNumLoci(), beginLocus(), endLocus());
+			genoSize()*popSize(), totNumLoci(), beginLocus(), endLocus());
 #else
 		// directly expose values. Do not copy data over.
 		return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
@@ -386,7 +386,7 @@ namespace simuPOP
 			adjustGenoPosition(order);
 #ifdef SIMUMPI
 		return Allele_Vec_As_NumArray( genoBegin(subPop, order), genoEnd(subPop, order),
-			totNumLoci(), beginLocus(), endLocus());
+			popSize()*genoSize(), totNumLoci(), beginLocus(), endLocus());
 #else
 		return Allele_Vec_As_NumArray( genoBegin(subPop, order), genoEnd(subPop, order));
 #endif
