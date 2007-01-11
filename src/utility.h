@@ -448,7 +448,7 @@ namespace simuPOP
 	/// CPPONLY
 #ifdef SIMUMPI
 	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end, 
-		UINT piece_size, UINT piece_begin, UINT piece_end);
+		ULONG size, UINT piece_size, UINT piece_begin, UINT piece_end);
 #else	
 	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 #endif

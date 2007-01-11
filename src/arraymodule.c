@@ -67,6 +67,7 @@ typedef struct arrayobject
 		UINT ob_piece_size;
 		UINT ob_piece_begin;
 		UINT ob_piece_end;
+		UINT ob_shift;
 #endif		
     } ob_iterator;
     // description of the type, the exact get and set item functions.
@@ -92,19 +93,23 @@ Note that the basic Get and Set functions do NOT check that the index is
 in bounds; that's the responsibility of the caller.
 ****************************************************************************/
 
-// bit type
+// allele type
 static PyObject *
 a_getitem(arrayobject *ap, int i)
 {
 #ifdef SIMUMPI
+	i += ap->ob_iterator.ob_shift;
 	UINT trunk = i / ap->ob_iterator.ob_piece_size;
 	UINT idx = i - trunk * ap->ob_iterator.ob_piece_size;
-	PyObject * value = NULL;
+	int value = 0;
+	int result = 0;
 	if (idx >= ap->ob_iterator.ob_piece_begin && idx < ap->ob_iterator.ob_piece_end)
-		value = PyInt_FromLong( *(ap->ob_iterator.ob_iter 
+		value = *(ap->ob_iterator.ob_iter 
 			+ trunk*(ap->ob_iterator.ob_piece_end - ap->ob_iterator.ob_piece_begin)
-			+ idx - ap->ob_iterator.ob_piece_begin) );
-	// broadcast(mpiComm(), value, mpiRank());
+			+ idx - ap->ob_iterator.ob_piece_begin);
+	MPI_Reduce(&value, &result, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
+	MPI_Bcast(&result, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	return PyInt_FromLong(result);
 #else
     return PyInt_FromLong( *(ap->ob_iterator.ob_iter+i) );
 #endif
@@ -121,15 +126,18 @@ a_setitem(arrayobject *ap, int i, PyObject *v)
     if (!PyArg_Parse(v, "h;array item must be integer", &x))
         return -1;
 #ifdef SIMUMPI
+	i += ap->ob_iterator.ob_shift;
 	UINT trunk = i / ap->ob_iterator.ob_piece_size;
 	UINT idx = i - trunk * ap->ob_iterator.ob_piece_size;
 	if (idx >= ap->ob_iterator.ob_piece_begin && idx < ap->ob_iterator.ob_piece_end)
 	{
     // force the value to bool to avoid a warning
 #ifdef BINARYALLELE
-	    *(ap->ob_iterator.ob_iter+idx-ap->ob_iterator.ob_piece_begin) = (x != 0);
+	    *(ap->ob_iterator.ob_iter + trunk*(ap->ob_iterator.ob_piece_end - ap->ob_iterator.ob_piece_begin)
+			+ idx-ap->ob_iterator.ob_piece_begin) = (x != 0);
 #else
-		*(ap->ob_iterator.ob_iter+idx-ap->ob_iterator.ob_piece_begin) = x;
+		*(ap->ob_iterator.ob_iter + trunk*(ap->ob_iterator.ob_piece_end - ap->ob_iterator.ob_piece_begin)
+			+ idx - ap->ob_iterator.ob_piece_begin) = x;
 #endif
 	}
 #else
@@ -490,7 +498,7 @@ carray_init(PyTypeObject *type, PyObject *args, PyObject *kwds)
 PyObject * newcarrayobject(char* ptr, char type, int size);
 #ifdef SIMUMPI
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end, 
-	UINT s_size, UINT s_begin, UINT s_end);
+	ULONG size, UINT s_size, UINT s_begin, UINT s_end, UINT shift);
 #else
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
 #endif
@@ -782,9 +790,13 @@ static PyObject * array_slice(arrayobject *a, int ilow, int ihigh)
         ihigh = a->ob_size;
     if( a->ob_descr->typecode == 'a')
 #ifdef SIMUMPI	
-        np = (arrayobject *) newcarrayiterobject(a->ob_iterator.ob_iter + ilow,
-            a->ob_iterator.ob_iter + ihigh, a->ob_iterator.ob_piece_size, 
-			a->ob_iterator.ob_piece_begin, a->ob_iterator.ob_piece_end);
+        np = (arrayobject *) newcarrayiterobject(a->ob_iterator.ob_iter,
+            a->ob_iterator.ob_iter + ihigh,
+			ihigh - ilow, // real size
+			a->ob_iterator.ob_piece_size, 
+			a->ob_iterator.ob_piece_begin, 
+			a->ob_iterator.ob_piece_end,
+			ilow);
 #else			
         np = (arrayobject *) newcarrayiterobject(a->ob_iterator.ob_iter + ilow,
             a->ob_iterator.ob_iter + ihigh)
@@ -1233,7 +1245,7 @@ PyObject * newcarrayobject(char* ptr, char type, int size)
 
 #ifdef SIMUMPI
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end, 
-	UINT s_size, UINT s_begin, UINT s_end)
+	ULONG size, UINT s_size, UINT s_begin, UINT s_end, UINT shift)
 #else
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end)
 #endif
@@ -1254,8 +1266,8 @@ PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end)
 	op->ob_iterator.ob_piece_size = s_size;
 	op->ob_iterator.ob_piece_begin = s_begin;
 	op->ob_iterator.ob_piece_end = s_end;
-	/// FIXME: make up some virtual size
-    op->ob_size = s_size;
+	op->ob_iterator.ob_shift = shift;
+    op->ob_size = size;
 #else	
     op->ob_size = end - begin;
 #endif	
