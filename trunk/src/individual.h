@@ -188,124 +188,57 @@ namespace simuPOP
 
 			/// return genotype as python Numeric.array object
 			/// This is the whole genotype (all)
-			PyObject* arrGenotype()
-			{
-				// this &* is to avoid any possible type mismatch thing.
-				// there is some magic here, for MPI module
-				// PyObject are different from node to node, but the
-				// referred value is the same. The right one is used and
-				// the value is boardcasted.
-#ifdef SIMUMPI
-				// which portion is this piece of array in?
-				return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + localGenoSize(),
-					genoSize(), totNumLoci(), beginLocus(), endLocus());
-#else
-				return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
-#endif
-			}
+			PyObject* arrGenotype();
 
 			/// return genotype as python Numeric.array object
 			/// This is the p'th copy of chromosomes
-			PyObject* arrGenotype(UINT p)
-			{
-				CHECKRANGEPLOIDY(p);
-#ifdef SIMUMPI
-				return Allele_Vec_As_NumArray( m_genoPtr + p*localNumLoci(),
-					m_genoPtr + (p+1)*localNumLoci(),
-					totNumLoci(), totNumLoci(), beginLocus(), endLocus());
-#else
-				return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci(),
-					m_genoPtr + (p+1)*totNumLoci() );
-#endif
-			}
+			PyObject* arrGenotype(UINT p);
 
 			/// return genotype as python Numeric.array object
 			/// This is the ch chromosome of the pth copy of chromosome
-			PyObject* arrGenotype(UINT p, UINT ch)
-			{
-				CHECKRANGEPLOIDY(p);
-#ifdef SIMUMPI
-				return Allele_Vec_As_NumArray( m_genoPtr + p*localNumLoci() + localChromBegin(ch),
-					m_genoPtr + (p+1)*localNumLoci() + localChromEnd(ch),
-					totNumLoci(), totNumLoci(), beginLocus(), endLocus());
-#else
-				return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci() + chromBegin(ch),
-					m_genoPtr + p*totNumLoci() +chromEnd(ch));
-#endif
-			}
+			PyObject* arrGenotype(UINT p, UINT ch);
 
-			PyObject* arrInfo()
-			{
-#ifdef SIMUMPI
-				if (mpiRank() == 0)
-					return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + infoSize() );
-				else
-					return NULL;
-#else
-				return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + infoSize() );
-#endif
-			}
+			PyObject* arrInfo();
 
 			/// get allele from an index
 			/** \param index index from the beginning of genotypic info
 			 */
+#ifdef SIMUMPI
+			Allele allele(UINT index) const;
+#else
 			Allele allele(UINT index) const
 			{
 				CHECKRANGEGENOSIZE(index);
-#ifdef SIMUMPI
-				// find out which node has the allele and broadcast it.
-				UINT p = index / totNumLoci();
-				UINT locus = index - p * totNumLoci();
-				std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
-				UINT rank = rankOfChrom(chIdx.first);
-				Allele val = 0;
-				if (mpiRank() == rank)
-					val = *(m_genoPtr+chIdx.second+p*localNumLoci());
-				broadcast(mpiComm(), val, rank);
-				return val;
-#else
 				return *(m_genoPtr+index);
-#endif
 			}
+#endif
 
 			/// get allele from an index, on the pth set of chromosome
 			/** \param index index from the begining of the p'th set of chromosomes.
 				\param p on p'th set of chromosomes, default to 0
 			*/
+#ifdef SIMUMPI
+			Allele allele(UINT index, UINT p) const;
+#else
 			Allele allele(UINT index, UINT p) const
 			{
 				CHECKRANGEABSLOCUS(index);
 				CHECKRANGEPLOIDY(p);
-#ifdef SIMUMPI
-				UINT locus = index - p * totNumLoci();
-				std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
-				UINT rank = rankOfChrom(chIdx.first);
-				Allele val = 0;
-				if (mpiRank() == rank)
-					val = *(m_genoPtr+chIdx.second-beginLocus()+p*localNumLoci());
-				broadcast(mpiComm(), val, rank);
-				return val;
-#else
 				return *(m_genoPtr+index + p* totNumLoci() );
-#endif
 			}
+#endif
 
+#ifdef SIMUMPI
+			Allele allele(UINT index, UINT p, UINT ch) const;
+#else
 			Allele allele(UINT index, UINT p, UINT ch) const
 			{
 				CHECKRANGELOCUS(ch, index);
 				CHECKRANGEPLOIDY(p);
 				CHECKRANGECHROM(ch);
-#ifdef SIMUMPI
-				UINT rank = rankOfChrom(ch);
-				Allele val = 0;
-				if(mpiRank() == rank)
-					val = *(m_genoPtr+index-beginLocus()+ localChromBegin(ch) + p*localNumLoci());
-				broadcast(mpiComm(), val, rank);
-				return val;
-#else
 				return *(m_genoPtr + index + p* totNumLoci() + chromBegin(ch));
-#endif
 			}
+#endif
 
 			string alleleChar(UINT index) const
 			{
@@ -342,55 +275,43 @@ namespace simuPOP
 			/// set allele from an index.
 			/** \param index index from the begining of genotype
 			 */
-			void setAllele(Allele allele, UINT index)
+#ifdef SIMUMPI
+			void setAllele(Allele allele, UINT index);
+#else
+				void setAllele(Allele allele, UINT index)
 			{
 				CHECKRANGEGENOSIZE(index);
-#ifdef SIMUMPI
-				// find out which node has the allele and broadcast it.
-				UINT p = index / totNumLoci();
-				UINT locus = index - p * totNumLoci();
-				std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
-				UINT rank = rankOfChrom(chIdx.first);
-				if (mpiRank() == rank)
-					*(m_genoPtr+chIdx.second+p*localNumLoci()) = allele;
-#else
 				*(m_genoPtr+index) = allele;
-#endif
 			}
+#endif
 
 			/// set allele from an index.
 			/** \param allele allele to set
 			\param index index from the begining of genotype
 			\param p on p'th set of chromosome, p=0 by default
 			 */
+#ifdef SIMUMPI
+			void setAllele(Allele allele, UINT index, UINT p);
+#else
 			void setAllele(Allele allele, UINT index, UINT p)
 			{
 				CHECKRANGEABSLOCUS(index);
 				CHECKRANGEPLOIDY(p);
-#ifdef SIMUMPI
-				UINT locus = index - p * totNumLoci();
-				std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
-				UINT rank = rankOfChrom(chIdx.first);
-				if (mpiRank() == rank)
-					*(m_genoPtr+chIdx.second-beginLocus()+p*localNumLoci()) = allele;
-#else
 				*(m_genoPtr + index+p*totNumLoci()) = allele;
-#endif
 			}
+#endif
 
+#ifdef SIMUMPI
+			void setAllele(Allele allele, UINT index, UINT p, UINT ch);
+#else
 			void setAllele(Allele allele, UINT index, UINT p, UINT ch)
 			{
 				CHECKRANGELOCUS(ch, index);
 				CHECKRANGEPLOIDY(p);
 				CHECKRANGECHROM(ch);
-#ifdef SIMUMPI
-				UINT rank = rankOfChrom(ch);
-				if(mpiRank() == rank)
-					*(m_genoPtr+index-beginLocus()+ localChromBegin(ch) + p*localNumLoci()) = allele;
-#else
 				*(m_genoPtr + index + p*totNumLoci() + chromBegin(ch) ) = allele;
-#endif
 			}
+#endif
 
 			/// sex?
 			Sex sex() const

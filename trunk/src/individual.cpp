@@ -25,6 +25,153 @@
 
 namespace simuPOP
 {
+
+#ifdef SIMUMPI
+	Allele individual::allele(UINT index) const
+	{
+		CHECKRANGEGENOSIZE(index);
+		// find out which node has the allele and broadcast it.
+		UINT p = index / totNumLoci();
+		UINT locus = index - p * totNumLoci();
+		std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
+		UINT rank = rankOfChrom(chIdx.first);
+		Allele val = 0;
+		if (mpiRank() == rank)
+			val = *(m_genoPtr+chIdx.second+p*localNumLoci());
+		broadcast(mpiComm(), val, rank);
+		return val;
+	}
+
+	Allele individual::allele(UINT index, UINT p) const
+	{
+		CHECKRANGEABSLOCUS(index);
+		CHECKRANGEPLOIDY(p);
+
+		std::pair<UINT, UINT> chIdx = chromLocusPair(index);
+		UINT rank = rankOfChrom(chIdx.first);
+		Allele val = 0;
+		if (mpiRank() == rank)
+			val = *(m_genoPtr + chIdx.second - beginLocus()
+				+ p*localNumLoci());
+		broadcast(mpiComm(), val, rank);
+		return val;
+	}
+
+	Allele individual::allele(UINT index, UINT p, UINT ch) const
+	{
+		CHECKRANGELOCUS(ch, index);
+		CHECKRANGEPLOIDY(p);
+		CHECKRANGECHROM(ch);
+
+		UINT rank = rankOfChrom(ch);
+		Allele val = 0;
+		if(mpiRank() == rank)
+			val = *(m_genoPtr + index + localChromBegin(ch)
+				+ p*localNumLoci());
+		broadcast(mpiComm(), val, rank);
+		return val;
+	}
+
+	void individual::setAllele(Allele allele, UINT index)
+	{
+		CHECKRANGEGENOSIZE(index);
+
+		// find out which node has the allele and broadcast it.
+		UINT p = index / totNumLoci();
+		UINT locus = index - p * totNumLoci();
+		std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
+		UINT rank = rankOfChrom(chIdx.first);
+		if (mpiRank() == rank)
+			*(m_genoPtr+chIdx.second+p*localNumLoci()) = allele;
+	}
+
+	/// set allele from an index.
+	/** \param allele allele to set
+	\param index index from the begining of genotype
+	\param p on p'th set of chromosome, p=0 by default
+	 */
+	void individual::setAllele(Allele allele, UINT index, UINT p)
+	{
+		CHECKRANGEABSLOCUS(index);
+		CHECKRANGEPLOIDY(p);
+
+		std::pair<UINT, UINT> chIdx = chromLocusPair(index);
+		UINT rank = rankOfChrom(chIdx.first);
+		if (mpiRank() == rank)
+			*(m_genoPtr + chIdx.second - beginLocus() + p*localNumLoci()) = allele;
+	}
+
+	void individual::setAllele(Allele allele, UINT index, UINT p, UINT ch)
+	{
+		CHECKRANGELOCUS(ch, index);
+		CHECKRANGEPLOIDY(p);
+		CHECKRANGECHROM(ch);
+
+		UINT rank = rankOfChrom(ch);
+		if(mpiRank() == rank)
+			*(m_genoPtr + index + localChromBegin(ch) +
+			p*localNumLoci()) = allele;
+	}
+#endif
+
+	PyObject* individual::arrGenotype()
+	{
+		// this &* is to avoid any possible type mismatch thing.
+		// there is some magic here, for MPI module
+		// PyObject are different from node to node, but the
+		// referred value is the same. The right one is used and
+		// the value is boardcasted.
+#ifdef SIMUMPI
+		// which portion is this piece of array in?
+		return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + localGenoSize(),
+			genoSize(), totNumLoci(), beginLocus(), endLocus());
+#else
+		return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
+#endif
+	}
+
+	/// return genotype as python Numeric.array object
+	/// This is the p'th copy of chromosomes
+	PyObject* individual::arrGenotype(UINT p)
+	{
+		CHECKRANGEPLOIDY(p);
+#ifdef SIMUMPI
+		return Allele_Vec_As_NumArray( m_genoPtr + p*localNumLoci(),
+			m_genoPtr + (p+1)*localNumLoci(),
+			totNumLoci(), totNumLoci(), beginLocus(), endLocus());
+#else
+		return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci(),
+			m_genoPtr + (p+1)*totNumLoci() );
+#endif
+	}
+
+	/// return genotype as python Numeric.array object
+	/// This is the ch chromosome of the pth copy of chromosome
+	PyObject* individual::arrGenotype(UINT p, UINT ch)
+	{
+		CHECKRANGEPLOIDY(p);
+#ifdef SIMUMPI
+		return Allele_Vec_As_NumArray( m_genoPtr + p*localNumLoci() + localChromBegin(ch),
+			m_genoPtr + p*localNumLoci() + localChromEnd(ch),
+			numLoci(ch), totNumLoci(), 0, localNumLoci());
+#else
+		return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci() + chromBegin(ch),
+			m_genoPtr + p*totNumLoci() +chromEnd(ch));
+#endif
+	}
+
+	PyObject* individual::arrInfo()
+	{
+#ifdef SIMUMPI
+		if (mpiRank() == 0)
+			return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + infoSize() );
+		else
+			return NULL;
+#else
+		return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + infoSize() );
+#endif
+	}
+
 	individual& individual::operator= (const individual& rhs)
 	{
 		setShallowCopied(true);
