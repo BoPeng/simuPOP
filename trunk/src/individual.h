@@ -278,7 +278,7 @@ namespace simuPOP
 #ifdef SIMUMPI
 			void setAllele(Allele allele, UINT index);
 #else
-				void setAllele(Allele allele, UINT index)
+			void setAllele(Allele allele, UINT index)
 			{
 				CHECKRANGEGENOSIZE(index);
 				*(m_genoPtr+index) = allele;
@@ -385,64 +385,53 @@ namespace simuPOP
 			}
 
 			/// get info
+#ifdef SIMUMPI
+			InfoType info(UINT idx) const;
+#else
 			InfoType info(UINT idx) const
 			{
 				CHECKRANGEINFO(idx);
-#ifdef SIMUMPI
-				if (mpiRank()==0)
-					return m_infoPtr[idx];
-				else
-					// info is stored only on head node
-					return 0;
-#else
+
 				return m_infoPtr[idx];
-#endif
 			}
+#endif
 
 			/// set info
+#ifdef SIMUMPI
+			void setInfo(InfoType value, UINT idx);
+#else
 			void setInfo(InfoType value, UINT idx)
 			{
 				CHECKRANGEINFO(idx);
-#ifdef SIMUMPI
-				if (mpiRank()==0)
-#endif
-					m_infoPtr[idx] = value;
+				m_infoPtr[idx] = value;
 			}
+#endif
 
 			/// get info
+#ifdef SIMUMPI
+			InfoType info(const string& name) const;
+#else
 			InfoType info(const string& name) const
 			{
-#ifdef SIMUMPI
-				if (mpiRank()==0)
-				{
-#endif
-					int idx = infoIdx(name);
-					DBG_ASSERT(idx>=0, IndexError,
-						"Info name " + name + " is not a valid info field name");
-					return m_infoPtr[idx];
-#ifdef SIMUMPI
-				}
-				else
-					// info is stored only on head node
-					return 0;
-#endif
+				int idx = infoIdx(name);
+				DBG_ASSERT(idx>=0, IndexError,
+					"Info name " + name + " is not a valid info field name");
+				return m_infoPtr[idx];
 			}
+#endif
 
 			/// set info
+#ifdef SIMUMPI
+			void setInfo(InfoType value, const string& name);
+#else
 			void setInfo(InfoType value, const string& name)
 			{
-#ifdef SIMUMPI
-				if (mpiRank()==0)
-				{
-#endif
-					int idx = infoIdx(name);
-					DBG_ASSERT(idx>=0, IndexError,
-						"Info name " + name + " is not a valid info field name");
-					m_infoPtr[idx] = value;
-#ifdef SIMUMPI
-				}
-#endif
+				int idx = infoIdx(name);
+				DBG_ASSERT(idx>=0, IndexError,
+					"Info name " + name + " is not a valid info field name");
+				m_infoPtr[idx] = value;
 			}
+#endif
 
 			/// start of alleles
 			/// CPPONLY

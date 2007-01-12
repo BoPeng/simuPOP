@@ -495,12 +495,17 @@ namespace simuPOP
 			*/
 			GappedAlleleIterator alleleBegin(UINT locus, bool order)
 			{
-#ifdef SIMUMPI
-				PENDING_MPI;
-#else
 				CHECKRANGEABSLOCUS(locus);
 				if(order && shallowCopied())
 					adjustGenoPosition(true);
+#ifdef SIMUMPI
+				UINT rank = rankOfLocus(locus);
+				if (mpiRank() == rank)
+					return GappedAlleleIterator(m_genotype.begin()+locus - beginLocus(), localNumLoci());
+				else					
+					// this iterator is invalid
+					return GappedAlleleIterator(m_genotype.begin(), 0);
+#else
 				return GappedAlleleIterator( m_genotype.begin()+locus, totNumLoci());
 #endif
 			}
@@ -508,15 +513,18 @@ namespace simuPOP
 			/// CPPONLY allele iterator
 			GappedAlleleIterator alleleEnd(UINT locus, bool order)
 			{
-#ifdef SIMUMPI
-				PENDING_MPI;
-#else
-
 				CHECKRANGEABSLOCUS( locus);
 				if(order && shallowCopied())
 					adjustGenoPosition(true);
-
-				return GappedAlleleIterator( m_genotype.begin() + locus + m_popSize*genoSize(), totNumLoci());
+#ifdef SIMUMPI
+				UINT rank = rankOfLocus(locus);
+				if (mpiRank() == rank)
+					return GappedAlleleIterator(m_genotype.begin() + locus -
+						beginLocus() + m_popSize*localGenoSize(), localNumLoci());
+				else					
+					return GappedAlleleIterator(m_genotype.begin(), 0);
+#else
+				return GappedAlleleIterator(m_genotype.begin() + locus + m_popSize*genoSize(), totNumLoci());
 #endif
 			}
 
@@ -525,15 +533,20 @@ namespace simuPOP
 			/// order = false; repect subpop
 			GappedAlleleIterator alleleBegin(UINT locus, UINT subPop, bool order)
 			{
-#ifdef SIMUMPI
-				PENDING_MPI;
-#else
 				CHECKRANGEABSLOCUS(locus);
 				CHECKRANGESUBPOP(subPop);
 
 				if(shallowCopied())
 					adjustGenoPosition(order);
+#ifdef SIMUMPI
+				UINT rank = rankOfLocus(locus);
+				if (mpiRank() == rank)
+					return GappedAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop]*localGenoSize() +
+						locus - beginLocus(), localNumLoci());
+				else
+					return GappedAlleleIterator( m_genotype.begin(), 0);
 
+#else
 				return GappedAlleleIterator( m_genotype.begin() + m_subPopIndex[subPop]*genoSize() +
 					locus, totNumLoci());
 #endif
@@ -542,15 +555,20 @@ namespace simuPOP
 			///  CPPONLY allele iterator
 			GappedAlleleIterator alleleEnd( UINT locus, UINT subPop, bool order)
 			{
-#ifdef SIMUMPI
-				PENDING_MPI;
-#else
 				CHECKRANGEABSLOCUS(locus);
 				CHECKRANGESUBPOP(subPop);
 
 				if(shallowCopied())
 					adjustGenoPosition(order);
 
+#ifdef SIMUMPI
+				UINT rank = rankOfLocus(locus);
+				if (mpiRank() == rank)
+					return GappedAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop+1]*localGenoSize() +
+						locus - beginLocus(), localNumLoci());
+				else
+					return GappedAlleleIterator(m_genotype.begin(), 0);
+#else
 				return GappedAlleleIterator( m_genotype.begin() + m_subPopIndex[subPop+1]*genoSize() +
 					locus, totNumLoci());
 #endif
@@ -561,27 +579,19 @@ namespace simuPOP
 			/// otherwise, do not even respect subpopulation structure
 			GenoIterator genoBegin(bool order)
 			{
-#ifdef SIMUMPI
-				PENDING_MPI;
-#else
 				if(order && shallowCopied())
 					adjustGenoPosition(true);
 
 				return m_genotype.begin();
-#endif
 			}
 
 			///  CPPONLY allele iterator
 			GenoIterator genoEnd(bool order)
 			{
-#ifdef SIMUMPI
-				PENDING_MPI;
-#else
 				if(order && shallowCopied())
 					adjustGenoPosition(true);
 
 				return m_genotype.end();
-#endif
 			}
 
 			///  CPPONLY allele iterator, go through all allels one by one in a subpopulation
@@ -589,15 +599,14 @@ namespace simuPOP
 			/// if not order, respect subpopulation structure
 			GenoIterator genoBegin(UINT subPop, bool order)
 			{
-#ifdef SIMUMPI
-				PENDING_MPI;
-#else
-
 				CHECKRANGESUBPOP(subPop);
 
 				if(shallowCopied())
 					adjustGenoPosition(order);
 
+#ifdef SIMUMPI
+				return m_genotype.begin() + m_subPopIndex[subPop]*localGenoSize();
+#else
 				return m_genotype.begin() + m_subPopIndex[subPop]*genoSize();
 #endif
 			}
@@ -605,13 +614,13 @@ namespace simuPOP
 			///  CPPONLY allele iterator in a subpopulation.
 			GenoIterator genoEnd(UINT subPop, bool order)
 			{
-#ifdef SIMUMPI
-				PENDING_MPI;
-#else
 				CHECKRANGESUBPOP(subPop);
 				if(shallowCopied())
 					adjustGenoPosition(order);
 
+#ifdef SIMUMPI
+				return m_genotype.begin() + m_subPopIndex[subPop+1]*localGenoSize();
+#else
 				return m_genotype.begin() + m_subPopIndex[subPop+1]*genoSize();
 #endif
 			}
@@ -814,23 +823,37 @@ namespace simuPOP
 			template<typename T, typename T1>
 				void setIndInfo(const T& values, T1 idx)
 			{
-				CHECKRANGEINFO(idx);
-				DBG_ASSERT(values.size() == popSize(), IndexError,
-					"Size of values should be the same as population size");
-				UINT is = infoSize();
-				typename T::const_iterator infoIter = values.begin();
-				for(vectorinfo::iterator ptr=m_info.begin() + idx;
-					ptr != m_info.end() + idx; ptr += is)
-				*ptr = static_cast<InfoType>(*infoIter++);
+#ifdef SIMUMPI
+				if(mpiRank()==0)
+				{
+#endif
+					CHECKRANGEINFO(idx);
+					DBG_ASSERT(values.size() == popSize(), IndexError,
+						"Size of values should be the same as population size");
+					UINT is = infoSize();
+					typename T::const_iterator infoIter = values.begin();
+					for(vectorinfo::iterator ptr=m_info.begin() + idx;
+						ptr != m_info.end() + idx; ptr += is)
+					*ptr = static_cast<InfoType>(*infoIter++);
+#ifdef SIMUMPI
+				}
+#endif
 			}
 
 			template<class T>
 				void setIndInfo(const T& values, const string& name)
 			{
-				int idx = infoIdx(name);
-				DBG_ASSERT(idx>=0, IndexError,
-					"Info name " + name + " is not a valid values field name");
-				setIndInfo<T, UINT>(values, idx);
+#ifdef SIMUMPI
+				if(mpiRank()==0)
+				{
+#endif
+					int idx = infoIdx(name);
+					DBG_ASSERT(idx>=0, IndexError,
+						"Info name " + name + " is not a valid values field name");
+					setIndInfo<T, UINT>(values, idx);
+#ifdef SIMUMPI
+				}
+#endif
 			}
 
 			/// info iterator

@@ -46,7 +46,7 @@ namespace simuPOP
 				m_ranges.resize( m_subPop.size());
 				for(size_t i = 0; i < m_subPop.size(); ++i)
 				{
-					m_ranges[i].resize(2, pop.subPopBegin( m_subPop[i]));
+					m_ranges[i].resize(2, pop.subPopBegin(m_subPop[i]));
 					m_ranges[i][1] = pop.subPopEnd(m_subPop[i]);
 				}
 			}
@@ -90,12 +90,14 @@ namespace simuPOP
 				SystemError, "Allele frequecies shoudl add up to one.");
 
 			pop.adjustGenoPosition(true);
-			if( m_identicalInds )
+			if(m_identicalInds)
 			{
-				if( this->m_atLoci.empty())		  // to all loci
+				if(this->m_atLoci.empty())		  // to all loci
 				{
 					if( this->m_atPloidy==-1)	  // all chromosomes
 					{
+						// for MPI mode, indGenoBegin and indGenoEnd
+						// refers to local pieces.
 						ws.get(pop.indGenoBegin(left), pop.indGenoEnd(left));
 
 						for(ULONG ind=left+1; ind != right; ++ind)
@@ -103,6 +105,8 @@ namespace simuPOP
 					}
 					else						  // only initialize one set of chromosome
 					{
+						// for MPI mode, indGenoBegin and indGenoEnd
+						// refers to local pieces.
 						ws.get(pop.ind(left).genoBegin(this->m_atPloidy),
 							pop.ind(left).genoEnd(this->m_atPloidy));
 
@@ -117,11 +121,11 @@ namespace simuPOP
 					// initislize locus by locus
 					for(vectoru::iterator locus=this->m_atLoci.begin(); locus != this->m_atLoci.end(); ++locus)
 					{
-												  // all chromosomes
-						if( this->m_atPloidy == -1 )
+						// all chromosomes
+						if(this->m_atPloidy == -1)
 						{
-							ws.get( pop.alleleBegin(*locus, false) + left * pop.ploidy(),
-								pop.alleleBegin(*locus, false) + (left+1)*pop.ploidy() );
+							ws.get(pop.alleleBegin(*locus, false) + left * pop.ploidy(),
+								pop.alleleBegin(*locus, false) + (left+1) * pop.ploidy() );
 
 							for(ULONG ind=left+1; ind != right; ++ind)
 								copy(pop.alleleBegin(*locus, false) + left*pop.ploidy(),
@@ -142,8 +146,15 @@ namespace simuPOP
 				if( this->m_atLoci.empty())		  // at all loci
 				{
 					if( this->m_atPloidy == -1)
-						ws.get( pop.genoBegin(false)+left*pop.genoSize(),
+					{
+#ifdef SIMUMPI
+						ws.get(pop.genoBegin(false)+left*pop.localGenoSize(),
+							pop.genoBegin(false)+right*pop.localGenoSize());
+#else
+						ws.get(pop.genoBegin(false)+left*pop.genoSize(),
 							pop.genoBegin(false)+right*pop.genoSize());
+#endif
+					}
 					else						  // for only one ploidy
 					{
 						for(ULONG ind=left; ind != right; ++ind)
@@ -193,6 +204,13 @@ namespace simuPOP
 
 	bool initByValue::apply(population& pop)
 	{
+#ifdef SIMUMPI
+		// still run without marker, go trigger errors etc.
+		bool noMarker = false;
+		// for mpi, there is no data in the first node
+		if (mpiRank() == 0)
+			noMarker = true;
+#endif
 
 		this->initSexIter();
 
@@ -201,25 +219,91 @@ namespace simuPOP
 			// extend m_value
 			if(m_proportion.empty())
 			{
-				if( this->m_atLoci.empty() && m_value[i].size() == pop.totNumLoci())
+				if(m_atLoci.empty() && m_value[i].size() == pop.totNumLoci())
 				{
+#ifdef SIMUMPI
+					if( this->m_atPloidy==-1)
+					{
+						// shift pieces to the beginning
+						vectori tmpValue(pop.localNumLoci()*pop.ploidy());
+						for(UINT p=0; p < pop.ploidy(); ++p)
+							copy(m_value[i].begin() + pop.beginLocus(),
+								m_value[i].begin() + pop.endLocus(),
+								tmpValue.begin() + pop.localNumLoci()*p);
+						m_value[i].swap(tmpValue);
+					}
+					else
+					{
+						vectori tmpValue(pop.localNumLoci());
+						copy(m_value[i].begin() + pop.beginLocus(),
+							m_value[i].begin() + pop.endLocus(),
+							tmpValue.begin());
+						m_value[i].swap(tmpValue);
+					}
+#else
 					if( this->m_atPloidy==-1)
 					{
 						m_value[i].resize( pop.totNumLoci() * pop.ploidy());
 						for(UINT p=1; p < pop.ploidy(); ++p)
-							copy( m_value[i].begin(), m_value[i].begin() + pop.totNumLoci(),
+							copy( m_value[i].begin(),
+								m_value[i].begin() + pop.totNumLoci(),
 								m_value[i].begin() + pop.totNumLoci()*p);
 					}
+#endif
 				}
-				if( ! this->m_atLoci.empty() && m_value[i].size() == this->m_atLoci.size() )
+#ifdef SIMUMPI
+				if(m_atLoci.empty() && m_value[i].size() == pop.totNumLoci()*pop.ploidy())
 				{
+					if(m_atPloidy==-1)
+					{
+						vectori tmpValue(pop.localNumLoci()*pop.ploidy());
+						for(UINT p=0; p < pop.ploidy(); ++p)
+							copy(m_value[i].begin() + pop.beginLocus() + pop.totNumLoci()*p,
+								m_value[i].begin() + pop.endLocus() + pop.totNumLoci()*p,
+								tmpValue.begin() + pop.localNumLoci()*p);
+						m_value[i].swap(tmpValue);
+					}
+				}
+#endif
+				if( !m_atLoci.empty() &&
+					(m_value[i].size() == m_atLoci.size()||
+					m_value[i].size() == m_atLoci.size() * pop.ploidy())
+					)
+				{
+#ifdef SIMUMPI
+					// pick at loci
+					vectoru tmpLoci;
+					vectori tmpValue;
+					for(size_t loc=0; loc < m_atLoci.size(); ++loc)
+					{
+						if (pop.rankOfLocus(m_atLoci[loc]) == mpiRank())
+						{
+							tmpLoci.push_back(m_atLoci[loc] - pop.beginLocus());
+							tmpValue.push_back(m_value[i][loc]);
+						}
+					}
+					if( this->m_atPloidy==-1)
+					{
+						tmpValue.resize(tmpLoci.size() * pop.ploidy());
+						for(UINT p=1; p < pop.ploidy(); ++p)
+							copy(tmpValue.begin(),
+								tmpValue.begin() + tmpLoci.size(),
+								tmpValue.begin() + tmpLoci.size()*p);
+						m_value[i].swap(tmpValue);
+						m_atLoci.swap(tmpLoci);
+						if (m_atLoci.empty())
+							noMarker = true;
+					}
+#else
 					if( this->m_atPloidy==-1)
 					{
 						m_value[i].resize( this->m_atLoci.size() * pop.ploidy());
 						for(UINT p=1; p < pop.ploidy(); ++p)
-							copy( m_value[i].begin(), m_value[i].begin() + this->m_atLoci.size(),
+							copy( m_value[i].begin(),
+								m_value[i].begin() + this->m_atLoci.size(),
 								m_value[i].begin() + this->m_atLoci.size()*p);
 					}
+#endif
 				}								  // case 2
 			}									  // no proportion
 		}										  // check m_value[i]
@@ -251,23 +335,42 @@ namespace simuPOP
 					ValueError, "Invaid m_ranges boundary: " + toStr(left) + " - " + toStr(right));
 
 				vectori& src = m_value.size() > 1 ? m_value[rg] : m_value[0];
-				size_t srcSz = src.size(), lociSz=this->m_atLoci.size(),
-					totNumLoci = pop.totNumLoci();
+				size_t srcSz = src.size();
+				size_t lociSz = m_atLoci.size();
+#ifdef SIMUMPI
+				size_t totNumLoci = pop.localNumLoci();
+#else
+				size_t totNumLoci = pop.totNumLoci();
+#endif
 
 				for (ULONG ind = left; ind < right; ++ind)
 				{
-					if(this->m_atLoci.empty())
+#ifdef SIMUMPI
+					if(m_atLoci.empty() && !noMarker)
+#else
+						if(m_atLoci.empty())
+#endif
 					{
-						if(this->m_atPloidy==-1)  // all copies of chromosome
+						if(m_atPloidy==-1)	  // all copies of chromosome
 						{
+#ifdef SIMUMPI
+							DBG_ASSERT(src.size() == pop.localGenoSize(), ValueError,
+								"Rank " + toStr(mpiRank()) + " Length of value does not match geno size");
+#else
 							DBG_ASSERT(src.size() == pop.genoSize(), ValueError,
 								"Length of value does not match geno size");
+#endif
 							copy(src.begin(), src.end(), pop.indGenoBegin(ind));
 						}
 						else					  // one of the copied.
 						{						  /// fixme: check length of src?
+#ifdef SIMUMPI
+							DBG_ASSERT(src.size() == pop.localNumLoci(), ValueError,
+								"Rank " + toStr(mpiRank()) + "Ploidy is specified but the length of alleles do not match length of chromosome. val size: " );
+#else
 							DBG_ASSERT( src.size() == pop.totNumLoci(), ValueError,
 								"Ploidy is specified but the length of alleles do not match length of chromosome. val size: " );
+#endif
 							copy(src.begin(), src.end(), pop.ind(ind).genoBegin(this->m_atPloidy));
 						}
 					}
@@ -313,14 +416,26 @@ namespace simuPOP
 				DBG_FAILIF( left > pop.popSize() || right > pop.popSize() || left > right ,
 					ValueError, "Invaid m_ranges boundary: " + toStr(left) + " - " + toStr(right));
 
-				size_t srcSz = m_value[0].size(), lociSz=this->m_atLoci.size(), totNumLoci = pop.totNumLoci();
+				size_t srcSz = m_value[0].size();
+				size_t lociSz=this->m_atLoci.size();
+#ifdef SIMUMPI
+				size_t totNumLoci = pop.localNumLoci();
+#else
+				size_t totNumLoci = pop.totNumLoci();
+#endif
 				Weightedsampler ws(rng(), m_proportion);
 
 				for (ULONG ind = left; ind < right; ++ind)
 				{
-					if(this->m_atLoci.empty())	  // whole chromosome or geno
+#ifdef SIMUMPI
+												  // whole chromosome or geno
+					if(m_atLoci.empty() && !noMarker)
+#else
+						if(m_atLoci.empty())	  // whole chromosome or geno
+#endif
 					{
-						if( srcSz == totNumLoci)  // by ploidy
+												  // by ploidy
+						if( srcSz == totNumLoci)
 						{
 							if(this->m_atPloidy==-1)
 							{
@@ -350,6 +465,9 @@ namespace simuPOP
 					}
 					else						  /// atLoci is in effect
 					{
+						cout << mpiRank() << "m loci " << m_atLoci << endl;
+						if (noMarker)
+							return true;
 						if( srcSz == lociSz )	  // one by one
 						{
 							if(this->m_atPloidy==-1)
