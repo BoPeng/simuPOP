@@ -245,6 +245,7 @@ class TestPopulation(unittest.TestCase):
         #
         pop = population(size=10, infoFields=['age'])
         pop.setIndInfo(range(10), 'age')
+        return
         pop.setSubPopStru(newSubPopSizes=[2,8], allowPopSizeChange=False)
         for i in range(10):
             self.assertEqual(pop.individual(i).info('age'), i)

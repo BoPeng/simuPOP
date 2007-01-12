@@ -40,6 +40,7 @@ class TestInitialization(unittest.TestCase):
         atLoci=[], subPop=[], indRange=[], atPloidy=[]):
         'Assert if the genotype has the correct allele frequency'
         geno = getGenotype(pop, atLoci, subPop, indRange, atPloidy)
+        print geno[:100]
         if alleleType() == 'binary':
             if len(freqLow) == 1:    # only one
                 freq0 = geno.count(0)*1.0 / len(geno)
@@ -54,15 +55,17 @@ class TestInitialization(unittest.TestCase):
         else:    # all loci
             for i in range(len(freqLow)):
                 freq = geno.count(i)*1.0 / len(geno)
+                print len(geno), freq
                 assert freq >= freqLow[i] and freq <= freqHigh[i]
      
     def testInitByFreq(self): 
         'Testing operator initByFreq '
-        pop = population(subPop=[500,1000, 500], loci=[2,4,2])
+        pop = population(subPop=[500, 1000, 500], loci=[2,4,2])
         # initialize all
         InitByFreq(pop, [.2, .3, .5])
         self.assertGenotypeFreq(pop, [.15, .25, .45],
             [.25, .35, .55])
+        return
         #
         self.clearGenotype(pop)
         InitByFreq(pop, [.2, .3, .4, .1], atLoci=[2,4,6])
@@ -250,10 +253,10 @@ class TestInitialization(unittest.TestCase):
         self.clearGenotype(pop)
         InitByValue(pop, value=[[0]*3, [1]*3], atLoci=[2,4,5],
             proportions=[.3,.7],    indRange=[[300,600],[700,1000]] )                 
-        self.assertGenotypeFreq(pop, [0.25, 0.65], [0.35, 0.75],
-            atLoci=[2,4,5], indRange=[[300,600],[700,1000]])
         self.assertGenotype(pop, 0, atLoci=[0,1,3,6,7])
         self.assertGenotype(pop, 0, indRange=[[0,300],[600,700]])
+        self.assertGenotypeFreq(pop, [0.25, 0.65], [0.35, 0.75],
+            atLoci=[2,4,5], indRange=[[300,600],[700,1000]])
         
     def testPyInit(self):
         ' testing operator pyInit'
