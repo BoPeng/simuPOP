@@ -252,8 +252,7 @@ class TestInitialization(unittest.TestCase):
         # whole ind
         self.clearGenotype(pop)
         InitByValue(pop, value=[[0]*3, [1]*3], atLoci=[2,4,5],
-            proportions=[.3,.7],    indRange=[[300,600],[700,1000]] )                 
-        return        
+            proportions=[.3,.7], indRange=[[300,600],[700,1000]] )                 
         self.assertGenotype(pop, 0, atLoci=[0,1,3,6,7])
         self.assertGenotype(pop, 0, indRange=[[0,300],[600,700]])
         self.assertGenotypeFreq(pop, [0.25, 0.65], [0.35, 0.75],
