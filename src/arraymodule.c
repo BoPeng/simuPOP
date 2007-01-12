@@ -799,7 +799,7 @@ static PyObject * array_slice(arrayobject *a, int ilow, int ihigh)
 			ilow);
 #else			
         np = (arrayobject *) newcarrayiterobject(a->ob_iterator.ob_iter + ilow,
-            a->ob_iterator.ob_iter + ihigh)
+            a->ob_iterator.ob_iter + ihigh);
 #endif			
     else
         np = (arrayobject *) newcarrayobject(a->ob_iterator.ob_item + ilow*a->ob_descr->itemsize,

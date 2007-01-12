@@ -112,6 +112,53 @@ namespace simuPOP
 			*(m_genoPtr + index + localChromBegin(ch) +
 			p*localNumLoci()) = allele;
 	}
+
+	/// get info
+	InfoType individual::info(UINT idx) const
+	{
+		CHECKRANGEINFO(idx);
+		// broad cast the value to all nodes
+		InfoType info;
+		if (mpiRank() == 0)
+			info = m_infoPtr[idx];
+		broadcast(mpiComm(), info, 0);
+		return info;
+	}
+
+	/// set info
+	void individual::setInfo(InfoType value, UINT idx)
+	{
+		CHECKRANGEINFO(idx);
+		if (mpiRank()==0)
+			m_infoPtr[idx] = value;
+	}
+
+	/// get info
+	InfoType individual::info(const string& name) const
+	{
+		InfoType info;
+		if (mpiRank()==0)
+		{
+			int idx = infoIdx(name);
+			DBG_ASSERT(idx>=0, IndexError,
+				"Info name " + name + " is not a valid info field name");
+			info = m_infoPtr[idx];
+		}
+		broadcast(mpiComm(), info, 0);
+		return info;
+	}
+
+	/// set info
+	void individual::setInfo(InfoType value, const string& name)
+	{
+		if (mpiRank()==0)
+		{
+			int idx = infoIdx(name);
+			DBG_ASSERT(idx>=0, IndexError,
+				"Info name " + name + " is not a valid info field name");
+			m_infoPtr[idx] = value;
+		}
+	}
 #endif
 
 	PyObject* individual::arrGenotype()

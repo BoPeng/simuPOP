@@ -1023,129 +1023,158 @@ namespace simuPOP
 	/// add field
 	int population::addInfoField(const string field, double init)
 	{
-		DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
-			"Info size is wrong");
+#ifdef SIMUMPI
+		if(mpiRank()==0)
+		{
+#endif
 
-		UINT os = infoSize();
-		UINT idx;
-		// if this field exists, return directly
-		try
-		{
-			idx = infoIdx(field);
-			// only needs to initialize
-			int oldAncPop = m_curAncestralPop;
-			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
-			{
-				useAncestralPop(anc);
-				for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
-					ind->setInfo(init, idx);
-			}
-			useAncestralPop(oldAncPop);
-			return idx;
-		}
-		catch(IndexError &)
-		{
-			idx = struAddInfoField(field);
-		}
+			DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
+				"Info size is wrong");
 
-		/// adjust information size.
-		UINT is = infoSize();
-		if(os != is)
-		{
-			int oldAncPop = m_curAncestralPop;
-			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
-			{
-				useAncestralPop(anc);
-				vectorinfo newInfo(is*popSize());
-				/// copy the old stuff in
-				InfoIterator ptr = newInfo.begin();
-				for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
-				{
-					copy(ind->infoBegin(), ind->infoBegin() + is - 1, ptr);
-					ind->setInfoPtr(ptr);
-					fill(ind->infoBegin() + os, ind->infoEnd(), init);
-					ptr += is;
-				}
-				m_info.swap(newInfo);
-			}
-			useAncestralPop(oldAncPop);
-		}
-		return idx;
-	}
-
-	void population::addInfoFields(const vectorstr& fields, double init)
-	{
-		DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
-			"Info size is wrong");
-		// oldsize
-		UINT os = infoSize();
-		for(vectorstr::const_iterator it=fields.begin(); it!=fields.end(); ++it)
-		{
+			UINT os = infoSize();
+			UINT idx;
+			// if this field exists, return directly
 			try
 			{
-				// has field
-				UINT idx = infoIdx(*it);
+				idx = infoIdx(field);
 				// only needs to initialize
 				int oldAncPop = m_curAncestralPop;
 				for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 				{
 					useAncestralPop(anc);
-
 					for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
 						ind->setInfo(init, idx);
 				}
 				useAncestralPop(oldAncPop);
+				return idx;
 			}
 			catch(IndexError &)
 			{
-				struAddInfoField(*it);
+				idx = struAddInfoField(field);
 			}
-		}
 
-		// add these fields
-		/// adjust information size.
-		UINT is = infoSize();
-		// need to extend.
-		if(is != os)
-		{
-			int oldAncPop = m_curAncestralPop;
-			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
+			/// adjust information size.
+			UINT is = infoSize();
+			if(os != is)
 			{
-				useAncestralPop(anc);
-				vectorinfo newInfo(is*popSize(), 0.);
-				/// copy the old stuff in
-				InfoIterator ptr = newInfo.begin();
-				for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
+				int oldAncPop = m_curAncestralPop;
+				for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 				{
-					copy(ind->infoBegin(), ind->infoBegin() + os, ptr);
-					ind->setInfoPtr(ptr);
-					fill(ind->infoBegin() + os, ind->infoEnd(), init);
-					ptr += is;
+					useAncestralPop(anc);
+					vectorinfo newInfo(is*popSize());
+					/// copy the old stuff in
+					InfoIterator ptr = newInfo.begin();
+					for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
+					{
+						copy(ind->infoBegin(), ind->infoBegin() + is - 1, ptr);
+						ind->setInfoPtr(ptr);
+						fill(ind->infoBegin() + os, ind->infoEnd(), init);
+						ptr += is;
+					}
+					m_info.swap(newInfo);
 				}
-				m_info.swap(newInfo);
+				useAncestralPop(oldAncPop);
 			}
-			useAncestralPop(oldAncPop);
+			return idx;
+#ifdef SIMUMPI
 		}
+		// for other node, just return 0.
+		else
+			return 0;
+#endif
+
+	}
+
+	void population::addInfoFields(const vectorstr& fields, double init)
+	{
+#ifdef SIMUMPI
+		if(mpiRank()==0)
+		{
+#endif
+
+			DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
+				"Info size is wrong");
+			// oldsize
+			UINT os = infoSize();
+			for(vectorstr::const_iterator it=fields.begin(); it!=fields.end(); ++it)
+			{
+				try
+				{
+					// has field
+					UINT idx = infoIdx(*it);
+					// only needs to initialize
+					int oldAncPop = m_curAncestralPop;
+					for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
+					{
+						useAncestralPop(anc);
+
+						for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
+							ind->setInfo(init, idx);
+					}
+					useAncestralPop(oldAncPop);
+				}
+				catch(IndexError &)
+				{
+					struAddInfoField(*it);
+				}
+			}
+
+			// add these fields
+			/// adjust information size.
+			UINT is = infoSize();
+			// need to extend.
+			if(is != os)
+			{
+				int oldAncPop = m_curAncestralPop;
+				for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
+				{
+					useAncestralPop(anc);
+					vectorinfo newInfo(is*popSize(), 0.);
+					/// copy the old stuff in
+					InfoIterator ptr = newInfo.begin();
+					for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
+					{
+						copy(ind->infoBegin(), ind->infoBegin() + os, ptr);
+						ind->setInfoPtr(ptr);
+						fill(ind->infoBegin() + os, ind->infoEnd(), init);
+						ptr += is;
+					}
+					m_info.swap(newInfo);
+				}
+				useAncestralPop(oldAncPop);
+			}
+#ifdef SIMUMPI
+		}
+#endif
+
 	}
 
 	/// set fields
 	void population::setInfoFields(const vectorstr& fields, double init)
 	{
-		struSetInfoFields(fields);
-
-		/// reset info vector
-		int oldAncPop = m_curAncestralPop;
-		UINT is = infoSize();
-		for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
+#ifdef SIMUMPI
+		if(mpiRank()==0)
 		{
-			useAncestralPop(anc);
-			vectorinfo newInfo(is*popSize(), init);
-			InfoIterator ptr = newInfo.begin();
-			for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind, ptr += is)
-				ind->setInfoPtr(ptr);
-			m_info.swap(newInfo);
+#endif
+			struSetInfoFields(fields);
+
+			/// reset info vector
+			int oldAncPop = m_curAncestralPop;
+			UINT is = infoSize();
+			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
+			{
+				useAncestralPop(anc);
+				vectorinfo newInfo(is*popSize(), init);
+				InfoIterator ptr = newInfo.begin();
+				for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind, ptr += is)
+					ind->setInfoPtr(ptr);
+				m_info.swap(newInfo);
+			}
+			useAncestralPop(oldAncPop);
+#ifdef SIMUMPI
 		}
-		useAncestralPop(oldAncPop);
+#endif
+
 	}
 
 	/// set ancestral depth, can be -1
