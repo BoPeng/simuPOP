@@ -266,7 +266,7 @@ namespace simuPOP
 				}
 #endif
 				if( !m_atLoci.empty() &&
-					(m_value[i].size() == m_atLoci.size()||
+					(m_value[i].size() == m_atLoci.size() ||
 					m_value[i].size() == m_atLoci.size() * pop.ploidy())
 					)
 				{
@@ -282,6 +282,9 @@ namespace simuPOP
 							tmpValue.push_back(m_value[i][loc]);
 						}
 					}
+					m_atLoci.swap(tmpLoci);
+					if (m_atLoci.empty())
+						noMarker = true;
 					if( this->m_atPloidy==-1)
 					{
 						tmpValue.resize(tmpLoci.size() * pop.ploidy());
@@ -290,9 +293,6 @@ namespace simuPOP
 								tmpValue.begin() + tmpLoci.size(),
 								tmpValue.begin() + tmpLoci.size()*p);
 						m_value[i].swap(tmpValue);
-						m_atLoci.swap(tmpLoci);
-						if (m_atLoci.empty())
-							noMarker = true;
 					}
 #else
 					if( this->m_atPloidy==-1)
@@ -307,6 +307,26 @@ namespace simuPOP
 				}								  // case 2
 			}									  // no proportion
 		}										  // check m_value[i]
+#ifdef SIMUMPI
+		if(!m_proportion.empty() && !m_atLoci.empty())
+		{
+			for(size_t i = 0; i < m_value.size(); ++i)
+			{
+				vectori tmpValue;
+				for(size_t loc=0; loc < m_atLoci.size(); ++loc)
+					if (pop.rankOfLocus(m_atLoci[loc]) == mpiRank())
+						tmpValue.push_back(m_value[i][loc]);
+				m_value[i].swap(tmpValue);
+			}
+			vectoru tmpLoci;
+			for(size_t loc=0; loc < m_atLoci.size(); ++loc)
+				if (pop.rankOfLocus(m_atLoci[loc]) == mpiRank())
+					tmpLoci.push_back(m_atLoci[loc] - pop.beginLocus());
+			m_atLoci.swap(tmpLoci);
+			if (m_atLoci.empty())
+				noMarker = true;
+		}
+#endif
 
 		DBG_DO(DBG_INITIALIZER, cout << "Size of src is " << m_value[0].size() << endl);
 
@@ -378,9 +398,19 @@ namespace simuPOP
 					{
 						if(this->m_atPloidy==-1)  // all copied of chromosome
 						{
-							DBG_ASSERT( src.size() == this->m_atLoci.size() ||
+#ifdef SIMUMPI
+							DBG_ASSERT(noMarker || src.size() == this->m_atLoci.size() ||
 								(src.size() == this->m_atLoci.size() * pop.ploidy() ),
 								ValueError, "Length of value does not atLoci size");
+#else
+							DBG_ASSERT(src.size() == this->m_atLoci.size() ||
+								(src.size() == this->m_atLoci.size() * pop.ploidy() ),
+								ValueError, "Length of value does not atLoci size");
+#endif
+#ifdef SIMUMPI
+							if(noMarker)
+								return true;
+#endif
 							for(size_t loc = 0; loc != srcSz ;++loc)
 								*(pop.indGenoBegin(ind) + this->m_atLoci[loc%lociSz] + loc/lociSz*totNumLoci ) = src[loc];
 						}
@@ -388,6 +418,10 @@ namespace simuPOP
 						{
 							DBG_ASSERT( src.size() == this->m_atLoci.size(), ValueError,
 								"Ploidy is specified but the length of alleles do not match length of given allele array.");
+#ifdef SIMUMPI
+							if(noMarker)
+								return true;
+#endif
 							for(size_t loc = 0; loc != srcSz ;++loc)
 								*(pop.ind(ind).genoBegin(this->m_atPloidy) +
 								this->m_atLoci[loc%lociSz] + loc/lociSz*totNumLoci ) = src[loc];
