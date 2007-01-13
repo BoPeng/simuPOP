@@ -68,17 +68,36 @@ namespace simuPOP
 	{
 		/// initialize m_ranges
 		setRanges(pop);
+#ifdef SIMUMPI
+		// still run without marker, go trigger errors etc.
+		bool noMarker = false;
+		// for mpi, there is no data in the first node
+		if (mpiRank() == 0)
+			noMarker = true;
+#endif
 
-		this->initSexIter();
+		initSexIter();
 
-		DBG_FAILIF( m_alleleFreq.size() > 1 && m_alleleFreq.size() != this->m_ranges.size(),
+		DBG_FAILIF( m_alleleFreq.size() > 1 && m_alleleFreq.size() != m_ranges.size(),
 			ValueError, "Ranges and values should have the same length");
 
-		for(size_t rg = 0; rg < this->m_ranges.size(); ++rg)
+#ifdef SIMUMPI
+		// if atLoci is given, fit to current node
+		if (!m_atLoci.empty())
+		{
+			vectori localLoci;
+			for(size_t loc=0; loc < m_atLoci.size(); ++loc)
+				if (pop.rankOfLocus(m_atLoci[loc]) == mpiRank())
+					localLoci.push_back(m_atLoci[loc]);
+			if(localLoci.empty())
+				noMarker = true;
+		}
+#endif
+		for(size_t rg = 0; rg < m_ranges.size(); ++rg)
 		{
 			vectorf& alleleFreq = m_alleleFreq.size() == 1 ? m_alleleFreq[0] : m_alleleFreq[rg];
 
-			ULONG left = this->m_ranges[rg][0], right = this->m_ranges[rg][1];
+			ULONG left = m_ranges[rg][0], right = m_ranges[rg][1];
 
 			DBG_FAILIF( left > pop.popSize() || right > pop.popSize() || left > right ,
 				ValueError, "Invaid range boundary: " + toStr(left) + " - " + toStr(right-1));
@@ -87,14 +106,14 @@ namespace simuPOP
 			Weightedsampler ws(rng(), alleleFreq);
 
 			DBG_ASSERT( fcmp_eq(std::accumulate(alleleFreq.begin(), alleleFreq.end(), 0.), 1),
-				SystemError, "Allele frequecies shoudl add up to one.");
+				SystemError, "Allele frequecies should add up to one.");
 
 			pop.adjustGenoPosition(true);
 			if(m_identicalInds)
 			{
-				if(this->m_atLoci.empty())		  // to all loci
+				if(m_atLoci.empty())			  // to all loci
 				{
-					if( this->m_atPloidy==-1)	  // all chromosomes
+					if( m_atPloidy==-1)			  // all chromosomes
 					{
 						// for MPI mode, indGenoBegin and indGenoEnd
 						// refers to local pieces.
@@ -107,45 +126,50 @@ namespace simuPOP
 					{
 						// for MPI mode, indGenoBegin and indGenoEnd
 						// refers to local pieces.
-						ws.get(pop.ind(left).genoBegin(this->m_atPloidy),
-							pop.ind(left).genoEnd(this->m_atPloidy));
+						ws.get(pop.ind(left).genoBegin(m_atPloidy),
+							pop.ind(left).genoEnd(m_atPloidy));
 
 						for(ULONG ind=left+1; ind != right; ++ind)
-							copy(pop.ind(left).genoBegin(this->m_atPloidy),
-								pop.ind(left).genoEnd(this->m_atPloidy),
-								pop.ind(ind).genoBegin(this->m_atPloidy));
+							copy(pop.ind(left).genoBegin(m_atPloidy),
+								pop.ind(left).genoEnd(m_atPloidy),
+								pop.ind(ind).genoBegin(m_atPloidy));
 					}
 				}
 				else
 				{
 					// initislize locus by locus
-					for(vectoru::iterator locus=this->m_atLoci.begin(); locus != this->m_atLoci.end(); ++locus)
+					if(!noMarker)
 					{
-						// all chromosomes
-						if(this->m_atPloidy == -1)
+						for(vectoru::iterator locus=m_atLoci.begin(); locus != m_atLoci.end(); ++locus)
 						{
-							ws.get(pop.alleleBegin(*locus, false) + left * pop.ploidy(),
-								pop.alleleBegin(*locus, false) + (left+1) * pop.ploidy() );
+							if(pop.rankOfLocus(*locus) != mpiRank())
+								continue;
+							// all chromosomes
+							if(m_atPloidy == -1)
+							{
+								ws.get(pop.alleleBegin(*locus, false) + left * pop.ploidy(),
+									pop.alleleBegin(*locus, false) + (left+1) * pop.ploidy() );
 
-							for(ULONG ind=left+1; ind != right; ++ind)
-								copy(pop.alleleBegin(*locus, false) + left*pop.ploidy(),
-									pop.alleleBegin(*locus, false) + (left+1)*pop.ploidy(),
-									pop.alleleBegin(*locus, false) + ind*pop.ploidy());
-						}
-						else					  // only one of the copies (do it one by one?)
-						{
-							UINT a = ws.get();
-							for(ULONG ind=left; ind != right; ++ind)
-								pop.ind(ind).setAllele(a, *locus, this->m_atPloidy);
+								for(ULONG ind=left+1; ind != right; ++ind)
+									copy(pop.alleleBegin(*locus, false) + left*pop.ploidy(),
+										pop.alleleBegin(*locus, false) + (left+1)*pop.ploidy(),
+										pop.alleleBegin(*locus, false) + ind*pop.ploidy());
+							}
+							else				  // only one of the copies (do it one by one?)
+							{
+								UINT a = ws.get();
+								for(ULONG ind=left; ind != right; ++ind)
+									pop.ind(ind).setAllele(a, *locus, m_atPloidy);
+							}
 						}
 					}
 				}
 			}
 			else								  // not idential individuals
 			{
-				if( this->m_atLoci.empty())		  // at all loci
+				if( m_atLoci.empty())			  // at all loci
 				{
-					if( this->m_atPloidy == -1)
+					if( m_atPloidy == -1)
 					{
 #ifdef SIMUMPI
 						ws.get(pop.genoBegin(false)+left*pop.localGenoSize(),
@@ -158,34 +182,43 @@ namespace simuPOP
 					else						  // for only one ploidy
 					{
 						for(ULONG ind=left; ind != right; ++ind)
-							ws.get( pop.ind(ind).genoBegin(this->m_atPloidy),
-								pop.ind(ind).genoEnd(this->m_atPloidy));
+							ws.get( pop.ind(ind).genoBegin(m_atPloidy),
+								pop.ind(ind).genoEnd(m_atPloidy));
 					}
 				}
 				else							  // at certain loci
 				{
-					if( this->m_atPloidy == -1)
+					if(!noMarker)
 					{
-						for(vectoru::iterator locus=this->m_atLoci.begin(); locus != this->m_atLoci.end(); ++locus)
-							ws.get( pop.alleleBegin(*locus, false) + left * pop.ploidy(),
-								pop.alleleBegin(*locus, false) + right * pop.ploidy() );
-					}
-					else						  // for only one ploidy
-					{
-						for(ULONG ind=left; ind != right; ++ind)
-							for(vectoru::iterator locus=this->m_atLoci.begin(); locus != this->m_atLoci.end(); ++locus)
-								pop.ind(ind).setAllele(ws.get(), *locus, this->m_atPloidy);
+						if( m_atPloidy == -1)
+						{
+							for(vectoru::iterator locus=m_atLoci.begin(); locus != m_atLoci.end(); ++locus)
+								ws.get(pop.alleleBegin(*locus, false) + left * pop.ploidy(),
+									pop.alleleBegin(*locus, false) + right * pop.ploidy() );
+						}
+						else					  // for only one ploidy
+						{
+							for(vectoru::iterator locus=m_atLoci.begin(); locus != m_atLoci.end(); ++locus)
+							{
+#ifdef SIMUMPI
+								if(pop.rankOfLocus(*locus) != mpiRank())
+									continue;
+#endif
+								for(ULONG ind=left; ind != right; ++ind)
+									pop.ind(ind).setAllele(ws.get(), *locus, m_atPloidy);
+							}
+						}
 					}
 				}
 			}
 			// initialize sex
 			// call randUnif once for each individual
 			// (initialize allele need to call randUnif for each locus
-			if(this->m_sex.empty())
+			if(m_sex.empty())
 			{
 				for ( ULONG ind = left; ind != right; ++ind)
 				{
-					if( rng().randUniform01() < this->m_maleFreq )
+					if( rng().randUniform01() < m_maleFreq )
 						pop.ind(ind).setSex( Male );
 					else
 						pop.ind(ind).setSex( Female );
@@ -195,7 +228,7 @@ namespace simuPOP
 			{
 				for ( ULONG ind = left; ind != right; ++ind)
 				{
-					pop.ind(ind).setSex( this->nextSex());
+					pop.ind(ind).setSex( nextSex());
 				}
 			}									  // set sex
 		}										  // range
@@ -212,7 +245,7 @@ namespace simuPOP
 			noMarker = true;
 #endif
 
-		this->initSexIter();
+		initSexIter();
 
 		for(size_t i = 0; i < m_value.size(); ++i)
 		{
@@ -222,7 +255,7 @@ namespace simuPOP
 				if(m_atLoci.empty() && m_value[i].size() == pop.totNumLoci())
 				{
 #ifdef SIMUMPI
-					if( this->m_atPloidy==-1)
+					if( m_atPloidy==-1)
 					{
 						// shift pieces to the beginning
 						vectori tmpValue(pop.localNumLoci()*pop.ploidy());
@@ -241,7 +274,7 @@ namespace simuPOP
 						m_value[i].swap(tmpValue);
 					}
 #else
-					if( this->m_atPloidy==-1)
+					if( m_atPloidy==-1)
 					{
 						m_value[i].resize( pop.totNumLoci() * pop.ploidy());
 						for(UINT p=1; p < pop.ploidy(); ++p)
@@ -285,7 +318,7 @@ namespace simuPOP
 					m_atLoci.swap(tmpLoci);
 					if (m_atLoci.empty())
 						noMarker = true;
-					if( this->m_atPloidy==-1)
+					if( m_atPloidy==-1)
 					{
 						tmpValue.resize(tmpLoci.size() * pop.ploidy());
 						for(UINT p=1; p < pop.ploidy(); ++p)
@@ -295,13 +328,13 @@ namespace simuPOP
 						m_value[i].swap(tmpValue);
 					}
 #else
-					if( this->m_atPloidy==-1)
+					if( m_atPloidy==-1)
 					{
-						m_value[i].resize( this->m_atLoci.size() * pop.ploidy());
+						m_value[i].resize( m_atLoci.size() * pop.ploidy());
 						for(UINT p=1; p < pop.ploidy(); ++p)
 							copy( m_value[i].begin(),
-								m_value[i].begin() + this->m_atLoci.size(),
-								m_value[i].begin() + this->m_atLoci.size()*p);
+								m_value[i].begin() + m_atLoci.size(),
+								m_value[i].begin() + m_atLoci.size()*p);
 					}
 #endif
 				}								  // case 2
@@ -340,16 +373,16 @@ namespace simuPOP
 		setRanges(pop);
 
 		DBG_FAILIF( m_proportion.empty() && m_value.size() > 1
-			&& m_value.size() != this->m_ranges.size(),
+			&& m_value.size() != m_ranges.size(),
 			ValueError, "Ranges and values should have the same length");
 
 		if( m_proportion.empty() )
 		{
 			// for each range
-			for(size_t rg = 0; rg < this->m_ranges.size(); ++rg)
+			for(size_t rg = 0; rg < m_ranges.size(); ++rg)
 			{
 				// we have left and right
-				ULONG left = this->m_ranges[rg][0], right = this->m_ranges[rg][1];
+				ULONG left = m_ranges[rg][0], right = m_ranges[rg][1];
 
 				DBG_FAILIF( left > pop.popSize() || right > pop.popSize() || left > right ,
 					ValueError, "Invaid m_ranges boundary: " + toStr(left) + " - " + toStr(right));
@@ -391,20 +424,20 @@ namespace simuPOP
 							DBG_ASSERT( src.size() == pop.totNumLoci(), ValueError,
 								"Ploidy is specified but the length of alleles do not match length of chromosome. val size: " );
 #endif
-							copy(src.begin(), src.end(), pop.ind(ind).genoBegin(this->m_atPloidy));
+							copy(src.begin(), src.end(), pop.ind(ind).genoBegin(m_atPloidy));
 						}
 					}
 					else						  // with m_loci
 					{
-						if(this->m_atPloidy==-1)  // all copied of chromosome
+						if(m_atPloidy==-1)		  // all copied of chromosome
 						{
 #ifdef SIMUMPI
-							DBG_ASSERT(noMarker || src.size() == this->m_atLoci.size() ||
-								(src.size() == this->m_atLoci.size() * pop.ploidy() ),
+							DBG_ASSERT(noMarker || src.size() == m_atLoci.size() ||
+								(src.size() == m_atLoci.size() * pop.ploidy() ),
 								ValueError, "Length of value does not atLoci size");
 #else
-							DBG_ASSERT(src.size() == this->m_atLoci.size() ||
-								(src.size() == this->m_atLoci.size() * pop.ploidy() ),
+							DBG_ASSERT(src.size() == m_atLoci.size() ||
+								(src.size() == m_atLoci.size() * pop.ploidy() ),
 								ValueError, "Length of value does not atLoci size");
 #endif
 #ifdef SIMUMPI
@@ -412,46 +445,46 @@ namespace simuPOP
 								return true;
 #endif
 							for(size_t loc = 0; loc != srcSz ;++loc)
-								*(pop.indGenoBegin(ind) + this->m_atLoci[loc%lociSz] + loc/lociSz*totNumLoci ) = src[loc];
+								*(pop.indGenoBegin(ind) + m_atLoci[loc%lociSz] + loc/lociSz*totNumLoci ) = src[loc];
 						}
 						else					  // one of the copies.
 						{
-							DBG_ASSERT( src.size() == this->m_atLoci.size(), ValueError,
+							DBG_ASSERT( src.size() == m_atLoci.size(), ValueError,
 								"Ploidy is specified but the length of alleles do not match length of given allele array.");
 #ifdef SIMUMPI
 							if(noMarker)
 								return true;
 #endif
 							for(size_t loc = 0; loc != srcSz ;++loc)
-								*(pop.ind(ind).genoBegin(this->m_atPloidy) +
-								this->m_atLoci[loc%lociSz] + loc/lociSz*totNumLoci ) = src[loc];
+								*(pop.ind(ind).genoBegin(m_atPloidy) +
+								m_atLoci[loc%lociSz] + loc/lociSz*totNumLoci ) = src[loc];
 						}
 					}
-					if( this->m_sex.empty())
+					if( m_sex.empty())
 					{
-						if( rng().randUniform01() < this->m_maleFreq )
+						if( rng().randUniform01() < m_maleFreq )
 							pop.ind(ind).setSex( Male );
 						else
 							pop.ind(ind).setSex( Female );
 					}
 					else
 					{
-						pop.ind(ind).setSex( this->nextSex() );
+						pop.ind(ind).setSex( nextSex() );
 					}							  // set sex
 				}
 			}
 		}
 		else									  // use proportion.
 		{
-			for(size_t rg = 0; rg < this->m_ranges.size(); ++rg)
+			for(size_t rg = 0; rg < m_ranges.size(); ++rg)
 			{
-				ULONG left = this->m_ranges[rg][0], right = this->m_ranges[rg][1];
+				ULONG left = m_ranges[rg][0], right = m_ranges[rg][1];
 
 				DBG_FAILIF( left > pop.popSize() || right > pop.popSize() || left > right ,
 					ValueError, "Invaid m_ranges boundary: " + toStr(left) + " - " + toStr(right));
 
 				size_t srcSz = m_value[0].size();
-				size_t lociSz=this->m_atLoci.size();
+				size_t lociSz=m_atLoci.size();
 #ifdef SIMUMPI
 				size_t totNumLoci = pop.localNumLoci();
 #else
@@ -471,7 +504,7 @@ namespace simuPOP
 												  // by ploidy
 						if( srcSz == totNumLoci)
 						{
-							if(this->m_atPloidy==-1)
+							if(m_atPloidy==-1)
 							{
 								for(UINT p = 0; p<pop.ploidy(); ++p)
 								{
@@ -484,79 +517,125 @@ namespace simuPOP
 							{
 								UINT idx = ws.get();
 								copy(m_value[idx].begin(), m_value[idx].end(),
-									pop.indGenoBegin(ind)+this->m_atPloidy*totNumLoci);
+									pop.indGenoBegin(ind)+m_atPloidy*totNumLoci);
 							}
 						}
 						else					  // whole geno
 						{
 							UINT idx = ws.get();
-							if(this->m_atPloidy==-1)
+							if(m_atPloidy==-1)
 								copy(m_value[idx].begin(), m_value[idx].end(), pop.indGenoBegin(ind));
 							else				  // only one copy of chromosome
 								copy(m_value[idx].begin(), m_value[idx].end(),
-									pop.ind(ind).genoBegin(this->m_atPloidy));
+									pop.ind(ind).genoBegin(m_atPloidy));
 						}
 					}
 					else						  /// atLoci is in effect
 					{
-						cout << mpiRank() << "m loci " << m_atLoci << endl;
 						if (noMarker)
 							return true;
 						if( srcSz == lociSz )	  // one by one
 						{
-							if(this->m_atPloidy==-1)
+							if(m_atPloidy==-1)
 							{
 								for(UINT p = 0; p<pop.ploidy(); ++p)
 								{
 									UINT idx = ws.get();
 									for(size_t loc = 0; loc != srcSz ;++loc)
-										*(pop.indGenoBegin(ind) + p*totNumLoci + this->m_atLoci[loc]) = m_value[idx][loc];
+										*(pop.indGenoBegin(ind) + p*totNumLoci + m_atLoci[loc]) = m_value[idx][loc];
 								}
 							}
 							else
 							{
 								UINT idx = ws.get();
 								for(size_t loc = 0; loc != srcSz ;++loc)
-									*(pop.indGenoBegin(ind) + this->m_atPloidy*totNumLoci +
-									this->m_atLoci[loc]) = m_value[idx][loc];
+									*(pop.indGenoBegin(ind) + m_atPloidy*totNumLoci +
+									m_atLoci[loc]) = m_value[idx][loc];
 							}
 
 						}
 						else					  // who geno (at loci .. though)
 						{
-							if(this->m_atPloidy==-1)
+							if(m_atPloidy==-1)
 							{
 								UINT idx = ws.get();
 								for(size_t loc = 0; loc != srcSz ;++loc)
-									*(pop.indGenoBegin(ind) + this->m_atLoci[loc%lociSz] +
+									*(pop.indGenoBegin(ind) + m_atLoci[loc%lociSz] +
 									loc/lociSz*totNumLoci ) = m_value[idx][loc];
 							}
 							else
 							{
 								UINT idx = ws.get();
 								for(size_t loc = 0; loc != srcSz ;++loc)
-									*(pop.ind(ind).genoBegin(this->m_atPloidy)
-									+ this->m_atLoci[loc%lociSz] +
+									*(pop.ind(ind).genoBegin(m_atPloidy)
+									+ m_atLoci[loc%lociSz] +
 									loc/lociSz*totNumLoci ) = m_value[idx][loc];
 							}
 						}
 					}
-					if( this->m_sex.empty())
+					if( m_sex.empty())
 					{
-						if( rng().randUniform01() < this->m_maleFreq )
+						if( rng().randUniform01() < m_maleFreq )
 							pop.ind(ind).setSex( Male );
 						else
 							pop.ind(ind).setSex( Female );
 					}
 					else
 					{
-						pop.ind(ind).setSex( this->nextSex() );
+						pop.ind(ind).setSex( nextSex() );
 					}							  // set sex
 				}
 			}
 
 		}
+		return true;
+	}
 
+	bool pyInit::apply(population& pop)
+	{
+		this->initSexIter();
+
+		for(UINT al = 0, alEnd=pop.totNumLoci(); al < alEnd; ++al)
+		{
+#ifdef SIMUMPI
+			if (mpiRank() != pop.rankOfLocus(al))
+				continue;
+#endif
+			for(UINT sp=0, numSP=pop.numSubPop(); sp < numSP; ++sp)
+			{
+				for(ULONG it=0, itEnd=pop.subPopSize(sp); it<itEnd; ++it)
+				{
+					for(UINT p=0, pEnd=pop.ploidy(); p<pEnd; ++p)
+					{
+						int resInt;
+						PyCallFunc3(m_func, "(iii)", al, p, sp, resInt, PyObj_As_Int);
+						pop.ind(it,sp).setAllele( static_cast<Allele>(resInt), al, p);
+					}
+				}
+			}
+		}
+		// initialize sex
+		// call randUnif once for each individual
+		// (initialize allele need to call randUnif for each locus
+		if(this->m_sex.empty())
+		{
+			for (population::IndIterator it = pop.indBegin(), itEnd=pop.indEnd();
+				it != itEnd; ++it)
+			{
+				if( rng().randUniform01() < this->m_maleFreq )
+					it->setSex( Male );
+				else
+					it->setSex( Female );
+			}
+		}
+		else
+		{
+			for (population::IndIterator it = pop.indBegin(), itEnd=pop.indEnd();
+				it != itEnd; ++it)
+			{
+				it->setSex( this->nextSex() );
+			}
+		}
 		return true;
 	}
 

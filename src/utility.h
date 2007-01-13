@@ -1502,6 +1502,8 @@ namespace simuPOP
 
 	UINT mpiSize();
 
+    void mpiBarrier();
+
 #ifdef SIMUMPI
 	void testMPI();
 #endif

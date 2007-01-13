@@ -373,11 +373,13 @@ Dump.__doc__ = "Function version of operator dump whose __init__ function is \n"
 
 def InitByFreq(pop, *args, **kwargs):
     initByFreq(*args, **kwargs).apply(pop)
+    mpiBarrier()
 
 InitByFreq.__doc__ = "Function version of operator initByFreq whose __init__ function is \n" + initByFreq.__init__.__doc__
 
 def InitByValue(pop, *args, **kwargs):
     initByValue(*args, **kwargs).apply(pop)
+    mpiBarrier()
 
 InitByValue.__doc__ = "Function version of operator initByValue whose __init__ function is \n" + initByValue.__init__.__doc__
 
