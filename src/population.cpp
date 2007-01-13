@@ -516,9 +516,9 @@ namespace simuPOP
 
 			// allocate new genotype and inds
 #ifdef SIMUMPI            
-			vectora newGenotype(genoSize() * newPopSize);
-#else
 			vectora newGenotype(localGenoSize() * newPopSize);
+#else
+			vectora newGenotype(genoSize() * newPopSize);
 #endif            
 			vectorinfo newInfo(newPopSize*infoSize());
 			vector<individual> newInds(newPopSize);
@@ -1604,16 +1604,16 @@ namespace simuPOP
 			m_inds[ scIndex[i] ].setGenoPtr( scPtr[i]);
 #ifdef SIMUMPI            
 #ifdef BINARYALLELE
-			copyGenotype(scGeno.begin() + i*genoSize(), indGenoBegin( scIndex[i] ), genoSize());
+			copyGenotype(scGeno.begin() + i*localGenoSize(), indGenoBegin( scIndex[i] ), localGenoSize());
 #else
-			copy( scGeno.begin() + i*  genoSize(), scGeno.begin() + (i+1)*  genoSize(),
+			copy( scGeno.begin() + i*  localGenoSize(), scGeno.begin() + (i+1)*  localGenoSize(),
 				indGenoBegin( scIndex[i] ));
 #endif
 #else
 #ifdef BINARYALLELE
-			copyGenotype(scGeno.begin() + i*localGenoSize(), indGenoBegin( scIndex[i] ), localGenoSize());
+			copyGenotype(scGeno.begin() + i*genoSize(), indGenoBegin( scIndex[i] ), genoSize());
 #else
-			copy( scGeno.begin() + i*  localGenoSize(), scGeno.begin() + (i+1)*  localGenoSize(),
+			copy( scGeno.begin() + i*  genoSize(), scGeno.begin() + (i+1)*  genoSize(),
 				indGenoBegin( scIndex[i] ));
 #endif
 #endif            
