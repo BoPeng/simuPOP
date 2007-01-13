@@ -391,49 +391,7 @@ namespace simuPOP
 				return "<simuPOP::pyInit>";
 			}
 
-			bool apply(population& pop)
-			{
-				this->initSexIter();
-
-				for(UINT sp=0, numSP=pop.numSubPop(); sp < numSP; ++sp)
-				{
-					for(ULONG it=0, itEnd=pop.subPopSize(sp); it<itEnd; ++it)
-					{
-						for(UINT p=0, pEnd=pop.ploidy(); p<pEnd; ++p)
-						{
-							for(UINT al = 0, alEnd=pop.totNumLoci(); al < alEnd; ++al)
-							{
-								int resInt;
-								PyCallFunc3( m_func, "(iii)", al, p, sp, resInt, PyObj_As_Int);
-								pop.ind(it,sp).setAllele( static_cast<Allele>(resInt), al, p);
-							}
-						}
-					}
-				}
-				// initialize sex
-				// call randUnif once for each individual
-				// (initialize allele need to call randUnif for each locus
-				if(this->m_sex.empty())
-				{
-					for (population::IndIterator it = pop.indBegin(), itEnd=pop.indEnd();
-						it != itEnd; ++it)
-					{
-						if( rng().randUniform01() < this->m_maleFreq )
-							it->setSex( Male );
-						else
-							it->setSex( Female );
-					}
-				}
-				else
-				{
-					for (population::IndIterator it = pop.indBegin(), itEnd=pop.indEnd();
-						it != itEnd; ++it)
-					{
-						it->setSex( this->nextSex() );
-					}
-				}
-				return true;
-			}
+			bool apply(population& pop);
 
 		private:
 			/// the python function with parameter (ind, ploidy, subpop)

@@ -98,7 +98,8 @@ namespace simuPOP
 		std::pair<UINT, UINT> chIdx = chromLocusPair(index);
 		UINT rank = rankOfChrom(chIdx.first);
 		if (mpiRank() == rank)
-			*(m_genoPtr + chIdx.second - beginLocus() + p*localNumLoci()) = allele;
+			*(m_genoPtr + chIdx.second + localChromBegin(chIdx.first)
+			+ p*localNumLoci()) = allele;
 	}
 
 	void individual::setAllele(Allele allele, UINT index, UINT p, UINT ch)
@@ -111,6 +112,46 @@ namespace simuPOP
 		if(mpiRank() == rank)
 			*(m_genoPtr + index + localChromBegin(ch) +
 			p*localNumLoci()) = allele;
+	}
+
+	Sex individual::sex() const
+	{
+		bool isFemale = ISSETFLAG(m_flags, m_flagFemale) ;
+		broadcast(mpiComm(), isFemale, 0);
+		if(isFemale)
+			return Female;
+		else
+			return Male;
+	};
+
+	void individual::setSex(Sex sex)
+	{
+		if(mpiRank() == 0)
+		{
+			CHECKRANGESEX(sex);
+			if( sex == Male )
+				RESETFLAG(m_flags, m_flagFemale);
+			else
+				SETFLAG(m_flags, m_flagFemale);
+		}
+	}
+
+	bool individual::affected() const
+	{
+		bool isAffected = ISSETFLAG(m_flags, m_flagAffected);
+		broadcast(mpiComm(), isAffected, 0);
+		return isAffected;
+	}
+
+	void individual::setAffected(bool affected)
+	{
+		if(mpiRank() == 0)
+		{
+			if(affected)
+				SETFLAG(m_flags, m_flagAffected);
+			else
+				RESETFLAG(m_flags, m_flagAffected);
+		}
 	}
 
 	/// get info
@@ -250,6 +291,55 @@ namespace simuPOP
 
 	bool individual::operator== (const individual& rhs) const
 	{
+#ifdef SIMUMPI
+		bool equal = true;
+		if( genoStruIdx() != rhs.genoStruIdx() )
+		{
+			DBG_DO(DBG_POPULATION, cout << "Geno stru different" << endl);
+			equal = false;
+		}
+
+		if(mpiRank() == 0)
+		{
+			if(ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
+				|| ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) )
+			{
+				DBG_DO(DBG_POPULATION, cout << "Flags different: sex "
+					<< ISSETFLAG(m_flags, m_flagFemale) << " vs " << ISSETFLAG(rhs.m_flags, m_flagFemale) << ", aff "
+					<< ISSETFLAG(m_flags, m_flagAffected) << " vs " << ISSETFLAG(rhs.m_flags, m_flagAffected)
+					<< endl);
+				equal = false;
+			}
+
+			if(equal)
+			{
+				for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
+				{
+					if( info(i) != rhs.info(i) )
+					{
+						DBG_DO(DBG_POPULATION, cout << "Info different" << endl);
+						equal = false;
+						break;
+					}
+				}
+			}
+		}
+
+		for( UINT i=0, iEnd = localGenoSize(); i < iEnd;  ++i)
+		{
+			// no shift
+			if( *(m_genoPtr+i) != *(rhs.m_genoPtr+i) )
+			{
+				DBG_DO(DBG_POPULATION, cout << "Genotype different" << endl);
+				equal = false;
+				break;
+			}
+		}
+		bool res;
+		reduce(mpiComm(), equal, res, std::logical_and<bool>(), 0);
+		broadcast(mpiComm(), res, 0);
+		return res;
+#else
 		if( genoStruIdx() != rhs.genoStruIdx() )
 			return false;
 
@@ -262,14 +352,61 @@ namespace simuPOP
 				return false;
 
 		for( UINT i=0, iEnd = genoSize(); i < iEnd;  ++i)
-			if( allele(i) != rhs.allele(i) )
+			if( *(m_genoPtr+i) != *(rhs.m_genoPtr+i) )
 				return false;
-
+#endif
 		return true;
 	}
 
 	int individual::__cmp__(const individual& rhs) const
 	{
+#ifdef SIMUMPI
+		bool equal = true;
+		if( genoStruIdx() != rhs.genoStruIdx() )
+		{
+			DBG_DO(DBG_POPULATION, cout << "Geno stru different" << endl);
+			equal = false;
+		}
+
+		if(mpiRank() == 0)
+		{
+			if( equal && m_flags != rhs.m_flags )
+			{
+				DBG_DO(DBG_POPULATION, cout << "Flags different" << endl);
+				equal = false;
+			}
+
+			if(equal)
+			{
+				for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
+				{
+					if( info(i) != rhs.info(i) )
+					{
+						DBG_DO(DBG_POPULATION, cout << "Info different" << endl);
+						equal = false;
+						break;
+					}
+				}
+			}
+		}
+
+		if(equal)
+		{
+			for( UINT i=0, iEnd = localGenoSize(); i < iEnd;  ++i)
+				if( allele(i) != rhs.allele(i) )
+			{
+				DBG_DO(DBG_POPULATION, cout << "Genotype different" << endl);
+				equal = false;
+				break;
+			}
+		}
+		bool res;
+		reduce(mpiComm(), equal, res, std::logical_and<bool>(), 0);
+		broadcast(mpiComm(), res, 0);
+		return res;
+
+#else
+
 		if( genoStruIdx() != rhs.genoStruIdx() )
 			return 1;
 
@@ -285,6 +422,7 @@ namespace simuPOP
 				return 1;
 
 		return 0;
+#endif
 	}
 
 	void individual::swap(individual& ind, bool swapContent)

@@ -314,6 +314,9 @@ namespace simuPOP
 #endif
 
 			/// sex?
+#ifdef SIMUMPI
+			Sex sex() const;
+#else
 			Sex sex() const
 			{
 				if( ISSETFLAG(m_flags, m_flagFemale) )
@@ -321,17 +324,18 @@ namespace simuPOP
 				else
 					return Male;
 			}
+#endif
 
 			/// return M or F for sex, for display purpose
 			char sexChar() const
 			{
-				if( ISSETFLAG(m_flags, m_flagFemale) )
-					return 'F';
-				else
-					return 'M';
+				return sex() == Female ? 'F' : 'M';
 			}
 
 			/// set sex
+#ifdef SIMUMPI
+			void setSex(Sex sex);
+#else
 			void setSex(Sex sex)
 			{
 				CHECKRANGESEX(sex);
@@ -341,29 +345,34 @@ namespace simuPOP
 				else
 					SETFLAG(m_flags, m_flagFemale);
 			}
+#endif
 
 			/// affected?
+#ifdef SIMUMPI
+			bool affected() const;
+#else
 			bool affected() const
 			{
-				return( ISSETFLAG(m_flags, m_flagAffected));
+				return (ISSETFLAG(m_flags, m_flagAffected));
 			}
+#endif
 
 			/// unaffected?
 			bool unaffected() const
 			{
-				return( ! ISSETFLAG(m_flags, m_flagAffected));
+				return ! affected();
 			}
 
 			/// return A or U for affected/Unaffected, for display purpose
 			char affectedChar() const
 			{
-				if( ISSETFLAG( m_flags, m_flagAffected))
-					return 'A';
-				else
-					return 'U';
+				return affected() ? 'A' : 'U';
 			}
 
 			/// set affected status
+#ifdef SIMUMPI
+			void setAffected(bool affected);
+#else
 			void setAffected(bool affected)
 			{
 				if(affected)
@@ -371,6 +380,7 @@ namespace simuPOP
 				else
 					RESETFLAG(m_flags, m_flagAffected);
 			}
+#endif
 
 			/// get subpop id
 			SubPopID subPopID() const

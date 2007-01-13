@@ -2676,6 +2676,15 @@ T Expression::valueAs##TypeName() \
 	}
 
 
+	void mpiBarrier()
+	{
+#ifdef SIMUMPI
+		g_mpiComm.barrier();
+#endif
+	}
+
+
+
 #ifdef SIMUMPI
 	void testMPI()
 	{
