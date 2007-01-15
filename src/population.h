@@ -501,9 +501,9 @@ namespace simuPOP
 #ifdef SIMUMPI
 				UINT rank = rankOfLocus(locus);
 				if (mpiRank() == rank)
-					return GappedAlleleIterator(m_genotype.begin() + locus - beginLocus(), 
+					return GappedAlleleIterator(m_genotype.begin() + locus - beginLocus(),
 						localNumLoci());
-				else					
+				else
 					// this iterator is invalid
 					return GappedAlleleIterator(m_genotype.begin(), 0);
 #else
@@ -522,7 +522,7 @@ namespace simuPOP
 				if (mpiRank() == rank)
 					return GappedAlleleIterator(m_genotype.begin() + locus -
 						beginLocus() + m_popSize*localGenoSize(), localNumLoci());
-				else					
+				else
 					return GappedAlleleIterator(m_genotype.begin(), 0);
 #else
 				return GappedAlleleIterator(m_genotype.begin() + locus + m_popSize*genoSize(), totNumLoci());
@@ -857,6 +857,19 @@ namespace simuPOP
 #endif
 			}
 
+#ifdef SIMUMPI
+			GappedInfoIterator infoBegin(UINT idx, bool order);
+			GappedInfoIterator infoEnd(UINT idx, bool order);
+			GappedInfoIterator infoBegin(UINT index, UINT subPop, bool order);
+			GappedInfoIterator infoEnd(UINT index, UINT subPop, bool order);
+			vectorinfo indInfo(UINT idx, bool order);
+			vectorinfo indInfo(const string& name, bool order);
+			vectorinfo indInfo(UINT idx, UINT subPop, bool order);
+			vectorinfo indInfo(const string& name, UINT subPop, bool order);
+			PyObject* arrIndInfo(bool order);
+			PyObject* arrIndInfo(UINT subPop, bool order);
+#else
+			/// CPPONLY
 			/// info iterator
 			/// if order=true, keep order,
 			/// if flase, do not respect pop structure
@@ -868,6 +881,7 @@ namespace simuPOP
 				return GappedInfoIterator(m_info.begin()+idx, infoSize());
 			}
 
+			/// CPPONLY
 			GappedInfoIterator infoEnd(UINT idx, bool order)
 			{
 				CHECKRANGEINFO(idx);
@@ -946,6 +960,7 @@ namespace simuPOP
 				return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop]*infoSize(),
 					m_info.begin() + m_subPopIndex[subPop+1]*infoSize());
 			}
+#endif
 
 			/// add information field to a population
 			/// if the field already exists in the geno structure

@@ -157,11 +157,13 @@ namespace simuPOP
 	/// get info
 	InfoType individual::info(UINT idx) const
 	{
-		CHECKRANGEINFO(idx);
-		// broad cast the value to all nodes
 		InfoType info;
 		if (mpiRank() == 0)
+		{
+			CHECKRANGEINFO(idx);
+			// broad cast the value to all nodes
 			info = m_infoPtr[idx];
+		}
 		broadcast(mpiComm(), info, 0);
 		return info;
 	}
@@ -169,9 +171,11 @@ namespace simuPOP
 	/// set info
 	void individual::setInfo(InfoType value, UINT idx)
 	{
-		CHECKRANGEINFO(idx);
 		if (mpiRank()==0)
+		{
+			CHECKRANGEINFO(idx);
 			m_infoPtr[idx] = value;
+		}
 	}
 
 	/// get info
