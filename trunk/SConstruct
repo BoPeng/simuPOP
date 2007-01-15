@@ -73,9 +73,12 @@ targets = []
 for key in all_modu + mpi_modu:
     if key in BUILD_TARGETS:
         targets.append(key)
-if targets == [] or 'all' in BUILD_TARGETS:
+if targets == []:
     # by default, do not build mpi version
-    targets = all_modu
+    targets = all_modu 
+if 'all' in BUILD_TARGETS:
+    # if all is specified, build all
+    targets = all_modu + mpi_modu
 
 def mod_src(file, mod):
     return file.replace('src', '$build_dir').replace('.cpp', '_%s.cpp' % mod)
