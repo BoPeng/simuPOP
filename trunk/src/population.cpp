@@ -300,6 +300,160 @@ namespace simuPOP
 		return p;
 	}
 
+#ifdef SIMUMPI
+	/// CPPONLY
+	/// info iterator
+	/// if order=true, keep order,
+	/// if flase, do not respect pop structure
+	GappedInfoIterator population::infoBegin(UINT idx, bool order)
+	{
+		CHECKRANGEINFO(idx);
+		if(mpiRank() == 0)
+		{
+			if(order && !infoOrdered())
+				adjustInfoPosition(true);
+			return GappedInfoIterator(m_info.begin()+idx, infoSize());
+		}
+		else
+			DBG_ASSERT(false, ValueError,
+				"Only head node has info information");
+	}
+
+	/// CPPONLY
+	GappedInfoIterator population::infoEnd(UINT idx, bool order)
+	{
+		CHECKRANGEINFO(idx);
+		if(mpiRank() == 0)
+		{
+			if(order && !infoOrdered())
+				adjustInfoPosition(true);
+			return GappedInfoIterator(m_info.begin()+idx+m_info.size(), infoSize());
+		}
+		else
+			DBG_ASSERT(false, ValueError,
+				"Only head node has info information");
+	}
+
+	/// info iterator
+	/// oder = true: keep order
+	/// otherwise, respect subpop structure
+	GappedInfoIterator population::infoBegin(UINT index, UINT subPop, bool order)
+	{
+		CHECKRANGEINFO(index);
+		CHECKRANGESUBPOP(subPop);
+
+		if(mpiRank() == 0)
+		{
+			if(!infoOrdered())
+				adjustInfoPosition(order);
+
+			return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop]*infoSize(), infoSize());
+		}
+		else
+			DBG_ASSERT(false, ValueError,
+				"Only head node has info information");
+	}
+
+	///
+	GappedInfoIterator population::infoEnd(UINT index, UINT subPop, bool order)
+	{
+		CHECKRANGEINFO(index);
+		CHECKRANGESUBPOP(subPop);
+
+		if(mpiRank() == 0)
+		{
+			if(!infoOrdered())
+				adjustInfoPosition(order);
+
+			return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop+1]*infoSize(), infoSize());
+		}
+		else
+			DBG_ASSERT(false, ValueError,
+				"Only head node has info information");
+	}
+
+	vectorinfo population::indInfo(UINT idx, bool order)
+	{
+		if(mpiRank() == 0)
+		{
+			return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
+		}
+		else
+			DBG_ASSERT(false, ValueError,
+				"Only head node has info information");
+	}
+
+	vectorinfo population::indInfo(const string& name, bool order)
+	{
+		if(mpiRank() == 0)
+		{
+			UINT idx = infoIdx(name);
+			return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
+		}
+		else
+			DBG_ASSERT(false, ValueError,
+				"Only head node has info information");
+	}
+
+	vectorinfo population::indInfo(UINT idx, UINT subPop, bool order)
+	{
+		if(mpiRank() == 0)
+		{
+			return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
+		}
+		else
+			DBG_ASSERT(false, ValueError,
+				"Only head node has info information");
+	}
+
+	vectorinfo population::indInfo(const string& name, UINT subPop, bool order)
+	{
+		if(mpiRank() == 0)
+		{
+			UINT idx = infoIdx(name);
+			return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
+		}
+		else
+			DBG_ASSERT(false, ValueError,
+				"Only head node has info information");
+	}
+
+	/// if order: keep order
+	/// otherwise: do not respect subpop info
+	PyObject* population::arrIndInfo(bool order)
+	{
+		if(mpiRank() == 0)
+		{
+			if(order && !infoOrdered())
+				adjustInfoPosition(true);
+
+			return Info_Vec_As_NumArray(m_info.begin(), m_info.end());
+		}
+		else
+			DBG_ASSERT(false, ValueError,
+				"Only head node has info information");
+	}
+
+	/// if order: keep order
+	/// otherwise: respect subpop info
+	PyObject* population::arrIndInfo(UINT subPop, bool order)
+	{
+		CHECKRANGESUBPOP(subPop);
+
+		if(mpiRank() == 0)
+		{
+			if(!infoOrdered())
+				adjustInfoPosition(order);
+
+			return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop]*infoSize(),
+				m_info.begin() + m_subPopIndex[subPop+1]*infoSize());
+		}
+		else
+			DBG_ASSERT(false, ValueError,
+				"Only head node has info information");
+	}
+#endif
+
 	int population::__cmp__(const population& rhs) const
 	{
 #ifdef SIMUMPI
@@ -437,17 +591,17 @@ namespace simuPOP
 
 				try
 				{
-#ifdef SIMUMPI                    
+#ifdef SIMUMPI
 					m_genotype.resize(m_popSize*localGenoSize());
-#else                    
+#else
 					m_genotype.resize(m_popSize*genoSize());
-#endif                    
+#endif
 					m_inds.resize(m_popSize);
-#ifdef SIMUMPI                    
-                    if (mpiRank() == 0)
-#endif                    
-					m_info.resize(m_popSize*infoSize());
-                    
+#ifdef SIMUMPI
+					if (mpiRank() == 0)
+#endif
+						m_info.resize(m_popSize*infoSize());
+
 				}
 				catch(...)
 				{
@@ -456,11 +610,11 @@ namespace simuPOP
 				// reset individual pointers
 				GenoIterator ptr = m_genotype.begin();
 				InfoIterator infoPtr = m_info.begin();
-#ifdef SIMUMPI                
+#ifdef SIMUMPI
 				UINT step = localGenoSize();
-#else                
+#else
 				UINT step = genoSize();
-#endif                
+#endif
 				UINT is = infoSize();
 				for(ULONG i=0; i< m_popSize; ++i, ptr+=step, infoPtr+=is)
 				{
@@ -515,11 +669,11 @@ namespace simuPOP
 			DBG_DO(DBG_POPULATION, cout << "New pop size" << newPopSize << endl);
 
 			// allocate new genotype and inds
-#ifdef SIMUMPI            
+#ifdef SIMUMPI
 			vectora newGenotype(localGenoSize() * newPopSize);
 #else
 			vectora newGenotype(genoSize() * newPopSize);
-#endif            
+#endif
 			vectorinfo newInfo(newPopSize*infoSize());
 			vector<individual> newInds(newPopSize);
 
@@ -863,7 +1017,7 @@ namespace simuPOP
 		// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 		// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
 		vectoru newNumLoci;
-        // FIXME FIXME
+		// FIXME FIXME
 		vectorf newLociDist;
 		vectorstr newLociNames;
 		UINT curCh = 9999;						  // not 0, will be set to 0 soon.
@@ -896,9 +1050,9 @@ namespace simuPOP
 		// allocate new genotype and inds
 #ifdef SIMUMPI
 		ULONG newPopGenoSize = localGenoSize() * m_popSize;
-#else        
+#else
 		ULONG newPopGenoSize = genoSize() * m_popSize;
-#endif        
+#endif
 		vectora newGenotype(newPopGenoSize);
 		// keep newInds();
 
@@ -1458,10 +1612,10 @@ namespace simuPOP
 		if(order)
 		{
 			DBG_DO(DBG_POPULATION, cout << "Refresh all order " << endl);
-#ifdef SIMUMPI            
+#ifdef SIMUMPI
 			vectora tmpGenotype(m_popSize*localGenoSize());
 			size_t sz = localGenoSize();
-#else            
+#else
 			vectora tmpGenotype(m_popSize*genoSize());
 			size_t sz = genoSize();
 #endif
@@ -1499,13 +1653,13 @@ namespace simuPOP
 
 		for(UINT sp=0, spEd = numSubPop(); sp < spEd;  sp++)
 		{
-#ifdef SIMUMPI            
+#ifdef SIMUMPI
 			GenoIterator spBegin = m_genotype.begin() + m_subPopIndex[sp]*localGenoSize();
 			GenoIterator spEnd   = m_genotype.begin() + m_subPopIndex[sp+1]*localGenoSize();
-#else            
+#else
 			GenoIterator spBegin = m_genotype.begin() + m_subPopIndex[sp]*genoSize();
 			GenoIterator spEnd   = m_genotype.begin() + m_subPopIndex[sp+1]*genoSize();
-#endif            
+#endif
 			for(j=0, jEnd = subPopSize(sp); j < jEnd;  j++)
 			{
 				if(m_inds[k].shallowCopied() )
@@ -1560,11 +1714,11 @@ namespace simuPOP
 		}
 
 		/// save genotypic info
-#ifdef SIMUMPI        
+#ifdef SIMUMPI
 		vectora scGeno(scIndex.size() * localNumLoci() * ploidy());
 #else
 		vectora scGeno(scIndex.size() * totNumLoci() * ploidy());
-#endif        
+#endif
 		vector<GenoIterator> scPtr( scIndex.size() );
 		vectorinfo scInfo(scIndex.size() * infoSize());
 		vector<InfoIterator> scInfoPtr( scIndex.size() );
@@ -1574,7 +1728,7 @@ namespace simuPOP
 		for(i=0, iEnd = scIndex.size(); i < iEnd;  i++)
 		{
 			scPtr[i] = m_inds[ scIndex[i]].genoPtr();
-#ifdef SIMUMPI            
+#ifdef SIMUMPI
 #ifdef BINARYALLELE
 			copyGenotype(indGenoBegin(scIndex[i]), scGeno.begin() + i* localGenoSize(), localGenoSize());
 #else
@@ -1586,7 +1740,7 @@ namespace simuPOP
 #else
 			copy(indGenoBegin(scIndex[i]), indGenoEnd(scIndex[i]), scGeno.begin() + i* genoSize());
 #endif
-#endif            
+#endif
 			scInfoPtr[i] = m_inds[ scIndex[i]].infoPtr();
 			copy(ind(scIndex[i]).infoBegin(), ind(scIndex[i]).infoEnd(),
 				scInfo.begin() + i* infoSize());
@@ -1602,7 +1756,7 @@ namespace simuPOP
 		for(i=0, iEnd =scIndex.size(); i < iEnd;  i++)
 		{
 			m_inds[ scIndex[i] ].setGenoPtr( scPtr[i]);
-#ifdef SIMUMPI            
+#ifdef SIMUMPI
 #ifdef BINARYALLELE
 			copyGenotype(scGeno.begin() + i*localGenoSize(), indGenoBegin( scIndex[i] ), localGenoSize());
 #else
@@ -1616,7 +1770,7 @@ namespace simuPOP
 			copy( scGeno.begin() + i*  genoSize(), scGeno.begin() + (i+1)*  genoSize(),
 				indGenoBegin( scIndex[i] ));
 #endif
-#endif            
+#endif
 			m_inds[ scIndex[i] ].setInfoPtr( scInfoPtr[i]);
 			copy( scInfo.begin() + i*  infoSize(), scInfo.begin() + (i+1)*  infoSize(),
 				ind(scIndex[i]).infoBegin());

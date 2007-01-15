@@ -397,6 +397,9 @@ namespace simuPOP
 			/// get info
 #ifdef SIMUMPI
 			InfoType info(UINT idx) const;
+			void setInfo(InfoType value, UINT idx);
+			InfoType info(const string& name) const;
+			void setInfo(InfoType value, const string& name);
 #else
 			InfoType info(UINT idx) const
 			{
@@ -404,23 +407,15 @@ namespace simuPOP
 
 				return m_infoPtr[idx];
 			}
-#endif
 
 			/// set info
-#ifdef SIMUMPI
-			void setInfo(InfoType value, UINT idx);
-#else
 			void setInfo(InfoType value, UINT idx)
 			{
 				CHECKRANGEINFO(idx);
 				m_infoPtr[idx] = value;
 			}
-#endif
 
 			/// get info
-#ifdef SIMUMPI
-			InfoType info(const string& name) const;
-#else
 			InfoType info(const string& name) const
 			{
 				int idx = infoIdx(name);
@@ -428,12 +423,8 @@ namespace simuPOP
 					"Info name " + name + " is not a valid info field name");
 				return m_infoPtr[idx];
 			}
-#endif
 
 			/// set info
-#ifdef SIMUMPI
-			void setInfo(InfoType value, const string& name);
-#else
 			void setInfo(InfoType value, const string& name)
 			{
 				int idx = infoIdx(name);

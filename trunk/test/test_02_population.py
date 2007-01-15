@@ -267,14 +267,24 @@ class TestPopulation(unittest.TestCase):
         pop.setIndInfo(range(10), 'age')
         pop1 = population(5, infoFields=['fitness'])
         pop1.setIndInfo(range(10,15), 'fitness')
+        if mpiRank() == 0:
+            print pop1.arrIndInfo(True)
+        for i in range(5):
+            #self.assertEqual(pop1.individual(i).info('fitness'), i+10)
+            print i, pop1.infoSize(), pop1.individual(i).info('fitness')
         pop.swap(pop1)
         self.assertEqual(pop.infoField(0), 'fitness')
         self.assertEqual(pop1.infoField(0), 'age')
-        self.assertEqual(pop.arrIndInfo(True), range(10,15))
-        self.assertEqual(pop1.arrIndInfo(True), range(10))
+        if mpiRank() == 0:
+            self.assertEqual(pop.arrIndInfo(True), range(10,15))
+            self.assertEqual(pop1.arrIndInfo(True), range(10))
+        else:
+            self.assertRaises(exceptions.ValueError, pop.arrIndInfo, True)
+            self.assertRaises(exceptions.ValueError, pop1.arrIndInfo, True)
         self.assertEqual(pop.popSize(), 5)
         self.assertEqual(pop1.popSize(), 10)
         for i in range(5):
+            print mpiRank(), pop.infoIdx('fitness'), pop.infoSize(), i+10, pop.individual(i).info('fitness')
             self.assertEqual(pop.individual(i).info('fitness'), i+10)
         for i in range(10):
             self.assertEqual(pop1.individual(i).info('age'), i)
