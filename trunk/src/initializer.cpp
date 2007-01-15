@@ -144,7 +144,7 @@ namespace simuPOP
 #endif						
 						for(vectoru::iterator locus=m_atLoci.begin(); locus != m_atLoci.end(); ++locus)
 						{
-#ifdef SIMUMPU							
+#ifdef SIMUMPI							
 							if(pop.rankOfLocus(*locus) != mpiRank())
 								continue;
 #endif								
@@ -154,7 +154,7 @@ namespace simuPOP
 								ws.get(pop.alleleBegin(*locus, false) + left * pop.ploidy(),
 									pop.alleleBegin(*locus, false) + (left+1) * pop.ploidy() );
 
-								for(ULONG ind=left+1; ind != right; ++ind)
+								for(ULONG ind=left+1; ind < right; ++ind)
 									copy(pop.alleleBegin(*locus, false) + left*pop.ploidy(),
 										pop.alleleBegin(*locus, false) + (left+1)*pop.ploidy(),
 										pop.alleleBegin(*locus, false) + ind*pop.ploidy());
