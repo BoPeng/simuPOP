@@ -501,7 +501,8 @@ namespace simuPOP
 #ifdef SIMUMPI
 				UINT rank = rankOfLocus(locus);
 				if (mpiRank() == rank)
-					return GappedAlleleIterator(m_genotype.begin()+locus - beginLocus(), localNumLoci());
+					return GappedAlleleIterator(m_genotype.begin() + locus - beginLocus(), 
+						localNumLoci());
 				else					
 					// this iterator is invalid
 					return GappedAlleleIterator(m_genotype.begin(), 0);
