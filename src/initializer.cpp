@@ -194,7 +194,7 @@ namespace simuPOP
 				}
 				else							  // at certain loci
 				{
-#ifdef SIMUMPU					
+#ifdef SIMUMPI
 					if(!noMarker)
 					{
 #endif						

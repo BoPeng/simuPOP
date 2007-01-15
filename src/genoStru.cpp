@@ -108,7 +108,7 @@ namespace simuPOP
 			m_chromMap = vectori(m_numChrom, 1);
 		// begining and end chromosome?
 		UINT rank = mpiRank();
-		if(rank == 0)
+		if(rank == 0 || rank > m_numChrom)
 		{
 			m_beginChrom = 0;
 			m_endChrom = 0;
@@ -118,7 +118,7 @@ namespace simuPOP
 			m_beginChrom = 0;
 			m_endChrom = m_chromMap[0];
 		}
-		else if(rank > 1)
+		else if(rank <= m_numChrom)
 		{
 			size_t sum = 0;
 			for(i=0; i < rank-1; ++i)
