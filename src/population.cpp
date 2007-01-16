@@ -133,17 +133,9 @@ namespace simuPOP
 #ifdef SIMUMPI
 			m_genotype.resize(m_popSize*localGenoSize());
 			/// only head node allocate info
-			size_t is = 0;
-			if (mpiRank() == 0)
-			{
-				is = infoSize();
-				DBG_ASSERT(is == infoFields.size(), SystemError, "Wrong geno structure");
-				m_info.resize(m_popSize*is);
-			}
-			else
-			{
-				m_info.resize(0);
-			}
+			size_t is = localInfoSize();
+			DBG_FAILIF(mpiRank() == 0 && is != infoFields.size(), SystemError, "Wrong geno structure");
+			m_info.resize(m_popSize*is);
 #else
 			m_genotype.resize(m_popSize*genoSize());
 			/// allocate info
@@ -167,7 +159,7 @@ namespace simuPOP
 			for(ULONG i=0; i< m_popSize; ++i, ptr+=step, infoPtr+=is)
 			{
 				m_inds[i].setGenoPtr(ptr);
-				m_inds[i].setGenoStruIdx(this->genoStruIdx());
+				m_inds[i].setGenoStruIdx(genoStruIdx());
 				m_inds[i].setShallowCopied(false);
 				m_inds[i].setInfoPtr(infoPtr);
 			}
@@ -209,11 +201,13 @@ namespace simuPOP
 			m_inds.resize(rhs.m_popSize);
 #ifdef SIMUMPI
 			m_genotype.resize(m_popSize*localGenoSize());
+			// have 0 length for mpi/non-head node
+			m_info.resize(rhs.m_popSize*localInfoSize());
 #else
 			m_genotype.resize(m_popSize*genoSize());
-#endif
 			// have 0 length for mpi/non-head node
 			m_info.resize(rhs.m_popSize*infoSize());
+#endif
 		}
 		catch(...)
 		{
@@ -233,11 +227,12 @@ namespace simuPOP
 		GenoIterator ptr = m_genotype.begin();
 		InfoIterator infoPtr = m_info.begin();
 #ifdef SIMUMPI
-		UINT step = this->localGenoSize();
+		UINT step = localGenoSize();
+		UINT infoStep = localInfoSize();
 #else
 		UINT step = this->genoSize();
-#endif
 		UINT infoStep = this->infoSize();
+#endif
 		for(ULONG i=0; i< m_popSize; ++i, ptr+=step, infoPtr+=infoStep)
 		{
 			m_inds[i].setGenoPtr(ptr);
@@ -307,31 +302,19 @@ namespace simuPOP
 	/// if flase, do not respect pop structure
 	GappedInfoIterator population::infoBegin(UINT idx, bool order)
 	{
-		CHECKRANGEINFO(idx);
-		if(mpiRank() == 0)
-		{
-			if(order && !infoOrdered())
-				adjustInfoPosition(true);
-			return GappedInfoIterator(m_info.begin()+idx, infoSize());
-		}
-		else
-			DBG_ASSERT(false, ValueError,
-				"Only head node has info information");
+		CHECKRANGELOCALINFO(idx);
+		if(order && !infoOrdered())
+			adjustInfoPosition(true);
+		return GappedInfoIterator(m_info.begin()+idx, localInfoSize());
 	}
 
 	/// CPPONLY
 	GappedInfoIterator population::infoEnd(UINT idx, bool order)
 	{
-		CHECKRANGEINFO(idx);
-		if(mpiRank() == 0)
-		{
-			if(order && !infoOrdered())
-				adjustInfoPosition(true);
-			return GappedInfoIterator(m_info.begin()+idx+m_info.size(), infoSize());
-		}
-		else
-			DBG_ASSERT(false, ValueError,
-				"Only head node has info information");
+		CHECKRANGELOCALINFO(idx);
+		if(order && !infoOrdered())
+			adjustInfoPosition(true);
+		return GappedInfoIterator(m_info.begin()+idx+m_info.size(), localInfoSize());
 	}
 
 	/// info iterator
@@ -339,83 +322,67 @@ namespace simuPOP
 	/// otherwise, respect subpop structure
 	GappedInfoIterator population::infoBegin(UINT index, UINT subPop, bool order)
 	{
-		CHECKRANGEINFO(index);
+		CHECKRANGELOCALINFO(index);
 		CHECKRANGESUBPOP(subPop);
 
-		if(mpiRank() == 0)
-		{
-			if(!infoOrdered())
-				adjustInfoPosition(order);
+		if(!infoOrdered())
+			adjustInfoPosition(order);
 
-			return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop]*infoSize(), infoSize());
-		}
-		else
-			DBG_ASSERT(false, ValueError,
-				"Only head node has info information");
+		return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop]*localInfoSize(), localInfoSize());
 	}
 
 	///
 	GappedInfoIterator population::infoEnd(UINT index, UINT subPop, bool order)
 	{
-		CHECKRANGEINFO(index);
+		CHECKRANGELOCALINFO(index);
 		CHECKRANGESUBPOP(subPop);
 
-		if(mpiRank() == 0)
-		{
-			if(!infoOrdered())
-				adjustInfoPosition(order);
+		if(!infoOrdered())
+			adjustInfoPosition(order);
 
-			return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop+1]*infoSize(), infoSize());
-		}
-		else
-			DBG_ASSERT(false, ValueError,
-				"Only head node has info information");
+		return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop+1]*localInfoSize(), localInfoSize());
 	}
 
 	vectorinfo population::indInfo(UINT idx, bool order)
 	{
+		vectorinfo info;
 		if(mpiRank() == 0)
-		{
-			return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
-		}
-		else
-			DBG_ASSERT(false, ValueError,
-				"Only head node has info information");
+			vectorinfo info = vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
+		broadcast(mpiComm(), info, 0);
+		return info;
 	}
 
 	vectorinfo population::indInfo(const string& name, bool order)
 	{
+		vectorinfo info;
 		if(mpiRank() == 0)
 		{
-			UINT idx = infoIdx(name);
-			return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
+			UINT idx = localInfoIdx(name);
+			info = vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 		}
-		else
-			DBG_ASSERT(false, ValueError,
-				"Only head node has info information");
+		broadcast(mpiComm(), info, 0);
+		return info;
 	}
 
 	vectorinfo population::indInfo(UINT idx, UINT subPop, bool order)
 	{
+		vectorinfo info;
 		if(mpiRank() == 0)
-		{
-			return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
-		}
-		else
-			DBG_ASSERT(false, ValueError,
-				"Only head node has info information");
+			info = vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
+		broadcast(mpiComm(), info, 0);
+		return info;
 	}
 
 	vectorinfo population::indInfo(const string& name, UINT subPop, bool order)
 	{
+		vectorinfo info;
 		if(mpiRank() == 0)
 		{
-			UINT idx = infoIdx(name);
-			return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
+			UINT idx = localInfoIdx(name);
+			info = vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
 		}
-		else
-			DBG_ASSERT(false, ValueError,
-				"Only head node has info information");
+		broadcast(mpiComm(), info, 0);
+		return info;
 	}
 
 	/// if order: keep order
@@ -445,8 +412,8 @@ namespace simuPOP
 			if(!infoOrdered())
 				adjustInfoPosition(order);
 
-			return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop]*infoSize(),
-				m_info.begin() + m_subPopIndex[subPop+1]*infoSize());
+			return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop]*localInfoSize(),
+				m_info.begin() + m_subPopIndex[subPop+1]*localInfoSize());
 		}
 		else
 			DBG_ASSERT(false, ValueError,
@@ -540,7 +507,7 @@ namespace simuPOP
 			adjustGenoPosition(order);
 #ifdef SIMUMPI
 		return Allele_Vec_As_NumArray( genoBegin(subPop, order), genoEnd(subPop, order),
-			subPopSize(subPop)*genoSize(), totNumLoci(), beginLocus(), endLocus());
+			genoSize()*subPopSize(subPop), totNumLoci(), beginLocus(), endLocus());
 #else
 		return Allele_Vec_As_NumArray( genoBegin(subPop, order), genoEnd(subPop, order));
 #endif
@@ -593,14 +560,12 @@ namespace simuPOP
 				{
 #ifdef SIMUMPI
 					m_genotype.resize(m_popSize*localGenoSize());
+					m_info.resize(m_popSize*localInfoSize());
 #else
 					m_genotype.resize(m_popSize*genoSize());
+					m_info.resize(m_popSize*infoSize());
 #endif
 					m_inds.resize(m_popSize);
-#ifdef SIMUMPI
-					if (mpiRank() == 0)
-#endif
-						m_info.resize(m_popSize*infoSize());
 
 				}
 				catch(...)
@@ -612,10 +577,11 @@ namespace simuPOP
 				InfoIterator infoPtr = m_info.begin();
 #ifdef SIMUMPI
 				UINT step = localGenoSize();
+				UINT is = localInfoSize();
 #else
 				UINT step = genoSize();
-#endif
 				UINT is = infoSize();
+#endif
 				for(ULONG i=0; i< m_popSize; ++i, ptr+=step, infoPtr+=is)
 				{
 					m_inds[i].setGenoPtr( ptr );
@@ -671,10 +637,11 @@ namespace simuPOP
 			// allocate new genotype and inds
 #ifdef SIMUMPI
 			vectora newGenotype(localGenoSize() * newPopSize);
+			vectorinfo newInfo(newPopSize*localInfoSize());
 #else
 			vectora newGenotype(genoSize() * newPopSize);
-#endif
 			vectorinfo newInfo(newPopSize*infoSize());
+#endif
 			vector<individual> newInds(newPopSize);
 
 			DBG_ASSERT( indEnd()== newPopSize+it, SystemError,
@@ -685,10 +652,11 @@ namespace simuPOP
 			InfoIterator infoPtr = newInfo.begin();
 #ifdef SIMUMPI
 			UINT step = localGenoSize();
+			UINT infoStep = localInfoSize();
 #else
 			UINT step = genoSize();
-#endif
 			UINT infoStep = infoSize();
+#endif
 			for(ULONG i=0; i< newPopSize; ++i, ptr+=step, ++it, infoPtr+=infoStep)
 			{
 				newInds[i].setGenoStruIdx(genoStruIdx());
@@ -1015,7 +983,7 @@ namespace simuPOP
 #endif
 		// adjust order before doing anything
 		UINT newTotNumLoci = loci.size();
-#ifdef SIMUMPI		
+#ifdef SIMUMPI
 		UINT oldTotNumLoci = localNumLoci();
 #else
 		UINT oldTotNumLoci = totNumLoci();
@@ -1104,8 +1072,8 @@ namespace simuPOP
 							*(ptr++) = ale;
 						}
 						else if(rnk == oldRank[*loc])
-							mpiComm().send(newRank[*loc], *loc, 
-								oldPtr[*loc - beginLocus()]);
+							mpiComm().send(newRank[*loc], *loc,
+									oldPtr[*loc - beginLocus()]);
 					}
 				}
 				oldPtr += oldTotNumLoci;		  // next ploidy
@@ -1156,7 +1124,7 @@ namespace simuPOP
 							}
 							else if(rnk == oldRank[*loc])
 							{
-								mpiComm().send(newRank[*loc], *loc, 
+								mpiComm().send(newRank[*loc], *loc,
 									oldPtr[*loc - beginLocus()]);
 							}
 						}
@@ -1329,17 +1297,13 @@ namespace simuPOP
 		{
 			DBG_ASSERT(m_info.size() == localInfoSize()*popSize(), SystemError,
 				"Info size is wrong");
-#endif
-
-			DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
-				"Info size is wrong");
-
-			UINT os = infoSize();
+			UINT os = localInfoSize();
 			UINT idx;
 			// if this field exists, return directly
 			try
 			{
-				idx = infoIdx(field);
+				// for node 0, local info index is the major index.
+				idx = localInfoIdx(field);
 				// only needs to initialize
 				int oldAncPop = m_curAncestralPop;
 				for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
@@ -1353,11 +1317,12 @@ namespace simuPOP
 			}
 			catch(IndexError &)
 			{
+				// and we only add field to node 0
 				struAddInfoField(field);
 			}
 
 			/// adjust information size.
-			UINT is = infoSize();
+			UINT is = localInfoSize();
 			if(os != is)
 			{
 				int oldAncPop = m_curAncestralPop;
@@ -1379,11 +1344,61 @@ namespace simuPOP
 				useAncestralPop(oldAncPop);
 			}
 			return;
-#ifdef SIMUMPI
 		}
 		// for other node, just return 0.
 		else
 			return;
+#else
+
+		DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
+			"Info size is wrong");
+
+		UINT os = infoSize();
+		UINT idx;
+		// if this field exists, return directly
+		try
+		{
+			idx = infoIdx(field);
+			// only needs to initialize
+			int oldAncPop = m_curAncestralPop;
+			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
+			{
+				useAncestralPop(anc);
+				for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
+					ind->setInfo(init, idx);
+			}
+			useAncestralPop(oldAncPop);
+			return;
+		}
+		catch(IndexError &)
+		{
+			// and we only add field to node 0
+			struAddInfoField(field);
+		}
+
+		/// adjust information size.
+		UINT is = infoSize();
+		if(os != is)
+		{
+			int oldAncPop = m_curAncestralPop;
+			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
+			{
+				useAncestralPop(anc);
+				vectorinfo newInfo(is*popSize());
+				/// copy the old stuff in
+				InfoIterator ptr = newInfo.begin();
+				for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
+				{
+					copy(ind->infoBegin(), ind->infoBegin() + is - 1, ptr);
+					ind->setInfoPtr(ptr);
+					fill(ind->infoBegin() + os, ind->infoEnd(), init);
+					ptr += is;
+				}
+				m_info.swap(newInfo);
+			}
+			useAncestralPop(oldAncPop);
+		}
+		return;
 #endif
 
 	}
@@ -1395,18 +1410,14 @@ namespace simuPOP
 		{
 			DBG_ASSERT(m_info.size() == localInfoSize()*popSize(), SystemError,
 				"Info size is wrong");
-#endif
-
-			DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
-				"Info size is wrong");
 			// oldsize, this is valid for rank 0
-			UINT os = infoSize();
+			UINT os = localInfoSize();
 			for(vectorstr::const_iterator it=fields.begin(); it!=fields.end(); ++it)
 			{
 				try
 				{
 					// has field
-					UINT idx = infoIdx(*it);
+					UINT idx = localInfoIdx(*it);
 					// only needs to initialize
 					int oldAncPop = m_curAncestralPop;
 					for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
@@ -1426,7 +1437,7 @@ namespace simuPOP
 
 			// add these fields
 			/// adjust information size.
-			UINT is = infoSize();
+			UINT is = localInfoSize();
 			// need to extend.
 			if(is != os)
 			{
@@ -1448,7 +1459,58 @@ namespace simuPOP
 				}
 				useAncestralPop(oldAncPop);
 			}
-#ifdef SIMUMPI
+		}
+#else
+		DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
+			"Info size is wrong");
+		// oldsize, this is valid for rank 0
+		UINT os = infoSize();
+		for(vectorstr::const_iterator it=fields.begin(); it!=fields.end(); ++it)
+		{
+			try
+			{
+				// has field
+				UINT idx = infoIdx(*it);
+				// only needs to initialize
+				int oldAncPop = m_curAncestralPop;
+				for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
+				{
+					useAncestralPop(anc);
+
+					for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
+						ind->setInfo(init, idx);
+				}
+				useAncestralPop(oldAncPop);
+			}
+			catch(IndexError &)
+			{
+				struAddInfoField(*it);
+			}
+		}
+
+		// add these fields
+		/// adjust information size.
+		UINT is = infoSize();
+		// need to extend.
+		if(is != os)
+		{
+			int oldAncPop = m_curAncestralPop;
+			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
+			{
+				useAncestralPop(anc);
+				vectorinfo newInfo(is*popSize(), 0.);
+				/// copy the old stuff in
+				InfoIterator ptr = newInfo.begin();
+				for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
+				{
+					copy(ind->infoBegin(), ind->infoBegin() + os, ptr);
+					ind->setInfoPtr(ptr);
+					fill(ind->infoBegin() + os, ind->infoEnd(), init);
+					ptr += is;
+				}
+				m_info.swap(newInfo);
+			}
+			useAncestralPop(oldAncPop);
 		}
 #endif
 
@@ -1465,7 +1527,11 @@ namespace simuPOP
 
 			/// reset info vector
 			int oldAncPop = m_curAncestralPop;
+#ifdef SIMUMPI
+			UINT is = localInfoSize();
+#else
 			UINT is = infoSize();
+#endif
 			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 			{
 				useAncestralPop(anc);
@@ -1745,14 +1811,16 @@ namespace simuPOP
 #ifdef SIMUMPI
 			vectora tmpGenotype(m_popSize*localGenoSize());
 			size_t sz = localGenoSize();
+			vectorinfo tmpInfo(m_popSize*localInfoSize());
+			UINT is = localInfoSize();
 #else
 			vectora tmpGenotype(m_popSize*genoSize());
 			size_t sz = genoSize();
-#endif
 			vectorinfo tmpInfo(m_popSize*infoSize());
+			UINT is = infoSize();
+#endif
 			vectora::iterator it = tmpGenotype.begin();
 			vectorinfo::iterator infoPtr = tmpInfo.begin();
-			UINT is = infoSize();
 
 			for(IndIterator ind=indBegin(), indEd=indEnd(); ind!=indEd; ++ind)
 			{
@@ -1829,7 +1897,11 @@ namespace simuPOP
 
 			// copy info
 			InfoType tmp2;
-			for(UINT a=0; a < infoSize(); ++a)
+#ifdef SIMUMPI
+			for(UINT a=0; a < localInfoSize(); ++a)
+#else
+				for(UINT a=0; a < infoSize(); ++a)
+#endif
 			{
 				tmp2 =  m_inds[ scIndex[0] ].info(a);
 				m_inds[scIndex[0] ].setInfo(m_inds[ scIndex[1] ].info(a), a);
@@ -1846,11 +1918,12 @@ namespace simuPOP
 		/// save genotypic info
 #ifdef SIMUMPI
 		vectora scGeno(scIndex.size() * localNumLoci() * ploidy());
+		vectorinfo scInfo(scIndex.size() * localInfoSize());
 #else
 		vectora scGeno(scIndex.size() * totNumLoci() * ploidy());
+		vectorinfo scInfo(scIndex.size() * infoSize());
 #endif
 		vector<GenoIterator> scPtr( scIndex.size() );
-		vectorinfo scInfo(scIndex.size() * infoSize());
 		vector<InfoIterator> scInfoPtr( scIndex.size() );
 
 		size_t i, iEnd;
@@ -1864,16 +1937,19 @@ namespace simuPOP
 #else
 			copy(indGenoBegin(scIndex[i]), indGenoEnd(scIndex[i]), scGeno.begin() + i* localGenoSize());
 #endif
+			scInfoPtr[i] = m_inds[ scIndex[i]].infoPtr();
+			copy(ind(scIndex[i]).infoBegin(), ind(scIndex[i]).infoEnd(),
+				scInfo.begin() + i* localInfoSize());
 #else
 #ifdef BINARYALLELE
 			copyGenotype(indGenoBegin(scIndex[i]), scGeno.begin() + i* genoSize(), genoSize());
 #else
 			copy(indGenoBegin(scIndex[i]), indGenoEnd(scIndex[i]), scGeno.begin() + i* genoSize());
 #endif
-#endif
 			scInfoPtr[i] = m_inds[ scIndex[i]].infoPtr();
 			copy(ind(scIndex[i]).infoBegin(), ind(scIndex[i]).infoEnd(),
 				scInfo.begin() + i* infoSize());
+#endif
 		}
 
 		DBG_DO(DBG_POPULATION, cout << "Shallow copied" << scIndex << endl);
@@ -1893,6 +1969,9 @@ namespace simuPOP
 			copy( scGeno.begin() + i*  localGenoSize(), scGeno.begin() + (i+1)*  localGenoSize(),
 				indGenoBegin( scIndex[i] ));
 #endif
+			m_inds[ scIndex[i] ].setInfoPtr( scInfoPtr[i]);
+			copy( scInfo.begin() + i*  localInfoSize(), scInfo.begin() + (i+1)*  localInfoSize(),
+				ind(scIndex[i]).infoBegin());
 #else
 #ifdef BINARYALLELE
 			copyGenotype(scGeno.begin() + i*genoSize(), indGenoBegin( scIndex[i] ), genoSize());
@@ -1900,10 +1979,10 @@ namespace simuPOP
 			copy( scGeno.begin() + i*  genoSize(), scGeno.begin() + (i+1)*  genoSize(),
 				indGenoBegin( scIndex[i] ));
 #endif
-#endif
 			m_inds[ scIndex[i] ].setInfoPtr( scInfoPtr[i]);
 			copy( scInfo.begin() + i*  infoSize(), scInfo.begin() + (i+1)*  infoSize(),
 				ind(scIndex[i]).infoBegin());
+#endif
 			m_inds[ scIndex[i] ].setShallowCopied(false);
 		}
 		//setShallowCopied(false);
@@ -1921,7 +2000,11 @@ namespace simuPOP
 		{
 		*/
 		DBG_DO(DBG_POPULATION, cout << "Refresh all order " << endl);
+#ifdef SIMUMPI
+		UINT is = localInfoSize();
+#else
 		UINT is = infoSize();
+#endif
 		size_t i;
 		vectorinfo tmpInfo(m_popSize*is);
 		vectorinfo::iterator infoPtr = tmpInfo.begin();

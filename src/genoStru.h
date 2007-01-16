@@ -517,6 +517,7 @@ namespace simuPOP
 			UINT infoSize() const;
 			vectorstr infoFields() const;
 			string infoField(UINT idx) const;
+			UINT localInfoIdx(const string& name) const;
 			UINT infoIdx(const string& name) const;
 			void struAddInfoField(const string& field);
 			void struSetInfoFields(const vectorstr& fields);
@@ -548,7 +549,6 @@ namespace simuPOP
 			{
 				vectorstr& fields = s_genoStruRepository[m_genoStruIdx].m_infoFields;
 				fields.push_back(field);
-				return fields.size()-1;
 			}
 
 			/// should should only be called from population

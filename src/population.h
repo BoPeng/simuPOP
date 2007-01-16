@@ -825,36 +825,39 @@ namespace simuPOP
 				void setIndInfo(const T& values, T1 idx)
 			{
 #ifdef SIMUMPI
+				// this function can be called within mpiRank() == 0
+				// can only check local index
+				CHECKRANGEINFO(idx);
+				DBG_ASSERT(values.size() == popSize(), IndexError,
+					"Size of values should be the same as population size");
 				if(mpiRank()==0)
 				{
-#endif
-					CHECKRANGEINFO(idx);
-					DBG_ASSERT(values.size() == popSize(), IndexError,
-						"Size of values should be the same as population size");
-					UINT is = infoSize();
+					UINT is = localInfoSize();
 					typename T::const_iterator infoIter = values.begin();
 					for(vectorinfo::iterator ptr=m_info.begin() + idx;
 						ptr != m_info.end() + idx; ptr += is)
-					*ptr = static_cast<InfoType>(*infoIter++);
-#ifdef SIMUMPI
+					{
+						*ptr = static_cast<InfoType>(*infoIter++);
+					}
 				}
+#else
+				CHECKRANGEINFO(idx);
+				DBG_ASSERT(values.size() == popSize(), IndexError,
+					"Size of values should be the same as population size");
+				UINT is = infoSize();
+				typename T::const_iterator infoIter = values.begin();
+				for(vectorinfo::iterator ptr=m_info.begin() + idx;
+					ptr != m_info.end() + idx; ptr += is)
+				*ptr = static_cast<InfoType>(*infoIter++);
 #endif
 			}
 
 			template<class T>
 				void setIndInfo(const T& values, const string& name)
 			{
-#ifdef SIMUMPI
-				if(mpiRank()==0)
-				{
-#endif
-					int idx = infoIdx(name);
-					DBG_ASSERT(idx>=0, IndexError,
-						"Info name " + name + " is not a valid values field name");
-					setIndInfo<T, UINT>(values, idx);
-#ifdef SIMUMPI
-				}
-#endif
+				// for mpi version , use gloal idx
+				int idx = infoIdx(name);
+				setIndInfo<T, UINT>(values, idx);
 			}
 
 #ifdef SIMUMPI
@@ -1229,9 +1232,6 @@ namespace simuPOP
 			template<class Archive>
 				void save(Archive &ar, const UINT version) const
 			{
-#ifdef SIMUMPI
-				PENDING_MPI;
-#else
 
 				// deep adjustment: everyone in order
 				//const_cast<population*>(this)->adjustGenoPosition(true);
@@ -1340,15 +1340,11 @@ namespace simuPOP
 				{
 					cout << "Warning: shared variable is not saved correctly.\npopulation should still be usable." << endl;
 				}
-#endif
 			}
 
 			template<class Archive>
 				void load(Archive &ar, const UINT version)
 			{
-#ifdef SIMUMPI
-				PENDING_MPI;
-#else
 
 				ULONG ma;
 				ar & make_nvp("libraryMaxAllele", ma);
@@ -1643,7 +1639,6 @@ namespace simuPOP
 
 				m_shallowCopied = false;
 				m_infoOrdered = true;
-#endif
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();

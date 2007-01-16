@@ -294,7 +294,7 @@ namespace simuPOP
 			}
 
 			///
-		    void setMPIReady()
+			void setMPIReady()
 			{
 				SETFLAG(m_flags, m_flagMPI);
 			}

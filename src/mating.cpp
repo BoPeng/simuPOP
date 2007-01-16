@@ -537,8 +537,8 @@ namespace simuPOP
 				continue;
 
 			numMale = 0;
-            population::IndIterator it = pop.indBegin(sp);
-            population::IndIterator itEnd = pop.indEnd(sp);
+			population::IndIterator it = pop.indBegin(sp);
+			population::IndIterator itEnd = pop.indEnd(sp);
 			for(; it < itEnd; ++it)
 				if(it->sex() == Male)
 					numMale ++;
@@ -2241,8 +2241,8 @@ namespace simuPOP
 			}
 
 			numMale = 0;
-            population::IndIterator it=pop.indBegin(sp);
-            population::IndIterator itEnd = pop.indEnd(sp);
+			population::IndIterator it=pop.indBegin(sp);
+			population::IndIterator itEnd = pop.indEnd(sp);
 			for(; it < itEnd;  ++it)
 				if(it->sex() == Male)
 					numMale ++;

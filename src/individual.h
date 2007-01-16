@@ -521,8 +521,12 @@ namespace simuPOP
 			/// CPPONLY
 			InfoIterator infoEnd() const
 			{
-				// infoSize is zero for non-head nodes
+#ifdef SIMUMPI
+				// can not use infoSize here since infoSize will broadcast stuff
+				return m_infoPtr + localInfoSize();
+#else
 				return m_infoPtr + infoSize();
+#endif
 			}
 
 			//@}

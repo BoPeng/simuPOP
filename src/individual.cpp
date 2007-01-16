@@ -37,9 +37,9 @@ namespace simuPOP
 		UINT rank = rankOfChrom(chIdx.first);
 		Allele val = 0;
 		if (mpiRank() == rank)
-			val = *(m_genoPtr + chIdx.second + // infex in chrom
-                localChromBegin(chIdx.first) +  // local chrom begin
-                p*localNumLoci()); 
+			val = *(m_genoPtr + chIdx.second +	  // infex in chrom
+				localChromBegin(chIdx.first) +	  // local chrom begin
+				p*localNumLoci());
 		broadcast(mpiComm(), val, rank);
 		return val;
 	}
@@ -53,8 +53,8 @@ namespace simuPOP
 		UINT rank = rankOfChrom(chIdx.first);
 		Allele val = 0;
 		if (mpiRank() == rank)
-			val = *(m_genoPtr 
-                + index - beginLocus() // index is within a  block
+			val = *(m_genoPtr
+				+ index - beginLocus()			  // index is within a  block
 				+ p*localNumLoci());
 		broadcast(mpiComm(), val, rank);
 		return val;
@@ -85,10 +85,10 @@ namespace simuPOP
 		std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
 		UINT rank = rankOfChrom(chIdx.first);
 		if (mpiRank() == rank)
-			*(m_genoPtr // infex in chrom
-                + localChromBegin(chIdx.first) 
-                + chIdx.second
-                + p*localNumLoci()) = allele;
+			*(m_genoPtr							  // infex in chrom
+			+ localChromBegin(chIdx.first)
+			+ chIdx.second
+			+ p*localNumLoci()) = allele;
 	}
 
 	/// set allele from an index.
@@ -163,15 +163,15 @@ namespace simuPOP
 	/// get info
 	InfoType individual::info(UINT idx) const
 	{
+		InfoType info = 0;
+		CHECKRANGEINFO(idx);
 		if (mpiRank() == 0)
 		{
-			CHECKRANGEINFO(idx);
 			// broad cast the value to all nodes
-			return m_infoPtr[idx];
+			info = m_infoPtr[idx];
 		}
-		else
-			DBG_ASSERT(false, ValueError,
-				"Only head node has info information");
+		broadcast(mpiComm(), info, 0);
+		return info;
 	}
 
 	/// set info
@@ -179,7 +179,7 @@ namespace simuPOP
 	{
 		if (mpiRank()==0)
 		{
-			CHECKRANGEINFO(idx);
+			CHECKRANGELOCALINFO(idx);
 			m_infoPtr[idx] = value;
 		}
 	}
@@ -187,17 +187,14 @@ namespace simuPOP
 	/// get info
 	InfoType individual::info(const string& name) const
 	{
+		InfoType info = 0;
+		// use glocal infoIdx (with broadcast to trigger
+		// IndexError properly
+		int idx = infoIdx(name);
 		if (mpiRank()==0)
-		{
-			int idx = infoIdx(name);
-			DBG_ASSERT(idx>=0, IndexError,
-				"Info name " + name + " is not a valid info field name");
-			return m_infoPtr[idx];
-		}
-		else
-			DBG_ASSERT(false, ValueError,
-				"Only head node has info information");
-		return 0;
+			info = m_infoPtr[idx];
+		broadcast(mpiComm(), info, 0);
+		return info;
 	}
 
 	/// set info
@@ -205,7 +202,7 @@ namespace simuPOP
 	{
 		if (mpiRank()==0)
 		{
-			int idx = infoIdx(name);
+			int idx = localInfoIdx(name);
 			DBG_ASSERT(idx>=0, IndexError,
 				"Info name " + name + " is not a valid info field name");
 			m_infoPtr[idx] = value;
@@ -263,9 +260,9 @@ namespace simuPOP
 	{
 #ifdef SIMUMPI
 		if (mpiRank() == 0)
-			return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + infoSize() );
+			return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + localInfoSize() );
 		else
-			return NULL;
+			throw ValueError("arrInfo() is not available for non-head nodes");
 #else
 		return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + infoSize() );
 #endif
@@ -324,7 +321,7 @@ namespace simuPOP
 
 			if(equal)
 			{
-				for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
+				for( UINT i=0, iEnd = localInfoSize(); i < iEnd;  ++i)
 				{
 					if( info(i) != rhs.info(i) )
 					{
@@ -389,7 +386,7 @@ namespace simuPOP
 
 			if(equal)
 			{
-				for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
+				for( UINT i=0, iEnd = localInfoSize(); i < iEnd;  ++i)
 				{
 					if( info(i) != rhs.info(i) )
 					{

@@ -232,7 +232,7 @@ namespace simuPOP
 					if( !m_applyOpToStoppedReps)
 						continue;
 				}
-				
+
 				// set selection off so that all selector has to be preMating
 				// that is to say, if some one set selection=True in a post mating opertor
 				// it will have no effect
@@ -490,10 +490,10 @@ namespace simuPOP
 	void simulator::saveSimulator(string filename, string format, bool compress) const
 	{
 		io::filtering_ostream ofs;
-#ifndef DISABLE_COMPRESSION		
+#ifndef DISABLE_COMPRESSION
 		if(compress)
 			ofs.push(io::gzip_compressor());
-#endif			
+#endif
 		ofs.push(io::file_sink(filename));
 
 		if(!ofs)
@@ -522,10 +522,10 @@ namespace simuPOP
 	{
 		io::filtering_istream ifs;
 		if(isGzipped(filename))
-#ifdef DISABLE_COMPRESSION		
+#ifdef DISABLE_COMPRESSION
 			throw ValueError("This version of simuPOP can not handle compressed file");
 #else
-			ifs.push(io::gzip_decompressor());
+		ifs.push(io::gzip_decompressor());
 #endif
 		ifs.push(io::file_source(filename));
 

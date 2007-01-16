@@ -138,16 +138,16 @@ namespace simuPOP
 				else
 				{
 					// initislize locus by locus
-#ifdef SIMUMPI					
+#ifdef SIMUMPI
 					if(!noMarker)
 					{
-#endif						
+#endif
 						for(vectoru::iterator locus=m_atLoci.begin(); locus != m_atLoci.end(); ++locus)
 						{
-#ifdef SIMUMPI							
+#ifdef SIMUMPI
 							if(pop.rankOfLocus(*locus) != mpiRank())
 								continue;
-#endif								
+#endif
 							// all chromosomes
 							if(m_atPloidy == -1)
 							{
@@ -166,9 +166,9 @@ namespace simuPOP
 									pop.ind(ind).setAllele(a, *locus, m_atPloidy);
 							}
 						}
-#ifdef SIMUMPI						
+#ifdef SIMUMPI
 					}
-#endif					
+#endif
 				}
 			}
 			else								  // not idential individuals
@@ -197,7 +197,7 @@ namespace simuPOP
 #ifdef SIMUMPI
 					if(!noMarker)
 					{
-#endif						
+#endif
 						if( m_atPloidy == -1)
 						{
 							for(vectoru::iterator locus=m_atLoci.begin(); locus != m_atLoci.end(); ++locus)
@@ -216,9 +216,9 @@ namespace simuPOP
 									pop.ind(ind).setAllele(ws.get(), *locus, m_atPloidy);
 							}
 						}
-#ifdef SIMUMPI						
+#ifdef SIMUMPI
 					}
-#endif					
+#endif
 				}
 			}
 			// initialize sex
@@ -542,10 +542,10 @@ namespace simuPOP
 					}
 					else						  /// atLoci is in effect
 					{
-#ifdef SIMUMPI						
+#ifdef SIMUMPI
 						if (noMarker)
 							return true;
-#endif							
+#endif
 						if( srcSz == lociSz )	  // one by one
 						{
 							if(m_atPloidy==-1)
