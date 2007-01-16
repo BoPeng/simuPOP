@@ -524,8 +524,19 @@ namespace simuPOP
 
 			string infoField(UINT idx) const
 			{
+#ifdef SIMUMPI
+				if(mpiRank() == 0)
+				{
+					CHECKRANGEINFO(idx);
+					return s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
+				}
+				else
+					DBG_ASSERT(false, ValueError,
+						"Only head node has info information");
+#else
 				CHECKRANGEINFO(idx);
 				return s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
+#endif
 			}
 
 			/// return the index of field name, return -1 if not found.
@@ -538,16 +549,36 @@ namespace simuPOP
 			/// CPPONLY
 			int struAddInfoField(const string& field)
 			{
-				vectorstr& fields = s_genoStruRepository[m_genoStruIdx].m_infoFields;
-				fields.push_back(field);
-				return fields.size()-1;
+#ifdef SIMUMPI
+				if(mpiRank() == 0)
+				{
+#endif
+					vectorstr& fields = s_genoStruRepository[m_genoStruIdx].m_infoFields;
+					fields.push_back(field);
+					return fields.size()-1;
+#ifdef SIMUMPI
+				}
+				else
+					DBG_ASSERT(false, ValueError,
+						"Only head node has info information");
+#endif
 			}
 
 			/// should should only be called from population
 			/// CPPONLY
 			void struSetInfoFields(const vectorstr& fields)
 			{
-				s_genoStruRepository[m_genoStruIdx].m_infoFields = fields;
+#ifdef SIMUMPI
+				if(mpiRank() == 0)
+				{
+#endif
+					s_genoStruRepository[m_genoStruIdx].m_infoFields = fields;
+#ifdef SIMUMPI
+				}
+				else
+					DBG_ASSERT(false, ValueError,
+						"Only head node has info information");
+#endif
 			}
 
 			void swap(GenoStruTrait& rhs)

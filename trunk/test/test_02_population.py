@@ -245,10 +245,12 @@ class TestPopulation(unittest.TestCase):
         #
         pop = population(size=10, infoFields=['age'])
         pop.setIndInfo(range(10), 'age')
-        return
         pop.setSubPopStru(newSubPopSizes=[2,8], allowPopSizeChange=False)
-        for i in range(10):
-            self.assertEqual(pop.individual(i).info('age'), i)
+        if mpiRank() == 0:
+            for i in range(10):
+                self.assertEqual(pop.individual(i).info('age'), i)
+        else:
+            self.assertRaises(exceptions.ValueError, pop.individual(0).info, 'age')
         
 
     def testPopSwap(self):
@@ -267,27 +269,25 @@ class TestPopulation(unittest.TestCase):
         pop.setIndInfo(range(10), 'age')
         pop1 = population(5, infoFields=['fitness'])
         pop1.setIndInfo(range(10,15), 'fitness')
-        if mpiRank() == 0:
-            print pop1.arrIndInfo(True)
-        for i in range(5):
-            #self.assertEqual(pop1.individual(i).info('fitness'), i+10)
-            print i, pop1.infoSize(), pop1.individual(i).info('fitness')
         pop.swap(pop1)
-        self.assertEqual(pop.infoField(0), 'fitness')
-        self.assertEqual(pop1.infoField(0), 'age')
         if mpiRank() == 0:
+            self.assertEqual(pop.infoField(0), 'fitness')
+            self.assertEqual(pop1.infoField(0), 'age')
             self.assertEqual(pop.arrIndInfo(True), range(10,15))
             self.assertEqual(pop1.arrIndInfo(True), range(10))
+            for i in range(5):
+                self.assertEqual(pop.individual(i).info('fitness'), i+10)
+            for i in range(10):
+                self.assertEqual(pop1.individual(i).info('age'), i)
         else:
+            self.assertRaises(exceptions.ValueError, pop.infoField, 0)
+            self.assertRaises(exceptions.ValueError, pop1.infoField, 0)
             self.assertRaises(exceptions.ValueError, pop.arrIndInfo, True)
             self.assertRaises(exceptions.ValueError, pop1.arrIndInfo, True)
+            self.assertRaises(exceptions.ValueError, pop.individual(0).info, 'fitness')
+            self.assertRaises(exceptions.ValueError, pop1.individual(0).info, 'age')
         self.assertEqual(pop.popSize(), 5)
         self.assertEqual(pop1.popSize(), 10)
-        for i in range(5):
-            print mpiRank(), pop.infoIdx('fitness'), pop.infoSize(), i+10, pop.individual(i).info('fitness')
-            self.assertEqual(pop.individual(i).info('fitness'), i+10)
-        for i in range(10):
-            self.assertEqual(pop1.individual(i).info('age'), i)
 
     def testSplitSubPop(self):
         'Testing function splitSubPop'
@@ -398,10 +398,12 @@ class TestPopulation(unittest.TestCase):
         pop = population(subPop=[2,4,5], infoFields=['age'])
         self.assertEqual( pop.numSubPop(), 3)
         pop.setIndInfo(range(11), 0)
-        self.assertEqual(pop.arrIndInfo(True), range(11))
+        if mpiRank() == 0:
+            self.assertEqual(pop.arrIndInfo(True), range(11))
         pop.removeSubPops([1])
-        self.assertEqual(pop.arrIndInfo(0, True), range(2))
-        self.assertEqual(pop.arrIndInfo(1, True), range(6,11))
+        if mpiRank() == 0:        
+            self.assertEqual(pop.arrIndInfo(0, True), range(2))
+            self.assertEqual(pop.arrIndInfo(1, True), range(6,11))
     
     def testRemoveIndividuals(self):
         'Testing function removeIndividuals'
@@ -428,10 +430,11 @@ class TestPopulation(unittest.TestCase):
         pop.setIndInfo(range(11), 0)
         pop.removeIndividuals([2,3,4,5])
         self.assertEqual(pop.subPopSizes(), (2,0,5))
-        self.assertEqual(pop.arrIndInfo(0, True), range(2))
-        self.assertEqual(pop.arrIndInfo(2, True), range(6,11))
-        # nothing in the middle left
-        self.assertEqual(pop.arrIndInfo(True), range(2) + range(6,11))
+        if mpiRank() == 0:
+            self.assertEqual(pop.arrIndInfo(0, True), range(2))
+            self.assertEqual(pop.arrIndInfo(2, True), range(6,11))
+            # nothing in the middle left
+            self.assertEqual(pop.arrIndInfo(True), range(2) + range(6,11))
     
     
     def testMergeSubPops(self):
@@ -460,8 +463,9 @@ class TestPopulation(unittest.TestCase):
         pop.mergeSubPops([0,2], removeEmptySubPops=True)
         self.assertEqual(pop.subPopSizes(), (7,4))
         # the order may be different
-        self.assertEqual(sum(pop.arrIndInfo(0, False)), sum(range(2)+range(6,11)))
-        self.assertEqual(pop.arrIndInfo(1, True), range(2,6))
+        if mpiRank() == 0:
+            self.assertEqual(sum(pop.arrIndInfo(0, False)), sum(range(2)+range(6,11)))
+            self.assertEqual(pop.arrIndInfo(1, True), range(2,6))
         
 
     def testReorderSubPops(self):
@@ -496,8 +500,9 @@ class TestPopulation(unittest.TestCase):
         pop.reorderSubPops(rank=[1,3,0,2])
         self.assertEqual( pop.subPopSizes(), (3,1,4,2))
         newInfoSums = [sum([3,4,5]), sum([0]), sum([6,7,8,9]), sum([1,2])]
-        for i in range(4):
-            self.assertEqual(sum(pop.arrIndInfo(i, True)), newInfoSums[i])
+        if mpiRank() == 0:
+            for i in range(4):
+                self.assertEqual(sum(pop.arrIndInfo(i, True)), newInfoSums[i])
         
 
     def testNewPopByIndID(self):
@@ -523,12 +528,16 @@ class TestPopulation(unittest.TestCase):
         pop1 = pop.newPopByIndID(id=[-1,8,7,6,5,4,3,2,1,-1], removeEmptySubPops=True)
         self.assertEqual(pop1.popSize(), 8)
         self.assertEqual(pop1.subPopSizes(), tuple([1]*8))
-        for i in range(8):
-            self.assertEqual(pop1.individual(i).info('age'), 8-i)
+        if mpiRank() == 0:
+            for i in range(8):
+                self.assertEqual(pop1.individual(i).info('age'), 8-i)
         
 
     def testRemoveLoci(self):
         'Testing function removeLoci'
+        # FIXME: make sure to test a case when 
+        # genotype has to be moved from one node to another 
+        # in the MPI modules
         pop = population(subPop=[1,2], ploidy=2, loci=[2,3,1])
         arr = pop.arrGenotype(True)
         arr[:] = range(pop.totNumLoci())*(pop.popSize()*pop.ploidy())

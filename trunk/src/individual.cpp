@@ -37,7 +37,9 @@ namespace simuPOP
 		UINT rank = rankOfChrom(chIdx.first);
 		Allele val = 0;
 		if (mpiRank() == rank)
-			val = *(m_genoPtr+chIdx.second+p*localNumLoci());
+			val = *(m_genoPtr + chIdx.second + // infex in chrom
+                localChromBegin(chIdx.first) +  // local chrom begin
+                p*localNumLoci()); 
 		broadcast(mpiComm(), val, rank);
 		return val;
 	}
@@ -51,7 +53,8 @@ namespace simuPOP
 		UINT rank = rankOfChrom(chIdx.first);
 		Allele val = 0;
 		if (mpiRank() == rank)
-			val = *(m_genoPtr + chIdx.second - beginLocus()
+			val = *(m_genoPtr 
+                + index - beginLocus() // index is within a  block
 				+ p*localNumLoci());
 		broadcast(mpiComm(), val, rank);
 		return val;
@@ -82,7 +85,10 @@ namespace simuPOP
 		std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
 		UINT rank = rankOfChrom(chIdx.first);
 		if (mpiRank() == rank)
-			*(m_genoPtr+chIdx.second+p*localNumLoci()) = allele;
+			*(m_genoPtr // infex in chrom
+                + localChromBegin(chIdx.first) 
+                + chIdx.second
+                + p*localNumLoci()) = allele;
 	}
 
 	/// set allele from an index.
@@ -157,15 +163,15 @@ namespace simuPOP
 	/// get info
 	InfoType individual::info(UINT idx) const
 	{
-		InfoType info;
 		if (mpiRank() == 0)
 		{
 			CHECKRANGEINFO(idx);
 			// broad cast the value to all nodes
-			info = m_infoPtr[idx];
+			return m_infoPtr[idx];
 		}
-		broadcast(mpiComm(), info, 0);
-		return info;
+		else
+			DBG_ASSERT(false, ValueError,
+				"Only head node has info information");
 	}
 
 	/// set info
@@ -181,16 +187,17 @@ namespace simuPOP
 	/// get info
 	InfoType individual::info(const string& name) const
 	{
-		InfoType info;
 		if (mpiRank()==0)
 		{
 			int idx = infoIdx(name);
 			DBG_ASSERT(idx>=0, IndexError,
 				"Info name " + name + " is not a valid info field name");
-			info = m_infoPtr[idx];
+			return m_infoPtr[idx];
 		}
-		broadcast(mpiComm(), info, 0);
-		return info;
+		else
+			DBG_ASSERT(false, ValueError,
+				"Only head node has info information");
+		return 0;
 	}
 
 	/// set info
