@@ -281,6 +281,7 @@ namespace simuPOP
 
 	}
 
+#ifndef SIMUMPI	
 	UINT GenoStruTrait::infoIdx(const string& name) const
 	{
 		vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
@@ -296,8 +297,89 @@ namespace simuPOP
 		// this should never be reached.
 		return 0;
 	}
+#endif	
 
 #ifdef SIMUMPI
+	UINT GenoStruTrait::localInfoSize() const
+	{
+		return s_genoStruRepository[m_genoStruIdx].m_infoFields.size();
+	}
+	
+	UINT GenoStruTrait::infoSize() const
+	{
+		UINT size = 0;
+		if(mpiRank() == 0)
+			size = s_genoStruRepository[m_genoStruIdx].m_infoFields.size();
+		broadcast(mpiComm(), size, 0);
+		return size;
+	}
+
+	vectorstr GenoStruTrait::infoFields() const
+	{
+		vectorstr fields;
+		if(mpiRank() == 0)
+			fields = s_genoStruRepository[m_genoStruIdx].m_infoFields;
+		broadcast(mpiComm(), fields, 0);
+		return fields;
+	}
+
+	string GenoStruTrait::infoField(UINT idx) const
+	{
+		string field;
+		if(mpiRank() == 0)
+		{
+			CHECKRANGEINFO(idx);
+			field = s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
+		}
+		broadcast(mpiComm(), field, 0);
+		return field;
+	}
+	
+	UINT GenoStruTrait::infoIdx(const string& name) const
+	{
+		int idx = -1;
+		if(mpiRank() == 0)
+		{
+			vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
+
+			for(UINT i=0; i< names.size(); ++i)
+			{
+				if(names[i] == name)
+				{
+					idx = i;
+					break;
+			}
+			}
+		}
+		broadcast(mpiComm(), idx, 0);
+		if (idx == -1)
+			throw IndexError("Info field '" + name + "' is not found. "
+				"Plese use infoFields=['" + name + "'] option of population() during construction\n"
+				"or use addInfoField('" + name + "') to add to an existing population.");
+		// this should never be reached.
+		return 0;
+	}
+
+	void GenoStruTrait::struAddInfoField(const string& field)
+	{
+		if(mpiRank() == 0)
+		{
+			vectorstr& fields = s_genoStruRepository[m_genoStruIdx].m_infoFields;
+			fields.push_back(field);
+			return;
+		}
+	}
+
+	/// should should only be called from population
+	/// CPPONLY
+	void GenoStruTrait::struSetInfoFields(const vectorstr& fields)
+	{
+		if(mpiRank() == 0)
+		{
+			s_genoStruRepository[m_genoStruIdx].m_infoFields = fields;
+		}
+	}
+
 	/// return node rank by chromosome number, according to map on setChromMap
 	UINT GenoStruTrait::rankOfChrom(UINT chrom) const
 	{

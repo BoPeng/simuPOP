@@ -967,7 +967,7 @@ namespace simuPOP
 			/// match local info fields with the structure.
 			///
 			/// the difficult part is for ancestral generations.
-			int addInfoField(const string field, double init=0);
+			void addInfoField(const string field, double init=0);
 			void addInfoFields(const vectorstr& fields, double init=0);
 
 			/// set information fields, remove the old one
