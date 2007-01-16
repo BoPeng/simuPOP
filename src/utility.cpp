@@ -1748,7 +1748,6 @@ T Expression::valueAs##TypeName() \
 
 	ostream& StreamProvider::getOstream( PyObject* dict, bool readable)
 	{
-
 		DBG_FAILIF( readable && ( ISSETFLAG(m_flags, m_flagNoOutput) || ISSETFLAG(m_flags, m_flagUseDefault)) ,
 			SystemError, "A readable file is requested but this Opertor uses cout or cnull.");
 
@@ -2480,6 +2479,11 @@ T Expression::valueAs##TypeName() \
 		protected:
 			int overflow(int c)
 			{
+#ifdef SIMUMPI
+                // only head node can output to python output
+                if(mpiRank() != 0)
+                    return 0;
+#endif                  
 				// write out current buffer
 				if( pbase() != pptr() )
 				{
