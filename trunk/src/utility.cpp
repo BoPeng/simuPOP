@@ -68,7 +68,7 @@ using boost::lowest_bit;
 extern "C" PyObject* newcarrayobject(char* buf, char type, int size);
 #ifdef SIMUMPI
 extern "C" PyObject* newcarrayiterobject(GenoIterator begin, GenoIterator end,
-	ULONG size, UINT piece_size, UINT piece_begin, UINT piece_end, UINT shift);
+ULONG size, UINT piece_size, UINT piece_begin, UINT piece_end, UINT shift);
 #else
 extern "C" PyObject* newcarrayiterobject(GenoIterator begin, GenoIterator end);
 #endif
@@ -310,15 +310,15 @@ namespace std
 		return out;
 	}
 
-    /// CPPONLY: 3^n, can not use pow(3, n) because of overloading problem
-    /// in msvc.
-    unsigned pow3(unsigned n)
-    {
-        unsigned res = 1;
-        for(unsigned i = 0; i < n; ++i)
-            res *= 3;
-        return res;
-    }
+	/// CPPONLY: 3^n, can not use pow(3, n) because of overloading problem
+	/// in msvc.
+	unsigned pow3(unsigned n)
+	{
+		unsigned res = 1;
+		for(unsigned i = 0; i < n; ++i)
+			res *= 3;
+		return res;
+	}
 }
 
 
@@ -546,15 +546,15 @@ namespace simuPOP
 		return res;
 	}
 
-#else	
-	
+#else
+
 	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 	{
 		PyObject* res = newcarrayiterobject(begin, end);
 		DBG_FAILIF(res==NULL, ValueError, "Can not convert buf to Allele num array");
 		return res;
 	}
-#endif	
+#endif
 
 	PyObject* Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end)
 	{
@@ -2153,7 +2153,7 @@ T Expression::valueAs##TypeName() \
 
 #define setBit(ptr, i)    ( *((ptr)+(i)/WORDBIT) |= 1UL << ((i) - ((i)/WORDBIT)*WORDBIT))
 #define unsetBit(ptr, i)  ( *((ptr)+(i)/WORDBIT) &= ~ (1UL << ((i) - ((i)/WORDBIT)*WORDBIT)))
-// use a != 0 to avoid compiler warning
+	// use a != 0 to avoid compiler warning
 #define getBit(ptr, i)    (( *((ptr)+(i)/WORDBIT) & (1UL << ((i) - ((i)/WORDBIT)*WORDBIT))) != 0)
 
 	void BernulliTrials::doTrial()
@@ -2480,10 +2480,10 @@ T Expression::valueAs##TypeName() \
 			int overflow(int c)
 			{
 #ifdef SIMUMPI
-                // only head node can output to python output
-                if(mpiRank() != 0)
-                    return 0;
-#endif                  
+				// only head node can output to python output
+				if(mpiRank() != 0)
+					return 0;
+#endif
 				// write out current buffer
 				if( pbase() != pptr() )
 				{
@@ -2679,15 +2679,12 @@ T Expression::valueAs##TypeName() \
 #endif
 	}
 
-
 	void mpiBarrier()
 	{
 #ifdef SIMUMPI
 		g_mpiComm.barrier();
 #endif
 	}
-
-
 
 #ifdef SIMUMPI
 	void testMPI()

@@ -169,9 +169,9 @@ namespace std
 	/// CPPONLY how to output a dictionary
 	ostream& operator<<(ostream& out, const intDict& dict);
 
-    /// CPPONLY: 3^n, can not use pow(3, n) because of overloading problem
-    /// in msvc.
-    unsigned pow3(unsigned n);
+	/// CPPONLY: 3^n, can not use pow(3, n) because of overloading problem
+	/// in msvc.
+	unsigned pow3(unsigned n);
 }
 
 
@@ -191,7 +191,6 @@ namespace simuPOP
 				return ind.affected();
 			}
 	};
-
 
 	/** \brief CPPONLY iterator to access an allele across all ploidy and individuals.
 
@@ -447,9 +446,9 @@ namespace simuPOP
 
 	/// CPPONLY
 #ifdef SIMUMPI
-	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end, 
+	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end,
 		ULONG size, UINT piece_size, UINT piece_begin, UINT piece_end);
-#else	
+#else
 	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 #endif
 
@@ -1502,7 +1501,7 @@ namespace simuPOP
 
 	UINT mpiSize();
 
-    void mpiBarrier();
+	void mpiBarrier();
 
 #ifdef SIMUMPI
 	void testMPI();

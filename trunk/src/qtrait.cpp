@@ -112,7 +112,7 @@ namespace simuPOP
 		{
 			m_len = m_loci.size() * ind->ploidy();
 			m_alleles.resize( m_len);
-#ifdef SIMUMPI			
+#ifdef SIMUMPI
 			m_numArray = Allele_Vec_As_NumArray( m_alleles.begin(), m_alleles.end(),
 				m_alleles.size(), m_alleles.size(), 0, m_alleles.size());
 #else

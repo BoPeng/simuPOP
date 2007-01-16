@@ -244,13 +244,16 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual( pop.subPopSizes(), (10, 20) )
         #
         pop = population(size=10, infoFields=['age'])
+        pop.individual(1).setInfo(1, 'age')
+        self.assertEqual(pop.individual(1).info('age'), 1)
+        self.assertEqual(pop.individual(1).info('age'), 1)
+        self.assertEqual(pop.individual(1).info('age'), 1)
         pop.setIndInfo(range(10), 'age')
+        self.assertEqual(pop.individual(0).info('age'), 0)
+        #print pop.indInfo('age', True)
         pop.setSubPopStru(newSubPopSizes=[2,8], allowPopSizeChange=False)
-        if mpiRank() == 0:
-            for i in range(10):
-                self.assertEqual(pop.individual(i).info('age'), i)
-        else:
-            self.assertRaises(exceptions.ValueError, pop.individual(0).info, 'age')
+        for i in range(10):
+            self.assertEqual(pop.individual(i).info('age'), i)
         
 
     def testPopSwap(self):
@@ -270,22 +273,21 @@ class TestPopulation(unittest.TestCase):
         pop1 = population(5, infoFields=['fitness'])
         pop1.setIndInfo(range(10,15), 'fitness')
         pop.swap(pop1)
+        self.assertEqual(pop.infoField(0), 'fitness')
+        self.assertEqual(pop1.infoField(0), 'age')
+        for i in range(5):
+            self.assertEqual(pop.individual(i).info('fitness'), i+10)
+        for i in range(10):
+            self.assertEqual(pop1.individual(i).info('age'), i)
+        ###
+        ###  ARRINDINFO is only valid for head node.
+        ###
         if mpiRank() == 0:
-            self.assertEqual(pop.infoField(0), 'fitness')
-            self.assertEqual(pop1.infoField(0), 'age')
             self.assertEqual(pop.arrIndInfo(True), range(10,15))
             self.assertEqual(pop1.arrIndInfo(True), range(10))
-            for i in range(5):
-                self.assertEqual(pop.individual(i).info('fitness'), i+10)
-            for i in range(10):
-                self.assertEqual(pop1.individual(i).info('age'), i)
         else:
-            self.assertRaises(exceptions.ValueError, pop.infoField, 0)
-            self.assertRaises(exceptions.ValueError, pop1.infoField, 0)
             self.assertRaises(exceptions.ValueError, pop.arrIndInfo, True)
             self.assertRaises(exceptions.ValueError, pop1.arrIndInfo, True)
-            self.assertRaises(exceptions.ValueError, pop.individual(0).info, 'fitness')
-            self.assertRaises(exceptions.ValueError, pop1.individual(0).info, 'age')
         self.assertEqual(pop.popSize(), 5)
         self.assertEqual(pop1.popSize(), 10)
 
@@ -528,9 +530,8 @@ class TestPopulation(unittest.TestCase):
         pop1 = pop.newPopByIndID(id=[-1,8,7,6,5,4,3,2,1,-1], removeEmptySubPops=True)
         self.assertEqual(pop1.popSize(), 8)
         self.assertEqual(pop1.subPopSizes(), tuple([1]*8))
-        if mpiRank() == 0:
-            for i in range(8):
-                self.assertEqual(pop1.individual(i).info('age'), 8-i)
+        for i in range(8):
+            self.assertEqual(pop1.individual(i).info('age'), 8-i)
         
 
     def testRemoveLoci(self):
@@ -592,6 +593,211 @@ class TestPopulation(unittest.TestCase):
         pop1.individual(0).setAllele(1, 0)
         # false becase of geno structure difference.
         self.assertEqual( pop == pop1, False)
+
+        
+    def testPopInfo(self):
+        'Testing info-related functions'
+        # create a population without info field
+        pop = population(10)
+        ind = pop.individual(0)
+        self.assertRaises(exceptions.IndexError, ind.info, 0)
+        # give name
+        self.assertRaises(exceptions.ValueError, population, infoFields='age')
+        pop = population(10, infoFields=['age'])
+        self.assertEqual(pop.infoField(0), 'age')
+        self.assertEqual(pop.infoFields(), ('age',))
+        ind = pop.individual(0)
+        self.assertRaises(exceptions.IndexError, ind.info, 1)
+        # can set more names
+        pop = population(10, infoFields=['age', 'fitness', 'trait1'])
+        self.assertEqual(pop.infoField(0), 'age')
+        self.assertEqual(pop.infoField(2), 'trait1')
+        self.assertRaises(exceptions.IndexError, pop.infoField, 3)
+        self.assertEqual(pop.infoFields(), ('age', 'fitness', 'trait1'))
+        # can set and read each info
+        pop.setIndInfo(range(10), 0)
+        pop.setIndInfo(range(10,20), 1)
+        pop.setIndInfo(range(20,30), 2)
+        self.assertRaises(exceptions.IndexError, pop.setIndInfo, range(30,40), 3)
+        for i in range(3):
+            for j in range(10):
+                self.assertEqual(pop.individual(j).info(i), i*10+j)
+        ind = pop.individual(0)
+        if mpiRank() == 0:
+            self.assertEqual(ind.arrInfo(), (0,10,20))
+            self.assertEqual(pop.arrIndInfo(True)[:8], (0,10,20,1,11,21,2,12))
+            self.assertEqual(pop.arrIndInfo(0, True)[:8], (0,10,20,1,11,21,2,12))
+        else:
+            self.assertRaises(exceptions.ValueError, ind.arrInfo)
+            self.assertRaises(exceptions.ValueError, pop.arrIndInfo, True)
+            self.assertRaises(exceptions.ValueError, pop.arrIndInfo, 0, True)
+        self.assertRaises(exceptions.IndexError, pop.arrIndInfo, 1, True)
+        # access by name
+        #pop.setIndInfo(range(30,40), 'sex')
+        #pop.arrIndInfo('sex')
+        self.assertRaises(exceptions.IndexError, ind.info, 'sex')
+        ind.setInfo(18, 'age')
+        self.assertEqual(ind.info('age'), 18)
+        #
+        pop = population(10, infoFields=['age', 'fitness'])
+        self.assertEqual(pop.infoFields(), ('age', 'fitness'))
+        self.assertEqual(pop.infoSize(), 2)
+        ind = pop.individual(0)
+        # set info
+        ind.setInfo(2, 0)
+        self.assertEqual(ind.info('age'), 2)
+        # get info
+        self.assertEqual(ind.info(0), 2)
+        # create another field
+        self.assertEqual(pop.infoIdx('age'), 0)
+        # set values
+        pop.setIndInfo([1, 2,3,4,5,6,7,8,9,10], 0)
+        for i in range(10):
+            self.assertEqual(pop.individual(i).info(0), i+1)
+        self.assertEqual(pop.infoIdx('fitness'), 1)
+        # adding fitness should not interfere with age.
+        for i in range(10):
+            self.assertEqual(pop.individual(i).info(0), i+1)
+        # set info by name
+        pop = population(10, infoFields=['age', 'fitness'])
+        #print pop.indInfo('fitness', True)
+        #print pop.indInfo('age', True)
+        for i in range(10):
+            pop.individual(i).setInfo(i+50, 'fitness')
+            self.assertEqual(pop.individual(i).info('fitness'), i+50)
+        pop.setIndInfo(range(50,60), 'fitness')
+        for i in range(10):
+            pop.individual(i).setInfo(i+50, 'fitness')
+            self.assertEqual(pop.individual(i).info('fitness'), i+50)
+        # 
+        #  test indInfo
+        pop = population(subPop=[4,6], infoFields=['age', 'fitness'])
+        pop.setIndInfo(range(10), 'age')
+        pop.setIndInfo(range(100, 110), 'fitness')
+        self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.indInfo('fitness', True), tuple([float(x) for x in range(100, 110)]))
+        self.assertEqual(pop.indInfo('age', 1, True), tuple([float(x) for x in range(4, 10)]))
+        self.assertEqual(pop.indInfo('fitness', 0, True), tuple([float(x) for x in range(100, 104)]))
+        #
+        # test reset info fields
+        pop = population(size=10, infoFields=['age'])
+        pop.setInfoFields(['age', 'fitness'])
+        self.assertEqual(pop.infoSize(), 2)
+        self.assertEqual(pop.infoFields(), ('age', 'fitness'))
+        # set values
+        pop.setIndInfo(range(10), 'age')
+        pop.setIndInfo(range(100, 110), 'fitness')
+        self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.indInfo('fitness', True), tuple([float(x) for x in range(100, 110)]))
+        # add an existing field
+        pop.addInfoField('fitness')
+        self.assertEqual(pop.infoSize(), 2)
+        # add a new one.
+        pop.addInfoField('misc')
+        self.assertEqual(pop.infoSize(), 3)
+        pop.setIndInfo(range(200, 210), 'fitness')
+        self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.indInfo('fitness', True), tuple([float(x) for x in range(200, 210)]))
+
+        
+    def testPopVars(self):
+        'Testing population variables'
+        # FIXME: currently variable is stored on all nodes.
+        pop = population()
+        self.assertEqual( pop.grp(), -1)
+        self.assertEqual( pop.rep(), -1)
+        # var will be copied?
+        pop.dvars().x = 1
+        pop1 = pop.clone()
+        self.assertEqual( pop1.dvars().x, 1)
+        pop1.dvars().y = 2
+        self.assertEqual(pop.vars().has_key('y'), False)
+        # test if a variable will be fully updated (a previous bug)
+        # If a vector has 16 numbers, and then it will have a value
+        # of 10 numbers, will the rest of the 6 numbers be removed?
+        pop = population(1000, loci=[2,4])
+        InitByFreq(pop, [.2, .3, .5])
+        Stat(pop, alleleFreq=range(0,6))
+        self.assertEqual(len(pop.dvars().alleleFreq), 6)
+        pop.removeLoci(remove=[0,4])
+        Stat(pop, alleleFreq=range(0,4))
+        self.assertEqual(len(pop.dvars().alleleFreq), 4)
+
+    def testAncestry(self):
+        'Testing ancestral population related functions'
+        pop = population(subPop=[3,5], loci=[2,3], ancestralDepth=2)
+        InitByFreq(pop, [.2,.8])
+        gt = list(pop.arrGenotype(True))
+        self.assertEqual(pop.ancestralDepth(), 0)
+        pop1 = population(subPop=[2,3], loci=[2,3], ancestralDepth=2)
+        InitByFreq(pop1, [.8,.2])
+        gt1 = list(pop1.arrGenotype(True))
+        # can not do, because of different genotype
+        pop.pushAndDiscard(pop1)
+        # pop1 should be empty now
+        self.assertEqual(pop1.popSize(), 0)
+        # pop should have one ancestry
+        self.assertEqual(pop.ancestralDepth(), 1)
+        # genotype of pop should be pop1
+        self.assertEqual(pop.arrGenotype(True), gt1)
+        # use ancestry pop
+        pop.useAncestralPop(1)
+        self.assertEqual(pop.arrGenotype(True), gt)
+        # use back
+        pop.useAncestralPop(0)
+        self.assertEqual(pop.arrGenotype(True), gt1)
+        # can not push itself
+        self.assertRaises(exceptions.ValueError,
+            pop.pushAndDiscard, pop)
+        # can not do, because of different genotype
+        pop2 = population(subPop=[3,5], loci=[2])
+        self.assertRaises(exceptions.ValueError,
+            pop.pushAndDiscard, pop2)
+        # [ gt1, gt ]
+        # push more?
+        pop2 = population(subPop=[3,5], loci=[2,3])
+        InitByFreq(pop2, [.2,.8])
+        gt2 = list(pop2.arrGenotype(True))
+        pop3 = pop2.clone()
+        pop.pushAndDiscard(pop2)
+        # [ gt2, gt1, gt]
+        # pop should have one ancestry
+        self.assertEqual(pop2.popSize(), 0)
+        self.assertEqual(pop.ancestralDepth(), 2)
+        # 
+        self.assertEqual(pop.arrGenotype(True), gt2)
+        pop.useAncestralPop(1)
+        self.assertEqual(pop.arrGenotype(True), gt1)
+        pop.useAncestralPop(2)
+        self.assertEqual(pop.arrGenotype(True), gt)
+        pop.useAncestralPop(0)
+        #
+        pop.pushAndDiscard(pop3)
+        # [ gt2, gt2, gt1]
+        self.assertEqual(pop3.popSize(), 0)
+        self.assertEqual(pop.ancestralDepth(), 2)
+        pop.useAncestralPop(1)
+        self.assertEqual(pop.arrGenotype(True), gt2)
+        pop.useAncestralPop(2)
+        self.assertEqual(pop.arrGenotype(True), gt1)
+        #
+        # test if ind info is saved with ancestral populations
+        pop = population(10, ancestralDepth=2, infoFields=['age', 'fitness'])
+        pop.setIndInfo(range(10), 'age')
+        pop.setIndInfo(range(10, 20), 'fitness')
+        pop1 = population(20, infoFields=['age', 'fitness'])
+        pop1.setIndInfo(range(100, 120), 'age')
+        pop1.setIndInfo(range(110, 130), 'fitness')
+        pop.pushAndDiscard(pop1)
+        # test info
+        self.assertEqual(pop.popSize(), 20)
+        if mpiRank() == 0:
+            self.assertEqual(pop.arrIndInfo(True)[:4], [100, 110, 101, 111])
+        pop.useAncestralPop(1)
+        self.assertEqual(pop.popSize(), 10)
+        if mpiRank() == 0:
+            self.assertEqual(pop.arrIndInfo(True)[:4], [0, 10, 1, 11])
+
 
     def testSaveLoadPopulation(self):
         'Testing save and load populations'
@@ -682,192 +888,6 @@ class TestPopulation(unittest.TestCase):
             if os.path.isfile('test_std.txt'):
                 pop1 = LoadPopulation('test_std.txt')
                 self.assertEqual(pop, pop1)
-        
-    def testPopInfo(self):
-        'Testing info-related functions'
-        # create a population without info field
-        pop = population(10)
-        ind = pop.individual(0)
-        self.assertRaises(exceptions.IndexError, ind.info, 0)
-        # give name
-        self.assertRaises(exceptions.ValueError, population, infoFields='age')
-        pop = population(10, infoFields=['age'])
-        self.assertEqual(pop.infoField(0), 'age')
-        self.assertEqual(pop.infoFields(), ('age',))
-        ind = pop.individual(0)
-        self.assertRaises(exceptions.IndexError, ind.info, 1)
-        # can set more names
-        pop = population(10, infoFields=['age', 'fitness', 'trait1'])
-        self.assertEqual(pop.infoField(0), 'age')
-        self.assertEqual(pop.infoField(2), 'trait1')
-        self.assertRaises(exceptions.IndexError, pop.infoField, 3)
-        self.assertEqual(pop.infoFields(), ('age', 'fitness', 'trait1'))
-        # can set and read each info
-        pop.setIndInfo(range(10), 0)
-        pop.setIndInfo(range(10,20), 1)
-        pop.setIndInfo(range(20,30), 2)
-        self.assertRaises(exceptions.IndexError, pop.setIndInfo, range(30,40), 3)
-        for i in range(3):
-            for j in range(10):
-                self.assertEqual(pop.individual(j).info(i), i*10+j)
-        ind = pop.individual(0)
-        self.assertEqual(ind.arrInfo(), (0,10,20))
-        self.assertEqual(pop.arrIndInfo(True)[:8], (0,10,20,1,11,21,2,12))
-        # by subpop
-        self.assertEqual(pop.arrIndInfo(0)[:8], (0,10,20,1,11,21,2,12))
-        self.assertRaises(exceptions.IndexError, pop.arrIndInfo, 1, True)
-        # access by name
-        #pop.setIndInfo(range(30,40), 'sex')
-        #pop.arrIndInfo('sex')
-        self.assertRaises(exceptions.IndexError, ind.info, 'sex')
-        ind.setInfo(18, 'age')
-        self.assertEqual(ind.info('age'), 18)
-        #
-        pop = population(10, infoFields=['age', 'fitness'])
-        self.assertEqual(pop.infoFields(), ('age', 'fitness'))
-        self.assertEqual(pop.infoSize(), 2)
-        ind = pop.individual(0)
-        # set info
-        ind.setInfo(2, 0)
-        self.assertEqual(ind.info('age'), 2)
-        # get info
-        self.assertEqual(ind.info(0), 2)
-        # create another field
-        self.assertEqual(pop.infoIdx('age'), 0)
-        # set values
-        pop.setIndInfo([1, 2,3,4,5,6,7,8,9,10], 0)
-        for i in range(10):
-            self.assertEqual(pop.individual(i).info(0), i+1)
-        self.assertEqual(pop.infoIdx('fitness'), 1)
-        # adding fitness should not interfere with age.
-        for i in range(10):
-            self.assertEqual(pop.individual(i).info(0), i+1)
-        # set info by name
-        pop.setIndInfo(range(50,60), 'fitness')
-        for i in range(10):
-            self.assertEqual(pop.individual(i).info('fitness'), i+50)
-        # 
-        #  test indInfo
-        pop = population(subPop=[4,6], infoFields=['age', 'fitness'])
-        pop.setIndInfo(range(10), 'age')
-        pop.setIndInfo(range(100, 110), 'fitness')
-        self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.indInfo('fitness', True), tuple([float(x) for x in range(100, 110)]))
-        self.assertEqual(pop.indInfo('age', 1, True), tuple([float(x) for x in range(4, 10)]))
-        self.assertEqual(pop.indInfo('fitness', 0, True), tuple([float(x) for x in range(100, 104)]))
-        #
-        # test reset info fields
-        pop = population(size=10, infoFields=['age'])
-        pop.setInfoFields(['age', 'fitness'])
-        self.assertEqual( pop.infoFields(), ('age', 'fitness'))
-        # set values
-        pop.setIndInfo(range(10), 'age')
-        pop.setIndInfo(range(100, 110), 'fitness')
-        self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.indInfo('fitness', True), tuple([float(x) for x in range(100, 110)]))
-        # add an existing field
-        self.assertEqual(pop.addInfoField('fitness'), 1)
-        # add a new one.
-        self.assertEqual(pop.addInfoField('misc'), 2)
-        pop.setIndInfo(range(200, 210), 'fitness')
-        self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.indInfo('fitness', True), tuple([float(x) for x in range(200, 210)]))
-
-        
-    def testPopVars(self):
-        'Testing population variables'
-        pop = population()
-        self.assertEqual( pop.grp(), -1)
-        self.assertEqual( pop.rep(), -1)
-        # var will be copied?
-        pop.dvars().x = 1
-        pop1 = pop.clone()
-        self.assertEqual( pop1.dvars().x, 1)
-        pop1.dvars().y = 2
-        self.assertEqual(pop.vars().has_key('y'), False)
-        # test if a variable will be fully updated (a previous bug)
-        # If a vector has 16 numbers, and then it will have a value
-        # of 10 numbers, will the rest of the 6 numbers be removed?
-        pop = population(1000, loci=[2,4])
-        InitByFreq(pop, [.2, .3, .5])
-        Stat(pop, alleleFreq=range(0,6))
-        self.assertEqual(len(pop.dvars().alleleFreq), 6)
-        pop.removeLoci(remove=[0,4])
-        Stat(pop, alleleFreq=range(0,4))
-        self.assertEqual(len(pop.dvars().alleleFreq), 4)
-
-    def testAncestry(self):
-        'Testing ancestral population related functions'
-        pop = population(subPop=[3,5], loci=[2,3], ancestralDepth=2)
-        InitByFreq(pop, [.2,.8])
-        gt = list(pop.arrGenotype(True))
-        self.assertEqual(pop.ancestralDepth(), 0)
-        pop1 = population(subPop=[2,3], loci=[2,3], ancestralDepth=2)
-        InitByFreq(pop1, [.8,.2])
-        gt1 = list(pop1.arrGenotype(True))
-        # can not do, because of different genotype
-        pop.pushAndDiscard(pop1)
-        # pop1 should be empty now
-        self.assertEqual(pop1.popSize(), 0)
-        # pop should have one ancestry
-        self.assertEqual(pop.ancestralDepth(), 1)
-        # genotype of pop should be pop1
-        self.assertEqual(pop.arrGenotype(True), gt1)
-        # use ancestry pop
-        pop.useAncestralPop(1)
-        self.assertEqual(pop.arrGenotype(True), gt)
-        # use back
-        pop.useAncestralPop(0)
-        self.assertEqual(pop.arrGenotype(True), gt1)
-        # can not push itself
-        self.assertRaises(exceptions.ValueError,
-            pop.pushAndDiscard, pop)
-        # can not do, because of different genotype
-        pop2 = population(subPop=[3,5], loci=[2])
-        self.assertRaises(exceptions.ValueError,
-            pop.pushAndDiscard, pop2)
-        # [ gt1, gt ]
-        # push more?
-        pop2 = population(subPop=[3,5], loci=[2,3])
-        InitByFreq(pop2, [.2,.8])
-        gt2 = list(pop2.arrGenotype(True))
-        pop3 = pop2.clone()
-        pop.pushAndDiscard(pop2)
-        # [ gt2, gt1, gt]
-        # pop should have one ancestry
-        self.assertEqual(pop2.popSize(), 0)
-        self.assertEqual(pop.ancestralDepth(), 2)
-        # 
-        self.assertEqual(pop.arrGenotype(True), gt2)
-        pop.useAncestralPop(1)
-        self.assertEqual(pop.arrGenotype(True), gt1)
-        pop.useAncestralPop(2)
-        self.assertEqual(pop.arrGenotype(True), gt)
-        pop.useAncestralPop(0)
-        #
-        pop.pushAndDiscard(pop3)
-        # [ gt2, gt2, gt1]
-        self.assertEqual(pop3.popSize(), 0)
-        self.assertEqual(pop.ancestralDepth(), 2)
-        pop.useAncestralPop(1)
-        self.assertEqual(pop.arrGenotype(True), gt2)
-        pop.useAncestralPop(2)
-        self.assertEqual(pop.arrGenotype(True), gt1)
-        #
-        # test if ind info is saved with ancestral populations
-        pop = population(10, ancestralDepth=2, infoFields=['age', 'fitness'])
-        pop.setIndInfo(range(10), 'age')
-        pop.setIndInfo(range(10, 20), 'fitness')
-        pop1 = population(20, infoFields=['age', 'fitness'])
-        pop1.setIndInfo(range(100, 120), 'age')
-        pop1.setIndInfo(range(110, 130), 'fitness')
-        pop.pushAndDiscard(pop1)
-        # test info
-        self.assertEqual(pop.popSize(), 20)
-        self.assertEqual(pop.arrIndInfo(True)[:4], [100, 110, 101, 111])
-        pop.useAncestralPop(1)
-        self.assertEqual(pop.popSize(), 10)
-        self.assertEqual(pop.arrIndInfo(True)[:4], [0, 10, 1, 11])
         
 
 if __name__ == '__main__':

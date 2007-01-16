@@ -607,9 +607,9 @@ namespace simuPOP
 
 #ifndef BINARYALLELE
 			Allele a, b;
-#else            
+#else
 			unsigned short a, b;
-#endif            
+#endif
 
 			// for each subpopulation
 			for( UINT sp=0; sp < numSP;  ++sp)
@@ -618,7 +618,6 @@ namespace simuPOP
 					loc << " subPop " << sp << endl);
 
 				vector<intDict> num;
-
 
 				/// go through a single allele for all individual, all diploid
 				for( GappedAlleleIterator it = pop.alleleBegin(loc, sp, false),
@@ -629,7 +628,7 @@ namespace simuPOP
 
 					if( !m_phase && a > b )
 						std::swap(a,b);
-                    
+
 					if( a >= num.size() )
 						num.resize(a+1);
 

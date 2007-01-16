@@ -175,8 +175,8 @@ namespace simuPOP
 		}
 	}
 
-	void sample::findOffspringAndSpouse(population& pop, unsigned ancestralDepth, 
-        unsigned maxOffspring,
+	void sample::findOffspringAndSpouse(population& pop, unsigned ancestralDepth,
+		unsigned maxOffspring,
 		const string& fatherField, const string& motherField,
 		const string& spouseField, const string& offspringField)
 	{

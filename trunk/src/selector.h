@@ -195,7 +195,7 @@ namespace simuPOP
 			selector(stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_fitness(fitness), m_wildtype(wildtype)
 			{
-				DBG_ASSERT( m_fitness.size() == static_cast<UINT>(pow(static_cast<double>(3), 
+				DBG_ASSERT( m_fitness.size() == static_cast<UINT>(pow(static_cast<double>(3),
 					static_cast<double>(loci.size()))),
 					ValueError, "Please specify fitness for each combination of genotype.");
 			};

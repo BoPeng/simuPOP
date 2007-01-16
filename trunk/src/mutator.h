@@ -429,15 +429,15 @@ namespace simuPOP
 			{
 				int resInt;
 				PyCallFunc(m_func, "(i)", static_cast<int>(allele), resInt, PyObj_As_Int);
-#ifdef BINARYALLELE                
-                DBG_ASSERT(resInt == 0 || resInt == 1, ValueError,
-                    "Can only mutate to 0 or 1 in binary mode.");
+#ifdef BINARYALLELE
+				DBG_ASSERT(resInt == 0 || resInt == 1, ValueError,
+					"Can only mutate to 0 or 1 in binary mode.");
 				allele = resInt != 0;
 #else
-                DBG_ASSERT(static_cast<unsigned>(resInt) <= MaxAllele, ValueError,
-                    "Mutated to an allele greater than maximum allowed allele value");
+				DBG_ASSERT(static_cast<unsigned>(resInt) <= MaxAllele, ValueError,
+					"Mutated to an allele greater than maximum allowed allele value");
 				allele = static_cast<Allele>(resInt);
-#endif                
+#endif
 			}
 
 			virtual string __repr__()

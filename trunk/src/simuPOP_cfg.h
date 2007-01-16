@@ -60,7 +60,6 @@
 #define WORDTYPE std::_Bit_type
 #define BITPTR(ref) ref._M_p
 #define BITOFF(ref) ref._M_offset
-
 #endif
 
 #include <string>
@@ -313,7 +312,6 @@ if(debug(dbgCode)){ expr; }
 #define DBG_DO_(expr)
 #endif
 
-
 #ifdef SIMUMPI
 #define PENDING_MPI DBG_FAILIF(true, SystemError, "This function is not available in MPI modules")
 #else
@@ -339,7 +337,9 @@ if(debug(dbgCode)){ expr; }
 #define CHECKRANGEGENOSIZE(p) DBG_FAILIF( p>=genoSize(),IndexError, "locus index  (" + toStr(p) + ") out of range of 0 - " + toStr(genoSize()-1))
 #define CHECKRANGESUBPOPMEMBER(ind,sp) DBG_FAILIF( subPopSize(sp)>0 && ind >= subPopSize(sp), IndexError, "individual index (" + toStr(ind) + ") out of range 0 ~" + toStr(subPopSize(sp)-1) + " in subpopulation " + toStr(sp))
 #define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, "individual index (" + toStr(ind) + ") is out of range of 0 ~ " + toStr(popSize()-1))
-#define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= infoSize(), IndexError, "indo index (" + toStr(ind) + ") is out of rage of 0 ~ " + toStr(infoSize()-1))
-
+#define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= infoSize(), IndexError, "info index (" + toStr(ind) + ") is out of rage of 0 ~ " + toStr(infoSize()-1))
+#ifdef SIMUMPI
+#define CHECKRANGELOCALINFO(ind) DBG_FAILIF(ind >= localInfoSize(), IndexError, "Local info index (" + toStr(ind) + ") is out of rage of 0 ~ " + toStr(localInfoSize()-1))
+#endif
 }
 #endif

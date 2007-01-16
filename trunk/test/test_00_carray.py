@@ -21,7 +21,6 @@ class TestCarray(unittest.TestCase):
     def testFloatCarray(self):
         'Testing float carray type returned by arrLociPos'
         pop = population(loci=[3,4], lociPos=[1,2,3,4,5,6,7])
-        return
         arr = pop.arrLociPos()
         # can print
         # print arr, ignore
@@ -78,7 +77,8 @@ class TestCarray(unittest.TestCase):
         
     def testGenotypeCarray(self):
         'Testing allele carray type returned by arrGenotype'
-        pop = population(size=2, loci=[1,2])
+        pop = population(size=2, loci=[2,1])
+        InitByValue(pop, [1,2,3])
         arr = pop.arrGenotype(True)
         arr[:] = [0,1,2]*4
         # can print
