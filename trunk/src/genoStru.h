@@ -512,6 +512,15 @@ namespace simuPOP
 			}
 
 			/// get info length
+#ifdef SIMUMPI
+			UINT localInfoSize() const;
+			UINT infoSize() const;
+			vectorstr infoFields() const;
+			string infoField(UINT idx) const;
+			UINT infoIdx(const string& name) const;
+			void struAddInfoField(const string& field);
+			void struSetInfoFields(const vectorstr& fields);
+#else
 			UINT infoSize() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_infoFields.size();
@@ -524,19 +533,8 @@ namespace simuPOP
 
 			string infoField(UINT idx) const
 			{
-#ifdef SIMUMPI
-				if(mpiRank() == 0)
-				{
-					CHECKRANGEINFO(idx);
-					return s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
-				}
-				else
-					DBG_ASSERT(false, ValueError,
-						"Only head node has info information");
-#else
 				CHECKRANGEINFO(idx);
 				return s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
-#endif
 			}
 
 			/// return the index of field name, return -1 if not found.
@@ -544,42 +542,22 @@ namespace simuPOP
 
 			/// add a new information field
 			/// NOTE: should only be called by population::requestInfoField
-			/// return the index of the newly added field
 			/// Right now, do not allow dynamic addition of these fields.
 			/// CPPONLY
-			int struAddInfoField(const string& field)
+			void struAddInfoField(const string& field)
 			{
-#ifdef SIMUMPI
-				if(mpiRank() == 0)
-				{
-#endif
-					vectorstr& fields = s_genoStruRepository[m_genoStruIdx].m_infoFields;
-					fields.push_back(field);
-					return fields.size()-1;
-#ifdef SIMUMPI
-				}
-				else
-					DBG_ASSERT(false, ValueError,
-						"Only head node has info information");
-#endif
+				vectorstr& fields = s_genoStruRepository[m_genoStruIdx].m_infoFields;
+				fields.push_back(field);
+				return fields.size()-1;
 			}
 
 			/// should should only be called from population
 			/// CPPONLY
 			void struSetInfoFields(const vectorstr& fields)
 			{
-#ifdef SIMUMPI
-				if(mpiRank() == 0)
-				{
-#endif
-					s_genoStruRepository[m_genoStruIdx].m_infoFields = fields;
-#ifdef SIMUMPI
-				}
-				else
-					DBG_ASSERT(false, ValueError,
-						"Only head node has info information");
-#endif
+				s_genoStruRepository[m_genoStruIdx].m_infoFields = fields;
 			}
+#endif
 
 			void swap(GenoStruTrait& rhs)
 			{

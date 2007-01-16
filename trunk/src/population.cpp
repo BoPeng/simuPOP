@@ -1322,11 +1322,13 @@ namespace simuPOP
 	}
 
 	/// add field
-	int population::addInfoField(const string field, double init)
+	void population::addInfoField(const string field, double init)
 	{
 #ifdef SIMUMPI
 		if(mpiRank()==0)
 		{
+			DBG_ASSERT(m_info.size() == localInfoSize()*popSize(), SystemError,
+				"Info size is wrong");
 #endif
 
 			DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
@@ -1347,11 +1349,11 @@ namespace simuPOP
 						ind->setInfo(init, idx);
 				}
 				useAncestralPop(oldAncPop);
-				return idx;
+				return;
 			}
 			catch(IndexError &)
 			{
-				idx = struAddInfoField(field);
+				struAddInfoField(field);
 			}
 
 			/// adjust information size.
@@ -1376,12 +1378,12 @@ namespace simuPOP
 				}
 				useAncestralPop(oldAncPop);
 			}
-			return idx;
+			return;
 #ifdef SIMUMPI
 		}
 		// for other node, just return 0.
 		else
-			return 0;
+			return;
 #endif
 
 	}
@@ -1391,11 +1393,13 @@ namespace simuPOP
 #ifdef SIMUMPI
 		if(mpiRank()==0)
 		{
+			DBG_ASSERT(m_info.size() == localInfoSize()*popSize(), SystemError,
+				"Info size is wrong");
 #endif
 
 			DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
 				"Info size is wrong");
-			// oldsize
+			// oldsize, this is valid for rank 0
 			UINT os = infoSize();
 			for(vectorstr::const_iterator it=fields.begin(); it!=fields.end(); ++it)
 			{
