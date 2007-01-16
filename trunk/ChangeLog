@@ -11,6 +11,8 @@ version 0.7.7 - Currently available as subversion snapshot.
   -NEW (build): try really hard to search proper boost libraries. One usually
   -NEW (build): prune files from source package
     does not have to specify boost inc and lib paths to build simuPOP.
+  -NEW: MPI module pass 00, 01, 06 test scripts
+  -NEW: Only head node can print to cout
   
 
 version 0.7.6 - (Rev 674) Dec 25, 2006
