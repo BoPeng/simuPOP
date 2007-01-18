@@ -513,6 +513,7 @@ namespace simuPOP
 
 			/// get info length
 #ifdef SIMUMPI
+			bool hasInfoField(const string& name) const;
 			UINT localInfoSize() const;
 			UINT infoSize() const;
 			vectorstr infoFields() const;
@@ -522,6 +523,12 @@ namespace simuPOP
 			void struAddInfoField(const string& field);
 			void struSetInfoFields(const vectorstr& fields);
 #else
+			bool hasInfoField(const string& name) const
+			{
+				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
+				return std::find(names.begin(), names.end(), name) != names.end();
+			}
+
 			UINT infoSize() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_infoFields.size();

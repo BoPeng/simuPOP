@@ -14,6 +14,7 @@ version 0.7.7 - Currently available as subversion snapshot.
   -NEW: MPI module pass 00, 01, 06 test scripts
   -NEW: Only head node can print to cout
   -NEW: add ancestralGen to penetrance and qtrait operators
+  -NEW: add hasInfoField() function
   
 
 version 0.7.6 - (Rev 674) Dec 25, 2006
