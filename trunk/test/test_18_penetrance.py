@@ -134,5 +134,12 @@ class TestPenetrance(unittest.TestCase):
         assert abs(self.pop.dvars(1).numOfAffected - 30*0.5 - 20) < 15
         assert abs(self.pop.dvars(2).numOfAffected - 600*0.5 - 400) < 50
         
+    def testAncestralPenetrance(self):
+        'Testing the ancestralGen parameter... (FIXME)'
+        # test the ancestralGen parameter
+        # 0: set affection status for the current generation
+        # -1: for all generation
+        # otherwise: up to this level of ancestral generation
+        
 if __name__ == '__main__':
     unittest.main()        

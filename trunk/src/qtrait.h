@@ -65,9 +65,10 @@ namespace simuPOP
 	{
 		public:
 			/// constructor. default to be always active.
-			quanTrait( int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
+			quanTrait(int ancestralGen=-1,  int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr(1, "qtrait"))
-				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields)
+				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields),
+				m_ancestralGen(ancestralGen)
 			{
 			}
 
@@ -96,6 +97,11 @@ namespace simuPOP
 			{
 				return "<simuPOP::qtrait::quantitative trait>" ;
 			}
+
+		private:
+			/// how to handle ancestral gen
+			int m_ancestralGen;
+
 	};
 
 	/** \brief quantitative trait according to genotype at one locus
@@ -118,11 +124,12 @@ namespace simuPOP
 			\param phase if true, a/b and b/a will have different qtrait value. Default to false.
 			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
-			mapQuanTrait( vectoru loci, const strDict& qtrait, double sigma=0, bool phase=false,
+			mapQuanTrait(vectoru loci, const strDict& qtrait, double sigma=0, bool phase=false,
+				int ancestralGen=-1,
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(1, "qtrait")):
-			quanTrait(stage, begin, end, step, at, rep, grp, infoFields),
+			quanTrait(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_dict(qtrait), m_sigma(sigma), m_phase(phase)
 			{
 			};
@@ -178,11 +185,11 @@ namespace simuPOP
 			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
 			maQuanTrait( vectoru loci, const vectorf& qtrait, const vectora& wildtype,
-				const vectorf& sigma = vectorf(),
+				const vectorf& sigma = vectorf(), int ancestralGen=-1,
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(1, "qtrait")):
-			quanTrait(stage, begin, end, step, at, rep, grp, infoFields),
+			quanTrait(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
 			{
 				if( m_sigma.empty())
@@ -249,11 +256,12 @@ namespace simuPOP
 
 			\param qtraits a list of qtraits.
 			*/
-			mlQuanTrait( const vectorop qtraits, int mode = QT_Multiplicative, double sigma=0,
+			mlQuanTrait( const vectorop qtraits, int mode = QT_Multiplicative,
+				double sigma=0, int ancestralGen=-1,
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(1, "qtrait")):
-			quanTrait(stage, begin, end, step, at, rep, grp, infoFields),
+			quanTrait(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 				m_qtraits(0), m_sigma(sigma), m_mode(mode)
 			{
 				DBG_FAILIF( qtraits.empty(), ValueError, "Please specify at least one selector.");
@@ -313,11 +321,11 @@ namespace simuPOP
 			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
 			/// provide locus and qtrait for 11, 12, 13 (in the form of dictionary)
-			pyQuanTrait( vectoru loci, PyObject* func,
+			pyQuanTrait( vectoru loci, PyObject* func, int ancestralGen=-1,
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(1, "qtrait")):
-			quanTrait(stage, begin, end, step, at, rep, grp, infoFields),
+			quanTrait(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
 			{
 				if( !PyCallable_Check(func))

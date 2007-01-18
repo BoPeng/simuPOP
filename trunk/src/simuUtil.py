@@ -37,14 +37,14 @@ Function list:
                etc and return as an array.
 - listVars:    list a dictionary (usually pop.vars()) in a human readable format,
                use wxPython if it is available
-- constSize
+- ConstSize
   LinearExpansion
   ExponentialExpansion
   InstantExpansion
                Sample demographic functions. Return a function that can be passed
                to newSubPopSizeFunc.
-- migrIslandRates
-  migrSteppingStoneRates
+- MigrIslandRates
+  MigrSteppingStoneRates
                Migration rate for two popular migration models.
 - tab
   endl       
@@ -246,7 +246,7 @@ def ListVars(var, level=-1, name='', subPop=True, useWxPython=True):
 
 #
 # demographic changes
-def constSize(size, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
+def ConstSize(size, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
     ''' The population size is constant, but will split into
         numSubPop subpopulations at generation split
     '''
@@ -345,7 +345,7 @@ def testDemoFunc(end, func):
 
 
 # migration rate matrix generators
-def migrIslandRates(r, n):
+def MigrIslandRates(r, n):
     '''
      migration rate matrix
 
@@ -367,7 +367,7 @@ def migrIslandRates(r, n):
     return m                         
     
 
-def migrSteppingStoneRates(r, n, circular=False):
+def MigrSteppingStoneRates(r, n, circular=False):
     '''
      migration rate matrix, circular step stone model (X=1-m)
   
