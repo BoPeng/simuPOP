@@ -77,7 +77,7 @@ if not os.path.isfile('/etc/urandom') and not os.path.isfile('/etc/random'):
     import time, random, sys
     rng().setSeed(int(time.time() + random.randint(0, rng().maxSeed())) % rng().maxSeed())
 
-if not simuOptions['Quiet'] and mpiRank() == 0:
+if not simuOptions['Quiet']:
     if mpi():
         print "simuPOP/MPI : Copyright (c) 2004-2006 Bo Peng"
     else:
@@ -88,11 +88,10 @@ if not simuOptions['Quiet'] and mpiRank() == 0:
     print compileCompiler()
     print "Random Number Generator is set to %s with random seed 0x%08x" % (rng().name(), rng().seed())
     # MaxAllele + 1 since 0 is one of the allelic states
-    print "This is the %s allele version with %d maximum allelic states." % (alleleType(), MaxAllele+1)
     if optimized():
-        print "You are running in optimized mode at maximum speed."
+        print "This is the optimied %s allele version with %d maximum allelic states." % (alleleType(), MaxAllele+1)
     else:
-        print "You are running in standard mode with strict boundary check etc."
+        print "This is the standard %s allele version with %d maximum allelic states." % (alleleType(), MaxAllele+1)
     print "For more information, please visit http://simupop.sourceforge.net,"
     print "or email simupop-list@lists.sourceforge.net (subscription required)."
 
