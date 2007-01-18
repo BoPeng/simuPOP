@@ -28,10 +28,28 @@ namespace simuPOP
 	bool quanTrait::apply(population& pop)
 	{
 		UINT idx = pop.infoIdx(infoField(0));
-		// we need info to be in order
-		GappedInfoIterator traitIt = pop.infoBegin(idx, true);
-		for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
-			*traitIt++ = qtrait(&*it) ;
+
+		UINT ansGen = 0;
+		if(m_ancestralGen == -1)
+			ansGen = pop.ancestralDepth() + 1;
+		else if(m_ancestralGen > 0)
+		{
+			if(static_cast<UINT>(m_ancestralGen) > pop.ancestralDepth())
+				ansGen = pop.ancestralDepth() + 1;
+			else
+				ansGen = m_ancestralGen + 1;
+		}
+
+		for(UINT i=0; i <= ansGen; ++i)
+		{
+			pop.useAncestralPop(i);
+
+			// we need info to be in order
+			GappedInfoIterator traitIt = pop.infoBegin(idx, true);
+			for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
+				*traitIt++ = qtrait(&*it) ;
+		}
+		pop.useAncestralPop(0);
 
 		return true;
 	}

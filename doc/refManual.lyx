@@ -12865,17 +12865,20 @@ PrePostMating
 operator.
  In these cases, affected status will be set to all individuals according
  to their penetrance value.
- It is also possible to use 
+ It is also possible to store penetrance in a given information field if
+ you provide on using the 
 \family typewriter
-exposePenetrance
+infoFields
 \family default
- parameter to set an carray 
+ parameter (e.g.
+ 
 \family typewriter
-penetrance 
+infoFields=['penetrance']
 \family default
-in these cases.
+).
  This is useful to actaully have a look at penetrance values and see if
  the values are as expected.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -12914,30 +12917,32 @@ use e.g.,
 \end_layout
 
 \begin_layout Standard
-One important note about penetrance functions is that they only apply to
- the current generation of a population.
- This is usually not a problem for operators, but if you need to set affected
- status for a population with ancestral populations, you should do
-\end_layout
+Penetrance functions can be applied to the current, all, or certain number
+ of ancestral generations.
+ This is controlled by the 
+\family typewriter
+ancestralGen
+\family default
+ parameter, which is default to
+\family typewriter
+ -1
+\family default
+ (all available ancestral generations).
+ You can set it to 0 if you only need affection status for the current generatio
+n, or specify a number 
+\begin_inset Formula $n$
+\end_inset
 
-\begin_layout LyX-Code
-for i in range(0, pop.ancetralDepath()+1):
-\end_layout
+ for the number of ancestral generations (
+\begin_inset Formula $n+1$
+\end_inset
 
-\begin_layout LyX-Code
-  pop.useAncestralPop(i)
-\end_layout
-
-\begin_layout LyX-Code
-  PyPenetrance(pop, ...)
-\end_layout
-
-\begin_layout LyX-Code
-pop.useAncestralPop(0)
-\end_layout
-
-\begin_layout LyX-Code
-
+ total generations) to process.
+ Note that 
+\family typewriter
+ancestralGen 
+\family default
+parameter is ignored if penetrance operator is used as a during mating operator.
 \end_layout
 
 \begin_layout Subsection
@@ -13335,13 +13340,25 @@ Quantitative trait is the measure of certain phenotype for given genotype.
 
 \begin_layout Standard
 The following operators/functions calculate quantitative traits for each
- individual and store the values in an array 
+ individual and store the values in the information field specified by the
+ user (default to 
 \family typewriter
-QT.
-
+qtrait
 \family default
- Because migration, mating etc will change individual order, the values
- in QT should be used soon after they are calculated.
+).
+ 
+\end_layout
+
+\begin_layout Standard
+The quantitative trait operators also accept the 
+\family typewriter
+ancestralGen
+\family default
+ parameter to control the number of generations
+\family typewriter
+ qtrait
+\family default
+ information field will be set.
 \end_layout
 
 \begin_layout Subsection

@@ -47,17 +47,19 @@ namespace simuPOP
 	{
 		public:
 			/// constructor. default to be always active.
-			/// infoFields: do not save penetrance inforamtion
+			// ancestralGen: 0: apply to current gen
+			//               -1: apply to all gen
+			//               otherwise, apply to n ancestral generations.
 			/// If one field is specified, it will be used to store penetrance
 			/// values.
 			/// default to post mating
-			penetrance(bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
+			penetrance(int ancestralGen=-1, int stage=DuringMating,
+				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr())
-				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields)
+				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields),
+				m_ancestralGen(ancestralGen)
 			{
-				DBG_FAILIF( exposePenetrance==true && stage==DuringMating, ValueError,
-					"Can not expose penetrance values when applied as a during mating operator.");
 			}
 
 			/// destructor
@@ -85,23 +87,39 @@ namespace simuPOP
 
 				bool savePene = infoSize() > 0;
 
-				GappedInfoIterator penIt;
-				if(savePene)
+				UINT ansGen = 0;
+				if(m_ancestralGen == -1)
+					ansGen = pop.ancestralDepth() + 1;
+				else if(m_ancestralGen > 0)
 				{
-					UINT idx = pop.infoIdx(infoField(0));
-					penIt = pop.infoBegin(idx, true);
-				}
-				for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
-				{
-					p = penet(&*it);
-
-					if( rng().randUniform01() < p )
-						it->setAffected(true);
+					if(static_cast<UINT>(m_ancestralGen) > pop.ancestralDepth())
+						ansGen = pop.ancestralDepth() + 1;
 					else
-						it->setAffected(false);
-					if(savePene)
-						*penIt++ = p;
+						ansGen = m_ancestralGen + 1;
 				}
+
+				for(UINT i=0; i <= ansGen; ++i)
+				{
+					pop.useAncestralPop(i);
+					GappedInfoIterator penIt;
+					if(savePene)
+					{
+						UINT idx = pop.infoIdx(infoField(0));
+						penIt = pop.infoBegin(idx, true);
+					}
+					for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
+					{
+						p = penet(&*it);
+
+						if( rng().randUniform01() < p )
+							it->setAffected(true);
+						else
+							it->setAffected(false);
+						if(savePene)
+							*penIt++ = p;
+					}
+				}
+				pop.useAncestralPop(0);
 
 				return true;
 			}
@@ -110,7 +128,10 @@ namespace simuPOP
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL)
 			{
-				if( rng().randUniform01() < penet(&*offspring) )
+				double p = penet(&*offspring);
+				if (infoSize() > 0);
+				(*offspring).setInfo(p, infoField(0));
+				if( rng().randUniform01() < p )
 					offspring->setAffected(true);
 				else
 					offspring->setAffected(false);
@@ -121,6 +142,10 @@ namespace simuPOP
 			{
 				return "<simuPOP::penetrance>" ;
 			}
+
+		private:
+			/// how to handle ancestral gen
+			int m_ancestralGen;
 	};
 
 	/** \brief penetrance according to genotype at one locus
@@ -142,10 +167,10 @@ namespace simuPOP
 			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
 			mapPenetrance( vectoru loci, const strDict& penet, bool phase=false,
-				bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
+				int ancestralGen=-1, int stage=DuringMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr()):
-			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
+			penetrance(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_dict(penet), m_phase(phase)
 			{
 			};
@@ -229,11 +254,11 @@ namespace simuPOP
 			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
 			maPenetrance( vectoru loci, const vectorf& penet, const vectora& wildtype,
-				bool exposePenetrance=false,
+				int ancestralGen=-1,
 				int stage=DuringMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr()):
-			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
+			penetrance(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_penetrance(penet), m_wildtype(wildtype)
 			{
 				DBG_ASSERT( m_penetrance.size() ==  static_cast<UINT>(pow(static_cast<double>(3),
@@ -316,10 +341,10 @@ namespace simuPOP
 			\param mode one of PEN_Multiplicative, PEN_Additive, PEN_Heterogeneity
 			*/
 			mlPenetrance( const vectorop peneOps, int mode = PEN_Multiplicative,
-				bool exposePenetrance=false, int stage=DuringMating, int begin=0, int end=-1, int step=1,
+				int ancestralGen=-1, int stage=DuringMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr()):
-			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
+			penetrance(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 				m_peneOps(0), m_mode(mode)
 			{
 				DBG_FAILIF( peneOps.empty(), ValueError, "Please specify at least one penetrance operator.");
@@ -408,11 +433,11 @@ namespace simuPOP
 			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
 			/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
-			pyPenetrance( vectoru loci, PyObject* func, bool exposePenetrance=false,
+			pyPenetrance( vectoru loci, PyObject* func, int ancestralGen=-1,
 				int stage=DuringMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr()):
-			penetrance(exposePenetrance, stage, begin, end, step, at, rep, grp, infoFields),
+			penetrance(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
 			{
 				if( !PyCallable_Check(func))
