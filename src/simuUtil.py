@@ -2,7 +2,7 @@
 
 ############################################################################
 #    Copyright (C) 2004 by Bo Peng                                         
-#    bpeng@rice.edu                                                        
+#    bpeng@mdanderson.org
 #                                                                          
 #    $LastChangedDate$          
 #    $Rev$                       
@@ -12,15 +12,15 @@
 #    the Free Software Foundation; either version 2 of the License, or     
 #    (at your option) any later version.                                   
 #                                                                                                                                                    
-#        This program is distributed in the hope that it will be useful,             
-#        but WITHOUT ANY WARRANTY; without even the implied warranty of                
-#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the                 
-#        GNU General Public License for more details.                                                    
+#    This program is distributed in the hope that it will be useful,             
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of                
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the                 
+#    GNU General Public License for more details.                                                    
 #                                                                                                                                                    
-#        You should have received a copy of the GNU General Public License         
-#        along with this program; if not, write to the                                                 
-#        Free Software Foundation, Inc.,                                                                             
-#        59 Temple Place - Suite 330, Boston, MA    02111-1307, USA.                         
+#    You should have received a copy of the GNU General Public License         
+#    along with this program; if not, write to the                                                 
+#    Free Software Foundation, Inc.,                                                                             
+#    59 Temple Place - Suite 330, Boston, MA    02111-1307, USA.                         
 ############################################################################
 
 
@@ -30,6 +30,64 @@ simuPOP utilities.
 This module provides some commonly used operators
 and format conversion utilities.
 
+
+Function list:
+
+- getGenotype: get genotype of specified loci, subpopulation, individual range
+               etc and return as an array.
+- listVars:    list a dictionary (usually pop.vars()) in a human readable format,
+               use wxPython if it is available
+- constSize
+  LinearExpansion
+  ExponentialExpansion
+  InstantExpansion
+               Sample demographic functions. Return a function that can be passed
+               to newSubPopSizeFunc.
+- migrIslandRates
+  migrSteppingStoneRates
+               Migration rate for two popular migration models.
+- tab
+  endl       
+               two operators
+- dataAggregator
+  CollectValue
+  collector
+               a data collector to collect information over the generations
+               Currently used by simuRPy, possibly needs an overhaul.
+- trajFunc
+  FreqTrajectoryMultiStochWithSubPop
+               simulate trajectory in the case of subpopulation, a wrapper
+               to C++ version FreqTrajectoryMultiStoch
+- SaveFstat
+  saveFstat (operator)
+  LoadFstat
+  LoadGCData
+  SaveLinkage
+  saveLinkage (operator)
+  SaveQTDT
+  SaveCSV
+               Save, and sometimes load from various format. Some functions
+               need more testing.
+- TDT_gh
+  LOD_gh
+  ChiSq_test
+  LOD_merlin
+  VC_merlin
+  Regression_merlin
+               Various gene mapping routines, calling genehunter or merlin
+               They work on samples saved in specified formats.
+               need more testing.
+- Sibpair_TDT_gh
+  Sibpair_LOD_gh
+  Sibpair_LOD_merlin
+  CaseControl_ChiSq
+  qtraitSibs_Reg_merlin
+  qtraitSibs_VC_merlin
+  largePeds_Reg_merlin
+  LargePeds_VC_merlin
+               Various gene mapping routines, acting on a population.
+               These functions need more testing.
+               
 """
 
 import exceptions, operator, types, os, sys, getopt, re, math
@@ -41,6 +99,8 @@ def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
         atLoci:     subset of loci, default to all
         subPop:     subset of subpopulations, default ao all
         indRange:   individual ranges 
+    This is mostly used for testing purposes because the returned
+    array can be large for large populations.  
     '''
     geno = []
     if type(atPloidy) == type(1):
@@ -324,7 +384,7 @@ def migrSteppingStoneRates(r, n, circular=False):
    0   m/2 X   m/2 ......0
    ...
    ...              m   X
-  ''' 
+    ''' 
     if n < 2: 
         raise exceptions.ValueError("Can not define step stone model for n < 2")
     elif n == 2:
@@ -547,6 +607,208 @@ def collector(name, expr, **kwargs):
     #print opt
     return eval(opt)
 
+
+def trajFunc(endingGen, traj):
+    ''' return freq at each generation from a 
+        simulated trajctories. '''
+    def func(gen):
+        freq = []
+        for tr in traj:
+            if gen < endingGen - len(tr) + 1:
+                freq.append( 0 )
+            else:
+                freq.append( tr[ gen - (endingGen - len(tr) + 1) ] )
+        return freq
+    return func
+
+
+def FreqTrajectoryMultiStochWithSubPop(
+        curGen, 
+        numLoci,
+        freq, 
+        NtFunc, 
+        fitness, 
+        minMutAge, 
+        maxMutAge,
+        mode = 'uneven',
+        ploidy=2,
+        restartIfFail=True):
+    ''' Simulate frequency trajectory with subpopulation structure,
+        migration is currently ignored. The essential part of this 
+        script is to simulate the trajectory of each subpopulation 
+        independently by calling FreqTrajectoryMultiStoch with properly
+        wrapped NtFunc function. 
+
+        If mode = 'even' (default) When freq is the same length 
+            of the number of loci. The allele frequency at the last 
+            generation will be multi-nomially distributed. If freq
+            for each subpop is specified in the order of loc1-sp1, loc1-sp2, ..
+                loc2-sp1, .... This freq will be used directly.
+        If mode = 'uneven'. The number of disease alleles
+            will be proportional to the interval lengths of 0 x x x 1 while x are 
+            uniform [0,1]. The distribution of interval lengths, are roughly 
+            exponential (conditional on overall length 1). '
+        If mode = 'none', subpop will be ignored.
+        
+        This script assume a single-split model of NtFunc
+    '''
+    numSP = len(NtFunc(curGen))
+    if maxMutAge == 0: 
+        maxMutAge = endGen
+    TurnOnDebug(DBG_GENERAL)
+    if numSP == 1 or mode == 'none':
+        traj = FreqTrajectoryMultiStoch(
+                curGen=curGen,
+                freq=freq, 
+                NtFunc=NtFunc, 
+                fitness=fitness, 
+                minMutAge=minMutAge, 
+                maxMutAge=maxMutAge, 
+                ploidy=ploidy,
+                restartIfFail=True)
+        #print traj
+        if True in [len(t) < max(2, minMutAge) for t in traj]:
+            print "Failed to generate trajectory. You may need to set a different set of parameters."
+            print "len: ", [len(t) for t in traj]
+            print 'curGen: ', curGen
+            print 'freq: ', freq
+            print 'begin size: ', NtFunc(0)
+            print 'ending size: ', NtFunc(curGen)
+            print 'fitness: ', fitness
+            print 'minMutAge: ', minMutAge
+            print 'maxMutAge: ', maxMutAge
+            print 'ploidy: ', ploidy
+            sys.exit(1)
+        return (traj, [curGen-len(x)+1 for x in traj], trajFunc(curGen, traj))
+    # other wise, do it in two stages
+    # get the split generation.
+    split = curGen;
+    while(True):
+        if len(NtFunc(split)) == 1:
+            break
+        split -= 1
+    split += 1
+    # set default for min/max mutage
+    if minMutAge < curGen - split:
+        minMutAge = split
+    if minMutAge > maxMutAge:
+        print "Minimal mutant age %d is larger then maximum age %d" % (minMutAge, maxMutAge)
+        sys.exit(1)
+    # now, NtFunc(split) has subpopulations
+    # 
+    # for each subpopulation
+    if len(freq) == numSP*numLoci:
+        freqAll = freq
+    elif len(freq) == numLoci:
+        freqAll = [0]*(numLoci*numSP)
+        if mode == 'even':
+            for i in range(numLoci):
+                wt = NtFunc(curGen)
+                ps = sum(wt)
+                # total allele number
+                totNum = int(freq[i]*ps)
+                # in subpopulations, according to population size
+                num = rng().randMultinomialVal(totNum, [x/float(ps) for x in wt])
+                for sp in range(numSP):
+                    freqAll[sp+i*numSP] = num[sp]/float(wt[sp])
+        elif mode == 'uneven':
+            for i in range(numLoci):
+                wt = NtFunc(curGen)
+                # total allele number
+                totNum = int(freq[i]*sum(wt))
+                while(True):
+                    # get [ x x x x x ] while x is uniform [0,1]
+                    num = [0,1]+[rng().randUniform01() for x in range(numSP-1)]
+                    num.sort()
+                    for sp in range(numSP):
+                        freqAll[sp+i*numSP] = (num[sp+1]-num[sp])*totNum/wt[sp]
+                    if max(freqAll) < 1:
+                        break;
+        else:
+            print "Wrong mode parameter is used: ", mode
+        print "Using ", mode, "distribution of alleles at the last generation"
+        print "Frequencies at the last generation: sp0-loc0, loc1, ..., sp1-loc0,..."
+        for sp in range(numSP):
+            print "SP ", sp, ': ',
+            for i in range(numLoci):
+                print "%.3f " % freqAll[sp+i*numSP],
+            print
+    else:
+        raise exceptions.ValueError("Wrong freq length")
+    spTraj = [0]*numSP*numLoci
+    for sp in range(numSP):
+        print "Generting trajectory for subpopulation %d (generation %d - %d)" % (sp, split, curGen)
+        # FreqTraj... will probe Nt for the next geneartion.
+        def spPopSize(gen):
+            if gen < split:
+                return [NtFunc(split-1)[0]]
+            else:
+                return [NtFunc(gen)[sp]]
+        while True:
+            t = FreqTrajectoryMultiStoch(
+                curGen=curGen,
+                freq=[freqAll[sp+x*numSP] for x in range(numLoci)], 
+                NtFunc=spPopSize, 
+                fitness=fitness,
+                minMutAge=curGen-split, 
+                maxMutAge=curGen-split, 
+                ploidy=ploidy,
+                restartIfFail=False) 
+                # failed to generate one of the trajectory
+            if 0 in [len(x) for x in t]:
+                print "Failed to generate trajectory. You may need to set a different set of parameters."
+                sys.exit(1)
+            if 0 in [x[0] for x in t]:
+                print "Subpop return 0 index. restart "
+            else:
+                break;
+        # now spTraj has SP0: loc0,1,2..., SP1 loc 0,1,2,..., ...
+        for i in range(numLoci):
+            spTraj[sp+i*numSP] = t[i]
+    # add all trajectories
+    traj = []
+    for i in range(numLoci):
+        traj.append([])
+        for g in range(split, curGen+1):
+            totAllele = sum( [
+                spTraj[sp+i*numSP][g-split] * NtFunc(g)[sp] for sp in range(numSP) ])
+            traj[i].append( totAllele / sum(NtFunc(g)) )
+    # 
+    print "Starting allele frequency (at split) ", [traj[i][0] for i in range(numLoci)]
+    print "Generating combined trajsctory with range: ", minMutAge, " - ", maxMutAge
+    trajBeforeSplit = FreqTrajectoryMultiStoch(
+        curGen=split,
+        freq=[traj[i][0] for i in range(numLoci)], 
+        NtFunc=NtFunc, 
+        fitness=fitness,
+        minMutAge=minMutAge-len(traj[0])+1, 
+        maxMutAge=maxMutAge-len(traj[0])+1, 
+        ploidy=ploidy,
+        restartIfFail=True) 
+    if 1 in [len(x) for x in trajBeforeSplit]:
+        print "Failed to generated trajectory. (Tried more than 1000 times)"
+        sys.exit(0)
+    def trajFuncWithSubPop(gen):
+        if gen >= split:
+            return [spTraj[x][gen-split] for x in range(numLoci*numSP)]
+        else:
+            freq = []
+            for tr in trajBeforeSplit:
+                if gen < split - len(tr) + 1:
+                    freq.append( 0 )
+                else:
+                    freq.append( tr[ gen - (split - len(tr) + 1) ] )
+        return freq
+    trajAll = []
+    for i in range(numLoci):
+        trajAll.append( [] )
+        trajAll[i].extend(trajBeforeSplit[i])
+        trajAll[i].extend(traj[i][1:])    
+    # how exactly should I return a trajectory?
+    return (trajAll, [curGen-len(x)+1 for x in trajAll ], trajFuncWithSubPop)
+
+
+
 #########################################################################
 ###
 ### The following are file import / export (mostly) functions
@@ -662,7 +924,7 @@ def LoadFstat(file, loci=[]):
         f = open(file, "r")
     except exceptions.IOError:
         raise exceptions.IOError("Can not open file " + file + " to read.")
-    #    
+    #
     # file is opened. get basic parameters
     try:
         # get numSubPop(), totNumLoci(), maxAllele(), digit
@@ -1124,206 +1386,6 @@ def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'],
 
 
 
-def trajFunc(endingGen, traj):
-    ''' return freq at each generation from a 
-        simulated trajctories. '''
-    def func(gen):
-        freq = []
-        for tr in traj:
-            if gen < endingGen - len(tr) + 1:
-                freq.append( 0 )
-            else:
-                freq.append( tr[ gen - (endingGen - len(tr) + 1) ] )
-        return freq
-    return func
-
-
-def FreqTrajectoryMultiStochWithSubPop(
-        curGen, 
-        numLoci,
-        freq, 
-        NtFunc, 
-        fitness, 
-        minMutAge, 
-        maxMutAge,
-        mode = 'uneven',
-        ploidy=2,
-        restartIfFail=True):
-    ''' Simulate frequency trajectory with subpopulation structure,
-        migration is currently ignored. The essential part of this 
-        script is to simulate the trajectory of each subpopulation 
-        independently by calling FreqTrajectoryMultiStoch with properly
-        wrapped NtFunc function. 
-
-        If mode = 'even' (default) When freq is the same length 
-            of the number of loci. The allele frequency at the last 
-            generation will be multi-nomially distributed. If freq
-            for each subpop is specified in the order of loc1-sp1, loc1-sp2, ..
-                loc2-sp1, .... This freq will be used directly.
-        If mode = 'uneven'. The number of disease alleles
-            will be proportional to the interval lengths of 0 x x x 1 while x are 
-            uniform [0,1]. The distribution of interval lengths, are roughly 
-            exponential (conditional on overall length 1). '
-        If mode = 'none', subpop will be ignored.
-        
-        This script assume a single-split model of NtFunc
-    '''
-    numSP = len(NtFunc(curGen))
-    if maxMutAge == 0: 
-        maxMutAge = endGen
-    TurnOnDebug(DBG_GENERAL)
-    if numSP == 1 or mode == 'none':
-        traj = FreqTrajectoryMultiStoch(
-                curGen=curGen,
-                freq=freq, 
-                NtFunc=NtFunc, 
-                fitness=fitness, 
-                minMutAge=minMutAge, 
-                maxMutAge=maxMutAge, 
-                ploidy=ploidy,
-                restartIfFail=True)
-        #print traj
-        if True in [len(t) < max(2, minMutAge) for t in traj]:
-            print "Failed to generate trajectory. You may need to set a different set of parameters."
-            print "len: ", [len(t) for t in traj]
-            print 'curGen: ', curGen
-            print 'freq: ', freq
-            print 'begin size: ', NtFunc(0)
-            print 'ending size: ', NtFunc(curGen)
-            print 'fitness: ', fitness
-            print 'minMutAge: ', minMutAge
-            print 'maxMutAge: ', maxMutAge
-            print 'ploidy: ', ploidy
-            sys.exit(1)
-        return (traj, [curGen-len(x)+1 for x in traj], trajFunc(curGen, traj))
-    # other wise, do it in two stages
-    # get the split generation.
-    split = curGen;
-    while(True):
-        if len(NtFunc(split)) == 1:
-            break
-        split -= 1
-    split += 1
-    # set default for min/max mutage
-    if minMutAge < curGen - split:
-        minMutAge = split
-    if minMutAge > maxMutAge:
-        print "Minimal mutant age %d is larger then maximum age %d" % (minMutAge, maxMutAge)
-        sys.exit(1)
-    # now, NtFunc(split) has subpopulations
-    # 
-    # for each subpopulation
-    if len(freq) == numSP*numLoci:
-        freqAll = freq
-    elif len(freq) == numLoci:
-        freqAll = [0]*(numLoci*numSP)
-        if mode == 'even':
-            for i in range(numLoci):
-                wt = NtFunc(curGen)
-                ps = sum(wt)
-                # total allele number
-                totNum = int(freq[i]*ps)
-                # in subpopulations, according to population size
-                num = rng().randMultinomialVal(totNum, [x/float(ps) for x in wt])
-                for sp in range(numSP):
-                    freqAll[sp+i*numSP] = num[sp]/float(wt[sp])
-        elif mode == 'uneven':
-            for i in range(numLoci):
-                wt = NtFunc(curGen)
-                # total allele number
-                totNum = int(freq[i]*sum(wt))
-                while(True):
-                    # get [ x x x x x ] while x is uniform [0,1]
-                    num = [0,1]+[rng().randUniform01() for x in range(numSP-1)]
-                    num.sort()
-                    for sp in range(numSP):
-                        freqAll[sp+i*numSP] = (num[sp+1]-num[sp])*totNum/wt[sp]
-                    if max(freqAll) < 1:
-                        break;
-        else:
-            print "Wrong mode parameter is used: ", mode
-        print "Using ", mode, "distribution of alleles at the last generation"
-        print "Frequencies at the last generation: sp0-loc0, loc1, ..., sp1-loc0,..."
-        for sp in range(numSP):
-            print "SP ", sp, ': ',
-            for i in range(numLoci):
-                print "%.3f " % freqAll[sp+i*numSP],
-            print
-    else:
-        raise exceptions.ValueError("Wrong freq length")
-    spTraj = [0]*numSP*numLoci
-    for sp in range(numSP):
-        print "Generting trajectory for subpopulation %d (generation %d - %d)" % (sp, split, curGen)
-        # FreqTraj... will probe Nt for the next geneartion.
-        def spPopSize(gen):
-            if gen < split:
-                return [NtFunc(split-1)[0]]
-            else:
-                return [NtFunc(gen)[sp]]
-        while True:
-            t = FreqTrajectoryMultiStoch(
-                curGen=curGen,
-                freq=[freqAll[sp+x*numSP] for x in range(numLoci)], 
-                NtFunc=spPopSize, 
-                fitness=fitness,
-                minMutAge=curGen-split, 
-                maxMutAge=curGen-split, 
-                ploidy=ploidy,
-                restartIfFail=False) 
-                # failed to generate one of the trajectory
-            if 0 in [len(x) for x in t]:
-                print "Failed to generate trajectory. You may need to set a different set of parameters."
-                sys.exit(1)
-            if 0 in [x[0] for x in t]:
-                print "Subpop return 0 index. restart "
-            else:
-                break;
-        # now spTraj has SP0: loc0,1,2..., SP1 loc 0,1,2,..., ...
-        for i in range(numLoci):
-            spTraj[sp+i*numSP] = t[i]
-    # add all trajectories
-    traj = []
-    for i in range(numLoci):
-        traj.append([])
-        for g in range(split, curGen+1):
-            totAllele = sum( [
-                spTraj[sp+i*numSP][g-split] * NtFunc(g)[sp] for sp in range(numSP) ])
-            traj[i].append( totAllele / sum(NtFunc(g)) )
-    # 
-    print "Starting allele frequency (at split) ", [traj[i][0] for i in range(numLoci)]
-    print "Generating combined trajsctory with range: ", minMutAge, " - ", maxMutAge
-    trajBeforeSplit = FreqTrajectoryMultiStoch(
-        curGen=split,
-        freq=[traj[i][0] for i in range(numLoci)], 
-        NtFunc=NtFunc, 
-        fitness=fitness,
-        minMutAge=minMutAge-len(traj[0])+1, 
-        maxMutAge=maxMutAge-len(traj[0])+1, 
-        ploidy=ploidy,
-        restartIfFail=True) 
-    if 1 in [len(x) for x in trajBeforeSplit]:
-        print "Failed to generated trajectory. (Tried more than 1000 times)"
-        sys.exit(0)
-    def trajFuncWithSubPop(gen):
-        if gen >= split:
-            return [spTraj[x][gen-split] for x in range(numLoci*numSP)]
-        else:
-            freq = []
-            for tr in trajBeforeSplit:
-                if gen < split - len(tr) + 1:
-                    freq.append( 0 )
-                else:
-                    freq.append( tr[ gen - (split - len(tr) + 1) ] )
-        return freq
-    trajAll = []
-    for i in range(numLoci):
-        trajAll.append( [] )
-        trajAll[i].extend(trajBeforeSplit[i])
-        trajAll[i].extend(traj[i][1:])    
-    # how exactly should I return a trajectory?
-    return (trajAll, [curGen-len(x)+1 for x in trajAll ], trajFuncWithSubPop)
-
-
 def TDT_gh(file, gh='gh'):
     ''' 
     Analyze data using genehunter/TDT. Note that this function may not work under 
@@ -1474,6 +1536,27 @@ def ChiSq_test(pop):
     return pvalues
 
 
+def LOD_merlin(file, merlin='merlin'):
+    ''' run multi-point non-parametric linkage analysis using merlin
+    '''
+    cmd = 'merlin -d %s.dat -p %s.ped -m %s.map --pairs --npl' % (file, file, file)
+    resline = re.compile('\s+[\d.+-]+\s+[\d.+-]+\s+[\d.+-]+\s+[\d.+-]+\s+[\d.+-]+\s+([\d.+-]+)')
+    print "Running", cmd
+    fout = os.popen(cmd)
+    pvalues = []
+    for line in fout.readlines():
+        try:
+            (pvalue) = resline.match(line).groups()
+            try:
+                pvalues.append(float(pvalue))
+            except:
+                pvalues.append(-1)
+        except:
+            pass
+    fout.close()
+    return pvalues
+
+    
 def VC_merlin(file, merlin='merlin'):
     ''' run variance component method 
         file: file.ped, file.dat, file.map and file,mdl are expected.
@@ -1522,6 +1605,38 @@ def Regression_merlin(file, merlin='merlin-regress'):
     fout.close()
     return pvalues
     
+
+def Sibpair_TDT_gh():
+    pass
+    
+def Sibpair_LOD_gh():
+    pass
+    
+
+def Sibpair_LOD_merlin():
+    pass
+    
+
+def CaseControl_ChiSq():
+    pass
+    
+
+def QtraitSibs_Reg_merlin():
+    pass
+    
+
+def QtraitSibs_VC_merlin():
+    pass
+    
+
+def LargePeds_Reg_merlin():
+    pass
+    
+
+def LargePeds_VC_merlin():
+    pass
+
+
 
 if __name__ == "__main__":
     pass
