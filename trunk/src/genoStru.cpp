@@ -300,6 +300,18 @@ namespace simuPOP
 #endif
 
 #ifdef SIMUMPI
+	bool GenoStruTrait::hasInfoField(const string& name) const
+	{
+		bool res = false;
+		if(mpiRank() == 0)
+		{
+			vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
+			res = std::find(names.begin(), names.end(), name) != names.end();
+		}
+		broadcast(mpiComm(), res, 0);
+		return res;
+	}
+
 	UINT GenoStruTrait::localInfoSize() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_infoFields.size();
