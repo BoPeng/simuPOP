@@ -77,7 +77,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status collapsed
+status open
 
 \begin_layout Standard
 \begin_inset ERT
@@ -230,7 +230,7 @@ copyright{}
 
 \end_inset
 
- 2004-2006 Bo Peng 
+ 2004-2007 Bo Peng 
 \begin_inset ERT
 status open
 
@@ -2056,7 +2056,7 @@ Simulation scenario
 \end_inset
 
  proposed a population genetics framework to model the evolution of allelic
- spectra.
+ spectra (the number and population frequency of alleles at a locus).
  The model is based on the fact that human population grew quickly from
  around 10,000 to 6 billion in 18,000 -150,000 years.
  His analysis showed that at the founder population, both common and rare
@@ -2069,7 +2069,7 @@ Simulation scenario
 I use simuPOP to simulate this evolution process and observe the allelic
  spectra of both types of diseases.
  The results are published in 
-\begin_inset LatexCommand \citep{Peng2006}
+\begin_inset LatexCommand \citet{Peng2006}
 
 \end_inset
 
@@ -2312,11 +2312,11 @@ fitness
 is needed.
  Similar information fields include 
 \family typewriter
-father_id
+father_idx
 \family default
  and 
 \family typewriter
-mother_id
+mother_idx
 \family default
  when you want to track each individual's parents using 
 \family typewriter
@@ -2494,7 +2494,7 @@ maSelector(locus=1, fitness=[1,1,1-R_s], wildtype=[0])
 
 \end_deeper
 \begin_layout Itemize
-Because an individual has only one fitness value, so fitness values obtained
+Because an individual has only one fitness value, fitness values obtained
  from two selectors need to be combined (another choice is that you can
  use a selector that handle multiple loci.).
  Therefore, we use a multi-locus selector as follows:
@@ -2593,7 +2593,7 @@ pyEval
 \end_layout
 
 \begin_layout LyX-Code
-pyEval(r'
+pyEval(r' 
 \begin_inset Quotes erd
 \end_inset
 
@@ -2846,7 +2846,7 @@ is no longer evaluated in the population's local namespace.
 pop.dvars()
 \family default
  function.
- This also implies that you can do whatever you want to the population.).
+ (This also implies that you can do whatever you want to the population.).
  In this example, the function form of the 
 \family typewriter
 stat
@@ -5371,6 +5371,217 @@ preview false
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+simuUtil.py
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+simuUtil.py 
+\family default
+is a standard part of simuPOP and is installed along with 
+\family typewriter
+simuPOP.py 
+\family default
+(other utility scripts are installed under 
+\family typewriter
+scripts 
+\family default
+directory).
+ These function include
+\end_layout
+
+\begin_layout Enumerate
+extra python operators, the two potentially useful ones are
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\series bold
+tab
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+endl
+\end_layout
+
+\begin_layout Standard
+These two operators output, as their names suggest, 
+\family typewriter
+'
+\backslash
+t'
+\family default
+ and 
+\family typewriter
+'
+\backslash
+n'
+\family default
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Pre-defined demographic functions:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+constSize
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+LinearExpansion
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ExponentialExpansion
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+InstantExpansion 
+\end_layout
+
+\begin_layout Standard
+These functions return a demographic function with given event times.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Pre-defined migration rate functions
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+MigrIslandRates
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MigrSteppingStoneRates
+\end_layout
+
+\begin_layout Standard
+These functions return a migration matrix of given migration model and parameter.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Save and load from other formats
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+SaveFstat (saveFstat), LoadFstat
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+LoadGCData
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+SaveLinkage (saveLinkage), LoadLinkage
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+SaveQTDT
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+SaveCSV
+\end_layout
+
+\begin_layout Standard
+These functions save and load simuPOP populations in various formats.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Gene mapping functions
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+TDT_gh, LOD_gh
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ChiSq_test
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+LOD_merlin, VC_merlin
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Sibpair_TDT_gh, Sibpair_LOD_gh
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Sibpair_LOD_merlin, QtraitSibs_Reg_Merlin, QtriatSibs_VC_merlin
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+LargePeds_Reg_merlin, LargePeds_VC_merlin
+\end_layout
+
+\begin_layout Standard
+These functions call GENEHUNTER or MERLIN to map disease genes.
+ Various parameters like penetrance, quantitative trait functions, sample
+ size are needed.
+ These functions are tested only under Linux and are subject to frequent
+ changes.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+In general, these utility functions are provided as it is and you may need
+ to read the source code to make it work should errors occur.
+ Unit test will be added later when these functions are more or less stablized/s
+tandardized.
 \end_layout
 
 \begin_layout Section

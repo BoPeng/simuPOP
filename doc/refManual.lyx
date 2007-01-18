@@ -67,7 +67,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status collapsed
+status open
 
 \begin_layout Standard
 \begin_inset ERT
@@ -220,7 +220,7 @@ copyright{}
 
 \end_inset
 
- 2004-2006 Bo Peng 
+ 2004-2007 Bo Peng 
 \begin_inset ERT
 status collapsed
 
@@ -7248,7 +7248,7 @@ split.
 \begin_layout Subsubsection*
 
 \family typewriter
-constSize(size, split, numSubPop, bottleneckGen, bottleneckSize)
+ConstSize(size, split, numSubPop, bottleneckGen, bottleneckSize)
 \end_layout
 
 \begin_layout Standard
@@ -7276,7 +7276,7 @@ at that generation.
 \begin_layout Subsubsection*
 
 \family typewriter
-linearExpansion(initSize, endSize, end, burnin, split, numSubPop, bottleneckGen,
+LinearExpansion(initSize, endSize, end, burnin, split, numSubPop, bottleneckGen,
  bottleneckSize)
 \end_layout
 
@@ -7301,7 +7301,7 @@ at that generation.
 \begin_layout Subsubsection*
 
 \family typewriter
-exponentialExpansion
+ExponentialExpansion
 \family default
 (
 \family typewriter
@@ -7329,7 +7329,7 @@ at that generation.
 \begin_layout Subsubsection*
 
 \family typewriter
-instantExpansion
+InstantExpansion
 \family default
 (
 \family typewriter
@@ -11191,12 +11191,12 @@ An detailed example can be found in 'some real examples' -> 'complex Migration
 \begin_layout Subsection
 Functions (Python) 
 \family typewriter
-migrIslandRates
+MigrIslandRates
 \begin_inset LatexCommand \index{Function!migrIslandRates}
 
 \end_inset
 
-, migrStepstoneRates
+, MigrStepstoneRates
 \begin_inset LatexCommand \index{Function!migrStepstoneRates}
 
 \end_inset
@@ -11217,7 +11217,7 @@ Migrator is very flexible.
 \begin_layout Itemize
 
 \family typewriter
-migrIslandRates(r, n)
+MigrIslandRates(r, n)
 \family default
  returns a migration matrix
 \begin_inset Formula \[
@@ -11236,7 +11236,7 @@ migrIslandRates(r, n)
 \begin_layout Itemize
 
 \family typewriter
-migrStepstoneRates(r,n,circular=False) 
+MigrStepstoneRates(r,n,circular=False) 
 \family default
 returns a migration matrix
 \begin_inset Formula \[
