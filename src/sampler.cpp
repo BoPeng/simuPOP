@@ -253,6 +253,8 @@ namespace simuPOP
 		DBG_FAILIF( m_size.size() > 1 && m_size.size() != pop.numSubPop(),
 			ValueError, "Length of size and number of subpops do not match.");
 
+		pop.addInfoField("oldindex", -1);
+		saveIndIndex(pop, "oldindex");
 		if( m_size.size() > 1)
 		{
 			for(UINT sp = 0; sp < pop.numSubPop(); ++sp)
@@ -308,6 +310,9 @@ namespace simuPOP
 
 	bool caseControlSample::prepareSample(population& pop )
 	{
+		// record the index in the old population, for samples.
+		pop.addInfoField("oldindex", -1);
+		saveIndIndex(pop, "oldindex");
 		if(!m_spSample)							  // sample from the whole population.
 		{
 			DBG_FAILIF( m_numCases.size() > 1 || m_numControls.size() > 1,

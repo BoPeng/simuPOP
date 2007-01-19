@@ -557,10 +557,7 @@ namespace simuPOP
 			}
 
 			// allow str(population) to get something better looking
-			string __repr__()
-			{
-				return "<simuPOP::individual>";
-			}
+			string __repr__();
 
 			/// swap individuals
 			/**
