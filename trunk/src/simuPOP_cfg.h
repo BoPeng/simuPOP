@@ -54,8 +54,11 @@
 
 #else
 
-#ifndef WORDBIT
+#if GCC_VERSION > 30400
 #define WORDBIT std::_S_word_bit
+#else
+// previous version uses _M_word_bit
+#define WORDBIT std::_M_word_bit
 #endif
 #define WORDTYPE std::_Bit_type
 #define BITPTR(ref) ref._M_p
