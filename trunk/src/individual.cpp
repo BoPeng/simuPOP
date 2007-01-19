@@ -415,7 +415,7 @@ namespace simuPOP
 	string individual::__repr__()
 	{
 		ostringstream os;
-		int width;
+		int width = 1;
 		if(maxAllele() < 10)
 			width = 1;
 		else if(maxAllele() >= 10 && maxAllele() < 100)
