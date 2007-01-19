@@ -177,6 +177,7 @@ outputVars = {
     'LD_prime': "D' measure of Linkage disequilibrium",
     'R2': 'R^2 measure of Linkage disequilibrium',
     'alleleFreq': 'allele frequency of DSL',    
+    'mono': 'Number of fixed or lost loci on the last chromosome',
     # result of gene mapping methods
     'affectedSibs_GH_TDT' : '', 
     'affectedSibs_GH_linkage' : '', 
@@ -271,7 +272,7 @@ def popStat(pop):
     'Calculate population statistics '
     # K -- populaiton prevalance
     print "Calculating population statistics "
-    Stat(pop, numOfAffected=True)
+    Stat(pop, numOfAffected=True, alleleFreq=range(pop.totNumLoci()))
     result = {}
     result['K'] = pop.dvars().numOfAffected * 1.0 / pop.popSize()
     # P11 = [ ] = proportion of 11 | affected, 
@@ -291,6 +292,12 @@ def popStat(pop):
                     P22[x] += 1
                 else:
                     P12[x] += 1
+    # calculate the number of fixed/lost loci
+    result['mono'] = 0
+    for x in range(pop.chromBegin(pop.numChrom()-1), pop.chromEnd(pop.numChrom()-1)):
+        #print  pop.dvars().alleleNum[x][0]
+        if pop.dvars().alleleNum[x][0] == 0 or pop.dvars().alleleNum[x][0] == pop.popSize() * pop.ploidy():
+            result['mono'] += 1
     N = pop.dvars().numOfAffected
     # some analysis does not have affected, or all affected
     if N == 0 or N == pop.popSize():
