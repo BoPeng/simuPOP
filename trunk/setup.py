@@ -92,7 +92,7 @@ def getMPIFlags():
         elif f[:2] == '-U':
             undef_macros.append(f[2:])
         elif f[:2] == '-D':
-            tmp = string.split(f[2:], '=')
+            tmp = f[2:].split('=')
             if len(tmp) == 1:
                 def_macros.append((tmp[0], None))
             else:
