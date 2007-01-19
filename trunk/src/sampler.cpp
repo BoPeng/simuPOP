@@ -480,7 +480,6 @@ namespace simuPOP
 			ValueError,
 			"Length of array size and number of subpopulations do not match.");
 
-		UINT nSibs = 0;
 		m_validSibs.clear();
 
 		m_father_id = pop.infoIdx(infoField(0));
@@ -505,13 +504,11 @@ namespace simuPOP
 		//
 		// find sibpairs from the parental generation.
 		pop.useAncestralPop(1);
-		int pedIdx = 0;
 		vectorlu off;
+		int pedIdx = 0;
 		// valid sibpairs for each subpopulation
-		m_validSibs.resize(pop.numSubPop());
 		for( UINT sp = 0; sp < pop.numSubPop(); ++sp)
 		{
-			m_validSibs[sp].clear();
 			for(population::IndIterator it = pop.indBegin(sp); it != pop.indEnd(sp); ++it)
 			{
 				// individual already belongs to another family
@@ -526,19 +523,27 @@ namespace simuPOP
 					pop.ind(static_cast<UINT>(spouse)).setInfo(pedIdx, pedindexIdx);
 					off.push_back(static_cast<ULONG>(it->info(off0Idx)));
 					off.push_back(static_cast<ULONG>(it->info(off1Idx)));
-					m_validSibs[sp].push_back(pedIdx);
-					pedIdx ++;
+					pedIdx++;
 				}
 			}
 			DBG_DO(DBG_SELECTOR, cout << "Number of sibpairs in subpop " << sp << " is "
 				<< m_validSibs[sp].size() << endl);
-			nSibs += m_validSibs[sp].size();
 		}										  // each subpop
 		pop.useAncestralPop(0);
+		m_validSibs.resize(pop.numSubPop());
+		for( UINT sp = 0; sp < pop.numSubPop(); ++sp)
+			m_validSibs[sp].clear();
+		UINT nSibs = 0;
 		for(size_t i = 0; i < off.size()/2; ++i)
 		{
 			pop.ind(off[2*i]).setInfo(i, pedindexIdx);
 			pop.ind(off[2*i+1]).setInfo(i, pedindexIdx);
+			if( m_affectedness == pop.ind(off[2*i]).affected() 
+				&& m_affectedness == pop.ind(off[2*i+1]).affected())
+			{
+				m_validSibs[pop.subPopIndPair(off[2*i]).first].push_back(i);
+				nSibs ++;
+			}
 		}
 		pop.setIntVar("numAffectedSibpairs", nSibs);
 		// do not do sampling if countOnly
