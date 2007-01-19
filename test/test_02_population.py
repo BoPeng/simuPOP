@@ -640,6 +640,9 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(ind.info('age'), 18)
         #
         pop = population(10, infoFields=['age', 'fitness'])
+        self.assertEqual(pop.hasInfoField('age'), True)
+        self.assertEqual(pop.hasInfoField('fitness'), True)
+        self.assertEqual(pop.hasInfoField('misc'), False)
         self.assertEqual(pop.infoFields(), ('age', 'fitness'))
         self.assertEqual(pop.infoSize(), 2)
         ind = pop.individual(0)

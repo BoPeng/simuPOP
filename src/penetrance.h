@@ -81,62 +81,11 @@ namespace simuPOP
 			}
 
 			/// set pentrance to all individuals and record penetrance if requested.
-			virtual bool apply(population& pop)
-			{
-				double p;
-
-				bool savePene = infoSize() > 0;
-
-				UINT ansGen = 0;
-				if(m_ancestralGen == -1)
-					ansGen = pop.ancestralDepth() + 1;
-				else if(m_ancestralGen > 0)
-				{
-					if(static_cast<UINT>(m_ancestralGen) > pop.ancestralDepth())
-						ansGen = pop.ancestralDepth() + 1;
-					else
-						ansGen = m_ancestralGen + 1;
-				}
-
-				for(UINT i=0; i <= ansGen; ++i)
-				{
-					pop.useAncestralPop(i);
-					GappedInfoIterator penIt;
-					if(savePene)
-					{
-						UINT idx = pop.infoIdx(infoField(0));
-						penIt = pop.infoBegin(idx, true);
-					}
-					for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
-					{
-						p = penet(&*it);
-
-						if( rng().randUniform01() < p )
-							it->setAffected(true);
-						else
-							it->setAffected(false);
-						if(savePene)
-							*penIt++ = p;
-					}
-				}
-				pop.useAncestralPop(0);
-
-				return true;
-			}
+			virtual bool apply(population& pop);
 
 			/// set penetrance to all individual
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
-				individual* dad=NULL, individual* mom=NULL)
-			{
-				double p = penet(&*offspring);
-				if (infoSize() > 0);
-				(*offspring).setInfo(p, infoField(0));
-				if( rng().randUniform01() < p )
-					offspring->setAffected(true);
-				else
-					offspring->setAffected(false);
-				return true;
-			}
+				individual* dad=NULL, individual* mom=NULL);
 
 			virtual string __repr__()
 			{
@@ -185,33 +134,7 @@ namespace simuPOP
 			}
 
 			/// currently assuming diploid
-			virtual double penet(individual * ind)
-			{
-				string key;
-
-				for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
-				{
-
-					/// get genotype of ind
-					Allele a = ind->allele(*loc, 0);
-					Allele b = ind->allele(*loc, 1);
-
-					if( loc != m_loci.begin() )
-						key += '|';
-
-					if( ! m_phase && a > b )	  // ab=ba
-						key +=  toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
-					else
-						key +=  toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
-				}
-
-				strDict::iterator pos = m_dict.find(key);
-
-				DBG_ASSERT( pos != m_dict.end(), ValueError,
-					"No penetrance value for genotype " + key);
-
-				return( pos->second);
-			}
+			virtual double penet(individual * ind);
 
 			virtual string __repr__()
 			{
@@ -276,29 +199,7 @@ namespace simuPOP
 			}
 
 			/// currently assuming diploid
-			virtual double penet(individual * ind)
-			{
-				UINT index = 0;
-				for(vectoru::iterator loc=m_loci.begin(); loc!=m_loci.end(); ++loc)
-				{
-
-					/// get genotype of ind
-					Allele a = ind->allele(*loc, 0);
-					Allele b = ind->allele(*loc, 1);
-
-					int numWildtype=0;
-
-					// count number of wildtype
-					if( find(m_wildtype.begin(), m_wildtype.end(), a) != m_wildtype.end() )
-						numWildtype ++;
-
-					if( find(m_wildtype.begin(), m_wildtype.end(), b) != m_wildtype.end() )
-						numWildtype ++;
-					index = index*3 + 2-numWildtype;
-				}
-
-				return m_penetrance[index];
-			}
+			virtual double penet(individual * ind);
 
 			virtual string __repr__()
 			{
@@ -370,38 +271,7 @@ namespace simuPOP
 			}
 
 			/// currently assuming diploid
-			virtual double penet(individual * ind)
-			{
-				if(m_mode == PEN_Multiplicative )
-				{
-					// x1 x2 x3 ...
-					double pen = 1;
-					for(vectorop::iterator s = m_peneOps.begin(), sEnd=m_peneOps.end();
-						s != sEnd; ++s)
-					pen *= static_cast<penetrance *>(*s)->penet(ind);
-					return pen;
-				}
-				else if(m_mode == PEN_Additive )
-				{
-					// x1 + x2 + x3
-					double pen = 0;
-					for(vectorop::iterator s = m_peneOps.begin(), sEnd=m_peneOps.end();
-						s != sEnd; ++s)
-					pen +=  static_cast<penetrance *>(*s)->penet(ind);
-					return pen>1?1:pen;
-				}
-				else if(m_mode == PEN_Heterogeneity )
-				{
-					// 1-(1-x1)(1-x2)
-					double pen = 1;
-					for(vectorop::iterator s = m_peneOps.begin(), sEnd=m_peneOps.end();
-						s != sEnd; ++s)
-					pen *= 1 - static_cast<penetrance *>(*s)->penet(ind);
-					return 1 - pen;
-				}
-
-				return 0.0;
-			}
+			virtual double penet(individual * ind);
 
 			virtual string __repr__()
 			{

@@ -31,13 +31,13 @@ namespace simuPOP
 
 		UINT ansGen = 0;
 		if(m_ancestralGen == -1)
-			ansGen = pop.ancestralDepth() + 1;
+			ansGen = pop.ancestralDepth();
 		else if(m_ancestralGen > 0)
 		{
 			if(static_cast<UINT>(m_ancestralGen) > pop.ancestralDepth())
-				ansGen = pop.ancestralDepth() + 1;
+				ansGen = pop.ancestralDepth();
 			else
-				ansGen = m_ancestralGen + 1;
+				ansGen = m_ancestralGen;
 		}
 
 		for(UINT i=0; i <= ansGen; ++i)
