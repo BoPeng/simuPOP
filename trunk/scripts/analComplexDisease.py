@@ -116,7 +116,7 @@ options = [
         'affectedSibs_GH_TDT', 
         'affectedSibs_GH_linkage', 
         'affectedSibs_merlin_linkage', 
-        'case-control_Association', 
+        'caseControl_Association', 
         'qtraitSibs_merlin_reg',
         'qtraitSibs_merlin_vc',
         'largePeds_merlin_reg', 
@@ -181,7 +181,7 @@ outputVars = {
     'affectedSibs_GH_TDT' : '', 
     'affectedSibs_GH_linkage' : '', 
     'affectedSibs_merlin_linkage' : '', 
-    'case-control_Association' : '', 
+    'caseControl_Association' : '', 
     'qtraitSibs_merlin_reg' : '',
     'qtraitSibs_merlin_vc' : '',
     'largePeds_merlin_reg' : '', 
@@ -367,8 +367,8 @@ if __name__ == '__main__':
         res['affectedSibs_GH_linkage'] = Sibpair_LOD_gh(pop, N, pene_func, keep_temp=keep_temp)
     if 'affectedSibs_merlin_linkage' in analyses: 
         res['affectedSibs_merlin_linkage'] = Sibpair_LOD_merlin(pop, N, pene_func, keep_temp=keep_temp)
-    if 'case-control_Association' in analyses: 
-        res['case-control_Association'] = CaseControl_ChiSq(pop, N, pene_func)
+    if 'caseControl_Association' in analyses: 
+        res['caseControl_Association'] = CaseControl_ChiSq(pop, N, pene_func)
     if 'qtraitSibs_merlin_reg' in analyses:
         res['qtraitSibs_merlin_reg'] = QtraitSibs_Reg_merlin(pop, N, customQtrait(para), keep_temp=keep_temp)
     if 'qtraitSibs_merlin_vc' in analyses:

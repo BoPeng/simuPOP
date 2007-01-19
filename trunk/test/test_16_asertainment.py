@@ -78,6 +78,10 @@ class TestAscertainment(unittest.TestCase):
 
     def testAffectedSibpairSample(self):
         'Testing affected sibpair sampling (imcomplete)'
+		# FIXME: testing sharing of parents 
+		# (father_idx and mother_idx of original and sample population,
+		# and if the parents are the same.)
+		#
         # find sibpairs
         (s,) = AffectedSibpairSample(self.pop, [2,3])
         assert s.subPopSize(0) <= 4
