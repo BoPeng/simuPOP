@@ -1412,13 +1412,15 @@ def TDT_gh(file, gh='gh'):
         sys.exit(2)
     # open the pipe for gh
     fin, fout = os.popen2(gh)
-    # write to fin
-    print >> fin, 'load markers %s.dat' % file
-    print >> fin, 'tdt %s.pre' % file
-    print >> fin, 'q'
-    fin.close()
+    cmds = '''load markers %s.dat
+tdt %s.pre
+q
+''' % (file, file)
     print "Running GENEHUNTER with commands:"
-    print open(fin).read()
+    print cmds
+    # write to fin
+    print >> fin, cmds
+    fin.close()
     # read output 
     # get only loc number and p-value
     scan = re.compile('loc(\d+)\s+- Allele \d+\s+\d+\s+\d+\s+[\d.]+\s+([\d.]+|nan)\s*.*')
@@ -1481,15 +1483,17 @@ def LOD_gh(file, gh='gh'):
     # open the pipe for gh
     fin, fout = os.popen2(gh)
     # write to fin
-    print >> fin, 'load markers %s.dat' % file
-    print >> fin, 'single point on'
-    print >> fin, 'scan pedigrees %s.pre' % file
-    print >> fin, 'photo tmp.txt'
-    print >> fin, 'total stat'
-    print >> fin, 'q'
-    fin.close()
+    cmds = '''load markers %s.dat
+single point on
+scan pedigrees %s.pre
+photo tmp.txt
+total stat
+q
+''' % (file, file)
     print "Running GENEHUNTER with commands:"
-    print open(fin).read()
+    print cmds
+    print >> fin, cmds
+    fin.close()
     # read output 
     # get only loc number and p-value
     scan = re.compile('loc(\d+)\s+[^\s]+\s+[^\s]+\s+([^\s]+)\s*.*')
@@ -1515,14 +1519,13 @@ def LOD_gh(file, gh='gh'):
 
 
 def ChiSq_test(pop):
-    ''' perform case control test at loci 
+    ''' perform case control test
 
     Parameters;
         pop: loaded population, or population file in simuPOP format. 
             This function assumes that pop has two 
             subpopulations, cases and controls, and have 0 as wildtype and 1 as 
             disease allele. pop can also be an loaded population object.
-        loci: At loci to return p-value. Can be empty.
         
     Return value:
         A list of p-value at each locus.
@@ -1539,7 +1542,7 @@ def ChiSq_test(pop):
         pop = LoadPopulation(pop)
     # at each locus
     pvalues = []
-    Stat(pop, alleleFreq=loci)
+    Stat(pop, alleleFreq=range(pop.totNumLoci()))
     for loc in range(pop.totNumLoci()):
         # allele frequency
         caseNum = pop.dvars(0).alleleNum[loc]
@@ -1560,14 +1563,15 @@ def ChiSq_test(pop):
 def LOD_merlin(file, merlin='merlin'):
     ''' run multi-point non-parametric linkage analysis using merlin
     '''
-    cmd = 'merlin -d %s.dat -p %s.ped -m %s.map --pairs --npl' % (file, file, file)
+    cmd = 'merlin -d %s.dat -p %s.ped -m %s.map --npl' % (file, file, file)
     resline = re.compile('\s+[\d.+-]+\s+[\d.+-]+\s+[\d.+-]+\s+[\d.+-]+\s+[\d.+-]+\s+([\d.+-]+)')
-    print "Running", cmd
+    print "Running:"
+    print cmd
     fout = os.popen(cmd)
     pvalues = []
     for line in fout.readlines():
         try:
-            (pvalue) = resline.match(line).groups()
+            (pvalue,) = resline.match(line).groups()
             try:
                 pvalues.append(float(pvalue))
             except:
@@ -1585,7 +1589,8 @@ def VC_merlin(file, merlin='merlin'):
     '''
     cmd = 'merlin -d %s.dat -p %s.ped -m %s.map --pair --vc' % (file, file, file)
     resline = re.compile('\s+([\d.+-]+|na)\s+([\d.+-]+|na)%\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)')
-    print "Running", cmd
+    print "Running"
+    print cmd
     fout = os.popen(cmd)
     pvalues = []
     for line in fout.readlines():
@@ -1608,7 +1613,8 @@ def Regression_merlin(file, merlin='merlin-regress'):
     '''
     # get information
     cmd = '%s -d %s.dat -p %s.ped -m %s.map' % (merlin, file, file, file)
-    print "Running", cmd
+    print "Running"
+    print cmd
     fout = os.popen(cmd)
     #
     pvalues = []
@@ -1657,10 +1663,10 @@ def Sibpair_TDT_gh(pop, sampleSize, penetrance=None, recRate=None, daf=None, gh=
     if penetrance is not None:
         PyPenetrance(pop, loci=pop.dvars().DSL, func=penetrance)
     # draw affected sibpair sample
-    print "Generating affected sibpair samples..."
-    samples = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    print "Generating affected sibpair sample..."
+    (sample,) = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
     # remove DSL from the sample
-    samples[0].removeLoci(pop.dvars().DSL)
+    sample.removeLoci(pop.dvars().DSL)
     # parameters needed by SaveLinkage
     dir = tempfile.mkdtemp()
     try:
@@ -1677,13 +1683,13 @@ def Sibpair_TDT_gh(pop, sampleSize, penetrance=None, recRate=None, daf=None, gh=
     # save in Linkage format and apply TDT
     pvalues = []
     for ch in range(0, pop.numChrom() ):
-        SaveLinkage(pop=samples[0], output = os.path.join(dir, "Aff_%d" % (ch+1)),
-            recombination=r, loci = range(samples[0].chromBegin(ch), samples[0].chromEnd(ch)), 
+        SaveLinkage(pop=sample, output = os.path.join(dir, "Aff_%d" % (ch+1)),
+            recombination=r, loci = range(sample.chromBegin(ch), sample.chromEnd(ch)), 
             daf=0.1)
         # process by TDT
         pvalues.extend(TDT_gh(os.path.join(dir, "Aff_%d" % (ch+1)), gh=gh))
-    if len(pvalues) != samples[0].totNumLoci():
-        print "Only obtain", len(pvalues), "pvalues. (should have", samples[0].totNumLoci(), ")"
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
         sys.exit(0)
     # remove temporary directory
     if not keep_temp:
@@ -1721,10 +1727,10 @@ def Sibpair_LOD_gh(pop, sampleSize, penetrance=None, recRate=None, daf=None, gh=
     if penetrance is not None:
         PyPenetrance(pop, loci=pop.dvars().DSL, func=penetrance)
     # draw affected sibpair sample
-    print "Generating affected sibpair samples..."
-    samples = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    print "Generating affected sibpair sample..."
+    (sample,) = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
     # remove DSL from the sample
-    samples[0].removeLoci(pop.dvars().DSL)
+    sample.removeLoci(pop.dvars().DSL)
     # parameters needed by SaveLinkage
     dir = tempfile.mkdtemp()
     try:
@@ -1741,12 +1747,12 @@ def Sibpair_LOD_gh(pop, sampleSize, penetrance=None, recRate=None, daf=None, gh=
     # save in Linkage format and apply linkage method
     pvalues = []
     for ch in range(0, pop.numChrom()):
-        SaveLinkage(pop=samples[0], output = os.path.join(dir, "Aff_%d" % (ch+1)),
-            recombination=r, loci = range(samples[0].chromBegin(ch), samples[0].chromEnd(ch)), 
+        SaveLinkage(pop=sample, output = os.path.join(dir, "Aff_%d" % (ch+1)),
+            recombination=r, loci = range(sample.chromBegin(ch), sample.chromEnd(ch)), 
             daf=0.1)
         pvalues.extend(LOD_gh(os.path.join(dir, "Aff_%d" % (ch+1)), gh=gh))
-    if len(pvalues) != samples[0].totNumLoci():
-        print "Only obtain", len(pvalues), "pvalues. (should have", samples[0].totNumLoci(), ")"
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
         sys.exit(0)
     # remove temporary directory
     if not keep_temp:
@@ -1780,25 +1786,24 @@ def Sibpair_LOD_merlin(pop, sampleSize, penetrance=None, merlin='merlin', keep_t
     if penetrance is not None:
         PyPenetrance(pop, loci=pop.dvars().DSL, func=penetrance)
     # draw affected sibpair sample
-    print "Generating affected sibpair samples..."
-    samples = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
-    Stat(samples[0], numOfAffected=True)
-    print samples[0].dvars().numOfAffected, " indi"
+    print "Generating affected sibpair sample..."
+    (sample,) = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    Stat(sample, numOfAffected=True)
     # remove DSL from the sample
-    samples[0].removeLoci(pop.dvars().DSL)
+    sample.removeLoci(pop.dvars().DSL)
     # save in QTDT
     dir = tempfile.mkdtemp()
     pop.savePopulation('affall.txt')
-    samples[0].savePopulation('aff.txt')
+    sample.savePopulation('aff.txt')
     pvalues = []
     for ch in range(0, pop.numChrom() ):
-        SaveQTDT(pop=samples[0], output = os.path.join(dir, "Aff_%d" % (ch+1)),
-                loci = range(samples[0].chromBegin(ch), samples[0].chromEnd(ch)),
+        SaveQTDT(pop=sample, output = os.path.join(dir, "Aff_%d" % (ch+1)),
+                loci = range(sample.chromBegin(ch), sample.chromEnd(ch)),
                 fields=['affection'])
         # process by merlin
         pvalues.extend(LOD_merlin(os.path.join(dir, "Aff_%d" % (ch+1)), merlin=merlin))
-    if len(pvalues) != samples[0].totNumLoci():
-        print "Only obtain", len(pvalues), "pvalues. (should have", samples[0].totNumLoci(), ")"
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
         sys.exit(0)
     # remove temporary directory
     if not keep_temp:
@@ -1828,16 +1833,16 @@ def CaseControl_ChiSq(pop, sampleSize, penetrance=None):
         pop = LoadPopulation(pop)
     # apply penetrance        
     if penetrance is not None:
-        PyPenetrance(pop, loci=pop.dvars().DSL, func=pene)
+        PyPenetrance(pop, loci=pop.dvars().DSL, func=penetrance)
     # draw affected sibpair sample
-    print "Generating affected sibpair samples..."
-    samples = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    print "Generating affected sibpair sample..."
+    (sample,) = CaseControlSample(pop, sampleSize/2, sampleSize/2, times=1)
     # remove DSL from the sample
-    samples[0].removeLoci(pop.dvars().DSL)
+    sample.removeLoci(pop.dvars().DSL)
     # parameters needed by SaveLinkage
-    pvalues = ChiSq_test(sample[0])
-    if len(pvalues) != samples[0].totNumLoci():
-        print "Only obtain", len(pvalues), "pvalues. (should have", samples[0].totNumLoci(), ")"
+    pvalues = ChiSq_test(sample)
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
         sys.exit(0)
     return pvalues
           
@@ -1870,25 +1875,23 @@ def QtraitSibs_Reg_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merl
     if qtrait is not None:
         PyQuanTrait(pop, loci=pop.dvars().DSL, func=qtrait, infoFields=[infoField])
     # set everyone to be affected
-    def allAffected(geno):
-        return 1
-    PyPenetrance(pop, loci=[0], func=allAffected)
+    MaPenetrance(pop, loci=[0], penetrance=[1,1,1])
     # draw affected sibpair sample
-    print "Generating sibpair samples..."
-    samples = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    print "Generating sibpair sample..."
+    (sample,) = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
     # remove DSL from the sample
-    samples[0].removeLoci(pop.dvars().DSL)
+    sample.removeLoci(pop.dvars().DSL)
     # parameters needed by SaveLinkage
     dir = tempfile.mkdtemp()
     # save in Linkage format
     pvalues = []
     for ch in range(0, pop.numChrom()):
-        SaveQTDT(pop=samples[0], output = os.path.join(dir, "QTDT_%d" % (ch+1)),
-            loci = range(samples[0].chromBegin(ch), samples[0].chromEnd(ch)), fields=['qtrait'])
+        SaveQTDT(pop=sample, output = os.path.join(dir, "QTDT_%d" % (ch+1)),
+            loci = range(sample.chromBegin(ch), sample.chromEnd(ch)), fields=['qtrait'])
         # process by TDT
         pvalues.extend(Regression_merlin(os.path.join(dir, "QTDT_%d" % (ch+1)), merlin=merlin))
-    if len(pvalues) != samples[0].totNumLoci():
-        print "Only obtain", len(pvalues), "pvalues. (should have", samples[0].totNumLoci(), ")"
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
         sys.exit(0)
     # remove temporary directory
     if not keep_temp:
@@ -1922,24 +1925,23 @@ def QtraitSibs_VC_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merli
         pop.addInfoField(infoField)
     if qtrait is not None:
         PyQuanTrait(pop, loci=pop.dvars().DSL, func=qtrait, infoFields=[infoField])
-    def allAffected(geno):
-        return 1
-    PyPenetrance(pop, loci=[0], func=allAffected)
+    # set everyone to be affected
+    MaPenetrance(pop, loci=[0], penetrance=[1,1,1])
     # draw affected sibpair sample
-    print "Generating affected sibpair samples..."
-    samples = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    print "Generating affected sibpair sample..."
+    (sample,) = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
     # remove DSL from the sample
-    samples[0].removeLoci(pop.dvars().DSL)
+    sample.removeLoci(pop.dvars().DSL)
     # parameters needed by SaveLinkage
     dir = tempfile.mkdtemp()
     # save in Linkage format
     pvalues = []
     for ch in range(0, pop.numChrom()):
-        SaveQTDT(pop=samples[0], output = os.path.join(dir, "Aff_%d" % (ch+1)),
-            loci = range(samples[0].chromBegin(ch), samples[0].chromEnd(ch)), fields=['qtrait'])
+        SaveQTDT(pop=sample, output = os.path.join(dir, "Aff_%d" % (ch+1)),
+            loci = range(sample.chromBegin(ch), sample.chromEnd(ch)), fields=['qtrait'])
         pvalues.extend(VC_merlin(os.path.join(dir, "Aff_%d" % (ch+1)), merlin=merlin))
-    if len(pvalues) != samples[0].totNumLoci():
-        print "Only obtain", len(pvalues), "pvalues. (should have", samples[0].totNumLoci(), ")"
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
         sys.exit(0)
     # remove temporary directory
     if not keep_temp:
@@ -1947,7 +1949,7 @@ def QtraitSibs_VC_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merli
     return pvalues
     
 
-def LargePeds_Reg_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merlin='merlin', keep_temp=False):
+def LargePeds_Reg_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merlin='merlin-regress', keep_temp=False):
     '''
     Draw affected sibpair sample from pop, run TDT using GENEHUNTER
 
@@ -1973,25 +1975,23 @@ def LargePeds_Reg_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merli
         pop.addInfoField(infoField)
     if qtrait is not None:
         PyQuanTrait(pop, loci=pop.dvars().DSL, func=qtrait, infoFields=[infoField])
-    def allAffected(geno):
-        return 1
-    PyPenetrance(pop, loci=[0], func=allAffected)
     # draw affected sibpair sample
-    print "Generating affected sibpair samples..."
-    samples = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    print "Generating large pedigress sample..."
+    (sample,) = LargePedigreeSample(pop, minTotalSize=N, maxOffspring=5,  
+        minPedSize=8, minAffected=0)
     # remove DSL from the sample
-    samples[0].removeLoci(pop.dvars().DSL)
+    sample.removeLoci(pop.dvars().DSL)
     # parameters needed by SaveLinkage
     dir = tempfile.mkdtemp()
     # save in Linkage format
     pvalues = []
     for ch in range(0, pop.numChrom()):
-        SaveQTDT(pop=samples[0], output = os.path.join(dir, "QTDT_%d" % (ch+1)),
-            loci = range(samples[0].chromBegin(ch), samples[0].chromEnd(ch)), fields=['qtrait'])
+        SaveQTDT(pop=sample, output = os.path.join(dir, "QTDT_%d" % (ch+1)),
+            loci = range(sample.chromBegin(ch), sample.chromEnd(ch)), fields=['qtrait'])
         pvalues.extend(Regression_merlin(os.path.join(dir, "Aff_%d" % (ch+1)), merlin=merlin))
     # remove temporary directory
-    if len(pvalues) != samples[0].totNumLoci():
-        print "Only obtain", len(pvalues), "pvalues. (should have", samples[0].totNumLoci(), ")"
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
         sys.exit(0)
     if not keep_temp:
         shutil.rmtree(dir)
@@ -2025,20 +2025,21 @@ def LargePeds_VC_merlin(pop, sampleSize,  qtrait=None, infoField='qtrait', merli
     if qtrait is not None:
         PyQuanTrait(pop, loci=pop.dvars().DSL, func=qtrait, infoFields=[infoField])
     # draw affected sibpair sample
-    print "Generating affected sibpair samples..."
-    samples = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    print "Generating large pedigree sample..."
+    (sample,) = LargePedigreeSample(pop, minTotalSize=N, maxOffspring=5,  
+        minPedSize=8, minAffected=0)
     # remove DSL from the sample
-    samples[0].removeLoci(pop.dvars().DSL)
+    sample.removeLoci(pop.dvars().DSL)
     # parameters needed by SaveLinkage
     dir = tempfile.mkdtemp()
     pvalues = []
     for ch in range(0, pop.numChrom()):
-        SaveQTDT(pop=samples[0], output = os.path.join("%s%d" % (dirPrefix, ns), "QTDT_%d" % (ch+1)),
-            loci = range(samples[0].chromBegin(ch), samples[0].chromEnd(ch)), fields=['qtrait'])
-        pvalues = VC_gh(os.path.join(dir, "Aff_%d" % (ch+1)), gh=gh)
+        SaveQTDT(pop=sample, output = os.path.join("%s%d" % (dirPrefix, ns), "QTDT_%d" % (ch+1)),
+            loci = range(sample.chromBegin(ch), sample.chromEnd(ch)), fields=['qtrait'])
+        pvalues = VC_merlin(os.path.join(dir, "Aff_%d" % (ch+1)), merlin=merlin)
     # remove temporary directory
-    if len(pvalues) != samples[0].totNumLoci():
-        print "Only obtain", len(pvalues), "pvalues. (should have", samples[0].totNumLoci(), ")"
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
         sys.exit(0)
     if not keep_temp:
         shutil.rmtree(dir)

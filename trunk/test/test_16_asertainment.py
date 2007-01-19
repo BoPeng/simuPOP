@@ -86,9 +86,7 @@ class TestAscertainment(unittest.TestCase):
             self.assertEqual(ind.affected(), True)
             #old index?
             inpop = self.pop.individual(int(ind.info('oldindex')))
-            print ind
             self.assertEqual(ind, inpop)
-        return
         for ind in s.individuals(1):
             self.assertEqual(ind.affected(), True)
             #old index?
