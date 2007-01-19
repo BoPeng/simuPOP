@@ -22,6 +22,8 @@
  ***************************************************************************/
 
 #include "individual.h"
+#include <sstream>
+using std::ostringstream;
 
 namespace simuPOP
 {
@@ -319,18 +321,21 @@ namespace simuPOP
 				equal = false;
 			}
 
-			if(equal)
-			{
-				for( UINT i=0, iEnd = localInfoSize(); i < iEnd;  ++i)
-				{
-					if( info(i) != rhs.info(i) )
-					{
-						DBG_DO(DBG_POPULATION, cout << "Info different" << endl);
-						equal = false;
-						break;
-					}
-				}
+			/*
+
+						if(equal)
+						{
+							for( UINT i=0, iEnd = localInfoSize(); i < iEnd;  ++i)
+							{
+								if( info(i) != rhs.info(i) )
+								{
+									DBG_DO(DBG_POPULATION, cout << "Info different" << endl);
+									equal = false;
+									break;
 			}
+			}
+			}
+			*/
 		}
 
 		for( UINT i=0, iEnd = localGenoSize(); i < iEnd;  ++i)
@@ -349,16 +354,26 @@ namespace simuPOP
 		return res;
 #else
 		if( genoStruIdx() != rhs.genoStruIdx() )
+		{
+			DBG_DO(DBG_POPULATION, cout << "Geno stru different" << endl);
 			return false;
+		}
 
 		if(ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
 			|| ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) )
+		{
+			DBG_DO(DBG_POPULATION, cout << "Flags different: sex "
+				<< ISSETFLAG(m_flags, m_flagFemale) << " vs " << ISSETFLAG(rhs.m_flags, m_flagFemale) << ", aff "
+				<< ISSETFLAG(m_flags, m_flagAffected) << " vs " << ISSETFLAG(rhs.m_flags, m_flagAffected)
+				<< endl);
 			return false;
+		}
 
+		/*
 		for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
 			if( info(i) != rhs.info(i) )
 				return false;
-
+		*/
 		for( UINT i=0, iEnd = genoSize(); i < iEnd;  ++i)
 			if( *(m_genoPtr+i) != *(rhs.m_genoPtr+i) )
 				return false;
@@ -368,69 +383,7 @@ namespace simuPOP
 
 	int individual::__cmp__(const individual& rhs) const
 	{
-#ifdef SIMUMPI
-		bool equal = true;
-		if( genoStruIdx() != rhs.genoStruIdx() )
-		{
-			DBG_DO(DBG_POPULATION, cout << "Geno stru different" << endl);
-			equal = false;
-		}
-
-		if(mpiRank() == 0)
-		{
-			if( equal && m_flags != rhs.m_flags )
-			{
-				DBG_DO(DBG_POPULATION, cout << "Flags different" << endl);
-				equal = false;
-			}
-
-			if(equal)
-			{
-				for( UINT i=0, iEnd = localInfoSize(); i < iEnd;  ++i)
-				{
-					if( info(i) != rhs.info(i) )
-					{
-						DBG_DO(DBG_POPULATION, cout << "Info different" << endl);
-						equal = false;
-						break;
-					}
-				}
-			}
-		}
-
-		if(equal)
-		{
-			for( UINT i=0, iEnd = localGenoSize(); i < iEnd;  ++i)
-				if( allele(i) != rhs.allele(i) )
-			{
-				DBG_DO(DBG_POPULATION, cout << "Genotype different" << endl);
-				equal = false;
-				break;
-			}
-		}
-		bool res;
-		reduce(mpiComm(), equal, res, std::logical_and<bool>(), 0);
-		broadcast(mpiComm(), res, 0);
-		return res;
-
-#else
-
-		if( genoStruIdx() != rhs.genoStruIdx() )
-			return 1;
-
-		if( m_flags != rhs.m_flags )
-			return 1;
-
-		for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
-			if( info(i) != rhs.info(i) )
-				return 1;
-
-		for( UINT i=0, iEnd = genoSize(); i < iEnd;  ++i)
-			if( allele(i) != rhs.allele(i) )
-				return 1;
-
-		return 0;
-#endif
+		return (*this == rhs) ? 0 : 1;
 	}
 
 	void individual::swap(individual& ind, bool swapContent)
@@ -459,14 +412,34 @@ namespace simuPOP
 		}
 	}
 
+	string individual::__repr__()
+	{
+		ostringstream os;
+		int width;
+		if(maxAllele() < 10)
+			width = 1;
+		else if(maxAllele() >= 10 && maxAllele() < 100)
+			width = 2;
+		else if( maxAllele() >=100)
+			width = 3;
+		display(os, width, vectori(), vectori());
+		const string & str = os.str();
+		if(str.size() < 100)
+			return str;
+		else
+			return str.substr(0, 100) + "...";
+	}
+
 	void individual::display( ostream& out, int width, const vectori& chrom, const vectori& loci)
 	{
-		out << sexChar() << affectedChar() << " ";
-		DBG_DO(DBG_POPULATION, out <<  subPopID() << " ");
+		out << sexChar() << affectedChar();
+		DBG_DO(DBG_POPULATION,
+			out << subPopID() << "," << genoStruIdx() << " "
+			);
 		for(UINT p=0, pEnd = ploidy(); p < pEnd;  ++p)
 		{
-			//      copy( genoBegin()+i, genoBegin()+i+totNumLoci(),
-			//        std::ostream_iterator<string>(out, outputSeparator()) );
+			// copy( genoBegin()+i, genoBegin()+i+totNumLoci(),
+			// std::ostream_iterator<string>(out, outputSeparator()) );
 			if(chrom.empty() && loci.empty())
 			{
 				for(UINT ch=0, chEnd=numChrom(); ch<chEnd; ++ch)

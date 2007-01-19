@@ -21,7 +21,7 @@ class TestAscertainment(unittest.TestCase):
     def setUp(self):
         simu = simulator(
             population(subPop=[100,200], ploidy=2, loci=[5,10],
-                ancestralDepth=1, maxAllele=MaxAllele, 
+                ancestralDepth=1, maxAllele=9, 
                 infoFields=['fitness', 'father_idx', 'mother_idx']),
             randomMating(numOffspring=2))
         simu.evolve(
@@ -48,6 +48,10 @@ class TestAscertainment(unittest.TestCase):
         (s,) = RandomSample(self.pop,[2,8])
         self.assertEqual(s.subPopSize(0), 2)
         self.assertEqual(s.subPopSize(1), 8)
+        for ind in s.individuals():
+            #old index?
+            inpop = self.pop.individual(int(ind.info('oldindex')))
+            self.assertEqual(ind, inpop)
         
     def testCaseControlSample(self):
         'Testing case control sampling (imcomplete)'
@@ -59,11 +63,18 @@ class TestAscertainment(unittest.TestCase):
         (s,) = CaseControlSample(self.pop, [1,2],[5,4])
         self.assertEqual(s.subPopSize(0), 3)
         self.assertEqual(s.subPopSize(1), 9)
+        # old index
+        self.assertEqual(s.hasInfoField('oldindex'), True)
         #
         for ind in s.individuals(0):
             self.assertEqual(ind.affected(), True)
+            #old index?
+            inpop = self.pop.individual(int(ind.info('oldindex')))
+            self.assertEqual(ind, inpop)
         for ind in s.individuals(1):
             self.assertEqual(ind.affected(), False)
+            #old index?
+            inpop = self.pop.individual(int(ind.info('oldindex')))
 
     def testAffectedSibpairSample(self):
         'Testing affected sibpair sampling (imcomplete)'
@@ -73,13 +84,24 @@ class TestAscertainment(unittest.TestCase):
         assert s.subPopSize(1) <= 6
         for ind in s.individuals(0):
             self.assertEqual(ind.affected(), True)
+            #old index?
+            inpop = self.pop.individual(int(ind.info('oldindex')))
+            print ind
+            self.assertEqual(ind, inpop)
+        return
         for ind in s.individuals(1):
             self.assertEqual(ind.affected(), True)
-        # 
+            #old index?
+            inpop = self.pop.individual(int(ind.info('oldindex')))
+            self.assertEqual(ind, inpop)
+        #
         (s,) = AffectedSibpairSample(self.pop, 2)
         assert s.subPopSize(0) <= 4
         for ind in s.individuals():
             self.assertEqual(ind.affected(), True)
+            #old index?
+            inpop = self.pop.individual(int(ind.info('oldindex')))
+            self.assertEqual(ind, inpop)
         
 
 if __name__ == '__main__':

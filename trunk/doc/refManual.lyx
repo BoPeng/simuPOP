@@ -13614,8 +13614,18 @@ pySubset
 \end_layout
 
 \begin_layout Standard
-Individuals in sampled populations may or may not keep their original order.
- Please check each sampling scheme for details.
+Individuals in sampled populations may or may not keep their original order
+ but their index in the whole population is stored in a information field
+ 
+\family typewriter
+oldindex
+\family default
+.
+ That is to say, you can use 
+\family typewriter
+ind.info('oldindex')
+\family default
+ to check the original position of an individual.
 \end_layout
 
 \begin_layout Standard
