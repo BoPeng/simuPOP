@@ -40,11 +40,6 @@
 // under parent directory. Included with -I.. option.
 #include "config.h"
 
-// for mac, or earlier version of gcc, _M_word_bit is used
-// while _S_word_bit is used for newer versions
-// to compile for mac, I define
-//    #define _Bit_type_size _M_word_bit
-// in config_mac.h. For other OS, we use _S_word_bit
 #ifdef _MSC_VER
 
 #define WORDBIT (8*sizeof(unsigned))
@@ -53,7 +48,7 @@
 #define BITOFF(ref) ref._Myoff
 
 #else
-
+#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #if GCC_VERSION > 30400
 #define WORDBIT std::_S_word_bit
 #else
