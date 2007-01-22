@@ -75,15 +75,15 @@ if cxx != "":
 if ldshared != '':
     env['SHLINK'] = ldshared
 
-if env['prefix'] is not None:
+if env.has_key('prefix') and env['prefix'] is not None:
     dest_dir  = distutils.sysconfig.get_python_lib(prefix=env['prefix'])
     print "Installing to", dest_dir
 else:
     dest_dir  = os.path.join(lib_dest, 'site-packages')
 
-if env['include-dirs'] is not None:
+if env.has_key('include-dirs') and env['include-dirs'] is not None:
     boost_inc_search_paths.extend(env['include-dirs'].split(';'))
-if env['library-dirs'] is not None:
+if env.has_key('library-dirs') and env['library-dirs'] is not None:
     boost_lib_search_paths.extend(env['library-dirs'].split(';'))
 
 build_dir = 'build'
