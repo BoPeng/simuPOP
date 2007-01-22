@@ -4,6 +4,25 @@
 # usage because it is a real multi-thread, dependency-based build system
 # that can build part of the simuPOP modules..
 #
+# Usage:
+#    scons [scons-options] [options] [targets]
+# where:
+#    scons-options:
+#      standard scons options like -j (number of threads)
+#
+#    options:
+#      prefix=/path/to/prefix:  
+#          prefix of installation, equivalent to the --prefix option of python setup.py
+#      include-dirs=/path/to/include;/path/to/includes2
+#          extra include directories, usually to boost library
+#      library-dirs=/path/to/lib;/path/to/lib2
+#          extra library directories, usually to boost library
+#      
+#   targets: one of more of
+#      std op la laop ba baop mpi opmpi lampi laopmpi bampi baopmpi: individual module
+#      all = all modules
+#      default to all standard modules (non-MPI version)
+#      install: install specified targets
 #
 import os, sys
 import SCons.Defaults
@@ -37,7 +56,16 @@ if not comp.__dict__.has_key('ldflags_shared'):
 if not comp.__dict__.has_key('compile_options'):
     comp.compile_options = []
 
-env = Environment(ENV={'PATH':os.environ['PATH']},
+opts = Options()
+opts.AddOptions(
+    PathOption('prefix', 'Where to install. see "python setup.py install --prefix"', None),
+    PathOption('include-dirs', 'Extra include directories, see "python setup.py build_ext --help"', None),
+    PathOption('library-dirs', 'Extra library directories, see "python setup.py build_ext --help"', None),
+)
+    
+env = Environment(
+    options=opts,
+    ENV={'PATH':os.environ['PATH']},
     tools=['default', 'swig'])
 # try to use the compiler used to build python
 if cc != "":
@@ -47,7 +75,17 @@ if cxx != "":
 if ldshared != '':
     env['SHLINK'] = ldshared
 
-dest_dir  = os.path.join(lib_dest, 'site-packages')
+if env['prefix'] is not None:
+    dest_dir  = distutils.sysconfig.get_python_lib(prefix=env['prefix'])
+    print "Installing to", dest_dir
+else:
+    dest_dir  = os.path.join(lib_dest, 'site-packages')
+
+if env['include-dirs'] is not None:
+    boost_inc_search_paths.extend(env['include-dirs'].split(';'))
+if env['library-dirs'] is not None:
+    boost_lib_search_paths.extend(env['library-dirs'].split(';'))
+
 build_dir = 'build'
 env.BuildDir(build_dir, 'src', duplicate = 0)
 env['build_dir'] = build_dir
