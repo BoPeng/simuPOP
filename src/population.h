@@ -1266,7 +1266,7 @@ namespace simuPOP
 				if (rest > 0)
 				{
 					tmp = *ptr;
-					for(size_t j = 0; j <= rest/32; ++j)
+					for(size_t j = 0; j <= (rest-1)/32; ++j)
 					{
 						tmp1 = tmp & 0xFFFFFFFF;
 						tmp = tmp >> 32;
@@ -1313,7 +1313,9 @@ namespace simuPOP
 					if (rest > 0)
 					{
 						tmp = *ptr;
-						for(size_t j = 0; j <= rest/32; ++j)
+						// rest = 1-31: (rest-1)/32=0, j <= rest/32 = 0
+						// rest = 32; j <= (rest-1)/32 = 0
+						for(size_t j = 0; j <= (rest-1)/32; ++j)
 						{
 							tmp1 = tmp & 0xFFFFFFFF;
 							tmp = tmp >> 32;
@@ -1372,11 +1374,11 @@ namespace simuPOP
 					// binary from binary
 					if (ma == 1)
 					{
-						DBG_DO(DBG_POPULATION, cout << "Load bin from bin. " << endl);
 						size_t size;
 						ar & make_nvp("size", size);
 						size_t blks = size / WORDBIT;
 						size_t rest = size - blks * WORDBIT;
+						DBG_DO(DBG_POPULATION, cout << "Load bin from bin. " << size << " rest " << rest << endl);
 
 						m_genotype.resize(size);
 						WORDTYPE tmp, tmp1;
@@ -1395,7 +1397,7 @@ namespace simuPOP
 						if (rest > 0)
 						{
 							tmp = 0;
-							for(size_t j = 0; j <= rest/32; ++j)
+							for(size_t j = 0; j <= (rest-1)/32; ++j)
 							{
 								ar & make_nvp("blocks", tmp1);
 								tmp |= tmp1 << (j * 32);
@@ -1415,13 +1417,13 @@ namespace simuPOP
 					// long from binary
 					if (ma == 1)
 					{
-						DBG_DO(DBG_POPULATION, cout << "Load long from bin. " << endl);
 						// for version 2 and higher, archive in 32bit blocks.
 						size_t size;
 						ar & make_nvp("size", size);
 						m_genotype.resize(size);
 						size_t blks = size / 32;
 						size_t rest = size - blks * 32;
+						DBG_DO(DBG_POPULATION, cout << "Load long from bin. " << size << " rest " << rest << endl);
 						DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
 
 						GenoIterator ptr = m_genotype.begin();
@@ -1543,7 +1545,7 @@ namespace simuPOP
 							if (rest > 0)
 							{
 								tmp = 0;
-								for(size_t j = 0; j <= rest/32; ++j)
+								for(size_t j = 0; j <= (rest-1)/32; ++j)
 								{
 									ar & make_nvp("blocks", tmp1);
 									tmp |= tmp1 << (j * 32);
@@ -1562,13 +1564,13 @@ namespace simuPOP
 #else
 						if(ma == 1)
 						{
-							DBG_DO(DBG_POPULATION, cout << "Load long from bin. " << endl);
 							// long type from binary
 							size_t size;
 							ar & make_nvp("size", size);
+							pd.m_genotype.resize(size);
 							size_t blks = size / 32;
 							size_t rest = size - blks * 32;
-							pd.m_genotype.resize(size);
+							DBG_DO(DBG_POPULATION, cout << "Load long from bin. " << size << " rest " << rest << endl);
 
 							ptr = pd.m_genotype.begin();
 							WORDTYPE tmp;
