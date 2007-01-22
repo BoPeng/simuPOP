@@ -9,11 +9,11 @@ def ins_exp(gen, oldSize=[]):
     else:
         return [finalSize]
 
-def simulate(incSenario):
+def simulate(incScenario):
     simu = simulator(                                        # create a simulator
-        population(subPop=incSenario(0), loci=[1,1],
+        population(subPop=incScenario(0), loci=[1,1],
             infoFields=['fitness']),                         # inital population
-        randomMating(newSubPopSizeFunc=incSenario)           # random mating
+        randomMating(newSubPopSizeFunc=incScenario)           # random mating
     )
 
 simulate(ins_exp)
