@@ -13,10 +13,10 @@
 #    options:
 #      prefix=/path/to/prefix:  
 #          prefix of installation, equivalent to the --prefix option of python setup.py
-#      include-dirs=/path/to/include;/path/to/includes2
-#          extra include directories, usually to boost library
-#      library-dirs=/path/to/lib;/path/to/lib2
-#          extra library directories, usually to boost library
+#      include-dirs=/path/to/include:/path/to/includes2
+#          extra include directories, usually to boost library. The path separator is ; under windows.
+#      library-dirs=/path/to/lib:/path/to/lib2
+#          extra library directories, usually to boost library. The path separator is ; under windows.
 #      
 #   targets: one of more of
 #      std op la laop ba baop mpi opmpi lampi laopmpi bampi baopmpi: individual module
@@ -82,9 +82,9 @@ else:
     dest_dir  = os.path.join(lib_dest, 'site-packages')
 
 if env.has_key('include-dirs') and env['include-dirs'] is not None:
-    boost_inc_search_paths.extend(env['include-dirs'].split(';'))
+    boost_inc_search_paths.extend(env['include-dirs'].split(os.pathsep))
 if env.has_key('library-dirs') and env['library-dirs'] is not None:
-    boost_lib_search_paths.extend(env['library-dirs'].split(';'))
+    boost_lib_search_paths.extend(env['library-dirs'].split(os.pathsep))
 
 build_dir = 'build'
 env.BuildDir(build_dir, 'src', duplicate = 0)
