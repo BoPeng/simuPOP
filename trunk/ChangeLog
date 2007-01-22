@@ -18,6 +18,8 @@ version 0.7.7 - Currently available as subversion snapshot.
   -BUG: fix a affected sibpair sampler bug introduced in 0.7.5
   -CHG: individual comparison does not compare information fields
   -CHG: adjust individual representation (actually output genotype)
+  -BUG: fix a bug in loading some files saved in binary module from standard modules
+  -NEW: scons build now accepts options prefix, include-dirs and library-dirs
   
 
 version 0.7.6 - (Rev 674) Dec 25, 2006
