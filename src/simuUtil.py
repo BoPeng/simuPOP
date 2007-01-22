@@ -1793,8 +1793,6 @@ def Sibpair_LOD_merlin(pop, sampleSize, penetrance=None, merlin='merlin', keep_t
     sample.removeLoci(pop.dvars().DSL)
     # save in QTDT
     dir = tempfile.mkdtemp()
-    pop.savePopulation('affall.txt')
-    sample.savePopulation('aff.txt')
     pvalues = []
     for ch in range(0, pop.numChrom() ):
         SaveQTDT(pop=sample, output = os.path.join(dir, "Aff_%d" % (ch+1)),
