@@ -59,6 +59,8 @@ where options can be:
   -q|--queue: queue to submit job to
   -f|--force: submit the job even it has $ in the (resulting) script 
   -c|--command: command used to submit jobs.
+  -r|--run: run the command
+  -p|--repeat: send several copies of the same command
 
 Example of one such script:
 
@@ -83,7 +85,7 @@ simu1: 1: 2
 simu2: 2: 1
 """
 
-Example $HOME/.simuCluster
+Sample $HOME/.simuCluster
 
 command = 'bsub -n 1 <'
 queue = 'normal'
@@ -170,14 +172,15 @@ if __name__ == '__main__':
     simuList = 'simulation.lst'
     proc_jobs = []
     run = False
+    repeat = 1
     force = False
     # default command to run the job, can be, for example sh
     options['command'] = 'qsub'
     # read configuration file
     options.update(readConfigFile())
     #
-    optlist, args = getopt.gnu_getopt(sys.argv[1:], 't:l:s:ahrq:fc:', 
-      ['list=', 'show=', 'time=', 'all', 'run', 'help', 'force', 'command'])
+    optlist, args = getopt.gnu_getopt(sys.argv[1:], 't:l:s:ahrq:fc:p:', 
+      ['list=', 'show=', 'time=', 'all', 'run', 'help', 'force', 'command', 'repeat='])
     for opt in optlist:
         if opt[0] == '-t' or opt[0] == '--time':
             try:
@@ -206,6 +209,8 @@ if __name__ == '__main__':
             sys.exit(0)
         elif opt[0] in ['-c', '--command']:
             options['command'] = command
+        elif opt[0] in ['-p', '--repeat']:
+            repeat = int(opt[1])
     #
     # this is a special case
     #
@@ -260,8 +265,9 @@ if __name__ == '__main__':
                 sys.exit(1)
             if run:
                 command = options['command'].replace('$name', job)
-                print "Submitting job using command '%s %s.pbs'" % (command, job)
-                os.system('%s %s.pbs' % (command, job))
+                print "Submitting %d job using command '%s %s.pbs'" % (repeat, command, job)
+                for r in range(repeat):
+                    os.system('%s %s.pbs' % (command, job))
         else:
             print "Job %s does not exist" % job
 

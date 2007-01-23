@@ -5147,7 +5147,7 @@ where
 \begin_layout Itemize
 
 \family typewriter
--l list:
+-l (--list) list:
 \family default
  a list file (actually a python file) that specifies variale 
 \family typewriter
@@ -5161,7 +5161,7 @@ joblist
 \begin_layout Itemize
 
 \family typewriter
--a: 
+-a (--all): 
 \family default
 use all jobs defined in the list file
 \end_layout
@@ -5169,7 +5169,7 @@ use all jobs defined in the list file
 \begin_layout Itemize
 
 \family typewriter
--r:
+-r (--run):
 \family default
  run the jobs, by default, this script will only list the jobs and generate
  job file.
@@ -5178,7 +5178,19 @@ use all jobs defined in the list file
 \begin_layout Itemize
 
 \family typewriter
--f: 
+-p (--repeat) n:
+\family default
+ execute command 
+\family typewriter
+n 
+\family default
+times.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+-f (--force): 
 \family default
 force the execution even if the generated job scripts have 
 \family typewriter
