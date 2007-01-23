@@ -20,6 +20,8 @@ version 0.7.7 - Currently available as subversion snapshot.
   -CHG: adjust individual representation (actually output genotype)
   -BUG: fix a bug in loading some files saved in binary module from standard modules
   -NEW: scons build now accepts options prefix, include-dirs and library-dirs
+  -NEW: change pySelector and allow a second parameter gen for the fitness function
+        This allows varying selection pressure.
   
 
 version 0.7.6 - (Rev 674) Dec 25, 2006

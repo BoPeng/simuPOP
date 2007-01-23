@@ -530,12 +530,11 @@ namespace simuPOP
 	//           gen is defined in forward order. NtFunc(curGen) should be current
 	//           generation number.
 	//    freq   expected allele frequency of allele a.
-	//    s      fitness for [AA, Aa, aa], shoulb be a vector of size 3.
-	//           Assume constant selection pressure. s is default to [1,1,1].
-	//           I.e, a neutral process.
-	//    sFunc  a python function that returns selection pressure at each generation
-	//           the function expects a single parameter gen which is defined
-	//           in reversed order.
+	//    fitness  constant fitness for [AA, Aa, aa, BB, Bb, bb ...]
+	//    fitnessFunc  a python function that returns selection pressure at each generation
+	//           the function expects parameters gen and freq. gen is current generation
+	//           number and freq is the allele frequency at all loci. This allows
+	//           frequency dependent selection. gen is defined in forward order.
 	//    minMutAge minimal generation number. The process will restart if the trajectory
 	//           is less than minGen. Default to 0.
 	//    maxMutAge maximum generation number. The process will terminate or restart if it

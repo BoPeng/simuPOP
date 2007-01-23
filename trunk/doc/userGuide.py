@@ -556,7 +556,8 @@ simu = simulator(
 
 s1 = .2
 s2 = .3
-def sel(arr):
+# the second parameter gen can be used for varying selection pressure
+def sel(arr, gen=0):
   if arr[0] == 1 and arr[1] == 1:
     return 1 - s1
   elif arr[0] == 1 and arr[1] == 2:
@@ -616,7 +617,7 @@ simu.evolve([
 )
 
 #end
-#PS convert log/simuDemo16.eps log/simuDemo16.png
+#PS /usr/bin/convert log/simuDemo16.eps log/simuDemo16.png
 #PS /bin/rm -f log/simuDemo*.eps
 
 #file log/ifElse.log

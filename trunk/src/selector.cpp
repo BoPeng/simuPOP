@@ -25,7 +25,7 @@
 
 namespace simuPOP
 {
-	double mapSelector::indFitness(individual * ind)
+	double mapSelector::indFitness(individual * ind, ULONG gen)
 	{
 		string key;
 
@@ -52,7 +52,7 @@ namespace simuPOP
 	}
 
 	/// currently assuming diploid
-	double maSelector::indFitness(individual * ind)
+	double maSelector::indFitness(individual * ind, ULONG gen)
 	{
 		UINT index = 0;
 		bool singleST = m_wildtype.size() == 1;
@@ -84,14 +84,14 @@ namespace simuPOP
 		return m_fitness[index];
 	}
 
-	double mlSelector::indFitness(individual * ind)
+	double mlSelector::indFitness(individual * ind, ULONG gen)
 	{
 		if(m_mode == SEL_Multiplicative )
 		{
 			double fit = 1;
 			for(vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end();
 				s != sEnd; ++s)
-			fit *= static_cast<selector* >(*s)->indFitness(ind);
+			fit *= static_cast<selector* >(*s)->indFitness(ind, gen);
 			return fit;
 		}
 		else if(m_mode == SEL_Additive )
@@ -99,7 +99,7 @@ namespace simuPOP
 			double fit = 1;
 			for(vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end();
 				s != sEnd; ++s)
-			fit -= 1 - static_cast<selector* >(*s)->indFitness(ind);
+			fit -= 1 - static_cast<selector* >(*s)->indFitness(ind, gen);
 			return fit<0?0.:fit;
 		}
 		else if(m_mode == SEL_Heterogeneity)
@@ -108,14 +108,14 @@ namespace simuPOP
 			double fit = 1;
 			for(vectorop::iterator s = m_selectors.begin(), sEnd=m_selectors.end();
 				s != sEnd; ++s)
-			fit *= 1 - static_cast<selector* >(*s)->indFitness(ind);
+			fit *= 1 - static_cast<selector* >(*s)->indFitness(ind, gen);
 			return 1-fit;
 		}
 		// this is the case for SEL_none.
 		return 1.0;
 	}
 
-	double pySelector::indFitness(individual * ind)
+	double pySelector::indFitness(individual * ind, ULONG gen)
 	{
 		if( m_len == 0)
 		{
@@ -129,7 +129,7 @@ namespace simuPOP
 #endif
 		}
 
-		DBG_FAILIF( static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),
+		DBG_FAILIF(static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),
 			SystemError,
 			"Length of m_len is wrong. Have you changed pop type?" );
 
@@ -139,7 +139,7 @@ namespace simuPOP
 				m_alleles[j++] = ind->allele(m_loci[i], p);
 
 		double resDouble;
-		PyCallFunc(m_func, "(O)", m_numArray, resDouble, PyObj_As_Double);
+		PyCallFunc2(m_func, "(Oi)", m_numArray, gen, resDouble, PyObj_As_Double);
 		return resDouble;
 	}
 
