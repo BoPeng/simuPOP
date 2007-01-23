@@ -627,12 +627,13 @@ def FreqTrajectoryMultiStochWithSubPop(
         numLoci,
         freq, 
         NtFunc, 
-        fitness, 
         minMutAge, 
         maxMutAge,
+        fitness=[], 
         mode = 'uneven',
         ploidy=2,
-        restartIfFail=True):
+        restartIfFail=True,
+        fitnessFunc=None):
     ''' Simulate frequency trajectory with subpopulation structure,
         migration is currently ignored. The essential part of this 
         script is to simulate the trajectory of each subpopulation 
@@ -657,11 +658,15 @@ def FreqTrajectoryMultiStochWithSubPop(
         maxMutAge = endGen
     TurnOnDebug(DBG_GENERAL)
     if numSP == 1 or mode == 'none':
+        # given in the form of [[.1,.2]]
+        if type(freq[0]) in [type((0,)), type([])]:
+            freq = freq[0]
         traj = FreqTrajectoryMultiStoch(
                 curGen=curGen,
                 freq=freq, 
                 NtFunc=NtFunc, 
                 fitness=fitness, 
+                fitnessFunc=fitnessFunc,
                 minMutAge=minMutAge, 
                 maxMutAge=maxMutAge, 
                 ploidy=ploidy,
@@ -697,47 +702,61 @@ def FreqTrajectoryMultiStochWithSubPop(
     # now, NtFunc(split) has subpopulations
     # 
     # for each subpopulation
-    if len(freq) == numSP*numLoci:
-        freqAll = freq
-    elif len(freq) == numLoci:
+    # layout for freqALL 
+    #     [  loc 0   ][loc 1 ][loc 2  ]
+    # for each locus
+    #     [ loc  0 ] = [at subpop 0, subpop 1, subpop 2...]
+    #
+    # That is to say, index is for locus i in subpop sp
+    #   freqAll[sp+i*numSP],
+    if type(freq[0]) in [type((0,)), type([])]:
+        # freq is given as [subpop 0][subpop 1] [subpop 2]
         freqAll = [0]*(numLoci*numSP)
-        if mode == 'even':
-            for i in range(numLoci):
-                wt = NtFunc(curGen)
-                ps = sum(wt)
-                # total allele number
-                totNum = int(freq[i]*ps)
-                # in subpopulations, according to population size
-                num = rng().randMultinomialVal(totNum, [x/float(ps) for x in wt])
-                for sp in range(numSP):
-                    freqAll[sp+i*numSP] = num[sp]/float(wt[sp])
-        elif mode == 'uneven':
-            for i in range(numLoci):
-                wt = NtFunc(curGen)
-                # total allele number
-                totNum = int(freq[i]*sum(wt))
-                while(True):
-                    # get [ x x x x x ] while x is uniform [0,1]
-                    num = [0,1]+[rng().randUniform01() for x in range(numSP-1)]
-                    num.sort()
-                    for sp in range(numSP):
-                        freqAll[sp+i*numSP] = (num[sp+1]-num[sp])*totNum/wt[sp]
-                    if max(freqAll) < 1:
-                        break;
-        else:
-            print "Wrong mode parameter is used: ", mode
-        print "Using ", mode, "distribution of alleles at the last generation"
-        print "Frequencies at the last generation: sp0-loc0, loc1, ..., sp1-loc0,..."
-        for sp in range(numSP):
-            print "SP ", sp, ': ',
-            for i in range(numLoci):
-                print "%.3f " % freqAll[sp+i*numSP],
-            print
+        for (sp, f) in enumerate(freq):
+            for (loc, s) in enumerate(f):
+                freqAll[sp+loc*numSP] = s
     else:
-        raise exceptions.ValueError("Wrong freq length")
+        if len(freq) == numSP*numLoci:
+            freqAll = freq
+        elif len(freq) == numLoci:
+            freqAll = [0]*(numLoci*numSP)
+            if mode == 'even':
+                for i in range(numLoci):
+                    wt = NtFunc(curGen)
+                    ps = sum(wt)
+                    # total allele number
+                    totNum = int(freq[i]*ps)
+                    # in subpopulations, according to population size
+                    num = rng().randMultinomialVal(totNum, [x/float(ps) for x in wt])
+                    for sp in range(numSP):
+                        freqAll[sp+i*numSP] = num[sp]/float(wt[sp])
+            elif mode == 'uneven':
+                for i in range(numLoci):
+                    wt = NtFunc(curGen)
+                    # total allele number
+                    totNum = int(freq[i]*sum(wt))
+                    while(True):
+                        # get [ x x x x x ] while x is uniform [0,1]
+                        num = [0,1]+[rng().randUniform01() for x in range(numSP-1)]
+                        num.sort()
+                        for sp in range(numSP):
+                            freqAll[sp+i*numSP] = (num[sp+1]-num[sp])*totNum/wt[sp]
+                        if max(freqAll) < 1:
+                            break;
+            else:
+                print "Wrong mode parameter is used: ", mode
+            print "Using ", mode, "distribution of alleles at the last generation"
+            print "Frequencies at the last generation: sp0-loc0, loc1, ..., sp1-loc0,..."
+            for sp in range(numSP):
+                print "SP ", sp, ': ',
+                for i in range(numLoci):
+                    print "%.3f " % freqAll[sp+i*numSP],
+                print
+        else:
+            raise exceptions.ValueError("Wrong freq length")
     spTraj = [0]*numSP*numLoci
     for sp in range(numSP):
-        print "Generting trajectory for subpopulation %d (generation %d - %d)" % (sp, split, curGen)
+        print "Generting trajectory for subpopulation %d (generation %d - %d), freq=%s" % (sp, split, curGen, [freqAll[sp+x*numSP] for x in range(numLoci)])
         # FreqTraj... will probe Nt for the next geneartion.
         def spPopSize(gen):
             if gen < split:
@@ -750,6 +769,7 @@ def FreqTrajectoryMultiStochWithSubPop(
                 freq=[freqAll[sp+x*numSP] for x in range(numLoci)], 
                 NtFunc=spPopSize, 
                 fitness=fitness,
+                fitnessFunc=fitnessFunc,
                 minMutAge=curGen-split, 
                 maxMutAge=curGen-split, 
                 ploidy=ploidy,
@@ -781,6 +801,7 @@ def FreqTrajectoryMultiStochWithSubPop(
         freq=[traj[i][0] for i in range(numLoci)], 
         NtFunc=NtFunc, 
         fitness=fitness,
+        fitnessFunc=fitnessFunc,
         minMutAge=minMutAge-len(traj[0])+1, 
         maxMutAge=maxMutAge-len(traj[0])+1, 
         ploidy=ploidy,

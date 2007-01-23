@@ -658,7 +658,7 @@ namespace simuPOP
 			maxMutAge = curGen;
 
 		DBG_FAILIF( maxMutAge < minMutAge, ValueError, "maxMutAge should >= minMutAge");
-		DBG_FAILIF( curGen == 0 && (NtFunc != NULL || fitnessFunc != NULL),
+		DBG_FAILIF( curGen == 0 && (ValidPyObject(NtFunc) || ValidPyObject(fitnessFunc)),
 			ValueError, "curGen should be > 0 if NtFunc or fitnessFunc is defined.");
 		DBG_FAILIF( curGen > 0 && curGen < maxMutAge, ValueError,
 			"curGen should be >= maxMutAge");
@@ -996,7 +996,7 @@ namespace simuPOP
 			sAll[3*loc+2] = sAll[3*loc+2] / sAll[3*loc] - 1.;
 			sAll[3*loc] = 0.;
 		}
-		DBG_DO(DBG_MATING, cout << "fitness " << fitness << " freq " << freq[0] << ", " << freq[1] << ", " << freq[2]  << " sall " << sAll << endl);
+		DBG_DO(DBG_MATING, cout << "fitness " << fitness << " freq " << freq[0] << ", " << " sall " << sAll << endl);
 	}
 
 	// the python version of interaction Fitness, for convenience purpose.
@@ -1023,7 +1023,7 @@ namespace simuPOP
 
 		DBG_ASSERT( minMutAge <= maxMutAge, ValueError, "minMutAge should be <= maxMutAge. ");
 		DBG_ASSERT( nLoci > 0, ValueError, "Number of loci should be at least one");
-		DBG_FAILIF( curGen == 0 && (NtFunc != NULL || fitnessFunc != NULL),
+		DBG_FAILIF( curGen == 0 && (NtFunc != NULL || ValidPyObject(fitnessFunc)),
 			ValueError, "curGen should be > 0 if NtFunc or fitnessFunc is defined.");
 		DBG_FAILIF( curGen > 0 && curGen < maxMutAge, ValueError,
 			"curGen should be >= maxMutAge");
@@ -1032,7 +1032,7 @@ namespace simuPOP
 
 		// in the cases of independent and constant selection pressure
 		// easy case.
-		if( fitnessFunc == NULL && fitness.size() == nLoci*3)
+		if( InvalidPyObject(fitnessFunc) && fitness.size() == nLoci*3)
 		{
 			for( i=0; i<nLoci; ++i)
 			{
@@ -1062,7 +1062,7 @@ namespace simuPOP
 		// and be converted to 1, 1+s1, 1+s2 format ...
 		vectorf sAll;
 		bool interaction = false;
-		if( fitnessFunc != NULL )
+		if(ValidPyObject(fitnessFunc))
 		{
 			if( !PyCallable_Check(fitnessFunc) )
 				throw ValueError("sFunc is not a valid Python function.");
@@ -1151,7 +1151,7 @@ namespace simuPOP
 			//
 			// get fitness, since it will change according to
 			// xt, I do not cache the result
-			if( fitnessFunc != NULL )
+			if(ValidPyObject(fitnessFunc))
 			{
 				// compile allele frequency... and pass
 				vectorf sAllTmp;
@@ -1169,13 +1169,13 @@ namespace simuPOP
 					}
 				}
 				// interaction case.
-				else if(sAll.size() == std::pow3(nLoci))
+				else if(sAllTmp.size() == std::pow3(nLoci))
 				{
 					// xt is the current allele frequency
 					interFitness(nLoci, sAllTmp, xt.begin()+(idx*nLoci), sAll);
 				}
 				else
-					throw ValueError("Wrong size of fitness vector");
+					throw ValueError("Wrong size of fitness vector: " + toStr(sAll.size()));
 			}
 			else if (interaction)
 			{
@@ -1335,7 +1335,7 @@ namespace simuPOP
 		// clean up
 		if( NtFunc != NULL)
 			Py_DECREF(NtFunc);
-		if( fitnessFunc != NULL)
+		if(ValidPyObject(fitnessFunc))
 			Py_DECREF(fitnessFunc);
 
 		// number of valid generation is idx+1
