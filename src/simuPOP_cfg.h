@@ -154,6 +154,9 @@ using std::map;
 typedef std::map<string, double>           strDict;
 typedef std::map<int, double>              intDict;
 
+#define ValidPyObject(obj)   (obj != NULL && obj != Py_None)
+#define InvalidPyObject(obj) (obj == NULL || obj == Py_None)
+
 namespace simuPOP
 {
 	/// exception handler. Exceptions will be passed to Python.
