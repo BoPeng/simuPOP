@@ -60,6 +60,7 @@ where options can be:
   -f|--force: submit the job even it has $ in the (resulting) script 
   -c|--command: command used to submit jobs.
   -r|--run: run the command
+  -a|--all: all jobs
   -p|--repeat: send several copies of the same command
 
 Example of one such script:
