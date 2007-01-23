@@ -12753,12 +12753,12 @@ pySelector
 \family default
 accept a list of susceptibility loci and a Python function.
  For each individual, this operator will pass the genotypes at these loci
- (in the form of 
+ (in the order of 
 \family typewriter
 0-0,0-1,1-0,1-1
 \family default
- etc where X-Y is locus X - ploidy Y, in case of diploid population) and
- expect a returned fitness value.
+ etc where X-Y is locus X - ploidy Y, in case of diploid population), generation
+ number, and expect a returned fitness value.
  This, at least in theory, can accommodate all selection scenarios.
  
 \end_layout

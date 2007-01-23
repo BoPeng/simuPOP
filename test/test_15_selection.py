@@ -353,11 +353,12 @@ class TestSelector(unittest.TestCase):
                 self.assertEqual( ft[ind], 0.25)
         
     def testPySelector(self):
-        'Testing heterozygous advantage    using pySelector'
+        'Testing heterozygous advantage  using pySelector'
         s1 = .1
         s2 = .2
         p = .2/ (.1+.2)
-        def sel(arr):
+        # gen may not be used.
+        def sel(arr, gen=0):
             if arr == [0, 0]:
                 return 1 - s1
             elif arr == [0, 1]:
@@ -391,6 +392,55 @@ class TestSelector(unittest.TestCase):
         # simulation did not terminate unexpectedly
         self.assertEqual(simu.gen(), 101)
         
+    def testPySelectorWithGen(self):
+        'Testing varying selection pressure using pySelector'
+        s1 = .1
+        s2 = .2
+        p = .2/ (.1+.2)
+        # gen may not be used.
+        def sel(arr, gen):
+            if gen > 50:
+                if arr == [0, 0]:
+                    return 1 - s1
+                elif arr == [0, 1]:
+                    return 1
+                elif arr == [1, 0]:
+                    return 1
+                else:
+                    return 1 - s2
+            else:
+                if arr == [0, 0]:
+                    return 1 - s1/2.
+                elif arr == [0, 1]:
+                    return 1
+                elif arr == [1, 0]:
+                    return 1
+                else:
+                    return 1 - s2/2.
+        #
+        simu = simulator(
+            population(size=1000, ploidy=2, loci=[1], 
+            infoFields=['fitness', 'spare']),
+            randomMating() )
+        # 2. heterozygote superiority
+        #     w11 < w12, w12 > w22
+        #    stable. 
+        # let
+        #        s1 = w12 -    w11
+        #        s2 = w12 - w22
+        #    p_ = s2/ (s1+s2)
+        simu.evolve(
+            [
+                stat( alleleFreq=[0], genoFreq=[0]),
+                pySelector(loci=[0], func=sel),
+                terminateIf('alleleFreq[0][0] < 0.5', begin=50),
+                terminateIf('alleleFreq[0][0] > 0.9', begin=50)
+            ],
+            preOps=[ initByFreq(alleleFreq=[.5,.5])],
+            end=100
+        )
+        # simulation did not terminate unexpectedly
+        self.assertEqual(simu.gen(), 101)
 
     def testMlSelector(self):
         'Testing multi-locus selector'

@@ -79,7 +79,7 @@ namespace simuPOP
 			}
 
 			/// calculate/return w11 etc
-			virtual double indFitness(individual *)
+			virtual double indFitness(individual *, ULONG gen)
 			{
 				///
 				throw ValueError("This selector is not supposed to be called directly");
@@ -92,8 +92,9 @@ namespace simuPOP
 				UINT fit_id = pop.infoIdx(this->infoField(0));
 				GappedInfoIterator fitness = pop.infoBegin(fit_id, true);
 
+				// fitness may change with generation so pass generation information
 				for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
-					*fitness++ = indFitness(&*it) ;
+					*fitness++ = indFitness(&*it, pop.gen()) ;
 
 				// indicate selection is on.
 				pop.setBoolVar("selection", true);
@@ -143,7 +144,7 @@ namespace simuPOP
 			}
 
 			/// currently assuming diploid
-			virtual double indFitness(individual * ind);
+			virtual double indFitness(individual * ind, ULONG gen);
 
 			virtual string __repr__()
 			{
@@ -210,7 +211,7 @@ namespace simuPOP
 			}
 
 			/// currently assuming diploid
-			virtual double indFitness(individual * ind);
+			virtual double indFitness(individual * ind, ULONG gen);
 
 			virtual string __repr__()
 			{
@@ -280,7 +281,7 @@ namespace simuPOP
 			}
 
 			/// currently assuming diploid
-			virtual double indFitness(individual * ind);
+			virtual double indFitness(individual * ind, ULONG gen);
 
 			virtual string __repr__()
 			{
@@ -308,7 +309,7 @@ namespace simuPOP
 			\param loci susceptibility loci. The genotype at these loci will be
 			passed to func.
 			\param func a Python function that accept genotypes at susceptibility loci
-			and return fitness value.
+				generation number, and return fitness value.
 			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
 			/// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
@@ -355,7 +356,7 @@ namespace simuPOP
 			}
 
 			/// currently assuming diploid
-			virtual double indFitness(individual * ind);
+			virtual double indFitness(individual * ind, ULONG gen);
 
 			virtual string __repr__()
 			{
@@ -380,6 +381,5 @@ namespace simuPOP
 			PyObject * m_numArray;
 
 	};
-
 }
 #endif
