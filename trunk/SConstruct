@@ -76,7 +76,7 @@ if ldshared != '':
     env['SHLINK'] = ldshared
 
 if env.has_key('prefix') and env['prefix'] is not None:
-    dest_dir  = distutils.sysconfig.get_python_lib(prefix=env['prefix'])
+    dest_dir  = distutils.sysconfig.get_python_lib(plat_specific=1, prefix=env['prefix'])
     print "Installing to", dest_dir
 else:
     dest_dir  = os.path.join(lib_dest, 'site-packages')
