@@ -226,6 +226,7 @@ def plotAlleleFreq(pop, param):
     r.hist(freq0, nclass=50, xlim=[0,0.5], xlab='frequency', ylab='hist', 
         main='Histogram of allele frequencies at generation %d' % pop.gen())
     r.dev_off()
+    return True
 
 
 # simulate function, 
