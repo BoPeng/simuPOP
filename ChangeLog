@@ -8,20 +8,21 @@ BUGS:
 
 version 0.7.7 - Currently available as subversion snapshot.
   -NEW (build): bring scons build system on par with python setup.py
+  -NEW (build): scons build now accepts options prefix, include-dirs and library-dirs
   -NEW (build): try really hard to search proper boost libraries. One usually
-  -NEW (build): prune files from source package
     does not have to specify boost inc and lib paths to build simuPOP.
-  -NEW: MPI module pass 00, 01, 06 test scripts
-  -NEW: Only head node can print to cout
+  -NEW (build): prune files from source package
   -NEW: add ancestralGen to penetrance and qtrait operators
-  -NEW: add hasInfoField() function
-  -BUG: fix a affected sibpair sampler bug introduced in 0.7.5
+  -NEW: change pySelector and allow a second parameter gen for the fitness function
+        This allows varying selection pressure.
   -CHG: individual comparison does not compare information fields
   -CHG: adjust individual representation (actually output genotype)
   -BUG: fix a bug in loading some files saved in binary module from standard modules
-  -NEW: scons build now accepts options prefix, include-dirs and library-dirs
-  -NEW: change pySelector and allow a second parameter gen for the fitness function
-        This allows varying selection pressure.
+  -BUG: fix a affected sibpair sampler bug introduced in 0.7.5
+MPI modules:
+  -NEW: add hasInfoField() function
+  -NEW: MPI module pass 00, 01, 06 test scripts
+  -NEW: Only head node can print to cout
   
 
 version 0.7.6 - (Rev 674) Dec 25, 2006
