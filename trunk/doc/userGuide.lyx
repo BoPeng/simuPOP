@@ -1,5 +1,5 @@
-#LyX 1.4.4svn created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
+\lyxformat 256
 \begin_document
 \begin_header
 \textclass manual
@@ -37,7 +37,14 @@ Last modified \\
 \end_preamble
 \language english
 \inputencoding auto
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \float_placement h
 \paperfontsize default
@@ -45,6 +52,7 @@ Last modified \\
 \papersize default
 \use_geometry false
 \use_amsmath 1
+\use_esint 0
 \cite_engine natbib_authoryear
 \use_bibtopic false
 \paperorientation portrait
@@ -58,6 +66,7 @@ Last modified \\
 \paperpagestyle default
 \tracking_changes false
 \output_changes true
+\author "Bo Peng" 
 \end_header
 
 \begin_body
@@ -77,7 +86,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Standard
 \begin_inset ERT
@@ -343,7 +352,7 @@ Bo Peng and Marek Kimmal (2005) simuPOP: a forward-time population genetics
 
 \end_deeper
 \begin_layout Standard
-\begin_inset LatexCommand \tableofcontents{}
+\begin_inset LatexCommand tableofcontents
 
 \end_inset
 
@@ -666,6 +675,8 @@ MPI modules.
  available, I only have access to Linux multi-processor systems and Linux-based
  clusters.
  Therefore, windows MPI modules are not yet supported.
+ Also, because of the random seed problem, special treatment has to be used
+ to ensure different seed for the MPI processes.
 \end_layout
 
 \begin_layout Standard
@@ -942,7 +953,8 @@ You should be able to load simuPOP library by running command
 import simuPOP 
 \family default
 (example 
-\begin_inset LatexCommand \ref{alg:Import-simuPOP-module}
+\begin_inset LatexCommand ref
+reference "alg:Import-simuPOP-module"
 
 \end_inset
 
@@ -958,7 +970,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{alg:Import-simuPOP-module}
+\begin_inset LatexCommand label
+name "alg:Import-simuPOP-module"
 
 \end_inset
 
@@ -984,7 +997,8 @@ In case that you do not have administrative privilege, you may not be able
  to install simuPOP to the system python directory.
  In this case, you can install simuPOP locally and load simuPOP as shown
  in example 
-\begin_inset LatexCommand \ref{alg:Import-simuPOP-module-add-path}
+\begin_inset LatexCommand ref
+reference "alg:Import-simuPOP-module-add-path"
 
 \end_inset
 
@@ -998,7 +1012,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{alg:Import-simuPOP-module-add-path}
+\begin_inset LatexCommand label
+name "alg:Import-simuPOP-module-add-path"
 
 \end_inset
 
@@ -1017,6 +1032,29 @@ preview false
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+/path/to/simuPOP
+\family default
+ refers to the directory that contains simuPOP modules such as 
+\family typewriter
+simuPOP.py 
+\family default
+and 
+\family typewriter
+simuPOP_std.py
+\family default
+.
+ However, this method does not work for exising simuPOP scripts.
+ A better method is to define environment variable 
+\family typewriter
+PYTHONPATH
+\family default
+ that points to this directory.
+ For details, please refer to Python reference manual.
 \end_layout
 
 \begin_layout Section
@@ -1111,7 +1149,8 @@ Set environment variable
 SIMUALLELETYPE
 \family default
 
-\begin_inset LatexCommand \index{SIMUALLELETYPE}
+\begin_inset LatexCommand index
+name "SIMUALLELETYPE"
 
 \end_inset
 
@@ -1131,7 +1170,8 @@ SIMUMPI
 Before you load simuPOP, set options using 
 \family typewriter
 simuOpt
-\begin_inset LatexCommand \index{simuOpt}
+\begin_inset LatexCommand index
+name "simuOpt"
 
 \end_inset
 
@@ -1143,7 +1183,8 @@ simuOpt
 alleleType
 \family default
 
-\begin_inset LatexCommand \index{alleleType}
+\begin_inset LatexCommand index
+name "alleleType"
 
 \end_inset
 
@@ -1182,7 +1223,8 @@ debug
 listDebugCode
 \family default
 
-\begin_inset LatexCommand \index{listDebugCode}
+\begin_inset LatexCommand index
+name "listDebugCode"
 
 \end_inset
 
@@ -1225,7 +1267,8 @@ simuPOP reference manual
 
 \begin_layout Section
 A simple example
-\begin_inset LatexCommand \label{sec:A-Simple-Example}
+\begin_inset LatexCommand label
+name "sec:A-Simple-Example"
 
 \end_inset
 
@@ -1234,7 +1277,8 @@ A simple example
 
 \begin_layout Standard
 Example 
-\begin_inset LatexCommand \ref{alg:A-simple-example}
+\begin_inset LatexCommand ref
+reference "alg:A-simple-example"
 
 \end_inset
 
@@ -1254,7 +1298,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{alg:A-simple-example}
+\begin_inset LatexCommand label
+name "alg:A-simple-example"
 
 \end_inset
 
@@ -1600,7 +1645,8 @@ Population
 
 \family typewriter
 population
-\begin_inset LatexCommand \index{population}
+\begin_inset LatexCommand index
+name "population"
 
 \end_inset
 
@@ -1679,7 +1725,8 @@ You usually do not need to use these functions explicitly unless you need
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sub:Individuals}
+\begin_inset LatexCommand label
+name "sub:Individuals"
 
 \end_inset
 
@@ -1691,7 +1738,8 @@ Individuals can not be created without population.
  You can create a population and access its individuals through the 
 \family typewriter
 individual
-\begin_inset LatexCommand \index{population!individual}
+\begin_inset LatexCommand index
+name "population!individual"
 
 \end_inset
 
@@ -1719,7 +1767,8 @@ ion fields)
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sub:Population-Variables}
+\begin_inset LatexCommand label
+name "sub:Population-Variables"
 
 \end_inset
 
@@ -1732,7 +1781,8 @@ Populations are associated with python variables.
  For example, 
 \family typewriter
 stat
-\begin_inset LatexCommand \index{operator!stat}
+\begin_inset LatexCommand index
+name "operator!stat"
 
 \end_inset
 
@@ -1749,7 +1799,8 @@ stat
 The interface functions are 
 \family typewriter
 population::vars
-\begin_inset LatexCommand \index{population!vars}
+\begin_inset LatexCommand index
+name "population!vars"
 
 \end_inset
 
@@ -1758,7 +1809,8 @@ population::vars
 and 
 \family typewriter
 population::
-\begin_inset LatexCommand \index{population!population}
+\begin_inset LatexCommand index
+name "population!population"
 
 \end_inset
 
@@ -1804,7 +1856,8 @@ ListVars()
 It is important to know that this dictionary forms a local namespace in
  which expressions can be evaluated.
  As we can see from example 
-\begin_inset LatexCommand \ref{alg:A-simple-example}
+\begin_inset LatexCommand ref
+reference "alg:A-simple-example"
 
 \end_inset
 
@@ -1826,7 +1879,8 @@ can be evaluated in each population's local namespace and yield different
 
 \begin_layout Section
 Mating Scheme
-\begin_inset LatexCommand \index{mating scheme}
+\begin_inset LatexCommand index
+name "mating scheme"
 
 \end_inset
 
@@ -1903,7 +1957,8 @@ built-in:
 hybrid
 \emph default
 
-\begin_inset LatexCommand \index{hybrid}
+\begin_inset LatexCommand index
+name "hybrid"
 
 \end_inset
 
@@ -1927,7 +1982,8 @@ pure python
  For example, a 
 \family typewriter
 varPlotter
-\begin_inset LatexCommand \index{varPlotter}
+\begin_inset LatexCommand index
+name "varPlotter"
 
 \end_inset
 
@@ -2004,7 +2060,8 @@ evolve()
 preOps
 \family default
 
-\begin_inset LatexCommand \index{simulato!preOps}
+\begin_inset LatexCommand index
+name "simulato!preOps"
 
 \end_inset
 
@@ -2013,7 +2070,8 @@ preOps
 postOps
 \family default
 
-\begin_inset LatexCommand \index{simulator!postOps}
+\begin_inset LatexCommand index
+name "simulator!postOps"
 
 \end_inset
 
@@ -2051,7 +2109,8 @@ Simulation scenario
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \citet{Reich2001a}
+\begin_inset LatexCommand citet
+key "Reich2001a"
 
 \end_inset
 
@@ -2069,7 +2128,8 @@ Simulation scenario
 I use simuPOP to simulate this evolution process and observe the allelic
  spectra of both types of diseases.
  The results are published in 
-\begin_inset LatexCommand \citet{Peng2006}
+\begin_inset LatexCommand citet
+key "Peng2006"
 
 \end_inset
 
@@ -2200,7 +2260,8 @@ Both diseases are recessive in that their fitness values are
 
 \begin_layout Standard
 These parameters, translated to python, is shown in 
-\begin_inset LatexCommand \ref{alg:reich0}
+\begin_inset LatexCommand ref
+reference "alg:reich0"
 
 \end_inset
 
@@ -2214,7 +2275,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{alg:reich0}
+\begin_inset LatexCommand label
+name "alg:reich0"
 
 \end_inset
 
@@ -2380,7 +2442,8 @@ population()
 \family default
 , and use demographic function as a parameter to allow other demographic
  models to be used, we end up with example 
-\begin_inset LatexCommand \ref{alg:reich1}
+\begin_inset LatexCommand ref
+reference "alg:reich1"
 
 \end_inset
 
@@ -2396,7 +2459,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{alg:reich1}
+\begin_inset LatexCommand label
+name "alg:reich1"
 
 \end_inset
 
@@ -2519,7 +2583,8 @@ With these operators, the simulator can be started.
  It first initialize a population with given allelic spectra, and then evolve
  it, subject to mutation and selection, specific to each locus.
  The program is listed in example 
-\begin_inset LatexCommand \ref{alg:reich2}
+\begin_inset LatexCommand ref
+reference "alg:reich2"
 
 \end_inset
 
@@ -2533,7 +2598,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{alg:reich2}
+\begin_inset LatexCommand label
+name "alg:reich2"
 
 \end_inset
 
@@ -2631,7 +2697,8 @@ n'
 
 \begin_layout Standard
 There is no operator to calculate effective number of alleles 
-\begin_inset LatexCommand \citep{Reich2001a}
+\begin_inset LatexCommand citep
+key "Reich2001a"
 
 \end_inset
 
@@ -2867,7 +2934,8 @@ The following program uses the
 pyOperator
 \family default
 
-\begin_inset LatexCommand \index{pyOperator}
+\begin_inset LatexCommand index
+name "pyOperator"
 
 \end_inset
 
@@ -2902,7 +2970,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{alg:reich3}
+\begin_inset LatexCommand label
+name "alg:reich3"
 
 \end_inset
 
@@ -3154,7 +3223,8 @@ simuOpt
 You will notice that 
 \family typewriter
 simuOpt
-\begin_inset LatexCommand \index{simuOpt}
+\begin_inset LatexCommand index
+name "simuOpt"
 
 \end_inset
 
@@ -3169,7 +3239,8 @@ scripts
 \family default
 directory as a template for your new script.
  The following example 
-\begin_inset LatexCommand \ref{alg:reich4}
+\begin_inset LatexCommand ref
+reference "alg:reich4"
 
 \end_inset
 
@@ -3190,7 +3261,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{alg:reich4}
+\begin_inset LatexCommand label
+name "alg:reich4"
 
 \end_inset
 
@@ -3264,12 +3336,14 @@ k
 
 \begin_layout Section
 Hybrid
-\begin_inset LatexCommand \index{Hybrid operator}
+\begin_inset LatexCommand index
+name "Hybrid operator"
 
 \end_inset
 
  and pure-Python operator
-\begin_inset LatexCommand \index{python operator}
+\begin_inset LatexCommand index
+name "python operator"
 
 \end_inset
 
@@ -3289,12 +3363,14 @@ hybrid operator
  Such operators accept a Python function and will call this function with
  appropriate parameter(s) when needed.
  For example, example 
-\begin_inset LatexCommand \ref{cap:hybrid-operator}
+\begin_inset LatexCommand ref
+reference "cap:hybrid-operator"
 
 \end_inset
 
  defines a three-locus heterogeneity penetrance model 
-\begin_inset LatexCommand \citep{Risch1990}
+\begin_inset LatexCommand citep
+key "Risch1990"
 
 \end_inset
 
@@ -3321,7 +3397,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:hybrid-operator}
+\begin_inset LatexCommand label
+name "cap:hybrid-operator"
 
 \end_inset
 
@@ -3344,7 +3421,8 @@ preview false
 
 \begin_layout Standard
 Example 
-\begin_inset LatexCommand \ref{cap:hybrid-operator}
+\begin_inset LatexCommand ref
+reference "cap:hybrid-operator"
 
 \end_inset
 
@@ -3372,7 +3450,8 @@ is the same as
 
 \begin_layout LyX-Code
 pyPenetrance
-\begin_inset LatexCommand \index{pyPenetrance}
+\begin_inset LatexCommand index
+name "pyPenetrance"
 
 \end_inset
 
@@ -3403,7 +3482,8 @@ If hybrid operators are still not flexible enough, you can write operators
 
 \begin_layout Standard
 Example 
-\begin_inset LatexCommand \ref{cap:pyOpeartor}
+\begin_inset LatexCommand ref
+reference "cap:pyOpeartor"
 
 \end_inset
 
@@ -3454,7 +3534,8 @@ max
 The result of this operator, unseen to users, is individual 
 \family typewriter
 fitness
-\begin_inset LatexCommand \index{fitness}
+\begin_inset LatexCommand index
+name "fitness"
 
 \end_inset
 
@@ -3492,7 +3573,8 @@ before mating, a
 stage=PreMating
 \family default
 
-\begin_inset LatexCommand \index{PreMating}
+\begin_inset LatexCommand index
+name "PreMating"
 
 \end_inset
 
@@ -3525,7 +3607,8 @@ If you are using non-optimization libraries, simulation will fail if selection
 If you are not sure in which order the operators are applied, use the 
 \family typewriter
 dryrun
-\begin_inset LatexCommand \index{dryrun}
+\begin_inset LatexCommand index
+name "dryrun"
 
 \end_inset
 
@@ -3535,7 +3618,8 @@ dryrun
  
 \family typewriter
 evolve
-\begin_inset LatexCommand \index{evolve}
+\begin_inset LatexCommand index
+name "evolve"
 
 \end_inset
 
@@ -3569,7 +3653,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:pyOpeartor}
+\begin_inset LatexCommand label
+name "cap:pyOpeartor"
 
 \end_inset
 
@@ -3647,17 +3732,20 @@ Besides these standard information fields, you can define any fields for
  The most frequently used functions are
 \family typewriter
  individual::setInfo
-\begin_inset LatexCommand \index{setInfo}
+\begin_inset LatexCommand index
+name "setInfo"
 
 \end_inset
 
 (value, field), individual::info
-\begin_inset LatexCommand \index{info}
+\begin_inset LatexCommand index
+name "info"
 
 \end_inset
 
 (field), population::setIndInfo
-\begin_inset LatexCommand \index{setIndInfo}
+\begin_inset LatexCommand index
+name "setIndInfo"
 
 \end_inset
 
@@ -3666,7 +3754,8 @@ Besides these standard information fields, you can define any fields for
  and
 \family typewriter
  population::indInfo
-\begin_inset LatexCommand \index{indInfo}
+\begin_inset LatexCommand index
+name "indInfo"
 
 \end_inset
 
@@ -3676,7 +3765,8 @@ Besides these standard information fields, you can define any fields for
 Here field can be the name of the field, or an id returned by 
 \family typewriter
 population::infoIdx
-\begin_inset LatexCommand \index{infoIdx}
+\begin_inset LatexCommand index
+name "infoIdx"
 
 \end_inset
 
@@ -3688,7 +3778,8 @@ population::infoIdx
 
 \begin_layout Standard
 In the following example (Example 
-\begin_inset LatexCommand \ref{cap:infoFields}
+\begin_inset LatexCommand ref
+reference "cap:infoFields"
 
 \end_inset
 
@@ -3786,7 +3877,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:infoFields}
+\begin_inset LatexCommand label
+name "cap:infoFields"
 
 \end_inset
 
@@ -3828,7 +3920,8 @@ You first need to understand that mating schemes populate subpopulations
  Split and merge of subpopulations are done by operators 
 \family typewriter
 splitSubPop
-\begin_inset LatexCommand \index{splitSubPop}
+\begin_inset LatexCommand index
+name "splitSubPop"
 
 \end_inset
 
@@ -3837,7 +3930,8 @@ splitSubPop
 and 
 \family typewriter
 mergeSubPops
-\begin_inset LatexCommand \index{mergeSubPops}
+\begin_inset LatexCommand index
+name "mergeSubPops"
 
 \end_inset
 
@@ -3845,7 +3939,8 @@ mergeSubPops
 \family default
 respectively.
  In example 
-\begin_inset LatexCommand \ref{cap:splitMerge}
+\begin_inset LatexCommand ref
+reference "cap:splitMerge"
 
 \end_inset
 
@@ -3864,7 +3959,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:splitMerge}
+\begin_inset LatexCommand label
+name "cap:splitMerge"
 
 \end_inset
 
@@ -3888,7 +3984,8 @@ preview false
 \begin_layout Standard
 Migration can change subpopulation size, but not total population size.
  In example 
-\begin_inset LatexCommand \ref{cap:splitMerge}
+\begin_inset LatexCommand ref
+reference "cap:splitMerge"
 
 \end_inset
 
@@ -3918,7 +4015,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:splitMigration}
+\begin_inset LatexCommand label
+name "cap:splitMigration"
 
 \end_inset
 
@@ -3944,7 +4042,8 @@ But what if you need to control total population size? In this case, a demograph
 ic function is needed to specify the size of each subpopulation, at each
  generation.
  In example 
-\begin_inset LatexCommand \ref{cap:splitMigration2}
+\begin_inset LatexCommand ref
+reference "cap:splitMigration2"
 
 \end_inset
 
@@ -3999,14 +4098,16 @@ stat
  operator by using 
 \family typewriter
 stage
-\begin_inset LatexCommand \index{stage}
+\begin_inset LatexCommand index
+name "stage"
 
 \end_inset
 
 =PrePostMating
 \family default
 
-\begin_inset LatexCommand \index{PrePostMating}
+\begin_inset LatexCommand index
+name "PrePostMating"
 
 \end_inset
 
@@ -4030,7 +4131,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:splitMigration2}
+\begin_inset LatexCommand label
+name "cap:splitMigration2"
 
 \end_inset
 
@@ -4073,7 +4175,8 @@ it uses the return value as the new subpopulation sizes.
 
 \begin_layout Standard
 Example 
-\begin_inset LatexCommand \ref{cap:splitMigration3}
+\begin_inset LatexCommand ref
+reference "cap:splitMigration3"
 
 \end_inset
 
@@ -4089,7 +4192,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:splitMigration3}
+\begin_inset LatexCommand label
+name "cap:splitMigration3"
 
 \end_inset
 
@@ -4122,7 +4226,8 @@ Supports for sex chromosomes are done in simuPOP in the following ways:
 If 
 \family typewriter
 sexChrom
-\begin_inset LatexCommand \index{sexChrom}
+\begin_inset LatexCommand index
+name "sexChrom"
 
 \end_inset
 
@@ -4211,7 +4316,8 @@ If you set ancestral depth of a population to a positive number (default
 You can use 
 \family typewriter
 population::useAncestralPop
-\begin_inset LatexCommand \index{useAncestralPop}
+\begin_inset LatexCommand index
+name "useAncestralPop"
 
 \end_inset
 
@@ -4233,7 +4339,8 @@ ancestralDepth
  dynamically using operator 
 \family typewriter
 setAncestralDepth
-\begin_inset LatexCommand \index{setAncestralDepth}
+\begin_inset LatexCommand index
+name "setAncestralDepth"
 
 \end_inset
 
@@ -4261,7 +4368,8 @@ mother_idx
  information fields, and an appropriate tagger such as 
 \family typewriter
 parentTagger
-\begin_inset LatexCommand \index{parentTagger}
+\begin_inset LatexCommand index
+name "parentTagger"
 
 \end_inset
 
@@ -4275,7 +4383,8 @@ parentTagger
 
 \family typewriter
 randomMating
-\begin_inset LatexCommand \index{randomMating}
+\begin_inset LatexCommand index
+name "randomMating"
 
 \end_inset
 
@@ -4540,7 +4649,8 @@ operators.
 \begin_layout Standard
 The first part of the function is the usual housekeeping part (see example
  
-\begin_inset LatexCommand \ref{cap:saveQTDT1}
+\begin_inset LatexCommand ref
+reference "cap:saveQTDT1"
 
 \end_inset
 
@@ -4565,7 +4675,8 @@ sideways false
 status collapsed
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:saveQTDT1}
+\begin_inset LatexCommand label
+name "cap:saveQTDT1"
 
 \end_inset
 
@@ -4588,7 +4699,8 @@ preview false
 
 \begin_layout Standard
 Part two of the code (example 
-\begin_inset LatexCommand \ref{cap:saveQTDT2}
+\begin_inset LatexCommand ref
+reference "cap:saveQTDT2"
 
 \end_inset
 
@@ -4630,7 +4742,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:saveQTDT2}
+\begin_inset LatexCommand label
+name "cap:saveQTDT2"
 
 \end_inset
 
@@ -4653,7 +4766,8 @@ preview false
 
 \begin_layout Standard
 Part three (example 
-\begin_inset LatexCommand \ref{cap:saveQTDT3}
+\begin_inset LatexCommand ref
+reference "cap:saveQTDT3"
 
 \end_inset
 
@@ -4675,7 +4789,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:saveQTDT3}
+\begin_inset LatexCommand label
+name "cap:saveQTDT3"
 
 \end_inset
 
@@ -4698,7 +4813,8 @@ preview false
 
 \begin_layout Standard
 The next part (example 
-\begin_inset LatexCommand \ref{cap:saveQTDT4}
+\begin_inset LatexCommand ref
+reference "cap:saveQTDT4"
 
 \end_inset
 
@@ -4727,7 +4843,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:saveQTDT4}
+\begin_inset LatexCommand label
+name "cap:saveQTDT4"
 
 \end_inset
 
@@ -4750,7 +4867,8 @@ preview false
 
 \begin_layout Standard
 The last part of the code (example 
-\begin_inset LatexCommand \ref{cap:saveQTDT5}
+\begin_inset LatexCommand ref
+reference "cap:saveQTDT5"
 
 \end_inset
 
@@ -4775,7 +4893,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:saveQTDT5}
+\begin_inset LatexCommand label
+name "cap:saveQTDT5"
 
 \end_inset
 
@@ -4831,7 +4950,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:mapping}
+\begin_inset LatexCommand label
+name "cap:mapping"
 
 \end_inset
 
@@ -4854,7 +4974,8 @@ preview false
 
 \begin_layout Standard
 An example is given in example 
-\begin_inset LatexCommand \ref{cap:mapping}
+\begin_inset LatexCommand ref
+reference "cap:mapping"
 
 \end_inset
 
@@ -4864,7 +4985,8 @@ An example is given in example
 merlin
 \family default
  
-\begin_inset LatexCommand \citep{Abecasis2002}
+\begin_inset LatexCommand citep
+key "Abecasis2002"
 
 \end_inset
 
@@ -5324,7 +5446,8 @@ $name, $var, $1, $2 ...
 \family default
 is given, the job will be submitted.
  Example 
-\begin_inset LatexCommand \ref{cap:joblist}
+\begin_inset LatexCommand ref
+reference "cap:joblist"
 
 \end_inset
 
@@ -5364,7 +5487,8 @@ sideways false
 status open
 
 \begin_layout Caption
-\begin_inset LatexCommand \label{cap:joblist}
+\begin_inset LatexCommand label
+name "cap:joblist"
 
 \end_inset
 
@@ -5612,25 +5736,29 @@ This script is used to simulate the evolution of allelic spectra (number
  rare or common diseases.
  The goal of the simulations is to validate the common disease common variant
  hypothesis
-\begin_inset LatexCommand \citep{Lander1996}
+\begin_inset LatexCommand citep
+key "Lander1996"
 
 \end_inset
 
 .
  I used this script to verify two theoretical models proposed by Pritchard
  
-\begin_inset LatexCommand \citeyearpar{Pritchard2001}
+\begin_inset LatexCommand citeyearpar
+key "Pritchard2001"
 
 \end_inset
 
  and Reich and Lander 
-\begin_inset LatexCommand \citeyearpar{Reich2001a}
+\begin_inset LatexCommand citeyearpar
+key "Reich2001a"
 
 \end_inset
 
 .
  The results are published in 
-\begin_inset LatexCommand \citet{Peng2006}
+\begin_inset LatexCommand citet
+key "Peng2006"
 
 \end_inset
 
@@ -5650,7 +5778,8 @@ I wrote this script to simulate the evolution of a chromosome, subject to
  can be observed if there is no physical recombination hotspots, i.e.
  actual variation of recombination rate on the chromosome.
  The population is saved in LDhat format to be analyzed by LDhat 
-\begin_inset LatexCommand \citep{Myers2005}
+\begin_inset LatexCommand citep
+key "Myers2005"
 
 \end_inset
 
@@ -5735,7 +5864,8 @@ To solve the first problem, I re-introduce disease mutants if they get lost.
  size, the impact of genetic drift can be moderate and give me a final populatio
 n with designed disease allele frequency.
  This simulation scenario roughly follows that of Calafell et al 
-\begin_inset LatexCommand \citet{Calafell2001}
+\begin_inset LatexCommand citet
+key "Calafell2001"
 
 \end_inset
 
@@ -5811,7 +5941,8 @@ simuComplexDiseas.py
 
 \begin_layout Itemize
 merlin variance component method 
-\begin_inset LatexCommand \citep{Abecasis2002,Amos1994}
+\begin_inset LatexCommand citep
+key "Abecasis2002,Amos1994"
 
 \end_inset
 
@@ -5820,7 +5951,8 @@ merlin variance component method
 
 \begin_layout Itemize
 merlin regression 
-\begin_inset LatexCommand \citep{sham2002}
+\begin_inset LatexCommand citep
+key "sham2002"
 
 \end_inset
 
@@ -5829,7 +5961,8 @@ merlin regression
 
 \begin_layout Itemize
 TDT 
-\begin_inset LatexCommand \citep{Spielman1993}
+\begin_inset LatexCommand citep
+key "Spielman1993"
 
 \end_inset
 
@@ -5845,7 +5978,9 @@ Case control association study.
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \bibtex[plainnat]{bib/all}
+\begin_inset LatexCommand bibtex
+options "plainnat"
+bibfiles "bib/all"
 
 \end_inset
 
@@ -5853,7 +5988,7 @@ Case control association study.
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \printindex{}
+\begin_inset LatexCommand printindex
 
 \end_inset
 
