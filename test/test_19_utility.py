@@ -70,7 +70,8 @@ class TestUtility(unittest.TestCase):
                 prop = bt.probSuccRate()
                 # binomial, mean p, variance = p(1-p)/n
                 std = math.sqrt(pi*(1.-pi)/N)
-                assert prop > pi - 3*std and prop < pi + 3*std
+                assert prop > pi - 3*std and prop < pi + 3*std, \
+                    'Obtain %f, expected %f (std: %f)' % (prop, pi, std)
 
         # test find_first and find_next
         bt = BernulliTrials(rg, p, N)
