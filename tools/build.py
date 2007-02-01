@@ -66,7 +66,7 @@ def setVersionRevision(release):
         last_version_file and last_revision_file will always
         be updated.
     '''
-    if release == 'snapshot':
+    if release != 'snapshot':
         rev = cmdOutput('svnversion .')
         if ':' in rev:
             rev = rev.split(':')[0]
@@ -189,18 +189,7 @@ def build_mac():
     run('ssh -X %s "cd temp && %s && cd simuPOP-%s && %s"' % (mac_name, unpack, ver, build))
     run('scp %s:temp/simuPOP-%s/dist/* %s' % (mac_name, ver, download_directory))
 
-
-if __name__ == '__main__':
-    config_file = 'build.cfg' 
-    release = 'snapshot'
-    actions = []
-    dryrun = False
-    all_actions = ['all', 'svn', 'src', 'doc', 'x86_64', 'rhel4', 'mac', 'win', 'mdk', 'suse', 'sol', 'fedora5']
-
-    ## Parse the command line
-    for op in sys.argv[1:]:   # default shell/for list is $*, the options
-        if op in [ '-help', '--help', '-h' ]:
-            print '''Usage: build.py [options] action1 action2 
+Usage = '''Usage: build.py [options] action1 action2 
 Options:
     --help                  show this help lines
     --release=version       release simupop with version number, default to snapshot
@@ -227,6 +216,21 @@ actions:
     fedora: packages for fedora
     all:    src + x86_64 + rhel4 + mac + win
 '''
+
+if __name__ == '__main__':
+    config_file = 'build.cfg' 
+    release = 'snapshot'
+    actions = []
+    dryrun = False
+    all_actions = ['all', 'svn', 'src', 'doc', 'x86_64', 'rhel4', 'mac', 'win', 'mdk', 'suse', 'sol', 'fedora5']
+
+    if len(sys.argv) == 1:
+        print Usage
+        sys.exit(0)
+    ## Parse the command line
+    for op in sys.argv[1:]:   # default shell/for list is $*, the options
+        if op in [ '-help', '--help', '-h' ]:
+            print Usage
             sys.exit(0)
         elif '--release' in op:
             release = op[10:]

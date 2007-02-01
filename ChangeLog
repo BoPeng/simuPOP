@@ -3,7 +3,9 @@ ChangeLog of simuPOP
 BUGS:
   - all known bugs have been cleared.
 
-version 0.7.7 - Not released, available at https://svn.sourceforge.net/svnroot/simupop/trunk
+version 0.7.8 - Not released, available at https://svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.7.7 - (Rev 786) Feb 1, 2007
   -NEW (build): bring scons build system on par with python setup.py
   -NEW (build): scons build now accepts options prefix, include-dirs and library-dirs
   -NEW (build): try really hard to search proper boost libraries. One usually
