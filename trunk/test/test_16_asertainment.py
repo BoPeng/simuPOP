@@ -19,11 +19,18 @@ import unittest, os, sys, exceptions
 class TestAscertainment(unittest.TestCase):
 
     def setUp(self):
-        simu = simulator(
-            population(subPop=[100,200], ploidy=2, loci=[5,10],
-                ancestralDepth=1, maxAllele=9, 
-                infoFields=['fitness', 'father_idx', 'mother_idx']),
-            randomMating(numOffspring=2))
+        if alleleType() == 'binary':
+            simu = simulator(
+                population(subPop=[100,200], ploidy=2, loci=[5,10],
+                    ancestralDepth=1, maxAllele=1, 
+                    infoFields=['fitness', 'father_idx', 'mother_idx']),
+                randomMating(numOffspring=2))
+        else:
+            simu = simulator(
+                population(subPop=[100,200], ploidy=2, loci=[5,10],
+                    ancestralDepth=1, maxAllele=9, 
+                    infoFields=['fitness', 'father_idx', 'mother_idx']),
+                randomMating(numOffspring=2))
         simu.evolve(
             [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),

@@ -263,7 +263,7 @@ class TestRPy(unittest.TestCase):
             ops = [
                 # penetrance, additve penetrance
                 maPenetrance(locus=0, wildtype=[1], penetrance=[0,0.5,1],
-                     stage=PreMating, exposePenetrance=True),
+                     stage=PreMating),
                 # count number of affected
                 stat(numOfAffected=True),
                 # introduce disease if no one is affected

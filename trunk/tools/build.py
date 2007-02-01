@@ -226,7 +226,7 @@ actions:
     sol:    packages for solaris
     fedora: packages for fedora
     all:    src + x86_64 + rhel4 + mac + win
-''' % ' '.join(all_actions)
+'''
             sys.exit(0)
         elif '--release' in op:
             release = op[10:]
