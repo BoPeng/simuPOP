@@ -236,6 +236,13 @@ include doc/userGuide.pdf
 include doc/userGuide.py
 include doc/refManual.pdf
 
+# win32 files
+include win32/stdint.h  
+include win32/zlib1.dll
+include win32/zdll.lib
+include win32/boost_iostreams-vc71-mt-1_33_1.lib
+include win32/boost_serialization-vc71-mt-1_33_1.lib  
+
 # misc files
 include misc/README 
 include misc/python-mode.el
