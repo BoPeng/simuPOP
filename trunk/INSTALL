@@ -180,11 +180,20 @@ simuPOP makes heavy use of GSL (GNU Scientific Library) and Boost (>=1.33.1,
 boost cvs, as of Jan 2007, is required for Boost.MPI for MPI modules). 
 Part of GSL is embedded in simuPOP but you will need to install boost by 
 yourself. Please follow the building instruction closely and make boost 
-library available (www.boost.org). It is important that you build boost 
-libraries with -fPIC flag so that they can be linked with simuPOP to generate
-shared libraries. The command line is likely to be:
+library available (www.boost.org). The usual
+  > ./configure
+will install both static and shared libraries and simuPOP will link to the
+shared version. (environment LD_LIBRARY_PATH may be needed if boost 
+libraries are not installed to a standard system PATH.)
+
+
+If you prefer static library (so no LD_LIBRARY_PATH is needed), it is 
+important that you build boost libraries with -fPIC flag so that they 
+can be linked with simuPOP to generate shared libraries. The command line 
+is likely to be:
 
   > bjam -j4 --prefix=/usr "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLS=gcc" install
+
 
 
 windows
