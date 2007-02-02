@@ -118,7 +118,7 @@ def build_src():
     # replace simuPOP.release file
     (old_ver, old_rev) = writeReleaseFile(ver, rev)
     # build source
-    run('python setup.py --extra_build_args "-static" sdist --formats=gztar,zip')
+    run('python setup.py --extra_link_args "-static" sdist --formats=gztar,zip')
     # write old release file back
     writeReleaseFile(old_ver, old_rev)
     # coppy files
@@ -135,6 +135,8 @@ def build_x86_64(ver):
         sys.exit(1)
     # 
     # build
+    d = os.getcwd()
+    os.chdir(user_tmp_directory)
     print 'Copying source package to user temp directory...'
     run('/bin/rm -rf simuPOP-%s' % ver)
     shutil.copy(source, 'simuPOP-%s-src.tar.gz' % ver)
@@ -142,11 +144,12 @@ def build_x86_64(ver):
     run('tar zxf simuPOP-%s-src.tar.gz' % ver)
     os.chdir('simuPOP-%s' % ver)
     print 'Building ...'
-    run('python setup.py --extra_build_args "-static" bdist --formats=gztar,rpm')
+    run('python setup.py --extra_link_args "-static" bdist --formats=gztar,rpm')
     # coppy files
     shutil.copy('dist/simuPOP-%s-1.x86_64.rpm' % ver, '%s/simuPOP-%s-1.rhel4.x86_64.rpm' % (download_directory, ver))
     shutil.copy('dist/simuPOP-%s.linux-x86_64.tar.gz' % ver, '%s/simuPOP-%s.rhel4.x86_64.tar.gz' % (download_directory, ver))
     shutil.copy('dist/simuPOP-%s-1.src.rpm' % ver, '%s/simuPOP-%s-1.src.rpm' % (download_directory, ver))
+    os.chdir(d)
 
 
 def build_vm(ver, name, pyver, vm, vm_port, vm_name):
@@ -159,7 +162,7 @@ def build_vm(ver, name, pyver, vm, vm_port, vm_name):
     run('scp -P %s %s/simuPOP-%s-src.tar.gz %s:' % \
         (vm_port, download_directory, ver, vm_name))
     #
-    run('ssh -X -p %d %s "tar zxf simuPOP-%s-src.tar.gz && cd simuPOP-%s && python setup.py --extra_build_args "-static" bdist --formats=gztar,rpm"' % \
+    run('ssh -X -p %d %s "tar zxf simuPOP-%s-src.tar.gz && cd simuPOP-%s && python setup.py --extra_link_args "-static" bdist --formats=gztar,rpm"' % \
         (vm_port, vm_name, ver, ver))
     run('scp -P %d %s:simuPOP-%s/dist/simuPOP-%s.linux-i686.tar.gz %s/simuPOP-%s-%s-py2%2d.tar.gz' % \
         (vm_port, vm_name, ver, ver, download_directory, ver, name, pyver))
@@ -192,7 +195,7 @@ def build_mac():
     #
     print 'Building ...'
     unpack = 'tar zxf simuPOP-%s-src.tar.gz' % ver
-    build = 'python setup.py --extra_build_args "-static" bdist_dumb'
+    build = 'python setup.py --extra_link_args "-static" bdist_dumb'
     run('ssh -X %s "cd temp && %s && cd simuPOP-%s && %s"' % (mac_name, unpack, ver, build))
     run('scp %s:temp/simuPOP-%s/dist/* %s' % (mac_name, ver, download_directory))
 

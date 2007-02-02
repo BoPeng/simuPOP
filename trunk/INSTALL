@@ -192,7 +192,7 @@ important that you build boost libraries with -fPIC flag so that they
 can be linked with simuPOP to generate shared libraries. The command line 
 is likely to be:
 
-  > bjam -j4 --prefix=/usr "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLS=gcc" install
+  > bjam -j4 --prefix=/usr "-sBUILD=release <runtime-link>static <cxxflags>-fPIC" "-sTOOLS=gcc" install
 
 
 
