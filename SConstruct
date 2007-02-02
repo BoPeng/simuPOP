@@ -61,6 +61,7 @@ opts.AddOptions(
     PathOption('prefix', 'Where to install. see "python setup.py install --prefix"', None),
     PathOption('include-dirs', 'Extra include directories, see "python setup.py build_ext --help"', None),
     PathOption('library-dirs', 'Extra library directories, see "python setup.py build_ext --help"', None),
+    ('extra_link_args', 'Extra link arguments (like -static to force the use of static boost libraries)', None),
 )
     
 env = Environment(
@@ -85,6 +86,10 @@ if env.has_key('include-dirs') and env['include-dirs'] is not None:
     boost_inc_search_paths.extend(env['include-dirs'].split(os.pathsep))
 if env.has_key('library-dirs') and env['library-dirs'] is not None:
     boost_lib_search_paths.extend(env['library-dirs'].split(os.pathsep))
+if extra_link_args is not None:
+    comp.ldflags_shared = extra_link_args
+if env.has_key('extra_link_args') and env['extra_link_args'] is not None:
+    comp.ldflags_shared = env['extra_link_args']
 
 build_dir = 'build'
 env.BuildDir(build_dir, 'src', duplicate = 0)
