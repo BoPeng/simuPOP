@@ -326,7 +326,7 @@ SIMUPOP_FILES = [
 MPIFlags = getMPIFlags()
 
 SWIG_FLAGS = '-O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
-SWIG_RUNTIME_FLAGS = '-python -outdir src -external-runtime'
+SWIG_RUNTIME_FLAGS = '-python -external-runtime'
                 
 MACROS = {
     'std':    [('SIMUPOP_MODULE', 'simuPOP_std')],
