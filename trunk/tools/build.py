@@ -180,8 +180,9 @@ def build_suse(ver):
     build_vm(ver, suse_vm, suse_port, suse_vm_name)
 
 def build_mac():
-    if not os.path.isfile('%s/simuPOP-%s.zip' % (download_directory, ver)):
-        print 'Source package does not exist. Please run build_src.py first'
+    source = '%s/simuPOP-%s-src.tar.gz' % (download_directory, ver)
+    if not os.path.isfile(source):
+        print 'Source package %s does not exist. Please run "build.py src" first' % source
         sys.exit(1)
     #   
     print 'Copying source package to remote machine ...'
