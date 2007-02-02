@@ -23,7 +23,7 @@ if os.name == 'nt':
     disable_compression = True
     # win32 is default since 1.33.1 libraries are bundled with simuPOP windows
     # distribution
-    boost_lib_search_paths = [r'win32', 'c:\boost\lib', r'c:\program files\boost\lib']
+    boost_lib_search_paths = [r'win32', r'c:\boost\lib', r'c:\program files\boost\lib']
     boost_inc_search_paths = [r'c:\boost', r'c:\program files\boost']
     boost_lib_prefix = ''
     boost_lib_suffix = '.lib'
