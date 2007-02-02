@@ -121,18 +121,21 @@ def build_src():
     writeReleaseFile(old_ver, old_rev)
     # coppy files
     shutil.copy('dist/simuPOP-%s.tar.gz' % ver, '%s/simuPOP-%s-src.tar.gz' % (download_directory, ver))
+    print 'Saving ', '%s/simuPOP-%s-src.tar.gz' % (download_directory, ver)
     shutil.copy('dist/simuPOP-%s.zip' % ver, '%s/simuPOP-%s-src.zip' % (download_directory, ver))
+    print 'Saving ', '%s/simuPOP-%s-src.zip' % (download_directory, ver)
 
 
 def build_x86_64(ver):
-    if not os.path.isfile('%s/simuPOP-%s.zip' % (download_directory, ver)):
-        print 'Source package does not exist. Please run build_src.py first'
+    source = '%s/simuPOP-%s-src.tar.gz' % (download_directory, ver)
+    if not os.path.isfile(source):
+        print 'Source package %s does not exist. Please run "build.py src" first' % source
         sys.exit(1)
     # 
     # build
     print 'Copying source package to user temp directory...'
     run('/bin/rm -rf simuPOP-%s' % ver)
-    shutil.copy('%s/simuPOP-%s-src.tar.gz' % (download_directory, ver), 'simuPOP-%s-src.tar.gz' % ver)
+    shutil.copy(source, 'simuPOP-%s-src.tar.gz' % ver)
     print 'Unpacking ...'
     run('tar zxf simuPOP-%s-src.tar.gz' % ver)
     os.chdir('simuPOP-%s' % ver)
@@ -207,7 +210,7 @@ actions:
     svn:    submit changes
     src:    build source package .tar.gz and .zip
     doc:    process simuPOP document
-    x96_64: build x86_64 rpm package, including -src.rpm
+    x86_64: build x86_64 rpm package, including -src.rpm
     rhel4:  build rpm and .tar.gz packages for rhel4/i386
     mac:    package for macintosh
     win:    packages for windows
@@ -253,6 +256,7 @@ if __name__ == '__main__':
         sys.exit(1)
     # get revision number and update last_revision_file
     (ver, rev, old_ver, old_rev) = setVersionRevision(release)
+    print 'New version: %s, revision: %s ' % (ver, rev)
     #
     os.chdir('..')
     removeTempFiles()
