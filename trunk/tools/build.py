@@ -70,6 +70,8 @@ def setVersionRevision(release):
         rev = cmdOutput('svnversion .')
         if ':' in rev:
             rev = rev.split(':')[0]
+    else:
+        rev = 9999
     # write last_revision_file and last_version_file
     file = open(last_revision_file, 'w')
     file.write(rev)
