@@ -27,6 +27,8 @@ if '--extra_link_args' in sys.argv:
 else:
     extra_link_args = None
 
+print sys.argv
+
 # If setup.py can not find boost libraries, change boost_lib_seach_paths
 # and/or boost_inc_search_paths. 
 # 
