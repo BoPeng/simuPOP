@@ -61,7 +61,7 @@ include src/recombinator.cpp
 include src/tagger.cpp
 
 # source generated files
-include src/swigpyrun.h 
+include swigpyrun.h 
 include src/simuPOP_std_wrap.cpp
 include src/simuPOP_op_wrap.cpp 
 include src/simuPOP_la_wrap.cpp
