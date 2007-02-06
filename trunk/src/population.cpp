@@ -120,24 +120,24 @@ namespace simuPOP
 		// create the population on other nodes by sending other nodes the command and parameters
 		if (mpiRank() == 0) 
 		{
-		for(size_t node = 1; node <= nodes; ++node)
-		{
-			int action = SLAVE_POPULATION_CREATE;
-			mpiComm().isend(node, 0, action);
-			mpiComm().isend(node, 1, m_popID);
-			mpiComm().isend(node, 2, size);
-			mpiComm().isend(node, 3, ploidy);
-			mpiComm().isend(node, 4, loci);
-			mpiComm().isend(node, 5, sexChrom);
-			mpiComm().isend(node, 6, lociPos);
-			mpiComm().isend(node, 7, subPop);
-			mpiComm().isend(node, 8, ancestralDepth);
-			mpiComm().isend(node, 9, alleleNames);
-			mpiComm().isend(node, 10, lociNames);
-			mpiComm().isend(node, 11, maxAllele);
-			mpiComm().isend(node, 12, infoFields);
-			mpiComm().isend(node, 13, chromMap);
-		}
+			for(size_t node = 1; node < nodes; ++node)
+			{
+				int action = SLAVE_POPULATION_CREATE;
+				mpiComm().send(node, 0, action);
+				mpiComm().send(node, 1, m_popID);
+				mpiComm().send(node, 2, size);
+				mpiComm().send(node, 3, ploidy);
+				mpiComm().send(node, 4, loci);
+				mpiComm().send(node, 5, sexChrom);
+				mpiComm().send(node, 6, lociPos);
+				mpiComm().send(node, 7, subPop);
+				mpiComm().send(node, 8, ancestralDepth);
+				mpiComm().send(node, 9, alleleNames);
+				mpiComm().send(node, 10, lociNames);
+				mpiComm().send(node, 11, maxAllele);
+				mpiComm().send(node, 12, infoFields);
+				mpiComm().send(node, 13, chromMap);
+			}
 		}
 #endif
 		// get a GenoStructure with parameters. GenoStructure may be shared by some populations

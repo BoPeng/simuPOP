@@ -19,12 +19,6 @@ import unittest, os, sys, exceptions, time
 
 class TestMPI(unittest.TestCase):
 
-    def testMPIStart(self):
-        '''Start mpi'''
-        if not mpi():
-            return True
-        testMPI()
-
     def testChromMap(self):
         '''Testing chromosome map'''
         if not mpi():
@@ -117,39 +111,25 @@ class TestMPI(unittest.TestCase):
         self.assertEqual(pop.rankOfLocus(15), 3)
         self.assertRaises(exceptions.IndexError, pop.rankOfLocus, 16)
         # begin chrom of rank
-        self.assertRaises(exceptions.IndexError, pop.beginChromOfRank, 0)
         self.assertEqual(pop.beginChromOfRank(1), 0)
         self.assertEqual(pop.beginChromOfRank(2), 2)
         self.assertEqual(pop.beginChromOfRank(3), 3)
         self.assertRaises(exceptions.IndexError, pop.beginChromOfRank, 4)
         # end chrom of rank
-        self.assertRaises(exceptions.IndexError, pop.endChromOfRank, 0)
         self.assertEqual(pop.endChromOfRank(1), 2)
         self.assertEqual(pop.endChromOfRank(2), 3)
         self.assertEqual(pop.endChromOfRank(3), 6)
         self.assertRaises(exceptions.IndexError, pop.endChromOfRank, 4)
         # begin locus of rank
-        self.assertRaises(exceptions.IndexError, pop.beginLocusOfRank, 0)
         self.assertEqual(pop.beginLocusOfRank(1), 0)
         self.assertEqual(pop.beginLocusOfRank(2), 3)
         self.assertEqual(pop.beginLocusOfRank(3), 6)
         self.assertRaises(exceptions.IndexError, pop.beginLocusOfRank, 4)
         # end chrom of rank
-        self.assertRaises(exceptions.IndexError, pop.endLocusOfRank, 0)
         self.assertEqual(pop.endLocusOfRank(1), 3)
         self.assertEqual(pop.endLocusOfRank(2), 6)
         self.assertEqual(pop.endLocusOfRank(3), 16)
         self.assertRaises(exceptions.IndexError, pop.endLocusOfRank, 4)
-        if mpiRank() == 0:
-            self.assertRaises(exceptions.IndexError, pop.beginChrom)
-            self.assertRaises(exceptions.IndexError, pop.endChrom)
-            self.assertRaises(exceptions.IndexError, pop.beginLocus)
-            self.assertRaises(exceptions.IndexError, pop.endLocus)
-        elif mpiRank() > 0:
-            self.assertEqual(pop.beginChrom(), pop.beginChromOfRank(mpiRank()))
-            self.assertEqual(pop.endChrom(), pop.endChromOfRank(mpiRank()))
-            self.assertEqual(pop.beginLocus(), pop.beginLocusOfRank(mpiRank()))
-            self.assertEqual(pop.endLocus(), pop.endLocusOfRank(mpiRank()))
 
 
 

@@ -1494,7 +1494,16 @@ namespace simuPOP
 	bool mpi();
 
 #ifdef SIMUMPI
-	const mpi::communicator mpiComm();
+	class comm : public mpi::communicator
+	{
+	public:
+		// the the communicator in node 0 is destroyed,
+		// ask slave nodes to stop
+		~comm();
+	};
+	
+
+	const comm mpiComm();
 
 	// unique id for a population or other object, used by slave nodes to 
 	// identify a population
@@ -1506,10 +1515,6 @@ namespace simuPOP
 	UINT mpiSize();
 
 	void mpiBarrier();
-
-#ifdef SIMUMPI
-	void testMPI();
-#endif
 
 	string alleleType();
 
