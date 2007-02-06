@@ -31,6 +31,9 @@
 #ifdef SIMUMPI
 #include <boost/parallel/mpi.hpp>
 namespace mpi = boost::parallel::mpi;
+
+// define action codes
+#include "slave.h"
 #endif
 
 namespace io = boost::iostreams;
@@ -88,6 +91,7 @@ namespace simuPOP
 		DBG_FAILIF(m_subPopSize.size() > MaxSubPopID, ValueError,
 			"Number of subpopulations exceed maximum allowed subpopulation numbers");
 
+
 		// if specify subPop but not m_popSize
 		if( !subPop.empty() )
 		{
@@ -111,6 +115,29 @@ namespace simuPOP
 			}
 			throw SystemError("Insufficient nodes. At least " + toStr(nodes) + " (1 + number of chromosomes "
 				"or 1 + length of chromMap ) number of nodes are required\n");
+		}
+		m_popID = uniqueID();
+		// create the population on other nodes by sending other nodes the command and parameters
+		if (mpiRank() == 0) 
+		{
+		for(size_t node = 1; node <= nodes; ++node)
+		{
+			int action = SLAVE_POPULATION_CREATE;
+			mpiComm().isend(node, 0, action);
+			mpiComm().isend(node, 1, m_popID);
+			mpiComm().isend(node, 2, size);
+			mpiComm().isend(node, 3, ploidy);
+			mpiComm().isend(node, 4, loci);
+			mpiComm().isend(node, 5, sexChrom);
+			mpiComm().isend(node, 6, lociPos);
+			mpiComm().isend(node, 7, subPop);
+			mpiComm().isend(node, 8, ancestralDepth);
+			mpiComm().isend(node, 9, alleleNames);
+			mpiComm().isend(node, 10, lociNames);
+			mpiComm().isend(node, 11, maxAllele);
+			mpiComm().isend(node, 12, infoFields);
+			mpiComm().isend(node, 13, chromMap);
+		}
 		}
 #endif
 		// get a GenoStructure with parameters. GenoStructure may be shared by some populations

@@ -95,3 +95,16 @@ if not simuOptions['Quiet']:
     print "For more information, please visit http://simupop.sourceforge.net,"
     print "or email simupop-list@lists.sourceforge.net (subscription required)."
 
+# IMPORTANT:
+#  the MPI modules work in a master slave mode in that
+#  the master intepret the user input and execute the script, it calls
+#  the slave when certain operation needs to be done for slaves.
+#  the slave accepts commands from master and execute the command.
+#  it does not execute the script itself.
+#  
+#  Therefore, after the module is loaded, the slaves go to a 'feed me'
+#  mode
+
+if mpi() and mpiRank() > 0:
+    slaveExecutionLoop()
+

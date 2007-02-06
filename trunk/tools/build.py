@@ -164,9 +164,9 @@ def build_vm(ver, name, pyver, vm, vm_port, vm_name):
     #
     run('ssh -X -p %d %s "tar zxf simuPOP-%s-src.tar.gz && cd simuPOP-%s && python setup.py --extra_link_args "-static" bdist --formats=gztar,rpm"' % \
         (vm_port, vm_name, ver, ver))
-    run('scp -P %d %s:simuPOP-%s/dist/simuPOP-%s.linux-i686.tar.gz %s/simuPOP-%s-%s-py2%2d.tar.gz' % \
+    run('scp -P %d %s:simuPOP-%s/dist/simuPOP-%s.linux-i686.tar.gz %s/simuPOP-%s-%s-py%2d.tar.gz' % \
         (vm_port, vm_name, ver, ver, download_directory, ver, name, pyver))
-    run("scp -P %d '%s:simuPOP-%s/dist/simuPOP-%s*' %s/simuPOP-%s-%s-py%2d.tar.gz" % \
+    run("scp -P %d %s:simuPOP-%s/dist/simuPOP-%s-i386.rpm' %s/simuPOP-%s-%s-py%2d.i386.rpm" % \
         (vm_port, vm_name, ver, ver, download_directory, ver, name, pyver))
     run('vmrun suspend %s' % vm)
 
@@ -195,7 +195,7 @@ def build_mac():
     #
     print 'Building ...'
     unpack = 'tar zxf simuPOP-%s-src.tar.gz' % ver
-    build = 'python setup.py --extra_link_args "-static" bdist_dumb'
+    build = 'python setup.py bdist_dumb'
     run('ssh -X %s "cd temp && %s && cd simuPOP-%s && %s"' % (mac_name, unpack, ver, build))
     run('scp %s:temp/simuPOP-%s/dist/* %s' % (mac_name, ver, download_directory))
 

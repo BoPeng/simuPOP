@@ -37,6 +37,7 @@ class TestMPI(unittest.TestCase):
         # chrom: 0 | 1 2 3 | 4 5
         # locus: 0 | 1 2 3 4 5 6 7 8 9 | 10 11 12 13 14 15
         self.assertEqual(pop.chromMap(), (1, 3, 2))
+        self.assertEqual(pop.locusMap(), (0, 1, 10, 16))
         self.assertEqual(pop.rankOfChrom(0), 1)
         self.assertEqual(pop.rankOfChrom(1), 2)
         self.assertEqual(pop.rankOfChrom(2), 2)

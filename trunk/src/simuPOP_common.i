@@ -33,6 +33,7 @@
 #include "genoStru.h"
 #include "individual.h"
 #include "population.h"
+#include "slave.h"
 #include "operator.h"
 #include "simulator.h"
 
@@ -236,6 +237,7 @@ namespace std
 %include "genoStru.h"
 %include "individual.h"
 %include "population.h"
+%include "slave.h"
 %include "operator.h"
 
 %extend simuPOP::population

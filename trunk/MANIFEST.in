@@ -22,6 +22,7 @@ include src/utility.h
 include src/genoStru.h
 include src/individual.h
 include src/population.h
+include src/slave.h
 include src/simulator.h
 include src/mating.h
 include src/operator.h
@@ -44,6 +45,7 @@ include src/utility.cpp
 include src/genoStru.cpp
 include src/individual.cpp
 include src/population.cpp
+include src/slave.cpp
 include src/simulator.cpp
 include src/mating.cpp
 include src/operator.cpp

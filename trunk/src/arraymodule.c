@@ -67,6 +67,7 @@ typedef struct arrayobject
 		UINT ob_trunk_size;
 		UINT ob_piece_begin;
 		UINT ob_piece_end;
+		vectori ob_pieceMap;
 		UINT ob_shift;
 #endif		
     } ob_iterator;
@@ -107,11 +108,7 @@ a_getitem(arrayobject *ap, int i)
 			+ trunk*(ap->ob_iterator.ob_piece_end - ap->ob_iterator.ob_piece_begin)
 			+ idx - ap->ob_iterator.ob_piece_begin);
     // receive the max value at node 0. (in result)
-    MPI_Barrier(MPI_COMM_WORLD);
-	MPI_Reduce(&value, &result, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
     // broadcast result from 0 to all the nodes
-	MPI_Bcast(&result, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
 	return PyInt_FromLong(result);
 #else
     return PyInt_FromLong( *(ap->ob_iterator.ob_iter+i) );
