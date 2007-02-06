@@ -609,18 +609,8 @@ namespace simuPOP
 			// rank 1: map[0] - map[1]
 			// rank 2: map[1] - map[2]
 			// ...
-			vectori locusMap()
-			{
-				// mpiSize = 3
-				// x0 x x x
-				vectori map(mpiSize());
-				// convert the chromosome map to locusMap
-				for(size_t i=1; i <= map.size(); ++i)
-					map[i-1] = beginLocusOfRank(i);
-				map[mpiSize()-1] = endLocusOfRank(mpiSize()-1);
-				return map;
-			}
-			
+			vectori locusMap();
+
 			/// begin chromosome for current node
 			UINT beginChrom() const
 			{

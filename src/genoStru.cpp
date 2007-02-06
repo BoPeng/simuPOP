@@ -155,9 +155,10 @@ namespace simuPOP
 			( m_alleleNames == rhs.m_alleleNames) &&
 			( m_lociNames == rhs.m_lociNames) &&
 			( m_maxAllele == rhs.m_maxAllele) &&
-			( m_infoFields == rhs.m_infoFields)
-			// chromosome map etc are not compared since
-			// they can be different from run to run.
+			( m_infoFields == rhs.m_infoFields) &&
+#ifdef SIMUMPI			
+			( m_chromMap == rhs.m_chromMap )
+#endif			
 			))
 			return true;
 		else
@@ -445,6 +446,19 @@ namespace simuPOP
 		for(size_t i=0; i < rank; ++i)
 			sum += map[i];
 		return sum;
+	}
+
+	vectori GenoStruTrait::locusMap()
+	{
+		// mpiSize = 4, three data nodes
+		// locusMap has size 4.
+		size_t sz = mpiSize();
+		vectori map(sz);
+		// convert the chromosome map to locusMap
+		for(size_t i=1; i < sz; ++i)
+			map[i-1] = beginLocusOfRank(i);
+		map[sz-1] = endLocusOfRank(sz-1);
+		return map;
 	}
 #endif
 

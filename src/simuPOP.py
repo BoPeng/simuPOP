@@ -26,7 +26,7 @@
 
 # get options
 from simuOpt import simuOptions
-import os
+import os, sys
 
 if simuOptions['Optimized']:
     if simuOptions['MPI']:
@@ -77,6 +77,20 @@ if not os.path.isfile('/etc/urandom') and not os.path.isfile('/etc/random'):
     import time, random, sys
     rng().setSeed(int(time.time() + random.randint(0, rng().maxSeed())) % rng().maxSeed())
 
+# IMPORTANT:
+#  the MPI modules work in a master slave mode in that
+#  the master intepret the user input and execute the script, it calls
+#  the slave when certain operation needs to be done for slaves.
+#  the slave accepts commands from master and execute the command.
+#  it does not execute the script itself.
+#  
+#  Therefore, after the module is loaded, the slaves go to a 'feed me'
+#  mode
+
+if mpi() and mpiRank() > 0:
+    slaveExecutionLoop()
+    sys.exit(0)
+
 if not simuOptions['Quiet']:
     if mpi():
         print "simuPOP/MPI : Copyright (c) 2004-2006 Bo Peng"
@@ -94,17 +108,4 @@ if not simuOptions['Quiet']:
         print "This is the standard %s allele version with %d maximum allelic states." % (alleleType(), MaxAllele+1)
     print "For more information, please visit http://simupop.sourceforge.net,"
     print "or email simupop-list@lists.sourceforge.net (subscription required)."
-
-# IMPORTANT:
-#  the MPI modules work in a master slave mode in that
-#  the master intepret the user input and execute the script, it calls
-#  the slave when certain operation needs to be done for slaves.
-#  the slave accepts commands from master and execute the command.
-#  it does not execute the script itself.
-#  
-#  Therefore, after the module is loaded, the slaves go to a 'feed me'
-#  mode
-
-if mpi() and mpiRank() > 0:
-    slaveExecutionLoop()
 

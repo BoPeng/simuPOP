@@ -67,6 +67,7 @@ using boost::lowest_bit;
 // in simuPOP_wrap.cpp
 extern "C" PyObject* newcarrayobject(char* buf, char type, int size);
 #ifdef SIMUMPI
+#include "slave.h"
 extern "C" PyObject* newcarrayiterobject(GenoIterator begin, GenoIterator end,
 ULONG size, UINT piece_size, UINT piece_begin, UINT piece_end, UINT shift);
 #else
@@ -2656,10 +2657,21 @@ T Expression::valueAs##TypeName() \
 	char * g_mpiArgv = "";
 	char ** g_mpiArgvv = & g_mpiArgv;
 	mpi::environment g_mpiEnv(g_mpiArgc, g_mpiArgvv);
-	mpi::communicator g_mpiComm;
+	comm g_mpiComm;
 	ULONG g_uniqueID = 1;
 
-	const mpi::communicator mpiComm()
+	comm::~comm()
+	{
+		if (mpiRank() == 0)
+		{
+			int action = SLAVE_TERMINATE;
+			for(size_t node=1; node<mpiSize(); ++node)
+				send(node, 0, action);
+		}
+	}
+
+
+	const comm mpiComm()
 	{
 		return g_mpiComm;
 	}
@@ -2696,21 +2708,6 @@ T Expression::valueAs##TypeName() \
 #endif
 	}
 
-#ifdef SIMUMPI
-	void testMPI()
-	{
-		// test MPI
-		// first: report who I am
-		std::cout << "This is node " << mpiRank() << " of " << mpiSize() << std::endl;
-		// for head node, send message to others
-		double sum = 0;
-		double val = 5;
-		broadcast(mpiComm(), val, 0);
-		reduce(mpiComm(), val, sum, std::plus<double>(), 0);
-		if (mpiRank() == 0)
-			std::cout << "Get the sum of values as (should be n*5) " << sum << std::endl;
-	}
-#endif
 
 	bool supportXML()
 	{
