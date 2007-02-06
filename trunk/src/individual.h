@@ -314,9 +314,6 @@ namespace simuPOP
 #endif
 
 			/// sex?
-#ifdef SIMUMPI
-			Sex sex() const;
-#else
 			Sex sex() const
 			{
 				if( ISSETFLAG(m_flags, m_flagFemale) )
@@ -324,7 +321,6 @@ namespace simuPOP
 				else
 					return Male;
 			}
-#endif
 
 			/// return M or F for sex, for display purpose
 			char sexChar() const
@@ -333,9 +329,6 @@ namespace simuPOP
 			}
 
 			/// set sex
-#ifdef SIMUMPI
-			void setSex(Sex sex);
-#else
 			void setSex(Sex sex)
 			{
 				CHECKRANGESEX(sex);
@@ -345,17 +338,12 @@ namespace simuPOP
 				else
 					SETFLAG(m_flags, m_flagFemale);
 			}
-#endif
 
 			/// affected?
-#ifdef SIMUMPI
-			bool affected() const;
-#else
 			bool affected() const
 			{
 				return (ISSETFLAG(m_flags, m_flagAffected));
 			}
-#endif
 
 			/// unaffected?
 			bool unaffected() const
@@ -370,9 +358,6 @@ namespace simuPOP
 			}
 
 			/// set affected status
-#ifdef SIMUMPI
-			void setAffected(bool affected);
-#else
 			void setAffected(bool affected)
 			{
 				if(affected)
@@ -380,7 +365,6 @@ namespace simuPOP
 				else
 					RESETFLAG(m_flags, m_flagAffected);
 			}
-#endif
 
 			/// get subpop id
 			SubPopID subPopID() const
@@ -395,12 +379,6 @@ namespace simuPOP
 			}
 
 			/// get info
-#ifdef SIMUMPI
-			InfoType info(UINT idx) const;
-			void setInfo(InfoType value, UINT idx);
-			InfoType info(const string& name) const;
-			void setInfo(InfoType value, const string& name);
-#else
 			InfoType info(UINT idx) const
 			{
 				CHECKRANGEINFO(idx);
@@ -432,7 +410,6 @@ namespace simuPOP
 					"Info name " + name + " is not a valid info field name");
 				m_infoPtr[idx] = value;
 			}
-#endif
 
 			/// start of alleles
 			/// CPPONLY
@@ -521,12 +498,7 @@ namespace simuPOP
 			/// CPPONLY
 			InfoIterator infoEnd() const
 			{
-#ifdef SIMUMPI
-				// can not use infoSize here since infoSize will broadcast stuff
-				return m_infoPtr + localInfoSize();
-#else
 				return m_infoPtr + infoSize();
-#endif
 			}
 
 			//@}
@@ -609,10 +581,6 @@ namespace simuPOP
 			template<class Archive>
 				void save(Archive &ar, const UINT version) const
 			{
-#ifdef SIMUMPI
-				if(mpiRank() == 0)
-				{
-#endif
 					// ar & boost::serialization::make_nvp("base ptr",
 					//  boost::serialization::base_object<GenoStruTrait>(*this));
 					bool b;
@@ -621,18 +589,11 @@ namespace simuPOP
 
 					b= ISSETFLAG(m_flags, m_flagAffected);
 					ar & boost::serialization::make_nvp("affected",b);
-#ifdef SIMUMPI
-				}
-#endif
 			}
 
 			template<class Archive>
 				void load(Archive &ar, const UINT version)
 			{
-#ifdef SIMUMPI
-				if(mpiRank() == 0)
-				{
-#endif
 					bool b;
 					m_flags = 0;
 					ar & boost::serialization::make_nvp("sex",b);
@@ -648,9 +609,6 @@ namespace simuPOP
 						ar & make_nvp("tag", tag);
 						ar & make_nvp("info", m_subPopID);
 					}
-#ifdef SIMUMPI
-				}
-#endif
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();

@@ -122,94 +122,6 @@ namespace simuPOP
 			p*localNumLoci()) = allele;
 	}
 
-	Sex individual::sex() const
-	{
-		bool isFemale = ISSETFLAG(m_flags, m_flagFemale) ;
-		broadcast(mpiComm(), isFemale, 0);
-		if(isFemale)
-			return Female;
-		else
-			return Male;
-	};
-
-	void individual::setSex(Sex sex)
-	{
-		if(mpiRank() == 0)
-		{
-			CHECKRANGESEX(sex);
-			if( sex == Male )
-				RESETFLAG(m_flags, m_flagFemale);
-			else
-				SETFLAG(m_flags, m_flagFemale);
-		}
-	}
-
-	bool individual::affected() const
-	{
-		bool isAffected = ISSETFLAG(m_flags, m_flagAffected);
-		broadcast(mpiComm(), isAffected, 0);
-		return isAffected;
-	}
-
-	void individual::setAffected(bool affected)
-	{
-		if(mpiRank() == 0)
-		{
-			if(affected)
-				SETFLAG(m_flags, m_flagAffected);
-			else
-				RESETFLAG(m_flags, m_flagAffected);
-		}
-	}
-
-	/// get info
-	InfoType individual::info(UINT idx) const
-	{
-		InfoType info = 0;
-		CHECKRANGEINFO(idx);
-		if (mpiRank() == 0)
-		{
-			// broad cast the value to all nodes
-			info = m_infoPtr[idx];
-		}
-		broadcast(mpiComm(), info, 0);
-		return info;
-	}
-
-	/// set info
-	void individual::setInfo(InfoType value, UINT idx)
-	{
-		if (mpiRank()==0)
-		{
-			CHECKRANGELOCALINFO(idx);
-			m_infoPtr[idx] = value;
-		}
-	}
-
-	/// get info
-	InfoType individual::info(const string& name) const
-	{
-		InfoType info = 0;
-		// use glocal infoIdx (with broadcast to trigger
-		// IndexError properly
-		int idx = infoIdx(name);
-		if (mpiRank()==0)
-			info = m_infoPtr[idx];
-		broadcast(mpiComm(), info, 0);
-		return info;
-	}
-
-	/// set info
-	void individual::setInfo(InfoType value, const string& name)
-	{
-		if (mpiRank()==0)
-		{
-			int idx = localInfoIdx(name);
-			DBG_ASSERT(idx>=0, IndexError,
-				"Info name " + name + " is not a valid info field name");
-			m_infoPtr[idx] = value;
-		}
-	}
 #endif
 
 	PyObject* individual::arrGenotype()
@@ -221,8 +133,8 @@ namespace simuPOP
 		// the value is boardcasted.
 #ifdef SIMUMPI
 		// which portion is this piece of array in?
-		return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + localGenoSize(),
-			genoSize(), totNumLoci(), beginLocus(), endLocus());
+		return Allele_Vec_As_NumArray(0, genoSize(),
+			totNumLoci(), locusMap());
 #else
 		return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
 #endif
@@ -234,9 +146,8 @@ namespace simuPOP
 	{
 		CHECKRANGEPLOIDY(p);
 #ifdef SIMUMPI
-		return Allele_Vec_As_NumArray( m_genoPtr + p*localNumLoci(),
-			m_genoPtr + (p+1)*localNumLoci(),
-			totNumLoci(), totNumLoci(), beginLocus(), endLocus());
+		return Allele_Vec_As_NumArray(p*totalNumLoci(),
+			totalNumLoci(),	totNumLoci(), locusMap());
 #else
 		return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci(),
 			m_genoPtr + (p+1)*totNumLoci() );
@@ -249,9 +160,8 @@ namespace simuPOP
 	{
 		CHECKRANGEPLOIDY(p);
 #ifdef SIMUMPI
-		return Allele_Vec_As_NumArray( m_genoPtr + p*localNumLoci() + localChromBegin(ch),
-			m_genoPtr + p*localNumLoci() + localChromEnd(ch),
-			numLoci(ch), totNumLoci(), 0, localNumLoci());
+		return Allele_Vec_As_NumArray(p*localNumLoci() + chromBegin(ch),
+			numLoci(ch), totNumLoci(), locusMap());
 #else
 		return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci() + chromBegin(ch),
 			m_genoPtr + p*totNumLoci() +chromEnd(ch));
@@ -260,14 +170,7 @@ namespace simuPOP
 
 	PyObject* individual::arrInfo()
 	{
-#ifdef SIMUMPI
-		if (mpiRank() == 0)
-			return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + localInfoSize() );
-		else
-			throw ValueError("arrInfo() is not available for non-head nodes");
-#else
 		return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + infoSize() );
-#endif
 	}
 
 	individual& individual::operator= (const individual& rhs)

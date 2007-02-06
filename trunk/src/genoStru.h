@@ -512,17 +512,6 @@ namespace simuPOP
 			}
 
 			/// get info length
-#ifdef SIMUMPI
-			bool hasInfoField(const string& name) const;
-			UINT localInfoSize() const;
-			UINT infoSize() const;
-			vectorstr infoFields() const;
-			string infoField(UINT idx) const;
-			UINT localInfoIdx(const string& name) const;
-			UINT infoIdx(const string& name) const;
-			void struAddInfoField(const string& field);
-			void struSetInfoFields(const vectorstr& fields);
-#else
 			bool hasInfoField(const string& name) const
 			{
 				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
@@ -564,7 +553,6 @@ namespace simuPOP
 			{
 				s_genoStruRepository[m_genoStruIdx].m_infoFields = fields;
 			}
-#endif
 
 			void swap(GenoStruTrait& rhs)
 			{
@@ -609,7 +597,7 @@ namespace simuPOP
 			// rank 1: map[0] - map[1]
 			// rank 2: map[1] - map[2]
 			// ...
-			vectori locusMap();
+			vectoru locusMap();
 
 			/// begin chromosome for current node
 			UINT beginChrom() const
