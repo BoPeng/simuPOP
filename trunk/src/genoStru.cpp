@@ -155,9 +155,9 @@ namespace simuPOP
 			( m_alleleNames == rhs.m_alleleNames) &&
 			( m_lociNames == rhs.m_lociNames) &&
 			( m_maxAllele == rhs.m_maxAllele) &&
-			( m_infoFields == rhs.m_infoFields) &&
+			( m_infoFields == rhs.m_infoFields) 
 #ifdef SIMUMPI			
-			( m_chromMap == rhs.m_chromMap )
+			&& ( m_chromMap == rhs.m_chromMap )
 #endif			
 			))
 			return true;

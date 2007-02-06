@@ -124,7 +124,8 @@ namespace simuPOP
 			///  @name constructor, destructor etc
 			//@{
 			/// default constructor,
-			individual():m_flags(0),m_subPopID(0)
+			individual():m_flags(0), m_subPopID(0), 
+				m_genoPtr(0), m_infoPtr(0)
 			{
 			}
 
@@ -622,8 +623,21 @@ namespace simuPOP
 			/// temporary information
 			SubPopID m_subPopID;
 
+#ifdef SIMUMPI
+			/// pointer to genotype.
+			union {
+				// used by slave node
+				GenoIterator m_genoPtr;
+				// used by master node
+				ULONG m_indIndex;
+			};
+
+			// population ID. 
+			ULONG m_popID;
+#else			
 			/// pointer to genotype.
 			GenoIterator m_genoPtr;
+#endif			
 
 			/// pointer to info
 			InfoIterator m_infoPtr;
