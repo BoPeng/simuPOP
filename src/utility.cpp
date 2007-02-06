@@ -126,6 +126,7 @@ namespace simuPOP
 		"DBG_MATING",
 		"DBG_MIGRATOR",
 		"DBG_PROFILE",
+		"DBG_MPI"
 		"DBG_DEVEL"
 	};
 
@@ -2479,11 +2480,13 @@ T Expression::valueAs##TypeName() \
 		protected:
 			int overflow(int c)
 			{
+/* In the maste slave mode, slave can also output
 #ifdef SIMUMPI
 				// only head node can output to python output
 				if(mpiRank() != 0)
 					return 0;
 #endif
+*/
 				// write out current buffer
 				if( pbase() != pptr() )
 				{
@@ -2654,11 +2657,18 @@ T Expression::valueAs##TypeName() \
 	char ** g_mpiArgvv = & g_mpiArgv;
 	mpi::environment g_mpiEnv(g_mpiArgc, g_mpiArgvv);
 	mpi::communicator g_mpiComm;
+	ULONG g_uniqueID = 1;
 
 	const mpi::communicator mpiComm()
 	{
 		return g_mpiComm;
 	}
+
+	ULONG uniqueID()
+	{
+		return g_uniqueID++;
+	}
+	
 #endif
 
 	UINT mpiRank()

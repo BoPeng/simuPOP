@@ -63,6 +63,13 @@ using boost::serialization::make_nvp;
 
 #include "individual.h"
 
+#ifdef SIMUMPI
+
+#define SLAVE_CREATE 1
+#define SLAVE_DESTROY 2
+
+#endif
+
 namespace simuPOP
 {
 
@@ -1708,6 +1715,12 @@ namespace simuPOP
 
 			/// whether or not information is ordered
 			bool m_infoOrdered;
+
+#ifdef SIMUMPI
+			/// unique population id, used by slave nodes to identify a population
+			ULONG m_popID;
+#endif			
+			
 	};
 
 	population& LoadPopulation(const string& file, const string& format="auto");

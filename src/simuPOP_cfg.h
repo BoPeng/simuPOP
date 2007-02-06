@@ -229,7 +229,7 @@ namespace simuPOP
 
 	// define DEBUG codes
 	// DEbUG_CODE_LENGTH should be the number of debug codes
-#define DBG_CODE_LENGTH 20
+#define DBG_CODE_LENGTH 21
 
 	enum DBG_CODE
 	{
@@ -252,7 +252,8 @@ namespace simuPOP
 		DBG_MATING=16,
 		DBG_MIGRATOR=17,
 		DBG_PROFILE=18,
-		DBG_DEVEL=19
+		DBG_MPI=19,
+		DBG_DEVEL=20
 	};
 
 	// DBG_NAMES are defined in utility.cpp

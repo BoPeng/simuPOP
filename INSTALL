@@ -170,7 +170,7 @@ NOTE:
   >= 1.3.30 is required.
 
 
-2.1. Install boost libraries (iostreams and serialization)
+2.1. Install boost libraries (iostreams, serialization and/or MPI)
 ===========================================================
 
 Non-windows
@@ -192,8 +192,13 @@ important that you build boost libraries with -fPIC flag so that they
 can be linked with simuPOP to generate shared libraries. The command line 
 is likely to be:
 
-  > bjam -j4 --prefix=/usr "-sBUILD=release <runtime-link>static <cxxflags>-fPIC" "-sTOOLS=gcc" install
-
+Boost 1.33.1:
+  > bjam -j4 --prefix=/usr "-sBUILD=release <runtime-link>static <cxxflags>-fPIC" \
+		"-sTOOLS=gcc"  --with-serialization --with-iostreams --prefix=/usr install
+Boost CVS:
+  > bjam toolset=gcc/cxxflags=-fPIC -j6 -d+2 --prefix=/usr \
+		--with-serialization --with-iostreams  --with-mpi install
+  Note that link=static can not be used here (because of a bjam bug).
 
 
 windows

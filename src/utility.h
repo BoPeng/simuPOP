@@ -1495,6 +1495,10 @@ namespace simuPOP
 
 #ifdef SIMUMPI
 	const mpi::communicator mpiComm();
+
+	// unique id for a population or other object, used by slave nodes to 
+	// identify a population
+	ULONG uniqueID();
 #endif
 
 	UINT mpiRank();

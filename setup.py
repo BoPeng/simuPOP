@@ -11,24 +11,6 @@ import os, sys, shutil, glob, re
 # simuPOP works with these boost versions.
 boost_versions = ['1_33_1', '1_34', '1_35']
 
-# Because boost is difficult to build, I use static library to distribute 
-# simuPOP binary packages. This requires boost is built with -fPIC flag which
-# is troublesome and sometimes impossible for a normal user who wants to
-# build simuPOP with existing boost distributions. 
-# 
-# I use a fake command line argument to control this behavior so that I can 
-# build simuPOP with 'Releasing_simuPOP' defined, but normal users
-# can link to shared boost libraries
-if '--extra_link_args' in sys.argv:
-    idx = sys.argv.index('--extra_link_args')
-    # get and remove this option
-    extra_link_args = sys.argv.pop(idx+1).strip('"').strip("'")
-    sys.argv.pop(idx)
-else:
-    extra_link_args = None
-
-print sys.argv
-
 # If setup.py can not find boost libraries, change boost_lib_seach_paths
 # and/or boost_inc_search_paths. 
 # 
@@ -217,6 +199,7 @@ HEADER_FILES = [
     'src/genoStru.h',
     'src/individual.h',
     'src/population.h',
+    'src/slave.h',
     'src/simulator.h',
     'src/mating.h',
     'src/operator.h',
@@ -239,6 +222,7 @@ SOURCE_FILES = [
     'src/genoStru.cpp',
     'src/individual.cpp',
     'src/population.cpp',
+    'src/slave.cpp',
     'src/simulator.cpp',
     'src/mating.cpp',
     'src/operator.cpp',
@@ -444,10 +428,6 @@ def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
         # force the use of static boost libraries because I do not
         # want to bundle boost libraries with simuPOP distributions.
         res['extra_compile_args'] = ['-O3', '-Wall']
-    if extra_link_args is not None:
-        res['extra_link_args'] = [extra_link_args]
-    else:
-        res['extra_link_args'] = []
     # define_macros
     res['define_macros'] = MACROS[modu]
     res['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])
@@ -545,7 +525,6 @@ if __name__ == '__main__':
             Extension('_simuPOP_%s' % modu,
                 sources = info['src'],
                 extra_compile_args = info['extra_compile_args'],
-                extra_link_args = info['extra_link_args'],
                 include_dirs = info['include_dirs'],
                 library_dirs = info['library_dirs'],
                 libraries = info['libraries'],
