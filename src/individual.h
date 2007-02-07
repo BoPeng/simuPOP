@@ -1,5 +1,4 @@
-/*************************enumerate(pop.individuals()):
-# find spose.**************************************************
+/***************************************************************************
  *   Copyright (C) 2004 by Bo Peng                                         *
  *   bpeng@rice.edu                                                        *
  *                                                                         *
@@ -124,8 +123,7 @@ namespace simuPOP
 			///  @name constructor, destructor etc
 			//@{
 			/// default constructor,
-			individual():m_flags(0), m_subPopID(0), 
-				m_genoPtr(0), m_infoPtr(0)
+			individual():m_flags(0), m_subPopID(0)
 			{
 			}
 
