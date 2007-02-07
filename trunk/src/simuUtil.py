@@ -1221,7 +1221,7 @@ def saveLinkage(output='', outputExpr='', **kwargs):
 
 
 # save in merlin qtdt format
-def SaveQTDT(pop, output='', outputExpr='', loci=[], 
+def SaveQTDT(pop, output='', outputExpr='', loci=[], affectionCode=['U', 'A'], 
         fields=[], combine=None, shift=1, **kwargs):
     """ save population in Merlin/QTDT format. The population must have
         pedindex, father_idx and mother_idx information fields.
@@ -1231,6 +1231,9 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
         output: base filename. 
         outputExpr: expression for base filename, will be evaluated in pop's
             local namespace.
+
+        affectionCode: code for unaffected and affected. '1', '2' are default,
+            but 'U', and 'A' or others can be specified.
 
         loci: loci to output
 
@@ -1290,9 +1293,9 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
     # disease status: in linkage affected is 2, unaffected is 1
     def affectedCode(ind):
         if ind.affected():
-            return 'a'
+            return affectionCode[1]
         else:
-            return 'u'
+            return affectionCode[0]
     #
     pldy = pop.ploidy()
     def writeInd(ind, famID, id, fa, mo):
