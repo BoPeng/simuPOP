@@ -266,6 +266,7 @@ if __name__ == '__main__':
                 sys.exit(1)
             if run:
                 command = options['command'].replace('$name', job)
+                command = command.replace('$queue', options['queue'])
                 print "Submitting %d job using command '%s %s.pbs'" % (repeat, command, job)
                 for r in range(repeat):
                     os.system('%s %s.pbs' % (command, job))
