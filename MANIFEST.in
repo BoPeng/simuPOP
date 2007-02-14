@@ -38,6 +38,7 @@ include src/terminator.h
 include src/mutator.h
 include src/recombinator.h
 include src/tagger.h
+include src/misc.h
 
 # source files
 include src/arraymodule.c
@@ -61,6 +62,7 @@ include src/terminator.cpp
 include src/mutator.cpp
 include src/recombinator.cpp
 include src/tagger.cpp
+include src/misc.cpp
 
 # source generated files
 include swigpyrun.h 
