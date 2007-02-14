@@ -215,6 +215,7 @@ HEADER_FILES = [
     'src/mutator.h',
     'src/recombinator.h',
     'src/tagger.h',
+    'src/misc.h',
 ]
 
 SOURCE_FILES = [
@@ -238,6 +239,7 @@ SOURCE_FILES = [
     'src/mutator.cpp',
     'src/recombinator.cpp',
     'src/tagger.cpp',
+    'src/misc.cpp',
 ]
 
 # since it is troublesome to link to external gsl library,
