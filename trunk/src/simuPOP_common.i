@@ -38,6 +38,7 @@
 #include "simulator.h"
 
 #include "utility.h"
+#include "misc.h"
 #include "initializer.h"
 #include "outputer.h"
 #include "terminator.h"
@@ -234,6 +235,7 @@ namespace std
 //
 %include "simuPOP_doc.i";
 %include "utility.h"
+%include "misc.h"
 %include "genoStru.h"
 %include "individual.h"
 %include "population.h"
