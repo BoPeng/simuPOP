@@ -146,4 +146,267 @@ namespace simuPOP
 			if( m_atGen[0] == -1 ) SETFLAG(m_flags, m_flagOnlyAtEnd);
 		}
 	}
+
+	bool pause::apply(population& pop)
+	{
+		char a;
+
+		if(m_stopOnKeyStroke)
+		{
+			// check if key is already pressed
+			if( !simuPOP_kbhit() )
+				return true;
+			else
+				simuPOP_getch();
+		}
+		// clear input and wait for user input
+		// std::cin.clear();
+		// std::cin.ignore(std::numeric_limits<int>::max());
+
+		if(m_prompt)
+		{
+			cout << "Simulation paused. " << endl
+				<< " Press " << endl
+				<< "   q to stop evolution, " << endl
+				<< "   s to start an interative shell, (current population is ";
+			if(m_exposePop)
+				cout << "exported as " << m_popName << ')' << endl;
+			else
+				cout << "not exported)" << endl;
+			cout << "   or any other key to continue...." << endl;
+		}
+		a = simuPOP_getch();					  // std::cin.get(a);
+
+		if( a == 'q' || a=='Q' )
+			throw SystemError("Terminated by user");
+		else if( a == 's' || a == 'S' )
+		{
+			// export current population
+			PyObject* popObj;
+			if(m_exposePop)
+			{
+				popObj = pyPopObj(static_cast<void*>(&pop));
+				if( popObj == NULL)
+					throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
+
+				// get global dictionary
+				mainVars().setVar(m_popName, popObj);
+			}
+			PyRun_InteractiveLoop(stdin, "<stdin>");
+			// if expose pop, release it.
+			if(m_exposePop)
+				mainVars().removeVar(m_popName);
+		}
+
+		// clear input and wait for user input
+		// std::cin.clear();
+		// std::cin.ignore(std::numeric_limits<int>::max());
+
+		return true;
+	}
+
+	bool ifElse::applyWithScratch(population& pop, population& scratch, int stage)
+	{
+		m_cond.setLocalDict(pop.dict());
+		bool res = m_cond.valueAsBool();
+
+		if(res && m_ifOp != NULL)
+			return m_ifOp->applyWithScratch(pop, scratch, stage);
+		else if( ! res && m_elseOp != NULL)
+			return m_elseOp->applyWithScratch(pop, scratch, stage);
+		return true;
+	}
+
+	bool ifElse::applyDuringMating(population& pop, population::IndIterator offspring,
+		individual* dad, individual* mom)
+	{
+		m_cond.setLocalDict(pop.dict());
+		bool res = m_cond.valueAsBool();
+
+		if(res && m_ifOp != NULL)
+			return m_ifOp->applyDuringMating(pop, offspring, dad, mom);
+		else if(!res && m_elseOp != NULL)
+			return m_elseOp->applyDuringMating(pop, offspring, dad, mom);
+		return true;
+	}
+
+	bool ifElse::apply(population& pop)
+	{
+		m_cond.setLocalDict(pop.dict());
+		bool res = m_cond.valueAsBool();
+
+		if(res && m_ifOp != NULL)
+			return m_ifOp->apply(pop);
+		else if( !res && m_elseOp != NULL)
+			return m_elseOp->apply(pop);
+		return true;
+	}
+
+	bool ticToc::apply(population& pop)
+	{
+		time_t tmpTime;
+
+		// this may not be correct but wrap is a possible problem.
+		if( ! this->noOutput() )
+		{
+			ostream & out = this->getOstream(pop.dict());
+			// since last time
+			double timeDiff = difftime( time(&tmpTime), m_lastTime);
+			out << "Elapsed Time: " << int(timeDiff*100)/100. ;
+			// since beginning
+			timeDiff = difftime( time(&tmpTime), m_startTime);
+			int h = int(timeDiff/3600);
+			int m = int((timeDiff - h*3600)/60);
+			int s = int(timeDiff - h*3600 - m*60);
+			out << "s  Overall Time: " << std::setw(2) << std::setfill('0') << h
+				<< ":" << std::setw(2) << std::setfill('0') << m << ":" << std::setw(2)
+				<< std::setfill('0') << s << endl;
+			this->closeOstream();
+		}
+
+		time(&m_lastTime);
+		return true;
+	}
+
+	bool pyOperator::apply(population& pop)
+	{
+		// call the python function, pass the whole population in it.
+		// get pop object
+		PyObject* popObj = pyPopObj(static_cast<void*>(&pop));
+		// if pop is valid?
+		if(popObj == NULL)
+			throw SystemError("Could not pass population to the provided function. \n"
+				"Compiled with the wrong version of SWIG?");
+
+		// parammeter list, ref count increased
+		bool resBool;
+		// parenthesis is needed since PyCallFuncX are macros.
+		if( m_param == NULL)
+		{
+			PyCallFunc(m_func, "(O)", popObj, resBool, PyObj_As_Bool);
+		}
+		else
+		{
+			PyCallFunc2(m_func, "(OO)", popObj, m_param, resBool, PyObj_As_Bool);
+		}
+
+		Py_DECREF(popObj);
+		return resBool;
+	}
+
+	bool pyOperator::applyDuringMating(population& pop, population::IndIterator offspring,
+		individual* dad, individual* mom)
+	{
+		// get offspring object
+		PyObject* offObj = pyIndObj(static_cast<void*>(&(*offspring)));
+		DBG_FAILIF(offObj == NULL, SystemError,
+			"Could not pass offspring to the provided function. \n"
+			"Compiled with the wrong version of SWIG?");
+
+		PyObject* arglist, *result;
+		if( m_passOffspringOnly )
+		{
+			// parammeter list, ref count increased
+			if( m_param == NULL)
+				arglist = Py_BuildValue("(O)", offObj);
+			else
+				arglist = Py_BuildValue("(OO)", offObj, m_param);
+
+			// we do not need to catch exceptions here,
+			// our wrapper will do that
+			result = PyEval_CallObject(m_func, arglist);
+			Py_DECREF(offObj);
+		}
+		else
+		{
+			// call the python function, pass all the parameters to it.
+			// get pop object
+			PyObject* popObj = pyPopObj(static_cast<void*>(&pop));
+
+			// get dad object
+			PyObject* dadObj, *momObj;
+			if(dad == NULL)
+			{
+				Py_INCREF(Py_None);
+				dadObj = Py_None;
+			}
+			else
+				dadObj = pyIndObj(static_cast<void*>(dad));
+
+			if(mom == NULL)
+			{
+				Py_INCREF(Py_None);
+				momObj = Py_None;
+			}
+			else
+				momObj = pyIndObj(static_cast<void*>(mom));
+
+			// if pop is valid?
+			DBG_FAILIF(popObj == NULL || dadObj == NULL || momObj == NULL, SystemError,
+				"Could not pass population or parental individuals to the provided function. \n"
+				"Compiled with the wrong version of SWIG?");
+
+			// parammeter list, ref count increased
+			if( m_param == NULL)
+				arglist = Py_BuildValue("(OOOO)", popObj, offObj, dadObj, momObj);
+			else
+				arglist = Py_BuildValue("(OOOOO)", popObj, offObj, dadObj, momObj, m_param);
+
+			// we do not need to catch exceptions here,
+			// our wrapper will do that
+			result = PyEval_CallObject(m_func, arglist);
+
+			Py_DECREF(offObj);
+			Py_DECREF(popObj);
+			Py_DECREF(dadObj);
+			Py_DECREF(momObj);
+		}
+		// release arglist
+		Py_DECREF(arglist);
+
+		if( result == NULL)
+		{
+			PyErr_Print();
+			throw ValueError("Invalid return from provided function. (Be sure to return True or False)");
+		}
+		// result should be a boolean value
+		bool resBool;
+		// defined in utility.h
+		PyObj_As_Bool(result, resBool);
+		Py_DECREF(result);
+		return resBool;
+	}
+
+	bool pyIndOperator::apply(population& pop)
+	{
+		// call the python function, pass the each individual to it.
+		// get pop object
+		for(size_t i=0; i<pop.popSize(); ++i)
+		{
+			PyObject* indObj = pyIndObj(static_cast<void*>(&pop.ind(i)));
+			// if pop is valid?
+			if(indObj == NULL)
+				throw SystemError("Could not pass population to the provided function. \n"
+					"Compiled with the wrong version of SWIG?");
+
+			// parammeter list, ref count increased
+			bool resBool;
+			// parenthesis is needed since PyCallFuncX are macros.
+			if( m_param == NULL)
+			{
+				PyCallFunc(m_func, "(O)", indObj, resBool, PyObj_As_Bool);
+			}
+			else
+			{
+				PyCallFunc2(m_func, "(OO)", indObj, m_param, resBool, PyObj_As_Bool);
+			}
+
+			Py_DECREF(indObj);
+
+			if(!resBool)
+				return false;
+		}
+		return true;
+	}
+
 }
