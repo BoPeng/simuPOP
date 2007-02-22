@@ -38,7 +38,7 @@ def getParamShortArg(p, processedArgs):
     ''' try to get a param from short arg '''
     if p.has_key('arg'):
         if p['arg'] == 'c':
-            raise exceptions.ValueError("-c option is reserved for config gile.")
+            raise exceptions.ValueError("-c option is reserved for config file.")
         if p['arg'][-1] == ':': # expecting an argument
             try:
                 idx = map(lambda x:x[:2]=='-'+p['arg'][0], sys.argv[1:]).index(True)
