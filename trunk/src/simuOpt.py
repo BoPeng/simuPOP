@@ -36,143 +36,140 @@ allowed_commandline_options = ['-c', '--config', '--optimized', '--mpi', '--chro
 
 def getParamShortArg(p, processedArgs):
     ''' try to get a param from short arg '''
-    if p.has_key('arg'):
-        if p['arg'] == 'c':
-            raise exceptions.ValueError("-c option is reserved for config file.")
-        if p['arg'][-1] == ':': # expecting an argument
-            try:
-                idx = map(lambda x:x[:2]=='-'+p['arg'][0], sys.argv[1:]).index(True)
-                # has something like -a
-                # case 1: -a file
-                if sys.argv[idx+1] == '-'+p['arg'][0]:
-                    if idx+1 in processedArgs or idx+2 in processedArgs:
-                        raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                    try:
-                        val = getParamValue(p, sys.argv[idx+2])
-                        processedArgs.append(idx+1)
-                        processedArgs.append(idx+2)
-                        return val
-                    except:
-                        return None
-                # case 2: -aopt or -a=opt
-                else:
-                    if idx+1 in processedArgs:
-                        raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                    try:
-                        if sys.argv[idx+1][1] == '=':
-                            val = getParamValue(p, sys.argv[idx+1][2:])
-                        else:
-                            val = getParamValue(p, sys.argv[idx+1][1:])
-                        processedArgs.append(idx+1)
-                        return val
-                    except:
-                        return None
-            except:
-                # not available
-                return None
-        else:     # true or false
-            # handle -h option, as a special case
-            if '-'+p['arg'] in sys.argv[1:]:
-                idx = sys.argv[1:].index('-'+p['arg'])
+    if not p.has_key('arg'):
+        return None
+    if p['arg'] == 'c':
+        raise exceptions.ValueError("-c option is reserved for config file.")
+    if p['arg'][-1] == ':': # expecting an argument
+        try:
+            idx = map(lambda x:x[:2]=='-'+p['arg'][0], sys.argv[1:]).index(True)
+            # has something like -a
+            # case 1: -a file
+            if sys.argv[idx+1] == '-'+p['arg'][0]:
+                if idx+1 in processedArgs or idx+2 in processedArgs:
+                    raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
+                try:
+                    val = getParamValue(p, sys.argv[idx+2])
+                    processedArgs.append(idx+1)
+                    processedArgs.append(idx+2)
+                    return val
+                except:
+                    return None
+            # case 2: -aopt or -a=opt
+            else:
                 if idx+1 in processedArgs:
                     raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                processedArgs.append(idx+1)
-                return True
-            else:
-                return None
-    else:
-        return None
+                try:
+                    if sys.argv[idx+1][1] == '=':
+                        val = getParamValue(p, sys.argv[idx+1][2:])
+                    else:
+                        val = getParamValue(p, sys.argv[idx+1][1:])
+                    processedArgs.append(idx+1)
+                    return val
+                except:
+                    return None
+        except:
+            # not available
+            return None
+    else:     # true or false
+        # handle -h option, as a special case
+        if '-'+p['arg'] in sys.argv[1:]:
+            idx = sys.argv[1:].index('-'+p['arg'])
+            if idx+1 in processedArgs:
+                raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
+            processedArgs.append(idx+1)
+            return True
+        else:
+            return None
 
 
 def getParamLongArg(p, processedArgs):
     ''' get param from long arg '''
-    if p.has_key('longarg'):
-        if p['longarg'] == 'config':
-            raise exceptions.ValueError("--config option is reserved for config gile.")
-        if p['longarg'][-1] == '=': # expecting an argument
-            try:
-                endChar = len(p['longarg'].split('=')[0])
-                idx = map(lambda x:x[:(endChar+2)]=='--'+p['longarg'][0:endChar], sys.argv[1:]).index(True)
-                # case 1: --arg something
-                if sys.argv[idx+1] == '--'+p['longarg'][0:-1]:
-                    if idx+1 in processedArgs or idx+2 in processedArgs:
-                        raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                    try:
-                        val = getParamValue(p, sys.argv[idx+2])
-                        processedArgs.append(idx+1)
-                        processedArgs.append(idx+2)
-                        return val
-                    except:
-                        return None
-                # case 2 --arg=something
-                else:
-                    if sys.argv[idx+1][endChar+2] != '=':
-                        raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " is invalid. (--longarg=value)")
-                    try:
-                        val = getParamValue(p, sys.argv[idx+1][(endChar+3):])
-                        processedArgs.append(idx+1)
-                        return val
-                    except:
-                        return None
-            except:
-                # not available
-                return None
-        else:     # true or false
-            if '--'+p['longarg'] in sys.argv[1:]:
-                idx = sys.argv[1:].index('--'+p['longarg'])
-                if idx+1 in processedArgs:
-                    raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                processedArgs.append(idx+1)
-                return True
-    else:
+    if not p.has_key('longarg'):
         return None
+    if p['longarg'] == 'config':
+        raise exceptions.ValueError("--config option is reserved for config gile.")
+    if p['longarg'][-1] == '=': # expecting an argument
+        try:
+            endChar = len(p['longarg'].split('=')[0])
+            idx = map(lambda x:x[:(endChar+2)]=='--'+p['longarg'][0:endChar], sys.argv[1:]).index(True)
+            # case 1: --arg something
+            if sys.argv[idx+1] == '--'+p['longarg'][0:-1]:
+                if idx+1 in processedArgs or idx+2 in processedArgs:
+                    raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
+                try:
+                    val = getParamValue(p, sys.argv[idx+2])
+                    processedArgs.append(idx+1)
+                    processedArgs.append(idx+2)
+                    return val
+                except:
+                    return None
+            # case 2 --arg=something
+            else:
+                if sys.argv[idx+1][endChar+2] != '=':
+                    raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " is invalid. (--longarg=value)")
+                try:
+                    val = getParamValue(p, sys.argv[idx+1][(endChar+3):])
+                    processedArgs.append(idx+1)
+                    return val
+                except:
+                    return None
+        except:
+            # not available
+            return None
+    else:     # true or false
+        if '--'+p['longarg'] in sys.argv[1:]:
+            idx = sys.argv[1:].index('--'+p['longarg'])
+            if idx+1 in processedArgs:
+                raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
+            processedArgs.append(idx+1)
+            return True
 
 
 def getParamConfigFile(p, processedArgs):
     ''' get param from configuration file    '''
-    if p.has_key('longarg'):
-        try:         # check -c and --config
-            idx = sys.argv[1:].index('-c')
+    if not p.has_key('longarg'):
+        return None
+    try:         # check -c and --config
+        idx = sys.argv[1:].index('-c')
+        processedArgs.append(idx+1)
+        processedArgs.append(idx+2)
+        config = sys.argv[idx+2]
+    except:
+        try:
+            idx = sys.argv[1:].index('--config')
             processedArgs.append(idx+1)
             processedArgs.append(idx+2)
             config = sys.argv[idx+2]
         except:
-            try:
-                idx = sys.argv[1:].index('--config')
-                processedArgs.append(idx+1)
-                processedArgs.append(idx+2)
-                config = sys.argv[idx+2]
-            except:
-                return None
-        # OK
-        # read configuration file
-        # deal with () in label.
-        if p['longarg'][-1] == '=':
-            name = p['longarg'][0:-1]
-        else:
-            name = p['longarg']
-        scan = re.compile(name+r'\s*=\s*(.*)')
-        try:
-            file = open(config)
-            for l in file.readlines():
-                try:
-                    (value,) = scan.match(l).groups()
-                except:
-                    # does not match
-                    continue
-                else:
-                    file.close()
-                    try:
-                        return getParamValue(p, value.strip('''"'\n'''))
-                    except:
-                        return None
-            file.close()
-            # get nothing
             return None
-        except:    # can not open file
-            print "Can not open configuration file ", config
-            return None
+    # OK
+    # read configuration file
+    # deal with () in label.
+    if p['longarg'][-1] == '=':
+        name = p['longarg'][0:-1]
     else:
+        name = p['longarg']
+    scan = re.compile(name+r'\s*=\s*(.*)')
+    try:
+        file = open(config)
+        for l in file.readlines():
+            try:
+                (value,) = scan.match(l).groups()
+            except:
+                # does not match
+                continue
+            else:
+                file.close()
+                try:
+                    return getParamValue(p, value.strip('''"'\n'''))
+                except:
+                    return None
+        file.close()
+        # get nothing
+        return None
+    except:    # can not open file
+        print "Can not open configuration file ", config
         return None
 
 
