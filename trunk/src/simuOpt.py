@@ -193,7 +193,7 @@ def getParamUserInput(p):
             break
         else:
             try:
-                return getParam(value)
+                return getParamValue(p, value)
             except:
                 print "Invalid input.\n"
                 continue
@@ -426,19 +426,19 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
         root1.geometry("+200+200")
         root1.minsize(400, 100)
         messageFrame = tk.Frame(root1)
-        messageFrame.pack(side=TOP, fill=BOTH)
+        messageFrame.pack(side=tk.TOP, fill=tk.BOTH)
         scrollBar = tk.Scrollbar(messageFrame)
-        scrollBar.pack(side=RIGHT, fill=Y)
-        messageWidget = tk.Text(messageFrame, wrap=WORD,
+        scrollBar.pack(side=tk.RIGHT, fill=tk.Y)
+        messageWidget = tk.Text(messageFrame, wrap=tk.WORD,
             yscrollcommand=scrollBar.set)
-        messageWidget.insert(END, usage(options, details))
+        messageWidget.insert(tk.END, usage(options, details))
         scrollBar.config(command=messageWidget.yview)
         #messageWidget.configure(font=(DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE), state=DISABLED)
-        messageWidget.pack(side=TOP, expand=YES, fill=X, padx='3m', pady='3m')
+        messageWidget.pack(side=tk.TOP, expand=tk.YES, fill=tk.X, padx='3m', pady='3m')
         buttonFrame = tk.Frame(root1)
-        buttonFrame.pack(side=BOTTOM, fill=BOTH)
+        buttonFrame.pack(side=tk.BOTTOM, fill=tk.BOTH)
         okButton = tk.Button(buttonFrame, takefocus=1, text="OK")
-        okButton.pack(expand=YES, padx='1m', pady='1m', ipadx='2m', ipady='1m')
+        okButton.pack(expand=tk.YES, padx='1m', pady='1m', ipadx='2m', ipady='1m')
         # bind the keyboard events to the widget
         okButton.bind("<Return>", doOK)
         okButton.bind("<Button-1>", doOK)
