@@ -510,6 +510,27 @@ def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
 # Build extensions
 #
 ############################################################################
+# checking os type and copy configuration files
+if os.name == 'nt':    # Windows
+    shutil.copy('config_win32.h', 'config.h')
+elif os.name == 'posix':
+    sysName = os.uname()[0]
+    if sysName == 'Linux':     # Linux
+        shutil.copy('config_linux.h', 'config.h')
+    elif sysName == 'SunOS': # Solaris
+        shutil.copy('config_solaris.h', 'config.h')
+    elif sysName == 'Darwin':    # MacOS
+        shutil.copy('config_mac.h', 'config.h')
+else:
+    try:
+        open('config.h')
+        close('config.h')
+        print "Warning: Unknown system type. Using existing config.h"
+    except IOError:
+        print "Error: Unknown system type. Use configure to generate config.h."
+        sys.exit()
+
+
 if __name__ == '__main__':
     # for every official release, there will be a file recording release info
     # Othersise, SIMUPOP_VER and SIMUPOP_REV will be provided as environmental
@@ -551,25 +572,7 @@ if __name__ == '__main__':
         print "All wrap files are generated successfully."
         print
     #
-    # checking os type and copy configuration files
-    if os.name == 'nt':    # Windows
-        shutil.copy('config_win32.h', 'config.h')
-    elif os.name == 'posix':
-        sysName = os.uname()[0]
-        if sysName == 'Linux':     # Linux
-            shutil.copy('config_linux.h', 'config.h')
-        elif sysName == 'SunOS': # Solaris
-            shutil.copy('config_solaris.h', 'config.h')
-        elif sysName == 'Darwin':    # MacOS
-            shutil.copy('config_mac.h', 'config.h')
-    else:
-        try:
-            open('config.h')
-            close('config.h')
-            print "Warning: Unknown system type. Using existing config.h"
-        except IOError:
-            print "Error: Unknown system type. Use configure to generate config.h."
-            sys.exit()
+
     # copy needed files
     copied_files = []
     for modu in MODULES:
