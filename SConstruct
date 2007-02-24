@@ -100,11 +100,12 @@ else:
 env['SWIGFLAGS'] = SWIG_FLAGS.replace('-outdir src', '-outdir .')
 env.Command('build_dir/swigpyrun.h', None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS.replace('-outdir src', '-outdir .')])
 
-gsl = env.StaticLibrary(
-    target = '$build_dir/gsl',
-    source = GSL_FILES,
+# this lib may contain gsl, boost/iostreams and boost/serialization
+extra_lib = env.StaticLibrary(
+    target = '$build_dir/extra_libs',
+    source = LIB_FILES,
     CCFLAGS = ' '.join([opt, ccshared]),
-    CPPPATH = ['.'],
+    CPPPATH = ['.', ModuInfo('std')['include_dirs']],
 )
 
 targets = []
@@ -137,7 +138,7 @@ for mod in targets:
     lib = env.SharedLibrary(
         target = '$build_dir/_simuPOP_%s%s' % (mod, so_ext),
         source = [mod_src(x, mod) for x in SOURCE_FILES] + ['$build_dir/simuPOP_%s.i' % mod],
-        LIBS = info['libraries'] + [gsl],
+        LIBS = info['libraries'] + [extra_lib],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
         SHLINKFLAGS = comp.ldflags_shared,
