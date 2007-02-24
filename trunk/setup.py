@@ -35,14 +35,14 @@ if os.name == 'nt':
     # win32 is default since 1.33.1 libraries are bundled with simuPOP windows
     # distribution
     boost_lib_search_paths = [r'win32', r'c:\boost\lib', r'c:\program files\boost\lib']
-    boost_inc_search_paths = [r'c:\boost', r'c:\program files\boost']
+    boost_inc_search_paths = [included_boost_dir, r'c:\boost', r'c:\program files\boost']
     boost_lib_prefix = ''
     boost_lib_suffix = '.lib'
 else:    
     use_vc = False
     disable_compression = False
     boost_lib_search_paths = ['/usr/lib', '/usr/local/lib']
-    boost_inc_search_paths = ['/usr/include', '/usr/local/include']
+    boost_inc_search_paths = [included+_boost_dir, '/usr/include', '/usr/local/include']
     home = os.environ.get('HOME', None)
     if home is not None:
         dirs = glob.glob(os.path.join(home, 'boost*'))
@@ -323,7 +323,7 @@ LIB_FILES = [
     'gsl/error.c' 
 ]
 
-if included_boost:
+if included_boost and os.name != 'nt':
     LIB_FILES.extend([os.path.join(included_boost_serialization_dir, x) for x in [
         'basic_archive.cpp',
         'basic_iarchive.cpp',
@@ -355,7 +355,7 @@ if included_boost:
     ])
 
 
-if included_boost:
+if included_boost and os.name != 'nt':
     LIB_FILES.extend([os.path.join(included_boost_iostreams_dir, x) for x in [
         'mapped_file.cpp',
         'file_descriptor.cpp',
@@ -446,10 +446,10 @@ if os.name == 'nt':
 
 
 def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
-    if included_boost:
+    if included_boost and os.name != 'nt':
+        boost_inc_path = included_boost_include_dir
         boost_lib_names = []
         boost_lib_path = None
-        boost_inc_path = included_boost_include_dir
     else:
         if 'mpi' in modu:
             (boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
