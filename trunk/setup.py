@@ -488,8 +488,8 @@ def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
         # force the use of static boost libraries because I do not
         # want to bundle boost libraries with simuPOP distributions.
         res['extra_compile_args'] = ['-O3', '-Wall']
-    # define_macros
-    res['define_macros'] = MACROS[modu]
+    # define_macros (deep copy)
+    res['define_macros'] = [x for x in MACROS[modu]]
     res['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])
     if disable_compression:
         res['define_macros'].extend([('DISABLE_COMPRESSION', None)])
