@@ -7,7 +7,7 @@ simuPOP installation guide
   1.3. Installing R/RPy (optional)
   1.4. Installing wxPython (optional)
 2. Build simuPOP from Source
-  2.1. Install boost libraries (iostreams and serialization)
+  2.1. (Optional) Install boost libraries (iostreams and serialization)
   2,2. Windows system using mingw (without cygwin)
   2.3. Windows using VC++ .NET 2003
   2.4. Linux-Solaris-MacOSX System
@@ -170,8 +170,16 @@ NOTE:
   >= 1.3.30 is required.
 
 
-2.1. Install boost libraries (iostreams, serialization and/or MPI)
-===========================================================
+2.1. (Optional) Install boost libraries (iostreams, serialization and/or MPI)
+=============================================================================
+
+Starting from simuPOP-0.7.8, boost 1.33.1 is bundled with simuPOP source
+and setup.py will build iostreams and serialization libraries automatically.
+
+If you use simuPOP snapshot (SVN version), you may want to download and 
+unpack boost 1.33.1. You can choose to install boost libraries system wide
+(as shown below), or simply unpack to simuPOP top source directory.
+
 
 Non-windows
 ------------
