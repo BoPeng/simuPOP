@@ -27,7 +27,6 @@
 \file
 \brief head file of class mating and its subclasses
 */
-#include "simuPOP_cfg.h"
 #include "utility.h"
 
 namespace simuPOP

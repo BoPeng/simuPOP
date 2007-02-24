@@ -11,6 +11,17 @@ import os, sys, shutil, glob, re
 # simuPOP works with these boost versions.
 boost_versions = ['1_33_1', '1_34', '1_35']
 
+# if the source package is districuted with boost 1.33.1, use
+# this bundled version.
+included_boost_dir = 'boost_1_33_1'
+if os.path.isdir(included_boost_dir):
+    included_boost = True
+    included_boost_include_dir = included_boost_dir
+    included_boost_serialization_dir = os.path.join(included_boost_dir, 'libs', 'serialization', 'src')
+    included_boost_iostreams_dir = os.path.join(included_boost_dir, 'libs', 'iostreams', 'src')
+else:
+    included_boost = False
+
 # If setup.py can not find boost libraries, change boost_lib_seach_paths
 # and/or boost_inc_search_paths. 
 # 
@@ -244,7 +255,7 @@ SOURCE_FILES = [
 
 # since it is troublesome to link to external gsl library,
 # I embed some GSL files with simuPOP. 
-GSL_FILES = [ 
+LIB_FILES = [ 
     'gsl/sys/infnan.c',
     'gsl/sys/coerce.c',
     'gsl/sys/fdiv.c',
@@ -311,6 +322,46 @@ GSL_FILES = [
     'gsl/randist/gauss.c',
     'gsl/error.c' 
 ]
+
+if included_boost:
+    LIB_FILES.extend([os.path.join(included_boost_serialization_dir, x) for x in [
+        'basic_archive.cpp',
+        'basic_iarchive.cpp',
+        'basic_oarchive.cpp',
+        'basic_serializer_map.cpp',
+        'basic_text_iprimitive.cpp',
+        'basic_text_oprimitive.cpp',
+        'binary_iarchive.cpp',
+        'binary_oarchive.cpp',
+        'extended_type_info.cpp',
+        'extended_type_info_no_rtti.cpp',
+        'extended_type_info_typeid.cpp',
+        'text_iarchive.cpp',
+        'text_oarchive.cpp',
+        'void_cast.cpp',
+        'polymorphic_iarchive.cpp',
+        'polymorphic_oarchive.cpp',
+        'stl_port.cpp',
+        'basic_pointer_iserializer.cpp',
+        'basic_iserializer.cpp',
+        'basic_oserializer.cpp',
+        'basic_pointer_oserializer.cpp',
+        'basic_archive_impl.cpp',
+        'basic_xml_archive.cpp',
+        'xml_grammar.cpp',
+        'xml_iarchive.cpp',
+        'xml_oarchive.cpp'
+        ]
+    ])
+
+
+if included_boost:
+    LIB_FILES.extend([os.path.join(included_boost_iostreams_dir, x) for x in [
+        'mapped_file.cpp',
+        'file_descriptor.cpp',
+        'zlib.cpp'
+        ]
+    ])
 
 
 SIMUPOP_FILES = [
@@ -395,34 +446,41 @@ if os.name == 'nt':
 
 
 def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
-    if 'mpi' in modu:
-        (boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
-            ['iostreams', 'serialization', 'mpi'], boost_lib_search_paths,
-            boost_lib_prefix, boost_lib_suffix,
-            boost_inc_search_paths, boost_versions)
+    if included_boost:
+        boost_lib_names = []
+        boost_lib_path = None
+        boost_inc_path = included_boost_include_dir
     else:
-        (boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
-            ['iostreams', 'serialization'], boost_lib_search_paths,
-            boost_lib_prefix, boost_lib_suffix,
-            boost_inc_search_paths, boost_versions)
+        if 'mpi' in modu:
+            (boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
+                ['iostreams', 'serialization', 'mpi'], boost_lib_search_paths,
+                boost_lib_prefix, boost_lib_suffix,
+                boost_inc_search_paths, boost_versions)
+        else:
+            (boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
+                ['iostreams', 'serialization'], boost_lib_search_paths,
+                boost_lib_prefix, boost_lib_suffix,
+                boost_inc_search_paths, boost_versions)
     res = {}
     res['src'] =  ['src/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:
         res['src'].append(src[:-4] + '_' + modu + '.cpp')
-    res['src'].extend(GSL_FILES)
-    # use deep copy
-    res['libraries'] = [x for x in boost_lib_names]
+    res['src'].extend(LIB_FILES)
     # lib
     if os.name == 'nt':    # Windows
-        res['libraries'].append('zdll')
+        res['libraries'] = ['zdll']
     else:
-        res['libraries'].extend(['stdc++', 'z'])
+        res['libraries'] = ['stdc++', 'z']
+    res['libraries'].extend(boost_lib_names)
     res['include_dirs'] = ['.', boost_inc_path]
     if use_vc:
         # I have a portable stdint.h for msvc
         res['include_dirs'].append('win32')
     #
-    res['library_dirs'] = ['build', boost_lib_path]
+    if included_boost:
+        res['library_dirs'] = ['build']
+    else:
+        res['library_dirs'] = ['build', boost_lib_path]
     if os.name == 'nt':
         # msvc does not have O3 option
         res['extra_compile_args'] = ['/O2']
