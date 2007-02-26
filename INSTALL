@@ -280,10 +280,15 @@ This might be the reason why simuPOP i/o does not work....
   1. Find a copy of VC++ 2003 and install. This is the version used to 
      compile python and is the version VC uses.
 
-  2. download boost 1.33.1 and unpack to c:\boost
+  2. in vc command prompt windows,
+    > python setup.py bdist_wininst
+	or
+	> python setup.py install
+	if you only need to install to your local machine.
 
-  3. in vc command prompt windows,
-    > python setup.py build_ext bdist_wininst
+Optionally, you can install scons (www.scons.org) and use
+    > scons install
+see later scons section 2.7 for details.
 
 NOTE: this process is *not* easy for me since I spent *a lot* of time builing
 boost libraries and put them under win32 directory. I also had to include a 
