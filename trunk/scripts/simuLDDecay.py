@@ -65,6 +65,13 @@ options = [
      'allowedTypes':[types.StringType],
      'description':'Save current paremeter set to specified file.'
     },
+    {'longarg':'method=', 
+     'default':'D',
+     'label':'Choose method',
+     'description':'Choose method to compute linkage disequilibrium.',
+     'chooseOneOf':['D', "D'", 'R2'],
+     'validate': simuOpt.valueOneOf(['D', "D'", 'R2']),
+    },
     {'arg':'v', 
      'longarg':'verbose', 
      'default':False, 
@@ -87,7 +94,7 @@ else:
 allParam = simuOpt.getParam(options, __doc__)
 
 if len(allParam) > 0:    # successfully get the params
-    (help, popSize, endGen, recRate, numRep, saveFigure, saveConfig, verbose) = allParam
+    (help, popSize, endGen, recRate, numRep, saveFigure, saveConfig, method, verbose) = allParam
 else:
     sys.exit(0)
 
@@ -113,10 +120,25 @@ simu = simulator(
     randomMating(),
     rep = numRep)
 
+# get method value used to plot and evolve
+if method=="D'":
+    methodplot = "LD_prime[0][1]"
+    upperlim = 1
+    methodeval = r"'%.4f\t' % LD_prime[0][1]"
+elif method=='R2':
+    methodplot = "R2[0][1]"
+    upperlim = 1
+    methodeval = r"'%.4f\t' % R2[0][1]"
+else:
+    methodplot = "LD[0][1]"
+    upperlim = 0.25
+    methodeval = r"'%.4f\t' % LD[0][1]"
+
+
 if useRPy:
-    plotter = varPlotter("LD[0][1]", numRep=numRep, win=endGen, 
-        ylim = [0,0.25], xlab="generation", saveAs=saveFigure, update=endGen,
-        ylab="D", title="Decay of Linkage Disequilibrium r=%.3f" % recRate)
+    plotter = varPlotter(methodplot, numRep=numRep, win=endGen, 
+        ylim = [0,upperlim], xlab="generation", saveAs=saveFigure, update=endGen,
+        ylab=method, title="Decay of Linkage Disequilibrium r=%.3f" % recRate)
 else:
     plotter = noneOp()
     
@@ -126,7 +148,7 @@ simu.evolve(
     ops = [
         recombinator( rate = recRate),
         stat( alleleFreq=[0], LD=[0,1] ),
-        pyEval(r"'%.4f\t' % LD[0][1]"),
+        pyEval(methodeval),
         pyEval(r"'\n'", rep=REP_LAST),
         plotter
     ],
