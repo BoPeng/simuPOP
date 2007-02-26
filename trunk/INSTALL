@@ -13,8 +13,13 @@ simuPOP installation guide
   2.4. Linux-Solaris-MacOSX System
   2.5. Linux using intel C++
   2.6. Building the MPI version of simuPOP
-  2.7. Using scons for faster rebuild
-  2.8. test simuPOP
+  2.7. test simuPOP
+3. Working with the latest simuPOP subversion version
+  3.1. Get simuPOP/svn
+  3.2. Using scons for faster rebuild
+  3.3. Installing SWIG
+  3.4. Installing boost
+  3.5. Compile
 
 
 1. install from binary distributions
@@ -288,7 +293,7 @@ This might be the reason why simuPOP i/o does not work....
 
 Optionally, you can install scons (www.scons.org) and use
     > scons install
-see later scons section 2.7 for details.
+see later scons section 3.1 for details.
 
 NOTE: this process is *not* easy for me since I spent *a lot* of time builing
 boost libraries and put them under win32 directory. I also had to include a 
@@ -427,24 +432,6 @@ setup.py runs 'mpiCC -show', and if failed, 'mpiCC -showme' to get the compiler 
 mpiCC. Check the correct syntax for your mpi distribution and modify setup.py.
 
 
-2.7. Using scons
-=================
-
-Using the standard python distutils package,
-  $ python setup.py bdist
-is the official way to build simuPOP. However, every execution of this command
-will recompile all the modules, using a single thread. This is unberable if you
-need to build simuPOP again and again, or if your machine can make use of multiple
-processes.
-
-Scons (www.scons.org) is an alternative build tool for simuPOP. Using commands like
-  $ scons laop -j4 install
-you can build only one module (laop) using four threads and install to system directory.
-This makes scons idea for developing simuPOP.
-
-The disadvantage of this approach is that you can not create rpm or .exe binary
-packages in this way. 
-
 
 2.8. test simuPOP
 =================
@@ -468,6 +455,69 @@ And then run a thorough tests (using windows as an example)
   $ c:\python25\python run_tests.py
 Under *nix (with shell), do
   $ run_tests.sh
+
+
+3 Working with simuPOP subversion version
+=========================================
+
+If you are interested in modifying simuPOP, using the latest version of
+simuPOP from subversion repository is the best option. In addition, you
+will need to install and use the following tools:
+
+3.1. Get simuPOP/svn
+====================
+
+Install a subversion client. tortoiseSVN is porpular under windows but 
+command line tool is also available and sometimes more convenient. 
+Then, get simuPOP/svn from https://svn.sourceforge.net/svnroot/simupop/trunk
+
+
+3.2. Using scons
+=================
+
+Using the standard python distutils package,
+  $ python setup.py bdist
+is the official way to build simuPOP. However, every execution of this command
+will recompile all the modules, using a single thread. This is unberable if you
+need to build simuPOP again and again, or if your machine can make use of multiple
+processes.
+
+Scons (www.scons.org) is an alternative build tool for simuPOP. Using commands like
+  $ scons laop -j4 install
+you can build only one module (laop) using four threads and install to system directory.
+This makes scons idea for developing simuPOP.
+
+The disadvantage of this approach is that you can not create rpm or .exe binary
+packages in this way. 
+
+NOTE: Only scons 0.96.92 and 0.96.93 are tested. 0.96.95 does not seem to work.
+
+
+3.3 Installing SWIG
+===================
+
+SWIG is needed to generate wrapper files. SWIG >= 1.3.30 required.
+
+
+3.4 Installing boost
+=====================
+
+You can choose to install boost completely or unpack boost 1.33.1 as boost_1_33_1
+under the top source directory of simuPOP. In the later case, simuPOP will automatically
+compile the needed libraries from boost source.
+
+3.5 Compile!
+============
+
+If you have a compiler (MSVS .NET 2003 is needed under windows), you can then
+try to compile simuPOP from source
+
+  $ scons std install
+
+If you would like to add your modifications to simuPOP, please run
+  $ svn diff > patch.diff
+or use 'make diff' menu item from tortoiseSVN, and send your patch to simuPOP
+user list.
 
 
 
