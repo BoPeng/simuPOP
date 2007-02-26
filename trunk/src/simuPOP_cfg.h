@@ -2,8 +2,8 @@
  *   Copyright (C) 2004 by Bo Peng                                         *
  *   bpeng@rice.edu
  *                                                                         *
- *   $LastChangedDate: 2007-01-08 23:44:48 -0600 (Mon, 08 Jan 2007) $
- *   $Rev: 728 $                                                     *
+ *   $LastChangedDate$
+ *   $Rev$                                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
