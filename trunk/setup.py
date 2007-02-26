@@ -42,7 +42,7 @@ else:
     use_vc = False
     disable_compression = False
     boost_lib_search_paths = ['/usr/lib', '/usr/local/lib']
-    boost_inc_search_paths = [included+_boost_dir, '/usr/include', '/usr/local/include']
+    boost_inc_search_paths = [included_boost_dir, '/usr/include', '/usr/local/include']
     home = os.environ.get('HOME', None)
     if home is not None:
         dirs = glob.glob(os.path.join(home, 'boost*'))
