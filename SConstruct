@@ -100,7 +100,7 @@ else:
 # for swig 1.3.30, but do not use -outdir src, use -outdir . instead
 # because the scons/swig module requires .py in the current directory (a bug, I would say).
 env['SWIGFLAGS'] = SWIG_FLAGS.replace('-outdir src', '-outdir .')
-env.Command('build_dir/swigpyrun.h', None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS.replace('-outdir src', '-outdir .')])
+env.Command('$build_dir/swigpyrun.h', None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS.replace('-outdir src', '-outdir .')])
 
 # this lib may contain gsl, boost/iostreams and boost/serialization
 extra_lib = env.StaticLibrary(
@@ -137,9 +137,10 @@ for mod in targets:
     info = ModuInfo(mod)
     for file in SOURCE_FILES:
         env.Command(mod_src(file, mod), file, [Copy('$TARGET', '$SOURCE')])
+	module_source = [mod_src(x, mod) for x in SOURCE_FILES]
     lib = env.SharedLibrary(
         target = '$build_dir/_simuPOP_%s%s' % (mod, so_ext),
-        source = [mod_src(x, mod) for x in SOURCE_FILES] + ['$build_dir/simuPOP_%s.i' % mod],
+        source = module_source + ['$build_dir/simuPOP_%s.i' % mod],
         LIBS = info['libraries'] + [extra_lib],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
@@ -150,6 +151,7 @@ for mod in targets:
         CCFLAGS = info['extra_compile_args'] + comp.compile_options,
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
     )
+    env.Depends(module_source, '$build_dir/swigpyrun.h')
     env.Depends(['$build_dir/simuPOP_%s_wrap$CXXFILESUFFIX' % mod, lib],
         ['src/simuPOP_cfg.h', 'src/simuPOP_common.i', 'src/simuPOP_doc.i'] + \
         HEADER_FILES)
