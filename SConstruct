@@ -65,7 +65,9 @@ opts.AddOptions(
     
 env = Environment(
     options=opts,
-    ENV={'PATH':os.environ['PATH']},
+	# pass all environment variables because MSVC needs INCLUDE and LIB
+	# but they may not exist on other platforms
+    ENV=os.environ,
     tools=['default', 'swig'])
 # try to use the compiler used to build python
 if cc != "":
