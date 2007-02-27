@@ -1385,7 +1385,6 @@ namespace simuPOP
 						ar & make_nvp("size", size);
 						size_t blks = size / WORDBIT;
 						size_t rest = size - blks * WORDBIT;
-						DBG_DO(DBG_POPULATION, cout << "Load bin from bin. " << size << " rest " << rest << endl);
 
 						m_genotype.resize(size);
 						WORDTYPE tmp, tmp1;
