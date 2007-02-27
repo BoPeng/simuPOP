@@ -1221,7 +1221,7 @@ def saveLinkage(output='', outputExpr='', **kwargs):
 
 
 # save in merlin qtdt format
-def SaveQTDT(pop, output='', outputExpr='', loci=[], affectionCode=['U', 'A'], 
+def SaveQTDT(pop, output='', outputExpr='', loci=[], header=False, affectionCode=['U', 'A'], 
         fields=[], combine=None, shift=1, **kwargs):
     """ save population in Merlin/QTDT format. The population must have
         pedindex, father_idx and mother_idx information fields.
@@ -1237,6 +1237,8 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[], affectionCode=['U', 'A'],
 
         loci: loci to output
 
+        header: whether or not put head line in the ped file.
+        
         fields: information fields to output
 
         combine: an optional function to combine two alleles of a diploid 
@@ -1266,11 +1268,11 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[], affectionCode=['U', 'A'],
     # write dat file
     # 
     if 'affection' in fields:
-        outputAffectation = True
+        outputAffection = True
         fields.remove('affection')
         print >> datOut, 'A\taffection'
     else:
-        outputAffectation = False
+        outputAffection = False
     for f in fields:
         print >> datOut, 'T\t%s' % f
     for marker in loci:
@@ -1285,6 +1287,15 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[], affectionCode=['U', 'A'],
     mapOut.close()
     #
     # write ped file
+    if header:
+        print >> pedOut, "famID ID fa mo sex",
+        if outputAffection:
+            print >> pedOut, "affection",
+        for f in fields:
+            print >> pedOut, f,
+        for marker in loci:
+            print >> pedOut, pop.locusName(marker),
+        print >> pedOut
     def sexCode(ind):
         if ind.sex() == Male:
             return 1
@@ -1300,7 +1311,7 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[], affectionCode=['U', 'A'],
     pldy = pop.ploidy()
     def writeInd(ind, famID, id, fa, mo):
         print >> pedOut, '%d %d %d %d %d' % (famID, id, fa, mo, sexCode(ind)),
-        if outputAffectation:
+        if outputAffection:
             print >> pedOut, affectedCode(ind),
         for f in fields:
             print >> pedOut, '%.3f' % ind.info(f),
@@ -1344,7 +1355,7 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[], affectionCode=['U', 'A'],
     else:
         # rare case: no pedigree structure, only output the last generation without parents
         for idx, ind in enumerate(pop.individuals()):
-            writeInd(ind, idx, 1, 0, 0)
+            writeInd(ind, idx+1, 1, 0, 0)
     pedOut.close()
 
 
