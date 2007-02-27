@@ -9,6 +9,7 @@ version 0.7.8 - Not released, available at https://svn.sourceforge.net/svnroot/s
   - NEW: bundle boost 1.33.1 with source package
   - BUG (build): fix a SConstruct bug with MSVC environment variables
   - NEW: add other LD measurements to simuLDDecay.py
+  - NEW: optionally add header to QTDT ped file
 
 version 0.7.7 - (Rev 786) Feb 1, 2007
   -NEW (build): bring scons build system on par with python setup.py
