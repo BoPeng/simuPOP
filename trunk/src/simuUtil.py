@@ -1316,8 +1316,11 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[], header=False, affectionCode
         for f in fields:
             print >> pedOut, '%.3f' % ind.info(f),
         for marker in loci:
-            for p in range(pldy):
-                print >> pedOut, "%d" % (ind.allele(marker, p) + shift), 
+            if combine is None:
+                for p in range(pldy):
+                    print >> pedOut, "%d" % (ind.allele(marker, p) + shift), 
+            else:
+                print >> pedOut, "%s" % combine([ind.allele(marker, p) for p in range(pldy)]),
         print >> pedOut
     #
     # number of pedigrees
