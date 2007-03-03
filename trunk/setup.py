@@ -481,6 +481,8 @@ def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
         res['library_dirs'] = ['build']
     else:
         res['library_dirs'] = ['build', boost_lib_path]
+    if use_vc:
+        res['library_dirs'].append('win32')
     if os.name == 'nt':
         # msvc does not have O3 option
         res['extra_compile_args'] = ['/O2']
