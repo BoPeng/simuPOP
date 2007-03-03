@@ -3,7 +3,9 @@ ChangeLog of simuPOP
 BUGS:
   - all known bugs have been cleared.
 
-version 0.7.8 - Not released, available at https://svn.sourceforge.net/svnroot/simupop/trunk
+version 0.7.9 - Not released, available at https://svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.7.8 - (Rev 833( Mar 2, 2007)
   - BUG: fix broken user interactive input
   - BUG: fix help feature of tkinter dialog
   - NEW: bundle boost 1.33.1 with source package
@@ -11,6 +13,7 @@ version 0.7.8 - Not released, available at https://svn.sourceforge.net/svnroot/s
   - NEW: add other LD measurements to simuLDDecay.py
   - NEW: optionally add header to QTDT ped file
   - BUG: fix the combine parameter of SaveQTDT
+
 
 version 0.7.7 - (Rev 786) Feb 1, 2007
   -NEW (build): bring scons build system on par with python setup.py
