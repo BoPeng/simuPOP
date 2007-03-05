@@ -4,6 +4,7 @@ BUGS:
   - all known bugs have been cleared.
 
 version 0.7.9 - Not released, available at https://svn.sourceforge.net/svnroot/simupop/trunk
+  - BUG (build): add solaris support. This OS does not have stdint.h.
 
 version 0.7.8 - (Rev 833( Mar 2, 2007)
   - BUG: fix broken user interactive input

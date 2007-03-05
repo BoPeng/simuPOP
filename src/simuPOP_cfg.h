@@ -76,7 +76,13 @@ using std::vector;
 typedef unsigned int UINT;
 
 // for msvc, I have a portable stdint.h under win32 directory
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#else
+// for solaris, I have to use inttypes.h because there is no stdint.h
+#include <inttypes.h>
+#endif
+
 // NOTE: the change of allele type here may need similar changes
 // in the wrapper file simuPOP_common.i
 #ifdef LONGALLELE
