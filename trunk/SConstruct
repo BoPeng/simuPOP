@@ -24,6 +24,10 @@
 #      default to all standard modules (non-MPI version)
 #      install: install specified targets
 #
+#
+#  BUG: This script does *not* work under solaris because a needed change in _wrap.cpp files.
+#       This change is handled in setup.py, but not in SConstruct
+#
 import os, sys
 import SCons.Defaults
 import SCons.Tool
