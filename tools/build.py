@@ -183,21 +183,28 @@ def build_rhel4(ver):
 def build_suse(ver):
     build_vm(ver, 'suse', 23, suse_vm, suse_port, suse_vm_name)
 
-def build_mac():
+def build_remote(ver, remote_machine):
     source = '%s/simuPOP-%s-src.tar.gz' % (download_directory, ver)
     if not os.path.isfile(source):
         print 'Source package %s does not exist. Please run "build.py src" first' % source
         sys.exit(1)
     #   
     print 'Copying source package to remote machine ...'
-    run("ssh %s '/bin/rm -rf temp &&  mkdir temp && /bin/rm -rf simuPOP'" % mac_name)
-    run('scp %s/simuPOP-%s-src.tar.gz %s:temp' % (download_directory, ver, mac_name))
+    run("ssh %s '/bin/rm -rf temp &&  mkdir temp && /bin/rm -rf simuPOP'" % remote_machine)
+    run('scp %s/simuPOP-%s-src.tar.gz %s:temp' % (download_directory, ver, remote_machine))
     #
     print 'Building ...'
     unpack = 'tar zxf simuPOP-%s-src.tar.gz' % ver
     build = 'python setup.py bdist_dumb'
-    run('ssh -X %s "cd temp && %s && cd simuPOP-%s && %s"' % (mac_name, unpack, ver, build))
-    run('scp %s:temp/simuPOP-%s/dist/* %s' % (mac_name, ver, download_directory))
+    run('ssh -X %s "cd temp && %s && cd simuPOP-%s && %s"' % (remote_machine, unpack, ver, build))
+    run('scp %s:temp/simuPOP-%s/dist/* %s' % (remote_machine, ver, download_directory))
+
+def build_mac(ver):
+    build_remote(ver, mac_name)
+
+def build_solaris(ver):
+    build_remote(ver, sol_name)
+
 
 Usage = '''Usage: build.py [options] action1 action2 
 Options:
@@ -286,7 +293,9 @@ if __name__ == '__main__':
     if 'suse' in actions:
         build_suse(ver)
     if 'mac' in actions:
-        build_mac()
+        build_mac(ver)
+    if 'sol' in actions:
+        build_solaris(ver)
     # 
     # restore simuPOP.release
     if release == 'snapshot':
