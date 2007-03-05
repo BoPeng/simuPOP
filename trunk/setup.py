@@ -6,7 +6,7 @@ checking out simuPOP from svn repository, you need to
 install swig >= 1.3.27 to generate the wrap files.
 
 """
-import os, sys, shutil, glob, re
+import os, sys, shutil, glob, re, tempfile
 
 # simuPOP works with these boost versions.
 boost_versions = ['1_33_1', '1_34', '1_35']
@@ -199,7 +199,28 @@ def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versio
         print "of setup.py for instructions."
         sys.exit(1)
         
-
+def replaceIntHeader(file):
+    ''' Replace "#include <stdint.h>" with "#include <inttypes.h>"
+        Try to keep time stamp unchanged '''
+    # save file modification time
+    time = os.path.getmtime(file)
+    # create a temp file
+    tmp, name = tempfile.mkstemp()
+    input = open(file)
+    output = open(name, 'w')
+    for line in input.readlines():
+        if '#include <stdint.h>' in line:
+            print >> output, '#include <inttypes.h>  /* no stdint.h is found so we use inttypes.h instead */'
+        else:
+            print >> output, line,
+    output.close()
+    input.close()
+    # replace file with temp file
+    shutil.copyfile(name, file)
+    os.remove(name)    
+    # restore old file modification time
+    os.utime(file, (-1, time))
+    
 #
 # SOURCE FILES
 #
@@ -516,12 +537,11 @@ def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
 if os.name == 'nt':    # Windows
     shutil.copy('config_win32.h', 'config.h')
 elif os.name == 'posix':
-    sysName = os.uname()[0]
-    if sysName == 'Linux':     # Linux
+    if sys.platform == 'linux2':     # Linux
         shutil.copy('config_linux.h', 'config.h')
-    elif sysName == 'SunOS': # Solaris
+    elif sys.platform == 'sunos5': # Solaris
         shutil.copy('config_solaris.h', 'config.h')
-    elif sysName == 'Darwin':    # MacOS
+    elif sys.platform == 'darwin':    # MacOS
         shutil.copy('config_mac.h', 'config.h')
 else:
     try:
@@ -573,8 +593,11 @@ if __name__ == '__main__':
         print
         print "All wrap files are generated successfully."
         print
-    #
-
+    # under solaris, there is no stdint.h so I need to replace stdint.h
+    # in the wrap files with inttypes.h
+    if sys.platform == 'sunos5':
+        for lib in MODULES:
+            replaceIntHeader(WRAP_INFO[lib][0])
     # copy needed files
     copied_files = []
     for modu in MODULES:
