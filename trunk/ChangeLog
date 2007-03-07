@@ -5,6 +5,7 @@ BUGS:
 
 version 0.7.9 - Not released, available at https://svn.sourceforge.net/svnroot/simupop/trunk
   - BUG (build): add solaris support. This OS does not have stdint.h.
+  - BUG (build): python 2.5, 64bit machine Py_ssize_t type
 
 version 0.7.8 - (Rev 833( Mar 2, 2007)
   - BUG: fix broken user interactive input

@@ -744,7 +744,7 @@ array_richcompare(PyObject *v, PyObject *w, int op)
 }
 
 
-static int array_length(arrayobject *a)
+static Py_ssize_t array_length(arrayobject *a)
 {
     return a->ob_size;
 }
@@ -758,7 +758,7 @@ static PyObject * array_concat(arrayobject *a, PyObject *bb)
 }
 
 
-static PyObject * array_repeat(arrayobject *a, int n)
+static PyObject * array_repeat(arrayobject *a, Py_ssize_t n)
 {
     PyErr_SetString(PyExc_TypeError,
         "Can not repeat carray object.");
@@ -766,7 +766,7 @@ static PyObject * array_repeat(arrayobject *a, int n)
 }
 
 
-static PyObject * array_item(arrayobject *a, int i)
+static PyObject * array_item(arrayobject *a, Py_ssize_t i)
 {
     if (i < 0 || i >= a->ob_size)
     {
@@ -777,7 +777,7 @@ static PyObject * array_item(arrayobject *a, int i)
 }
 
 
-static PyObject * array_slice(arrayobject *a, int ilow, int ihigh)
+static PyObject * array_slice(arrayobject *a, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
     arrayobject *np;
     if (ilow < 0)
@@ -811,7 +811,7 @@ static PyObject * array_slice(arrayobject *a, int ilow, int ihigh)
 }
 
 
-static int array_ass_slice(arrayobject *a, int ilow, int ihigh, PyObject *v)
+static int array_ass_slice(arrayobject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject *v)
 {
     if (v == NULL || a==(arrayobject*)v)
     {
@@ -885,7 +885,7 @@ static int array_ass_slice(arrayobject *a, int ilow, int ihigh, PyObject *v)
 }
 
 
-static int array_ass_item(arrayobject *a, int i, PyObject *v)
+static Py_ssize_t array_ass_item(arrayobject *a, Py_ssize_t i, PyObject *v)
 {
     if (i < 0 || i >= a->ob_size)
     {
@@ -1096,9 +1096,9 @@ array_repr(arrayobject *a)
     return s;
 }
 
-
 static PySequenceMethods array_as_sequence =
 {
+#if PY_VERSION_HEX < 0x02050000
     (inquiry)array_length,                                                    /*sq_length*/
     (binaryfunc)array_concat,                                             /*sq_concat*/
     (intargfunc)array_repeat,                                             /*sq_repeat*/
@@ -1106,6 +1106,15 @@ static PySequenceMethods array_as_sequence =
     (intintargfunc)array_slice,                                         /*sq_slice*/
     (intobjargproc)array_ass_item,                                    /*sq_ass_item*/
     (intintobjargproc)array_ass_slice,                            /*sq_ass_slice*/
+#else	
+    (lenfunc)array_length,                                                    /*sq_length*/
+    (binaryfunc)array_concat,                                             /*sq_concat*/
+    (ssizeargfunc)array_repeat,                                             /*sq_repeat*/
+    (ssizeargfunc)array_item,                                                 /*sq_item*/
+    (ssizessizeargfunc)array_slice,                                         /*sq_slice*/
+    (ssizeobjargproc)array_ass_item,                                    /*sq_ass_item*/
+    (ssizessizeobjargproc)array_ass_slice,                            /*sq_ass_slice*/
+#endif	
 };
 
 static char arraytype_doc [] =
