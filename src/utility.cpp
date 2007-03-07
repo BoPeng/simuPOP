@@ -588,7 +588,7 @@ namespace simuPOP
 			m_dict = PyDict_New();
 			PyObject *key = 0, *value = 0;
 
-			int i=0;
+			Py_ssize_t i=0;
 			while(PyDict_Next(rhs.m_dict, &i, &key, &value))
 			{
 				//Py_INCREF(key);
@@ -1133,7 +1133,7 @@ namespace simuPOP
 		PyObject *key = 0, *value = 0;
 
 		str += 'd';								  // dictionary
-		int i = 0;
+		Py_ssize_t i = 0;
 		while (PyDict_Next(args, &i, &key, &value))
 		{
 			saveObj(str, key);
