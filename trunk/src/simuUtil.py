@@ -1220,33 +1220,41 @@ def saveLinkage(output='', outputExpr='', **kwargs):
     return eval(opt)
 
 
-# save in merlin qtdt format
-def SaveQTDT(pop, output='', outputExpr='', loci=[], header=False, affectionCode=['U', 'A'], 
-        fields=[], combine=None, shift=1, **kwargs):
-    """ save population in Merlin/QTDT format. The population must have
-        pedindex, father_idx and mother_idx information fields.
-         
-        pop: population to be saved. If pop is a filename, it will be loaded.
+def SaveSolarFrqFile(pop, output='', outputExpr='', loci=[], calcFreq=True):
+    '''Output a frequency file, in a format readable by solar
+        calcFreq: whether or not calculate allele frequency
+    '''
+    if type(pop) == type(''):
+        pop = LoadPopulation(pop)
+    if output != '':
+        file = output
+    elif outputExpr != '':
+        file = eval(outputExpr, globals(), pop.vars())
+    else:
+        raise exceptions.ValueError, "Please specify output or outputExpr"
+    # open data file and pedigree file to write.
+    try:
+        frqOut = open(file + ".frq", "w")
+    except exceptions.IOError:
+        raise exceptions.IOError, "Can not open file " + file + ".frq to write."
+    if loci == []:
+        loci = range(0, pop.totNumLoci())
+    if calcFreq or not pop.vars().has_key('alleleFreq'):
+        Stat(pop, alleleFreq=loci)
+    alleleFreq = pop.dvars().alleleFreq
+    for m in loci:
+        try:
+            print >> frqOut, pop.locusName(m),
+            for a in range(len(alleleFreq[m])):
+                print >> frqOut, '\t%d\t%f' % (a+1, alleleFreq[m][a]),
+            print >> frqOut
+        except:
+            print "Can not output allele frequency for marker %s " % m
+    frqOut.close()
+ 
 
-        output: base filename. 
-        outputExpr: expression for base filename, will be evaluated in pop's
-            local namespace.
-
-        affectionCode: code for unaffected and affected. '1', '2' are default,
-            but 'U', and 'A' or others can be specified.
-
-        loci: loci to output
-
-        header: whether or not put head line in the ped file.
-        
-        fields: information fields to output
-
-        combine: an optional function to combine two alleles of a diploid 
-            individual.
-
-        shift: if combine is not given, output two alleles directly, adding
-            this value (default to 1).
-    """
+def SaveMerlinDatFile(pop, output='', outputExpr='', loci=[], fields=[], outputAffection=False):
+    '''Output a .dat file readable by merlin'''
     if type(pop) == type(''):
         pop = LoadPopulation(pop)
     if output != '':
@@ -1258,35 +1266,61 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[], header=False, affectionCode
     # open data file and pedigree file to write.
     try:
         datOut = open(file + ".dat", "w")
-        mapOut = open(file + ".map", "w")
-        pedOut = open(file + ".ped", "w")
     except exceptions.IOError:
-        raise exceptions.IOError, "Can not open file " + file + " to write."
+        raise exceptions.IOError, "Can not open file " + file + ".dat to write."
     if loci == []:
         loci = range(0, pop.totNumLoci())
-    #    
-    # write dat file
-    # 
-    if 'affection' in fields:
-        outputAffection = True
-        fields.remove('affection')
+    if outputAffection:
         print >> datOut, 'A\taffection'
-    else:
-        outputAffection = False
     for f in fields:
         print >> datOut, 'T\t%s' % f
     for marker in loci:
         print >> datOut, 'M\t%s' % pop.locusName(marker)
     datOut.close()
-    #
-    # write map file
+
+
+def SaveMerlinMapFile(pop, output='', outputExpr='', loci=[]):
+    '''Output a .map file readable by merlin'''
+    if type(pop) == type(''):
+        pop = LoadPopulation(pop)
+    if output != '':
+        file = output
+    elif outputExpr != '':
+        file = eval(outputExpr, globals(), pop.vars())
+    else:
+        raise exceptions.ValueError, "Please specify output or outputExpr"
+    # open data file and pedigree file to write.
+    try:
+        mapOut = open(file + ".map", "w")
+    except exceptions.IOError:
+        raise exceptions.IOError, "Can not open file " + file + ".map to write."
+    if loci == []:
+        loci = range(0, pop.totNumLoci())
     print >> mapOut, 'CHROMOSOME MARKER POSITION'
     for marker in loci:
         print >> mapOut, '%d\t%s\t%f' % (pop.chromLocusPair(marker)[0] + 1, 
             pop.locusName(marker), pop.locusPos(marker))
     mapOut.close()
-    #
-    # write ped file
+
+
+def SaveMerlinPedFile(pop, output='', outputExpr='', loci=[], fields=[], header=False,
+    outputAffection=False, affectionCode=['U', 'A'], combine=None, shift=1, **kwargs):
+    '''Output a .ped file readable by merlin'''
+    if type(pop) == type(''):
+        pop = LoadPopulation(pop)
+    if output != '':
+        file = output
+    elif outputExpr != '':
+        file = eval(outputExpr, globals(), pop.vars())
+    else:
+        raise exceptions.ValueError, "Please specify output or outputExpr"
+    # open data file and pedigree file to write.
+    try:
+        pedOut = open(file + ".ped", "w")
+    except exceptions.IOError:
+        raise exceptions.IOError, "Can not open file " + file + ".ped to write."
+    if loci == []:
+        loci = range(0, pop.totNumLoci())
     if header:
         print >> pedOut, "famID ID fa mo sex",
         if outputAffection:
@@ -1360,6 +1394,53 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[], header=False, affectionCode
         for idx, ind in enumerate(pop.individuals()):
             writeInd(ind, idx+1, 1, 0, 0)
     pedOut.close()
+
+    
+# save in merlin qtdt format
+def SaveQTDT(pop, output='', outputExpr='', loci=[], header=False,
+    affectionCode=['U', 'A'], fields=[], combine=None, shift=1, **kwargs): 
+    """
+    save population in Merlin/QTDT format. The population must have pedindex,
+    father_idx and mother_idx information fields.
+         
+        pop: population to be saved. If pop is a filename, it will be loaded.
+
+        output: base filename. 
+        outputExpr: expression for base filename, will be evaluated in pop's
+            local namespace.
+
+        affectionCode: code for unaffected and affected. '1', '2' are default,
+            but 'U', and 'A' or others can be specified.
+
+        loci: loci to output
+
+        header: whether or not put head line in the ped file.
+        
+        fields: information fields to output
+
+        combine: an optional function to combine two alleles of a diploid 
+            individual.
+
+        shift: if combine is not given, output two alleles directly, adding
+            this value (default to 1).
+    """
+    if type(pop) == type(''):
+        pop = LoadPopulation(pop)
+    #
+    if loci == []:
+        loci = range(0, pop.totNumLoci())
+    # write dat file
+    if 'affection' in fields:
+        outputAffection = True
+        fields.remove('affection')
+    else:
+        outputAffection = False
+    SaveMerlinDatFile(pop, output, outputExpr, loci, fields, outputAffection)
+    # write map file
+    SaveMerlinMapFile(pop, output, outputExpr, loci)
+    # write ped file
+    SaveMerlinPedFile(pop, output, outputExpr, loci, fields, header, 
+        outputAffection, affectionCode, combine, shift)
 
 
 
