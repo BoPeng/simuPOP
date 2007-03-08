@@ -963,23 +963,94 @@ namespace simuPOP
 		// reset ...
 		setSubPopByIndID();
 	}
+	
+	population& population::newPopByIndIDPerGen(const vectori& id, bool removeEmptySubPops)
+	{
+		// determine the size of needed individuals
+		vectorlu sz;
+		if(!id.empty())
+		{
+			DBG_ASSERT(id.size() == popSize(), ValueError, "Please assign id for each individual");
+			for(ULONG i = 0; i != id.size(); ++i)
+			{
+				if(id[i] < 0)
+					continue;
+				if(static_cast<UINT>(id[i]) >= sz.size())
+					sz.resize(id[i]+1);
+				sz[id[i]]++;
+			}
+		}
+		else
+		{
+			for(UINT sp = 0; sp < numSubPop(); ++sp)
+			{
+				for(IndIterator it = indBegin(sp); it != indEnd(sp); ++it)
+				{
+					int indID = it->subPopID();
+					if(indID < 0)
+						continue;
+					if(static_cast<UINT>(indID) >= sz.size())
+						sz.resize(indID+1);
+					sz[indID]++;
+				}
+			}
+		}
+		DBG_DO(DBG_POPULATION, cout << "newPopByIndIDPerGen: New population size: " << sz << endl);
+		
+		// create a population with this size
+		population * pop = new population(0, ploidy(), numLoci(), sexChrom(), lociPos(), sz, 0,
+			alleleNames(), lociNames(), maxAllele(), infoFields(), chromMap());
+		// copy individuals over
+		IndIterator from = indBegin();
+		vector<IndIterator> to;
+		for(UINT sp=0; sp < sz.size(); ++sp)
+			to.push_back(pop->indBegin(sp));
+		if(!id.empty())
+		{
+			for(ULONG i = 0; i != id.size(); ++i)
+			{
+				if(id[i] >= 0) 
+				{
+					to[id[i]]->copyFrom(ind(i));
+					++to[id[i]];
+				}
+			}
+		}
+		else
+		{
+			for(; from != indEnd(); ++from) 
+			{
+				int indID = from->subPopID();
+				if(indID >= 0) 
+				{
+					to[indID]->copyFrom(*from);
+					++to[indID];
+				}
+			}
+		}
+		if(removeEmptySubPops)
+			pop->removeEmptySubPops();
+		return *pop;
+	}
 
 	/** form a new population according to info, info can be given directly */
 	population& population::newPopByIndID(int keepAncestralPops,
 		const vectori& id, bool removeEmptySubPops)
 	{
-		// copy the population over (info is also copied)
-		population & pop = *clone(keepAncestralPops);
 		// and shrink them
-		for(size_t depth=0; depth <= pop.ancestralDepth(); ++depth)
+		useAncestralPop(ancestralDepth());
+		population & ret = newPopByIndIDPerGen(id, removeEmptySubPops);
+		ret.setAncestralDepth(ancestralDepth());
+		if(ancestralDepth() > 0)
 		{
-			pop.useAncestralPop(depth);
-			pop.setSubPopByIndID(id);
+			for(size_t depth = ancestralDepth()-1; depth >=0; --depth)
+			{
+				useAncestralPop(depth);
+				ret.pushAndDiscard(newPopByIndIDPerGen(id, removeEmptySubPops));
+			}
 		}
-		pop.useAncestralPop(0);
-		if( removeEmptySubPops)
-			pop.removeEmptySubPops();
-		return pop;
+		useAncestralPop(0);
+		return ret;
 	}
 
 	void population::removeLoci( const vectoru& remove, const vectoru& keep)

@@ -313,7 +313,17 @@ simuPOP user's guide.
 \begin_layout Abstract
 
 \series bold
-How to cite simuPOP: 
+How to cite simuPOP
+\series default
+ 
+\series bold
+
+\begin_inset LatexCommand citeyearpar
+key "Peng2005"
+
+\end_inset
+
+: 
 \end_layout
 
 \begin_deeper
@@ -584,10 +594,6 @@ level
 \emph default
 .
  
-\end_layout
-
-\begin_layout Standard
-
 \end_layout
 
 \begin_layout Standard
@@ -6201,10 +6207,6 @@ subPop: whether or not display variables for each subpopulations
 \end_layout
 
 \begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float algorithm
 wide false
 sideways false
@@ -6883,10 +6885,6 @@ name "text format"
 :
 \family default
  human readable with no structure, portable, median file size.
-\end_layout
-
-\begin_layout Standard
-
 \end_layout
 
 \begin_layout Standard
@@ -8039,10 +8037,6 @@ For example
 \end_layout
 
 \begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float algorithm
 wide false
 sideways false
@@ -8758,10 +8752,6 @@ b
 \family default
  in the local namespace.
  It this is still too abstract, here is a real example
-\end_layout
-
-\begin_layout Standard
-
 \end_layout
 
 \begin_layout Standard
@@ -15698,7 +15688,28 @@ r^{2} & = & \frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)}\end
 
 \end_inset
 
-If 
+
+\begin_inset Formula $D'$
+\end_inset
+
+ is defined in 
+\begin_inset LatexCommand citet
+key "Lewontin1964"
+
+\end_inset
+
+, 
+\begin_inset Formula $r^{2}$
+\end_inset
+
+ is defined in 
+\begin_inset LatexCommand citet
+key "Weir1979"
+
+\end_inset
+
+.
+ If 
 \begin_inset Formula $A$
 \end_inset
 
