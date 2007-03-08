@@ -30,10 +30,10 @@ simuPOP installation guide
   3.6. Sending your patch to simuPOP mailing list
 
 
-0 General Introduction
+0. General Introduction
 =======================
 
-simuPOP comsists of a set of Python modules and its installation follows
+simuPOP consists of a set of Python modules and its installation follows
 other python modules. Briefly, binary packages are provided for specific
 combinations of architecture (32 or 64 bit), operating systems (windows,
 Linux) and Python (2.3, 2.4, 2.5). If there is a binary package for your
@@ -200,7 +200,7 @@ There are detailed instructions at wxPython homepage.
 There are a few reasons why you might need to install simuPOP from source
   1. Binary package for your system is not provided.
   2. You would like to build special version of Python and simuPOP for maximum
-     efficienty. For example, simuPOP built with intel C++ compiler (icc) 
+     efficiently. For example, simuPOP built with intel C++ compiler (icc) 
 	 usually runs 20% to 30% faster than g++ compiled ones. Since intel C++ 
 	 for linux is free for non-commercial users, using intel C++ is a good choice 
 	 on linux systems.
@@ -276,7 +276,7 @@ option --prefix. For example
 2.1.3. Building binary packages
 ================================
 
-You can also use setup.py to build binary pacakges. bdist command needs to be
+You can also use setup.py to build binary packages. bdist command needs to be
 used and you can specify the format of binary packages like:
     > python setup.py bdist
   windows .exe installer
@@ -361,7 +361,7 @@ Optionally, you can install scons (www.scons.org) and use
     > scons install
 see later scons section 3.1 for details.
 
-NOTE: this process is *not* easy for me since I spent *a lot* of time builing
+NOTE: this process is *not* easy for me since I spent *a lot* of time building
 boost libraries and put them under win32 directory. I also had to include a 
 portable copy of stdint.h under win32 since msvc does not provide this header
 file.
@@ -384,7 +384,7 @@ file.
   
   You might need to use 
     > sudo python setup.py install
-  to install. If you do not have root priviledge,
+  to install. If you do not have root privilege,
     > python setup.py install --home=/path/to/simuPOP
   and then set PYTHONPATH to where simuPOP locates.
   
@@ -548,7 +548,7 @@ will need to install and use the following tools:
 3.1. Get simuPOP/svn
 ====================
 
-Install a subversion client. tortoiseSVN is porpular under windows but 
+Install a subversion client. tortoiseSVN is popular under windows but 
 command line tool is also available and sometimes more convenient. 
 Then, get simuPOP/svn from https://svn.sourceforge.net/svnroot/simupop/trunk
 
@@ -583,7 +583,7 @@ try to compile simuPOP from source
 Using the standard python distutils package,
   $ python setup.py bdist
 is the official way to build simuPOP. However, every execution of this command
-will recompile all the modules, using a single thread. This is unberable if you
+will recompile all the modules, using a single thread. This is unbearable if you
 need to build simuPOP again and again, or if your machine can make use of multiple
 processes.
 
