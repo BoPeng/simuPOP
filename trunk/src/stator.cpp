@@ -76,14 +76,14 @@ namespace simuPOP
 
 	bool statPopSize::apply(population& pop)
 	{
+		if( !m_isActive)
+			return true;
+
 		UINT numSP = pop.numSubPop();
 		ULONG popSize = pop.popSize();
 
 		pop.setIntVar(numSubPop_String, numSP);
 		pop.setIntVar(popSize_String, popSize);
-
-		if( !m_isActive)
-			return true;
 
 		// type mismatch, can not use subPopSizes() directly.
 		vectori spSize(numSP);
