@@ -6,50 +6,50 @@ Towards simuPOP 1.0     - Roadmaps  Marked by Easy 1 --- difficult 9. Workload 1
 Roadmap: test and documentation:
   3/8 document each class whether or not they are suitable only for diploid population.
   3/7 sample script and precise description for each class, put it in online help
-DONE  comprehensive testing scripts
   3/8 check help contents in C++ source code. 
   5/2 online help is not complete. Need re-write or fix the processing scripts.
   1/4 Proofread simuPOP user's guide and reference manual
+DONE  comprehensive testing scripts
 
 Roadmap: scripts:
-
-DONE  add a few population conversion, sampling scripts in scripts directory.
-      For example, a script that can load some formats and save to others, and
-      another script to sample from them.
-  3/2 add mutation etc to simuLDDecay.py (use useRpy and print figure. Genrate html report...)
   5/6 add models from population genetics book
   7/7 write simuEasyPop
 DONE  add things like listbox to tkGetParam function. Use wxPython when possible
+DONE  add other LD measures to simuLDDecay.py
+DONE  add a few population conversion, sampling scripts in scripts directory.
+      For example, a script that can load some formats and save to others, and
+      another script to sample from them.
 
 Roadmap: simuPOP core
  *1/1 Sampling now copy populations and result in high RAM demand
-DONE  aged population
   8/8 overlapped generations and continuous time reproduction. (mating in aged populations.)
-DONE  sex-difference recombination rate.
-  6/4 add other mating scheme. (Folowing easyPOP)
+  6/4 add other mating scheme. (Following easyPOP)
   6/7 improve support for non-diploid individuals.
   5/5 profile simuPOP and imporve efficiency (this is *always* needed for a simulation program like simuPOP)
+* 2/2 Add association measures displayed in http://www.sph.umich.edu/csg/abecasis/GOLD/docs/stats.html
+DONE  sex-difference recombination rate.
+DONE  aged population
 
 Roadmap: simuUtil
   3/2 investigate the potential of python image module. See if it is easy to install and support
-DONE  change layout of simuRPy/varPlotter/image 
-DONE  add migration models functions like stepstone, 2d stepstone etc. (Return 
-      a matrix with given rate and type. Update reference manual accordingly
-DONE  add population size change function support like linear growth, exponential growth.
-      Basically simple nested functions. Update reference manual accordingly
   1/1 add a set of popular penetrance functions. It may be better to let user write their own
       function though, since these functions are easy to write but hard to memorize and document.
+DONE  save and load other popular formats like merlin and solar
+DONE  add wxPython version of listVars()
+DONE  change layout of simuRPy/varPlotter/image 
 DONE  save linkage of any pedigree. This is very troublesome considering the potentially very 
       complicated pedigrees.
-  2/2 save and load other popular formats. 
-DONE  add wxPython version of listVars()
+DONE  add population size change function support like linear growth, exponential growth.
+      Basically simple nested functions. Update reference manual accordingly
+DONE  add migration models functions like stepstone, 2d stepstone etc. (Return 
+      a matrix with given rate and type. Update reference manual accordingly
 
 Roadmap: A real GUI other than the tk-based simple parameter dialog
   9/9 wxPython or Tkinter? wxPython may be better for this large GUI project
   5/5 GUI independent description for each class.
   8/4 Visualization of active gens of objects.... 
   7/4 Interactively change population, split, merge etc through menu
-DONE  Start/stop for easy debugging
   8/4 output and load simuPOP script
+DONE  Start/stop for easy debugging
  
  
