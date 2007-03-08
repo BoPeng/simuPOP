@@ -373,6 +373,11 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_numLoci[chrom];
 			}
 
+			vectoru numLoci() const
+			{
+				return s_genoStruRepository[m_genoStruIdx].m_numLoci;
+			}
+			
 			/// whether or not the last chromosome is sex chromosome
 			bool sexChrom() const
 			{
@@ -409,6 +414,11 @@ namespace simuPOP
 
 				CHECKRANGEABSLOCUS(locus);
 				return s_genoStruRepository[m_genoStruIdx].m_lociPos[locus];
+			}
+
+			vectorf lociPos() const
+			{
+				return s_genoStruRepository[m_genoStruIdx].m_lociPos;
 			}
 
 			/// expose loci distance
@@ -496,6 +506,11 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_lociNames[loc];
 			}
 
+			vectorstr lociNames() const
+			{
+				return s_genoStruRepository[m_genoStruIdx].m_lociNames;
+			}
+			
 			UINT maxAllele() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_maxAllele;

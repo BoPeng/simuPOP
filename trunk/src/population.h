@@ -797,6 +797,8 @@ namespace simuPOP
 				0: only current
 				1: keep one ...
 			*/
+			population& newPopByIndIDPerGen(const vectori& id=vectori(),
+				bool removeEmptySubPops=false);
 			population& newPopByIndID(int keepAncestralPops=-1,
 				const vectori& id=vectori(),
 				bool removeEmptySubPops=false);
