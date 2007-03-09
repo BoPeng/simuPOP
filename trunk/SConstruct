@@ -38,6 +38,17 @@ SIMUPOP_VER = '9.9.9'
 all_modu = ['std', 'op', 'la', 'laop', 'ba', 'baop']
 mpi_modu = ['mpi', 'opmpi', 'lampi', 'laopmpi', 'bampi', 'baopmpi']
 
+if not os.path.isfile('SConstruct'):
+    print 'Please run scons from simuPOP source directory.'
+    Exit(1)
+
+# Needs scons 0.96.93
+from SCons import __version__
+version = map(int, __version__.split('.'))
+if version[0] != 0 or version[1] != 96 or version[2] != 93:
+    print "Scons version 0.96.93 is required."
+    Exit(1)
+
 # load all the module information from setup.py
 from setup import *
 
