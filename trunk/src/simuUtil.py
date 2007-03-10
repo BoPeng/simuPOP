@@ -1330,31 +1330,23 @@ def SaveMerlinPedFile(pop, output='', outputExpr='', loci=[], fields=[], header=
         for marker in loci:
             print >> pedOut, pop.locusName(marker),
         print >> pedOut
-    def sexCode(ind):
-        if ind.sex() == Male:
-            return 1
-        else:
-            return 2
-    # disease status: in linkage affected is 2, unaffected is 1
-    def affectedCode(ind):
-        if ind.affected():
-            return affectionCode[1]
-        else:
-            return affectionCode[0]
+    sexCode = {Male:1, Female:2}
+    affectedCode = {False: affectionCode[0], True: affectionCode[1]}
     #
     pldy = pop.ploidy()
     def writeInd(ind, famID, id, fa, mo):
-        print >> pedOut, '%d %d %d %d %d' % (famID, id, fa, mo, sexCode(ind)),
+        print >> pedOut, '%d %d %d %d %d' % (famID, id, fa, mo, sexCode[ind()]),
         if outputAffection:
-            print >> pedOut, affectedCode(ind),
+            print >> pedOut, affectedCode[ind.affected()],
         for f in fields:
             print >> pedOut, '%.3f' % ind.info(f),
-        for marker in loci:
-            if combine is None:
-                for p in range(pldy):
-                    print >> pedOut, "%d" % (ind.allele(marker, p) + shift), 
-            else:
-                print >> pedOut, "%s" % combine([ind.allele(marker, p) for p in range(pldy)]),
+        if combine is None:
+            # for efficiency, assuming diploid population
+            for marker in loci:
+                print >> pedOut, "%d %d" % (ind.allele(marker, 0) + shift, ind.allele(marker, 1) + shift), 
+        else:
+            for marker in loci:
+                print >> pedOut, "%d" % combine([ind.allele(marker, 0), ind.allele(marker, 1)]),
         print >> pedOut
     #
     # number of pedigrees
