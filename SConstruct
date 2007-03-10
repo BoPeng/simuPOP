@@ -29,8 +29,6 @@
 #       This change is handled in setup.py, but not in SConstruct
 #
 import os, sys
-import SCons.Defaults
-import SCons.Tool
 
 # do not update version for this development version to avoid rebuild
 SIMUPOP_REV = '9990'
