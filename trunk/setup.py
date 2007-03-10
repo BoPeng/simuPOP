@@ -75,12 +75,12 @@ from distutils.core import setup, Extension
 # MPI implementation, I use mpiCC only.
 def getMPIFlags():
     ''' get and parse result of mpiCC -showme or mpicc -show'''
-    fin, fout, ferr = os.popen3('mpiCC -show')
+    fout = os.popen('mpiCC -show')
     output = fout.read()
     fout.close()
     #
     if output == '':
-        fin, fout, ferr = os.popen3('mpiCC -showme')
+        fout = os.popen('mpiCC -showme')
         output = fout.read()
         fout.close()
     if output == '':
