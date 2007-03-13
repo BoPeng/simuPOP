@@ -1335,7 +1335,7 @@ def SaveMerlinPedFile(pop, output='', outputExpr='', loci=[], fields=[], header=
     #
     pldy = pop.ploidy()
     def writeInd(ind, famID, id, fa, mo):
-        print >> pedOut, '%d %d %d %d %d' % (famID, id, fa, mo, sexCode[ind()]),
+        print >> pedOut, '%d %d %d %d %d' % (famID, id, fa, mo, sexCode[ind.sex()]),
         if outputAffection:
             print >> pedOut, affectedCode[ind.affected()],
         for f in fields:
