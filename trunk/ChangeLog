@@ -10,6 +10,8 @@ version 0.7.9 - Not released, available at https://svn.sourceforge.net/svnroot/s
   - NEW: separate SaveQTDT in SaveMerlinDatFile, SaveMerlinMapFile and SaveMerlinPedFile
 		SaveQTDT now calls these three functions.
   - NEW: rewrite newPopByIndID and speed up sample generation considerably.
+  - NEW: add scripts/simuHWE.py that demonstrate the temprary deviation from HWE in a
+		population with unequal male and female allele frequencies, from Yaji Xu.
 
 
 version 0.7.8 - (Rev 833( Mar 2, 2007)
