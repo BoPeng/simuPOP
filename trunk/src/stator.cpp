@@ -799,13 +799,6 @@ namespace simuPOP
 		if( m_LD.empty())
 			return true;
 
-		pop.removeVar(LD_String);
-		pop.removeVar(LDPRIME_String);
-		pop.removeVar(R2_String);
-		pop.removeVar(AvgLD_String);
-		pop.removeVar(AvgLDPRIME_String);
-		pop.removeVar(AvgR2_String);
-
 		UINT numSP = pop.numSubPop();
 		UINT nLD = m_LD.size();
 
