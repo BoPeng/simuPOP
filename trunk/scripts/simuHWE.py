@@ -43,7 +43,15 @@ options = [
      'default':0.4,
      'allowedTypes':[types.FloatType, types.LongType],
      'label':'Male Allele Frequency',
-     'description':'Initial allele frequency in males, female frequency is 1-malleleFreq.',
+     'description':'Initial allele frequency in males,',
+     'validate':simuOpt.valueBetween(0, 1)
+    },
+    {'arg':'f:',
+     'longarg':'falleleFreq=',
+     'default':0.7,
+     'allowedTypes':[types.FloatType, types.LongType],
+     'label':'Female Allele Frequency',
+     'description':'Initial allele frequency in females.',
      'validate':simuOpt.valueBetween(0, 1)
     },
     {'longarg':'saveConfig=',
@@ -64,8 +72,7 @@ from simuPOP import *
 allParam = simuOpt.getParam(options, __doc__)
 
 if len(allParam) > 0:    # successfully get the params
-    (help, popSize, endGen, malleleFreq, saveConfig, verbose) = allParam
-    falleleFreq = 1 - malleleFreq
+    (help, popSize, endGen, malleleFreq, falleleFreq, saveConfig, verbose) = allParam
 else:
     sys.exit(0)
 
