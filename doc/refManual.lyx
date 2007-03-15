@@ -8,7 +8,7 @@
 
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.7.6 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.7.9 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. MD Anderson Cancer Center}\\
 {\bf Email: }{\textsf bpeng@mdanderson.org}\\
@@ -14897,9 +14897,48 @@ For each statistics, I will list corresponding parameter (of
 stat
 \family default
 ), variables and mathematics formula if applicable.
- Note that these statistics are dependent to each other.
- For example, heterotype and allele frequency of related loci will be automatica
-lly calculated if linkage diseqilibrium is requested.
+ Note that more than one statistics may be generated for a parameter, and
+ the same set of statistics/variables is calculated for all subpopulations.
+ For example, parameter 
+\family typewriter
+LD=[0,1]
+\family default
+ will calculate various linkage disequilibrium measures like 
+\begin_inset Formula $D$
+\end_inset
+
+, 
+\begin_inset Formula $D'$
+\end_inset
+
+, 
+\begin_inset Formula $r^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta^{2}$
+\end_inset
+
+, and optional single-allele measurements in the multi-allele cases.
+ A quick trick to remember is that you can access subpopulation-specific
+ variables as 
+\family typewriter
+pop.dvars().subPop[1]['alleleFreq'][0][1]
+\family default
+, or simply 
+\family typewriter
+pop.dvars(1).alleleFreq[0][1].
+ 
+\family default
+Similarly, 
+\family typewriter
+pop.vars()['subPop'][1]['alleleFreq'][0][1] 
+\family default
+is the same as 
+\family typewriter
+pop.vars(1)['alleleFreq'][0][1]
+\family default
+.
 \end_layout
 
 \begin_layout Subsubsection*
