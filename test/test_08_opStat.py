@@ -285,18 +285,35 @@ class TestStat(unittest.TestCase):
             Stat(pop, LD=[0,1], haploFreq=[0,1], alleleFreq=[0,1])
         else:
             Stat(pop, LD=[0,1], haploFreq=[0,1], alleleFreq=[0,1])
+        def LD(P11, p1, q1):
+            return P11 - p1*q1
+        def LD_prime(P11, p1, q1):
+            return 0  # fix it
+        def R2(P11, p1, q1):
+            return 0  # fix it
         P11 = pop.dvars().haploFreq['0-1']['0-0']
         p1 = pop.dvars().alleleFreq[0][0]
         q1 = pop.dvars().alleleFreq[1][0]
-        LD0 = P11 - p1*q1
-        print P11, p1, q1, LD0, pop.dvars().LD[0][1]
-        assert (LD0 - pop.dvars().LD[0][1]) < 0.05
+        assert (LD(P11, p1, q1) - pop.dvars().LD[0][1]) < 0.05
+        #assert (LD_prime(P11, p1, q1) - pop.dvars().LD[0][1]) < 0.05
+        #assert (R2(P11, p1, q1) - pop.dvars().LD[0][1]) < 0.05
         for sp in range(3):
             P11 = pop.dvars(sp).haploFreq['0-1']['0-0']
             p1 = pop.dvars(sp).alleleFreq[0][0]
             q1 = pop.dvars(sp).alleleFreq[1][0]
-            LD0 = P11 - p1*q1
-            assert (LD0 - pop.dvars(sp).LD[0][1]) < 0.05
+            assert (LD(P11, p1, q1) - pop.dvars(sp).LD[0][1]) < 0.05
+            #assert (LD_prime(P11, p1, q1) - pop.dvars(sp).LD[0][1]) < 0.05
+            #assert (R2(P11, p1, q1) - pop.dvars(sp).LD[0][1]) < 0.05
+        #
+        # test for single allele cases
+        # for binary alleles, LD should be he same 
+        # for standard or long alleles, LD should be different from average LD
+        Stat(pop, LD=[0,1,0,1], haploFreq=[0,1], midValues=True)
+        P11 = pop.dvars().haploFreq['0-1']['0-0']
+        p1 = pop.dvars().alleleFreq[0][0]
+        q1 = pop.dvars().alleleFreq[1][0]
+        assert (LD(P11, p1, q1) - pop.dvars().ld['0-1']['0-1']) < 0.05
+        
             
  
 
