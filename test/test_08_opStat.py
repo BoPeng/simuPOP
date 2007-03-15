@@ -277,17 +277,28 @@ class TestStat(unittest.TestCase):
             assert abs(pop.dvars().haploFreq['2-5']['3-3'] - 0.5) < 0.05
 
     def testLD(self):
-        'Testing calculation of LD (imcomplete)'
+        'Testing calculation of LD'
         pop = population(subPop=[500,100,1000], 
-            ploidy=2, loci = [4,5])
+            ploidy=2, loci = [2])
         InitByFreq(pop, [.2, .3, .5] )
         if alleleType() == 'binary':
-            # [4,5,0,1] should not make any difference
-            Stat(pop, LD=[[1,2],[4,5,0,1],[2,5]])
+            Stat(pop, LD=[0,1], haploFreq=[0,1], alleleFreq=[0,1])
         else:
-            Stat(pop, LD=[[1,2],[4,5,1,2],[2,5]])
-        #
-        #assert pop.dvars().LD
+            Stat(pop, LD=[0,1], haploFreq=[0,1], alleleFreq=[0,1])
+        P11 = pop.dvars().haploFreq['0-1']['0-0']
+        p1 = pop.dvars().alleleFreq[0][0]
+        q1 = pop.dvars().alleleFreq[1][0]
+        LD0 = P11 - p1*q1
+        print P11, p1, q1, LD0, pop.dvars().LD[0][1]
+        assert (LD0 - pop.dvars().LD[0][1]) < 0.05
+        for sp in range(3):
+            P11 = pop.dvars(sp).haploFreq['0-1']['0-0']
+            p1 = pop.dvars(sp).alleleFreq[0][0]
+            q1 = pop.dvars(sp).alleleFreq[1][0]
+            LD0 = P11 - p1*q1
+            assert (LD0 - pop.dvars(sp).LD[0][1]) < 0.05
+            
+ 
 
 if __name__ == '__main__':
     unittest.main()
