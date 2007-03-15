@@ -793,7 +793,59 @@ namespace simuPOP
 		return true;
 	}
 
-	// calculate, right now,  do not tempt to save values
+	// this function calculate single-allele LD measures
+	// D, D_p and r2 are used to return calculated values.
+	// LD for subpopulation sp is calculated if subPop is true
+	void statLD::calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
+		double & P_A, double & P_B, double & D, double & D_prime, double & r2)
+	{
+		if(subPop)
+		{
+			// get haplotype freq from the m_haploFreq object
+			double P_AB = m_haploFreq.haploFreq(hapLoci, sp)[hapAlleles];
+			// get allele freq from the m_alleleFreq object
+			P_A = m_alleleFreq.alleleFreq(hapAlleles[0], hapLoci[0], sp);
+			P_B = m_alleleFreq.alleleFreq(hapAlleles[1], hapLoci[1], sp);
+
+			// calculate LD
+			D = P_AB - P_A * P_B;
+			// calculate LD'
+			double D_max = D > 0 ? std::min(P_A*(1-P_B), (1-P_A)*P_B):std::min(P_A*P_B,(1-P_A)*(1-P_B));
+			// fcmp_eq is the float comparison operator, which treat (-1e-10, 1e-10) or so as 0 (platform dependent)
+			D_prime = fcmp_eq(D_max, 0.)?0.:D/D_max;
+			r2 = (fcmp_eq(P_A,0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1))?0.:D*D/P_A/(1-P_A)/P_B/(1-P_B);
+
+			// if environmental variable SIMUDEBUG is set to DBG_STAT, or
+			// if TurnOnDebug(DBG_STAT) is called in python, the following will be printed.
+			DBG_DO(DBG_STAT, cout << "LD: subpop " << sp << " : P_AB: " << P_AB
+				<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
+				" LD: " << D << " LD': " << D_prime << " r2: " << r2 << endl);
+
+		}
+		else
+		{
+			// whole population
+			// get haplotype freq
+			double P_AB = m_haploFreq.haploFreq(hapLoci)[hapAlleles];
+			P_A = m_alleleFreq.alleleFreq(hapAlleles[0], hapLoci[0]);
+			P_B = m_alleleFreq.alleleFreq(hapAlleles[1], hapLoci[1]);
+
+			// calculate LD
+			D = P_AB - P_A * P_B;
+			// calculate LD'
+			double D_max = D > 0 ? std::min(P_A*(1-P_B), (1-P_A)*P_B):std::max(P_A*P_B,(1-P_A)*(1-P_B));
+			D_prime = fcmp_eq(D_max, 0)?0:D/D_max;
+			r2 = (fcmp_eq(P_A,0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1))?0:D*D/P_A/(1-P_A)/P_B/(1-P_B);
+
+			DBG_DO(DBG_STAT, cout << "LD: P_AB: " << P_AB
+				<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
+				" LD: " << D << " LD': " << D_prime << " r2: " << r2 << endl);
+		}
+	}
+
+	// this function is called by stat::apply(pop). It is called
+	// after m_alleleFreq.apply(pop) and m_haploFreq.apply(pop) so
+	// allele and haplotype frequencies should be available.
 	bool statLD::apply(population& pop)
 	{
 		if( m_LD.empty())
@@ -808,8 +860,10 @@ namespace simuPOP
 		pop.removeVar(R2_String);
 		pop.removeVar(AvgLDPRIME_String);
 		pop.removeVar(AvgR2_String);
+		// also vars at each subpopulations
 		for( UINT sp=0; sp < numSP;  ++sp)
 		{
+			// subPopVar_String is nothing but subPop[sp]['string']
 			pop.removeVar( subPopVar_String(sp, LD_String));
 			pop.removeVar( subPopVar_String(sp, LDPRIME_String));
 			pop.removeVar( subPopVar_String(sp, R2_String));
@@ -831,169 +885,112 @@ namespace simuPOP
 				hapAlleles[1] = m_LD[i][3];
 
 				for( UINT sp=0; sp < numSP;  ++sp)
-				{								  // all necessary numbers have been applyd
-					// get haplotype freq
-					double P_AB = m_haploFreq.haploFreq(hapLoci, sp)[hapAlleles];
-					double P_A = m_alleleFreq.alleleFreq(m_LD[i][2], m_LD[i][0], sp);
-					double P_B = m_alleleFreq.alleleFreq(m_LD[i][3], m_LD[i][1],sp);
+				{
+					// get LD values, P_A, P_B is ignored.
+					double D = 0;
+					double D_prime = 0;
+					double r2 = 0;
+					double P_A = 0;
+					double P_B = 0;
+					calculateLD(hapLoci, hapAlleles, sp, true, P_A, P_B, D, D_prime, r2);
 
-					// apply LD
-					double D = P_AB - P_A * P_B;
-					// apply LD'
-					double D_max = D > 0 ? std::min(P_A*(1-P_B), (1-P_A)*P_B):std::min(P_A*P_B,(1-P_A)*(1-P_B));
-					double D_prime = fcmp_eq(D_max, 0.)?0.:D/D_max;
-					double r2 = (fcmp_eq(P_A,0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1))?0.:D*D/P_A/(1-P_A)/P_B/(1-P_B);
-
-					DBG_DO(DBG_STAT, cout << "LD: subpop " << sp << " : P_AB: " << P_AB
-						<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
-						" LD: " << D << " LD': " << D_prime << " r2: " << r2 << endl);
-
-					// m_D[sp][key] = D;
-					// m_Dprime[sp][key] = D_prime;
-					// m_r2[sp][key] = r2;
+					// haploKey returns ['a-b'] from array a,b
 					pop.setDoubleVar( subPopVar_String(sp, LD_String) +
 						haploKey( hapLoci) + haploKey(hapAlleles), D);
 					pop.setDoubleVar( subPopVar_String(sp, LDPRIME_String) +
 						haploKey( hapLoci) + haploKey(hapAlleles), D_prime);
 					pop.setDoubleVar( subPopVar_String(sp, R2_String) +
 						haploKey( hapLoci) + haploKey(hapAlleles), r2);
+					// if numSP == 1, use values for the only subpop as whole population
+					if (numSP == 1)
+					{
+						pop.setDoubleVar(LD_String + haploKey( hapLoci) + haploKey(hapAlleles), D);
+						pop.setDoubleVar(LDPRIME_String + haploKey( hapLoci) + haploKey(hapAlleles), D_prime);
+						pop.setDoubleVar(R2_String + haploKey( hapLoci) + haploKey(hapAlleles), r2);
+					}
 				}
 
-				// whole population
-				// get haplotype freq
-				double P_AB = m_haploFreq.haploFreq(hapLoci)[hapAlleles];
-				double P_A = m_alleleFreq.alleleFreq(m_LD[i][2], m_LD[i][0]);
-				double P_B = m_alleleFreq.alleleFreq(m_LD[i][3], m_LD[i][1]);
+				if (numSP > 1)
+				{
+					// whole population, P_A, P_B is ignored
+					double D = 0;
+					double D_prime = 0;
+					double r2 = 0;
+					double P_A = 0;
+					double P_B = 0;
+					calculateLD(hapLoci, hapAlleles, 0, false, P_A, P_B, D, D_prime, r2);
 
-				// apply LD
-				double D = P_AB - P_A * P_B;
-				// apply LD'
-				double D_max = D > 0 ? std::min(P_A*(1-P_B), (1-P_A)*P_B):std::max(P_A*P_B,(1-P_A)*(1-P_B));
-				double D_prime = fcmp_eq(D_max, 0)?0:D/D_max;
-				double r2 = (fcmp_eq(P_A,0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1))?0:D*D/P_A/(1-P_A)/P_B/(1-P_B);
-
-				DBG_DO(DBG_STAT, cout << "LD: P_AB: " << P_AB
-					<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
-					" LD: " << D << " LD': " << D_prime << " r2: " << r2 << endl);
-
-				// m_D[numSP][key] = D;
-				// m_Dprime[numSP][key] = D_prime;
-				// m_r2[numSP][key] = r2;
-				pop.setDoubleVar(LD_String + haploKey( hapLoci) + haploKey(hapAlleles), D);
-				pop.setDoubleVar(LDPRIME_String + haploKey( hapLoci) + haploKey(hapAlleles), D_prime);
-				pop.setDoubleVar(R2_String + haploKey( hapLoci) + haploKey(hapAlleles), r2);
+					pop.setDoubleVar(LD_String + haploKey( hapLoci) + haploKey(hapAlleles), D);
+					pop.setDoubleVar(LDPRIME_String + haploKey( hapLoci) + haploKey(hapAlleles), D_prime);
+					pop.setDoubleVar(R2_String + haploKey( hapLoci) + haploKey(hapAlleles), r2);
+				}
 			}
-			else								  // No alleles, using averages
+			else
 			{
+				// No alleles specified, average over all available alleles
 				vectori hapLoci(2);
 				vectori hapAlleles(2);
 
 				hapLoci[0] = m_LD[i][0];
 				hapLoci[1] = m_LD[i][1];
-				string hapLociStr = toStr("[") + toStr(hapLoci[0])
-					+ toStr("][") + toStr(hapLoci[1]) + toStr("]");
-
-				if( hapLoci[0] == hapLoci[1])	  // meaningless?
-				{
-					for( UINT sp=0; sp < numSP;  ++sp)
-					{
-						pop.setDoubleVar( subPopVar_String(sp, AvgLD_String) + hapLociStr, 0);
-						pop.setDoubleVar( subPopVar_String(sp, AvgLDPRIME_String) + hapLociStr, 0);
-						pop.setDoubleVar( subPopVar_String(sp, AvgR2_String) + hapLociStr, 0);
-					}
-					pop.setDoubleVar( AvgLD_String + hapLociStr, 0);
-					pop.setDoubleVar( AvgLDPRIME_String + hapLociStr, 0);
-					pop.setDoubleVar( AvgR2_String + hapLociStr, 0);
-
-					continue;
-				}
+				string hapLociStr = haploKey(hapLoci);
 
 				// find out all alleles
 				vectori A_alleles = m_alleleFreq.alleles(hapLoci[0]);
 				vectori B_alleles = m_alleleFreq.alleles(hapLoci[1]);
 
-				map<vectori, double>::iterator hapKey;
-
 				for( UINT sp=0; sp < numSP;  ++sp)
 				{
-					map<vectori, double>& hapFreq = m_haploFreq.haploFreq(hapLoci, sp);
-
-					// all necessary numbers have been applyd
 					double D=0.0, D_prime = 0.0, r2 = 0.0;
+					// iterate through all alleles at locus A and B
 					for(vectori::iterator A_ale = A_alleles.begin();
 						A_ale != A_alleles.end(); ++A_ale)
 					{
 						for(vectori::iterator B_ale = B_alleles.begin();
 							B_ale != B_alleles.end(); ++B_ale)
 						{
+							// this is now single allele ...
 							hapAlleles[0] = *A_ale;
 							hapAlleles[1] = *B_ale;
+							double D_ = 0;
+							double D_prime_ = 0;
+							double r2_ = 0;
+							double P_A = 0;
+							double P_B = 0;
+							calculateLD(hapLoci, hapAlleles, sp, true, P_A, P_B, D, D_prime, r2);
 
-							// get haplotype freq
-							double P_AB = (hapKey=hapFreq.find(hapAlleles))==hapFreq.end()?0.:hapKey->second;
-							// alleleFreq(allele, locus, subPop)
-							double P_A = m_alleleFreq.alleleFreq(hapAlleles[0], m_LD[i][0], sp);
-							double P_B = m_alleleFreq.alleleFreq(hapAlleles[1], m_LD[i][1], sp);
-
-							// apply LD
-							double D_ = P_AB - P_A * P_B;
-
+							// store allele-specific LD values as well.
 							if( m_midValues)
 							{
 								pop.setDoubleVar( subPopVar_String(sp, LD_String) + haploKey(hapLoci) +
 									haploKey(hapAlleles), D_);
-								if( numSP == 1)
-									pop.setDoubleVar( LD_String + haploKey(hapLoci) +
-										haploKey(hapAlleles), D_);
-							}
-
-							double D_max = D_ > 0 ? std::min(P_A*(1-P_B), (1-P_A)*P_B):std::min(P_A*P_B,(1-P_A)*(1-P_B));
-
-							double D_prime_ = fcmp_eq(D_max, 0.)?0.:D_/D_max;
-
-							if( m_midValues)
-							{
 								pop.setDoubleVar( subPopVar_String(sp, LDPRIME_String) + haploKey(hapLoci) +
 									haploKey(hapAlleles), D_prime_);
-								if( numSP == 1)
-									pop.setDoubleVar( LDPRIME_String + haploKey(hapLoci) +
-										haploKey(hapAlleles), D_prime_);
-							}
-
-							double r2_ = (fcmp_eq(P_A,0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1))?0.:D_*D_/P_A/(1-P_A)/P_B/(1-P_B);
-
-							if( m_midValues)
-							{
 								pop.setDoubleVar( subPopVar_String(sp, R2_String) + haploKey(hapLoci) +
 									haploKey(hapAlleles), r2_);
+								// if only one subpopulation, set the same value for whole population
 								if( numSP == 1)
+								{
+									pop.setDoubleVar( LD_String + haploKey(hapLoci) +
+										haploKey(hapAlleles), D_);
+									pop.setDoubleVar( LDPRIME_String + haploKey(hapLoci) +
+										haploKey(hapAlleles), D_prime_);
 									pop.setDoubleVar( R2_String + haploKey(hapLoci) +
 										haploKey(hapAlleles), r2_);
+								}
 							}
 
 							D += P_A*P_B*fabs(D_);
 							D_prime += P_A*P_B*fabs(D_prime_);
 							r2 += P_A*P_B*r2_;
-
-							DBG_DO(DBG_STAT, cout << "LD: subpop " << sp
-								<< m_LD[i][0] << m_LD[i][1] << " " << hapAlleles[0] << hapAlleles[1]
-								<< " : P_AB: " << P_AB
-								<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max
-								<< " LD: " << D_ << " LD': " << D_prime_ << " r2: " << r2_ << endl);
 						}
 					}
 
 					// average take average.
-
-					// m_D[sp][key] = D;
-					// m_Dprime[sp][key] = D_prime;
-					// m_r2[sp][key] = r2;
-					// fixme: room for performance impovement.
-					// setStrDictVar instead of setting them one by one.
-					// also may need to save result.
 					pop.setDoubleVar( subPopVar_String(sp, AvgLD_String) + hapLociStr, D);
 					pop.setDoubleVar( subPopVar_String(sp, AvgLDPRIME_String) + hapLociStr, D_prime);
 					pop.setDoubleVar( subPopVar_String(sp, AvgR2_String) + hapLociStr, r2);
+					// if numSP == 1, use the single subpop value as whole pop
 					if( numSP == 1)
 					{
 						pop.setDoubleVar( AvgLD_String + hapLociStr, D);
@@ -1004,8 +1001,6 @@ namespace simuPOP
 
 				if(numSP > 1 )
 				{
-					map< vectori, double>& hapFreq = m_haploFreq.haploFreq(hapLoci);
-
 					double D = 0.0, D_prime = 0.0, r2 = 0.0;
 					for(vectori::iterator A_ale = A_alleles.begin();
 						A_ale != A_alleles.end(); ++A_ale)
@@ -1015,39 +1010,23 @@ namespace simuPOP
 						{
 							hapAlleles[0] = *A_ale;
 							hapAlleles[1] = *B_ale;
-
-							// whole population
-							// get haplotype freq
-							double P_AB = (hapKey=hapFreq.find(hapAlleles))==hapFreq.end()?0.:hapKey->second;
-							double P_A = m_alleleFreq.alleleFreq(hapAlleles[0], m_LD[i][0]);
-							double P_B = m_alleleFreq.alleleFreq(hapAlleles[1], m_LD[i][1]);
-
-							// apply LD
-							double D_ = P_AB - P_A * P_B;
+							double D_ = 0;
+							double D_prime_ = 0;
+							double r2_ = 0;
+							double P_A = 0;
+							double P_B = 0;
+							calculateLD(hapLoci, hapAlleles, 0, false, P_A, P_B, D, D_prime, r2);
 
 							if( m_midValues)
+							{
 								pop.setDoubleVar(LD_String + haploKey(hapLoci) + haploKey(hapAlleles), D_);
-
-							double D_max = D_ > 0 ? std::min(P_A*(1-P_B), (1-P_A)*P_B):std::min(P_A*P_B,(1-P_A)*(1-P_B));
-
-							double D_prime_ = fcmp_eq(D_max, 0.)?0.:D_/D_max;
-
-							if( m_midValues)
 								pop.setDoubleVar(LDPRIME_String + haploKey(hapLoci) + haploKey(hapAlleles), D_prime_);
-
-							double r2_ = (fcmp_eq(P_A,0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1))?0.:D_*D_/P_A/(1-P_A)/P_B/(1-P_B);
-
-							if( m_midValues)
 								pop.setDoubleVar(R2_String + haploKey(hapLoci) + haploKey(hapAlleles), r2_);
+							}
 
 							D += P_A * P_B * fabs(D_);
 							D_prime += P_A * P_B * fabs(D_prime_);
 							r2 += P_A * P_B * r2_;
-
-							DBG_DO(DBG_STAT, cout <<  m_LD[i][0] << m_LD[i][1] << hapAlleles[0] << hapAlleles[1]
-								<< "LD: P_AB: " << P_AB  << " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max
-								<< " LD: " << D_ << " LD': " << D_prime_ << " r2: " << r2_ << endl);
-
 						}						  // all haplotypes
 					}
 					pop.setDoubleVar( AvgLD_String + hapLociStr, D);
