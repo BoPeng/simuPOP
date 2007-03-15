@@ -865,15 +865,25 @@ namespace simuPOP
 	{
 		private:
 
+			// these are names of calcualted statistics, will be accessed like
+			// pop.dvars().r2 or pop.vars()['r2']
 #define   LD_String           "ld"
 #define   LDPRIME_String      "ld_prime"
 #define   R2_String           "r2"
+			// these are LD averaged across all alleles
+			// for diallelic loci, they are the same as single-allele values
 #define   AvgLD_String        "LD"
 #define   AvgLDPRIME_String   "LD_prime"
 #define   AvgR2_String        "R2"
 
 		public:
 
+			// alleleFreq and haploFreq is required to calculate LD
+			// needed allele and halplotype are added to alleleFreq and haploFreq
+			// objects during the initialization of statLD, as well as stat.
+			// In stat::apply(), alleleFreq.apply() and haploFreq.apply()
+			// is called before statLD.apply() and ensures that allele frequencies
+			// are calculated when statLD needs them.
 			statLD(statAlleleFreq& alleleFreq, statHaploFreq& haploFreq,
 				const intMatrix& LD=intMatrix(), bool midValues=false)
 				:m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
@@ -881,14 +891,26 @@ namespace simuPOP
 			{
 				for( size_t i=0, iEnd = m_LD.size(); i < iEnd; ++i)
 				{
-					if( m_LD[i].size() != 2 && m_LD[i].size() != 4 )
-						throw ValueError("Expecting [locus locus [allele allele ]] items");
+					// these asserts will only be checked in non-optimized modules
+					DBG_FAILIF(m_LD[i].size() != 2 && m_LD[i].size() != 4,
+						ValueError, "Expecting [locus locus [allele allele ]] items");
 
-					// what we will need?
-					// 1. allele freq
+					DBG_FAILIF(m_LD[i][0] == m_LD[i][1],
+						ValueError, "LD has to be calculated between different loci");
+
+					// midValues is used to tell alleleFreq that the calculated allele
+					// frequency values should not be posted to pop.dvars()
+					//
+					// That is to say,
+					//     stat(LD=[0,1])
+					// will not generate
+					//     pop.dvars().alleleFreq
+					// unless stat() is called as
+					//     stat(LD=[0,1], midValues=True)
+					//
 					m_alleleFreq.addLocus( m_LD[i][0], midValues );
 					m_alleleFreq.addLocus( m_LD[i][1], midValues );
-					// 2. haplotype
+					// also need haplotype.
 					vectori hap(2);
 					hap[0] = m_LD[i][0];
 					hap[1] = m_LD[i][1];
@@ -898,6 +920,12 @@ namespace simuPOP
 
 			// calculate, right now,  do not tempt to save values
 			bool apply(population& pop);
+
+		private:
+
+			// calculate single allele LD values
+			void calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
+				double & P_A, double & P_B, double & D, double & D_prime, double & r2);
 
 		private:
 
