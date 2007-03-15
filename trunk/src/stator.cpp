@@ -933,7 +933,8 @@ namespace simuPOP
 
 				hapLoci[0] = m_LD[i][0];
 				hapLoci[1] = m_LD[i][1];
-				string hapLociStr = haploKey(hapLoci);
+				string hapLociStr = '[' + toStr(hapLoci[0]) + "][" + 
+					toStr(hapLoci[1]) + ']';
 
 				// find out all alleles
 				vectori A_alleles = m_alleleFreq.alleles(hapLoci[0]);
