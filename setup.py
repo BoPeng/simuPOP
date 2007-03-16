@@ -544,14 +544,8 @@ elif os.name == 'posix':
     elif sys.platform == 'darwin':    # MacOS
         shutil.copy('config_mac.h', 'config.h')
 else:
-    try:
-        open('config.h')
-        close('config.h')
-        print "Warning: Unknown system type. Using existing config.h"
-    except IOError:
-        print "Error: Unknown system type. Use configure to generate config.h."
-        sys.exit()
-
+    # otherwise, assume a posix system
+    shutil.copy('config_linux.h', 'config.h')
 
 if __name__ == '__main__':
     # for every official release, there will be a file recording release info
