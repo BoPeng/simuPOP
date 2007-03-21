@@ -354,7 +354,7 @@ namespace simuPOP
 		for( size_t i = 0; i < numLoci; ++i)
 		{
 			UINT loc = m_atLoci[i];
-			DBG_DO(DBG_STAT, cout << "Counting heterozygotes at locus " << loc << endl);
+			DBG_DO(DBG_STATOR, cout << "Counting heterozygotes at locus " << loc << endl);
 
 			vectori& sum = m_heteroNum[resIdx(i)];
 			fill(sum.begin(), sum.end(), 0);
@@ -614,7 +614,7 @@ namespace simuPOP
 			// for each subpopulation
 			for( UINT sp=0; sp < numSP;  ++sp)
 			{
-				DBG_DO(DBG_STAT, cout << "Counting genotypes at locus " <<
+				DBG_DO(DBG_STATOR, cout << "Counting genotypes at locus " <<
 					loc << " subPop " << sp << endl);
 
 				vector<intDict> num;
@@ -711,7 +711,7 @@ namespace simuPOP
 
 		UINT numSP = pop.numSubPop();
 
-		DBG_DO(DBG_STAT, cout << "Counting haplotypes" << endl);
+		DBG_DO(DBG_STATOR, cout << "Counting haplotypes" << endl);
 
 		// clear all statistics
 		for(size_t h = 0; h < nHap*(numSP+1); ++h)
@@ -815,9 +815,9 @@ namespace simuPOP
 			D_prime = fcmp_eq(D_max, 0.)?0.:D/D_max;
 			r2 = (fcmp_eq(P_A,0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1))?0.:D*D/P_A/(1-P_A)/P_B/(1-P_B);
 
-			// if environmental variable SIMUDEBUG is set to DBG_STAT, or
+			// if environmental variable SIMUDEBUG is set to DBG_STATOR, or
 			// if TurnOnDebug(DBG_STAT) is called in python, the following will be printed.
-			DBG_DO(DBG_STAT, cout << "LD: subpop " << sp << " : P_AB: " << P_AB
+			DBG_DO(DBG_STATOR, cout << "LD: subpop " << sp << " : P_AB: " << P_AB
 				<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
 				" LD: " << D << " LD': " << D_prime << " r2: " << r2 << endl);
 
@@ -837,7 +837,7 @@ namespace simuPOP
 			D_prime = fcmp_eq(D_max, 0)?0:D/D_max;
 			r2 = (fcmp_eq(P_A,0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1))?0:D*D/P_A/(1-P_A)/P_B/(1-P_B);
 
-			DBG_DO(DBG_STAT, cout << "LD: P_AB: " << P_AB
+			DBG_DO(DBG_STATOR, cout << "LD: P_AB: " << P_AB
 				<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
 				" LD: " << D << " LD': " << D_prime << " r2: " << r2 << endl);
 		}
@@ -1073,7 +1073,7 @@ namespace simuPOP
 			// get all available alleles
 			vectori alleles = m_alleleFreq.alleles(loc);
 
-			DBG_DO(DBG_STAT, cout << "Using alleles " << alleles << endl);
+			DBG_DO(DBG_STATOR, cout << "Using alleles " << alleles << endl);
 
 			// n_bar
 			double r = numSP;
@@ -1118,12 +1118,12 @@ namespace simuPOP
 				b += n_bar / (n_bar -1 )* ( p_bar *(1-p_bar) - (r-1)/r * s_2 - (2 * n_bar -1 )/(4.*n_bar)* h_bar );
 				c += h_bar /2.;
 
-				DBG_DO(DBG_STAT, cout << "allele " << *ale << "\tn_c: " << n_c
+				DBG_DO(DBG_STATOR, cout << "allele " << *ale << "\tn_c: " << n_c
 					<< "\tp_i: " << p_i << "\tp_bar: " << p_bar << "\ts^2: " << s_2 << "\th_bar:"
 					<< h_bar << "\ta: " << a << "\tb: " << b << "\tc: " << c << endl);
 			}									  // each allele
 
-			DBG_DO(DBG_STAT, cout << "Fst= " << a/(a+b+c) << endl);
+			DBG_DO(DBG_STATOR, cout << "Fst= " << a/(a+b+c) << endl);
 
 			if( static_cast<size_t>(loc) >= m_Fst.size())
 			{

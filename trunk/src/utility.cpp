@@ -147,8 +147,16 @@ namespace simuPOP
 	{
 #ifndef OPTIMIZED
 		for(int i=0; i < DBG_CODE_LENGTH; ++i)
+		{
 			if( code == g_dbgString[i])
+			{
 				TurnOnDebug(static_cast<DBG_CODE>(i));
+				return;
+			}
+		}
+		// this line should not have been reached
+		cout << "Wrong DEBUG name " << code << endl
+			<< "Please check it against the result of ListDebugCode()" << endl;
 #endif
 	}
 
