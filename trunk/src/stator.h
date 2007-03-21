@@ -870,11 +870,13 @@ namespace simuPOP
 #define   LD_String           "ld"
 #define   LDPRIME_String      "ld_prime"
 #define   R2_String           "r2"
+#define   DELTA2_String       "delta2"
 			// these are LD averaged across all alleles
 			// for diallelic loci, they are the same as single-allele values
 #define   AvgLD_String        "LD"
 #define   AvgLDPRIME_String   "LD_prime"
 #define   AvgR2_String        "R2"
+#define   AvgDELTA2_String    "Delta2"
 
 		public:
 
@@ -925,7 +927,7 @@ namespace simuPOP
 
 			// calculate single allele LD values
 			void calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
-				double & P_A, double & P_B, double & D, double & D_prime, double & r2);
+				double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2);
 
 		private:
 

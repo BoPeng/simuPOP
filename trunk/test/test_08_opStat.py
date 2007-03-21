@@ -10,7 +10,7 @@
 
 
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=False)
 
 from simuPOP import *
 import unittest, os, sys, exceptions
@@ -181,7 +181,7 @@ class TestStat(unittest.TestCase):
             self.assertEqual(pop.dvars(2).heteroFreq[0][3], 0.5)
         
     def testExpHetero(self):
-        'Testing expected heterozygosity 1-sum p_i^2'
+        'Testing expected heterozygosity 1-sum p_i2'
         pop = population(subPop=[500,100,1000], 
             ploidy=2, loci = [1])
         InitByValue(pop, 
@@ -276,46 +276,116 @@ class TestStat(unittest.TestCase):
             assert abs(pop.dvars().haploFreq['2-5']['2-2'] - 0.3) < 0.05
             assert abs(pop.dvars().haploFreq['2-5']['3-3'] - 0.5) < 0.05
 
-    def testLD(self):
-        'Testing calculation of LD'
+    def TestLD(self, freq):
+        'Testing calculation of LD for a particular freq'
+        #TurnOnDebug(DBG_STATOR)
         pop = population(subPop=[500,100,1000], 
-            ploidy=2, loci = [2])
-        InitByFreq(pop, [.2, .3, .5] )
+            ploidy=2, loci = [5])
+        InitByFreq(pop, freq)
         if alleleType() == 'binary':
-            Stat(pop, LD=[0,1], haploFreq=[0,1], alleleFreq=[0,1])
+            Stat(pop, LD=[2,4], haploFreq=[2,4], alleleFreq=[2,4], numOfAlleles=[2,4])
         else:
-            Stat(pop, LD=[0,1], haploFreq=[0,1], alleleFreq=[0,1])
-        def LD(P11, p1, q1):
-            return P11 - p1*q1
-        def LD_prime(P11, p1, q1):
-            return 0  # fix it
-        def R2(P11, p1, q1):
-            return 0  # fix it
-        P11 = pop.dvars().haploFreq['0-1']['0-0']
-        p1 = pop.dvars().alleleFreq[0][0]
-        q1 = pop.dvars().alleleFreq[1][0]
-        assert (LD(P11, p1, q1) - pop.dvars().LD[0][1]) < 0.05
-        #assert (LD_prime(P11, p1, q1) - pop.dvars().LD[0][1]) < 0.05
-        #assert (R2(P11, p1, q1) - pop.dvars().LD[0][1]) < 0.05
+            Stat(pop, LD=[2,4], haploFreq=[2,4], alleleFreq=[2,4], numOfAlleles=[2,4])
+        def LD_single(var, loc1, loc2, allele1, allele2):
+            p = var.alleleFreq[loc1][allele1]
+            q = var.alleleFreq[loc2][allele2]
+            pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
+            return pq-p*q    
+        def LD(var, loc1, loc2):
+            LD = 0
+            #allele1 is alleles in loc1
+            for allele1 in range(len(var.alleleFreq[loc1])):
+                for allele2 in range(len(var.alleleFreq[loc2])):
+                    p = var.alleleFreq[loc1][allele1]
+                    q = var.alleleFreq[loc2][allele2]
+                    LD += p*q*abs(LD_single(var, loc1, loc2, allele1, allele2))
+            return LD
+        def LD_prime_single(var, loc1, loc2, allele1, allele2):
+            p = var.alleleFreq[loc1][allele1]
+            q = var.alleleFreq[loc2][allele2]
+            pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
+            D = pq - p*q
+            if D < 0:
+                Dmax = min(p*q, (1 - p)*(1 - q))
+            else:
+                Dmax = min((1 - p)*q, p*(1 - q))
+            return D/Dmax
+        def LD_prime(var, loc1, loc2):
+            LD_prime = 0
+            #allele1 is alleles in loc1
+            for allele1 in range(len(var.alleleFreq[loc1])):
+                for allele2 in range(len(var.alleleFreq[loc2])):
+                    p = var.alleleFreq[loc1][allele1]
+                    q = var.alleleFreq[loc2][allele2]
+                    LD_prime += p*q*abs(LD_prime_single(var, loc1, loc2, allele1, allele2))
+            return LD_prime
+        def R2_single(var, loc1, loc2, allele1, allele2):
+            p = var.alleleFreq[loc1][allele1]
+            q = var.alleleFreq[loc2][allele2]
+            pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
+            return (pq-p*q)**2/(p*q*(1-p)*(1-q))            
+        def R2(var, loc1, loc2):
+            R2 = 0
+            #allele1 is alleles in loc1
+            for allele1 in range(len(var.alleleFreq[loc1])):
+                for allele2 in range(len(var.alleleFreq[loc2])):
+                    p = var.alleleFreq[loc1][allele1]
+                    q = var.alleleFreq[loc2][allele2]
+                    R2 += p*q*R2_single(var, loc1, loc2, allele1, allele2)
+            return R2
+        def Delta2(var, loc1, loc2):
+            P11 = var.haploFreq['%d-%d' % (loc1, loc2)]['0-0']
+            P12 = var.haploFreq['%d-%d' % (loc1, loc2)]['0-1']
+            P21 = var.haploFreq['%d-%d' % (loc1, loc2)]['1-0']
+            P22 = var.haploFreq['%d-%d' % (loc1, loc2)]['1-1']
+            p1 = var.alleleFreq[loc1][0]
+            q1 = var.alleleFreq[loc2][0]
+            return (P11*P22-P12*P21)**2/(p1*(1-p1)*q1*(1-q1))
+        #import simuUtil
+        #simuUtil.ListVars(pop.dvars())
+        assert (LD(pop.dvars(), 2, 4) - pop.dvars().LD[2][4]) < 1e-6
+        assert (LD_prime(pop.dvars(), 2, 4) - pop.dvars().LD_prime[2][4]) < 1e-6
+        assert (R2(pop.dvars(), 2, 4) - pop.dvars().R2[2][4]) < 1e-6
+        if pop.dvars().numOfAlleles[2] > 2 or pop.dvars().numOfAlleles[4] > 2 :
+            assert not pop.vars().has_key('Delta2')
+        else:
+            assert (Delta2(pop.dvars(), 2, 4) - pop.dvars().Delta2[2][4]) < 1e-6
         for sp in range(3):
-            P11 = pop.dvars(sp).haploFreq['0-1']['0-0']
-            p1 = pop.dvars(sp).alleleFreq[0][0]
-            q1 = pop.dvars(sp).alleleFreq[1][0]
-            assert (LD(P11, p1, q1) - pop.dvars(sp).LD[0][1]) < 0.05
-            #assert (LD_prime(P11, p1, q1) - pop.dvars(sp).LD[0][1]) < 0.05
-            #assert (R2(P11, p1, q1) - pop.dvars(sp).LD[0][1]) < 0.05
+            assert (LD(pop.dvars(sp), 2, 4) - pop.dvars(sp).LD[2][4]) < 1e-6
+            assert (LD_prime(pop.dvars(sp), 2, 4) - pop.dvars(sp).LD_prime[2][4]) < 1e-6
+            assert (R2(pop.dvars(sp), 2, 4) - pop.dvars(sp).R2[2][4]) < 1e-6
+            if pop.dvars(sp).numOfAlleles[2] > 2 or pop.dvars(sp).numOfAlleles[4] > 2 :
+                assert not pop.vars(sp).has_key('Delta2')
+                #self.assertRaises(exceptions.AttributeError, pop.dvars(sp).Delta2)
+            else:
+                assert (Delta2(pop.dvars(sp), 2, 4) - pop.dvars(sp).Delta2[2][4]) < 1e-6
         #
         # test for single allele cases
-        # for binary alleles, LD should be he same 
+        # for binary alleles, LD should be the same 
         # for standard or long alleles, LD should be different from average LD
-        Stat(pop, LD=[0,1,0,1], haploFreq=[0,1], midValues=True)
-        P11 = pop.dvars().haploFreq['0-1']['0-0']
-        p1 = pop.dvars().alleleFreq[0][0]
-        q1 = pop.dvars().alleleFreq[1][0]
-        assert (LD(P11, p1, q1) - pop.dvars().ld['0-1']['0-1']) < 0.05
+        Stat(pop, LD=[1,3,0,1], haploFreq=[0,1], midValues=True)
+        assert (abs(LD_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().ld['1-3']['0-1'])) < 1e-6
+        assert (abs(LD_prime_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().ld_prime['1-3']['0-1'])) < 1e-6
+        assert (abs(R2_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().r2['1-3']['0-1'])) < 1e-6
+        if pop.dvars().numOfAlleles[1] > 2 or pop.dvars().numOfAlleles[3] > 2 :
+            assert not pop.vars().has_key('delta2')
+        else:
+            assert (abs(Delta2(pop.dvars(), 1, 3)) - abs(pop.dvars().delta2['1-3']['0-1'])) < 1e-6
+        for sp in range(3):
+            assert (abs(LD_single(pop.dvars(sp), 1, 3, 0, 1)) - abs(pop.dvars(sp).ld['1-3']['0-1'])) < 1e-6
+            assert (abs(LD_prime_single(pop.dvars(sp), 1, 3, 0, 1)) - abs(pop.dvars(sp).ld_prime['1-3']['0-1'])) < 1e-6
+            assert (abs(R2_single(pop.dvars(sp), 1, 3, 0, 1)) - abs(pop.dvars(sp).r2['1-3']['0-1'])) < 1e-6
+            if pop.dvars(sp).numOfAlleles[1] > 2 or pop.dvars(sp).numOfAlleles[3] > 2:
+                assert not pop.vars().has_key('delta2')
+            else:
+                assert (abs(Delta2(pop.dvars(sp), 1, 3)) - abs(pop.dvars(sp).delta2['1-3']['0-1'])) < 1e-6
+                
         
-            
- 
-
+    def testLD(self):
+        '''Testing LD for both dialleleic and multi-allelic cases'''
+        self.TestLD([.2, .8])
+        self.TestLD([.2, .3, .5])
+                
+                
 if __name__ == '__main__':
     unittest.main()
