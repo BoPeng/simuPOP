@@ -797,7 +797,7 @@ namespace simuPOP
 	// D, D_p and r2 are used to return calculated values.
 	// LD for subpopulation sp is calculated if subPop is true
 	void statLD::calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
-		double & P_A, double & P_B, double & D, double & D_prime, double & r2)
+		double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2)
 	{
 		if(subPop)
 		{
@@ -814,12 +814,13 @@ namespace simuPOP
 			// fcmp_eq is the float comparison operator, which treat (-1e-10, 1e-10) or so as 0 (platform dependent)
 			D_prime = fcmp_eq(D_max, 0.)?0.:D/D_max;
 			r2 = (fcmp_eq(P_A,0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1))?0.:D*D/P_A/(1-P_A)/P_B/(1-P_B);
-
+			// calculate delta2
+			delta2 = (fcmp_eq(P_A,0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1))?0.:pow((P_AB*((1-P_A)-(P_B-P_AB))-(P_A-P_AB)*(P_B-P_AB)), 2)/(P_A*(1-P_A)*P_B*(1-P_B));
 			// if environmental variable SIMUDEBUG is set to DBG_STATOR, or
-			// if TurnOnDebug(DBG_STAT) is called in python, the following will be printed.
+			// if TurnOnDebug(DBG_STATOR) is called in python, the following will be printed.
 			DBG_DO(DBG_STATOR, cout << "LD: subpop " << sp << " : P_AB: " << P_AB
 				<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
-				" LD: " << D << " LD': " << D_prime << " r2: " << r2 << endl);
+				" LD: " << D << " LD': " << D_prime << " r2: " << r2 << " delta2: " << delta2 << endl);
 
 		}
 		else
@@ -833,13 +834,14 @@ namespace simuPOP
 			// calculate LD
 			D = P_AB - P_A * P_B;
 			// calculate LD'
-			double D_max = D > 0 ? std::min(P_A*(1-P_B), (1-P_A)*P_B):std::max(P_A*P_B,(1-P_A)*(1-P_B));
+			double D_max = D > 0 ? std::min(P_A*(1-P_B), (1-P_A)*P_B):std::min(P_A*P_B,(1-P_A)*(1-P_B));
 			D_prime = fcmp_eq(D_max, 0)?0:D/D_max;
 			r2 = (fcmp_eq(P_A,0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1))?0:D*D/P_A/(1-P_A)/P_B/(1-P_B);
+			delta2 = (fcmp_eq(P_A,0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1))?0.:pow((P_AB*((1-P_A)-(P_B-P_AB))-(P_A-P_AB)*(P_B-P_AB)), 2)/(P_A*(1-P_A)*P_B*(1-P_B));
 
 			DBG_DO(DBG_STATOR, cout << "LD: P_AB: " << P_AB
 				<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
-				" LD: " << D << " LD': " << D_prime << " r2: " << r2 << endl);
+				" LD: " << D << " LD': " << D_prime << " r2: " << r2 << " delta2: " << delta2 << endl);
 		}
 	}
 
@@ -853,13 +855,18 @@ namespace simuPOP
 
 		UINT numSP = pop.numSubPop();
 		UINT nLD = m_LD.size();
+		// used for delta2 which can only be computed for 2 alleles
+		vectori numofalleles = m_alleleFreq.numOfAlleles();
+		bool valid_delta2 = false;
 
 		// remove previous values.
 		pop.removeVar(LD_String);
 		pop.removeVar(LDPRIME_String);
 		pop.removeVar(R2_String);
+		pop.removeVar(DELTA2_String);
 		pop.removeVar(AvgLDPRIME_String);
 		pop.removeVar(AvgR2_String);
+		pop.removeVar(AvgDELTA2_String);
 		// also vars at each subpopulations
 		for( UINT sp=0; sp < numSP;  ++sp)
 		{
@@ -867,10 +874,11 @@ namespace simuPOP
 			pop.removeVar( subPopVar_String(sp, LD_String));
 			pop.removeVar( subPopVar_String(sp, LDPRIME_String));
 			pop.removeVar( subPopVar_String(sp, R2_String));
+			pop.removeVar( subPopVar_String(sp, DELTA2_String));
 			pop.removeVar( subPopVar_String(sp, AvgLDPRIME_String));
 			pop.removeVar( subPopVar_String(sp, AvgR2_String));
+			pop.removeVar( subPopVar_String(sp, AvgDELTA2_String));
 		}
-
 		for(size_t i=0; i < nLD; ++i)
 		{
 			// specifying alleles
@@ -881,6 +889,8 @@ namespace simuPOP
 
 				hapLoci[0] = m_LD[i][0];
 				hapLoci[1] = m_LD[i][1];
+				if (numofalleles[hapLoci[0]] <= 2 && numofalleles[hapLoci[1]] <= 2)
+					valid_delta2 = true;
 				hapAlleles[0] = m_LD[i][2];
 				hapAlleles[1] = m_LD[i][3];
 
@@ -890,9 +900,10 @@ namespace simuPOP
 					double D = 0;
 					double D_prime = 0;
 					double r2 = 0;
+					double delta2 = 0;
 					double P_A = 0;
 					double P_B = 0;
-					calculateLD(hapLoci, hapAlleles, sp, true, P_A, P_B, D, D_prime, r2);
+					calculateLD(hapLoci, hapAlleles, sp, true, P_A, P_B, D, D_prime, r2, delta2);
 
 					// haploKey returns ['a-b'] from array a,b
 					pop.setDoubleVar( subPopVar_String(sp, LD_String) +
@@ -901,12 +912,17 @@ namespace simuPOP
 						haploKey( hapLoci) + haploKey(hapAlleles), D_prime);
 					pop.setDoubleVar( subPopVar_String(sp, R2_String) +
 						haploKey( hapLoci) + haploKey(hapAlleles), r2);
+					if (valid_delta2)
+						pop.setDoubleVar( subPopVar_String(sp, DELTA2_String) +
+							haploKey( hapLoci) + haploKey(hapAlleles), delta2);
 					// if numSP == 1, use values for the only subpop as whole population
 					if (numSP == 1)
 					{
 						pop.setDoubleVar(LD_String + haploKey( hapLoci) + haploKey(hapAlleles), D);
 						pop.setDoubleVar(LDPRIME_String + haploKey( hapLoci) + haploKey(hapAlleles), D_prime);
 						pop.setDoubleVar(R2_String + haploKey( hapLoci) + haploKey(hapAlleles), r2);
+						if (valid_delta2)
+							pop.setDoubleVar(DELTA2_String + haploKey( hapLoci) + haploKey(hapAlleles), delta2);
 					}
 				}
 
@@ -916,13 +932,16 @@ namespace simuPOP
 					double D = 0;
 					double D_prime = 0;
 					double r2 = 0;
+					double delta2 = 0;
 					double P_A = 0;
 					double P_B = 0;
-					calculateLD(hapLoci, hapAlleles, 0, false, P_A, P_B, D, D_prime, r2);
+					calculateLD(hapLoci, hapAlleles, 0, false, P_A, P_B, D, D_prime, r2, delta2);
 
 					pop.setDoubleVar(LD_String + haploKey( hapLoci) + haploKey(hapAlleles), D);
 					pop.setDoubleVar(LDPRIME_String + haploKey( hapLoci) + haploKey(hapAlleles), D_prime);
 					pop.setDoubleVar(R2_String + haploKey( hapLoci) + haploKey(hapAlleles), r2);
+					if (valid_delta2)
+						pop.setDoubleVar(DELTA2_String + haploKey( hapLoci) + haploKey(hapAlleles), delta2);
 				}
 			}
 			else
@@ -933,7 +952,9 @@ namespace simuPOP
 
 				hapLoci[0] = m_LD[i][0];
 				hapLoci[1] = m_LD[i][1];
-				string hapLociStr = '[' + toStr(hapLoci[0]) + "][" + 
+				if (numofalleles[hapLoci[0]] <= 2 && numofalleles[hapLoci[1]] <= 2)
+					valid_delta2 = true;
+				string hapLociStr = '[' + toStr(hapLoci[0]) + "][" +
 					toStr(hapLoci[1]) + ']';
 
 				// find out all alleles
@@ -942,7 +963,7 @@ namespace simuPOP
 
 				for( UINT sp=0; sp < numSP;  ++sp)
 				{
-					double D=0.0, D_prime = 0.0, r2 = 0.0;
+					double D=0.0, D_prime = 0.0, r2 = 0.0, delta2 = 0.0;
 					// iterate through all alleles at locus A and B
 					for(vectori::iterator A_ale = A_alleles.begin();
 						A_ale != A_alleles.end(); ++A_ale)
@@ -956,9 +977,10 @@ namespace simuPOP
 							double D_ = 0;
 							double D_prime_ = 0;
 							double r2_ = 0;
+							double delta2_ = 0;
 							double P_A = 0;
 							double P_B = 0;
-							calculateLD(hapLoci, hapAlleles, sp, true, P_A, P_B, D, D_prime, r2);
+							calculateLD(hapLoci, hapAlleles, sp, true, P_A, P_B, D_, D_prime_, r2_, delta2_);
 
 							// store allele-specific LD values as well.
 							if( m_midValues)
@@ -969,6 +991,9 @@ namespace simuPOP
 									haploKey(hapAlleles), D_prime_);
 								pop.setDoubleVar( subPopVar_String(sp, R2_String) + haploKey(hapLoci) +
 									haploKey(hapAlleles), r2_);
+								if (valid_delta2)
+									pop.setDoubleVar( subPopVar_String(sp, DELTA2_String) + haploKey(hapLoci) +
+										haploKey(hapAlleles), delta2_);
 								// if only one subpopulation, set the same value for whole population
 								if( numSP == 1)
 								{
@@ -978,12 +1003,18 @@ namespace simuPOP
 										haploKey(hapAlleles), D_prime_);
 									pop.setDoubleVar( R2_String + haploKey(hapLoci) +
 										haploKey(hapAlleles), r2_);
+									if (valid_delta2)
+										pop.setDoubleVar( DELTA2_String + haploKey(hapLoci) +
+											haploKey(hapAlleles), delta2_);
 								}
 							}
 
 							D += P_A*P_B*fabs(D_);
 							D_prime += P_A*P_B*fabs(D_prime_);
 							r2 += P_A*P_B*r2_;
+							if (valid_delta2)
+								delta2 += P_A*P_B*delta2_;
+							DBG_DO(DBG_STATOR, cout << "Sum D " << D << " D' " << D_prime <<" r2 " << r2 << endl);
 						}
 					}
 
@@ -991,18 +1022,22 @@ namespace simuPOP
 					pop.setDoubleVar( subPopVar_String(sp, AvgLD_String) + hapLociStr, D);
 					pop.setDoubleVar( subPopVar_String(sp, AvgLDPRIME_String) + hapLociStr, D_prime);
 					pop.setDoubleVar( subPopVar_String(sp, AvgR2_String) + hapLociStr, r2);
+					if (valid_delta2)
+						pop.setDoubleVar( subPopVar_String(sp, AvgDELTA2_String) + hapLociStr, delta2);
 					// if numSP == 1, use the single subpop value as whole pop
 					if( numSP == 1)
 					{
 						pop.setDoubleVar( AvgLD_String + hapLociStr, D);
 						pop.setDoubleVar( AvgLDPRIME_String + hapLociStr, D_prime);
 						pop.setDoubleVar( AvgR2_String + hapLociStr, r2);
+						if (valid_delta2)
+							pop.setDoubleVar( AvgDELTA2_String + hapLociStr, delta2);
 					}
 				}
 
 				if(numSP > 1 )
 				{
-					double D = 0.0, D_prime = 0.0, r2 = 0.0;
+					double D = 0.0, D_prime = 0.0, r2 = 0.0, delta2 = 0.0;
 					for(vectori::iterator A_ale = A_alleles.begin();
 						A_ale != A_alleles.end(); ++A_ale)
 					{
@@ -1014,25 +1049,33 @@ namespace simuPOP
 							double D_ = 0;
 							double D_prime_ = 0;
 							double r2_ = 0;
+							double delta2_ = 0;
 							double P_A = 0;
 							double P_B = 0;
-							calculateLD(hapLoci, hapAlleles, 0, false, P_A, P_B, D, D_prime, r2);
+							calculateLD(hapLoci, hapAlleles, 0, false, P_A, P_B, D_, D_prime_, r2_, delta2_);
 
 							if( m_midValues)
 							{
 								pop.setDoubleVar(LD_String + haploKey(hapLoci) + haploKey(hapAlleles), D_);
 								pop.setDoubleVar(LDPRIME_String + haploKey(hapLoci) + haploKey(hapAlleles), D_prime_);
 								pop.setDoubleVar(R2_String + haploKey(hapLoci) + haploKey(hapAlleles), r2_);
+								if (valid_delta2)
+									pop.setDoubleVar(DELTA2_String + haploKey(hapLoci) + haploKey(hapAlleles), delta2_);
 							}
 
 							D += P_A * P_B * fabs(D_);
 							D_prime += P_A * P_B * fabs(D_prime_);
 							r2 += P_A * P_B * r2_;
+							if (valid_delta2)
+								delta2 += P_A * P_B * delta2_;
+							DBG_DO(DBG_STATOR, cout << "Sum D " << D << " D' " << D_prime <<" r2 " << r2 << endl);
 						}						  // all haplotypes
 					}
 					pop.setDoubleVar( AvgLD_String + hapLociStr, D);
 					pop.setDoubleVar( AvgLDPRIME_String + hapLociStr, D_prime);
 					pop.setDoubleVar( AvgR2_String + hapLociStr, r2);
+					if (valid_delta2)
+						pop.setDoubleVar( AvgDELTA2_String + hapLociStr, delta2);
 				}								  // length 2
 			}
 		}										  // for all LD

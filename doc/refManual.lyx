@@ -15723,7 +15723,8 @@ D' & = & D/D_{max}\\
 D_{max} & = & \begin{cases}
 \min\left(P_{A}\left(1-P_{B}\right),\left(1-P_{A}\right)P_{B}\right) & \textrm{if }D\geq0\\
 \min\left(P_{A}P_{B},\left(1-P_{A}\right)\left(1-P_{B}\right)\right) & \textrm{if }D<0\end{cases}\\
-r^{2} & = & \frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)}\end{eqnarray*}
+r^{2} & = & \frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)}\\
+\Delta^{2} & = & \frac{\left(P_{ab}P_{AB}-P_{aB}P_{Ab}\right)^{2}}{P_{a}P_{A}P_{b}P_{B}}\end{eqnarray*}
 
 \end_inset
 
@@ -15797,6 +15798,14 @@ th allele on loc1 and the
 \end_inset
 
 th allele on loc2.
+ 
+\begin_inset Formula $\Delta^{2}$
+\end_inset
+
+ is only valid for diallelic markers so the statistics will not be reported
+ when either marker has more than two alleles.
+ Single-allele statistics, however, is provided although they are all the
+ same.
  Please note that some other authors use
 \begin_inset Formula \[
 r^{2}=\sum_{i}\sum_{j}\frac{D_{ij}^{2}}{P_{i}P_{j}}\]
@@ -15845,6 +15854,13 @@ r2['loc1-loc2']['al1-al2'], subPop[sp]['r2']['loc1-loc2']['al1-al2']
 
 \family typewriter
 \series bold
+delta2['loc1-loc2']['al1-al2'], subPop[sp]['delta2']['loc1-loc2']['al1-al2']
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\series bold
 LD[loc1][loc2], subPop[sp]['LD'][loc1][loc2]
 \end_layout
 
@@ -15860,6 +15876,13 @@ LD_prime[loc1][loc2], subPop[sp]['LD_prime'][loc1][loc2]
 \family typewriter
 \series bold
 R2[loc1][loc2], subPop[sp]['R2'][loc1][loc2]
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\series bold
+Delta2[loc1][loc2], subPop[sp]['Delta2'][loc1][loc2]
 \end_layout
 
 \begin_layout Standard
