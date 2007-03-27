@@ -388,15 +388,7 @@ namespace simuPOP
 					m_ifPost[i] = 1;			  // true, post result
 			}
 
-			void addLocus(int locus, bool post=false)
-			{
-				if( find(m_atLoci.begin(), m_atLoci.end(), locus) == m_atLoci.end() )
-				{
-					m_atLoci.push_back( locus );
-					// do not post result.
-					m_ifPost.push_back(static_cast<int>(post));
-				}
-			}
+			void addLocus(int locus, bool post=false);
 
 			intMatrix& alleleNumAll()
 			{
@@ -887,38 +879,7 @@ namespace simuPOP
 			// is called before statLD.apply() and ensures that allele frequencies
 			// are calculated when statLD needs them.
 			statLD(statAlleleFreq& alleleFreq, statHaploFreq& haploFreq,
-				const intMatrix& LD=intMatrix(), bool midValues=false)
-				:m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
-				m_LD(LD), m_midValues(midValues)
-			{
-				for( size_t i=0, iEnd = m_LD.size(); i < iEnd; ++i)
-				{
-					// these asserts will only be checked in non-optimized modules
-					DBG_FAILIF(m_LD[i].size() != 2 && m_LD[i].size() != 4,
-						ValueError, "Expecting [locus locus [allele allele ]] items");
-
-					DBG_FAILIF(m_LD[i][0] == m_LD[i][1],
-						ValueError, "LD has to be calculated between different loci");
-
-					// midValues is used to tell alleleFreq that the calculated allele
-					// frequency values should not be posted to pop.dvars()
-					//
-					// That is to say,
-					//     stat(LD=[0,1])
-					// will not generate
-					//     pop.dvars().alleleFreq
-					// unless stat() is called as
-					//     stat(LD=[0,1], midValues=True)
-					//
-					m_alleleFreq.addLocus( m_LD[i][0], midValues );
-					m_alleleFreq.addLocus( m_LD[i][1], midValues );
-					// also need haplotype.
-					vectori hap(2);
-					hap[0] = m_LD[i][0];
-					hap[1] = m_LD[i][1];
-					m_haploFreq.addHaplotype( hap, midValues );
-				}
-			}
+				const intMatrix& LD=intMatrix(), const strDict & LD_param = strDict());
 
 			// calculate, right now,  do not tempt to save values
 			bool apply(population& pop);
@@ -928,6 +889,10 @@ namespace simuPOP
 			// calculate single allele LD values
 			void calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
 				double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2);
+
+			// output statistics
+			void outputLD(population & pop, const vectori & hapLoci, const string & allele_string, UINT sp, bool subPop,
+				bool valid_delta2, double D, double D_prime, double r2, double delta2);
 
 		private:
 
@@ -940,8 +905,21 @@ namespace simuPOP
 			/// LD
 			intMatrix m_LD;
 
-			///
+			/// whether or not keep intermediate values
 			bool m_midValues;
+
+			/// whether or not calculate statistics for subpopulations
+			bool m_evalInSubPop;
+
+			/// whether or not calculate the following statistics
+			bool m_output_ld;
+			bool m_output_ld_prime;
+			bool m_output_r2;
+			bool m_output_delta2;
+			bool m_output_LD;
+			bool m_output_LD_prime;
+			bool m_output_R2;
+			bool m_output_Delta2;
 	};
 
 	class statAssociation
@@ -1236,6 +1214,16 @@ namespace simuPOP
 			using specified alleles are provided. If only one item is specified, the
 			outer [] can be ignored. I.e., LD=[locus1 locus2] is acceptable.
 
+			\param LD_param: a dictionary of parameters to LD statistics. Can have key
+			stat: a list of statistics to calculate. default to all.
+			if any statistics is specified, only those specified will be calculated.
+			i.e.: LD_param={'stat':['LD']}
+			LD: True/False, shortcut for 'stat':['LD']
+			LD_prime: True/False, shortcut for 'stat':['LD_prime']
+			...
+			subPop: True/False: whether or not calculate statistics for subpopulations
+			midValues: True/False: whether or not keep intermediate results
+
 			\param Fst calculate Fst. Fis and Fit will be given as a side product.
 
 			format
@@ -1278,6 +1266,7 @@ namespace simuPOP
 				vectori genoFreq=vectori(),
 				intMatrix haploFreq=intMatrix(),
 				intMatrix LD=intMatrix(),
+				strDict LD_param=strDict(),
 				intMatrix association=intMatrix(),
 				vectori Fst=vectori(),
 				intMatrix relGroups=intMatrix(),
@@ -1286,7 +1275,7 @@ namespace simuPOP
 				vectori relMethod=vectori(),
 				int relMinScored=10,			  // minimal number of loci required.
 				bool hasPhase=false,
-				bool midValues=false,
+				bool midValues=false,			  // this parameter will be removed after all _param parameter is given.
 			// regular parameters
 				string output="", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -1302,7 +1291,7 @@ namespace simuPOP
 				m_expHetero(m_alleleFreq, expHetero),
 				m_genoFreq(genoFreq, hasPhase),
 				m_haploFreq(haploFreq),
-				m_LD(m_alleleFreq, m_haploFreq, LD, midValues),
+				m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
 				m_association(m_alleleFreq, m_haploFreq, association, midValues),
 				m_Fst(m_alleleFreq, m_heteroFreq, Fst, midValues),
 				m_relatedness(m_alleleFreq, relGroups, relBySubPop, relLoci,
