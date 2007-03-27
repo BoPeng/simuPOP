@@ -283,9 +283,9 @@ class TestStat(unittest.TestCase):
             ploidy=2, loci = [5])
         InitByFreq(pop, freq)
         if alleleType() == 'binary':
-            Stat(pop, LD=[2,4], haploFreq=[2,4], alleleFreq=[2,4], numOfAlleles=[2,4])
+            Stat(pop, LD=[2,4], LD_param={'midValues':True})
         else:
-            Stat(pop, LD=[2,4], haploFreq=[2,4], alleleFreq=[2,4], numOfAlleles=[2,4])
+            Stat(pop, LD=[2,4], LD_param={'midValues':True})
         def LD_single(var, loc1, loc2, allele1, allele2):
             p = var.alleleFreq[loc1][allele1]
             q = var.alleleFreq[loc2][allele2]
@@ -359,11 +359,10 @@ class TestStat(unittest.TestCase):
                 #self.assertRaises(exceptions.AttributeError, pop.dvars(sp).Delta2)
             else:
                 assert (Delta2(pop.dvars(sp), 2, 4) - pop.dvars(sp).Delta2[2][4]) < 1e-6
-        #
         # test for single allele cases
         # for binary alleles, LD should be the same 
         # for standard or long alleles, LD should be different from average LD
-        Stat(pop, LD=[1,3,0,1], haploFreq=[0,1], midValues=True)
+        Stat(pop, LD=[1,3,0,1], LD_param={'midValues':True})
         assert (abs(LD_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().ld['1-3']['0-1'])) < 1e-6
         assert (abs(LD_prime_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().ld_prime['1-3']['0-1'])) < 1e-6
         assert (abs(R2_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().r2['1-3']['0-1'])) < 1e-6
@@ -379,6 +378,15 @@ class TestStat(unittest.TestCase):
                 assert not pop.vars().has_key('delta2')
             else:
                 assert (abs(Delta2(pop.dvars(sp), 1, 3)) - abs(pop.dvars(sp).delta2['1-3']['0-1'])) < 1e-6
+        # test LD_param
+        Stat(pop, LD=[2,3], LD_param={'stat':['LD', 'LD_prime', 'Delta2'], 'subPop':False})
+        assert pop.vars().has_key('LD')
+        assert pop.vars().has_key('LD_prime')
+        assert not pop.vars().has_key('R2')
+        assert not pop.vars(0).has_key('LD')
+        assert not pop.vars(0).has_key('LD_prime')
+        if pop.dvars(sp).numOfAlleles[1] <= 2 or pop.dvars(sp).numOfAlleles[3] <= 2:
+            assert pop.vars().has_key('Delta2')
                 
         
     def testLD(self):

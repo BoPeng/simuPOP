@@ -174,11 +174,11 @@ namespace std
     {
         $function
     }
-	catch(simuPOP::StopIteration e)
-	{
+    catch(simuPOP::StopIteration e)
+    {
         SWIG_SetErrorObj(PyExc_StopIteration, SWIG_Py_Void());
-		SWIG_fail;
-	}
+        SWIG_fail;
+    }
     catch(simuPOP::OutOfMemory e)
     {
         SWIG_exception(SWIG_MemoryError, e.message());
@@ -904,7 +904,10 @@ del pyInit.__init__
 pyInit.__init__ = new_pyInit
 
 
-def new_stat(self, haploFreq=[], LD=[], association=[], relGroups=[], relMethod=[], *args, **kwargs):
+def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], relGroups=[], relMethod=[], midValues=None, *args, **kwargs):
+    # midValues is now obsolete
+    if midValues is not None:
+        print 'Parameter midValues is now obsolete. Please use the _param parameter of corresponding statistics'
     # parameter haploFreq
     if len(haploFreq) > 0 and type(haploFreq[0]) in [types.IntType, types.LongType]:
         hf = [haploFreq]
@@ -915,6 +918,14 @@ def new_stat(self, haploFreq=[], LD=[], association=[], relGroups=[], relMethod=
         ld = [LD]
     else:
         ld = LD
+    # parameters of LD, convert 'stat':['LD', 'LD_prime'] etc to 'LD':True, 'LD_prime':True
+    ldp = {}
+    for key in LD_param.keys():
+        if 'stat' == key and type(LD_param['stat']) in [types.TupleType, types.ListType]:
+            for stat in LD_param['stat']:
+                ldp[stat] = True
+        else:
+            ldp[key] = LD_param[key]
     # parameter association
     if len(association) > 0 and type(association[0]) in    [types.IntType, types.LongType]:
         Association = [association]
@@ -936,7 +947,7 @@ def new_stat(self, haploFreq=[], LD=[], association=[], relGroups=[], relMethod=
     else:
         rm = relGroups
     cppModule.stat_swiginit(self, 
-        cppModule.new_stat(haploFreq=hf, LD=ld, association=Assciation, relGroups=rg, relBySubPop=useSubPop,
+        cppModule.new_stat(haploFreq=hf, LD=ld, LD_param=ldp, association=Association, relGroups=rg, relBySubPop=useSubPop,
             relMethod = rm, *args, **kwargs))
  
 new_stat.__doc__ = stat.__init__.__doc__

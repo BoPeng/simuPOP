@@ -171,6 +171,19 @@ namespace simuPOP
 		return true;
 	}
 
+	void statAlleleFreq::addLocus(int locus, bool post)
+	{
+		vectori::const_iterator it;
+		if( (it = find(m_atLoci.begin(), m_atLoci.end(), locus)) == m_atLoci.end() )
+		{
+			m_atLoci.push_back( locus );
+			// do not post result.
+			m_ifPost.push_back(static_cast<int>(post));
+		}
+		else
+			m_ifPost[ it-m_atLoci.begin() ] = static_cast<int>(post);
+	}
+
 	bool statAlleleFreq::apply(population& pop)
 	{
 		if( m_atLoci.empty())
@@ -794,6 +807,98 @@ namespace simuPOP
 		return true;
 	}
 
+	statLD::statLD(statAlleleFreq& alleleFreq, statHaploFreq& haploFreq,
+		const intMatrix& LD, const strDict & LD_param)
+		:m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
+		m_LD(LD),
+	// default values,
+		m_midValues(false),
+		m_evalInSubPop(true),
+		m_output_ld(true),
+		m_output_ld_prime(true),
+		m_output_r2(true),
+		m_output_delta2(true),
+		m_output_LD(true),
+		m_output_LD_prime(true),
+		m_output_R2(true),
+		m_output_Delta2(true)
+	{
+		// parameters
+		if (!LD_param.empty())
+		{
+			strDict::const_iterator it;
+			strDict::const_iterator itEnd = LD_param.end();
+			if ((it=LD_param.find("subPop")) != itEnd)
+				m_evalInSubPop = it->second;
+			if ((it=LD_param.find("midValues")) != itEnd)
+				m_midValues = it->second;
+			// if any statistics is specified, other unspecified ones are not calculated
+			if (LD_param.find("ld") != itEnd ||
+				LD_param.find("ld_prime") != itEnd ||
+				LD_param.find("r2") != itEnd ||
+				LD_param.find("delta2") != itEnd ||
+				LD_param.find("LD") != itEnd ||
+				LD_param.find("LD_prime") != itEnd ||
+				LD_param.find("R2") != itEnd ||
+				LD_param.find("Delta2") != itEnd)
+			{
+				m_output_ld = false;
+				m_output_ld_prime = false;
+				m_output_r2 = false;
+				m_output_delta2 = false;
+				m_output_LD = false;
+				m_output_LD_prime = false;
+				m_output_R2 = false;
+				m_output_Delta2 = false;
+				// if has key, and is True or 1
+				if ((it=LD_param.find("ld")) != itEnd)
+					m_output_ld = it->second;
+				if ((it=LD_param.find("ld_prime")) != itEnd)
+					m_output_ld_prime = it->second;
+				if ((it=LD_param.find("r2")) != itEnd)
+					m_output_r2 = it->second;
+				if ((it=LD_param.find("delta2")) != itEnd)
+					m_output_delta2 = it->second;
+				if ((it=LD_param.find("LD")) != itEnd)
+					m_output_LD = it->second;
+				if ((it=LD_param.find("LD_prime")) != itEnd)
+					m_output_LD_prime = it->second;
+				if ((it=LD_param.find("R2")) != itEnd)
+					m_output_R2 = it->second;
+				if ((it=LD_param.find("Delta2")) != itEnd)
+					m_output_Delta2 = it->second;
+			}
+		}
+		//
+		for( size_t i=0, iEnd = m_LD.size(); i < iEnd; ++i)
+		{
+			// these asserts will only be checked in non-optimized modules
+			DBG_FAILIF(m_LD[i].size() != 2 && m_LD[i].size() != 4,
+				ValueError, "Expecting [locus locus [allele allele ]] items");
+
+			DBG_FAILIF(m_LD[i][0] == m_LD[i][1],
+				ValueError, "LD has to be calculated between different loci");
+
+			// midValues is used to tell alleleFreq that the calculated allele
+			// frequency values should not be posted to pop.dvars()
+			//
+			// That is to say,
+			//     stat(LD=[0,1])
+			// will not generate
+			//     pop.dvars().alleleFreq
+			// unless stat() is called as
+			//     stat(LD=[0,1], midValues=True)
+			//
+			m_alleleFreq.addLocus( m_LD[i][0], m_midValues);
+			m_alleleFreq.addLocus( m_LD[i][1], m_midValues);
+			// also need haplotype.
+			vectori hap(2);
+			hap[0] = m_LD[i][0];
+			hap[1] = m_LD[i][1];
+			m_haploFreq.addHaplotype( hap, m_midValues);
+		}
+	}
+
 	// this function calculate single-allele LD measures
 	// D, D_p and r2 are used to return calculated values.
 	// LD for subpopulation sp is calculated if subPop is true
@@ -822,7 +927,6 @@ namespace simuPOP
 			DBG_DO(DBG_STATOR, cout << "LD: subpop " << sp << " : P_AB: " << P_AB
 				<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
 				" LD: " << D << " LD': " << D_prime << " r2: " << r2 << " delta2: " << delta2 << endl);
-
 		}
 		else
 		{
@@ -846,6 +950,55 @@ namespace simuPOP
 		}
 	}
 
+	// try to shorten statLD::apply
+	void statLD::outputLD(population & pop, const vectori & hapLoci, const string & allele_string, UINT sp, bool subPop,
+		bool valid_delta2, double D, double D_prime, double r2, double delta2)
+	{
+		string ld_name, ldp_name, r2_name, d2_name, key_name;
+		bool ld_cond, ldp_cond, r2_cond, d2_cond;
+		// single allele cases
+		if (allele_string != "")
+		{
+			ld_name = LD_String;
+			ldp_name = LDPRIME_String;
+			r2_name = R2_String;
+			d2_name = DELTA2_String;
+			key_name = haploKey(hapLoci) + allele_string;
+			ld_cond = m_output_ld;
+			ldp_cond = m_output_ld_prime;
+			r2_cond = m_output_r2;
+			d2_cond = m_output_delta2;
+		}
+		else
+		{
+			ld_name = AvgLD_String;
+			ldp_name = AvgLDPRIME_String;
+			r2_name = AvgR2_String;
+			d2_name = AvgDELTA2_String;
+			key_name = "[" + toStr(hapLoci[0]) + "][" +   toStr(hapLoci[1]) + ']';
+			ld_cond = m_output_LD;
+			ldp_cond = m_output_LD_prime;
+			r2_cond = m_output_R2;
+			d2_cond = m_output_Delta2;
+		}
+		if (subPop)
+		{
+			ld_name = subPopVar_String(sp, ld_name);
+			ldp_name = subPopVar_String(sp, ldp_name);
+			r2_name = subPopVar_String(sp, r2_name);
+			d2_name = subPopVar_String(sp, d2_name);
+		}
+		DBG_DO(DBG_STATOR, cout << "Output statistics " << ldp_name + key_name << endl);
+		if(ld_cond)
+			pop.setDoubleVar( ld_name + key_name, D);
+		if(ldp_cond)
+			pop.setDoubleVar( ldp_name + key_name, D_prime);
+		if(r2_cond)
+			pop.setDoubleVar( r2_name + key_name, r2);
+		if(valid_delta2 && d2_cond)
+			pop.setDoubleVar( d2_name + key_name, delta2);
+	}
+
 	// this function is called by stat::apply(pop). It is called
 	// after m_alleleFreq.apply(pop) and m_haploFreq.apply(pop) so
 	// allele and haplotype frequencies should be available.
@@ -865,6 +1018,7 @@ namespace simuPOP
 		pop.removeVar(LDPRIME_String);
 		pop.removeVar(R2_String);
 		pop.removeVar(DELTA2_String);
+		pop.removeVar(AvgLD_String);
 		pop.removeVar(AvgLDPRIME_String);
 		pop.removeVar(AvgR2_String);
 		pop.removeVar(AvgDELTA2_String);
@@ -876,6 +1030,7 @@ namespace simuPOP
 			pop.removeVar( subPopVar_String(sp, LDPRIME_String));
 			pop.removeVar( subPopVar_String(sp, R2_String));
 			pop.removeVar( subPopVar_String(sp, DELTA2_String));
+			pop.removeVar( subPopVar_String(sp, AvgLD_String));
 			pop.removeVar( subPopVar_String(sp, AvgLDPRIME_String));
 			pop.removeVar( subPopVar_String(sp, AvgR2_String));
 			pop.removeVar( subPopVar_String(sp, AvgDELTA2_String));
@@ -895,55 +1050,36 @@ namespace simuPOP
 				hapAlleles[0] = m_LD[i][2];
 				hapAlleles[1] = m_LD[i][3];
 
-				for( UINT sp=0; sp < numSP;  ++sp)
-				{
-					// get LD values, P_A, P_B is ignored.
-					double D = 0;
-					double D_prime = 0;
-					double r2 = 0;
-					double delta2 = 0;
-					double P_A = 0;
-					double P_B = 0;
-					calculateLD(hapLoci, hapAlleles, sp, true, P_A, P_B, D, D_prime, r2, delta2);
+				// whole population, P_A, P_B is ignored
+				double D = 0;
+				double D_prime = 0;
+				double r2 = 0;
+				double delta2 = 0;
+				double P_A = 0;
+				double P_B = 0;
+				calculateLD(hapLoci, hapAlleles, 0, false, P_A, P_B, D, D_prime, r2, delta2);
+				outputLD(pop, hapLoci, haploKey(hapAlleles), 0, false, valid_delta2, D, D_prime, r2, delta2);
 
-					// haploKey returns ['a-b'] from array a,b
-					pop.setDoubleVar( subPopVar_String(sp, LD_String) +
-						haploKey( hapLoci) + haploKey(hapAlleles), D);
-					pop.setDoubleVar( subPopVar_String(sp, LDPRIME_String) +
-						haploKey( hapLoci) + haploKey(hapAlleles), D_prime);
-					pop.setDoubleVar( subPopVar_String(sp, R2_String) +
-						haploKey( hapLoci) + haploKey(hapAlleles), r2);
-					if (valid_delta2)
-						pop.setDoubleVar( subPopVar_String(sp, DELTA2_String) +
-							haploKey( hapLoci) + haploKey(hapAlleles), delta2);
-					// if numSP == 1, use values for the only subpop as whole population
-					if (numSP == 1)
+				if(m_evalInSubPop)
+				{
+					if (numSP == 1)				  // use the whole population result
+						outputLD(pop, hapLoci, haploKey(hapAlleles), 0, true, valid_delta2, D, D_prime, r2, delta2);
+					else
 					{
-						pop.setDoubleVar(LD_String + haploKey( hapLoci) + haploKey(hapAlleles), D);
-						pop.setDoubleVar(LDPRIME_String + haploKey( hapLoci) + haploKey(hapAlleles), D_prime);
-						pop.setDoubleVar(R2_String + haploKey( hapLoci) + haploKey(hapAlleles), r2);
-						if (valid_delta2)
-							pop.setDoubleVar(DELTA2_String + haploKey( hapLoci) + haploKey(hapAlleles), delta2);
+						for( UINT sp=0; sp < numSP;  ++sp)
+						{
+							// get LD values, P_A, P_B is ignored.
+							double D = 0;
+							double D_prime = 0;
+							double r2 = 0;
+							double delta2 = 0;
+							double P_A = 0;
+							double P_B = 0;
+							calculateLD(hapLoci, hapAlleles, sp, true, P_A, P_B, D, D_prime, r2, delta2);
+							outputLD(pop, hapLoci, haploKey(hapAlleles), sp, true, valid_delta2, D, D_prime, r2, delta2);
+						}
 					}
-				}
-
-				if (numSP > 1)
-				{
-					// whole population, P_A, P_B is ignored
-					double D = 0;
-					double D_prime = 0;
-					double r2 = 0;
-					double delta2 = 0;
-					double P_A = 0;
-					double P_B = 0;
-					calculateLD(hapLoci, hapAlleles, 0, false, P_A, P_B, D, D_prime, r2, delta2);
-
-					pop.setDoubleVar(LD_String + haploKey( hapLoci) + haploKey(hapAlleles), D);
-					pop.setDoubleVar(LDPRIME_String + haploKey( hapLoci) + haploKey(hapAlleles), D_prime);
-					pop.setDoubleVar(R2_String + haploKey( hapLoci) + haploKey(hapAlleles), r2);
-					if (valid_delta2)
-						pop.setDoubleVar(DELTA2_String + haploKey( hapLoci) + haploKey(hapAlleles), delta2);
-				}
+				}								  // eval in subpop
 			}
 			else
 			{
@@ -955,130 +1091,85 @@ namespace simuPOP
 				hapLoci[1] = m_LD[i][1];
 				if (numofalleles[hapLoci[0]] <= 2 && numofalleles[hapLoci[1]] <= 2)
 					valid_delta2 = true;
-				string hapLociStr = '[' + toStr(hapLoci[0]) + "][" +
-					toStr(hapLoci[1]) + ']';
 
 				// find out all alleles
 				vectori A_alleles = m_alleleFreq.alleles(hapLoci[0]);
 				vectori B_alleles = m_alleleFreq.alleles(hapLoci[1]);
 
-				for( UINT sp=0; sp < numSP;  ++sp)
+				// whole population
+				double D = 0.0, D_prime = 0.0, r2 = 0.0, delta2 = 0.0;
+				for(vectori::iterator A_ale = A_alleles.begin();
+					A_ale != A_alleles.end(); ++A_ale)
 				{
-					double D=0.0, D_prime = 0.0, r2 = 0.0, delta2 = 0.0;
-					// iterate through all alleles at locus A and B
-					for(vectori::iterator A_ale = A_alleles.begin();
-						A_ale != A_alleles.end(); ++A_ale)
+					for(vectori::iterator B_ale = B_alleles.begin();
+						B_ale != B_alleles.end(); ++B_ale)
 					{
-						for(vectori::iterator B_ale = B_alleles.begin();
-							B_ale != B_alleles.end(); ++B_ale)
-						{
-							// this is now single allele ...
-							hapAlleles[0] = *A_ale;
-							hapAlleles[1] = *B_ale;
-							double D_ = 0;
-							double D_prime_ = 0;
-							double r2_ = 0;
-							double delta2_ = 0;
-							double P_A = 0;
-							double P_B = 0;
-							calculateLD(hapLoci, hapAlleles, sp, true, P_A, P_B, D_, D_prime_, r2_, delta2_);
+						hapAlleles[0] = *A_ale;
+						hapAlleles[1] = *B_ale;
+						double D_ = 0;
+						double D_prime_ = 0;
+						double r2_ = 0;
+						double delta2_ = 0;
+						double P_A = 0;
+						double P_B = 0;
+						calculateLD(hapLoci, hapAlleles, 0, false, P_A, P_B, D_, D_prime_, r2_, delta2_);
+						if(m_midValues)
+							outputLD(pop, hapLoci, haploKey(hapAlleles), 0, false, valid_delta2, D_, D_prime_, r2_, delta2_);
 
-							// store allele-specific LD values as well.
-							if( m_midValues)
+						D += P_A * P_B * fabs(D_);
+						D_prime += P_A * P_B * fabs(D_prime_);
+						r2 += P_A * P_B * r2_;
+						if (valid_delta2)
+							delta2 += P_A * P_B * delta2_;
+						DBG_DO(DBG_STATOR, cout << "Sum D " << D << " D' " << D_prime << " r2 " << r2 << endl);
+					}							  // all haplotypes
+				}
+				outputLD(pop, hapLoci, "", 0, false, valid_delta2, D, D_prime, r2, delta2);
+
+				if(m_evalInSubPop)
+				{
+					if (numSP == 1)				  // use the whole population result
+						outputLD(pop, hapLoci, "", 0, true, valid_delta2, D, D_prime, r2, delta2);
+					else
+					{
+						for( UINT sp=0; sp < numSP;  ++sp)
+						{
+							double D=0.0, D_prime = 0.0, r2 = 0.0, delta2 = 0.0;
+							// iterate through all alleles at locus A and B
+							for(vectori::iterator A_ale = A_alleles.begin();
+								A_ale != A_alleles.end(); ++A_ale)
 							{
-								pop.setDoubleVar( subPopVar_String(sp, LD_String) + haploKey(hapLoci) +
-									haploKey(hapAlleles), D_);
-								pop.setDoubleVar( subPopVar_String(sp, LDPRIME_String) + haploKey(hapLoci) +
-									haploKey(hapAlleles), D_prime_);
-								pop.setDoubleVar( subPopVar_String(sp, R2_String) + haploKey(hapLoci) +
-									haploKey(hapAlleles), r2_);
-								if (valid_delta2)
-									pop.setDoubleVar( subPopVar_String(sp, DELTA2_String) + haploKey(hapLoci) +
-										haploKey(hapAlleles), delta2_);
-								// if only one subpopulation, set the same value for whole population
-								if( numSP == 1)
+								for(vectori::iterator B_ale = B_alleles.begin();
+									B_ale != B_alleles.end(); ++B_ale)
 								{
-									pop.setDoubleVar( LD_String + haploKey(hapLoci) +
-										haploKey(hapAlleles), D_);
-									pop.setDoubleVar( LDPRIME_String + haploKey(hapLoci) +
-										haploKey(hapAlleles), D_prime_);
-									pop.setDoubleVar( R2_String + haploKey(hapLoci) +
-										haploKey(hapAlleles), r2_);
+									// this is now single allele ...
+									hapAlleles[0] = *A_ale;
+									hapAlleles[1] = *B_ale;
+									double D_ = 0;
+									double D_prime_ = 0;
+									double r2_ = 0;
+									double delta2_ = 0;
+									double P_A = 0;
+									double P_B = 0;
+									calculateLD(hapLoci, hapAlleles, sp, true, P_A, P_B, D_, D_prime_, r2_, delta2_);
+
+									// store allele-specific LD values as well.
+									if( m_midValues)
+										outputLD(pop, hapLoci, haploKey(hapAlleles), sp, true, valid_delta2, D_, D_prime_, r2_, delta2_);
+
+									D += P_A*P_B*fabs(D_);
+									D_prime += P_A*P_B*fabs(D_prime_);
+									r2 += P_A*P_B*r2_;
 									if (valid_delta2)
-										pop.setDoubleVar( DELTA2_String + haploKey(hapLoci) +
-											haploKey(hapAlleles), delta2_);
+										delta2 += P_A*P_B*delta2_;
+									DBG_DO(DBG_STATOR, cout << "Sum D " << D << " D' " << D_prime <<" r2 " << r2 << "delta2" << delta2 << endl);
 								}
 							}
-
-							D += P_A*P_B*fabs(D_);
-							D_prime += P_A*P_B*fabs(D_prime_);
-							r2 += P_A*P_B*r2_;
-							if (valid_delta2)
-								delta2 += P_A*P_B*delta2_;
-							DBG_DO(DBG_STATOR, cout << "Sum D " << D << " D' " << D_prime <<" r2 " << r2 << "delta2" << delta2 << endl);
-						}
-					}
-
-					// average take average.
-					pop.setDoubleVar( subPopVar_String(sp, AvgLD_String) + hapLociStr, D);
-					pop.setDoubleVar( subPopVar_String(sp, AvgLDPRIME_String) + hapLociStr, D_prime);
-					pop.setDoubleVar( subPopVar_String(sp, AvgR2_String) + hapLociStr, r2);
-					if (valid_delta2)
-						pop.setDoubleVar( subPopVar_String(sp, AvgDELTA2_String) + hapLociStr, delta2);
-					// if numSP == 1, use the single subpop value as whole pop
-					if( numSP == 1)
-					{
-						pop.setDoubleVar( AvgLD_String + hapLociStr, D);
-						pop.setDoubleVar( AvgLDPRIME_String + hapLociStr, D_prime);
-						pop.setDoubleVar( AvgR2_String + hapLociStr, r2);
-						if (valid_delta2)
-							pop.setDoubleVar( AvgDELTA2_String + hapLociStr, delta2);
-					}
-				}
-
-				if(numSP > 1 )
-				{
-					double D = 0.0, D_prime = 0.0, r2 = 0.0, delta2 = 0.0;
-					for(vectori::iterator A_ale = A_alleles.begin();
-						A_ale != A_alleles.end(); ++A_ale)
-					{
-						for(vectori::iterator B_ale = B_alleles.begin();
-							B_ale != B_alleles.end(); ++B_ale)
-						{
-							hapAlleles[0] = *A_ale;
-							hapAlleles[1] = *B_ale;
-							double D_ = 0;
-							double D_prime_ = 0;
-							double r2_ = 0;
-							double delta2_ = 0;
-							double P_A = 0;
-							double P_B = 0;
-							calculateLD(hapLoci, hapAlleles, 0, false, P_A, P_B, D_, D_prime_, r2_, delta2_);
-
-							if( m_midValues)
-							{
-								pop.setDoubleVar(LD_String + haploKey(hapLoci) + haploKey(hapAlleles), D_);
-								pop.setDoubleVar(LDPRIME_String + haploKey(hapLoci) + haploKey(hapAlleles), D_prime_);
-								pop.setDoubleVar(R2_String + haploKey(hapLoci) + haploKey(hapAlleles), r2_);
-								if (valid_delta2)
-									pop.setDoubleVar(DELTA2_String + haploKey(hapLoci) + haploKey(hapAlleles), delta2_);
-							}
-
-							D += P_A * P_B * fabs(D_);
-							D_prime += P_A * P_B * fabs(D_prime_);
-							r2 += P_A * P_B * r2_;
-							if (valid_delta2)
-								delta2 += P_A * P_B * delta2_;
-							DBG_DO(DBG_STATOR, cout << "Sum D " << D << " D' " << D_prime << " r2 " << r2 << endl);
-						}						  // all haplotypes
-					}
-					pop.setDoubleVar( AvgLD_String + hapLociStr, D);
-					pop.setDoubleVar( AvgLDPRIME_String + hapLociStr, D_prime);
-					pop.setDoubleVar( AvgR2_String + hapLociStr, r2);
-					if (valid_delta2)
-						pop.setDoubleVar( AvgDELTA2_String + hapLociStr, delta2);
-				}								  // length 2
-			}
+							outputLD(pop, hapLoci, "", sp, true, valid_delta2, D, D_prime, r2, delta2);
+						}						  // each subpop
+					}							  // numSP
+				}								  // eval in subpop
+			}									  // size = 2, 4
 		}										  // for all LD
 		return true;
 	}
