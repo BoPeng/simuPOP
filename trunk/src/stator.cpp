@@ -1105,7 +1105,7 @@ namespace simuPOP
 		}
 		for(size_t i=0; i < nAssociation; ++i)
 		{
-			// 
+			//
 			vectori & hapLoci = m_association[i];
 
 			// find out all alleles
@@ -1126,26 +1126,26 @@ namespace simuPOP
 					cont_table[i][bs]=0;
 				for(size_t j=0; j <= bs; ++j)
 					cont_table[as][j]=0;
-                // get P_ij
+				// get P_ij
 				for(size_t i=0; i<as; ++i)
 					for(size_t j=0; j < bs; ++j)
-					{
-                        vectori hapAlleles(2);
-                        hapAlleles[0] = A_alleles[i];
-                        hapAlleles[1] = B_alleles[j];
-						cont_table[i][j] = m_haploFreq.haploFreq(hapLoci)[hapAlleles];
-						cont_table[i][bs] += cont_table[i][j];
-						cont_table[as][j] += cont_table[i][j];
-                        cont_table[as][bs] += cont_table[i][j];
-					}
-                DBG_ASSERT(fcmp_eq(cont_table[as][bs], 1.), ValueError,    
-                    "Sum of haplotype frequencies is not 1. Association will not be computed.");
-                DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
+				{
+					vectori hapAlleles(2);
+					hapAlleles[0] = A_alleles[i];
+					hapAlleles[1] = B_alleles[j];
+					cont_table[i][j] = m_haploFreq.haploFreq(hapLoci)[hapAlleles];
+					cont_table[i][bs] += cont_table[i][j];
+					cont_table[as][j] += cont_table[i][j];
+					cont_table[as][bs] += cont_table[i][j];
+				}
+				DBG_ASSERT(fcmp_eq(cont_table[as][bs], 1.), ValueError,
+					"Sum of haplotype frequencies is not 1. Association will not be computed.");
+				DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
 				// calculate statistics
 				for(size_t i=0; i<as; ++i)
 					for(size_t j=0; j < bs; ++j)
 						ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/n*cont_table[i][bs]*cont_table[as][j];
-                DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << " sp " << sp << endl);
+				DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << " sp " << sp << endl);
 			}
 			if(numSP > 1 )
 			{
@@ -1163,25 +1163,25 @@ namespace simuPOP
 					cont_table[as][j]=0;
 				for(size_t i=0; i < as; ++i)
 					for(size_t j=0; j < bs; ++j)
-					{
-						vectori hapAlleles(2);
-                        hapAlleles[0] = A_alleles[i];
-                        hapAlleles[1] = B_alleles[j];
-						cont_table[i][j] = m_haploFreq.haploFreq(hapLoci)[hapAlleles];
-						cont_table[i][bs] += cont_table[i][j];
-						cont_table[as][j] += cont_table[i][j];
-                        cont_table[as][bs] += cont_table[i][j];
-					}
-                DBG_ASSERT(fcmp_eq(cont_table[as][bs], 1.), ValueError, 
-                    "Sum of haplotype frequencies is not 1. Association will not be computed.");
-                DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
+				{
+					vectori hapAlleles(2);
+					hapAlleles[0] = A_alleles[i];
+					hapAlleles[1] = B_alleles[j];
+					cont_table[i][j] = m_haploFreq.haploFreq(hapLoci)[hapAlleles];
+					cont_table[i][bs] += cont_table[i][j];
+					cont_table[as][j] += cont_table[i][j];
+					cont_table[as][bs] += cont_table[i][j];
+				}
+				DBG_ASSERT(fcmp_eq(cont_table[as][bs], 1.), ValueError,
+					"Sum of haplotype frequencies is not 1. Association will not be computed.");
+				DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
 				// calculate statistics
 				for(size_t i=0; i<as; ++i)
 					for(size_t j=0; j < bs; ++j)
 						ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/n*cont_table[i][bs]*cont_table[as][j];
-                DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << endl);
-			}								 
-		}										
+				DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << endl);
+			}
+		}
 		return true;
 	}
 
