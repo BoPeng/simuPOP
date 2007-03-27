@@ -385,7 +385,28 @@ class TestStat(unittest.TestCase):
         '''Testing LD for both dialleleic and multi-allelic cases'''
         self.TestLD([.2, .8])
         self.TestLD([.2, .3, .5])
-                
+        
+    def testAssociation(self):
+        'Testing calculation of association between two loci'
+        #TurnOnDebug(DBG_STATOR)
+        pop = population(subPop=[500,100,1000], 
+            ploidy=2, loci = [5])
+        InitByFreq(pop, [.2, .3, .5])
+        if alleleType() == 'binary':
+            Stat(pop, association=[2,4], midValues=True)
+        else:
+            Stat(pop, association=[2,4], midValues=True)
+        def association(var, loc1, loc2):
+            association = 0
+            #allele1 is alleles in loc1
+            for allele1 in range(len(var.alleleFreq[loc1])):
+                for allele2 in range(len(var.alleleFreq[loc2])):
+                    p = var.alleleFreq[loc1][allele1]
+                    q = var.alleleFreq[loc2][allele2]
+                    pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
+                    association += (pq - pop.dvars.popSize*p*q) ** 2 / (pop.dvars.popSize*p*q)
+            return association
+        assert (association(pop.dvars(), 2, 4) - pop.dvars().association[2][4]) < 0.05
                 
 if __name__ == '__main__':
     unittest.main()

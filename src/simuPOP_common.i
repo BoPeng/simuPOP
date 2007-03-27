@@ -904,7 +904,7 @@ del pyInit.__init__
 pyInit.__init__ = new_pyInit
 
 
-def new_stat(self, haploFreq=[], LD=[], relGroups=[], relMethod=[], *args, **kwargs):
+def new_stat(self, haploFreq=[], LD=[], association=[], relGroups=[], relMethod=[], *args, **kwargs):
     # parameter haploFreq
     if len(haploFreq) > 0 and type(haploFreq[0]) in [types.IntType, types.LongType]:
         hf = [haploFreq]
@@ -915,6 +915,11 @@ def new_stat(self, haploFreq=[], LD=[], relGroups=[], relMethod=[], *args, **kwa
         ld = [LD]
     else:
         ld = LD
+    # parameter association
+    if len(association) > 0 and type(association[0]) in    [types.IntType, types.LongType]:
+        Association = [association]
+    else:
+        Association = association
     # parameter relGroups
     if relGroups == []:
         rg = [[]]
@@ -931,7 +936,7 @@ def new_stat(self, haploFreq=[], LD=[], relGroups=[], relMethod=[], *args, **kwa
     else:
         rm = relGroups
     cppModule.stat_swiginit(self, 
-        cppModule.new_stat(haploFreq=hf, LD=ld, relGroups=rg, relBySubPop=useSubPop,
+        cppModule.new_stat(haploFreq=hf, LD=ld, association=Assciation, relGroups=rg, relBySubPop=useSubPop,
             relMethod = rm, *args, **kwargs))
  
 new_stat.__doc__ = stat.__init__.__doc__
