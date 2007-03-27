@@ -944,6 +944,76 @@ namespace simuPOP
 			bool m_midValues;
 	};
 
+	class statAssociation
+	{
+		private:
+
+			// these are names of calcualted statistics, will be accessed like
+			// pop.dvars().Chisq or pop.vars()['Chisq']
+#define   ChiSq_String		"ChiSq"
+#define   UCU_String      	"UC_U"
+#define   CramerV_String	"CramerV"
+
+		public:
+
+			// alleleFreq and haploFreq is required to calculate Chisq
+			// needed allele and halplotype are added to alleleFreq and haploFreq
+			// objects during the initialization of statAssociation, as well as stat.
+			// In stat::apply(), alleleFreq.apply() and haploFreq.apply()
+			// is called before statAssociation.apply() and ensures that allele frequencies
+			// are calculated when statAssociation needs them.
+			statAssociation(statAlleleFreq& alleleFreq, statHaploFreq& haploFreq,
+				const intMatrix& Association=intMatrix(), bool midValues=false)
+				:m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
+				m_association(Association), m_midValues(midValues)
+			{
+				for( size_t i=0, iEnd = m_association.size(); i < iEnd; ++i)
+				{
+					// these asserts will only be checked in non-optimized modules
+					DBG_FAILIF(m_association[i].size() != 2, 
+						ValueError, "Expecting [locus locus] items");
+
+					DBG_FAILIF(m_association[i][0] == m_association[i][1],
+						ValueError, "Association has to be calculated between different loci");
+
+					// midValues is used to tell alleleFreq that the calculated allele
+					// frequency values should not be posted to pop.dvars()
+					//
+					// That is to say,
+					//     stat(Association=[0,1])
+					// will not generate
+					//     pop.dvars().alleleFreq
+					// unless stat() is called as
+					//     stat(Association=[0,1], midValues=True)
+					//
+					m_alleleFreq.addLocus( m_association[i][0], midValues );
+					m_alleleFreq.addLocus( m_association[i][1], midValues );
+					// also need haplotype.
+					vectori hap(2);
+					hap[0] = m_association[i][0];
+					hap[1] = m_association[i][1];
+					m_haploFreq.addHaplotype( hap, midValues );
+				}
+			}
+
+			// calculate, right now,  do not tempt to save values
+			bool apply(population& pop);
+
+		private:
+
+			/// need to get allele freq
+			statAlleleFreq& m_alleleFreq;
+
+			/// need to get haplofreq
+			statHaploFreq& m_haploFreq;
+
+            /// Association
+			intMatrix m_association;			
+
+			///
+			bool m_midValues;
+	};
+
 	/// CPPONLY
 	/// currently there is no need to retrieve calculated value
 
@@ -1005,7 +1075,6 @@ namespace simuPOP
 			}
 
 			bool apply(population& pop);
-
 		private:
 
 			statAlleleFreq& m_alleleFreq;
@@ -1209,6 +1278,7 @@ namespace simuPOP
 				vectori genoFreq=vectori(),
 				intMatrix haploFreq=intMatrix(),
 				intMatrix LD=intMatrix(),
+				intMatrix association=intMatrix(),
 				vectori Fst=vectori(),
 				intMatrix relGroups=intMatrix(),
 				vectori relLoci=vectori(),
@@ -1233,6 +1303,7 @@ namespace simuPOP
 				m_genoFreq(genoFreq, hasPhase),
 				m_haploFreq(haploFreq),
 				m_LD(m_alleleFreq, m_haploFreq, LD, midValues),
+				m_association(m_alleleFreq, m_haploFreq, association, midValues),
 				m_Fst(m_alleleFreq, m_heteroFreq, Fst, midValues),
 				m_relatedness(m_alleleFreq, relGroups, relBySubPop, relLoci,
 				relMethod, relMinScored, midValues)
@@ -1270,6 +1341,7 @@ namespace simuPOP
 			statGenoFreq m_genoFreq;
 			statHaploFreq m_haploFreq;
 			statLD m_LD;
+			statAssociation m_association;
 			statFst m_Fst;
 			statRelatedness m_relatedness;
 	};
