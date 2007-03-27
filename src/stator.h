@@ -950,9 +950,9 @@ namespace simuPOP
 
 			// these are names of calcualted statistics, will be accessed like
 			// pop.dvars().Chisq or pop.vars()['Chisq']
-#define   ChiSq_String		"ChiSq"
-#define   UCU_String      	"UC_U"
-#define   CramerV_String	"CramerV"
+#define   ChiSq_String      "ChiSq"
+#define   UCU_String        "UC_U"
+#define   CramerV_String    "CramerV"
 
 		public:
 
@@ -970,7 +970,7 @@ namespace simuPOP
 				for( size_t i=0, iEnd = m_association.size(); i < iEnd; ++i)
 				{
 					// these asserts will only be checked in non-optimized modules
-					DBG_FAILIF(m_association[i].size() != 2, 
+					DBG_FAILIF(m_association[i].size() != 2,
 						ValueError, "Expecting [locus locus] items");
 
 					DBG_FAILIF(m_association[i][0] == m_association[i][1],
@@ -1007,8 +1007,8 @@ namespace simuPOP
 			/// need to get haplofreq
 			statHaploFreq& m_haploFreq;
 
-            /// Association
-			intMatrix m_association;			
+			/// Association
+			intMatrix m_association;
 
 			///
 			bool m_midValues;
