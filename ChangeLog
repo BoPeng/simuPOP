@@ -14,6 +14,8 @@ version 0.7.9 - Not released, available at https://svn.sourceforge.net/svnroot/s
 		population with unequal male and female allele frequencies, from Yaji Xu.
   - BUG: fix a bug in the calculation of D'
   - NEW: add LD measurement delta^2
+  - NEW: add LD_param parameter to have finer control over how LD is calculated
+  - CHG: midValues of LD is replaced by LD_param={'midValues':True}
 
 
 version 0.7.8 - (Rev 833( Mar 2, 2007)
