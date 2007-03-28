@@ -380,15 +380,40 @@ namespace simuPOP
 
 		public:
 
-			statAlleleFreq( const vectori& atLoci = vectori())
+			statAlleleFreq( const vectori& atLoci = vectori(), const strDict & param = strDict())
 				:m_atLoci(atLoci), m_ifPost(atLoci.size()), m_numOfAlleles(0),
-				m_alleleNum(0), m_alleleFreq(0)
+				m_alleleNum(0), m_alleleFreq(0),
+				m_evalInSubPop(true),
+				m_output_alleleNum(true),
+				m_output_alleleFreq(true),
+				m_output_numOfAlleles(false)
 			{
 				for(size_t i=0; i<atLoci.size(); ++i)
 					m_ifPost[i] = 1;			  // true, post result
+				if (!param.empty())
+				{
+					strDict::const_iterator it;
+					strDict::const_iterator itEnd = param.end();
+					if ((it=param.find("subPop")) != itEnd)
+						m_evalInSubPop = it->second;
+					if (param.find(AlleleNum_String) != itEnd ||
+						param.find(AlleleFreq_String) != itEnd ||
+						param.find(NumOfAlleles_String) != itEnd)
+					{
+						m_output_alleleNum = false;
+						m_output_alleleFreq = false;
+						m_output_numOfAlleles = false;
+						if ((it=param.find(AlleleNum_String)) != itEnd)
+							m_output_alleleNum = it->second;
+						if ((it=param.find(AlleleFreq_String)) != itEnd)
+							m_output_alleleFreq = it->second;
+						if ((it=param.find(NumOfAlleles_String)) != itEnd)
+							m_output_numOfAlleles = it->second;
+					}
+				}
 			}
 
-			void addLocus(int locus, bool post=false);
+			void addLocus(int locus, bool post, bool subPop, bool numOfAlleles);
 
 			intMatrix& alleleNumAll()
 			{
@@ -529,6 +554,12 @@ namespace simuPOP
 
 			/// allele Freq
 			vector<matrix> m_alleleFreq;
+
+			///
+			bool m_evalInSubPop;
+			bool m_output_alleleNum;
+			bool m_output_alleleFreq;
+			bool m_output_numOfAlleles;
 	};
 
 	/// CPPONLY
@@ -539,11 +570,19 @@ namespace simuPOP
 	class statNumOfAlleles
 	{
 		public:
-			statNumOfAlleles(statAlleleFreq& calc, const vectori& atLoci = vectori())
-				:m_calc(calc)
+			statNumOfAlleles(statAlleleFreq& calc, const vectori& atLoci = vectori(),
+				const strDict & param = strDict())
+				:m_calc(calc), m_evalInSubPop(true)
 			{
+				if (!param.empty())
+				{
+					strDict::const_iterator it;
+					strDict::const_iterator itEnd = param.end();
+					if ((it=param.find("subPop")) != itEnd)
+						m_evalInSubPop = it->second;
+				}
 				for(vectori::const_iterator it = atLoci.begin(); it != atLoci.end(); ++it)
-					m_calc.addLocus(*it, true);
+					m_calc.addLocus(*it, true, m_evalInSubPop, true);
 			}
 
 			// do nothing. m_calc.spply will be called by stat.
@@ -556,6 +595,8 @@ namespace simuPOP
 
 			/// a reference to an existing allelefreq calculator
 			statAlleleFreq& m_calc;
+
+			bool m_evalInSubPop;
 	};
 
 	/// CPPONLY
@@ -703,12 +744,23 @@ namespace simuPOP
 #define ExpHetero_String "expHetero"
 
 		public:
-			statExpHetero(statAlleleFreq& alleleFreq, const vectori& expHetero=vectori())
-				: m_alleleFreq(alleleFreq), m_atLoci(expHetero), m_expHetero(0)
+			statExpHetero(statAlleleFreq& alleleFreq, const vectori& expHetero=vectori(),
+				const strDict & param=strDict())
+				: m_alleleFreq(alleleFreq), m_atLoci(expHetero), m_expHetero(0),
+				m_midValues(false), m_evalInSubPop(true)
 			{
+				if (!param.empty())
+				{
+					strDict::const_iterator it;
+					strDict::const_iterator itEnd = param.end();
+					if ((it=param.find("subPop")) != itEnd)
+						m_evalInSubPop = it->second;
+					if ((it=param.find("midValues")) != itEnd)
+						m_midValues = it->second;
+				}
 				// add expected hetero to m_alleleFreq
 				for(size_t i=0; i < expHetero.size(); ++i)
-					m_alleleFreq.addLocus( expHetero[i]);
+					m_alleleFreq.addLocus( expHetero[i], m_midValues, m_evalInSubPop, false);
 			}
 
 			bool apply(population& pop);
@@ -723,6 +775,13 @@ namespace simuPOP
 
 			/// expected heterozygosity
 			matrix m_expHetero;
+
+			/// whether or not keep intermediate values
+			bool m_midValues;
+
+			/// whether or not calculate statistics for subpopulations
+			bool m_evalInSubPop;
+
 	};
 
 	/// CPPONLY
@@ -941,38 +1000,7 @@ namespace simuPOP
 			// is called before statAssociation.apply() and ensures that allele frequencies
 			// are calculated when statAssociation needs them.
 			statAssociation(statAlleleFreq& alleleFreq, statHaploFreq& haploFreq,
-				const intMatrix& Association=intMatrix(), bool midValues=false)
-				:m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
-				m_association(Association), m_midValues(midValues)
-			{
-				for( size_t i=0, iEnd = m_association.size(); i < iEnd; ++i)
-				{
-					// these asserts will only be checked in non-optimized modules
-					DBG_FAILIF(m_association[i].size() != 2,
-						ValueError, "Expecting [locus locus] items");
-
-					DBG_FAILIF(m_association[i][0] == m_association[i][1],
-						ValueError, "Association has to be calculated between different loci");
-
-					// midValues is used to tell alleleFreq that the calculated allele
-					// frequency values should not be posted to pop.dvars()
-					//
-					// That is to say,
-					//     stat(Association=[0,1])
-					// will not generate
-					//     pop.dvars().alleleFreq
-					// unless stat() is called as
-					//     stat(Association=[0,1], midValues=True)
-					//
-					m_alleleFreq.addLocus( m_association[i][0], midValues );
-					m_alleleFreq.addLocus( m_association[i][1], midValues );
-					// also need haplotype.
-					vectori hap(2);
-					hap[0] = m_association[i][0];
-					hap[1] = m_association[i][1];
-					m_haploFreq.addHaplotype( hap, midValues );
-				}
-			}
+				const intMatrix& Association=intMatrix(), const strDict & param = strDict());
 
 			// calculate, right now,  do not tempt to save values
 			bool apply(population& pop);
@@ -990,6 +1018,11 @@ namespace simuPOP
 
 			///
 			bool m_midValues;
+			bool m_evalInSubPop;
+			bool m_output_ChiSq;
+			bool m_output_UCU;
+			bool m_output_CramerV;
+
 	};
 
 	/// CPPONLY
@@ -1009,18 +1042,7 @@ namespace simuPOP
 
 		public:
 			statFst(statAlleleFreq& alleleFreq, statHeteroFreq& heteroFreq,
-				const vectori& Fst=vectori(), bool midValues=false)
-				: m_alleleFreq(alleleFreq), m_heteroFreq(heteroFreq), m_atLoci(Fst)
-			{
-				for(size_t i=0; i < m_atLoci.size(); ++i)
-				{
-					// need to get allele frequency at this locus
-					m_alleleFreq.addLocus( m_atLoci[i], midValues);
-
-					// need to get heterozygous proportion  at this locus
-					m_heteroFreq.addLocus( m_atLoci[i], midValues);
-				}
-			}
+				const vectori& Fst=vectori(), const strDict & param=strDict());
 
 			double Fst()
 			{
@@ -1053,6 +1075,7 @@ namespace simuPOP
 			}
 
 			bool apply(population& pop);
+
 		private:
 
 			statAlleleFreq& m_alleleFreq;
@@ -1065,6 +1088,14 @@ namespace simuPOP
 			vectorf m_Fst, m_Fit, m_Fis;
 
 			double m_avgFst, m_avgFit, m_avgFis;
+
+			bool m_midValues;
+			bool m_output_Fst;
+			bool m_output_Fis;
+			bool m_output_Fit;
+			bool m_output_AvgFst;
+			bool m_output_AvgFis;
+			bool m_output_AvgFit;
 	};
 
 #define REL_Queller             1
@@ -1107,20 +1138,7 @@ namespace simuPOP
 			*/
 			statRelatedness(statAlleleFreq& alleleFreq, const intMatrix& groups=intMatrix(),
 				bool useSubPop=false, const vectori& loci=vectori(), vectori method=vectori(),
-				int minScored=10, bool midValues=false):
-			m_alleleFreq(alleleFreq), m_groups(groups), m_useSubPop(useSubPop),
-				m_atLoci(loci), m_method(method), m_minScored(minScored)
-			{
-				if( m_groups.empty() || m_groups[0].empty() )
-					return;
-
-				DBG_FAILIF(  method.empty(), ValueError, "Please specify relatedness method");
-
-				DBG_FAILIF( m_atLoci.empty(), ValueError, "Please specify parameter relLoci.");
-
-				for(size_t i=0; i<m_atLoci.size(); ++i)
-					m_alleleFreq.addLocus(m_atLoci[i], midValues);
-			}
+				int minScored=10, const strDict & param = strDict());
 
 			// relatedness between individuals
 			fraction relQueller(individual ind1,
@@ -1167,6 +1185,8 @@ namespace simuPOP
 
 			// save result
 			matrix m_relQueller, m_relLynch, m_relIR, m_relD2, m_relRel;
+
+			bool m_midValues;
 	};
 
 	class stat: public stator
@@ -1259,18 +1279,32 @@ namespace simuPOP
 				bool numOfMale=false,
 				bool numOfAffected=false,
 				vectori numOfAlleles=vectori(),
+				strDict numOfAlleles_param=strDict(),
+			//
 				vectori alleleFreq=vectori(),
+				strDict alleleFreq_param=strDict(),
+			//
 				vectori heteroFreq=vectori(),
 				vectori expHetero=vectori(),
+				strDict expHetero_param=strDict(),
+			//
 				vectori homoFreq=vectori(),
 				vectori genoFreq=vectori(),
 				intMatrix haploFreq=intMatrix(),
+			//
 				intMatrix LD=intMatrix(),
 				strDict LD_param=strDict(),
+			//
 				intMatrix association=intMatrix(),
+				strDict association_param=strDict(),
+			//
 				vectori Fst=vectori(),
+				strDict Fst_param=strDict(),
+			//
 				intMatrix relGroups=intMatrix(),
 				vectori relLoci=vectori(),
+				strDict rel_param=strDict(),
+			//
 				bool relBySubPop=false,			  // internal use
 				vectori relMethod=vectori(),
 				int relMinScored=10,			  // minimal number of loci required.
@@ -1285,17 +1319,17 @@ namespace simuPOP
 				m_popSize(popSize),
 				m_numOfMale(numOfMale),
 				m_numOfAffected(numOfAffected),
-				m_alleleFreq(alleleFreq),
-				m_numOfAlleles(m_alleleFreq, numOfAlleles),
+				m_alleleFreq(alleleFreq, alleleFreq_param),
+				m_numOfAlleles(m_alleleFreq, numOfAlleles, numOfAlleles_param),
 				m_heteroFreq(heteroFreq, homoFreq),
-				m_expHetero(m_alleleFreq, expHetero),
+				m_expHetero(m_alleleFreq, expHetero, expHetero_param),
 				m_genoFreq(genoFreq, hasPhase),
 				m_haploFreq(haploFreq),
 				m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
-				m_association(m_alleleFreq, m_haploFreq, association, midValues),
-				m_Fst(m_alleleFreq, m_heteroFreq, Fst, midValues),
+				m_association(m_alleleFreq, m_haploFreq, association, association_param),
+				m_Fst(m_alleleFreq, m_heteroFreq, Fst, Fst_param),
 				m_relatedness(m_alleleFreq, relGroups, relBySubPop, relLoci,
-				relMethod, relMinScored, midValues)
+				relMethod, relMinScored, rel_param)
 			{
 			}
 

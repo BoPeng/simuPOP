@@ -15207,6 +15207,13 @@ loc1
 \end_layout
 
 \begin_layout Itemize
+parameter: 
+\family typewriter
+alleleFreq_param={'subPop':True, 'alleleFreq':True, 'alleleNum':True, 'numOfAlle
+les':True}
+\end_layout
+
+\begin_layout Itemize
 variable: the following 
 \family typewriter
 carray
@@ -15422,6 +15429,12 @@ parameter:
 \family typewriter
 \series bold
 expHetero=[loc1, loc2,...]
+\end_layout
+
+\begin_layout Itemize
+parameter: 
+\family typewriter
+expHetero_param={'subPop':True, 'midValues':False}
 \end_layout
 
 \begin_layout Itemize
@@ -16060,6 +16073,13 @@ key "Weir1984"
 \end_layout
 
 \end_deeper
+\begin_layout Itemize
+parameter: 
+\family typewriter
+Fst_param={'midValues':False, 'Fis':True, 'Fst':True, 'Fit':True, 'AvgFis':True,
+ 'AvgFst':True, 'AvgFit':True}
+\end_layout
+
 \begin_layout Itemize
 variables:
 \end_layout
