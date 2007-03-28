@@ -1291,7 +1291,7 @@ namespace simuPOP
 			// find out all alleles
 			vectori A_alleles = m_alleleFreq.alleles(hapLoci[0]);
 			vectori B_alleles = m_alleleFreq.alleles(hapLoci[1]);
-            string hapLociStr = '[' + toStr(hapLoci[0]) + "][" +
+			string hapLociStr = '[' + toStr(hapLoci[0]) + "][" +
 				toStr(hapLoci[1]) + ']';
 
 			for( UINT sp=0; sp < numSP;  ++sp)
@@ -1326,9 +1326,9 @@ namespace simuPOP
 				// calculate statistics
 				for(size_t i=0; i<as; ++i)
 					for(size_t j=0; j < bs; ++j)
-				        ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/(n*cont_table[i][bs]*cont_table[as][j]);
-                DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << " sp " << sp << " n*pq " << n*cont_table[i][j] << " n*p*q " << n*cont_table[i][bs]*cont_table[as][j] << endl);
-                pop.setDoubleVar(subPopVar_String(sp, ChiSq_String) + hapLociStr, ChiSq);
+						ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/(n*cont_table[i][bs]*cont_table[as][j]);
+				DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << " sp " << sp << " n*pq " << n*cont_table[i][j] << " n*p*q " << n*cont_table[i][bs]*cont_table[as][j] << endl);
+				pop.setDoubleVar(subPopVar_String(sp, ChiSq_String) + hapLociStr, ChiSq);
 			}
 			if(numSP > 1 )
 			{
@@ -1363,7 +1363,7 @@ namespace simuPOP
 					for(size_t j=0; j < bs; ++j)
 						ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/(n*cont_table[i][bs]*cont_table[as][j]);
 				DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << endl);
-                pop.setDoubleVar(ChiSq_String + hapLociStr, ChiSq);
+				pop.setDoubleVar(ChiSq_String + hapLociStr, ChiSq);
 			}
 		}
 		return true;
