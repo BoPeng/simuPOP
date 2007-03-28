@@ -1291,6 +1291,8 @@ namespace simuPOP
 			// find out all alleles
 			vectori A_alleles = m_alleleFreq.alleles(hapLoci[0]);
 			vectori B_alleles = m_alleleFreq.alleles(hapLoci[1]);
+            string hapLociStr = '[' + toStr(hapLoci[0]) + "][" +
+				toStr(hapLoci[1]) + ']';
 
 			for( UINT sp=0; sp < numSP;  ++sp)
 			{
@@ -1313,7 +1315,7 @@ namespace simuPOP
 					vectori hapAlleles(2);
 					hapAlleles[0] = A_alleles[i];
 					hapAlleles[1] = B_alleles[j];
-					cont_table[i][j] = m_haploFreq.haploFreq(hapLoci)[hapAlleles];
+					cont_table[i][j] = m_haploFreq.haploFreq(hapLoci, sp)[hapAlleles];
 					cont_table[i][bs] += cont_table[i][j];
 					cont_table[as][j] += cont_table[i][j];
 					cont_table[as][bs] += cont_table[i][j];
@@ -1324,8 +1326,9 @@ namespace simuPOP
 				// calculate statistics
 				for(size_t i=0; i<as; ++i)
 					for(size_t j=0; j < bs; ++j)
-						ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/n*cont_table[i][bs]*cont_table[as][j];
-				DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << " sp " << sp << endl);
+				        ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/(n*cont_table[i][bs]*cont_table[as][j]);
+                DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << " sp " << sp << " n*pq " << n*cont_table[i][j] << " n*p*q " << n*cont_table[i][bs]*cont_table[as][j] << endl);
+                pop.setDoubleVar(subPopVar_String(sp, ChiSq_String) + hapLociStr, ChiSq);
 			}
 			if(numSP > 1 )
 			{
@@ -1358,8 +1361,9 @@ namespace simuPOP
 				// calculate statistics
 				for(size_t i=0; i<as; ++i)
 					for(size_t j=0; j < bs; ++j)
-						ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/n*cont_table[i][bs]*cont_table[as][j];
+						ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/(n*cont_table[i][bs]*cont_table[as][j]);
 				DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << endl);
+                pop.setDoubleVar(ChiSq_String + hapLociStr, ChiSq);
 			}
 		}
 		return true;
