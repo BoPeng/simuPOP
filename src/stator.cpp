@@ -126,7 +126,7 @@ namespace simuPOP
 			n = pop.subPopSize(sp) - n;
 			m_numOfFemale[sp] = n;
 
-			pop.setIntVar( subPopVar_String(sp, numOfFemale_String), n);
+			pop.setIntVar(subPopVar_String(sp, numOfFemale_String), n);
 		}
 		pop.setIntVar( numOfMale_String, numOfMale);
 		pop.setIntVar( numOfFemale_String, pop.popSize() - numOfMale);
@@ -171,7 +171,7 @@ namespace simuPOP
 		return true;
 	}
 
-	void statAlleleFreq::addLocus(int locus, bool post)
+	void statAlleleFreq::addLocus(int locus, bool post, bool subPop, bool numOfAlleles)
 	{
 		vectori::const_iterator it;
 		if( (it = find(m_atLoci.begin(), m_atLoci.end(), locus)) == m_atLoci.end() )
@@ -182,6 +182,11 @@ namespace simuPOP
 		}
 		else
 			m_ifPost[ it-m_atLoci.begin() ] = static_cast<int>(post);
+		// override existing subPop eval
+		if (subPop)
+			m_evalInSubPop = true;
+		if (numOfAlleles)
+			m_output_numOfAlleles = true;
 	}
 
 	bool statAlleleFreq::apply(population& pop)
@@ -189,12 +194,18 @@ namespace simuPOP
 		if( m_atLoci.empty())
 			return true;
 
+		UINT numSP = pop.numSubPop();
+		UINT numLoci = m_atLoci.size();
+
 		pop.removeVar(NumOfAlleles_String);
 		pop.removeVar(AlleleNum_String);
 		pop.removeVar(AlleleFreq_String);
-
-		UINT numSP = pop.numSubPop();
-		UINT numLoci = m_atLoci.size();
+		for(UINT sp=0; sp < numSP; ++sp)
+		{
+			pop.removeVar(subPopVar_String(sp, NumOfAlleles_String));
+			pop.removeVar(subPopVar_String(sp, AlleleNum_String));
+			pop.removeVar(subPopVar_String(sp, AlleleFreq_String));
+		}
 
 		UINT len = numSP==1?1:(numSP+1);
 		// if not initialized or m_atLoci/numSP changes
@@ -263,32 +274,39 @@ namespace simuPOP
 				// post result at this locus
 				if(m_ifPost[i])
 				{
-					varname = subPopVar_String(sp, AlleleNum_String) + "[" + toStr(loc) + "]";
-					PyObject * d = pop.setIntVectorVar(varname, num);
-
-					// do not need a separate result
-					if(numSP == 1)
+					if(m_output_alleleNum)
 					{
-						varname = toStr(AlleleNum_String) + "[" + toStr(loc) + "]";
-						Py_INCREF(d);
-						pop.setVar(varname, d);
+						varname = subPopVar_String(sp, AlleleNum_String) + "[" + toStr(loc) + "]";
+						PyObject * d = pop.setIntVectorVar(varname, num);
+
+						// do not need a separate result
+						if(numSP == 1 && sp == 0)
+						{
+							varname = toStr(AlleleNum_String) + "[" + toStr(loc) + "]";
+							Py_INCREF(d);
+							pop.setVar(varname, d);
+						}
 					}
 
-					varname = subPopVar_String(sp, AlleleFreq_String) + "[" + toStr(loc) + "]";
-					d = pop.setDoubleVectorVar(varname, freq);
-
-					// do not need a separate result
-					if(numSP == 1)
+					if(m_output_alleleFreq)
 					{
-						varname = toStr(AlleleFreq_String) + "[" + toStr(loc) + "]";
-						Py_INCREF(d);
-						pop.setVar(varname, d);
+						varname = subPopVar_String(sp, AlleleFreq_String) + "[" + toStr(loc) + "]";
+						PyObject * d = pop.setDoubleVectorVar(varname, freq);
+
+						// do not need a separate result
+						if(numSP == 1 && sp == 0)
+						{
+							varname = toStr(AlleleFreq_String) + "[" + toStr(loc) + "]";
+							Py_INCREF(d);
+							pop.setVar(varname, d);
+						}
 					}
 				}								  // post
 
 				// set numOfAlleles if necessary
-				m_numOfAlleles[sp][loc] = count_if( num.begin(), num.end(),
-					bind2nd(std::greater<int>(), 0));
+				if(m_output_numOfAlleles)
+					m_numOfAlleles[sp][loc] = count_if( num.begin(), num.end(),
+						bind2nd(std::greater<int>(), 0));
 			}									  // subpop
 
 			if(numSP > 1 )						  // calculate sum and post overall result
@@ -302,21 +320,27 @@ namespace simuPOP
 
 				if(m_ifPost[i])
 				{
-					varname = string(AlleleNum_String) + "[" + toStr(loc) + "]";
-					pop.setIntVectorVar(varname, sum);
-
-					varname = string(AlleleFreq_String) + "[" + toStr(loc) + "]";
-					pop.setDoubleVectorVar(varname, freq);
+					if(m_output_alleleNum)
+					{
+						varname = string(AlleleNum_String) + "[" + toStr(loc) + "]";
+						pop.setIntVectorVar(varname, sum);
+					}
+					if(m_output_alleleFreq)
+					{
+						varname = string(AlleleFreq_String) + "[" + toStr(loc) + "]";
+						pop.setDoubleVectorVar(varname, freq);
+					}
 				}
 
 				// set numOfAlleles if necessary
-				m_numOfAlleles.back()[loc] = count_if( sum.begin(), sum.end(),
-					bind2nd(std::greater<int>(), 0));
+				if(m_output_numOfAlleles)
+					m_numOfAlleles.back()[loc] = count_if( sum.begin(), sum.end(),
+						bind2nd(std::greater<int>(), 0));
 			}
 		}										  // all loci
 
 		// post number of alleles
-		if( accumulate(m_ifPost.begin(), m_ifPost.end(), 0) > 0 )
+		if( m_output_numOfAlleles && accumulate(m_ifPost.begin(), m_ifPost.end(), 0) > 0 )
 		{
 			// post number of alleles
 			for(UINT sp = 0; sp < numSP; ++sp)
@@ -808,7 +832,7 @@ namespace simuPOP
 	}
 
 	statLD::statLD(statAlleleFreq& alleleFreq, statHaploFreq& haploFreq,
-		const intMatrix& LD, const strDict & LD_param)
+		const intMatrix& LD, const strDict & param)
 		:m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
 		m_LD(LD),
 	// default values,
@@ -824,23 +848,23 @@ namespace simuPOP
 		m_output_Delta2(true)
 	{
 		// parameters
-		if (!LD_param.empty())
+		if (!param.empty())
 		{
 			strDict::const_iterator it;
-			strDict::const_iterator itEnd = LD_param.end();
-			if ((it=LD_param.find("subPop")) != itEnd)
+			strDict::const_iterator itEnd = param.end();
+			if ((it=param.find("subPop")) != itEnd)
 				m_evalInSubPop = it->second;
-			if ((it=LD_param.find("midValues")) != itEnd)
+			if ((it=param.find("midValues")) != itEnd)
 				m_midValues = it->second;
 			// if any statistics is specified, other unspecified ones are not calculated
-			if (LD_param.find("ld") != itEnd ||
-				LD_param.find("ld_prime") != itEnd ||
-				LD_param.find("r2") != itEnd ||
-				LD_param.find("delta2") != itEnd ||
-				LD_param.find("LD") != itEnd ||
-				LD_param.find("LD_prime") != itEnd ||
-				LD_param.find("R2") != itEnd ||
-				LD_param.find("Delta2") != itEnd)
+			if (param.find("ld") != itEnd ||
+				param.find("ld_prime") != itEnd ||
+				param.find("r2") != itEnd ||
+				param.find("delta2") != itEnd ||
+				param.find("LD") != itEnd ||
+				param.find("LD_prime") != itEnd ||
+				param.find("R2") != itEnd ||
+				param.find("Delta2") != itEnd)
 			{
 				m_output_ld = false;
 				m_output_ld_prime = false;
@@ -851,21 +875,21 @@ namespace simuPOP
 				m_output_R2 = false;
 				m_output_Delta2 = false;
 				// if has key, and is True or 1
-				if ((it=LD_param.find("ld")) != itEnd)
+				if ((it=param.find("ld")) != itEnd)
 					m_output_ld = it->second;
-				if ((it=LD_param.find("ld_prime")) != itEnd)
+				if ((it=param.find("ld_prime")) != itEnd)
 					m_output_ld_prime = it->second;
-				if ((it=LD_param.find("r2")) != itEnd)
+				if ((it=param.find("r2")) != itEnd)
 					m_output_r2 = it->second;
-				if ((it=LD_param.find("delta2")) != itEnd)
+				if ((it=param.find("delta2")) != itEnd)
 					m_output_delta2 = it->second;
-				if ((it=LD_param.find("LD")) != itEnd)
+				if ((it=param.find("LD")) != itEnd)
 					m_output_LD = it->second;
-				if ((it=LD_param.find("LD_prime")) != itEnd)
+				if ((it=param.find("LD_prime")) != itEnd)
 					m_output_LD_prime = it->second;
-				if ((it=LD_param.find("R2")) != itEnd)
+				if ((it=param.find("R2")) != itEnd)
 					m_output_R2 = it->second;
-				if ((it=LD_param.find("Delta2")) != itEnd)
+				if ((it=param.find("Delta2")) != itEnd)
 					m_output_Delta2 = it->second;
 			}
 		}
@@ -889,8 +913,8 @@ namespace simuPOP
 			// unless stat() is called as
 			//     stat(LD=[0,1], midValues=True)
 			//
-			m_alleleFreq.addLocus( m_LD[i][0], m_midValues);
-			m_alleleFreq.addLocus( m_LD[i][1], m_midValues);
+			m_alleleFreq.addLocus( m_LD[i][0], m_midValues, true, true);
+			m_alleleFreq.addLocus( m_LD[i][1], m_midValues, true, true);
 			// also need haplotype.
 			vectori hap(2);
 			hap[0] = m_LD[i][0];
@@ -1174,6 +1198,71 @@ namespace simuPOP
 		return true;
 	}
 
+	statAssociation::statAssociation(statAlleleFreq& alleleFreq, statHaploFreq& haploFreq,
+		const intMatrix& Association, const strDict & param)
+		:m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
+		m_association(Association),
+		m_midValues(false),
+		m_evalInSubPop(true),
+		m_output_ChiSq(true),
+		m_output_UCU(true),
+		m_output_CramerV(true)
+	{
+		for( size_t i=0, iEnd = m_association.size(); i < iEnd; ++i)
+		{
+			// these asserts will only be checked in non-optimized modules
+			DBG_FAILIF(m_association[i].size() != 2,
+				ValueError, "Expecting [locus locus] items");
+
+			DBG_FAILIF(m_association[i][0] == m_association[i][1],
+				ValueError, "Association has to be calculated between different loci");
+			// parameters
+			if (!param.empty())
+			{
+				strDict::const_iterator it;
+				strDict::const_iterator itEnd = param.end();
+				if ((it=param.find("subPop")) != itEnd)
+					m_evalInSubPop = it->second;
+				if ((it=param.find("midValues")) != itEnd)
+					m_midValues = it->second;
+				// if any statistics is specified, other unspecified ones are not calculated
+				if (param.find(ChiSq_String) != itEnd ||
+					param.find(UCU_String) != itEnd ||
+					param.find(CramerV_String) != itEnd)
+				{
+					m_output_ChiSq = false;
+					m_output_UCU = false;
+					m_output_CramerV = false;
+					// if has key, and is True or 1
+					if ((it=param.find(ChiSq_String)) != itEnd)
+						m_output_ChiSq = it->second;
+					if ((it=param.find("ld_prime")) != itEnd)
+						m_output_UCU = it->second;
+					if ((it=param.find("r2")) != itEnd)
+						m_output_CramerV = it->second;
+				}
+			}
+
+			// midValues is used to tell alleleFreq that the calculated allele
+			// frequency values should not be posted to pop.dvars()
+			//
+			// That is to say,
+			//     stat(Association=[0,1])
+			// will not generate
+			//     pop.dvars().alleleFreq
+			// unless stat() is called as
+			//     stat(Association=[0,1], midValues=True)
+			//
+			m_alleleFreq.addLocus( m_association[i][0], m_midValues, m_evalInSubPop, true);
+			m_alleleFreq.addLocus( m_association[i][1], m_midValues, m_evalInSubPop, true);
+			// also need haplotype.
+			vectori hap(2);
+			hap[0] = m_association[i][0];
+			hap[1] = m_association[i][1];
+			m_haploFreq.addHaplotype(hap, m_midValues);
+		}
+	}
+
 	bool statAssociation::apply(population& pop)
 	{
 		if( m_association.empty())
@@ -1274,6 +1363,60 @@ namespace simuPOP
 			}
 		}
 		return true;
+	}
+
+	statFst::statFst(statAlleleFreq& alleleFreq, statHeteroFreq& heteroFreq,
+		const vectori& Fst, const strDict & param)
+		: m_alleleFreq(alleleFreq), m_heteroFreq(heteroFreq), m_atLoci(Fst),
+		m_midValues(false),
+		m_output_Fst(true),
+		m_output_Fis(true),
+		m_output_Fit(true),
+		m_output_AvgFst(true),
+		m_output_AvgFis(true),
+		m_output_AvgFit(true)
+	{
+		strDict::const_iterator it;
+		strDict::const_iterator itEnd = param.end();
+		if ((it=param.find("midValues")) != itEnd)
+			m_midValues = it->second;
+		// if any statistics is specified, other unspecified ones are not calculated
+		if (param.find(Fst_String) != itEnd ||
+			param.find(Fis_String) != itEnd ||
+			param.find(Fit_String) != itEnd ||
+			param.find(AvgFst_String) != itEnd ||
+			param.find(AvgFis_String) != itEnd ||
+			param.find(AvgFit_String) != itEnd)
+		{
+			m_output_Fst = false;
+			m_output_Fis = false;
+			m_output_Fit = false;
+			m_output_AvgFst = false;
+			m_output_AvgFis = false;
+			m_output_AvgFit = false;
+			// if has key, and is True or 1
+			if ((it=param.find(Fst_String)) != itEnd)
+				m_output_Fst = it->second;
+			if ((it=param.find(Fis_String)) != itEnd)
+				m_output_Fis = it->second;
+			if ((it=param.find(Fit_String)) != itEnd)
+				m_output_Fit = it->second;
+			if ((it=param.find(AvgFst_String)) != itEnd)
+				m_output_AvgFst = it->second;
+			if ((it=param.find(AvgFis_String)) != itEnd)
+				m_output_AvgFis = it->second;
+			if ((it=param.find(AvgFit_String)) != itEnd)
+				m_output_AvgFit = it->second;
+		}
+
+		for(size_t i=0; i < m_atLoci.size(); ++i)
+		{
+			// need to get allele frequency at this locus
+			m_alleleFreq.addLocus( m_atLoci[i], m_midValues, true, true);
+
+			// need to get heterozygous proportion  at this locus
+			m_heteroFreq.addLocus( m_atLoci[i], m_midValues);
+		}
 	}
 
 	bool statFst::apply(population& pop)
@@ -1381,13 +1524,41 @@ namespace simuPOP
 		m_avgFis = fcmp_eq(aa+bb+cc,0)?1.:(1 - cc /( bb+cc));
 
 		// post results
-		pop.setDoubleVectorVar(Fst_String, m_Fst);
-		pop.setDoubleVectorVar(Fit_String, m_Fit);
-		pop.setDoubleVectorVar(Fis_String, m_Fis);
-		pop.setDoubleVar(AvgFst_String, m_avgFst);
-		pop.setDoubleVar(AvgFit_String, m_avgFit);
-		pop.setDoubleVar(AvgFis_String, m_avgFis);
+		if(m_output_Fst)
+			pop.setDoubleVectorVar(Fst_String, m_Fst);
+		if(m_output_Fit)
+			pop.setDoubleVectorVar(Fit_String, m_Fit);
+		if(m_output_Fis)
+			pop.setDoubleVectorVar(Fis_String, m_Fis);
+		if(m_output_AvgFst)
+			pop.setDoubleVar(AvgFst_String, m_avgFst);
+		if(m_output_AvgFit)
+			pop.setDoubleVar(AvgFit_String, m_avgFit);
+		if(m_output_AvgFis)
+			pop.setDoubleVar(AvgFis_String, m_avgFis);
 		return true;
+	}
+
+	statRelatedness::statRelatedness(statAlleleFreq& alleleFreq, const intMatrix& groups,
+		bool useSubPop, const vectori& loci, vectori method,
+		int minScored, const strDict & param):
+	m_alleleFreq(alleleFreq), m_groups(groups), m_useSubPop(useSubPop),
+		m_atLoci(loci), m_method(method), m_minScored(minScored),
+		m_midValues(false)
+	{
+		if( m_groups.empty() || m_groups[0].empty() )
+			return;
+		strDict::const_iterator it;
+		strDict::const_iterator itEnd = param.end();
+		if ((it=param.find("midValues")) != itEnd)
+			m_midValues = it->second;
+
+		DBG_FAILIF(  method.empty(), ValueError, "Please specify relatedness method");
+
+		DBG_FAILIF( m_atLoci.empty(), ValueError, "Please specify parameter relLoci.");
+
+		for(size_t i=0; i<m_atLoci.size(); ++i)
+			m_alleleFreq.addLocus(m_atLoci[i], m_midValues, true, true);
 	}
 
 	// relatedness between individuals
