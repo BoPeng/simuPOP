@@ -857,14 +857,14 @@ namespace simuPOP
 			if ((it=param.find("midValues")) != itEnd)
 				m_midValues = it->second;
 			// if any statistics is specified, other unspecified ones are not calculated
-			if (param.find("ld") != itEnd ||
-				param.find("ld_prime") != itEnd ||
-				param.find("r2") != itEnd ||
-				param.find("delta2") != itEnd ||
-				param.find("LD") != itEnd ||
-				param.find("LD_prime") != itEnd ||
-				param.find("R2") != itEnd ||
-				param.find("Delta2") != itEnd)
+			if (param.find(LD_String) != itEnd ||
+				param.find(LDPRIME_String) != itEnd ||
+				param.find(R2_String) != itEnd ||
+				param.find(DELTA2_String) != itEnd ||
+				param.find(AvgLD_String) != itEnd ||
+				param.find(AvgLDPRIME_String) != itEnd ||
+				param.find(AvgR2_String) != itEnd ||
+				param.find(AvgDELTA2_String) != itEnd)
 			{
 				m_output_ld = false;
 				m_output_ld_prime = false;
@@ -875,21 +875,21 @@ namespace simuPOP
 				m_output_R2 = false;
 				m_output_Delta2 = false;
 				// if has key, and is True or 1
-				if ((it=param.find("ld")) != itEnd)
+				if ((it=param.find(LD_String)) != itEnd)
 					m_output_ld = it->second;
-				if ((it=param.find("ld_prime")) != itEnd)
+				if ((it=param.find(LDPRIME_String)) != itEnd)
 					m_output_ld_prime = it->second;
-				if ((it=param.find("r2")) != itEnd)
+				if ((it=param.find(R2_String)) != itEnd)
 					m_output_r2 = it->second;
-				if ((it=param.find("delta2")) != itEnd)
+				if ((it=param.find(DELTA2_String)) != itEnd)
 					m_output_delta2 = it->second;
-				if ((it=param.find("LD")) != itEnd)
+				if ((it=param.find(AvgLD_String)) != itEnd)
 					m_output_LD = it->second;
-				if ((it=param.find("LD_prime")) != itEnd)
+				if ((it=param.find(AvgLDPRIME_String)) != itEnd)
 					m_output_LD_prime = it->second;
-				if ((it=param.find("R2")) != itEnd)
+				if ((it=param.find(AvgR2_String)) != itEnd)
 					m_output_R2 = it->second;
-				if ((it=param.find("Delta2")) != itEnd)
+				if ((it=param.find(AvgDELTA2_String)) != itEnd)
 					m_output_Delta2 = it->second;
 			}
 		}
