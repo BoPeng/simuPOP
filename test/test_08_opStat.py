@@ -10,6 +10,7 @@
 
 
 import simuOpt
+import math
 simuOpt.setOptions(quiet=False)
 
 from simuPOP import *
@@ -424,9 +425,41 @@ class TestStat(unittest.TestCase):
                     pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
                     ChiSq += (var.popSize * pq - var.popSize * p * q) ** 2 / (var.popSize * p * q)
             return ChiSq
+        def UC_U(var, loc1, loc2):
+            UC_U = 0
+            HA = 0
+            HB = 0
+            HAB = 0
+            #allele1 is alleles in loc1
+            for allele1 in range(len(var.alleleFreq[loc1])):
+                HA += -var.alleleFreq[loc1][allele1] * math.log(var.alleleFreq[loc1][allele1])
+            for allele2 in range(len(var.alleleFreq[loc2])):
+                HB += -var.alleleFreq[loc2][allele2] * math.log(var.alleleFreq[loc2][allele2])
+            for allele1 in range(len(var.alleleFreq[loc1])):
+                for allele2 in range(len(var.alleleFreq[loc2])):
+                    pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
+                    HAB += -pq*math.log(pq)
+            UC_U = 2 * ((HA+HB-HAB)/(HA+HB))
+            return UC_U
+        def CramerV(var, loc1, loc2):
+            r = len(var.alleleFreq[loc1])
+            c = len(var.alleleFreq[loc2])
+            CramerV = math.sqrt(ChiSq(var, loc1, loc2)/(var.popSize * min(r - 1, c - 1)))
+            return CramerV
         assert (ChiSq(pop.dvars(), 2, 4) - pop.dvars().ChiSq[2][4]) < 1e-6
+        assert (UC_U(pop.dvars(), 2, 4) - pop.dvars().UC_U[2][4]) < 1e-6
+        assert (CramerV(pop.dvars(), 2, 4) - pop.dvars().CramerV[2][4]) < 1e-6
         for sp in range(3):
-            assert (ChiSq(pop.dvars(sp), 2, 4) - pop.dvars(sp).ChiSq[2][4]) < 0.05
+            assert (ChiSq(pop.dvars(sp), 2, 4) - pop.dvars(sp).ChiSq[2][4]) < 1e-6
+            assert (UC_U(pop.dvars(sp), 2, 4) - pop.dvars(sp).UC_U[2][4]) < 1e-6
+            assert (CramerV(pop.dvars(sp), 2, 4) - pop.dvars(sp).CramerV[2][4]) < 1e-6
+        #if alleleType() == 'binary':
+            #Stat(pop, association=[2,4], popSize=1, association_param={'midValues':True, 'subPop':False})
+        #else:
+            #Stat(pop, association=[2,4], popSize=1, association_param={'midValues':True, 'subPop':False})
+        #assert pop.vars().has_key('ChiSq')
+        #assert not pop.vars(0).has_key('ChiSq')
+        
 
     
 if __name__ == '__main__':

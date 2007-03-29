@@ -1303,6 +1303,7 @@ namespace simuPOP
 					cont_table[i].resize(bs+1);
 				double n = static_cast<double>(pop.subPopSize(sp));
 				double ChiSq = 0.0, UC_U = 0.0, CramerV = 0.0;
+                double HA = 0.0, HB = 0.0, HAB = 0.0;
 				// initialize last line/column
 				for(size_t i=0; i < as; ++i)
 					cont_table[i][bs]=0;
@@ -1324,11 +1325,29 @@ namespace simuPOP
 					"Sum of haplotype frequencies is not 1. Association will not be computed.");
 				DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
 				// calculate statistics
+                //ChiSq
 				for(size_t i=0; i<as; ++i)
 					for(size_t j=0; j < bs; ++j)
 						ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/(n*cont_table[i][bs]*cont_table[as][j]);
-				DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << " sp " << sp << " n*pq " << n*cont_table[i][j] << " n*p*q " << n*cont_table[i][bs]*cont_table[as][j] << endl);
-				pop.setDoubleVar(subPopVar_String(sp, ChiSq_String) + hapLociStr, ChiSq);
+                //UC_U
+                for(size_t i=0; i < as; ++i)
+					HA += -cont_table[i][bs]*log(cont_table[i][bs]);
+				for(size_t j=0; j <= bs; ++j)
+					HB += -cont_table[as][j]*log(cont_table[as][j]);
+                for(size_t i=0; i<as; ++i)
+					for(size_t j=0; j < bs; ++j)
+						HAB += -cont_table[i][j]*log(cont_table[i][j]);
+                UC_U = 2*((HA+HB-HAB)/(HA+HB));
+                //CramerV
+                CramerV = sqrt(ChiSq/(n*std::min(as-1, bs-1)));
+                
+				DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << " sp " << sp << " n*pq " << n*cont_table[i][j] << " n*p*q " << n*cont_table[i][bs]*cont_table[as][j] << " UC_U " << UC_U << " CramerV " << CramerV << endl);
+                if (m_output_ChiSq)
+                    pop.setDoubleVar(subPopVar_String(sp, ChiSq_String) + hapLociStr, ChiSq);
+                if (m_output_UCU)
+                    pop.setDoubleVar(subPopVar_String(sp, UCU_String) + hapLociStr, UC_U);
+                if (m_output_CramerV)
+                    pop.setDoubleVar(subPopVar_String(sp, CramerV_String) + hapLociStr, CramerV);
 			}
 			if(numSP > 1 )
 			{
@@ -1339,11 +1358,13 @@ namespace simuPOP
 					cont_table[i].resize(bs+1);
 				double n = static_cast<double>(pop.popSize());
 				double ChiSq = 0.0, UC_U =0.0, CramerV = 0.0;
-				// get p_ij
+                double HA = 0.0, HB = 0.0, HAB = 0.0;
+				// initialize last line/column
 				for(size_t i=0; i < as; ++i)
 					cont_table[i][bs]=0;
 				for(size_t j=0; j <= bs; ++j)
 					cont_table[as][j]=0;
+                // get P_ij
 				for(size_t i=0; i < as; ++i)
 					for(size_t j=0; j < bs; ++j)
 				{
@@ -1359,11 +1380,29 @@ namespace simuPOP
 					"Sum of haplotype frequencies is not 1. Association will not be computed.");
 				DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
 				// calculate statistics
+                //ChiSq
 				for(size_t i=0; i<as; ++i)
 					for(size_t j=0; j < bs; ++j)
 						ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/(n*cont_table[i][bs]*cont_table[as][j]);
-				DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << endl);
-				pop.setDoubleVar(ChiSq_String + hapLociStr, ChiSq);
+                //UC_U
+                for(size_t i=0; i < as; ++i)
+					HA += -cont_table[i][bs]*log(cont_table[i][bs]);
+				for(size_t j=0; j <= bs; ++j)
+					HB += -cont_table[as][j]*log(cont_table[as][j]);
+                for(size_t i=0; i<as; ++i)
+					for(size_t j=0; j < bs; ++j)
+						HAB += -cont_table[i][j]*log(cont_table[i][j]);
+                UC_U = 2*((HA+HB-HAB)/(HA+HB));
+                //CramerV
+                CramerV = sqrt(ChiSq/(n*std::min(as-1, bs-1)));
+                
+				DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << " UC_U " << UC_U << " CramerV " << CramerV <<endl);
+                if (m_output_ChiSq)
+                    pop.setDoubleVar(ChiSq_String + hapLociStr, ChiSq);
+                if (m_output_UCU)
+                    pop.setDoubleVar(UCU_String + hapLociStr, UC_U);
+                if (m_output_CramerV)
+                    pop.setDoubleVar(CramerV_String + hapLociStr, CramerV);
 			}
 		}
 		return true;
