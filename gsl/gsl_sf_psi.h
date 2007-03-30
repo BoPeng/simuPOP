@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 /* Author:  G. Jungman */
@@ -67,6 +67,18 @@ double  gsl_sf_psi(const double x);
  */
 int     gsl_sf_psi_1piy_e(const double y, gsl_sf_result * result);
 double  gsl_sf_psi_1piy(const double y);
+
+
+/* Di-Gamma Function psi(z) for general complex argument z = x + iy
+ *
+ * exceptions: GSL_EDOM
+ */
+int gsl_sf_complex_psi_e(
+  const double x,
+  const double y,
+  gsl_sf_result * result_re,
+  gsl_sf_result * result_im
+  );
 
 
 /* Tri-Gamma Function psi^(1)(n)

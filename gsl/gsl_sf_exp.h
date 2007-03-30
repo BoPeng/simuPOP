@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 /* Author:  G. Jungman */
@@ -128,37 +128,5 @@ int gsl_sf_exp_mult_err_e(const double x, const double dx, const double y, const
 int gsl_sf_exp_mult_err_e10_e(const double x, const double dx, const double y, const double dy, gsl_sf_result_e10 * result);
 
 __END_DECLS
-
-
-#ifdef HAVE_INLINE
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_errno.h>
-
-__BEGIN_DECLS
-
-extern inline
-int gsl_sf_exp_e(const double x, gsl_sf_result * result)
-{
-  if(x > GSL_LOG_DBL_MAX) {
-    result->val = GSL_POSINF;
-    result->err = GSL_POSINF;
-    GSL_ERROR ("overflow", GSL_EOVRFLW);
-  }
-  else if(x < GSL_LOG_DBL_MIN) {
-    result->val = 0.0;
-    result->err = GSL_DBL_MIN;
-    GSL_ERROR ("underflow", GSL_EUNDRFLW);
-  }
-  else {
-    result->val = exp(x);
-    result->err = 2.0 * GSL_DBL_EPSILON * result->val;
-    return GSL_SUCCESS;
-  }  
-}
-
-__END_DECLS
-
-#endif /* HAVE_INLINE */
-
 
 #endif /* __GSL_SF_EXP_H__ */

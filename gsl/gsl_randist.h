@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 #ifndef __GSL_RANDIST_H__
@@ -40,7 +40,8 @@ double gsl_ran_beta (const gsl_rng * r, const double a, const double b);
 double gsl_ran_beta_pdf (const double x, const double a, const double b);
 
 unsigned int gsl_ran_binomial (const gsl_rng * r, double p, unsigned int n);
-unsigned int gsl_ran_binomial_tpe (const gsl_rng * r, double pp, unsigned int n);
+unsigned int gsl_ran_binomial_knuth (const gsl_rng * r, double p, unsigned int n);
+unsigned int gsl_ran_binomial_tpe (const gsl_rng * r, double p, unsigned int n);
 double gsl_ran_binomial_pdf (const unsigned int k, const double p, const unsigned int n);
 
 double gsl_ran_exponential (const gsl_rng * r, const double mu);
@@ -71,9 +72,12 @@ double gsl_ran_flat_pdf (double x, const double a, const double b);
 double gsl_ran_gamma (const gsl_rng * r, const double a, const double b);
 double gsl_ran_gamma_int (const gsl_rng * r, const unsigned int a);
 double gsl_ran_gamma_pdf (const double x, const double a, const double b);
+double gsl_ran_gamma_mt (const gsl_rng * r, const double a, const double b);
+double gsl_ran_gamma_knuth (const gsl_rng * r, const double a, const double b);
 
 double gsl_ran_gaussian (const gsl_rng * r, const double sigma);
 double gsl_ran_gaussian_ratio_method (const gsl_rng * r, const double sigma);
+double gsl_ran_gaussian_ziggurat (const gsl_rng * r, const double sigma);
 double gsl_ran_gaussian_pdf (const double x, const double sigma);
 
 double gsl_ran_ugaussian (const gsl_rng * r);

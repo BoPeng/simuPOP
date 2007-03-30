@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 #ifndef __GSL_RNG_H__
@@ -67,6 +67,7 @@ GSL_VAR const gsl_rng_type *gsl_rng_fishman2x;
 GSL_VAR const gsl_rng_type *gsl_rng_gfsr4;
 GSL_VAR const gsl_rng_type *gsl_rng_knuthran;
 GSL_VAR const gsl_rng_type *gsl_rng_knuthran2;
+GSL_VAR const gsl_rng_type *gsl_rng_knuthran2002;
 GSL_VAR const gsl_rng_type *gsl_rng_lecuyer21;
 GSL_VAR const gsl_rng_type *gsl_rng_minstd;
 GSL_VAR const gsl_rng_type *gsl_rng_mrg;
@@ -191,14 +192,16 @@ gsl_rng_uniform_int (const gsl_rng * r, unsigned long int n)
 {
   unsigned long int offset = r->type->min;
   unsigned long int range = r->type->max - offset;
-  unsigned long int scale = range / n;
+  unsigned long int scale;
   unsigned long int k;
 
-  if (n > range) 
+  if (n > range || n == 0) 
     {
-      GSL_ERROR_VAL ("n exceeds maximum value of generator",
-                        GSL_EINVAL, 0) ;
+      GSL_ERROR_VAL ("invalid n, either 0 or exceeds maximum value of generator",
+                     GSL_EINVAL, 0) ;
     }
+
+  scale = range / n;
 
   do
     {

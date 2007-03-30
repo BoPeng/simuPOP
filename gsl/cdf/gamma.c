@@ -1,6 +1,6 @@
-/* randist/chisq.c
+/* cdf/cdf_gamma.c
  * 
- * Copyright (C) 1996, 1997, 1998, 1999, 2000 James Theiler, Brian Gough
+ * Copyright (C) 2003 Jason Stover.
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,41 +14,61 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+/* 
+ * Author: J. Stover
  */
 
 #include <config.h>
 #include <math.h>
+#include <gsl/gsl_cdf.h>
+#include <gsl/gsl_math.h>
 #include <gsl/gsl_sf_gamma.h>
-#include <gsl/gsl_rng.h>
-#include <gsl/gsl_randist.h>
-
-/* The chisq distribution has the form
-
-   p(x) dx = (1/(2*Gamma(nu/2))) (x/2)^(nu/2 - 1) exp(-x/2) dx
-
-   for x = 0 ... +infty */
 
 double
-gsl_ran_chisq (const gsl_rng * r, const double nu)
+gsl_cdf_gamma_P (const double x, const double a, const double b)
 {
-  double chisq = 2 * gsl_ran_gamma (r, nu / 2, 1.0);
-  return chisq;
-}
+  double P;
+  double y = x / b;
 
-double
-gsl_ran_chisq_pdf (const double x, const double nu)
-{
-  if (x <= 0)
+  if (x <= 0.0)
     {
-      return 0 ;
+      return 0.0;
+    }
+
+  if (y > a)
+    {
+      P = 1 - gsl_sf_gamma_inc_Q (a, y);
     }
   else
     {
-      double p;
-      double lngamma = gsl_sf_lngamma (nu / 2);
-      
-      p = exp ((nu / 2 - 1) * log (x/2) - x/2 - lngamma) / 2;
-      return p;
+      P = gsl_sf_gamma_inc_P (a, y);
     }
+
+  return P;
+}
+
+double
+gsl_cdf_gamma_Q (const double x, const double a, const double b)
+{
+  double Q;
+  double y = x / b;
+
+  if (x <= 0.0)
+    {
+      return 1.0;
+    }
+
+  if (y < a)
+    {
+      Q = 1 - gsl_sf_gamma_inc_P (a, y);
+    }
+  else
+    {
+      Q = gsl_sf_gamma_inc_Q (a, y);
+    }
+
+  return Q;
 }
