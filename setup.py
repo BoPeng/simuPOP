@@ -285,11 +285,13 @@ LIB_FILES = [
     'gsl/specfunc/psi.c',
     'gsl/specfunc/trig.c',
     'gsl/specfunc/exp.c',
+    'gsl/specfunc/expint.c',
     'gsl/specfunc/log.c',
     'gsl/specfunc/erfc.c',
     'gsl/specfunc/zeta.c',
     'gsl/specfunc/elementary.c',
     'gsl/specfunc/gamma.c',
+    'gsl/specfunc/gamma_inc.c',
     'gsl/rng/borosh13.c',
     'gsl/rng/fishman2x.c',
     'gsl/rng/mt.c',
@@ -337,10 +339,13 @@ LIB_FILES = [
     'gsl/randist/geometric.c',
     'gsl/randist/binomial.c',
     'gsl/randist/poisson.c',
-    'gsl/randist/rdgamma.c',
     'gsl/randist/multinomial.c',
     'gsl/randist/chisq.c',
     'gsl/randist/gauss.c',
+    'gsl/randist/gausszig.c',
+    'gsl/randist/gamma.c',
+    'gsl/cdf/chisq.c',
+    'gsl/cdf/gamma.c',
     'gsl/error.c' 
 ]
 

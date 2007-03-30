@@ -76,7 +76,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Standard
 \begin_inset ERT
@@ -12797,7 +12797,7 @@ name "operator!mapSelector"
 \family default
 function 
 \family typewriter
-MapSelector
+MapSelect
 \begin_inset LatexCommand index
 name "function!MapSelect"
 
@@ -15724,7 +15724,8 @@ parameter:
 
 \begin_deeper
 \begin_layout LyX-Code
-LD: LD = [ [1,2], [ 0,1,1,2],[1,2,1,2]] 
+LD: LD = [ [1,2], [ 0,1,1,2],[1,2,1,2]] , or LD=[1,2] in the case of one
+ pair to calculate.
 \end_layout
 
 \begin_layout LyX-Code
@@ -15993,6 +15994,108 @@ LD_param
 'stat':[list of stat]
 \family default
 .
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection*
+Association
+\end_layout
+
+\begin_layout Standard
+Check http://www.sph.umich.edu/csg/abecasis/GOLD/docs/stats.html for details
+\end_layout
+
+\begin_layout Itemize
+parameter 
+\family typewriter
+association=[[1,2], [3,4]], 
+\family default
+or 
+\family typewriter
+association=[1,2]
+\family default
+ in the case of one pair to calculate.
+\end_layout
+
+\begin_layout Itemize
+parameter 
+\family typewriter
+association_param={'stat':['ChiSq', 'UCU', 'CramerV'], 'subPop':True, 'midValues
+':False}, 'ChiSq':True 
+\family default
+etc are also allowed.
+\end_layout
+
+\begin_layout Itemize
+statistics:
+\begin_inset Formula \begin{eqnarray*}
+\mbox{ChiSq} & = & \mbox{contingency table }\chi^{2}\mbox{ statistics}\\
+\mbox{ChiSq\_P} & = & p\mbox{-value of }\chi^{2}\mbox{ with df=}\left(a-1\right)\left(b-1\right)\\
+H\left(A\right) & = & \sum_{i}-P{}_{i}\ln P_{i}\\
+H\left(B\right) & = & \sum_{j}-P_{j}\ln P_{j}\\
+H\left(A,B\right) & = & \sum_{i}\sum_{j}P_{ij}\\
+\mbox{UCU} & = & 2\left(\frac{H\left(A\right)+H\left(B\right)-H\left(A,B\right)}{H\left(A\right)+H\left(B\right)}\right)\\
+\mbox{CramerV} & = & \sqrt{\frac{\chi^{2}}{N\min\left(a-1,b-1\right)}}\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+variables:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+ChiSq[loc1][loc2], ChiSq_P[loc1][loc2],
+\family default
+ 
+\family typewriter
+UC_U[loc1][loc2], CramerV[loc1][loc2]
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+subPop[sp]['ChiSq'][loc1][loc2], subPop[sp]['ChiSq_P'][loc1][loc2], subPop[sp]['
+UC_U'][loc1][loc2], subPop[sp]['CramerV'][loc1][loc2]
+\end_layout
+
+\begin_layout Standard
+where 
+\family typewriter
+ChiSq_P
+\family default
+ is the single-sided 
+\begin_inset Formula $p$
+\end_inset
+
+-value of 
+\begin_inset Formula $\chi^{2}\left(\left(a-1\right)\left(b-1\right)\right)$
+\end_inset
+
+ distribution where 
+\begin_inset Formula $a$
+\end_inset
+
+ and 
+\begin_inset Formula $b$
+\end_inset
+
+ are the number of alleles in locus 1 and 2, also the size of the contigency
+ table.
+ Note that no correction is done for the 
+\begin_inset Formula $p$
+\end_inset
+
+-value, as R's 
+\family typewriter
+chisq.test 
+\family default
+function may do.
 \end_layout
 
 \end_deeper

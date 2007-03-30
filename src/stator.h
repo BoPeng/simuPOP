@@ -988,6 +988,7 @@ namespace simuPOP
 			// these are names of calcualted statistics, will be accessed like
 			// pop.dvars().Chisq or pop.vars()['Chisq']
 #define   ChiSq_String      "ChiSq"
+#define   ChiSq_P_String    "ChiSq_P"
 #define   UCU_String        "UC_U"
 #define   CramerV_String    "CramerV"
 

@@ -904,7 +904,7 @@ del pyInit.__init__
 pyInit.__init__ = new_pyInit
 
 
-def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], relGroups=[], relMethod=[], midValues=None, *args, **kwargs):
+def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], association_param={}, relGroups=[], relMethod=[], midValues=None, *args, **kwargs):
     # midValues is now obsolete
     if midValues is not None:
         print 'Parameter midValues is now obsolete. Please use the _param parameter of corresponding statistics'
@@ -926,8 +926,16 @@ def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], relGroups=[
                 ldp[stat] = True
         else:
             ldp[key] = LD_param[key]
+    # parameters of association, convert 'stat':['ChiSq', 'UCU'] etc to 'ChiSq':True, 'UCU':True
+    assp = {}
+    for key in association_param.keys():
+        if 'stat' == key and type(association_param['stat']) in [types.TupleType, types.ListType]:
+            for stat in association_param['stat']:
+                assp[stat] = True
+        else:
+            assp[key] = association_param[key]
     # parameter association
-    if len(association) > 0 and type(association[0]) in    [types.IntType, types.LongType]:
+    if len(association) > 0 and type(association[0]) in [types.IntType, types.LongType]:
         Association = [association]
     else:
         Association = association
@@ -935,7 +943,7 @@ def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], relGroups=[
     if relGroups == []:
         rg = [[]]
         useSubPop = True
-    elif len(relGroups) > 0 and type(relGroups[0]) in    [types.IntType, types.LongType]:
+    elif len(relGroups) > 0 and type(relGroups[0]) in [types.IntType, types.LongType]:
         rg = [relGroups]
         useSubPop = True
     else:
@@ -947,7 +955,8 @@ def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], relGroups=[
     else:
         rm = relGroups
     cppModule.stat_swiginit(self, 
-        cppModule.new_stat(haploFreq=hf, LD=ld, LD_param=ldp, association=Association, relGroups=rg, relBySubPop=useSubPop,
+        cppModule.new_stat(haploFreq=hf, LD=ld, LD_param=ldp, 
+			association=Association, association_param=assp, relGroups=rg, relBySubPop=useSubPop,
             relMethod = rm, *args, **kwargs))
  
 new_stat.__doc__ = stat.__init__.__doc__
