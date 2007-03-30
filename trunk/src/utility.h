@@ -73,6 +73,7 @@ using std::setw;
 #include "gsl/gsl_sys.h"						  // for floating point comparison
 #include "gsl/gsl_rng.h"
 #include "gsl/gsl_randist.h"
+#include "gsl/gsl_cdf.h"
 
 /// for bernulli trials.
 // use vector<bool> instead of dynamic_bitset since I can manipulate
@@ -1160,6 +1161,13 @@ namespace simuPOP
 			{
 				return gsl_ran_poisson(m_RNG, p);
 			}
+
+            /// right hand side (single side) p-value for ChiSq value
+            double pvalChiSq(double chisq, unsigned int df)
+            {
+                return 1 - gsl_cdf_chisq_P(chisq, df);
+            }
+            
 
 		private:
 

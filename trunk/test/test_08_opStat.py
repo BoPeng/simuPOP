@@ -16,6 +16,12 @@ simuOpt.setOptions(quiet=False)
 from simuPOP import *
 import unittest, os, sys, exceptions
 
+try:
+    import rpy
+    has_rpy = True
+except:
+    has_rpy = False
+
 class TestStat(unittest.TestCase):
 
     def testPopSize(self):
@@ -408,37 +414,41 @@ class TestStat(unittest.TestCase):
     def testAssociation(self):
         'Testing calculation of association between two loci'
         #TurnOnDebug(DBG_STATO
-        pop = population(subPop=[500,100,1000], 
-            ploidy=2, loci = [5])
+        pop = population(subPop=[500,100,1000], ploidy=2, loci = [5])
+        #
+        # FIXME:
+        #
+        # In this test, we use and assume consecutive alleles, i.e. allele 0, 1 and 2
+        # In simuPOP, these alleles can be discrete, i.e. something like 
+        # 
+        #    InitByFreq(pop, [0, 0, .2, .3, .5])
+        #
+        # This has not passed our test yet. (degree of freedom problem?)
+        #
         InitByFreq(pop, [.2, .3, .5])
-        if alleleType() == 'binary':
-            Stat(pop, association=[2,4], popSize=1, association_param={'midValues':True})
-        else:
-            Stat(pop, association=[2,4], popSize=1, association_param={'midValues':True})
+        Stat(pop, association=[2,4], popSize=1, association_param={'midValues':True})
         def ChiSq(var, loc1, loc2):
             ChiSq = 0
             #allele1 is alleles in loc1
-            for allele1 in range(len(var.alleleFreq[loc1])):
-                for allele2 in range(len(var.alleleFreq[loc2])):
-                    p = var.alleleFreq[loc1][allele1]
-                    q = var.alleleFreq[loc2][allele2]
-                    pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
-                    ChiSq += (var.popSize * pq - var.popSize * p * q) ** 2 / (var.popSize * p * q)
+            for allele1, p in enumerate(var.alleleFreq[loc1]):
+                for allele2, q in enumerate(var.alleleFreq[loc2]):
+                    pq = var.haploFreq['%d-%d' % (loc1, loc2)].setdefault('%d-%d' % (allele1, allele2), 0)
+                    if p > 0 and q > 0:
+                        ChiSq += (var.popSize * pq - var.popSize * p * q) ** 2 / (var.popSize * p * q)
             return ChiSq
+        def ChiSq_P(var, loc1, loc2):
+            a = len(var.alleleFreq[loc1])
+            b = len(var.alleleFreq[loc2])
+            return 1 - rpy.r.pchisq(ChiSq(var, loc1, loc2), (a-1)*(b-1))
         def UC_U(var, loc1, loc2):
             UC_U = 0
             HA = 0
             HB = 0
             HAB = 0
             #allele1 is alleles in loc1
-            for allele1 in range(len(var.alleleFreq[loc1])):
-                HA += -var.alleleFreq[loc1][allele1] * math.log(var.alleleFreq[loc1][allele1])
-            for allele2 in range(len(var.alleleFreq[loc2])):
-                HB += -var.alleleFreq[loc2][allele2] * math.log(var.alleleFreq[loc2][allele2])
-            for allele1 in range(len(var.alleleFreq[loc1])):
-                for allele2 in range(len(var.alleleFreq[loc2])):
-                    pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
-                    HAB += -pq*math.log(pq)
+            HA = sum([-x * math.log(x) for x in var.alleleFreq[loc1]])
+            HB = sum([-x * math.log(x) for x in var.alleleFreq[loc2]])
+            HAB = sum([-x * math.log(x) for x in var.haploFreq['%d-%d' % (loc1, loc2)].values()])
             UC_U = 2 * ((HA+HB-HAB)/(HA+HB))
             return UC_U
         def CramerV(var, loc1, loc2):
@@ -446,23 +456,36 @@ class TestStat(unittest.TestCase):
             c = len(var.alleleFreq[loc2])
             CramerV = math.sqrt(ChiSq(var, loc1, loc2)/(var.popSize * min(r - 1, c - 1)))
             return CramerV
-        assert (ChiSq(pop.dvars(), 2, 4) - pop.dvars().ChiSq[2][4]) < 1e-6
-        assert (UC_U(pop.dvars(), 2, 4) - pop.dvars().UC_U[2][4]) < 1e-6
-        assert (CramerV(pop.dvars(), 2, 4) - pop.dvars().CramerV[2][4]) < 1e-6
+        assert abs(ChiSq(pop.dvars(), 2, 4) - pop.dvars().ChiSq[2][4]) < 1e-6
+        assert abs(ChiSq_P(pop.dvars(), 2, 4) - pop.dvars().ChiSq_P[2][4]) < 1e-6
+        assert abs(UC_U(pop.dvars(), 2, 4) - pop.dvars().UC_U[2][4]) < 1e-6
+        assert abs(CramerV(pop.dvars(), 2, 4) - pop.dvars().CramerV[2][4]) < 1e-6
         for sp in range(3):
-            assert (ChiSq(pop.dvars(sp), 2, 4) - pop.dvars(sp).ChiSq[2][4]) < 1e-6
-            assert (UC_U(pop.dvars(sp), 2, 4) - pop.dvars(sp).UC_U[2][4]) < 1e-6
-            assert (CramerV(pop.dvars(sp), 2, 4) - pop.dvars(sp).CramerV[2][4]) < 1e-6
-        if alleleType() == 'binary':
-            Stat(pop, association=[2,3], popSize=1, association_param={'stat':['ChiSq', 'UC_U', 'CramerV'], 'midValues':True, 'subPop':False})
-        else:
-            Stat(pop, association=[2,3], popSize=1, association_param={'stat':['ChiSq', 'UC_U', 'CramerV'], 'midValues':True, 'subPop':False})
-        assert pop.vars().has_key('ChiSq')
-        assert not pop.vars(0).has_key('ChiSq')
-        assert pop.vars().has_key('UC_U')
-        assert not pop.vars(0).has_key('UC_U')
-        assert pop.vars().has_key('CramerV')
-        assert not pop.vars(0).has_key('CramerV')
+            assert abs(ChiSq(pop.dvars(sp), 2, 4) - pop.dvars(sp).ChiSq[2][4]) < 1e-6
+            assert abs(UC_U(pop.dvars(sp), 2, 4) - pop.dvars(sp).UC_U[2][4]) < 1e-6
+            assert abs(CramerV(pop.dvars(sp), 2, 4) - pop.dvars(sp).CramerV[2][4]) < 1e-6
+        # if any one statistics is specified, others will not be evaluated
+        for stat in ['ChiSq', 'UC_U', 'CramerV']:
+            func = {'ChiSq':ChiSq, 'UC_U':UC_U, 'CramerV':CramerV}[stat]
+            Stat(pop, association=[2,4], popSize=1, association_param={'stat':[stat], 'midValues':True})
+            assert pop.vars().has_key(stat)
+            assert abs(func(pop.dvars(), 2, 4) - pop.vars()[stat][2][4]) < 1e-6
+            for sp in range(3):
+                assert pop.vars(sp).has_key(stat)
+                assert abs(func(pop.dvars(sp), 2, 4) - pop.vars(sp)[stat][2][4]) < 1e-6
+            other_stat = ['ChiSq', 'UC_U', 'CramerV']
+            other_stat.remove(stat)
+            for os in other_stat:
+                assert not pop.vars().has_key(os)
+                for sp in range(3):
+                    assert not pop.vars(sp).has_key(os)
+            # if subPop is set to False, no statistics for subpopulations
+            Stat(pop, association=[2,4], popSize=1, association_param={'stat':[stat], 'midValues':True, 'subPop':False})
+            assert abs(func(pop.dvars(), 2, 4) - pop.vars()[stat][2][4]) < 1e-6
+            for sp in range(3):
+                assert not pop.vars(sp).has_key('ChiSq')
+                assert not pop.vars(sp).has_key('UC_U')
+                assert not pop.vars(sp).has_key('CramerV')
         
 
 if __name__ == '__main__':
