@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 #ifndef __GSL_MATH_H__
@@ -60,7 +60,7 @@
 #endif
 
 #ifndef M_PI_4
-#define M_PI_4     0.78539816339744830966156608458      /* pi/4 */
+#define M_PI_4     0.78539816339744830961566084582     /* pi/4 */
 #endif
 
 #ifndef M_SQRTPI

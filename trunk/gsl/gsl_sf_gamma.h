@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 /* Author:  G. Jungman */
@@ -254,6 +254,8 @@ double gsl_sf_gamma_inc(const double a, const double x);
 int gsl_sf_lnbeta_e(const double a, const double b, gsl_sf_result * result);
 double gsl_sf_lnbeta(const double a, const double b);
 
+int gsl_sf_lnbeta_sgn_e(const double x, const double y, gsl_sf_result * result, double * sgn);
+
 
 /* Beta Function
  * B(a,b)
@@ -280,6 +282,11 @@ double gsl_sf_beta_inc(const double a, const double b, const double x);
  */
 #define GSL_SF_GAMMA_XMAX  171.0
 
+/* The maximum n such that gsl_sf_fact(n) does not give an overflow. */
+#define GSL_SF_FACT_NMAX 170
+
+/* The maximum n such that gsl_sf_doublefact(n) does not give an overflow. */
+#define GSL_SF_DOUBLEFACT_NMAX 297
 
 __END_DECLS
 
