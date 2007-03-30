@@ -1236,9 +1236,9 @@ namespace simuPOP
 					// if has key, and is True or 1
 					if ((it=param.find(ChiSq_String)) != itEnd)
 						m_output_ChiSq = it->second;
-					if ((it=param.find("ld_prime")) != itEnd)
+					if ((it=param.find(UCU_String)) != itEnd)
 						m_output_UCU = it->second;
-					if ((it=param.find("r2")) != itEnd)
+					if ((it=param.find(CramerV_String)) != itEnd)
 						m_output_CramerV = it->second;
 				}
 			}
@@ -1294,60 +1294,69 @@ namespace simuPOP
 			string hapLociStr = '[' + toStr(hapLoci[0]) + "][" +
 				toStr(hapLoci[1]) + ']';
 
-			for( UINT sp=0; sp < numSP;  ++sp)
-			{
-				UINT as = A_alleles.size();
-				UINT bs = B_alleles.size();
-				vector<vectorf> cont_table(as+1);
-				for(size_t i=0; i <= as; ++i)
-					cont_table[i].resize(bs+1);
-				double n = static_cast<double>(pop.subPopSize(sp));
-				double ChiSq = 0.0, UC_U = 0.0, CramerV = 0.0;
-				double HA = 0.0, HB = 0.0, HAB = 0.0;
-				// initialize last line/column
-				for(size_t i=0; i < as; ++i)
-					cont_table[i][bs]=0;
-				for(size_t j=0; j <= bs; ++j)
-					cont_table[as][j]=0;
-				// get P_ij
-				for(size_t i=0; i<as; ++i)
-					for(size_t j=0; j < bs; ++j)
-				{
-					vectori hapAlleles(2);
-					hapAlleles[0] = A_alleles[i];
-					hapAlleles[1] = B_alleles[j];
-					cont_table[i][j] = m_haploFreq.haploFreq(hapLoci, sp)[hapAlleles];
-					cont_table[i][bs] += cont_table[i][j];
-					cont_table[as][j] += cont_table[i][j];
-					cont_table[as][bs] += cont_table[i][j];
-				}
-				DBG_ASSERT(fcmp_eq(cont_table[as][bs], 1.), ValueError,
-					"Sum of haplotype frequencies is not 1. Association will not be computed.");
-				DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
-				// calculate statistics
-				//ChiSq
-				for(size_t i=0; i<as; ++i)
-					for(size_t j=0; j < bs; ++j)
-						ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/(n*cont_table[i][bs]*cont_table[as][j]);
-				//UC_U
-				for(size_t i=0; i < as; ++i)
-					HA += -cont_table[i][bs]*log(cont_table[i][bs]);
-				for(size_t j=0; j <= bs; ++j)
-					HB += -cont_table[as][j]*log(cont_table[as][j]);
-				for(size_t i=0; i<as; ++i)
-					for(size_t j=0; j < bs; ++j)
-						HAB += -cont_table[i][j]*log(cont_table[i][j]);
-				UC_U = 2*((HA+HB-HAB)/(HA+HB));
-				//CramerV
-				CramerV = sqrt(ChiSq/(n*std::min(as-1, bs-1)));
-
-				if (m_output_ChiSq)
-					pop.setDoubleVar(subPopVar_String(sp, ChiSq_String) + hapLociStr, ChiSq);
-				if (m_output_UCU)
-					pop.setDoubleVar(subPopVar_String(sp, UCU_String) + hapLociStr, UC_U);
-				if (m_output_CramerV)
-					pop.setDoubleVar(subPopVar_String(sp, CramerV_String) + hapLociStr, CramerV);
-			}
+            if (m_evalInSubPop)
+            {
+                for( UINT sp=0; sp < numSP;  ++sp)
+    			{
+    				UINT as = A_alleles.size();
+    				UINT bs = B_alleles.size();
+    				vector<vectorf> cont_table(as+1);
+    				for(size_t i=0; i <= as; ++i)
+    					cont_table[i].resize(bs+1);
+    				double n = static_cast<double>(pop.subPopSize(sp));
+    				double ChiSq = 0.0, UC_U = 0.0, CramerV = 0.0;
+                    double HA = 0.0, HB = 0.0, HAB = 0.0;
+    				// initialize last line/column
+    				for(size_t i=0; i < as; ++i)
+    					cont_table[i][bs]=0;
+    				for(size_t j=0; j <= bs; ++j)
+    					cont_table[as][j]=0;
+    				// get P_ij
+    				for(size_t i=0; i<as; ++i)
+    					for(size_t j=0; j < bs; ++j)
+    				{
+    					vectori hapAlleles(2);
+    					hapAlleles[0] = A_alleles[i];
+    					hapAlleles[1] = B_alleles[j];
+    					cont_table[i][j] = m_haploFreq.haploFreq(hapLoci, sp)[hapAlleles];
+    					cont_table[i][bs] += cont_table[i][j];
+    					cont_table[as][j] += cont_table[i][j];
+    					cont_table[as][bs] += cont_table[i][j];
+    				}
+    				DBG_ASSERT(fcmp_eq(cont_table[as][bs], 1.), ValueError,
+    					"Sum of haplotype frequencies is not 1. Association will not be computed.");
+    				//DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
+    				// calculate statistics
+                    //ChiSq
+                    if (m_output_ChiSq)
+                        for(size_t i=0; i<as; ++i)
+        					for(size_t j=0; j < bs; ++j)
+        						ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/(n*cont_table[i][bs]*cont_table[as][j]);
+                    //UC_U
+                    if (m_output_UCU)
+                    {
+                        for(size_t i=0; i < as; ++i)
+        					HA += -cont_table[i][bs]*log(cont_table[i][bs]);
+        				for(size_t j=0; j <= bs; ++j)
+        					HB += -cont_table[as][j]*log(cont_table[as][j]);
+                        for(size_t i=0; i<as; ++i)
+        					for(size_t j=0; j < bs; ++j)
+        						HAB += -cont_table[i][j]*log(cont_table[i][j]);
+                        UC_U = 2*((HA+HB-HAB)/(HA+HB));
+                    }
+                    //CramerV
+                    if (m_output_CramerV)
+                        CramerV = sqrt(ChiSq/(n*std::min(as-1, bs-1)));
+                    
+    				//DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << " sp " << sp << " n*pq " << n*cont_table[i][j] << " n*p*q " << n*cont_table[i][bs]*cont_table[as][j] << " UC_U " << UC_U << " CramerV " << CramerV << endl);
+                    if (m_output_ChiSq)
+                        pop.setDoubleVar(subPopVar_String(sp, ChiSq_String) + hapLociStr, ChiSq);
+                    if (m_output_UCU)
+                        pop.setDoubleVar(subPopVar_String(sp, UCU_String) + hapLociStr, UC_U);
+                    if (m_output_CramerV)
+                        pop.setDoubleVar(subPopVar_String(sp, CramerV_String) + hapLociStr, CramerV);
+    			}
+    		}
 			if(numSP > 1 )
 			{
 				UINT as = A_alleles.size();
@@ -1377,32 +1386,37 @@ namespace simuPOP
 				}
 				DBG_ASSERT(fcmp_eq(cont_table[as][bs], 1.), ValueError,
 					"Sum of haplotype frequencies is not 1. Association will not be computed.");
-				DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
+				//DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
 				// calculate statistics
 				//ChiSq
-				for(size_t i=0; i<as; ++i)
-					for(size_t j=0; j < bs; ++j)
-						ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/(n*cont_table[i][bs]*cont_table[as][j]);
-				//UC_U
-				for(size_t i=0; i < as; ++i)
-					HA += -cont_table[i][bs]*log(cont_table[i][bs]);
-				for(size_t j=0; j <= bs; ++j)
-					HB += -cont_table[as][j]*log(cont_table[as][j]);
-				for(size_t i=0; i<as; ++i)
-					for(size_t j=0; j < bs; ++j)
-						HAB += -cont_table[i][j]*log(cont_table[i][j]);
-				UC_U = 2*((HA+HB-HAB)/(HA+HB));
-				//CramerV
-				CramerV = sqrt(ChiSq/(n*std::min(as-1, bs-1)));
-
-				DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << " UC_U " << UC_U << " CramerV " << CramerV <<endl);
-				if (m_output_ChiSq)
-					pop.setDoubleVar(ChiSq_String + hapLociStr, ChiSq);
-				if (m_output_UCU)
-					pop.setDoubleVar(UCU_String + hapLociStr, UC_U);
-				if (m_output_CramerV)
-					pop.setDoubleVar(CramerV_String + hapLociStr, CramerV);
-			}
+                if (m_output_ChiSq)
+                    for(size_t i=0; i<as; ++i)
+                    	for(size_t j=0; j < bs; ++j)
+                        	ChiSq += pow((n*cont_table[i][j] - n*cont_table[i][bs]*cont_table[as][j]), 2)/(n*cont_table[i][bs]*cont_table[as][j]);
+                //UC_U
+                if (m_output_UCU)
+                {
+                    for(size_t i=0; i < as; ++i)
+    					HA += -cont_table[i][bs]*log(cont_table[i][bs]);
+    				for(size_t j=0; j <= bs; ++j)
+    					HB += -cont_table[as][j]*log(cont_table[as][j]);
+                    for(size_t i=0; i<as; ++i)
+    					for(size_t j=0; j < bs; ++j)
+    						HAB += -cont_table[i][j]*log(cont_table[i][j]);
+                    UC_U = 2*((HA+HB-HAB)/(HA+HB));
+                }
+                //CramerV
+                if (m_output_CramerV)
+                    CramerV = sqrt(ChiSq/(n*std::min(as-1, bs-1)));
+                
+				//DBG_DO(DBG_STATOR, cout << "Chisq " << ChiSq << " UC_U " << UC_U << " CramerV " << CramerV <<endl);
+                if (m_output_ChiSq)
+                    pop.setDoubleVar(ChiSq_String + hapLociStr, ChiSq);
+                if (m_output_UCU)
+                    pop.setDoubleVar(UCU_String + hapLociStr, UC_U);
+                if (m_output_CramerV)
+                    pop.setDoubleVar(CramerV_String + hapLociStr, CramerV);
+    		}
 		}
 		return true;
 	}

@@ -453,14 +453,17 @@ class TestStat(unittest.TestCase):
             assert (ChiSq(pop.dvars(sp), 2, 4) - pop.dvars(sp).ChiSq[2][4]) < 1e-6
             assert (UC_U(pop.dvars(sp), 2, 4) - pop.dvars(sp).UC_U[2][4]) < 1e-6
             assert (CramerV(pop.dvars(sp), 2, 4) - pop.dvars(sp).CramerV[2][4]) < 1e-6
-        #if alleleType() == 'binary':
-            #Stat(pop, association=[2,4], popSize=1, association_param={'midValues':True, 'subPop':False})
-        #else:
-            #Stat(pop, association=[2,4], popSize=1, association_param={'midValues':True, 'subPop':False})
-        #assert pop.vars().has_key('ChiSq')
-        #assert not pop.vars(0).has_key('ChiSq')
+        if alleleType() == 'binary':
+            Stat(pop, association=[2,3], popSize=1, association_param={'stat':['ChiSq', 'UC_U', 'CramerV'], 'midValues':True, 'subPop':False})
+        else:
+            Stat(pop, association=[2,3], popSize=1, association_param={'stat':['ChiSq', 'UC_U', 'CramerV'], 'midValues':True, 'subPop':False})
+        assert pop.vars().has_key('ChiSq')
+        assert not pop.vars(0).has_key('ChiSq')
+        assert pop.vars().has_key('UC_U')
+        assert not pop.vars(0).has_key('UC_U')
+        assert pop.vars().has_key('CramerV')
+        assert not pop.vars(0).has_key('CramerV')
         
 
-    
 if __name__ == '__main__':
     unittest.main()
