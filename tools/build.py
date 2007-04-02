@@ -129,13 +129,14 @@ def build_src():
 
 
 def build_x86_64(ver):
-    source = '%s/simuPOP-%s-src.tar.gz' % (download_directory, ver)
+    source = os.path.realpath('%s/simuPOP-%s-src.tar.gz' % (download_directory, ver))
     if not os.path.isfile(source):
         print 'Source package %s does not exist. Please run "build.py src" first' % source
         sys.exit(1)
     # 
     # build
     d = os.getcwd()
+    print source
     os.chdir(user_tmp_directory)
     print 'Copying source package to user temp directory...'
     run('/bin/rm -rf simuPOP-%s' % ver)
@@ -184,7 +185,7 @@ def build_suse(ver):
     build_vm(ver, 'suse', 23, suse_vm, suse_port, suse_vm_name)
 
 def build_remote(ver, remote_machine):
-    source = '%s/simuPOP-%s-src.tar.gz' % (download_directory, ver)
+    source = os.path.realpath('%s/simuPOP-%s-src.tar.gz' % (download_directory, ver))
     if not os.path.isfile(source):
         print 'Source package %s does not exist. Please run "build.py src" first' % source
         sys.exit(1)
@@ -268,11 +269,11 @@ if __name__ == '__main__':
     else:
         print 'Configuration file not found'
         sys.exit(1)
+    #
+    os.chdir('..')
     # get revision number and update last_revision_file
     (ver, rev, old_ver, old_rev) = setVersionRevision(release)
     print 'New version: %s, revision: %s ' % (ver, rev)
-    #
-    os.chdir('..')
     removeTempFiles()
     if 'svn' in actions:
         commitModification()
