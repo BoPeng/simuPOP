@@ -23,15 +23,24 @@ output will be written (the file will be clobbered).
 # Last Modified, sep, 2005
 # License: BSD style
 
+
+# Reference links (may be obsolete soon):
+#
+#    XML DOM in general: http://www.w3schools.com/dom/default.asp
+#        Note that Element and Text class names. This file does
+#        not handle Attribute class.
+#    Python minidom: http://docs.python.org/lib/module-xml.dom.minidom.html
+#    
+
+
 from xml.dom import minidom
-import re, textwrap, sys, types, os.path
+import re, textwrap, sys, types, os.path, sets
 
 class Doxy2SWIG:
     """Converts Doxygen generated XML files into a file containing
     docstrings that can be used by SWIG-1.3.x that have support for
     feature("docstring").    Once the data is parsed it is stored in
     self.pieces.
-
     """
 
     def __init__(self, src):
@@ -39,47 +48,84 @@ class Doxy2SWIG:
         """
         f = open(src)
         self.my_dir = os.path.dirname(src)
+        # get everything into this XMLDOC
         self.xmldoc = minidom.parse(f).documentElement
         f.close()
+        
+        # parse xmldoc to pieces of text, 
+        # Initialize with a comment of File being parsed
+        self.pieces = ['\n// Input File: %s\n'% os.path.basename(f.name)]
+        
+        # ignore these tags
+        self.ignores = ('inheritancegraph', 'param', 'listofallmembers',
+                        'innerclass', 'name', 'declname', 'incdepgraph',
+                        'invincdepgraph', 'programlisting', 'type',
+                        'references', 'referencedby', 'location',
+                        'collaborationgraph', 'reimplements',
+                        'reimplementedby', 'derivedcompoundref',
+                        'basecompoundref', 'header', 'includes')
+        # unhandled names (handled by generic_parse
+        self.unhandled_names = sets.Set()
 
-        self.pieces = []
-        self.pieces.append('\n// File: %s\n'%\
-                                             os.path.basename(f.name))
-
+        # match one or more space/tab etc
         self.space_re = re.compile(r'\s+')
+
         self.lead_spc = re.compile(r'^(%feature\S+\s+\S+\s*?)"\s+(\S)')
         self.multi = 0
         self.indent = 0
         self.maxChar = 70
         self.curCol = 0
-        self.ignores = ('inheritancegraph', 'param', 'listofallmembers',
-                                        'innerclass', 'name', 'declname', 'incdepgraph',
-                                        'invincdepgraph', 'programlisting', 'type',
-                                        'references', 'referencedby', 'location',
-                                        'collaborationgraph', 'reimplements',
-                                        'reimplementedby', 'derivedcompoundref',
-                                        'basecompoundref', 'header', 'includes')
-        #self.generics = []
+
 
     def generate(self):
-        """Parses the file set in the initialization.    The resulting
+        """Parses the file set in the initialization. The resulting
         data is stored in `self.pieces`.
-
         """
         self.parse(self.xmldoc)
 
+
     def parse(self, node):
-        """Parse a given node.    This function in turn calls the
+        """Parse a given node. This function in turn calls the
         `parse_<nodeType>` functions which handle the respective
         nodes.
-
         """
-        # print node.__class__.__name__
-        pm = getattr(self, "parse_%s" %node.__class__.__name__)
-        pm(node)
+        # every node in a XML tree has __class__.__name__ e.g. Text, Document, etc.
+        # This function get this information and call the relevant function to parse this node.
+        # This is a dispatch function that is by nature recursive.
+        # 
+        # in fact, we will only see Element and Text classes.
+        try:
+            handlerMethod = getattr(self, "parse_%s" % node.__class__.__name__)
+            handlerMethod(node)
+        except:
+            print "Warning: Document class %s is not handled" % node.__class__.__name__
 
-    def parse_Document(self, node):
-        self.parse(node.documentElement)
+
+    def parse_Element(self, node):
+        """Parse an `ELEMENT_NODE`. This calls specific
+        `do_<tagName>` handers for different elements. If no handler
+        is available the `generic_parse` method is called. All
+        tagNames specified in `self.ignores` are simply ignored.
+        """
+        name = node.tagName
+        if name in self.ignores:
+            return
+        # a bunch of 'tagName's will be handled by do_XXX functions
+        # We defined do_ref, do_emphasis, do_bold, do_computeroutput
+        # do_formula (all using space_parse), do_compindname, do_compounddef
+        # do_parameterlist, do_para, do_parametername, do_parameterdescription
+        # etc.....
+        #
+        # Unhandled names are stored in unhandlednames and are printed
+        # at the end.
+        attr = "do_%s" % name
+        if hasattr(self, attr):
+            handlerMethod = getattr(self, attr)
+            handlerMethod(node)
+        else:
+            self.unhandled_names.add(name)
+            self.generic_parse(node)
+
 
     def parse_Text(self, node):
         txt = node.data
@@ -87,37 +133,19 @@ class Doxy2SWIG:
         txt = txt.replace('"', r'\"')
         # ignore pure whitespace
         m = self.space_re.match(txt)
-        if m and len(m.group()) == len(txt):
-                pass
+        # for example '     ' yields 5 blank matches
+        if m is not None and len(m.group()) == len(txt):
+            pass
         else:
-                self.add_text( self.wrap_text(txt, self.curCol - self.indent))
-
-    def parse_Element(self, node):
-        """Parse an `ELEMENT_NODE`.    This calls specific
-        `do_<tagName>` handers for different elements.    If no handler
-        is available the `generic_parse` method is called.    All
-        tagNames specified in `self.ignores` are simply ignored.
-
-        """
-        name = node.tagName
-        ignores = self.ignores
-        if name in ignores:
-                return
-        attr = "do_%s" % name
-        if hasattr(self, attr):
-                handlerMethod = getattr(self, attr)
-                handlerMethod(node)
-        else:
-                self.generic_parse(node)
-                #if name not in self.generics: self.generics.append(name)
+            self.add_text(self.wrap_text(txt, self.curCol - self.indent))
 
 
     def add_text(self, value):
         """Adds text corresponding to `value` into `self.pieces`."""
         if type(value) in (types.ListType, types.TupleType):
-                self.pieces.extend(value)
+            self.pieces.extend(value)
         else:
-                self.pieces.append(value)
+            self.pieces.append(value)
 
 
     def get_specific_nodes(self, node, names):
@@ -148,14 +176,14 @@ class Doxy2SWIG:
         """
         npiece = 0
         if pad:
-                npiece = len(self.pieces)
-                if pad == 2:
-                        self.add_text('\n'+' '*self.indent)
+            npiece = len(self.pieces)
+            if pad == 2:
+                self.add_text('\n'+' '*self.indent)
         for n in node.childNodes:
-                self.parse(n)
+            self.parse(n)
         if pad:
-                if len(self.pieces) > npiece:
-                        self.add_text('\n'+' '*self.indent)
+            if len(self.pieces) > npiece:
+                self.add_text('\n'+' '*self.indent)
 
     def space_parse(self, node):
         self.add_text(' ')
@@ -350,38 +378,32 @@ class Doxy2SWIG:
     def do_simplesect(self, node):
         kind = node.attributes['kind'].value
         if kind in ('date', 'rcs', 'version'):
-                pass
+            pass
         elif kind == 'warning':
-                self.add_text('\nWARNING:\n    ')
-                self.indent = 2
-                self.curCol = 2
-                self.generic_parse(node)
-                self.add_text(['\n    \n'])
-                self.indent = 2
-                self.curCol = 2
+            self.add_text('\nWARNING:\n    ')
+            self.indent, self.curCol = 2, 2
+            self.generic_parse(node)
+            self.add_text(['\n    \n'])
+            self.indent, self.curCol = 2, 2
+            self.indent = 2
+            self.curCol = 2
         elif kind == 'see':
-                self.add_text('\nSee Also:\n    ')
-                self.indent = 2
-                self.curCol = 2
-                self.generic_parse(node)
-                self.indent = 2
-                self.curCol = 2
+            self.add_text('\nSee Also:\n    ')
+            self.indent, self.curCol = 2, 2
+            self.generic_parse(node)
+            self.indent, self.curCol = 2, 2
         elif kind == 'note':
-                self.add_text('\nNote:\n    ')
-                self.indent = 2
-                self.curCol = 2
-                self.generic_parse(node)
-                self.indent = 2
-                self.curCol = 2
+            self.add_text('\nNote:\n    ')
+            self.indent, self.curCol = 2, 2
+            self.generic_parse(node)
+            self.indent, self.curCol = 2, 2
         elif kind == 'return':
-                self.add_text('\nValue:\n    ')
-                self.indent = 2
-                self.curCol = 2
-                self.generic_parse(node)
-                self.indent = 2
-                self.curCol = 2
+            self.add_text('\nValue:\n    ')
+            self.indent, self.curCol = 2, 2
+            self.generic_parse(node)
+            self.indent, self.curCol = 2, 2
         else:
-                self.generic_parse(node)
+            self.generic_parse(node)
         self.add_text("\nDetails:\n    ");
         self.indent = 2;
         self.curCol = 2;
@@ -437,19 +459,31 @@ class Doxy2SWIG:
         if kind == 'function' and refid[:9] == 'namespace':
                 self.generic_parse(node)
 
+
     def do_doxygenindex(self, node):
+        '''Parse files included as compound, member and refid, like
+        
+            <doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.3.9.1">
+              <compound refid="a00153" kind="class"><name>simuPOP::affectedSibpairSample</name>
+              <member refid="a00153_1a0" kind="function"><name>affectedSibpairSample</name></member>
+              </compound>
+            </doxygenindex>
+
+            In this case, we process each compound using a Doxy2SWIG class and
+            obtain its results.
+        '''
         self.multi = 1
         comps = node.getElementsByTagName('compound')
         for c in comps:
-                refid = c.attributes['refid'].value
-                fname = refid + '.xml'
-                if not os.path.exists(fname):
-                        fname = os.path.join(self.my_dir,    fname)
-                print "parsing file: %s"%fname
-                p = Doxy2SWIG(fname)
-                p.generate()
-                # self.pieces.extend(self.clean_pieces(p.pieces))
-                self.pieces.extend(p.pieces)
+            refid = c.attributes['refid'].value
+            fname = refid + '.xml'
+            if not os.path.exists(fname):
+                fname = os.path.join(self.my_dir, fname)
+            print "parsing file: %s"%fname
+            p = Doxy2SWIG(fname)
+            p.generate()
+            self.pieces.extend(p.pieces)
+
 
     def write(self, output):
         fout = open(output, 'w')
@@ -459,7 +493,8 @@ class Doxy2SWIG:
             # o.write("".join(self.clean_pieces(self.pieces)))
             fout.write("".join(self.pieces))
 
-    def wrap_text(self, text, start_pos ):
+
+    def wrap_text(self, text, start_pos):
         """ wrap text given current indent """ 
         strs = textwrap.wrap(text.lstrip('\n '), width=self.maxChar, 
             initial_indent=' '*(start_pos+self.indent),
@@ -473,13 +508,20 @@ class Doxy2SWIG:
         if( self.curCol < self.indent):
             self.curCol = self.indent
         # print 'wrap \'' + text + '\' to \'' + ('\n'.join(strs)).lstrip() + '\''
-        return    ('\n'.join(strs)).lstrip()
+        return  ('\n'.join(strs)).lstrip()
 
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
         print __doc__
         sys.exit(1)
+    # read the XML file (actually a index.xml file that contains all others)
     p = Doxy2SWIG(sys.argv[1])
+    # generate interface file.
     p.generate()
+    # write interface file to output interface file.
     p.write(sys.argv[2])
+    # ending statement
+    if len(p.unhandled_names) > 0:
+        print 'Unhandled names: ', p.unhandled_names
+    print 'Done.'
