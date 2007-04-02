@@ -30,7 +30,7 @@ PROJECT_NUMBER         = "version: $(SIMUPOP_VER), Rev $(SIMUPOP_REV)"
 # If a relative path is entered, it will be relative to the location 
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = /var/www/html/simuPOP_doc/doc
+OUTPUT_DIRECTORY       = simuPOP_doc
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 
 # 4096 sub-directories (in 2 levels) under the output directory of each output 
@@ -433,7 +433,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = .
+INPUT                  = src
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -484,15 +484,7 @@ RECURSIVE              = YES
 # excluded from the INPUT source files. This way you can easily exclude a 
 # subdirectory from a directory tree whose root is specified with the INPUT tag.
 
-EXCLUDE                = config.h \
-                         debug/config.h \
-                         test \
-                         tools \
-                         boost \
-                         gsl \
-                         src/simuPOP_*wrap.cpp \
-                         src/utility_*.cpp \
-                         src/arraymodule.cpp
+EXCLUDE                = src/arraymodule.c
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or directories 
 # that are symbolic links (a Unix filesystem feature) are excluded from the input.
@@ -510,8 +502,8 @@ EXCLUDE_PATTERNS       = *wrap.*
 # the \include command).
 
 EXAMPLE_PATH           = . \
-                         ./doc \
-                         ./test
+                         ../doc \
+                         ../test
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
