@@ -161,6 +161,7 @@ include gsl/sys/fcmp.c
 include gsl/sys/coerce.c
 include gsl/sys/infnan.c
 include gsl/sys/log1p.c
+include gsl/sys/invhyp.c
 include gsl/rng/ranf.c
 include gsl/rng/rand.c
 include gsl/rng/ran0.c
