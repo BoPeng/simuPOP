@@ -904,7 +904,8 @@ del pyInit.__init__
 pyInit.__init__ = new_pyInit
 
 
-def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], association_param={}, relGroups=[], relMethod=[], midValues=None, *args, **kwargs):
+def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], association_param={}, 
+	relGroups=[], relMethod=[], midValues=None, *args, **kwargs):
     # midValues is now obsolete
     if midValues is not None:
         print 'Parameter midValues is now obsolete. Please use the _param parameter of corresponding statistics'
@@ -951,13 +952,14 @@ def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], association
         useSubPop = False
     # parameter relMethod
     if type(relMethod) in [types.IntType, types.LongType]:
-        rm = [relGroups]
+        rm = [relMethod]
     else:
-        rm = relGroups
+        rm = relMethod
     cppModule.stat_swiginit(self, 
         cppModule.new_stat(haploFreq=hf, LD=ld, LD_param=ldp, 
-			association=Association, association_param=assp, relGroups=rg, relBySubPop=useSubPop,
-            relMethod = rm, *args, **kwargs))
+			association=Association, association_param=assp, 
+			relGroups=rg, relBySubPop=useSubPop,
+            relMethod =rm, *args, **kwargs))
  
 new_stat.__doc__ = stat.__init__.__doc__
 del stat.__init__

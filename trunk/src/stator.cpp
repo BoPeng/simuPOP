@@ -174,19 +174,18 @@ namespace simuPOP
 	void statAlleleFreq::addLocus(int locus, bool post, bool subPop, bool numOfAlleles)
 	{
 		vectori::const_iterator it;
+		// a new one
 		if( (it = find(m_atLoci.begin(), m_atLoci.end(), locus)) == m_atLoci.end() )
 		{
 			m_atLoci.push_back( locus );
-			// do not post result.
 			m_ifPost.push_back(static_cast<int>(post));
 		}
+		// existing one
 		else
-			m_ifPost[ it-m_atLoci.begin() ] = static_cast<int>(post);
-		// override existing subPop eval
-		if (subPop)
-			m_evalInSubPop = true;
-		if (numOfAlleles)
-			m_output_numOfAlleles = true;
+			m_ifPost[ it-m_atLoci.begin() ] |= static_cast<int>(post);
+		
+		m_evalInSubPop |= subPop;
+		m_output_numOfAlleles |= numOfAlleles;
 	}
 
 	bool statAlleleFreq::apply(population& pop)
@@ -720,6 +719,19 @@ namespace simuPOP
 		return true;
 	}
 
+				void statHaploFreq::addHaplotype(const vectori& haplo, bool post)
+			{
+				intMatrix::iterator it;
+				if((it = find(m_haplotypes.begin(), m_haplotypes.end(), haplo)) == m_haplotypes.end())
+				{
+					m_haplotypes.push_back( haplo );
+					m_ifPost.push_back(static_cast<int>(post));
+				}
+				else
+					m_ifPost[it-m_haplotypes.begin()] |= static_cast<int>(post);
+			}
+
+
 	bool statHaploFreq::apply(population& pop)
 	{
 		if( m_haplotypes.empty())
@@ -900,9 +912,6 @@ namespace simuPOP
 			DBG_FAILIF(m_LD[i].size() != 2 && m_LD[i].size() != 4,
 				ValueError, "Expecting [locus locus [allele allele ]] items");
 
-			DBG_FAILIF(m_LD[i][0] == m_LD[i][1],
-				ValueError, "LD has to be calculated between different loci");
-
 			// midValues is used to tell alleleFreq that the calculated allele
 			// frequency values should not be posted to pop.dvars()
 			//
@@ -913,13 +922,16 @@ namespace simuPOP
 			// unless stat() is called as
 			//     stat(LD=[0,1], midValues=True)
 			//
-			m_alleleFreq.addLocus( m_LD[i][0], m_midValues, true, true);
-			m_alleleFreq.addLocus( m_LD[i][1], m_midValues, true, true);
+			m_alleleFreq.addLocus(m_LD[i][0], m_midValues, true, true);
+			m_alleleFreq.addLocus(m_LD[i][1], m_midValues, true, true);
 			// also need haplotype.
-			vectori hap(2);
-			hap[0] = m_LD[i][0];
-			hap[1] = m_LD[i][1];
-			m_haploFreq.addHaplotype( hap, m_midValues);
+			if(m_LD[i][0] != m_LD[i][1])
+			{
+				vectori hap(2);
+				hap[0] = m_LD[i][0];
+				hap[1] = m_LD[i][1];
+				m_haploFreq.addHaplotype(hap, m_midValues);
+			}
 		}
 	}
 
@@ -932,7 +944,11 @@ namespace simuPOP
 		if(subPop)
 		{
 			// get haplotype freq from the m_haploFreq object
-			double P_AB = m_haploFreq.haploFreq(hapLoci, sp)[hapAlleles];
+			double P_AB;
+			if(hapLoci[0] == hapLoci[1])
+				P_AB = 0;
+			else
+				P_AB = m_haploFreq.haploFreq(hapLoci, sp)[hapAlleles];
 			// get allele freq from the m_alleleFreq object
 			P_A = m_alleleFreq.alleleFreq(hapAlleles[0], hapLoci[0], sp);
 			P_B = m_alleleFreq.alleleFreq(hapAlleles[1], hapLoci[1], sp);
@@ -956,7 +972,11 @@ namespace simuPOP
 		{
 			// whole population
 			// get haplotype freq
-			double P_AB = m_haploFreq.haploFreq(hapLoci)[hapAlleles];
+			double P_AB;
+			if(hapLoci[0] == hapLoci[1])
+				P_AB = 0;
+			else
+				P_AB = m_haploFreq.haploFreq(hapLoci)[hapAlleles];
 			P_A = m_alleleFreq.alleleFreq(hapAlleles[0], hapLoci[0]);
 			P_B = m_alleleFreq.alleleFreq(hapAlleles[1], hapLoci[1]);
 

@@ -129,6 +129,7 @@ include gsl/gsl_sf_zeta.h
 include gsl/gsl_sf_gamma.h
 include gsl/gsl_sf_log.h
 include gsl/gsl_sys.h
+include gsl/gsl_cdf.h
 include gsl/randist/poisson.c
 include gsl/randist/chisq.c
 include gsl/randist/exponential.c

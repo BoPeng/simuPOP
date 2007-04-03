@@ -827,7 +827,7 @@ namespace simuPOP
 					idx ++;
 
 				DBG_ASSERT( idx != m_haplotypes.size(), ValueError,
-					"Can not find haplotype.");
+					"Can not find haplotype." + toStr(haplo[0]) + ", " + toStr(haplo[1]));
 
 				return idx;
 			}
@@ -841,14 +841,7 @@ namespace simuPOP
 					m_ifPost[i] = 1;
 			}
 
-			void addHaplotype(const vectori& haplo, bool post=false)
-			{
-				if( find(m_haplotypes.begin(), m_haplotypes.end(), haplo) == m_haplotypes.end() )
-				{
-					m_haplotypes.push_back( haplo );
-					m_ifPost.push_back(static_cast<int>(post));
-				}
-			}
+			void addHaplotype(const vectori& haplo, bool post=false);
 
 			int numOfHaplotypes(const vectori& haplo)
 			{

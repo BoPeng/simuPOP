@@ -89,18 +89,6 @@ Usage:
 
 ";
 
-%feature("docstring") arraydescr "
-
-";
-
-%feature("docstring") arrayobject "
-
-";
-
-%feature("docstring") arrayobject::iterator "
-
-";
-
 %feature("docstring") simuPOP::BernulliTrials "
 
   this class encapsulate behavior of a sequence of Bernulli trial. the
@@ -1057,6 +1045,13 @@ Usage:
 
 ";
 
+%feature("docstring")  simuPOP::GenoStruTrait::numLoci " 
+
+Usage:
+    x.numLoci()
+
+";
+
 %feature("docstring")  simuPOP::GenoStruTrait::sexChrom " 
 
   whether or not the last chromosome is sex chromosome
@@ -1090,6 +1085,13 @@ Usage:
 
 Usage:
     x.locusPos()
+
+";
+
+%feature("docstring")  simuPOP::GenoStruTrait::lociPos " 
+
+Usage:
+    x.lociPos()
 
 ";
 
@@ -1190,6 +1192,13 @@ Usage:
 
 Usage:
     x.locusName()
+
+";
+
+%feature("docstring")  simuPOP::GenoStruTrait::lociNames " 
+
+Usage:
+    x.lociNames()
 
 ";
 
@@ -4818,6 +4827,17 @@ Arguments:
 
 ";
 
+%feature("docstring")  simuPOP::population::newPopByIndIDPerGen " 
+
+Usage:
+    x.newPopByIndIDPerGen(&id=vectori, removeEmptySubPops=False)
+
+Details:
+    form a new population according to info, info can be given directly
+  keepAncestralPops=-1: keep all 0: only current 1: keep one ...
+
+";
+
 %feature("docstring")  simuPOP::population::newPopByIndID " 
 
 Usage:
@@ -4826,7 +4846,6 @@ Usage:
 
 Details:
     form a new population according to info, info can be given directly
-  keepAncestralPops=-1: keep all 0: only current 1: keep one ...
 
 ";
 
@@ -6019,18 +6038,6 @@ Usage:
 
 ";
 
-%feature("docstring") PySwigClientData "
-
-";
-
-%feature("docstring") PySwigObject "
-
-";
-
-%feature("docstring") PySwigPacked "
-
-";
-
 %feature("docstring") simuPOP::PythonCoutBuf "
 
   create a stream buf that print to python sys.stdout cout will be
@@ -6658,6 +6665,15 @@ Usage:
 
 Usage:
     x.randPoisson(p)
+
+";
+
+%feature("docstring")  simuPOP::RNG::pvalChiSq " 
+
+  right hand side (single side) p-value for ChiSq value
+
+Usage:
+    x.pvalChiSq(chisq, df)
 
 ";
 
@@ -7637,14 +7653,17 @@ Usage:
 
 Usage:
     stat(popSize=False, numOfMale=False, numOfAffected=False,
-    numOfAlleles=vectori, alleleFreq=vectori, heteroFreq=vectori,
-    expHetero=vectori, homoFreq=vectori, genoFreq=vectori,
-    haploFreq=intMatrix, LD=intMatrix, Fst=vectori,
-    relGroups=intMatrix, relLoci=vectori, relBySubPop=False,
-    relMethod=vectori, relMinScored=10, hasPhase=False,
-    midValues=False, output=\"\", outputExpr=\"\", stage=PostMating,
-    begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-    &infoFields=[])
+    numOfAlleles=vectori, numOfAlleles_param=strDict,
+    alleleFreq=vectori, alleleFreq_param=strDict, heteroFreq=vectori,
+    expHetero=vectori, expHetero_param=strDict, homoFreq=vectori,
+    genoFreq=vectori, haploFreq=intMatrix, LD=intMatrix,
+    LD_param=strDict, association=intMatrix,
+    association_param=strDict, Fst=vectori, Fst_param=strDict,
+    relGroups=intMatrix, relLoci=vectori, rel_param=strDict,
+    relBySubPop=False, relMethod=vectori, relMinScored=10,
+    hasPhase=False, midValues=False, output=\"\", outputExpr=\"\",
+    stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+    grp=GRP_ALL, &infoFields=[])
 
 Arguments:
 
@@ -7692,6 +7711,15 @@ Arguments:
       using specified alleles are provided. If only one item is
       specified, the outer [] can be ignored. I.e., LD=[locus1 locus2]
       is acceptable.
+      
+    LD_param::    a dictionary of parameters to LD statistics. Can have
+      key stat: a list of statistics to calculate. default to all. if
+      any statistics is specified, only those specified will be
+      calculated. i.e.: LD_param={'stat':['LD']} LD: True/False,
+      shortcut for 'stat':['LD'] LD_prime: True/False, shortcut for
+      'stat':['LD_prime'] ... subPop: True/False: whether or not
+      calculate statistics for subpopulations midValues: True/False:
+      whether or not keep intermediate results
       
     Fst:    calculate Fst. Fis and Fit will be given as a side product.
       
@@ -7764,14 +7792,14 @@ Usage:
 %feature("docstring")  simuPOP::statAlleleFreq::statAlleleFreq " 
 
 Usage:
-    statAlleleFreq(&atLoci=vectori)
+    statAlleleFreq(&atLoci=vectori, &param=strDict)
 
 ";
 
 %feature("docstring")  simuPOP::statAlleleFreq::addLocus " 
 
 Usage:
-    x.addLocus(locus, post=False)
+    x.addLocus(locus, post, subPop, numOfAlleles)
 
 ";
 
@@ -7894,12 +7922,31 @@ Usage:
 
 ";
 
+%feature("docstring") simuPOP::statAssociation "
+
+";
+
+%feature("docstring")  simuPOP::statAssociation::statAssociation " 
+
+Usage:
+    statAssociation(&alleleFreq, &haploFreq, &Association=intMatrix,
+    &param=strDict)
+
+";
+
+%feature("docstring")  simuPOP::statAssociation::apply " 
+
+Usage:
+    x.apply(&pop)
+
+";
+
 %ignore simuPOP::statExpHetero;
 
 %feature("docstring")  simuPOP::statExpHetero::statExpHetero " 
 
 Usage:
-    statExpHetero(&alleleFreq, &expHetero=vectori)
+    statExpHetero(&alleleFreq, &expHetero=vectori, &param=strDict)
 
 ";
 
@@ -7915,7 +7962,7 @@ Usage:
 %feature("docstring")  simuPOP::statFst::statFst " 
 
 Usage:
-    statFst(&alleleFreq, &heteroFreq, &Fst=vectori, midValues=False)
+    statFst(&alleleFreq, &heteroFreq, &Fst=vectori, &param=strDict)
 
 ";
 
@@ -8109,7 +8156,7 @@ Usage:
 %feature("docstring")  simuPOP::statLD::statLD " 
 
 Usage:
-    statLD(&alleleFreq, &haploFreq, &LD=intMatrix, midValues=False)
+    statLD(&alleleFreq, &haploFreq, &LD=intMatrix, &LD_param=strDict)
 
 ";
 
@@ -8176,7 +8223,7 @@ Usage:
 %feature("docstring")  simuPOP::statNumOfAlleles::statNumOfAlleles " 
 
 Usage:
-    statNumOfAlleles(&calc, &atLoci=vectori)
+    statNumOfAlleles(&calc, &atLoci=vectori, &param=strDict)
 
 ";
 
@@ -8314,7 +8361,7 @@ values
 
 Usage:
     statRelatedness(&alleleFreq, &groups=intMatrix, useSubPop=False,
-    &loci=vectori, method=vectori, minScored=10, midValues=False)
+    &loci=vectori, method=vectori, minScored=10, &param=strDict)
 
 Arguments:
 
@@ -8476,22 +8523,6 @@ Usage:
 
 Usage:
     x.closeOstream()
-
-";
-
-%feature("docstring") swig_cast_info "
-
-";
-
-%feature("docstring") swig_const_info "
-
-";
-
-%feature("docstring") swig_module_info "
-
-";
-
-%feature("docstring") swig_type_info "
 
 ";
 
@@ -8880,6 +8911,31 @@ Usage:
 
 ";
 
+%feature("docstring")  simuPOP::countAlleles " 
+
+Usage:
+    countAlleles(&pop, subpop, &loci, &alleles, &alleleNum)
+
+";
+
+%feature("docstring")  simuPOP::getExpectedAlleles " 
+
+  give expected frequency for the whole population, or all
+subpopulations return expected number of alleles at each
+subpopulations.
+
+Usage:
+    getExpectedAlleles(&pop, &expFreq, &loci, &alleles, &expAlleles)
+
+Details:
+    calculate exp number of affected offspring in the next generation.
+  step 1: totalsize*expFreq is the total number of disease alleles
+  step 2: assign these alleles to each subpopulation according to a
+  multi-nomial distribution with p_i beging allele frequency at each
+  subpopulation.
+
+";
+
 %feature("docstring")  simuPOP::FreqTrajectoryStoch " 
 
 Usage:
@@ -8931,31 +8987,6 @@ Usage:
 Usage:
     FreqTrajectoryForward(lowbound, highbound, disAge, grate, N0,
     seleCo)
-
-";
-
-%feature("docstring")  simuPOP::countAlleles " 
-
-Usage:
-    countAlleles(&pop, subpop, &loci, &alleles, &alleleNum)
-
-";
-
-%feature("docstring")  simuPOP::getExpectedAlleles " 
-
-  give expected frequency for the whole population, or all
-subpopulations return expected number of alleles at each
-subpopulations.
-
-Usage:
-    getExpectedAlleles(&pop, &expFreq, &loci, &alleles, &expAlleles)
-
-Details:
-    calculate exp number of affected offspring in the next generation.
-  step 1: totalsize*expFreq is the total number of disease alleles
-  step 2: assign these alleles to each subpopulation according to a
-  multi-nomial distribution with p_i beging allele frequency at each
-  subpopulation.
 
 ";
 
@@ -9466,398 +9497,28 @@ Usage:
 
 %ignore std::pow3(unsigned n);
 
-%feature("docstring")  is_carrayobject " 
+%feature("docstring")  simuPOP::countAlleles " 
 
 Usage:
-    is_carrayobject(*op)
+    countAlleles(&pop, subpop, &loci, &alleles, &alleleNum)
 
 ";
 
-%feature("docstring")  a_getitem " 
+%feature("docstring")  simuPOP::getExpectedAlleles " 
+
+  give expected frequency for the whole population, or all
+subpopulations return expected number of alleles at each
+subpopulations.
 
 Usage:
-    a_getitem(*ap, i)
-
-";
-
-%feature("docstring")  a_setitem " 
-
-Usage:
-    a_setitem(*ap, i, *v)
-
-";
-
-%feature("docstring")  c_getitem " 
-
-Usage:
-    c_getitem(*ap, i)
-
-";
-
-%feature("docstring")  c_setitem " 
-
-Usage:
-    c_setitem(*ap, i, *v)
-
-";
-
-%feature("docstring")  b_getitem " 
-
-Usage:
-    b_getitem(*ap, i)
-
-";
-
-%feature("docstring")  b_setitem " 
-
-Usage:
-    b_setitem(*ap, i, *v)
-
-";
-
-%feature("docstring")  BB_getitem " 
-
-Usage:
-    BB_getitem(*ap, i)
-
-";
-
-%feature("docstring")  BB_setitem " 
-
-Usage:
-    BB_setitem(*ap, i, *v)
-
-";
-
-%feature("docstring")  h_getitem " 
-
-Usage:
-    h_getitem(*ap, i)
-
-";
-
-%feature("docstring")  h_setitem " 
-
-Usage:
-    h_setitem(*ap, i, *v)
-
-";
-
-%feature("docstring")  HH_getitem " 
-
-Usage:
-    HH_getitem(*ap, i)
-
-";
-
-%feature("docstring")  HH_setitem " 
-
-Usage:
-    HH_setitem(*ap, i, *v)
-
-";
-
-%feature("docstring")  i_getitem " 
-
-Usage:
-    i_getitem(*ap, i)
-
-";
-
-%feature("docstring")  i_setitem " 
-
-Usage:
-    i_setitem(*ap, i, *v)
-
-";
-
-%feature("docstring")  II_getitem " 
-
-Usage:
-    II_getitem(*ap, i)
-
-";
-
-%feature("docstring")  II_setitem " 
-
-Usage:
-    II_setitem(*ap, i, *v)
-
-";
-
-%feature("docstring")  l_getitem " 
-
-Usage:
-    l_getitem(*ap, i)
-
-";
-
-%feature("docstring")  l_setitem " 
-
-Usage:
-    l_setitem(*ap, i, *v)
-
-";
-
-%feature("docstring")  LL_getitem " 
-
-Usage:
-    LL_getitem(*ap, i)
-
-";
-
-%feature("docstring")  LL_setitem " 
-
-Usage:
-    LL_setitem(*ap, i, *v)
-
-";
-
-%feature("docstring")  f_getitem " 
-
-Usage:
-    f_getitem(*ap, i)
-
-";
-
-%feature("docstring")  f_setitem " 
-
-Usage:
-    f_setitem(*ap, i, *v)
-
-";
-
-%feature("docstring")  d_getitem " 
-
-Usage:
-    d_getitem(*ap, i)
-
-";
-
-%feature("docstring")  d_setitem " 
-
-Usage:
-    d_setitem(*ap, i, *v)
-
-";
-
-%feature("docstring")  carray_new " 
-
-Usage:
-    carray_new(*type, *args, *kwds)
-
-";
-
-%feature("docstring")  carray_init " 
-
-Usage:
-    carray_init(*type, *args, *kwds)
-
-";
-
-%feature("docstring")  newcarrayobject " 
-
-Usage:
-    newcarrayobject(*ptr, type, size)
-
-";
-
-%feature("docstring")  newcarrayiterobject " 
-
-Usage:
-    newcarrayiterobject(begin, end)
-
-";
-
-%feature("docstring")  getarrayitem " 
-
-Usage:
-    getarrayitem(*op, i)
-
-";
-
-%feature("docstring")  array_dealloc " 
-
-Usage:
-    array_dealloc(*op)
-
-";
-
-%feature("docstring")  array_richcompare " 
-
-Usage:
-    array_richcompare(*v, *w, op)
-
-";
-
-%feature("docstring")  array_length " 
-
-Usage:
-    array_length(*a)
-
-";
-
-%feature("docstring")  array_concat " 
-
-Usage:
-    array_concat(*a, *bb)
-
-";
-
-%feature("docstring")  array_repeat " 
-
-Usage:
-    array_repeat(*a, n)
-
-";
-
-%feature("docstring")  array_item " 
-
-Usage:
-    array_item(*a, i)
-
-";
-
-%feature("docstring")  array_slice " 
-
-Usage:
-    array_slice(*a, ilow, ihigh)
-
-";
-
-%feature("docstring")  array_ass_slice " 
-
-Usage:
-    array_ass_slice(*a, ilow, ihigh, *v)
-
-";
-
-%feature("docstring")  array_ass_item " 
-
-Usage:
-    array_ass_item(*a, i, *v)
-
-";
-
-%feature("docstring")  array_count " 
-
-Usage:
-    array_count(*self, *args)
-
-";
-
-%feature("docstring")  array_index " 
-
-Usage:
-    array_index(*self, *args)
-
-";
-
-%feature("docstring")  array_tolist " 
-
-Usage:
-    array_tolist(*self, *args)
-
-";
-
-%feature("docstring")  array_getattr " 
-
-Usage:
-    array_getattr(*a, *name)
-
-";
-
-%feature("docstring")  array_print " 
-
-Usage:
-    array_print(*a, *fp, flags)
-
-";
-
-%feature("docstring")  array_repr " 
-
-Usage:
-    array_repr(*a)
-
-";
-
-%feature("docstring")  initcarray " 
-
-Usage:
-    initcarray(void)
-
-";
-
-%feature("docstring")  carray_length " 
-
-Usage:
-    carray_length(*a)
-
-";
-
-%feature("docstring")  carray_itemsize " 
-
-Usage:
-    carray_itemsize(*a)
-
-";
-
-%feature("docstring")  carray_type " 
-
-Usage:
-    carray_type(*a)
-
-";
-
-%feature("docstring")  carray_data " 
-
-Usage:
-    carray_data(*a)
-
-";
-
-%feature("docstring")  NEW " 
-
-Usage:
-    NEW(build)
-
-";
-
-%feature("docstring")  variables " 
-
-Usage:
-    variables(linux)
-
-";
-
-%feature("docstring")  binary " 
-
-Usage:
-    binary(port)
-
-";
-
-%feature("docstring")  help " 
-
-Usage:
-    help(macOS)
-
-";
-
-%feature("docstring")  addInfoField " 
-
-  match local info fields with the structure. the difficult part is
-for ancestral generations.
-
-Usage:
-    addInfoField(field, init=0)
-
-";
-
-%feature("docstring")  addInfoFields " 
-
-Usage:
-    addInfoFields(&fields, init=0)
+    getExpectedAlleles(&pop, &expFreq, &loci, &alleles, &expAlleles)
+
+Details:
+    calculate exp number of affected offspring in the next generation.
+  step 1: totalsize*expFreq is the total number of disease alleles
+  step 2: assign these alleles to each subpopulation according to a
+  multi-nomial distribution with p_i beging allele frequency at each
+  subpopulation.
 
 ";
 
@@ -9915,31 +9576,6 @@ Usage:
 
 ";
 
-%feature("docstring")  simuPOP::countAlleles " 
-
-Usage:
-    countAlleles(&pop, subpop, &loci, &alleles, &alleleNum)
-
-";
-
-%feature("docstring")  simuPOP::getExpectedAlleles " 
-
-  give expected frequency for the whole population, or all
-subpopulations return expected number of alleles at each
-subpopulations.
-
-Usage:
-    getExpectedAlleles(&pop, &expFreq, &loci, &alleles, &expAlleles)
-
-Details:
-    calculate exp number of affected offspring in the next generation.
-  step 1: totalsize*expFreq is the total number of disease alleles
-  step 2: assign these alleles to each subpopulation according to a
-  multi-nomial distribution with p_i beging allele frequency at each
-  subpopulation.
-
-";
-
 %feature("docstring")  simuPOP::LoadPopulation " 
 
 Usage:
@@ -9973,1231 +9609,6 @@ Usage:
 ";
 
 %ignore simuPOP::haploKey(const vectori &seq);
-
-%feature("docstring")  SWIG_TypeNameComp " 
-
-Usage:
-    SWIG_TypeNameComp(*f1, *l1, *f2, *l2)
-
-";
-
-%feature("docstring")  SWIG_TypeEquiv " 
-
-Usage:
-    SWIG_TypeEquiv(*nb, *tb)
-
-";
-
-%feature("docstring")  SWIG_TypeCompare " 
-
-Usage:
-    SWIG_TypeCompare(*nb, *tb)
-
-";
-
-%feature("docstring")  SWIG_TypeCheck " 
-
-Usage:
-    SWIG_TypeCheck(*c, *ty)
-
-";
-
-%feature("docstring")  SWIG_TypeCheckStruct " 
-
-Usage:
-    SWIG_TypeCheckStruct(*from, *into)
-
-";
-
-%feature("docstring")  SWIG_TypeCast " 
-
-Usage:
-    SWIG_TypeCast(*ty, *ptr)
-
-";
-
-%feature("docstring")  SWIG_TypeDynamicCast " 
-
-Usage:
-    SWIG_TypeDynamicCast(*ty, **ptr)
-
-";
-
-%feature("docstring")  SWIG_TypeName " 
-
-Usage:
-    SWIG_TypeName(*ty)
-
-";
-
-%feature("docstring")  SWIG_TypePrettyName " 
-
-Usage:
-    SWIG_TypePrettyName(*type)
-
-";
-
-%feature("docstring")  SWIG_TypeClientData " 
-
-Usage:
-    SWIG_TypeClientData(*ti, *clientdata)
-
-";
-
-%feature("docstring")  SWIG_TypeNewClientData " 
-
-Usage:
-    SWIG_TypeNewClientData(*ti, *clientdata)
-
-";
-
-%feature("docstring")  SWIG_MangledTypeQueryModule " 
-
-Usage:
-    SWIG_MangledTypeQueryModule(*start, *end, *name)
-
-";
-
-%feature("docstring")  SWIG_TypeQueryModule " 
-
-Usage:
-    SWIG_TypeQueryModule(*start, *end, *name)
-
-";
-
-%feature("docstring")  SWIG_PackData " 
-
-Usage:
-    SWIG_PackData(*c, *ptr, sz)
-
-";
-
-%feature("docstring")  SWIG_UnpackData " 
-
-Usage:
-    SWIG_UnpackData(*c, *ptr, sz)
-
-";
-
-%feature("docstring")  SWIG_PackVoidPtr " 
-
-Usage:
-    SWIG_PackVoidPtr(*buff, *ptr, *name, bsz)
-
-";
-
-%feature("docstring")  SWIG_UnpackVoidPtr " 
-
-Usage:
-    SWIG_UnpackVoidPtr(*c, **ptr, *name)
-
-";
-
-%feature("docstring")  SWIG_PackDataName " 
-
-Usage:
-    SWIG_PackDataName(*buff, *ptr, sz, *name, bsz)
-
-";
-
-%feature("docstring")  SWIG_UnpackDataName " 
-
-Usage:
-    SWIG_UnpackDataName(*c, *ptr, sz, *name)
-
-";
-
-%feature("docstring")  PyString_FromFormat " 
-
-Usage:
-    PyString_FromFormat(*fmt, ...)
-
-";
-
-%feature("docstring")  PyBool_FromLong " 
-
-Usage:
-    PyBool_FromLong(ok)
-
-";
-
-%feature("docstring")  SWIG_Python_ErrorType " 
-
-Usage:
-    SWIG_Python_ErrorType(code)
-
-";
-
-%feature("docstring")  SWIG_Python_AddErrorMsg " 
-
-Usage:
-    SWIG_Python_AddErrorMsg(*mesg)
-
-";
-
-%feature("docstring")  SWIG_Python_SetErrorObj " 
-
-Usage:
-    SWIG_Python_SetErrorObj(*errtype, *obj)
-
-";
-
-%feature("docstring")  SWIG_Python_SetErrorMsg " 
-
-Usage:
-    SWIG_Python_SetErrorMsg(*errtype, *msg)
-
-";
-
-%feature("docstring")  SWIG_Python_SetConstant " 
-
-Usage:
-    SWIG_Python_SetConstant(*d, *name, *obj)
-
-";
-
-%feature("docstring")  SWIG_Python_AppendOutput " 
-
-Usage:
-    SWIG_Python_AppendOutput(*result, *obj)
-
-";
-
-%feature("docstring")  SWIG_Python_UnpackTuple " 
-
-Usage:
-    SWIG_Python_UnpackTuple(*args, *name, min, max, **objs)
-
-";
-
-%feature("docstring")  SWIG_Py_Void " 
-
-Usage:
-    SWIG_Py_Void(void)
-
-";
-
-%feature("docstring")  SWIG_Python_CheckImplicit " 
-
-Usage:
-    SWIG_Python_CheckImplicit(*ty)
-
-";
-
-%feature("docstring")  SWIG_Python_ExceptionType " 
-
-Usage:
-    SWIG_Python_ExceptionType(*desc)
-
-";
-
-%feature("docstring")  PySwigClientData_New " 
-
-Usage:
-    PySwigClientData_New(*obj)
-
-";
-
-%feature("docstring")  PySwigClientData_Del " 
-
-Usage:
-    PySwigClientData_Del(*data)
-
-";
-
-%feature("docstring")  PySwigObject_long " 
-
-Usage:
-    PySwigObject_long(*v)
-
-";
-
-%feature("docstring")  PySwigObject_format " 
-
-Usage:
-    PySwigObject_format(*fmt, *v)
-
-";
-
-%feature("docstring")  PySwigObject_oct " 
-
-Usage:
-    PySwigObject_oct(*v)
-
-";
-
-%feature("docstring")  PySwigObject_hex " 
-
-Usage:
-    PySwigObject_hex(*v)
-
-";
-
-%feature("docstring")  PySwigObject_repr " 
-
-Usage:
-    PySwigObject_repr(*v, *args)
-
-";
-
-%feature("docstring")  PySwigObject_print " 
-
-Usage:
-    PySwigObject_print(*v, *fp, flags)
-
-";
-
-%feature("docstring")  PySwigObject_str " 
-
-Usage:
-    PySwigObject_str(*v)
-
-";
-
-%feature("docstring")  PySwigObject_compare " 
-
-Usage:
-    PySwigObject_compare(*v, *w)
-
-";
-
-%feature("docstring")  _PySwigObject_type " 
-
-Usage:
-    _PySwigObject_type(void)
-
-";
-
-%feature("docstring")  PySwigObject_type " 
-
-Usage:
-    PySwigObject_type(void)
-
-";
-
-%feature("docstring")  PySwigObject_Check " 
-
-Usage:
-    PySwigObject_Check(*op)
-
-";
-
-%feature("docstring")  PySwigObject_New " 
-
-Usage:
-    PySwigObject_New(*ptr, *ty, own)
-
-";
-
-%feature("docstring")  PySwigObject_dealloc " 
-
-Usage:
-    PySwigObject_dealloc(*v)
-
-";
-
-%feature("docstring")  PySwigObject_append " 
-
-Usage:
-    PySwigObject_append(*v, *next)
-
-";
-
-%feature("docstring")  PySwigObject_next " 
-
-Usage:
-    PySwigObject_next(*v, args)
-
-";
-
-%feature("docstring")  PySwigObject_disown " 
-
-Usage:
-    PySwigObject_disown(*v, args)
-
-";
-
-%feature("docstring")  PySwigObject_acquire " 
-
-Usage:
-    PySwigObject_acquire(*v, args)
-
-";
-
-%feature("docstring")  PySwigObject_own " 
-
-Usage:
-    PySwigObject_own(*v, *args)
-
-";
-
-%feature("docstring")  PySwigObject_getattr " 
-
-Usage:
-    PySwigObject_getattr(*sobj, *name)
-
-";
-
-%feature("docstring")  PySwigPacked_print " 
-
-Usage:
-    PySwigPacked_print(*v, *fp, flags)
-
-";
-
-%feature("docstring")  PySwigPacked_repr " 
-
-Usage:
-    PySwigPacked_repr(*v)
-
-";
-
-%feature("docstring")  PySwigPacked_str " 
-
-Usage:
-    PySwigPacked_str(*v)
-
-";
-
-%feature("docstring")  PySwigPacked_compare " 
-
-Usage:
-    PySwigPacked_compare(*v, *w)
-
-";
-
-%feature("docstring")  _PySwigPacked_type " 
-
-Usage:
-    _PySwigPacked_type(void)
-
-";
-
-%feature("docstring")  PySwigPacked_type " 
-
-Usage:
-    PySwigPacked_type(void)
-
-";
-
-%feature("docstring")  PySwigPacked_Check " 
-
-Usage:
-    PySwigPacked_Check(*op)
-
-";
-
-%feature("docstring")  PySwigPacked_dealloc " 
-
-Usage:
-    PySwigPacked_dealloc(*v)
-
-";
-
-%feature("docstring")  PySwigPacked_New " 
-
-Usage:
-    PySwigPacked_New(*ptr, size, *ty)
-
-";
-
-%feature("docstring")  PySwigPacked_UnpackData " 
-
-Usage:
-    PySwigPacked_UnpackData(*obj, *ptr, size)
-
-";
-
-%feature("docstring")  _SWIG_This " 
-
-Usage:
-    _SWIG_This(void)
-
-";
-
-%feature("docstring")  SWIG_This " 
-
-Usage:
-    SWIG_This(void)
-
-";
-
-%feature("docstring")  SWIG_Python_GetSwigThis " 
-
-Usage:
-    SWIG_Python_GetSwigThis(*pyobj)
-
-";
-
-%feature("docstring")  SWIG_Python_AcquirePtr " 
-
-Usage:
-    SWIG_Python_AcquirePtr(*obj, own)
-
-";
-
-%feature("docstring")  SWIG_Python_ConvertPtrAndOwn " 
-
-Usage:
-    SWIG_Python_ConvertPtrAndOwn(*obj, **ptr, *ty, flags, *own)
-
-";
-
-%feature("docstring")  SWIG_Python_ConvertFunctionPtr " 
-
-Usage:
-    SWIG_Python_ConvertFunctionPtr(*obj, **ptr, *ty)
-
-";
-
-%feature("docstring")  SWIG_Python_ConvertPacked " 
-
-Usage:
-    SWIG_Python_ConvertPacked(*obj, *ptr, sz, *ty)
-
-";
-
-%feature("docstring")  SWIG_Python_NewShadowInstance " 
-
-Usage:
-    SWIG_Python_NewShadowInstance(*data, *swig_this)
-
-";
-
-%feature("docstring")  SWIG_Python_SetSwigThis " 
-
-Usage:
-    SWIG_Python_SetSwigThis(*inst, *swig_this)
-
-";
-
-%feature("docstring")  SWIG_Python_InitShadowInstance " 
-
-Usage:
-    SWIG_Python_InitShadowInstance(*args)
-
-";
-
-%feature("docstring")  SWIG_Python_NewPointerObj " 
-
-Usage:
-    SWIG_Python_NewPointerObj(*ptr, *type, flags)
-
-";
-
-%feature("docstring")  SWIG_Python_NewPackedObj " 
-
-Usage:
-    SWIG_Python_NewPackedObj(*ptr, sz, *type)
-
-";
-
-%feature("docstring")  SWIG_Python_GetModule " 
-
-Usage:
-    SWIG_Python_GetModule(void)
-
-";
-
-%feature("docstring")  PyModule_AddObject " 
-
-Usage:
-    PyModule_AddObject(*m, *name, *o)
-
-";
-
-%feature("docstring")  SWIG_Python_DestroyModule " 
-
-Usage:
-    SWIG_Python_DestroyModule(*vptr)
-
-";
-
-%feature("docstring")  SWIG_Python_SetModule " 
-
-Usage:
-    SWIG_Python_SetModule(*swig_module)
-
-";
-
-%feature("docstring")  SWIG_Python_TypeCache " 
-
-Usage:
-    SWIG_Python_TypeCache(void)
-
-";
-
-%feature("docstring")  SWIG_Python_TypeQuery " 
-
-Usage:
-    SWIG_Python_TypeQuery(*type)
-
-";
-
-%feature("docstring")  SWIG_Python_AddErrMesg " 
-
-Usage:
-    SWIG_Python_AddErrMesg(*mesg, infront)
-
-";
-
-%feature("docstring")  SWIG_Python_ArgFail " 
-
-Usage:
-    SWIG_Python_ArgFail(argnum)
-
-";
-
-%feature("docstring")  PySwigObject_GetDesc " 
-
-Usage:
-    PySwigObject_GetDesc(*self)
-
-";
-
-%feature("docstring")  SWIG_Python_TypeError " 
-
-Usage:
-    SWIG_Python_TypeError(*type, *obj)
-
-";
-
-%feature("docstring")  SWIG_Python_MustGetPtr " 
-
-Usage:
-    SWIG_Python_MustGetPtr(*obj, *ty, argnum, flags)
-
-";
-
-%feature("docstring")  SWIG_TypeQuery " 
-
-Usage:
-    SWIG_TypeQuery(*name)
-
-";
-
-%feature("docstring")  SWIG_MangledTypeQuery " 
-
-Usage:
-    SWIG_MangledTypeQuery(*name)
-
-";
-
-%feature("docstring")  SWIG_TypeNameComp " 
-
-Usage:
-    SWIG_TypeNameComp(*f1, *l1, *f2, *l2)
-
-";
-
-%feature("docstring")  SWIG_TypeEquiv " 
-
-Usage:
-    SWIG_TypeEquiv(*nb, *tb)
-
-";
-
-%feature("docstring")  SWIG_TypeCompare " 
-
-Usage:
-    SWIG_TypeCompare(*nb, *tb)
-
-";
-
-%feature("docstring")  SWIG_TypeCheck " 
-
-Usage:
-    SWIG_TypeCheck(*c, *ty)
-
-";
-
-%feature("docstring")  SWIG_TypeCheckStruct " 
-
-Usage:
-    SWIG_TypeCheckStruct(*from, *into)
-
-";
-
-%feature("docstring")  SWIG_TypeCast " 
-
-Usage:
-    SWIG_TypeCast(*ty, *ptr)
-
-";
-
-%feature("docstring")  SWIG_TypeDynamicCast " 
-
-Usage:
-    SWIG_TypeDynamicCast(*ty, **ptr)
-
-";
-
-%feature("docstring")  SWIG_TypeName " 
-
-Usage:
-    SWIG_TypeName(*ty)
-
-";
-
-%feature("docstring")  SWIG_TypePrettyName " 
-
-Usage:
-    SWIG_TypePrettyName(*type)
-
-";
-
-%feature("docstring")  SWIG_TypeClientData " 
-
-Usage:
-    SWIG_TypeClientData(*ti, *clientdata)
-
-";
-
-%feature("docstring")  SWIG_TypeNewClientData " 
-
-Usage:
-    SWIG_TypeNewClientData(*ti, *clientdata)
-
-";
-
-%feature("docstring")  SWIG_MangledTypeQueryModule " 
-
-Usage:
-    SWIG_MangledTypeQueryModule(*start, *end, *name)
-
-";
-
-%feature("docstring")  SWIG_TypeQueryModule " 
-
-Usage:
-    SWIG_TypeQueryModule(*start, *end, *name)
-
-";
-
-%feature("docstring")  SWIG_PackData " 
-
-Usage:
-    SWIG_PackData(*c, *ptr, sz)
-
-";
-
-%feature("docstring")  SWIG_UnpackData " 
-
-Usage:
-    SWIG_UnpackData(*c, *ptr, sz)
-
-";
-
-%feature("docstring")  SWIG_PackVoidPtr " 
-
-Usage:
-    SWIG_PackVoidPtr(*buff, *ptr, *name, bsz)
-
-";
-
-%feature("docstring")  SWIG_UnpackVoidPtr " 
-
-Usage:
-    SWIG_UnpackVoidPtr(*c, **ptr, *name)
-
-";
-
-%feature("docstring")  SWIG_PackDataName " 
-
-Usage:
-    SWIG_PackDataName(*buff, *ptr, sz, *name, bsz)
-
-";
-
-%feature("docstring")  SWIG_UnpackDataName " 
-
-Usage:
-    SWIG_UnpackDataName(*c, *ptr, sz, *name)
-
-";
-
-%feature("docstring")  PyString_FromFormat " 
-
-Usage:
-    PyString_FromFormat(*fmt, ...)
-
-";
-
-%feature("docstring")  PyBool_FromLong " 
-
-Usage:
-    PyBool_FromLong(ok)
-
-";
-
-%feature("docstring")  SWIG_Python_ErrorType " 
-
-Usage:
-    SWIG_Python_ErrorType(code)
-
-";
-
-%feature("docstring")  SWIG_Python_AddErrorMsg " 
-
-Usage:
-    SWIG_Python_AddErrorMsg(*mesg)
-
-";
-
-%feature("docstring")  SWIG_Python_SetErrorObj " 
-
-Usage:
-    SWIG_Python_SetErrorObj(*errtype, *obj)
-
-";
-
-%feature("docstring")  SWIG_Python_SetErrorMsg " 
-
-Usage:
-    SWIG_Python_SetErrorMsg(*errtype, *msg)
-
-";
-
-%feature("docstring")  SWIG_Python_SetConstant " 
-
-Usage:
-    SWIG_Python_SetConstant(*d, *name, *obj)
-
-";
-
-%feature("docstring")  SWIG_Python_AppendOutput " 
-
-Usage:
-    SWIG_Python_AppendOutput(*result, *obj)
-
-";
-
-%feature("docstring")  SWIG_Python_UnpackTuple " 
-
-Usage:
-    SWIG_Python_UnpackTuple(*args, *name, min, max, **objs)
-
-";
-
-%feature("docstring")  SWIG_Py_Void " 
-
-Usage:
-    SWIG_Py_Void(void)
-
-";
-
-%feature("docstring")  SWIG_Python_CheckImplicit " 
-
-Usage:
-    SWIG_Python_CheckImplicit(*ty)
-
-";
-
-%feature("docstring")  SWIG_Python_ExceptionType " 
-
-Usage:
-    SWIG_Python_ExceptionType(*desc)
-
-";
-
-%feature("docstring")  PySwigClientData_New " 
-
-Usage:
-    PySwigClientData_New(*obj)
-
-";
-
-%feature("docstring")  PySwigClientData_Del " 
-
-Usage:
-    PySwigClientData_Del(*data)
-
-";
-
-%feature("docstring")  PySwigObject_long " 
-
-Usage:
-    PySwigObject_long(*v)
-
-";
-
-%feature("docstring")  PySwigObject_format " 
-
-Usage:
-    PySwigObject_format(*fmt, *v)
-
-";
-
-%feature("docstring")  PySwigObject_oct " 
-
-Usage:
-    PySwigObject_oct(*v)
-
-";
-
-%feature("docstring")  PySwigObject_hex " 
-
-Usage:
-    PySwigObject_hex(*v)
-
-";
-
-%feature("docstring")  PySwigObject_repr " 
-
-Usage:
-    PySwigObject_repr(*v, *args)
-
-";
-
-%feature("docstring")  PySwigObject_print " 
-
-Usage:
-    PySwigObject_print(*v, *fp, flags)
-
-";
-
-%feature("docstring")  PySwigObject_str " 
-
-Usage:
-    PySwigObject_str(*v)
-
-";
-
-%feature("docstring")  PySwigObject_compare " 
-
-Usage:
-    PySwigObject_compare(*v, *w)
-
-";
-
-%feature("docstring")  _PySwigObject_type " 
-
-Usage:
-    _PySwigObject_type(void)
-
-";
-
-%feature("docstring")  PySwigObject_type " 
-
-Usage:
-    PySwigObject_type(void)
-
-";
-
-%feature("docstring")  PySwigObject_Check " 
-
-Usage:
-    PySwigObject_Check(*op)
-
-";
-
-%feature("docstring")  PySwigObject_New " 
-
-Usage:
-    PySwigObject_New(*ptr, *ty, own)
-
-";
-
-%feature("docstring")  PySwigObject_dealloc " 
-
-Usage:
-    PySwigObject_dealloc(*v)
-
-";
-
-%feature("docstring")  PySwigObject_append " 
-
-Usage:
-    PySwigObject_append(*v, *next)
-
-";
-
-%feature("docstring")  PySwigObject_next " 
-
-Usage:
-    PySwigObject_next(*v, args)
-
-";
-
-%feature("docstring")  PySwigObject_disown " 
-
-Usage:
-    PySwigObject_disown(*v, args)
-
-";
-
-%feature("docstring")  PySwigObject_acquire " 
-
-Usage:
-    PySwigObject_acquire(*v, args)
-
-";
-
-%feature("docstring")  PySwigObject_own " 
-
-Usage:
-    PySwigObject_own(*v, *args)
-
-";
-
-%feature("docstring")  PySwigObject_getattr " 
-
-Usage:
-    PySwigObject_getattr(*sobj, *name)
-
-";
-
-%feature("docstring")  PySwigPacked_print " 
-
-Usage:
-    PySwigPacked_print(*v, *fp, flags)
-
-";
-
-%feature("docstring")  PySwigPacked_repr " 
-
-Usage:
-    PySwigPacked_repr(*v)
-
-";
-
-%feature("docstring")  PySwigPacked_str " 
-
-Usage:
-    PySwigPacked_str(*v)
-
-";
-
-%feature("docstring")  PySwigPacked_compare " 
-
-Usage:
-    PySwigPacked_compare(*v, *w)
-
-";
-
-%feature("docstring")  _PySwigPacked_type " 
-
-Usage:
-    _PySwigPacked_type(void)
-
-";
-
-%feature("docstring")  PySwigPacked_type " 
-
-Usage:
-    PySwigPacked_type(void)
-
-";
-
-%feature("docstring")  PySwigPacked_Check " 
-
-Usage:
-    PySwigPacked_Check(*op)
-
-";
-
-%feature("docstring")  PySwigPacked_dealloc " 
-
-Usage:
-    PySwigPacked_dealloc(*v)
-
-";
-
-%feature("docstring")  PySwigPacked_New " 
-
-Usage:
-    PySwigPacked_New(*ptr, size, *ty)
-
-";
-
-%feature("docstring")  PySwigPacked_UnpackData " 
-
-Usage:
-    PySwigPacked_UnpackData(*obj, *ptr, size)
-
-";
-
-%feature("docstring")  _SWIG_This " 
-
-Usage:
-    _SWIG_This(void)
-
-";
-
-%feature("docstring")  SWIG_This " 
-
-Usage:
-    SWIG_This(void)
-
-";
-
-%feature("docstring")  SWIG_Python_GetSwigThis " 
-
-Usage:
-    SWIG_Python_GetSwigThis(*pyobj)
-
-";
-
-%feature("docstring")  SWIG_Python_AcquirePtr " 
-
-Usage:
-    SWIG_Python_AcquirePtr(*obj, own)
-
-";
-
-%feature("docstring")  SWIG_Python_ConvertPtrAndOwn " 
-
-Usage:
-    SWIG_Python_ConvertPtrAndOwn(*obj, **ptr, *ty, flags, *own)
-
-";
-
-%feature("docstring")  SWIG_Python_ConvertFunctionPtr " 
-
-Usage:
-    SWIG_Python_ConvertFunctionPtr(*obj, **ptr, *ty)
-
-";
-
-%feature("docstring")  SWIG_Python_ConvertPacked " 
-
-Usage:
-    SWIG_Python_ConvertPacked(*obj, *ptr, sz, *ty)
-
-";
-
-%feature("docstring")  SWIG_Python_NewShadowInstance " 
-
-Usage:
-    SWIG_Python_NewShadowInstance(*data, *swig_this)
-
-";
-
-%feature("docstring")  SWIG_Python_SetSwigThis " 
-
-Usage:
-    SWIG_Python_SetSwigThis(*inst, *swig_this)
-
-";
-
-%feature("docstring")  SWIG_Python_InitShadowInstance " 
-
-Usage:
-    SWIG_Python_InitShadowInstance(*args)
-
-";
-
-%feature("docstring")  SWIG_Python_NewPointerObj " 
-
-Usage:
-    SWIG_Python_NewPointerObj(*ptr, *type, flags)
-
-";
-
-%feature("docstring")  SWIG_Python_NewPackedObj " 
-
-Usage:
-    SWIG_Python_NewPackedObj(*ptr, sz, *type)
-
-";
-
-%feature("docstring")  SWIG_Python_GetModule " 
-
-Usage:
-    SWIG_Python_GetModule(void)
-
-";
-
-%feature("docstring")  PyModule_AddObject " 
-
-Usage:
-    PyModule_AddObject(*m, *name, *o)
-
-";
-
-%feature("docstring")  SWIG_Python_DestroyModule " 
-
-Usage:
-    SWIG_Python_DestroyModule(*vptr)
-
-";
-
-%feature("docstring")  SWIG_Python_SetModule " 
-
-Usage:
-    SWIG_Python_SetModule(*swig_module)
-
-";
-
-%feature("docstring")  SWIG_Python_TypeCache " 
-
-Usage:
-    SWIG_Python_TypeCache(void)
-
-";
-
-%feature("docstring")  SWIG_Python_TypeQuery " 
-
-Usage:
-    SWIG_Python_TypeQuery(*type)
-
-";
-
-%feature("docstring")  SWIG_Python_AddErrMesg " 
-
-Usage:
-    SWIG_Python_AddErrMesg(*mesg, infront)
-
-";
-
-%feature("docstring")  SWIG_Python_ArgFail " 
-
-Usage:
-    SWIG_Python_ArgFail(argnum)
-
-";
-
-%feature("docstring")  PySwigObject_GetDesc " 
-
-Usage:
-    PySwigObject_GetDesc(*self)
-
-";
-
-%feature("docstring")  SWIG_Python_TypeError " 
-
-Usage:
-    SWIG_Python_TypeError(*type, *obj)
-
-";
-
-%feature("docstring")  SWIG_Python_MustGetPtr " 
-
-Usage:
-    SWIG_Python_MustGetPtr(*obj, *ty, argnum, flags)
-
-";
-
-%feature("docstring")  SWIG_TypeQuery " 
-
-Usage:
-    SWIG_TypeQuery(*name)
-
-";
-
-%feature("docstring")  SWIG_MangledTypeQuery " 
-
-Usage:
-    SWIG_MangledTypeQuery(*name)
-
-";
-
-%feature("docstring")  main " 
-
-Usage:
-    main()
-
-";
 
 %feature("docstring")  simuPOP::newcarrayobject " 
 

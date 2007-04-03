@@ -993,9 +993,9 @@ namespace simuPOP
 				return m_curAncestralPop;
 			}
 
-			// idx = 0 (current, do nothing) -1, -2, ..
+			// idx = 0 (current), 1 (parents), 2 (grandparents...)
 			//
-			void useAncestralPop(int idx);
+			void useAncestralPop(UINT idx);
 
 			/// compare two populations
 			bool equalTo(const population& rhs)

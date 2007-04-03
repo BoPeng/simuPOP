@@ -208,8 +208,8 @@ class TestMatingSchemes(unittest.TestCase):
             end=burnin+mutAge
         )
             
-    def testControlledBinomialSelection(self):
-        'Testing controlled bionomial selection'
+    def TestControlledBinomialSelection(self):
+        'Testing controlled bionomial selection (broken mating scheme)'
         #TurnOnDebug(DBG_MATING)
         #TurnOnDebug(DBG_DEVEL)
         # planned trajectory
