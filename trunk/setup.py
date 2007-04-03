@@ -283,6 +283,7 @@ LIB_FILES = [
     'gsl/sys/pow_int.c',
     'gsl/sys/fcmp.c',
     'gsl/sys/log1p.c',
+    'gsl/sys/invhyp.c',
     'gsl/complex/math.c',
     'gsl/specfunc/psi.c',
     'gsl/specfunc/trig.c',
