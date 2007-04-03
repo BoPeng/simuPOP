@@ -131,10 +131,11 @@ include gsl/gsl_sf_gamma.h
 include gsl/gsl_sf_log.h
 include gsl/gsl_sys.h
 include gsl/gsl_cdf.h
+include gsl/complex/math.c
 include gsl/randist/poisson.c
 include gsl/randist/chisq.c
 include gsl/randist/exponential.c
-include gsl/randist/binomial.c
+include gsl/randist/binomial_tpe.c
 include gsl/randist/geometric.c
 include gsl/randist/nbinomial.c
 include gsl/randist/multinomial.c
@@ -159,6 +160,7 @@ include gsl/sys/fdiv.c
 include gsl/sys/fcmp.c
 include gsl/sys/coerce.c
 include gsl/sys/infnan.c
+include gsl/sys/log1p.c
 include gsl/rng/ranf.c
 include gsl/rng/rand.c
 include gsl/rng/ran0.c
@@ -201,6 +203,7 @@ include gsl/rng/schrage.c
 include gsl/rng/knuthran2.c
 include gsl/rng/ranmar.c
 include gsl/rng/ranlux.c
+include gsl/rng/knuthran2002.c
 include gsl/cdf/chisq.c
 include gsl/cdf/gamma.c
 
