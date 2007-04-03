@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 #include <config.h>
@@ -26,6 +26,10 @@
    x_n = x_{n-103} ^ x_{n-250}        ("^" means XOR)
 
    defined on 32-bit words.
+
+   BJG: Note that this implementation actually uses the sequence, x_n
+   = x_{n-147} ^ x_{n-250} which generates the outputs in
+   time-reversed order but is otherwise completely equivalent.
 
    The first 250 elements x_1 .. x_250 are first initialized as x_n =
    s_n, where s_n = (69069*s_{n-1}) mod 2^32 and s_0=s is the

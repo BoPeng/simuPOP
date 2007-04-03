@@ -14,11 +14,12 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 #include <config.h>
 #include <math.h>
+#include <gsl/gsl_math.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_sf_gamma.h>
@@ -52,8 +53,15 @@ gsl_ran_beta_pdf (const double x, const double a, const double b)
       double gab = gsl_sf_lngamma (a + b);
       double ga = gsl_sf_lngamma (a);
       double gb = gsl_sf_lngamma (b);
-
-      p = exp (gab - ga - gb) * pow (x, a - 1) * pow (1 - x, b - 1);
+      
+      if (x == 0.0 || x == 1.0) 
+        {
+          p = exp (gab - ga - gb) * pow (x, a - 1) * pow (1 - x, b - 1);
+        }
+      else
+        {
+          p = exp (gab - ga - gb + log(x) * (a - 1)  + log1p(-x) * (b - 1));
+        }
 
       return p;
     }

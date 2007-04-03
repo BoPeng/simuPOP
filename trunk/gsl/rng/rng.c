@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 #include <config.h>
@@ -126,19 +126,27 @@ gsl_rng_uniform_pos (const gsl_rng * r)
   return x ;
 }
 
+/* Note: to avoid integer overflow in (range+1) we work with scale =
+   range/n = (max-min)/n rather than scale=(max-min+1)/n, this reduces
+   efficiency slightly but avoids having to check for the out of range
+   value.  Note that range is typically O(2^32) so the addition of 1
+   is negligible in most usage. */
+
 unsigned long int
 gsl_rng_uniform_int (const gsl_rng * r, unsigned long int n)
 {
   unsigned long int offset = r->type->min;
   unsigned long int range = r->type->max - offset;
-  unsigned long int scale = range / n;
+  unsigned long int scale;
   unsigned long int k;
 
-  if (n > range) 
+  if (n > range || n == 0) 
     {
-      GSL_ERROR_VAL ("n exceeds maximum value of generator",
-                        GSL_EINVAL, 0) ;
+      GSL_ERROR_VAL ("invalid n, either 0 or exceeds maximum value of generator",
+                     GSL_EINVAL, 0) ;
     }
+
+  scale = range / n;
 
   do
     {

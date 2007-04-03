@@ -105,12 +105,11 @@ gsl_ran_multinomial_lnpdf (const size_t K,
       norm += p[k];
     }
 
-  /* Note: n! == gamma(n+1) */
-  log_pdf = gsl_sf_lngamma (N + 1);
+  log_pdf = gsl_sf_lnfact (N);
 
   for (k = 0; k < K; k++)
     {
-      log_pdf -= gsl_sf_lngamma (n[k] + 1);
+      log_pdf -= gsl_sf_lnfact (n[k]);
     }
 
   for (k = 0; k < K; k++)

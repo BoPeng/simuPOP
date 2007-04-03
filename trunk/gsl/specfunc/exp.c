@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 /* Author:  G. Jungman */
@@ -104,7 +104,6 @@ exprel_n_CF(const int N, const double x, gsl_sf_result * result)
 
 /*-*-*-*-*-*-*-*-*-*-*-* Functions with Error Codes *-*-*-*-*-*-*-*-*-*-*-*/
 
-#ifndef HIDE_INLINE_STATIC
 int gsl_sf_exp_e(const double x, gsl_sf_result * result)
 {
   if(x > GSL_LOG_DBL_MAX) {
@@ -119,7 +118,6 @@ int gsl_sf_exp_e(const double x, gsl_sf_result * result)
     return GSL_SUCCESS;
   }
 }
-#endif
 
 int gsl_sf_exp_e10_e(const double x, gsl_sf_result_e10 * result)
 {

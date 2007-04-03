@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 /* Author:  G. Jungman */
@@ -39,9 +39,7 @@
 
 /*-*-*-*-*-*-*-*-*-*-*-* Private Section *-*-*-*-*-*-*-*-*-*-*-*/
 
-#define FACT_TABLE_MAX  170
-#define FACT_TABLE_SIZE (FACT_TABLE_MAX+1)
-static struct {int n; double f; long i; } fact_table[FACT_TABLE_SIZE] = {
+static struct {int n; double f; long i; } fact_table[GSL_SF_FACT_NMAX + 1] = {
     { 0,  1.0,     1L     },
     { 1,  1.0,     1L     },
     { 2,  2.0,     2L     },
@@ -250,9 +248,7 @@ static struct {int n; double f; long i; } fact_table[FACT_TABLE_SIZE] = {
     */
 };
 
-#define DOUB_FACT_TABLE_MAX  297
-#define DOUB_FACT_TABLE_SIZE (DOUB_FACT_TABLE_MAX+1)
-static struct {int n; double f; long i; } doub_fact_table[DOUB_FACT_TABLE_SIZE] = {
+static struct {int n; double f; long i; } doub_fact_table[GSL_SF_DOUBLEFACT_NMAX + 1] = {
   { 0,  1.000000000000000000000000000,    1L    },
   { 1,  1.000000000000000000000000000,    1L    },
   { 2,  2.000000000000000000000000000,    2L    },
@@ -725,7 +721,6 @@ lngamma_lanczos(double x, gsl_sf_result * result)
   return GSL_SUCCESS;
 }
 
-
 /* x = eps near zero
  * gives double-precision for |eps| < 0.02
  */
@@ -1029,7 +1024,7 @@ gamma_xgthalf(const double x, gsl_sf_result * result)
     result->val = 1.77245385090551602729817;
     result->err = GSL_DBL_EPSILON * result->val;
     return GSL_SUCCESS;
-  } else if (x <= (FACT_TABLE_MAX + 1.0) && x == floor(x)) {
+  } else if (x <= (GSL_SF_FACT_NMAX + 1.0) && x == floor(x)) {
     int n = (int) floor (x);
     result->val = fact_table[n - 1].f;
     result->err = GSL_DBL_EPSILON * result->val;
@@ -1190,12 +1185,16 @@ int gsl_sf_lngamma_e(double x, gsl_sf_result * result)
 int gsl_sf_lngamma_sgn_e(double x, gsl_sf_result * result_lg, double * sgn)
 {
   if(fabs(x - 1.0) < 0.01) {
+    int stat = lngamma_1_pade(x - 1.0, result_lg);
+    result_lg->err *= 1.0/(GSL_DBL_EPSILON + fabs(x - 1.0));
     *sgn = 1.0;
-    return lngamma_1_pade(x-1.0, result_lg);
+    return stat;
   }
   else if(fabs(x - 2.0) < 0.01) {
+   int stat = lngamma_2_pade(x - 2.0, result_lg);
+    result_lg->err *= 1.0/(GSL_DBL_EPSILON + fabs(x - 2.0));
     *sgn = 1.0;
-    return lngamma_2_pade(x-2.0, result_lg);
+    return stat;
   }
   else if(x >= 0.5) {
     *sgn = 1.0;
@@ -1209,6 +1208,9 @@ int gsl_sf_lngamma_sgn_e(double x, gsl_sf_result * result_lg, double * sgn)
     return lngamma_sgn_0(x, result_lg, sgn);
   }
   else if(x > -0.5/(GSL_DBL_EPSILON*M_PI)) {
+   /* Try to extract a fractional
+     * part from x.
+     */
     double z = 1.0 - x;
     double s = sin(M_PI*x);
     double as = fabs(s);
@@ -1478,7 +1480,7 @@ int gsl_sf_fact_e(const unsigned int n, gsl_sf_result * result)
     result->err = 0.0;
     return GSL_SUCCESS;
   }
-  else if(n <= FACT_TABLE_MAX){
+  else if(n <= GSL_SF_FACT_NMAX){
     result->val = fact_table[n].f;
     result->err = 2.0 * GSL_DBL_EPSILON * fabs(result->val);
     return GSL_SUCCESS;
@@ -1498,7 +1500,7 @@ int gsl_sf_doublefact_e(const unsigned int n, gsl_sf_result * result)
     result->err = 0.0;
     return GSL_SUCCESS;
   }
-  else if(n <= DOUB_FACT_TABLE_MAX){
+  else if(n <= GSL_SF_DOUBLEFACT_NMAX){
     result->val = doub_fact_table[n].f;
     result->err = 2.0 * GSL_DBL_EPSILON * fabs(result->val);
     return GSL_SUCCESS;
@@ -1513,7 +1515,7 @@ int gsl_sf_lnfact_e(const unsigned int n, gsl_sf_result * result)
 {
   /* CHECK_POINTER(result) */
 
-  if(n <= FACT_TABLE_MAX){
+  if(n <= GSL_SF_FACT_NMAX){
     result->val = log(fact_table[n].f);
     result->err = 2.0 * GSL_DBL_EPSILON * fabs(result->val);
     return GSL_SUCCESS;
@@ -1529,7 +1531,7 @@ int gsl_sf_lndoublefact_e(const unsigned int n, gsl_sf_result * result)
 {
   /* CHECK_POINTER(result) */
 
-  if(n <= DOUB_FACT_TABLE_MAX){
+  if(n <= GSL_SF_DOUBLEFACT_NMAX){
     result->val = log(doub_fact_table[n].f);
     result->err = 2.0 * GSL_DBL_EPSILON * fabs(result->val);
     return GSL_SUCCESS;
@@ -1589,7 +1591,7 @@ int gsl_sf_choose_e(unsigned int n, unsigned int m, gsl_sf_result * result)
     result->err = 0.0;
     return GSL_SUCCESS;
   }
-  else if (n <= FACT_TABLE_MAX) {
+  else if (n <= GSL_SF_FACT_NMAX) {
     result->val = (fact_table[n].f / fact_table[m].f) / fact_table[n-m].f;
     result->err = 6.0 * GSL_DBL_EPSILON * fabs(result->val);
     return GSL_SUCCESS;

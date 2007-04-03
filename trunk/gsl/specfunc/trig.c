@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 /* Author:  G. Jungman */
@@ -538,22 +538,26 @@ int gsl_sf_angle_restrict_symm_err_e(const double theta, gsl_sf_result * result)
   const double P3 = 4 * 2.6951514290790594840552e-15;
   const double TwoPi = 2*(P1 + P2 + P3);
 
-  const double y = 2*floor(theta/TwoPi);
+  const double y = GSL_SIGN(theta) * 2 * floor(fabs(theta)/TwoPi);
   double r = ((theta - y*P1) - y*P2) - y*P3;
 
-  if(r >  M_PI) r -= TwoPi;
+  if(r >  M_PI) { r = (((r-2*P1)-2*P2)-2*P3); }  /* r-TwoPi */
+  else if (r < -M_PI) r = (((r+2*P1)+2*P2)+2*P3); /* r+TwoPi */
+
   result->val = r;
 
-  if(theta > 0.0625/GSL_DBL_EPSILON) {
-    result->err = fabs(result->val);
+  if(fabs(theta) > 0.0625/GSL_DBL_EPSILON) {
+    result->val = GSL_NAN;
+    result->err = GSL_NAN;
     GSL_ERROR ("error", GSL_ELOSS);
   }
-  else if(theta > 0.0625/GSL_SQRT_DBL_EPSILON) {
-    result->err = GSL_SQRT_DBL_EPSILON * fabs(result->val);
+  else if(fabs(theta) > 0.0625/GSL_SQRT_DBL_EPSILON) {
+    result->err = 2.0 * GSL_DBL_EPSILON * fabs(result->val - theta);
     return GSL_SUCCESS;
   }
   else {
-    result->err = 2.0 * GSL_DBL_EPSILON * fabs(result->val);
+    double delta = fabs(result->val - theta);
+    result->err = 2.0 * GSL_DBL_EPSILON * ((delta < M_PI) ? delta : M_PI);
     return GSL_SUCCESS;
   }
 }
@@ -569,18 +573,27 @@ int gsl_sf_angle_restrict_pos_err_e(const double theta, gsl_sf_result * result)
 
   const double y = 2*floor(theta/TwoPi);
 
-  result->val = ((theta - y*P1) - y*P2) - y*P3;
+  double r = ((theta - y*P1) - y*P2) - y*P3;
 
-  if(theta > 0.0625/GSL_DBL_EPSILON) {
+  if(r > TwoPi) {r = (((r-2*P1)-2*P2)-2*P3); }  /* r-TwoPi */
+  else if (r < 0) { /* may happen due to FP rounding */
+    r = (((r+2*P1)+2*P2)+2*P3); /* r+TwoPi */
+  }
+
+  result->val = r;
+
+  if(fabs(theta) > 0.0625/GSL_DBL_EPSILON) {
+    result->val = GSL_NAN;
     result->err = fabs(result->val);
     GSL_ERROR ("error", GSL_ELOSS);
   }
-  else if(theta > 0.0625/GSL_SQRT_DBL_EPSILON) {
-    result->err = GSL_SQRT_DBL_EPSILON * fabs(result->val);
+  else if(fabs(theta) > 0.0625/GSL_SQRT_DBL_EPSILON) {
+    result->err = GSL_DBL_EPSILON * fabs(result->val - theta);
     return GSL_SUCCESS;
   }
   else {
-    result->err = 2.0 * GSL_DBL_EPSILON * fabs(result->val);
+    double delta = fabs(result->val - theta);
+    result->err = 2.0 * GSL_DBL_EPSILON * ((delta < M_PI) ? delta : M_PI);
     return GSL_SUCCESS;
   }
 }

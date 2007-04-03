@@ -14,11 +14,12 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 #include <config.h>
 #include <math.h>
+#include <gsl/gsl_sys.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_sf_gamma.h>
@@ -29,8 +30,10 @@
 
    This is the algorithm from Knuth */
 
+/* Default binomial generator is now in binomial_tpe.c */
+
 unsigned int
-gsl_ran_binomial (const gsl_rng * r, double p, unsigned int n)
+gsl_ran_binomial_knuth (const gsl_rng * r, double p, unsigned int n)
 {
   unsigned int i, a, b, k = 0;
 
@@ -77,9 +80,20 @@ gsl_ran_binomial_pdf (const unsigned int k, const double p,
     {
       double P;
 
-      double ln_Cnk = gsl_sf_lnchoose (n, k);
-      P = ln_Cnk + k * log (p) + (n - k) * log (1 - p);
-      P = exp (P);
+      if (p == 0) 
+        {
+          P = (k == 0) ? 1 : 0;
+        }
+      else if (p == 1)
+        {
+          P = (k == n) ? 1 : 0;
+        }
+      else
+        {
+          double ln_Cnk = gsl_sf_lnchoose (n, k);
+          P = ln_Cnk + k * log (p) + (n - k) * log1p (-p);
+          P = exp (P);
+        }
 
       return P;
     }

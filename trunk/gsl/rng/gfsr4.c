@@ -130,6 +130,13 @@ gfsr4_set (void *vstate, unsigned long int s)
   /* Based on the orthogonalization used in r250, as suggested initially
    * by Kirkpatrick and Stoll, and pointed out to me by Brian Gough
    */
+
+  /* BJG: note that this orthogonalisation doesn't have any effect
+     here because the the initial 6695 elements do not participate in
+     the calculation.  For practical purposes this orthogonalisation
+     is somewhat irrelevant, because the probability of the original
+     sequence being degenerate should be exponentially small. */
+
   for (i=0; i<32; ++i) {
       int k=7+i*3;
       state->ra[k] &= mask;     /* Turn off bits left of the diagonal */

@@ -14,11 +14,15 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 #include <config.h>
 #include <math.h>
+
+#if HAVE_IEEEFP_H
+#include <ieeefp.h>
+#endif
 
 double gsl_nan (void);
 double gsl_posinf (void);
@@ -117,6 +121,7 @@ gsl_isinf (const double x)
     return isinf(x);
 }
 #else
+int
 gsl_isinf (const double x)
 {
     return (! gsl_finite(x)) && (! gsl_isnan(x));

@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 /* Author:  G. Jungman */
@@ -788,7 +788,7 @@ int gsl_sf_zeta_e(const double s, gsl_sf_result * result)
 
     gsl_sf_result zeta_one_minus_s;
     const int stat_zoms = riemann_zeta1ms_slt0(s, &zeta_one_minus_s);
-    const double sin_term = sin(0.5*M_PI*s)/M_PI;
+    const double sin_term = (fmod(s,2.0) == 0.0) ? 0.0 : sin(0.5*M_PI*fmod(s,4.0))/M_PI;
 
     if(sin_term == 0.0) {
       result->val = 0.0;
@@ -908,7 +908,7 @@ int gsl_sf_zetam1_int_e(const int n, gsl_sf_result * result)
 {
   if(n < 0) {
     if(!GSL_IS_ODD(n)) {
-      result->val = 0.0; /* exactly zero at even negative integers */
+      result->val = -1.0; /* at even negative integers zetam1 == -1 since zeta is exactly zero */
       result->err = 0.0;
       return GSL_SUCCESS;
     }
@@ -918,7 +918,9 @@ int gsl_sf_zetam1_int_e(const int n, gsl_sf_result * result)
       return GSL_SUCCESS;
     }
     else {
-      return gsl_sf_zeta_e((double)n, result);
+      /* could use gsl_sf_zetam1_e here but subtracting 1 makes no difference
+         for such large values, so go straight to the result */
+      return gsl_sf_zeta_e((double)n, result);  
     }
   }
   else if(n == 1){
