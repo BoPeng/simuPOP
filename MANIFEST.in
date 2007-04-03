@@ -112,6 +112,7 @@ include gsl/gsl_sf_psi.h
 include gsl/gsl_message.h
 include gsl/gsl_rng.h
 include gsl/gsl_math.h
+include gsl/gsl_complex_math.h
 include gsl/gsl_sf_result.h
 include gsl/gsl_types.h
 include gsl/gsl-cdf.h
