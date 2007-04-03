@@ -14,7 +14,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 #include <config.h>
@@ -41,6 +41,7 @@ gsl_rng_types_setup (void)
   ADD(gsl_rng_gfsr4);
   ADD(gsl_rng_knuthran);
   ADD(gsl_rng_knuthran2);
+  ADD(gsl_rng_knuthran2002);
   ADD(gsl_rng_lecuyer21);
   ADD(gsl_rng_minstd);
   ADD(gsl_rng_mrg);

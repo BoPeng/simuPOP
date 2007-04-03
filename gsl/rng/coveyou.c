@@ -12,7 +12,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 /*
@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <gsl/gsl_rng.h>
 
-#define MM 0xffffffffUL         /* 2 ^ 32 */
+#define MM 0xffffffffUL         /* 2 ^ 32 - 1 */
 
 static inline unsigned long int ran_get (void *vstate);
 static double ran_get_double (void *vstate);
