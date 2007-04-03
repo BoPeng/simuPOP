@@ -1037,13 +1037,15 @@ namespace simuPOP
 	population& population::newPopByIndID(int keepAncestralPops,
 		const vectori& id, bool removeEmptySubPops)
 	{
-		// and shrink them
-		useAncestralPop(ancestralDepth());
+		// go to the oldest generation
+		if(ancestralDepth() >= 0)
+			useAncestralPop(ancestralDepth());
 		population & ret = newPopByIndIDPerGen(id, removeEmptySubPops);
+		// prepare for push and discard
 		ret.setAncestralDepth(ancestralDepth());
 		if(ancestralDepth() > 0)
 		{
-			for(size_t depth = ancestralDepth()-1; depth >=0; --depth)
+			for(int depth = static_cast<int>(ancestralDepth()-1); depth >=0; --depth)
 			{
 				useAncestralPop(depth);
 				ret.pushAndDiscard(newPopByIndIDPerGen(id, removeEmptySubPops));
@@ -1666,9 +1668,9 @@ namespace simuPOP
 		m_ancestralDepth = depth;
 	}
 
-	void population::useAncestralPop(int idx)
+	void population::useAncestralPop(UINT idx)
 	{
-		if( idx == m_curAncestralPop)
+		if( m_curAncestralPop >= 0 && idx == static_cast<UINT>(m_curAncestralPop))
 			return;
 
 		DBG_DO(DBG_POPULATION, cout << "Use ancestralPop: " << idx <<
@@ -1702,7 +1704,7 @@ namespace simuPOP
 		}
 
 		// now m_curAncestralPop is zero.
-		DBG_ASSERT( idx >0 && static_cast<size_t>(idx-1) < m_ancestralPops.size(),
+		DBG_ASSERT( idx <= m_ancestralPops.size(),
 			ValueError, "Ancestry population " + toStr(idx) + " does not exist.");
 
 		// now idx should be at least 1

@@ -95,6 +95,7 @@ def makeReleaseTag(release):
 
 def build_doc(ver, rev):
     ' build doxygen document '
+    d = os.getcwd()
     os.environ['SIMUPOP_DOC_DIR'] = doc_directory
     os.environ['SIMUPOP_VER'] = ver
     os.environ['SIMUPOP_REV'] = rev
@@ -102,7 +103,7 @@ def build_doc(ver, rev):
     run('python tools/doxy2swig.py %s/xml/index.xml tmp.i' % doc_directory)
     run('perl tools/processDocString.pl tmp.i > src/simuPOP_doc.i')
     os.remove('tmp.i')
-    os.chdir('doc')
+    os.chdir(d)
 
 
 def build_src():
@@ -129,14 +130,14 @@ def build_src():
 
 
 def build_x86_64(ver):
-    source = os.path.realpath('%s/simuPOP-%s-src.tar.gz' % (download_directory, ver))
+    src_path = os.path.realpath(download_directory)
+    source = os.path.join(src_path, 'simuPOP-%s-src.tar.gz' % ver)
     if not os.path.isfile(source):
         print 'Source package %s does not exist. Please run "build.py src" first' % source
         sys.exit(1)
     # 
     # build
     d = os.getcwd()
-    print source
     os.chdir(user_tmp_directory)
     print 'Copying source package to user temp directory...'
     run('/bin/rm -rf simuPOP-%s' % ver)
@@ -147,9 +148,9 @@ def build_x86_64(ver):
     print 'Building ...'
     run('python setup.py  bdist --formats=gztar,rpm')
     # coppy files
-    shutil.copy('dist/simuPOP-%s-1.x86_64.rpm' % ver, '%s/simuPOP-%s-1.rhel4.x86_64.rpm' % (download_directory, ver))
-    shutil.copy('dist/simuPOP-%s.linux-x86_64.tar.gz' % ver, '%s/simuPOP-%s.rhel4.x86_64.tar.gz' % (download_directory, ver))
-    shutil.copy('dist/simuPOP-%s-1.src.rpm' % ver, '%s/simuPOP-%s-1.src.rpm' % (download_directory, ver))
+    shutil.copy('dist/simuPOP-%s-1.x86_64.rpm' % ver, '%s/simuPOP-%s-1.rhel4.x86_64.rpm' % (src_path, ver))
+    shutil.copy('dist/simuPOP-%s.linux-x86_64.tar.gz' % ver, '%s/simuPOP-%s.rhel4.x86_64.tar.gz' % (src_path, ver))
+    shutil.copy('dist/simuPOP-%s-1.src.rpm' % ver, '%s/simuPOP-%s-1.src.rpm' % (src_path, ver))
     os.chdir(d)
 
 

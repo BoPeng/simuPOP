@@ -38,7 +38,6 @@ try:
     import rpy_options
     rpy_options.set_options(VERBOSE = False)
     from rpy import *
-    set_default_mode(NO_CONVERSION)
 except:
     print "Rpy can not be loaded. Please verify your rpy installation. "
     print "If you are using a rpy version that reuires Python Numeric package. "
@@ -323,7 +322,8 @@ class VarPlotter_NoHis(VarPlotter_Base):
             d=[]
             for i in range(0,len(data)):
                 d.extend(data[i])
-            r.image( z= r.t(r.matrix(d, ncol=len(data))), 
+            r.image( z= with_mode(NO_CONVERSION, r.t)(
+                with_mode(NO_CONVERSION, r.matrix)(d, ncol=len(data))), 
                 xlab=self.xlab, axes=self.axes,
                 ylab=self.ylab, main=self.title[rep], col=self.color)
         else: 
@@ -509,8 +509,12 @@ class VarPlotter_His(VarPlotter_Base):
                 self.colorBar(self.level, self.ylim)
                 for rep in range(0, self.numRep):
                     r.image(x=self.data[rep].gen, y=range(0, self.data[rep].recordSize),
-                        xlim=self.xlim, z=r.t(r.matrix(self.data[rep].flatData(),
-                        byrow=True, ncol=len(self.data[rep].gen))), xlab=self.xlab,
+                        xlim=self.xlim, 
+                        z=with_mode(NO_CONVERSION, r.t)(
+                            with_mode(NO_CONVERSION, r.matrix)(
+                                self.data[rep].flatData(), byrow=True, ncol=len(self.data[rep].gen)
+                                )
+                            ), xlab=self.xlab,
                         ylab=self.ylab, main=self.title[rep], col=self.color)
             elif self.separate == False or self.data[rep].recordSize == 1:
                 for rep in range(0, self.numRep):

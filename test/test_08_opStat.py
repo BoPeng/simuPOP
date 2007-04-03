@@ -18,6 +18,7 @@ import unittest, os, sys, exceptions
 
 try:
     import rpy
+    rpy.set_default_mode(rpy.DEFAULT_CONVERSION)
     has_rpy = True
 except:
     has_rpy = False
@@ -486,6 +487,22 @@ class TestStat(unittest.TestCase):
                 assert not pop.vars(sp).has_key('ChiSq')
                 assert not pop.vars(sp).has_key('UC_U')
                 assert not pop.vars(sp).has_key('CramerV')
+
+    def testCombinedStats(self):
+        '''Resting dependency of combined statistics'''
+        pop = population(subPop=[500,100,1000], ploidy=2, loci = [5])
+        InitByFreq(pop, [.2, .3, .5])
+        Stat(pop, alleleFreq=[1,2], haploFreq=[[1,2], [1,3]], LD=[[1,2],[1,4]])
+        assert pop.vars().has_key('alleleFreq')
+        assert pop.vars().has_key('LD')
+        assert pop.vars().has_key('haploFreq')
+        pop.dvars().LD[1][2]
+        pop.dvars().LD[1][4]
+        pop.dvars().alleleFreq[1][0]
+        pop.dvars().alleleFreq[2][0]
+        pop.dvars().haploFreq['1-2']
+        pop.dvars().haploFreq['1-3']
+            
         
 
 if __name__ == '__main__':

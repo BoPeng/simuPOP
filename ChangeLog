@@ -3,7 +3,9 @@ ChangeLog of simuPOP
 BUGS:
   - all known bugs have been cleared.
 
-version 0.7.9 - Not released, available at https://svn.sourceforge.net/svnroot/simupop/trunk
+version 0.7.10 - Not released, available at https://svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.7.9 - (Rev 885) Apr 3, 2007
   - BUG (build): add solaris support. This OS does not have stdint.h.
   - BUG (build): add support for python 2.5 on 64 bit machines (new Py_ssize_t type for python2.5)
   - NEW: add SaveSolarFrqFile in simuUtil.py
@@ -19,9 +21,11 @@ version 0.7.9 - Not released, available at https://svn.sourceforge.net/svnroot/s
 	    control over the calculation of these statistics.
   - CHG: midValues of LD is replaced by LD_param={'midValues':True}
   - NEW: add association statistics (ChiSq, UC_U, CramerV)
+  - BUG: fix passing of relMethod parameter of stat operator
+  - CHG: NO_CONVERSION is no longer the default for rpy
 
 
-version 0.7.8 - (Rev 833( Mar 2, 2007)
+version 0.7.8 - (Rev 833) Mar 2, 2007
   - BUG: fix broken user interactive input
   - BUG: fix help feature of tkinter dialog
   - NEW: bundle boost 1.33.1 with source package
