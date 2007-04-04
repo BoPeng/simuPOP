@@ -865,9 +865,9 @@ namespace simuPOP
 			strDict::const_iterator it;
 			strDict::const_iterator itEnd = param.end();
 			if ((it=param.find("subPop")) != itEnd)
-				m_evalInSubPop = it->second;
+				m_evalInSubPop = static_cast<bool>(it->second);
 			if ((it=param.find("midValues")) != itEnd)
-				m_midValues = it->second;
+				m_midValues = static_cast<bool>(it->second);
 			// if any statistics is specified, other unspecified ones are not calculated
 			if (param.find(LD_String) != itEnd ||
 				param.find(LDPRIME_String) != itEnd ||
@@ -888,21 +888,21 @@ namespace simuPOP
 				m_output_Delta2 = false;
 				// if has key, and is True or 1
 				if ((it=param.find(LD_String)) != itEnd)
-					m_output_ld = it->second;
+					m_output_ld = static_cast<bool>(it->second);
 				if ((it=param.find(LDPRIME_String)) != itEnd)
-					m_output_ld_prime = it->second;
+					m_output_ld_prime = static_cast<bool>(it->second);
 				if ((it=param.find(R2_String)) != itEnd)
-					m_output_r2 = it->second;
+					m_output_r2 = static_cast<bool>(it->second);
 				if ((it=param.find(DELTA2_String)) != itEnd)
-					m_output_delta2 = it->second;
+					m_output_delta2 = static_cast<bool>(it->second);
 				if ((it=param.find(AvgLD_String)) != itEnd)
-					m_output_LD = it->second;
+					m_output_LD = static_cast<bool>(it->second);
 				if ((it=param.find(AvgLDPRIME_String)) != itEnd)
-					m_output_LD_prime = it->second;
+					m_output_LD_prime = static_cast<bool>(it->second);
 				if ((it=param.find(AvgR2_String)) != itEnd)
-					m_output_R2 = it->second;
+					m_output_R2 = static_cast<bool>(it->second);
 				if ((it=param.find(AvgDELTA2_String)) != itEnd)
-					m_output_Delta2 = it->second;
+					m_output_Delta2 = static_cast<bool>(it->second);
 			}
 		}
 		//
@@ -1242,9 +1242,9 @@ namespace simuPOP
 				strDict::const_iterator it;
 				strDict::const_iterator itEnd = param.end();
 				if ((it=param.find("subPop")) != itEnd)
-					m_evalInSubPop = it->second;
+					m_evalInSubPop = static_cast<bool>(it->second);
 				if ((it=param.find("midValues")) != itEnd)
-					m_midValues = it->second;
+					m_midValues = static_cast<bool>(it->second);
 				// if any statistics is specified, other unspecified ones are not calculated
 				if (param.find(ChiSq_String) != itEnd ||
 					param.find(UCU_String) != itEnd ||
@@ -1255,11 +1255,11 @@ namespace simuPOP
 					m_output_CramerV = false;
 					// if has key, and is True or 1
 					if ((it=param.find(ChiSq_String)) != itEnd)
-						m_output_ChiSq = it->second;
+						m_output_ChiSq = static_cast<bool>(it->second);
 					if ((it=param.find(UCU_String)) != itEnd)
-						m_output_UCU = it->second;
+						m_output_UCU = static_cast<bool>(it->second);
 					if ((it=param.find(CramerV_String)) != itEnd)
-						m_output_CramerV = it->second;
+						m_output_CramerV = static_cast<bool>(it->second);
 				}
 			}
 
@@ -1479,7 +1479,7 @@ namespace simuPOP
 		strDict::const_iterator it;
 		strDict::const_iterator itEnd = param.end();
 		if ((it=param.find("midValues")) != itEnd)
-			m_midValues = it->second;
+			m_midValues = static_cast<bool>(it->second);
 		// if any statistics is specified, other unspecified ones are not calculated
 		if (param.find(Fst_String) != itEnd ||
 			param.find(Fis_String) != itEnd ||
@@ -1496,17 +1496,17 @@ namespace simuPOP
 			m_output_AvgFit = false;
 			// if has key, and is True or 1
 			if ((it=param.find(Fst_String)) != itEnd)
-				m_output_Fst = it->second;
+				m_output_Fst = static_cast<bool>(it->second);
 			if ((it=param.find(Fis_String)) != itEnd)
-				m_output_Fis = it->second;
+				m_output_Fis = static_cast<bool>(it->second);
 			if ((it=param.find(Fit_String)) != itEnd)
-				m_output_Fit = it->second;
+				m_output_Fit = static_cast<bool>(it->second);
 			if ((it=param.find(AvgFst_String)) != itEnd)
-				m_output_AvgFst = it->second;
+				m_output_AvgFst = static_cast<bool>(it->second);
 			if ((it=param.find(AvgFis_String)) != itEnd)
-				m_output_AvgFis = it->second;
+				m_output_AvgFis = static_cast<bool>(it->second);
 			if ((it=param.find(AvgFit_String)) != itEnd)
-				m_output_AvgFit = it->second;
+				m_output_AvgFit = static_cast<bool>(it->second);
 		}
 
 		for(size_t i=0; i < m_atLoci.size(); ++i)
@@ -1651,7 +1651,7 @@ namespace simuPOP
 		strDict::const_iterator it;
 		strDict::const_iterator itEnd = param.end();
 		if ((it=param.find("midValues")) != itEnd)
-			m_midValues = it->second;
+			m_midValues = static_cast<bool>(it->second);
 
 		DBG_FAILIF(  method.empty(), ValueError, "Please specify relatedness method");
 
