@@ -146,7 +146,7 @@ class Doxy2SWIG:
             self.pieces.extend(value)
         else:
             self.pieces.append(value)
-
+            
 
     def get_specific_nodes(self, node, names):
         """Given a node and a sequence of strings in `names`, return a
@@ -413,8 +413,18 @@ class Doxy2SWIG:
         for n in node.childNodes:
             txt = txt + n.data
         
-        # print    'Ori: ', txt, '\n'
+        ori_txt = txt
+        #print    'Ori: ', txt, '\n'
         # replace the trailing const
+        # @ is used instead of , to avoid separation of replaced text, it will be replaced back to ,
+        txt = txt.replace('vectorstr(TAG_InheritFields, TAG_InheritFields+2)',
+            '["paternal_tag"@ "maternal_tag"]')
+        txt = txt.replace('vectorstr(TAG_ParentsFields, TAG_ParentsFields+2)',
+            '["father_idx"@ "mother_idx"]')
+        txt = txt.replace('vectorstr(ASC_AS_Fields, ASC_AS_Fields+2)',
+            '["father_idx"@ "mother_idx"]')
+        txt = txt.replace('vectorstr(1, "qtrait")', '["qtrait"]')
+        txt = txt.replace('vectorstr(1, "fitness")', '["fitness"]')
         txt = txt.replace(')    const',')')
         txt = txt.replace(') const',')')
         txt = txt.replace(')const',')')
@@ -423,13 +433,16 @@ class Doxy2SWIG:
         args = txt.split(',')
         out=[]
         for s in args:
+            s = s.replace('@', r',')
             piece = s.split('=')
             var = piece[0].split(' ')[-1].split(')')[0].split('(')[-1]
+            var = var.replace('&', '')
             if( len( piece ) == 2 ): 
                 defVal = piece[1].split('(')[0].split(')')[0].split(')')[0]
                 defVal = defVal.replace('vectorlu','[]')
                 defVal = defVal.replace('vectoru','[]')
                 defVal = defVal.replace('vectorl','[]')
+                defVal = defVal.replace('vectori','[]')
                 defVal = defVal.replace('vectorf','[]')
                 defVal = defVal.replace('vectora','[]')
                 defVal = defVal.replace('vectorop','[]')
@@ -445,9 +458,9 @@ class Doxy2SWIG:
                 out.append( var )
 
         self.indent = 4
-        # print    '(' + (', '.join(out)) + ')\n'
+        #print    '(' + (', '.join(out)) + ')\n'
         self.add_text( self.wrap_text( '(' + (', '.join(out)) + ')\n', self.curCol - self.indent ) + '\n')
-        self.add_text( 'OriArgString: ' + txt + '\n')
+        self.add_text( 'OriArgString: ' + ori_txt + '\n')
         
         # remove type and default value.
         # self.add_text(txt)
