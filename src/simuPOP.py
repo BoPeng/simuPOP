@@ -69,8 +69,9 @@ else:
 
 if simuOptions['Debug'] != []:
     for g in simuOptions['Debug']:
-        print "Turn on debug ", g
-        TurnOnDebugWithName(g)
+        if g not in ['', None]:
+            print "Turn on debug '%s'" % g
+            TurnOnDebugWithName(g)
 
 # seed rng() if necessay
 if not os.path.isfile('/etc/urandom') and not os.path.isfile('/etc/random'):

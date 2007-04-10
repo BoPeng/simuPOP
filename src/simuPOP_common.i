@@ -1005,7 +1005,6 @@ del caseControlSample.__init__
 caseControlSample.__init__ = new_caseControlSample
 
 
-
 def new_affectedSibpairSample(self,size=[], *args, **kwargs):
     if type(size) in [types.IntType, types.LongType]:
         sz=[size]
@@ -1017,6 +1016,32 @@ def new_affectedSibpairSample(self,size=[], *args, **kwargs):
 new_affectedSibpairSample.__doc__ = affectedSibpairSample.__init__.__doc__
 del affectedSibpairSample.__init__
 affectedSibpairSample.__init__ = new_affectedSibpairSample
+
+
+def new_largePedigreeSample(self, size=[], *args, **kwargs):
+    if type(size) in [types.IntType, types.LongType]:
+        sz= [size]
+    else:
+        sz = size
+    cppModule.largePedigreeSample_swiginit(self,
+        cppModule.new_largePedigreeSample(size=sz, *args, **kwargs))
+ 
+new_largePedigreeSample.__doc__ = largePedigreeSample.__init__.__doc__
+del largePedigreeSample.__init__
+largePedigreeSample.__init__ = new_largePedigreeSample
+
+
+def new_nuclearFamilySample(self, size=[], *args, **kwargs):
+    if type(size) in [types.IntType, types.LongType]:
+        sz= [size]
+    else:
+        sz = size
+    cppModule.nuclearFamilySample_swiginit(self,
+        cppModule.new_nuclearFamilySample(size=sz, *args, **kwargs))
+ 
+new_nuclearFamilySample.__doc__ = nuclearFamilySample.__init__.__doc__
+del nuclearFamilySample.__init__
+nuclearFamilySample.__init__ = new_nuclearFamilySample
 
 
 def new_mapSelector(self, locus=-1, loci=[], *args, **kwargs):
