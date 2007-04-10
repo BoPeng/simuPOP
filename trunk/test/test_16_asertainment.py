@@ -19,18 +19,11 @@ import unittest, os, sys, exceptions
 class TestAscertainment(unittest.TestCase):
 
     def setUp(self):
-        if alleleType() == 'binary':
-            simu = simulator(
-                population(subPop=[1000,2000], ploidy=2, loci=[5,10],
-                    ancestralDepth=2, maxAllele=1, 
-                    infoFields=['fitness', 'father_idx', 'mother_idx']),
-                randomMating(numOffspring=2))
-        else:
-            simu = simulator(
-                population(subPop=[1000,2000], ploidy=2, loci=[5,10],
-                    ancestralDepth=2, maxAllele=9, 
-                    infoFields=['fitness', 'father_idx', 'mother_idx']),
-                randomMating(numOffspring=2))
+        simu = simulator(
+            population(subPop=[1000,2000], ploidy=2, loci=[5,10],
+                ancestralDepth=2, 
+                infoFields=['fitness', 'father_idx', 'mother_idx']),
+            randomMating(numOffspring=2))
         simu.evolve(
             [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
@@ -46,6 +39,26 @@ class TestAscertainment(unittest.TestCase):
             end=4
         )
         self.pop = simu.getPopulation(0)
+        # more complicated one
+        simu1 = simulator(
+            population(subPop=[5000,20000], ploidy=2, loci=[5,10],
+                ancestralDepth=2, infoFields=['fitness', 'father_idx', 'mother_idx']),
+            randomMating(numOffspring=2, maxNumOffspring=5, mode=MATE_UniformDistribution))
+        simu1.evolve(
+            [
+                stat( alleleFreq=[0,1], genoFreq=[0,1]),
+                migrator(rate=[[0.1,0.1],[0.1,0.1]]),
+                mapPenetrance(locus=0,
+                    penetrance={'0-0':0,'0-1':.7,'1-1':1}),
+                parentsTagger(),
+            ],
+            preOps=[    
+                 initByFreq(alleleFreq=[.2, .8], atLoci=[0]),
+                 initByFreq(alleleFreq=[.2]*5, atLoci=range(1, simu.totNumLoci()))     
+            ],
+            end=10
+        )
+        self.largepop = simu1.getPopulation(0)
     
     def testRandomSample(self):
         'Testing random sampling (imcomplete)'
@@ -115,73 +128,39 @@ class TestAscertainment(unittest.TestCase):
 
     def testLargePedigreeSample(self):
         'Testing large pedigree sampling (FIXME)'
-        (s,) = LargePedigreeSample(self.pop, 50, minTotalSize=10, maxOffspring=5, 
+        (s,) = LargePedigreeSample(self.largepop, minTotalSize=20, maxOffspring=5, 
             minPedSize=3, minAffected=0)
-        print s.subPopSizes()
-        return
-        assert s.subPopSize(0) <= 4
-        assert s.subPopSize(1) <= 6
-        for ind in s.individuals(0):
-            self.assertEqual(ind.affected(), True)
+        assert s.ancestralDepth() == 2
+        for ind in s.individuals():
             #old index?
-            inpop = self.pop.individual(int(ind.info('oldindex')))
+            inpop = self.largepop.individual(int(ind.info('oldindex')))
             self.assertEqual(ind, inpop)
-        for ind in s.individuals(1):
-            self.assertEqual(ind.affected(), True)
+        (s,) = LargePedigreeSample(self.largepop, 50, minTotalSize=5, maxOffspring=5, 
+            minPedSize=3, minAffected=0)
+        for ind in s.individuals():
             #old index?
-            inpop = self.pop.individual(int(ind.info('oldindex')))
+            inpop = self.largepop.individual(int(ind.info('oldindex')))
             self.assertEqual(ind, inpop)
         #
-        (s,) = AffectedSibpairSample(self.pop, 2)
-        assert s.subPopSize(0) <= 4
-        for ind in s.individuals():
-            self.assertEqual(ind.affected(), True)
-            #old index?
-            inpop = self.pop.individual(int(ind.info('oldindex')))
-            self.assertEqual(ind, inpop)
-        pass
 
 
     def testNuclearFamilySample(self):
-        'Testing nuclear family sampling'
-        simu = simulator(
-            population(subPop=[5000,20000], ploidy=2, loci=[5,10],
-                ancestralDepth=2, infoFields=['fitness', 'father_idx', 'mother_idx']),
-            randomMating(numOffspring=5))
-        simu.evolve(
-            [
-                stat( alleleFreq=[0,1], genoFreq=[0,1]),
-                migrator(rate=[[0.1,0.1],[0.1,0.1]]),
-                mapPenetrance(locus=0,
-                    penetrance={'0-0':0,'0-1':.7,'1-1':1}),
-                parentsTagger(),
-            ],
-            preOps=[    
-                 initByFreq(alleleFreq=[.2, .8], atLoci=[0]),
-                 initByFreq(alleleFreq=[.2]*5, atLoci=range(1, simu.totNumLoci()))     
-            ],
-            end=10
-        )
-        pop = simu.getPopulation(0)
-        (s,) = NuclearFamilySample(pop, 50, minTotalSize=50, maxOffspring=5,
+        'Testing nuclear family sampling (imcomplete)'
+        (s,) = NuclearFamilySample(self.largepop, 50, minTotalSize=50, maxOffspring=5,
             minPedSize=5, minAffected=0)
         print s.subPopSizes()
         assert s.subPopSize(0) <= 5
         assert s.subPopSize(1) <= 5
-        for ind in s.individuals(0):
+        for ind in s.individuals():
             #old index?
-            inpop = pop.individual(int(ind.info('oldindex')))
-            self.assertEqual(ind, inpop)
-        for ind in s.individuals(1):
-            #old index?
-            inpop = pop.individual(int(ind.info('oldindex')))
+            inpop = self.largepop.individual(int(ind.info('oldindex')))
             self.assertEqual(ind, inpop)
         #
-        (s,) = NuclearFamilySample(pop, size=[2, 3], maxOffspring=5)
+        (s,) = NuclearFamilySample(self.largepop, size=[2, 3], maxOffspring=5)
         assert s.subPopSize(0) <= 5
         for ind in s.individuals():
             #old index?
-            inpop = pop.individual(int(ind.info('oldindex')))
+            inpop = self.largepop.individual(int(ind.info('oldindex')))
             self.assertEqual(ind, inpop)
 
         

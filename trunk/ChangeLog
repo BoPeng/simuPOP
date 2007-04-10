@@ -8,6 +8,7 @@ version 0.7.10 - Not released, available at https://svn.sourceforge.net/svnroot/
   - BUG: fix a newPopByIndID bug where keepAncestralPops is not respected.
   - NEW: nuclearFamilySampler operator and function
   - NEW: add MATE_UniformDistribution number of offspring type
+  - BUG: fix a useAncestralGen bug in largePedigreeSample (Does not affect output).
 
 version 0.7.9 - (Rev 885) Apr 3, 2007
   - BUG (build): add solaris support. This OS does not have stdint.h.

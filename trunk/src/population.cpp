@@ -1055,8 +1055,6 @@ namespace simuPOP
 				ret.pushAndDiscard(newPopByIndIDPerGen(id, removeEmptySubPops));
 			}
 		}
-		// just to make sure
-		useAncestralPop(0);
 		return ret;
 	}
 

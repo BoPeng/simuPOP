@@ -173,6 +173,7 @@ namespace simuPOP
 					it->setInfo(tmp-oldindex.begin(), motherIdx);
 			}
 		}
+		pop.useAncestralPop(0);
 	}
 
 	void sample::findOffspringAndSpouse(population& pop, unsigned ancestralDepth,
@@ -831,9 +832,10 @@ namespace simuPOP
 			if(m_size.empty() || m_minTotalSize > 0)
 			{
 				size_t totalSize = 0;
-				for(pedArray::iterator it = allPeds.begin(); it != allPeds.end(); ++it, ++N)
+				for(pedArray::iterator it = allPeds.begin(); it != allPeds.end(); ++it)
 				{
 					totalSize += boost::get<1>(*it);
+					N++;
 					if(totalSize > m_minTotalSize)
 						break;
 				}
@@ -938,6 +940,9 @@ namespace simuPOP
 			DBG_FAILIF(ps != boost::get<1>(*ped), SystemError,
 				"Pedigree sizes do not match, estimated " + toStr(boost::get<1>(*ped)) + " real: " + toStr(ps));
 		}
+		// just to make sure
+		pop.useAncestralPop(0);
+		// saving samples in a new population, 
 		population & newPop = pop.newPopByIndID(2);
 		//
 		resetParentalIndex(newPop, "father_idx", "mother_idx", "oldindex");
@@ -1054,9 +1059,10 @@ namespace simuPOP
 			if(m_size.empty() || m_minTotalSize > 0)
 			{
 				size_t totalSize = 0;
-				for(pedArray::iterator it = allPeds.begin(); it != allPeds.end(); ++it, ++N)
+				for(pedArray::iterator it = allPeds.begin(); it != allPeds.end(); ++it)
 				{
 					totalSize += boost::get<1>(*it);
+					N++;
 					if(totalSize > m_minTotalSize)
 						break;
 				}
