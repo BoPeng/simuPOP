@@ -489,6 +489,87 @@ namespace simuPOP
 			vector<pedArray> m_validPedigrees;
 	};
 
+	class nuclearFamilySample: public sample
+	{
+
+		public:
+			/// draw nuclear family
+			/**
+			
+			\param name variable name of the sampled population (will be put in pop local namespace)
+			\param nameExpr expression version of name. If both name and nameExpr is empty, do not store pop.
+			\param times how many times to run the sample process? This is usually one, but we
+			may want to take several random samples.
+			\param saveAs filename to save the population.
+			\param saveAsExpr expression for save filename
+			\param format to save sample(s)
+			\param stage and other parameters please see help(baseOperator.__init__)
+			*/
+			nuclearFamilySample(vectoru size = vectoru(),
+				unsigned minTotalSize=0,
+				unsigned maxOffspring=5,
+				unsigned minPedSize=5,
+				unsigned minAffected=0,
+				bool countOnly=false,
+				const string& name="sample", const string& nameExpr="", UINT times=1,
+				const string& saveAs="", const string& saveAsExpr="",
+				const string& format="auto",
+				int stage=PostMating, int begin=0, int end=-1,
+				int step=1, vectorl at=vectorl(),
+				int rep=REP_ALL, int grp=GRP_ALL,
+				const vectorstr& infoFields=vectorstr(ASC_AS_Fields, ASC_AS_Fields+2))
+				: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
+				stage, begin, end, step, at, rep, grp, infoFields),
+				m_size(size), m_minTotalSize(minTotalSize), m_maxOffspring(maxOffspring),
+				m_minPedSize(minPedSize), m_minAffected(minAffected),
+				m_countOnly(countOnly), m_validPedigrees()
+			{
+			}
+
+			/// destructor
+			virtual ~nuclearFamilySample(){};
+
+			/// this function is very important
+			virtual Operator* clone() const
+			{
+				return new nuclearFamilySample(*this);
+			}
+
+			virtual bool prepareSample(population& pop);
+
+			virtual population& drawsample(population& pop);
+
+			virtual string __repr__()
+			{
+				return "<simuPOP::affected sibpair sample>" ;
+			}
+
+		private:
+			typedef vector<boost::tuple<double, int> > pedArray;
+
+			/// sample size
+			vectoru m_size;
+
+			/// control total size
+			unsigned m_minTotalSize;
+
+			///
+			unsigned m_maxOffspring;
+
+			///
+			unsigned m_minPedSize;
+
+			///
+			unsigned m_minAffected;
+
+			// do not draw sample
+			bool m_countOnly;
+
+			/// sibs for all subpopulations
+			/// we need to also save size information.
+			vector<pedArray> m_validPedigrees;
+	};
+
 	/// thrink population accroding to some outside value
 
 	class pySample: public sample

@@ -943,5 +943,191 @@ namespace simuPOP
 		resetParentalIndex(newPop, "father_idx", "mother_idx", "oldindex");
 		return newPop;
 	}
+	
+	bool nuclearFamilySample::prepareSample(population& pop)
+	{
+		DBG_FAILIF(pop.ancestralDepth() < 1, ValueError,
+			"At least one ancestral populations are needed to draw large pedigrees");
+		//
+		m_validPedigrees.clear();
+		UINT nPed = 0;
+		//
+		vectorstr fields(3 + m_maxOffspring);
+		vectori offspringIdx(m_maxOffspring);
+		for(size_t i = 0; i < m_maxOffspring; ++i)
+			fields[i] = "offspring" + toStr(i);
+		fields[m_maxOffspring] = "pedindex";
+		fields[m_maxOffspring+1] = "spouse";
+		fields[m_maxOffspring+2] = "oldindex";
+		// add info fields
+		pop.addInfoFields(fields, -1);
+		UINT pedindexIdx = pop.infoIdx("pedindex");
+		UINT spouseIdx = pop.infoIdx("spouse");
+		for(size_t i = 0; i < m_maxOffspring; ++i)
+			offspringIdx[i] = pop.infoIdx(fields[i]);
+		// save old index
+		saveIndIndex(pop, "oldindex");
+		//
+		// 1 means find till parents
+		findOffspringAndSpouse(pop, 1, m_maxOffspring, "father_idx", "mother_idx",
+			"spouse", "offspring");
+		// offspring index
+		m_validPedigrees.resize(pop.numSubPop());
+		size_t pedIdx = 0;
+		DBG_DO(DBG_SELECTOR, cout << "Finding all two-generation pedigrees" << endl);
+		for(UINT sp = 0; sp < pop.numSubPop(); ++sp)
+		{
+			pop.useAncestralPop(1);
+			vectorf off;
+			for(population::IndIterator it = pop.indBegin(sp); it != pop.indEnd(sp); ++it)
+			{
+				// individual already belongs to another family
+				if(it->info(pedindexIdx) != -1.)
+					continue;
+				double spouse = it->info(spouseIdx);
+				// has spouse, spouse does not belong to anther ped
+				if(spouse != -1. && pop.ind(static_cast<UINT>(spouse)).info(pedindexIdx) == -1.)
+				{
+					it->setInfo(pedIdx, pedindexIdx);
+					pop.ind(static_cast<UINT>(spouse)).setInfo(pedIdx, pedindexIdx);
+					// many of the offspring may be -1.
+					for(UINT oi=0; oi < m_maxOffspring; ++oi)
+						off.push_back(static_cast<ULONG>(it->info(offspringIdx[oi])));
+					pedIdx++;
+				}
+			}
+			// go to offspring generation and verify
+			pop.useAncestralPop(0);
+			m_validPedigrees[sp].clear();
+			for(UINT i=0; i< off.size()/m_maxOffspring; ++i)
+			{
+				UINT pedSize = 2;
+				UINT pedAffected = 0;
+				for(UINT oi=0; oi < m_maxOffspring; ++oi)
+				{
+					// valid offspring
+					if (off[i*m_maxOffspring + oi] != -1)
+					{
+						pedSize ++;
+						if (pop.ind(static_cast<UINT>(off[i*m_maxOffspring + oi])).affected())
+							pedAffected ++;
+					}
+				}
+				if (pedSize > m_minPedSize && pedAffected > m_minAffected)
+					m_validPedigrees[sp].push_back(boost::tie(i, pedSize));
+			}
+			nPed += m_validPedigrees[sp].size();
+		}
+		pop.useAncestralPop(0);
+		pop.setIntVar("numPedigrees", nPed);
+
+		// do not do sampling if countOnly
+		if(m_countOnly)
+			return false;
+		else
+			return true;
+	}
+
+	population& nuclearFamilySample::drawsample(population& pop)
+	{
+		DBG_DO(DBG_SELECTOR, cout << "Generating nuclear family" << endl);
+		resetSubPopID(pop);
+		pedArray acceptedPeds;
+
+		if(m_size.size() <= 1)					  // draw from the whole population
+		{
+			/// collect all families
+			pedArray allPeds;
+
+			for(UINT sp =0; sp < pop.numSubPop(); ++sp)
+				allPeds.insert(allPeds.end(), m_validPedigrees[sp].begin(), m_validPedigrees[sp].end());
+
+			if(!m_size.empty() && m_size[0] > allPeds.size())
+				cout << "Warning: Not enough sibpairs to be sampled. Requested "
+					<< m_size[0] << ", existing " << allPeds.size() << endl;
+
+			random_shuffle(allPeds.begin(), allPeds.end());
+			UINT N = 0;
+			// consider total size.
+			if(m_size.empty() || m_minTotalSize > 0)
+			{
+				size_t totalSize = 0;
+				for(pedArray::iterator it = allPeds.begin(); it != allPeds.end(); ++it, ++N)
+				{
+					totalSize += boost::get<1>(*it);
+					if(totalSize > m_minTotalSize)
+						break;
+				}
+				if(totalSize < m_minTotalSize)
+					cout << "Warning: can not reach min total size" << endl;
+			}
+			else
+				N = m_size[0];
+			acceptedPeds.insert(acceptedPeds.end(), allPeds.begin(), allPeds.begin() + N);
+		}
+		else									  // for each subpop
+		{
+			for(UINT sp = 0; sp < pop.numSubPop(); ++sp)
+			{
+				pedArray & peds = m_validPedigrees[sp];
+
+				UINT N = peds.size();
+				if(N > m_size[sp])
+				{
+					N = m_size[sp];
+					random_shuffle(peds.begin(), peds.end());
+				}
+				acceptedPeds.insert(acceptedPeds.end(), peds.begin(), peds.begin() + N);
+			}									  // sp
+		}
+
+		DBG_DO(DBG_SELECTOR, cout << "Sampling " << acceptedPeds.size() << " pedigrees " << endl);
+
+		//
+		UINT spouseIdx = pop.infoIdx("spouse");
+		UINT pedindexIdx = pop.infoIdx("pedindex");
+		vectori offspringIdx(m_maxOffspring);
+		for(size_t i=0; i<m_maxOffspring; ++i)
+			offspringIdx[i] = pop.infoIdx("offspring" + toStr(i));
+		pop.useAncestralPop(1);
+		vectorf off;
+		int pedIdx = 0;
+		
+		for(size_t i=0; i< pop.popSize(); ++i)
+		{
+			individual& ind = pop.ind(i);
+			double infoPedIdx = ind.info(pedindexIdx);
+			if (infoPedIdx == -1.)
+				continue;
+			double spouse = ind.info(spouseIdx);
+			// only look forward
+			if (spouse < i)
+				continue;
+			// if this family is selected
+			for(pedArray::iterator it = acceptedPeds.begin(); it != acceptedPeds.end(); ++it)
+			{
+				if ( boost::get<0>(*it) == static_cast<ULONG>(infoPedIdx))
+				{
+					ind.setSubPopID(pedIdx);
+					pop.ind(static_cast<UINT>(spouse)).setSubPopID(pedIdx);
+					for(UINT oi=0; oi < m_maxOffspring; ++oi)
+						off.push_back(static_cast<ULONG>(ind.info(offspringIdx[oi])));
+					pedIdx ++;
+					break;
+				}
+				DBG_FAILIF(true, SystemError, "Pedigree not found");
+			}
+		}
+		pop.useAncestralPop(0);
+		for(size_t i=0; i<off.size()/m_maxOffspring; ++i)
+		{
+			if(off[i*m_maxOffspring+i] != -1.)
+				pop.ind(static_cast<ULONG>(off[i*m_maxOffspring+i])).setSubPopID(i);
+		}
+		population & newPop = pop.newPopByIndID(1);
+		//
+		resetParentalIndex(newPop, "father_idx", "mother_idx", "oldindex");
+		return newPop;
+	}
 
 }
