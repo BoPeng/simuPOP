@@ -571,6 +571,11 @@ def LargePedigreeSample(pop, *args, **kwargs):
     s.apply(pop)
     return s.samples(pop)
 
+def NuclearFamilySample(pop, *args, **kwargs):
+    s = nuclearFamilySample(*args, **kwargs)
+    s.apply(pop)
+    return s.samples(pop)
+
 def SavePopulation(pop, *args, **kwargs):
     pop.savePopulation(*args, **kwargs)
 

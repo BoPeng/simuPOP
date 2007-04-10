@@ -111,6 +111,15 @@ class TestAscertainment(unittest.TestCase):
             #old index?
             inpop = self.pop.individual(int(ind.info('oldindex')))
             self.assertEqual(ind, inpop)
+
+
+    def testLargePedigreeSample(self):
+        'Testing large pedigree sampling (FIXME)'
+        pass
+
+    def testNuclearFamilySample(self):
+        'Testing nuclear family sampling'
+
         
 
 if __name__ == '__main__':
