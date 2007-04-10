@@ -1017,6 +1017,8 @@ namespace simuPOP
 					m_validPedigrees[sp].push_back(boost::tie(i, pedSize));
 			}
 			nPed += m_validPedigrees[sp].size();
+			DBG_DO(DBG_SELECTOR, cout << "Number of valid pedigrees in subpop " + toStr(sp) + " is "
+				+ toStr(m_validPedigrees[sp].size()) << endl);
 		}
 		pop.useAncestralPop(0);
 		pop.setIntVar("numPedigrees", nPed);
@@ -1043,7 +1045,7 @@ namespace simuPOP
 				allPeds.insert(allPeds.end(), m_validPedigrees[sp].begin(), m_validPedigrees[sp].end());
 
 			if(!m_size.empty() && m_size[0] > allPeds.size())
-				cout << "Warning: Not enough sibpairs to be sampled. Requested "
+				cout << "Warning: Not enough nuclear families to be sampled. Requested "
 					<< m_size[0] << ", existing " << allPeds.size() << endl;
 
 			random_shuffle(allPeds.begin(), allPeds.end());
@@ -1101,7 +1103,7 @@ namespace simuPOP
 				continue;
 			double spouse = ind.info(spouseIdx);
 			// only look forward
-			if (spouse < i)
+			if (static_cast<size_t>(spouse) < i)
 				continue;
 			// if this family is selected
 			for(pedArray::iterator it = acceptedPeds.begin(); it != acceptedPeds.end(); ++it)
@@ -1111,18 +1113,17 @@ namespace simuPOP
 					ind.setSubPopID(pedIdx);
 					pop.ind(static_cast<UINT>(spouse)).setSubPopID(pedIdx);
 					for(UINT oi=0; oi < m_maxOffspring; ++oi)
-						off.push_back(static_cast<ULONG>(ind.info(offspringIdx[oi])));
+						off.push_back(ind.info(offspringIdx[oi]));
 					pedIdx ++;
 					break;
 				}
-				DBG_FAILIF(true, SystemError, "Pedigree not found");
 			}
 		}
 		pop.useAncestralPop(0);
-		for(size_t i=0; i<off.size()/m_maxOffspring; ++i)
+		for(size_t i=0; i<off.size(); ++i)
 		{
-			if(off[i*m_maxOffspring+i] != -1.)
-				pop.ind(static_cast<ULONG>(off[i*m_maxOffspring+i])).setSubPopID(i);
+			if(off[i] != -1.)
+				pop.ind(static_cast<ULONG>(off[i])).setSubPopID(i/m_maxOffspring);
 		}
 		population & newPop = pop.newPopByIndID(1);
 		//
