@@ -222,7 +222,10 @@ namespace std
 %rename(individual) ind(ULONG, UINT);
 %rename(population) pop(UINT) const;
 
-%newobject simuPOP::population::newPopByIndInfo;
+%newobject LoadPopulation;
+%newobject LoadSimulator;
+
+%newobject simuPOP::population::newPopByIndID;
 %newobject simuPOP::population::newPopWithPartialLoci;
 %newobject simuPOP::population::clone;
 %newobject simuPOP::simulator::getPopulation;
@@ -306,11 +309,6 @@ namespace std
 //
 //population.inds = inds
 //%}
-
-////////////////////////// SIMUPOP C++ UTILITY FUNCTIONS //////////////////////////
-
-%newobject LoadPopulation;
-%newobject LoadSimulator;
 
 
 ////////////////////////// SIMUPOP PYTHON UTILITY FUNCTIONS //////////////////////////

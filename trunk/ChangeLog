@@ -4,6 +4,7 @@ BUGS:
   - all known bugs have been cleared.
 
 version 0.7.10 - Not released, available at https://svn.sourceforge.net/svnroot/simupop/trunk
+  - BUG: fix a memory leak bug with LoadPopulation
 
 version 0.7.9 - (Rev 885) Apr 3, 2007
   - BUG (build): add solaris support. This OS does not have stdint.h.
