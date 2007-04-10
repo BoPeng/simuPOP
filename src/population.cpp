@@ -2126,8 +2126,7 @@ namespace simuPOP
 		return;
 	}
 
-	population& LoadPopulation(const string& file,
-		const string& format)
+	population& LoadPopulation(const string& file, const string& format)
 	{
 #ifndef _NO_SERIALIZATION_
 		population *p = new population(1);
