@@ -115,7 +115,7 @@ class TestAscertainment(unittest.TestCase):
 
     def testLargePedigreeSample(self):
         'Testing large pedigree sampling (FIXME)'
-        (s,) = LargePedigreeSample(self.pop, 5, minTotalSize=10, maxOffspring=5, 
+        (s,) = LargePedigreeSample(self.pop, 50, minTotalSize=10, maxOffspring=5, 
             minPedSize=3, minAffected=0)
         print s.subPopSizes()
         return
@@ -144,27 +144,44 @@ class TestAscertainment(unittest.TestCase):
 
     def testNuclearFamilySample(self):
         'Testing nuclear family sampling'
-        (s,) = NuclearFamilySample(self.pop, 5, )
-        return
-        assert s.subPopSize(0) <= 4
-        assert s.subPopSize(1) <= 6
+        simu = simulator(
+            population(subPop=[5000,20000], ploidy=2, loci=[5,10],
+                ancestralDepth=2, infoFields=['fitness', 'father_idx', 'mother_idx']),
+            randomMating(numOffspring=5))
+        simu.evolve(
+            [
+                stat( alleleFreq=[0,1], genoFreq=[0,1]),
+                migrator(rate=[[0.1,0.1],[0.1,0.1]]),
+                mapPenetrance(locus=0,
+                    penetrance={'0-0':0,'0-1':.7,'1-1':1}),
+                parentsTagger(),
+            ],
+            preOps=[    
+                 initByFreq(alleleFreq=[.2, .8], atLoci=[0]),
+                 initByFreq(alleleFreq=[.2]*5, atLoci=range(1, simu.totNumLoci()))     
+            ],
+            end=10
+        )
+        pop = simu.getPopulation(0)
+        (s,) = NuclearFamilySample(pop, 50, minTotalSize=50, maxOffspring=5,
+            minPedSize=5, minAffected=0)
+        print s.subPopSizes()
+        assert s.subPopSize(0) <= 5
+        assert s.subPopSize(1) <= 5
         for ind in s.individuals(0):
-            self.assertEqual(ind.affected(), True)
             #old index?
-            inpop = self.pop.individual(int(ind.info('oldindex')))
+            inpop = pop.individual(int(ind.info('oldindex')))
             self.assertEqual(ind, inpop)
         for ind in s.individuals(1):
-            self.assertEqual(ind.affected(), True)
             #old index?
-            inpop = self.pop.individual(int(ind.info('oldindex')))
+            inpop = pop.individual(int(ind.info('oldindex')))
             self.assertEqual(ind, inpop)
         #
-        (s,) = AffectedSibpairSample(self.pop, 2)
-        assert s.subPopSize(0) <= 4
+        (s,) = NuclearFamilySample(pop, size=[2, 3], maxOffspring=5)
+        assert s.subPopSize(0) <= 5
         for ind in s.individuals():
-            self.assertEqual(ind.affected(), True)
             #old index?
-            inpop = self.pop.individual(int(ind.info('oldindex')))
+            inpop = pop.individual(int(ind.info('oldindex')))
             self.assertEqual(ind, inpop)
 
         
