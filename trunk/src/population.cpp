@@ -1037,20 +1037,25 @@ namespace simuPOP
 	population& population::newPopByIndID(int keepAncestralPops,
 		const vectori& id, bool removeEmptySubPops)
 	{
+		UINT topGen;
+		if(keepAncestralPops < 0 || static_cast<UINT>(keepAncestralPops) >= ancestralDepth())
+			topGen = ancestralDepth();
+		else
+			topGen = keepAncestralPops;
 		// go to the oldest generation
-		if(ancestralDepth() >= 0)
-			useAncestralPop(ancestralDepth());
+		useAncestralPop(topGen);
 		population & ret = newPopByIndIDPerGen(id, removeEmptySubPops);
 		// prepare for push and discard
-		ret.setAncestralDepth(ancestralDepth());
-		if(ancestralDepth() > 0)
+		ret.setAncestralDepth(topGen);
+		if(topGen > 0)
 		{
-			for(int depth = static_cast<int>(ancestralDepth()-1); depth >=0; --depth)
+			for(int depth = topGen - 1; depth >=0; --depth)
 			{
 				useAncestralPop(depth);
 				ret.pushAndDiscard(newPopByIndIDPerGen(id, removeEmptySubPops));
 			}
 		}
+		// just to make sure
 		useAncestralPop(0);
 		return ret;
 	}

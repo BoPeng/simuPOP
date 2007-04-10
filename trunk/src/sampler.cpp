@@ -471,7 +471,7 @@ namespace simuPOP
 					pop.ind( m_controlIdx[sp][i],sp ).setSubPopID( -1 );
 			}
 			// newPop .... but ignore ancestral populations
-			population& sample = pop.newPopByIndID(false);
+			population& sample = pop.newPopByIndID(0);
 			sample.setIntVectorVar("nCases", m_numCases);
 			sample.setIntVectorVar("nControls", m_numControls);
 			return sample;
