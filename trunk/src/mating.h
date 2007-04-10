@@ -113,6 +113,8 @@ namespace simuPOP
 #define MATE_GeometricDistribution   3
 #define MATE_PoissonDistribution     4
 #define MATE_BinomialDistribution    5
+			/// uniform between numOffspring and maxNumOffspring
+#define MATE_UniformDistribution     6
 
 		public:
 			/// check if the mating type is compatible with population structure

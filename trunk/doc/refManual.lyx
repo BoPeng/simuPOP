@@ -8,7 +8,7 @@
 
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.7.9 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.7.10 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. MD Anderson Cancer Center}\\
 {\bf Email: }{\textsf bpeng@mdanderson.org}\\
@@ -7094,7 +7094,7 @@ Most mating schemes take the following parameters:
 \begin_layout Itemize
 
 \family typewriter
-numOffsprings
+numOffspring
 \begin_inset LatexCommand index
 name "simulator!numOffsprings"
 
@@ -7115,7 +7115,7 @@ name "simulator!numOffsprings"
 \begin_layout Itemize
 
 \family typewriter
-numOffspringsFunc
+numOffspringFunc
 \begin_inset LatexCommand index
 name "simulator!numOffspringsFunc"
 
@@ -7133,7 +7133,7 @@ name "simulator!numOffspringsFunc"
 \begin_layout Itemize
 
 \family typewriter
-maxNumOffsprings
+maxNumOffspring
 \begin_inset LatexCommand index
 name "simulator!maxNumOffsprings"
 
@@ -7141,7 +7141,7 @@ name "simulator!maxNumOffsprings"
 
 
 \family default
- used when numOffsprings is generated from a binomial distribution.
+ used when numOffspring is generated from a binomial distribution.
 \end_layout
 
 \begin_layout Itemize
@@ -7161,7 +7161,7 @@ name "simulator!mode"
 \family default
  One of 
 \family typewriter
-MATE_NumOffspring, MATE_NumOffspringsEachFamily, MATE_GeometricDistribution,
+MATE_NumOffspring, MATE_NumOffspringEachFamily, MATE_GeometricDistribution,
  MATE_PoissonDistribution, MATE_BinomialDistribution
 \family default
 .
@@ -7221,7 +7221,7 @@ Determine number of offsprings during mating
 \begin_layout Standard
 The default values 
 \family typewriter
-numOffsprings
+numOffspring
 \family default
  parameters makes a mating scheme produce one offspring per mating.
  This is the real random mating and should be used whenever possible.
@@ -7241,20 +7241,20 @@ mode
 \begin_layout Itemize
 
 \family typewriter
-MATE_NumOffsprings:
+MATE_NumOffspring:
 \family default
  if 
 \family typewriter
-numOffspringsFunc
+numOffspringFunc
 \family default
  is not given, number of offsprings will be constant 
 \family typewriter
-numOffsprings
+numOffspring
 \family default
  all the time.
  Otherwise, 
 \family typewriter
-numOffspringsFunc(gen)
+numOffspringFunc(gen)
 \family default
  will be called 
 \series bold
@@ -7268,16 +7268,16 @@ once
 \begin_layout Itemize
 
 \family typewriter
-MATE_NumOffspringsEachFamily:
+MATE_NumOffspringEachFamily:
 \family default
  
 \family typewriter
-numOffspringsFunc
+numOffspringFunc
 \family default
  has to be given and will be called whenever a mating happens.
  Since 
 \family typewriter
-numOffspringsFunc
+numOffspringFunc
 \family default
  can be 
 \series bold
@@ -7291,11 +7291,11 @@ any
 \begin_layout Itemize
 
 \family typewriter
-MATE_GeometricDistribution: numOffsprings
+MATE_GeometricDistribution: numOffspring
 \family default
  or result of 
 \family typewriter
-numOffspringsFunc
+numOffspringFunc
 \family default
  (evaluated at each generation) will be considered as 
 \begin_inset Formula $p$
@@ -7314,11 +7314,11 @@ P\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1\]
 \begin_layout Itemize
 
 \family typewriter
-MATE_PoissonDistribution: numOffsprings
+MATE_PoissonDistribution: numOffspring
 \family default
  or result of 
 \family typewriter
-numOffspringsFunc
+numOffspringFunc
 \family default
  (evaluated at each generation) will be considered as 
 \begin_inset Formula $p$
@@ -7342,11 +7342,11 @@ Since the mean of this shifted Poisson distribution is
 \begin_layout Itemize
 
 \family typewriter
-MATE_BinomialDistribution: numOffsprings
+MATE_BinomialDistribution: numOffspring
 \family default
  or result of 
 \family typewriter
-numOffspringsFunc
+numOffspringFunc
 \family default
  (evaluated at each generation) will be considered as 
 \begin_inset Formula $p$
@@ -7359,7 +7359,7 @@ numOffspringsFunc
 
 =
 \family typewriter
-maxNumOffsprings
+maxNumOffspring
 \family default
 , the number of offsprings for each mating is determined by
 \begin_inset Formula \[
@@ -7368,6 +7368,32 @@ P\left(k\right)=\frac{\left(n-1\right)!}{\left(k-1\right)!\left(n-k\right)!}p^{k
 \end_inset
 
 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_UniformDistribution
+\family default
+: Uniform between
+\family typewriter
+ numOffspring
+\family default
+ and 
+\family typewriter
+maxNumOffspring
+\family default
+.
+ I.e., if 
+\family typewriter
+numOffspring=2
+\family default
+ and 
+\family typewriter
+maxNumOffspring=5
+\family default
+, families with 2, 3, 4, 5 children will be generated with probability 1/4
+ each.
 \end_layout
 
 \begin_layout Standard
@@ -14684,7 +14710,7 @@ endGen = 1000
 \end_layout
 
 \begin_layout LyX-Code
-def numOffsprings(gen):
+def numOffspring(gen):
 \end_layout
 
 \begin_layout LyX-Code
@@ -14708,7 +14734,7 @@ def numOffsprings(gen):
 \end_layout
 
 \begin_layout LyX-Code
-simu = simulator(pop, randomMating(numOffspringsFunc = numOffsprings))
+simu = simulator(pop, randomMating(numOffspringFunc = numOffspring))
 \end_layout
 
 \begin_layout LyX-Code

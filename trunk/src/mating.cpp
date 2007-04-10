@@ -317,6 +317,8 @@ namespace simuPOP
 
 		DBG_FAILIF(mode == MATE_BinomialDistribution && maxNumOffspring < 2,
 			ValueError, "If mode is MATE_BinomialDistribution, maxNumOffspring should be > 1");
+		DBG_FAILIF(mode == MATE_UniformDistribution && maxNumOffspring < static_cast<int>(numOffspring),
+			ValueError, "If mode is MATE_UniformDistribution, maxNumOffspring should be greater than numOffspring");
 	}
 
 	bool mating::fixedFamilySize()
@@ -374,6 +376,16 @@ namespace simuPOP
 				"Max number of offspring should be greater than 1. Given "
 				+ toStr(m_maxNumOffspring));
 			UINT nos = rng().randBinomial(m_maxNumOffspring-1, numOS)+1;
+			return nos;
+		}
+		else if(m_mode == MATE_UniformDistribution)
+		{
+			// max: 5
+			// num: 2
+			// randint(4)  ==> 0, 1, 2, 3
+			// + 2 ==> 2, 3, 4, 5
+			UINT nos = rng().randInt(m_maxNumOffspring - static_cast<unsigned long>(m_numOffspring) + 1)
+				+ static_cast<UINT>(m_numOffspring);
 			return nos;
 		}
 		else
