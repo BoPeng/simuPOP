@@ -1013,6 +1013,7 @@ namespace simuPOP
 					// valid offspring
 					if (off[i*m_maxOffspring + oi] != -1)
 					{
+						pop.ind(static_cast<UINT>(off[i*m_maxOffspring + oi])).setInfo(i, pedindexIdx);
 						pedSize ++;
 						if (pop.ind(static_cast<UINT>(off[i*m_maxOffspring + oi])).affected())
 							pedAffected ++;
