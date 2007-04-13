@@ -4,7 +4,7 @@
 Converts Doxygen generated XML files into a file containing docstrings
 that can be used by SWIG-1.3.x. It also generate a latex file with
 reference manauls for all classes and functions. These definitions
-can be included into the simuPOP reference manual easily. 
+can be included into the simuPOP reference manual easily.
 
 Usage:
 
@@ -29,14 +29,14 @@ are where the output interface and latex files will be written.
 #        Note that Element and Text class names. This file does
 #        not handle Attribute class.
 #    Python minidom: http://docs.python.org/lib/module-xml.dom.minidom.html
-#    
+#
 
 
 from xml.dom import minidom
 import re, textwrap, sys, types, os.path, sets
 
 class Doxy2SWIG:
-    """Converts Doxygen generated XML files into a data struture 
+    """Converts Doxygen generated XML files into a data struture
     (self.content) that can be written in doctring and latex format
     Docstrings that can be used by SWIG-1.3.x that have support for
     feature("docstring").
@@ -54,7 +54,7 @@ class Doxy2SWIG:
         # all the information will be in content,
         # interface and tex files will be generated from content
         self.content = []
-        
+
         # ignore these tags
         self.ignores = ('inheritancegraph', 'param', 'listofallmembers',
                         'innerclass', 'name', 'declname', 'incdepgraph',
@@ -71,6 +71,7 @@ class Doxy2SWIG:
         self.maxChar = 70
         # current field in self.content
         self.curField = ''
+        self.uniqueName = []
 
 
     def generate(self):
@@ -88,7 +89,7 @@ class Doxy2SWIG:
         # every node in a XML tree has __class__.__name__ e.g. Text, Document, etc.
         # This function get this information and call the relevant function to parse this node.
         # This is a dispatch function that is by nature recursive.
-        # 
+        #
         # in fact, we will only see Element and Text classes.
         handlerMethod = getattr(self, "parse_%s" % node.__class__.__name__)
         handlerMethod(node)
@@ -139,7 +140,7 @@ class Doxy2SWIG:
             if type(value) in (types.ListType, types.TupleType):
                 self.content[-1][self.curField] += ' '.join(value)
             else:
-                self.content[-1][self.curField] += value    
+                self.content[-1][self.curField] += value
 
     def get_specific_nodes(self, node, names):
         """Given a node and a sequence of strings in `names`, return a
@@ -205,7 +206,7 @@ class Doxy2SWIG:
              self.curField = 'Arguments'
              self.content[-1]['Arguments'] = []
              self.generic_parse(node)
-                 
+
 
     def do_para(self, node):
         self.generic_parse(node)
@@ -215,8 +216,8 @@ class Doxy2SWIG:
         parameter_name = node.firstChild.data.strip()
         assert self.curField == 'Arguments'
         self.content[-1][self.curField].append({'Name': parameter_name, 'Description': ''})
-        
-        
+
+
     def do_detaileddescription(self, node):
         self.curField = 'Details'
         self.content[-1]['Details'] = ''
@@ -259,7 +260,7 @@ class Doxy2SWIG:
                     func_name = '%s::%s' %(ns, name) + defn.split(' ')[-1]
                     self.content.append({'Name': func_name})
                     self.content[-1]['Usage'] = ''
-                    self.curField = 'Usage'                                
+                    self.curField = 'Usage'
                 else:
                     self.content.append({'Name': name})
                     self.content[-1]['Usage'] = ''
@@ -278,14 +279,14 @@ class Doxy2SWIG:
                     if (len(defName) > 1 ):
                         defName = defName[0].lower() + defName[1:]
                     self.add_text( self.format_text( defName, 0, 0 ) )
-                else: 
+                else:
                     self.add_text( 'x.' )
                     self.add_text( self.format_text( defName, 0, 0 ) )
 
             for n in node.childNodes:
                 if n not in first.values():
                     self.parse(n)
-                
+
 
     def do_sectiondef(self, node):
         kind = node.attributes['kind'].value
@@ -329,13 +330,13 @@ class Doxy2SWIG:
             self.generic_parse(node)
         self.curField = 'Details'
         self.content[-1]['Details'] = ''
-        
+
 
     def do_argsstring(self, node):
         txt = ''
         for n in node.childNodes:
             txt = txt + n.data
-        
+
         ori_txt = txt
         # replace the trailing const
         # @ is used instead of , to avoid separation of replaced text, it will be replaced back to ,
@@ -361,7 +362,7 @@ class Doxy2SWIG:
             var = piece[0].split(' ')[-1].split(')')[0].split('(')[-1]
             #delete &
             var = var.replace('&', '')
-            if( len( piece ) == 2 ): 
+            if( len( piece ) == 2 ):
                 defVal = piece[1].split('(')[0].split(')')[0].split(')')[0]
                 defVal = defVal.replace('vectorlu','[]')
                 defVal = defVal.replace('vectoru','[]')
@@ -375,12 +376,12 @@ class Doxy2SWIG:
                 defVal = defVal.replace('matrix','[]')
                 defVal = defVal.replace('true','True')
                 defVal = defVal.replace('false','False')
-                out.append( var + '=' + defVal    )
+                out.append(var + '=' + defVal)
             else:
-                out.append( var )
-        self.add_text( self.format_text( '(' + (', '.join(out)) + ')\n', 0, 6 ) + '\n')
+                out.append(var)
+        self.add_text('(' + ', '.join(out) + ')')
 
-        
+
     def do_member(self, node):
         kind = node.attributes['kind'].value
         refid = node.attributes['refid'].value
@@ -390,7 +391,7 @@ class Doxy2SWIG:
 
     def do_doxygenindex(self, node):
         '''Parse files included as compound, member and refid, like
-        
+
             <doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.3.9.1">
               <compound refid="a00153" kind="class"><name>simuPOP::affectedSibpairSample</name>
               <member refid="a00153_1a0" kind="function"><name>affectedSibpairSample</name></member>
@@ -410,7 +411,7 @@ class Doxy2SWIG:
             p = Doxy2SWIG(fname)
             p.generate()
             self.content.extend(p.content)
-            
+
 
     def post_process(self):
         # first, remove all entries with 'CPPONLY' in description
@@ -422,8 +423,8 @@ class Doxy2SWIG:
         #        if 'PLOIDY:ALL' in entry['description']:
         #            self.content['ploidy'] = 'all'
         #            self.content['description'].remove('PLOIDY:ALL')
-        
-        
+
+
     def write_swig(self, out):
         for entry in self.content:
             #print >> out, self.content
@@ -433,7 +434,7 @@ class Doxy2SWIG:
                 print >> out, '\n    %s\n' % self.format_text(entry['Description'], 0, 4)
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, 'Usage:'
-                print >> out, '\n    %s' % entry['Usage']
+                print >> out, '\n    %s' % self.format_text(entry['Usage'], 0, 6)
             if entry.has_key('Arguments') and entry['Arguments'] != '':
                 print >> out, 'Arguments:\n'
                 for arg in entry['Arguments']:
@@ -446,32 +447,53 @@ class Doxy2SWIG:
                 print >> out, 'Examples:'
                 print >> out, '\n%s\n' % entry['Examples'].replace('\\', r'\\\\').replace('"', r'\"')
             print >> out, '\"; \n'
-                
+
+
     def latexName(self, name):
-        return name.replace(':', '').replace('~', 'tilda')
-            
+        # function name can overload
+        uname = None
+        for suffix in [''] + [chr(x) for x in range(ord('a'), ord('z'))]:
+            if name + suffix not in self.uniqueName:
+                uname = name + suffix
+                self.uniqueName.append(uname)
+                break
+        if uname is None:
+            print name, ' has too many overload names!'
+            print self.uniqueName
+            sys.exit(0)
+        return uname.replace(':', '').replace('~', 'tld').replace('_', 'us').replace('0', 'o').replace('1', 'l').replace('2', 'z')
+
+
+    def latex_text(self, text):
+        """ wrap text given current indent """
+        for ch in ['\\', '&', '', '%', '#', '_', '{', '}', '^']:
+            text = text.replace(ch, '\\' + ch)
+        return text
+
+
     def write_latex(self, out):
         for entry in self.content:
-            #print >> out, self.content     
+            #print >> out, self.content
             print >> out, '\\newcommand{\\%s}{\n' % self.latexName(entry['Name'])
+            print >> out, '\\par\n\\strong{%s}\n\\par\n' % self.latex_text(entry['Name'])
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, '\\par\n\\strong{Description}\n\\par\n'
-                print >> out, '    %s\n' % self.format_text(entry['Description'], 0, 4)
+                print >> out, '    %s\n' % self.latex_text(entry['Description'])
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, '\\par\n\\strong{Usage}\n\\par\n'
-                print >> out, '    \\function{%s}' % entry['Usage']
+                print >> out, '    \\function{%s}' % self.latex_text(entry['Usage'])
             if entry.has_key('Arguments') and entry['Arguments'] != '':
                 print >> out, '\\par\n\\strong{Arguments}\n\\par\n'
                 print >> out, '\\begin{description}\n '
                 for arg in entry['Arguments']:
-                    print >> out, '\\item [{   %-16s}]%s\n' % (arg['Name']+':', self.format_text(arg['Description'], 0, 20))
+                    print >> out, '\\item [{%s}]%s\n' % (arg['Name'], self.latex_text(arg['Description']))
                 print >> out, '\\end{description}\n'
             if entry.has_key('Details') and entry['Details'] != '':
                 print >> out, '\\par\n\\strong{Details}\n\\par\n'
-                print >> out, '    %s\n' % self.format_text(entry['Details'], 0, 4)
+                print >> out, '    %s\n' % self.latex_text(entry['Details'])
             if entry.has_key('Examples') and entry['Examples'] != '':
                 print >> out, '\\strong{Examples}\n\\begin{lyxcode}\n'
-                print >> out, '%s\n' % entry['Examples'].replace('\\', r'\\\\').replace('"', r'\"').replace('#', '\\#')
+                print >> out, '%s\n' % entry['Examples'].replace('\\', r'\\\\').replace('#', '\\#')
                 print >> out, '\\end{lyxcode}\n'
             print >> out, '}'
 
@@ -499,12 +521,13 @@ class Doxy2SWIG:
 \usepackage{babel}
 \makeatother
 \begin{document}
-\include{%s}''' % os.path.splitext(ref_file)[0]
+\include{%s}''' % os.path.basename(os.path.splitext(ref_file)[0])
         for entry in self.content:
-             print >> out, '\\%s' % self.latexName(entry['Name'])
+             print >> out, r'\%s' % self.latexName(entry['Name'])
+             print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
         print >> out, r'\end{document}'
 
-            
+
     def write(self, output, type, ref_file=''):
         fout = open(output, 'w')
         if type == 'swig':
@@ -514,11 +537,11 @@ class Doxy2SWIG:
         elif type == 'latex_all':
             self.write_latex_testfile(fout, ref_file)
         fout.close()
-        
-        
+
+
     def format_text(self, text, start_pos, indent):
-        """ wrap text given current indent """ 
-        strs = textwrap.wrap(text.lstrip('\n '), width=self.maxChar, 
+        """ wrap text given current indent """
+        strs = textwrap.wrap(text.lstrip('\n '), width=self.maxChar,
             initial_indent=' '*(start_pos+indent),
             subsequent_indent = ' '*indent)
         return  ('\n'.join(strs)).lstrip().replace('\\', r'\\\\').replace('"', r'\"')
@@ -555,8 +578,13 @@ if __name__ == '__main__':
     p.generate()
     p.post_process()
     # write interface file to output interface file.
+    print 'Writing SWIG interface file to', interface_file
     p.write(interface_file, type='swig')
+    print 'Writing latex reference file to', latex_file
     p.write(latex_file, type='latex_single')
+    # clear unique name
+    p.uniqueName = []
+    print 'Writing latex test file to', latex_testfile
     p.write(latex_testfile, type='latex_all', ref_file=latex_file)
     # ending statement
     print 'Done.'
