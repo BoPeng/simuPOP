@@ -118,6 +118,8 @@ Description:
 
 "; 
 
+%ignore simuPOP::BernulliTrials::BernulliTrials(RNG &rng);
+
 %feature("docstring") simuPOP::BernulliTrials::BernulliTrials "
 
 Usage:
@@ -132,12 +134,16 @@ Usage:
     x.~BernulliTrials()
 "; 
 
+%ignore simuPOP::BernulliTrials::trialSize() const ;
+
 %feature("docstring") simuPOP::BernulliTrials::probSize "
 
 Usage:
 
     x.probSize()
 "; 
+
+%ignore simuPOP::BernulliTrials::setParameter(const vectorf &prob, ULONG trials);
 
 %feature("docstring") simuPOP::BernulliTrials::doTrial "
 
@@ -149,6 +155,8 @@ Usage:
 
     x.doTrial()
 "; 
+
+%ignore simuPOP::BernulliTrials::curTrial();
 
 %feature("docstring") simuPOP::BernulliTrials::trial "
 
@@ -232,6 +240,8 @@ Usage:
 
     x.probSuccRate()
 "; 
+
+%ignore simuPOP::BernulliTrials::probabilities();
 
 %feature("docstring") simuPOP::binomialSelection "
 
@@ -484,6 +494,8 @@ Usage:
       *newSubPopSizeFunc=NULL)
 "; 
 
+%ignore simuPOP::controlledBinomialSelection::controlledBinomialSelection(const controlledBinomialSelection &rhs);
+
 %feature("docstring") simuPOP::controlledBinomialSelection::~controlledBinomialSelection "
 
 Description:
@@ -578,6 +590,8 @@ Arguments:
 
 
 "; 
+
+%ignore simuPOP::controlledMating::controlledMating(const controlledMating &rhs);
 
 %feature("docstring") simuPOP::controlledMating::~controlledMating "
 
@@ -704,6 +718,8 @@ Arguments:
 
 
 "; 
+
+%ignore simuPOP::controlledRandomMating::controlledRandomMating(const controlledRandomMating &rhs);
 
 %feature("docstring") simuPOP::controlledRandomMating::~controlledRandomMating "
 
@@ -935,6 +951,12 @@ Usage:
     x.~Exception()
 "; 
 
+%ignore simuPOP::Expression;
+
+%ignore simuPOP::Expression::Expression(const string &expr="", const string &stmts="", PyObject *locals=NULL);
+
+%ignore simuPOP::Expression::~Expression();
+
 %feature("docstring") simuPOP::Expression::Expression "
 
 Description:
@@ -945,6 +967,14 @@ Usage:
 
     expression(rhs)
 "; 
+
+%ignore simuPOP::Expression::setLocalDict(PyObject *dict);
+
+%ignore simuPOP::Expression::empty();
+
+%ignore simuPOP::Expression::setExpr(const string &expr="");
+
+%ignore simuPOP::Expression::setStmts(const string &stmts="");
 
 %feature("docstring") simuPOP::Expression::evaluate "
 
@@ -957,6 +987,30 @@ Usage:
     x.evaluate()
 "; 
 
+%ignore simuPOP::Expression::valueAsBool();
+
+%ignore simuPOP::Expression::valueAsInt();
+
+%ignore simuPOP::Expression::valueAsDouble();
+
+%ignore simuPOP::Expression::valueAsString();
+
+%ignore simuPOP::Expression::valueAsArray();
+
+%ignore simuPOP::Expression::valueAsStrDict();
+
+%ignore simuPOP::Expression::valueAsIntDict();
+
+%ignore simuPOP::GappedIterator;
+
+%ignore simuPOP::GappedIterator::GappedIterator();
+
+%ignore simuPOP::GappedIterator::GappedIterator(pointer p, difference_type s=1);
+
+%ignore simuPOP::GappedIterator::GappedIterator(const GappedIterator &rhs);
+
+%ignore simuPOP::GappedIterator::~GappedIterator();
+
 %feature("docstring") simuPOP::GappedIterator::ptr "
 
 Description:
@@ -967,6 +1021,14 @@ Usage:
 
     x.ptr()
 "; 
+
+%ignore simuPOP::GappedIterator::step();
+
+%ignore simuPOP::GenoStructure;
+
+%ignore simuPOP::GenoStructure::GenoStructure();
+
+%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields, const vectori &chromMap);
 
 %feature("docstring") simuPOP::GenoStructure::~GenoStructure "
 
@@ -1003,6 +1065,8 @@ Usage:
     genoStruTrait()
 "; 
 
+%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields, const vectori &chromMap);
+
 %feature("docstring") simuPOP::GenoStruTrait::setGenoStructure "
 
 Description:
@@ -1015,6 +1079,12 @@ Usage:
 
     x.setGenoStructure(rhs)
 "; 
+
+%ignore simuPOP::GenoStruTrait::setGenoStruIdx(size_t idx);
+
+%ignore simuPOP::GenoStruTrait::genoStru() const ;
+
+%ignore simuPOP::GenoStruTrait::genoStruIdx() const ;
 
 %feature("docstring") simuPOP::GenoStruTrait::ploidy "
 
@@ -1293,6 +1363,10 @@ Usage:
     x.infoIdx()
 "; 
 
+%ignore simuPOP::GenoStruTrait::struAddInfoField(const string &field);
+
+%ignore simuPOP::GenoStruTrait::struSetInfoFields(const vectorstr &fields);
+
 %feature("docstring") simuPOP::GenoStruTrait::swap "
 
 Usage:
@@ -1413,6 +1487,8 @@ Usage:
     x.~ifElse()
 "; 
 
+%ignore simuPOP::ifElse::ifElse(const ifElse &rhs);
+
 %feature("docstring") simuPOP::ifElse::clone "
 
 Description:
@@ -1521,6 +1597,8 @@ Usage:
     individual()
 "; 
 
+%ignore simuPOP::individual::individual(const individual &ind);
+
 %feature("docstring") simuPOP::individual::~individual "
 
 Description:
@@ -1532,6 +1610,10 @@ Usage:
     x.~individual()
 "; 
 
+%ignore simuPOP::individual::setGenoPtr(GenoIterator pos);
+
+%ignore simuPOP::individual::setInfoPtr(InfoIterator pos);
+
 %feature("docstring") simuPOP::individual::copyFrom "
 
 Description:
@@ -1542,6 +1624,10 @@ Usage:
 
     x.copyFrom(rhs)
 "; 
+
+%ignore simuPOP::individual::genoPtr() const ;
+
+%ignore simuPOP::individual::infoPtr() const ;
 
 %feature("docstring") simuPOP::individual::arrGenotype "
 
@@ -1854,6 +1940,22 @@ Usage:
     x.setInfo(value, name)
 "; 
 
+%ignore simuPOP::individual::genoBegin() const ;
+
+%ignore simuPOP::individual::genoEnd() const ;
+
+%ignore simuPOP::individual::genoBegin(UINT p) const ;
+
+%ignore simuPOP::individual::genoEnd(UINT p) const ;
+
+%ignore simuPOP::individual::genoBegin(UINT p, UINT chrom) const ;
+
+%ignore simuPOP::individual::genoEnd(UINT p, UINT chrom) const ;
+
+%ignore simuPOP::individual::infoBegin() const ;
+
+%ignore simuPOP::individual::infoEnd() const ;
+
 %feature("docstring") simuPOP::individual::__cmp__ "
 
 Usage:
@@ -1895,6 +1997,12 @@ Details:
     swapping but may affected performance of allele counting.
 
 "; 
+
+%ignore simuPOP::individual::shallowCopied() const ;
+
+%ignore simuPOP::individual::setShallowCopied(bool shallowCopied);
+
+%ignore simuPOP::individual::display(ostream &out, int width=1, const vectori &chrom=vectori(), const vectori &loci=vectori());
 
 %feature("docstring") simuPOP::individualIterator "
 
@@ -2215,6 +2323,8 @@ Usage:
 
     iOError(msg)
 "; 
+
+%ignore simuPOP::isAffected;
 
 %feature("docstring") simuPOP::isAffected::isAffected "
 
@@ -4150,6 +4260,10 @@ Usage:
     x.infoField(idx)
 "; 
 
+%ignore simuPOP::Operator::formOffGenotype();
+
+%ignore simuPOP::Operator::setFormOffGenotype(bool flag=true);
+
 %feature("docstring") simuPOP::Operator::applyWithScratch "
 
 Description:
@@ -4222,6 +4336,8 @@ Usage:
     x.closeOstream()
 "; 
 
+%ignore simuPOP::Operator::atRepr();
+
 %feature("docstring") simuPOP::Operator::__repr__ "
 
 Usage:
@@ -4265,6 +4381,14 @@ Usage:
 
     ostreamManager()
 "; 
+
+%ignore simuPOP::OstreamManager::~OstreamManager();
+
+%ignore simuPOP::OstreamManager::getOstream(const string &name, bool readable, bool realAppend, bool useString);
+
+%ignore simuPOP::OstreamManager::hasOstream(const string &filename);
+
+%ignore simuPOP::OstreamManager::listAll();
 
 %feature("docstring") simuPOP::OstreamManager::closeAll "
 
@@ -4798,6 +4922,8 @@ Examples:
 
 "; 
 
+%ignore simuPOP::population::population(const population &rhs);
+
 %feature("docstring") simuPOP::population::clone "
 
 Usage:
@@ -5009,6 +5135,30 @@ Usage:
     x.individuals(subPop)
 "; 
 
+%ignore simuPOP::population::shallowCopied();
+
+%ignore simuPOP::population::setShallowCopied(bool s);
+
+%ignore simuPOP::population::infoOrdered();
+
+%ignore simuPOP::population::setInfoOrdered(bool s);
+
+%ignore simuPOP::population::indBegin();
+
+%ignore simuPOP::population::indEnd();
+
+%ignore simuPOP::population::indBegin(UINT subPop);
+
+%ignore simuPOP::population::indEnd(UINT subPop);
+
+%ignore simuPOP::population::indBegin() const ;
+
+%ignore simuPOP::population::indEnd() const ;
+
+%ignore simuPOP::population::indBegin(UINT subPop) const ;
+
+%ignore simuPOP::population::indEnd(UINT subPop) const ;
+
 %feature("docstring") simuPOP::population::alleleBegin "
 
 Description:
@@ -5033,6 +5183,28 @@ Details:
     respect subpops
 
 "; 
+
+%ignore simuPOP::population::alleleEnd(UINT locus, bool order);
+
+%ignore simuPOP::population::alleleBegin(UINT locus, UINT subPop, bool order);
+
+%ignore simuPOP::population::alleleEnd(UINT locus, UINT subPop, bool order);
+
+%ignore simuPOP::population::genoBegin(bool order);
+
+%ignore simuPOP::population::genoEnd(bool order);
+
+%ignore simuPOP::population::genoBegin(UINT subPop, bool order);
+
+%ignore simuPOP::population::genoEnd(UINT subPop, bool order);
+
+%ignore simuPOP::population::indGenoBegin(ULONG ind) const ;
+
+%ignore simuPOP::population::indGenoEnd(ULONG ind) const ;
+
+%ignore simuPOP::population::indGenoBegin(ULONG ind, UINT subPop) const ;
+
+%ignore simuPOP::population::indGenoEnd(ULONG ind, UINT subPop) const ;
 
 %feature("docstring") simuPOP::population::arrGenotype "
 
@@ -5303,6 +5475,10 @@ Usage:
     x.setIndInfo(values, name)
 "; 
 
+%ignore simuPOP::population::infoBegin(UINT idx, bool order);
+
+%ignore simuPOP::population::infoEnd(UINT idx, bool order);
+
 %feature("docstring") simuPOP::population::infoBegin "
 
 Description:
@@ -5449,6 +5625,10 @@ Usage:
     x.equalTo(rhs)
 "; 
 
+%ignore simuPOP::population::adjustGenoPosition(bool order);
+
+%ignore simuPOP::population::adjustInfoPosition(bool order);
+
 %feature("docstring") simuPOP::population::savePopulation "
 
 Description:
@@ -5472,12 +5652,16 @@ Arguments:
 
 "; 
 
+%ignore simuPOP::population::loadPopulation(const string &filename, const string &format="auto");
+
 %feature("docstring") simuPOP::population::rep "
 
 Usage:
 
     x.rep()
 "; 
+
+%ignore simuPOP::population::setRep(int rep, bool setVar=true);
 
 %feature("docstring") simuPOP::population::grp "
 
@@ -5486,12 +5670,16 @@ Usage:
     x.grp()
 "; 
 
+%ignore simuPOP::population::setGrp(int grp, bool setVar=true);
+
 %feature("docstring") simuPOP::population::gen "
 
 Usage:
 
     x.gen()
 "; 
+
+%ignore simuPOP::population::setGen(ULONG gen, bool setVar=true);
 
 %feature("docstring") simuPOP::population::vars "
 
@@ -5504,6 +5692,10 @@ Usage:
 
     x.vars(subPop=-1)
 "; 
+
+%ignore simuPOP::population::dict(int subPop=-1);
+
+%ignore simuPOP::population::setDict(PyObject *dict);
 
 %feature("docstring") simuPOP::population::hasVar "
 
@@ -5522,6 +5714,42 @@ Usage:
 
     x.removeVar(name)
 "; 
+
+%ignore simuPOP::population::setBoolVar(const string &name, const bool val);
+
+%ignore simuPOP::population::setIntVar(const string &name, const int val);
+
+%ignore simuPOP::population::setDoubleVar(const string &name, const double val);
+
+%ignore simuPOP::population::setStringVar(const string &name, const string &val);
+
+%ignore simuPOP::population::setIntVectorVar(const string &name, const vectori &val);
+
+%ignore simuPOP::population::setDoubleVectorVar(const string &name, const vectorf &val);
+
+%ignore simuPOP::population::setStrDictVar(const string &name, const strDict &val);
+
+%ignore simuPOP::population::setIntDictVar(const string &name, const intDict &val);
+
+%ignore simuPOP::population::setVar(const string &name, PyObject *val);
+
+%ignore simuPOP::population::getVar(const string &name, bool nameError=true);
+
+%ignore simuPOP::population::getVarAsBool(const string &name, bool nameError=true);
+
+%ignore simuPOP::population::getVarAsInt(const string &name, bool nameError=true);
+
+%ignore simuPOP::population::getVarAsDouble(const string &name, bool nameError=true);
+
+%ignore simuPOP::population::getVarAsString(const string &name, bool nameError=true);
+
+%ignore simuPOP::population::getVarAsStrDict(const string &name, bool nameError=true);
+
+%ignore simuPOP::population::getVarAsIntDict(const string &name, bool nameError=true);
+
+%ignore simuPOP::population::varsAsString() const ;
+
+%ignore simuPOP::population::varsFromString(const string &vars);
 
 %feature("docstring") simuPOP::population::evaluate "
 
@@ -5727,6 +5955,8 @@ Usage:
     x.~pyIndOperator()
 "; 
 
+%ignore simuPOP::pyIndOperator::pyIndOperator(const pyIndOperator &rhs);
+
 %feature("docstring") simuPOP::pyIndOperator::clone "
 
 Description:
@@ -5805,6 +6035,8 @@ Usage:
     x.~pyInit()
 "; 
 
+%ignore simuPOP::pyInit::pyInit(const pyInit &rhs);
+
 %feature("docstring") simuPOP::pyInit::clone "
 
 Description:
@@ -5880,6 +6112,8 @@ Usage:
 
     x.clone()
 "; 
+
+%ignore simuPOP::pyMating::pyMating(const pyMating &rhs);
 
 %feature("docstring") simuPOP::pyMating::__repr__ "
 
@@ -5960,6 +6194,8 @@ Usage:
     x.~pyMigrator()
 "; 
 
+%ignore simuPOP::pyMigrator::pyMigrator(const pyMigrator &rhs);
+
 %feature("docstring") simuPOP::pyMigrator::clone "
 
 Description:
@@ -6013,6 +6249,8 @@ Usage:
 
     x.~pyMutator()
 "; 
+
+%ignore simuPOP::pyMutator::pyMutator(const pyMutator &rhs);
 
 %feature("docstring") simuPOP::pyMutator::clone "
 
@@ -6093,6 +6331,8 @@ Usage:
 
     x.~pyOperator()
 "; 
+
+%ignore simuPOP::pyOperator::pyOperator(const pyOperator &rhs);
 
 %feature("docstring") simuPOP::pyOperator::clone "
 
@@ -6182,6 +6422,8 @@ Usage:
     x.~pyPenetrance()
 "; 
 
+%ignore simuPOP::pyPenetrance::pyPenetrance(const pyPenetrance &rhs);
+
 %feature("docstring") simuPOP::pyPenetrance::clone "
 
 Description:
@@ -6254,6 +6496,8 @@ Usage:
     x.~pyQuanTrait()
 "; 
 
+%ignore simuPOP::pyQuanTrait::pyQuanTrait(const pyQuanTrait &rhs);
+
 %feature("docstring") simuPOP::pyQuanTrait::clone "
 
 Description:
@@ -6324,6 +6568,8 @@ Usage:
 
     x.~pySample()
 "; 
+
+%ignore simuPOP::pySample::pySample(const pySample &rhs);
 
 %feature("docstring") simuPOP::pySample::clone "
 
@@ -6396,6 +6642,8 @@ Usage:
 
     x.~pySelector()
 "; 
+
+%ignore simuPOP::pySelector::pySelector(const pySelector &rhs);
 
 %feature("docstring") simuPOP::pySelector::clone "
 
@@ -7546,6 +7794,16 @@ Details:
 
 "; 
 
+%ignore simuPOP::SharedVariables::SharedVariables();
+
+%ignore simuPOP::SharedVariables::SharedVariables(PyObject *dict, bool ownVars);
+
+%ignore simuPOP::SharedVariables::SharedVariables(const SharedVariables &rhs);
+
+%ignore simuPOP::SharedVariables::swap(SharedVariables &rhs);
+
+%ignore simuPOP::SharedVariables::~SharedVariables();
+
 %feature("docstring") simuPOP::SharedVariables::clear "
 
 Usage:
@@ -7575,6 +7833,8 @@ Details:
 
 "; 
 
+%ignore simuPOP::SharedVariables::getVar(const string &name, bool nameError=true);
+
 %feature("docstring") simuPOP::SharedVariables::hasVar "
 
 Usage:
@@ -7593,12 +7853,42 @@ Usage:
     x.removeVar(name)
 "; 
 
+%ignore simuPOP::SharedVariables::setBoolVar(const string &name, const bool val);
+
+%ignore simuPOP::SharedVariables::setIntVar(const string &name, const int val);
+
+%ignore simuPOP::SharedVariables::setDoubleVar(const string &name, const double val);
+
+%ignore simuPOP::SharedVariables::setStringVar(const string &name, const string &val);
+
+%ignore simuPOP::SharedVariables::setIntVectorVar(const string &name, const vectori &val);
+
+%ignore simuPOP::SharedVariables::setDoubleVectorVar(const string &name, const vectorf &val);
+
+%ignore simuPOP::SharedVariables::setStrDictVar(const string &name, const strDict &val);
+
+%ignore simuPOP::SharedVariables::setIntDictVar(const string &name, const intDict &val);
+
+%ignore simuPOP::SharedVariables::getVarAsBool(const string &name, bool nameError=true);
+
+%ignore simuPOP::SharedVariables::getVarAsInt(const string &name, bool nameError=true);
+
+%ignore simuPOP::SharedVariables::getVarAsDouble(const string &name, bool nameError=true);
+
+%ignore simuPOP::SharedVariables::getVarAsString(const string &name, bool nameError=true);
+
+%ignore simuPOP::SharedVariables::getVarAsStrDict(const string &name, bool nameError=true);
+
+%ignore simuPOP::SharedVariables::getVarAsIntDict(const string &name, bool nameError=true);
+
 %feature("docstring") simuPOP::SharedVariables::dict "
 
 Usage:
 
     x.dict()
 "; 
+
+%ignore simuPOP::SharedVariables::asString() const ;
 
 %feature("docstring") simuPOP::SharedVariables::fromString "
 
@@ -7742,6 +8032,8 @@ Usage:
     x.setPopulation(pop, rep)
 "; 
 
+%ignore simuPOP::simulator::curRep() const ;
+
 %feature("docstring") simuPOP::simulator::numRep "
 
 Usage:
@@ -7755,6 +8047,8 @@ Usage:
 
     x.gen()
 "; 
+
+%ignore simuPOP::simulator::grp();
 
 %feature("docstring") simuPOP::simulator::group "
 
@@ -7941,6 +8235,8 @@ Arguments:
 
 
 "; 
+
+%ignore simuPOP::simulator::loadSimulator(string filename, string format="auto");
 
 %feature("docstring") simuPOP::simulator::__repr__ "
 
@@ -8230,6 +8526,8 @@ Usage:
     x.__repr__()
 "; 
 
+%ignore simuPOP::statAlleleFreq;
+
 %feature("docstring") simuPOP::statAlleleFreq::statAlleleFreq "
 
 Usage:
@@ -8382,6 +8680,8 @@ Usage:
     x.apply(pop)
 "; 
 
+%ignore simuPOP::statExpHetero;
+
 %feature("docstring") simuPOP::statExpHetero::statExpHetero "
 
 Usage:
@@ -8395,6 +8695,8 @@ Usage:
 
     x.apply(pop)
 "; 
+
+%ignore simuPOP::statFst;
 
 %feature("docstring") simuPOP::statFst::statFst "
 
@@ -8452,6 +8754,8 @@ Usage:
     x.apply(pop)
 "; 
 
+%ignore simuPOP::statGenoFreq;
+
 %feature("docstring") simuPOP::statGenoFreq::statGenoFreq "
 
 Usage:
@@ -8470,6 +8774,8 @@ Details:
     replace previous values
 
 "; 
+
+%ignore simuPOP::statHaploFreq;
 
 %feature("docstring") simuPOP::statHaploFreq::statHaploFreq "
 
@@ -8534,6 +8840,8 @@ Usage:
     x.apply(pop)
 "; 
 
+%ignore simuPOP::statHeteroFreq;
+
 %feature("docstring") simuPOP::statHeteroFreq::statHeteroFreq "
 
 Usage:
@@ -8583,6 +8891,8 @@ Usage:
     x.apply(pop)
 "; 
 
+%ignore simuPOP::statLD;
+
 %feature("docstring") simuPOP::statLD::statLD "
 
 Usage:
@@ -8596,6 +8906,8 @@ Usage:
 
     x.apply(pop)
 "; 
+
+%ignore simuPOP::statNumOfAffected;
 
 %feature("docstring") simuPOP::statNumOfAffected::statNumOfAffected "
 
@@ -8646,6 +8958,8 @@ Usage:
     x.apply(pop)
 "; 
 
+%ignore simuPOP::statNumOfAlleles;
+
 %feature("docstring") simuPOP::statNumOfAlleles::statNumOfAlleles "
 
 Usage:
@@ -8659,6 +8973,8 @@ Usage:
 
     x.apply(pop)
 "; 
+
+%ignore simuPOP::statNumOfMale;
 
 %feature("docstring") simuPOP::statNumOfMale::statNumOfMale "
 
@@ -8755,6 +9071,8 @@ Usage:
 
     x.clone()
 "; 
+
+%ignore simuPOP::statPopSize;
 
 %feature("docstring") simuPOP::statPopSize::statPopSize "
 
@@ -8879,6 +9197,8 @@ Usage:
     stopIteration(msg)
 "; 
 
+%ignore simuPOP::StreamElem;
+
 %feature("docstring") simuPOP::StreamElem::StreamElem "
 
 Description:
@@ -8936,6 +9256,14 @@ Usage:
     x.makeAppend(append)
 "; 
 
+%ignore simuPOP::StreamElem::stream();
+
+%ignore simuPOP::StreamElem::type();
+
+%ignore simuPOP::StreamElem::info();
+
+%ignore simuPOP::StreamElem::append();
+
 %feature("docstring") simuPOP::StreamProvider "
 
 Description:
@@ -8974,6 +9302,14 @@ Usage:
 
     streamProvider(output, outputExpr)
 "; 
+
+%ignore simuPOP::StreamProvider::~StreamProvider();
+
+%ignore simuPOP::StreamProvider::setOutput(const string &output, const string &outputExpr);
+
+%ignore simuPOP::StreamProvider::noOutput();
+
+%ignore simuPOP::StreamProvider::getOstream(PyObject *dict=NULL, bool readable=false);
 
 %feature("docstring") simuPOP::StreamProvider::closeOstream "
 
@@ -9535,6 +9871,8 @@ Usage:
     (file, mate, format)
 "; 
 
+%ignore simuPOP::haploKeyhaploKey(const vectori &seq);
+
 %feature("docstring") simuPOP::TurnOnDebugTurnOnDebug "
 
 Description:
@@ -9600,6 +9938,44 @@ Usage:
 
     (code)
 "; 
+
+%ignore simuPOP::simuPOP_kbhitsimuPOP_kbhit(void);
+
+%ignore simuPOP::simuPOP_getchsimuPOP_getch(void);
+
+%ignore simuPOP::PyObj_As_BoolPyObj_As_Bool(PyObject *obj, bool &val);
+
+%ignore simuPOP::PyObj_As_IntPyObj_As_Int(PyObject *obj, int &val);
+
+%ignore simuPOP::PyObj_As_DoublePyObj_As_Double(PyObject *obj, double &val);
+
+%ignore simuPOP::PyObj_As_StringPyObj_As_String(PyObject *obj, string &val);
+
+%ignore simuPOP::PyObj_As_StrDictPyObj_As_StrDict(PyObject *obj, strDict &val);
+
+%ignore simuPOP::PyObj_As_ArrayPyObj_As_Array(PyObject *obj, vectorf &val);
+
+%ignore simuPOP::PyObj_As_IntArrayPyObj_As_IntArray(PyObject *obj, vectori &val);
+
+%ignore simuPOP::PyObj_As_IntDictPyObj_As_IntDict(PyObject *obj, intDict &val);
+
+%ignore simuPOP::PyObj_Is_IntNumArrayPyObj_Is_IntNumArray(PyObject *obj);
+
+%ignore simuPOP::PyObj_Is_DoubleNumArrayPyObj_Is_DoubleNumArray(PyObject *obj);
+
+%ignore simuPOP::PyObj_Is_AlleleNumArrayPyObj_Is_AlleleNumArray(PyObject *obj);
+
+%ignore simuPOP::Int_Vec_As_NumArrayInt_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
+
+%ignore simuPOP::Double_Vec_As_NumArrayDouble_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
+
+%ignore simuPOP::Allele_Vec_As_NumArrayAllele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
+
+%ignore simuPOP::Info_Vec_As_NumArrayInfo_Vec_As_NumArray(InfoIterator begin, InfoIterator end);
+
+%ignore simuPOP::NumArray_SizeNumArray_Size(PyObject *obj);
+
+%ignore simuPOP::NumArray_DataNumArray_Data(PyObject *obj);
 
 %feature("docstring") simuPOP::save_nonesave_none "
 
@@ -9727,6 +10103,14 @@ Usage:
     (vars, offset)
 "; 
 
+%ignore simuPOP::mainVarsmainVars();
+
+%ignore simuPOP::moduleVarsmoduleVars();
+
+%ignore simuPOP::pyPopObjpyPopObj(void *p);
+
+%ignore simuPOP::pyIndObjpyIndObj(void *p);
+
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
 
 Usage:
@@ -9775,6 +10159,8 @@ Usage:
 
     (intDict, IntDict, )
 "; 
+
+%ignore simuPOP::ostreamManagerostreamManager();
 
 %feature("docstring") simuPOP::rngrng "
 
@@ -9853,6 +10239,8 @@ Usage:
 
     (g_nullStreamBuf)
 "; 
+
+%ignore simuPOP::cnullcnull();
 
 %feature("docstring") simuPOP::setLogOutputsetLogOutput "
 
@@ -9979,12 +10367,16 @@ Usage:
     (filename)
 "; 
 
+%ignore simuPOP::initializeinitialize();
+
 %feature("docstring") simuPOP::testGappedIteratortestGappedIterator "
 
 Usage:
 
     ()
 "; 
+
+%ignore std::pow3pow3(unsigned n);
 
 %feature("docstring") simuPOP::countAllelescountAlleles "
 
@@ -10100,6 +10492,8 @@ Usage:
 
     (file, mate, format)
 "; 
+
+%ignore simuPOP::haploKeyhaploKey(const vectori &seq);
 
 %feature("docstring") simuPOP::newcarrayobjectnewcarrayobject "
 
@@ -10223,6 +10617,46 @@ Usage:
     (code)
 "; 
 
+%ignore simuPOP::simuPOP_kbhitsimuPOP_kbhit(void);
+
+%ignore simuPOP::simuPOP_getchsimuPOP_getch(void);
+
+%ignore simuPOP::pow3pow3(unsigned n);
+
+%ignore simuPOP::PyObj_As_BoolPyObj_As_Bool(PyObject *obj, bool &val);
+
+%ignore simuPOP::PyObj_As_IntPyObj_As_Int(PyObject *obj, int &val);
+
+%ignore simuPOP::PyObj_As_DoublePyObj_As_Double(PyObject *obj, double &val);
+
+%ignore simuPOP::PyObj_As_StringPyObj_As_String(PyObject *obj, string &val);
+
+%ignore simuPOP::PyObj_As_StrDictPyObj_As_StrDict(PyObject *obj, strDict &val);
+
+%ignore simuPOP::PyObj_As_ArrayPyObj_As_Array(PyObject *obj, vectorf &val);
+
+%ignore simuPOP::PyObj_As_IntArrayPyObj_As_IntArray(PyObject *obj, vectori &val);
+
+%ignore simuPOP::PyObj_As_IntDictPyObj_As_IntDict(PyObject *obj, intDict &val);
+
+%ignore simuPOP::PyObj_Is_IntNumArrayPyObj_Is_IntNumArray(PyObject *obj);
+
+%ignore simuPOP::PyObj_Is_DoubleNumArrayPyObj_Is_DoubleNumArray(PyObject *obj);
+
+%ignore simuPOP::PyObj_Is_AlleleNumArrayPyObj_Is_AlleleNumArray(PyObject *obj);
+
+%ignore simuPOP::Int_Vec_As_NumArrayInt_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
+
+%ignore simuPOP::Double_Vec_As_NumArrayDouble_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
+
+%ignore simuPOP::Allele_Vec_As_NumArrayAllele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
+
+%ignore simuPOP::Info_Vec_As_NumArrayInfo_Vec_As_NumArray(InfoIterator begin, InfoIterator end);
+
+%ignore simuPOP::NumArray_SizeNumArray_Size(PyObject *obj);
+
+%ignore simuPOP::NumArray_DataNumArray_Data(PyObject *obj);
+
 %feature("docstring") simuPOP::save_nonesave_none "
 
 Usage:
@@ -10349,6 +10783,14 @@ Usage:
     (vars, offset)
 "; 
 
+%ignore simuPOP::mainVarsmainVars();
+
+%ignore simuPOP::moduleVarsmoduleVars();
+
+%ignore simuPOP::pyPopObjpyPopObj(void *p);
+
+%ignore simuPOP::pyIndObjpyIndObj(void *p);
+
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
 
 Usage:
@@ -10397,6 +10839,8 @@ Usage:
 
     (intDict, IntDict, )
 "; 
+
+%ignore simuPOP::ostreamManagerostreamManager();
 
 %feature("docstring") simuPOP::rngrng "
 
@@ -10475,6 +10919,8 @@ Usage:
 
     (g_nullStreamBuf)
 "; 
+
+%ignore simuPOP::cnullcnull();
 
 %feature("docstring") simuPOP::setLogOutputsetLogOutput "
 
@@ -10600,6 +11046,8 @@ Usage:
 
     (filename)
 "; 
+
+%ignore simuPOP::initializeinitialize();
 
 %feature("docstring") simuPOP::testGappedIteratortestGappedIterator "
 
