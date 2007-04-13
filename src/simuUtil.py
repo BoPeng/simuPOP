@@ -1059,7 +1059,7 @@ def LoadGCData(file, loci=[]):
 #        
 def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
         fields = [], recombination=0.00001, penetrance=[0,0.25,0.5], 
-        pre=True, daf=0.001):
+        affectionCode=['1', '2'],  pre=True, daf=0.001):
     """ save population in Linkage format. Currently only
         support affected sibpairs sampled with affectedSibpairSample
         operator.
@@ -1073,6 +1073,8 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
             saving multiple files.
             
         outputExpr: expression version of output.
+
+        affectionCode: default to '1': unaffected, '2': affected
 
         pre: True. pedigree format to be fed to makeped. Non-pre format it is likely to 
             be wrong now for non-sibpair families.
@@ -1099,7 +1101,7 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
         raise exceptions.IOError, "Can not open file " + file + ".dat/.ped to write."
     #
     if loci == []:
-        loci = range(pop.totalNumLoci())
+        loci = range(pop.totNumLoci())
     #    
     # file is opened.
     # write data file
@@ -1135,6 +1137,7 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
     # interference
     datOut.write('0 0 << sex difference, interference\n')
     # recombination
+    if type(recombination) in [type([]), type(())]:
     datOut.write( ''.join(['%f '%recombination]*len(loci)) + ' << recombination rates \n ')
     # I do not know what they are
     datOut.write( "1 0.1 0.1\n")
@@ -1142,28 +1145,19 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
     datOut.close()
     # write pedigree file (affected sibpairs)
     # sex: in linkage, male is 1, female is 2
-    def sexCode(ind):
-        if ind.sex() == Male:
-            return 1
-        else:
-            return 2
-    # disease status: in linkage affected is 2, unaffected is 1
-    def affectedCode(ind):
-        if ind.affected():
-            return 2
-        else:
-            return 1
+    sexCode = {Male:1, Female:2}
+    affectedCode = {False: affectionCode[0], True: affectionCode[1]}
     # alleles string, since simuPOP allele starts from 0, add 1 to avoid
     # being treated as missing data.
     pldy = pop.ploidy()
     def writeInd(ind, famID, id, fa, mo):
         if pre:
-            print >> pedOut, '%d %d %d %d %s %s' % (famID, id, fa, mo, sexCode(ind), affectedCode(ind)),
+            print >> pedOut, '%d %d %d %d %s %s' % (famID, id, fa, mo, sexCode(ind), affectedCode[ind.sex()]),
         else:
             if fa == 0:
-                print >> pedOut, '%d %d %d 3 0 0 %d %s 0 %s' % (famID, id, fa, mo, sexCode(ind), affectedCode(ind)),
+                print >> pedOut, '%d %d %d 3 0 0 %d %s 0 %s' % (famID, id, fa, mo, sexCode(ind), affectedCode[ind.affected()]),
             else:
-                print >> pedOut, '%d %d %d 0 4 4 %d %s 1 %s' % (famID, id, fa, mo, sexCode(ind), affectedCode(ind)),
+                print >> pedOut, '%d %d %d 0 4 4 %d %s 1 %s' % (famID, id, fa, mo, sexCode(ind), affectedCode[ind.affected()]),
         for marker in loci:
             if combine is None:
                 for p in range(pldy):
