@@ -14,12 +14,11 @@ Description:
 
 Usage:
 
-    affectedSibpairSample(size=[], chooseUnaffected=False, countOnly=False,
-      name=\"sample\", nameExpr=\"\", times=1, saveAs=\"\", saveAsExpr=\"\",
-      format=\"auto\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[\"father_idx\",
-      \"mother_idx\"])
-
+    affectedSibpairSample(size=[], chooseUnaffected=False,
+      countOnly=False, name=\"sample\", nameExpr=\"\", times=1, saveAs=\"\",
+      saveAsExpr=\"\", format=\"auto\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+      infoFields=[\"father_idx\", \"mother_idx\"])
 Arguments:
 
     size:           number of affected sibpairs to be sampled. Can be
@@ -56,7 +55,6 @@ Description:
 Usage:
 
     x.~affectedSibpairSample()
-
 "; 
 
 %feature("docstring") simuPOP::affectedSibpairSample::clone "
@@ -68,7 +66,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::affectedSibpairSample::prepareSample "
@@ -76,7 +73,6 @@ Usage:
 Usage:
 
     x.prepareSample(pop)
-
 "; 
 
 %feature("docstring") simuPOP::affectedSibpairSample::drawsample "
@@ -84,7 +80,6 @@ Usage:
 Usage:
 
     x.drawsample(pop)
-
 Details:
 
     collect all families
@@ -96,7 +91,6 @@ Details:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials "
@@ -129,7 +123,6 @@ Description:
 Usage:
 
     bernulliTrials(rng, prob, trials)
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::~BernulliTrials "
@@ -137,7 +130,6 @@ Usage:
 Usage:
 
     x.~BernulliTrials()
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::probSize "
@@ -145,7 +137,6 @@ Usage:
 Usage:
 
     x.probSize()
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::doTrial "
@@ -157,7 +148,6 @@ Description:
 Usage:
 
     x.doTrial()
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::trial "
@@ -169,7 +159,6 @@ Description:
 Usage:
 
     x.trial()
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::trialSucc "
@@ -177,7 +166,6 @@ Usage:
 Usage:
 
     x.trialSucc()
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::trialSucc "
@@ -185,7 +173,6 @@ Usage:
 Usage:
 
     x.trialSucc(idx, )
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::probFirstSucc "
@@ -193,7 +180,6 @@ Usage:
 Usage:
 
     x.probFirstSucc()
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::probNextSucc "
@@ -201,7 +187,6 @@ Usage:
 Usage:
 
     x.probNextSucc()
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::trialFirstSucc "
@@ -209,7 +194,6 @@ Usage:
 Usage:
 
     x.trialFirstSucc()
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::trialNextSucc "
@@ -217,7 +201,6 @@ Usage:
 Usage:
 
     x.trialNextSucc(idx, )
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::setTrialSucc "
@@ -225,7 +208,6 @@ Usage:
 Usage:
 
     x.setTrialSucc(idx, succ)
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::trialSuccRate "
@@ -237,7 +219,6 @@ Description:
 Usage:
 
     x.trialSuccRate()
-
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::probSuccRate "
@@ -250,7 +231,6 @@ Description:
 Usage:
 
     x.probSuccRate()
-
 "; 
 
 %feature("docstring") simuPOP::binomialSelection "
@@ -273,10 +253,9 @@ Description:
 
 Usage:
 
-    binomialSelection(numOffspring=1., *numOffspringFunc=NULL, maxNumOffspring=0,
-      mode=MATE_NumOffspring, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      *newSubPopSizeFunc=NULL)
-
+    binomialSelection(numOffspring=1., *numOffspringFunc=NULL,
+      maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
+      newSubPopSizeExpr=\"\", *newSubPopSizeFunc=NULL)
 "; 
 
 %feature("docstring") simuPOP::binomialSelection::~binomialSelection "
@@ -288,7 +267,6 @@ Description:
 Usage:
 
     x.~binomialSelection()
-
 "; 
 
 %feature("docstring") simuPOP::binomialSelection::clone "
@@ -300,7 +278,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::binomialSelection::__repr__ "
@@ -312,7 +289,6 @@ Description:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::binomialSelection::submitScratch "
@@ -320,7 +296,6 @@ Usage:
 Usage:
 
     x.submitScratch(pop, scratch)
-
 "; 
 
 %feature("docstring") simuPOP::binomialSelection::mate "
@@ -332,7 +307,6 @@ Description:
 Usage:
 
     x.mate(pop, scratch, ops, submit)
-
 Arguments:
 
     pop:            population
@@ -359,11 +333,10 @@ Description:
 
 Usage:
 
-    caseControlSample(cases=[], controls=[], spSample=False, name=\"sample\",
-      nameExpr=\"\", times=1, saveAs=\"\", saveAsExpr=\"\", format=\"auto\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
-
+    caseControlSample(cases=[], controls=[], spSample=False,
+      name=\"sample\", nameExpr=\"\", times=1, saveAs=\"\", saveAsExpr=\"\",
+      format=\"auto\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     cases:          number of cases, or an array of number of cases
@@ -395,7 +368,6 @@ Description:
 Usage:
 
     x.~caseControlSample()
-
 "; 
 
 %feature("docstring") simuPOP::caseControlSample::clone "
@@ -407,7 +379,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::caseControlSample::prepareSample "
@@ -415,7 +386,6 @@ Usage:
 Usage:
 
     x.prepareSample(pop)
-
 "; 
 
 %feature("docstring") simuPOP::caseControlSample::drawsample "
@@ -423,7 +393,6 @@ Usage:
 Usage:
 
     x.drawsample(pop)
-
 "; 
 
 %feature("docstring") simuPOP::caseControlSample::__repr__ "
@@ -431,7 +400,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::continueIf "
@@ -452,7 +420,6 @@ Usage:
     continueIf(condition=\"\", message=\"\", var=\"terminate\", output=\"\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
 "; 
 
 %feature("docstring") simuPOP::continueIf::clone "
@@ -464,7 +431,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::continueIf::__repr__ "
@@ -472,7 +438,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::continueIf::apply "
@@ -484,7 +449,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::continueIf::~continueIf "
@@ -492,7 +456,6 @@ Usage:
 Usage:
 
     x.~continueIf()
-
 "; 
 
 %feature("docstring") simuPOP::controlledBinomialSelection "
@@ -515,11 +478,10 @@ Description:
 
 Usage:
 
-    controlledBinomialSelection(loci, alleles, *freqFunc, numOffspring=1.,
-      *numOffspringFunc=NULL, maxNumOffspring=0,
+    controlledBinomialSelection(loci, alleles, *freqFunc,
+      numOffspring=1., *numOffspringFunc=NULL, maxNumOffspring=0,
       mode=MATE_NumOffspring, newSubPopSize=[], newSubPopSizeExpr=\"\",
       *newSubPopSizeFunc=NULL)
-
 "; 
 
 %feature("docstring") simuPOP::controlledBinomialSelection::~controlledBinomialSelection "
@@ -531,7 +493,6 @@ Description:
 Usage:
 
     x.~controlledBinomialSelection()
-
 "; 
 
 %feature("docstring") simuPOP::controlledBinomialSelection::clone "
@@ -543,7 +504,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::controlledBinomialSelection::__repr__ "
@@ -555,7 +515,6 @@ Description:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::controlledBinomialSelection::submitScratch "
@@ -563,7 +522,6 @@ Usage:
 Usage:
 
     x.submitScratch(pop, scratch)
-
 "; 
 
 %feature("docstring") simuPOP::controlledBinomialSelection::mate "
@@ -575,7 +533,6 @@ Description:
 Usage:
 
     x.mate(pop, scratch, ops, submit)
-
 Arguments:
 
     pop:            population
@@ -602,8 +559,8 @@ Description:
 
 Usage:
 
-    controlledMating(matingScheme, loci, alleles, *freqFunc, range=0.01)
-
+    controlledMating(matingScheme, loci, alleles, *freqFunc,
+      range=0.01)
 Arguments:
 
     mating:         a mating scheme.
@@ -631,7 +588,6 @@ Description:
 Usage:
 
     x.~controlledMating()
-
 "; 
 
 %feature("docstring") simuPOP::controlledMating::clone "
@@ -645,7 +601,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::controlledMating::isCompatible "
@@ -657,7 +612,6 @@ Description:
 Usage:
 
     x.isCompatible()
-
 Details:
 
     possible things to check:need certain types of individual (age,
@@ -674,7 +628,6 @@ Description:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::controlledMating::mate "
@@ -686,7 +639,6 @@ Description:
 Usage:
 
     x.mate(pop, scratch, ops, submit)
-
 Arguments:
 
     pop:            population
@@ -722,12 +674,11 @@ Description:
 
 Usage:
 
-    controlledRandomMating(loci, alleles, *freqFunc, acceptScheme=0, numOffspring=1.,
-      *numOffspringFunc=NULL, maxNumOffspring=0,
+    controlledRandomMating(loci, alleles, *freqFunc, acceptScheme=0,
+      numOffspring=1., *numOffspringFunc=NULL, maxNumOffspring=0,
       mode=MATE_NumOffspring, newSubPopSize=[],
       *newSubPopSizeFunc=NULL, newSubPopSizeExpr=\"\",
       contWhenUniSex=True)
-
 Arguments:
 
     numOffspring:   
@@ -763,7 +714,6 @@ Description:
 Usage:
 
     x.~controlledRandomMating()
-
 "; 
 
 %feature("docstring") simuPOP::controlledRandomMating::clone "
@@ -777,7 +727,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::controlledRandomMating::isCompatible "
@@ -789,7 +738,6 @@ Description:
 Usage:
 
     x.isCompatible()
-
 Details:
 
     possible things to check:need certain types of individual (age,
@@ -806,7 +754,6 @@ Description:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::controlledRandomMating::submitScratch "
@@ -814,7 +761,6 @@ Usage:
 Usage:
 
     x.submitScratch(pop, scratch)
-
 "; 
 
 %feature("docstring") simuPOP::controlledRandomMating::mate "
@@ -826,7 +772,6 @@ Description:
 Usage:
 
     x.mate(pop, scratch, ops, submit)
-
 Details:
 
     Within each subpopulation, choose male and female randomly randmly
@@ -860,7 +805,6 @@ Usage:
       dispWidth=1, max=100, chrom=[], loci=[], subPop=[], indRange=[],
       output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
       step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
 Arguments:
 
     alleleOnly:     only display allele
@@ -891,7 +835,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::dumper::alleleOnly "
@@ -903,7 +846,6 @@ Description:
 Usage:
 
     x.alleleOnly()
-
 "; 
 
 %feature("docstring") simuPOP::dumper::setAlleleOnly "
@@ -911,7 +853,6 @@ Usage:
 Usage:
 
     x.setAlleleOnly(alleleOnly)
-
 "; 
 
 %feature("docstring") simuPOP::dumper::infoOnly "
@@ -923,7 +864,6 @@ Description:
 Usage:
 
     x.infoOnly()
-
 "; 
 
 %feature("docstring") simuPOP::dumper::setInfoOnly "
@@ -931,7 +871,6 @@ Usage:
 Usage:
 
     x.setInfoOnly(infoOnly)
-
 "; 
 
 %feature("docstring") simuPOP::dumper::apply "
@@ -939,7 +878,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 Details:
 
     dump population structuredump all genotypic info
@@ -951,7 +889,6 @@ Details:
 Usage:
 
     x.~dumper()
-
 "; 
 
 %feature("docstring") simuPOP::dumper::__repr__ "
@@ -959,7 +896,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::Exception "
@@ -979,7 +915,6 @@ Description:
 Usage:
 
     exception(msg)
-
 "; 
 
 %feature("docstring") simuPOP::Exception::message "
@@ -991,7 +926,6 @@ Description:
 Usage:
 
     x.message()
-
 "; 
 
 %feature("docstring") simuPOP::Exception::~Exception "
@@ -999,7 +933,6 @@ Usage:
 Usage:
 
     x.~Exception()
-
 "; 
 
 %feature("docstring") simuPOP::Expression::Expression "
@@ -1011,7 +944,6 @@ Description:
 Usage:
 
     expression(rhs)
-
 "; 
 
 %feature("docstring") simuPOP::Expression::evaluate "
@@ -1023,7 +955,6 @@ Description:
 Usage:
 
     x.evaluate()
-
 "; 
 
 %feature("docstring") simuPOP::GappedIterator::ptr "
@@ -1035,7 +966,6 @@ Description:
 Usage:
 
     x.ptr()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStructure::~GenoStructure "
@@ -1047,7 +977,6 @@ Description:
 Usage:
 
     x.~GenoStructure()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait "
@@ -1072,7 +1001,6 @@ Description:
 Usage:
 
     genoStruTrait()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::setGenoStructure "
@@ -1086,7 +1014,6 @@ Description:
 Usage:
 
     x.setGenoStructure(rhs)
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::ploidy "
@@ -1098,7 +1025,6 @@ Description:
 Usage:
 
     x.ploidy()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::ploidyName "
@@ -1110,7 +1036,6 @@ Description:
 Usage:
 
     x.ploidyName()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::numLoci "
@@ -1122,7 +1047,6 @@ Description:
 Usage:
 
     x.numLoci()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::numLoci "
@@ -1130,7 +1054,6 @@ Usage:
 Usage:
 
     x.numLoci()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::sexChrom "
@@ -1142,7 +1065,6 @@ Description:
 Usage:
 
     x.sexChrom()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::totNumLoci "
@@ -1154,7 +1076,6 @@ Description:
 Usage:
 
     x.totNumLoci()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::genoSize "
@@ -1166,7 +1087,6 @@ Description:
 Usage:
 
     x.genoSize()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::locusPos "
@@ -1178,7 +1098,6 @@ Description:
 Usage:
 
     x.locusPos()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::lociPos "
@@ -1186,7 +1105,6 @@ Usage:
 Usage:
 
     x.lociPos()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::arrLociPos "
@@ -1198,7 +1116,6 @@ Description:
 Usage:
 
     x.arrLociPos()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::arrLociPos "
@@ -1210,7 +1127,6 @@ Description:
 Usage:
 
     x.arrLociPos(chrom)
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::numChrom "
@@ -1222,7 +1138,6 @@ Description:
 Usage:
 
     x.numChrom()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::chromIndex "
@@ -1234,7 +1149,6 @@ Description:
 Usage:
 
     x.chromIndex()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::chromBegin "
@@ -1246,7 +1160,6 @@ Description:
 Usage:
 
     x.chromBegin()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::chromEnd "
@@ -1258,7 +1171,6 @@ Description:
 Usage:
 
     x.chromEnd()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::absLocusIndex "
@@ -1271,7 +1183,6 @@ Description:
 Usage:
 
     x.absLocusIndex(chrom, locus)
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::chromLocusPair "
@@ -1283,7 +1194,6 @@ Description:
 Usage:
 
     x.chromLocusPair()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::alleleName "
@@ -1295,7 +1205,6 @@ Description:
 Usage:
 
     x.alleleName()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::alleleNames "
@@ -1307,7 +1216,6 @@ Description:
 Usage:
 
     x.alleleNames()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::locusName "
@@ -1319,7 +1227,6 @@ Description:
 Usage:
 
     x.locusName()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::lociNames "
@@ -1327,7 +1234,6 @@ Usage:
 Usage:
 
     x.lociNames()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::maxAllele "
@@ -1335,7 +1241,6 @@ Usage:
 Usage:
 
     x.maxAllele()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::setMaxAllele "
@@ -1343,7 +1248,6 @@ Usage:
 Usage:
 
     x.setMaxAllele(maxAllele)
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::hasInfoField "
@@ -1355,7 +1259,6 @@ Description:
 Usage:
 
     x.hasInfoField()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::infoSize "
@@ -1363,7 +1266,6 @@ Usage:
 Usage:
 
     x.infoSize()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::infoFields "
@@ -1371,7 +1273,6 @@ Usage:
 Usage:
 
     x.infoFields()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::infoField "
@@ -1379,7 +1280,6 @@ Usage:
 Usage:
 
     x.infoField()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::infoIdx "
@@ -1391,7 +1291,6 @@ Description:
 Usage:
 
     x.infoIdx()
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::swap "
@@ -1399,7 +1298,6 @@ Usage:
 Usage:
 
     x.swap(rhs)
-
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::chromMap "
@@ -1407,7 +1305,6 @@ Usage:
 Usage:
 
     x.chromMap()
-
 "; 
 
 %feature("docstring") simuPOP::gsmMutator "
@@ -1422,10 +1319,10 @@ Description:
 
 Usage:
 
-    gsmMutator(rate=[], atLoci=[], maxAllele=0, incProb=0.5, p=0, *func=NULL,
-      output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    gsmMutator(rate=[], atLoci=[], maxAllele=0, incProb=0.5, p=0,
+      *func=NULL, output=\">\", outputExpr=\"\", stage=PostMating,
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+      infoFields=[])
 Arguments:
 
     rate::          mutation rate
@@ -1449,7 +1346,6 @@ Details:
 Usage:
 
     x.~gsmMutator()
-
 "; 
 
 %feature("docstring") simuPOP::gsmMutator::clone "
@@ -1461,7 +1357,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::gsmMutator::mutate "
@@ -1474,7 +1369,6 @@ Description:
 Usage:
 
     x.mutate(allele)
-
 "; 
 
 %feature("docstring") simuPOP::gsmMutator::__repr__ "
@@ -1482,7 +1376,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::ifElse "
@@ -1497,10 +1390,9 @@ Description:
 
 Usage:
 
-    ifElse(cond, *ifOp=NULL, *elseOp=NULL, output=\">\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
-
+    ifElse(cond, *ifOp=NULL, *elseOp=NULL, output=\">\",
+      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     cond:           expression, will be treated as bool variable.
@@ -1519,7 +1411,6 @@ Description:
 Usage:
 
     x.~ifElse()
-
 "; 
 
 %feature("docstring") simuPOP::ifElse::clone "
@@ -1531,7 +1422,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::ifElse::applyWithScratch "
@@ -1544,7 +1434,6 @@ Description:
 Usage:
 
     x.applyWithScratch(pop, scratch, stage)
-
 "; 
 
 %feature("docstring") simuPOP::ifElse::applyDuringMating "
@@ -1556,7 +1445,6 @@ Description:
 Usage:
 
     x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
 "; 
 
 %feature("docstring") simuPOP::ifElse::apply "
@@ -1569,7 +1457,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::ifElse::__repr__ "
@@ -1577,7 +1464,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::IndexError "
@@ -1593,7 +1479,6 @@ Description:
 Usage:
 
     indexError(msg)
-
 "; 
 
 %feature("docstring") simuPOP::individual "
@@ -1634,7 +1519,6 @@ Description:
 Usage:
 
     individual()
-
 "; 
 
 %feature("docstring") simuPOP::individual::~individual "
@@ -1646,7 +1530,6 @@ Description:
 Usage:
 
     x.~individual()
-
 "; 
 
 %feature("docstring") simuPOP::individual::copyFrom "
@@ -1658,7 +1541,6 @@ Description:
 Usage:
 
     x.copyFrom(rhs)
-
 "; 
 
 %feature("docstring") simuPOP::individual::arrGenotype "
@@ -1671,7 +1553,6 @@ Description:
 Usage:
 
     x.arrGenotype()
-
 "; 
 
 %feature("docstring") simuPOP::individual::arrGenotype "
@@ -1684,7 +1565,6 @@ Description:
 Usage:
 
     x.arrGenotype(p)
-
 "; 
 
 %feature("docstring") simuPOP::individual::arrGenotype "
@@ -1697,7 +1577,6 @@ Description:
 Usage:
 
     x.arrGenotype(p, ch)
-
 "; 
 
 %feature("docstring") simuPOP::individual::arrInfo "
@@ -1705,7 +1584,6 @@ Usage:
 Usage:
 
     x.arrInfo()
-
 "; 
 
 %feature("docstring") simuPOP::individual::allele "
@@ -1717,7 +1595,6 @@ Description:
 Usage:
 
     x.allele()
-
 Arguments:
 
     index:          index from the beginning of genotypic info
@@ -1734,7 +1611,6 @@ Description:
 Usage:
 
     x.allele(index, )
-
 Arguments:
 
     index:          index from the begining of the p'th set of
@@ -1749,7 +1625,6 @@ Arguments:
 Usage:
 
     x.allele(index, p, )
-
 "; 
 
 %feature("docstring") simuPOP::individual::alleleChar "
@@ -1757,7 +1632,6 @@ Usage:
 Usage:
 
     x.alleleChar()
-
 "; 
 
 %feature("docstring") simuPOP::individual::alleleChar "
@@ -1769,7 +1643,6 @@ Description:
 Usage:
 
     x.alleleChar(index, )
-
 Arguments:
 
     index:          index from the begining of the p'th set of
@@ -1788,7 +1661,6 @@ Description:
 Usage:
 
     x.alleleChar(index, p, )
-
 Arguments:
 
     index:          index from the begining of the p'th set of
@@ -1807,7 +1679,6 @@ Description:
 Usage:
 
     x.setAllele(allele, index)
-
 Arguments:
 
     index:          index from the begining of genotype
@@ -1824,7 +1695,6 @@ Description:
 Usage:
 
     x.setAllele(allele, index, p)
-
 Arguments:
 
     allele:         allele to set
@@ -1839,7 +1709,6 @@ Arguments:
 Usage:
 
     x.setAllele(allele, index, p, ch)
-
 "; 
 
 %feature("docstring") simuPOP::individual::sex "
@@ -1851,7 +1720,6 @@ Description:
 Usage:
 
     x.sex()
-
 "; 
 
 %feature("docstring") simuPOP::individual::sexChar "
@@ -1863,7 +1731,6 @@ Description:
 Usage:
 
     x.sexChar()
-
 "; 
 
 %feature("docstring") simuPOP::individual::setSex "
@@ -1875,7 +1742,6 @@ Description:
 Usage:
 
     x.setSex(sex)
-
 "; 
 
 %feature("docstring") simuPOP::individual::affected "
@@ -1887,7 +1753,6 @@ Description:
 Usage:
 
     x.affected()
-
 "; 
 
 %feature("docstring") simuPOP::individual::unaffected "
@@ -1899,7 +1764,6 @@ Description:
 Usage:
 
     x.unaffected()
-
 "; 
 
 %feature("docstring") simuPOP::individual::affectedChar "
@@ -1911,7 +1775,6 @@ Description:
 Usage:
 
     x.affectedChar()
-
 "; 
 
 %feature("docstring") simuPOP::individual::setAffected "
@@ -1923,7 +1786,6 @@ Description:
 Usage:
 
     x.setAffected(affected)
-
 "; 
 
 %feature("docstring") simuPOP::individual::subPopID "
@@ -1935,7 +1797,6 @@ Description:
 Usage:
 
     x.subPopID()
-
 "; 
 
 %feature("docstring") simuPOP::individual::setSubPopID "
@@ -1947,7 +1808,6 @@ Description:
 Usage:
 
     x.setSubPopID(id)
-
 "; 
 
 %feature("docstring") simuPOP::individual::info "
@@ -1959,7 +1819,6 @@ Description:
 Usage:
 
     x.info()
-
 "; 
 
 %feature("docstring") simuPOP::individual::setInfo "
@@ -1971,7 +1830,6 @@ Description:
 Usage:
 
     x.setInfo(value, idx)
-
 "; 
 
 %feature("docstring") simuPOP::individual::info "
@@ -1983,7 +1841,6 @@ Description:
 Usage:
 
     x.info()
-
 "; 
 
 %feature("docstring") simuPOP::individual::setInfo "
@@ -1995,7 +1852,6 @@ Description:
 Usage:
 
     x.setInfo(value, name)
-
 "; 
 
 %feature("docstring") simuPOP::individual::__cmp__ "
@@ -2003,7 +1859,6 @@ Usage:
 Usage:
 
     x.__cmp__()
-
 "; 
 
 %feature("docstring") simuPOP::individual::__repr__ "
@@ -2011,7 +1866,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::individual::swap "
@@ -2023,7 +1877,6 @@ Description:
 Usage:
 
     x.swap(ind, swapContent=True)
-
 Arguments:
 
     ind:            individual to be swapped in
@@ -2059,7 +1912,6 @@ Description:
 Usage:
 
     individualIterator(*pop, s, e)
-
 "; 
 
 %feature("docstring") simuPOP::individualIterator::__iter__ "
@@ -2067,7 +1919,6 @@ Usage:
 Usage:
 
     x.__iter__()
-
 "; 
 
 %feature("docstring") simuPOP::individualIterator::next "
@@ -2075,7 +1926,6 @@ Usage:
 Usage:
 
     x.next()
-
 "; 
 
 %feature("docstring") simuPOP::inheritTagger "
@@ -2094,9 +1944,9 @@ Description:
 
 Usage:
 
-    inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[\"paternal_tag\", \"maternal_tag\"])
-
+    inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[\"paternal_tag\",
+      \"maternal_tag\"])
 "; 
 
 %feature("docstring") simuPOP::inheritTagger::~inheritTagger "
@@ -2104,7 +1954,6 @@ Usage:
 Usage:
 
     x.~inheritTagger()
-
 "; 
 
 %feature("docstring") simuPOP::inheritTagger::__repr__ "
@@ -2112,7 +1961,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::inheritTagger::applyDuringMating "
@@ -2124,7 +1972,6 @@ Description:
 Usage:
 
     x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
 "; 
 
 %feature("docstring") simuPOP::inheritTagger::clone "
@@ -2136,7 +1983,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::initByFreq "
@@ -2159,7 +2005,6 @@ Usage:
       indRange=intMatrix, atLoci=[], atPloidy=-1, maleFreq=0.5,
       sex=[], stage=PreMating, begin=0, end=1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
 Arguments:
 
     alleleFreq:     an array of allele frequencies. Must add up to 1;
@@ -2200,7 +2045,6 @@ Details:
 Usage:
 
     x.~initByFreq()
-
 "; 
 
 %feature("docstring") simuPOP::initByFreq::clone "
@@ -2212,7 +2056,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::initByFreq::__repr__ "
@@ -2220,7 +2063,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::initByFreq::apply "
@@ -2228,7 +2070,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 Details:
 
     initialize m_ranges
@@ -2251,7 +2092,6 @@ Usage:
       indRange=intMatrix, proportions=[], maleFreq=0.5, sex=[],
       stage=PreMating, begin=0, end=1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[])
-
 "; 
 
 %feature("docstring") simuPOP::initByValue::~initByValue "
@@ -2259,7 +2099,6 @@ Usage:
 Usage:
 
     x.~initByValue()
-
 "; 
 
 %feature("docstring") simuPOP::initByValue::clone "
@@ -2271,7 +2110,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::initByValue::__repr__ "
@@ -2279,7 +2117,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::initByValue::apply "
@@ -2287,7 +2124,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 Details:
 
     fixme: check length of src?atLoci is in effect
@@ -2310,10 +2146,9 @@ Description:
 
 Usage:
 
-    initializer(subPop=[], indRange=intMatrix, atLoci=[], atPloidy=-1,
-      maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    initializer(subPop=[], indRange=intMatrix, atLoci=[],
+      atPloidy=-1, maleFreq=0.5, sex=[], stage=PreMating, begin=0,
+      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::initializer::~initializer "
@@ -2325,7 +2160,6 @@ Description:
 Usage:
 
     x.~initializer()
-
 "; 
 
 %feature("docstring") simuPOP::initializer::clone "
@@ -2337,7 +2171,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::initializer::__repr__ "
@@ -2345,7 +2178,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::initializer::setRanges "
@@ -2353,7 +2185,6 @@ Usage:
 Usage:
 
     x.setRanges(pop)
-
 "; 
 
 %feature("docstring") simuPOP::initializer::initSexIter "
@@ -2361,7 +2192,6 @@ Usage:
 Usage:
 
     x.initSexIter()
-
 "; 
 
 %feature("docstring") simuPOP::initializer::nextSex "
@@ -2369,7 +2199,6 @@ Usage:
 Usage:
 
     x.nextSex()
-
 "; 
 
 %feature("docstring") simuPOP::IOError "
@@ -2385,7 +2214,6 @@ Description:
 Usage:
 
     iOError(msg)
-
 "; 
 
 %feature("docstring") simuPOP::isAffected::isAffected "
@@ -2393,7 +2221,6 @@ Usage:
 Usage:
 
     isAffected()
-
 "; 
 
 %feature("docstring") simuPOP::kamMutator "
@@ -2412,10 +2239,9 @@ Description:
 
 Usage:
 
-    kamMutator(rate=[], atLoci=[], maxAllele=0, output=\">\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
-
+    kamMutator(rate=[], atLoci=[], maxAllele=0, output=\">\",
+      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     rate:           mutation rate. It is 'probability to mutate'. The
@@ -2435,7 +2261,6 @@ Arguments:
 Usage:
 
     x.~kamMutator()
-
 "; 
 
 %feature("docstring") simuPOP::kamMutator::mutate "
@@ -2447,7 +2272,6 @@ Description:
 Usage:
 
     x.mutate(allele)
-
 "; 
 
 %feature("docstring") simuPOP::kamMutator::clone "
@@ -2459,7 +2283,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::kamMutator::__repr__ "
@@ -2467,7 +2290,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::largePedigreeSample "
@@ -2482,12 +2304,11 @@ Description:
 
 Usage:
 
-    largePedigreeSample(size=[], minTotalSize=0, maxOffspring=5, minPedSize=5,
-      minAffected=0, countOnly=False, name=\"sample\", nameExpr=\"\",
-      times=1, saveAs=\"\", saveAsExpr=\"\", format=\"auto\",
+    largePedigreeSample(size=[], minTotalSize=0, maxOffspring=5,
+      minPedSize=5, minAffected=0, countOnly=False, name=\"sample\",
+      nameExpr=\"\", times=1, saveAs=\"\", saveAsExpr=\"\", format=\"auto\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[\"father_idx\", \"mother_idx\"])
-
 Arguments:
 
     size:           number of affected sibpairs to be sampled. Can be
@@ -2524,7 +2345,6 @@ Description:
 Usage:
 
     x.~largePedigreeSample()
-
 "; 
 
 %feature("docstring") simuPOP::largePedigreeSample::clone "
@@ -2536,7 +2356,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::largePedigreeSample::prepareSample "
@@ -2544,7 +2363,6 @@ Usage:
 Usage:
 
     x.prepareSample(pop)
-
 "; 
 
 %feature("docstring") simuPOP::largePedigreeSample::drawsample "
@@ -2552,7 +2370,6 @@ Usage:
 Usage:
 
     x.drawsample(pop)
-
 Details:
 
     collect all families
@@ -2564,7 +2381,6 @@ Details:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::maPenetrance "
@@ -2589,10 +2405,9 @@ Description:
 
 Usage:
 
-    maPenetrance(loci, penet, wildtype, ancestralGen=-1, stage=DuringMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[])
-
+    maPenetrance(loci, penet, wildtype, ancestralGen=-1,
+      stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
 Arguments:
 
     locus:          the locus index. The genotype of this locus will
@@ -2615,7 +2430,6 @@ Arguments:
 Usage:
 
     x.~maPenetrance()
-
 "; 
 
 %feature("docstring") simuPOP::maPenetrance::clone "
@@ -2627,7 +2441,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::maPenetrance::penet "
@@ -2639,7 +2452,6 @@ Description:
 Usage:
 
     x.penet(*ind)
-
 Details:
 
     get genotype of ind
@@ -2651,7 +2463,6 @@ Details:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::mapPenetrance "
@@ -2676,10 +2487,9 @@ Description:
 
 Usage:
 
-    mapPenetrance(loci, penet, phase=False, ancestralGen=-1, stage=DuringMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[])
-
+    mapPenetrance(loci, penet, phase=False, ancestralGen=-1,
+      stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
 Arguments:
 
     locus:          the locus index. The genotype of this locus will
@@ -2701,7 +2511,6 @@ Arguments:
 Usage:
 
     x.~mapPenetrance()
-
 "; 
 
 %feature("docstring") simuPOP::mapPenetrance::clone "
@@ -2713,7 +2522,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::mapPenetrance::penet "
@@ -2725,7 +2533,6 @@ Description:
 Usage:
 
     x.penet(*ind)
-
 Details:
 
     get genotype of ind
@@ -2737,7 +2544,6 @@ Details:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::mapQuanTrait "
@@ -2761,10 +2567,9 @@ Description:
 
 Usage:
 
-    mapQuanTrait(loci, qtrait, sigma=0, phase=False, ancestralGen=-1,
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=\"qtrait\")
-
+    mapQuanTrait(loci, qtrait, sigma=0, phase=False,
+      ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
+      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=\"qtrait\")
 Arguments:
 
     locus:          the locus index. The genotype of this locus will
@@ -2790,7 +2595,6 @@ Arguments:
 Usage:
 
     x.~mapQuanTrait()
-
 "; 
 
 %feature("docstring") simuPOP::mapQuanTrait::clone "
@@ -2802,7 +2606,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::mapQuanTrait::qtrait "
@@ -2814,7 +2617,6 @@ Description:
 Usage:
 
     x.qtrait(*ind)
-
 Details:
 
     get genotype of ind
@@ -2826,7 +2628,6 @@ Details:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::mapSelector "
@@ -2851,9 +2652,9 @@ Description:
 
 Usage:
 
-    mapSelector(loci, fitness, phase=False, stage=PreMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=\"fitness\")
-
+    mapSelector(loci, fitness, phase=False, stage=PreMating,
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+      infoFields=\"fitness\")
 Arguments:
 
     locus:          the locus index. The genotype of this locus will
@@ -2876,7 +2677,6 @@ Arguments:
 Usage:
 
     x.~mapSelector()
-
 "; 
 
 %feature("docstring") simuPOP::mapSelector::clone "
@@ -2888,7 +2688,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::mapSelector::indFitness "
@@ -2900,7 +2699,6 @@ Description:
 Usage:
 
     x.indFitness(*ind, gen)
-
 Details:
 
     get genotype of ind
@@ -2912,7 +2710,6 @@ Details:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::maQuanTrait "
@@ -2940,7 +2737,6 @@ Usage:
     maQuanTrait(loci, qtrait, wildtype, sigma=[], ancestralGen=-1,
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=\"qtrait\")
-
 Arguments:
 
     locus:          the locus index. The genotype of this locus will
@@ -2966,7 +2762,6 @@ Description:
 Usage:
 
     x.~maQuanTrait()
-
 "; 
 
 %feature("docstring") simuPOP::maQuanTrait::clone "
@@ -2978,7 +2773,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::maQuanTrait::qtrait "
@@ -2990,7 +2784,6 @@ Description:
 Usage:
 
     x.qtrait(*ind)
-
 Details:
 
     get genotype of ind
@@ -3002,7 +2795,6 @@ Details:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::maSelector "
@@ -3028,9 +2820,9 @@ Description:
 
 Usage:
 
-    maSelector(loci, fitness, wildtype, stage=PreMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=\"fitness\")
-
+    maSelector(loci, fitness, wildtype, stage=PreMating, begin=0,
+      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+      infoFields=\"fitness\")
 Arguments:
 
     locus:          the locus index. The genotype of this locus will
@@ -3055,7 +2847,6 @@ Arguments:
 Usage:
 
     x.~maSelector()
-
 "; 
 
 %feature("docstring") simuPOP::maSelector::clone "
@@ -3067,7 +2858,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::maSelector::indFitness "
@@ -3079,7 +2869,6 @@ Description:
 Usage:
 
     x.indFitness(*ind, gen)
-
 Details:
 
     get genotype of ind
@@ -3091,7 +2880,6 @@ Details:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::mating "
@@ -3112,7 +2900,6 @@ Description:
 Usage:
 
     x.isCompatible()
-
 Details:
 
     possible things to check:need certain types of individual (age,
@@ -3128,10 +2915,9 @@ Description:
 
 Usage:
 
-    mating(numOffspring=1.0, *numOffspringFunc=NULL, maxNumOffspring=0,
-      mode=MATE_NumOffspring, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      *newSubPopSizeFunc=NULL)
-
+    mating(numOffspring=1.0, *numOffspringFunc=NULL,
+      maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
+      newSubPopSizeExpr=\"\", *newSubPopSizeFunc=NULL)
 "; 
 
 %feature("docstring") simuPOP::mating::mating "
@@ -3139,7 +2925,6 @@ Usage:
 Usage:
 
     mating(rhs)
-
 "; 
 
 %feature("docstring") simuPOP::mating::~mating "
@@ -3151,7 +2936,6 @@ Description:
 Usage:
 
     x.~mating()
-
 "; 
 
 %feature("docstring") simuPOP::mating::clone "
@@ -3163,7 +2947,6 @@ Description:
 Usage:
 
     x.clone()
-
 Details:
 
     This function is important because Python automatically release an
@@ -3182,7 +2965,6 @@ Description:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::mating::submitScratch "
@@ -3190,7 +2972,6 @@ Usage:
 Usage:
 
     x.submitScratch(pop, scratch)
-
 "; 
 
 %feature("docstring") simuPOP::mating::mate "
@@ -3202,7 +2983,6 @@ Description:
 Usage:
 
     x.mate(pop, scratch, ops, submit)
-
 Arguments:
 
     pop:            population
@@ -3217,7 +2997,6 @@ Arguments:
 Usage:
 
     x.fixedFamilySize()
-
 "; 
 
 %feature("docstring") simuPOP::mating::numOffspring "
@@ -3225,7 +3004,6 @@ Usage:
 Usage:
 
     x.numOffspring(gen)
-
 "; 
 
 %feature("docstring") simuPOP::mating::resetNumOffspring "
@@ -3233,7 +3011,6 @@ Usage:
 Usage:
 
     x.resetNumOffspring()
-
 "; 
 
 %feature("docstring") simuPOP::mating::prepareScratchPop "
@@ -3245,7 +3022,6 @@ Description:
 Usage:
 
     x.prepareScratchPop(pop, scratch)
-
 "; 
 
 %feature("docstring") simuPOP::mergeSubPops "
@@ -3264,9 +3040,9 @@ Description:
 
 Usage:
 
-    mergeSubPops(subPops=[], removeEmptySubPops=False, stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    mergeSubPops(subPops=[], removeEmptySubPops=False,
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
 Arguments:
 
     subPops:        subpops to be merged, default to all subpops.
@@ -3283,7 +3059,6 @@ Description:
 Usage:
 
     x.~mergeSubPops()
-
 "; 
 
 %feature("docstring") simuPOP::mergeSubPops::clone "
@@ -3295,7 +3070,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::mergeSubPops::apply "
@@ -3308,7 +3082,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::mergeSubPops::__repr__ "
@@ -3316,7 +3089,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::migrator "
@@ -3331,10 +3103,9 @@ Description:
 
 Usage:
 
-    migrator(rate, mode=MigrByProbability, fromSubPop=[], toSubPop=[],
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
-
+    migrator(rate, mode=MigrByProbability, fromSubPop=[],
+      toSubPop=[], stage=PreMating, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     rate:           migration rate, proportion or count. Determined by
@@ -3374,7 +3145,6 @@ Description:
 Usage:
 
     x.~migrator()
-
 "; 
 
 %feature("docstring") simuPOP::migrator::clone "
@@ -3386,7 +3156,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::migrator::rate "
@@ -3398,7 +3167,6 @@ Description:
 Usage:
 
     x.rate()
-
 "; 
 
 %feature("docstring") simuPOP::migrator::setRates "
@@ -3410,7 +3178,6 @@ Description:
 Usage:
 
     x.setRates(rate, mode)
-
 Details:
 
     format 0-0 0-1 0-2, 1-0 1-1 1-2, 2-0, 2-1, 2-2. for mode 1 or 2,
@@ -3423,7 +3190,6 @@ Details:
 Usage:
 
     x.apply(pop)
-
 Details:
 
     2nd, or 3rd methodcreate a vector and assign indices, then random
@@ -3436,7 +3202,6 @@ Details:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::mlPenetrance "
@@ -3465,7 +3230,6 @@ Usage:
     mlPenetrance(peneOps, mode=PEN_Multiplicative, ancestralGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[])
-
 Arguments:
 
     selectors:      a list of selectors.
@@ -3480,7 +3244,6 @@ Arguments:
 Usage:
 
     x.~mlPenetrance()
-
 "; 
 
 %feature("docstring") simuPOP::mlPenetrance::clone "
@@ -3492,7 +3255,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::mlPenetrance::penet "
@@ -3504,7 +3266,6 @@ Description:
 Usage:
 
     x.penet(*ind)
-
 "; 
 
 %feature("docstring") simuPOP::mlPenetrance::__repr__ "
@@ -3512,7 +3273,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::mlQuanTrait "
@@ -3538,10 +3298,9 @@ Description:
 
 Usage:
 
-    mlQuanTrait(qtraits, mode=QT_Multiplicative, sigma=0, ancestralGen=-1,
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=\"qtrait\")
-
+    mlQuanTrait(qtraits, mode=QT_Multiplicative, sigma=0,
+      ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
+      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=\"qtrait\")
 Arguments:
 
     qtraits:        a list of qtraits.
@@ -3554,7 +3313,6 @@ Arguments:
 Usage:
 
     x.~mlQuanTrait()
-
 "; 
 
 %feature("docstring") simuPOP::mlQuanTrait::clone "
@@ -3566,7 +3324,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::mlQuanTrait::qtrait "
@@ -3578,7 +3335,6 @@ Description:
 Usage:
 
     x.qtrait(*ind)
-
 "; 
 
 %feature("docstring") simuPOP::mlQuanTrait::__repr__ "
@@ -3586,7 +3342,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::mlSelector "
@@ -3612,10 +3367,9 @@ Description:
 
 Usage:
 
-    mlSelector(selectors, mode=SEL_Multiplicative, stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+    mlSelector(selectors, mode=SEL_Multiplicative, stage=PreMating,
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
       infoFields=\"fitness\")
-
 Arguments:
 
     selectors:      a list of selectors.
@@ -3628,7 +3382,6 @@ Arguments:
 Usage:
 
     x.~mlSelector()
-
 "; 
 
 %feature("docstring") simuPOP::mlSelector::clone "
@@ -3640,7 +3393,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::mlSelector::indFitness "
@@ -3652,7 +3404,6 @@ Description:
 Usage:
 
     x.indFitness(*ind, gen)
-
 Details:
 
     fixme
@@ -3664,7 +3415,6 @@ Details:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::mutator "
@@ -3686,10 +3436,9 @@ Description:
 
 Usage:
 
-    mutator(rate=[], atLoci=[], maxAllele=0, output=\">\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
-
+    mutator(rate=[], atLoci=[], maxAllele=0, output=\">\",
+      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     rate:           single rate for all applicable loci (atLoci). Will
@@ -3712,7 +3461,6 @@ Description:
 Usage:
 
     x.~mutator()
-
 "; 
 
 %feature("docstring") simuPOP::mutator::clone "
@@ -3724,7 +3472,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::mutator::rate "
@@ -3736,7 +3483,6 @@ Description:
 Usage:
 
     x.rate()
-
 "; 
 
 %feature("docstring") simuPOP::mutator::setRate "
@@ -3748,7 +3494,6 @@ Description:
 Usage:
 
     x.setRate(rate, atLoci=[])
-
 "; 
 
 %feature("docstring") simuPOP::mutator::maxAllele "
@@ -3760,7 +3505,6 @@ Description:
 Usage:
 
     x.maxAllele()
-
 "; 
 
 %feature("docstring") simuPOP::mutator::setMaxAllele "
@@ -3768,7 +3512,6 @@ Usage:
 Usage:
 
     x.setMaxAllele(maxAllele)
-
 "; 
 
 %feature("docstring") simuPOP::mutator::mutationCount "
@@ -3780,7 +3523,6 @@ Description:
 Usage:
 
     x.mutationCount(locus)
-
 "; 
 
 %feature("docstring") simuPOP::mutator::mutationCounts "
@@ -3792,7 +3534,6 @@ Description:
 Usage:
 
     x.mutationCounts()
-
 "; 
 
 %feature("docstring") simuPOP::mutator::mutate "
@@ -3805,7 +3546,6 @@ Description:
 Usage:
 
     x.mutate(allele)
-
 "; 
 
 %feature("docstring") simuPOP::mutator::apply "
@@ -3817,7 +3557,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::noMating "
@@ -3838,7 +3577,6 @@ Description:
 Usage:
 
     noMating()
-
 "; 
 
 %feature("docstring") simuPOP::noMating::~noMating "
@@ -3850,7 +3588,6 @@ Description:
 Usage:
 
     x.~noMating()
-
 "; 
 
 %feature("docstring") simuPOP::noMating::clone "
@@ -3862,7 +3599,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::noMating::__repr__ "
@@ -3874,7 +3610,6 @@ Description:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::noMating::submitScratch "
@@ -3882,7 +3617,6 @@ Usage:
 Usage:
 
     x.submitScratch(pop, scratch)
-
 "; 
 
 %feature("docstring") simuPOP::noMating::mate "
@@ -3894,7 +3628,6 @@ Description:
 Usage:
 
     x.mate(pop, scratch, ops, submit)
-
 Details:
 
     All individuals will be passed to during mating operators but no
@@ -3914,9 +3647,8 @@ Description:
 
 Usage:
 
-    noneOp(output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=0,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    noneOp(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
+      end=0, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::noneOp::~noneOp "
@@ -3928,7 +3660,6 @@ Description:
 Usage:
 
     x.~noneOp()
-
 "; 
 
 %feature("docstring") simuPOP::noneOp::clone "
@@ -3940,7 +3671,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::noneOp::applyWithScratch "
@@ -3953,7 +3683,6 @@ Description:
 Usage:
 
     x.applyWithScratch(pop, scratch, stage)
-
 "; 
 
 %feature("docstring") simuPOP::noneOp::applyDuringMating "
@@ -3965,7 +3694,6 @@ Description:
 Usage:
 
     x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
 "; 
 
 %feature("docstring") simuPOP::noneOp::apply "
@@ -3978,7 +3706,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::noneOp::__repr__ "
@@ -3986,7 +3713,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::nuclearFamilySample "
@@ -4001,12 +3727,11 @@ Description:
 
 Usage:
 
-    nuclearFamilySample(size=[], minTotalSize=0, maxOffspring=5, minPedSize=5,
-      minAffected=0, countOnly=False, name=\"sample\", nameExpr=\"\",
-      times=1, saveAs=\"\", saveAsExpr=\"\", format=\"auto\",
+    nuclearFamilySample(size=[], minTotalSize=0, maxOffspring=5,
+      minPedSize=5, minAffected=0, countOnly=False, name=\"sample\",
+      nameExpr=\"\", times=1, saveAs=\"\", saveAsExpr=\"\", format=\"auto\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[\"father_idx\", \"mother_idx\"])
-
 Arguments:
 
     name:           variable name of the sampled population (will be
@@ -4034,7 +3759,6 @@ Description:
 Usage:
 
     x.~nuclearFamilySample()
-
 "; 
 
 %feature("docstring") simuPOP::nuclearFamilySample::clone "
@@ -4046,7 +3770,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::nuclearFamilySample::prepareSample "
@@ -4054,7 +3777,6 @@ Usage:
 Usage:
 
     x.prepareSample(pop)
-
 "; 
 
 %feature("docstring") simuPOP::nuclearFamilySample::drawsample "
@@ -4062,7 +3784,6 @@ Usage:
 Usage:
 
     x.drawsample(pop)
-
 Details:
 
     collect all families
@@ -4074,7 +3795,6 @@ Details:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::NullStreamBuf "
@@ -4090,7 +3810,6 @@ Description:
 Usage:
 
     nullStreamBuf()
-
 "; 
 
 %feature("docstring") simuPOP::offspringGenerator "
@@ -4114,7 +3833,6 @@ Description:
 Usage:
 
     offspringGenerator(pop, ops)
-
 "; 
 
 %feature("docstring") simuPOP::offspringGenerator::generateOffspring "
@@ -4128,7 +3846,6 @@ Description:
 Usage:
 
     x.generateOffspring(pop, *dad, *mom, numOff, offBegin)
-
 Details:
 
     apply all during mating operators
@@ -4146,7 +3863,6 @@ Description:
 Usage:
 
     x.copyOffspring(pop, *par, numOff, offBegin)
-
 Details:
 
     use deep copy!!!!!!!
@@ -4170,9 +3886,8 @@ Description:
 
 Usage:
 
-    operator(output, outputExpr, stage, begin, end, step, at, rep, grp,
-      infoFields)
-
+    operator(output, outputExpr, stage, begin, end, step, at, rep,
+      grp, infoFields)
 Arguments:
 
     output:         a string of output filename. Different operators
@@ -4213,7 +3928,6 @@ Description:
 Usage:
 
     x.~Operator()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::clone "
@@ -4225,7 +3939,6 @@ Description:
 Usage:
 
     x.clone()
-
 Details:
 
     use of parameter start, end, every, at, group, rep
@@ -4241,7 +3954,6 @@ Description:
 Usage:
 
     x.isActive(rep, numRep, gen, end, grp, repOnly=False)
-
 "; 
 
 %feature("docstring") simuPOP::Operator::applicableGroup "
@@ -4253,7 +3965,6 @@ Description:
 Usage:
 
     x.applicableGroup()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::setApplicableGroup "
@@ -4265,7 +3976,6 @@ Description:
 Usage:
 
     x.setApplicableGroup(grp=GRP_ALL)
-
 Details:
 
     GRP_ALL is the default value (applicable to all groups. )
@@ -4283,7 +3993,6 @@ Description:
 Usage:
 
     x.applicableReplicate()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::setApplicableReplicate "
@@ -4295,7 +4004,6 @@ Description:
 Usage:
 
     x.setApplicableReplicate(rep)
-
 "; 
 
 %feature("docstring") simuPOP::Operator::setActiveGenerations "
@@ -4308,7 +4016,6 @@ Description:
 Usage:
 
     x.setActiveGenerations(begin=0, end=-1, step=1, at=[])
-
 Details:
 
     set certain m_flags to speed up using this machanism. pre, during,
@@ -4326,7 +4033,6 @@ Description:
 Usage:
 
     x.setApplicableStage(stage)
-
 "; 
 
 %feature("docstring") simuPOP::Operator::canApplyPreMating "
@@ -4338,7 +4044,6 @@ Description:
 Usage:
 
     x.canApplyPreMating()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::canApplyDuringMating "
@@ -4350,7 +4055,6 @@ Description:
 Usage:
 
     x.canApplyDuringMating()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::canApplyPostMating "
@@ -4362,7 +4066,6 @@ Description:
 Usage:
 
     x.canApplyPostMating()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::canApplyPreOrPostMating "
@@ -4374,7 +4077,6 @@ Description:
 Usage:
 
     x.canApplyPreOrPostMating()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::isCompatible "
@@ -4382,7 +4084,6 @@ Usage:
 Usage:
 
     x.isCompatible(pop)
-
 "; 
 
 %feature("docstring") simuPOP::Operator::haploidOnly "
@@ -4390,7 +4091,6 @@ Usage:
 Usage:
 
     x.haploidOnly()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::diploidOnly "
@@ -4398,7 +4098,6 @@ Usage:
 Usage:
 
     x.diploidOnly()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::MPIReady "
@@ -4406,7 +4105,6 @@ Usage:
 Usage:
 
     x.MPIReady()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::setHaploidOnly "
@@ -4414,7 +4112,6 @@ Usage:
 Usage:
 
     x.setHaploidOnly()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::setDiploidOnly "
@@ -4422,7 +4119,6 @@ Usage:
 Usage:
 
     x.setDiploidOnly()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::setMPIReady "
@@ -4430,7 +4126,6 @@ Usage:
 Usage:
 
     x.setMPIReady()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::infoSize "
@@ -4442,7 +4137,6 @@ Description:
 Usage:
 
     x.infoSize()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::infoField "
@@ -4454,7 +4148,6 @@ Description:
 Usage:
 
     x.infoField(idx)
-
 "; 
 
 %feature("docstring") simuPOP::Operator::applyWithScratch "
@@ -4467,7 +4160,6 @@ Description:
 Usage:
 
     x.applyWithScratch(pop, scratch, stage)
-
 "; 
 
 %feature("docstring") simuPOP::Operator::apply "
@@ -4480,7 +4172,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::Operator::applyDuringMating "
@@ -4492,7 +4183,6 @@ Description:
 Usage:
 
     x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
 Details:
 
     separator, persistant files, $gen etc substitution.
@@ -4508,7 +4198,6 @@ Description:
 Usage:
 
     x.setOutput(output=\"\", outputExpr=\"\")
-
 "; 
 
 %feature("docstring") simuPOP::Operator::getOstream "
@@ -4520,7 +4209,6 @@ Description:
 Usage:
 
     x.getOstream(*dict=NULL, readable=False)
-
 "; 
 
 %feature("docstring") simuPOP::Operator::closeOstream "
@@ -4532,7 +4220,6 @@ Description:
 Usage:
 
     x.closeOstream()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::__repr__ "
@@ -4540,7 +4227,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::Operator::noOutput "
@@ -4552,7 +4238,6 @@ Description:
 Usage:
 
     x.noOutput()
-
 "; 
 
 %feature("docstring") simuPOP::OstreamManager "
@@ -4579,7 +4264,6 @@ Description:
 Usage:
 
     ostreamManager()
-
 "; 
 
 %feature("docstring") simuPOP::OstreamManager::closeAll "
@@ -4591,7 +4275,6 @@ Description:
 Usage:
 
     x.closeAll()
-
 "; 
 
 %feature("docstring") simuPOP::OutOfMemory "
@@ -4607,7 +4290,6 @@ Description:
 Usage:
 
     outOfMemory(msg)
-
 "; 
 
 %feature("docstring") simuPOP::outputer "
@@ -4627,9 +4309,8 @@ Description:
 
 Usage:
 
-    outputer(output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    outputer(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::outputer::~outputer "
@@ -4641,7 +4322,6 @@ Description:
 Usage:
 
     x.~outputer()
-
 "; 
 
 %feature("docstring") simuPOP::outputer::clone "
@@ -4653,7 +4333,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::outputHelper "
@@ -4664,9 +4343,9 @@ Usage:
 
 Usage:
 
-    outputHelper(str=\"\\\\n\", output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    outputHelper(str=\"\\\\n\", output=\">\", outputExpr=\"\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::outputHelper::apply "
@@ -4678,7 +4357,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::outputHelper::~outputHelper "
@@ -4686,7 +4364,6 @@ Usage:
 Usage:
 
     x.~outputHelper()
-
 "; 
 
 %feature("docstring") simuPOP::outputHelper::clone "
@@ -4698,7 +4375,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::outputHelper::setString "
@@ -4710,7 +4386,6 @@ Description:
 Usage:
 
     x.setString(str)
-
 "; 
 
 %feature("docstring") simuPOP::outputHelper::__repr__ "
@@ -4718,7 +4393,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::parentsTagger "
@@ -4739,9 +4413,8 @@ Description:
 
 Usage:
 
-    parentsTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[\"father_idx\", \"mother_idx\"])
-
+    parentsTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[\"father_idx\", \"mother_idx\"])
 "; 
 
 %feature("docstring") simuPOP::parentsTagger::~parentsTagger "
@@ -4749,7 +4422,6 @@ Usage:
 Usage:
 
     x.~parentsTagger()
-
 "; 
 
 %feature("docstring") simuPOP::parentsTagger::clone "
@@ -4761,7 +4433,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::parentsTagger::__repr__ "
@@ -4769,7 +4440,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::parentsTagger::applyDuringMating "
@@ -4781,7 +4451,6 @@ Description:
 Usage:
 
     x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
 "; 
 
 %feature("docstring") simuPOP::pause "
@@ -4800,7 +4469,6 @@ Usage:
       popName=\"pop\", output=\">\", outputExpr=\"\", stage=PostMating,
       begin=0, end=-1, step=1, at=[], rep=REP_LAST, grp=GRP_ALL,
       infoFields=[])
-
 Arguments:
 
     prompt:         if true (default), print prompt message.
@@ -4823,7 +4491,6 @@ Description:
 Usage:
 
     x.~pause()
-
 "; 
 
 %feature("docstring") simuPOP::pause::clone "
@@ -4835,7 +4502,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pause::apply "
@@ -4847,7 +4513,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::pause::__repr__ "
@@ -4855,7 +4520,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::penetrance "
@@ -4879,9 +4543,8 @@ Description:
 
 Usage:
 
-    penetrance(ancestralGen=-1, stage=DuringMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    penetrance(ancestralGen=-1, stage=DuringMating, begin=0, end=-1,
+      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::penetrance::~penetrance "
@@ -4893,7 +4556,6 @@ Description:
 Usage:
 
     x.~penetrance()
-
 "; 
 
 %feature("docstring") simuPOP::penetrance::clone "
@@ -4905,7 +4567,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::penetrance::penet "
@@ -4917,7 +4578,6 @@ Description:
 Usage:
 
     x.penet(*)
-
 "; 
 
 %feature("docstring") simuPOP::penetrance::apply "
@@ -4930,7 +4590,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::penetrance::applyDuringMating "
@@ -4942,7 +4601,6 @@ Description:
 Usage:
 
     x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
 "; 
 
 %feature("docstring") simuPOP::penetrance::__repr__ "
@@ -4950,7 +4608,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pointMutator "
@@ -4977,7 +4634,6 @@ Usage:
     pointMutator(atLoci, toAllele, atPloidy=[], inds=[], output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
 Arguments:
 
     atLoci:         a vector of loci index.
@@ -4996,7 +4652,6 @@ Description:
 Usage:
 
     x.~pointMutator()
-
 "; 
 
 %feature("docstring") simuPOP::pointMutator::clone "
@@ -5008,7 +4663,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pointMutator::apply "
@@ -5020,7 +4674,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::pointMutator::__repr__ "
@@ -5028,7 +4681,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pointMutator::mutationCount "
@@ -5040,7 +4692,6 @@ Description:
 Usage:
 
     x.mutationCount(locus)
-
 "; 
 
 %feature("docstring") simuPOP::pointMutator::mutationCounts "
@@ -5052,7 +4703,6 @@ Description:
 Usage:
 
     x.mutationCounts()
-
 "; 
 
 %feature("docstring") simuPOP::population "
@@ -5075,10 +4725,9 @@ Description:
 
 Usage:
 
-    population(size=0, ploidy=2, loci=[], sexChrom=False, lociPos=[],
-      subPop=[], ancestralDepth=0, alleleNames=[], lociNames=[],
-      maxAllele=MaxAllele, infoFields=[], chromMap=[])
-
+    population(size=0, ploidy=2, loci=[], sexChrom=False,
+      lociPos=[], subPop=[], ancestralDepth=0, alleleNames=[],
+      lociNames=[], maxAllele=MaxAllele, infoFields=[], chromMap=[])
 Arguments:
 
     size:           population size. Can be ignored if subPop is
@@ -5154,7 +4803,6 @@ Examples:
 Usage:
 
     x.clone(keepAncestralPops=-1)
-
 "; 
 
 %feature("docstring") simuPOP::population::swap "
@@ -5166,7 +4814,6 @@ Description:
 Usage:
 
     x.swap(rhs)
-
 "; 
 
 %feature("docstring") simuPOP::population::~population "
@@ -5178,7 +4825,6 @@ Description:
 Usage:
 
     x.~population()
-
 "; 
 
 %feature("docstring") simuPOP::population::__repr__ "
@@ -5186,7 +4832,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::population::__cmp__ "
@@ -5194,7 +4839,6 @@ Usage:
 Usage:
 
     x.__cmp__()
-
 "; 
 
 %feature("docstring") simuPOP::population::setSubPopStru "
@@ -5210,7 +4854,6 @@ Description:
 Usage:
 
     x.setSubPopStru(newSubPopSizes, allowPopSizeChange=False)
-
 "; 
 
 %feature("docstring") simuPOP::population::numSubPop "
@@ -5222,7 +4865,6 @@ Description:
 Usage:
 
     x.numSubPop()
-
 "; 
 
 %feature("docstring") simuPOP::population::subPopSize "
@@ -5234,7 +4876,6 @@ Description:
 Usage:
 
     x.subPopSize()
-
 Arguments:
 
     subPop:         index of subpopulation (start from 0)
@@ -5251,7 +4892,6 @@ Description:
 Usage:
 
     x.subPopSizes()
-
 Details:
 
     conversion between absoluate indices and relative indices. return
@@ -5268,7 +4908,6 @@ Description:
 Usage:
 
     x.popSize()
-
 "; 
 
 %feature("docstring") simuPOP::population::absIndIndex "
@@ -5280,7 +4919,6 @@ Description:
 Usage:
 
     x.absIndIndex(ind, )
-
 Arguments:
 
     index:          index of individual at subpopulation subPop
@@ -5298,7 +4936,6 @@ Description:
 Usage:
 
     x.subPopIndPair(ind)
-
 "; 
 
 %feature("docstring") simuPOP::population::subPopBegin "
@@ -5310,7 +4947,6 @@ Description:
 Usage:
 
     x.subPopBegin()
-
 Arguments:
 
     subPop:         subpopulation index
@@ -5331,7 +4967,6 @@ Description:
 Usage:
 
     x.subPopEnd()
-
 Arguments:
 
     subPop:         subpopulation index
@@ -5352,7 +4987,6 @@ Description:
 Usage:
 
     x.ind(ind, subPop=0)
-
 Arguments:
 
     ind:            individual index within subPop
@@ -5366,7 +5000,6 @@ Arguments:
 Usage:
 
     x.individuals()
-
 "; 
 
 %feature("docstring") simuPOP::population::individuals "
@@ -5374,7 +5007,6 @@ Usage:
 Usage:
 
     x.individuals(subPop)
-
 "; 
 
 %feature("docstring") simuPOP::population::alleleBegin "
@@ -5387,7 +5019,6 @@ Description:
 Usage:
 
     x.alleleBegin(locus, order)
-
 Arguments:
 
     locus:          allele access, given locus, return the first
@@ -5414,7 +5045,6 @@ Description:
 Usage:
 
     x.arrGenotype(order)
-
 "; 
 
 %feature("docstring") simuPOP::population::arrGenotype "
@@ -5428,7 +5058,6 @@ Description:
 Usage:
 
     x.arrGenotype(subPop, order)
-
 Details:
 
     set subpopulation, save and load etc.
@@ -5440,7 +5069,6 @@ Details:
 Usage:
 
     x.exposeAffectedness(name=\"affected\")
-
 Details:
 
     brief return individual affected status in pop namespace
@@ -5452,7 +5080,6 @@ Details:
 Usage:
 
     x.setIndSubPopID(id)
-
 Arguments:
 
     info:           an array of info values, should have length of pop
@@ -5470,7 +5097,6 @@ Description:
 Usage:
 
     x.setIndSubPopIDWithID()
-
 Details:
 
     set individual info by subpop id.
@@ -5486,7 +5112,6 @@ Description:
 Usage:
 
     x.setSubPopByIndID(id=[])
-
 Arguments:
 
     info:           optional info that will be used to set sub pop
@@ -5503,7 +5128,6 @@ Description:
 Usage:
 
     x.splitSubPop(which, sizes, subPopID=[])
-
 "; 
 
 %feature("docstring") simuPOP::population::splitSubPopByProportion "
@@ -5515,7 +5139,6 @@ Description:
 Usage:
 
     x.splitSubPopByProportion(which, proportions, subPopID=[])
-
 "; 
 
 %feature("docstring") simuPOP::population::removeEmptySubPops "
@@ -5523,7 +5146,6 @@ Usage:
 Usage:
 
     x.removeEmptySubPops()
-
 Details:
 
     remove empty subpops, this will adjust subPOP ID of other subpops
@@ -5534,8 +5156,8 @@ Details:
 
 Usage:
 
-    x.removeSubPops(subPops=[], shiftSubPopID=True, removeEmptySubPops=False)
-
+    x.removeSubPops(subPops=[], shiftSubPopID=True,
+      removeEmptySubPops=False)
 Details:
 
     remove subpop, adjust subpop numbers so that there will be no
@@ -5547,8 +5169,8 @@ Details:
 
 Usage:
 
-    x.removeIndividuals(inds=[], subPop=-1, removeEmptySubPops=False)
-
+    x.removeIndividuals(inds=[], subPop=-1,
+      removeEmptySubPops=False)
 Details:
 
     remove subpop, adjust subpop numbers so that there will be no
@@ -5565,7 +5187,6 @@ Description:
 Usage:
 
     x.mergeSubPops(subPops=[], removeEmptySubPops=False)
-
 Details:
 
     merge subpopulations, subpop id will be the ID of the first in
@@ -5582,7 +5203,6 @@ Description:
 Usage:
 
     x.reorderSubPops(order=[], rank=[], removeEmptySubPops=False)
-
 Arguments:
 
     order:          new order of the subpopulations. For examples, 3 2
@@ -5601,7 +5221,6 @@ Arguments:
 Usage:
 
     x.newPopByIndIDPerGen(id=[], removeEmptySubPops=False)
-
 Details:
 
     form a new population according to info, info can be given
@@ -5614,8 +5233,8 @@ Details:
 
 Usage:
 
-    x.newPopByIndID(keepAncestralPops=-1, id=[], removeEmptySubPops=False)
-
+    x.newPopByIndID(keepAncestralPops=-1, id=[],
+      removeEmptySubPops=False)
 Details:
 
     form a new population according to info, info can be given
@@ -5628,7 +5247,6 @@ Details:
 Usage:
 
     x.removeLoci(remove=[], keep=[])
-
 "; 
 
 %feature("docstring") simuPOP::population::newPopWithPartialLoci "
@@ -5636,7 +5254,6 @@ Usage:
 Usage:
 
     x.newPopWithPartialLoci(remove=[], keep=[])
-
 Details:
 
     get a new population with selected loci
@@ -5648,7 +5265,6 @@ Details:
 Usage:
 
     x.pushAndDiscard(rhs, force=False)
-
 "; 
 
 %feature("docstring") simuPOP::population::ancestralDepth "
@@ -5656,7 +5272,6 @@ Usage:
 Usage:
 
     x.ancestralDepth()
-
 "; 
 
 %feature("docstring") simuPOP::population::ancestralGen "
@@ -5668,7 +5283,6 @@ Description:
 Usage:
 
     x.ancestralGen()
-
 "; 
 
 %feature("docstring") simuPOP::population::setIndInfo "
@@ -5680,7 +5294,6 @@ Description:
 Usage:
 
     x.setIndInfo(values, idx)
-
 "; 
 
 %feature("docstring") simuPOP::population::setIndInfo "
@@ -5688,7 +5301,6 @@ Usage:
 Usage:
 
     x.setIndInfo(values, name)
-
 "; 
 
 %feature("docstring") simuPOP::population::infoBegin "
@@ -5701,7 +5313,6 @@ Description:
 Usage:
 
     x.infoBegin(index, subPop, order)
-
 "; 
 
 %feature("docstring") simuPOP::population::infoEnd "
@@ -5709,7 +5320,6 @@ Usage:
 Usage:
 
     x.infoEnd(index, subPop, order)
-
 "; 
 
 %feature("docstring") simuPOP::population::indInfo "
@@ -5717,7 +5327,6 @@ Usage:
 Usage:
 
     x.indInfo(idx, order)
-
 "; 
 
 %feature("docstring") simuPOP::population::indInfo "
@@ -5725,7 +5334,6 @@ Usage:
 Usage:
 
     x.indInfo(name, order)
-
 "; 
 
 %feature("docstring") simuPOP::population::indInfo "
@@ -5733,7 +5341,6 @@ Usage:
 Usage:
 
     x.indInfo(idx, subPop, order)
-
 "; 
 
 %feature("docstring") simuPOP::population::indInfo "
@@ -5741,7 +5348,6 @@ Usage:
 Usage:
 
     x.indInfo(name, subPop, order)
-
 "; 
 
 %feature("docstring") simuPOP::population::arrIndInfo "
@@ -5753,7 +5359,6 @@ Description:
 Usage:
 
     x.arrIndInfo(order)
-
 "; 
 
 %feature("docstring") simuPOP::population::arrIndInfo "
@@ -5765,7 +5370,6 @@ Description:
 Usage:
 
     x.arrIndInfo(subPop, order)
-
 "; 
 
 %feature("docstring") simuPOP::population::addInfoField "
@@ -5777,7 +5381,6 @@ Description:
 Usage:
 
     x.addInfoField(field, init=0)
-
 Details:
 
     adjust information size.copy the old stuff in
@@ -5789,7 +5392,6 @@ Details:
 Usage:
 
     x.addInfoFields(fields, init=0)
-
 Details:
 
     adjust information size.copy the old stuff in
@@ -5805,7 +5407,6 @@ Description:
 Usage:
 
     x.setInfoFields(fields, init=0)
-
 Details:
 
     reset info vector
@@ -5821,7 +5422,6 @@ Description:
 Usage:
 
     x.setAncestralDepth(depth)
-
 "; 
 
 %feature("docstring") simuPOP::population::ancestralPop "
@@ -5829,7 +5429,6 @@ Usage:
 Usage:
 
     x.ancestralPop()
-
 "; 
 
 %feature("docstring") simuPOP::population::useAncestralPop "
@@ -5837,7 +5436,6 @@ Usage:
 Usage:
 
     x.useAncestralPop(idx)
-
 "; 
 
 %feature("docstring") simuPOP::population::equalTo "
@@ -5849,7 +5447,6 @@ Description:
 Usage:
 
     x.equalTo(rhs)
-
 "; 
 
 %feature("docstring") simuPOP::population::savePopulation "
@@ -5861,7 +5458,6 @@ Description:
 Usage:
 
     x.savePopulation(filename, format=\"auto\", compress=True)
-
 Arguments:
 
     filename:       save to filename
@@ -5881,7 +5477,6 @@ Arguments:
 Usage:
 
     x.rep()
-
 "; 
 
 %feature("docstring") simuPOP::population::grp "
@@ -5889,7 +5484,6 @@ Usage:
 Usage:
 
     x.grp()
-
 "; 
 
 %feature("docstring") simuPOP::population::gen "
@@ -5897,7 +5491,6 @@ Usage:
 Usage:
 
     x.gen()
-
 "; 
 
 %feature("docstring") simuPOP::population::vars "
@@ -5910,7 +5503,6 @@ Description:
 Usage:
 
     x.vars(subPop=-1)
-
 "; 
 
 %feature("docstring") simuPOP::population::hasVar "
@@ -5918,7 +5510,6 @@ Usage:
 Usage:
 
     x.hasVar(name)
-
 "; 
 
 %feature("docstring") simuPOP::population::removeVar "
@@ -5930,7 +5521,6 @@ Description:
 Usage:
 
     x.removeVar(name)
-
 "; 
 
 %feature("docstring") simuPOP::population::evaluate "
@@ -5942,7 +5532,6 @@ Description:
 Usage:
 
     x.evaluate(expr=\"\", stmts=\"\")
-
 Details:
 
     this function evaluate python expressions and return as string
@@ -5955,7 +5544,6 @@ Details:
 Usage:
 
     x.execute(stmts=\"\")
-
 "; 
 
 %feature("docstring") simuPOP::pyEval "
@@ -5974,10 +5562,10 @@ Description:
 
 Usage:
 
-    pyEval(expr=\"\", stmts=\"\", preStmts=\"\", postStmts=\"\", exposePop=False,
-      name=\"\", output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    pyEval(expr=\"\", stmts=\"\", preStmts=\"\", postStmts=\"\",
+      exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
 Arguments:
 
     expr:           expression to be evaluated. Its result will be
@@ -6003,7 +5591,6 @@ Arguments:
 Usage:
 
     x.~pyEval()
-
 "; 
 
 %feature("docstring") simuPOP::pyEval::clone "
@@ -6015,7 +5602,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pyEval::apply "
@@ -6028,7 +5614,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::pyEval::__repr__ "
@@ -6036,7 +5621,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pyEval::name "
@@ -6044,7 +5628,6 @@ Usage:
 Usage:
 
     x.name()
-
 "; 
 
 %feature("docstring") simuPOP::pyExec "
@@ -6063,10 +5646,9 @@ Description:
 
 Usage:
 
-    pyExec(stmts=\"\", preStmts=\"\", postStmts=\"\", exposePop=False, name=\"\",
-      output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    pyExec(stmts=\"\", preStmts=\"\", postStmts=\"\", exposePop=False,
+      name=\"\", output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     stmts:          statements (a single or multi-line string) that
@@ -6092,7 +5674,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pyExec::__repr__ "
@@ -6100,7 +5681,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pyIndOperator "
@@ -6115,10 +5695,9 @@ Description:
 
 Usage:
 
-    pyIndOperator(*func, *param=NULL, stage=PostMating, formOffGenotype=False,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[])
-
+    pyIndOperator(*func, *param=NULL, stage=PostMating,
+      formOffGenotype=False, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     func:           a python function that accept a individual and
@@ -6146,7 +5725,6 @@ Description:
 Usage:
 
     x.~pyIndOperator()
-
 "; 
 
 %feature("docstring") simuPOP::pyIndOperator::clone "
@@ -6158,7 +5736,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pyIndOperator::apply "
@@ -6171,7 +5748,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::pyIndOperator::__repr__ "
@@ -6179,7 +5755,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pyInit "
@@ -6194,10 +5769,10 @@ Description:
 
 Usage:
 
-    pyInit(*func, subPop=[], atLoci=[], atPloidy=-1, indRange=intMatrix,
-      maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    pyInit(*func, subPop=[], atLoci=[], atPloidy=-1,
+      indRange=intMatrix, maleFreq=0.5, sex=[], stage=PreMating,
+      begin=0, end=1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+      infoFields=[])
 Arguments:
 
     func:           a python function with parameter (index, ploidy,
@@ -6228,7 +5803,6 @@ Details:
 Usage:
 
     x.~pyInit()
-
 "; 
 
 %feature("docstring") simuPOP::pyInit::clone "
@@ -6240,7 +5814,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pyInit::__repr__ "
@@ -6248,7 +5821,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pyInit::apply "
@@ -6261,7 +5833,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::pyMating "
@@ -6286,7 +5857,6 @@ Usage:
 
     pyMating(*func=NULL, newSubPopSize=[], newSubPopSizeExpr=\"\",
       *newSubPopSizeFunc=NULL)
-
 "; 
 
 %feature("docstring") simuPOP::pyMating::~pyMating "
@@ -6298,7 +5868,6 @@ Description:
 Usage:
 
     x.~pyMating()
-
 "; 
 
 %feature("docstring") simuPOP::pyMating::clone "
@@ -6310,7 +5879,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pyMating::__repr__ "
@@ -6322,7 +5890,6 @@ Description:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pyMating::mate "
@@ -6334,7 +5901,6 @@ Description:
 Usage:
 
     x.mate(pop, scratch, ops, submit)
-
 Details:
 
     All individuals will be passed to during mating operators but no
@@ -6364,9 +5930,8 @@ Description:
 
 Usage:
 
-    pyMigrator(*subPopID=NULL, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    pyMigrator(*subPopID=NULL, stage=PreMating, begin=0, end=-1,
+      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     subPopID:       a 1-d array (list, typle, carray). Must has length
@@ -6393,7 +5958,6 @@ Description:
 Usage:
 
     x.~pyMigrator()
-
 "; 
 
 %feature("docstring") simuPOP::pyMigrator::clone "
@@ -6405,7 +5969,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pyMigrator::apply "
@@ -6418,7 +5981,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::pyMigrator::__repr__ "
@@ -6426,7 +5988,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pyMutator "
@@ -6441,10 +6002,9 @@ Description:
 
 Usage:
 
-    pyMutator(rate=[], atLoci=[], maxAllele=0, *func=NULL, output=\">\",
-      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    pyMutator(rate=[], atLoci=[], maxAllele=0, *func=NULL,
+      output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::pyMutator::~pyMutator "
@@ -6452,7 +6012,6 @@ Usage:
 Usage:
 
     x.~pyMutator()
-
 "; 
 
 %feature("docstring") simuPOP::pyMutator::clone "
@@ -6464,7 +6023,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pyMutator::mutate "
@@ -6477,7 +6035,6 @@ Description:
 Usage:
 
     x.mutate(allele)
-
 "; 
 
 %feature("docstring") simuPOP::pyMutator::__repr__ "
@@ -6485,7 +6042,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pyOperator "
@@ -6500,10 +6056,9 @@ Description:
 
 Usage:
 
-    pyOperator(*func, *param=NULL, stage=PostMating, formOffGenotype=False,
-      passOffspringOnly=False, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    pyOperator(*func, *param=NULL, stage=PostMating,
+      formOffGenotype=False, passOffspringOnly=False, begin=0, end=-1,
+      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     func:           a python function that accept a population and
@@ -6537,7 +6092,6 @@ Description:
 Usage:
 
     x.~pyOperator()
-
 "; 
 
 %feature("docstring") simuPOP::pyOperator::clone "
@@ -6549,7 +6103,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pyOperator::apply "
@@ -6562,7 +6115,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::pyOperator::applyDuringMating "
@@ -6574,7 +6126,6 @@ Description:
 Usage:
 
     x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
 "; 
 
 %feature("docstring") simuPOP::pyOperator::__repr__ "
@@ -6582,7 +6133,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pyPenetrance "
@@ -6606,9 +6156,9 @@ Description:
 
 Usage:
 
-    pyPenetrance(loci, *func, ancestralGen=-1, stage=DuringMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    pyPenetrance(loci, *func, ancestralGen=-1, stage=DuringMating,
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+      infoFields=[])
 Arguments:
 
     loci:           susceptibility loci. The genotype at these loci
@@ -6630,7 +6180,6 @@ Description:
 Usage:
 
     x.~pyPenetrance()
-
 "; 
 
 %feature("docstring") simuPOP::pyPenetrance::clone "
@@ -6642,7 +6191,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pyPenetrance::penet "
@@ -6654,7 +6202,6 @@ Description:
 Usage:
 
     x.penet(*ind)
-
 "; 
 
 %feature("docstring") simuPOP::pyPenetrance::__repr__ "
@@ -6662,7 +6209,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pyQuanTrait "
@@ -6686,10 +6232,9 @@ Description:
 
 Usage:
 
-    pyQuanTrait(loci, *func, ancestralGen=-1, stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+    pyQuanTrait(loci, *func, ancestralGen=-1, stage=PostMating,
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
       infoFields=\"qtrait\")
-
 Arguments:
 
     loci:           susceptibility loci. The genotype at these loci
@@ -6707,7 +6252,6 @@ Arguments:
 Usage:
 
     x.~pyQuanTrait()
-
 "; 
 
 %feature("docstring") simuPOP::pyQuanTrait::clone "
@@ -6719,7 +6263,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pyQuanTrait::qtrait "
@@ -6731,7 +6274,6 @@ Description:
 Usage:
 
     x.qtrait(*ind)
-
 "; 
 
 %feature("docstring") simuPOP::pyQuanTrait::__repr__ "
@@ -6739,7 +6281,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pySample "
@@ -6758,11 +6299,10 @@ Description:
 
 Usage:
 
-    pySample(*keep, keepAncestralPops=-1, name=\"sample\", nameExpr=\"\",
-      times=1, saveAs=\"\", saveAsExpr=\"\", format=\"auto\",
+    pySample(*keep, keepAncestralPops=-1, name=\"sample\",
+      nameExpr=\"\", times=1, saveAs=\"\", saveAsExpr=\"\", format=\"auto\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[])
-
 Arguments:
 
     keep:           a carray of the length of population. its values
@@ -6783,7 +6323,6 @@ Description:
 Usage:
 
     x.~pySample()
-
 "; 
 
 %feature("docstring") simuPOP::pySample::clone "
@@ -6795,7 +6334,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pySample::drawsample "
@@ -6803,7 +6341,6 @@ Usage:
 Usage:
 
     x.drawsample(pop)
-
 "; 
 
 %feature("docstring") simuPOP::pySample::__repr__ "
@@ -6811,7 +6348,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pySelector "
@@ -6835,9 +6371,8 @@ Description:
 
 Usage:
 
-    pySelector(loci, *func, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=\"fitness\")
-
+    pySelector(loci, *func, stage=PreMating, begin=0, end=-1,
+      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=\"fitness\")
 Arguments:
 
     loci:           susceptibility loci. The genotype at these loci
@@ -6860,7 +6395,6 @@ Description:
 Usage:
 
     x.~pySelector()
-
 "; 
 
 %feature("docstring") simuPOP::pySelector::clone "
@@ -6872,7 +6406,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pySelector::indFitness "
@@ -6884,7 +6417,6 @@ Description:
 Usage:
 
     x.indFitness(*ind, gen)
-
 "; 
 
 %feature("docstring") simuPOP::pySelector::__repr__ "
@@ -6892,7 +6424,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::pySubset "
@@ -6911,9 +6442,8 @@ Description:
 
 Usage:
 
-    pySubset(keep=[], stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    pySubset(keep=[], stage=PostMating, begin=0, end=-1, step=1,
+      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     keep:           a carray of the length of population. its values
@@ -6932,7 +6462,6 @@ Description:
 Usage:
 
     x.~pySubset()
-
 "; 
 
 %feature("docstring") simuPOP::pySubset::clone "
@@ -6944,7 +6473,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::pySubset::apply "
@@ -6957,7 +6485,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::pySubset::__repr__ "
@@ -6965,7 +6492,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::PythonCoutBuf "
@@ -6982,7 +6508,6 @@ Description:
 Usage:
 
     pythonCoutBuf()
-
 "; 
 
 %feature("docstring") simuPOP::quanTrait "
@@ -7017,9 +6542,8 @@ Description:
 
 Usage:
 
-    quanTrait(ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=\"qtrait\")
-
+    quanTrait(ancestralGen=-1, stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=\"qtrait\")
 "; 
 
 %feature("docstring") simuPOP::quanTrait::~quanTrait "
@@ -7031,7 +6555,6 @@ Description:
 Usage:
 
     x.~quanTrait()
-
 "; 
 
 %feature("docstring") simuPOP::quanTrait::clone "
@@ -7043,7 +6566,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::quanTrait::qtrait "
@@ -7055,7 +6577,6 @@ Description:
 Usage:
 
     x.qtrait(*)
-
 "; 
 
 %feature("docstring") simuPOP::quanTrait::apply "
@@ -7067,7 +6588,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::quanTrait::__repr__ "
@@ -7075,7 +6595,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::randomMating "
@@ -7104,11 +6623,10 @@ Description:
 
 Usage:
 
-    randomMating(numOffspring=1., *numOffspringFunc=NULL, maxNumOffspring=0,
-      mode=MATE_NumOffspring, newSubPopSize=[],
+    randomMating(numOffspring=1., *numOffspringFunc=NULL,
+      maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
       *newSubPopSizeFunc=NULL, newSubPopSizeExpr=\"\",
       contWhenUniSex=True)
-
 Arguments:
 
     numOffspring:   
@@ -7144,7 +6662,6 @@ Description:
 Usage:
 
     x.~randomMating()
-
 "; 
 
 %feature("docstring") simuPOP::randomMating::clone "
@@ -7158,7 +6675,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::randomMating::isCompatible "
@@ -7170,7 +6686,6 @@ Description:
 Usage:
 
     x.isCompatible()
-
 Details:
 
     possible things to check:need certain types of individual (age,
@@ -7187,7 +6702,6 @@ Description:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::randomMating::submitScratch "
@@ -7195,7 +6709,6 @@ Usage:
 Usage:
 
     x.submitScratch(pop, scratch)
-
 "; 
 
 %feature("docstring") simuPOP::randomMating::mate "
@@ -7207,7 +6720,6 @@ Description:
 Usage:
 
     x.mate(pop, scratch, ops, submit)
-
 Details:
 
     Within each subpopulation, choose male and female randomly randmly
@@ -7237,10 +6749,10 @@ Description:
 
 Usage:
 
-    randomSample(size=[], name=\"sample\", nameExpr=\"\", times=1, saveAs=\"\",
-      saveAsExpr=\"\", format=\"auto\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    randomSample(size=[], name=\"sample\", nameExpr=\"\", times=1,
+      saveAs=\"\", saveAsExpr=\"\", format=\"auto\", stage=PostMating,
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+      infoFields=[])
 Arguments:
 
     size:           size of sample. It can be either a number,
@@ -7274,7 +6786,6 @@ Description:
 Usage:
 
     x.~randomSample()
-
 "; 
 
 %feature("docstring") simuPOP::randomSample::clone "
@@ -7286,7 +6797,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::randomSample::prepareSample "
@@ -7298,7 +6808,6 @@ Description:
 Usage:
 
     x.prepareSample(pop)
-
 "; 
 
 %feature("docstring") simuPOP::randomSample::drawsample "
@@ -7306,7 +6815,6 @@ Usage:
 Usage:
 
     x.drawsample(pop)
-
 "; 
 
 %feature("docstring") simuPOP::randomSample::__repr__ "
@@ -7314,7 +6822,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::recombinator "
@@ -7348,10 +6855,9 @@ Description:
 
 Usage:
 
-    recombinator(intensity=-1, rate=[], afterLoci=[], maleIntensity=-1,
-      maleRate=[], maleAfterLoci=[], begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    recombinator(intensity=-1, rate=[], afterLoci=[],
+      maleIntensity=-1, maleRate=[], maleAfterLoci=[], begin=0,
+      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     intensity:      recombination rate per unit of loci distance.
@@ -7383,7 +6889,6 @@ Arguments:
 Usage:
 
     x.~recombinator()
-
 "; 
 
 %feature("docstring") simuPOP::recombinator::clone "
@@ -7395,7 +6900,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::recombinator::__repr__ "
@@ -7403,7 +6907,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::recombinator::prepareRecRates "
@@ -7415,8 +6918,8 @@ Description:
 
 Usage:
 
-    x.prepareRecRates(pop, intensity, rate, afterLoci, sexChrom, recBeforeLoci, vecP)
-
+    x.prepareRecRates(pop, intensity, rate, afterLoci, sexChrom,
+      recBeforeLoci, vecP)
 Details:
 
     get loci distance * rate and then recombinant pointsget loci
@@ -7435,7 +6938,6 @@ Description:
 Usage:
 
     x.recCount(locus)
-
 "; 
 
 %feature("docstring") simuPOP::recombinator::recCounts "
@@ -7447,15 +6949,14 @@ Description:
 Usage:
 
     x.recCounts()
-
 "; 
 
 %feature("docstring") simuPOP::recombinator::recombine "
 
 Usage:
 
-    x.recombine(*parent, offspring, offPloidy, bt, recBeforeLoci, setSex=False)
-
+    x.recombine(*parent, offspring, offPloidy, bt, recBeforeLoci,
+      setSex=False)
 "; 
 
 %feature("docstring") simuPOP::recombinator::applyDuringMating "
@@ -7467,7 +6968,6 @@ Description:
 Usage:
 
     x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
 "; 
 
 %feature("docstring") simuPOP::RNG "
@@ -7489,7 +6989,6 @@ Description:
 Usage:
 
     rNG(*rng=NULL, seed=0)
-
 "; 
 
 %feature("docstring") simuPOP::RNG::~RNG "
@@ -7497,7 +6996,6 @@ Usage:
 Usage:
 
     x.~RNG()
-
 "; 
 
 %feature("docstring") simuPOP::RNG::setRNG "
@@ -7510,7 +7008,6 @@ Description:
 Usage:
 
     x.setRNG(*rng=NULL, seed=0)
-
 "; 
 
 %feature("docstring") simuPOP::RNG::name "
@@ -7522,7 +7019,6 @@ Description:
 Usage:
 
     x.name()
-
 "; 
 
 %feature("docstring") simuPOP::RNG::seed "
@@ -7530,7 +7026,6 @@ Usage:
 Usage:
 
     x.seed()
-
 "; 
 
 %feature("docstring") simuPOP::RNG::maxSeed "
@@ -7538,7 +7033,6 @@ Usage:
 Usage:
 
     x.maxSeed()
-
 "; 
 
 %feature("docstring") simuPOP::RNG::setSeed "
@@ -7546,7 +7040,6 @@ Usage:
 Usage:
 
     x.setSeed(seed)
-
 "; 
 
 %feature("docstring") simuPOP::RNG::generateRandomSeed "
@@ -7554,7 +7047,6 @@ Usage:
 Usage:
 
     x.generateRandomSeed()
-
 "; 
 
 %feature("docstring") simuPOP::RNG::max "
@@ -7562,7 +7054,6 @@ Usage:
 Usage:
 
     x.max()
-
 "; 
 
 %feature("docstring") simuPOP::RNG::__repr__ "
@@ -7570,7 +7061,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::RNG::randGet "
@@ -7582,7 +7072,6 @@ Description:
 Usage:
 
     x.randGet()
-
 "; 
 
 %feature("docstring") simuPOP::RNG::randInt "
@@ -7594,7 +7083,6 @@ Description:
 Usage:
 
     x.randInt(n)
-
 "; 
 
 %feature("docstring") simuPOP::RNG::randIntArray "
@@ -7606,7 +7094,6 @@ Description:
 Usage:
 
     x.randIntArray(n, size, *vec)
-
 "; 
 
 %feature("docstring") simuPOP::RNG::randGeometric "
@@ -7618,7 +7105,6 @@ Description:
 Usage:
 
     x.randGeometric(p)
-
 "; 
 
 %feature("docstring") simuPOP::RNG::randUniform01 "
@@ -7630,7 +7116,6 @@ Description:
 Usage:
 
     x.randUniform01()
-
 "; 
 
 %feature("docstring") simuPOP::RNG::randNormal "
@@ -7642,7 +7127,6 @@ Description:
 Usage:
 
     x.randNormal(m, v)
-
 "; 
 
 %feature("docstring") simuPOP::RNG::randUniform01Array "
@@ -7654,7 +7138,6 @@ Description:
 Usage:
 
     x.randUniform01Array(size, *vec)
-
 "; 
 
 %feature("docstring") simuPOP::RNG::randBinomial "
@@ -7666,7 +7149,6 @@ Description:
 Usage:
 
     x.randBinomial(n, p)
-
 "; 
 
 %feature("docstring") simuPOP::RNG::randMultinomial "
@@ -7674,7 +7156,6 @@ Usage:
 Usage:
 
     x.randMultinomial(N, p, n)
-
 "; 
 
 %feature("docstring") simuPOP::RNG::randMultinomialVal "
@@ -7682,7 +7163,6 @@ Usage:
 Usage:
 
     x.randMultinomialVal(N, p)
-
 "; 
 
 %feature("docstring") simuPOP::RNG::randPoisson "
@@ -7694,7 +7174,6 @@ Description:
 Usage:
 
     x.randPoisson(p)
-
 "; 
 
 %feature("docstring") simuPOP::RNG::pvalChiSq "
@@ -7706,7 +7185,6 @@ Description:
 Usage:
 
     x.pvalChiSq(chisq, df)
-
 "; 
 
 %feature("docstring") simuPOP::sample "
@@ -7726,10 +7204,9 @@ Description:
 
 Usage:
 
-    sample(name=\"sample\", nameExpr=\"\", times=1, saveAs=\"\", saveAsExpr=\"\",
-      format=\"auto\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    sample(name=\"sample\", nameExpr=\"\", times=1, saveAs=\"\",
+      saveAsExpr=\"\", format=\"auto\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     name:           variable name of the sampled population (will be
@@ -7757,7 +7234,6 @@ Description:
 Usage:
 
     x.~sample()
-
 "; 
 
 %feature("docstring") simuPOP::sample::clone "
@@ -7769,7 +7245,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::sample::prepareSample "
@@ -7777,7 +7252,6 @@ Usage:
 Usage:
 
     x.prepareSample()
-
 "; 
 
 %feature("docstring") simuPOP::sample::drawsample "
@@ -7785,7 +7259,6 @@ Usage:
 Usage:
 
     x.drawsample(pop)
-
 "; 
 
 %feature("docstring") simuPOP::sample::samples "
@@ -7797,7 +7270,6 @@ Description:
 Usage:
 
     x.samples(pop)
-
 "; 
 
 %feature("docstring") simuPOP::sample::apply "
@@ -7810,7 +7282,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::sample::__repr__ "
@@ -7818,7 +7289,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::sample::saveIndIndex "
@@ -7831,7 +7301,6 @@ Description:
 Usage:
 
     x.saveIndIndex(pop, indexField=\"oldindex\")
-
 "; 
 
 %feature("docstring") simuPOP::sample::resetParentalIndex "
@@ -7842,9 +7311,8 @@ Description:
 
 Usage:
 
-    x.resetParentalIndex(pop, fatherField=\"father_idx\", motherField=\"mother_idx\",
-      indexField=\"oldindex\")
-
+    x.resetParentalIndex(pop, fatherField=\"father_idx\",
+      motherField=\"mother_idx\", indexField=\"oldindex\")
 "; 
 
 %feature("docstring") simuPOP::sample::findOffspringAndSpouse "
@@ -7855,9 +7323,8 @@ Description:
 
 Usage:
 
-    x.findOffspringAndSpouse(pop, ancestralDepth, maxOffspring, fatherField, motherField,
-      spouseField, offspringField)
-
+    x.findOffspringAndSpouse(pop, ancestralDepth, maxOffspring,
+      fatherField, motherField, spouseField, offspringField)
 "; 
 
 %feature("docstring") simuPOP::sample::resetSubPopID "
@@ -7869,7 +7336,6 @@ Description:
 Usage:
 
     x.resetSubPopID(pop)
-
 "; 
 
 %feature("docstring") simuPOP::savePopulation "
@@ -7884,10 +7350,9 @@ Description:
 
 Usage:
 
-    savePopulation(output=\"\", outputExpr=\"\", format=\"bin\", compress=True,
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
-
+    savePopulation(output=\"\", outputExpr=\"\", format=\"bin\",
+      compress=True, stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::savePopulation::~savePopulation "
@@ -7895,7 +7360,6 @@ Usage:
 Usage:
 
     x.~savePopulation()
-
 "; 
 
 %feature("docstring") simuPOP::savePopulation::clone "
@@ -7907,7 +7371,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::savePopulation::apply "
@@ -7920,7 +7383,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::savePopulation::__repr__ "
@@ -7928,7 +7390,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::selector "
@@ -7963,9 +7424,8 @@ Description:
 
 Usage:
 
-    selector(stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=\"fitness\")
-
+    selector(stage=PreMating, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=\"fitness\")
 "; 
 
 %feature("docstring") simuPOP::selector::~selector "
@@ -7977,7 +7437,6 @@ Description:
 Usage:
 
     x.~selector()
-
 "; 
 
 %feature("docstring") simuPOP::selector::clone "
@@ -7989,7 +7448,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::selector::indFitness "
@@ -8001,7 +7459,6 @@ Description:
 Usage:
 
     x.indFitness(*, gen)
-
 "; 
 
 %feature("docstring") simuPOP::selector::apply "
@@ -8013,7 +7470,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::selector::__repr__ "
@@ -8021,7 +7477,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::setAncestralDepth "
@@ -8036,9 +7491,9 @@ Description:
 
 Usage:
 
-    setAncestralDepth(depth, output=\">\", outputExpr=\"\", stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    setAncestralDepth(depth, output=\">\", outputExpr=\"\",
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::setAncestralDepth::~setAncestralDepth "
@@ -8050,7 +7505,6 @@ Description:
 Usage:
 
     x.~setAncestralDepth()
-
 "; 
 
 %feature("docstring") simuPOP::setAncestralDepth::clone "
@@ -8062,7 +7516,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::setAncestralDepth::apply "
@@ -8075,7 +7528,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::setAncestralDepth::__repr__ "
@@ -8083,7 +7535,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::SharedVariables "
@@ -8100,7 +7551,6 @@ Details:
 Usage:
 
     x.clear()
-
 "; 
 
 %feature("docstring") simuPOP::SharedVariables::setDict "
@@ -8108,7 +7558,6 @@ Usage:
 Usage:
 
     x.setDict(*dict)
-
 "; 
 
 %feature("docstring") simuPOP::SharedVariables::setVar "
@@ -8120,7 +7569,6 @@ Description:
 Usage:
 
     x.setVar(name, *val)
-
 Details:
 
     if the size if enough, get the item
@@ -8132,7 +7580,6 @@ Details:
 Usage:
 
     x.hasVar(name)
-
 "; 
 
 %feature("docstring") simuPOP::SharedVariables::removeVar "
@@ -8144,7 +7591,6 @@ Description:
 Usage:
 
     x.removeVar(name)
-
 "; 
 
 %feature("docstring") simuPOP::SharedVariables::dict "
@@ -8152,7 +7598,6 @@ Usage:
 Usage:
 
     x.dict()
-
 "; 
 
 %feature("docstring") simuPOP::SharedVariables::fromString "
@@ -8160,7 +7605,6 @@ Usage:
 Usage:
 
     x.fromString(vars)
-
 "; 
 
 %feature("docstring") simuPOP::simulator "
@@ -8220,7 +7664,6 @@ Description:
 Usage:
 
     simulator(pop, matingScheme, rep=1, grp=[])
-
 Arguments:
 
     population:     a population created by population() function.
@@ -8248,7 +7691,6 @@ Description:
 Usage:
 
     x.~simulator()
-
 "; 
 
 %feature("docstring") simuPOP::simulator::clone "
@@ -8256,7 +7698,6 @@ Usage:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::simulator::pop "
@@ -8268,7 +7709,6 @@ Description:
 Usage:
 
     x.pop()
-
 Arguments:
 
     rep:            number of replicate.
@@ -8281,7 +7721,6 @@ Arguments:
 Usage:
 
     x.getPopulation(rep)
-
 Arguments:
 
     rep:            number of replicate.
@@ -8294,7 +7733,6 @@ Arguments:
 Usage:
 
     x.setMatingScheme(matingScheme)
-
 "; 
 
 %feature("docstring") simuPOP::simulator::setPopulation "
@@ -8302,7 +7740,6 @@ Usage:
 Usage:
 
     x.setPopulation(pop, rep)
-
 "; 
 
 %feature("docstring") simuPOP::simulator::numRep "
@@ -8310,7 +7747,6 @@ Usage:
 Usage:
 
     x.numRep()
-
 "; 
 
 %feature("docstring") simuPOP::simulator::gen "
@@ -8318,7 +7754,6 @@ Usage:
 Usage:
 
     x.gen()
-
 "; 
 
 %feature("docstring") simuPOP::simulator::group "
@@ -8330,7 +7765,6 @@ Description:
 Usage:
 
     x.group()
-
 "; 
 
 %feature("docstring") simuPOP::simulator::setGroup "
@@ -8342,7 +7776,6 @@ Description:
 Usage:
 
     x.setGroup(grp)
-
 "; 
 
 %feature("docstring") simuPOP::simulator::setGen "
@@ -8354,7 +7787,6 @@ Description:
 Usage:
 
     x.setGen(gen)
-
 Arguments:
 
     gen:            new generation number
@@ -8371,7 +7803,6 @@ Description:
 Usage:
 
     x.step(ops=[], preOps=[], postOps=[], steps=1, dryrun=False)
-
 "; 
 
 %feature("docstring") simuPOP::simulator::evolve "
@@ -8383,7 +7814,6 @@ Description:
 Usage:
 
     x.evolve(ops, preOps=[], postOps=[], end=-1, dryrun=False)
-
 Arguments:
 
     ops:            operators that will be applied at all generations.
@@ -8412,7 +7842,6 @@ Description:
 Usage:
 
     x.apply(ops, dryrun=False)
-
 Arguments:
 
     ops:            operators that will be applied at all generations.
@@ -8436,7 +7865,6 @@ Description:
 Usage:
 
     x.setStopIfOneRepStop(on=True)
-
 Arguments:
 
     on:             turn on or off stopIfOneRepStop if set, the
@@ -8451,7 +7879,6 @@ Arguments:
 Usage:
 
     x.stopIfOneRepStop()
-
 "; 
 
 %feature("docstring") simuPOP::simulator::setApplyOpToStoppedReps "
@@ -8463,7 +7890,6 @@ Description:
 Usage:
 
     x.setApplyOpToStoppedReps(on=True)
-
 Arguments:
 
     on:             turn on or off applyOpToStoppedReps flag if set,
@@ -8479,7 +7905,6 @@ Arguments:
 Usage:
 
     x.applyOpToStoppedReps()
-
 "; 
 
 %feature("docstring") simuPOP::simulator::vars "
@@ -8492,7 +7917,6 @@ Description:
 Usage:
 
     x.vars(rep, subPop=-1)
-
 "; 
 
 %feature("docstring") simuPOP::simulator::saveSimulator "
@@ -8504,7 +7928,6 @@ Description:
 Usage:
 
     x.saveSimulator(filename, format=\"auto\", compress=True)
-
 Arguments:
 
     filename:       save to filename
@@ -8524,7 +7947,6 @@ Arguments:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::smmMutator "
@@ -8539,10 +7961,9 @@ Description:
 
 Usage:
 
-    smmMutator(rate=[], atLoci=[], maxAllele=0, incProb=0.5, output=\">\",
-      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    smmMutator(rate=[], atLoci=[], maxAllele=0, incProb=0.5,
+      output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     rate::          mutation rate
@@ -8564,7 +7985,6 @@ Details:
 Usage:
 
     x.~smmMutator()
-
 "; 
 
 %feature("docstring") simuPOP::smmMutator::mutate "
@@ -8577,7 +7997,6 @@ Description:
 Usage:
 
     x.mutate(allele)
-
 "; 
 
 %feature("docstring") simuPOP::smmMutator::clone "
@@ -8589,7 +8008,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::smmMutator::__repr__ "
@@ -8597,7 +8015,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::splitSubPop "
@@ -8616,10 +8033,9 @@ Description:
 
 Usage:
 
-    splitSubPop(which=0, sizes=[], proportions=[], subPopID=[], randomize=True,
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
-
+    splitSubPop(which=0, sizes=[], proportions=[], subPopID=[],
+      randomize=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
     which:          which subpop to split (if there is no subpop
@@ -8646,7 +8062,6 @@ Description:
 Usage:
 
     x.~splitSubPop()
-
 "; 
 
 %feature("docstring") simuPOP::splitSubPop::clone "
@@ -8658,7 +8073,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::splitSubPop::apply "
@@ -8671,7 +8085,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::splitSubPop::__repr__ "
@@ -8679,7 +8092,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::spread "
@@ -8694,9 +8106,8 @@ Description:
 
 Usage:
 
-    spread(ind, subPop=[], stage=PreMating, begin=0, end=1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    spread(ind, subPop=[], stage=PreMating, begin=0, end=1, step=1,
+      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::spread::~spread "
@@ -8704,7 +8115,6 @@ Usage:
 Usage:
 
     x.~spread()
-
 "; 
 
 %feature("docstring") simuPOP::spread::clone "
@@ -8716,7 +8126,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::spread::__repr__ "
@@ -8724,7 +8133,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::spread::apply "
@@ -8737,7 +8145,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::stat "
@@ -8763,7 +8170,6 @@ Usage:
       relMinScored=10, hasPhase=False, midValues=False, output=\"\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
 Arguments:
 
     relGroups:      calculated pairwise relatedness between groups.
@@ -8792,7 +8198,6 @@ Arguments:
 Usage:
 
     x.~stat()
-
 "; 
 
 %feature("docstring") simuPOP::stat::clone "
@@ -8804,7 +8209,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::stat::apply "
@@ -8817,7 +8221,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::stat::__repr__ "
@@ -8825,7 +8228,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::statAlleleFreq "
@@ -8833,7 +8235,6 @@ Usage:
 Usage:
 
     statAlleleFreq(atLoci=[], param=strDict)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::addLocus "
@@ -8841,7 +8242,6 @@ Usage:
 Usage:
 
     x.addLocus(locus, post, subPop, numOfAlleles)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleNumAll "
@@ -8849,7 +8249,6 @@ Usage:
 Usage:
 
     x.alleleNumAll()
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleNumVec "
@@ -8857,7 +8256,6 @@ Usage:
 Usage:
 
     x.alleleNumVec(loc)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleNum "
@@ -8865,7 +8263,6 @@ Usage:
 Usage:
 
     x.alleleNum(allele, loc)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleFreqAll "
@@ -8873,7 +8270,6 @@ Usage:
 Usage:
 
     x.alleleFreqAll()
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleFreqVec "
@@ -8881,7 +8277,6 @@ Usage:
 Usage:
 
     x.alleleFreqVec(loc)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleFreq "
@@ -8889,7 +8284,6 @@ Usage:
 Usage:
 
     x.alleleFreq(allele, loc)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleNumAll "
@@ -8897,7 +8291,6 @@ Usage:
 Usage:
 
     x.alleleNumAll(subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleNumVec "
@@ -8905,7 +8298,6 @@ Usage:
 Usage:
 
     x.alleleNumVec(loc, subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleNum "
@@ -8913,7 +8305,6 @@ Usage:
 Usage:
 
     x.alleleNum(allele, loc, subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleFreqAll "
@@ -8921,7 +8312,6 @@ Usage:
 Usage:
 
     x.alleleFreqAll(subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleFreqVec "
@@ -8929,7 +8319,6 @@ Usage:
 Usage:
 
     x.alleleFreqVec(loc, subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleFreq "
@@ -8937,7 +8326,6 @@ Usage:
 Usage:
 
     x.alleleFreq(allele, loc, subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::numOfAlleles "
@@ -8945,7 +8333,6 @@ Usage:
 Usage:
 
     x.numOfAlleles()
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::numOfAlleles "
@@ -8953,7 +8340,6 @@ Usage:
 Usage:
 
     x.numOfAlleles(subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleles "
@@ -8961,7 +8347,6 @@ Usage:
 Usage:
 
     x.alleles(loc)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleles "
@@ -8969,7 +8354,6 @@ Usage:
 Usage:
 
     x.alleles(loc, subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::apply "
@@ -8977,7 +8361,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::statAssociation "
@@ -8988,8 +8371,8 @@ Usage:
 
 Usage:
 
-    statAssociation(alleleFreq, haploFreq, Association=intMatrix, param=strDict)
-
+    statAssociation(alleleFreq, haploFreq, Association=intMatrix,
+      param=strDict)
 "; 
 
 %feature("docstring") simuPOP::statAssociation::apply "
@@ -8997,7 +8380,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::statExpHetero::statExpHetero "
@@ -9005,7 +8387,6 @@ Usage:
 Usage:
 
     statExpHetero(alleleFreq, expHetero=[], param=strDict)
-
 "; 
 
 %feature("docstring") simuPOP::statExpHetero::apply "
@@ -9013,7 +8394,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::statFst::statFst "
@@ -9021,7 +8401,6 @@ Usage:
 Usage:
 
     statFst(alleleFreq, heteroFreq, Fst=[], param=strDict)
-
 "; 
 
 %feature("docstring") simuPOP::statFst::Fst "
@@ -9029,7 +8408,6 @@ Usage:
 Usage:
 
     x.Fst()
-
 "; 
 
 %feature("docstring") simuPOP::statFst::Fis "
@@ -9037,7 +8415,6 @@ Usage:
 Usage:
 
     x.Fis()
-
 "; 
 
 %feature("docstring") simuPOP::statFst::Fit "
@@ -9045,7 +8422,6 @@ Usage:
 Usage:
 
     x.Fit()
-
 "; 
 
 %feature("docstring") simuPOP::statFst::Fst "
@@ -9053,7 +8429,6 @@ Usage:
 Usage:
 
     x.Fst(loc)
-
 "; 
 
 %feature("docstring") simuPOP::statFst::Fis "
@@ -9061,7 +8436,6 @@ Usage:
 Usage:
 
     x.Fis(loc)
-
 "; 
 
 %feature("docstring") simuPOP::statFst::Fit "
@@ -9069,7 +8443,6 @@ Usage:
 Usage:
 
     x.Fit(loc)
-
 "; 
 
 %feature("docstring") simuPOP::statFst::apply "
@@ -9077,7 +8450,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::statGenoFreq::statGenoFreq "
@@ -9085,7 +8457,6 @@ Usage:
 Usage:
 
     statGenoFreq(genoFreq=[], phase=True)
-
 "; 
 
 %feature("docstring") simuPOP::statGenoFreq::apply "
@@ -9093,7 +8464,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 Details:
 
     go through a single allele for all individual, all diploidneed to
@@ -9106,7 +8476,6 @@ Details:
 Usage:
 
     statHaploFreq(haploFreq=intMatrix)
-
 "; 
 
 %feature("docstring") simuPOP::statHaploFreq::addHaplotype "
@@ -9114,7 +8483,6 @@ Usage:
 Usage:
 
     x.addHaplotype(haplo, post=False)
-
 "; 
 
 %feature("docstring") simuPOP::statHaploFreq::numOfHaplotypes "
@@ -9122,7 +8490,6 @@ Usage:
 Usage:
 
     x.numOfHaplotypes(haplo)
-
 "; 
 
 %feature("docstring") simuPOP::statHaploFreq::numOfHaplotypes "
@@ -9130,7 +8497,6 @@ Usage:
 Usage:
 
     x.numOfHaplotypes(haplo, subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statHaploFreq::haploNum "
@@ -9138,7 +8504,6 @@ Usage:
 Usage:
 
     x.haploNum(haplo)
-
 "; 
 
 %feature("docstring") simuPOP::statHaploFreq::haploFreq "
@@ -9146,7 +8511,6 @@ Usage:
 Usage:
 
     x.haploFreq(haplo)
-
 "; 
 
 %feature("docstring") simuPOP::statHaploFreq::haploNum "
@@ -9154,7 +8518,6 @@ Usage:
 Usage:
 
     x.haploNum(haplo, subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statHaploFreq::haploFreq "
@@ -9162,7 +8525,6 @@ Usage:
 Usage:
 
     x.haploFreq(haplo, subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statHaploFreq::apply "
@@ -9170,7 +8532,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::statHeteroFreq::statHeteroFreq "
@@ -9178,7 +8539,6 @@ Usage:
 Usage:
 
     statHeteroFreq(heteroFreq=[], homoFreq=[])
-
 "; 
 
 %feature("docstring") simuPOP::statHeteroFreq::addLocus "
@@ -9186,7 +8546,6 @@ Usage:
 Usage:
 
     x.addLocus(locus, post=False)
-
 "; 
 
 %feature("docstring") simuPOP::statHeteroFreq::heteroNum "
@@ -9194,7 +8553,6 @@ Usage:
 Usage:
 
     x.heteroNum(allele, loc)
-
 "; 
 
 %feature("docstring") simuPOP::statHeteroFreq::heteroFreq "
@@ -9202,7 +8560,6 @@ Usage:
 Usage:
 
     x.heteroFreq(allele, loc)
-
 "; 
 
 %feature("docstring") simuPOP::statHeteroFreq::heteroNum "
@@ -9210,7 +8567,6 @@ Usage:
 Usage:
 
     x.heteroNum(allele, loc, subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statHeteroFreq::heteroFreq "
@@ -9218,7 +8574,6 @@ Usage:
 Usage:
 
     x.heteroFreq(allele, loc, subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statHeteroFreq::apply "
@@ -9226,7 +8581,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::statLD::statLD "
@@ -9234,7 +8588,6 @@ Usage:
 Usage:
 
     statLD(alleleFreq, haploFreq, LD=intMatrix, LD_param=strDict)
-
 "; 
 
 %feature("docstring") simuPOP::statLD::apply "
@@ -9242,7 +8595,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfAffected::statNumOfAffected "
@@ -9250,7 +8602,6 @@ Usage:
 Usage:
 
     statNumOfAffected(numOfAffected=False)
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfAffected::activate "
@@ -9258,7 +8609,6 @@ Usage:
 Usage:
 
     x.activate(yes=True)
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfAffected::numOfAffected "
@@ -9266,7 +8616,6 @@ Usage:
 Usage:
 
     x.numOfAffected()
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfAffected::numOfUnaffected "
@@ -9274,7 +8623,6 @@ Usage:
 Usage:
 
     x.numOfUnaffected()
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfAffected::numOfAffected "
@@ -9282,7 +8630,6 @@ Usage:
 Usage:
 
     x.numOfAffected(subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfAffected::numOfUnaffected "
@@ -9290,7 +8637,6 @@ Usage:
 Usage:
 
     x.numOfUnaffected(subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfAffected::apply "
@@ -9298,7 +8644,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfAlleles::statNumOfAlleles "
@@ -9306,7 +8651,6 @@ Usage:
 Usage:
 
     statNumOfAlleles(calc, atLoci=[], param=strDict)
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfAlleles::apply "
@@ -9314,7 +8658,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfMale::statNumOfMale "
@@ -9322,7 +8665,6 @@ Usage:
 Usage:
 
     statNumOfMale(numOfMale=False)
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfMale::activate "
@@ -9330,7 +8672,6 @@ Usage:
 Usage:
 
     x.activate(yes=True)
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfMale::numOfMale "
@@ -9338,7 +8679,6 @@ Usage:
 Usage:
 
     x.numOfMale()
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfMale::numOfFemale "
@@ -9346,7 +8686,6 @@ Usage:
 Usage:
 
     x.numOfFemale()
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfMale::numOfMale "
@@ -9354,7 +8693,6 @@ Usage:
 Usage:
 
     x.numOfMale(subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfMale::numOfFemale "
@@ -9362,7 +8700,6 @@ Usage:
 Usage:
 
     x.numOfFemale(subPop)
-
 "; 
 
 %feature("docstring") simuPOP::statNumOfMale::apply "
@@ -9370,7 +8707,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::stator "
@@ -9394,9 +8730,8 @@ Description:
 
 Usage:
 
-    stator(output=\"\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    stator(output=\"\", outputExpr=\"\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::stator::~stator "
@@ -9408,7 +8743,6 @@ Description:
 Usage:
 
     x.~stator()
-
 "; 
 
 %feature("docstring") simuPOP::stator::clone "
@@ -9420,7 +8754,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::statPopSize::statPopSize "
@@ -9428,7 +8761,6 @@ Usage:
 Usage:
 
     statPopSize(popSize=False)
-
 "; 
 
 %feature("docstring") simuPOP::statPopSize::activate "
@@ -9436,7 +8768,6 @@ Usage:
 Usage:
 
     x.activate()
-
 "; 
 
 %feature("docstring") simuPOP::statPopSize::apply "
@@ -9444,7 +8775,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::statRelatedness "
@@ -9465,9 +8795,8 @@ Description:
 
 Usage:
 
-    statRelatedness(alleleFreq, groups=intMatrix, useSubPop=False, loci=[],
-      method=[], minScored=10, param=strDict)
-
+    statRelatedness(alleleFreq, groups=intMatrix, useSubPop=False,
+      loci=[], method=[], minScored=10, param=strDict)
 Arguments:
 
     groups:         can be [ [1,2,3],[4,5,6],[7,8,9]] as three groups
@@ -9487,7 +8816,6 @@ Arguments:
 Usage:
 
     x.relQueller(ind1, ind2)
-
 "; 
 
 %feature("docstring") simuPOP::statRelatedness::relLynch "
@@ -9495,7 +8823,6 @@ Usage:
 Usage:
 
     x.relLynch(ind1, ind2)
-
 "; 
 
 %feature("docstring") simuPOP::statRelatedness::relIR "
@@ -9503,7 +8830,6 @@ Usage:
 Usage:
 
     x.relIR(ind1, locus)
-
 "; 
 
 %feature("docstring") simuPOP::statRelatedness::relD2 "
@@ -9511,7 +8837,6 @@ Usage:
 Usage:
 
     x.relD2(ind1, locus)
-
 "; 
 
 %feature("docstring") simuPOP::statRelatedness::relRel "
@@ -9519,7 +8844,6 @@ Usage:
 Usage:
 
     x.relRel(ind1, ind2, locus)
-
 "; 
 
 %feature("docstring") simuPOP::statRelatedness::groupRelatedness "
@@ -9531,7 +8855,6 @@ Description:
 Usage:
 
     x.groupRelatedness(pop, i, j, method)
-
 "; 
 
 %feature("docstring") simuPOP::statRelatedness::apply "
@@ -9539,7 +8862,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::StopIteration "
@@ -9555,7 +8877,6 @@ Description:
 Usage:
 
     stopIteration(msg)
-
 "; 
 
 %feature("docstring") simuPOP::StreamElem::StreamElem "
@@ -9568,7 +8889,6 @@ Description:
 Usage:
 
     streamElem(name, readable, realAppend, useString)
-
 "; 
 
 %feature("docstring") simuPOP::StreamElem::StreamElem "
@@ -9581,7 +8901,6 @@ Description:
 Usage:
 
     streamElem(rhs)
-
 "; 
 
 %feature("docstring") simuPOP::StreamElem::~StreamElem "
@@ -9593,7 +8912,6 @@ Description:
 Usage:
 
     x.~StreamElem()
-
 "; 
 
 %feature("docstring") simuPOP::StreamElem::makeReadable "
@@ -9605,7 +8923,6 @@ Description:
 Usage:
 
     x.makeReadable()
-
 "; 
 
 %feature("docstring") simuPOP::StreamElem::makeAppend "
@@ -9617,7 +8934,6 @@ Description:
 Usage:
 
     x.makeAppend(append)
-
 "; 
 
 %feature("docstring") simuPOP::StreamProvider "
@@ -9657,7 +8973,6 @@ Description:
 Usage:
 
     streamProvider(output, outputExpr)
-
 "; 
 
 %feature("docstring") simuPOP::StreamProvider::closeOstream "
@@ -9669,7 +8984,6 @@ Description:
 Usage:
 
     x.closeOstream()
-
 "; 
 
 %feature("docstring") simuPOP::SystemError "
@@ -9685,7 +8999,6 @@ Description:
 Usage:
 
     systemError(msg)
-
 "; 
 
 %feature("docstring") simuPOP::tagger "
@@ -9709,7 +9022,6 @@ Usage:
 
     tagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
       infoFields=[])
-
 "; 
 
 %feature("docstring") simuPOP::tagger::~tagger "
@@ -9721,7 +9033,6 @@ Description:
 Usage:
 
     x.~tagger()
-
 "; 
 
 %feature("docstring") simuPOP::tagger::clone "
@@ -9733,7 +9044,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::terminateIf "
@@ -9751,10 +9061,9 @@ Description:
 
 Usage:
 
-    terminateIf(condition=\"\", message=\"\", var=\"terminate\", output=\"\",
-      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    terminateIf(condition=\"\", message=\"\", var=\"terminate\",
+      output=\"\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::terminateIf::clone "
@@ -9766,7 +9075,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::terminateIf::__repr__ "
@@ -9774,7 +9082,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::terminateIf::apply "
@@ -9786,7 +9093,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::terminateIf::~terminateIf "
@@ -9794,7 +9100,6 @@ Usage:
 Usage:
 
     x.~terminateIf()
-
 "; 
 
 %feature("docstring") simuPOP::terminator "
@@ -9809,10 +9114,9 @@ Description:
 
 Usage:
 
-    terminator(message=\"\", output=\">\", outputExpr=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[])
-
+    terminator(message=\"\", output=\">\", outputExpr=\"\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::terminator::~terminator "
@@ -9824,7 +9128,6 @@ Description:
 Usage:
 
     x.~terminator()
-
 "; 
 
 %feature("docstring") simuPOP::terminator::clone "
@@ -9836,7 +9139,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::terminator::message "
@@ -9844,7 +9146,6 @@ Usage:
 Usage:
 
     x.message()
-
 "; 
 
 %feature("docstring") simuPOP::ticToc "
@@ -9859,9 +9160,8 @@ Description:
 
 Usage:
 
-    ticToc(output=\">\", outputExpr=\"\", stage=PreMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    ticToc(output=\">\", outputExpr=\"\", stage=PreMating, begin=0,
+      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::ticToc::~ticToc "
@@ -9873,7 +9173,6 @@ Description:
 Usage:
 
     x.~ticToc()
-
 "; 
 
 %feature("docstring") simuPOP::ticToc::clone "
@@ -9885,7 +9184,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::ticToc::apply "
@@ -9898,7 +9196,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::ticToc::__repr__ "
@@ -9906,7 +9203,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::turnOffDebugOp "
@@ -9921,9 +9217,8 @@ Description:
 
 Usage:
 
-    turnOffDebugOp(code, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    turnOffDebugOp(code, stage=PreMating, begin=0, end=-1, step=1,
+      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::turnOffDebugOp::~turnOffDebugOp "
@@ -9935,7 +9230,6 @@ Description:
 Usage:
 
     x.~turnOffDebugOp()
-
 "; 
 
 %feature("docstring") simuPOP::turnOffDebugOp::clone "
@@ -9947,7 +9241,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::turnOffDebugOp::apply "
@@ -9960,7 +9253,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::turnOffDebugOp::__repr__ "
@@ -9968,7 +9260,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::turnOnDebugOp "
@@ -9983,9 +9274,8 @@ Description:
 
 Usage:
 
-    turnOnDebugOp(code, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
+    turnOnDebugOp(code, stage=PreMating, begin=0, end=-1, step=1,
+      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 "; 
 
 %feature("docstring") simuPOP::turnOnDebugOp::~turnOnDebugOp "
@@ -9997,7 +9287,6 @@ Description:
 Usage:
 
     x.~turnOnDebugOp()
-
 "; 
 
 %feature("docstring") simuPOP::turnOnDebugOp::clone "
@@ -10009,7 +9298,6 @@ Description:
 Usage:
 
     x.clone()
-
 "; 
 
 %feature("docstring") simuPOP::turnOnDebugOp::apply "
@@ -10022,7 +9310,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
 "; 
 
 %feature("docstring") simuPOP::turnOnDebugOp::__repr__ "
@@ -10030,7 +9317,6 @@ Usage:
 Usage:
 
     x.__repr__()
-
 "; 
 
 %feature("docstring") simuPOP::TypeError "
@@ -10046,7 +9332,6 @@ Description:
 Usage:
 
     typeError(msg)
-
 "; 
 
 %feature("docstring") simuPOP::ValueError "
@@ -10062,7 +9347,6 @@ Description:
 Usage:
 
     valueError(msg)
-
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler "
@@ -10074,7 +9358,6 @@ Usage:
 Usage:
 
     weightedsampler(rng, weight=[], fast=True)
-
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler::~Weightedsampler "
@@ -10082,7 +9365,6 @@ Usage:
 Usage:
 
     x.~Weightedsampler()
-
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler::set "
@@ -10094,7 +9376,6 @@ Description:
 Usage:
 
     x.set(weight)
-
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler::biSearch "
@@ -10102,7 +9383,6 @@ Usage:
 Usage:
 
     x.biSearch(a)
-
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler::get "
@@ -10110,7 +9390,6 @@ Usage:
 Usage:
 
     x.get()
-
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler::get "
@@ -10118,7 +9397,6 @@ Usage:
 Usage:
 
     x.get(res, shift=0)
-
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler::get "
@@ -10126,7 +9404,6 @@ Usage:
 Usage:
 
     x.get(beg, end, shift=0)
-
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler::q "
@@ -10134,7 +9411,6 @@ Usage:
 Usage:
 
     x.q()
-
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler::a "
@@ -10142,7 +9418,6 @@ Usage:
 Usage:
 
     x.a()
-
 "; 
 
 %feature("docstring") simuPOP::countAllelescountAlleles "
@@ -10150,7 +9425,6 @@ Usage:
 Usage:
 
     (pop, subpop, loci, alleles, alleleNum)
-
 "; 
 
 %feature("docstring") simuPOP::getExpectedAllelesgetExpectedAlleles "
@@ -10164,7 +9438,6 @@ Description:
 Usage:
 
     (pop, expFreq, loci, alleles, expAlleles)
-
 Details:
 
     calculate exp number of affected offspring in the next generation.
@@ -10181,7 +9454,6 @@ Usage:
 
     (curGen, freq, N, *NtFunc, fitness, *fitnessFunc, minMutAge,
       maxMutAge, ploidy, restartIfFail, maxAttempts, allowFixation)
-
 "; 
 
 %feature("docstring") simuPOP::fitOfGenofitOfGeno "
@@ -10189,7 +9461,6 @@ Usage:
 Usage:
 
     (loc, allgeno, fitness, freq)
-
 "; 
 
 %feature("docstring") simuPOP::interFitnessinterFitness "
@@ -10197,7 +9468,6 @@ Usage:
 Usage:
 
     (nLoci, fitness, freq, sAll)
-
 "; 
 
 %feature("docstring") simuPOP::MarginalFitnessMarginalFitness "
@@ -10205,7 +9475,6 @@ Usage:
 Usage:
 
     (nLoci, fitness, freq)
-
 "; 
 
 %feature("docstring") simuPOP::FreqTrajectoryMultiStochFreqTrajectoryMultiStoch "
@@ -10214,7 +9483,6 @@ Usage:
 
     (curGen, freq, N, *NtFunc, fitness, *fitnessFunc, minMutAge,
       maxMutAge, ploidy, restartIfFail, maxAttempts)
-
 "; 
 
 %feature("docstring") simuPOP::FreqTrajectorySelSimFreqTrajectorySelSim "
@@ -10222,7 +9490,6 @@ Usage:
 Usage:
 
     (sel, Ne, freq, dom_h, selection)
-
 "; 
 
 %feature("docstring") simuPOP::FreqTrajectoryForwardFreqTrajectoryForward "
@@ -10230,7 +9497,6 @@ Usage:
 Usage:
 
     (lowbound, highbound, disAge, grate, N0, seleCo)
-
 "; 
 
 %feature("docstring") simuPOP::LoadPopulationLoadPopulation "
@@ -10238,7 +9504,6 @@ Usage:
 Usage:
 
     (file, format)
-
 "; 
 
 %feature("docstring") simuPOP::testGetinfoFromIndtestGetinfoFromInd "
@@ -10250,7 +9515,6 @@ Description:
 Usage:
 
     (pop)
-
 "; 
 
 %feature("docstring") simuPOP::testGetinfoFromPoptestGetinfoFromPop "
@@ -10262,7 +9526,6 @@ Description:
 Usage:
 
     (pop, order)
-
 "; 
 
 %feature("docstring") simuPOP::LoadSimulatorLoadSimulator "
@@ -10270,7 +9533,6 @@ Usage:
 Usage:
 
     (file, mate, format)
-
 "; 
 
 %feature("docstring") simuPOP::TurnOnDebugTurnOnDebug "
@@ -10282,7 +9544,6 @@ Description:
 Usage:
 
     (code)
-
 "; 
 
 %feature("docstring") simuPOP::TurnOnDebugWithNameTurnOnDebugWithName "
@@ -10294,7 +9555,6 @@ Description:
 Usage:
 
     (code)
-
 "; 
 
 %feature("docstring") simuPOP::TurnOffDebugTurnOffDebug "
@@ -10306,7 +9566,6 @@ Description:
 Usage:
 
     (code)
-
 "; 
 
 %feature("docstring") simuPOP::debugdebug "
@@ -10318,7 +9577,6 @@ Description:
 Usage:
 
     (code)
-
 "; 
 
 %feature("docstring") simuPOP::ListDebugCodeListDebugCode "
@@ -10330,7 +9588,6 @@ Description:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::dbgStringdbgString "
@@ -10342,7 +9599,6 @@ Description:
 Usage:
 
     (code)
-
 "; 
 
 %feature("docstring") simuPOP::save_nonesave_none "
@@ -10350,7 +9606,6 @@ Usage:
 Usage:
 
     (str)
-
 "; 
 
 %feature("docstring") simuPOP::load_noneload_none "
@@ -10358,7 +9613,6 @@ Usage:
 Usage:
 
     (str, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_intsave_int "
@@ -10366,7 +9620,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_intload_int "
@@ -10374,7 +9627,6 @@ Usage:
 Usage:
 
     (str, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_longsave_long "
@@ -10382,7 +9634,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_longload_long "
@@ -10390,7 +9641,6 @@ Usage:
 Usage:
 
     (str, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_floatsave_float "
@@ -10398,7 +9648,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_floatload_float "
@@ -10406,7 +9655,6 @@ Usage:
 Usage:
 
     (str, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_stringsave_string "
@@ -10414,7 +9662,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_stringload_string "
@@ -10422,7 +9669,6 @@ Usage:
 Usage:
 
     (str, offset)
-
 "; 
 
 %feature("docstring") simuPOP::saveObjsaveObj "
@@ -10430,7 +9676,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::loadObjloadObj "
@@ -10438,7 +9683,6 @@ Usage:
 Usage:
 
     (vars, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_dictsave_dict "
@@ -10446,7 +9690,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_dictload_dict "
@@ -10454,7 +9697,6 @@ Usage:
 Usage:
 
     (vars, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_listsave_list "
@@ -10462,7 +9704,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_listload_list "
@@ -10470,7 +9711,6 @@ Usage:
 Usage:
 
     (vars, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_tuplesave_tuple "
@@ -10478,7 +9718,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_tupleload_tuple "
@@ -10486,7 +9725,6 @@ Usage:
 Usage:
 
     (vars, offset)
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -10494,7 +9732,6 @@ Usage:
 Usage:
 
     (bool, Bool, false)
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -10502,7 +9739,6 @@ Usage:
 Usage:
 
     (int, Int, 0)
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -10510,7 +9746,6 @@ Usage:
 Usage:
 
     (double, Double, 0.0)
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -10518,7 +9753,6 @@ Usage:
 Usage:
 
     (string, String, \"\")
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -10526,7 +9760,6 @@ Usage:
 Usage:
 
     (vectorf, Array, )
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -10534,7 +9767,6 @@ Usage:
 Usage:
 
     (strDict, StrDict, )
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -10542,7 +9774,6 @@ Usage:
 Usage:
 
     (intDict, IntDict, )
-
 "; 
 
 %feature("docstring") simuPOP::rngrng "
@@ -10554,7 +9785,6 @@ Description:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::SetRNGSetRNG "
@@ -10566,7 +9796,6 @@ Description:
 Usage:
 
     (r, seed)
-
 "; 
 
 %feature("docstring") simuPOP::setRNGsetRNG "
@@ -10578,7 +9807,6 @@ Description:
 Usage:
 
     (r, seed)
-
 "; 
 
 %feature("docstring") simuPOP::ListAllRNGListAllRNG "
@@ -10590,7 +9818,6 @@ Description:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::listAllRNGlistAllRNG "
@@ -10602,7 +9829,6 @@ Description:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::gsl_error_handlergsl_error_handler "
@@ -10615,7 +9841,6 @@ Description:
 Usage:
 
     (*reason, *, int, gsl_errno)
-
 "; 
 
 %feature("docstring") simuPOP::g_cnullg_cnull "
@@ -10627,7 +9852,6 @@ Description:
 Usage:
 
     (g_nullStreamBuf)
-
 "; 
 
 %feature("docstring") simuPOP::setLogOutputsetLogOutput "
@@ -10639,7 +9863,6 @@ Description:
 Usage:
 
     (filename)
-
 "; 
 
 %feature("docstring") simuPOP::simuRevsimuRev "
@@ -10652,7 +9875,6 @@ Description:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::simuVersimuVer "
@@ -10664,7 +9886,6 @@ Description:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::optimizedoptimized "
@@ -10672,7 +9893,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::mpimpi "
@@ -10680,7 +9900,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::mpiRankmpiRank "
@@ -10688,7 +9907,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::mpiSizempiSize "
@@ -10696,7 +9914,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::mpiBarriermpiBarrier "
@@ -10704,7 +9921,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::supportXMLsupportXML "
@@ -10712,7 +9928,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::alleleTypealleleType "
@@ -10720,7 +9935,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::compileCompilercompileCompiler "
@@ -10728,7 +9942,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::compileDatecompileDate "
@@ -10736,7 +9949,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::compilePyVersioncompilePyVersion "
@@ -10744,7 +9956,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::compilePlatFormcompilePlatForm "
@@ -10752,7 +9963,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::isGzippedisGzipped "
@@ -10760,7 +9970,6 @@ Usage:
 Usage:
 
     (filename)
-
 "; 
 
 %feature("docstring") simuPOP::fileExtensionfileExtension "
@@ -10768,7 +9977,6 @@ Usage:
 Usage:
 
     (filename)
-
 "; 
 
 %feature("docstring") simuPOP::testGappedIteratortestGappedIterator "
@@ -10776,7 +9984,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::countAllelescountAlleles "
@@ -10784,7 +9991,6 @@ Usage:
 Usage:
 
     (pop, subpop, loci, alleles, alleleNum)
-
 "; 
 
 %feature("docstring") simuPOP::getExpectedAllelesgetExpectedAlleles "
@@ -10798,7 +10004,6 @@ Description:
 Usage:
 
     (pop, expFreq, loci, alleles, expAlleles)
-
 Details:
 
     calculate exp number of affected offspring in the next generation.
@@ -10815,7 +10020,6 @@ Usage:
 
     (curGen, freq, N, *NtFunc, fitness, *fitnessFunc, minMutAge,
       maxMutAge, ploidy, restartIfFail, maxAttempts, allowFixation)
-
 "; 
 
 %feature("docstring") simuPOP::fitOfGenofitOfGeno "
@@ -10823,7 +10027,6 @@ Usage:
 Usage:
 
     (loc, allgeno, fitness, freq)
-
 "; 
 
 %feature("docstring") simuPOP::interFitnessinterFitness "
@@ -10831,7 +10034,6 @@ Usage:
 Usage:
 
     (nLoci, fitness, freq, sAll)
-
 "; 
 
 %feature("docstring") simuPOP::MarginalFitnessMarginalFitness "
@@ -10839,7 +10041,6 @@ Usage:
 Usage:
 
     (nLoci, fitness, freq)
-
 "; 
 
 %feature("docstring") simuPOP::FreqTrajectoryMultiStochFreqTrajectoryMultiStoch "
@@ -10848,7 +10049,6 @@ Usage:
 
     (curGen, freq, N, *NtFunc, fitness, *fitnessFunc, minMutAge,
       maxMutAge, ploidy, restartIfFail, maxAttempts)
-
 "; 
 
 %feature("docstring") simuPOP::FreqTrajectorySelSimFreqTrajectorySelSim "
@@ -10856,7 +10056,6 @@ Usage:
 Usage:
 
     (sel, Ne, freq, dom_h, selection)
-
 "; 
 
 %feature("docstring") simuPOP::FreqTrajectoryForwardFreqTrajectoryForward "
@@ -10864,7 +10063,6 @@ Usage:
 Usage:
 
     (lowbound, highbound, disAge, grate, N0, seleCo)
-
 "; 
 
 %feature("docstring") simuPOP::LoadPopulationLoadPopulation "
@@ -10872,7 +10070,6 @@ Usage:
 Usage:
 
     (file, format)
-
 "; 
 
 %feature("docstring") simuPOP::testGetinfoFromIndtestGetinfoFromInd "
@@ -10884,7 +10081,6 @@ Description:
 Usage:
 
     (pop)
-
 "; 
 
 %feature("docstring") simuPOP::testGetinfoFromPoptestGetinfoFromPop "
@@ -10896,7 +10092,6 @@ Description:
 Usage:
 
     (pop, order)
-
 "; 
 
 %feature("docstring") simuPOP::LoadSimulatorLoadSimulator "
@@ -10904,7 +10099,6 @@ Usage:
 Usage:
 
     (file, mate, format)
-
 "; 
 
 %feature("docstring") simuPOP::newcarrayobjectnewcarrayobject "
@@ -10912,7 +10106,6 @@ Usage:
 Usage:
 
     (*buf, type, size)
-
 "; 
 
 %feature("docstring") simuPOP::newcarrayiterobjectnewcarrayiterobject "
@@ -10920,7 +10113,6 @@ Usage:
 Usage:
 
     (begin, end)
-
 "; 
 
 %feature("docstring") simuPOP::is_carrayobjectis_carrayobject "
@@ -10928,7 +10120,6 @@ Usage:
 Usage:
 
     (*)
-
 "; 
 
 %feature("docstring") simuPOP::carray_lengthcarray_length "
@@ -10936,7 +10127,6 @@ Usage:
 Usage:
 
     (*a)
-
 "; 
 
 %feature("docstring") simuPOP::carray_itemsizecarray_itemsize "
@@ -10944,7 +10134,6 @@ Usage:
 Usage:
 
     (*a)
-
 "; 
 
 %feature("docstring") simuPOP::carray_typecarray_type "
@@ -10952,7 +10141,6 @@ Usage:
 Usage:
 
     (*a)
-
 "; 
 
 %feature("docstring") simuPOP::carray_datacarray_data "
@@ -10960,7 +10148,6 @@ Usage:
 Usage:
 
     (*a)
-
 "; 
 
 %feature("docstring") simuPOP::initcarrayinitcarray "
@@ -10968,7 +10155,6 @@ Usage:
 Usage:
 
     (void)
-
 "; 
 
 %feature("docstring") simuPOP::TurnOnDebugTurnOnDebug "
@@ -10980,7 +10166,6 @@ Description:
 Usage:
 
     (code)
-
 "; 
 
 %feature("docstring") simuPOP::TurnOnDebugWithNameTurnOnDebugWithName "
@@ -10992,7 +10177,6 @@ Description:
 Usage:
 
     (code)
-
 "; 
 
 %feature("docstring") simuPOP::TurnOffDebugTurnOffDebug "
@@ -11004,7 +10188,6 @@ Description:
 Usage:
 
     (code)
-
 "; 
 
 %feature("docstring") simuPOP::debugdebug "
@@ -11016,7 +10199,6 @@ Description:
 Usage:
 
     (code)
-
 "; 
 
 %feature("docstring") simuPOP::ListDebugCodeListDebugCode "
@@ -11028,7 +10210,6 @@ Description:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::dbgStringdbgString "
@@ -11040,7 +10221,6 @@ Description:
 Usage:
 
     (code)
-
 "; 
 
 %feature("docstring") simuPOP::save_nonesave_none "
@@ -11048,7 +10228,6 @@ Usage:
 Usage:
 
     (str)
-
 "; 
 
 %feature("docstring") simuPOP::load_noneload_none "
@@ -11056,7 +10235,6 @@ Usage:
 Usage:
 
     (str, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_intsave_int "
@@ -11064,7 +10242,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_intload_int "
@@ -11072,7 +10249,6 @@ Usage:
 Usage:
 
     (str, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_longsave_long "
@@ -11080,7 +10256,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_longload_long "
@@ -11088,7 +10263,6 @@ Usage:
 Usage:
 
     (str, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_floatsave_float "
@@ -11096,7 +10270,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_floatload_float "
@@ -11104,7 +10277,6 @@ Usage:
 Usage:
 
     (str, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_stringsave_string "
@@ -11112,7 +10284,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_stringload_string "
@@ -11120,7 +10291,6 @@ Usage:
 Usage:
 
     (str, offset)
-
 "; 
 
 %feature("docstring") simuPOP::saveObjsaveObj "
@@ -11128,7 +10298,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::loadObjloadObj "
@@ -11136,7 +10305,6 @@ Usage:
 Usage:
 
     (vars, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_dictsave_dict "
@@ -11144,7 +10312,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_dictload_dict "
@@ -11152,7 +10319,6 @@ Usage:
 Usage:
 
     (vars, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_listsave_list "
@@ -11160,7 +10326,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_listload_list "
@@ -11168,7 +10333,6 @@ Usage:
 Usage:
 
     (vars, offset)
-
 "; 
 
 %feature("docstring") simuPOP::save_tuplesave_tuple "
@@ -11176,7 +10340,6 @@ Usage:
 Usage:
 
     (str, *args)
-
 "; 
 
 %feature("docstring") simuPOP::load_tupleload_tuple "
@@ -11184,7 +10347,6 @@ Usage:
 Usage:
 
     (vars, offset)
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -11192,7 +10354,6 @@ Usage:
 Usage:
 
     (bool, Bool, false)
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -11200,7 +10361,6 @@ Usage:
 Usage:
 
     (int, Int, 0)
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -11208,7 +10368,6 @@ Usage:
 Usage:
 
     (double, Double, 0.0)
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -11216,7 +10375,6 @@ Usage:
 Usage:
 
     (string, String, \"\")
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -11224,7 +10382,6 @@ Usage:
 Usage:
 
     (vectorf, Array, )
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -11232,7 +10389,6 @@ Usage:
 Usage:
 
     (strDict, StrDict, )
-
 "; 
 
 %feature("docstring") simuPOP::ExpressionValueAsTypeExpressionValueAsType "
@@ -11240,7 +10396,6 @@ Usage:
 Usage:
 
     (intDict, IntDict, )
-
 "; 
 
 %feature("docstring") simuPOP::rngrng "
@@ -11252,7 +10407,6 @@ Description:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::SetRNGSetRNG "
@@ -11264,7 +10418,6 @@ Description:
 Usage:
 
     (r, seed)
-
 "; 
 
 %feature("docstring") simuPOP::setRNGsetRNG "
@@ -11276,7 +10429,6 @@ Description:
 Usage:
 
     (r, seed)
-
 "; 
 
 %feature("docstring") simuPOP::ListAllRNGListAllRNG "
@@ -11288,7 +10440,6 @@ Description:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::listAllRNGlistAllRNG "
@@ -11300,7 +10451,6 @@ Description:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::gsl_error_handlergsl_error_handler "
@@ -11313,7 +10463,6 @@ Description:
 Usage:
 
     (*reason, *, int, gsl_errno)
-
 "; 
 
 %feature("docstring") simuPOP::g_cnullg_cnull "
@@ -11325,7 +10474,6 @@ Description:
 Usage:
 
     (g_nullStreamBuf)
-
 "; 
 
 %feature("docstring") simuPOP::setLogOutputsetLogOutput "
@@ -11337,7 +10485,6 @@ Description:
 Usage:
 
     (filename)
-
 "; 
 
 %feature("docstring") simuPOP::simuRevsimuRev "
@@ -11350,7 +10497,6 @@ Description:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::simuVersimuVer "
@@ -11362,7 +10508,6 @@ Description:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::optimizedoptimized "
@@ -11370,7 +10515,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::mpimpi "
@@ -11378,7 +10522,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::mpiRankmpiRank "
@@ -11386,7 +10529,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::mpiSizempiSize "
@@ -11394,7 +10536,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::mpiBarriermpiBarrier "
@@ -11402,7 +10543,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::supportXMLsupportXML "
@@ -11410,7 +10550,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::alleleTypealleleType "
@@ -11418,7 +10557,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::compileCompilercompileCompiler "
@@ -11426,7 +10564,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::compileDatecompileDate "
@@ -11434,7 +10571,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::compilePyVersioncompilePyVersion "
@@ -11442,7 +10578,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::compilePlatFormcompilePlatForm "
@@ -11450,7 +10585,6 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
 %feature("docstring") simuPOP::isGzippedisGzipped "
@@ -11458,7 +10592,6 @@ Usage:
 Usage:
 
     (filename)
-
 "; 
 
 %feature("docstring") simuPOP::fileExtensionfileExtension "
@@ -11466,7 +10599,6 @@ Usage:
 Usage:
 
     (filename)
-
 "; 
 
 %feature("docstring") simuPOP::testGappedIteratortestGappedIterator "
@@ -11474,6 +10606,5 @@ Usage:
 Usage:
 
     ()
-
 "; 
 
