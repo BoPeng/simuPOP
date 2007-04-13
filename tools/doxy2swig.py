@@ -447,13 +447,72 @@ class Doxy2SWIG:
                 print >> out, '\n%s\n' % entry['Examples'].replace('\\', r'\\\\').replace('"', r'\"')
             print >> out, '\"; \n'
                 
+    def latexName(self, name):
+        return name.replace(':', '').replace('~', 'tilda')
             
-    def write(self, output, type):
+    def write_latex(self, out):
+        for entry in self.content:
+            #print >> out, self.content     
+            print >> out, '\\newcommand{\\%s}{\n' % self.latexName(entry['Name'])
+            if entry.has_key('Description') and entry['Description'] != '':
+                print >> out, '\\par\n\\strong{Description}\n\\par\n'
+                print >> out, '    %s\n' % self.format_text(entry['Description'], 0, 4)
+            if entry.has_key('Usage') and entry['Usage'] != '':
+                print >> out, '\\par\n\\strong{Usage}\n\\par\n'
+                print >> out, '    \\function{%s}' % entry['Usage']
+            if entry.has_key('Arguments') and entry['Arguments'] != '':
+                print >> out, '\\par\n\\strong{Arguments}\n\\par\n'
+                print >> out, '\\begin{description}\n '
+                for arg in entry['Arguments']:
+                    print >> out, '\\item [{   %-16s}]%s\n' % (arg['Name']+':', self.format_text(arg['Description'], 0, 20))
+                print >> out, '\\end{description}\n'
+            if entry.has_key('Details') and entry['Details'] != '':
+                print >> out, '\\par\n\\strong{Details}\n\\par\n'
+                print >> out, '    %s\n' % self.format_text(entry['Details'], 0, 4)
+            if entry.has_key('Examples') and entry['Examples'] != '':
+                print >> out, '\\strong{Examples}\n\\begin{lyxcode}\n'
+                print >> out, '%s\n' % entry['Examples'].replace('\\', r'\\\\').replace('"', r'\"').replace('#', '\\#')
+                print >> out, '\\end{lyxcode}\n'
+            print >> out, '}'
+
+
+    def write_latex_testfile(self, out, ref_file):
+        print >> out, r'''\documentclass[oneside,english]{manual}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+
+\newenvironment{lyxcode}
+{\begin{list}{}{
+\setlength{\rightmargin}{\leftmargin}
+\setlength{\listparindent}{0pt}
+\raggedright
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\normalfont\ttfamily}
+ \item[]}
+{\end{list}}
+
+\usepackage{babel}
+\makeatother
+\begin{document}
+\include{%s}''' % os.path.splitext(ref_file)[0]
+        for entry in self.content:
+             print >> out, '\\%s' % self.latexName(entry['Name'])
+        print >> out, r'\end{document}'
+
+            
+    def write(self, output, type, ref_file=''):
         fout = open(output, 'w')
         if type == 'swig':
             self.write_swig(fout)
-        elif type == 'latex':
+        elif type == 'latex_single':
             self.write_latex(fout)
+        elif type == 'latex_all':
+            self.write_latex_testfile(fout, ref_file)
         fout.close()
         
         
@@ -480,11 +539,16 @@ if __name__ == '__main__':
         interface_file = os.path.join('..', 'src', 'simuPOP_doc.i')
     else:
         interface_file = sys.argv[2]
-    # output .tex file
+    # output ref_single.tex file
     if len(sys.argv) < 4:
         latex_file = os.path.join('..', 'doc', 'simuPOP_ref.tex')
     else:
         latex_file = sys.argv[3]
+    # output ref_all.tex file
+    if len(sys.argv) < 5:
+        latex_testfile = os.path.join('..', 'doc', 'simuPOP_ref_test.tex')
+    else:
+        latex_testfile = sys.argv[4]
     # read the XML file (actually a index.xml file that contains all others)
     p = Doxy2SWIG(xml_file)
     # generate interface file.
@@ -492,5 +556,7 @@ if __name__ == '__main__':
     p.post_process()
     # write interface file to output interface file.
     p.write(interface_file, type='swig')
+    p.write(latex_file, type='latex_single')
+    p.write(latex_testfile, type='latex_all', ref_file=latex_file)
     # ending statement
     print 'Done.'
