@@ -1138,7 +1138,9 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
     datOut.write('0 0 << sex difference, interference\n')
     # recombination
     if type(recombination) in [type([]), type(())]:
-    datOut.write( ''.join(['%f '%recombination]*len(loci)) + ' << recombination rates \n ')
+        datOut.write( ' '.join(['%f '% x for x in recombination]) + ' << recombination rates \n ')
+    else:
+        datOut.write( ''.join(['%f '%recombination]*len(loci)) + ' << recombination rates \n ')
     # I do not know what they are
     datOut.write( "1 0.1 0.1\n")
     # done!
@@ -1152,12 +1154,12 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
     pldy = pop.ploidy()
     def writeInd(ind, famID, id, fa, mo):
         if pre:
-            print >> pedOut, '%d %d %d %d %s %s' % (famID, id, fa, mo, sexCode(ind), affectedCode[ind.sex()]),
+            print >> pedOut, '%d %d %d %d %s %s' % (famID, id, fa, mo, sexCode[ind.sex()], affectedCode[ind.affected()]),
         else:
             if fa == 0:
-                print >> pedOut, '%d %d %d 3 0 0 %d %s 0 %s' % (famID, id, fa, mo, sexCode(ind), affectedCode[ind.affected()]),
+                print >> pedOut, '%d %d %d 3 0 0 %d %s 0 %s' % (famID, id, fa, mo, sexCode[ind.sex()], affectedCode[ind.affected()]),
             else:
-                print >> pedOut, '%d %d %d 0 4 4 %d %s 1 %s' % (famID, id, fa, mo, sexCode(ind), affectedCode[ind.affected()]),
+                print >> pedOut, '%d %d %d 0 4 4 %d %s 1 %s' % (famID, id, fa, mo, sexCode[ind.sex()], affectedCode[ind.affected()]),
         for marker in loci:
             if combine is None:
                 for p in range(pldy):
@@ -1171,6 +1173,8 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
     peds = Set(pop.indInfo('pedindex', False))
     # do not count peds
     peds.discard(-1)
+    if len(peds) == 0:
+        print 'Warning: no valid pedigree, please check the pedindex field of your population'
     #
     newPedIdx = 1
     for ped in peds:
@@ -1350,6 +1354,8 @@ def SaveMerlinPedFile(pop, output='', outputExpr='', loci=[], fields=[], header=
         peds = Set(pop.indInfo('pedindex', False))
         # do not count peds
         peds.discard(-1)
+        if len(peds) == 0:
+            print 'Warning: no valid pedigree, please check the pedindex field of your population'
         #
         newPedIdx = 1
         #
