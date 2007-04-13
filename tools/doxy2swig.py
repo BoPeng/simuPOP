@@ -337,7 +337,7 @@ class Doxy2SWIG:
         for n in node.childNodes:
             txt = txt + n.data
 
-        ori_txt = txt
+        self.content[-1]['cppArgs'] = txt
         # replace the trailing const
         # @ is used instead of , to avoid separation of replaced text, it will be replaced back to ,
         txt = txt.replace('vectorstr(TAG_InheritFields, TAG_InheritFields+2)',
@@ -415,9 +415,11 @@ class Doxy2SWIG:
 
     def post_process(self):
         # first, remove all entries with 'CPPONLY' in description
-        self.content = [x for x in self.content if (not x.has_key('Description')) or ('CPPONLY' not in x['Description'])]
-        list = [1, 2, 3, 4]
-        list1 = [x+2 for x in list if x > 2]
+        for entry in self.content:
+            if entry.has_key('Description') and 'CPPONLY' in entry['Description']:
+                entry['ignore'] = True
+            else:
+                entry['ignore'] = False
         #for entry in self.content:
         #    if entry.has_key('description') and 'PLOIDY:' in entry['description'];
         #        if 'PLOIDY:ALL' in entry['description']:
@@ -427,6 +429,12 @@ class Doxy2SWIG:
 
     def write_swig(self, out):
         for entry in self.content:
+            if entry['ignore']:
+                if entry.has_key('cppArgs'):
+                    print >> out, '%%ignore %s%s;\n' % (entry['Name'], entry['cppArgs'])
+                else:
+                    print >> out, '%%ignore %s;\n' % entry['Name']
+                continue
             #print >> out, self.content
             print >> out, '%%feature("docstring") %s "\n' % entry['Name']
             if entry.has_key('Description') and entry['Description'] != '':
