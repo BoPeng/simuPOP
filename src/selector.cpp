@@ -25,6 +25,29 @@
 
 namespace simuPOP
 {
+	bool selector::apply(population& pop)
+	{
+		UINT fit_id = pop.infoIdx(this->infoField(0));
+		GappedInfoIterator fitness = pop.infoBegin(fit_id, true);
+
+		// fitness may change with generation so pass generation information
+		for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
+			*fitness++ = indFitness(&*it, pop.gen()) ;
+
+		// if selection is on, that must have been set by another selector.
+		// The fitness value set by that selector will be overriden.
+		// This can be a source of mistake and is forbidden here.
+		DBG_FAILIF(pop.hasVar("selection") && pop.getVarAsBool("selection"),
+			ValueError, "\nOnly one selector is allowed because each individual has only one fitness value\n"
+			"If you need to select on more than one locus, use a multi-locus selector\n"
+			"If you really want to apply another selector on the same population, set \n"
+			"population variable selection to False to walk around this restriction.\n");
+		
+		// indicate selection is on.
+		pop.setBoolVar("selection", true);
+		return true;
+	}
+
 	double mapSelector::indFitness(individual * ind, ULONG gen)
 	{
 		string key;
