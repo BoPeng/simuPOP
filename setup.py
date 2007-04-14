@@ -410,7 +410,10 @@ SIMUPOP_FILES = [
 # explore availability of mpi library
 MPIFlags = getMPIFlags()
 
-SWIG_FLAGS = '-O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
+# I was using an additional -O option for 'Optimization', however, this makes
+# help of member functions disappear, as discussed in SWIG user mailing list.
+# I removed the -O option and will add it later if the problem is resolved.
+SWIG_FLAGS = '-templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
 SWIG_RUNTIME_FLAGS = '-python -external-runtime'
                 
 MACROS = {
