@@ -414,10 +414,13 @@ MPIFlags = getMPIFlags()
 # depend on this feature (XX_swiginit calls). However, this makes __doc__
 # messages of member functions disappear, as discussed in SWIG user mailing list.
 # 
-# I will be using a patched SVN swig version to fix this. Users of later version
-# of swig (>1.3.21) may not need this. To test if __doc__ works, try
-# help(population.absIndIndex)
+# I am using a patched SVN swig version to fix this (as of Apr. 2007). Users 
+# of later version of swig (>1.3.21) may not need this. To test if __doc__ works, 
+# try
+#     help(population.absIndIndex)
 #
+# The patch can be found here:
+#     http://sf.net/tracker/index.php?func=detail&aid=1700146&group_id=1645&atid=301645
 SWIG_FLAGS = '-O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
 SWIG_RUNTIME_FLAGS = '-python -external-runtime'
                 
