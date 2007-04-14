@@ -17540,17 +17540,13 @@ Random Number Generator
 Random number generator is a tricky business.
  Reliable and fast RNGs are hard to find and everyone seems to trust/distrust
  certain RNGs.
- To avoid such arguments, I have included all RNGs from GSL (
-\begin_inset LatexCommand url
-name "The GNU Scientific Library"
-target "http://sources.redhat.com/gsl/"
-
+ To avoid such arguments, I have included all RNGs from GNU Scientific Library
+ and you can choose any of the qualified RNGs (
+\begin_inset Formula $\geq32$
 \end_inset
 
-) and you can choose any of the 61 RNGs, if you really know what the differences
- between them.
- (I do not, except that some of them are really bad but fast.) Note that
- RNG that can not generate a full range of integers are removed.
+ significant bits), if you really know what the differences between them.
+ (I do not, except that some of them are really bad but fast.) 
 \end_layout
 
 \begin_layout Standard
