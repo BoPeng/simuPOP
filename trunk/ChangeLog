@@ -10,7 +10,8 @@ version 0.7.10 - Not released, available at https://svn.sourceforge.net/svnroot/
   - NEW: add MATE_UniformDistribution number of offspring type
   - BUG: fix a useAncestralGen bug in largePedigreeSample (Does not affect output).
   - BUG: fix a typo in function SaveLinkage, I really need to test these functions as well.
-  - BUG: fix a SWIG option bug that prevents help messages of member functions to display
+  - BUG: fix a SWIG option bug that prevents help messages of member functions to display.
+  - NEW: throw an exception when multiple selectors are applied at the same time.
 
 version 0.7.9 - (Rev 885) Apr 3, 2007
   - BUG (build): add solaris support. This OS does not have stdint.h.

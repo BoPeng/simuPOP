@@ -87,19 +87,7 @@ namespace simuPOP
 			}
 
 			/// set fitness to all individual
-			bool apply(population& pop)
-			{
-				UINT fit_id = pop.infoIdx(this->infoField(0));
-				GappedInfoIterator fitness = pop.infoBegin(fit_id, true);
-
-				// fitness may change with generation so pass generation information
-				for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
-					*fitness++ = indFitness(&*it, pop.gen()) ;
-
-				// indicate selection is on.
-				pop.setBoolVar("selection", true);
-				return true;
-			}
+			bool apply(population& pop);
 
 			virtual string __repr__()
 			{

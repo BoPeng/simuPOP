@@ -34,6 +34,9 @@ class TestSelector(unittest.TestCase):
                 assert ind.info('fitness') == 0.25
         assert pop.dvars().selection
         #
+        # selector on a population with selection on is not allowed
+        # explicitly walk around this.
+        pop.dvars().selection = False
         InitByFreq(pop, [.2, 0, .3, .4, .1])
         # other than 1 alleles
         MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0])
@@ -41,6 +44,10 @@ class TestSelector(unittest.TestCase):
             #print ind.arrGenotype(), ind.info('fitness')
             if 0 in ind.arrGenotype():
                 assert ind.info('fitness') > 0.25
+        # selector on a population with selection on is not allowed
+        # explicitly walk around this.
+        pop.dvars().selection = False
+        InitByFreq(pop, [.2, 0, .3, .4, .1])
         # more than one wild type
         MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0, 2])
         for ind in pop.individuals():
@@ -319,9 +326,9 @@ class TestSelector(unittest.TestCase):
         pop = population(10, loci=[2], 
             infoFields=['fitness'])
         InitByValue(pop, value=[[0,0],[1,1]], proportions=[0.5,0.5])
-        mapSelector(loci=[0,1], 
+        MapSelect(pop, loci=[0,1], 
             fitness={'0-0|0-0':0, '1-1|1-1':0.25,
-                             '0-1|0-1':0.5, '1-0|1-0':0.75}).apply(pop)
+            '0-1|0-1':0.5, '1-0|1-0':0.75})
         # there is only one field, so fitness is continuous
         ft = pop.arrIndInfo(True)
         for ind in range(pop.popSize()):
@@ -335,10 +342,13 @@ class TestSelector(unittest.TestCase):
                 self.assertEqual( ft[ind], 0)
             elif gt == [1,1,1,1]:
                 self.assertEqual( ft[ind], 0.25)
+        # selector on a population with selection on is not allowed
+        # explicitly walk around this.
+        pop.dvars().selection = False
         # test phase
-        mapSelector(loci=[0,1], phase=True,
+        MapSelect(pop, loci=[0,1], phase=True,
             fitness={'0-0|0-0':0, '1-1|1-1':0.25,
-                             '0-1|0-1':0.5, '1-0|1-0':0.75}).apply(pop)
+                '0-1|0-1':0.5, '1-0|1-0':0.75})
         ft = pop.arrIndInfo(True)
         for ind in range(pop.popSize()):
             gt = pop.individual(ind).arrGenotype()
@@ -470,6 +480,21 @@ class TestSelector(unittest.TestCase):
             preOps=[ initByFreq(alleleFreq=[.2,.8])],
             end=100
         )
+
+    def testMultipleSelector(self):
+        'Testing if multiple selector is allowed (should not)'
+        simu = simulator(
+            population(size=1000, ploidy=2, loci=[2], 
+            infoFields=['fitness', 'spare']),
+            randomMating())
+        self.assertRaises(exceptions.ValueError, simu.evolve,
+            ops = [
+                mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+                mapSelector(locus=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+            ],
+            end=10
+        )
+
         
 if __name__ == '__main__':
     unittest.main()        
