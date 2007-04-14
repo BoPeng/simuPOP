@@ -410,10 +410,15 @@ SIMUPOP_FILES = [
 # explore availability of mpi library
 MPIFlags = getMPIFlags()
 
-# I was using an additional -O option for 'Optimization', however, this makes
-# help of member functions disappear, as discussed in SWIG user mailing list.
-# I removed the -O option and will add it later if the problem is resolved.
-SWIG_FLAGS = '-templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
+# I use -O option for 'Optimization' and part of my extension code actually
+# depend on this feature (XX_swiginit calls). However, this makes __doc__
+# messages of member functions disappear, as discussed in SWIG user mailing list.
+# 
+# I will be using a patched SVN swig version to fix this. Users of later version
+# of swig (>1.3.21) may not need this. To test if __doc__ works, try
+# help(population.absIndIndex)
+#
+SWIG_FLAGS = '-O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
 SWIG_RUNTIME_FLAGS = '-python -external-runtime'
                 
 MACROS = {
