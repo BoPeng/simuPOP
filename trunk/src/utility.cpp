@@ -68,8 +68,8 @@ using boost::lowest_bit;
 extern "C" PyObject* newcarrayobject(char* buf, char type, int size);
 #ifdef SIMUMPI
 #include "slave.h"
-extern "C" PyObject* newcarrayiterobject(ULONG shift, 
-	ULONG size, UINT piece_size, vectoru map);
+extern "C" PyObject* newcarrayiterobject(ULONG shift,
+ULONG size, UINT piece_size, vectoru map);
 #else
 extern "C" PyObject* newcarrayiterobject(GenoIterator begin, GenoIterator end);
 #endif
@@ -357,6 +357,7 @@ namespace simuPOP
 			val = PyInt_AS_LONG(obj) ? true : false;
 	}
 
+	/// CPPONLY
 	void PyObj_As_Int(PyObject *obj, int& val)
 	{
 		if(obj==NULL)
@@ -373,6 +374,7 @@ namespace simuPOP
 		Py_DECREF(res);
 	}
 
+	/// CPPONLY
 	void PyObj_As_Double(PyObject *obj, double& val)
 	{
 		if(obj==NULL)
@@ -389,6 +391,7 @@ namespace simuPOP
 		Py_DECREF(res);
 	}
 
+	/// CPPONLY
 	void PyObj_As_String(PyObject *obj, string& val)
 	{
 		if(obj==NULL)
@@ -405,6 +408,7 @@ namespace simuPOP
 		Py_DECREF(res);
 	}
 
+	/// CPPONLY
 	void PyObj_As_StrDict(PyObject* obj, strDict& val)
 	{
 		if(obj==NULL)
@@ -437,6 +441,7 @@ namespace simuPOP
 		}
 	}
 
+	/// CPPONLY
 	void PyObj_As_Array(PyObject* obj, vectorf& val)
 	{
 		if(obj==NULL)
@@ -457,6 +462,7 @@ namespace simuPOP
 		}
 	}
 
+	/// CPPONLY
 	void PyObj_As_IntArray(PyObject* obj, vectori& val)
 	{
 		if(obj==NULL)
@@ -477,6 +483,7 @@ namespace simuPOP
 		}
 	}
 
+	/// CPPONLY
 	void PyObj_As_IntDict(PyObject* obj, intDict& val)
 	{
 		if(obj==NULL)
@@ -531,6 +538,7 @@ namespace simuPOP
 		return is_carrayobject(obj) && carray_type(obj) == 'a';
 	}
 
+	/// CPPONLY
 	PyObject* Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end)
 	{
 		PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*begin), 'i', end-begin);
@@ -539,6 +547,7 @@ namespace simuPOP
 		return res;
 	}
 
+	/// CPPONLY
 	PyObject* Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end)
 	{
 		PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*begin), 'd', end-begin);
@@ -548,6 +557,7 @@ namespace simuPOP
 	}
 
 #ifdef SIMUMPI
+	/// CPPONLY
 	PyObject* Allele_Vec_As_NumArray(ULONG shift,
 		ULONG size, UINT piece_size, vectoru map)
 	{
@@ -558,6 +568,7 @@ namespace simuPOP
 
 #else
 
+	/// CPPONLY
 	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 	{
 		PyObject* res = newcarrayiterobject(begin, end);
@@ -566,6 +577,7 @@ namespace simuPOP
 	}
 #endif
 
+	/// CPPONLY
 	PyObject* Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end)
 	{
 		PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*begin), 'd', end-begin);
@@ -573,12 +585,14 @@ namespace simuPOP
 		return res;
 	}
 
+	/// CPPONLY
 	int NumArray_Size(PyObject* obj)
 	{
 		// return PyArray_Size(obj);
 		return carray_length(obj);
 	}
 
+	/// CPPONLY
 	char* NumArray_Data(PyObject* obj)
 	{
 		// return reinterpret_cast<PyArrayObject*>(obj)->data;
@@ -588,6 +602,7 @@ namespace simuPOP
 	// //////////////////////////////////////////////////////
 
 	// copy constructor
+	/// CPPONLY
 	SharedVariables::SharedVariables(const SharedVariables& rhs)
 		: m_ownVars(rhs.m_ownVars)
 	{
@@ -608,6 +623,7 @@ namespace simuPOP
 			m_dict = rhs.m_dict;
 	}
 
+	/// CPPONLY
 	SharedVariables::~SharedVariables()
 	{
 		if(m_ownVars)
@@ -618,6 +634,7 @@ namespace simuPOP
 	}
 
 	/// setvars C++ ==> Python
+	/// CPPONLY
 	PyObject* SharedVariables::setVar(const string& name, const PyObject* val)
 	{
 		/* find the first piece */
@@ -782,6 +799,7 @@ namespace simuPOP
 		return const_cast<PyObject*>(val);
 	}
 
+	/// CPPONLY
 	PyObject* SharedVariables::getVar(const string& name, bool nameError)
 	{
 		DBG_ASSERT( m_dict != NULL, ValueError,
@@ -873,6 +891,7 @@ namespace simuPOP
 		}
 	}
 
+	/// CPPONLY
 	void SharedVariables::removeVar(const string& name)
 	{
 		DBG_ASSERT( m_dict != NULL, ValueError,
@@ -1051,11 +1070,13 @@ namespace simuPOP
 		return setVar(name, obj);
 	}
 
+	/// CPPONLY
 	void save_none(string& str)
 	{
 		str += "n";
 	}
 
+	/// CPPONLY
 	PyObject* load_none(const string& str, size_t& offset)
 	{
 		offset++;
@@ -1063,6 +1084,7 @@ namespace simuPOP
 		return Py_None;
 	}
 
+	/// CPPONLY
 	void save_int(string& str, PyObject * args)
 	{
 		long l = PyInt_AS_LONG((PyIntObject *)args);
@@ -1070,6 +1092,7 @@ namespace simuPOP
 		str += 'i' + toStr(l) + ' ';
 	}
 
+	/// CPPONLY
 	PyObject* load_int(const string& str, size_t& offset)
 	{
 		// search for blank
@@ -1082,6 +1105,7 @@ namespace simuPOP
 		return val;
 	}
 
+	/// CPPONLY
 	void save_long(string& str, PyObject * args)
 	{
 		long l = PyInt_AS_LONG(args);
@@ -1089,6 +1113,7 @@ namespace simuPOP
 		str += 'i' + toStr(l) + ' ';
 	}
 
+	/// CPPONLY
 	PyObject* load_long(const string& str, size_t& offset)
 	{
 		int len = 0;
@@ -1100,6 +1125,7 @@ namespace simuPOP
 		return val;
 	}
 
+	/// CPPONLY
 	void save_float(string& str, PyObject * args)
 	{
 		double d = PyFloat_AsDouble(args);
@@ -1107,6 +1133,7 @@ namespace simuPOP
 		str += 'f' + toStr(d) + ' ';
 	}
 
+	/// CPPONLY
 	PyObject* load_float(const string& str, size_t& offset)
 	{
 		int len = 0;
@@ -1116,12 +1143,14 @@ namespace simuPOP
 		return PyFloat_FromDouble(d);
 	}
 
+	/// CPPONLY
 	void save_string(string& str, PyObject * args)
 	{
 		char * s = PyString_AsString(args);
 		str += 's' + string(s)+'\0';
 	}
 
+	/// CPPONLY
 	PyObject* load_string(const string& str, size_t& offset)
 	{
 		char * s = const_cast<char*>(str.c_str()) + offset + 1;
@@ -1133,9 +1162,12 @@ namespace simuPOP
 		return PyString_FromString(s);
 	}
 
+	/// CPPONLY
 	void saveObj(string& str, PyObject* args);
+	/// CPPONLY
 	PyObject* loadObj(const string& vars, size_t& offset);
 
+	/// CPPONLY
 	void save_dict(string& str, PyObject* args)
 	{
 		PyObject *key = 0, *value = 0;
@@ -1150,6 +1182,7 @@ namespace simuPOP
 		str += 'e';								  // ending of a dictionary
 	}
 
+	/// CPPONLY
 	PyObject* load_dict(const string& vars, size_t& offset)
 	{
 		// skip 'd'
@@ -1167,6 +1200,7 @@ namespace simuPOP
 		return d;
 	}
 
+	/// CPPONLY
 	void save_list(string& str, PyObject* args)
 	{
 		str += 'L';								  // dictionary
@@ -1180,6 +1214,7 @@ namespace simuPOP
 		str += 'e';								  // ending of a dictionary
 	}
 
+	/// CPPONLY
 	PyObject* load_list(const string& vars, size_t& offset)
 	{
 		// skip 'L'
@@ -1194,6 +1229,7 @@ namespace simuPOP
 		return d;
 	}
 
+	/// CPPONLY
 	void save_tuple(string& str, PyObject* args)
 	{
 		str += 't';								  // dictionary
@@ -1208,6 +1244,7 @@ namespace simuPOP
 		}
 	}
 
+	/// CPPONLY
 	PyObject* load_tuple(const string& vars, size_t& offset)
 	{
 		// skip 't'
@@ -1255,6 +1292,7 @@ namespace simuPOP
 	}
 	*/
 
+	/// CPPONLY
 	void saveObj(string& str, PyObject* args)
 	{
 		PyTypeObject *type;
@@ -1288,6 +1326,7 @@ namespace simuPOP
 		}
 	}
 
+	/// CPPONLY
 	PyObject* loadObj(const string& vars, size_t& offset)
 	{
 		switch( vars[offset])
@@ -1316,6 +1355,7 @@ namespace simuPOP
 		}
 	}
 
+	/// CPPONLY
 	string SharedVariables::asString() const
 	{
 		// go through each variable and save
@@ -1325,6 +1365,7 @@ namespace simuPOP
 		return str;
 	}
 
+	/// CPPONLY
 	void SharedVariables::fromString(const string& vars)
 	{
 		size_t offset = 0;
@@ -1380,6 +1421,7 @@ namespace simuPOP
 	// ////////////////////////////////////////////////////////////
 	// because of ref count, need to define copier
 
+	/// CPPONLY
 	Expression::Expression(const Expression& rhs)
 		: m_expr(rhs.m_expr), m_stmts(rhs.m_stmts), m_locals(rhs.m_locals)
 	{
@@ -1389,6 +1431,7 @@ namespace simuPOP
 			Py_INCREF(m_stmts);
 	}
 
+	/// CPPONLY
 	Expression::~Expression()
 	{
 		// release compiled code
@@ -1398,6 +1441,7 @@ namespace simuPOP
 			Py_DECREF(m_stmts);
 	}
 
+	/// CPPONLY
 	void Expression::compileExpr(const string& expr)
 	{
 		if( m_expr != NULL)
@@ -1417,6 +1461,7 @@ namespace simuPOP
 			throw ValueError("Expression '" + expr + "' is not a valid python expression.");
 	}
 
+	/// CPPONLY
 	void Expression::compileStmts(const string& stmts)
 	{
 		if( m_stmts != NULL)
@@ -1477,26 +1522,77 @@ namespace simuPOP
 		return res;
 	}
 
-	/// returned values.
-#define ExpressionValueAsType(T, TypeName, init) \
-T Expression::valueAs##TypeName() \
-{ \
-	PyObject* res = evaluate(); \
-	if( res==NULL ) \
-	return init; \
-	T val; \
-	PyObj_As_##TypeName(res, val); \
-	Py_XDECREF(res); \
-	return val; \
-}
+	/// CPPONLY
+	bool Expression::valueAsBool()
+	{
+		PyObject* res = evaluate();
+		if( res==NULL )
+			return false;
+		bool val;
+		PyObj_As_Bool(res, val);
+		Py_XDECREF(res);
+		return val;
+	}
 
-		ExpressionValueAsType(bool, Bool, false);
-	ExpressionValueAsType(int, Int, 0);
-	ExpressionValueAsType(double, Double, 0.0);
-	ExpressionValueAsType(string, String, "");
-	ExpressionValueAsType(vectorf, Array, vectorf());
-	ExpressionValueAsType(strDict, StrDict, strDict());
-	ExpressionValueAsType(intDict, IntDict, intDict());
+	/// CPPONLY
+	int Expression::valueAsInt()
+	{
+		PyObject* res = evaluate();
+		if( res==NULL )
+			return 0;
+		int val;
+		PyObj_As_Int(res, val);
+		Py_XDECREF(res);
+		return val;
+	}
+
+	/// CPPONLY
+	string Expression::valueAsString()
+	{
+		PyObject* res = evaluate();
+		if( res==NULL )
+			return "";
+		string val;
+		PyObj_As_String(res, val);
+		Py_XDECREF(res);
+		return val;
+	}
+
+	/// CPPONLY
+	vectorf Expression::valueAsArray()
+	{
+		PyObject* res = evaluate();
+		if( res==NULL )
+			return vectorf();
+		vectorf val;
+		PyObj_As_Array(res, val);
+		Py_XDECREF(res);
+		return val;
+	}
+
+	/// CPPONLY
+	strDict Expression::valueAsStrDict()
+	{
+		PyObject* res = evaluate();
+		if( res==NULL )
+			return strDict();
+		strDict val;
+		PyObj_As_StrDict(res, val);
+		Py_XDECREF(res);
+		return val;
+	}
+
+	/// CPPONLY
+	intDict Expression::valueAsIntDict()
+	{
+		PyObject* res = evaluate();
+		if( res==NULL )
+			return intDict();
+		intDict val;
+		PyObj_As_IntDict(res, val);
+		Py_XDECREF(res);
+		return val;
+	}
 
 	//////////////////////////////////////////////////////////////
 	/// Stream element, can be of different types
@@ -2489,13 +2585,13 @@ T Expression::valueAs##TypeName() \
 		protected:
 			int overflow(int c)
 			{
-/* In the maste slave mode, slave can also output
-#ifdef SIMUMPI
-				// only head node can output to python output
-				if(mpiRank() != 0)
-					return 0;
-#endif
-*/
+				/* In the maste slave mode, slave can also output
+				#ifdef SIMUMPI
+								// only head node can output to python output
+								if(mpiRank() != 0)
+									return 0;
+				#endif
+				*/
 				// write out current buffer
 				if( pbase() != pptr() )
 				{
@@ -2678,7 +2774,6 @@ T Expression::valueAs##TypeName() \
 		}
 	}
 
-
 	const comm mpiComm()
 	{
 		return g_mpiComm;
@@ -2688,7 +2783,6 @@ T Expression::valueAs##TypeName() \
 	{
 		return g_uniqueID++;
 	}
-	
 #endif
 
 	UINT mpiRank()
@@ -2715,7 +2809,6 @@ T Expression::valueAs##TypeName() \
 		g_mpiComm.barrier();
 #endif
 	}
-
 
 	bool supportXML()
 	{

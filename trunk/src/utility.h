@@ -464,13 +464,13 @@ namespace simuPOP
 
 	// ///////////////////////////////////////////////////////
 	/** shared variables.
+
 	 CPPONLY
 
 	This class set and read Python variables using the given
 	dictionary.
 
 	*/
-
 	class SharedVariables
 	{
 		public:
@@ -510,11 +510,13 @@ namespace simuPOP
 			/// hence call this destructore.
 			~SharedVariables();
 
+			/// CPPONLY
 			void clear()
 			{
 				PyDict_Clear(m_dict);
 			}
 
+			/// CPPONLY
 			void setDict(PyObject* dict)
 			{
 				m_dict = dict;
@@ -696,7 +698,9 @@ namespace simuPOP
 				// Expression evaluation
 				// ////////////////////////////////////////////////////////////
 
-				/**  \brief expression CPPONLY
+				/**  \brief expression
+
+				CPPONLY
 
 				This class evaluate python expressions.
 
@@ -1162,12 +1166,11 @@ namespace simuPOP
 				return gsl_ran_poisson(m_RNG, p);
 			}
 
-            /// right hand side (single side) p-value for ChiSq value
-            double pvalChiSq(double chisq, unsigned int df)
-            {
-                return 1 - gsl_cdf_chisq_P(chisq, df);
-            }
-            
+			/// right hand side (single side) p-value for ChiSq value
+			double pvalChiSq(double chisq, unsigned int df)
+			{
+				return 1 - gsl_cdf_chisq_P(chisq, df);
+			}
 
 		private:
 
@@ -1504,16 +1507,15 @@ namespace simuPOP
 #ifdef SIMUMPI
 	class comm : public mpi::communicator
 	{
-	public:
-		// the the communicator in node 0 is destroyed,
-		// ask slave nodes to stop
-		~comm();
+		public:
+			// the the communicator in node 0 is destroyed,
+			// ask slave nodes to stop
+			~comm();
 	};
-	
 
 	const comm mpiComm();
 
-	// unique id for a population or other object, used by slave nodes to 
+	// unique id for a population or other object, used by slave nodes to
 	// identify a population
 	ULONG uniqueID();
 #endif
