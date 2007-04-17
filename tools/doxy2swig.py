@@ -257,10 +257,9 @@ class Doxy2SWIG:
                     ns_node = anc.getElementsByTagName('compoundname')
                 if ns_node:
                     ns = ns_node[0].firstChild.data
-                    func_name = '%s::%s' %(ns, name) + defn.split(' ')[-1]
-                    print "Content type unknown??? ", func_name
-                    self.content.append({'Name': func_name})
-                    self.content[-1]['Usage'] = ''
+                    func_name = '%s::%s' %(ns, name)
+                    self.content.append({'Name': func_name, 'type': 'global_function'})
+                    self.content[-1]['Usage'] = func_name.split(':')[-1]
                     self.curField = 'Usage'
                 else:
                     self.content.append({'Name': name})
@@ -275,17 +274,14 @@ class Doxy2SWIG:
                 classname = cname.split('::')[-1]
                 if classname == name:
                     self.content.append({'Name': '%s::%s' %(cname, name),
-                                         'type': 'constructorofclass%s::%s' %(cname, name)})
+                                         'type': 'constructorofclass_%s' % cname})
                 else:
                     self.content.append({'Name': '%s::%s' %(cname, name),
-                                         'type': 'memberofclass%s::%s' %(cname, name)})
+                                         'type': 'memberofclass_%s' % cname})
                 self.content[-1]['Usage'] = ''
                 self.curField = 'Usage'
                 defName = defn.split(' ')[-1]
-                # force the first character lower case
                 if( defName == cname.split(':')[-1] ): # constructor
-                    if (len(defName) > 1 ):
-                        defName = defName[0].lower() + defName[1:]
                     self.add_text( self.format_text( defName, 0, 0 ) )
                 else:
                     self.add_text( 'x.' )
@@ -315,15 +311,18 @@ class Doxy2SWIG:
                 try:
                     # usual ../doc/log directory
                     file = open(os.path.join('..', 'doc', 'log', filename.strip()))
+                    self.content[-1]['ExampleFile'] = os.path.join('..', 'doc', 'log', filename.strip())
                 except:
                     # local file
                     file = open(filename.strip() )
+                    self.content[-1]['ExampleFile'] = filename.strip()
                 cont = file.read()
                 file.close()
                 self.add_text(cont)
             except:
+                self.content[-1]['ExampleFile'] = None
                 print "File " + filename + " does not exist\n"
-                self.add_text("    " + filename + "does not exist\n")
+                self.add_text(filename + "does not exist\n")
 
 
     def do_simplesect(self, node):
@@ -422,9 +421,34 @@ class Doxy2SWIG:
 
 
     def post_process(self):
-        # first, remove all entries with 'CPPONLY' in description
+        # remove duplicate entry
+        # They might be introduced if a function is list both under 'file' and under 'namespace'
+        print "Number of entries: ", len(self.content)
+        def myhash(entry):
+            'encode an entry to a string for easy comparison'
+            ret = entry['Name']
+            if entry.has_key('Description'):
+                ret += entry['Description']
+            if entry.has_key('Details'):
+                ret += entry['Details']
+            return ret
+        seen = []
+        self.content = [x for x in self.content if not (myhash(x) in seen or seen.append(myhash(x)))]
+        print "Unique entries: ", len(self.content)
+        # remove all empty entries 
+        def notEmpty(entry):
+            'judge if an entry is empty'
+            return (entry.has_key('Description') and entry['Description'] != '') or \
+                (entry.has_key('Details') and entry['Details'] != '')
         for entry in self.content:
-            if entry.has_key('Description') and 'CPPONLY' in entry['Description']:
+            if not (entry.has_key('Description') and entry['Description'] != '') or \
+                (entry.has_key('Details') and entry['Details'] != ''):
+                entry['Description'] = entry['Name']
+        # mark all entries with 'CPPONLY' in description or details as ignore
+        for entry in self.content:
+            if (entry.has_key('Description') and 'CPPONLY' in entry['Description']) or \
+               (entry.has_key('Details') and 'CPPONLY' in entry['Details']) or \
+               'test' in entry['Name'] or '~' in entry['Name']:
                 entry['ignore'] = True
             else:
                 entry['ignore'] = False
@@ -433,10 +457,11 @@ class Doxy2SWIG:
         #        if 'PLOIDY:ALL' in entry['description']:
         #            self.content['ploidy'] = 'all'
         #            self.content['description'].remove('PLOIDY:ALL')
+        # sort the entries
+        self.content.sort(lambda x, y: x['Name'] > y['Name'])
 
 
     def write_swig(self, out):
-        print >> out, self.content
         for entry in self.content:
             if entry['ignore']:
                 if entry.has_key('cppArgs'):
@@ -488,61 +513,92 @@ class Doxy2SWIG:
 
 
     def write_latex(self, out):
-        for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
-            print >> out, '\\newcommand{\\%s}{\n' % self.latexName(entry['Name'])
+        # first handle glocal functions
+        for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore']]:
+            print >> out, '\\newcommand{\\%s}{' % self.latexName(entry['Name'])
             if entry.has_key('Description') and entry['Description'] != '':
-                print >> out, '\\par\n\\strong{Class %s}\n\\par\n' % self.latex_text(entry['Name'])
-                print >> out, '    %s\n' % self.latex_text(entry['Description'])
+                print >> out, '\\par\n\\strong{Function %s}\n\\par' % self.latex_text(entry['Name'])
+                print >> out, '%s\par' % self.latex_text(entry['Description'])
+            if entry.has_key('Usage') and entry['Usage'] != '':
+                print >> out, '\\begin{quote}\\function{%s}\\end{quote}' % self.latex_text(entry['Usage'])
+            if entry.has_key('Arguments') and entry['Arguments'] != '':
+                print >> out, '\\par\n\\strong{Arguments}'
+                print >> out, '\\begin{description}'
+                for arg in entry['Arguments']:
+                    print >> out, '\\item [{%s}]%s' % (arg['Name'], self.latex_text(arg['Description']))
+                print >> out, '\\end{description}'
             if entry.has_key('Details') and entry['Details'] != '':
-                print >> out, '\\par\n\\strong{Details}\n\\par\n'
+                print >> out, '\\par\n\\strong{Details}\n\\par'
                 print >> out, '    %s\n' % self.latex_text(entry['Details'])
-            constructor = [x for x in self.content if x['type'] == 'constructorofclass' + x['Name'] and not x['ignore']]          
+            if entry.has_key('Examples') and entry['Examples'] != '':
+                print >> out, '\\strong{Examples}\n\\begin{algorithm}[h]'
+                print >> out, '\\caption{\\label{alg:%s}Example for function %s}' % (entry['Name'], entry['Name'])
+                if entry['ExampleFile'] is not None:
+                    print >> out, '\\verbatiminput{%s}' % entry['ExampleFile']
+                print >> out, '\\end{algorithm}'
+            print >> out, '}\n'
+        # then classes
+        for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
+            print >> out, '\\newcommand{\\%s}{' % self.latexName(entry['Name'])
+            if entry.has_key('Description') and entry['Description'] != '':
+                print >> out, '\\par\n\\strong{Class %s}\n\\par' % self.latex_text(entry['Name'])
+                print >> out, '%s' % self.latex_text(entry['Description'])
+            if entry.has_key('Details') and entry['Details'] != '':
+                print >> out, '\\par\n\\strong{Details}\n\\par'
+                print >> out, '%s' % self.latex_text(entry['Details'])
+            # only use the first constructor
+            constructor = [x for x in self.content if x['type'] == 'constructorofclass_' + entry['Name'] and not x['ignore']]          
             if len(constructor) == 0:
+                print >> out, '}\n'
                 continue
-            print >> out, '\\par\n\\strong{Initialization}\n\\par\n'
-            for cons in constructor:
-                if cons.has_key('Description') and cons['Description'] != '':
-                    print >> out, '    %s\n' % self.latex_text(cons['Description'])
-                if cons.has_key('Usage') and cons['Usage'] != '':
-                    print >> out, '    \\function{%s}' % self.latex_text(cons['Usage'])
-                if cons.has_key('Arguments') and cons['Arguments'] != '':
-                    print >> out, '\\par\n\\strong{Arguments}\n'
-                    print >> out, '\\begin{description}\n '
-                    for arg in cons['Arguments']:
-                        print >> out, '\\item [{%s}]%s\n' % (arg['Name'], self.latex_text(arg['Description']))
-                    print >> out, '\\end{description}\n'
-                if cons.has_key('Details') and cons['Details'] != '':
-                    print >> out, '\\par\n\\strong{Details}\n\\par\n'
-                    print >> out, '    %s\n' % self.latex_text(cons['Details'])
-                #if cons.has_key('Examples') and cons['Examples'] != '':
-                   #print >> out, '\\strong{Examples}\n\\begin{lyxcode}\n'
-                    #print >> out, '%s\n' % cons['Examples'].replace('\\', r'\\\\').replace('#', '\\#')
-                    #print >> out, '\\end{lyxcode}\n'
-            members = [x for x in self.content if x['type'] == 'memberofclass' + x['Name'] and not x['ignore']]
+            elif len(constructor) > 1:
+                print "Warning: multiple constructors: %s" % entry['Name']
+            cons = constructor[0]
+            print >> out, '\\par\n\\strong{Initialization}\n\\par'
+            if cons.has_key('Description') and cons['Description'] != '':
+                print >> out, '%s\par' % self.latex_text(cons['Description'])
+            if cons.has_key('Usage') and cons['Usage'] != '':
+                print >> out, '\\begin{quote}\\function{%s}\\end{quote}' % self.latex_text(cons['Usage'])
+            if cons.has_key('Arguments') and cons['Arguments'] != '':
+                print >> out, '\\par\n\\strong{Arguments}'
+                print >> out, '\\begin{description}'
+                for arg in cons['Arguments']:
+                    print >> out, '\\item [{%s}]%s' % (arg['Name'], self.latex_text(arg['Description']))
+                print >> out, '\\end{description}'
+            if cons.has_key('Details') and cons['Details'] != '':
+                print >> out, '\\par\n\\strong{Details}\n\\par'
+                print >> out, '%s' % self.latex_text(cons['Details'])
+            members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and not x['ignore']]
             if len(members) == 0:
-                print >> out, '}'
+                print >> out, '}\n'
                 continue
-            print >> out, '\\par\n\\strong{Member Functions}\n\\par\n'
-            print >> out, '\\begin{description}\n '
+            print >> out, '\\par\n\\strong{Member Functions}\n\\par'
+            print >> out, '\\begin{description}'
             for mem in members:
                 if mem.has_key('Usage') and mem['Usage'] != '':
                     print >> out, '\\item [\\function{%s}] ' % self.latex_text(mem['Usage'])
                 if mem.has_key('Description') and mem['Description'] != '':
-                    print >> out, '%s\n' % self.latex_text(mem['Description'])
+                    print >> out, '%s' % self.latex_text(mem['Description'])
                 if mem.has_key('Details') and mem['Details'] != '':
                     # if we have short description, use a separate paragraph for details.
                     if mem.has_key('Description') and mem['Description'] != '':
-                        print >> out, '\\par\n%s\\par\n' % self.latex_text(mem['Details'])
+                        print >> out, '\\par\n%s\\par' % self.latex_text(mem['Details'])
                     # otherwise, use details as description
                     else:
-                        print >> out, '%s\n' % self.latex_text(mem['Details'])
+                        print >> out, '%s' % self.latex_text(mem['Details'])
                 if mem.has_key('Arguments') and mem['Arguments'] != '':
-                    print >> out, '\\begin{description}\n '
+                    print >> out, '\\begin{description}'
                     for arg in mem['Arguments']:
-                        print >> out, '\\item [{%s}]%s\n' % (arg['Name'], self.latex_text(arg['Description']))
-                    print >> out, '\\end{description}\n'            
-            print >> out, '\\end{description}\n'
-            print >> out, '}'
+                        print >> out, '\\item [{%s}]%s' % (arg['Name'], self.latex_text(arg['Description']))
+                    print >> out, '\\end{description}'            
+            print >> out, '\\end{description}'
+            if cons.has_key('Examples') and cons['Examples'] != '':
+                print >> out, '\\strong{Examples}\n\\begin{algorithm}[h]'
+                print >> out, '\\caption{\\label{alg:%s}Example for function %s}' % (cons['Name'], cons['Name'])
+                if cons['ExampleFile'] is not None:
+                    print >> out, '\\verbatiminput{%s}' % cons['ExampleFile']
+                print >> out, '\\end{algorithm}'
+            print >> out, '}\n'
 
 
     def write_latex_testfile(self, out, ref_file):
@@ -551,8 +607,14 @@ class Doxy2SWIG:
 \usepackage[latin9]{inputenc}
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
-
+\usepackage{verbatim}
+\usepackage{float}
 \makeatletter
+
+\providecommand{\tabularnewline}{\\}
+\floatstyle{ruled}
+\newfloat{algorithm}{tbp}{loa}
+\floatname{algorithm}{Algorithm}
 
 \newenvironment{lyxcode}
 {\begin{list}{}{
@@ -564,12 +626,15 @@ class Doxy2SWIG:
 \normalfont\ttfamily}
  \item[]}
 {\end{list}}
-
+\floatname{algorithm}{Example}
 \usepackage{babel}
 \makeatother
 \begin{document}
 \include{%s}''' % os.path.basename(os.path.splitext(ref_file)[0])
-        for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
+        for entry in [x for x in self.content if x['type'] in ['global_function'] and not x['ignore']]:
+             print >> out, r'\%s' % self.latexName(entry['Name'])
+             print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
+        for entry in [x for x in self.content if x['type'] in ['class'] and not x['ignore']]:
              print >> out, r'\%s' % self.latexName(entry['Name'])
              print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
         print >> out, r'\end{document}'
@@ -623,6 +688,7 @@ if __name__ == '__main__':
     p = Doxy2SWIG(xml_file)
     # generate interface file.
     p.generate()
+    # clean up, and process CPPONLY etc
     p.post_process()
     # write interface file to output interface file.
     print 'Writing SWIG interface file to', interface_file
