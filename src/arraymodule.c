@@ -40,11 +40,13 @@
 #endif                                                                                        /* DONT_HAVE_SYS_TYPES_H */
 #endif                                                                                        /* !STDC_HEADERS */
 
+/// CPPONLY
 struct arrayobject;                                                             /* Forward */
 
-/* All possible arraydescr values are defined in the vector "descriptors"
+/** All possible arraydescr values are defined in the vector "descriptors"
  * below.    That's defined later because the appropriate get and set
  * functions aren't visible yet.
+ CPPONLY
  */
 struct arraydescr
 {
@@ -54,6 +56,7 @@ struct arraydescr
     int (*setitem)(struct arrayobject *, int, PyObject *);
 };
 
+/// CPPONLY
 typedef struct arrayobject
 {
     PyObject_VAR_HEAD
@@ -77,6 +80,7 @@ typedef struct arrayobject
 // redefinition of type...
 // staticforward PyTypeObject Arraytype;
 
+/// CPPONLY
 bool is_carrayobject(PyObject *op);
 
 // #define is_carrayobject(op) ((op)->ob_type == &Arraytype)
@@ -94,6 +98,7 @@ in bounds; that's the responsibility of the caller.
 ****************************************************************************/
 
 // allele type
+/// CPPONLY
 static PyObject *
 a_getitem(arrayobject *ap, int i)
 {
@@ -119,6 +124,7 @@ a_getitem(arrayobject *ap, int i)
 }
 
 
+/// CPPONLY
 static int
 a_setitem(arrayobject *ap, int i, PyObject *v)
 {
@@ -155,6 +161,7 @@ a_setitem(arrayobject *ap, int i, PyObject *v)
 }
 
 
+/// CPPONLY
 static PyObject *
 c_getitem(arrayobject *ap, int i)
 {
@@ -162,6 +169,7 @@ c_getitem(arrayobject *ap, int i)
 }
 
 
+/// CPPONLY
 static int
 c_setitem(arrayobject *ap, int i, PyObject *v)
 {
@@ -174,6 +182,7 @@ c_setitem(arrayobject *ap, int i, PyObject *v)
 }
 
 
+/// CPPONLY
 static PyObject *
 b_getitem(arrayobject *ap, int i)
 {
@@ -184,6 +193,7 @@ b_getitem(arrayobject *ap, int i)
 }
 
 
+/// CPPONLY
 static int
 b_setitem(arrayobject *ap, int i, PyObject *v)
 {
@@ -211,6 +221,7 @@ b_setitem(arrayobject *ap, int i, PyObject *v)
 }
 
 
+/// CPPONLY
 static PyObject *
 BB_getitem(arrayobject *ap, int i)
 {
@@ -219,6 +230,7 @@ BB_getitem(arrayobject *ap, int i)
 }
 
 
+/// CPPONLY
 static int
 BB_setitem(arrayobject *ap, int i, PyObject *v)
 {
@@ -232,6 +244,7 @@ BB_setitem(arrayobject *ap, int i, PyObject *v)
 }
 
 
+/// CPPONLY
 static PyObject *
 h_getitem(arrayobject *ap, int i)
 {
@@ -239,6 +252,7 @@ h_getitem(arrayobject *ap, int i)
 }
 
 
+/// CPPONLY
 static int
 h_setitem(arrayobject *ap, int i, PyObject *v)
 {
@@ -252,6 +266,7 @@ h_setitem(arrayobject *ap, int i, PyObject *v)
 }
 
 
+/// CPPONLY
 static PyObject *
 HH_getitem(arrayobject *ap, int i)
 {
@@ -259,6 +274,7 @@ HH_getitem(arrayobject *ap, int i)
 }
 
 
+/// CPPONLY
 static int
 HH_setitem(arrayobject *ap, int i, PyObject *v)
 {
@@ -284,7 +300,7 @@ HH_setitem(arrayobject *ap, int i, PyObject *v)
     return 0;
 }
 
-
+/// CPPONLY
 static PyObject *
 i_getitem(arrayobject *ap, int i)
 {
@@ -292,6 +308,7 @@ i_getitem(arrayobject *ap, int i)
 }
 
 
+/// CPPONLY
 static int
 i_setitem(arrayobject *ap, int i, PyObject *v)
 {
@@ -305,6 +322,7 @@ i_setitem(arrayobject *ap, int i, PyObject *v)
 }
 
 
+/// CPPONLY
 static PyObject *
 II_getitem(arrayobject *ap, int i)
 {
@@ -313,6 +331,7 @@ II_getitem(arrayobject *ap, int i)
 }
 
 
+/// CPPONLY
 static int
 II_setitem(arrayobject *ap, int i, PyObject *v)
 {
@@ -350,6 +369,7 @@ II_setitem(arrayobject *ap, int i, PyObject *v)
 }
 
 
+/// CPPONLY
 static PyObject *
 l_getitem(arrayobject *ap, int i)
 {
@@ -357,6 +377,7 @@ l_getitem(arrayobject *ap, int i)
 }
 
 
+/// CPPONLY
 static int
 l_setitem(arrayobject *ap, int i, PyObject *v)
 {
@@ -369,6 +390,7 @@ l_setitem(arrayobject *ap, int i, PyObject *v)
 }
 
 
+/// CPPONLY
 static PyObject *
 LL_getitem(arrayobject *ap, int i)
 {
@@ -376,6 +398,7 @@ LL_getitem(arrayobject *ap, int i)
 }
 
 
+/// CPPONLY
 static int
 LL_setitem(arrayobject *ap, int i, PyObject *v)
 {
@@ -413,6 +436,7 @@ LL_setitem(arrayobject *ap, int i, PyObject *v)
 }
 
 
+/// CPPONLY
 static PyObject *
 f_getitem(arrayobject *ap, int i)
 {
@@ -420,6 +444,7 @@ f_getitem(arrayobject *ap, int i)
 }
 
 
+/// CPPONLY
 static int
 f_setitem(arrayobject *ap, int i, PyObject *v)
 {
@@ -432,6 +457,7 @@ f_setitem(arrayobject *ap, int i, PyObject *v)
 }
 
 
+/// CPPONLY
 static PyObject *
 d_getitem(arrayobject *ap, int i)
 {
@@ -439,6 +465,7 @@ d_getitem(arrayobject *ap, int i)
 }
 
 
+/// CPPONLY
 static int
 d_setitem(arrayobject *ap, int i, PyObject *v)
 {
@@ -476,6 +503,7 @@ Implementations of array object methods.
 ****************************************************************************/
 // you can not create a object from python,
 // error will occur
+/// CPPONLY
 static PyObject *
 carray_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
@@ -487,6 +515,7 @@ carray_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
 // you can not init a object from python,
 // error will occur
+/// CPPONLY
 static PyObject *
 carray_init(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
@@ -505,6 +534,7 @@ PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end,
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
 #endif
 
+/// CPPONLY
 static PyObject * getarrayitem(PyObject *op, int i)
 {
     register arrayobject *ap;
@@ -520,6 +550,7 @@ static PyObject * getarrayitem(PyObject *op, int i)
 }
 
 
+/// CPPONLY
 static void
 array_dealloc(arrayobject *op)
 {
@@ -527,6 +558,7 @@ array_dealloc(arrayobject *op)
 }
 
 
+/// CPPONLY
 static PyObject *
 array_richcompare(PyObject *v, PyObject *w, int op)
 {
@@ -744,12 +776,14 @@ array_richcompare(PyObject *v, PyObject *w, int op)
 }
 
 
+/// CPPONLY
 static Py_ssize_t array_length(arrayobject *a)
 {
     return a->ob_size;
 }
 
 
+/// CPPONLY
 static PyObject * array_concat(arrayobject *a, PyObject *bb)
 {
     PyErr_SetString(PyExc_TypeError,
@@ -758,6 +792,7 @@ static PyObject * array_concat(arrayobject *a, PyObject *bb)
 }
 
 
+/// CPPONLY
 static PyObject * array_repeat(arrayobject *a, Py_ssize_t n)
 {
     PyErr_SetString(PyExc_TypeError,
@@ -766,6 +801,7 @@ static PyObject * array_repeat(arrayobject *a, Py_ssize_t n)
 }
 
 
+/// CPPONLY
 static PyObject * array_item(arrayobject *a, Py_ssize_t i)
 {
     if (i < 0 || i >= a->ob_size)
@@ -777,6 +813,7 @@ static PyObject * array_item(arrayobject *a, Py_ssize_t i)
 }
 
 
+/// CPPONLY
 static PyObject * array_slice(arrayobject *a, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
     arrayobject *np;
@@ -811,6 +848,7 @@ static PyObject * array_slice(arrayobject *a, Py_ssize_t ilow, Py_ssize_t ihigh)
 }
 
 
+/// CPPONLY
 static int array_ass_slice(arrayobject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject *v)
 {
     if (v == NULL || a==(arrayobject*)v)
@@ -885,6 +923,7 @@ static int array_ass_slice(arrayobject *a, Py_ssize_t ilow, Py_ssize_t ihigh, Py
 }
 
 
+/// CPPONLY
 static Py_ssize_t array_ass_item(arrayobject *a, Py_ssize_t i, PyObject *v)
 {
     if (i < 0 || i >= a->ob_size)
@@ -908,6 +947,7 @@ static int setarrayitem(PyObject *a, int i, PyObject *v)
 }
 */
 
+/// CPPONLY
 static PyObject * array_count(arrayobject *self, PyObject *args)
 {
     int count = 0;
@@ -930,11 +970,13 @@ static PyObject * array_count(arrayobject *self, PyObject *args)
 }
 
 
+/// CPPONLY
 static char count_doc [] =
 "count(x)\n\
 \n\
 Return number of occurences of x in the array.";
 
+/// CPPONLY
 static PyObject * array_index(arrayobject *self, PyObject *args)
 {
     int i;
@@ -964,6 +1006,7 @@ static char index_doc [] =
 \n\
 Return index of first occurence of x in the array.";
 
+/// CPPONLY
 static PyObject * array_tolist(arrayobject *self, PyObject *args)
 {
     PyObject *list = PyList_New(self->ob_size);
@@ -1010,6 +1053,7 @@ PyMethodDef array_methods[] =
     }
 };
 
+/// CPPONLY
 static PyObject * array_getattr(arrayobject *a, char *name)
 {
     if (strcmp(name, "typecode") == 0)
@@ -1042,6 +1086,7 @@ static PyObject * array_getattr(arrayobject *a, char *name)
 }
 
 
+/// CPPONLY
 static int array_print(arrayobject *a, FILE *fp, int flags)
 {
     int ok = 0;
@@ -1067,6 +1112,7 @@ static int array_print(arrayobject *a, FILE *fp, int flags)
 }
 
 
+/// CPPONLY
 static PyObject *
 array_repr(arrayobject *a)
 {
@@ -1179,6 +1225,7 @@ PyTypeObject Arraytype =
 
 // we do not import or export hings,
 // carray is defined within simuPOP.
+/// CPPONLY
 void initcarray(void)
 {
     // this will be done in PyType_Ready() is your read this
@@ -1187,36 +1234,42 @@ void initcarray(void)
 }
 
 
+/// CPPONLY
 bool is_carrayobject(PyObject* op)
 {
     return op->ob_type == &Arraytype;
 }
 
 
+/// CPPONLY
 int carray_length(PyObject*a)
 {
     return ((arrayobject*)(a))->ob_size;
 }
 
 
+/// CPPONLY
 int carray_itemsize(PyObject*a)
 {
     return ((arrayobject*)(a))->ob_descr->itemsize;
 }
 
 
+/// CPPONLY
 char carray_type(PyObject* a)
 {
     return ((arrayobject*)(a))->ob_descr->typecode;
 }
 
 
+/// CPPONLY
 char * carray_data(PyObject*a)
 {
     return ((arrayobject*)(a))->ob_iterator.ob_item;
 }
 
 
+/// CPPONLY
 PyObject * newcarrayobject(char* ptr, char type, int size)
 {
     struct arraydescr * descr;
@@ -1253,6 +1306,7 @@ PyObject * newcarrayobject(char* ptr, char type, int size)
 }
 
 
+/// CPPONLY
 #ifdef SIMUMPI
 PyObject * newcarrayiterobject(ULONG shift, ULONG size, UINT s_size, vectoru s_map)
 #else

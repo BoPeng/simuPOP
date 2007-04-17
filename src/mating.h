@@ -522,13 +522,13 @@ namespace simuPOP
 	};
 
 
+	/// CPPONLY
 	void countAlleles(population& pop, int subpop, const vectori& loci, const vectori& alleles,
 		vectorlu& numAllele);
 
 	/**
 	  controlled mating
 	*/
-
 	class controlledMating : public mating
 	{
 		public:
@@ -631,6 +631,7 @@ namespace simuPOP
 			double m_range;
 	};
 
+	/// CPPONLY
 	void getExpectedAlleles(population& pop, vectorf& expFreq, const vectori& loci, const vectori& alleles,
 		vectoru& expAlleles);
 

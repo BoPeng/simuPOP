@@ -183,7 +183,7 @@ namespace simuPOP
 		// existing one
 		else
 			m_ifPost[ it-m_atLoci.begin() ] |= static_cast<int>(post);
-		
+
 		m_evalInSubPop |= subPop;
 		m_output_numOfAlleles |= numOfAlleles;
 	}
@@ -719,18 +719,17 @@ namespace simuPOP
 		return true;
 	}
 
-				void statHaploFreq::addHaplotype(const vectori& haplo, bool post)
-			{
-				intMatrix::iterator it;
-				if((it = find(m_haplotypes.begin(), m_haplotypes.end(), haplo)) == m_haplotypes.end())
-				{
-					m_haplotypes.push_back( haplo );
-					m_ifPost.push_back(static_cast<int>(post));
-				}
-				else
-					m_ifPost[it-m_haplotypes.begin()] |= static_cast<int>(post);
-			}
-
+	void statHaploFreq::addHaplotype(const vectori& haplo, bool post)
+	{
+		intMatrix::iterator it;
+		if((it = find(m_haplotypes.begin(), m_haplotypes.end(), haplo)) == m_haplotypes.end())
+		{
+			m_haplotypes.push_back( haplo );
+			m_ifPost.push_back(static_cast<int>(post));
+		}
+		else
+			m_ifPost[it-m_haplotypes.begin()] |= static_cast<int>(post);
+	}
 
 	bool statHaploFreq::apply(population& pop)
 	{

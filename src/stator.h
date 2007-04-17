@@ -206,7 +206,6 @@ namespace simuPOP
 
 	/// CPPONLY
 	/// post population sizes etc.
-
 	class statPopSize
 	{
 		private:
@@ -233,7 +232,6 @@ namespace simuPOP
 	};
 
 	/// CPPONLY
-
 	class statNumOfMale
 	{
 		private:
@@ -300,7 +298,6 @@ namespace simuPOP
 	};
 
 	/// CPPONLY
-
 	class statNumOfAffected
 	{
 		private:
@@ -369,7 +366,6 @@ namespace simuPOP
 	};
 
 	/// CPPONLY
-
 	class statAlleleFreq
 	{
 		private:
@@ -566,7 +562,6 @@ namespace simuPOP
 	/// use alleleFreq to get number of alleles
 	/// so statNumOfAlleles is just a proxy class
 	///
-
 	class statNumOfAlleles
 	{
 		public:
@@ -736,7 +731,6 @@ namespace simuPOP
 	};
 
 	/// CPPONLY
-
 	class statExpHetero
 	{
 		private:
@@ -787,7 +781,6 @@ namespace simuPOP
 	/// CPPONLY
 	/// currently there is no need to expose the result.
 	/// may add that later.
-
 	class statGenoFreq
 	{
 		private:
@@ -812,7 +805,6 @@ namespace simuPOP
 	};
 
 	/// CPPONLY
-
 	class statHaploFreq
 	{
 		private:
@@ -904,7 +896,6 @@ namespace simuPOP
 	};
 
 	/// CPPONLY
-
 	class statLD
 	{
 		private:
@@ -974,6 +965,7 @@ namespace simuPOP
 			bool m_output_Delta2;
 	};
 
+	/// CPPONLY
 	class statAssociation
 	{
 		private:
@@ -1021,7 +1013,6 @@ namespace simuPOP
 
 	/// CPPONLY
 	/// currently there is no need to retrieve calculated value
-
 	class statFst
 	{
 
@@ -1101,7 +1092,7 @@ namespace simuPOP
 	/// the relatedness measure between two individuals/families
 	/// using Queller and Goodnight or Lynch's method.
 	/// or internal relatedness values
-
+	/// CPPONLY
 	class statRelatedness
 	{
 
