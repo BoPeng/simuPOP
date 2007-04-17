@@ -175,7 +175,7 @@ class Doxy2SWIG:
 
     def do_compoundname(self, node):
         data = node.firstChild.data
-        self.content.append({'Name': data})
+        self.content.append({'Name': data, 'type': 'class'})
 
     def do_compounddef(self, node):
         kind = node.attributes['kind'].value
@@ -258,11 +258,13 @@ class Doxy2SWIG:
                 if ns_node:
                     ns = ns_node[0].firstChild.data
                     func_name = '%s::%s' %(ns, name) + defn.split(' ')[-1]
+                    print "Content type unknown??? ", func_name
                     self.content.append({'Name': func_name})
                     self.content[-1]['Usage'] = ''
                     self.curField = 'Usage'
                 else:
                     self.content.append({'Name': name})
+                    print "Content type unknown??? ", name
                     self.content[-1]['Usage'] = ''
                     self.curField = 'Usage'
                     self.add_text( defn.split(' ')[-1] )
@@ -270,7 +272,13 @@ class Doxy2SWIG:
                 # Get the full function name.
                 anc_node = anc.getElementsByTagName('compoundname')
                 cname = anc_node[0].firstChild.data
-                self.content.append({'Name': '%s::%s' %(cname, name)})
+                classname = cname.split('::')[-1]
+                if classname == name:
+                    self.content.append({'Name': '%s::%s' %(cname, name),
+                                         'type': 'constructorofclass%s::%s' %(cname, name)})
+                else:
+                    self.content.append({'Name': '%s::%s' %(cname, name),
+                                         'type': 'memberofclass%s::%s' %(cname, name)})
                 self.content[-1]['Usage'] = ''
                 self.curField = 'Usage'
                 defName = defn.split(' ')[-1]
@@ -428,14 +436,14 @@ class Doxy2SWIG:
 
 
     def write_swig(self, out):
+        print >> out, self.content
         for entry in self.content:
             if entry['ignore']:
                 if entry.has_key('cppArgs'):
                     print >> out, '%%ignore %s%s;\n' % (entry['Name'], entry['cppArgs'])
                 else:
                     print >> out, '%%ignore %s;\n' % entry['Name']
-                continue
-            #print >> out, self.content
+                continue          
             print >> out, '%%feature("docstring") %s "\n' % entry['Name']
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, 'Description:'
@@ -474,35 +482,66 @@ class Doxy2SWIG:
 
     def latex_text(self, text):
         """ wrap text given current indent """
-        for ch in ['\\', '&', '', '%', '#', '_', '{', '}', '^']:
+        for ch in ['\\', '&', '$', '~', '%', '#', '_', '{', '}', '^']:
             text = text.replace(ch, '\\' + ch)
         return text
 
 
     def write_latex(self, out):
-        for entry in self.content:
-            #print >> out, self.content
+        for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
             print >> out, '\\newcommand{\\%s}{\n' % self.latexName(entry['Name'])
-            print >> out, '\\par\n\\strong{%s}\n\\par\n' % self.latex_text(entry['Name'])
             if entry.has_key('Description') and entry['Description'] != '':
-                print >> out, '\\par\n\\strong{Description}\n\\par\n'
+                print >> out, '\\par\n\\strong{Class %s}\n\\par\n' % self.latex_text(entry['Name'])
                 print >> out, '    %s\n' % self.latex_text(entry['Description'])
-            if entry.has_key('Usage') and entry['Usage'] != '':
-                print >> out, '\\par\n\\strong{Usage}\n\\par\n'
-                print >> out, '    \\function{%s}' % self.latex_text(entry['Usage'])
-            if entry.has_key('Arguments') and entry['Arguments'] != '':
-                print >> out, '\\par\n\\strong{Arguments}\n\\par\n'
-                print >> out, '\\begin{description}\n '
-                for arg in entry['Arguments']:
-                    print >> out, '\\item [{%s}]%s\n' % (arg['Name'], self.latex_text(arg['Description']))
-                print >> out, '\\end{description}\n'
             if entry.has_key('Details') and entry['Details'] != '':
                 print >> out, '\\par\n\\strong{Details}\n\\par\n'
                 print >> out, '    %s\n' % self.latex_text(entry['Details'])
-            if entry.has_key('Examples') and entry['Examples'] != '':
-                print >> out, '\\strong{Examples}\n\\begin{lyxcode}\n'
-                print >> out, '%s\n' % entry['Examples'].replace('\\', r'\\\\').replace('#', '\\#')
-                print >> out, '\\end{lyxcode}\n'
+            constructor = [x for x in self.content if x['type'] == 'constructorofclass' + x['Name'] and not x['ignore']]          
+            if len(constructor) == 0:
+                continue
+            print >> out, '\\par\n\\strong{Initialization}\n\\par\n'
+            for cons in constructor:
+                if cons.has_key('Description') and cons['Description'] != '':
+                    print >> out, '    %s\n' % self.latex_text(cons['Description'])
+                if cons.has_key('Usage') and cons['Usage'] != '':
+                    print >> out, '    \\function{%s}' % self.latex_text(cons['Usage'])
+                if cons.has_key('Arguments') and cons['Arguments'] != '':
+                    print >> out, '\\par\n\\strong{Arguments}\n'
+                    print >> out, '\\begin{description}\n '
+                    for arg in cons['Arguments']:
+                        print >> out, '\\item [{%s}]%s\n' % (arg['Name'], self.latex_text(arg['Description']))
+                    print >> out, '\\end{description}\n'
+                if cons.has_key('Details') and cons['Details'] != '':
+                    print >> out, '\\par\n\\strong{Details}\n\\par\n'
+                    print >> out, '    %s\n' % self.latex_text(cons['Details'])
+                #if cons.has_key('Examples') and cons['Examples'] != '':
+                   #print >> out, '\\strong{Examples}\n\\begin{lyxcode}\n'
+                    #print >> out, '%s\n' % cons['Examples'].replace('\\', r'\\\\').replace('#', '\\#')
+                    #print >> out, '\\end{lyxcode}\n'
+            members = [x for x in self.content if x['type'] == 'memberofclass' + x['Name'] and not x['ignore']]
+            if len(members) == 0:
+                print >> out, '}'
+                continue
+            print >> out, '\\par\n\\strong{Member Functions}\n\\par\n'
+            print >> out, '\\begin{description}\n '
+            for mem in members:
+                if mem.has_key('Usage') and mem['Usage'] != '':
+                    print >> out, '\\item [\\function{%s}] ' % self.latex_text(mem['Usage'])
+                if mem.has_key('Description') and mem['Description'] != '':
+                    print >> out, '%s\n' % self.latex_text(mem['Description'])
+                if mem.has_key('Details') and mem['Details'] != '':
+                    # if we have short description, use a separate paragraph for details.
+                    if mem.has_key('Description') and mem['Description'] != '':
+                        print >> out, '\\par\n%s\\par\n' % self.latex_text(mem['Details'])
+                    # otherwise, use details as description
+                    else:
+                        print >> out, '%s\n' % self.latex_text(mem['Details'])
+                if mem.has_key('Arguments') and mem['Arguments'] != '':
+                    print >> out, '\\begin{description}\n '
+                    for arg in mem['Arguments']:
+                        print >> out, '\\item [{%s}]%s\n' % (arg['Name'], self.latex_text(arg['Description']))
+                    print >> out, '\\end{description}\n'            
+            print >> out, '\\end{description}\n'
             print >> out, '}'
 
 
@@ -530,7 +569,7 @@ class Doxy2SWIG:
 \makeatother
 \begin{document}
 \include{%s}''' % os.path.basename(os.path.splitext(ref_file)[0])
-        for entry in self.content:
+        for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
              print >> out, r'\%s' % self.latexName(entry['Name'])
              print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
         print >> out, r'\end{document}'
@@ -552,7 +591,7 @@ class Doxy2SWIG:
         strs = textwrap.wrap(text.lstrip('\n '), width=self.maxChar,
             initial_indent=' '*(start_pos+indent),
             subsequent_indent = ' '*indent)
-        return  ('\n'.join(strs)).lstrip().replace('\\', r'\\\\').replace('"', r'\"')
+        return  ('\n'.join(strs)).lstrip().replace('\\', r'\\\\').replace('"', r'\"')              
 
 
 if __name__ == '__main__':
@@ -594,5 +633,8 @@ if __name__ == '__main__':
     p.uniqueName = []
     print 'Writing latex test file to', latex_testfile
     p.write(latex_testfile, type='latex_all', ref_file=latex_file)
+    # generating sample document
+    os.chdir(os.path.dirname(latex_testfile))
+    os.system('pdflatex %s' % os.path.split(latex_testfile)[1])
     # ending statement
     print 'Done.'
