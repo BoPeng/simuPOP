@@ -312,6 +312,7 @@ namespace simuPOP
 	//      index = 0*3+1
 	// second loop
 	//      index = 1*3 + 2 = 5
+	/// CPPONLY
 	double fitOfGeno(unsigned loc, const vectori & allgeno, const vectorf & fitness, const vectorf::const_iterator & freq)
 	{
 		int index = 0;
@@ -334,6 +335,7 @@ namespace simuPOP
 		return fitness[index]*fq;
 	}
 
+	/// CPPONLY
 	// get individual fitness, accounting interaction
 	void interFitness(unsigned nLoci, const vectorf & fitness, const vectorf::const_iterator & freq, vectorf & sAll)
 	{
@@ -378,6 +380,7 @@ namespace simuPOP
 	}
 
 	// the python version of interaction Fitness, for convenience purpose.
+	/// CPPONLY
 	vectorf MarginalFitness(unsigned nLoci, const vectorf & fitness, const vectorf & freq)
 	{
 		vectorf sAll(3, 1);
