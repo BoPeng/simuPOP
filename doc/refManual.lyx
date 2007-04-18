@@ -1555,7 +1555,7 @@ Population related functions
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="60" columns="3">
+<lyxtabular version="3" rows="65" columns="3">
 <features islongtable="true" firstHeadBottomDL="true" headBottomDL="true">
 <column alignment="left" valignment="top" leftline="true" width="0">
 <column alignment="left" valignment="top" leftline="true" width="0" special="|p{2in}|">
@@ -3516,6 +3516,187 @@ Load a population and replace the current one.
 LoadPopulation
 \family default
  instead)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+p.mergePopulation
+\begin_inset LatexCommand index
+name "population!mergePopulation"
+
+\end_inset
+
+(pop, newSubPopSizes=[])
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Merge with another population (by merging individuals)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+p.mergePopulationByLoci
+\family default
+
+\begin_inset LatexCommand index
+name "population!mergePopulationByLoci"
+
+\end_inset
+
+
+\family typewriter
+(pop, newNumLoci=[], newLociPos=[])
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Merge with another population (by merging loci)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+MergePopulation([pop1, pop2, ...], newSubPopSizes=[])
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Merge several populations to create a new population
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+MergePopulationByLoci([pop1, pop2, ...], newNumLoci=[], newLociPos=[])
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Merge several populations by loci to create a new population
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+p.expand
+\family default
+
+\begin_inset LatexCommand index
+name "population!expand"
+
+\end_inset
+
+
+\family typewriter
+(newSubPopSize, propagate=True)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Expand population (add individuals)
 \end_layout
 
 \end_inset
@@ -6742,6 +6923,66 @@ preview false
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Merge populations
+\end_layout
+
+\begin_layout Standard
+There are several functions to merge or split populations.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.mergePopulation(pop1, newSubPopSizes=[])
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.mergePopulationByLoci(pop1, newLoci=[])
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MergePopulations([pop1, pop2, ...], newSubPopSizes=[])
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MergePopulationsByLoci([pop1, pop2, ...], newLoci=[])
+\end_layout
+
+\begin_layout Standard
+These functions can merge populations by individuals (populations should
+ have the same genotype structure), or by loci (populations should have
+ the same number of individuals).
+ The first two forms change 
+\family typewriter
+pop
+\family default
+ itself by merging
+\family typewriter
+ pop1
+\family default
+, the latter two forms create new populations from 
+\family typewriter
+pop1, pop2
+\family default
+ etc.
+ In all cases, 
+\family typewriter
+newSubPopSizes
+\family default
+ and
+\family typewriter
+ newLoci
+\family default
+ can be used to set the subpopulation structure or genotype structure.
 \end_layout
 
 \begin_layout Section
@@ -16056,7 +16297,7 @@ etc are also allowed.
 statistics:
 \begin_inset Formula \begin{eqnarray*}
 \mbox{ChiSq} & = & \mbox{contingency table }\chi^{2}\mbox{ statistics}\\
-\mbox{ChiSq\_P} & = & p\mbox{-value of }\chi^{2}\mbox{ with df=}\left(a-1\right)\left(b-1\right)\\
+\mbox{ChiSq\_ P} & = & p\mbox{-value of }\chi^{2}\mbox{ with df=}\left(a-1\right)\left(b-1\right)\\
 H\left(A\right) & = & \sum_{i}-P{}_{i}\ln P_{i}\\
 H\left(B\right) & = & \sum_{j}-P_{j}\ln P_{j}\\
 H\left(A,B\right) & = & \sum_{i}\sum_{j}P_{ij}\\
