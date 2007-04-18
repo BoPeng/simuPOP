@@ -922,12 +922,12 @@ namespace simuPOP
 			this->removeEmptySubPops();
 	}
 
-	void population::mergePopulation(const population & pop, const vectorlu & newSubPopSizes)
+	void population::mergePopulationPerGen(const population & pop, const vectorlu & newSubPopSizes)
 	{
 		DBG_FAILIF(genoStruIdx() != pop.genoStruIdx(), ValueError,
 			"Merged population should have the same genotype structure");
 		// calculate new population size
-		vectorlu newSSs;
+		vectorlu newSS;
 		newSS.insert(newSS.end(), m_subPopSize.begin(), m_subPopSize.end());
 		newSS.insert(newSS.end(), pop.m_subPopSize.begin(), pop.m_subPopSize.end());
 		// new population size
@@ -935,7 +935,7 @@ namespace simuPOP
 		DBG_FAILIF(!newSubPopSizes.empty() && accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) != newPopSize,
 			ValueError, "newSubPopSizes should not change overall population size");
 
-		// prepare new population 
+		// prepare new population
 		vector<individual> newInds(newPopSize);
 		vectora newGenotype(genoSize() * newPopSize);
 		vectorinfo newInfo(newPopSize * infoSize());
@@ -944,9 +944,8 @@ namespace simuPOP
 		InfoIterator infoPtr = newInfo.begin();
 		UINT step = genoSize();
 		UINT infoStep = infoSize();
-		IndIterator it=indBegin();
 		// set pointers
-		for(ULONG i=0; i< newPopSize; ++i, ptr+=step, ++it, infoPtr+=infoStep)
+		for(ULONG i=0; i< newPopSize; ++i, ptr+=step, infoPtr+=infoStep)
 		{
 			newInds[i].setGenoStruIdx(genoStruIdx());
 			newInds[i].setGenoPtr( ptr );
@@ -954,7 +953,7 @@ namespace simuPOP
 		}
 		// copy stuff over
 		for(ULONG i = 0; i < popSize(); ++i)
-				newInds[i].copyFrom(ind(i));
+			newInds[i].copyFrom(ind(i));
 		ULONG start = popSize();
 		for(ULONG i = 0; i < pop.popSize(); ++i)
 			newInds[i+start].copyFrom(pop.ind(i));
@@ -965,29 +964,105 @@ namespace simuPOP
 		m_popSize = newPopSize;
 		setShallowCopied(false);
 		setInfoOrdered(true);
-		if (newSubPopSizes.empty)
+		if (newSubPopSizes.empty())
 			m_subPopSize = newSS;
 		else
 			m_subPopSize = newSubPopSizes;
+		m_numSubPop = m_subPopSize.size();
 		/// rebuild index
+		m_subPopIndex.resize(m_numSubPop+1);
 		size_t i = 1;
 		for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
 			m_subPopIndex[i] = m_subPopIndex[i-1] + m_subPopSize[i - 1];
 	}
 
-	void population::mergePopulationByLoci(const population & pop, 
-		const vectoru & newLoci, const vectorf & newLociPos)
+	void population::mergePopulation(const population & pop, const vectorlu & newSubPopSizes,
+		int keepAncestralPops)
 	{
+		DBG_FAILIF(ancestralDepth() != pop.ancestralDepth(), ValueError,
+			"Merged populations should have the same number of ancestral generations");
+		UINT topGen;
+		if(keepAncestralPops < 0 || static_cast<UINT>(keepAncestralPops) >= ancestralDepth())
+			topGen = ancestralDepth();
+		else
+			topGen = keepAncestralPops;
+		// go to the oldest generation
+		useAncestralPop(topGen);
+		const_cast<population &>(pop).useAncestralPop(topGen);
+		mergePopulationPerGen(pop, newSubPopSizes);
+		if(topGen > 0)
+		{
+			for(int depth = topGen - 1; depth >=0; --depth)
+			{
+				useAncestralPop(depth);
+				const_cast<population &>(pop).useAncestralPop(depth);
+				mergePopulationPerGen(pop, newSubPopSizes);
+			}
+		}
+		useAncestralPop(0);
+		const_cast<population &>(pop).useAncestralPop(0);
+	}
+
+	void population::mergePopulationByLoci(const population & pop,
+		const vectoru & newNumLoci, const vectorf & newLociPos)
+	{
+		DBG_FAILIF(subPopSizes() != pop.subPopSizes(), ValueError,
+			"Merged population should have the same number of individuals in each subpopulation");
+
+		UINT gs1 = totNumLoci();
+		UINT gs2 = pop.totNumLoci();
+
+		// obtain new genotype structure and set it
+		setGenoStructure(mergeGenoStru(pop.genoStruIdx()));
+
+		DBG_FAILIF(ancestralDepth() != pop.ancestralDepth(), ValueError,
+			"Merged populations should have the same number of ancestral generations");
+		for(int depth = ancestralDepth(); depth >=0; --depth)
+		{
+			useAncestralPop(depth);
+			const_cast<population &>(pop).useAncestralPop(depth);
+			//
+			ULONG newPopGenoSize = genoSize() * m_popSize;
+			vectora newGenotype(newPopGenoSize);
+
+			// copy data over
+			GenoIterator ptr = newGenotype.begin();
+			UINT pEnd = ploidy();
+			for(ULONG i=0; i< m_popSize; ++i)
+			{
+				// set new geno structure
+				m_inds[i].setGenoStruIdx(genoStruIdx());
+				GenoIterator ptr1 = m_inds[i].genoPtr();
+				GenoIterator ptr2 = pop.m_inds[i].genoPtr();
+				// new genotype
+				m_inds[i].setGenoPtr( ptr );
+				// copy each allele
+				for(UINT p=0; p < pEnd; ++p)
+				{
+					for(size_t j=0; j < gs1; ++j)
+						*(ptr++) = *(ptr1++);
+					for(size_t j=0; j < gs2; ++j)
+						*(ptr++) = *(ptr2++);
+				}
+			}
+			m_genotype.swap(newGenotype);
+		}
+
+		// reset genoStructure again
+		if (!newNumLoci.empty() and ! newLociPos.empty())
+			rearrangeLoci(newNumLoci, newLociPos);
+
+		setShallowCopied(false);
 	}
 
 	void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 	{
 		DBG_FAILIF(newSubPopSizes.size() != numSubPop(), ValueError,
 			"Resize should give subpopulation size for each subpopulation");
-		
+
 		ULONG newPopSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
-		
-		// prepare new population 
+
+		// prepare new population
 		vector<individual> newInds(newPopSize);
 		vectora newGenotype(genoSize() * newPopSize);
 		vectorinfo newInfo(newPopSize * infoSize());
@@ -996,9 +1071,8 @@ namespace simuPOP
 		InfoIterator infoPtr = newInfo.begin();
 		UINT step = genoSize();
 		UINT infoStep = infoSize();
-		IndIterator it=indBegin();
 		// set pointers
-		for(ULONG i=0; i< newPopSize; ++i, ptr+=step, ++it, infoPtr+=infoStep)
+		for(ULONG i=0; i< newPopSize; ++i, ptr+=step, infoPtr+=infoStep)
 		{
 			newInds[i].setGenoStruIdx(genoStruIdx());
 			newInds[i].setGenoPtr( ptr );
@@ -1433,21 +1507,25 @@ namespace simuPOP
 		return *pop;
 	}
 
-
 	void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLociPos)
 	{
 		/// total number of loci can not change
 		DBG_FAILIF(std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != totNumLoci(), ValueError,
 			"Re-arrange loci must keep the same total number of loci");
 		setGenoStructure(ploidy(), newNumLoci, sexChrom(), newLociPos,
-			alleleNames(), lociNames(), maxAllele(), infoFields(), 
+			alleleNames(), lociNames(), maxAllele(), infoFields(),
 			chromMap());
-		// now set geno structure
-		for(ULONG i=0; i < m_popSize; ++i)
-			// set new geno structure
-			m_inds[i].setGenoStruIdx(genoStruIdx());
+		for(int depth = ancestralDepth(); depth >=0; --depth)
+		{
+			useAncestralPop(depth);
+
+			// now set geno structure
+			for(ULONG i=0; i < m_popSize; ++i)
+				// set new geno structure
+				m_inds[i].setGenoStruIdx(genoStruIdx());
+		}
 	}
-	
+
 	void population::pushAndDiscard(population& rhs, bool force)
 	{
 		// time consuming!
@@ -2264,30 +2342,6 @@ namespace simuPOP
 		cout << "This feature is not supported in this platform" << endl;
 		return *new population(1);
 #endif
-	}
-
-	population & MergePopulations(const vector<population*> & pops, const vectorlu & newSubPopSizes)
-	{
-		DBG_FAILIF(pops.empty(), ValueError, "MergePopuations: empty population list is given");
-		population * res = new population(*pops[0]);
-		for (size_t i=1; i < pops.size(); ++i)
-			res->mergePopulation(*pops[i]);
-		if(!newSubPopSizes.empty())
-			res->setSubPopStru(newSubPopSizes);
-		return *res;
-	}
-
-	/// merge several populations by loci and create a new population
-	population & MergePopulationsByLoci(const vector<population*> & pops, 
-		const vectoru & newNumLoci, const vectorf & newLociPos)
-	{
-		DBG_FAILIF(pops.empty(), ValueError, "MergePopuations: empty population list is given");
-		population * res = new population(*pops[0]);
-		for (size_t i=1; i < pops.size(); ++i)
-			res->mergePopulationByLoci(*pops[i]);
-		if(!newNumLoci.empty())
-			res->rearrangeLoci(newNumLoci, newLociPos);
-		return *res;
 	}
 
 	vectorf testGetinfoFromInd(population& pop)

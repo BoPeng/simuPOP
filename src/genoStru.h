@@ -336,6 +336,9 @@ namespace simuPOP
 				m_genoStruIdx = static_cast<TraitIndexType>(idx);
 			}
 
+			/// CPPONLY merge two genotype structure
+			GenoStructure& mergeGenoStru(size_t idx);
+
 			/// return the GenoStructure
 			/// CPPONLY
 			GenoStructure& genoStru() const
@@ -377,7 +380,7 @@ namespace simuPOP
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_numLoci;
 			}
-			
+
 			/// whether or not the last chromosome is sex chromosome
 			bool sexChrom() const
 			{
@@ -510,7 +513,7 @@ namespace simuPOP
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_lociNames;
 			}
-			
+
 			UINT maxAllele() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_maxAllele;
