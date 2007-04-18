@@ -804,9 +804,15 @@ namespace simuPOP
 			void mergePopulationByLoci(const population & pop, const vectoru & newLoci = vectoru(),
 				const vectorf & newLociPos=vectorf());
 
-			/// resize current population to another size
-			/// if propagate is true, copy individuals to new comers
-			/// i.e., 1,2,3 ==> 1,2,3,1,2,3,1
+			/// resize population to another size
+			/** Resize population to given new subpopulation sizes.
+			
+				\param newSubPopSizes an array of new subpopulation sizes. If there
+					is only one subpopulation, use [newPopSize].
+				\param propagate if propagate is true, copy individuals to new comers
+					 i.e., 1,2,3 ==> 1,2,3,1,2,3,1
+				\note this function only resize current generation.
+			*/
 			void resize(const vectorlu  & newSubPopSizes, bool propagate=false);
 			
 			/// \brief reorder subpopulations
