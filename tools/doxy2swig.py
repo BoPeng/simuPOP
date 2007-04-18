@@ -515,9 +515,9 @@ class Doxy2SWIG:
     def write_latex(self, out):
         # first handle glocal functions
         for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore']]:
-            print >> out, '\\newcommand{\\%s}{' % self.latexName(entry['Name'])
+            print >> out, '\\newcommand{\\%s}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
             if entry.has_key('Description') and entry['Description'] != '':
-                print >> out, '\\par\n\\strong{Function %s}\n\\par' % self.latex_text(entry['Name'])
+                print >> out, '\\par\n\\strong{Function \\texttt{%s}}\n\\par' % self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
                 print >> out, '%s\par' % self.latex_text(entry['Description'])
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, '\\begin{quote}\\function{%s}\\end{quote}' % self.latex_text(entry['Usage'])
@@ -539,9 +539,9 @@ class Doxy2SWIG:
             print >> out, '}\n'
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
-            print >> out, '\\newcommand{\\%s}{' % self.latexName(entry['Name'])
+            print >> out, '\\newcommand{\\%s}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
             if entry.has_key('Description') and entry['Description'] != '':
-                print >> out, '\\par\n\\strong{Class %s}\n\\par' % self.latex_text(entry['Name'])
+                print >> out, '\\par\n\\strong{Class \\texttt{%s}}\n\\par' % self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
                 print >> out, '%s' % self.latex_text(entry['Description'])
             if entry.has_key('Details') and entry['Details'] != '':
                 print >> out, '\\par\n\\strong{Details}\n\\par'
@@ -632,11 +632,11 @@ class Doxy2SWIG:
 \begin{document}
 \include{%s}''' % os.path.basename(os.path.splitext(ref_file)[0])
         for entry in [x for x in self.content if x['type'] in ['global_function'] and not x['ignore']]:
-             print >> out, r'\%s' % self.latexName(entry['Name'])
+             print >> out, r'\%s' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
              print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
         for entry in [x for x in self.content if x['type'] in ['class'] and not x['ignore']]:
-             print >> out, r'\%s' % self.latexName(entry['Name'])
-             print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
+             print >> out, r'\%s' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
+             print >> out, r'\vspace{.1in}\par\rule[.3ex]{\linewidth}{1pt}\par\vspace{0.1in}'
         print >> out, r'\end{document}'
 
 
