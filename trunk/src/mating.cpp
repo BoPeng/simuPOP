@@ -317,7 +317,7 @@ namespace simuPOP
 
 		DBG_FAILIF(mode == MATE_BinomialDistribution && maxNumOffspring < 2,
 			ValueError, "If mode is MATE_BinomialDistribution, maxNumOffspring should be > 1");
-		DBG_FAILIF(mode == MATE_UniformDistribution && maxNumOffspring < static_cast<int>(numOffspring),
+		DBG_FAILIF(mode == MATE_UniformDistribution && maxNumOffspring < static_cast<UINT>(numOffspring),
 			ValueError, "If mode is MATE_UniformDistribution, maxNumOffspring should be greater than numOffspring");
 	}
 

@@ -272,7 +272,7 @@ namespace simuPOP
 			/// get size of all subpopulations
 			/** \return an array of size of subpopulations
 			 */
-			vectorlu subPopSizes()
+			vectorlu subPopSizes() const
 			{
 				return m_subPopSize;
 			}
@@ -402,6 +402,22 @@ namespace simuPOP
 #endif
 
 				return individualIterator(this, subPopBegin(subPop), subPopEnd(subPop));
+			}
+
+			const individual& ind(ULONG ind, UINT subPop=0) const
+			{
+#ifndef OPTIMIZED
+				if( subPop > 0 )
+				{
+					CHECKRANGESUBPOPMEMBER(ind, subPop);
+				}
+				else
+				{
+					CHECKRANGEIND(ind);
+				}
+#endif
+
+				return m_inds[ subPopBegin(subPop) + ind];
 			}
 
 			/// CPPONLY
@@ -792,22 +808,27 @@ namespace simuPOP
 				be used for all ancestral generations, it may fail if ancestral generations have
 				different sizes. To overcome this problem, you can run merge without parameter,
 				and adjust subpopulation sizes generation by generation.
+				\param keepAncestralPops ancestral populations to merge, default to all
 			\note: population variables are not copied to pop
 			*/
-			void mergePopulation(const population & pop, const vectorlu & newSubPopSizes = vectorlu());
+			void mergePopulation(const population & pop, const vectorlu & newSubPopSizes = vectorlu(),
+				int keepAncestralPops=-1);
 
 			/// merge population by loci
 			/** Two populations should have the same number of individuals. This also holds for
 				any ancestral generations. By default, chromosomes of pop is added to the current
 				population.	You can also specify new chromosome structure using parameter newLoci.
 				\param newLoci the new number of loci for the combined genotype structure.
+				\note information fields are not merged.
+				\note all ancestral generations will be merged because all individuals
+				in a population have to have the same genotype structure.
 			*/
-			void mergePopulationByLoci(const population & pop, const vectoru & newLoci = vectoru(),
+			void mergePopulationByLoci(const population & pop, const vectoru & newNumLoci = vectoru(),
 				const vectorf & newLociPos=vectorf());
 
 			/// resize population to another size
 			/** Resize population to given new subpopulation sizes.
-			
+
 				\param newSubPopSizes an array of new subpopulation sizes. If there
 					is only one subpopulation, use [newPopSize].
 				\param propagate if propagate is true, copy individuals to new comers
@@ -815,7 +836,7 @@ namespace simuPOP
 				\note this function only resize current generation.
 			*/
 			void resize(const vectorlu  & newSubPopSizes, bool propagate=false);
-			
+
 			/// \brief reorder subpopulations
 			/**
 			\param order new order of the subpopulations. For examples, 3 2 0 1
@@ -832,8 +853,6 @@ namespace simuPOP
 				0: only current
 				1: keep one ...
 			*/
-			population& newPopByIndIDPerGen(const vectori& id=vectori(),
-				bool removeEmptySubPops=false);
 			population& newPopByIndID(int keepAncestralPops=-1,
 				const vectori& id=vectori(),
 				bool removeEmptySubPops=false);
@@ -851,13 +870,13 @@ namespace simuPOP
 			// regardless of m_ancestray settings.
 			void pushAndDiscard(population& rhs, bool force=false);
 
-			UINT ancestralDepth()
+			UINT ancestralDepth() const
 			{
 				return m_ancestralPops.size();
 			}
 
 			/// return the current ancestral gen index.
-			int ancestralGen()
+			int ancestralGen() const
 			{
 				return m_curAncestralPop;
 			}
@@ -1075,6 +1094,13 @@ namespace simuPOP
 			*/
 			void loadPopulation(const string& filename, const string& format="auto");
 
+		private:
+
+			population& newPopByIndIDPerGen(const vectori& id=vectori(),
+				bool removeEmptySubPops=false);
+
+			void mergePopulationPerGen(const population & pop, const vectorlu & newSubPopSizes);
+
 		public:
 
 			int rep()
@@ -1272,7 +1298,7 @@ namespace simuPOP
 			/// rearrange loci on chromosomes, e.g. combine two chromosomes to one
 			/// This is used by mergeByLoci
 			void rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLociPos);
-			
+
 		private:
 
 			friend class boost::serialization::access;
@@ -1764,13 +1790,6 @@ namespace simuPOP
 	};
 
 	population& LoadPopulation(const string& file, const string& format="auto");
-
-	/// merge several populations and create a new population
-	population& MergePopulations(const vector<population*> & pops, const vectorlu & newSubPopSizes = vectorlu());
-
-	/// merge several populations by loci and create a new population
-	population& MergePopulationsByLoci(const vector<population*> & pops, 
-		const vectoru & newNumLoci = vectoru(), const vectorf & newLociPos = vectorf());
 
 	/// get info through ind.info()
 	vectorf testGetinfoFromInd(population& pop);

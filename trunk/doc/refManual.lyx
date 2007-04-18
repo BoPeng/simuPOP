@@ -3543,7 +3543,7 @@ name "population!mergePopulation"
 
 \end_inset
 
-(pop, newSubPopSizes=[])
+(pop, newSubPopSizes=[], keepAncestralPops=-1)
 \end_layout
 
 \end_inset
@@ -3615,7 +3615,7 @@ Merge with another population (by merging loci)
 \begin_layout Standard
 
 \family typewriter
-MergePopulation([pop1, pop2, ...], newSubPopSizes=[])
+MergePopulation([pop1, pop2, ...], newSubPopSizes=[], keepAncestralPops=-1)
 \end_layout
 
 \end_inset

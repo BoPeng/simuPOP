@@ -155,10 +155,10 @@ namespace simuPOP
 			( m_alleleNames == rhs.m_alleleNames) &&
 			( m_lociNames == rhs.m_lociNames) &&
 			( m_maxAllele == rhs.m_maxAllele) &&
-			( m_infoFields == rhs.m_infoFields) 
-#ifdef SIMUMPI			
+			( m_infoFields == rhs.m_infoFields)
+	#ifdef SIMUMPI
 			&& ( m_chromMap == rhs.m_chromMap )
-#endif			
+	#endif
 			))
 			return true;
 		else
@@ -203,12 +203,35 @@ namespace simuPOP
 		m_genoStruIdx = s_genoStruRepository.size()-1;
 	}
 
+	GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx)
+	{
+		GenoStructure & gs1 = s_genoStruRepository[m_genoStruIdx];
+		GenoStructure & gs2 = s_genoStruRepository[idx];
+
+		// identify another
+		DBG_FAILIF(gs1.m_ploidy != gs2.m_ploidy, ValueError,
+			"Merged population should have the same ploidy");
+		vectoru loci = gs1.m_numLoci;
+		loci.insert(loci.end(), gs2.m_numLoci.begin(), gs2.m_numLoci.end());
+		DBG_FAILIF(gs1.m_sexChrom, ValueError,
+			"Population with sex chromosome has to be at the end");
+		vectorf lociPos = gs1.m_lociPos;
+		lociPos.insert(lociPos.end(), gs2.m_lociPos.begin(), gs2.m_lociPos.end());
+		DBG_FAILIF(gs1.m_alleleNames != gs2.m_alleleNames, ValueError,
+			"Merged population should have the same allele names (sorry, no allele names at each locus for now)");
+		vectorstr lociNames = gs1.m_lociNames;
+		lociNames.insert(lociNames.end(), gs2.m_lociNames.begin(), gs2.m_lociNames.end());
+		UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
+		return * new GenoStructure(gs1.m_ploidy, loci, gs2.m_sexChrom, lociPos,
+			gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields, gs1.m_chromMap);
+	}
+
 	void GenoStruTrait::setGenoStructure(GenoStructure& rhs)
 	{
 		for(TraitIndexType it = 0; it < s_genoStruRepository.size();
 			++it)
 		{
-												  // object comparison
+			// object comparison
 			if( s_genoStruRepository[it] == rhs )
 			{
 				m_genoStruIdx = it;

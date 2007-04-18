@@ -2166,16 +2166,7 @@ Details:
 
 %ignore simuPOP::individual::display(ostream &out, int width=1, const vectori &chrom=vectori(), const vectori &loci=vectori());
 
-%feature("docstring") simuPOP::individualIterator "
-
-Description:
-
-    this class implements a Python itertor class that can be used to
-    iterate through individuals in a population. an instance of this
-    class is returned by  population::individuals() and
-    population::individuals(subPop)
-
-"; 
+%ignore simuPOP::individualIterator;
 
 %feature("docstring") simuPOP::individualIterator::individualIterator "
 
@@ -5593,6 +5584,17 @@ Usage:
     x.individuals()
 "; 
 
+%feature("docstring") simuPOP::population::ind "
+
+Description:
+
+    simuPOP::population::ind
+
+Usage:
+
+    x.ind(ind, subPop=0)
+"; 
+
 %ignore simuPOP::population::shallowCopied();
 
 %ignore simuPOP::population::setShallowCopied(bool s);
@@ -5831,7 +5833,7 @@ Details:
 
 Description:
 
-    simuPOP::population::mergePopulation
+    merge population by individual
 
 Usage:
 
@@ -5848,15 +5850,6 @@ Arguments:
                     generation by generation.
 
 
-Details:
-
-    Merge individuals from pop to the current population. Two
-    population should have the same genotype structure. By default,
-    subpopulations of the merged population is kept. I.e., if you
-    merge two populations with one subpopulation, the resulting
-    population will have two subpopulations. All ancestral generations
-    are also merged.
-
 "; 
 
 %feature("docstring") simuPOP::population::mergePopulationByLoci "
@@ -5867,7 +5860,7 @@ Description:
 
 Usage:
 
-    x.mergePopulationByLoci(pop, newLoci=[])
+    x.mergePopulationByLoci(pop, newLoci=[], newLociPos=[])
 Arguments:
 
     newLoci:        the new number of loci for the combined genotype
@@ -5880,6 +5873,25 @@ Details:
     also holds for any ancestral generations. By default, chromosomes
     of pop is added to the current population. You can also specify
     new chromosome structure using parameter newLoci.
+
+"; 
+
+%feature("docstring") simuPOP::population::resize "
+
+Description:
+
+    resize population to another size
+
+Usage:
+
+    x.resize(newSubPopSizes, propagate=False)
+Arguments:
+
+    newSubPopSizes: an array of new subpopulation sizes. If there is
+                    only one subpopulation, use [newPopSize].
+    propagate:      if propagate is true, copy individuals to new
+                    comers i.e., 1,2,3 ==> 1,2,3,1,2,3,1
+
 
 "; 
 
@@ -6336,6 +6348,21 @@ Usage:
     x.execute(stmts=\"\")
 "; 
 
+%feature("docstring") simuPOP::population::rearrangeLoci "
+
+Description:
+
+    simuPOP::population::rearrangeLoci
+
+Usage:
+
+    x.rearrangeLoci(newNumLoci, newLociPos)
+Details:
+
+    total number of loci can not change
+
+"; 
+
 %feature("docstring") simuPOP::pyEval "
 
 Description:
@@ -6465,6 +6492,17 @@ Arguments:
                     help(baseOperator.__init__)
 
 
+"; 
+
+%feature("docstring") simuPOP::pyExec::~pyExec "
+
+Description:
+
+    simuPOP::pyExec::~pyExec
+
+Usage:
+
+    x.~pyExec()
 "; 
 
 %feature("docstring") simuPOP::pyExec::clone "
@@ -8550,8 +8588,6 @@ Usage:
 
 %ignore simuPOP::SharedVariables::SharedVariables();
 
-%ignore simuPOP::SharedVariables::SharedVariables(const SharedVariables &rhs);
-
 %ignore simuPOP::SharedVariables::swap(SharedVariables &rhs);
 
 %ignore simuPOP::SharedVariables::~SharedVariables();
@@ -8588,16 +8624,7 @@ Usage:
     x.hasVar(name)
 "; 
 
-%feature("docstring") simuPOP::SharedVariables::removeVar "
-
-Description:
-
-    remove variable
-
-Usage:
-
-    x.removeVar(name)
-"; 
+%ignore simuPOP::SharedVariables::removeVar(const string &name);
 
 %ignore simuPOP::SharedVariables::setBoolVar(const string &name, const bool val);
 
@@ -9358,6 +9385,17 @@ Usage:
     statAlleleFreq(atLoci=[], param=strDict)
 "; 
 
+%feature("docstring") simuPOP::statAlleleFreq::~statAlleleFreq "
+
+Description:
+
+    destructor, nested vectors have to be cleared manually
+
+Usage:
+
+    x.~statAlleleFreq()
+"; 
+
 %feature("docstring") simuPOP::statAlleleFreq::addLocus "
 
 Description:
@@ -9616,6 +9654,17 @@ Usage:
     statHaploFreq(haploFreq=intMatrix)
 "; 
 
+%feature("docstring") simuPOP::statHaploFreq::~statHaploFreq "
+
+Description:
+
+    simuPOP::statHaploFreq::~statHaploFreq
+
+Usage:
+
+    x.~statHaploFreq()
+"; 
+
 %feature("docstring") simuPOP::statHaploFreq::addHaplotype "
 
 Description:
@@ -9765,6 +9814,17 @@ Usage:
     statNumOfAffected(numOfAffected=False)
 "; 
 
+%feature("docstring") simuPOP::statNumOfAffected::~statNumOfAffected "
+
+Description:
+
+    simuPOP::statNumOfAffected::~statNumOfAffected
+
+Usage:
+
+    x.~statNumOfAffected()
+"; 
+
 %feature("docstring") simuPOP::statNumOfAffected::activate "
 
 Description:
@@ -9820,6 +9880,17 @@ Description:
 Usage:
 
     statNumOfAlleles(calc, atLoci=[], param=strDict)
+"; 
+
+%feature("docstring") simuPOP::statNumOfAlleles::~statNumOfAlleles "
+
+Description:
+
+    simuPOP::statNumOfAlleles::~statNumOfAlleles
+
+Usage:
+
+    x.~statNumOfAlleles()
 "; 
 
 %feature("docstring") simuPOP::statNumOfAlleles::apply "
@@ -10838,7 +10909,7 @@ Description:
 
 Usage:
 
-    MergePopulationsByLoci(pops, newLoci)
+    MergePopulationsByLoci(pops, newNumLoci, newLociPos)
 "; 
 
 %ignore simuPOP::testGetinfoFromInd(population &pop);
