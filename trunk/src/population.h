@@ -804,10 +804,10 @@ namespace simuPOP
 			void mergePopulationByLoci(const population & pop, const vectoru & newLoci = vectoru(),
 				const vectorf & newLociPos=vectorf());
 
-			/// expand current population to another size
+			/// resize current population to another size
 			/// if propagate is true, copy individuals to new comers
 			/// i.e., 1,2,3 ==> 1,2,3,1,2,3,1
-			void expand(const vectorlu  & newSubPopSizes, bool propagate=false);
+			void resize(const vectorlu  & newSubPopSizes, bool propagate=false);
 			
 			/// \brief reorder subpopulations
 			/**
@@ -1762,7 +1762,8 @@ namespace simuPOP
 	population& MergePopulations(const vector<population*> & pops, const vectorlu & newSubPopSizes = vectorlu());
 
 	/// merge several populations by loci and create a new population
-	population& MergePopulationsByLoci(const vector<population*> & pops, const vectoru & newLoci = vectoru());
+	population& MergePopulationsByLoci(const vector<population*> & pops, 
+		const vectoru & newNumLoci = vectoru(), const vectorf & newLociPos = vectorf());
 
 	/// get info through ind.info()
 	vectorf testGetinfoFromInd(population& pop);

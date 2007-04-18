@@ -931,7 +931,7 @@ namespace simuPOP
 	{
 	}
 
-	void population::expand(const vectorlu & newSubPopSizes, bool propagate)
+	void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 	{
 	}
 
@@ -2181,7 +2181,8 @@ namespace simuPOP
 	}
 
 	/// merge several populations by loci and create a new population
-	population & MergePopulationsByLoci(const vector<population*> & pops, const vectoru & newNumLoci, const vectorf & newLociPos)
+	population & MergePopulationsByLoci(const vector<population*> & pops, 
+		const vectoru & newNumLoci, const vectorf & newLociPos)
 	{
 		DBG_FAILIF(pops.empty(), ValueError, "MergePopuations: empty population list is given");
 		population * res = new population(*pops[0]);
