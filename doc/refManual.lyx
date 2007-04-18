@@ -3677,7 +3677,7 @@ Merge several populations by loci to create a new population
 \begin_layout Standard
 
 \family typewriter
-p.expand
+p.resize
 \family default
 
 \begin_inset LatexCommand index
@@ -3696,7 +3696,7 @@ name "population!expand"
 \begin_inset Text
 
 \begin_layout Standard
-Expand population (add individuals)
+Expand or thrink population (add individuals)
 \end_layout
 
 \end_inset
