@@ -448,7 +448,7 @@ class Doxy2SWIG:
         for entry in self.content:
             if (entry.has_key('Description') and 'CPPONLY' in entry['Description']) or \
                (entry.has_key('Details') and 'CPPONLY' in entry['Details']) or \
-               'test' in entry['Name'] or '~' in entry['Name']:
+               'test' in entry['Name']:
                 entry['ignore'] = True
             else:
                 entry['ignore'] = False
