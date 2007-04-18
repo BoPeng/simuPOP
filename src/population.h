@@ -792,6 +792,7 @@ namespace simuPOP
 				be used for all ancestral generations, it may fail if ancestral generations have
 				different sizes. To overcome this problem, you can run merge without parameter,
 				and adjust subpopulation sizes generation by generation.
+			\note: population variables are not copied to pop
 			*/
 			void mergePopulation(const population & pop, const vectorlu & newSubPopSizes = vectorlu());
 
