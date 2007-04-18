@@ -67,7 +67,6 @@ using boost::serialization::make_nvp;
 
 #define SLAVE_CREATE 1
 #define SLAVE_DESTROY 2
-
 #endif
 
 namespace simuPOP
@@ -81,6 +80,7 @@ namespace simuPOP
 	///
 	/// an instance of this class is returned by
 	/// population::individuals() and population::individuals(subPop)
+	/// CPPONLY
 	class individualIterator
 	{
 		public:
@@ -781,6 +781,34 @@ namespace simuPOP
 			*/
 			void mergeSubPops(vectoru subPops=vectoru(), bool removeEmptySubPops=false);
 
+			/// merge population by individual
+			/** Merge individuals from pop to the current population.
+			Two population should have the same genotype structure. By default, subpopulations
+			of the merged population is kept. I.e., if you merge two populations with one
+			subpopulation, the resulting population will have two subpopulations. All ancestral
+			generations are also merged.
+				\param newSubPopSizes You can specify the subpopulation sizes. The overall size should
+				be the combined size of two populations. Because this parameter will
+				be used for all ancestral generations, it may fail if ancestral generations have
+				different sizes. To overcome this problem, you can run merge without parameter,
+				and adjust subpopulation sizes generation by generation.
+			*/
+			void mergePopulation(const population & pop, const vectorlu & newSubPopSizes = vectorlu());
+
+			/// merge population by loci
+			/** Two populations should have the same number of individuals. This also holds for
+				any ancestral generations. By default, chromosomes of pop is added to the current
+				population.	You can also specify new chromosome structure using parameter newLoci.
+				\param newLoci the new number of loci for the combined genotype structure.
+			*/
+			void mergePopulationByLoci(const population & pop, const vectoru & newLoci = vectoru(),
+				const vectorf & newLociPos=vectorf());
+
+			/// expand current population to another size
+			/// if propagate is true, copy individuals to new comers
+			/// i.e., 1,2,3 ==> 1,2,3,1,2,3,1
+			void expand(const vectorlu  & newSubPopSizes, bool propagate=false);
+			
 			/// \brief reorder subpopulations
 			/**
 			\param order new order of the subpopulations. For examples, 3 2 0 1
@@ -1098,13 +1126,13 @@ namespace simuPOP
 				m_vars.setDict(dict);
 			}
 
-			///
+			/// CPPONLY
 			bool hasVar(const string& name)
 			{
 				return m_vars.hasVar(name);
 			}
 
-			/// CPPNLY
+			/// CPPONLY
 			void removeVar(const string& name)
 			{
 				m_vars.removeVar(name);
@@ -1234,6 +1262,10 @@ namespace simuPOP
 				Expression("", stmts, m_vars.dict() ).evaluate();
 			}
 
+			/// rearrange loci on chromosomes, e.g. combine two chromosomes to one
+			/// This is used by mergeByLoci
+			void rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLociPos);
+			
 		private:
 
 			friend class boost::serialization::access;
@@ -1720,11 +1752,17 @@ namespace simuPOP
 #ifdef SIMUMPI
 			/// unique population id, used by slave nodes to identify a population
 			ULONG m_popID;
-#endif			
-			
+#endif
+
 	};
 
 	population& LoadPopulation(const string& file, const string& format="auto");
+
+	/// merge several populations and create a new population
+	population& MergePopulations(const vector<population*> & pops, const vectorlu & newSubPopSizes = vectorlu());
+
+	/// merge several populations by loci and create a new population
+	population& MergePopulationsByLoci(const vector<population*> & pops, const vectoru & newLoci = vectoru());
 
 	/// get info through ind.info()
 	vectorf testGetinfoFromInd(population& pop);

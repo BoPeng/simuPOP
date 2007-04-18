@@ -91,7 +91,6 @@ namespace simuPOP
 		DBG_FAILIF(m_subPopSize.size() > MaxSubPopID, ValueError,
 			"Number of subpopulations exceed maximum allowed subpopulation numbers");
 
-
 		// if specify subPop but not m_popSize
 		if( !subPop.empty() )
 		{
@@ -118,7 +117,7 @@ namespace simuPOP
 		}
 		m_popID = uniqueID();
 		// create the population on other nodes by sending other nodes the command and parameters
-		if (mpiRank() == 0) 
+		if (mpiRank() == 0)
 		{
 			for(size_t node = 1; node < nodes; ++node)
 			{
@@ -515,7 +514,7 @@ namespace simuPOP
 #ifdef SIMUMPI
 		// shift (starting point), size (total size)
 		// trunk size, pieces map
-		return Allele_Vec_As_NumArray(0, genoSize()*popSize(), 
+		return Allele_Vec_As_NumArray(0, genoSize()*popSize(),
 			totNumLoci(), locusMap());
 #else
 		// directly expose values. Do not copy data over.
@@ -923,6 +922,19 @@ namespace simuPOP
 			this->removeEmptySubPops();
 	}
 
+	void population::mergePopulation(const population & pop, const vectorlu & newSubPopSizes)
+	{
+	}
+
+	void population::mergePopulationByLoci(const population & pop, 
+		const vectoru & newLoci, const vectorf & newLociPos)
+	{
+	}
+
+	void population::expand(const vectorlu & newSubPopSizes, bool propagate)
+	{
+	}
+
 	void population::reorderSubPops(const vectoru& order, const vectoru& rank,
 		bool removeEmptySubPops)
 	{
@@ -963,7 +975,7 @@ namespace simuPOP
 		// reset ...
 		setSubPopByIndID();
 	}
-	
+
 	population& population::newPopByIndIDPerGen(const vectori& id, bool removeEmptySubPops)
 	{
 		// determine the size of needed individuals
@@ -996,7 +1008,7 @@ namespace simuPOP
 			}
 		}
 		DBG_DO(DBG_POPULATION, cout << "newPopByIndIDPerGen: New population size: " << sz << endl);
-		
+
 		// create a population with this size
 		population * pop = new population(0, ploidy(), numLoci(), sexChrom(), lociPos(), sz, 0,
 			alleleNames(), lociNames(), maxAllele(), infoFields(), chromMap());
@@ -1009,7 +1021,7 @@ namespace simuPOP
 		{
 			for(ULONG i = 0; i != id.size(); ++i)
 			{
-				if(id[i] >= 0) 
+				if(id[i] >= 0)
 				{
 					to[id[i]]->copyFrom(ind(i));
 					++to[id[i]];
@@ -1018,10 +1030,10 @@ namespace simuPOP
 		}
 		else
 		{
-			for(; from != indEnd(); ++from) 
+			for(; from != indEnd(); ++from)
 			{
 				int indID = from->subPopID();
-				if(indID >= 0) 
+				if(indID >= 0)
 				{
 					to[indID]->copyFrom(*from);
 					++to[indID];
@@ -1323,6 +1335,22 @@ namespace simuPOP
 		return *pop;
 	}
 
+
+	void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLociPos)
+	{
+		/// total number of loci can not change
+		UINT tnl = std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U);
+		DBG_FAILIF(tnl != totNumLoci(), ValueError,
+			"Re-arrange loci must keep the same total number of loci");
+		setGenoStructure(ploidy(), newNumLoci, sexChrom(), newLociPos,
+			alleleNames(), lociNames(), maxAllele(), infoFields(), 
+			chromMap());
+		// now set geno structure
+		for(ULONG i=0; i < m_popSize; ++i)
+			// set new geno structure
+			m_inds[i].setGenoStruIdx(genoStruIdx());
+	}
+	
 	void population::pushAndDiscard(population& rhs, bool force)
 	{
 		// time consuming!
@@ -2139,6 +2167,29 @@ namespace simuPOP
 		cout << "This feature is not supported in this platform" << endl;
 		return *new population(1);
 #endif
+	}
+
+	population & MergePopulations(const vector<population*> & pops, const vectorlu & newSubPopSizes)
+	{
+		DBG_FAILIF(pops.empty(), ValueError, "MergePopuations: empty population list is given");
+		population * res = new population(*pops[0]);
+		for (size_t i=1; i < pops.size(); ++i)
+			res->mergePopulation(*pops[i]);
+		if(!newSubPopSizes.empty())
+			res->setSubPopStru(newSubPopSizes);
+		return *res;
+	}
+
+	/// merge several populations by loci and create a new population
+	population & MergePopulationsByLoci(const vector<population*> & pops, const vectoru & newNumLoci, const vectorf & newLociPos)
+	{
+		DBG_FAILIF(pops.empty(), ValueError, "MergePopuations: empty population list is given");
+		population * res = new population(*pops[0]);
+		for (size_t i=1; i < pops.size(); ++i)
+			res->mergePopulationByLoci(*pops[i]);
+		if(!newNumLoci.empty())
+			res->rearrangeLoci(newNumLoci, newLociPos);
+		return *res;
 	}
 
 	vectorf testGetinfoFromInd(population& pop)

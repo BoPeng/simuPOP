@@ -891,7 +891,23 @@ class TestPopulation(unittest.TestCase):
             if os.path.isfile('test_std.txt'):
                 pop1 = LoadPopulation('test_std.txt')
                 self.assertEqual(pop, pop1)
-        
+
+
+    def testMergePopulation(self):
+        'Testing merge populations...'
+        pop = population(10)
+        pop1 = population(20)
+        pop2 = population(10)
+        pop.mergePopulation(pop1)
+        pop.mergePopulationByLoci(pop2)
+        pop3 = MergePopulation(pop, pop1)
+        pop4 = MergePopulationByLoci(pop, pop2)
+
+
+    def testExpandPopulation(self):
+        'Testing population expansion...'
+        pop = population(10)
+        pop.expand([20], propagate=True)
 
 if __name__ == '__main__':
     unittest.main()

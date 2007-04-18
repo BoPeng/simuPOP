@@ -224,6 +224,8 @@ namespace std
 
 %newobject LoadPopulation;
 %newobject LoadSimulator;
+%newobject MergePopulation;
+%newobject MergePopulationByLoci;
 
 %newobject simuPOP::population::newPopByIndID;
 %newobject simuPOP::population::newPopWithPartialLoci;
@@ -257,6 +259,7 @@ namespace std
 namespace std
 {
     %template(vectorop)     vector< simuPOP::Operator * >;
+	%template(vectorpop)    vector< simuPOP::population *>;
 }
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////
