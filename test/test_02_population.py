@@ -904,10 +904,27 @@ class TestPopulation(unittest.TestCase):
         pop4 = MergePopulationByLoci(pop, pop2)
 
 
-    def testExpandPopulation(self):
-        'Testing population expansion...'
-        pop = population(10)
-        pop.expand([20], propagate=True)
+    def testResizePopulation(self):
+        'Testing population resize...'
+        pop = population(subPop=[7,3,4], loci=[4,5,1])
+        InitByFreq(pop, [.2, .3, .5])
+        pop1 = pop.clone()
+        pop2 = pop.clone()
+        # resize error (number of subpop mismatch)
+        self.assertRaises(exceptions.ValueError, pop1.resize, [5,5])
+        # resize without propagation
+        pop1.resize([5, 5, 8], propagate=False)
+        for sp in range(pop1.numSubPop()):
+            for i in range(min(pop1.subPopSize(sp), pop.subPopSize(sp))):
+                self.assertEqual(pop1.individual(i, sp), pop.individual(i, sp))
+            for i in range(min(pop1.subPopSize(sp), pop.subPopSize(sp)), pop1.subPopSize(sp)):
+                self.assertEqual(pop1.individual(i, sp).arrGenotype(), [0]*20)
+        # resize with propagation
+        pop2.resize([5, 5, 8], propagate=True)
+        for sp in range(pop1.numSubPop()):
+            for i in range(pop2.subPopSize(sp)):
+                self.assertEqual(pop2.individual(i, sp), pop.individual(i%pop.subPopSize(sp), sp))
+
 
 if __name__ == '__main__':
     unittest.main()

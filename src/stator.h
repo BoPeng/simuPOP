@@ -172,6 +172,10 @@ namespace simuPOP
 			{
 			}
 
+			~pyExec()
+			{
+			}
+
 			/// this function is very important
 			virtual Operator* clone() const
 			{
@@ -314,6 +318,10 @@ namespace simuPOP
 			{
 			}
 
+			~statNumOfAffected()
+			{
+			}
+			
 			void activate(bool yes=true)
 			{
 				m_numOfAffected.resize(yes?1:0);
@@ -408,6 +416,9 @@ namespace simuPOP
 					}
 				}
 			}
+
+			/// destructor, nested vectors have to be cleared manually
+			~statAlleleFreq();
 
 			void addLocus(int locus, bool post, bool subPop, bool numOfAlleles);
 
@@ -578,6 +589,10 @@ namespace simuPOP
 				}
 				for(vectori::const_iterator it = atLoci.begin(); it != atLoci.end(); ++it)
 					m_calc.addLocus(*it, true, m_evalInSubPop, true);
+			}
+
+			~statNumOfAlleles()
+			{
 			}
 
 			// do nothing. m_calc.spply will be called by stat.
@@ -831,6 +846,10 @@ namespace simuPOP
 			{
 				for(size_t i=0; i<haploFreq.size(); ++i)
 					m_ifPost[i] = 1;
+			}
+
+			~statHaploFreq()
+			{
 			}
 
 			void addHaplotype(const vectori& haplo, bool post=false);

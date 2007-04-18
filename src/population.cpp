@@ -933,6 +933,55 @@ namespace simuPOP
 
 	void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 	{
+		DBG_FAILIF(newSubPopSizes.size() != numSubPop(), ValueError,
+			"Resize should give subpopulation size for each subpopulation");
+		
+		ULONG newPopSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
+		
+		// prepare new population 
+		vector<individual> newInds(newPopSize);
+		vectora newGenotype(genoSize() * newPopSize);
+		vectorinfo newInfo(newPopSize * infoSize());
+		// iterators ready
+		GenoIterator ptr = newGenotype.begin();
+		InfoIterator infoPtr = newInfo.begin();
+		UINT step = genoSize();
+		UINT infoStep = infoSize();
+		IndIterator it=indBegin();
+		// set pointers
+		for(ULONG i=0; i< newPopSize; ++i, ptr+=step, ++it, infoPtr+=infoStep)
+		{
+			newInds[i].setGenoStruIdx(genoStruIdx());
+			newInds[i].setGenoPtr( ptr );
+			newInds[i].setInfoPtr( infoPtr );
+		}
+		// copy stuff over
+		ULONG startSP = 0;
+		for(UINT sp=0; sp < numSubPop(); ++sp)
+		{
+			ULONG spSize = subPopSize(sp);
+			for(ULONG i =0, j = 0; i < newSubPopSizes[sp]; ++j, ++i)
+			{
+				// repeating?
+				if ((j / spSize) > 0 && ! propagate)
+					break;
+				newInds[startSP + i].copyFrom(ind(j % spSize, sp));
+			}
+			// point to the start of next subpopulation
+			startSP += newSubPopSizes[sp];
+		}
+		// now, switch!
+		m_genotype.swap(newGenotype);
+		m_info.swap(newInfo);
+		m_inds.swap(newInds);
+		m_popSize = newPopSize;
+		setShallowCopied(false);
+		setInfoOrdered(true);
+		m_subPopSize = newSubPopSizes;
+		/// rebuild index
+		size_t i = 1;
+		for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
+			m_subPopIndex[i] = m_subPopIndex[i-1] + m_subPopSize[i - 1];
 	}
 
 	void population::reorderSubPops(const vectoru& order, const vectoru& rank,
@@ -1339,8 +1388,7 @@ namespace simuPOP
 	void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLociPos)
 	{
 		/// total number of loci can not change
-		UINT tnl = std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U);
-		DBG_FAILIF(tnl != totNumLoci(), ValueError,
+		DBG_FAILIF(std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != totNumLoci(), ValueError,
 			"Re-arrange loci must keep the same total number of loci");
 		setGenoStructure(ploidy(), newNumLoci, sexChrom(), newLociPos,
 			alleleNames(), lociNames(), maxAllele(), infoFields(), 
