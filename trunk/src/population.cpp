@@ -924,6 +924,55 @@ namespace simuPOP
 
 	void population::mergePopulation(const population & pop, const vectorlu & newSubPopSizes)
 	{
+		DBG_FAILIF(genoStruIdx() != pop.genoStruIdx(), ValueError,
+			"Merged population should have the same genotype structure");
+		// calculate new population size
+		vectorlu newSSs;
+		newSS.insert(newSS.end(), m_subPopSize.begin(), m_subPopSize.end());
+		newSS.insert(newSS.end(), pop.m_subPopSize.begin(), pop.m_subPopSize.end());
+		// new population size
+		ULONG newPopSize = accumulate(newSS.begin(), newSS.end(), 0UL);
+		DBG_FAILIF(!newSubPopSizes.empty() && accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) != newPopSize,
+			ValueError, "newSubPopSizes should not change overall population size");
+
+		// prepare new population 
+		vector<individual> newInds(newPopSize);
+		vectora newGenotype(genoSize() * newPopSize);
+		vectorinfo newInfo(newPopSize * infoSize());
+		// iterators ready
+		GenoIterator ptr = newGenotype.begin();
+		InfoIterator infoPtr = newInfo.begin();
+		UINT step = genoSize();
+		UINT infoStep = infoSize();
+		IndIterator it=indBegin();
+		// set pointers
+		for(ULONG i=0; i< newPopSize; ++i, ptr+=step, ++it, infoPtr+=infoStep)
+		{
+			newInds[i].setGenoStruIdx(genoStruIdx());
+			newInds[i].setGenoPtr( ptr );
+			newInds[i].setInfoPtr( infoPtr );
+		}
+		// copy stuff over
+		for(ULONG i = 0; i < popSize(); ++i)
+				newInds[i].copyFrom(ind(i));
+		ULONG start = popSize();
+		for(ULONG i = 0; i < pop.popSize(); ++i)
+			newInds[i+start].copyFrom(pop.ind(i));
+		// now, switch!
+		m_genotype.swap(newGenotype);
+		m_info.swap(newInfo);
+		m_inds.swap(newInds);
+		m_popSize = newPopSize;
+		setShallowCopied(false);
+		setInfoOrdered(true);
+		if (newSubPopSizes.empty)
+			m_subPopSize = newSS;
+		else
+			m_subPopSize = newSubPopSizes;
+		/// rebuild index
+		size_t i = 1;
+		for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
+			m_subPopIndex[i] = m_subPopIndex[i-1] + m_subPopSize[i - 1];
 	}
 
 	void population::mergePopulationByLoci(const population & pop, 
