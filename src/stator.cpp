@@ -171,6 +171,10 @@ namespace simuPOP
 		return true;
 	}
 
+	statAlleleFreq::~statAlleleFreq()
+	{
+	}
+
 	void statAlleleFreq::addLocus(int locus, bool post, bool subPop, bool numOfAlleles)
 	{
 		vectori::const_iterator it;
@@ -243,6 +247,10 @@ namespace simuPOP
 				vectori& num = m_alleleNum[sp][loc];
 				// clear all current values
 				fill(num.begin(), num.end(),0);
+				// for convenience, gurantees the existence
+				// of num for 0 and 1...
+				if (num.size() < 2)
+					num.resize(2, 0);
 
 				// go through all alleles
 				for(GappedAlleleIterator a=pop.alleleBegin(loc, sp, false),
