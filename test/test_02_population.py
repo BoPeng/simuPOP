@@ -927,14 +927,14 @@ class TestPopulation(unittest.TestCase):
         #
         # test the Merge function
         pop = population(subPop=[7, 3, 4], loci=[4, 5, 1])
-        pop_ori = pop.clone()
         pop1 = population(subPop=[4, 5], loci=[4,5,1])
-        pop1_ori = pop1.clone()
         pop2 = population(subPop=[4, 5], loci=[4,1])
-        pop2_ori = pop2.clone()
         InitByFreq(pop, [.2, .3, .5])
+        pop_ori = pop.clone()
         InitByFreq(pop1, [.5, .5])
+        pop1_ori = pop1.clone()
         InitByFreq(pop2, [.2, .8])
+        pop2_ori = pop2.clone()
         #self.assertRaises(exceptions.ValueError, MergePopulations, [pop, pop2])
         #
         mp = MergePopulations(pops=[pop, pop1, pop1])
@@ -953,13 +953,78 @@ class TestPopulation(unittest.TestCase):
         #
         pop1 = pop.clone()
         #
-        pop2 = MergePopulation(pop, pop1)
+        pop2 = MergePopulations([pop, pop1])
         self.assertEqual(pop2.ancestralDepth(), 1)
         self.assertEqual(pop2.subPopSizes(), (4,5,4,5))
         pop2.useAncestralPop(1)
         self.assertEqual(pop2.subPopSizes(), (7,3,4,7,3,4))
         # test for keepAncestralPops (FIXME)
         
+    def testMergePopulationByLoci(self):
+        'Testing merge populations...'
+        pop = population(subPop=[7, 3, 4], loci=[4, 5, 1])
+        pop1 = population(subPop=[4, 5], loci=[4,5,1])
+        pop2 = population(subPop=[4, 5], loci=[4,1])
+        InitByFreq(pop, [.2, .3, .5])
+        InitByFreq(pop1, [.5, .5])
+        InitByFreq(pop2, [.2, .8])
+        # merge error (number of subpop mismatch)
+        self.assertRaises(exceptions.ValueError, pop.mergePopulationByLoci, pop2)
+        # merge without subpop size change
+        pop_ori = pop.clone()
+        pop.mergePopulationByLoci(pop1)
+        self.assertEqual(pop.subPopSizes(), (7,3,4,4,5))
+        for sp in range(3):
+            for i in range(pop.subPopSize(sp)):
+                self.assertEqual(pop.individual(i, sp), pop_ori.individual(i, sp))
+        for sp in range(2):
+            for i in range(pop.subPopSize(3+sp)):
+                self.assertEqual(pop.individual(i, sp+3), pop1.individual(i, sp))
+        # merge with new subpop sizes
+        pop = pop_ori.clone()
+        # total size should not change
+        self.assertRaises(exceptions.ValueError, pop.mergePopulationByLoci, pop1, newSubPopSizes=[5, 20])
+        #
+        pop.mergePopulationByLoci(pop1, newSubPopSizes=[9, 10,4])
+        self.assertEqual(pop.subPopSizes(), (9, 10, 4))
+        for i in range(pop_ori.popSize()):
+            self.assertEqual(pop.individual(i), pop_ori.individual(i))
+        for i in range(pop1.popSize()):
+            self.assertEqual(pop.individual(i+pop_ori.popSize()), pop1.individual(i))
+        #
+        # test the Merge function
+        pop = population(subPop=[7, 3, 4], loci=[4, 5, 1])
+        pop1 = population(subPop=[4, 5], loci=[4,5,1])
+        pop2 = population(subPop=[4, 5], loci=[4,1])
+        InitByFreq(pop, [.2, .3, .5])
+        pop_ori = pop.clone()
+        InitByFreq(pop1, [.5, .5])
+        pop1_ori = pop1.clone()
+        InitByFreq(pop2, [.2, .8])
+        pop2_ori = pop2.clone()
+        #self.assertRaises(exceptions.ValueError, MergePopulationByLocis, [pop, pop2])
+        #
+        mp = MergePopulationByLocis(pops=[pop, pop1, pop1])
+        # populaition not changed
+        self.assertEqual(pop, pop_ori)
+        self.assertEqual(pop1, pop1_ori)
+        pop.mergePopulationByLoci(pop1)
+        pop.mergePopulationByLoci(pop1)
+        self.assertEqual(pop, mp)
+        #
+        # test for merge of ancestral gen
+        pop = population(subPop=[7, 3, 4], loci=[4, 5, 1])
+        pop.setAncestralDepth(-1)
+        pop1 = population(subPop=[4, 5], loci=[4, 5, 1])
+        pop.pushAndDiscard(pop1)
+        #
+        pop1 = pop.clone()
+        #
+        pop2 = MergePopulationByLocis([pop, pop1])
+        self.assertEqual(pop2.ancestralDepth(), 1)
+        self.assertEqual(pop2.subPopSizes(), (4,5,4,5))
+        pop2.useAncestralPop(1)
+        self.assertEqual(pop2.subPopSizes(), (7,3,4,7,3,4))
 
 
     def testResizePopulation(self):
