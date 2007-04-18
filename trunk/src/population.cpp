@@ -1512,7 +1512,8 @@ namespace simuPOP
 		/// total number of loci can not change
 		DBG_FAILIF(std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != totNumLoci(), ValueError,
 			"Re-arrange loci must keep the same total number of loci");
-		setGenoStructure(ploidy(), newNumLoci, sexChrom(), newLociPos,
+		setGenoStructure(ploidy(), newNumLoci.empty()?numLoci():newNumLoci, 
+			sexChrom(), newLociPos.empty()?lociPos():newLociPos,
 			alleleNames(), lociNames(), maxAllele(), infoFields(),
 			chromMap());
 		for(int depth = ancestralDepth(); depth >=0; --depth)

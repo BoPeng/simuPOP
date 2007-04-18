@@ -364,12 +364,12 @@ def LoadPopulations(file, format='auto'):
     return pops
 
 def MergePopulations(pops, newSubPopSizes=[], keepAncestralPops=-1):
-	'merge several populations and create a new population'
+    'merge several populations and create a new population'
     if len(pops) == 0:
         raise exceptions.ValueError("MergePopuations: empty population list is given")
     res = pops[0].clone()
     for i in range(1, len(pops)):
-        res.mergePopulation(pops[i], keepAncestralPops)
+        res.mergePopulation(pops[i], keepAncestralPops=keepAncestralPops)
     if len(newSubPopSizes) != 0:
         if sum(newSubPopSizes) != res.popSize():
             raise exceptions.ValueError("MergePopulations: can not change total population size")
@@ -377,13 +377,13 @@ def MergePopulations(pops, newSubPopSizes=[], keepAncestralPops=-1):
     return res
 
 
-def MergePopulationsByLoci(pops, newNumLoci=[], newLociPos=[], keepAncestralPops=-1):
-	'merge several populations by loci and create a new population'
+def MergePopulationsByLoci(pops, newNumLoci=[], newLociPos=[]):
+    'merge several populations by loci and create a new population'
     if len(pops) == 0:
         raise exceptions.ValueError("MergePopuations: empty population list is given")
     res = pops[0].clone()
     for i in range(1, len(pops)):
-        res.mergePopulationByLoci(pops[i], keepAncestralPops)
+        res.mergePopulationByLoci(pops[i])
     if len(newNumLoci) != 0:
         if sum(newNumLoci) != res.totNumLoci():
             raise exceptions.ValueError("MergePopulationsByLoci: can not change total number of loci")
