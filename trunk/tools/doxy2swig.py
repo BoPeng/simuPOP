@@ -447,11 +447,15 @@ class Doxy2SWIG:
         # mark all entries with 'CPPONLY' in description or details as ignore
         for entry in self.content:
             if (entry.has_key('Description') and 'CPPONLY' in entry['Description']) or \
-               (entry.has_key('Details') and 'CPPONLY' in entry['Details']) or \
-               'test' in entry['Name']:
+               (entry.has_key('Details') and 'CPPONLY' in entry['Details']):
                 entry['ignore'] = True
             else:
                 entry['ignore'] = False
+        # destructor can not be CPPONLY, this will cause memory leak. Let us check this
+        for entry in self.content:
+            if entry['ignore'] and '~' in entry['Name']:
+                print "Desctructor of %s has CPPONLY. Please correct it." % entry['Name']
+                sys.exit(1)
         #for entry in self.content:
         #    if entry.has_key('description') and 'PLOIDY:' in entry['description'];
         #        if 'PLOIDY:ALL' in entry['description']:

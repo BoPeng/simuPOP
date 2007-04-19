@@ -1014,7 +1014,7 @@ namespace simuPOP
 
 		DBG_FAILIF(!newNumLoci.empty() && accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != gs1 + gs2,
 			ValueError, "Sum of newNumLoci should equal to " + toStr(gs1+gs2));
-		
+
 		DBG_FAILIF(!newLociPos.empty() && newLociPos.size() != gs1 + gs2,
 			ValueError, "newLociPos should have the length of combined total number of loci");
 
@@ -1058,6 +1058,115 @@ namespace simuPOP
 		if (!newNumLoci.empty() || !newLociPos.empty())
 			rearrangeLoci(newNumLoci, newLociPos);
 
+		setShallowCopied(false);
+	}
+
+	void population::insertBeforeLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names)
+	{
+		// use loci to keep the position of old loci in the new structure
+		vectoru loci(totNumLoci());
+		// 0, 1, 2, 3, 4, 5, 6, ...
+		for(size_t i=0; i<totNumLoci(); ++i)
+			loci[i] = i;
+		// can insert multiple loci at the same location
+		for(size_t i=0; i<idx.size(); ++i)
+		{
+			CHECKRANGEABSLOCUS(idx[i]);
+			// 0, 1, 2, 3, 4, 5, 6, ...
+			// if idx[i] = 3 (before index 3)
+			// 0, 1, 2, 4, 5, 6, 7, ...
+			for(size_t j = idx[i]; j < totNumLoci(); ++j)
+				loci[j] ++;
+		}
+
+		// obtain new genotype structure and set it
+		setGenoStructure(insertBeforeLociToGenoStru(idx, pos, names));
+
+		for(int depth = ancestralDepth(); depth >=0; --depth)
+		{
+			useAncestralPop(depth);
+			//
+			ULONG newPopGenoSize = genoSize() * m_popSize;
+			vectora newGenotype(newPopGenoSize);
+
+			// copy data over
+			GenoIterator newPtr = newGenotype.begin();
+			UINT pEnd = ploidy();
+			for(ULONG i=0; i< m_popSize; ++i)
+			{
+				// set new geno structure
+				m_inds[i].setGenoStruIdx(genoStruIdx());
+				GenoIterator oldPtr = m_inds[i].genoPtr();
+				// new genotype
+				m_inds[i].setGenoPtr(newPtr);
+				// copy each chromosome
+				for(UINT p=0; p < pEnd; ++p)
+				{
+					for(vectoru::iterator loc = loci.begin();
+						loc != loci.end(); ++loc)
+					{
+						newPtr[*loc] = *(oldPtr++);
+					}
+					newPtr += totNumLoci();		  // next ploidy
+				}
+			}
+			m_genotype.swap(newGenotype);
+		}
+		setShallowCopied(false);
+	}
+
+	void population::insertAfterLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names)
+	{
+		// use loci to keep the position of old loci in the new structure
+		vectoru loci(totNumLoci());
+		// 0, 1, 2, 3, 4, 5, 6, ...
+		for(size_t i=0; i<totNumLoci(); ++i)
+			loci[i] = i;
+		// can insert multiple loci at the same location
+		for(size_t i=0; i<idx.size(); ++i)
+		{
+			CHECKRANGEABSLOCUS(idx[i]);
+			// 0, 1, 2, 3, 4, 5, 6, ...
+			// if idx[i] = 3 (before index 3)
+			// 0, 1, 2, 3, 5, 6, 7, ...
+			if (idx[i] != totNumLoci()-1)
+				for(size_t j = idx[i]+1; j < totNumLoci(); ++j)
+					loci[j] ++;
+		}
+
+		// obtain new genotype structure and set it
+		setGenoStructure(insertAfterLociToGenoStru(idx, pos, names));
+
+		for(int depth = ancestralDepth(); depth >=0; --depth)
+		{
+			useAncestralPop(depth);
+			//
+			ULONG newPopGenoSize = genoSize() * m_popSize;
+			vectora newGenotype(newPopGenoSize);
+
+			// copy data over
+			GenoIterator newPtr = newGenotype.begin();
+			UINT pEnd = ploidy();
+			for(ULONG i=0; i< m_popSize; ++i)
+			{
+				// set new geno structure
+				m_inds[i].setGenoStruIdx(genoStruIdx());
+				GenoIterator oldPtr = m_inds[i].genoPtr();
+				// new genotype
+				m_inds[i].setGenoPtr(newPtr);
+				// copy each chromosome
+				for(UINT p=0; p < pEnd; ++p)
+				{
+					for(vectoru::iterator loc = loci.begin();
+						loc != loci.end(); ++loc)
+					{
+						newPtr[*loc] = *(oldPtr++);
+					}
+					newPtr += totNumLoci();		  // next ploidy
+				}
+			}
+			m_genotype.swap(newGenotype);
+		}
 		setShallowCopied(false);
 	}
 
@@ -1278,33 +1387,7 @@ namespace simuPOP
 #endif
 		// adjust order before doing anything
 		UINT newTotNumLoci = loci.size();
-#ifdef SIMUMPI
-		UINT oldTotNumLoci = localNumLoci();
-#else
 		UINT oldTotNumLoci = totNumLoci();
-#endif
-
-		// first, new genotype
-		// get a GenoStructure with parameters. GenoStructure may be shared by some populations
-		// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
-		vectoru newNumLoci;
-		vectorf newLociDist;
-		vectorstr newLociNames;
-		UINT curCh = 9999;						  // not 0, will be set to 0 soon.
-		for(vectoru::iterator loc = loci.begin();
-			loc != loci.end(); ++loc)
-		{
-			UINT ch = this->chromLocusPair(*loc).first;
-			if( newNumLoci.empty() || curCh != ch )
-			{
-				newNumLoci.push_back(1);
-				curCh = ch;
-			}
-			else
-				newNumLoci.back()++;
-			newLociDist.push_back( this->locusPos(*loc));
-			newLociNames.push_back( this->locusName(*loc));
-		}
 
 		// prepare data
 		//
@@ -1316,190 +1399,41 @@ namespace simuPOP
 		// genotype
 		// allocate new genotype and inds
 		// new geno structure is in effective now!
-#ifdef SIMUMPI
-		// for the MPI case, genotype may be moved from one node to another
-		//
-		// For this reason, geno structure is not set as in the non-MPI case.
-		// A temp population is created to hold new geno structure
-		population tmpPop = population(0, ploidy(), newNumLoci, sexChrom(), newLociDist,
-			vectorlu(0), 0, vectorstr(), newLociNames, maxAllele(), infoFields(), chromMap());
+		setGenoStructure(removeLociFromGenoStru(vectoru(), loci));
 
-		ULONG newPopGenoSize = tmpPop.localGenoSize() * m_popSize;
-		vectora newGenotype(newPopGenoSize);
-		// copy data over
-		GenoIterator ptr = newGenotype.begin();
-		UINT pEnd = ploidy();
-		// rank map
-		UINT rnk = mpiRank();
-		UINT oldBeginLocus = beginLocus();
-		vectoru oldRank(totNumLoci());
-		vectoru newRank(totNumLoci());
-		for(size_t i=0; i < totNumLoci(); ++i)
-			oldRank[i] = rankOfLocus(i);
-		for(size_t i=0; i < loci.size(); ++i)
-			newRank[loci[i]] = tmpPop.rankOfLocus(i);
-		//
-		for(ULONG i=0; i < m_popSize; ++i)
+		for(int depth = ancestralDepth(); depth >=0; --depth)
 		{
-			GenoIterator oldPtr = m_inds[i].genoPtr();
-			// new genotype
-			m_inds[i].setGenoPtr( ptr );
-			// copy each chromosome
-			for(UINT p=0; p < pEnd; ++p)
-			{
-				for(vectoru::iterator loc = loci.begin();
-					loc != loci.end(); ++loc)
-				{
-					// belong to the same rank
-					if (oldRank[*loc] == newRank[*loc])
-					{
-						if(newRank[*loc] == rnk)
-							*(ptr++) = oldPtr[*loc - oldBeginLocus];
-					}
-					else						  // cross rank copy
-					{
-						// bring allele from another node
-						if(rnk == newRank[*loc])
-						{
-							Allele ale;
-							// second parameter is tag
-							mpiComm().recv(oldRank[*loc], *loc, ale);
-							*(ptr++) = ale;
-						}
-						else if(rnk == oldRank[*loc])
-							mpiComm().send(newRank[*loc], *loc,
-									oldPtr[*loc - beginLocus()]);
-					}
-				}
-				oldPtr += oldTotNumLoci;		  // next ploidy
-			}
-		}
-		m_genotype.swap(newGenotype);
+			useAncestralPop(depth);
 
-		// ancestral populations?
-		for(size_t ap=0; ap < m_ancestralPops.size(); ++ap)
-		{
-			popData& p = m_ancestralPops[ap];
-			// set pointers
-			vector<individual>& inds = p.m_inds;
-			ULONG ps = inds.size();
-			vectora newGenotype(ps*pEnd*newTotNumLoci);
-			ptr = newGenotype.begin();
+			//
+			ULONG newPopGenoSize = genoSize() * m_popSize;
+			vectora newGenotype(newPopGenoSize);
+			// keep newInds();
 
-			for(ULONG i=0; i< ps; ++i)
+			// copy data over
+			GenoIterator newPtr = newGenotype.begin();
+			UINT pEnd = ploidy();
+			for(ULONG i=0; i< m_popSize; ++i)
 			{
 				// set new geno structure
-				inds[i].setGenoStruIdx(genoStruIdx());
-				GenoIterator oldPtr = inds[i].genoPtr();
+				m_inds[i].setGenoStruIdx(genoStruIdx());
+				GenoIterator oldPtr = m_inds[i].genoPtr();
 				// new genotype
-				inds[i].setGenoPtr( ptr );
+				m_inds[i].setGenoPtr( newPtr );
 				// copy each chromosome
 				for(UINT p=0; p < pEnd; ++p)
 				{
 					for(vectoru::iterator loc = loci.begin();
 						loc != loci.end(); ++loc)
 					{
-						// belong to the same rank
-						if (oldRank[*loc] = newRank[*loc])
-						{
-							if(newRank[*loc] == rnk)
-							{
-								*(ptr++) = oldPtr[*loc - oldBeginLocus];
-							}
-						}
-						else					  // cross rank copy
-						{
-							// bring allele from another node
-							if(rnk == newRank[*loc])
-							{
-								Allele ale;
-								// second parameter is tag
-								mpiComm().recv(oldRank[*loc], *loc, ale);
-								*(ptr++) = ale;
-							}
-							else if(rnk == oldRank[*loc])
-							{
-								mpiComm().send(newRank[*loc], *loc,
-									oldPtr[*loc - beginLocus()]);
-							}
-						}
+						*(newPtr++) = oldPtr[*loc];
 					}
 					oldPtr += oldTotNumLoci;	  // next ploidy
 				}
 			}
-			p.m_genotype.swap(newGenotype);
+			m_genotype.swap(newGenotype);
 		}
-		this->setGenoStructure(this->ploidy(), newNumLoci, this->sexChrom(), newLociDist,
-			this->alleleNames(), newLociNames, this->maxAllele(), this->infoFields(), this->chromMap() );
-		// now set geno structure
-		for(ULONG i=0; i< m_popSize; ++i)
-		{
-			// set new geno structure
-			m_inds[i].setGenoStruIdx(genoStruIdx());
-		}
-#else
-		this->setGenoStructure(this->ploidy(), newNumLoci, this->sexChrom(), newLociDist,
-			this->alleleNames(), newLociNames, this->maxAllele(), this->infoFields(), this->chromMap() );
-		ULONG newPopGenoSize = genoSize() * m_popSize;
-		vectora newGenotype(newPopGenoSize);
-		// keep newInds();
-
-		// copy data over
-		GenoIterator ptr = newGenotype.begin();
-		UINT pEnd = ploidy();
-		for(ULONG i=0; i< m_popSize; ++i)
-		{
-			// set new geno structure
-			m_inds[i].setGenoStruIdx(genoStruIdx());
-			GenoIterator oldPtr = m_inds[i].genoPtr();
-			// new genotype
-			m_inds[i].setGenoPtr( ptr );
-			// copy each chromosome
-			for(UINT p=0; p < pEnd; ++p)
-			{
-				for(vectoru::iterator loc = loci.begin();
-					loc != loci.end(); ++loc)
-				{
-					*(ptr++) = oldPtr[*loc];
-				}
-				oldPtr += oldTotNumLoci;		  // next ploidy
-			}
-		}
-		m_genotype.swap(newGenotype);
-
-		// ancestral populations?
-		for(size_t ap=0; ap < m_ancestralPops.size(); ++ap)
-		{
-			popData& p = m_ancestralPops[ap];
-			// set pointers
-			vector<individual>& inds = p.m_inds;
-			ULONG ps = inds.size();
-			vectora newGenotype(ps*pEnd*newTotNumLoci);
-			ptr = newGenotype.begin();
-
-			for(ULONG i=0; i< ps; ++i)
-			{
-				// set new geno structure
-				inds[i].setGenoStruIdx(genoStruIdx());
-				GenoIterator oldPtr = inds[i].genoPtr();
-				// new genotype
-				inds[i].setGenoPtr( ptr );
-				// copy each chromosome
-				for(UINT p=0; p < pEnd; ++p)
-				{
-					for(vectoru::iterator loc = loci.begin();
-						loc != loci.end(); ++loc)
-					{
-						*(ptr++) = oldPtr[*loc];
-					}
-					oldPtr += oldTotNumLoci;	  // next ploidy
-				}
-			}
-			p.m_genotype.swap(newGenotype);
-		}										  // all ancestral
-#endif
 		setShallowCopied(false);
-		setInfoOrdered(true);
 	}
 
 	/** get a new population with selected loci */
@@ -1518,7 +1452,7 @@ namespace simuPOP
 		/// total number of loci can not change
 		DBG_FAILIF(std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != totNumLoci(), ValueError,
 			"Re-arrange loci must keep the same total number of loci");
-		setGenoStructure(ploidy(), newNumLoci.empty()?numLoci():newNumLoci, 
+		setGenoStructure(ploidy(), newNumLoci.empty()?numLoci():newNumLoci,
 			sexChrom(), newLociPos.empty()?lociPos():newLociPos,
 			alleleNames(), lociNames(), maxAllele(), infoFields(),
 			chromMap());

@@ -337,7 +337,16 @@ namespace simuPOP
 			}
 
 			/// CPPONLY merge two genotype structure
-			GenoStructure& mergeGenoStru(size_t idx);
+			GenoStructure & mergeGenoStru(size_t idx) const;
+
+			/// CPPONLY
+			GenoStructure & removeLociFromGenoStru(const vectoru & remove=vectoru(), const vectoru & keep=vectoru());
+
+			/// CPPONLY add some loci to genotype structure
+			GenoStructure & insertBeforeLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const;
+
+			/// CPPONLY append some loci to genotype structure
+			GenoStructure & insertAfterLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const;
 
 			/// return the GenoStructure
 			/// CPPONLY
@@ -512,6 +521,24 @@ namespace simuPOP
 			vectorstr lociNames() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_lociNames;
+			}
+
+			/// return the index of a locus by locus name
+			UINT locusByName(const string name) const
+			{
+				const vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_lociNames;
+				vectorstr::const_iterator it = std::find(names.begin(), names.end(), name);
+				DBG_FAILIF(it == names.end(), ValueError, "Failed to find locus with name " + name);
+				return it - names.begin();
+			}
+
+			/// return an array of locus index by loci names
+			vectoru lociByNames(const vectorstr& names) const
+			{
+				vectoru indices;
+				for(vectorstr::const_iterator name = names.begin(); name != names.end(); ++name)
+					indices.push_back(locusByName(*name));
+				return indices;
 			}
 
 			UINT maxAllele() const

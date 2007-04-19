@@ -91,6 +91,10 @@ namespace simuPOP
 			{
 			}
 
+			~individualIterator()
+			{
+			}
+
 			individualIterator __iter__()
 			{
 				return *this;
@@ -164,7 +168,7 @@ namespace simuPOP
 			display purpose.
 			\param lociNames an array or a matrix (separated by chromosome) of names for
 			each loci. Default to "locX-X" where
-			X-X is chromosome-loci index starting from 1. This info is rarely used.
+			X-X is chromosome-loci index starting from 1.
 			\param maxAllele maximum allele number. Default to the max allowed allele states
 			of current library (standard or long allele version)
 			\param infoFields: name of information fields that will be attached to each
@@ -825,6 +829,54 @@ namespace simuPOP
 			*/
 			void mergePopulationByLoci(const population & pop, const vectoru & newNumLoci = vectoru(),
 				const vectorf & newLociPos=vectorf());
+
+			/// insert loci at given locations
+			/** insert loci at some given locations. Alleles in inserted locations will be zero.
+				\param idx An array of locus index. The loci will be inserted \em before each index.
+					If you need to append to the last locus, use insertAfterLoci. If your index is the first
+					locus of a chromosome, the inserted locus will become the first of that chromosome.
+					If you need to insert multiple locus before a locus, repeat that locus number.
+				\param pos An array of locus position. You need to make sure that the position
+					will make the inserted locus between adjacent markers.
+				\param names An array of locus name. If not given, some unique names like "insX_X" will be given.
+			*/
+			void insertBeforeLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names=vectorstr());
+
+			/// insert an locus at given location.
+			/**
+				insertBeforeLocus(idx, pos, name) is a shortcut to insertBeforeLoci([idx], [pos], [name])
+			*/
+			void insertBeforeLocus(UINT idx, double pos, const string & name="")
+			{
+				vectoru v_idx(1, idx);
+				vectorf v_pos(1, pos);
+				vectorstr v_name(1, name);
+				return insertBeforeLoci(v_idx, v_pos, v_name);
+			}
+
+			/// append loci at given locations
+			/** append loci at some given locations. Alleles in appended locations will be zero.
+				\param idx An array of locus index. The loci will be added \em after each index.
+					If you need to append to the first locus, use insertBeforeLoci. If your index is the last
+					locus of a chromosome, the appended locus will become the last of that chromosome.
+					If you need to append multiple locus after a locus, repeat that locus number.
+				\param pos An array of locus position. You need to make sure that the position
+					will make the appended locus between adjacent markers.
+				\param names An array of locus name. If not given, some unique names like "insX_X" will be given.
+			*/
+			void insertAfterLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names=vectorstr());
+
+			/// append an locus at given location.
+			/**
+				insertAfterLocus(idx, pos, name) is a shortcut to insertAfterLoci([idx], [pos], [name])
+			*/
+			void insertAfterLocus(UINT idx, double pos, const string & name="")
+			{
+				vectoru v_idx(1, idx);
+				vectorf v_pos(1, pos);
+				vectorstr v_name(1, name);
+				return insertAfterLoci(v_idx, v_pos, v_name);
+			}
 
 			/// resize population to another size
 			/** Resize population to given new subpopulation sizes.

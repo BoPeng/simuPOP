@@ -113,7 +113,7 @@ class TestUtility(unittest.TestCase):
 
 
     def testWeightedSampler(self):
-        'Test weighted sampler'
+        'Testing weighted sampler'
         sampler = Weightedsampler(rng(), [1, 2, 3, 4])
         num = []
         for i in range(100000):
@@ -122,12 +122,12 @@ class TestUtility(unittest.TestCase):
 
 
     def testGappedIterator(self):
-        'Test gapped iterator (internal)'
+        'Testing gapped iterator (internal)'
         self.assertEqual(testGappedIterator(), True)
             
     
     def TestLargePedigree(self):
-        'Test getting large pedigree, for simuUtils.ascertainPedigree'
+        'Testing getting large pedigree, for simuUtils.ascertainPedigree'
         import simuUtil
         pop = population(100, ancestralDepth=2, infoFields=['father_idx', 'mother_idx'])
         simu = simulator(pop, randomMating(numOffspring=0.3, mode=MATE_GeometricDistribution))
@@ -141,6 +141,16 @@ class TestUtility(unittest.TestCase):
         simuUtil.VC_merlin('ped')
 
         
+    def TestLeakLoadPopulation(self):
+        'Testing if loadPopulation leaks'
+        # run this and see if memory usage goes up continuously
+        pop = population(100, loci=[1000]*10)
+        Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        pop.savePopulation('test.bin')
+        for i in range(10000):
+            print 'Loading %i' % i
+            pop = LoadPopulation('test.bin')
+            print pop.dvars().alleleFreq[100][0]
 
 
 if __name__ == '__main__':

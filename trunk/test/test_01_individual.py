@@ -92,6 +92,13 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(pop.locusName(1), 'lb')
         self.assertEqual(pop.locusName(2), 'lc')
         self.assertRaises(exceptions.IndexError, pop.locusName, 5)
+        #
+        # test loci names
+        self.assertRaises(exceptions.ValueError, pop.locusByName, 'somename')
+        self.assertEqual(pop.locusByName('loc1-2'), 1)
+        self.assertRaises(exceptions.ValueError, pop.lociByNames, ['somename', 'other'])
+        self.assertEqual(pop.lociByNames(['loc1-2', 'loc2-1']), (1, 5))
+        
 
     def testIndGenotype(self):
         'Testing individual genotype manipulation function'

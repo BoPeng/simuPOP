@@ -623,7 +623,6 @@ namespace simuPOP
 			m_dict = rhs.m_dict;
 	}
 
-	/// CPPONLY
 	SharedVariables::~SharedVariables()
 	{
 		if(m_ownVars)
@@ -1195,6 +1194,8 @@ namespace simuPOP
 			// get value
 			PyObject* val = loadObj(vars, offset);
 			PyDict_SetItem(d, key, val);
+            Py_DECREF(key);
+            Py_DECREF(val);
 		}
 		offset++;								  // skip 'e'
 		return d;
@@ -1224,6 +1225,7 @@ namespace simuPOP
 		{
 			PyObject* elem = loadObj(vars, offset);
 			PyList_Append(d, elem);
+            Py_DECREF(elem);
 		}
 		offset++;								  // skip 'e'
 		return d;
@@ -1259,6 +1261,7 @@ namespace simuPOP
 		{
 			PyObject* elem = loadObj(vars, offset);
 			PyTuple_SET_ITEM(d, i, elem);
+            Py_DECREF(elem);
 		}
 		return d;
 	}
@@ -1421,7 +1424,6 @@ namespace simuPOP
 	// ////////////////////////////////////////////////////////////
 	// because of ref count, need to define copier
 
-	/// CPPONLY
 	Expression::Expression(const Expression& rhs)
 		: m_expr(rhs.m_expr), m_stmts(rhs.m_stmts), m_locals(rhs.m_locals)
 	{
@@ -1431,7 +1433,6 @@ namespace simuPOP
 			Py_INCREF(m_stmts);
 	}
 
-	/// CPPONLY
 	Expression::~Expression()
 	{
 		// release compiled code

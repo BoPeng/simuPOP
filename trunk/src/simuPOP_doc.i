@@ -1070,9 +1070,29 @@ Usage:
 
 %ignore simuPOP::Expression;
 
-%ignore simuPOP::Expression::Expression(const string &expr="", const string &stmts="", PyObject *locals=NULL);
+%feature("docstring") simuPOP::Expression::Expression "
 
-%ignore simuPOP::Expression::~Expression();
+Description:
+
+    simuPOP::Expression::Expression
+
+Usage:
+
+    Expression(expr=\"\", stmts=\"\", *locals=NULL)
+"; 
+
+%feature("docstring") simuPOP::Expression::~Expression "
+
+Description:
+
+    simuPOP::Expression::~Expression
+
+Usage:
+
+    x.~Expression()
+"; 
+
+%ignore simuPOP::Expression::Expression(const Expression &rhs);
 
 %ignore simuPOP::Expression::setLocalDict(PyObject *dict);
 
@@ -1109,9 +1129,29 @@ Usage:
 
 %ignore simuPOP::GappedIterator;
 
-%ignore simuPOP::GappedIterator::GappedIterator();
+%feature("docstring") simuPOP::GappedIterator::GappedIterator "
 
-%ignore simuPOP::GappedIterator::~GappedIterator();
+Description:
+
+    simuPOP::GappedIterator::GappedIterator
+
+Usage:
+
+    GappedIterator()
+"; 
+
+%ignore simuPOP::GappedIterator::GappedIterator(pointer p, difference_type s=1);
+
+%feature("docstring") simuPOP::GappedIterator::~GappedIterator "
+
+Description:
+
+    simuPOP::GappedIterator::~GappedIterator
+
+Usage:
+
+    x.~GappedIterator()
+"; 
 
 %feature("docstring") simuPOP::GappedIterator::ptr "
 
@@ -1215,6 +1255,8 @@ Usage:
 "; 
 
 %ignore simuPOP::GenoStruTrait::setGenoStruIdx(size_t idx);
+
+%ignore simuPOP::GenoStruTrait::mergeGenoStru(size_t idx);
 
 %ignore simuPOP::GenoStruTrait::genoStru() const ;
 
@@ -4791,7 +4833,16 @@ Usage:
     OstreamManager()
 "; 
 
-%ignore simuPOP::OstreamManager::~OstreamManager();
+%feature("docstring") simuPOP::OstreamManager::~OstreamManager "
+
+Description:
+
+    simuPOP::OstreamManager::~OstreamManager
+
+Usage:
+
+    x.~OstreamManager()
+"; 
 
 %ignore simuPOP::OstreamManager::getOstream(const string &name, bool readable, bool realAppend, bool useString);
 
@@ -5837,7 +5888,7 @@ Description:
 
 Usage:
 
-    x.mergePopulation(pop, newSubPopSizes=[])
+    x.mergePopulation(pop, newSubPopSizes=[], keepAncestralPops=-1)
 Arguments:
 
     newSubPopSizes: You can specify the subpopulation sizes. The
@@ -5848,6 +5899,7 @@ Arguments:
                     overcome this problem, you can run merge without
                     parameter, and adjust subpopulation sizes
                     generation by generation.
+    keepAncestralPops:ancestral populations to merge, default to all
 
 
 "; 
@@ -5856,23 +5908,16 @@ Arguments:
 
 Description:
 
-    simuPOP::population::mergePopulationByLoci
+    merge population by loci
 
 Usage:
 
-    x.mergePopulationByLoci(pop, newLoci=[], newLociPos=[])
+    x.mergePopulationByLoci(pop, newNumLoci=[], newLociPos=[])
 Arguments:
 
     newLoci:        the new number of loci for the combined genotype
                     structure.
 
-
-Details:
-
-    Two populations should have the same number of individuals. This
-    also holds for any ancestral generations. By default, chromosomes
-    of pop is added to the current population. You can also specify
-    new chromosome structure using parameter newLoci.
 
 "; 
 
@@ -5917,23 +5962,6 @@ Arguments:
 
 "; 
 
-%feature("docstring") simuPOP::population::newPopByIndIDPerGen "
-
-Description:
-
-    simuPOP::population::newPopByIndIDPerGen
-
-Usage:
-
-    x.newPopByIndIDPerGen(id=[], removeEmptySubPops=False)
-Details:
-
-    form a new population according to info, info can be given
-    directly keepAncestralPops=-1: keep all 0: only current 1: keep
-    one ...
-
-"; 
-
 %feature("docstring") simuPOP::population::newPopByIndID "
 
 Description:
@@ -5947,7 +5975,8 @@ Usage:
 Details:
 
     form a new population according to info, info can be given
-    directly
+    directly keepAncestralPops=-1: keep all 0: only current 1: keep
+    one ...
 
 "; 
 
@@ -8590,7 +8619,17 @@ Usage:
 
 %ignore simuPOP::SharedVariables::swap(SharedVariables &rhs);
 
-%ignore simuPOP::SharedVariables::~SharedVariables();
+%feature("docstring") simuPOP::SharedVariables::~SharedVariables "
+
+Description:
+
+    destructor I can not clear dict here since a resize of g_vars will
+    copy this object and hence call this destructore.
+
+Usage:
+
+    x.~SharedVariables()
+"; 
 
 %ignore simuPOP::SharedVariables::clear();
 
@@ -10246,7 +10285,16 @@ Usage:
     StreamProvider(output, outputExpr)
 "; 
 
-%ignore simuPOP::StreamProvider::~StreamProvider();
+%feature("docstring") simuPOP::StreamProvider::~StreamProvider "
+
+Description:
+
+    simuPOP::StreamProvider::~StreamProvider
+
+Usage:
+
+    x.~StreamProvider()
+"; 
 
 %ignore simuPOP::StreamProvider::setOutput(const string &output, const string &outputExpr);
 
@@ -10890,31 +10938,27 @@ Usage:
     LoadPopulation(file, format)
 "; 
 
-%feature("docstring") simuPOP::MergePopulations "
+%feature("docstring") simuPOP::testGetinfoFromInd "
 
 Description:
 
-    merge several populations and create a new population
+    get info through ind.info()
 
 Usage:
 
-    MergePopulations(pops, newSubPopSizes)
+    testGetinfoFromInd(pop)
 "; 
 
-%feature("docstring") simuPOP::MergePopulationsByLoci "
+%feature("docstring") simuPOP::testGetinfoFromPop "
 
 Description:
 
-    merge several populations by loci and create a new population
+    get info through GappedInfoIterator
 
 Usage:
 
-    MergePopulationsByLoci(pops, newNumLoci, newLociPos)
+    testGetinfoFromPop(pop, order)
 "; 
-
-%ignore simuPOP::testGetinfoFromInd(population &pop);
-
-%ignore simuPOP::testGetinfoFromPop(population &pop, bool order);
 
 %feature("docstring") simuPOP::LoadSimulator "
 
@@ -11353,7 +11397,16 @@ Details:
 
 "; 
 
-%ignore simuPOP::testGappedIterator();
+%feature("docstring") simuPOP::testGappedIterator "
+
+Description:
+
+    simuPOP::testGappedIterator
+
+Usage:
+
+    testGappedIterator()
+"; 
 
 %ignore std::pow3(unsigned n);
 
