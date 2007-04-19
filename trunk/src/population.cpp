@@ -1012,6 +1012,12 @@ namespace simuPOP
 		UINT gs1 = totNumLoci();
 		UINT gs2 = pop.totNumLoci();
 
+		DBG_FAILIF(!newNumLoci.empty() && accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != gs1 + gs2,
+			ValueError, "Sum of newNumLoci should equal to " + toStr(gs1+gs2));
+		
+		DBG_FAILIF(!newLociPos.empty() && newLociPos.size() != gs1 + gs2,
+			ValueError, "newLociPos should have the length of combined total number of loci");
+
 		// obtain new genotype structure and set it
 		setGenoStructure(mergeGenoStru(pop.genoStruIdx()));
 
@@ -1049,7 +1055,7 @@ namespace simuPOP
 		}
 
 		// reset genoStructure again
-		if (!newNumLoci.empty() and ! newLociPos.empty())
+		if (!newNumLoci.empty() || !newLociPos.empty())
 			rearrangeLoci(newNumLoci, newLociPos);
 
 		setShallowCopied(false);
