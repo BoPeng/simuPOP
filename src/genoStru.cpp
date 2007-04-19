@@ -87,6 +87,8 @@ namespace simuPOP
 		}
 #endif
 
+		DBG_ASSERT(m_lociNames.empty() || m_lociNames.size() == m_totNumLoci, ValueError,
+			"Loci names, if specified, should be given to every loci");
 		if( m_lociNames.empty())
 		{
 			m_lociNames.resize(m_totNumLoci);
@@ -94,8 +96,17 @@ namespace simuPOP
 				for (j = 0; j < m_numLoci[i]; j++)
 					m_lociNames[m_chromIndex[i]+j] = "loc"+ toStr(i+1) + "-" + toStr(j+1);
 		}
-		DBG_ASSERT( m_lociNames.size() == m_totNumLoci, ValueError,
-			"Loci names, if specified, should be given to every loci");
+#ifndef OPTIMIZED
+		else
+		{
+			// check uniqueness of the names
+			for(i = 0; i< m_totNumLoci; ++i)
+				for(j=i+1; j < m_totNumLoci; ++j)
+					if (m_lociNames[i] == m_lociNames[j])
+						throw ValueError("Given loci names should be unique");
+		}
+#endif
+
 		DBG_WARNING( (!m_alleleNames.empty()) && m_alleleNames.size() != m_maxAllele+1,
 			"Not all allele names are given. ");
 
@@ -203,7 +214,7 @@ namespace simuPOP
 		m_genoStruIdx = s_genoStruRepository.size()-1;
 	}
 
-	GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx)
+	GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx) const
 	{
 		GenoStructure & gs1 = s_genoStruRepository[m_genoStruIdx];
 		GenoStructure & gs2 = s_genoStruRepository[idx];
@@ -220,10 +231,178 @@ namespace simuPOP
 		DBG_FAILIF(gs1.m_alleleNames != gs2.m_alleleNames, ValueError,
 			"Merged population should have the same allele names (sorry, no allele names at each locus for now)");
 		vectorstr lociNames = gs1.m_lociNames;
-		lociNames.insert(lociNames.end(), gs2.m_lociNames.begin(), gs2.m_lociNames.end());
+		// add locus name, if there is no duplicate, fine. Otherwise, add '_' to the names.
+		for(vectorstr::const_iterator it=gs2.m_lociNames.begin(); it != gs2.m_lociNames.end(); ++it)
+		{
+			// no duplicate, good
+			if(std::find(lociNames.begin(), lociNames.end(), *it) == lociNames.end())
+				lociNames.push_back(*it);
+			else
+			{
+				int n = 1;
+				while(true)
+				{
+					string name = *it + "_" + toStr(n++);
+					if(std::find(lociNames.begin(), lociNames.end(), name) == lociNames.end())
+					{
+						lociNames.push_back(name);
+						break;
+					}
+				}
+			}
+		}
 		UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
 		return * new GenoStructure(gs1.m_ploidy, loci, gs2.m_sexChrom, lociPos,
 			gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields, gs1.m_chromMap);
+	}
+
+	/// CPPONLY
+	GenoStructure & GenoStruTrait::removeLociFromGenoStru(const vectoru & remove, const vectoru & keep)
+	{
+		vectoru loci;
+		DBG_FAILIF(remove.empty() && keep.empty(), ValueError,
+			"Please specify either remove or keep");
+		if (remove.empty())
+			loci = keep;
+		else
+		{
+			for(size_t loc = 0; loc < totNumLoci(); ++loc)
+				// if not removed
+				if( find(remove.begin(), remove.end(), loc) == remove.end())
+					loci.push_back(loc);
+		}
+		// loci are now remainining loci
+		vectoru newNumLoci;
+		vectorf newLociDist;
+		vectorstr newLociNames;
+		UINT curCh = 999999;					  // not 0, will be set to 0 soon.
+		for(vectoru::iterator loc = loci.begin();
+			loc != loci.end(); ++loc)
+		{
+			UINT ch = chromLocusPair(*loc).first;
+			if( newNumLoci.empty() || curCh != ch )
+			{
+				newNumLoci.push_back(1);
+				curCh = ch;
+			}
+			else
+				newNumLoci.back()++;
+			newLociDist.push_back(locusPos(*loc));
+			newLociNames.push_back(locusName(*loc));
+		}
+		return * new GenoStructure(ploidy(), newNumLoci, sexChrom(), newLociDist,
+			alleleNames(), newLociNames, maxAllele(), infoFields(), chromMap());
+	}
+
+	/// CPPONLY add some loci to genotype structure
+	GenoStructure & GenoStruTrait::insertBeforeLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const
+	{
+		DBG_FAILIF(idx.size() != pos.size(), ValueError,
+			"Index and position should have the same length");
+		DBG_FAILIF(!names.empty() && idx.size() != names.size(), ValueError,
+			"LociNames, if given, should be the same length as idx");
+
+		GenoStructure & gs = s_genoStruRepository[m_genoStruIdx];
+
+		vectoru loci = gs.m_numLoci;
+		vectorf lociPos = gs.m_lociPos;
+		for(size_t i=0; i<idx.size(); ++i)
+		{
+			CHECKRANGEABSLOCUS(idx[i]);
+			lociPos.insert(lociPos.begin() + idx[i], pos[i]);
+			loci[chromLocusPair(idx[i]).first]++;
+		}
+		vectorstr lociNames = gs.m_lociNames;
+		// add locus name, if there is no duplicate, fine. Otherwise, add '_' to the names.
+		if (names.empty())
+		{
+			for(size_t i=0; i<idx.size(); ++i)
+			{
+				int ch = chromLocusPair(idx[i]).first + 1;
+				int loc = chromLocusPair(idx[i]).second + 1;
+				string base_name = "ins" + toStr(ch) + "_" + toStr(loc) + "_";
+				int n = 1;
+				while(true)
+				{
+					string name = base_name + toStr(n++);
+					if(std::find(lociNames.begin(), lociNames.end(), name) == lociNames.end())
+					{
+						lociNames.insert(lociNames.begin() + idx[i], name);
+						break;
+					}
+				}
+			}
+		}
+		else									  // given names
+		{
+			for(size_t i=0; i<idx.size(); ++i)
+			{
+				if(std::find(lociNames.begin(), lociNames.end(), names[i]) == lociNames.end())
+					lociNames.insert(lociNames.begin() + idx[i], names[i]);
+				else
+					throw ValueError("Locus name " + names[i] + " already exists.");
+			}
+		}
+		return * new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, lociPos,
+			gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields, gs.m_chromMap);
+	}
+
+	/// CPPONLY append some loci to genotype structure
+	GenoStructure & GenoStruTrait::insertAfterLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const
+	{
+		DBG_FAILIF(idx.size() != pos.size(), ValueError,
+			"Index and position should have the same length");
+		DBG_FAILIF(!names.empty() && idx.size() != names.size(), ValueError,
+			"LociNames, if given, should be the same length as idx");
+
+		GenoStructure & gs = s_genoStruRepository[m_genoStruIdx];
+
+		vectoru loci = gs.m_numLoci;
+		vectorf lociPos = gs.m_lociPos;
+		for(size_t i=0; i<idx.size(); ++i)
+		{
+			CHECKRANGEABSLOCUS(idx[i]);
+			if(idx[i] == totNumLoci()-1)
+				lociPos.push_back(pos[i]);
+			else
+				lociPos.insert(lociPos.begin() + idx[i] + 1, pos[i]);
+			loci[chromLocusPair(idx[i]).first]++;
+		}
+		vectorstr lociNames = gs.m_lociNames;
+		// add locus name, if there is no duplicate, fine. Otherwise, add '_' to the names.
+		if (names.empty())
+		{
+			for(size_t i=0; i<idx.size(); ++i)
+			{
+				int ch = chromLocusPair(idx[i]).first + 1;
+				int loc = chromLocusPair(idx[i]).second + 1;
+				string base_name = "app" + toStr(ch) + "_" + toStr(loc) + "_";
+				int n = 1;
+				while(true)
+				{
+					string name = base_name + toStr(n++);
+					if(std::find(lociNames.begin(), lociNames.end(), name) == lociNames.end())
+					{
+						lociNames.insert(lociNames.begin() + idx[i], name);
+						break;
+					}
+				}
+			}
+		}
+		else									  // given names
+		{
+			for(size_t i=0; i<idx.size(); ++i)
+			{
+				if(std::find(lociNames.begin(), lociNames.end(), names[i]) == lociNames.end())
+				{
+					lociNames.insert(lociNames.begin() + idx[i], names[i]);
+				}
+				else
+					throw ValueError("Locus name " + names[i] + " already exists.");
+			}
+		}
+		return * new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, lociPos,
+			gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields, gs.m_chromMap);
 	}
 
 	void GenoStruTrait::setGenoStructure(GenoStructure& rhs)

@@ -225,7 +225,6 @@ namespace simuPOP
 			typedef Ref                        reference;
 			typedef Ptr                        pointer;
 
-			/// CPPONLY
 			GappedIterator():m_step(1)
 			// , m_ptr(NULL) // do not initialize reference.
 			{
@@ -252,7 +251,6 @@ namespace simuPOP
 				return *this;
 			}
 
-			/// CPPONLY
 			~GappedIterator()
 			{
 			}
@@ -504,7 +502,7 @@ namespace simuPOP
 				std::swap(m_ownVars, rhs.m_ownVars);
 			}
 
-			/// CPPONLY  destructor
+			/// destructor
 			/// I can not clear dict here since
 			/// a resize of g_vars will copy this object and
 			/// hence call this destructore.
@@ -708,7 +706,6 @@ namespace simuPOP
 				class Expression
 				{
 					public:
-				/// CPPONLY
 							Expression(const string& expr="", const string& stmts="",
 								PyObject* locals=NULL)
 								: m_expr(NULL), m_stmts(NULL), m_locals(locals)
@@ -724,10 +721,10 @@ namespace simuPOP
 					compileStmts(stmts);
 				}
 
-				/// CPPONLY
 				~Expression();
 
 				/// Copy constructor, need to be defined because of ref count issue.
+				/// CPPONLY
 				Expression(const Expression& rhs);
 
 				/// CPPONLY
@@ -878,7 +875,6 @@ namespace simuPOP
 			/// CPPONLY
 			OstreamManager();
 
-			/// CPPONLY
 			~OstreamManager();
 
 			/// CPPONLY get an ostream pointer from a name.
@@ -948,7 +944,6 @@ namespace simuPOP
 			/// CPPONLY constructor. set the name parser
 			StreamProvider(const string& output, const string& outputExpr);
 
-			/// CPPONLY destructor
 			~StreamProvider(){}
 
 			/// CPPONLY reset format string
