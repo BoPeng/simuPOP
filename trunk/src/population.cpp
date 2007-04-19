@@ -1406,7 +1406,6 @@ namespace simuPOP
 		}
 #endif
 		// adjust order before doing anything
-		UINT newTotNumLoci = loci.size();
 		UINT oldTotNumLoci = totNumLoci();
 
 		// prepare data
