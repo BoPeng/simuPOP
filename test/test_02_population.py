@@ -1044,9 +1044,118 @@ class TestPopulation(unittest.TestCase):
         pop = population(subPop=[7,3,4], loci=[4,5,1])
         InitByFreq(pop, [.2, .3, .5])
         pop1 = pop.clone()
-        Dump(pop)
-        pop.insertBeforeLoci(idx=[0, 5], pos=[0,0])
-        Dump(pop)
+        self.assertRaises(exceptions.ValueError, pop.insertBeforeLoci, idx=[0,5], pos=[0,0.5])
+        # recover pop.
+        pop = pop1.clone()
+        pop.insertBeforeLoci(idx=[0, 5], pos=[0,1.5])
+        self.assertEqual(pop.locusName(6), 'ins2_2_1')
+        # compare
+        for i in range(pop.popSize()):
+            ind = pop.individual(i)
+            ind1 = pop1.individual(i)
+            for j in range(pop.ploidy()):
+                self.assertEqual(ind.allele(0, j), 0)
+                self.assertEqual(ind.allele(1, j), ind1.allele(0, j))
+                self.assertEqual(ind.allele(2, j), ind1.allele(1, j))
+                self.assertEqual(ind.allele(3, j), ind1.allele(2, j))
+                self.assertEqual(ind.allele(4, j), ind1.allele(3, j))
+                self.assertEqual(ind.allele(5, j), ind1.allele(4, j))
+                self.assertEqual(ind.allele(6, j), 0)
+                self.assertEqual(ind.allele(7, j), ind1.allele(5, j))
+                self.assertEqual(ind.allele(8, j), ind1.allele(6, j))
+                self.assertEqual(ind.allele(9, j), ind1.allele(7, j))
+        pop.insertBeforeLocus(idx=pop.totNumLoci()-1, pos=0.5)
+        self.assertEqual(pop.locusName(11), 'ins3_1_1')
+        for i in range(pop.popSize()):
+            ind = pop.individual(i)
+            ind1 = pop1.individual(i)
+            for j in range(pop.ploidy()):
+                self.assertEqual(ind.allele(11, j), 0)
+        # insert multiple loci before the same location.
+        # recover pop.
+        pop = pop1.clone()
+        pop.insertBeforeLoci(idx=[0, 5, 5, 9, 9], pos=[0,1.3, 1.5, 0.5, 0.6])
+        self.assertEqual(pop.locusName(6), 'ins2_2_1')
+        # compare
+        for i in range(pop.popSize()):
+            ind = pop.individual(i)
+            ind1 = pop1.individual(i)
+            for j in range(pop.ploidy()):
+                self.assertEqual(ind.allele(0, j), 0)
+                self.assertEqual(ind.allele(1, j), ind1.allele(0, j))
+                self.assertEqual(ind.allele(2, j), ind1.allele(1, j))
+                self.assertEqual(ind.allele(3, j), ind1.allele(2, j))
+                self.assertEqual(ind.allele(4, j), ind1.allele(3, j))
+                self.assertEqual(ind.allele(5, j), ind1.allele(4, j))
+                self.assertEqual(ind.allele(6, j), 0)
+                self.assertEqual(ind.allele(7, j), 0)
+                self.assertEqual(ind.allele(8, j), ind1.allele(5, j))
+                self.assertEqual(ind.allele(9, j), ind1.allele(6, j))
+                self.assertEqual(ind.allele(10, j), ind1.allele(7, j))
+                self.assertEqual(ind.allele(11, j), ind1.allele(8, j))
+                self.assertEqual(ind.allele(12, j), 0)
+                self.assertEqual(ind.allele(13, j), 0)
+                self.assertEqual(ind.allele(14, j), ind1.allele(9, j))
+        # test ancestral population FIXME
+
+    def  testInsertAfterLoci(self):
+        'Testing insert before loci of a population'
+        pop = population(subPop=[7,3,4], loci=[4,5,1])
+        InitByFreq(pop, [.2, .3, .5])
+        pop1 = pop.clone()
+        self.assertRaises(exceptions.ValueError, pop.insertAfterLoci, idx=[0,5], pos=[0,0.5])
+        # recover pop.
+        pop = pop1.clone()
+        pop.insertAfterLoci(idx=[0, 5], pos=[1.5,2.5])
+        self.assertEqual(pop.locusName(7), 'app2_2_1')
+        # compare
+        for i in range(pop.popSize()):
+            ind = pop.individual(i)
+            ind1 = pop1.individual(i)
+            for j in range(pop.ploidy()):
+                self.assertEqual(ind.allele(0, j), ind1.allele(0, j))
+                self.assertEqual(ind.allele(1, j), 0)
+                self.assertEqual(ind.allele(2, j), ind1.allele(1, j))
+                self.assertEqual(ind.allele(3, j), ind1.allele(2, j))
+                self.assertEqual(ind.allele(4, j), ind1.allele(3, j))
+                self.assertEqual(ind.allele(5, j), ind1.allele(4, j))
+                self.assertEqual(ind.allele(6, j), ind1.allele(5, j))
+                self.assertEqual(ind.allele(7, j), 0)
+                self.assertEqual(ind.allele(8, j), ind1.allele(6, j))
+                self.assertEqual(ind.allele(9, j), ind1.allele(7, j))
+        pop.insertAfterLocus(idx=pop.totNumLoci()-1, pos=99)
+        self.assertEqual(pop.locusName(12), 'app3_1_1')
+        for i in range(pop.popSize()):
+            ind = pop.individual(i)
+            ind1 = pop1.individual(i)
+            for j in range(pop.ploidy()):
+                self.assertEqual(ind.allele(12, j), 0)
+        # insert multiple loci before the same location.
+        # recover pop.
+        pop = pop1.clone()
+        pop.insertAfterLoci(idx=[0, 5, 5, 9, 9], pos=[1.5, 2.3, 2.5, 1.5, 1.6])
+        self.assertEqual(pop.locusName(7), 'app2_2_1')
+        # compare
+        for i in range(pop.popSize()):
+            ind = pop.individual(i)
+            ind1 = pop1.individual(i)
+            for j in range(pop.ploidy()):
+                self.assertEqual(ind.allele(0, j), ind1.allele(0, j))
+                self.assertEqual(ind.allele(1, j), 0)
+                self.assertEqual(ind.allele(2, j), ind1.allele(1, j))
+                self.assertEqual(ind.allele(3, j), ind1.allele(2, j))
+                self.assertEqual(ind.allele(4, j), ind1.allele(3, j))
+                self.assertEqual(ind.allele(5, j), ind1.allele(4, j))
+                self.assertEqual(ind.allele(6, j), ind1.allele(5, j))
+                self.assertEqual(ind.allele(7, j), 0)
+                self.assertEqual(ind.allele(8, j), 0)
+                self.assertEqual(ind.allele(9, j), ind1.allele(6, j))
+                self.assertEqual(ind.allele(10, j), ind1.allele(7, j))
+                self.assertEqual(ind.allele(11, j), ind1.allele(8, j))
+                self.assertEqual(ind.allele(12, j), ind1.allele(9, j))
+                self.assertEqual(ind.allele(13, j), 0)
+                self.assertEqual(ind.allele(14, j), 0)
+        # test ancestral population FIXME
 
 
     def testResizePopulation(self):
