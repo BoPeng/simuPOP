@@ -1039,9 +1039,18 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop2.ancestralDepth(), 1)
         self.assertEqual(pop2.numLoci(), (4,5,1,4,5,1))
 
+    def testInsertBeforeLoci(self):
+        'Testing insert before loci of a population'
+        pop = population(subPop=[7,3,4], loci=[4,5,1])
+        InitByFreq(pop, [.2, .3, .5])
+        pop1 = pop.clone()
+        Dump(pop)
+        pop.insertBeforeLoci(idx=[0, 5], pos=[0,0])
+        Dump(pop)
+
 
     def testResizePopulation(self):
-        'Testing population resize...'
+        'Testing population resize'
         pop = population(subPop=[7,3,4], loci=[4,5,1])
         InitByFreq(pop, [.2, .3, .5])
         pop1 = pop.clone()
