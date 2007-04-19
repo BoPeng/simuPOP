@@ -20,11 +20,12 @@
 Introduction
 =============
 
-NOTE: this version (> rev193) of simuComplexDisease.py uses a significantly
-different mechanism to control the allele frequency of disease susceptibility
-loci. I will describe the method briefly here. More details please see 
-an unpublished paper. :-) If you prefer the previous method, you should set all
-your DSL as free DSL, meaning no pre-simulated trajectories.
+This script uses a significantly different mechanism to control the allele 
+frequency of disease susceptibility loci than simuForward.py. I will describe 
+the method briefly here. More details please see 
+
+    Peng B, Amos CI, Kimmel M (2007) Forward-Time Simulations of Human 
+    Populations with Complex Diseases. PLoS Genet 3(3): e47
 
 This program simulates the evolution of a complex common disease under the 
 influence of mutation, migration, recombination and population size change. 
@@ -32,28 +33,22 @@ Starting from a small founder population, each simulation will go through
 the following steps:
 
     1. Simulate the trajectory of allele frequency using specified disease model.
-        except for the free DSL.
-    2. After determining mutant age, start simulation several thousands generations
-         before the disease mutants are introduced. 
-    3. Burn-in the population with mutation and recombination
-    4. Introduce disease alleles and evolve the population with pre-simulated 
-         allele frequency. The free DSL will be brought to high allele frequency
-         manually (by strong positive selection.)
-    5. Population structure and migration are specified along with demographic
-         models. The population can be split into several equally-sized subpopulations
-         and then evolve independently, or with migration. 
-
-NOTE: free DSL is not yet implemented.
+    2. Burn-in the population with mutation and recombination
+    3. Introduce disease alleles and evolve the population with pre-simulated 
+       allele frequency.
+    4. Population structure and migration are specified along with demographic
+       models. The population can be split into several equally-sized subpopulations
+       and then evolve independently, or with migration. 
 
 The result of the simulation is a large multi-generation population. To analyze 
 the population, you will typically need to 
 
     1. Apply a penetrance function to the population and determine the affectedness
-        for each individual
+       for each individual
 
     2. Draw Population and/or pedigree based samples and save in popular 
-         formats so that the samples can be analyzed by other software like
-         genehunter.
+       formats so that the samples can be analyzed by other software like
+       genehunter.
 
 Another script analComplexDisease gives excellent examples on how to perform these tasks.
 Please follow that script to perform your own analyses.
@@ -203,36 +198,6 @@ options = [
      'allowedTypes': [types.TupleType, types.ListType],
      'validate':    simuOpt.valueListOf( simuOpt.valueBetween(0,1))
     },
-#     {'longarg': 'freeDSL=',
-#      'default': [],
-#      # do not expect this option to be used often.
-#      'useDefault': True,
-#      'label': 'DSL that evolve freely',
-#      'description': '''A subset of DSL that will evolve differently. Namely, the trajectories
-#                 will not be pre-simulated. It will be brought to high allele frequency with 
-#                 positive selection and evolve freely afterwards. The disease allele may not
-#                 reach designed allele frequency, or even get lost. However, this option allows
-#                 simulation of linked DSL that can not be simulated otherwise.''',
-#      'allowedTypes': [types.TupleType, types.ListType],
-#      'validate':    simuOpt.valueListOf( simuOpt.valueGT(0) )
-#     },
-#     {'longarg': 'introFree=',
-#      'default': [0,0],
-#      'useDefault': True,
-#      'label': 'When to introduce free DSL',
-#      'description': '''Beginning and ending generation to introduce free DSL.''',
-#      'allowedTypes': [types.TupleType, types.ListType],
-#      'validate': simuOpt.valueListOf(simuOpt.valueGE(0))
-#     },
-#     {'longarg': 'selFreeIntensity=',
-#      'default': 0.5,
-#      'useDefault': True,
-#      'label': 'Intensity of positive selection (free DSL)',
-#      'description': '''Selection coefficient to bring free DSL to their high allele frequency.
-#                 Given s, fitness [1, 1+s/2, 1+s] will be used.''',
-#      'allowedTypes': [types.FloatType, types.IntType],
-#      'validate': simuOpt.valueGT(0)
-#     },    
     #
     #
     {'separator': 'Demographic model:'},
@@ -618,39 +583,6 @@ def outputStatistics(pop, args):
     return True
 
 
-# def dynaAdvSelector(pop):
-#     ''' This selector will apply advantage/purifying selection to DSl according
-#         to allele frequency at each DSL. minAlleleFreq and maxAlleleFreq
-#         are stored in pop.dvars().
-#     '''
-#     DSL = pop.dvars().DSL
-#     # get allele frequencies
-#     Stat(pop, alleleFreq=DSL)
-#     # gives 1,1.25,1.5 to promote allele if freq < lower cound
-#     # gives 1,0.9,0.8 to select agsinst DSL with freq > upper
-#     sel = []
-#     freq = pop.dvars().alleleFreq
-#     # print +- symbol for each DSL to visualize how frequencies are manipulated
-#     for i in range(len(DSL)):
-#         # positive selection (promote allele)
-#         if 1-freq[DSL[i]][StartingAllele] < pop.dvars().minAlleleFreq[i]:
-#             print '+',
-#             sel.append( maSelector(locus=DSL[i], wildtype=[StartingAllele], fitness=[1,1.5,2]) )
-#         # negative selection (select against allele)
-#         elif 1-freq[DSL[i]][StartingAllele] > pop.dvars().maxAlleleFreq[i]:
-#             print '-',
-#             sel.append( maSelector(locus=DSL[i], wildtype=[StartingAllele], fitness=[1,0.9,0.8]) )
-#         else:
-#         # encourage slightly towards upper bound
-#             print ' ',
-#             sel.append( maSelector(locus=DSL[i], wildtype=[StartingAllele], fitness=[1,1.02,1.04]) )
-#         # apply multi-locus selector, note that this operator will only
-#         # set a variable fitness in pop, actual selection happens during mating.
-#         if len(sel ) > 0:    # need adjustment (needed if 'else' part is empty)
-#             MlSelect( pop, sel, mode=SEL_Multiplicative)
-#     return True
-
-
 # simulate function, using a single value of mutation, migration,
 # recombination rate
 def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp, 
@@ -790,32 +722,22 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     numDSL = len(DSLafter)
     if len(DSLdist) != numDSL:
         raise exceptions.ValueError("--DSL and --DSLloc has different length.")
-    # real indices of DSL
-    DSL = list(DSLafter)
-    for i in range(0,numDSL):
-        DSL[i] += i+1
-    # adjust loci and lociPos
-    loci = [0]*numChrom
-    lociPos = []
-    i = 0    # current absolute locus 
-    j = 0    # current DSL
-    for ch in range(0, numChrom):
-        lociPos.append([])
-        for loc in range(0,numLoci):
-            # DSL after original loci indices
-            if j < numDSL and i == DSLafter[j]:
-                loci[ch] += 2
-                lociPos[ch].append(loc+1)
-                lociPos[ch].append(loc+1 + DSLdist[j])
-                j += 1
-            else:
-                loci[ch] += 1
-                lociPos[ch].append(loc+1)
-            i += 1
-    # non-DSL loci, for convenience
-    nonDSL = range(0, reduce(operator.add, loci))
-    for loc in DSL:
-        nonDSL.remove(loc)
+    #
+    # I can calculate the real indices of DSL (after insertion of DSL at DSLafter),
+    # but it is easier, and less error prone to use a temporary population to do it.
+    #
+    # create a population, give each locus a name
+    # 0, 1, 2, 3, ...
+    tmp = population(1, loci=[numLoci]*numChrom, lociNames=[str(x) for x in range(numLoci*numChrom)])
+    # insert DSL, given them names DSL0, DSL1, ...
+    tmp.insertAfterLoci(idx=DSLafter, pos=[tmp.locusPos(DSLafter[x]) + DSLdist[x] for x in range(len(DSLafter))], 
+        names = ['DSL%d' % x for x in range(len(DSLafter))])
+    # now, obtain the indices of these loci using loci names
+    # I need these information because the following operators need to know which marker is DSL...
+    DSL = tmp.lociByNames(['DSL%d' % x for x in range(len(DSLafter))])
+    loci = tmp.numLoci()
+    lociPos = tmp.lociPos()
+    nonDSL = tmp.lociByNames([str(x) for x in range(numLoci*numChrom)])
     ###
     ### initialization 
     ###
