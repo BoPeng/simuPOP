@@ -86,7 +86,7 @@ class TestPenetrance(unittest.TestCase):
         assert abs(self.pop.dvars(2).numOfAffected - 600*0.3 - 400*0.5) < 50
         
     def testMultiLocusMaPenetrance(self):
-        'Test the multi-locus version of maPenetrance'
+        'Testing the multi-locus version of maPenetrance'
         pop = population(1000, loci=[3,5], infoFields=['penetrance'])
         InitByFreq(pop, [.3, .7])
         #

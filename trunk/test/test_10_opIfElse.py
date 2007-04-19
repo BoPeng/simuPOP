@@ -17,7 +17,7 @@ import unittest, os, sys, exceptions
 class TestIfElseOperator(unittest.TestCase):
     
     def testIfElseOperator(self):
-        'Test opeartor ifElse'
+        'Testing opeartor ifElse'
         simu = simulator(population(1000, loci=[2]), 
             randomMating())
         # now if we want to flip a lot of alleles whenever it reaches 0.2

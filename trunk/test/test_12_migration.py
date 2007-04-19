@@ -141,7 +141,7 @@ class TestMigrator(unittest.TestCase):
 
 
     def testRearrange(self):
-        'Test if info and genotype are migrated with individuals'
+        'Testing if info and genotype are migrated with individuals'
         if alleleType() == 'binary':
             return
         #TurnOnDebug(DBG_POPULATION)
