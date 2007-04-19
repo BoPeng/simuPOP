@@ -393,7 +393,7 @@ namespace simuPOP
 			{
 				if(std::find(lociNames.begin(), lociNames.end(), names[i]) == lociNames.end())
 				{
-					lociNames.insert(lociNames.begin() + idx[i] = i, names[i]);
+					lociNames.insert(lociNames.begin() + idx[i] + i + 1, names[i]);
 				}
 				else
 					throw ValueError("Locus name " + names[i] + " already exists.");
