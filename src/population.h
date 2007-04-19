@@ -80,7 +80,6 @@ namespace simuPOP
 	///
 	/// an instance of this class is returned by
 	/// population::individuals() and population::individuals(subPop)
-	/// CPPONLY
 	class individualIterator
 	{
 		public:
@@ -846,13 +845,7 @@ namespace simuPOP
 			/**
 				insertBeforeLocus(idx, pos, name) is a shortcut to insertBeforeLoci([idx], [pos], [name])
 			*/
-			void insertBeforeLocus(UINT idx, double pos, const string & name="")
-			{
-				vectoru v_idx(1, idx);
-				vectorf v_pos(1, pos);
-				vectorstr v_name(1, name);
-				return insertBeforeLoci(v_idx, v_pos, v_name);
-			}
+			void insertBeforeLocus(UINT idx, double pos, const string & name=string());
 
 			/// append loci at given locations
 			/** append loci at some given locations. Alleles in appended locations will be zero.
@@ -870,13 +863,7 @@ namespace simuPOP
 			/**
 				insertAfterLocus(idx, pos, name) is a shortcut to insertAfterLoci([idx], [pos], [name])
 			*/
-			void insertAfterLocus(UINT idx, double pos, const string & name="")
-			{
-				vectoru v_idx(1, idx);
-				vectorf v_pos(1, pos);
-				vectorstr v_name(1, name);
-				return insertAfterLoci(v_idx, v_pos, v_name);
-			}
+			void insertAfterLocus(UINT idx, double pos, const string & name=string());
 
 			/// resize population to another size
 			/** Resize population to given new subpopulation sizes.

@@ -1061,6 +1061,16 @@ namespace simuPOP
 		setShallowCopied(false);
 	}
 
+	void population::insertBeforeLocus(UINT idx, double pos, const string & name)
+	{
+		vectoru v_idx(1, idx);
+		vectorf v_pos(1, pos);
+		if (name==string())
+			return insertBeforeLoci(v_idx, v_pos, vectorstr());
+		else
+			return insertBeforeLoci(v_idx, v_pos, vectorstr(1, name));
+	}
+
 	void population::insertBeforeLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names)
 	{
 		// use loci to keep the position of old loci in the new structure
@@ -1113,6 +1123,16 @@ namespace simuPOP
 			m_genotype.swap(newGenotype);
 		}
 		setShallowCopied(false);
+	}
+
+	void population::insertAfterLocus(UINT idx, double pos, const string & name)
+	{
+		vectoru v_idx(1, idx);
+		vectorf v_pos(1, pos);
+		if(name == string())
+			return insertAfterLoci(v_idx, v_pos, vectorstr());
+		else
+			return insertAfterLoci(v_idx, v_pos, vectorstr(1, name));
 	}
 
 	void population::insertAfterLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names)
