@@ -68,7 +68,7 @@ class TestQuanTrait(unittest.TestCase):
         assert abs( self.stdev( self.pop.arrIndInfo(False)[3750:5000] ) - 1.0) < 0.1
         
     def testMultiLocusMaQuanTrait(self):
-        'Test the multi-locus version of maQTrait'
+        'Testing the multi-locus version of maQTrait'
         pop = population(1000, loci=[3,5], infoFields=['qtrait'])
         InitByFreq(pop, [.3, .7])
         #

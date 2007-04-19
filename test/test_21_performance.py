@@ -74,7 +74,7 @@ class TestPerformance(unittest.TestCase):
         # rewitten according to this. 
 
     def TestRandomMating(self):
-        'Test the performance of random mating '
+        'Testing the performance of random mating '
         sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
         r = 0.001
         migr = migrator(rate=[[1-r,r],[r,1-r]])
@@ -155,7 +155,7 @@ class TestPerformance(unittest.TestCase):
             #
 
     def TestLongGenome(self):
-        'Test the performance of recombination with long genome'
+        'Testing the performance of recombination with long genome'
         sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
         r = 0.001
         migr = migrator(rate=[[1-r,r],[r,1-r]])
@@ -224,7 +224,7 @@ class TestPerformance(unittest.TestCase):
 
 
     def TestBernulliTrials(self):
-        'Test the performance of bernulli trials'
+        'Testing the performance of bernulli trials'
         rg = rng()
         p = [0.00001, 0.001, 0.5, 0.99]
         N = 1000000
@@ -260,7 +260,7 @@ class TestPerformance(unittest.TestCase):
             
 
     def TestMatingAlgorithm(self):
-        'Test the performance of mating algorithm'
+        'Testing the performance of mating algorithm'
         sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
         for N in [40000, 400000]:
             print "N=%d" % N
