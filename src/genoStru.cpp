@@ -309,7 +309,7 @@ namespace simuPOP
 		for(size_t i=0; i<idx.size(); ++i)
 		{
 			CHECKRANGEABSLOCUS(idx[i]);
-			lociPos.insert(lociPos.begin() + idx[i], pos[i]);
+			lociPos.insert(lociPos.begin() + idx[i] + i, pos[i]);
 			loci[chromLocusPair(idx[i]).first]++;
 		}
 		vectorstr lociNames = gs.m_lociNames;
@@ -327,7 +327,8 @@ namespace simuPOP
 					string name = base_name + toStr(n++);
 					if(std::find(lociNames.begin(), lociNames.end(), name) == lociNames.end())
 					{
-						lociNames.insert(lociNames.begin() + idx[i], name);
+						// +i because the array has shifted.
+						lociNames.insert(lociNames.begin() + idx[i] + i, name);
 						break;
 					}
 				}
@@ -338,7 +339,7 @@ namespace simuPOP
 			for(size_t i=0; i<idx.size(); ++i)
 			{
 				if(std::find(lociNames.begin(), lociNames.end(), names[i]) == lociNames.end())
-					lociNames.insert(lociNames.begin() + idx[i], names[i]);
+					lociNames.insert(lociNames.begin() + idx[i] + i, names[i]);
 				else
 					throw ValueError("Locus name " + names[i] + " already exists.");
 			}
@@ -362,10 +363,7 @@ namespace simuPOP
 		for(size_t i=0; i<idx.size(); ++i)
 		{
 			CHECKRANGEABSLOCUS(idx[i]);
-			if(idx[i] == totNumLoci()-1)
-				lociPos.push_back(pos[i]);
-			else
-				lociPos.insert(lociPos.begin() + idx[i] + 1, pos[i]);
+			lociPos.insert(lociPos.begin() + idx[i] + 1 + i, pos[i]);
 			loci[chromLocusPair(idx[i]).first]++;
 		}
 		vectorstr lociNames = gs.m_lociNames;
@@ -383,7 +381,7 @@ namespace simuPOP
 					string name = base_name + toStr(n++);
 					if(std::find(lociNames.begin(), lociNames.end(), name) == lociNames.end())
 					{
-						lociNames.insert(lociNames.begin() + idx[i], name);
+						lociNames.insert(lociNames.begin() + idx[i] + i + 1, name);
 						break;
 					}
 				}
@@ -395,7 +393,7 @@ namespace simuPOP
 			{
 				if(std::find(lociNames.begin(), lociNames.end(), names[i]) == lociNames.end())
 				{
-					lociNames.insert(lociNames.begin() + idx[i], names[i]);
+					lociNames.insert(lociNames.begin() + idx[i] = i, names[i]);
 				}
 				else
 					throw ValueError("Locus name " + names[i] + " already exists.");

@@ -95,9 +95,10 @@ class TestIndividual(unittest.TestCase):
         #
         # test loci names
         self.assertRaises(exceptions.ValueError, pop.locusByName, 'somename')
-        self.assertEqual(pop.locusByName('loc1-2'), 1)
+        self.assertEqual(pop.locusByName('lb'), 1)
         self.assertRaises(exceptions.ValueError, pop.lociByNames, ['somename', 'other'])
-        self.assertEqual(pop.lociByNames(['loc1-2', 'loc2-1']), (1, 5))
+        self.assertEqual(pop.lociByNames(['lb', 'lc']), (1, 2))
+        self.assertEqual(pop.lociByNames(['lb', 'la']), (1, 0))
         
 
     def testIndGenotype(self):
