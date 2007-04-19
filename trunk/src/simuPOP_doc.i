@@ -1256,7 +1256,13 @@ Usage:
 
 %ignore simuPOP::GenoStruTrait::setGenoStruIdx(size_t idx);
 
-%ignore simuPOP::GenoStruTrait::mergeGenoStru(size_t idx);
+%ignore simuPOP::GenoStruTrait::mergeGenoStru(size_t idx) const ;
+
+%ignore simuPOP::GenoStruTrait::removeLociFromGenoStru(const vectoru &remove=vectoru(), const vectoru &keep=vectoru());
+
+%ignore simuPOP::GenoStruTrait::insertBeforeLociToGenoStru(const vectoru &idx, const vectorf &pos, const vectorstr &names) const ;
+
+%ignore simuPOP::GenoStruTrait::insertAfterLociToGenoStru(const vectoru &idx, const vectorf &pos, const vectorstr &names) const ;
 
 %ignore simuPOP::GenoStruTrait::genoStru() const ;
 
@@ -1492,6 +1498,28 @@ Description:
 Usage:
 
     x.lociNames()
+"; 
+
+%feature("docstring") simuPOP::GenoStruTrait::locusByName "
+
+Description:
+
+    return the index of a locus by locus name
+
+Usage:
+
+    x.locusByName()
+"; 
+
+%feature("docstring") simuPOP::GenoStruTrait::lociByNames "
+
+Description:
+
+    return an array of locus index by loci names
+
+Usage:
+
+    x.lociByNames()
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::maxAllele "
@@ -2208,7 +2236,16 @@ Details:
 
 %ignore simuPOP::individual::display(ostream &out, int width=1, const vectori &chrom=vectori(), const vectori &loci=vectori());
 
-%ignore simuPOP::individualIterator;
+%feature("docstring") simuPOP::individualIterator "
+
+Description:
+
+    this class implements a Python itertor class that can be used to
+    iterate through individuals in a population. an instance of this
+    class is returned by  population::individuals() and
+    population::individuals(subPop)
+
+"; 
 
 %feature("docstring") simuPOP::individualIterator::individualIterator "
 
@@ -2219,6 +2256,17 @@ Description:
 Usage:
 
     individualIterator(*pop, s, e)
+"; 
+
+%feature("docstring") simuPOP::individualIterator::~individualIterator "
+
+Description:
+
+    simuPOP::individualIterator::~individualIterator
+
+Usage:
+
+    x.~individualIterator()
 "; 
 
 %feature("docstring") simuPOP::individualIterator::__iter__ "
@@ -5390,8 +5438,7 @@ Arguments:
                     will only be used for display purpose.
     lociNames:      an array or a matrix (separated by chromosome) of
                     names for each loci. Default to \"locX-X\" where X-X
-                    is chromosome-loci index starting from 1. This
-                    info is rarely used.
+                    is chromosome-loci index starting from 1.
     maxAllele:      maximum allele number. Default to the max allowed
                     allele states of current library (standard or long
                     allele version)
@@ -5918,6 +5965,102 @@ Arguments:
     newLoci:        the new number of loci for the combined genotype
                     structure.
 
+
+"; 
+
+%feature("docstring") simuPOP::population::insertBeforeLoci "
+
+Description:
+
+    simuPOP::population::insertBeforeLoci
+
+Usage:
+
+    x.insertBeforeLoci(idx, pos, names=[])
+Arguments:
+
+    idx:            An array of locus index. The loci will be inserted
+                    before  each index. If you need to append to the
+                    last locus, use insertAfterLoci. If your index is
+                    the first locus of a chromosome, the inserted
+                    locus will become the first of that chromosome. If
+                    you need to insert multiple locus before a locus,
+                    repeat that locus number.
+    pos:            An array of locus position. You need to make sure
+                    that the position will make the inserted locus
+                    between adjacent markers.
+    names:          An array of locus name. If not given, some unique
+                    names like \"insX_X\" will be given.
+
+
+Details:
+
+    insert loci at some given locations. Alleles in inserted locations
+    will be zero.
+
+"; 
+
+%feature("docstring") simuPOP::population::insertBeforeLocus "
+
+Description:
+
+    simuPOP::population::insertBeforeLocus
+
+Usage:
+
+    x.insertBeforeLocus(idx, pos, name=string)
+Details:
+
+    insertBeforeLocus(idx, pos, name) is a shortcut to
+    insertBeforeLoci([idx], [pos], [name])
+
+"; 
+
+%feature("docstring") simuPOP::population::insertAfterLoci "
+
+Description:
+
+    simuPOP::population::insertAfterLoci
+
+Usage:
+
+    x.insertAfterLoci(idx, pos, names=[])
+Arguments:
+
+    idx:            An array of locus index. The loci will be added
+                    after  each index. If you need to append to the
+                    first locus, use insertBeforeLoci. If your index
+                    is the last locus of a chromosome, the appended
+                    locus will become the last of that chromosome. If
+                    you need to append multiple locus after a locus,
+                    repeat that locus number.
+    pos:            An array of locus position. You need to make sure
+                    that the position will make the appended locus
+                    between adjacent markers.
+    names:          An array of locus name. If not given, some unique
+                    names like \"insX_X\" will be given.
+
+
+Details:
+
+    append loci at some given locations. Alleles in appended locations
+    will be zero.
+
+"; 
+
+%feature("docstring") simuPOP::population::insertAfterLocus "
+
+Description:
+
+    simuPOP::population::insertAfterLocus
+
+Usage:
+
+    x.insertAfterLocus(idx, pos, name=string)
+Details:
+
+    insertAfterLocus(idx, pos, name) is a shortcut to
+    insertAfterLoci([idx], [pos], [name])
 
 "; 
 
