@@ -814,6 +814,7 @@ namespace simuPOP
 
 	/// give expected frequency for the whole population, or all subpopulations
 	/// return expected number of alleles at each subpopulations.
+	/// CPPONLY
 	void getExpectedAlleles(population& pop, vectorf& expFreq, const vectori& loci,
 		const vectori& alleles, vectoru& expAlleles)
 	{
@@ -881,11 +882,11 @@ namespace simuPOP
 					throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
 						" Generation " + toStr(pop.gen()) );
 
-				/// calculate exp number of affected offspring in the next generation.
-				///
-				/// step 1: totalsize*expFreq is the total number of disease alleles
-				/// step 2: assign these alleles to each subpopulation according to a multi-nomial
-				/// distribution with p_i beging allele frequency at each subpopulation.
+				// calculate exp number of affected offspring in the next generation.
+				//
+				// step 1: totalsize*expFreq is the total number of disease alleles
+				// step 2: assign these alleles to each subpopulation according to a multi-nomial
+				// distribution with p_i beging allele frequency at each subpopulation.
 				// assign these numbers to each subpopulation
 				rng().randMultinomial(static_cast<unsigned int>(pop.popSize()*expFreq[i]*pldy),
 					curFreq, expAlleles.begin()+numSP*i);

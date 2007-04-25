@@ -10996,24 +10996,7 @@ Usage:
 
 %ignore simuPOP::countAlleles(population &pop, int subpop, const vectori &loci, const vectori &alleles, vectorlu &alleleNum);
 
-%feature("docstring") simuPOP::getExpectedAlleles "
-
-Description:
-
-    simuPOP::getExpectedAlleles
-
-Usage:
-
-    getExpectedAlleles(pop, expFreq, loci, alleles, expAlleles)
-Details:
-
-    calculate exp number of affected offspring in the next generation.
-    step 1: totalsize*expFreq is the total number of disease alleles
-    step 2: assign these alleles to each subpopulation according to a
-    multi-nomial distribution with p_i beging allele frequency at each
-    subpopulation.
-
-"; 
+%ignore simuPOP::getExpectedAlleles(population &pop, vectorf &expFreq, const vectori &loci, const vectori &alleles, vectoru &expAlleles);
 
 %feature("docstring") simuPOP::FreqTrajectoryStoch "
 
@@ -11149,16 +11132,7 @@ Usage:
     TurnOffDebug(code)
 "; 
 
-%feature("docstring") simuPOP::debug "
-
-Description:
-
-    test if one code is turned on
-
-Usage:
-
-    debug(code)
-"; 
+%ignore simuPOP::debug(DBG_CODE code);
 
 %feature("docstring") simuPOP::ListDebugCode "
 
@@ -11171,16 +11145,7 @@ Usage:
     ListDebugCode()
 "; 
 
-%feature("docstring") simuPOP::dbgString "
-
-Description:
-
-    dbg string for a code
-
-Usage:
-
-    dbgString(code)
-"; 
+%ignore simuPOP::dbgString(DBG_CODE code);
 
 %ignore simuPOP::simuPOP_kbhit(void);
 
@@ -11321,28 +11286,9 @@ Usage:
     listAllRNG()
 "; 
 
-%feature("docstring") simuPOP::gsl_error_handler "
+%ignore simuPOP::gsl_error_handler(const char *reason, const char *, int, int gsl_errno);
 
-Description:
-
-    Global debug and initialization related functions/////////////////
-    //////////////////////////////////////////.
-
-Usage:
-
-    gsl_error_handler(*reason, *, int, gsl_errno)
-"; 
-
-%feature("docstring") simuPOP::g_cnull "
-
-Description:
-
-    null stream
-
-Usage:
-
-    g_cnull(g_nullStreamBuf)
-"; 
+%ignore simuPOP::g_cnull(&g_nullStreamBuf);
 
 %ignore simuPOP::cnull();
 
@@ -11424,27 +11370,7 @@ Usage:
     mpiSize()
 "; 
 
-%feature("docstring") simuPOP::mpiBarrier "
-
-Description:
-
-    simuPOP::mpiBarrier
-
-Usage:
-
-    mpiBarrier()
-"; 
-
-%feature("docstring") simuPOP::supportXML "
-
-Description:
-
-    simuPOP::supportXML
-
-Usage:
-
-    supportXML()
-"; 
+%ignore simuPOP::mpiBarrier();
 
 %feature("docstring") simuPOP::alleleType "
 
@@ -11501,27 +11427,9 @@ Usage:
     compilePlatForm()
 "; 
 
-%feature("docstring") simuPOP::isGzipped "
+%ignore simuPOP::isGzipped(const string &filename);
 
-Description:
-
-    simuPOP::isGzipped
-
-Usage:
-
-    isGzipped(filename)
-"; 
-
-%feature("docstring") simuPOP::fileExtension "
-
-Description:
-
-    simuPOP::fileExtension
-
-Usage:
-
-    fileExtension(filename)
-"; 
+%ignore simuPOP::fileExtension(const string &filename);
 
 %feature("docstring") simuPOP::initialize "
 
@@ -11534,9 +11442,7 @@ Usage:
     initialize()
 Details:
 
-    This file is used to initialize simuPOP when being load into
-    python. The swig interface file will has a init%  entry to include
-    this file.load carray function and type
+    load carray function and type
 
 "; 
 
@@ -11564,82 +11470,19 @@ Usage:
     newcarrayobject(*buf, type, size)
 "; 
 
-%feature("docstring") simuPOP::newcarrayiterobject "
+%ignore simuPOP::newcarrayiterobject(GenoIterator begin, GenoIterator end);
 
-Description:
+%ignore simuPOP::is_carrayobject(PyObject *);
 
-    simuPOP::newcarrayiterobject
+%ignore simuPOP::carray_length(PyObject *a);
 
-Usage:
+%ignore simuPOP::carray_itemsize(PyObject *a);
 
-    newcarrayiterobject(begin, end)
-"; 
+%ignore simuPOP::carray_type(PyObject *a);
 
-%feature("docstring") simuPOP::is_carrayobject "
+%ignore simuPOP::carray_data(PyObject *a);
 
-Description:
-
-    simuPOP::is_carrayobject
-
-Usage:
-
-    is_carrayobject(*)
-"; 
-
-%feature("docstring") simuPOP::carray_length "
-
-Description:
-
-    simuPOP::carray_length
-
-Usage:
-
-    carray_length(*a)
-"; 
-
-%feature("docstring") simuPOP::carray_itemsize "
-
-Description:
-
-    simuPOP::carray_itemsize
-
-Usage:
-
-    carray_itemsize(*a)
-"; 
-
-%feature("docstring") simuPOP::carray_type "
-
-Description:
-
-    simuPOP::carray_type
-
-Usage:
-
-    carray_type(*a)
-"; 
-
-%feature("docstring") simuPOP::carray_data "
-
-Description:
-
-    simuPOP::carray_data
-
-Usage:
-
-    carray_data(*a)
-"; 
-
-%feature("docstring") simuPOP::initcarray "
-
-Description:
-
-    simuPOP::initcarray
-
-Usage:
-
-    initcarray(void)
-"; 
+%ignore simuPOP::initcarray(void);
 
 %ignore simuPOP::pow3(unsigned n);
 

@@ -43,6 +43,10 @@ NOTE:
    This makes it easy to pick locus according to allele frequency. Note
    that these frequencies are counted directly from the sample. No estimation
    is used.
+
+6. Loci positions are translated from sequence location to cM by deviding indices
+   by 1000000, roughly in the unit of cM.
+
 '''
 
 from simuOpt import setOptions
@@ -67,7 +71,8 @@ def getLoci(ch):
     for line in open(file).readlines():
         fields = line.split()
         lociName.append(fields[0])
-        lociPos.append(float(fields[1]))
+        # translate pos from index to cM. This is tentative
+        lociPos.append(float(fields[1])/1000000.)
     return (lociPos, lociName)
 
 

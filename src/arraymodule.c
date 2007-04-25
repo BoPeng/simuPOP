@@ -526,11 +526,14 @@ carray_init(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
 
 // declaration only to avoid use of Arraytype
+/// CPPONLY
 PyObject * newcarrayobject(char* ptr, char type, int size);
 #ifdef SIMUMPI
+/// CPPONLY
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end, 
 	ULONG size, UINT s_size, vectoru s_map, UINT shift);
 #else
+/// CPPONLY
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
 #endif
 

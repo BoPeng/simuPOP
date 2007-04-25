@@ -518,7 +518,8 @@ class Doxy2SWIG:
 
     def write_latex(self, out):
         # first handle glocal functions
-        for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore']]:
+        for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] \
+                and 'test' not in x['Name']]:
             print >> out, '\\newcommand{\\%s}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, '\\par\n\\strong{Function \\texttt{%s}}\n\\par' % self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
@@ -635,7 +636,8 @@ class Doxy2SWIG:
 \makeatother
 \begin{document}
 \include{%s}''' % os.path.basename(os.path.splitext(ref_file)[0])
-        for entry in [x for x in self.content if x['type'] in ['global_function'] and not x['ignore']]:
+        for entry in [x for x in self.content if x['type'] in ['global_function'] and not x['ignore'] \
+            and 'test' not in x['Name']]:
              print >> out, r'\%s' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
              print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
         for entry in [x for x in self.content if x['type'] in ['class'] and not x['ignore']]:
