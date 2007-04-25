@@ -64,20 +64,28 @@ using boost::lowest_bit;
 #define MacroQuote(x) MacroQuote_(x)
 
 // these functions are defined in arraymodule.c which is included
-// in simuPOP_wrap.cpp
+// in simuPOP_wrap.cpp CPPONLY
 extern "C" PyObject* newcarrayobject(char* buf, char type, int size);
 #ifdef SIMUMPI
 #include "slave.h"
+/// CPPONLY
 extern "C" PyObject* newcarrayiterobject(ULONG shift,
 ULONG size, UINT piece_size, vectoru map);
 #else
+/// CPPONLY
 extern "C" PyObject* newcarrayiterobject(GenoIterator begin, GenoIterator end);
 #endif
+/// CPPONLY
 extern "C" bool   is_carrayobject(PyObject*);
+/// CPPONLY
 extern "C" int    carray_length(PyObject*a);
+/// CPPONLY
 extern "C" int    carray_itemsize(PyObject*a);
+/// CPPONLY
 extern "C" char   carray_type(PyObject* a);
+/// CPPONLY
 extern "C" char * carray_data(PyObject*a);
+/// CPPONLY
 extern "C" void   initcarray(void);
 extern "C" PyTypeObject Arraytype;
 
@@ -2568,6 +2576,7 @@ namespace simuPOP
 	///  Global debug and initialization related functions
 	//////////////////////////////////////////////////////////////
 
+	/// CPPONLY
 	void gsl_error_handler (const char * reason, const char * ,
 		int , int gsl_errno)
 	{
@@ -2643,7 +2652,7 @@ namespace simuPOP
 	/// null stream buf
 	NullStreamBuf g_nullStreamBuf;
 
-	/// null stream
+	/// null stream, CPPONLY
 	ostream g_cnull( &g_nullStreamBuf );
 
 	/// return null stream
@@ -2811,14 +2820,6 @@ namespace simuPOP
 #endif
 	}
 
-	bool supportXML()
-	{
-#ifdef __NO_XML_SUPPORT__
-		return false;
-#else
-		return true;
-#endif
-	}
 
 	string alleleType()
 	{
@@ -3115,7 +3116,7 @@ namespace simuPOP
 	}
 #endif
 
-	/** This file is used to initialize simuPOP when being load into
+	/* This file is used to initialize simuPOP when being load into
 	   python. The swig interface file will has a init% % entry to
 	   include this file. */
 	bool initialize()

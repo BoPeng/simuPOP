@@ -97,14 +97,14 @@ namespace simuPOP
 	void TurnOffDebug(DBG_CODE code=DBG_ALL);
 
 #ifndef OPTIMIZED
-	/// test if one code is turned on
+	/// test if one code is turned on, CPPONLY
 	bool debug(DBG_CODE code);
 #endif
 
 	/// show all dbg codes (print to cout)
 	void ListDebugCode();
 
-	/// dbg string for a code
+	/// dbg string for a code CPPONLY
 	string dbgString(DBG_CODE code);
 
 #ifdef Py_REF_DEBUG
@@ -1472,8 +1472,7 @@ namespace simuPOP
 	/// return version infomation of simuPOP
 	string simuVer();
 
-	bool supportXML();
-
+	///
 	string compileCompiler();
 
 	string compileDate();
@@ -1508,6 +1507,7 @@ namespace simuPOP
 			~comm();
 	};
 
+	/// CPPONLY
 	const comm mpiComm();
 
 	// unique id for a population or other object, used by slave nodes to
@@ -1519,6 +1519,7 @@ namespace simuPOP
 
 	UINT mpiSize();
 
+	/// CPPONLY
 	void mpiBarrier();
 
 	string alleleType();
@@ -1530,10 +1531,10 @@ namespace simuPOP
 	/// set standard output to (default standard Python output)
 	void setLogOutput(const string filename="");
 
-	// check if a file is a gzipped file
+	/// check if a file is a gzipped file CPPONLY
 	bool isGzipped(const string & filename);
 
-	// file extension, including .gz
+	/// file extension, including .gz, CPPONLY
 	const string fileExtension(const string & filename);
 }
 #endif
