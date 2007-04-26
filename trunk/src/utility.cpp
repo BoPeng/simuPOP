@@ -2652,7 +2652,7 @@ namespace simuPOP
 	/// null stream buf
 	NullStreamBuf g_nullStreamBuf;
 
-	/// null stream, CPPONLY
+	/// null stream
 	ostream g_cnull( &g_nullStreamBuf );
 
 	/// return null stream
