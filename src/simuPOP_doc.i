@@ -11288,7 +11288,16 @@ Usage:
 
 %ignore simuPOP::gsl_error_handler(const char *reason, const char *, int, int gsl_errno);
 
-%ignore simuPOP::g_cnull(&g_nullStreamBuf);
+%feature("docstring") simuPOP::g_cnull "
+
+Description:
+
+    null stream
+
+Usage:
+
+    g_cnull(g_nullStreamBuf)
+"; 
 
 %ignore simuPOP::cnull();
 
