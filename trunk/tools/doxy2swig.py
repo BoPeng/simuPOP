@@ -223,7 +223,8 @@ class Doxy2SWIG:
     def do_parameterlist(self, node):
         if( node.hasChildNodes):
              self.curField = 'Arguments'
-             self.content[-1]['Arguments'] = []
+             if not self.content[-1].has_key('Arguments'):
+                 self.content[-1]['Arguments'] = []
              self.generic_parse(node)
 
 
@@ -239,7 +240,8 @@ class Doxy2SWIG:
 
     def do_detaileddescription(self, node):
         self.curField = 'Details'
-        self.content[-1]['Details'] = ''
+        if not self.content[-1].has_key('Details'):
+            self.content[-1]['Details'] = ''
         self.generic_parse(node)
 
 
@@ -475,6 +477,9 @@ class Doxy2SWIG:
             if entry['ignore'] and '~' in entry['Name']:
                 print "Desctructor of %s has CPPONLY. Please correct it." % entry['Name']
                 sys.exit(1)
+        for entry in self.content:
+            if 'population' in entry['Name']:
+                print entry
         #for entry in self.content:
         #    if entry.has_key('description') and 'PLOIDY:' in entry['description'];
         #        if 'PLOIDY:ALL' in entry['description']:
@@ -534,11 +539,11 @@ class Doxy2SWIG:
         for ch in ['\\', '&', '$', '~', '%', '#', '_', '{', '}', '^']:
             text = text.replace(ch, '\\' + ch)
         #text = re.compile(r'%s' % text)
-        text = text.replace(r'<em>', r'{\\em ')
-        text = text.replace(r'</em>', r'}')
-        text = text.replace(r'<tt>', r'{\\tt ')
-        text = text.replace(r'</tt>', r'}')
-        text = text.replace(r'</newline>', r'\\newline')
+        text = text.replace('<em>', r'{\em ')
+        text = text.replace('</em>', '}')
+        text = text.replace('<tt>', r'{\tt ')
+        text = text.replace('</tt>', '}')
+        text = text.replace('</newline>', r'\newline')
         return text
 
 
@@ -588,11 +593,14 @@ class Doxy2SWIG:
             print >> out, '\\par\n\\strong{Initialization}\n\\par'
             if cons.has_key('Description') and cons['Description'] != '':
                 print >> out, '%s\par' % self.latex_text(cons['Description'])
+            if cons.has_key('Details') and cons['Details'] != '':
+                print >> out, '%s\par' % self.latex_text(cons['Details'])
             if cons.has_key('Usage') and cons['Usage'] != '':
                 print >> out, '\\begin{quote}\\function{%s}\\end{quote}' % self.latex_text(cons['Usage'])
             if cons.has_key('Arguments') and cons['Arguments'] != '':
-                print >> out, '\\par\n\\strong{Arguments}'
+                print >> out, '\\par\n'
                 print >> out, '\\begin{description}'
+                cons['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                 for arg in cons['Arguments']:
                     print >> out, '\\item [{%s}]%s' % (arg['Name'], self.latex_text(arg['Description']))
                 print >> out, '\\end{description}'
@@ -600,6 +608,7 @@ class Doxy2SWIG:
                 print >> out, '\\par\n\\strong{Details}\n\\par'
                 print >> out, '%s' % self.latex_text(cons['Details'])
             members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and not x['ignore']]
+            members.sort(lambda x, y: cmp(x['Name'], y['Name']))
             if len(members) == 0:
                 print >> out, '}\n'
                 continue
@@ -619,16 +628,16 @@ class Doxy2SWIG:
                         print >> out, '%s' % self.latex_text(mem['Details'])
                 if mem.has_key('Arguments') and mem['Arguments'] != '':
                     print >> out, '\\begin{description}'
+                    mem['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                     for arg in mem['Arguments']:
                         print >> out, '\\item [{%s}]%s' % (arg['Name'], self.latex_text(arg['Description']))
                     print >> out, '\\end{description}'            
             print >> out, '\\end{description}'
             if cons.has_key('Examples') and cons['Examples'] != '':
-                print >> out, '\\strong{Examples}\n\\begin{algorithm}[h]'
-                print >> out, '\\caption{\\label{alg:%s}Example for function %s}' % (cons['Name'], cons['Name'])
+                print >> out, '\\strong{Examples}\n'
+                #print >> out, '\\caption{\\label{alg:%s}Example for function %s}' % (cons['Name'], cons['Name'])
                 if cons['ExampleFile'] is not None:
-                    print >> out, '\\verbatiminput{"%s"}' % cons['ExampleFile'].replace('\\', '/')
-                print >> out, '\\end{algorithm}'
+                    print >> out, '\\lstinputlisting{%s}' % cons['ExampleFile'].replace('\\', '/')
             print >> out, '}\n'
 
 
@@ -640,6 +649,7 @@ class Doxy2SWIG:
 \setcounter{tocdepth}{3}
 \usepackage{verbatim}
 \usepackage{float}
+\usepackage{listings}
 \makeatletter
 
 \providecommand{\tabularnewline}{\\}
@@ -658,6 +668,14 @@ class Doxy2SWIG:
  \item[]}
 {\end{list}}
 \floatname{algorithm}{Example}
+
+\lstset{language=Python,
+   showspaces=false,
+   basicstyle=\footnotesize,
+   showstringspaces=false,
+   showtabs=false
+}
+
 \usepackage{babel}
 \makeatother
 \begin{document}
@@ -686,10 +704,10 @@ class Doxy2SWIG:
     def format_text(self, text, start_pos, indent):
         """ wrap text given current indent """
         #delete format sign used in latex file
-        text = text.replace(r'<em>', '')
-        text = text.replace(r'</em>', '')
-        text = text.replace(r'<tt>', '')
-        text = text.replace(r'</tt>', '')
+        text = text.replace('<em>', '')
+        text = text.replace('</em>', '')
+        text = text.replace('<tt>', '')
+        text = text.replace('</tt>', '')
         #used in swig file output
         text = text.split(r'</newline>')
         strs = []
