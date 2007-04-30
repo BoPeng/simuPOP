@@ -117,7 +117,6 @@ class Doxy2SWIG:
         else:
             self.generic_parse(node)
 
-
     def parse_Text(self, node):
         txt = node.data
         # ignore pure whitespace
@@ -172,11 +171,31 @@ class Doxy2SWIG:
     do_bold = space_parse
     do_computeroutput = space_parse
     do_formula = space_parse
+    
 
     def do_compoundname(self, node):
         data = node.firstChild.data
         self.content.append({'Name': data, 'type': 'class'})
+        
 
+    def do_emphasis(self, node):
+        if node.firstChild is not None:
+            self.add_text(r'<em>%s</em>' % node.firstChild.data)
+            
+
+    def do_computeroutput(self, node):
+        try:
+            if node.firstChild is not None:
+                self.add_text(r'<tt>%s</tt>' % node.firstChild.data)
+        except:
+            pass
+            
+            
+    def do_linebreak(self, node):
+        #newline tag indicates the linebreak we do want
+        self.add_text(r'</newline>')
+        
+        
     def do_compounddef(self, node):
         kind = node.attributes['kind'].value
         if kind in ('class', 'struct'):
@@ -463,9 +482,10 @@ class Doxy2SWIG:
         #            self.content['description'].remove('PLOIDY:ALL')
         # sort the entries
         self.content.sort(lambda x, y: x['Name'] > y['Name'])
-
+    
 
     def write_swig(self, out):
+        #print >> out, self.content
         for entry in self.content:
             if entry['ignore']:
                 if entry.has_key('cppArgs'):
@@ -513,6 +533,12 @@ class Doxy2SWIG:
         """ wrap text given current indent """
         for ch in ['\\', '&', '$', '~', '%', '#', '_', '{', '}', '^']:
             text = text.replace(ch, '\\' + ch)
+        #text = re.compile(r'%s' % text)
+        text = text.replace(r'<em>', r'{\\em ')
+        text = text.replace(r'</em>', r'}')
+        text = text.replace(r'<tt>', r'{\\tt ')
+        text = text.replace(r'</tt>', r'}')
+        text = text.replace(r'</newline>', r'\\newline')
         return text
 
 
@@ -601,7 +627,7 @@ class Doxy2SWIG:
                 print >> out, '\\strong{Examples}\n\\begin{algorithm}[h]'
                 print >> out, '\\caption{\\label{alg:%s}Example for function %s}' % (cons['Name'], cons['Name'])
                 if cons['ExampleFile'] is not None:
-                    print >> out, '\\verbatiminput{%s}' % cons['ExampleFile']
+                    print >> out, '\\verbatiminput{"%s"}' % cons['ExampleFile'].replace('\\', '/')
                 print >> out, '\\end{algorithm}'
             print >> out, '}\n'
 
@@ -659,9 +685,18 @@ class Doxy2SWIG:
 
     def format_text(self, text, start_pos, indent):
         """ wrap text given current indent """
-        strs = textwrap.wrap(text.lstrip('\n '), width=self.maxChar,
-            initial_indent=' '*(start_pos+indent),
-            subsequent_indent = ' '*indent)
+        #delete format sign used in latex file
+        text = text.replace(r'<em>', '')
+        text = text.replace(r'</em>', '')
+        text = text.replace(r'<tt>', '')
+        text = text.replace(r'</tt>', '')
+        #used in swig file output
+        text = text.split(r'</newline>')
+        strs = []
+        for txt in text:
+            strs.extend(textwrap.wrap(txt.lstrip('\n '), width=self.maxChar,
+                initial_indent=' '*(start_pos+indent),
+                subsequent_indent = ' '*indent))
         return  ('\n'.join(strs)).lstrip().replace('\\', r'\\\\').replace('"', r'\"')              
 
 
