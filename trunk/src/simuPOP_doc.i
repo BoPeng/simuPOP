@@ -1294,7 +1294,7 @@ Usage:
 
 Description:
 
-    number of loci on chromosome  chrom
+    number of loci on chromosome chrom
 
 Usage:
 
@@ -1415,7 +1415,7 @@ Usage:
 
 Description:
 
-    chromosome index of chromosome  chrom
+    chromosome index of chromosome chrom
 
 Usage:
 
@@ -1426,7 +1426,7 @@ Usage:
 
 Description:
 
-    chromosome index of chromosome  chrom
+    chromosome index of chromosome chrom
 
 Usage:
 
@@ -1849,8 +1849,8 @@ Details:
     be adjusted by setOutputDelimeter. Usage info: (for population
     classes developers)for individuals are created, you are
     responsible to set its genotypic pointer and genotypic
-    information. This is done by   setSubPopID()  and   subPopID()
-    can be used for any  temporary  purpose.
+    information. This is done by   and   can be used for any temporary
+    purpose.
 
 "; 
 
@@ -10469,7 +10469,7 @@ Details:
     get ostream.if this  Operator uses cout return cout.if it does not
     use output, return something similar to /dev/null.if it uses a
     use-and-close file, create one and return its handle. The file
-    will be closed by  closeOstream .if it uses a persistent file (>>
+    will be closed by closeOstream .if it uses a persistent file (>>
     or >>>), get from a global repository of file handles. (If the
     file is not created yet, the repository will create one.) Note
     that if a use-and-close file is being opened in the repository,
