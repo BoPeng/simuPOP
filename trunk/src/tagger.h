@@ -162,15 +162,15 @@ namespace simuPOP
 					'B' of father, followed by mother if there is one, to this function. The returned value
 					is assigned to fields 'A' and 'B' of the offspring. The returned value
 					has to be a list even if only one field is given.
-			*/				
-			pyTagger(PyObject * func=NULL, int begin=0, int end=-1, 
+			*/
+			pyTagger(PyObject * func=NULL, int begin=0, int end=-1,
 				int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr()):
 			tagger( begin, end, step, at, rep, grp, infoFields)
-			{	
+			{
 				DBG_FAILIF(infoSize() == 0, ValueError,
 					"infoFields can not be empty.");
-			
+
 				DBG_ASSERT(PyCallable_Check(func), ValueError,
 					"Passed variable is not a callable python function.");
 
@@ -179,19 +179,19 @@ namespace simuPOP
 			};
 
 			virtual ~pyTagger()
-			{	
+			{
 				if( m_func != NULL )
 					Py_DECREF(m_func);
 			}
 
 			/// CPPONLY
 			pyTagger(const pyTagger & rhs):
-				tagger(rhs), m_func(rhs.m_func)
+			tagger(rhs), m_func(rhs.m_func)
 			{
 				if (m_func != NULL)
 					Py_INCREF(m_func);
 			}
-			
+
 			virtual Operator* clone() const
 			{
 				return new pyTagger(*this);
@@ -204,7 +204,7 @@ namespace simuPOP
 
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL);
-				
+
 		private:
 
 			PyObject * m_func;

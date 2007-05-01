@@ -87,14 +87,14 @@ namespace simuPOP
 	}
 
 	bool pyTagger::applyDuringMating(population& pop, population::IndIterator offspring,
-				individual* dad, individual* mom)
+		individual* dad, individual* mom)
 	{
 		UINT numFields = infoSize();
-		
+
 		vectoru idx(numFields);
 		for(size_t i=0; i<numFields; ++i)
 			idx[i] = pop.infoIdx(infoField(i));
-			
+
 		vectorf values;
 		if (dad != NULL)
 		{
@@ -112,7 +112,7 @@ namespace simuPOP
 			res, PyObj_As_Array);
 
 		DBG_FAILIF(res.size() != numFields, ValueError, "Please return a value for each information field");
-		
+
 		// assign return values to offspring
 		for(size_t i=0; i<numFields; ++i)
 			offspring->setInfo(res[i], idx[i]);
