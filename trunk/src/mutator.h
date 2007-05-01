@@ -398,8 +398,8 @@ namespace simuPOP
 				:mutator( rate,atLoci, maxAllele,
 				output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields), m_func(NULL)
 			{
-				if( !PyCallable_Check(func))
-					throw ValueError("Passed variable is not a callable python function.");
+				DBG_ASSERT(PyCallable_Check(func), ValueError,
+					"Passed variable is not a callable python function.");
 
 				Py_XINCREF(func);
 				m_func = func;

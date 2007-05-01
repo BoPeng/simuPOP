@@ -5455,7 +5455,20 @@ Arguments:
 
 Examples:
 
-popInit.log does not exist
+>>> # a Wright-Fisher population
+>>> WF = population(size=100, ploidy=1, loci=[1])
+>>> 
+>>> # a diploid population of size 10
+>>> # there are two chromosomes with 5 and 7 loci respectively
+>>> pop = population(size=10, ploidy=2, loci=[5, 7], subPop=[2, 8])
+>>> 
+>>> # a population with SNP markers (with names A,C,T,G
+>>> #  range() are python functions
+>>> pop = population(size=5, ploidy=2, loci=[5,10],
+...     lociPos=[range(0,5),range(0,20,2)],
+...     alleleNames=['A','C','T','G'],
+...     subPop=[2,3], maxAllele=3)
+>>>  
 
 
 "; 
@@ -7606,6 +7619,93 @@ Usage:
     x.__repr__()
 "; 
 
+%feature("docstring") simuPOP::pyTagger "
+
+Description:
+
+    simuPOP::pyTagger
+
+Details:
+
+    This tagger take some information fields from both parents, pass
+    to a python function and set individual field with the return
+    value.This operator can be used to trace the inheritance of trait
+    values.
+
+"; 
+
+%feature("docstring") simuPOP::pyTagger::pyTagger "
+
+Description:
+
+    simuPOP::pyTagger::pyTagger
+
+Usage:
+
+    pyTagger(*func=NULL, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+Arguments:
+
+    infoFields:     information fields. The user should gurantee the
+                    existence of these fields.
+    func:           a pyton function that return a list to assign the
+                    information fields. e.g. if fields=['A', 'B'], the
+                    function will pass values of fields 'A' and 'B' of
+                    father, followed by mother if there is one, to
+                    this function. The returned value is assigned to
+                    fields 'A' and 'B' of the offspring. The returned
+                    value has to be a list even if only one field is
+                    given.
+
+
+"; 
+
+%feature("docstring") simuPOP::pyTagger::~pyTagger "
+
+Description:
+
+    simuPOP::pyTagger::~pyTagger
+
+Usage:
+
+    x.~pyTagger()
+"; 
+
+%ignore simuPOP::pyTagger::pyTagger(const pyTagger &rhs);
+
+%feature("docstring") simuPOP::pyTagger::clone "
+
+Description:
+
+    this function is very important
+
+Usage:
+
+    x.clone()
+"; 
+
+%feature("docstring") simuPOP::pyTagger::__repr__ "
+
+Description:
+
+    simuPOP::pyTagger::__repr__
+
+Usage:
+
+    x.__repr__()
+"; 
+
+%feature("docstring") simuPOP::pyTagger::applyDuringMating "
+
+Description:
+
+    give pop, offspring, pop and mom.
+
+Usage:
+
+    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
+"; 
+
 %feature("docstring") simuPOP::PythonCoutBuf "
 
 Description:
@@ -9488,6 +9588,61 @@ Usage:
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 Arguments:
 
+    popSize:        whether or not calculate population sizes. will
+                    set numSubPop, subPopSize, popSize,
+                    subPop[sp]['popSize']
+    numOfMale:      whether or not count number of male and female,
+                    will set numOfMale and numOfFemale for all
+                    population/subpopulations
+    numOfAffected:  whether or not count number of affected
+                    individuals. Will set numOfAffected, and
+                    numOfUnaffected.
+    numOfAlleles:   an array of loci at which number of alleles will
+                    be counted (0 is excluded). Note that number of
+                    alleles will be automatically set if alleleFreq is
+                    counted.
+    alleleFreq:     an array of loci at which all alleles will be
+                    counted.
+    genoFreq:       an array of loci at which all genotype will be
+                    counted each item is the locus index followed by
+                    allele pairs.
+    heteroFreq:     an array of loci at which the observed proportion
+                    of individuausl heterozygous will be applyd for
+                    each allele. Expected heterozygosity will also be
+                    calculuate and put in heteroFreq[locus][0] (since
+                    allele 0 is not used.)
+    homoFreq:       an array of loci at which homozygosity number and
+                    frequcies will be calculated
+    expHetero:      an array of loci at which expected heterozygosity
+                    will be calculated.
+    haploFreq:      a matrix of haplotypes (allele sequence) to count
+                    format: haploFreq = [ [ 0,1,2 ], [1,2] ]All
+                    haplotypes on loci 012, 12 will be counted. If
+                    only one haplotype is specified, the outer [] can
+                    be ommited. I.e., haploFreq=[0,1] is acceptable.
+    LD:             apply LD, LD' and r2, given LD=[ [locus1 locus2],
+                    [ locus1 locus2 allele1 allele2], ,...] If two
+                    numbers are given, D, D' and r2 overall possible
+                    allele pairs will be calculated and saved as AvgLD
+                    etc. If four numbers are given, D, D' and r2 using
+                    specified alleles are provided. If only one item
+                    is specified, the outer [] can be ignored. I.e.,
+                    LD=[locus1 locus2] is acceptable.
+    LD_param::      a dictionary of parameters to LD statistics. Can
+                    have key stat: a list of statistics to calculate.
+                    default to all. if any statistics is specified,
+                    only those specified will be calculated. i.e.:
+                    LD_param={'stat':['LD']} LD: True/False, shortcut
+                    for 'stat':['LD'] LD_prime: True/False, shortcut
+                    for 'stat':['LD_prime'] ... subPop: True/False:
+                    whether or not calculate statistics for
+                    subpopulations midValues: True/False: whether or
+                    not keep intermediate results
+    Fst:            calculate Fst. Fis and Fit will be given as a side
+                    product. format Fst = [ 0, 1 ] Fst calculated at
+                    locus 0 and 1. Since any allele can be used to
+                    calculate Fst, Fst[0] will be the average over all
+                    alleles as suggested by Weir and Cockerham.
     relGroups:      calculated pairwise relatedness between groups.
                     relGroups can be in the form of either
                     [[1,2,3],[4,5],[7,8]] (gourps of individuals) or
