@@ -127,7 +127,10 @@ namespace simuPOP
 
 	/** \brief a collection of individuals with subpopulation structure
 
-	Please refer to user's Guide for details about this object.
+	simuPOP uses one-level population structure. That is to say, there is no sub-subpopulation
+	or families in subpopulations. Mating is within subpopulations only. Exchange of genetic information
+	across subpopulations can only be done through migration. Population and subpopulation sizes can be
+	changed, as a result of mating or migration. More specifically
 
 	*/
 	class population : public GenoStruTrait
@@ -141,18 +144,22 @@ namespace simuPOP
 			/** @name  constructors and destructor */
 			//@{
 
-			/// create a population object with given size and genotypic structure
+			///create a population object with given size and genotypic structure
 			/**
-			\param size population size. Can be ignored if subPop is specified.
-			   In that case, size is sum of subPop. Default to 0.
+			\warning this is a warning
+			\param size population size. \li Can be ignored if subPop is specified.
+			   \li In that case, size is sum of subPop. \li Default to 0.
+			   <br> If both \n parameters are provided, subPop should add up to size.
 			\param ploidy number of sets of chromosomes. Default to 2 (diploid).
 			\param loci an array of numbers of loci on each chromosome. If
 			   not specified, assume a single locus on one chromosome. Number
-			   of chromosomes is determined by the size of this array.
+			   of chromosomes is determined by the size of this array. The last chromosome can be sex chromosome.
+			   In this case, please specify the maximum number of loci on X and Y. I.e., if there are 3 loci on Y
+			   chromosme and 5 on X chromosome, use 5.
 			\param lociPos an array of loci distance for each locus. You can
-			   also use a nested array to specify loci distance for each chromosome.
-			   ( [1,2,3,4,5] or [[1,2],[3,4,5]] are both allowed for loci=[2,3])
-			   The default values are 1, 2, etc. on each chromosome.
+			also use a nested array to specify loci distance for each chromosome.
+			( [1,2,3,4,5] or [[1,2],[3,4,5]] are both allowed for loci=[2,3])
+			The default values are 1, 2, etc. on each chromosome.
 			\param subPop an array of subpopulation sizes. Default value is [size]
 			which means a single subpopulation of the whole population. If both
 			size and subPop are given, sum of subPop should agree with size.
@@ -170,7 +177,7 @@ namespace simuPOP
 			X-X is chromosome-loci index starting from 1.
 			\param maxAllele maximum allele number. Default to the max allowed allele states
 			of current library (standard or long allele version)
-			\param infoFields: name of information fields that will be attached to each
+			\param infoFields name of information fields that will be attached to each
 			individual. For example, if you need to record the parents of each individual
 			you will need two, if you need to record the age of individual, you need an additional
 			one. Other possibilities include offspring ids etc. Note that you have to plan
@@ -178,7 +185,7 @@ namespace simuPOP
 			to use. Default to none.
 			\return no return value. Exception will be thrown is wrong parameters are given.
 			\sa simulator, baseOperator, mating schemes
-			\test popInit.log \include popInit.log
+			\test popInit.log
 			*/
 			population( ULONG size=0,
 				UINT ploidy=2,
@@ -196,7 +203,7 @@ namespace simuPOP
 			/// CPPONLY copy constructor
 			population(const population& rhs);
 
-			///
+			/// deep copy of a population (in python, <tt>pop1 = pop</tt> will only create a reference to \c pop)
 			population * clone(int keepAncestralPops=-1) const;
 
 			/// SWAP population
@@ -239,17 +246,19 @@ namespace simuPOP
 			// only equal or unequal, no greater or less than
 			int __cmp__(const population& rhs) const;
 
-			/// \brief set population/subpopulation given subpopulation sizes
-			///
-			/// \param subPopSize an array of subpopulation sizes
-			///    the population may or may not change according to
-			///    parameter allowPopSizeChange if sum of subPopSize
-			///    does not match popSize.
-			/// \param allowPopSizeChange if true, popSize can change to sum of
-			///    subPopSize.
-			///
-			/// \return none
-			/// \sa migration, mating
+			/**
+			\brief set population/subpopulation given subpopulation sizes
+
+			\param subPopSize an array of subpopulation sizes
+			the population may or may not change according to
+			parameter allowPopSizeChange if sum of subPopSize
+			does not match popSize.
+			\param allowPopSizeChange if true, popSize can change to sum of
+			subPopSize.
+
+			\return none
+			\sa migration, mating
+			*/
 			void setSubPopStru(const vectorlu& newSubPopSizes, bool allowPopSizeChange=false);
 
 			///  number of sub populations.
@@ -262,8 +271,10 @@ namespace simuPOP
 			}
 
 			/// get size of subpopulation subPop
-			/** \param subPop index of subpopulation (start from 0)
-				\return size of subpopulation subPop
+			/**
+			\param subPop index of subpopulation (start from 0)
+
+			\return size of subpopulation subPop
 			*/
 			ULONG subPopSize(UINT subPop) const
 			{
@@ -273,8 +284,9 @@ namespace simuPOP
 			}
 
 			/// get size of all subpopulations
-			/** \return an array of size of subpopulations
-			 */
+			/**
+			\return an array of size of subpopulations
+			*/
 			vectorlu subPopSizes() const
 			{
 				return m_subPopSize;
@@ -355,7 +367,7 @@ namespace simuPOP
 			\param subPop subpopulation index
 			\result ending index of this subpopulation (not in this subpop)
 			\sa absIndIndex
-			 \note as with all ...End functions, the returning index is out of the range
+			\note as with all ...End functions, the returning index is out of the range
 			 so the actual range is [xxxBegin, xxxEnd). This agrees with all STL
 			 conventions.
 			*/
@@ -707,7 +719,7 @@ namespace simuPOP
 			*/
 			//@{
 
-			/** brief return individual affected status in pop namespace
+			/** \brief return individual affected status in pop namespace
 			 */
 			PyObject* exposeAffectedness(string name="affected")
 			{
@@ -727,9 +739,9 @@ namespace simuPOP
 			sort individuals and set subpopulations. Therefore, the following code
 			will do a migration:
 
-			setIndSubPopID([ an_array_of_info_value ])
+			\c {setIndSubPopID([ an_array_of_info_value ])}
 
-			setSubPopByIndID()
+			\c {setSubPopByIndID()}
 
 			\param info an array of info values, should have length of pop size
 			\sa individual::setSubPopID, individual::subPopID
@@ -776,7 +788,7 @@ namespace simuPOP
 			void splitSubPop(UINT which, vectorlu sizes, vectoru subPopID=vectoru());
 
 			/// split population
-			/** split subpopulation 'which' into subpopulations with specified 'proportions',
+			/** split subpopulation \em'which' into subpopulations with specified \em 'proportions',
 			optionally given subPopID.
 			\note subpop with negative id will be removed. So, you can shrink
 			one subpop by split and set one of the new subpop with negative id.
@@ -786,11 +798,11 @@ namespace simuPOP
 			/** remove empty subpops, this will adjust subPOP ID of other subpops */
 			void removeEmptySubPops();
 
-			/**  remove subpop, adjust subpop numbers so that there will be no 'empty'
+			/**  remove subpop, adjust subpop numbers so that there will be no \em 'empty'
 			subpops left */
 			void removeSubPops(const vectoru& subPops=vectoru(), bool shiftSubPopID=true, bool removeEmptySubPops=false);
 
-			/**  remove subpop, adjust subpop numbers so that there will be no 'empty'
+			/**  remove subpop, adjust subpop numbers so that there will be no \em 'empty'
 			subpops left */
 			void removeIndividuals(const vectoru& inds=vectoru(), int subPop=-1, bool removeEmptySubPops=false);
 
@@ -843,7 +855,7 @@ namespace simuPOP
 
 			/// insert an locus at given location.
 			/**
-				insertBeforeLocus(idx, pos, name) is a shortcut to insertBeforeLoci([idx], [pos], [name])
+				\c {insertBeforeLocus(idx, pos, name)} is a shortcut to \c {insertBeforeLoci([idx], [pos], [name])}
 			*/
 			void insertBeforeLocus(UINT idx, double pos, const string & name=string());
 
@@ -861,7 +873,7 @@ namespace simuPOP
 
 			/// append an locus at given location.
 			/**
-				insertAfterLocus(idx, pos, name) is a shortcut to insertAfterLoci([idx], [pos], [name])
+				\c {insertAfterLocus(idx, pos, name)} is a shortcut to \c {insertAfterLoci([idx], [pos], [name])}
 			*/
 			void insertAfterLocus(UINT idx, double pos, const string & name=string());
 
@@ -869,7 +881,7 @@ namespace simuPOP
 			/** Resize population to given new subpopulation sizes.
 
 				\param newSubPopSizes an array of new subpopulation sizes. If there
-					is only one subpopulation, use [newPopSize].
+					is only one subpopulation, use \c [newPopSize].
 				\param propagate if propagate is true, copy individuals to new comers
 					 i.e., 1,2,3 ==> 1,2,3,1,2,3,1
 				\note this function only resize current generation.
@@ -879,7 +891,7 @@ namespace simuPOP
 			/// \brief reorder subpopulations
 			/**
 			\param order new order of the subpopulations. For examples, 3 2 0 1
-			means subpop3, subpop2, subpop0, subpop1 will be the new layout.
+			means \c {subpop3}, subpop2, subpop0, subpop1 will be the new layout.
 			\param rank you can also specify new rank for each subpop. For example, 3,2,0,1
 			means the original subpopulations will have new ID 3,2,0,1. To achive order 3,2,0,1.
 			the rank should be 1 0 2 3.
@@ -888,9 +900,9 @@ namespace simuPOP
 				bool removeEmptySubPops=false);
 
 			/** form a new population according to info, info can be given directly
-				keepAncestralPops=-1: keep all
-				0: only current
-				1: keep one ...
+				\c keepAncestralPops=-1: keep all
+				\c 0: only current
+				\c 1: keep one ...
 			*/
 			population& newPopByIndID(int keepAncestralPops=-1,
 				const vectori& id=vectori(),
@@ -996,7 +1008,7 @@ namespace simuPOP
 			}
 
 			/// info iterator
-			/// oder = true: keep order
+			/// order = true: keep order
 			/// otherwise, respect subpop structure
 			GappedInfoIterator infoBegin(UINT index, UINT subPop, bool order)
 			{
