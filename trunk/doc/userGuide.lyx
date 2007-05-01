@@ -683,7 +683,7 @@ MPI modules.
 I welcome suggestions on how to make these features available for windows.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \end_layout
 
@@ -706,7 +706,7 @@ Classes (objects), member functions and parameter names start with small
  For example
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 population, population::subPopSize(), individual::setInfo()
 \end_layout
 
@@ -733,7 +733,7 @@ Constants start with Capital characters.
  For example
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 MigrByProportion, StatNumOfFemale
 \end_layout
 
@@ -741,7 +741,7 @@ MigrByProportion, StatNumOfFemale
 The following words in function names are abbreviated:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pos (position),  info (information), migr (migration), subPop (subpopulation),
  
 \newline
@@ -1869,11 +1869,11 @@ can be evaluated in each population's local namespace and yield different
  results.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
  
 \end_layout
 
@@ -2389,7 +2389,7 @@ taggers.
 You can then create a population with:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 population(size=1000, loci=[1,1], infoFields=['fitness'])
 \end_layout
 
@@ -2422,7 +2422,7 @@ should be used.
  The instant population growth model is actually quite easy to write:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 def ins_exp(gen, oldSize=[]):
 \newline
      if gen < burnin:
@@ -2498,7 +2498,7 @@ initByFreq
  We need only to specify locus to initialize, and use it like
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # initialize locus 0 (for common disease)
 \newline
 initByFreq(atLoci=[0], alleleFreq=C_f),
@@ -2532,7 +2532,7 @@ You will need to read the relative sections of the reference manual to pick
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 kamMutator(rate=mu, maxAllele=max_allele)
 \end_layout
 
@@ -2544,7 +2544,7 @@ single locus selector that treat 0 as wildtype, and any other allele as
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0])
 \end_layout
 
@@ -2552,7 +2552,7 @@ maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0])
 and
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 maSelector(locus=1, fitness=[1,1,1-R_s], wildtype=[0])
 \end_layout
 
@@ -2565,7 +2565,7 @@ Because an individual has only one fitness value, fitness values obtained
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 mlSelector([
 \newline
     maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0]),
@@ -2646,7 +2646,7 @@ alleleNum
 ) in each population's local namespace,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 stat(alleleFreq=[0,1]),
 \end_layout
 
@@ -2658,7 +2658,7 @@ pyEval
 (python expression) operator to print out the values:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pyEval(r' 
 \begin_inset Quotes erd
 \end_inset
@@ -2733,7 +2733,7 @@ pyEval
  operator (a direct translation of the formula):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pyEval('1./sum([(x/(1-alleleFreq[0][0]))**2 for x in alleleFreq[0][1:]])')
 \end_layout
 
@@ -2759,39 +2759,39 @@ expr
  ,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pyEval(stmts='''ne = [0,0]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 for i in range(2):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     freq = alleleFreq[i][1:]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     f0 = 1 - alleleFreq[i][0]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     if f0 == 0:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
         ne[i] = 0
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     else:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
         ne[i] = 1./sum([(x/f0)**2 for x in freq])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 ''', expr=r'
 \begin_inset Quotes erd
 \end_inset
@@ -2819,56 +2819,56 @@ pyEval
  a population as the first parameter (and an optional parameter),
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 def ne(pop):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     ' calculate effective number of alleles '
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     Stat(pop, alleleFreq=[0,1])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     f0 = [0, 0]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     ne = [0, 0]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     for i in range(2):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
         freq = pop.dvars().alleleFreq[i][1:]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
         f0[i] = 1 - pop.dvars().alleleFreq[i][0]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
         if f0[i] == 0:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
             ne[i] = 0
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
         else:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
             ne[i] = 1.
  / sum([(x/f0[i])**2 for x in freq])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     print '%d
 \backslash
 t%.3f
@@ -2882,7 +2882,7 @@ t%.3f
 n' % (pop.gen(), f0[0], f0[1], ne[0], ne[1])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     return True
 \end_layout
 
@@ -2890,7 +2890,7 @@ n' % (pop.gen(), f0[0], f0[1], ne[0], ne[1])
 Then, you can use this function in a python operator
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pyOperator(func=ne, step=5)
 \end_layout
 
@@ -3050,7 +3050,7 @@ click the help button on the dialog, or run
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 > simuLDDecay.py -h
 \end_layout
 
@@ -3064,7 +3064,7 @@ enter parameters in a parameter dialog, or use short or long command arguments
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 > simuLDDecay.py -s 500 -e 10 --recRate 0.1 --numRep 5 --noDialog
 \end_layout
 
@@ -3074,7 +3074,7 @@ use the optimized module by
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 > simuLDDecay.py --optimized
 \end_layout
 
@@ -3084,7 +3084,7 @@ save the parameters to a config file
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 > simuLDDecay.py --quiet -s 500 -e 10 --saveConfig decay.cfg
 \end_layout
 
@@ -3110,7 +3110,7 @@ and of course use
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 > simuLDDecay.py --config decay.cfg
 \end_layout
 
@@ -3135,7 +3135,7 @@ First line:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 #!/usr/bin/env python
 \end_layout
 
@@ -3145,15 +3145,15 @@ Write the introduction of the whole script in a module-wise doc string.
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 '''
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 This script will ....
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 '''
 \end_layout
 
@@ -3172,16 +3172,16 @@ Define an option data structure.
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 options = [ 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 ...
  a dictionary of all user input parameters ...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 ]
 \end_layout
 
@@ -3405,7 +3405,7 @@ name "cap:hybrid-operator"
 An example of hybrid operators
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{hybrid.py}
 preview false
 
@@ -3440,7 +3440,7 @@ stat
  For example,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 PyPenetrance(pop, parameters)
 \end_layout
 
@@ -3448,7 +3448,7 @@ PyPenetrance(pop, parameters)
 is the same as
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pyPenetrance
 \begin_inset LatexCommand index
 name "pyPenetrance"
@@ -3583,11 +3583,11 @@ name "PreMating"
  not the current generation, as shown below:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 preMating | mating -> offspring generation | postMating, fitness calculated
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 preMating | mating -> ...
 \end_layout
 
@@ -3661,7 +3661,7 @@ name "cap:pyOpeartor"
 A frequency dependent selection operator
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{pyOperator.py}
 preview false
 
@@ -3885,7 +3885,7 @@ name "cap:infoFields"
 Proportional hazard model and use of information fields
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \end_layout
 
@@ -3894,7 +3894,7 @@ Proportional hazard model and use of information fields
 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{infoFields.py}
 preview false
 
@@ -3903,7 +3903,7 @@ preview false
 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \lyxline
 
@@ -3967,7 +3967,7 @@ name "cap:splitMerge"
 Population split and merge
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{splitAndMerge.out}
 preview false
 
@@ -4023,7 +4023,7 @@ name "cap:splitMigration"
 Population split and migration
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{splitMigration.out}
 preview false
 
@@ -4139,7 +4139,7 @@ name "cap:splitMigration2"
 Population split with changing population size
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{splitMigration2.out}
 preview false
 
@@ -4200,7 +4200,7 @@ name "cap:splitMigration3"
 Population split with changing population size
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{splitMigration3.out}
 preview false
 
@@ -4407,47 +4407,47 @@ scripts/simuComplexDisease.py
  like this
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu.evolve(
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     preOps=[...],
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     ops = operators,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     end = 1000 - 2
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 )
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # need to do this to all replicate if you have more
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu.population(0).setAncestralDepth(2)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu.population(0).addInforFields(['father_idx', 'mother_idx'])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 operators.append(parentsTagger())
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu.setMatingScheme(randomMating(numOffspring=2))
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu.evolve(ops=operators, end=1000)
 \end_layout
 
@@ -4587,11 +4587,11 @@ combine: a python function, if given, used to combine two alleles at the
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 def comb(geno):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     return geno[0]+geno[1]+1
 \end_layout
 
@@ -4683,7 +4683,7 @@ name "cap:saveQTDT1"
 Function SaveQTDT, part one
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{saveQTDT1.py}
 preview false
 
@@ -4750,7 +4750,7 @@ name "cap:saveQTDT2"
 Function SaveQTDT, part two
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{saveQTDT2.py}
 preview false
 
@@ -4797,7 +4797,7 @@ name "cap:saveQTDT3"
 Function SaveQTDT, part three
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{saveQTDT3.py}
 preview false
 
@@ -4851,7 +4851,7 @@ name "cap:saveQTDT4"
 Function SaveQTDT, part four
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{saveQTDT4.py}
 preview false
 
@@ -4901,7 +4901,7 @@ name "cap:saveQTDT5"
 Function SaveQTDT, part five
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{saveQTDT5.py}
 preview false
 
@@ -4958,7 +4958,7 @@ name "cap:mapping"
 Example of gene mapping
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{mapping.py}
 preview false
 
@@ -5078,7 +5078,7 @@ It is critical for you to remember how many nodes a simuPOP simulation will
  need, since the usual way to start the simulation is
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 $ mpirun -n 4 python /path/to/a/simuPOP/script --mpi --chromMap='[2,3,4]'
  --other-options
 \end_layout
@@ -5213,7 +5213,7 @@ Run from command line
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 $ simuViewPop.py /path/to/population.txt
 \end_layout
 
@@ -5258,7 +5258,7 @@ will help you submit them.
  The command line options are
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 $ simuCluster.py -l simulation.lst -a  -r -f key=val jobs 
 \end_layout
 
@@ -5343,15 +5343,15 @@ $HOME/.simuCluster
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 command = 'bsub -J $name <'
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 queue = 'batch'
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 job_dir = '/scratch/jobs'
 \end_layout
 
@@ -5455,7 +5455,7 @@ reference "cap:joblist"
  Command
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 $ python scripts/simuCluster.py -l joblist.lst -a
 \end_layout
 
@@ -5495,7 +5495,7 @@ name "cap:joblist"
 A sample job list file
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{joblist.lst}
 preview false
 

@@ -1,5 +1,5 @@
 #LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 263
+\lyxformat 265
 \begin_document
 \begin_header
 \textclass manual
@@ -350,19 +350,19 @@ bioinformatics
 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \end_layout
 
@@ -1601,7 +1601,7 @@ Population has a large number of member functions, ranging from reviewing
 Population related functions
 \end_layout
 
-\begin_layout Standard
+\begin_layout Enumerate
 The following table lists all population related functions.
  Functions that are prefixed by 
 \family typewriter
@@ -4542,7 +4542,7 @@ name "population"
  function, you need to run 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \family typewriter
 help(population.__init__)
@@ -4739,11 +4739,9 @@ Copying a population
 Like many other python operations,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop = population(...)
-\end_layout
-
-\begin_layout LyX-Code
+\newline
 pop1 = pop
 \end_layout
 
@@ -4769,7 +4767,7 @@ pop
  If you would like to have an independent copy, use
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop1 = pop.clone()
 \end_layout
 
@@ -4781,7 +4779,7 @@ simu
  is a simulator with several replicates,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop = simu.population(idx)
 \end_layout
 
@@ -4796,15 +4794,15 @@ pop
  distroyed so the following calling sequence will crash python.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop = simu.population(idx)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu = simulator(....)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop.savePopulation(....)
 \end_layout
 
@@ -4812,7 +4810,7 @@ pop.savePopulation(....)
 If you would like to get a real copy, use
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop = simu.getPopulation(idx)
 \end_layout
 
@@ -4931,7 +4929,7 @@ apply()
  For example, you can initialize a population outside a simulator by 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 initByFreq( [0.3, .2, .5] ).apply(pop)
 \end_layout
 
@@ -4939,7 +4937,7 @@ initByFreq( [0.3, .2, .5] ).apply(pop)
 or dump the content of a population by
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 dumper().apply(pop)
 \end_layout
 
@@ -4989,7 +4987,7 @@ preview false
 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \end_layout
 
@@ -5002,15 +5000,15 @@ The following two calling sequences have different consequences:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 pop = population(10)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu = simulator(pop, randomMating(), rep=3)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu.evolve( preOps = [initByFreq([.8,.2]) ] )
 \end_layout
 
@@ -5022,15 +5020,15 @@ initByFreq
  object is applied to three populations.) but
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop = population(10)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 InitByFreq(pop, [.8, .2])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu = simulator(pop, randomMating(), rep=3)
 \end_layout
 
@@ -5047,15 +5045,15 @@ If you are going to call such a function many times, it is more efficient
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 init = initByFreq([.8,.2])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 for i in range(0,1000):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   init.apply(pop[i])
 \end_layout
 
@@ -5063,11 +5061,11 @@ for i in range(0,1000):
 than 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 for i in range(0,1000):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   InitByFreq(pop[i], [.8,.2])
 \end_layout
 
@@ -5682,15 +5680,15 @@ individuals(), individuals(subPop):
 The iterator can simplify the access of individuals, by using
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 for ind in pop.individuals(2):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   # do something to ind
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   print ind.affected()
 \end_layout
 
@@ -5698,15 +5696,15 @@ for ind in pop.individuals(2):
 instead of the older
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 for i in range(pop.popSize()):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   ind = pop.individual(i)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   print ind.affected()
 \end_layout
 
@@ -6894,7 +6892,7 @@ setIndInfo(values, idx or name).
  a population unordered, you can use 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 setIndInfo(values, idx)
 \end_layout
 
@@ -6902,11 +6900,11 @@ setIndInfo(values, idx)
 Otherwise, you will have to use the less efficient way:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 for i in range(pop.popSize()):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     pop.individual(i).setInfo(values[i], idx)
 \end_layout
 
@@ -6928,27 +6926,27 @@ arrIndInfo,
  you would usually do:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 idx = pop.infoIdx('trait2')
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 step = pop.infoSize()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 arr = pop.arrIndInfo(subPop=2)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 for i in range(pop.subPopSize(2)):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   # note again that arr is writable.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   arr[idx + step*i] = something
 \end_layout
 
@@ -7026,15 +7024,15 @@ setAncestralDepth()
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 simu.evolve(...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   setAncestralDepth(3, at=[-3])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 )
 \end_layout
 
@@ -7435,19 +7433,19 @@ Shared variables will also be saved (except for big objects like samples).
  For example, you can 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop.vars().clear()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop.dvars().migrationRate = 0.002
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop.dvars().diseaseLoci = [4, 30]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 SavePopulation(pop, 'pop.bin')
 \end_layout
 
@@ -7465,7 +7463,7 @@ simuViewPop.py
  First, you can use this script as a standalone application, simply run
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simuViewPop.py mypop.bin
 \end_layout
 
@@ -7484,15 +7482,15 @@ viewPop
  For example,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 import simuViewPop
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simuViewPop.viewPop(myPop)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simuViewPop.viewPop(filename='mypop.bin') 
 \end_layout
 
@@ -7934,27 +7932,26 @@ spliPopulation
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 def lin_exp(gen, oldSize=[]):
+\newline
+  if gen < 200:   # burn in, constant population
+ size
 \end_layout
 
-\begin_layout LyX-Code
-  if gen < 200:   # burn in, constant population size
-\end_layout
-
-\begin_layout LyX-Code
+\begin_layout Listings
     return [1000]
 \end_layout
 
-\begin_layout LyX-Code
-  else:           # increase subpopulation sizes
+\begin_layout Listings
+else:           # increase subpopulation sizes
 \end_layout
 
-\begin_layout LyX-Code
-    incSize = (10000-1000)/(500-200)/len(oldSize)
+\begin_layout Listings
+incSize = (10000-1000)/(500-200)/len(oldSize)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     return [oldSize[x]+incSize for x in range(0, len(oldSize))]
 \end_layout
 
@@ -7962,7 +7959,7 @@ def lin_exp(gen, oldSize=[]):
 you can then use this function as follows
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 ...randomMating(newSubPopSizeFunc=lin_exp) ...
 \end_layout
 
@@ -7994,15 +7991,15 @@ simuUtil.py
  For all these function, you can test them by
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 func = oneOfTheDemographicFunc(parameters)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 gen = range(0, yourEndGen)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 r.plot(gen, [func(x)[0] for x in gen])
 \end_layout
 
@@ -8127,7 +8124,7 @@ bottleneckSize
  
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \end_layout
 
@@ -8580,7 +8577,7 @@ simulator::setGroup
 The most useful example is 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 output('
 \backslash
 n',rep=REP_LAST)
@@ -8941,50 +8938,50 @@ vars(rep)
  function:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu.vars(0)        simu.vars(1) ...
       // replicate
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   popSize             popSize            // local namespace
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   alleleFreq[0]       alleleFreq[0]      // allele frequency at locus 1
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   alleleFreq[1]       alleleFreq[1]      // at locus 2
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   ...
                  ....
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   subPop[0]           subPop[0]          // subpop namespace
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     popSize             popSize          // subpopulation 1 size
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     allaleFreq[0]       allaleFreq[0]    // allele frequency at locus 1
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     ...
                  ...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   subPop[1]           subPop[1]          // variables for subpop 2
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     ...
                  ...
 \end_layout
@@ -9032,7 +9029,7 @@ simuUtil.py
  For example
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 ListVars(simu.vars(0), level=2)
 \end_layout
 
@@ -9356,7 +9353,7 @@ gen:rep
  using the following function
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop.evaluate(r
 \begin_inset Quotes eld
 \end_inset
@@ -9373,7 +9370,7 @@ but if you would like to change/create variables, you have to use statements
  like
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop.evalulate(r
 \begin_inset Quotes eld
 \end_inset
@@ -9399,11 +9396,11 @@ Since you are executing Python statements, you can of course do it directly
  For example, the above function does exactly the following
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop.vars()['myval'] = pop.vars()['rep'] + 1
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop.vars()['myvar']
 \end_layout
 
@@ -9421,7 +9418,7 @@ we use expressions for dynamic parameters.
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 newSubPopSizeExpr=
 \begin_inset Quotes erd
 \end_inset
@@ -9433,7 +9430,7 @@ range(10,20)*1.2
 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 outputExpr= ' 
 \begin_inset Quotes erd
 \end_inset
@@ -9605,7 +9602,7 @@ evolve(..., end=0), evolve
 It may sound strange that 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 evolve(end=2)
 \end_layout
 
@@ -9617,7 +9614,7 @@ evolve the population three times.
  This is why you should test if a simulation is finished correctly by
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 if(simu.gen() == endGen+1)
 \end_layout
 
@@ -10119,7 +10116,7 @@ First line:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 #!/usr/bin/env python
 \end_layout
 
@@ -10129,15 +10126,15 @@ Introduction to the whole script:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 '''
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 This script simulates ....
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 '''
 \end_layout
 
@@ -10155,16 +10152,16 @@ Options: (see the next section)
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 options = [ 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 ...
  a dictionary of all user input parameters ...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 ]
 \end_layout
 
@@ -10184,7 +10181,7 @@ Evolution function
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 def simulation(....)
 \end_layout
 
@@ -10194,75 +10191,75 @@ Executable part:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 if __name__ == '__main__':  
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   allParam = simuOpt.getParam(options,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     ''' A short description ''', __doc__)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   # if user press cancel,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   if len(allParam) == 0:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     sys.exit(1)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   # -h or --help
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   if allParam[0]:  
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     print simuOpt.usage(options, __doc__)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     sys.exit(0)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   # sace configuration, something like
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   if allParam[-2] != None:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
      simuOpt.saveConfig(options, allParam[-2]+'.cfg', allParam)  
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   # get the parameters, something like
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   N = allParam[1]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   # run the simulation
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   simulation(N) 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   
 \end_layout
 
@@ -10421,48 +10418,48 @@ simuPOP
  All these should be put in a list of dictionaries like follows:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 options = [
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   { 'arg':'h', 'longarg':'help', 'default':False,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     'allowedTypes':[IntType],
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     'description':'print this message'},
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   { 'longarg':'saveconfig=', 'default':'', 'allowedTypes':[StringType],
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     'description':'Save current configuration in a file.'},
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   { 'arg':'m', 'longarg':'mu', 'label'='mutationRate', 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     'default':0.005,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     'validate': simuOpt.valueBetween(0,1),
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     'description':'mutation rate (a number or an array of numbers) at each
  loci'
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   } ]
 \end_layout
 
@@ -10705,7 +10702,7 @@ valueOr(validator), valueAnd(val1, val2), valueOr(val1,val2)
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 valueOr( valueGT(0), valueListOf( valueGT(0) ))
 \end_layout
 
@@ -10795,11 +10792,11 @@ With all these information at hand, the rest is routine, if you follow the
  coding conventions.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \end_layout
 
@@ -10911,131 +10908,131 @@ count, index
  The following is the operations allowed:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # obtain an object using one of the arrXXX functions
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop = population(loci=[3,4], lociPos=[1,2,3,4,5,6,7])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 arr = pop.arrLociPos()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # print and expression (just like list)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 print arr
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 str(arr)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # count
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 arr.count(2)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # index 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 arr.index, 2)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # can read write
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 arr[0] = 0.5
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # convert to list
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 arr.tolist()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # or simply
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 list(arr)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # compare to list directly
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 arr == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # you can also convert and compare
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 list(arr) == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # slice
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 arr[:] = [1,2,3,4,5,6,7]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # arr1 is 1,2,3
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 arr1 = arr[:3]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # assign slice from a number
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # IMPORTANT NOTE that arr will also be affected
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # since arr1 point to a part of arr
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 arr1[:] = 10
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # assign vector of the same length
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 arr1[:] = [30,40]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # assign from another part
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 arr[1:3] = arr[3:5]
 \end_layout
 
@@ -11059,7 +11056,7 @@ arrXXX
  
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \end_layout
 
@@ -11072,15 +11069,15 @@ Most of the info can be found in rpy manual.
  One function in simuRPy may help though:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 def rmatrix(mat):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   ' convert a python 2d list to r.matrix object'
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   return with_mode(NO_CONVERSION, r.do_call)('rbind',mat)
 \end_layout
 
@@ -11089,11 +11086,11 @@ with this function, you can easily handle matrices in R.
  (List and array has been easy enough to be handled).
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 >>> a = [[1,2],[4,5]]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 >>> r.image( rmatrix(a))
 \end_layout
 
@@ -11103,7 +11100,7 @@ With the help of this function, you can call almost any R function directly,
  In this case, you can always do
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 >>> r('''whatever R expression''')
 \end_layout
 
@@ -11112,39 +11109,39 @@ Since Rpy is not always available, you may see the following scenario again
  and again in simuPOP scripts:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 try:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   from simuRPy import *
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 except:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   hasRPy = False
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 else:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   hasRPy = True
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 ...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 if hasRPy:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   r.....
 \end_layout
 
@@ -11180,15 +11177,15 @@ define a function that handle a population as you wish.
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 def myOperator(pop, para):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   ' do whatever you want'
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   return True
 \end_layout
 
@@ -11215,7 +11212,7 @@ pyOperator
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 pyOperator(mfunc=yOperator, param=para)
 \end_layout
 
@@ -11406,7 +11403,7 @@ pyOperator
  
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 def Func(pop, off, dad, mom, para)
 \end_layout
 
@@ -11414,7 +11411,7 @@ def Func(pop, off, dad, mom, para)
 or
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 def shortFunc(off, para)
 \end_layout
 
@@ -11427,7 +11424,7 @@ para
  To use this operator, you can do
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pyOperator(stage=DuringMating, func=Func, param=someparam, formOffGenotype=True)
 \end_layout
 
@@ -11435,11 +11432,11 @@ pyOperator(stage=DuringMating, func=Func, param=someparam, formOffGenotype=True)
 or
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pyOperator(stage=DuringMating, func=shortFunc, param=someparam,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 formOffGenotype=False, passOffspringOnly=True)
 \end_layout
 
@@ -11506,15 +11503,15 @@ pyOpertor
  
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 def func(ind, param):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   ind.setInfo(param[0], 'myinfo)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pyIndOperator(func=func, param=(1,))
 \end_layout
 
@@ -11522,19 +11519,19 @@ pyIndOperator(func=func, param=(1,))
 is the same as
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 def func(pop, param):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   for ind in pop.individuals():
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     ind.setInfo(param[0], 'myinfo')
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pyIndOperator(func=func, param=(1,))
 \end_layout
 
@@ -12415,11 +12412,11 @@ Mutators record the number of mutation events at each loci.
  You can retrieve this information using
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 mut.mutationCount(locus)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 mut.mutationCounts()
 \end_layout
 
@@ -12857,7 +12854,7 @@ pointMutator,
  It is syntax is:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pointMutator(atLoci, toAllele, atPloidy=[], inds=[], ...)
 \end_layout
 
@@ -13052,11 +13049,11 @@ Recombinations after each locus will be recorded.
  You can retrieve this information through functions
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 rec.recCount(locus)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 rec.recCounts()
 \end_layout
 
@@ -13998,7 +13995,7 @@ Assign penetrance using a table with keys 'X-Y' where X and Y are allele
  For example,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 mapPenetrance(locus=1, penetrance={'1-1':0, '1-2':0.5, '2-2':1})
 \end_layout
 
@@ -14058,7 +14055,7 @@ maSelector
  For example
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 maPenetrance(loci=[1,5], wildtype=[1], penetrance=[0,0.5,1,0,0,1,0,1,1])
 \end_layout
 
@@ -14195,27 +14192,27 @@ For example, if each locus follows an additive penetrance model, we can
  have
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pen = []
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 for loc in loci:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   pen.append( maPenetrance(locus=loc, wildtype=[1],
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     penetrance=[0.0.3,0.6] ) )
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # the multi-loci penetrance
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 penMulti = mlPenetrance(mode=PEN_Multiplicative, peneOps=pen)
 \end_layout
 
@@ -14285,27 +14282,27 @@ pyPenetrance
  as
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 def peneFunc(geno):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   p = 1
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   for l in range(len(geno)/2):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     p *= (geno[l*2]+geno[l*2+1]-2)*0.3
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   return p
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 penMulti = pyPenetrance(loci=loci, func=peneFunc)
 \end_layout
 
@@ -14323,27 +14320,27 @@ It would be useful to let peneFunc take parameters.
  This may sound intimidating but it is really easy:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 def peneFunc(table):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   def func(geno):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     return table[geno[0]-1][geno[1]-1]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   return func
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # then, given a table, you can do
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pen = pyPenetrance(loci=loci, func=peneFunc( ((0,0.5),(0.3,0.8)) ) )
 \end_layout
 
@@ -14355,7 +14352,7 @@ peneFunc
  to return a penetrance function that uses this table.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     
 \end_layout
 
@@ -15149,59 +15146,59 @@ All these requirements come at a cost: multiple ancestral populations, judge
  For example, you can do
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 endGen = 1000
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # having two offsprings only at the last three generations
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 def numOffspring(gen):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   if gen >= endGen - 3:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     return 2
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   else 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     return 1
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # evolve ...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu = simulator(pop, randomMating(numOffspringFunc = numOffspring))
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu.evolve( ...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   parentsTagger(begin = endGen - 3),
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   mapPenetrance(...., begin = endGen - 2),
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   setAncestralDepth(1, at = endGen -2 )
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 ...)
 \end_layout
 
@@ -15245,7 +15242,7 @@ use a penetrance operator to set affected status of each individual
 and finally use this operator (or function)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 affectedSibpairSample(size
 \family typewriter
 ,
@@ -15319,7 +15316,7 @@ numSibpairs
  of each sample.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 
 \end_layout
 
@@ -15432,7 +15429,7 @@ XXX
  For example, you can use
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 stat(LD=[1,3], LD_param={'LD':True, 'LD_prime':True, 'subPop':False})
 \end_layout
 
@@ -16102,7 +16099,7 @@ haploFreq:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 haploFreq = [ [ 0,1,2 ], [1,2] ]
 \end_layout
 
@@ -16197,29 +16194,29 @@ parameter:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 LD: LD = [ [1,2], [ 0,1,1,2],[1,2,1,2]] , or LD=[1,2] in the case of one
  pair to calculate.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 LD_param: a dictionary of
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     'LD', 'LD_prime', 'R2', 'Delta2'
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     'ld', 'ld_prime', 'r2', 'delta2'
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     'stat', (e.g.
  'stat':['LD', 'r2'])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     'subPop'=True, 'midValues'=False
 \end_layout
 
@@ -16822,7 +16819,7 @@ This operator output a simple string.
  For example, 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 output(r'
 \backslash
 n', rep=REP_LAST)
@@ -17070,7 +17067,7 @@ plot a number in the form of a varaible or expression, use
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 varPlotter(var='expr')
 \end_layout
 
@@ -17081,7 +17078,7 @@ plot a vector in the same window and there is only one replicate in the
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 varPlotter(var='expr', varDim=len)
 \end_layout
 
@@ -17100,7 +17097,7 @@ plot a vector in the same window and there are several replicates, use
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 varPlotter(var='expr', varDim=len, numRep=nr, byRep=1)
 \end_layout
 
@@ -17121,7 +17118,7 @@ if you would like to plot each item of your array variable in a subplot,
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Listings
 varPlotter(var='expr', varDim=len, byVal=1)
 \end_layout
 
@@ -17129,7 +17126,7 @@ varPlotter(var='expr', varDim=len, byVal=1)
 in case of a single replicate or
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
 \end_layout
 
@@ -17265,7 +17262,7 @@ leaveOpen:
 Here is an example:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 \begin_inset Include \verbatiminput{log/simuPlotter.log}
 preview false
 
@@ -17639,7 +17636,7 @@ This operator terminates the evolution under certain conditions.
  For example,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 terminateIf(condition='alleleFreq[0][1]<0.05', begin=100)
 \end_layout
 
@@ -17735,7 +17732,7 @@ at
  parameter of an operator by
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 ifElse('rep in [2,5,9]', operator)
 \end_layout
 
@@ -17845,23 +17842,23 @@ This operator does nothing.
  It is used like follows:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 if savePop :
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   saveOp = savePopulation(output='a.txt')
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 else:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   saveOp = noneOp()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 simu.evolve( [ ...
  saveOp ])
 \end_layout
@@ -17947,7 +17944,7 @@ This operator, when called, output the difference between current and last
  Similar information can also be obtained from 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 turnOnDebug(DBG_PROFILE)
 \end_layout
 
@@ -18135,7 +18132,7 @@ simuPOP
  For example, the following code will crash simuPOP:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 >>> population(1).individual(0).arrAllele()
 \end_layout
 
@@ -18145,33 +18142,33 @@ g the genotype of the only individual of this population.
  However, the reason is clear if you turn on debug info:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 >>> TurnOnDebug(DBG_ALL)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 Debug code DBG_ALL is turned on.
  cf.
  listDebugCode(), turnOffDebug() 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 >>> population(1).individual(0).arrAlleles()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 Constructor of Population is called
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 Population size 1
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 Destructor of Population is called 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 Segmentation fault (core dumped) 
 \end_layout
 
@@ -18187,11 +18184,11 @@ population(1)
  The right way to do this is create a persistent population object: 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 >>> pop = population(1)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 >>> pop.individual(0).arrAllele()
 \end_layout
 
@@ -18340,7 +18337,7 @@ The genotypes of an individual are organized as a single array.
  The genotypes should be in the order of
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 0-0-0, 1-0-0, 0-1-0, 1-1-0, 2-1-0,0-0-1, 1-0-1, 0-1-1, 1-1-1,2-1-1
 \end_layout
 
@@ -18584,7 +18581,7 @@ ch
  For example
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pop.individual(1).arrGenotype(1, 2)
 \end_layout
 
@@ -18724,51 +18721,51 @@ For example, if you would like to record a silly statistics, namely the
 , you can do:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 def sillyStat(pop, para):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   # para can be used to pass any number of parameters
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   (filename, m, n) = para # unpack parameter
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   f = open(filename)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   f.write('%d ' % pop.individual(m).allele(n) )
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   f.close()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 # then in the evole function
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 evolve(...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   ops=[ # other operators
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     pyOperator(func=sillyStat, param=('file.txt', 2, 1) )
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   ]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 )
 \end_layout
 
@@ -18835,7 +18832,7 @@ preview false
 This function actually returns an operator
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 output(r"
 \backslash
 t", rep=REP_LAST, begin=500)
@@ -18932,7 +18929,7 @@ Note that
 You can use this function independently like
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 saveInFstatFormat(simu.population(1),'a.txt')
 \end_layout
 
@@ -18993,7 +18990,7 @@ preview false
 This function takes all parameters of an ordinary operator:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 saveFstat(at=[-1], outputExpr=r
 \begin_inset Quotes erd
 \end_inset
@@ -19013,19 +19010,19 @@ pyEval
  operator (use above example)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 pyEval(exposePop=1, at=[-1], 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   stmts=r"""saveInFSTATFormat(pop,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
     output='''''', outputExpr=r''' 'a'+str(rep)+'.txt' """ 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
   )
 \end_layout
 
@@ -19179,7 +19176,7 @@ test
  To run all tests, run
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 sh run_tests.sh
 \end_layout
 
@@ -19187,7 +19184,7 @@ sh run_tests.sh
 Or, if you do not install rpy and r, run
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Listings
 sh run_tests.sh norpy
 \end_layout
 
