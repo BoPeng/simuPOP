@@ -98,7 +98,7 @@ class Doxy2SWIG:
     def parse_Element(self, node):
         """Parse an `ELEMENT_NODE`. This calls specific
         `do_<tagName>` handers for different elements. If no handler
-        is available the `generic_parse` method is called. All
+        is available the `parse_childnodes` method is called. All
         tagNames specified in `self.ignores` are simply ignored.
         """
         name = node.tagName
@@ -115,7 +115,7 @@ class Doxy2SWIG:
             handlerMethod = getattr(self, attr)
             handlerMethod(node)
         else:
-            self.generic_parse(node)
+            self.parse_childnodes(node)
 
     def parse_Text(self, node):
         txt = node.data
@@ -153,18 +153,17 @@ class Doxy2SWIG:
         return dict(nodes)
 
 
-    def generic_parse(self, node):
-        """A Generic parser for arbitrary tags in a node.
-         - node:    A node in the DOM.
+    def parse_childnodes(self, node):
+        """parse all child nodes.          
         """
-        npiece = 0
+        #self.parse(node)
         for n in node.childNodes:
             self.parse(n)
 
 
     def space_parse(self, node):
         self.add_text(' ')
-        self.generic_parse(node)
+        self.parse_childnodes(node)
 
     do_ref = space_parse
     do_emphasis = space_parse
@@ -194,7 +193,20 @@ class Doxy2SWIG:
     def do_linebreak(self, node):
         #newline tag indicates the linebreak we do want
         self.add_text(r'</newline>')
-        
+
+
+    def do_itemizedlist(self, node):
+        if( node.hasChildNodes ):
+            self.add_text(r'<itemize>') 
+            self.parse_childnodes(node)
+            self.add_text(r'</itemize>')
+            
+
+    def do_listitem(self, node):
+        self.add_text('<item>')
+        self.parse_childnodes(node)
+        self.add_text('</item>')
+             
         
     def do_compounddef(self, node):
         kind = node.attributes['kind'].value
@@ -218,18 +230,18 @@ class Doxy2SWIG:
 
     # def do_includes(self, node):
     #         # self.add_text('C++ includes: ')
-    #         self.generic_parse(node, pad=1)
+    #         self.parse_childnodes(node, pad=1)
 
     def do_parameterlist(self, node):
         if( node.hasChildNodes):
              self.curField = 'Arguments'
              if not self.content[-1].has_key('Arguments'):
                  self.content[-1]['Arguments'] = []
-             self.generic_parse(node)
+             self.parse_childnodes(node)
 
 
     def do_para(self, node):
-        self.generic_parse(node)
+        self.parse_childnodes(node)
 
 
     def do_parametername(self, node):
@@ -242,13 +254,13 @@ class Doxy2SWIG:
         self.curField = 'Details'
         if not self.content[-1].has_key('Details'):
             self.content[-1]['Details'] = ''
-        self.generic_parse(node)
+        self.parse_childnodes(node)
 
 
     def do_briefdescription(self, node):
         self.curField = 'Description'
         self.content[-1]['Description'] = ''
-        self.generic_parse(node)
+        self.parse_childnodes(node)
 
     def do_memberdef(self, node):
         prot = node.attributes['prot'].value
@@ -316,7 +328,7 @@ class Doxy2SWIG:
     def do_sectiondef(self, node):
         kind = node.attributes['kind'].value
         if kind in ('public-func', 'func', 'user-defined'):
-                self.generic_parse(node)
+                self.parse_childnodes(node)
 
 
     def do_xrefsect(self, node):
@@ -353,9 +365,9 @@ class Doxy2SWIG:
         if kind in ('warning', 'see', 'note', 'return'):
             self.curField = kind
             self.content[-1][kind] = ''
-            self.generic_parse(node)
+            self.parse_childnodes(node)
         else:
-            self.generic_parse(node)
+            self.parse_childnodes(node)
         self.curField = 'Details'
         self.content[-1]['Details'] = ''
 
@@ -414,7 +426,7 @@ class Doxy2SWIG:
         kind = node.attributes['kind'].value
         refid = node.attributes['refid'].value
         if kind == 'function' and refid[:9] == 'namespace':
-            self.generic_parse(node)
+            self.parse_childnodes(node)
 
 
     def do_doxygenindex(self, node):
@@ -477,9 +489,6 @@ class Doxy2SWIG:
             if entry['ignore'] and '~' in entry['Name']:
                 print "Desctructor of %s has CPPONLY. Please correct it." % entry['Name']
                 sys.exit(1)
-        for entry in self.content:
-            if 'population' in entry['Name']:
-                print entry
         #for entry in self.content:
         #    if entry.has_key('description') and 'PLOIDY:' in entry['description'];
         #        if 'PLOIDY:ALL' in entry['description']:
@@ -544,6 +553,10 @@ class Doxy2SWIG:
         text = text.replace('<tt>', r'{\tt ')
         text = text.replace('</tt>', '}')
         text = text.replace('</newline>', r'\newline')
+        text = text.replace('<itemize>', r'\begin{itemize} ')
+        text = text.replace('</itemize>', r'\end{itemize}')
+        text = text.replace('<item>', r'\item ')
+        text = text.replace('</item>', ' ')
         return text
 
 
@@ -661,8 +674,7 @@ class Doxy2SWIG:
 {\begin{list}{}{
 \setlength{\rightmargin}{\leftmargin}
 \setlength{\listparindent}{0pt}
-\raggedright
-\setlength{\itemsep}{0pt}
+\raggngth{\itemsep}{0pt}
 \setlength{\parsep}{0pt}
 \normalfont\ttfamily}
  \item[]}
@@ -670,10 +682,16 @@ class Doxy2SWIG:
 \floatname{algorithm}{Example}
 
 \lstset{language=Python,
-   showspaces=false,
-   basicstyle=\footnotesize,
+   basicstyle=\ttfamily,
    showstringspaces=false,
-   showtabs=false
+   xleftmargin=30pt,
+   xrightmargin=10pt,
+   resetmargins=false,
+   showspaces=false,
+   showtabs=false,
+   frame=none,
+   columns=fixed,
+   keepspaces=true,
 }
 
 \usepackage{babel}
@@ -708,6 +726,11 @@ class Doxy2SWIG:
         text = text.replace('</em>', '')
         text = text.replace('<tt>', '')
         text = text.replace('</tt>', '')
+        text = text.replace('<itemize>', '')
+        text = text.replace('</itemize>', '')
+        #itemize items in swig file
+        text = text.replace('<item>', '</newline> * ')
+        text = text.replace('</item>', '')
         #used in swig file output
         text = text.split(r'</newline>')
         strs = []
