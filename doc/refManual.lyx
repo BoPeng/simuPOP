@@ -17397,7 +17397,7 @@ The plotting function used for Reich's simulation, using R as plotting engine.
 \end_layout
 
 \begin_layout Section
-Tagging (used for pedigree tracking) 
+Tagging (used for pedigree tracking, trait inheritance) 
 \end_layout
 
 \begin_layout Subsection
@@ -17469,6 +17469,63 @@ affectedSibpairSample
  Since parental population will be discarded or stored after mating, and
  tagging info will be passed with individuals, mating/population change
  etc will not interfere with this simple tagging system.
+\end_layout
+
+\begin_layout Subsection
+(operator c++) 
+\family typewriter
+pyTagger 
+\end_layout
+
+\begin_layout Standard
+This tagger can be used to trace the inheritance of trait.
+ This sort of inheritance can be seen in applications like Nemo 
+\begin_inset LatexCommand citep
+key "Guillaume2006"
+
+\end_inset
+
+, which is used in ecology applications where exact genotype may not be
+ important and trait can be passed from parents to offspring directly.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+pyTagger 
+\family default
+has two important parameters
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+infoFields
+\family default
+: information fields that is involved in this tagger.
+ Fields from parents will be passed to a python function, and the return
+ values (a list) will be assigned to offspring
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+func
+\family default
+: a python function that takes values from information fields, and return
+ a list of the same length of 
+\family typewriter
+infoFields
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+During evolution, trait values in 
+\family typewriter
+infoFields
+\family default
+ of parents are calculated and passed to offspring.
 \end_layout
 
 \begin_layout Section

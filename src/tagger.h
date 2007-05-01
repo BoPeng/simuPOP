@@ -84,6 +84,8 @@ namespace simuPOP
 				const vectorstr& infoFields=vectorstr(TAG_InheritFields, TAG_InheritFields+2)):
 			tagger( begin, end, step, at, rep, grp, infoFields), m_mode(mode)
 			{
+				DBG_ASSERT(infoSize() == 2, ValueError,
+					"Inherit tagger needs to know the information fields of both parents");
 			};
 
 			virtual ~inheritTagger()
@@ -143,6 +145,69 @@ namespace simuPOP
 
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL);
+	};
+
+	/** This tagger take some information fields from both parents, pass to a python function
+		and set individual field with the return value.
+
+		This operator can be used to trace the inheritance of trait values.
+	*/
+	class pyTagger: public tagger
+	{
+		public:
+			/** \param infoFields information fields. The user should gurantee the existence of
+				these fields.
+				\param func a pyton function that return a list to assign the information fields.
+					e.g. if fields=['A', 'B'], the function will pass values of fields 'A' and
+					'B' of father, followed by mother if there is one, to this function. The returned value
+					is assigned to fields 'A' and 'B' of the offspring. The returned value
+					has to be a list even if only one field is given.
+			*/				
+			pyTagger(PyObject * func=NULL, int begin=0, int end=-1, 
+				int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
+				const vectorstr& infoFields=vectorstr()):
+			tagger( begin, end, step, at, rep, grp, infoFields)
+			{	
+				DBG_FAILIF(infoSize() == 0, ValueError,
+					"infoFields can not be empty.");
+			
+				DBG_ASSERT(PyCallable_Check(func), ValueError,
+					"Passed variable is not a callable python function.");
+
+				Py_XINCREF(func);
+				m_func = func;
+			};
+
+			virtual ~pyTagger()
+			{	
+				if( m_func != NULL )
+					Py_DECREF(m_func);
+			}
+
+			/// CPPONLY
+			pyTagger(const pyTagger & rhs):
+				tagger(rhs), m_func(rhs.m_func)
+			{
+				if (m_func != NULL)
+					Py_INCREF(m_func);
+			}
+			
+			virtual Operator* clone() const
+			{
+				return new pyTagger(*this);
+			}
+
+			virtual string __repr__()
+			{
+				return "<simuPOP::pyTagger>" ;
+			}
+
+			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
+				individual* dad=NULL, individual* mom=NULL);
+				
+		private:
+
+			PyObject * m_func;
 	};
 }
 #endif
