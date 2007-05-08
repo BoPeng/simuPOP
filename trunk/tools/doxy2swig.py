@@ -183,12 +183,14 @@ class Doxy2SWIG:
             
 
     def do_computeroutput(self, node):
-        try:
-            if node.firstChild is not None:
-                self.add_text(r'<tt>%s</tt>' % node.firstChild.data)
-        except:
-            pass
-            
+        #try:
+        #    if node.firstChild is not None:
+        #        self.add_text(r'<tt>%s</tt>' % node.firstChild.data)
+        #except:
+        #    pass
+        self.add_text('<tt>')
+        self.parse_childnodes(node)
+        self.add_text('</tt>')
             
     def do_linebreak(self, node):
         #newline tag indicates the linebreak we do want
@@ -366,6 +368,10 @@ class Doxy2SWIG:
             self.curField = kind
             self.content[-1][kind] = ''
             self.parse_childnodes(node)
+        #elif kind in ('par'):
+        #    self.add_text(r'<par>') 
+        #    self.parse_childnodes(node)
+        #    self.add_text(r'</par>')
         else:
             self.parse_childnodes(node)
         self.curField = 'Details'
@@ -376,7 +382,6 @@ class Doxy2SWIG:
         txt = ''
         for n in node.childNodes:
             txt = txt + n.data
-
         self.content[-1]['cppArgs'] = txt
         # replace the trailing const
         # @ is used instead of , to avoid separation of replaced text, it will be replaced back to ,
@@ -386,13 +391,18 @@ class Doxy2SWIG:
             '["father_idx"@ "mother_idx"]')
         txt = txt.replace('vectorstr(ASC_AS_Fields, ASC_AS_Fields+2)',
             '["father_idx"@ "mother_idx"]')
-        txt = txt.replace('vectorstr(1, "qtrait")', '["qtrait"]')
-        txt = txt.replace('vectorstr(1, "fitness")', '["fitness"]')
-        txt = txt.replace(')    const',')')
-        txt = txt.replace(') const',')')
-        txt = txt.replace(')const',')')
+        # re function used to replace the following sentances
+        vec1 = re.compile('(.*)vectorstr\(1,\s*([\w"]+)\)(.*)')
+        txt = vec1.sub(r'\1[\2]\3', txt)
+        #txt = txt.replace('vectorstr(1, "qtrait")', '["qtrait"]')
+        #txt = txt.replace('vectorstr(1, "fitness")', '["fitness"]')
+        con1 = re.compile('\)\s*const\s*$')
+        txt = con1.sub(')', txt)
+        #txt = txt.replace(')    const',')')
+        #txt = txt.replace(') const',')')
+        #txt = txt.replace(')const',')')
         # temporary fix for (1, " ")
-        txt = txt.replace('vectorstr(1,', '')
+        #txt = txt.replace('vectorstr(1,', '')
         args = txt.split(',')
         out=[]
         for s in args:
@@ -404,14 +414,17 @@ class Doxy2SWIG:
             var = var.replace('&', '')
             if( len( piece ) == 2 ):
                 defVal = piece[1].split('(')[0].split(')')[0].split(')')[0]
-                defVal = defVal.replace('vectorlu','[]')
-                defVal = defVal.replace('vectoru','[]')
-                defVal = defVal.replace('vectorl','[]')
-                defVal = defVal.replace('vectori','[]')
-                defVal = defVal.replace('vectorf','[]')
-                defVal = defVal.replace('vectora','[]')
-                defVal = defVal.replace('vectorop','[]')
-                defVal = defVal.replace('vectorstr','[]')
+                # re function used to repalce the following sentances
+                vect = re.compile('vector(lu|u|l|i|f|a|op|str)')
+                defVal = vect.sub('[]', defVal)
+                #defVal = defVal.replace('vectorlu','[]')
+                #defVal = defVal.replace('vectoru','[]')
+                #defVal = defVal.replace('vectorl','[]')
+                #defVal = defVal.replace('vectori','[]')
+                #defVal = defVal.replace('vectorf','[]')
+                #defVal = defVal.replace('vectora','[]')
+                #defVal = defVal.replace('vectorop','[]')
+                #defVal = defVal.replace('vectorstr','[]')
                 defVal = defVal.replace('dictionary','{}')
                 defVal = defVal.replace('matrix','[]')
                 defVal = defVal.replace('true','True')
@@ -474,8 +487,8 @@ class Doxy2SWIG:
             return (entry.has_key('Description') and entry['Description'] != '') or \
                 (entry.has_key('Details') and entry['Details'] != '')
         for entry in self.content:
-            if not (entry.has_key('Description') and entry['Description'] != '') or \
-                (entry.has_key('Details') and entry['Details'] != ''):
+            if not (entry.has_key('Description') and entry['Description'] != '') and \
+                not (entry.has_key('Details') and entry['Details'] != ''):
                 entry['Description'] = entry['Name']
         # mark all entries with 'CPPONLY' in description or details as ignore
         for entry in self.content:
@@ -499,7 +512,7 @@ class Doxy2SWIG:
     
 
     def write_swig(self, out):
-        #print >> out, self.content
+        print >> out, self.content
         for entry in self.content:
             if entry['ignore']:
                 if entry.has_key('cppArgs'):
@@ -552,11 +565,13 @@ class Doxy2SWIG:
         text = text.replace('</em>', '}')
         text = text.replace('<tt>', r'{\tt ')
         text = text.replace('</tt>', '}')
-        text = text.replace('</newline>', r'\newline')
+        text = text.replace('</newline>', '\n\n')
         text = text.replace('<itemize>', r'\begin{itemize} ')
         text = text.replace('</itemize>', r'\end{itemize}')
         text = text.replace('<item>', r'\item ')
         text = text.replace('</item>', ' ')
+        #text = text.replace('<par>', r'\par ')
+        #text = text.replace('</par>', ' ')
         return text
 
 
@@ -615,7 +630,7 @@ class Doxy2SWIG:
                 print >> out, '\\begin{description}'
                 cons['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                 for arg in cons['Arguments']:
-                    print >> out, '\\item [{%s}]%s' % (arg['Name'], self.latex_text(arg['Description']))
+                    print >> out, '\\item [{%s}]%s' % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
                 print >> out, '\\end{description}'
             if cons.has_key('Details') and cons['Details'] != '':
                 print >> out, '\\par\n\\strong{Details}\n\\par'
@@ -643,7 +658,7 @@ class Doxy2SWIG:
                     print >> out, '\\begin{description}'
                     mem['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                     for arg in mem['Arguments']:
-                        print >> out, '\\item [{%s}]%s' % (arg['Name'], self.latex_text(arg['Description']))
+                        print >> out, '\\item [{%s}]%s' % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
                     print >> out, '\\end{description}'            
             print >> out, '\\end{description}'
             if cons.has_key('Examples') and cons['Examples'] != '':
@@ -729,7 +744,7 @@ class Doxy2SWIG:
         text = text.replace('<itemize>', '')
         text = text.replace('</itemize>', '')
         #itemize items in swig file
-        text = text.replace('<item>', '</newline> * ')
+        text = text.replace('<item>', r'</newline> * ')
         text = text.replace('</item>', '')
         #used in swig file output
         text = text.split(r'</newline>')

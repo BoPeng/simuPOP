@@ -522,12 +522,12 @@ namespace simuPOP
 #endif
 	}
 
-	/// get the whole genotype.
-	/// individuals will be in order before exposing
-	/// their genotypes.
-	///
-	/// if order: keep order
-	/// otherwise: respect subpop structure
+	// get the whole genotype.
+	// individuals will be in order before exposing
+	// their genotypes.
+	//
+	// if order: keep order
+	// otherwise: respect subpop structure
 	PyObject* population::arrGenotype(UINT subPop, bool order)
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -721,7 +721,7 @@ namespace simuPOP
 			for(IndIterator it = indBegin(), itEnd = indEnd(); it < itEnd;  ++it)
 				m_subPopSize[ static_cast<UINT>(it->subPopID()) ] ++;
 		}
-		/// rebuild index
+		// rebuild index
 		size_t i = 1;
 		for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
 			m_subPopIndex[i] = m_subPopIndex[i-1] + m_subPopSize[i - 1];
@@ -806,7 +806,7 @@ namespace simuPOP
 		m_numSubPop = newSPNum;
 		m_subPopSize.swap(newSPSize);
 		m_subPopIndex.resize(m_numSubPop+1);
-		/// rebuild index
+		// rebuild index
 		size_t i = 1;
 		for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
 			m_subPopIndex[i] = m_subPopIndex[i-1] + m_subPopSize[i - 1];
@@ -969,7 +969,7 @@ namespace simuPOP
 		else
 			m_subPopSize = newSubPopSizes;
 		m_numSubPop = m_subPopSize.size();
-		/// rebuild index
+		// rebuild index
 		m_subPopIndex.resize(m_numSubPop+1);
 		size_t i = 1;
 		for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
@@ -1236,7 +1236,7 @@ namespace simuPOP
 		setShallowCopied(false);
 		setInfoOrdered(true);
 		m_subPopSize = newSubPopSizes;
-		/// rebuild index
+		// rebuild index
 		size_t i = 1;
 		for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
 			m_subPopIndex[i] = m_subPopIndex[i-1] + m_subPopSize[i - 1];
@@ -1557,7 +1557,7 @@ namespace simuPOP
 		}
 	}
 
-	/// add field
+	// add field
 	void population::addInfoField(const string field, double init)
 	{
 #ifdef SIMUMPI
@@ -1589,7 +1589,7 @@ namespace simuPOP
 				struAddInfoField(field);
 			}
 
-			/// adjust information size.
+			// adjust information size.
 			UINT is = localInfoSize();
 			if(os != is)
 			{
@@ -1598,7 +1598,7 @@ namespace simuPOP
 				{
 					useAncestralPop(anc);
 					vectorinfo newInfo(is*popSize());
-					/// copy the old stuff in
+					// copy the old stuff in
 					InfoIterator ptr = newInfo.begin();
 					for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
 					{
@@ -1644,7 +1644,7 @@ namespace simuPOP
 			struAddInfoField(field);
 		}
 
-		/// adjust information size.
+		// adjust information size.
 		UINT is = infoSize();
 		if(os != is)
 		{
@@ -1653,7 +1653,7 @@ namespace simuPOP
 			{
 				useAncestralPop(anc);
 				vectorinfo newInfo(is*popSize());
-				/// copy the old stuff in
+				// copy the old stuff in
 				InfoIterator ptr = newInfo.begin();
 				for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
 				{
@@ -1704,7 +1704,7 @@ namespace simuPOP
 			}
 
 			// add these fields
-			/// adjust information size.
+			// adjust information size.
 			UINT is = localInfoSize();
 			// need to extend.
 			if(is != os)
@@ -1714,7 +1714,7 @@ namespace simuPOP
 				{
 					useAncestralPop(anc);
 					vectorinfo newInfo(is*popSize(), 0.);
-					/// copy the old stuff in
+					// copy the old stuff in
 					InfoIterator ptr = newInfo.begin();
 					for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
 					{
@@ -1757,7 +1757,7 @@ namespace simuPOP
 		}
 
 		// add these fields
-		/// adjust information size.
+		// adjust information size.
 		UINT is = infoSize();
 		// need to extend.
 		if(is != os)
@@ -1767,7 +1767,7 @@ namespace simuPOP
 			{
 				useAncestralPop(anc);
 				vectorinfo newInfo(is*popSize(), 0.);
-				/// copy the old stuff in
+				// copy the old stuff in
 				InfoIterator ptr = newInfo.begin();
 				for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind)
 				{
@@ -1793,7 +1793,7 @@ namespace simuPOP
 #endif
 			struSetInfoFields(fields);
 
-			/// reset info vector
+			// reset info vector
 			int oldAncPop = m_curAncestralPop;
 #ifdef SIMUMPI
 			UINT is = localInfoSize();
@@ -2042,9 +2042,9 @@ namespace simuPOP
 		}
 	}
 
-	/// CPPONLY
-	/// The same as vars(), but without increasing
-	/// reference count.
+	// CPPONLY
+	// The same as vars(), but without increasing
+	// reference count.
 	PyObject* population::dict(int subPop)
 	{
 		if(subPop < 0)
