@@ -108,7 +108,7 @@ WF = population(size=100, ploidy=1, loci=[1])
 pop = population(size=10, ploidy=2, loci=[5, 7], subPop=[2, 8])
 
 # a population with SNP markers (with names A,C,T,G
-#  range() are python functions
+# range() are python functions
 pop = population(size=5, ploidy=2, loci=[5,10],
     lociPos=[range(0,5),range(0,20,2)],
     alleleNames=['A','C','T','G'],
