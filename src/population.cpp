@@ -75,7 +75,7 @@ namespace simuPOP
 		m_rep(-1),
 		m_grp(-1),
 		m_gen(0),
-		m_curAncestralPop(0),
+		m_curAncestralGen(0),
 		m_shallowCopied(false),
 		m_infoOrdered(true)
 	{
@@ -215,7 +215,7 @@ namespace simuPOP
 		m_rep(-1),								  // rep is set to -1 for new pop (until simulator really set them
 		m_grp(-1),
 		m_gen(0),
-		m_curAncestralPop(rhs.m_curAncestralPop),
+		m_curAncestralGen(rhs.m_curAncestralGen),
 		m_shallowCopied(false),
 		m_infoOrdered(true)
 	{
@@ -1573,7 +1573,7 @@ namespace simuPOP
 				// for node 0, local info index is the major index.
 				idx = localInfoIdx(field);
 				// only needs to initialize
-				int oldAncPop = m_curAncestralPop;
+				int oldAncPop = m_curAncestralGen;
 				for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 				{
 					useAncestralPop(anc);
@@ -1593,7 +1593,7 @@ namespace simuPOP
 			UINT is = localInfoSize();
 			if(os != is)
 			{
-				int oldAncPop = m_curAncestralPop;
+				int oldAncPop = m_curAncestralGen;
 				for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 				{
 					useAncestralPop(anc);
@@ -1628,7 +1628,7 @@ namespace simuPOP
 		{
 			idx = infoIdx(field);
 			// only needs to initialize
-			int oldAncPop = m_curAncestralPop;
+			int oldAncPop = m_curAncestralGen;
 			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 			{
 				useAncestralPop(anc);
@@ -1648,7 +1648,7 @@ namespace simuPOP
 		UINT is = infoSize();
 		if(os != is)
 		{
-			int oldAncPop = m_curAncestralPop;
+			int oldAncPop = m_curAncestralGen;
 			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 			{
 				useAncestralPop(anc);
@@ -1687,7 +1687,7 @@ namespace simuPOP
 					// has field
 					UINT idx = localInfoIdx(*it);
 					// only needs to initialize
-					int oldAncPop = m_curAncestralPop;
+					int oldAncPop = m_curAncestralGen;
 					for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 					{
 						useAncestralPop(anc);
@@ -1709,7 +1709,7 @@ namespace simuPOP
 			// need to extend.
 			if(is != os)
 			{
-				int oldAncPop = m_curAncestralPop;
+				int oldAncPop = m_curAncestralGen;
 				for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 				{
 					useAncestralPop(anc);
@@ -1740,7 +1740,7 @@ namespace simuPOP
 				// has field
 				UINT idx = infoIdx(*it);
 				// only needs to initialize
-				int oldAncPop = m_curAncestralPop;
+				int oldAncPop = m_curAncestralGen;
 				for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 				{
 					useAncestralPop(anc);
@@ -1762,7 +1762,7 @@ namespace simuPOP
 		// need to extend.
 		if(is != os)
 		{
-			int oldAncPop = m_curAncestralPop;
+			int oldAncPop = m_curAncestralGen;
 			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 			{
 				useAncestralPop(anc);
@@ -1794,7 +1794,7 @@ namespace simuPOP
 			struSetInfoFields(fields);
 
 			// reset info vector
-			int oldAncPop = m_curAncestralPop;
+			int oldAncPop = m_curAncestralGen;
 #ifdef SIMUMPI
 			UINT is = localInfoSize();
 #else
@@ -1836,20 +1836,20 @@ namespace simuPOP
 
 	void population::useAncestralPop(UINT idx)
 	{
-		if( m_curAncestralPop >= 0 && idx == static_cast<UINT>(m_curAncestralPop))
+		if( m_curAncestralGen >= 0 && idx == static_cast<UINT>(m_curAncestralGen))
 			return;
 
 		DBG_DO(DBG_POPULATION, cout << "Use ancestralPop: " << idx <<
-			"Curidx: " <<  m_curAncestralPop << endl);
+			"Curidx: " <<  m_curAncestralGen << endl);
 
-		if( idx == 0 || m_curAncestralPop != 0)	  // recover pop.
+		if( idx == 0 || m_curAncestralGen != 0)	  // recover pop.
 		{
-			popData& pd = m_ancestralPops[ m_curAncestralPop-1 ];
+			popData& pd = m_ancestralPops[ m_curAncestralGen-1 ];
 			pd.m_subPopSize.swap(m_subPopSize);
 			pd.m_genotype.swap(m_genotype);
 			pd.m_info.swap(m_info);
 			pd.m_inds.swap(m_inds);
-			m_curAncestralPop = 0;
+			m_curAncestralGen = 0;
 #ifndef OPTIMIZED
 			//DBG_FAILIF( pd.m_startingGenoPtr != m_genotype.begin(),
 			//	SystemError, "Starting genoptr has been changed.");
@@ -1869,15 +1869,15 @@ namespace simuPOP
 			}
 		}
 
-		// now m_curAncestralPop is zero.
+		// now m_curAncestralGen is zero.
 		DBG_ASSERT( idx <= m_ancestralPops.size(),
 			ValueError, "Ancestry population " + toStr(idx) + " does not exist.");
 
 		// now idx should be at least 1
-		m_curAncestralPop = idx;
+		m_curAncestralGen = idx;
 		// swap  1 ==> 0, 2 ==> 1
 
-		popData& pd = m_ancestralPops[ m_curAncestralPop -1];
+		popData& pd = m_ancestralPops[ m_curAncestralGen -1];
 		pd.m_subPopSize.swap(m_subPopSize);
 		pd.m_genotype.swap(m_genotype);
 		pd.m_info.swap(m_info);
