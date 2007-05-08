@@ -5314,47 +5314,42 @@ Usage:
 
 Description:
 
-    a collection of individuals with subpopulation structure
+    a collection of individuals with the same genotypic structure
 
 Details:
 
-    simuPOP uses one-level population structure. That is to say, there
-    is no sub-subpopulation or families in subpopulations. Mating is
-    within subpopulations only. Exchange of genetic information across
-    subpopulations can only be done through migration. Population and
-    subpopulation sizes can be changed, as a result of mating or
-    migration. More specifically
-    * Migration can change subpopulation size; create or remove
-    subpopulations. Since migration can not generate new individuals,
-    the total population size will not be changed.
-    * Mating can fill any population/subpopulation structure with
-    offsprings. Both population and subpopulation sizes can be
-    changed. Since mating is within subpopulation, you can not create
-    new subpopulation through mating.
-    * A special operator  pySubset  can shrink population size. It
-    removes individuals according to their subPopID()  status. This
-    can be used to model a sudden population decrease due to natural
-    disaster.
-    * Subpopulations can be split or merged.
-    Note that migration will most likely change subpopulation sizes.
-    To keep subpopulation sizes constant, you may set them during
-    mating so that the next generation will have desired subpopulation
-    sizes.
-    Every population has its own variable space, or localnamespaces
-    in  simuPOP term. This namespace is a Python dictionary that is
-    attached to each population and can be exposed to the users
-    through  vars()  or dvars()  function. Many functions and
-    operators work in these namespaces and store their results in
+    simuPOP populations consists of individuals of the same genotypic
+    structure, which refers to number of chromosome, number and
+    position of loci on each chromosome etc. The most important
+    components of a population are:
+    * subpopulation. A population is divided into subpopulations
+    (unstructured population has a single subpopulation, which is the
+    whole population itself). Subpopulation structure limits the
+    usually random exchange of genotypes between individuals
+    disallowing mating between individuals from different
+    subpopulation. In the presence of subpopualtion structure,
+    exchange of genetic information across subpopulations can only be
+    done through migration. Note that  simuPOP uses one-level
+    population structure. That is to say, there is no sub-
+    subpopulation or families in subpopulations.
+    * variables. Every population has its own variable space, or
+    localnamespaces  in  simuPOP term. This namespace is a Python
+    dictionary that is attached to each population and can be exposed
+    to the users through  vars()  or dvars()  function. Many functions
+    and operators work in these namespaces and store their results in
     them. For example, function Stat  set variables like
     alleleFreq[loc]  and you can access them via
     pop.dvars().alleleFreq[loc][allele] .
-    Population has a large number of member functions, ranging from
-    reviewing simple properties to generating new population from the
-    current one. However, you do not have to know all the member
-    functions to use a population. As a matter of fact, you will only
-    use a small portion of these functions unless you need to write
-    pure python functions/ operators that involve complicated
-    manipulation of populations.
+    * ancestral generations. A population can save arbitrary number of
+    ancestral generations. During evolution, the latest severl (or
+    all) ancestral generations are saved. Functions to make a certain
+    ancestray generation current  is provided so that one can examine
+    and modify ancestral generations. Other important concepts like
+    {information fields} are explained in class individual.
+    It is worth noting that although a large number of member
+    functions are provided, most of the operations are performed by
+    operators . These functions will only be useful when you need to
+    manipulate a population explicitly.
 
 "; 
 
@@ -5363,8 +5358,7 @@ Details:
 Description:
 
     Create a population object with given size and genotypic
-    structure. Note that this is techniquely the __init__  function of
-    the population object.
+    structure.
 
 Usage:
 
@@ -5378,20 +5372,20 @@ Arguments:
                     subPop . Default to 0 .
     ploidy:         number of sets of chromosomes. Default to 2
                     (diploid).
-    loci:           an array of numbers of loci on each chromosome. If
-                    not specified, assume a single locus on one
-                    chromosome. The length of parameter loci
-                    determines the number of chromosomes. The last
-                    chromosome can be sex chromosome. In this case,
-                    please specify the maximum number of loci on X and
-                    Y. I.e., if there are 3 loci on Y chromosme and 5
-                    on X chromosome, use 5 .
+    loci:           an array of numbers of loci on each chromosome.
+                    The length of parameter loci  determines the
+                    number of chromosomes. Default to [1], meaning one
+                    chromosome with a single locus.
+                    The last chromosome can be sex chromosome. In this
+                    case, the maximum number of loci on X and Y should
+                    be provided. I.e., if there are 3 loci on Y
+                    chromosme and 5 on X chromosome, use 5 .
     sexChrom:       true  or false . Diploid population only. If true
                     , the last homologous chromosome will be treated
                     as sex chromosome. (XY for male and XX for
                     female.) If X and Y have different number of loci,
-                    you should use the longer one as loci number of
-                    the last (sex) chromosome.
+                    number of loci of the longer one of the last (sex)
+                    chromosome should be specified in loci .
     lociPos:        a 1-d or 2-d array specifying positions of loci on
                     each chromosome. You can use a nested array to
                     specify loci position for each chromosome. For
@@ -5399,13 +5393,8 @@ Arguments:
                     loci=[3]  or lociPos=[[1,2],[1.5,3,5]]  for
                     loci=[2,3] .  simuPOP does not assume a unit for
                     these locations, although they are usually
-                    intepreted as base pairs or centiMorgans,
-                    depending on types of simulation being performed.
-                    Currently, loci location is used only for
-                    specifying recombination intensity. The actual
-                    recombination rate is intensity times loci
-                    distance between adjacent loci. The default values
-                    are 1 , 2 , etc. on each chromosome.
+                    intepreted as centiMorgans. The default values are
+                    1 , 2 , etc. on each chromosome.
     subPop:         an array of subpopulation sizes. Default value is
                     [size]  which means a single subpopulation of the
                     whole population. If both size  and subPop  are
@@ -5483,16 +5472,7 @@ Usage:
     x.clone(keepAncestralPops=-1)
 "; 
 
-%feature("docstring") simuPOP::population::swap "
-
-Description:
-
-    swap the content of two populations
-
-Usage:
-
-    x.swap(rhs)
-"; 
+%ignore simuPOP::population::swap(population &rhs);
 
 %feature("docstring") simuPOP::population::~population "
 
@@ -5509,8 +5489,8 @@ Usage:
 
 Description:
 
-    a python function used to print out the general information of the
-    population
+    used by Python print function to print out the general information
+    of the population
 
 Usage:
 
@@ -5521,7 +5501,7 @@ Usage:
 
 Description:
 
-    a python function used to compile the population class
+    a python function used to compare the population class
 
 Usage:
 
@@ -5591,7 +5571,7 @@ Usage:
 
 Description:
 
-    obtain the total population size
+    obtain total population size
 
 Usage:
 
@@ -5610,7 +5590,7 @@ Usage:
 Arguments:
 
     index:          index of an individual in a subpopulation subPop
-    subPop:         subpopulation index
+    subPop:         subpopulation index (start from 0 )
 
 
 "; 
@@ -5619,7 +5599,7 @@ Arguments:
 
 Description:
 
-    return the (sp,idx)  pair from an absolute index of an individual
+    return the (sp, idx)  pair from an absolute index of an individual
 
 Usage:
 
@@ -5663,7 +5643,7 @@ Arguments:
 
 Description:
 
-    refernce to individual index in subpopulation subPop
+    refernce to individual ind  in subpopulation subPop
 
 Usage:
 
@@ -5692,7 +5672,8 @@ Usage:
 
 Description:
 
-    simuPOP::population::individuals
+    return an iterator that can be used to iterate through all
+    individuals in subpopulation subPop
 
 Usage:
 
@@ -5703,11 +5684,16 @@ Usage:
 
 Description:
 
-    simuPOP::population::ind
+    refernce to individual ind  in subpopulation subPop
 
 Usage:
 
     x.ind(ind, subPop=0)
+Details:
+
+    Return individual  from subpopulation . This function is named
+    individual  in the Python interface.
+
 "; 
 
 %ignore simuPOP::population::shallowCopied();
@@ -6268,13 +6254,18 @@ Usage:
 
 %feature("docstring") simuPOP::population::indInfo "
 
+Description:
+
+    Get information idx  of all individuals.
+
 Usage:
 
     x.indInfo(idx, order)
-Details:
+Arguments:
 
-    Get information of all individuals. The information does not have
-    to be in the same order as the individuals.
+    idx:            index in all information fields
+    order:          if true, sort returned vector in individual order
+
 
 "; 
 
@@ -6282,33 +6273,72 @@ Details:
 
 Description:
 
-    simuPOP::population::indInfo
+    Get information name  of all individuals.
 
 Usage:
 
     x.indInfo(name, order)
+Arguments:
+
+    name:           name of the information field
+    order:          if true, sort returned vector in individual order
+
+
+"; 
+
+%feature("docstring") simuPOP::population::indInfo "
+
+Description:
+
+    Get information idx  of all individuals in a subpopulation subPop
+    .
+
+Usage:
+
+    x.indInfo(idx, subPop, order)
+Arguments:
+
+    idx:            index in all information fields
+    subPop:         subpopulation index
+    order:          if true, sort returned vector in individual order
+
+
+"; 
+
+%feature("docstring") simuPOP::population::indInfo "
+
+Description:
+
+    Get information name  of all individuals in a subpopulation subPop
+    .
+
+Usage:
+
+    x.indInfo(name, subPop, order)
+Arguments:
+
+    name:           name of the information field
+    subPop:         subpopulation index
+    order:          if true, sort returned vector in individual order
+
+
 "; 
 
 %feature("docstring") simuPOP::population::arrIndInfo "
 
 Description:
 
-    if order: keep order otherwise: do not respect subpop info
+    Get an editable array (Python list) of all information fields.
 
 Usage:
 
     x.arrIndInfo(order)
-"; 
+Arguments:
 
-%feature("docstring") simuPOP::population::arrIndInfo "
+    order:          whether or not the list has the same order as
+                    individuals
 
-Description:
 
-    if order: keep order otherwise: respect subpop info
-
-Usage:
-
-    x.arrIndInfo(subPop, order)
 "; 
 
 %feature("docstring") simuPOP::population::addInfoField "

@@ -125,35 +125,41 @@ namespace simuPOP
 	 *
 	 **/
 
-	/** \brief a collection of individuals with subpopulation structure
+	/// a collection of individuals with the same genotypic structure
+	/**
 
-	simuPOP uses one-level population structure. That is to say, there is no sub-subpopulation
-	or families in subpopulations. Mating is within subpopulations only. Exchange of genetic information
-	across subpopulations can only be done through migration. Population and subpopulation sizes can be
-	changed, as a result of mating or migration. More specifically
+	simuPOP populations consists of individuals of the same genotypic structure,
+	which refers to number of chromosome, number and position of loci on each
+	chromosome etc. The most important components of a population are:
 
-	\li Migration can change subpopulation size; create or remove subpopulations. Since migration can not generate
-		new individuals, the total population size will not be changed.
-	\li Mating can fill any population/subpopulation structure with offsprings. Both population and subpopulation sizes
-		can be changed. Since mating is within subpopulation, you can not create new subpopulation through mating.
-	\li A special operator \c pySubset can shrink population size. It removes individuals according to their
-	\c subPopID() status. This can be used to model a sudden population decrease due to natural disaster.
-	\li Subpopulations can be split or merged.
+	\li subpopulation. A population is divided into subpopulations (unstructured
+	population has a single	subpopulation, which is the whole population itself).
+	Subpopulation structure limits the usually random exchange of genotypes between
+	individuals disallowing mating between individuals from different subpopulation.
+	In the presence of subpopualtion structure, exchange of genetic information
+	across subpopulations can only be done through migration. Note that simuPOP uses
+	one-level population structure. That is to say, there is no sub-subpopulation
+	or families in subpopulations.
 
-	<br> Note that migration will most likely change subpopulation sizes. To keep subpopulation sizes constant, you may set
-	them during mating so that the next generation will have desired subpopulation sizes.
+	\li variables. Every population has its own variable space, or \em local \em
+	namespaces in simuPOP term. This namespace is a Python dictionary that is
+	attached to each population and can be exposed to the users through \c vars()
+	or \c dvars() function. Many functions and operators work in these namespaces
+	and store their results in them. For example, function \c Stat set variables
+	like <tt>alleleFreq[loc]</tt> and you can access them via
+	<tt>pop.dvars().alleleFreq[loc][allele]</tt>.
 
-	\n
-	Every population has its own variable space, or \e local \e namespaces in simuPOP term. This namespace is a Python dictionary
-	that is attached to each population and can be exposed to the users through \c vars() or \c dvars() function. Many
-	functions and operators work in these namespaces and store their results in them. For example, function \c Stat set variables
-	like <tt>alleleFreq[loc]</tt> and you can access them via <tt>pop.dvars().alleleFreq[loc][allele]</tt>.
+	\li ancestral generations. A population can save arbitrary number of ancestral
+	generations. During evolution, the latest severl (or all) ancestral generations
+	are saved. Functions to make a certain ancestray generation \em current is
+	provided so that one can examine and modify ancestral generations.
 
-	\n
-	Population has a large number of member functions, ranging from reviewing simple properties to generating new population
-	from the current one. However, you do not have to know all the member functions to use a population. As
-	a matter of fact, you will only use a small portion of these functions unless you need to write pure python functions/
-	operators that involve complicated manipulation of populations.
+	Other important concepts like \em information \em fields are explained in
+	class individual.
+
+	\n It is worth noting that although a large number of member functions are provided,
+	most of the operations are performed by \em operators. These functions will only
+	be useful when you need to manipulate a population explicitly.
 	*/
 	class population : public GenoStruTrait
 	{
@@ -166,30 +172,40 @@ namespace simuPOP
 			/** @name  constructors and destructor */
 			//@{
 
-			///Create a population object with given size and genotypic structure. Note that this is techniquely the \c __init__ function of the population object.
+			///Create a population object with given size and genotypic structure.
 			/**
-			\param size population size. Can be ignored if \c subPop is specified. In that case, \c size is the sum of \c subPop.
-			   Default to \c 0.
+			FIXME: Details of constructure is missing.
+
+			This is techniquely the \c __init__ function of the population object.
+
+			\param size population size. Can be ignored if \c subPop is specified.
+				In that case, \c size is the sum of \c subPop. Default to \c 0.
 			\param ploidy number of sets of chromosomes. Default to \c 2 (diploid).
-			\param loci an array of numbers of loci on each chromosome. If not specified, assume a single locus on one
-			   chromosome. The length of parameter \c loci determines the number of chromosomes. The last chromosome can be
-			   sex chromosome. In this case, please specify the maximum number of loci on X and Y. I.e., if there are 3
-			   loci on Y chromosme and 5 on X chromosome, use \c 5.
-			\param sexChrom \c true or \c false. Diploid population only. If \c true, the last homologous chromosome will be
-			   treated as sex chromosome. (XY for male and XX for female.) If X and Y have different number of loci,
-			   you should use the longer one as loci number of the last (sex) chromosome.
-			\param lociPos a 1-d or 2-d array specifying positions of loci on each chromosome. You can use a nested
-			array to specify loci position for each chromosome. For example, you can use <tt>lociPos=[1,2,3]</tt>
-			when <tt>loci=[3]</tt> or <tt>lociPos=[[1,2],[1.5,3,5]]</tt> for <tt>loci=[2,3]</tt>. simuPOP does not
-			assume a unit for these locations, although they are usually intepreted as base pairs or centiMorgans,
-			depending on types of simulation being performed. Currently, loci location is used only for specifying
-			recombination intensity. The actual recombination rate is intensity times loci distance between adjacent
-			loci. The default values are \c 1, \c 2, etc. on each chromosome.
-			\param subPop an array of subpopulation sizes. Default value is <tt>[size]</tt>
-			which means a single subpopulation of the whole population. If both
-			\c size and \c subPop are are provided, \c subPop should add up to \c size.
-			\param ancestralDepth number of most recent ancestral generations to keep during evolution. Default to \c 0,
-			which means only the current generation will be available. You can set it to a positive number m to
+			\param loci an array of numbers of loci on each chromosome. The length
+			of parameter \c loci determines the number of chromosomes. Default
+			to [1],	meaning one chromosome with a single locus. \n
+			The last chromosome can be sex chromosome. In this case, the maximum
+			number of loci on X and Y should be provided. I.e., if there are 3
+			loci on Y chromosme and 5 on X chromosome, use \c 5.
+			\param sexChrom \c true or \c false. Diploid population only. If \c true,
+			the last homologous chromosome will be treated as sex chromosome.
+			(XY for male and XX for female.) If X and Y have different number of loci,
+			number of loci of the longer one of the last (sex) chromosome should be
+			specified in \c loci.
+			\param lociPos a 1-d or 2-d array specifying positions of loci on each
+			chromosome. You can use a nested array to specify loci position for
+			each chromosome. For example, you can use <tt>lociPos=[1,2,3]</tt>
+			when <tt>loci=[3]</tt> or <tt>lociPos=[[1,2],[1.5,3,5]]</tt> for
+			<tt>loci=[2,3]</tt>. simuPOP does not assume a unit for these
+			locations, although they are usually intepreted as centiMorgans.
+			The default values are \c 1, \c 2, etc. on each chromosome.
+			\param subPop an array of subpopulation sizes. Default value is
+			<tt>[size]</tt>	which means a single subpopulation of the whole
+			population. If both	\c size and \c subPop are are provided,
+			\c subPop should add up to \c size.
+			\param ancestralDepth number of most recent ancestral generations to keep
+			during evolution. Default to \c 0, which means only the current generation
+			will be available. You can set it to a positive number m to
 			keep the latest m generations in the population, or \c -1 to keep all ancestral populations. Note that
 			keeping track of all ancestral populations may quickly exhaust your computer RAM. If you really need
 			to do that, use \c savePopulation operator to save each generation to a file is a much better choice.
@@ -235,6 +251,7 @@ namespace simuPOP
 			population * clone(int keepAncestralPops=-1) const;
 
 			/// swap the content of two populations
+			/// CPPONLY
 			void swap(population& rhs)
 			{
 				GenoStruTrait::swap(rhs);
@@ -251,7 +268,7 @@ namespace simuPOP
 				std::swap(m_rep, rhs.m_rep);
 				std::swap(m_grp, rhs.m_grp);
 				std::swap(m_gen, rhs.m_gen);
-				std::swap(m_curAncestralPop, rhs.m_curAncestralPop);
+				std::swap(m_curAncestralGen, rhs.m_curAncestralGen);
 				std::swap(m_shallowCopied, rhs.m_shallowCopied);
 				std::swap(m_infoOrdered, rhs.m_infoOrdered);
 			}
@@ -263,8 +280,7 @@ namespace simuPOP
 					cout << "Destructor of population is called" << endl);
 			}
 
-			// allow str(population) to get something better looking
-			/// a python function used to print out the general information of the population
+			/// used by Python print function to print out the general information of the population
 			string __repr__()
 			{
 				return "<simuPOP::population of size " + toStr(popSize()) + ">";
@@ -272,7 +288,7 @@ namespace simuPOP
 
 			// allow compaison of populations in python
 			// only equal or unequal, no greater or less than
-			/// a python function used to compile the population class
+			/// a python function used to compare the population class
 			int __cmp__(const population& rhs) const;
 
 			/// set population/subpopulation structure given subpopulation sizes
@@ -281,8 +297,7 @@ namespace simuPOP
 			The population may or may not change according to
 			parameter \c allowPopSizeChange if the sum of \c subPopSize
 			does not match \c popSize.
-			\param allowPopSizeChange if this parameter is \c true, \c popSize can be changed to the sum of
-			\c subPopSize.
+			\param allowPopSizeChange if this parameter is \c true, population will be resized.
 			\return none
 			\sa migration, mating
 			*/
@@ -301,7 +316,7 @@ namespace simuPOP
 			/**
 			\param subPop index of subpopulation (start from 0)
 
-			\return size of subpopulation subPop
+			\return size of subpopulation \c subPop
 			*/
 			ULONG subPopSize(UINT subPop) const
 			{
@@ -324,7 +339,7 @@ namespace simuPOP
 			 */
 			//@{
 
-			/// obtain the total population size
+			/// obtain total population size
 			/**
 			 \return total number of individuals in this population
 			 */
@@ -336,8 +351,8 @@ namespace simuPOP
 			///  return the absolute index of an individual in a subpopulation
 			/**
 			  \param index index of an individual in a subpopulation \c subPop
-			  \param subPop subpopulation index
-			  \return return the absolute index of an individual in a subpopulation
+			  \param subPop subpopulation index (start from \c 0)
+			  \return the absolute index of an individual in a subpopulation
 			  \sa subPopIndPair
 			*/
 			ULONG absIndIndex(ULONG ind, UINT subPop) const
@@ -348,7 +363,7 @@ namespace simuPOP
 				return( m_subPopIndex[subPop] + ind);
 			}
 
-			/// return the <tt>(sp,idx)</tt> pair from an absolute index of an individual
+			/// return the <tt>(sp, idx)</tt> pair from an absolute index of an individual
 			/*
 			  \param absInd absolute index of an individual
 			  \return a pair of values (subPop, index)
@@ -377,7 +392,6 @@ namespace simuPOP
 			\param subPop subpopulation index
 			\result beginning index of this subpopulation
 			\sa absIndIndex
-			absIndIndex(index, subPop) = subPopBegin(subPop) + index
 			*/
 			ULONG subPopBegin(UINT subPop) const
 			{
@@ -391,9 +405,9 @@ namespace simuPOP
 			\param subPop subpopulation index
 			\result ending index of this subpopulation (not in this subpop)
 			\sa absIndIndex
-			\note as with all ...End functions, the returning index is out of the range
+			\bf note as with all ...End functions, the returning index is out of the range
 			 so the actual range is [xxxBegin, xxxEnd). This agrees with all STL
-			 conventions.
+			 conventions and Python range.
 			*/
 			ULONG subPopEnd(UINT subPop) const
 			{
@@ -407,8 +421,9 @@ namespace simuPOP
 			 */
 			//@{
 
-			/// refernce to individual index in subpopulation \c subPop
-			/** \param ind individual index within \c subPop
+			/// refernce to individual \c ind in subpopulation \c subPop
+			/** This function is named \c individual in the Python interface.
+				\param ind individual index within \c subPop
 				\param subPop subpopulation index
 				\return reference to an individual
 			*/
@@ -434,6 +449,7 @@ namespace simuPOP
 				return individualIterator(this, 0, popSize());
 			}
 
+			/// return an iterator that can be used to iterate through all individuals in subpopulation \c subPop
 			individualIterator individuals(UINT subPop)
 			{
 #ifndef OPTIMIZED
@@ -443,6 +459,10 @@ namespace simuPOP
 				return individualIterator(this, subPopBegin(subPop), subPopEnd(subPop));
 			}
 
+			/// CPPONLY refernce to individual \c ind in subpopulation \c subPop
+			/** Return individual \ind from subpopulation \subPop. This function
+				is named \c individual in the Python interface.
+			 */
 			const individual& ind(ULONG ind, UINT subPop=0) const
 			{
 #ifndef OPTIMIZED
@@ -751,32 +771,13 @@ namespace simuPOP
 			 */
 			//@{
 
-			/** \brief return individual affected status in pop namespace
-			 */
-			/// expose the (non-editable) effectedness fields of all individuals
-			PyObject* exposeAffectedness(string name="affected")
-			{
-				// regardness of info type, treat it as int.
-				vectori val(m_popSize);
-				for(ULONG it=0; it < m_popSize; ++it)
-					val[it] = static_cast<int>(ind(it).affected());
-				// this has to be changed according to info type.
-				PyObject* var = setIntVectorVar(name, val);
-				Py_INCREF(var);
-				return var;
-			}
-
-			/// set info field of all individuals
+			/// set subpopulation ID with given ID
 			/**
-			This function set information field for all individuals. Info can be used to
-			sort individuals and set subpopulations. Therefore, the following code
-			will do a migration:
+				Set subpopulation ID of each individual with given ID. Individuals
+				can be rearranged afterwards using \c setSubPopByIndID.
 
-			<tt>setIndSubPopID([ an_array_of_info_value ])</tt>
-
-			<tt>setSubPopByIndID()</tt>
-
-			\param info an array of info values, should have length of pop size
+				\param id an array of the same length of population size, resprenting
+					subpopulation id of each individual.
 			*/
 			/// \sa individual::setSubPopID, individual::subPopID
 			void setIndSubPopID( const vectori& id)
@@ -785,10 +786,10 @@ namespace simuPOP
 					"Info should have the same length as pop size");
 
 				for(ULONG it=0; it < m_popSize; ++it)
-					ind(it).setSubPopID( static_cast<SubPopID>(id[it]) );
+					ind(it).setSubPopID( static_cast<SubPopID>(id[it]));
 			}
 
-			/// set information field of all individuals using their respective subpopulation ID
+			/// set subpopulation ID of each individual with their current subpopulation ID
 			void setIndSubPopIDWithID()
 			{
 				for( UINT i=0, iEnd = numSubPop(); i < iEnd;  ++i)
@@ -796,10 +797,13 @@ namespace simuPOP
 						it -> setSubPopID(i);
 			}
 
-			/// adjust subpopulation according to individual information values
-			/** Assume individuals has subpopulation index in their information values and put
-			them into corresponding subpopulations.
-			\param info optional info that will be used to set sub pop
+			/// adjust subpopulation according to individual subpopulation ID.
+			/** 
+			Rearrange individuals to their new subpopulations according to their
+			subpopulation ID (or the new given \c id). Order within each subpopulation is not respected.
+
+			\param id new subpopulation ID, if given, current individual subpopulation ID 
+				will be	ignored.
 			*/
 			// \note individual with negative info will be removed!
 			// \sa setIndSubPopID,
@@ -837,10 +841,11 @@ namespace simuPOP
 			 */
 			void removeIndividuals(const vectoru& inds=vectoru(), int subPop=-1, bool removeEmptySubPops=false);
 
-			/// merge populations
+			/// merge given subpopulations
 			/**
-			Merge subpopulations, the first subpopulation ID (the first one in array \c subPops) will be used as the ID of the new population.
-			I.e., all subpopulations will take the ID of the first one.
+			Merge subpopulations, the first subpopulation ID (the first one in array 
+			\c subPops) will be used as the ID of the new subpopulation. That is to 
+			say, all subpopulations will take the ID of the first one.
 			*/
 			void mergeSubPops(vectoru subPops=vectoru(), bool removeEmptySubPops=false);
 
@@ -954,11 +959,13 @@ namespace simuPOP
 				const vectoru& remove=vectoru(),
 				const vectoru& keep=vectoru());
 
-			// swap in rhs. (usually a scratch population
-			// if fixRhs is false, leave rhs in broken status
-			// if force is true, push current population
-			// regardless of m_ancestray settings.
-			/// (almost) internal use only
+			/// Obsorb \c rhs population as the current generation of a population
+			/** 
+				This is mainly used by a simulator to push offspring generation \c rhs
+				to the current population, while the current population is pushed
+				back as an ancestral population (if ancestralDepath() != 0). Because \c rhs
+				population is swapped in, \c rhs will be empty after this operation.
+  			*/
 			void pushAndDiscard(population& rhs, bool force=false);
 
 			/// ancestral depth of the current population
@@ -967,15 +974,27 @@ namespace simuPOP
 				return m_ancestralPops.size();
 			}
 
-			/// return the current ancestral generation index
+			/// currently used ancestral population (0 for the latest generation)
+			/**
+				current ancestral population activated by useAncestralPop. There can be
+				several ancestral generations in a population. \c 0 (current), \c 1 (parental)
+				etc. When useAncestralPop(gen) is used, current generation is set to 
+				one of the parental generation, which is the information returned by this
+				function. \c useAncestralPop(0) should always be used to set a population
+				to its usual ancestral order.
+			*/
 			int ancestralGen() const
 			{
-				return m_curAncestralPop;
+				return m_curAncestralGen;
 			}
 
 			// int requestInfoField(const string name);
 
-			/// set individual information for the given information field (index), for the given subpopulation (default to all population)
+			/// set individual information for the given information field (index),
+			/**
+				\param values an array that has the same length as population size.
+				\param idx index to the information field.
+			  */
 			template<typename T, typename T1>
 				void setIndInfo(const T& values, T1 idx)
 			{
@@ -1007,7 +1026,11 @@ namespace simuPOP
 #endif
 			}
 
-			/// set individual information for the given information field (name), for the given subpopulation (default to all population)
+			/// set individual information for the given information field (name)
+			/**
+				setIndInfo using field name, <tt> x.setIndInfo(values, name) </tt> is 
+					equivalent to the \c idx version <tt> x.setIndInfo(values, x.infoIdx(name)) </tt>.
+			 */
 			template<class T>
 				void setIndInfo(const T& values, const string& name)
 			{
@@ -1078,34 +1101,60 @@ namespace simuPOP
 				return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop+1]*infoSize(), infoSize());
 			}
 
+			/// Get information \c idx of all individuals.
 			/**
-			Get information of all individuals. The information does not have to be in the same order as
-			the individuals.
+			\param idx index in all information fields
+			\param order if true, sort returned vector in individual order
+			\return a vector with value of the information field
 			*/
 			vectorinfo indInfo(UINT idx, bool order)
 			{
 				return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 			}
 
+			/// Get information \c name of all individuals.
+			/**
+			\param name name of the information field
+			\param order if true, sort returned vector in individual order
+			\return a vector with value of the information field
+			*/
 			vectorinfo indInfo(const string& name, bool order)
 			{
 				UINT idx = infoIdx(name);
 				return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 			}
 
+			/// Get information \c idx of all individuals in a subpopulation \c subPop.
+			/**
+			\param idx index in all information fields
+			\param subPop subpopulation index
+			\param order if true, sort returned vector in individual order
+			\return a vector with value of the information field
+			*/
 			vectorinfo indInfo(UINT idx, UINT subPop, bool order)
 			{
 				return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
 			}
 
+			/// Get information \c name of all individuals in a subpopulation \c subPop.
+			/**
+			\param name name of the information field
+			\param subPop subpopulation index
+			\param order if true, sort returned vector in individual order
+			\return a vector with value of the information field
+			*/
 			vectorinfo indInfo(const string& name, UINT subPop, bool order)
 			{
 				UINT idx = infoIdx(name);
 				return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
 			}
 
-			/// if order: keep order
-			/// otherwise: do not respect subpop info
+			/// Get an editable array (Python list) of all information fields
+			/**
+				\param order whether or not the list has the same order as individuals
+				\return a python list that has all information fields for all individual
+					values of information fields of the same individual are put together.
+			  */
 			PyObject* arrIndInfo(bool order)
 			{
 				if(order && !infoOrdered())
@@ -1114,8 +1163,12 @@ namespace simuPOP
 				return Info_Vec_As_NumArray(m_info.begin(), m_info.end());
 			}
 
-			/// if order: keep order
-			/// otherwise: respect subpop info
+			/// Get an editable array (Python list) of all information fields
+			/**
+				\param order whether or not the list has the same order as individuals
+				\return a python list that has all information fields for all individual
+					values of information fields of the same individual are put together.
+			  */
 			PyObject* arrIndInfo(UINT subPop, bool order)
 			{
 				CHECKRANGESUBPOP(subPop);
@@ -1128,28 +1181,42 @@ namespace simuPOP
 			}
 #endif
 
+			///	add an information field to a population.
 			/**
-			add an information field to a population. For example, "penetrance", for the analysis of an existing
-			population. If the field already exists in the geno structure, matches local info fields with the structure.
+				\param field new information field. If it already exists, it will
+					be re-initialized.
+				\param init inital value for the new field.
 			*/
 			void addInfoField(const string field, double init=0);
+			
 			/// add one or more information fields to a population
+			/** 
+				\param fields new information fields. If one or more of the fields
+					alreay exist, they will simply be re-initialized.
+				\param init initial value for the new fields.
+			*/
 			void addInfoFields(const vectorstr& fields, double init=0);
 
-			/// set the information fields for an existing population. The existing fields will be removed.
+			/// set information fields for an existing population. The existing fields will be removed.
+			/**
+				\param fields an array of fields
+				\param init initial value for the new fields.
+			 */
 			void setInfoFields(const vectorstr& fields, double init=0);
 
-			/// set ancestral depth. \c 0 for none, \c -1 for unlimited.
+			/// set ancestral depth.
+			/** \param depth \c 0 for none, \c -1 for unlimited, a positive number sets
+				the number of ancestral generations to save.
+			 */
 			void setAncestralDepth(int depth);
 
-			/// current ancestral population selected (0 for the latest generation)
-			int ancestralPop()
-			{
-				return m_curAncestralPop;
-			}
-
 			// idx = 0 (current), 1 (parents), 2 (grandparents...)
-			/// use an ancestral population. \c 0 for the latest generation.
+			/// use an ancestral generation. \c 0 for the latest generation.
+			/**
+			    \param idx Index of the ancestral generation. \c 0 for current, 
+					\c 1 for parental, etc. idx can not exceed ancestral depth.
+					(see setAncestralDepth).
+			  */
 			void useAncestralPop(UINT idx);
 
 			/// compare two populations
@@ -1204,6 +1271,9 @@ namespace simuPOP
 		public:
 
 			/// current replicate in a simulator
+			/**
+				Replication number is not meaningful for a stand-alone population.
+			 */
 			int rep()
 			{
 				return m_rep;
@@ -1218,6 +1288,9 @@ namespace simuPOP
 			}
 
 			/// current group ID in a simulator
+			/**
+				Group number is not meaningful for a stand-alone population.
+			 */
 			int grp()
 			{
 				return m_grp;
@@ -1875,7 +1948,7 @@ namespace simuPOP
 			ULONG m_gen;
 
 			/// current ancestral depth
-			int m_curAncestralPop;
+			int m_curAncestralGen;
 
 			/// whether or not individual genotype is in order
 			bool m_shallowCopied;
