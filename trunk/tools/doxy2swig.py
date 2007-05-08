@@ -183,11 +183,6 @@ class Doxy2SWIG:
             
 
     def do_computeroutput(self, node):
-        #try:
-        #    if node.firstChild is not None:
-        #        self.add_text(r'<tt>%s</tt>' % node.firstChild.data)
-        #except:
-        #    pass
         self.add_text('<tt>')
         self.parse_childnodes(node)
         self.add_text('</tt>')
@@ -368,10 +363,6 @@ class Doxy2SWIG:
             self.curField = kind
             self.content[-1][kind] = ''
             self.parse_childnodes(node)
-        #elif kind in ('par'):
-        #    self.add_text(r'<par>') 
-        #    self.parse_childnodes(node)
-        #    self.add_text(r'</par>')
         else:
             self.parse_childnodes(node)
         self.curField = 'Details'
@@ -395,14 +386,9 @@ class Doxy2SWIG:
         vec1 = re.compile('(.*)vectorstr\(1,\s*([\w"]+)\)(.*)')
         txt = vec1.sub(r'\1[\2]\3', txt)
         #txt = txt.replace('vectorstr(1, "qtrait")', '["qtrait"]')
-        #txt = txt.replace('vectorstr(1, "fitness")', '["fitness"]')
         con1 = re.compile('\)\s*const\s*$')
         txt = con1.sub(')', txt)
         #txt = txt.replace(')    const',')')
-        #txt = txt.replace(') const',')')
-        #txt = txt.replace(')const',')')
-        # temporary fix for (1, " ")
-        #txt = txt.replace('vectorstr(1,', '')
         args = txt.split(',')
         out=[]
         for s in args:
@@ -418,12 +404,6 @@ class Doxy2SWIG:
                 vect = re.compile('vector(lu|u|l|i|f|a|op|str)')
                 defVal = vect.sub('[]', defVal)
                 #defVal = defVal.replace('vectorlu','[]')
-                #defVal = defVal.replace('vectoru','[]')
-                #defVal = defVal.replace('vectorl','[]')
-                #defVal = defVal.replace('vectori','[]')
-                #defVal = defVal.replace('vectorf','[]')
-                #defVal = defVal.replace('vectora','[]')
-                #defVal = defVal.replace('vectorop','[]')
                 #defVal = defVal.replace('vectorstr','[]')
                 defVal = defVal.replace('dictionary','{}')
                 defVal = defVal.replace('matrix','[]')
@@ -512,7 +492,6 @@ class Doxy2SWIG:
     
 
     def write_swig(self, out):
-        print >> out, self.content
         for entry in self.content:
             if entry['ignore']:
                 if entry.has_key('cppArgs'):
@@ -635,7 +614,7 @@ class Doxy2SWIG:
             if cons.has_key('Details') and cons['Details'] != '':
                 print >> out, '\\par\n\\strong{Details}\n\\par'
                 print >> out, '%s' % self.latex_text(cons['Details'])
-            members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and not x['ignore']]
+            members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and not x['ignore'] and not '~' in x['Name']]
             members.sort(lambda x, y: cmp(x['Name'], y['Name']))
             if len(members) == 0:
                 print >> out, '}\n'
