@@ -1,5 +1,5 @@
 #LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 265
+\lyxformat 269
 \begin_document
 \begin_header
 \textclass manual
@@ -54,6 +54,7 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
+\listings_params "frame=lines,language=Python"
 \tracking_changes false
 \output_changes false
 \author "Bo Peng" 
@@ -569,7 +570,7 @@ Genotype structure functions
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/genoStru.log}
+\begin_inset Include \lstinputlisting{log/genoStru.log}
 preview false
 
 \end_inset
@@ -597,31 +598,8 @@ level
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Calling genotype structure functions from individual or simulator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/indGenoStru.log}
+\begin_inset Include \lstinputlisting{log/indGenoStru.log}[caption={Calling genotype structure functions from individual or simulator}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -700,7 +678,7 @@ Conversion between absolute and relative indices
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/absIndex.log}
+\begin_inset Include \lstinputlisting{log/absIndex.log}
 preview false
 
 \end_inset
@@ -4718,7 +4696,7 @@ Use of population function
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/popInit.log}
+\begin_inset Include \lstinputlisting{log/popInit.log}
 preview false
 
 \end_inset
@@ -4736,13 +4714,38 @@ Copying a population
 \end_layout
 
 \begin_layout Standard
-Like many other python operations,
+Like many other python o
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+perati
+\end_layout
+
+\end_inset
+
+ons,
 \end_layout
 
 \begin_layout Listings
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
 pop = population(...)
-\newline
+\end_layout
+
+\begin_layout Standard
+
 pop1 = pop
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4768,7 +4771,18 @@ pop
 \end_layout
 
 \begin_layout Listings
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
 pop1 = pop.clone()
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4780,7 +4794,18 @@ simu
 \end_layout
 
 \begin_layout Listings
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
 pop = simu.population(idx)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4794,16 +4819,26 @@ pop
  distroyed so the following calling sequence will crash python.
 \end_layout
 
-\begin_layout Listings
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pop = simu.population(idx)
 \end_layout
 
-\begin_layout Listings
+\begin_layout Standard
 simu = simulator(....)
 \end_layout
 
-\begin_layout Listings
+\begin_layout Standard
 pop.savePopulation(....)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4811,7 +4846,17 @@ If you would like to get a real copy, use
 \end_layout
 
 \begin_layout Listings
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pop = simu.getPopulation(idx)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -4840,36 +4885,8 @@ apply()
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:popAndOp"
-
-\end_inset
-
-Population and operators
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/popAndOperator.log}
+\begin_inset Include \lstinputlisting{log/popAndOperator.log}[caption={Population and operators},frame=lines]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -4956,31 +4973,8 @@ initByFreq
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Function InitByFreq
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/InitByFreq.log}
+\begin_inset Include \lstinputlisting{log/InitByFreq.log}[frame=lines,caption={Function InitByFreq},label=initByFreq]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -5190,7 +5184,7 @@ Operator dumper and initByFreq
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/dumpPop.log}
+\begin_inset Include \lstinputlisting{log/dumpPop.log}
 preview false
 
 \end_inset
@@ -5340,7 +5334,7 @@ population structure functions
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/popStru.log}
+\begin_inset Include \lstinputlisting{log/popStru.log}
 preview false
 
 \end_inset
@@ -5600,7 +5594,7 @@ population structure functions
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/popStruManip.log}
+\begin_inset Include \lstinputlisting{log/popStruManip.log}
 preview false
 
 \end_inset
@@ -5740,7 +5734,7 @@ Individual member functions
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/ind.log}
+\begin_inset Include \lstinputlisting{log/ind.log}
 preview false
 
 \end_inset
@@ -6616,7 +6610,7 @@ Population variables
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/popVars.log}
+\begin_inset Include \lstinputlisting{log/popVars.log}
 preview false
 
 \end_inset
@@ -6669,7 +6663,7 @@ Local namespaces of populations
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/localNamespace.log}
+\begin_inset Include \lstinputlisting{log/localNamespace.log}
 preview false
 
 \end_inset
@@ -7117,7 +7111,7 @@ Ancestral populations
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/ancestralPop.log}
+\begin_inset Include \lstinputlisting{log/ancestralPop.log}
 preview false
 
 \end_inset
@@ -7352,7 +7346,7 @@ Save and load population
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/popSaveLoad.log}
+\begin_inset Include \lstinputlisting{log/popSaveLoad.log}
 preview false
 
 \end_inset
@@ -8416,7 +8410,7 @@ Operator stage
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatorstages.log}
+\begin_inset Include \lstinputlisting{log/operatorstages.log}
 preview false
 
 \end_inset
@@ -8508,31 +8502,8 @@ For example
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Set active generations of an operator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatorgen.log}
+\begin_inset Include \lstinputlisting{log/operatorgen.log}[caption={Set active generations of an operator},label=operatorgen]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -8617,7 +8588,7 @@ Replicate group
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatorgrp.log}
+\begin_inset Include \lstinputlisting{log/operatorgrp.log}
 preview false
 
 \end_inset
@@ -8756,7 +8727,7 @@ log/operatoroutput
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatoroutput.log}
+\begin_inset Include \lstinputlisting{log/operatoroutput.log}
 preview false
 
 \end_inset
@@ -8861,7 +8832,7 @@ log/operatoroutputexpr
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatoroutputexpr.log}
+\begin_inset Include \lstinputlisting{log/operatoroutputexpr.log}
 preview false
 
 \end_inset
@@ -9244,7 +9215,7 @@ python expression
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/expr.log}
+\begin_inset Include \lstinputlisting{log/expr.log}
 preview false
 
 \end_inset
@@ -9480,7 +9451,7 @@ Expression evaluation
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/expreval.log}
+\begin_inset Include \lstinputlisting{log/expreval.log}
 preview false
 
 \end_inset
@@ -10009,7 +9980,7 @@ save and load a simulator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/simulatorsaveload.log}
+\begin_inset Include \lstinputlisting{log/simulatorsaveload.log}
 preview false
 
 \end_inset
@@ -11270,7 +11241,7 @@ define a python operator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/pyOperator.log}
+\begin_inset Include \lstinputlisting{log/pyOperator.log}
 preview false
 
 \end_inset
@@ -11302,7 +11273,7 @@ use of python operator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/pyOperatorUse.log}
+\begin_inset Include \lstinputlisting{log/pyOperatorUse.log}
 preview false
 
 \end_inset
@@ -11717,7 +11688,7 @@ Init by freq
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/initByFreq.log}
+\begin_inset Include \lstinputlisting{log/initByFreq.log}
 preview false
 
 \end_inset
@@ -11793,7 +11764,7 @@ Init by value
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/initByValue.log}
+\begin_inset Include \lstinputlisting{log/initByValue.log}
 preview false
 
 \end_inset
@@ -11924,7 +11895,7 @@ Init by value
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/pyInit.log}
+\begin_inset Include \lstinputlisting{log/pyInit.log}
 preview false
 
 \end_inset
@@ -12240,7 +12211,7 @@ pyMigrator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/pyMigrator.log}
+\begin_inset Include \lstinputlisting{log/pyMigrator.log}
 preview false
 
 \end_inset
@@ -12508,7 +12479,7 @@ kamMutator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/kamMutator.log}
+\begin_inset Include \lstinputlisting{log/kamMutator.log}
 preview false
 
 \end_inset
@@ -12617,7 +12588,7 @@ smmMutator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/smmMutator.log}
+\begin_inset Include \lstinputlisting{log/smmMutator.log}
 preview false
 
 \end_inset
@@ -12726,7 +12697,7 @@ gsmMutator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/gsmMutator.log}
+\begin_inset Include \lstinputlisting{log/gsmMutator.log}
 preview false
 
 \end_inset
@@ -12794,7 +12765,7 @@ pyMutator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/pyMutator.log}
+\begin_inset Include \lstinputlisting{log/pyMutator.log}
 preview false
 
 \end_inset
@@ -13020,7 +12991,7 @@ Recombinator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/recombinator.log}
+\begin_inset Include \lstinputlisting{log/recombinator.log}
 preview false
 
 \end_inset
@@ -13343,7 +13314,7 @@ map selector
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/basicSelector.log}
+\begin_inset Include \lstinputlisting{log/basicSelector.log}
 preview false
 
 \end_inset
@@ -13815,7 +13786,7 @@ python selector
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/pySelector.log}
+\begin_inset Include \lstinputlisting{log/pySelector.log}
 preview false
 
 \end_inset
@@ -15067,7 +15038,7 @@ random sample
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/randomSample.log}
+\begin_inset Include \lstinputlisting{log/randomSample.log}
 preview false
 
 \end_inset
@@ -17258,16 +17229,7 @@ leaveOpen:
  Default to true.
 \end_layout
 
-\begin_layout Standard
-Here is an example:
-\end_layout
-
 \begin_layout Listings
-\begin_inset Include \verbatiminput{log/simuPlotter.log}
-preview false
-
-\end_inset
-
 
 \end_layout
 
@@ -17865,7 +17827,7 @@ Conditional operator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/ifElse.log}
+\begin_inset Include \lstinputlisting{log/ifElse.log}
 preview false
 
 \end_inset
@@ -18070,7 +18032,7 @@ Random number generator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/rng.log}
+\begin_inset Include \lstinputlisting{log/rng.log}
 preview false
 
 \end_inset
@@ -18136,7 +18098,7 @@ Random number generator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/rngrand.log}
+\begin_inset Include \lstinputlisting{log/rngrand.log}
 preview false
 
 \end_inset
@@ -18561,7 +18523,7 @@ geno stru
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/extgenostru.log}
+\begin_inset Include \lstinputlisting{log/extgenostru.log}
 preview false
 
 \end_inset
@@ -18671,7 +18633,7 @@ genotype
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/extgenotype.log}
+\begin_inset Include \lstinputlisting{log/extgenotype.log}
 preview false
 
 \end_inset
@@ -18711,7 +18673,7 @@ genotype
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/extother.log}
+\begin_inset Include \lstinputlisting{log/extother.log}
 preview false
 
 \end_inset
@@ -18872,7 +18834,7 @@ Tab operator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/tab.log}
+\begin_inset Include \lstinputlisting{log/tab.log}
 preview false
 
 \end_inset
@@ -18965,7 +18927,7 @@ genotype
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/extother.log}
+\begin_inset Include \lstinputlisting{log/extother.log}
 preview false
 
 \end_inset
@@ -19030,7 +18992,7 @@ save fstat
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \verbatiminput{log/saveFstat.log}
+\begin_inset Include \lstinputlisting{log/saveFstat.log}
 preview false
 
 \end_inset

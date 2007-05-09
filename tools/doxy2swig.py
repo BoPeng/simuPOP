@@ -186,6 +186,12 @@ class Doxy2SWIG:
         self.add_text('<tt>')
         self.parse_childnodes(node)
         self.add_text('</tt>')
+
+
+    def do_bold(self, node):
+        self.add_text('<bf>')
+        self.parse_childnodes(node)
+        self.add_text('</bf>')
             
     def do_linebreak(self, node):
         #newline tag indicates the linebreak we do want
@@ -258,6 +264,7 @@ class Doxy2SWIG:
         self.curField = 'Description'
         self.content[-1]['Description'] = ''
         self.parse_childnodes(node)
+        
 
     def do_memberdef(self, node):
         prot = node.attributes['prot'].value
@@ -366,7 +373,6 @@ class Doxy2SWIG:
         else:
             self.parse_childnodes(node)
         self.curField = 'Details'
-        self.content[-1]['Details'] = ''
 
 
     def do_argsstring(self, node):
@@ -492,6 +498,7 @@ class Doxy2SWIG:
     
 
     def write_swig(self, out):
+        #print >> out, self.content
         for entry in self.content:
             if entry['ignore']:
                 if entry.has_key('cppArgs'):
@@ -503,17 +510,20 @@ class Doxy2SWIG:
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, 'Description:'
                 print >> out, '\n    %s\n' % self.format_text(entry['Description'], 0, 4)
+            if entry.has_key('Details') and entry['Details'] != '':
+                print >> out, 'Details:'
+                print >> out, '\n    %s\n' % self.format_text(entry['Details'], 0, 4)
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, 'Usage:'
-                print >> out, '\n    %s' % self.format_text(entry['Usage'], 0, 6)
+                print >> out, '\n    %s\n' % self.format_text(entry['Usage'], 0, 6)
             if entry.has_key('Arguments') and entry['Arguments'] != '':
                 print >> out, 'Arguments:\n'
                 for arg in entry['Arguments']:
                     print >> out, '    %-16s%s' % (arg['Name']+':', self.format_text(arg['Description'], 0, 20))
-                print >> out, '\n'
-            if entry.has_key('Details') and entry['Details'] != '':
-                print >> out, 'Details:'
-                print >> out, '\n    %s\n' % self.format_text(entry['Details'], 0, 4)
+                print >> out
+            if entry.has_key('note') and entry['note'] != '':
+                print >> out, 'Note:'
+                print >> out, '\n    %s\n' % self.format_text(entry['note'], 0, 4)
             if entry.has_key('Examples') and entry['Examples'] != '':
                 print >> out, 'Examples:'
                 print >> out, '\n%s\n' % entry['Examples'].replace('\\', r'\\\\').replace('"', r'\"')
@@ -544,6 +554,8 @@ class Doxy2SWIG:
         text = text.replace('</em>', '}')
         text = text.replace('<tt>', r'{\tt ')
         text = text.replace('</tt>', '}')
+        text = text.replace('<bf>', r'{\bf ')
+        text = text.replace('</bf>', '}')
         text = text.replace('</newline>', '\n\n')
         text = text.replace('<itemize>', r'\begin{itemize} ')
         text = text.replace('</itemize>', r'\end{itemize}')
@@ -562,6 +574,9 @@ class Doxy2SWIG:
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, '\\par\n\\strong{Function \\texttt{%s}}\n\\par' % self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
                 print >> out, '%s\par' % self.latex_text(entry['Description'])
+            if entry.has_key('Details') and entry['Details'] != '':
+                print >> out, '\\par\n\\strong{Details}\n\\par'
+                print >> out, '    %s\n' % self.latex_text(entry['Details'])
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, '\\begin{quote}\\function{%s}\\end{quote}' % self.latex_text(entry['Usage'])
             if entry.has_key('Arguments') and entry['Arguments'] != '':
@@ -570,9 +585,9 @@ class Doxy2SWIG:
                 for arg in entry['Arguments']:
                     print >> out, '\\item [{%s}]%s' % (arg['Name'], self.latex_text(arg['Description']))
                 print >> out, '\\end{description}'
-            if entry.has_key('Details') and entry['Details'] != '':
-                print >> out, '\\par\n\\strong{Details}\n\\par'
-                print >> out, '    %s\n' % self.latex_text(entry['Details'])
+            if entry.has_key('note') and entry['note'] != '':
+                print >> out, '\\par\n\\strong{Note}\n\\par'
+                print >> out, '    %s\n' % self.latex_text(entry['note'])
             if entry.has_key('Examples') and entry['Examples'] != '':
                 print >> out, '\\strong{Examples}\n\\begin{algorithm}[h]'
                 print >> out, '\\caption{\\label{alg:%s}Example for function %s}' % (entry['Name'], entry['Name'])
@@ -611,9 +626,12 @@ class Doxy2SWIG:
                 for arg in cons['Arguments']:
                     print >> out, '\\item [{%s}]%s' % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
                 print >> out, '\\end{description}'
-            if cons.has_key('Details') and cons['Details'] != '':
-                print >> out, '\\par\n\\strong{Details}\n\\par'
-                print >> out, '%s' % self.latex_text(cons['Details'])
+            #if cons.has_key('Details') and cons['Details'] != '':
+            #    print >> out, '\\par\n\\strong{Details}\n\\par'
+            #    print >> out, '%s' % self.latex_text(cons['Details'])
+            if cons.has_key('note') and cons['note'] != '':
+                print >> out, '\\par\n\\strong{Note}\n\\par'
+                print >> out, '%s' % self.latex_text(cons['note'])
             members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and not x['ignore'] and not '~' in x['Name']]
             members.sort(lambda x, y: cmp(x['Name'], y['Name']))
             if len(members) == 0:
@@ -638,7 +656,9 @@ class Doxy2SWIG:
                     mem['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                     for arg in mem['Arguments']:
                         print >> out, '\\item [{%s}]%s' % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
-                    print >> out, '\\end{description}'            
+                    print >> out, '\\end{description}'
+                if mem.has_key('note') and mem['note'] != '':
+                    print >> out, '\\par\n\\strong{Note:} %s\\par' % self.latex_text(mem['note'])
             print >> out, '\\end{description}'
             if cons.has_key('Examples') and cons['Examples'] != '':
                 print >> out, '\\strong{Examples}\n'
@@ -720,6 +740,8 @@ class Doxy2SWIG:
         text = text.replace('</em>', '')
         text = text.replace('<tt>', '')
         text = text.replace('</tt>', '')
+        text = text.replace('<bf>', '')
+        text = text.replace('</bf>', '')
         text = text.replace('<itemize>', '')
         text = text.replace('</itemize>', '')
         #itemize items in swig file
