@@ -3,7 +3,9 @@ ChangeLog of simuPOP
 BUGS:
   - all known bugs have been cleared.
 
-version 0.7.10 - Not released, available at https://svn.sourceforge.net/svnroot/simupop/trunk
+version 0.8.0 - Not released, available at https://svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.7.10 - (Rev 958) May 9, 2007
   - BUG: fix a memory leak bug with LoadPopulation
   - BUG: fix a newPopByIndID bug where keepAncestralPops is not respected.
   - NEW: nuclearFamilySampler operator and function
@@ -23,6 +25,7 @@ version 0.7.10 - Not released, available at https://svn.sourceforge.net/svnroot/
   - NEW: swig 1.3.32 compatibility
   - NEW: add scripts/loadHapMap.py
   - NEW: add pyTagger operator, which can be used to trace trait values.
+  - NEW: update comments, in preparation for the 0.8.0 release
 
 
 version 0.7.9 - (Rev 885) Apr 3, 2007
