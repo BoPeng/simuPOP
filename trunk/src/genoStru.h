@@ -296,9 +296,13 @@ BOOST_CLASS_VERSION(simuPOP::GenoStructure, 2)
 
 namespace simuPOP
 {
-	/// a trait class maintains a static array of geno structures, and provides interfaces around a GenoStructure index.
+	/// genotypic structure related functions, can be accessed from both individuals and populations
 	/**
-	 */
+	Genotypic structure refers to the number of chromosomes, positions, the
+	number of loci on each chromosome, and allele and locus names etc. All individuals
+	in a population share the same genotypic structure and functions provided in
+	this class can be accessed from individual, population and simulator levels.
+	*/
 	class GenoStruTrait
 	{
 		private:
@@ -318,7 +322,7 @@ namespace simuPOP
 				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields,
 				const vectori& chromMap);
 
-			/// set an existing geno structure
+			/// CPPONLY set an existing geno structure
 			/**
 			\note This is \em NOT efficient! However, this function has to be used when, for example,
 			  loading a structure from a file.
@@ -368,10 +372,10 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_ploidy;
 			}
 
-			/// return ploidy name, \c haploid, \c diploid, \c triploid etc.
+			/// return ploidy name, \c haploid, \c diploid, or \c triploid etc.
 			string ploidyName() const;
 
-			/// number of loci on chromosome \c chrom
+			/// return the number of loci on chromosome \c chrom, equals to <tt> numLoci()[chrom] </tt>
 			UINT numLoci(UINT chrom) const
 			{
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -381,7 +385,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_numLoci[chrom];
 			}
 
-			/// number of loci
+			/// return the number of loci on all chromosomes
 			vectoru numLoci() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_numLoci;
@@ -396,7 +400,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_sexChrom;
 			}
 
-			/// return the total number of loci on all chromosomes (STATIC)
+			/// return the total number of loci on all chromosomes
 			UINT totNumLoci() const
 			{
 
@@ -431,14 +435,20 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_lociPos;
 			}
 
-			/// return an (editable) array of loci positions
+			/// return an (editable) array of loci positions of all loci
+			/**
+			\note Modifying loci position directly using this function is strongly discouraged.
+			*/
 			PyObject* arrLociPos()
 			{
 				return Double_Vec_As_NumArray( s_genoStruRepository[m_genoStruIdx].m_lociPos.begin(),
 					s_genoStruRepository[m_genoStruIdx].m_lociPos.end() );
 			}
 
-			/// return an array of distance between loci on a chromosome
+			/// return an array of loci positions on a given chromosome
+			/**
+			\note Modifying loci position directly using this function is strongly discouraged.
+			*/
 			PyObject* arrLociPos(UINT chrom)
 			{
 				CHECKRANGECHROM(chrom);
@@ -448,7 +458,7 @@ namespace simuPOP
 					s_genoStruRepository[m_genoStruIdx].m_lociPos.begin() + chromEnd(chrom) );
 			}
 
-			/// number of chromosomes
+			/// return the number of chromosomes
 			UINT numChrom() const
 			{
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -500,7 +510,7 @@ namespace simuPOP
 			/// return the name of an allele (if previously specified)
 			string alleleName(const Allele allele) const;
 
-			/// return an array of allelic names, the first one is for missing value
+			/// return an array of allelic names
 			vectorstr alleleNames() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_alleleNames;
@@ -516,7 +526,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_lociNames[loc];
 			}
 
-			/// return locus names
+			/// return names of all loci
 			vectorstr lociNames() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_lociNames;
@@ -540,13 +550,21 @@ namespace simuPOP
 				return indices;
 			}
 
-			/// return the maximum allele state for all loci
+			/// return the maximum allele value for all loci
+			/**
+			\sa setMaxAllele
+			*/
 			UINT maxAllele() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_maxAllele;
 			}
 
-			/// set the maximum allele state for all loci
+			/// set the maximum allele value for all loci
+			/**
+			Maximum allele value has to be \c 1 for binary modules. \c maxAllele is
+			the maximum possible allele value, which allows <tt>maxAllele+1</tt> alleles
+			<tt>0, 1, ..., maxAllele</tt>.
+			*/
 			void setMaxAllele(UINT maxAllele)
 			{
 #ifdef BINARYALLELE
@@ -564,7 +582,7 @@ namespace simuPOP
 				return std::find(names.begin(), names.end(), name) != names.end();
 			}
 
-			/// get the size of information fields
+			/// obtain the number of information fields
 			UINT infoSize() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_infoFields.size();
@@ -583,7 +601,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
 			}
 
-			/// return the index of the field \c name, return -1 if not found
+			/// return the index of the field \c name, return \c -1 if not found
 			UINT infoIdx(const string& name) const;
 
 			/// CPPONLY add a new information field
@@ -603,13 +621,13 @@ namespace simuPOP
 				s_genoStruRepository[m_genoStruIdx].m_infoFields = fields;
 			}
 
-			/// swap a geno structure with the current one
+			/// CPPONLY swap a geno structure with the current one
 			void swap(GenoStruTrait& rhs)
 			{
 				std::swap(m_genoStruIdx, rhs.m_genoStruIdx);
 			}
 
-			/// ???
+			/// return the distribution of chromosomes across multiple nodes (MPI version of simuPOP only)
 			vectori chromMap() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_chromMap;
