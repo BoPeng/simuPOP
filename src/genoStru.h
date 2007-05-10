@@ -296,12 +296,9 @@ BOOST_CLASS_VERSION(simuPOP::GenoStructure, 2)
 
 namespace simuPOP
 {
-
-	/** \brief genoStruTrait
-
-	A trait class that maintain a static array of geno structure,
-	and provide interfaces around a GenoStructure Index.
-	*/
+	/// a trait class maintains a static array of geno structures, and provides interfaces around a GenoStructure index.
+	/**
+	 */
 	class GenoStruTrait
 	{
 		private:
@@ -310,21 +307,22 @@ namespace simuPOP
 #define TraitMaxIndex 0xFF
 
 		public:
-			/// constructor, but m_genoStruIdx will be set later.
+			/// Creat a \c GenoStruTrait class, but \c m_genoStruIdx will be set later.
 			GenoStruTrait():m_genoStruIdx(TraitMaxIndex)
 			{
 			}
 
-			/// set genotypic structure
-			/// CPPONLY
+			/// CPPONLY set genotypic structure
 			void setGenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
 				const vectorf& lociPos, const vectorstr& alleleNames,
 				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields,
 				const vectori& chromMap);
 
-			/// set an existing geno structure, simply use it
-			/// This is NOT efficient! (but has to be used when, for example,
-			/// loading a structure from file
+			/// set an existing geno structure
+			/**
+			\note This is \em NOT efficient! However, this function has to be used when, for example,
+			  loading a structure from a file.
+			*/
 			void setGenoStructure(GenoStructure& rhs);
 
 			/// CPPONLY set index directly
@@ -348,21 +346,19 @@ namespace simuPOP
 			/// CPPONLY append some loci to genotype structure
 			GenoStructure & insertAfterLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const;
 
-			/// return the GenoStructure
-			/// CPPONLY
+			/// CPPONLY return the GenoStructure
 			GenoStructure& genoStru() const
 			{
 				return s_genoStruRepository[m_genoStruIdx];
 			}
 
-			/// return the GenoStructure index
-			/// CPPONLY
+			/// CPPONLY return the GenoStructure index
 			size_t genoStruIdx() const
 			{
 				return static_cast<size_t>(m_genoStruIdx);
 			}
 
-			/// return ploidy
+			/// return ploidy, the number of homologous sets of chromosomes
 			UINT ploidy() const
 			{
 
@@ -372,7 +368,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_ploidy;
 			}
 
-			/// return ploidy
+			/// return ploidy name, \c haploid, \c diploid, \c triploid etc.
 			string ploidyName() const;
 
 			/// number of loci on chromosome \c chrom
@@ -385,12 +381,13 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_numLoci[chrom];
 			}
 
+			/// number of loci
 			vectoru numLoci() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_numLoci;
 			}
 
-			/// whether or not the last chromosome is sex chromosome
+			/// determine whether or not the last chromosome is sex chromosome
 			bool sexChrom() const
 			{
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -399,7 +396,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_sexChrom;
 			}
 
-			/// return totNumLoci (STATIC)
+			/// return the total number of loci on all chromosomes (STATIC)
 			UINT totNumLoci() const
 			{
 
@@ -409,7 +406,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_totNumLoci;
 			}
 
-			/// return totNumLoci * ploidy
+			/// return the total number of loci times ploidy
 			UINT genoSize() const
 			{
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -418,7 +415,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_genoSize;
 			}
 
-			/// locus distance.
+			/// return the position of a locus
 			double locusPos(UINT locus) const
 			{
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -428,19 +425,20 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_lociPos[locus];
 			}
 
+			/// return loci positions
 			vectorf lociPos() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_lociPos;
 			}
 
-			/// expose loci distance
+			/// return an (editable) array of loci positions
 			PyObject* arrLociPos()
 			{
 				return Double_Vec_As_NumArray( s_genoStruRepository[m_genoStruIdx].m_lociPos.begin(),
 					s_genoStruRepository[m_genoStruIdx].m_lociPos.end() );
 			}
 
-			/// expose loci distance of a chromosome
+			/// return an array of distance between loci on a chromosome
 			PyObject* arrLociPos(UINT chrom)
 			{
 				CHECKRANGECHROM(chrom);
@@ -450,7 +448,7 @@ namespace simuPOP
 					s_genoStruRepository[m_genoStruIdx].m_lociPos.begin() + chromEnd(chrom) );
 			}
 
-			/// number of chromosome
+			/// number of chromosomes
 			UINT numChrom() const
 			{
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -459,13 +457,13 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_numChrom;
 			}
 
-			/// chromosome index
+			/// return an array of chromosome indices
 			const vectoru& chromIndex() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_chromIndex;
 			}
 
-			/// chromosome index of chromosome \c chrom
+			/// return the index of the first locus on a chromosome
 			UINT chromBegin(UINT chrom) const
 			{
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -476,7 +474,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_chromIndex[chrom];
 			}
 
-			/// chromosome index of chromosome \c chrom
+			/// return the index of the last locus on a chromosome plus 1
 			UINT chromEnd(UINT chrom) const
 			{
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -487,7 +485,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_chromIndex[chrom+1];
 			}
 
-			/// convert from relative locus (on chromsome) to absolute locus (no chromosome structure)
+			/// return the absolute index of a locus on a chromosome
 			UINT absLocusIndex(UINT chrom, UINT locus)
 			{
 				CHECKRANGECHROM(chrom);
@@ -496,19 +494,19 @@ namespace simuPOP
 				return( s_genoStruRepository[m_genoStruIdx].m_chromIndex[chrom] + locus );
 			}
 
-			/// return chrom, locus pair from an absolute locus position.
+			/// return <tt>(chrom, locus)</tt> pair of an absolute locus index
 			std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
 
-			/// return allele name
+			/// return the name of an allele (if previously specified)
 			string alleleName(const Allele allele) const;
 
-			/// allele names
+			/// return an array of allelic names, the first one is for missing value
 			vectorstr alleleNames() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_alleleNames;
 			}
 
-			/// return locus name
+			/// return the name of a locus
 			string locusName(const UINT loc) const
 			{
 				DBG_FAILIF( loc >= s_genoStruRepository[m_genoStruIdx].m_totNumLoci, IndexError,
@@ -518,12 +516,13 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_lociNames[loc];
 			}
 
+			/// return locus names
 			vectorstr lociNames() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_lociNames;
 			}
 
-			/// return the index of a locus by locus name
+			/// return the index of a locus by its locus name
 			UINT locusByName(const string name) const
 			{
 				const vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_lociNames;
@@ -532,7 +531,7 @@ namespace simuPOP
 				return it - names.begin();
 			}
 
-			/// return an array of locus index by loci names
+			/// return an array of locus indices by locus names
 			vectoru lociByNames(const vectorstr& names) const
 			{
 				vectoru indices;
@@ -541,11 +540,13 @@ namespace simuPOP
 				return indices;
 			}
 
+			/// return the maximum allele state for all loci
 			UINT maxAllele() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_maxAllele;
 			}
 
+			/// set the maximum allele state for all loci
 			void setMaxAllele(UINT maxAllele)
 			{
 #ifdef BINARYALLELE
@@ -556,65 +557,69 @@ namespace simuPOP
 #endif
 			}
 
-			/// get info length
+			/// determine if an information field exists
 			bool hasInfoField(const string& name) const
 			{
 				vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
 				return std::find(names.begin(), names.end(), name) != names.end();
 			}
 
+			/// get the size of information fields
 			UINT infoSize() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_infoFields.size();
 			}
 
+			/// return an array of all information fields
 			vectorstr infoFields() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_infoFields;
 			}
 
+			/// obtain the name of information field \c idx
 			string infoField(UINT idx) const
 			{
 				CHECKRANGEINFO(idx);
 				return s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
 			}
 
-			/// return the index of field name, return -1 if not found.
+			/// return the index of the field \c name, return -1 if not found
 			UINT infoIdx(const string& name) const;
 
-			/// add a new information field
-			/// NOTE: should only be called by population::requestInfoField
-			/// Right now, do not allow dynamic addition of these fields.
-			/// CPPONLY
+			/// CPPONLY add a new information field
+			/**
+			\note Should only be called by population::requestInfoField.
+			  Right now, do not allow dynamic addition of these fields.
+			*/
 			void struAddInfoField(const string& field)
 			{
 				vectorstr& fields = s_genoStruRepository[m_genoStruIdx].m_infoFields;
 				fields.push_back(field);
 			}
 
-			/// should should only be called from population
-			/// CPPONLY
+			/// CPPONLY should should only be called from population
 			void struSetInfoFields(const vectorstr& fields)
 			{
 				s_genoStruRepository[m_genoStruIdx].m_infoFields = fields;
 			}
 
+			/// swap a geno structure with the current one
 			void swap(GenoStruTrait& rhs)
 			{
 				std::swap(m_genoStruIdx, rhs.m_genoStruIdx);
 			}
 
-			///
+			/// ???
 			vectori chromMap() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_chromMap;
 			}
 
 #ifdef SIMUMPI
-			/// return node rank by chromosome number, according to map on setChromMap
+			/// return node rank by chromosome number, according to the map on \c setChromMap
 			UINT rankOfChrom(UINT chrom) const;
 
-			/// return node rank by locus id, according to map on setChromMap
+			/// return node rank by locus ID, according to the map on \c setChromMap
 			UINT rankOfLocus(UINT locus) const
 			{
 				return rankOfChrom(chromLocusPair(locus).first);
