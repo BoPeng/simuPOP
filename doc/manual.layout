@@ -27,51 +27,6 @@ Style Bibliography
   EndFont
 End
 
-Style Listings
-  Margin		Static
-  LatexType		Environment
-  LatexName	    lstlisting
-  NextNoIndent		1
-  LeftMargin		MMM
-  RightMargin		MMM
-  TopSep		0.5
-  BottomSep		0.5
-  Align			Left
-  AlignPossible		Block, Left, Right, Center
-  LabelType		No_Label
-  #NewLine       1
-  PassThru      1
-  KeepEmpty     1
-  #FreeSpacing 	    	1
-
-  # define the environment lyxcode
-  Preamble
-    \usepackage{listings}
-    \lstset{language=Python,
-        basicstyle=\ttfamily,
-		commentstyle=\ttfamily,
-		stringstyle=\ttfamily,
-		keywordstyle=\ttfamily,
-        showstringspaces=false,
-		tabsize=4,
-		xleftmargin=30pt,
-		xrightmargin=10pt,
-		resetmargins=false,
-        showspaces=false,
-        showtabs=false,
-		frame=none,
-		columns=fixed,
-		keepspaces=true,
-   }
-  EndPreamble
-
-  # standard font definition
-  Font 
-    Family  		Typewriter
-	Size            small
-  EndFont
-End
-
 ProvidesUrl 1
 NoStyle LyX-Code
 NoStyle Right_Address
