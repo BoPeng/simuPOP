@@ -1,5 +1,5 @@
 #LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 256
+\lyxformat 269
 \begin_document
 \begin_header
 \textclass manual
@@ -64,8 +64,9 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
+\listings_params "language=Python,xleftmargin=30pt,basicstyle=\ttfamily"
 \tracking_changes false
-\output_changes true
+\output_changes false
 \author "Bo Peng" 
 \end_header
 
@@ -86,7 +87,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status collapsed
+status open
 
 \begin_layout Standard
 \begin_inset ERT
@@ -339,9 +340,9 @@ How to cite simuPOP:
 \begin_layout Quote
 Bo Peng and Marek Kimmal (2005) simuPOP: a forward-time population genetics
  simulation environment.
-
+ 
 \emph on
- bioinformatics
+bioinformatics
 \emph default
 , 
 \series bold
@@ -675,15 +676,13 @@ MPI modules.
  available, I only have access to Linux multi-processor systems and Linux-based
  clusters.
  Therefore, windows MPI modules are not yet supported.
- Also, because of the random seed problem, special treatment has to be used
- to ensure different seed for the MPI processes.
 \end_layout
 
 \begin_layout Standard
 I welcome suggestions on how to make these features available for windows.
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 
 \end_layout
 
@@ -706,7 +705,7 @@ Classes (objects), member functions and parameter names start with small
  For example
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 population, population::subPopSize(), individual::setInfo()
 \end_layout
 
@@ -717,9 +716,9 @@ Standalone functions start with capital character.
 \family typewriter
 initByFreq(vars)
 \family default
- is an operator and
+ is an operator and 
 \family typewriter
- InitByFreq(pop, vars)
+InitByFreq(pop, vars)
 \family default
  is its function version (equivalent to 
 \family typewriter
@@ -733,7 +732,7 @@ Constants start with Capital characters.
  For example
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 MigrByProportion, StatNumOfFemale
 \end_layout
 
@@ -741,7 +740,7 @@ MigrByProportion, StatNumOfFemale
 The following words in function names are abbreviated:
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 pos (position),  info (information), migr (migration), subPop (subpopulation),
  
 \newline
@@ -767,23 +766,23 @@ There are a lot of functions/operators in simuPOP and there is no reason
 \begin_layout Itemize
 Read some examples under 
 \family typewriter
-scripts 
+scripts
 \family default
-directory.
+ directory.
  From easy to difficult, you can read 
 \family typewriter
-simuLDDecay.py, simuCDCV.py 
+simuLDDecay.py, simuCDCV.py
 \family default
-and 
+ and 
 \family typewriter
 simuComplexDisease.py.
- 
+
 \family default
-Scripts from the 
+ Scripts from the 
 \family typewriter
-examples 
+examples
 \family default
-directory can also be studied.
+ directory can also be studied.
 \end_layout
 
 \begin_layout Itemize
@@ -815,9 +814,9 @@ simupop-x.x.x-py23-win32.exe
 .
  Double click the 
 \family typewriter
-.exe 
+.exe
 \family default
-file to install.
+ file to install.
  
 \end_layout
 
@@ -858,9 +857,9 @@ wxPython: By default, simuPOP uses Tkinter to get parameters (the parameter
  This will enable a bunch of other GUI improvements including a nicer version
  of 
 \family typewriter
-ListVars() 
+ListVars()
 \family default
-function.
+ function.
  
 \end_layout
 
@@ -919,9 +918,9 @@ share
 \backslash
 simuPOP
 \backslash
-test: 
+test:
 \family default
-all unit test cases.
+ all unit test cases.
  You can run run_tests.py to test if your simuPOP installation is correct.
 \end_layout
 
@@ -940,19 +939,18 @@ scripts
 \series bold
 \emph on
 :
-\emph default
- 
 \family default
 \series default
-This directory has all the built-in scripts.
+\emph default
+ This directory has all the built-in scripts.
 \end_layout
 
 \begin_layout Standard
 You should be able to load simuPOP library by running command 
 \family typewriter
-import simuPOP 
+import simuPOP
 \family default
-(example 
+ (example 
 \begin_inset LatexCommand ref
 reference "alg:Import-simuPOP-module"
 
@@ -969,13 +967,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "alg:Import-simuPOP-module"
 
 \end_inset
 
 Import simuPOP module
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1011,13 +1017,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "alg:Import-simuPOP-module-add-path"
 
 \end_inset
 
 Import locally installed simuPOP module
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1032,29 +1046,6 @@ preview false
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-/path/to/simuPOP
-\family default
- refers to the directory that contains simuPOP modules such as 
-\family typewriter
-simuPOP.py 
-\family default
-and 
-\family typewriter
-simuPOP_std.py
-\family default
-.
- However, this method does not work for exising simuPOP scripts.
- A better method is to define environment variable 
-\family typewriter
-PYTHONPATH
-\family default
- that points to this directory.
- For details, please refer to Python reference manual.
 \end_layout
 
 \begin_layout Section
@@ -1121,8 +1112,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 set options through simuOpt
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1190,22 +1189,22 @@ name "alleleType"
 
  can be 
 \family typewriter
-short, long 
+short, long
 \family default
-or 
+ or 
 \family typewriter
 binary.
 
 \family default
  
 \family typewriter
-mpi 
+mpi
 \family default
-can be 
+ can be 
 \family typewriter
-True 
+True
 \family default
-or 
+ or 
 \family typewriter
 False
 \family default
@@ -1237,9 +1236,9 @@ If you are running a simuPOP script that conforms to simuPOP convention,
 \family typewriter
 --optimized
 \family default
-, and the MPI version using
+, and the MPI version using 
 \family typewriter
- --mpi.
+--mpi.
 \end_layout
 
 \begin_layout Chapter
@@ -1297,13 +1296,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "alg:A-simple-example"
 
 \end_inset
 
 A simple example
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1333,9 +1340,9 @@ import
  line import simuPOP module (output suppressed).
  
 \family typewriter
-simuRPy 
+simuRPy
 \family default
-defines a pure-python operator 
+ defines a pure-python operator 
 \family typewriter
 varPlotter
 \family default
@@ -1345,13 +1352,13 @@ varPlotter
 \begin_layout Itemize
 
 \family typewriter
-simulator 
+simulator
 \family default
-creates a simulator from a population created by the 
+ creates a simulator from a population created by the 
 \family typewriter
-population 
+population
 \family default
-function.
+ function.
  The population is diploid (
 \family typewriter
 ploidy=2
@@ -1392,32 +1399,28 @@ preOps=[initByValue]
 \family default
 : operators in parameter 
 \family typewriter
-preOps 
+preOps
 \family default
-(accept a list of operators) will be applied to the populations at the beginning
- of evolution.
+ (accept a list of operators) will be applied to the populations at the
+ beginning of evolution.
  
 \family typewriter
 initByValue
 \family default
  is an 
 \family typewriter
-initializer 
+initializer
 \family default
-that set the same genotype to all individuals.
- In this case, everyone will have
+ that set the same genotype to all individuals.
+ In this case, everyone will have genotype 
 \family typewriter
- 
-\family default
-genotype
-\family typewriter
- 12/21
+12/21
 \family default
  (
 \family typewriter
-1 2 
+1 2
 \family default
-on the first chromosome and 
+ on the first chromosome and 
 \family typewriter
 2 1
 \family default
@@ -1428,42 +1431,36 @@ on the first chromosome and
 \begin_layout Itemize
 operators in 
 \family typewriter
-ops 
+ops
 \family default
-parameter will be applied to all populations at each generation.
+ parameter will be applied to all populations at each generation.
  (Not exactly, operators can be inactive at certain generations.)
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-recombinator 
+recombinator
 \family default
-is a
+ is a 
 \emph on
- during-mating operator
-\family typewriter
+during-mating operator
 \emph default
- 
-\family default
-that recombine parental chromosomes with probability 0.1 during mating.
+ that recombine parental chromosomes with probability 0.1 during mating.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-stat 
+stat
 \family default
-is a 
+ is a 
 \emph on
-post-mating 
+post-mating
 \emph default
-operator.
- Parameter
-\emph on
- 
+ operator.
+ Parameter 
 \family typewriter
-\emph default
 LD=[0,1]
 \family default
  tells the operator to calculate the linkage disequilibrium between locus
@@ -1471,11 +1468,7 @@ LD=[0,1]
  When this operator is applied to a population, it will calculate the LD
  for the population and store the result in the population's local variable
  namespace.
-
-\emph on
- 
-\emph default
-For this case, variables 
+ For this case, variables 
 \family typewriter
 LD
 \family default
@@ -1516,28 +1509,28 @@ LD[0][1]
 \begin_layout Itemize
 
 \family typewriter
-pyEval 
+pyEval
 \family default
-accepts any python expression, evaluate it in each replicates' local namespace
+ accepts any python expression, evaluate it in each replicates' local namespace
  and return the result.
  In this example, 
 \family typewriter
-pyEval 
+pyEval
 \family default
-get the value of 
+ get the value of 
 \family typewriter
 gen
 \family default
  (generation number), 
 \family typewriter
-LD[0][1] 
+LD[0][1]
 \family default
-and print them.
+ and print them.
  Note the we use 
 \family typewriter
-rep 
+rep
 \family default
-parameter to let operators apply to first (
+ parameter to let operators apply to first (
 \family typewriter
 rep=0
 \family default
@@ -1574,9 +1567,9 @@ ld/LDdecay.eps
 .
  Note that 
 \family typewriter
-'.' 
+'.'
 \family default
-in R function names need to be replaced by 
+ in R function names need to be replaced by 
 \family typewriter
 '_'
 \family default
@@ -1593,9 +1586,9 @@ The output is a table of LD values of each replicate at 0, 25, 50, 57 and
 Most simuPOP scripts have similar steps.
  You can add more operators to the 
 \family typewriter
-ops 
+ops
 \family default
-list to build more complicated simulations.
+ list to build more complicated simulations.
  Obvious choices are 
 \family typewriter
 mutator
@@ -1615,9 +1608,9 @@ Genotype structure
 Genotypic structure refers to the number of copies of basic number of chromosome
 s
 \family typewriter
-, 
+,
 \family default
-number of chromosomes, existence of sex chromosome, number of loci on each
+ number of chromosomes, existence of sex chromosome, number of loci on each
  chromosome, locus location on chromosome and allele names.
  It presents the common genetic configuration for all the individuals in
  a population.
@@ -1629,9 +1622,9 @@ Individuals in the same population share the same genotypic structure.
 \emph on
 genotypic information can be retrieved from individual, population and simulator
 \emph default
- (consists of populations with the same genotypic structure)
+ (consists of populations with the same genotypic structure) 
 \emph on
- level
+level
 \emph default
 .
  
@@ -1748,9 +1741,9 @@ name "population!individual"
  functions.
  The returned 
 \family typewriter
-individual 
+individual
 \family default
-object has its own member functions, with which you can 
+ object has its own member functions, with which you can 
 \end_layout
 
 \begin_layout Itemize
@@ -1804,9 +1797,9 @@ name "population!vars"
 
 \end_inset
 
-() 
+()
 \family default
-and 
+ and 
 \family typewriter
 population::
 \begin_inset LatexCommand index
@@ -1814,9 +1807,9 @@ name "population!population"
 
 \end_inset
 
-dvars() 
+dvars()
 \family default
-function.
+ function.
  They are identical except that 
 \family typewriter
 vars()
@@ -1828,11 +1821,11 @@ dvars()
  returns a wrapper class so that you can access this dictionary as attributes.
  For example, 
 \family typewriter
-pop.vars()['alleleFreq'][0] 
+pop.vars()['alleleFreq'][0]
 \family default
-is the same as
+ is the same as 
 \family typewriter
- pop.dvars().alleleFreq[0]
+pop.dvars().alleleFreq[0]
 \family default
 .
  To have a look at all associated variables of a population, you can print
@@ -1842,9 +1835,9 @@ pop.vars()
 \family default
 , or better pass 
 \family typewriter
-pop.vars() 
+pop.vars()
 \family default
-to a function 
+ to a function 
 \family typewriter
 ListVars()
 \family default
@@ -1863,17 +1856,17 @@ reference "alg:A-simple-example"
 
 , the same expression 
 \family typewriter
-``'%f ' % LD[0][1]'' 
+``'%f ' % LD[0][1]''
 \family default
-can be evaluated in each population's local namespace and yield different
+ can be evaluated in each population's local namespace and yield different
  results.
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
  
 \end_layout
 
@@ -1966,9 +1959,9 @@ name "hybrid"
  Less efficient.
  For example, a hybrid mutator 
 \family typewriter
-pyMutator 
+pyMutator
 \family default
-will determine if an allele will be mutated and call a user--defined Python
+ will determine if an allele will be mutated and call a user--defined Python
  function to mutate it.
 \end_layout
 
@@ -2027,9 +2020,9 @@ stage
 \family default
  parameter to 
 \family typewriter
-preMating 
+preMating
 \family default
-and apply it pre-mating.
+ and apply it pre-mating.
 \end_layout
 
 \begin_layout Section
@@ -2274,13 +2267,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "alg:reich0"
 
 \end_inset
 
 Set parameters
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2327,9 +2328,9 @@ size
 subPop
 \family default
 : no subpopulation (or one single population).
- size can be ignored if
+ size can be ignored if 
 \family typewriter
- subPop
+subPop
 \family default
  is given.
 \end_layout
@@ -2362,16 +2363,16 @@ infoFields
  to attach to each individual.
  During the simulation, 
 \family typewriter
-fitness 
+fitness
 \family default
-is needed because all selectors generate this information and mating schemes
+ is needed because all selectors generate this information and mating schemes
  will make use of it.
  If you forget to provide this parameter, never mind, the simulation will
  fail and tell you that a information field 
 \family typewriter
-fitness 
+fitness
 \family default
-is needed.
+ is needed.
  Similar information fields include 
 \family typewriter
 father_idx
@@ -2389,7 +2390,7 @@ taggers.
 You can then create a population with:
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 population(size=1000, loci=[1,1], infoFields=['fitness'])
 \end_layout
 
@@ -2401,9 +2402,9 @@ randomMating
 \family default
  should of course be used, but we need to tell 
 \family typewriter
-randomMating 
+randomMating
 \family default
-how population size should be changed.
+ how population size should be changed.
  By default, all mating schemes keep the population size of ancestral population
 , but we need an instant population expansion model.
 \end_layout
@@ -2414,25 +2415,47 @@ The easiest way to achieve this is defining a function that accept generation
  of this generation.
  The input and output population sizes need to be arrays, indicating sizes
  of all subpopulations.
- In our case, something like
+ In our case, something like 
 \family typewriter
- [1000] 
+[1000]
 \family default
-should be used.
+ should be used.
  The instant population growth model is actually quite easy to write:
 \end_layout
 
-\begin_layout Listings
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
 def ins_exp(gen, oldSize=[]):
-\newline
+\end_layout
+
+\begin_layout Standard
+
      if gen < burnin:
-\newline
+\end_layout
+
+\begin_layout Standard
+
          return [initSize]
-\newline
+\end_layout
+
+\begin_layout Standard
 
      else:
-\newline
+\end_layout
+
+\begin_layout Standard
+
          return [finalSize] 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2458,13 +2481,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "alg:reich1"
 
 \end_inset
 
 Create a simulator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2498,7 +2529,7 @@ initByFreq
  We need only to specify locus to initialize, and use it like
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 # initialize locus 0 (for common disease)
 \newline
 initByFreq(atLoci=[0], alleleFreq=C_f),
@@ -2532,7 +2563,7 @@ You will need to read the relative sections of the reference manual to pick
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 kamMutator(rate=mu, maxAllele=max_allele)
 \end_layout
 
@@ -2544,7 +2575,7 @@ single locus selector that treat 0 as wildtype, and any other allele as
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0])
 \end_layout
 
@@ -2552,7 +2583,7 @@ maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0])
 and
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 maSelector(locus=1, fitness=[1,1,1-R_s], wildtype=[0])
 \end_layout
 
@@ -2565,7 +2596,7 @@ Because an individual has only one fitness value, fitness values obtained
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 mlSelector([
 \newline
     maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0]),
@@ -2597,13 +2628,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "alg:reich2"
 
 \end_inset
 
 Run the simulator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2637,28 +2676,28 @@ stat()
 \family default
  operator to calculate allele frequency and set variable 
 \family typewriter
-alleleFreq 
+alleleFreq
 \family default
-(and 
+ (and 
 \family typewriter
 alleleNum
 \family default
 ) in each population's local namespace,
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 stat(alleleFreq=[0,1]),
 \end_layout
 
 \begin_layout Standard
 and then use a 
 \family typewriter
-pyEval 
+pyEval
 \family default
-(python expression) operator to print out the values:
+ (python expression) operator to print out the values:
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 pyEval(r' 
 \begin_inset Quotes erd
 \end_inset
@@ -2733,7 +2772,7 @@ pyEval
  operator (a direct translation of the formula):
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 pyEval('1./sum([(x/(1-alleleFreq[0][0]))**2 for x in alleleFreq[0][1:]])')
 \end_layout
 
@@ -2759,39 +2798,39 @@ expr
  ,
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 pyEval(stmts='''ne = [0,0]
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 for i in range(2):
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     freq = alleleFreq[i][1:]
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     f0 = 1 - alleleFreq[i][0]
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     if f0 == 0:
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
         ne[i] = 0
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     else:
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
         ne[i] = 1./sum([(x/f0)**2 for x in freq])
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 ''', expr=r'
 \begin_inset Quotes erd
 \end_inset
@@ -2819,56 +2858,56 @@ pyEval
  a population as the first parameter (and an optional parameter),
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 def ne(pop):
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     ' calculate effective number of alleles '
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     Stat(pop, alleleFreq=[0,1])
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     f0 = [0, 0]
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     ne = [0, 0]
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     for i in range(2):
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
         freq = pop.dvars().alleleFreq[i][1:]
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
         f0[i] = 1 - pop.dvars().alleleFreq[i][0]
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
         if f0[i] == 0:
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
             ne[i] = 0
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
         else:
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
             ne[i] = 1.
  / sum([(x/f0[i])**2 for x in freq])
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     print '%d
 \backslash
 t%.3f
@@ -2882,7 +2921,7 @@ t%.3f
 n' % (pop.gen(), f0[0], f0[1], ne[0], ne[1])
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     return True
 \end_layout
 
@@ -2890,24 +2929,24 @@ n' % (pop.gen(), f0[0], f0[1], ne[0], ne[1])
 Then, you can use this function in a python operator
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 pyOperator(func=ne, step=5)
 \end_layout
 
 \begin_layout Standard
 The biggest difference between 
 \family typewriter
-pyEval 
+pyEval
 \family default
-and 
+ and 
 \family typewriter
 pyOperator
 \family default
  is that 
 \family typewriter
-pyOperator 
+pyOperator
 \family default
-is no longer evaluated in the population's local namespace.
+ is no longer evaluated in the population's local namespace.
  You will have to get the vars explicitly using the 
 \family typewriter
 pop.dvars()
@@ -2948,9 +2987,9 @@ name "pyOperator"
 \begin_layout Itemize
 A 
 \family typewriter
-ticToc 
+ticToc
 \family default
-operator that prints out elapsed time at every 100 generations
+ operator that prints out elapsed time at every 100 generations
 \end_layout
 
 \begin_layout Itemize
@@ -2969,13 +3008,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "alg:reich3"
 
 \end_inset
 
 The whole program
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -3050,7 +3097,7 @@ click the help button on the dialog, or run
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 > simuLDDecay.py -h
 \end_layout
 
@@ -3064,7 +3111,7 @@ enter parameters in a parameter dialog, or use short or long command arguments
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 > simuLDDecay.py -s 500 -e 10 --recRate 0.1 --numRep 5 --noDialog
 \end_layout
 
@@ -3074,7 +3121,7 @@ use the optimized module by
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 > simuLDDecay.py --optimized
 \end_layout
 
@@ -3084,7 +3131,7 @@ save the parameters to a config file
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 > simuLDDecay.py --quiet -s 500 -e 10 --saveConfig decay.cfg
 \end_layout
 
@@ -3110,7 +3157,7 @@ and of course use
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 > simuLDDecay.py --config decay.cfg
 \end_layout
 
@@ -3135,7 +3182,7 @@ First line:
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 #!/usr/bin/env python
 \end_layout
 
@@ -3145,24 +3192,24 @@ Write the introduction of the whole script in a module-wise doc string.
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 '''
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 This script will ....
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 '''
 \end_layout
 
 \begin_layout Standard
 These comments can be accessed as module 
 \family typewriter
-__doc__ 
+__doc__
 \family default
-and will be displayed as help message.
+ and will be displayed as help message.
 \end_layout
 
 \end_deeper
@@ -3172,16 +3219,16 @@ Define an option data structure.
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 options = [ 
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 ...
  a dictionary of all user input parameters ...
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 ]
 \end_layout
 
@@ -3228,16 +3275,16 @@ name "simuOpt"
 
 \end_inset
 
- 
+
 \family default
-does all the housekeeping things for you, including parameter reading, conversio
-n, validation, print usage, save configuration file.
+ does all the housekeeping things for you, including parameter reading,
+ conversion, validation, print usage, save configuration file.
  Since most of the parts are pretty standard, you can actually copy any
  of the scripts under the 
 \family typewriter
-scripts 
+scripts
 \family default
-directory as a template for your new script.
+ directory as a template for your new script.
  The following example 
 \begin_inset LatexCommand ref
 reference "alg:reich4"
@@ -3260,13 +3307,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "alg:reich4"
 
 \end_inset
 
 Option handling
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -3396,7 +3451,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:hybrid-operator"
 
@@ -3405,7 +3463,12 @@ name "cap:hybrid-operator"
 An example of hybrid operators
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{hybrid.py}
 preview false
 
@@ -3440,7 +3503,7 @@ stat
  For example,
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 PyPenetrance(pop, parameters)
 \end_layout
 
@@ -3448,7 +3511,7 @@ PyPenetrance(pop, parameters)
 is the same as
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 pyPenetrance
 \begin_inset LatexCommand index
 name "pyPenetrance"
@@ -3539,9 +3602,9 @@ name "fitness"
 
 \end_inset
 
- 
+
 \family default
-values set by one of (maybe none of) the multi-allele selector, which will
+ values set by one of (maybe none of) the multi-allele selector, which will
  be used by 
 \family typewriter
 randomMating()
@@ -3566,9 +3629,9 @@ PostMating
 .
  To calculate 
 \family typewriter
-fitness 
+fitness
 \family default
-before mating, a 
+ before mating, a 
 \family typewriter
 stage=PreMating
 \family default
@@ -3583,11 +3646,11 @@ name "PreMating"
  not the current generation, as shown below:
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 preMating | mating -> offspring generation | postMating, fitness calculated
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 preMating | mating -> ...
 \end_layout
 
@@ -3652,7 +3715,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:pyOpeartor"
 
@@ -3661,7 +3727,12 @@ name "cap:pyOpeartor"
 A frequency dependent selection operator
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{pyOperator.py}
 preview false
 
@@ -3688,9 +3759,9 @@ Information fields are, in short, double values attached to each individual.
  does not have it, an error message will be given so that you can add appropriat
 e fields to the 
 \family typewriter
-infoFields 
+infoFields
 \family default
-parameter of 
+ parameter of 
 \family typewriter
 population()
 \family default
@@ -3705,9 +3776,9 @@ setInfoFields(), addInfoField(), addInfoFields()
 \begin_layout Itemize
 
 \family typewriter
-fitness: 
+fitness:
 \family default
-used by all selectors, and by mating schemes
+ used by all selectors, and by mating schemes
 \end_layout
 
 \begin_layout Itemize
@@ -3729,9 +3800,9 @@ spouse, pedindex, oldindex:
 \begin_layout Standard
 Besides these standard information fields, you can define any fields for
  your use.
- The most frequently used functions are
+ The most frequently used functions are 
 \family typewriter
- individual::setInfo
+individual::setInfo
 \begin_inset LatexCommand index
 name "setInfo"
 
@@ -3751,18 +3822,18 @@ name "setIndInfo"
 
 (values, field)
 \family default
- and
+ and 
 \family typewriter
- population::indInfo
+population::indInfo
 \begin_inset LatexCommand index
 name "indInfo"
 
 \end_inset
 
 (field).
- 
+
 \family default
-Here field can be the name of the field, or an id returned by 
+ Here field can be the name of the field, or an id returned by 
 \family typewriter
 population::infoIdx
 \begin_inset LatexCommand index
@@ -3856,13 +3927,13 @@ The program is pretty self-explainary so I do not comment on the code here.
 \family typewriter
 DateOfBirth
 \family default
-,
+, 
 \family typewriter
- betaX
+betaX
 \family default
- and
+ and 
 \family typewriter
- ageOfOnset
+ageOfOnset
 \family default
 .
  Note that this example does not any operator or simulator, and demonstrate
@@ -3876,7 +3947,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:infoFields"
 
@@ -3885,7 +3959,12 @@ name "cap:infoFields"
 Proportional hazard model and use of information fields
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 
 \end_layout
 
@@ -3894,7 +3973,7 @@ Proportional hazard model and use of information fields
 
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{infoFields.py}
 preview false
 
@@ -3903,7 +3982,7 @@ preview false
 
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 
 \lyxline
 
@@ -3925,9 +4004,9 @@ name "splitSubPop"
 
 \end_inset
 
- 
+
 \family default
-and 
+ and 
 \family typewriter
 mergeSubPops
 \begin_inset LatexCommand index
@@ -3935,9 +4014,9 @@ name "mergeSubPops"
 
 \end_inset
 
- 
+
 \family default
-respectively.
+ respectively.
  In example 
 \begin_inset LatexCommand ref
 reference "cap:splitMerge"
@@ -3958,7 +4037,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:splitMerge"
 
@@ -3967,7 +4049,12 @@ name "cap:splitMerge"
 Population split and merge
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{splitAndMerge.out}
 preview false
 
@@ -4014,7 +4101,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:splitMigration"
 
@@ -4023,7 +4113,12 @@ name "cap:splitMigration"
 Population split and migration
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{splitMigration.out}
 preview false
 
@@ -4130,7 +4225,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:splitMigration2"
 
@@ -4139,7 +4237,12 @@ name "cap:splitMigration2"
 Population split with changing population size
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{splitMigration2.out}
 preview false
 
@@ -4191,7 +4294,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:splitMigration3"
 
@@ -4200,7 +4306,12 @@ name "cap:splitMigration3"
 Population split with changing population size
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{splitMigration3.out}
 preview false
 
@@ -4240,9 +4351,9 @@ population()
 , the last chromosome is assumed to be the sex chromosome.
  For female, it is 
 \family typewriter
-XX, 
+XX,
 \family default
-for male, it is 
+ for male, it is 
 \family typewriter
 XY
 \family default
@@ -4257,18 +4368,18 @@ During mating, sex of offspring is determined by sex chromosome.
 \begin_layout Itemize
 Recombination can not happen between 
 \family typewriter
-X 
+X
 \family default
-and 
+ and 
 \family typewriter
 Y
 \family default
  chromosomes.
  That is to say, offspring can get recombined 
 \family typewriter
-X 
+X
 \family default
-from his/her mother, but untouched 
+ from his/her mother, but untouched 
 \family typewriter
 X
 \family default
@@ -4288,9 +4399,9 @@ stat
  counts allele frequencies etc regardless sex chromosome and can not count
  allele frequency for 
 \family typewriter
-X 
+X
 \family default
-or 
+ or 
 \family typewriter
 Y
 \family default
@@ -4407,47 +4518,47 @@ scripts/simuComplexDisease.py
  like this
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 simu.evolve(
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     preOps=[...],
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     ops = operators,
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     end = 1000 - 2
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 )
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 # need to do this to all replicate if you have more
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 simu.population(0).setAncestralDepth(2)
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 simu.population(0).addInforFields(['father_idx', 'mother_idx'])
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 operators.append(parentsTagger())
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 simu.setMatingScheme(randomMating(numOffspring=2))
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 simu.evolve(ops=operators, end=1000)
 \end_layout
 
@@ -4490,13 +4601,13 @@ s in each family can be specified.
 \begin_layout Standard
 If you need to sample more complicated pedigrees, you should first use 
 \family typewriter
-sample::findOffspringAndSpouse 
+sample::findOffspringAndSpouse
 \family default
-to locate each individual's offspring and spouse, then use 
+ to locate each individual's offspring and spouse, then use 
 \family typewriter
-useAncestralPop() 
+useAncestralPop()
 \family default
-to go through the generations and set 
+ to go through the generations and set 
 \family typewriter
 pedIndex
 \family default
@@ -4515,13 +4626,13 @@ sample::resetParentalIndex()
 \family default
  should also be used to reset the 
 \family typewriter
-father_idx 
+father_idx
 \family default
-and 
+ and 
 \family typewriter
-mother_idx 
+mother_idx
 \family default
-fields.
+ fields.
  Sound complicated? It is complicated! I hope that I can get some better
  idea and make this process a bit easier, but this is where simuPOP is at
  right now.
@@ -4555,9 +4666,9 @@ simuUtil.py
 \begin_layout Standard
 Although all file formats have different characteristics, 
 \family typewriter
-simuPOP 
+simuPOP
 \family default
-tries to provide a uniform interface to them.
+ tries to provide a uniform interface to them.
  Common parameters are
 \end_layout
 
@@ -4587,11 +4698,11 @@ combine: a python function, if given, used to combine two alleles at the
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 def comb(geno):
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
     return geno[0]+geno[1]+1
 \end_layout
 
@@ -4609,9 +4720,9 @@ shift: default to 1.
 \begin_layout Standard
 The 
 \family typewriter
-Merlin/QTDT 
+Merlin/QTDT
 \family default
-format uses several files to store genotype and phenotype information.
+ format uses several files to store genotype and phenotype information.
  Namely a 
 \family typewriter
 .dat
@@ -4622,14 +4733,14 @@ format uses several files to store genotype and phenotype information.
 \family default
  file for chromosome structure, and 
 \family typewriter
-.ped 
+.ped
 \family default
-for pedigree.
+ for pedigree.
  The population given must have 
 \family typewriter
-pedindex, father_idx 
+pedindex, father_idx
 \family default
-and 
+ and 
 \family typewriter
 mother_idx
 \family default
@@ -4637,13 +4748,13 @@ mother_idx
  These information fields will be available if the sample is obtained from
  
 \family typewriter
-affectedSibpairSample 
+affectedSibpairSample
 \family default
-or 
+ or 
 \family typewriter
-largePedigreeSample 
+largePedigreeSample
 \family default
-operators.
+ operators.
 \end_layout
 
 \begin_layout Standard
@@ -4674,7 +4785,10 @@ wide false
 sideways false
 status collapsed
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:saveQTDT1"
 
@@ -4683,7 +4797,12 @@ name "cap:saveQTDT1"
 Function SaveQTDT, part one
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{saveQTDT1.py}
 preview false
 
@@ -4708,18 +4827,18 @@ reference "cap:saveQTDT2"
  There are three kinds of phenotype, affection status, trait and markers.
  We determine if a user wants to output affection from the 
 \family typewriter
-fields 
+fields
 \family default
-parameter.
+ parameter.
  We remove 
 \family typewriter
 affection
 \family default
  from 
 \family typewriter
-fields 
+fields
 \family default
-because 
+ because 
 \family typewriter
 affection
 \family default
@@ -4741,7 +4860,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:saveQTDT2"
 
@@ -4750,7 +4872,12 @@ name "cap:saveQTDT2"
 Function SaveQTDT, part two
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{saveQTDT2.py}
 preview false
 
@@ -4788,7 +4915,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:saveQTDT3"
 
@@ -4797,7 +4927,12 @@ name "cap:saveQTDT3"
 Function SaveQTDT, part three
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{saveQTDT3.py}
 preview false
 
@@ -4842,7 +4977,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:saveQTDT4"
 
@@ -4851,7 +4989,12 @@ name "cap:saveQTDT4"
 Function SaveQTDT, part four
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{saveQTDT4.py}
 preview false
 
@@ -4875,9 +5018,9 @@ reference "cap:saveQTDT5"
 ) look most complicated.
  It first get the 
 \family typewriter
-pedindex 
+pedindex
 \family default
-information field of the whole population, and figure out how many pedigrees
+ information field of the whole population, and figure out how many pedigrees
  to output.
  Then, it go from ancestral generation 2, 1, 0 and look for individuals
  within each pedigree.
@@ -4892,7 +5035,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:saveQTDT5"
 
@@ -4901,7 +5047,12 @@ name "cap:saveQTDT5"
 Function SaveQTDT, part five
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{saveQTDT5.py}
 preview false
 
@@ -4949,7 +5100,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:mapping"
 
@@ -4958,7 +5112,12 @@ name "cap:mapping"
 Example of gene mapping
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{mapping.py}
 preview false
 
@@ -5001,9 +5160,9 @@ popen
 \family default
 ) and be filtered by the python 
 \family typewriter
-re 
+re
 \family default
-(regex) module.
+ (regex) module.
  Only the 
 \begin_inset Formula $p$
 \end_inset
@@ -5058,13 +5217,13 @@ chromMap
 \begin_layout Itemize
 Using 
 \family typewriter
---chromMap='[2,3,4]' 
+--chromMap='[2,3,4]'
 \family default
-as an parameter to simuPOP scripts, 
+ as an parameter to simuPOP scripts, 
 \family typewriter
-simuOpt.setOptions(chromMap), 
+simuOpt.setOptions(chromMap),
 \family default
-or set environment variable 
+ or set environment variable 
 \family typewriter
 SIMUCHROMMAP
 \family default
@@ -5078,7 +5237,7 @@ It is critical for you to remember how many nodes a simuPOP simulation will
  need, since the usual way to start the simulation is
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 $ mpirun -n 4 python /path/to/a/simuPOP/script --mpi --chromMap='[2,3,4]'
  --other-options
 \end_layout
@@ -5117,9 +5276,9 @@ simuOpt
  the scripts and the parameter used by clicking on help button of the parameter
  dialog, or use commands like '
 \family typewriter
-simuComplexDisease.py -h' 
+simuComplexDisease.py -h'
 \family default
-to get the help messages.
+ to get the help messages.
 \end_layout
 
 \begin_layout Standard
@@ -5187,9 +5346,9 @@ simuViewPop.py
 \family default
  is a 
 \family typewriter
-wxPython 
+wxPython
 \family default
-application written to view simuPOP populations.
+ application written to view simuPOP populations.
  You will need to have 
 \family typewriter
 wxPython
@@ -5201,9 +5360,9 @@ wxPython
 \begin_layout Itemize
 Import this script and call 
 \family typewriter
-viewPop(pop) 
+viewPop(pop)
 \family default
-to view population 
+ to view population 
 \family typewriter
 pop
 \end_layout
@@ -5213,7 +5372,7 @@ Run from command line
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 $ simuViewPop.py /path/to/population.txt
 \end_layout
 
@@ -5252,13 +5411,13 @@ simuCluster.py
  helps you manage a large number of simulations on a cluster system.
  You only need to maintain a single job-description file and 
 \family typewriter
-simuCluster.py 
+simuCluster.py
 \family default
-will help you submit them.
+ will help you submit them.
  The command line options are
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 $ simuCluster.py -l simulation.lst -a  -r -f key=val jobs 
 \end_layout
 
@@ -5273,9 +5432,9 @@ where
 \family default
  a list file (actually a python file) that specifies variale 
 \family typewriter
-script 
+script
 \family default
-and 
+ and 
 \family typewriter
 joblist
 \end_layout
@@ -5283,9 +5442,9 @@ joblist
 \begin_layout Itemize
 
 \family typewriter
--a (--all): 
+-a (--all):
 \family default
-use all jobs defined in the list file
+ use all jobs defined in the list file
 \end_layout
 
 \begin_layout Itemize
@@ -5304,21 +5463,21 @@ use all jobs defined in the list file
 \family default
  execute command 
 \family typewriter
-n 
+n
 \family default
-times.
+ times.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
--f (--force): 
+-f (--force):
 \family default
-force the execution even if the generated job scripts have 
+ force the execution even if the generated job scripts have 
 \family typewriter
-$ 
+$
 \family default
-character.
+ character.
 \end_layout
 
 \begin_layout Itemize
@@ -5328,9 +5487,9 @@ key=val:
 \family default
  additional subsitution key/value pair that will be used to replace 
 \family typewriter
-$key 
+$key
 \family default
-in the job scripts.
+ in the job scripts.
  Commonly used, or machine-specific, 
 \family typewriter
 key=val
@@ -5343,15 +5502,15 @@ $HOME/.simuCluster
 \end_layout
 
 \begin_deeper
-\begin_layout Listings
+\begin_layout LyX-Code
 command = 'bsub -J $name <'
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 queue = 'batch'
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 job_dir = '/scratch/jobs'
 \end_layout
 
@@ -5359,14 +5518,14 @@ job_dir = '/scratch/jobs'
 \begin_layout Itemize
 
 \family typewriter
-job: 
+job:
 \family default
-a list of jobs, a simple form of regular expression can be used.
+ a list of jobs, a simple form of regular expression can be used.
  Namely, 
 \family typewriter
-job1_3 
+job1_3
 \family default
-means 
+ means 
 \family typewriter
 job1
 \family default
@@ -5382,15 +5541,15 @@ job3
 \end_layout
 
 \begin_layout Standard
-The list file can be any python script, that defines variables
+The list file can be any python script, that defines variables 
 \family typewriter
- script 
+script
 \family default
-and 
+ and 
 \family typewriter
-joblist 
+joblist
 \family default
-after execution, where 
+ after execution, where 
 \family typewriter
 script
 \family default
@@ -5423,9 +5582,9 @@ $name
 , the name of a job)
 \family typewriter
 , $1, $2, ...
- 
+
 \family default
-etc.
+ etc.
 \end_layout
 
 \begin_layout Standard
@@ -5442,9 +5601,9 @@ $name, $var, $1, $2 ...
  file and joblist and generate job scripts.
  If 
 \family typewriter
--r 
+-r
 \family default
-is given, the job will be submitted.
+ is given, the job will be submitted.
  Example 
 \begin_inset LatexCommand ref
 reference "cap:joblist"
@@ -5455,29 +5614,29 @@ reference "cap:joblist"
  Command
 \end_layout
 
-\begin_layout Listings
+\begin_layout LyX-Code
 $ python scripts/simuCluster.py -l joblist.lst -a
 \end_layout
 
 \begin_layout Standard
-will generate files
+will generate files 
 \family typewriter
- job1.pbs
+job1.pbs
 \family default
 , ...
  and if 
 \family typewriter
--r 
+-r
 \family default
-option is given, these files will be submitted using 
+ option is given, these files will be submitted using 
 \family typewriter
 qsub job1
 \family default
 , unless you specify another 
 \family typewriter
-command 
+command
 \family default
-variable.
+ variable.
 \end_layout
 
 \begin_layout Standard
@@ -5486,7 +5645,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "cap:joblist"
 
@@ -5495,7 +5657,12 @@ name "cap:joblist"
 A sample job list file
 \end_layout
 
-\begin_layout Listings
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
 \begin_inset Include \verbatiminput{joblist.lst}
 preview false
 
@@ -5518,17 +5685,17 @@ simuUtil.py
 \begin_layout Standard
 
 \family typewriter
-simuUtil.py 
+simuUtil.py
 \family default
-is a standard part of simuPOP and is installed along with 
+ is a standard part of simuPOP and is installed along with 
 \family typewriter
-simuPOP.py 
+simuPOP.py
 \family default
-(other utility scripts are installed under 
+ (other utility scripts are installed under 
 \family typewriter
-scripts 
+scripts
 \family default
-directory).
+ directory).
  These function include
 \end_layout
 
