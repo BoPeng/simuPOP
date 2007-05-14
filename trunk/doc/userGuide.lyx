@@ -2429,27 +2429,22 @@ inline false
 status open
 
 \begin_layout Standard
-
 def ins_exp(gen, oldSize=[]):
 \end_layout
 
 \begin_layout Standard
-
      if gen < burnin:
 \end_layout
 
 \begin_layout Standard
-
          return [initSize]
 \end_layout
 
 \begin_layout Standard
-
      else:
 \end_layout
 
 \begin_layout Standard
-
          return [finalSize] 
 \end_layout
 
@@ -4547,7 +4542,7 @@ simu.population(0).setAncestralDepth(2)
 \end_layout
 
 \begin_layout LyX-Code
-simu.population(0).addInforFields(['father_idx', 'mother_idx'])
+simu.population(0).addInfoFields(['father_idx', 'mother_idx'])
 \end_layout
 
 \begin_layout LyX-Code
