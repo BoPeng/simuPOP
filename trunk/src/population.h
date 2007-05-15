@@ -263,7 +263,7 @@ namespace simuPOP
 			/// deep copy of a population. (In python, <tt>pop1 = pop</tt> will only create a reference to \c pop.)
 			population * clone(int keepAncestralPops=-1) const;
 
-			/// CPPONLY swap the content of two populations
+			/// swap the content of two populations
 			void swap(population& rhs)
 			{
 				GenoStruTrait::swap(rhs);
