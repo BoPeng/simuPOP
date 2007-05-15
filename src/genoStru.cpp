@@ -421,6 +421,7 @@ namespace simuPOP
 		m_genoStruIdx = s_genoStruRepository.size() - 1;
 	}
 
+	
 	string GenoStruTrait::ploidyName() const
 	{
 		DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -498,6 +499,23 @@ namespace simuPOP
 		return 0;
 	}
 
+	GenoStructure & GenoStruTrait::struAddInfoFields(const vectorstr& fields)
+	{
+		GenoStructure * gs = new GenoStructure(s_genoStruRepository[m_genoStruIdx]);
+		gs->m_infoFields.insert(gs->m_infoFields.end(), fields.begin(), fields.end());
+		return * gs;
+	}
+
+	/// CPPONLY should should only be called from population
+	GenoStructure & GenoStruTrait::struSetInfoFields(const vectorstr& fields)
+	{
+		GenoStructure * gs = new GenoStructure(s_genoStruRepository[m_genoStruIdx]);
+		gs->m_infoFields = fields;
+		return * gs;
+	}
+
+
+	
 #ifdef SIMUMPI
 	/// return node rank by chromosome number, according to map on setChromMap
 	UINT GenoStruTrait::rankOfChrom(UINT chrom) const

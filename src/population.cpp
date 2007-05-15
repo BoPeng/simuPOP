@@ -1563,6 +1563,7 @@ namespace simuPOP
 		DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
 			"Info size is wrong");
 
+		vectorstr newfields;
 		UINT os = infoSize();
 		UINT idx;
 		// if this field exists, return directly
@@ -1582,14 +1583,14 @@ namespace simuPOP
 		}
 		catch(IndexError &)
 		{
-			// and we only add field to node 0
-			struAddInfoField(field);
+			newfields.push_back(field);
 		}
 
 		// adjust information size.
-		UINT is = infoSize();
-		if(os != is)
+		if (!newfields.empty())
 		{
+			setGenoStructure(struAddInfoFields(newfields));
+			UINT is = infoSize();
 			int oldAncPop = m_curAncestralGen;
 			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 			{
@@ -1601,6 +1602,7 @@ namespace simuPOP
 				{
 					copy(ind->infoBegin(), ind->infoBegin() + is - 1, ptr);
 					ind->setInfoPtr(ptr);
+					ind->setGenoStruIdx(genoStruIdx());
 					fill(ind->infoBegin() + os, ind->infoEnd(), init);
 					ptr += is;
 				}
@@ -1615,6 +1617,9 @@ namespace simuPOP
 	{
 		DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
 			"Info size is wrong");
+		
+		vectorstr newfields;
+		
 		// oldsize, this is valid for rank 0
 		UINT os = infoSize();
 		for(vectorstr::const_iterator it=fields.begin(); it!=fields.end(); ++it)
@@ -1636,16 +1641,17 @@ namespace simuPOP
 			}
 			catch(IndexError &)
 			{
-				struAddInfoField(*it);
+				newfields.push_back(*it);
 			}
 		}
 
 		// add these fields
-		// adjust information size.
-		UINT is = infoSize();
-		// need to extend.
-		if(is != os)
+		if (!newfields.empty())
 		{
+			setGenoStructure(struAddInfoFields(newfields));
+				
+			// adjust information size.
+			UINT is = infoSize();
 			int oldAncPop = m_curAncestralGen;
 			for(UINT anc=0; anc <= m_ancestralPops.size(); anc++)
 			{
@@ -1657,6 +1663,7 @@ namespace simuPOP
 				{
 					copy(ind->infoBegin(), ind->infoBegin() + os, ptr);
 					ind->setInfoPtr(ptr);
+					ind->setGenoStruIdx(genoStruIdx());
 					fill(ind->infoBegin() + os, ind->infoEnd(), init);
 					ptr += is;
 				}
@@ -1669,7 +1676,7 @@ namespace simuPOP
 	/// set fields
 	void population::setInfoFields(const vectorstr& fields, double init)
 	{
-		struSetInfoFields(fields);
+		setGenoStructure(struSetInfoFields(fields));
 		// reset info vector
 		int oldAncPop = m_curAncestralGen;
 		UINT is = infoSize();
@@ -1679,7 +1686,10 @@ namespace simuPOP
 			vectorinfo newInfo(is*popSize(), init);
 			InfoIterator ptr = newInfo.begin();
 			for(IndIterator ind=indBegin(); ind!=indEnd(); ++ind, ptr += is)
+			{
 				ind->setInfoPtr(ptr);
+				ind->setGenoStruIdx(genoStruIdx());
+			}
 			m_info.swap(newInfo);
 		}
 		useAncestralPop(oldAncPop);
