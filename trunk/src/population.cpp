@@ -1237,9 +1237,9 @@ namespace simuPOP
 		setInfoOrdered(true);
 		m_subPopSize = newSubPopSizes;
 		// rebuild index
-		size_t i = 1;
-		for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
-			m_subPopIndex[i] = m_subPopIndex[i-1] + m_subPopSize[i - 1];
+		size_t idx = 1;
+		for (m_subPopIndex[0] = 0; idx <= m_numSubPop; ++idx)
+			m_subPopIndex[idx] = m_subPopIndex[idx-1] + m_subPopSize[idx - 1];
 	}
 
 	void population::reorderSubPops(const vectoru& order, const vectoru& rank,
