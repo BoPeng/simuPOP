@@ -98,7 +98,8 @@ Usage:
 
 Description:
 
-    simuPOP::affectedSibpairSample::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -485,7 +486,8 @@ Usage:
 
 Description:
 
-    simuPOP::caseControlSample::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -522,7 +524,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -534,7 +536,8 @@ Usage:
 
 Description:
 
-    simuPOP::continueIf::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -970,7 +973,7 @@ Arguments:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -1054,7 +1057,8 @@ Usage:
 
 Description:
 
-    simuPOP::dumper::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -1232,12 +1236,16 @@ Usage:
 
 Description:
 
-    genoStruTrait
+    genotypic structure related functions, can be accessed from both
+    individuals and populations
 
 Details:
 
-    A trait class that maintain a static array of geno structure, and
-    provide interfaces around a  GenoStructure Index.
+    Genotypic structure refers to the number of chromosomes,
+    positions, the number of loci on each chromosome, and allele and
+    locus names etc. All individuals in a population share the same
+    genotypic structure and functions provided in this class can be
+    accessed from individual, population and simulator levels.
 
 "; 
 
@@ -1245,7 +1253,8 @@ Details:
 
 Description:
 
-    constructor, but m_genoStruIdx will be set later.
+    Creat a  GenoStruTrait  class, but m_genoStruIdx  will be set
+    later.
 
 Usage:
 
@@ -1255,19 +1264,7 @@ Usage:
 
 %ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields, const vectori &chromMap);
 
-%feature("docstring") simuPOP::GenoStruTrait::setGenoStructure "
-
-Description:
-
-    set an existing geno structure, simply use it This is NOT
-    efficient! (but has to be used when, for example, loading a
-    structure from file
-
-Usage:
-
-    x.setGenoStructure(rhs)
-
-"; 
+%ignore simuPOP::GenoStruTrait::setGenoStructure(GenoStructure &rhs);
 
 %ignore simuPOP::GenoStruTrait::setGenoStruIdx(size_t idx);
 
@@ -1287,7 +1284,7 @@ Usage:
 
 Description:
 
-    return ploidy
+    return ploidy, the number of homologous sets of chromosomes
 
 Usage:
 
@@ -1299,7 +1296,7 @@ Usage:
 
 Description:
 
-    return ploidy
+    return ploidy name, haploid , diploid , or triploid  etc.
 
 Usage:
 
@@ -1311,7 +1308,8 @@ Usage:
 
 Description:
 
-    number of loci on chromosome chrom
+    return the number of loci on chromosome chrom , equals to
+    numLoci()[chrom]
 
 Usage:
 
@@ -1323,7 +1321,7 @@ Usage:
 
 Description:
 
-    simuPOP::GenoStruTrait::numLoci
+    return the number of loci on all chromosomes
 
 Usage:
 
@@ -1335,7 +1333,7 @@ Usage:
 
 Description:
 
-    whether or not the last chromosome is sex chromosome
+    determine whether or not the last chromosome is sex chromosome
 
 Usage:
 
@@ -1347,7 +1345,7 @@ Usage:
 
 Description:
 
-    return totNumLoci (STATIC)
+    return the total number of loci on all chromosomes
 
 Usage:
 
@@ -1359,7 +1357,7 @@ Usage:
 
 Description:
 
-    return totNumLoci * ploidy
+    return the total number of loci times ploidy
 
 Usage:
 
@@ -1371,7 +1369,7 @@ Usage:
 
 Description:
 
-    locus distance.
+    return the position of a locus
 
 Usage:
 
@@ -1383,7 +1381,7 @@ Usage:
 
 Description:
 
-    simuPOP::GenoStruTrait::lociPos
+    return loci positions
 
 Usage:
 
@@ -1395,11 +1393,16 @@ Usage:
 
 Description:
 
-    expose loci distance
+    return an (editable) array of loci positions of all loci
 
 Usage:
 
     x.arrLociPos()
+
+Note:
+
+    Modifying loci position directly using this function is strongly
+    discouraged.
 
 "; 
 
@@ -1407,11 +1410,16 @@ Usage:
 
 Description:
 
-    expose loci distance of a chromosome
+    return an array of loci positions on a given chromosome
 
 Usage:
 
     x.arrLociPos(chrom)
+
+Note:
+
+    Modifying loci position directly using this function is strongly
+    discouraged.
 
 "; 
 
@@ -1419,7 +1427,7 @@ Usage:
 
 Description:
 
-    number of chromosome
+    return the number of chromosomes
 
 Usage:
 
@@ -1431,7 +1439,7 @@ Usage:
 
 Description:
 
-    chromosome index
+    return an array of chromosome indices
 
 Usage:
 
@@ -1443,7 +1451,7 @@ Usage:
 
 Description:
 
-    chromosome index of chromosome chrom
+    return the index of the first locus on a chromosome
 
 Usage:
 
@@ -1455,7 +1463,7 @@ Usage:
 
 Description:
 
-    chromosome index of chromosome chrom
+    return the index of the last locus on a chromosome plus 1
 
 Usage:
 
@@ -1467,8 +1475,7 @@ Usage:
 
 Description:
 
-    convert from relative locus (on chromsome) to absolute locus (no
-    chromosome structure)
+    return the absolute index of a locus on a chromosome
 
 Usage:
 
@@ -1480,7 +1487,7 @@ Usage:
 
 Description:
 
-    return chrom, locus pair from an absolute locus position.
+    return (chrom, locus)  pair of an absolute locus index
 
 Usage:
 
@@ -1492,7 +1499,7 @@ Usage:
 
 Description:
 
-    return allele name
+    return the name of an allele (if previously specified)
 
 Usage:
 
@@ -1504,7 +1511,7 @@ Usage:
 
 Description:
 
-    allele names
+    return an array of allelic names
 
 Usage:
 
@@ -1516,7 +1523,7 @@ Usage:
 
 Description:
 
-    return locus name
+    return the name of a locus
 
 Usage:
 
@@ -1528,7 +1535,7 @@ Usage:
 
 Description:
 
-    simuPOP::GenoStruTrait::lociNames
+    return names of all loci
 
 Usage:
 
@@ -1540,7 +1547,7 @@ Usage:
 
 Description:
 
-    return the index of a locus by locus name
+    return the index of a locus by its locus name
 
 Usage:
 
@@ -1552,7 +1559,7 @@ Usage:
 
 Description:
 
-    return an array of locus index by loci names
+    return an array of locus indices by locus names
 
 Usage:
 
@@ -1564,7 +1571,7 @@ Usage:
 
 Description:
 
-    simuPOP::GenoStruTrait::maxAllele
+    return the maximum allele value for all loci
 
 Usage:
 
@@ -1576,7 +1583,13 @@ Usage:
 
 Description:
 
-    simuPOP::GenoStruTrait::setMaxAllele
+    set the maximum allele value for all loci
+
+Details:
+
+    Maximum allele value has to be 1  for binary modules. maxAllele
+    is the maximum possible allele value, which allows maxAllele+1
+    alleles 0, 1, ..., maxAllele .
 
 Usage:
 
@@ -1588,7 +1601,7 @@ Usage:
 
 Description:
 
-    get info length
+    determine if an information field exists
 
 Usage:
 
@@ -1600,7 +1613,7 @@ Usage:
 
 Description:
 
-    simuPOP::GenoStruTrait::infoSize
+    obtain the number of information fields
 
 Usage:
 
@@ -1612,7 +1625,7 @@ Usage:
 
 Description:
 
-    simuPOP::GenoStruTrait::infoFields
+    return an array of all information fields
 
 Usage:
 
@@ -1624,7 +1637,7 @@ Usage:
 
 Description:
 
-    simuPOP::GenoStruTrait::infoField
+    obtain the name of information field idx
 
 Usage:
 
@@ -1636,7 +1649,7 @@ Usage:
 
 Description:
 
-    return the index of field name, return -1 if not found.
+    return the index of the field name , return -1  if not found
 
 Usage:
 
@@ -1648,23 +1661,14 @@ Usage:
 
 %ignore simuPOP::GenoStruTrait::struSetInfoFields(const vectorstr &fields);
 
-%feature("docstring") simuPOP::GenoStruTrait::swap "
-
-Description:
-
-    simuPOP::GenoStruTrait::swap
-
-Usage:
-
-    x.swap(rhs)
-
-"; 
+%ignore simuPOP::GenoStruTrait::swap(GenoStruTrait &rhs);
 
 %feature("docstring") simuPOP::GenoStruTrait::chromMap "
 
 Description:
 
-    simuPOP::GenoStruTrait::chromMap
+    return the distribution of chromosomes across multiple nodes (MPI
+    version of  simuPOP only)
 
 Usage:
 
@@ -1753,7 +1757,8 @@ Usage:
 
 Description:
 
-    simuPOP::gsmMutator::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -1844,7 +1849,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -1857,7 +1862,8 @@ Usage:
 
 Description:
 
-    simuPOP::ifElse::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -1889,33 +1895,24 @@ Usage:
 
 Description:
 
-    Basic individual class.
+    individuals with genotype, affection status, sex etc.
 
 Details:
 
-    class individual with
-    * genotypic information
-    * shared genotypic structure info (through a  GenoStructure
-    pointer)
-    * flags about sex, affected status
-    * an internal info field other individuals will be derived from
-    this class, adding age info etc.Note  that
-    * individual DOES NOT manage memory. It will use a pointer passed
-    from class population. This causes A LOT of trouble and I have not
-    evaluated how much benefic I get.
-    * operator = uses shallow copy. This is required by sort algorithm
-    since otherwise individuals are non-copiable. However, in
-    population memory management, it is showtimes required that
-    genotypic information within one subPop should go together. This
-    is done by a shollow_copied flag for each individual and for all
-    individuals. population might have to re-arrange individuals to
-    solve this problem.
-    * output of individual can be adjusted by setOutputDelimeter.
-    Usage info: (for population classes developers)
-    * for individuals are created, you are responsible to set its
-    genotypic pointer and genotypic information. This is done by
-    *  setSubPopID()  and  subPopID()  can be used for any temporary
-    purpose.
+    Individuals are the building blocks of populations, each having
+    the following individual information:
+    * shared genotypic structure information
+    * genotype
+    * sex, affection status, subpopulation ID
+    * optional information fields Individual genotypes are arranged by
+    locus, chromosome, ploidy, in that order, and can be accessed from
+    a single index. For example, for a diploid individual with two
+    loci on the first chromosome, one locus on the second, its
+    genotype is arranged as  1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1
+    where x-y-z  represents ploidy x  chromosome y  and locus z . An
+    allele 2-1-2 can be accessed by allele(4) (by absolute index),
+    allele(2, 1) (by index and ploidy) or allele(1, 1, 0) (by index,
+    ploidy and chromosome).
 
 "; 
 
@@ -1923,7 +1920,8 @@ Details:
 
 Description:
 
-    default constructor,
+    Individuals are created by populations automatically. Do not call
+    this function directly.
 
 Usage:
 
@@ -1949,17 +1947,7 @@ Usage:
 
 %ignore simuPOP::individual::setInfoPtr(InfoIterator pos);
 
-%feature("docstring") simuPOP::individual::copyFrom "
-
-Description:
-
-    Deep copy! Important!
-
-Usage:
-
-    x.copyFrom(rhs)
-
-"; 
+%ignore simuPOP::individual::copyFrom(const individual &rhs);
 
 %ignore simuPOP::individual::genoPtr() const ;
 
@@ -1969,8 +1957,15 @@ Usage:
 
 Description:
 
-    return genotype as python Numeric.array object This is the whole
-    genotype (all)
+    return an editable array of genotypes??? of an individual
+
+Details:
+
+    This function will give the whole genotype. Although this function
+    is not as easy to use as other functions that access allele
+    proporties,??? it is the fastest one since you can read/write
+    genotype directly after you obtain the handle of all genotypes
+    through this function.
 
 Usage:
 
@@ -2008,7 +2003,7 @@ Usage:
 
 Description:
 
-    simuPOP::individual::arrInfo
+    return an editable array of all information fields
 
 Usage:
 
@@ -2020,7 +2015,7 @@ Usage:
 
 Description:
 
-    get allele from an index
+    return the allele at locus index
 
 Usage:
 
@@ -2028,7 +2023,8 @@ Usage:
 
 Arguments:
 
-    index:          index from the beginning of genotypic info
+    index:          absolute index from the beginning of the genotype,
+                    ranging from 0 to  totNumLoci()*ploidy()
 
 "; 
 
@@ -2036,7 +2032,8 @@ Arguments:
 
 Description:
 
-    get allele from an index, on the pth set of chromosome
+    return the allele at locus index  of the p-th  copy of the
+    chromosomes
 
 Usage:
 
@@ -2044,9 +2041,10 @@ Usage:
 
 Arguments:
 
-    index:          index from the begining of the p'th set of
-                    chromosomes.
-    p:              on p'th set of chromosomes, default to 0
+    index:          index from the begining of the p-th  set of the
+                    chromosomes, ranging from /c 0 to  totNumLoci()
+    p:              index of the chromosome sets which will be
+                    accessed
 
 "; 
 
@@ -2054,11 +2052,21 @@ Arguments:
 
 Description:
 
-    simuPOP::individual::allele
+    return the allele at locus index  of the ch-th  chromosome of the
+    p-th  chromosome set
 
 Usage:
 
     x.allele(index, p, ch)
+
+Arguments:
+
+    index:          index from the begining of chromosome ch  of
+                    ploidy p , ranging from 0  to  numLoci(ch)  .
+    p:              index of the chromosome sets which will be
+                    accessed, default to 0
+    ch:             index of the chromosome which will be accessed in
+                    the p-th  chromosome set
 
 "; 
 
@@ -2066,7 +2074,7 @@ Usage:
 
 Description:
 
-    simuPOP::individual::alleleChar
+    return the name of allele(index)
 
 Usage:
 
@@ -2078,7 +2086,7 @@ Usage:
 
 Description:
 
-    get allele from an index, on the pth set of chromosome
+    return the name of allele(index, p)
 
 Usage:
 
@@ -2086,9 +2094,31 @@ Usage:
 
 Arguments:
 
-    index:          index from the begining of the p'th set of
-                    chromosomes.
-    p:              on p'th set of chromosomes, p=0 by default
+    index:          index from the begining of the p-th  set of
+                    chromosomes
+    p:              index of the chromosome sets which will be
+                    accessed, default to 0
+
+"; 
+
+%feature("docstring") simuPOP::individual::alleleChar "
+
+Description:
+
+    return the name of allele(idx, p, ch)
+
+Usage:
+
+    x.alleleChar(index, p, ch)
+
+Arguments:
+
+    index:          index from the begining of the p-th  set of the
+                    chromosomes???
+    p:              index of the chromosome sets which will be
+                    accessed, default to 0
+    ch:             index of the chromosome which will be accessed in
+                    the p-th  chromosome set
 
 "; 
 
@@ -2096,7 +2126,7 @@ Arguments:
 
 Description:
 
-    set allele from an index.
+    Set the allele at locus index .
 
 Usage:
 
@@ -2104,6 +2134,7 @@ Usage:
 
 Arguments:
 
+    allele:         allele to be set
     index:          index from the begining of genotype
 
 "; 
@@ -2112,11 +2143,41 @@ Arguments:
 
 Description:
 
-    simuPOP::individual::setAllele
+    set the allele at locus index  of the p-th  copy of the
+    chromosomes
+
+Usage:
+
+    x.setAllele(allele, index, p)
+
+Arguments:
+
+    allele:         allele to be set
+    index:          index from the begining of genotype
+    index:          of the chromosome sets which will be accessed,
+                    default to 0
+
+"; 
+
+%feature("docstring") simuPOP::individual::setAllele "
+
+Description:
+
+    set the allele at locus index  of the ch-th  chromosome in the
+    p-th  chromosome set
 
 Usage:
 
     x.setAllele(allele, index, p, ch)
+
+Arguments:
+
+    allele:         allele to be set
+    index:          index from the begining of genotype
+    index:          of the chromosome sets which will be accessed,
+                    default to 0
+    ch:             index of the chromosome which will be accessed in
+                    the p-th  chromosome set
 
 "; 
 
@@ -2124,7 +2185,8 @@ Usage:
 
 Description:
 
-    sex?
+    return the sex of an individual, 1  for males and 2  for females.
+    However, this is not guranteed so please use  sexChar() .
 
 Usage:
 
@@ -2136,7 +2198,7 @@ Usage:
 
 Description:
 
-    return M or F for sex, for display purpose
+    return the sex of an individual, M  or F
 
 Usage:
 
@@ -2148,7 +2210,8 @@ Usage:
 
 Description:
 
-    set sex
+    set the sex. You should use setSex(Male)  or setSex(Female)
+    instead of 1  and 2 .
 
 Usage:
 
@@ -2160,7 +2223,7 @@ Usage:
 
 Description:
 
-    affected?
+    whether or not an individual is affected
 
 Usage:
 
@@ -2172,7 +2235,7 @@ Usage:
 
 Description:
 
-    unaffected?
+    equals to not  affected()
 
 Usage:
 
@@ -2184,7 +2247,7 @@ Usage:
 
 Description:
 
-    return A or U for affected/Unaffected, for display purpose
+    return A  or U  for affection status
 
 Usage:
 
@@ -2196,7 +2259,7 @@ Usage:
 
 Description:
 
-    set affected status
+    set affection status
 
 Usage:
 
@@ -2208,7 +2271,7 @@ Usage:
 
 Description:
 
-    get subpop id
+    return the ID of the subpopulation to which this individual blongs
 
 Usage:
 
@@ -2220,7 +2283,8 @@ Usage:
 
 Description:
 
-    set subpop if
+    set new subpopulation ID, pop.rearrangeByIndID  will move this
+    individual to that population
 
 Usage:
 
@@ -2232,11 +2296,35 @@ Usage:
 
 Description:
 
-    get info
+    get information field idx
 
 Usage:
 
     x.info(idx)
+
+Arguments:
+
+    idx:            index of the information field
+
+"; 
+
+%feature("docstring") simuPOP::individual::info "
+
+Description:
+
+    get information field name
+
+Details:
+
+    equivalent to info(infoIdx(name)).
+
+Usage:
+
+    x.info(name)
+
+Arguments:
+
+    name:           name of the information field
 
 "; 
 
@@ -2244,7 +2332,7 @@ Usage:
 
 Description:
 
-    set info
+    set information???
 
 Usage:
 
@@ -2270,7 +2358,7 @@ Usage:
 
 Description:
 
-    simuPOP::individual::__cmp__
+    a python function used to compare the individual class
 
 Usage:
 
@@ -2282,7 +2370,8 @@ Usage:
 
 Description:
 
-    simuPOP::individual::__repr__
+    used by Python print function to print out the general information
+    of the individual
 
 Usage:
 
@@ -2290,33 +2379,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::individual::swap "
-
-Description:
-
-    swap individuals
-
-Details:
-
-    The default behavior is swapping all info, but not the position of
-    genotypic info. If swapContent is false, pointer to genotypic info
-    is swapped instead. This will lead to better performance for
-    swapping but may affected performance of allele counting.
-
-Usage:
-
-    x.swap(ind, swapContent=True)
-
-Arguments:
-
-    ind:            individual to be swapped in
-    swapContent:    swapContent or only the pointers. The guideline is
-                    that if we swap individuals across subpopulation,
-                    we should swap content. Otherwise, swap pointers.
-                    (There is no order right now within subpopulation
-                    so the later case is rare, at best.
-
-"; 
+%ignore simuPOP::individual::swap(individual &ind, bool swapContent=true);
 
 %ignore simuPOP::individual::shallowCopied() const ;
 
@@ -2421,7 +2484,8 @@ Usage:
 
 Description:
 
-    simuPOP::inheritTagger::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -2429,23 +2493,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::inheritTagger::applyDuringMating "
-
-Description:
-
-    give pop, offspring, pop and mom.
-
-Usage:
-
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
-"; 
+%ignore simuPOP::inheritTagger::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::inheritTagger::clone "
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -2536,7 +2590,8 @@ Usage:
 
 Description:
 
-    simuPOP::initByFreq::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -2607,7 +2662,8 @@ Usage:
 
 Description:
 
-    simuPOP::initByValue::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -2681,7 +2737,8 @@ Usage:
 
 Description:
 
-    simuPOP::initializer::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -2844,7 +2901,8 @@ Usage:
 
 Description:
 
-    simuPOP::kamMutator::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -2952,7 +3010,8 @@ Usage:
 
 Description:
 
-    simuPOP::largePedigreeSample::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -3046,7 +3105,8 @@ Usage:
 
 Description:
 
-    simuPOP::maPenetrance::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -3139,7 +3199,8 @@ Usage:
 
 Description:
 
-    simuPOP::mapPenetrance::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -3207,7 +3268,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -3235,7 +3296,8 @@ Usage:
 
 Description:
 
-    simuPOP::mapQuanTrait::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -3301,7 +3363,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -3329,7 +3391,8 @@ Usage:
 
 Description:
 
-    simuPOP::mapSelector::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -3394,7 +3457,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -3422,7 +3485,8 @@ Usage:
 
 Description:
 
-    simuPOP::maQuanTrait::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -3491,7 +3555,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -3519,7 +3583,8 @@ Usage:
 
 Description:
 
-    simuPOP::maSelector::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -3743,7 +3808,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -3755,7 +3820,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -3768,7 +3833,8 @@ Usage:
 
 Description:
 
-    simuPOP::mergeSubPops::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -3841,7 +3907,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -3895,7 +3961,8 @@ Usage:
 
 Description:
 
-    simuPOP::migrator::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -3978,7 +4045,8 @@ Usage:
 
 Description:
 
-    simuPOP::mlPenetrance::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -4035,7 +4103,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -4059,7 +4127,8 @@ Usage:
 
 Description:
 
-    simuPOP::mlQuanTrait::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -4116,7 +4185,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -4144,7 +4213,8 @@ Usage:
 
 Description:
 
-    simuPOP::mlSelector::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -4456,8 +4526,8 @@ Usage:
 
 Description:
 
-    simply output some info providing interface to apply operator
-    before during or after mating.
+    providing interface to apply operator before during or after
+    mating
 
 Usage:
 
@@ -4481,7 +4551,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -4494,7 +4564,8 @@ Usage:
 
 Description:
 
-    simuPOP::noneOp::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -4593,7 +4664,8 @@ Usage:
 
 Description:
 
-    simuPOP::nuclearFamilySample::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -4685,42 +4757,46 @@ Usage:
 
 Description:
 
-    base class of all classes that manipulate populations.
+    base class of all classes that manipulate populations
 
 Details:
 
     Operators are object that act on populations. They can be applied
-    to populations directly using  apply() member function, but most
-    of the time they are managed and applied by a simulator.Operators
-    can be applied at different stage(s) of a life cycle. More
-    specifically, at pre-, duing- or post mating stage(s). Note that
-    it is possible for an operator to apply multiple times in a life
-    cycle. For example, an save-to-file operator might be applied
-    before and after mating to trace parental information.Operators do
-    not have to be applied at all generations. You can specify
-    starting genertion, ending generation, gaps between applicable
-    generations, or even specific generations to apply. For example,
-    you might want to start applying migrations after certain heat-up
-    generation; or you want to calculate every 10
-    generations.Operators can have outputs. Output can be standard
-    output (terminal) or a file, which can be constant, or change with
-    generation or replicate. Different operators can append to the
-    same file to form table-like outputs.filename can have the
-    following format:1. 'filename' this file will be closed after each
-    use. I.e., if several operators output to the same file, only the
-    last one will succeed.2. '>filename' the same as 'filaname'3.
-    '>>filename' The file will be created at the beginning of
-    evolution ( simulator::evolve) and close at the end. Several
-    operators can output to this file to form a table.4. '>>>filename'
-    The same as '>>filename' except that the file will not be cleared
-    at the beginning of evolution if it is not empty.5. '>' out put to
-    standard output.6. '' supress output.Most operators are applied to
-    every replicate of a simulator during evolution. However, you can
-    apply opertors to one or a group of replicates only. For example,
-    you can initialize different replicates with different initial
-    values and then start evolution. c.f.  simulator::setGroup .Please
-    refer to help(baseOperator) and help(baseOperator.__init__) for
-    detailed information about member functions and parameters.Bo Peng
+    to populations directly using the function form of operators, but
+    they are usually managed and applied by a simulator.
+    Operators can be applied at different stages of the life cycle of
+    a generation. More specifically, operators can be applied at pre-
+    , during- , post-mating , or a combination of these stages.
+    Applicable stages are usually set by default but you can change it
+    by setting stage=(PreMating|PostMating|DuringMating|PrePostMating)
+    parameter. Note that some operators ignore stage  parameter
+    because they only work at one stage.
+    Operators do not have to be applied at all generations. You can
+    specify starting generation, ending generation, gaps between
+    applicable generations, or even specific generations to apply. For
+    example, you might want to start applying migrations after certain
+    burn-in generations; or you want to calculate certain statistics
+    only sparsely.
+    Operators can have outputs. Output can be standard output
+    (terminal) or a file, which can vary from replicate to replicate,
+    and/or from generation to generation. Output from different
+    operators can be accumulated to the same file to form table-like
+    outputs.
+    Operators are applied to every replicate of a simulator by
+    default. However, you can apply operators to one or a group of
+    replicates using parameter rep  or grp .
+    Filenames can have the following format:
+    * 'filename'  this file will be overwritten each time. If two
+    operators output to the same file, only the last one will succeed;
+    * '>filename'  the same as 'filename' ;
+    * '>>filename'  the file will be created at the beginning of
+    evolution ( simulator::evolve ) and closed at the end. Output from
+    several operators is allowed;
+    * '>>>filename'  the same as '>>filename'  except that the file
+    will not be cleared at the beginning of evolution if it is not
+    empty;
+    * '>'  standard output (terminal);
+    * ''  supress output.
 
 "; 
 
@@ -4728,8 +4804,8 @@ Details:
 
 Description:
 
-    create an operator (this function is not supposed to be called
-    directly)
+    common interface for all operators (this base operator does
+    nothing by itself.)
 
 Usage:
 
@@ -4738,31 +4814,36 @@ Usage:
 
 Arguments:
 
-    output:         a string of output filename. Different operators
-                    will have different default output (most commonly
-                    '>' or '')
-    outputExpr:     an expression that determines output filename
-                    dynamically.
-    begin:          start generation. default to 1. negative number is
-                    interpreted as endGeneration + begin
-    end:            stop applying after this generation. negative
-                    number is allowed
-    step:           number of generations between active generations.
-                    default to 1
-    at:             an array of active generations. If given, stage,
-                    begin, end, step will be ignored.
-    rep:            applicable replicate. It can be replicate number 0
-                    ~ (number of replicate -1), REP_ALL (all
-                    replicates) or REP_LAST (only to the last
-                    replicate). Usually default to REP_ALL.
-    grp:            applicable group, default to GRP_ALL. A group
+    begin:          the starting generation. Default to 0 . Negative
+                    numbers are allowed.
+    end:            stop applying after this generation. Negative
+                    numbers are allowed.
+    step:           the number of generations between active
+                    generations. Default to 1 .
+    at:             an array of active generations. If given, stage ,
+                    begin , end , and step  will be ignored.
+    rep:            applicable replicates. It can be a valid replicate
+                    number, REP_ALL  (all replicates, default), or
+                    REP_LAST  (only the last replicate). REP_LAST  is
+                    useful in adding newlines to a table output.
+    grp:            applicable group. Default to GRP_ALL . A group
                     number for each replicate is set by
-                    simulator.__init__ or  simulator::setGroup(). grp,
-                    if not GRP_ALL, will be compared to the group
-                    number of this replicate before applying. DEVONLY{
-                    DO NOT SET DEFAULT PARAMETE. This will force all
-                    derived classes to pay attention to parameter
-                    number. }
+                    simulator.__init__  or  simulator::setGroup() .
+    output:         a string of the output filename. Different
+                    operators will have different default output
+                    (most commonly '>'  or '' ).
+    outputExpr:     an expression that determines the output filename
+                    dynamically. This expression will be evaluated
+                    against a population's local namespace each time
+                    when an output filename is required. For example,
+                    \"'>>out%s_%s.xml' % (gen, rep)\"   will output to
+                    >>>out1_1.xml   for replicate 1  at generation 1 .
+
+Note:
+
+    Negative generation numbers are allowed for begin , end  and at .
+    They are intepretted as endGen + gen + 1 . For example, begin = -2
+    in simu.evolve(..., end=20)  starts at generation 19 .
 
 "; 
 
@@ -4782,11 +4863,7 @@ Usage:
 
 Description:
 
-    this function is very important
-
-Details:
-
-    use of parameter start, end, every, at, group, rep
+    deep copy of an operator
 
 Usage:
 
@@ -4794,27 +4871,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Operator::isActive "
-
-Description:
-
-    judge if this operator is active
-
-Details:
-
-    Judge if this operator is active under the conditions like current
-    replicate, group number of current replicate, current generation.
-    ending generation etc.
-
-Usage:
-
-    x.isActive(rep, numRep, gen, end, grp, repOnly=False)
-
-Note:
-
-    will be called by simulator before applying.
-
-"; 
+%ignore simuPOP::Operator::isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly=false);
 
 %feature("docstring") simuPOP::Operator::applicableGroup "
 
@@ -4832,13 +4889,13 @@ Usage:
 
 Description:
 
-    set applicable group.
+    set applicable group
 
 Details:
 
-    GRP_ALL is the default value (applicable to all groups. )
-    Otherwise, the operator is applicable to ONE group of replicates.
-    groups can be set in  simulator::setGroup()
+    Default to GRP_ALL  (applicable to all groups). Otherwise, the
+    operator is applicable to only one  group of replicates. Groups
+    can be set in  simulator::setGroup() .
 
 Usage:
 
@@ -4862,7 +4919,7 @@ Usage:
 
 Description:
 
-    set applicable replicate.
+    set applicable replicate
 
 Usage:
 
@@ -4874,13 +4931,7 @@ Usage:
 
 Description:
 
-    set applicable generation parrameters: stage, begin, end, step and
-    at
-
-Details:
-
-    set certain m_flags to speed up using this machanism. pre, during,
-    post-mating methods
+    set applicable generation parameters: begin , end , step  and at
 
 Usage:
 
@@ -4892,8 +4943,7 @@ Usage:
 
 Description:
 
-    set m_stage settings. This is usually not usable since the m_stage
-    setting are set by default for each  Operator.
+    set applicable stage. Another way to set stage  parameter.
 
 Usage:
 
@@ -4905,7 +4955,7 @@ Usage:
 
 Description:
 
-    Can this operator be applied pre-mating?
+    set if this operator can be applied pre-mating
 
 Usage:
 
@@ -4917,7 +4967,7 @@ Usage:
 
 Description:
 
-    Can this operator be applied uring mating?
+    set if this operator can be applied during-mating
 
 Usage:
 
@@ -4929,7 +4979,7 @@ Usage:
 
 Description:
 
-    Can this operator be applied post-mating?
+    set if this operator can be applied post-mating
 
 Usage:
 
@@ -4941,7 +4991,7 @@ Usage:
 
 Description:
 
-    can be applied pre or post mating.
+    set of this operator can be applied pre-  or post-mating
 
 Usage:
 
@@ -4949,23 +4999,14 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Operator::isCompatible "
-
-Description:
-
-    simuPOP::Operator::isCompatible
-
-Usage:
-
-    x.isCompatible(pop)
-
-"; 
+%ignore simuPOP::Operator::isCompatible(const population &pop);
 
 %feature("docstring") simuPOP::Operator::haploidOnly "
 
 Description:
 
-    simuPOP::Operator::haploidOnly
+    determine if the operator can be applied only for haploid
+    population
 
 Usage:
 
@@ -4977,7 +5018,8 @@ Usage:
 
 Description:
 
-    simuPOP::Operator::diploidOnly
+    determine if the operator can be applied only for diploid
+    population
 
 Usage:
 
@@ -4989,7 +5031,7 @@ Usage:
 
 Description:
 
-    simuPOP::Operator::MPIReady
+    determine if this operator can be used in a MPI module
 
 Usage:
 
@@ -4997,47 +5039,17 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Operator::setHaploidOnly "
+%ignore simuPOP::Operator::setHaploidOnly();
 
-Description:
+%ignore simuPOP::Operator::setDiploidOnly();
 
-    simuPOP::Operator::setHaploidOnly
-
-Usage:
-
-    x.setHaploidOnly()
-
-"; 
-
-%feature("docstring") simuPOP::Operator::setDiploidOnly "
-
-Description:
-
-    simuPOP::Operator::setDiploidOnly
-
-Usage:
-
-    x.setDiploidOnly()
-
-"; 
-
-%feature("docstring") simuPOP::Operator::setMPIReady "
-
-Description:
-
-    simuPOP::Operator::setMPIReady
-
-Usage:
-
-    x.setMPIReady()
-
-"; 
+%ignore simuPOP::Operator::setMPIReady();
 
 %feature("docstring") simuPOP::Operator::infoSize "
 
 Description:
 
-    get the number of information fields for this operator
+    get the length of information fields for this operator
 
 Usage:
 
@@ -5061,24 +5073,13 @@ Usage:
 
 %ignore simuPOP::Operator::setFormOffGenotype(bool flag=true);
 
-%feature("docstring") simuPOP::Operator::applyWithScratch "
-
-Description:
-
-    providing interface to apply operator before during or after
-    mating.
-
-Usage:
-
-    x.applyWithScratch(pop, scratch, stage)
-
-"; 
+%ignore simuPOP::Operator::applyWithScratch(population &pop, population &scratch, int stage);
 
 %feature("docstring") simuPOP::Operator::apply "
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -5087,27 +5088,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Operator::applyDuringMating "
-
-Description:
-
-    give pop, offspring, pop and mom.
-
-Details:
-
-    separator, persistant files, $gen etc substitution.
-
-Usage:
-
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
-"; 
+%ignore simuPOP::Operator::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::Operator::setOutput "
 
 Description:
 
-    ostream, if not set during construction.
+    set ouput stream, if was not set during construction
 
 Usage:
 
@@ -5115,29 +5102,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Operator::getOstream "
+%ignore simuPOP::Operator::getOstream(PyObject *dict=NULL, bool readable=false);
 
-Description:
-
-    get output stream. This function is not exposed to user.
-
-Usage:
-
-    x.getOstream(*dict=NULL, readable=False)
-
-"; 
-
-%feature("docstring") simuPOP::Operator::closeOstream "
-
-Description:
-
-    close ostream and delete ostream pointer.. if it is a ofstream.
-
-Usage:
-
-    x.closeOstream()
-
-"; 
+%ignore simuPOP::Operator::closeOstream();
 
 %ignore simuPOP::Operator::atRepr();
 
@@ -5145,7 +5112,8 @@ Usage:
 
 Description:
 
-    simuPOP::Operator::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -5153,17 +5121,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Operator::noOutput "
-
-Description:
-
-    if output=\">\". used internally
-
-Usage:
-
-    x.noOutput()
-
-"; 
+%ignore simuPOP::Operator::noOutput();
 
 %ignore simuPOP::OstreamManager;
 
@@ -5272,7 +5230,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -5330,7 +5288,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -5354,7 +5312,8 @@ Usage:
 
 Description:
 
-    simuPOP::outputHelper::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -5401,7 +5360,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -5413,7 +5372,8 @@ Usage:
 
 Description:
 
-    simuPOP::parentsTagger::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -5421,23 +5381,16 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::parentsTagger::applyDuringMating "
-
-Description:
-
-    give pop, offspring, pop and mom.
-
-Usage:
-
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
-"; 
+%ignore simuPOP::parentsTagger::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::pause "
 
-Description:
+Details:
 
-    simuPOP::pause
+    Pause the evolution of a simulator at given generations or at key
+    stroke, using stopOnKeyStroke=True  option. When a simulator is
+    stopped, user can resume simulation by pressing '/??' or escape to
+    a python shell to examine the status of the simulation.
 
 "; 
 
@@ -5456,8 +5409,8 @@ Usage:
 
 Arguments:
 
-    prompt:         if true (default), print prompt message.
-    stopOnKeyStroke:if true, goon if no key was pressed
+    prompt:         if true (default), print prompt message. findpause
+    stopOnKeyStroke:if true, go on if no key was pressed
     exposePop:      whether or not expose pop to user namespace, only
                     useful when user choose 's' at pause. Default to
                     true.
@@ -5506,7 +5459,8 @@ Usage:
 
 Description:
 
-    simuPOP::pause::__repr__
+    used by Python print function to print out the general information
+    of the pause
 
 Usage:
 
@@ -5605,7 +5559,8 @@ Usage:
 
 Description:
 
-    simuPOP::penetrance::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -5686,7 +5641,8 @@ Usage:
 
 Description:
 
-    simuPOP::pointMutator::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -5753,7 +5709,7 @@ Details:
     all) ancestral generations are saved. Functions to make a certain
     ancestray generation current  is provided so that one can examine
     and modify ancestral generations. Other important concepts like
-    {information fields} are explained in class individual.
+    informationfields  are explained in class individual.
     It is worth noting that although a large number of member
     functions are provided, most of the operations are performed by
     operators . These functions will only be useful when you need to
@@ -5886,7 +5842,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::population::swap(population &rhs);
+%feature("docstring") simuPOP::population::swap "
+
+Description:
+
+    swap the content of two populations
+
+Usage:
+
+    x.swap(rhs)
+
+"; 
 
 %feature("docstring") simuPOP::population::~population "
 
@@ -5941,8 +5907,8 @@ Arguments:
                     may or may not change according to parameter
                     allowPopSizeChange  if the sum of subPopSize  does
                     not match popSize .
-    allowPopSizeChange:if this parameter is true , popSize  can be
-                    changed to the sum of subPopSize .
+    allowPopSizeChange:if this parameter is true , population will be
+                    resized.
 
 "; 
 
@@ -6060,9 +6026,9 @@ Arguments:
 
 Note:
 
-    as with all ...End functions, the returning index is out of the
-    range so the actual range is [xxxBegin, xxxEnd). This agrees with
-    all STL conventions and Python range.
+    As with all ...End functions, the returning index is out of the
+    range so that the actual range is [xxxBegin, xxxEnd). This agrees
+    with all STL conventions and Python range.
 
 "; 
 
@@ -6113,22 +6079,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::population::ind "
-
-Description:
-
-    refernce to individual ind  in subpopulation subPop
-
-Details:
-
-    Return individual  from subpopulation . This function is named
-    individual  in the Python interface.
-
-Usage:
-
-    x.ind(ind, subPop=0)
-
-"; 
+%ignore simuPOP::population::ind(ULONG ind, UINT subPop=0) const ;
 
 %ignore simuPOP::population::shallowCopied();
 
@@ -6211,30 +6162,16 @@ Arguments:
 
 "; 
 
-%feature("docstring") simuPOP::population::exposeAffectedness "
-
-Description:
-
-    expose the (non-editable) effectedness fields of all individuals
-
-Usage:
-
-    x.exposeAffectedness(name=\"affected\")
-
-"; 
-
 %feature("docstring") simuPOP::population::setIndSubPopID "
 
 Description:
 
-    individual::setSubPopID,  individual::subPopID
+    set subpopulation ID with given ID
 
 Details:
 
-    This function set information field for all individuals. Info can
-    be used to sort individuals and set subpopulations. Therefore, the
-    following code will do a migration:setIndSubPopID([
-    an_array_of_info_value ]) setSubPopByIndID()
+    Set subpopulation ID of each individual with given ID. Individuals
+    can be rearranged afterwards using setSubPopByIndID .
 
 Usage:
 
@@ -6242,8 +6179,8 @@ Usage:
 
 Arguments:
 
-    info:           an array of info values, should have length of pop
-                    size
+    id:             an array of the same length of population size,
+                    resprenting subpopulation ID of each individual.
 
 "; 
 
@@ -6251,7 +6188,7 @@ Arguments:
 
 Description:
 
-    set information field of all individuals using their respective
+    set subpopulation ID of each individual with their current
     subpopulation ID
 
 Usage:
@@ -6264,12 +6201,13 @@ Usage:
 
 Description:
 
-    adjust subpopulation according to individual information values
+    adjust subpopulation according to individual subpopulation ID.
 
 Details:
 
-    Assume individuals has subpopulation index in their information
-    values and put them into corresponding subpopulations.
+    Rearrange individuals to their new subpopulations according to
+    their subpopulation ID (or the new given id ). Order within each
+    subpopulation is not respected.
 
 Usage:
 
@@ -6277,7 +6215,12 @@ Usage:
 
 Arguments:
 
-    info:           optional info that will be used to set sub pop
+    id:             new subpopulation ID, if given, current individual
+                    subpopulation ID will be ignored.
+
+Note:
+
+    Individual with negative info will be removed!
 
 "; 
 
@@ -6299,6 +6242,12 @@ Usage:
 
     x.splitSubPop(which, sizes, subPopID=[])
 
+Note:
+
+    subpop  with negative ID will be removed. So, you can shrink one
+    subpop  by splitting and setting one of the new subpop  with
+    negative ID.
+
 "; 
 
 %feature("docstring") simuPOP::population::splitSubPopByProportion "
@@ -6315,6 +6264,12 @@ Details:
 Usage:
 
     x.splitSubPopByProportion(which, proportions, subPopID=[])
+
+Note:
+
+    subpop  with negative ID will be removed. So, you can shrink one
+    subpop  by splitting and setting one of the new subpop  with
+    negative ID.
 
 "; 
 
@@ -6371,13 +6326,14 @@ Usage:
 
 Description:
 
-    merge populations
+    merge given subpopulations
 
 Details:
 
     Merge subpopulations, the first subpopulation ID (the first one in
-    array subPops ) will be used as the ID of the new population.
-    I.e., all subpopulations will take the ID of the first one.
+    array subPops ) will be used as the ID of the new subpopulation.
+    That is to say, all subpopulations will take the ID of the first
+    one.
 
 Usage:
 
@@ -6417,6 +6373,10 @@ Arguments:
     keepAncestralPops:ancestral populations to merge, default to all (-1
                     )
 
+Note:
+
+    Population variables are not copied to pop .
+
 "; 
 
 %feature("docstring") simuPOP::population::mergePopulationByLoci "
@@ -6440,6 +6400,12 @@ Arguments:
 
     newLoci:        the new number of loci for the combined genotypic
                     structure.
+
+Note:
+
+    * Information fields are not merged.
+    * All ancestral generations will be merged because all individuals
+    in a population have to have the same genotypic structure.
 
 "; 
 
@@ -6564,6 +6530,10 @@ Arguments:
     propagate:      if propagate  is true , copy individuals to new
                     comers. I.e., 1, 2, 3 ==> 1, 2, 3, 1, 2, 3, 1
 
+Note:
+
+    This function only resizes the current generation.
+
 "; 
 
 %feature("docstring") simuPOP::population::reorderSubPops "
@@ -6640,7 +6610,15 @@ Usage:
 
 Description:
 
-    (almost) internal use only
+    Absorb rhs  population as the current generation of a population.
+
+Details:
+
+    This is mainly used by a simulator to push offspring generation
+    rhs  to the current population, while the current population is
+    pushed back as an ancestral population (if ancestralDepath() != 0
+    ). Because rhs  population is swapped in, rhs  will be empty after
+    this operation.
 
 Usage:
 
@@ -6664,7 +6642,17 @@ Usage:
 
 Description:
 
-    return the current ancestral generation index
+    currently used ancestral population (0 for the latest generation)
+
+Details:
+
+    Current ancestral population activated by useAncestralPop. There
+    can be several ancestral generations in a population. 0
+    (current), 1  (parental) etc. When useAncestralPop(gen) is used,
+    current generation is set to one of the parental generation, which
+    is the information returned by this function. useAncestralPop(0)
+    should always be used to set a population to its usual ancestral
+    order.
 
 Usage:
 
@@ -6677,11 +6665,17 @@ Usage:
 Description:
 
     set individual information for the given information field
-    (index), for the given subpopulation (default to all population)
+    (index),
 
 Usage:
 
     x.setIndInfo(values, idx)
+
+Arguments:
+
+    values:         an array that has the same length as population
+                    size.
+    idx:            index to the information field.
 
 "; 
 
@@ -6689,8 +6683,13 @@ Usage:
 
 Description:
 
-    set individual information for the given information field (name),
-    for the given subpopulation (default to all population)
+    set individual information for the given information field (name)
+
+Details:
+
+    setIndInfo using field name, x.setIndInfo(values, name)  is
+    equivalent to the idx  version x.setIndInfo(values,
+    x.infoIdx(name)) .
 
 Usage:
 
@@ -6708,7 +6707,7 @@ Usage:
 
 Description:
 
-    Get information idx  of all individuals.
+    get information idx  of all individuals.
 
 Usage:
 
@@ -6725,7 +6724,7 @@ Arguments:
 
 Description:
 
-    Get information name  of all individuals.
+    get information name  of all individuals.
 
 Usage:
 
@@ -6742,7 +6741,7 @@ Arguments:
 
 Description:
 
-    Get information idx  of all individuals in a subpopulation subPop
+    get information idx  of all individuals in a subpopulation subPop
     .
 
 Usage:
@@ -6761,7 +6760,7 @@ Arguments:
 
 Description:
 
-    Get information name  of all individuals in a subpopulation subPop
+    get information name  of all individuals in a subpopulation subPop
     .
 
 Usage:
@@ -6780,7 +6779,7 @@ Arguments:
 
 Description:
 
-    Get an editable array (Python list) of all information fields.
+    get an editable array (Python list) of all information fields
 
 Usage:
 
@@ -6795,16 +6794,19 @@ Arguments:
 
 %feature("docstring") simuPOP::population::addInfoField "
 
-Details:
+Description:
 
-    add an information field to a population. For example,
-    \"penetrance\", for the analysis of an existing population. If the
-    field already exists in the geno structure, matches local info
-    fields with the structure.
+    add an information field to a population.
 
 Usage:
 
     x.addInfoField(field, init=0)
+
+Arguments:
+
+    field:          new information field. If it already exists, it
+                    will be re-initialized.
+    init:           inital value for the new field.
 
 "; 
 
@@ -6818,6 +6820,13 @@ Usage:
 
     x.addInfoFields(fields, init=0)
 
+Arguments:
+
+    fields:         new information fields. If one or more of the
+                    fields alreay exist, they will simply be re-
+                    initialized.
+    init:           initial value for the new fields.
+
 "; 
 
 %feature("docstring") simuPOP::population::setInfoFields "
@@ -6829,6 +6838,11 @@ Description:
 Usage:
 
     x.setInfoFields(fields, init=0)
+
+Arguments:
+
+    fields:         an array of fields
+    init:           initial value for the new fields.
 
 "; 
 
@@ -6842,18 +6856,10 @@ Usage:
 
     x.setAncestralDepth(depth)
 
-"; 
+Arguments:
 
-%feature("docstring") simuPOP::population::ancestralPop "
-
-Description:
-
-    current ancestral population selected (0 for the latest
-    generation)
-
-Usage:
-
-    x.ancestralPop()
+    depth:          0  for none, -1  for unlimited, a positive number
+                    sets the number of ancestral generations to save.
 
 "; 
 
@@ -6861,11 +6867,17 @@ Usage:
 
 Description:
 
-    use an ancestral population. 0  for the latest generation.
+    use an ancestral generation. 0  for the latest generation.
 
 Usage:
 
     x.useAncestralPop(idx)
+
+Arguments:
+
+    idx:            Index of the ancestral generation. 0  for current,
+                    1  for parental, etc. idx can not exceed ancestral
+                    depth (see  setAncestralDepth).
 
 "; 
 
@@ -6917,6 +6929,10 @@ Description:
 
     current replicate in a simulator
 
+Details:
+
+    Replication number is not meaningful for a stand-alone population.
+
 Usage:
 
     x.rep()
@@ -6930,6 +6946,10 @@ Usage:
 Description:
 
     current group ID in a simulator
+
+Details:
+
+    Group number is not meaningful for a stand-alone population.
 
 Usage:
 
@@ -7048,7 +7068,7 @@ Description:
 
 Details:
 
-    This is used by mergeByLoci
+    This is used by mergeByLoci .
 
 Usage:
 
@@ -7124,7 +7144,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -7137,7 +7157,8 @@ Usage:
 
 Description:
 
-    simuPOP::pyEval::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -7220,7 +7241,8 @@ Usage:
 
 Description:
 
-    simuPOP::pyExec::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -7295,7 +7317,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -7308,7 +7330,8 @@ Usage:
 
 Description:
 
-    simuPOP::pyIndOperator::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -7391,7 +7414,8 @@ Usage:
 
 Description:
 
-    simuPOP::pyInit::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -7403,7 +7427,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -7551,7 +7575,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -7563,7 +7587,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -7576,7 +7600,8 @@ Usage:
 
 Description:
 
-    simuPOP::pyMigrator::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -7649,7 +7674,8 @@ Usage:
 
 Description:
 
-    simuPOP::pyMutator::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -7730,7 +7756,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -7739,23 +7765,14 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyOperator::applyDuringMating "
-
-Description:
-
-    give pop, offspring, pop and mom.
-
-Usage:
-
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
-"; 
+%ignore simuPOP::pyOperator::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::pyOperator::__repr__ "
 
 Description:
 
-    simuPOP::pyOperator::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -7841,7 +7858,8 @@ Usage:
 
 Description:
 
-    simuPOP::pyPenetrance::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -7903,7 +7921,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -7927,7 +7945,8 @@ Usage:
 
 Description:
 
-    simuPOP::pyQuanTrait::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -8008,7 +8027,8 @@ Usage:
 
 Description:
 
-    simuPOP::pySample::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -8070,7 +8090,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -8094,7 +8114,8 @@ Usage:
 
 Description:
 
-    simuPOP::pySelector::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -8157,7 +8178,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -8170,7 +8191,8 @@ Usage:
 
 Description:
 
-    simuPOP::pySubset::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -8233,7 +8255,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -8245,7 +8267,8 @@ Usage:
 
 Description:
 
-    simuPOP::pyTagger::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -8253,17 +8276,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyTagger::applyDuringMating "
-
-Description:
-
-    give pop, offspring, pop and mom.
-
-Usage:
-
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
-"; 
+%ignore simuPOP::pyTagger::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::PythonCoutBuf "
 
@@ -8340,7 +8353,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -8376,7 +8389,8 @@ Usage:
 
 Description:
 
-    simuPOP::quanTrait::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -8632,7 +8646,8 @@ Usage:
 
 Description:
 
-    simuPOP::randomSample::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -8737,7 +8752,8 @@ Usage:
 
 Description:
 
-    simuPOP::recombinator::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -8803,17 +8819,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::recombinator::applyDuringMating "
-
-Description:
-
-    give pop, offspring, pop and mom.
-
-Usage:
-
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
-"; 
+%ignore simuPOP::recombinator::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::RNG "
 
@@ -9192,7 +9198,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -9205,7 +9211,8 @@ Usage:
 
 Description:
 
-    simuPOP::sample::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -9302,7 +9309,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -9314,7 +9321,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -9327,7 +9334,8 @@ Usage:
 
 Description:
 
-    simuPOP::savePopulation::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -9389,7 +9397,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -9425,7 +9433,8 @@ Usage:
 
 Description:
 
-    simuPOP::selector::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -9483,7 +9492,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -9496,7 +9505,8 @@ Usage:
 
 Description:
 
-    simuPOP::setAncestralDepth::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -9594,46 +9604,41 @@ Usage:
 Description:
 
     simulator manage several replicates of a population, evolve them
-    using given mating scheme and operators.
+    using given mating scheme and operators
 
 Details:
 
-    simulators combine three important components of  simuPOP:
-    population, mating scheme and operators together. A simulator is
-    created with an instance of population, a replicate number and a
-    mating scheme. It makes 'rep' replicates of this population and
-    control the evolution process of these populations.The most
-    important functions of a simulator is of course  evolve(). It
-    accepts arrays of operators as its parameters, among which,
-    'preOps' and 'postOps' will be applied to the populations at the
-    begining and end of evolution, whereas 'operators'will be applied
-    at every generation.simulators separates operators into pre-,
-    during- and post- mating operators. During evolution, simulator
-    first apply all pre-mating operators and then call the mate()
-    function of the given mating scheme, which will call during-mating
-    operators during the birth of each offsrping. After the mating is
-    finished, post-mating operators are applied in the order they
-    apprear in the operator list.Since operators can apply to specific
-    replicate or replicates group, and might not be active at all
-    time, the isActive(m_curRep, m_numRep, m_gen, end,  grp())
-    function of each operator is called before it is applied to the
-    populations.simulators can evolve a given number of generations
-    (the 'end' parameter of evolve), or evolve indefinitely using a
-    certain type of operators called terminators. In this case, one or
-    more terminators will check the status of evolution and determine
-    if the simulation should be stopped. An obvious example of such a
-    terminator is a fixation-checker.Finally, a simulator can be saved
-    to a file in the format of 'text', 'bin', or 'xml'. This enables
-    us to stop a simulation and ressume it at another time or on
-    another machine. It is also a good idea to save a snapshot of a
-    simulation every several generations.DEVONLY{This is a template
-    class that manage the whole simulation process. It glues three
-    major components of  simuPOP together: population, mating,
-    Operation. More specifically, a simuPOP<population> object manages
-    several copies of population (or one of its subclasses) plus a
-    'scratch population'; it has a mating object that knows how to
-    generate next gen; it controls the evolution process by applying
-    pre- during- and post- mating Operators during evolution. }
+    Simulators combine three important components of  simuPOP:
+    population , mating scheme and operators together. A simulator is
+    created with an instance of population , a replicate number rep
+    and a mating scheme. It makes rep  number of replicates of this
+    population and control the evolution process of them.
+    The most important functions of a simulator is  evolve() . It
+    accepts an array of operators as its parameters, among which,
+    preOps  and postOps  will be applied to the populations at the
+    begining and the end of evolution, respectively, whereas ops  will
+    be applied at every generation.
+    Simulators separate operators into pre- , during-  and post-mating
+    operators. During evolution, a simulator first apply all pre-
+    mating operators and then call the mate()  function of the given
+    mating scheme, which will call during-mating operators during the
+    birth of each offsrping. After mating is completed, post-mating
+    operators are applied to the offspring in the order at which they
+    appear in the operator list.
+    Operators can be applied to specific replicate, group of the
+    replicates, to specific generations, determined by the rep , grp ,
+    begin , end , step , and at  parameters.
+    Simulators can evolve a given number of generations (the end
+    parameter of evolve ), or evolve indefinitely until a certain type
+    of operators called terminators terminates it. In this case, one
+    or more terminators will check the status of evolution and
+    determine if the simulation should be stopped. An obvious example
+    of such a terminator is a fixation-checker.
+    Finally, a simulator can be saved to a file in the format of 'txt'
+    , 'bin' , or 'xml' . This enables us to stop a simulation and
+    resume it at another time or on another machine. It is also a good
+    idea to save a snapshot of a simulation every several hundred
+    generations.
 
 "; 
 
@@ -9643,24 +9648,22 @@ Description:
 
     create a simulator
 
-Details:
-
-    DEVONLY{ m_curRep, gen are reference to glocal shared variables. }
-
 Usage:
 
     simulator(pop, matingScheme, rep=1, grp=[])
 
 Arguments:
 
-    population:     a population created by population() function.
-                    This population will be copied to the simulator so
-                    its content will not be changed.
-    mate:           a mating scheme
-    rep:            number of replicates. default to 1
-    grp:            grp number for each replicate. For example, we can
-                    seprate all replicates into two groups and give
-                    them differnt initial values before evolution.
+    population:     a population created by population()  function.
+                    This population will be copied rep  times to the
+                    simulator. Its content will not be changed.
+    matingScheme:   a mating scheme
+    rep:            number of replicates. Default to 1 .
+    grp:            group number for each replicate. Operators can be
+                    applied to a group of replicates using its grp
+                    parameter.
+    applyOpToStoppedReps:
+    stopIfOneRepStops:
 
 "; 
 
@@ -9676,10 +9679,10 @@ Usage:
 
 Note:
 
-    pop = simulator::population() returns temporary reference to an
+    pop = simulator::population()  returns temporary reference to an
     internal population. After a simulator evolves another genertion
     or after the simulator is destroyed, this referenced population
-    should *not* be used.
+    should not  be used.
 
 "; 
 
@@ -9687,7 +9690,7 @@ Note:
 
 Description:
 
-    simuPOP::simulator::clone
+    deep copy of a simulator
 
 Usage:
 
@@ -9699,7 +9702,11 @@ Usage:
 
 Description:
 
-    the 'rep' replicate of this simulator
+    the rep  replicate of this simulator
+
+Details:
+
+    This function is named population  in the Python interface.
 
 Usage:
 
@@ -9707,23 +9714,31 @@ Usage:
 
 Arguments:
 
-    rep:            number of replicate.
+    rep:            the index number of replicate which will be
+                    accessed
 
 Note:
 
     The returned reference is temporary in the sense that the refered
     population will be invalid after another round of evolution.
     Therefore, the use of this function should be limited to
-    'immediate after retrival'. If you would like to get a persistent
-    population, use getPopulation(rep)
+    immediateafterretrival . If you would like to get a persistent
+    population, please use getPopulation(rep) .
 
 "; 
 
 %feature("docstring") simuPOP::simulator::getPopulation "
 
+Description:
+
+    return a copy of population rep
+
 Details:
 
-    this function returns a copy of population rep
+    return a temporary reference of one of the populations.
+    'Reference'  means that the changes to the referred population
+    will reflect to the one in simulator. 'Temporary'  means that the
+    referred population might be invalid after evolution.
 
 Usage:
 
@@ -9731,7 +9746,8 @@ Usage:
 
 Arguments:
 
-    rep:            number of replicate.
+    rep:            the index number of the replicate which will be
+                    obtained
 
 "; 
 
@@ -9739,7 +9755,7 @@ Arguments:
 
 Description:
 
-    simuPOP::simulator::setMatingScheme
+    set mating scheme
 
 Usage:
 
@@ -9747,17 +9763,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::simulator::setPopulation "
-
-Description:
-
-    simuPOP::simulator::setPopulation
-
-Usage:
-
-    x.setPopulation(pop, rep)
-
-"; 
+%ignore simuPOP::simulator::setPopulation(population &pop, UINT rep);
 
 %ignore simuPOP::simulator::curRep() const ;
 
@@ -9765,7 +9771,7 @@ Usage:
 
 Description:
 
-    simuPOP::simulator::numRep
+    return the number of replicates
 
 Usage:
 
@@ -9777,7 +9783,7 @@ Usage:
 
 Description:
 
-    simuPOP::simulator::gen
+    return current generation number
 
 Usage:
 
@@ -9815,7 +9821,7 @@ Usage:
 
 Description:
 
-    set generation number
+    set current generation. Usually used to reset a simulator.
 
 Usage:
 
@@ -9823,11 +9829,7 @@ Usage:
 
 Arguments:
 
-    gen:            new generation number
-
-Note:
-
-    this will also set shared variable gen
+    gen:            new generation index number
 
 "; 
 
@@ -9835,7 +9837,7 @@ Note:
 
 Description:
 
-    evolve one step
+    evolve steps  generation
 
 Usage:
 
@@ -9847,15 +9849,20 @@ Usage:
 
 Description:
 
-    evolve till 'end' generation subject to given operators
+    evolve all replicates of the population, subject to operators
 
 Details:
 
-    'operators' will be applied in the order of:all pre-mating
-    opertorsduring-mating operators called by the mating scheme at the
-    birth of each offspringall post-mating operatorsIf any pre or
-    post-mating opertor fails to apply, that replicate will be
-    stopped. This is exactly how terminators work.
+    Evolve to the end  generation unless an operator (terminator)
+    stops it earlier.
+    ops  will be applied in the order of:
+    * all pre-mating opertors
+    * during-mating operators called by the mating scheme at the birth
+    of each offspring
+    * all post-mating operators If any pre- or post-mating operator
+    fails to apply, that replicate will be stopped. The behavior of
+    the simulator will be determined by flags applyOpToStoppedReps
+    and stopIfOneRepStops . This is exactly how terminators work.
 
 Usage:
 
@@ -9863,118 +9870,44 @@ Usage:
 
 Arguments:
 
-    ops:            operators that will be applied at all generations.
-                    Of course they might not be active at all
-                    generations.
+    ops:            operators that will be applied at each generation,
+                    if they are active at that generation. (Determined
+                    by the begin , end , step  and at  parameters of
+                    the operator.)
     preOps:         operators that will be applied before evolution.
-                    evolve() function will *not* check if they are
+                    evolve()  function will not  check if they are
                     active.
-    postOps:        operators that will be applied after the last
-                    generation, or after a replicate is terminated.
-    end:            ending generation. Should be -1 (no ending
-                    generation) or a number greater than current
-                    generation number. When end=-1, simulator can only
-                    be stopped by terminators.
+    postOps:        operators that will be applied after evolution
+    end:            ending generation. Default to -1 . In this case,
+                    there is no ending generation and a simulator will
+                    only be ended by a terminator. Otherwise, it
+                    should be a number greater than current generation
+                    number.
 
 Note:
 
-    When end=-1, you can not specify negative generation parameters to
-    operators. How would an operator know which genertion is the -1
+    When end = -1 , you can not specify negative generation parameters
+    to operators. How would an operator know which genertion is the -1
     genertion if no ending genertion is given?
 
 "; 
 
-%feature("docstring") simuPOP::simulator::apply "
+%ignore simuPOP::simulator::apply(const vectorop ops, bool dryrun=false);
 
-Description:
+%ignore simuPOP::simulator::setStopIfOneRepStop(bool on=true);
 
-    apply some ops, geneartion of population does not change No mating
-    is allowed.
+%ignore simuPOP::simulator::stopIfOneRepStop();
 
-Details:
+%ignore simuPOP::simulator::setApplyOpToStoppedReps(bool on=true);
 
-    pre-mating oeprators are applied before post-mating operators. no
-    during-mating operators are allowed.
-
-Usage:
-
-    x.apply(ops, dryrun=False)
-
-Arguments:
-
-    ops:            operators that will be applied at all generations.
-                    Of course they might not be active at all
-                    generations.
-
-"; 
-
-%feature("docstring") simuPOP::simulator::setStopIfOneRepStop "
-
-Description:
-
-    stop if one replicate stops or not
-
-Usage:
-
-    x.setStopIfOneRepStop(on=True)
-
-Arguments:
-
-    on:             turn on or off stopIfOneRepStop if set, the
-                    simulator will stop evolution if one replicate
-                    stops. This is sometimes useful.
-
-"; 
-
-%feature("docstring") simuPOP::simulator::stopIfOneRepStop "
-
-Description:
-
-    simuPOP::simulator::stopIfOneRepStop
-
-Usage:
-
-    x.stopIfOneRepStop()
-
-"; 
-
-%feature("docstring") simuPOP::simulator::setApplyOpToStoppedReps "
-
-Description:
-
-    apply ops even if rep stops
-
-Usage:
-
-    x.setApplyOpToStoppedReps(on=True)
-
-Arguments:
-
-    on:             turn on or off applyOpToStoppedReps flag if set,
-                    the simulator will continue to apply operators to
-                    all stopped repicates until all replicates are
-                    marked stopped. This is sometimes useful.
-
-"; 
-
-%feature("docstring") simuPOP::simulator::applyOpToStoppedReps "
-
-Description:
-
-    simuPOP::simulator::applyOpToStoppedReps
-
-Usage:
-
-    x.applyOpToStoppedReps()
-
-"; 
+%ignore simuPOP::simulator::applyOpToStoppedReps();
 
 %feature("docstring") simuPOP::simulator::vars "
 
 Description:
 
-    get simulator namespace, if rep > 0 is given, return replicate rep
-    namespace
+    get simulator namespace. If rep > 0  is given, return the
+    namespace of replicate rep
 
 Usage:
 
@@ -9986,7 +9919,14 @@ Usage:
 
 Description:
 
-    save simulator in 'text','bin' or 'xml' format
+    save simulator in 'txt' , 'bin'  or 'xml'  format
+
+Details:
+
+    The default format is 'txt'  but the output is not supposed to be
+    read. 'bin'  has smaller size and should be used for large
+    populations. 'xml'  format is most verbose and should be used when
+    you would like to convert  simuPOP  populations to other formats.
 
 Usage:
 
@@ -9994,14 +9934,10 @@ Usage:
 
 Arguments:
 
-    filename:       save to filename
-    format:         format to save. Can be one of 'text', 'bin', 'xml'
-                    The default format is 'text' but the output is not
-                    suppored to be read. 'bin' has smaller size and
-                    should be used for large populations. 'xml' format
-                    is most readable and should be used when you would
-                    like to convert  simuPOP populations to other
-                    formats.
+    filename:       filename to save the simulator. Default to simu .
+    format:         format to save. Default to auto . I.e., determine
+                    the format by file extensions.
+    compress:       whether or not compress the file in 'gzip'  format
 
 "; 
 
@@ -10011,7 +9947,8 @@ Arguments:
 
 Description:
 
-    simuPOP::simulator::__repr__
+    used by Python print function to print out the general information
+    of the simulator
 
 Usage:
 
@@ -10099,7 +10036,8 @@ Usage:
 
 Description:
 
-    simuPOP::smmMutator::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -10159,7 +10097,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -10171,7 +10109,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -10184,7 +10122,8 @@ Usage:
 
 Description:
 
-    simuPOP::splitSubPop::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -10241,7 +10180,8 @@ Usage:
 
 Description:
 
-    simuPOP::spread::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -10253,7 +10193,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -10414,7 +10354,8 @@ Usage:
 
 Description:
 
-    simuPOP::stat::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -11457,7 +11398,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -11494,7 +11435,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -11506,7 +11447,8 @@ Usage:
 
 Description:
 
-    simuPOP::terminateIf::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -11576,7 +11518,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an operator
 
 Usage:
 
@@ -11645,7 +11587,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -11658,7 +11600,8 @@ Usage:
 
 Description:
 
-    simuPOP::ticToc::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -11715,7 +11658,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -11728,7 +11671,8 @@ Usage:
 
 Description:
 
-    simuPOP::turnOffDebugOp::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
@@ -11785,7 +11729,7 @@ Usage:
 
 Description:
 
-    apply to one population, does not check if the oeprator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -11798,7 +11742,8 @@ Usage:
 
 Description:
 
-    simuPOP::turnOnDebugOp::__repr__
+    used by Python print function to print out the general information
+    of the operator
 
 Usage:
 
