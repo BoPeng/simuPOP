@@ -821,8 +821,6 @@ class TestPopulation(unittest.TestCase):
             pop.setIndInfo(range(100, 110), 'fitness')
         # .xml format may not be available (under mac)
         for file in ['a.txt', 'a.bin', 'a.xml', 'a.txt.gz', 'a.bin.gz', 'a.xml.gz']:
-            if (file == 'a.xml' or file == 'a.xml.gz') and not supportXML():
-                continue
             pop.savePopulation(file, compress=False)
             assert os.path.isfile(file), "File %s does not exist" % file
             pop1 = LoadPopulation(file)
