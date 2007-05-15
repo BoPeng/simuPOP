@@ -72,6 +72,7 @@ namespace simuPOP
 	{
 		UINT id1 = pop.infoIdx(infoField(0));
 		UINT id2 = pop.infoIdx(infoField(1));
+		cout << "Offspring " << offspring->infoSize() << endl;
 
 		if(dad == NULL)
 			offspring->setInfo(0, id1);

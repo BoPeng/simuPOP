@@ -145,6 +145,10 @@ namespace simuPOP
 		const vectorop& postOps,
 		int end, bool dryrun)
 	{
+		// it is possible that a user changes the internal population's
+		// genotype strucutre. It is therefore necessary to check if
+		// all populations have the same structure.
+
 		DBG_DO(DBG_SIMULATOR, cout << "Starting generation: " << gen()
 			<< " with ending generation " << end << endl);
 
@@ -228,7 +232,7 @@ namespace simuPOP
 
 				if (stop[m_curRep])
 				{
-					/// if apply to stopped reps, do it.
+					// if apply to stopped reps, do it.
 					if( !m_applyOpToStoppedReps)
 						continue;
 				}
