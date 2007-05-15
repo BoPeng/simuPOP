@@ -151,6 +151,14 @@ class TestSimulator(unittest.TestCase):
         # always point to the enxt gen
         self.assertEqual(simu.gen(), 11 )
 
+    def testIntegrity(self):
+        'Testing checking of simulator inegrity'
+        simu = simulator(population(1), noMating())
+        simu.population(0).addInfoField('something')
+        # one can not change the genotype structure of the populations
+        # in a simulator
+        self.assertRaises(exceptions.ValueError, simu.evolve, ops=[])
+
     def testMultiRep(self):
         'Testing multi-replicates related functions'
         simu = simulator(population(1), noMating(), rep=3 )

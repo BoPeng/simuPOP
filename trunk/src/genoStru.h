@@ -609,17 +609,10 @@ namespace simuPOP
 			\note Should only be called by population::requestInfoField.
 			  Right now, do not allow dynamic addition of these fields.
 			*/
-			void struAddInfoField(const string& field)
-			{
-				vectorstr& fields = s_genoStruRepository[m_genoStruIdx].m_infoFields;
-				fields.push_back(field);
-			}
+			GenoStructure & struAddInfoFields(const vectorstr& fields);
 
 			/// CPPONLY should should only be called from population
-			void struSetInfoFields(const vectorstr& fields)
-			{
-				s_genoStruRepository[m_genoStruIdx].m_infoFields = fields;
-			}
+			GenoStructure & struSetInfoFields(const vectorstr& fields);
 
 			/// CPPONLY swap a geno structure with the current one
 			void swap(GenoStruTrait& rhs)

@@ -148,6 +148,21 @@ namespace simuPOP
 		// it is possible that a user changes the internal population's
 		// genotype strucutre. It is therefore necessary to check if
 		// all populations have the same structure.
+#ifndef OPTIMIZED		
+		for (size_t i = 0; i < m_numRep; ++i)
+		{
+			DBG_FAILIF(genoStruIdx() != m_ptrRep[i]->genoStruIdx(),
+				ValueError, "Genotypic structure of one of the \n"
+					"replicates does not agree with the simulator. It is likely that you\n"
+					"have changed the genotypic structure of a population obtained from \n"
+					"simu::population(rep). This is not allowed.\n");
+		}
+		DBG_FAILIF(genoStruIdx() != m_scratchPop->genoStruIdx(),
+			ValueError, "Genotypic structure of one of the \n"
+				"replicates does not agree with the simulator. It is likely that you\n"
+				"have changed the genotypic structure of a population obtained from \n"
+				"simu::population(rep). This is not allowed.\n");
+#endif
 
 		DBG_DO(DBG_SIMULATOR, cout << "Starting generation: " << gen()
 			<< " with ending generation " << end << endl);
