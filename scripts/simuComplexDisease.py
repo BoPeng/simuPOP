@@ -864,7 +864,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     # that simulation can run a bit faster without them. 
     pop = population(subPop=popSizeFunc(0), ploidy=2,
         loci = loci, maxAllele = maxAle, lociPos = lociPos,
-        infoFields = ['fitness'])
+        infoFields = ['fitness', 'father_idx', 'mother_idx'])
     # save DSL info, some operators will use it.
     pop.dvars().DSL = DSL
     pop.dvars().numLoci = numLoci
@@ -894,7 +894,6 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     #
     # save saveGen-1 ancestral generations
     simu.population(0).setAncestralDepth(savedGen-1)
-    simu.population(0).addInfoFields(['father_idx', 'mother_idx'])
     operators.append(parentsTagger())
     simu.setMatingScheme(
         randomMating(
