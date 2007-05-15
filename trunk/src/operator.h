@@ -50,59 +50,53 @@ using std::string;
 namespace simuPOP
 {
 
-	/** \brief base class of all classes that manipulate populations.
+    /// base class of all classes that manipulate populations
+	/** 
+	Operators are object that act on populations. They can be
+    applied	to populations directly using the function form of
+    operators, but they are usually managed and applied by a simulator. \n
 
-	Operators are object that act on populations. They can be applied
-	to populations directly using apply() member function, but most of
-	the time they are managed and applied by a simulator.
-
-	Operators can be applied at different stage(s) of a life cycle. More
-	specifically, at pre-, duing- or post mating stage(s). Note that it
-	is possible for an operator to apply multiple times in a life cycle.
-	For example, an save-to-file operator might be applied before and
-	after mating to trace parental information.
+	Operators can be applied at different stages of the life cycle of
+    a generation. More specifically, operators can be applied at \em pre-,
+    \em during-, \em post-mating, or a combination of these stages. Applicable stages
+    are usually set by default but you can change it by setting
+    <tt>stage=(PreMating|PostMating|DuringMating|PrePostMating)</tt> parameter.
+    Note that some operators ignore \c stage parameter because they only
+    work at one stage. \n
 
 	Operators do not have to be applied at all generations. You can specify
-	starting genertion, ending generation, gaps between applicable generations,
+	starting generation, ending generation, gaps between applicable generations,
 	or even specific generations to apply. For example, you might want to
-	start applying migrations after certain heat-up generation; or you want
-	to calculate every 10 generations.
+	start applying migrations after certain burn-in generations; or you want
+	to calculate certain statistics only sparsely. \n
 
 	Operators can have outputs. Output can be standard output (terminal)
-	or a file, which can be constant, or change with generation or replicate.
-	Different operators can append to the same file to form table-like
-	outputs.
+	or a file, which can vary from replicate to replicate, and/or from
+    generation to generation. Output from different operators can be
+    accumulated to the same file to form table-like	outputs. \n
 
-	filename can have the following format:
+    Operators are applied to every replicate of a simulator by default.
+    However, you can apply operators to one or a group of
+	replicates using parameter \c rep or \c grp. \n
+    
+	Filenames can have the following format:
 
-	1. 'filename' this file will be closed after each use. I.e., if several
-	operators output to the same file, only the last one will succeed.
+	\li \c 'filename' this file will be overwritten each time. If two operators
+      output to the same file, only the last one will succeed;
 
-	2. '>filename' the same as 'filaname'
+	\li \c '>filename' the same as \c 'filename';
 
-	3. '>>filename' The file will be created at the beginning of evolution
-	(simulator::evolve) and close at the end. Several operators can
-	output to this file to form a table.
+	\li <tt>'>>filename'</tt> the file will be created at the beginning of evolution
+	  (\c simulator::evolve) and closed at the end. Output from several operators
+      is allowed;
 
-	4. '>>>filename' The same as '>>filename' except that the file will not
-	be cleared at the beginning of evolution if it is not empty.
+	\li <tt>'>>>filename'</tt> the same as <tt>'>>filename'</tt> except that the file will not
+	  be cleared at the beginning of evolution if it is not empty;
 
-	5. '>' out put to standard output.
+	\li \c '>' standard output (terminal);
 
-	6. '' supress output.
-
-	Most operators are applied to every replicate of a simulator during
-	evolution. However, you can apply opertors to one or a group of
-	replicates only. For example, you can initialize different replicates
-	with different initial values and then start evolution. c.f.
-	simulator::setGroup .
-
-	Please refer to help(baseOperator) and help(baseOperator.__init__) for
-	detailed information about member functions and parameters.
-
-	@author Bo Peng
+	\li \c '' supress output.
 	*/
-
 	class Operator
 	{
 		public:
@@ -110,26 +104,29 @@ namespace simuPOP
 			/** @name constructor and destructor */
 			//@{
 
-			/// create an operator (this function is not supposed to be called directly)
+			/// common interface for all operators (this base operator does nothing by itself.)
 			/**
-			\param output a string of output filename. Different operators will have
-			   different default output (most commonly '>' or '')
-			\param outputExpr an expression that determines output filename dynamically.
-			\param begin start generation. default to 1. negative number is interpreted
-			as endGeneration + begin
-			\param end stop applying after this generation. negative number is allowed
-			\param step number of generations between active generations. default to 1
-			\param at an array of active generations. If given, stage, begin, end,
-			step will be ignored.
-			\param rep applicable replicate. It can be replicate number 0 ~ (number of replicate -1),
-			REP_ALL (all replicates) or REP_LAST (only to the last replicate).
-			Usually default to REP_ALL.
-			\param grp applicable group, default to GRP_ALL.  A group number for each
-			replicate is set by simulator.__init__ or simulator::setGroup(). grp, if not
-			GRP_ALL, will be compared to the group number of this replicate before applying.
 
-			DEVONLY{ DO NOT SET DEFAULT PARAMETE. This will force all
-			derived classes to pay attention to parameter number. }
+			\param begin the starting generation. Default to \c 0. Negative numbers are allowed.
+			\param end stop applying after this generation. Negative numbers are allowed.
+			\param step the number of generations between active generations. Default to \c 1.
+			\param at an array of active generations. If given, \c stage, \c begin, \c end,
+			  and \c step will be ignored.
+			\param rep applicable replicates. It can be a valid replicate number, \c REP_ALL
+              (all replicates, default), or \c REP_LAST (only the last replicate). \c REP_LAST
+              is useful in adding newlines to a table output.
+			\param grp applicable group. Default to \c GRP_ALL.  A group number for each
+			  replicate is set by <tt>simulator.__init__</tt> or <tt>simulator::setGroup()</tt>.
+			\param output a string of the output filename. Different operators will have
+			  different default \c output (most commonly \c '>' or \c ''). 
+			\param outputExpr an expression that determines the output filename dynamically. This
+              expression will be evaluated against a population's local namespace each time when
+              an output filename is required. For example, <tt> "'>>out%s_%s.xml' % (gen, rep)" </tt>
+              will output to <tt> >>>out1_1.xml </tt> for replicate \c 1 at generation \c 1.
+            
+            \note Negative generation numbers are allowed for \c begin, \c end and \c at. They are
+              intepretted as <tt>endGen + gen + 1</tt>. For example, <tt>begin = -2</tt> in
+              <tt>simu.evolve(..., end=20)</tt> starts at generation \c 19.
 			*/
 			Operator(string output, string outputExpr, int stage,
 				int begin, int end, int step, vectorl at,
@@ -149,7 +146,7 @@ namespace simuPOP
 			{
 			}
 
-			/// this function is very important
+			/// deep copy of an operator
 			virtual Operator* clone() const
 			{
 				return new Operator(*this);
@@ -157,17 +154,15 @@ namespace simuPOP
 
 			//@}
 
-			/** @name  applicable generations (also judge from rep and group.
-			  use of parameter start, end, every, at, group, rep
+			/** @name  applicable generations (also judge from rep and group). use of parameter start, end, every, at, group, rep
 			*/
 			//@{
 
-			/// judge if this operator is active
-			/** Judge if this operator is active under the conditions like current
-			 replicate, group number of current replicate, current generation.
-			ending generation etc.
-
-			\note will be called by simulator before applying.
+			/// CPPONLY determine if this operator is active
+			/**
+            Determine if this operator is active under the conditions such as the current
+            replicate, group number of the current replicate, current generation, ending generation etc.
+			\note This function will be called by simulators before applying.
 			*/
 			bool isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly =false);
 
@@ -177,11 +172,11 @@ namespace simuPOP
 				return m_grp;
 			}
 
-			/// set applicable group.
-			/** GRP_ALL is the default value (applicable to
-			all groups. )
-				  Otherwise, the operator is applicable to ONE group of replicates.
-				  groups can be set in simulator::setGroup()
+			/// set applicable group
+			/**
+			Default to \c GRP_ALL (applicable to all groups).
+			Otherwise, the operator is applicable to only \em one group of replicates.
+			Groups can be set in \c simulator::setGroup().
 			*/
 			void setApplicableGroup(int grp=GRP_ALL)
 			{
@@ -194,13 +189,13 @@ namespace simuPOP
 				return m_rep;
 			}
 
-			/// set applicable replicate.
+			/// set applicable replicate
 			void setApplicableReplicate(int rep)
 			{
 				m_rep = rep;
 			}
 
-			/// set applicable generation parrameters: stage, begin, end, step and at
+			/// set applicable generation parameters: \c begin, \c end, \c step and \c at
 			void setActiveGenerations(int begin=0, int end=-1, int step=1, vectorl at=vectorl())
 			{
 				m_beginGen = begin;
@@ -210,48 +205,47 @@ namespace simuPOP
 
 				DBG_FAILIF(step<=0, ValueError, "step need to be at least one");
 
-				/// set certain m_flags to speed up using this machanism.
+				// set certain m_flags to speed up using this machanism
 				setFlags();
 			}
 
 			//@}
 
-			/** @name applicable stages
-					pre, during, post-mating methods */
+			/** @name applicable stages	pre, during, post-mating methods */
 			//@{
 
-			/// set m_stage settings. This is usually not usable since
-			/// the m_stage setting are set by default for each Operator.
+			/// set applicable stage. Another way to set \c stage parameter.
 			void setApplicableStage(int stage)
 			{
 				RESETFLAG(m_flags, PreDuringPostMating);
 				SETFLAG(m_flags, stage);
 			}
 
-			/// Can this operator be applied pre-mating?
+			/// set if this operator can be applied \em pre-mating
 			bool canApplyPreMating()
 			{
 				return ISSETFLAG(m_flags, m_flagPreMating);
 			}
 
-			/// Can this operator be applied uring mating?
+			/// set if this operator can be applied \em during-mating
 			bool canApplyDuringMating()
 			{
 				return ISSETFLAG(m_flags, m_flagDuringMating);
 			}
 
-			/// Can this operator be applied post-mating?
+			/// set if this operator can be applied \em post-mating
 			bool canApplyPostMating()
 			{
 				return ISSETFLAG(m_flags, m_flagPostMating);
 			}
 
-			/// can be applied pre or post mating.
+			/// set of this operator can be applied \em pre- or \em post-mating
 			bool canApplyPreOrPostMating()
 			{
 				return ISSETFLAG(m_flags, m_flagPreMating) || ISSETFLAG(m_flags, m_flagPostMating);
 			}
 
+            /// CPPONLY
 			virtual bool isCompatible(const population & pop)
 			{
 #ifdef SIMUMPI
@@ -263,43 +257,43 @@ namespace simuPOP
 #endif
 			}
 
-			///
+			/// determine if the operator can be applied only for haploid population
 			bool haploidOnly()
 			{
 				return ISSETFLAG(m_flags, m_flagHaploid);
 			}
 
-			///
+			/// determine if the operator can be applied only for diploid population
 			bool diploidOnly()
 			{
 				return ISSETFLAG(m_flags, m_flagDiploid);
 			}
 
-			///
+			/// determine if this operator can be used in a MPI module
 			bool MPIReady()
 			{
 				return ISSETFLAG(m_flags, m_flagMPI);
 			}
 
-			///
+			/// CPPONLY set that the operator can be applied only for haploid populations
 			void setHaploidOnly()
 			{
 				SETFLAG(m_flags, m_flagHaploid);
 			}
 
-			///
+			/// CPPONLY set that the operator can be applied only for diploid populations
 			void setDiploidOnly()
 			{
 				SETFLAG(m_flags, m_flagDiploid);
 			}
 
-			///
+			/// CPPONLY set the operator is ready for MPI version
 			void setMPIReady()
 			{
 				SETFLAG(m_flags, m_flagMPI);
 			}
 
-			/// get the number of information fields for this operator
+			/// get the length of information fields for this operator
 			UINT infoSize()
 			{
 				return m_infoFields.size();
@@ -313,9 +307,11 @@ namespace simuPOP
 				return m_infoFields[idx];
 			}
 
-			/// CPPONLY
-			/// if the operator will form genotype of offspring.
-			/// if none of the during mating operator can form offspring, default will be used
+
+			/// CPPONLY if the operator will form genotype of offspring
+			/**
+			If none of the during mating operator can form offspring, default will be used.
+			*/
 			bool formOffGenotype()
 			{
 				return ISSETFLAG(m_flags, m_flagFormOffGenotype);
@@ -330,20 +326,19 @@ namespace simuPOP
 					RESETFLAG(m_flags, m_flagFormOffGenotype);
 			}
 
-			///  providing interface to apply operator before during or after
-			///  mating.
+			/// CPPONLY provide interface to apply operator before during or after mating
 			virtual bool applyWithScratch(population& pop, population& scratch, int stage)
 			{
 				return apply(pop);
 			}
 
-			/// apply to one population, does not check if the oeprator is activated.
+			/// apply to one population. It does not check if the operator is activated.
 			virtual bool apply(population& pop)
 			{
 				throw SystemError("This function Operator::apply() is not supposed to be called.");
 			}
 
-			/// give pop, offspring, pop and mom.
+			/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL)
 			{
@@ -351,30 +346,29 @@ namespace simuPOP
 			}
 
 			//@}
-			/** @name dealing with output
-			  separator, persistant files, $gen etc substitution.
+			/** @name dealing with output separator, persistant files, $gen etc substitution.
 			*/
 			//@{
 
-			/// ostream, if not set during construction.
+			/// set ouput stream, if was not set during construction
 			void setOutput(string output="", string outputExpr="")
 			{
 				m_ostream.setOutput(output, outputExpr);
 			}
 
-			/// get output stream. This function is not exposed to user.
+			/// CPPONLY get output stream. This function is not exposed to user.
 			ostream& getOstream( PyObject* dict=NULL, bool readable=false)
 			{
 				return m_ostream.getOstream( dict, readable);
 			}
 
-			/// close ostream and delete ostream pointer.. if it is a ofstream.
+			/// CPPONLY close output stream and delete output stream pointer, if it is a output stream
 			void closeOstream()
 			{
 				m_ostream.closeOstream();
 			}
 
-			/// CPPONLY, say something about active states
+			/// CPPONLY say something about active states
 			virtual string atRepr()
 			{
 				if( ISSETFLAG(m_flags, m_flagAtAllGen))
@@ -404,6 +398,7 @@ namespace simuPOP
 				return repr;
 			}
 
+            /// used by Python print function to print out the general information of the operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::operator> " ;
@@ -411,7 +406,7 @@ namespace simuPOP
 
 			//@}
 
-			/// if output=">". used internally
+			/// CPPONLY determine if \c output=">". Used internally.
 			bool noOutput(){ return m_ostream.noOutput(); }
 
 		protected:
@@ -468,23 +463,23 @@ namespace simuPOP
 			vectorstr m_infoFields;
 	};
 
-	/* 
-	pause simulation, press any key to stop
+	/**
+	Pause the evolution of a simulator at given generations or at
+	key stroke, using \c stopOnKeyStroke=True option. When a simulator
+	is stopped, user can resume simulation by pressing '/??' or escape
+	to a python shell to examine the status of the simulation.
 	*/
-
 	class pause: public Operator
 	{
 
 		public:
-			/** \brief
-			stop simulation. press q to exit and any other key to continue
-
-			\param prompt if true (default), print prompt message.
-			\param stopOnKeyStroke if true, goon if no key was pressed
+			/// stop simulation. press q to exit and any other key to continue
+            /**
+			\param prompt if true (default), print prompt message. findpause
+			\param stopOnKeyStroke if true, go on if no key was pressed
 			\param exposePop whether or not expose pop to user namespace, only
 			  useful when user choose 's' at pause. Default to true.
 			\param popName by which name the population is exposed? default to 'pop'
-
 			*/
 			pause(bool prompt=true, bool stopOnKeyStroke=false,
 				bool exposePop=true, string popName="pop",
@@ -509,6 +504,7 @@ namespace simuPOP
 			/// simply output some info
 			virtual bool apply(population& pop);
 
+            /// used by Python print function to print out the general information of the pause
 			virtual string __repr__()
 			{
 				return "<simuPOP::pause simulation>" ;
@@ -554,9 +550,7 @@ namespace simuPOP
 				return new noneOp(*this);
 			}
 
-			/// simply output some info
-			///  providing interface to apply operator before during or after
-			///  mating.
+			///  providing interface to apply operator before during or after mating
 			virtual bool applyWithScratch(population& pop, population& scratch, int stage)
 			{
 				return true;

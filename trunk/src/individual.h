@@ -70,40 +70,40 @@ using std::pair;
 
 namespace simuPOP
 {
-	/** \brief Basic individual class
+    /// individuals with genotype, affection status, sex etc.
+	/** 
+	Individuals are the building blocks of populations, each having
+    the following individual information:
+	\li shared genotypic structure information
+    \li genotype
+	\li sex, affection status, subpopulation ID
+    \li optional information fields
 
-	class individual with
-	- genotypic information
-	- shared genotypic structure info (through a GenoStructure pointer)
-	- flags about sex, affected status
-	- an internal info field
-	.
+    Individual genotypes are arranged by locus, chromosome, ploidy, in that order,
+    and can be accessed from a single index. For example, for a diploid individual with
+    two loci on the first chromosome, one locus on the second, its genotype is arranged
+    as <tt> 1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1 </tt> where \c x-y-z represents ploidy \c x
+    chromosome \c y and locus \c z. An allele 2-1-2 can be accessed by
+    allele(4) (by absolute index), allele(2, 1) (by index and ploidy) or allele(1, 1, 0)
+    (by index, ploidy and chromosome).
+    */
+    /*
+    Usage information: (for population class developers)
+	\li for individuals created, you are responsible for setting their genotypic
+	  pointer and genotypic information by using
+	  <tt>setGenoStructure(GenoStructure gs)</tt>.
+	\li \c setSubPopID() and \c subPopID() can be used for any \em temporary purpose.
 
-	other individuals will be derived from this class, adding age info etc.
-
-	\b Note that
-	- individual DOES NOT manage memory. It will use a pointer passed from
-	class population. This causes A LOT of trouble and I have not
-	evaluated how much benefic I get.
-	- operator = uses shallow copy. This is required by
-	sort algorithm since otherwise individuals are
-	non-copiable. However, in population memory management,
-	it is showtimes required that genotypic information within
-	one subPop should go together. This is done by
-	a shollow_copied flag for each individual and for all
-	individuals. population might have to re-arrange
-	individuals to solve this problem.
-	- output of individual can be adjusted by setOutputDelimeter.
-	.
-
-	Usage info: (for population classes developers)
-	- for individuals are created, you are responsible to set its genotypic
-	pointer and genotypic information. This is done by
-	\code
-	setGenoStructure(GenoStructure gs)
-	\endcode
-	- \c setSubPopID() and \c subPopID() can be used for any \e temporary purpose.
-
+	\note 
+	\li \c individual does \em not manage memory. Instead, it use a pointer passed
+      from \c population class. This may cause a \em lot of troubles.
+	\li \c operator= uses shallow copy. This is required by \em sort algorithm since
+      otherwise individuals will not be able to be copied. However, in population
+      memory management, it is sometimes required that genotypic information within
+	  one subpopulation should go together. This is done by using a \c shollow_copied
+      flag for each individual and for all individuals. Population might have to rearrange
+	  individuals to solve this problem.
+	\li Output of \c individual can be adjusted by \c setOutputDelimeter.	
 	*/
 	class individual : public GenoStruTrait
 	{
@@ -122,13 +122,12 @@ namespace simuPOP
 
 			///  @name constructor, destructor etc
 			//@{
-			/// default constructor,
+			/// Individuals are created by populations automatically. Do not call this function directly.
 			individual():m_flags(0), m_subPopID(0)
 			{
 			}
 
-			/// CPPONLY
-			/// copy constructor will be a shallow copied one
+			/// CPPONLY copy constructor will be a shallow copied one
 			individual(const individual& ind) :
 			GenoStruTrait(ind), m_flags(ind.m_flags),
 				m_subPopID(ind.m_subPopID),
@@ -143,33 +142,29 @@ namespace simuPOP
 			{
 			}
 
-			/// CPPONLY
-			/// set genotype pointer (use if Allele*pos can not
-			/// be determined during construction.
+			/// CPPONLY set genotype pointer (use if Allele*pos can not be determined during construction)
 			void setGenoPtr(GenoIterator pos)
 			{
 				m_genoPtr = pos;
 			}
 
-			/// CPPONLY
-			/// set pointer to individual info
+			/// CPPONLY set pointer to individual info
 			void setInfoPtr(InfoIterator pos)
 			{
 				m_infoPtr = pos;
 			}
 
-			/// shallow copy of an object.
+			/// shallow copy of an individual class
 			individual& operator= (const individual& rhs);
 
-			/// Deep copy! Important!
+			/// CPPONLY deep copy of an individual class 
 			individual& copyFrom( const individual& rhs);
 
 			//@}
 			/// @name readonly structural info
 			//@{
 
-			/// pointer to alleles
-			/// CPPONLY
+			/// CPPONLY pointer to alleles
 			GenoIterator genoPtr() const
 			{
 				return m_genoPtr;
@@ -185,22 +180,28 @@ namespace simuPOP
 			/// @name allele, info get/set functions
 			//@{
 
-			/// return genotype as python Numeric.array object
-			/// This is the whole genotype (all)
+			/// return an editable array of genotypes??? of an individual
+			/**
+            This function will give the whole genotype. Although this function is
+            not as easy to use as other functions that access allele proporties,???
+            it is the fastest one since you can read/write genotype directly after
+            you obtain the handle of all genotypes through this function.
+            */
 			PyObject* arrGenotype();
 
-			/// return genotype as python Numeric.array object
-			/// This is the p'th copy of chromosomes
+			/// return only the \c p-th copy of the chromosomes
 			PyObject* arrGenotype(UINT p);
 
-			/// return genotype as python Numeric.array object
-			/// This is the ch chromosome of the pth copy of chromosome
+			/// return only the \c ch-th chromosome of the \c p-th copy???
 			PyObject* arrGenotype(UINT p, UINT ch);
 
+            /// return an editable array of all information fields
 			PyObject* arrInfo();
 
-			/// get allele from an index
-			/** \param index index from the beginning of genotypic info
+			/// return the allele at locus \c index
+			/**
+            \param index absolute index from the beginning of the genotype, ranging from 0
+                to <tt> totNumLoci()*ploidy() </tt>
 			 */
 #ifdef SIMUMPI
 			Allele allele(UINT index) const;
@@ -212,9 +213,11 @@ namespace simuPOP
 			}
 #endif
 
-			/// get allele from an index, on the pth set of chromosome
-			/** \param index index from the begining of the p'th set of chromosomes.
-				\param p on p'th set of chromosomes, default to 0
+			/// return the allele at locus \c index of the \c p-th copy of the chromosomes
+			/**
+            \param index index from the begining of the \c p-th set of the chromosomes, ranging from
+                /c 0 to <tt> totNumLoci() </tt>
+			\param p index of the chromosome sets which will be accessed
 			*/
 #ifdef SIMUMPI
 			Allele allele(UINT index, UINT p) const;
@@ -227,6 +230,13 @@ namespace simuPOP
 			}
 #endif
 
+            /// return the allele at locus \c index of the \c ch-th chromosome of the \c p-th chromosome set
+			/**
+            \param index index from the begining of chromosome \c ch of ploidy \c p,
+                ranging from \c 0 to <tt> numLoci(ch) </tt>.
+			\param p index of the chromosome sets which will be accessed, default to \c 0
+			\param ch index of the chromosome which will be accessed in the \c p-th chromosome set
+			*/
 #ifdef SIMUMPI
 			Allele allele(UINT index, UINT p, UINT ch) const;
 #else
@@ -239,6 +249,7 @@ namespace simuPOP
 			}
 #endif
 
+            /// return the name of \c allele(index)
 			string alleleChar(UINT index) const
 			{
 				CHECKRANGEGENOSIZE(index);
@@ -246,9 +257,10 @@ namespace simuPOP
 				return this->alleleName(allele(index));
 			}
 
-			/// get allele from an index, on the pth set of chromosome
-			/** \param index index from the begining of the p'th set of chromosomes.
-				\param p on p'th set of chromosomes, p=0 by default
+			/// return the name of <tt>allele(index, p)</tt>
+			/**
+			\param index index from the begining of the \c p-th set of chromosomes
+			\param p index of the chromosome sets which will be accessed, default to \c 0
 			*/
 			string alleleChar(UINT index, UINT p) const
 			{
@@ -258,9 +270,11 @@ namespace simuPOP
 				return this->alleleName(allele(index, p));
 			}
 
-			/// get allele from an index, on the pth set of chromosome
-			/** \param index index from the begining of the p'th set of chromosomes.
-				\param p on p'th set of chromosomes, p=0 by default
+			/// return the name of <tt>allele(idx, p, ch)</tt>
+			/**
+			\param index index from the begining of the \c p-th set of the chromosomes???
+			\param p index of the chromosome sets which will be accessed, default to \c 0
+			\param ch index of the chromosome which will be accessed in the \c p-th chromosome set
 			*/
 			string alleleChar(UINT index, UINT p, UINT ch) const
 			{
@@ -271,8 +285,10 @@ namespace simuPOP
 				return this->alleleName(allele(index, p, ch));
 			}
 
-			/// set allele from an index.
-			/** \param index index from the begining of genotype
+			/// Set the allele at locus \c index
+			/**
+			\param allele allele to be set
+			\param index index from the begining of genotype
 			 */
 #ifdef SIMUMPI
 			void setAllele(Allele allele, UINT index);
@@ -284,10 +300,11 @@ namespace simuPOP
 			}
 #endif
 
-			/// set allele from an index.
-			/** \param allele allele to set
+			/// set the allele at locus \c index of the \c p-th copy of the chromosomes
+			/**
+			\param allele allele to be set
 			\param index index from the begining of genotype
-			\param p on p'th set of chromosome, p=0 by default
+			\param index of the chromosome sets which will be accessed, default to \c 0
 			 */
 #ifdef SIMUMPI
 			void setAllele(Allele allele, UINT index, UINT p);
@@ -300,6 +317,13 @@ namespace simuPOP
 			}
 #endif
 
+            /// set the allele at locus \c index of the \c ch-th chromosome in the \c p-th chromosome set
+			/**
+			\param allele allele to be set
+			\param index index from the begining of genotype
+			\param index of the chromosome sets which will be accessed, default to \c 0
+			\param ch index of the chromosome which will be accessed in the \c p-th chromosome set
+			 */
 #ifdef SIMUMPI
 			void setAllele(Allele allele, UINT index, UINT p, UINT ch);
 #else
@@ -312,7 +336,7 @@ namespace simuPOP
 			}
 #endif
 
-			/// sex?
+			/// return the sex of an individual, \c 1 for males and \c 2 for females. However, this is not guranteed so please use \c sexChar().
 			Sex sex() const
 			{
 				if( ISSETFLAG(m_flags, m_flagFemale) )
@@ -321,13 +345,13 @@ namespace simuPOP
 					return Male;
 			}
 
-			/// return M or F for sex, for display purpose
+			/// return the sex of an individual, \c M or \c F
 			char sexChar() const
 			{
 				return sex() == Female ? 'F' : 'M';
 			}
 
-			/// set sex
+			/// set the sex. You should use \c setSex(Male) or \c setSex(Female) instead of \c 1 and \c 2.
 			void setSex(Sex sex)
 			{
 				CHECKRANGESEX(sex);
@@ -338,25 +362,25 @@ namespace simuPOP
 					SETFLAG(m_flags, m_flagFemale);
 			}
 
-			/// affected?
+			/// whether or not an individual is affected
 			bool affected() const
 			{
 				return (ISSETFLAG(m_flags, m_flagAffected));
 			}
 
-			/// unaffected?
+			/// equals to not \c affected()
 			bool unaffected() const
 			{
 				return ! affected();
 			}
 
-			/// return A or U for affected/Unaffected, for display purpose
+			/// return \c A or \c U for affection status
 			char affectedChar() const
 			{
 				return affected() ? 'A' : 'U';
 			}
 
-			/// set affected status
+			/// set affection status
 			void setAffected(bool affected)
 			{
 				if(affected)
@@ -365,19 +389,22 @@ namespace simuPOP
 					RESETFLAG(m_flags, m_flagAffected);
 			}
 
-			/// get subpop id
+			/// return the ID of the subpopulation to which this individual blongs
 			SubPopID subPopID() const
 			{
 				return m_subPopID;
 			}
 
-			/// set subpop if
+			/// set new subpopulation ID, \c pop.rearrangeByIndID will move this individual to that population
 			void setSubPopID(SubPopID id)
 			{
 				m_subPopID = id;
 			}
 
-			/// get info
+			/// get information field \c idx
+			/**
+			\param idx index of the information field
+			*/
 			InfoType info(UINT idx) const
 			{
 				CHECKRANGEINFO(idx);
@@ -385,14 +412,12 @@ namespace simuPOP
 				return m_infoPtr[idx];
 			}
 
-			/// set info
-			void setInfo(InfoType value, UINT idx)
-			{
-				CHECKRANGEINFO(idx);
-				m_infoPtr[idx] = value;
-			}
-
-			/// get info
+			/// get information field \c name
+			/**
+			equivalent to info(infoIdx(name)).
+			
+            \param name name of the information field
+			*/
 			InfoType info(const string& name) const
 			{
 				int idx = infoIdx(name);
@@ -400,8 +425,15 @@ namespace simuPOP
 					"Info name " + name + " is not a valid info field name");
 				return m_infoPtr[idx];
 			}
+			
+			/// set information???
+			void setInfo(InfoType value, UINT idx)
+			{
+				CHECKRANGEINFO(idx);
+				m_infoPtr[idx] = value;
+			}
 
-			/// set info
+			/// set information???
 			void setInfo(InfoType value, const string& name)
 			{
 				int idx = infoIdx(name);
@@ -410,15 +442,13 @@ namespace simuPOP
 				m_infoPtr[idx] = value;
 			}
 
-			/// start of alleles
-			/// CPPONLY
+			/// CPPONLY start of alleles
 			GenoIterator genoBegin() const
 			{
 				return m_genoPtr;
 			}
 
-			/// end of allele
-			/// CPPONLY
+			/// CPPONLY end of allele
 			GenoIterator genoEnd() const
 			{
 #ifdef SIMUMPI
@@ -428,8 +458,7 @@ namespace simuPOP
 #endif
 			}
 
-			/// start of allele of the pth set of chromosome
-			/// CPPONLY
+			/// CPPONLY start of allele of the pth set of chromosome
 			GenoIterator genoBegin(UINT p) const
 			{
 				CHECKRANGEPLOIDY(p);
@@ -440,8 +469,7 @@ namespace simuPOP
 #endif
 			}
 
-			/// end of allele of the pth set of chromosome
-			/// CPPONLY
+			/// CPPONLY end of allele of the pth set of chromosome
 			GenoIterator genoEnd(UINT p) const
 			{
 				CHECKRANGEPLOIDY(p);
@@ -452,8 +480,7 @@ namespace simuPOP
 #endif
 			}
 
-			/// start of allele of the pth set of chromosome, chrom ch
-			/// CPPONLY
+			/// CPPONLY start of allele of the pth set of chromosome, chrom ch
 			GenoIterator genoBegin(UINT p, UINT chrom) const
 			{
 				CHECKRANGEPLOIDY(p);
@@ -469,8 +496,7 @@ namespace simuPOP
 #endif
 			}
 
-			/// end of allele of the pth set of chromosome
-			/// CPPONLY
+			/// CPPONLY end of allele of the pth set of chromosome
 			GenoIterator genoEnd(UINT p, UINT chrom) const
 			{
 				CHECKRANGEPLOIDY(p);
@@ -486,15 +512,13 @@ namespace simuPOP
 #endif
 			}
 
-			/// start of info
-			/// CPPONLY
+			/// CPPONLY start of info
 			InfoIterator infoBegin() const
 			{
 				return m_infoPtr;
 			}
 
-			/// end of info
-			/// CPPONLY
+			/// CPPONLY end of info
 			InfoIterator infoEnd() const
 			{
 				return m_infoPtr + infoSize();
@@ -503,9 +527,9 @@ namespace simuPOP
 			//@}
 			/// @name copy, comparison, swap operations to objects.
 			//@{
-			/// compare if two individuals are the same used in case of serialization etc
-			/** Note that we do not compare info because
-			   m_subPopID is considered temporary.
+			/// compare if two individuals are the same used in case of serialization etc.
+			/**
+            \note We do not compare info because \c m_subPopID is considered temporary.
 			*/
 			bool operator== (const individual& rhs) const;
 
@@ -517,6 +541,7 @@ namespace simuPOP
 
 			// allow compaison of individuals in python
 			// only equal or unequal, no greater or less than
+            /// a python function used to compare the individual class
 			int __cmp__(const individual& rhs) const;
 
 			/// there is usally no >, < comparison for individuals
@@ -528,9 +553,10 @@ namespace simuPOP
 			}
 
 			// allow str(population) to get something better looking
+            /// used by Python print function to print out the general information of the individual
 			string __repr__();
 
-			/// swap individuals
+			/// CPPONLY swap individuals
 			/**
 			The default behavior is swapping all info, but not the
 			position of genotypic info. If swapContent is false,
@@ -549,18 +575,16 @@ namespace simuPOP
 			void swap(individual& ind, bool swapContent=true);
 
 			//@}
-			/// @name misc (only relevant to developers.
+			/// @name misc (only relevant to developers)
 			//@{
 
-			/// is this individual a result of shallow copy?
-			/// CPPONLY
+			/// CPPONLY is this individual a result of shallow copy?
 			bool shallowCopied() const
 			{
 				return ISSETFLAG(m_flags, m_flagShallowCopied);
 			}
 
-			/// set shallowCopied flag.
-			/// CPPONLY
+			/// CPPONLY set shallowCopied flag
 			void setShallowCopied(bool shallowCopied)
 			{
 				if( shallowCopied )
