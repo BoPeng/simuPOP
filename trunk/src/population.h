@@ -125,16 +125,17 @@ namespace simuPOP
 	 *
 	 **/
 	 
-	 /*************Documentation Format*****************
-	 *   /// brief description                         *
-	 *   /**                                           *
-	 *   details                                       *
-	 *   \param                                        *
-	 *   \note                                         *
-	 *   \return                                       *
-	 *   \sa                                           *
-	 *   etc..                                         *
-	 **************************************************/
+	 //************Documentation Format*****************
+	 //   /// brief description
+	 //   /**
+	 //   details
+	 //   \param 
+	 //   \note 
+	 //   \return
+	 //   \sa
+	 //   etc..
+	 //   */
+	 //
 
 	/// a collection of individuals with the same genotypic structure
 	/**

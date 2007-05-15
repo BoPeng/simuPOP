@@ -507,7 +507,6 @@ class Doxy2SWIG:
                     print >> out, '%%ignore %s;\n' % entry['Name']
                 continue          
             print >> out, '%%feature("docstring") %s "\n' % entry['Name']
-            print entry['Name']
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, 'Description:'
                 print >> out, '\n    %s\n' % self.format_text(entry['Description'], 0, 4)
