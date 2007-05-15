@@ -1,5 +1,5 @@
 #LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 269
+\lyxformat 270
 \begin_document
 \begin_header
 \textclass manual
@@ -64,7 +64,7 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "language=Python,xleftmargin=30pt,basicstyle=\ttfamily"
+\listings_params "language=Python,xleftmargin=30pt,basicstyle=\ttfamily,frame=Tb,showspaces=false,showtabs=false"
 \tracking_changes false
 \output_changes false
 \author "Bo Peng" 
@@ -87,7 +87,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Standard
 \begin_inset ERT
@@ -354,6 +354,22 @@ bioinformatics
 \end_deeper
 \begin_layout Standard
 \begin_inset LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+lstlistoflistings
+\end_layout
 
 \end_inset
 
@@ -962,36 +978,8 @@ reference "alg:Import-simuPOP-module"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:Import-simuPOP-module"
-
-\end_inset
-
-Import simuPOP module
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/importSimuPOP.log}
+\begin_inset Include \lstinputlisting{log/importSimuPOP.log}[caption={Import simuPOP module},label={Import-simuPOP-module}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -1012,36 +1000,8 @@ reference "alg:Import-simuPOP-module-add-path"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:Import-simuPOP-module-add-path"
-
-\end_inset
-
-Import locally installed simuPOP module
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/addSysPath.log}
+\begin_inset Include \lstinputlisting{log/addSysPath.log}[caption={Import locally installed simuPOP module},label={Import-simuPOP-module-add-path}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -1107,31 +1067,8 @@ The MPI modules are not provided in the binary distributions since many
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-set options through simuOpt
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/importSimuPOPOpt.log}
+\begin_inset Include \lstinputlisting{log/importSimuPOPOpt.log}[caption={set options through simuOpt}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -1291,36 +1228,8 @@ reference "alg:A-simple-example"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:A-simple-example"
-
-\end_inset
-
-A simple example
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/simpleExample.log}
+\begin_inset Include \lstinputlisting{log/simpleExample.log}[caption={A simple example},label={alg:A-simple-example}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -2262,36 +2171,8 @@ reference "alg:reich0"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:reich0"
-
-\end_inset
-
-Set parameters
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{reich0.py}
+\begin_inset Include \lstinputlisting{reich0.py}[caption={Set parameters},label={alg:reich0}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -2390,8 +2271,19 @@ taggers.
 You can then create a population with:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
 population(size=1000, loci=[1,1], infoFields=['fitness'])
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2525,14 +2417,33 @@ initByFreq
 \end_layout
 
 \begin_layout LyX-Code
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
 # initialize locus 0 (for common disease)
-\newline
+\end_layout
+
+\begin_layout Standard
+
 initByFreq(atLoci=[0], alleleFreq=C_f),
-\newline
+\end_layout
+
+\begin_layout Standard
 
 # initialize locus 1 (for rare disease)
-\newline
+\end_layout
+
+\begin_layout Standard
+
 initByFreq(atLoci=[1], alleleFreq=R_f),
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -2558,8 +2469,19 @@ You will need to read the relative sections of the reference manual to pick
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
 kamMutator(rate=mu, maxAllele=max_allele)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -2570,8 +2492,19 @@ single locus selector that treat 0 as wildtype, and any other allele as
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
 maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0])
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

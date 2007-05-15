@@ -1,5 +1,5 @@
-#LyX 1.4.4svn created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
+\lyxformat 270
 \begin_document
 \begin_header
 \textclass manual
@@ -27,7 +27,14 @@ Last modified \\
 \end_preamble
 \language english
 \inputencoding auto
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \float_placement h
 \paperfontsize default
@@ -35,6 +42,7 @@ Last modified \\
 \papersize default
 \use_geometry false
 \use_amsmath 1
+\use_esint 0
 \cite_engine natbib_authoryear
 \use_bibtopic false
 \paperorientation portrait
@@ -46,8 +54,10 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
+\listings_params "language=Python,xleftmargin=30pt,basicstyle=\ttfamily,frame=Tb,showspaces=false,showtabs=false"
 \tracking_changes false
-\output_changes true
+\output_changes false
+\author "Bo Peng" 
 \end_header
 
 \begin_body
@@ -67,7 +77,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Standard
 \begin_inset ERT
@@ -311,9 +321,9 @@ How to cite simuPOP:
 \begin_layout Quote
 Bo Peng and Marek Kimmel (2005) simuPOP: a forward-time population genetics
  simulation environment.
-
+ 
 \emph on
- bioinformatics
+bioinformatics
 \emph default
 , 
 \series bold
@@ -324,7 +334,7 @@ Bo Peng and Marek Kimmel (2005) simuPOP: a forward-time population genetics
 
 \end_deeper
 \begin_layout Standard
-\begin_inset LatexCommand \tableofcontents{}
+\begin_inset LatexCommand tableofcontents
 
 \end_inset
 
@@ -332,6 +342,18 @@ Bo Peng and Marek Kimmel (2005) simuPOP: a forward-time population genetics
 \end_layout
 
 \begin_layout LyX-Code
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+lstlistoflistings
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -349,7 +371,8 @@ Bo Peng and Marek Kimmel (2005) simuPOP: a forward-time population genetics
 
 \begin_layout Chapter
 Genotypic structure 
-\begin_inset LatexCommand \index{genotypic structure}
+\begin_inset LatexCommand index
+name "genotypic structure"
 
 \end_inset
 
@@ -365,32 +388,35 @@ ploidy, the number of copies of basic number of chromosomes (c.f.
  
 \family typewriter
 ploidy
-\begin_inset LatexCommand \index{GenoStruTrait!ploidy}
+\begin_inset LatexCommand index
+name "GenoStruTrait!ploidy"
 
 \end_inset
 
 (), ploidyName
-\begin_inset LatexCommand \index{GenoStruTrait!ploidyName}
+\begin_inset LatexCommand index
+name "GenoStruTrait!ploidyName"
 
 \end_inset
 
-() 
+()
 \family default
-)
+ )
 \end_layout
 
 \begin_layout Itemize
 number of chromosomes (c.f.
-
+ 
 \family typewriter
- numChrom
-\begin_inset LatexCommand \index{GenoStruTrait!numChrom}
+numChrom
+\begin_inset LatexCommand index
+name "GenoStruTrait!numChrom"
 
 \end_inset
 
-() 
+()
 \family default
-)
+ )
 \end_layout
 
 \begin_layout Itemize
@@ -398,13 +424,14 @@ existence of sex chromosome (c.f.
  
 \family typewriter
 sexChrom
-\begin_inset LatexCommand \index{GenoStruTrait!sexChrom}
+\begin_inset LatexCommand index
+name "GenoStruTrait!sexChrom"
 
 \end_inset
 
-() 
+()
 \family default
-)
+ )
 \end_layout
 
 \begin_layout Itemize
@@ -412,18 +439,20 @@ number of loci on each chromosome (c.f.
  
 \family typewriter
 numLoci
-\begin_inset LatexCommand \index{GenoStruTrait!numLoci}
+\begin_inset LatexCommand index
+name "GenoStruTrait!numLoci"
 
 \end_inset
 
 (ch), totNumLoci
-\begin_inset LatexCommand \index{GenoStruTrait!totNumLoci}
+\begin_inset LatexCommand index
+name "GenoStruTrait!totNumLoci"
 
 \end_inset
 
-() 
+()
 \family default
-)
+ )
 \end_layout
 
 \begin_layout Itemize
@@ -431,18 +460,20 @@ locus location on chromosome (c.f.
  
 \family typewriter
 locusPos
-\begin_inset LatexCommand \index{GenoStruTrait!locusPos}
+\begin_inset LatexCommand index
+name "GenoStruTrait!locusPos"
 
 \end_inset
 
 (loc), arrlociPos
-\begin_inset LatexCommand \index{GenoStruTrait!arrLociPos}
+\begin_inset LatexCommand index
+name "GenoStruTrait!arrLociPos"
 
 \end_inset
 
-() 
+()
 \family default
-)
+ )
 \end_layout
 
 \begin_layout Itemize
@@ -450,13 +481,14 @@ allele names, default to allele number (c.f.
  
 \family typewriter
 alleleName
-\begin_inset LatexCommand \index{GenoStruTrait!alleleName}
+\begin_inset LatexCommand index
+name "GenoStruTrait!alleleName"
 
 \end_inset
 
-(allele) 
+(allele)
 \family default
-)
+ )
 \end_layout
 
 \begin_layout Itemize
@@ -464,13 +496,14 @@ maximum allele state (c.f.
  
 \family typewriter
 maxAllele
-\begin_inset LatexCommand \index{GenoStruTrait!maxAllele}
+\begin_inset LatexCommand index
+name "GenoStruTrait!maxAllele"
 
 \end_inset
 
-() 
+()
 \family default
-)
+ )
 \end_layout
 
 \begin_layout Itemize
@@ -478,18 +511,20 @@ name of the information fields (c.f.
  
 \family typewriter
 infoField
-\begin_inset LatexCommand \index{GenoStruTrait!infoField}
+\begin_inset LatexCommand index
+name "GenoStruTrait!infoField"
 
 \end_inset
 
 (idx), infoFields
-\begin_inset LatexCommand \index{GenoStruTrait!infoFields}
+\begin_inset LatexCommand index
+name "GenoStruTrait!infoFields"
 
 \end_inset
 
-() 
+()
 \family default
-)
+ )
 \end_layout
 
 \begin_layout Standard
@@ -505,7 +540,8 @@ Here information fields refer to the numbers attached to each individual,
 
 \begin_layout Standard
 Example 
-\begin_inset LatexCommand \ref{alg:Genotype-structure-functions}
+\begin_inset LatexCommand ref
+reference "alg:Genotype-structure-functions"
 
 \end_inset
 
@@ -513,27 +549,8 @@ Example
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-\begin_inset LatexCommand \label{alg:Genotype-structure-functions}
-
-\end_inset
-
-Genotype structure functions
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/genoStru.log}
+\begin_inset Include \lstinputlisting{log/genoStru.log}[caption={Genotype structure functions},label={alg:Genotype-structure-functions}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -546,36 +563,17 @@ Individuals in the same population share the same genotypic structure.
 \emph on
 genotypic information can be retrieved from individual, population and simulator
 \emph default
- (consists of populations with the same genotypic structure)
+ (consists of populations with the same genotypic structure) 
 \emph on
- level
+level
 \emph default
 .
  
 \end_layout
 
 \begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Caption
-Calling genotype structure functions from individual or simulator
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/indGenoStru.log}
+\begin_inset Include \lstinputlisting{log/indGenoStru.log}[caption={Calling genotype structure functions from individual or simulator}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -598,26 +596,28 @@ As a matter of fact, all arrays in simuPOP start at index 0
 
 \begin_layout Standard
 Another concern is how we should refer to loci on different chromosomes.
- The solution is that we almost always use
+ The solution is that we almost always use 
 \emph on
- absolute index
-\begin_inset LatexCommand \index{index!absolute}
+absolute index
+\begin_inset LatexCommand index
+name "index!absolute"
 
 \end_inset
 
- 
+
 \emph default
-and seldom 
+ and seldom 
 \emph on
 use relative index
-\begin_inset LatexCommand \index{index!relative}
+\begin_inset LatexCommand index
+name "index!relative"
 
 \end_inset
 
 .
- 
+
 \emph default
-For example, if there are five and seven loci on the first two chromosomes,
+ For example, if there are five and seven loci on the first two chromosomes,
  the absolute indices of loci will be (0,1,2,3,4), (5,6,7,8,9,10,11).
  It may feel confusing at first but this avoids the trouble of having to
  use two numbers (chrom, index) to refer to a locus.
@@ -639,8 +639,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Conversion between absolute and relative indices
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -668,22 +676,22 @@ help(population)
 \family default
  or 
 \family typewriter
-help(individual) 
+help(individual)
 \family default
-or directly
+ or directly 
 \family typewriter
- help(GenoStruTrait).
+help(GenoStruTrait).
 
 \family default
  (You may notice that both 
 \family typewriter
-population 
+population
 \family default
-and 
+ and 
 \family typewriter
-individual 
+individual
 \family default
-classes are inherited from 
+ classes are inherited from 
 \family typewriter
 GenoStruTrait
 \family default
@@ -1217,9 +1225,9 @@ Sex chromosome
 \begin_layout Standard
 If 
 \family typewriter
-sexChrom() 
+sexChrom()
 \family default
-is false, all chromosomes are assumed to be autosomes.
+ is false, all chromosomes are assumed to be autosomes.
  You can also create population/individuals with a sex chromosome.
  Please note that we currently only model the XY chromosomes in diploid
  population.
@@ -1275,27 +1283,27 @@ An individual will by default have genotype, sex and affectedness information,
 Operators may require certain information field to work properly.
  For example, all selectors require field 
 \family typewriter
-fitness 
+fitness
 \family default
-to store evaluated fitness values for each individual.
+ to store evaluated fitness values for each individual.
  
 \family typewriter
 parentTagger
 \family default
  needs 
 \family typewriter
-father_idx 
+father_idx
 \family default
-and 
+ and 
 \family typewriter
-mother_idx 
+mother_idx
 \family default
-to store index of the parents of each individual in the parental generation.
+ to store index of the parents of each individual in the parental generation.
  You do need to add these fields to the 
 \family typewriter
-infoFields 
+infoFields
 \family default
-parameter of the population constructor.
+ parameter of the population constructor.
  If you forget, an error message will appear and tells you to add certain
  field when a field is needed by some operators.
 \end_layout
@@ -1341,7 +1349,8 @@ Population
 
 \family typewriter
 population
-\begin_inset LatexCommand \index{population}
+\begin_inset LatexCommand index
+name "population"
 
 \end_inset
 
@@ -1385,14 +1394,14 @@ Mating can fill any population/subpopulation structure with offsprings.
 \begin_layout Itemize
 A special operator 
 \family typewriter
-pySubset 
+pySubset
 \family default
-can shrink population size.
+ can shrink population size.
  It removes individuals according to their 
 \family typewriter
-subPopID() 
+subPopID()
 \family default
-status.
+ status.
  (Will explain later.) This can be used to model sudden population decrease
  due to natural disaster.
  
@@ -1412,13 +1421,14 @@ Note that migration will most likely change subpopulation size.
 Every population has its own variable space, or 
 \emph on
 local namespaces
-\begin_inset LatexCommand \index{local namespace}
+\begin_inset LatexCommand index
+name "local namespace"
 
 \end_inset
 
- 
+
 \emph default
-in simuPOP term.
+ in simuPOP term.
  This namespace is a Python dictionary that is attached to each population
  and can be exposed to the users through 
 \family typewriter
@@ -1437,9 +1447,9 @@ Stat
 \family default
  set variables like 
 \family typewriter
-alleleFreq[loc] 
+alleleFreq[loc]
 \family default
-and you can access them like 
+ and you can access them like 
 \family typewriter
 pop.dvars().alleleFreq[loc][allele]
 \family default
@@ -1464,20 +1474,20 @@ Population related functions
 The following table lists all population related functions.
  Functions that are prefixed by 
 \family typewriter
-`p.' 
+`p.'
 \family default
-are member functions.
+ are member functions.
  That is to say, they should be called in the form of 
 \family typewriter
 pop.function()
 \family default
  where pop is a population object created by functions like 
 \family typewriter
-population(...) 
+population(...)
 \family default
-or
+ or 
 \family typewriter
- LoadPopulation(...).
+LoadPopulation(...).
 \end_layout
 
 \begin_layout Standard
@@ -1536,7 +1546,8 @@ description
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Creating-a-population}
+\begin_inset LatexCommand ref
+reference "sub:Creating-a-population"
 
 \end_inset
 
@@ -1552,7 +1563,8 @@ description
 
 \family typewriter
 population
-\begin_inset LatexCommand \index{population!population}
+\begin_inset LatexCommand index
+name "population!population"
 
 \end_inset
 
@@ -1566,11 +1578,11 @@ population
 
 \begin_layout Standard
 Create a population.
- Note that this is techniquely the
+ Note that this is techniquely the 
 \family typewriter
- __init__ 
+__init__
 \family default
-function of the population object.
+ function of the population object.
 \end_layout
 
 \end_inset
@@ -1581,7 +1593,8 @@ function of the population object.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Creating-a-population}
+\begin_inset LatexCommand ref
+reference "sub:Creating-a-population"
 
 \end_inset
 
@@ -1597,7 +1610,8 @@ function of the population object.
 
 \family typewriter
 p.clone
-\begin_inset LatexCommand \index{population!clone}
+\begin_inset LatexCommand index
+name "population!clone"
 
 \end_inset
 
@@ -1628,7 +1642,8 @@ pop.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Structure}
+\begin_inset LatexCommand ref
+reference "sub:Population-Structure"
 
 \end_inset
 
@@ -1644,7 +1659,8 @@ pop.
 
 \family typewriter
 p.numSubPop
-\begin_inset LatexCommand \index{population!numSubPop}
+\begin_inset LatexCommand index
+name "population!numSubPop"
 
 \end_inset
 
@@ -1668,7 +1684,8 @@ Number of subpopulations in a population
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Structure}
+\begin_inset LatexCommand ref
+reference "sub:Population-Structure"
 
 \end_inset
 
@@ -1684,7 +1701,8 @@ Number of subpopulations in a population
 
 \family typewriter
 p.subPopSize
-\begin_inset LatexCommand \index{population!subPopSize}
+\begin_inset LatexCommand index
+name "population!subPopSize"
 
 \end_inset
 
@@ -1708,7 +1726,8 @@ Size of a subpopulation
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Structure}
+\begin_inset LatexCommand ref
+reference "sub:Population-Structure"
 
 \end_inset
 
@@ -1724,7 +1743,8 @@ Size of a subpopulation
 
 \family typewriter
 p.subPopSizes
-\begin_inset LatexCommand \index{population!subPopSizes}
+\begin_inset LatexCommand index
+name "population!subPopSizes"
 
 \end_inset
 
@@ -1748,7 +1768,8 @@ Return an array of subpopulation sizes
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Structure}
+\begin_inset LatexCommand ref
+reference "sub:Population-Structure"
 
 \end_inset
 
@@ -1764,7 +1785,8 @@ Return an array of subpopulation sizes
 
 \family typewriter
 p.popSize
-\begin_inset LatexCommand \index{population!popSize}
+\begin_inset LatexCommand index
+name "population!popSize"
 
 \end_inset
 
@@ -1788,7 +1810,8 @@ Total population size
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Structure}
+\begin_inset LatexCommand ref
+reference "sub:Population-Structure"
 
 \end_inset
 
@@ -1804,7 +1827,8 @@ Total population size
 
 \family typewriter
 p.absIndIndex
-\begin_inset LatexCommand \index{population!absIndIndex}
+\begin_inset LatexCommand index
+name "population!absIndIndex"
 
 \end_inset
 
@@ -1828,7 +1852,8 @@ Return the absolute index of an individual in a subpopulation
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Structure}
+\begin_inset LatexCommand ref
+reference "sub:Population-Structure"
 
 \end_inset
 
@@ -1844,7 +1869,8 @@ Return the absolute index of an individual in a subpopulation
 
 \family typewriter
 p.subPopIndPair
-\begin_inset LatexCommand \index{population!subPopIndPair}
+\begin_inset LatexCommand index
+name "population!subPopIndPair"
 
 \end_inset
 
@@ -1868,7 +1894,8 @@ Return the (sp,idx) pair from an absolute index of an individual
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Structure}
+\begin_inset LatexCommand ref
+reference "sub:Population-Structure"
 
 \end_inset
 
@@ -1884,7 +1911,8 @@ Return the (sp,idx) pair from an absolute index of an individual
 
 \family typewriter
 p.subPopBegin
-\begin_inset LatexCommand \index{population!subPopBegin}
+\begin_inset LatexCommand index
+name "population!subPopBegin"
 
 \end_inset
 
@@ -1908,7 +1936,8 @@ Index of the first individual of a subpopulation
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Structure}
+\begin_inset LatexCommand ref
+reference "sub:Population-Structure"
 
 \end_inset
 
@@ -1924,7 +1953,8 @@ Index of the first individual of a subpopulation
 
 \family typewriter
 p.subPopEnd
-\begin_inset LatexCommand \index{population!subPopEnd}
+\begin_inset LatexCommand index
+name "population!subPopEnd"
 
 \end_inset
 
@@ -1948,7 +1978,8 @@ Index of the last individual of a subpopulation + 1
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Individuals}
+\begin_inset LatexCommand ref
+reference "sub:Individuals"
 
 \end_inset
 
@@ -1964,7 +1995,8 @@ Index of the last individual of a subpopulation + 1
 
 \family typewriter
 p.individual
-\begin_inset LatexCommand \index{population!individual}
+\begin_inset LatexCommand index
+name "population!individual"
 
 \end_inset
 
@@ -1988,7 +2020,8 @@ Return an individual
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Individuals}
+\begin_inset LatexCommand ref
+reference "sub:Individuals"
 
 \end_inset
 
@@ -2004,7 +2037,8 @@ Return an individual
 
 \family typewriter
 p.individual
-\begin_inset LatexCommand \index{population!individual}
+\begin_inset LatexCommand index
+name "population!individual"
 
 \end_inset
 
@@ -2028,7 +2062,8 @@ Return an individual from a subpopulation
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Individuals}
+\begin_inset LatexCommand ref
+reference "sub:Individuals"
 
 \end_inset
 
@@ -2044,7 +2079,8 @@ Return an individual from a subpopulation
 
 \family typewriter
 p.individuals
-\begin_inset LatexCommand \index{population!individuals}
+\begin_inset LatexCommand index
+name "population!individuals"
 
 \end_inset
 
@@ -2080,7 +2116,8 @@ Return an iterator that can be used to iterate through all individuals
 
 \family typewriter
 p.individuals
-\begin_inset LatexCommand \index{population!individuals}
+\begin_inset LatexCommand index
+name "population!individuals"
 
 \end_inset
 
@@ -2105,7 +2142,8 @@ Return an iterator that can be used to iterate through all individuals in
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2121,7 +2159,8 @@ Return an iterator that can be used to iterate through all individuals in
 
 \family typewriter
 p.arrGenotype
-\begin_inset LatexCommand \index{population!arrGenotype}
+\begin_inset LatexCommand index
+name "population!arrGenotype"
 
 \end_inset
 
@@ -2147,7 +2186,8 @@ Return an editable array of all genotype of the population.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2163,7 +2203,8 @@ Return an editable array of all genotype of the population.
 
 \family typewriter
 p.arrGenotype
-\begin_inset LatexCommand \index{population!arrGenotype}
+\begin_inset LatexCommand index
+name "population!arrGenotype"
 
 \end_inset
 
@@ -2187,7 +2228,8 @@ Return an editable array of all genotype of a subpopulation.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2203,7 +2245,8 @@ Return an editable array of all genotype of a subpopulation.
 
 \family typewriter
 p.arrInfo
-\begin_inset LatexCommand \index{population!arrIndInfo}
+\begin_inset LatexCommand index
+name "population!arrIndInfo"
 
 \end_inset
 
@@ -2241,7 +2284,8 @@ Return the editable array of all information field of a subpopulation (default
 
 \family typewriter
 p.indInfo
-\begin_inset LatexCommand \index{population!indInfo}
+\begin_inset LatexCommand index
+name "population!indInfo"
 
 \end_inset
 
@@ -2278,7 +2322,8 @@ Get information of all individuals (or in a subpopulation), the information
 
 \family typewriter
 p.setIndInfo
-\begin_inset LatexCommand \index{population!setIndInfo}
+\begin_inset LatexCommand index
+name "population!setIndInfo"
 
 \end_inset
 
@@ -2315,7 +2360,8 @@ Set indifivual information for the given information field (index or name),
 
 \family typewriter
 p.addInfoField
-\begin_inset LatexCommand \index{population!addInfoField}
+\begin_inset LatexCommand index
+name "population!addInfoField"
 
 \end_inset
 
@@ -2352,7 +2398,8 @@ Add a information field, for example, 'penetrance', for the analysis of
 
 \family typewriter
 p.setInfoFields
-\begin_inset LatexCommand \index{population!setInfoFields}
+\begin_inset LatexCommand index
+name "population!setInfoFields"
 
 \end_inset
 
@@ -2377,7 +2424,8 @@ set the information fields of an existing population.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2393,7 +2441,8 @@ set the information fields of an existing population.
 
 \family typewriter
 p.exposeAffectedness
-\begin_inset LatexCommand \index{population!exposeAffectedness}
+\begin_inset LatexCommand index
+name "population!exposeAffectedness"
 
 \end_inset
 
@@ -2417,7 +2466,8 @@ Expose (not editable) the effectedness field of all individuals
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2433,7 +2483,8 @@ Expose (not editable) the effectedness field of all individuals
 
 \family typewriter
 p.setIndSubPopID
-\begin_inset LatexCommand \index{population!setIndInfo}
+\begin_inset LatexCommand index
+name "population!setIndInfo"
 
 \end_inset
 
@@ -2446,9 +2497,9 @@ p.setIndSubPopID
 \begin_inset Text
 
 \begin_layout Standard
-Set info field of all individuals using an array of size
+Set info field of all individuals using an array of size 
 \family typewriter
- popSize()
+popSize()
 \end_layout
 
 \end_inset
@@ -2459,7 +2510,8 @@ Set info field of all individuals using an array of size
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2475,7 +2527,8 @@ Set info field of all individuals using an array of size
 
 \family typewriter
 p.setIndSubPopIDWithID
-\begin_inset LatexCommand \index{population!setIndInfoWithSubPopID}
+\begin_inset LatexCommand index
+name "population!setIndInfoWithSubPopID"
 
 \end_inset
 
@@ -2500,7 +2553,8 @@ Fill info field of all individuals using their respective subpopulation
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2516,7 +2570,8 @@ Fill info field of all individuals using their respective subpopulation
 
 \family typewriter
 p.setSubPopByIndID
-\begin_inset LatexCommand \index{population!setSubPopByIndInfo}
+\begin_inset LatexCommand index
+name "population!setSubPopByIndInfo"
 
 \end_inset
 
@@ -2542,7 +2597,8 @@ Rearrange individual and set subpopulation structure, using the info value
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2558,7 +2614,8 @@ Rearrange individual and set subpopulation structure, using the info value
 
 \family typewriter
 p.splitSubPop
-\begin_inset LatexCommand \index{population!splitSubPop}
+\begin_inset LatexCommand index
+name "population!splitSubPop"
 
 \end_inset
 
@@ -2587,7 +2644,8 @@ which
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2603,7 +2661,8 @@ which
 
 \family typewriter
 p.setSubPopStru
-\begin_inset LatexCommand \index{population!setSubPopStru}
+\begin_inset LatexCommand index
+name "population!setSubPopStru"
 
 \end_inset
 
@@ -2628,7 +2687,8 @@ Set subpopulation structure.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2644,7 +2704,8 @@ Set subpopulation structure.
 
 \family typewriter
 p.splitSubPopByProportion
-\begin_inset LatexCommand \index{population!splitSubPopByProportion}
+\begin_inset LatexCommand index
+name "population!splitSubPopByProportion"
 
 \end_inset
 
@@ -2670,7 +2731,8 @@ Split a subpopulation info subpopulations of given proportions.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2686,7 +2748,8 @@ Split a subpopulation info subpopulations of given proportions.
 
 \family typewriter
 p.removeEmptySubPops
-\begin_inset LatexCommand \index{population!removeEmptySubPops}
+\begin_inset LatexCommand index
+name "population!removeEmptySubPops"
 
 \end_inset
 
@@ -2711,7 +2774,8 @@ Remove empty subpopulations by adjusting subpopulation IDs.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2727,7 +2791,8 @@ Remove empty subpopulations by adjusting subpopulation IDs.
 
 \family typewriter
 p.removeSubPops
-\begin_inset LatexCommand \index{population!removeSubPops}
+\begin_inset LatexCommand index
+name "population!removeSubPops"
 
 \end_inset
 
@@ -2756,7 +2821,8 @@ shiftSubPopID
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2772,7 +2838,8 @@ shiftSubPopID
 
 \family typewriter
 p.removeIndividuals
-\begin_inset LatexCommand \index{population!removeIndividuals}
+\begin_inset LatexCommand index
+name "population!removeIndividuals"
 
 \end_inset
 
@@ -2797,7 +2864,8 @@ Remove individuals.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2813,7 +2881,8 @@ Remove individuals.
 
 \family typewriter
 p.mergeSubPops
-\begin_inset LatexCommand \index{population!mergeSubPops}
+\begin_inset LatexCommand index
+name "population!mergeSubPops"
 
 \end_inset
 
@@ -2837,7 +2906,8 @@ Merge subpopulations, using the first subpopulation ID.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2853,7 +2923,8 @@ Merge subpopulations, using the first subpopulation ID.
 
 \family typewriter
 p.reorderSubPops
-\begin_inset LatexCommand \index{population!reorderSubPops}
+\begin_inset LatexCommand index
+name "population!reorderSubPops"
 
 \end_inset
 
@@ -2878,7 +2949,8 @@ Reorder subpopulations by order or by rank.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2894,7 +2966,8 @@ Reorder subpopulations by order or by rank.
 
 \family typewriter
 p.newPopByIndInfo
-\begin_inset LatexCommand \index{population!newPopByIndInfo}
+\begin_inset LatexCommand index
+name "population!newPopByIndInfo"
 
 \end_inset
 
@@ -2918,7 +2991,8 @@ FIXME: details.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2934,7 +3008,8 @@ FIXME: details.
 
 \family typewriter
 p.removeLoci
-\begin_inset LatexCommand \index{population!removeLoci}
+\begin_inset LatexCommand index
+name "population!removeLoci"
 
 \end_inset
 
@@ -2959,7 +3034,8 @@ Remove some loci from the current population.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -2975,7 +3051,8 @@ Remove some loci from the current population.
 
 \family typewriter
 p.newPopWithPartialLoci
-\begin_inset LatexCommand \index{population!newPopWithPartialLoci}
+\begin_inset LatexCommand index
+name "population!newPopWithPartialLoci"
 
 \end_inset
 
@@ -3000,7 +3077,8 @@ Copy current population to a new one and remove its loci.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand ref
+reference "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -3016,7 +3094,8 @@ Copy current population to a new one and remove its loci.
 
 \family typewriter
 p.pushAndDiscard
-\begin_inset LatexCommand \index{population!pushAndDiscard}
+\begin_inset LatexCommand index
+name "population!pushAndDiscard"
 
 \end_inset
 
@@ -3040,7 +3119,8 @@ p.pushAndDiscard
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Ancestral-populations}
+\begin_inset LatexCommand ref
+reference "sub:Ancestral-populations"
 
 \end_inset
 
@@ -3056,7 +3136,8 @@ p.pushAndDiscard
 
 \family typewriter
 p.ancestralDepth
-\begin_inset LatexCommand \index{population!ancestralDepth}
+\begin_inset LatexCommand index
+name "population!ancestralDepth"
 
 \end_inset
 
@@ -3080,7 +3161,8 @@ Ancestral depth of current population.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Ancestral-populations}
+\begin_inset LatexCommand ref
+reference "sub:Ancestral-populations"
 
 \end_inset
 
@@ -3096,7 +3178,8 @@ Ancestral depth of current population.
 
 \family typewriter
 p.setAncestralDepth
-\begin_inset LatexCommand \index{population!setAncestralDepth}
+\begin_inset LatexCommand index
+name "population!setAncestralDepth"
 
 \end_inset
 
@@ -3121,7 +3204,8 @@ Set ancestral depth.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Ancestral-populations}
+\begin_inset LatexCommand ref
+reference "sub:Ancestral-populations"
 
 \end_inset
 
@@ -3137,7 +3221,8 @@ Set ancestral depth.
 
 \family typewriter
 p.ancestralPop
-\begin_inset LatexCommand \index{population!ancestralPop}
+\begin_inset LatexCommand index
+name "population!ancestralPop"
 
 \end_inset
 
@@ -3162,7 +3247,8 @@ Current ancestral population selected.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Ancestral-populations}
+\begin_inset LatexCommand ref
+reference "sub:Ancestral-populations"
 
 \end_inset
 
@@ -3178,7 +3264,8 @@ Current ancestral population selected.
 
 \family typewriter
 p.useAncestralPop
-\begin_inset LatexCommand \index{population!useAncestralPop}
+\begin_inset LatexCommand index
+name "population!useAncestralPop"
 
 \end_inset
 
@@ -3215,7 +3302,8 @@ Use an ancestral population.
 
 \family typewriter
 p.equalTo
-\begin_inset LatexCommand \index{population!equalTo}
+\begin_inset LatexCommand index
+name "population!equalTo"
 
 \end_inset
 
@@ -3239,7 +3327,8 @@ Compare two populations.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Save-and-Load}
+\begin_inset LatexCommand ref
+reference "sub:Save-and-Load"
 
 \end_inset
 
@@ -3255,7 +3344,8 @@ Compare two populations.
 
 \family typewriter
 p.savePopulation
-\begin_inset LatexCommand \index{population!savePopulation}
+\begin_inset LatexCommand index
+name "population!savePopulation"
 
 \end_inset
 
@@ -3341,7 +3431,8 @@ Save an array of populations to a file.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Save-and-Load}
+\begin_inset LatexCommand ref
+reference "sub:Save-and-Load"
 
 \end_inset
 
@@ -3357,7 +3448,8 @@ Save an array of populations to a file.
 
 \family typewriter
 p.loadPopulation
-\begin_inset LatexCommand \index{population!loadPopulation}
+\begin_inset LatexCommand index
+name "population!loadPopulation"
 
 \end_inset
 
@@ -3386,7 +3478,8 @@ LoadPopulation
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Save-and-Load}
+\begin_inset LatexCommand ref
+reference "sub:Save-and-Load"
 
 \end_inset
 
@@ -3467,7 +3560,8 @@ Load an array of populations from a single file.
 
 \family typewriter
 p.rep
-\begin_inset LatexCommand \index{population!rep}
+\begin_inset LatexCommand index
+name "population!rep"
 
 \end_inset
 
@@ -3503,7 +3597,8 @@ Current replicate in a simulator
 
 \family typewriter
 p.grp
-\begin_inset LatexCommand \index{population!grp}
+\begin_inset LatexCommand index
+name "population!grp"
 
 \end_inset
 
@@ -3539,7 +3634,8 @@ Current group ID in a simulator
 
 \family typewriter
 p.gen
-\begin_inset LatexCommand \index{population!gen}
+\begin_inset LatexCommand index
+name "population!gen"
 
 \end_inset
 
@@ -3563,7 +3659,8 @@ Current generation during evolution.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Variables}
+\begin_inset LatexCommand ref
+reference "sub:Population-Variables"
 
 \end_inset
 
@@ -3579,7 +3676,8 @@ Current generation during evolution.
 
 \family typewriter
 p.vars
-\begin_inset LatexCommand \index{population!vars}
+\begin_inset LatexCommand index
+name "population!vars"
 
 \end_inset
 
@@ -3603,7 +3701,8 @@ Return a dictionary of attached Python namespace.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Variables}
+\begin_inset LatexCommand ref
+reference "sub:Population-Variables"
 
 \end_inset
 
@@ -3619,7 +3718,8 @@ Return a dictionary of attached Python namespace.
 
 \family typewriter
 p.vars
-\begin_inset LatexCommand \index{population!vars}
+\begin_inset LatexCommand index
+name "population!vars"
 
 \end_inset
 
@@ -3643,7 +3743,8 @@ Return the namespace for a subpopulation
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Variables}
+\begin_inset LatexCommand ref
+reference "sub:Population-Variables"
 
 \end_inset
 
@@ -3659,7 +3760,8 @@ Return the namespace for a subpopulation
 
 \family typewriter
 p.dvars
-\begin_inset LatexCommand \index{population!dvars}
+\begin_inset LatexCommand index
+name "population!dvars"
 
 \end_inset
 
@@ -3694,7 +3796,8 @@ pop.dvars().LD.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Variables}
+\begin_inset LatexCommand ref
+reference "sub:Population-Variables"
 
 \end_inset
 
@@ -3710,7 +3813,8 @@ pop.dvars().LD.
 
 \family typewriter
 p.dvars
-\begin_inset LatexCommand \index{population!dvars}
+\begin_inset LatexCommand index
+name "population!dvars"
 
 \end_inset
 
@@ -3736,7 +3840,8 @@ vars(sp)
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Variables}
+\begin_inset LatexCommand ref
+reference "sub:Population-Variables"
 
 \end_inset
 
@@ -3752,7 +3857,8 @@ vars(sp)
 
 \family typewriter
 p.hasVar
-\begin_inset LatexCommand \index{population!hasVar}
+\begin_inset LatexCommand index
+name "population!hasVar"
 
 \end_inset
 
@@ -3776,7 +3882,8 @@ Whether or not a variable exists in the local namespace
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Variables}
+\begin_inset LatexCommand ref
+reference "sub:Population-Variables"
 
 \end_inset
 
@@ -3820,7 +3927,8 @@ useWxPython=False.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Variables}
+\begin_inset LatexCommand ref
+reference "sub:Population-Variables"
 
 \end_inset
 
@@ -3836,7 +3944,8 @@ useWxPython=False.
 
 \family typewriter
 p.evaluate
-\begin_inset LatexCommand \index{population!evaluate}
+\begin_inset LatexCommand index
+name "population!evaluate"
 
 \end_inset
 
@@ -3861,7 +3970,8 @@ Evaluate an expression and return its result.
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset LatexCommand \ref{sub:Population-Variables}
+\begin_inset LatexCommand ref
+reference "sub:Population-Variables"
 
 \end_inset
 
@@ -3877,7 +3987,8 @@ Evaluate an expression and return its result.
 
 \family typewriter
 p.execute
-\begin_inset LatexCommand \index{population!execute}
+\begin_inset LatexCommand index
+name "population!execute"
 
 \end_inset
 
@@ -3904,7 +4015,8 @@ Evaluate a statement (can be multi-line string).
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand \label{sub:Creating-a-population}
+\begin_inset LatexCommand label
+name "sub:Creating-a-population"
 
 \end_inset
 
@@ -3918,13 +4030,13 @@ A population can be created through
 \begin_layout Itemize
 call 
 \family typewriter
-population 
+population
 \family default
-function to create an instance of population from 
+ function to create an instance of population from 
 \family typewriter
-population 
+population
 \family default
-class.
+ class.
 \end_layout
 
 \begin_layout Itemize
@@ -3943,9 +4055,9 @@ LoadFstat
 \begin_layout Itemize
 generated as a subset of an existing population by operators like 
 \family typewriter
-randomSample, caseControlSample 
+randomSample, caseControlSample
 \family default
-or equivalent functions 
+ or equivalent functions 
 \family typewriter
 RandomSample, CaseControlSample
 \family default
@@ -3954,16 +4066,17 @@ RandomSample, CaseControlSample
 \end_layout
 
 \begin_layout Itemize
-Obtained from an existing simulator through
+Obtained from an existing simulator through 
 \family typewriter
- simulator::getPopulation()
+simulator::getPopulation()
 \end_layout
 
 \begin_layout Standard
 Help contents of all functions of population class can be displayed by 
 \family typewriter
 help
-\begin_inset LatexCommand \index{help}
+\begin_inset LatexCommand index
+name "help"
 
 \end_inset
 
@@ -3983,7 +4096,8 @@ __init__
  Therefore, to display parameters of 
 \family typewriter
 population
-\begin_inset LatexCommand \index{population}
+\begin_inset LatexCommand index
+name "population"
 
 \end_inset
 
@@ -3992,10 +4106,19 @@ population
  function, you need to run 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
 
-\family typewriter
+\begin_layout Standard
+
 help(population.__init__)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4005,14 +4128,14 @@ Some notes about the parameters:
 \begin_layout Itemize
 
 \family typewriter
-size, subPop: 
+size, subPop:
 \family default
-size can be ignored if subPop is specified.
+ size can be ignored if subPop is specified.
  If both parameters are provided, 
 \family typewriter
-subPop 
+subPop
 \family default
-should add up to 
+ should add up to 
 \family typewriter
 size
 \family default
@@ -4027,9 +4150,9 @@ loci:
  number of loci on each chromosome.
  The length of parameter 
 \family typewriter
-loci 
+loci
 \family default
-determines number of chromosomes.
+ determines number of chromosomes.
  The last chromosome can be sex chromosome.
  In this case, please specify the maximum number of loci on X and Y.
  I.e., if there are 3 loci on Y chromosme and 5 on X chromosome, use 5.
@@ -4039,9 +4162,9 @@ determines number of chromosomes.
 \begin_layout Itemize
 
 \family typewriter
-sexChrom: 
+sexChrom:
 \family default
-true or false.
+ true or false.
  Diploid population only.
  If true, the last homologous chromosomes will be treated as sex chromosomes.
  (XY for male and XX for female.) If X and Y have different number of loci,
@@ -4058,13 +4181,13 @@ lociPos:
 \family typewriter
 lociPos=[1,2,3]
 \family default
- when
+ when 
 \family typewriter
- loci=[3]
+loci=[3]
 \family default
- or
+ or 
 \family typewriter
- lociPos=[[1,2],[1.5,3,5]]
+lociPos=[[1,2],[1.5,3,5]]
 \family default
  for 
 \family typewriter
@@ -4082,15 +4205,15 @@ loci=[2,3]
 \begin_layout Itemize
 
 \family typewriter
-ancestralDepth: 
+ancestralDepth:
 \family default
-number of most recent ancestral generations to keep during evolution.
+ number of most recent ancestral generations to keep during evolution.
  Default to 0.
- You can set it to a positive number
+ You can set it to a positive number 
 \family typewriter
- m 
+m
 \family default
-to keep the latest 
+ to keep the latest 
 \family typewriter
 m
 \family default
@@ -4127,16 +4250,17 @@ maxAllele
 \family default
  in mutation models, which can be smaller than global 
 \family typewriter
-maxAllele 
+maxAllele
 \family default
-but not larger.
+ but not larger.
  Note that this number is thee number of allele states minus 1 since allele
  number starts from 0.
 \end_layout
 
 \begin_layout Standard
 Example 
-\begin_inset LatexCommand \ref{alg:population-init}
+\begin_inset LatexCommand ref
+reference "alg:population-init"
 
 \end_inset
 
@@ -4149,12 +4273,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{alg:population-init}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "alg:population-init"
 
 \end_inset
 
 Use of population function
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4267,17 +4400,17 @@ Operators are objects that can be applied to populations.
  Usually, an operator is created and passed as a parameter to a simulator.
  When 
 \family typewriter
-simulator::evolve 
+simulator::evolve
 \family default
-(or
+ (or 
 \family typewriter
- step, apply
+step, apply
 \family default
 ) is called, the simulator will call the 
 \family typewriter
-apply() 
+apply()
 \family default
-function of these operators at appropriate times.
+ function of these operators at appropriate times.
  
 \end_layout
 
@@ -4287,12 +4420,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{alg:popAndOp}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "alg:popAndOp"
 
 \end_inset
 
 Population and operators
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4312,14 +4454,15 @@ preview false
 \begin_layout Standard
 For example, operators 
 \family typewriter
-initByFreq, stat 
+initByFreq, stat
 \family default
-and two copies of 
+ and two copies of 
 \family typewriter
 kamMutator
 \family default
  are created in example 
-\begin_inset LatexCommand \ref{alg:popAndOp}
+\begin_inset LatexCommand ref
+reference "alg:popAndOp"
 
 \end_inset
 
@@ -4338,13 +4481,13 @@ kamMutator
 \family default
  to the first replicate and the second 
 \family typewriter
-kamMutator 
+kamMutator
 \family default
-to the second replicate at every generation; apply 
+ to the second replicate at every generation; apply 
 \family typewriter
-stat 
+stat
 \family default
-to count allele frequency and calculate 
+ to count allele frequency and calculate 
 \begin_inset Formula $F_{st}$
 \end_inset
 
@@ -4355,9 +4498,9 @@ to count allele frequency and calculate
 \begin_layout Standard
 You can ignore the specialties of an opertor and call its 
 \family typewriter
-apply() 
+apply()
 \family default
-function directly.
+ function directly.
  For example, you can initialize a population outside a simulator by 
 \end_layout
 
@@ -4378,13 +4521,13 @@ This style of calling is used so often that it deserves some simplification.
  Equivalent functions are defined for most of the operators.
  For example, function 
 \family typewriter
-InitByFreq 
+InitByFreq
 \family default
-is defined for operator 
+ is defined for operator 
 \family typewriter
-initByFreq 
+initByFreq
 \family default
-as follows
+ as follows
 \end_layout
 
 \begin_layout Standard
@@ -4393,8 +4536,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Function InitByFreq
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4505,9 +4656,9 @@ initByFreq
 \begin_layout Standard
 Because 
 \family typewriter
-initByFreq 
+initByFreq
 \family default
-and 
+ and 
 \family typewriter
 dumper
 \family default
@@ -4519,7 +4670,8 @@ dumper
 
 \family typewriter
 initByFreq
-\begin_inset LatexCommand \index{initByFreq}
+\begin_inset LatexCommand index
+name "initByFreq"
 
 \end_inset
 
@@ -4535,7 +4687,8 @@ initByFreq
  
 \family typewriter
 InitByFreq
-\begin_inset LatexCommand \index{function!InitByFreq}
+\begin_inset LatexCommand index
+name "function!InitByFreq"
 
 \end_inset
 
@@ -4548,7 +4701,8 @@ InitByFreq
 
 \family typewriter
 dumper
-\begin_inset LatexCommand \index{dumper}
+\begin_inset LatexCommand index
+name "dumper"
 
 \end_inset
 
@@ -4569,7 +4723,8 @@ dumper
  Its function form is named 
 \family typewriter
 Dump
-\begin_inset LatexCommand \index{function!Dump}
+\begin_inset LatexCommand index
+name "function!Dump"
 
 \end_inset
 
@@ -4578,7 +4733,8 @@ Dump
 
 \begin_layout Standard
 Example 
-\begin_inset LatexCommand \ref{alg:Operator-dumper-and-initByFreq}
+\begin_inset LatexCommand ref
+reference "alg:Operator-dumper-and-initByFreq"
 
 \end_inset
 
@@ -4591,12 +4747,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{alg:Operator-dumper-and-initByFreq}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "alg:Operator-dumper-and-initByFreq"
 
 \end_inset
 
 Operator dumper and initByFreq
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4614,7 +4779,8 @@ preview false
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sub:Population-Structure}
+\begin_inset LatexCommand label
+name "sub:Population-Structure"
 
 \end_inset
 
@@ -4630,7 +4796,8 @@ subpopulation structure can be accessed through the following member functions:
 
 \family typewriter
 pop.popSize
-\begin_inset LatexCommand \index{population!popSize}
+\begin_inset LatexCommand index
+name "population!popSize"
 
 \end_inset
 
@@ -4643,7 +4810,8 @@ pop.popSize
 
 \family typewriter
 pop.numSubPop
-\begin_inset LatexCommand \index{population!numSubPop}
+\begin_inset LatexCommand index
+name "population!numSubPop"
 
 \end_inset
 
@@ -4656,7 +4824,8 @@ pop.numSubPop
 
 \family typewriter
 pop.subPopSize
-\begin_inset LatexCommand \index{population!subPopSize}
+\begin_inset LatexCommand index
+name "population!subPopSize"
 
 \end_inset
 
@@ -4670,13 +4839,14 @@ pop.subPopSize
 
 \family typewriter
 pop.subPopBegin
-\begin_inset LatexCommand \index{population!dubPopBegin}
+\begin_inset LatexCommand index
+name "population!dubPopBegin"
 
 \end_inset
 
-(sp), 
+(sp),
 \family default
-the index of the first individual in subpopulation 
+ the index of the first individual in subpopulation 
 \family typewriter
 sp
 \end_layout
@@ -4685,7 +4855,8 @@ sp
 
 \family typewriter
 pop.subPopEnd
-\begin_inset LatexCommand \index{population!subPopEnd}
+\begin_inset LatexCommand index
+name "population!subPopEnd"
 
 \end_inset
 
@@ -4702,7 +4873,8 @@ sp
 
 \family typewriter
 pop.subPopIndPair
-\begin_inset LatexCommand \index{population!subPopIndPair}
+\begin_inset LatexCommand index
+name "population!subPopIndPair"
 
 \end_inset
 
@@ -4715,7 +4887,8 @@ pop.subPopIndPair
 
 \family typewriter
 pop.absIndIndex
-\begin_inset LatexCommand \index{population!absIndIndex}
+\begin_inset LatexCommand index
+name "population!absIndIndex"
 
 \end_inset
 
@@ -4729,8 +4902,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 population structure functions
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4760,36 +4941,37 @@ info
  For example, function 
 \family typewriter
 rearrangeByIndID
-\begin_inset LatexCommand \index{population!rearrangeByIndInfo}
+\begin_inset LatexCommand index
+name "population!rearrangeByIndInfo"
 
 \end_inset
 
-() 
+()
 \family default
-rearrange individuals in the order of their info values.
- Similar functions are
-\family typewriter
- 
+ rearrange individuals in the order of their info values.
+ Similar functions are 
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 pop.setIndSubPopID
-\begin_inset LatexCommand \index{population!setIndInfo}
+\begin_inset LatexCommand index
+name "population!setIndInfo"
 
 \end_inset
 
-(info), 
+(info),
 \family default
-set individual info using a vector of size of the population
+ set individual info using a vector of size of the population
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 pop.setIndSubPopIDWithID
-\begin_inset LatexCommand \index{population!setIndInfoWithSubPopID}
+\begin_inset LatexCommand index
+name "population!setIndInfoWithSubPopID"
 
 \end_inset
 
@@ -4802,7 +4984,8 @@ pop.setIndSubPopIDWithID
 
 \family typewriter
 pop.setSubPopByIndID
-\begin_inset LatexCommand \index{population!setSubPopByIndInfo}
+\begin_inset LatexCommand index
+name "population!setSubPopByIndInfo"
 
 \end_inset
 
@@ -4816,15 +4999,14 @@ pop.setSubPopByIndID
 
 \family typewriter
 pop.removeEmptySubPops
-\begin_inset LatexCommand \index{population!removeEmptySubPops}
+\begin_inset LatexCommand index
+name "population!removeEmptySubPops"
 
 \end_inset
 
 ()
 \family default
 , remove empty subpopulations.
-
-\family typewriter
  
 \end_layout
 
@@ -4832,20 +5014,22 @@ pop.removeEmptySubPops
 
 \family typewriter
 pop.removeSubPops
-\begin_inset LatexCommand \index{population!removeSubPops}
+\begin_inset LatexCommand index
+name "population!removeSubPops"
 
 \end_inset
 
-(subPops), 
+(subPops),
 \family default
-remove subpopulation
+ remove subpopulation
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 pop.reorderSubPops
-\begin_inset LatexCommand \index{population!reorderSubPops}
+\begin_inset LatexCommand index
+name "population!reorderSubPops"
 
 \end_inset
 
@@ -4858,7 +5042,8 @@ pop.reorderSubPops
 
 \family typewriter
 pop.newPopByIndID
-\begin_inset LatexCommand \index{population!newPopByIndInfo}
+\begin_inset LatexCommand index
+name "population!newPopByIndInfo"
 
 \end_inset
 
@@ -4869,7 +5054,8 @@ pop.newPopByIndID
 
 \family typewriter
 pop.removeLoci
-\begin_inset LatexCommand \index{population!removeLoci}
+\begin_inset LatexCommand index
+name "population!removeLoci"
 
 \end_inset
 
@@ -4882,26 +5068,28 @@ pop.removeLoci
 
 \family typewriter
 pop.newPopWithPartialLoci
-\begin_inset LatexCommand \index{population!newPopWithPartialLoci}
+\begin_inset LatexCommand index
+name "population!newPopWithPartialLoci"
 
 \end_inset
 
-(remove=[], keep=[]), 
+(remove=[], keep=[]),
 \family default
-return a new reduced population
+ return a new reduced population
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 pop.splitSubPop
-\begin_inset LatexCommand \index{population!splitSubPop}
+\begin_inset LatexCommand index
+name "population!splitSubPop"
 
 \end_inset
 
-(which, subPopSizes, subPopID), 
+(which, subPopSizes, subPopID),
 \family default
-split subpopulation 
+ split subpopulation 
 \family typewriter
 which
 \family default
@@ -4912,27 +5100,29 @@ which
 
 \family typewriter
 pop.spliSubPopByProportion
-\begin_inset LatexCommand \index{population!spliSubPopByProportion}
+\begin_inset LatexCommand index
+name "population!spliSubPopByProportion"
 
 \end_inset
 
-(which, proportions, subPopID), 
+(which, proportions, subPopID),
 \family default
-use proportion
+ use proportion
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 pop.mergeSubPop
-\begin_inset LatexCommand \index{population!mergeSubPop}
+\begin_inset LatexCommand index
+name "population!mergeSubPop"
 
 \end_inset
 
 (subPops).
- 
+
 \family default
-merge subpopulations
+ merge subpopulations
 \end_layout
 
 \begin_layout Standard
@@ -4947,15 +5137,16 @@ These functions may look useful and appealing but you will almost never
 
 \begin_layout Standard
 Example 
-\begin_inset LatexCommand \ref{alg:population-structure-functions}
+\begin_inset LatexCommand ref
+reference "alg:population-structure-functions"
 
 \end_inset
 
  demonostrate the use of functions 
 \family typewriter
-setIndSubPopID, setSubPopByIndID 
+setIndSubPopID, setSubPopByIndID
 \family default
-and 
+ and 
 \family typewriter
 removeLoci.
 \end_layout
@@ -4966,12 +5157,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{alg:population-structure-functions}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "alg:population-structure-functions"
 
 \end_inset
 
 population structure functions
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4989,7 +5189,8 @@ preview false
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sub:Individuals}
+\begin_inset LatexCommand label
+name "sub:Individuals"
 
 \end_inset
 
@@ -5000,7 +5201,8 @@ Individuals
 You can access individuals of a population through 
 \family typewriter
 individual
-\begin_inset LatexCommand \index{population!individual}
+\begin_inset LatexCommand index
+name "population!individual"
 
 \end_inset
 
@@ -5016,11 +5218,11 @@ subPop,
 \begin_layout Itemize
 
 \family typewriter
-individual(ind) 
+individual(ind)
 \family default
-returns the
+ returns the 
 \family typewriter
- ind
+ind
 \family default
 'th individual (absolute index) of the whole population
 \end_layout
@@ -5028,9 +5230,9 @@ returns the
 \begin_layout Itemize
 
 \family typewriter
-individual(ind, subPop) 
+individual(ind, subPop)
 \family default
-returns the 
+ returns the 
 \family typewriter
 ind
 \family default
@@ -5044,9 +5246,9 @@ subPop
 \begin_layout Itemize
 
 \family typewriter
-individuals(), individuals(subPop): 
+individuals(), individuals(subPop):
 \family default
-returns an iterator that can be used to iterate through all individuals.
+ returns an iterator that can be used to iterate through all individuals.
 \end_layout
 
 \begin_layout Standard
@@ -5084,9 +5286,9 @@ for i in range(pop.popSize()):
 \begin_layout Standard
 The returned 
 \family typewriter
-individual 
+individual
 \family default
-object also has its own member functions.
+ object also has its own member functions.
  You can retrieve genotypic information of an individual through the same
  set of functions.
  You can also get/set genotype of an individual.
@@ -5100,8 +5302,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Individual member functions
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5192,7 +5402,8 @@ i.arrGenotype()
 \begin_layout Standard
 Return an editable array of the genotype of an individual.
  The layout of this array is explained in section 
-\begin_inset LatexCommand \ref{sec:Accessing-genotype-and}
+\begin_inset LatexCommand ref
+reference "sec:Accessing-genotype-and"
 
 \end_inset
 
@@ -5334,11 +5545,11 @@ i.allele(idx, p, ch)
 \begin_layout Standard
 Return the allele at locus 
 \family typewriter
-idx 
+idx
 \family default
-of the
+ of the 
 \family typewriter
- ch
+ch
 \family default
 -th chromosome of the 
 \family typewriter
@@ -5494,11 +5705,11 @@ i.setAllele(allele, idx, p, ch)
 \begin_layout Standard
 Set the allele at locus 
 \family typewriter
-idx 
+idx
 \family default
-of the
+ of the 
 \family typewriter
- ch
+ch
 \family default
 -th chromosome of the 
 \family typewriter
@@ -5558,9 +5769,9 @@ i.setInfo(value, idx or name)
 \begin_layout Standard
 Set the value of info field (indexed by 
 \family typewriter
-idx 
+idx
 \family default
-or 
+ or 
 \family typewriter
 name)
 \end_layout
@@ -5606,9 +5817,9 @@ i.sex()
 \begin_inset Text
 
 \begin_layout Standard
-Return the sex of an individual,
+Return the sex of an individual, 
 \series bold
- 1 for Male and 2 for Female
+1 for Male and 2 for Female
 \series default
 .
  However, this is not guranteed so please use 
@@ -5635,9 +5846,9 @@ i.sexChar()
 \begin_inset Text
 
 \begin_layout Standard
-Return the sex of an individual
+Return the sex of an individual 
 \series bold
- M/F
+M/F
 \end_layout
 
 \end_inset
@@ -5666,9 +5877,9 @@ setSex(Male)
 \family default
  or 
 \family typewriter
-setSex(Female) 
+setSex(Female)
 \family default
-instead of 1 and 2.
+ instead of 1 and 2.
 \end_layout
 
 \end_inset
@@ -5824,7 +6035,8 @@ Set the info field of an individual
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sub:Population-Variables}
+\begin_inset LatexCommand label
+name "sub:Population-Variables"
 
 \end_inset
 
@@ -5837,7 +6049,8 @@ Populations are associated with python variables.
  For example, 
 \family typewriter
 stat
-\begin_inset LatexCommand \index{operator!stat}
+\begin_inset LatexCommand index
+name "operator!stat"
 
 \end_inset
 
@@ -5846,15 +6059,16 @@ stat
  operator calculates many population statistics and store results in population
  namespace.
  Example 
-\begin_inset LatexCommand \ref{sub:Population-Variables}
+\begin_inset LatexCommand ref
+reference "sub:Population-Variables"
 
 \end_inset
 
  demonstrates how 
 \family typewriter
-stat 
+stat
 \family default
-set variables 
+ set variables 
 \family typewriter
 popSize
 \family default
@@ -5870,27 +6084,29 @@ alleleFreq
 You can refer to these variables using 
 \family typewriter
 population::vars
-\begin_inset LatexCommand \index{population!vars}
+\begin_inset LatexCommand index
+name "population!vars"
 
 \end_inset
 
-() 
+()
 \family default
-or 
+ or 
 \family typewriter
 population::
-\begin_inset LatexCommand \index{population!population}
+\begin_inset LatexCommand index
+name "population!population"
 
 \end_inset
 
-dvars() 
+dvars()
 \family default
-function.
+ function.
  The returned value of 
 \family typewriter
-vars() 
+vars()
 \family default
-and 
+ and 
 \family typewriter
 dvars()
 \family default
@@ -5920,13 +6136,13 @@ vars()
 .
  A function 
 \family typewriter
-ListVars 
+ListVars
 \family default
-defined in 
+ defined in 
 \family typewriter
-simuUtil 
+simuUtil
 \family default
-can be used to display the variables.
+ can be used to display the variables.
  With wxPython installed, this function will open a nice window with a tree
  representing the variables.
  Without wxPython (or use parameter 
@@ -5961,12 +6177,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{alg:Population-variables}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "alg:Population-variables"
 
 \end_inset
 
 Population variables
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5985,25 +6210,22 @@ preview false
 
 \begin_layout Standard
 These variables form a Python dictionary, and furthermore a local namespace
- for
+ for functions like 
 \family typewriter
- 
-\family default
-functions like
-\family typewriter
- population::evaluate
+population::evaluate
 \family default
 
-\begin_inset LatexCommand \index{population!evaluate}
+\begin_inset LatexCommand index
+name "population!evaluate"
 
 \end_inset
 
 .
  
 \emph on
-Local namespace 
+Local namespace
 \emph default
-means that you can use dictionary items as variables duing evaluation.
+ means that you can use dictionary items as variables duing evaluation.
  For example: 
 \end_layout
 
@@ -6013,8 +6235,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Local namespaces of populations
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6034,23 +6264,23 @@ preview false
 \begin_layout Standard
 As you can see, these variables are 
 \emph on
-local 
+local
 \emph default
-to the population and is not directly accessible from the main namespace.
+ to the population and is not directly accessible from the main namespace.
  
 \family typewriter
-vars(subPop) 
+vars(subPop)
 \family default
-and 
+ and 
 \family typewriter
-dvars(subPop) 
+dvars(subPop)
 \family default
-function can be used.
+ function can be used.
  Both functions takes an optional 
 \family typewriter
-subPop 
+subPop
 \family default
-option.
+ option.
  If ignored, they will return population dictionary; otherwise, they will
  return dictionary for subpopulation 
 \family typewriter
@@ -6072,7 +6302,8 @@ Sampling (or ascertainment) is a complicated issue.
  simuPOP provides several methods to generate samples from an existing populatio
 n.
  Details please refer to Chapter 
-\begin_inset LatexCommand \ref{sec:Ascertainment}
+\begin_inset LatexCommand ref
+reference "sec:Ascertainment"
 
 \end_inset
 
@@ -6087,17 +6318,17 @@ Information fields
 The information fields are information that is attached to each individual.
  For example, an individual may need 
 \family typewriter
-father_idx 
+father_idx
 \family default
-and 
+ and 
 \family typewriter
 mother_idx
 \family default
  to track pedigree information, may need 
 \family typewriter
-penetrance 
+penetrance
 \family default
-to set affectedness.
+ to set affectedness.
 \end_layout
 
 \begin_layout Standard
@@ -6198,9 +6429,9 @@ order=True
  order.
  If you only need to get a summary of some information fields, passing 
 \family typewriter
-order=False 
+order=False
 \family default
-will speed up the process.
+ will speed up the process.
  
 \end_layout
 
@@ -6228,9 +6459,9 @@ f1, f2, f3, ..., f1, f2, f3, ...
  array.
  That is to say, 
 \family typewriter
-pop.arrIndInfo()[0] 
+pop.arrIndInfo()[0]
 \family default
-does not have to be the first field of the first individual.
+ does not have to be the first field of the first individual.
  This property is also true for 
 \family typewriter
 setIndInfo(values, idx or name).
@@ -6265,13 +6496,13 @@ indInfo
  than 
 \family typewriter
 arrIndInfo.
- 
+
 \family default
-To handle the return value of 
+ To handle the return value of 
 \family typewriter
-arrIndInfo, 
+arrIndInfo,
 \family default
-you would usually do:
+ you would usually do:
 \end_layout
 
 \begin_layout LyX-Code
@@ -6299,7 +6530,8 @@ for i in range(pop.subPopSize(2)):
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sub:Ancestral-populations}
+\begin_inset LatexCommand label
+name "sub:Ancestral-populations"
 
 \end_inset
 
@@ -6326,9 +6558,9 @@ ancestry
 \family default
  generations; or -
 \family typewriter
-1 
+1
 \family default
-to store all populations.
+ to store all populations.
  
 \end_layout
 
@@ -6339,9 +6571,9 @@ Several important usage of ancestral populations:
 \begin_layout Itemize
 
 \family typewriter
-dumper() 
+dumper()
 \family default
-operator and 
+ operator and 
 \family typewriter
 Dump()
 \family default
@@ -6365,9 +6597,9 @@ setAncestralDepth()
  set the number of ancestral generations to keep for a population.
  A typical use of 
 \family typewriter
-setAncestralDepth() 
+setAncestralDepth()
 \family default
-is
+ is
 \end_layout
 
 \begin_deeper
@@ -6392,9 +6624,9 @@ which save the last three generations in populations so that pedigree based
 \begin_layout Itemize
 
 \family typewriter
-pop.useAncestralPop(idx) 
+pop.useAncestralPop(idx)
 \family default
-set current generation of population 
+ set current generation of population 
 \family typewriter
 pop
 \family default
@@ -6421,7 +6653,8 @@ setAncestralPop(0)
 
 \begin_layout Standard
 A typical use of this function is demonstrated in example 
-\begin_inset LatexCommand \ref{alg:Ancestral-populations}
+\begin_inset LatexCommand ref
+reference "alg:Ancestral-populations"
 
 \end_inset
 
@@ -6445,12 +6678,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{alg:Ancestral-populations}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "alg:Ancestral-populations"
 
 \end_inset
 
 Ancestral populations
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6468,7 +6710,8 @@ preview false
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sub:Save-and-Load}
+\begin_inset LatexCommand label
+name "sub:Save-and-Load"
 
 \end_inset
 
@@ -6515,7 +6758,8 @@ bin
  formats using 
 \family typewriter
 savePopulation
-\begin_inset LatexCommand \index{savePopulation}
+\begin_inset LatexCommand index
+name "savePopulation"
 
 \end_inset
 
@@ -6524,7 +6768,8 @@ savePopulation
  member function, global 
 \family typewriter
 SavePopulation
-\begin_inset LatexCommand \index{Function!SavePopulation}
+\begin_inset LatexCommand index
+name "Function!SavePopulation"
 
 \end_inset
 
@@ -6535,7 +6780,8 @@ SavePopulation
 LoadPopulation
 \family default
 
-\begin_inset LatexCommand \index{function!LoadPopulation}
+\begin_inset LatexCommand index
+name "function!LoadPopulation"
 
 \end_inset
 
@@ -6548,24 +6794,26 @@ Load..
  not 
 \family typewriter
 load..
- 
+
 \family default
-since 
+ since 
 \family typewriter
-savePopulation 
+savePopulation
 \family default
-is a member function and 
+ is a member function and 
 \family typewriter
-LoadPopulation 
+LoadPopulation
 \family default
-is a global function.) These formats have their own advantages and disadvantages:
+ is a global function.) These formats have their own advantages and disadvantages
+:
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 xml
-\begin_inset LatexCommand \index{xml format}
+\begin_inset LatexCommand index
+name "xml format"
 
 \end_inset
 
@@ -6579,7 +6827,8 @@ xml
 
 \family typewriter
 bin
-\begin_inset LatexCommand \index{bin format}
+\begin_inset LatexCommand index
+name "bin format"
 
 \end_inset
 
@@ -6593,7 +6842,8 @@ bin
 
 \family typewriter
 txt
-\begin_inset LatexCommand \index{text format}
+\begin_inset LatexCommand index
+name "text format"
 
 \end_inset
 
@@ -6612,8 +6862,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Save and load population
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6638,9 +6896,9 @@ compress=False
 \family default
  when saving a populaton, or decompress the saved files using 
 \family typewriter
-gzip -d 
+gzip -d
 \family default
-command.
+ command.
 \end_layout
 
 \begin_layout Standard
@@ -6668,7 +6926,8 @@ It is also possible to save a bunch of populations in a single file, provided
 
 \family typewriter
 SavePopulations
-\begin_inset LatexCommand \index{function!SavePopulations}
+\begin_inset LatexCommand index
+name "function!SavePopulations"
 
 \end_inset
 
@@ -6679,7 +6938,8 @@ SavePopulations
 
 \family typewriter
 LoadPopulations
-\begin_inset LatexCommand \index{functions!LoadPopulations}
+\begin_inset LatexCommand index
+name "functions!LoadPopulations"
 
 \end_inset
 
@@ -6759,7 +7019,8 @@ simuViewPop.viewPop(filename='mypop.bin')
 
 \begin_layout Chapter
 Mating Scheme
-\begin_inset LatexCommand \index{mating scheme}
+\begin_inset LatexCommand index
+name "mating scheme"
 
 \end_inset
 
@@ -6803,13 +7064,14 @@ Most mating schemes take the following parameters:
 
 \family typewriter
 numOffsprings
-\begin_inset LatexCommand \index{simulator!numOffsprings}
+\begin_inset LatexCommand index
+name "simulator!numOffsprings"
 
 \end_inset
 
- 
+
 \family default
-number of offsprings or 
+ number of offsprings or 
 \begin_inset Formula $p$
 \end_inset
 
@@ -6823,13 +7085,14 @@ number of offsprings or
 
 \family typewriter
 numOffspringsFunc
-\begin_inset LatexCommand \index{simulator!numOffspringsFunc}
+\begin_inset LatexCommand index
+name "simulator!numOffspringsFunc"
 
 \end_inset
 
- 
+
 \family default
-a python function that return number of offspring or 
+ a python function that return number of offspring or 
 \begin_inset Formula $p$
 \end_inset
 
@@ -6840,13 +7103,14 @@ a python function that return number of offspring or
 
 \family typewriter
 maxNumOffsprings
-\begin_inset LatexCommand \index{simulator!maxNumOffsprings}
+\begin_inset LatexCommand index
+name "simulator!maxNumOffsprings"
 
 \end_inset
 
- 
+
 \family default
-used when numOffsprings is generated from a binomial distribution.
+ used when numOffsprings is generated from a binomial distribution.
 \end_layout
 
 \begin_layout Itemize
@@ -6857,13 +7121,14 @@ mode
  
 \family typewriter
 
-\begin_inset LatexCommand \index{simulator!mode}
+\begin_inset LatexCommand index
+name "simulator!mode"
 
 \end_inset
 
- 
+
 \family default
-One of 
+ One of 
 \family typewriter
 MATE_NumOffspring, MATE_NumOffspringsEachFamily, MATE_GeometricDistribution,
  MATE_PoissonDistribution, MATE_BinomialDistribution
@@ -6875,13 +7140,14 @@ MATE_NumOffspring, MATE_NumOffspringsEachFamily, MATE_GeometricDistribution,
 
 \family typewriter
 newSubPopSize
-\begin_inset LatexCommand \index{simulator!newSubPopSize}
+\begin_inset LatexCommand index
+name "simulator!newSubPopSize"
 
 \end_inset
 
- 
+
 \family default
-an array of sizes of subpopulaitons.
+ an array of sizes of subpopulaitons.
  
 \end_layout
 
@@ -6889,13 +7155,14 @@ an array of sizes of subpopulaitons.
 
 \family typewriter
 newSubPopSizeExpr
-\begin_inset LatexCommand \index{simulator!newSubPopSizeExpr}
+\begin_inset LatexCommand index
+name "simulator!newSubPopSizeExpr"
 
 \end_inset
 
- 
+
 \family default
-an expression that will return the new subpopulation size.
+ an expression that will return the new subpopulation size.
  Details about python expression will be discussed later.
 \end_layout
 
@@ -6903,7 +7170,8 @@ an expression that will return the new subpopulation size.
 
 \family typewriter
 newSubPopSizeFunc
-\begin_inset LatexCommand \index{simulator!newSubPopSizeFunc}
+\begin_inset LatexCommand index
+name "simulator!newSubPopSizeFunc"
 
 \end_inset
 
@@ -6922,9 +7190,9 @@ Determine number of offsprings during mating
 \begin_layout Standard
 The default values 
 \family typewriter
-numOffsprings 
+numOffsprings
 \family default
-parameters makes a mating scheme produce one offspring per mating.
+ parameters makes a mating scheme produce one offspring per mating.
  This is the real random mating and should be used whenever possible.
  However, various situations requires larger family size or even changing
  family size.
@@ -6946,9 +7214,9 @@ MATE_NumOffsprings:
 \family default
  if 
 \family typewriter
-numOffspringsFunc 
+numOffspringsFunc
 \family default
-is not given, number of offsprings will be constant 
+ is not given, number of offsprings will be constant 
 \family typewriter
 numOffsprings
 \family default
@@ -6959,9 +7227,9 @@ numOffspringsFunc(gen)
 \family default
  will be called 
 \series bold
-once 
+once
 \series default
-for each generation to get the number of offsprings for the matings happen
+ for each generation to get the number of offsprings for the matings happen
  in this generation.
  
 \end_layout
@@ -6973,9 +7241,9 @@ MATE_NumOffspringsEachFamily:
 \family default
  
 \family typewriter
-numOffspringsFunc 
+numOffspringsFunc
 \family default
-has to be given and will be called whenever a mating happens.
+ has to be given and will be called whenever a mating happens.
  Since 
 \family typewriter
 numOffspringsFunc
@@ -6992,9 +7260,9 @@ any
 \begin_layout Itemize
 
 \family typewriter
-MATE_GeometricDistribution: numOffsprings 
+MATE_GeometricDistribution: numOffsprings
 \family default
-or result of 
+ or result of 
 \family typewriter
 numOffspringsFunc
 \family default
@@ -7015,9 +7283,9 @@ P\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1\]
 \begin_layout Itemize
 
 \family typewriter
-MATE_PoissonDistribution: numOffsprings 
+MATE_PoissonDistribution: numOffsprings
 \family default
-or result of 
+ or result of 
 \family typewriter
 numOffspringsFunc
 \family default
@@ -7043,9 +7311,9 @@ Since the mean of this shifted Poisson distribution is
 \begin_layout Itemize
 
 \family typewriter
-MATE_BinomialDistribution: numOffsprings 
+MATE_BinomialDistribution: numOffsprings
 \family default
-or result of 
+ or result of 
 \family typewriter
 numOffspringsFunc
 \family default
@@ -7112,23 +7380,23 @@ newSubPopSize=some_fixed_values
 If subpopulation size can be easily calculated through an expression, you
  can use 
 \family typewriter
-newSubPopSizeExpr 
+newSubPopSizeExpr
 \family default
-to determine the new subpopulation sizes.
+ to determine the new subpopulation sizes.
  For example 
 \family typewriter
-newSubPopSizeExpr=`[gen+10]' 
+newSubPopSizeExpr=`[gen+10]'
 \family default
-uses generation number + 10 as the new population size.
+ uses generation number + 10 as the new population size.
  More complicated expression can be used, maybe along with 
 \family typewriter
-pyExec 
+pyExec
 \family default
-operators, but in this case, a specialized function and 
+ operators, but in this case, a specialized function and 
 \family typewriter
-newSubPopSizeFunc 
+newSubPopSizeFunc
 \family default
-is recommened.
+ is recommened.
  Note that the expression uses variables from local namespace.
 \end_layout
 
@@ -7144,13 +7412,13 @@ newSubPopSizeFunc
  an array of new subpoulation sizes.
  ( return 
 \family typewriter
-[newsize] 
+[newsize]
 \family default
-instead of
+ instead of 
 \family typewriter
- newsize 
+newsize
 \family default
-when you do not have any subpopulation structure).
+ when you do not have any subpopulation structure).
  For example, the following function defines a linear expansion demographic
  scenario where a real example where a single population is splitted at
  200 generations (using a 
@@ -7201,22 +7469,22 @@ Demographic change functions
 \begin_layout Standard
 
 \family typewriter
-newSubPopSizeFunc 
+newSubPopSizeFunc
 \family default
-can take a function with parameters 
+ can take a function with parameters 
 \family typewriter
-gen 
+gen
 \family default
-and 
+ and 
 \family typewriter
 oldSize.
- 
+
 \family default
-A few functions are defined in 
+ A few functions are defined in 
 \family typewriter
-simuUtil.py 
+simuUtil.py
 \family default
-that will return such a function with given parameters.
+ that will return such a function with given parameters.
  All these functions support burnin and split to equal sized subpopulations.
  For all these function, you can test them by
 \end_layout
@@ -7267,9 +7535,9 @@ bottleneckGen
 \family default
  is specified, population size will be 
 \family typewriter
-bottleneckSize 
+bottleneckSize
 \family default
-at that generation.
+ at that generation.
  
 \end_layout
 
@@ -7292,9 +7560,9 @@ bottleneckGen
 \family default
  is specified, population size will be 
 \family typewriter
-bottleneckSize 
+bottleneckSize
 \family default
-at that generation.
+ at that generation.
  
 \end_layout
 
@@ -7320,9 +7588,9 @@ bottleneckGen
 \family default
  is specified, population size will be 
 \family typewriter
-bottleneckSize 
+bottleneckSize
 \family default
-at that generation.
+ at that generation.
  
 \end_layout
 
@@ -7348,9 +7616,9 @@ bottleneckGen
 \family default
  is specified, population size will be 
 \family typewriter
-bottleneckSize 
+bottleneckSize
 \family default
-at that generation.
+ at that generation.
  
 \end_layout
 
@@ -7370,13 +7638,14 @@ Currently, simuPOP provides the following mating schemes:
 
 \family typewriter
 noMating
-\begin_inset LatexCommand \index{noMating}
+\begin_inset LatexCommand index
+name "noMating"
 
 \end_inset
 
-() 
+()
 \family default
-parent generation will be considered as offspring genertion.
+ parent generation will be considered as offspring genertion.
  subpopsizes will be ignored although some during-mating operators can be
  applied.
 \end_layout
@@ -7388,13 +7657,14 @@ parent generation will be considered as offspring genertion.
 binomialSelection
 \emph default
 
-\begin_inset LatexCommand \index{binomialSelection}
+\begin_inset LatexCommand index
+name "binomialSelection"
 
 \end_inset
 
-() 
+()
 \family default
-no sex is involved.
+ no sex is involved.
  Offspring is chosen from parental generation by random or according to
  fitness values.
 \end_layout
@@ -7403,23 +7673,26 @@ no sex is involved.
 
 \family typewriter
 radomMating
-\begin_inset LatexCommand \index{radomMating}
+\begin_inset LatexCommand index
+name "radomMating"
 
 \end_inset
 
-() 
+()
 \family default
-sexed random mating.
+ sexed random mating.
  A prameter 
 \family typewriter
 (contIfUniSex
-\begin_inset LatexCommand \index{contIfUniSex}
+\begin_inset LatexCommand index
+name "contIfUniSex"
 
 \end_inset
 
-) 
+)
 \family default
-can be set to determine the behavior when only one sex exists in a subpopulation.
+ can be set to determine the behavior when only one sex exists in a subpopulatio
+n.
  Default is continue without warning.
 \end_layout
 
@@ -7427,17 +7700,18 @@ can be set to determine the behavior when only one sex exists in a subpopulation
 
 \family typewriter
 pyMating
-\begin_inset LatexCommand \index{pyMating}
+\begin_inset LatexCommand index
+name "pyMating"
 
 \end_inset
 
-() 
+()
 \family default
-(
+ (
 \series bold
-not usable right now) 
+not usable right now)
 \series default
-Hybird mating scheme.
+ Hybird mating scheme.
  This mating scheme takes two parameters: 
 \family typewriter
 mateFunc
@@ -7455,9 +7729,9 @@ mateFunc
  parent indices for each offspring.
  If 
 \family typewriter
-keepSubPopStru=True 
+keepSubPopStru=True
 \family default
-(default), parents should come from the same subpopulation and the offspring
+ (default), parents should come from the same subpopulation and the offspring
  population will have subpopulation strcture.
  Otherwise, mating can across subpopulation strcuture.
  
@@ -7466,9 +7740,9 @@ keepSubPopStru=True
 \begin_layout Standard
 Detailed information of each mating scheme can be found through 
 \family typewriter
-help(...) 
+help(...)
 \family default
-function.
+ function.
  
 \end_layout
 
@@ -7548,7 +7822,8 @@ built-in:
 hybrid
 \emph default
 
-\begin_inset LatexCommand \index{hybrid}
+\begin_inset LatexCommand index
+name "hybrid"
 
 \end_inset
 
@@ -7556,9 +7831,9 @@ hybrid
  Less efficient.
  For example, a hybrid mutator 
 \family typewriter
-pyMutator 
+pyMutator
 \family default
-will determine if an allele will be mutated and call a user--defined Python
+ will determine if an allele will be mutated and call a user--defined Python
  function to mutate it.
 \end_layout
 
@@ -7572,7 +7847,8 @@ pure python
  For example, a 
 \family typewriter
 varPlotter
-\begin_inset LatexCommand \index{varPlotter}
+\begin_inset LatexCommand index
+name "varPlotter"
 
 \end_inset
 
@@ -7591,7 +7867,8 @@ You do not have to know the type of an operator to use them.
 
 \begin_layout Subsection
 Applicable Stages
-\begin_inset LatexCommand \index{applicable stage}
+\begin_inset LatexCommand index
+name "applicable stage"
 
 \end_inset
 
@@ -7608,14 +7885,14 @@ Operators can be applied at different stage(s) of a life cycle.
  Applicable stages are usually set by default but you can change it by setting
  
 \family typewriter
-stage=(PreMating|PostMating|DuringMating|PrePostMating) 
+stage=(PreMating|PostMating|DuringMating|PrePostMating)
 \family default
-parameter.
+ parameter.
  Note that some operators ignore 
 \family typewriter
-stage 
+stage
 \family default
-parameter since they only work at one stage.
+ parameter since they only work at one stage.
 \end_layout
 
 \begin_layout Standard
@@ -7624,8 +7901,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Operator stage
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7659,13 +7944,14 @@ Operators do not have to be applied at all generations.
 
 \family typewriter
 begin
-\begin_inset LatexCommand \index{begin}
+\begin_inset LatexCommand index
+name "begin"
 
 \end_inset
 
- 
+
 \family default
-start generation.
+ start generation.
  default to 1.
  negative number is interpreted as endGeneration + begin 
 \end_layout
@@ -7674,7 +7960,8 @@ start generation.
 
 \family typewriter
 end
-\begin_inset LatexCommand \index{end}
+\begin_inset LatexCommand index
+name "end"
 
 \end_inset
 
@@ -7688,13 +7975,14 @@ end
 
 \family typewriter
 step
-\begin_inset LatexCommand \index{step}
+\begin_inset LatexCommand index
+name "step"
 
 \end_inset
 
- 
+
 \family default
-number of generations between active generations.
+ number of generations between active generations.
  default to 1 
 \end_layout
 
@@ -7702,7 +7990,8 @@ number of generations between active generations.
 
 \family typewriter
 at
-\begin_inset LatexCommand \index{at}
+\begin_inset LatexCommand index
+name "at"
 
 \end_inset
 
@@ -7726,8 +8015,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Set active generations of an operator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7747,9 +8044,9 @@ preview false
 \begin_layout Standard
 The last example displays variable 
 \family typewriter
-gen 
+gen
 \family default
-for each replicate.
+ for each replicate.
  Note that you can use negative generation number whenever you specifies
  the 
 \family typewriter
@@ -7770,11 +8067,11 @@ Most operators are applied to every replicate of a simulator during evolution.
  For example, you can initialize different replicates with different initial
  values and then start evolution.
  c.f.
-
+ 
 \family typewriter
- simulator::setGroup 
+simulator::setGroup
 \family default
-.
+ .
  
 \end_layout
 
@@ -7793,9 +8090,9 @@ that will output
 \family typewriter
 
 \backslash
-n 
+n
 \family default
-at the end of each generation.
+ at the end of each generation.
  Here is an example of using replicate groups:
 \end_layout
 
@@ -7809,8 +8106,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Replicate group
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7856,17 +8161,17 @@ Filename can have the following format:
 \begin_layout Itemize
 
 \family typewriter
-'>filename' 
+'>filename'
 \family default
-the same as 'filename'
+ the same as 'filename'
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-'>>filename' 
+'>>filename'
 \family default
-The file will be created at the beginning of evolution (
+ The file will be created at the beginning of evolution (
 \family typewriter
 simulator::evolve
 \family default
@@ -7877,9 +8182,9 @@ simulator::evolve
 \begin_layout Itemize
 
 \family typewriter
-'>>>filename' 
+'>>>filename'
 \family default
-The same as 
+ The same as 
 \family typewriter
 '>>filename'
 \family default
@@ -7899,9 +8204,9 @@ The same as
 \begin_layout Itemize
 
 \family typewriter
-'' 
+''
 \family default
-suppress output.
+ suppress output.
 \end_layout
 
 \begin_layout Standard
@@ -7940,8 +8245,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 log/operatoroutput
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8019,9 +8332,9 @@ n
 Output filename does not have to be fixed.
  If 
 \family typewriter
-outputExpr 
+outputExpr
 \family default
-parameter is used (
+ parameter is used (
 \family typewriter
 output
 \family default
@@ -8037,8 +8350,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 log/operatoroutputexpr
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8078,15 +8399,15 @@ Unlike C/C++, assignments in Python do not return values.
 \begin_layout Itemize
 expressions consist of constants, variables, operators, functions, but 
 \emph on
-no 
+no
 \emph default
-assignments, condition, loop etc.
+ assignments, condition, loop etc.
  Expression returns a value when executed.
  An example of expression is 
 \family typewriter
-range(1,5)+10 
+range(1,5)+10
 \family default
-.
+ .
 \end_layout
 
 \begin_layout Itemize
@@ -8114,9 +8435,9 @@ All populations have their own attached variables.
  You can access local namespace of each replicate through a simulator's
  
 \family typewriter
-vars(rep) 
+vars(rep)
 \family default
-function:
+ function:
 \end_layout
 
 \begin_layout LyX-Code
@@ -8174,9 +8495,9 @@ It is important to know that
 \begin_layout Itemize
 
 \family typewriter
-simulator::vars(0), vars(1) 
+simulator::vars(0), vars(1)
 \family default
-etc are the 
+ etc are the 
 \emph on
 local namespaces
 \emph default
@@ -8186,9 +8507,9 @@ local namespaces
 \begin_layout Itemize
 
 \family typewriter
-subPop[0], subPop[1] 
+subPop[0], subPop[1]
 \family default
-etc have almost the same set of keys as those for the whole population.
+ etc have almost the same set of keys as those for the whole population.
  This is because 
 \family typewriter
 stat
@@ -8200,9 +8521,9 @@ stat
 \begin_layout Standard
 To list these variables, you can use the 
 \family typewriter
-ListVars() 
+ListVars()
 \family default
-function defined in 
+ function defined in 
 \family typewriter
 simuUtil.py
 \family default
@@ -8234,24 +8555,24 @@ Two functions can be used to access simulator and population variables:
 \family typewriter
 vars()
 \family default
- and
+ and 
 \family typewriter
- dvars()
+dvars()
 \family default
 .
  We have known 
 \family typewriter
-population::vars() 
+population::vars()
 \family default
-and 
+ and 
 \family typewriter
 population::dvars()
 \family default
 , 
 \family typewriter
-simulator::vars() 
+simulator::vars()
 \family default
-and 
+ and 
 \family typewriter
 simulator::dvars()
 \family default
@@ -8264,9 +8585,9 @@ simulator::dvars()
 \family typewriter
 simulator::vars(rep
 \family default
-),
+), 
 \family typewriter
- dvars(rep):
+dvars(rep):
 \family default
  return replicate 
 \family typewriter
@@ -8280,13 +8601,13 @@ rep
 \family typewriter
 simulator::vars(rep, subPop
 \family default
-),
+), 
 \family typewriter
- dvars(rep, subPop):
+dvars(rep, subPop):
 \family default
- return the namespace of
+ return the namespace of 
 \family typewriter
- subPop
+subPop
 \family default
  subpopulation of replicate 
 \family typewriter
@@ -8294,15 +8615,15 @@ rep.
 \end_layout
 
 \begin_layout Standard
-The return values of
+The return values of 
 \family typewriter
- vars() 
+vars()
 \family default
-and 
+ and 
 \family typewriter
-dvars() 
+dvars()
 \family default
-are different.
+ are different.
  
 \family typewriter
 vars()
@@ -8311,40 +8632,43 @@ vars()
  You should access their keys in the usual Python way.
  
 \family typewriter
-dvars() 
+dvars()
 \family default
-returns a 'wrapped' Python dictionary.
+ returns a 'wrapped' Python dictionary.
  You can access dictionary keys as attributes.
  
 \family typewriter
-dvars() 
+dvars()
 \family default
-is usually considered to be easier to use.
+ is usually considered to be easier to use.
 \end_layout
 
 \begin_layout Subsection
 
 \family typewriter
 evaluate
-\begin_inset LatexCommand \index{calculate}
+\begin_inset LatexCommand index
+name "calculate"
 
 \end_inset
 
- 
+
 \family default
-function and 
+ function and 
 \family typewriter
 pyEval
-\begin_inset LatexCommand \index{calc}
+\begin_inset LatexCommand index
+name "calc"
 
 \end_inset
 
- 
+
 \family default
-and
+ and 
 \family typewriter
- pyExec
-\begin_inset LatexCommand \index{pyExec}
+pyExec
+\begin_inset LatexCommand index
+name "pyExec"
 
 \end_inset
 
@@ -8356,13 +8680,13 @@ and
 \begin_layout Standard
 Function 
 \family typewriter
-population::evaluate 
+population::evaluate
 \family default
-and operator 
+ and operator 
 \family typewriter
-pyEval/pyExec 
+pyEval/pyExec
 \family default
-will work in local namespaces.
+ will work in local namespaces.
  For example, if there are 
 \family typewriter
 a
@@ -8389,9 +8713,9 @@ pop.vars()['a']
 \family default
 , 
 \family typewriter
-pop.evaluate('b') 
+pop.evaluate('b')
 \family default
-will return global 
+ will return global 
 \family typewriter
 b
 \family default
@@ -8413,8 +8737,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 python expression
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8434,9 +8766,9 @@ preview false
 \begin_layout Itemize
 
 \family typewriter
-simulator 
+simulator
 \family default
-creates a simulator with two replicates 0 and 1.
+ creates a simulator with two replicates 0 and 1.
  
 \end_layout
 
@@ -8451,26 +8783,26 @@ grp*2
 \begin_layout Itemize
 
 \family typewriter
-gen 
+gen
 \family default
-is not in either replicate's namespace so the global one will be used.
+ is not in either replicate's namespace so the global one will be used.
 \end_layout
 
 \begin_layout Itemize
 Using statements can create variables in local namespaces.
  (You can use 
 \family typewriter
-global 
+global
 \family default
-statement to create global variable if you are familiar with python.)
+ statement to create global variable if you are familiar with python.)
 \end_layout
 
 \begin_layout Standard
 
 \family typewriter
-pyEval/pyExec 
+pyEval/pyExec
 \family default
-operators execute python expression/statements, 
+ operators execute python expression/statements, 
 \emph on
 using local namespaces
 \emph default
@@ -8480,18 +8812,18 @@ using local namespaces
 \begin_layout Itemize
 
 \family typewriter
-pyEval 
+pyEval
 \family default
-(operator) evaluate a Python expression and return its value, optional execute
- a list of statements beforehand.
+ (operator) evaluate a Python expression and return its value, optional
+ execute a list of statements beforehand.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-pyExec 
+pyExec
 \family default
-(operator) execute a list of statements in the form of a multi-line string.
+ (operator) execute a list of statements in the form of a multi-line string.
  No return value or output.
 \end_layout
 
@@ -8503,9 +8835,9 @@ expr
  is a simple string containing an expression that will return a value when
  executed; 
 \family typewriter
-stmts 
+stmts
 \family default
-is a string of statements, separated by 
+ is a string of statements, separated by 
 \family typewriter
 '
 \backslash
@@ -8622,11 +8954,11 @@ These parameters will be evaluated whenever they are referred.
 
 \end_deeper
 \begin_layout Itemize
-we use expression/statements in
+we use expression/statements in 
 \family typewriter
- pyEval/pyExec 
+pyEval/pyExec
 \family default
-operators.
+ operators.
  These statements will work in local namespaces.
  For example:
 \end_layout
@@ -8641,8 +8973,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Expression evaluation
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8663,18 +9003,19 @@ preview false
 Because of the interactive nature of python, it is very easy to write short
  programs, quote them in 
 \family typewriter
-r'''program''' 
+r'''program'''
 \family default
-and put them in to 
+ and put them in to 
 \family typewriter
-pyEval/pyExec 
+pyEval/pyExec
 \family default
-operators.
+ operators.
 \end_layout
 
 \begin_layout Chapter
 Simulator
-\begin_inset LatexCommand \index{Simulator}
+\begin_inset LatexCommand index
+name "Simulator"
 
 \end_inset
 
@@ -8705,7 +9046,8 @@ evolve()
 preOps
 \family default
 
-\begin_inset LatexCommand \index{simulato!preOps}
+\begin_inset LatexCommand index
+name "simulato!preOps"
 
 \end_inset
 
@@ -8714,7 +9056,8 @@ preOps
 postOps
 \family default
 
-\begin_inset LatexCommand \index{simulator!postOps}
+\begin_inset LatexCommand index
+name "simulator!postOps"
 
 \end_inset
 
@@ -8746,19 +9089,19 @@ a generation number presents a 'to-be-evolved' generation
 \begin_layout Itemize
 ending generation specified in 
 \family typewriter
-evolve() 
+evolve()
 \family default
-will be executed
+ will be executed
 \end_layout
 
 \begin_layout Standard
 That is to say, a new simulator will have generation 0 (at the beginning
  of generation 0).
- If you do
+ If you do 
 \family typewriter
- evolve(..., end=0), evolve 
+evolve(..., end=0), evolve
 \family default
-will evolve one generation and stop at the beginning of generation 1.
+ will evolve one generation and stop at the beginning of generation 1.
 \end_layout
 
 \begin_layout Standard
@@ -8785,9 +9128,9 @@ if(simu.gen() == endGen+1)
 instead of 
 \family typewriter
 simu.gen() == endGen.
- 
+
 \family default
-(endGen is the value for parameter end).
+ (endGen is the value for parameter end).
 \end_layout
 
 \begin_layout Standard
@@ -8797,9 +9140,9 @@ start=0, step=5, end=10
 \family default
  for your operator, it will be applied at generations 
 \family typewriter
-0,5,10 
+0,5,10
 \family default
-etc.
+ etc.
  
 \end_layout
 
@@ -8812,13 +9155,13 @@ Simulators separate operators into
 \family typewriter
 pre-
 \family default
-,
+, 
 \family typewriter
- during-
+during-
 \family default
- and
+ and 
 \family typewriter
- post-
+post-
 \family default
  mating operators.
  During evolution, simulator first apply all 
@@ -8831,9 +9174,9 @@ mate()
 \family default
  function of the given mating scheme, which will call 
 \family typewriter
-DuringMating 
+DuringMating
 \family default
-operators during the birth of each offspring.
+ operators during the birth of each offspring.
  After the new generation is generated, 
 \family typewriter
 PostMating
@@ -8856,9 +9199,9 @@ rep, grp, gen
 \begin_layout Standard
 The order of applying operators usually does not matter but errors can occur
  if you are not careful.
- For example,
+ For example, 
 \family typewriter
- stat(...)
+stat(...)
 \family default
  calculate the statistics of current population.
  It is a pre-mating operator so you should set 
@@ -8880,69 +9223,74 @@ If you are not sure about the calling sequence of operators, you can set
 dryrun
 \family default
 
-\begin_inset LatexCommand \index{simulator!dryun}
+\begin_inset LatexCommand index
+name "simulator!dryun"
 
 \end_inset
 
-
+ parameter of 
 \family typewriter
- 
+evolve()
 \family default
-parameter of 
-\family typewriter
-evolve() 
-\family default
-function to true.
+ function to true.
  
 \family typewriter
-evolve 
+evolve
 \family default
-will then print out the order of operators to apply.
+ will then print out the order of operators to apply.
  Consider that operators can be 
 \family typewriter
 PreMating
-\begin_inset LatexCommand \index{constant!PreMating}
+\begin_inset LatexCommand index
+name "constant!PreMating"
 
 \end_inset
 
 
-\begin_inset LatexCommand \index{operator!PreMating}
+\begin_inset LatexCommand index
+name "operator!PreMating"
 
 \end_inset
 
 , PostMating
-\begin_inset LatexCommand \index{constant!PostMating}
+\begin_inset LatexCommand index
+name "constant!PostMating"
 
 \end_inset
 
 
-\begin_inset LatexCommand \index{operator!PostMating}
+\begin_inset LatexCommand index
+name "operator!PostMating"
 
 \end_inset
 
 , PrePostMating
-\begin_inset LatexCommand \index{constant!PrePostMating}
+\begin_inset LatexCommand index
+name "constant!PrePostMating"
 
 \end_inset
 
 
-\begin_inset LatexCommand \index{operator!PrePostMating}
+\begin_inset LatexCommand index
+name "operator!PrePostMating"
 
 \end_inset
 
 , DuringMating
-\begin_inset LatexCommand \index{constant!DuringMating}
+\begin_inset LatexCommand index
+name "constant!DuringMating"
 
 \end_inset
 
 
-\begin_inset LatexCommand \index{operator!DuringMating}
+\begin_inset LatexCommand index
+name "operator!DuringMating"
 
 \end_inset
 
- 
+
 \family default
-and the default value (parameter 
+ and the default value (parameter 
 \family typewriter
 stage
 \family default
@@ -8955,9 +9303,9 @@ Evolution
 \end_layout
 
 \begin_layout Standard
-Simulators can evolve a given number of generations (the
+Simulators can evolve a given number of generations (the 
 \family typewriter
- 'end'
+'end'
 \family default
  parameter of evolve), or evolve indefinitely using a certain type of operators
  called terminators.
@@ -8971,26 +9319,28 @@ Simulators can evolve a given number of generations (the
 
 \family typewriter
 gen
-\begin_inset LatexCommand \index{simulator!gen}
+\begin_inset LatexCommand index
+name "simulator!gen"
 
 \end_inset
 
-() 
+()
 \family default
-return current generation number
+ return current generation number
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 setGen
-\begin_inset LatexCommand \index{simulator!setGen}
+\begin_inset LatexCommand index
+name "simulator!setGen"
 
 \end_inset
 
-() 
+()
 \family default
-set current generation.
+ set current generation.
  Usually used to reset a simulator
 \end_layout
 
@@ -8998,13 +9348,14 @@ set current generation.
 
 \family typewriter
 population
-\begin_inset LatexCommand \index{simulator!population}
+\begin_inset LatexCommand index
+name "simulator!population"
 
 \end_inset
 
-() 
+()
 \family default
-return temporary reference of one of the populations.
+ return temporary reference of one of the populations.
  'Reference' means that the changes to the referred population will reflect
  to the one in simulator.
  'Temporary' means that the referred population might be invalid after evolution.
@@ -9014,33 +9365,36 @@ return temporary reference of one of the populations.
 
 \family typewriter
 evolve
-\begin_inset LatexCommand \index{simulator!evolve}
+\begin_inset LatexCommand index
+name "simulator!evolve"
 
 \end_inset
 
-() 
+()
 \family default
-evolve all replicates of the population
+ evolve all replicates of the population
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 apply
-\begin_inset LatexCommand \index{simulator!apply}
+\begin_inset LatexCommand index
+name "simulator!apply"
 
 \end_inset
 
-() 
+()
 \family default
-apply a list of operators to all populations.
+ apply a list of operators to all populations.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 step
-\begin_inset LatexCommand \index{simulator!step}
+\begin_inset LatexCommand index
+name "simulator!step"
 
 \end_inset
 
@@ -9068,18 +9422,18 @@ preOps:
 \begin_layout Itemize
 
 \family typewriter
-ops: 
+ops:
 \family default
-opeartors that will be applied at each generation.
+ opeartors that will be applied at each generation.
  
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-postOps: 
+postOps:
 \family default
-operators that will be applied after evolution.
+ operators that will be applied after evolution.
 \end_layout
 
 \begin_layout Itemize
@@ -9095,9 +9449,9 @@ end:
 \begin_layout Itemize
 
 \family typewriter
-dryrun: 
+dryrun:
 \family default
-dryrun mode.
+ dryrun mode.
  see previous section
 \end_layout
 
@@ -9114,13 +9468,13 @@ Save and Load
 \end_layout
 
 \begin_layout Standard
-A simulator can be saved to a file in the format of
+A simulator can be saved to a file in the format of 
 \family typewriter
- 'txt', 'bin'
+'txt', 'bin'
 \family default
-, or
+, or 
 \family typewriter
- 'xml'
+'xml'
 \family default
 .
  This enables us to stop a simulation and resume it at another time or on
@@ -9131,7 +9485,8 @@ A simulator can be saved to a file in the format of
  
 \family typewriter
 LoadSimulator
-\begin_inset LatexCommand \index{loadSimulator}
+\begin_inset LatexCommand index
+name "loadSimulator"
 
 \end_inset
 
@@ -9147,8 +9502,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 save and load a simulator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -9190,18 +9553,18 @@ simu
 \begin_layout Itemize
 
 \family typewriter
-saveAt: 
+saveAt:
 \family default
-generations at which to save the simulator.
+ generations at which to save the simulator.
  Generation can be negative, meaning counting backwards.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-format: 
+format:
 \family default
-format.
+ format.
  Default to 'bin'.
 \end_layout
 
@@ -9212,9 +9575,9 @@ saveAt
 \family default
  generations with filenames 
 \family typewriter
-saveAs+gen+format 
+saveAs+gen+format
 \family default
-(for example 
+ (for example 
 \family typewriter
 simu1000.bin
 \family default
@@ -9284,9 +9647,9 @@ This script simulates ....
 \begin_layout Standard
 These comments can be accessed as module 
 \family typewriter
-__doc__ 
+__doc__
 \family default
-and will be displayed as help message.
+ and will be displayed as help message.
 \end_layout
 
 \end_deeper
@@ -9410,16 +9773,16 @@ if __name__ == '__main__':
 \begin_layout Standard
 You will notice that 
 \family typewriter
-simuOpt 
+simuOpt
 \family default
-does all the housekeeping things for you, including parameter reading, conversio
-n, validation, print usage, save configuration file.
+ does all the housekeeping things for you, including parameter reading,
+ conversion, validation, print usage, save configuration file.
  Since most of the parts are pretty standard, you can actually copy any
  of the scripts under the 
 \family typewriter
-scripts 
+scripts
 \family default
-directory as a template for your new script.
+ directory as a template for your new script.
 \end_layout
 
 \begin_layout Standard
@@ -9438,17 +9801,17 @@ Although simuPOP scripts, simply Python scripts, can be in any valid Python
  writing style and provide a uniform interface to users.
  From a user's point of view, a simuPOP script 
 \family typewriter
-cmd.py 
+cmd.py
 \family default
-should
+ should
 \end_layout
 
 \begin_layout Enumerate
 Start a Tk/wxPython dialog to accept user input when 
 \family typewriter
---noDialog 
+--noDialog
 \family default
-is not specified.
+ is not specified.
 \end_layout
 
 \begin_layout Enumerate
@@ -9458,22 +9821,22 @@ List all commandline/config file options through
 \family default
  or 
 \family typewriter
---help 
+--help
 \family default
-option.
+ option.
  
 \end_layout
 
 \begin_layout Enumerate
 Accept 
 \family typewriter
--c 
+-c
 \family default
-or 
+ or 
 \family typewriter
---config 
+--config
 \family default
-parameter to read a configuration file and set parameters.
+ parameter to read a configuration file and set parameters.
 \end_layout
 
 \begin_layout Enumerate
@@ -9487,9 +9850,9 @@ Be able to use command line arguments to set parameters if
 \begin_layout Enumerate
 When 
 \family typewriter
---noDialog 
+--noDialog
 \family default
-and 
+ and 
 \family typewriter
 --useDefault
 \family default
@@ -9501,9 +9864,9 @@ and
 \begin_layout Enumerate
 Accept 
 \family typewriter
---saveconfig file 
+--saveconfig file
 \family default
-to save current configuration (input my commandline argument) into 
+ to save current configuration (input my commandline argument) into 
 \family typewriter
 file
 \family default
@@ -9627,9 +9990,9 @@ longarg
 \begin_layout Itemize
 
 \family typewriter
-arg:'h' 
+arg:'h'
 \family default
-checks the presence of argument 
+ checks the presence of argument 
 \family typewriter
 -h
 \family default
@@ -9645,9 +10008,9 @@ True
 \family typewriter
 arg:'f:'
 \family default
- checks the presence of argument pair
+ checks the presence of argument pair 
 \family typewriter
- -f something
+-f something
 \family default
 , return 
 \family typewriter
@@ -9659,31 +10022,31 @@ something
 \begin_layout Itemize
 
 \family typewriter
-longarg:'help' 
+longarg:'help'
 \family default
-cheks the prescence of argument 
+ cheks the prescence of argument 
 \family typewriter
 --longarg
 \family default
 , return 
 \family typewriter
-True 
+True
 \family default
-if succeeds
+ if succeeds
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-longarg:'mu=' 
+longarg:'mu='
 \family default
-checks the presence of argument pair
+ checks the presence of argument pair 
 \family typewriter
- --mu number
+--mu number
 \family default
-, return
+, return 
 \family typewriter
- number
+number
 \family default
  if succeeds.
 \end_layout
@@ -9725,14 +10088,14 @@ useDfault
 \begin_layout Itemize
 
 \family typewriter
-description 
+description
 \family default
-is the description of this parameter, will be put into usage information.
+ is the description of this parameter, will be put into usage information.
  ( 
 \family typewriter
--h 
+-h
 \family default
-or help button in parameter dialog).
+ or help button in parameter dialog).
 \end_layout
 
 \begin_layout Itemize
@@ -9743,9 +10106,9 @@ allowedTypes
  is the accepted types.
  If 
 \family typewriter
-allowedTypes 
+allowedTypes
 \family default
-is 
+ is 
 \family typewriter
 types.ListType
 \family default
@@ -9785,13 +10148,13 @@ valueBetween(a,b), valueOneOf(list):
 \family default
  check if the value is between 
 \family typewriter
-a 
+a
 \family default
-and 
+ and 
 \family typewriter
-b 
+b
 \family default
-or is one of 
+ or is one of 
 \family typewriter
 list
 \end_layout
@@ -9830,17 +10193,17 @@ valueListOf([types.IntType, types.LongType])
  or 
 \family typewriter
 valueListOf( valueValidFile()).
- 
+
 \family default
-As you can see, validators can be nested.
+ As you can see, validators can be nested.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-valueOr(validator), valueAnd(val1, val2), valueOr(val1,val2) 
+valueOr(validator), valueAnd(val1, val2), valueOr(val1,val2)
 \family default
-accepts other validators and perform respective logical calculation.
+ accepts other validators and perform respective logical calculation.
  For example
 \end_layout
 
@@ -9858,9 +10221,9 @@ accept a positive number, or a list of positive number.
 \begin_layout Itemize
 
 \family typewriter
-chooseOneOf: 
+chooseOneOf:
 \family default
-If specified, 
+ If specified, 
 \family typewriter
 simuOpt
 \family default
@@ -9875,9 +10238,9 @@ chooseFrom:
 \family default
  If specified, 
 \family typewriter
-simuOpt 
+simuOpt
 \family default
-will choose one or more items from a list of values using a listbox (tk)
+ will choose one or more items from a list of values using a listbox (tk)
  or a combo box (wxPython) .
  
 \end_layout
@@ -9900,9 +10263,9 @@ jump:
 \family typewriter
 getParam
 \family default
- will skip the rest of the parameters if
+ will skip the rest of the parameters if 
 \family typewriter
- -h
+-h
 \family default
  is specified since parameter 
 \family typewriter
@@ -9921,9 +10284,9 @@ getParam
 \begin_layout Itemize
 
 \family typewriter
-jumpIfFalse: 
+jumpIfFalse:
 \family default
-The same as 
+ The same as 
 \family typewriter
 jump
 \family default
@@ -9972,9 +10335,9 @@ alleleType()
 \family typewriter
 'short'
 \family default
-, or
+, or 
 \family typewriter
- 'long'
+'long'
 \family default
 .
 \end_layout
@@ -10019,13 +10382,14 @@ simuRev()
 
 \family typewriter
 carray
-\begin_inset LatexCommand \index{carray}
+\begin_inset LatexCommand index
+name "carray"
 
 \end_inset
 
- 
+
 \family default
-type
+ type
 \end_layout
 
 \begin_layout Standard
@@ -10186,9 +10550,9 @@ No other operation is allowed.
 \begin_layout Standard
 
 \series bold
-Important note: 
+Important note:
 \series default
-Objects returned from 
+ Objects returned from 
 \family typewriter
 arrXXX
 \family default
@@ -10291,12 +10655,14 @@ if hasRPy:
 Operator (Hybrid) 
 \family typewriter
 pyOperator
-\begin_inset LatexCommand \index{operator!pyOperator}
+\begin_inset LatexCommand index
+name "operator!pyOperator"
 
 \end_inset
 
 , pyIndOperator
-\begin_inset LatexCommand \index{operator!pyIndOperator}
+\begin_inset LatexCommand index
+name "operator!pyIndOperator"
 
 \end_inset
 
@@ -10337,9 +10703,9 @@ False
 , this operator will work like a terminator.
  
 \family typewriter
-para 
+para
 \family default
-be ommitted.
+ be ommitted.
 \end_layout
 
 \end_deeper
@@ -10372,9 +10738,9 @@ outputExpr
 \begin_layout Standard
 When 
 \family typewriter
-pyOperator 
+pyOperator
 \family default
-is called, it will simply pass the accepted population to the function.
+ is called, it will simply pass the accepted population to the function.
  If your function returns 
 \family typewriter
 False
@@ -10397,8 +10763,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 define a python operator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10421,8 +10795,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 use of python operator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10446,9 +10828,9 @@ Note that
 \begin_layout Itemize
 Currently, 
 \family typewriter
-pyOperator 
+pyOperator
 \family default
-does not support parameter 
+ does not support parameter 
 \family typewriter
 output
 \family default
@@ -10513,9 +10895,9 @@ pyOperator
  is a post-mating operator by default.
  Remember to use 
 \family typewriter
-stage 
+stage
 \family default
-parameter to change this when necessary.
+ parameter to change this when necessary.
 \end_layout
 
 \begin_layout Standard
@@ -10542,9 +10924,9 @@ def shortFunc(off, para)
 \begin_layout Standard
 where 
 \family typewriter
-para 
+para
 \family default
-can be ignored.
+ can be ignored.
  To use this operator, you can do
 \end_layout
 
@@ -10575,10 +10957,10 @@ formOffGenotype: (
 \family default
 default to 
 \family typewriter
-False) 
+False)
 \family default
-By default, a mating scheme will set the genotype of offspring by copy one
- of the parental chromosomes.
+ By default, a mating scheme will set the genotype of offspring by copy
+ one of the parental chromosomes.
  However, if 
 \family typewriter
 formOffGenotype
@@ -10673,7 +11055,8 @@ pyOperator
 
 \begin_layout Section
 Initialization
-\begin_inset LatexCommand \index{initializer}
+\begin_inset LatexCommand index
+name "initializer"
 
 \end_inset
 
@@ -10692,16 +11075,18 @@ Initializers are used to initialize populations before evolution.
 Operator (C++) 
 \family typewriter
 initByFreq
-\begin_inset LatexCommand \index{operator!initByFreq}
+\begin_inset LatexCommand index
+name "operator!initByFreq"
 
 \end_inset
 
-, 
+,
 \family default
-function
+ function 
 \family typewriter
- InitByFreq
-\begin_inset LatexCommand \index{function!InitByFreq}
+InitByFreq
+\begin_inset LatexCommand index
+name "function!InitByFreq"
 
 \end_inset
 
@@ -10711,15 +11096,15 @@ function
 \begin_layout Standard
 
 \family typewriter
-initByFreq 
+initByFreq
 \family default
-operator accepts 
+ operator accepts 
 \family typewriter
-alleleFreq 
+alleleFreq
 \family default
-or
+ or 
 \family typewriter
- alleleFreqs
+alleleFreqs
 \family default
 .
  The first one ignores subpopulation structure while the second one gives
@@ -10761,16 +11146,16 @@ indRange
 \family default
 ) ranges are acceptable.This is how you can initialize individuals differently
  within subpopulations.
- Note that ranges are in the form of
+ Note that ranges are in the form of 
 \family typewriter
- [a,b)
+[a,b)
 \family default
 .
- I.e., range
+ I.e., range 
 \family typewriter
- [4,6] 
+[4,6]
 \family default
-will intialize individual 4, 5, but not 6.
+ will intialize individual 4, 5, but not 6.
  As a shortcut for 
 \family typewriter
 [4,5]
@@ -10788,25 +11173,25 @@ n.)
 \begin_layout Itemize
 
 \family typewriter
-atLoci: 
+atLoci:
 \family default
-loci at which initialization will be done.
+ loci at which initialization will be done.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-maleFreq: 
+maleFreq:
 \family default
-intialize sex with this male frequency.
+ intialize sex with this male frequency.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-identicalInds: 
+identicalInds:
 \family default
-if true, copy the genotype of the first randomly initialized individual
+ if true, copy the genotype of the first randomly initialized individual
  to other individuals in the subpop/range.
  
 \end_layout
@@ -10825,8 +11210,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Init by freq
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10844,18 +11237,19 @@ preview false
 \end_layout
 
 \begin_layout Standard
-Please refer to
+Please refer to 
 \family typewriter
- test/test_init.py 
+test/test_init.py
 \family default
-for more complicated examples.
+ for more complicated examples.
 \end_layout
 
 \begin_layout Subsection
-Operator (C++)
+Operator (C++) 
 \family typewriter
- initByValue
-\begin_inset LatexCommand \index{operator!initByValue}
+initByValue
+\begin_inset LatexCommand index
+name "operator!initByValue"
 
 \end_inset
 
@@ -10864,7 +11258,8 @@ Operator (C++)
  function 
 \family typewriter
 InitByValue
-\begin_inset LatexCommand \index{function!InitByValue}
+\begin_inset LatexCommand index
+name "function!InitByValue"
 
 \end_inset
 
@@ -10874,10 +11269,10 @@ InitByValue
 \begin_layout Standard
 
 \family typewriter
-initByValue 
+initByValue
 \family default
-operator gets the one copy of chromosomes or the whole genotype (or of those
- corresponds to 
+ operator gets the one copy of chromosomes or the whole genotype (or of
+ those corresponds to 
 \family typewriter
 atLoci
 \family default
@@ -10891,8 +11286,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Init by value
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10910,24 +11313,24 @@ preview false
 \end_layout
 
 \begin_layout Standard
-Parameters
+Parameters 
 \family typewriter
- subPop, indRange, atLoci, maleFreq 
+subPop, indRange, atLoci, maleFreq
 \family default
-are also supported.
+ are also supported.
  Note that
 \end_layout
 
 \begin_layout Itemize
-If
+If 
 \family typewriter
- value 
+value
 \family default
-is an array of values, it should have the same length as 
+ is an array of values, it should have the same length as 
 \family typewriter
-subpop, indRange 
+subpop, indRange
 \family default
-or 
+ or 
 \family typewriter
 proportions
 \family default
@@ -10945,10 +11348,11 @@ proportions
 \end_layout
 
 \begin_layout Subsection
-Operator (C++)
+Operator (C++) 
 \family typewriter
- spread
-\begin_inset LatexCommand \index{operator!spread}
+spread
+\begin_inset LatexCommand index
+name "operator!spread"
 
 \end_inset
 
@@ -10957,7 +11361,8 @@ Operator (C++)
  function 
 \family typewriter
 Spread
-\begin_inset LatexCommand \index{function!Spread}
+\begin_inset LatexCommand index
+name "function!Spread"
 
 \end_inset
 
@@ -10967,17 +11372,18 @@ Spread
 \begin_layout Standard
 
 \family typewriter
-Spread(ind, subPop) 
+Spread(ind, subPop)
 \family default
-spread the genotype of ind to all individuals in an array of subpopulations.
+ spread the genotype of ind to all individuals in an array of subpopulations.
  The default value of subPop is the subpopulation where ind resides.
 \end_layout
 
 \begin_layout Subsection
-Operator (hybrid)
+Operator (hybrid) 
 \family typewriter
- pyInit
-\begin_inset LatexCommand \index{operator!pyInit}
+pyInit
+\begin_inset LatexCommand index
+name "operator!pyInit"
 
 \end_inset
 
@@ -10986,7 +11392,8 @@ Operator (hybrid)
  function 
 \family typewriter
 PyInit
-\begin_inset LatexCommand \index{function!PyInit}
+\begin_inset LatexCommand index
+name "function!PyInit"
 
 \end_inset
 
@@ -11010,8 +11417,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Init by value
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11030,7 +11445,8 @@ preview false
 
 \begin_layout Section
 Migration
-\begin_inset LatexCommand \index{migrator}
+\begin_inset LatexCommand index
+name "migrator"
 
 \end_inset
 
@@ -11081,9 +11497,9 @@ b
 \begin_layout Itemize
 In the case of proportion, exactly 
 \family typewriter
-r*size_of_subPop_a 
+r*size_of_subPop_a
 \family default
-individuals (chosen by random) will migrate to subpop b.
+ individuals (chosen by random) will migrate to subpop b.
  
 \end_layout
 
@@ -11102,8 +11518,9 @@ New subpopulation can be generated through migration.
 Note that overall population size will not change.
  (Mating schemes can do that).
  If you would like to keep subpop size after migration, you can use the
+ 
 \family typewriter
- newSubPopSize
+newSubPopSize
 \family default
  or 
 \family typewriter
@@ -11116,17 +11533,20 @@ newSubPopSizeExpr
 Constants: 
 \family typewriter
 MigrByProbability
-\begin_inset LatexCommand \index{constant!MigrByProbability}
+\begin_inset LatexCommand index
+name "constant!MigrByProbability"
 
 \end_inset
 
 , MigrByProportion
-\begin_inset LatexCommand \index{constant!MigrByProportion}
+\begin_inset LatexCommand index
+name "constant!MigrByProportion"
 
 \end_inset
 
 , MigrByCount
-\begin_inset LatexCommand \index{constant!MigrByCount}
+\begin_inset LatexCommand index
+name "constant!MigrByCount"
 
 \end_inset
 
@@ -11145,7 +11565,8 @@ mode
 Opertor (C++) 
 \family typewriter
 migrator
-\begin_inset LatexCommand \index{operator!migrator}
+\begin_inset LatexCommand index
+name "operator!migrator"
 
 \end_inset
 
@@ -11169,18 +11590,18 @@ migrator
  From and to subpop can be a number or an array of subpopulations.
  The migration probability/rate/counts from 
 \family typewriter
-i->j 
+i->j
 \family default
-is specified in the rate matrix.
+ is specified in the rate matrix.
  The 
 \family typewriter
 'fromSubPop'
 \family default
  and 
 \family typewriter
-'toSubPop' 
+'toSubPop'
 \family default
-are default to all subpopulations.
+ are default to all subpopulations.
 \end_layout
 
 \begin_layout Standard
@@ -11192,18 +11613,20 @@ An detailed example can be found in 'some real examples' -> 'complex Migration
 Functions (Python) 
 \family typewriter
 MigrIslandRates
-\begin_inset LatexCommand \index{Function!migrIslandRates}
+\begin_inset LatexCommand index
+name "Function!migrIslandRates"
 
 \end_inset
 
 , MigrStepstoneRates
-\begin_inset LatexCommand \index{Function!migrStepstoneRates}
+\begin_inset LatexCommand index
+name "Function!migrStepstoneRates"
 
 \end_inset
 
- 
+
 \family default
-(simuUtil.py)
+ (simuUtil.py)
 \end_layout
 
 \begin_layout Standard
@@ -11236,9 +11659,9 @@ MigrIslandRates(r, n)
 \begin_layout Itemize
 
 \family typewriter
-MigrStepstoneRates(r,n,circular=False) 
+MigrStepstoneRates(r,n,circular=False)
 \family default
-returns a migration matrix
+ returns a migration matrix
 \begin_inset Formula \[
 \left(\begin{array}{ccccc}
 1-r & r\\
@@ -11276,7 +11699,8 @@ A lot of such functions may be defined later.
 Operator (C++/Hybrid) 
 \family typewriter
 pyMigrator
-\begin_inset LatexCommand \index{operator!pyMigrator}
+\begin_inset LatexCommand index
+name "operator!pyMigrator"
 
 \end_inset
 
@@ -11309,8 +11733,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 pyMigrator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11336,17 +11768,17 @@ the application sequence of the operators is
 \family typewriter
 initByFreq
 \family default
-,
+, 
 \family typewriter
- dumper, pyMigrator 
+dumper, pyMigrator
 \family default
-and then 
+ and then 
 \family typewriter
-dumper 
+dumper
 \family default
-again since its stage is set to
+ again since its stage is set to 
 \family typewriter
- PrePostMating
+PrePostMating
 \family default
 .
 \end_layout
@@ -11354,9 +11786,9 @@ again since its stage is set to
 \begin_layout Itemize
 Usually you will use a 
 \family typewriter
-pyEval 
+pyEval
 \family default
-operator to re-assign 
+ operator to re-assign 
 \family typewriter
 spID
 \family default
@@ -11369,14 +11801,16 @@ Operator (C++)
 splitSubPop
 \family default
 
-\begin_inset LatexCommand \index{operator!splitSubPop}
+\begin_inset LatexCommand index
+name "operator!splitSubPop"
 
 \end_inset
 
 , function 
 \family typewriter
 SplitSubPop
-\begin_inset LatexCommand \index{function!SplitSubPop}
+\begin_inset LatexCommand index
+name "function!SplitSubPop"
 
 \end_inset
 
@@ -11414,14 +11848,16 @@ Operator (C++)
 mergeSubPops
 \family default
 
-\begin_inset LatexCommand \index{operator!mergeSubPops}
+\begin_inset LatexCommand index
+name "operator!mergeSubPops"
 
 \end_inset
 
 , function 
 \family typewriter
 MergeSubPops
-\begin_inset LatexCommand \index{function!MergeSubPops}
+\begin_inset LatexCommand index
+name "function!MergeSubPops"
 
 \end_inset
 
@@ -11429,21 +11865,22 @@ MergeSubPops
 \end_layout
 
 \begin_layout Standard
-This operator merges subPopulations
+This operator merges subPopulations 
 \family typewriter
- subPops 
+subPops
 \family default
-(the only parameter) to a single subpopulation.
+ (the only parameter) to a single subpopulation.
  If 
 \family typewriter
-subPops 
+subPops
 \family default
-are ignored, all subpopulations will be merged.
+ are ignored, all subpopulations will be merged.
 \end_layout
 
 \begin_layout Section
 Mutation
-\begin_inset LatexCommand \index{Mutation}
+\begin_inset LatexCommand index
+name "Mutation"
 
 \end_inset
 
@@ -11454,22 +11891,24 @@ Mutation
 
 \family typewriter
 rate
-\begin_inset LatexCommand \index{rate}
+\begin_inset LatexCommand index
+name "rate"
 
 \end_inset
 
- 
+
 \family default
-can be a number (uniform rate) or an array of mutation rates, 
+ can be a number (uniform rate) or an array of mutation rates, 
 \family typewriter
 atLoci
-\begin_inset LatexCommand \index{atLoci}
+\begin_inset LatexCommand index
+name "atLoci"
 
 \end_inset
 
- 
+
 \family default
-is defaulted to all loci.
+ is defaulted to all loci.
  The only differences between the following mutors are they way they actually
  mutate an allele, and corresponding input parameters.
 \end_layout
@@ -11503,16 +11942,18 @@ locus
 Operator (C++) 
 \family typewriter
 kamMutator
-\begin_inset LatexCommand \index{operator!kamMutator}
+\begin_inset LatexCommand index
+name "operator!kamMutator"
 
 \end_inset
 
-, 
+,
 \family default
-function
+ function 
 \family typewriter
- KamMutate
-\begin_inset LatexCommand \index{function!KamMutate}
+KamMutate
+\begin_inset LatexCommand index
+name "function!KamMutate"
 
 \end_inset
 
@@ -11525,7 +11966,8 @@ function
 kamMutator
 \family default
  (K-allele mutator
-\begin_inset LatexCommand \index{mutation!K-allele model}
+\begin_inset LatexCommand index
+name "mutation!K-allele model"
 
 \end_inset
 
@@ -11544,7 +11986,8 @@ kamMutator
 maxAllele
 \family default
 
-\begin_inset LatexCommand \index{maxAllele}
+\begin_inset LatexCommand index
+name "maxAllele"
 
 \end_inset
 
@@ -11558,8 +12001,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 kamMutator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11581,7 +12032,8 @@ You can also specify states for this mutator.
  If 
 \family typewriter
 states
-\begin_inset LatexCommand \index{kamMutator!states}
+\begin_inset LatexCommand index
+name "kamMutator!states"
 
 \end_inset
 
@@ -11591,9 +12043,9 @@ states
  happen among them.
  
 \family typewriter
-states 
+states
 \family default
-is defaulted to 
+ is defaulted to 
 \family typewriter
 1-maxAllele
 \family default
@@ -11605,16 +12057,18 @@ is defaulted to
 Operator (C++) 
 \family typewriter
 smmMutator
-\begin_inset LatexCommand \index{operator!smmMutator}
+\begin_inset LatexCommand index
+name "operator!smmMutator"
 
 \end_inset
 
-, 
+,
 \family default
-function
+ function 
 \family typewriter
- SmmMutate
-\begin_inset LatexCommand \index{function!SmmMutate}
+SmmMutate
+\begin_inset LatexCommand index
+name "function!SmmMutate"
 
 \end_inset
 
@@ -11623,7 +12077,8 @@ function
 
 \begin_layout Standard
 Stepwise mutation model
-\begin_inset LatexCommand \index{mutation!stepwise mutation model}
+\begin_inset LatexCommand index
+name "mutation!stepwise mutation model"
 
 \end_inset
 
@@ -11635,18 +12090,18 @@ Stepwise mutation model
 \end_layout
 
 \begin_layout Standard
-The following example demonstrate the use of
+The following example demonstrate the use of 
 \family typewriter
- smmMutator
+smmMutator
 \family default
 .
  Note that although the mutation rate is 1, some allele 1 is not mutated
  since they can not be mutated to 0.
  The same will hold for the upper bound 
 \family typewriter
-maxAllele 
+maxAllele
 \family default
-which is defaulted to 99 in this case.
+ which is defaulted to 99 in this case.
 \end_layout
 
 \begin_layout Standard
@@ -11655,8 +12110,16 @@ wide false
 sideways false
 status collapsed
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 smmMutator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11677,16 +12140,18 @@ preview false
 Operator (C++/Hybrid) 
 \family typewriter
 gsmMutator
-\begin_inset LatexCommand \index{operator!gsmMutator}
+\begin_inset LatexCommand index
+name "operator!gsmMutator"
 
 \end_inset
 
-, 
+,
 \family default
-function
+ function 
 \family typewriter
- GsmMutate
-\begin_inset LatexCommand \index{function!GsmMutate}
+GsmMutate
+\begin_inset LatexCommand index
+name "function!GsmMutate"
 
 \end_inset
 
@@ -11697,19 +12162,21 @@ function
 
 \emph on
 Generalized stepwise model
-\begin_inset LatexCommand \index{mutation!generalized stepwise model}
+\begin_inset LatexCommand index
+name "mutation!generalized stepwise model"
 
 \end_inset
 
- 
+
 \emph default
-is an extension to stepwise mutation model.
+ is an extension to stepwise mutation model.
  In this model, the change in the allelic state is draw from a random distributi
 on.
  A 
 \emph on
 geometric generalized stepwise model 
-\begin_inset LatexCommand \index{geometric generalized stepwise model}
+\begin_inset LatexCommand index
+name "geometric generalized stepwise model"
 
 \end_inset
 
@@ -11734,9 +12201,9 @@ uses a geometric distribution with parameter
 \begin_layout Standard
 Operator 
 \family typewriter
-gsmMutator 
+gsmMutator
 \family default
-implements both models.
+ implements both models.
  If you specify a python function without parameter, the operator will use
  its return value each time a mutation occur; otherwise, a parameter 
 \begin_inset Formula $p$
@@ -11752,8 +12219,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 gsmMutator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11774,16 +12249,18 @@ preview false
 Operator (Hybrid) 
 \family typewriter
 pyMutator
-\begin_inset LatexCommand \index{operator!pyMutator}
+\begin_inset LatexCommand index
+name "operator!pyMutator"
 
 \end_inset
 
-, 
+,
 \family default
-function
+ function 
 \family typewriter
- PyMutate
-\begin_inset LatexCommand \index{function!PyMutate}
+PyMutate
+\begin_inset LatexCommand index
+name "function!PyMutate"
 
 \end_inset
 
@@ -11797,9 +12274,9 @@ If you can not accomplish your task with the above normal mutator, you can
  a python function to return a new allele state given an old state.
  
 \family typewriter
-pyMutator 
+pyMutator
 \family default
-will choose an allele as usual and call your function to mutate it to another
+ will choose an allele as usual and call your function to mutate it to another
  allele.
  Here is an example:
 \end_layout
@@ -11810,8 +12287,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 pyMutator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11848,16 +12333,18 @@ clearpage
 Operator (C++) 
 \family typewriter
 pointMutator
-\begin_inset LatexCommand \index{operator!pointMutator}
+\begin_inset LatexCommand index
+name "operator!pointMutator"
 
 \end_inset
 
-, 
+,
 \family default
-function
+ function 
 \family typewriter
- PointMutate
-\begin_inset LatexCommand \index{function!PointMutate}
+PointMutate
+\begin_inset LatexCommand index
+name "function!PointMutate"
 
 \end_inset
 
@@ -11867,9 +12354,9 @@ function
 \begin_layout Standard
 
 \family typewriter
-pointMutator, 
+pointMutator,
 \family default
-as its name suggest, does point mutation.
+ as its name suggest, does point mutation.
  It is syntax is:
 \end_layout
 
@@ -11878,24 +12365,24 @@ pointMutator(atLoci, toAllele, atPloidy=[], inds=[], ...)
 \end_layout
 
 \begin_layout Standard
-This mutator will turn alleles at
+This mutator will turn alleles at 
 \family typewriter
- atLoci
+atLoci
 \family default
  on the first chromosome copy to 
 \family typewriter
-toAllele 
+toAllele
 \family default
-for individual 
+ for individual 
 \family typewriter
 inds
 \family default
 .
  You can specify 
 \family typewriter
-atPloidy 
+atPloidy
 \family default
-to mutate other, or all ploidy copy.
+ to mutate other, or all ploidy copy.
 \end_layout
 
 \begin_layout Standard
@@ -11916,7 +12403,8 @@ clearpage
 
 \begin_layout Section
 Recombination
-\begin_inset LatexCommand \index{recombination}
+\begin_inset LatexCommand index
+name "recombination"
 
 \end_inset
 
@@ -11932,7 +12420,8 @@ Only one recombinator is provided.
 Operator (C++) 
 \family typewriter
 recombinator
-\begin_inset LatexCommand \index{operator!recombinator}
+\begin_inset LatexCommand index
+name "operator!recombinator"
 
 \end_inset
 
@@ -11982,9 +12471,9 @@ afterLoci.
 \begin_layout Itemize
 
 \family typewriter
-afterLoci: 
+afterLoci:
 \family default
-recombine after loci 
+ recombine after loci 
 \family typewriter
 afterLoci.
  
@@ -11993,17 +12482,17 @@ afterLoci.
 \begin_layout Itemize
 
 \family typewriter
-maleIntensity, maleRate, maleAfterLoci: 
+maleIntensity, maleRate, maleAfterLoci:
 \family default
-If you need to specify different recombination model for male and female,
+ If you need to specify different recombination model for male and female,
  you can specify these parameters.
  In this case, 
 \family typewriter
-intensity, rate 
+intensity, rate
 \family default
-and
+ and 
 \family typewriter
- afterLoci
+afterLoci
 \family default
  will be treated as female parameters.
 \end_layout
@@ -12014,9 +12503,9 @@ The following example forces recombination (with rate 1, an unrealistic
  10.
  Here I use a 
 \family typewriter
-parentsTagger 
+parentsTagger
 \family default
-to mark the parents of each individual so you can (if you have enough patience)
+ to mark the parents of each individual so you can (if you have enough patience)
  see exactly how recombination works.
  
 \begin_inset Float algorithm
@@ -12024,8 +12513,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Recombinator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -12045,9 +12542,9 @@ preview false
 \begin_layout Standard
 Note that if 
 \family typewriter
-sexChrom() 
+sexChrom()
 \family default
-is true, there is no recombination between the last chromosome (sex chromosomes
+ is true, there is no recombination between the last chromosome (sex chromosomes
  XY) of male individuals.
  This may change later if the exchanges of genes between pseudoautosomal
  region of XY need to be modeled.
@@ -12081,7 +12578,8 @@ locus
 
 \begin_layout Section
 Selection
-\begin_inset LatexCommand \index{selection}
+\begin_inset LatexCommand index
+name "selection"
 
 \end_inset
 
@@ -12096,9 +12594,9 @@ Mechanism
 Genetic selection is tricky to simulate since there are many difference
  
 \emph on
-fitness 
+fitness
 \emph default
-values and many different way to apply selection.
+ values and many different way to apply selection.
  
 \family typewriter
 simuPOP
@@ -12221,9 +12719,9 @@ The same argument applies to arbitrary number of genotypes and random mating.
 \end_layout
 
 \begin_layout Standard
-The following operators, when applied, will set a variable
+The following operators, when applied, will set a variable 
 \family typewriter
- fitness
+fitness
 \family default
  and an indicator so that selector-aware mating scheme can select individuals
  according to these values.
@@ -12238,26 +12736,26 @@ selector along can not do selection! Only mating schemes can actually select
 \begin_layout Itemize
 selector has to be 
 \family typewriter
-PreMating 
+PreMating
 \family default
-operator.
+ operator.
  This is not a problem when you use the operator form of the selectors since
  their default stage is 
 \family typewriter
 PreMating
 \family default
 .
- However, if you use the function form of these selectors in a
+ However, if you use the function form of these selectors in a 
 \family typewriter
- pyOperator
+pyOperator
 \family default
 , make sure to set the stage of 
 \family typewriter
 pyOperator
 \family default
- to
+ to 
 \family typewriter
- PreMating
+PreMating
 \family default
 .
  
@@ -12267,7 +12765,8 @@ pyOperator
 Operator (C++) 
 \family typewriter
 mapSelector
-\begin_inset LatexCommand \index{operator!mapSelector}
+\begin_inset LatexCommand index
+name "operator!mapSelector"
 
 \end_inset
 
@@ -12276,7 +12775,8 @@ mapSelector
 function 
 \family typewriter
 MapSelector
-\begin_inset LatexCommand \index{function!MapSelect}
+\begin_inset LatexCommand index
+name "function!MapSelect"
 
 \end_inset
 
@@ -12336,8 +12836,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 map selector
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -12358,16 +12866,18 @@ preview false
 Operator (C++) 
 \family typewriter
 maSelector
-\begin_inset LatexCommand \index{operator!maSelector}
+\begin_inset LatexCommand index
+name "operator!maSelector"
 
 \end_inset
 
-, 
+,
 \family default
-function 
+ function 
 \family typewriter
 MaSelect
-\begin_inset LatexCommand \index{function!MaSelect}
+\begin_inset LatexCommand index
+name "function!MaSelect"
 
 \end_inset
 
@@ -12377,10 +12887,11 @@ MaSelect
 \begin_layout Standard
 
 \family typewriter
-maSelector 
+maSelector
 \family default
-is called 'multiple-alleles
-\begin_inset LatexCommand \index{selection!multiple-alleles selection}
+ is called 'multiple-alleles
+\begin_inset LatexCommand index
+name "selection!multiple-alleles selection"
 
 \end_inset
 
@@ -12388,14 +12899,14 @@ is called 'multiple-alleles
  It separate alleles into two groups: wildtype and disease alleles.
  wildtype alleles are specified by parameter 
 \family typewriter
-wildtype 
+wildtype
 \family default
-and any other alleles are considered as diseased allele.
+ and any other alleles are considered as diseased allele.
  
 \family typewriter
-maSelector 
+maSelector
 \family default
-accepts an array of fitness
+ accepts an array of fitness
 \end_layout
 
 \begin_layout Itemize
@@ -12410,9 +12921,9 @@ fitness
 \begin_layout Itemize
 For a two-locus model, 
 \family typewriter
-fitness 
+fitness
 \family default
-is the fitness for genotype 
+ is the fitness for genotype 
 \end_layout
 
 \begin_deeper
@@ -12633,7 +13144,8 @@ For more than two-locus, use a table of length
 Operator (C++) 
 \family typewriter
 mlSelector
-\begin_inset LatexCommand \index{operator!mlSelector}
+\begin_inset LatexCommand index
+name "operator!mlSelector"
 
 \end_inset
 
@@ -12642,7 +13154,8 @@ mlSelector
 , function 
 \family typewriter
 MlSelect
-\begin_inset LatexCommand \index{function!MlSelect}
+\begin_inset LatexCommand index
+name "function!MlSelect"
 
 \end_inset
 
@@ -12652,10 +13165,11 @@ MlSelect
 \begin_layout Standard
 
 \family typewriter
-mlSelector 
+mlSelector
 \family default
-is a 'multiple-loci model
-\begin_inset LatexCommand \index{selection!multiple-loci multiplicative model}
+ is a 'multiple-loci model
+\begin_inset LatexCommand index
+name "selection!multiple-loci multiplicative model"
 
 \end_inset
 
@@ -12675,7 +13189,8 @@ mode
 
 \begin_layout Subsubsection*
 SEL_Multiplicative
-\begin_inset LatexCommand \index{constant!SEL\_Multiplicative}
+\begin_inset LatexCommand index
+name "constant!SEL\\_Multiplicative"
 
 \end_inset
 
@@ -12693,7 +13208,8 @@ The fitness is calculated as
 
 \begin_layout Subsubsection*
 SEL_Additive
-\begin_inset LatexCommand \index{constant!SEL\_Additive}
+\begin_inset LatexCommand index
+name "constant!SEL\\_Additive"
 
 \end_inset
 
@@ -12730,7 +13246,8 @@ The fitness is calculated as
 Operator (Hybrid) 
 \family typewriter
 pySelector
-\begin_inset LatexCommand \index{operator!pySelector}
+\begin_inset LatexCommand index
+name "operator!pySelector"
 
 \end_inset
 
@@ -12739,7 +13256,8 @@ pySelector
 , function 
 \family typewriter
 PySelect
-\begin_inset LatexCommand \index{function!PySelect}
+\begin_inset LatexCommand index
+name "function!PySelect"
 
 \end_inset
 
@@ -12749,9 +13267,9 @@ PySelect
 \begin_layout Standard
 
 \family typewriter
-pySelector 
+pySelector
 \family default
-accept a list of susceptibility loci and a Python function.
+ accept a list of susceptibility loci and a Python function.
  For each individual, this operator will pass the genotypes at these loci
  (in the order of 
 \family typewriter
@@ -12790,8 +13308,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 python selector
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -12826,7 +13352,8 @@ clearpage
 
 \begin_layout Section
 Penetrance
-\begin_inset LatexCommand \index{penetrance}
+\begin_inset LatexCommand index
+name "penetrance"
 
 \end_inset
 
@@ -12856,13 +13383,13 @@ DuringMating
  during mating.
  You can also use penetrance as 
 \family typewriter
-PreMating, PostMating 
+PreMating, PostMating
 \family default
-or even 
+ or even 
 \family typewriter
-PrePostMating 
+PrePostMating
 \family default
-operator.
+ operator.
  In these cases, affected status will be set to all individuals according
  to their penetrance value.
  It is also possible to store penetrance in a given information field if
@@ -12907,9 +13434,9 @@ addInfoField('penetrance')
 \end_layout
 
 \begin_layout Itemize
-use e.g.,
+use e.g., 
 \family typewriter
- mlPenetrance(...., infoFields=['penetrance'])
+mlPenetrance(...., infoFields=['penetrance'])
 \family default
  to add penetrance field to the penetrance operator you use.
  You can choose a name other than 'penetrance' as long as the field name
@@ -12923,9 +13450,9 @@ Penetrance functions can be applied to the current, all, or certain number
 \family typewriter
 ancestralGen
 \family default
- parameter, which is default to
+ parameter, which is default to 
 \family typewriter
- -1
+-1
 \family default
  (all available ancestral generations).
  You can set it to 0 if you only need affection status for the current generatio
@@ -12940,25 +13467,28 @@ n, or specify a number
  total generations) to process.
  Note that 
 \family typewriter
-ancestralGen 
+ancestralGen
 \family default
-parameter is ignored if penetrance operator is used as a during mating operator.
+ parameter is ignored if penetrance operator is used as a during mating
+ operator.
 \end_layout
 
 \begin_layout Subsection
-Operator (C++)
+Operator (C++) 
 \family typewriter
- mapPenetrance
+mapPenetrance
 \family default
 
-\begin_inset LatexCommand \index{operator!mapPenetrance}
+\begin_inset LatexCommand index
+name "operator!mapPenetrance"
 
 \end_inset
 
  (post, during-Mating), function 
 \family typewriter
 MapPenetrance
-\begin_inset LatexCommand \index{function!MapPenetrance}
+\begin_inset LatexCommand index
+name "function!MapPenetrance"
 
 \end_inset
 
@@ -12987,14 +13517,16 @@ Operator (C++)
 maPenetrance
 \family default
 
-\begin_inset LatexCommand \index{operator!maPenetrance}
+\begin_inset LatexCommand index
+name "operator!maPenetrance"
 
 \end_inset
 
  (post, during-Mating), function 
 \family typewriter
 MaPenetrance
-\begin_inset LatexCommand \index{function!MaPenetrance}
+\begin_inset LatexCommand index
+name "function!MaPenetrance"
 
 \end_inset
 
@@ -13004,10 +13536,11 @@ MaPenetrance
 \begin_layout Standard
 
 \family typewriter
-maPenetrance 
+maPenetrance
 \family default
-is called 'multiple-alleles
-\begin_inset LatexCommand \index{selection!multiple-alleles penetrance}
+ is called 'multiple-alleles
+\begin_inset LatexCommand index
+name "selection!multiple-alleles penetrance"
 
 \end_inset
 
@@ -13015,14 +13548,14 @@ is called 'multiple-alleles
  It separate alleles into two groups: wildtype and disease alleles.
  wildtype alleles are specified by parameter 
 \family typewriter
-wildtype 
+wildtype
 \family default
-and any other alleles are considered as diseased allele.
+ and any other alleles are considered as diseased allele.
  
 \family typewriter
-maSelector 
+maSelector
 \family default
-accepts an array of fitness for AA, Aa, aa in the single-locus case, and
+ accepts an array of fitness for AA, Aa, aa in the single-locus case, and
  a longer table for multi-locus case.
  Penetrance is then set for any given genotype.
  For example
@@ -13035,26 +13568,28 @@ maPenetrance(loci=[1,5], wildtype=[1], penetrance=[0,0.5,1,0,0,1,0,1,1])
 \begin_layout Standard
 this operator behave the same as the 
 \family typewriter
-mapPenetrance 
+mapPenetrance
 \family default
-example but will work if there are more than one disease alleles.
+ example but will work if there are more than one disease alleles.
  
 \end_layout
 
 \begin_layout Subsection
-Operator (C++)
+Operator (C++) 
 \family typewriter
- mlPenetrance
+mlPenetrance
 \family default
 
-\begin_inset LatexCommand \index{operator!mlPenetrance}
+\begin_inset LatexCommand index
+name "operator!mlPenetrance"
 
 \end_inset
 
 (post, during-Mating), function 
 \family typewriter
 MlPenetrance
-\begin_inset LatexCommand \index{function!MlPenetrance}
+\begin_inset LatexCommand index
+name "function!MlPenetrance"
 
 \end_inset
 
@@ -13069,14 +13604,15 @@ mlPentrance
  is the 'multiple-loci' penetrnace calculator.
  It accepts a list of penetrances and combine them according to the 
 \family typewriter
-mode 
+mode
 \family default
-parameter which can take the values:
+ parameter which can take the values:
 \end_layout
 
 \begin_layout Subsubsection*
 PEN_Multiplicative
-\begin_inset LatexCommand \index{constant!PEN\_Multiplicative}
+\begin_inset LatexCommand index
+name "constant!PEN\\_Multiplicative"
 
 \end_inset
 
@@ -13094,7 +13630,8 @@ The penetrance is calculated as
 
 \begin_layout Subsubsection*
 PEN_Additive
-\begin_inset LatexCommand \index{constant!PEN\_Additive}
+\begin_inset LatexCommand index
+name "constant!PEN\\_Additive"
 
 \end_inset
 
@@ -13129,7 +13666,8 @@ The penetrance is calculated as
 
 \begin_layout Subsubsection*
 PEN_Heterogeneity
-\begin_inset LatexCommand \index{constant!PEN\_Multiplicative}
+\begin_inset LatexCommand index
+name "constant!PEN\\_Multiplicative"
 
 \end_inset
 
@@ -13147,7 +13685,8 @@ The penetrance is calculated as
 
 \begin_layout Standard
 Please refer to 
-\begin_inset LatexCommand \citet{Risch1990}
+\begin_inset LatexCommand citet
+key "Risch1990"
 
 \end_inset
 
@@ -13189,14 +13728,16 @@ Operator (Hybrid)
 pyPenetrance
 \family default
 
-\begin_inset LatexCommand \index{operator!pyPenetrance}
+\begin_inset LatexCommand index
+name "operator!pyPenetrance"
 
 \end_inset
 
 (post, during-Mating), function 
 \family typewriter
 PyPenetrance
-\begin_inset LatexCommand \index{function!PyPenetrance}
+\begin_inset LatexCommand index
+name "function!PyPenetrance"
 
 \end_inset
 
@@ -13213,19 +13754,19 @@ For each individual, user provide a function to calculate penetrance.
 \begin_layout Itemize
 
 \family typewriter
-loci: 
+loci:
 \family default
-disease susceptibility loci.
+ disease susceptibility loci.
  The genotype 
 \emph on
-at these loci 
+at these loci
 \emph default
-will be passed to the provided python function in the form of 
+ will be passed to the provided python function in the form of 
 \family typewriter
 loc1_1, loc1_2, loc2_1, loc2_2, ...
- 
+
 \family default
-if the individuals are diploid.
+ if the individuals are diploid.
 \end_layout
 
 \begin_layout Itemize
@@ -13312,9 +13853,9 @@ pen = pyPenetrance(loci=loci, func=peneFunc( ((0,0.5),(0.3,0.8)) ) )
 \begin_layout Standard
 Now, for any table, you can use 
 \family typewriter
-peneFunc 
+peneFunc
 \family default
-to return a penetrance function that uses this table.
+ to return a penetrance function that uses this table.
 \end_layout
 
 \begin_layout LyX-Code
@@ -13323,7 +13864,8 @@ to return a penetrance function that uses this table.
 
 \begin_layout Section
 Quantitative Trait
-\begin_inset LatexCommand \index{quantitative trait}
+\begin_inset LatexCommand index
+name "quantitative trait"
 
 \end_inset
 
@@ -13354,27 +13896,29 @@ The quantitative trait operators also accept the
 \family typewriter
 ancestralGen
 \family default
- parameter to control the number of generations
+ parameter to control the number of generations 
 \family typewriter
- qtrait
+qtrait
 \family default
  information field will be set.
 \end_layout
 
 \begin_layout Subsection
-Operator (C++)
+Operator (C++) 
 \family typewriter
- mapQuanTrait
+mapQuanTrait
 \family default
 
-\begin_inset LatexCommand \index{operator!mapQuanTrait}
+\begin_inset LatexCommand index
+name "operator!mapQuanTrait"
 
 \end_inset
 
 , function 
 \family typewriter
 MapQuanTrait
-\begin_inset LatexCommand \index{function!MapQuanTrait}
+\begin_inset LatexCommand index
+name "function!MapQuanTrait"
 
 \end_inset
 
@@ -13403,14 +13947,16 @@ Operator (C++)
 maQuanTrait
 \family default
 
-\begin_inset LatexCommand \index{operator!maQuanTrait}
+\begin_inset LatexCommand index
+name "operator!maQuanTrait"
 
 \end_inset
 
 , function 
 \family typewriter
 MaQuanTrait
-\begin_inset LatexCommand \index{function!MaQuanTrait}
+\begin_inset LatexCommand index
+name "function!MaQuanTrait"
 
 \end_inset
 
@@ -13420,10 +13966,11 @@ MaQuanTrait
 \begin_layout Standard
 
 \family typewriter
-maQuanTrait 
+maQuanTrait
 \family default
-is called 'multiple-alleles
-\begin_inset LatexCommand \index{selection!multiple-alleles penetrance}
+ is called 'multiple-alleles
+\begin_inset LatexCommand index
+name "selection!multiple-alleles penetrance"
 
 \end_inset
 
@@ -13431,14 +13978,14 @@ is called 'multiple-alleles
  It separate alleles into two groups: wildtype and disease alleles.
  wildtype alleles are specified by parameter 
 \family typewriter
-wildtype 
+wildtype
 \family default
-and any other alleles are considered as diseased allele.
+ and any other alleles are considered as diseased allele.
  
 \family typewriter
-maQuanTrait 
+maQuanTrait
 \family default
-accepts an array of fitness as described before.
+ accepts an array of fitness as described before.
  Quantitative trait is then set for any given genotype.
  
 \begin_inset Formula $N\left(0,\sigma^{2}\right)$
@@ -13453,14 +14000,16 @@ Operator (C++)
 mlQuanTrait
 \family default
 
-\begin_inset LatexCommand \index{operator!mlQuanTrait}
+\begin_inset LatexCommand index
+name "operator!mlQuanTrait"
 
 \end_inset
 
 , function 
 \family typewriter
 MlQuanTrait
-\begin_inset LatexCommand \index{function!MlQuanTrait}
+\begin_inset LatexCommand index
+name "function!MlQuanTrait"
 
 \end_inset
 
@@ -13475,14 +14024,15 @@ mlQuanTrait
  is the 'multiple-loci' QT calculator.
  It accepts a list of QuanTraits and combine them according to the 
 \family typewriter
-mode 
+mode
 \family default
-parameter which can take the values:
+ parameter which can take the values:
 \end_layout
 
 \begin_layout Subsubsection*
 QT_Multiplicative
-\begin_inset LatexCommand \index{constant!QT\_Multiplicative}
+\begin_inset LatexCommand index
+name "constant!QT\\_Multiplicative"
 
 \end_inset
 
@@ -13500,7 +14050,8 @@ The mean of quantitative trait is calculated as
 
 \begin_layout Subsubsection*
 QT_Additive
-\begin_inset LatexCommand \index{constant!QT\_Additive}
+\begin_inset LatexCommand index
+name "constant!QT\\_Additive"
 
 \end_inset
 
@@ -13549,19 +14100,21 @@ for QT_Additive case.
 \end_layout
 
 \begin_layout Subsection
-Operator (Hybrid)
+Operator (Hybrid) 
 \family typewriter
- pyQuanTrait
+pyQuanTrait
 \family default
 
-\begin_inset LatexCommand \index{operator!pyQuanTrait}
+\begin_inset LatexCommand index
+name "operator!pyQuanTrait"
 
 \end_inset
 
 , function 
 \family typewriter
 PyQuanTrait
-\begin_inset LatexCommand \index{function!PyQuanTrait}
+\begin_inset LatexCommand index
+name "function!PyQuanTrait"
 
 \end_inset
 
@@ -13589,12 +14142,14 @@ clearpage
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Ascertainment}
+\begin_inset LatexCommand label
+name "sec:Ascertainment"
 
 \end_inset
 
 Ascertainment
-\begin_inset LatexCommand \index{ascertainment}
+\begin_inset LatexCommand index
+name "ascertainment"
 
 \end_inset
 
@@ -13635,9 +14190,9 @@ Most of the ascertainment operators support the following options:
 \begin_layout Itemize
 
 \family typewriter
-times: 
+times:
 \family default
-how many times to sample from the population.
+ how many times to sample from the population.
 \end_layout
 
 \begin_layout Itemize
@@ -13676,9 +14231,9 @@ saveAs, format:
 \begin_layout Itemize
 
 \family typewriter
-nameExpr, saveAsExpr: 
+nameExpr, saveAsExpr:
 \family default
-expression version of parameter 
+ expression version of parameter 
 \family typewriter
 name
 \family default
@@ -13696,9 +14251,9 @@ Two forms of sample size specifications are supported: with/without subpopulatio
 n structure.
  For example, the 
 \family typewriter
-size 
+size
 \family default
-parameter of 
+ parameter of 
 \family typewriter
 randomSample
 \family default
@@ -13736,7 +14291,8 @@ The function form of these operators are a bit different from others.
 function 
 \family typewriter
 population::shrinkByIndID
-\begin_inset LatexCommand \index{thrinkByIndInfo}
+\begin_inset LatexCommand index
+name "thrinkByIndInfo"
 
 \end_inset
 
@@ -13746,9 +14302,9 @@ population::shrinkByIndID
 \begin_layout Standard
 This function look at the 
 \family typewriter
-subPopID() 
+subPopID()
 \family default
-field of each individual and remove anyone with value 0.
+ field of each individual and remove anyone with value 0.
  
 \end_layout
 
@@ -13758,7 +14314,8 @@ Operator (C++)
 pySubset
 \family default
 
-\begin_inset LatexCommand \index{operator!pySubset}
+\begin_inset LatexCommand index
+name "operator!pySubset"
 
 \end_inset
 
@@ -13767,7 +14324,8 @@ pySubset
 PySubset
 \family default
 
-\begin_inset LatexCommand \index{function!PySubset}
+\begin_inset LatexCommand index
+name "function!PySubset"
 
 \end_inset
 
@@ -13788,16 +14346,18 @@ subPopID()
 Operator (C++/hybrid) 
 \family typewriter
 pySample
-\begin_inset LatexCommand \index{operator!pySample}
+\begin_inset LatexCommand index
+name "operator!pySample"
 
 \end_inset
 
-, 
+,
 \family default
-function
+ function 
 \family typewriter
- PySample
-\begin_inset LatexCommand \index{function!PySample}
+PySample
+\begin_inset LatexCommand index
+name "function!PySample"
 
 \end_inset
 
@@ -13808,16 +14368,18 @@ function
 
 \family typewriter
 PySample
-\begin_inset LatexCommand \index{function!PySample}
+\begin_inset LatexCommand index
+name "function!PySample"
 
 \end_inset
 
-(pop, info, name, saveAs, format) 
+(pop, info, name, saveAs, format)
 \family default
-or 
+ or 
 \family typewriter
 Sample
-\begin_inset LatexCommand \index{function!Sample}
+\begin_inset LatexCommand index
+name "function!Sample"
 
 \end_inset
 
@@ -13826,17 +14388,19 @@ Sample
  if you already set info for each individual using 
 \family typewriter
 setSubPopID
-\begin_inset LatexCommand \index{population!setInfo}
+\begin_inset LatexCommand index
+name "population!setInfo"
 
 \end_inset
 
-() 
+()
 \family default
-function.
+ function.
  The operator version of these functions are 
 \family typewriter
 pySample
-\begin_inset LatexCommand \index{operator!pySample}
+\begin_inset LatexCommand index
+name "operator!pySample"
 
 \end_inset
 
@@ -13848,16 +14412,18 @@ pySample
 Operator (C++) 
 \family typewriter
 randomSample
-\begin_inset LatexCommand \index{operator!randomSample}
+\begin_inset LatexCommand index
+name "operator!randomSample"
 
 \end_inset
 
-, 
+,
 \family default
-function
+ function 
 \family typewriter
- RandomSample
-\begin_inset LatexCommand \index{function!RandomSample}
+RandomSample
+\begin_inset LatexCommand index
+name "function!RandomSample"
 
 \end_inset
 
@@ -13868,7 +14434,8 @@ function
 
 \family typewriter
 RandomSample
-\begin_inset LatexCommand \index{function!RandomSample}
+\begin_inset LatexCommand index
+name "function!RandomSample"
 
 \end_inset
 
@@ -13884,7 +14451,8 @@ sizes
 randomSample
 \family default
 
-\begin_inset LatexCommand \index{operator!randomSample}
+\begin_inset LatexCommand index
+name "operator!randomSample"
 
 \end_inset
 
@@ -13900,18 +14468,18 @@ size, times, name, nameExpr, saveAs, saveAsExpr, format
 The function form returns the samples directly.
  The operator keeps samples in an array 
 \family typewriter
-name 
+name
 \family default
-in local namespace.
+ in local namespace.
  You can acess them through 
 \family typewriter
 dvars()
 \family default
  or 
 \family typewriter
-vars() 
+vars()
 \family default
-functions.
+ functions.
  
 \end_layout
 
@@ -13923,16 +14491,18 @@ The orginal subpopulation structure/boundary is kept in the samples.
 Opeartor (C++) 
 \family typewriter
 caseControlSample
-\begin_inset LatexCommand \index{operator!caseControlSample}
+\begin_inset LatexCommand index
+name "operator!caseControlSample"
 
 \end_inset
 
-, 
+,
 \family default
-function
+ function 
 \family typewriter
- CaseControlSample
-\begin_inset LatexCommand \index{function!CaseControlSample}
+CaseControlSample
+\begin_inset LatexCommand index
+name "function!CaseControlSample"
 
 \end_inset
 
@@ -13990,8 +14560,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 random sample
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -14014,7 +14592,8 @@ Operator (C++)
 affectedSibpairSample
 \family default
 
-\begin_inset LatexCommand \index{operator!affectedSibpairsSample}
+\begin_inset LatexCommand index
+name "operator!affectedSibpairsSample"
 
 \end_inset
 
@@ -14023,7 +14602,8 @@ affectedSibpairSample
 AffectedSibpairSample
 \family default
 
-\begin_inset LatexCommand \index{function!AffectedSibpairsSample}
+\begin_inset LatexCommand index
+name "function!AffectedSibpairsSample"
 
 \end_inset
 
@@ -14171,9 +14751,9 @@ and finally use this operator (or function)
 \begin_layout LyX-Code
 affectedSibpairSample(size
 \family typewriter
-, 
+,
 \family default
- 
+  
 \family typewriter
 times, name, saveAs, format
 \family default
@@ -14181,12 +14761,12 @@ times, name, saveAs, format
 \end_layout
 
 \begin_layout Standard
-to get samples accessible from
+to get samples accessible from 
 \family typewriter
- dvars().name[i].
- 
+dvars().name[i].
+
 \family default
-Each sample will
+ Each sample will
 \end_layout
 
 \begin_layout Itemize
@@ -14198,9 +14778,9 @@ individual(2n)
 \family default
  and 
 \family typewriter
-individual(2n+1), n=0,1,..., size-1 
+individual(2n+1), n=0,1,..., size-1
 \family default
-are siblings.
+ are siblings.
 \end_layout
 
 \begin_layout Itemize
@@ -14210,17 +14790,17 @@ have an ancestral generation of the same size, with parents to the sibpairs.
 \begin_layout Itemize
 if 
 \family typewriter
-size 
+size
 \family default
-is an array, get 
+ is an array, get 
 \family typewriter
-size[sp] 
+size[sp]
 \family default
-sibpairs from subpop
+ sibpairs from subpop 
 \family typewriter
- sp 
+sp
 \family default
-.
+ .
 \end_layout
 
 \begin_layout Standard
@@ -14254,16 +14834,18 @@ Statistics Calculation
 Operator (C++) 
 \family typewriter
 stat
-\begin_inset LatexCommand \index{operator!stat}
+\begin_inset LatexCommand index
+name "operator!stat"
 
 \end_inset
 
-, 
+,
 \family default
-function 
+ function 
 \family typewriter
 Stat
-\begin_inset LatexCommand \index{function!Stat}
+\begin_inset LatexCommand index
+name "function!Stat"
 
 \end_inset
 
@@ -14317,14 +14899,15 @@ variable:
 \family typewriter
 \series bold
 numSubPop
-\begin_inset LatexCommand \index{stat!numSubPop}
+\begin_inset LatexCommand index
+name "stat!numSubPop"
 
 \end_inset
 
- 
+
 \family default
 \series default
-number of subpopulation
+ number of subpopulation
 \end_layout
 
 \begin_layout Itemize
@@ -14333,7 +14916,8 @@ number of subpopulation
 \family typewriter
 \series bold
 popSize
-\begin_inset LatexCommand \index{stat!popSize}
+\begin_inset LatexCommand index
+name "stat!popSize"
 
 \end_inset
 
@@ -14345,14 +14929,15 @@ popSize
 \family typewriter
 \series bold
 subPopSize
-\begin_inset LatexCommand \index{stat!subPopSize}
+\begin_inset LatexCommand index
+name "stat!subPopSize"
 
 \end_inset
 
-, 
+,
 \family default
 \series default
-an array of subpopulation size.
+ an array of subpopulation size.
  Not available for subpopulations.
 \end_layout
 
@@ -14379,7 +14964,8 @@ variable:
 \family typewriter
 \series bold
 numOfMale
-\begin_inset LatexCommand \index{stat!numOfMale}
+\begin_inset LatexCommand index
+name "stat!numOfMale"
 
 \end_inset
 
@@ -14392,7 +14978,8 @@ numOfMale
 \family typewriter
 \series bold
 numOfFemale
-\begin_inset LatexCommand \index{stat!numOfFemale}
+\begin_inset LatexCommand index
+name "stat!numOfFemale"
 
 \end_inset
 
@@ -14464,10 +15051,10 @@ numOfAlleles=[loc1, loc2, ...]
  where 
 \family typewriter
 \series bold
-loc1 
+loc1
 \family default
 \series default
-etc are absolute locus indices.
+ etc are absolute locus indices.
  
 \end_layout
 
@@ -14486,7 +15073,8 @@ all loci
 \family typewriter
 \series bold
 numOfAlleles
-\begin_inset LatexCommand \index{stat!numOfAlleles}
+\begin_inset LatexCommand index
+name "stat!numOfAlleles"
 
 \end_inset
 
@@ -14506,16 +15094,16 @@ Allele frequency/count
 parameter: 
 \family typewriter
 \series bold
-alleleFreq=[loc1, loc2, ...] 
+alleleFreq=[loc1, loc2, ...]
 \family default
 \series default
-where 
+ where 
 \family typewriter
 \series bold
-loc1 
+loc1
 \family default
 \series default
-etc are loci where allele frequencies will be counted.
+ etc are loci where allele frequencies will be counted.
 \end_layout
 
 \begin_layout Itemize
@@ -14524,13 +15112,13 @@ variable: the following
 carray
 \family default
  objects will be set.
- For example
+ For example 
 \family typewriter
 \series bold
- alleleNum[1][2] 
+alleleNum[1][2]
 \family default
 \series default
-will be the number of allele 2 at locus 1.
+ will be the number of allele 2 at locus 1.
  
 \end_layout
 
@@ -14541,14 +15129,18 @@ will be the number of allele 2 at locus 1.
 \family typewriter
 \series bold
 alleleNum[a]
-\begin_inset LatexCommand \index{stat!alleleNum}
+\begin_inset LatexCommand index
+name "stat!alleleNum"
 
 \end_inset
 
 
 \family default
-, 
+,
+\series default
+ 
 \family typewriter
+\series bold
 subPop[sp]['alleleNum'][a]
 \end_layout
 
@@ -14558,14 +15150,18 @@ subPop[sp]['alleleNum'][a]
 \family typewriter
 \series bold
 alleleFreq[a]
-\begin_inset LatexCommand \index{stat!alleleFreq}
+\begin_inset LatexCommand index
+name "stat!alleleFreq"
 
 \end_inset
 
 
 \family default
-, 
+,
+\series default
+ 
 \family typewriter
+\series bold
 subPop[sp]['alleleFreq'][a]
 \end_layout
 
@@ -14575,9 +15171,8 @@ heterozygote frequency/count
 \end_layout
 
 \begin_layout Itemize
-parameter:
+parameter: 
 \family typewriter
- 
 \series bold
 heteroFreq=[loc1,loc2,...]
 \series default
@@ -14595,7 +15190,8 @@ y.
 \end_deeper
 \begin_layout Itemize
 variables: array of observed heterozygosity
-\begin_inset LatexCommand \index{observed heterozygosity}
+\begin_inset LatexCommand index
+name "observed heterozygosity"
 
 \end_inset
 
@@ -14608,19 +15204,18 @@ heteroNum[
 loc
 \series bold
 ][1]
-\series default
- 
 \family default
-is the number of heterozygote 1x,
+\series default
+ is the number of heterozygote 1x, 
 \series bold
- 
+
 \begin_inset Formula $x\ne1$
 \end_inset
 
 .
- 
+
 \series default
-Number and frequency (proportion) of heterozygotes are calculated for each
+ Number and frequency (proportion) of heterozygotes are calculated for each
  allele.
  
 \end_layout
@@ -14631,18 +15226,15 @@ Number and frequency (proportion) of heterozygotes are calculated for each
 \family typewriter
 \series bold
 HeteroNum[loc]
-\series default
- 
 \family default
-and
+\series default
+ and 
 \family typewriter
- 
 \series bold
 HeterFreq[loc]
-\series default
- 
 \family default
-is the overall heterozygosity number and frequency.
+\series default
+ is the overall heterozygosity number and frequency.
  I.e., number/frequency of genotype 
 \begin_inset Formula $xy$
 \end_inset
@@ -14685,14 +15277,18 @@ HeteroFreq[loc], subPop[sp]['HeteroFreq'][loc]
 \family typewriter
 \series bold
 heteroNum[loc][allele]
-\begin_inset LatexCommand \index{stat!heteroNum}
+\begin_inset LatexCommand index
+name "stat!heteroNum"
 
 \end_inset
 
 
 \family default
-, 
+,
+\series default
+ 
 \family typewriter
+\series bold
 subPop[sp]['heteroNum'][loc][allele]
 \end_layout
 
@@ -14701,14 +15297,18 @@ subPop[sp]['heteroNum'][loc][allele]
 \family typewriter
 \series bold
 heteroFreq[loc][allele]
-\begin_inset LatexCommand \index{stat!heteroFreq}
+\begin_inset LatexCommand index
+name "stat!heteroFreq"
 
 \end_inset
 
 
 \family default
-, 
+,
+\series default
+ 
 \family typewriter
+\series bold
 subPop[sp]['heteroFreq'][loc][allele]
 \end_layout
 
@@ -14726,7 +15326,8 @@ expHetero=[loc1, loc2,...]
 
 \begin_layout Itemize
 Expected heterozygosity
-\begin_inset LatexCommand \index{expected heterozygosity}
+\begin_inset LatexCommand index
+name "expected heterozygosity"
 
 \end_inset
 
@@ -14751,10 +15352,10 @@ homozygosity frequency/count
 \end_layout
 
 \begin_layout Itemize
-parameter:
+parameter: 
 \family typewriter
 \series bold
- homoFreq=[loc1, loc2, ...]
+homoFreq=[loc1, loc2, ...]
 \end_layout
 
 \begin_layout Itemize
@@ -14779,10 +15380,10 @@ homoNum[loc
 homoFreq[loc], subPop[sp]['homoNum'][loc]
 \family default
 \series default
-,
+, 
 \family typewriter
 \series bold
- subPop[sp]['homoFreq'][loc]
+subPop[sp]['homoFreq'][loc]
 \end_layout
 
 \begin_layout Subsubsection*
@@ -14790,9 +15391,7 @@ genotype frequency/count
 \end_layout
 
 \begin_layout Itemize
-parameter:
-\series bold
- 
+parameter: 
 \end_layout
 
 \begin_deeper
@@ -14821,18 +15420,18 @@ hasPhase
 \begin_layout Itemize
 variables: Dictionary variables 
 \family typewriter
-genoNum, genoFreq, subPop[sp]['genoNum'], subPop[sp]['genoFreq'] 
+genoNum, genoFreq, subPop[sp]['genoNum'], subPop[sp]['genoFreq']
 \family default
-will be set.
- Note that the index
+ will be set.
+ Note that the index 
 \family typewriter
- a, b 
+a, b
 \family default
-of 
+ of 
 \family typewriter
-genoFreq[a][b] 
+genoFreq[a][b]
 \family default
-are dictionary keys (unlike list used for alleleFreq etc) so you will get
+ are dictionary keys (unlike list used for alleleFreq etc) so you will get
  KeyError when you use a wrong key.
  
 \family typewriter
@@ -14848,14 +15447,18 @@ genoNum.setDefault(a,{})
 \family typewriter
 \series bold
 genoNum[a][geno]
-\begin_inset LatexCommand \index{stat!genoNum}
+\begin_inset LatexCommand index
+name "stat!genoNum"
 
 \end_inset
 
 
 \family default
-, 
+,
+\series default
+ 
 \family typewriter
+\series bold
 subPop[sp]['genoNum'][a][geno]
 \end_layout
 
@@ -14864,14 +15467,18 @@ subPop[sp]['genoNum'][a][geno]
 \family typewriter
 \series bold
 genoFreq
-\begin_inset LatexCommand \index{stat!genoFreq}
+\begin_inset LatexCommand index
+name "stat!genoFreq"
 
 \end_inset
 
 [a][geno]
 \family default
-, 
+,
+\series default
+ 
 \family typewriter
+\series bold
 subPop[sp]['genoFreq'][a][geno]
 \family default
 \series default
@@ -14926,18 +15533,18 @@ haploNum, haploFreq,
 \family default
  will be set with keys 
 \family typewriter
-0-1-2 
+0-1-2
 \family default
-etc
+ etc
 \family typewriter
 .
- 
+
 \family default
-For example 
+ For example 
 \family typewriter
-haploNum['1-2']['5-6'] 
+haploNum['1-2']['5-6']
 \family default
-is the number of allele pair 
+ is the number of allele pair 
 \family typewriter
 5,6
 \family default
@@ -14950,14 +15557,18 @@ is the number of allele pair
 \family typewriter
 \series bold
 haploNum[haplo]
-\begin_inset LatexCommand \index{stat!haploNum}
+\begin_inset LatexCommand index
+name "stat!haploNum"
 
 \end_inset
 
 
 \family default
-, 
+,
+\series default
+ 
 \family typewriter
+\series bold
 subPop[sp]['haploNum'][haplo]
 \end_layout
 
@@ -14966,14 +15577,18 @@ subPop[sp]['haploNum'][haplo]
 \family typewriter
 \series bold
 haploFreq
-\begin_inset LatexCommand \index{stat!haploFreq}
+\begin_inset LatexCommand index
+name "stat!haploFreq"
 
 \end_inset
 
 [haplo]
 \family default
-, 
+,
+\series default
+ 
 \family typewriter
+\series bold
 subPop[sp]['haploFreq'][haplo]
 \family default
 \series default
@@ -15000,9 +15615,9 @@ LD: LD = [ [1,2], [ 0,1,1,2],[1,2,1,2]]
 \end_layout
 
 \begin_layout Standard
-For each item
+For each item 
 \family typewriter
- [loc1, loc2, allele1, allele2]
+[loc1, loc2, allele1, allele2]
 \family default
 , 
 \begin_inset Formula $D$
@@ -15174,9 +15789,9 @@ LD
 \end_layout
 
 \begin_layout Itemize
-parameter:
+parameter: 
 \family typewriter
- Fst: Fst = [0,1,2]
+Fst: Fst = [0,1,2]
 \family default
 , calculate 
 \begin_inset Formula $F_{st},$
@@ -15193,11 +15808,12 @@ parameter:
  based on alleles at locu 0, 1, 2 respectively.
  The locus-specific values will be used to calculate 
 \family typewriter
-AvgFst 
+AvgFst
 \family default
-etc.
+ etc.
  Terms and values that match 
-\begin_inset LatexCommand \citeauthor{Weir1984}
+\begin_inset LatexCommand citeauthor
+key "Weir1984"
 
 \end_inset
 
@@ -15252,25 +15868,34 @@ variables:
 \family typewriter
 \series bold
 Fst[loc]
-\begin_inset LatexCommand \index{stat!Fst}
+\begin_inset LatexCommand index
+name "stat!Fst"
 
 \end_inset
 
 
 \family default
-, 
+,
+\series default
+ 
 \family typewriter
+\series bold
 Fis[loc]
-\begin_inset LatexCommand \index{stat!Fis}
+\begin_inset LatexCommand index
+name "stat!Fis"
 
 \end_inset
 
 
 \family default
-, 
+,
+\series default
+ 
 \family typewriter
+\series bold
 Fit[loc]
-\begin_inset LatexCommand \index{stat!Fit}
+\begin_inset LatexCommand index
+name "stat!Fit"
 
 \end_inset
 
@@ -15292,12 +15917,14 @@ Relatedness
 \begin_layout Standard
 The relatedness values between two individuals, or two groups of individuals
  are calculated according to 
-\begin_inset LatexCommand \citet{Quller1989}
+\begin_inset LatexCommand citet
+key "Quller1989"
 
 \end_inset
 
  and 
-\begin_inset LatexCommand \citet{Lynch1999}
+\begin_inset LatexCommand citet
+key "Lynch1999"
 
 \end_inset
 
@@ -15336,9 +15963,9 @@ relGroups:
 \begin_layout Itemize
 
 \family typewriter
-relLoci: 
+relLoci:
 \family default
-calculate relativeness values based on 
+ calculate relativeness values based on 
 \family typewriter
 relLoci
 \family default
@@ -15380,10 +16007,11 @@ Expression and Statements
 \end_layout
 
 \begin_layout Subsection
-Operator (C++)
+Operator (C++) 
 \family typewriter
- output
-\begin_inset LatexCommand \index{operator!output}
+output
+\begin_inset LatexCommand index
+name "operator!output"
 
 \end_inset
 
@@ -15410,7 +16038,8 @@ output a newline at the last replicate.
 Operator (Python) 
 \family typewriter
 tab
-\begin_inset LatexCommand \index{operator!tab}
+\begin_inset LatexCommand index
+name "operator!tab"
 
 \end_inset
 
@@ -15426,7 +16055,8 @@ Outpur a tab.
 Operator (Python) 
 \family typewriter
 endl
-\begin_inset LatexCommand \index{operator!endl}
+\begin_inset LatexCommand index
+name "operator!endl"
 
 \end_inset
 
@@ -15442,16 +16072,18 @@ Outpur a new line.
 Operator (hybrid) 
 \family typewriter
 pyEval
-\begin_inset LatexCommand \index{operator!pyEval}
+\begin_inset LatexCommand index
+name "operator!pyEval"
 
 \end_inset
 
-, 
+,
 \family default
-function 
+ function 
 \family typewriter
 PyEval
-\begin_inset LatexCommand \index{function!PyEval}
+\begin_inset LatexCommand index
+name "function!PyEval"
 
 \end_inset
 
@@ -15463,9 +16095,9 @@ We have seen the
 \family typewriter
 expr
 \family default
- and
+ and 
 \family typewriter
- stmts
+stmts
 \family default
  parameter of 
 \family typewriter
@@ -15502,16 +16134,18 @@ varPlotter
 Operator (hybrid) 
 \family typewriter
 pyExec
-\begin_inset LatexCommand \index{operator!pyEval}
+\begin_inset LatexCommand index
+name "operator!pyEval"
 
 \end_inset
 
 
 \family default
-, function
+, function 
 \family typewriter
- PyExec
-\begin_inset LatexCommand \index{function!PyExec}
+PyExec
+\begin_inset LatexCommand index
+name "function!PyExec"
 
 \end_inset
 
@@ -15533,7 +16167,8 @@ ListVars (defined in simuUtil.py)
 
 \family typewriter
 ListVars
-\begin_inset LatexCommand \index{function!listVars}
+\begin_inset LatexCommand index
+name "function!listVars"
 
 \end_inset
 
@@ -15544,13 +16179,13 @@ ListVars
 This function list any variable in an indented text format.
  You can use 
 \family typewriter
-listVar(simuVars) 
+listVar(simuVars)
 \family default
-to have a look at all replicates or 
+ to have a look at all replicates or 
 \family typewriter
-listVar(simuVars[0]['subPop'][0]) 
+listVar(simuVars[0]['subPop'][0])
 \family default
-to see variables for the first subpoulation in replicate one.
+ to see variables for the first subpoulation in replicate one.
 \end_layout
 
 \begin_layout Section
@@ -15575,9 +16210,9 @@ find an appropriate tool.
 write a function to plot variable.
  If you would like to plot history of a variable, you can use the 
 \family typewriter
-Aggregator 
+Aggregator
 \family default
-object defined in 
+ object defined in 
 \family typewriter
 simuUtil.py
 \family default
@@ -15592,22 +16227,22 @@ wrap this function as an operator.
 \begin_layout Standard
 
 \family typewriter
-simuRPy.py 
+simuRPy.py
 \family default
-provides a pure Python operator 
+ provides a pure Python operator 
 \family typewriter
 varPlotter.
- 
+
 \family default
-It is defined in 
+ It is defined in 
 \family typewriter
 simuSciPy
 \family default
  and 
 \family typewriter
-simuMatPlt.py 
+simuMatPlt.py
 \family default
-as well but they are lack of subplot capacity (so the usages are different)
+ as well but they are lack of subplot capacity (so the usages are different)
  due to the limit of SciPy/gplt and MatPlotLib's plotting capacity.
  Also note as of Apr, 2006, the development of gplt in scipy is stopped
  so support of simuPOP/simuSciPy is stopped as well.
@@ -15622,9 +16257,9 @@ varPlotter (simuRPy.py)
 \begin_layout Standard
 The use of 
 \family typewriter
-varPlotter 
+varPlotter
 \family default
-is easy, if you would like to 
+ is easy, if you would like to 
 \end_layout
 
 \begin_layout Subsubsection*
@@ -15654,9 +16289,9 @@ varPlotter(var='expr', varDim=len)
 \begin_layout Standard
 where 
 \family typewriter
-len 
+len
 \family default
-is the dimension of your variable or expression.
+ is the dimension of your variable or expression.
  Each line in the figure represents the history of an item of the array.
 \end_layout
 
@@ -15675,9 +16310,9 @@ varPlotter will try to use an appropriate layout for your subplots (for
  example, use 3x4 if numRep=10).
  You can also specify paramter 
 \family typewriter
-mfrow 
+mfrow
 \family default
-to change the layout.
+ to change the layout.
 \end_layout
 
 \end_deeper
@@ -15702,9 +16337,9 @@ varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
 \begin_layout Standard
 There will be 
 \family typewriter
-numRep 
+numRep
 \family default
-lines in each subplot
+ lines in each subplot
 \end_layout
 
 \end_deeper
@@ -15718,11 +16353,11 @@ use option
 history=False.
 
 \family default
- Parameters
+ Parameters 
 \family typewriter
- byVal, varDim 
+byVal, varDim
 \family default
-etc will be ignored.
+ etc will be ignored.
  
 \end_layout
 
@@ -15746,9 +16381,9 @@ generation
 \begin_layout Enumerate
 
 \family typewriter
-win: 
+win:
 \family default
-window of generations.
+ window of generations.
  I.e., how many generations to keep in a figure.
  This is useful when you want to keep track of only recent changes.
 \end_layout
@@ -15756,9 +16391,9 @@ window of generations.
 \begin_layout Enumerate
 
 \family typewriter
-update: 
+update:
 \family default
-update figure after 
+ update figure after 
 \family typewriter
 update
 \family default
@@ -15770,14 +16405,14 @@ update
 \begin_layout Enumerate
 
 \family typewriter
-saveAs: 
+saveAs:
 \family default
-save figures in files 
+ save figures in files 
 \family typewriter
 saveAs#gen.eps.
- 
+
 \family default
-For example, if 
+ For example, if 
 \family typewriter
 saveAs='demo
 \family default
@@ -15785,9 +16420,9 @@ saveAs='demo
 \family typewriter
 demo1.eps
 \family default
-,
+, 
 \family typewriter
- demo2.eps
+demo2.eps
 \family default
  etc.
 \end_layout
@@ -15804,17 +16439,17 @@ separate:
 \begin_layout Enumerate
 
 \family typewriter
-image: 
+image:
 \family default
-use R image function to plot image, instead of lines.
+ use R image function to plot image, instead of lines.
 \end_layout
 
 \begin_layout Enumerate
 
 \family typewriter
-level: 
+level:
 \family default
-level of image colors.
+ level of image colors.
  default to 20
 \end_layout
 
@@ -15854,60 +16489,60 @@ python/SciPy/MatPltLib
 \begin_layout Standard
 
 \family typewriter
-varPlotter 
+varPlotter
 \family default
-is also available for SciPy/MatPltLib but there is no subplots (so no byVal
+ is also available for SciPy/MatPltLib but there is no subplots (so no byVal
  etc) and the usage is different.
- The
+ The 
 \family typewriter
- __init__
+__init__
 \family default
- function of
+ function of 
 \family typewriter
- varPlotter 
+varPlotter
 \family default
-takes the following parameters:
+ takes the following parameters:
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-win 
+win
 \family default
-window size.
+ window size.
  Actually the number of generations to display.
  default to 0 (no limit).
  If this is set to be a positive number, only the last 
 \family typewriter
-win 
+win
 \family default
-data will be displayed.
+ data will be displayed.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-update 
+update
 \family default
-generations between successive re-draw of figure.
+ generations between successive re-draw of figure.
  We can not use '
 \family typewriter
 step
 \family default
 ' parameter of 
 \family typewriter
-pyEval 
+pyEval
 \family default
-operator since we need to collect data at each generation.
+ operator since we need to collect data at each generation.
  
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-title, xtitle, ytitle 
+title, xtitle, ytitle
 \family default
-titles/labels to be displayed
+ titles/labels to be displayed
 \end_layout
 
 \begin_layout Itemize
@@ -15972,9 +16607,9 @@ Tagging (used for pedigree tracking)
 \begin_layout Subsection
 Operator (C++) 
 \family typewriter
-inheritTagger, 
+inheritTagger,
 \family default
-duringMating
+ duringMating
 \end_layout
 
 \begin_layout Standard
@@ -16024,17 +16659,17 @@ parentsTagger
 \end_layout
 
 \begin_layout Standard
-This during-mating operator set
+This during-mating operator set 
 \family typewriter
- tag()
+tag()
 \family default
 , currently a pair of numbers, of each individual with indices of his/her
  parents in the parent population.
  This info will be used by pedigree-related operators like 
 \family typewriter
-affectedSibpairSample 
+affectedSibpairSample
 \family default
-to track pedigree information.
+ to track pedigree information.
  Since parental population will be discarded or stored after mating, and
  tagging info will be passed with individuals, mating/population change
  etc will not interfere with this simple tagging system.
@@ -16055,15 +16690,16 @@ Sometimes, instead of output data directly, we may want to collect history
 operator (Python) 
 \family typewriter
 collector
-\begin_inset LatexCommand \index{operator!collector}
+\begin_inset LatexCommand index
+name "operator!collector"
 
 \end_inset
 
 
 \family default
-, in
+, in 
 \family typewriter
- simuUtil.py
+simuUtil.py
 \end_layout
 
 \begin_layout Standard
@@ -16084,12 +16720,12 @@ name:
 \begin_layout Itemize
 
 \family typewriter
-expr: 
+expr:
 \family default
-an expression that will be evaluated.
- The result will be converted to a list (if needed) and stored in
+ an expression that will be evaluated.
+ The result will be converted to a list (if needed) and stored in 
 \family typewriter
- name[gen]
+name[gen]
 \family default
 .
 \end_layout
@@ -16113,10 +16749,11 @@ Output
 \end_layout
 
 \begin_layout Subsection
-operator (C++)
+operator (C++) 
 \family typewriter
- savePopulation
-\begin_inset LatexCommand \index{operator!savePopulation}
+savePopulation
+\begin_inset LatexCommand index
+name "operator!savePopulation"
 
 \end_inset
 
@@ -16127,13 +16764,14 @@ operator (C++)
 function (Python) 
 \family typewriter
 SaveFstat
-\begin_inset LatexCommand \index{function!SaveFstat}
+\begin_inset LatexCommand index
+name "function!SaveFstat"
 
 \end_inset
 
- 
+
 \family default
-(in 
+ (in 
 \family typewriter
 simuUtil.py
 \family default
@@ -16144,13 +16782,14 @@ simuUtil.py
 operator (Python) 
 \family typewriter
 saveFstat
-\begin_inset LatexCommand \index{operator!saveFstat}
+\begin_inset LatexCommand index
+name "operator!saveFstat"
 
 \end_inset
 
- 
+
 \family default
-(in 
+ (in 
 \family typewriter
 simuUtil.py
 \family default
@@ -16161,13 +16800,14 @@ simuUtil.py
 function (Python) 
 \family typewriter
 loadFstat
-\begin_inset LatexCommand \index{function!loadFstat}
+\begin_inset LatexCommand index
+name "function!loadFstat"
 
 \end_inset
 
- 
+
 \family default
-(in 
+ (in 
 \family typewriter
 simuUtil.py
 \family default
@@ -16187,7 +16827,8 @@ These operators are used to see if an evolution is running as expected,
 Operator (C++) 
 \family typewriter
 terminateIf
-\begin_inset LatexCommand \index{operator!terminateIf}
+\begin_inset LatexCommand index
+name "operator!terminateIf"
 
 \end_inset
 
@@ -16221,7 +16862,8 @@ alleleFreq
 Operator (C++) 
 \family typewriter
 continueIf
-\begin_inset LatexCommand \index{operator!terminateIf}
+\begin_inset LatexCommand index
+name "operator!terminateIf"
 
 \end_inset
 
@@ -16231,9 +16873,9 @@ continueIf
 \begin_layout Standard
 The same as 
 \family typewriter
-terminateIf 
+terminateIf
 \family default
-but continue if the condition if true.
+ but continue if the condition if true.
 \end_layout
 
 \begin_layout Section
@@ -16244,7 +16886,8 @@ Conditional operator
 Operator (C++) 
 \family typewriter
 ifElse
-\begin_inset LatexCommand \index{operator!ifelse}
+\begin_inset LatexCommand index
+name "operator!ifelse"
 
 \end_inset
 
@@ -16254,18 +16897,18 @@ ifElse
 \begin_layout Standard
 
 \family typewriter
-ifElse 
+ifElse
 \family default
-is an interesting operator.
+ is an interesting operator.
  It accepts:
 \end_layout
 
 \begin_layout Itemize
 an expression that will be evaluated when 
 \family typewriter
-ifelse 
+ifelse
 \family default
-is called.
+ is called.
 \end_layout
 
 \begin_layout Itemize
@@ -16283,9 +16926,9 @@ When this operator is applied to a population, it will evaluate the expression
  and depend on its value, apply the supplied operators.
  Note that the 
 \family typewriter
-begin, at, step, at 
+begin, at, step, at
 \family default
-parameters of if/else operators will be ignored.
+ parameters of if/else operators will be ignored.
  For example, you can mimic the 
 \family typewriter
 at
@@ -16306,9 +16949,9 @@ Anyway, the real use of this machanism is minitoring the population statistics
 \begin_layout Itemize
 set affected status using 
 \family typewriter
-maPenetrance 
+maPenetrance
 \family default
-as a 
+ as a 
 \family typewriter
 DuringMating
 \family default
@@ -16326,18 +16969,18 @@ count the number of affected individuals.
 If no one is effected, inject some mutations into the population.
  Note the use of 
 \family typewriter
-ifElse 
+ifElse
 \family default
-operator.
+ operator.
 \end_layout
 
 \begin_layout Itemize
 expose individual affectedness to local namespaces.
  Note the use of 
 \family typewriter
-exposePop 
+exposePop
 \family default
-option.
+ option.
  With this, you can call any population member function.
 \end_layout
 
@@ -16356,8 +16999,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Conditional operator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -16382,7 +17033,8 @@ Miscellaneous
 Operator: (C++) 
 \family typewriter
 noneOp
-\begin_inset LatexCommand \index{operator!noneOp}
+\begin_inset LatexCommand index
+name "operator!noneOp"
 
 \end_inset
 
@@ -16419,7 +17071,8 @@ simu.evolve( [ ...
 Operator: (C++) 
 \family typewriter
 pause
-\begin_inset LatexCommand \index{operator!pause}
+\begin_inset LatexCommand index
+name "operator!pause"
 
 \end_inset
 
@@ -16470,16 +17123,18 @@ popName
 Operator: (C++) 
 \family typewriter
 ticToc
-\begin_inset LatexCommand \index{operator!ticToc}
+\begin_inset LatexCommand index
+name "operator!ticToc"
 
 \end_inset
 
 
 \family default
-, function
+, function 
 \family typewriter
- TicToc
-\begin_inset LatexCommand \index{function!TicToc}
+TicToc
+\begin_inset LatexCommand index
+name "function!TicToc"
 
 \end_inset
 
@@ -16501,9 +17156,9 @@ turnOnDebug(DBG_PROFILE)
 but this operator has the advantage of measuing duration between several
  generations (set 
 \family typewriter
-step 
+step
 \family default
-parameter.)
+ parameter.)
 \end_layout
 
 \begin_layout Subsection
@@ -16519,9 +17174,9 @@ pop.setAncestralDepth
 \begin_layout Standard
 
 \family typewriter
-setAncestralDepth 
+setAncestralDepth
 \family default
-set the number of ancestral generations to keep in a population.
+ set the number of ancestral generations to keep in a population.
  This is useful when constructing pedigree trees from a population.
  
 \end_layout
@@ -16535,7 +17190,9 @@ Random number generator is a tricky business.
  Reliable and fast RNGs are hard to find and everyone seems to trust/distrust
  certain RNGs.
  To avoid such arguments, I have included all RNGs from GSL (
-\begin_inset LatexCommand \url[The GNU Scientific Library]{http://sources.redhat.com/gsl/}
+\begin_inset LatexCommand url
+name "The GNU Scientific Library"
+target "http://sources.redhat.com/gsl/"
 
 \end_inset
 
@@ -16551,8 +17208,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Random number generator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -16572,27 +17237,29 @@ preview false
 \begin_layout Standard
 If you need to use a random number generator in your 
 \family typewriter
-pyEval 
+pyEval
 \family default
-operator, you can either use python random module (
+ operator, you can either use python random module (
 \family typewriter
 import random
 \family default
 ) or use 
 \family typewriter
 rng
-\begin_inset LatexCommand \index{function!rng}
+\begin_inset LatexCommand index
+name "function!rng"
 
 \end_inset
 
-() 
+()
 \family default
-function to get the random number generator of simuPOP.
+ function to get the random number generator of simuPOP.
  Note that 
 \family typewriter
-rng() 
+rng()
 \family default
-does not have many member functions and it might be tricky to use them correctly.
+ does not have many member functions and it might be tricky to use them
+ correctly.
  (This object is not designed to be used at the Python level.
  For a full list of member functions, check 
 \family typewriter
@@ -16607,8 +17274,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Random number generator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -16657,9 +17332,9 @@ Debug-related operators/functions
 \begin_layout Standard
 Standard 
 \family typewriter
-simuPOP 
+simuPOP
 \family default
-library can print out lots of debug information upon request.
+ library can print out lots of debug information upon request.
  These are mostly for internal debuging use but you can also use them when
  error happens.
  For example, the following code will crash simuPOP:
@@ -16734,7 +17409,8 @@ If the output is overwhelming after you turn on all debug info, you can
 
 \family typewriter
 ListDebugCode
-\begin_inset LatexCommand \index{listDebugCode}
+\begin_inset LatexCommand index
+name "listDebugCode"
 
 \end_inset
 
@@ -16747,36 +17423,40 @@ ListDebugCode
 
 \family typewriter
 turnOnDebug()
-\begin_inset LatexCommand \index{operator!turnOnDebug}
+\begin_inset LatexCommand index
+name "operator!turnOnDebug"
 
 \end_inset
 
 , TurnOnDebug
-\begin_inset LatexCommand \index{Function!TurnOnDebug}
+\begin_inset LatexCommand index
+name "Function!TurnOnDebug"
 
 \end_inset
 
-(code) 
+(code)
 \family default
-turn on a debug code
+ turn on a debug code
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 turnOffDebug()
-\begin_inset LatexCommand \index{operator!turnOffDebug}
+\begin_inset LatexCommand index
+name "operator!turnOffDebug"
 
 \end_inset
 
 , TurnOffDebug
-\begin_inset LatexCommand \index{Function!turnOffDebug}
+\begin_inset LatexCommand index
+name "Function!turnOffDebug"
 
 \end_inset
 
-(code) 
+(code)
 \family default
-turn off debug code
+ turn off debug code
 \end_layout
 
 \begin_layout Standard
@@ -16786,9 +17466,9 @@ turnOnDebug()
 \family default
  and 
 \family typewriter
-turnOffDebug() 
+turnOffDebug()
 \family default
-are operators and accept all operator parameters 
+ are operators and accept all operator parameters 
 \family typewriter
 begin, step
 \family default
@@ -16806,9 +17486,9 @@ turnOndebug
 Another useful debug code is 
 \family typewriter
 DBG_PROFILE.
- 
+
 \family default
-When turned on, it will display running time of each operator.
+ When turned on, it will display running time of each operator.
  This will give you a good sense of which operator runs slowly (or simply
  the order of operator execution if you are not sure).
  If most of the excution time is spent on a pure-python operator, you may
@@ -16850,7 +17530,8 @@ To write smuPOP extension, you will have to know more data structure and
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Genotypic-structure}
+\begin_inset LatexCommand label
+name "sec:Genotypic-structure"
 
 \end_inset
 
@@ -16884,7 +17565,8 @@ Several functions are provided to retrieve genotypic info:
 
 \family typewriter
 ploidy
-\begin_inset LatexCommand \index{function!ploidy}
+\begin_inset LatexCommand index
+name "function!ploidy"
 
 \end_inset
 
@@ -16895,7 +17577,8 @@ ploidy
 
 \family typewriter
 numChrom
-\begin_inset LatexCommand \index{function!numChrom}
+\begin_inset LatexCommand index
+name "function!numChrom"
 
 \end_inset
 
@@ -16906,7 +17589,8 @@ numChrom
 
 \family typewriter
 numLoci
-\begin_inset LatexCommand \index{function!numLoci}
+\begin_inset LatexCommand index
+name "function!numLoci"
 
 \end_inset
 
@@ -16919,7 +17603,8 @@ numLoci
 
 \family typewriter
 totNumLoci
-\begin_inset LatexCommand \index{function!totNumLoci}
+\begin_inset LatexCommand index
+name "function!totNumLoci"
 
 \end_inset
 
@@ -16930,23 +17615,25 @@ totNumLoci
 
 \family typewriter
 genoSize
-\begin_inset LatexCommand \index{function!genoSize}
+\begin_inset LatexCommand index
+name "function!genoSize"
 
 \end_inset
 
 ()
 \family default
 , size of genotype.
- Equals to
+ Equals to 
 \family typewriter
- totNumLoci()*ploidy()
+totNumLoci()*ploidy()
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 alleleName
-\begin_inset LatexCommand \index{function!alleleName}
+\begin_inset LatexCommand index
+name "function!alleleName"
 
 \end_inset
 
@@ -16954,16 +17641,17 @@ alleleName
 \family default
 , if not specified by 
 \family typewriter
-alleleNames 
+alleleNames
 \family default
-parameter when creating a population, return allele number
+ parameter when creating a population, return allele number
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 locusPos
-\begin_inset LatexCommand \index{function!locusPos}
+\begin_inset LatexCommand index
+name "function!locusPos"
 
 \end_inset
 
@@ -16976,15 +17664,16 @@ locusPos
 
 \family typewriter
 arrlociPos
-\begin_inset LatexCommand \index{function!arrLociPos}
+\begin_inset LatexCommand index
+name "function!arrLociPos"
 
 \end_inset
 
 ()
 \family default
-, return an
+, return an 
 \family typewriter
- carray
+carray
 \family default
  of the loci distance.
 \end_layout
@@ -17010,8 +17699,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 geno stru
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17029,7 +17726,8 @@ preview false
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Accessing-genotype-and}
+\begin_inset LatexCommand label
+name "sec:Accessing-genotype-and"
 
 \end_inset
 
@@ -17044,7 +17742,8 @@ Genotype of an individual can be retrieved through the following functions
 
 \family typewriter
 ind.allele
-\begin_inset LatexCommand \index{function!allele}
+\begin_inset LatexCommand index
+name "function!allele"
 
 \end_inset
 
@@ -17055,7 +17754,8 @@ ind.allele
 
 \family typewriter
 ind.setAllele
-\begin_inset LatexCommand \index{function!setAllele}
+\begin_inset LatexCommand index
+name "function!setAllele"
 
 \end_inset
 
@@ -17066,7 +17766,8 @@ ind.setAllele
 
 \family typewriter
 ind.arrGenotype
-\begin_inset LatexCommand \index{function!arrAlleles}
+\begin_inset LatexCommand index
+name "function!arrAlleles"
 
 \end_inset
 
@@ -17076,15 +17777,15 @@ ind.arrGenotype
 \begin_layout Standard
 
 \family typewriter
-p 
+p
 \family default
-means ploidy.
+ means ploidy.
  I.e., the index of copies of chromosomes.
  
 \family typewriter
-ch 
+ch
 \family default
-means chromosome.
+ means chromosome.
  For example
 \end_layout
 
@@ -17108,8 +17809,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 genotype
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17129,9 +17838,9 @@ preview false
 \begin_layout Standard
 Sex, affected status can be accessed through 
 \family typewriter
-sex, setSex, affected, setAffected 
+sex, setSex, affected, setAffected
 \family default
-functions.
+ functions.
 \end_layout
 
 \begin_layout Standard
@@ -17140,8 +17849,16 @@ wide false
 sideways false
 status collapsed
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 genotype
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17159,7 +17876,8 @@ preview false
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand \label{sub:Direct-populaiton-manipulation}
+\begin_inset LatexCommand label
+name "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
@@ -17262,9 +17980,9 @@ evolve(...
 \begin_layout Standard
 
 \family typewriter
-pyOperator 
+pyOperator
 \family default
-is by default a post-mating operator, you can redefine its stage by 
+ is by default a post-mating operator, you can redefine its stage by 
 \family typewriter
 stage
 \family default
@@ -17292,8 +18010,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Tab operator
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17365,9 +18091,9 @@ Wrap this function as an operator.
 \begin_layout Standard
 For example, function 
 \family typewriter
-saveInFstatFormat(pop, output, outputExpr, dict) 
+saveInFstatFormat(pop, output, outputExpr, dict)
 \family default
-saves a population in FSTAT format.
+ saves a population in FSTAT format.
  Its defnition is (first 15 lines)
 \end_layout
 
@@ -17377,8 +18103,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 genotype
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17410,9 +18144,9 @@ saveInFstatFormat(simu.population(1),'a.txt')
 \begin_layout Itemize
 
 \family typewriter
-pop.vars() 
+pop.vars()
 \family default
-is used to evaluate 
+ is used to evaluate 
 \family typewriter
 outputExpr
 \family default
@@ -17423,9 +18157,9 @@ outputExpr
 Then you can wrap this function by an operator, actually a function that
  returns a 
 \family typewriter
-pyEval 
+pyEval
 \family default
-operator:
+ operator:
 \end_layout
 
 \begin_layout Standard
@@ -17434,8 +18168,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 save fstat
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17471,9 +18213,9 @@ saveFstat(at=[-1], outputExpr=r
 \begin_layout Standard
 and generate a 
 \family typewriter
-pyEval 
+pyEval
 \family default
-operator (use above example)
+ operator (use above example)
 \end_layout
 
 \begin_layout LyX-Code
@@ -17505,22 +18247,22 @@ pyEval
  To access that replicate of population, you should use the magic paramter
  
 \family typewriter
-exposePop 
+exposePop
 \family default
-of 
+ of 
 \family typewriter
 pyEval
 \family default
 .
  When set true, 
 \family typewriter
-pyEval 
+pyEval
 \family default
-will automatically set a variable 
+ will automatically set a variable 
 \family typewriter
-pop 
+pop
 \family default
-in the current local namespace before any statement is executed.
+ in the current local namespace before any statement is executed.
  This is why we can call 
 \family typewriter
 saveInFSTATFormat(
@@ -17607,13 +18349,13 @@ build from source and see if your programming environment works well
 \begin_layout Itemize
 to add an operator, make changes in appropriate 
 \family typewriter
-.h 
+.h
 \family default
-file, check 
+ file, check 
 \family typewriter
-simuPOP_common.i 
+simuPOP_common.i
 \family default
-if your operator can not be used.
+ if your operator can not be used.
 \end_layout
 
 \begin_layout Standard
@@ -17634,9 +18376,9 @@ test scripts
 \begin_layout Standard
 There are many test scripts under the 
 \family typewriter
-test 
+test
 \family default
-directory.
+ directory.
  It is recommended that you run the test scripts after you install simuPOP.
  This will make sure that your system is working correctly.
  To run all tests, run
@@ -17701,7 +18443,9 @@ simulator.evolve will check reference count at the end of each generation
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \bibtex[bibtotoc,plainnat]{bib/all}
+\begin_inset LatexCommand bibtex
+options "bibtotoc,plainnat"
+bibfiles "bib/all"
 
 \end_inset
 
@@ -17709,7 +18453,7 @@ simulator.evolve will check reference count at the end of each generation
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \printindex{}
+\begin_inset LatexCommand printindex
 
 \end_inset
 
