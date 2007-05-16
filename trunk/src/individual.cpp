@@ -140,8 +140,8 @@ namespace simuPOP
 #endif
 	}
 
-	/// return genotype as python Numeric.array object
-	/// This is the p'th copy of chromosomes
+	// return genotype as python Numeric.array object
+	// This is the p'th copy of chromosomes
 	PyObject* individual::arrGenotype(UINT p)
 	{
 		CHECKRANGEPLOIDY(p);
@@ -154,8 +154,8 @@ namespace simuPOP
 #endif
 	}
 
-	/// return genotype as python Numeric.array object
-	/// This is the ch chromosome of the pth copy of chromosome
+	// return genotype as python Numeric.array object
+	// This is the ch chromosome of the pth copy of chromosome
 	PyObject* individual::arrGenotype(UINT p, UINT ch)
 	{
 		CHECKRANGEPLOIDY(p);
