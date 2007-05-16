@@ -300,7 +300,7 @@ namespace simuPOP
 
 			// allow compaison of populations in python
 			// only equal or unequal, no greater or less than
-			/// a python function used to compare the population class
+			/// a python function used to compare the population objects
 			int __cmp__(const population& rhs) const;
 
 			/// set population/subpopulation structure given subpopulation sizes

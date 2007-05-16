@@ -83,8 +83,8 @@ namespace simuPOP
     and can be accessed from a single index. For example, for a diploid individual with
     two loci on the first chromosome, one locus on the second, its genotype is arranged
     as <tt> 1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1 </tt> where \c x-y-z represents ploidy \c x
-    chromosome \c y and locus \c z. An allele 2-1-2 can be accessed by
-    allele(4) (by absolute index), allele(2, 1) (by index and ploidy) or allele(1, 1, 0)
+    chromosome \c y and locus \c z. An allele \c 2-1-2 can be accessed by
+    \c allele(4) (by absolute index), \c allele(2, 1) (by index and ploidy) or \c allele(1, 1, 0)
     (by index, ploidy and chromosome).
     */
     /*
@@ -180,27 +180,26 @@ namespace simuPOP
 			/// @name allele, info get/set functions
 			//@{
 
-			/// return an editable array of genotypes??? of an individual
+			/// return an editable array (a Python list of length <tt>totNumLoci()*ploidy()</tt>) of genotypes of an individual
 			/**
-            This function will give the whole genotype. Although this function is
-            not as easy to use as other functions that access allele proporties,???
-            it is the fastest one since you can read/write genotype directly after
-            you obtain the handle of all genotypes through this function.
+            This function returns the whole genotype. Although this function is
+            not as easy to use as other functions that access alleles,
+            it is the fastest one since you can read/write genotype directly.
             */
 			PyObject* arrGenotype();
 
 			/// return only the \c p-th copy of the chromosomes
 			PyObject* arrGenotype(UINT p);
 
-			/// return only the \c ch-th chromosome of the \c p-th copy???
+			/// return only the \c ch-th chromosome of the \c p-th copy
 			PyObject* arrGenotype(UINT p, UINT ch);
 
-            /// return an editable array of all information fields
+            /// return an editable array of all information fields (a Python list of length \c infosSize())
 			PyObject* arrInfo();
 
 			/// return the allele at locus \c index
 			/**
-            \param index absolute index from the beginning of the genotype, ranging from 0
+            \param index absolute index from the beginning of the genotype, ranging from \c 0
                 to <tt> totNumLoci()*ploidy() </tt>
 			 */
 #ifdef SIMUMPI
@@ -216,8 +215,8 @@ namespace simuPOP
 			/// return the allele at locus \c index of the \c p-th copy of the chromosomes
 			/**
             \param index index from the begining of the \c p-th set of the chromosomes, ranging from
-                /c 0 to <tt> totNumLoci() </tt>
-			\param p index of the chromosome sets which will be accessed
+                \c 0 to <tt> totNumLoci() </tt>
+			\param p index of the ploidy
 			*/
 #ifdef SIMUMPI
 			Allele allele(UINT index, UINT p) const;
@@ -233,9 +232,9 @@ namespace simuPOP
             /// return the allele at locus \c index of the \c ch-th chromosome of the \c p-th chromosome set
 			/**
             \param index index from the begining of chromosome \c ch of ploidy \c p,
-                ranging from \c 0 to <tt> numLoci(ch) </tt>.
-			\param p index of the chromosome sets which will be accessed, default to \c 0
-			\param ch index of the chromosome which will be accessed in the \c p-th chromosome set
+                ranging from \c 0 to <tt> numLoci(ch) </tt>
+			\param p index of the polidy
+			\param ch index of the chromosome in the \c p-th chromosome set
 			*/
 #ifdef SIMUMPI
 			Allele allele(UINT index, UINT p, UINT ch) const;
@@ -258,10 +257,6 @@ namespace simuPOP
 			}
 
 			/// return the name of <tt>allele(index, p)</tt>
-			/**
-			\param index index from the begining of the \c p-th set of chromosomes
-			\param p index of the chromosome sets which will be accessed, default to \c 0
-			*/
 			string alleleChar(UINT index, UINT p) const
 			{
 				CHECKRANGEABSLOCUS(index);
@@ -271,11 +266,6 @@ namespace simuPOP
 			}
 
 			/// return the name of <tt>allele(idx, p, ch)</tt>
-			/**
-			\param index index from the begining of the \c p-th set of the chromosomes???
-			\param p index of the chromosome sets which will be accessed, default to \c 0
-			\param ch index of the chromosome which will be accessed in the \c p-th chromosome set
-			*/
 			string alleleChar(UINT index, UINT p, UINT ch) const
 			{
 				CHECKRANGELOCUS(ch, index);
@@ -285,10 +275,11 @@ namespace simuPOP
 				return this->alleleName(allele(index, p, ch));
 			}
 
-			/// Set the allele at locus \c index
+			/// set the allele at locus \c index
 			/**
 			\param allele allele to be set
-			\param index index from the begining of genotype
+			\param index index from the begining of genotype, ranging from \c 0
+                to <tt> totNumLoci()*ploidy() </tt>
 			 */
 #ifdef SIMUMPI
 			void setAllele(Allele allele, UINT index);
@@ -303,8 +294,8 @@ namespace simuPOP
 			/// set the allele at locus \c index of the \c p-th copy of the chromosomes
 			/**
 			\param allele allele to be set
-			\param index index from the begining of genotype
-			\param index of the chromosome sets which will be accessed, default to \c 0
+			\param index index from the begining of the poloidy \c p, ranging from \c 0 to <tt> totNumLoci(p) </tt>
+			\param p index of the poloidy
 			 */
 #ifdef SIMUMPI
 			void setAllele(Allele allele, UINT index, UINT p);
@@ -320,9 +311,9 @@ namespace simuPOP
             /// set the allele at locus \c index of the \c ch-th chromosome in the \c p-th chromosome set
 			/**
 			\param allele allele to be set
-			\param index index from the begining of genotype
-			\param index of the chromosome sets which will be accessed, default to \c 0
-			\param ch index of the chromosome which will be accessed in the \c p-th chromosome set
+			\param index index from the begining of the chromosome, ranging from \c 0 to \c numLoci(ch)
+			\param p index of the ploidy
+			\param ch index of the chromosome in ploidy \c p
 			 */
 #ifdef SIMUMPI
 			void setAllele(Allele allele, UINT index, UINT p, UINT ch);
@@ -368,7 +359,7 @@ namespace simuPOP
 				return (ISSETFLAG(m_flags, m_flagAffected));
 			}
 
-			/// equals to not \c affected()
+			/// equals to <tt>not affected()</tt>
 			bool unaffected() const
 			{
 				return ! affected();
@@ -390,6 +381,10 @@ namespace simuPOP
 			}
 
 			/// return the ID of the subpopulation to which this individual blongs
+			/**
+			\note \c subPopID is not set by default. It only corresponds to the subpopulation
+                in which this individual resides after \c pop::setIndSubPopID is called.
+			*/
 			SubPopID subPopID() const
 			{
 				return m_subPopID;
@@ -414,8 +409,7 @@ namespace simuPOP
 
 			/// get information field \c name
 			/**
-			equivalent to info(infoIdx(name)).
-			
+			Equivalent to <tt>info(infoIdx(name))</tt>.
             \param name name of the information field
 			*/
 			InfoType info(const string& name) const
@@ -426,14 +420,14 @@ namespace simuPOP
 				return m_infoPtr[idx];
 			}
 			
-			/// set information???
+			/// set information field by \c idx 
 			void setInfo(InfoType value, UINT idx)
 			{
 				CHECKRANGEINFO(idx);
 				m_infoPtr[idx] = value;
 			}
 
-			/// set information???
+			/// set information field by \c name
 			void setInfo(InfoType value, const string& name)
 			{
 				int idx = infoIdx(name);
@@ -541,12 +535,14 @@ namespace simuPOP
 
 			// allow compaison of individuals in python
 			// only equal or unequal, no greater or less than
-            /// a python function used to compare the individual class
+            /// a python function used to compare the individual objects
 			int __cmp__(const individual& rhs) const;
 
-			/// there is usally no >, < comparison for individuals
-			/// if order is required, it is a comparison of info.
-			/// this behavior is used in migration.
+			/**
+            There is usally no '>', '<' comparisons for individuals.
+			If order is required, it is a comparison of \c info.
+			This behavior is used in migration.???
+            */
 			bool operator< (const individual& rhs) const
 			{
 				return subPopID() < rhs.subPopID();

@@ -279,7 +279,6 @@ class Doxy2SWIG:
             name = first['name'].firstChild.data
             if name[:8] == 'operator': # Don't handle operators yet.
                 return
-
             # defn = first['definition'].firstChild.data
             defn = ''
             for n in first['definition'].childNodes:
@@ -498,7 +497,6 @@ class Doxy2SWIG:
     
 
     def write_swig(self, out):
-        #print >> out, self.content
         for entry in self.content:
             if entry['ignore']:
                 if entry.has_key('cppArgs'):
@@ -561,6 +559,7 @@ class Doxy2SWIG:
         text = text.replace('</itemize>', r'\end{itemize}')
         text = text.replace('<item>', r'\item ')
         text = text.replace('</item>', ' ')
+        text = text.replace('>','>{}')
         #text = text.replace('<par>', r'\par ')
         #text = text.replace('</par>', ' ')
         return text
@@ -604,6 +603,9 @@ class Doxy2SWIG:
             if entry.has_key('Details') and entry['Details'] != '':
                 print >> out, '\\par\n\\strong{Details}\n\\par'
                 print >> out, '%s' % self.latex_text(entry['Details'])
+            if entry.has_key('note') and entry['note'] != '':
+                print >> out, '\\par\n\\strong{Note}\n\\par'
+                print >> out, '%s' % self.latex_text(entry['note'])
             # only use the first constructor
             constructor = [x for x in self.content if x['type'] == 'constructorofclass_' + entry['Name'] and not x['ignore']]          
             if len(constructor) == 0:
@@ -632,7 +634,8 @@ class Doxy2SWIG:
             if cons.has_key('note') and cons['note'] != '':
                 print >> out, '\\par\n\\strong{Note}\n\\par'
                 print >> out, '%s' % self.latex_text(cons['note'])
-            members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and not x['ignore'] and not '~' in x['Name']]
+            members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and \
+                       not x['ignore'] and not '~' in x['Name'] and not '__' in x['Name']]
             members.sort(lambda x, y: cmp(x['Name'], y['Name']))
             if len(members) == 0:
                 print >> out, '}\n'
