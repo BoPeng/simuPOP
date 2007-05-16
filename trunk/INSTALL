@@ -115,6 +115,12 @@ Windows/ .exe
 Double click the downloaded .exe file, follow the instructions. SimuPOP
 libraries will be installed to the Python site-packages directory.
 
+NOTE: A simuPOP user reported that simuPOP was not usable after installation
+due to a missing file called msvcp71.dll. He solved the problem by downloading
+the file from http://www.dll-files.com/dllindex/dll-files.shtml?msvcp71
+at put it to c:\windows\system. More information about this issue can be found
+at http://mail.python.org/pipermail/python-list/2005-February/305172.html .
+
 
 Linux, MacOSX, Solaris / .tar.gz
 ---------------------------------

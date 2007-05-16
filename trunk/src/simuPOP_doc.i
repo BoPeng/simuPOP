@@ -1657,7 +1657,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::struAddInfoField(const string &field);
+%ignore simuPOP::GenoStruTrait::struAddInfoFields(const vectorstr &fields);
 
 %ignore simuPOP::GenoStruTrait::struSetInfoFields(const vectorstr &fields);
 

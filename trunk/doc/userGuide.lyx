@@ -2277,7 +2277,6 @@ inline false
 status open
 
 \begin_layout Standard
-
 population(size=1000, loci=[1,1], infoFields=['fitness'])
 \end_layout
 
@@ -2422,22 +2421,18 @@ inline false
 status open
 
 \begin_layout Standard
-
 # initialize locus 0 (for common disease)
 \end_layout
 
 \begin_layout Standard
-
 initByFreq(atLoci=[0], alleleFreq=C_f),
 \end_layout
 
 \begin_layout Standard
-
 # initialize locus 1 (for rare disease)
 \end_layout
 
 \begin_layout Standard
-
 initByFreq(atLoci=[1], alleleFreq=R_f),
 \end_layout
 
@@ -2475,7 +2470,6 @@ inline false
 status open
 
 \begin_layout Standard
-
 kamMutator(rate=mu, maxAllele=max_allele)
 \end_layout
 
@@ -2498,7 +2492,6 @@ inline false
 status open
 
 \begin_layout Standard
-
 maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0])
 \end_layout
 
@@ -4346,9 +4339,20 @@ simuPOP provides the following functions to manipulate pedigrees
 \end_layout
 
 \begin_layout Itemize
-If you set ancestral depth of a population to a positive number (default
- 0), ancestral depth number of ancestral generations will be saved to the
- population, which makes a total of ancestral depth + 1 generations.
+If you set 
+\family typewriter
+ancestralDepth
+\family default
+ of a population to a positive number (default 0), 
+\family typewriter
+ancestralDepth
+\family default
+ number of ancestral generations will be saved to the population, which
+ makes a total of 
+\family typewriter
+ancestralDepth + 1
+\family default
+ generations.
 \end_layout
 
 \begin_layout Itemize
@@ -4442,52 +4446,154 @@ You can see that generating multi-generation populations are quite different
 \family typewriter
 scripts/simuComplexDisease.py
 \family default
-), if we need to prepare a population for pedigree sampling, we do something
- like this
+), if we need to prepare a population for pedigree sampling, we can run
+ a simulator like this
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+\begin_inset Caption
+
+\begin_layout Standard
+One-stage simulation for pedigree tracking
+\end_layout
+
+\end_inset
+
+pop = population(...., ancestralDepth=2,
+\end_layout
+
+\begin_layout Standard
+
+    infoFields=['father_idx', 'mother_idx'])
+\end_layout
+
+\begin_layout Standard
+
+simu = simulator(pop, randomMating(numOffspring=2))
+\end_layout
+
+\begin_layout Standard
+
 simu.evolve(
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+
     preOps=[...],
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+
     ops = operators,
 \end_layout
 
-\begin_layout LyX-Code
-    end = 1000 - 2
+\begin_layout Standard
+
+    end = 1000
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+
 )
 \end_layout
 
-\begin_layout LyX-Code
-# need to do this to all replicate if you have more
+\end_inset
+
+
 \end_layout
 
-\begin_layout LyX-Code
-simu.population(0).setAncestralDepth(2)
+\begin_layout Standard
+The problem with this approach is that two generations are saved at all
+ generations, and all mating events produce two offspring.
+ The former is not a big deal but the latter will reduce effective population
+ size of the resulting population.
+ To avoid these problems, a two-stage simulation can be done 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+\begin_inset Caption
+
+\begin_layout Standard
+Two-stage simulation for pedigree tracking
 \end_layout
 
-\begin_layout LyX-Code
-simu.population(0).addInfoFields(['father_idx', 'mother_idx'])
+\end_inset
+
+pop = population(....)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+
+simu = simulator(pop, randomMating())
+\end_layout
+
+\begin_layout Standard
+
+simu.evolve(
+\end_layout
+
+\begin_layout Standard
+
+    preOps=[...],
+\end_layout
+
+\begin_layout Standard
+
+    ops = operators,
+\end_layout
+
+\begin_layout Standard
+
+    end = 1000 - 2
+\end_layout
+
+\begin_layout Standard
+
+)
+\end_layout
+
+\begin_layout Standard
+
+pop = simu.getPopulation(0)
+\end_layout
+
+\begin_layout Standard
+
+pop.setAncestralDepth(2)
+\end_layout
+
+\begin_layout Standard
+
+pop.addInfoFields(['father_idx', 'mother_idx'])
+\end_layout
+
+\begin_layout Standard
+
 operators.append(parentsTagger())
 \end_layout
 
-\begin_layout LyX-Code
-simu.setMatingScheme(randomMating(numOffspring=2))
+\begin_layout Standard
+
+simu = simulator(pop, randomMating(numOffspring=2))
 \end_layout
 
-\begin_layout LyX-Code
-simu.evolve(ops=operators, end=1000)
+\begin_layout Standard
+
+simu.evolve(ops=operators, end=2)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4501,9 +4607,9 @@ That is to say, we separate the simulation into two parts.
 Now, at the end of the simulation, you get a population with multiple generation
 s, with parental information.
  But it is still not easy to obtain pedigrees.
- As a matter of fact, since pedigrees can have intersections, it is not
- even easy to define a pedigree.
- simuPOP provides two pedigree ascertainment operators
+ As a matter of fact, since individuals can belong to multiple pedigrees,
+ it is not even easy to define a pedigree.
+ simuPOP provides a few pedigree ascertainment operators
 \end_layout
 
 \begin_layout Itemize
@@ -4524,6 +4630,14 @@ LargePedigreeSample:
  sample grand parents, their children, and the spouse and children of them.
  Affection status is ignored, although the minimal number of affected individual
 s in each family can be specified.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+NuclearFamilySample: 
+\family default
+sample two-generation pedigrees.
 \end_layout
 
 \begin_layout Standard
