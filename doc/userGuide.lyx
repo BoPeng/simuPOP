@@ -3042,8 +3042,18 @@ use the optimized module by
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 > simuLDDecay.py --optimized
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -3052,8 +3062,19 @@ save the parameters to a config file
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
 > simuLDDecay.py --quiet -s 500 -e 10 --saveConfig decay.cfg
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4511,7 +4532,6 @@ inline false
 status open
 
 \begin_layout Standard
-
 \begin_inset Caption
 
 \begin_layout Standard
@@ -4524,57 +4544,46 @@ pop = population(....)
 \end_layout
 
 \begin_layout Standard
-
 simu = simulator(pop, randomMating())
 \end_layout
 
 \begin_layout Standard
-
 simu.evolve(
 \end_layout
 
 \begin_layout Standard
-
     preOps=[...],
 \end_layout
 
 \begin_layout Standard
-
     ops = operators,
 \end_layout
 
 \begin_layout Standard
-
     end = 1000 - 2
 \end_layout
 
 \begin_layout Standard
-
 )
 \end_layout
 
 \begin_layout Standard
-
 simu.setAncestralDepth(2)
 \end_layout
 
 \begin_layout Standard
-
 simu.addInfoFields(['father_idx', 'mother_idx'])
 \end_layout
 
 \begin_layout Standard
-
 simu.setMatingScheme(randomMating(numOffspring=2))
 \end_layout
 
 \begin_layout Standard
-
 operators.append(parentsTagger())
 \end_layout
 
 \begin_layout Standard
-
 simu.evolve(ops=operators, end=2)
 \end_layout
 
