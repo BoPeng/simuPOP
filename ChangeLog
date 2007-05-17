@@ -27,6 +27,8 @@ version 0.7.10 - (Rev 958) May 9, 2007
   - NEW: add pyTagger operator, which can be used to trace trait values.
   - NEW: update comments, in preparation for the 0.8.0 release
   - NEW: disallow change of genotypic structure of populations in a simulator.
+  - NEW: add simulator::addInfoField, simulator::addInfoFields, simulator::setAncestralDepth
+		and related tests and documents.
 
 
 version 0.7.9 - (Rev 885) Apr 3, 2007

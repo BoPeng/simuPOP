@@ -985,6 +985,10 @@ namespace simuPOP
 			void pushAndDiscard(population& rhs, bool force=false);
 
 			/// ancestral depth of the current population
+			/** \note The returned value is the number of ancestral generations
+				exists in the population, not necessarily equal to the number set by
+				setAncestralDepth().
+			*/
 			UINT ancestralDepth() const
 			{
 				return m_ancestralPops.size();

@@ -144,12 +144,16 @@ namespace simuPOP
 			\param rep number of replicates. Default to \c 1.
 			\param grp group number for each replicate. Operators can
               be applied to a group of replicates using its \c grp parameter.
-            \param applyOpToStoppedReps
-            \param stopIfOneRepStops 
+            \param applyOpToStoppedReps 	If set, the simulator will continue to apply operators
+			to all stopped replicates until all replicates are marked
+			'stopped'.
+            \param stopIfOneRepStops If set, the simulator will stop evolution if one replicate stops.
 			\return a simulator
 			\sa population, mating
 			*/
-			simulator(const population & pop, mating&  matingScheme,
+			simulator(const population & pop, mating&  matingScheme, 
+				bool stopIfOneRepStops=false,
+				bool applyOpToStoppedReps=false,
 				int rep = 1, vectori grp=vectori());
 
 			/// destroy a simulator along with all its populations
@@ -164,6 +168,31 @@ namespace simuPOP
 
             /// deep copy of a simulator
 			simulator * clone() const;
+
+			
+			/// add an information field to all replicates
+			/** 
+			Add an information field to all replicate, and to the
+			simulator itself. This is important because all populations
+			must have the same genotypic information as the simulator.
+			Adding an information field to one or more of the replicates
+			will compromise the integrity of the simulator.
+			\param field information field to be added
+			*/
+			void addInfoField(const string & field, double init=0);
+
+
+			/// add information fields to all replicates
+			/** 
+			Add given information fields to all replicate, and to the
+			simulator itself.
+			*/
+			void addInfoFields(const vectorstr & fields, double init=0);
+
+
+			/// set ancestral depth of all replicates
+			void setAncestralDepth(UINT depth);
+
 
 			/// the \c rep replicate of this simulator
 			/**
@@ -295,7 +324,7 @@ namespace simuPOP
 			\li  all post-mating operators
 			If any pre- or post-mating operator fails to apply, that
 			replicate will be stopped. The behavior of the simulator
-			will be determined by flags \c applyOpToStoppedReps and \c stopIfOneRepStops.
+			will be determined by flags \c applyOpToStoppedReps and \c stopIfOneRepStopss.
 			This is exactly how terminators work.
 			
 			\note that an operator can be applied at multiple stages, e.g.
@@ -335,18 +364,18 @@ namespace simuPOP
 			/// CPPONLY set 'stop' or not if one replicate stops
 			/**
 			If set, the simulator will stop evolution if one replicate stops.
-			\param on turn on or off \c stopIfOneRepStop
+			\param on turn on or off \c stopIfOneRepStops
 			*/
-			bool setStopIfOneRepStop(bool on=true)
+			bool setStopIfOneRepStops(bool on=true)
 			{
-				m_stopIfOneRepStop = on;
+				m_stopIfOneRepStops = on;
 				return(on);
 			}
 
-            /// CPPONLY get the status of \c setStopIfOneRepStop
-			bool stopIfOneRepStop()
+            /// CPPONLY get the status of \c setStopIfOneRepStops
+			bool stopIfOneRepStops()
 			{
-				return(m_stopIfOneRepStop);
+				return(m_stopIfOneRepStops);
 			}
 
 			/// CPPONLY apply operators even if \c rep stops
@@ -445,7 +474,7 @@ namespace simuPOP
 
 				ar & make_nvp("groups", m_groups);
 
-				m_stopIfOneRepStop = false;
+				m_stopIfOneRepStops = false;
 				m_applyOpToStoppedReps = false;
 
 				// only after all replicates are ready do we set gen
@@ -495,7 +524,7 @@ namespace simuPOP
 			/// for example: if stop after one replicate stops
 			///   or stop after all stop
 			///   or if apply operators if stopped.
-			bool m_stopIfOneRepStop;
+			bool m_stopIfOneRepStops;
 
 			bool m_applyOpToStoppedReps;
 

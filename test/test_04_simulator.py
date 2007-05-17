@@ -46,7 +46,7 @@ class TestSimulator(unittest.TestCase):
     def testProperties(self):
         'Testing simulator properties'
         pop = population(size=1, loci=[1])
-        simu = simulator(pop, randomMating(), rep=3)
+        simu = simulator(pop, randomMating(), rep=3, stopIfOneRepStops=True)
         self.assertEqual( simu.numRep(), 3)
         self.assertEqual( simu.gen(), 0)
         self.assertEqual( simu.group(), (0,1,2) )
@@ -54,12 +54,6 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual( simu.group(), (1,1,2) )
         simu.setGen(10)
         self.assertEqual( simu.gen(), 10)
-        self.assertEqual( simu.stopIfOneRepStop(), False)
-        simu.setStopIfOneRepStop()
-        self.assertEqual( simu.stopIfOneRepStop(), True)
-        self.assertEqual( simu.applyOpToStoppedReps(), False)
-        simu.setApplyOpToStoppedReps()
-        self.assertEqual( simu.applyOpToStoppedReps(), True)
         
     def testEvolve(self):
         'Testing function evolve and step'
@@ -177,8 +171,7 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(simu.population(2).dvars().hist, range(21))
         #
         # if    set stopIfOneRepStop
-        simu = simulator(population(1), noMating(), rep=3 )
-        simu.setStopIfOneRepStop()
+        simu = simulator(population(1), noMating(), rep=3, stopIfOneRepStops=True )
         simu.evolve( 
             ops=[ 
                 opRecorder(), 
@@ -194,8 +187,7 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(simu.population(2).dvars().hist, range(11))
         #
         # if set applyOpToStoppedReps
-        simu = simulator(population(1), noMating(), rep=3 )
-        simu.setApplyOpToStoppedReps()
+        simu = simulator(population(1), noMating(), rep=3, applyOpToStoppedReps=True )
         simu.evolve( 
             ops=[ 
                 opRecorder(), 
@@ -209,6 +201,24 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(simu.population(0).dvars().hist, range(21))
         self.assertEqual(simu.population(1).dvars().hist, range(21))
         self.assertEqual(simu.population(2).dvars().hist, range(21))
+
+
+    def testAddInfoField(self):
+        'Testing adding information fields to a simulator'
+        simu = simulator(population(10, infoFields=['a']), randomMating(), rep=3)
+        simu.addInfoField('b')
+        self.assertEqual(simu.infoFields(), ('a', 'b'))
+        simu.addInfoFields(['c', 'd'])
+        simu.setAncestralDepth(2)
+        simu.evolve(ops=[], end=10)
+        self.assertEqual(simu.population(0).ancestralDepth(), 2)
+        self.assertEqual(simu.infoFields(), ('a', 'b', 'c', 'd'))
+        self.assertEqual(simu.population(0).infoFields(), ('a', 'b', 'c', 'd'))
+        simu.population(0).addInfoField('l')
+        self.assertRaises(exceptions.ValueError, simu.addInfoField, 'j')
+        self.assertRaises(exceptions.ValueError, simu.evolve, ops=[])
+        
+
         
 if __name__ == '__main__':
     unittest.main()
