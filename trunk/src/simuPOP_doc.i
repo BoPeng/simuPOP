@@ -1910,8 +1910,8 @@ Details:
     loci on the first chromosome, one locus on the second, its
     genotype is arranged as  1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1
     where x-y-z  represents ploidy x  chromosome y  and locus z . An
-    allele 2-1-2 can be accessed by allele(4) (by absolute index),
-    allele(2, 1) (by index and ploidy) or allele(1, 1, 0) (by index,
+    allele 2-1-2  can be accessed by allele(4)  (by absolute index),
+    allele(2, 1)  (by index and ploidy) or allele(1, 1, 0)  (by index,
     ploidy and chromosome).
 
 "; 
@@ -1957,15 +1957,14 @@ Usage:
 
 Description:
 
-    return an editable array of genotypes??? of an individual
+    return an editable array (a Python list of length
+    totNumLoci()*ploidy() ) of genotypes of an individual
 
 Details:
 
-    This function will give the whole genotype. Although this function
-    is not as easy to use as other functions that access allele
-    proporties,??? it is the fastest one since you can read/write
-    genotype directly after you obtain the handle of all genotypes
-    through this function.
+    This function returns the whole genotype. Although this function
+    is not as easy to use as other functions that access alleles, it
+    is the fastest one since you can read/write genotype directly.
 
 Usage:
 
@@ -1977,8 +1976,7 @@ Usage:
 
 Description:
 
-    return genotype as python Numeric.array object This is the p'th
-    copy of chromosomes
+    return only the p-th  copy of the chromosomes
 
 Usage:
 
@@ -1990,8 +1988,7 @@ Usage:
 
 Description:
 
-    return genotype as python Numeric.array object This is the ch
-    chromosome of the pth copy of chromosome
+    return only the ch-th  chromosome of the p-th  copy
 
 Usage:
 
@@ -2003,7 +2000,8 @@ Usage:
 
 Description:
 
-    return an editable array of all information fields
+    return an editable array of all information fields (a Python list
+    of length infosSize() )
 
 Usage:
 
@@ -2024,7 +2022,7 @@ Usage:
 Arguments:
 
     index:          absolute index from the beginning of the genotype,
-                    ranging from 0 to  totNumLoci()*ploidy()
+                    ranging from 0  to  totNumLoci()*ploidy()
 
 "; 
 
@@ -2042,9 +2040,8 @@ Usage:
 Arguments:
 
     index:          index from the begining of the p-th  set of the
-                    chromosomes, ranging from /c 0 to  totNumLoci()
-    p:              index of the chromosome sets which will be
-                    accessed
+                    chromosomes, ranging from 0  to  totNumLoci()
+    p:              index of the ploidy
 
 "; 
 
@@ -2062,11 +2059,10 @@ Usage:
 Arguments:
 
     index:          index from the begining of chromosome ch  of
-                    ploidy p , ranging from 0  to  numLoci(ch)  .
-    p:              index of the chromosome sets which will be
-                    accessed, default to 0
-    ch:             index of the chromosome which will be accessed in
-                    the p-th  chromosome set
+                    ploidy p , ranging from 0  to  numLoci(ch)
+    p:              index of the polidy
+    ch:             index of the chromosome in the p-th  chromosome
+                    set
 
 "; 
 
@@ -2092,13 +2088,6 @@ Usage:
 
     x.alleleChar(index, p)
 
-Arguments:
-
-    index:          index from the begining of the p-th  set of
-                    chromosomes
-    p:              index of the chromosome sets which will be
-                    accessed, default to 0
-
 "; 
 
 %feature("docstring") simuPOP::individual::alleleChar "
@@ -2111,22 +2100,13 @@ Usage:
 
     x.alleleChar(index, p, ch)
 
-Arguments:
-
-    index:          index from the begining of the p-th  set of the
-                    chromosomes???
-    p:              index of the chromosome sets which will be
-                    accessed, default to 0
-    ch:             index of the chromosome which will be accessed in
-                    the p-th  chromosome set
-
 "; 
 
 %feature("docstring") simuPOP::individual::setAllele "
 
 Description:
 
-    Set the allele at locus index .
+    set the allele at locus index
 
 Usage:
 
@@ -2135,7 +2115,8 @@ Usage:
 Arguments:
 
     allele:         allele to be set
-    index:          index from the begining of genotype
+    index:          index from the begining of genotype, ranging from
+                    0  to  totNumLoci()*ploidy()
 
 "; 
 
@@ -2153,9 +2134,9 @@ Usage:
 Arguments:
 
     allele:         allele to be set
-    index:          index from the begining of genotype
-    index:          of the chromosome sets which will be accessed,
-                    default to 0
+    index:          index from the begining of the poloidy p , ranging
+                    from 0  to  totNumLoci(p)
+    p:              index of the poloidy
 
 "; 
 
@@ -2173,11 +2154,10 @@ Usage:
 Arguments:
 
     allele:         allele to be set
-    index:          index from the begining of genotype
-    index:          of the chromosome sets which will be accessed,
-                    default to 0
-    ch:             index of the chromosome which will be accessed in
-                    the p-th  chromosome set
+    index:          index from the begining of the chromosome, ranging
+                    from 0  to numLoci(ch)
+    p:              index of the ploidy
+    ch:             index of the chromosome in ploidy p
 
 "; 
 
@@ -2277,6 +2257,12 @@ Usage:
 
     x.subPopID()
 
+Note:
+
+    subPopID  is not set by default. It only corresponds to the
+    subpopulation in which this individual resides after
+    pop::setIndSubPopID  is called.
+
 "; 
 
 %feature("docstring") simuPOP::individual::setSubPopID "
@@ -2316,7 +2302,7 @@ Description:
 
 Details:
 
-    equivalent to info(infoIdx(name)).
+    Equivalent to info(infoIdx(name)) .
 
 Usage:
 
@@ -2332,11 +2318,23 @@ Arguments:
 
 Description:
 
-    set information???
+    set information field by idx
 
 Usage:
 
     x.setInfo(value, idx)
+
+"; 
+
+%feature("docstring") simuPOP::individual::setInfo "
+
+Description:
+
+    set information field by name
+
+Usage:
+
+    x.setInfo(value, name)
 
 "; 
 
@@ -2358,7 +2356,7 @@ Usage:
 
 Description:
 
-    a python function used to compare the individual class
+    a python function used to compare the individual objects
 
 Usage:
 
@@ -5883,7 +5881,7 @@ Usage:
 
 Description:
 
-    a python function used to compare the population class
+    a python function used to compare the population objects
 
 Usage:
 
@@ -6635,6 +6633,12 @@ Description:
 Usage:
 
     x.ancestralDepth()
+
+Note:
+
+    The returned value is the number of ancestral generations exists
+    in the population, not necessarily equal to the number set by
+    setAncestralDepth().
 
 "; 
 
@@ -9650,7 +9654,8 @@ Description:
 
 Usage:
 
-    simulator(pop, matingScheme, rep=1, grp=[])
+    simulator(pop, matingScheme, stopIfOneRepStops=False,
+      applyOpToStoppedReps=False, rep=1, grp=[])
 
 Arguments:
 
@@ -9662,8 +9667,11 @@ Arguments:
     grp:            group number for each replicate. Operators can be
                     applied to a group of replicates using its grp
                     parameter.
-    applyOpToStoppedReps:
-    stopIfOneRepStops:
+    applyOpToStoppedReps:If set, the simulator will continue to apply
+                    operators to all stopped replicates until all
+                    replicates are marked 'stopped'.
+    stopIfOneRepStops:If set, the simulator will stop evolution if one
+                    replicate stops.
 
 "; 
 
@@ -9695,6 +9703,59 @@ Description:
 Usage:
 
     x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::simulator::addInfoField "
+
+Description:
+
+    add an information field to all replicates
+
+Details:
+
+    Add an information field to all replicate, and to the simulator
+    itself. This is important because all populations must have the
+    same genotypic information as the simulator. Adding an information
+    field to one or more of the replicates will compromise the
+    integrity of the simulator.
+
+Usage:
+
+    x.addInfoField(field, init=0)
+
+Arguments:
+
+    field:          information field to be added
+
+"; 
+
+%feature("docstring") simuPOP::simulator::addInfoFields "
+
+Description:
+
+    add information fields to all replicates
+
+Details:
+
+    Add given information fields to all replicate, and to the
+    simulator itself.
+
+Usage:
+
+    x.addInfoFields(fields, init=0)
+
+"; 
+
+%feature("docstring") simuPOP::simulator::setAncestralDepth "
+
+Description:
+
+    set ancestral depth of all replicates
+
+Usage:
+
+    x.setAncestralDepth(depth)
 
 "; 
 
@@ -9862,7 +9923,7 @@ Details:
     * all post-mating operators If any pre- or post-mating operator
     fails to apply, that replicate will be stopped. The behavior of
     the simulator will be determined by flags applyOpToStoppedReps
-    and stopIfOneRepStops . This is exactly how terminators work.
+    and stopIfOneRepStopss . This is exactly how terminators work.
 
 Usage:
 
@@ -9894,9 +9955,9 @@ Note:
 
 %ignore simuPOP::simulator::apply(const vectorop ops, bool dryrun=false);
 
-%ignore simuPOP::simulator::setStopIfOneRepStop(bool on=true);
+%ignore simuPOP::simulator::setStopIfOneRepStops(bool on=true);
 
-%ignore simuPOP::simulator::stopIfOneRepStop();
+%ignore simuPOP::simulator::stopIfOneRepStops();
 
 %ignore simuPOP::simulator::setApplyOpToStoppedReps(bool on=true);
 
