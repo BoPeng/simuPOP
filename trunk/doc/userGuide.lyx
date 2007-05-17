@@ -1,5 +1,5 @@
 #LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 270
+\lyxformat 271
 \begin_document
 \begin_header
 \textclass manual
@@ -18,7 +18,7 @@
 
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.7.6 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.7.10 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. MD Anderson Cancer Center}\\
 {\bf Email: }{\textsf bpeng@mdanderson.org}\\
@@ -4456,7 +4456,6 @@ inline false
 status open
 
 \begin_layout Standard
-
 \begin_inset Caption
 
 \begin_layout Standard
@@ -4469,37 +4468,30 @@ pop = population(...., ancestralDepth=2,
 \end_layout
 
 \begin_layout Standard
-
     infoFields=['father_idx', 'mother_idx'])
 \end_layout
 
 \begin_layout Standard
-
 simu = simulator(pop, randomMating(numOffspring=2))
 \end_layout
 
 \begin_layout Standard
-
 simu.evolve(
 \end_layout
 
 \begin_layout Standard
-
     preOps=[...],
 \end_layout
 
 \begin_layout Standard
-
     ops = operators,
 \end_layout
 
 \begin_layout Standard
-
     end = 1000
 \end_layout
 
 \begin_layout Standard
-
 )
 \end_layout
 
@@ -4563,27 +4555,22 @@ simu.evolve(
 
 \begin_layout Standard
 
-pop = simu.getPopulation(0)
+simu.setAncestralDepth(2)
 \end_layout
 
 \begin_layout Standard
 
-pop.setAncestralDepth(2)
+simu.addInfoFields(['father_idx', 'mother_idx'])
 \end_layout
 
 \begin_layout Standard
 
-pop.addInfoFields(['father_idx', 'mother_idx'])
+simu.setMatingScheme(randomMating(numOffspring=2))
 \end_layout
 
 \begin_layout Standard
 
 operators.append(parentsTagger())
-\end_layout
-
-\begin_layout Standard
-
-simu = simulator(pop, randomMating(numOffspring=2))
 \end_layout
 
 \begin_layout Standard
@@ -4599,8 +4586,25 @@ simu.evolve(ops=operators, end=2)
 \begin_layout Standard
 That is to say, we separate the simulation into two parts.
  The first part is geared toward performance and maximum effective population
- size (use true random mating), and the second part is tweaked for the fianl
+ size (use true random mating), and the second part is tweaked for the final
  multi-generation population.
+ Note that 
+\family typewriter
+setAncestralDepth 
+\family default
+and 
+\family typewriter
+addInfoFields
+\family default
+ should be done at the simulator level so that every replicates in the simulator
+ have the same new information fields.
+ 
+\family typewriter
+simu.population(0).addInfoFields(['father_idx', 'mother_idx']) 
+\family default
+will compromise the integrity of the simulator and is disallowed.
+ (Integrity refers to the fact that all populations in a simulator should
+ have the same genotypic structure as the simulator).
 \end_layout
 
 \begin_layout Standard
