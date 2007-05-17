@@ -35,9 +35,12 @@ namespace simuPOP
 
 	simulator::simulator(const population & pop,
 		mating&  matingScheme,
+		bool stopIfOneRepStops,
+		bool applyOpToStoppedReps,
 		int rep , vectori grp)
 		: m_gen(0), m_curRep(0), m_numRep(rep), m_groups(0),
-		m_stopIfOneRepStop(false), m_applyOpToStoppedReps(false)
+		m_stopIfOneRepStops(stopIfOneRepStops), 
+		m_applyOpToStoppedReps(applyOpToStoppedReps)
 	{
 		DBG_ASSERT(m_numRep >= 1, ValueError,
 			"Number of replicates should be greater than or equal one.");
@@ -110,12 +113,79 @@ namespace simuPOP
 	simulator * simulator::clone() const
 	{
 		simulator * simu = new simulator(population(0),
-			*m_matingScheme, m_numRep, m_groups);
+			*m_matingScheme, m_stopIfOneRepStops,
+			m_applyOpToStoppedReps, m_numRep, m_groups);
 		for(size_t i=0; i < m_numRep; ++i)
 			simu->setPopulation(*m_ptrRep[i], i);
 		return simu;
 	}
 
+	void simulator::addInfoField(const string & field, double init)
+	{
+		vectorstr newfields;
+		try
+		{
+			infoIdx(field);
+		}
+		catch(IndexError &)
+		{
+			newfields.push_back(field);
+		}
+
+		if (!newfields.empty())
+			setGenoStructure(struAddInfoFields(newfields));
+		// all replicate
+		for (UINT i = 0; i < m_numRep; ++i) {
+			m_ptrRep[i]->addInfoField(field, init);
+			DBG_ASSERT(genoStruIdx() == m_ptrRep[i]->genoStruIdx(),
+				ValueError, "Genotypic structure of one of the "
+				"replicates does not agree with the structure of the simulator");
+		}
+		// and the scratch pop
+		m_scratchPop->addInfoField(field, init);
+		DBG_ASSERT(genoStruIdx() == m_scratchPop->genoStruIdx(),
+			ValueError, "Genotypic structure of one of the "
+			"replicates does not agree with the structure of the simulator");
+	}
+
+	void simulator::addInfoFields(const vectorstr & fields, double init)
+	{
+		vectorstr newfields;
+		for(vectorstr::const_iterator it=fields.begin(); it!=fields.end(); ++it)
+		{
+			try
+			{
+				infoIdx(*it);
+			}
+			catch(IndexError &)
+			{
+				newfields.push_back(*it);
+			}
+		}
+
+		if (!newfields.empty())
+			setGenoStructure(struAddInfoFields(newfields));
+
+		for (UINT i = 0; i < m_numRep; ++i)
+		{
+			m_ptrRep[i]->addInfoFields(fields, init);
+			DBG_ASSERT(genoStruIdx() == m_ptrRep[i]->genoStruIdx(),
+				ValueError, "Genotypic structure of one of the "
+				"replicates does not agree with the structure of the simulator");
+		}
+		m_scratchPop->addInfoFields(fields, init);
+		DBG_ASSERT(genoStruIdx() == m_scratchPop->genoStruIdx(),
+			ValueError, "Genotypic structure of one of the "
+			"replicates does not agree with the structure of the simulator");
+	}
+	
+	void simulator::setAncestralDepth(UINT depth)
+	{
+		for (UINT i = 0; i < m_numRep; ++i)
+			m_ptrRep[i]->setAncestralDepth(depth);
+		m_scratchPop->setAncestralDepth(depth);
+	}
+	
 	void simulator::setMatingScheme(const mating& matingScheme)
 	{
 		delete m_matingScheme;
@@ -387,7 +457,7 @@ namespace simuPOP
 			if(dryrun)
 				break;
 
-			// if one replicate stop and stopIfOneRepStop is set,
+			// if one replicate stop and stopIfOneRepStops is set,
 			// or if all replicates stop, or reach ending gen, stop iteration.
 			// count the number of stopped replicates
 			DBG_DO(DBG_SIMULATOR, cout << endl << "Number of stopped replicates: " << numStopped << endl);
@@ -407,7 +477,7 @@ namespace simuPOP
 			//    cur, end = cur +1
 			//    will go two generations.
 			//  therefore, step should:
-			if ( (numStopped >= 1 && m_stopIfOneRepStop)
+			if ( (numStopped >= 1 && m_stopIfOneRepStops)
 				|| numStopped >= m_numRep || (end >= 0
 				&& gen() > static_cast<UINT>(end)))
 				break;
