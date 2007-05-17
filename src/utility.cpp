@@ -923,7 +923,12 @@ namespace simuPOP
 		if( curType == 1 )
 			curChild = PyDict_GetItem(curParent, curKey);
 		else
-			curChild = PyList_GetItem(curParent, curIdx);
+		{
+			if (curIdx < PyList_Size(curParent))
+				curChild = PyList_GetItem(curParent, curIdx);
+			else
+				return;
+		}
 
 		// maybe the item has been removed?
 		if(curChild == NULL)
