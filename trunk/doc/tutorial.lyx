@@ -1,0 +1,250 @@
+#LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
+\lyxformat 271
+\begin_document
+\begin_header
+\textclass beamer
+\begin_preamble
+% meta information
+\usepackage{hyperref}
+\hypersetup{
+  pdfauthor={Bo Peng},
+  pdftitle = {On the allelic structure of human diseases, a simulation study},
+  pdfkeywords = {common disease common variant, simuPOP, simulation, allelic spectrum},
+  pdfcreator = {pdflatex + latex/beamer class},
+  pdfproducer = {pdflatex},
+  pdfpagemode=FullScreen
+}
+
+\beamertemplateshadingbackground{red!5}{structure!5}
+
+\usepackage{times}
+\usepackage{beamerthemeshadow}
+%\usetheme{JuanLesPins}
+\end_preamble
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "Bo Peng" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Forward-time simulations using simuPOP, a tutorial
+\begin_inset OptArg
+status collapsed
+
+\begin_layout Standard
+simuPOP tutorial
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Bo Peng
+\end_layout
+
+\begin_layout Institute
+Ph.D.
+\newline
+Department of Epidemiology
+\newline
+UT MD Anderson Cancer Center
+\newline
+Houston, TX
+\end_layout
+
+\begin_layout Date
+June.
+ 6, 2007
+\newline
+UT MD Anderson Cancer Center
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+% Show the table of contents at the beginning
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+% of every subsection.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+AtBeginSubsection[]{
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+  
+\backslash
+frame<handout:0>{ 
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+    
+\backslash
+frametitle{Outline}   
+\backslash
+tableofcontents[sections={
+\backslash
+thesection},currentsubsection] }
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+outline
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand tableofcontents
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+[subsectionstyle=hide]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Section
+What is simuPOP
+\end_layout
+
+\begin_layout BeginFrame
+s
+\end_layout
+
+\begin_layout Standard
+dfdfd
+\end_layout
+
+\begin_layout Section
+How can simuPOP be used
+\end_layout
+
+\begin_layout BeginFrame
+2
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+[fragile]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+\color foreground
+>>> from simuPOP import *
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document
