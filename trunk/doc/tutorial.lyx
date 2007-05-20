@@ -212,13 +212,12 @@ How can simuPOP be used
 \end_layout
 
 \begin_layout BeginFrame
-2
 \begin_inset ERT
 status open
 
 \begin_layout Standard
 
-[fragile]
+<fragile>other
 \end_layout
 
 \end_inset
@@ -233,7 +232,6 @@ status open
 
 \begin_layout Standard
 
-\color foreground
 >>> from simuPOP import *
 \end_layout
 

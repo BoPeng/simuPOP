@@ -1,14 +1,12 @@
 #LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 270
+\lyxformat 271
 \begin_document
 \begin_header
 \textclass manual
 \begin_preamble
-\floatname{algorithm}{Example}
-
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.7.6 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.7.10 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. MD Anderson Cancer Center}\\
 {\bf Email: }{\textsf bpeng@mdanderson.org}\\
@@ -54,10 +52,11 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "language=Python,xleftmargin=30pt,basicstyle=\ttfamily,frame=Tb,showspaces=false,showtabs=false"
+\listings_params "language=Python,xleftmargin=15pt,basicstyle=\ttfamily,showspaces=false,showtabs=false"
 \tracking_changes false
 \output_changes false
 \author "Bo Peng" 
+\author "Yaji" 
 \end_header
 
 \begin_body
@@ -634,31 +633,8 @@ absLocusIndex(chrom,index)
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Conversion between absolute and relative indices
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/absIndex.log}
+\begin_inset Include \lstinputlisting{log/absIndex.log}[caption={Conversion between absolute and relative indices},label={absIndex}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -4112,7 +4088,6 @@ inline false
 status open
 
 \begin_layout Standard
-
 help(population.__init__)
 \end_layout
 
@@ -4268,36 +4243,8 @@ reference "alg:population-init"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:population-init"
-
-\end_inset
-
-Use of population function
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/popInit.log}
+\begin_inset Include \lstinputlisting{log/popInit.log}[caption={Use of population function},label={popInit}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -4312,12 +4259,22 @@ Copying a population
 Like many other python operations,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pop = population(...)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 pop1 = pop
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4342,8 +4299,18 @@ pop
  If you would like to have an independent copy, use
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pop1 = pop.clone()
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4354,8 +4321,18 @@ simu
  is a simulator with several replicates,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pop = simu.population(idx)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4369,24 +4346,44 @@ pop
  distroyed so the following calling sequence will crash python.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pop = simu.population(idx)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 simu = simulator(....)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 pop.savePopulation(....)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 If you would like to get a real copy, use
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pop = simu.getPopulation(idx)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -4415,36 +4412,8 @@ apply()
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:popAndOp"
-
-\end_inset
-
-Population and operators
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/popAndOperator.log}
+\begin_inset Include \lstinputlisting{log/popAndOperator.log}[caption={Population and operators},label={popAndOperator}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -4504,16 +4473,36 @@ apply()
  For example, you can initialize a population outside a simulator by 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 initByFreq( [0.3, .2, .5] ).apply(pop)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 or dump the content of a population by
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 dumper().apply(pop)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4531,31 +4520,8 @@ initByFreq
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Function InitByFreq
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/InitByFreq.log}
+\begin_inset Include \lstinputlisting{log/InitByFreq.log}[caption={Function InitByFreq},label={InitByFreq}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -4575,16 +4541,26 @@ The following two calling sequences have different consequences:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pop = population(10)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 simu = simulator(pop, randomMating(), rep=3)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 simu.evolve( preOps = [initByFreq([.8,.2]) ] )
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4595,16 +4571,26 @@ initByFreq
  object is applied to three populations.) but
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pop = population(10)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 InitByFreq(pop, [.8, .2])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 simu = simulator(pop, randomMating(), rep=3)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4620,28 +4606,48 @@ If you are going to call such a function many times, it is more efficient
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 init = initByFreq([.8,.2])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 for i in range(0,1000):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   init.apply(pop[i])
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 than 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 for i in range(0,1000):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   InitByFreq(pop[i], [.8,.2])
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4742,36 +4748,8 @@ reference "alg:Operator-dumper-and-initByFreq"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:Operator-dumper-and-initByFreq"
-
-\end_inset
-
-Operator dumper and initByFreq
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/dumpPop.log}
+\begin_inset Include \lstinputlisting{log/dumpPop.log}[caption={Operator dumper and initByFreq},label={dumpPop}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -4897,31 +4875,8 @@ name "population!absIndIndex"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-population structure functions
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/popStru.log}
+\begin_inset Include \lstinputlisting{log/popStru.log}[caption={population structure functions},label={popStru}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -5152,36 +5107,8 @@ removeLoci.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:population-structure-functions"
-
-\end_inset
-
-population structure functions
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/popStruManip.log}
+\begin_inset Include \lstinputlisting{log/popStruManip.log}[caption={population structure functions},label={popStruManip}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -5255,32 +5182,52 @@ individuals(), individuals(subPop):
 The iterator can simplify the access of individuals, by using
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 for ind in pop.individuals(2):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   # do something to ind
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   print ind.affected()
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 instead of the older
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 for i in range(pop.popSize()):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   ind = pop.individual(i)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   print ind.affected()
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5297,31 +5244,8 @@ individual
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Individual member functions
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/ind.log}
+\begin_inset Include \lstinputlisting{log/ind.log}[caption={Individual member functions},label={ind}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -6172,36 +6096,8 @@ subPop: whether or not display variables for each subpopulations
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:Population-variables"
-
-\end_inset
-
-Population variables
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/popVars.log}
+\begin_inset Include \lstinputlisting{log/popVars.log}[caption={Population variables},label={popVars}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -6230,31 +6126,8 @@ Local namespace
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Local namespaces of populations
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/localNamespace.log}
+\begin_inset Include \lstinputlisting{log/localNamespace.log}[caption={Local namespaces of populations},label={localNamespace}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -6471,20 +6344,40 @@ setIndInfo(values, idx or name).
  a population unordered, you can use 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 setIndInfo(values, idx)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 Otherwise, you will have to use the less efficient way:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 for i in range(pop.popSize()):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     pop.individual(i).setInfo(values[i], idx)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6505,28 +6398,38 @@ arrIndInfo,
  you would usually do:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 idx = pop.infoIdx('trait2')
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 step = pop.infoSize()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 arr = pop.arrIndInfo(subPop=2)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 for i in range(pop.subPopSize(2)):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   # note again that arr is writable.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   arr[idx + step*i] = something
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -6603,16 +6506,26 @@ setAncestralDepth()
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 simu.evolve(...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   setAncestralDepth(3, at=[-3])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 )
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6673,36 +6586,8 @@ stat
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:Ancestral-populations"
-
-\end_inset
-
-Ancestral populations
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/ancestralPop.log}
+\begin_inset Include \lstinputlisting{log/ancestralPop.log}[caption={Ancestral populations},label={ancestralPop}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -6857,31 +6742,8 @@ name "text format"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Save and load population
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/popSaveLoad.log}
+\begin_inset Include \lstinputlisting{log/popSaveLoad.log}[caption={Save and load population},label={popSaveLoad}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -6956,20 +6818,30 @@ Shared variables will also be saved (except for big objects like samples).
  For example, you can 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pop.vars().clear()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 pop.dvars().migrationRate = 0.002
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 pop.dvars().diseaseLoci = [4, 30]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 SavePopulation(pop, 'pop.bin')
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -6986,8 +6858,18 @@ simuViewPop.py
  First, you can use this script as a standalone application, simply run
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 simuViewPop.py mypop.bin
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7005,16 +6887,26 @@ viewPop
  For example,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 import simuViewPop
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 simuViewPop.viewPop(myPop)
 \end_layout
 
-\begin_layout LyX-Code
-simuViewPop.viewPop(filename='mypop.bin') 
+\begin_layout Standard
+simuViewPop.viewPop(filename='mypop.bin')
+\end_layout
+
+\end_inset
+
+ 
 \end_layout
 
 \begin_layout Chapter
@@ -7429,36 +7321,56 @@ spliPopulation
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def lin_exp(gen, oldSize=[]):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   if gen < 200:   # burn in, constant population size
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     return [1000]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   else:           # increase subpopulation sizes
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     incSize = (10000-1000)/(500-200)/len(oldSize)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     return [oldSize[x]+incSize for x in range(0, len(oldSize))]
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 you can then use this function as follows
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 ...randomMating(newSubPopSizeFunc=lin_exp) ...
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -7489,16 +7401,26 @@ simuUtil.py
  For all these function, you can test them by
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 func = oneOfTheDemographicFunc(parameters)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 gen = range(0, yourEndGen)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 r.plot(gen, [func(x)[0] for x in gen])
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7896,31 +7818,8 @@ stage
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Operator stage
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatorstages.log}
+\begin_inset Include \lstinputlisting{log/operatorstages.log}[caption={Operator stage},label={operatorstages}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -8010,31 +7909,8 @@ For example
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Set active generations of an operator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatorgen.log}
+\begin_inset Include \lstinputlisting{log/operatorgen.log}[caption={Set active generations of an operator},label={operatorgen}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -8079,10 +7955,20 @@ simulator::setGroup
 The most useful example is 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 output('
 \backslash
 n',rep=REP_LAST)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8101,31 +7987,8 @@ n
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Replicate group
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatorgrp.log}
+\begin_inset Include \lstinputlisting{log/operatorgrp.log}[caption={Replicate group},label={operatorgrp}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -8236,35 +8099,8 @@ The following example shows the difference between
 \end_layout
 
 \begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-log/operatoroutput
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatoroutput.log}
+\begin_inset Include \lstinputlisting{log/operatoroutput.log}[caption={log/operatoroutput},label={operatoroutput}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -8345,31 +8181,8 @@ output
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-log/operatoroutputexpr
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/operatoroutputexpr.log}
+\begin_inset Include \lstinputlisting{log/operatoroutputexpr.log}[caption={log/operatoroutputexpr},label={operatoroutputexpr}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -8531,8 +8344,18 @@ simuUtil.py
  For example
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 ListVars(simu.vars(0), level=2)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8732,31 +8555,8 @@ b
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-python expression
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/expr.log}
+\begin_inset Include \lstinputlisting{log/expr.log}[caption={python expression},label={expr}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -8859,16 +8659,18 @@ gen:rep
  using the following function
 \end_layout
 
-\begin_layout LyX-Code
-pop.evaluate(r
-\begin_inset Quotes eld
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+pop.evaluate(r'%d:%d' % (gen,rep))
+\end_layout
+
 \end_inset
 
-'%d:%d' % (gen,rep)
-\begin_inset Quotes erd
-\end_inset
 
-)
 \end_layout
 
 \begin_layout Standard
@@ -8876,24 +8678,18 @@ but if you would like to change/create variables, you have to use statements
  like
 \end_layout
 
-\begin_layout LyX-Code
-pop.evalulate(r
-\begin_inset Quotes eld
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+pop.evalulate(rmyval, stmts=rmyval=rep+1)
+\end_layout
+
 \end_inset
 
-myval
-\begin_inset Quotes erd
-\end_inset
 
-, stmts=r
-\begin_inset Quotes erd
-\end_inset
-
-myval=rep+1
-\begin_inset Quotes erd
-\end_inset
-
-)
 \end_layout
 
 \begin_layout Standard
@@ -8902,12 +8698,22 @@ Since you are executing Python statements, you can of course do it directly
  For example, the above function does exactly the following
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pop.vars()['myval'] = pop.vars()['rep'] + 1
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 pop.vars()['myvar']
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8924,28 +8730,22 @@ we use expressions for dynamic parameters.
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
-newSubPopSizeExpr=
-\begin_inset Quotes erd
-\end_inset
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
 
-range(10,20)*1.2
-\begin_inset Quotes erd
-\end_inset
-
-
+\begin_layout Standard
+newSubPopSizeExpr=range(10,20)*1.2
 \end_layout
 
-\begin_layout LyX-Code
-outputExpr= ' 
-\begin_inset Quotes erd
+\begin_layout Standard
+outputExpr= ' saveAt%s.txt % gen'
+\end_layout
+
 \end_inset
 
-saveAt%s.txt
-\begin_inset Quotes erd
-\end_inset
 
- % gen'
 \end_layout
 
 \begin_layout Standard
@@ -8964,35 +8764,8 @@ pyEval/pyExec
 \end_layout
 
 \begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Expression evaluation
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/expreval.log}
+\begin_inset Include \lstinputlisting{log/expreval.log}[caption={Expression evaluation},label={expreval}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -9108,8 +8881,18 @@ evolve(..., end=0), evolve
 It may sound strange that 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 evolve(end=2)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -9120,8 +8903,18 @@ evolve the population three times.
  This is why you should test if a simulation is finished correctly by
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 if(simu.gen() == endGen+1)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -9497,31 +9290,8 @@ name "loadSimulator"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-save and load a simulator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/simulatorsaveload.log}
+\begin_inset Include \lstinputlisting{log/simulatorsaveload.log}[caption={save and load a simulator},label={simulatorsaveload}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -9622,8 +9392,18 @@ First line:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 #!/usr/bin/env python
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -9632,16 +9412,26 @@ Introduction to the whole script:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 '''
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 This script simulates ....
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 '''
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -9658,17 +9448,27 @@ Options: (see the next section)
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 options = [ 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 ...
  a dictionary of all user input parameters ...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 ]
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -9687,8 +9487,18 @@ Evolution function
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def simulation(....)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -9697,72 +9507,82 @@ Executable part:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 if __name__ == '__main__':  
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   allParam = simuOpt.getParam(options,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     ''' A short description ''', __doc__)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   # if user press cancel,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   if len(allParam) == 0:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     sys.exit(1)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   # -h or --help
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   if allParam[0]:  
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     print simuOpt.usage(options, __doc__)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     sys.exit(0)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   # sace configuration, something like
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   if allParam[-2] != None:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
      simuOpt.saveConfig(options, allParam[-2]+'.cfg', allParam)  
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   # get the parameters, something like
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   N = allParam[1]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   # run the simulation
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   simulation(N) 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -9924,49 +9744,59 @@ simuPOP
  All these should be put in a list of dictionaries like follows:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 options = [
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   { 'arg':'h', 'longarg':'help', 'default':False,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     'allowedTypes':[IntType],
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     'description':'print this message'},
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   { 'longarg':'saveconfig=', 'default':'', 'allowedTypes':[StringType],
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     'description':'Save current configuration in a file.'},
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   { 'arg':'m', 'longarg':'mu', 'label'='mutationRate', 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     'default':0.005,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     'validate': simuOpt.valueBetween(0,1),
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     'description':'mutation rate (a number or an array of numbers) at each
  loci'
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   } ]
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10414,132 +10244,142 @@ count, index
  The following is the operations allowed:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 # obtain an object using one of the arrXXX functions
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 pop = population(loci=[3,4], lociPos=[1,2,3,4,5,6,7])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 arr = pop.arrLociPos()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # print and expression (just like list)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 print arr
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 str(arr)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # count
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 arr.count(2)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # index 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 arr.index, 2)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # can read write
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 arr[0] = 0.5
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # convert to list
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 arr.tolist()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # or simply
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 list(arr)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # compare to list directly
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 arr == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # you can also convert and compare
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 list(arr) == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # slice
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 arr[:] = [1,2,3,4,5,6,7]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # arr1 is 1,2,3
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 arr1 = arr[:3]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # assign slice from a number
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # IMPORTANT NOTE that arr will also be affected
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # since arr1 point to a part of arr
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 arr1[:] = 10
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # assign vector of the same length
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 arr1[:] = [30,40]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # assign from another part
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 arr[1:3] = arr[3:5]
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10575,16 +10415,26 @@ Most of the info can be found in rpy manual.
  One function in simuRPy may help though:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def rmatrix(mat):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   ' convert a python 2d list to r.matrix object'
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   return with_mode(NO_CONVERSION, r.do_call)('rbind',mat)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10592,12 +10442,22 @@ with this function, you can easily handle matrices in R.
  (List and array has been easy enough to be handled).
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 >>> a = [[1,2],[4,5]]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 >>> r.image( rmatrix(a))
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10606,8 +10466,18 @@ With the help of this function, you can call almost any R function directly,
  In this case, you can always do
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 >>> r('''whatever R expression''')
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10615,40 +10485,50 @@ Since Rpy is not always available, you may see the following scenario again
  and again in simuPOP scripts:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 try:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   from simuRPy import *
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 except:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   hasRPy = False
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 else:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   hasRPy = True
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 ...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 if hasRPy:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   r.....
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -10683,16 +10563,26 @@ define a function that handle a population as you wish.
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def myOperator(pop, para):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   ' do whatever you want'
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   return True
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10718,8 +10608,18 @@ pyOperator
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pyOperator(mfunc=yOperator, param=para)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10758,25 +10658,7 @@ lated functions.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-define a python operator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/pyOperator.log}
+\begin_inset Include \lstinputlisting{log/pyOperator.log}[caption={define a python operator},label={pyOperator}]
 preview false
 
 \end_inset
@@ -10784,37 +10666,9 @@ preview false
 
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-use of python operator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/pyOperatorUse.log}
+\begin_inset Include \lstinputlisting{log/pyOperatorUse.log}[caption={use of python operator},label={pyOperatorUse}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -10909,16 +10763,36 @@ pyOperator
  
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def Func(pop, off, dad, mom, para)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 or
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def shortFunc(off, para)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10930,20 +10804,40 @@ para
  To use this operator, you can do
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pyOperator(stage=DuringMating, func=Func, param=someparam, formOffGenotype=True)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 or
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pyOperator(stage=DuringMating, func=shortFunc, param=someparam,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 formOffGenotype=False, passOffspringOnly=True)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11009,36 +10903,56 @@ pyOpertor
  
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def func(ind, param):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   ind.setInfo(param[0], 'myinfo)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 pyIndOperator(func=func, param=(1,))
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 is the same as
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def func(pop, param):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   for ind in pop.individuals():
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     ind.setInfo(param[0], 'myinfo')
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 pyIndOperator(func=func, param=(1,))
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11205,31 +11119,8 @@ alleleFreq
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Init by freq
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/initByFreq.log}
+\begin_inset Include \lstinputlisting{log/initByFreq.log}[caption={Init by freq},label={initByFreq}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -11281,31 +11172,8 @@ atLoci
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Init by value
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/initByValue.log}
+\begin_inset Include \lstinputlisting{log/initByValue.log}[caption={Init by value},label={initByValue}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -11412,31 +11280,8 @@ pyInit
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Init by value
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/pyInit.log}
+\begin_inset Include \lstinputlisting{log/pyInit.log}[caption={Init by value},label={pyInit}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -11728,31 +11573,8 @@ pyMigrator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-pyMigrator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/pyMigrator.log}
+\begin_inset Include \lstinputlisting{log/pyMigrator.log}[caption={pyMigrator},label={pyMigrator}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -11918,12 +11740,22 @@ Mutators record the number of mutation events at each loci.
  You can retrieve this information using
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 mut.mutationCount(locus)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 mut.mutationCounts()
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11996,31 +11828,8 @@ name "maxAllele"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-kamMutator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/kamMutator.log}
+\begin_inset Include \lstinputlisting{log/kamMutator.log}[caption={kamMutator},label={kamMutator}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -12105,31 +11914,8 @@ maxAllele
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status collapsed
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-smmMutator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/smmMutator.log}
+\begin_inset Include \lstinputlisting{log/smmMutator.log}[caption={smmMutator},label={smmMutator}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -12214,31 +12000,8 @@ gsmMutator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-gsmMutator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/gsmMutator.log}
+\begin_inset Include \lstinputlisting{log/gsmMutator.log}[caption={gsmMutator},label={gsmMutator}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -12282,31 +12045,8 @@ pyMutator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-pyMutator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/pyMutator.log}
+\begin_inset Include \lstinputlisting{log/pyMutator.log}[caption={pyMutator},label={pyMutator}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -12360,8 +12100,18 @@ pointMutator,
  It is syntax is:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pointMutator(atLoci, toAllele, atPloidy=[], inds=[], ...)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -12508,31 +12258,8 @@ parentsTagger
  to mark the parents of each individual so you can (if you have enough patience)
  see exactly how recombination works.
  
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Recombinator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/recombinator.log}
+\begin_inset Include \lstinputlisting{log/recombinator.log}[caption={Recombinator},label={recombinator}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -12555,12 +12282,22 @@ Recombinations after each locus will be recorded.
  You can retrieve this information through functions
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 rec.recCount(locus)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 rec.recCounts()
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -12831,31 +12568,8 @@ Which is
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-map selector
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/basicSelector.log}
+\begin_inset Include \lstinputlisting{log/basicSelector.log}[caption={map selector},label={basicSelector}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -13303,31 +13017,8 @@ sel
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-python selector
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/pySelector.log}
+\begin_inset Include \lstinputlisting{log/pySelector.log}[caption={python selector},label={pySelector}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -13501,8 +13192,18 @@ Assign penetrance using a table with keys 'X-Y' where X and Y are allele
  For example,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 mapPenetrance(locus=1, penetrance={'1-1':0, '1-2':0.5, '2-2':1})
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -13561,8 +13262,18 @@ maSelector
  For example
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 maPenetrance(loci=[1,5], wildtype=[1], penetrance=[0,0.5,1,0,0,1,0,1,1])
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -13698,28 +13409,38 @@ For example, if each locus follows an additive penetrance model, we can
  have
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pen = []
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 for loc in loci:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   pen.append( maPenetrance(locus=loc, wildtype=[1],
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     penetrance=[0.0.3,0.6] ) )
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # the multi-loci penetrance
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 penMulti = mlPenetrance(mode=PEN_Multiplicative, peneOps=pen)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -13788,28 +13509,38 @@ pyPenetrance
  as
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def peneFunc(geno):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   p = 1
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   for l in range(len(geno)/2):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     p *= (geno[l*2]+geno[l*2+1]-2)*0.3
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   return p
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 penMulti = pyPenetrance(loci=loci, func=peneFunc)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -13826,28 +13557,38 @@ It would be useful to let peneFunc take parameters.
  This may sound intimidating but it is really easy:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def peneFunc(table):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   def func(geno):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     return table[geno[0]-1][geno[1]-1]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   return func
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # then, given a table, you can do
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 pen = pyPenetrance(loci=loci, func=peneFunc( ((0,0.5),(0.3,0.8)) ) )
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -14555,31 +14296,8 @@ The following example shows how to draw a random sample (without replacement
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-random sample
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/randomSample.log}
+\begin_inset Include \lstinputlisting{log/randomSample.log}[caption={random sample},label={randomSample}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -14652,60 +14370,70 @@ All these requirements come at a cost: multiple ancestral populations, judge
  For example, you can do
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 endGen = 1000
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # having two offsprings only at the last three generations
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 def numOffsprings(gen):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   if gen >= endGen - 3:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     return 2
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   else 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     return 1
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # evolve ...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 simu = simulator(pop, randomMating(numOffspringsFunc = numOffsprings))
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 simu.evolve( ...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   parentsTagger(begin = endGen - 3),
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   mapPenetrance(...., begin = endGen - 2),
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   setAncestralDepth(1, at = endGen -2 )
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 ...)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -14748,16 +14476,18 @@ use a penetrance operator to set affected status of each individual
 and finally use this operator (or function)
 \end_layout
 
-\begin_layout LyX-Code
-affectedSibpairSample(size
-\family typewriter
-,
-\family default
-  
-\family typewriter
-times, name, saveAs, format
-\family default
-)
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+affectedSibpairSample(size,  times, name, saveAs, format)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -15515,8 +15245,18 @@ haploFreq:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 haploFreq = [ [ 0,1,2 ], [1,2] ]
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -15610,8 +15350,18 @@ parameter:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
-LD: LD = [ [1,2], [ 0,1,1,2],[1,2,1,2]] 
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+LD: LD = [ [1,2], [ 0,1,1,2],[1,2,1,2]]
+\end_layout
+
+\end_inset
+
+ 
 \end_layout
 
 \begin_layout Standard
@@ -16023,10 +15773,20 @@ This operator output a simple string.
  For example, 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 output(r'
 \backslash
 n', rep=REP_LAST)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -16271,8 +16031,18 @@ plot a number in the form of a varaible or expression, use
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 varPlotter(var='expr')
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -16282,8 +16052,18 @@ plot a vector in the same window and there is only one replicate in the
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 varPlotter(var='expr', varDim=len)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -16301,8 +16081,18 @@ plot a vector in the same window and there are several replicates, use
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 varPlotter(var='expr', varDim=len, numRep=nr, byRep=1)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -16322,16 +16112,36 @@ if you would like to plot each item of your array variable in a subplot,
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 varPlotter(var='expr', varDim=len, byVal=1)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 in case of a single replicate or
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -16840,8 +16650,18 @@ This operator terminates the evolution under certain conditions.
  For example,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 terminateIf(condition='alleleFreq[0][1]<0.05', begin=100)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -16994,31 +16814,8 @@ Use dryrun to exam simulator first.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Conditional operator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/ifElse.log}
+\begin_inset Include \lstinputlisting{log/ifElse.log}[caption={Conditional operator},label={ifElse}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -17046,25 +16843,35 @@ This operator does nothing.
  It is used like follows:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 if savePop :
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   saveOp = savePopulation(output='a.txt')
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 else:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   saveOp = noneOp()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 simu.evolve( [ ...
  saveOp ])
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -17148,8 +16955,18 @@ This operator, when called, output the difference between current and last
  Similar information can also be obtained from 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 turnOnDebug(DBG_PROFILE)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17203,31 +17020,8 @@ target "http://sources.redhat.com/gsl/"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Random number generator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/rng.log}
+\begin_inset Include \lstinputlisting{log/rng.log}[caption={Random number generator},label={rng}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -17269,31 +17063,8 @@ src/utility.h
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Random number generator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/rngrand.log}
+\begin_inset Include \lstinputlisting{log/rngrand.log}[caption={Random number generator},label={rngrand}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -17340,8 +17111,18 @@ simuPOP
  For example, the following code will crash simuPOP:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 >>> population(1).individual(0).arrAllele()
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17350,34 +17131,44 @@ g the genotype of the only individual of this population.
  However, the reason is clear if you turn on debug info:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 >>> TurnOnDebug(DBG_ALL)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 Debug code DBG_ALL is turned on.
  cf.
  listDebugCode(), turnOffDebug() 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 >>> population(1).individual(0).arrAlleles()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 Constructor of Population is called
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 Population size 1
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 Destructor of Population is called 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 Segmentation fault (core dumped) 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17392,12 +17183,22 @@ population(1)
  The right way to do this is create a persistent population object: 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 >>> pop = population(1)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 >>> pop.individual(0).arrAllele()
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17694,31 +17495,8 @@ The following example shows how to change locus distance through this function.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-geno stru
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/extgenostru.log}
+\begin_inset Include \lstinputlisting{log/extgenostru.log}[caption={geno stru},label={extgenostru}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -17789,8 +17567,18 @@ ch
  For example
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pop.individual(1).arrGenotype(1, 2)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17804,31 +17592,8 @@ pop
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-genotype
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/extgenotype.log}
+\begin_inset Include \lstinputlisting{log/extgenotype.log}[caption={genotype},label={extgenotype}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -17844,31 +17609,8 @@ sex, setSex, affected, setAffected
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status collapsed
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-genotype
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/extother.log}
+\begin_inset Include \lstinputlisting{log/extother.log}[caption={genotype},label={extother}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -17929,52 +17671,62 @@ For example, if you would like to record a silly statistics, namely the
 , you can do:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def sillyStat(pop, para):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   # para can be used to pass any number of parameters
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   (filename, m, n) = para # unpack parameter
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   f = open(filename)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   f.write('%d ' % pop.individual(m).allele(n) )
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   f.close()
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 # then in the evole function
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 evolve(...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   ops=[ # other operators
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     pyOperator(func=sillyStat, param=('file.txt', 2, 1) )
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   ]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 )
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -18005,31 +17757,8 @@ tab
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Tab operator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/tab.log}
+\begin_inset Include \lstinputlisting{log/tab.log}[caption={Tab operator},label={tab}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -18040,10 +17769,20 @@ preview false
 This function actually returns an operator
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 output(r"
 \backslash
 t", rep=REP_LAST, begin=500)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -18098,31 +17837,8 @@ saveInFstatFormat(pop, output, outputExpr, dict)
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-genotype
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/extother.log}
+\begin_inset Include \lstinputlisting{log/extother.log}[caption={genotype},label={extother}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -18137,8 +17853,18 @@ Note that
 You can use this function independently like
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 saveInFstatFormat(simu.population(1),'a.txt')
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -18163,31 +17889,8 @@ pyEval
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-save fstat
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{log/saveFstat.log}
+\begin_inset Include \lstinputlisting{log/saveFstat.log}[caption={save fstat},label={saveFstat}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -18198,16 +17901,18 @@ preview false
 This function takes all parameters of an ordinary operator:
 \end_layout
 
-\begin_layout LyX-Code
-saveFstat(at=[-1], outputExpr=r
-\begin_inset Quotes erd
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+saveFstat(at=[-1], outputExpr=r'a'+str(rep)+'.txt')
+\end_layout
+
 \end_inset
 
-'a'+str(rep)+'.txt'
-\begin_inset Quotes erd
-\end_inset
 
-)
 \end_layout
 
 \begin_layout Standard
@@ -18218,20 +17923,30 @@ pyEval
  operator (use above example)
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pyEval(exposePop=1, at=[-1], 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   stmts=r"""saveInFSTATFormat(pop,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     output='''''', outputExpr=r''' 'a'+str(rep)+'.txt' """ 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
   )
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -18384,16 +18099,36 @@ test
  To run all tests, run
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 sh run_tests.sh
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 Or, if you do not install rpy and r, run
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 sh run_tests.sh norpy
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
