@@ -14,8 +14,6 @@
 %pdfproducer={pdflatex},
 %}
 
-\floatname{algorithm}{Example}
-
 \renewcommand{\py@ptsize}{12pt}
 
 \setreleaseinfo{Release 0.7.10 (\mbox{$$Rev$$})}
@@ -64,10 +62,11 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "language=Python,xleftmargin=30pt,basicstyle=\ttfamily,frame=Tb,showspaces=false,showtabs=false"
+\listings_params "language=Python,xleftmargin=15pt,basicstyle=\ttfamily,showspaces=false,showtabs=false"
 \tracking_changes false
 \output_changes false
 \author "Bo Peng" 
+\author "Yaji" 
 \end_header
 
 \begin_body
@@ -2362,36 +2361,8 @@ reference "alg:reich1"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:reich1"
-
-\end_inset
-
-Create a simulator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{reich1.py}
+\begin_inset Include \lstinputlisting{reich1.py}[caption={Create a simulator},label={reich1}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -2504,8 +2475,18 @@ maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0])
 and
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 maSelector(locus=1, fitness=[1,1,1-R_s], wildtype=[0])
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -2517,16 +2498,30 @@ Because an individual has only one fitness value, fitness values obtained
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
-mlSelector([
-\newline
-    maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0]),
-\newline
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
 
+\begin_layout Standard
+mlSelector([
+\end_layout
+
+\begin_layout Standard
+    maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0]),
+\end_layout
+
+\begin_layout Standard
     maSelector(locus=1, fitness=[1,1,1-R_s], wildtype=[0])
-\newline
-    ], mode=SEL_Multip
-licative)
+\end_layout
+
+\begin_layout Standard
+    ], mode=SEL_Multiplicative)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -2544,36 +2539,8 @@ reference "alg:reich2"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:reich2"
-
-\end_inset
-
-Run the simulator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{reich2.py}
+\begin_inset Include \lstinputlisting{reich2.py}[caption={Run the simulator},label={reich2}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -2606,8 +2573,18 @@ alleleNum
 ) in each population's local namespace,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 stat(alleleFreq=[0,1]),
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2618,20 +2595,22 @@ pyEval
  (python expression) operator to print out the values:
 \end_layout
 
-\begin_layout LyX-Code
-pyEval(r' 
-\begin_inset Quotes erd
-\end_inset
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
 
-%.3f
+\begin_layout Standard
+pyEval(r' %.3f
 \backslash
 t%.3f
 \backslash
-n
-\begin_inset Quotes erd
+n % (1-alleleFreq[0][0], 1-alleleFreq[1][0])')
+\end_layout
+
 \end_inset
 
- % (1-alleleFreq[0][0], 1-alleleFreq[1][0])')
+
 \end_layout
 
 \begin_layout Standard
@@ -2693,8 +2672,18 @@ pyEval
  operator (a direct translation of the formula):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pyEval('1./sum([(x/(1-alleleFreq[0][0]))**2 for x in alleleFreq[0][1:]])')
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2719,52 +2708,54 @@ expr
  ,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pyEval(stmts='''ne = [0,0]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 for i in range(2):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     freq = alleleFreq[i][1:]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     f0 = 1 - alleleFreq[i][0]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     if f0 == 0:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
         ne[i] = 0
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     else:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
         ne[i] = 1./sum([(x/f0)**2 for x in freq])
 \end_layout
 
-\begin_layout LyX-Code
-''', expr=r'
-\begin_inset Quotes erd
-\end_inset
-
-%.4f
+\begin_layout Standard
+''', expr=r'%.4f
 \backslash
 t%.4f
 \backslash
-n
-\begin_inset Quotes erd
+n % (ne[0], ne[1])')
+\end_layout
+
 \end_inset
 
- % (ne[0], ne[1])')
+
 \end_layout
 
 \begin_layout Standard
@@ -2779,56 +2770,61 @@ pyEval
  a population as the first parameter (and an optional parameter),
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def ne(pop):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     ' calculate effective number of alleles '
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     Stat(pop, alleleFreq=[0,1])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     f0 = [0, 0]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     ne = [0, 0]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     for i in range(2):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
         freq = pop.dvars().alleleFreq[i][1:]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
         f0[i] = 1 - pop.dvars().alleleFreq[i][0]
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
         if f0[i] == 0:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
             ne[i] = 0
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
         else:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
             ne[i] = 1.
  / sum([(x/f0[i])**2 for x in freq])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     print '%d
 \backslash
 t%.3f
@@ -2842,16 +2838,31 @@ t%.3f
 n' % (pop.gen(), f0[0], f0[1], ne[0], ne[1])
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     return True
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 Then, you can use this function in a python operator
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 pyOperator(func=ne, step=5)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2923,36 +2934,7 @@ pause
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:reich3"
-
-\end_inset
-
-The whole program
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{reich3.py}
+\begin_inset Include \lstinputlisting{reich3.py}[caption={The whole program},label={reich3}]
 preview false
 
 \end_inset
@@ -3018,8 +3000,18 @@ click the help button on the dialog, or run
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 > simuLDDecay.py -h
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3027,16 +3019,24 @@ to view help information.
 \end_layout
 
 \end_deeper
-\begin_layout Itemize
+\begin_layout Standard
 enter parameters in a parameter dialog, or use short or long command arguments
 \end_layout
 
-\begin_deeper
 \begin_layout LyX-Code
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 > simuLDDecay.py -s 500 -e 10 --recRate 0.1 --numRep 5 --noDialog
 \end_layout
 
-\end_deeper
+\end_inset
+
+
+\end_layout
+
 \begin_layout Itemize
 use the optimized module by
 \end_layout
@@ -3057,18 +3057,16 @@ status open
 \end_layout
 
 \end_deeper
-\begin_layout Itemize
+\begin_layout Standard
 save the parameters to a config file
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
 \begin_inset listings
 inline false
 status open
 
 \begin_layout Standard
-
 > simuLDDecay.py --quiet -s 500 -e 10 --saveConfig decay.cfg
 \end_layout
 
@@ -3085,7 +3083,6 @@ decay.cfg
  with these parameters.
 \end_layout
 
-\end_deeper
 \begin_layout Itemize
 and of course use 
 \family typewriter
@@ -3100,7 +3097,17 @@ and of course use
 
 \begin_deeper
 \begin_layout LyX-Code
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 > simuLDDecay.py --config decay.cfg
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3124,8 +3131,18 @@ First line:
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 #!/usr/bin/env python
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -3134,16 +3151,26 @@ Write the introduction of the whole script in a module-wise doc string.
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 '''
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 This script will ....
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 '''
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3161,17 +3188,27 @@ Define an option data structure.
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 options = [ 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 ...
  a dictionary of all user input parameters ...
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 ]
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3243,36 +3280,7 @@ reich.py
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float algorithm
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "alg:reich4"
-
-\end_inset
-
-Option handling
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \verbatiminput{reich4.py}
+\begin_inset Include \lstinputlisting{reich4.py}[caption={Option handling},label={reich4}]
 preview false
 
 \end_inset
@@ -3387,37 +3395,9 @@ myPenetrance
  is then interpreted as the probability of being affected.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:hybrid-operator"
-
-\end_inset
-
-An example of hybrid operators
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{hybrid.py}
+\begin_inset Include \lstinputlisting{hybrid.py}[caption={An example of hybrid operators},label={hybrid}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -3445,22 +3425,36 @@ stat
  For example,
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 PyPenetrance(pop, parameters)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 is the same as
 \end_layout
 
-\begin_layout LyX-Code
-pyPenetrance
-\begin_inset LatexCommand index
-name "pyPenetrance"
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+pyPenetrance(parameters).apply(pop)
+\end_layout
 
 \end_inset
 
-(parameters).apply(pop)
+
 \end_layout
 
 \begin_layout Standard
@@ -3588,12 +3582,22 @@ name "PreMating"
  not the current generation, as shown below:
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 preMating | mating -> offspring generation | postMating, fitness calculated
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 preMating | mating -> ...
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3651,37 +3655,9 @@ simuRPy.py
  guide.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:pyOpeartor"
-
-\end_inset
-
-A frequency dependent selection operator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{pyOperator.py}
+\begin_inset Include \lstinputlisting{pyOperator.py}[caption={A frequency dependent selection operator},label={pyOperator}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -3882,41 +3858,8 @@ ageOfOnset
  simuPOP's ability to manipulation populations.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:infoFields"
-
-\end_inset
-
-Proportional hazard model and use of information fields
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset Include \verbatiminput{infoFields.py}
+\begin_inset Include \lstinputlisting{infoFields.py}[caption={Proportional hazard model and use of information fields},label={infoFields}]
 preview false
 
 \end_inset
@@ -3972,38 +3915,9 @@ reference "cap:splitMerge"
  This is used to keep subpopulation id of other subpopulations unchanged.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:splitMerge"
-
-\end_inset
-
-Population split and merge
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{splitAndMerge.out}
+\begin_inset Include \lstinputlisting{splitAndMerge.out}[caption={Population split and merge},label={splitAndMerge}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -4036,38 +3950,9 @@ means moving 20% of individuals from subpop 0 to 1, 40% of individuals from
  Subpopulation sizes change accordingly.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:splitMigration"
-
-\end_inset
-
-Population split and migration
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{splitMigration.out}
+\begin_inset Include \lstinputlisting{splitMigration.out}[caption={Population split and migration},label={splitMigration}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -4160,38 +4045,9 @@ evolve
  to check.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:splitMigration2"
-
-\end_inset
-
-Population split with changing population size
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{splitMigration2.out}
+\begin_inset Include \lstinputlisting{splitMigration2.out}[caption={Population split with changing population size},label={splitMigration2}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -4229,38 +4085,9 @@ reference "cap:splitMigration3"
  subpopulations.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:splitMigration3"
-
-\end_inset
-
-Population split with changing population size
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{splitMigration3.out}
+\begin_inset Include \lstinputlisting{splitMigration3.out}[caption={Population split with changing population size},label={splitMigration3}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -4753,12 +4580,22 @@ combine: a python function, if given, used to combine two alleles at the
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 def comb(geno):
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
     return geno[0]+geno[1]+1
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4833,38 +4670,9 @@ outputExpr
  This part is likely to be similar for all such functions.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-placement H
-wide false
-sideways false
-status collapsed
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:saveQTDT1"
-
-\end_inset
-
-Function SaveQTDT, part one
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{saveQTDT1.py}
+\begin_inset Include \lstinputlisting{saveQTDT1.py}[caption={Function SaveQTDT, part one},label={saveQTDT1}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -4909,37 +4717,9 @@ locusName
  function from this part.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:saveQTDT2"
-
-\end_inset
-
-Function SaveQTDT, part two
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{saveQTDT2.py}
+\begin_inset Include \lstinputlisting{saveQTDT2.py}[caption={Function SaveQTDT, part two},label={saveQTDT2}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -4964,37 +4744,9 @@ simuPOP
  is created, they all have default values.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:saveQTDT3"
-
-\end_inset
-
-Function SaveQTDT, part three
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{saveQTDT3.py}
+\begin_inset Include \lstinputlisting{saveQTDT3.py}[caption={Function SaveQTDT, part three},label={saveQTDT3}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -5026,37 +4778,9 @@ combine
  
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:saveQTDT4"
-
-\end_inset
-
-Function SaveQTDT, part four
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{saveQTDT4.py}
+\begin_inset Include \lstinputlisting{saveQTDT4.py}[caption={Function SaveQTDT, part four},label={saveQTDT4}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -5084,37 +4808,9 @@ pedindex
  for example, when outputting case control samples.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:saveQTDT5"
-
-\end_inset
-
-Function SaveQTDT, part five
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{saveQTDT5.py}
+\begin_inset Include \lstinputlisting{saveQTDT5.py}[caption={Function SaveQTDT, part five},label={saveQTDT5}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -5149,37 +4845,9 @@ Once you output your sample into a format that can be processed by other
  
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:mapping"
-
-\end_inset
-
-Example of gene mapping
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{mapping.py}
+\begin_inset Include \lstinputlisting{mapping.py}[caption={Example of gene mapping},label={mapping}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -5292,9 +4960,19 @@ It is critical for you to remember how many nodes a simuPOP simulation will
  need, since the usual way to start the simulation is
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 $ mpirun -n 4 python /path/to/a/simuPOP/script --mpi --chromMap='[2,3,4]'
  --other-options
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5427,8 +5105,18 @@ Run from command line
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 $ simuViewPop.py /path/to/population.txt
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -5472,8 +5160,18 @@ simuCluster.py
  The command line options are
 \end_layout
 
-\begin_layout LyX-Code
-$ simuCluster.py -l simulation.lst -a  -r -f key=val jobs 
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+$ simuCluster.py -l simulation.lst -a  -r -f key=val jobs
+\end_layout
+
+\end_inset
+
+ 
 \end_layout
 
 \begin_layout Standard
@@ -5557,16 +5255,26 @@ $HOME/.simuCluster
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 command = 'bsub -J $name <'
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 queue = 'batch'
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 job_dir = '/scratch/jobs'
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -5669,8 +5377,18 @@ reference "cap:joblist"
  Command
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
 $ python scripts/simuCluster.py -l joblist.lst -a
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5694,37 +5412,9 @@ command
  variable.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "cap:joblist"
-
-\end_inset
-
-A sample job list file
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{joblist.lst}
+\begin_inset Include \lstinputlisting{joblist.lst}[caption={A sample job list file},label={joblist}]
 preview false
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
