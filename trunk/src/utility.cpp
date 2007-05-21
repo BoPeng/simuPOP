@@ -1559,7 +1559,19 @@ namespace simuPOP
 		Py_XDECREF(res);
 		return val;
 	}
-
+	
+	/// CPPONLY
+	double Expression::valueAsDouble()
+	{
+		PyObject* res = evaluate();
+		if( res==NULL )
+			return 0;
+		double val;
+		PyObj_As_Double(res, val);
+		Py_XDECREF(res);
+		return val;
+	}
+	
 	/// CPPONLY
 	string Expression::valueAsString()
 	{
