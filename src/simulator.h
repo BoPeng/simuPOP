@@ -94,22 +94,22 @@ namespace simuPOP
     number of replicates of this population and control the
     evolution process of them. \n
 
-	The most important functions of a simulator is \c evolve().
+	The most important function of a simulator is \c evolve().
     It accepts an array of operators as its parameters,
 	among which, \c preOps and \c postOps will be applied to the
-	populations at the begining and the end of evolution, respectively,
+	populations at the beginning and the end of evolution, respectively,
     whereas	\c ops will be applied at every generation. \n
 
 	Simulators separate operators into \em pre-, \em during- and
     \em post-mating operators. During evolution, a simulator first
 	apply all pre-mating operators and then call the \c mate()
 	function of the given mating scheme, which will call
-	during-mating operators during the birth of each offsrping.
+	during-mating operators during the birth of each offspring.
 	After mating is completed, post-mating operators are
 	applied to the offspring in the order at which they appear in the operator list. \n
 
-	Operators can be applied to specific replicate, group of the replicates,
-    to specific generations, determined by the \c rep, \c grp, \c begin,
+	Operators can be applied to specific replicate, a group of replicates,
+    or specific generations, determined by the \c rep, \c grp, \c begin,
     \c end, \c step, and \c at parameters.\n
 
 	Simulators can evolve a given number of generations (the
@@ -120,7 +120,7 @@ namespace simuPOP
 	An obvious example of such a terminator is a fixation-checker. \n
 
 	Finally, a simulator can be saved to a file in the format
-	of \c 'txt', \c 'bin', or \c 'xml'. This enables us to stop a
+	of \c 'txt', \c 'bin', or \c 'xml'. So we can stop a
 	simulation and resume it at another time or on another
 	machine. It is also a good idea to save a snapshot of a
 	simulation every several hundred generations. 

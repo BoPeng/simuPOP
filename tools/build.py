@@ -100,7 +100,8 @@ def build_doc(ver, rev):
     os.environ['SIMUPOP_VER'] = ver
     os.environ['SIMUPOP_REV'] = rev
     run('doxygen Doxyfile')
-    run('python tools/doxy2swig.py')
+    os.chdir('tools')
+    run('python doxy2swig.py')
     os.chdir(d)
 
 
@@ -166,7 +167,7 @@ def build_vm(ver, name, pyver, vm, vm_port, vm_name):
         (vm_port, vm_name, ver, ver))
     run('scp -P %d %s:simuPOP-%s/dist/simuPOP-%s.linux-i686.tar.gz %s/simuPOP-%s-%s-py%2d.tar.gz' % \
         (vm_port, vm_name, ver, ver, download_directory, ver, name, pyver))
-    run("scp -P %d %s:simuPOP-%s/dist/simuPOP-%s-i386.rpm' %s/simuPOP-%s-%s-py%2d.i386.rpm" % \
+    run("scp -P %d %s:simuPOP-%s/dist/simuPOP-%s-i386.rpm %s/simuPOP-%s-%s-py%2d.i386.rpm" % \
         (vm_port, vm_name, ver, ver, download_directory, ver, name, pyver))
     run('vmrun suspend %s' % vm)
 

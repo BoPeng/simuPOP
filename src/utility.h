@@ -170,8 +170,7 @@ namespace std
 	/// CPPONLY how to output a dictionary
 	ostream& operator<<(ostream& out, const intDict& dict);
 
-	/// CPPONLY: 3^n, can not use pow(3, n) because of overloading problem
-	/// in msvc.
+	/// CPPONLY can not use pow(3, n) because of overloading problem in msvc.
 	unsigned pow3(unsigned n);
 }
 
