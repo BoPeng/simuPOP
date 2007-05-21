@@ -202,6 +202,10 @@ status open
 What is simuPOP
 \end_layout
 
+\begin_layout Subsection
+simuPOP overview
+\end_layout
+
 \begin_layout BeginFrame
 \begin_inset CharStyle Alert
 show_label true
@@ -238,6 +242,18 @@ An environment to manipulate populations, namely, a collection of individuals
 \end_layout
 
 \begin_layout BeginFrame
+What can you do with simuPOP
+\end_layout
+
+\begin_layout Itemize
+Studying the evolution of whatever
+\end_layout
+
+\begin_layout Itemize
+Manipulate populations
+\end_layout
+
+\begin_layout BeginFrame
 \begin_inset ERT
 status open
 
@@ -248,66 +264,31 @@ status open
 
 \end_inset
 
-Major features
+A few quick statistics
 \end_layout
 
 \begin_layout Itemize
-d
-\end_layout
-
-\begin_layout EndFrame
-
-\end_layout
-
-\begin_layout Section
-How can simuPOP be used
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{frame}[fragile]
-\end_layout
-
+12 modules (short, long, binary) 
+\begin_inset Formula $\times$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
->>> from simuPOP import *
-\end_layout
-
+ (standard, optimized) 
+\begin_inset Formula $\times$
 \end_inset
 
-
+ (standard, parallel)
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-end{frame}
+\begin_layout Itemize
+60+ operators
 \end_layout
 
-\end_inset
+\begin_layout Itemize
+...
+\end_layout
 
-
+\begin_layout Subsection
+A simple example
 \end_layout
 
 \begin_layout BeginPlainFrame
@@ -360,16 +341,117 @@ mating scheme
 evolve!
 \end_layout
 
+\begin_layout BeginFrame
+Exercise time!
+\end_layout
+
+\begin_layout Standard
+simuLDDecay.py
+\end_layout
+
 \begin_layout Section
+simuPOP components
+\end_layout
+
+\begin_layout Subsection
 Population object
 \end_layout
 
-\begin_layout Section
+\begin_layout BeginPlainFrame
+Illustration
+\end_layout
+
+\begin_layout BeginFrame
+Create a population
+\end_layout
+
+\begin_layout BeginFrame
+Genotypic structure
+\end_layout
+
+\begin_layout BeginFrame
+Individuals
+\end_layout
+
+\begin_layout BeginFrame
+Population strcuture
+\end_layout
+
+\begin_layout BeginFrame
+Information fields
+\end_layout
+
+\begin_layout BeginFrame
+Variables
+\end_layout
+
+\begin_layout Subsection
 Operators
 \end_layout
 
+\begin_layout BeginFrame
+Stages
+\end_layout
+
+\begin_layout BeginFrame
+Stages, an example
+\end_layout
+
+\begin_layout BeginFrame
+Output
+\end_layout
+
+\begin_layout BeginFrame
+Table-like output
+\end_layout
+
+\begin_layout Subsection
+Mating scheme, Simulator and forward-time simulation
+\end_layout
+
+\begin_layout BeginFrame
+Mating schemes
+\end_layout
+
+\begin_layout BeginFrame
+Simulator
+\end_layout
+
+\begin_layout BeginFrame
+Evolve?!
+\end_layout
+
 \begin_layout Section
-Simulator and forward-time simulation
+A real example
+\end_layout
+
+\begin_layout Subsection
+Handling of HapMap data
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+A quick Python tutorial
+\end_layout
+
+\begin_layout Section
+Some more examples
+\end_layout
+
+\begin_layout Subsection
+Example 1
+\end_layout
+
+\begin_layout BeginFrame
+Manipulating of HapMap data
+\end_layout
+
+\begin_layout Subsection
+Example 2
+\end_layout
+
+\begin_layout Section
+Advanced topics
 \end_layout
 
 \begin_layout EndFrame
