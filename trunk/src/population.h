@@ -140,35 +140,35 @@ namespace simuPOP
 	/// a collection of individuals with the same genotypic structure
 	/**
 	simuPOP populations consists of individuals of the same genotypic structure,
-	which refers to number of chromosome, number and position of loci on each
+	which refers to the number of chromosomes, number and position of loci on each
 	chromosome etc. The most important components of a population are:
 
 	\li subpopulation. A population is divided into subpopulations (unstructured
 	population has a single	subpopulation, which is the whole population itself).
 	Subpopulation structure limits the usually random exchange of genotypes between
-	individuals disallowing mating between individuals from different subpopulation.
+	individuals disallowing mating between individuals from different subpopulations.
 	In the presence of subpopualtion structure, exchange of genetic information
 	across subpopulations can only be done through migration. Note that simuPOP uses
-	one-level population structure. That is to say, there is no sub-subpopulation
+	one-level population structure. I.e., there is no sub-subpopulation
 	or families in subpopulations.
 
 	\li variables. Every population has its own variable space, or \em local \em
 	namespaces in simuPOP term. This namespace is a Python dictionary that is
 	attached to each population and can be exposed to the users through \c vars()
-	or \c dvars() function. Many functions and operators work in these namespaces
-	and store their results in them. For example, function \c Stat set variables
+	or \c dvars() function. Many functions and operators work and store their results
+	in these namespaces. For example, function \c Stat set variables
 	like <tt>alleleFreq[loc]</tt> and you can access them via
 	<tt>pop.dvars().alleleFreq[loc][allele]</tt>.
 
 	\li ancestral generations. A population can save arbitrary number of ancestral
-	generations. During evolution, the latest severl (or all) ancestral generations
+	generations. During evolution, the latest several (or all) ancestral generations
 	are saved. Functions to make a certain ancestray generation \em current is
 	provided so that one can examine and modify ancestral generations.
 
 	Other important concepts like \em information \em fields are explained in
 	class individual.
 
-	\n It is worth noting that although a large number of member functions are provided,
+	\n Note that although a large number of member functions are provided,
 	most of the operations are performed by \em operators. These functions will only
 	be useful when you need to manipulate a population explicitly.
 	*/

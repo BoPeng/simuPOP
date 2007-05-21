@@ -52,28 +52,28 @@ namespace simuPOP
 
     /// base class of all classes that manipulate populations
 	/** 
-	Operators are object that act on populations. They can be
-    applied	to populations directly using the function form of
-    operators, but they are usually managed and applied by a simulator. \n
+	Operators are objects that act on populations. They can be
+    applied	to populations directly using their function forms,
+    but they are usually managed and applied by a simulator. \n
 
 	Operators can be applied at different stages of the life cycle of
-    a generation. More specifically, operators can be applied at \em pre-,
+    a generation. More specifically, they can be applied at \em pre-,
     \em during-, \em post-mating, or a combination of these stages. Applicable stages
     are usually set by default but you can change it by setting
     <tt>stage=(PreMating|PostMating|DuringMating|PrePostMating)</tt> parameter.
-    Note that some operators ignore \c stage parameter because they only
+    Some operators ignore \c stage parameter because they only
     work at one stage. \n
 
 	Operators do not have to be applied at all generations. You can specify
-	starting generation, ending generation, gaps between applicable generations,
-	or even specific generations to apply. For example, you might want to
-	start applying migrations after certain burn-in generations; or you want
-	to calculate certain statistics only sparsely. \n
+	starting/ending generation, gaps between applicable generations,
+	or even specific generations. For example, you might want to
+	start applying migrations after certain burn-in generations, or
+    calculate certain statistics only sparsely. \n
 
-	Operators can have outputs. Output can be standard output (terminal)
-	or a file, which can vary from replicate to replicate, and/or from
-    generation to generation. Output from different operators can be
-    accumulated to the same file to form table-like	outputs. \n
+	Operators can have outputs. Output can be standard (terminal)
+	or a file, which can vary with replicates and/or generations.
+    Outputs from different operators can be accumulated to the same file to form
+    table-like outputs. \n
 
     Operators are applied to every replicate of a simulator by default.
     However, you can apply operators to one or a group of
