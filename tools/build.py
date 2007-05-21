@@ -106,6 +106,7 @@ def build_doc(ver, rev):
 
 
 def build_src():
+    d = os.getcwd()
     ver = open(last_version_file).read()
 
     if ver == 'snapshot':
@@ -126,6 +127,7 @@ def build_src():
     print 'Saving ', '%s/simuPOP-%s-src.tar.gz' % (download_directory, ver)
     shutil.copy('dist/simuPOP-%s.zip' % ver, '%s/simuPOP-%s-src.zip' % (download_directory, ver))
     print 'Saving ', '%s/simuPOP-%s-src.zip' % (download_directory, ver)
+    os.chdir(d)
 
 
 def build_x86_64(ver):

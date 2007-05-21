@@ -842,12 +842,6 @@ class TestPopulation(unittest.TestCase):
         pop.individual(0).setAllele(0,1)
         pop1.individual(0).setAllele(1,1)
         self.assertNotEqual(pop, pop1)
-        SavePopulations([pop, pop1], 'a.txt')
-        (pop2, pop3) = LoadPopulations('a.txt')
-        self.assertEqual(pop, pop2)
-        self.assertEqual(pop1, pop3)
-        self.assertNotEqual(pop, pop3)
-        os.remove('a.txt')        
 
     def testCrossSaveLoad(self):
         'Testing population saved by other modules'

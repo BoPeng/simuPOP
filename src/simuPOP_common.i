@@ -335,34 +335,6 @@ def dvars(self, *args, **kwargs):
 population.dvars = dvars
 simulator.dvars = dvars
 
-def LoadSimulatorFromFiles( files, mating):
-    simu = simulator(population(1), mating, rep=len(files))
-    # now, replace simu.population with pops
-    for i in range(0, len(files)):
-        pop = LoadPopulation(files[i])
-        simu.setPopulation(pop, i)
-    return simu
-
-def LoadSimulatorFromPops( pops, mating):
-    simu = simulator(population(1), mating, rep=len(pops))
-    # now, replace simu.population with pops
-    for i in range(0, len(pops)):
-        simu.setPopulation(pops[i], i)
-    return simu
-
-def SavePopulations(pops, file, format='auto', compress=True):
-    simu = simulator(population(1), noMating(), rep=len(pops))
-    for i in range(0, len(pops)):
-        simu.setPopulation(pops[i], i)
-    simu.saveSimulator(file, format, compress)
-
-def LoadPopulations(file, format='auto'):
-    simu = LoadSimulator(file, noMating(), format);
-    pops = []
-    for i in range(0, simu.numRep()):
-        pops.append( simu.getPopulation(i))
-    return pops
-
 def MergePopulations(pops, newSubPopSizes=[], keepAncestralPops=-1):
     'merge several populations and create a new population'
     if len(pops) == 0:

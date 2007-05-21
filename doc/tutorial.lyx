@@ -49,6 +49,7 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
+\listings_params "basicstyle=\ttfamily,language=Python,showstringspaces=false,showspaces=false"
 \tracking_changes false
 \output_changes false
 \author "Bo Peng" 
@@ -87,6 +88,8 @@ Houston, TX
 \begin_layout Date
 June.
  6, 2007
+\newline
+Programmers' Cross Training
 \newline
 UT MD Anderson Cancer Center
 \end_layout
@@ -200,15 +203,38 @@ What is simuPOP
 \end_layout
 
 \begin_layout BeginFrame
-s
+\begin_inset CharStyle Alert
+show_label true
+status inlined
+
+\begin_layout Standard
+simu
+\end_layout
+
+\end_inset
+
+lation of 
+\begin_inset CharStyle Alert
+show_label true
+status inlined
+
+\begin_layout Standard
+pop
+\end_layout
+
+\end_inset
+
+ulations
 \end_layout
 
 \begin_layout Standard
-dfdfd
+simuPOP is a forward-time population genetics simulation environment, it
+ provides
 \end_layout
 
-\begin_layout Section
-How can simuPOP be used
+\begin_layout Itemize
+An environment to manipulate populations, namely, a collection of individuals
+ with the same genotypic structure.
 \end_layout
 
 \begin_layout BeginFrame
@@ -217,7 +243,35 @@ status open
 
 \begin_layout Standard
 
-<fragile>other
+[<+->]
+\end_layout
+
+\end_inset
+
+Major features
+\end_layout
+
+\begin_layout Itemize
+d
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Section
+How can simuPOP be used
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+begin{frame}[fragile]
 \end_layout
 
 \end_inset
@@ -238,6 +292,84 @@ status open
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginPlainFrame
+A simple example
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/simpleExample.log}[basicstyle=\small\ttfamily,lastline=20]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginPlainFrame
+Output of the example
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/simpleExample.log}[basicstyle=\small\ttfamily,firstline=21,lastline=25]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+simuPOP modules
+\end_layout
+
+\begin_layout BeginFrame
+population
+\end_layout
+
+\begin_layout BeginFrame
+operator
+\end_layout
+
+\begin_layout BeginFrame
+simulator
+\end_layout
+
+\begin_layout BeginFrame
+mating scheme
+\end_layout
+
+\begin_layout BeginFrame
+evolve!
+\end_layout
+
+\begin_layout Section
+Population object
+\end_layout
+
+\begin_layout Section
+Operators
+\end_layout
+
+\begin_layout Section
+Simulator and forward-time simulation
 \end_layout
 
 \begin_layout EndFrame
