@@ -62,7 +62,7 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "language=Python,xleftmargin=15pt,basicstyle=\ttfamily,showspaces=false,showtabs=false"
+\listings_params "language=Python,xleftmargin=15pt,basicstyle=\ttfamily,showspaces=false,showstringspaces=false,showtabs=false"
 \tracking_changes false
 \output_changes false
 \author "Bo Peng" 
@@ -444,7 +444,7 @@ As a summary, simuPOP is suitable for the following applications:
 \end_layout
 
 \begin_layout Itemize
-Teaching tool for population genetic courses.
+Teaching tool for population genetics courses.
  Compared to other existing programs, the biggest advantage of simuPOP is
  its flexibility.
  There is no limit on the complexity of the simulation and students can
@@ -967,7 +967,7 @@ import simuPOP
 \family default
  (example 
 \begin_inset LatexCommand ref
-reference "alg:Import-simuPOP-module"
+reference "Import-simuPOP-module"
 
 \end_inset
 
@@ -991,7 +991,7 @@ In case that you do not have administrative privilege, you may not be able
  In this case, you can install simuPOP locally and load simuPOP as shown
  in example 
 \begin_inset LatexCommand ref
-reference "alg:Import-simuPOP-module-add-path"
+reference "Import-simuPOP-module-add-path"
 
 \end_inset
 
@@ -1049,17 +1049,18 @@ Standard libraries have detailed debug and run-time validation mechanism
  They bypass all parameter checking and run-time validations and will simply
  crash if things go wrong.
  It is recommended that you use standard libraries whenever possible and
- only use the optimized version when performance if needed and you are confidenc
+ only use the optimized version when performance is needed and you are confidenc
 e that your simulation is running as expected.
 \end_layout
 
 \begin_layout Standard
 The MPI modules are not provided in the binary distributions since many
  MPI implementations are available for different platforms.
- You will have to compile simuPOP by yourself to make use of them.
- (As of version 0.7.5, MPI modules are not ready).
- Due to the overhead of inter-CPU communication, the MPI versions are not
- necessarily much faster than single-CPU modules.
+ Also, as of version 0.7.9, the MPI modules are not yet fully implemented
+ (and most likely unusable for your simulations).
+ You will have to compile simuPOP by yourself to make use of them.Due to
+ the overhead of inter-CPU communication, the MPI versions are not necessarily
+ much faster than single-CPU modules.
  However, since the MPI version of the modules spread the populations across
  nodes, they can handle much larger populations then single-CPU modules,
  and can save you some time when you have multiple CPU/Core workstations.
@@ -1153,7 +1154,7 @@ quiet
 \family typewriter
 debug
 \family default
- should be a list of debug options specified by 
+ should be a comma-separated list of debug options specified by 
 \family typewriter
 listDebugCode
 \family default
@@ -2030,7 +2031,7 @@ I use simuPOP to simulate this evolution process and observe the allelic
  spectra of both types of diseases.
  The results are published in 
 \begin_inset LatexCommand citet
-key "Peng2006"
+key "Peng2007"
 
 \end_inset
 
@@ -2160,7 +2161,7 @@ Both diseases are recessive in that their fitness values are
 \end_layout
 
 \begin_layout Standard
-These parameters, translated to python, is shown in 
+These parameters, translated to python, are shown in 
 \begin_inset LatexCommand ref
 reference "alg:reich0"
 
@@ -2183,7 +2184,7 @@ Create a simulator
 \end_layout
 
 \begin_layout Standard
-Several parameters need to be used to create a population:
+Several parameters are needed to create a population:
 \end_layout
 
 \begin_layout Itemize
@@ -2351,7 +2352,7 @@ population()
 , and use demographic function as a parameter to allow other demographic
  models to be used, we end up with example 
 \begin_inset LatexCommand ref
-reference "alg:reich1"
+reference "reich1"
 
 \end_inset
 
@@ -2426,7 +2427,7 @@ You will need to read the relative sections of the reference manual to pick
 \begin_inset Formula $k$
 \end_inset
 
--allele mutator will given number of allele states (
+-allele mutator with given number of allele states (
 \begin_inset Formula $k$
 \end_inset
 
@@ -2531,7 +2532,7 @@ With these operators, the simulator can be started.
  it, subject to mutation and selection, specific to each locus.
  The program is listed in example 
 \begin_inset LatexCommand ref
-reference "alg:reich2"
+reference "reich2"
 
 \end_inset
 
@@ -2900,7 +2901,13 @@ print
 \end_layout
 
 \begin_layout Standard
-The following program uses the 
+The following program (listing 
+\begin_inset LatexCommand ref
+reference "reich3"
+
+\end_inset
+
+) uses the 
 \family typewriter
 pyOperator
 \family default
@@ -3266,7 +3273,7 @@ scripts
  directory as a template for your new script.
  The following example 
 \begin_inset LatexCommand ref
-reference "alg:reich4"
+reference "reich4"
 
 \end_inset
 
@@ -3369,7 +3376,7 @@ hybrid operator
  appropriate parameter(s) when needed.
  For example, example 
 \begin_inset LatexCommand ref
-reference "cap:hybrid-operator"
+reference "hybrid"
 
 \end_inset
 
@@ -3407,7 +3414,7 @@ preview false
 \begin_layout Standard
 Example 
 \begin_inset LatexCommand ref
-reference "cap:hybrid-operator"
+reference "hybrid"
 
 \end_inset
 
@@ -3482,7 +3489,7 @@ If hybrid operators are still not flexible enough, you can write operators
 \begin_layout Standard
 Example 
 \begin_inset LatexCommand ref
-reference "cap:pyOpeartor"
+reference "pyOperator"
 
 \end_inset
 
@@ -3768,7 +3775,7 @@ name "infoIdx"
 \begin_layout Standard
 In the following example (Example 
 \begin_inset LatexCommand ref
-reference "cap:infoFields"
+reference "infoFields"
 
 \end_inset
 
@@ -3904,7 +3911,7 @@ name "mergeSubPops"
  respectively.
  In example 
 \begin_inset LatexCommand ref
-reference "cap:splitMerge"
+reference "splitAndMerge"
 
 \end_inset
 
@@ -3928,7 +3935,7 @@ preview false
 Migration can change subpopulation size, but not total population size.
  In example 
 \begin_inset LatexCommand ref
-reference "cap:splitMerge"
+reference "splitAndMerge"
 
 \end_inset
 
@@ -3965,7 +3972,7 @@ ic function is needed to specify the size of each subpopulation, at each
  generation.
  In example 
 \begin_inset LatexCommand ref
-reference "cap:splitMigration2"
+reference "splitMigration2"
 
 \end_inset
 
@@ -4077,7 +4084,7 @@ it uses the return value as the new subpopulation sizes.
 \begin_layout Standard
 Example 
 \begin_inset LatexCommand ref
-reference "cap:splitMigration3"
+reference "splitMigration3"
 
 \end_inset
 
@@ -4653,7 +4660,7 @@ largePedigreeSample
 The first part of the function is the usual housekeeping part (see example
  
 \begin_inset LatexCommand ref
-reference "cap:saveQTDT1"
+reference "saveQTDT1"
 
 \end_inset
 
@@ -4682,7 +4689,7 @@ preview false
 \begin_layout Standard
 Part two of the code (example 
 \begin_inset LatexCommand ref
-reference "cap:saveQTDT2"
+reference "saveQTDT2"
 
 \end_inset
 
@@ -4729,7 +4736,7 @@ preview false
 \begin_layout Standard
 Part three (example 
 \begin_inset LatexCommand ref
-reference "cap:saveQTDT3"
+reference "saveQTDT3"
 
 \end_inset
 
@@ -4756,7 +4763,7 @@ preview false
 \begin_layout Standard
 The next part (example 
 \begin_inset LatexCommand ref
-reference "cap:saveQTDT4"
+reference "saveQTDT4"
 
 \end_inset
 
@@ -4790,7 +4797,7 @@ preview false
 \begin_layout Standard
 The last part of the code (example 
 \begin_inset LatexCommand ref
-reference "cap:saveQTDT5"
+reference "saveQTDT5"
 
 \end_inset
 
@@ -4857,7 +4864,7 @@ preview false
 \begin_layout Standard
 An example is given in example 
 \begin_inset LatexCommand ref
-reference "cap:mapping"
+reference "mapping"
 
 \end_inset
 
@@ -5369,7 +5376,7 @@ $name, $var, $1, $2 ...
  is given, the job will be submitted.
  Example 
 \begin_inset LatexCommand ref
-reference "cap:joblist"
+reference "joblist"
 
 \end_inset
 
@@ -5670,7 +5677,7 @@ key "Reich2001a"
 .
  The results are published in 
 \begin_inset LatexCommand citet
-key "Peng2006"
+key "Peng2007"
 
 \end_inset
 
