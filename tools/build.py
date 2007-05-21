@@ -100,9 +100,7 @@ def build_doc(ver, rev):
     os.environ['SIMUPOP_VER'] = ver
     os.environ['SIMUPOP_REV'] = rev
     run('doxygen Doxyfile')
-    run('python tools/doxy2swig.py %s/xml/index.xml tmp.i' % doc_directory)
-    run('perl tools/processDocString.pl tmp.i > src/simuPOP_doc.i')
-    os.remove('tmp.i')
+    run('python tools/doxy2swig.py')
     os.chdir(d)
 
 
