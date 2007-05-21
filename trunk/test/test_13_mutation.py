@@ -88,8 +88,10 @@ class TestMutator(unittest.TestCase):
     'Testing k-allele mutator'
     simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
       randomMating(), rep=5)
-    simu.apply( [ initByFreq([.2,.8])])
-    simu.evolve([ kamMutator(rate=0.1)], end=200)
+    # simu.apply( [ initByFreq([.2,.8])])
+    simu.evolve(
+        preOps =  [ initByFreq([.2,.8])],
+        ops = [ kamMutator(rate=0.1)], end=200)
     # at loci
     simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
       randomMating(), rep=5)
@@ -106,8 +108,9 @@ class TestMutator(unittest.TestCase):
       return
     simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
       randomMating(), rep=5)
-    simu.apply( [ initByFreq([.2,.8])])
-    simu.evolve([ smmMutator(rate=0.2)], end=200)
+    # simu.apply( [ initByFreq([.2,.8])])
+    simu.evolve(preOps=[initByFreq([.2,.8])],
+       ops = [ smmMutator(rate=0.2)], end=200)
     # at loci
     simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
       randomMating(), rep=5)
@@ -124,8 +127,8 @@ class TestMutator(unittest.TestCase):
       return
     simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
       randomMating(), rep=5)
-    simu.apply( [ initByFreq([.2,.8])])
-    simu.evolve([ gsmMutator(rate=0.2)], end=200)
+    simu.evolve( preOps = [ initByFreq([.2,.8])],
+        ops = [ gsmMutator(rate=0.2)], end=200)
     # at loci
     simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
       randomMating(), rep=5)
