@@ -61,58 +61,34 @@ outFile.close()
 
 print "Finished executing ", sys.argv[1]
 
-# separate this file using a perl script
-perlscript = open(perlFile, 'w')
-perlscript.write(r'''#!/usr/bin/perl
-$output = 0;
-$first = 0;
-$file = "";
-while(<>)
-{
-  if ( /^(>>>|\.\.\.) #file/ )
-  {
-    ($file) = $_ =~ /.*file\s*(.*)\s*/;
-    open(FILE, ">$file");
-    $first = 1;
-    $output = 1;
-    next;
-  }
-  elsif ( /^>>> #end/ )
-  {
-    $first = 0;
-    $output = 0;
-    print FILE ">>>  \n";
-    close(FILE);
-    next;
-  }
-  elsif (/^(>>>|\.\.\.)\s*#PS / )
-  {
-    ($pre, $cmd) = $_ =~ /^(>>>|\.\.\.)\s*#PS (.*)$/;
-    print "Running command ", $cmd, "\n";
-    system("$cmd");
-  }
-  if( $output )
-  {
-    if( $first )
-    {
-      print FILE ">>> ", substr($_, 4);
-      $first = 0;
-    }
-    else
-    {
-      print FILE "$_";
-    }
-  }
-}
-close(FILE);
-''')
-
-perlscript.close()
-
-# run this perl script
-print "Processing output... "
-print 'perl ' + perlFile + ' ' + outputFile
-os.system('perl ' + perlFile + ' ' + outputFile)
-
-#os.remove(perlFile)
-#os.remove(outputFile)
+begin_re = re.compile('^(>>>|\.\.\.)\s*#file\s*(.*)')
+end_re = re.compile('^>>>\s*#end')
+cmd_re = re.compile('^(>>>|\.\.\.)\s*#PS\s*(.*)')
+outFile = open(outputFile, 'r')
+out = ''
+first = False
+for line in outFile.readlines():
+    if begin_re.match(line):
+        (tmp, file) = begin_re.match(line).groups()
+        file = file.strip()
+        print "Writing to %s" % file
+        out = open(file, 'w')
+        first = True
+    elif end_re.match(line):
+        if type(out) != type(''):
+            print >> out, '>>>'
+            out.close()
+            out = ""
+    elif cmd_re.match(line):
+        (tmp, cmd) = cmd_re.match(line).groups()
+        print "Running command %s" % cmd
+        os.system(cmd)
+    else:
+        if type(out) == type(''):
+            continue
+        if first:
+            print >> out, '>>> %s' % line[4:],
+            first = False
+        else:
+            print >> out, line,
+    
