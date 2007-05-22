@@ -57,7 +57,7 @@ namespace simuPOP
 		while(count < numOff)
 		{
 			if(m_formOffGenotype)
-				/// use deep copy!!!!!!!
+				// use deep copy!!!!!!!
 				it->copyFrom(*parent);
 
 			accept = true;
@@ -259,7 +259,7 @@ namespace simuPOP
 			}
 
 			accept = true;
-			/// apply all during mating operators
+			// apply all during mating operators
 			if(!m_ops.empty())
 			{
 				for( vector<Operator *>::iterator iop = m_ops.begin(), iopEnd = m_ops.end(); iop != iopEnd;  ++iop)

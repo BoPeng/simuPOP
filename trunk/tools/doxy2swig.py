@@ -241,6 +241,7 @@ class Doxy2SWIG:
              if not self.content[-1].has_key('Arguments'):
                  self.content[-1]['Arguments'] = []
              self.parse_childnodes(node)
+        self.curField = 'Details'
 
 
     def do_para(self, node):
@@ -515,10 +516,7 @@ class Doxy2SWIG:
             str = ''
             if entry.has_key('Description') and entry['Description'] != '':
                 str += 'Description:' + '\n'
-                str += '\n    %s\n\n' % self.format_text(entry['Description'], 0, 4)
-            if entry.has_key('Details') and entry['Details'] != '':
-                str += 'Details:' + '\n'
-                str += '\n    %s\n\n' % self.format_text(entry['Details'], 0, 4)
+                str += '\n    %s\n\n' % self.format_text(entry['Description'], 0, 4)            
             if entry.has_key('Usage') and entry['Usage'] != '':
                 str += 'Usage:' + '\n'
                 str += '\n    %s\n\n' % self.format_text(entry['Usage'], 0, 6)
@@ -527,6 +525,9 @@ class Doxy2SWIG:
                 for arg in entry['Arguments']:
                     str += '    %-16s%s\n' % (arg['Name']+':', self.format_text(arg['Description'], 0, 20))
                 str += '\n'
+            if entry.has_key('Details') and entry['Details'] != '':
+                str += 'Details:' + '\n'
+                str += '\n    %s\n\n' % self.format_text(entry['Details'], 0, 4)
             if entry.has_key('note') and entry['note'] != '':
                 str += 'Note:' + '\n'
                 str += '\n    %s\n\n' % self.format_text(entry['note'], 0, 4)
@@ -585,9 +586,6 @@ class Doxy2SWIG:
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, '\\par\n\\strong{Function \\texttt{%s}}\n\\par' % self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
                 print >> out, '%s\par' % self.latex_text(entry['Description'])
-            if entry.has_key('Details') and entry['Details'] != '':
-                print >> out, '\\par\n\\strong{Details}\n\\par'
-                print >> out, '    %s\n' % self.latex_text(entry['Details'])
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, '\\begin{quote}\\function{%s}\\end{quote}' % self.latex_text(entry['Usage'])
             if entry.has_key('Arguments') and entry['Arguments'] != '':
@@ -596,6 +594,9 @@ class Doxy2SWIG:
                 for arg in entry['Arguments']:
                     print >> out, '\\item [{%s}]%s' % (arg['Name'], self.latex_text(arg['Description']))
                 print >> out, '\\end{description}'
+            if entry.has_key('Details') and entry['Details'] != '':
+                print >> out, '\\par\n\\strong{Details}\n\\par'
+                print >> out, '    %s\n' % self.latex_text(entry['Details'])
             if entry.has_key('note') and entry['note'] != '':
                 print >> out, '\\par\n\\strong{Note}\n\\par'
                 print >> out, '    %s\n' % self.latex_text(entry['note'])
@@ -629,8 +630,6 @@ class Doxy2SWIG:
             print >> out, '\\par\n\\strong{Initialization}\n\\par'
             if cons.has_key('Description') and cons['Description'] != '':
                 print >> out, '%s\par' % self.latex_text(cons['Description'])
-            if cons.has_key('Details') and cons['Details'] != '':
-                print >> out, '%s\par' % self.latex_text(cons['Details'])
             if cons.has_key('Usage') and cons['Usage'] != '':
                 print >> out, '\\begin{quote}\\function{%s}\\end{quote}' % self.latex_text(cons['Usage'])
             if cons.has_key('Arguments') and cons['Arguments'] != '':
@@ -640,6 +639,8 @@ class Doxy2SWIG:
                 for arg in cons['Arguments']:
                     print >> out, '\\item [{%s}]%s' % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
                 print >> out, '\\end{description}'
+            if cons.has_key('Details') and cons['Details'] != '':
+                print >> out, '%s\par' % self.latex_text(cons['Details'])
             #if cons.has_key('Details') and cons['Details'] != '':
             #    print >> out, '\\par\n\\strong{Details}\n\\par'
             #    print >> out, '%s' % self.latex_text(cons['Details'])
