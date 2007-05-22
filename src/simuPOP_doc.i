@@ -84,13 +84,13 @@ Usage:
 
 %feature("docstring") simuPOP::affectedSibpairSample::drawsample "
 
-Details:
-
-    collect all families
-
 Usage:
 
     x.drawsample(pop)
+
+Details:
+
+    collect all families
 
 "; 
 
@@ -301,13 +301,19 @@ Usage:
 
 %feature("docstring") simuPOP::binomialSelection "
 
+Description:
+
+    a mating scheme that uses binomial selection, regardless of sex
+
 Details:
 
-    binomial random selectionNo sex. Choose one individual from last
-    generation.1. numOffspring protocol is honored 2. population size
-    changes are allowed 3. selection is possible.So this works just
-    like a sexless random mating. If ploidy is one, this is
-    chromosomal mating.
+    No sex information is involved (binomial random selection).
+    Offspring is chosen from parental generation by random or
+    according to the fitness values. In this mating scheme,
+    * numOffspring  protocol is honored;
+    * population size changes are allowed;
+    * selection is possible;
+    * haploid populaton is allowed.
 
 "; 
 
@@ -315,13 +321,17 @@ Details:
 
 Description:
 
-    constructor
+    create a binomial selection mating scheme
 
 Usage:
 
     binomialSelection(numOffspring=1., *numOffspringFunc=NULL,
       maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
       newSubPopSizeExpr=\"\", *newSubPopSizeFunc=NULL)
+
+Details:
+
+    Please refer to class mating  for parameter descriptions.
 
 "; 
 
@@ -341,7 +351,7 @@ Usage:
 
 Description:
 
-    clone() const. The same as  mating::clone() const.
+    deep copy of a binomial selection mating scheme
 
 Usage:
 
@@ -353,7 +363,8 @@ Usage:
 
 Description:
 
-    return name of the mating type
+    used by Python print function to print out the general information
+    of the binomial selection mating scheme
 
 Usage:
 
@@ -361,36 +372,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::binomialSelection::submitScratch "
+%ignore simuPOP::binomialSelection::submitScratch(population &pop, population &scratch);
 
-Description:
-
-    simuPOP::binomialSelection::submitScratch
-
-Usage:
-
-    x.submitScratch(pop, scratch)
-
-"; 
-
-%feature("docstring") simuPOP::binomialSelection::mate "
-
-Description:
-
-    do the mating.
-
-Usage:
-
-    x.mate(pop, scratch, ops, submit)
-
-Arguments:
-
-    pop:            population
-    scratch:        scratch population, will be used in this mating
-                    scheme.
-    ops:            during mating operators
-
-"; 
+%ignore simuPOP::binomialSelection::mate(population &pop, population &scratch, vector< Operator * > &ops, bool submit);
 
 %feature("docstring") simuPOP::caseControlSample "
 
@@ -571,13 +555,21 @@ Usage:
 
 %feature("docstring") simuPOP::controlledBinomialSelection "
 
+Description:
+
+    a controlled binomial random selection mating scheme
+
 Details:
 
-    binomial random selectionNo sex. Choose one individual from last
-    generation.1. numOffspring protocol is honored 2. population size
-    changes are allowed 3. selection is possible.So this works just
-    like a sexless random mating. If ploidy is one, this is
-    chromosomal mating.
+    This is the controlled binomial random selection mating scheme
+    described in  Peng 2007 (PLoS Genetics)  . Basically, a freqFunc
+    is passed to this mating scheme and set the allele frequencies of
+    given alleles at given loci at the offspring generation.
+    The offspring generation is conceptually populated in two steps.
+    At the first step, only families with disease alleles are accepted
+    until the expected number of disease alleles are met. At the
+    second step, only families with wide type alleles are accepted to
+    populate the rest of the offspring generation.
 
 "; 
 
@@ -585,7 +577,7 @@ Details:
 
 Description:
 
-    constructor
+    create a controlled binomial random selection mating scheme
 
 Usage:
 
@@ -593,6 +585,10 @@ Usage:
       numOffspring=1., *numOffspringFunc=NULL, maxNumOffspring=0,
       mode=MATE_NumOffspring, newSubPopSize=[], newSubPopSizeExpr=\"\",
       *newSubPopSizeFunc=NULL)
+
+Details:
+
+    Please refer to class mating  for descriptions of parameters.
 
 "; 
 
@@ -614,7 +610,7 @@ Usage:
 
 Description:
 
-    clone() const. The same as  mating::clone() const.
+    deep copy of a controlled binomial random selection mating scheme
 
 Usage:
 
@@ -626,7 +622,8 @@ Usage:
 
 Description:
 
-    return name of the mating type
+    used by Python print function to print out the general information
+    of the controlled binomial random selection mating scheme
 
 Usage:
 
@@ -634,42 +631,24 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::controlledBinomialSelection::submitScratch "
+%ignore simuPOP::controlledBinomialSelection::submitScratch(population &pop, population &scratch);
 
-Description:
-
-    simuPOP::controlledBinomialSelection::submitScratch
-
-Usage:
-
-    x.submitScratch(pop, scratch)
-
-"; 
-
-%feature("docstring") simuPOP::controlledBinomialSelection::mate "
-
-Description:
-
-    do the mating.
-
-Usage:
-
-    x.mate(pop, scratch, ops, submit)
-
-Arguments:
-
-    pop:            population
-    scratch:        scratch population, will be used in this mating
-                    scheme.
-    ops:            during mating operators
-
-"; 
+%ignore simuPOP::controlledBinomialSelection::mate(population &pop, population &scratch, vector< Operator * > &ops, bool submit);
 
 %feature("docstring") simuPOP::controlledMating "
 
+Description:
+
+    a controlled mating scheme
+
 Details:
 
-    controlled mating
+    This is an experimental mating scheme that uses a frequency range
+    to control the allele frequency of the offspring generation at
+    given loci. When allele frequencies at the offspring generation
+    does not fall into the given range, the offspring generation is
+    regenerated. Any mating scheme can be used with this mating scheme
+    by passing through parameter matingScheme .
 
 "; 
 
@@ -677,7 +656,7 @@ Details:
 
 Description:
 
-    Controlled mating, control allele frequency at a locus.
+    control allele frequencies at a locus
 
 Usage:
 
@@ -686,18 +665,18 @@ Usage:
 
 Arguments:
 
-    mating:         a mating scheme.
+    matingScheme:   a mating scheme
     loci:           loci at which allele frequency is controlled. Note
                     that controlling the allele frequencies at several
                     loci may take a long time.
-    alleles:        alleles to control at each loci. Should have the
-                    same length as loci
-    freqFunc:       frequency boundaries. If the length of the return
-                    value equals the size of loci, the range for loci
-                    will be [value0, value0+range], [value1,
-                    value1+range] etc. If the length of the return
-                    value is 2 times size of loci, it will be
-                    interpreted as [low1, high1, low2, high2 ...]
+    alleles:        alleles to control at each locus. Should have the
+                    same length as loci .
+    freqFunc:       frequency boundaries. If the length of the
+                    returned value equals the size of loci , the range
+                    for loci will be [value0, value0+range] , [value1,
+                    value1+range]  etc. If the length of the returned
+                    value is 2 times the size of loci , it will be
+                    interpreted as [low1, high1, low2, high2, ...] .
 
 "; 
 
@@ -719,9 +698,7 @@ Usage:
 
 Description:
 
-    clone() const. Generate a copy of itself and return pointer this
-    is to make sure the object is persistent and will not be freed by
-    python.
+    deep copy of a controlled mating scheme
 
 Usage:
 
@@ -729,29 +706,14 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::controlledMating::isCompatible "
-
-Description:
-
-    check if the mating type is compatible with population structure
-
-Details:
-
-    possible things to check:
-    * need certain types of individual (age, sex etc)
-    * need resizeable population...
-
-Usage:
-
-    x.isCompatible(pop)
-
-"; 
+%ignore simuPOP::controlledMating::isCompatible(const population &pop) const ;
 
 %feature("docstring") simuPOP::controlledMating::__repr__ "
 
 Description:
 
-    return name of the mating type
+    used by Python print function to print out the general information
+    of the controlled mating scheme
 
 Usage:
 
@@ -759,39 +721,25 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::controlledMating::mate "
-
-Description:
-
-    mate: This is not supposed to be called for base mating class.
-
-Usage:
-
-    x.mate(pop, scratch, ops, submit)
-
-Arguments:
-
-    pop:            population
-    scratch:        scratch population
-    ops:            during mating operators
-
-"; 
+%ignore simuPOP::controlledMating::mate(population &pop, population &scratch, vector< Operator * > &ops, bool submit);
 
 %feature("docstring") simuPOP::controlledRandomMating "
 
+Description:
+
+    a controlled random mating scheme
+
 Details:
 
-    basic sexual random mating.Within each subpopulation, choose male
-    and female randomly randmly get one copy of chromosome from
-    father/mother.require: sexed individual; ploidy == 2apply during
-    mating operators and put into the next generation.if
-    ignoreParentsSex is set, parents will be chosen regardless of
-    sex.Otherwise, male and female will be collected and be chosen
-    randomly.If there is no male or female in a subpopulation, if
-    m_UseSameSexIfUniSex is true, an warning will be generated and
-    same sex mating (?) will be used otherwise,  randomMating will
-    return false.if there is no during mating operator to copy
-    alleles, a direct copy will be used.
+    This is the controlled random mating scheme described in  Peng
+    2007 (PLoS Genetics)  . Basically, a freqFunc  is passed to this
+    mating scheme and set the allele frequencies of given alleles at
+    given loci at the offspring generation.
+    The offspring generation is conceptually populated in two steps.
+    At the first step, only families with disease alleles are accepted
+    until the expected number of disease alleles are met. At the
+    second step, only families with wide type alleles are accepted to
+    populate the rest of the offspring generation.
 
 "; 
 
@@ -799,7 +747,7 @@ Details:
 
 Description:
 
-    create a random mating scheme
+    create a controlled random mating scheme
 
 Usage:
 
@@ -811,26 +759,19 @@ Usage:
 
 Arguments:
 
-    numOffspring:   
-    number:         of offspring or p in some modes
-    numOffspringFunc:
-    a:              python function that determine number of offspring
-                    or p depending on mode
-    maxNumOffspring:used when mode=MATE_BinomialDistribution
-    mode:           one of MATE_NumOffspring ,
-                    MATE_NumOffspringEachFamily,
-                    MATE_GeometricDistribution,
-                    MATE_PoissonDistribution,
-                    MATE_BinomialDistribution
-    newSubPopSize:  an array of subpopulation sizes, should have the
-                    same number of subpopulations as current
-                    population
-    newSubPopSizeExpr:an expression that will be evaluated as an array
-                    of subpop sizes
-    newSubPopSizeFunc:an function that have parameter gen and oldSize
-                    (current subpop size).
-    contWhenUniSex: continue when there is only one sex in the
-                    population, default to true
+    loci:           loci at which allele frequencies are monitored
+                    (controlled)
+    alleles:        alleles at given loci. It should have the same
+                    length as loci
+    freqFunc:       a Python function that accepts a generation number
+                    and returns expected allele frequencies at given
+                    loci
+    acceptScheme:   internal use only
+
+Details:
+
+    Please refer to class mating  for descriptions of other
+    parameters.
 
 "; 
 
@@ -852,9 +793,7 @@ Usage:
 
 Description:
 
-    clone() const. Generate a copy of itself and return pointer this
-    is to make sure the object is persistent and will not be freed by
-    python.
+    deep copy of a controlled random mating scheme
 
 Usage:
 
@@ -862,29 +801,14 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::controlledRandomMating::isCompatible "
-
-Description:
-
-    check if the mating type is compatible with population structure
-
-Details:
-
-    possible things to check:
-    * need certain types of individual (age, sex etc)
-    * need resizeable population...
-
-Usage:
-
-    x.isCompatible(pop)
-
-"; 
+%ignore simuPOP::controlledRandomMating::isCompatible(const population &pop) const ;
 
 %feature("docstring") simuPOP::controlledRandomMating::__repr__ "
 
 Description:
 
-    return name of the mating type
+    used by Python print function to print out the general information
+    of the controlled random mating scheme
 
 Usage:
 
@@ -892,41 +816,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::controlledRandomMating::submitScratch "
+%ignore simuPOP::controlledRandomMating::submitScratch(population &pop, population &scratch);
 
-Description:
-
-    simuPOP::controlledRandomMating::submitScratch
-
-Usage:
-
-    x.submitScratch(pop, scratch)
-
-"; 
-
-%feature("docstring") simuPOP::controlledRandomMating::mate "
-
-Description:
-
-    do the mating. parameters see  mating::mate .
-
-Details:
-
-    Within each subpopulation, choose male and female randomly randmly
-    get one copy of chromosome from father/mother.require: sexed
-    individual; ploidy == 2apply during mating operators and put into
-    the next generation.Otherwise, male and female will be collected
-    and be chosen randomly.
-    * If there is no male or female in a subpopulation,
-    * if m_contWhenUniSex is true, an warning will be generated and
-    same sex mating (?) will be used
-    * otherwise,  controlledRandomMating will return false.
-
-Usage:
-
-    x.mate(pop, scratch, ops, submit)
-
-"; 
+%ignore simuPOP::controlledRandomMating::mate(population &pop, population &scratch, vector< Operator * > &ops, bool submit);
 
 %feature("docstring") simuPOP::dumper "
 
@@ -1031,13 +923,13 @@ Usage:
 
 %feature("docstring") simuPOP::dumper::apply "
 
-Details:
-
-    dump population structuredump all genotypic info
-
 Usage:
 
     x.apply(pop)
+
+Details:
+
+    dump population structuredump all genotypic info
 
 "; 
 
@@ -1585,15 +1477,15 @@ Description:
 
     set the maximum allele value for all loci
 
+Usage:
+
+    x.setMaxAllele(maxAllele)
+
 Details:
 
     Maximum allele value has to be 1  for binary modules. maxAllele
     is the maximum possible allele value, which allows maxAllele+1
     alleles 0, 1, ..., maxAllele .
-
-Usage:
-
-    x.setMaxAllele(maxAllele)
 
 "; 
 
@@ -1692,12 +1584,6 @@ Details:
 
 %feature("docstring") simuPOP::gsmMutator::gsmMutator "
 
-Details:
-
-    The generalized stepwise mutation model (GMM) is developed for
-    allozymes. It provides better description for these kinds of
-    evolutionary processes.
-
 Usage:
 
     gsmMutator(rate=[], atLoci=[], maxAllele=0, incProb=0.5, p=0,
@@ -1713,6 +1599,12 @@ Arguments:
     atLoci:         and other parameters: refer to help(mutator),
                     help(baseOperator.__init__)
     func:           return number of steps. no parameter
+
+Details:
+
+    The generalized stepwise mutation model (GMM) is developed for
+    allozymes. It provides better description for these kinds of
+    evolutionary processes.
 
 "; 
 
@@ -1960,15 +1852,15 @@ Description:
     return an editable array (a Python list of length
     totNumLoci()*ploidy() ) of genotypes of an individual
 
+Usage:
+
+    x.arrGenotype()
+
 Details:
 
     This function returns the whole genotype. Although this function
     is not as easy to use as other functions that access alleles, it
     is the fastest one since you can read/write genotype directly.
-
-Usage:
-
-    x.arrGenotype()
 
 "; 
 
@@ -2300,10 +2192,6 @@ Description:
 
     get information field name
 
-Details:
-
-    Equivalent to info(infoIdx(name)) .
-
 Usage:
 
     x.info(name)
@@ -2311,6 +2199,10 @@ Usage:
 Arguments:
 
     name:           name of the information field
+
+Details:
+
+    Equivalent to info(infoIdx(name)) .
 
 "; 
 
@@ -2519,12 +2411,6 @@ Description:
 
     randomly assign alleles according to allele frequency
 
-Details:
-
-    This operator randomly assign alleles according to given allele
-    frequency. Allele frequencies can differ by subpop. Sex is also
-    assigned randomly.
-
 Usage:
 
     initByFreq(alleleFreq=[], identicalInds=False, subPop=[],
@@ -2557,6 +2443,12 @@ Arguments:
                     beginning.
     stages:         is set to PreMating. Other parameters please see
                     help(baseOperator.__init__)
+
+Details:
+
+    This operator randomly assign alleles according to given allele
+    frequency. Allele frequencies can differ by subpop. Sex is also
+    assigned randomly.
 
 "; 
 
@@ -2599,13 +2491,13 @@ Usage:
 
 %feature("docstring") simuPOP::initByFreq::apply "
 
-Details:
-
-    initialize m_ranges
-
 Usage:
 
     x.apply(pop)
+
+Details:
+
+    initialize m_ranges
 
 "; 
 
@@ -2671,13 +2563,13 @@ Usage:
 
 %feature("docstring") simuPOP::initByValue::apply "
 
-Details:
-
-    fixme: check length of src?atLoci is in effect
-
 Usage:
 
     x.apply(pop)
+
+Details:
+
+    fixme: check length of src?atLoci is in effect
 
 "; 
 
@@ -2994,13 +2886,13 @@ Usage:
 
 %feature("docstring") simuPOP::largePedigreeSample::drawsample "
 
-Details:
-
-    collect all families
-
 Usage:
 
     x.drawsample(pop)
+
+Details:
+
+    collect all families
 
 "; 
 
@@ -3089,13 +2981,13 @@ Description:
 
     currently assuming diploid
 
-Details:
-
-    get genotype of ind
-
 Usage:
 
     x.penet(*ind)
+
+Details:
+
+    get genotype of ind
 
 "; 
 
@@ -3183,13 +3075,13 @@ Description:
 
     currently assuming diploid
 
-Details:
-
-    get genotype of ind
-
 Usage:
 
     x.penet(*ind)
+
+Details:
+
+    get genotype of ind
 
 "; 
 
@@ -3280,13 +3172,13 @@ Description:
 
     currently assuming diploid
 
-Details:
-
-    get genotype of ind
-
 Usage:
 
     x.qtrait(*ind)
+
+Details:
+
+    get genotype of ind
 
 "; 
 
@@ -3375,13 +3267,13 @@ Description:
 
     currently assuming diploid
 
-Details:
-
-    get genotype of ind
-
 Usage:
 
     x.indFitness(*ind, gen)
+
+Details:
+
+    get genotype of ind
 
 "; 
 
@@ -3469,13 +3361,13 @@ Description:
 
     currently assuming diploid
 
-Details:
-
-    get genotype of ind
-
 Usage:
 
     x.qtrait(*ind)
+
+Details:
+
+    get genotype of ind
 
 "; 
 
@@ -3567,13 +3459,13 @@ Description:
 
     currently assuming diploid
 
-Details:
-
-    get genotype of ind
-
 Usage:
 
     x.indFitness(*ind, gen)
+
+Details:
+
+    get genotype of ind
 
 "; 
 
@@ -3592,36 +3484,31 @@ Usage:
 
 %feature("docstring") simuPOP::mating "
 
-Details:
-
-    The mating classes describe various mating scheme --- a required
-    parameter of simulator.
-
-"; 
-
-%feature("docstring") simuPOP::mating::isCompatible "
-
 Description:
 
-    check if the mating type is compatible with population structure
+    the base class of all mating schemes - a required parameter of
+    simulator
 
 Details:
 
-    possible things to check:
-    * need certain types of individual (age, sex etc)
-    * need resizeable population...
-
-Usage:
-
-    x.isCompatible(pop)
+    Mating schemes specify how to generate offspring from the current
+    population. It must be provided when a simulator is created.
+    Mating can perform the following tasks:
+    * change population/subpopulation sizes;
+    * randomly select parent(s) to generate offspring to fill the next
+    generation;
+    * during-mating  operators are applied to all offspring;
+    * apply selection if applicable.
 
 "; 
+
+%ignore simuPOP::mating::isCompatible(const population &pop) const ;
 
 %feature("docstring") simuPOP::mating::mating "
 
 Description:
 
-    constructor
+    create a mating scheme
 
 Usage:
 
@@ -3629,19 +3516,48 @@ Usage:
       maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
       newSubPopSizeExpr=\"\", *newSubPopSizeFunc=NULL)
 
+Arguments:
+
+    numOffspring:   number of offspring or p  for a random
+                    distribution. Default to 1. This parameter
+                    determines the number of offspring that a mating
+                    event will produce. Therefore, it determines the
+                    family size.
+    numOffspringFunc:a python function that returns the number of
+                    offspring or p
+    maxNumOffspring:used when numOffspring  is generated from a
+                    binomial distribution
+    mode:           can be one of MATE_NumOffspring,
+                    MATE_NumOffspringEachFamily,
+                    MATE_GeometricDistribution,
+                    MATE_PoissonDistribution,
+                    MATE_BinomialDistribution,
+                    MATE_UniformDistribution .
+    newSubPopSize:  an array of subpopulaitons sizes
+    newSubPopSizeExpr:an expression that will return the new
+                    subpopulation size
+    newSubPopSizeFunc:a function that accepts an int
+                    parameter(generation), an array of current
+                    population size and return an array of
+                    subpopulation sizes. This is usually easier to use
+                    than its expression version of this parameter.
+
+Details:
+
+    By default, a mating scheme keeps a constant population size,
+    generate one offspring per mating event. These can be changed
+    using a variety of parameters. First, newSubPopSize ,
+    newSubPopSizeExpr  and newSubPopSizeFunc  can be used to specify
+    subpopulation sizes of the offspring generation. mode ,
+    numOffspring , maxNumOffspring  can be used to specify how many
+    offspring will be produced for each mating event. This mode
+    parameter ...
+
+Please refer to the reference manual for more details.
+
 "; 
 
-%feature("docstring") simuPOP::mating::mating "
-
-Description:
-
-    simuPOP::mating::mating
-
-Usage:
-
-    mating(rhs)
-
-"; 
+%ignore simuPOP::mating::mating(const mating &rhs);
 
 %feature("docstring") simuPOP::mating::~mating "
 
@@ -3659,14 +3575,7 @@ Usage:
 
 Description:
 
-    clone() const. Generate a copy of itself and return a pointer
-
-Details:
-
-    This function is important because Python automatically release an
-    object after it is used.For example: will fail since  mating() is
-    released after the first line being executed.With the help of
-    clone() const, the C++ implementation can avoid this problem by
+    deep copy of a mating scheme
 
 Usage:
 
@@ -3678,7 +3587,8 @@ Usage:
 
 Description:
 
-    return name of the mating type used primarily in logging.
+    used by Python print function to print out the general information
+    of the mating scheme
 
 Usage:
 
@@ -3686,83 +3596,17 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mating::submitScratch "
+%ignore simuPOP::mating::submitScratch(population &pop, population &scratch);
 
-Description:
+%ignore simuPOP::mating::mate(population &pop, population &scratch, vector< Operator * > &ops, bool submit);
 
-    simuPOP::mating::submitScratch
+%ignore simuPOP::mating::fixedFamilySize();
 
-Usage:
+%ignore simuPOP::mating::numOffspring(int gen);
 
-    x.submitScratch(pop, scratch)
+%ignore simuPOP::mating::resetNumOffspring();
 
-"; 
-
-%feature("docstring") simuPOP::mating::mate "
-
-Description:
-
-    mate: This is not supposed to be called for base mating class.
-
-Usage:
-
-    x.mate(pop, scratch, ops, submit)
-
-Arguments:
-
-    pop:            population
-    scratch:        scratch population
-    ops:            during mating operators
-
-"; 
-
-%feature("docstring") simuPOP::mating::fixedFamilySize "
-
-Description:
-
-    simuPOP::mating::fixedFamilySize
-
-Usage:
-
-    x.fixedFamilySize()
-
-"; 
-
-%feature("docstring") simuPOP::mating::numOffspring "
-
-Description:
-
-    simuPOP::mating::numOffspring
-
-Usage:
-
-    x.numOffspring(gen)
-
-"; 
-
-%feature("docstring") simuPOP::mating::resetNumOffspring "
-
-Description:
-
-    simuPOP::mating::resetNumOffspring
-
-Usage:
-
-    x.resetNumOffspring()
-
-"; 
-
-%feature("docstring") simuPOP::mating::prepareScratchPop "
-
-Description:
-
-    dealing with pop/subPop size change, copy of structure etc.
-
-Usage:
-
-    x.prepareScratchPop(pop, scratch)
-
-"; 
+%ignore simuPOP::mating::prepareScratchPop(population &pop, population &scratch);
 
 %feature("docstring") simuPOP::mergeSubPops "
 
@@ -3876,16 +3720,17 @@ Arguments:
                     [] can be ignored.
     stage:          is default to PreMating. For details about other
                     parameters, please refer to
-                    help(baseOperator.__init__) rate is a matrix with
-                    dimensions determined by fromSubPop and toSubPop.
-                    By default, rate is a matrix with element (i,j)
-                    being the migration rate, probability or count
-                    from subpop i to subpop j. If fromSubPop and/or
-                    toSubPop are given, migration only happen between
-                    these subpopulations. An extreme case is 'point
-                    migration'rate=[[r]], fromSubPop=a,
-                    toSubPop=bwhich migrate from subpop a to b with
-                    given rate r.
+                    help(baseOperator.__init__)
+
+Details:
+
+    rate is a matrix with dimensions determined by fromSubPop and
+    toSubPop. By default, rate is a matrix with element (i,j) being
+    the migration rate, probability or count from subpop i to subpop
+    j. If fromSubPop and/or toSubPop are given, migration only happen
+    between these subpopulations. An extreme case is 'point
+    migration'rate=[[r]], fromSubPop=a, toSubPop=bwhich migrate from
+    subpop a to b with given rate r.
 
 "; 
 
@@ -3931,27 +3776,27 @@ Description:
 
     set migration rate
 
+Usage:
+
+    x.setRates(rate, mode)
+
 Details:
 
     format 0-0 0-1 0-2, 1-0 1-1 1-2, 2-0, 2-1, 2-2. for mode 1 or 2,
     00,11,22 will be set automatically. regardless of input.
 
-Usage:
-
-    x.setRates(rate, mode)
-
 "; 
 
 %feature("docstring") simuPOP::migrator::apply "
+
+Usage:
+
+    x.apply(pop)
 
 Details:
 
     2nd, or 3rd methodcreate a vector and assign indices, then random
     shuffle and assign infofor all subPop.
-
-Usage:
-
-    x.apply(pop)
 
 "; 
 
@@ -4197,13 +4042,13 @@ Description:
 
     currently assuming diploid
 
-Details:
-
-    fixme
-
 Usage:
 
     x.indFitness(*ind, gen)
+
+Details:
+
+    fixme
 
 "; 
 
@@ -4391,10 +4236,19 @@ Usage:
 
 %feature("docstring") simuPOP::noMating "
 
+Description:
+
+    a mating scheme that does nothing
+
 Details:
 
-    No mating. No subpopulation change. During mating operator will be
-    applied, but the return values are not checked.
+    In this scheme, there is
+    * no mating. Parent generation will be considered as offspring
+    generation.
+    * no subpopulation change. During-mating  operators will be
+    applied, but the return values are not checked. I.e., subpopsizes
+    will be ignored although some during-mating operators may be
+    applied.
 
 "; 
 
@@ -4402,11 +4256,15 @@ Details:
 
 Description:
 
-    constructor, no new subPopsize parameter
+    creat a scheme with no mating
 
 Usage:
 
     noMating()
+
+Note:
+
+    There is no new subPopsize  parameter.
 
 "; 
 
@@ -4426,7 +4284,7 @@ Usage:
 
 Description:
 
-    clone() const. The same as  mating::clone() const.
+    deep copy of a scheme with no mating
 
 Usage:
 
@@ -4438,7 +4296,8 @@ Usage:
 
 Description:
 
-    return name of the mating type
+    used by Python print function to print out the general information
+    of the scheme with no mating
 
 Usage:
 
@@ -4446,34 +4305,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::noMating::submitScratch "
+%ignore simuPOP::noMating::submitScratch(population &pop, population &scratch);
 
-Description:
-
-    simuPOP::noMating::submitScratch
-
-Usage:
-
-    x.submitScratch(pop, scratch)
-
-"; 
-
-%feature("docstring") simuPOP::noMating::mate "
-
-Description:
-
-    do the mating. --- no mating :-)
-
-Details:
-
-    All individuals will be passed to during mating operators but no
-    one will die (ignore during mating failing signal).
-
-Usage:
-
-    x.mate(pop, scratch, ops, submit)
-
-"; 
+%ignore simuPOP::noMating::mate(population &pop, population &scratch, vector< Operator * > &ops, bool submit);
 
 %feature("docstring") simuPOP::noneOp "
 
@@ -4648,13 +4482,13 @@ Usage:
 
 %feature("docstring") simuPOP::nuclearFamilySample::drawsample "
 
-Details:
-
-    collect all families
-
 Usage:
 
     x.drawsample(pop)
+
+Details:
+
+    collect all families
 
 "; 
 
@@ -4691,23 +4525,14 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::offspringGenerator "
-
-Description:
-
-    the default method to generate offspring from parents This part is
-    separated from the mating schemes, because mating schemes usually
-    only differ by the way parents are choosing. input: parents,
-    output: offsprings
-
-"; 
+%ignore simuPOP::offspringGenerator;
 
 %feature("docstring") simuPOP::offspringGenerator::offspringGenerator "
 
 Description:
 
-    constructor, save information from pop and ops to speed up the
-    calls to generateOffspring
+    create an offspring generator, save information from pop  and ops
+    to speed up the calls to generateOffspring
 
 Usage:
 
@@ -4719,17 +4544,16 @@ Usage:
 
 Description:
 
-    generate numOff offspring, or until reach offEnd this is because
-    offBegin+numOff may go beyond subpopulation boundary. return the
-    ending iterator
-
-Details:
-
-    apply all during mating operators
+    generate numOff  offspring, or until reach offEnd
 
 Usage:
 
     x.generateOffspring(pop, *dad, *mom, numOff, offBegin)
+
+Details:
+
+    This is because offBegin+numOff  may go beyond the subpopulation
+    boundary.
 
 "; 
 
@@ -4737,17 +4561,16 @@ Usage:
 
 Description:
 
-    generate numOff offspring, or until reach offEnd this is because
-    offBegin+numOff may go beyond subpopulation boundary. return the
-    ending iterator
-
-Details:
-
-    use deep copy!!!!!!!
+    copy numOff  offspring, or until reach offEnd
 
 Usage:
 
     x.copyOffspring(pop, *par, numOff, offBegin)
+
+Details:
+
+    This is because offBegin+numOff  may go beyond the subpopulation
+    boundary.
 
 "; 
 
@@ -4886,15 +4709,15 @@ Description:
 
     set applicable group
 
+Usage:
+
+    x.setApplicableGroup(grp=GRP_ALL)
+
 Details:
 
     Default to GRP_ALL  (applicable to all groups). Otherwise, the
     operator is applicable to only one  group of replicates. Groups
     can be set in  simulator::setGroup() .
-
-Usage:
-
-    x.setApplicableGroup(grp=GRP_ALL)
 
 "; 
 
@@ -5719,11 +5542,6 @@ Description:
     Create a population object with given size and genotypic
     structure.
 
-Details:
-
-    FIXME: Details of constructure is missing.This is techniquely the
-    __init__  function of the population object.
-
 Usage:
 
     population(size=0, ploidy=2, loci=[], sexChrom=False,
@@ -5756,7 +5574,9 @@ Arguments:
                     specify loci position for each chromosome. For
                     example, you can use lociPos=[1,2,3]  when
                     loci=[3]  or lociPos=[[1,2],[1.5,3,5]]  for
-        ...
+                    loci=[2,3] .  simuPOP does not assume a unit for
+                    these locations, although they are usually
+      ...
 
 Please refer to the reference manual for more details.
 
@@ -5973,10 +5793,6 @@ Description:
 
     refernce to individual ind  in subpopulation subPop
 
-Details:
-
-    This function is named individual  in the Python interface.
-
 Usage:
 
     x.ind(ind, subPop=0)
@@ -5985,6 +5801,10 @@ Arguments:
 
     ind:            individual index within subPop
     subPop:         subpopulation index
+
+Details:
+
+    This function is named individual  in the Python interface.
 
 "; 
 
@@ -6056,13 +5876,6 @@ Description:
 
     get the whole genotypes
 
-Details:
-
-    Return an editable array of all genotypes of the population. You
-    need to know how these genotypes are organized to safely
-    read/write genotype directly. Individuals will be in order before
-    exposing their genotypes.
-
 Usage:
 
     x.arrGenotype(order)
@@ -6072,6 +5885,13 @@ Arguments:
     order:          if order is true , respect order; otherwise, do
                     not repect population structure.
 
+Details:
+
+    Return an editable array of all genotypes of the population. You
+    need to know how these genotypes are organized to safely
+    read/write genotype directly. Individuals will be in order before
+    exposing their genotypes.
+
 "; 
 
 %feature("docstring") simuPOP::population::arrGenotype "
@@ -6079,11 +5899,6 @@ Arguments:
 Description:
 
     get the whole genotypes
-
-Details:
-
-    Return an editable array of all genotype of a subpopulation.
-    Individuals will be in order before exposing their genotypes.
 
 Usage:
 
@@ -6095,6 +5910,11 @@ Arguments:
     order:          if order is true , keep order; otherwise, respect
                     subpop  structure.
 
+Details:
+
+    Return an editable array of all genotype of a subpopulation.
+    Individuals will be in order before exposing their genotypes.
+
 "; 
 
 %feature("docstring") simuPOP::population::setIndSubPopID "
@@ -6102,11 +5922,6 @@ Arguments:
 Description:
 
     set subpopulation ID with given ID
-
-Details:
-
-    Set subpopulation ID of each individual with given ID. Individuals
-    can be rearranged afterwards using setSubPopByIndID .
 
 Usage:
 
@@ -6116,6 +5931,11 @@ Arguments:
 
     id:             an array of the same length of population size,
                     resprenting subpopulation ID of each individual.
+
+Details:
+
+    Set subpopulation ID of each individual with given ID. Individuals
+    can be rearranged afterwards using setSubPopByIndID .
 
 "; 
 
@@ -6138,12 +5958,6 @@ Description:
 
     adjust subpopulation according to individual subpopulation ID.
 
-Details:
-
-    Rearrange individuals to their new subpopulations according to
-    their subpopulation ID (or the new given id ). Order within each
-    subpopulation is not respected.
-
 Usage:
 
     x.setSubPopByIndID(id=[])
@@ -6152,6 +5966,12 @@ Arguments:
 
     id:             new subpopulation ID, if given, current individual
                     subpopulation ID will be ignored.
+
+Details:
+
+    Rearrange individuals to their new subpopulations according to
+    their subpopulation ID (or the new given id ). Order within each
+    subpopulation is not respected.
 
 Note:
 
@@ -6165,6 +5985,10 @@ Description:
 
     split a subpopulation into subpopulations of given sizes
 
+Usage:
+
+    x.splitSubPop(which, sizes, subPopID=[])
+
 Details:
 
     The sum of given sizes should be equal to the size of the split
@@ -6172,10 +5996,6 @@ Details:
     subpopulation IDs of non-split subpopulations will be kept. For
     example, if subpopulation 1 of 0 1 2 3 is split into three parts,
     the new subpop id will be 0 (1 4 5) 2 3.
-
-Usage:
-
-    x.splitSubPop(which, sizes, subPopID=[])
 
 Note:
 
@@ -6191,14 +6011,14 @@ Description:
 
     split a subpopulation into subpopulations of given proportions
 
+Usage:
+
+    x.splitSubPopByProportion(which, proportions, subPopID=[])
+
 Details:
 
     The sum of given proportions should add up to one. Subpopulation
     IDs can be specified.
-
-Usage:
-
-    x.splitSubPopByProportion(which, proportions, subPopID=[])
 
 Note:
 
@@ -6227,15 +6047,15 @@ Description:
     remove subpopulations and adjust subpopulation IDs so that there
     will be no 'empty'  subpopulation left
 
-Details:
-
-    Remove specified subpopulations (and all individuals within). If
-    shiftSubPopID  is false, subPopID  will be kept intactly.
-
 Usage:
 
     x.removeSubPops(subPops=[], shiftSubPopID=True,
       removeEmptySubPops=False)
+
+Details:
+
+    Remove specified subpopulations (and all individuals within). If
+    shiftSubPopID  is false, subPopID  will be kept intactly.
 
 "; 
 
@@ -6245,15 +6065,15 @@ Description:
 
     remove individuals
 
-Details:
-
-    If a valid subPop  is given, remove individuals from this
-    subpopulation.
-
 Usage:
 
     x.removeIndividuals(inds=[], subPop=-1,
       removeEmptySubPops=False)
+
+Details:
+
+    If a valid subPop  is given, remove individuals from this
+    subpopulation.
 
 "; 
 
@@ -6263,16 +6083,16 @@ Description:
 
     merge given subpopulations
 
+Usage:
+
+    x.mergeSubPops(subPops=[], removeEmptySubPops=False)
+
 Details:
 
     Merge subpopulations, the first subpopulation ID (the first one in
     array subPops ) will be used as the ID of the new subpopulation.
     That is to say, all subpopulations will take the ID of the first
     one.
-
-Usage:
-
-    x.mergeSubPops(subPops=[], removeEmptySubPops=False)
 
 "; 
 
@@ -6281,15 +6101,6 @@ Usage:
 Description:
 
     merge populations by individuals
-
-Details:
-
-    Merge individuals from pop  to the current population. Two
-    populations should have the same genotypic structures. By default,
-    subpopulations of the merged populations are kept. I.e., if you
-    merge two populations with one subpopulation, the resulting
-    population will have two subpopulations. All ancestral generations
-    are also merged.
 
 Usage:
 
@@ -6308,6 +6119,15 @@ Arguments:
     keepAncestralPops:ancestral populations to merge, default to all (-1
                     )
 
+Details:
+
+    Merge individuals from pop  to the current population. Two
+    populations should have the same genotypic structures. By default,
+    subpopulations of the merged populations are kept. I.e., if you
+    merge two populations with one subpopulation, the resulting
+    population will have two subpopulations. All ancestral generations
+    are also merged.
+
 Note:
 
     Population variables are not copied to pop .
@@ -6320,13 +6140,6 @@ Description:
 
     merge populations by loci
 
-Details:
-
-    Two populations should have the same number of individuals. This
-    also holds for any ancestral generations. By default, chromosomes
-    of pop  are added to the current population. You can also specify
-    new chromosome structure using parameter newLoci .
-
 Usage:
 
     x.mergePopulationByLoci(pop, newNumLoci=[], newLociPos=[])
@@ -6335,6 +6148,13 @@ Arguments:
 
     newLoci:        the new number of loci for the combined genotypic
                     structure.
+
+Details:
+
+    Two populations should have the same number of individuals. This
+    also holds for any ancestral generations. By default, chromosomes
+    of pop  are added to the current population. You can also specify
+    new chromosome structure using parameter newLoci .
 
 Note:
 
@@ -6349,11 +6169,6 @@ Note:
 Description:
 
     insert loci at given locations
-
-Details:
-
-    Insert loci at some given locations. In an inserted location,
-    alleles will be zero.
 
 Usage:
 
@@ -6375,6 +6190,11 @@ Arguments:
                     given, some unique names such as \"insX_X\", will be
                     given.
 
+Details:
+
+    Insert loci at some given locations. In an inserted location,
+    alleles will be zero.
+
 "; 
 
 %feature("docstring") simuPOP::population::insertBeforeLocus "
@@ -6383,14 +6203,14 @@ Description:
 
     insert an locus at given location.
 
+Usage:
+
+    x.insertBeforeLocus(idx, pos, name=string)
+
 Details:
 
     insertBeforeLocus(idx, pos, name)  is a shortcut to
     insertBeforeLoci([idx], [pos], [name])
-
-Usage:
-
-    x.insertBeforeLocus(idx, pos, name=string)
 
 "; 
 
@@ -6399,11 +6219,6 @@ Usage:
 Description:
 
     append loci at given locations
-
-Details:
-
-    Append loci at some given locations. In an appended location,
-    alleles will be zero.
 
 Usage:
 
@@ -6425,6 +6240,11 @@ Arguments:
                     given, some unique names such as \"insX_X\", will be
                     given.
 
+Details:
+
+    Append loci at some given locations. In an appended location,
+    alleles will be zero.
+
 "; 
 
 %feature("docstring") simuPOP::population::insertAfterLocus "
@@ -6433,14 +6253,14 @@ Description:
 
     append an locus at a given location
 
+Usage:
+
+    x.insertAfterLocus(idx, pos, name=string)
+
 Details:
 
     insertAfterLocus(idx, pos, name)  is a shortcut to
     insertAfterLoci([idx], [pos], [name]) .
-
-Usage:
-
-    x.insertAfterLocus(idx, pos, name=string)
 
 "; 
 
@@ -6449,10 +6269,6 @@ Usage:
 Description:
 
     resize population
-
-Details:
-
-    Resize population by giving new subpopulation sizes.
 
 Usage:
 
@@ -6464,6 +6280,10 @@ Arguments:
                     only one subpopulation, use [newPopSize] .
     propagate:      if propagate  is true , copy individuals to new
                     comers. I.e., 1, 2, 3 ==> 1, 2, 3, 1, 2, 3, 1
+
+Details:
+
+    Resize population by giving new subpopulation sizes.
 
 Note:
 
@@ -6496,6 +6316,11 @@ Arguments:
 
 %feature("docstring") simuPOP::population::newPopByIndID "
 
+Usage:
+
+    x.newPopByIndID(keepAncestralPops=-1, id=[],
+      removeEmptySubPops=False)
+
 Details:
 
     Form a new population according to the parameter information.
@@ -6503,11 +6328,6 @@ Details:
     * keepAncestralPops=-1 : keep all
     * keepAncestralPops=0 : only current
     * keepAncestralPops=1 : keep one ...
-
-Usage:
-
-    x.newPopByIndID(keepAncestralPops=-1, id=[],
-      removeEmptySubPops=False)
 
 "; 
 
@@ -6530,14 +6350,14 @@ Description:
 
     obtain a new population with selected loci
 
+Usage:
+
+    x.newPopWithPartialLoci(remove=[], keep=[])
+
 Details:
 
     Copy current population to a new one with selected loci and remove
     specified loci. (No change on the current population.)
-
-Usage:
-
-    x.newPopWithPartialLoci(remove=[], keep=[])
 
 "; 
 
@@ -6547,6 +6367,10 @@ Description:
 
     Absorb rhs  population as the current generation of a population.
 
+Usage:
+
+    x.pushAndDiscard(rhs, force=False)
+
 Details:
 
     This is mainly used by a simulator to push offspring generation
@@ -6554,10 +6378,6 @@ Details:
     pushed back as an ancestral population (if ancestralDepath() != 0
     ). Because rhs  population is swapped in, rhs  will be empty after
     this operation.
-
-Usage:
-
-    x.pushAndDiscard(rhs, force=False)
 
 "; 
 
@@ -6585,6 +6405,10 @@ Description:
 
     currently used ancestral population (0 for the latest generation)
 
+Usage:
+
+    x.ancestralGen()
+
 Details:
 
     Current ancestral population activated by useAncestralPop. There
@@ -6594,10 +6418,6 @@ Details:
     is the information returned by this function. useAncestralPop(0)
     should always be used to set a population to its usual ancestral
     order.
-
-Usage:
-
-    x.ancestralGen()
 
 "; 
 
@@ -6626,15 +6446,15 @@ Description:
 
     set individual information for the given information field (name)
 
+Usage:
+
+    x.setIndInfo(values, name)
+
 Details:
 
     setIndInfo using field name, x.setIndInfo(values, name)  is
     equivalent to the idx  version x.setIndInfo(values,
     x.infoIdx(name)) .
-
-Usage:
-
-    x.setIndInfo(values, name)
 
 "; 
 
@@ -6870,13 +6690,13 @@ Description:
 
     current replicate in a simulator
 
-Details:
-
-    Replication number is not meaningful for a stand-alone population.
-
 Usage:
 
     x.rep()
+
+Details:
+
+    Replication number is not meaningful for a stand-alone population.
 
 "; 
 
@@ -6888,13 +6708,13 @@ Description:
 
     current group ID in a simulator
 
-Details:
-
-    Group number is not meaningful for a stand-alone population.
-
 Usage:
 
     x.grp()
+
+Details:
+
+    Group number is not meaningful for a stand-alone population.
 
 "; 
 
@@ -6977,14 +6797,14 @@ Description:
 
     evaluate a python statment/expression
 
+Usage:
+
+    x.evaluate(expr=\"\", stmts=\"\")
+
 Details:
 
     This function evaluates a python statment/expression and return
     its result as a string. Optionally run statement first.
-
-Usage:
-
-    x.evaluate(expr=\"\", stmts=\"\")
 
 "; 
 
@@ -7007,13 +6827,13 @@ Description:
     rearrange loci on chromosomes, e.g. combine two chromosomes into
     one
 
-Details:
-
-    This is used by mergeByLoci .
-
 Usage:
 
     x.rearrangeLoci(newNumLoci, newLociPos)
+
+Details:
+
+    This is used by mergeByLoci .
 
 "; 
 
@@ -7219,12 +7039,14 @@ Arguments:
                     after pop parameter. Multiple parameter can be
                     passed as a tuple.
     formOffGenotype:if stage=DuringMating, set this parameter to false
-                    will disallow random mating to set genotype. Note:
-                    (FIXME) output to output or outputExpr is not yet
-                    supported. Ideally, this func will take two
-                    parameters with pop and then a filehandle to
-                    output, however, differentiating output, append
-                    etc is too troublesome right now.
+                    will disallow random mating to set genotype.
+
+Details:
+
+    Note: (FIXME) output to output or outputExpr is not yet supported.
+    Ideally, this func will take two parameters with pop and then a
+    filehandle to output, however, differentiating output, append etc
+    is too troublesome right now.
 
 "; 
 
@@ -7294,14 +7116,6 @@ Description:
 
     initialize populations using given user function.
 
-Details:
-
-    User of this operator must supply a Python function with parameter
-    (index, ploidy, subpop). This operator will loop through all
-    individual in each subpop and call this function to initialize
-    populations.The arrange of parameters allows different
-    initialization scheme for each subpop.
-
 Usage:
 
     pyInit(*func, subPop=[], atLoci=[], atPloidy=-1,
@@ -7322,6 +7136,14 @@ Arguments:
                     all.
     stage:          is et to PreMating. Other parameters please refer
                     to help(baseOperator.__init__)
+
+Details:
+
+    User of this operator must supply a Python function with parameter
+    (index, ploidy, subpop). This operator will loop through all
+    individual in each subpop and call this function to initialize
+    populations.The arrange of parameters allows different
+    initialization scheme for each subpop.
 
 "; 
 
@@ -7379,13 +7201,23 @@ Usage:
 
 %feature("docstring") simuPOP::pyMating "
 
+Description:
+
+    a Python mating scheme
+
 Details:
 
-    python mating. Parental and offspring generation, along with
-    during mating operators, are passed to a python function. All
-    mating are done there, and the resulting population be
-    returned.This process will be slow and should be used mainly for
-    prototyping or demonstration purposes.
+    Hybird mating scheme. This mating scheme takes a Python function
+    that accepts both the parental and offspring populations and this
+    function is responsible for setting genotype, sex of the offspring
+    generation. During-mating operators, if needed, have to be applied
+    from this function as well. Note that the subpopulaton size
+    parameters are honored and the passed offspring generation has the
+    desired (sub)population sizes. Parameters that control the number
+    of offspring of each family are ignored.
+    This is likely an extremely slow mating scheme and should be used
+    for experimental uses only. When a mating scheme is tested, it is
+    recommended to implement it at the C++ level.
 
 "; 
 
@@ -7393,12 +7225,20 @@ Details:
 
 Description:
 
-    constructor, no new subPopsize parameter
+    create a Python mating scheme
 
 Usage:
 
     pyMating(*func=NULL, newSubPopSize=[], newSubPopSizeExpr=\"\",
       *newSubPopSizeFunc=NULL)
+
+Arguments:
+
+    func:           a Python function that accepts two parameters: the
+                    parental and the offspring populations. The
+                    offspring population is empty, and this function
+                    is responsible for setting genotype, sex etc. of
+                    individuals in the offspring generation.
 
 "; 
 
@@ -7418,7 +7258,7 @@ Usage:
 
 Description:
 
-    clone() const. The same as  mating::clone() const.
+    deep copy of a Python mating scheme
 
 Usage:
 
@@ -7432,7 +7272,8 @@ Usage:
 
 Description:
 
-    return name of the mating type
+    used by Python print function to print out the general information
+    of the Python mating scheme
 
 Usage:
 
@@ -7440,22 +7281,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyMating::mate "
-
-Description:
-
-    do the mating. --- no mating :-)
-
-Details:
-
-    All individuals will be passed to during mating operators but no
-    one will die (ignore during mating failing signal).
-
-Usage:
-
-    x.mate(pop, scratch, ops, submit)
-
-"; 
+%ignore simuPOP::pyMating::mate(population &pop, population &scratch, vector< Operator * > &ops, bool submit);
 
 %feature("docstring") simuPOP::pyMigrator "
 
@@ -7477,12 +7303,6 @@ Description:
 
     create a directmigrator
 
-Details:
-
-    This operator accept a one-dimensional Numeric Python int array.
-    (created by Numeric.array ). The contend of the array will be
-    considered as subpopulation id.
-
 Usage:
 
     pyMigrator(*subPopID=NULL, stage=PreMating, begin=0, end=-1,
@@ -7495,6 +7315,12 @@ Arguments:
     stage:          is default to PreMating, please refer to
                     help(baseOperator.__init__) for details about
                     other parameters.
+
+Details:
+
+    This operator accept a one-dimensional Numeric Python int array.
+    (created by Numeric.array ). The contend of the array will be
+    considered as subpopulation id.
 
 "; 
 
@@ -7658,12 +7484,14 @@ Arguments:
                     func(pop, off, dad, mon, param) when
                     passOffspringOnly is false. Since many
                     duringMating  pyOperator only need access to
-                    offspring, this will imporve efficiency. Note:
-                    (FIXME) output to output or outputExpr is not yet
-                    supported. Ideally, this func will take two
-                    parameters with pop and then a filehandle to
-                    output, however, differentiating output, append
-                    etc is too troublesome right now.
+                    offspring, this will imporve efficiency.
+
+Details:
+
+    Note: (FIXME) output to output or outputExpr is not yet supported.
+    Ideally, this func will take two parameters with pop and then a
+    filehandle to output, however, differentiating output, append etc
+    is too troublesome right now.
 
 "; 
 
@@ -8341,19 +8169,18 @@ Usage:
 
 %feature("docstring") simuPOP::randomMating "
 
+Description:
+
+    a mating scheme of basic sexually random mating
+
 Details:
 
-    basic sexual random mating.Within each subpopulation, choose male
-    and female randomly randmly get one copy of chromosome from
-    father/mother.require: sexed individual; ploidy == 2apply during
-    mating operators and put into the next generation.if
-    ignoreParentsSex is set, parents will be chosen regardless of
-    sex.Otherwise, male and female will be collected and be chosen
-    randomly.If there is no male or female in a subpopulation, if
-    m_UseSameSexIfUniSex is true, an warning will be generated and
-    same sex mating (?) will be used otherwise,  randomMating will
-    return false.if there is no during mating operator to copy
-    alleles, a direct copy will be used.
+    In this scheme, sex information is considered for each individual,
+    and ploidy is always 2. Within each subpopulation, males and
+    females are randomly chosen. Then randomly get one copy of
+    chromosomes from father and mother. When only one sex exists in a
+    subpopulation, a parameter (contWhenUniSex ) can be set to
+    determine the behavior. Default to continuing without warning.
 
 "; 
 
@@ -8372,26 +8199,27 @@ Usage:
 
 Arguments:
 
-    numOffspring:   
-    number:         of offspring or p in some modes
-    numOffspringFunc:
-    a:              python function that determine number of offspring
-                    or p depending on mode
-    maxNumOffspring:used when mode=MATE_BinomialDistribution
-    mode:           one of MATE_NumOffspring ,
+    numOffspring:   number of offspring or p  in some modes
+    numOffspringFunc:a python function that determines the number of
+                    offspring or p
+    maxNumOffspring:used when numOffspring  is generated from a
+                    binomial distribution
+    mode:           can be one of MATE_NumOffspring,
                     MATE_NumOffspringEachFamily,
                     MATE_GeometricDistribution,
                     MATE_PoissonDistribution,
                     MATE_BinomialDistribution
     newSubPopSize:  an array of subpopulation sizes, should have the
-                    same number of subpopulations as current
+                    same number of subpopulations as the current
                     population
     newSubPopSizeExpr:an expression that will be evaluated as an array
-                    of subpop sizes
-    newSubPopSizeFunc:an function that have parameter gen and oldSize
-                    (current subpop size).
+                    of subpopulation sizes
+    newSubPopSizeFunc:an function that have parameter gen  and oldSize
+                    (current subpopulation size)
     contWhenUniSex: continue when there is only one sex in the
                     population, default to true
+                    Please refer to class mating  for descriptions of
+                    other parameters.
 
 "; 
 
@@ -8411,9 +8239,7 @@ Usage:
 
 Description:
 
-    clone() const. Generate a copy of itself and return pointer this
-    is to make sure the object is persistent and will not be freed by
-    python.
+    deep copy of a random mating scheme
 
 Usage:
 
@@ -8421,29 +8247,14 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::randomMating::isCompatible "
-
-Description:
-
-    check if the mating type is compatible with population structure
-
-Details:
-
-    possible things to check:
-    * need certain types of individual (age, sex etc)
-    * need resizeable population...
-
-Usage:
-
-    x.isCompatible(pop)
-
-"; 
+%ignore simuPOP::randomMating::isCompatible(const population &pop) const ;
 
 %feature("docstring") simuPOP::randomMating::__repr__ "
 
 Description:
 
-    return name of the mating type
+    used by Python print function to print out the general information
+    of the random mating scheme
 
 Usage:
 
@@ -8451,41 +8262,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::randomMating::submitScratch "
+%ignore simuPOP::randomMating::submitScratch(population &pop, population &scratch);
 
-Description:
-
-    simuPOP::randomMating::submitScratch
-
-Usage:
-
-    x.submitScratch(pop, scratch)
-
-"; 
-
-%feature("docstring") simuPOP::randomMating::mate "
-
-Description:
-
-    do the mating. parameters see  mating::mate .
-
-Details:
-
-    Within each subpopulation, choose male and female randomly randmly
-    get one copy of chromosome from father/mother.require: sexed
-    individual; ploidy == 2apply during mating operators and put into
-    the next generation.Otherwise, male and female will be collected
-    and be chosen randomly.
-    * If there is no male or female in a subpopulation,
-    * if m_contWhenUniSex is true, an warning will be generated and
-    same sex mating (?) will be used
-    * otherwise,  randomMating will return false.
-
-Usage:
-
-    x.mate(pop, scratch, ops, submit)
-
-"; 
+%ignore simuPOP::randomMating::mate(population &pop, population &scratch, vector< Operator * > &ops, bool submit);
 
 %feature("docstring") simuPOP::randomSample "
 
@@ -8709,17 +8488,17 @@ Description:
     this function takes intensity, rate, afterLoci, ... inputs and
     return a bernulli trailer and a recBeforeLoci vector.
 
+Usage:
+
+    x.prepareRecRates(pop, intensity, rate, afterLoci, sexChrom,
+      recBeforeLoci, vecP)
+
 Details:
 
     get loci distance * rate and then recombinant pointsget loci
     distance * rate and then recombinant pointsinitialize
     recombination counter, This will count recombination events after
     each locus.
-
-Usage:
-
-    x.prepareRecRates(pop, intensity, rate, afterLoci, sexChrom,
-      recBeforeLoci, vecP)
 
 "; 
 
@@ -9649,14 +9428,6 @@ Description:
 
     add an information field to all replicates
 
-Details:
-
-    Add an information field to all replicate, and to the simulator
-    itself. This is important because all populations must have the
-    same genotypic information as the simulator. Adding an information
-    field to one or more of the replicates will compromise the
-    integrity of the simulator.
-
 Usage:
 
     x.addInfoField(field, init=0)
@@ -9664,6 +9435,14 @@ Usage:
 Arguments:
 
     field:          information field to be added
+
+Details:
+
+    Add an information field to all replicate, and to the simulator
+    itself. This is important because all populations must have the
+    same genotypic information as the simulator. Adding an information
+    field to one or more of the replicates will compromise the
+    integrity of the simulator.
 
 "; 
 
@@ -9673,14 +9452,14 @@ Description:
 
     add information fields to all replicates
 
+Usage:
+
+    x.addInfoFields(fields, init=0)
+
 Details:
 
     Add given information fields to all replicate, and to the
     simulator itself.
-
-Usage:
-
-    x.addInfoFields(fields, init=0)
 
 "; 
 
@@ -9702,10 +9481,6 @@ Description:
 
     the rep  replicate of this simulator
 
-Details:
-
-    This function is named population  in the Python interface.
-
 Usage:
 
     x.pop(rep)
@@ -9714,6 +9489,10 @@ Arguments:
 
     rep:            the index number of replicate which will be
                     accessed
+
+Details:
+
+    This function is named population  in the Python interface.
 
 Note:
 
@@ -9731,13 +9510,6 @@ Description:
 
     return a copy of population rep
 
-Details:
-
-    return a temporary reference of one of the populations.
-    'Reference'  means that the changes to the referred population
-    will reflect to the one in simulator. 'Temporary'  means that the
-    referred population might be invalid after evolution.
-
 Usage:
 
     x.getPopulation(rep)
@@ -9746,6 +9518,13 @@ Arguments:
 
     rep:            the index number of the replicate which will be
                     obtained
+
+Details:
+
+    return a temporary reference of one of the populations.
+    'Reference'  means that the changes to the referred population
+    will reflect to the one in simulator. 'Temporary'  means that the
+    referred population might be invalid after evolution.
 
 "; 
 
@@ -9849,19 +9628,6 @@ Description:
 
     evolve all replicates of the population, subject to operators
 
-Details:
-
-    Evolve to the end  generation unless an operator (terminator)
-    stops it earlier.
-    ops  will be applied in the order of:
-    * all pre-mating opertors
-    * during-mating operators called by the mating scheme at the birth
-    of each offspring
-    * all post-mating operators If any pre- or post-mating operator
-    fails to apply, that replicate will be stopped. The behavior of
-    the simulator will be determined by flags applyOpToStoppedReps
-    and stopIfOneRepStopss . This is exactly how terminators work.
-
 Usage:
 
     x.evolve(ops, preOps=[], postOps=[], end=-1, dryrun=False)
@@ -9881,6 +9647,19 @@ Arguments:
                     only be ended by a terminator. Otherwise, it
                     should be a number greater than current generation
                     number.
+
+Details:
+
+    Evolve to the end  generation unless an operator (terminator)
+    stops it earlier.
+    ops  will be applied in the order of:
+    * all pre-mating opertors
+    * during-mating operators called by the mating scheme at the birth
+    of each offspring
+    * all post-mating operators If any pre- or post-mating operator
+    fails to apply, that replicate will be stopped. The behavior of
+    the simulator will be determined by flags applyOpToStoppedReps
+    and stopIfOneRepStopss . This is exactly how terminators work.
 
 Note:
 
@@ -9919,13 +9698,6 @@ Description:
 
     save simulator in 'txt' , 'bin'  or 'xml'  format
 
-Details:
-
-    The default format is 'txt'  but the output is not supposed to be
-    read. 'bin'  has smaller size and should be used for large
-    populations. 'xml'  format is most verbose and should be used when
-    you would like to convert  simuPOP  populations to other formats.
-
 Usage:
 
     x.saveSimulator(filename, format=\"auto\", compress=True)
@@ -9936,6 +9708,13 @@ Arguments:
     format:         format to save. Default to auto . I.e., determine
                     the format by file extensions.
     compress:       whether or not compress the file in 'gzip'  format
+
+Details:
+
+    The default format is 'txt'  but the output is not supposed to be
+    read. 'bin'  has smaller size and should be used for large
+    populations. 'xml'  format is most verbose and should be used when
+    you would like to convert  simuPOP  populations to other formats.
 
 "; 
 
@@ -9972,12 +9751,6 @@ Details:
 
 %feature("docstring") simuPOP::smmMutator::smmMutator "
 
-Details:
-
-    The stepwise mutation model (SMM) is developed for allozymes. It
-    provides better description for these kinds of evolutionary
-    processes.
-
 Usage:
 
     smmMutator(rate=[], atLoci=[], maxAllele=0, incProb=0.5,
@@ -9990,6 +9763,12 @@ Arguments:
     incProb:        probability to increase allele state. Default to 1
     atLoci:         and other parameters: refer to help(mutator),
                     help(baseOperator.__init__)
+
+Details:
+
+    The stepwise mutation model (SMM) is developed for allozymes. It
+    provides better description for these kinds of evolutionary
+    processes.
 
 "; 
 
@@ -10246,12 +10025,12 @@ Arguments:
     alleleFreq:     an array of loci at which all alleles will be
                     counted.
     genoFreq:       an array of loci at which all genotype will be
-                    counted each item is the locus index followed by
-                    allele pairs.
+                    counted
     heteroFreq:     an array of loci at which the observed proportion
                     of individuausl heterozygous will be applyd for
                     each allele. Expected heterozygosity will also be
-                    calculuate...
+                    calculuate and put in heteroFreq[locus][0] (since
+                    allele 0 is not...
 
 Please refer to the reference manual for more details.
 
@@ -10584,14 +10363,14 @@ Usage:
 
 %feature("docstring") simuPOP::statGenoFreq::apply "
 
+Usage:
+
+    x.apply(pop)
+
 Details:
 
     go through a single allele for all individual, all diploidneed to
     replace previous values
-
-Usage:
-
-    x.apply(pop)
 
 "; 
 
