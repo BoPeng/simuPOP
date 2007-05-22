@@ -248,7 +248,10 @@ class Doxy2SWIG:
 
 
     def do_parametername(self, node):
-        parameter_name = node.firstChild.data.strip()
+        if node.firstChild.nodeName == 'ref':
+            parameter_name = node.firstChild.firstChild.data.strip()
+        else:
+            parameter_name = node.firstChild.data.strip()
         assert self.curField == 'Arguments'
         self.content[-1][self.curField].append({'Name': parameter_name, 'Description': ''})
 
@@ -446,9 +449,13 @@ class Doxy2SWIG:
             if not os.path.exists(fname):
                 fname = os.path.join(self.my_dir, fname)
             print "parsing file: %s"%fname
-            p = Doxy2SWIG(fname)
-            p.generate()
-            self.content.extend(p.content)
+            try:
+                p = Doxy2SWIG(fname)
+                p.generate()
+                self.content.extend(p.content)
+            except:
+                print "This file can not be parsed, something wrong with file format"
+                pass
 
 
     def post_process(self):
