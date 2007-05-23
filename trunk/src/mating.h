@@ -397,7 +397,7 @@ namespace simuPOP
             ///CPPONLY
 			virtual void submitScratch(population& pop, population& scratch)
 			{
-				pop.setBoolVar("selection", false);
+				pop.turnOffSelection();
 				// use scratch population,
 				pop.pushAndDiscard(scratch);
 				DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
@@ -503,7 +503,7 @@ namespace simuPOP
             /// CPPONLY
 			virtual void submitScratch(population& pop, population& scratch)
 			{
-				pop.setBoolVar("selection", false);
+				pop.turnOffSelection();
 				// use scratch population,
 				pop.pushAndDiscard(scratch);
 				DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
@@ -730,7 +730,7 @@ namespace simuPOP
             /// CPPONLY 
 			virtual void submitScratch(population& pop, population& scratch)
 			{
-				pop.setBoolVar("selection", false);
+				pop.turnOffSelection();
 				// use scratch population,
 				pop.pushAndDiscard(scratch);
 				DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
@@ -858,7 +858,7 @@ namespace simuPOP
             /// CPPONLY
 			virtual void submitScratch(population& pop, population& scratch)
 			{
-				pop.setBoolVar("selection", false);
+				pop.turnOffSelection();
 				// use scratch population,
 				pop.pushAndDiscard(scratch);
 				DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));

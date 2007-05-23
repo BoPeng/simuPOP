@@ -3217,9 +3217,9 @@ Description:
 
 Usage:
 
-    mapSelector(loci, fitness, phase=False, stage=PreMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[\"fitness\"])
+    mapSelector(loci, fitness, phase=False, subPops=[],
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -3407,8 +3407,8 @@ Description:
 
 Usage:
 
-    maSelector(loci, fitness, wildtype, stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+    maSelector(loci, fitness, wildtype, subPops=[], stage=PreMating,
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
       infoFields=[\"fitness\"])
 
 Arguments:
@@ -4002,9 +4002,9 @@ Description:
 
 Usage:
 
-    mlSelector(selectors, mode=SEL_Multiplicative, stage=PreMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[\"fitness\"])
+    mlSelector(selectors, mode=SEL_Multiplicative, subPops=[],
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -6684,6 +6684,31 @@ Arguments:
 
 %ignore simuPOP::population::loadPopulation(const string &filename, const string &format="auto");
 
+%ignore simuPOP::population::selectionOn();
+
+%ignore simuPOP::population::selectionOn(UINT sp);
+
+%feature("docstring") simuPOP::population::turnOffSelection "
+
+Description:
+
+    Turn off selection for all subpopulations.
+
+Usage:
+
+    x.turnOffSelection()
+
+Details:
+
+    If you really want to apply another selector, run turnOffSelection
+    to eliminate the effect of the previous one.
+
+"; 
+
+%ignore simuPOP::population::turnOnSelection(UINT sp);
+
+%ignore simuPOP::population::turnOnSelection();
+
 %feature("docstring") simuPOP::population::rep "
 
 Description:
@@ -7826,8 +7851,9 @@ Description:
 
 Usage:
 
-    pySelector(loci, *func, stage=PreMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[\"fitness\"])
+    pySelector(loci, *func, subPops=[], stage=PreMating, begin=0,
+      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+      infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -9092,12 +9118,18 @@ Details:
 
 Description:
 
-    constructor. default to be always active.
+    constructor
 
 Usage:
 
-    selector(stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[\"fitness\"])
+    selector(subPops=[], stage=PreMating, begin=0, end=-1, step=1,
+      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[\"fitness\"])
+
+Arguments:
+
+    subPop:         a shortcut to subPops=[subPop]
+    subPops:        subpopulations this operator can apply to. Default
+                    to all.
 
 "; 
 

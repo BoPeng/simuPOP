@@ -473,8 +473,7 @@ namespace simuPOP
 
 		GappedInfoIterator fitness;
 		UINT fit_id = 0;
-		bool selectionOn = pop.hasVar("selection") && pop.getVarAsBool("selection");
-		if(selectionOn)
+		if(pop.selectionOn())
 		{
 			fit_id = pop.infoIdx("fitness");
 			// we need to order (true) the individual fitness.
@@ -488,6 +487,7 @@ namespace simuPOP
 			if(spSize == 0)
 				continue;
 
+			bool selectionOn = pop.selectionOn(sp);
 			if(selectionOn)
 			{
 				// regardless of sex, get fitness for everyone.
@@ -532,10 +532,8 @@ namespace simuPOP
 
 		DBG_DO(DBG_MATING, m_famSize.clear());
 
-		// empty fitness means no selection
-		bool selectionOn = pop.hasVar("selection") && pop.getVarAsBool("selection");
 		UINT fit_id = 0;
-		if (selectionOn)
+		if (pop.selectionOn())
 			fit_id = pop.infoIdx("fitness");
 
 		offspringGenerator og(pop, ops);
@@ -560,6 +558,7 @@ namespace simuPOP
 			m_femaleIndex.resize(spSize-numMale);
 
 			/// if selection is on
+			bool selectionOn = pop.selectionOn(sp);
 			if(selectionOn)
 			{
 				m_maleFitness.resize(numMale);
@@ -962,9 +961,8 @@ namespace simuPOP
 
 		//
 		GappedInfoIterator fitness;
-		bool selectionOn = pop.hasVar("selection") && pop.getVarAsBool("selection");
 		UINT fit_id = 0;
-		if (selectionOn)
+		if (pop.selectionOn())
 		{
 			fit_id = pop.infoIdx("fitness");
 			fitness = pop.infoBegin(fit_id, true);
@@ -993,7 +991,8 @@ namespace simuPOP
 			}
 
 			// if selection is on
-			if( selectionOn )
+			bool selectionOn = pop.selectionOn(sp);
+			if(selectionOn)
 			{
 				m_sampler.set( vectorf(fitness + pop.subPopBegin(sp),
 					fitness+ pop.subPopEnd(sp) ) );
@@ -1032,7 +1031,7 @@ namespace simuPOP
 
 				individual * parent;
 				// choose a parent
-				if( selectionOn)
+				if(selectionOn)
 					parent = &pop.ind( m_sampler.get(), sp);
 				else
 					parent = &pop.ind( rng().randInt(spSize), sp);
@@ -1262,9 +1261,8 @@ namespace simuPOP
 		bool useStack = fixedFamilySize();
 
 		// empty fitness means no selection
-		bool selectionOn = pop.hasVar("selection") && pop.getVarAsBool("selection");
 		UINT fit_id = 0;
-		if (selectionOn)
+		if (pop.selectionOn())
 			fit_id = pop.infoIdx("fitness");
 
 		offspringGenerator og(pop, ops);
@@ -1308,6 +1306,7 @@ namespace simuPOP
 			m_maleIndex.resize(numMale);
 			m_femaleIndex.resize(spSize-numMale);
 			/// if selection is on
+			bool selectionOn = pop.selectionOn(sp);
 			if(selectionOn)
 			{
 				m_maleFitness.resize(numMale);

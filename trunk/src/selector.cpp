@@ -30,21 +30,25 @@ namespace simuPOP
 		UINT fit_id = pop.infoIdx(this->infoField(0));
 		GappedInfoIterator fitness = pop.infoBegin(fit_id, true);
 
-		// fitness may change with generation so pass generation information
-		for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
-			*fitness++ = indFitness(&*it, pop.gen()) ;
+		if (m_subPops.empty()) {
+			// fitness may change with generation so pass generation information
+			for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
+				*fitness++ = indFitness(&*it, pop.gen()) ;
+			pop.turnOnSelection();
+		}
+		else
+		{
+			for (vectoru::iterator sp = m_subPops.begin(); sp != m_subPops.end(); ++sp)
+			{
+				DBG_FAILIF(*sp > pop.numSubPop(), IndexError,
+					"Wrong subpopulation index" + toStr(*sp) + " (number of subpops is " +
+					toStr(pop.numSubPop()) + ")");
+				for (population::IndIterator it = pop.indBegin(*sp); it != pop.indEnd(*sp); ++it)
+					*fitness++ = indFitness(&*it, pop.gen());
+				pop.turnOnSelection(*sp);
+			}
+		}
 
-		// if selection is on, that must have been set by another selector.
-		// The fitness value set by that selector will be overriden.
-		// This can be a source of mistake and is forbidden here.
-		DBG_FAILIF(pop.hasVar("selection") && pop.getVarAsBool("selection"),
-			ValueError, "\nOnly one selector is allowed because each individual has only one fitness value\n"
-			"If you need to select on more than one locus, use a multi-locus selector\n"
-			"If you really want to apply another selector on the same population, set \n"
-			"population variable selection to False to walk around this restriction.\n");
-		
-		// indicate selection is on.
-		pop.setBoolVar("selection", true);
 		return true;
 	}
 

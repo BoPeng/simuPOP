@@ -1044,7 +1044,7 @@ del nuclearFamilySample.__init__
 nuclearFamilySample.__init__ = new_nuclearFamilySample
 
 
-def new_mapSelector(self, locus=-1, loci=[], *args, **kwargs):
+def new_mapSelector(self, locus=-1, loci=[], subPop=-1, subPops=[], *args, **kwargs):
     if locus != -1 and type(locus) in [types.IntType, types.LongType]:
         loc = [locus]
     elif type(loci) in [types.IntType, types.LongType]:
@@ -1053,14 +1053,22 @@ def new_mapSelector(self, locus=-1, loci=[], *args, **kwargs):
         loc = loci
     else:
         raise exceptions.TypeError('Please specify locus or loci')
+    if subPop != -1 and type(subPop) in [types.IntType, types.LongType]:
+        sp = [subPop]
+    elif type(subPops) in [types.IntType, types.LongType]:
+        sp = [subPops]
+    elif type(subPops) in [types.TupleType, types.ListType] and len(subPops)>0:
+        sp = subPops
+    else:
+        sp = []
     cppModule.mapSelector_swiginit(self,
-        cppModule.new_mapSelector(loci=loc, *args, **kwargs))
+        cppModule.new_mapSelector(loci=loc, subPops=sp, *args, **kwargs))
  
 new_mapSelector.__doc__ = mapSelector.__init__.__doc__
 del mapSelector.__init__
 mapSelector.__init__ = new_mapSelector
 
-def new_maSelector(self, locus=-1, loci=[], wildtype=[0], *args, **kwargs):
+def new_maSelector(self, locus=-1, loci=[], wildtype=[0], subPop=-1, subPops=[], *args, **kwargs):
     if locus != -1 and type(locus) in [types.IntType, types.LongType]:
         loc = [locus]
     elif type(loci) in [types.IntType, types.LongType]:
@@ -1073,14 +1081,39 @@ def new_maSelector(self, locus=-1, loci=[], wildtype=[0], *args, **kwargs):
         wt = [wildtype]
     else:
         wt = wildtype
+    if subPop != -1 and type(subPop) in [types.IntType, types.LongType]:
+        sp = [subPop]
+    elif type(subPops) in [types.IntType, types.LongType]:
+        sp = [subPops]
+    elif type(subPops) in [types.TupleType, types.ListType] and len(subPops)>0:
+        sp = subPops
+    else:
+        sp = []
     cppModule.maSelector_swiginit(self,
-        cppModule.new_maSelector(loci=loc, wildtype=wt, *args, **kwargs))
- 
+        cppModule.new_maSelector(loci=loc, wildtype=wt, subPops=sp, *args, **kwargs))
+
 new_maSelector.__doc__ = maSelector.__init__.__doc__
 del maSelector.__init__
 maSelector.__init__ = new_maSelector
 
-def new_pySelector(self, locus=-1, loci=[], *args, **kwargs):
+def new_mlSelector(self, selectors=[], subPop=-1, subPops=[], *args, **kwargs):
+    if subPop != -1 and type(subPop) in [types.IntType, types.LongType]:
+        sp = [subPop]
+    elif type(subPops) in [types.IntType, types.LongType]:
+        sp = [subPops]
+    elif type(subPops) in [types.TupleType, types.ListType] and len(subPops)>0:
+        sp = subPops
+    else:
+        sp = []
+    cppModule.mlSelector_swiginit(self,
+        cppModule.new_mlSelector(selectors, subPops=sp, *args, **kwargs))
+ 
+
+new_mlSelector.__doc__ = mlSelector.__init__.__doc__
+del mlSelector.__init__
+mlSelector.__init__ = new_mlSelector
+
+def new_pySelector(self, locus=-1, loci=[], subPop=-1, subPops=[], *args, **kwargs):
     if locus != -1 and type(locus) in [types.IntType, types.LongType]:
         loc = [locus]
     elif type(loci) in [types.IntType, types.LongType]:
@@ -1089,8 +1122,16 @@ def new_pySelector(self, locus=-1, loci=[], *args, **kwargs):
         loc = loci
     else:
         raise exceptions.TypeError('Please specify locus or loci')
+    if subPop != -1 and type(subPop) in [types.IntType, types.LongType]:
+        sp = [subPop]
+    elif type(subPops) in [types.IntType, types.LongType]:
+        sp = [subPops]
+    elif type(subPops) in [types.TupleType, types.ListType] and len(subPops)>0:
+        sp = subPops
+    else:
+        sp = []
     cppModule.pySelector_swiginit(self, 
-        cppModule.new_pySelector(loci=loc, *args, **kwargs))
+        cppModule.new_pySelector(loci=loc, subPops=sp, *args, **kwargs))
  
 new_pySelector.__doc__ = pySelector.__init__.__doc__
 del pySelector.__init__
