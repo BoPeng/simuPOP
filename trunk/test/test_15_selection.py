@@ -504,13 +504,11 @@ class TestSelector(unittest.TestCase):
             for sp in params[0]:
                 for ind in pop.individuals(sp):
                     self.assertEqual(ind.info('fitness'), 0.)
-                
         simu.evolve(
             preOps = [initByFreq([.4, .6])],
             ops = [
-                mapSelector(locus = 0, fitness = {'0-0':1,'0-1':1,'1-1':.8},
-                    subPops=[1]),
-                pyOperator(func=testFitness, param=([0, 2],)),
+                mapSelector(locus = 1, fitness = {'0-0':1.,'0-1':1.,'1-1':.8}, subPops=[1]),
+                pyOperator(func=testFitness, stage=PreMating, param=([0, 2],)),
                 ],
             end = 5
         )
@@ -523,8 +521,10 @@ class TestSelector(unittest.TestCase):
             preOps = [initByFreq([.4, .6])],
             ops = [
                 maSelector(locus=0, wildtype=[0], fitness = [0.5, 0.4, 0.6],
-                    subPop=[1, 2]),
-                pyOperator(func=testFitness, param=([0],)),
+                    subPop=1),
+                maSelector(locus=0, wildtype=[0], fitness = [0.6, 0.4, 0.6],
+                    subPop=2),
+                pyOperator(func=testFitness, param=([0],), stage=PreMating),
                 ],
             end = 5
         )
