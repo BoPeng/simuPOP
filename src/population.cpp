@@ -77,7 +77,8 @@ namespace simuPOP
 		m_gen(0),
 		m_curAncestralGen(0),
 		m_shallowCopied(false),
-		m_infoOrdered(true)
+		m_infoOrdered(true),
+		m_selectionFlags()
 	{
 		DBG_FAILIF(maxAllele > MaxAllele, ValueError,
 			"maxAllele is bigger than maximum allowed allele state of this library (" + toStr(MaxAllele) +
@@ -217,7 +218,8 @@ namespace simuPOP
 		m_gen(0),
 		m_curAncestralGen(rhs.m_curAncestralGen),
 		m_shallowCopied(false),
-		m_infoOrdered(true)
+		m_infoOrdered(true),
+		m_selectionFlags()
 	{
 		DBG_DO(DBG_POPULATION,
 			cout << "Copy constructor of population is called\n" << endl);

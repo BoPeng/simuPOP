@@ -1289,6 +1289,70 @@ namespace simuPOP
 			void mergePopulationPerGen(const population & pop, const vectorlu & newSubPopSizes);
 
 		public:
+			/// CPPONLY
+			/// selection is on at any subpopulation?
+			bool selectionOn()
+			{
+				return !m_selectionFlags.empty();
+			}
+			
+			/// CPPONLY
+			bool selectionOn(UINT sp)
+			{
+				DBG_ASSERT(m_selectionFlags.empty() || m_selectionFlags.size() == numSubPop(),
+					IndexError, "Selection flags are wrong");
+				return (!m_selectionFlags.empty() && m_selectionFlags[sp]);
+			}
+
+			/// Turn off selection for all subpopulations
+			/** If you really want to apply another selector, run
+				turnOffSelection to eliminate the effect of the previous one.				
+			*/
+			void turnOffSelection()
+			{
+				m_selectionFlags.clear();
+			}
+
+			/// CPPONLY
+			void turnOnSelection(UINT sp)
+			{
+				if (m_selectionFlags.empty())
+					m_selectionFlags.resize(numSubPop(), false);
+				// there is an extreme case
+				// selector turn on ...
+				// split population...
+				DBG_ASSERT(m_selectionFlags.size() == numSubPop(),
+					SystemError, "Selection flags are wrong, did you split or merge populations after a selector is applied?");
+				DBG_FAILIF(m_selectionFlags[sp], ValueError,
+					"\nOnly one selector is allowed because each individual has only one fitness value\n"
+					"If you need to select on more than one locus, use a multi-locus selector\n"
+					"If you really want to apply another selector on the same population, call \n"
+					"population::turnOffSelection() to walk around this restriction.\n");
+				m_selectionFlags[sp] = true;
+			}
+		
+			/// CPPONLY
+			/// Turn on selection for all subpopulations
+			void turnOnSelection()
+			{
+				if (m_selectionFlags.empty()) {
+					m_selectionFlags.resize(numSubPop(), true);
+					return;
+				}
+				// there is an extreme case
+				// selector turn on ...
+				// split population...
+				DBG_ASSERT(m_selectionFlags.size() == numSubPop(),
+					SystemError, "Selection flags are wrong, did you split or merge populations after a selector is applied?");
+				DBG_FAILIF(true, ValueError,
+					"\nOnly one selector is allowed because each individual has only one fitness value\n"
+					"If you need to select on more than one locus, use a multi-locus selector\n"
+					"If you really want to apply another selector on the same population, call \n"
+					"population::turnOffSelection() to walk around this restriction.\n");
+			}
+
+
+		public:
 
 			/// current replicate in a simulator
 			/**
@@ -1975,6 +2039,10 @@ namespace simuPOP
 
 			/// whether or not information is ordered
 			bool m_infoOrdered;
+
+			/// selection flags for each subpopulation.
+			/// empty means no selection
+			vector<bool> m_selectionFlags;
 
 #ifdef SIMUMPI
 			/// unique population id, used by slave nodes to identify a population

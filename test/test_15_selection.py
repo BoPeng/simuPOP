@@ -32,11 +32,10 @@ class TestSelector(unittest.TestCase):
                 assert ind.info('fitness') == 0.5
             elif ind.arrGenotype() == (1,1):
                 assert ind.info('fitness') == 0.25
-        assert pop.dvars().selection
         #
         # selector on a population with selection on is not allowed
         # explicitly walk around this.
-        pop.dvars().selection = False
+        pop.turnOffSelection()
         InitByFreq(pop, [.2, 0, .3, .4, .1])
         # other than 1 alleles
         MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0])
@@ -46,7 +45,7 @@ class TestSelector(unittest.TestCase):
                 assert ind.info('fitness') > 0.25
         # selector on a population with selection on is not allowed
         # explicitly walk around this.
-        pop.dvars().selection = False
+        pop.turnOffSelection()
         InitByFreq(pop, [.2, 0, .3, .4, .1])
         # more than one wild type
         MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0, 2])
@@ -344,7 +343,7 @@ class TestSelector(unittest.TestCase):
                 self.assertEqual( ft[ind], 0.25)
         # selector on a population with selection on is not allowed
         # explicitly walk around this.
-        pop.dvars().selection = False
+        pop.turnOffSelection()
         # test phase
         MapSelect(pop, loci=[0,1], phase=True,
             fitness={'0-0|0-0':0, '1-1|1-1':0.25,
@@ -495,6 +494,42 @@ class TestSelector(unittest.TestCase):
             end=10
         )
 
+    def testSubPops(self):
+        'Testing the subPops parameter of selector'
+        simu = simulator(
+            population(subPop=[20, 30, 40], loci=[2],
+                infoFields=['fitness']),
+            randomMating())
+        def testFitness(pop, params):
+            for sp in params[0]:
+                for ind in pop.individuals(sp):
+                    self.assertEqual(ind.info('fitness'), 0.)
+                
+        simu.evolve(
+            preOps = [initByFreq([.4, .6])],
+            ops = [
+                mapSelector(locus = 0, fitness = {'0-0':1,'0-1':1,'1-1':.8},
+                    subPops=[1]),
+                pyOperator(func=testFitness, param=([0, 2],)),
+                ],
+            end = 5
+        )
+        # subPop is also allowed
+        simu = simulator(
+            population(subPop=[20, 30, 40], loci=[2],
+                infoFields=['fitness']),
+            randomMating())
+        simu.evolve(
+            preOps = [initByFreq([.4, .6])],
+            ops = [
+                maSelector(locus=0, wildtype=[0], fitness = [0.5, 0.4, 0.6],
+                    subPop=[1, 2]),
+                pyOperator(func=testFitness, param=([0],)),
+                ],
+            end = 5
+        )
+
+            
         
 if __name__ == '__main__':
     unittest.main()        
