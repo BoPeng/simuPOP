@@ -28,9 +28,9 @@ namespace simuPOP
 	bool selector::apply(population& pop)
 	{
 		UINT fit_id = pop.infoIdx(this->infoField(0));
-		GappedInfoIterator fitness = pop.infoBegin(fit_id, true);
 
 		if (m_subPops.empty()) {
+			GappedInfoIterator fitness = pop.infoBegin(fit_id, true);
 			// fitness may change with generation so pass generation information
 			for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
 				*fitness++ = indFitness(&*it, pop.gen()) ;
@@ -40,6 +40,7 @@ namespace simuPOP
 		{
 			for (vectoru::iterator sp = m_subPops.begin(); sp != m_subPops.end(); ++sp)
 			{
+				GappedInfoIterator fitness = pop.infoBegin(fit_id, *sp, true);
 				DBG_FAILIF(*sp > pop.numSubPop(), IndexError,
 					"Wrong subpopulation index" + toStr(*sp) + " (number of subpops is " +
 					toStr(pop.numSubPop()) + ")");
