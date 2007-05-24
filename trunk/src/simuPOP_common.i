@@ -855,7 +855,7 @@ recombinator.__init__ = new_recombinator
 
 
 
-def new_initByFreq(self, alleleFreq=[], indRange=[], *args, **kwargs):
+def new_initByFreq(self, alleleFreq=[], indRange=[], subPop=-1, subPops=[], *args, **kwargs):
     # parameter alleleFreq
     if len(alleleFreq) > 0 and type(alleleFreq[0]) in [types.IntType, types.LongType, types.FloatType]:
         af = [alleleFreq]
@@ -866,15 +866,26 @@ def new_initByFreq(self, alleleFreq=[], indRange=[], *args, **kwargs):
         ir = [indRange]
     else:
         ir = indRange
+    if subPop != -1 and type(subPop) in [types.IntType, types.LongType]:
+        sp = [subPop]
+    elif subPop != -1 and type(subPop) in [types.ListType, types.TupleType] and len(subPop) > 0:
+        sp = subPop
+    elif type(subPops) in [types.IntType, types.LongType]:
+        sp = [subPops]
+    elif type(subPops) in [types.TupleType, types.ListType] and len(subPops)>0:
+        sp = subPops
+    else:
+        sp = []
     cppModule.initByFreq_swiginit(self,
-        cppModule.new_initByFreq(alleleFreq=af, indRange=ir, *args, **kwargs))
+        cppModule.new_initByFreq(alleleFreq=af, indRange=ir, subPop=sp,
+			*args, **kwargs))
  
 new_initByFreq.__doc__ = initByFreq.__init__.__doc__
 del initByFreq.__init__
 initByFreq.__init__ = new_initByFreq
 
 
-def new_initByValue(self, value=[], indRange=[], *args, **kwargs):
+def new_initByValue(self, value=[], indRange=[], subPop=-1, subPops=[], *args, **kwargs):
     # parameter value
     if len(value) > 0 and type(value[0]) in [types.IntType, types.LongType]:
         val = [value]
@@ -885,8 +896,18 @@ def new_initByValue(self, value=[], indRange=[], *args, **kwargs):
         ir = [indRange]
     else:
         ir = indRange
+    if subPop != -1 and type(subPop) in [types.IntType, types.LongType]:
+        sp = [subPop]
+    elif subPop != -1 and type(subPop) in [types.ListType, types.TupleType] and len(subPop) > 0:
+        sp = subPop
+    elif type(subPops) in [types.IntType, types.LongType]:
+        sp = [subPops]
+    elif type(subPops) in [types.TupleType, types.ListType] and len(subPops)>0:
+        sp = subPops
+    else:
+        sp = []
     cppModule.initByValue_swiginit(self,
-        cppModule.new_initByValue(value=val, indRange=ir, *args, **kwargs))
+        cppModule.new_initByValue(value=val, indRange=ir, subPop=sp, *args, **kwargs))
  
 new_initByValue.__doc__ = initByValue.__init__.__doc__
 del initByValue.__init__
@@ -1055,6 +1076,8 @@ def new_mapSelector(self, locus=-1, loci=[], subPop=-1, subPops=[], *args, **kwa
         raise exceptions.TypeError('Please specify locus or loci')
     if subPop != -1 and type(subPop) in [types.IntType, types.LongType]:
         sp = [subPop]
+    elif subPop != -1 and type(subPop) in [types.ListType, types.TupleType] and len(subPop) > 0:
+        sp = subPop
     elif type(subPops) in [types.IntType, types.LongType]:
         sp = [subPops]
     elif type(subPops) in [types.TupleType, types.ListType] and len(subPops)>0:
@@ -1083,6 +1106,8 @@ def new_maSelector(self, locus=-1, loci=[], wildtype=[0], subPop=-1, subPops=[],
         wt = wildtype
     if subPop != -1 and type(subPop) in [types.IntType, types.LongType]:
         sp = [subPop]
+    elif subPop != -1 and type(subPop) in [types.ListType, types.TupleType] and len(subPop) > 0:
+        sp = subPop
     elif type(subPops) in [types.IntType, types.LongType]:
         sp = [subPops]
     elif type(subPops) in [types.TupleType, types.ListType] and len(subPops)>0:
@@ -1099,6 +1124,8 @@ maSelector.__init__ = new_maSelector
 def new_mlSelector(self, selectors=[], subPop=-1, subPops=[], *args, **kwargs):
     if subPop != -1 and type(subPop) in [types.IntType, types.LongType]:
         sp = [subPop]
+    elif subPop != -1 and type(subPop) in [types.ListType, types.TupleType] and len(subPop) > 0:
+        sp = subPop
     elif type(subPops) in [types.IntType, types.LongType]:
         sp = [subPops]
     elif type(subPops) in [types.TupleType, types.ListType] and len(subPops)>0:
@@ -1124,6 +1151,8 @@ def new_pySelector(self, locus=-1, loci=[], subPop=-1, subPops=[], *args, **kwar
         raise exceptions.TypeError('Please specify locus or loci')
     if subPop != -1 and type(subPop) in [types.IntType, types.LongType]:
         sp = [subPop]
+    elif subPop != -1 and type(subPop) in [types.ListType, types.TupleType] and len(subPop) > 0:
+        sp = subPop
     elif type(subPops) in [types.IntType, types.LongType]:
         sp = [subPops]
     elif type(subPops) in [types.TupleType, types.ListType] and len(subPops)>0:
