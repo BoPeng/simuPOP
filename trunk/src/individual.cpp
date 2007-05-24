@@ -335,7 +335,7 @@ namespace simuPOP
 
 	void individual::display( ostream& out, int width, const vectori& chrom, const vectori& loci)
 	{
-		out << sexChar() << affectedChar();
+		out << sexChar() << affectedChar() << " ";
 		DBG_DO(DBG_POPULATION,
 			out << subPopID() << "," << genoStruIdx() << " "
 			);
