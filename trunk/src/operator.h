@@ -164,7 +164,7 @@ namespace simuPOP
             replicate, group number of the current replicate, current generation, ending generation etc.
 			\note This function will be called by simulators before applying.
 			*/
-			bool isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly =false);
+			bool isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly=false);
 
 			/// return applicable group
 			int applicableGroup()
@@ -463,23 +463,34 @@ namespace simuPOP
 			vectorstr m_infoFields;
 	};
 
+    /// pause a simulator
 	/**
-	Pause the evolution of a simulator at given generations or at
-	key stroke, using \c stopOnKeyStroke=True option. When a simulator
-	is stopped, user can resume simulation by pressing '/??' or escape
-	to a python shell to examine the status of the simulation.
+	This operator pauses the evolution of a simulator at given generations or
+	at a key stroke, using <tt>stopOnKeyStroke=True</tt> option. Users can
+	use \c 'q' to stop an evolution. When a simulator is stopped, press any
+	other key to resume	the simulation or escape to a Python shell to examine
+	the status of the simulation by press \c 's'. \n
+	
+    There are two ways to use this operator, the first one is to pause the
+    simulation at specified generations, using the usual operator parameters
+    such as \c at. Another way is to pause a simulation with any key stroke,
+    using the \c stopOnKeyStroke parameter. This feature is useful for a
+    presentation or an interactive simulation. When \c 's' is pressed, this operator
+    expose the current population to the main Python dictionary as variable \c pop
+    and enter an interactive Python session. The way current population is exposed
+    can be controlled by parameter \c exposePop and \c popName.
 	*/
 	class pause: public Operator
 	{
 
 		public:
-			/// stop simulation. press q to exit and any other key to continue
+			/// stop a simulation. Press \c 'q' to exit or any other key to continue.
             /**
-			\param prompt if true (default), print prompt message. findpause
-			\param stopOnKeyStroke if true, go on if no key was pressed
-			\param exposePop whether or not expose pop to user namespace, only
-			  useful when user choose 's' at pause. Default to true.
-			\param popName by which name the population is exposed? default to 'pop'
+			\param prompt if \c True (default), print prompt message
+			\param stopOnKeyStroke if \c True, stop only when a key was pressed
+			\param exposePop whether or not expose \c pop to user namespace, only
+                useful when user choose \c 's' at pause. Default to \c True.
+			\param popName by which name the population is exposed. Default to \c pop.
 			*/
 			pause(bool prompt=true, bool stopOnKeyStroke=false,
 				bool exposePop=true, string popName="pop",
@@ -495,16 +506,16 @@ namespace simuPOP
 			/// destructor
 			virtual ~pause(){}
 
-			/// this function is very important
+			/// deep copy of a \c pause operator
 			virtual Operator* clone() const
 			{
 				return new pause(*this);
 			}
 
-			/// simply output some info
+			/// apply the \c pause operator to one population
 			virtual bool apply(population& pop);
 
-            /// used by Python print function to print out the general information of the pause
+            /// used by Python print function to print out the general information of the \c pause operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::pause simulation>" ;
@@ -522,16 +533,14 @@ namespace simuPOP
 			string m_popName;
 	};
 
-	/* 
-	  None operator, do nothing.
-	  */
-
+	/// none operator
 	class noneOp: public Operator
 	{
 
 		public:
-			/** \brief do nothing
-			 */
+			/**
+            This operator does nothing.
+			*/
 			noneOp( string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=0, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
@@ -544,48 +553,58 @@ namespace simuPOP
 			{
 			}
 
-			/// this function is very important
+			/// deep copy of a \c noneOp operator
 			virtual Operator* clone() const
 			{
 				return new noneOp(*this);
 			}
 
-			///  providing interface to apply operator before during or after mating
+			///  CPPONLY providing interface to apply operator before during or after mating
 			virtual bool applyWithScratch(population& pop, population& scratch, int stage)
 			{
 				return true;
 			}
 
-			/// give pop, offspring, pop and mom.
+			/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL)
 			{
 				return true;
 			}
 
+            /// apply the \c noneOp operator to one population
 			virtual bool apply(population& pop)
 			{
 				return true;
 			}
 
+            /// used by Python print function to print out the general information of the \c noneOp operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::None>" ;
 			}
 	};
 
-	/* 
-	 evaluate an expression, call if_op or else_op
-	 */
-
+	/// conditional operator
 	class ifElse: public Operator
 	{
 
 		public:
-			/** \brief conditional operator
-			\param cond expression, will be treated as bool variable.
-			\param ifOp if operator, be called when expr is true
-			\param elseOp else operator, be called when expr is false
+			/**
+            This operator accepts
+            \li an expression that will be evaluated when this operator is applied;
+            \li an operator that will be applied if the expression is <tt>True</tt> (default to null);
+            \li an operator that will be applied if the expression is <tt>False</tt> (default to null).
+            
+            When this operator is applied to a population, it will evaluate the expression and
+            depending on its value, apply the supplied operator. Note that the \c begin, \c at,
+            \c step, and \c at parameters of \c ifOp and \c elseOp will be ignored.
+            For example, you can mimic the \c at parameter of an operator by
+            <tt>ifElse('rep in [2,5,9]' operator)</tt>. The real use of this machanism is
+            to monitor the population statistics and act accordingly.
+			\param cond expression that will be treated as a bool variable
+			\param ifOp an operator that will be applied when \c cond is \c True
+        	\param elseOp an operator that will be applied when \c cond is \c False
 			*/
 			ifElse(const string& cond, Operator* ifOp=NULL, Operator* elseOp = NULL,
 				string output=">", string outputExpr="",
@@ -609,8 +628,7 @@ namespace simuPOP
 					delete m_elseOp;
 			};
 
-			/// copy constructor
-			/// CPPONLY
+			/// CPPONLY copy constructor
 			ifElse(const ifElse& rhs)
 				: Operator(rhs), m_cond(rhs.m_cond), m_ifOp(NULL), m_elseOp(NULL)
 			{
@@ -620,23 +638,23 @@ namespace simuPOP
 					m_elseOp = rhs.m_elseOp->clone();
 			}
 
-			/// this function is very important
+			/// deep copy of an \c ifElse operator
 			virtual Operator* clone() const
 			{
 				return new ifElse(*this);
 			}
 
-			/// simply output some info
-			///  providing interface to apply operator before during or after
-			///  mating.
+			/// CPPONLY providing interface to apply operator before during or after mating
 			virtual bool applyWithScratch(population& pop, population& scratch, int stage);
 
-			/// give pop, offspring, pop and mom.
+			/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL);
 
+            /// apply the \c ifElse operator to one population
 			virtual bool apply(population& pop);
 
+            /// used by Python print function to print out the general information of the \c ifElse operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::if else operator >" + m_ifOp->__repr__() ;
@@ -649,16 +667,17 @@ namespace simuPOP
 			Operator *m_elseOp;
 	};
 
-	/* 
-	  evaluate an expression, call if_op or else_op
-	  */
-
+	/// timer operator
 	class ticToc: public Operator
 	{
-
 		public:
-			/** \brief timer
-			if called, output time passed since last calling time.
+			/**
+            This operator, when called, output the difference between current and the
+            last called clock time. This can be used to estimate execution time of
+            each generation. Similar information can also be obtained from
+            <tt>turnOnDebug(DBG_PROFILE)</tt>, but this operator has the advantage
+            of measuring the duration between several generations by setting \c step
+            parameter.
 			*/
 			ticToc( string output=">", string outputExpr="",
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -674,14 +693,16 @@ namespace simuPOP
 			{
 			};
 
-			/// this function is very important
+			/// deep copy of a \c ticToc operator
 			virtual Operator* clone() const
 			{
 				return new ticToc(*this);
 			}
 
+            /// apply the \c ticToc operator to one population
 			virtual bool apply(population& pop);
 
+            /// used by Python print function to print out the general information of the \c ticToc operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::tic toc performance monitor>" ;
@@ -692,16 +713,15 @@ namespace simuPOP
 			time_t m_startTime, m_lastTime;
 	};
 
-	/* 
-	   set ancestral depth
-	   */
-
+	/// set ancestral depth
 	class setAncestralDepth: public Operator
 	{
 
 		public:
-			/** \brief timer
-			if called, output time passed since last calling time.
+			/**
+            This operator set the number of ancestral generations to keep in a population.
+            It is usually called like <tt>setAncestral(at=[-2])</tt> to start recording
+            ancestral generations to a population at the end of the evolution.
 			*/
 			setAncestralDepth( int depth, string output=">", string outputExpr="",
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -716,18 +736,20 @@ namespace simuPOP
 			{
 			};
 
-			/// this function is very important
+			/// deep copy of a \c setAncestralDepth operator
 			virtual Operator* clone() const
 			{
 				return new setAncestralDepth(*this);
 			}
 
+            /// apply the \c setAncestralDepth operator to one population
 			virtual bool apply(population& pop)
 			{
 				pop.setAncestralDepth(m_depth);
 				return true;
 			}
 
+            /// used by Python print function to print out the general information of the \c setAncestralDepth operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::setAncestralDepth>";
@@ -737,18 +759,22 @@ namespace simuPOP
 			int m_depth;
 	};
 
-	/* 
-	   set debug
-	   */
-
-	class turnOnDebugOp: public Operator
+    /// set debug on
+	class turnOnDebug: public Operator
 	{
-
 		public:
-			/** \brief turn on debug
-
-			 */
-			turnOnDebugOp(DBG_CODE code,
+			/**
+            Turn on debug. There are several ways to turn on debug information for
+            non-optimized modules, namely
+            \li set environment variable \c SIMUDEBUG
+            \li use <tt>simuOpt.setOptions(debug)</tt> function, or
+            \li use \c TurnOnDebug or \c TurnOnDebugByName function
+            \li use this \c turnOnDebug operator
+        
+            The advantage of using this operator is that you can turn on debug at
+            given generations.
+    		*/
+			turnOnDebug(DBG_CODE code,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
 			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
@@ -757,22 +783,24 @@ namespace simuPOP
 			};
 
 			/// destructor
-			virtual ~turnOnDebugOp()
+			virtual ~turnOnDebug()
 			{
 			};
 
-			/// this function is very important
+			/// deep copy of a \c turnOnDebug operator
 			virtual Operator* clone() const
 			{
-				return new turnOnDebugOp(*this);
+				return new turnOnDebug(*this);
 			}
 
+            /// apply the \c turnOnDebug operator to one population
 			virtual bool apply(population& pop)
 			{
 				TurnOnDebug(m_code);
 				return true;
 			}
 
+            /// used by Python print function to print out the general information of the \c turnOnDebug operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::turnOnDebug " + dbgString(m_code) + ">";
@@ -782,18 +810,15 @@ namespace simuPOP
 			DBG_CODE m_code;
 	};
 
-	/* 
-	   set debug
-	   */
-
-	class turnOffDebugOp: public Operator
+    /// set debug off
+	class turnOffDebug: public Operator
 	{
 
 		public:
-			/** \brief turn on debug
-
-			 */
-			turnOffDebugOp(DBG_CODE code,
+			/**
+            Turn off debug.
+			*/
+			turnOffDebug(DBG_CODE code,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
 			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
@@ -802,22 +827,24 @@ namespace simuPOP
 			};
 
 			/// destructor
-			virtual ~turnOffDebugOp()
+			virtual ~turnOffDebug()
 			{
 			};
 
-			/// this function is very important
+			/// deep copy of a \c turnOffDebug operator
 			virtual Operator* clone() const
 			{
-				return new turnOffDebugOp(*this);
+				return new turnOffDebug(*this);
 			}
 
+            /// apply the \c turnOffDebug operator to one population
 			virtual bool apply(population& pop)
 			{
 				TurnOffDebug(m_code);
 				return true;
 			}
 
+            /// used by Python print function to print out the general information of the \c turnOffDebug operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::turnOffDebug " + dbgString(m_code) + ">";
@@ -827,30 +854,44 @@ namespace simuPOP
 			DBG_CODE m_code;
 	};
 
-	/* 
-	   pyOperator, the ultimate python operator
-	   */
 
+    /// the one and only Python operator
 	class pyOperator: public Operator
 	{
-
 		public:
-			/** \brief python operator, using a function that accept a population object
+            /// Python operator, using a function that accepts a population object
+            /**
+            This operator accepts a function that can take the form of
+            \li <tt>func(pop)</tt> when <tt>stage=PreMating</tt> or \c PostMating, without setting \c param;
+            \li <tt>func(pop, param)</tt> when <tt>stage=PreMating</tt> or \c PostMating, with \c param;
+            \li <tt>func(pop, off, dad, mom)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=False</tt>, without setting \c param;
+            \li <tt>func(off)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=True</tt>, and without setting \c param;
+            \li <tt>func(pop, off, dad, mom, param)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=False</tt>, with \c param;
+            \li <tt>func(off, param)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=True</tt>, with \c param.
+        
+            For \c Pre- and \c PostMating usages, a population and an optional parameter is passed to the given
+            function. For \c DuringMating usages, population, offspring, its parents and an optional parameter
+            are passed to the given function. Arbitrary operations can be applied to the population and
+            offspring (if <tt>stage=DuringMating</tt>). 
+        
+			\param func a Python function. Its form is determined by other parameters.
+			\param param any Python object that will be passed to \c func after \c pop parameter.
+                Multiple parameters can be passed as a tuple.
+			\param formOffGenotype This option tells the mating scheme this operator will set
+                the genotype of offspring (valid only for <tt>stage=DuringMating</tt>). By default
+                (<tt>formOffGenotype=False</tt>), a mating scheme will set the genotype of offspring before it is
+                passed to the given Python function. Otherwise, a 'blank' offspring will be passed.
+			\param passOffspringOnly if \c True, \c pyOperator will expect a function of form <tt>func(off [,param])</tt>,
+                instead of <tt>func(pop, off, dad, mom [, param])</tt> which is used when \c passOffspringOnly
+                is \c False. Because many during-mating \c pyOperator only need access to offspring,
+                this will improve efficiency. Default to \c False.
 
-			\param func a python function that accept a population and perform whatever
-			operation it wants to.
-			\param para any python object that will be passed to func after pop parameter.
-			  Multiple parameter can be passed as a tuple.
-			\param formOffGenotype if stage=DuringMating, set this parameter to false
-			  will disallow random mating to set genotype.
-			\param passOffspringOnly Default to false. If true, pyOperator will expect
-			  a function of form func(off, param), instead of func(pop, off, dad, mon, param)
-			  when passOffspringOnly is false. Since many duringMating pyOperator only need
-			access to offspring, this will imporve efficiency.
-
-			Note: (FIXME) output to output or outputExpr is not yet supported. Ideally,
-			this func will take two parameters with pop and then a filehandle to output,
-			however, differentiating output, append etc is too troublesome right now.
+			\note
+            \li Output to \c output or \c outputExpr is not supported. That is to say,
+                you have to open/close/append to files explicitly in the Python function.
+            \li This operator can be applied \c Pre-, \c During- or \c Post- mating and is applied \c PostMating
+                by default. For example, if you would like to examine the fitness values set by
+                a selector, a \c PreMating Python operator should be used.            
 			*/
 			pyOperator(PyObject* func, PyObject* param=NULL,
 				int stage=PostMating, bool formOffGenotype=false, bool passOffspringOnly=false,
@@ -860,7 +901,7 @@ namespace simuPOP
 				m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
 			{
 				if( !PyCallable_Check(func))
-					throw ValueError("Passed variable is not a callable python function.");
+					throw ValueError("Passed variable is not a callable Python function.");
 
 				// inc reference count
 				Py_XINCREF(func);
@@ -892,17 +933,20 @@ namespace simuPOP
 					Py_INCREF( m_param);
 			}
 
-			/// this function is very important
+			/// deep copy of a \c pyOperator operator
 			virtual Operator* clone() const
 			{
 				return new pyOperator(*this);
 			}
 
+            /// apply the \c pyOperator operator to one population
 			virtual bool apply(population& pop);
 
+            /// CPPONLY
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL);
 
+            /// used by Python print function to print out the general information of the \c pyOperator operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::pyOperator>";
@@ -920,25 +964,19 @@ namespace simuPOP
 			bool m_passOffspringOnly;
 	};
 
-	/* 
-	   infoOperator that manipulate individuals
-	*/
+    /// individual operator
 	class pyIndOperator: public Operator
 	{
 
 		public:
-			/** \brief individual operator that apply a function to each individual
-
-			\param func a python function that accept a individual and perform whatever
-			operation it wants to.
-			\param para any python object that will be passed to func after pop parameter.
-			  Multiple parameter can be passed as a tuple.
-			\param formOffGenotype if stage=DuringMating, set this parameter to false
-			  will disallow random mating to set genotype.
-
-			Note: (FIXME) output to output or outputExpr is not yet supported. Ideally,
-			this func will take two parameters with pop and then a filehandle to output,
-			however, differentiating output, append etc is too troublesome right now.
+            /// a \c Pre- or \c PostMating Python operator that apply a function to each individual
+			/**
+            This operator is similar to a \c pyOperator but works at the individual level. It expects
+            a function that accepts an individual and an optional parameter. When it is applied,
+            it passes each individual to this function.        
+            \param func a Python function that accepts an individual and perform desired operations
+			\param param any Python object that will be passed to \c func after \c pop parameter.
+                Multiple parameters can be passed as a tuple.
 			*/
 			pyIndOperator(PyObject* func, PyObject* param=NULL,
 				int stage=PostMating, bool formOffGenotype=false,
@@ -948,7 +986,7 @@ namespace simuPOP
 				m_func(func), m_param(param)
 			{
 				if( !PyCallable_Check(func))
-					throw ValueError("Passed variable is not a callable python function.");
+					throw ValueError("Passed variable is not a callable Python function.");
 
 				// inc reference count
 				Py_XINCREF(func);
@@ -956,6 +994,8 @@ namespace simuPOP
 				if(param != NULL)
 					Py_XINCREF(param);
 
+                DBG_FAILIF(stage == DuringMating, ValueError,
+                               "This operator can not be used DuringMating.");
 				this->setFormOffGenotype(formOffGenotype);
 			};
 
@@ -980,14 +1020,16 @@ namespace simuPOP
 					Py_INCREF( m_param);
 			}
 
-			/// this function is very important
+			/// deep copy of a \c pyIndOperator operator
 			virtual Operator* clone() const
 			{
 				return new pyIndOperator(*this);
 			}
 
+            /// apply the \c pyIndOperator operator to one population
 			virtual bool apply(population& pop);
 
+            /// used by Python print function to print out the general information of the \c pyIndOperator operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::pyIndOperator>";
