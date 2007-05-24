@@ -92,7 +92,7 @@ namespace simuPOP
 			return false;
 		}
 
-		/// finally, check start, end, every
+		// finally, check start, end, every
 		if( end < 0 )							  // if we do not know ending generation.
 		{
 			// can not determine starting gen.
@@ -124,7 +124,7 @@ namespace simuPOP
 		RESETFLAG(m_flags, m_flagOnlyAtBegin);
 		RESETFLAG(m_flags, m_flagOnlyAtEnd);
 
-		/// atGen has higher priority: if it is not empty, use it.
+		// atGen has higher priority: if it is not empty, use it.
 		if( m_atGen.empty() )
 		{
 			if( m_beginGen == 0 && m_endGen == 0 )
