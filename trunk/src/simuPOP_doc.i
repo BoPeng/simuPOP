@@ -1662,15 +1662,11 @@ Usage:
 
 Description:
 
-    simuPOP::ifElse
+    conditional operator
 
 "; 
 
 %feature("docstring") simuPOP::ifElse::ifElse "
-
-Description:
-
-    conditional operator
 
 Usage:
 
@@ -1680,9 +1676,27 @@ Usage:
 
 Arguments:
 
-    cond:           expression, will be treated as bool variable.
-    ifOp:           if operator, be called when expr is true
-    elseOp:         else operator, be called when expr is false
+    cond:           expression that will be treated as a bool variable
+    ifOp:           an operator that will be applied when cond  is
+                    True
+    elseOp:         an operator that will be applied when cond  is
+                    False
+
+Details:
+
+    This operator accepts
+    * an expression that will be evaluated when this operator is
+    applied;
+    * an operator that will be applied if the expression is True
+    (default to null);
+    * an operator that will be applied if the expression is False
+    (default to null). When this operator is applied to a population,
+    it will evaluate the expression and depending on its value, apply
+    the supplied operator. Note that the begin , at , step , and at
+    parameters of ifOp  and elseOp  will be ignored. For example, you
+    can mimic the at  parameter of an operator by  ifElse('rep in
+    [2,5,9]' operator) . The real use of this machanism is to monitor
+    the population statistics and act accordingly.
 
 "; 
 
@@ -1704,7 +1718,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of an  ifElse  operator
 
 Usage:
 
@@ -1712,37 +1726,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::ifElse::applyWithScratch "
+%ignore simuPOP::ifElse::applyWithScratch(population &pop, population &scratch, int stage);
 
-Description:
-
-    simply output some info providing interface to apply operator
-    before during or after mating.
-
-Usage:
-
-    x.applyWithScratch(pop, scratch, stage)
-
-"; 
-
-%feature("docstring") simuPOP::ifElse::applyDuringMating "
-
-Description:
-
-    give pop, offspring, pop and mom.
-
-Usage:
-
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
-"; 
+%ignore simuPOP::ifElse::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::ifElse::apply "
 
 Description:
 
-    apply to one population. It does not check if the operator is
-    activated.
+    apply the  ifElse  operator to one population
 
 Usage:
 
@@ -1755,7 +1747,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  ifElse  operator
 
 Usage:
 
@@ -4313,20 +4305,20 @@ Usage:
 
 Description:
 
-    simuPOP::noneOp
+    none operator
 
 "; 
 
 %feature("docstring") simuPOP::noneOp::noneOp "
 
-Description:
-
-    do nothing
-
 Usage:
 
     noneOp(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
       end=0, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+
+Details:
+
+    This operator does nothing.
 
 "; 
 
@@ -4346,7 +4338,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  noneOp  operator
 
 Usage:
 
@@ -4354,37 +4346,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::noneOp::applyWithScratch "
+%ignore simuPOP::noneOp::applyWithScratch(population &pop, population &scratch, int stage);
 
-Description:
-
-    providing interface to apply operator before during or after
-    mating
-
-Usage:
-
-    x.applyWithScratch(pop, scratch, stage)
-
-"; 
-
-%feature("docstring") simuPOP::noneOp::applyDuringMating "
-
-Description:
-
-    give pop, offspring, pop and mom.
-
-Usage:
-
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
-
-"; 
+%ignore simuPOP::noneOp::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::noneOp::apply "
 
 Description:
 
-    apply to one population. It does not check if the operator is
-    activated.
+    apply the  noneOp  operator to one population
 
 Usage:
 
@@ -4397,7 +4367,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  noneOp  operator
 
 Usage:
 
@@ -5203,12 +5173,27 @@ Usage:
 
 %feature("docstring") simuPOP::pause "
 
+Description:
+
+    pause a simulator
+
 Details:
 
-    Pause the evolution of a simulator at given generations or at key
-    stroke, using stopOnKeyStroke=True  option. When a simulator is
-    stopped, user can resume simulation by pressing '/??' or escape to
-    a python shell to examine the status of the simulation.
+    This operator pauses the evolution of a simulator at given
+    generations or at a key stroke, using stopOnKeyStroke=True
+    option. Users can use 'q'  to stop an evolution. When a simulator
+    is stopped, press any other key to resume the simulation or escape
+    to a Python shell to examine the status of the simulation by press
+    's' .
+    There are two ways to use this operator, the first one is to pause
+    the simulation at specified generations, using the usual operator
+    parameters such as at . Another way is to pause a simulation with
+    any key stroke, using the stopOnKeyStroke  parameter. This feature
+    is useful for a presentation or an interactive simulation. When
+    's'  is pressed, this operator expose the current population to
+    the main Python dictionary as variable pop  and enter an
+    interactive Python session. The way current population is exposed
+    can be controlled by parameter exposePop  and popName .
 
 "; 
 
@@ -5216,7 +5201,8 @@ Details:
 
 Description:
 
-    stop simulation. press q to exit and any other key to continue
+    stop a simulation. Press 'q'  to exit or any other key to
+    continue.
 
 Usage:
 
@@ -5227,13 +5213,13 @@ Usage:
 
 Arguments:
 
-    prompt:         if true (default), print prompt message. findpause
-    stopOnKeyStroke:if true, go on if no key was pressed
-    exposePop:      whether or not expose pop to user namespace, only
-                    useful when user choose 's' at pause. Default to
-                    true.
-    popName:        by which name the population is exposed? default
-                    to 'pop'
+    prompt:         if True  (default), print prompt message
+    stopOnKeyStroke:if True , stop only when a key was pressed
+    exposePop:      whether or not expose pop  to user namespace, only
+                    useful when user choose 's'  at pause. Default to
+                    True .
+    popName:        by which name the population is exposed. Default
+                    to pop .
 
 "; 
 
@@ -5253,7 +5239,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a pause  operator
 
 Usage:
 
@@ -5265,7 +5251,7 @@ Usage:
 
 Description:
 
-    simply output some info
+    apply the pause  operator to one population
 
 Usage:
 
@@ -5278,7 +5264,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the pause
+    of the pause  operator
 
 Usage:
 
@@ -7040,7 +7026,7 @@ Usage:
 
 Description:
 
-    simuPOP::pyIndOperator
+    individual operator
 
 "; 
 
@@ -7048,7 +7034,8 @@ Description:
 
 Description:
 
-    individual operator that apply a function to each individual
+    a Pre-  or PostMating  Python operator that apply a function to
+    each individual
 
 Usage:
 
@@ -7058,20 +7045,18 @@ Usage:
 
 Arguments:
 
-    func:           a python function that accept a individual and
-                    perform whatever operation it wants to.
-    para:           any python object that will be passed to func
-                    after pop parameter. Multiple parameter can be
+    func:           a Python function that accepts an individual and
+                    perform desired operations
+    param:          any Python object that will be passed to func
+                    after pop  parameter. Multiple parameters can be
                     passed as a tuple.
-    formOffGenotype:if stage=DuringMating, set this parameter to false
-                    will disallow random mating to set genotype.
 
 Details:
 
-    Note: (FIXME) output to output or outputExpr is not yet supported.
-    Ideally, this func will take two parameters with pop and then a
-    filehandle to output, however, differentiating output, append etc
-    is too troublesome right now.
+    This operator is similar to a  pyOperator  but works at the
+    individual level. It expects a function that accepts an individual
+    and an optional parameter. When it is applied, it passes each
+    individual to this function.
 
 "; 
 
@@ -7093,7 +7078,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  pyIndOperator  operator
 
 Usage:
 
@@ -7105,8 +7090,7 @@ Usage:
 
 Description:
 
-    apply to one population. It does not check if the operator is
-    activated.
+    apply the  pyIndOperator  operator to one population
 
 Usage:
 
@@ -7119,7 +7103,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  pyIndOperator  operator
 
 Usage:
 
@@ -7479,7 +7463,7 @@ Usage:
 
 Description:
 
-    simuPOP::pyOperator
+    the one and only Python operator
 
 "; 
 
@@ -7487,7 +7471,8 @@ Description:
 
 Description:
 
-    python operator, using a function that accept a population object
+    Python operator, using a function that accepts a population
+    object.
 
 Usage:
 
@@ -7497,26 +7482,40 @@ Usage:
 
 Arguments:
 
-    func:           a python function that accept a population and
-                    perform whatever operation it wants to.
-    para:           any python object that will be passed to func
-                    after pop parameter. Multiple parameter can be
+    func:           a Python function. Its form is determined by other
+                    parameters.
+    param:          any Python object that will be passed to func
+                    after pop  parameter. Multiple parameters can be
                     passed as a tuple.
-    formOffGenotype:if stage=DuringMating, set this parameter to false
-                    will disallow random mating to set genotype.
-    passOffspringOnly:Default to false. If true,  pyOperator will expect
-                    a function of form func(off, param), instead of
-                    func(pop, off, dad, mon, param) when
-                    passOffspringOnly is false. Since many
-                    duringMating  pyOperator only need access to
-                    offspring, this will imporve efficiency.
+    formOffGenotype:This option tells the mating scheme this operator
+                    will set the genotype of offspring (valid only for
+                    stage=DuringMating ). By default
+                    (formOffGenotype=False ), a mating scheme will set
+                    the genotype of offspring before it is passed to
+                    the given Python function. Otherwise, a 'blank'
+                    offspring will be passed.
+    passOffspringOnly:if True ,  pyOperator  will expect a function of
+                    form func(off [,param]) , instead of func(pop,
+                    off, dad, mom [, param])  which is used when
+                    passOffspringOnly  is False . Because many during-
+                    mating  pyOperator  only need access to offspring,
+                    this will improve efficiency. Default to False .
 
 Details:
 
-    Note: (FIXME) output to output or outputExpr is not yet supported.
-    Ideally, this func will take two parameters with pop and then a
-    filehandle to output, however, differentiating output, append etc
-    is too troublesome right now.
+    This operator accepts a function that can take the form of
+    * func(pop)  when stage=PreMating  or PostMating , without setting
+    param ;
+    * func(pop, param)  when stage=PreMating  or PostMating , with
+    param ;
+    * func(pop, off, dad, mom)  when stage=DuringMating  and
+    passOffspringOnly=False , without setting param ;
+    * func(off)  when stage=DuringMating  and passOffspringOnly=True ,
+    and without setting param ;
+    * func(pop, off, dad, mom, param)  when stage=DuringMating  and
+    passOff...
+
+Please refer to the reference manual for more details.
 
 "; 
 
@@ -7538,7 +7537,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  pyOperator  operator
 
 Usage:
 
@@ -7550,8 +7549,7 @@ Usage:
 
 Description:
 
-    apply to one population. It does not check if the operator is
-    activated.
+    apply the  pyOperator  operator to one population
 
 Usage:
 
@@ -7566,7 +7564,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  pyOperator  operator
 
 Usage:
 
@@ -9198,21 +9196,24 @@ Usage:
 
 Description:
 
-    simuPOP::setAncestralDepth
+    set ancestral depth
 
 "; 
 
 %feature("docstring") simuPOP::setAncestralDepth::setAncestralDepth "
-
-Description:
-
-    timer if called, output time passed since last calling time.
 
 Usage:
 
     setAncestralDepth(depth, output=\">\", outputExpr=\"\",
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[])
+
+Details:
+
+    This operator set the number of ancestral generations to keep in a
+    population. It is usually called like setAncestral(at=[-2])  to
+    start recording ancestral generations to a population at the end
+    of the evolution.
 
 "; 
 
@@ -9232,7 +9233,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  setAncestralDepth  operator
 
 Usage:
 
@@ -9244,8 +9245,7 @@ Usage:
 
 Description:
 
-    apply to one population. It does not check if the operator is
-    activated.
+    apply the  setAncestralDepth  operator to one population
 
 Usage:
 
@@ -9258,7 +9258,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  setAncestralDepth  operator
 
 Usage:
 
@@ -11297,20 +11297,25 @@ Usage:
 
 Description:
 
-    simuPOP::ticToc
+    timer operator
 
 "; 
 
 %feature("docstring") simuPOP::ticToc::ticToc "
 
-Description:
-
-    timer if called, output time passed since last calling time.
-
 Usage:
 
     ticToc(output=\">\", outputExpr=\"\", stage=PreMating, begin=0,
       end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+
+Details:
+
+    This operator, when called, output the difference between current
+    and the last called clock time. This can be used to estimate
+    execution time of each generation. Similar information can also be
+    obtained from turnOnDebug(DBG_PROFILE) , but this operator has the
+    advantage of measuring the duration between several generations by
+    setting step  parameter.
 
 "; 
 
@@ -11330,7 +11335,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  ticToc  operator
 
 Usage:
 
@@ -11342,8 +11347,7 @@ Usage:
 
 Description:
 
-    apply to one population. It does not check if the operator is
-    activated.
+    apply the  ticToc  operator to one population
 
 Usage:
 
@@ -11356,7 +11360,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  ticToc  operator
 
 Usage:
 
@@ -11364,28 +11368,28 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::turnOffDebugOp "
+%feature("docstring") simuPOP::turnOffDebug "
 
 Description:
 
-    simuPOP::turnOffDebugOp
+    set debug off
 
 "; 
 
-%feature("docstring") simuPOP::turnOffDebugOp::turnOffDebugOp "
-
-Description:
-
-    turn on debug
+%feature("docstring") simuPOP::turnOffDebug::turnOffDebug "
 
 Usage:
 
-    turnOffDebugOp(code, stage=PreMating, begin=0, end=-1, step=1,
+    turnOffDebug(code, stage=PreMating, begin=0, end=-1, step=1,
       at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+
+Details:
+
+    Turn off debug.
 
 "; 
 
-%feature("docstring") simuPOP::turnOffDebugOp::~turnOffDebugOp "
+%feature("docstring") simuPOP::turnOffDebug::~turnOffDebug "
 
 Description:
 
@@ -11393,15 +11397,15 @@ Description:
 
 Usage:
 
-    x.~turnOffDebugOp()
+    x.~turnOffDebug()
 
 "; 
 
-%feature("docstring") simuPOP::turnOffDebugOp::clone "
+%feature("docstring") simuPOP::turnOffDebug::clone "
 
 Description:
 
-    this function is very important
+    deep copy of a  turnOffDebug  operator
 
 Usage:
 
@@ -11409,12 +11413,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::turnOffDebugOp::apply "
+%feature("docstring") simuPOP::turnOffDebug::apply "
 
 Description:
 
-    apply to one population. It does not check if the operator is
-    activated.
+    apply the  turnOffDebug  operator to one population
 
 Usage:
 
@@ -11422,12 +11425,12 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::turnOffDebugOp::__repr__ "
+%feature("docstring") simuPOP::turnOffDebug::__repr__ "
 
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  turnOffDebug  operator
 
 Usage:
 
@@ -11435,28 +11438,34 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::turnOnDebugOp "
+%feature("docstring") simuPOP::turnOnDebug "
 
 Description:
 
-    simuPOP::turnOnDebugOp
+    set debug on
 
 "; 
 
-%feature("docstring") simuPOP::turnOnDebugOp::turnOnDebugOp "
-
-Description:
-
-    turn on debug
+%feature("docstring") simuPOP::turnOnDebug::turnOnDebug "
 
 Usage:
 
-    turnOnDebugOp(code, stage=PreMating, begin=0, end=-1, step=1,
+    turnOnDebug(code, stage=PreMating, begin=0, end=-1, step=1,
       at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+
+Details:
+
+    Turn on debug. There are several ways to turn on debug information
+    for non-optimized modules, namely
+    * set environment variable SIMUDEBUG
+    * use simuOpt.setOptions(debug)  function, or
+    * use TurnOnDebug  or TurnOnDebugByName  function
+    * use this  turnOnDebug  operator The advantage of using this
+    operator is that you can turn on debug at given generations.
 
 "; 
 
-%feature("docstring") simuPOP::turnOnDebugOp::~turnOnDebugOp "
+%feature("docstring") simuPOP::turnOnDebug::~turnOnDebug "
 
 Description:
 
@@ -11464,15 +11473,15 @@ Description:
 
 Usage:
 
-    x.~turnOnDebugOp()
+    x.~turnOnDebug()
 
 "; 
 
-%feature("docstring") simuPOP::turnOnDebugOp::clone "
+%feature("docstring") simuPOP::turnOnDebug::clone "
 
 Description:
 
-    this function is very important
+    deep copy of a  turnOnDebug  operator
 
 Usage:
 
@@ -11480,12 +11489,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::turnOnDebugOp::apply "
+%feature("docstring") simuPOP::turnOnDebug::apply "
 
 Description:
 
-    apply to one population. It does not check if the operator is
-    activated.
+    apply the  turnOnDebug  operator to one population
 
 Usage:
 
@@ -11493,12 +11501,12 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::turnOnDebugOp::__repr__ "
+%feature("docstring") simuPOP::turnOnDebug::__repr__ "
 
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  turnOnDebug  operator
 
 Usage:
 
