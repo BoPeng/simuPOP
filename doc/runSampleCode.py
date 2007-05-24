@@ -5,7 +5,7 @@
 # to the instructions within.
 #
 # 
-import code, sys, os
+import code, sys, os, re
 
 if len(sys.argv) < 2 or sys.argv[1] == '-h':
     print 'Usage: runSampleCode scriptToRun'
