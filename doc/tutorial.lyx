@@ -15,11 +15,18 @@
   pdfpagemode=FullScreen
 }
 
+% current scheme does not support logi
+%\logo{\includegraphics[height=0.5cm]{MDA_logo.jpg}}
+
 \beamertemplateshadingbackground{red!5}{structure!5}
 
 \usepackage{times}
-\usepackage{beamerthemeshadow}
 %\usetheme{JuanLesPins}
+%\usepackage{beamerthemeshadow}
+\usetheme{Hannover}
+%\useoutertheme{tree}
+%\usecolortheme{beetle}
+\usefonttheme{structurebold}
 \end_preamble
 \language english
 \inputencoding auto
@@ -49,7 +56,7 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "basicstyle=\ttfamily,language=Python,showstringspaces=false,showspaces=false"
+\listings_params "basicstyle={\ttfamily\scriptsize},frame=tblr,frameround=tttt,language=Python,showspaces=false,showstringspaces=false"
 \tracking_changes false
 \output_changes false
 \author "Bo Peng" 
@@ -202,33 +209,8 @@ status open
 What is simuPOP
 \end_layout
 
-\begin_layout Subsection
-simuPOP overview
-\end_layout
-
 \begin_layout BeginFrame
-\begin_inset CharStyle Alert
-show_label true
-status inlined
-
-\begin_layout Standard
-simu
-\end_layout
-
-\end_inset
-
-lation of 
-\begin_inset CharStyle Alert
-show_label true
-status inlined
-
-\begin_layout Standard
-pop
-\end_layout
-
-\end_inset
-
-ulations
+What is simuPOP
 \end_layout
 
 \begin_layout Standard
@@ -242,7 +224,54 @@ An environment to manipulate populations, namely, a collection of individuals
 \end_layout
 
 \begin_layout BeginFrame
-What can you do with simuPOP
+What simuPOP can do
+\end_layout
+
+\begin_layout Itemize
+Start with a population with invidividuals with the same genotypic strcture
+\end_layout
+
+\begin_layout Itemize
+manipulate populations (copy, split, merge, save, load, modify genotype,
+ determine affection status, generate sample, ...)
+\end_layout
+
+\begin_layout Itemize
+evolve populations forward in time, subject to all sorts of demographic
+ and genetic forces such as population size changes, mutation, migration,
+ selection...
+\end_layout
+
+\begin_layout Standard
+A powerful scripting tool to manipulate and evolve populations.
+\end_layout
+
+\begin_layout BeginFrame
+Partial feature list
+\end_layout
+
+\begin_layout Itemize
+Scripting language...
+\end_layout
+
+\begin_layout Itemize
+Binary, short and long allele types
+\end_layout
+
+\begin_layout Itemize
+Arbitrary demographic changes
+\end_layout
+
+\begin_layout Itemize
+60+ operators supporting all sorts of 
+\end_layout
+
+\begin_layout BeginFrame
+structure of simuPOP
+\end_layout
+
+\begin_layout BeginFrame
+simuPOP - as a teaching tool
 \end_layout
 
 \begin_layout Itemize
@@ -251,6 +280,42 @@ Studying the evolution of whatever
 
 \begin_layout Itemize
 Manipulate populations
+\end_layout
+
+\begin_layout BeginFrame
+simuPOP - 
+\end_layout
+
+\begin_layout Standard
+Studying
+\end_layout
+
+\begin_layout Itemize
+The impact of selection
+\end_layout
+
+\begin_layout Itemize
+The impact of demographic changes
+\end_layout
+
+\begin_layout Itemize
+The evolution of diseases
+\end_layout
+
+\begin_layout Itemize
+...
+\end_layout
+
+\begin_layout Standard
+Generating sample.
+\end_layout
+
+\begin_layout Standard
+Generate huge populations...
+\end_layout
+
+\begin_layout Standard
+Handling HAPMAP data
 \end_layout
 
 \begin_layout BeginFrame
@@ -268,15 +333,11 @@ A few quick statistics
 \end_layout
 
 \begin_layout Itemize
-12 modules (short, long, binary) 
+6 modules (short, long, binary) 
 \begin_inset Formula $\times$
 \end_inset
 
- (standard, optimized) 
-\begin_inset Formula $\times$
-\end_inset
-
- (standard, parallel)
+ (standard, optimized)
 \end_layout
 
 \begin_layout Itemize
@@ -427,31 +488,6 @@ A real example
 
 \begin_layout Subsection
 Handling of HapMap data
-\end_layout
-
-\begin_layout Section
-\start_of_appendix
-A quick Python tutorial
-\end_layout
-
-\begin_layout Section
-Some more examples
-\end_layout
-
-\begin_layout Subsection
-Example 1
-\end_layout
-
-\begin_layout BeginFrame
-Manipulating of HapMap data
-\end_layout
-
-\begin_layout Subsection
-Example 2
-\end_layout
-
-\begin_layout Section
-Advanced topics
 \end_layout
 
 \begin_layout EndFrame
