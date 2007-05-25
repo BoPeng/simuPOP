@@ -91,4 +91,6 @@ for line in outFile.readlines():
             first = False
         else:
             print >> out, line,
+outFile.close()
+os.remove(outputFile)
     
