@@ -18,9 +18,13 @@
 \beamertemplateshadingbackground{red!5}{structure!5}
 
 \usepackage{times}
-\usepackage{beamerthemeshadow}
-%\usetheme{JuanLesPins}
+%\usepackage{beamerthemeshadow}
+\usetheme{Hannover}
+%\useoutertheme{tree}
+%\usecolortheme{beetle}
+\usefonttheme{structurebold}
 \end_preamble
+\options 10pt
 \language english
 \inputencoding auto
 \font_roman default
@@ -49,7 +53,7 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "basicstyle={\ttfamily\tiny},frame=tblr,frameround=tttt,language=Python,showspaces=false,showstringspaces=false"
+\listings_params "basicstyle={\ttfamily\scriptsize},frame=tblr,frameround=tttt,language=Python,showspaces=false,showstringspaces=false"
 \tracking_changes false
 \output_changes false
 \author "Bo Peng" 
@@ -216,7 +220,7 @@ simuPOP modules
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/details_load.log}
+\begin_inset Include \lstinputlisting{log/details_load.log}[basicstyle={\tiny\ttfamily}]
 preview false
 
 \end_inset
@@ -392,15 +396,71 @@ preview false
 \end_layout
 
 \begin_layout BeginFrame
-simuPOP modules
+Subpopulation manipulations
+\end_layout
+
+\begin_layout Subsection
+Information fields
 \end_layout
 
 \begin_layout BeginFrame
-population
+Information fields
+\end_layout
+
+\begin_layout Standard
+Pieces of information that can be attached to each individual, e.g.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+fitness:
+\family default
+ fitness of each individual, calculated by selectors
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+father_idx, mother_idx
+\family default
+: index of parents in the parental generation
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+old_index: 
+\family default
+index of an individual in the population where it is sampled
+\end_layout
+
+\begin_layout Standard
+Or, self-defined
+\end_layout
+
+\begin_layout Itemize
+birthday
+\end_layout
+
+\begin_layout Itemize
+geographic location
+\end_layout
+
+\begin_layout Itemize
+...
 \end_layout
 
 \begin_layout BeginFrame
-operator
+Information fields -- an example
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section
+Operators
 \end_layout
 
 \begin_layout BeginFrame
