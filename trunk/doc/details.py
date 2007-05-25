@@ -59,3 +59,8 @@ simu.evolve(
     end = 1
 )
 #end
+#file log/details_infofields.log
+pop = population(size=20, loci=[1], infoFields=['birthday'])
+InitByFreq(pop, alleleFreq=[0.2, .8])
+def 
+#end
