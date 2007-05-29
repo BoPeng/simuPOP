@@ -303,7 +303,7 @@ namespace simuPOP
 			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
 			/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
-			pyPenetrance( vectoru loci, PyObject* func, int ancestralGen=-1,
+			pyPenetrance(const vectoru & loci, PyObject* func, int ancestralGen=-1,
 				int stage=DuringMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr()):
