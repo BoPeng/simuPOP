@@ -513,32 +513,30 @@ class Doxy2SWIG:
                     print >> out, '%%ignore %s;\n' % entry['Name']
                 continue          
             print >> out, '%%feature("docstring") %s "\n' % entry['Name']
-            str = ''
             if entry.has_key('Description') and entry['Description'] != '':
-                str += 'Description:' + '\n'
-                str += '\n    %s\n\n' % self.format_text(entry['Description'], 0, 4)            
+                print >> out, 'Description:'
+                print >> out, '\n    %s\n' % self.format_text(entry['Description'], 0, 4)            
             if entry.has_key('Usage') and entry['Usage'] != '':
-                str += 'Usage:' + '\n'
-                str += '\n    %s\n\n' % self.format_text(entry['Usage'], 0, 6)
+                print >> out, 'Usage:'
+                print >> out, '\n    %s\n' % self.format_text(entry['Usage'], 0, 6)
             if entry.has_key('Arguments') and entry['Arguments'] != '':
-                str += 'Arguments:\n' + '\n'
+                print >> out, 'Arguments:\n'
                 for arg in entry['Arguments']:
-                    str += '    %-16s%s\n' % (arg['Name']+':', self.format_text(arg['Description'], 0, 20))
-                str += '\n'
+                    print >> out, '    %-16s%s' % (arg['Name']+':', self.format_text(arg['Description'], 0, 20))
+                print >> out
             if entry.has_key('Details') and entry['Details'] != '':
-                str += 'Details:' + '\n'
-                str += '\n    %s\n\n' % self.format_text(entry['Details'], 0, 4)
+                print >> out, 'Details:'
+                print >> out, '\n    %s\n' % self.format_text(entry['Details'], 0, 4)
             if entry.has_key('note') and entry['note'] != '':
-                str += 'Note:' + '\n'
-                str += '\n    %s\n\n' % self.format_text(entry['note'], 0, 4)
+                print >> out, 'Note:'
+                print >> out, '\n    %s\n' % self.format_text(entry['note'], 0, 4)
             if entry.has_key('Examples') and entry['Examples'] != '':
-                str += 'Examples:' + '\n'
-                str += '\n%s\n\n' % entry['Examples'].replace('\\', r'\\\\').replace('"', r'\"')
-            if len(str) > 2048:
-                #print 'Entry %s is too long (%d)' % (entry['Name'], len(str))
-                str = str[0:1970] + '...' + '\n\nPlease refer to the reference manual for more details.\n\n'
-            str += '\"; \n'
-            print >> out, str
+                print >> out, 'Examples:'
+                print >> out, '\n%s\n' % entry['Examples'].replace('\\', r'\\\\').replace('"', r'\"')
+            #if len(str) > 2048:
+            #    #print 'Entry %s is too long (%d)' % (entry['Name'], len(str))
+            #    str = str[0:1970] + '...' + '\n\nPlease refer to the reference manual for more details.\n\n'
+            print >> out, '\"; \n'
 
 
     def latexName(self, name):
