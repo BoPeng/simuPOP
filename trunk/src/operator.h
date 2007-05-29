@@ -972,18 +972,29 @@ namespace simuPOP
             /// a \c Pre- or \c PostMating Python operator that apply a function to each individual
 			/**
             This operator is similar to a \c pyOperator but works at the individual level. It expects
-            a function that accepts an individual and an optional parameter. When it is applied,
-            it passes each individual to this function.        
-            \param func a Python function that accepts an individual and perform desired operations
+            a function that accepts an individual, optional genotype at certain loci, and an optional
+			parameter. When it is applied, it passes each individual to this function. When 
+			\c infoFields is given, this function should return an array to fill these infoFields.
+			Otherwise, True/False is expected.
+
+			More specifically, \c func can be
+			\li func(ind) when neither loci nor param is given.
+			\li func(ind, genotype) when loci is given
+			\li func(ind, param) when param is given
+			\li func(ind, genotype, param) when both loci and param are given.
+			
+            \param func a Python function that accepts an individual and optional genotype and parameters.
 			\param param any Python object that will be passed to \c func after \c pop parameter.
                 Multiple parameters can be passed as a tuple.
+			\param infoFields if given, \c func is expected to return an array of the same length
+				and fill these \c infoFields of an individual.
 			*/
-			pyIndOperator(PyObject* func, PyObject* param=NULL,
+			pyIndOperator(PyObject* func, const vectoru & loci=vectoru(), PyObject* param=NULL,
 				int stage=PostMating, bool formOffGenotype=false,
 				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
 			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
-				m_func(func), m_param(param)
+				m_func(func), m_loci(loci), m_param(param)
 			{
 				if( !PyCallable_Check(func))
 					throw ValueError("Passed variable is not a callable Python function.");
@@ -1040,6 +1051,9 @@ namespace simuPOP
 			/// the function
 			PyObject * m_func;
 
+			/// loci
+			vectoru m_loci;
+			
 			/// parammeters
 			PyObject * m_param;
 	};
