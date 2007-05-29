@@ -3543,9 +3543,26 @@ Details:
     subpopulation sizes of the offspring generation. mode ,
     numOffspring , maxNumOffspring  can be used to specify how many
     offspring will be produced for each mating event. This mode
-    parameter ...
-
-Please refer to the reference manual for more details.
+    parameter can be one of
+    * MATE_NumOffspring:  fixed number of offspring for all families
+    at this generation. If numOffspring  is given, all generations use
+    this fixed number. If numOffspringFunc  is given, the number of
+    offspring at each generation is determined by the value returned
+    from this function.
+    * MATE_NumOffspringEachFamily:  each family can have its own
+    number of offspring. Usually, numOffspringFunc  is used to
+    determine the number of offspring of each family. If numOffspring
+    is used, MATE_NumOffspringEachFamily  is equivalent to
+    MATE_NumOffspring .
+    * MATE_GeometricDistribution:  a geometric distribution with
+    parameter numOffspring  is used to determine number of offspring
+    of each family.
+    * MATE_BinomialDistribution:  a binomial distribution with
+    parameter numOffspring  is used to determine number of offspring
+    of each family.
+    * MATE_UniformDistribution:  a uniform distribution  [a, b]   with
+    parameter numOffspring  (a) and maxNumOffspring  (b) is used to
+    determine number of offspring of each family.
 
 "; 
 
@@ -4582,9 +4599,10 @@ Details:
     evolution ( simulator::evolve ) and closed at the end. Output from
     several operators is allowed;
     * '>>>filename'  the same as '>>filename'  except that the file
-    will not be cleared at the beginning of evolution if it i...
-
-Please refer to the reference manual for more details.
+    will not be cleared at the beginning of evolution if it is not
+    empty;
+    * '>'  standard output (terminal);
+    * ''  supress output.
 
 "; 
 
@@ -5515,9 +5533,8 @@ Details:
     informationfields  are explained in class individual.
     Note that although a large number of member functions are
     provided, most of the operations are performed by operators .
-    These function...
-
-Please refer to the reference manual for more details.
+    These functions will only be useful when you need to manipulate a
+    population explicitly.
 
 "; 
 
@@ -5562,9 +5579,72 @@ Arguments:
                     loci=[3]  or lociPos=[[1,2],[1.5,3,5]]  for
                     loci=[2,3] .  simuPOP does not assume a unit for
                     these locations, although they are usually
-      ...
+                    intepreted as centiMorgans. The default values are
+                    1 , 2 , etc. on each chromosome.
+    subPop:         an array of subpopulation sizes. Default value is
+                    [size]  which means a single subpopulation of the
+                    whole population. If both size  and subPop  are
+                    are provided, subPop  should add up to size .
+    ancestralDepth: number of most recent ancestral generations to
+                    keep during evolution. Default to 0 , which means
+                    only the current generation will be available. You
+                    can set it to a positive number m to keep the
+                    latest m generations in the population, or -1  to
+                    keep all ancestral populations. Note that keeping
+                    track of all ancestral populations may quickly
+                    exhaust your computer RAM. If you really need to
+                    do that, use  savePopulation  operator to save
+                    each generation to a file is a much better choice.
+    alleleNames:    an array of allele names. The first element should
+                    be given to invalid/unknown allele. For example,
+                    for a locus with alleles A,C,T,G, you can specify
+                    alleleNames  as ('_','A','C','T','G') . Note that
+                    simuPOP uses 1,2,3,4  internally and these names
+                    will only be used for display purpose.
+    lociNames:      an array or a matrix (separated by chromosomes) of
+                    names for each loci. Default to \"locX-X\"  where
+                    X-X  is a chromosome-loci index starting from 1.
+    maxAllele:      maximum allele number. Default to the max allowed
+                    allele states of current library (standard or long
+                    allele version) maximum allele state for the whole
+                    population. This will set a cap for all loci. For
+                    individual locus, you can specify maxAllele in
+                    mutation models, which can be smaller than global
+                    maxAllele but not larger. Note that this number is
+                    the number of allele states minus 1 since allele
+                    number starts from 0.
+    infoFields:     name of information fields that will be attached
+                    to each individual. For example, if you need to
+                    record the parents of each individual you will
+                    need two, if you need to record the age of
+                    individual, you need an additional one. Other
+                    possibilities include offspring IDs etc. Note that
+                    you have to plan this ahead of time since, for
+                    example, tagger will need to know what info unit
+                    to use. Default to none .
 
-Please refer to the reference manual for more details.
+Details:
+
+    FIXME: Details of constructure is missing.This is techniquely the
+    __init__  function of the population object.
+
+Examples:
+
+>>> # a Wright-Fisher population
+>>> WF = population(size=100, ploidy=1, loci=[1])
+>>> 
+>>> # a diploid population of size 10
+>>> # there are two chromosomes with 5 and 7 loci respectively
+>>> pop = population(size=10, ploidy=2, loci=[5, 7], subPop=[2, 8])
+>>> 
+>>> # a population with SNP markers (with names A,C,T,G
+>>> # range() are python functions
+>>> pop = population(size=5, ploidy=2, loci=[5,10],
+...     lociPos=[range(0,5),range(0,20,2)],
+...     alleleNames=['A','C','T','G'],
+...     subPop=[2,3], maxAllele=3)
+>>>
+
 
 "; 
 
@@ -7039,24 +7119,34 @@ Description:
 
 Usage:
 
-    pyIndOperator(*func, *param=NULL, stage=PostMating,
+    pyIndOperator(*func, loci, *param=NULL, stage=PostMating,
       formOffGenotype=False, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
 Arguments:
 
     func:           a Python function that accepts an individual and
-                    perform desired operations
+                    optional genotype and parameters.
     param:          any Python object that will be passed to func
                     after pop  parameter. Multiple parameters can be
                     passed as a tuple.
+    infoFields:     if given, func  is expected to return an array of
+                    the same length and fill these infoFields  of an
+                    individual.
 
 Details:
 
     This operator is similar to a  pyOperator  but works at the
-    individual level. It expects a function that accepts an individual
-    and an optional parameter. When it is applied, it passes each
-    individual to this function.
+    individual level. It expects a function that accepts an
+    individual, optional genotype at certain loci, and an optional
+    parameter. When it is applied, it passes each individual to this
+    function. When infoFields  is given, this function should return
+    an array to fill these infoFields. Otherwise, True/False is
+    expected.More specifically, func  can be
+    * func(ind) when neither loci nor param is given.
+    * func(ind, genotype) when loci is given
+    * func(ind, param) when param is given
+    * func(ind, genotype, param) when both loci and param are given.
 
 "; 
 
@@ -7513,9 +7603,24 @@ Details:
     * func(off)  when stage=DuringMating  and passOffspringOnly=True ,
     and without setting param ;
     * func(pop, off, dad, mom, param)  when stage=DuringMating  and
-    passOff...
+    passOffspringOnly=False , with param ;
+    * func(off, param)  when stage=DuringMating  and
+    passOffspringOnly=True , with param . For Pre-  and PostMating
+    usages, a population and an optional parameter is passed to the
+    given function. For DuringMating  usages, population, offspring,
+    its parents and an optional parameter are passed to the given
+    function. Arbitrary operations can be applied to the population
+    and offspring (if stage=DuringMating ).
 
-Please refer to the reference manual for more details.
+Note:
+
+    * Output to output  or outputExpr  is not supported. That is to
+    say, you have to open/close/append to files explicitly in the
+    Python function.
+    * This operator can be applied Pre- , During-  or Post-  mating
+    and is applied PostMating  by default. For example, if you would
+    like to examine the fitness values set by a selector, a PreMating
+    Python operator should be used.
 
 "; 
 
@@ -9388,9 +9493,8 @@ Details:
     of such a terminator is a fixation-checker.
     Finally, a simulator can be saved to a file in the format of 'txt'
     , 'bin' , or 'xml' . So we can stop a simulation and resume it at
-    another time or on another machine. It is a...
-
-Please refer to the reference manual for more details.
+    another time or on another machine. It is also a good idea to save
+    a snapshot of a simulation every several hundred generations.
 
 "; 
 
@@ -10062,9 +10166,65 @@ Arguments:
                     of individuausl heterozygous will be applyd for
                     each allele. Expected heterozygosity will also be
                     calculuate and put in heteroFreq[locus][0] (since
-                    allele 0 is not...
+                    allele 0 is not used.)
+    homoFreq:       an array of loci at which homozygosity number and
+                    frequcies will be calculated
+    expHetero:      an array of loci at which expected heterozygosity
+                    will be calculated.
+    haploFreq:      a matrix of haplotypes (allele sequence) to count
+    LD:             apply LD, LD' and r2, given LD=[ [locus1 locus2],
+                    [ locus1 locus2 allele1 allele2], ,...] If two
+                    numbers are given, D, D' and r2 overall possible
+                    allele pairs will be calculated and saved as AvgLD
+                    etc. If four numbers are given, D, D' and r2 using
+                    specified alleles are provided. If only one item
+                    is specified, the outer [] can be ignored. I.e.,
+                    LD=[locus1 locus2] is acceptable.
+    LD_param::      a dictionary of parameters to LD statistics. Can
+                    have key stat: a list of statistics to calculate.
+                    default to all. if any statistics is specified,
+                    only those specified will be calculated. i.e.:
+                    LD_param={'stat':['LD']} LD: True/False, shortcut
+                    for 'stat':['LD'] LD_prime: True/False, shortcut
+                    for 'stat':['LD_prime'] ... subPop: True/False:
+                    whether or not calculate statistics for
+                    subpopulations midValues: True/False: whether or
+                    not keep intermediate results
+    Fst:            calculate Fst. Fis and Fit will be given as a side
+                    product.
+    relGroups:      calculated pairwise relatedness between groups.
+                    relGroups can be in the form of either
+                    [[1,2,3],[4,5],[7,8]] (gourps of individuals) or
+                    [1,3,4] (use subpopulations).
+    relMethod:      method used to calculate relatedness. Can be
+                    either REL_Queller or REL_Lynch.
+    relLoci:        loci on which relatedness calues are calculated.
+    hasPhase:       if a/b and b/a are the same genotype. default is
+                    false.
+    midValues:      whether or not post intermediate results. Default
+                    to false. For example, Fst will need to calculate
+                    allele frequency, if midValues is set to true,
+                    allele frequencies will be posted as well. This
+                    will help debuging and sometimes derived
+                    statistics.
+    others:         there is NO output for this operator. other
+                    parameters please see help(baseOperator.__init__)
 
-Please refer to the reference manual for more details.
+Details:
+
+    each item is the locus index followed by allele pairs. format:
+    haploFreq = [ [ 0,1,2 ], [1,2] ]All haplotypes on loci 012, 12
+    will be counted. If only one haplotype is specified, the outer []
+    can be ommited. I.e., haploFreq=[0,1] is acceptable. format Fst =
+    [ 0, 1 ] Fst calculated at locus 0 and 1. Since any allele can be
+    used to calculate Fst, Fst[0] will be the average over all alleles
+    as suggested by Weir and Cockerham.
+
+Note:
+
+    previous provide 'search for all allele/genotype' option but this
+    has proven to be troublesome. In this version, everything should
+    be explicitly specified.
 
 "; 
 
