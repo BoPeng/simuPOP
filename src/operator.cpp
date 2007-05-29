@@ -379,32 +379,103 @@ namespace simuPOP
 
 	bool pyIndOperator::apply(population& pop)
 	{
+		// if loci is given
+		vectora alleles;
+		PyObject * numArray;
+		UINT pld = pop.ploidy();
+		//
+		if (!m_loci.empty())
+		{
+			alleles.resize(m_loci.size()*pld);
+			numArray = Allele_Vec_As_NumArray(alleles.begin(), alleles.end());
+		}
+		vectoru infoIdx(infoSize());
+		if (!infoIdx.empty())
+		{
+			for(size_t i = 0; i < infoIdx.size(); ++i)
+				infoIdx[i] = pop.infoIdx(infoField(i));
+		}
 		// call the python function, pass the each individual to it.
 		// get pop object
-		for(size_t i=0; i<pop.popSize(); ++i)
+		for(population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
 		{
-			PyObject* indObj = pyIndObj(static_cast<void*>(&pop.ind(i)));
+			PyObject* indObj = pyIndObj(static_cast<void*>(&*it));
 			// if pop is valid?
 			if(indObj == NULL)
 				throw SystemError("Could not pass population to the provided function. \n"
 					"Compiled with the wrong version of SWIG?");
 
+			// loci
+			if (!m_loci.empty())
+			{
+				for(size_t i=0, iEnd=m_loci.size(), j=0; i < iEnd; ++i)
+					for(UINT p=0; p < pld; ++p)
+						alleles[j++] = it->allele(m_loci[i], p);
+			}
 			// parammeter list, ref count increased
 			bool resBool;
-			// parenthesis is needed since PyCallFuncX are macros.
-			if( m_param == NULL)
+			vectorf resArray;
+
+			// if infoFields is not given.
+			if (infoSize() == 0)
 			{
-				PyCallFunc(m_func, "(O)", indObj, resBool, PyObj_As_Bool);
+				// parenthesis is needed since PyCallFuncX are macros.
+				if( m_param == NULL)
+				{
+					if (m_loci.empty())
+					{
+						PyCallFunc(m_func, "(O)", indObj, resBool, PyObj_As_Bool);
+					}
+					else
+					{
+						PyCallFunc2(m_func, "(OO)", indObj, numArray, resBool, PyObj_As_Bool);
+					}
+				}
+				else
+				{
+					if (m_loci.empty())
+					{
+						PyCallFunc2(m_func, "(OO)", indObj, m_param, resBool, PyObj_As_Bool);
+					}
+					else
+					{
+						PyCallFunc3(m_func, "(OOO)", indObj, numArray, m_param, resBool, PyObj_As_Bool);
+					}
+				}
+				if(!resBool)
+					return false;
 			}
 			else
 			{
-				PyCallFunc2(m_func, "(OO)", indObj, m_param, resBool, PyObj_As_Bool);
+				// parenthesis is needed since PyCallFuncX are macros.
+				if( m_param == NULL)
+				{
+					if (m_loci.empty())
+					{
+						PyCallFunc(m_func, "(O)", indObj, resArray, PyObj_As_Array);
+					}
+					else
+					{
+						PyCallFunc2(m_func, "(OO)", indObj, numArray, resArray, PyObj_As_Array);
+					}
+				}
+				else
+				{
+					if (m_loci.empty())
+					{
+						PyCallFunc2(m_func, "(OO)", indObj, m_param, resArray, PyObj_As_Array);
+					}
+					else
+					{
+						PyCallFunc3(m_func, "(OOO)", indObj, numArray, m_param, resArray, PyObj_As_Array);
+					}
+				}
+				DBG_FAILIF(resArray.size() != infoIdx.size(), ValueError,
+					"Returned array should have the same size as given information fields");
+				for( size_t i = 0; i < infoSize(); ++i)
+					it->setInfo(resArray[i], infoIdx[i]);
 			}
-
 			Py_DECREF(indObj);
-
-			if(!resBool)
-				return false;
 		}
 		return true;
 	}
