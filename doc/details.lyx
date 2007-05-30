@@ -463,6 +463,91 @@ Information fields -- an example
 Operators
 \end_layout
 
+\begin_layout Subsection
+Python Operators
+\end_layout
+
+\begin_layout Standard
+The most flexible operators that can perform any operation, but are less
+ efficient.
+\end_layout
+
+\begin_layout Standard
+The idea: user provide a function with specified input and output, simuPOP
+ calls this function during evolution.
+\end_layout
+
+\begin_layout BeginFrame
+Python operator
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+func(pop [, param])
+\end_layout
+
+\begin_layout BeginFrame
+Python Individual operator
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+func(ind [, genotype] [, param]), return True/False or an array
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ind
+\family default
+: individual
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+genotype
+\family default
+: if parameter loci is given, genotype at these loci are passed to the function
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+param
+\family default
+: if parameter param is given, param passed from simuPOP
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+return
+\family default
+: if parameter infoFields is given, assign return values to these information
+ fields
+\end_layout
+
+\begin_layout BeginFrame
+An example of 
+\family typewriter
+pyIndOperator
+\end_layout
+
+\begin_layout BeginFrame
+Specialized Python operators: pyPenetrance
+\end_layout
+
+\begin_layout BeginFrame
+pySelector
+\end_layout
+
+\begin_layout Section
+Simulator
+\end_layout
+
 \begin_layout BeginFrame
 simulator
 \end_layout
