@@ -87,7 +87,9 @@ Ph.D.
 \newline
 Department of Epidemiology
 \newline
-UT MD Anderson Cancer Center
+U.T.
+ M.D.
+ Anderson Cancer Center
 \newline
 Houston, TX
 \end_layout
@@ -98,7 +100,9 @@ June.
 \newline
 Programmers' Cross Training
 \newline
-UT MD Anderson Cancer Center
+U.T.
+ M.D.
+ Anderson Cancer Center
 \end_layout
 
 \begin_layout Standard
@@ -213,14 +217,38 @@ What is simuPOP
 What is simuPOP
 \end_layout
 
+\begin_layout Block
+\begin_inset ERT
+status collapsed
+
 \begin_layout Standard
-simuPOP is a forward-time population genetics simulation environment, it
- provides
+
+{
+\backslash
+alert{simu}lation of 
+\backslash
+alert{pop}ulations}
 \end_layout
 
-\begin_layout Itemize
-An environment to manipulate populations, namely, a collection of individuals
- with the same genotypic structure.
+\end_inset
+
+simuPOP is a forward-time population genetics simulation program that provides
+ an environment to manipulate populations and a machanism to evolve populations
+ forward in time, subject to various genetic and demographic effects.
+\end_layout
+
+\begin_layout Uncover
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+[2]
+\end_layout
+
+\end_inset
+
+Provided as python modules
 \end_layout
 
 \begin_layout BeginFrame
