@@ -16,16 +16,26 @@
 }
 
 % current scheme does not support logi
-%\logo{\includegraphics[height=0.5cm]{MDA_logo.jpg}}
+\logo{\includegraphics[height=0.8cm]{MDA_logo.jpg}}
+\usepackage{tikz}
+
+\newcommand{\inda}[3]{
+  #2 node[circle,shade,ball color=#3, scale=0.5](#1){}
+}
+
+
+
 
 \beamertemplateshadingbackground{red!5}{structure!5}
 
 \usepackage{times}
 %\usetheme{JuanLesPins}
 %\usepackage{beamerthemeshadow}
-\usetheme{Hannover}
+%\usetheme{Hannover}
+\usetheme[hideothersubsections]{PaloAlto}
 %\useoutertheme{tree}
-%\usecolortheme{beetle}
+%\usecolortheme{beaver}
+\usecolortheme{sidebartab}
 \usefonttheme{structurebold}
 \end_preamble
 \language english
@@ -210,68 +220,674 @@ status open
 \end_layout
 
 \begin_layout Section
-What is simuPOP
+Forward-time simulations
 \end_layout
 
 \begin_layout BeginFrame
-What is simuPOP
+Why population genetics simulations are needed
 \end_layout
 
-\begin_layout Block
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
-{
-\backslash
-alert{simu}lation of 
-\backslash
-alert{pop}ulations}
-\end_layout
-
-\end_inset
-
-simuPOP is a forward-time population genetics simulation program that provides
- an environment to manipulate populations and a machanism to evolve populations
- forward in time, subject to various genetic and demographic effects.
-\end_layout
-
-\begin_layout Uncover
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
 \begin_layout Standard
 
-[2]
+<1->
 \end_layout
 
 \end_inset
 
-Provided as python modules
+High cost of genetic data collection
+\color blue
+
+\newline
+Simulations are relatively inexpensive
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<2->
+\end_layout
+
+\end_inset
+
+Inaccessibility to ancestral information
+\color blue
+
+\newline
+Simulations can simulate very long evolutionary process
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<3->
+\end_layout
+
+\end_inset
+
+Complexity of real-world genetic effect
+\color blue
+
+\newline
+Simulations can control the number and genetic effects of disease susceptibility
+ loci (DSL)
+\end_layout
+
+\begin_layout BeginFrame
+Two major simulation methods
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+vspace{-0.8cm} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5.0cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+vspace{-.5cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+{Backward-time}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Start from a sample with unknown genotype
+\end_layout
+
+\begin_layout Itemize
+Coalesce individuals until the most recent common ancestor of all individuals
+ is found
+\end_layout
+
+\begin_layout Itemize
+Starting from the MRCA, proceed forward in time and fill the genotype of
+ each individual
+\end_layout
+
+\end_deeper
+\begin_layout Column
+5.0cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+only<2>{
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+{Forward-time}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Start from an initial population
+\end_layout
+
+\begin_layout Itemize
+Evolve forward in time, generation by generation, subject to certain number
+ of genetic and/or demographic effects
+\end_layout
+
+\begin_layout Itemize
+Samples are collected from the last several generations
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Comparison between forward- and backward-time simulations
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+vspace{-0.8cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+{Backward-time}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset ERT
+status inlined
+
+\begin_layout Standard
+
+<1->
+\end_layout
+
+\end_inset
+
+Sample based, efficient.
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status inlined
+
+\begin_layout Standard
+
+<2->
+\end_layout
+
+\end_inset
+
+Limited selection, recombination models and mating schemes
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status inlined
+
+\begin_layout Standard
+
+<3->
+\end_layout
+
+\end_inset
+
+Can not study population properties, or properties of ancestral generations
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status inlined
+
+\begin_layout Standard
+
+<4->
+\end_layout
+
+\end_inset
+
+Used mostly for sample generation
+\end_layout
+
+\end_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+{Forward-time}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset ERT
+status inlined
+
+\begin_layout Standard
+
+<1->
+\end_layout
+
+\end_inset
+
+Population based, inefficient.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status inlined
+
+\begin_layout Standard
+
+<2->
+\end_layout
+
+\end_inset
+
+Can simulate almost arbitrary evolutionary scenarios
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status inlined
+
+\begin_layout Standard
+
+<3->
+\end_layout
+
+\end_inset
+
+Can study population properties and ancestral generations
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status inlined
+
+\begin_layout Standard
+
+<4->
+\end_layout
+
+\end_inset
+
+Wider application area
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout BeginFrame
+On the simulations of complex human diseases
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+{Backward-time}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<1->
+\end_layout
+
+\end_inset
+
+Haploid simulation only
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<2->
+\end_layout
+
+\end_inset
+
+Additive selection and penetrance models
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<3->
+\end_layout
+
+\end_inset
+
+One disease susceptibility locus
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<4->
+\end_layout
+
+\end_inset
+
+Generate independent samples
+\end_layout
+
+\end_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+{Forward-time}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<1->
+\end_layout
+
+\end_inset
+
+No limit on ploidy
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<2->
+\end_layout
+
+\end_inset
+
+Arbitrary selection and penetrance models
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<3->
+\end_layout
+
+\end_inset
+
+Multiple DSL with interaction
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<4->
+\end_layout
+
+\end_inset
+
+Simulate populations, which allows more flexible sampling
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Section
+What is simuPOP
+\end_layout
+
+\begin_layout BeginFrame
+simuPOP is ...
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+{
+\backslash
+bf A 
+\backslash
+alert<3>{forward-time} population genetics 
+\backslash
+alert<2>{simulation}  
+\backslash
+alert<4>{environment}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status inlined
+
+\begin_layout Standard
+
+<2->
+\end_layout
+
+\end_inset
+
+A population genetics simulation program
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status inlined
+
+\begin_layout Standard
+
+<3->
+\end_layout
+
+\end_inset
+
+Not coalescent-based
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status inlined
+
+\begin_layout Standard
+
+<4->
+\end_layout
+
+\end_inset
+
+Based on an
+\color none
+ object-oriented scripting language (Python)
 \end_layout
 
 \begin_layout BeginFrame
 What simuPOP can do
 \end_layout
 
-\begin_layout Itemize
-Start with a population with invidividuals with the same genotypic strcture
+\begin_layout Standard
+simuPOP provides 
 \end_layout
 
 \begin_layout Itemize
-manipulate populations (copy, split, merge, save, load, modify genotype,
- determine affection status, generate sample, ...)
+a large number of objects and functions to manipulate populations, 
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+copy, split, merge, save, load, modify genotype, determine affection status,
+ generate sample, ...
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
-evolve populations forward in time, subject to all sorts of demographic
- and genetic forces such as population size changes, mutation, migration,
- selection...
+and a mechanism to evolve populations forward in time
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+subject to all sorts of demographic and genetic forces such as population
+ size changes, mutation, migration, selection...
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Why is simuPOP needed?
+\end_layout
+
+\begin_layout BeginFrame
+How to use simuPOP
 \end_layout
 
 \begin_layout Standard
-A powerful scripting tool to manipulate and evolve populations.
+Just like R/S-Plus or Matlab, you can
+\end_layout
+
+\begin_layout Itemize
+Interactively manipulate populations and evolve them
+\end_layout
+
+\begin_layout Itemize
+Write a script (in Python)
+\end_layout
+
+\begin_layout Itemize
+Run existing script
 \end_layout
 
 \begin_layout BeginFrame
@@ -295,55 +911,32 @@ Arbitrary demographic changes
 \end_layout
 
 \begin_layout BeginFrame
-structure of simuPOP
+Oohm, Python??
+\end_layout
+
+\begin_layout Standard
+The core of simuPOP is written in C++, and is provided (wrapped) as Python
+ modules.
+\end_layout
+
+\begin_layout Itemize
+Python is easy to learn
+\end_layout
+
+\begin_layout Itemize
+Python is easy to write and maintain
+\end_layout
+
+\begin_layout Itemize
+Python is 
 \end_layout
 
 \begin_layout BeginFrame
-simuPOP - as a teaching tool
-\end_layout
 
-\begin_layout Itemize
-Studying the evolution of whatever
-\end_layout
-
-\begin_layout Itemize
-Manipulate populations
-\end_layout
-
-\begin_layout BeginFrame
-simuPOP - 
 \end_layout
 
 \begin_layout Standard
-Studying
-\end_layout
 
-\begin_layout Itemize
-The impact of selection
-\end_layout
-
-\begin_layout Itemize
-The impact of demographic changes
-\end_layout
-
-\begin_layout Itemize
-The evolution of diseases
-\end_layout
-
-\begin_layout Itemize
-...
-\end_layout
-
-\begin_layout Standard
-Generating sample.
-\end_layout
-
-\begin_layout Standard
-Generate huge populations...
-\end_layout
-
-\begin_layout Standard
-Handling HAPMAP data
 \end_layout
 
 \begin_layout BeginFrame
@@ -376,6 +969,449 @@ A few quick statistics
 ...
 \end_layout
 
+\begin_layout Section
+Forward-time population generation
+\end_layout
+
+\begin_layout Subsection
+simuPOP - a forward-time simulation environment
+\end_layout
+
+\begin_layout Itemize
+
+\end_layout
+
+\begin_layout BeginFrame
+A simple example
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+vspace{0.3cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+>>> from simuPOP import *
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+>>> from simuRPy import *
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+>>> simu=simulator(
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+...
+   population(size=1000,loci=[2]), 
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+...
+   randomMating(),rep=3 )
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+>>> simu.evolve(
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+...
+   preOps=[initByValue([1,2,2,1])],
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+...
+   ops=[ 
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+...
+     recombinator(rate=0.1),
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+...
+     stat(LD=[0,1]),
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+...
+     varPlotter("LD[0][1]",numRep=3,  
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+...
+       ylim=[0,.25],xlab="generation", 
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+...
+       ylab="D",title="LD Decay")], 
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+\size footnotesize
+...
+   end=100 )
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout BeginPlainFrame
+A simple example
+\end_layout
+
+\begin_layout FrameSubtitle
+Demonstration
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+animate<2-9>
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+vspace{-1cm}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<1>{
+\backslash
+includegraphics[width=8cm,height=8cm]{ld10.pdf}}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<2>{
+\backslash
+includegraphics[width=8cm,height=8cm]{ld20.pdf}}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<3>{
+\backslash
+includegraphics[width=8cm,height=8cm]{ld30.pdf}}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<4>{
+\backslash
+includegraphics[width=8cm,height=8cm]{ld40.pdf}}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<5>{
+\backslash
+includegraphics[width=8cm,height=8cm]{ld50.pdf}}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<6>{
+\backslash
+includegraphics[width=8cm,height=8cm]{ld60.pdf}}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<7>{
+\backslash
+includegraphics[width=8cm,height=8cm]{ld70.pdf}}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<8>{
+\backslash
+includegraphics[width=8cm,height=8cm]{ld80.pdf}}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<9>{
+\backslash
+includegraphics[width=8cm,height=8cm]{ld90.pdf}}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<10>{
+\backslash
+includegraphics[width=8cm,height=8cm]{ld100.pdf}}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+3cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+vspace{1cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Update at every 10 generations
+\end_layout
+
+\begin_layout Itemize
+LD=0.25 before generation 0
+\end_layout
+
+\begin_layout Itemize
+LD calculated at the end of each generation
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+vspace{1cm}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+begin{flushright}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hyperlink{ReplayLD}{
+\backslash
+beamerbutton{Replay}}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hypertarget<1>{ReplayLD}{}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+end{flushright}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
 \begin_layout Subsection
 A simple example
 \end_layout
@@ -446,8 +1482,570 @@ simuPOP components
 Population object
 \end_layout
 
-\begin_layout BeginPlainFrame
-Illustration
+\begin_layout BeginFrame
+Structure of a population
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+begin{tikzpicture}[scale=0.8]
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+begin{small}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+fill[blue, very nearly transparent] (-4, -7.5) rectangle +(7, 7);
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {-3,-2.5,...,1} 
+\backslash
+path 
+\backslash
+inda{a
+\backslash
+x}{(
+\backslash
+x, -2)}{green};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {-3,-2.5,...,1} 
+\backslash
+path 
+\backslash
+inda{b
+\backslash
+x}{(
+\backslash
+x, -2.5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {-3,-2.5,...,2} 
+\backslash
+path 
+\backslash
+inda{c
+\backslash
+x}{(
+\backslash
+x, -3.5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {-3,-2.5,...,2} 
+\backslash
+path 
+\backslash
+inda{d
+\backslash
+x}{(
+\backslash
+x, -4)}{green};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {-3,-2.5,...,2} 
+\backslash
+path 
+\backslash
+inda{e
+\backslash
+x}{(
+\backslash
+x, -5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {-3,-2.5,...,2} 
+\backslash
+path 
+\backslash
+inda{f
+\backslash
+x}{(
+\backslash
+x, -5.5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {-1, 0.5} 
+\backslash
+path 
+\backslash
+inda{a
+\backslash
+x}{(
+\backslash
+x, -4)}{red};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {1.5} 
+\backslash
+path 
+\backslash
+inda{d
+\backslash
+x}{(
+\backslash
+x, -3.5)}{red};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {-1.5, 0} 
+\backslash
+path 
+\backslash
+inda{d
+\backslash
+x}{(
+\backslash
+x, -5)}{red};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {-2, 0, 2} 
+\backslash
+path 
+\backslash
+inda{d
+\backslash
+x}{(
+\backslash
+x, -5.5)}{red};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {0} 
+\backslash
+path 
+\backslash
+inda{a
+\backslash
+x}{(
+\backslash
+x, -2)}{red};
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {-3.25, -1.75, 0.25, 2.25} 
+\end_layout
+
+\begin_layout Standard
+
+    
+\backslash
+draw [thick, yellow!80!gray] (
+\backslash
+x, -5.75) -- (
+\backslash
+x, -4.75);
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {-3.25, -2.25, 0.25, 2.25} 
+\end_layout
+
+\begin_layout Standard
+
+    
+\backslash
+draw [thick, yellow!80!gray] (
+\backslash
+x, -4.25) -- (
+\backslash
+x, -3.25);
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+x in {-3.25, -0.25, 1.25} 
+\backslash
+draw [thick, yellow!80!gray] (
+\backslash
+x, -2.75) -- (
+\backslash
+x, -1.75);
+\end_layout
+
+\begin_layout Standard
+
+ %
+\backslash
+foreach 
+\backslash
+y in {-5.75, -4.75, -4.25, -3.25} 
+\backslash
+draw [thick, yellow!80!gray] (-3.25, 
+\backslash
+y) -- (2.25, 
+\backslash
+y);
+\end_layout
+
+\begin_layout Standard
+
+ %
+\backslash
+foreach 
+\backslash
+y in {-2.75, -1.75} 
+\backslash
+draw [thick, yellow!80!gray] (-3.25, 
+\backslash
+y) -- (1.25, 
+\backslash
+y);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+only<2->{
+\backslash
+draw (3, -5.25) node (t1) [right]{Current generation};}
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+only<6->{
+\backslash
+draw (3, -3.75) node (t1) [right]{Ancestral generation 1};}
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+only<7->{
+\backslash
+draw (3, -2.25) node (t1) [right]{Ancestral generation 2};}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+path 
+\backslash
+inda{s1}{(-3, 0.5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+path 
+\backslash
+inda{s1}{(-3, 0)}{red};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+draw (-2.5, 0.5) node(s1) [right]{Unaffected}
+\end_layout
+
+\begin_layout Standard
+
+  (-2.5, 0) node(s2) [right]{Affected};
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+draw (-3.5, -6.5) node [right]{gen = 2, numAffected = 5, ...};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+fill[blue, very nearly transparent] (-3.5, -7)rectangle +(6, 1);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+only<8->{
+\backslash
+draw (3, -6.5) node (t1) [right]{Population variables};}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+uncover<2-5>{
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+fill[red, very nearly transparent] (-3.5, -6) rectangle +(6, 1.5);
+\end_layout
+
+\begin_layout Standard
+
+ }
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+uncover<3>{
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+fill[blue, very nearly transparent] (-3.25, -5.75)rectangle +(1.5, 1);
+\end_layout
+
+\begin_layout Standard
+
+ }
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+uncover<4>{
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+fill[blue, very nearly transparent] (-1.75, -5.75)rectangle +(2, 1);
+\end_layout
+
+\begin_layout Standard
+
+ }
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+uncover<5>{
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+fill[blue, very nearly transparent] (0.25, -5.75)rectangle +(2, 1);
+\end_layout
+
+\begin_layout Standard
+
+ }
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+uncover<6>{
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+fill[red, very nearly transparent] (-3.5, -4.5)rectangle +(6, 1.5);
+\end_layout
+
+\begin_layout Standard
+
+ }
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+uncover<7>{
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+fill[red, very nearly transparent] (-3.5, -3)rectangle +(5, 1.5);
+\end_layout
+
+\begin_layout Standard
+
+ }
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+end{small}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
@@ -459,7 +2057,476 @@ Genotypic structure
 \end_layout
 
 \begin_layout BeginFrame
-Individuals
+Structure of Individuals
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+begin{tikzpicture}[scale=0.8]
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+begin{small}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+fill[blue, very nearly transparent] (-0.5, -6.5) rectangle +(8, 6.5);
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+draw (-0.5, 0.5) node [right]{Assume ploidy = 2, maxAllele = 1};
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+fill[red, very nearly transparent] (0, -1.5) rectangle +(7.25, 1);
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+draw [thick, yellow!80!gray] (0, -1) -- (7.25, -1);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (0.0, -0.25) node [right]{
+\backslash
+tiny 0};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (0.75, -0.25) node [right]{
+\backslash
+tiny 1};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (1.5, -0.25) node [right]{
+\backslash
+tiny 2};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (3.0, -0.25) node [right]{
+\backslash
+tiny 3};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (3.75, -0.25) node [right]{
+\backslash
+tiny 4};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (6.0, -0.25) node [right]{
+\backslash
+tiny 5};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (6.75, -0.25) node [right]{
+\backslash
+tiny 6};
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+cell in {0.0,  3.75, 6}  
+\backslash
+draw (
+\backslash
+cell, -0.75) node [right]{0};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+cell in {0.75, 1.5, 3,  6.75}  
+\backslash
+draw (
+\backslash
+cell, -0.75) node [right]{1};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+cell in {0.0, 0.75,  6}  
+\backslash
+draw (
+\backslash
+cell, -1.25) node [right]{0};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+cell in {1.5, 3, 3.75,  6.75}  
+\backslash
+draw (
+\backslash
+cell, -1.25) node [right]{1};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+uncover<2->{
+\backslash
+draw (7.75, -1) node [right]{Chromosome 0};}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (0.0, -1.75) node [right]{
+\backslash
+tiny 0};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (2.25, -1.75) node [right]{
+\backslash
+tiny 1};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (3, -1.75) node [right]{
+\backslash
+tiny 2};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (3.75, -1.75) node [right]{
+\backslash
+tiny 3};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (4.5, -1.75) node [right]{
+\backslash
+tiny 4};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (5.25, -1.75) node [right]{
+\backslash
+tiny 5};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+fill[red, very nearly transparent] (0, -3) rectangle +(5.75, 1);
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+draw [thick, yellow!80!gray] (0, -2.5) -- (5.75, -2.5);
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+cell in {0.0,  3, 3.75, 4.5}  
+\backslash
+draw (
+\backslash
+cell, -2.25) node [right]{0};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+cell in { 2.25, 5.25}  
+\backslash
+draw (
+\backslash
+cell, -2.25) node [right]{1};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+cell in { 2.25, 5.25, 4.5}  
+\backslash
+draw (
+\backslash
+cell, -2.75) node [right]{0};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+cell in {0.0,  3, 3.75}  
+\backslash
+draw (
+\backslash
+cell, -2.75) node [right]{1};
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+uncover<3->{
+\backslash
+draw (7.75, -2.5) node [right]{Chromosome 1};}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw (0, -3.6) node [right]{Male};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+uncover<4->{
+\backslash
+draw (7.75, -3.6) node [right]{Sex};} 
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+path 
+\backslash
+inda{s1}{(0.25, -4.5)}{red};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+draw (0.75, -4.5) node [right]{Affected};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+uncover<5->{
+\backslash
+draw (7.75, -4.5) node [right]{Affection status};}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+fill[red, very nearly transparent] (0, -6) rectangle +(6.8, 0.75);
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+draw (0, -5.65) node [right]{fitness};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+draw (2, -5.65) node [right]{father
+\backslash
+_id};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+draw (4, -5.65) node [right]{...};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+uncover<6->{
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+draw (7.75, -5.45) node [right]{Information};
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+draw (7.75, -5.85) node [right]{fields}; }
+\end_layout
+
+\begin_layout Standard
+
+ 
+\backslash
+foreach 
+\backslash
+cell in {1.75, 4} 
+\backslash
+draw [thick, yellow!80!gray] (
+\backslash
+cell, -6) -- (
+\backslash
+cell, -5.25);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+end{small}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
