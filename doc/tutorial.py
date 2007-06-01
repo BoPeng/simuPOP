@@ -34,11 +34,20 @@ simu.evolve(
     ops = [
         recombinator(rate=0.1),
         stat(LD=[0,1]),
-        varPlotter('LD[0][1]', numRep=3, step=10,
-                   ylim=[0,.25], xlab='generation',
-                   ylab='D', title='LD Decay'),
+        varPlotter('LD[0][1]', numRep=3, step=10, saveAs='ld',
+            ylim=[0,.25], lty=range(1, 4), col=range(2, 5),
+            xlab='generation', ylab='D', title='LD Decay'),
     ],
     end=100
 )
-r.dev_print(file='log/LDdecay.eps')
 #end
+#PS epstopdf ld10.eps
+#PS epstopdf ld20.eps
+#PS epstopdf ld30.eps
+#PS epstopdf ld40.eps
+#PS epstopdf ld50.eps
+#PS epstopdf ld60.eps
+#PS epstopdf ld70.eps
+#PS epstopdf ld80.eps
+#PS epstopdf ld90.eps
+#PS epstopdf ld100.eps
