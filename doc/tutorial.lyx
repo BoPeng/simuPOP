@@ -912,6 +912,50 @@ pass parameters and more
 \end_layout
 
 \end_deeper
+\begin_layout BeginFrame
+Availability
+\end_layout
+
+\begin_layout Itemize
+\begin_inset LatexCommand url
+name "simuPOP website:"
+target "http://simupop.sourceforge.net"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Mailing list: 
+\family typewriter
+simupop-list@lists.sourceforge.net
+\end_layout
+
+\begin_layout Itemize
+License: GPL 2.0
+\end_layout
+
+\begin_layout Itemize
+Platforms: 
+\family typewriter
+all OS on which Python is available
+\end_layout
+
+\begin_layout Itemize
+Monthly release, currently at 0.7.10
+\end_layout
+
+\begin_layout Itemize
+Documentation: 
+\emph on
+simuPOP User's Guide 
+\emph default
+and 
+\emph on
+simuPOP Reference Manual
+\end_layout
+
 \begin_layout Section
 An example
 \end_layout
