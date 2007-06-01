@@ -86,7 +86,44 @@ MapPenetrance(pop2, locus=1,
     penetrance={'0-0': 0.05, '0-1': 0.2, '1-1': 0.8})
 # draw case control sample
 (sample,) = CaseControlSample(pop2, cases=5, controls=5)
-# have a look at the sample
-Dump(sample, infoOnly=True)
-Dump(sample, alleleOnly=True)
+# save sample in Merlin QTDT format
+from simuUtil import SaveQTDT
+SaveQTDT(sample, output='sample', affectionCode=['U', 'A'], 
+    fields=['affection'])
+# have a look at the sample in Merlin-QTDT Format
+print open('sample.map').read()
+print open('sample.dat').read()
+print open('sample.ped').read()
+#end
+#file log/tutorial_pop_variable.log
+pop = population(subPop=[5, 10], loci=[5])
+InitByFreq(pop, [.6, .3, .1])
+Stat(pop, alleleFreq=[1], genoFreq=[2])
+print pop.dvars().alleleFreq[1][0]
+from simuUtil import ListVars
+ListVars(pop.dvars(), useWxPython=False)
+#end
+#file log/tutorial_individual.log
+pop = population(subPop=[5, 8], loci=[5], 
+    infoFields=['penetrance'])
+InitByFreq(pop, [.6, .3, .1])
+MaPenetrance(pop, locus=2, penetrance=[0.05, 0.2, 0.5],
+    wildtype=[0], infoFields=['penetrance'])
+# iterate through all inviduals in subPop 1
+for ind in pop.individuals(1):
+    print 'Aff: %d Fit: %.3f Geno: %d %d' % \
+        (ind.affected(), ind.info('penetrance'), \
+        ind.allele(2, 0), ind.allele(2, 1))
+
+#end
+#file log/tutorial_info.log
+pop = population(100, loci=[5, 8],
+    infoFields=['father_idx', 'mother_idx'])
+simu = simulator(pop, randomMating(numOffspring=2))
+simu.evolve(ops=[parentsTagger()], end=5)
+ind = simu.population(0).individual(0)
+ind1 = simu.population(0).individual(1)
+print ind.info('father_idx'), ind.info('mother_idx')
+print ind1.info('father_idx'), ind1.info('mother_idx')
+
 #end
