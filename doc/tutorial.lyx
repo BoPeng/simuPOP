@@ -1,4 +1,4 @@
-#LyX 1.5.0rc1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
 \lyxformat 271
 \begin_document
 \begin_header
@@ -307,11 +307,31 @@ Based on an
 \end_layout
 
 \begin_layout BeginFrame
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+[<+->]
+\end_layout
+
+\end_inset
+
 What simuPOP does
 \end_layout
 
 \begin_layout Standard
+\begin_inset CharStyle Structure
+show_label false
+status inlined
+
+\begin_layout Standard
 simuPOP provides 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -320,6 +340,8 @@ a large number of functions to manipulate populations,
 
 \begin_deeper
 \begin_layout Standard
+
+\color blue
 copy, split, merge, modify genotype, modify individuals, determine affection
  status, save to and load from various formats, generate sample, ...
 \end_layout
@@ -331,32 +353,24 @@ and a mechanism to evolve populations forward in time,
 
 \begin_deeper
 \begin_layout Standard
+
+\color blue
 subject to arbitrary demographic and genetic forces such as population size
- changes, mutation, migration, recombination, selection...
+ changes, mutation, migration, recombination, selection ...
 \end_layout
 
 \end_deeper
 \begin_layout BeginFrame
-How to use simuPOP
-\end_layout
+\begin_inset ERT
+status open
 
 \begin_layout Standard
-Just like R/S-Plus or Matlab, you can
+
+[<+->]
 \end_layout
 
-\begin_layout Itemize
-Interactively manipulate populations and evolve them
-\end_layout
+\end_inset
 
-\begin_layout Itemize
-Write a script (in Python) and set arbitrarily complicated simulations
-\end_layout
-
-\begin_layout Itemize
-Run existing scripts 
-\end_layout
-
-\begin_layout BeginFrame
 This is fun, but is it useful?
 \end_layout
 
@@ -371,15 +385,24 @@ demonstrate population genetics phenomina
 \end_layout
 
 \begin_layout Itemize
-study the impact of genetic and demographic forces on a population
+study the impact of genetic and demographic forces on the evolution of a
+ population
 \end_layout
 
 \begin_layout Itemize
-study the evolution of (complex) genetic diseases 
+study the evolution of (complex) genetic diseases
 \end_layout
 
 \begin_layout Itemize
 simulate samples to validate gene-mapping methods
+\end_layout
+
+\begin_layout Itemize
+study ascertainment methods in simulated populations
+\end_layout
+
+\begin_layout Itemize
+...
 \end_layout
 
 \begin_layout BeginFrame
@@ -867,23 +890,28 @@ Simulate populations, which allows more flexible sampling
 I like it, but, oohm, Python??
 \end_layout
 
-\begin_layout Standard
-The core of simuPOP is written in C++, and is provided (wrapped) as Python
- modules.
+\begin_layout Itemize
+For efficiency, the core of simuPOP is written in C++
 \end_layout
 
 \begin_layout Itemize
-Python is easy to learn
+Python is used to
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+wrap simuPOP core (the glue language)
 \end_layout
 
 \begin_layout Itemize
-Python is easy to write and maintain
+write simuPOP extensions (GUI etc)
 \end_layout
 
 \begin_layout Itemize
-Python is 
+pass parameters and more
 \end_layout
 
+\end_deeper
 \begin_layout Section
 An example
 \end_layout
@@ -2112,8 +2140,65 @@ end{tikzpicture}
 Create and manipulate populations
 \end_layout
 
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_population.log}[lastline=22]
+preview false
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout BeginFrame
 Genotypic structure
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_genostru.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Population manipulation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_pop_manipulate.log}[lastline=20]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Population manipulation (cont.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_pop_manipulate.log}[firstline=20,lastline=36]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Population manipulation (cont.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_pop_manipulate.log}[firstline=37]
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
