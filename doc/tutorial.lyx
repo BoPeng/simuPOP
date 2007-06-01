@@ -406,7 +406,7 @@ study ascertainment methods in simulated populations
 \end_layout
 
 \begin_layout BeginFrame
-I heard about coalescent...
+Forward-time simulation
 \end_layout
 
 \begin_layout Standard
@@ -442,7 +442,740 @@ status open
 
 
 \backslash
-vspace{-.5cm}
+begin{tikzpicture}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+fill[blue, very nearly transparent] (0.5, 1) rectangle (6, 6.5);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<1->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {a0/1, a1/1.5, a2/2, a3/2.5, a4/3, a5/3.5, a6/4, a7/4.5, a8/5, a9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 6)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {b0/1, b1/1.5, b2/2, b3/2.5, b4/3, b5/3.5, b6/4, b7/4.5, b8/5, b9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 5.5)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {c0/1, c1/1.5, c2/2, c3/2.5, c4/3, c5/3.5, c6/4, c7/4.5, c8/5, c9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 5)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {d0/1, d1/1.5, d2/2, d3/2.5, d4/3, d5/3.5, d6/4, d7/4.5, d8/5, d9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 4.5)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {e0/1, e1/1.5, e2/2, e3/2.5, e4/3, e5/3.5, e6/4, e7/4.5, e8/5, e9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 4)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {f0/1, f1/1.5, f2/2, f3/2.5, f4/3, f5/3.5, f6/4, f7/4.5, f8/5, f9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 3.5)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {g0/1, g1/1.5, g2/2, g3/2.5, g4/3, g5/3.5, g6/4, g7/4.5, g8/5, g9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 3)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {h0/1, h1/1.5, h2/2, h3/2.5, h4/3, h5/3.5, h6/4, h7/4.5, h8/5, h9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 2.5)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {i0/1, i1/1.5, i2/2, i3/2.5, i4/3, i5/3.5, i6/4, i7/4.5, i8/5, i9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 2)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {j0/1, j1/1.5, j2/2, j3/2.5, j4/3, j5/3.5, j6/4, j7/4.5, j8/5, j9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 1.5)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.4pt, yellow] (a0) -- (b0) (a4) -- (b1) (a4) -- (b2) (a4)
+ -- (b3) (a5) -- (b4) (a5) -- (b5) (a6) -- (b6) (a8) -- (b7) (a8) -- (b8)
+ (a9) -- (b9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.4pt, yellow] (b1) -- (c0) (b1) -- (c1) (b1) -- (c2) (b3)
+ -- (c3) (b4) -- (c4) (b7) -- (c5) (b7) -- (c6) (b8) -- (c7) (b9) -- (c8)
+ (b9) -- (c9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.4pt, yellow] (c1) -- (d0) (c1) -- (d1) (c1) -- (d2) (c5)
+ -- (d3) (c5) -- (d4) (c5) -- (d5) (c7) -- (d6) (c7) -- (d7) (c7) -- (d8)
+ (c7) -- (d9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.4pt, yellow] (d1) -- (e0) (d1) -- (e1) (d3) -- (e2) (d4)
+ -- (e3) (d4) -- (e4) (d5) -- (e5) (d6) -- (e6) (d6) -- (e7) (d7) -- (e8)
+ (d7) -- (e9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.4pt, yellow] (e0) -- (f0) (e1) -- (f1) (e4) -- (f2) (e4)
+ -- (f3) (e5) -- (f4) (e5) -- (f5) (e6) -- (f6) (e6) -- (f7) (e7) -- (f8)
+ (e7) -- (f9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.4pt, yellow] (f0) -- (g0) (f1) -- (g1) (f2) -- (g2) (f3)
+ -- (g3) (f4) -- (g4) (f7) -- (g5) (f6) -- (g6) (f7) -- (g7) (f9) -- (g8)
+ (f9) -- (g9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.4pt, yellow] (g0) -- (h0) (g1) -- (h1) (g3) -- (h2) (g4)
+ -- (h3) (g4) -- (h4) (g6) -- (h5) (g6) -- (h6) (g8) -- (h7) (g8) -- (h8)
+ (g9) -- (h9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.4pt, yellow] (h2) -- (i0) (h2) -- (i1) (h2) -- (i2) (h3)
+ -- (i3) (h5) -- (i4) (h5) -- (i5) (h6) -- (i6) (h8) -- (i7) (h8) -- (i8)
+ (h9) -- (i9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.4pt, yellow] (i1) -- (j0) (i1) -- (j1) (i2) -- (j2) (i2)
+ -- (j3) (i2) -- (j4) (i3) -- (j5) (i3) -- (j6) (i3) -- (j7) (i5) -- (j8)
+ (i8) -- (j9);
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<2->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {a0/1, a1/1.5, a2/2, a3/2.5, a4/3, a5/3.5, a6/4, a7/4.5, a8/5, a9/5.5} 
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 6)}{green}; }
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<3->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.6pt, red] (a0) -- (b0) (a4) -- (b1) (a4) -- (b2) (a4)
+ -- (b3) (a5) -- (b4) (a5) -- (b5) (a6) -- (b6) (a8) -- (b7) (a8) -- (b8)
+ (a9) -- (b9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {b0/1, b1/1.5, b2/2, b3/2.5, b4/3, b5/3.5, b6/4, b7/4.5, b8/5, b9/5.5} 
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 5.5)}{green}; 
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<4->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.6pt, red] (b1) -- (c0) (b1) -- (c1) (b1) -- (c2) (b3)
+ -- (c3) (b4) -- (c4) (b7) -- (c5) (b7) -- (c6) (b8) -- (c7) (b9) -- (c8)
+ (b9) -- (c9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {c0/1, c1/1.5, c2/2, c3/2.5, c4/3, c5/3.5, c6/4, c7/4.5, c8/5, c9/5.5} 
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 5)}{green}; 
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<5->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.6pt, red] (c1) -- (d0) (c1) -- (d1) (c1) -- (d2) (c5)
+ -- (d3) (c5) -- (d4) (c5) -- (d5) (c7) -- (d6) (c7) -- (d7) (c7) -- (d8)
+ (c7) -- (d9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {d0/1, d1/1.5, d2/2, d3/2.5, d4/3, d5/3.5, d6/4, d7/4.5, d8/5, d9/5.5} 
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 4.5)}{green}; 
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<6->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.6pt, red] (d1) -- (e0) (d1) -- (e1) (d3) -- (e2) (d4)
+ -- (e3) (d4) -- (e4) (d5) -- (e5) (d6) -- (e6) (d6) -- (e7) (d7) -- (e8)
+ (d7) -- (e9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {e0/1, e1/1.5, e2/2, e3/2.5, e4/3, e5/3.5, e6/4, e7/4.5, e8/5, e9/5.5} 
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 4)}{green}; 
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<7->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.6pt, red] (e0) -- (f0) (e1) -- (f1) (e4) -- (f2) (e4)
+ -- (f3) (e5) -- (f4) (e5) -- (f5) (e6) -- (f6) (e6) -- (f7) (e7) -- (f8)
+ (e7) -- (f9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {f0/1, f1/1.5, f2/2, f3/2.5, f4/3, f5/3.5, f6/4, f7/4.5, f8/5, f9/5.5} 
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 3.5)}{green}; 
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<8->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.6pt, red] (f0) -- (g0) (f1) -- (g1) (f2) -- (g2) (f3)
+ -- (g3) (f4) -- (g4) (f7) -- (g5) (f6) -- (g6) (f7) -- (g7) (f9) -- (g8)
+ (f9) -- (g9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {g0/1, g1/1.5, g2/2, g3/2.5, g4/3, g5/3.5, g6/4, g7/4.5, g8/5, g9/5.5} 
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 3)}{green}; 
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<9->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.6pt, red] (g0) -- (h0) (g1) -- (h1) (g3) -- (h2) (g4)
+ -- (h3) (g4) -- (h4) (g6) -- (h5) (g6) -- (h6) (g8) -- (h7) (g8) -- (h8)
+ (g9) -- (h9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {h0/1, h1/1.5, h2/2, h3/2.5, h4/3, h5/3.5, h6/4, h7/4.5, h8/5, h9/5.5} 
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 2.5)}{green}; 
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<10->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.6pt, red] (h2) -- (i0) (h2) -- (i1) (h2) -- (i2) (h3)
+ -- (i3) (h5) -- (i4) (h5) -- (i5) (h6) -- (i6) (h8) -- (i7) (h8) -- (i8)
+ (h9) -- (i9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {i0/1, i1/1.5, i2/2, i3/2.5, i4/3, i5/3.5, i6/4, i7/4.5, i8/5, i9/5.5} 
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 2)}{green}; 
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<11->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.6pt, red] (i1) -- (j0) (i1) -- (j1) (i2) -- (j2) (i2)
+ -- (j3) (i2) -- (j4) (i3) -- (j5) (i3) -- (j6) (i3) -- (j7) (i5) -- (j8)
+ (i8) -- (j9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {i0/1, i1/1.5, i2/2, i3/2.5, i4/3, i5/3.5, i6/4, i7/4.5, i8/5, i9/5.5} 
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 2)}{green}; 
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+end{tikzpicture}
 \end_layout
 
 \end_inset
@@ -450,13 +1183,472 @@ vspace{-.5cm}
 
 \end_layout
 
-\begin_layout Block
+\begin_layout Column
+4.0cm
+\end_layout
+
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
 \begin_layout Standard
 
-{Backward-time}
+<2->
+\end_layout
+
+\end_inset
+
+Start from an initial population
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<3->
+\end_layout
+
+\end_inset
+
+Evolve forward in time, generation by generation, subject to certain number
+ of genetic and/or demographic effects
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<11->
+\end_layout
+
+\end_inset
+
+Samples are collected from the last several generations
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Backward-time simulation
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5.0cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+begin{tikzpicture}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+fill[gray, very nearly transparent] (0.5, 1) rectangle (6, 6.5);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<1->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {a0/1, a1/1.5, a2/2, a3/2.5, a4/3, a5/3.5, a6/4, a7/4.5, a8/5, a9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 6)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {b0/1, b1/1.5, b2/2, b3/2.5, b4/3, b5/3.5, b6/4, b7/4.5, b8/5, b9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 5.5)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {c0/1, c1/1.5, c2/2, c3/2.5, c4/3, c5/3.5, c6/4, c7/4.5, c8/5, c9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 5)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {d0/1, d1/1.5, d2/2, d3/2.5, d4/3, d5/3.5, d6/4, d7/4.5, d8/5, d9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 4.5)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {e0/1, e1/1.5, e2/2, e3/2.5, e4/3, e5/3.5, e6/4, e7/4.5, e8/5, e9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 4)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {f0/1, f1/1.5, f2/2, f3/2.5, f4/3, f5/3.5, f6/4, f7/4.5, f8/5, f9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 3.5)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {g0/1, g1/1.5, g2/2, g3/2.5, g4/3, g5/3.5, g6/4, g7/4.5, g8/5, g9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 3)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {h0/1, h1/1.5, h2/2, h3/2.5, h4/3, h5/3.5, h6/4, h7/4.5, h8/5, h9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 2.5)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {i0/1, i1/1.5, i2/2, i3/2.5, i4/3, i5/3.5, i6/4, i7/4.5, i8/5, i9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 2)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+foreach 
+\backslash
+name/
+\backslash
+x in {j0/1, j1/1.5, j2/2, j3/2.5, j4/3, j5/3.5, j6/4, j7/4.5, j8/5, j9/5.5}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{
+\backslash
+name}{(
+\backslash
+x, 1.5)}{gray};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.5pt, yellow] (a0) -- (b0)  (a4) -- (b1) (a4) -- (b2) (a4)
+ -- (b3) (a5) -- (b4) (a5) -- (b5) (a6) -- (b6) (a8) -- (b7) (a8) -- (b8)
+ (a9) -- (b9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.5pt, yellow] (b1) -- (c0)  (b1) -- (c1) (b1) -- (c2) (b3)
+ -- (c3) (b4) -- (c4) (b7) -- (c5) (b7) -- (c6) (b8) -- (c7) (b9) -- (c8)
+ (b9) -- (c9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.5pt, yellow] (c1) -- (d0)  (c1) -- (d1) (c1) -- (d2) (c5)
+ -- (d3) (c5) -- (d4) (c5) -- (d5) (c7) -- (d6) (c7) -- (d7) (c7) -- (d8)
+ (c7) -- (d9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.5pt, yellow] (d1) -- (e0)  (d1) -- (e1) (d3) -- (e2) (d4)
+ -- (e3) (d4) -- (e4) (d5) -- (e5) (d6) -- (e6) (d6) -- (e7) (d7) -- (e8)
+ (d7) -- (e9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.5pt, yellow] (e0) -- (f0)  (e1) -- (f1) (e4) -- (f2) (e4)
+ -- (f3) (e5) -- (f4) (e5) -- (f5) (e6) -- (f6) (e6) -- (f7) (e7) -- (f8)
+ (e7) -- (f9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.5pt, yellow] (f0) -- (g0)  (f1) -- (g1) (f2) -- (g2) (f3)
+ -- (g3) (f4) -- (g4) (f7) -- (g5) (f6) -- (g6) (f7) -- (g7) (f9) -- (g8)
+ (f9) -- (g9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.5pt, yellow] (g0) -- (h0)  (g1) -- (h1) (g3) -- (h2) (g4)
+ -- (h3) (g4) -- (h4) (g6) -- (h5) (g6) -- (h6) (g8) -- (h7) (g8) -- (h8)
+ (g9) -- (h9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.5pt, yellow] (h2) -- (i0)  (h2) -- (i1) (h2) -- (i2) (h3)
+ -- (i3) (h5) -- (i4) (h5) -- (i5) (h6) -- (i6) (h8) -- (i7) (h8) -- (i8)
+ (h9) -- (i9);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.5pt, yellow] (i1) -- (j0)  (i1) -- (j1) (i2) -- (j2) (i2)
+ -- (j3) (i2) -- (j4) (i3) -- (j5) (i3) -- (j6) (i3) -- (j7) (i5) -- (j8)
+ (i8) -- (j9);
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<2->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.6pt, red] (i1) -- (j0)  (i2) -- (j2) (h2) -- (i1) (h2)
+ -- (i2);
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<3->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+draw [line width=0.6pt, red] (j8) -- (i5) -- (h5) -- (g6) -- (f7) -- (e6)
+ -- (d6) -- (c7) -- (b8) -- (a8) -- (b7) -- (c5) -- (d4) -- (e4) -- (f3)
+ -- (g3) -- (h2);
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \end_inset
@@ -464,7 +1656,10 @@ status open
 
 \end_layout
 
-\begin_deeper
+\begin_layout Column
+4.0cm
+\end_layout
+
 \begin_layout Itemize
 Start from a sample with unknown genotype
 \end_layout
@@ -480,70 +1675,14 @@ Starting from the MRCA, proceed forward in time and fill the genotype of
 \end_layout
 
 \end_deeper
-\begin_layout Column
-5.0cm
+\begin_layout BeginFrame
+
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-only<2>{
-\end_layout
-
-\end_inset
-
 
 \end_layout
 
-\begin_layout Block
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-{Forward-time}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Start from an initial population
-\end_layout
-
-\begin_layout Itemize
-Evolve forward in time, generation by generation, subject to certain number
- of genetic and/or demographic effects
-\end_layout
-
-\begin_layout Itemize
-Samples are collected from the last several generations
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
 \begin_layout BeginFrame
 Forward vs.
  backward-time simulations
