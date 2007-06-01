@@ -66,7 +66,7 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "basicstyle={\ttfamily\scriptsize},emphstyle={\color{red}},frame=tblr,frameround=tttt,language=Python,showspaces=false,showstringspaces=false"
+\listings_params "basicstyle={\ttfamily\scriptsize},commentstyle={\color{blue}},frame=tblr,frameround=tttt,language=Python,showspaces=false,showstringspaces=false"
 \tracking_changes false
 \output_changes false
 \author "Bo Peng" 
@@ -947,7 +947,7 @@ simuPOP modules
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/tutorial_example1.log}[emph={[1]{import,from}},lastline=5]
+\begin_inset Include \lstinputlisting{log/tutorial_example1.log}[emph={[1]{import,from}},emphstyle={[1]\color{red}},lastline=5]
 preview false
 
 \end_inset
@@ -1567,7 +1567,7 @@ simuPOP components
 \end_layout
 
 \begin_layout Subsection
-Population object
+Population
 \end_layout
 
 \begin_layout BeginFrame
@@ -2167,7 +2167,7 @@ Population manipulation
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/tutorial_pop_manipulate.log}[lastline=20]
+\begin_inset Include \lstinputlisting{log/tutorial_pop_manipulate.log}[lastline=22]
 preview false
 
 \end_inset
@@ -2180,7 +2180,7 @@ Population manipulation (cont.)
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/tutorial_pop_manipulate.log}[firstline=20,lastline=36]
+\begin_inset Include \lstinputlisting{log/tutorial_pop_manipulate.log}[firstline=23,lastline=43]
 preview false
 
 \end_inset
@@ -2193,12 +2193,42 @@ Population manipulation (cont.)
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/tutorial_pop_manipulate.log}[firstline=37]
+\begin_inset Include \lstinputlisting{log/tutorial_pop_manipulate.log}[firstline=44]
 preview false
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout BeginFrame
+Population variables
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_pop_variable.log}[basicstyle={\tiny\ttfamily},lastline=35]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Population variables (cont.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_pop_variable.log}[basicstyle={\tiny\ttfamily},firstline=36,lastline=61]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Individual
 \end_layout
 
 \begin_layout BeginFrame
@@ -2207,7 +2237,7 @@ Structure of Individuals
 
 \begin_layout Standard
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -2675,19 +2705,37 @@ end{tikzpicture}
 \end_layout
 
 \begin_layout BeginFrame
-Population strcuture
+Individuals
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_individual.log}
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
 Information fields
 \end_layout
 
-\begin_layout BeginFrame
-Variables
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_info.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Subsection
-Operators
+Operator
 \end_layout
 
 \begin_layout BeginFrame
@@ -2707,31 +2755,19 @@ Table-like output
 \end_layout
 
 \begin_layout Subsection
-Mating scheme, Simulator and forward-time simulation
+Mating scheme
 \end_layout
 
 \begin_layout BeginFrame
 Mating schemes
 \end_layout
 
-\begin_layout BeginFrame
+\begin_layout Subsection
 Simulator
 \end_layout
 
 \begin_layout BeginFrame
-Evolve?!
-\end_layout
-
-\begin_layout Section
-Population manipulation
-\end_layout
-
-\begin_layout Subsection
-Handling of HapMap data
-\end_layout
-
-\begin_layout Section
-Evolution
+Simulator
 \end_layout
 
 \begin_layout EndFrame
