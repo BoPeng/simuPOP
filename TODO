@@ -59,3 +59,11 @@ Roadmap: A real GUI other than the tk-based simple parameter dialog
   8/4/P output and load simuPOP script
 DONE    Start/stop for easy debugging
 
+
+Roadmap: Parallel version of simuPOP
+  3/3/N availability of MPI (and/or boost/MPI) under windows
+  6/4/C port genostructure to MPI
+  6/5/C port individual to MPI
+  6/6/C port population to MPI
+  6/9/C port operators to MPI
+DONE    feasibility study
