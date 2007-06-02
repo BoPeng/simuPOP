@@ -13,7 +13,8 @@ Roadmap: test and documentation:
   3/5/N document each class whether or not they are suitable only for diploid population.
   3/7/P sample script and precise description for each class, put it in online help
 O 3/8/N check help contents in C++ source code. 
-  1/4   Proofread simuPOP user's guide and reference manual
+  1/4/N Proofread simuPOP user's guide and reference manual
+  2/5/P write more comprehensive test scripts 
 DONE    online help is not complete. Need re-write or fix the processing scripts.
 DONE    comprehensive testing scripts
 
@@ -59,7 +60,6 @@ Roadmap: A real GUI other than the tk-based simple parameter dialog
   8/4/P output and load simuPOP script
 DONE    Start/stop for easy debugging
 
-
 Roadmap: Parallel version of simuPOP
   3/3/N availability of MPI (and/or boost/MPI) under windows
   6/4/C port genostructure to MPI
@@ -67,3 +67,8 @@ Roadmap: Parallel version of simuPOP
   6/6/C port population to MPI
   6/9/C port operators to MPI
 DONE    feasibility study
+
+Roadmap: Distribution
+  2/2/N help the release and even development of RPy. rpy plays an important role in simuPOP
+        but installing it under windows has always been a problem.
+  2/3/N test simuPOP under different machines and operating systems
