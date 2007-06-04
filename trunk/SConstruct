@@ -43,8 +43,8 @@ if not os.path.isfile('SConstruct'):
 # Needs scons 0.96.93
 from SCons import __version__
 version = map(int, __version__.split('.'))
-if version[0] != 0 or version[1] != 96 or version[2] != 93:
-    print "Scons version 0.96.93 is required."
+if version != [0, 96, 93] and version[:2] != [0, 97]:
+    print "Scons version 0.96.93 or >= 0.97 is required."
     Exit(1)
 
 # load all the module information from setup.py
