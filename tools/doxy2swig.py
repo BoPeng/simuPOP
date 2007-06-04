@@ -635,7 +635,7 @@ class Doxy2SWIG:
                 print >> out, '\\begin{description}'
                 cons['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                 for arg in cons['Arguments']:
-                    print >> out, '\\item [{%s}]%s' % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
+                    print >> out, '\\item [{%s}]{\\leftskip 0.5cm %s\par}' % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
                 print >> out, '\\end{description}'
             if cons.has_key('Details') and cons['Details'] != '':
                 print >> out, '%s\par' % self.latex_text(cons['Details'])
