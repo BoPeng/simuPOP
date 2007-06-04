@@ -23,7 +23,10 @@
   #2 node[circle,shade,ball color=#3, scale=0.5](#1){}
 }
 
-
+\newcommand{\teninds}[3]{
+\foreach \name/\x in {0/1, 1/1.5, 2/2, 3/2.5, 4/3, 5/3.5, 6/4, 7/4.5, 8/5, 9/5.5} 
+    \path \inda{#1\name}{(\x, #2)}{#3}; 
+}
 
 
 \beamertemplateshadingbackground{red!5}{structure!5}
@@ -465,238 +468,24 @@ only<1->{
 \backslash
 foreach 
 \backslash
-name/
+y/
 \backslash
-x in {a0/1, a1/1.5, a2/2, a3/2.5, a4/3, a5/3.5, a6/4, a7/4.5, a8/5, a9/5.5}
+nn in {6/a, 5.5/b, 5/c, 4.5/d, 4/e, 3.5/f, 3/g, 2.5/h, 2/i, 1.5/j}
 \end_layout
 
 \begin_layout Standard
 
 
 \backslash
-path 
+teninds{
 \backslash
-inda{
+nn}{
 \backslash
-name}{(
-\backslash
-x, 6)}{gray};
+y}{yellow};
 \end_layout
 
 \begin_layout Standard
 
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {b0/1, b1/1.5, b2/2, b3/2.5, b4/3, b5/3.5, b6/4, b7/4.5, b8/5, b9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 5.5)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {c0/1, c1/1.5, c2/2, c3/2.5, c4/3, c5/3.5, c6/4, c7/4.5, c8/5, c9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 5)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {d0/1, d1/1.5, d2/2, d3/2.5, d4/3, d5/3.5, d6/4, d7/4.5, d8/5, d9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 4.5)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {e0/1, e1/1.5, e2/2, e3/2.5, e4/3, e5/3.5, e6/4, e7/4.5, e8/5, e9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 4)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {f0/1, f1/1.5, f2/2, f3/2.5, f4/3, f5/3.5, f6/4, f7/4.5, f8/5, f9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 3.5)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {g0/1, g1/1.5, g2/2, g3/2.5, g4/3, g5/3.5, g6/4, g7/4.5, g8/5, g9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 3)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {h0/1, h1/1.5, h2/2, h3/2.5, h4/3, h5/3.5, h6/4, h7/4.5, h8/5, h9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 2.5)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {i0/1, i1/1.5, i2/2, i3/2.5, i4/3, i5/3.5, i6/4, i7/4.5, i8/5, i9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 2)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {j0/1, j1/1.5, j2/2, j3/2.5, j4/3, j5/3.5, j6/4, j7/4.5, j8/5, j9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 1.5)}{gray};
 \end_layout
 
 \begin_layout Standard
@@ -796,19 +585,12 @@ only<2->{
 
 
 \backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {a0/1, a1/1.5, a2/2, a3/2.5, a4/3, a5/3.5, a6/4, a7/4.5, a8/5, a9/5.5} 
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 6)}{green}; }
+teninds{a}{6}{green}
+\end_layout
+
+\begin_layout Standard
+
+}
 \end_layout
 
 \begin_layout Standard
@@ -831,19 +613,7 @@ draw [line width=0.6pt, red] (a0) -- (b0) (a4) -- (b1) (a4) -- (b2) (a4)
 
 
 \backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {b0/1, b1/1.5, b2/2, b3/2.5, b4/3, b5/3.5, b6/4, b7/4.5, b8/5, b9/5.5} 
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 5.5)}{green}; 
+teninds{b}{5.5}{green}
 \end_layout
 
 \begin_layout Standard
@@ -871,19 +641,7 @@ draw [line width=0.6pt, red] (b1) -- (c0) (b1) -- (c1) (b1) -- (c2) (b3)
 
 
 \backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {c0/1, c1/1.5, c2/2, c3/2.5, c4/3, c5/3.5, c6/4, c7/4.5, c8/5, c9/5.5} 
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 5)}{green}; 
+teninds{c}{5}{green}
 \end_layout
 
 \begin_layout Standard
@@ -911,19 +669,7 @@ draw [line width=0.6pt, red] (c1) -- (d0) (c1) -- (d1) (c1) -- (d2) (c5)
 
 
 \backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {d0/1, d1/1.5, d2/2, d3/2.5, d4/3, d5/3.5, d6/4, d7/4.5, d8/5, d9/5.5} 
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 4.5)}{green}; 
+teninds{d}{4.5}{green}
 \end_layout
 
 \begin_layout Standard
@@ -951,19 +697,7 @@ draw [line width=0.6pt, red] (d1) -- (e0) (d1) -- (e1) (d3) -- (e2) (d4)
 
 
 \backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {e0/1, e1/1.5, e2/2, e3/2.5, e4/3, e5/3.5, e6/4, e7/4.5, e8/5, e9/5.5} 
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 4)}{green}; 
+teninds{e}{4}{green}
 \end_layout
 
 \begin_layout Standard
@@ -991,19 +725,7 @@ draw [line width=0.6pt, red] (e0) -- (f0) (e1) -- (f1) (e4) -- (f2) (e4)
 
 
 \backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {f0/1, f1/1.5, f2/2, f3/2.5, f4/3, f5/3.5, f6/4, f7/4.5, f8/5, f9/5.5} 
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 3.5)}{green}; 
+teninds{f}{3.5}{green}
 \end_layout
 
 \begin_layout Standard
@@ -1031,19 +753,7 @@ draw [line width=0.6pt, red] (f0) -- (g0) (f1) -- (g1) (f2) -- (g2) (f3)
 
 
 \backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {g0/1, g1/1.5, g2/2, g3/2.5, g4/3, g5/3.5, g6/4, g7/4.5, g8/5, g9/5.5} 
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 3)}{green}; 
+teninds{g}{3}{green}
 \end_layout
 
 \begin_layout Standard
@@ -1071,19 +781,7 @@ draw [line width=0.6pt, red] (g0) -- (h0) (g1) -- (h1) (g3) -- (h2) (g4)
 
 
 \backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {h0/1, h1/1.5, h2/2, h3/2.5, h4/3, h5/3.5, h6/4, h7/4.5, h8/5, h9/5.5} 
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 2.5)}{green}; 
+teninds{h}{2.5}{green}
 \end_layout
 
 \begin_layout Standard
@@ -1111,19 +809,7 @@ draw [line width=0.6pt, red] (h2) -- (i0) (h2) -- (i1) (h2) -- (i2) (h3)
 
 
 \backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {i0/1, i1/1.5, i2/2, i3/2.5, i4/3, i5/3.5, i6/4, i7/4.5, i8/5, i9/5.5} 
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 2)}{green}; 
+teninds{i}{2}{green}
 \end_layout
 
 \begin_layout Standard
@@ -1151,19 +837,7 @@ draw [line width=0.6pt, red] (i1) -- (j0) (i1) -- (j1) (i2) -- (j2) (i2)
 
 
 \backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {i0/1, i1/1.5, i2/2, i3/2.5, i4/3, i5/3.5, i6/4, i7/4.5, i8/5, i9/5.5} 
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 2)}{green}; 
+teninds{j}{1.5}{green}
 \end_layout
 
 \begin_layout Standard
@@ -1275,238 +949,20 @@ only<1->{
 \backslash
 foreach 
 \backslash
-name/
+y/
 \backslash
-x in {a0/1, a1/1.5, a2/2, a3/2.5, a4/3, a5/3.5, a6/4, a7/4.5, a8/5, a9/5.5}
+nn in {6/a, 5.5/b, 5/c, 4.5/d, 4/e, 3.5/f, 3/g, 2.5/h, 2/i, 1.5/j} 
 \end_layout
 
 \begin_layout Standard
 
 
 \backslash
-path 
+teninds{
 \backslash
-inda{
+nn}{
 \backslash
-name}{(
-\backslash
-x, 6)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {b0/1, b1/1.5, b2/2, b3/2.5, b4/3, b5/3.5, b6/4, b7/4.5, b8/5, b9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 5.5)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {c0/1, c1/1.5, c2/2, c3/2.5, c4/3, c5/3.5, c6/4, c7/4.5, c8/5, c9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 5)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {d0/1, d1/1.5, d2/2, d3/2.5, d4/3, d5/3.5, d6/4, d7/4.5, d8/5, d9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 4.5)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {e0/1, e1/1.5, e2/2, e3/2.5, e4/3, e5/3.5, e6/4, e7/4.5, e8/5, e9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 4)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {f0/1, f1/1.5, f2/2, f3/2.5, f4/3, f5/3.5, f6/4, f7/4.5, f8/5, f9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 3.5)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {g0/1, g1/1.5, g2/2, g3/2.5, g4/3, g5/3.5, g6/4, g7/4.5, g8/5, g9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 3)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {h0/1, h1/1.5, h2/2, h3/2.5, h4/3, h5/3.5, h6/4, h7/4.5, h8/5, h9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 2.5)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {i0/1, i1/1.5, i2/2, i3/2.5, i4/3, i5/3.5, i6/4, i7/4.5, i8/5, i9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 2)}{gray};
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-foreach 
-\backslash
-name/
-\backslash
-x in {j0/1, j1/1.5, j2/2, j3/2.5, j4/3, j5/3.5, j6/4, j7/4.5, j8/5, j9/5.5}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-path 
-\backslash
-inda{
-\backslash
-name}{(
-\backslash
-x, 1.5)}{gray};
+y}{yellow};
 \end_layout
 
 \begin_layout Standard
@@ -1675,10 +1131,6 @@ Starting from the MRCA, proceed forward in time and fill the genotype of
 \end_layout
 
 \end_deeper
-\begin_layout BeginFrame
-
-\end_layout
-
 \begin_layout Standard
 
 \end_layout
