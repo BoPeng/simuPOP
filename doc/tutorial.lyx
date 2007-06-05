@@ -330,7 +330,7 @@ Forward-time simulation
 
 \begin_layout Standard
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Standard
 
@@ -685,10 +685,6 @@ inda{g3}{(2.5, 3)}{red};
 
 \begin_layout Standard
 
-\end_layout
-
-\begin_layout Standard
-
 }
 \end_layout
 
@@ -816,6 +812,30 @@ inda{j3}{(2.5, 1.5)}{red};
 
 
 \backslash
+only<12>
+\end_layout
+
+\begin_layout Standard
+
+{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+fill[red, very nearly transparent] (0.8, 1.3) rectangle (5.7, 2.2);
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
 end{tikzpicture}
 \end_layout
 
@@ -863,7 +883,7 @@ status open
 
 \begin_layout Standard
 
-<11->
+<12>
 \end_layout
 
 \end_inset
@@ -1405,8 +1425,9 @@ status inlined
 
 \end_inset
 
-Sample based, efficient.
- 
+Sample based, 
+\newline
+efficient
 \end_layout
 
 \begin_layout Itemize
@@ -1482,7 +1503,7 @@ status inlined
 
 \end_inset
 
-Population based, inefficient.
+Population based, inefficient
 \end_layout
 
 \begin_layout Itemize
@@ -1524,7 +1545,9 @@ status inlined
 
 \end_inset
 
-Wider application area
+Wider application areas
+\newline
+
 \end_layout
 
 \end_deeper
@@ -1755,7 +1778,7 @@ Study ascertainment methods in simulated populations
 \end_layout
 
 \begin_layout BeginFrame
-On the simulations of complex human diseases
+Simulations of complex human diseases
 \end_layout
 
 \begin_layout Columns
@@ -1836,6 +1859,8 @@ status open
 \end_inset
 
 Generate independent samples
+\newline
+
 \end_layout
 
 \end_deeper
@@ -2540,7 +2565,7 @@ LD=0.25 before generation 0
 \end_layout
 
 \begin_layout Itemize
-LD calculated at the end of each generation
+LD is calculated at the end of each generation
 \end_layout
 
 \begin_layout Standard
@@ -4094,20 +4119,7 @@ end{tikzpicture}
 \end_layout
 
 \begin_layout Standard
-Every operator has a default 
-\begin_inset CharStyle Alert
-show_label true
-status inlined
-
-\begin_layout Standard
-
-\family typewriter
-stage
-\end_layout
-
-\end_inset
-
-, and a 
+Every operator has a default stage, and a 
 \family typewriter
 
 \begin_inset CharStyle Alert
@@ -4129,7 +4141,7 @@ parameter to change it.
 \end_layout
 
 \begin_layout BeginFrame
-Pre-, During- and Post- operators
+Pre-, During- and PostMating operators
 \end_layout
 
 \begin_layout Standard
@@ -4146,7 +4158,7 @@ Applicable generations
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/tutorial_op_gen.log}
+\begin_inset Include \lstinputlisting{log/tutorial_op_gen.log}[basicstyle={\tiny\ttfamily}]
 preview false
 
 \end_inset
@@ -4171,8 +4183,13 @@ preview false
 Output
 \end_layout
 
-\begin_layout BeginFrame
-Table-like output
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_op_output.log}[basicstyle={\tiny\ttfamily},emph={[1]{output,outputExpr}},emphstyle={[1]\color{red}}]
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -4183,12 +4200,217 @@ Mating scheme
 Mating schemes
 \end_layout
 
+\begin_layout Standard
+\begin_inset CharStyle Structure
+show_label true
+status inlined
+
+\begin_layout Standard
+Mating schemes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Population offspring subpopulation from corresponding parental subpopulation
+\end_layout
+
+\begin_layout Itemize
+Can change subpopulation size
+\end_layout
+
+\begin_layout Itemize
+Select parents according to their 
+\family typewriter
+fitness
+\family default
+ value (information field)
+\end_layout
+
+\begin_layout Itemize
+Can produce more than one offspring
+\end_layout
+
+\begin_layout BeginFrame
+Demographic model
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_mating_demo.log}[emph={[1]{newSubPopSizeFunc}},emphstyle={[1]\color{red}}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Number of offspring
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_mating_offspring.log}[emph={[1]{newSubPopSizeFunc}},emphstyle={[1]\color{red}}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Simulator
 \end_layout
 
 \begin_layout BeginFrame
 Simulator
+\end_layout
+
+\begin_layout Standard
+\begin_inset CharStyle Structure
+show_label false
+status inlined
+
+\begin_layout Standard
+A simulator manages
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Replicates of a population
+\end_layout
+
+\begin_layout Itemize
+A mating scheme
+\end_layout
+
+\begin_layout Itemize
+Many operators
+\end_layout
+
+\begin_layout Standard
+and evolve the populations.
+\end_layout
+
+\begin_layout Subsection
+Other utilities
+\end_layout
+
+\begin_layout BeginFrame
+Utility modules and scripts
+\end_layout
+
+\begin_layout Description
+simuOpt.py provides an easy way to handle parameters.
+\end_layout
+
+\begin_layout Description
+simuUtil.py provides functions to save/load in many formats, gene mapping
+ functions, list variables etc
+\end_layout
+
+\begin_layout Description
+simuCluster.py a control script to send jobs to cluster systems
+\end_layout
+
+\begin_layout Description
+simuLDDecay.py a simple script to demonstrate the decay of linkage disequilibrium
+ under recombination
+\end_layout
+
+\begin_layout Description
+simuForward.py implements a traditional forward-time simulation scenario
+\end_layout
+
+\begin_layout Description
+simuComplexDisease.py implements a new forward-time simulation method (PLoS
+ Genetics, 2007)
+\end_layout
+
+\begin_layout Description
+simuCDCV.py demonstrate the evolution of allelic spectrum
+\end_layout
+
+\begin_layout Description
+...
+\end_layout
+
+\begin_layout Section
+Population manipulation
+\end_layout
+
+\begin_layout BeginFrame
+loadHapMap.py
+\end_layout
+
+\begin_layout Subtitle
+load simuPOP
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{/home/bpeng/simuPOP/scripts/loadHapMap.py}[firstline=52,lastline=54]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+loadHapMap.py
+\end_layout
+
+\begin_layout Subtitle
+load from hapmap file
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{/home/bpeng/simuPOP/scripts/loadHapMap.py}[firstline=117,lastline=149]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+loadHapMap.py
+\end_layout
+
+\begin_layout Subtitle
+steps 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{/home/bpeng/simuPOP/scripts/loadHapMap.py}[firstline=152,lastline=180]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+loadHapMap.py
+\end_layout
+
+\begin_layout Subtitle
+use these populations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{/home/bpeng/simuPOP/scripts/loadHapMap.py}[firstline=52,lastline=54]
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout EndFrame

@@ -178,3 +178,58 @@ simu.evolve(
     end=5
 )
 #end
+#file log/tutorial_op_output.log
+simu = simulator(
+    population(100, loci=[3]),
+    randomMating(), 
+    rep=5, grp=[1,1,2,2,2])
+simu.evolve(
+    preOps = [initByFreq([0.5, 0.5])],
+    ops = [
+        stat(alleleFreq=[1]),
+        pyEval(r"'%.2f ' % alleleFreq[1][0]", 
+            output='>>out'),
+        pyEval(r"'\n'", rep=REP_LAST, output='>>out'),
+        pyEval(r"'%.2f ' % alleleFreq[1][0]", 
+            outputExpr="'>>out%d' % grp"),
+    ],
+    end=2
+)
+print open('out').read()
+print open('out1').read()
+print open('out2').read()
+#end
+#file log/tutorial_mating_demo.log
+def lin_inc(gen, oldsize=[]):
+    return [10+gen]*5
+
+simu = simulator(
+    population(subPop=lin_inc(1), loci=[1]),
+    randomMating(newSubPopSizeFunc=lin_inc)
+)
+simu.evolve(
+    ops = [
+        stat(popSize=True),
+        pyEval(r'"%d %d\n"%(gen, subPop[0]["popSize"])'),
+    ],
+    end=5
+)
+#end
+#file log/tutorial_mating_offspring.log
+simu = simulator(
+    population(size=10000, loci=[1]),
+    randomMating(),
+)
+simu.evolve(
+    preOps = [initByFreq([0.1, 0.9])],
+    ops = [ ], end=100
+)
+simu.setMatingScheme(randomMating(numOffspring=2))
+simu.addInfoFields(['father_idx', 'mother_idx'])
+simu.setAncestralDepth(1)
+simu.step(ops=[parentsTagger()])
+pop = simu.getPopulation(0)
+MaPenetrance(pop, locus=0, penetrance=[0.05, 0.1, 0.5])
+AffectedSibpairSample(pop, size=100)
+#end
+#file log/tutorial_
