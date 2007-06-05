@@ -310,105 +310,6 @@ Based on an
 \end_layout
 
 \begin_layout BeginFrame
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-[<+->]
-\end_layout
-
-\end_inset
-
-What simuPOP does
-\end_layout
-
-\begin_layout Standard
-\begin_inset CharStyle Structure
-show_label false
-status inlined
-
-\begin_layout Standard
-simuPOP provides 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-a large number of functions to manipulate populations, 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-
-\color blue
-copy, split, merge, modify genotype, modify individuals, determine affection
- status, save to and load from various formats, generate sample, ...
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-and a mechanism to evolve populations forward in time,
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-
-\color blue
-subject to arbitrary demographic and genetic forces such as population size
- changes, mutation, migration, recombination, selection ...
-\end_layout
-
-\end_deeper
-\begin_layout BeginFrame
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-[<+->]
-\end_layout
-
-\end_inset
-
-This is fun, but is it useful?
-\end_layout
-
-\begin_layout Standard
-simuPOP can simulate the change of the genetic composition of a population
- in a complicated evolutionary process.
- It can be used to
-\end_layout
-
-\begin_layout Itemize
-demonstrate population genetics phenomina
-\end_layout
-
-\begin_layout Itemize
-study the impact of genetic and demographic forces on the evolution of a
- population
-\end_layout
-
-\begin_layout Itemize
-study the evolution of (complex) genetic diseases
-\end_layout
-
-\begin_layout Itemize
-simulate samples to validate gene-mapping methods
-\end_layout
-
-\begin_layout Itemize
-study ascertainment methods in simulated populations
-\end_layout
-
-\begin_layout Itemize
-...
-\end_layout
-
-\begin_layout BeginFrame
 Forward-time simulation
 \end_layout
 
@@ -439,7 +340,7 @@ vspace{-0.8cm}
 
 \begin_layout Standard
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -646,6 +547,15 @@ teninds{c}{5}{green}
 
 \begin_layout Standard
 
+
+\backslash
+path 
+\backslash
+inda{c5}{(3.5, 5)}{red};
+\end_layout
+
+\begin_layout Standard
+
 }
 \end_layout
 
@@ -674,6 +584,15 @@ teninds{d}{4.5}{green}
 
 \begin_layout Standard
 
+
+\backslash
+path 
+\backslash
+inda{d4}{(3, 4.5)}{red};
+\end_layout
+
+\begin_layout Standard
+
 }
 \end_layout
 
@@ -698,6 +617,15 @@ draw [line width=0.6pt, red] (d1) -- (e0) (d1) -- (e1) (d3) -- (e2) (d4)
 
 \backslash
 teninds{e}{4}{green}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{e3}{(2.5, 4)}{red};
 \end_layout
 
 \begin_layout Standard
@@ -758,6 +686,19 @@ teninds{g}{3}{green}
 
 \begin_layout Standard
 
+
+\backslash
+path 
+\backslash
+inda{g3}{(2.5, 3)}{red};
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
 }
 \end_layout
 
@@ -782,6 +723,15 @@ draw [line width=0.6pt, red] (g0) -- (h0) (g1) -- (h1) (g3) -- (h2) (g4)
 
 \backslash
 teninds{h}{2.5}{green}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{h2}{(2, 2.5)}{red};
 \end_layout
 
 \begin_layout Standard
@@ -814,6 +764,15 @@ teninds{i}{2}{green}
 
 \begin_layout Standard
 
+
+\backslash
+path 
+\backslash
+inda{i1}{(1.5, 2)}{red};
+\end_layout
+
+\begin_layout Standard
+
 }
 \end_layout
 
@@ -838,6 +797,24 @@ draw [line width=0.6pt, red] (i1) -- (j0) (i1) -- (j1) (i2) -- (j2) (i2)
 
 \backslash
 teninds{j}{1.5}{green}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{j0}{(1, 1.5)}{red};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{j3}{(2.5, 1.5)}{red};
 \end_layout
 
 \begin_layout Standard
@@ -920,7 +897,7 @@ Backward-time simulation
 
 \begin_layout Standard
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -1062,8 +1039,27 @@ only<2->{
 
 
 \backslash
-draw [line width=0.6pt, red] (i1) -- (j0)  (i2) -- (j2) (h2) -- (i1) (h2)
- -- (i2);
+path 
+\backslash
+inda{j0}{(1, 1.5)}{red};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{j2}{(2, 1.5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{j8}{(5, 1.5)}{green};
 \end_layout
 
 \begin_layout Standard
@@ -1082,6 +1078,26 @@ only<3->{
 
 
 \backslash
+draw [line width=0.6pt, red] (i1) -- (j0) (i2) -- (j2) (h2) -- (i1) (h2)
+ -- (i2);
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<4->{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
 draw [line width=0.6pt, red] (j8) -- (i5) -- (h5) -- (g6) -- (f7) -- (e6)
  -- (d6) -- (c7) -- (b8) -- (a8) -- (b7) -- (c5) -- (d4) -- (e4) -- (f3)
  -- (g3) -- (h2);
@@ -1090,6 +1106,184 @@ draw [line width=0.6pt, red] (j8) -- (i5) -- (h5) -- (g6) -- (f7) -- (e6)
 \begin_layout Standard
 
 }
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+only<5>{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{a8}{(5, 6)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{b7}{(4.5, 5.5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{b8}{(5, 5.5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{c5}{(3.5, 5)}{red};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{c7}{(4.5, 5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{d4}{(3, 4.5)}{red};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{d6}{(4, 4.5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{e4}{(3, 4)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{e6}{(4, 4)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{f3}{(2.5, 3.5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{f7}{(4.5, 3.5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{g3}{(2.5, 3)}{red};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{g6}{(4, 3)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{h2}{(2, 2.5)}{red};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{h5}{(3.5, 2.5)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{i1}{(1.5, 2)}{red};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{i2}{(2, 2)}{green};
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+path 
+\backslash
+inda{i5}{(3.5, 2)}{green};
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Standard
@@ -1117,15 +1311,45 @@ end{tikzpicture}
 \end_layout
 
 \begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<2->
+\end_layout
+
+\end_inset
+
 Start from a sample with unknown genotype
 \end_layout
 
 \begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<3->
+\end_layout
+
+\end_inset
+
 Coalesce individuals until the most recent common ancestor of all individuals
  is found
 \end_layout
 
 \begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<5>
+\end_layout
+
+\end_inset
+
 Starting from the MRCA, proceed forward in time and fill the genotype of
  each individual
 \end_layout
@@ -1315,6 +1539,105 @@ Wider application area
 
 \end_deeper
 \end_deeper
+\begin_layout BeginFrame
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+[<+->]
+\end_layout
+
+\end_inset
+
+What simuPOP does
+\end_layout
+
+\begin_layout Standard
+\begin_inset CharStyle Structure
+show_label false
+status inlined
+
+\begin_layout Standard
+simuPOP provides 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+a large number of functions to manipulate populations, 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\color blue
+copy, split, merge, modify genotype, modify individuals, determine affection
+ status, save to and load from various formats, generate sample, ...
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+and a mechanism to evolve populations forward in time,
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\color blue
+subject to arbitrary demographic and genetic forces such as population size
+ changes, mutation, migration, recombination, selection ...
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+[<+->]
+\end_layout
+
+\end_inset
+
+This is fun, but is it useful?
+\end_layout
+
+\begin_layout Standard
+simuPOP can simulate the change of the genetic composition of a population
+ in a complicated evolutionary process.
+ It can be used to
+\end_layout
+
+\begin_layout Itemize
+demonstrate population genetics phenomina
+\end_layout
+
+\begin_layout Itemize
+study the impact of genetic and demographic forces on the evolution of a
+ population
+\end_layout
+
+\begin_layout Itemize
+study the evolution of (complex) genetic diseases
+\end_layout
+
+\begin_layout Itemize
+simulate samples to validate gene-mapping methods
+\end_layout
+
+\begin_layout Itemize
+study ascertainment methods in simulated populations
+\end_layout
+
+\begin_layout Itemize
+...
+\end_layout
+
 \begin_layout BeginFrame
 On the simulations of complex human diseases
 \end_layout
