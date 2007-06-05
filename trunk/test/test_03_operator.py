@@ -43,6 +43,24 @@ class TestOperator(unittest.TestCase):
         #
         d.setApplicableReplicate(REP_LAST)
         self.assertEqual(d.applicableReplicate(), REP_LAST)
+
+    def testStage(self):
+        'Testing stage parameter of operators'
+        simu = simulator(
+            population(subPop=[20, 80], loci=[3]),
+                randomMating())
+        simu.evolve(
+            preOps = [initByFreq([0.2, 0.8])],
+            ops = [
+                recombinator(rate=0.001),
+                stat(stage=PrePostMating),
+                stat(alleleFreq=[1]),
+                kamMutator(maxAllele=10, rate=0.00005, atLoci=[0,2])
+            ],
+            postOps = [stat()],
+            #dryrun=True,
+            end=10
+        )
     
     def testActiveGen(self):
         'Testing active generation specifications'
