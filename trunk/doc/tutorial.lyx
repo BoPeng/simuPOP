@@ -69,7 +69,7 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "basicstyle={\ttfamily\scriptsize},commentstyle={\color{blue}},frame=tblr,frameround=tttt,language=Python,showspaces=false,showstringspaces=false"
+\listings_params "basicstyle={\ttfamily\scriptsize},commentstyle={\color{blue}},frame=tblr,frameround=tttt,language=Python,showspaces=false,showstringspaces=false,stringstyle={\color{magenta}}"
 \tracking_changes false
 \output_changes false
 \author "Bo Peng" 
@@ -309,24 +309,14 @@ Based on an
  object-oriented scripting language (Python)
 \end_layout
 
+\begin_layout Subsection
+
+\color none
+Forward- and backward-time simulation
+\end_layout
+
 \begin_layout BeginFrame
 Forward-time simulation
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-vspace{-0.8cm} 
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Columns
@@ -910,7 +900,7 @@ begin{tikzpicture}
 
 
 \backslash
-fill[gray, very nearly transparent] (0.5, 1) rectangle (6, 6.5);
+fill[blue, very nearly transparent] (0.5, 1) rectangle (6, 6.5);
 \end_layout
 
 \begin_layout Standard
@@ -1540,6 +1530,107 @@ Wider application area
 \end_deeper
 \end_deeper
 \begin_layout BeginFrame
+Forward-time simulation programs
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+uncover<1->{
+\end_layout
+
+\end_inset
+
+
+\begin_inset CharStyle Structure
+show_label true
+status inlined
+
+\begin_layout Standard
+For specific applications
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Easy to write simple simulations
+\end_layout
+
+\begin_layout Itemize
+Difficult to write complicated simulations
+\end_layout
+
+\begin_layout Itemize
+A few programs are available (EasyPOP, FPG, Nemo, ...), easy to use if they
+ happen to fit your need
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+}
+\backslash
+uncover<2->{
+\end_layout
+
+\end_inset
+
+
+\begin_inset CharStyle Structure
+show_label true
+status inlined
+
+\begin_layout Standard
+For general purposes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Difficult to write
+\end_layout
+
+\begin_layout Itemize
+Easy to set up complicated simulations
+\end_layout
+
+\begin_layout Itemize
+simuPOP fits in this category 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Features of simuPOP
+\end_layout
+
+\begin_layout BeginFrame
 \begin_inset ERT
 status open
 
@@ -1568,20 +1659,20 @@ simuPOP provides
 \end_layout
 
 \begin_layout Itemize
-a large number of functions to manipulate populations, 
+a large number of functions to manipulate populations 
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
 
 \color blue
-copy, split, merge, modify genotype, modify individuals, determine affection
+copy, split, merge, manipulate individual genotypes, determine affection
  status, save to and load from various formats, generate sample, ...
 \end_layout
 
 \end_deeper
 \begin_layout Itemize
-and a mechanism to evolve populations forward in time,
+and a mechanism to evolve populations forward in time
 \end_layout
 
 \begin_deeper
@@ -1589,10 +1680,35 @@ and a mechanism to evolve populations forward in time,
 
 \color blue
 subject to arbitrary demographic and genetic forces such as population size
- changes, mutation, migration, recombination, selection ...
+ changes, mutation, migration, recombination, selection, ...
 \end_layout
 
 \end_deeper
+\begin_layout BeginFrame
+What distinguishes simuPOP from others
+\end_layout
+
+\begin_layout Description
+scripting simuPOP is provided as a set of Python modules, and is therefore
+ backed by a full-blown object-oriented programming language.
+\end_layout
+
+\begin_layout Description
+flexibility simuPOP does not impose any limit on the size of genome, population,
+ demographic model, etc.
+ Using a large number of standard and hybrid (Python-assisted) operators,
+ users can simulate almost arbitrarily complex evolutionary processes.
+\end_layout
+
+\begin_layout Description
+integration Owing to the ‘glue language’ nature of Python, it is easy to
+ integrate simuPOP with other languages and programs.
+\end_layout
+
+\begin_layout Subsection
+Applications
+\end_layout
+
 \begin_layout BeginFrame
 \begin_inset ERT
 status open
@@ -1614,24 +1730,24 @@ simuPOP can simulate the change of the genetic composition of a population
 \end_layout
 
 \begin_layout Itemize
-demonstrate population genetics phenomina
+Demonstrate population genetics phenomina
 \end_layout
 
 \begin_layout Itemize
-study the impact of genetic and demographic forces on the evolution of a
+Study the impact of genetic and demographic forces on the evolution of a
  population
 \end_layout
 
 \begin_layout Itemize
-study the evolution of (complex) genetic diseases
+Study the evolution of (complex) genetic diseases
 \end_layout
 
 \begin_layout Itemize
-simulate samples to validate gene-mapping methods
+Simulate samples to validate gene-mapping methods
 \end_layout
 
 \begin_layout Itemize
-study ascertainment methods in simulated populations
+Study ascertainment methods in simulated populations
 \end_layout
 
 \begin_layout Itemize
@@ -1795,37 +1911,35 @@ status open
 
 \end_inset
 
-Simulate populations, which allows more flexible sampling
+Generate multi-generation populations
 \end_layout
 
 \end_deeper
 \end_deeper
+\begin_layout Subsection
+Availability
+\end_layout
+
 \begin_layout BeginFrame
-I like it, but, oohm, Python??
+I like it, but, oohm, why Python??
 \end_layout
 
 \begin_layout Itemize
-For efficiency, the core of simuPOP is written in C++
+The core of simuPOP is written in C++ for efficiency
 \end_layout
 
 \begin_layout Itemize
-Python is used to
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-wrap simuPOP core (the glue language)
+Python is the glue language, a wrapper of the core
 \end_layout
 
 \begin_layout Itemize
-write simuPOP extensions (GUI etc)
+Python is used to write simuPOP extensions (user interface etc)
 \end_layout
 
 \begin_layout Itemize
-pass parameters and more
+The core sometimes calls Python (Python operators) for maximum flexibility
 \end_layout
 
-\end_deeper
 \begin_layout BeginFrame
 Availability
 \end_layout
@@ -1871,6 +1985,10 @@ simuPOP Reference Manual
 \end_layout
 
 \begin_layout Section
+An example
+\end_layout
+
+\begin_layout Subsection
 An example
 \end_layout
 
@@ -2182,6 +2300,10 @@ status open
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Visualization with R
 \end_layout
 
 \begin_layout BeginFrame
@@ -3195,7 +3317,7 @@ Structure of Individuals
 
 \begin_layout Standard
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -3702,7 +3824,7 @@ Life cycle of a generation
 
 \begin_layout Standard
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -3971,12 +4093,78 @@ end{tikzpicture}
 
 \end_layout
 
-\begin_layout BeginFrame
-Stages
+\begin_layout Standard
+Every operator has a default 
+\begin_inset CharStyle Alert
+show_label true
+status inlined
+
+\begin_layout Standard
+
+\family typewriter
+stage
+\end_layout
+
+\end_inset
+
+, and a 
+\family typewriter
+
+\begin_inset CharStyle Alert
+show_label true
+status inlined
+
+\begin_layout Standard
+
+\family typewriter
+stage
+\end_layout
+
+\end_inset
+
+ 
+\family default
+parameter to change it.
+ 
 \end_layout
 
 \begin_layout BeginFrame
-Stages, an example
+Pre-, During- and Post- operators
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_op_stage.log}[basicstyle={\ttfamily\tiny}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Applicable generations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_op_gen.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Applicable replicates
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_op_rep.log}
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame

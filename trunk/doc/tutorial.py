@@ -22,35 +22,37 @@ simu.evolve(
     end=100
 )
 #end
-#file log/tutorial_example2.log
-from simuPOP import *
-from simuRPy import *
-simu = simulator(
-    population(size=1000, ploidy=2, loci=[2]),
-    randomMating(),
-    rep = 3)
-simu.evolve(
-    preOps = [initByValue([1,2,2,1])],  
-    ops = [
-        recombinator(rate=0.1),
-        stat(LD=[0,1]),
-        varPlotter('LD[0][1]', numRep=3, step=10, saveAs='ld',
-            ylim=[0,.25], lty=range(1, 4), col=range(2, 5),
-            xlab='generation', ylab='D', title='LD Decay'),
-    ],
-    end=100
-)
-#end
-#PS epstopdf ld10.eps
-#PS epstopdf ld20.eps
-#PS epstopdf ld30.eps
-#PS epstopdf ld40.eps
-#PS epstopdf ld50.eps
-#PS epstopdf ld60.eps
-#PS epstopdf ld70.eps
-#PS epstopdf ld80.eps
-#PS epstopdf ld90.eps
-#PS epstopdf ld100.eps
+# #file log/tutorial_example2.log
+# from simuPOP import *
+# from simuRPy import *
+# simu = simulator(
+#     population(size=1000, ploidy=2, loci=[2]),
+#     randomMating(),
+#     rep = 3)
+# simu.evolve(
+#     preOps = [initByValue([1,2,2,1])],  
+#     ops = [
+#         recombinator(rate=0.1),
+#         stat(LD=[0,1]),
+#         varPlotter('LD[0][1]', numRep=3, step=10, 
+#             saveAs='ld', ylim=[0,.25], 
+#             lty=range(1, 4), col=range(2, 5),
+#             xlab='generation', ylab='D', 
+#             title='LD Decay'),
+#     ],
+#     end=100
+# )
+# #end
+# #PS epstopdf ld10.eps
+# #PS epstopdf ld20.eps
+# #PS epstopdf ld30.eps
+# #PS epstopdf ld40.eps
+# #PS epstopdf ld50.eps
+# #PS epstopdf ld60.eps
+# #PS epstopdf ld70.eps
+# #PS epstopdf ld80.eps
+# #PS epstopdf ld90.eps
+# #PS epstopdf ld100.eps
 #file log/tutorial_population.log
 pop = population(size=10, loci=[2, 3])
 Dump(pop)
@@ -126,4 +128,53 @@ ind1 = simu.population(0).individual(1)
 print ind.info('father_idx'), ind.info('mother_idx')
 print ind1.info('father_idx'), ind1.info('mother_idx')
 
+#end
+#file log/tutorial_op_stage.log
+simu = simulator(
+    population(subPop=[20, 80], loci=[3]),
+    randomMating())
+simu.evolve(
+    preOps = [initByFreq([0.2, 0.8])],
+    ops = [
+        kamMutator(maxAllele=10, rate=0.00005, atLoci=[0,2]),
+        recombinator(rate=0.001),
+        dumper(stage=PrePostMating),
+        stat(alleleFreq=[1]),
+    ],
+    dryrun=True
+)
+#end
+#file log/tutorial_op_gen.log
+simu = simulator(
+    population(10000, loci=[3]),
+    randomMating())
+eval1 = r"'Gen: %3d  Freq: %f\n' % (gen, alleleFreq[1][0])"
+eval2 = r"'Last Gen: %3d  Freq: %s\n' % (gen, alleleFreq[1])"
+simu.evolve(
+    preOps = [initByFreq([0.3, 0.7])],
+    ops = [
+        recombinator(rate=0.01, begin=10, end=30),
+        stat(alleleFreq=[1], step=10),
+        pyEval(eval1, step=10),
+        pyEval(eval2, at=[-1])
+    ],
+    end = 50
+)
+#end
+#file log/tutorial_op_rep.log
+simu = simulator(
+    population(100, loci=[3]),
+    randomMating(), 
+    rep=5, grp=[1,1,2,2,2])
+simu.evolve(
+    preOps = [initByFreq([0.5, 0.5])],
+    ops = [
+        stat(alleleFreq=[1]),
+        recombinator(rate=0.01, grp=1),
+        recombinator(rate=0.01, grp=2),
+        pyEval(r"'%.2f ' % alleleFreq[1][0]", grp=1),
+        pyEval(r"'\n'", rep=REP_LAST),
+    ],
+    end=5
+)
 #end
