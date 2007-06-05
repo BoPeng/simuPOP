@@ -499,17 +499,11 @@ namespace simuPOP
 
 	bool simulator::apply(const vectorop ops, bool dryrun)
 	{
-		vectorop preMatingOps, postMatingOps;
-
 		// an operator can belong to more than one groups.
 		for (size_t i = 0; i < ops.size(); ++i)
 		{
-			if (ops[i]->canApplyPreMating())
-				preMatingOps.push_back(ops[i]);
 			if (ops[i]->canApplyDuringMating())
 				throw TypeError("During-mating operator has to be called by a simulator.");
-			if (ops[i]->canApplyPostMating())
-				postMatingOps.push_back(ops[i]);
 			// check compatibility of operators
 			DBG_ASSERT(ops[i]->isCompatible(curpopulation()), ValueError,
 				"Operator " + ops[i]->__repr__() + " is not compatible.");
@@ -518,59 +512,28 @@ namespace simuPOP
 		// really apply
 		for (m_curRep = 0; m_curRep < m_numRep; m_curRep++)
 		{
-
 			if(dryrun)
 				cout << "  Replicate " << m_curRep << endl;
 
 			size_t it;
 
 			// apply pre-mating ops to current gen
-			if (!preMatingOps.empty())
+			for (it = 0; it < ops.size(); ++it)
 			{
+
 				if(dryrun)
-					cout << "    Apply pre-mating ops " << endl;
-
-				for (it = 0; it < preMatingOps.size(); ++it)
 				{
-
-					if(dryrun)
-					{
-						cout << "      - " << preMatingOps[it]->__repr__() << preMatingOps[it]->atRepr() << endl;
-						continue;
-					}
-
-					if( ! preMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0, grp(), true))
-						continue;
-
-					preMatingOps[it] -> applyWithScratch(curpopulation(),
-						scratchpopulation(), PreMating);
-
-					ElapsedTime("PrePost-preMatingop"+toStr(it));
-
+					cout << "      - " << ops[it]->__repr__() << ops[it]->atRepr() << endl;
+					continue;
 				}
-			}
 
-			// apply post-mating ops to next gen
-			if (!postMatingOps.empty())
-			{
-				if(dryrun)
-					cout << "    Applying post-mating ops " << endl;
+				if( ! ops[it]->isActive(m_curRep, m_numRep, 0, 0, grp(), true))
+					continue;
 
-				for (it = 0; it < postMatingOps.size(); ++it)
-				{
-					if(dryrun)
-					{
-						cout << "      - " << preMatingOps[it]->__repr__() << preMatingOps[it]->atRepr() << endl;
-						continue;
-					}
+				ops[it] -> applyWithScratch(curpopulation(),
+					scratchpopulation(), PreMating);
 
-					if( ! postMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0, grp(), true))
-						continue;
-
-					postMatingOps[it] -> applyWithScratch(curpopulation(), scratchpopulation(), PostMating);
-
-					ElapsedTime("PrePost-postMatingop"+toStr(it));
-				}
+				ElapsedTime("PrePost-preMatingop"+toStr(it));
 			}
 		}
 		return true;

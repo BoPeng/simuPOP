@@ -8,6 +8,7 @@ version 0.8.0 - Not released, available at https://svn.sourceforge.net/svnroot/s
 		in different subpopulations
   - NEW: add subPops parameter to intializers, working the same as subPop
   - NEW: extending pyIndOperator with handling of loci and infoFields
+  - BUG: fix a crash of postOps in dryrun mode by applying operator in the order given.
 
 version 0.7.10 - (Rev 987) May 20, 2007
   - BUG: fix a memory leak bug with LoadPopulation
