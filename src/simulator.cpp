@@ -294,7 +294,7 @@ namespace simuPOP
 
 		// start the evolution loop
 		if(dryrun)
-			cout << "Start evolution:" << endl;
+			cout << "Start evolution" << endl;
 
 		while (1)
 		{
@@ -336,7 +336,7 @@ namespace simuPOP
 				if (!preMatingOps.empty())
 				{
 					if(dryrun)
-						cout << "    Pre-mating operators: " << endl;
+						cout << "    Pre-mating operators" << endl;
 
 					for (it = 0; it < preMatingOps.size(); ++it)
 					{
@@ -376,7 +376,7 @@ namespace simuPOP
 				// start mating:
 				// find out active during-mating operators
 				if(dryrun)
-					cout << "    Start mating." << endl;
+					cout << "    Start mating" << endl;
 
 				activeDurmatingOps.clear();
 				for(vectorop::iterator op=durmatingOps.begin(), opEnd = durmatingOps.end();
@@ -415,7 +415,7 @@ namespace simuPOP
 				if (!postMatingOps.empty())
 				{
 					if(dryrun )
-						cout << "    Apply post-mating operators " << endl;
+						cout << "    Apply post-mating operators" << endl;
 
 					for (it = 0; it < postMatingOps.size(); ++it)
 					{
