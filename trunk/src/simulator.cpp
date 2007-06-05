@@ -258,9 +258,6 @@ namespace simuPOP
 			if (ops[i]->canApplyDuringMating() && ops[i]->formOffGenotype())
 				durmatingOps.push_back(ops[i]);
 
-		if(durmatingOps.size() > 1)
-			cout << "Warning: More than one during mating operators. Make sure they act on different replicates." << endl;
-
 		for (size_t i = 0; i < ops.size(); ++i)
 			if (ops[i]->canApplyDuringMating() && !ops[i]->formOffGenotype())
 				durmatingOps.push_back(ops[i]);
