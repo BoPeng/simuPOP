@@ -106,8 +106,7 @@ Houston, TX
 \end_layout
 
 \begin_layout Date
-June.
- 6, 2007
+June 6th, 2007
 \newline
 Programmers' Cross Training
 \newline
@@ -1960,10 +1959,6 @@ Generate multi-generation populations
 \end_deeper
 \begin_layout Subsection
 Availability
-\end_layout
-
-\begin_layout Itemize
-
 \end_layout
 
 \begin_layout BeginFrame
@@ -4427,6 +4422,117 @@ preview false
 \end_inset
 
 
+\end_layout
+
+\begin_layout BeginFrame
+Acknowledgements
+\end_layout
+
+\begin_layout Itemize
+W.M.
+ Keck Foundation to the Gulf Coast Consortia through the Keck Center for
+ Computational and Structural Biology
+\end_layout
+
+\begin_layout Itemize
+Rice Terascale Cluster funded by NSF under Grant EIA-0216467, Intel, and
+ HP.
+ 
+\end_layout
+
+\begin_layout Itemize
+M.D.
+ Anderson Cancer Center High Performance Computing Cluster
+\end_layout
+
+\begin_layout Itemize
+BP was supported in part by a grant CA75432 from NCI.
+\end_layout
+
+\begin_layout BeginFrame
+For further reading
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status inlined
+
+\begin_layout Standard
+
+
+\backslash
+beamertemplatearticlebibitems
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+label "Peng and Kimmel, 2005"
+key "Peng2005"
+
+\end_inset
+
+
+\series bold
+Bo Peng
+\series default
+ and Marek Kimmel (2005).
+ simuPOP: a forward-time population genetics simulation environment.
+ 
+\emph on
+Bioinformatics,
+\emph default
+ 21:3686--3687
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+label "Peng and Kimmel, 2007"
+key "Peng2007"
+
+\end_inset
+
+
+\series bold
+Bo Peng
+\series default
+ and Marek Kimmel (2007) Simulations provide support for the common disease
+ common variant hypothesis.
+ 
+\emph on
+Genetics.
+
+\emph default
+ 175:763-776
+\emph on
+.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+label "Peng et al, 2007"
+key "Peng2007a"
+
+\end_inset
+
+
+\series bold
+Bo Peng
+\series default
+, Christopher I.
+ Amos and Marek Kimmel (2007) Forward-time simulations of complex human
+ diseases.
+ 
+\emph on
+PLoS Genetics, 
+\emph default
+3(3):e47
+\emph on
+.
 \end_layout
 
 \begin_layout EndFrame
