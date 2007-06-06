@@ -1771,7 +1771,7 @@ simuPOP can simulate the change of the genetic composition of a population
 \end_layout
 
 \begin_layout Itemize
-Demonstrate population genetics phenomina
+Demonstrate population genetics phenomena
 \end_layout
 
 \begin_layout Itemize
@@ -4425,7 +4425,7 @@ preview false
 \end_layout
 
 \begin_layout BeginFrame
-Acknowledgements
+Acknowledgments
 \end_layout
 
 \begin_layout Itemize
@@ -4436,17 +4436,20 @@ W.M.
 
 \begin_layout Itemize
 Rice Terascale Cluster funded by NSF under Grant EIA-0216467, Intel, and
- HP.
- 
+ HP
 \end_layout
 
 \begin_layout Itemize
 M.D.
- Anderson Cancer Center High Performance Computing Cluster
+ Anderson Cancer Center High Performance Cluster
 \end_layout
 
 \begin_layout Itemize
-BP was supported in part by a grant CA75432 from NCI.
+BP was supported in part by a grant CA75432 from NCI
+\end_layout
+
+\begin_layout Itemize
+Yaji Xu helped with all the figures in this talk
 \end_layout
 
 \begin_layout BeginFrame
