@@ -232,4 +232,40 @@ pop = simu.getPopulation(0)
 MaPenetrance(pop, locus=0, penetrance=[0.05, 0.1, 0.5])
 AffectedSibpairSample(pop, size=100)
 #end
-#file log/tutorial_
+#file log/tutorial_hapmap.log
+genes = [
+    ("p53exon4", "rs1042522"),
+    ("p53_6", "rs1625895"),
+    ("xpdex23", "rs1799793"),
+    ("xpdex10", "rs13181"),
+    ("xpa", "rs1800975"),
+    ("xpg1104", "rs17655"),
+    ("xpf662", "rs2020955"),
+    ("ercc61097", "rs2228526"),
+    ("ercc61230", "rs4253211"),
+    ("xpc_939", "rs2228001"),
+    ("ccnh", "rs2266690"),
+    ("rad23", "rs1805329"),
+    ("ercc1", "rs3212986"),
+    ("xpc_499", "rs2228000"), 
+]
+
+names = [x[1] for x in genes]
+pops = []
+for i in range(1, 23):
+    print "Loading hapmap chromosome %d..." % i
+    pop = LoadPopulation('hapmap_%d.bin' % i)
+    markers = []
+    for name in names:
+        try:
+            idx = pop.locusByName(name)
+            markers.append(idx)
+        except:
+            pass
+    if len(markers) > 0:
+        markers.sort()
+        pop.removeLoci(keep=markers)
+        pops.append(pop)
+
+all = MergePopulationsByLoci(pops)
+#end
