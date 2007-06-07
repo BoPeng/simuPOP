@@ -49,14 +49,14 @@ namespace simuPOP
 			/// constructor. default to be always active.
 			initializer( const vectoru& subPop=vectoru(),
 				intMatrix indRange=intMatrix(),
-				const vectoru& atLoci = vectoru(),
+				const vectoru& loci = vectoru(),
 				int atPloidy = -1,
 				double maleFreq=0.5, const vectori& sex = vectori(),
 				int stage=PreMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				:Operator("","", stage, begin, end, step, at, rep, grp, infoFields),
 				m_subPop(subPop), m_indRange(indRange),
-				m_atLoci(atLoci), m_atPloidy(atPloidy),
+				m_atLoci(loci), m_atPloidy(atPloidy),
 				m_maleFreq(maleFreq), m_sex(sex)
 			{
 				for(size_t i = 0; i < m_indRange.size(); ++i)
@@ -155,11 +155,11 @@ namespace simuPOP
 			initByFreq( const matrix& alleleFreq=matrix(),
 				bool identicalInds=false,  const vectoru& subPop=vectoru(),
 				intMatrix indRange = intMatrix(),
-				const vectoru& atLoci=vectoru(), int atPloidy=-1,
+				const vectoru& loci=vectoru(), int atPloidy=-1,
 				double maleFreq=0.5, const vectori& sex = vectori(),
 				int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				: initializer(subPop, indRange, atLoci,
+				: initializer(subPop, indRange, loci,
 				atPloidy, maleFreq, sex,
 				stage, begin, end, step, at, rep, grp, infoFields),
 				m_alleleFreq(alleleFreq), m_identicalInds(identicalInds)
@@ -232,13 +232,13 @@ namespace simuPOP
 			\param stages is set to PreMating. Other parameters please see help(baseOperator.__init__)
 			*/
 			initByValue( intMatrix value=intMatrix(),
-				vectoru atLoci=vectoru(), int atPloidy=-1,
+				vectoru loci=vectoru(), int atPloidy=-1,
 				vectoru subPop=vectoru(), intMatrix indRange=intMatrix(),
 				const vectorf& proportions = vectorf(),
 				double maleFreq=0.5, const vectori& sex = vectori(),
 				int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				: initializer(subPop, indRange, atLoci, atPloidy, maleFreq, sex,
+				: initializer(subPop, indRange, loci, atPloidy, maleFreq, sex,
 				stage, begin, end, step, at, rep, grp, infoFields),
 				m_value(value), m_proportion(proportions)
 			{
@@ -350,12 +350,12 @@ namespace simuPOP
 			\param stage is et to PreMating. Other parameters please refer to help(baseOperator.__init__)
 			*/
 			pyInit(PyObject * func,  vectoru subPop=vectoru(),
-				vectoru atLoci=vectoru(), int atPloidy=-1,
+				vectoru loci=vectoru(), int atPloidy=-1,
 				intMatrix indRange=intMatrix(),
 				double maleFreq=0.5, const vectori& sex = vectori(),
 				int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				: initializer(subPop, indRange, atLoci, atPloidy, maleFreq, sex,
+				: initializer(subPop, indRange, loci, atPloidy, maleFreq, sex,
 				stage, begin, end, step, at, rep, grp, infoFields)
 			{
 				DBG_FAILIF( maleFreq < 0 || maleFreq > 1 ,

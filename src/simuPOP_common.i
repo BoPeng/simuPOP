@@ -855,17 +855,33 @@ recombinator.__init__ = new_recombinator
 
 
 
-def new_initByFreq(self, alleleFreq=[], indRange=[], subPop=-1, subPops=[], *args, **kwargs):
+def new_initByFreq(self, alleleFreq=[], locus=-1, loci=[], atLoci=[], indRange=[], subPop=-1, subPops=[], *args, **kwargs):
     # parameter alleleFreq
     if len(alleleFreq) > 0 and type(alleleFreq[0]) in [types.IntType, types.LongType, types.FloatType]:
         af = [alleleFreq]
     else:
         af = alleleFreq
+    # parameter loci
+    if type(atLoci) in [types.IntType, types.LongType]:
+        loc = [atLoci]
+    elif type(atLoci) in [types.TupleType, types.ListType] and len(atLoci) > 0:
+        loc = atLoci
+    elif locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif locus != -1 and type(locus) in [types.ListType, types.TupleType] and len(locus) > 0:
+        loc = locus
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        loc = []
     # parameter indRange
     if len(indRange) > 0 and type(indRange[0]) in    [types.IntType, types.LongType]:
         ir = [indRange]
     else:
         ir = indRange
+    # parameter subpop
     if subPop != -1 and type(subPop) in [types.IntType, types.LongType]:
         sp = [subPop]
     elif subPop != -1 and type(subPop) in [types.ListType, types.TupleType] and len(subPop) > 0:
@@ -877,15 +893,15 @@ def new_initByFreq(self, alleleFreq=[], indRange=[], subPop=-1, subPops=[], *arg
     else:
         sp = []
     cppModule.initByFreq_swiginit(self,
-        cppModule.new_initByFreq(alleleFreq=af, indRange=ir, subPop=sp,
-			*args, **kwargs))
+        cppModule.new_initByFreq(alleleFreq=af, loci=loc, indRange=ir, subPop=sp,
+            *args, **kwargs))
  
 new_initByFreq.__doc__ = initByFreq.__init__.__doc__
 del initByFreq.__init__
 initByFreq.__init__ = new_initByFreq
 
 
-def new_initByValue(self, value=[], indRange=[], subPop=-1, subPops=[], *args, **kwargs):
+def new_initByValue(self, value=[], indRange=[], locus=-1, loci=[], atLoci=[], subPop=-1, subPops=[], *args, **kwargs):
     # parameter value
     if len(value) > 0 and type(value[0]) in [types.IntType, types.LongType]:
         val = [value]
@@ -896,6 +912,21 @@ def new_initByValue(self, value=[], indRange=[], subPop=-1, subPops=[], *args, *
         ir = [indRange]
     else:
         ir = indRange
+        # parameter loci
+    if type(atLoci) in [types.IntType, types.LongType]:
+        loc = [atLoci]
+    elif type(atLoci) in [types.TupleType, types.ListType] and len(atLoci) > 0:
+        loc = atLoci
+    elif locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif locus != -1 and type(locus) in [types.ListType, types.TupleType] and len(locus) > 0:
+        loc = locus
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        loc = []
     if subPop != -1 and type(subPop) in [types.IntType, types.LongType]:
         sp = [subPop]
     elif subPop != -1 and type(subPop) in [types.ListType, types.TupleType] and len(subPop) > 0:
@@ -907,21 +938,36 @@ def new_initByValue(self, value=[], indRange=[], subPop=-1, subPops=[], *args, *
     else:
         sp = []
     cppModule.initByValue_swiginit(self,
-        cppModule.new_initByValue(value=val, indRange=ir, subPop=sp, *args, **kwargs))
+        cppModule.new_initByValue(value=val, loci=loc, indRange=ir, subPop=sp, *args, **kwargs))
  
 new_initByValue.__doc__ = initByValue.__init__.__doc__
 del initByValue.__init__
 initByValue.__init__ = new_initByValue
 
 
-def new_pyInit(self, indRange=[], *args, **kwargs):
+def new_pyInit(self, locus=-1, loci=[], atLoci=[], indRange=[], *args, **kwargs):
     # parameter indRange
     if len(indRange) > 0 and type(indRange[0]) in    [types.IntType, types.LongType]:
         ir = [indRange]
     else:
         ir = indRange
+    # parameter loci
+    if type(atLoci) in [types.IntType, types.LongType]:
+        loc = [atLoci]
+    elif type(atLoci) in [types.TupleType, types.ListType] and len(atLoci) > 0:
+        loc = atLoci
+    elif locus != -1 and type(locus) in [types.IntType, types.LongType]:
+        loc = [locus]
+    elif locus != -1 and type(locus) in [types.ListType, types.TupleType] and len(locus) > 0:
+        loc = locus
+    elif type(loci) in [types.IntType, types.LongType]:
+        loc = [loci]
+    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+        loc = loci
+    else:
+        loc = []
     cppModule.pyInit_swiginit(self,
-        cppModule.new_pyInit(indRange=ir, *args, **kwargs))
+        cppModule.new_pyInit(indRange=ir, loci=loc, *args, **kwargs))
  
 new_pyInit.__doc__ = pyInit.__init__.__doc__
 del pyInit.__init__
