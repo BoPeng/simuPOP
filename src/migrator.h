@@ -45,10 +45,8 @@ using std::random_shuffle;
 
 namespace simuPOP
 {
-	/**
-	@author Bo Peng
-	*/
 
+    /// migrate individuals from a (sub)population to another (sub)population
 	class migrator: public Operator
 	{
 
@@ -61,25 +59,40 @@ namespace simuPOP
 		public:
 			/// create a migrator
 			/**
-			\param rate migration rate, proportion or count. Determined by parameter mode.
-			   rate should be a m by n matrix. If a number is given,
-			   the migration rate will be r*ones(m,n).
-			\param mode one of MigrByProbability (default), MigrByProportion or MigrByCounts
-			\param fromSubPop an array of 'from' subpops, default to all subpopulations.
-			  If a single subpop is specified, [] can be ignored. I.e., [a] is equvalent to a.
-			\param toSubPop an array of 'to' subpops, default to all subpopulations. If
-			  a single subpop is specified, [] can be ignored.
-			\param stage is default to PreMating. For details about other parameters,
-			please refer to help(baseOperator.__init__)
+            Migrator is the only way to mix genotypes of several subpopulations 
+            because mating is strictly within subpopulations in simuPOP. Migrators
+            are quite flexible in simuPOP in the sense that
+            \li Migration can happen from and to a subset of subpopulations.
+            \li Migration can be done by probability, proportion or by counts. In
+                the case of probability, if the migration rate from subpopulation
+                \c a to \c b is \c r, then everyone in subpopulation \c a will have this
+                probability to migrate to \c b. In the case of proportion, exactly
+                <tt>r*size_of_subPop_a</tt> individuals (chosen by random) will migrate
+                to subpopulation \c b. In the last case, a given number of individuals will
+                migrate.
+            \li New subpopulation can be generated through migration. You simply
+                need to migrate to a new subpopulation number.
+                
+			\param rate migration rate, can be a proportion or counted number. Determined by
+                parameter \c mode. \c rate should be an m by n matrix. If a number is given,
+                the migration rate will be <tt>r*ones(m,n)</tt>???.
+			\param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
+			\param fromSubPop an array of 'from' subpopulations. Default to all. If a single \c subpop
+                is specified, <tt>[]</tt> can be ignored. I.e., <tt>[a]<tt> is equvalent to \c a.
+			\param toSubPop an array of 'to' subpopulations. Default to all subpopulations. If a single
+                \c subpop is specified, <tt>[]</tt> can be ignored.
+			\param stage default to \c PreMating
 
-			rate is a matrix with dimensions determined by fromSubPop and toSubPop. By default,
-			rate is a matrix with element (i,j) being the migration rate, probability or count
-			from subpop i to subpop j. If fromSubPop and/or toSubPop are given, migration only
-			happen between these subpopulations. An extreme case is 'point migration'
-
-			rate=[[r]], fromSubPop=a, toSubPop=b
-
-			which migrate from subpop a to b with given rate r.
+            \note
+                \li The overall population size will not be changed. (Mating schemes can
+                    do that). If you would like to keep the subpopulation size after migration, you
+                    can use the \c newSubPopSize or \c newSubPopSizeExpr parameter of a mating scheme.
+                \li \c rate is a matrix with dimensions determined by \c fromSubPop and \c toSubPop.
+                    By default, \c rate is a matrix with element \c r(i,j), where \c r(i, j) is the
+                    migration rate, probability or count from subpopulation \c i to \c j. If \c fromSubPop
+                    and/or \c toSubPop are given, migration will only happen between these subpopulations.
+                    An extreme case is 'point migration', <tt>rate=[[r]], fromSubPop=a, toSubPop=b</tt>
+                    which migrate from subpopulation \c a to \c b with given rate \c r.???
 			*/
 			migrator( const matrix& rate, int mode = MigrByProbability,
 				vectoru fromSubPop=vectoru(), vectoru toSubPop=vectoru(),
@@ -101,26 +114,30 @@ namespace simuPOP
 			/// destructor
 			virtual ~migrator(){};
 
+            /// deep copy of a migrator
 			virtual Operator* clone() const
 			{
 				return new migrator(*this);
 			}
 
-			/// return rate
+			/// return migration rate
 			matrix rate()
 			{
 				return m_rate;
 			}
 
 			/// set migration rate
-			/** format 0-0 0-1 0-2, 1-0 1-1 1-2, 2-0, 2-1, 2-2.
-			for mode 1 or 2, 00,11,22 will be set automatically.
-			regardless of input.
+			/**
+			Format should be <tt>0-0 0-1 0-2, 1-0 1-1 1-2, 2-0, 2-1, 2-2</tt>.
+			For mode \c MigrByProbability or \c MigrByProportion, <tt>0-0,1-1,2-2</tt> will be set
+			automatically regardless of input.
 			*/
 			void setRates(const matrix& rate, int mode);
 
+            /// apply the \c migrator
 			virtual bool apply(population& pop);
 
+            /// used by Python print function to print out the general information of the \c migrator
 			virtual string __repr__()
 			{
 				return "<simuPOP::migrator>" ;
@@ -139,27 +156,30 @@ namespace simuPOP
 			vectoru m_from, m_to;
 	};
 
-	/** \brief migrate using given info vector
-
-	You can use directmigrator to accomplish any migration: that is to say
+    /// migrate using given information vector
+	/**
+	You can use directmigrator??? to accomplish any migration: that is to say
 	you directly specify subpopulation numbers for each individual and
 	this operator will do the rest.
-
 	*/
-
 	class pyMigrator: public Operator
 	{
 
 		public:
 			/// create a directmigrator
 			/**
-			This operator accept a one-dimensional Numeric Python int array. (created by Numeric.array ).
-			The contend of the array will be considered as subpopulation id.
+            For even more complicated migration schemes, you can DIY it using a
+            \c pyMigrator. This operator is not strictly hybrid since it does not
+            call a python function. However, it takes a carray of subPopulation IDs
+            for each individual. \c pyMigrator then complete migration according to
+            its content.
+        
+			This operator accepts a one-dimensional Numeric Python \c int array
+            (created by \c Numeric.array ). ???
 
-			\param subPopID a 1-d array (list, typle, carray). Must has length greater or equal to
-			population size.
-			\param stage is default to PreMating, please refer to help(baseOperator.__init__)
-			for details about other parameters.
+			\param subPopID a 1-d array (list, typle, carray). Length must be
+                greater than or equal to the population size.
+			\param stage default to \c PreMating
 			*/
 			pyMigrator( PyObject* subPopID=NULL,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -188,13 +208,16 @@ namespace simuPOP
 					Py_INCREF(m_subPopID);
 			}
 
+            /// deep copy of a \c pyMigrator
 			virtual Operator* clone() const
 			{
 				return new pyMigrator(*this);
 			}
 
+            /// apply a \c pyMigrator
 			virtual bool apply(population& pop);
 
+            /// used by Python print function to print out the general information of the \c pyMigrator
 			virtual string __repr__()
 			{
 				return "<simuPOP::python migrator>" ;
@@ -205,22 +228,23 @@ namespace simuPOP
 
 	};
 
-	/** \brief
-	 split subpopulation
-	 */
-
+	/// split a subpopulation
 	class splitSubPop: public Operator
 	{
 
 		public:
-			/// split a subpopulation (or whole population as subpop 0)
+			/// split a subpopulation or the whole population as subpopulation \c 0
 			/**
-			\param which which subpop to split (if there is no subpop structure, 0 is the only subpop)
-			\param subPop new subpop size, should add up to the size of subpop to be splitted
-			\param proportions proportions of new subpop. (use one of subPop or proportions). Should add up to one.
-			\param subPopID optional. new subpop IDs. If given, should have the same length
-			   as subPop or proportions. SInce subpop with negative id will be removed.
-			   You can remove part of a subpop by setting a new negative id.
+			\param which which subpopulation to split. If there is no subpopulation structure,
+                use 0 as the first (and only) subpopulation.
+			\param sizes new subpopulation sizes. The sizes should be added up to the original
+                subpopulation (subpopulation \c which) size.
+			\param proportions proportions of new subpopulations. Should be added up to \c 1.
+                Optionally, you can use one of \c subPopID or \c proportions to split. ???
+			\param subPopID new subpopulation IDs. Otherwise, the operator will automatically
+                set new subpopulation IDs to new subpopulations. If given, should have the same length
+			   as subPop or proportions.??? Since subpop with negative id will be removed.
+			   You can remove part of a subpop by setting a new negative id.???
 			*/
 			splitSubPop( UINT which=0,  vectorlu sizes=vectorlu(), vectorf proportions=vectorf(),
 				vectoru subPopID=vectoru(),
@@ -242,13 +266,16 @@ namespace simuPOP
 			{
 			}
 
+            /// deep copy of a \c splitSubPop operator
 			virtual Operator* clone() const
 			{
 				return new splitSubPop(*this);
 			}
 
+            /// apply a \c splitSubPop operator
 			virtual bool apply(population& pop);
 
+            /// used by Python print function to print out the general information of the \c splitSubPop operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::split population>" ;
@@ -275,17 +302,16 @@ namespace simuPOP
 			bool m_randomize;
 	};
 
-	/** \brief
-	  merge subpopulations
-	  */
-
+	///  merge subpopulations
 	class mergeSubPops: public Operator
 	{
 
 		public:
 			/// merge subpopulations
 			/**
-			\param subPops subpops to be merged, default to all subpops.
+            This operator merges subPopulations \c subPops (the only parameter) to a
+            single subpopulation. If \c subPops is ignored, all subpopulations will be merged.
+			\param subPops subpopulatinos to be merged. Default to all.
 			*/
 			mergeSubPops( vectoru subPops=vectoru(), bool removeEmptySubPops=false,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -300,17 +326,20 @@ namespace simuPOP
 			{
 			}
 
+            /// deep copy of a \c mergeSubPops operator
 			virtual Operator* clone() const
 			{
 				return new mergeSubPops(*this);
 			}
 
+            /// apply a \c mergeSubPops operator
 			virtual bool apply(population& pop)
 			{
 				pop.mergeSubPops(m_subPops, m_removeEmptySubPops);
 				return true;
 			}
 
+            /// used by Python print function to print out the general information of the \c mergeSubPops operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::merge subpopulations>" ;
