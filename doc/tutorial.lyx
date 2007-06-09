@@ -1,5 +1,5 @@
 #LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 271
+\lyxformat 272
 \begin_document
 \begin_header
 \textclass beamer
@@ -4410,15 +4410,6 @@ Self-defined statistics
 Calculate effective number of alleles
 \end_layout
 
-\begin_layout Columns
-
-\end_layout
-
-\begin_deeper
-\begin_layout Column
-4cm
-\end_layout
-
 \begin_layout Standard
 The effective number of alleles can be estimated from a population by
 \begin_inset Formula \[
@@ -4442,15 +4433,11 @@ is the frequency of allele
 \begin_inset Formula $0$
 \end_inset
 
- is the only wildtype alleel).
-\end_layout
-
-\begin_layout Column
-5.5cm
+ is the only wildtype alelle).
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/tutorial_pyPenetrance.log}[firstline=32]
+\begin_inset Include \lstinputlisting{log/tutorial_eff_alleles.log}[lastline=10]
 preview false
 
 \end_inset
@@ -4458,7 +4445,19 @@ preview false
 
 \end_layout
 
-\end_deeper
+\begin_layout BeginFrame
+Use a Python operator
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/tutorial_eff_alleles.log}[firstline=12]
+preview false
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Read HapMap data
 \end_layout

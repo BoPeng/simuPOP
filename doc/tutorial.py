@@ -124,11 +124,22 @@ def Ne(pop, loci):
     v = pop.dvars().alleleFreq
     for locus in loci:
         f0 = 1 - v[locus][0]
-        Ne = 1./f0*f0/sum([x*x for x in v[locus][1:]])
+        Ne = f0*f0/sum([x*x for x in v[locus][1:]])
         pop.dvars().Ne[locus] = Ne
     return True
 
-pop = population(1000, loci=[2,3])
+simu = simulator(
+    population(1000, loci=[1], infoFields=['fitness']),
+    randomMating())
+simu.evolve(
+    preOps = [ initByFreq([0.1]*10) ],
+    ops = [
+        maSelector(locus=0, fitness=[1, 0.999, 0.998]),
+        pyOperator(func=Ne, param=[0], step=100),
+        pyEval(r'"Ne=%.3f\n" % Ne[0]', step=100),
+    ],
+    end=500
+)
       
 #end
 #file log/tutorial_hapmap.log
