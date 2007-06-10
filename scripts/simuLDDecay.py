@@ -75,8 +75,9 @@ options = [
     {'arg':'v', 
      'longarg':'verbose', 
      'default':False, 
-     'description':'Verbose mode.'},
-    ]
+     'description':'Verbose mode.'
+    },
+]
 
 
 from simuPOP import *
