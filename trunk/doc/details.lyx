@@ -78,7 +78,7 @@
 \begin_body
 
 \begin_layout Title
-Writing forward-time simulations, an in-depth course
+Forward-time simulations using simuPOP, an in-depth course
 \begin_inset OptArg
 status open
 
@@ -236,11 +236,200 @@ The global view
 \end_layout
 
 \begin_layout BeginFrame
-simuPOP modules
+six types of simuPOP modules
 \end_layout
+
+\begin_layout Enumerate
+Possible allele states:
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+\begin_inset ERT
+status open
 
 \begin_layout Standard
 
+short
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula $0\sim2^{8}-1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+long
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula $0\sim2^{16}-1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+binary
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula $0$
+\end_inset
+
+ and 
+\begin_inset Formula $1$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Debug information
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+standard with debug information and runtime check
+\end_layout
+
+\begin_layout Description
+optimized without debug information and runtime check
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Loading simuPOP
+\end_layout
+
+\begin_layout Standard
+\begin_inset CharStyle Structure
+show_label true
+status inlined
+
+\begin_layout Standard
+You can specify which module to load by
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Use 
+\family typewriter
+simuOpt.setOptions
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/details_load.log}[basicstyle={\tiny\ttfamily}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Set environment variables 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+SIMUALLELETYPE = short/long/binary
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+SIMUOPTIMIZED
+\family default
+ for optimized version
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Command line argument 
+\family typewriter
+--optimized
+\end_layout
+
+\begin_layout BeginFrame
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+[<+->]
+\end_layout
+
+\end_inset
+
+Important simuPOP concepts
+\end_layout
+
+\begin_layout Description
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+genotypic structure
+\end_layout
+
+\end_inset
+
+ number of chromosome, number and position of loci on each chromosome etc.
+\end_layout
+
+\begin_layout Description
+individual building blocks of populations
+\end_layout
+
+\begin_layout Description
+population consist of individuals of the same genotypic structure
+\end_layout
+
+\begin_layout Description
+operator objects that operate on populations
+\end_layout
+
+\begin_layout Description
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+mating scheme
+\end_layout
+
+\end_inset
+
+ controls how offspring generation is populated
 \end_layout
 
 \begin_layout BeginFrame
@@ -519,15 +708,10 @@ end{tikzpicture}
 \end_layout
 
 \begin_layout BeginFrame
-Load simuPOP
+
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/details_load.log}[basicstyle={\tiny\ttfamily}]
-preview false
-
-\end_inset
-
 
 \end_layout
 
