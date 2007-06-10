@@ -1,5 +1,5 @@
 #LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 272
+\lyxformat 271
 \begin_document
 \begin_header
 \textclass beamer
@@ -4164,7 +4164,7 @@ Calculate statistics
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/tutorial_stat.log}[emph={[1]{LD,stat,pyEval}},emphstyle={[1]\color{red}},lastline=18]
+\begin_inset Include \lstinputlisting{log/tutorial_stat.log}[emph={[1]{LD,stat,Fst,pyEval}},emphstyle={[1]\color{red}},lastline=18]
 preview false
 
 \end_inset
@@ -4500,6 +4500,149 @@ preview false
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+User interface
+\end_layout
+
+\begin_layout BeginFrame
+Use of 
+\family typewriter
+simuOpt.py
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{../scripts/simuLDDecay.py}[basicstyle={\ttfamily\tiny},linerange={17-31,40-47,80-80}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Input methods
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{../scripts/simuLDDecay.py}[linerange={94-108}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Bundled Scripts
+\end_layout
+
+\begin_layout Subsection
+simuLDDecay.py
+\end_layout
+
+\begin_layout BeginFrame
+simuLDDecay.py
+\end_layout
+
+\begin_layout Itemize
+simulate the decay of linkage disequilibrium with recombination
+\end_layout
+
+\begin_layout Itemize
+can control population size, recombination rate, number of replicates and
+ generations
+\end_layout
+
+\begin_layout Itemize
+use 
+\family typewriter
+simuRPy.py 
+\family default
+to visualize the decay of LD
+\end_layout
+
+\begin_layout Subsection
+simuNeutralSNPs.py
+\end_layout
+
+\begin_layout BeginFrame
+simuNeutralSNPs.py
+\end_layout
+
+\begin_layout Itemize
+simulate the evolution of unlinked SNP markers
+\end_layout
+
+\begin_layout Itemize
+observe the distribution of minor allele frequency
+\end_layout
+
+\begin_layout Itemize
+no selection
+\end_layout
+
+\begin_layout Subsection
+simuForward.py
+\end_layout
+
+\begin_layout BeginFrame
+simuForward.py
+\end_layout
+
+\begin_layout Itemize
+Traditional forward-time simulation
+\end_layout
+
+\begin_layout Itemize
+Use a dynamic-selector to control disease allele frequency in a disease
+ introduction stage
+\end_layout
+
+\begin_layout Itemize
+Restart simulation when a disease allele get lost
+\end_layout
+
+\begin_layout Subsection
+simuComplexDisease.py
+\end_layout
+
+\begin_layout BeginFrame
+simuComplexDisease.py
+\end_layout
+
+\begin_layout Itemize
+New forward-time simulation method (Peng, 2007)
+\end_layout
+
+\begin_layout Itemize
+Simulate the trajectory of disease allele frequencies backward in time
+\end_layout
+
+\begin_layout Itemize
+Controlled forward-time simulation method that follows simulated disease
+ allele frequency
+\end_layout
+
+\begin_layout Subsection
+simuCluster.py
+\end_layout
+
+\begin_layout BeginFrame
+simuCluster.py
+\end_layout
+
+\begin_layout Itemize
+A utility script to help running simuPOP scripts on a cluster system
+\end_layout
+
+\begin_layout Itemize
+User provides a template scripts and a list of paramters
+\end_layout
+
+\begin_layout Itemize
+This script generate scripts and submit the jobs
 \end_layout
 
 \begin_layout BeginFrame
