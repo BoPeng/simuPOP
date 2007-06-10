@@ -95,7 +95,8 @@ else:
 allParam = simuOpt.getParam(options, __doc__)
 
 if len(allParam) > 0:    # successfully get the params
-    (help, popSize, endGen, recRate, numRep, saveFigure, saveConfig, method, verbose) = allParam
+    (help, popSize, endGen, recRate, numRep, saveFigure, 
+    saveConfig, method, verbose) = allParam
 else:
     sys.exit(0)
 
