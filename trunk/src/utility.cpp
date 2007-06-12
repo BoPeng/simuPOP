@@ -135,7 +135,7 @@ namespace simuPOP
 		"DBG_MATING",
 		"DBG_MIGRATOR",
 		"DBG_PROFILE",
-		"DBG_MPI"
+		"DBG_MPI",
 		"DBG_DEVEL"
 	};
 
@@ -198,10 +198,11 @@ namespace simuPOP
 	void ListDebugCode()
 	{
 #ifndef OPTIMIZED
-		cout << "Debug code \t On/Off" << endl;
+		cout << "Debug code                  On/Off" << endl;
 
 		for(int i=0; i < DBG_CODE_LENGTH; ++i)
-			cout << g_dbgString[i] << '\t' << debug(static_cast<DBG_CODE>(i)) << endl;
+			cout << g_dbgString[i] << string("                        ", 30 - g_dbgString[i].size())
+				<< debug(static_cast<DBG_CODE>(i)) << endl;
 
 		cout << endl;
 		if(debug(DBG_GENERAL))
