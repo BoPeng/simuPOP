@@ -1,55 +1,69 @@
 #!/usr/bin/env python
 #
-# python scripts for details.lyx
+# python scripts for course.lyx
 #
-#file log/details_load.log
+#file log/course_load.log
 from simuOpt import setOptions
 setOptions(alleleType='long', optimized=False)
 from simuPOP import *
 #end
-# part 1:
-# 
-#   Genotypic structure
-#   
-#file log/details_chrom_stru.log
-pop = population(size=10, loci=[2, 4, 5])
-print pop.numLoci()
-# index starts at zero!
-print pop.numLoci(1)
-print pop.ploidy()
-print pop.ploidyName()
-print pop.chromBegin(1)
-print pop.locusPos(3)
-print pop.locusName(4)
+#file log/course_standard.log
+pop = population(10, loci=[2])
+pop.locusPos(10)
+pop.individual(20).setAllele(1, 0)
 #end
-#file log/details_loci_pos.log
-pop = population(size=10, loci=[2, 4], maxAllele=3,
-    lociPos=[[1.5, 2.5], [1, 2, 5, 10]],
-    lociNames=['loc%x' % x for x in range(6)],
-    alleleNames=['A', 'T', 'C', 'G'])
-print pop.locusPos(3)
-print pop.locusName(4)
-print pop.alleleName(1)
+#file log/course_rng.log
+rng().name()
+rng().seed()
+r = ListAllRNG()
+print r[:5]
+SetRNG('taus2', 1234)
+rng().name()
+rng().seed()
+rng().randUniform01()
 #end
-#file log/details_population.log
+#file log/course_debug.log
+TurnOnDebug(DBG_POPULATION)
+ind = population(10, loci=[5]).individual(1)
+# This line may crash simuPOP 
+print ind.allele(2)
+# Show all debug code
+ListDebugCode()
+#end
+TurnOffDebug(DBG_POPULATION)
+#
+#file log/course_help.log
+help(population.addInfoFields)
+#end
+#file log/course_population.log
 pop = population(size=10, loci=[2, 3])
 Dump(pop)
 #end
-#file log/details_dump.log
+#file log/course_genostru.log
+pop = population(subPop=[200, 300], loci=[3, 2], 
+    maxAllele=3, ploidy=4, 
+    lociPos=[[1, 3, 5], [2.5, 4]], 
+    alleleNames=['A', 'C', 'T', 'G'])
+pop.numLoci(0)
+pop.totNumLoci()
+pop.locusPos(4)
+pop.subPopSize(1)
+pop.popSize()
+pop.ploidyName()
+pop.individual(1).allele(1, 2)
+#end
+
+#file log/course_dump.log
 Dump(pop)
 #end
-#file log/details_init_dump.log
-InitByFreq(pop, alleleFreq=[0.3, 0.7])
-Dump(pop)
-#end
-#file log/details_pop_stru.log
+#file log/course_pop_stru.log
 pop = population(subPop=[2, 5, 6], loci=[2])
 print pop.popSize()
 print pop.subPopSizes()
 print pop.subPopSize(1)
 Dump(pop, infoOnly=True)
 #end
-#file log/details_subpop_mating.log
+#file log/course_subpop_mating.log
 pop = population(subPop=[5, 6], loci=[2])
 simu = simulator(pop, randomMating())
 simu.evolve(
@@ -63,25 +77,17 @@ simu.evolve(
     end = 1
 )
 #end
-#file log/details_infofields.log
-pop = population(size=20, loci=[1], infoFields=['birthday'])
-InitByFreq(pop, alleleFreq=[0.2, .8])
+#file log/course_pop_variable.log
+pop = population(subPop=[5, 10], loci=[5])
+InitByFreq(pop, [.6, .3, .1])
+Stat(pop, alleleFreq=[1], genoFreq=[2])
+print pop.dvars().alleleFreq[1][0]
+from simuUtil import ListVars
+ListVars(pop.dvars(), useWxPython=False)
 #end
-#file log/details_genostru.log
-pop = population(subPop=[200, 300], loci=[3, 2], 
-    maxAllele=3, ploidy=4, 
-    lociPos=[[1, 3, 5], [2.5, 4]], 
-    alleleNames=['A', 'C', 'T', 'G'])
-pop.numLoci(0)
-pop.totNumLoci()
-pop.locusPos(4)
-pop.subPopSize(1)
-pop.popSize()
-pop.ploidyName()
-pop.individual(1).allele(1, 2)
-#end
-#file log/details_pop_manipulate.log
+#file log/course_pop_manipulate.log
 # make a copy of pop
+pop = population(1000, loci=[2,3])
 pop1 = pop.clone()
 # remove loci 2, 3, 4
 pop.removeLoci(keep=[0, 1])
@@ -89,10 +95,6 @@ pop.removeLoci(keep=[0, 1])
 pop2 = MergePopulationsByLoci(pops=[pop, pop1])
 # randomly assign alleles using given allele frequencies
 InitByFreq(pop2, [0.8, .2])
-# calculate population allele frequency
-Stat(pop2, alleleFreq=range(pop2.totNumLoci()))
-# print allele frequency
-print pop2.dvars().alleleFreq
 # assign affection status using a penetrance model
 MapPenetrance(pop2, locus=1, 
     penetrance={'0-0': 0.05, '0-1': 0.2, '1-1': 0.8})
@@ -107,15 +109,35 @@ print open('sample.map').read()
 print open('sample.dat').read()
 print open('sample.ped').read()
 #end
-#file log/details_pop_variable.log
-pop = population(subPop=[5, 10], loci=[5])
-InitByFreq(pop, [.6, .3, .1])
-Stat(pop, alleleFreq=[1], genoFreq=[2])
-print pop.dvars().alleleFreq[1][0]
-from simuUtil import ListVars
-ListVars(pop.dvars(), useWxPython=False)
+#file log/course_individual.log
+pop =  population(subPop=[100, 200], loci=[2, 3])
+# the first individual
+ind1 = pop.individual(0)
+# the second individual in the second subpop
+ind2 = pop.individual(1, 1)
+# genotypic strcuture
+print ind1.numLoci(1)
+print ind1.numChrom()
+# an editable allele list
+alleles = ind1.arrGenotype(0)
+alleles[:] = range(ind1.totNumLoci())
+print ind1.arrGenotype(0)
+# ploidy 1, index 4
+ind1.setAllele(3, 4, 1)
+print ind1.allele(4, 1)
 #end
-#file log/details_individual.log
+#file log/course_info.log
+pop = population(100, loci=[5, 8],
+    infoFields=['father_idx', 'mother_idx'])
+simu = simulator(pop, randomMating(numOffspring=2))
+simu.evolve(ops=[parentsTagger()], end=5)
+ind = simu.population(0).individual(0)
+ind1 = simu.population(0).individual(1)
+print ind.info('father_idx'), ind.info('mother_idx')
+print ind1.info('father_idx'), ind1.info('mother_idx')
+
+#end
+#file log/course_individuals.log
 pop = population(subPop=[5, 8], loci=[5], 
     infoFields=['penetrance'])
 InitByFreq(pop, [.6, .3, .1])
@@ -128,18 +150,7 @@ for ind in pop.individuals(1):
         ind.allele(2, 0), ind.allele(2, 1))
 
 #end
-#file log/details_info.log
-pop = population(100, loci=[5, 8],
-    infoFields=['father_idx', 'mother_idx'])
-simu = simulator(pop, randomMating(numOffspring=2))
-simu.evolve(ops=[parentsTagger()], end=5)
-ind = simu.population(0).individual(0)
-ind1 = simu.population(0).individual(1)
-print ind.info('father_idx'), ind.info('mother_idx')
-print ind1.info('father_idx'), ind1.info('mother_idx')
-
-#end
-#file log/details_op_stage.log
+#file log/course_op_stage.log
 simu = simulator(
     population(subPop=[20, 80], loci=[3]),
     randomMating())
@@ -154,7 +165,7 @@ simu.evolve(
     dryrun=True
 )
 #end
-#file log/details_op_gen.log
+#file log/course_op_gen.log
 simu = simulator(
     population(10000, loci=[3]),
     randomMating())
@@ -171,7 +182,7 @@ simu.evolve(
     end = 50
 )
 #end
-#file log/details_op_rep.log
+#file log/course_op_rep.log
 simu = simulator(
     population(100, loci=[3]),
     randomMating(), 
@@ -188,7 +199,7 @@ simu.evolve(
     end=5
 )
 #end
-#file log/details_op_output.log
+#file log/course_op_output.log
 simu = simulator(
     population(100, loci=[3]),
     randomMating(), 
@@ -209,7 +220,7 @@ print open('out').read()
 print open('out1').read()
 print open('out2').read()
 #end
-#file log/details_mating_demo.log
+#file log/course_mating_demo.log
 def lin_inc(gen, oldsize=[]):
     return [10+gen]*5
 
@@ -225,7 +236,7 @@ simu.evolve(
     end=5
 )
 #end
-#file log/details_mating_offspring.log
+#file log/course_mating_offspring.log
 simu = simulator(
     population(size=10000, loci=[1]),
     randomMating(),
