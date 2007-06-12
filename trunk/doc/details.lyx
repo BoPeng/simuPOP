@@ -451,7 +451,7 @@ begin{tikzpicture}
 
 
 \backslash
-fill[blue, very nearly transparent] (0, 2.6) rectangle (10, 7);
+shade[color=blue] (0, 2.6) rectangle (10, 7);
 \end_layout
 
 \begin_layout Standard
@@ -465,7 +465,7 @@ uncover<1->{
 
 
 \backslash
-fill[red, very nearly transparent] (2.5, 4) rectangle +(1.5, 1);
+shade[color=red] (2.5, 4) rectangle +(1.5, 1);
 \end_layout
 
 \begin_layout Standard
@@ -532,7 +532,7 @@ uncover<3->{
 
 
 \backslash
-fill[red, very nearly transparent] (4, 5.5) rectangle +(0.5, 1);
+shade[color=red] (4, 5.5) rectangle +(0.5, 1);
 \end_layout
 
 \begin_layout Standard
@@ -582,7 +582,7 @@ draw [->] (4.5, 6) -- (5.5, 6);
 
 
 \backslash
-fill[red, very nearly transparent] (5.5, 5.5) rectangle +(0.5, 1);
+shade[color=red] (5.5, 5.5) rectangle +(0.5, 1);
 \end_layout
 
 \begin_layout Standard
@@ -639,7 +639,7 @@ draw [->] (6, 6) ..
 
 
 \backslash
-fill[red, very nearly transparent] (6, 4) rectangle +(1.5, 1);
+shade[color=red] (6, 4) rectangle +(1.5, 1);
 \end_layout
 
 \begin_layout Standard
@@ -737,7 +737,7 @@ Structure of a population
 
 \begin_layout Standard
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -755,9 +755,134 @@ begin{small}
 
 \begin_layout Standard
 
+\end_layout
+
+\begin_layout Standard
+
 
 \backslash
-fill[blue, very nearly transparent] (-4, -7.5) rectangle +(7, 7);
+shade[color=blue] (-4, -7.5) rectangle +(7, 7);
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+uncover<2-5>{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+shade[color=red] (-3.5, -6) rectangle +(6, 1.5);
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+uncover<3>{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+shade[color=blue] (-3.25, -5.75)rectangle +(1.5, 1);
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+uncover<4>{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+shade[color=blue] (-1.75, -5.75)rectangle +(2, 1);
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+uncover<5>{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+shade[color=blue] (0.25, -5.75)rectangle +(2, 1);
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+uncover<6>{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+shade[color=red] (-3.5, -4.5)rectangle +(6, 1.5);
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+uncover<7>{
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+shade[color=red] (-3.5, -3)rectangle +(5, 1.5);
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+shade[color=blue] (-3.5, -7)rectangle +(6, 1);
 \end_layout
 
 \begin_layout Standard
@@ -1012,32 +1137,6 @@ x, -1.75);
 
 \begin_layout Standard
 
- %
-\backslash
-foreach 
-\backslash
-y in {-5.75, -4.75, -4.25, -3.25} 
-\backslash
-draw [thick, yellow!80!gray] (-3.25, 
-\backslash
-y) -- (2.25, 
-\backslash
-y);
-\end_layout
-
-\begin_layout Standard
-
- %
-\backslash
-foreach 
-\backslash
-y in {-2.75, -1.75} 
-\backslash
-draw [thick, yellow!80!gray] (-3.25, 
-\backslash
-y) -- (1.25, 
-\backslash
-y);
 \end_layout
 
 \begin_layout Standard
@@ -1119,8 +1218,6 @@ draw (-3.5, -6.5) node [right]{gen = 2, numAffected = 5, ...};
 \begin_layout Standard
 
  
-\backslash
-fill[blue, very nearly transparent] (-3.5, -7)rectangle +(6, 1);
 \end_layout
 
 \begin_layout Standard
@@ -1138,140 +1235,6 @@ draw (3, -6.5) node (t1) [right]{Population variables};}
 
 \begin_layout Standard
 
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-uncover<2-5>{
-\end_layout
-
-\begin_layout Standard
-
- 
-\backslash
-fill[red, very nearly transparent] (-3.5, -6) rectangle +(6, 1.5);
-\end_layout
-
-\begin_layout Standard
-
- }
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
- 
-\backslash
-uncover<3>{
-\end_layout
-
-\begin_layout Standard
-
- 
-\backslash
-fill[blue, very nearly transparent] (-3.25, -5.75)rectangle +(1.5, 1);
-\end_layout
-
-\begin_layout Standard
-
- }
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
- 
-\backslash
-uncover<4>{
-\end_layout
-
-\begin_layout Standard
-
- 
-\backslash
-fill[blue, very nearly transparent] (-1.75, -5.75)rectangle +(2, 1);
-\end_layout
-
-\begin_layout Standard
-
- }
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
- 
-\backslash
-uncover<5>{
-\end_layout
-
-\begin_layout Standard
-
- 
-\backslash
-fill[blue, very nearly transparent] (0.25, -5.75)rectangle +(2, 1);
-\end_layout
-
-\begin_layout Standard
-
- }
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
- 
-\backslash
-uncover<6>{
-\end_layout
-
-\begin_layout Standard
-
- 
-\backslash
-fill[red, very nearly transparent] (-3.5, -4.5)rectangle +(6, 1.5);
-\end_layout
-
-\begin_layout Standard
-
- }
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
- 
-\backslash
-uncover<7>{
-\end_layout
-
-\begin_layout Standard
-
- 
-\backslash
-fill[red, very nearly transparent] (-3.5, -3)rectangle +(5, 1.5);
-\end_layout
-
-\begin_layout Standard
-
- }
 \end_layout
 
 \begin_layout Standard
@@ -1488,7 +1451,7 @@ begin{small}
 
 
 \backslash
-fill[blue, very nearly transparent] (-0.5, -6.5) rectangle +(8, 6.5);
+shade[color=blue] (-0.5, -6.5) rectangle +(8, 6.5);
 \end_layout
 
 \begin_layout Standard
@@ -1506,7 +1469,7 @@ draw (-0.5, 0.5) node [right]{Assume ploidy = 2, maxAllele = 1};
 
  
 \backslash
-fill[red, very nearly transparent] (0, -1.5) rectangle +(7.25, 1);
+shade[color=red] (0, -1.5) rectangle +(7.25, 1);
 \end_layout
 
 \begin_layout Standard
@@ -1710,7 +1673,7 @@ tiny 5};
 
  
 \backslash
-fill[red, very nearly transparent] (0, -3) rectangle +(5.75, 1);
+shade[color=red] (0, -3) rectangle +(5.75, 1);
 \end_layout
 
 \begin_layout Standard
@@ -1846,7 +1809,7 @@ draw (7.75, -4.5) node [right]{Affection status};}
 
  
 \backslash
-fill[red, very nearly transparent] (0, -6) rectangle +(6.8, 0.75);
+shade[color=red] (0, -6) rectangle +(6.8, 0.75);
 \end_layout
 
 \begin_layout Standard
@@ -1984,7 +1947,7 @@ begin{tikzpicture}
 
 
 \backslash
-fill[blue, very nearly transparent] (0, 2.6) rectangle (10, 7);
+shade[color=blue] (0, 2.6) rectangle (10, 7);
 \end_layout
 
 \begin_layout Standard
@@ -1998,7 +1961,7 @@ uncover<1->{
 
 
 \backslash
-fill[red, very nearly transparent] (2.5, 4) rectangle +(1.5, 1);
+shade[color=red] (2.5, 4) rectangle +(1.5, 1);
 \end_layout
 
 \begin_layout Standard
@@ -2065,7 +2028,7 @@ uncover<3->{
 
 
 \backslash
-fill[red, very nearly transparent] (4, 5.5) rectangle +(0.5, 1);
+shade[color=red] (4, 5.5) rectangle +(0.5, 1);
 \end_layout
 
 \begin_layout Standard
@@ -2115,7 +2078,7 @@ draw [->] (4.5, 6) -- (5.5, 6);
 
 
 \backslash
-fill[red, very nearly transparent] (5.5, 5.5) rectangle +(0.5, 1);
+shade[color=red] (5.5, 5.5) rectangle +(0.5, 1);
 \end_layout
 
 \begin_layout Standard
@@ -2172,7 +2135,7 @@ draw [->] (6, 6) ..
 
 
 \backslash
-fill[red, very nearly transparent] (6, 4) rectangle +(1.5, 1);
+shade[color=red] (6, 4) rectangle +(1.5, 1);
 \end_layout
 
 \begin_layout Standard
@@ -2238,28 +2201,6 @@ end{tikzpicture}
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Every operator has a default stage, and a 
-\family typewriter
-
-\begin_inset CharStyle Alert
-show_label true
-status inlined
-
-\begin_layout Standard
-
-\family typewriter
-stage
-\end_layout
-
-\end_inset
-
- 
-\family default
-parameter to change it.
- 
 \end_layout
 
 \begin_layout BeginFrame

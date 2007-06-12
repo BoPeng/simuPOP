@@ -1556,6 +1556,217 @@ Not limited to sample generation
 \end_deeper
 \end_deeper
 \begin_layout BeginFrame
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+[<+->]
+\end_layout
+
+\end_inset
+
+Applications of forward-time simulations
+\end_layout
+
+\begin_layout Standard
+simuPOP can simulate the change of the genetic composition of a population
+ in a complicated evolutionary process.
+ It can be used to
+\end_layout
+
+\begin_layout Itemize
+Demonstrate population genetics phenomena
+\end_layout
+
+\begin_layout Itemize
+Study the impact of genetic and demographic forces on the evolution of a
+ population
+\end_layout
+
+\begin_layout Itemize
+Study the evolution of (complex) genetic diseases
+\end_layout
+
+\begin_layout Itemize
+Simulate samples to validate gene-mapping methods
+\end_layout
+
+\begin_layout Itemize
+Study ascertainment methods in simulated populations
+\end_layout
+
+\begin_layout Itemize
+...
+\end_layout
+
+\begin_layout BeginFrame
+Simulations of complex human diseases
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4.7cm
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+{Backward-time}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<1->
+\end_layout
+
+\end_inset
+
+Haploid only
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<2->
+\end_layout
+
+\end_inset
+
+Additive selection and penetrance models
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<3->
+\end_layout
+
+\end_inset
+
+One disease susceptibility locus
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<4->
+\end_layout
+
+\end_inset
+
+Generate independent samples of fixed format
+\end_layout
+
+\end_deeper
+\begin_layout Column
+4.7cm
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+{Forward-time}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<1->
+\end_layout
+
+\end_inset
+
+No limit on ploidy
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<2->
+\end_layout
+
+\end_inset
+
+Arbitrary selection and penetrance models
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<3->
+\end_layout
+
+\end_inset
+
+Multiple DSL with interaction
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+<4->
+\end_layout
+
+\end_inset
+
+Generate multi-generation populations
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Subsection
+Features of simuPOP
+\end_layout
+
+\begin_layout BeginFrame
 Forward-time simulation programs
 \end_layout
 
@@ -1668,10 +1879,6 @@ status open
 
 \end_layout
 
-\begin_layout Subsection
-Features of simuPOP
-\end_layout
-
 \begin_layout BeginFrame
 \begin_inset ERT
 status open
@@ -1732,7 +1939,7 @@ Structure of individuals
 
 \begin_layout Standard
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -2205,7 +2412,7 @@ Structure of populations
 
 \begin_layout Standard
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -2734,7 +2941,7 @@ The evolutionary process
 
 \begin_layout Standard
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -3169,217 +3376,6 @@ this scenario is implemented in simuPOP
 
 \end_deeper
 \begin_layout Subsection
-Applications
-\end_layout
-
-\begin_layout BeginFrame
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-[<+->]
-\end_layout
-
-\end_inset
-
-This is fun, but is it useful?
-\end_layout
-
-\begin_layout Standard
-simuPOP can simulate the change of the genetic composition of a population
- in a complicated evolutionary process.
- It can be used to
-\end_layout
-
-\begin_layout Itemize
-Demonstrate population genetics phenomena
-\end_layout
-
-\begin_layout Itemize
-Study the impact of genetic and demographic forces on the evolution of a
- population
-\end_layout
-
-\begin_layout Itemize
-Study the evolution of (complex) genetic diseases
-\end_layout
-
-\begin_layout Itemize
-Simulate samples to validate gene-mapping methods
-\end_layout
-
-\begin_layout Itemize
-Study ascertainment methods in simulated populations
-\end_layout
-
-\begin_layout Itemize
-...
-\end_layout
-
-\begin_layout BeginFrame
-Simulations of complex human diseases
-\end_layout
-
-\begin_layout Columns
-
-\end_layout
-
-\begin_deeper
-\begin_layout Column
-4.7cm
-\end_layout
-
-\begin_layout Block
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-{Backward-time}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-<1->
-\end_layout
-
-\end_inset
-
-Haploid only
-\end_layout
-
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-<2->
-\end_layout
-
-\end_inset
-
-Additive selection and penetrance models
-\end_layout
-
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-<3->
-\end_layout
-
-\end_inset
-
-One disease susceptibility locus
-\end_layout
-
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-<4->
-\end_layout
-
-\end_inset
-
-Generate independent samples of fixed format
-\end_layout
-
-\end_deeper
-\begin_layout Column
-4.7cm
-\end_layout
-
-\begin_layout Block
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-{Forward-time}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-<1->
-\end_layout
-
-\end_inset
-
-No limit on ploidy
-\end_layout
-
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-<2->
-\end_layout
-
-\end_inset
-
-Arbitrary selection and penetrance models
-\end_layout
-
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-<3->
-\end_layout
-
-\end_inset
-
-Multiple DSL with interaction
-\end_layout
-
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-<4->
-\end_layout
-
-\end_inset
-
-Generate multi-generation populations
-\end_layout
-
-\end_deeper
-\end_deeper
-\begin_layout Subsection
 Availability
 \end_layout
 
@@ -3426,11 +3422,11 @@ simuPOP Reference Manual
 \end_layout
 
 \begin_layout Section
-An example
+Dive into simuPOP
 \end_layout
 
 \begin_layout Subsection
-An example
+Your first simuPOP script
 \end_layout
 
 \begin_layout BeginFrame
@@ -4073,36 +4069,8 @@ end{flushright}
 \end_layout
 
 \end_deeper
-\begin_layout BeginFrame
-Exercise time
-\end_layout
-
-\begin_layout Itemize
-Start python
-\end_layout
-
-\begin_layout Itemize
-Load simuPOP
-\end_layout
-
-\begin_layout Itemize
-Create a population and run
-\end_layout
-
-\begin_deeper
-\begin_layout LyX-Code
-pop.ploidyName()
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-run 
-\family typewriter
-tutorial_example1.py
-\end_layout
-
 \begin_layout Section
-Various topics
+More examples
 \end_layout
 
 \begin_layout Subsection
@@ -4123,7 +4091,7 @@ preview false
 \end_layout
 
 \begin_layout Subsection
-Calculate statistics
+Statistics and Population Variables
 \end_layout
 
 \begin_layout BeginFrame
@@ -4157,8 +4125,6 @@ Hybrid Operator
 \end_layout
 
 \begin_layout BeginFrame
-
-\family typewriter
 A penetrance model
 \end_layout
 
@@ -4370,7 +4336,7 @@ preview false
 \end_layout
 
 \begin_layout Subsection
-Self-defined statistics
+Python Operator
 \end_layout
 
 \begin_layout BeginFrame
@@ -4388,7 +4354,7 @@ where
 \begin_inset Formula $f_{i}$
 \end_inset
 
-is the frequency of allele 
+ is the frequency of allele 
 \begin_inset Formula $i$
 \end_inset
 
@@ -4417,7 +4383,7 @@ Use a Python operator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/tutorial_eff_alleles.log}[firstline=12]
+\begin_inset Include \lstinputlisting{log/tutorial_eff_alleles.log}[emph={[1]{pyOperator,func,param}},emphstyle={[1]\color{red}},firstline=12]
 preview false
 
 \end_inset
@@ -4489,12 +4455,27 @@ preview false
 \end_layout
 
 \begin_layout BeginFrame
-Input methods
+Process parameters
 \end_layout
 
 \begin_layout Standard
 \begin_inset Include \lstinputlisting{../scripts/simuLDDecay.py}[linerange={94-108}]
 preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Parameter dialog
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename simuLDDecay.png
+	lyxscale 50
+	width 8cm
 
 \end_inset
 
