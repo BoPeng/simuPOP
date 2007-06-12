@@ -65,10 +65,10 @@ options = [
      'allowedTypes':[types.StringType],
      'description':'Save current paremeter set to specified file.'
     },
-    {'longarg':'method=', 
+    {'longarg':'measure=', 
      'default':'D',
-     'label':'Choose method',
-     'description':'Choose method to compute linkage disequilibrium.',
+     'label':'LD measure',
+     'description':'Choose linkage disequilibrium measure to be outputted.',
      'chooseOneOf':['D', "D'", 'R2'],
      'validate': simuOpt.valueOneOf(['D', "D'", 'R2']),
     },
