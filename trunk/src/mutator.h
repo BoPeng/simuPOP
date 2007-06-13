@@ -256,7 +256,7 @@ namespace simuPOP
 			 for these kinds of evolutionary processes.
 
 			\param rate: mutation rate
-			\param incProb probability to increase allele state. Default to 1
+			\param incProb probability to increase allele state. Default to 0.5
 			\param atLoci and other parameters: refer to help(mutator), help(baseOperator.__init__)
 
 			*/
