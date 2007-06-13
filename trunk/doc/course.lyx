@@ -346,7 +346,7 @@ Note
 
 \end_inset
 
-: A MPI (Message Passing Interface ) version of simuPOP is under development.
+: A Message Passing Interface (parallel) version of simuPOP is under development.
 \end_layout
 
 \begin_layout BeginFrame
@@ -371,7 +371,7 @@ preview false
 
 \end_deeper
 \begin_layout Enumerate
-Set environment variables 
+Set environment variables (system dependent)
 \end_layout
 
 \begin_deeper
@@ -1334,27 +1334,6 @@ preview false
 
 \end_layout
 
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout BeginFrame
-Have a look at the population (
-\family typewriter
-Dump
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/course_dump.log}[basicstyle={\ttfamily\tiny}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Population structure
 \end_layout
@@ -1437,7 +1416,7 @@ Population manipulation
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/course_pop_manipulate.log}[lastline=22]
+\begin_inset Include \lstinputlisting{log/course_pop_manipulate.log}[lastline=18]
 preview false
 
 \end_inset
@@ -1450,7 +1429,7 @@ Population manipulation (cont.)
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/course_pop_manipulate.log}[firstline=23,lastline=43]
+\begin_inset Include \lstinputlisting{log/course_pop_manipulate.log}[firstline=19,lastline=39]
 preview false
 
 \end_inset
@@ -1463,7 +1442,7 @@ Population manipulation (cont.)
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/course_pop_manipulate.log}[firstline=44]
+\begin_inset Include \lstinputlisting{log/course_pop_manipulate.log}[firstline=40]
 preview false
 
 \end_inset
@@ -1489,7 +1468,7 @@ Structure of individual
 
 \begin_layout Standard
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Standard
 
@@ -1883,14 +1862,14 @@ draw (0, -5.65) node [right]{fitness};
 \backslash
 draw (2, -5.65) node [right]{father
 \backslash
-_id};
+_idx};
 \end_layout
 
 \begin_layout Standard
 
  
 \backslash
-draw (4, -5.65) node [right]{...};
+draw (4.5, -5.65) node [right]{...};
 \end_layout
 
 \begin_layout Standard
@@ -1920,7 +1899,7 @@ draw (7.75, -5.85) node [right]{fields}; }
 \backslash
 foreach 
 \backslash
-cell in {1.75, 4} 
+cell in {1.75, 4.5} 
 \backslash
 draw [thick, yellow!80!gray] (
 \backslash
@@ -2030,7 +2009,7 @@ Information fields
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/course_info.log}
+\begin_inset Include \lstinputlisting{log/course_info.log}[emph={[1]{infoFields,parentsTagger}},emphstyle={[1]\color{red}}]
 preview false
 
 \end_inset
@@ -2060,7 +2039,7 @@ Stage of an operator
 \end_layout
 
 \begin_layout BeginFrame
-Life cycle of a generation
+Stage of an operator
 \end_layout
 
 \begin_layout Standard
@@ -2139,8 +2118,8 @@ uncover<2->{
 
 
 \backslash
-draw [->] (1.75, 4.5) -- (2.5, 4.5) node[at start, left, text width=1.9cm, scale=0.8]
- {Pre-mating operators};
+draw [->] (1.75, 4.5) -- (2.5, 4.5) node[at start, left, text width=1.9cm, scale=0.8,
+ color=red] {Pre-mating operators};
 \end_layout
 
 \begin_layout Standard
@@ -2237,8 +2216,8 @@ uncover<5->{
 
 
 \backslash
-draw [->] (5, 5) -- (5, 6) node[at start, below, text width=1.9cm, scale=0.8]
- {During-mating operators};
+draw [->] (5, 5) -- (5, 6) node[at start, below, text width=1.9cm, scale=0.8,color
+=red] {During-mating operators};
 \end_layout
 
 \begin_layout Standard
@@ -2314,7 +2293,7 @@ uncover<7->{
 
 \backslash
 draw [->] (8.25 , 4.5) -- (7.5, 4.5) node[at start, right, text width=2.1cm,
- scale=0.8] {Post-mating operators};
+ scale=0.8, color=red] {Post-mating operators};
 \end_layout
 
 \begin_layout Standard
@@ -2382,7 +2361,7 @@ preview false
 \end_layout
 
 \begin_layout Subsection
-Output
+Output and output expression
 \end_layout
 
 \begin_layout BeginFrame
@@ -2407,62 +2386,268 @@ Python operator
 \end_layout
 
 \begin_layout Standard
-The most flexible operators that can perform any operation, but are less
- efficient.
-\end_layout
+A 
+\begin_inset CharStyle Alert
+show_label true
+status inlined
 
 \begin_layout Standard
-The idea: user provide a function with specified input and output, simuPOP
- calls this function during evolution.
+Python operator
 \end_layout
 
-\begin_layout Standard
+\end_inset
 
-\family typewriter
-func(pop [, param])
+ is an operator that calls a user-provided Python function when it is applied
+ to a population.
+ A 
+\begin_inset CharStyle Alert
+show_label true
+status inlined
+
+\begin_layout Standard
+hybrid operator
+\end_layout
+
+\end_inset
+
+ performs its main function at the C++ level, and a 
+\begin_inset CharStyle Alert
+show_label true
+status inlined
+
+\begin_layout Standard
+pure Python operator
+\end_layout
+
+\end_inset
+
+ depends on this user-provided function for its functionality.
 \end_layout
 
 \begin_layout BeginFrame
-Python Individual operator
+A hybrid operator
 \end_layout
 
 \begin_layout Standard
-
-\family typewriter
-func(ind [, genotype] [, param]), return True/False or an array
+A (weird) selector with fitness 
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features>
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\family typewriter
-ind
-\family default
-: individual
+\begin_layout Standard
+
 \end_layout
 
-\begin_layout Itemize
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\family typewriter
-genotype
-\family default
-: if parameter loci is given, genotype at these loci are passed to the function
+\begin_layout Standard
+BB
 \end_layout
 
-\begin_layout Itemize
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\family typewriter
-param
-\family default
-: if parameter param is given, param passed from simuPOP
+\begin_layout Standard
+Bb
 \end_layout
 
-\begin_layout Itemize
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
 
-\family typewriter
-return
-\family default
-: if parameter infoFields is given, assign return values to these information
- fields
+\begin_layout Standard
+bb
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+AA
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+1.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+1.01
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+1.02
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Aa
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+1.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+0.99
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+0.98
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+aa
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+1.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+1.01
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+1.02
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/course_hybrid.log}[lastline=8]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CharStyle Alert
+show_label true
+status inlined
+
+\begin_layout Standard
+Note
+\end_layout
+
+\end_inset
+
+: This operator can be more efficiently implemented using other non-Python
+ operators.
+\end_layout
+
+\begin_layout BeginFrame
+A hybrid operator (cont.).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/course_hybrid.log}[firstline=9]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+A pure Python operator
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/course_python_op.log}[basicstyle={\ttfamily\tiny},emph={[1]{pyIndOperator,func,pyOperator}},emphstyle={[1]\color{red}}]
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -2507,6 +2692,10 @@ fitness
 Can produce more than one offspring
 \end_layout
 
+\begin_layout Subsection
+Demographic model
+\end_layout
+
 \begin_layout BeginFrame
 Demographic model
 \end_layout
@@ -2518,6 +2707,10 @@ preview false
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Number of offspring
 \end_layout
 
 \begin_layout BeginFrame
@@ -2535,6 +2728,10 @@ preview false
 
 \begin_layout Section
 Simulator
+\end_layout
+
+\begin_layout Subsection
+What a simulator does
 \end_layout
 
 \begin_layout BeginFrame
@@ -2569,6 +2766,40 @@ Many operators
 
 \begin_layout Standard
 and evolve the populations.
+\end_layout
+
+\begin_layout Subsection
+Simulator operations
+\end_layout
+
+\begin_layout BeginFrame
+simulator operations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/course_simulator_op.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Populations
+\end_layout
+
+\begin_layout BeginFrame
+simulator populations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/course_simulator_pop.log}
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout EndFrame

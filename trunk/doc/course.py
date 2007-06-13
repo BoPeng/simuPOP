@@ -4,7 +4,7 @@
 #
 #file log/course_load.log
 from simuOpt import setOptions
-setOptions(alleleType='long', optimized=False)
+setOptions(alleleType='long', optimized=False, quiet=False)
 from simuPOP import *
 #end
 #file log/course_standard.log
@@ -220,6 +220,54 @@ print open('out').read()
 print open('out1').read()
 print open('out2').read()
 #end
+#file log/course_hybrid.log
+def mySelector(geno, gen):
+    if geno[0] + geno[1] == 0:
+        return (1, 1.01, 1.02)[geno[2] + geno[3]]
+    elif geno[0] + geno[1] == 1:
+        return (1, 0.99, 0.98)[geno[2] + geno[3]]
+    else:
+        return (1, 1.01, 1.02)[geno[2] + geno[3]]
+
+expr = r'"%.3f %.3f\n" % (alleleFreq[0][0], alleleFreq[1][0])'
+simu = simulator(
+    population(10000, loci=[1,1], 
+        infoFields=['fitness']),
+    randomMating(),
+)
+simu.evolve(
+    preOps = [initByFreq([0.3, 0.7])],
+    ops = [
+        pySelector(loci=[0, 1], func=mySelector),
+        stat(alleleFreq=[0, 1], step=20),
+        pyEval(expr, step=20)
+        ],
+    end = 100
+)
+#end
+#file log/course_python_op.log
+from random import normalvariate
+def trait(ind):
+    return [ind.info('trait') + normalvariate(0, 1)]
+
+def avgTrait(pop):
+    t = sum(pop.indInfo('trait', False))/pop.popSize()
+    pop.dvars().trait = t
+    print 'Average trait at gen %4d : %.4f' % (pop.gen(), t)
+    return True
+
+simu = simulator(
+    population(100, infoFields=['trait']),
+    randomMating()
+)
+simu.evolve(
+    ops = [
+        pyIndOperator(func=trait, infoFields=['trait']),
+        pyOperator(func=avgTrait, step=100),
+    ],
+    end = 500
+)        
+#end
 #file log/course_mating_demo.log
 def lin_inc(gen, oldsize=[]):
     return [10+gen]*5
@@ -252,5 +300,28 @@ simu.step(ops=[parentsTagger()])
 pop = simu.getPopulation(0)
 MaPenetrance(pop, locus=0, penetrance=[0.05, 0.1, 0.5])
 AffectedSibpairSample(pop, size=100)
+#end
+#file log/course_simulator_op.log
+simu = simulator(
+    population(size=10000, loci=[3]),
+    randomMating(),
+)
+# genotypic structure can be accessed at the simulator level
+print simu.lociPos()
+simu.step(ops = [])
+print simu.gen()
+# add information fields to all populations
+simu.addInfoFields(['father_idx', 'mother_idx'])
+simu.setMatingScheme(randomMating(numOffspring=2))
+#end
+#file log/course_simulator_pop.log
+# get a reference to the first replicate
+pop = simu.population(0)
+pop.individual(0).setAllele(1, 0)
+print simu.population(0).individual(0).allele(0)
+# get a real copy
+pop = simu.getPopulation(0)
+pop.individual(0).setAllele(1, 1)
+print simu.population(0).individual(0).allele(1)
 #end
 
