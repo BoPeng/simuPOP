@@ -1,5 +1,5 @@
 #LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 271
+\lyxformat 273
 \begin_document
 \begin_header
 \textclass beamer
@@ -850,7 +850,7 @@ end{tikzpicture}
 \end_layout
 
 \begin_layout Column
-4.0cm
+4.5cm
 \end_layout
 
 \begin_layout Itemize
@@ -1322,7 +1322,7 @@ end{tikzpicture}
 \end_layout
 
 \begin_layout Column
-4.0cm
+4.5cm
 \end_layout
 
 \begin_layout Itemize
@@ -1336,7 +1336,7 @@ status open
 
 \end_inset
 
-Start from a sample with unknown genotype
+Start from a sample with unknown genotypes
 \end_layout
 
 \begin_layout Itemize
@@ -1555,6 +1555,10 @@ Not limited to sample generation
 
 \end_deeper
 \end_deeper
+\begin_layout Subsection
+Applications of forward-time simulations
+\end_layout
+
 \begin_layout BeginFrame
 \begin_inset ERT
 status open
@@ -1598,6 +1602,399 @@ Study ascertainment methods in simulated populations
 
 \begin_layout Itemize
 ...
+\end_layout
+
+\begin_layout BeginFrame
+Specific topics
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="11" columns="3">
+<features>
+<column alignment="left" valignment="top" width="2cm">
+<column alignment="left" valignment="top" width="5.5cm">
+<column alignment="left" valignment="top" width="1.5cm">
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\color blue
+Discipline
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\color blue
+Topic
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\color blue
+Feasibility
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Epidemiology
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Disease risk in population
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+OK
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Complex sample features
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+OK
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Evolutionary Biology and Genetics
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Drift, mutation, selection, recombination, migration, subpopulation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+OK
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Disease data for linkage analysis
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+OK
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Statistical 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Gene Network
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Not sure
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Genetics
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Haplotype inference
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+OK
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Copy number variation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Not sure
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Time series
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Not sure
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Spatial fields
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Limited
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Ecology etc
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Animal line-breeding
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Limited
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
@@ -1798,7 +2195,7 @@ For specific applications
 \end_layout
 
 \begin_layout Itemize
-Easy to write simple simulations
+Easy to write simple simulations (C++, Perl, ...)
 \end_layout
 
 \begin_layout Itemize
@@ -3325,7 +3722,8 @@ Python is used to write simuPOP extensions (user interface etc)
 \end_layout
 
 \begin_layout Itemize
-The core sometimes calls Python (Python operators) for maximum flexibility
+Python is used to provide user-defined behaviors during evolution (Python
+ operators)
 \end_layout
 
 \begin_layout BeginFrame
@@ -4366,7 +4764,7 @@ where
 \begin_inset Formula $0$
 \end_inset
 
- is the only wildtype alelle).
+ is the only wildtype allele).
 \end_layout
 
 \begin_layout Standard
@@ -4406,7 +4804,7 @@ scripts/loadHapMap.py
 \end_layout
 
 \begin_layout Standard
-Load genotype from hapmap data file
+Load genotypes from HapMap data file to an existing population
 \end_layout
 
 \begin_layout Standard
@@ -4524,7 +4922,7 @@ simulate the evolution of unlinked SNP markers
 \end_layout
 
 \begin_layout Itemize
-observe the distribution of minor allele frequency
+observe the distribution of minor allele frequencies
 \end_layout
 
 \begin_layout Itemize
@@ -4544,7 +4942,7 @@ Traditional forward-time simulation
 \end_layout
 
 \begin_layout Itemize
-Use a dynamic-selector to control disease allele frequency in a disease
+Use a dynamic-selector to control disease allele frequencies in a disease
  introduction stage
 \end_layout
 
@@ -4582,15 +4980,15 @@ simuCluster.py
 \end_layout
 
 \begin_layout Itemize
-A utility script to help running simuPOP scripts on a cluster system
+A utility script to help run simuPOP scripts on a cluster system
 \end_layout
 
 \begin_layout Itemize
-User provides a template scripts and a list of paramters
+User provides a template script and a list of paramters
 \end_layout
 
 \begin_layout Itemize
-This script generate scripts and submit the jobs
+This script generates scripts and submit the jobs
 \end_layout
 
 \begin_layout BeginFrame

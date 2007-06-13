@@ -1,5 +1,5 @@
 #LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 271
+\lyxformat 273
 \begin_document
 \begin_header
 \textclass beamer
@@ -652,7 +652,7 @@ Note
 
 \end_inset
 
-: simuPOP depends on system clock to set random seed under windows.
+: simuPOP uses system clock to set random seeds under windows.
 \end_layout
 
 \begin_layout Subsection
@@ -1289,11 +1289,11 @@ Number of loci on each chromosome
 \end_layout
 
 \begin_layout Itemize
-Name and position of loci
+Names and positions of loci
 \end_layout
 
 \begin_layout Itemize
-Name of information fields
+Names of information fields
 \end_layout
 
 \begin_layout Itemize
@@ -1314,10 +1314,6 @@ preview false
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 
 \end_layout
 
@@ -1352,7 +1348,7 @@ preview false
 \end_layout
 
 \begin_layout BeginFrame
-Mating is within subpopulation only
+Mating happens within subpopulation
 \end_layout
 
 \begin_layout Standard
@@ -1365,7 +1361,7 @@ preview false
 \end_layout
 
 \begin_layout BeginFrame
-Mating is within subpopulation only (cont.)
+Mating happens within subpopulation (cont.)
 \end_layout
 
 \begin_layout Standard
@@ -2017,6 +2013,10 @@ preview false
 
 \end_layout
 
+\begin_layout Subsection
+Iterate through a population
+\end_layout
+
 \begin_layout BeginFrame
 Iterate through a population
 \end_layout
@@ -2314,7 +2314,7 @@ end{tikzpicture}
 \end_layout
 
 \begin_layout BeginFrame
-Pre-, During- and PostMating operators
+Pre-, During-, and PostMating operators
 \end_layout
 
 \begin_layout Standard
@@ -2344,7 +2344,7 @@ preview false
 \end_layout
 
 \begin_layout Subsection
-Replicate and replicate group
+Replicates and replicate groups
 \end_layout
 
 \begin_layout BeginFrame
@@ -2673,7 +2673,11 @@ Mating schemes
 \end_layout
 
 \begin_layout Itemize
-Population offspring subpopulation from corresponding parental subpopulation
+Populate offspring subpopulation from corresponding parental subpopulation
+\end_layout
+
+\begin_layout Itemize
+Can not change number of subpopulations
 \end_layout
 
 \begin_layout Itemize
