@@ -168,7 +168,7 @@ namespace simuPOP
 				const vectoru& loci=vectoru(), int atPloidy=-1,
 				double maleFreq=0.5, const vectori& sex = vectori(),
 				int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL, const v ectorstr& infoFields=vectorstr())
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				: initializer(subPop, indRange, loci,
 				atPloidy, maleFreq, sex,
 				stage, begin, end, step, at, rep, grp, infoFields),
