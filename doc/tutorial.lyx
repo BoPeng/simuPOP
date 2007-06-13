@@ -1939,7 +1939,7 @@ Structure of individuals
 
 \begin_layout Standard
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Standard
 
@@ -2333,14 +2333,14 @@ draw (0, -5.65) node [right]{fitness};
 \backslash
 draw (2, -5.65) node [right]{father
 \backslash
-_id};
+_idx};
 \end_layout
 
 \begin_layout Standard
 
  
 \backslash
-draw (4, -5.65) node [right]{...};
+draw (4.5, -5.65) node [right]{...};
 \end_layout
 
 \begin_layout Standard
@@ -2370,7 +2370,7 @@ draw (7.75, -5.85) node [right]{fields}; }
 \backslash
 foreach 
 \backslash
-cell in {1.75, 4} 
+cell in {1.75, 4.5} 
 \backslash
 draw [thick, yellow!80!gray] (
 \backslash
