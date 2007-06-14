@@ -3,7 +3,7 @@
 # python scripts for topics.lyx
 #
 from simuPOP import *
-#file log/topics_split_merge.py
+#file log/topics_split_merge.log
 pop = population(subPop=[100, 200], loci=[1])
 pop.splitSubPop(0, [20, 80])
 # Note that subpop 1 is intact
@@ -20,7 +20,7 @@ pop1 = pop.clone()
 pop.mergePopulation(pop1)
 print pop.subPopSizes()
 #end
-#file log/topics_newSubPopSizeFunc.py
+#file log/topics_newSubPopSizeFunc.log
 def demo(gen, oldsize):
     return [x+10 for x in oldsize]
 
@@ -36,7 +36,7 @@ simu.evolve(
     end=5
 )
 #end
-#file log/topics_split_and_grow.py
+#file log/topics_split_and_grow.log
 def demo(gen, oldsize):
     if gen < 4:
         return [100]
@@ -82,6 +82,90 @@ simu.evolve(
     ],
     end=5
 )
+#end
+# #file log/topics_varying_recombination.log
+# simu = simulator(
+#     population(size=1000, loci=[1000]),
+#     randomMating()
+# )
+# rates = [0.00001]*400 + [0.0001]*200 + [0.000001]*399
+# expr = r'"%.3f %.3f %.3f\n" % (LD[100][101], LD[500][501], LD[900][901])'
+# simu.evolve(
+#     preOps = [initByValue([1]*1000+[2]*1000)],
+#     ops = [
+#         recombinator(rate=rates, afterLoci=range(999)),
+#         stat(LD=[[100,101], [500, 501], [900, 901]]),
+#         pyEval(expr, step=100)
+#     ],
+#     end = 1000
+# )
+# #end
+# #file log/topics_recombination_intensity.log
+# dist = [0.01]*400+[0.1]*200+[0.01]*400
+# simu = simulator(
+#     population(size=1000, loci=[1000],
+#         lociPos=[sum(dist[:x]) for x in range(1000)]),
+#     randomMating()
+# )
+# expr = r'"%.3f %.3f %.3f\n" % (LD[100][101], LD[500][501], LD[900][901])'
+# simu.evolve(
+#     preOps = [initByValue([1]*1000+[2]*1000)],
+#     ops = [
+#         recombinator(intensity=0.01),
+#         stat(LD=[[100,101], [500, 501], [900, 901]]),
+#         pyEval(expr, step=100)
+#     ],
+#     end = 1000
+# )
+# #end
+#file log/topics_migrator.log
+simu = simulator(
+    population(subPop=[1000]*5),
+    randomMating()
+)
+simu.evolve(
+    ops = [
+        migrator(rate=[
+            [0, 0.2, 0.1],
+            [0, 0, 0.1],
+            [0.2, 0.2, 0]],
+            fromSubPop=[1,2,3], toSubPop=[1,2,3]),
+        stat(popSize=True),
+        pyEval(r'"%s\n" % subPopSize')
+    ],
+    end = 3
+)
+#end
+#file log/topics_penetrance.log
+def myPene(geno):
+    return (0.01, 0.1, 0.3)[sum(geno)]
+
+simu = simulator(
+    population(size=20000, loci=[1]),
+    randomMating()
+)
+expr = r'"%s (%.3f)\n" % (numOfAffected, 1.*numOfAffected/popSize)'
+simu.evolve(
+    preOps = [initByFreq([0.9, 0.1])],
+    ops = [
+        pyPenetrance(locus=0, func=myPene),
+        stat(numOfAffected=True, popSize=True),
+        pyEval(expr, step=10),
+    ],
+    end=20
+)      
+#end
+#file log/topics_R.log
+from rpy import *
+def asscociation(pop, loci):
+    Stat(pop, alleleFreq=[loci])
+    a1 = pop.dvars().alleleNum[loci[0]][0]
+    a2 = 2*pop.popSize() - a1
+    b1 = pop.dvars().alleleNum[loci[1]][0]
+    b2 = 2*pop.popSize() - b1
+    print r.chisq_test(WITH_NO_CONVERSION(r.matrix)(
+        (a1, a2, b1, b2), ncol=2, byrow=True))
+    
 #end
 #file log/topics_quantrait.log
 pop = population(100, loci=[1, 1], infoFields=['qtrait'])
