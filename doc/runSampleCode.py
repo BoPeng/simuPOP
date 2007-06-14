@@ -7,12 +7,7 @@
 # 
 import code, sys, os, re
 
-if len(sys.argv) < 2 or sys.argv[1] == '-h':
-    print 'Usage: runSampleCode scriptToRun'
-    sys.exit(0)
 
-outputFile = sys.argv[1].split('.')[0] + '.out'
-perlFile = sys.argv[1].split('.')[0] + '.pl'
 
 #  run a script interatively
 class runScriptInteractively(code.InteractiveConsole):
@@ -36,61 +31,98 @@ class wrapper:
   def __getattr__(self, key):
     return getattr(self.file, key)
 
-# out to a file
-outFile = open(outputFile, 'w')
-
-oldIn = sys.stdin
-oldOut = sys.stdout
-oldErr = sys.stderr
-
-# set stdin, stderr, stdout
-sys.stdin = wrapper(sys.stdin)
-#sys.stderr = sys.stdout
-sys.stderr = outFile
-sys.stdout = outFile
-
-b = runScriptInteractively(locals=locals(), filename = sys.argv[1])
-b.interact(None)
-
-# reset io streams
-sys.stdin = oldIn
-sys.stdout = oldOut
-sys.stderr = oldErr
-
-outFile.close()
-
-print "Finished executing ", sys.argv[1]
-
-begin_re = re.compile('^(>>>|\.\.\.)\s*#file\s*(.*)')
-end_re = re.compile('^>>>\s*#end')
-cmd_re = re.compile('^(>>>|\.\.\.)\s*#PS\s*(.*)')
-outFile = open(outputFile, 'r')
-out = ''
-first = False
-for line in outFile.readlines():
-    if begin_re.match(line):
-        (tmp, file) = begin_re.match(line).groups()
-        file = file.strip()
-        print "Writing to %s" % file
-        out = open(file, 'w')
-        first = True
-    elif end_re.match(line):
-        if type(out) != type(''):
-            print >> out, '>>>'
-            out.close()
-            out = ""
-    elif cmd_re.match(line):
-        (tmp, cmd) = cmd_re.match(line).groups()
-        print "Running command %s" % cmd
-        os.system(cmd)
-    else:
-        if type(out) == type(''):
-            continue
-        if first:
-            print >> out, '>>> %s' % line[4:],
-            first = False
-        else:
-            print >> out, line,
-outFile.close()
-os.remove(outputFile)
+def runScript(inputFile, outputFile):
+    # out to a file
+    outFile = open(outputFile, 'w')
     
+    oldIn = sys.stdin
+    oldOut = sys.stdout
+    oldErr = sys.stderr
+    
+    # set stdin, stderr, stdout
+    sys.stdin = wrapper(sys.stdin)
+    #sys.stderr = sys.stdout
+    sys.stderr = outFile
+    sys.stdout = outFile
+    
+    b = runScriptInteractively(locals=locals(), filename = sys.argv[1])
+    b.interact(None)
+    
+    # reset io streams
+    sys.stdin = oldIn
+    sys.stdout = oldOut
+    sys.stderr = oldErr
+    
+    outFile.close()
+    
+    print "Finished executing ", sys.argv[1]
+
+
+def splitFile(outputFile, runCommand=True):
+    if runCommand:
+        begin_re = re.compile('^(>>>|\.\.\.)\s*#file\s*(.*)')
+        end_re = re.compile('^>>>\s*#end')
+        cmd_re = re.compile('^(>>>|\.\.\.)\s*#PS\s*(.*)')
+    else:
+        begin_re = re.compile('^#file\s*(.*)')
+        end_re = re.compile('^#end')
+        cmd_re = re.compile('^#PS\s*(.*)')
+    outFile = open(outputFile, 'r')
+    out = ''
+    first = False
+    for line in outFile.readlines():
+        if begin_re.match(line):
+            if runCommand:
+                (tmp, file) = begin_re.match(line).groups()
+                file = file.strip()
+            else:
+                (file,) = begin_re.match(line).groups()
+                file = file.strip()
+                # in a special split input mode
+                file = file.replace('.log', '.py')
+            print "Writing to %s" % file
+            out = open(file, 'w')
+            first = True
+        elif end_re.match(line):
+            if type(out) != type(''):
+                if runCommand:
+                    print >> out, '>>>'
+                out.close()
+                out = ""
+        elif runCommand and cmd_re.match(line):
+            (tmp, cmd) = cmd_re.match(line).groups()
+            print "Running command %s" % cmd
+            os.system(cmd)
+        else:
+            if type(out) == type(''):
+                continue
+            if first:
+                if runCommand:
+                    print >> out, '>>> %s' % line[4:],
+                else:
+                    print >> out, '#!/usr/bin/env python'
+                    print >> out, 'from simuPOP import *'
+                    print >> out
+                    print >> out, line
+                first = False
+            else:
+                print >> out, line,
+    outFile.close()
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2 or sys.argv[1] == '-h':
+        print 'Usage: runSampleCode scriptToRun'
+        print '    -h: view this help information'
+        print '    -s: split current script and do not run it'
+        sys.exit(0)
+
+    splitMyself = '-s' in sys.argv[1:]
+    inputFile = sys.argv[-1]
+    if not splitMyself:
+        outputFile = inputFile.split('.')[0] + '.out'
+        runScript(inputFile, outputFile)
+        splitFile(outputFile, True)
+        os.remove(outputFile)
+    else:
+        splitFile(inputFile, False)
+
