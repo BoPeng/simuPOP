@@ -83,3 +83,17 @@ simu.evolve(
     end=5
 )
 #end
+#file log/topics_quantrait.log
+pop = population(100, loci=[1, 1], infoFields=['qtrait'])
+InitByFreq(pop, [0.4, 0.6])
+def qtrait(geno):
+    return sum(geno)
+
+PyQuanTrait(pop, loci=[0, 1], func=qtrait)
+for i in range(5):
+    ind = pop.individual(i)
+    print '%d %d %d %d: %.2f' % (ind.allele(0, 0),
+        ind.allele(1, 0), ind.allele(0, 1),
+        ind.allele(1, 1), ind.info('qtrait'))
+
+#end
