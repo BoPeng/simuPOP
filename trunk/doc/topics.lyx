@@ -1146,7 +1146,7 @@ Misc topics
 \end_layout
 
 \begin_layout Subsection
-User interface
+Pause a simulation
 \end_layout
 
 \begin_layout BeginFrame
@@ -1161,6 +1161,37 @@ Use of wxPython
 Use of wxPython
 \end_layout
 
+\begin_layout Standard
+If 
+\family typewriter
+wxPython 
+\family default
+is installed, it will be used 
+\end_layout
+
+\begin_layout Itemize
+simuOpt will use wxPython to build parameter dialogs, instead of the outdated
+ tk dialogs
+\end_layout
+
+\begin_layout Itemize
+ListVars(pop.dvars()) will use wxPython to display population variables
+\end_layout
+
+\begin_layout Itemize
+simuViewPop can be used to view population information
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+run simuViewPop.py file.bin' to view a saved population
+\end_layout
+
+\begin_layout Itemize
+In python, import simuViewPop and call viewPop(pop)
+\end_layout
+
+\end_deeper
 \begin_layout Subsection
 Integration with R
 \end_layout
@@ -1189,18 +1220,6 @@ preview false
 \end_inset
 
 
-\end_layout
-
-\begin_layout Section
-Special types of simulations
-\end_layout
-
-\begin_layout Subsection
-Gene-gene interaction
-\end_layout
-
-\begin_layout Subsection
-Structured population
 \end_layout
 
 \begin_layout EndFrame
