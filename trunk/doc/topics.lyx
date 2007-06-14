@@ -1,5 +1,5 @@
 #LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 273
+\lyxformat 274
 \begin_document
 \begin_header
 \textclass beamer
@@ -8,36 +8,19 @@
 \usepackage{hyperref}
 \hypersetup{
   pdfauthor={Bo Peng},
-  pdftitle = {Forward-time simulations using simuPOP, an in-depth course},
-  pdfkeywords = {simuPOP, tutorial, forward-time, coalescent},
-  pdfcreator = {pdflatex + latex/beamer class},
+  pdftitle = {Forward-time simulations using simuPOP, selected topics},
+  pdfkeywords = {simuPOP, tutorial, forward-time},
+  pdfcreator = {pdflatex + latex beamer class},
   pdfproducer = {pdflatex},
   pdfpagemode=FullScreen
 }
 
 % current scheme does not support logi
 \logo{\includegraphics[height=0.8cm]{MDA_logo.jpg}}
-\usepackage{tikz}
-
-\newcommand{\inda}[3]{
-  #2 node[circle,shade,ball color=#3, scale=0.5](#1){}
-}
-
-\newcommand{\teninds}[3]{
-\foreach \name/\x in {0/1, 1/1.5, 2/2, 3/2.5, 4/3, 5/3.5, 6/4, 7/4.5, 8/5, 9/5.5} 
-    \path \inda{#1\name}{(\x, #2)}{#3}; 
-}
-
-
 \beamertemplateshadingbackground{red!5}{structure!5}
 
 \usepackage{times}
-%\usetheme{JuanLesPins}
-%\usepackage{beamerthemeshadow}
-%\usetheme{Hannover}
 \usetheme[hideothersubsections]{PaloAlto}
-%\useoutertheme{tree}
-%\usecolortheme{beaver}
 \usecolortheme{sidebartab}
 \usefonttheme{structurebold}
 \end_preamble
@@ -72,6 +55,7 @@
 \listings_params "basicstyle={\ttfamily\scriptsize},commentstyle={\color{blue}},frame=tblr,frameround=tttt,language=Python,showspaces=false,showstringspaces=false,stringstyle={\color{magenta}}"
 \tracking_changes false
 \output_changes false
+\author "BPeng1" 
 \author "Bo Peng" 
 \end_header
 
@@ -232,10 +216,6 @@ status collapsed
 \end_layout
 
 \begin_layout Section
-Genetic and demographic factors
-\end_layout
-
-\begin_layout Subsection
 Demographic models
 \end_layout
 
@@ -325,7 +305,7 @@ Population manipulation
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/topics_split_merge.py}
+\begin_inset Include \lstinputlisting{log/topics_split_merge.log}
 preview false
 
 \end_inset
@@ -340,7 +320,7 @@ newSubPopSizeFunc
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/topics_newSubPopSizeFunc.py}
+\begin_inset Include \lstinputlisting{log/topics_newSubPopSizeFunc.log}
 preview false
 
 \end_inset
@@ -353,12 +333,16 @@ Split and grow?
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/topics_split_and_grow.py}[basicstyle={\ttfamily\tiny}]
+\begin_inset Include \lstinputlisting{log/topics_split_and_grow.log}[basicstyle={\ttfamily\tiny}]
 preview false
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Genetic models
 \end_layout
 
 \begin_layout Subsection
@@ -460,6 +444,71 @@ preview false
 \end_layout
 
 \begin_layout Subsection
+Recombination
+\end_layout
+
+\begin_layout BeginFrame
+Recombination
+\end_layout
+
+\begin_layout Standard
+\begin_inset CharStyle Structure
+show_label true
+status inlined
+
+\begin_layout Standard
+simuPOP allows
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+a single recombination rate between all adjacent loci
+\end_layout
+
+\begin_layout Itemize
+varying recombination rate between adjacent loci
+\end_layout
+
+\begin_layout Itemize
+a single recombination intensity with recombination rate between adjacent
+ loci depending on loci distance
+\end_layout
+
+\begin_layout Itemize
+sex-specific recombination rate
+\end_layout
+
+\begin_layout BeginFrame
+Varying recombination rate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/topics_varying_recombination.log}[basicstyle={\ttfamily\tiny}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Recombination intensity
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/topics_recombination_intensity.log}[basicstyle={\ttfamily\tiny}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Selection
 \end_layout
 
@@ -479,7 +528,7 @@ Selection in simuPOP is implemented as
 probability (ability) to mate
 \family default
 \emph default
-, by two components
+, achieved by two components
 \end_layout
 
 \end_inset
@@ -945,6 +994,172 @@ mlSelector( [
     ], mode=SEL_Additive)
 \end_layout
 
+\begin_layout Subsection
+Migration
+\end_layout
+
+\begin_layout BeginFrame
+Migration operator: 
+\family typewriter
+migrator
+\end_layout
+
+\begin_layout Standard
+\begin_inset CharStyle Structure
+show_label true
+status inlined
+
+\begin_layout Standard
+The simuPOP 
+\family typewriter
+migrator 
+\family default
+accepts a migration rate matrix, that is interpreted differently depending
+ on the 
+\family typewriter
+\color blue
+mode 
+\family default
+\color inherit
+parameter, which can be
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+MigrByProbability This is the default migration mode where migration rate
+ is treated as 
+\begin_inset Formula $r_{ij}=Pr\left(\mbox{migrate from subpop  }i\mbox{ to }j\right)$
+\end_inset
+
+.
+ 
+\begin_inset Formula $r_{ii}=1-\sum_{j\ne i}r_{ij}$
+\end_inset
+
+ is automatically calculated.
+\end_layout
+
+\begin_layout Description
+MigrByProportion A given proportion of individuals in a subpopulation will
+ migrate to other subpopulations.
+\end_layout
+
+\begin_layout Description
+MigrByCount A given number of individuals in a subpopulation will migrate
+ to other subpopulations.
+\end_layout
+
+\begin_layout BeginFrame
+Migration
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/topics_migrator.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Penetrance
+\end_layout
+
+\begin_layout BeginFrame
+Penetrance models
+\end_layout
+
+\begin_layout Standard
+Penetrance is the probability that an individual gets affected, condition
+ on his/her genotype.
+ Several penetrance operators and functions are provided.
+\end_layout
+
+\begin_layout Itemize
+mapPenetrance (MapPenetrance)
+\end_layout
+
+\begin_layout Itemize
+maPenetrance (MaPenetrance)
+\end_layout
+
+\begin_layout Itemize
+pyPenetrance (PyPenetrance)
+\end_layout
+
+\begin_layout Standard
+These penetrance operators (functions) calculate penetrance values for each
+ individual, and assign affection status randomly.
+\end_layout
+
+\begin_layout BeginFrame
+Operator 
+\family typewriter
+PyPenetrance
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/topics_penetrance.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Quantitative traits
+\end_layout
+
+\begin_layout BeginFrame
+Quantitative traits
+\end_layout
+
+\begin_layout Standard
+There are many quantitative trait models so 
+\family typewriter
+pyQuanTrait 
+\family default
+and its function form 
+\family typewriter
+PyQuanTrait 
+\family default
+are most frequently used.
+\end_layout
+
+\begin_layout Section
+Misc topics
+\end_layout
+
+\begin_layout Subsection
+User interface
+\end_layout
+
+\begin_layout BeginFrame
+User Interface
+\end_layout
+
+\begin_layout Subsection
+Use of wxPython
+\end_layout
+
+\begin_layout BeginFrame
+Use of wxPython
+\end_layout
+
+\begin_layout Subsection
+Integration with R
+\end_layout
+
+\begin_layout BeginFrame
+Integration with R
+\end_layout
+
 \begin_layout Section
 Special types of simulations
 \end_layout
@@ -955,10 +1170,6 @@ Gene-gene interaction
 
 \begin_layout Subsection
 Structured population
-\end_layout
-
-\begin_layout Standard
-
 \end_layout
 
 \begin_layout EndFrame
