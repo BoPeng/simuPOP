@@ -1132,6 +1132,15 @@ PyQuanTrait
 are most frequently used.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/topics_quantrait.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Misc topics
 \end_layout
@@ -1158,6 +1167,28 @@ Integration with R
 
 \begin_layout BeginFrame
 Integration with R
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/topics_R.log}[lastline=20]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Integration with R (cont.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/topics_R.log}[firstline=21]
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

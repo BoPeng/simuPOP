@@ -157,15 +157,29 @@ simu.evolve(
 #end
 #file log/topics_R.log
 from rpy import *
-def asscociation(pop, loci):
-    Stat(pop, alleleFreq=[loci])
+def association(pop, loci):
+    Stat(pop, alleleFreq=loci)
     a1 = pop.dvars().alleleNum[loci[0]][0]
     a2 = 2*pop.popSize() - a1
     b1 = pop.dvars().alleleNum[loci[1]][0]
     b2 = 2*pop.popSize() - b1
-    print r.chisq_test(WITH_NO_CONVERSION(r.matrix)(
-        (a1, a2, b1, b2), ncol=2, byrow=True))
-    
+    print '%4d %4d %4d %4d: %.3f' % (a1, a2, b1, b2, 
+        r.chisq_test(with_mode(NO_CONVERSION, r.matrix)(
+        (a1, a2, b1, b2), ncol=2, byrow=True))['p.value'])
+    return True
+
+simu = simulator(
+    population(10000, loci=[2]),
+    randomMating()
+)
+simu.evolve(
+    preOps=[initByValue([0,1,1,0])],
+    ops = [
+        recombinator(rate=0.0001),
+        pyOperator(func=association, param=[0,1], step=20)
+    ],
+    end=100
+)
 #end
 #file log/topics_quantrait.log
 pop = population(100, loci=[1, 1], infoFields=['qtrait'])
