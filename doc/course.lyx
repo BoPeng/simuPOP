@@ -72,8 +72,8 @@
 \listings_params "basicstyle={\ttfamily\scriptsize},commentstyle={\color{blue}},frame=tblr,frameround=tttt,language=Python,showspaces=false,showstringspaces=false,stringstyle={\color{magenta}}"
 \tracking_changes false
 \output_changes false
-\author "BPeng1" 
 \author "Bo Peng" 
+\author "BPeng1" 
 \end_header
 
 \begin_body
@@ -3203,11 +3203,11 @@ preview false
 \end_layout
 
 \begin_layout Subsection
-Populations
+Retrieve populations
 \end_layout
 
 \begin_layout BeginFrame
-simulator populations
+Get populations from a simulator
 \end_layout
 
 \begin_layout Standard
