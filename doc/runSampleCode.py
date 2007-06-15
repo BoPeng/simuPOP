@@ -64,25 +64,21 @@ def splitFile(outputFile, runCommand=True):
         end_re = re.compile('^>>>\s*#end')
         cmd_re = re.compile('^(>>>|\.\.\.)\s*#PS\s*(.*)')
     else:
-        begin_re = re.compile('^#file\s*(.*)')
-        end_re = re.compile('^#end')
+        begin_re = re.compile('^(## )*#file\s*(.*)')
+        end_re = re.compile('^(## )*#end')
         cmd_re = re.compile('^#PS\s*(.*)')
     outFile = open(outputFile, 'r')
     out = ''
     first = False
     for line in outFile.readlines():
         if begin_re.match(line):
-            if runCommand:
-                (tmp, file) = begin_re.match(line).groups()
-                file = file.strip()
-            else:
-                (file,) = begin_re.match(line).groups()
-                file = file.strip()
-                # in a special split input mode
-                file = file.replace('.log', '.py')
+            (tmp, file) = begin_re.match(line).groups()
+            file = file.strip()
+            # in a special split input mode
             if runCommand: 
                 print "Writing log to %s" % file
             else:
+                file = file.replace('.log', '.py')
                 print "Writing source to %s" % file
             out = open(file, 'w')
             first = True
