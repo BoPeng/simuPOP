@@ -1,5 +1,5 @@
 #LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 273
+\lyxformat 274
 \begin_document
 \begin_header
 \textclass beamer
@@ -72,6 +72,7 @@
 \listings_params "basicstyle={\ttfamily\scriptsize},commentstyle={\color{blue}},frame=tblr,frameround=tttt,language=Python,showspaces=false,showstringspaces=false,stringstyle={\color{magenta}}"
 \tracking_changes false
 \output_changes false
+\author "BPeng1" 
 \author "Bo Peng" 
 \end_header
 
@@ -322,7 +323,7 @@ binary
 
 \end_deeper
 \begin_layout Enumerate
-Debug information and runtime validation
+Optimization
 \end_layout
 
 \begin_deeper
