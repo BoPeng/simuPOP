@@ -80,7 +80,10 @@ def splitFile(outputFile, runCommand=True):
                 file = file.strip()
                 # in a special split input mode
                 file = file.replace('.log', '.py')
-            print "Writing to %s" % file
+            if runCommand: 
+                print "Writing log to %s" % file
+            else:
+                print "Writing source to %s" % file
             out = open(file, 'w')
             first = True
         elif end_re.match(line):
@@ -103,26 +106,28 @@ def splitFile(outputFile, runCommand=True):
                     print >> out, '#!/usr/bin/env python'
                     print >> out, 'from simuPOP import *'
                     print >> out
-                    print >> out, line
+                    if line.startswith('## '):
+                        print >> out, line[3:],
+                    else:
+                        print >> out, line,
                 first = False
             else:
-                print >> out, line,
+                if not runCommand and line.startswith('## '):
+                    print >> out, line[3:],
+                else:
+                    print >> out, line,
     outFile.close()
 
 if __name__ == '__main__':
     if len(sys.argv) < 2 or sys.argv[1] == '-h':
         print 'Usage: runSampleCode scriptToRun'
         print '    -h: view this help information'
-        print '    -s: split current script and do not run it'
         sys.exit(0)
 
-    splitMyself = '-s' in sys.argv[1:]
     inputFile = sys.argv[-1]
-    if not splitMyself:
-        outputFile = inputFile.split('.')[0] + '.out'
-        runScript(inputFile, outputFile)
-        splitFile(outputFile, True)
-        os.remove(outputFile)
-    else:
-        splitFile(inputFile, False)
+    splitFile(inputFile, False)
+    outputFile = inputFile.split('.')[0] + '.out'
+    runScript(inputFile, outputFile)
+    splitFile(outputFile, True)
+    os.remove(outputFile)
 
