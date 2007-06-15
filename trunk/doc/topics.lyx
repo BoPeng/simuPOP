@@ -224,8 +224,7 @@ How population sizes are changed
 \end_layout
 
 \begin_layout Itemize
-There are simuPOP functions and operators to forcefully change (split, merge
- and expand) population sizes
+Some simuPOP functions and operators can forcefully change population sizes
 \end_layout
 
 \begin_deeper
@@ -240,12 +239,11 @@ mergeSubPops
 \end_layout
 
 \begin_layout Itemize
-Population member functions: 
+population member functions: 
 \family typewriter
 resize
 \family default
-.
- 
+, 
 \family typewriter
 splitSubPop
 \family default
@@ -267,7 +265,7 @@ mergePopulationByLoci
 \end_layout
 
 \begin_layout Itemize
-Global functions: 
+global functions: 
 \family typewriter
 MergePopulations
 \family default
@@ -278,8 +276,8 @@ MergePopulationsByLoci
 
 \end_deeper
 \begin_layout Itemize
-Mating schemes can generate offspring generation with the same number of
- subpopulations
+Mating schemes can generate offspring generation with different subpopulation
+ sizes
 \end_layout
 
 \begin_deeper
@@ -354,25 +352,60 @@ Mutation
 \end_layout
 
 \begin_layout Standard
-In simuPOP, mutation
+\begin_inset CharStyle Structure
+show_label true
+status inlined
+
+\begin_layout Standard
+mutation in simuPOP refers to the change of allele at a locus from one state
+ to another.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
-happens at rate 
+mutation happens at a given rate 
 \begin_inset Formula $\mu$
 \end_inset
 
-, the probability of a mutation event
+
 \end_layout
 
 \begin_layout Itemize
-different mutators mutate the allele at a given locus differently
+a mutator determines how allele state changes
 \end_layout
 
 \begin_layout Standard
-Note that there is no direct support for infinite allele or infinite site
- models.
- 
+\begin_inset CharStyle Alert
+show_label true
+status inlined
+
+\begin_layout Standard
+Note that:
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+No direct support for infinite allele or infinite site models
+\end_layout
+
+\begin_layout Itemize
+No direct support for state-dependent mutation rates (
+\begin_inset Formula $\mu_{S}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu_{N}$
+\end_inset
+
+)
 \end_layout
 
 \begin_layout BeginFrame
@@ -404,7 +437,7 @@ kmmMutator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/topics_kam_mutation.log}[basicstyle={\ttfamily\tiny}]
+\begin_inset Include \lstinputlisting{log/topics_kam_mutation.log}
 preview false
 
 \end_inset
@@ -466,7 +499,7 @@ simuPOP allows
 \end_layout
 
 \begin_layout Itemize
-a single recombination rate between all adjacent loci
+uniform recombination rate between all adjacent loci
 \end_layout
 
 \begin_layout Itemize
@@ -474,8 +507,8 @@ varying recombination rate between adjacent loci
 \end_layout
 
 \begin_layout Itemize
-a single recombination intensity with recombination rate between adjacent
- loci depending on loci distance
+a recombination intensity with recombination rate between adjacent loci
+ determined by loci distances
 \end_layout
 
 \begin_layout Itemize
@@ -483,7 +516,7 @@ sex-specific recombination rate
 \end_layout
 
 \begin_layout BeginFrame
-Varying recombination rate
+Varying recombination rates
 \end_layout
 
 \begin_layout Standard
@@ -517,27 +550,25 @@ How selection is implemented
 \end_layout
 
 \begin_layout Standard
+Selection in simuPOP is implemented as 
 \begin_inset CharStyle Structure
 show_label true
 status inlined
 
 \begin_layout Standard
-Selection in simuPOP is implemented as 
+
 \family roman
 \emph on
 probability (ability) to mate
-\family default
-\emph default
-, achieved by two components
 \end_layout
 
 \end_inset
 
-,
+, achieved by two components.
 \end_layout
 
 \begin_layout Enumerate
-A selector set information field 
+A selector sets information field 
 \family typewriter
 fitness 
 \family default
@@ -675,7 +706,7 @@ W
 \family typewriter
 S
 \family default
-), a multi-allele selector uses three given values for genotype 
+), a multi-allele selector uses three values for genotype 
 \family typewriter
 WW
 \family default
@@ -917,7 +948,7 @@ Multi-locus selector:
 \end_layout
 
 \begin_layout Standard
-Multi-locus selector obtain fitness values at each locus, calculated by
+Multi-locus selector obtains fitness values at each locus, calculated by
  other selectors, and combine them to a single 
 \family typewriter
 fitness
@@ -979,19 +1010,19 @@ mlSelector( [
 \begin_layout LyX-Code
 
 \size small
-    maSelector(locus=0, fitness=(1, 1.01, 1.02)),
+  maSelector(locus=0, fitness=(1, 1.01, 1.02)),
 \end_layout
 
 \begin_layout LyX-Code
 
 \size small
-    maSelector(locus=1, fitness=(1, 0.99, 0.98)),
+  maSelector(locus=1, fitness=(1, 0.99, 0.98)),
 \end_layout
 
 \begin_layout LyX-Code
 
 \size small
-    ], mode=SEL_Additive)
+  ], mode=SEL_Additive)
 \end_layout
 
 \begin_layout Subsection
@@ -1005,11 +1036,6 @@ migrator
 \end_layout
 
 \begin_layout Standard
-\begin_inset CharStyle Structure
-show_label true
-status inlined
-
-\begin_layout Standard
 The simuPOP 
 \family typewriter
 migrator 
@@ -1021,18 +1047,13 @@ accepts a migration rate matrix, that is interpreted differently depending
 mode 
 \family default
 \color inherit
-parameter, which can be
-\end_layout
-
-\end_inset
-
-
+parameter, which can be 
 \end_layout
 
 \begin_layout Description
 MigrByProbability This is the default migration mode where migration rate
  is treated as 
-\begin_inset Formula $r_{ij}=Pr\left(\mbox{migrate from subpop  }i\mbox{ to }j\right)$
+\begin_inset Formula $r_{ij}=Pr\left(\mbox{migrate from subpop }i\mbox{ to }j\right)$
 \end_inset
 
 .
@@ -1150,7 +1171,72 @@ Pause a simulation
 \end_layout
 
 \begin_layout BeginFrame
+Pause and time a simulation
+\end_layout
+
+\begin_layout Standard
+Use 
+\family typewriter
+pause()
+\family default
+ operator to pause the evolution by
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pause(...)
+\family default
+ pauses the simulation at given generations
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pause(stopOnKeyStroke)
+\family default
+ pauses the simulation at key stroke.
+\end_layout
+
+\begin_layout Standard
+Use 
+\family typewriter
+ticToc() 
+\family default
+operator to display elapsed time
+\end_layout
+
+\begin_layout BeginFrame
+Operators: 
+\family typewriter
+pause 
+\family default
+and 
+\family typewriter
+ticToc
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/topics_pause.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+User interface
+\end_layout
+
+\begin_layout BeginFrame
 User Interface
+\end_layout
+
+\begin_layout Standard
+See, for example, 
+\family typewriter
+simuLDDecay.py
 \end_layout
 
 \begin_layout Subsection
@@ -1192,6 +1278,19 @@ In python, import simuViewPop and call viewPop(pop)
 \end_layout
 
 \end_deeper
+\begin_layout BeginFrame
+Use of wxPython (cont.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/topics_wxPython.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Integration with R
 \end_layout

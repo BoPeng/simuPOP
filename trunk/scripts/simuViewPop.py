@@ -552,7 +552,7 @@ Number of ancestral population: %d
         self.statPageReady = True
          
     def setConvertPage(self):
-        if self.pop == None or self.pop.ancestralDepth() == 0: # no ancestral population
+        if self.pop is not None or self.pop.ancestralDepth() == 0: # no ancestral population
             self.btn_export_linkage.Disable()
         else:
             self.btn_export_linkage.Enable()

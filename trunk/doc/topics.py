@@ -83,41 +83,41 @@ simu.evolve(
     end=5
 )
 #end
-# #file log/topics_varying_recombination.log
-# simu = simulator(
-#     population(size=1000, loci=[1000]),
-#     randomMating()
-# )
-# rates = [0.00001]*400 + [0.0001]*200 + [0.000001]*399
-# expr = r'"%.3f %.3f %.3f\n" % (LD[100][101], LD[500][501], LD[900][901])'
-# simu.evolve(
-#     preOps = [initByValue([1]*1000+[2]*1000)],
-#     ops = [
-#         recombinator(rate=rates, afterLoci=range(999)),
-#         stat(LD=[[100,101], [500, 501], [900, 901]]),
-#         pyEval(expr, step=100)
-#     ],
-#     end = 1000
-# )
-# #end
-# #file log/topics_recombination_intensity.log
-# dist = [0.01]*400+[0.1]*200+[0.01]*400
-# simu = simulator(
-#     population(size=1000, loci=[1000],
-#         lociPos=[sum(dist[:x]) for x in range(1000)]),
-#     randomMating()
-# )
-# expr = r'"%.3f %.3f %.3f\n" % (LD[100][101], LD[500][501], LD[900][901])'
-# simu.evolve(
-#     preOps = [initByValue([1]*1000+[2]*1000)],
-#     ops = [
-#         recombinator(intensity=0.01),
-#         stat(LD=[[100,101], [500, 501], [900, 901]]),
-#         pyEval(expr, step=100)
-#     ],
-#     end = 1000
-# )
-# #end
+#file log/topics_varying_recombination.log
+simu = simulator(
+    population(size=1000, loci=[1000]),
+    randomMating()
+)
+rates = [0.00001]*400 + [0.0001]*200 + [0.000001]*399
+expr = r'"%.3f %.3f %.3f\n" % (LD[100][101], LD[500][501], LD[900][901])'
+simu.evolve(
+    preOps = [initByValue([1]*1000+[2]*1000)],
+    ops = [
+        recombinator(rate=rates, afterLoci=range(999)),
+        stat(LD=[[100,101], [500, 501], [900, 901]]),
+        pyEval(expr, step=100)
+    ],
+    end = 1000
+)
+#end
+#file log/topics_recombination_intensity.log
+dist = [0.01]*400+[0.1]*200+[0.01]*400
+simu = simulator(
+    population(size=1000, loci=[1000],
+        lociPos=[sum(dist[:x]) for x in range(1000)]),
+    randomMating()
+)
+expr = r'"%.3f %.3f %.3f\n" % (LD[100][101], LD[500][501], LD[900][901])'
+simu.evolve(
+    preOps = [initByValue([1]*1000+[2]*1000)],
+    ops = [
+        recombinator(intensity=0.001),
+        stat(LD=[[100,101], [500, 501], [900, 901]]),
+        pyEval(expr, step=100)
+    ],
+    end = 1000
+)
+#end
 #file log/topics_migrator.log
 simu = simulator(
     population(subPop=[1000]*5),
@@ -144,7 +144,8 @@ simu = simulator(
     population(size=20000, loci=[1]),
     randomMating()
 )
-expr = r'"%s (%.3f)\n" % (numOfAffected, 1.*numOfAffected/popSize)'
+expr = r'"%s (%.3f)\n" % (numOfAffected, '
+        '1.*numOfAffected/popSize)'
 simu.evolve(
     preOps = [initByFreq([0.9, 0.1])],
     ops = [
@@ -194,4 +195,28 @@ for i in range(5):
         ind.allele(1, 0), ind.allele(0, 1),
         ind.allele(1, 1), ind.info('qtrait'))
 
+#end
+#file log/topics_pause.log
+simu = simulator(
+    population(size=50000, loci=[100]*10),
+    randomMating()
+)
+simu.evolve(
+    ops = [
+        pause(stopOnKeyStroke=True),
+        ticToc(step=10),
+    ],
+    end = 50
+)
+#end
+#file log/topics_wxPython.log
+pop = population(1000, loci=[3,5])
+InitByFreq(pop, [.2, .8])
+Stat(pop, alleleFreq=range(8), LD=[1,2])
+from simuUtil import ListVars
+ListVars(pop.vars())
+import sys
+sys.path.append('../scripts')
+from simuViewPop import *
+viewPop(pop)
 #end
