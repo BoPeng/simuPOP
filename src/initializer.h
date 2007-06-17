@@ -365,7 +365,9 @@ namespace simuPOP
 		public:
 			/**
 			\c pyInit is a hybrid initializer. User should define a function with parameters
-            allele, ploidy and subpop indices, and return an allele value. ??? Users of this operator must supply a Python function with parameter <tt>(index, ploidy, subpop)</tt>.
+            allele, ploidy and subpop indices, and return an allele value. 
+			Users of this operator must supply a Python function with parameter 
+			<tt>(index, ploidy, subpop)</tt>.
 			This operator will loop through all individual in each subpopulation and call this function
 			to initialize populations. The arrange of parameters allows different initialization scheme for each subpop.
 
