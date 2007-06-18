@@ -38,21 +38,55 @@ namespace simuPOP
 {
 	// ///////////////////////// PENETRANCE ///////////////////////////////
 
-	/** \brief penetrance
-
-	Please refer to the user's guide for details.
+    /// basic class of a penetrance operator
+	/**
+	Penetrance is the probability that one will have the disease when he has certain
+    genotype(s). Calculation and the parameter set of penetrance are similar to those
+    of fitness. An individual will be randomly marked as affected/unaffected according
+    to his penetrance value.??? For example, an individual will have probability 0.8 to
+    be affected if the penetrance is 0.8. \n
+    
+    Penetrance can be applied at any stage (default to \c DuringMating). It will be
+    calculated during mating, and then the affected status will be set for each offspring.
+    Penetrance can also be used as \c PreMating, \c PostMating or even \c PrePostMating??? operator.
+    In these cases, the affected status will be set to all individuals according to their
+    penetrance values. It is also possible to store penetrance in a given information
+    field specified by \c infoFields parameter (e.g. <tt>infoFields=['penetrance']</tt>). This is
+    useful to check the penetrance values at a later time. \n
+    
+    Affected status will be used for statistical purpose, and most importantly, ascertainment.
+    They will be calculated along with fitness although they might not be used at every
+    generation. You can use two operators: one for fitness/selection, active at every
+    generation; one for affected status, active only at ascertainments, to avoid unnecessary
+    calculation of the affected status. \n
+    
+    Pentrance values are used to set the affectedness of individuals, and are usually not saved.
+    If you would like to know the penetrance value, you need to 
+    \li use <tt>addInfoField('penetrance')</tt> to the population to analyze. (Or use \c infoFields
+    parameter of the population constructor), and
+    \li use e.g., <tt>mlPenetrance(...., infoFields=['penetrance'])</tt> to add the penetrance field
+    to the penetrance operator you use. You may choose a name other than \c 'penetrance' as long as
+    the field names for the operator and population match.
+    
+    Penetrance functions can be applied to the current, all, or certain number of ancestral generations.
+    This is controlled by the \c ancestralGen parameter, which is default to \c -1 (all available
+    ancestral generations). You can set it to \c 0 if you only need affection??? status for the current
+    generation, or specify a number \c n for the number of ancestral generations (n + 1 total generations)
+    to process. Note that \c ancestralGen parameter is ignored if the penetrance operator is used
+    as a during mating operator.
 	*/
-
 	class penetrance: public Operator
 	{
 		public:
-			/// constructor. default to be always active.
-			// ancestralGen: 0: apply to current gen
-			//               -1: apply to all gen
-			//               otherwise, apply to n ancestral generations.
-			/// If one field is specified, it will be used to store penetrance
-			/// values.
-			/// default to post mating
+			/// create a penetrance operator
+            /**
+            default to be always active.
+			\param ancestralGen if this parameter is set to be \c 0, then apply penetrance to
+                the current generation; if \c -1, apply to all generations; otherwise, apply
+                to the specified number of ancestral generations
+			\param stage specify the stage this operator will be applied, default to \c DuringMating.
+            \param infoFields If one field is specified, it will be used to store penetrance values.???
+            */
 			penetrance(int ancestralGen=-1, int stage=DuringMating,
 				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL,
@@ -67,26 +101,27 @@ namespace simuPOP
 			{
 			}
 
-			/// this function is very important
+			/// deep copy of a penetrance operator
 			virtual Operator* clone() const
 			{
 				return new penetrance(*this);
 			}
 
-			/// calculate/return penetrance etc
+			/// calculate/return penetrance etc.
 			virtual double penet(individual *)
 			{
 				throw ValueError("This penetrance calculator is not supposed to be called directly");
 				return 1.;
 			}
 
-			/// set pentrance to all individuals and record penetrance if requested.
+			/// set penetrance to all individuals and record penetrance if requested
 			virtual bool apply(population& pop);
 
-			/// set penetrance to all individual
+			/// set penetrance to all individuals
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL);
 
+            /// used by Python print function to print out the general information of the penetrance operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::penetrance>" ;
@@ -97,23 +132,23 @@ namespace simuPOP
 			int m_ancestralGen;
 	};
 
-	/** \brief penetrance according to genotype at one locus
-
-	map selector. Assign penetrance value according to a
-	given dictionary.
+    /// penetrance according to the genotype at one locus
+	/**
+    Assign penetrance using a table with keys \c 'X-Y' where \c X and \c Y are allele numbers.
 	*/
 
 	class mapPenetrance: public penetrance
 	{
 		public:
-			/** \brief create a map penetrance function (penetrance according to genotype at one locus
-
-			\param locus the locus index. The genotype of this locus will be axamed.
-			\param loci the loci index. The genotype of this locus will be axamed.
-			\param penetrance a dictionary of penetrance. The genotype must be in the form of 'a-b' for single
-			   locus.
-			\param phase if true, a/b and b/a will have different penetrance value. Default to false.
-			\param output and other parameters please refer to help(baseOperator.__init__)
+            /// create a map penetrance operator
+            /**
+            \param locus the locus index. The genotype of this locus will be examed.???
+			\param loci the loci indices. The genotypes of these loci will be examed.
+			\param penetrance a dictionary of penetrance. The genotype must be in the form
+                of 'a-b' for a single locus.
+			\param phase if True, <tt>a/b</tt> and <tt>b/a</tt> will have different penetrance values.
+                Default to \c False.
+			\param output and other parameters please refer to help(baseOperator.__init__)???
 			*/
 			mapPenetrance( vectoru loci, const strDict& penet, bool phase=false,
 				int ancestralGen=-1, int stage=DuringMating, int begin=0, int end=-1, int step=1,
@@ -128,14 +163,16 @@ namespace simuPOP
 			{
 			}
 
+            /// deep copy of a map penetrance operator
 			virtual Operator* clone() const
 			{
 				return new mapPenetrance(*this);
 			}
 
-			/// currently assuming diploid
+			/// currently assuming diploid???
 			virtual double penet(individual * ind);
 
+            /// used by Python print function to print out the general information of the map penetrance operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::penetrance::map penetrance>" ;
@@ -152,29 +189,27 @@ namespace simuPOP
 			bool m_phase;
 	};
 
-	/** \brief penetrance according to genotype at one locus
-
-	multiple allele selector. This selector group alleles to disease
-	and wild type and return penetrance to AA,Aa,aa. (A is wildtype).
+    /// multiple allele penetrance operator
+	/**
+    This is called 'multiple-alleles'??? penetrance. It separates alleles into two groups:
+    wildtype and disease alleles. Wildtype alleles are specified by parameter \c wildtype
+    and any other alleles are considered as diseased alleles. \c maPenetrance accepts an
+    array of fitness for AA, Aa, aa in the single-locus case, and a longer table for
+    multi-locus case. Penetrance is then set for any given genotype.
 	*/
-
 	class maPenetrance: public penetrance
 	{
 		public:
-			/** \brief create a multiple allele selector (penetrance according to diseased or wildtype
-			alleles)
-
-			\param locus the locus index. The genotype of this locus will be axamed.
-			\param loci the loci index.
-			\param penetrance an array of penetrance of AA,Aa,aa. A is the
-			   wild type group. In the case of multiple loci, fitness should be in the order of
-					BB Bb bb
-				 AA 1  2  3
-				 Aa 4  5  6
-				 aa 7  8  9
-			\param wildtype an array of alleles in the wildtype group. Anything else is disease allele.,
-			default = [0]
-			\param output and other parameters please refer to help(baseOperator.__init__)
+            /// create a multiple allele penetrance operator (penetrance according to diseased or wildtype alleles)
+			/**
+			\param locus the locus index. The genotype of this locus will be examed.???
+			\param loci the loci indices. The genotypes of these loci will be examed.
+			\param penetrance an array of penetrance values of AA, Aa, aa. A is the
+                wild type group. In the case of multiple loci, fitness should be in the order of
+                AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
+			\param wildtype an array of alleles in the wildtype group. Any other alleles will
+                be considered as in the disease allele group.
+			\param output and other parameters please refer to help(baseOperator.__init__)???
 			*/
 			maPenetrance( vectoru loci, const vectorf& penet, const vectora& wildtype,
 				int ancestralGen=-1,
@@ -193,14 +228,16 @@ namespace simuPOP
 			{
 			}
 
+            /// deep copy of a multi-allele penetrance operator
 			virtual Operator* clone() const
 			{
 				return new maPenetrance(*this);
 			}
 
-			/// currently assuming diploid
+			/// currently assuming diploid???
 			virtual double penet(individual * ind);
 
+            /// used by Python print function to print out the general information of the multi-allele penetrance operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::penetrance::multiple-alleles penetrance>" ;
@@ -216,14 +253,11 @@ namespace simuPOP
 			///
 			vectora m_wildtype;
 	};
-
-	/** \brief penetrance according to genotype at multiple loci multiplicative model
-
-	 multiple loci selector. This selector takes several selectors and
-	 multiply their penetrance values...
-	 e.g.
-	   mlmpenetrance( [mappenetrance(...), mapenetrance(...) ])
-	 */
+    /// penetrance according to the genotype according to a multiple loci multiplicative model
+	/** 
+    \c mlPentrance is the 'multiple-loci'??? penetrnace calculator. It accepts a list of
+    penetrances and combine them according to the \c mode parameter.
+    */
 
 	class mlPenetrance: public penetrance
 	{
@@ -236,10 +270,10 @@ namespace simuPOP
 			typedef std::vector< Operator * > vectorop;
 
 		public:
-			/** \brief multiple loci selector using a multiplicative model.
-
-			\param selectors a list of selectors.
-			\param mode one of PEN_Multiplicative, PEN_Additive, PEN_Heterogeneity
+            /// create a multiple loci penetrance operator using a multiplicative model
+			/**
+			\param peneOps a list of selectors???
+			\param mode can be one of \c PEN_Multiplicative, \c PEN_Additive, and \c PEN_Heterogeneity
 			*/
 			mlPenetrance( const vectorop peneOps, int mode = PEN_Multiplicative,
 				int ancestralGen=-1, int stage=DuringMating, int begin=0, int end=-1, int step=1,
@@ -265,14 +299,16 @@ namespace simuPOP
 					delete *s;
 			}
 
+            /// deep copy of a multi-loci penetrance operator
 			virtual Operator* clone() const
 			{
 				throw ValueError("Multi-loci selector can not be nested.");
 			}
 
-			/// currently assuming diploid
+			/// currently assuming diploid???
 			virtual double penet(individual * ind);
-
+			
+            /// used by Python print function to print out the general information of the multiple-loci penetrance operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::penetrance::multiple-loci penetrance>" ;
@@ -286,21 +322,24 @@ namespace simuPOP
 			int m_mode;
 	};
 
-	/** \brief penetrance using user supplied function
-
-	Assign penetrance value by calling a user supplied function
+    /// assign penetrance values by calling a user provided function
+	/**
+    For each individual, users provide a function to calculate penetrance. This
+    method is very flexible but will be slower than previous operators since a
+    function will be called for each individual. 
 	*/
-
 	class pyPenetrance: public penetrance
 	{
 		public:
 			/** \brief create a python hybrid selector
 
-			\param loci susceptibility loci. The genotype at these loci will be
-			passed to func.
-			\param func a Python function that accept genotypes at susceptibility loci
-			and return penetrance value.
-			\param output and other parameters please refer to help(baseOperator.__init__)
+			\param loci disease susceptibility loci. The genotypes at these loci will
+                be passed to the provided Python function in the form of <tt>loc1_1, loc1_2, loc2_1, loc2_2, ...</tt>
+                if the individuals are diploid.
+			\param func a user-defined Python function that accepts an array of genotypes
+                at susceptibility loci and return a penetrance value. The returned value
+                should be between 0 and 1.
+			\param output and other parameters please refer to help(baseOperator.__init__)???
 			*/
 			/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
 			pyPenetrance(const vectoru & loci, PyObject* func, int ancestralGen=-1,
@@ -342,14 +381,16 @@ namespace simuPOP
 					Py_INCREF(m_func);
 			}
 
+            /// deep copy of a Python penetrance operator
 			virtual Operator* clone() const
 			{
 				return new pyPenetrance(*this);
 			}
 
-			/// currently assuming diploid
+			/// currently assuming diploid???
 			virtual double penet(individual * ind);
-
+			
+            /// used by Python print function to print out the general information of the Python penetrance operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::penetrance::python penetrance>" ;
