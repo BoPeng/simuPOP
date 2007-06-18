@@ -35,30 +35,20 @@ using std::ostream_iterator;
 
 namespace simuPOP
 {
+    /// recombination
 	/**
-	\brief  Recombination
-
-	- only works for diploids (and for females in haplodiploids) population.
-
-	- Free recombination between loci. Loci behave completely independently.
-
-	- otherwise there will be some linkage between loci, user
-	  need to specify physical recombination rate between adjacent loci
-	(ie between locus n and n+1)
-
-	- The recombination rate must be comprised between 0.0 and 0.5.
-
-	- A recombination rate of 0.0 means that the loci are completely linked
-	and thus behave together as a single linked locus.
-
-	- A recombination rate of 0.5 is equivalent to free
-	recombination.
-
-	- All values in between will represent various linkage intensities
-	between adjacent pairs of loci. The recombination rate is equivalent to
-	1-linkage and represents the probability that the allele at the next locus is
-	randomly drawn.
-
+    In simuPOP, only one recombinator is provided. Recombination events between loci
+    a/b and b/c are independent, otherwise there will be some linkage between loci, users
+	need to specify physical recombination rate between adjacent loci. In addition,
+    for the recombinator
+	\li it only works for diploid (and for females in haplodiploid) populations.
+    \li the recombination rate must be comprised between \c 0.0 and \c 0.5. A recombination
+    rate of \c 0.0 means that the loci are completely linked, and thus behave together
+    as a single linked locus. A recombination rate of \c 0.5 is equivalent to free
+	recombination. All other values between \c 0.0 and \c 0.5 will represent various
+    linkage intensities	between adjacent pairs of loci. The recombination rate is
+    equivalent to <tt>1-linkage</tt> and represents the probability that the allele
+    at the next locus is randomly drawn.
 	*/
 
 	class recombinator: public Operator
@@ -66,25 +56,26 @@ namespace simuPOP
 		public:
 			/// recombine chromosomes from parents
 			/**
-
-			\param intensity recombination rate per unit of loci distance. I.e., the really recombination
-			rate between two loci is determined by intensity*loci distance between them.
-			\param rate recombination rate regardless of loci distance; it can also be
-			  an array of recombination rates. Must be the same length
-			  as afterLoci or totNumOfLoci(). If totNumLociThe last item can be ignored.
-			\param afterLoci an array of loci index. If rates is also specified, they
-			should have the same length. Default to all loci (but meaningless for those
-			loci locate at the end of chromosome.) If given, afterLoci should
-			be ordered, and can not include loci at the end of a chromosome.
-			\maleRate recombination rate for male individuals. If given,
-			parameter rate will be considered as female rate.
-			\maleIntensity recombination intensity for male individuals. If given,
-			parameter intensity will be considered as female intensity.
-			\maleAfterLoci if given, male will recombine at different locations.
-			This is rarely used.
-			\note rate gives recombination rate PER unit, rates gives plain rates.
-			\note there is no recombination between sex chromosomes of male individuals.
-			(sexChrom=True).
+			\param intensity intensity of recombination. The actually recombination rate
+                between two loci is determined by <tt>intensity*locus distance</tt> between them.
+			\param rate recombination rate regardless of locus distance after all \c afterLoci.
+                It can also be an array of recombination rates. Should have the same length
+                as \c afterLoci or \c totNumOfLoci(). If \c totNumLoci, the last item can be ignored.??? 
+                The recombination rates are independent of locus distance.
+			\param afterLoci an array of locus indices. Recombination will occur after these
+                loci. If \c rate is also specified, they should have the same length. Default
+                to all loci (but meaningless for those loci located at the end of a chromosome).
+                If this parameter is given, it should be ordered, and can not include loci at
+                the end of a chromosome. 
+			\param maleIntensity recombination intensity for male individuals. If given,
+                parameter \c intensity will be considered as female intensity.
+			\param maleRate recombination rate for male individuals. If given,
+                parameter \c rate will be considered as female recombination rate.
+			\param maleAfterLoci if given, males will recombine at different locations.
+                This is rarely used.???
+			\note There is no recombination between sex chromosomes of male individuals
+                if <tt>sexChrom()=True</tt>.??? This may change later if the exchanges
+                of genes between pseudoautosomal regions of XY need to be modeled.
 			*/
 			recombinator(double intensity=-1,
 				vectorf rate=vectorf(),
@@ -112,27 +103,17 @@ namespace simuPOP
 			{
 			}
 
-			/// this function is very important
+			/// deep copy of a recombinator
 			virtual Operator* clone() const
 			{
 				return new recombinator(*this);
 			}
 
+            /// used by Python print function to print out the general information of the recombinator
 			virtual string __repr__()
 			{
 				return "<simuPOP::recombination>" ;
 			}
-
-			/// this function takes intensity, rate, afterLoci, ...
-			/// inputs and return a bernulli trailer and a recBeforeLoci
-			/// vector.
-			void prepareRecRates(population& pop,
-				double intensity,
-				vectorf rate,
-				vectoru afterLoci,				  //
-				bool sexChrom,					  // whether or not recombine the last chromosome
-				vectoru& recBeforeLoci,			  // return before loci vector
-				vectorf& vecP);					  // return recombination rate
 
 			/// return recombination count
 			ULONG recCount(size_t locus)
@@ -148,6 +129,14 @@ namespace simuPOP
 				return m_recCount;
 			}
 
+            /// apply the recombinator during mating???
+			virtual bool applyDuringMating(population& pop,
+				population::IndIterator offspring,
+				individual* dad=NULL,
+				individual* mom=NULL);
+			
+		private:
+
 			// this function implement how to recombine
 			// parental chromosomes and set one copy of offspring chromosome
 			// bt contains the bernulli trailer
@@ -159,10 +148,16 @@ namespace simuPOP
 				const vectoru& recBeforeLoci,
 				bool setSex=false);
 
-			virtual bool applyDuringMating(population& pop,
-				population::IndIterator offspring,
-				individual* dad=NULL,
-				individual* mom=NULL);
+			/// this function takes intensity, rate, afterLoci, ...
+			/// inputs and return a bernulli trailer and a recBeforeLoci
+			/// vector.
+			void prepareRecRates(population& pop,
+				double intensity,
+				vectorf rate,
+				vectoru afterLoci,				  //
+				bool sexChrom,					  // whether or not recombine the last chromosome
+				vectoru& recBeforeLoci,			  // return before loci vector
+				vectorf& vecP);					  // return recombination rate      
 
 		private:
 

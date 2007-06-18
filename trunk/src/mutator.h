@@ -32,37 +32,35 @@
 
 namespace simuPOP
 {
-	/** \brief mutator class.
+    /// mutator class
+	/**
+	The base class of all functional mutators. It is not supposed to be called directly.
 
-	Do not use this class directly. It just provide interface for real mutators.
-
-	Every mutator can specify rate (equal rate) or rates (different rate for different
+	Every mutator can specify \c rate (equal rate or different rates for different
 	loci) and a vector of applicable loci (default to all but should have the same
-	length with rates if rates have length greater than one).
+	length as \c rate if \c rate has length greater than one).
 
-	max allele can be specified as well but more parameter, if needed, should
+	Maximum allele can be specified as well but more parameter, if needed, should
 	be implemented by individual mutator classes.
 
-	Number of possible allelic states: Most theoretical studies assume an infinite
-	number of allelic states to avoid any homoplasy. If it facilitates analysis,
+	There are number of possible allelic states. Most theoretical studies assume an infinite
+	number of allelic states to avoid any homoplasy. If it facilitates any analysis,
 	this is however extremely unrealistic.
-
-	@author Bo Peng
 	*/
-
 	class mutator: public Operator
 	{
 		public:
-			/** \brief create a mutator
+            /// create a mutator
+			/**
 			All mutators have the following common parameters. However, the actual meaning
-			of these parameters may vary according to different model. Check the manual
-			for details!!! (help(kamMutator) for example.)
+			of these parameters may vary according to different model. The only differences
+            between the following mutators are they way they actually mutate an allele, and
+            corresponding input parameters. Mutators record the number of mutation events at each loci.
 
-			\param rate single rate for all applicable loci (atLoci). Will be ignored
-			if rates is specified; or it can be an array of rates, the same length as atLoci.
-			\param atLoci a vector of loci index. Can be ignored only when single
-			rate is specified. Default to all loci.
-			\param maxAllele max allowable allele. Interpreted by each sub mutaor class. Default to pop.maxAllele().
+			\param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c atLoci)
+			\param atLoci a vector of loci indices. Will be ignored only when single rate is specified.
+                Default to all loci.
+			\param maxAllele maximum allowable allele. Interpreted by each sub mutaor class. Default to \c pop.maxAllele().
 			*/
 			mutator( vectorf rate=vectorf(),
 				vectori atLoci=vectori(),
@@ -98,19 +96,19 @@ namespace simuPOP
 			{
 			}
 
-			/// this function is very important
+			/// deep copy of a \c mutator
 			virtual Operator* clone() const
 			{
 				return new mutator(*this);
 			}
 
-			/// return mutation rate
+			/// return the mutation rate
 			vectorf rate()
 			{
 				return m_rate;
 			}
 
-			/// set an array of rates
+			/// set an array of mutation rates
 			void setRate(const vectorf rate, const vectori atLoci = vectori())
 			{
 				if( rate.size() != 1 && rate.size() != atLoci.size() )
@@ -123,13 +121,13 @@ namespace simuPOP
 				m_initialized = false;
 			}
 
-			/// return max allowable allele number
+			/// return maximum allowable allele number
 			UINT maxAllele()
 			{
 				return m_maxAllele;
 			}
 
-			///
+			/// set maximum allowable allele
 			void setMaxAllele(UINT maxAllele)
 			{
 #ifndef BINARYALLELE
@@ -137,7 +135,7 @@ namespace simuPOP
 #endif
 			}
 
-			/// return mutation count
+			/// return mutation count at \c locus
 			ULONG mutationCount(size_t locus)
 			{
 				DBG_ASSERT( locus < m_mutCount.size(), IndexError,
@@ -151,14 +149,13 @@ namespace simuPOP
 				return m_mutCount;
 			}
 
-			/// how to mutate a single allele.
-			/// this is usually the only function that need to be defined by the subclasses.
+			/// describe how to mutate a single allele
 			virtual void mutate(AlleleRef allele)
 			{
 				throw SystemError("You are not supposed to call this base mutator funciton.");
 			};
 
-			/// apply!
+			/// apply a mutator
 			virtual bool apply(population& pop);
 
 		private:
@@ -188,25 +185,26 @@ namespace simuPOP
 
 	/// K-Allele Model mutator
 	/**
-	Under this model, there are K (here refers as maxAllele) possible allele states, and any
-	allele has a constant probability (rate/(K-1)) of mutation towards any of the K-1 allelic states.
-
-	\note the theoretical mutation rate is rates/(K-1)  towards any of the K-1 allelic states.
-	So rates is actually the probability to mutate!
-
+    This mutator mutate an allele to another allelic state with equal probability.
+    The specified mutation rate is actually the 'probability to mutate'. So the
+    mutation rate to any other allelic state is actually <tt>(rate/(K-1))</tt>, where
+    \c K is specified by parameter \c maxAllele. You can also specify states for
+    this mutator. If the state parameter is given, all alleles must be one of the
+    states, and mutation will happen among them. states is defaulted to \c 1-maxAllele.???
+	
 	\sa Crow & Kimura 1970
 	*/
-
 	class kamMutator: public mutator
 	{
 		public:
-			/// K-Allele Model mutator
+			/// create a K-Allele Model mutator
 			/**
-			\param rate  mutation rate. It is 'probability to mutate'. The actual
-			   mutation rate to any of the other K-1 allelic states are rates/(K-1)!
-			\param atLoci and other parameters: refer to help(mutator), help(baseOperator.__init__)
-			\param maxAllele maxAllele that can be mutated to. For binary libraries
-			  allelic states will be [0, maxAllele]. For others, they are [1, maxAllele]
+			\param rate mutation rate. It is the 'probability to mutate'. The actual
+                mutation rate to any of the other \c K-1 allelic states are <tt>rates/(K-1)</tt>.
+			\param atLoci a vector of loci indices. Will be ignored only when single rate is specified.
+                Default to all loci.
+			\param maxAllele maximum allele that can be mutated to. For binary libraries
+			  allelic states will be <tt>[0, maxAllele]</tt>. Otherwise, they are <tt>[1, maxAllele]</tt>.
 			*/
 			kamMutator(const vectorf& rate=vectorf(),
 				const vectori& atLoci=vectori(),
@@ -224,12 +222,13 @@ namespace simuPOP
 			/// mutate to a state other than current state with equal probability
 			virtual void mutate(AlleleRef allele);
 
-			/// this function is very important
+			/// deep copy of a \c kamMutator
 			virtual Operator* clone() const
 			{
 				return new kamMutator(*this);
 			}
 
+            /// used by Python print function to print out the general information of the \c kamMutator
 			virtual string __repr__()
 			{
 				return "<simuPOP::k-allele model mutator K=" +
@@ -237,28 +236,26 @@ namespace simuPOP
 			}
 	};
 
-	/// stepwise mutation model.
+	/// stepwise mutation model
 	/**
-	Stepwise mutation model (SMM) assumes that alleles are represented by integer values
+	<em>Stepwise Mutation Model</em> (SMM) assumes that alleles are represented by integer values
 	and that a mutation either increases or decreases the allele value by one.
 	For variable number tandem repeats loci (VNTR), the allele value is generally
 	taken as the number of tandem repeats in the DNA sequence.
 
 	\sa Kimura & Ohta 1978
 	*/
-
 	class smmMutator: public mutator
 	{
 		public:
-			///
+			/// create a SMM mutator
 			/**
 			The stepwise mutation model (SMM) is developed for allozymes. It  provides better description
-			 for these kinds of evolutionary processes.
+			for these kinds of evolutionary processes.
 
-			\param rate: mutation rate
-			\param incProb probability to increase allele state. Default to 0.5
-			\param atLoci and other parameters: refer to help(mutator), help(baseOperator.__init__)
+			\param incProb probability to increase allele state. Default to \c 0.5.
 
+            Please see \c mutator for the description of other parameters.     
 			*/
 			smmMutator(vectorf rate=vectorf(), vectori atLoci=vectori(),
 				UINT maxAllele=0, double incProb=0.5,
@@ -278,6 +275,7 @@ namespace simuPOP
 
 			~smmMutator(){}
 
+            /// mutate according to the SMM model ???
 			virtual void mutate(AlleleRef allele)
 			{
 				// inc
@@ -291,12 +289,13 @@ namespace simuPOP
 					AlleleDec(allele);
 			}
 
-			/// this function is very important
+			/// deep copy of a \c smmMutator
 			virtual Operator* clone() const
 			{
 				return new smmMutator(*this);
 			}
 
+           /// used by Python print function to print out the general information of the \c smmMutator
 			virtual string __repr__()
 			{
 				return "<simuPOP::step-wise mutation model mutator>" ;
@@ -307,26 +306,33 @@ namespace simuPOP
 			double m_incProb;
 	};
 
-	/// stepwise mutation model.
+	/// generalized stepwise mutation model
 	/**
-	Generalized Stepwise mutation model (GSM) assumes that alleles are represented by integer values
+	<em>Generalized Stepwise Mutation model</em> (GSM) is an extension to stepwise
+	mutation model. This model assumes that alleles are represented by integer values
 	and that a mutation either increases or decreases the allele value by a random value.
+    In other words, in this model the change in the allelic state is drawn from a random
+    distribution. A geometric generalized stepwise model uses a geometric distribution with
+    parameter \em p.
+    
+    \c gsmMutator implements both models. If you specify a Python function without a
+    parameter, this mutator will use its return value each time a mutation occur; otherwise,
+    a parameter \c p should be provided and the mutator will act as a geometric generalized stepwise model.
 
 	\sa Kimura & Ohta 1978
 	*/
-
 	class gsmMutator: public mutator
 	{
 		public:
-			///
+			/// create a \c gsmMutator
 			/**
 			The generalized stepwise mutation model (GMM) is developed for allozymes.
 			It  provides better description for these kinds of evolutionary processes.
 
-			\param rate: mutation rate
-			\param incProb probability to increase allele state. Default to 0.5
-			\param atLoci and other parameters: refer to help(mutator), help(baseOperator.__init__)
-			\param func return number of steps. no parameter
+			\param incProb probability to increase allele state. Default to \c 0.5.
+			\param func return number of steps. No parameter.???
+
+            Please see \c mutator for the description of other parameters.            
 			*/
 			gsmMutator( vectorf rate=vectorf(), vectori atLoci=vectori(),
 				UINT maxAllele=0, double incProb=0.5, double p=0, PyObject* func=NULL,
@@ -361,14 +367,16 @@ namespace simuPOP
 
 			~gsmMutator(){}
 
-			/// this function is very important
+			/// deep copy of a \c gsmMutator
 			virtual Operator* clone() const
 			{
 				return new gsmMutator(*this);
 			}
 
+            /// mutate according to the GSM model
 			virtual void mutate(AlleleRef allele);
 
+            /// used by Python print function to print out the general information of the \c gsmMutator
 			virtual string __repr__()
 			{
 				return "<simuPOP::generalized step-wise mutator>" ;
@@ -385,11 +393,16 @@ namespace simuPOP
 			PyObject* m_func;
 	};
 
-	/// mixed mutation model . has not been implemented.
-
+	/// mixed mutation model
+	/**
+	Hybrid mutator. Mutation rate etc. are set just like others and you are supposed to
+	provide a Python function to return a new allele state given an old state. \c pyMutator
+	will choose an allele as usual and call your function to mutate it to another allele.
+    */
 	class pyMutator: public mutator
 	{
 		public:
+            /// create a \c pyMutator
 			pyMutator(vectorf rate=vectorf(), vectori atLoci=vectori(), UINT maxAllele=0,
 				PyObject* func=NULL,
 				string output=">", string outputExpr="",
@@ -419,12 +432,13 @@ namespace simuPOP
 					Py_INCREF(m_func);
 			}
 
-			/// this function is very important
+			/// deep copy of a \c pyMutator
 			virtual Operator* clone() const
 			{
 				return new pyMutator(*this);
 			}
 
+            /// mutate according to the mixed model
 			virtual void mutate(AlleleRef allele)
 			{
 				int resInt;
@@ -440,6 +454,7 @@ namespace simuPOP
 #endif
 			}
 
+            /// used by Python print function to print out the general information of the \c pyMutator
 			virtual string __repr__()
 			{
 				return "<simuPOP::python mutator>" ;
@@ -450,19 +465,23 @@ namespace simuPOP
 			PyObject* m_func;
 	};
 
-	/// \brief point mutator
-	/** mutate specified individuals at specified loci to spcified allele.
-	I.e., this is a non-random mutator used to introduce disease etc.
+	/// point mutator
+	/**
+	Mutate specified individuals at a specified loci to a spcified allele.
+	I.e., this is a non-random mutator used to introduce diseases etc.
+	\c pointMutator, as its name suggest, does point mutation. This mutator will turn
+	alleles at \c atLoci on the first chromosome copy to \c toAllele for individual \c inds.
+	You can specify atPloidy to mutate other, or all ploidy copy.
 	*/
-
 	class pointMutator: public Operator
 	{
 		public:
-			/** \brief mutate once
+            /// create a \c pointMutator
+			/**
+			\param inds individuals who will mutate
+			\param toAllele allele that will be mutate to
 
-			\param atLoci a vector of loci index.
-			\param inds mutate 'inds' individuals
-			\param toAllele mutate to 'toAllele'
+            Please see \c mutator for the description of other parameters.     
 			*/
 			pointMutator(
 				const vectori& atLoci,
@@ -485,13 +504,13 @@ namespace simuPOP
 			{
 			}
 
-			/// this function is very important
+			/// deep copy of a \c pointMutator
 			virtual Operator* clone() const
 			{
 				return new pointMutator(*this);
 			}
 
-			/// apply!
+			/// apply a \c pointMutator
 			virtual bool apply(population& pop)
 			{
 				m_mutCount.resize(pop.totNumLoci(), 0);
@@ -512,12 +531,13 @@ namespace simuPOP
 				return true;
 			}
 
+            /// used by Python print function to print out the general information of the \c pointMutator
 			virtual string __repr__()
 			{
 				return "<simuPOP::point mutator>" ;
 			}
 
-			/// return mutation count
+			/// return mutation count at \c locus
 			ULONG mutationCount(size_t locus)
 			{
 				DBG_ASSERT( locus < m_mutCount.size(), IndexError,
