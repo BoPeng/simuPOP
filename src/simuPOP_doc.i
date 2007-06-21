@@ -1582,17 +1582,29 @@ Usage:
 
 Description:
 
-    stepwise mutation model.
+    generalized stepwise mutation model
 
 Details:
 
-    Generalized Stepwise mutation model (GSM) assumes that alleles are
+    Generalized Stepwise Mutation model (GSM) is an extension to
+    stepwise mutation model. This model assumes that alleles are
     represented by integer values and that a mutation either increases
-    or decreases the allele value by a random value.
+    or decreases the allele value by a random value. In other words,
+    in this model the change in the allelic state is drawn from a
+    random distribution. A geometric generalized stepwise model uses a
+    geometric distribution with parameter p. gsmMutator implements
+    both models. If you specify a Python function without a parameter,
+    this  mutator will use its return value each time a mutation
+    occur; otherwise, a parameter p should be provided and the
+    mutator will act as a geometric generalized stepwise model.
 
 "; 
 
 %feature("docstring") simuPOP::gsmMutator::gsmMutator "
+
+Description:
+
+    create a  gsmMutator
 
 Usage:
 
@@ -1603,19 +1615,16 @@ Usage:
 
 Arguments:
 
-    rate:           
-    ::              mutation rate
     incProb:        probability to increase allele state. Default to
-                    0.5
-    atLoci:         and other parameters: refer to help(mutator),
-                    help(baseOperator.__init__)
-    func:           return number of steps. no parameter
+                    0.5.
+    func:           return number of steps. No parameter.???
 
 Details:
 
     The generalized stepwise mutation model (GMM) is developed for
     allozymes. It provides better description for these kinds of
-    evolutionary processes.
+    evolutionary processes. Please see  mutator for the description of
+    other parameters.
 
 "; 
 
@@ -1635,7 +1644,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  gsmMutator
 
 Usage:
 
@@ -1647,8 +1656,7 @@ Usage:
 
 Description:
 
-    how to mutate a single allele. this is usually the only function
-    that need to be defined by the subclasses.
+    mutate according to the GSM model
 
 Usage:
 
@@ -1661,7 +1669,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  gsmMutator
 
 Usage:
 
@@ -2785,15 +2793,14 @@ Description:
 
 Details:
 
-    Under this model, there are K (here refers as maxAllele) possible
-    allele states, and any allele has a constant probability
-    (rate/(K-1)) of mutation towards any of the K-1 allelic states.
-
-Note:
-
-    the theoretical mutation rate is rates/(K-1) towards any of the
-    K-1 allelic states. So rates is actually the probability to
-    mutate!
+    This  mutator mutate an allele to another allelic state with equal
+    probability. The specified mutation rate is actually the
+    'probability to mutate'. So the mutation rate to any other allelic
+    state is actually (rate/(K-1)), where K is specified by parameter
+    maxAllele. You can also specify states for this  mutator. If the
+    state parameter is given, all alleles must be one of the states,
+    and mutation will happen among them. states is defaulted to
+    1-maxAllele.???
 
 "; 
 
@@ -2801,7 +2808,7 @@ Note:
 
 Description:
 
-    K-Allele Model  mutator.
+    create a K-Allele Model  mutator
 
 Usage:
 
@@ -2811,14 +2818,15 @@ Usage:
 
 Arguments:
 
-    rate:           mutation rate. It is 'probability to mutate'. The
-                    actual mutation rate to any of the other K-1
-                    allelic states are rates/(K-1)!
-    atLoci:         and other parameters: refer to help(mutator),
-                    help(baseOperator.__init__)
-    maxAllele:      maxAllele that can be mutated to. For binary
+    rate:           mutation rate. It is the 'probability to mutate'.
+                    The actual mutation rate to any of the other K-1
+                    allelic states are rates/(K-1).
+    atLoci:         a vector of loci indices. Will be ignored only
+                    when single rate is specified. Default to all
+                    loci.
+    maxAllele:      maximum allele that can be mutated to. For binary
                     libraries allelic states will be [0, maxAllele].
-                    For others, they are [1, maxAllele]
+                    Otherwise, they are [1, maxAllele].
 
 "; 
 
@@ -2850,7 +2858,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  kamMutator
 
 Usage:
 
@@ -2863,7 +2871,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  kamMutator
 
 Usage:
 
@@ -2984,12 +2992,17 @@ Usage:
 
 Description:
 
-    penetrance according to genotype at one locus
+    multiple allele  penetrance operator
 
 Details:
 
-    multiple allele  selector. This  selector group alleles to disease
-    and wild type and return  penetrance to AA,Aa,aa. (A is wildtype).
+    This is called 'multiple-alleles'???  penetrance. It separates
+    alleles into two groups: wildtype and disease alleles. Wildtype
+    alleles are specified by parameter wildtype and any other alleles
+    are considered as diseased alleles.  maPenetrance accepts an array
+    of fitness for AA, Aa, aa in the single-locus case, and a longer
+    table for multi-locus case. Penetrance is then set for any given
+    genotype.
 
 "; 
 
@@ -2997,8 +3010,8 @@ Details:
 
 Description:
 
-    create a multiple allele  selector ( penetrance according to
-    diseased or wildtype alleles)
+    create a multiple allele  penetrance operator ( penetrance
+    according to diseased or wildtype alleles)
 
 Usage:
 
@@ -3009,16 +3022,18 @@ Usage:
 Arguments:
 
     locus:          the locus index. The genotype of this locus will
-                    be axamed.
-    loci:           the loci index.
-    penetrance:     an array of  penetrance of AA,Aa,aa. A is the wild
-                    type group. In the case of multiple loci, fitness
-                    should be in the order of BB Bb bb AA 1 2 3 Aa 4 5
-                    6 aa 7 8 9
-    wildtype:       an array of alleles in the wildtype group.
-                    Anything else is disease allele., default = [0]
+                    be examed.???
+    loci:           the loci indices. The genotypes of these loci will
+                    be examed.
+    penetrance:     an array of  penetrance values of AA, Aa, aa. A is
+                    the wild type group. In the case of multiple loci,
+                    fitness should be in the order of AABB, AABb,
+                    AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
+    wildtype:       an array of alleles in the wildtype group. Any
+                    other alleles will be considered as in the disease
+                    allele group.
     output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+                    help(baseOperator.__init__)???
 
 "; 
 
@@ -3038,7 +3053,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a multi-allele  penetrance operator
 
 Usage:
 
@@ -3050,7 +3065,7 @@ Usage:
 
 Description:
 
-    currently assuming diploid
+    currently assuming diploid???
 
 Usage:
 
@@ -3067,7 +3082,7 @@ Details:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the multi-allele  penetrance operator
 
 Usage:
 
@@ -3079,12 +3094,12 @@ Usage:
 
 Description:
 
-    penetrance according to genotype at one locus
+    penetrance according to the genotype at one locus
 
 Details:
 
-    map  selector. Assign  penetrance value according to a given
-    dictionary.
+    Assign  penetrance using a table with keys 'X-Y' where X and Y are
+    allele numbers.
 
 "; 
 
@@ -3092,8 +3107,7 @@ Details:
 
 Description:
 
-    create a map  penetrance function ( penetrance according to
-    genotype at one locus
+    create a map  penetrance operator
 
 Usage:
 
@@ -3104,15 +3118,15 @@ Usage:
 Arguments:
 
     locus:          the locus index. The genotype of this locus will
-                    be axamed.
-    loci:           the loci index. The genotype of this locus will be
-                    axamed.
+                    be examed.???
+    loci:           the loci indices. The genotypes of these loci will
+                    be examed.
     penetrance:     a dictionary of  penetrance. The genotype must be
-                    in the form of 'a-b' for single locus.
-    phase:          if true, a/b and b/a will have different
-                    penetrance value. Default to false.
+                    in the form of 'a-b' for a single locus.
+    phase:          if True, a/b and b/a will have different
+                    penetrance values. Default to False.
     output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+                    help(baseOperator.__init__)???
 
 "; 
 
@@ -3132,7 +3146,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a map  penetrance operator
 
 Usage:
 
@@ -3144,7 +3158,7 @@ Usage:
 
 Description:
 
-    currently assuming diploid
+    currently assuming diploid???
 
 Usage:
 
@@ -3161,7 +3175,7 @@ Details:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the map  penetrance operator
 
 Usage:
 
@@ -3271,12 +3285,13 @@ Usage:
 
 Description:
 
-    selection according to genotype at one locus
+    selection according to the genotype at one locus
 
 Details:
 
-    map  selector. Assign fitness value according to a given
-    dictionary.
+    This map  selector implements selection at one locus. A user
+    provided dictionary (map) of genotypes will be used in this
+    selector to set each individual's fitness value.
 
 "; 
 
@@ -3284,8 +3299,7 @@ Details:
 
 Description:
 
-    create a map  selector (selection according to genotype at one
-    locus
+    create a map  selector
 
 Usage:
 
@@ -3296,16 +3310,16 @@ Usage:
 Arguments:
 
     locus:          the locus index. The genotype of this locus will
-                    be axamed.
-    loci:           the loci index. The genotype of this locus will be
-                    axamed.
-    fitness:        a dictionary of fitness. The genotype must be in
-                    the form of 'a-b' for single locus, and
-                    'a-b|c-d|e-f' for multi-locus..
-    phase:          if true, a/b and b/a will have different fitness
-                    value. Default to false.
+                    be examed.???
+    loci:           the locus indices. The genotypes of these loci
+                    will be examed.
+    fitness:        a dictionary of fitness values. The genotype must
+                    be in the form of 'a-b' for a single locus, and
+                    'a-b|c-d|e-f' for multi-loci.
+    phase:          if True, genotypes a-b and b-a will have different
+                    fitness values. Default to false.
     output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+                    help(baseOperator.__init__)???
 
 "; 
 
@@ -3325,7 +3339,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a map  selector
 
 Usage:
 
@@ -3337,7 +3351,7 @@ Usage:
 
 Description:
 
-    currently assuming diploid
+    calculate/return the fitness value, currently assuming diploid
 
 Usage:
 
@@ -3354,7 +3368,7 @@ Details:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the map  selector
 
 Usage:
 
@@ -3460,12 +3474,16 @@ Usage:
 
 Description:
 
-    selection according to genotype at one locus
+    multiple allele  selector (selection according to wildtype or
+    diseased alleles)
 
 Details:
 
-    multiple allele  selector. This  selector group alleles to disease
-    and wild type and return fitness to AA,Aa,aa. (A is wildtype).
+    This is called 'multiple-allele'  selector. It separate alleles
+    into two groups: wildtype and disease alleles. Wildtype alleles
+    are specified by parameter wildtype and any other alleles are
+    considered as diseased alleles.  maSelector accepts an array of
+    fitness.???
 
 "; 
 
@@ -3473,9 +3491,7 @@ Details:
 
 Description:
 
-    create a multiple allele  selector (selection according to
-    diseased or wildtype alleles) Note that  maSelector only work for
-    diploid  population now.
+    create a multiple allele  selector
 
 Usage:
 
@@ -3485,19 +3501,25 @@ Usage:
 
 Arguments:
 
-    locus:          the locus index. The genotype of this locus will
-                    be axamed.
-    loci:           the loci index.
-    fitness:        For the single locus case, fitness is an array of
-                    fitness of AA,Aa,aa. A is the wild type group. In
+    fitness:        for the single locus case, fitness is an array of
+                    fitness of AA, Aa, aa. A is the wildtype group. In
                     the case of multiple loci, fitness should be in
-                    the order of BB Bb bb AA 1 2 3 Aa 4 5 6 aa 7 8 9
-                    The length for such table is 3^(loci).
-    wildtype:       an array of alleles in the wildtype group.
-                    Anything else is disease allele. default = [0]
-                    NOTE that wildtype at all loci are the same.
+                    the order of AABB, AABb, AAbb, AaBB, AaBb, Aabb,
+                    aaBB, aaBb, aabb.
+    wildtype:       an array of alleles in the wildtype group. Any
+                    other alleles are considered to be diseased
+                    alleles. Default to [0].
     output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+                    help(baseOperator.__init__)???
+
+Details:
+
+    Please refer to  mapSelector for other parameter descriptions.
+
+Note:
+
+    *  maSelector only works for diploid populations now.
+    * wildtype at all loci are the same.
 
 "; 
 
@@ -3517,7 +3539,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a  maSelector
 
 Usage:
 
@@ -3546,7 +3568,7 @@ Details:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  maSelector
 
 Usage:
 
@@ -3937,14 +3959,14 @@ Usage:
 
 Description:
 
-    penetrance according to genotype at multiple loci multiplicative
-    model
+    penetrance according to the genotype according to a multiple loci
+    multiplicative model
 
 Details:
 
-    multiple loci  selector. This  selector takes several selectors
-    and multiply their  penetrance values... e.g. mlmpenetrance(
-    [mappenetrance(...), mapenetrance(...) ])
+    mlPentrance is the 'multiple-loci'??? penetrnace calculator. It
+    accepts a list of penetrances and combine them according to the
+    mode parameter.
 
 "; 
 
@@ -3952,7 +3974,8 @@ Details:
 
 Description:
 
-    multiple loci  selector using a multiplicative model.
+    create a multiple loci  penetrance operator using a multiplicative
+    model
 
 Usage:
 
@@ -3962,9 +3985,9 @@ Usage:
 
 Arguments:
 
-    selectors:      a list of selectors.
-    mode:           one of PEN_Multiplicative, PEN_Additive,
-                    PEN_Heterogeneity
+    peneOps:        a list of selectors???
+    mode:           can be one of PEN_Multiplicative, PEN_Additive,
+                    and PEN_Heterogeneity
 
 "; 
 
@@ -3984,7 +4007,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a multi-loci  penetrance operator
 
 Usage:
 
@@ -3996,7 +4019,7 @@ Usage:
 
 Description:
 
-    currently assuming diploid
+    currently assuming diploid???
 
 Usage:
 
@@ -4009,7 +4032,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the multiple-loci  penetrance operator
 
 Usage:
 
@@ -4103,14 +4126,16 @@ Usage:
 
 Description:
 
-    selection according to genotype at multiple loci multiplicative
-    model
+    selection according to genotypes at multiple loci in a
+    multiplicative model
 
 Details:
 
-    multiple loci  selector. This  selector takes several selectors
-    and multiply their fitness values... e.g. mlmselector(
-    [mapselector(...), maselector(...) ])
+    This  selector is a 'multiple-loci model'  selector. The  selector
+    takes a vector of selectors (can not be another  mlSelector) and
+    evaluate the fitness of an  individual as the the product or sum
+    of  individual fitness values. The mode is determined by parameter
+    mode.
 
 "; 
 
@@ -4118,7 +4143,7 @@ Details:
 
 Description:
 
-    multiple loci  selector using a multiplicative model.
+    create a multi-loci  selector
 
 Usage:
 
@@ -4128,7 +4153,11 @@ Usage:
 
 Arguments:
 
-    selectors:      a list of selectors.
+    selectors:      a list of selectors
+
+Details:
+
+    Please refer to  mapSelector for other parameter descriptions.
 
 "; 
 
@@ -4148,7 +4177,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a  mlSelector
 
 Usage:
 
@@ -4160,7 +4189,7 @@ Usage:
 
 Description:
 
-    currently assuming diploid
+    calculate/return the fitness value, currently assuming diploid
 
 Usage:
 
@@ -4177,7 +4206,7 @@ Details:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  mlSelector
 
 Usage:
 
@@ -4189,20 +4218,20 @@ Usage:
 
 Description:
 
-    mutator class.
+    mutator class
 
 Details:
 
-    Do not use this class directly. It just provide interface for real
-    mutators.Every  mutator can specify rate (equal rate) or rates
-    (different rate for different loci) and a vector of applicable
-    loci (default to all but should have the same length with rates if
-    rates have length greater than one).max allele can be specified as
-    well but more parameter, if needed, should be implemented by
-    individual mutator classes.Number of possible allelic states: Most
-    theoretical studies assume an infinite number of allelic states to
-    avoid any homoplasy. If it facilitates analysis, this is however
-    extremely unrealistic.Bo Peng
+    The base class of all functional mutators. It is not supposed to
+    be called directly.Every  mutator can specify rate (equal rate or
+    different rates for different loci) and a vector of applicable
+    loci (default to all but should have the same length as rate if
+    rate has length greater than one).Maximum allele can be specified
+    as well but more parameter, if needed, should be implemented by
+    individual mutator classes.There are number of possible allelic
+    states. Most theoretical studies assume an infinite number of
+    allelic states to avoid any homoplasy. If it facilitates any
+    analysis, this is however extremely unrealistic.
 
 "; 
 
@@ -4210,10 +4239,7 @@ Details:
 
 Description:
 
-    create a  mutator All mutators have the following common
-    parameters. However, the actual meaning of these parameters may
-    vary according to different model. Check the manual for details!!!
-    (help(kamMutator) for example.)
+    create a  mutator
 
 Usage:
 
@@ -4223,13 +4249,22 @@ Usage:
 
 Arguments:
 
-    rate:           single rate for all applicable loci (atLoci). Will
-                    be ignored if rates is specified; or it can be an
-                    array of rates, the same length as atLoci.
-    atLoci:         a vector of loci index. Can be ignored only when
-                    single rate is specified. Default to all loci.
-    maxAllele:      max allowable allele. Interpreted by each sub
+    rate:           can be a number (uniform rate) or an array of
+                    mutation rates (the same length as atLoci)
+    atLoci:         a vector of loci indices. Will be ignored only
+                    when single rate is specified. Default to all
+                    loci.
+    maxAllele:      maximum allowable allele. Interpreted by each sub
                     mutaor class. Default to pop.maxAllele().
+
+Details:
+
+    All mutators have the following common parameters. However, the
+    actual meaning of these parameters may vary according to different
+    model. The only differences between the following mutators are
+    they way they actually mutate an allele, and corresponding input
+    parameters. Mutators record the number of mutation events at each
+    loci.
 
 "; 
 
@@ -4249,7 +4284,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  mutator
 
 Usage:
 
@@ -4261,7 +4296,7 @@ Usage:
 
 Description:
 
-    return mutation rate
+    return the mutation rate
 
 Usage:
 
@@ -4273,7 +4308,7 @@ Usage:
 
 Description:
 
-    set an array of rates
+    set an array of mutation rates
 
 Usage:
 
@@ -4285,7 +4320,7 @@ Usage:
 
 Description:
 
-    return max allowable allele number
+    return maximum allowable allele number
 
 Usage:
 
@@ -4297,7 +4332,7 @@ Usage:
 
 Description:
 
-    simuPOP::mutator::setMaxAllele
+    set maximum allowable allele
 
 Usage:
 
@@ -4309,7 +4344,7 @@ Usage:
 
 Description:
 
-    return mutation count
+    return mutation count at locus
 
 Usage:
 
@@ -4333,8 +4368,7 @@ Usage:
 
 Description:
 
-    how to mutate a single allele. this is usually the only function
-    that need to be defined by the subclasses.
+    describe how to mutate a single allele
 
 Usage:
 
@@ -4346,7 +4380,7 @@ Usage:
 
 Description:
 
-    apply!
+    apply a  mutator
 
 Usage:
 
@@ -5404,11 +5438,49 @@ Usage:
 
 Description:
 
-    penetrance
+    basic class of a  penetrance operator
 
 Details:
 
-    Please refer to the user's guide for details.
+    Penetrance is the probability that one will have the disease when
+    he has certain genotype(s). Calculation and the parameter set of
+    penetrance are similar to those of fitness. An  individual will be
+    randomly marked as affected/unaffected according to his
+    penetrance value.??? For example, an  individual will have
+    probability 0.8 to be affected if the  penetrance is 0.8.
+    Penetrance can be applied at any stage (default to DuringMating).
+    It will be calculated during  mating, and then the affected status
+    will be set for each offspring. Penetrance can also be used as
+    PreMating, PostMating or even PrePostMating??? operator. In these
+    cases, the affected status will be set to all individuals
+    according to their  penetrance values. It is also possible to
+    store  penetrance in a given information field specified by
+    infoFields parameter (e.g. infoFields=['penetrance']). This is
+    useful to check the  penetrance values at a later time.
+    Affected status will be used for statistical purpose, and most
+    importantly, ascertainment. They will be calculated along with
+    fitness although they might not be used at every generation. You
+    can use two operators: one for fitness/selection, active at every
+    generation; one for affected status, active only at
+    ascertainments, to avoid unnecessary calculation of the affected
+    status.
+    Pentrance values are used to set the affectedness of individuals,
+    and are usually not saved. If you would like to know the
+    penetrance value, you need to
+    * use addInfoField('penetrance') to the  population to analyze.
+    (Or use infoFields parameter of the  population constructor), and
+    * use e.g.,  mlPenetrance(...., infoFields=['penetrance']) to add
+    the  penetrance field to the  penetrance operator you use. You may
+    choose a name other than 'penetrance' as long as the field names
+    for the operator and  population match. Penetrance functions can
+    be applied to the current, all, or certain number of ancestral
+    generations. This is controlled by the ancestralGen parameter,
+    which is default to -1 (all available ancestral generations). You
+    can set it to 0 if you only need affection??? status for the
+    current generation, or specify a number n for the number of
+    ancestral generations (n + 1 total generations) to process. Note
+    that ancestralGen parameter is ignored if the  penetrance operator
+    is used as a during  mating operator.
 
 "; 
 
@@ -5416,13 +5488,27 @@ Details:
 
 Description:
 
-    If one field is specified, it will be used to store  penetrance
-    values. default to post  mating.
+    create a  penetrance operator
 
 Usage:
 
     penetrance(ancestralGen=-1, stage=DuringMating, begin=0, end=-1,
       step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+
+Arguments:
+
+    ancestralGen:   if this parameter is set to be 0, then apply
+                    penetrance to the current generation; if -1, apply
+                    to all generations; otherwise, apply to the
+                    specified number of ancestral generations
+    stage:          specify the stage this operator will be applied,
+                    default to DuringMating.
+    infoFields:     If one field is specified, it will be used to
+                    store  penetrance values.???
+
+Details:
+
+    default to be always active.
 
 "; 
 
@@ -5442,7 +5528,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  penetrance operator
 
 Usage:
 
@@ -5454,7 +5540,7 @@ Usage:
 
 Description:
 
-    calculate/return  penetrance etc
+    calculate/return  penetrance etc.
 
 Usage:
 
@@ -5479,7 +5565,7 @@ Usage:
 
 Description:
 
-    set  penetrance to all  individual
+    set  penetrance to all individuals
 
 Usage:
 
@@ -5492,7 +5578,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  penetrance operator
 
 Usage:
 
@@ -5508,8 +5594,12 @@ Description:
 
 Details:
 
-    mutate specified individuals at specified loci to spcified allele.
-    I.e., this is a non-random  mutator used to introduce disease etc.
+    Mutate specified individuals at a specified loci to a spcified
+    allele. I.e., this is a non-random  mutator used to introduce
+    diseases etc.  pointMutator, as its name suggest, does point
+    mutation. This  mutator will turn alleles at atLoci on the first
+    chromosome copy to toAllele for  individualinds. You can specify
+    atPloidy to mutate other, or all ploidy copy.
 
 "; 
 
@@ -5517,7 +5607,7 @@ Details:
 
 Description:
 
-    mutate once
+    create a  pointMutator
 
 Usage:
 
@@ -5527,9 +5617,12 @@ Usage:
 
 Arguments:
 
-    atLoci:         a vector of loci index.
-    inds:           mutate 'inds' individuals
-    toAllele:       mutate to 'toAllele'
+    inds:           individuals who will mutate
+    toAllele:       allele that will be mutate to
+
+Details:
+
+    Please see  mutator for the description of other parameters.
 
 "; 
 
@@ -5549,7 +5642,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  pointMutator
 
 Usage:
 
@@ -5561,7 +5654,7 @@ Usage:
 
 Description:
 
-    apply!
+    apply a  pointMutator
 
 Usage:
 
@@ -5574,7 +5667,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  pointMutator
 
 Usage:
 
@@ -5586,7 +5679,7 @@ Usage:
 
 Description:
 
-    return mutation count
+    return mutation count at locus
 
 Usage:
 
@@ -7592,7 +7685,14 @@ Usage:
 
 Description:
 
-    mixed mutation model . has not been implemented.
+    mixed mutation model
+
+Details:
+
+    Hybrid  mutator. Mutation rate etc. are set just like others and
+    you are supposed to provide a Python function to return a new
+    allele state given an old state.  pyMutator will choose an allele
+    as usual and call your function to mutate it to another allele.
 
 "; 
 
@@ -7600,7 +7700,7 @@ Description:
 
 Description:
 
-    simuPOP::pyMutator::pyMutator
+    create a  pyMutator
 
 Usage:
 
@@ -7628,7 +7728,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  pyMutator
 
 Usage:
 
@@ -7640,8 +7740,7 @@ Usage:
 
 Description:
 
-    how to mutate a single allele. this is usually the only function
-    that need to be defined by the subclasses.
+    mutate according to the mixed model
 
 Usage:
 
@@ -7654,7 +7753,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  pyMutator
 
 Usage:
 
@@ -7793,11 +7892,14 @@ Usage:
 
 Description:
 
-    penetrance using user supplied function
+    assign  penetrance values by calling a user provided function
 
 Details:
 
-    Assign  penetrance value by calling a user supplied function
+    For each  individual, users provide a function to calculate
+    penetrance. This method is very flexible but will be slower than
+    previous operators since a function will be called for each
+    individual.
 
 "; 
 
@@ -7816,12 +7918,16 @@ Usage:
 
 Arguments:
 
-    loci:           susceptibility loci. The genotype at these loci
-                    will be passed to func.
-    func:           a Python function that accept genotypes at
-                    susceptibility loci and return  penetrance value.
+    loci:           disease susceptibility loci. The genotypes at
+                    these loci will be passed to the provided Python
+                    function in the form of loc1_1, loc1_2, loc2_1,
+                    loc2_2, ... if the individuals are diploid.
+    func:           a user-defined Python function that accepts an
+                    array of genotypes at susceptibility loci and
+                    return a  penetrance value. The returned value
+                    should be between 0 and 1.
     output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+                    help(baseOperator.__init__)???
 
 "; 
 
@@ -7843,7 +7949,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a Python  penetrance operator
 
 Usage:
 
@@ -7855,7 +7961,7 @@ Usage:
 
 Description:
 
-    currently assuming diploid
+    currently assuming diploid???
 
 Usage:
 
@@ -7868,7 +7974,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the Python  penetrance operator
 
 Usage:
 
@@ -8050,11 +8156,18 @@ Usage:
 
 Description:
 
-    selection using user supplied function
+    selection using user provided function
 
 Details:
 
-    Assign fitness value by calling a user supplied function
+    pySelector assigns fitness values by calling a user provided
+    function. It accepts a list of susceptibility loci and a Python
+    function. For each  individual, this operator will pass the
+    genotypes at these loci (in the order of 0-0,0-1,1-0,1-1 etc.
+    where X-Y represents locus X - ploidy Y, in the case of diploid
+    population), generation number,??? and expect a returned fitness
+    value. This, at least in theory, can accommodate all selection
+    scenarios.
 
 "; 
 
@@ -8062,8 +8175,7 @@ Details:
 
 Description:
 
-    provide locus and fitness for 11, 12, 13 (in the form of
-    dictionary)
+    create a Python hybrid  selector
 
 Usage:
 
@@ -8075,11 +8187,11 @@ Arguments:
 
     loci:           susceptibility loci. The genotype at these loci
                     will be passed to func.
-    func:           a Python function that accept genotypes at
+    func:           a Python function that accepts genotypes at
                     susceptibility loci generation number, and return
-                    fitness value.
+                    fitness value.???
     output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+                    help(baseOperator.__init__)???
 
 "; 
 
@@ -8101,7 +8213,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a  pySelector
 
 Usage:
 
@@ -8113,7 +8225,7 @@ Usage:
 
 Description:
 
-    currently assuming diploid
+    calculate/return the fitness value, currently assuming diploid
 
 Usage:
 
@@ -8126,7 +8238,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  pySelector
 
 Usage:
 
@@ -8622,24 +8734,24 @@ Usage:
 
 Description:
 
-    Recombination.
+    recombination
 
 Details:
 
-    * only works for diploids (and for females in haplodiploids)
-    population.
-    * Free recombination between loci. Loci behave completely
-    independently.
-    * otherwise there will be some linkage between loci, user need to
-    specify physical recombination rate between adjacent loci (ie
-    between locus n and n+1)
-    * The recombination rate must be comprised between 0.0 and 0.5.
-    * A recombination rate of 0.0 means that the loci are completely
-    linked and thus behave together as a single linked locus.
-    * A recombination rate of 0.5 is equivalent to free recombination.
-    * All values in between will represent various linkage intensities
-    between adjacent pairs of loci. The recombination rate is
-    equivalent to 1-linkage and represents the probability that the
+    In  simuPOP, only one  recombinator is provided. Recombination
+    events between loci a/b and b/c are independent, otherwise there
+    will be some linkage between loci, users need to specify physical
+    recombination rate between adjacent loci. In addition, for the
+    recombinator
+    * it only works for diploid (and for females in haplodiploid)
+    populations.
+    * the recombination rate must be comprised between 0.0 and 0.5. A
+    recombination rate of 0.0 means that the loci are completely
+    linked, and thus behave together as a single linked locus. A
+    recombination rate of 0.5 is equivalent to free recombination. All
+    other values between 0.0 and 0.5 will represent various linkage
+    intensities between adjacent pairs of loci. The recombination rate
+    is equivalent to 1-linkage and represents the probability that the
     allele at the next locus is randomly drawn.
 
 "; 
@@ -8658,32 +8770,37 @@ Usage:
 
 Arguments:
 
-    intensity:      recombination rate per unit of loci distance.
-                    I.e., the really recombination rate between two
-                    loci is determined by intensity*loci distance
-                    between them.
-    rate:           recombination rate regardless of loci distance; it
-                    can also be an array of recombination rates. Must
-                    be the same length as afterLoci or totNumOfLoci().
-                    If totNumLociThe last item can be ignored.
-    afterLoci:      an array of loci index. If rates is also
-                    specified, they should have the same length.
-                    Default to all loci (but meaningless for those
-                    loci locate at the end of chromosome.) If given,
-                    afterLoci should be ordered, and can not include
-                    loci at the end of a chromosome.  recombination
-                    rate for male individuals. If given, parameter
-                    rate will be considered as female rate.
-                    recombination intensity for male individuals. If
+    intensity:      intensity of recombination. The actually
+                    recombination rate between two loci is determined
+                    by intensity*locus distance between them.
+    rate:           recombination rate regardless of locus distance
+                    after all afterLoci. It can also be an array of
+                    recombination rates. Should have the same length
+                    as afterLoci or totNumOfLoci(). If totNumLoci, the
+                    last item can be ignored.??? The recombination
+                    rates are independent of locus distance.
+    afterLoci:      an array of locus indices. Recombination will
+                    occur after these loci. If rate is also specified,
+                    they should have the same length. Default to all
+                    loci (but meaningless for those loci located at
+                    the end of a chromosome). If this parameter is
+                    given, it should be ordered, and can not include
+                    loci at the end of a chromosome.
+    maleIntensity:  recombination intensity for male individuals. If
                     given, parameter intensity will be considered as
-                    female intensity.  if given, male will recombine
-                    at different locations. This is rarely used.
+                    female intensity.
+    maleRate:       recombination rate for male individuals. If given,
+                    parameter rate will be considered as female
+                    recombination rate.
+    maleAfterLoci:  if given, males will recombine at different
+                    locations. This is rarely used.???
 
 Note:
 
-    rate gives recombination rate PER unit, rates gives plain rates.
-    there is no recombination between sex chromosomes of male
-    individuals. (sexChrom=True).
+    There is no recombination between sex chromosomes of male
+    individuals if sexChrom()=True.??? This may change later if the
+    exchanges of genes between pseudoautosomal regions of XY need to
+    be modeled.
 
 "; 
 
@@ -8703,7 +8820,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  recombinator
 
 Usage:
 
@@ -8716,32 +8833,11 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  recombinator
 
 Usage:
 
     x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::recombinator::prepareRecRates "
-
-Description:
-
-    this function takes intensity, rate, afterLoci, ... inputs and
-    return a bernulli trailer and a recBeforeLoci vector.
-
-Usage:
-
-    x.prepareRecRates(pop, intensity, rate, afterLoci, sexChrom,
-      recBeforeLoci, vecP)
-
-Details:
-
-    get loci distance * rate and then recombinant pointsget loci
-    distance * rate and then recombinant pointsinitialize
-    recombination counter, This will count recombination events after
-    each locus.
 
 "; 
 
@@ -8769,20 +8865,17 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::recombinator::recombine "
+%feature("docstring") simuPOP::recombinator::applyDuringMating "
 
 Description:
 
-    simuPOP::recombinator::recombine
+    apply the  recombinator during  mating???
 
 Usage:
 
-    x.recombine(*parent, offspring, offPloidy, bt, recBeforeLoci,
-      setSex=False)
+    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
 
 "; 
-
-%ignore simuPOP::recombinator::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::RNG "
 
@@ -9309,24 +9402,36 @@ Usage:
 
 Description:
 
-    selection
+    genetic selection
 
 Details:
 
-    Genetic selection is tricky to simulate. In  simuPOP, I employee
-    an ability (fitness) to mate approach. Namely, the probability
-    that an  individual will be chosen for  mating is proportional to
-    its fitness value. More specifically,
+    Genetic selection is tricky to simulate since there are many
+    different fitness values and many different ways to apply
+    selection.  simuPOP employs an 'ability-to-mate' approach. Namely,
+    the probability that an  individual will be chosen for  mating is
+    proportional to its fitness value. More specifically,
     * PreMating selectors assign fitness values to each  individual.
-    * Sexless  mating (e.g.  binomialSelection) : individuals are
-    chosen at probabilities that are proportional to their fitness
-    values. More specifically, if there are N individuals with fitness
-    values  $f_i, i=1,...,N $,  individual $i$ will have probability
-    $ \\\\frac{f_i}{\\\\sum_{j=1}^N f_j} $ to be chosen to be passed to the
-    next generation.
-    * Random  mating with sex (e.g. randommating): males and females
-    are separated and each are chosen as described above.Please refer
-    to the user's guide for details.
+    * During sexless  mating (e.g.  binomialSelection???), individuals
+    are chosen at probabilities that are proportional to their fitness
+    values.
+    * During  randomMating, males and females are separated. They are
+    chosen from their respective groups in the same manner and mate.
+    It is not very clear that our method agrees with the traditional
+    'average number of offspring' definition of fitness. (Note that
+    this concept is very difficult to simulate since we do not know
+    who will determine the number of offspring if two parents are
+    involved.)All of the selection operators, when applied, will set a
+    variable fitness and an indicator so that 'selector-aware'  mating
+    scheme can select individuals according to these values. Hence,
+    two consequences are stated below:
+    *  selector alone can not do selection! Only  mating schemes can
+    actually select individuals.
+    *  selector has to be PreMating operator. This is not a problem
+    when you use the operator form of the selectors since their
+    default stage is PreMating. However, if you use the function form
+    of these selectors in a  pyOperator, make sure to set the stage of
+    pyOperator to PreMating.
 
 "; 
 
@@ -9334,7 +9439,7 @@ Details:
 
 Description:
 
-    constructor
+    create a  selector
 
 Usage:
 
@@ -9344,8 +9449,8 @@ Usage:
 Arguments:
 
     subPop:         a shortcut to subPops=[subPop]
-    subPops:        subpopulations this operator can apply to. Default
-                    to all.
+    subPops:        subpopulations that the  selector will apply to.
+                    Default to all.
 
 "; 
 
@@ -9365,7 +9470,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a  selector
 
 Usage:
 
@@ -9377,7 +9482,7 @@ Usage:
 
 Description:
 
-    calculate/return w11 etc
+    calculate/return the fitness value???
 
 Usage:
 
@@ -9389,7 +9494,7 @@ Usage:
 
 Description:
 
-    set fitness to all  individual
+    set fitness to all individuals???
 
 Usage:
 
@@ -9402,7 +9507,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  selector
 
 Usage:
 
@@ -9986,11 +10091,11 @@ Usage:
 
 Description:
 
-    stepwise mutation model.
+    stepwise mutation model
 
 Details:
 
-    Stepwise mutation model (SMM) assumes that alleles are represented
+    Stepwise Mutation Model (SMM) assumes that alleles are represented
     by integer values and that a mutation either increases or
     decreases the allele value by one. For variable number tandem
     repeats loci (VNTR), the allele value is generally taken as the
@@ -10000,6 +10105,10 @@ Details:
 
 %feature("docstring") simuPOP::smmMutator::smmMutator "
 
+Description:
+
+    create a SMM  mutator
+
 Usage:
 
     smmMutator(rate=[], atLoci=[], maxAllele=0, incProb=0.5,
@@ -10008,18 +10117,15 @@ Usage:
 
 Arguments:
 
-    rate:           
-    ::              mutation rate
     incProb:        probability to increase allele state. Default to
-                    0.5
-    atLoci:         and other parameters: refer to help(mutator),
-                    help(baseOperator.__init__)
+                    0.5.
 
 Details:
 
     The stepwise mutation model (SMM) is developed for allozymes. It
     provides better description for these kinds of evolutionary
-    processes.
+    processes. Please see  mutator for the description of other
+    parameters.
 
 "; 
 
@@ -10039,8 +10145,7 @@ Usage:
 
 Description:
 
-    how to mutate a single allele. this is usually the only function
-    that need to be defined by the subclasses.
+    mutate according to the SMM model ???
 
 Usage:
 
@@ -10052,7 +10157,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  smmMutator
 
 Usage:
 
@@ -10065,7 +10170,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  smmMutator
 
 Usage:
 
