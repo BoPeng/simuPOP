@@ -393,7 +393,7 @@ namespace simuPOP
 			PyObject* m_func;
 	};
 
-	/// mixed mutation model
+	/// Hybrid mutator
 	/**
 	Hybrid mutator. Mutation rate etc. are set just like others and you are supposed to
 	provide a Python function to return a new allele state given an old state. \c pyMutator
@@ -418,6 +418,7 @@ namespace simuPOP
 				m_func = func;
 			}
 
+            /// destructor
 			~pyMutator()
 			{
 				if( m_func != NULL )
