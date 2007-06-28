@@ -34,22 +34,18 @@ const string TAG_ParentsFields[2] = {"father_idx", "mother_idx"};
 
 namespace simuPOP
 {
+    /// basic class of tagging individuals
 	/**
-	\brief  tagger is a during mating operator that
-	tag individual with various information. Potential usages are
-	1. record parenting information to track pedigree.
-	2. tag a individual/allele and monitor its spread in the population
-	   etc.
-	3...
-
-	@author Bo Peng
+	\c tagger is a during mating operator that tag individuals with various information.
+    Potential usages are:
+	\li recording parental information to track pedigree;
+	\li tagging an individual/allele and monitor its spread in the population etc.
 	*/
-
 	class tagger: public Operator
 	{
 
 		public:
-			/// constructor. default to be always active but no output.
+			/// create a \c tagger, default to be always active but no output
 			tagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL,
 			// this is not nice, but is the only way I know how to initialize this array.
@@ -61,6 +57,7 @@ namespace simuPOP
 			/// destructor
 			virtual ~tagger(){};
 
+            /// deep copy of a \ tagger
 			virtual Operator* clone() const
 			{
 				return new tagger(*this);
@@ -68,8 +65,15 @@ namespace simuPOP
 	};
 
 	/// inherite tag from parents.
-	/// If both parents have tags, use fathers.
-
+    /**
+    This during-mating operator will copy the tag information from his/her parents.
+    Depending on \c mode parameter, this tagger will obtain tag from his/her father
+    (two tag fields), mother (two tag fields) or both (first tag field from both
+    father and mother).
+    
+    An example may be tagging one or a few parents and see, at the last generation,
+    how many offspring they have.
+    */
 	class inheritTagger: public tagger
 	{
 		public:
@@ -78,7 +82,10 @@ namespace simuPOP
 #define TAG_Both       2
 
 		public:
-			/// constructor. default to be always active.
+			/// create an \c inheritTagger, default to be always active
+            /**
+            \param mode can be one of \c TAG_Paternal, \c TAG_Maternal, and \c TAG_Both
+            */
 			inheritTagger(int mode=TAG_Paternal, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(TAG_InheritFields, TAG_InheritFields+2)):
@@ -92,14 +99,17 @@ namespace simuPOP
 			{
 			}
 
+            /// used by Python print function to print out the general information of the \c inheritTagger
 			virtual string __repr__()
 			{
 				return "<simuPOP::inherittagger>" ;
 			}
 
+            /// apply the \c inheritTagger
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL);
 
+            /// deep copy of a \c inheritTagger
 			virtual Operator* clone() const
 			{
 				return new inheritTagger(*this);
@@ -113,16 +123,21 @@ namespace simuPOP
 			int m_mode;
 	};
 
-	/// inherite tag from parents.
-	/// If both parents have tags, use fathers.
-	///
-
+	/// tagging according to parents' indices
+    /**
+    This during-mating operator set \c tag(), currently a pair of numbers, of each
+    individual with indices of his/her parents in the parental population. This information
+    will be used by pedigree-related operators like \c affectedSibpairSample to track
+    the pedigree information. Since parental population will be discarded or stored after
+    mating, and tagging information will be passed with individuals, mating/population
+    change etc. will not interfere with this simple tagging system.
+    */
 	class parentsTagger: public tagger
 	{
 		public:
-			/// constructor. default to be always active.
-			/// string can be any string (m_Delimiter will be ignored for this class.)
-			///  %r will be replicate number %g will be generation number.
+			/// create a \c parentsTagger, default to be always active
+			// string can be any string (m_Delimiter will be ignored for this class.)
+			//  %r will be replicate number %g will be generation number.
 			parentsTagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(TAG_ParentsFields, TAG_ParentsFields+2)):
 			tagger( begin, end, step, at, rep, grp, infoFields)
@@ -133,35 +148,40 @@ namespace simuPOP
 			{
 			}
 
+            /// deep copy of a \c parentsTagger
 			virtual Operator* clone() const
 			{
 				return new parentsTagger(*this);
 			}
 
+            /// used by Python print function to print out the general information of the \c parentsTagger
 			virtual string __repr__()
 			{
 				return "<simuPOP::parentstagger>" ;
 			}
 
+            /// apply the \c parentsTagger
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL);
 	};
 
-	/** This tagger take some information fields from both parents, pass to a python function
-		and set individual field with the return value.
+	/**
+	This tagger takes some information fields from both parents, pass to a Python
+	function and set the individual field with the returned value. \n
 
-		This operator can be used to trace the inheritance of trait values.
+	This operator can be used to trace the inheritance of trait values.
 	*/
 	class pyTagger: public tagger
 	{
 		public:
-			/** \param infoFields information fields. The user should gurantee the existence of
-				these fields.
-				\param func a pyton function that return a list to assign the information fields.
-					e.g. if fields=['A', 'B'], the function will pass values of fields 'A' and
-					'B' of father, followed by mother if there is one, to this function. The returned value
-					is assigned to fields 'A' and 'B' of the offspring. The returned value
-					has to be a list even if only one field is given.
+			/**
+            \param infoFields information fields. The user should gurantee the existence
+                of these fields.
+			\param func a Pyton function that returns a list to assign the information fields.
+				e.g., if <tt>fields=['A', 'B']</tt>, the function will pass values of fields
+                \c 'A' and \c 'B' of father, followed by mother if there is one, to this
+                function. The returned value is assigned to fields \c 'A' and \c 'B' of the
+                offspring. The returned value has to be a list even if only one field is given.
 			*/
 			pyTagger(PyObject * func=NULL, int begin=0, int end=-1,
 				int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
@@ -192,16 +212,19 @@ namespace simuPOP
 					Py_INCREF(m_func);
 			}
 
+            /// deep copy of a \c pyTagger
 			virtual Operator* clone() const
 			{
 				return new pyTagger(*this);
 			}
 
+            /// used by Python print function to print out the general information of the \c pyTagger
 			virtual string __repr__()
 			{
 				return "<simuPOP::pyTagger>" ;
 			}
 
+            /// apply the \c pyTagger
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL);
 
