@@ -370,7 +370,7 @@ namespace simuPOP
 						m_evalInSubPop = it->second;
 					if (param.find(numOfAffected_String) != itEnd ||
 						param.find(propOfAffected_String) != itEnd ||
-						param.find(numOfUnaffected_String) != itEnd ||`
+						param.find(numOfUnaffected_String) != itEnd ||
                         param.find(propOfUnaffected_String) != itEnd)
 					{
 						m_output_numOfAffected = false;
