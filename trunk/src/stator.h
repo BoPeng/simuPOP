@@ -46,19 +46,19 @@ using std::setprecision;
 
 namespace simuPOP
 {
-	/// NOTE: the default output for stator is "", i.e., no output
-	/// i.e., stator will write to shared variables and
-	/// unless specified by output=">" etc, no output will be generated.
-	///
-	/// this class will also list ALL statistics and its names?
-	///
-
+	/// basic class of all the statistics
+    /**
+    Operator \c stator calculate various basic statistics for the population and set
+    variables in the local namespace. Other operators/functions can refer to the results
+    from the namespace after \c stat is applied. \c Stat is the function form of the
+    operator.
+    */
 	class stator: public Operator
 	{
 		public:
-			/// constructor. default to be always active.
-			/// default to have NO output (shared variables will be set.)
-			/// phase: if we treat Aa!=aA, default is false, i.e, Aa=aA.
+			// constructor. default to be always active.
+			// default to have NO output (shared variables will be set.)
+            /// create a stator
 			stator(string output="", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
@@ -71,31 +71,32 @@ namespace simuPOP
 			{
 			}
 
-			/// this function is very important
+			/// deep copy of a stator
 			virtual Operator* clone() const
 			{
 				return new stator(*this);
 			}
 	};
 
-	/// evaluate an expression.
-	///
-
+	/// evaluate an expression
 	class pyEval: public stator
 	{
 		public:
-			/** \brief evaluate expr/statments in local replicate namespace
-
-			\param expr expression to be evaluated. Its result will be sent to output.
-			\param stmts statement that will be executed before the expression.
-			\param preStmts statement that will be executed when the operaot is
-			constructed.
-			\param postStmts statement that will be executed when the operator is
-			destroyed.
-			\param exposePop if true, expose current pop as variable "pop"
-			\param name used to let pure python operator to identify themselves
-			\param output default to ">" . i.e., output to standard output.
-			for usage of other parameters, see help(baseOperator.__init__)
+			/// evaluate expressions/statments in the local namespace of a replicate
+            /**
+            Python expressions/statements will be executed when \c pyEval is applied
+            to a population by using parameters <tt>expr/stmts</tt>. Statements can
+            also been executed when \c pyEval is created and destroyed or before \c expr
+			is executed. The corresponding parameters are \c preStmts, \c postStmts
+			and \c stmts. For example, operator \c varPlotter
+            uses this feature to initialize \c R plots and save plots to a file when finished.
+			\param expr the expression to be evaluated. Its result will be sent to \c output.
+			\param stmts the statement that will be executed before the expression
+			\param preStmts the statement that will be executed when the operator is constructed
+			\param postStmts the statement that will be executed when the operator is destroyed
+			\param exposePop if true, expose current population as variable \c pop
+			\param name used to let pure Python operator to identify themselves
+			\param output default to \c >. I.e., output to standard output.
 			*/
 			pyEval(const string& expr="", const string& stmts="", const string& preStmts="",
 				const string& postStmts="", bool exposePop=false, const string& name="",
@@ -114,20 +115,27 @@ namespace simuPOP
 				m_postExpr.evaluate();
 			}
 
-			/// this function is very important
+			/// deep copy of a \c pyEval operator
 			virtual Operator* clone() const
 			{
 				return new pyEval(*this);
 			}
 
 			// check all alleles in vector allele if they are fixed.
+			/// apply the \c pyEval operator
 			virtual bool apply(population& pop);
 
+            /// used by Python print function to print out the general information of the \c pyEval operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::pyEval " + m_name + ">";
 			}
 
+            /// return the name of an expression
+			/** The name of a \c pyEval operator is given by an optional parameter \c name.
+			  It can be used to identify this \c pyEval operator in debug output, or in the dryrun
+			  mode of simulator::evolve.
+			*/
 			string& name()
 			{
 				return m_name;
@@ -145,22 +153,19 @@ namespace simuPOP
 			string m_name;
 	};
 
-	/// evaluate an expression.
-	///
-
+	/// execute a Python statement
 	class pyExec: public pyEval
 	{
 		public:
-			/** \brief evaluate statments in local replicate namespace, no return value
-
-			\param stmts statements (a single or multi-line string) that will be evaluated before the expression.
-			\param preStmts statement that will be executed when the operaot is
-			constructed.
-			\param postStmts statement that will be executed when the operator is
-			destroyed.
-			\param exposePop if true, expose current pop as variable "pop"
-			\param output default to ">" . i.e., output to standard output.
-			for usage of other parameters, see help(baseOperator.__init__)
+			/// evaluate statments in the local replicate namespace, no return value
+            /**
+            This operator takes a list of statements and execute them. No value will be returned or outputted.
+			\param stmts the statements (a single or multi-line string) that will be executed when
+				this operator is applied.
+			\param preStmts the statement that will be executed when the operator is constructed
+			\param postStmts the statement that will be executed when the operator is destroyed
+			\param exposePop if true, expose current population as variable \c pop
+			\param default to \c >. I.e., output to standard output.
 			*/
 			pyExec( const string& stmts="", const string & preStmts="", const string& postStmts="",
 				bool exposePop=false, const string& name="",
@@ -176,40 +181,39 @@ namespace simuPOP
 			{
 			}
 
-			/// this function is very important
+			/// deep copy of a \c pyExec operator
 			virtual Operator* clone() const
 			{
 				return new pyExec(*this);
 			}
 
+            /// used by Python print function to print out the general information of the \c pyExec operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::pyExec " + this->name() + ">";
 			}
 	};
 
-	///
-	/// The following classes apply various statistics
-	/// and stat class will provide an opearator interface
-	/// to all of them.
 
-	///
-	/// each class defines how to apply the statistics and
-	/// provide interface to allow others to retrieve the value.
-	/// NOTE: the values are population dependent so these
-	/// values are only meaningful within the same stat.apply
-	/// call;
-	///
-	/// The design separate the calculation of statistics
-	/// as much as possible and allow easier debug and writting
-	/// new statistics.
+	// The following classes apply various statistics
+	// and stat class will provide an opearator interface
+	// to all of them.
 
-	/// CPPONLY
-	/// return {'a-b-b'} for a b c
+	//
+	// each class defines how to apply the statistics and
+	// provide interface to allow others to retrieve the value.
+	// NOTE: the values are population dependent so these
+	// values are only meaningful within the same stat.apply
+	// call;
+	//
+	// The design separate the calculation of statistics
+	// as much as possible and allow easier debug and writting
+	// new statistics.
+
+	/// CPPONLY return {'a-b-b'} for a b c
 	string haploKey(const vectori& seq);
 
-	/// CPPONLY
-	/// post population sizes etc.
+	/// CPPONLY post population sizes etc.
 	class statPopSize
 	{
 		private:
@@ -241,13 +245,45 @@ namespace simuPOP
 		private:
 
 #define  numOfMale_String    "numOfMale"
+#define  propOfMale_String   "propOfMale"
 #define  numOfFemale_String  "numOfFemale"
+#define  propOfFemale_String   "propOfFemale"
 
 		public:
 
-			statNumOfMale(bool numOfMale=false)
-				:m_numOfMale(numOfMale?1:0), m_numOfFemale(0)
+			statNumOfMale(bool numOfMale=false, const strDict & param = strDict())
+				:m_numOfMale(numOfMale?1:0), m_numOfFemale(0),
+                m_evalInSubPop(true),
+                m_output_numOfMale(true),
+				m_output_propOfMale(true),
+				m_output_numOfFemale(true),
+                m_output_propOfFemale(true)
 			{
+				if (!param.empty())
+				{
+					strDict::const_iterator it;
+					strDict::const_iterator itEnd = param.end();
+					if ((it=param.find("subPop")) != itEnd)
+						m_evalInSubPop = it->second;
+					if (param.find(numOfMale_String) != itEnd ||
+						param.find(propOfMale_String) != itEnd ||
+						param.find(numOfFemale_String) != itEnd ||
+                        param.find(propOfFemale_String) != itEnd)
+					{
+						m_output_numOfMale = false;
+						m_output_propOfMale = false;
+						m_output_numOfFemale = false;
+                        m_output_propOfFemale = false;
+						if ((it=param.find(numOfMale_String)) != itEnd)
+							m_output_numOfMale = it->second;
+						if ((it=param.find(propOfMale_String)) != itEnd)
+							m_output_propOfMale = it->second;
+						if ((it=param.find(numOfFemale_String)) != itEnd)
+							m_output_numOfFemale = it->second;
+						if ((it=param.find(propOfFemale_String)) != itEnd)
+							m_output_propOfFemale = it->second;
+					}
+				}
 			}
 
 			void activate(bool yes=true)
@@ -299,6 +335,11 @@ namespace simuPOP
 		private:
 			/// whether or not to apply number of male/female
 			vectorlu m_numOfMale, m_numOfFemale;
+			bool m_evalInSubPop;
+			bool m_output_numOfMale;
+			bool m_output_propOfMale;
+			bool m_output_numOfFemale;
+			bool m_output_propOfFemale;
 	};
 
 	/// CPPONLY
@@ -313,9 +354,39 @@ namespace simuPOP
 
 		public:
 
-			statNumOfAffected(bool numOfAffected=false)
-				: m_numOfAffected(numOfAffected?1:0), m_numOfUnaffected(0)
+			statNumOfAffected(bool numOfAffected=false, const strDict & param = strDict())
+				: m_numOfAffected(numOfAffected?1:0), m_numOfUnaffected(0),
+                m_evalInSubPop(true),
+                m_output_numOfAffected(true),
+				m_output_propOfAffected(true),
+				m_output_numOfUnaffected(true),
+                m_output_propOfUnaffected(true)
 			{
+				if (!param.empty())
+				{
+					strDict::const_iterator it;
+					strDict::const_iterator itEnd = param.end();
+					if ((it=param.find("subPop")) != itEnd)
+						m_evalInSubPop = it->second;
+					if (param.find(numOfAffected_String) != itEnd ||
+						param.find(propOfAffected_String) != itEnd ||
+						param.find(numOfUnaffected_String) != itEnd ||`
+                        param.find(propOfUnaffected_String) != itEnd)
+					{
+						m_output_numOfAffected = false;
+						m_output_propOfAffected = false;
+						m_output_numOfUnaffected = false;
+                        m_output_propOfUnaffected = false;
+						if ((it=param.find(numOfAffected_String)) != itEnd)
+							m_output_numOfAffected = it->second;
+						if ((it=param.find(propOfAffected_String)) != itEnd)
+							m_output_propOfAffected = it->second;
+						if ((it=param.find(numOfUnaffected_String)) != itEnd)
+							m_output_numOfUnaffected = it->second;
+						if ((it=param.find(propOfUnaffected_String)) != itEnd)
+							m_output_propOfUnaffected = it->second;
+					}
+				}
 			}
 
 			~statNumOfAffected()
@@ -371,6 +442,11 @@ namespace simuPOP
 		private:
 			/// record the result.
 			vectorlu m_numOfAffected, m_numOfUnaffected;
+			bool m_evalInSubPop;
+            bool m_output_numOfAffected;
+			bool m_output_propOfAffected;
+			bool m_output_numOfUnaffected;
+            bool m_output_propOfUnaffected;
 	};
 
 	/// CPPONLY
@@ -568,11 +644,10 @@ namespace simuPOP
 			bool m_output_alleleFreq;
 			bool m_output_numOfAlleles;
 	};
-
+ 
+	// use alleleFreq to get number of alleles
+	// so statNumOfAlleles is just a proxy class
 	/// CPPONLY
-	/// use alleleFreq to get number of alleles
-	/// so statNumOfAlleles is just a proxy class
-	///
 	class statNumOfAlleles
 	{
 		public:
@@ -610,7 +685,6 @@ namespace simuPOP
 	};
 
 	/// CPPONLY
-
 	class statHeteroFreq
 	{
 		private:
@@ -793,9 +867,9 @@ namespace simuPOP
 
 	};
 
+	// currently there is no need to expose the result.
+	// may add that later.
 	/// CPPONLY
-	/// currently there is no need to expose the result.
-	/// may add that later.
 	class statGenoFreq
 	{
 		private:
@@ -1030,8 +1104,7 @@ namespace simuPOP
 
 	};
 
-	/// CPPONLY
-	/// currently there is no need to retrieve calculated value
+	/// CPPONLY currently there is no need to retrieve calculated value
 	class statFst
 	{
 
@@ -1108,9 +1181,9 @@ namespace simuPOP
 #define REL_D2                  4
 #define REL_Rel                 5
 
-	/// the relatedness measure between two individuals/families
-	/// using Queller and Goodnight or Lynch's method.
-	/// or internal relatedness values
+	// the relatedness measure between two individuals/families
+	// using Queller and Goodnight or Lynch's method.
+	// or internal relatedness values
 	/// CPPONLY
 	class statRelatedness
 	{
@@ -1193,95 +1266,196 @@ namespace simuPOP
 			bool m_midValues;
 	};
 
+    /// calculate statistics
 	class stat: public stator
 	{
 		public:
 
-			/// create an stat
+			/// create an \c stat operator
 			/**
-			\param popSize whether or not calculate population sizes. will set numSubPop, subPopSize,
-			  popSize, subPop[sp]['popSize']
+            Operator \c stat calculatse various basic statistics for the population
+            and sets variables in the local namespace. Other operators/functions can
+            refer to the results from the namespace after \c stat is applied. \c Stat
+            is the function form of the operator.
 
-			\param numOfMale whether or not count number of male and female, will set numOfMale and numOfFemale for
-			  all population/subpopulations
+            Note that these statistics are dependent to each other. For example,
+            heterotype and allele frequencies of related loci will be automatically
+            calculated if linkage diseqilibrium is requested.
+        
+			\param popSize whether or not calculate population sizes. This parameter
+                will set the following variables:
+                \li \c numSubPop the number of subpopulations
+                \li \c subPopSize an array of subpopulation sizes. Not available for subpopulations.
+                \li \c popSize, <tt>subPop[sp]['popSize']</tt> population/subpopulation size.
 
-			\param numOfAffected whether or not count number of affected individuals. Will set numOfAffected, and numOfUnaffected.
+			\param numOfMale whether or not count the numbers/proportions of males and females.
+                This parameter can set the following variables by user's specification:
+                \li \c numOfMale, <tt>subPop[sp]['numOfMale']</tt> the number of males in the population/subpopulation
+                \li \c numOfFemale, <tt>subPop[sp]['numOfFemale']</tt> the number of females in the population/subpopulation.
+                \li \c propOfMale, <tt>subPop[sp]['propOfMale']</tt> the proportion of
+                    males in the population/subpopulation
+                \li \c propOfFemale, <tt>subPop[sp]['propOfFemale']</tt> the proportion of
+                    females in the population/subpopulation
 
-			\param numOfAlleles an array of loci at which number of alleles will be counted (0 is excluded). Note that
-			  number of alleles will be automatically set if alleleFreq is counted.
+            \param numOfMale_param a dictionary of parameters of \c numOfMale statistics.        
 
-			\param alleleFreq an array of loci at which all alleles will be counted.
+			\param numOfAffected whether or not count the numbers/proportions of affected and unaffected individuals.
+                This parameter can set the following variables by user's specification:
+                \li \c numOfAffected, <tt>subPop[sp]['numOfAffected']</tt> the number of
+                    affected individuals in the population/subpopulation
+                \li \c numOfUnaffected, <tt>subPop[sp]['numOfUnAffected']</tt> the number of
+                    unaffected individuals in the population/subpopulation
+                \li \c propOfAffected, <tt>subPop[sp]['propOfAffected']</tt> the proportion of
+                    affected individuals in the population/subpopulation
+                \li \c propOfUnaffected, <tt>subPop[sp]['propOfUnAffected']</tt> the proportion of
+                    unaffected individuals in the population/subpopulation
 
-			\param genoFreq an array of loci at which all genotype will be counted
+            \param numOfAffected_param a dictionary of parameters of \c numOfAffected statistics. 
+        
+			\param numOfAlleles an array of loci at which the numbers of distinct alleles
+                will be counted (<tt>numOfAlleles=[loc1, loc2, ...]</tt> where \c loc1 etc.
+                are absolute locus indices). This is done through the calculation of allele
+                frequencies. Therefore, allele frequencies will also be calculated if this
+                statistics is requested. This parameter will set the following variables
+                (\c carray objects of the numbers of alleles for \em all \em loci. Unrequested loci will
+                have \c 0 distinct alleles.):
+                \li \c numOfAlleles, <tt>subPop[sp]['numOfAlleles']</tt>, number of distinct
+                    alleles at each locus. (Calculated only at requested loci.)
 
-			each item is the locus index followed by allele pairs.
+            \param numOfAlleles_param a dictionary of parameters of \c numOfAlleles statistics.
+        
+			\param alleleFreq an array of loci at which all allele frequencies will be
+                calculated (<tt>alleleFreq=[loc1, loc2, ...]</tt> where \c loc1 etc. are
+                loci where allele frequencies will be calculated). This parameter will set
+                the following variables (\c carray objects); for example, <tt>alleleNum[1][2]</tt>
+                will be the number of allele \c 2 at locus \c 1: 
+                \li <tt>alleleNum[a]</tt>, <tt>subPop[sp]['alleleNum'][a]</tt>
+                \li <tt>alleleFreq[a]</tt>, <tt>subPop[sp]['alleleFreq'][a]</tt>.
 
-			\param heteroFreq an array of loci at which the observed proportion of individuausl heterozygous
-			will be applyd for each allele. Expected heterozygosity will also be calculuate and put
-			in heteroFreq[locus][0] (since allele 0 is not used.)
+            \param alleleFreq_param a dictionary of parameters of \c alleleFreq statistics.
+        
+			\param genoFreq an array of loci at which all genotype frequencies will be
+                calculated (<tt>genoFreq=[loc1, loc2, ...]</tt> where \c loc1 etc. are
+                loci where genotype frequencies will be calculated). All the genotypes
+                in the population will be counted. You may use \c hasPhase to set if
+                a/b and b/a are the same genotype. This parameter will set the following
+                dictionary variables. Note that unlike list used for \c alleleFreq etc.,
+                the indices \c a, \c b of <tt>genoFreq[a][b]</tt> are dictionary keys,
+                so you will get a \em KeyError when you used a wrong key. Usually, 
+                <tt>genoNum.setDefault(a,{})</tt> is preferred.
+                \li <tt>genoNum[a][geno]</tt> and <tt>subPop[sp]['genoNum'][a][geno]</tt>,
+                    the number of genotype \c geno at allele \c a. \c geno has the form <tt>x-y</tt>.
+                \li <tt>genoFreq[a][geno]</tt> and <tt>subPop[sp]['genoFreq'][a][geno]</tt>,
+                    the frequency of genotype \c geno at allele \c a.
+        
+			\param heteroFreq an array of loci to calaulate observed heterozygosities
+                and expected heterozygosities (<tt>heteroFreq=[loc1, loc2, ...]</tt>).
+				This parameter will set the following
+                variables (arrays of observed heterozygosities). Note that <tt>heteroNum[loc][1]</tt>
+                is the number of heterozygote \c 1x, \c x is not 1. Numbers and frequencies
+                (proportions) of heterozygotes are calculated for each allele. <tt>HeteroNum[loc]</tt>
+                and <tt>HeterFreq[loc]</tt> are the overall heterozygosity number and
+                frequency. I.e., the number/frequency of genotype \c xy, \c x is not
+                equal to \c y. From this number, we can easily derive the number of homozygosity.
+                \li <tt>HeteroNum[loc]</tt>, <tt>subPop[sp]['HeteroNum'][loc]</tt>, the overall heterozygote number
+                \li <tt>HeteroFreq[loc]</tt>, <tt>subPop[sp]['HeteroFreq'][loc]</tt>, the overall heterozygote frequency
+                \li <tt>heteroNum[loc][allele]</tt>, <tt>subPop[sp]['heteroNum'][loc][allele]</tt>
+                \li <tt>heteroFreq[loc][allele]</tt>, <tt>subPop[sp]['heteroFreq'][loc][allele]</tt>
 
-			\param homoFreq an array of loci at which homozygosity number and frequcies will be calculated
+			\param homoFreq an array of loci to calaulate observed homozygosities
+                and expected homozygosities (<tt>homoFreq=[loc1, loc2, ...]</tt>).
+                This parameter will calculate the numbers and frequencies of homozygotes
+                \c xx and set the following variables:
+                \li <tt>homoNum[loc]</tt>, <tt>subPop[sp]['homoNum'][loc]</tt>,
+                \li <tt>homoFreq[loc]</tt>, <tt>subPop[sp]['homoFreq'][loc]</tt>.
+        
+			\param expHetero an array of loci at which the expected heterozygosities will
+                be calculated (<tt>expHetero=[loc1, loc2, ...]</tt>). The following variables
+                will be set:
+                \li <tt>expHetero[loc]</tt>, <tt>subPop[sp]['expHetero'][loc]</tt>.
 
-			\param expHetero an array of loci at which expected heterozygosity will be calculated.
+            \param expHetero_param a dictionary of parameters of \c expHetero statistics.        
+        
+			\param haploFreq a matrix of haplotypes (allele sequences on different loci) to
+                count. For example, <tt>haploFreq = [ [ 0,1,2 ], [1,2] ]</tt>  will count
+                all haplotypes on loci 0,1 and 2; and all haplotypes on loci 1, 2.
+                If only one haplotype is specified, the outer <tt>[]</tt> can be omitted. I.e.,
+                <tt>haploFreq=[0,1]</tt> is acceptable. The following dictionary variables
+                will be set with keys <tt>0-1-2</tt> etc. For example, <tt>haploNum['1-2']['5-6']</tt>
+                is the number of allele pair 5,6 (on loci 1 and 2 respectively) in the population.
+                \li <tt>haploNum[haplo]</tt> and <tt>subPop[sp]['haploNum'][haplo]</tt>, the number
+                    of allele sequencies on loci \c haplo.
+                \li <tt>haploFreq[haplo]</tt>, <tt>subPop[sp]['haploFreq'][haplo]</tt>, the frequency
+                    of allele sequencies on loci \c haplo.
+        
+			\param LD calculate linkage disequilibria LD, LD' and r2, given
+                <tt>LD=[ [loc1, loc2], [ loc1, loc2, allele1, allele2], ... ]</tt> 
+                For each item <tt>[loc1, loc2, allele1, allele2]</tt>, D, D' and r2 will be calculated
+                based on \c allele1 at \c loc1 and \c allele2 at \c loc2. If only two loci are given,
+                the LD values are averaged over all allele pairs. If only one item is specified, the
+                outer <tt>[]</tt> can be ignored. I.e., <tt>LD=[loc1, loc2]</tt> is acceptable.
+                This parameter will set the following variables. Please note that the difference between
+                the data structures used for \c ld and \c LD. 
+                \li <tt>ld['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['ld']['loc1-loc2']['allele1-allele2']</tt>
+                \li <tt>ld_prime['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['ld_prime']['loc1-loc2']['allele1-allele2']</tt>
+                \li <tt>r2['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['r2']['loc1-loc2']['allele1-allele2']</tt>
+                \li <tt>LD[loc1][loc2]</tt>, <tt>subPop[sp]['LD'][loc1][loc2]</tt>
+                \li <tt>LD_prime[loc1][loc2]</tt>, <tt>subPop[sp]['LD_prime'][loc1][loc2]</tt>
+                \li <tt>R2[loc1][loc2]</tt>, <tt>subPop[sp]['R2'][loc1][loc2]</tt>
 
-			\param haploFreq a matrix of haplotypes (allele sequence) to count
+			\param LD_param a dictionary of parameters of \c LD statistics. Can have key \c stat which is 
+                a list of statistics to calculate. Default to all. If any statistics is specified,
+                only those specified will be calculated. For example, you may use <tt>LD_param={LD_prime}</tt>
+                to calculate D' only, where <tt>LD_prime</tt> is a shortcut for <tt>'stat':['LD_prime']</tt>.
+                Other parameters that you may use are:
+                \li \c subPop, whether or not calculate statistics for subpopulations
+                \li \c midValues, whether or not keep intermediate results.
 
-			format:  haploFreq = [ [ 0,1,2 ], [1,2] ]
+            \param association association measures 
 
-			All haplotypes on loci 012, 12 will be counted. If only one haplotype is
-			specified, the outer [] can be ommited. I.e., haploFreq=[0,1] is acceptable.
+            \param association_param a dictionary of parameters of \c association statistics.        
 
-			\param LD apply LD, LD' and r2, given
-			LD=[ [locus1 locus2], [ locus1 locus2 allele1 allele2], ,...]
-			If two numbers are given, D, D' and r2 overall possible allele pairs will
-			be calculated and saved as AvgLD etc. If four numbers are given, D, D' and r2
-			using specified alleles are provided. If only one item is specified, the
-			outer [] can be ignored. I.e., LD=[locus1 locus2] is acceptable.
+			\param Fst calculate Fst, Fis, Fit. For example, <tt>Fst = [0,1,2]</tt> will calculate Fst, Fis,
+                Fit based on alleles at loci \c 0, \c 1, \c 2. The locus-specific values will be used
+                to calculate \c AvgFst, which is an average value over all alleles (Weir
+                and Cockerham, 1984). This parameter will set the following variables:
+                \li <tt>Fst[loc]</tt>, <tt>Fis[loc]</tt>, <tt>Fit[loc]</tt>
+                \li <tt>AvgFst</tt>, <tt>AvgFis</tt>, <tt>AvgFit</tt>.
 
-			\param LD_param: a dictionary of parameters to LD statistics. Can have key
-			stat: a list of statistics to calculate. default to all.
-			if any statistics is specified, only those specified will be calculated.
-			i.e.: LD_param={'stat':['LD']}
-			LD: True/False, shortcut for 'stat':['LD']
-			LD_prime: True/False, shortcut for 'stat':['LD_prime']
-			...
-			subPop: True/False: whether or not calculate statistics for subpopulations
-			midValues: True/False: whether or not keep intermediate results
+            \param Fst_param a dictionary of parameters of \c Fst statistics.        
+        
+			\param relMethod method used to calculate relatedness. Can be either \c  REL_Queller or \c REL_Lynch.
+                The relatedness values between two individuals, or two groups of individuals are calculated according
+                to Queller & Goodnight (1989) (<tt>method=REL_Queller</tt>) and Lynch et al. (1999) (<tt>method=REL_Lynch</tt>).
+                The results are pairwise relatedness values, in the form of a matrix. Original group or subpopulation
+                numbers are discarded. <tt>relatedness[grp1][grp2]</tt> is the relatedness value between \c grp1
+                and \c grp2. There is no subpop level relatedness values.
 
-			\param Fst calculate Fst. Fis and Fit will be given as a side product.
+			\param relGroups calculate pairwise relatedness between groups. Can be in the form of either
+                <tt>[[1,2,3],[5,6,7],[8,9]]</tt> or <tt>[2,3,4]</tt>. The first one specifies groups of
+                individuals, while the second specifies subpopulations. By default, relatedness between
+                subpopulations is calculated.
 
-			format
-			Fst = [ 0, 1 ] Fst calculated at locus 0 and 1. Since any allele can be used
-			to calculate Fst, Fst[0] will be the average over all alleles as suggested
-			by Weir and Cockerham.
+			\param relLoci loci on which relatedness values are calculated
+        
+            \param rel_param a dictionary of parameters of relatedness statistics.             
+        
+			\param hasPhase if a/b and b/a are the same genotype. Default to \c False.
 
-			\param relGroups  calculated pairwise relatedness between groups. relGroups
-			can be in the form of either [[1,2,3],[4,5],[7,8]] (gourps of individuals)
-			or [1,3,4] (use subpopulations).
-
-			\param relMethod method used to calculate relatedness. Can be
-			either REL_Queller or REL_Lynch.
-
-			\param relLoci loci on which relatedness calues are calculated.
-
-			\param hasPhase if a/b and b/a are the same genotype. default is false.
-
-			\param midValues whether or not post intermediate results. Default to false.
-			For example, Fst will need to calculate allele frequency, if midValues is set
-			to true, allele frequencies will be posted as well. This will help debuging and
-			sometimes derived statistics.
-
-			\param others there is NO output for this operator. other parameters
-			please see help(baseOperator.__init__)
-
-			\note previous provide 'search for all allele/genotype' option but this
-			has proven to be troublesome. In this version, everything should be
-			explicitly specified.
+			\param midValues whether or not post intermediate results. Default to \c False.
+                For example, Fst will need to calculate allele frequencise. If \c midValues
+                is set to \c True, allele frequencies will be posted as well. This will be
+                helpful in debugging and sometimes in deriving statistics.
 			**/
 			stat(
 				bool popSize=false,
+            //
 				bool numOfMale=false,
+                strDict numOfMale_param=strDict(),
+            //
 				bool numOfAffected=false,
+                strDict numOfAffected_param=strDict(),
+            //    
 				vectori numOfAlleles=vectori(),
 				strDict numOfAlleles_param=strDict(),
 			//
@@ -1321,8 +1495,8 @@ namespace simuPOP
 				:stator("", outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 			// the order of initialization is meaningful since they may depend on each other
 				m_popSize(popSize),
-				m_numOfMale(numOfMale),
-				m_numOfAffected(numOfAffected),
+				m_numOfMale(numOfMale, numOfMale_param),
+				m_numOfAffected(numOfAffected, numOfAffected_param),
 				m_alleleFreq(alleleFreq, alleleFreq_param),
 				m_numOfAlleles(m_alleleFreq, numOfAlleles, numOfAlleles_param),
 				m_heteroFreq(heteroFreq, homoFreq),
@@ -1341,17 +1515,19 @@ namespace simuPOP
 			{
 			}
 
-			/// this function is very important
+			/// deep copy of a \c stat operator
 			virtual Operator* clone() const
 			{
 				return new stat(*this);
 			}
 
-			/// count various statistics.
-			/// use m_alleles etc to save (potentially) time to
-			/// resize all these variables.
+			// count various statistics.
+			// use m_alleles etc to save (potentially) time to
+			// resize all these variables.
+			/// apply the \c stat operator
 			virtual bool apply(population& pop);
 
+            /// used by Python print function to print out the general information of the \c stat operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::statistics>";
