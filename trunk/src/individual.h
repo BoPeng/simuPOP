@@ -527,7 +527,7 @@ namespace simuPOP
 			*/
 			bool operator== (const individual& rhs) const;
 
-			///
+			/// compare if two individuals are not the same used in case of serialization etc.
 			bool operator!= (const individual& rhs) const
 			{
 				return ! (*this == rhs);
@@ -566,7 +566,7 @@ namespace simuPOP
 			The guideline is that if we swap individuals across
 			subpopulation, we should swap content. Otherwise,
 			swap pointers. (There is no order right now within
-			subpopulation so the later case is rare, at best.
+			subpopulation so the later case is rare, at best.)
 			*/
 			void swap(individual& ind, bool swapContent=true);
 
