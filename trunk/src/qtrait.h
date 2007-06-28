@@ -39,32 +39,24 @@ namespace simuPOP
 
 	// ///////////////////////// Quantitative trait ////////////////////////
 
-	/** \brief quantitative trait
-
-	Genetic quantitative trait is tricky to simulate. In simuPOP, I employee
-	an ability (fitness) to mate approach. Namely, the probability
-	that an individual will be chosen for mating is proportional
-	to its fitness value. More specifically,
-
-	- PreMating selectors assign fitness values to each individual.
-
-	- Sexless mating (e.g. binomialSelection) : individuals are chosen
-	at probabilities that are proportional to their fitness values. More
-	specifically, if there are N individuals with fitness values
-	\f$f_i, i=1,...,N \f$, individual \f$i\f$ will have probability
-	\f$ \frac{f_i}{\sum_{j=1}^N f_j} \f$ to be chosen to be passed
-	to the next generation.
-
-	- Random mating with sex (e.g. randommating): males and females are
-	separated and each are chosen as described above.
-
-	Please refer to the user's guide for details.
+    /// basic class of quantitative trait
+	/**
+    Quantitative trait is the measure of certain phenotype for given genotype.
+    Quantitative trait is similar to penetrance in that the consequence of
+    penetrance is binary: affected or unaffected; while it is continuous for
+    quantitative trait. \n
+    
+    In simuPOP, different operators/functions were implemented to calculate
+    quantitative traits for each individual and store the values in the information
+    field specified by user (default to \c qtrait). The quantitative trait operators
+    also accept the \c ancestralGen parameter to control the number of generations
+    for which the \c qtrait information field will be set.
 	*/
 
 	class quanTrait: public Operator
 	{
 		public:
-			/// constructor. default to be always active.
+			/// create a quantitative trait operator, default to be always active
 			quanTrait(int ancestralGen=-1,  int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr(1, "qtrait"))
 				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields),
@@ -77,12 +69,13 @@ namespace simuPOP
 			{
 			}
 
+            /// deep copy of a quantitative trait operator            
 			virtual Operator* clone() const
 			{
 				return new quanTrait(*this);
 			}
 
-			/// calculate/return quantitative trait etc
+			/// calculate/return quantitative trait etc.
 			virtual double qtrait(individual *)
 			{
 				///
@@ -90,9 +83,10 @@ namespace simuPOP
 				return 1.;
 			}
 
-			/// set qtrait to all individual
+			/// set \c qtrait to all individual
 			bool apply(population& pop);
 
+            /// used by Python print function to print out the general information of the quantitative trait operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::qtrait::quantitative trait>" ;
@@ -104,24 +98,28 @@ namespace simuPOP
 
 	};
 
-	/** \brief quantitative trait according to genotype at one locus
-
-	map selector. Assign qtrait value according to a
-	given dictionary.
+    /// quantitative trait according to genotype at one locus
+	/**
+    Assign quantitative trait using a table with keys 'X-Y' where X and Y are allele
+    numbers. If parameter \c sigma is not zero, the returned value is the sum of the
+    trait plus a standard normal distribution with mean 0, standard deviation \c sigma.
+    This random part is usually considered as the environmental factor of the trait.
 	*/
 
 	class mapQuanTrait: public quanTrait
 	{
 		public:
-			/** \brief create a map selector (quantitative trait according to genotype at one locus
-
-			\param locus the locus index. The genotype of this locus will be axamed.
-			\param loci the loci.
-			\param qtrait a dictionary of qtrait. The genotype must be in the form of 'a-b'. This is the mean
-			of quantitative trait. The actual trait value will be N(mean, sigma^2)
-			For multiple loci, the form is 'a-b|c-d|e-f' etc.
-			\param sigma standard deviation of the environmental facotr N(0,sigma^2).
-			\param phase if true, a/b and b/a will have different qtrait value. Default to false.
+            /// create a map quantitative trait operator
+			/** 
+			\param locus the locus index. The quantitative trait is determined by genotype at this locus.
+			\param loci an array of locus indices. The quantitative trait is determined by genotype at these loci.
+			\param qtrait a dictionary of quantitative traits. The genotype must be in the
+                form of 'a-b'. This is the mean	of the quantitative trait. The actual trait
+                value will be <tt>N(mean, sigma^2)</tt>. For multiple loci, the form is
+                'a-b|c-d|e-f' etc.
+			\param sigma standard deviation of the environmental factor <tt>N(0, sigma^2)</tt>.
+			\param phase if True, a/b and b/a will have different quantitative trait values.
+                Default to False.
 			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
 			mapQuanTrait(vectoru loci, const strDict& qtrait, double sigma=0, bool phase=false,
@@ -138,6 +136,7 @@ namespace simuPOP
 			{
 			}
 
+            /// deep copy of a map quantitative trait operator
 			virtual Operator* clone() const
 			{
 				return new mapQuanTrait(*this);
@@ -146,6 +145,7 @@ namespace simuPOP
 			/// currently assuming diploid
 			virtual double qtrait(individual * ind);
 
+            /// used by Python print function to print out the general information of the map quantitative trait operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::qtrait::map quantitative trait>" ;
@@ -165,24 +165,27 @@ namespace simuPOP
 			bool m_phase;
 	};
 
-	/** \brief quantitative trait according to genotype at one locus
-
-	multiple allele selector. This selector group alleles to disease
-	and wild type and return qtrait to AA,Aa,aa. (A is wildtype).
+    /// multiple allele quantitative trait (quantitative trait according to disease or wildtype alleles)
+	/**
+    This is called 'multiple-allele' quantitative trait. It separates alleles into
+    two groups: wildtype and disease susceptibility alleles. Wildtype alleles are specified by parameter
+    \c wildtype and any other alleles are considered as disease alleles.
+    \c maQuanTrait accepts an array of fitness. Quantitative trait is then set for any given
+    genotype. a standard normal distribution with mean 0, standard deviation \c sigma will
+    be added to the returned trait value.
 	*/
-
 	class maQuanTrait: public quanTrait
 	{
 		public:
-			/** \brief create a multiple allele selector (quantitative trait according to diseased or wildtype
-			alleles)
-
-			\param locus the locus index. The genotype of this locus will be axamed.
-			\param qtrait an array of qtrait of AA,Aa,aa. A is the wild type group.
-			\param sigma an array of standard deviation for each of the trait genotype (AA, Aa, aa)
-			\param wildtype an array of alleles in the wildtype group. Anything else is disease allele.
-			   default = [0]
+            /// create a multiple allele quantitative trait operator
+			/**
+			\param qtrait an array of quantitative traits of AA, Aa, aa. A is the wild type group
+			\param sigma an array of standard deviations for each of the trait genotype (AA, Aa, aa)
+			\param wildtype an array of alleles in the wildtype group. Any other alleles will be
+                considered as disease alleles. Default to <tt>[0]</tt>.
 			\param output and other parameters please refer to help(baseOperator.__init__)
+
+            Please refer to \c quanTrait for other parameter descriptions.
 			*/
 			maQuanTrait( vectoru loci, const vectorf& qtrait, const vectora& wildtype,
 				const vectorf& sigma = vectorf(), int ancestralGen=-1,
@@ -206,6 +209,7 @@ namespace simuPOP
 			{
 			}
 
+            /// deep copy of a multiple allele quantitative trait
 			virtual Operator* clone() const
 			{
 				return new maQuanTrait(*this);
@@ -214,6 +218,7 @@ namespace simuPOP
 			/// currently assuming diploid
 			virtual double qtrait(individual * ind);
 
+            /// used by Python print function to print out the general information of the multiple allele quantitative trait operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::qtrait::multiple-alleles qtrait>" ;
@@ -233,14 +238,11 @@ namespace simuPOP
 			vectora m_wildtype;
 	};
 
-	/** \brief quantitative trait according to genotype at multiple loci multiplicative model
-
-	 multiple loci selector. This selector takes several selectors and
-	 multiply their qtrait values...
-	 e.g.
-	   mlmquanTrait( [mapquanTrait(...), maquanTrait(...) ])
+    /// quantitative trait according to genotypes from a multiple loci multiplicative model
+	/**
+    \c mlQuanTrait is a 'multiple-loci' quantitative trait calculator. It accepts a list
+    of quantitative traits and combine them according to the \c mode parameter.
 	 */
-
 	class mlQuanTrait: public quanTrait
 	{
 		public:
@@ -252,9 +254,12 @@ namespace simuPOP
 			typedef std::vector< Operator * > vectorop;
 
 		public:
-			/** \brief multiple loci selector using a multiplicative model.
-
-			\param qtraits a list of qtraits.
+            /// multiple loci quantitative trait using a multiplicative model
+			/**
+			\param qtraits a list of quantitative traits
+            \param mode can be one of \c QT_Multiplicative and \c QT_Additive
+        
+            Please refer to \c quanTrait for other parameter descriptions.        
 			*/
 			mlQuanTrait( const vectorop qtraits, int mode = QT_Multiplicative,
 				double sigma=0, int ancestralGen=-1,
@@ -280,6 +285,7 @@ namespace simuPOP
 					delete *s;
 			}
 
+            /// deep copy of a multiple loci quantitative trait operator
 			virtual Operator* clone() const
 			{
 				throw ValueError("Multi-loci selector can not be nested.");
@@ -288,6 +294,7 @@ namespace simuPOP
 			/// currently assuming diploid
 			virtual double qtrait(individual * ind);
 
+            /// used by Python print function to print out the general information of the multiple loci quantitative trait operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::qtrait::multiple-loci qtrait>" ;
@@ -304,23 +311,24 @@ namespace simuPOP
 			int m_mode;
 	};
 
-	/** \brief quantitative trait using user supplied function
-
-	Assign qtrait value by calling a user supplied function
+    /// quantitative trait using a user provided function
+	/**
+    For each individual, a user provided function is used to calculate quantitative trait.
 	*/
-
 	class pyQuanTrait: public quanTrait
 	{
 		public:
-			/** \brief create a python hybrid selector
-
-			\param loci susceptibility loci. The genotype at these loci will be
-			passed to func.
+            /// create a Python quantitative trait operator
+			/** 
+			\param loci susceptibility loci. The genotypes at these loci will be
+                passed to \c func.
 			\param func a Python function that accept genotypes at susceptibility loci
-			and return qtrait value.
+                and return quantitative trait value.
 			\param output and other parameters please refer to help(baseOperator.__init__)
+
+            Please refer to \c quanTrait for other parameter descriptions.          
 			*/
-			/// provide locus and qtrait for 11, 12, 13 (in the form of dictionary)
+			// provide locus and qtrait for 11, 12, 13 (in the form of dictionary)
 			pyQuanTrait( vectoru loci, PyObject* func, int ancestralGen=-1,
 				int stage=PostMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
@@ -357,6 +365,7 @@ namespace simuPOP
 					Py_INCREF(m_func);
 			}
 
+            /// deep copy of a Python quantitative trait operator
 			virtual Operator* clone() const
 			{
 				return new pyQuanTrait(*this);
@@ -365,6 +374,7 @@ namespace simuPOP
 			/// currently assuming diploid
 			virtual double qtrait(individual * ind);
 
+            /// used by Python print function to print out the general information of the Python quantitative trait operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::qtrait::python qtrait>" ;
