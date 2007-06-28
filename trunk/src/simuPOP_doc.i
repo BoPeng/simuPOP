@@ -2,7 +2,28 @@
 
 Description:
 
-    thrink  population accroding to some outside value
+    draw an affected sibling pair  sample
+
+Details:
+
+    Special preparation for the  population is needed in order to use
+    this operator. Obviously, to obtain affected sibling pairs, we
+    need to know the parents and the affectedness status of each
+    individual. Furthermore, to get parental genotype, the  population
+    should have ancestralDepth at least 1. The biggest problem,
+    however, comes from the  mating scheme we are using.
+    randomMating() is usually used for diploid populations. The real
+    random  mating requires that a  mating will generate only one
+    offspring. Since parents are chosen with replacement, a parent can
+    have multiple offsprings with different parents. On the otherhand,
+    it is very unlikely that two offsprings will have the same
+    parents. Therefore, we will have to allow multiple offsprings per
+    mating at the cost of smaller effective  population size.
+    All these requirements come at a cost: multiple ancestral
+    populations, judge affectedness status and tagging will slow down
+    evolution; multiple offsprings will reduce effective  population
+    size. Fortunately,  simuPOP is flexible enough to let all these
+    happen only at the last several generations.
 
 "; 
 
@@ -10,7 +31,7 @@ Description:
 
 Description:
 
-    draw cases and controls
+    draw an affected sibling pair  sample
 
 Usage:
 
@@ -22,27 +43,21 @@ Usage:
 
 Arguments:
 
-    size:           number of affected sibpairs to be sampled. Can be
-                    a number or an array. If a number is given, it is
-                    the total number of sibpairs, ignoring  population
-                    structure. Otherwise, given number of sibpairs are
-                    sampled from subpopulations. If size is
-                    unspecified, this operator will return all
-                    affected sibpairs.
+    size:           the number of affected sibling pairs to be
+                    sampled. Can be a number or an array. If a number
+                    is given, it is the total number of sibpairs,
+                    ignoring  population structure. Otherwise, given
+                    number of sibpairs are sampled from
+                    subpopulations. If size is unspecified, this
+                    operator will return all affected sibpairs.
+    chooseUnaffected:instead of affected sibpairs, choose unaffected
+                    families.
     countOnly:      set variables about number of affected sibpairs,
                     do not actually draw the  sample
-    name:           variable name of the sampled  population (will be
-                    put in pop local namespace)
-    nameExpr:       expression version of name. If both name and
-                    nameExpr is empty, do not store pop.
-    times:          how many times to run the  sample process? This is
-                    usually one, but we may want to take several
-                    random samples.
-    saveAs:         filename to save the  population.
-    saveAsExpr:     expression for save filename
-    format:         to save sample(s)
-    stage:          and other parameters please see
-                    help(baseOperator.__init__)
+
+Details:
+
+    Please refer to class  sample for other parameter descriptions.
 
 "; 
 
@@ -62,7 +77,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  affectedSibpairSample operator
 
 Usage:
 
@@ -74,7 +89,7 @@ Usage:
 
 Description:
 
-    simuPOP::affectedSibpairSample::prepareSample
+    preparation before drawing a  sample
 
 Usage:
 
@@ -84,13 +99,13 @@ Usage:
 
 %feature("docstring") simuPOP::affectedSibpairSample::drawsample "
 
+Description:
+
+    draw a  sample
+
 Usage:
 
     x.drawsample(pop)
-
-Details:
-
-    collect all families
 
 "; 
 
@@ -99,7 +114,7 @@ Details:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  affectedSibpairSample operator
 
 Usage:
 
@@ -195,7 +210,7 @@ Usage:
 
 Description:
 
-    get a trial corresponding to m_prob.
+    if necessary, do trail again.
 
 Usage:
 
@@ -383,7 +398,23 @@ Usage:
 
 Description:
 
-    thrink  population accroding to some outside value
+    draw a case-control  sample from a  population
+
+Details:
+
+    This operator will randomly choose cases affected individuals and
+    controls unaffected individuals as a  sample. The affected status
+    is usually set by  penetrance functions/operators. The  sample
+    populations will have two subpopulations: cases and controls.
+    You may specify the number of cases and the number of controls
+    from each subpopulation using the array form of the parameters.
+    The  sample population will still have only two subpoulations
+    (cases/controls) though.
+    A special case of this sampling scheme occurs when one of or both
+    cases and controls are omitted (zeros). In this case, all cases
+    and/or controls are chosen. If both parameters are omitted, the
+    sample is effectively the same  population with affected and
+    unaffected individuals separated into two subpopulations.
 
 "; 
 
@@ -391,7 +422,7 @@ Description:
 
 Description:
 
-    draw cases and controls
+    draw cases and controls as a  sample
 
 Usage:
 
@@ -402,22 +433,14 @@ Usage:
 
 Arguments:
 
-    cases:          number of cases, or an array of number of cases
-                    from each subpopulation.
-    controls:       number of controls, or an array of number of
-                    controls from each subpopulation.
-    name:           variable name of the sampled  population (will be
-                    put in pop local namespace)
-    nameExpr:       expression version of name. If both name and
-                    nameExpr is empty, do not store pop.
-    times:          how many times to run the  sample process? This is
-                    usually one, but we may want to take several
-                    random samples.
-    saveAs:         filename to save the  population.
-    saveAsExpr:     expression for save filename
-    format:         to save sample(s)
-    stage:          and other parameters please see
-                    help(baseOperator.__init__)
+    cases:          the number of cases, or an array of the numbers of
+                    cases from each subpopulation
+    controls:       the number of controls, or an array of the numbers
+                    of controls from each subpopulation
+
+Details:
+
+    Please refer to class  sample for other parameter descriptions.
 
 "; 
 
@@ -437,7 +460,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  caseControlSample operator
 
 Usage:
 
@@ -445,36 +468,16 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::caseControlSample::prepareSample "
+%ignore simuPOP::caseControlSample::prepareSample(population &pop);
 
-Description:
-
-    simuPOP::caseControlSample::prepareSample
-
-Usage:
-
-    x.prepareSample(pop)
-
-"; 
-
-%feature("docstring") simuPOP::caseControlSample::drawsample "
-
-Description:
-
-    simuPOP::caseControlSample::drawsample
-
-Usage:
-
-    x.drawsample(pop)
-
-"; 
+%ignore simuPOP::caseControlSample::drawsample(population &pop);
 
 %feature("docstring") simuPOP::caseControlSample::__repr__ "
 
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  caseControlSample operator
 
 Usage:
 
@@ -486,13 +489,11 @@ Usage:
 
 Description:
 
-    terminate according to a condition which can be, e.g.
-    any(alleleNum0) == 0 all(alleleNum1) > 0.5 alleleNum0{2} == 0 etc.
+    terminate according to a condition failure
 
 Details:
 
-    When the condition is true, a shared variable var=\"terminate\" will
-    be set to current generation.
+    The same as  terminateIf but continue if the condition is True.
 
 "; 
 
@@ -500,7 +501,7 @@ Details:
 
 Description:
 
-    simuPOP::continueIf::continueIf
+    create a  continueIf terminator
 
 Usage:
 
@@ -514,7 +515,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a  continueIf terminator
 
 Usage:
 
@@ -527,7 +528,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  continueIf terminator
 
 Usage:
 
@@ -539,7 +540,7 @@ Usage:
 
 Description:
 
-    check all alleles in vector allele if they are fixed.
+    apply the  continueIf terminator???
 
 Usage:
 
@@ -1049,17 +1050,7 @@ Usage:
 
 %ignore simuPOP::Expression::setStmts(const string &stmts="");
 
-%feature("docstring") simuPOP::Expression::evaluate "
-
-Description:
-
-    python expression
-
-Usage:
-
-    x.evaluate()
-
-"; 
+%ignore simuPOP::Expression::evaluate();
 
 %ignore simuPOP::Expression::valueAsBool();
 
@@ -2352,7 +2343,16 @@ Usage:
 
 Description:
 
-    inherite tag from parents. If both parents have tags, use fathers.
+    inherite tag from parents.
+
+Details:
+
+    This during-mating operator will copy the tag information from
+    his/her parents. Depending on mode parameter, this  tagger will
+    obtain tag from his/her father (two tag fields), mother (two tag
+    fields) or both (first tag field from both father and mother).An
+    example may be tagging one or a few parents and see, at the last
+    generation, how many offspring they have.
 
 "; 
 
@@ -2360,13 +2360,18 @@ Description:
 
 Description:
 
-    constructor. default to be always active.
+    create an  inheritTagger, default to be always active
 
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[\"paternal_tag\",
       \"maternal_tag\"])
+
+Arguments:
+
+    mode:           can be one of TAG_Paternal, TAG_Maternal, and
+                    TAG_Both
 
 "; 
 
@@ -2387,7 +2392,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  inheritTagger
 
 Usage:
 
@@ -2395,13 +2400,23 @@ Usage:
 
 "; 
 
-%ignore simuPOP::inheritTagger::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%feature("docstring") simuPOP::inheritTagger::applyDuringMating "
+
+Description:
+
+    apply the  inheritTagger
+
+Usage:
+
+    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
+
+"; 
 
 %feature("docstring") simuPOP::inheritTagger::clone "
 
 Description:
 
-    deep copy of an operator
+    deep copy of a  inheritTagger
 
 Usage:
 
@@ -2427,7 +2442,7 @@ Description:
 Usage:
 
     initByFreq(alleleFreq=[], identicalInds=False, subPop=[],
-      indRange=intMatrix, loci=[], atPloidy=-1, maleFreq=0.5, sex=[],
+      indRange=[], loci=[], atPloidy=-1, maleFreq=0.5, sex=[],
       stage=PreMating, begin=0, end=1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[])
 
@@ -2523,10 +2538,6 @@ Usage:
 
     x.apply(pop)
 
-Details:
-
-    initialize m_ranges
-
 "; 
 
 %feature("docstring") simuPOP::initByValue "
@@ -2545,8 +2556,8 @@ Description:
 
 Usage:
 
-    initByValue(value=intMatrix, loci=[], atPloidy=-1, subPop=[],
-      indRange=intMatrix, proportions=[], maleFreq=0.5, sex=[],
+    initByValue(value=[], loci=[], atPloidy=-1, subPop=[],
+      indRange=[], proportions=[], maleFreq=0.5, sex=[],
       stage=PreMating, begin=0, end=1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[])
 
@@ -2642,10 +2653,6 @@ Usage:
 
     x.apply(pop)
 
-Details:
-
-    fixme: check length of src?atLoci is in effect
-
 "; 
 
 %feature("docstring") simuPOP::initializer "
@@ -2664,7 +2671,7 @@ Description:
 
 Usage:
 
-    initializer(subPop=[], indRange=intMatrix, loci=[], atPloidy=-1,
+    initializer(subPop=[], indRange=[], loci=[], atPloidy=-1,
       maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=-1, step=1,
       at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
@@ -2883,7 +2890,7 @@ Usage:
 
 Description:
 
-    simuPOP::largePedigreeSample
+    draw a large pedigree  sample
 
 "; 
 
@@ -2891,7 +2898,7 @@ Description:
 
 Description:
 
-    draw cases and controls
+    draw a large pedigree  sample
 
 Usage:
 
@@ -2903,27 +2910,17 @@ Usage:
 
 Arguments:
 
-    size:           number of affected sibpairs to be sampled. Can be
-                    a number or an array. If a number is given, it is
-                    the total number of sibpairs, ignoring  population
-                    structure. Otherwise, given number of sibpairs are
-                    sampled from subpopulations. If size is
-                    unspecified, this operator will return all
-                    affected sibpairs.
+    minTotalSize:   the minimum number of individuals in the  sample
+    maxOffspring:   the maximum number of offspring a parent may have
+    minPedSize:     minimal pedigree size, default to 5
+    minAffected:    minimal number of affected individuals in each
+                    pedigree, default to 0
     countOnly:      set variables about number of affected sibpairs,
-                    do not actually draw the  sample
-    name:           variable name of the sampled  population (will be
-                    put in pop local namespace)
-    nameExpr:       expression version of name. If both name and
-                    nameExpr is empty, do not store pop.
-    times:          how many times to run the  sample process? This is
-                    usually one, but we may want to take several
-                    random samples.
-    saveAs:         filename to save the  population.
-    saveAsExpr:     expression for save filename
-    format:         to save sample(s)
-    stage:          and other parameters please see
-                    help(baseOperator.__init__)
+                    do not actually draw the  sample.
+
+Details:
+
+    Please refer to class  sample for other parameter descriptions.
 
 "; 
 
@@ -2943,7 +2940,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  largePedigreeSample operator
 
 Usage:
 
@@ -2955,7 +2952,7 @@ Usage:
 
 Description:
 
-    simuPOP::largePedigreeSample::prepareSample
+    preparation before drawing a  sample
 
 Usage:
 
@@ -2965,13 +2962,13 @@ Usage:
 
 %feature("docstring") simuPOP::largePedigreeSample::drawsample "
 
+Description:
+
+    draw a a large pedigree  sample
+
 Usage:
 
     x.drawsample(pop)
-
-Details:
-
-    collect all families
 
 "; 
 
@@ -2980,7 +2977,7 @@ Details:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  largePedigreeSample operator
 
 Usage:
 
@@ -3071,10 +3068,6 @@ Usage:
 
     x.penet(*ind)
 
-Details:
-
-    get genotype of ind
-
 "; 
 
 %feature("docstring") simuPOP::maPenetrance::__repr__ "
@@ -3164,10 +3157,6 @@ Usage:
 
     x.penet(*ind)
 
-Details:
-
-    get genotype of ind
-
 "; 
 
 %feature("docstring") simuPOP::mapPenetrance::__repr__ "
@@ -3191,8 +3180,12 @@ Description:
 
 Details:
 
-    map  selector. Assign qtrait value according to a given
-    dictionary.
+    Assign quantitative trait using a table with keys 'X-Y' where X
+    and Y are allele numbers. If parameter sigma is not zero, the
+    returned value is the sum of the trait plus a standard normal
+    distribution with mean 0, standard deviation sigma. This random
+    part is usually considered as the environmental factor of the
+    trait.
 
 "; 
 
@@ -3200,8 +3193,7 @@ Details:
 
 Description:
 
-    create a map  selector (quantitative trait according to genotype
-    at one locus
+    create a map quantitative trait operator
 
 Usage:
 
@@ -3211,18 +3203,19 @@ Usage:
 
 Arguments:
 
-    locus:          the locus index. The genotype of this locus will
-                    be axamed.
-    loci:           the loci.
-    qtrait:         a dictionary of qtrait. The genotype must be in
-                    the form of 'a-b'. This is the mean of
-                    quantitative trait. The actual trait value will be
-                    N(mean, sigma^2) For multiple loci, the form is
-                    'a-b|c-d|e-f' etc.
-    sigma:          standard deviation of the environmental facotr
-                    N(0,sigma^2).
-    phase:          if true, a/b and b/a will have different qtrait
-                    value. Default to false.
+    locus:          the locus index. The quantitative trait is
+                    determined by genotype at this locus.
+    loci:           an array of locus indices. The quantitative trait
+                    is determined by genotype at these loci.
+    qtrait:         a dictionary of quantitative traits. The genotype
+                    must be in the form of 'a-b'. This is the mean of
+                    the quantitative trait. The actual trait value
+                    will be N(mean, sigma^2). For multiple loci, the
+                    form is 'a-b|c-d|e-f' etc.
+    sigma:          standard deviation of the environmental factor
+                    N(0, sigma^2).
+    phase:          if True, a/b and b/a will have different
+                    quantitative trait values. Default to False.
     output:         and other parameters please refer to
                     help(baseOperator.__init__)
 
@@ -3244,7 +3237,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a map quantitative trait operator
 
 Usage:
 
@@ -3262,10 +3255,6 @@ Usage:
 
     x.qtrait(*ind)
 
-Details:
-
-    get genotype of ind
-
 "; 
 
 %feature("docstring") simuPOP::mapQuanTrait::__repr__ "
@@ -3273,7 +3262,7 @@ Details:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the map quantitative trait operator
 
 Usage:
 
@@ -3357,10 +3346,6 @@ Usage:
 
     x.indFitness(*ind, gen)
 
-Details:
-
-    get genotype of ind
-
 "; 
 
 %feature("docstring") simuPOP::mapSelector::__repr__ "
@@ -3380,12 +3365,19 @@ Usage:
 
 Description:
 
-    quantitative trait according to genotype at one locus
+    multiple allele quantitative trait (quantitative trait according
+    to disease or wildtype alleles)
 
 Details:
 
-    multiple allele  selector. This  selector group alleles to disease
-    and wild type and return qtrait to AA,Aa,aa. (A is wildtype).
+    This is called 'multiple-allele' quantitative trait. It separates
+    alleles into two groups: wildtype and disease susceptibility
+    alleles. Wildtype alleles are specified by parameter wildtype and
+    any other alleles are considered as disease alleles.  maQuanTrait
+    accepts an array of fitness. Quantitative trait is then set for
+    any given genotype. a standard normal distribution with mean 0,
+    standard deviation sigma will be added to the returned trait
+    value.
 
 "; 
 
@@ -3393,8 +3385,7 @@ Details:
 
 Description:
 
-    create a multiple allele  selector (quantitative trait according
-    to diseased or wildtype alleles)
+    create a multiple allele quantitative trait operator
 
 Usage:
 
@@ -3404,16 +3395,19 @@ Usage:
 
 Arguments:
 
-    locus:          the locus index. The genotype of this locus will
-                    be axamed.
-    qtrait:         an array of qtrait of AA,Aa,aa. A is the wild type
-                    group.
-    sigma:          an array of standard deviation for each of the
+    qtrait:         an array of quantitative traits of AA, Aa, aa. A
+                    is the wild type group
+    sigma:          an array of standard deviations for each of the
                     trait genotype (AA, Aa, aa)
-    wildtype:       an array of alleles in the wildtype group.
-                    Anything else is disease allele. default = [0]
+    wildtype:       an array of alleles in the wildtype group. Any
+                    other alleles will be considered as disease
+                    alleles. Default to [0].
     output:         and other parameters please refer to
                     help(baseOperator.__init__)
+
+Details:
+
+    Please refer to  quanTrait for other parameter descriptions.
 
 "; 
 
@@ -3433,7 +3427,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a multiple allele quantitative trait
 
 Usage:
 
@@ -3451,10 +3445,6 @@ Usage:
 
     x.qtrait(*ind)
 
-Details:
-
-    get genotype of ind
-
 "; 
 
 %feature("docstring") simuPOP::maQuanTrait::__repr__ "
@@ -3462,7 +3452,7 @@ Details:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the multiple allele quantitative trait operator
 
 Usage:
 
@@ -3551,15 +3541,11 @@ Usage:
 
 Description:
 
-    currently assuming diploid
+    calculate/return the fitness value, currently assuming diploid
 
 Usage:
 
     x.indFitness(*ind, gen)
-
-Details:
-
-    get genotype of ind
 
 "; 
 
@@ -3920,8 +3906,7 @@ Details:
 
     Format should be 0-0 0-1 0-2, 1-0 1-1 1-2, 2-0, 2-1, 2-2. For mode
     MigrByProbability or MigrByProportion, 0-0,1-1,2-2 will be set
-    automatically regardless of input. set r[i][i]--- may need to
-    extend rate (to add i->i)
+    automatically regardless of input.
 
 "; 
 
@@ -3934,11 +3919,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
-Details:
-
-    2nd, or 3rd methodcreate a vector and assign indices, then random
-    shuffle and assign infofor all subPop.
 
 "; 
 
@@ -4044,14 +4024,14 @@ Usage:
 
 Description:
 
-    quantitative trait according to genotype at multiple loci
+    quantitative trait according to genotypes from a multiple loci
     multiplicative model
 
 Details:
 
-    multiple loci  selector. This  selector takes several selectors
-    and multiply their qtrait values... e.g. mlmquanTrait(
-    [mapquanTrait(...), maquanTrait(...) ])
+    mlQuanTrait is a 'multiple-loci' quantitative trait calculator. It
+    accepts a list of quantitative traits and combine them according
+    to the mode parameter.
 
 "; 
 
@@ -4059,7 +4039,7 @@ Details:
 
 Description:
 
-    multiple loci  selector using a multiplicative model.
+    multiple loci quantitative trait using a multiplicative model
 
 Usage:
 
@@ -4069,7 +4049,12 @@ Usage:
 
 Arguments:
 
-    qtraits:        a list of qtraits.
+    qtraits:        a list of quantitative traits
+    mode:           can be one of QT_Multiplicative and QT_Additive
+
+Details:
+
+    Please refer to  quanTrait for other parameter descriptions.
 
 "; 
 
@@ -4089,7 +4074,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a multiple loci quantitative trait operator
 
 Usage:
 
@@ -4114,7 +4099,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the multiple loci quantitative trait operator
 
 Usage:
 
@@ -4194,10 +4179,6 @@ Description:
 Usage:
 
     x.indFitness(*ind, gen)
-
-Details:
-
-    fixme
 
 "; 
 
@@ -4541,7 +4522,7 @@ Usage:
 
 Description:
 
-    simuPOP::nuclearFamilySample
+    draw a nuclear family  sample
 
 "; 
 
@@ -4549,7 +4530,7 @@ Description:
 
 Description:
 
-    draw nuclear family
+    draw a nuclear family  sample
 
 Usage:
 
@@ -4559,20 +4540,9 @@ Usage:
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[\"father_idx\", \"mother_idx\"])
 
-Arguments:
+Details:
 
-    name:           variable name of the sampled  population (will be
-                    put in pop local namespace)
-    nameExpr:       expression version of name. If both name and
-                    nameExpr is empty, do not store pop.
-    times:          how many times to run the  sample process? This is
-                    usually one, but we may want to take several
-                    random samples.
-    saveAs:         filename to save the  population.
-    saveAsExpr:     expression for save filename
-    format:         to save sample(s)
-    stage:          and other parameters please see
-                    help(baseOperator.__init__)
+    Please refer to class  sample for parameter descriptions.
 
 "; 
 
@@ -4592,7 +4562,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  nuclearFamilySample operator
 
 Usage:
 
@@ -4604,7 +4574,7 @@ Usage:
 
 Description:
 
-    simuPOP::nuclearFamilySample::prepareSample
+    preparation before drawing a  sample
 
 Usage:
 
@@ -4614,13 +4584,13 @@ Usage:
 
 %feature("docstring") simuPOP::nuclearFamilySample::drawsample "
 
+Description:
+
+    draw a nuclear family  sample
+
 Usage:
 
     x.drawsample(pop)
-
-Details:
-
-    collect all families
 
 "; 
 
@@ -4629,31 +4599,11 @@ Details:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  nuclearFamilySample operator
 
 Usage:
 
     x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::NullStreamBuf "
-
-Description:
-
-    create a null stream buf that discard everything
-
-"; 
-
-%feature("docstring") simuPOP::NullStreamBuf::NullStreamBuf "
-
-Description:
-
-    simuPOP::NullStreamBuf::NullStreamBuf
-
-Usage:
-
-    NullStreamBuf()
 
 "; 
 
@@ -5075,18 +5025,7 @@ Usage:
 
 %ignore simuPOP::OstreamManager;
 
-%feature("docstring") simuPOP::OstreamManager::OstreamManager "
-
-Description:
-
-    OStream Manager
-    ///////////////////////////////////////////////////////////.
-
-Usage:
-
-    OstreamManager()
-
-"; 
+%ignore simuPOP::OstreamManager::OstreamManager();
 
 %feature("docstring") simuPOP::OstreamManager::~OstreamManager "
 
@@ -5106,17 +5045,7 @@ Usage:
 
 %ignore simuPOP::OstreamManager::listAll();
 
-%feature("docstring") simuPOP::OstreamManager::closeAll "
-
-Description:
-
-    close all files and clean the map
-
-Usage:
-
-    x.closeAll()
-
-"; 
+%ignore simuPOP::OstreamManager::closeAll();
 
 %feature("docstring") simuPOP::OutOfMemory "
 
@@ -5275,7 +5204,18 @@ Usage:
 
 Description:
 
-    inherite tag from parents. If both parents have tags, use fathers.
+    tagging according to parents' indices
+
+Details:
+
+    This during-mating operator set \\\\c tag(), currently a pair of
+    numbers, of each  individual with indices of his/her parents in
+    the parental  population. This information will be used by
+    pedigree-related operators like  affectedSibpairSample to track
+    the pedigree information. Since parental  population will be
+    discarded or stored after  mating, and tagging information will be
+    passed with individuals, mating/population change etc. will not
+    interfere with this simple tagging system.
 
 "; 
 
@@ -5283,9 +5223,7 @@ Description:
 
 Description:
 
-    constructor. default to be always active. string can be any string
-    (m_Delimiter will be ignored for this class.) r will be replicate
-    number g will be generation number.
+    create a  parentsTagger, default to be always active
 
 Usage:
 
@@ -5310,7 +5248,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a  parentsTagger
 
 Usage:
 
@@ -5323,7 +5261,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  parentsTagger
 
 Usage:
 
@@ -5331,7 +5269,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::parentsTagger::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%feature("docstring") simuPOP::parentsTagger::applyDuringMating "
+
+Description:
+
+    apply the  parentsTagger
+
+Usage:
+
+    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
+
+"; 
 
 %feature("docstring") simuPOP::pause "
 
@@ -5552,8 +5500,8 @@ Usage:
 
 Description:
 
-    set pentrance to all individuals and record  penetrance if
-    requested.
+    set  penetrance to all individuals and record  penetrance if
+    requested
 
 Usage:
 
@@ -5847,7 +5795,7 @@ Examples:
 ...     alleleNames=['A','C','T','G'],
 ...     subPop=[2,3], maxAllele=3)
 >>>
-allocate info 
+
 
 "; 
 
@@ -6861,7 +6809,8 @@ Arguments:
 
 Description:
 
-    set fields
+    set information fields for an existing  population. The existing
+    fields will be removed.
 
 Usage:
 
@@ -6878,7 +6827,7 @@ Arguments:
 
 Description:
 
-    set ancestral depth, can be -1
+    set ancestral depth.
 
 Usage:
 
@@ -6923,7 +6872,17 @@ Usage:
 
 %ignore simuPOP::population::adjustGenoPosition(bool order);
 
-%ignore simuPOP::population::adjustInfoPosition(bool order);
+%feature("docstring") simuPOP::population::adjustInfoPosition "
+
+Description:
+
+    simuPOP::population::adjustInfoPosition
+
+Usage:
+
+    x.adjustInfoPosition(order)
+
+"; 
 
 %feature("docstring") simuPOP::population::savePopulation "
 
@@ -7126,7 +7085,7 @@ Usage:
 
 Details:
 
-    This is used by mergeByLoci. total number of loci can not change
+    This is used by mergeByLoci.
 
 "; 
 
@@ -7134,7 +7093,7 @@ Details:
 
 Description:
 
-    evaluate an expression.
+    evaluate an expression
 
 "; 
 
@@ -7142,7 +7101,8 @@ Description:
 
 Description:
 
-    evaluate expr/statments in local replicate namespace
+    evaluate expressions/statments in the local namespace of a
+    replicate
 
 Usage:
 
@@ -7153,20 +7113,29 @@ Usage:
 
 Arguments:
 
-    expr:           expression to be evaluated. Its result will be
+    expr:           the expression to be evaluated. Its result will be
                     sent to output.
-    stmts:          statement that will be executed before the
-                    expression.
-    preStmts:       statement that will be executed when the operaot
-                    is constructed.
-    postStmts:      statement that will be executed when the operator
-                    is destroyed.
-    exposePop:      if true, expose current pop as variable \"pop\"
-    name:           used to let pure python operator to identify
+    stmts:          the statement that will be executed before the
+                    expression
+    preStmts:       the statement that will be executed when the
+                    operator is constructed
+    postStmts:      the statement that will be executed when the
+                    operator is destroyed
+    exposePop:      if true, expose current  population as variable
+                    pop
+    name:           used to let pure Python operator to identify
                     themselves
-    output:         default to \">\" . i.e., output to standard output.
-                    for usage of other parameters, see
-                    help(baseOperator.__init__)
+    output:         default to >. I.e., output to standard output.
+
+Details:
+
+    Python expressions/statements will be executed when  pyEval is
+    applied to a  population by using parameters expr/stmts.
+    Statements can also been executed when  pyEval is created and
+    destroyed or before expr is executed. The corresponding parameters
+    are preStmts, postStmts and stmts. For example, operator
+    varPlotter uses this feature to initialize R plots and save plots
+    to a file when finished.
 
 "; 
 
@@ -7186,7 +7155,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  pyEval operator
 
 Usage:
 
@@ -7198,8 +7167,7 @@ Usage:
 
 Description:
 
-    apply to one  population. It does not check if the operator is
-    activated.
+    apply the  pyEval operator
 
 Usage:
 
@@ -7212,7 +7180,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  pyEval operator
 
 Usage:
 
@@ -7224,11 +7192,17 @@ Usage:
 
 Description:
 
-    simuPOP::pyEval::name
+    return the name of an expression
 
 Usage:
 
     x.name()
+
+Details:
+
+    The name of a  pyEval operator is given by an optional parameter
+    name. It can be used to identify this  pyEval operator in debug
+    output, or in the dryrun mode of  simulator::evolve.
 
 "; 
 
@@ -7236,7 +7210,7 @@ Usage:
 
 Description:
 
-    evaluate an expression.
+    execute a Python statement
 
 "; 
 
@@ -7244,7 +7218,8 @@ Description:
 
 Description:
 
-    evaluate statments in local replicate namespace, no return value
+    evaluate statments in the local replicate namespace, no return
+    value
 
 Usage:
 
@@ -7254,16 +7229,21 @@ Usage:
 
 Arguments:
 
-    stmts:          statements (a single or multi-line string) that
-                    will be evaluated before the expression.
-    preStmts:       statement that will be executed when the operaot
-                    is constructed.
-    postStmts:      statement that will be executed when the operator
-                    is destroyed.
-    exposePop:      if true, expose current pop as variable \"pop\"
-    output:         default to \">\" . i.e., output to standard output.
-                    for usage of other parameters, see
-                    help(baseOperator.__init__)
+    stmts:          the statements (a single or multi-line string)
+                    that will be executed when this operator is
+                    applied.
+    preStmts:       the statement that will be executed when the
+                    operator is constructed
+    postStmts:      the statement that will be executed when the
+                    operator is destroyed
+    exposePop:      if true, expose current  population as variable
+                    pop
+    default:        to >. I.e., output to standard output.
+
+Details:
+
+    This operator takes a list of statements and execute them. No
+    value will be returned or outputted.
 
 "; 
 
@@ -7283,7 +7263,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  pyExec operator
 
 Usage:
 
@@ -7296,7 +7276,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  pyExec operator
 
 Usage:
 
@@ -7419,10 +7399,9 @@ Description:
 
 Usage:
 
-    pyInit(*func, subPop=[], loci=[], atPloidy=-1,
-      indRange=intMatrix, maleFreq=0.5, sex=[], stage=PreMating,
-      begin=0, end=1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[])
+    pyInit(*func, subPop=[], loci=[], atPloidy=-1, indRange=[],
+      maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=1, step=1,
+      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
 Arguments:
 
@@ -7685,7 +7664,7 @@ Usage:
 
 Description:
 
-    mixed mutation model
+    Hybrid  mutator.
 
 Details:
 
@@ -7714,7 +7693,7 @@ Usage:
 
 Description:
 
-    simuPOP::pyMutator::~pyMutator
+    destructor
 
 Usage:
 
@@ -7986,11 +7965,12 @@ Usage:
 
 Description:
 
-    quantitative trait using user supplied function
+    quantitative trait using a user provided function
 
 Details:
 
-    Assign qtrait value by calling a user supplied function
+    For each  individual, a user provided function is used to
+    calculate quantitative trait.
 
 "; 
 
@@ -7998,8 +7978,7 @@ Details:
 
 Description:
 
-    provide locus and qtrait for 11, 12, 13 (in the form of
-    dictionary)
+    create a Python quantitative trait operator
 
 Usage:
 
@@ -8009,12 +7988,17 @@ Usage:
 
 Arguments:
 
-    loci:           susceptibility loci. The genotype at these loci
+    loci:           susceptibility loci. The genotypes at these loci
                     will be passed to func.
     func:           a Python function that accept genotypes at
-                    susceptibility loci and return qtrait value.
+                    susceptibility loci and return quantitative trait
+                    value.
     output:         and other parameters please refer to
                     help(baseOperator.__init__)
+
+Details:
+
+    Please refer to  quanTrait for other parameter descriptions.
 
 "; 
 
@@ -8036,7 +8020,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a Python quantitative trait operator
 
 Usage:
 
@@ -8061,7 +8045,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the Python quantitative trait operator
 
 Usage:
 
@@ -8073,7 +8057,11 @@ Usage:
 
 Description:
 
-    thrink  population accroding to some outside value
+    Python sampler.
+
+Details:
+
+    A Python sampler that generate a  sample with given individuals.
 
 "; 
 
@@ -8081,7 +8069,7 @@ Description:
 
 Description:
 
-    create a python sampler
+    create a Python sampler
 
 Usage:
 
@@ -8092,12 +8080,15 @@ Usage:
 
 Arguments:
 
-    keep:           a carray of the length of  population. its values
-                    will be assigned to info.
-    keepAncestralPop:
-    ::              -1 (all), 0 (no), 1(one ancestral pop) and so on.
-                    and other parameters please see
-                    help(baseOperator.__init__)
+    keep:           subpopulation IDs of all individuals
+    keepAncestralPop:the number of ancestral populations that will be
+                    kept. If -1, keep all ancestral populations
+                    (default). If 0, no ancestral  population will be
+                    kept.
+
+Details:
+
+    Please refer to class  sample for other parameter descriptions.
 
 "; 
 
@@ -8119,7 +8110,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a Python sampler
 
 Usage:
 
@@ -8131,7 +8122,7 @@ Usage:
 
 Description:
 
-    simuPOP::pySample::drawsample
+    draw a Python  sample
 
 Usage:
 
@@ -8144,7 +8135,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the Python sampler
 
 Usage:
 
@@ -8250,7 +8241,13 @@ Usage:
 
 Description:
 
-    thrink  population accroding to some outside value
+    shrink  population
+
+Details:
+
+    This operator shrinks a population according to a given array or
+    the \\\\c subPopID() value of each indvidual. Subpopulations are kept
+    intact.
 
 "; 
 
@@ -8258,7 +8255,7 @@ Description:
 
 Description:
 
-    create a directmigrator
+    create a  pySubset operator
 
 Usage:
 
@@ -8267,9 +8264,8 @@ Usage:
 
 Arguments:
 
-    keep:           a carray of the length of  population. its values
-                    will be assigned to info.  and other parameters
-                    please see help(baseOperator.__init__)
+    keep:           an array of subpopulation IDs for each
+                    individual.
 
 "; 
 
@@ -8289,7 +8285,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  pySubset operator
 
 Usage:
 
@@ -8301,8 +8297,7 @@ Usage:
 
 Description:
 
-    apply to one  population. It does not check if the operator is
-    activated.
+    apply the  pySubset operator
 
 Usage:
 
@@ -8315,7 +8310,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  pySubset operator
 
 Usage:
 
@@ -8327,9 +8322,10 @@ Usage:
 
 Details:
 
-    This  tagger take some information fields from both parents, pass
-    to a python function and set  individual field with the return
-    value.This operator can be used to trace the inheritance of trait
+    This  tagger takes some information fields from both parents, pass
+    to a Python function and set the  individual field with the
+    returned value.
+    This operator can be used to trace the inheritance of trait
     values.
 
 "; 
@@ -8349,14 +8345,14 @@ Arguments:
 
     infoFields:     information fields. The user should gurantee the
                     existence of these fields.
-    func:           a pyton function that return a list to assign the
-                    information fields. e.g. if fields=['A', 'B'], the
-                    function will pass values of fields 'A' and 'B' of
-                    father, followed by mother if there is one, to
-                    this function. The returned value is assigned to
-                    fields 'A' and 'B' of the offspring. The returned
-                    value has to be a list even if only one field is
-                    given.
+    func:           a Pyton function that returns a list to assign the
+                    information fields. e.g., if fields=['A', 'B'],
+                    the function will pass values of fields 'A' and
+                    'B' of father, followed by mother if there is one,
+                    to this function. The returned value is assigned
+                    to fields 'A' and 'B' of the offspring. The
+                    returned value has to be a list even if only one
+                    field is given.
 
 "; 
 
@@ -8378,7 +8374,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a  pyTagger
 
 Usage:
 
@@ -8391,7 +8387,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  pyTagger
 
 Usage:
 
@@ -8399,26 +8395,15 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pyTagger::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
-
-%feature("docstring") simuPOP::PythonCoutBuf "
+%feature("docstring") simuPOP::pyTagger::applyDuringMating "
 
 Description:
 
-    create a stream buf that print to python sys.stdout cout will be
-    redirected to this buf to really output to python console.
-
-"; 
-
-%feature("docstring") simuPOP::PythonCoutBuf::PythonCoutBuf "
-
-Description:
-
-    simuPOP::PythonCoutBuf::PythonCoutBuf
+    apply the  pyTagger
 
 Usage:
 
-    PythonCoutBuf()
+    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
 
 "; 
 
@@ -8426,24 +8411,20 @@ Usage:
 
 Description:
 
-    quantitative trait
+    basic class of quantitative trait
 
 Details:
 
-    Genetic quantitative trait is tricky to simulate. In  simuPOP, I
-    employee an ability (fitness) to mate approach. Namely, the
-    probability that an  individual will be chosen for  mating is
-    proportional to its fitness value. More specifically,
-    * PreMating selectors assign fitness values to each  individual.
-    * Sexless  mating (e.g.  binomialSelection) : individuals are
-    chosen at probabilities that are proportional to their fitness
-    values. More specifically, if there are N individuals with fitness
-    values  $f_i, i=1,...,N $,  individual $i$ will have probability
-    $ \\\\frac{f_i}{\\\\sum_{j=1}^N f_j} $ to be chosen to be passed to the
-    next generation.
-    * Random  mating with sex (e.g. randommating): males and females
-    are separated and each are chosen as described above.Please refer
-    to the user's guide for details.
+    Quantitative trait is the measure of certain phenotype for given
+    genotype. Quantitative trait is similar to  penetrance in that the
+    consequence of  penetrance is binary: affected or unaffected;
+    while it is continuous for quantitative trait.
+    In  simuPOP, different operators/functions were implemented to
+    calculate quantitative traits for each  individual and store the
+    values in the information field specified by user (default to
+    qtrait). The quantitative trait operators also accept the
+    ancestralGen parameter to control the number of generations for
+    which the qtrait information field will be set.
 
 "; 
 
@@ -8451,7 +8432,7 @@ Details:
 
 Description:
 
-    constructor. default to be always active.
+    create a quantitative trait operator, default to be always active
 
 Usage:
 
@@ -8476,7 +8457,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a quantitative trait operator
 
 Usage:
 
@@ -8488,7 +8469,7 @@ Usage:
 
 Description:
 
-    calculate/return quantitative trait etc
+    calculate/return quantitative trait etc.
 
 Usage:
 
@@ -8513,7 +8494,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the quantitative trait operator
 
 Usage:
 
@@ -8624,7 +8605,18 @@ Usage:
 
 Description:
 
-    thrink  population accroding to some outside value
+    randomly draw a  sample from a  population
+
+Details:
+
+    This operator will randomly choose size individuals (or size[i]
+    individuals from subpopulation i) and return a new  population.
+    The function form of this operator returns the samples directly.
+    The operator keeps samples in an array name in the local
+    namespace. You may access them through dvars() or vars()
+    functions.
+    The original subpopulation structure/boundary is kept in the
+    samples.
 
 "; 
 
@@ -8632,7 +8624,7 @@ Description:
 
 Description:
 
-    draw random  sample, regardless of affected status
+    draw a random  sample, regardless of the affected status
 
 Usage:
 
@@ -8643,29 +8635,19 @@ Usage:
 
 Arguments:
 
-    size:           size of  sample. It can be either a number,
-                    representing the overall  sample size, regardless
-                    of  population strucutre; or an array,
-                    representing number of samples drawn from each
-                    subpopulation.
-    stage:          and other parameters please see
-                    help(baseOperator.__init__)
-    name:           variable name of the sampled  population (will be
-                    put in pop local namespace)
-    nameExpr:       expression version of name. If both name and
-                    nameExpr is empty, do not store pop.
-    times:          how many times to run the  sample process? This is
-                    usually one, but we may want to take several
-                    random samples.
-    saveAs:         filename to save the  population.
-    saveAsExpr:     expression for save filename
-    format:         to save sample(s)
-    stage:          and other parameters please see
-                    help(baseOperator.__init__)
+    size:           size of the  sample. It can be either a number
+                    which represents the overall  sample size,
+                    regardless of the  population structure; or an
+                    array which represents the number of samples drawn
+                    from each subpopulation.
+
+Details:
+
+    Please refer to class  sample for other parameter descriptions.
 
 Note:
 
-    ancestral populations will not be copied to the samples
+    Ancestral populations will not be copied to the samples.
 
 "; 
 
@@ -8685,7 +8667,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  randomSample operator
 
 Usage:
 
@@ -8693,36 +8675,16 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::randomSample::prepareSample "
+%ignore simuPOP::randomSample::prepareSample(population &pop);
 
-Description:
-
-    value checking
-
-Usage:
-
-    x.prepareSample(pop)
-
-"; 
-
-%feature("docstring") simuPOP::randomSample::drawsample "
-
-Description:
-
-    simuPOP::randomSample::drawsample
-
-Usage:
-
-    x.drawsample(pop)
-
-"; 
+%ignore simuPOP::randomSample::drawsample(population &pop);
 
 %feature("docstring") simuPOP::randomSample::__repr__ "
 
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  randomSample operator
 
 Usage:
 
@@ -8881,8 +8843,7 @@ Usage:
 
 Description:
 
-    Random number generator
-    ///////////////////////////////////////////////////////////.
+    simuPOP::RNG
 
 "; 
 
@@ -8890,8 +8851,7 @@ Description:
 
 Description:
 
-    Random number generator
-    ///////////////////////////////////////////////////////////.
+    simuPOP::RNG::RNG
 
 Usage:
 
@@ -9156,8 +9116,32 @@ Usage:
 
 Description:
 
-    sample operator will generate a new subpopulation in pop
-    namespace.
+    basic class of other  sample operator
+
+Details:
+
+    Ascertainment/sampling refers to ways to select individuals from a
+    population. In  simuPOP, ascerntainment operators form separate
+    populations in a population's namespace. All the ascertainment
+    operators work like this except for  pySubset which shrink the
+    population itself.
+    Individuals in sampled populations may or may not keep their
+    original order but their indices in the whole  population are
+    stored in a information field oldindex. That is to say, you can
+    use ind.info('oldindex') to check the original position of an
+    individual.
+    Two forms of  sample size specification are supported: with or
+    without subpopulation structure. For example, the size parameter
+    of  randomSample can be a number or an array (which has the length
+    of the number of subpopulations). If a number is given, a  sample
+    will be drawn from the whole  population, regardless of the
+    population structure. If an array is given, individuals will be
+    drawn from each subpopulation sp according to size[sp].
+    An important special case of  sample size specification occurs
+    when size=[] (default). In this case, usually all qualified
+    individuals will be returned.
+    The function forms of these operators are a little different from
+    others. They do return a value: an array of samples.
 
 "; 
 
@@ -9165,7 +9149,7 @@ Description:
 
 Description:
 
-    create a  sample
+    draw a  sample
 
 Usage:
 
@@ -9175,18 +9159,26 @@ Usage:
 
 Arguments:
 
-    name:           variable name of the sampled  population (will be
-                    put in pop local namespace)
-    nameExpr:       expression version of name. If both name and
-                    nameExpr is empty, do not store pop.
-    times:          how many times to run the  sample process? This is
-                    usually one, but we may want to take several
+    name:           name of the  sample in local namespace. This
+                    variable is an array of populations of size times.
+                    Default to  sample. If name='' is set, samples
+                    will not be saved in local namespace.
+    nameExpr:       expression version of parameter name. If both name
+                    and nameExpr are empty, do not store pop. This
+                    expression will be evaluated dynamically in
+                    population's local namespace.
+    times:          how many times to  sample from the  population.
+                    This is usually 1, but we may want to take several
                     random samples.
-    saveAs:         filename to save the  population.
-    saveAsExpr:     expression for save filename
-    format:         to save sample(s)
-    stage:          and other parameters please see
-                    help(baseOperator.__init__)
+    saveAs:         filename to save the samples
+    saveAsExpr:     expression version of parameter saveAs. It will be
+                    evaluated dynamically in population's local
+                    namespace.
+    format:         format to save the samples
+
+Details:
+
+    Please refer to baseOperator::__init__ for other parameters.
 
 "; 
 
@@ -9206,7 +9198,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  sample operator
 
 Usage:
 
@@ -9214,29 +9206,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::sample::prepareSample "
+%ignore simuPOP::sample::prepareSample(population &);
 
-Description:
-
-    simuPOP::sample::prepareSample
-
-Usage:
-
-    x.prepareSample()
-
-"; 
-
-%feature("docstring") simuPOP::sample::drawsample "
-
-Description:
-
-    simuPOP::sample::drawsample
-
-Usage:
-
-    x.drawsample(pop)
-
-"; 
+%ignore simuPOP::sample::drawsample(population &pop);
 
 %feature("docstring") simuPOP::sample::samples "
 
@@ -9254,8 +9226,7 @@ Usage:
 
 Description:
 
-    apply to one  population. It does not check if the operator is
-    activated.
+    apply the  sample operator
 
 Usage:
 
@@ -9268,7 +9239,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  sample operator
 
 Usage:
 
@@ -9280,7 +9251,7 @@ Usage:
 
 Description:
 
-    save the idx of each  individual to a filed usually 'oldindex'
+    save the index of each  individual to a field (usually oldindex)
 
 Usage:
 
@@ -9292,7 +9263,7 @@ Usage:
 
 Description:
 
-    reset father_idx and mother_idx using the samed
+    reset father_idx and mother_idx
 
 Usage:
 
@@ -9318,7 +9289,7 @@ Usage:
 
 Description:
 
-    set all sub pop id to -1 (remove)
+    set all subpopulation IDs to -1 (remove)
 
 Usage:
 
@@ -9593,6 +9564,8 @@ Usage:
 
 %ignore simuPOP::SharedVariables::SharedVariables();
 
+%ignore simuPOP::SharedVariables::SharedVariables(const SharedVariables &rhs);
+
 %ignore simuPOP::SharedVariables::swap(SharedVariables &rhs);
 
 %feature("docstring") simuPOP::SharedVariables::~SharedVariables "
@@ -9628,7 +9601,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::SharedVariables::removeVar(const string &name);
+%feature("docstring") simuPOP::SharedVariables::removeVar "
+
+Description:
+
+    remove variable
+
+Usage:
+
+    x.removeVar(name)
+
+"; 
 
 %ignore simuPOP::SharedVariables::setBoolVar(const string &name, const bool val);
 
@@ -9672,7 +9655,17 @@ Usage:
 
 %ignore simuPOP::SharedVariables::asString() const;
 
-%ignore simuPOP::SharedVariables::fromString(const string &vars);
+%feature("docstring") simuPOP::SharedVariables::fromString "
+
+Description:
+
+    simuPOP::SharedVariables::fromString
+
+Usage:
+
+    x.fromString(vars)
+
+"; 
 
 %feature("docstring") simuPOP::simulator "
 
@@ -10346,7 +10339,7 @@ Usage:
 
 Description:
 
-    simuPOP::stat
+    calculate statistics
 
 "; 
 
@@ -10354,105 +10347,246 @@ Description:
 
 Description:
 
-    create an  stat
+    create an  stat operator
 
 Usage:
 
-    stat(popSize=False, numOfMale=False, numOfAffected=False,
-      numOfAlleles=[], numOfAlleles_param=strDict, alleleFreq=[],
-      alleleFreq_param=strDict, heteroFreq=[], expHetero=[],
-      expHetero_param=strDict, homoFreq=[], genoFreq=[],
-      haploFreq=intMatrix, LD=intMatrix, LD_param=strDict,
-      association=intMatrix, association_param=strDict, Fst=[],
-      Fst_param=strDict, relGroups=intMatrix, relLoci=[],
-      rel_param=strDict, relBySubPop=False, relMethod=[],
+    stat(popSize=False, numOfMale=False, numOfMale_param={},
+      numOfAffected=False, numOfAffected_param={}, numOfAlleles=[],
+      numOfAlleles_param={}, alleleFreq=[], alleleFreq_param={},
+      heteroFreq=[], expHetero=[], expHetero_param={}, homoFreq=[],
+      genoFreq=[], haploFreq=[], LD=[], LD_param={}, association=[],
+      association_param={}, Fst=[], Fst_param={}, relGroups=[],
+      relLoci=[], rel_param={}, relBySubPop=False, relMethod=[],
       relMinScored=10, hasPhase=False, midValues=False, output=\"\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
 Arguments:
 
-    popSize:        whether or not calculate  population sizes. will
-                    set numSubPop, subPopSize, popSize,
-                    subPop[sp]['popSize']
-    numOfMale:      whether or not count number of male and female,
-                    will set numOfMale and numOfFemale for all
-                    population/subpopulations
-    numOfAffected:  whether or not count number of affected
-                    individuals. Will set numOfAffected, and
-                    numOfUnaffected.
-    numOfAlleles:   an array of loci at which number of alleles will
-                    be counted (0 is excluded). Note that number of
-                    alleles will be automatically set if alleleFreq is
-                    counted.
-    alleleFreq:     an array of loci at which all alleles will be
-                    counted.
-    genoFreq:       an array of loci at which all genotype will be
-                    counted
-    heteroFreq:     an array of loci at which the observed proportion
-                    of individuausl heterozygous will be applyd for
-                    each allele. Expected heterozygosity will also be
-                    calculuate and put in heteroFreq[locus][0] (since
-                    allele 0 is not used.)
-    homoFreq:       an array of loci at which homozygosity number and
-                    frequcies will be calculated
-    expHetero:      an array of loci at which expected heterozygosity
-                    will be calculated.
-    haploFreq:      a matrix of haplotypes (allele sequence) to count
-    LD:             apply LD, LD' and r2, given LD=[ [locus1 locus2],
-                    [ locus1 locus2 allele1 allele2], ,...] If two
-                    numbers are given, D, D' and r2 overall possible
-                    allele pairs will be calculated and saved as AvgLD
-                    etc. If four numbers are given, D, D' and r2 using
-                    specified alleles are provided. If only one item
-                    is specified, the outer [] can be ignored. I.e.,
-                    LD=[locus1 locus2] is acceptable.
-    LD_param:       
-    ::              a dictionary of parameters to LD statistics. Can
-                    have key  stat: a list of statistics to calculate.
-                    default to all. if any statistics is specified,
-                    only those specified will be calculated. i.e.:
-                    LD_param={'stat':['LD']} LD: True/False, shortcut
-                    for 'stat':['LD'] LD_prime: True/False, shortcut
-                    for 'stat':['LD_prime'] ... subPop: True/False:
-                    whether or not calculate statistics for
-                    subpopulations midValues: True/False: whether or
-                    not keep intermediate results
-    Fst:            calculate Fst. Fis and Fit will be given as a side
-                    product.
-    relGroups:      calculated pairwise relatedness between groups.
-                    relGroups can be in the form of either
-                    [[1,2,3],[4,5],[7,8]] (gourps of individuals) or
-                    [1,3,4] (use subpopulations).
-    relMethod:      method used to calculate relatedness. Can be
-                    either REL_Queller or REL_Lynch.
-    relLoci:        loci on which relatedness calues are calculated.
-    hasPhase:       if a/b and b/a are the same genotype. default is
-                    false.
-    midValues:      whether or not post intermediate results. Default
-                    to false. For example, Fst will need to calculate
-                    allele frequency, if midValues is set to true,
-                    allele frequencies will be posted as well. This
-                    will help debuging and sometimes derived
+    popSize:        whether or not calculate  population sizes. This
+                    parameter will set the following variables:
+                    * numSubPop the number of subpopulations
+                    * subPopSize an array of subpopulation sizes. Not
+                    available for subpopulations.
+                    * popSize, subPop[sp]['popSize']
+                    population/subpopulation size.
+    numOfMale:      whether or not count the numbers/proportions of
+                    males and females. This parameter can set the
+                    following variables by user's specification:
+                    * numOfMale, subPop[sp]['numOfMale'] the number of
+                    males in the population/subpopulation
+                    * numOfFemale, subPop[sp]['numOfFemale'] the
+                    number of females in the population/subpopulation.
+                    * propOfMale, subPop[sp]['propOfMale'] the
+                    proportion of males in the
+                    population/subpopulation
+                    * propOfFemale, subPop[sp]['propOfFemale'] the
+                    proportion of females in the
+                    population/subpopulation
+    numOfMale_param:a dictionary of parameters of numOfMale
                     statistics.
-    others:         there is NO output for this operator. other
-                    parameters please see help(baseOperator.__init__)
+    numOfAffected:  whether or not count the numbers/proportions of
+                    affected and unaffected individuals. This
+                    parameter can set the following variables by
+                    user's specification:
+                    * numOfAffected, subPop[sp]['numOfAffected'] the
+                    number of affected individuals in the
+                    population/subpopulation
+                    * numOfUnaffected, subPop[sp]['numOfUnAffected']
+                    the number of unaffected individuals in the
+                    population/subpopulation
+                    * propOfAffected, subPop[sp]['propOfAffected'] the
+                    proportion of affected individuals in the
+                    population/subpopulation
+                    * propOfUnaffected, subPop[sp]['propOfUnAffected']
+                    the proportion of unaffected individuals in the
+                    population/subpopulation
+    numOfAffected_param:a dictionary of parameters of numOfAffected
+                    statistics.
+    numOfAlleles:   an array of loci at which the numbers of distinct
+                    alleles will be counted (numOfAlleles=[loc1, loc2,
+                    ...] where loc1 etc. are absolute locus indices).
+                    This is done through the calculation of allele
+                    frequencies. Therefore, allele frequencies will
+                    also be calculated if this statistics is
+                    requested. This parameter will set the following
+                    variables (carray objects of the numbers of
+                    alleles for allloci. Unrequested loci will have 0
+                    distinct alleles.):
+                    * numOfAlleles, subPop[sp]['numOfAlleles'], number
+                    of distinct alleles at each locus. (Calculated
+                    only at requested loci.)
+    numOfAlleles_param:a dictionary of parameters of numOfAlleles
+                    statistics.
+    alleleFreq:     an array of loci at which all allele frequencies
+                    will be calculated (alleleFreq=[loc1, loc2, ...]
+                    where loc1 etc. are loci where allele frequencies
+                    will be calculated). This parameter will set the
+                    following variables (carray objects); for example,
+                    alleleNum[1][2] will be the number of allele 2 at
+                    locus 1:
+                    * alleleNum[a], subPop[sp]['alleleNum'][a]
+                    * alleleFreq[a], subPop[sp]['alleleFreq'][a].
+    alleleFreq_param:a dictionary of parameters of alleleFreq
+                    statistics.
+    genoFreq:       an array of loci at which all genotype frequencies
+                    will be calculated (genoFreq=[loc1, loc2, ...]
+                    where loc1 etc. are loci where genotype
+                    frequencies will be calculated). All the genotypes
+                    in the  population will be counted. You may use
+                    hasPhase to set if a/b and b/a are the same
+                    genotype. This parameter will set the following
+                    dictionary variables. Note that unlike list used
+                    for alleleFreq etc., the indices a, b of
+                    genoFreq[a][b] are dictionary keys, so you will
+                    get a KeyError when you used a wrong key. Usually,
+                    genoNum.setDefault(a,{}) is preferred.
+                    * genoNum[a][geno] and
+                    subPop[sp]['genoNum'][a][geno], the number of
+                    genotype geno at allele a. geno has the form x-y.
+                    * genoFreq[a][geno] and
+                    subPop[sp]['genoFreq'][a][geno], the frequency of
+                    genotype geno at allele a.
+    heteroFreq:     an array of loci to calaulate observed
+                    heterozygosities and expected heterozygosities
+                    (heteroFreq=[loc1, loc2, ...]). This parameter
+                    will set the following variables (arrays of
+                    observed heterozygosities). Note that
+                    heteroNum[loc][1] is the number of heterozygote
+                    1x, x is not 1. Numbers and frequencies
+                    (proportions) of heterozygotes are calculated for
+                    each allele. HeteroNum[loc] and HeterFreq[loc] are
+                    the overall heterozygosity number and frequency.
+                    I.e., the number/frequency of genotype xy, x is
+                    not equal to y. From this number, we can easily
+                    derive the number of homozygosity.
+                    * HeteroNum[loc], subPop[sp]['HeteroNum'][loc],
+                    the overall heterozygote number
+                    * HeteroFreq[loc], subPop[sp]['HeteroFreq'][loc],
+                    the overall heterozygote frequency
+                    * heteroNum[loc][allele],
+                    subPop[sp]['heteroNum'][loc][allele]
+                    * heteroFreq[loc][allele],
+                    subPop[sp]['heteroFreq'][loc][allele]
+    homoFreq:       an array of loci to calaulate observed
+                    homozygosities and expected homozygosities
+                    (homoFreq=[loc1, loc2, ...]). This parameter will
+                    calculate the numbers and frequencies of
+                    homozygotes xx and set the following variables:
+                    * homoNum[loc], subPop[sp]['homoNum'][loc],
+                    * homoFreq[loc], subPop[sp]['homoFreq'][loc].
+    expHetero:      an array of loci at which the expected
+                    heterozygosities will be calculated
+                    (expHetero=[loc1, loc2, ...]). The following
+                    variables will be set:
+                    * expHetero[loc], subPop[sp]['expHetero'][loc].
+    expHetero_param:a dictionary of parameters of expHetero
+                    statistics.
+    haploFreq:      a matrix of haplotypes (allele sequences on
+                    different loci) to count. For example, haploFreq =
+                    [ [ 0,1,2 ], [1,2] ] will count all haplotypes on
+                    loci 0,1 and 2; and all haplotypes on loci 1, 2.
+                    If only one haplotype is specified, the outer []
+                    can be omitted. I.e., haploFreq=[0,1] is
+                    acceptable. The following dictionary variables
+                    will be set with keys 0-1-2 etc. For example,
+                    haploNum['1-2']['5-6'] is the number of allele
+                    pair 5,6 (on loci 1 and 2 respectively) in the
+                    population.
+                    * haploNum[haplo] and
+                    subPop[sp]['haploNum'][haplo], the number of
+                    allele sequencies on loci haplo.
+                    * haploFreq[haplo],
+                    subPop[sp]['haploFreq'][haplo], the frequency of
+                    allele sequencies on loci haplo.
+    LD:             calculate linkage disequilibria LD, LD' and r2,
+                    given LD=[ [loc1, loc2], [ loc1, loc2, allele1,
+                    allele2], ... ] For each item [loc1, loc2,
+                    allele1, allele2], D, D' and r2 will be calculated
+                    based on allele1 at loc1 and allele2 at loc2. If
+                    only two loci are given, the LD values are
+                    averaged over all allele pairs. If only one item
+                    is specified, the outer [] can be ignored. I.e.,
+                    LD=[loc1, loc2] is acceptable. This parameter will
+                    set the following variables. Please note that the
+                    difference between the data structures used for ld
+                    and LD.
+                    * ld['loc1-loc2']['allele1-allele2'],
+                    subPop[sp]['ld']['loc1-loc2']['allele1-allele2']
+                    * ld_prime['loc1-loc2']['allele1-allele2'],
+                    subPop[sp]['ld_prime']['loc1-loc2']['allele1-
+                    allele2']
+                    * r2['loc1-loc2']['allele1-allele2'],
+                    subPop[sp]['r2']['loc1-loc2']['allele1-allele2']
+                    * LD[loc1][loc2], subPop[sp]['LD'][loc1][loc2]
+                    * LD_prime[loc1][loc2],
+                    subPop[sp]['LD_prime'][loc1][loc2]
+                    * R2[loc1][loc2], subPop[sp]['R2'][loc1][loc2]
+    LD_param:       a dictionary of parameters of LD statistics. Can
+                    have key  stat which is a list of statistics to
+                    calculate. Default to all. If any statistics is
+                    specified, only those specified will be
+                    calculated. For example, you may use
+                    LD_param={LD_prime} to calculate D' only, where
+                    LD_prime is a shortcut for 'stat':['LD_prime'].
+                    Other parameters that you may use are:
+                    * subPop, whether or not calculate statistics for
+                    subpopulations
+                    * midValues, whether or not keep intermediate
+                    results.
+    association:    association measures
+    association_param:a dictionary of parameters of association
+                    statistics.
+    Fst:            calculate Fst, Fis, Fit. For example, Fst =
+                    [0,1,2] will calculate Fst, Fis, Fit based on
+                    alleles at loci 0, 1, 2. The locus-specific values
+                    will be used to calculate AvgFst, which is an
+                    average value over all alleles (Weir and
+                    Cockerham, 1984). This parameter will set the
+                    following variables:
+                    * Fst[loc], Fis[loc], Fit[loc]
+                    * AvgFst, AvgFis, AvgFit.
+    Fst_param:      a dictionary of parameters of Fst statistics.
+    relMethod:      method used to calculate relatedness. Can be
+                    either REL_Queller or REL_Lynch. The relatedness
+                    values between two individuals, or two groups of
+                    individuals are calculated according to Queller &
+                    Goodnight (1989) (method=REL_Queller) and Lynch et
+                    al. (1999) (method=REL_Lynch). The results are
+                    pairwise relatedness values, in the form of a
+                    matrix. Original group or subpopulation numbers
+                    are discarded. relatedness[grp1][grp2] is the
+                    relatedness value between grp1 and grp2. There is
+                    no subpop level relatedness values.
+    relGroups:      calculate pairwise relatedness between groups. Can
+                    be in the form of either [[1,2,3],[5,6,7],[8,9]]
+                    or [2,3,4]. The first one specifies groups of
+                    individuals, while the second specifies
+                    subpopulations. By default, relatedness between
+                    subpopulations is calculated.
+    relLoci:        loci on which relatedness values are calculated
+    rel_param:      a dictionary of parameters of relatedness
+                    statistics.
+    hasPhase:       if a/b and b/a are the same genotype. Default to
+                    False.
+    midValues:      whether or not post intermediate results. Default
+                    to False. For example, Fst will need to calculate
+                    allele frequencise. If midValues is set to True,
+                    allele frequencies will be posted as well. This
+                    will be helpful in debugging and sometimes in
+                    deriving statistics.
 
 Details:
 
-    each item is the locus index followed by allele pairs. format:
-    haploFreq = [ [ 0,1,2 ], [1,2] ]All haplotypes on loci 012, 12
-    will be counted. If only one haplotype is specified, the outer []
-    can be ommited. I.e., haploFreq=[0,1] is acceptable. format Fst =
-    [ 0, 1 ] Fst calculated at locus 0 and 1. Since any allele can be
-    used to calculate Fst, Fst[0] will be the average over all alleles
-    as suggested by Weir and Cockerham.
-
-Note:
-
-    previous provide 'search for all allele/genotype' option but this
-    has proven to be troublesome. In this version, everything should
-    be explicitly specified.
+    Operator stat calculatse various basic statistics for the
+    population and sets variables in the local namespace. Other
+    operators/functions can refer to the results from the namespace
+    after  stat is applied. Stat is the function form of the
+    operator.Note that these statistics are dependent to each other.
+    For example, heterotype and allele frequencies of related loci
+    will be automatically calculated if linkage diseqilibrium is
+    requested.
 
 "; 
 
@@ -10472,7 +10606,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  stat operator
 
 Usage:
 
@@ -10484,8 +10618,7 @@ Usage:
 
 Description:
 
-    count various statistics. use m_alleles etc to save (potentially)
-    time to resize all these variables.
+    apply the  stat operator
 
 Usage:
 
@@ -10498,7 +10631,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  stat operator
 
 Usage:
 
@@ -10516,7 +10649,7 @@ Description:
 
 Usage:
 
-    statAlleleFreq(atLoci=[], param=strDict)
+    statAlleleFreq(atLoci=[], param={})
 
 "; 
 
@@ -10662,8 +10795,7 @@ Description:
 
 Usage:
 
-    statAssociation(alleleFreq, haploFreq, Association=intMatrix,
-      param=strDict)
+    statAssociation(alleleFreq, haploFreq, Association=[], param={})
 
 "; 
 
@@ -10689,7 +10821,7 @@ Description:
 
 Usage:
 
-    statExpHetero(alleleFreq, expHetero=[], param=strDict)
+    statExpHetero(alleleFreq, expHetero=[], param={})
 
 "; 
 
@@ -10715,7 +10847,7 @@ Description:
 
 Usage:
 
-    statFst(alleleFreq, heteroFreq, Fst=[], param=strDict)
+    statFst(alleleFreq, heteroFreq, Fst=[], param={})
 
 "; 
 
@@ -10783,14 +10915,13 @@ Usage:
 
 %feature("docstring") simuPOP::statGenoFreq::apply "
 
+Description:
+
+    simuPOP::statGenoFreq::apply
+
 Usage:
 
     x.apply(pop)
-
-Details:
-
-    go through a single allele for all  individual, all diploidneed to
-    replace previous values
 
 "; 
 
@@ -10804,7 +10935,7 @@ Description:
 
 Usage:
 
-    statHaploFreq(haploFreq=intMatrix)
+    statHaploFreq(haploFreq=[])
 
 "; 
 
@@ -10952,7 +11083,7 @@ Description:
 
 Usage:
 
-    statLD(alleleFreq, haploFreq, LD=intMatrix, LD_param=strDict)
+    statLD(alleleFreq, haploFreq, LD=[], LD_param={})
 
 "; 
 
@@ -10978,7 +11109,7 @@ Description:
 
 Usage:
 
-    statNumOfAffected(numOfAffected=False)
+    statNumOfAffected(numOfAffected=False, param={})
 
 "; 
 
@@ -11052,7 +11183,7 @@ Description:
 
 Usage:
 
-    statNumOfAlleles(calc, atLoci=[], param=strDict)
+    statNumOfAlleles(calc, atLoci=[], param={})
 
 "; 
 
@@ -11090,7 +11221,7 @@ Description:
 
 Usage:
 
-    statNumOfMale(numOfMale=False)
+    statNumOfMale(numOfMale=False, param={})
 
 "; 
 
@@ -11146,13 +11277,14 @@ Usage:
 
 Description:
 
-    NOTE: the default output for  stator is \"\", i.e., no output i.e.,
-    stator will write to shared variables and unless specified by
-    output=\">\" etc, no output will be generated.
+    basic class of all the statistics
 
 Details:
 
-    this class will also list ALL statistics and its names?
+    Operator stator calculate various basic statistics for the
+    population and set variables in the local namespace. Other
+    operators/functions can refer to the results from the namespace
+    after  stat is applied. Stat is the function form of the operator.
 
 "; 
 
@@ -11160,9 +11292,7 @@ Details:
 
 Description:
 
-    constructor. default to be always active. default to have NO
-    output (shared variables will be set.) phase: if we treat Aa!=aA,
-    default is false, i.e, Aa=aA.
+    create a  stator
 
 Usage:
 
@@ -11187,7 +11317,7 @@ Usage:
 
 Description:
 
-    this function is very important
+    deep copy of a  stator
 
 Usage:
 
@@ -11243,8 +11373,8 @@ Description:
 
 Usage:
 
-    statRelatedness(alleleFreq, groups=intMatrix, useSubPop=False,
-      loci=[], method=[], minScored=10, param=strDict)
+    statRelatedness(alleleFreq, groups=[], useSubPop=False, loci=[],
+      method=[], minScored=10, param={})
 
 Arguments:
 
@@ -11365,45 +11495,15 @@ Usage:
 
 %ignore simuPOP::StreamElem;
 
-%feature("docstring") simuPOP::StreamElem::StreamElem "
+%ignore simuPOP::StreamElem::StreamElem(const string &name, bool readable, bool realAppend, bool useString);
 
-Description:
-
-    Stream element, can be of different types
-    ///////////////////////////////////////////////////////////.
-
-Usage:
-
-    StreamElem(name, readable, realAppend, useString)
-
-Arguments:
-
-    name:           filename
-    readable:       iostream or just ostream
-    realAppend:     whether or not keep old content when open an
-                    existing file
-    useString:      use a stringstream rather than a file.
-
-"; 
-
-%feature("docstring") simuPOP::StreamElem::StreamElem "
-
-Description:
-
-    copy constructor, we need to clear rhs.m_stream to avoid closing
-    file too early this is techniquely advanced (and dangerous)
-
-Usage:
-
-    StreamElem(rhs)
-
-"; 
+%ignore simuPOP::StreamElem::StreamElem(const StreamElem &rhs);
 
 %feature("docstring") simuPOP::StreamElem::~StreamElem "
 
 Description:
 
-    destructor
+    destructor. Close stream and delete m_stream pointer.
 
 Usage:
 
@@ -11411,29 +11511,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::StreamElem::makeReadable "
+%ignore simuPOP::StreamElem::makeReadable();
 
-Description:
-
-    the file was write-only, re-open it as read-write
-
-Usage:
-
-    x.makeReadable()
-
-"; 
-
-%feature("docstring") simuPOP::StreamElem::makeAppend "
-
-Description:
-
-    change the append status
-
-Usage:
-
-    x.makeAppend(append)
-
-"; 
+%ignore simuPOP::StreamElem::makeAppend(bool append);
 
 %ignore simuPOP::StreamElem::stream();
 
@@ -11445,18 +11525,7 @@ Usage:
 
 %ignore simuPOP::StreamProvider;
 
-%feature("docstring") simuPOP::StreamProvider::StreamProvider "
-
-Description:
-
-    Stream provider
-    ///////////////////////////////////////////////////////////.
-
-Usage:
-
-    StreamProvider(output, outputExpr)
-
-"; 
+%ignore simuPOP::StreamProvider::StreamProvider(const string &output, const string &outputExpr);
 
 %feature("docstring") simuPOP::StreamProvider::~StreamProvider "
 
@@ -11476,17 +11545,7 @@ Usage:
 
 %ignore simuPOP::StreamProvider::getOstream(PyObject *dict=NULL, bool readable=false);
 
-%feature("docstring") simuPOP::StreamProvider::closeOstream "
-
-Description:
-
-    close ostream and delete ostream pointer.. if it is a ofstream.
-
-Usage:
-
-    x.closeOstream()
-
-"; 
+%ignore simuPOP::StreamProvider::closeOstream();
 
 %feature("docstring") simuPOP::SystemError "
 
@@ -11512,14 +11571,15 @@ Usage:
 
 Description:
 
-    tagger is a during  mating operator that tag  individual with
-    various information. Potential usages are 1. record parenting
-    information to track pedigree. 2. tag a individual/allele and
-    monitor its  spread in the  population etc. 3...
+    basic class of tagging individuals
 
 Details:
 
-    Bo Peng
+    tagger is a during  mating operator that tag individuals with
+    various information. Potential usages are:
+    * recording parental information to track pedigree;
+    * tagging an individual/allele and monitor its  spread in the
+    population etc.
 
 "; 
 
@@ -11527,7 +11587,7 @@ Details:
 
 Description:
 
-    constructor. default to be always active but no output.
+    create a  tagger, default to be always active but no output
 
 Usage:
 
@@ -11552,7 +11612,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a \\\\  tagger
 
 Usage:
 
@@ -11564,13 +11624,18 @@ Usage:
 
 Description:
 
-    terminate according to a condition which can be, e.g.
-    any(alleleNum0) == 0 all(alleleNum1) > 0.5 alleleNum0{2} == 0 etc.
+    terminate according to a condition
 
 Details:
 
+    This operator terminates the evolution under certain conditions.
+    For example,  terminateIf(condition='alleleFreq[0][1]<0.05',
+    begin=100) terminates the evolution if the allele frequency of
+    allele 1 at locus 0 is less than 0.05. Of course, to make this
+    opertor work, you will need to use a  stat operator before it so
+    that variable alleleFreq exists in the local namespace.
     When the condition is true, a shared variable var=\"terminate\" will
-    be set to current generation.
+    be set to the current generation.
 
 "; 
 
@@ -11578,7 +11643,7 @@ Details:
 
 Description:
 
-    simuPOP::terminateIf::terminateIf
+    create a  terminateIf terminator
 
 Usage:
 
@@ -11592,7 +11657,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a  terminateIf terminator
 
 Usage:
 
@@ -11605,7 +11670,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator
+    of the  terminateIf terminator
 
 Usage:
 
@@ -11617,7 +11682,7 @@ Usage:
 
 Description:
 
-    check all alleles in vector allele if they are fixed.
+    apply the  terminateIf terminator
 
 Usage:
 
@@ -11641,7 +11706,13 @@ Usage:
 
 Description:
 
-    simuPOP::terminator
+    terminate the evolution
+
+Details:
+
+    These operators are used to see if an evolution is running as
+    expected, and terminate the evolution if a certain condition
+    fails.
 
 "; 
 
@@ -11649,7 +11720,7 @@ Description:
 
 Description:
 
-    constructor. default to be always active.
+    create a  terminator, default to be always active
 
 Usage:
 
@@ -11675,7 +11746,7 @@ Usage:
 
 Description:
 
-    deep copy of an operator
+    deep copy of a  terminator
 
 Usage:
 
@@ -11687,7 +11758,7 @@ Usage:
 
 Description:
 
-    simuPOP::terminator::message
+    return the message to print when terminated???
 
 Usage:
 
@@ -11992,7 +12063,7 @@ Usage:
 
 Description:
 
-    FIXME: consider adopting R's implementation. They may be quicker.
+    simuPOP::Weightedsampler::set
 
 Usage:
 
@@ -12048,7 +12119,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::countAlleles(population &pop, int subpop, const vectori &loci, const vectori &alleles, vectorlu &alleleNum);
+%ignore simuPOP::countAlleles(population &pop, int subpop, const vectori &loci, const vectori &alleles, vectorlu &numAllele);
 
 %ignore simuPOP::getExpectedAlleles(population &pop, vectorf &expFreq, const vectori &loci, const vectori &alleles, vectoru &expAlleles);
 
@@ -12060,17 +12131,24 @@ Description:
 
 Usage:
 
-    FreqTrajectoryStoch(curGen, freq, N, *NtFunc, fitness,
-      *fitnessFunc, minMutAge, maxMutAge, ploidy, restartIfFail,
-      maxAttempts, allowFixation)
+    FreqTrajectoryStoch(curGen=0, freq=0, N=0, *NtFunc=NULL,
+      fitness=[], *fitnessFunc=NULL, minMutAge=0, maxMutAge=100000,
+      ploidy=2, restartIfFail=False, maxAttempts=1000,
+      allowFixation=False)
 
 "; 
 
-%ignore simuPOP::fitOfGeno(unsigned loc, const vectori &allgeno, const vectorf &fitness, const vectorf::const_iterator &freq);
+%feature("docstring") simuPOP::MarginalFitness "
 
-%ignore simuPOP::interFitness(unsigned nLoci, const vectorf &fitness, const vectorf::const_iterator &freq, vectorf &sAll);
+Description:
 
-%ignore simuPOP::MarginalFitness(unsigned nLoci, const vectorf &fitness, const vectorf &freq);
+    simuPOP::MarginalFitness
+
+Usage:
+
+    MarginalFitness(nLoci, fitness, freq)
+
+"; 
 
 %feature("docstring") simuPOP::FreqTrajectoryMultiStoch "
 
@@ -12080,9 +12158,9 @@ Description:
 
 Usage:
 
-    FreqTrajectoryMultiStoch(curGen, freq, N, *NtFunc, fitness,
-      *fitnessFunc, minMutAge, maxMutAge, ploidy, restartIfFail,
-      maxAttempts)
+    FreqTrajectoryMultiStoch(curGen=0, freq=[], N=0, *NtFunc=NULL,
+      fitness=[], *fitnessFunc=NULL, minMutAge=0, maxMutAge=100000,
+      ploidy=2, restartIfFail=False, maxAttempts=1000)
 
 "; 
 
@@ -12119,7 +12197,7 @@ Description:
 
 Usage:
 
-    LoadPopulation(file, format)
+    LoadPopulation(file, format=\"auto\")
 
 "; 
 
@@ -12155,7 +12233,7 @@ Description:
 
 Usage:
 
-    LoadSimulator(file, mate, format)
+    LoadSimulator(file, mate, format=\"auto\")
 
 "; 
 
@@ -12169,7 +12247,7 @@ Description:
 
 Usage:
 
-    TurnOnDebug(code)
+    TurnOnDebug(code=DBG_ALL)
 
 "; 
 
@@ -12193,7 +12271,7 @@ Description:
 
 Usage:
 
-    TurnOffDebug(code)
+    TurnOffDebug(code=DBG_ALL)
 
 "; 
 
@@ -12213,9 +12291,21 @@ Usage:
 
 %ignore simuPOP::dbgString(DBG_CODE code);
 
-%ignore simuPOP::simuPOP_kbhit(void);
+%ignore simuPOP::simuPOP_kbhit();
 
 %ignore simuPOP::simuPOP_getch();
+
+%feature("docstring") simuPOP::testGappedIterator "
+
+Description:
+
+    simuPOP::testGappedIterator
+
+Usage:
+
+    testGappedIterator()
+
+"; 
 
 %ignore simuPOP::PyObj_As_Bool(PyObject *obj, bool &val);
 
@@ -12225,11 +12315,11 @@ Usage:
 
 %ignore simuPOP::PyObj_As_String(PyObject *obj, string &val);
 
-%ignore simuPOP::PyObj_As_StrDict(PyObject *obj, strDict &val);
-
 %ignore simuPOP::PyObj_As_Array(PyObject *obj, vectorf &val);
 
 %ignore simuPOP::PyObj_As_IntArray(PyObject *obj, vectori &val);
+
+%ignore simuPOP::PyObj_As_StrDict(PyObject *obj, strDict &val);
 
 %ignore simuPOP::PyObj_As_IntDict(PyObject *obj, intDict &val);
 
@@ -12250,42 +12340,6 @@ Usage:
 %ignore simuPOP::NumArray_Size(PyObject *obj);
 
 %ignore simuPOP::NumArray_Data(PyObject *obj);
-
-%ignore simuPOP::save_none(string &str);
-
-%ignore simuPOP::load_none(const string &str, size_t &offset);
-
-%ignore simuPOP::save_int(string &str, PyObject *args);
-
-%ignore simuPOP::load_int(const string &str, size_t &offset);
-
-%ignore simuPOP::save_long(string &str, PyObject *args);
-
-%ignore simuPOP::load_long(const string &str, size_t &offset);
-
-%ignore simuPOP::save_float(string &str, PyObject *args);
-
-%ignore simuPOP::load_float(const string &str, size_t &offset);
-
-%ignore simuPOP::save_string(string &str, PyObject *args);
-
-%ignore simuPOP::load_string(const string &str, size_t &offset);
-
-%ignore simuPOP::saveObj(string &str, PyObject *args);
-
-%ignore simuPOP::loadObj(const string &vars, size_t &offset);
-
-%ignore simuPOP::save_dict(string &str, PyObject *args);
-
-%ignore simuPOP::load_dict(const string &vars, size_t &offset);
-
-%ignore simuPOP::save_list(string &str, PyObject *args);
-
-%ignore simuPOP::load_list(const string &vars, size_t &offset);
-
-%ignore simuPOP::save_tuple(string &str, PyObject *args);
-
-%ignore simuPOP::load_tuple(const string &vars, size_t &offset);
 
 %ignore simuPOP::mainVars();
 
@@ -12317,7 +12371,7 @@ Description:
 
 Usage:
 
-    SetRNG(r, seed)
+    SetRNG(rng=\"\", seed=0)
 
 "; 
 
@@ -12357,34 +12411,6 @@ Usage:
 
 "; 
 
-%ignore simuPOP::gsl_error_handler(const char *reason, const char *, int, int gsl_errno);
-
-%feature("docstring") simuPOP::g_cnull "
-
-Description:
-
-    null stream
-
-Usage:
-
-    g_cnull(g_nullStreamBuf)
-
-"; 
-
-%ignore simuPOP::cnull();
-
-%feature("docstring") simuPOP::setLogOutput "
-
-Description:
-
-    set standard output to (default standard Python output)
-
-Usage:
-
-    setLogOutput(filename)
-
-"; 
-
 %feature("docstring") simuPOP::simuRev "
 
 Description:
@@ -12408,6 +12434,56 @@ Usage:
     simuVer()
 
 "; 
+
+%feature("docstring") simuPOP::compileCompiler "
+
+Description:
+
+    simuPOP::compileCompiler
+
+Usage:
+
+    compileCompiler()
+
+"; 
+
+%feature("docstring") simuPOP::compileDate "
+
+Description:
+
+    simuPOP::compileDate
+
+Usage:
+
+    compileDate()
+
+"; 
+
+%feature("docstring") simuPOP::compilePyVersion "
+
+Description:
+
+    simuPOP::compilePyVersion
+
+Usage:
+
+    compilePyVersion()
+
+"; 
+
+%feature("docstring") simuPOP::compilePlatForm "
+
+Description:
+
+    simuPOP::compilePlatForm
+
+Usage:
+
+    compilePlatForm()
+
+"; 
+
+%ignore simuPOP::initialize();
 
 %feature("docstring") simuPOP::optimized "
 
@@ -12471,71 +12547,23 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::compileCompiler "
+%ignore simuPOP::cnull();
+
+%feature("docstring") simuPOP::setLogOutput "
 
 Description:
 
-    simuPOP::compileCompiler
+    set standard output to (default standard Python output)
 
 Usage:
 
-    compileCompiler()
-
-"; 
-
-%feature("docstring") simuPOP::compileDate "
-
-Description:
-
-    simuPOP::compileDate
-
-Usage:
-
-    compileDate()
-
-"; 
-
-%feature("docstring") simuPOP::compilePyVersion "
-
-Description:
-
-    simuPOP::compilePyVersion
-
-Usage:
-
-    compilePyVersion()
-
-"; 
-
-%feature("docstring") simuPOP::compilePlatForm "
-
-Description:
-
-    simuPOP::compilePlatForm
-
-Usage:
-
-    compilePlatForm()
+    setLogOutput(filename=\"\")
 
 "; 
 
 %ignore simuPOP::isGzipped(const string &filename);
 
 %ignore simuPOP::fileExtension(const string &filename);
-
-%ignore simuPOP::initialize();
-
-%feature("docstring") simuPOP::testGappedIterator "
-
-Description:
-
-    simuPOP::testGappedIterator
-
-Usage:
-
-    testGappedIterator()
-
-"; 
 
 %ignore std::pow3(unsigned n);
 
