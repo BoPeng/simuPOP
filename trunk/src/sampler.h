@@ -41,17 +41,18 @@ namespace simuPOP
 	// ///////////////////// SUBSET ///////////////////////////////////////////
 	// // ascertainment ........................................
 
-	/// thrink population accroding to some outside value
-
+	/// shrink population
+    /**
+    This operator shrinks a population according to a given array or the \c subPopID()
+    value of each indvidual. Subpopulations are kept intact.
+    */
 	class pySubset: public Operator
 	{
 
 		public:
-			/// create a directmigrator
+			/// create a \c pySubset operator
 			/**
-			\param keep a carray of the length of population.
-			its values will be assigned to info.
-			\stage and other parameters please see help(baseOperator.__init__)
+			\param keep an array of subpopulation IDs for each individual.
 			*/
 			pySubset(const vectori& keep=vectori(),
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -66,12 +67,13 @@ namespace simuPOP
 			{
 			}
 
-			/// this function is very important
+			/// deep copy of a \c pySubset operator
 			virtual Operator* clone() const
 			{
 				return new pySubset(*this);
 			}
 
+            /// apply the \c pySubset operator
 			virtual bool apply(population& pop)
 			{
 				DBG_ASSERT( m_keep.size() >= pop.popSize() ,
@@ -91,6 +93,7 @@ namespace simuPOP
 				return true;
 			}
 
+            /// used by Python print function to print out the general information of the \c pySubset operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::pySubset>" ;
@@ -100,24 +103,51 @@ namespace simuPOP
 			vectori m_keep;
 	};
 
-	/// sample from population and save samples
-
-	/// sample operator will generate a new subpopulation in pop namespace.
-
+	/// basic class of other sample operator
+    /**
+    Ascertainment/sampling refers to ways to select individuals from a population.
+    In simuPOP, ascerntainment operators form separate populations in a population's
+    namespace. All the ascertainment operators work like this except for \c pySubset
+    which shrink the population itself. \n
+    
+    Individuals in sampled populations may or may not keep their original order but
+    their indices in the whole population are stored in a information field \c oldindex.
+    That is to say, you can use <tt>ind.info('oldindex')</tt> to check the original
+    position of an individual. \n
+    
+    Two forms of sample size specification are supported: with or without subpopulation
+    structure. For example, the \c size parameter of \c randomSample can be a number
+    or an array (which has the length of the number of subpopulations). If a number
+    is given, a sample will be drawn from the whole population, regardless of the
+    population structure. If an array is given, individuals will be drawn from each
+    subpopulation \c sp according to <tt>size[sp]</tt>. \n
+    
+    An important special case of sample size specification occurs when <tt>size=[]</tt>
+    (default). In this case, usually all qualified individuals will be returned. \n
+    
+    The function forms of these operators are a little different from others.
+    They do return a value: an array of samples.
+    */
 	class sample: public Operator
 	{
 
 		public:
-			/// create a sample
+			/// draw a sample
 			/**
-			\param name variable name of the sampled population (will be put in pop local namespace)
-			\param nameExpr expression version of name. If both name and nameExpr is empty, do not store pop.
-			\param times how many times to run the sample process? This is usually one, but we
-			   may want to take several random samples.
-			\param saveAs filename to save the population.
-			\param saveAsExpr expression for save filename
-			\param format to save sample(s)
-			\param stage and other parameters please see help(baseOperator.__init__)
+			\param name name of the sample in local namespace. This variable is an array of
+                populations of size \c times. Default to \c sample. If <tt>name=''</tt> is set,
+                samples will not be saved in local namespace.
+			\param nameExpr expression version of parameter \c name. If both \c name and \c nameExpr
+                are empty, do not store \c pop. This expression will be evaluated dynamically
+                in population's local namespace.
+			\param times how many times to sample from the population. This is usually \c 1,
+                but we may want to take several random samples. 
+			\param saveAs filename to save the samples
+			\param saveAsExpr expression version of parameter \c saveAs. It will be evaluated
+                dynamically in population's local namespace.
+			\param format format to save the samples
+
+            Please refer to <tt>baseOperator::__init__</tt> for other parameters.			
 			*/
 			sample( const string& name="sample", const string& nameExpr="", UINT times=1,
 				const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
@@ -134,17 +164,19 @@ namespace simuPOP
 			/// destructor
 			virtual ~sample(){};
 
-			/// this function is very important
+			/// deep copy of a \c sample operator
 			virtual Operator* clone() const
 			{
 				return new sample(*this);
 			}
 
+			/// CPPONLY prepare the population for sampling. E.g., find out all affected individuals.
 			virtual bool prepareSample(population& )
 			{
 				return true;
 			}
 
+            /// CPPONLY draw a sample
 			virtual population& drawsample(population& pop)
 			{
 				// keep pop untouched.
@@ -156,22 +188,22 @@ namespace simuPOP
 			/// return the samples
 			PyObject* samples(population& pop);
 
+            /// apply the \c sample operator
 			virtual bool apply(population& pop);
 
+            /// used by Python print function to print out the general information of the \c sample operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::sample>" ;
 			}
 
 		public:
-			/// service functions that can be used by everyone
+			// service functions that can be used by everyone
 
-			/// save the idx of each individual to a filed
-			/// usually 'oldindex'
+			/// save the index of each individual to a field (usually \c oldindex)
 			void saveIndIndex(population& pop, const string& indexField="oldindex");
 
-			/// reset father_idx and mother_idx
-			/// using the samed
+			/// reset \c father_idx and \c mother_idx 
 			void resetParentalIndex(population& pop, const string& fatherField="father_idx",
 				const string& motherField="mother_idx", const string& indexField="oldindex");
 
@@ -180,7 +212,7 @@ namespace simuPOP
 				const string& fatherField, const string& motherField,
 				const string& spouseField, const string& offspringField);
 
-			/// set all sub pop id to -1 (remove)
+			/// set all subpopulation IDs to \c -1 (remove)
 			void resetSubPopID(population& pop);
 		private:
 
@@ -203,28 +235,29 @@ namespace simuPOP
 			string m_format;
 	};
 
-	/// thrink population accroding to some outside value
-
+	/// randomly draw a sample from a population
+    /**
+    This operator will randomly choose \c size individuals (or \c size[i] individuals 
+	from subpopulation \c i)
+    and return a new population. The function form of this operator returns the samples
+    directly. The operator keeps samples in an array \c name in the local namespace. You
+    may access them through \c dvars() or \c vars() functions. \n
+    
+    The original subpopulation structure/boundary is kept in the samples.
+    */
 	class randomSample: public sample
 	{
 
 		public:
-			/// draw random sample, regardless of affected status
+			/// draw a random sample, regardless of the affected status
 			/**
-			\param size size of sample. It can be either a number, representing
-			  the overall sample size, regardless of population strucutre;
-			  or an array, representing number of samples drawn from each subpopulation.
-			\param stage and other parameters please see help(baseOperator.__init__)
-			\param name variable name of the sampled population (will be put in pop local namespace)
-			\param nameExpr expression version of name. If both name and nameExpr is empty, do not store pop.
-			\param times how many times to run the sample process? This is usually one, but we
-			   may want to take several random samples.
-			\param saveAs filename to save the population.
-			\param saveAsExpr expression for save filename
-			\param format to save sample(s)
-			\param stage and other parameters please see help(baseOperator.__init__)
+			\param size size of the sample. It can be either a number which represents the
+                overall sample size, regardless of the population structure; or an array
+                which represents the number of samples drawn from each subpopulation.
 
-			\note ancestral populations will not be copied to the samples
+            Please refer to class \c sample for other parameter descriptions.
+        
+			\note Ancestral populations will not be copied to the samples.
 			*/
 			randomSample( vectorlu size=vectorlu(),
 				const string& name="sample", const string& nameExpr="", UINT times=1,
@@ -240,17 +273,19 @@ namespace simuPOP
 			/// destructor
 			virtual ~randomSample(){};
 
-			/// this function is very important
+			/// deep copy of a \c randomSample operator
 			virtual Operator* clone() const
 			{
 				return new randomSample(*this);
 			}
 
-			/// value checking
+			/// CPPONLY
 			virtual bool prepareSample(population& pop);
 
+            /// CPPONLY
 			virtual population& drawsample(population& pop);
 
+            /// used by Python print function to print out the general information of the \c randomSample operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::random sample>" ;
@@ -261,27 +296,34 @@ namespace simuPOP
 			vectorlu m_size;
 	};
 
-	/// thrink population accroding to some outside value
+	/// draw a case-control sample from a population
+    /**
+    This operator will randomly choose \c cases affected individuals and \c controls
+    unaffected individuals as a sample. The affected status is usually set by penetrance
+    functions/operators. The sample populations will have two subpopulations: cases
+    and controls. \n
 
+    You may specify the number of cases and the number of controls from
+    each subpopulation using the array form of the parameters. The sample population
+    will still have only two subpoulations (cases/controls) though. \n
+    
+    A special case of this sampling scheme occurs when one of or both cases and controls
+    are omitted (zeros). In this case, all cases and/or controls are chosen. If both
+    parameters are omitted, the sample is effectively the same population with
+    affected and unaffected individuals separated into two subpopulations.
+    */
 	class caseControlSample: public sample
 	{
 
 		public:
-			/// draw cases and controls
+			/// draw cases and controls as a sample
 			/**
-			\param cases number of cases, or an array of number of cases from
-			  each subpopulation.
-			\param controls number of controls, or an array of number of controls
-			  from each subpopulation.
-			\param name variable name of the sampled population (will be put in pop local namespace)
-			\param nameExpr expression version of name. If both name and nameExpr is empty, do not store pop.
-			\param times how many times to run the sample process? This is usually one, but we
-			   may want to take several random samples.
-			\param saveAs filename to save the population.
-			\param saveAsExpr expression for save filename
-			\param format to save sample(s)
-			\param stage and other parameters please see help(baseOperator.__init__)
-			*/
+			\param cases the number of cases, or an array of the numbers of cases from each subpopulation
+			\param controls the number of controls, or an array of the numbers of controls
+                from each subpopulation
+
+            Please refer to class \c sample for other parameter descriptions.
+    		*/
 			caseControlSample( const vectori& cases=vectori(), const vectori& controls = vectori(),
 				bool spSample=false, const string& name="sample", const string& nameExpr="", UINT times=1,
 				const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
@@ -297,16 +339,19 @@ namespace simuPOP
 			/// destructor
 			virtual ~caseControlSample(){};
 
-			/// this function is very important
+			/// deep copy of a \c caseControlSample operator
 			virtual Operator* clone() const
 			{
 				return new caseControlSample(*this);
 			}
 
+            /// CPPONLY
 			virtual bool prepareSample(population& pop );
 
+            /// CPPONLY
 			virtual population& drawsample(population& pop);
 
+            /// used by Python print function to print out the general information of the \c caseControlSample operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::case control sample>" ;
@@ -324,30 +369,42 @@ namespace simuPOP
 			vector< vectori > m_caseIdx, m_controlIdx;
 	};
 
-	/// thrink population accroding to some outside value
+	/// draw an affected sibling pair sample
+    /**
+    Special preparation for the population is needed in order to use this operator.
+    Obviously, to obtain affected sibling pairs, we need to know the parents and
+    the affectedness status of each individual. Furthermore, to get parental genotype,
+    the population should have \c ancestralDepth at least \c 1. The biggest problem,
+    however, comes from the mating scheme we are using. \n
 
+    \c randomMating() is usually used for diploid populations. The real random mating
+    requires that a mating will generate only one offspring. Since parents are chosen
+    with replacement, a parent can have multiple offsprings with different parents.
+    On the otherhand, it is very unlikely that two offsprings will have the same parents.
+    Therefore, we will have to allow multiple offsprings per mating at the cost of
+    smaller effective population size. \n
+
+    All these requirements come at a cost: multiple ancestral populations, judge
+    affectedness status and tagging will slow down evolution; multiple offsprings
+    will reduce effective population size. Fortunately, simuPOP is flexible enough to
+    let all these happen only at the last several generations.
+    */
 	class affectedSibpairSample: public sample
 	{
 
 		public:
-			/// draw cases and controls
+			/// draw an affected sibling pair sample
 			/**
-			\param size number of affected sibpairs to be sampled.
-			  Can be a number or an array. If a number is given, it is
-			  the total number of sibpairs, ignoring population structure.
-			  Otherwise, given number of sibpairs are sampled from
-			  subpopulations. If size is unspecified, this operator
-			  will return all affected sibpairs.
+			\param size the number of affected sibling pairs to be sampled. Can be a
+                number or an array. If a number is given, it is the total number of
+                sibpairs, ignoring population structure. Otherwise, given number of
+                sibpairs are sampled from subpopulations. If size is unspecified,
+                this operator will return all affected sibpairs.
+            \param chooseUnaffected instead of affected sibpairs, choose unaffected families.
 			\param countOnly set variables about number of affected sibpairs,
-			do not actually draw the sample
-			\param name variable name of the sampled population (will be put in pop local namespace)
-			\param nameExpr expression version of name. If both name and nameExpr is empty, do not store pop.
-			\param times how many times to run the sample process? This is usually one, but we
-			may want to take several random samples.
-			\param saveAs filename to save the population.
-			\param saveAsExpr expression for save filename
-			\param format to save sample(s)
-			\param stage and other parameters please see help(baseOperator.__init__)
+                do not actually draw the sample         
+
+            Please refer to class \c sample for other parameter descriptions.            
 			*/
 			affectedSibpairSample(vectoru size = vectoru(),
 				bool chooseUnaffected=false,
@@ -369,16 +426,19 @@ namespace simuPOP
 			/// destructor
 			virtual ~affectedSibpairSample(){};
 
-			/// this function is very important
+			/// deep copy of a \c affectedSibpairSample operator
 			virtual Operator* clone() const
 			{
 				return new affectedSibpairSample(*this);
 			}
 
+            /// preparation before drawing a sample
 			virtual bool prepareSample(population& pop);
 
+            /// draw a sample
 			virtual population& drawsample(population& pop);
 
+            /// used by Python print function to print out the general information of the \c affectedSibpairSample operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::affected sibpair sample>" ;
@@ -401,28 +461,21 @@ namespace simuPOP
 
 	};
 
+    /// draw a large pedigree sample
 	class largePedigreeSample: public sample
 	{
 
 		public:
-			/// draw cases and controls
+			/// draw a large pedigree sample
 			/**
-			\param size number of affected sibpairs to be sampled.
-			  Can be a number or an array. If a number is given, it is
-			  the total number of sibpairs, ignoring population structure.
-			  Otherwise, given number of sibpairs are sampled from
-			  subpopulations. If size is unspecified, this operator
-			  will return all affected sibpairs.
-			\param countOnly set variables about number of affected sibpairs,
-			do not actually draw the sample
-			\param name variable name of the sampled population (will be put in pop local namespace)
-			\param nameExpr expression version of name. If both name and nameExpr is empty, do not store pop.
-			\param times how many times to run the sample process? This is usually one, but we
-			may want to take several random samples.
-			\param saveAs filename to save the population.
-			\param saveAsExpr expression for save filename
-			\param format to save sample(s)
-			\param stage and other parameters please see help(baseOperator.__init__)
+			\param minTotalSize the minimum number of individuals in the sample
+			\param maxOffspring the maximum number of offspring a parent may have
+			\param minPedSize minimal pedigree size, default to \c 5
+			\param minAffected minimal number of affected individuals in each pedigree, default to \c 0
+			\param countOnly  set variables about number of affected sibpairs,
+                do not actually draw the sample.
+        
+            Please refer to class \c sample for other parameter descriptions.            
 			*/
 			largePedigreeSample(vectoru size = vectoru(),
 				unsigned minTotalSize=0,
@@ -448,16 +501,19 @@ namespace simuPOP
 			/// destructor
 			virtual ~largePedigreeSample(){};
 
-			/// this function is very important
+			/// deep copy of a \c largePedigreeSample operator
 			virtual Operator* clone() const
 			{
 				return new largePedigreeSample(*this);
 			}
 
+            /// preparation before drawing a sample
 			virtual bool prepareSample(population& pop);
 
+            /// draw a a large pedigree sample
 			virtual population& drawsample(population& pop);
 
+            /// used by Python print function to print out the general information of the \c largePedigreeSample operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::affected sibpair sample>" ;
@@ -489,21 +545,14 @@ namespace simuPOP
 			vector<pedArray> m_validPedigrees;
 	};
 
+    /// draw a nuclear family sample
 	class nuclearFamilySample: public sample
 	{
 
 		public:
-			/// draw nuclear family
+			/// draw a nuclear family sample
 			/**
-			
-			\param name variable name of the sampled population (will be put in pop local namespace)
-			\param nameExpr expression version of name. If both name and nameExpr is empty, do not store pop.
-			\param times how many times to run the sample process? This is usually one, but we
-			may want to take several random samples.
-			\param saveAs filename to save the population.
-			\param saveAsExpr expression for save filename
-			\param format to save sample(s)
-			\param stage and other parameters please see help(baseOperator.__init__)
+			Please refer to class \c sample for parameter descriptions.
 			*/
 			nuclearFamilySample(vectoru size = vectoru(),
 				unsigned minTotalSize=0,
@@ -529,16 +578,19 @@ namespace simuPOP
 			/// destructor
 			virtual ~nuclearFamilySample(){};
 
-			/// this function is very important
+			/// deep copy of a \c nuclearFamilySample operator
 			virtual Operator* clone() const
 			{
 				return new nuclearFamilySample(*this);
 			}
 
+            /// preparation before drawing a sample 
 			virtual bool prepareSample(population& pop);
 
+            /// draw a nuclear family sample
 			virtual population& drawsample(population& pop);
 
+            /// used by Python print function to print out the general information of the \c nuclearFamilySample operator
 			virtual string __repr__()
 			{
 				return "<simuPOP::affected sibpair sample>" ;
@@ -570,18 +622,21 @@ namespace simuPOP
 			vector<pedArray> m_validPedigrees;
 	};
 
-	/// thrink population accroding to some outside value
-
+	/// Python sampler
+    /**
+	A Python sampler that generate a sample with given individuals.
+    */
 	class pySample: public sample
 	{
 
 		public:
-			/// create a python sampler
+			/// create a Python sampler
 			/**
-			\param keep a carray of the length of population.
-			its values will be assigned to info.
-			\param keepAncestralPop: -1 (all), 0 (no), 1(one ancestral pop) and so on.
-			\stage and other parameters please see help(baseOperator.__init__)
+			\param keep subpopulation IDs of all individuals
+			\param keepAncestralPop the number of ancestral populations that will be kept. If \c -1,
+                keep all ancestral populations (default). If \c 0, no ancestral population will be kept.
+        
+            Please refer to class \c sample for other parameter descriptions.            
 			*/
 			pySample( PyObject * keep, int keepAncestralPops=-1,
 				const string& name="sample", const string& nameExpr="", UINT times=1,
@@ -614,12 +669,13 @@ namespace simuPOP
 					Py_INCREF(m_keep);
 			}
 
-			/// this function is very important
+			/// deep copy of a Python sampler
 			virtual Operator* clone() const
 			{
 				return new pySample(*this);
 			}
 
+            /// draw a Python sample
 			virtual population& drawsample(population& pop)
 			{
 				DBG_ASSERT( NumArray_Size(m_keep) >= static_cast<int>(pop.popSize()) ,
@@ -640,6 +696,7 @@ namespace simuPOP
 				return pop.newPopByIndID(m_keepAncestralPops);
 			}
 
+            /// used by Python print function to print out the general information of the Python sampler
 			virtual string __repr__()
 			{
 				return "<simuPOP::pySubset>" ;
