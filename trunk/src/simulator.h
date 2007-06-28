@@ -502,7 +502,7 @@ namespace simuPOP
 			/// current generation
 			ULONG m_gen;
 
-			/// index to current population, refernce to shared "%rep"
+			/// index to current population
 			UINT m_curRep;
 
 			/// mating functor that will do the mating.
