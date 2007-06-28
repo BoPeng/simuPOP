@@ -46,7 +46,7 @@ namespace simuPOP
 				m_atLoci[i] = i;
 		}
 
-		/// all use the same rate
+		// all use the same rate
 		if( m_rate.size() < m_atLoci.size() )
 		{
 			m_rate.resize( m_atLoci.size());
@@ -104,7 +104,7 @@ namespace simuPOP
 		return true;
 	}
 
-	/// mutate to a state other than current state with equal probability
+	// mutate to a state other than current state with equal probability
 	void kamMutator::mutate(AlleleRef allele)
 	{
 #ifdef BINARYALLELE
