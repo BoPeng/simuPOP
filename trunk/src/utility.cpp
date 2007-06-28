@@ -68,24 +68,16 @@ using boost::lowest_bit;
 extern "C" PyObject* newcarrayobject(char* buf, char type, int size);
 #ifdef SIMUMPI
 #include "slave.h"
-/// CPPONLY
 extern "C" PyObject* newcarrayiterobject(ULONG shift,
 ULONG size, UINT piece_size, vectoru map);
 #else
-/// CPPONLY
 extern "C" PyObject* newcarrayiterobject(GenoIterator begin, GenoIterator end);
 #endif
-/// CPPONLY
 extern "C" bool   is_carrayobject(PyObject*);
-/// CPPONLY
 extern "C" int    carray_length(PyObject*a);
-/// CPPONLY
 extern "C" int    carray_itemsize(PyObject*a);
-/// CPPONLY
 extern "C" char   carray_type(PyObject* a);
-/// CPPONLY
 extern "C" char * carray_data(PyObject*a);
-/// CPPONLY
 extern "C" void   initcarray(void);
 extern "C" PyTypeObject Arraytype;
 
@@ -106,14 +98,14 @@ using std::greater;
 namespace simuPOP
 {
 
-	//////////////////////////////////////////////////////////////
-	/// Debug functions
-	//////////////////////////////////////////////////////////////
-	/// debug codes in a bitset.
+	// ////////////////////////////////////////////////////////////
+	// / Debug functions
+	// ////////////////////////////////////////////////////////////
+	// / debug codes in a bitset.
 	DbgBitSet g_dbgCode;
 
-	/// debug code string. For output purpose only.
-	/// debug code and DBG_CODE_LENGTH is defined in simuPOP_cfg.h
+	// debug code string. For output purpose only.
+	// debug code and DBG_CODE_LENGTH is defined in simuPOP_cfg.h
 	string g_dbgString[DBG_CODE_LENGTH] =
 	{
 		"DBG_ALL",
@@ -139,7 +131,7 @@ namespace simuPOP
 		"DBG_DEVEL"
 	};
 
-	/// set debug area, default to turn all code on
+	// set debug area, default to turn all code on
 	void TurnOnDebug(DBG_CODE code)
 	{
 #ifndef OPTIMIZED
@@ -150,7 +142,7 @@ namespace simuPOP
 #endif
 	}
 
-	/// set debug area, default to turn all code on
+	// set debug area, default to turn all code on
 	void TurnOnDebugWithName(string code)
 	{
 #ifndef OPTIMIZED
@@ -168,7 +160,7 @@ namespace simuPOP
 #endif
 	}
 
-	/// turn off debug, default to turn all code off
+	// turn off debug, default to turn all code off
 	void TurnOffDebug(DBG_CODE code)
 	{
 #ifndef OPTIMIZED
@@ -186,9 +178,9 @@ namespace simuPOP
 	}
 
 #ifndef OPTIMIZED
-	/// test if one code is turned on
-	/// in DEBUG section to make sure it will not be called
-	/// in optimized mode
+	// test if one code is turned on
+	// in DEBUG section to make sure it will not be called
+	// in optimized mode
 	bool debug(DBG_CODE code)
 	{
 		return g_dbgCode[code];
@@ -239,9 +231,9 @@ namespace simuPOP
 	}
 #endif
 
-	//////////////////////////////////////////////////////////////
-	/// Some common functions/templates
-	//////////////////////////////////////////////////////////////
+	// ////////////////////////////////////////////////////////////
+	// / Some common functions/templates
+	// ////////////////////////////////////////////////////////////
 
 #if  defined(_WIN32) || defined(__WIN32__)
 	int simuPOP_kbhit()
@@ -295,7 +287,7 @@ namespace simuPOP
 
 namespace std
 {
-	/// how to output a dictionary
+	// how to output a dictionary
 	ostream& operator<< (ostream& out, const strDict& dict)
 	{
 		out<<"{";
@@ -312,7 +304,7 @@ namespace std
 		return out;
 	}
 
-	/// how to output a dictionary
+	// how to output a dictionary
 	ostream& operator<< (ostream& out, const intDict& dict)
 	{
 		out<<"{";
@@ -329,8 +321,7 @@ namespace std
 		return out;
 	}
 
-	/// CPPONLY: 3^n, can not use pow(3, n) because of overloading problem
-	/// in msvc.
+	// in msvc.
 	unsigned pow3(unsigned n)
 	{
 		unsigned res = 1;
@@ -351,8 +342,7 @@ namespace simuPOP
 	//
 	// ///////////////////////////////////////////////////////////////
 
-	/// utility functions: python => C++ conversion
-	/// CPPONLY
+	// utility functions: python => C++ conversion
 	void PyObj_As_Bool(PyObject *obj, bool& val)
 	{
 		if(obj==NULL || obj == Py_False || obj == Py_None)
@@ -366,7 +356,6 @@ namespace simuPOP
 			val = PyInt_AS_LONG(obj) ? true : false;
 	}
 
-	/// CPPONLY
 	void PyObj_As_Int(PyObject *obj, int& val)
 	{
 		if(obj==NULL)
@@ -383,7 +372,6 @@ namespace simuPOP
 		Py_DECREF(res);
 	}
 
-	/// CPPONLY
 	void PyObj_As_Double(PyObject *obj, double& val)
 	{
 		if(obj==NULL)
@@ -400,7 +388,6 @@ namespace simuPOP
 		Py_DECREF(res);
 	}
 
-	/// CPPONLY
 	void PyObj_As_String(PyObject *obj, string& val)
 	{
 		if(obj==NULL)
@@ -417,7 +404,6 @@ namespace simuPOP
 		Py_DECREF(res);
 	}
 
-	/// CPPONLY
 	void PyObj_As_StrDict(PyObject* obj, strDict& val)
 	{
 		if(obj==NULL)
@@ -450,7 +436,6 @@ namespace simuPOP
 		}
 	}
 
-	/// CPPONLY
 	void PyObj_As_Array(PyObject* obj, vectorf& val)
 	{
 		if(obj==NULL)
@@ -471,7 +456,6 @@ namespace simuPOP
 		}
 	}
 
-	/// CPPONLY
 	void PyObj_As_IntArray(PyObject* obj, vectori& val)
 	{
 		if(obj==NULL)
@@ -492,7 +476,6 @@ namespace simuPOP
 		}
 	}
 
-	/// CPPONLY
 	void PyObj_As_IntDict(PyObject* obj, intDict& val)
 	{
 		if(obj==NULL)
@@ -527,27 +510,23 @@ namespace simuPOP
 		Py_XDECREF(vals);
 	}
 
-	/// CPPONLY
 	bool PyObj_Is_IntNumArray(PyObject * obj)
 	{
 		return is_carrayobject(obj) &&
 			carray_type(obj) == 'i' ;
 	}
 
-	/// CPPONLY
 	bool PyObj_Is_DoubleNumArray(PyObject * obj)
 	{
 		return is_carrayobject(obj) &&
 			carray_type(obj) == 'd';
 	}
 
-	/// CPPONLY
 	bool PyObj_Is_AlleleNumArray(PyObject * obj)
 	{
 		return is_carrayobject(obj) && carray_type(obj) == 'a';
 	}
 
-	/// CPPONLY
 	PyObject* Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end)
 	{
 		PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*begin), 'i', end-begin);
@@ -556,7 +535,6 @@ namespace simuPOP
 		return res;
 	}
 
-	/// CPPONLY
 	PyObject* Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end)
 	{
 		PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*begin), 'd', end-begin);
@@ -566,7 +544,6 @@ namespace simuPOP
 	}
 
 #ifdef SIMUMPI
-	/// CPPONLY
 	PyObject* Allele_Vec_As_NumArray(ULONG shift,
 		ULONG size, UINT piece_size, vectoru map)
 	{
@@ -577,7 +554,6 @@ namespace simuPOP
 
 #else
 
-	/// CPPONLY
 	PyObject* Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 	{
 		PyObject* res = newcarrayiterobject(begin, end);
@@ -586,7 +562,6 @@ namespace simuPOP
 	}
 #endif
 
-	/// CPPONLY
 	PyObject* Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end)
 	{
 		PyObject* res = newcarrayobject(reinterpret_cast<char*>(&*begin), 'd', end-begin);
@@ -594,14 +569,12 @@ namespace simuPOP
 		return res;
 	}
 
-	/// CPPONLY
 	int NumArray_Size(PyObject* obj)
 	{
 		// return PyArray_Size(obj);
 		return carray_length(obj);
 	}
 
-	/// CPPONLY
 	char* NumArray_Data(PyObject* obj)
 	{
 		// return reinterpret_cast<PyArrayObject*>(obj)->data;
@@ -611,7 +584,6 @@ namespace simuPOP
 	// //////////////////////////////////////////////////////
 
 	// copy constructor
-	/// CPPONLY
 	SharedVariables::SharedVariables(const SharedVariables& rhs)
 		: m_ownVars(rhs.m_ownVars)
 	{
@@ -641,8 +613,7 @@ namespace simuPOP
 		}
 	}
 
-	/// setvars C++ ==> Python
-	/// CPPONLY
+	// setvars C++ ==> Python
 	PyObject* SharedVariables::setVar(const string& name, const PyObject* val)
 	{
 		/* find the first piece */
@@ -716,7 +687,7 @@ namespace simuPOP
 			else								  // if exist, if it is a sequence?
 			{
 				size_t curSize = PyList_Size(curChild);
-				/// if the size if enough, get the item
+				// if the size if enough, get the item
 				if( curSize <= idx )
 				{
 					while(curSize++ <= idx)
@@ -807,7 +778,6 @@ namespace simuPOP
 		return const_cast<PyObject*>(val);
 	}
 
-	/// CPPONLY
 	PyObject* SharedVariables::getVar(const string& name, bool nameError)
 	{
 		DBG_ASSERT( m_dict != NULL, ValueError,
@@ -899,7 +869,6 @@ namespace simuPOP
 		}
 	}
 
-	/// CPPONLY
 	void SharedVariables::removeVar(const string& name)
 	{
 		DBG_ASSERT( m_dict != NULL, ValueError,
@@ -1040,7 +1009,7 @@ namespace simuPOP
 		return setVar(name, obj);
 	}
 
-	///CPPONLY
+	//CPPONLY
 	PyObject* SharedVariables::setDoubleVectorVar(const string& name, const vectorf& val)
 	{
 		PyObject * obj = PyList_New(0);
@@ -1083,13 +1052,11 @@ namespace simuPOP
 		return setVar(name, obj);
 	}
 
-	/// CPPONLY
 	void save_none(string& str)
 	{
 		str += "n";
 	}
 
-	/// CPPONLY
 	PyObject* load_none(const string& str, size_t& offset)
 	{
 		offset++;
@@ -1097,7 +1064,6 @@ namespace simuPOP
 		return Py_None;
 	}
 
-	/// CPPONLY
 	void save_int(string& str, PyObject * args)
 	{
 		long l = PyInt_AS_LONG((PyIntObject *)args);
@@ -1105,7 +1071,6 @@ namespace simuPOP
 		str += 'i' + toStr(l) + ' ';
 	}
 
-	/// CPPONLY
 	PyObject* load_int(const string& str, size_t& offset)
 	{
 		// search for blank
@@ -1118,7 +1083,6 @@ namespace simuPOP
 		return val;
 	}
 
-	/// CPPONLY
 	void save_long(string& str, PyObject * args)
 	{
 		long l = PyInt_AS_LONG(args);
@@ -1126,7 +1090,6 @@ namespace simuPOP
 		str += 'i' + toStr(l) + ' ';
 	}
 
-	/// CPPONLY
 	PyObject* load_long(const string& str, size_t& offset)
 	{
 		int len = 0;
@@ -1138,7 +1101,6 @@ namespace simuPOP
 		return val;
 	}
 
-	/// CPPONLY
 	void save_float(string& str, PyObject * args)
 	{
 		double d = PyFloat_AsDouble(args);
@@ -1146,7 +1108,6 @@ namespace simuPOP
 		str += 'f' + toStr(d) + ' ';
 	}
 
-	/// CPPONLY
 	PyObject* load_float(const string& str, size_t& offset)
 	{
 		int len = 0;
@@ -1156,14 +1117,12 @@ namespace simuPOP
 		return PyFloat_FromDouble(d);
 	}
 
-	/// CPPONLY
 	void save_string(string& str, PyObject * args)
 	{
 		char * s = PyString_AsString(args);
 		str += 's' + string(s)+'\0';
 	}
 
-	/// CPPONLY
 	PyObject* load_string(const string& str, size_t& offset)
 	{
 		char * s = const_cast<char*>(str.c_str()) + offset + 1;
@@ -1175,12 +1134,9 @@ namespace simuPOP
 		return PyString_FromString(s);
 	}
 
-	/// CPPONLY
 	void saveObj(string& str, PyObject* args);
-	/// CPPONLY
 	PyObject* loadObj(const string& vars, size_t& offset);
 
-	/// CPPONLY
 	void save_dict(string& str, PyObject* args)
 	{
 		PyObject *key = 0, *value = 0;
@@ -1195,7 +1151,6 @@ namespace simuPOP
 		str += 'e';								  // ending of a dictionary
 	}
 
-	/// CPPONLY
 	PyObject* load_dict(const string& vars, size_t& offset)
 	{
 		// skip 'd'
@@ -1215,7 +1170,6 @@ namespace simuPOP
 		return d;
 	}
 
-	/// CPPONLY
 	void save_list(string& str, PyObject* args)
 	{
 		str += 'L';								  // dictionary
@@ -1229,7 +1183,6 @@ namespace simuPOP
 		str += 'e';								  // ending of a dictionary
 	}
 
-	/// CPPONLY
 	PyObject* load_list(const string& vars, size_t& offset)
 	{
 		// skip 'L'
@@ -1245,7 +1198,6 @@ namespace simuPOP
 		return d;
 	}
 
-	/// CPPONLY
 	void save_tuple(string& str, PyObject* args)
 	{
 		str += 't';								  // dictionary
@@ -1260,7 +1212,6 @@ namespace simuPOP
 		}
 	}
 
-	/// CPPONLY
 	PyObject* load_tuple(const string& vars, size_t& offset)
 	{
 		// skip 't'
@@ -1309,7 +1260,6 @@ namespace simuPOP
 	}
 	*/
 
-	/// CPPONLY
 	void saveObj(string& str, PyObject* args)
 	{
 		PyTypeObject *type;
@@ -1343,7 +1293,6 @@ namespace simuPOP
 		}
 	}
 
-	/// CPPONLY
 	PyObject* loadObj(const string& vars, size_t& offset)
 	{
 		switch( vars[offset])
@@ -1372,7 +1321,6 @@ namespace simuPOP
 		}
 	}
 
-	/// CPPONLY
 	string SharedVariables::asString() const
 	{
 		// go through each variable and save
@@ -1382,7 +1330,6 @@ namespace simuPOP
 		return str;
 	}
 
-	/// CPPONLY
 	void SharedVariables::fromString(const string& vars)
 	{
 		size_t offset = 0;
@@ -1407,9 +1354,9 @@ namespace simuPOP
 	// //////////// BEGIN of SimuVars
 	// simuVars will hold replicate specific Shared Variables.
 
-	/// global dictionary
-	/// will be set by // initialize() function
-	/// DO NOT OWN the dictionaries
+	// global dictionary
+	// will be set by // initialize() function
+	// DO NOT OWN the dictionaries
 	SharedVariables g_main_vars, g_module_vars;
 	swig_type_info* g_swigPopType, *g_swigindividual;
 
@@ -1456,7 +1403,6 @@ namespace simuPOP
 			Py_DECREF(m_stmts);
 	}
 
-	/// CPPONLY
 	void Expression::compileExpr(const string& expr)
 	{
 		if( m_expr != NULL)
@@ -1476,7 +1422,6 @@ namespace simuPOP
 			throw ValueError("Expression '" + expr + "' is not a valid python expression.");
 	}
 
-	/// CPPONLY
 	void Expression::compileStmts(const string& stmts)
 	{
 		if( m_stmts != NULL)
@@ -1497,7 +1442,7 @@ namespace simuPOP
 			throw ValueError("statement '" + stmts + "' is not valid.");
 	}
 
-	/// python expression
+	// python expression
 	PyObject* Expression::evaluate()
 	{
 		if( m_expr == NULL && m_stmts == NULL )
@@ -1537,7 +1482,6 @@ namespace simuPOP
 		return res;
 	}
 
-	/// CPPONLY
 	bool Expression::valueAsBool()
 	{
 		PyObject* res = evaluate();
@@ -1549,7 +1493,6 @@ namespace simuPOP
 		return val;
 	}
 
-	/// CPPONLY
 	int Expression::valueAsInt()
 	{
 		PyObject* res = evaluate();
@@ -1561,7 +1504,6 @@ namespace simuPOP
 		return val;
 	}
 	
-	/// CPPONLY
 	double Expression::valueAsDouble()
 	{
 		PyObject* res = evaluate();
@@ -1573,7 +1515,6 @@ namespace simuPOP
 		return val;
 	}
 	
-	/// CPPONLY
 	string Expression::valueAsString()
 	{
 		PyObject* res = evaluate();
@@ -1585,7 +1526,6 @@ namespace simuPOP
 		return val;
 	}
 
-	/// CPPONLY
 	vectorf Expression::valueAsArray()
 	{
 		PyObject* res = evaluate();
@@ -1597,7 +1537,6 @@ namespace simuPOP
 		return val;
 	}
 
-	/// CPPONLY
 	strDict Expression::valueAsStrDict()
 	{
 		PyObject* res = evaluate();
@@ -1609,7 +1548,6 @@ namespace simuPOP
 		return val;
 	}
 
-	/// CPPONLY
 	intDict Expression::valueAsIntDict()
 	{
 		PyObject* res = evaluate();
@@ -1621,9 +1559,9 @@ namespace simuPOP
 		return val;
 	}
 
-	//////////////////////////////////////////////////////////////
-	/// Stream element, can be of different types
-	//////////////////////////////////////////////////////////////
+	// ////////////////////////////////////////////////////////////
+	// / Stream element, can be of different types
+	// ////////////////////////////////////////////////////////////
 
 	StreamElem::StreamElem(const string& name, bool readable, bool realAppend, bool useString )
 		:m_filename(name)
@@ -1669,8 +1607,8 @@ namespace simuPOP
 
 	}
 
-	/// copy constructor, we need to clear rhs.m_stream to avoid closing file too early
-	/// this is techniquely advanced (and dangerous)
+	// copy constructor, we need to clear rhs.m_stream to avoid closing file too early
+	// this is techniquely advanced (and dangerous)
 	StreamElem::StreamElem(const StreamElem& rhs)
 	{
 		m_filename = rhs.m_filename;
@@ -1680,7 +1618,7 @@ namespace simuPOP
 		const_cast<StreamElem&>(rhs).m_stream = NULL;
 	}
 
-	/// destructor
+	// destructor
 	StreamElem::~StreamElem()
 	{
 		// close file.
@@ -1700,7 +1638,7 @@ namespace simuPOP
 		}
 	}
 
-	/// the file was write-only, re-open it as read-write
+	// the file was write-only, re-open it as read-write
 	void StreamElem::makeReadable()
 	{
 
@@ -1720,7 +1658,7 @@ namespace simuPOP
 		m_type = FSTREAM;
 	}
 
-	/// change the append status
+	// change the append status
 	void StreamElem::makeAppend(bool append)
 	{
 
@@ -1781,9 +1719,9 @@ namespace simuPOP
 		return out.str();
 	}
 
-	//////////////////////////////////////////////////////////////
-	/// OStream Manager
-	//////////////////////////////////////////////////////////////
+	// ////////////////////////////////////////////////////////////
+	// / OStream Manager
+	// ////////////////////////////////////////////////////////////
 
 	OstreamManager::OstreamManager():m_ostreams()
 	{
@@ -1842,24 +1780,24 @@ namespace simuPOP
 			cout << it->first << " : "  << it->second.info() << endl;
 	}
 
-	/// close all files and clean the map
+	// close all files and clean the map
 	void OstreamManager::closeAll()
 	{
 		m_ostreams.clear();
 	}
 
-	/// global ostream  manager
+	// global ostream  manager
 	OstreamManager g_ostreams;
 
-	/// return ostream manager
+	// return ostream manager
 	OstreamManager& ostreamManager()
 	{
 		return g_ostreams;
 	}
 
-	//////////////////////////////////////////////////////////////
-	/// Stream provider
-	//////////////////////////////////////////////////////////////
+	// ////////////////////////////////////////////////////////////
+	// / Stream provider
+	// ////////////////////////////////////////////////////////////
 
 	// all flags will be cleared to 0
 	StreamProvider::StreamProvider(const string& output, const string& outputExpr)
@@ -1958,7 +1896,7 @@ namespace simuPOP
 		}
 	}
 
-	/// close ostream and delete ostream pointer.. if it is a ofstream.
+	// close ostream and delete ostream pointer.. if it is a ofstream.
 	void StreamProvider::closeOstream()
 	{
 		if( ISSETFLAG(m_flags, m_flagCloseAfterUse ) )
@@ -2040,9 +1978,9 @@ namespace simuPOP
 		m_filename = format;
 	}
 
-	//////////////////////////////////////////////////////////////
-	/// Random number generator
-	//////////////////////////////////////////////////////////////
+	// ////////////////////////////////////////////////////////////
+	// / Random number generator
+	// ////////////////////////////////////////////////////////////
 	RNG::RNG(const char* rng, unsigned long seed):m_RNG(NULL)
 	{
 		setRNG(rng, seed);
@@ -2080,8 +2018,8 @@ namespace simuPOP
 		return seed;
 	}
 
-	/// choose an random number generator.
-	/// This can be done by setting GSL_RNG_TYPE as well.
+	// choose an random number generator.
+	// This can be done by setting GSL_RNG_TYPE as well.
 	void RNG::setRNG(const char * rng, unsigned long seed)
 	{
 		if (rng != NULL && rng[0] != '\0')
@@ -2133,9 +2071,9 @@ namespace simuPOP
 		gsl_rng_set(m_RNG, m_seed);
 	}
 
-	///////////// Weighted sampler //////////////
-	/// FIXME: consider adopting R's implementation.
-	/// They may be quicker.
+	// /////////// Weighted sampler //////////////
+	// / FIXME: consider adopting R's implementation.
+	// / They may be quicker.
 	void Weightedsampler::set(const vectorf& weight)
 	{
 		m_N = weight.size();
@@ -2204,7 +2142,7 @@ namespace simuPOP
 		// }
 	}
 
-	////////////// Bernulli trials ///////////
+	// //////////// Bernulli trials ///////////
 
 	// this is used for BernulliTrials and copyGenotype
 	WORDTYPE g_bitMask[WORDBIT];
@@ -2230,7 +2168,7 @@ namespace simuPOP
 		}
 	}
 
-	///
+	// 
 	BernulliTrials::~BernulliTrials()
 	{
 	}
@@ -2396,7 +2334,7 @@ namespace simuPOP
 		return m_cur;
 	}
 
-	/// get a trial corresponding to m_prob.
+	// get a trial corresponding to m_prob.
 	void BernulliTrials::trial()
 	{
 		if(m_cur == npos || m_cur == m_N - 1)	  // reach the last trial
@@ -2540,18 +2478,18 @@ namespace simuPOP
 #undef unsetBit
 #undef getBit
 
-	/// random number generator. a global variable.
-	/// there might be multiple RNG later.
+	// random number generator. a global variable.
+	// there might be multiple RNG later.
 	RNG g_RNG;
 
-	/// return the global RNG
+	// return the global RNG
 	RNG& rng()
 	{
 		return g_RNG;
 	}
 
-	/// set global rng
-	/// this is temporary since rng() might not exist in the future
+	// set global rng
+	// this is temporary since rng() might not exist in the future
 	void SetRNG(const string r, unsigned long seed)
 	{
 		rng().setRNG(r.c_str(), seed);
@@ -2563,7 +2501,7 @@ namespace simuPOP
 		rng().setRNG(r.c_str(), seed);
 	}
 
-	/// list all available RNG.
+	// list all available RNG.
 	vectorstr ListAllRNG()
 	{
 		vectorstr list;
@@ -2590,11 +2528,10 @@ namespace simuPOP
 		return ListAllRNG();
 	}
 
-	//////////////////////////////////////////////////////////////
-	///  Global debug and initialization related functions
-	//////////////////////////////////////////////////////////////
+	// ////////////////////////////////////////////////////////////
+	// /  Global debug and initialization related functions
+	// ////////////////////////////////////////////////////////////
 
-	/// CPPONLY
 	void gsl_error_handler (const char * reason, const char * ,
 		int , int gsl_errno)
 	{
@@ -2602,9 +2539,9 @@ namespace simuPOP
 			+ reason);
 	}
 
-	/// create a stream buf that print to python sys.stdout
-	/// cout will be redirected to this buf to really output
-	/// to python console.
+	// create a stream buf that print to python sys.stdout
+	// cout will be redirected to this buf to really output
+	// to python console.
 	class PythonCoutBuf: public streambuf
 	{
 		public:
@@ -2651,7 +2588,7 @@ namespace simuPOP
 			}
 	};
 
-	/// create a null stream buf that discard everything
+	// create a null stream buf that discard everything
 	class NullStreamBuf: public streambuf
 	{
 		public:
@@ -2664,22 +2601,22 @@ namespace simuPOP
 			}
 	};
 
-	/// create an object
+	// create an object
 	PythonCoutBuf g_pythonCoutBuf;
 
-	/// null stream buf
+	// null stream buf
 	NullStreamBuf g_nullStreamBuf;
 
-	/// null stream
+	// null stream
 	ostream g_cnull( &g_nullStreamBuf );
 
-	/// return null stream
+	// return null stream
 	ostream& cnull()
 	{
 		return g_cnull;
 	}
 
-	/// set default output ("" means standard output)
+	// set default output ("" means standard output)
 	void setLogOutput(const string filename)
 	{
 		static ofstream * outputFile=NULL;
