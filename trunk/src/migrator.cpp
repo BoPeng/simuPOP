@@ -66,7 +66,7 @@ namespace simuPOP
 
 		m_rate = rate;
 
-		/// set r[i][i]--- may need to extend rate (to add i->i)
+		// set r[i][i]--- may need to extend rate (to add i->i)
 		if( m_mode == MigrByProbability || m_mode == MigrByProportion)
 		{
 			for(UINT i=0; i< szFrom; i++)		  // from
@@ -141,7 +141,7 @@ namespace simuPOP
 				continue;
 			}
 
-			/// 2nd, or 3rd method
+			// 2nd, or 3rd method
 			// first find out how many people will move to other subPop
 			// then randomly assign individuals to move
 			vectorlu toNum(toSize);
@@ -156,8 +156,8 @@ namespace simuPOP
 				for(UINT i=0; i<toSize; ++i)
 					toNum[i] = static_cast<ULONG>(m_rate[from][i]);
 			}
-			/// create a vector and assign indices, then random shuffle
-			/// and assign info
+			// create a vector and assign indices, then random shuffle
+			// and assign info
 			toIndices.resize( spSize);
 			UINT k=0;
 			for(UINT i=0; i<toSize && k<spSize; ++i)

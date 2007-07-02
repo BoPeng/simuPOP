@@ -108,7 +108,6 @@ namespace simuPOP
 		m_numOfFemale.resize(numSP+1);
 
 		ULONG numOfMale=0;
-
 		for( size_t sp=0; sp < numSP; ++sp)
 		{
 			ULONG n = 0;
@@ -121,32 +120,35 @@ namespace simuPOP
 			numOfMale += n;
 			m_numOfMale[sp] = n;
 
-            if(m_output_numOfMale)            
-    			pop.setIntVar(subPopVar_String(sp, numOfMale_String), n);
-            if(m_output_propOfMale)
-                pop.setDoubleVar( subPopVar_String(sp, propOfMale_String),
-				(double)(n)/pop.subPopSize(sp));
+			if(m_evalInSubPop)
+			{
+				if(m_output_numOfMale)
+					pop.setIntVar(subPopVar_String(sp, numOfMale_String), n);
+				if(m_output_propOfMale)
+					pop.setDoubleVar( subPopVar_String(sp, propOfMale_String),
+						(double)(n)/pop.subPopSize(sp));
+			}
 
-            if(m_output_numOfFemale || m_output_propOfFemale)
-            {
-                n = pop.subPopSize(sp) - n;
-    			m_numOfFemale[sp] = n;
-            }
+			n = pop.subPopSize(sp) - n;
+			m_numOfFemale[sp] = n;
 
-            if(m_output_numOfFemale)
-    			pop.setIntVar(subPopVar_String(sp, numOfFemale_String), n);
-            if(m_output_propOfFemale)
-                pop.setDoubleVar( subPopVar_String(sp, propOfFemale_String),
-				(double)(n)/pop.subPopSize(sp));
+			if(m_evalInSubPop)
+			{
+				if(m_output_numOfFemale)
+					pop.setIntVar(subPopVar_String(sp, numOfFemale_String), n);
+				if(m_output_propOfFemale)
+					pop.setDoubleVar( subPopVar_String(sp, propOfFemale_String),
+						(double)(n)/pop.subPopSize(sp));
+			}
 		}
-        if(m_output_numOfMale)
-    		pop.setIntVar( numOfMale_String, numOfMale);
-        if(m_output_numOfFemale)
-    		pop.setIntVar( numOfFemale_String, pop.popSize() - numOfMale);
-        if(m_output_propOfMale)
-            pop.setDoubleVar( propOfMale_String, (double)(numOfMale)/pop.popSize());
-        if(m_output_propOfFemale)
-    		pop.setDoubleVar( propOfFemale_String, (double)(pop.popSize() - numOfMale)/pop.popSize());
+		if(m_output_numOfMale)
+			pop.setIntVar( numOfMale_String, numOfMale);
+		if(m_output_numOfFemale)
+			pop.setIntVar( numOfFemale_String, pop.popSize() - numOfMale);
+		if(m_output_propOfMale)
+			pop.setDoubleVar( propOfMale_String, (double)(numOfMale)/pop.popSize());
+		if(m_output_propOfFemale)
+			pop.setDoubleVar( propOfFemale_String, (double)(pop.popSize() - numOfMale)/pop.popSize());
 		m_numOfMale[numSP] = numOfMale;
 		m_numOfFemale[numSP] = pop.popSize() - numOfMale;
 		return true;
@@ -161,37 +163,39 @@ namespace simuPOP
 		UINT numSP = pop.numSubPop();
 		m_numOfAffected.resize(numSP+1);
 		m_numOfUnaffected.resize(numSP+1);
-
-		for( size_t sp=0; sp < numSP; ++sp)
+		if(m_evalInSubPop)
 		{
-			ULONG n = count_if(pop.indBegin( sp ), pop.indEnd( sp ),
-				isAffected<individual>());
-			numOfAffected += n;
-			m_numOfAffected[sp] = n;
-            if(m_output_numOfAffected)
-                pop.setIntVar(subPopVar_String(sp, numOfAffected_String), n);
-            if(m_output_propOfAffected)
-                pop.setDoubleVar( subPopVar_String(sp, propOfAffected_String),
-                    (double)(n)/pop.subPopSize(sp));
-            if(m_output_numOfUnaffected || m_output_propOfUnaffected)
+			for( size_t sp=0; sp < numSP; ++sp)
 			{
-                n = pop.subPopSize(sp) - n;
-    			m_numOfUnaffected[sp] = n;
-            }
-            if(m_output_numOfUnaffected)
-    			pop.setIntVar(subPopVar_String(sp, numOfUnaffected_String), n);
-			if(m_output_propOfUnaffected)
-                pop.setDoubleVar( subPopVar_String(sp, propOfUnaffected_String),
-                    (double)(n)/pop.subPopSize(sp));
+				ULONG n = count_if(pop.indBegin( sp ), pop.indEnd( sp ),
+					isAffected<individual>());
+				numOfAffected += n;
+				m_numOfAffected[sp] = n;
+				if(m_output_numOfAffected)
+					pop.setIntVar(subPopVar_String(sp, numOfAffected_String), n);
+				if(m_output_propOfAffected)
+					pop.setDoubleVar( subPopVar_String(sp, propOfAffected_String),
+						(double)(n)/pop.subPopSize(sp));
+				if(m_output_numOfUnaffected || m_output_propOfUnaffected)
+				{
+					n = pop.subPopSize(sp) - n;
+					m_numOfUnaffected[sp] = n;
+				}
+				if(m_output_numOfUnaffected)
+					pop.setIntVar(subPopVar_String(sp, numOfUnaffected_String), n);
+				if(m_output_propOfUnaffected)
+					pop.setDoubleVar( subPopVar_String(sp, propOfUnaffected_String),
+						(double)(n)/pop.subPopSize(sp));
+			}
 		}
-        if(m_output_numOfAffected)
-            pop.setIntVar( numOfAffected_String, numOfAffected);
-        if(m_output_numOfUnaffected)
-            pop.setIntVar( numOfUnaffected_String, pop.popSize() - numOfAffected);
-        if(m_output_propOfAffected)
-            pop.setDoubleVar( propOfAffected_String, (double)(numOfAffected)/pop.popSize());
-        if(m_output_propOfUnaffected)
-            pop.setDoubleVar( propOfUnaffected_String, (double)(pop.popSize() - numOfAffected)/pop.popSize());
+		if(m_output_numOfAffected)
+			pop.setIntVar( numOfAffected_String, numOfAffected);
+		if(m_output_numOfUnaffected)
+			pop.setIntVar( numOfUnaffected_String, pop.popSize() - numOfAffected);
+		if(m_output_propOfAffected)
+			pop.setDoubleVar( propOfAffected_String, (double)(numOfAffected)/pop.popSize());
+		if(m_output_propOfUnaffected)
+			pop.setDoubleVar( propOfUnaffected_String, (double)(pop.popSize() - numOfAffected)/pop.popSize());
 		m_numOfAffected[numSP] = numOfAffected;
 		m_numOfUnaffected[numSP] = pop.popSize() - numOfAffected;
 		return true;
