@@ -1297,7 +1297,9 @@ namespace simuPOP
                 \li \c propOfFemale, <tt>subPop[sp]['propOfFemale']</tt> the proportion of
                     females in the population/subpopulation
 
-            \param numOfMale_param a dictionary of parameters of \c numOfMale statistics.        
+            \param numOfMale_param a dictionary of parameters of \c numOfMale statistics.
+                Can be one or more items choosen from the following options: \c numOfMale,
+                \c propOfMale, \c numOfFemale, and \c propOfFemale.
 
 			\param numOfAffected whether or not count the numbers/proportions of affected and unaffected individuals.
                 This parameter can set the following variables by user's specification:
@@ -1310,7 +1312,9 @@ namespace simuPOP
                 \li \c propOfUnaffected, <tt>subPop[sp]['propOfUnAffected']</tt> the proportion of
                     unaffected individuals in the population/subpopulation
 
-            \param numOfAffected_param a dictionary of parameters of \c numOfAffected statistics. 
+            \param numOfAffected_param a dictionary of parameters of \c numOfAffected statistics.
+                Can be one or more items choosen from the following options: \c numOfAffected,
+                \c propOfAffected, \c numOfUnaffected, \c propOfUnaffected.
         
 			\param numOfAlleles an array of loci at which the numbers of distinct alleles
                 will be counted (<tt>numOfAlleles=[loc1, loc2, ...]</tt> where \c loc1 etc.
@@ -1323,6 +1327,8 @@ namespace simuPOP
                     alleles at each locus. (Calculated only at requested loci.)
 
             \param numOfAlleles_param a dictionary of parameters of \c numOfAlleles statistics.
+                Can be one or more items choosen from the following options: \c numOfAffected,
+                \c propOfAffected, \c numOfUnaffected, \c propOfUnaffected.
         
 			\param alleleFreq an array of loci at which all allele frequencies will be
                 calculated (<tt>alleleFreq=[loc1, loc2, ...]</tt> where \c loc1 etc. are
@@ -1333,6 +1339,8 @@ namespace simuPOP
                 \li <tt>alleleFreq[a]</tt>, <tt>subPop[sp]['alleleFreq'][a]</tt>.
 
             \param alleleFreq_param a dictionary of parameters of \c alleleFreq statistics.
+                Can be one or more items choosen from the following options: \c numOfAlleles,
+                \c alleleNum, and \c alleleFreq.
         
 			\param genoFreq an array of loci at which all genotype frequencies will be
                 calculated (<tt>genoFreq=[loc1, loc2, ...]</tt> where \c loc1 etc. are
@@ -1374,7 +1382,9 @@ namespace simuPOP
                 will be set:
                 \li <tt>expHetero[loc]</tt>, <tt>subPop[sp]['expHetero'][loc]</tt>.
 
-            \param expHetero_param a dictionary of parameters of \c expHetero statistics.        
+            \param expHetero_param a dictionary of parameters of \c expHetero statistics.
+                Can be one or more items choosen from the following options: \c subpop and
+				\c midValues.
         
 			\param haploFreq a matrix of haplotypes (allele sequences on different loci) to
                 count. For example, <tt>haploFreq = [ [ 0,1,2 ], [1,2] ]</tt>  will count
@@ -1413,7 +1423,9 @@ namespace simuPOP
 
             \param association association measures 
 
-            \param association_param a dictionary of parameters of \c association statistics.        
+            \param association_param a dictionary of parameters of \c association statistics.
+                Can be one or more items choosen from the following options: \c ChiSq,
+                \c ChiSq_P, \c UC_U, and \c CramerV.
 
 			\param Fst calculate Fst, Fis, Fit. For example, <tt>Fst = [0,1,2]</tt> will calculate Fst, Fis,
                 Fit based on alleles at loci \c 0, \c 1, \c 2. The locus-specific values will be used
@@ -1422,7 +1434,9 @@ namespace simuPOP
                 \li <tt>Fst[loc]</tt>, <tt>Fis[loc]</tt>, <tt>Fit[loc]</tt>
                 \li <tt>AvgFst</tt>, <tt>AvgFis</tt>, <tt>AvgFit</tt>.
 
-            \param Fst_param a dictionary of parameters of \c Fst statistics.        
+            \param Fst_param a dictionary of parameters of \c Fst statistics.
+                Can be one or more items choosen from the following options: \c Fst,
+                \c Fis, \c Fit, \c AvgFst, \c AvgFis, and \c AvgFit.
         
 			\param relMethod method used to calculate relatedness. Can be either \c  REL_Queller or \c REL_Lynch.
                 The relatedness values between two individuals, or two groups of individuals are calculated according
@@ -1438,7 +1452,9 @@ namespace simuPOP
 
 			\param relLoci loci on which relatedness values are calculated
         
-            \param rel_param a dictionary of parameters of relatedness statistics.             
+            \param rel_param a dictionary of parameters of relatedness statistics.
+                Can be one or more items choosen from the following options: \c Fst,
+                \c Fis, \c Fit, \c AvgFst, \c AvgFis, and \c AvgFit.
         
 			\param hasPhase if a/b and b/a are the same genotype. Default to \c False.
 

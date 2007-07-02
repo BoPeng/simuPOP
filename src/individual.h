@@ -634,8 +634,8 @@ namespace simuPOP
 
 		protected:
 
-			/// internal flag. Can be used to perform many things.
-			/// bitset<3> was previously used but that will take 4 bytes.
+			// internal flag. Can be used to perform many things.
+			// bitset<3> was previously used but that will take 4 bytes.
 			unsigned char m_flags;
 
 			/// temporary information

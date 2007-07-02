@@ -93,11 +93,12 @@ namespace simuPOP
 			+ p*localNumLoci()) = allele;
 	}
 
-	/// set allele from an index.
-	/** \param allele allele to set
-	\param index index from the begining of genotype
-	\param p on p'th set of chromosome, p=0 by default
-	 */
+	// set allele from an index.
+	// /**
+	//\param allele allele to set
+	//\param index index from the begining of genotype
+	//\param p on p'th set of chromosome, p=0 by default
+	// */
 	void individual::setAllele(Allele allele, UINT index, UINT p)
 	{
 		CHECKRANGEABSLOCUS(index);
@@ -177,8 +178,8 @@ namespace simuPOP
 	{
 		setShallowCopied(true);
 
-		/// when the source is being moved. Its relative position may change
-		/// so it also becomes shallowCopied.
+		// when the source is being moved. Its relative position may change
+		// so it also becomes shallowCopied.
 		const_cast<individual&>(rhs).setShallowCopied(true);
 
 		m_flags = rhs.m_flags;
