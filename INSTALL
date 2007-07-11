@@ -556,7 +556,7 @@ will need to install and use the following tools:
 
 Install a subversion client. tortoiseSVN is popular under windows but 
 command line tool is also available and sometimes more convenient. 
-Then, get simuPOP/svn from https://svn.sourceforge.net/svnroot/simupop/trunk
+Then, get simuPOP/svn from https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
 
 3.2. Installing boost (Optional)
