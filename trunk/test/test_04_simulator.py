@@ -42,6 +42,11 @@ class TestSimulator(unittest.TestCase):
         pop1 = simu.getPopulation(1)
         simu.population(0).individual(1).setAllele(0,0)
         self.assertEqual( pop1.individual(0).allele(0), 1)
+        # if we use simu.getPopulation(1, true), the population
+        # within the simulator will be destroyed
+        pop2 = simu.getPopulation(0, True)
+        self.assertEqual(pop1, pop2)
+        self.assertEqual(simu.population(0).popSize(), 0)
     
     def testProperties(self):
         'Testing simulator properties'

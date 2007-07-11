@@ -219,11 +219,20 @@ namespace simuPOP
 		    that the changes to the referred population will reflect to the one in simulator.
 		    \em 'Temporary' means that the referred population might be invalid after evolution.
 			\param rep the index number of the replicate which will be obtained
+			\param destructive if true, destroy the copy of population within this simulator. 
+				Default to false. <tt>getPopulation(rep, true)</tt> is a more efficient way
+				to get hold of a population when the simulator will no longer be used.
 			\return reference to a population
 			*/
-			population& getPopulation(UINT rep)
+			population& getPopulation(UINT rep, bool destructive=false)
 			{
-				return *new population( *m_ptrRep[rep]);
+				if (destructive)
+				{
+					population * pop = new population();
+					pop->swap(*m_ptrRep[rep]);
+					return *pop;
+				} else
+					return *new population( *m_ptrRep[rep]);
 			}
 
 			/// set mating scheme
