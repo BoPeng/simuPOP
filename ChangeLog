@@ -10,6 +10,8 @@ version 0.8.0 - Not released, available at https://svn.sourceforge.net/svnroot/s
   - NEW: extending pyIndOperator with handling of loci and infoFields
   - BUG: fix a crash of postOps in dryrun mode by applying operator in the order given.
   - BUG: fix scripts/simuViewPop.py
+  - NEW: add optional option destructive=False to simulator::getPopulation, as
+		a way to retrieve a population more efficiently.
 
 
 version 0.7.10 - (Rev 987) May 20, 2007
