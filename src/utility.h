@@ -422,6 +422,9 @@ namespace simuPOP
 	void PyObj_As_IntArray(PyObject *obj, vectori& val);
 
 	/// CPPONLY
+	void PyObj_As_Matrix(PyObject *obj, matrix& val);
+
+	/// CPPONLY
 	void PyObj_As_StrDict(PyObject *obj, strDict& val);
 
 	/// CPPONLY

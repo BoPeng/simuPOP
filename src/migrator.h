@@ -99,7 +99,7 @@ namespace simuPOP
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				: Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
-				m_rate(0), m_mode(0), m_from(fromSubPop), m_to(toSubPop)
+				m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)
 			{
 
 				DBG_FAILIF( !m_from.empty() && m_from.size() != rate.size(),
@@ -143,7 +143,7 @@ namespace simuPOP
 				return "<simuPOP::migrator>" ;
 			}
 
-		private:
+		protected:
 
 			/// migration rate. its meaning is controled by m_mode
 			matrix m_rate;
@@ -156,56 +156,85 @@ namespace simuPOP
 			vectoru m_from, m_to;
 	};
 
-    /// migrate using given information vector
+    /// A more flexible python migrator
 	/**
-	You can use directmigrator??? to accomplish any migration: that is to say
-	you directly specify subpopulation numbers for each individual and
-	this operator will do the rest.
+	This migrator can be used in two ways
+	\li define a function that accepts a generation number and return a migration rate matrix.
+		This can be used in the varying migration rate cases.
+	\li define a function that accepts individuals etc, and return new subpopulation id.
+	
+	More specifically, \c func can be
+		\li func(ind) when neither loci nor param is given.
+		\li func(ind, genotype) when loci is given
+		\li func(ind, param) when param is given
+		\li func(ind, genotype, param) when both loci and param are given.
+	and return subpopulation id.
 	*/
-	class pyMigrator: public Operator
+	class pyMigrator: public migrator
 	{
 
 		public:
-			/// create a directmigrator
+			/// create a hybrid migrator
 			/**
-            For even more complicated migration schemes, you can DIY it using a
-            \c pyMigrator. This operator is not strictly hybrid since it does not
-            call a python function. However, it takes a carray of subPopulation IDs
-            for each individual. \c pyMigrator then complete migration according to
-            its content.
-        
-			This operator accepts a one-dimensional Numeric Python \c int array
-            (created by \c Numeric.array ). ???
-
-			\param subPopID a 1-d array (list, typle, carray). Length must be
-                greater than or equal to the population size.
+			\param rateFunc a python function that accept a generation number,
+				current subpopulation sizes, and return a migration rate matrix. 
+				The migrator then migrate like a usual migrator.
+			\param indFunc a python function that accepts an individual, optional
+				genotype and parameter, then returns a subpopulation id. This 
+				method can be used to separate a population according to individual
+				genotype.
 			\param stage default to \c PreMating
 			*/
-			pyMigrator( PyObject* subPopID=NULL,
+			pyMigrator( PyObject * rateFunc=NULL, int mode = MigrByProbability,
+				vectoru fromSubPop=vectoru(), vectoru toSubPop=vectoru(),
+				PyObject * indFunc=NULL,
+				const vectoru & loci=vectoru(), PyObject * param=NULL,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				: Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields)
+				: m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(param),
+					migrator(matrix(), mode, fromSubPop, toSubPop, stage, begin, end, step, at, rep, grp, infoFields)
 			{
 				// carray of python list/typle
-				DBG_ASSERT( PyObj_Is_IntNumArray(subPopID) ||
-					PySequence_Check(subPopID), ValueError,
-					"Passed vector is not a sequence (Python list, tuple or carray)");
-				Py_INCREF(subPopID);
-				m_subPopID = subPopID;
+				DBG_FAILIF( rateFunc != NULL && !PyCallable_Check(rateFunc), 
+					ValueError, "Passed rateFunc is not a callable Python function.");
+				DBG_FAILIF( indFunc != NULL && !PyCallable_Check(indFunc), 
+					ValueError, "Passed rateFunc is not a callable Python function.");
+				DBG_FAILIF( rateFunc == NULL && indFunc == NULL,
+					ValueError, "Please specify either rateFunc or indFunc");
+				DBG_FAILIF( rateFunc != NULL && indFunc != NULL,
+					ValueError, "Please specify only one of rateFunc or indFunc");
+
+				if (m_rateFunc != NULL)
+					Py_INCREF(m_rateFunc);
+				if (m_indFunc != NULL)
+					Py_INCREF(m_indFunc);
+				if (m_param  != NULL)
+					Py_INCREF(m_param);
 			}
 
 			/// destructor
 			virtual ~pyMigrator()
 			{
-				if( m_subPopID != NULL)
-					Py_DECREF(m_subPopID);
+				if (m_rateFunc != NULL)
+					Py_DECREF(m_rateFunc);
+				if (m_indFunc != NULL)
+					Py_DECREF(m_indFunc);
+				if (m_param  != NULL)
+					Py_DECREF(m_param);
 			}
 
 			/// CPPONLY
-			pyMigrator(const pyMigrator& rhs):Operator(rhs), m_subPopID(rhs.m_subPopID)
+			pyMigrator(const pyMigrator& rhs): migrator(rhs), 
+				m_rateFunc(rhs.m_rateFunc),
+				m_indFunc(rhs.m_indFunc),
+				m_param(rhs.m_param)
 			{
-				if( m_subPopID != NULL)
-					Py_INCREF(m_subPopID);
+				if (m_rateFunc != NULL)
+					Py_INCREF(m_rateFunc);
+				if (m_indFunc != NULL)
+					Py_INCREF(m_indFunc);
+				if (m_param  != NULL)
+					Py_INCREF(m_param);
 			}
 
             /// deep copy of a \c pyMigrator
@@ -224,7 +253,18 @@ namespace simuPOP
 			}
 
 		private:
-			PyObject* m_subPopID;
+			/// rateFunc
+			PyObject* m_rateFunc;
+			
+			/// indFunc as in pyIndOperator
+			PyObject* m_indFunc;
+			
+			/// loci to indFunc
+			vectoru m_loci;
+
+			/// parameters to indFunc
+			PyObject* m_param;
+			
 
 	};
 
