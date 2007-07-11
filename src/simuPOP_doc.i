@@ -9859,12 +9859,17 @@ Description:
 
 Usage:
 
-    x.getPopulation(rep)
+    x.getPopulation(rep, destructive=False)
 
 Arguments:
 
     rep:            the index number of the replicate which will be
                     obtained
+    destructive:    if true, destroy the copy of  population within
+                    this  simulator. Default to false.
+                    getPopulation(rep, true) is a more efficient way
+                    to get hold of a  population when the  simulator
+                    will no longer be used.
 
 Details:
 
@@ -10385,7 +10390,9 @@ Arguments:
                     proportion of females in the
                     population/subpopulation
     numOfMale_param:a dictionary of parameters of numOfMale
-                    statistics.
+                    statistics. Can be one or more items choosen from
+                    the following options: numOfMale, propOfMale,
+                    numOfFemale, and propOfFemale.
     numOfAffected:  whether or not count the numbers/proportions of
                     affected and unaffected individuals. This
                     parameter can set the following variables by
@@ -10403,7 +10410,9 @@ Arguments:
                     the proportion of unaffected individuals in the
                     population/subpopulation
     numOfAffected_param:a dictionary of parameters of numOfAffected
-                    statistics.
+                    statistics. Can be one or more items choosen from
+                    the following options: numOfAffected,
+                    propOfAffected, numOfUnaffected, propOfUnaffected.
     numOfAlleles:   an array of loci at which the numbers of distinct
                     alleles will be counted (numOfAlleles=[loc1, loc2,
                     ...] where loc1 etc. are absolute locus indices).
@@ -10418,7 +10427,9 @@ Arguments:
                     of distinct alleles at each locus. (Calculated
                     only at requested loci.)
     numOfAlleles_param:a dictionary of parameters of numOfAlleles
-                    statistics.
+                    statistics. Can be one or more items choosen from
+                    the following options: numOfAffected,
+                    propOfAffected, numOfUnaffected, propOfUnaffected.
     alleleFreq:     an array of loci at which all allele frequencies
                     will be calculated (alleleFreq=[loc1, loc2, ...]
                     where loc1 etc. are loci where allele frequencies
@@ -10429,7 +10440,9 @@ Arguments:
                     * alleleNum[a], subPop[sp]['alleleNum'][a]
                     * alleleFreq[a], subPop[sp]['alleleFreq'][a].
     alleleFreq_param:a dictionary of parameters of alleleFreq
-                    statistics.
+                    statistics. Can be one or more items choosen from
+                    the following options: numOfAlleles, alleleNum,
+                    and alleleFreq.
     genoFreq:       an array of loci at which all genotype frequencies
                     will be calculated (genoFreq=[loc1, loc2, ...]
                     where loc1 etc. are loci where genotype
@@ -10482,7 +10495,8 @@ Arguments:
                     variables will be set:
                     * expHetero[loc], subPop[sp]['expHetero'][loc].
     expHetero_param:a dictionary of parameters of expHetero
-                    statistics.
+                    statistics. Can be one or more items choosen from
+                    the following options: subpop and midValues.
     haploFreq:      a matrix of haplotypes (allele sequences on
                     different loci) to count. For example, haploFreq =
                     [ [ 0,1,2 ], [1,2] ] will count all haplotypes on
@@ -10537,7 +10551,9 @@ Arguments:
                     results.
     association:    association measures
     association_param:a dictionary of parameters of association
-                    statistics.
+                    statistics. Can be one or more items choosen from
+                    the following options: ChiSq, ChiSq_P, UC_U, and
+                    CramerV.
     Fst:            calculate Fst, Fis, Fit. For example, Fst =
                     [0,1,2] will calculate Fst, Fis, Fit based on
                     alleles at loci 0, 1, 2. The locus-specific values
@@ -10547,7 +10563,10 @@ Arguments:
                     following variables:
                     * Fst[loc], Fis[loc], Fit[loc]
                     * AvgFst, AvgFis, AvgFit.
-    Fst_param:      a dictionary of parameters of Fst statistics.
+    Fst_param:      a dictionary of parameters of Fst statistics. Can
+                    be one or more items choosen from the following
+                    options: Fst, Fis, Fit, AvgFst, AvgFis, and
+                    AvgFit.
     relMethod:      method used to calculate relatedness. Can be
                     either REL_Queller or REL_Lynch. The relatedness
                     values between two individuals, or two groups of
@@ -10567,7 +10586,9 @@ Arguments:
                     subpopulations is calculated.
     relLoci:        loci on which relatedness values are calculated
     rel_param:      a dictionary of parameters of relatedness
-                    statistics.
+                    statistics. Can be one or more items choosen from
+                    the following options: Fst, Fis, Fit, AvgFst,
+                    AvgFis, and AvgFit.
     hasPhase:       if a/b and b/a are the same genotype. Default to
                     False.
     midValues:      whether or not post intermediate results. Default
