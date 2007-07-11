@@ -973,9 +973,9 @@ namespace simuPOP
 		m_numSubPop = m_subPopSize.size();
 		// rebuild index
 		m_subPopIndex.resize(m_numSubPop+1);
-		size_t i = 1;
-		for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
-			m_subPopIndex[i] = m_subPopIndex[i-1] + m_subPopSize[i - 1];
+		size_t j = 1;
+		for (m_subPopIndex[0] = 0; j <= m_numSubPop; ++j)
+			m_subPopIndex[j] = m_subPopIndex[j-1] + m_subPopSize[j - 1];
 	}
 
 	void population::mergePopulation(const population & pop, const vectorlu & newSubPopSizes,
