@@ -476,6 +476,35 @@ namespace simuPOP
 		}
 	}
 
+
+	void PyObj_As_Matrix(PyObject* obj, matrix& val)
+	{
+		if (obj==NULL)
+		{
+			val = matrix();
+			return;
+		}
+		DBG_ASSERT( PySequence_Check(obj), ValueError, "PyObj_As_Matrix: Expecting a sequence");
+		val.resize(PySequence_Size(obj), vectorf());
+		//
+		for (size_t i=0; i < val.size(); ++i)
+		{
+			PyObject * item = PySequence_GetItem(obj, i);
+			DBG_ASSERT( PySequence_Check(item), ValueError, "PyObj_As_Matrix: Expecting a nested sequence");
+
+			size_t sz = PySequence_Size(item);
+			val[i].resize(sz);
+			for(size_t j=0; j < sz; ++i)
+			{
+				PyObject * it = PySequence_GetItem(item, j);
+				PyObj_As_Double(it, val[i][j]);
+				Py_DECREF(it);
+			}
+			Py_DECREF(item);
+		}
+	}
+
+ 
 	void PyObj_As_IntDict(PyObject* obj, intDict& val)
 	{
 		if(obj==NULL)

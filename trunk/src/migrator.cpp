@@ -28,11 +28,7 @@ namespace simuPOP
 	void migrator::setRates(const matrix& rate, int mode)
 	{
 		if( rate.empty() )
-		{
-			m_from.clear();
-			m_to.clear();
 			return;
-		}
 
 		UINT szFrom = rate.size();
 		UINT szTo = rate[0].size();
@@ -183,31 +179,77 @@ namespace simuPOP
 
 	bool pyMigrator::apply(population& pop)
 	{
-		if(PyObj_Is_IntNumArray(m_subPopID) )
+		if (m_rateFunc != NULL)
 		{
-			DBG_ASSERT( NumArray_Size(m_subPopID) >= static_cast<int>(pop.popSize()) ,
-				ValueError, "Given subpopid array has a length of "
-				+ toStr( NumArray_Size(m_subPopID)) + " which is less than population size "
-				+ toStr(pop.popSize()));
+			// get rate,
+			matrix rate;
+			PyObject* curSize = PyTuple_New(pop.numSubPop());
+			for(size_t i=0; i<pop.numSubPop(); ++i)
+				PyTuple_SetItem(curSize, i, PyInt_FromLong(pop.subPopSize(i)));
 
-			long * id = reinterpret_cast<long*>(NumArray_Data(m_subPopID));
-
-			for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
-				pop.ind(i).setSubPopID(id[i]);
+			PyCallFunc2(m_rateFunc, "(iO)", pop.gen(), curSize, rate, PyObj_As_Matrix);
+			Py_XDECREF(curSize);
+			//
+			setRates(rate, m_mode);
+			// apply migrator
+			return migrator::apply(pop);			
 		}
-		else
+		// now, m_indFunc
+		//
+		// if loci is given
+		vectora alleles;
+		PyObject * numArray;
+		UINT pld = pop.ploidy();
+		//
+		if (!m_loci.empty())
 		{
-			DBG_ASSERT( PySequence_Size(m_subPopID) >=  static_cast<int>(pop.popSize()) ,
-				ValueError, "Given subpopid array has a length of "
-				+ toStr( PySequence_Size(m_subPopID)) + " which is less than population size "
-				+ toStr(pop.popSize()));
+			alleles.resize(m_loci.size()*pld);
+			numArray = Allele_Vec_As_NumArray(alleles.begin(), alleles.end());
+		}
+		// call the python function, pass the each individual to it.
+		// get pop object
+		for(population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
+		{
+			PyObject* indObj = pyIndObj(static_cast<void*>(&*it));
+			// if pop is valid?
+			if(indObj == NULL)
+				throw SystemError("Could not pass population to the provided function. \n"
+					"Compiled with the wrong version of SWIG?");
 
-			int id;
-			for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
+			// loci
+			if (!m_loci.empty())
 			{
-				PyObj_As_Int(PySequence_GetItem(m_subPopID, i), id);
-				pop.ind(i).setSubPopID(id);
+				for(size_t i=0, iEnd=m_loci.size(), j=0; i < iEnd; ++i)
+					for(UINT p=0; p < pld; ++p)
+						alleles[j++] = it->allele(m_loci[i], p);
 			}
+			// hold the return subpopulation id.
+			int resID = 0;
+			// parenthesis is needed since PyCallFuncX are macros.
+			if( m_param == NULL)
+			{
+				if (m_loci.empty())
+				{
+					PyCallFunc(m_indFunc, "(O)", indObj, resID, PyObj_As_Int);
+				}
+				else
+				{
+					PyCallFunc2(m_indFunc, "(OO)", indObj, numArray, resID, PyObj_As_Int);
+				}
+			}
+			else
+			{
+				if (m_loci.empty())
+				{
+					PyCallFunc2(m_indFunc, "(OO)", indObj, m_param, resID, PyObj_As_Int);
+				}
+				else
+				{
+					PyCallFunc3(m_indFunc, "(OOO)", indObj, numArray, m_param, resID, PyObj_As_Int);
+				}
+			}
+			it->setSubPopID(resID);
+			Py_DECREF(indObj);
 		}
 		// do migration.
 		// true: rearrange individuals
