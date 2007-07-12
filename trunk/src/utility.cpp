@@ -494,7 +494,7 @@ namespace simuPOP
 
 			size_t sz = PySequence_Size(item);
 			val[i].resize(sz);
-			for(size_t j=0; j < sz; ++i)
+			for(size_t j=0; j < sz; ++j)
 			{
 				PyObject * it = PySequence_GetItem(item, j);
 				PyObj_As_Double(it, val[i][j]);

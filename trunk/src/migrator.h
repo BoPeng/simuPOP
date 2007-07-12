@@ -101,14 +101,18 @@ namespace simuPOP
 				: Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)
 			{
+                // when migrator is constructed from a pyMigrator, initial
+                // rate is empty
+                if (!rate.empty())
+                {
+                    DBG_FAILIF( !m_from.empty() && m_from.size() != rate.size(),
+    					ValueError, "Length of param fromSubPop must match rows of rate matrix.");
 
-				DBG_FAILIF( !m_from.empty() && m_from.size() != rate.size(),
-					ValueError, "Length of param fromSubPop must match rows of rate matrix.");
+    				DBG_FAILIF( !m_to.empty() && m_to.size() != rate[0].size(),
+    					ValueError, "Length of param toSubPop must match columns of rate matrix.");
 
-				DBG_FAILIF( !m_to.empty() && m_to.size() != rate[0].size(),
-					ValueError, "Length of param toSubPop must match columns of rate matrix.");
-
-				setRates(rate, mode);
+    				setRates(rate, mode);
+                }
 			};
 
 			/// destructor
@@ -156,19 +160,19 @@ namespace simuPOP
 			vectoru m_from, m_to;
 	};
 
-    /// A more flexible python migrator
+    /// A more flexible Python migrator
 	/**
 	This migrator can be used in two ways
-	\li define a function that accepts a generation number and return a migration rate matrix.
+	\li define a function that accepts a generation number and returns a migration rate matrix.
 		This can be used in the varying migration rate cases.
-	\li define a function that accepts individuals etc, and return new subpopulation id.
+	\li define a function that accepts individuals etc, and returns the new subpopulation ID.
 	
 	More specifically, \c func can be
-		\li func(ind) when neither loci nor param is given.
-		\li func(ind, genotype) when loci is given
-		\li func(ind, param) when param is given
+		\li func(ind) when neither loci nor \c param is given.
+		\li func(ind, genotype) when loci is given.
+		\li func(ind, param) when param is given.
 		\li func(ind, genotype, param) when both loci and param are given.
-	and return subpopulation id.
+	and return the subpopulation ID.
 	*/
 	class pyMigrator: public migrator
 	{
@@ -176,10 +180,10 @@ namespace simuPOP
 		public:
 			/// create a hybrid migrator
 			/**
-			\param rateFunc a python function that accept a generation number,
-				current subpopulation sizes, and return a migration rate matrix. 
+			\param rateFunc a Python function that accepts a generation number,
+				current subpopulation sizes, and returns a migration rate matrix. 
 				The migrator then migrate like a usual migrator.
-			\param indFunc a python function that accepts an individual, optional
+			\param indFunc a Python function that accepts an individual, optional
 				genotype and parameter, then returns a subpopulation id. This 
 				method can be used to separate a population according to individual
 				genotype.
@@ -198,7 +202,7 @@ namespace simuPOP
 				DBG_FAILIF( rateFunc != NULL && !PyCallable_Check(rateFunc), 
 					ValueError, "Passed rateFunc is not a callable Python function.");
 				DBG_FAILIF( indFunc != NULL && !PyCallable_Check(indFunc), 
-					ValueError, "Passed rateFunc is not a callable Python function.");
+					ValueError, "Passed indFunc is not a callable Python function.");
 				DBG_FAILIF( rateFunc == NULL && indFunc == NULL,
 					ValueError, "Please specify either rateFunc or indFunc");
 				DBG_FAILIF( rateFunc != NULL && indFunc != NULL,
