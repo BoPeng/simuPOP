@@ -204,7 +204,7 @@ namespace simuPOP
 		//
 		// if loci is given
 		vectora alleles;
-		PyObject * numArray;
+		PyObject * numArray = NULL;
 		UINT pld = pop.ploidy();
 		//
 		if (!m_loci.empty())
