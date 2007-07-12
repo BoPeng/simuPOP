@@ -81,6 +81,9 @@ env = Environment(
 	# pass all environment variables because MSVC needs INCLUDE and LIB
 	# but they may not exist on other platforms
     ENV=os.environ,
+	# force the use of MS Visual Studio .NET 2003 if under windows
+	# This does not work right when there are multiple versions of MSVS.
+	MSVS_VERSION = '7.1',
     tools=['default', 'swig'])
 # try to use the compiler used to build python
 if cc != "":
