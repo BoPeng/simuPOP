@@ -141,19 +141,29 @@ namespace simuPOP
 
 		DBG_DO(DBG_MUTATOR, cout << "step is " << step << endl);
 
+		// increase
 		if( rng().randUniform01() < m_incProb)
 		{
+#ifdef BINARYALLELE
+			allele = 1;
+#else
 			if( static_cast<UINT>(allele + step) < this->maxAllele() )
 				AlleleAdd(allele, step);
 			else
-				allele = this->maxAllele();
+				allele = static_cast<Allele>(this->maxAllele());
+#endif
 		}
+		// decrease
 		else
 		{
+#ifdef BINARYALLELE
+			allele = 0;
+#else
 			if(allele > step)
 				AlleleMinus(allele, step);
 			else
 				allele = 0;
+#endif
 		}
 	}
 
