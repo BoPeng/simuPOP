@@ -36,6 +36,7 @@ typedef std::bitset<DBG_CODE_LENGTH> DbgBitSet;
 #include <sstream>
 using std::stringstream;
 using std::ostringstream;
+using std::hex;
 
 #include <fstream>
 using std::fstream;
@@ -2745,6 +2746,15 @@ namespace simuPOP
 #else
 		return(false);
 #endif
+	}
+
+	void limits()
+	{
+		cout << "Maximum allele state: " << hex << MaxAllele << endl;
+		cout << "Maximum random number: " << hex << MaxRandomNumber << endl;
+		cout << "Maximum number of subpopulations: " << hex << MaxSubPopID << endl;
+		cout << "Maximum index size (limits population size * total number of markers): " 
+			<< hex << MaxIndexSize << endl;
 	}
 
 #ifdef SIMUMPI

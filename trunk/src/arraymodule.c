@@ -128,7 +128,8 @@ a_getitem(arrayobject *ap, int i)
 static int
 a_setitem(arrayobject *ap, int i, PyObject *v)
 {
-    short x;
+	// right now, the longest allele is uint16_t, but we need to be careful.
+    int x;
     /* PyArg_Parse's 'b' formatter is for an unsigned char, therefore
          must use the next size up that is signed ('h') and manually do
          the overflow checking */
@@ -145,7 +146,7 @@ a_setitem(arrayobject *ap, int i, PyObject *v)
 			+ idx - ap->ob_iterator.ob_piece_begin) = (x != 0);
 #else
 		*(ap->ob_iterator.ob_iter + trunk*(ap->ob_iterator.ob_piece_end - ap->ob_iterator.ob_piece_begin)
-			+ idx - ap->ob_iterator.ob_piece_begin) = x;
+			+ idx - ap->ob_iterator.ob_piece_begin) = Allele(x);
 #endif
 	}
 #else
@@ -153,7 +154,7 @@ a_setitem(arrayobject *ap, int i, PyObject *v)
 #ifdef BINARYALLELE
     *(ap->ob_iterator.ob_iter+i) = (x != 0);
 #else
-    *(ap->ob_iterator.ob_iter+i) = x;
+    *(ap->ob_iterator.ob_iter+i) = Allele(x);
 #endif
 
 #endif

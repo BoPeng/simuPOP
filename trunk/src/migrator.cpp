@@ -167,7 +167,8 @@ namespace simuPOP
 			ind = pop.indBegin(spFrom);
 			// set info
 			for(UINT i=0; i<spSize; ++i)
-				(ind + i )->setSubPopID( toIndices[i] );
+				// SubPopID is signed short, to save a few bits
+				(ind + i )->setSubPopID(static_cast<SubPopID>(toIndices[i]));
 		}										  /// for all subPop.
 
 		// do migration.
@@ -268,9 +269,8 @@ namespace simuPOP
 		if(m_randomize)
 		{
 			// random shuffle individuals
-			ULONG N = pop.subPopSize(m_which);
 			for(ULONG it=0; it<pop.subPopSize(m_which); ++it)
-				pop.ind(it, m_which).setSubPopID(rng().randInt(N) );
+				pop.ind(it, m_which).setSubPopID(static_cast<SubPopID>(rng().randInt(MaxSubPopID)));
 			std::sort(pop.indBegin(m_which), pop.indEnd(m_which));
 			// not actully required since spliSubPop will do this.
 			// this is to remind myself this step is important.

@@ -30,7 +30,6 @@ namespace simuPOP
 	{
 		m_formOffGenotype = formOffspringGenotype();
 		m_hasSexChrom = pop.sexChrom();
-		m_ploidy = pop.ploidy();
 		vectorf prob(2*pop.numChrom(), 0.5);
 		if(m_formOffGenotype)
 			m_bt.setParameter(prob, pop.popSize());
@@ -510,7 +509,8 @@ namespace simuPOP
 					parent = &pop.ind(rng().randInt(spSize), sp);
 
 				numOS = numOffspring(pop.gen());
-				if(numOS > itEnd - it)
+				// avoid warning assocaited with 'numOS > itEnd - it'
+				if(it + numOS > itEnd)
 					numOS = itEnd - it;
 				// record family size, for debug reasons.
 				DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
@@ -644,7 +644,7 @@ namespace simuPOP
 
 				// record family size (this may be wrong for the last family)
 				numOS = numOffspring(pop.gen());
-				if(numOS > itEnd - it)
+				if(it + numOS > itEnd)
 					numOS = itEnd - it;
 				// record family size (this may be wrong for the last family)
 				DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
@@ -1039,7 +1039,7 @@ namespace simuPOP
 				//
 				itBegin = it;
 				numOS = numOffspring(pop.gen());
-				if(numOS > itEnd - it)
+				if( it + numOS > itEnd)
 					numOS = itEnd - it;
 				og.copyOffspring(pop, parent, numOS, it);
 
@@ -1435,7 +1435,7 @@ namespace simuPOP
 				itBegin = it;
 				numOS = numOffspring(pop.gen());
 				// note that this is still valid in stack stage
-				if(numOS > itEnd - it)
+				if(it + numOS > itEnd)
 					numOS = itEnd - it;
 				// generate numOffspring offspring per mating
 				// it moves forward

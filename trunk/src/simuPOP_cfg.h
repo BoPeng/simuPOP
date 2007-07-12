@@ -142,6 +142,7 @@ typedef signed short SubPopID;
 const unsigned long MaxSubPopID = std::numeric_limits<SubPopID>::max();
 
 typedef unsigned long ULONG;
+const unsigned long MaxIndexSize = std::numeric_limits<ULONG>::max();
 typedef long LONG;
 
 typedef std::vector<int>                   vectori;

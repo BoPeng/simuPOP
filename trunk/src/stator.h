@@ -264,7 +264,7 @@ namespace simuPOP
 					strDict::const_iterator it;
 					strDict::const_iterator itEnd = param.end();
 					if ((it=param.find("subPop")) != itEnd)
-						m_evalInSubPop = it->second;
+						m_evalInSubPop = it->second != 0.;
 					if (param.find(numOfMale_String) != itEnd ||
 						param.find(propOfMale_String) != itEnd ||
 						param.find(numOfFemale_String) != itEnd ||
@@ -275,13 +275,13 @@ namespace simuPOP
 						m_output_numOfFemale = false;
                         m_output_propOfFemale = false;
 						if ((it=param.find(numOfMale_String)) != itEnd)
-							m_output_numOfMale = it->second;
+							m_output_numOfMale = it->second != 0.;
 						if ((it=param.find(propOfMale_String)) != itEnd)
-							m_output_propOfMale = it->second;
+							m_output_propOfMale = it->second != 0.;
 						if ((it=param.find(numOfFemale_String)) != itEnd)
-							m_output_numOfFemale = it->second;
+							m_output_numOfFemale = it->second != 0.;
 						if ((it=param.find(propOfFemale_String)) != itEnd)
-							m_output_propOfFemale = it->second;
+							m_output_propOfFemale = it->second != 0.;
 					}
 				}
 			}
@@ -367,7 +367,7 @@ namespace simuPOP
 					strDict::const_iterator it;
 					strDict::const_iterator itEnd = param.end();
 					if ((it=param.find("subPop")) != itEnd)
-						m_evalInSubPop = it->second;
+						m_evalInSubPop = it->second != 0.;
 					if (param.find(numOfAffected_String) != itEnd ||
 						param.find(propOfAffected_String) != itEnd ||
 						param.find(numOfUnaffected_String) != itEnd ||
@@ -378,13 +378,13 @@ namespace simuPOP
 						m_output_numOfUnaffected = false;
                         m_output_propOfUnaffected = false;
 						if ((it=param.find(numOfAffected_String)) != itEnd)
-							m_output_numOfAffected = it->second;
+							m_output_numOfAffected = it->second != 0.;
 						if ((it=param.find(propOfAffected_String)) != itEnd)
-							m_output_propOfAffected = it->second;
+							m_output_propOfAffected = it->second != 0.;
 						if ((it=param.find(numOfUnaffected_String)) != itEnd)
-							m_output_numOfUnaffected = it->second;
+							m_output_numOfUnaffected = it->second != 0.;
 						if ((it=param.find(propOfUnaffected_String)) != itEnd)
-							m_output_propOfUnaffected = it->second;
+							m_output_propOfUnaffected = it->second != 0.;
 					}
 				}
 			}
@@ -475,7 +475,7 @@ namespace simuPOP
 					strDict::const_iterator it;
 					strDict::const_iterator itEnd = param.end();
 					if ((it=param.find("subPop")) != itEnd)
-						m_evalInSubPop = it->second;
+						m_evalInSubPop = it->second != 0.;
 					if (param.find(AlleleNum_String) != itEnd ||
 						param.find(AlleleFreq_String) != itEnd ||
 						param.find(NumOfAlleles_String) != itEnd)
@@ -484,11 +484,11 @@ namespace simuPOP
 						m_output_alleleFreq = false;
 						m_output_numOfAlleles = false;
 						if ((it=param.find(AlleleNum_String)) != itEnd)
-							m_output_alleleNum = it->second;
+							m_output_alleleNum = it->second != 0.;
 						if ((it=param.find(AlleleFreq_String)) != itEnd)
-							m_output_alleleFreq = it->second;
+							m_output_alleleFreq = it->second != 0.;
 						if ((it=param.find(NumOfAlleles_String)) != itEnd)
-							m_output_numOfAlleles = it->second;
+							m_output_numOfAlleles = it->second != 0.;
 					}
 				}
 			}
@@ -660,7 +660,7 @@ namespace simuPOP
 					strDict::const_iterator it;
 					strDict::const_iterator itEnd = param.end();
 					if ((it=param.find("subPop")) != itEnd)
-						m_evalInSubPop = it->second;
+						m_evalInSubPop = it->second != 0.;
 				}
 				for(vectori::const_iterator it = atLoci.begin(); it != atLoci.end(); ++it)
 					m_calc.addLocus(*it, true, m_evalInSubPop, true);
@@ -837,9 +837,9 @@ namespace simuPOP
 					strDict::const_iterator it;
 					strDict::const_iterator itEnd = param.end();
 					if ((it=param.find("subPop")) != itEnd)
-						m_evalInSubPop = it->second;
+						m_evalInSubPop = it->second != 0.;
 					if ((it=param.find("midValues")) != itEnd)
-						m_midValues = it->second;
+						m_midValues = it->second != 0.;
 				}
 				// add expected hetero to m_alleleFreq
 				for(size_t i=0; i < expHetero.size(); ++i)
