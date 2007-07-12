@@ -213,7 +213,8 @@ namespace simuPOP
 									continue;
 #endif
 								for(ULONG ind=left; ind != right; ++ind)
-									pop.ind(ind).setAllele(ws.get(), *locus, m_atPloidy);
+									// ws.get() return ULONG from 0 to len(allele frequency).
+									pop.ind(ind).setAllele(static_cast<Allele>(ws.get()), *locus, m_atPloidy);
 							}
 						}
 #ifdef SIMUMPI

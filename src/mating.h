@@ -88,9 +88,6 @@ namespace simuPOP
 			/// sex chromosome handling
 			bool m_hasSexChrom;
 
-			/// cache ploidy
-			bool m_ploidy;
-
 			// cache chromBegin, chromEnd for better performance.
 			vectoru m_chIdx;
 	};

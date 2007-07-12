@@ -1276,9 +1276,9 @@ namespace simuPOP
 					rN -= K;
 
 					if( rN < m_q[K] )
-						*it = K+shift;
+						*it = static_cast<Iterator::value_type>(K + shift);
 					else
-						*it = m_a[K]+shift;
+						*it = static_cast<Iterator::value_type>(m_a[K] + shift);
 				}
 				return 0;
 			}
@@ -1499,6 +1499,9 @@ namespace simuPOP
 	bool optimized();
 
 	bool mpi();
+
+	/// print out system limits
+	void limits();
 
 #ifdef SIMUMPI
 	class comm : public mpi::communicator
