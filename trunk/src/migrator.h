@@ -195,8 +195,8 @@ namespace simuPOP
 				const vectoru & loci=vectoru(), PyObject * param=NULL,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				: m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(param),
-					migrator(matrix(), mode, fromSubPop, toSubPop, stage, begin, end, step, at, rep, grp, infoFields)
+				: migrator(matrix(), mode, fromSubPop, toSubPop, stage, begin, end, step, at, rep, grp, infoFields),
+					m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(param)
 			{
 				// carray of python list/typle
 				DBG_FAILIF( rateFunc != NULL && !PyCallable_Check(rateFunc), 
