@@ -84,6 +84,7 @@ env = Environment(
 	# force the use of MS Visual Studio .NET 2003 if under windows
 	# This does not work right when there are multiple versions of MSVS.
 	MSVS_VERSION = '7.1',
+    #MSVS_IGNORE_IDE_PATHS = 1,
     tools=['default', 'swig'])
 # try to use the compiler used to build python
 if cc != "":
@@ -124,7 +125,7 @@ extra_lib = env.StaticLibrary(
     source = LIB_FILES,
     CCFLAGS = ModuInfo('std')['extra_compile_args'] + comp.compile_options,
     CPPPATH = ['.', ModuInfo('std')['include_dirs']],
-	CPPFLAGS = ' '.join([basicflags, ccshared, opt]),
+	#CPPFLAGS = ' '.join([basicflags, ccshared, opt]),
 )
 
 targets = []
