@@ -116,16 +116,39 @@ class TestMigrator(unittest.TestCase):
              
     def testPyMigrator(self):
         'Testing operator pyMigrator'
-        pop = population(subPop=[2,4,4], loci=[2,6])
-        InitByFreq(pop, [.2,.4,.4])
-        ind1 = pop.individual(0).arrGenotype(True)
-        PyMigrate(pop, subPopID=[2,2,0,0,2,2,1,1,1,1])
-        assert ind1 == pop.individual(6).arrGenotype(True)
-        PyMigrate(pop, subPopID=[0,0,2,2,2,2,1,1,1,1])
-        assert ind1 == pop.individual(2).arrGenotype(True)
-        self.assertRaises(exceptions.ValueError, 
-            PyMigrate, pop, [0,0,2,2,2,2,1,1])
-
+        #pop = population(subPop=[2,4,4], loci=[2,6])
+        #InitByFreq(pop, [.2,.4,.4])
+        #ind1 = pop.individual(0).arrGenotype(True)
+        #PyMigrate(pop, subPopID=[2,2,0,0,2,2,1,1,1,1])
+        #assert ind1 == pop.individual(6).arrGenotype(True)
+        #PyMigrate(pop, subPopID=[0,0,2,2,2,2,1,1,1,1])
+        #assert ind1 == pop.individual(2).arrGenotype(True)
+        #self.assertRaises(exceptions.ValueError, 
+        #    PyMigrate, pop, [0,0,2,2,2,2,1,1])
+        #TurnOnDebug(DBG_MIGRATOR)
+        def rFunc(gen, size = []):
+            if gen == 0:
+                return [ [0.1] ]
+            elif gen == 1:
+                return [ [0.5] ]
+            else:
+                return [[0]]
+        pop = population(subPop=[2000,4000], loci=[2])
+        InitByFreq(pop, [.2, .8])
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            preOps = [],
+            ops = [
+                pyMigrator(rateFunc = rFunc, fromSubPop = [0],
+                           toSubPop = [1], mode = MigrByProportion),
+                stat( popSize = True ),
+                # pyEval('subPopSize'),
+                terminateIf( "subPopSize != [1800, 4200]", at = [0]),
+                terminateIf( "subPopSize != [900, 5100]", at = [1])
+            ],
+            end=5
+        )
+        self.assertEqual(simu.gen(), 6)
         
     def testSplitSubPop(self):
         'Testing population split'
@@ -152,7 +175,7 @@ class TestMigrator(unittest.TestCase):
             [int(x) for x in pop.indInfo('a', 0, True)])
         self.assertEqual([x.allele(0,0) for x in pop.individuals(1)],
             [int(x) for x in pop.indInfo('a', 1, True)])
-        PyMigrate(pop, subPopID=[1,1,1,1,0,0,0,0,0,0])
+        #PyMigrate(pop, subPopID=[1,1,1,1,0,0,0,0,0,0])
         # from ind, this should be fine.
         self.assertEqual([x.allele(0,0) for x in pop.individuals(0)],
             [x.info('a') for x in pop.individuals(0)])
@@ -180,5 +203,6 @@ class TestMigrator(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
      
+
 
 
