@@ -1276,9 +1276,9 @@ namespace simuPOP
 					rN -= K;
 
 					if( rN < m_q[K] )
-						*it = static_cast<Iterator::value_type>(K + shift);
+						*it = static_cast<typename Iterator::value_type>(K + shift);
 					else
-						*it = static_cast<Iterator::value_type>(m_a[K] + shift);
+						*it = static_cast<typename Iterator::value_type>(m_a[K] + shift);
 				}
 				return 0;
 			}

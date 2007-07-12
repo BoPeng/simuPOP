@@ -123,9 +123,8 @@ env.Command('$build_dir/swigpyrun.h', None, ['swig %s $TARGET' % SWIG_RUNTIME_FL
 extra_lib = env.StaticLibrary(
     target = '$build_dir/extra_libs',
     source = LIB_FILES,
-    CCFLAGS = ModuInfo('std')['extra_compile_args'] + comp.compile_options,
+    CCFLAGS = ModuInfo('std')['extra_compile_args'] + comp.compile_options + [opt],
     CPPPATH = ['.', ModuInfo('std')['include_dirs']],
-	#CPPFLAGS = ' '.join([basicflags, ccshared, opt]),
 )
 
 targets = []
