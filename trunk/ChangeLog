@@ -3,7 +3,7 @@ ChangeLog of simuPOP
 BUGS:
   - all known bugs have been cleared.
 
-version 0.8.0 - Not released, available at https://svn.sourceforge.net/svnroot/simupop/trunk
+version 0.8.0 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - NEW: add subPop(s) parameters to selectors, allowing different selection pressure 
 		in different subpopulations
   - NEW: add subPops parameter to intializers, working the same as subPop
