@@ -537,7 +537,8 @@ namespace simuPOP
 			{
 				const vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_lociNames;
 				vectorstr::const_iterator it = std::find(names.begin(), names.end(), name);
-				DBG_FAILIF(it == names.end(), ValueError, "Failed to find locus with name " + name);
+				if (it == names.end())
+					throw ValueError("Failed to find locus with name " + name);
 				return it - names.begin();
 			}
 
