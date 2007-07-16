@@ -57,29 +57,29 @@ namespace simuPOP
             between the following mutators are they way they actually mutate an allele, and
             corresponding input parameters. Mutators record the number of mutation events at each loci.
 
-			\param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c atLoci)
-			\param atLoci a vector of loci indices. Will be ignored only when single rate is specified.
+			\param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c loci)
+			\param loci a vector of loci indices. Will be ignored only when single rate is specified.
                 Default to all loci.
 			\param maxAllele maximum allowable allele. Interpreted by each sub mutaor class. Default to \c pop.maxAllele().
 			*/
 			mutator( vectorf rate=vectorf(),
-				vectori atLoci=vectori(),
+				vectori loci=vectori(),
 				UINT maxAllele=0,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				:Operator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
-				m_rate(rate), m_maxAllele(maxAllele), m_atLoci(atLoci),
+				m_rate(rate), m_maxAllele(maxAllele), m_loci(loci),
 				m_bt(rng()), m_initialized(false), m_mutCount(0)
 			{
 				if( m_rate.empty() )
 					throw ValueError("You should specify a rate, or a sequence of rate.");
 
-				if( rate.size() > 1 && atLoci.empty())
-					throw ValueError("If you use variable rates, you should specify atLoci for each of the rate.");
+				if( rate.size() > 1 && loci.empty())
+					throw ValueError("If you use variable rates, you should specify loci for each of the rate.");
 
-				if( rate.size() > 1 && !atLoci.empty() && rate.size() != atLoci.size() )
-					throw ValueError("If both rates and atLoci are specified, they should have the same length.");
+				if( rate.size() > 1 && !loci.empty() && rate.size() != loci.size() )
+					throw ValueError("If both rates and loci are specified, they should have the same length.");
 
 #ifdef BINARYALLELE
 				DBG_WARNING( maxAllele > 1, "MaxAllele for binary libraries must be 1");
@@ -109,14 +109,14 @@ namespace simuPOP
 			}
 
 			/// set an array of mutation rates
-			void setRate(const vectorf rate, const vectori atLoci = vectori())
+			void setRate(const vectorf rate, const vectori loci = vectori())
 			{
-				if( rate.size() != 1 && rate.size() != atLoci.size() )
+				if( rate.size() != 1 && rate.size() != loci.size() )
 					throw ValueError("If you specify more than one rate values, you should also specify corresponding applicable loci");
 
 				m_rate = rate;
-				if( ! atLoci.empty())
-					m_atLoci = atLoci;
+				if( ! loci.empty())
+					m_loci = loci;
 
 				m_initialized = false;
 			}
@@ -171,7 +171,7 @@ namespace simuPOP
 			UINT m_maxAllele;
 
 			/// applicable loci.
-			vectori m_atLoci;
+			vectori m_loci;
 
 			/// bernulli trials. bitSet mutation results.
 			BernulliTrials m_bt;
@@ -201,18 +201,18 @@ namespace simuPOP
 			/**
 			\param rate mutation rate. It is the 'probability to mutate'. The actual
                 mutation rate to any of the other \c K-1 allelic states are <tt>rates/(K-1)</tt>.
-			\param atLoci a vector of loci indices. Will be ignored only when single rate is specified.
+			\param loci a vector of loci indices. Will be ignored only when single rate is specified.
                 Default to all loci.
 			\param maxAllele maximum allele that can be mutated to. For binary libraries
 			  allelic states will be <tt>[0, maxAllele]</tt>. Otherwise, they are <tt>[1, maxAllele]</tt>.
 			*/
 			kamMutator(const vectorf& rate=vectorf(),
-				const vectori& atLoci=vectori(),
+				const vectori& loci=vectori(),
 				UINT maxAllele=0,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				:mutator( rate, atLoci, maxAllele,
+				:mutator( rate, loci, maxAllele,
 				output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields)
 			{
 			}
@@ -257,12 +257,12 @@ namespace simuPOP
 
             Please see \c mutator for the description of other parameters.     
 			*/
-			smmMutator(vectorf rate=vectorf(), vectori atLoci=vectori(),
+			smmMutator(vectorf rate=vectorf(), vectori loci=vectori(),
 				UINT maxAllele=0, double incProb=0.5,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				:mutator( rate, atLoci, maxAllele,
+				:mutator( rate, loci, maxAllele,
 				output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 				m_incProb(incProb)
 			{
@@ -334,12 +334,12 @@ namespace simuPOP
 
             Please see \c mutator for the description of other parameters.            
 			*/
-			gsmMutator( vectorf rate=vectorf(), vectori atLoci=vectori(),
+			gsmMutator( vectorf rate=vectorf(), vectori loci=vectori(),
 				UINT maxAllele=0, double incProb=0.5, double p=0, PyObject* func=NULL,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				:mutator( rate, atLoci, maxAllele,
+				:mutator( rate, loci, maxAllele,
 				output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 				m_incProb(incProb), m_p(p), m_func(func)
 			{
@@ -403,12 +403,12 @@ namespace simuPOP
 	{
 		public:
             /// create a \c pyMutator
-			pyMutator(vectorf rate=vectorf(), vectori atLoci=vectori(), UINT maxAllele=0,
+			pyMutator(vectorf rate=vectorf(), vectori loci=vectori(), UINT maxAllele=0,
 				PyObject* func=NULL,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				:mutator( rate,atLoci, maxAllele,
+				:mutator( rate, loci, maxAllele,
 				output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields), m_func(NULL)
 			{
 				DBG_ASSERT(PyCallable_Check(func), ValueError,
@@ -471,7 +471,7 @@ namespace simuPOP
 	Mutate specified individuals at a specified loci to a spcified allele.
 	I.e., this is a non-random mutator used to introduce diseases etc.
 	\c pointMutator, as its name suggest, does point mutation. This mutator will turn
-	alleles at \c atLoci on the first chromosome copy to \c toAllele for individual \c inds.
+	alleles at \c loci on the first chromosome copy to \c toAllele for individual \c inds.
 	You can specify atPloidy to mutate other, or all ploidy copy.
 	*/
 	class pointMutator: public Operator
@@ -485,7 +485,7 @@ namespace simuPOP
             Please see \c mutator for the description of other parameters.     
 			*/
 			pointMutator(
-				const vectori& atLoci,
+				const vectori& loci,
 				Allele toAllele,
 				vectoru atPloidy=vectoru(),
 				vectorlu inds=vectorlu(),
@@ -493,7 +493,7 @@ namespace simuPOP
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				:Operator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
-				m_atLoci(atLoci), m_toAllele(toAllele),
+				m_loci(loci), m_toAllele(toAllele),
 				m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)
 			{
 				if(m_atPloidy.empty())
@@ -516,15 +516,15 @@ namespace simuPOP
 			{
 				m_mutCount.resize(pop.totNumLoci(), 0);
 				// mutate each mutable locus
-				for( size_t i=0, iEnd=m_atLoci.size(); i < iEnd; ++i)
+				for( size_t i=0, iEnd=m_loci.size(); i < iEnd; ++i)
 				{
 					for( vectorlu::iterator ind = m_inds.begin();
 						ind != m_inds.end(); ++ind)
 					{
 						for( size_t p=0; p<m_atPloidy.size(); ++p)
 						{
-							m_mutCount[m_atLoci[i]]++;
-							*(pop.ind(*ind).genoBegin(m_atPloidy[p])+m_atLoci[i])= m_toAllele;
+							m_mutCount[m_loci[i]]++;
+							*(pop.ind(*ind).genoBegin(m_atPloidy[p])+m_loci[i])= m_toAllele;
 						}
 					}
 				}								  // each applicable loci
@@ -555,7 +555,7 @@ namespace simuPOP
 		private:
 
 			/// applicable loci.
-			vectori m_atLoci;
+			vectori m_loci;
 			Allele m_toAllele;
 			vectoru m_atPloidy;
 			vectorlu m_inds;

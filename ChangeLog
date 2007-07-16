@@ -14,6 +14,8 @@ version 0.8.0 - Not released, available at https://simupop.svn.sourceforge.net/s
 		a way to retrieve a population more efficiently.
   - NEW: rewrite pyMigrator to allow for changing migration rates, and more subtle
 		control of migration using individual genotype.
+  - NEW: rename parameter atLoci to loci for all mutators (atLoci becomes obsolete, but is
+		still usable)
 
 
 version 0.7.10 - (Rev 987) May 20, 2007
