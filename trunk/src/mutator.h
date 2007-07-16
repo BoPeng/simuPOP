@@ -62,8 +62,8 @@ namespace simuPOP
                 Default to all loci.
 			\param maxAllele maximum allowable allele. Interpreted by each sub mutaor class. Default to \c pop.maxAllele().
 			*/
-			mutator( vectorf rate=vectorf(),
-				vectori loci=vectori(),
+			mutator( const vectorf & rate=vectorf(),
+				const vectoru & loci=vectoru(),
 				UINT maxAllele=0,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -109,7 +109,7 @@ namespace simuPOP
 			}
 
 			/// set an array of mutation rates
-			void setRate(const vectorf rate, const vectori loci = vectori())
+			void setRate(const vectorf & rate, const vectoru & loci = vectoru())
 			{
 				if( rate.size() != 1 && rate.size() != loci.size() )
 					throw ValueError("If you specify more than one rate values, you should also specify corresponding applicable loci");
@@ -171,7 +171,7 @@ namespace simuPOP
 			UINT m_maxAllele;
 
 			/// applicable loci.
-			vectori m_loci;
+			vectoru m_loci;
 
 			/// bernulli trials. bitSet mutation results.
 			BernulliTrials m_bt;
@@ -207,7 +207,7 @@ namespace simuPOP
 			  allelic states will be <tt>[0, maxAllele]</tt>. Otherwise, they are <tt>[1, maxAllele]</tt>.
 			*/
 			kamMutator(const vectorf& rate=vectorf(),
-				const vectori& loci=vectori(),
+				const vectoru& loci=vectoru(),
 				UINT maxAllele=0,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -257,7 +257,8 @@ namespace simuPOP
 
             Please see \c mutator for the description of other parameters.     
 			*/
-			smmMutator(vectorf rate=vectorf(), vectori loci=vectori(),
+			smmMutator(const vectorf& rate=vectorf(), 
+				const vectoru & loci=vectoru(),
 				UINT maxAllele=0, double incProb=0.5,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -334,7 +335,8 @@ namespace simuPOP
 
             Please see \c mutator for the description of other parameters.            
 			*/
-			gsmMutator( vectorf rate=vectorf(), vectori loci=vectori(),
+			gsmMutator(const vectorf & rate=vectorf(), 
+				const vectoru & loci=vectoru(),
 				UINT maxAllele=0, double incProb=0.5, double p=0, PyObject* func=NULL,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -403,7 +405,8 @@ namespace simuPOP
 	{
 		public:
             /// create a \c pyMutator
-			pyMutator(vectorf rate=vectorf(), vectori loci=vectori(), UINT maxAllele=0,
+			pyMutator(const vectorf & rate=vectorf(), 
+				const vectoru & loci=vectoru(), UINT maxAllele=0,
 				PyObject* func=NULL,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -485,7 +488,7 @@ namespace simuPOP
             Please see \c mutator for the description of other parameters.     
 			*/
 			pointMutator(
-				const vectori& loci,
+				const vectoru & loci,
 				Allele toAllele,
 				vectoru atPloidy=vectoru(),
 				vectorlu inds=vectorlu(),
@@ -555,7 +558,7 @@ namespace simuPOP
 		private:
 
 			/// applicable loci.
-			vectori m_loci;
+			vectoru m_loci;
 			Allele m_toAllele;
 			vectoru m_atPloidy;
 			vectorlu m_inds;

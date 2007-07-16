@@ -2755,6 +2755,9 @@ namespace simuPOP
 		cout << "Maximum number of subpopulations: " << hex << MaxSubPopID << endl;
 		cout << "Maximum index size (limits population size * total number of markers): " 
 			<< hex << MaxIndexSize << endl;
+		cout << "Maximum integer: " << hex << std::numeric_limits<int>::max() << endl;
+		cout << "Maximum long integer: " << hex << std::numeric_limits<long int>::max() << endl;
+
 	}
 
 #ifdef SIMUMPI
