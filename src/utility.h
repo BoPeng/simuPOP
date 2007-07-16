@@ -220,7 +220,7 @@ namespace simuPOP
 
 			typedef std::random_access_iterator_tag iterator_category;
 			typedef T                          value_type;
-			typedef int                        difference_type;
+			typedef long int                   difference_type;
 			typedef Ref                        reference;
 			typedef Ptr                        pointer;
 
@@ -279,7 +279,7 @@ namespace simuPOP
 			}
 
 			/// CPPONLY
-			GappedIterator operator++ (difference_type)
+			GappedIterator operator++ (int)
 			{
 				GappedIterator tmp = *this;
 				m_ptr += m_step;
@@ -294,7 +294,7 @@ namespace simuPOP
 			}
 
 			/// CPPONLY
-			GappedIterator operator-- (difference_type)
+			GappedIterator operator-- (int)
 			{
 				GappedIterator tmp = *this;
 

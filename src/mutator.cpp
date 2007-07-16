@@ -45,6 +45,16 @@ namespace simuPOP
 			for(UINT i=0, iEnd = pop.totNumLoci(); i < iEnd;  ++i)
 				m_loci[i] = i;
 		}
+#ifndef OPTIMIZED
+		else
+		{
+			for(UINT i = 0; i < m_loci.size(); ++i)
+			{
+				if (m_loci[i] >= pop.totNumLoci())
+					throw IndexError("Given loci is out of range");
+			}
+		}
+#endif
 
 		// all use the same rate
 		if( m_rate.size() < m_loci.size() )
@@ -60,7 +70,8 @@ namespace simuPOP
 			if( fcmp_lt( m_rate[i], 0.) || fcmp_gt( m_rate[i], 1.) )
 				throw ValueError("Migration rate should be between [0,1], given " + toStr(m_rate[i]));
 #endif
-		m_mutCount.resize(pop.totNumLoci(), 0);
+		if (pop.totNumLoci() != m_mutCount.size())
+			m_mutCount.resize(pop.totNumLoci(), 0);
 		m_initialized = true;
 	}
 
@@ -69,7 +80,7 @@ namespace simuPOP
 		if( !m_initialized || m_bt.trialSize() != pop.ploidy() * pop.popSize())
 		{
 			initialize(pop);
-			DBG_DO(DBG_MUTATOR, cout << "Mutate at loci " << m_loci <<
+			DBG_DO(DBG_MUTATOR, cout << "Reinitialize mutator at loci" << m_loci <<
 				" at rate " << m_rate << endl);
 		}
 
@@ -81,7 +92,7 @@ namespace simuPOP
 		for( size_t i=0, iEnd=m_loci.size(); i < iEnd; ++i)
 		{
 			int locus = m_loci[i];
-
+			DBG_DO(DBG_MUTATOR, cout << "Mutate at locus " << locus << endl);
 			size_t pos = m_bt.trialFirstSucc(i);
 			if( pos != BernulliTrials::npos)
 			{
@@ -89,12 +100,13 @@ namespace simuPOP
 				{
 #ifndef OPTIMIZED
 					// alleleBegin is *not* ordered, so the mutation is random
-					AlleleRef ptr = *(pop.alleleBegin(locus, false) + pos).ptr();
+					AlleleRef ptr = *(pop.alleleBegin(locus, false) + pos);
 					DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << locus
-						<< " of individual " << (pos/pop.ploidy()) << " from " << int(ptr) );
+						<< " of individual " << (pos/pop.ploidy()) << " from " << int(ptr));
 					mutate(ptr);
+					DBG_DO(DBG_MUTATOR, cout << " to " << int(ptr) << endl);
 #else
-					mutate( *(pop.alleleBegin(locus, false) + pos).ptr() );
+					mutate( *(pop.alleleBegin(locus, false) + pos));
 #endif
 					m_mutCount[ locus ]++;
 				}while( (pos = m_bt.trialNextSucc(i, pos)) != BernulliTrials::npos );

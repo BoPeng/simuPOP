@@ -16,6 +16,8 @@ version 0.8.0 - Not released, available at https://simupop.svn.sourceforge.net/s
 		control of migration using individual genotype.
   - NEW: rename parameter atLoci to loci for all mutators (atLoci becomes obsolete, but is
 		still usable)
+  - BUG: fix a mutator crash when locus index difference exceeds the range of integer,
+		for cases, for example, with 10k loci and 100k individuals.
 
 
 version 0.7.10 - (Rev 987) May 20, 2007
