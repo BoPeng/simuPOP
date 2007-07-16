@@ -722,25 +722,36 @@ new_controlledRandomMating.__doc__ = controlledRandomMating.__init__.__doc__
 del controlledRandomMating.__init__
 controlledRandomMating.__init__ = new_controlledRandomMating
 
-def mutator_setRate(self, rate, atLoci=[], *args, **kwargs):
+def mutator_setRate(self, rate, loci=[], atLoci=[], *args, **kwargs):
     # rate -> [rate] if needed
     if type(rate)    in [types.IntType, types.FloatType]:
         r = [rate]
     else:
         r = rate
-    return cppModule.mutator_setRate(self, r, atLoci, *args, **kwargs)
+    #
+    if atLoci != []:
+        print 'Parameter atLoci is obsolete. Please use loci'
+        loc = atLoci
+    else:
+        loc = loci
+    return cppModule.mutator_setRate(self, r, loc, *args, **kwargs)
 
 del mutator.setRate
 mutator.setRate = mutator_setRate
 
-def new_kamMutator(self, rate=[], *args, **kwargs):
+def new_kamMutator(self, rate=[], loci=[], atLoci=[], *args, **kwargs):
     # parameter rate
     if type(rate) in [types.IntType, types.FloatType]:
         r = [rate]
     else:
         r = rate
+    if atLoci != []:
+        print 'Parameter atLoci is obsolete. Please use loci'
+        loc = atLoci
+    else:
+        loc = loci
     cppModule.kamMutator_swiginit(self,
-        cppModule.new_kamMutator(rate=r, *args, **kwargs))
+        cppModule.new_kamMutator(rate=r, loci=loc, *args, **kwargs))
  
 new_kamMutator.__doc__ = kamMutator.__init__.__doc__
 del kamMutator.__init__
@@ -748,14 +759,19 @@ kamMutator.__init__ = new_kamMutator
 
 
 
-def new_smmMutator(self, rate=[], *args, **kwargs):
+def new_smmMutator(self, rate=[], loci=[], atLoci=[], *args, **kwargs):
     # parameter rate
     if type(rate) in [types.IntType, types.FloatType]:
         r = [rate]
     else:
         r = rate
+    if atLoci != []:
+        print 'Parameter atLoci is obsolete. Please use loci'
+        loc = atLoci
+    else:
+        loc = loci
     cppModule.smmMutator_swiginit(self,
-        cppModule.new_smmMutator(rate=r, *args, **kwargs))
+        cppModule.new_smmMutator(rate=r, loci=loc, *args, **kwargs))
  
 new_smmMutator.__doc__ = smmMutator.__init__.__doc__
 del smmMutator.__init__
@@ -763,14 +779,19 @@ smmMutator.__init__ = new_smmMutator
 
 
 
-def new_gsmMutator(self, rate=[], *args, **kwargs):
+def new_gsmMutator(self, rate=[], loci=[], atLoci=[], *args, **kwargs):
     # parameter rate
     if type(rate) in [types.IntType, types.FloatType]:
         r = [rate]
     else:
         r = rate
+    if atLoci != []:
+        print 'Parameter atLoci is obsolete. Please use loci'
+        loc = atLoci
+    else:
+        loc = loci
     cppModule.gsmMutator_swiginit(self,
-        cppModule.new_gsmMutator(rate=r, *args, **kwargs))
+        cppModule.new_gsmMutator(rate=r, loci=loc, *args, **kwargs))
  
 new_gsmMutator.__doc__ = gsmMutator.__init__.__doc__
 del gsmMutator.__init__
@@ -778,18 +799,36 @@ gsmMutator.__init__ = new_gsmMutator
 
 
 
-def new_pyMutator(self, rate=[], *args, **kwargs):
+def new_pyMutator(self, rate=[], loci=[], atLoci=[], *args, **kwargs):
     # parameter rate
     if type(rate) in [types.IntType, types.FloatType]:
         r = [rate]
     else:
         r = rate
+    if atLoci != []:
+        print 'Parameter atLoci is obsolete. Please use loci'
+        loc = atLoci
+    else:
+        loc = loci
     cppModule.pyMutator_swiginit(self, 
-        cppModule.new_pyMutator(rate=r, *args, **kwargs))
+        cppModule.new_pyMutator(rate=r, loci=loc, *args, **kwargs))
  
 new_pyMutator.__doc__ = pyMutator.__init__.__doc__
 del pyMutator.__init__
 pyMutator.__init__ = new_pyMutator
+
+def new_pointMutator(self, loci=[], atLoci=[], *args, **kwargs):
+    if atLoci != []:
+        print 'Parameter atLoci is obsolete. Please use loci'
+        loc = atLoci
+    else:
+        loc = loci
+    cppModule.pointMutator_swiginit(self, 
+        cppModule.new_pointMutator(loci=loc, *args, **kwargs))
+ 
+new_pointMutator.__doc__ = pointMutator.__init__.__doc__
+del pointMutator.__init__
+pointMutator.__init__ = new_pointMutator
 
 
 def new_migrator(self, rate, fromSubPop=[], toSubPop=[], *args, **kwargs):

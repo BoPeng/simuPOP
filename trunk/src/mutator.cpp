@@ -38,18 +38,18 @@ namespace simuPOP
 		DBG_DO(DBG_MUTATOR, cout << "initialize mutator" << endl);
 
 		// deal with applicable loci
-		if(m_atLoci.empty() )
+		if(m_loci.empty() )
 		{
 			// all loci
-			m_atLoci.resize(pop.totNumLoci() );
+			m_loci.resize(pop.totNumLoci() );
 			for(UINT i=0, iEnd = pop.totNumLoci(); i < iEnd;  ++i)
-				m_atLoci[i] = i;
+				m_loci[i] = i;
 		}
 
 		// all use the same rate
-		if( m_rate.size() < m_atLoci.size() )
+		if( m_rate.size() < m_loci.size() )
 		{
-			m_rate.resize( m_atLoci.size());
+			m_rate.resize( m_loci.size());
 			fill(m_rate.begin()+1, m_rate.end(), m_rate[0]);
 		}
 
@@ -69,7 +69,7 @@ namespace simuPOP
 		if( !m_initialized || m_bt.trialSize() != pop.ploidy() * pop.popSize())
 		{
 			initialize(pop);
-			DBG_DO(DBG_MUTATOR, cout << "Mutate at loci " << m_atLoci <<
+			DBG_DO(DBG_MUTATOR, cout << "Mutate at loci " << m_loci <<
 				" at rate " << m_rate << endl);
 		}
 
@@ -78,9 +78,9 @@ namespace simuPOP
 		m_bt.doTrial();
 
 		// mutate each mutable locus
-		for( size_t i=0, iEnd=m_atLoci.size(); i < iEnd; ++i)
+		for( size_t i=0, iEnd=m_loci.size(); i < iEnd; ++i)
 		{
-			int locus = m_atLoci[i];
+			int locus = m_loci[i];
 
 			size_t pos = m_bt.trialFirstSucc(i);
 			if( pos != BernulliTrials::npos)
