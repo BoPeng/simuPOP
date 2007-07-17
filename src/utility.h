@@ -275,6 +275,9 @@ namespace simuPOP
 			/// CPPONLY
 			reference operator[] (difference_type diff) const
 			{
+				DBG_FAILIF((diff > 0 && diff*m_step < 0) || (diff < 0 && diff*m_step > 0),
+					IndexError, "Index difference exceeds integer range. Your may need a 64bit computer to simulate such a big population.");
+
 				return *(m_ptr + diff*m_step);
 			}
 
@@ -312,6 +315,9 @@ namespace simuPOP
 			/// CPPONLY
 			GappedIterator & operator+= (difference_type diff)
 			{
+				DBG_FAILIF((diff > 0 && diff*m_step < 0) || (diff < 0 && diff*m_step > 0),
+					IndexError, "Index difference exceeds integer range. Your may need a 64bit computer to simulate such a big population.");
+
 				m_ptr += diff * m_step;
 				return *this;
 			}
@@ -319,6 +325,9 @@ namespace simuPOP
 			/// CPPONLY
 			GappedIterator & operator-=(difference_type diff)
 			{
+				DBG_FAILIF((diff > 0 && diff*m_step < 0) || (diff < 0 && diff*m_step > 0),
+					IndexError, "Index difference exceeds integer range. Your may need a 64bit computer to simulate such a big population.");
+					
 				m_ptr -= diff * m_step;
 				return *this;
 			}
