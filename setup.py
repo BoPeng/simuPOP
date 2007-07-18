@@ -400,6 +400,7 @@ SIMUPOP_FILES = [
     'simuPOP', 
     'simuOpt', 
     'simuUtil', 
+    'hapMapUtil',
     'simuRPy', 
 ]
 

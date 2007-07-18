@@ -1,4 +1,26 @@
 #!/usr/bin/env python
+############################################################################
+#    Copyright (C) 2004 by Bo Peng                                         
+#    bpeng@mdanderson.org
+#                                                                          
+#    $LastChangedDate: 2007-04-13 15:55:29 -0500 (Fri, 13 Apr 2007) $          
+#    $Rev: 909 $                       
+#                                                                          
+#    This program is free software; you can redistribute it and/or modify  
+#    it under the terms of the GNU General Public License as published by  
+#    the Free Software Foundation; either version 2 of the License, or     
+#    (at your option) any later version.                                   
+#                                                                                                                                                    
+#    This program is distributed in the hope that it will be useful,             
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of                
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the                 
+#    GNU General Public License for more details.                                                    
+#                                                                                                                                                    
+#    You should havereceived a copy of the GNU General Public License         
+#    along with this program; if not, write to the                                                 
+#    Free Software Foundation, Inc.,                                                                             
+#    59 Temple Place - Suite 330, Boston, MA    02111-1307, USA.                         
+############################################################################
 
 '''
 Utility functions to manipulate HapMap data
@@ -73,14 +95,24 @@ def getMarkersFromName(hapmap_dir, names, chroms=[]):
 # get markers in range 0, 100cM, with minimal distance 0.1cM
 #    getMarkersFromRange(2, 0, 100, sys.maxint. 0, 0.1)
 
-def getMarkersFromRange(chrom, startPos, endPos, maxNum, minAF, minDist):
+def getMarkersFromRange(hapmap_dir, chrom, startPos, endPos, maxNum, minAF, minDist):
     '''get markers from given range
+    
+        hapmap_dir: where hapmap data in simuPOP format is stored. The files
+            should have been prepared by scripts/loadHapMap.py.
+    
         chrom:    chromosome number (1-based index)
+        
         startPos: starting position (in cM)
+        
         endPos:   ending position (in cM)
+        
         maxNum:   maximum number of markers to get
+        
         minAF:    minimal minor allele frequency
+        
         minDist:  minimal distance between two markers, in cM
+        
     '''
     print "Loading hapmap population hapmap_%d.bin" % (chrom-1)
     pop = LoadPopulation(os.path.join(hapmap_dir, 'hapmap_%d.bin' % (chrom-1)))
@@ -108,30 +140,42 @@ def getMarkersFromRange(chrom, startPos, endPos, maxNum, minAF, minDist):
 #
 # Evole the hapmap population
 #
-# NOTE1: use uniform recombination rate for now
+# NOTE1: use uniform recombination rate for now.
 # 
-# NOTE2: resultinf population will have strong signature
-#   of population expansion. The sideeffect is unknown for now.
+# NOTE2: no mutation at the last generation to avoid
+#        mendelian inconsistency error.
 # 
 ###########################################################
 
 
-def evolve(pop, initMultiple=5, endingSize=1e4, expand='linear',
+def evolveHapMap(pop, initMultiple=5, endingSize=1e4, expand='linear',
     mergeAt=90, endGen=100, recIntensity=0.01, mutRate=1e-7,
     step=10, keepParents=False, numOffspring=1):
     ''' evolve and expand the hapmap population
+    
     gen: total evolution generation
+    
     initMultiple: copy each individual initMultiple times, to avoid
         rapid loss of genotype variation when population size is small.
+    
     endingSize: ending poplation size
+    
     expand: expanding method, can be linear or exponential
+    
     mergeAt: when to merge population?
+    
     endGen: endingGeneration
+    
     recIntensity: recombination intensity
+    
     mutRate: mutation rate
+    
     step: step at which to display statistics
+    
     keepParents: whether or not keep parental generations
+    
     numOffspring: number of offspring at the last generation
+    
     '''
     print "Starting population size is ", pop.subPopSizes()
     if initMultiple > 1:
@@ -153,11 +197,10 @@ def evolve(pop, initMultiple=5, endingSize=1e4, expand='linear',
     #
     simu = simulator(pop, randomMating(newSubPopSizeFunc=popSizeFunc), rep=1)
     operators = [
+        # mutation will be disallowed in the last generation (see later)
+        kamMutator(rate=mutRate, loci=range(pop.totNumLoci())),
         mergeSubPops(subPops=[0,1,2], removeEmptySubPops=True, at=[mergeAt]),
         recombinator(intensity=recIntensity),
-        kamMutator(rate=mutRate, loci=range(pop.totNumLoci())),
-        # estimating Fst from all loci will be slow, so using the first 100 markers
-        #stat(popSize=True, Fst=range(min(100, pop.totNumLoci())), step=step),
         stat(popSize=True, step=step),
         pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=step)
     ]
@@ -168,20 +211,63 @@ def evolve(pop, initMultiple=5, endingSize=1e4, expand='linear',
         simu.addInfoFields(['father_idx', 'mother_idx'])
         simu.setAncestralDepth(1)
         simu.setMatingScheme(randomMating(numOffspring=numOffspring))
-        simu.step(ops=operators + [parentsTagger()])
+        # evolve, but without mutation
+        simu.step(ops=operators[1:] + [parentsTagger()])
     return simu.getPopulation(0, True)
 
-
-def sample(pop, DSL, pene, name, size):
+#
+#
+# Example functions to sample from resulting population
+#
+#
+def sample1DSL(pop, DSL, DA, pene, name, sampleSize):
     '''sample from the final population
+
+    DSL: disease locus
+    
+    DA: disease allele
+    
+    pene: penetrance
+    
+    name: name of directory to save (it must exist)
+    
+    sampleSize: sample size, in this case, sampleSize/4 is the number of families
+    '''
+    # applying penetrance
+    def peneFunc(geno):
+        if DA == 1:
+            return pene[geno[0] + geno[1]]
+        else:
+            return pene[2 - geno[0] - geno[1]]
+    PyPenetrance(pop, locus=DSL, func=peneFunc)
+    Stat(pop, numOfAffected=True, alleleFreq=[DSL])
+    #
+    dsl = open(os.path.join(name, 'sample.dsl'), 'w')
+    print >> dsl, 'DSL (0 indexed), Name, Allele freq (allele 0), Number of affected (%)'
+    print >> dsl, '%d, %s, %.4f, %d (%.3f)' % (DSL, pop.locusName(DSL), pop.dvars().alleleFreq[DSL][0], \
+        pop.dvars().numOfAffected, pop.dvars().numOfAffected*1.0/pop.popSize())
+    dsl.close()
+    #
+    # draw sample
+    samples = AffectedSibpairSample(pop, size=sampleSize/4)
+    SaveQTDT(samples[0], output=os.path.join(name, 'sample'), 
+        affectionCode=['1', '2'], fields=['affection'])
+
+
+def sample2DSL(pop, DSL, pene, name, size):
+    '''sample from the final population
+    
     DSL: disease loci (two locus)
+    
     pene: penetrance value, assuming a two-locus model
          penetrance
                  BB Bb bb
              AA  0  1  2
              Aa  3  4  5
              aa  6  7  8
+    
     name: name to save sample
+    
     size: sample size
     '''
     Stat(pop, alleleFreq=DSL)
