@@ -214,46 +214,130 @@ namespace simuPOP
 		m_genoStruIdx = s_genoStruRepository.size()-1;
 	}
 
-	GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx) const
+	GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) const
 	{
+#define addLocusName(name); \
+	if(std::find(lociNames.begin(), lociNames.end(), name) == lociNames.end()) \
+		lociNames.push_back(name); \
+	else { \
+		int n = 1; \
+		while(true) { \
+			string name_ = name + "_" + toStr(n++); \
+			if(std::find(lociNames.begin(), lociNames.end(), name_) == lociNames.end())	{ \
+				lociNames.push_back(name_); \
+				break; \
+			} \
+		} \
+	}
 		GenoStructure & gs1 = s_genoStruRepository[m_genoStruIdx];
 		GenoStructure & gs2 = s_genoStruRepository[idx];
 
 		// identify another
 		DBG_FAILIF(gs1.m_ploidy != gs2.m_ploidy, ValueError,
 			"Merged population should have the same ploidy");
-		vectoru loci = gs1.m_numLoci;
-		loci.insert(loci.end(), gs2.m_numLoci.begin(), gs2.m_numLoci.end());
-		DBG_FAILIF(gs1.m_sexChrom, ValueError,
-			"Population with sex chromosome has to be at the end");
-		vectorf lociPos = gs1.m_lociPos;
-		lociPos.insert(lociPos.end(), gs2.m_lociPos.begin(), gs2.m_lociPos.end());
-		DBG_FAILIF(gs1.m_alleleNames != gs2.m_alleleNames, ValueError,
-			"Merged population should have the same allele names (sorry, no allele names at each locus for now)");
-		vectorstr lociNames = gs1.m_lociNames;
-		// add locus name, if there is no duplicate, fine. Otherwise, add '_' to the names.
-		for(vectorstr::const_iterator it=gs2.m_lociNames.begin(); it != gs2.m_lociNames.end(); ++it)
+		// which pop has more chromosomes?
+		if (byChromosome)
 		{
-			// no duplicate, good
-			if(std::find(lociNames.begin(), lociNames.end(), *it) == lociNames.end())
-				lociNames.push_back(*it);
-			else
+			// loci
+			vectoru loci(std::max(gs1.m_numLoci.size(), gs2.m_numLoci.size()));
+			for (size_t ch = 0; ch < loci.size(); ++ch)
 			{
-				int n = 1;
-				while(true)
-				{
-					string name = *it + "_" + toStr(n++);
-					if(std::find(lociNames.begin(), lociNames.end(), name) == lociNames.end())
-					{
-						lociNames.push_back(name);
-						break;
-					}
-				}
+				if (ch < gs1.m_numLoci.size())
+					loci[ch] += gs1.m_numLoci[ch];
+				if (ch < gs2.m_numLoci.size())
+					loci[ch] += gs2.m_numLoci[ch];
 			}
+			DBG_DO(DBG_POPULATION, cout << "New number of loci " << loci << endl);
+			// sex chrom
+			DBG_FAILIF(gs1.m_sexChrom && gs2.m_sexChrom && gs1.m_numLoci.size() != gs2.m_numLoci.size(),
+				ValueError, "If both population has sex chromosome, they should be the same chromosome");
+			DBG_FAILIF(gs1.m_sexChrom && !gs2.m_sexChrom && gs1.m_numLoci.size() <= gs2.m_numLoci.size(),
+				ValueError, "The same chromosome of another population should also be the sex chromosome");
+			DBG_FAILIF(!gs1.m_sexChrom && gs2.m_sexChrom && gs2.m_numLoci.size() <= gs1.m_numLoci.size(),
+				ValueError, "The same chromosome of another population should also be the sex chromosome");
+			bool sexChrom = gs1.m_sexChrom || gs2.m_sexChrom;
+			// loci pos and loci name
+			vectorf lociPos;
+			vectorstr lociNames;
+
+			for (size_t ch = 0; ch < loci.size(); ++ch)
+			{
+				size_t idx1 = 0;
+				size_t idx2 = 0;
+				for(size_t loc = 0; loc < loci[ch]; ++loc)
+				{
+					if (ch < gs1.m_numLoci.size() && ch < gs2.m_numLoci.size())
+					{
+						// index 1 done
+						double pos1 = idx1 < gs1.m_numLoci[ch] ? gs1.m_lociPos[gs1.m_chromIndex[ch] + idx1] : 1.e9;
+						double pos2 = idx2 < gs2.m_numLoci[ch] ? gs2.m_lociPos[gs2.m_chromIndex[ch] + idx2] : 1.e9;
+						if (idx2 >= gs2.m_numLoci[ch] || pos1 < pos2)
+						{
+							// push this in
+							lociPos.push_back(pos1);
+							string name = gs1.m_lociNames[gs1.m_chromIndex[ch] + idx1];
+							addLocusName(name);
+							idx1 ++;
+						}
+						else if (idx1 >= gs1.m_numLoci[ch] || pos1 > pos2)
+						{
+							// push this in
+							lociPos.push_back(pos2);
+							string name = gs2.m_lociNames[gs2.m_chromIndex[ch] + idx2];
+							addLocusName(name);
+							idx2 ++;
+						}
+						else
+							throw ValueError("Duplicate loci position. Can not merge");
+					}
+					else if (ch < gs1.m_numLoci.size() && ch >= gs2.m_numLoci.size())
+					{
+						// add idx 1
+						lociPos.push_back(gs1.m_lociPos[gs1.m_chromIndex[ch] + idx1]);
+						string name = gs1.m_lociNames[gs1.m_chromIndex[ch] + idx1];
+						addLocusName(name);
+						idx1 ++;
+					}
+					else if (ch >= gs1.m_numLoci.size() && ch < gs2.m_numLoci.size())
+					{
+						// add idx 2
+						lociPos.push_back(gs2.m_lociPos[gs2.m_chromIndex[ch] + idx2]);
+						string name = gs2.m_lociNames[gs2.m_chromIndex[ch] + idx2];
+						addLocusName(name);
+						idx2 ++;
+					}
+					else
+						throw SystemError("This should not happen");
+				}
+			} // each chromosome
+			DBG_DO(DBG_POPULATION, cout << "New loci positions: " << lociPos << endl);
+			DBG_DO(DBG_POPULATION, cout << "New loci names: " << lociNames << endl);
+			//
+			UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
+			return * new GenoStructure(gs1.m_ploidy, loci, sexChrom, lociPos,
+				gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields, gs1.m_chromMap);
 		}
-		UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
-		return * new GenoStructure(gs1.m_ploidy, loci, gs2.m_sexChrom, lociPos,
-			gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields, gs1.m_chromMap);
+		else
+		{
+			vectoru loci = gs1.m_numLoci;
+			loci.insert(loci.end(), gs2.m_numLoci.begin(), gs2.m_numLoci.end());
+			DBG_FAILIF(gs1.m_sexChrom, ValueError,
+				"Population with sex chromosome has to be at the end");
+			vectorf lociPos = gs1.m_lociPos;
+			lociPos.insert(lociPos.end(), gs2.m_lociPos.begin(), gs2.m_lociPos.end());
+			DBG_FAILIF(gs1.m_alleleNames != gs2.m_alleleNames, ValueError,
+				"Merged population should have the same allele names (sorry, no allele names at each locus for now)");
+			vectorstr lociNames = gs1.m_lociNames;
+			// add locus name, if there is no duplicate, fine. Otherwise, add '_' to the names.
+			for(vectorstr::const_iterator it=gs2.m_lociNames.begin(); it != gs2.m_lociNames.end(); ++it)
+			{
+				addLocusName(*it);
+			}
+			UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
+			return * new GenoStructure(gs1.m_ploidy, loci, gs2.m_sexChrom, lociPos,
+				gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields, gs1.m_chromMap);
+		}
+#undef addLocusName
 	}
 
 	/// CPPONLY

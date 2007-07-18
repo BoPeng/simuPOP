@@ -124,7 +124,21 @@ namespace simuPOP
 			~GenoStructure()
 			{
 			}
-
+			
+			/// CPPONLY
+			// population::mergePopulationByLoci needs to hanle this
+			double locusPos(UINT locus) const
+			{
+				return m_lociPos[locus];
+			}
+			
+			/// CPPONLY
+			// population::mergePopulationByLoci needs to hanle this
+			const size_t chromIndex(UINT ch) const
+			{
+				return m_chromIndex[ch];
+			}
+			
 #if  defined(_WIN32) || defined(__WIN32__)
 
 			// due to an weird compiling error fo vc7.1,
@@ -339,7 +353,7 @@ namespace simuPOP
 			}
 
 			/// CPPONLY merge two genotype structure
-			GenoStructure & mergeGenoStru(size_t idx) const;
+			GenoStructure & mergeGenoStru(size_t idx, bool byChromosome) const;
 
 			/// CPPONLY
 			GenoStructure & removeLociFromGenoStru(const vectoru & remove=vectoru(), const vectoru & keep=vectoru());

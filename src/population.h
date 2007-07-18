@@ -883,14 +883,27 @@ namespace simuPOP
 			/**
 			Two populations should have the same number of individuals. This also holds for
 			any ancestral generations. By default, chromosomes of \c pop are added to the current
-			population.	You can also specify new chromosome structure using parameter \c newLoci.
-			\param newLoci the new number of loci for the combined genotypic structure.
+			population.	That is to say, chromosomes from \c pop is added, as new chromosomes
+			to this populaton. You can change this arrangement in two ways
+			\li specify new chromosome structure using parameter \c newLoci. loci from new and old
+				population are still in their original order, but chromosome number and position
+				can be changed in this way.
+			\li specify \c byChromosome=true so that chromosomes will be merged one by one. In this
+				case, loci position of two popualtions are important because loci will be arranged 
+				in the order of loci position; and identical loci position of two loci in two
+				populations will lead to error.
+			
+			\param newNumLoci the new number of loci for the combined genotypic structure.
+			\param newLociPos the new loci position if number of loci on each chromosomes are 
+				changed with \c newNumLoci. On each chromosome, loci position should in order.
+			\param byChromosome merge chromosome by chromosome, loci are ordered by loci position
+				default to false.
 			\note \li Information fields are not merged.
 			      \li All ancestral generations will be merged because all individuals in a
                     population have to have the same genotypic structure.
 			*/
 			void mergePopulationByLoci(const population & pop, const vectoru & newNumLoci = vectoru(),
-				const vectorf & newLociPos=vectorf());
+				const vectorf & newLociPos=vectorf(), bool byChromosome=false);
 
 			/// insert loci at given locations
 			/** Insert loci at some given locations. In an inserted location, alleles will be zero.

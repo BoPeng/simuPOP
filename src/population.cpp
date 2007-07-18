@@ -1006,22 +1006,57 @@ namespace simuPOP
 	}
 
 	void population::mergePopulationByLoci(const population & pop,
-		const vectoru & newNumLoci, const vectorf & newLociPos)
+		const vectoru & newNumLoci, const vectorf & newLociPos, bool byChromosome)
 	{
 		DBG_FAILIF(subPopSizes() != pop.subPopSizes(), ValueError,
 			"Merged population should have the same number of individuals in each subpopulation");
 
-		UINT gs1 = totNumLoci();
-		UINT gs2 = pop.totNumLoci();
+		UINT numloci1 = totNumLoci();
+		UINT numloci2 = pop.totNumLoci();
 
-		DBG_FAILIF(!newNumLoci.empty() && accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != gs1 + gs2,
-			ValueError, "Sum of newNumLoci should equal to " + toStr(gs1+gs2));
+		DBG_FAILIF(!newNumLoci.empty() && accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != numloci1 + numloci2,
+			ValueError, "Sum of newNumLoci should equal to " + toStr(numloci1+numloci2));
 
-		DBG_FAILIF(!newLociPos.empty() && newLociPos.size() != gs1 + gs2,
+		DBG_FAILIF(!newLociPos.empty() && newLociPos.size() != numloci1 + numloci2,
 			ValueError, "newLociPos should have the length of combined total number of loci");
 
+		// make copy of old genotype structure
+		GenoStructure * gs1 = new GenoStructure(genoStru());
+		GenoStructure * gs2 = new GenoStructure(pop.genoStru());
+		
 		// obtain new genotype structure and set it
-		setGenoStructure(mergeGenoStru(pop.genoStruIdx()));
+		setGenoStructure(mergeGenoStru(pop.genoStruIdx(), byChromosome));
+		// if byChromosome, we have to figure out how to copy loci
+		vectoru source;
+		if (byChromosome)
+		{
+			DBG_DO(DBG_POPULATION, cout << "New pos " << lociPos() << endl);
+
+			for (size_t ch = 0; ch < numChrom(); ++ch)
+			{
+				size_t idx1 = 0;
+				size_t idx2 = 0;
+				for( size_t loc = 0; loc < numLoci(ch); ++loc)
+				{
+					double pos = locusPos(absLocusIndex(ch, loc));
+					if (pos == gs1->locusPos(gs1->chromIndex(ch) + idx1))
+					{
+						source.push_back(0);
+						idx1 ++;
+					}
+					else if(pos == gs2->locusPos(gs2->chromIndex(ch) + idx2))
+					{
+						source.push_back(1);
+						idx2 ++;
+					}
+					else
+						throw SystemError("Unable to determine position. Something wrong");
+				}
+			}
+		}
+		// remove copied genostructure
+		delete gs1;
+		delete gs2;
 
 		DBG_FAILIF(ancestralDepth() != pop.ancestralDepth(), ValueError,
 			"Merged populations should have the same number of ancestral generations");
@@ -1033,24 +1068,53 @@ namespace simuPOP
 			ULONG newPopGenoSize = genoSize() * m_popSize;
 			vectora newGenotype(newPopGenoSize);
 
-			// copy data over
-			GenoIterator ptr = newGenotype.begin();
-			UINT pEnd = ploidy();
-			for(ULONG i=0; i< m_popSize; ++i)
+			if (byChromosome)
+			// merge chromosome by chromosome
 			{
-				// set new geno structure
-				m_inds[i].setGenoStruIdx(genoStruIdx());
-				GenoIterator ptr1 = m_inds[i].genoPtr();
-				GenoIterator ptr2 = pop.m_inds[i].genoPtr();
-				// new genotype
-				m_inds[i].setGenoPtr( ptr );
-				// copy each allele
-				for(UINT p=0; p < pEnd; ++p)
+				// copy data over
+				GenoIterator ptr = newGenotype.begin();
+				UINT pEnd = ploidy();
+				for(ULONG i=0; i< m_popSize; ++i)
 				{
-					for(size_t j=0; j < gs1; ++j)
-						*(ptr++) = *(ptr1++);
-					for(size_t j=0; j < gs2; ++j)
-						*(ptr++) = *(ptr2++);
+					// set new geno structure
+					m_inds[i].setGenoStruIdx(genoStruIdx());
+					GenoIterator ptr1 = m_inds[i].genoPtr();
+					GenoIterator ptr2 = pop.m_inds[i].genoPtr();
+					// new genotype
+					m_inds[i].setGenoPtr( ptr );
+					// copy each allele
+					for(UINT p=0; p < pEnd; ++p)
+					{
+						for(size_t j=0; j < numloci1 + numloci2; ++j)
+							if (source[j] == 0)
+								*(ptr++) = *(ptr1++);
+							else
+								*(ptr++) = *(ptr2++);
+					}
+				}
+			}
+			else
+			{
+				// append pop2 chromosomes to the first one
+				// copy data over
+				GenoIterator ptr = newGenotype.begin();
+				UINT pEnd = ploidy();
+				for(ULONG i=0; i< m_popSize; ++i)
+				{
+					// set new geno structure
+					m_inds[i].setGenoStruIdx(genoStruIdx());
+					GenoIterator ptr1 = m_inds[i].genoPtr();
+					GenoIterator ptr2 = pop.m_inds[i].genoPtr();
+					// new genotype
+					m_inds[i].setGenoPtr( ptr );
+					// copy each allele
+					for(UINT p=0; p < pEnd; ++p)
+					{
+						for(size_t j=0; j < numloci1; ++j)
+							*(ptr++) = *(ptr1++);
+						for(size_t j=0; j < numloci2; ++j)
+							*(ptr++) = *(ptr2++);
+					}
 				}
 			}
 			m_genotype.swap(newGenotype);

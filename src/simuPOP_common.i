@@ -349,13 +349,13 @@ def MergePopulations(pops, newSubPopSizes=[], keepAncestralPops=-1):
     return res
 
 
-def MergePopulationsByLoci(pops, newNumLoci=[], newLociPos=[]):
+def MergePopulationsByLoci(pops, newNumLoci=[], newLociPos=[], byChromosome=False):
     'merge several populations by loci and create a new population'
     if len(pops) == 0:
         raise exceptions.ValueError("MergePopuations: empty population list is given")
     res = pops[0].clone()
     for i in range(1, len(pops)):
-        res.mergePopulationByLoci(pops[i])
+        res.mergePopulationByLoci(pops[i], [], [], byChromosome)
     if len(newNumLoci) != 0:
         if sum(newNumLoci) != res.totNumLoci():
             raise exceptions.ValueError("MergePopulationsByLoci: can not change total number of loci")

@@ -1030,6 +1030,34 @@ class TestPopulation(unittest.TestCase):
         pop2 = MergePopulationsByLoci([pop, pop1])
         self.assertEqual(pop2.ancestralDepth(), 1)
         self.assertEqual(pop2.numLoci(), (4,5,1,4,5,1))
+        #
+        # test for merge with loci rearrangement
+        pop1 = population(10, loci=[2,3], lociPos=[0.1, 0.3, 0.15, 0.2, 0.3])
+        for i in range(5):
+            InitByFreq(pop1, locus=i, alleleFreq=[i*0.1+0.05, 1-i*0.1 - 0.05])
+        Stat(pop1, alleleFreq=range(5))
+        af1 = [pop1.dvars().alleleFreq[x][0] for x in range(5)]
+        pop2 = population(10, loci=[3,2,1], lociPos=[0.15, 0.16, 0.32, 0.1, 0.21, 0.1])
+        for i in range(5):
+            InitByFreq(pop2, locus=i, alleleFreq=[i*0.1 + 0.12, 1-i*0.1 - 0.12])
+        Stat(pop2, alleleFreq=range(6))
+        af2 = [pop2.dvars().alleleFreq[x][0] for x in range(6)]
+        #
+        pop3 = MergePopulationsByLoci([pop1, pop2], byChromosome=True)
+        Stat(pop3, alleleFreq=range(11))
+        af3 = [pop3.dvars().alleleFreq[x][0] for x in range(11)]
+        self.assertEqual(af1[0], af3[0])
+        self.assertEqual(af2[0], af3[1])
+        self.assertEqual(af2[1], af3[2])
+        self.assertEqual(af1[1], af3[3])
+        self.assertEqual(af2[2], af3[4])
+        self.assertEqual(af2[3], af3[5])
+        self.assertEqual(af1[2], af3[6])
+        self.assertEqual(af1[3], af3[7])
+        self.assertEqual(af2[4], af3[8])
+        self.assertEqual(af1[4], af3[9])
+        self.assertEqual(af2[5], af3[10])
+        
 
     def testInsertBeforeLoci(self):
         'Testing insert before loci of a population'
