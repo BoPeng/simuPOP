@@ -31,6 +31,7 @@ import sys, os, math
 from simuOpt import setOptions
 setOptions(alleleType='binary')
 from simuPOP import *
+from simuUtil import SaveQTDT
 
 # choose some markers to work with
 # 
