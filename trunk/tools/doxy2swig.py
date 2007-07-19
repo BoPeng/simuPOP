@@ -558,8 +558,12 @@ class Doxy2SWIG:
 
     def latex_text(self, text):
         """ wrap text given current indent """
-        for ch in ['\\', '&', '$', '~', '%', '#', '_', '{', '}', '^']:
-            text = text.replace(ch, '\\' + ch)
+        st = text.split('$')
+        for idx, txt in enumerate(st):
+            if idx % 2 == 0:
+                for ch in ['\\', '&', '$', '~', '%', '#', '_', '{', '}', '^']:
+                    txt = txt.replace(ch, '\\' + ch)
+        text = '$'.join(st)
         #text = re.compile(r'%s' % text)
         text = text.replace('<em>', r'{\em ')
         text = text.replace('</em>', '}')
