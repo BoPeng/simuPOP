@@ -260,7 +260,7 @@ class Doxy2SWIG:
     def do_detaileddescription(self, node):
         self.curField = 'Details'
         if not self.content[-1].has_key('Details'):
-            self.content[-1]['Details'] = ''
+            self.content[-1]['Details'] = ''   
         self.parse_childnodes(node)
 
 
@@ -492,6 +492,13 @@ class Doxy2SWIG:
                 entry['ignore'] = True
             else:
                 entry['ignore'] = False
+        # add funcForm key to content and delete function form from Details 
+        for entry in self.content:
+            if (entry.has_key('Details') and '<funcForm>' in entry['Details']):
+                piece1 = entry['Details'].split('<funcForm>')
+                piece2 = piece1[1].split('</funcForm>')
+                entry['Details'] = piece1[0] + piece2[1]
+                entry['funcForm'] = '<tt>' + piece2[0] + '</tt>'
         # destructor can not be CPPONLY, this will cause memory leak. Let us check this
         for entry in self.content:
             if entry['ignore'] and '~' in entry['Name']:
@@ -515,20 +522,23 @@ class Doxy2SWIG:
                     print >> out, '%%ignore %s;\n' % entry['Name']
                 continue          
             print >> out, '%%feature("docstring") %s "\n' % entry['Name']
+            if entry.has_key('funcForm'):
+                print >> out, 'Function form:'
+                print >> out, '\n    %s\n' % self.format_text(entry['funcForm'], 0, 4)
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, 'Description:'
                 print >> out, '\n    %s\n' % self.format_text(entry['Description'], 0, 4)            
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, 'Usage:'
                 print >> out, '\n    %s\n' % self.format_text(entry['Usage'], 0, 6)
+            if entry.has_key('Details') and entry['Details'] != '':
+                print >> out, 'Details:'
+                print >> out, '\n    %s\n' % self.format_text(entry['Details'], 0, 4)
             if entry.has_key('Arguments') and entry['Arguments'] != '':
                 print >> out, 'Arguments:\n'
                 for arg in entry['Arguments']:
                     print >> out, '    %-16s%s' % (arg['Name']+':', self.format_text(arg['Description'], 0, 20))
                 print >> out
-            if entry.has_key('Details') and entry['Details'] != '':
-                print >> out, 'Details:'
-                print >> out, '\n    %s\n' % self.format_text(entry['Details'], 0, 4)
             if entry.has_key('note') and entry['note'] != '':
                 print >> out, 'Note:'
                 print >> out, '\n    %s\n' % self.format_text(entry['note'], 0, 4)
@@ -558,12 +568,33 @@ class Doxy2SWIG:
 
     def latex_text(self, text):
         """ wrap text given current indent """
-        st = text.split('$')
-        for idx, txt in enumerate(st):
-            if idx % 2 == 0:
-                for ch in ['\\', '&', '$', '~', '%', '#', '_', '{', '}', '^']:
-                    txt = txt.replace(ch, '\\' + ch)
-        text = '$'.join(st)
+        # handle the in-text and displayed math formulas
+        newtext = ''
+        inmath = False
+        indispmath = False
+        dispstart = False
+        for i in range(len(text)):
+            if dispstart:
+                # skip [ or ] after \[, \] for display math mode
+                dispstart = False
+                continue
+            if text[i] == '$':
+                inmath = not inmath
+                newtext += '$'
+            elif i+1 < len(text) and text[i:i+2] == r'\[':
+                indispmath = True
+                newtext += '$$'
+                dispstart = True
+            elif i+1 < len(text) and text[i:i+2] == r'\]':
+                indispmath = False
+                newtext += '$$'
+                dispstart = True
+            else:
+                if not inmath and not indispmath and text[i] in ['\\', '&', '$', '~', '%', '#', '_', '{', '}', '^']:
+                    newtext += '\\' + text[i]
+                else:
+                    newtext += text[i]
+        text = newtext
         #text = re.compile(r'%s' % text)
         text = text.replace('<em>', r'{\em ')
         text = text.replace('</em>', '}')
@@ -592,15 +623,15 @@ class Doxy2SWIG:
                 print >> out, '%s\par' % self.latex_text(entry['Description'])
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, '\\begin{quote}\\function{%s}\\end{quote}' % self.latex_text(entry['Usage'])
+            if entry.has_key('Details') and entry['Details'] != '':
+                print >> out, '\\par\n\\strong{Details}\n\\par'
+                print >> out, '    %s\n' % self.latex_text(entry['Details'])
             if entry.has_key('Arguments') and entry['Arguments'] != '':
                 print >> out, '\\par\n\\strong{Arguments}'
                 print >> out, '\\begin{description}'
                 for arg in entry['Arguments']:
                     print >> out, '\\item [{%s}]%s' % (arg['Name'], self.latex_text(arg['Description']))
                 print >> out, '\\end{description}'
-            if entry.has_key('Details') and entry['Details'] != '':
-                print >> out, '\\par\n\\strong{Details}\n\\par'
-                print >> out, '    %s\n' % self.latex_text(entry['Details'])
             if entry.has_key('note') and entry['note'] != '':
                 print >> out, '\\par\n\\strong{Note}\n\\par'
                 print >> out, '    %s\n' % self.latex_text(entry['note'])
@@ -615,7 +646,9 @@ class Doxy2SWIG:
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
             if entry.has_key('Description') and entry['Description'] != '':
-                print >> out, '\\par\n\\strong{Class \\texttt{%s}}\n\\par' % self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
+                print >> out, '\\par\n\\strong{Class \\texttt{%s}}' % self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
+                if entry.has_key('funcForm'):
+                    print >> out, '  (Function form: %s)\n\\par' % self.latex_text(entry['funcForm'])
                 print >> out, '%s' % self.latex_text(entry['Description'])
             if entry.has_key('Details') and entry['Details'] != '':
                 print >> out, '\\par\n\\strong{Details}\n\\par'
@@ -636,6 +669,11 @@ class Doxy2SWIG:
                 print >> out, '%s\par' % self.latex_text(cons['Description'])
             if cons.has_key('Usage') and cons['Usage'] != '':
                 print >> out, '\\begin{quote}\\function{%s}\\end{quote}' % self.latex_text(cons['Usage'])
+            if cons.has_key('Details') and cons['Details'] != '':
+                print >> out, '%s\par' % self.latex_text(cons['Details'])
+            #if cons.has_key('Details') and cons['Details'] != '':
+            #    print >> out, '\\par\n\\strong{Details}\n\\par'
+            #    print >> out, '%s' % self.latex_text(cons['Details'])
             if cons.has_key('Arguments') and cons['Arguments'] != '':
                 print >> out, '\\par\n'
                 print >> out, '\\begin{description}'
@@ -643,11 +681,6 @@ class Doxy2SWIG:
                 for arg in cons['Arguments']:
                     print >> out, '\\item [{%s}]{\\leftskip 0.5cm %s\par}' % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
                 print >> out, '\\end{description}'
-            if cons.has_key('Details') and cons['Details'] != '':
-                print >> out, '%s\par' % self.latex_text(cons['Details'])
-            #if cons.has_key('Details') and cons['Details'] != '':
-            #    print >> out, '\\par\n\\strong{Details}\n\\par'
-            #    print >> out, '%s' % self.latex_text(cons['Details'])
             if cons.has_key('note') and cons['note'] != '':
                 print >> out, '\\par\n\\strong{Note}\n\\par'
                 print >> out, '%s' % self.latex_text(cons['note'])
