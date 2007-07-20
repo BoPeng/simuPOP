@@ -154,7 +154,7 @@ class Doxy2SWIG:
 
 
     def parse_childnodes(self, node):
-        """parse all child nodes.          
+        """parse all child nodes.
         """
         #self.parse(node)
         for n in node.childNodes:
@@ -170,17 +170,17 @@ class Doxy2SWIG:
     do_bold = space_parse
     do_computeroutput = space_parse
     do_formula = space_parse
-    
+
 
     def do_compoundname(self, node):
         data = node.firstChild.data
         self.content.append({'Name': data, 'type': 'class'})
-        
+
 
     def do_emphasis(self, node):
         if node.firstChild is not None:
             self.add_text(r'<em>%s</em>' % node.firstChild.data)
-            
+
 
     def do_computeroutput(self, node):
         self.add_text('<tt>')
@@ -192,7 +192,7 @@ class Doxy2SWIG:
         self.add_text('<bf>')
         self.parse_childnodes(node)
         self.add_text('</bf>')
-            
+
     def do_linebreak(self, node):
         #newline tag indicates the linebreak we do want
         self.add_text(r'</newline>')
@@ -200,17 +200,17 @@ class Doxy2SWIG:
 
     def do_itemizedlist(self, node):
         if( node.hasChildNodes ):
-            self.add_text(r'<itemize>') 
+            self.add_text(r'<itemize>')
             self.parse_childnodes(node)
             self.add_text(r'</itemize>')
-            
+
 
     def do_listitem(self, node):
         self.add_text('<item>')
         self.parse_childnodes(node)
         self.add_text('</item>')
-             
-        
+
+
     def do_compounddef(self, node):
         kind = node.attributes['kind'].value
         if kind in ('class', 'struct'):
@@ -260,7 +260,7 @@ class Doxy2SWIG:
     def do_detaileddescription(self, node):
         self.curField = 'Details'
         if not self.content[-1].has_key('Details'):
-            self.content[-1]['Details'] = ''   
+            self.content[-1]['Details'] = ''
         self.parse_childnodes(node)
 
 
@@ -268,7 +268,7 @@ class Doxy2SWIG:
         self.curField = 'Description'
         self.content[-1]['Description'] = ''
         self.parse_childnodes(node)
-        
+
 
     def do_memberdef(self, node):
         prot = node.attributes['prot'].value
@@ -322,10 +322,10 @@ class Doxy2SWIG:
                 self.curField = 'Usage'
                 defName = defn.split(' ')[-1]
                 if( defName == cname.split(':')[-1] ): # constructor
-                    self.add_text( self.format_text( defName, 0, 0 ) )
+                    self.add_text( self.swig_text( defName, 0, 0 ) )
                 else:
                     self.add_text( 'x.' )
-                    self.add_text( self.format_text( defName, 0, 0 ) )
+                    self.add_text( self.swig_text( defName, 0, 0 ) )
 
             for n in node.childNodes:
                 if n not in first.values():
@@ -476,7 +476,7 @@ class Doxy2SWIG:
         seen = []
         self.content = [x for x in self.content if not (myhash(x) in seen or seen.append(myhash(x)))]
         print "Unique entries: ", len(self.content)
-        # remove all empty entries 
+        # remove all empty entries
         def notEmpty(entry):
             'judge if an entry is empty'
             return (entry.has_key('Description') and entry['Description'] != '') or \
@@ -492,7 +492,14 @@ class Doxy2SWIG:
                 entry['ignore'] = True
             else:
                 entry['ignore'] = False
-        # add funcForm key to content and delete function form from Details 
+        # add funcForm key to content and delete function form from Details
+        for entry in self.content:
+            if (entry.has_key('Details') and '<funcForm>' in entry['Details']):
+                piece1 = entry['Details'].split('<funcForm>')
+                piece2 = piece1[1].split('</funcForm>')
+                entry['Details'] = piece1[0] + piece2[1]
+                entry['funcForm'] = '<tt>' + piece2[0] + '</tt>'
+        # add funcForm key to content and delete function form from Details
         for entry in self.content:
             if (entry.has_key('Details') and '<funcForm>' in entry['Details']):
                 piece1 = entry['Details'].split('<funcForm>')
@@ -511,7 +518,7 @@ class Doxy2SWIG:
         #            self.content['description'].remove('PLOIDY:ALL')
         # sort the entries
         self.content.sort(lambda x, y: x['Name'] > y['Name'])
-    
+
 
     def write_swig(self, out):
         for entry in self.content:
@@ -520,28 +527,34 @@ class Doxy2SWIG:
                     print >> out, '%%ignore %s%s;\n' % (entry['Name'], entry['cppArgs'])
                 else:
                     print >> out, '%%ignore %s;\n' % entry['Name']
-                continue          
+                continue
             print >> out, '%%feature("docstring") %s "\n' % entry['Name']
+            if entry.has_key('funcForm'):
+                print >> out, 'Function form:'
+                print >> out, '\n    %s\n' % self.swig_text(entry['funcForm'], 0, 4)
             if entry.has_key('funcForm'):
                 print >> out, 'Function form:'
                 print >> out, '\n    %s\n' % self.format_text(entry['funcForm'], 0, 4)
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, 'Description:'
-                print >> out, '\n    %s\n' % self.format_text(entry['Description'], 0, 4)            
+                print >> out, '\n    %s\n' % self.swig_text(entry['Description'], 0, 4)
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, 'Usage:'
-                print >> out, '\n    %s\n' % self.format_text(entry['Usage'], 0, 6)
+                print >> out, '\n    %s\n' % self.swig_text(entry['Usage'], 0, 6)
+            if entry.has_key('Details') and entry['Details'] != '':
+                print >> out, 'Details:'
+                print >> out, '\n    %s\n' % self.swig_text(entry['Details'], 0, 4)
             if entry.has_key('Details') and entry['Details'] != '':
                 print >> out, 'Details:'
                 print >> out, '\n    %s\n' % self.format_text(entry['Details'], 0, 4)
             if entry.has_key('Arguments') and entry['Arguments'] != '':
                 print >> out, 'Arguments:\n'
                 for arg in entry['Arguments']:
-                    print >> out, '    %-16s%s' % (arg['Name']+':', self.format_text(arg['Description'], 0, 20))
+                    print >> out, '    %-16s%s' % (arg['Name']+':', self.swig_text(arg['Description'], 0, 20))
                 print >> out
             if entry.has_key('note') and entry['note'] != '':
                 print >> out, 'Note:'
-                print >> out, '\n    %s\n' % self.format_text(entry['note'], 0, 4)
+                print >> out, '\n    %s\n' % self.swig_text(entry['note'], 0, 4)
             if entry.has_key('Examples') and entry['Examples'] != '':
                 print >> out, 'Examples:'
                 print >> out, '\n%s\n' % entry['Examples'].replace('\\', r'\\\\').replace('"', r'\"')
@@ -613,6 +626,33 @@ class Doxy2SWIG:
         return text
 
 
+    def swig_text(self, text, start_pos, indent):
+        """ wrap text given current indent """
+        #delete format sign used in latex file
+        text = text.replace('<em>', '')
+        text = text.replace('</em>', '')
+        text = text.replace('<tt>', '')
+        text = text.replace('</tt>', '')
+        text = text.replace('<bf>', '')
+        text = text.replace('</bf>', '')
+        text = text.replace('<itemize>', '')
+        text = text.replace('</itemize>', '')
+        #itemize items in swig file
+        text = text.replace('<item>', r'</newline> * ')
+        text = text.replace('</item>', '')
+        #displayed formulas in swig file
+        text = text.replace('\[', r'</newline> $')
+        text = text.replace('\]', '$')
+        #used in swig file output
+        text = text.split(r'</newline>')
+        strs = []
+        for txt in text:
+            strs.extend(textwrap.wrap(txt.lstrip('\n '), width=self.maxChar,
+                initial_indent=' '*(start_pos+indent),
+                subsequent_indent = ' '*indent))
+        return  ('\n'.join(strs)).lstrip().replace('\\', '\\\\').replace('"', r'\"')
+
+
     def write_latex(self, out):
         # first handle glocal functions
         for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] \
@@ -648,8 +688,8 @@ class Doxy2SWIG:
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, '\\par\n\\strong{Class \\texttt{%s}}' % self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
                 if entry.has_key('funcForm'):
-                    print >> out, '  (Function form: %s)\n\\par' % self.latex_text(entry['funcForm'])
-                print >> out, '%s' % self.latex_text(entry['Description'])
+                    print >> out, '  (Function form: %s)' % self.latex_text(entry['funcForm'])
+                print >> out, '\n\\par %s' % self.latex_text(entry['Description'])
             if entry.has_key('Details') and entry['Details'] != '':
                 print >> out, '\\par\n\\strong{Details}\n\\par'
                 print >> out, '%s' % self.latex_text(entry['Details'])
@@ -657,7 +697,7 @@ class Doxy2SWIG:
                 print >> out, '\\par\n\\strong{Note}\n\\par'
                 print >> out, '%s' % self.latex_text(entry['note'])
             # only use the first constructor
-            constructor = [x for x in self.content if x['type'] == 'constructorofclass_' + entry['Name'] and not x['ignore']]          
+            constructor = [x for x in self.content if x['type'] == 'constructorofclass_' + entry['Name'] and not x['ignore']]
             if len(constructor) == 0:
                 print >> out, '}\n'
                 continue
@@ -784,30 +824,6 @@ class Doxy2SWIG:
         elif type == 'latex_all':
             self.write_latex_testfile(fout, ref_file)
         fout.close()
-
-
-    def format_text(self, text, start_pos, indent):
-        """ wrap text given current indent """
-        #delete format sign used in latex file
-        text = text.replace('<em>', '')
-        text = text.replace('</em>', '')
-        text = text.replace('<tt>', '')
-        text = text.replace('</tt>', '')
-        text = text.replace('<bf>', '')
-        text = text.replace('</bf>', '')
-        text = text.replace('<itemize>', '')
-        text = text.replace('</itemize>', '')
-        #itemize items in swig file
-        text = text.replace('<item>', r'</newline> * ')
-        text = text.replace('</item>', '')
-        #used in swig file output
-        text = text.split(r'</newline>')
-        strs = []
-        for txt in text:
-            strs.extend(textwrap.wrap(txt.lstrip('\n '), width=self.maxChar,
-                initial_indent=' '*(start_pos+indent),
-                subsequent_indent = ' '*indent))
-        return  ('\n'.join(strs)).lstrip().replace('\\', r'\\\\').replace('"', r'\"')              
 
 
 if __name__ == '__main__':
