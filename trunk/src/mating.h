@@ -138,7 +138,7 @@ namespace simuPOP
 			\c mode, \c numOffspring, \c maxNumOffspring can be used to specify how
 			many offspring will be produced for each mating event. This \c mode parameter
 			can be one of
-            \li \c MATE_NumOffspring: fixed number of offspring for all families at this generation.
+            \li \c MATE_NumOffspring: a fixed number of offspring for all families at this generation.
                 If \c numOffspring is given, all generations use this fixed number. If \c numOffspringFunc
                 is given, the number of offspring at each generation is determined by the value
                 returned from this function.
@@ -146,17 +146,19 @@ namespace simuPOP
                 Usually, \c numOffspringFunc is used to determine the number of offspring of each
                 family. If \c numOffspring is used, \c MATE_NumOffspringEachFamily is equivalent to
                 \c MATE_NumOffspring.
-            \li \c MATE_GeometricDistribution: a geometric distribution with parameter \c numOffspring
-                is used to determine number of offspring of each family.
-            \li \c MATE_BinomialDistribution: a binomial distribution with parameter \c numOffspring
-                is used to determine number of offspring of each family.
-            \li \c MATE_UniformDistribution: a uniform distribution <tt> [a, b] </tt> with parameter
-                \c numOffspring (a) and \c maxNumOffspring (b) is used to determine number of offspring of each family.
+            \li \c MATE_GeometricDistribution: a Geometric distribution with parameter \c numOffspring
+                is used to determine the number of offspring of each family.
+            \li \c MATE_PoissonDistribution: a Poisson distribution with parameter \c numOffspring
+                is used to determine the number of offspring of each family.
+            \li \c MATE_BinomialDistribution: a Binomial distribution with parameter \c numOffspring
+                is used to determine the number of offspring of each family.
+            \li \c MATE_UniformDistribution: a Uniform distribution <tt> [a, b] </tt> with parameter
+                \c numOffspring (a) and \c maxNumOffspring (b) is used to determine the number of offspring of each family.
                 
-            \param numOffspring number of offspring or \em p for a random distribution.
-                Default to 1. This parameter determines the number of offspring that a
+            \param numOffspring the number of offspring or \em p for a random distribution.
+                Default to \c 1. This parameter determines the number of offspring that a
                 mating event will produce. Therefore, it determines the family size.
-            \param numOffspringFunc a python function that returns the number of offspring or \em p
+            \param numOffspringFunc a Python function that returns the number of offspring or \em p
             \param maxNumOffspring used when \c numOffspring is generated from a binomial distribution
             \param mode can be one of <tt>MATE_NumOffspring, MATE_NumOffspringEachFamily,
                 MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,

@@ -22,7 +22,7 @@
  ***************************************************************************/
 
 #ifndef _OPERATOR_H
-#define _OPERATOR_H
+#define _OPERATOR_H 
 /**
 \file
 \brief head file of class Operator

@@ -148,27 +148,26 @@ namespace simuPOP
 	Subpopulation structure limits the usually random exchange of genotypes between
 	individuals disallowing mating between individuals from different subpopulations.
 	In the presence of subpopualtion structure, exchange of genetic information
-	across subpopulations can only be done through migration. Note that simuPOP uses
-	one-level population structure. I.e., there is no sub-subpopulation
-	or families in subpopulations.
+	across subpopulations can only be done through migration. Note that in simuPOP
+	there is no	sub-subpopulation or family in subpopulations.
 
 	\li variables. Every population has its own variable space, or \em local \em
 	namespaces in simuPOP term. This namespace is a Python dictionary that is
 	attached to each population and can be exposed to the users through \c vars()
 	or \c dvars() function. Many functions and operators work and store their results
 	in these namespaces. For example, function \c Stat set variables
-	like <tt>alleleFreq[loc]</tt> and you can access them via
+	such as <tt>alleleFreq[loc]</tt>, and you can access it via
 	<tt>pop.dvars().alleleFreq[loc][allele]</tt>.
 
 	\li ancestral generations. A population can save arbitrary number of ancestral
 	generations. During evolution, the latest several (or all) ancestral generations
-	are saved. Functions to make a certain ancestray generation \em current is
+	are saved. Functions??? to make a certain ancestral generation \em current are
 	provided so that one can examine and modify ancestral generations.
 
-	Other important concepts like \em information \em fields are explained in
-	class individual.
+	Other important concepts like <em>information fields</em> are explained in
+	class \c individual???.
 
-	\n Note that although a large number of member functions are provided,
+	\note Although a large number of member functions are provided,
 	most of the operations are performed by \em operators. These functions will only
 	be useful when you need to manipulate a population explicitly.
 	*/
@@ -185,7 +184,7 @@ namespace simuPOP
 
 			///Create a population object with given size and genotypic structure.
 			/**
-			FIXME: Details of constructure is missing. 
+			FIXME: Details of constructure is missing. ???
 
 			This is techniquely the \c __init__ function of the population object.
 
@@ -798,7 +797,7 @@ namespace simuPOP
 					ind(it).setSubPopID( static_cast<SubPopID>(id[it]));
 			}
 
-			/// set subpopulation ID of each individual with their current subpopulation ID
+			/// set subpopulation ID of each individual with their current subpopulation ID???
 			void setIndSubPopIDWithID()
 			{
 				for( UINT i=0, iEnd = numSubPop(); i < iEnd;  ++i)
@@ -809,7 +808,7 @@ namespace simuPOP
 			/// adjust subpopulation according to individual subpopulation ID.
 			/** 
 			Rearrange individuals to their new subpopulations according to their
-			subpopulation ID (or the new given \c id). Order within each subpopulation is not respected.
+			subpopulation ID (or the new given \c ID). Order within each subpopulation is not respected.
 
 			\param id new subpopulation ID, if given, current individual subpopulation ID 
 			  will be ignored.
