@@ -518,7 +518,7 @@ namespace simuPOP
 				return( s_genoStruRepository[m_genoStruIdx].m_chromIndex[chrom] + locus );
 			}
 
-			/// return <tt>(chrom, locus)</tt> pair of an absolute locus index
+			/// return a <tt>(chrom, locus)</tt> pair of an absolute locus index
 			std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
 
 			/// return the name of an allele (if previously specified)

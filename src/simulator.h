@@ -85,10 +85,10 @@ namespace simuPOP
 	// the evolution process by applying pre- during- and post- mating Operators
 	// during evolution. } 
 
-    /// simulator manage several replicates of a population, evolve them using given mating scheme and operators
+    /// simulator manages several replicates of a population, evolve them using given mating scheme and operators
 	/**
-	Simulators combine three important components of <tt>simuPOP:
-	population</tt>, mating scheme and operators together. A
+	Simulators combine three important components of simuPOP:
+	population, mating scheme and operators together. A
 	simulator is created with an instance of \c population, a
 	replicate number \c rep and a mating scheme. It makes \c rep
     number of replicates of this population and control the
@@ -100,7 +100,7 @@ namespace simuPOP
 	populations at the beginning and the end of evolution, respectively,
     whereas	\c ops will be applied at every generation. \n
 
-	Simulators separate operators into \em pre-, \em during- and
+	Simulators separate operators into \em pre-, \em during-, and
     \em post-mating operators. During evolution, a simulator first
 	apply all pre-mating operators and then call the \c mate()
 	function of the given mating scheme, which will call
@@ -108,7 +108,7 @@ namespace simuPOP
 	After mating is completed, post-mating operators are
 	applied to the offspring in the order at which they appear in the operator list. \n
 
-	Operators can be applied to specific replicate, a group of replicates,
+	Operators can be applied to a specific replicate, a group of replicates,
     or specific generations, determined by the \c rep, \c grp, \c begin,
     \c end, \c step, and \c at parameters.\n
 
@@ -272,7 +272,7 @@ namespace simuPOP
 				return m_numRep;
 			}
 
-            /// return current generation number
+            /// return the current generation number
 			ULONG gen() const
 			{
 				return m_gen;
@@ -293,7 +293,7 @@ namespace simuPOP
 			/// set groups for replicates
 			void setGroup(const vectori& grp);
 
-			/// set current generation. Usually used to reset a simulator.
+			/// set the current generation. Usually used to reset a simulator.
 			/**
 			\param gen new generation index number
 			*/
@@ -349,6 +349,7 @@ namespace simuPOP
 			  is no ending generation and a simulator will only be ended by a
 			  terminator. Otherwise, it should be a number greater than current
 			  generation number.
+			\param dry run mode. Default to \c False.
 			\result True if evolution performed successfully.
 			\sa simulator::step()
 			\note When <tt>end = -1</tt>, you can not specify negative generation
