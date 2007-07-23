@@ -534,7 +534,7 @@ class Doxy2SWIG:
                 print >> out, '\n    %s\n' % self.swig_text(entry['funcForm'], 0, 4)
             if entry.has_key('funcForm'):
                 print >> out, 'Function form:'
-                print >> out, '\n    %s\n' % self.format_text(entry['funcForm'], 0, 4)
+                print >> out, '\n    %s\n' % self.swig_text(entry['funcForm'], 0, 4)
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, 'Description:'
                 print >> out, '\n    %s\n' % self.swig_text(entry['Description'], 0, 4)
@@ -546,7 +546,7 @@ class Doxy2SWIG:
                 print >> out, '\n    %s\n' % self.swig_text(entry['Details'], 0, 4)
             if entry.has_key('Details') and entry['Details'] != '':
                 print >> out, 'Details:'
-                print >> out, '\n    %s\n' % self.format_text(entry['Details'], 0, 4)
+                print >> out, '\n    %s\n' % self.swig_text(entry['Details'], 0, 4)
             if entry.has_key('Arguments') and entry['Arguments'] != '':
                 print >> out, 'Arguments:\n'
                 for arg in entry['Arguments']:
