@@ -1057,7 +1057,17 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(af2[4], af3[8])
         self.assertEqual(af1[4], af3[9])
         self.assertEqual(af2[5], af3[10])
-        
+        #
+        # test mergePopulationByLoci using byChromosome
+        pop = population(subPop=[7, 3, 4], loci=[4, 5, 1])
+        InitByFreq(pop, [.2, .3, .5])
+        pop_re = pop.clone()
+        pop_re.removeLoci(remove=[1, 4, 7])
+        pop_ke = pop.clone()
+        pop_ke.removeLoci(keep=[1, 4, 7])
+        pop_re.mergePopulationByLoci(pop_ke, byChromosome=True)
+        self.assertEqual(pop, pop_re)
+
 
     def testInsertBeforeLoci(self):
         'Testing insert before loci of a population'
