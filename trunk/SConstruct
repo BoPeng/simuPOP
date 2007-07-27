@@ -129,7 +129,8 @@ extra_lib = env.StaticLibrary(
 )
 
 targets = []
-for key in all_modu + mpi_modu:
+# temporarily disable the building of mpi
+for key in all_modu: #  + mpi_modu:
     if key in BUILD_TARGETS:
         targets.append(key)
 if targets == []:
@@ -137,7 +138,7 @@ if targets == []:
     targets = all_modu 
 if 'all' in BUILD_TARGETS:
     # if all is specified, build all
-    targets = all_modu + mpi_modu
+    targets = all_modu # + mpi_modu
 
 def mod_src(file, mod):
     return file.replace('src', '$build_dir').replace('.cpp', '_%s.cpp' % mod)
