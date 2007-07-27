@@ -1,4 +1,4 @@
-#LyX 1.5.0rc2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -16,7 +16,7 @@
 
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.7.10 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.7.11 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. MD Anderson Cancer Center}\\
 {\bf Email: }{\textsf bpeng@mdanderson.org}\\
@@ -65,9 +65,9 @@ Last modified \\
 \listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
-\author "BPeng1" 
-\author "Bo Peng" 
-\author "Yaji" 
+\author "" 
+\author "" 
+\author "" 
 \end_header
 
 \begin_body
