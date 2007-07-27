@@ -244,43 +244,6 @@ class TestRPy(unittest.TestCase):
         sleep(1)
         r.dev_off()
 
-    def testVarPlotterImagePenetrance(self):
-        'Testing a more complicated example'
-        if not hasRPy:
-            return True
-        # of course this is not the best image to draw.
-        # now, consider plotting penetrance?
-        # or affected status?
-        # check the spreading of disease
-        numRep=4
-        popSize=500
-        #turnOnDebug(DBG_MUTATOR)
-        #turnOnDebug(DBG_SIMULATOR)
-        simu = simulator(population(size=popSize, loci=[1]),
-            randomMating(), rep=numRep)
-        simu.evolve(
-            preOps = [ initByValue([1,1])],
-            ops = [
-                # penetrance, additve penetrance
-                maPenetrance(locus=0, wildtype=[1], penetrance=[0,0.5,1],
-                     stage=PreMating),
-                # count number of affected
-                stat(numOfAffected=True),
-                # introduce disease if no one is affected
-                ifElse(cond='numOfAffected==0',
-                    ifOp=kamMutator(rate=0.01, maxAllele=2)),
-                # expose affected status
-                pyExec('pop.exposeAffectedness()', exposePop=True),
-                # plot affected status
-                varPlotter(expr='affected',plotType='image', byRep=True, update=50, 
-                    varDim=popSize, win=100, numRep=numRep, title='affectedness')
-            ],
-            end=100,
-            dryrun=False
-        )
-        sleep(1)
-        r.dev_off()
-        
     def testVarPlotterImageNoHistory(self):
         'Testing no history version of image parameter'
         if not hasRPy:
