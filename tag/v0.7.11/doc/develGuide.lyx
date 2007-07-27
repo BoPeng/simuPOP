@@ -1,0 +1,569 @@
+#LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
+\lyxformat 258
+\begin_document
+\begin_header
+\textclass manual
+\begin_preamble
+\usepackage{underscore}
+\renewcommand{\py@ptsize}{12pt}
+
+\setreleaseinfo{Release 0.6.9 (\mbox{$$Rev: 75 $$})}
+\authoraddress{
+{\bf Department of Statistics, Rice University}\\
+{\bf Email: }{\textsf bpeng@rice.edu}\\
+{\bf URL: }{\textsf http://simupop.sourceforge.net} \\
+{\bf Mailing List: }{\textsf simupop-list@lists.sourceforge.net}
+}
+\author{Bo Peng}
+\date{December 2004\\
+\hfill{}\\
+Last modified \\
+\today }
+
+\ifhtml
+\chapter*{Front Matter\label{front}}
+\fi
+\end_preamble
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\float_placement H
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 2
+\use_esint 0
+\cite_engine natbib_authoryear
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes true
+\author "Bo Peng" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+simuPOP Developer's Guide
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "c"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1pt"
+height_special "totalheight"
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+hspace{1cm}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+vspace{5in}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+{
+\backslash
+large
+\backslash
+textsf Acknowledgements: }
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+vspace{.2cm}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Dr.
+ Marek Kimmel
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Dr.
+ Fran
+\backslash
+c cious Balloux
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Dr.
+ William Amos
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} SWIG user community
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Python user community 
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Keck Center for Computational and Structural Biology
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+vspace{.7in} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+ 
+\backslash
+copyright{} 
+\end_layout
+
+\end_inset
+
+ 2004-2005 Bo Peng 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+vspace{.3cm} 
+\backslash
+hrule 
+\backslash
+vspace{0.1cm} 
+\end_layout
+
+\end_inset
+
+Permission is granted to make and distribute verbatim copies of this manual
+ provided the copyright notice and this permission notice are preserved
+ on all copies.
+ Permission is granted to copy and distribute modified versions of this
+ manual under the conditions for verbatim copying, provided also that the
+ sections entitled Copying and GNU General Public License are included exactly
+ as in the original, and provided that the entire resulting derived work
+ is distributed under the terms of a permission notice identical to this
+ one.
+ Permission is granted to copy and distribute translations of this manual
+ into another language, under the above conditions for modified versions,
+ except that this permission notice may be stated in a translation approved
+ by the Free Software Foundation.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+MPI implementations
+\end_layout
+
+\begin_layout Section
+Design
+\end_layout
+
+\begin_layout Standard
+It is quite challenging to write a MPI version of simuPOP because simuPOP
+ is a python module.
+ The first thing I need to decide is: how to run the simuPOP script?
+\end_layout
+
+\begin_layout Standard
+There are two choices:
+\end_layout
+
+\begin_layout Itemize
+All processes run the same script
+\end_layout
+
+\begin_layout Itemize
+Only the head node run the script
+\end_layout
+
+\begin_layout Standard
+In the first method, all processes run the same script.
+ Write operation write to a certain node and read operation read from a
+ node and broadcast to all nodes.
+ This ensures all nodes have the same execution logic.
+ However, this approach has some obvious disadvantages
+\end_layout
+
+\begin_layout Itemize
+Not all nodes need to execute the same script.
+ The script can contain something computationally intensive for something
+ else....
+\end_layout
+
+\begin_layout Itemize
+It is difficult to ensure identical execution logic.
+ For example, the script might randomly choose a population using python
+ random module.
+ There is no way simuPOP can detect such changes.
+\end_layout
+
+\begin_layout Itemize
+The program becomes really difficult to implement when things like python
+ operator is involved.
+\end_layout
+
+\begin_layout Standard
+I choose the second method.
+ Namely only the head node execute the script.
+ All other nodes becomes slave nodes after simuPOP is loaded.
+ This is seem in 
+\family typewriter
+simuPOP.py
+\end_layout
+
+\begin_layout LyX-Code
+if mpi() and mpiRank() > 0: 
+\end_layout
+
+\begin_layout LyX-Code
+    slaveExecutionLoop() 
+\end_layout
+
+\begin_layout LyX-Code
+    sys.exit(0)
+\end_layout
+
+\begin_layout Standard
+The slave process will go to a dead loop, waiting for master instruction
+ and act accordingly.
+ When the communicator in the master process is destroyed (master node stops),
+ it send 
+\family typewriter
+SLAVE_TERMINATE
+\family default
+ signal to all slaves and terminate them.
+\end_layout
+
+\begin_layout Section
+Kick back execution
+\end_layout
+
+\begin_layout Standard
+The logic in many functions may look strange to you so let me explain here,
+ taking the constructor of 
+\family typewriter
+population 
+\family default
+as an example.
+\end_layout
+
+\begin_layout Standard
+This function goes like this
+\end_layout
+
+\begin_layout Itemize
+The master node is instructed to create a population
+\end_layout
+
+\begin_layout Itemize
+It execute 
+\family typewriter
+population::population()
+\family default
+, and send a 
+\family typewriter
+SLAVE_POPULATION_CREATE 
+\family default
+signal to all slave nodes, along with all the parameters.
+\end_layout
+
+\begin_layout Itemize
+The master process finishes this function without allocating any memory
+ for genotype.
+\end_layout
+
+\begin_layout Itemize
+The slave processes get the 
+\family typewriter
+SLAVE_POPULATION_CREATE 
+\family default
+signal, get all the parameters and call the same 
+\family typewriter
+population::population()
+\family default
+ function.
+ Of course, this function execute differently because of the 
+\family typewriter
+mpiRank()
+\family default
+ conditions.
+ For example, master node does not allocate memory for genotype, but slave
+ node does.
+ Master node takes care of information fields, but slave node does not.
+\end_layout
+
+\begin_layout Section
+Population ID
+\end_layout
+
+\begin_layout Standard
+From a slave process point of view, it does not know anything about the
+ script.
+ It creates populations when it is asked to do so, but how can a master
+ process tell the slave process WHICH population to operate on?
+\end_layout
+
+\begin_layout Standard
+This problem is solved by population ID.
+ Each population, when it is created, get a unique ID.
+ The master process passes this 
+\family typewriter
+m_popID
+\family default
+ to the slave processes and they store the create populations in a map,
+ with this ID and the population pointer.
+ When a population is being accessed, the slave process retrieves this populatio
+n using this ID.
+ A cache (
+\family typewriter
+g_curID, g_curPop
+\family default
+)
+\family typewriter
+ 
+\family default
+is used to avoid repeative map search when operations are done to the same
+ population.
+\end_layout
+
+\begin_layout Standard
+Since the slave processes know nothing about the script, it has to be instructed
+ hand by hand.
+ That to say, for every operation, parameters have to be passed and in most
+ cases, such kick back calls have to be made.
+ So in general, if you see
+\end_layout
+
+\begin_layout LyX-Code
+action = SLAVE_XXX
+\end_layout
+
+\begin_layout LyX-Code
+mpiComm().send(node, 0, action)
+\end_layout
+
+\begin_layout Standard
+some slave-process action is triggered.
+ If you see
+\end_layout
+
+\begin_layout LyX-Code
+#ifdef SIMUMPI
+\end_layout
+
+\begin_layout LyX-Code
+#endif
+\end_layout
+
+\begin_layout Standard
+and 
+\end_layout
+
+\begin_layout LyX-Code
+if(mpiRank() == 0)
+\end_layout
+
+\begin_layout LyX-Code
+...
+\end_layout
+
+\begin_layout LyX-Code
+else
+\end_layout
+
+\begin_layout Standard
+then, the function will be executed by both master and slave processes,
+ doing probably different things.
+\end_layout
+
+\begin_layout Section
+Individual objects
+\end_layout
+
+\begin_layout Standard
+We use ID to look up populations but looking up individuals in this way
+ is unacceptable.
+ One extra ID field will waste a lot of ram, but more importantly, searching
+ in a map for an individual object will be very slow.
+\end_layout
+
+\begin_layout Standard
+So the first thing we need to do is storing individual index instead of
+ genoPtr on the master node, and because genoPtr does not point to any real
+ memory anyway.
+ On the slave node, genoPtr is meaningful though.
+ A union has to be used.
+\end_layout
+
+\begin_layout Standard
+Then, allele access at the individual level is done by:
+\end_layout
+
+\begin_layout Itemize
+the master node needs to know the genotype of an individual at certain location
+\end_layout
+
+\begin_layout Itemize
+it sends out 
+\family typewriter
+SLAVE_INDIVIDUEL_GET_ALLELE
+\family default
+ to the slave node.
+ Population id, individual index and locus index is needed.
+ The latter is now stored in genoPtr.
+ The master nodes need to figure out which slave it should send the request
+ to.
+\end_layout
+
+\begin_layout Itemize
+the slave node get the allele from the information it gets and send the
+ allele back.
+\end_layout
+
+\begin_layout Standard
+And now you see some other problems:
+\end_layout
+
+\begin_layout Itemize
+population ID must be saved at individual level.
+ This is a waste of RAM but I see no way out.
+\end_layout
+
+\begin_layout Itemize
+Individual index has to be reset over and over again...
+ I need to be REALLY CAREFUL about this.
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand printindex
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
