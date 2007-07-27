@@ -87,16 +87,16 @@ class TestPyOperator(unittest.TestCase):
             for i in range( pop.totNumLoci() ):
                 # 1-freq of wild type = total disease allele frequency
                 if 1-pop.dvars().alleleFreq[i][0] < cutoff:
-                    KamMutate(pop, rate=mu1, atLoci=[i])
+                    KamMutate(pop, rate=mu1, loci=[i])
                 else:
-                    KamMutate(pop, rate=mu2, atLoci=[i])
+                    KamMutate(pop, rate=mu2, loci=[i])
         else:
             for i in range( pop.totNumLoci() ):
                 # 1-freq of wild type = total disease allele frequency
                 if 1-pop.dvars().alleleFreq[i][1] < cutoff:
-                    KamMutate(pop, maxAllele=2, rate=mu1, atLoci=[i])
+                    KamMutate(pop, maxAllele=2, rate=mu1, loci=[i])
                 else:
-                    KamMutate(pop, maxAllele=2, rate=mu2, atLoci=[i])
+                    KamMutate(pop, maxAllele=2, rate=mu2, loci=[i])
         return True
 
     def testDynaMutator(self):
@@ -104,8 +104,8 @@ class TestPyOperator(unittest.TestCase):
         simu = simulator(self.pop, randomMating())
         simu.evolve(
             preOps = [ 
-                initByFreq( [.6, .4], atLoci=[0,2,4]),
-                initByFreq( [.8, .2], atLoci=[1,3]) ],
+                initByFreq( [.6, .4], loci=[0,2,4]),
+                initByFreq( [.8, .2], loci=[1,3]) ],
             ops = [ 
                 pyOperator( func=self.dynaMutator, param=(.5, .1, 0) ),
                 stat(alleleFreq=range(5)),
@@ -176,8 +176,8 @@ class TestPyOperator(unittest.TestCase):
             noMating(), rep=1)
         simu.step(
             preOps = [
-                initByValue(value=[1], atLoci=[2]),
-                initByValue(value=[2], atLoci=[4]),
+                initByValue(value=[1], loci=[2]),
+                initByValue(value=[2], loci=[4]),
                 ],
             ops = [
                 pyIndOperator(func=indFunc),

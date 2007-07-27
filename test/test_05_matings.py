@@ -197,7 +197,7 @@ class TestMatingSchemes(unittest.TestCase):
                 initByValue([0])
                 ],
             ops=[
-                pointMutator(atLoci=[0], 
+                pointMutator(loci=[0], 
                     toAllele=1, 
                     inds = [0],
                     at = [burnin+1],
@@ -239,7 +239,7 @@ class TestMatingSchemes(unittest.TestCase):
                 initByValue([0])
                 ],
             ops=[
-                pointMutator(atLoci=[0], 
+                pointMutator(loci=[0], 
                     toAllele=1, 
                     inds = [0],
                     at = [burnin+1],
@@ -281,12 +281,12 @@ class TestMatingSchemes(unittest.TestCase):
                 initByValue([0]*2)
                 ],
             ops=[
-                pointMutator(atLoci=[0], 
+                pointMutator(loci=[0], 
                     toAllele=1, 
                     inds = [0],
                     at = [endingGen-len(traj[0])+1],
                     stage = PreMating),
-                pointMutator(atLoci=[1], 
+                pointMutator(loci=[1], 
                     toAllele=1, 
                     inds = [1],
                     at = [endingGen-len(traj[1])+1],
@@ -324,7 +324,7 @@ class TestMatingSchemes(unittest.TestCase):
                 initByValue([0])
                 ],
             ops=[
-                pointMutator(atLoci=[0], 
+                pointMutator(loci=[0], 
                     toAllele=1, 
                     inds = [0],
                     at = [burnin+1],
@@ -363,12 +363,12 @@ class TestMatingSchemes(unittest.TestCase):
                 initByValue([0]*2)
                 ],
             ops=[
-                pointMutator(atLoci=[0], 
+                pointMutator(loci=[0], 
                     toAllele=1, 
                     inds = [0],
                     at = [endingGen-len(traj[0])+1],
                     stage = PreMating),
-                pointMutator(atLoci=[1], 
+                pointMutator(loci=[1], 
                     toAllele=1, 
                     inds = [1],
                     at = [endingGen-len(traj[1])+1],

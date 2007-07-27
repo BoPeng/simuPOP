@@ -22,9 +22,9 @@ class TestInitialization(unittest.TestCase):
         pop.arrGenotype(False)[:] = 0
 
     def assertGenotype(self, pop, genotype,
-        atLoci=[], subPop=[], indRange=[], atPloidy=[]):
+        loci=[], subPop=[], indRange=[], atPloidy=[]):
         'Assert if the genotype of subPop of pop is genotype '
-        geno = getGenotype(pop, atLoci, subPop, indRange, atPloidy)
+        geno = getGenotype(pop, loci, subPop, indRange, atPloidy)
         if alleleType() == 'binary':
             if type(genotype) == type(1):
                 self.assertEqual(geno, [genotype>0]*len(geno))
@@ -37,9 +37,9 @@ class TestInitialization(unittest.TestCase):
                 self.assertEqual(geno, genotype)
 
     def assertGenotypeFreq(self, pop, freqLow, freqHigh,
-        atLoci=[], subPop=[], indRange=[], atPloidy=[]):
+        loci=[], subPop=[], indRange=[], atPloidy=[]):
         'Assert if the genotype has the correct allele frequency'
-        geno = getGenotype(pop, atLoci, subPop, indRange, atPloidy)
+        geno = getGenotype(pop, loci, subPop, indRange, atPloidy)
         if alleleType() == 'binary':
             if len(freqLow) == 1:    # only one
                 freq0 = geno.count(0)*1.0 / len(geno)
@@ -65,10 +65,10 @@ class TestInitialization(unittest.TestCase):
             [.25, .35, .55])
         #
         self.clearGenotype(pop)
-        InitByFreq(pop, [.2, .3, .4, .1], atLoci=[2,4,6])
+        InitByFreq(pop, [.2, .3, .4, .1], loci=[2,4,6])
         self.assertGenotypeFreq(pop, [.15, .25, .35, .05],
-            [.25, .35, .45, .15], atLoci=[2,4,6])
-        self.assertGenotype(pop, 0, atLoci=[0,1,3,5,7])
+            [.25, .35, .45, .15], loci=[2,4,6])
+        self.assertGenotype(pop, 0, loci=[0,1,3,5,7])
         #
         self.clearGenotype(pop)
         # use maleFreq=1 to avoid problem when comparing individuals
@@ -129,17 +129,17 @@ class TestInitialization(unittest.TestCase):
         #
         self.clearGenotype(pop)
         InitByFreq(pop, alleleFreq=[[.2, .8],[.8,.2]],
-            indRange=[[0,300],[500,1300]], atLoci=[2,3,5,6])
+            indRange=[[0,300],[500,1300]], loci=[2,3,5,6])
         self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], 
-            indRange=[0,300], atLoci=[2,3,5,6] )
+            indRange=[0,300], loci=[2,3,5,6] )
         self.assertGenotypeFreq(pop, [.75, .15], [.85, .25], 
-            indRange=[500, 1300], atLoci=[2,3,5,6] )
+            indRange=[500, 1300], loci=[2,3,5,6] )
         self.assertGenotype(pop, 0, indRange=[[300,500], [1300, 2000]] )
-        self.assertGenotype(pop, 0, indRange=[[300,500],[1300,2000]], atLoci=[2,3,5,6])
+        self.assertGenotype(pop, 0, indRange=[[300,500],[1300,2000]], loci=[2,3,5,6])
         #
         self.clearGenotype(pop)
         InitByFreq(pop, alleleFreq=[[.2, .8],[.8,.2]],
-            indRange=[[0,4],[8,15]], atLoci=[2,3,5,6],
+            indRange=[[0,4],[8,15]], loci=[2,3,5,6],
             identicalInds=1, maleFreq=1)
         self.assertEqual(pop.individual(0), pop.individual(3))
         self.assertEqual(pop.individual(8), pop.individual(14))
@@ -148,10 +148,10 @@ class TestInitialization(unittest.TestCase):
         #Testing atPloidy in initByFreq'
         pop = population(subPop=[500, 1000, 500], loci=[2,4,2])
         self.clearGenotype(pop)
-        InitByFreq(pop, [.2, .3, .5], atLoci=[2,4,6], atPloidy=0)
+        InitByFreq(pop, [.2, .3, .5], loci=[2,4,6], atPloidy=0)
         self.assertGenotypeFreq(pop, [.15, .25, .45], [.25, .35, .55],
-            atLoci=[2,4,6], atPloidy=0)
-        self.assertGenotype(pop, 0, atLoci=[0,3,5,7])
+            loci=[2,4,6], atPloidy=0)
+        self.assertGenotype(pop, 0, loci=[0,3,5,7])
         self.assertGenotype(pop, 0, atPloidy=1)
         #
         self.clearGenotype(pop)
@@ -195,10 +195,10 @@ class TestInitialization(unittest.TestCase):
         # 
         self.clearGenotype(pop)
         InitByFreq(pop, alleleFreq=[[.2, .8],[.8,.2]],
-            indRange=[[0,300],[500,1300]], atLoci=[2,3,5,6], atPloidy=0)
-        self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], atLoci=[2,3,5,6], 
+            indRange=[[0,300],[500,1300]], loci=[2,3,5,6], atPloidy=0)
+        self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], loci=[2,3,5,6], 
             indRange=[0,300], atPloidy=0 )
-        self.assertGenotypeFreq(pop, [.75, .15], [.85, .25], atLoci=[2,3,5,6], 
+        self.assertGenotypeFreq(pop, [.75, .15], [.85, .25], loci=[2,3,5,6], 
             indRange=[500, 1300], atPloidy=0 )
         self.assertGenotype(pop, 0, indRange=[[300,500], [1300, 2000]] )
         self.assertGenotype(pop, 0, atPloidy=1)
@@ -223,11 +223,11 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotype(pop, 0, indRange=[3,4])
         #
         self.clearGenotype(pop)
-        InitByValue(pop, value=[0,1,5], atLoci=[2,4,5],
+        InitByValue(pop, value=[0,1,5], loci=[2,4,5],
             indRange=[3,6])
-        self.assertGenotype(pop, [0,1,5]*6, atLoci=[2,4,5],
+        self.assertGenotype(pop, [0,1,5]*6, loci=[2,4,5],
             indRange=[3,6])
-        self.assertGenotype(pop, 0, atLoci=[0,1,3,6,7])
+        self.assertGenotype(pop, 0, loci=[0,1,3,6,7])
         self.assertGenotype(pop, 0, indRange=[6, pop.popSize()-1] )
         # by proportion
         InitByValue(pop, value= [ [0]*8, [1]*8 ],
@@ -249,15 +249,15 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotype(pop, ([0]*5 + [2]*3)*4, atPloidy=1, indRange=[[2,4],[5,7]])
         # whole ind
         self.clearGenotype(pop)
-        InitByValue(pop, value=[[0]*3, [1]*3], atLoci=[2,4,5],
+        InitByValue(pop, value=[[0]*3, [1]*3], loci=[2,4,5],
             proportions=[.3,.7], indRange=[[300,600],[700,1000]] )                 
-        self.assertGenotype(pop, 0, atLoci=[0,1,3,6,7])
+        self.assertGenotype(pop, 0, loci=[0,1,3,6,7])
         self.assertGenotype(pop, 0, indRange=[[0,300],[600,700]])
         self.assertGenotypeFreq(pop, [0.25, 0.65], [0.35, 0.75],
-            atLoci=[2,4,5], indRange=[[300,600],[700,1000]])
+            loci=[2,4,5], indRange=[[300,600],[700,1000]])
         
     def testPyInit(self):
-        ' testing operator pyInit'
+        'Testing operator pyInit'
         pop = population(subPop=[2,8], loci=[1,2,1])
         def initAllele(ind, p, sp):
             return sp + ind + p

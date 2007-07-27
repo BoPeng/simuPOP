@@ -38,7 +38,7 @@ class TestRecombinator(unittest.TestCase):
     assert (simu.dvars(0).haploFreq['5-6']['%s-%s'%(a1,a2)] - 0.05) < 0.01
     
   def testAtLociRecRates(self):
-    'Testing atLoci parameter'
+    'Testing loci parameter'
     if alleleType() == 'binary':
       a1, a2 = 0, 1
     else:
