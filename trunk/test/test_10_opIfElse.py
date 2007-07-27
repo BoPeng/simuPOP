@@ -29,10 +29,10 @@ class TestIfElseOperator(unittest.TestCase):
                 stat(alleleFreq=[0]),
                 # inject 50% of allele 2 if this allele get low freq
                 ifElse('alleleFreq[0][0]<0.2', 
-                    kamMutator(rate=.6, maxAllele=1, atLoci=[0]) ),
+                    kamMutator(rate=.6, maxAllele=1, loci=[0]) ),
                 # the other way around?
                 ifElse('alleleFreq[0][0]>0.8', 
-                    kamMutator(rate=.6, maxAllele=1, atLoci=[0]) ),
+                    kamMutator(rate=.6, maxAllele=1, loci=[0]) ),
                 # terminate if
                 terminateIf('alleleFreq[0][0]<0.1 or alleleFreq[0][0]>0.9')
             ],

@@ -33,8 +33,8 @@ class TestAscertainment(unittest.TestCase):
                 parentsTagger(),
             ],
             preOps=[    
-                 initByFreq(alleleFreq=[.2, .8], atLoci=[0]),
-                 initByFreq(alleleFreq=[.2]*5, atLoci=range(1, simu.totNumLoci()))     
+                 initByFreq(alleleFreq=[.2, .8], loci=[0]),
+                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))     
             ],
             end=4
         )
@@ -53,8 +53,8 @@ class TestAscertainment(unittest.TestCase):
                 parentsTagger(),
             ],
             preOps=[    
-                 initByFreq(alleleFreq=[.2, .8], atLoci=[0]),
-                 initByFreq(alleleFreq=[.2]*5, atLoci=range(1, simu.totNumLoci()))     
+                 initByFreq(alleleFreq=[.2, .8], loci=[0]),
+                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))     
             ],
             end=10
         )
