@@ -132,19 +132,31 @@ class TestPyOperator(unittest.TestCase):
             return True
         def indFunc2(ind, genotype):
             self.assertEqual(len(genotype), 4)
-            self.assertEqual(genotype, (1, 1, 2, 2))
+            if alleleType() == 'binary':
+                self.assertEqual(genotype, (1, 1, 1, 1))
+            else:
+                self.assertEqual(genotype, (1, 1, 2, 2))
             ind.setInfo(sum(genotype), 'info1')
             return True
         def testFunc2(ind):
-            self.assertEqual(ind.info('info1'), 6)
+            if alleleType() == 'binary':
+                self.assertEqual(ind.info('info1'), 4)
+            else:
+                self.assertEqual(ind.info('info1'), 6)
             return True
         def indFunc3(ind, genotype, param):
             self.assertEqual(len(genotype), 4)
-            self.assertEqual(genotype, (1, 1, 2, 2))
+            if alleleType() == 'binary':
+                self.assertEqual(genotype, (1, 1, 1, 1))
+            else:
+                self.assertEqual(genotype, (1, 1, 2, 2))
             ind.setInfo(sum(genotype) + param[0], 'info1')
             return True
         def testFunc3(ind):
-            self.assertEqual(ind.info('info1'), 4)
+            if alleleType() == 'binary':
+                self.assertEqual(ind.info('info1'), 2)
+            else:
+                self.assertEqual(ind.info('info1'), 4)
             return True
         def indFunc4(ind):
             return [1.5]
@@ -159,17 +171,29 @@ class TestPyOperator(unittest.TestCase):
             return True            
         def indFunc6(ind, genotype):
             self.assertEqual(len(genotype), 4)
-            self.assertEqual(genotype, (1, 1, 2, 2))
+            if alleleType() == 'binary':
+                self.assertEqual(genotype, (1, 1, 1, 1))
+            else:
+                self.assertEqual(genotype, (1, 1, 2, 2))
             return (sum(genotype),)
         def testFunc6(ind):
-            self.assertEqual(ind.info('info1'), 6)
+            if alleleType() == 'binary':
+                self.assertEqual(ind.info('info1'), 4)
+            else:
+                self.assertEqual(ind.info('info1'), 6)
             return True            
         def indFunc7(ind, genotype, param):
             self.assertEqual(len(genotype), 4)
-            self.assertEqual(genotype, (1, 1, 2, 2))
+            if alleleType() == 'binary':
+                self.assertEqual(genotype, (1, 1, 1, 1))
+            else:
+                self.assertEqual(genotype, (1, 1, 2, 2))
             return (sum(genotype) + param[0],)
         def testFunc7(ind):
-            self.assertEqual(ind.info('info2'), 8)
+            if alleleType() == 'binary':
+                self.assertEqual(ind.info('info2'), 6)
+            else:
+                self.assertEqual(ind.info('info2'), 8)
             return True            
         # use noMating, otherwise info will *not* be inherited
         simu = simulator(population(10, loci=[2,5], infoFields=['info1', 'info2']), 
