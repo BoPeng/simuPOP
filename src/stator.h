@@ -51,7 +51,7 @@ namespace simuPOP
     Operator \c stator calculate various basic statistics for the population and set
     variables in the local namespace. Other operators/functions can refer to the results
     from the namespace after \c stat is applied. \c Stat is the function form of the
-    operator.
+    operator. ????
     */
 	class stator: public Operator
 	{
@@ -79,17 +79,20 @@ namespace simuPOP
 	};
 
 	/// evaluate an expression
+	/**
+	Python expressions/statements will be executed when \c pyEval is applied
+    to a population by using parameters <tt>expr/stmts</tt>. Statements can
+    also been executed when \c pyEval is created and destroyed or before \c expr
+	is executed. The corresponding parameters are \c preStmts, \c postStmts
+	and \c stmts. For example, operator \c varPlotter
+    uses this feature to initialize \c R plots and save plots to a file when finished.
+    <funcForm>PyEval</funcForm>
+	*/
 	class pyEval: public stator
 	{
 		public:
 			/// evaluate expressions/statments in the local namespace of a replicate
             /**
-            Python expressions/statements will be executed when \c pyEval is applied
-            to a population by using parameters <tt>expr/stmts</tt>. Statements can
-            also been executed when \c pyEval is created and destroyed or before \c expr
-			is executed. The corresponding parameters are \c preStmts, \c postStmts
-			and \c stmts. For example, operator \c varPlotter
-            uses this feature to initialize \c R plots and save plots to a file when finished.
 			\param expr the expression to be evaluated. Its result will be sent to \c output.
 			\param stmts the statement that will be executed before the expression
 			\param preStmts the statement that will be executed when the operator is constructed
@@ -154,12 +157,15 @@ namespace simuPOP
 	};
 
 	/// execute a Python statement
+	/**
+	This operator takes a list of statements and execute them. No value will be returned or outputted.
+    <funcForm>PyExec</funcForm>
+	*/
 	class pyExec: public pyEval
 	{
 		public:
 			/// evaluate statments in the local replicate namespace, no return value
             /**
-            This operator takes a list of statements and execute them. No value will be returned or outputted.
 			\param stmts the statements (a single or multi-line string) that will be executed when
 				this operator is applied.
 			\param preStmts the statement that will be executed when the operator is constructed
@@ -1267,20 +1273,25 @@ namespace simuPOP
 	};
 
     /// calculate statistics
+    /**
+    Operator \c stat calculatse various basic statistics for the population
+    and sets variables in the local namespace. Other operators/functions can
+    refer to the results from the namespace after \c stat is applied. \c Stat
+    is the function form of the operator. \n
+    
+    Note that these statistics are dependent to each other. For example,
+    heterotype and allele frequencies of related loci will be automatically
+    calculated if linkage diseqilibrium is requested.
+    
+    <funcForm>Stat</funcForm>
+    */
 	class stat: public stator
 	{
 		public:
 
 			/// create an \c stat operator
 			/**
-            Operator \c stat calculatse various basic statistics for the population
-            and sets variables in the local namespace. Other operators/functions can
-            refer to the results from the namespace after \c stat is applied. \c Stat
-            is the function form of the operator.
-
-            Note that these statistics are dependent to each other. For example,
-            heterotype and allele frequencies of related loci will be automatically
-            calculated if linkage diseqilibrium is requested.
+            
         
 			\param popSize whether or not calculate population sizes. This parameter
                 will set the following variables:
@@ -1360,11 +1371,11 @@ namespace simuPOP
                 and expected heterozygosities (<tt>heteroFreq=[loc1, loc2, ...]</tt>).
 				This parameter will set the following
                 variables (arrays of observed heterozygosities). Note that <tt>heteroNum[loc][1]</tt>
-                is the number of heterozygote \c 1x, \c x is not 1. Numbers and frequencies
+                is the number of heterozygote \b 1x, \f$ x \ne 1 \f$. Numbers and frequencies
                 (proportions) of heterozygotes are calculated for each allele. <tt>HeteroNum[loc]</tt>
                 and <tt>HeterFreq[loc]</tt> are the overall heterozygosity number and
-                frequency. I.e., the number/frequency of genotype \c xy, \c x is not
-                equal to \c y. From this number, we can easily derive the number of homozygosity.
+                frequency. I.e., the number/frequency of genotype \b xy, \f$ x \ne y \f$.
+                From this number, we can easily derive the number of homozygosity.
                 \li <tt>HeteroNum[loc]</tt>, <tt>subPop[sp]['HeteroNum'][loc]</tt>, the overall heterozygote number
                 \li <tt>HeteroFreq[loc]</tt>, <tt>subPop[sp]['HeteroFreq'][loc]</tt>, the overall heterozygote frequency
                 \li <tt>heteroNum[loc][allele]</tt>, <tt>subPop[sp]['heteroNum'][loc][allele]</tt>
@@ -1373,12 +1384,13 @@ namespace simuPOP
 			\param homoFreq an array of loci to calaulate observed homozygosities
                 and expected homozygosities (<tt>homoFreq=[loc1, loc2, ...]</tt>).
                 This parameter will calculate the numbers and frequencies of homozygotes
-                \c xx and set the following variables:
+                \b xx and set the following variables:
                 \li <tt>homoNum[loc]</tt>, <tt>subPop[sp]['homoNum'][loc]</tt>,
                 \li <tt>homoFreq[loc]</tt>, <tt>subPop[sp]['homoFreq'][loc]</tt>.
         
 			\param expHetero an array of loci at which the expected heterozygosities will
-                be calculated (<tt>expHetero=[loc1, loc2, ...]</tt>). The following variables
+                be calculated (<tt>expHetero=[loc1, loc2, ...]</tt>). The expected heterozygosity
+                is calculated by \f[ h_{exp}=1-p_{i}^{2}. \f] The following variables
                 will be set:
                 \li <tt>expHetero[loc]</tt>, <tt>subPop[sp]['expHetero'][loc]</tt>.
 
@@ -1398,20 +1410,33 @@ namespace simuPOP
                 \li <tt>haploFreq[haplo]</tt>, <tt>subPop[sp]['haploFreq'][haplo]</tt>, the frequency
                     of allele sequencies on loci \c haplo.
         
-			\param LD calculate linkage disequilibria LD, LD' and r2, given
+			\param LD calculate linkage disequilibria \f$ LD \f$, \f$ LD' \f$
+                and \f$ r^{2} \f$, given
                 <tt>LD=[ [loc1, loc2], [ loc1, loc2, allele1, allele2], ... ]</tt> 
-                For each item <tt>[loc1, loc2, allele1, allele2]</tt>, D, D' and r2 will be calculated
+                For each item <tt>[loc1, loc2, allele1, allele2]</tt>, \f$ D \f$, \f$ D' \f$
+                and \f$ r^{2} \f$ will be calculated
                 based on \c allele1 at \c loc1 and \c allele2 at \c loc2. If only two loci are given,
-                the LD values are averaged over all allele pairs. If only one item is specified, the
+                the LD values are averaged over all allele pairs. For example, for allele \f$ A \f$ at
+                locus \c 1 and allele \f$ B \f$ at locus \c 2, 
+                \f[ D = P_{AB}-P_{A}P_{B} \f]
+                \f[ D' = D/D_{max} \f]
+                \f[ D_{max} = 
+                    \min\left(P_{A}\left(1-P_{B}\right),\left(1-P_{A}\right)P_{B}\right)  \textrm{if }D>0 \\
+                    \min\left(P_{A}P_{B},\left(1-P_{A}\right)\left(1-P_{B}\right)\right)  \textrm{if }D<0 \f]
+                \f[ r^{2} = \frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)} \f]
+            
+
+                If only one item is specified, the
                 outer <tt>[]</tt> can be ignored. I.e., <tt>LD=[loc1, loc2]</tt> is acceptable.
                 This parameter will set the following variables. Please note that the difference between
-                the data structures used for \c ld and \c LD. 
+                the data structures used for \c ld and \c LD. The names are potentially very confusing but I have no better idea. 
                 \li <tt>ld['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['ld']['loc1-loc2']['allele1-allele2']</tt>
                 \li <tt>ld_prime['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['ld_prime']['loc1-loc2']['allele1-allele2']</tt>
                 \li <tt>r2['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['r2']['loc1-loc2']['allele1-allele2']</tt>
                 \li <tt>LD[loc1][loc2]</tt>, <tt>subPop[sp]['LD'][loc1][loc2]</tt>
                 \li <tt>LD_prime[loc1][loc2]</tt>, <tt>subPop[sp]['LD_prime'][loc1][loc2]</tt>
                 \li <tt>R2[loc1][loc2]</tt>, <tt>subPop[sp]['R2'][loc1][loc2]</tt>
+                       
 
 			\param LD_param a dictionary of parameters of \c LD statistics. Can have key \c stat which is 
                 a list of statistics to calculate. Default to all. If any statistics is specified,
@@ -1427,10 +1452,18 @@ namespace simuPOP
                 Can be one or more items choosen from the following options: \c ChiSq,
                 \c ChiSq_P, \c UC_U, and \c CramerV.
 
-			\param Fst calculate Fst, Fis, Fit. For example, <tt>Fst = [0,1,2]</tt> will calculate Fst, Fis,
-                Fit based on alleles at loci \c 0, \c 1, \c 2. The locus-specific values will be used
+			\param Fst calculate \f$ F_{st} \f$, \f$ F_{is} \f$, \f$ F_{it} \f$.
+                For example, <tt>Fst = [0,1,2]</tt> will calculate \f$ F_{st} \f$, \f$ F_{is} \f$,
+                \f$ F_{it} \f$ based on alleles at loci \c 0, \c 1, \c 2. The locus-specific values will be used
                 to calculate \c AvgFst, which is an average value over all alleles (Weir
-                and Cockerham, 1984). This parameter will set the following variables:
+                & Cockerham, 1984). Terms and values that match Weir & Cockerham:
+                \li \f$ F \f$ (\f$ F_{IT} \f$) the correlation of genes within individuals (inbreeding);
+                \li \f$ \theta \f$ (\f$ F_{ST} \f$) the correlation of genes of difference individuals
+                    in the same population (will evaluate for each subpopulation and the whole population)
+                \li \f$ f \f$ (\f$ F_{IS} \f$) the correlation of genes within individuals within
+                    populations. Population refers to subpopulations in simuPOP term.???
+        
+                This parameter will set the following variables:
                 \li <tt>Fst[loc]</tt>, <tt>Fis[loc]</tt>, <tt>Fit[loc]</tt>
                 \li <tt>AvgFst</tt>, <tt>AvgFis</tt>, <tt>AvgFit</tt>.
 
@@ -1443,7 +1476,7 @@ namespace simuPOP
                 to Queller & Goodnight (1989) (<tt>method=REL_Queller</tt>) and Lynch et al. (1999) (<tt>method=REL_Lynch</tt>).
                 The results are pairwise relatedness values, in the form of a matrix. Original group or subpopulation
                 numbers are discarded. <tt>relatedness[grp1][grp2]</tt> is the relatedness value between \c grp1
-                and \c grp2. There is no subpop level relatedness values.
+                and \c grp2. There is no subpopulation level relatedness values.
 
 			\param relGroups calculate pairwise relatedness between groups. Can be in the form of either
                 <tt>[[1,2,3],[5,6,7],[8,9]]</tt> or <tt>[2,3,4]</tt>. The first one specifies groups of

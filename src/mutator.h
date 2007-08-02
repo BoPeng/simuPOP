@@ -55,7 +55,7 @@ namespace simuPOP
 			All mutators have the following common parameters. However, the actual meaning
 			of these parameters may vary according to different model. The only differences
             between the following mutators are they way they actually mutate an allele, and
-            corresponding input parameters. Mutators record the number of mutation events at each loci.
+            corresponding input parameters. Mutators record the number of mutation events at each locus.
 
 			\param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c loci)
 			\param loci a vector of loci indices. Will be ignored only when single rate is specified.
@@ -187,11 +187,11 @@ namespace simuPOP
 	/**
     This mutator mutate an allele to another allelic state with equal probability.
     The specified mutation rate is actually the 'probability to mutate'. So the
-    mutation rate to any other allelic state is actually <tt>(rate/(K-1))</tt>, where
-    \c K is specified by parameter \c maxAllele. You can also specify states for
+    mutation rate to any other allelic state is actually \f$ (rate/(K-1)) \f$, where
+    \f$ K \f$ is specified by parameter \c maxAllele. You can also specify states for
     this mutator. If the state parameter is given, all alleles must be one of the
     states, and mutation will happen among them. states is defaulted to \c 1-maxAllele.???
-	
+	<funcForm>KamMutate</funcForm>
 	\sa Crow & Kimura 1970
 	*/
 	class kamMutator: public mutator
@@ -242,7 +242,7 @@ namespace simuPOP
 	and that a mutation either increases or decreases the allele value by one.
 	For variable number tandem repeats loci (VNTR), the allele value is generally
 	taken as the number of tandem repeats in the DNA sequence.
-
+    <funcForm>SmmMutate</funcForm>
 	\sa Kimura & Ohta 1978
 	*/
 	class smmMutator: public mutator
@@ -313,13 +313,14 @@ namespace simuPOP
 	mutation model. This model assumes that alleles are represented by integer values
 	and that a mutation either increases or decreases the allele value by a random value.
     In other words, in this model the change in the allelic state is drawn from a random
-    distribution. A geometric generalized stepwise model uses a geometric distribution with
-    parameter \em p.
+    distribution. A <em>geometric generalized stepwise model</em> uses a geometric distribution with
+    parameter \f$ p \f$, which has mean \f$ \frac{p}{1-p} \f$ and variance \f$ \frac{p}{\left(1-p\right)^{2}} \f$. \n
     
     \c gsmMutator implements both models. If you specify a Python function without a
     parameter, this mutator will use its return value each time a mutation occur; otherwise,
-    a parameter \c p should be provided and the mutator will act as a geometric generalized stepwise model.
+    a parameter \f$ p \f$ should be provided and the mutator will act as a geometric generalized stepwise model.
 
+    <funcForm>GsmMutate</funcForm>
 	\sa Kimura & Ohta 1978
 	*/
 	class gsmMutator: public mutator
@@ -395,11 +396,12 @@ namespace simuPOP
 			PyObject* m_func;
 	};
 
-	/// Hybrid mutator
+	/// hybrid mutator
 	/**
 	Hybrid mutator. Mutation rate etc. are set just like others and you are supposed to
 	provide a Python function to return a new allele state given an old state. \c pyMutator
 	will choose an allele as usual and call your function to mutate it to another allele.
+    <funcForm>PyMutate</funcForm>
     */
 	class pyMutator: public mutator
 	{
@@ -475,7 +477,9 @@ namespace simuPOP
 	I.e., this is a non-random mutator used to introduce diseases etc.
 	\c pointMutator, as its name suggest, does point mutation. This mutator will turn
 	alleles at \c loci on the first chromosome copy to \c toAllele for individual \c inds.
-	You can specify atPloidy to mutate other, or all ploidy copy.
+	You can specify \c atPloidy to mutate other, or all ploidy copies.
+
+    <funcForm>PointMutate</funcForm>	
 	*/
 	class pointMutator: public Operator
 	{

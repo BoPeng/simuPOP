@@ -567,7 +567,7 @@ namespace simuPOP
 
 		if(m_size.size() <= 1)					  // draw from the whole population
 		{
-			/// collect all families
+			// collect all families
 			vector<UINT> allSibs;
 
 			for(UINT sp =0; sp < pop.numSubPop(); ++sp)
@@ -816,7 +816,7 @@ namespace simuPOP
 
 		if(m_size.size() <= 1)					  // draw from the whole population
 		{
-			/// collect all families
+			// collect all families
 			pedArray allPeds;
 
 			for(UINT sp =0; sp < pop.numSubPop(); ++sp)
@@ -1044,7 +1044,7 @@ namespace simuPOP
 
 		if(m_size.size() <= 1)					  // draw from the whole population
 		{
-			/// collect all families
+			// collect all families
 			pedArray allPeds;
 
 			for(UINT sp =0; sp < pop.numSubPop(); ++sp)

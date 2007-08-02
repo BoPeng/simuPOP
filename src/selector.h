@@ -44,7 +44,10 @@ namespace simuPOP
     chosen for mating is proportional to its fitness value. More specifically,
     \li \c PreMating selectors assign fitness values to each individual.
     \li During sexless mating (e.g. \c binomialSelection???), individuals are chosen
-        at probabilities that are proportional to their fitness values. 
+        at probabilities that are proportional to their fitness values. If there are
+        \f$ N \f$ individuals with fitness values \f$ f_{i},i=1,...,N \f$, individual
+        \f$ i \f$ will have probability \f$ \frac{f_{i}}{\sum_{j}f_{j}} \f$ to be chosen
+        and passed to the next generation.
     \li During \c randomMating, males and females are separated. They are chosen from
         their respective groups in the same manner and mate.
 
@@ -112,6 +115,7 @@ namespace simuPOP
 	/**
 	This map selector implements selection at one locus. A user provided dictionary (map) of
     genotypes will be used in this selector to set each individual's fitness value.
+    <funcForm>MapSelector</funcForm>
 	*/
 	class mapSelector: public selector
 	{
@@ -169,7 +173,7 @@ namespace simuPOP
     This is called 'multiple-allele' selector. It separate alleles into two groups:
     wildtype and disease alleles. Wildtype alleles are specified by parameter
     \c wildtype and any other alleles are considered as diseased alleles.
-    \c maSelector accepts an array of fitness.???
+    <funcForm>MaSelect</funcForm>
 	*/
 	class maSelector: public selector
 	{
@@ -236,7 +240,14 @@ namespace simuPOP
     This selector is a 'multiple-loci model' selector. The selector takes a vector of
     selectors (can not be another \c mlSelector) and evaluate the fitness of an
     individual as the the product or sum of individual fitness values. The mode is
-    determined by parameter \c mode.
+    determined by parameter \c mode, which takes the value
+    \li \c SEL_Multiplicative: the fitness is calculated as \f$ f=\prod_{i}f_{i} \f$.
+    \li \c SEL_Additive: the fitness is calculated as
+        \f$ f=\max\left(0,1-\sum_{i}(1-f_{i})\right)=\max\left(0,1-\sum_{i}s_{i}\right) \f$.
+        \f$ f \f$ will be set to \c 0 when \f$ f<0 \f$. In this case, \f$ s_{i} \f$ are added,
+        not \f$ f_{i} \f$ directly. 
+
+    <funcForm>MlSelect</funcForm>
 	*/
 	class mlSelector: public selector
 	{
@@ -309,8 +320,9 @@ namespace simuPOP
     of <tt>0-0,0-1,1-0,1-1</tt> etc. where X-Y represents locus X - ploidy Y, in the case
     of diploid population), generation number,??? and expect a returned fitness value.
     This, at least in theory, can accommodate all selection scenarios.
-	*/
 
+    <funcForm>PySelect</funcForm>    
+	*/
 	class pySelector: public selector
 	{
 		public:
