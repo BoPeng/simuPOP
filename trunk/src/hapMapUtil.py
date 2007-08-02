@@ -148,10 +148,20 @@ def getMarkersFromRange(hapmap_dir, chrom, startPos, endPos, maxNum, minAF, minD
 # 
 ###########################################################
 
-
-def evolveHapMap(pop, initMultiple=5, endingSize=1e4, expand='linear',
-    mergeAt=90, endGen=100, recIntensity=0.01, mutRate=1e-7,
-    step=10, keepParents=False, numOffspring=1):
+def evolveHapMap(pop,
+    endingSize, 
+    endGen,
+    migr=noneOp(),
+    expand='exponential',
+    # do not merge
+    mergeAt=10000, 
+    initMultiple=1, 
+    recIntensity=0.01, 
+    mutRate=1e-7,
+    step=10, 
+    keepParents=False, 
+    numOffspring=1
+    ):
     ''' evolve and expand the hapmap population
     
     gen: total evolution generation
@@ -176,6 +186,8 @@ def evolveHapMap(pop, initMultiple=5, endingSize=1e4, expand='linear',
     keepParents: whether or not keep parental generations
     
     numOffspring: number of offspring at the last generation
+
+    migr: a migrator to be used.
     
     '''
     print "Starting population size is ", pop.subPopSizes()
@@ -187,14 +199,20 @@ def evolveHapMap(pop, initMultiple=5, endingSize=1e4, expand='linear',
     N0 = pop.popSize()
     N1 = endingSize
     if expand == 'linear':
-        rate = (N1-N0)*1.0/(endGen+1)
+        rate = (N1-N0)*1.0/(endGen)
     else:
-        rate = math.exp(math.log(N1*1.0/N0)/(endGen+1))
+        rate = math.exp(math.log(N1*1.0/N0)/(endGen))
     def popSizeFunc(gen, cur):
         if expand == 'linear':
-            return [int(x+rate/len(cur)) for x in cur]
+            sz = [int(x+rate/len(cur)) for x in cur]
         else:
-            return [int(x*rate) for x in cur]
+            sz = [int(x*rate) for x in cur]
+        # the last generation, try to achieve perfect endingSize
+        if gen == endGen - 1:
+            extra = N1 - sum(sz)
+            sz = [x  + extra/len(cur) for x in sz]
+            sz[-1] += N1 - sum(sz)
+        return sz
     #
     simu = simulator(pop, randomMating(newSubPopSizeFunc=popSizeFunc), rep=1)
     operators = [
@@ -202,11 +220,12 @@ def evolveHapMap(pop, initMultiple=5, endingSize=1e4, expand='linear',
         kamMutator(rate=mutRate, loci=range(pop.totNumLoci())),
         mergeSubPops(subPops=[0,1,2], removeEmptySubPops=True, at=[mergeAt]),
         recombinator(intensity=recIntensity),
-        stat(popSize=True, step=step),
-        pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=step)
+        stat(popSize=True, step=step, begin=step-1),
+        migr,
+        pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=step, begin=step-1)
     ]
     del pop
-    simu.evolve(ops=operators, end=endGen)
+    simu.evolve(ops=operators, end=endGen-1)
     if keepParents:
         print "Preparing the last generation"
         simu.addInfoFields(['father_idx', 'mother_idx'])

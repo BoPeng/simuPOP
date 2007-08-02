@@ -757,7 +757,9 @@ class Doxy2SWIG:
                 print >> out, '\\strong{Examples}\n'
                 #print >> out, '\\caption{\\label{alg:%s}Example for function %s}' % (cons['Name'], cons['Name'])
                 if cons['ExampleFile'] is not None:
-                    print >> out, '\\lstinputlisting{%s}' % cons['ExampleFile'].replace('\\', '/')
+                    label = os.path.split(cons['ExampleFile'])[-1]
+                    print >> out, '\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
+                        (label, label, cons['ExampleFile'].replace('\\', '/'))
             print >> out, '}\n'
 
 
