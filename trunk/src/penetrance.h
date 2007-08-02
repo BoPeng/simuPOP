@@ -135,8 +135,8 @@ namespace simuPOP
     /// penetrance according to the genotype at one locus
 	/**
     Assign penetrance using a table with keys \c 'X-Y' where \c X and \c Y are allele numbers.
+    <funcForm>MapPenetrance</funcForm>
 	*/
-
 	class mapPenetrance: public penetrance
 	{
 		public:
@@ -196,6 +196,7 @@ namespace simuPOP
     and any other alleles are considered as diseased alleles. \c maPenetrance accepts an
     array of fitness for AA, Aa, aa in the single-locus case, and a longer table for
     multi-locus case. Penetrance is then set for any given genotype.
+    <funcForm>MaPenetrance</funcForm>
 	*/
 	class maPenetrance: public penetrance
 	{
@@ -256,9 +257,19 @@ namespace simuPOP
     /// penetrance according to the genotype according to a multiple loci multiplicative model
 	/** 
     \c mlPentrance is the 'multiple-loci'??? penetrnace calculator. It accepts a list of
-    penetrances and combine them according to the \c mode parameter.
-    */
+    penetrances and combine them according to the \c mode parameter, which takes one of the
+    following values:
+            
+    \li \c PEN_Multiplicative: the penetrance is calculated as \f$ f=\prod f_{i} \f$. 
+    \li \c PEN_Additive: the penetrance is calculated as \f$ f=\min\left(1,\sum f_{i}\right) \f$.
+        \f$ f \f$ will be set to \c 1 when \f$ f<0 \f$. In this case, \f$ s_{i} \f$??? are
+        added, not \f$ f_{i} \f$ directly.
+    \li \c PEN_Heterogeneity: the penetrance is calculated as \f$ f=1-\prod\left(1-f_{i}\right) \f$. 
 
+    Please refer to Neil Risch (1990) for detailed information about these models.
+
+    <funcForm>MlPenetrance</funcForm>
+    */
 	class mlPenetrance: public penetrance
 	{
 		public:
@@ -326,19 +337,19 @@ namespace simuPOP
 	/**
     For each individual, users provide a function to calculate penetrance. This
     method is very flexible but will be slower than previous operators since a
-    function will be called for each individual. 
+    function will be called for each individual.
+    <funcForm>PyPenetrance</funcForm>
 	*/
 	class pyPenetrance: public penetrance
 	{
 		public:
-			/** \brief create a python hybrid selector
-
+			/**
 			\param loci disease susceptibility loci. The genotypes at these loci will
                 be passed to the provided Python function in the form of <tt>loc1_1, loc1_2, loc2_1, loc2_2, ...</tt>
                 if the individuals are diploid.
 			\param func a user-defined Python function that accepts an array of genotypes
                 at susceptibility loci and return a penetrance value. The returned value
-                should be between 0 and 1.
+                should be between \c 0 and \c 1.
 			\param output and other parameters please refer to help(baseOperator.__init__)???
 			*/
 			/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)

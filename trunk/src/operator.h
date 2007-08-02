@@ -478,7 +478,8 @@ namespace simuPOP
     presentation or an interactive simulation. When \c 's' is pressed, this operator
     expose the current population to the main Python dictionary as variable \c pop
     and enter an interactive Python session. The way current population is exposed
-    can be controlled by parameter \c exposePop and \c popName.
+    can be controlled by parameter \c exposePop and \c popName. This feature is
+    useful when you want to examine the properties of a population during evolution.
 	*/
 	class pause: public Operator
 	{
@@ -586,22 +587,24 @@ namespace simuPOP
 	};
 
 	/// conditional operator
+	/**
+	This operator accepts
+    \li an expression that will be evaluated when this operator is applied;
+    \li an operator that will be applied if the expression is <tt>True</tt> (default to null);
+    \li an operator that will be applied if the expression is <tt>False</tt> (default to null).
+            
+    When this operator is applied to a population, it will evaluate the expression and
+    depending on its value, apply the supplied operator. Note that the \c begin, \c at,
+    \c step, and \c at parameters of \c ifOp and \c elseOp will be ignored.
+    For example, you can mimic the \c at parameter of an operator by
+    <tt>ifElse('rep in [2,5,9]' operator)</tt>. The real use of this machanism is
+    to monitor the population statistics and act accordingly.
+	*/
 	class ifElse: public Operator
 	{
 
 		public:
 			/**
-            This operator accepts
-            \li an expression that will be evaluated when this operator is applied;
-            \li an operator that will be applied if the expression is <tt>True</tt> (default to null);
-            \li an operator that will be applied if the expression is <tt>False</tt> (default to null).
-            
-            When this operator is applied to a population, it will evaluate the expression and
-            depending on its value, apply the supplied operator. Note that the \c begin, \c at,
-            \c step, and \c at parameters of \c ifOp and \c elseOp will be ignored.
-            For example, you can mimic the \c at parameter of an operator by
-            <tt>ifElse('rep in [2,5,9]' operator)</tt>. The real use of this machanism is
-            to monitor the population statistics and act accordingly.
 			\param cond expression that will be treated as a bool variable
 			\param ifOp an operator that will be applied when \c cond is \c True
         	\param elseOp an operator that will be applied when \c cond is \c False
@@ -668,17 +671,19 @@ namespace simuPOP
 	};
 
 	/// timer operator
+	/**
+    This operator, when called, output the difference between current and the
+    last called clock time. This can be used to estimate execution time of
+    each generation. Similar information can also be obtained from
+    <tt>turnOnDebug(DBG_PROFILE)</tt>, but this operator has the advantage
+    of measuring the duration between several generations by setting \c step
+    parameter.
+    <funcForm>TicToc</funcForm>
+	*/
 	class ticToc: public Operator
 	{
 		public:
-			/**
-            This operator, when called, output the difference between current and the
-            last called clock time. This can be used to estimate execution time of
-            each generation. Similar information can also be obtained from
-            <tt>turnOnDebug(DBG_PROFILE)</tt>, but this operator has the advantage
-            of measuring the duration between several generations by setting \c step
-            parameter.
-			*/
+			/// create a timer
 			ticToc( string output=">", string outputExpr="",
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
@@ -714,15 +719,17 @@ namespace simuPOP
 	};
 
 	/// set ancestral depth
+	/**
+    This operator set the number of ancestral generations to keep in a population.
+    It is usually called like <tt>setAncestral(at=[-2])</tt> to start recording
+    ancestral generations to a population at the end of the evolution. This is
+    useful when constructing pedigree trees from a population. 
+	*/
 	class setAncestralDepth: public Operator
 	{
 
 		public:
-			/**
-            This operator set the number of ancestral generations to keep in a population.
-            It is usually called like <tt>setAncestral(at=[-2])</tt> to start recording
-            ancestral generations to a population at the end of the evolution.
-			*/
+			/// create a \c setAncestralDepth operator
 			setAncestralDepth( int depth, string output=">", string outputExpr="",
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
@@ -760,20 +767,22 @@ namespace simuPOP
 	};
 
     /// set debug on
+    /**
+    Turn on debug. There are several ways to turn on debug information for
+    non-optimized modules, namely
+    \li set environment variable \c SIMUDEBUG
+    \li use <tt>simuOpt.setOptions(debug)</tt> function, or
+    \li use \c TurnOnDebug or \c TurnOnDebugByName function
+    \li use this \c turnOnDebug operator
+        
+    The advantage of using this operator is that you can turn on debug at
+    given generations.
+    <funcForm>TurnOnDebug</funcForm>
+    */
 	class turnOnDebug: public Operator
 	{
 		public:
-			/**
-            Turn on debug. There are several ways to turn on debug information for
-            non-optimized modules, namely
-            \li set environment variable \c SIMUDEBUG
-            \li use <tt>simuOpt.setOptions(debug)</tt> function, or
-            \li use \c TurnOnDebug or \c TurnOnDebugByName function
-            \li use this \c turnOnDebug operator
-        
-            The advantage of using this operator is that you can turn on debug at
-            given generations.
-    		*/
+			
 			turnOnDebug(DBG_CODE code,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
@@ -811,13 +820,14 @@ namespace simuPOP
 	};
 
     /// set debug off
+    /**
+    Turn off debug.
+    <funcForm>TurnOffDebug</funcForm>
+	*/
 	class turnOffDebug: public Operator
 	{
 
 		public:
-			/**
-            Turn off debug.
-			*/
 			turnOffDebug(DBG_CODE code,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
@@ -855,25 +865,26 @@ namespace simuPOP
 	};
 
 
-    /// the one and only Python operator
+    /// the one and only Python operator???
+    /**
+    This operator accepts a function that can take the form of
+    \li <tt>func(pop)</tt> when <tt>stage=PreMating</tt> or \c PostMating, without setting \c param;
+    \li <tt>func(pop, param)</tt> when <tt>stage=PreMating</tt> or \c PostMating, with \c param;
+    \li <tt>func(pop, off, dad, mom)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=False</tt>, without setting \c param;
+    \li <tt>func(off)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=True</tt>, and without setting \c param;
+    \li <tt>func(pop, off, dad, mom, param)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=False</tt>, with \c param;
+    \li <tt>func(off, param)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=True</tt>, with \c param.
+        
+    For \c Pre- and \c PostMating usages, a population and an optional parameter is passed to the given
+    function. For \c DuringMating usages, population, offspring, its parents and an optional parameter
+    are passed to the given function. Arbitrary operations can be applied to the population and
+    offspring (if <tt>stage=DuringMating</tt>).
+    */
 	class pyOperator: public Operator
 	{
 		public:
             /// Python operator, using a function that accepts a population object
             /**
-            This operator accepts a function that can take the form of
-            \li <tt>func(pop)</tt> when <tt>stage=PreMating</tt> or \c PostMating, without setting \c param;
-            \li <tt>func(pop, param)</tt> when <tt>stage=PreMating</tt> or \c PostMating, with \c param;
-            \li <tt>func(pop, off, dad, mom)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=False</tt>, without setting \c param;
-            \li <tt>func(off)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=True</tt>, and without setting \c param;
-            \li <tt>func(pop, off, dad, mom, param)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=False</tt>, with \c param;
-            \li <tt>func(off, param)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=True</tt>, with \c param.
-        
-            For \c Pre- and \c PostMating usages, a population and an optional parameter is passed to the given
-            function. For \c DuringMating usages, population, offspring, its parents and an optional parameter
-            are passed to the given function. Arbitrary operations can be applied to the population and
-            offspring (if <tt>stage=DuringMating</tt>). 
-        
 			\param func a Python function. Its form is determined by other parameters.
 			\param param any Python object that will be passed to \c func after \c pop parameter.
                 Multiple parameters can be passed as a tuple.
@@ -965,24 +976,25 @@ namespace simuPOP
 	};
 
     /// individual operator
+    /**
+    This operator is similar to a \c pyOperator but works at the individual level. It expects
+    a function that accepts an individual, optional genotype at certain loci, and an optional
+	parameter. When it is applied, it passes each individual to this function. When 
+	\c infoFields is given, this function should return an array to fill these infoFields.
+	Otherwise, True/False is expected.
+
+	More specifically, \c func can be
+	\li <tt>func(ind)</tt> when neither loci nor param is given.
+	\li <tt>func(ind, genotype)</tt> when loci is given
+	\li <tt>func(ind, param)</tt> when param is given
+	\li <tt>func(ind, genotype, param)</tt> when both loci and param are given.	
+    */
 	class pyIndOperator: public Operator
 	{
 
 		public:
             /// a \c Pre- or \c PostMating Python operator that apply a function to each individual
 			/**
-            This operator is similar to a \c pyOperator but works at the individual level. It expects
-            a function that accepts an individual, optional genotype at certain loci, and an optional
-			parameter. When it is applied, it passes each individual to this function. When 
-			\c infoFields is given, this function should return an array to fill these infoFields.
-			Otherwise, True/False is expected.
-
-			More specifically, \c func can be
-			\li func(ind) when neither loci nor param is given.
-			\li func(ind, genotype) when loci is given
-			\li func(ind, param) when param is given
-			\li func(ind, genotype, param) when both loci and param are given.
-			
             \param func a Python function that accepts an individual and optional genotype and parameters.
 			\param param any Python object that will be passed to \c func after \c pop parameter.
                 Multiple parameters can be passed as a tuple.

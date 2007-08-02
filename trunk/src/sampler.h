@@ -43,8 +43,9 @@ namespace simuPOP
 
 	/// shrink population
     /**
-    This operator shrinks a population according to a given array or the \c subPopID()
-    value of each indvidual. Subpopulations are kept intact.
+    This operator shrinks a population according to a given array or the
+    \c subPopID() value of each indvidual. Subpopulations are kept intact.
+    <funcForm>PySubset</funcForm>
     */
 	class pySubset: public Operator
 	{
@@ -237,13 +238,14 @@ namespace simuPOP
 
 	/// randomly draw a sample from a population
     /**
-    This operator will randomly choose \c size individuals (or \c size[i] individuals 
+    This operator will randomly choose \c size individuals (or <tt> size[i] </tt> individuals 
 	from subpopulation \c i)
     and return a new population. The function form of this operator returns the samples
     directly. The operator keeps samples in an array \c name in the local namespace. You
     may access them through \c dvars() or \c vars() functions. \n
     
     The original subpopulation structure/boundary is kept in the samples.
+    <funcForm>RandomSample</funcForm>
     */
 	class randomSample: public sample
 	{
@@ -307,10 +309,12 @@ namespace simuPOP
     each subpopulation using the array form of the parameters. The sample population
     will still have only two subpoulations (cases/controls) though. \n
     
-    A special case of this sampling scheme occurs when one of or both cases and controls
+    A special case of this sampling scheme occurs when one of or both \c cases and \c controls
     are omitted (zeros). In this case, all cases and/or controls are chosen. If both
     parameters are omitted, the sample is effectively the same population with
     affected and unaffected individuals separated into two subpopulations.
+    
+    <funcForm>CaseControlSample</funcForm>
     */
 	class caseControlSample: public sample
 	{
@@ -374,20 +378,24 @@ namespace simuPOP
     Special preparation for the population is needed in order to use this operator.
     Obviously, to obtain affected sibling pairs, we need to know the parents and
     the affectedness status of each individual. Furthermore, to get parental genotype,
-    the population should have \c ancestralDepth at least \c 1. The biggest problem,
+    the population should have \c ancestralDepth at least \c 1. The most important problem,
     however, comes from the mating scheme we are using. \n
 
-    \c randomMating() is usually used for diploid populations. The real random mating
+    \c randomMating() is usually used for diploid populations. The \em real \em random mating
     requires that a mating will generate only one offspring. Since parents are chosen
-    with replacement, a parent can have multiple offsprings with different parents.
-    On the otherhand, it is very unlikely that two offsprings will have the same parents.
-    Therefore, we will have to allow multiple offsprings per mating at the cost of
-    smaller effective population size. \n
+    with replacement, a parent can have multiple offspring with different parents.
+    On the other hand, it is very unlikely that two offspring will have the same parents.
+    The probability of having a sibling for an offspring is \f$ \frac{1}{N^{2}} \f$
+    (if do not consider selection).
+    Therefore, we will have to allow multiple offspring per mating at the cost of
+    small effective population size. \n
 
-    All these requirements come at a cost: multiple ancestral populations, judge
-    affectedness status and tagging will slow down evolution; multiple offsprings
+    All these requirements come at a cost: multiple ancestral populations, determining
+    affectedness status and tagging will slow down evolution; multiple offspring
     will reduce effective population size. Fortunately, simuPOP is flexible enough to
     let all these happen only at the last several generations.
+
+    <funcForm>AffectedSibpairSample</funcForm>    
     */
 	class affectedSibpairSample: public sample
 	{
@@ -625,6 +633,7 @@ namespace simuPOP
 	/// Python sampler
     /**
 	A Python sampler that generate a sample with given individuals.
+	<funcForm>PySample</funcForm>
     */
 	class pySample: public sample
 	{

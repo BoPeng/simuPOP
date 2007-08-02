@@ -48,11 +48,10 @@ namespace simuPOP
     
     In simuPOP, different operators/functions were implemented to calculate
     quantitative traits for each individual and store the values in the information
-    field specified by user (default to \c qtrait). The quantitative trait operators
+    fields specified by user (default to \c qtrait). The quantitative trait operators
     also accept the \c ancestralGen parameter to control the number of generations
     for which the \c qtrait information field will be set.
 	*/
-
 	class quanTrait: public Operator
 	{
 		public:
@@ -102,10 +101,10 @@ namespace simuPOP
 	/**
     Assign quantitative trait using a table with keys 'X-Y' where X and Y are allele
     numbers. If parameter \c sigma is not zero, the returned value is the sum of the
-    trait plus a standard normal distribution with mean 0, standard deviation \c sigma.
-    This random part is usually considered as the environmental factor of the trait.
+    trait plus \f$ N\left(0,\sigma^{2}\right) \f$. This random part is usually considered
+    as the environmental factor of the trait.
+    <funcForm>MapQuanTrait</funcForm>
 	*/
-
 	class mapQuanTrait: public quanTrait
 	{
 		public:
@@ -118,7 +117,7 @@ namespace simuPOP
                 value will be <tt>N(mean, sigma^2)</tt>. For multiple loci, the form is
                 'a-b|c-d|e-f' etc.
 			\param sigma standard deviation of the environmental factor <tt>N(0, sigma^2)</tt>.
-			\param phase if True, a/b and b/a will have different quantitative trait values.
+			\param phase if \c True, a/b and b/a will have different quantitative trait values.
                 Default to False.
 			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
@@ -171,8 +170,9 @@ namespace simuPOP
     two groups: wildtype and disease susceptibility alleles. Wildtype alleles are specified by parameter
     \c wildtype and any other alleles are considered as disease alleles.
     \c maQuanTrait accepts an array of fitness. Quantitative trait is then set for any given
-    genotype. a standard normal distribution with mean 0, standard deviation \c sigma will
+    genotype. A standard normal distribution \f$ N\left(0,\sigma^{2}\right) \f$ will
     be added to the returned trait value.
+    <funcForm>MaQuanTrait</funcForm>
 	*/
 	class maQuanTrait: public quanTrait
 	{
@@ -241,8 +241,20 @@ namespace simuPOP
     /// quantitative trait according to genotypes from a multiple loci multiplicative model
 	/**
     \c mlQuanTrait is a 'multiple-loci' quantitative trait calculator. It accepts a list
-    of quantitative traits and combine them according to the \c mode parameter.
-	 */
+    of quantitative traits and combine them according to the \c mode parameter, which takes
+    one of the following values
+    \li \c QT_Multiplicative: the mean of the quantitative trait is calculated as
+        \f$ f=\prod f_{i} \f$. 
+    \li \c QT_Additive: the mean of the quantitative trait is calculated as
+        \f$ f=\sum f_{i} \f$. 
+
+    Note that all \f$ \sigma_{i} \f$ (for \f$ f_{i} \f$) and \f$ \sigma \f$ (for \f$ f \f$)
+    will all be considered. I.e, the trait value should be
+    \f[ f=\sum_{i}\left(f_{i}+N\left(0,\sigma_{i}^{2}\right)\right)+\sigma^{2} \f]
+    for \c QT_Additive case. If this is not desired, you can set some of the \f$ \sigma \f$ to zero.
+
+    <funcForm>MlQuanTrait</funcForm>
+	*/
 	class mlQuanTrait: public quanTrait
 	{
 		public:
@@ -314,6 +326,7 @@ namespace simuPOP
     /// quantitative trait using a user provided function
 	/**
     For each individual, a user provided function is used to calculate quantitative trait.
+    <funcForm>PyQuanTrait</funcForm>
 	*/
 	class pyQuanTrait: public quanTrait
 	{
@@ -322,8 +335,8 @@ namespace simuPOP
 			/** 
 			\param loci susceptibility loci. The genotypes at these loci will be
                 passed to \c func.
-			\param func a Python function that accept genotypes at susceptibility loci
-                and return quantitative trait value.
+			\param func a Python function that accepts genotypes at susceptibility loci
+                and returns the quantitative trait value.
 			\param output and other parameters please refer to help(baseOperator.__init__)
 
             Please refer to \c quanTrait for other parameter descriptions.          
