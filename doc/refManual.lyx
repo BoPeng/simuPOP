@@ -57,8 +57,6 @@ Last modified \\
 \output_changes false
 \author "" 
 \author "" 
-\author "" 
-\author "" 
 \end_header
 
 \begin_body
@@ -298,8 +296,8 @@ simuPOP is written in C++ and is provided as Python modules.
  Python is used extensively to pass dynamic parameters, calculate complex
  statistics and write operators.
  Because of the openness of simuPOP and Python, users can make use of a
- wide variety of tools (Splus/R, Python/SciPy, MatPlotLib etc.) to perform
- tasks like statistical analysis, gene mapping and visualization.
+ wide variety of tools (Splus/R etc.) to perform tasks like statistical analysis,
+ gene mapping and visualization.
  Depend on machine configuration, simuPOP can simulate large (think in millions)
  populations at reasonable speed.
 \end_layout
@@ -474,7 +472,7 @@ name "GenoStruTrait!locusPos"
 
 \end_inset
 
-(loc), arrlociPos
+(loc), arrLociPos
 \begin_inset LatexCommand index
 name "GenoStruTrait!arrLociPos"
 
@@ -595,7 +593,7 @@ preview false
 \end_layout
 
 \begin_layout Standard
-You may have noticed that locus indices start from 0.
+You may have noticed that locus indexes start from 0.
  
 \series bold
 As a matter of fact, all arrays in simuPOP start at index 0
@@ -1021,7 +1019,7 @@ name "help"
 (population)
 \family default
 .
- Help on a memeber function can be viewed by 
+ Help on a member function can be viewed by 
 \family typewriter
 help(population.func)
 \family default
@@ -1152,7 +1150,7 @@ pop1 = pop.clone()
 \end_layout
 
 \begin_layout Standard
-This scenario also applys to simulator (see later sections).
+This scenario also applies to simulator (see later sections).
  If 
 \family typewriter
 simu
@@ -1183,7 +1181,7 @@ pop
 \family default
  reference.
  Note that this pop reference will become invalid when the simulator is
- distroyed so the following calling sequence will crash Python:
+ destroyed so the following calling sequence will crash Python:
 \end_layout
 
 \begin_layout Standard
@@ -1236,7 +1234,7 @@ Interaction with operators and functions
 
 \begin_layout Standard
 Operators are objects that can be applied to populations.
- They have special attributes like at which generations to be actived, at
+ They have special attributes like at which generations to be active, at
  what stage of a evolutionary life cycle to be applied.
  Usually, an operator is created and passed as a parameter to a simulator.
  When 
@@ -1684,7 +1682,7 @@ reference "popStruManip"
 
 \end_inset
 
- demonostrates the use of functions 
+ demonstrates the use of functions 
 \family typewriter
 setIndSubPopID, setSubPopByIndID
 \family default
@@ -2051,7 +2049,7 @@ name "population!evaluate"
 \emph on
 Local namespace
 \emph default
- means that you can use dictionary items as variables duing evaluation.
+ means that you can use dictionary items as variables during evaluation.
  For example: 
 \end_layout
 
@@ -2136,7 +2134,7 @@ penetrance
 
 \begin_layout Standard
 The information fields is usually set during population creation, in preparation
- for all the opeartors, using the 
+ for all the operators, using the 
 \family typewriter
 infoFields
 \family default
@@ -2246,7 +2244,7 @@ idx
 \family default
  is faster.
  Although population information is kept in a population object linearly,
- there is no gurantee that they are ordered.
+ there is no guarantee that they are ordered.
  If you would like to access 
 \family typewriter
 info
@@ -2549,7 +2547,7 @@ idx
 \family typewriter
 setAncestralPop(0)
 \family default
- after you examed the ancestral populations.
+ after you examined the ancestral populations.
  
 \end_layout
 
@@ -2561,7 +2559,7 @@ reference "ancestralPop"
 \end_inset
 
 .
- In this example, a population with two loci is created and with intial
+ In this example, a population with two loci is created and with initial
  genotype 0.
  Two 
 \family typewriter
@@ -2569,7 +2567,7 @@ kamMutator
 \family default
  with different mutation rates are applied to these two loci.
  Five most recent populations are kept.
- The allele frequencies at these generations are calculated afterwards.
+ The allele frequencies at these generations are calculated afterward.
  (Note that this is not the best way to exam the changes of allele frequencies,
  a 
 \family typewriter
@@ -2744,7 +2742,7 @@ Populations are by default compressed in gzip format.
 \family typewriter
 compress=False
 \family default
- when saving a populaton, or decompress the saved files using 
+ when saving a population, or decompress the saved files using 
 \family typewriter
 gzip -d
 \family default
@@ -2758,7 +2756,7 @@ Populations can also be saved in other formats such as FSTAT so that they
  They are handled in Python in the form of Python function or pure-Python
  operator.
  If you would like to save/load simuPOP population in your own format, you
- can do it by mimicing these functions in 
+ can do it by mimicking these functions in 
 \family typewriter
 simuUtil.py
 \family default
@@ -3029,7 +3027,7 @@ numOffspringFunc
 \end_inset
 
  for a geometric distribution.
- The number of offsprings for each mating is determined by
+ The number of offspring for each mating is determined by
 \begin_inset Formula \[
 P\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1\]
 
@@ -3202,7 +3200,7 @@ newSubPopSizeFunc
 .
  To use this parameter, you need to define a Python function that takes
  two parameters: the generation number and the current subpopulation sizes,
- and return an array of new subpoulation sizes (return 
+ and return an array of new subpopulation sizes (return 
 \family typewriter
 [newsize]
 \family default
@@ -4013,7 +4011,7 @@ Expressions and statements
 \end_layout
 
 \begin_layout Standard
-Expressions are used extensively in operators so some basic knowldege of
+Expressions are used extensively in operators so some basic knowledge of
  Python is required.
  If you know almost nothing about Python, please spend some time on the
  Python tutorial from Python website.
@@ -5060,7 +5058,7 @@ These parameters will be handled by simuPOP automatically.
 
 \end_deeper
 \begin_layout Enumerate
-Auxillary functions
+Auxiliary functions
 \end_layout
 
 \begin_layout Enumerate
@@ -5234,7 +5232,7 @@ Start a Tk/wxPython dialog to accept a user's input when
 \end_layout
 
 \begin_layout Enumerate
-List all commandline/config file options through 
+List all command-line/config file options through 
 \family typewriter
 -h
 \family default
@@ -5276,7 +5274,7 @@ When
 --useDefault
 \family default
  is specified, use default values for all parameters, if they can not be
- obtained from commandline parameters, configuration file, and have default
+ obtained from command-line parameters, configuration file, and have default
  values.
 \end_layout
 
@@ -5311,8 +5309,8 @@ SIMUOPTIMIZED
 \end_layout
 
 \begin_layout Enumerate
-Be able to make use of longallele libraries through the use of command line
- parameter (
+Be able to make use of long-allele libraries through the use of command
+ line parameter (
 \family typewriter
 --longallele
 \family default
@@ -5329,7 +5327,7 @@ SIMULONGALLELE
 \end_layout
 
 \begin_layout Standard
-To alleviate the throuble of doing all these, 
+To alleviate the trouble of doing all these, 
 \family typewriter
 simuPOP
 \family default
@@ -5711,7 +5709,7 @@ separator
 \family typewriter
 jump
 \family default
-: it is used to skip some parameters when doing the interative user input.
+: it is used to skip some parameters when doing the interactive user input.
  For example, 
 \family typewriter
 getParam
@@ -5840,7 +5838,7 @@ simuRev()
 \family typewriter
 simuRev()
 \family default
- against the revision when the feature you need becames available.
+ against the revision when the feature you need becomes available.
 \end_layout
 
 \begin_layout Section
@@ -6064,7 +6062,7 @@ Important note:
 arrXXX
 \family default
  functions should be considered temporary.
- There is no gurantee that the underlying array will still be valid after
+ There is no guarantee that the underlying array will still be valid after
  any population operation.
  
 \end_layout
@@ -9840,7 +9838,7 @@ name "operator!tab"
 \end_layout
 
 \begin_layout Standard
-Outpur a tab.
+Output a tab.
  (Wrapper of output operator)
 \end_layout
 
@@ -9857,7 +9855,7 @@ name "operator!endl"
 \end_layout
 
 \begin_layout Standard
-Outpur a new line.
+Output a new line.
  (Wrapper of output operator)
 \end_layout
 
@@ -9965,7 +9963,7 @@ listVar(simuVars)
 \family typewriter
 listVar(simuVars[0]['subPop'][0])
 \family default
- to see variables for the first subpoulation in replicate one.
+ to see variables for the first subpopulation in replicate one.
 \end_layout
 
 \begin_layout Section
@@ -10047,7 +10045,7 @@ Plotting with history
 \end_layout
 
 \begin_layout Itemize
-plot a number in the form of a varaible or expression, use
+plot a number in the form of a variable or expression, use
 \end_layout
 
 \begin_deeper
@@ -10219,7 +10217,7 @@ title, xtitle, ytitle:
 \family typewriter
 title
 \family default
- is defauled to your expression, 
+ is default to your expression, 
 \family typewriter
 xtitle
 \family default
@@ -10980,11 +10978,19 @@ Since simuPOP 0.7.1, RNGs are seeded in the following order:
 \end_layout
 
 \begin_layout Itemize
-use random number from /dev/urandom if it is available
+use random number from 
+\family typewriter
+/dev/urandom
+\family default
+ if it is available
 \end_layout
 
 \begin_layout Itemize
-use random number from /dev/random if it is available
+use random number from 
+\family typewriter
+/dev/random
+\family default
+ if it is available
 \end_layout
 
 \begin_layout Itemize
@@ -11244,13 +11250,13 @@ DBG_PROFILE.
  When turned on, it will display running time of each operator.
  This will give you a good sense of which operator runs slowly (or simply
  the order of operator execution if you are not sure).
- If most of the excution time is spent on a pure-Python operator, you may
+ If most of the execution time is spent on a pure-Python operator, you may
  want to rewrite it in C++.
  Note that 
 \family typewriter
 DBG_PROFILE
 \family default
- is suitable for measuing individual operator performance.
+ is suitable for measuring individual operator performance.
  If you would like to measure the execution time of all operators in several
  generations, 
 \family typewriter
@@ -11280,7 +11286,7 @@ unlimited
 \end_layout
 
 \begin_layout Standard
-To write smuPOP extension, you will have to know more about data structures
+To write simuPOP extension, you will have to know more about data structures
  and member functions of population.
  Note that for efficiency and implementation reasons, many of the following
  functions do not provide keyword parameters.
@@ -11602,7 +11608,7 @@ name "sub:Direct-populaiton-manipulation"
 
 \end_inset
 
-Direct populaiton manipulation
+Direct population manipulation
 \end_layout
 
 \begin_layout Standard
@@ -11844,7 +11850,7 @@ For example, function
 saveInFstatFormat(pop, output, outputExpr, dict)
 \family default
  saves a population in FSTAT format.
- Its defnition is (first 15 lines)
+ Its definition is (first 15 lines)
 \end_layout
 
 \begin_layout Standard
