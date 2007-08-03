@@ -1284,16 +1284,20 @@ Details:
     Genotypic structure refers to the number of chromosomes,
     positions, the number of loci on each chromosome, and allele and
     locus names etc. All individuals in a  population share the same
-    genotypic structure and functions provided in this class can be
-    accessed from  individual,  population and  simulator levels.
+    genotypic structure. Because class  GenoStruTrait is inherited by
+    class  population, class  individual, and class  simulator,
+    functions provided in this class can be accessed at the
+    individual,  population and  simulator levels.
 
 Details:
 
     Genotypic structure refers to the number of chromosomes,
     positions, the number of loci on each chromosome, and allele and
     locus names etc. All individuals in a  population share the same
-    genotypic structure and functions provided in this class can be
-    accessed from  individual,  population and  simulator levels.
+    genotypic structure. Because class  GenoStruTrait is inherited by
+    class  population, class  individual, and class  simulator,
+    functions provided in this class can be accessed at the
+    individual,  population and  simulator levels.
 
 "; 
 
@@ -1301,7 +1305,8 @@ Details:
 
 Description:
 
-    Creat a  GenoStruTrait class, but m_genoStruIdx will be set later.
+    This object can not be created directly. It is created by a
+    population.
 
 Usage:
 
@@ -1355,7 +1360,7 @@ Usage:
 
 Description:
 
-    return the number of loci on chromosome chrom, equals to
+    return the number of loci on chromosome chrom, equivalent to
     numLoci()[chrom]
 
 Usage:
@@ -1457,7 +1462,7 @@ Note:
 
 Description:
 
-    return an array of loci positions on a given chromosome
+    return an (editable) array of loci positions on a given chromosome
 
 Usage:
 
@@ -1482,17 +1487,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::chromIndex "
-
-Description:
-
-    return an array of chromosome indices
-
-Usage:
-
-    x.chromIndex()
-
-"; 
+%ignore simuPOP::GenoStruTrait::chromIndex() const;
 
 %feature("docstring") simuPOP::GenoStruTrait::chromBegin "
 
@@ -1515,6 +1510,11 @@ Description:
 Usage:
 
     x.chromEnd(chrom)
+
+Note:
+
+    From the description of this function, the returned value may not
+    be a valid index. (This is consistant with Python ranges.)
 
 "; 
 
@@ -1546,7 +1546,8 @@ Usage:
 
 Description:
 
-    return the name of an allele (if previously specified)
+    return the name of an allele (if previously specified). Default to
+    allele index.
 
 Usage:
 
@@ -1558,7 +1559,7 @@ Usage:
 
 Description:
 
-    return an array of allelic names
+    return an array of allele names
 
 Usage:
 
@@ -1618,24 +1619,13 @@ Usage:
 
 Description:
 
-    return the maximum allele value for all loci
+    return the maximum allele value for all loci. Default to maximum
+    allowed allele state.
 
 Usage:
 
     x.maxAllele()
 
-"; 
-
-%feature("docstring") simuPOP::GenoStruTrait::setMaxAllele "
-
-Description:
-
-    set the maximum allele value for all loci
-
-Usage:
-
-    x.setMaxAllele(maxAllele)
-
 Details:
 
     Maximum allele value has to be 1 for binary modules. maxAllele is
@@ -1649,6 +1639,8 @@ Details:
     alleles 0, 1, ..., maxAllele.
 
 "; 
+
+%ignore simuPOP::GenoStruTrait::setMaxAllele(UINT maxAllele);
 
 %feature("docstring") simuPOP::GenoStruTrait::hasInfoField "
 
@@ -1716,18 +1708,7 @@ Usage:
 
 %ignore simuPOP::GenoStruTrait::swap(GenoStruTrait &rhs);
 
-%feature("docstring") simuPOP::GenoStruTrait::chromMap "
-
-Description:
-
-    return the distribution of chromosomes across multiple nodes (MPI
-    version of  simuPOP only)
-
-Usage:
-
-    x.chromMap()
-
-"; 
+%ignore simuPOP::GenoStruTrait::chromMap() const;
 
 %feature("docstring") simuPOP::gsmMutator "
 

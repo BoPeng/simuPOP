@@ -1,4 +1,4 @@
-#LyX 1.5.0rc2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -55,10 +55,10 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showtabs=false,xleftmargin=15pt"
+\listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
-\author "Anonymous" 
+\author "" 
 \author "" 
 \end_header
 
@@ -613,7 +613,7 @@ reference "alg:Genotype-structure-functions"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/genoStru.log}[caption={Genotype structure functions},label={alg:Genotype-structure-functions}]
+\begin_inset Include \lstinputlisting{log/ref_genoStru.log}[caption={Genotype structure functions},label={alg:Genotype-structure-functions}]
 preview false
 
 \end_inset
@@ -637,7 +637,7 @@ levels
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/indGenoStru.log}[caption={Calling genotype structure functions from individual or simulator}]
+\begin_inset Include \lstinputlisting{log/ref_indGenoStru.log}[caption={Calling genotype structure functions from individual or simulator}]
 preview false
 
 \end_inset
@@ -706,7 +706,7 @@ absLocusIndex(chrom,index)
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/absIndex.log}[caption={Conversion between absolute and relative indices},label={absIndex}]
+\begin_inset Include \lstinputlisting{log/ref_absIndex.log}[caption={Conversion between absolute and relative indices},label={absIndex}]
 preview false
 
 \end_inset
@@ -1059,7 +1059,7 @@ reference "popInit"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/popInit.log}[caption={Use of population function},label={popInit}]
+\begin_inset Include \lstinputlisting{log/ref_popInit.log}[caption={Use of population function},label={popInit}]
 preview false
 
 \end_inset
@@ -1237,7 +1237,7 @@ apply()
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/popAndOperator.log}[caption={Population and operators},label={popAndOperator}]
+\begin_inset Include \lstinputlisting{log/ref_popAndOperator.log}[caption={Population and operators},label={popAndOperator}]
 preview false
 
 \end_inset
@@ -1347,7 +1347,7 @@ initByFreq
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/InitByFreq.log}[caption={Function InitByFreq},label={InitByFreq}]
+\begin_inset Include \lstinputlisting{log/ref_InitByFreq.log}[caption={Function InitByFreq},label={InitByFreq}]
 preview false
 
 \end_inset
@@ -1589,7 +1589,7 @@ reference "dumpPop"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/dumpPop.log}[caption={Operator dumper and initByFreq},label={dumpPop}]
+\begin_inset Include \lstinputlisting{log/ref_dumpPop.log}[caption={Operator dumper and initByFreq},label={dumpPop}]
 preview false
 
 \end_inset
@@ -1613,7 +1613,7 @@ Please refer to the class reference of population for detailed information
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/popStru.log}[caption={population structure functions},label={popStru}]
+\begin_inset Include \lstinputlisting{log/ref_popStru.log}[caption={population structure functions},label={popStru}]
 preview false
 
 \end_inset
@@ -1677,7 +1677,7 @@ removeLoci
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/popStruManip.log}[caption={population structure functions},label={popStruManip}]
+\begin_inset Include \lstinputlisting{log/ref_popStruManip.log}[caption={population structure functions},label={popStruManip}]
 preview false
 
 \end_inset
@@ -1822,7 +1822,7 @@ individual
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ind.log}[caption={Individual member functions},label={ind}]
+\begin_inset Include \lstinputlisting{log/ref_ind.log}[caption={Individual member functions},label={ind}]
 preview false
 
 \end_inset
@@ -2007,7 +2007,7 @@ subPop
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/popVars.log}[caption={Population variables},label={popVars}]
+\begin_inset Include \lstinputlisting{log/ref_popVars.log}[caption={Population variables},label={popVars}]
 preview false
 
 \end_inset
@@ -2037,7 +2037,7 @@ Local namespace
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/localNamespace.log}[caption={Local namespaces of populations},label={localNamespace}]
+\begin_inset Include \lstinputlisting{log/ref_localNamespace.log}[caption={Local namespaces of populations},label={localNamespace}]
 preview false
 
 \end_inset
@@ -2560,7 +2560,7 @@ stat
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ancestralPop.log}[caption={Ancestral populations},label={ancestralPop}]
+\begin_inset Include \lstinputlisting{log/ref_ancestralPop.log}[caption={Ancestral populations},label={ancestralPop}]
 preview false
 
 \end_inset
@@ -2711,7 +2711,7 @@ name "text format"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/popSaveLoad.log}[caption={Save and load population},label={popSaveLoad}]
+\begin_inset Include \lstinputlisting{log/ref_popSaveLoad.log}[caption={Save and load population},label={popSaveLoad}]
 preview false
 
 \end_inset
@@ -3484,7 +3484,6 @@ bottleneckGen
 bottleneckSize
 \family default
  at that generation.
- 
 \end_layout
 
 \begin_layout Section
@@ -3725,7 +3724,7 @@ stage
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/operatorstages.log}[caption={Operator stage},label={operatorstages}]
+\begin_inset Include \lstinputlisting{log/ref_operatorstages.log}[caption={Operator stage},label={operatorstages}]
 preview false
 
 \end_inset
@@ -3759,7 +3758,7 @@ at
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/operatorgen.log}[caption={Set active generations of an operator},label={operatorgen}]
+\begin_inset Include \lstinputlisting{log/ref_operatorgen.log}[caption={Set active generations of an operator},label={operatorgen}]
 preview false
 
 \end_inset
@@ -3845,7 +3844,7 @@ n
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/operatorgrp.log}[caption={Replicate group},label={operatorgrp}]
+\begin_inset Include \lstinputlisting{log/ref_operatorgrp.log}[caption={Replicate group},label={operatorgrp}]
 preview false
 
 \end_inset
@@ -3884,7 +3883,7 @@ The following example shows the difference between
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/operatoroutput.log}[caption={log/operatoroutput},label={operatoroutput}]
+\begin_inset Include \lstinputlisting{log/ref_operatoroutput.log}[caption={operatoroutput},label={operatoroutput}]
 preview false
 
 \end_inset
@@ -3966,7 +3965,7 @@ generations.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/operatoroutputexpr.log}[caption={log/operatoroutputexpr},label={operatoroutputexpr}]
+\begin_inset Include \lstinputlisting{log/ref_operatoroutputexpr.log}[caption={operatoroutputexpr},label={operatoroutputexpr}]
 preview false
 
 \end_inset
@@ -4353,7 +4352,7 @@ b
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/expr.log}[caption={python expression},label={expr}]
+\begin_inset Include \lstinputlisting{log/ref_expr.log}[caption={python expression},label={expr}]
 preview false
 
 \end_inset
@@ -4576,7 +4575,7 @@ pyEval/pyExec
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/expreval.log}[caption={Expression evaluation},label={expreval}]
+\begin_inset Include \lstinputlisting{log/ref_expreval.log}[caption={Expression evaluation},label={expreval}]
 preview false
 
 \end_inset
@@ -4907,7 +4906,7 @@ name "loadSimulator"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/simulatorsaveload.log}[caption={save and load a simulator},label={simulatorsaveload}]
+\begin_inset Include \lstinputlisting{log/ref_simulatorsaveload.log}[caption={save and load a simulator},label={simulatorsaveload}]
 preview false
 
 \end_inset
@@ -6328,7 +6327,7 @@ lated functions.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/pyOperator.log}[caption={define a python operator},label={pyOperator}]
+\begin_inset Include \lstinputlisting{log/ref_pyOperator.log}[caption={define a python operator},label={pyOperator}]
 preview false
 
 \end_inset
@@ -6337,7 +6336,7 @@ preview false
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/pyOperatorUse.log}[caption={use of python operator},label={pyOperatorUse}]
+\begin_inset Include \lstinputlisting{log/ref_pyOperatorUse.log}[caption={use of python operator},label={pyOperatorUse}]
 preview false
 
 \end_inset
@@ -6802,7 +6801,7 @@ alleleFreq
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/initByFreq.log}[caption={Init by freq},label={initByFreq}]
+\begin_inset Include \lstinputlisting{log/ref_initByFreq.log}[caption={Init by freq},label={initByFreq}]
 preview false
 
 \end_inset
@@ -6857,7 +6856,7 @@ initByValueRef
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/initByValue.log}[caption={Init by value},label={initByValue}]
+\begin_inset Include \lstinputlisting{log/ref_initByValue.log}[caption={Init by value},label={initByValue}]
 preview false
 
 \end_inset
@@ -6942,7 +6941,7 @@ pyInitRef
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/pyInit.log}[caption={Init by value},label={pyInit}]
+\begin_inset Include \lstinputlisting{log/ref_pyInit.log}[caption={Init by value},label={pyInit}]
 preview false
 
 \end_inset
@@ -7138,16 +7137,6 @@ carray
 pyMigrator
 \family default
  then complete migration according its content.
- For example:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/pyMigrator.log}[caption={pyMigrator},label={pyMigrator}]
-preview false
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -7385,7 +7374,7 @@ kamMutator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/kamMutator.log}[caption={kamMutator},label={kamMutator}]
+\begin_inset Include \lstinputlisting{log/ref_kamMutator.log}[caption={kamMutator},label={kamMutator}]
 preview false
 
 \end_inset
@@ -7447,7 +7436,7 @@ maxAllele
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/smmMutator.log}[caption={smmMutator},label={smmMutator}]
+\begin_inset Include \lstinputlisting{log/ref_smmMutator.log}[caption={smmMutator},label={smmMutator}]
 preview false
 
 \end_inset
@@ -7502,7 +7491,7 @@ gsmMutator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/gsmMutator.log}[caption={gsmMutator},label={gsmMutator}]
+\begin_inset Include \lstinputlisting{log/ref_gsmMutator.log}[caption={gsmMutator},label={gsmMutator}]
 preview false
 
 \end_inset
@@ -7555,7 +7544,7 @@ If you can not accomplish your task with the above mutators, you can always
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/pyMutator.log}[caption={pyMutator},label={pyMutator}]
+\begin_inset Include \lstinputlisting{log/ref_pyMutator.log}[caption={pyMutator},label={pyMutator}]
 preview false
 
 \end_inset
@@ -7692,7 +7681,7 @@ parentsTagger
  to mark the parents of each individual so you can (if you have enough patience)
  see exactly how recombination works.
  
-\begin_inset Include \lstinputlisting{log/recombinator.log}[caption={Recombinator},label={recombinator}]
+\begin_inset Include \lstinputlisting{log/ref_recombinator.log}[caption={Recombinator},label={recombinator}]
 preview false
 
 \end_inset
@@ -7956,7 +7945,7 @@ Which is
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/basicSelector.log}[caption={map selector},label={basicSelector}]
+\begin_inset Include \lstinputlisting{log/ref_basicSelector.log}[caption={map selector},label={basicSelector}]
 preview false
 
 \end_inset
@@ -8339,7 +8328,7 @@ sel
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/pySelector.log}[caption={python selector},label={pySelector}]
+\begin_inset Include \lstinputlisting{log/ref_pySelector.log}[caption={python selector},label={pySelector}]
 preview false
 
 \end_inset
@@ -9254,7 +9243,7 @@ The following example shows how to draw a random sample (without replacement
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/randomSample.log}[caption={random sample},label={randomSample}]
+\begin_inset Include \lstinputlisting{log/ref_randomSample.log}[caption={random sample},label={randomSample}]
 preview false
 
 \end_inset
@@ -10303,7 +10292,7 @@ Here is an example:
 \end_layout
 
 \begin_layout LyX-Code
-\begin_inset Include \verbatiminput{log/simuPlotter.log}
+\begin_inset Include \verbatiminput{log/ref_simuPlotter.log}
 preview false
 
 \end_inset
@@ -10718,7 +10707,7 @@ use dryrun to exam simulator first.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ifElse.log}[caption={Conditional operator},label={ifElse}]
+\begin_inset Include \lstinputlisting{log/ref_ifElse.log}[caption={Conditional operator},label={ifElse}]
 preview false
 
 \end_inset
@@ -10906,7 +10895,7 @@ Random number generator is a tricky business.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/rng.log}[caption={Random number generator},label={rng}]
+\begin_inset Include \lstinputlisting{log/ref_rng.log}[caption={Random number generator},label={rng}]
 preview false
 
 \end_inset
@@ -10949,7 +10938,7 @@ src/utility.h
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/rngrand.log}[caption={Random number generator},label={rngrand}]
+\begin_inset Include \lstinputlisting{log/ref_rngrand.log}[caption={Random number generator},label={rngrand}]
 preview false
 
 \end_inset
@@ -11457,7 +11446,7 @@ The following example shows how to change the locus distance through this
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/extgenostru.log}[caption={geno stru},label={extgenostru}]
+\begin_inset Include \lstinputlisting{log/ref_extgenostru.log}[caption={geno stru},label={extgenostru}]
 preview false
 
 \end_inset
@@ -11561,7 +11550,7 @@ pop
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/extgenotype.log}[caption={genotype},label={extgenotype}]
+\begin_inset Include \lstinputlisting{log/ref_extgenotype.log}[caption={genotype},label={extgenotype}]
 preview false
 
 \end_inset
@@ -11578,7 +11567,7 @@ sex, setSex, affected, setAffected
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/extother.log}[caption={genotype},label={extother}]
+\begin_inset Include \lstinputlisting{log/ref_extother.log}[caption={genotype},label={extother}]
 preview false
 
 \end_inset
@@ -11753,7 +11742,7 @@ tab
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/tab.log}[caption={Tab operator},label={tab}]
+\begin_inset Include \lstinputlisting{log/ref_tab.log}[caption={Tab operator},label={tab}]
 preview false
 
 \end_inset
@@ -11838,7 +11827,7 @@ saveInFstatFormat(pop, output, outputExpr, dict)
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/extother.log}[caption={genotype},label={extother}]
+\begin_inset Include \lstinputlisting{log/ref_extother.log}[caption={genotype},label={extother}]
 preview false
 
 \end_inset
@@ -11892,7 +11881,7 @@ pyEval
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/saveFstat.log}[caption={save fstat},label={saveFstat}]
+\begin_inset Include \lstinputlisting{log/ref_saveFstat.log}[caption={save fstat},label={saveFstat}]
 preview false
 
 \end_inset
