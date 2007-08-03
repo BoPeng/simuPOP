@@ -69,8 +69,8 @@ using std::pair;
 
 namespace simuPOP
 {
-
-	/** \brief CPPONLY genetic structure. Shared by individuals of one population
+    /// CPPONLY
+	/** \brief genetic structure. Shared by individuals of one population
 
 	populations create a copy of GenoStrcture and assign its pointer to each individual.
 	This strcuture will be destroyed when population is destroyed.
@@ -97,8 +97,8 @@ namespace simuPOP
 	#endif
 				{}
 
-			/** \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
-			CPPONLY
+			/** CPPONLY \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
+			
 			\param ploidy number of sets of chromosomes
 			\param loci number of loci on each chromosome.
 			\param lociPos loci distance on each chromosome. the default values
@@ -314,8 +314,10 @@ namespace simuPOP
 	/**
 	Genotypic structure refers to the number of chromosomes, positions, the
 	number of loci on each chromosome, and allele and locus names etc. All individuals
-	in a population share the same genotypic structure and functions provided in
-	this class can be accessed from individual, population and simulator levels.
+	in a population share the same genotypic structure. Because class \c GenoStruTrait
+    is inherited by class \c population, class \c individual, and class \c simulator,
+    functions provided in this class can be accessed at the individual, population and
+    simulator levels.
 	*/
 	class GenoStruTrait
 	{
@@ -325,7 +327,7 @@ namespace simuPOP
 #define TraitMaxIndex 0xFF
 
 		public:
-			/// Creat a \c GenoStruTrait class, but \c m_genoStruIdx will be set later.
+			/// This object can not be created directly. It is created by a population.
 			GenoStruTrait():m_genoStruIdx(TraitMaxIndex)
 			{
 			}
@@ -389,7 +391,7 @@ namespace simuPOP
 			/// return ploidy name, \c haploid, \c diploid, or \c triploid etc.
 			string ploidyName() const;
 
-			/// return the number of loci on chromosome \c chrom, equals to <tt> numLoci()[chrom] </tt>
+			/// return the number of loci on chromosome \c chrom, equivalent to <tt> numLoci()[chrom] </tt>
 			UINT numLoci(UINT chrom) const
 			{
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -459,7 +461,7 @@ namespace simuPOP
 					s_genoStruRepository[m_genoStruIdx].m_lociPos.end() );
 			}
 
-			/// return an array of loci positions on a given chromosome
+			/// return an (editable) array of loci positions on a given chromosome
 			/**
 			\note Modifying loci position directly using this function is strongly discouraged.
 			*/
@@ -481,7 +483,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_numChrom;
 			}
 
-			/// return an array of chromosome indices
+			/// CPPONLY return an array of chromosome indices
 			const vectoru& chromIndex() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_chromIndex;
@@ -499,6 +501,10 @@ namespace simuPOP
 			}
 
 			/// return the index of the last locus on a chromosome plus 1
+			/**
+			\note From the description of this function, the returned value may not be a valid index.
+                (This is consistant with Python ranges.)
+            */
 			UINT chromEnd(UINT chrom) const
 			{
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -521,10 +527,10 @@ namespace simuPOP
 			/// return a <tt>(chrom, locus)</tt> pair of an absolute locus index
 			std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
 
-			/// return the name of an allele (if previously specified)
+			/// return the name of an allele (if previously specified). Default to allele index.
 			string alleleName(const Allele allele) const;
 
-			/// return an array of allelic names
+			/// return an array of allele names
 			vectorstr alleleNames() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_alleleNames;
@@ -565,8 +571,11 @@ namespace simuPOP
 				return indices;
 			}
 
-			/// return the maximum allele value for all loci
+			/// return the maximum allele value for all loci. Default to maximum allowed allele state.
 			/**
+			Maximum allele value has to be \c 1 for binary modules. \c maxAllele is
+			the maximum possible allele value, which allows <tt>maxAllele+1</tt> alleles
+			<tt>0, 1, ..., maxAllele</tt>.
 			\sa setMaxAllele
 			*/
 			UINT maxAllele() const
@@ -574,12 +583,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_maxAllele;
 			}
 
-			/// set the maximum allele value for all loci
-			/**
-			Maximum allele value has to be \c 1 for binary modules. \c maxAllele is
-			the maximum possible allele value, which allows <tt>maxAllele+1</tt> alleles
-			<tt>0, 1, ..., maxAllele</tt>.
-			*/
+			/// CPPONLY set the maximum allele value for all loci
 			void setMaxAllele(UINT maxAllele)
 			{
 #ifdef BINARYALLELE
@@ -635,7 +639,7 @@ namespace simuPOP
 				std::swap(m_genoStruIdx, rhs.m_genoStruIdx);
 			}
 
-			/// return the distribution of chromosomes across multiple nodes (MPI version of simuPOP only)
+			/// CPPONLY return the distribution of chromosomes across multiple nodes (MPI version of simuPOP only)
 			vectori chromMap() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_chromMap;
