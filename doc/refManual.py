@@ -225,8 +225,8 @@ simu = simulator(population(10000, loci=[2]), randomMating())
 simu.evolve(
   ops = [
     setAncestralDepth(5, at=[-5]),
-    kamMutator(rate=0.01, atLoci=[0], maxAllele=1),
-    kamMutator(rate=0.001, atLoci=[1], maxAllele=1)
+    kamMutator(rate=0.01, loci=[0], maxAllele=1),
+    kamMutator(rate=0.001, loci=[1], maxAllele=1)
   ],
   end = 20
 )
@@ -330,7 +330,7 @@ simu.evolve( [ pyEval(r"str(gen)+'\n'", begin=5, end=-1, step=2)],
 from simuUtil import *
 simu = simulator(population(1),binomialSelection(), rep=4,
                  grp=[1,2,1,2])
-simu.apply([ pyEval(r"grp+3", grp=1),
+simu.step([ pyEval(r"grp+3", grp=1),
              pyEval(r"grp+6", grp=2),
              output('\n', rep=REP_LAST)]
 )
@@ -411,9 +411,9 @@ def dynaMutator(pop, param):
   for i in range( pop.totNumLoci() ):
     # 1-freq of wild type = total disease allele frequency
     if 1-pop.dvars().alleleFreq[i][1] < cutoff:
-      KamMutate(pop, maxAllele=2, rate=mu1, atLoci=[i])
+      KamMutate(pop, maxAllele=2, rate=mu1, loci=[i])
     else:
-      KamMutate(pop, maxAllele=2, rate=mu2, atLoci=[i])
+      KamMutate(pop, maxAllele=2, rate=mu2, loci=[i])
   return True
 #end
 
@@ -424,8 +424,8 @@ simu = simulator(pop, randomMating())
 
 simu.evolve(
   preOps = [ 
-    initByFreq( [.6, .4], atLoci=[0,2,4]),
-    initByFreq( [.8, .2], atLoci=[1,3]) ],
+    initByFreq( [.6, .4], loci=[0,2,4]),
+    initByFreq( [.8, .2], loci=[1,3]) ],
   ops = [ 
     pyOperator( func=dynaMutator, param=(.5, .1, 0) ),
     stat(alleleFreq=range(5)),
@@ -439,14 +439,14 @@ simu.evolve(
 #file log/ref_initByFreq.log
 simu = simulator( population(subPop=[2,3], loci=[5,7]),
     randomMating(), rep=1)
-simu.apply([
+simu.step([
     initByFreq(alleleFreq=[ [.2,.8],[.8,.2]]),
     dumper(alleleOnly=True)
   ])
 #end
 
 #file log/ref_initByValue.log
-simu.apply([
+simu.step([
     initByValue([1]*5 + [2]*7 + [3]*5 +[4]*7),
     dumper(alleleOnly=True)])
 #end
@@ -455,41 +455,29 @@ simu.apply([
 def initAllele(ind, p, sp):
   return sp + ind + p
 
-simu.apply([
+simu.step([
     pyInit(func=initAllele),
     dumper(alleleOnly=True, dispWidth=2)])
 #end
 
 
-#file log/ref_pyMigrator.log
-simu = simulator(population(subPop=[2,3], loci=[2,5]),
-    randomMating())
-# an Numeric array, force to Int type
-spID = [2,2,1,1,0]
-simu.apply( [
-    initByFreq([.2,.4,.4]), 
-    dumper(alleleOnly=True, stage=PrePostMating),
-    pyMigrator(subPopID=spID)
-    ])
-#end
-
 #file log/ref_kamMutator.log
 simu = simulator(population(size=5, loci=[3,5]), noMating())
-simu.apply([
-    kamMutator( rate=[.2,.6,.5], atLoci=[0,2,6], maxAllele=9),
+simu.step([
+    kamMutator( rate=[.2,.6,.5], loci=[0,2,6], maxAllele=9),
     dumper(alleleOnly=True)])
 #end
 
 #file log/ref_smmMutator.log
 simu = simulator(population(size=3, loci=[3,5]), noMating())
-simu.apply([
+simu.step([
     initByFreq( [.2,.3,.5]),
     smmMutator(rate=1,  incProb=.8),
     dumper(alleleOnly=True, stage=PrePostMating)])
 #end
 
 #file log/ref_gsmMutator.log
-simu.apply([
+simu.step([
     initByFreq( [.2,.3,.5]),
     gsmMutator(rate=1, p=.8, incProb=.8),
     dumper(alleleOnly=True, stage=PrePostMating)])
@@ -498,7 +486,7 @@ import random
 def rndInt():
   return random.randrange(3,6)
 
-simu.apply([
+simu.step([
     initByFreq( [.2,.3,.5]),
     gsmMutator(rate=1, func=rndInt, incProb=.8),
     dumper(alleleOnly=True, stage=PrePostMating)])
@@ -509,8 +497,8 @@ simu.apply([
 def mut(x):
   return 8
 
-simu.apply([
-  pyMutator(rate=.5, atLoci=[3,4,5], func=mut),
+simu.step([
+  pyMutator(rate=.5, loci=[3,4,5], func=mut),
   dumper(alleleOnly=True)])
 #end
 
@@ -582,7 +570,7 @@ simu.evolve([
 #file log/ref_pySubset.log
 simu = simulator(population(subPop=[2,3], loci=[3,4], infoFields=['fitness']),
     randomMating())
-simu.apply([
+simu.step([
     initByFreq([.3,.5,.2]),
     pySubset( [1,-1,-1,1,-1] ),
     dumper(alleleOnly=True, stage=PrePostMating)
@@ -716,7 +704,7 @@ Dump(pop1)
 #end
 
 #file log/ref_extoperator.log
-simu.apply([ pyEval(stmts="pop=simu.population(rep)")])
+simu.step([ pyEval(stmts="pop=simu.population(rep)")])
 #end
 
 

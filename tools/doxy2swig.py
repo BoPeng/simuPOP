@@ -687,7 +687,7 @@ class Doxy2SWIG:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
             if entry.has_key('Description') and entry['Description'] != '':
                 classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
-                print >> out, '\n\\section{Class \\texttt{%s}\index{class!%s}' % (classname, classname)
+                print >> out, '\n\\subsection{Class \\texttt{%s}\index{class!%s}' % (classname, classname)
                 if entry.has_key('funcForm'):
                     print >> out, '  (Function form: %s\index{function!%s})' % (
                         self.latex_text(entry['funcForm']), self.latex_text(entry['funcForm']))
