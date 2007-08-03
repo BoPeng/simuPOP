@@ -686,10 +686,12 @@ class Doxy2SWIG:
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
             if entry.has_key('Description') and entry['Description'] != '':
-                print >> out, '\\par\n\\strong{Class \\texttt{%s}}' % self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
+                classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
+                print >> out, '\n\\section{Class \\texttt{%s}\index{class!%s}' % (classname, classname)
                 if entry.has_key('funcForm'):
-                    print >> out, '  (Function form: %s)' % self.latex_text(entry['funcForm'])
-                print >> out, '\n\\par %s' % self.latex_text(entry['Description'])
+                    print >> out, '  (Function form: %s\index{function!%s})' % (
+                        self.latex_text(entry['funcForm']), self.latex_text(entry['funcForm']))
+                print >> out, '}\n\\par %s' % self.latex_text(entry['Description'])
             if entry.has_key('Details') and entry['Details'] != '':
                 print >> out, '\\par\n\\strong{Details}\n\\par'
                 print >> out, '%s' % self.latex_text(entry['Details'])
