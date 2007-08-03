@@ -1,4 +1,4 @@
-#LyX 1.6.0svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.0rc2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -9,9 +9,9 @@
 \setreleaseinfo{Release 0.8.0 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. MD Anderson Cancer Center}\\
-{\bf Email: }{\textsf bpeng@mdanderson.org}\\
-{\bf URL: }{\textsf http://simupop.sourceforge.net} \\
-{\bf Mailing List: }{\textsf simupop-list@lists.sourceforge.net}
+{\bf Email: } \textsf{bpeng@mdanderson.org}\\
+{\bf URL: } \textsf{http://simupop.sourceforge.net} \\
+{\bf Mailing List: } \textsf{simupop-list@lists.sourceforge.net}
 }
 \author{Bo Peng}
 \date{December 2004\\
@@ -22,6 +22,9 @@ Last modified \\
 \ifhtml
 \chapter*{Front Matter\label{front}}
 \fi
+
+\renewcommand\lstlistlistingname{List of Examples}
+\renewcommand\lstlistingname{Example}
 \end_preamble
 \language english
 \inputencoding auto
@@ -55,7 +58,7 @@ Last modified \\
 \listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
-\author "" 
+\author "Anonymous" 
 \author "" 
 \end_header
 
@@ -195,6 +198,18 @@ hspace{.3cm} Python user community
 hspace{.3cm} Keck Center for Computational and Structural Biology
 \end_layout
 
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} UT M.D.
+ Anderson Cancer Center
+\end_layout
+
 \end_inset
 
 
@@ -295,17 +310,17 @@ simuPOP is written in C++ and is provided as Python modules.
  Besides a front-end providing an interactive shell and a scripting language,
  Python is used extensively to pass dynamic parameters, calculate complex
  statistics and write operators.
- Because of the openness of simuPOP and Python, users can make use of a
- wide variety of tools (Splus/R etc.) to perform tasks like statistical analysis,
- gene mapping and visualization.
- Depend on machine configuration, simuPOP can simulate large (think in millions)
- populations at reasonable speed.
+ Because of the openness of simuPOP and Python, users can make use of external
+ programs, such as R, to perform statistical analysis, gene mapping and
+ visualization.
+ Depending on machine configuration, simuPOP can simulate large (think of
+ millions) populations at reasonable speed.
 \end_layout
 
 \begin_layout Abstract
-This is a reference manual to all variables, functions, and operators.
- This should be read after you learned the structure of simuPOP and how
- to write a simuPOP script from the 
+This is a reference manual to all variables, functions, and objects of simuPOP.
+ To learn different components of simuPOP and how to write simuPOP scripts,
+ please refer to the 
 \emph on
 simuPOP user's guide.
 \end_layout
@@ -377,6 +392,35 @@ preview false
 \end_layout
 
 \begin_layout Chapter
+Introduction
+\end_layout
+
+\begin_layout Itemize
+How to access the main page (an example) from the command line? help( _,
+ _ )
+\end_layout
+
+\begin_layout Itemize
+Online reference (URL).
+\end_layout
+
+\begin_layout Itemize
+Concept of base classes and how to refer to base classes for parameters.
+\end_layout
+
+\begin_layout Itemize
+What is the function form, global functions, and member functions?
+\end_layout
+
+\begin_layout Itemize
+arr_function and carray type
+\end_layout
+
+\begin_layout Itemize
+Library-dependent functions/constants
+\end_layout
+
+\begin_layout Chapter
 Genotypic structure 
 \begin_inset LatexCommand index
 name "genotypic structure"
@@ -384,6 +428,10 @@ name "genotypic structure"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Introduction
 \end_layout
 
 \begin_layout Standard
@@ -463,7 +511,7 @@ name "GenoStruTrait!totNumLoci"
 \end_layout
 
 \begin_layout Itemize
-the locus location on its chromosome (c.f.
+the locus position on its chromosome (c.f.
  
 \family typewriter
 locusPos
@@ -539,9 +587,14 @@ name "GenoStruTrait!infoFields"
 \end_layout
 
 \begin_layout Standard
-Here information fields refer to the numbers attached to each individual,
- such as fitness value, parent index, age etc.
- Individuals may need some information fields to use certain operators.
+
+\emph on
+Information fields
+\emph default
+ refer to the numbers attached to each individual, such as fitness value,
+ parent index, age.
+ They are used to store auxiliary information of individuals, and are essential
+ to the operations of some simuPOP components.
  For example, 
 \family typewriter
 'fitness'
@@ -556,7 +609,7 @@ reference "alg:Genotype-structure-functions"
 
 \end_inset
 
- creates a population and displays some of the genotypic information.
+ creates a population and displays some of its genotypic information.
 \end_layout
 
 \begin_layout Standard
@@ -572,7 +625,7 @@ preview false
 Individuals in the same population share the same genotypic structure.
  Consequently, 
 \emph on
-the genotypic information can be retrieved from individual, population and
+the genotypic information can be accessed from individual, population and
  simulator
 \emph default
  (consists of populations with the same genotypic structure) 
@@ -594,9 +647,9 @@ preview false
 
 \begin_layout Standard
 You may have noticed that locus indexes start from 0.
- 
+ As a matter of fact,
 \series bold
-As a matter of fact, all arrays in simuPOP start at index 0
+ all arrays in simuPOP start at index 0
 \series default
 .
  To avoid confusion, I will refer the first locus as locus zero, the second
@@ -605,10 +658,9 @@ As a matter of fact, all arrays in simuPOP start at index 0
 \end_layout
 
 \begin_layout Standard
-Another concern is how we should refer to loci on different chromosomes.
- The solution is that we almost always use 
+Another two important concepts are the
 \emph on
-the absolute index
+ absolute index
 \begin_inset LatexCommand index
 name "index!absolute"
 
@@ -616,23 +668,32 @@ name "index!absolute"
 
 
 \emph default
- and seldom use
+ and
 \emph on
- the relative index
+ 
+\emph default
+the
+\emph on
+ relative index
 \begin_inset LatexCommand index
 name "index!relative"
 
 \end_inset
 
-.
-
+ 
 \emph default
- For example, if there are five and seven loci on the first two chromosomes,
- the absolute indices of loci will be (0, 1, 2, 3, 4), (5, 6, 7, 8, 9, 10,
- 11).
- It may feel confusing at first but this avoids the trouble of having to
- use two numbers (chrom, index) to refer to a locus.
- If the relative index is needed, functions 
+of a locus.
+ The former index ignores chromosome structure.
+
+\emph on
+ 
+\emph default
+For example, if there are 5 and 7 loci on the first two chromosomes, the
+ absolute indexes of the two loci are (0, 1, 2, 3, 4), (5, 6, 7, 8, 9, 10,
+ 11) and the relative indexes are (0, 1, 2, 3, 4), (0, 1, 2, 3, 4, 5, 6).
+ Absolute indexes are more frequently used because they avoid the trouble
+ of having to use two numbers (chrom, index) to refer to a locus.
+ Two functions 
 \family typewriter
 chromLocusPair(absIndex)
 \family default
@@ -640,70 +701,13 @@ chromLocusPair(absIndex)
 \family typewriter
 absLocusIndex(chrom,index)
 \family default
- can be used.
+ are provided to convert between these two kinds of indexes.
  
 \end_layout
 
 \begin_layout Standard
 \begin_inset Include \lstinputlisting{log/absIndex.log}[caption={Conversion between absolute and relative indices},label={absIndex}]
 preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Class reference
-\end_layout
-
-\begin_layout Standard
-To display the following manual item in Python, you can use 
-\family typewriter
-help(population)
-\family default
- or 
-\family typewriter
-help(individual)
-\family default
- or directly 
-\family typewriter
-help(GenoStruTrait).
-
-\family default
- (You may notice that both 
-\family typewriter
-population
-\family default
- and 
-\family typewriter
-individual
-\family default
- classes are inherited from 
-\family typewriter
-GenoStruTrait
-\family default
- class.
- )
-\end_layout
-
-\begin_layout Standard
-\begin_inset VSpace defskip
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-GenoStruTraitRef
-\end_layout
 
 \end_inset
 
@@ -720,10 +724,9 @@ If
 sexChrom()
 \family default
  is false, all chromosomes are assumed to be autosomes.
- You can also create populations/individuals with a sex chromosome.
- Please note that we currently only model the XY chromosomes in diploid
- population.
- Consequently,
+ You can also create populations with a sex chromosome.
+ Currently, simuPOP only models the XY chromosomes in diploid population.
+ This is to say,
 \end_layout
 
 \begin_layout Itemize
@@ -743,15 +746,14 @@ ploidy()=2
 sex chromosomes (XY) may differ in length.
  You should specify the length of the longer one as the chromosome length.
  If there are more loci on X than Y, the rest of the Y chromosome is unused.
- Mutation and recombination may still occur at this unused part of chromosome
- to simplify implementation and usage.
+ Mutation may still occur at this unused part of chromosome to simplify
+ implementation and usage.
  
 \end_layout
 
 \begin_layout Itemize
 it is assumed that males have XY and females have XX chromosomes.
- The sex chromosomes of male individuals will be arranged in the order of
- XY.
+ The sex chromosomes of male individuals are in the order of XY.
  
 \end_layout
 
@@ -760,12 +762,12 @@ Information fields
 \end_layout
 
 \begin_layout Standard
-An individual will by default have genotype, sex and affectedness information,
- but other information is needed for some operations.
+An individual will by default have genotype, sex and affection status informatio
+n, but other information is needed for some operations.
  For example, the fitness value of an individual is needed for selection,
  one or more trait values may be needed to calculate quantitative traits,
  and age may be needed if age-dependent mating schemes are used.
- Since the need for information fields varies from simulation to simulation,
+ Because the need for information fields varies from simulation to simulation,
  simuPOP does not fix the amount of information fields, and allow users
  to specify these fields during the construction of populations.
 \end_layout
@@ -790,13 +792,14 @@ father_idx
 mother_idx
 \family default
  to store indices of the parents of each individual in the parental generation.
- You do need to add these fields to the 
+ These information fields can be added by the 
 \family typewriter
 infoFields
 \family default
- parameter of the population constructor.
- If you forget, an error message will appear and tell you to add some certain
- field when a field is needed by some operators.
+ parameter of the population constructor or be added later using relevant
+ function.
+ If a required information field is unavailable, an error message will appear
+ and tell you which fields are needed.
 \end_layout
 
 \begin_layout Standard
@@ -808,28 +811,28 @@ info(idx), info(name), setInfo(value, idx), setInfo(value, name), arrInfo()
  of the individual), or from the population level (c.f.
  
 \family typewriter
-setindInfo(value), arrIndInfo(subPop)
+setIndInfo(value), arrIndInfo(subPop)
 \family default
 ).
  Some operators allow you to specify which information field(s) to use.
- Just to show what you can do with information fields, one can
+ For example, quantitative trait operator can work on specified fields so
+ an individual can have several quantitative traits.
 \end_layout
 
-\begin_layout Itemize
-create a population with 5 trait values and some risk factors.
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+GenoStruTraitRef
 \end_layout
 
-\begin_layout Itemize
-assign risk factors (environmental maybe) manually, or through some operators.
-\end_layout
+\end_inset
 
-\begin_layout Itemize
-calculate each trait value using different quantitative trait operators,
- some gene may contribute to more than one trait values.
-\end_layout
 
-\begin_layout Itemize
-calculate a final trait value from these information fields.
 \end_layout
 
 \begin_layout Chapter
@@ -920,26 +923,6 @@ s to generating a new population from the current one.
  As a matter of fact, you will only use a small portion of these functions
  unless you need to write pure Python functions/operators that involves
  complicated manipulation of populations.
-\end_layout
-
-\begin_layout Section
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-populationRef
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -2901,6 +2884,19 @@ simuViewPop.viewPop(filename='mypop.bin')
 \end_inset
 
  
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+populationRef
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
@@ -2916,26 +2912,6 @@ name "mating scheme"
 \begin_layout Standard
 Mating schemes define the rules of offspring generating.
  A mating scheme is required when a simulator is created.
-\end_layout
-
-\begin_layout Section
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-matingRef
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -3620,20 +3596,6 @@ not
  of XY need to be modeled.
 \end_layout
 
-\begin_layout Chapter
-Operators
-\end_layout
-
-\begin_layout Standard
-Operators are objects that act on populations.
- They define manipulations on populations.
- Operators are basic and important components in simuPOP.
-\end_layout
-
-\begin_layout Section
-Class reference
-\end_layout
-
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -3642,12 +3604,22 @@ status open
 
 
 \backslash
-OperatorRef
+matingRef
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Chapter
+Operators
+\end_layout
+
+\begin_layout Standard
+Operators are objects that act on populations.
+ They define manipulations on populations.
+ Operators are basic and important components in simuPOP.
 \end_layout
 
 \begin_layout Section
@@ -4625,6 +4597,22 @@ pyEval/pyExec
  operators.
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+OperatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Simulator
 \begin_inset LatexCommand index
@@ -4641,26 +4629,6 @@ The population evolution is implemented in simulator, which manages and
  Simulator is the basic and important simulation function or environment
  in simuPOP.
  Without it, we may only call the simuPOP 'POP'.
-\end_layout
-
-\begin_layout Section
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-simulatorRef
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -4941,6 +4909,22 @@ name "loadSimulator"
 \begin_layout Standard
 \begin_inset Include \lstinputlisting{log/simulatorsaveload.log}[caption={save and load a simulator},label={simulatorsaveload}]
 preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+simulatorRef
+\end_layout
 
 \end_inset
 
@@ -7916,7 +7900,7 @@ name "function!MapSelect"
 
 \end_inset
 
- 
+
 \end_layout
 
 \begin_layout Standard

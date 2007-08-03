@@ -1,4 +1,4 @@
-#LyX 1.6.0svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.0rc2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -19,9 +19,9 @@
 \setreleaseinfo{Release 0.7.11 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. MD Anderson Cancer Center}\\
-{\bf Email: }{\textsf bpeng@mdanderson.org}\\
-{\bf URL: }{\textsf http://simupop.sourceforge.net} \\
-{\bf Mailing List: }{\textsf simupop-list@lists.sourceforge.net}
+{\bf Email: } \textsf{bpeng@mdanderson.org}\\
+{\bf URL: } \textsf{http://simupop.sourceforge.net} \\
+{\bf Mailing List: } \textsf{simupop-list@lists.sourceforge.net}
 }
 \author{Bo Peng}
 \date{December 2004\\
@@ -65,8 +65,7 @@ Last modified \\
 \listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\author "Anonymous" 
 \author "" 
 \end_header
 
