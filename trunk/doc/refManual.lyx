@@ -1,5 +1,5 @@
-#LyX 1.5.1svn created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
+\lyxformat 274
 \begin_document
 \begin_header
 \textclass manual
@@ -58,7 +58,7 @@ Last modified \\
 \listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
-\author "" 
+\author "BPeng1" 
 \author "" 
 \end_header
 
@@ -420,7 +420,448 @@ arr_function and carray type
 Library-dependent functions/constants
 \end_layout
 
+\begin_layout Section
+Library-dependent functions/constants
+\end_layout
+
+\begin_layout Standard
+Several functions and constants are defined for each library:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+alleleType()
+\family default
+: return 
+\family typewriter
+'binary'
+\family default
+, 
+\family typewriter
+'short'
+\family default
+, or 
+\family typewriter
+'long'
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MaxAllele
+\family default
+: 
+\family typewriter
+1
+\family default
+ for binary libraries, usually 
+\family typewriter
+255
+\family default
+ for short libraries and 
+\begin_inset Formula $2^{32}-1$
+\end_inset
+
+ for long libraries.
+ Note that these numbers for short and long libraries might be changed on
+ different platforms.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simuVer()
+\family default
+: return the version string
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simuRev()
+\family default
+: simuPOP revision number.
+ If your script needs a recent version of simuPOP, it is a good idea to
+ test 
+\family typewriter
+simuRev()
+\family default
+ against the revision when the feature you need becomes available.
+\end_layout
+
+\begin_layout Section
+
+\family typewriter
+carray
+\begin_inset LatexCommand index
+name "carray"
+
+\end_inset
+
+
+\family default
+ type
+\end_layout
+
+\begin_layout Standard
+The return value of simuPOP functions with names start with 
+\family typewriter
+arr
+\family default
+ is of a special Python type 
+\family typewriter
+carray
+\family default
+.
+ This object reflects the underlying C/C++ array and you can read/write
+ array elements just as a regular list.
+ Only a small subset of list member functions of Python, 
+\family typewriter
+count, index
+\family default
+ to be exact, is available.
+ This is because you are not allowed to change the size of the underlying
+ C/C++ vector.
+ The following shows the operations allowed:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+# obtain an object using one of the arrXXX functions
+\end_layout
+
+\begin_layout Standard
+
+pop = population(loci=[3,4], lociPos=[1,2,3,4,5,6,7])
+\end_layout
+
+\begin_layout Standard
+
+arr = pop.arrLociPos()
+\end_layout
+
+\begin_layout Standard
+
+# print and expression (just like list)
+\end_layout
+
+\begin_layout Standard
+
+print arr
+\end_layout
+
+\begin_layout Standard
+
+str(arr)
+\end_layout
+
+\begin_layout Standard
+
+# count
+\end_layout
+
+\begin_layout Standard
+
+arr.count(2)
+\end_layout
+
+\begin_layout Standard
+
+# index 
+\end_layout
+
+\begin_layout Standard
+
+arr.index, 2)
+\end_layout
+
+\begin_layout Standard
+
+# can read write
+\end_layout
+
+\begin_layout Standard
+
+arr[0] = 0.5
+\end_layout
+
+\begin_layout Standard
+
+# convert to list
+\end_layout
+
+\begin_layout Standard
+
+arr.tolist()
+\end_layout
+
+\begin_layout Standard
+
+# or simply
+\end_layout
+
+\begin_layout Standard
+
+list(arr)
+\end_layout
+
+\begin_layout Standard
+
+# compare to list directly
+\end_layout
+
+\begin_layout Standard
+
+arr == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0]
+\end_layout
+
+\begin_layout Standard
+
+# you can also convert and compare
+\end_layout
+
+\begin_layout Standard
+
+list(arr) == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0])
+\end_layout
+
+\begin_layout Standard
+
+# slice
+\end_layout
+
+\begin_layout Standard
+
+arr[:] = [1,2,3,4,5,6,7]
+\end_layout
+
+\begin_layout Standard
+
+# arr1 is 1,2,3
+\end_layout
+
+\begin_layout Standard
+
+arr1 = arr[:3]
+\end_layout
+
+\begin_layout Standard
+
+# assign slice from a number
+\end_layout
+
+\begin_layout Standard
+
+# IMPORTANT NOTE that arr will also be affected
+\end_layout
+
+\begin_layout Standard
+
+# since arr1 point to a part of arr
+\end_layout
+
+\begin_layout Standard
+
+arr1[:] = 10
+\end_layout
+
+\begin_layout Standard
+
+# assign vector of the same length
+\end_layout
+
+\begin_layout Standard
+
+arr1[:] = [30,40]
+\end_layout
+
+\begin_layout Standard
+
+# assign from another part
+\end_layout
+
+\begin_layout Standard
+
+arr[1:3] = arr[3:5]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+No other operation is allowed.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Important note:
+\series default
+ Objects returned from 
+\family typewriter
+arrXXX
+\family default
+ functions should be considered temporary.
+ There is no guarantee that the underlying array will still be valid after
+ any population operation.
+\end_layout
+
+\begin_layout Section
+Use of R (RPy) in Python
+\end_layout
+
+\begin_layout Standard
+Most of the information can be found in RPy manual.
+ One function in simuRPy may help though:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+def rmatrix(mat):
+\end_layout
+
+\begin_layout Standard
+
+  ' convert a Python 2d list to r.matrix object'
+\end_layout
+
+\begin_layout Standard
+
+  return with_mode(NO_CONVERSION, r.do_call)('rbind',mat)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With this function, you can easily handle matrices in R.
+ (List and array have been easy enough to be handled).
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+>>> a = [[1,2],[4,5]]
+\end_layout
+
+\begin_layout Standard
+
+>>> r.image( rmatrix(a))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With the help of this function, you can call almost any R function directly,
+ maybe except some R-only syntax like formula, expression etc.
+ In this case, you can always do
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+>>> r('''whatever R expression''')
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since RPy is not always available, you may see the following scenario again
+ and again in simuPOP scripts:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+try:
+\end_layout
+
+\begin_layout Standard
+
+  from simuRPy import *
+\end_layout
+
+\begin_layout Standard
+
+except:
+\end_layout
+
+\begin_layout Standard
+
+  hasRPy = False
+\end_layout
+
+\begin_layout Standard
+
+else:
+\end_layout
+
+\begin_layout Standard
+
+  hasRPy = True
+\end_layout
+
+\begin_layout Standard
+
+...
+\end_layout
+
+\begin_layout Standard
+
+if hasRPy:
+\end_layout
+
+\begin_layout Standard
+
+  r.....
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
+simuPOP components
+\end_layout
+
+\begin_layout Section
 Genotypic structure 
 \begin_inset LatexCommand index
 name "genotypic structure"
@@ -430,7 +871,23 @@ name "genotypic structure"
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+GenoStruTraitRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Introduction
 \end_layout
 
@@ -714,7 +1171,7 @@ preview false
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Sex chromosome
 \end_layout
 
@@ -757,7 +1214,7 @@ it is assumed that males have XY and females have XX chromosomes.
  
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Information fields
 \end_layout
 
@@ -819,23 +1276,7 @@ setIndInfo(value), arrIndInfo(subPop)
  an individual can have several quantitative traits.
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-GenoStruTraitRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Chapter
+\begin_layout Section
 Population
 \end_layout
 
@@ -857,7 +1298,24 @@ name "population"
  pedigree analysis.
 \end_layout
 
-\begin_layout Section
+\begin_layout Standard
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+populationRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Population overview
 \end_layout
 
@@ -925,7 +1383,7 @@ s to generating a new population from the current one.
  complicated manipulation of populations.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 \begin_inset LatexCommand label
 name "sub:Creating-a-population"
 
@@ -1067,7 +1525,7 @@ preview false
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Copying a population
 \end_layout
 
@@ -1211,7 +1669,7 @@ pop = simu.getPopulation(idx)
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Interaction with operators and functions
 \end_layout
 
@@ -1597,7 +2055,7 @@ preview false
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 \begin_inset LatexCommand label
 name "sub:Population-Structure"
 
@@ -1685,180 +2143,7 @@ preview false
 
 \end_layout
 
-\begin_layout Section
-\begin_inset LatexCommand label
-name "sub:Individuals"
-
-\end_inset
-
-Individuals
-\end_layout
-
-\begin_layout Standard
-You can access individuals of a population through 
-\family typewriter
-individual
-\begin_inset LatexCommand index
-name "population!individual"
-
-\end_inset
-
-()
-\family default
- function.
- There are four forms of this function, two with and two without parameter
- 
-\family typewriter
-subPop
-\family default
-,
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-individual(ind)
-\family default
- returns the 
-\family typewriter
-ind
-\family default
-'th individual (absolute index) of the whole population.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-individual(ind, subPop)
-\family default
- returns the 
-\family typewriter
-ind
-\family default
-'th (relative index) individual in the 
-\family typewriter
-subPop
-\family default
-'th subpopulation.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-individuals(), individuals(subPop)
-\family default
- return an iterator that can be used to iterate through all individuals.
-\end_layout
-
-\begin_layout Standard
-The iterator can simplify the access of individuals, by using
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-for ind in pop.individuals(2):
-\end_layout
-
-\begin_layout Standard
-
-  # do something to ind
-\end_layout
-
-\begin_layout Standard
-
-  print ind.affected()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-instead of the older
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-for i in range(pop.popSize()):
-\end_layout
-
-\begin_layout Standard
-
-  ind = pop.individual(i)
-\end_layout
-
-\begin_layout Standard
-
-  print ind.affected()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The returned 
-\family typewriter
-individual
-\family default
- object also has its own member functions.
- You can retrieve genotypic information of an individual through the same
- set of functions.
- You can also get/set genotypes of an individual.
- Note that you can not create an individual object directly.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_ind.log}[caption={Individual member functions},label={ind}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Again, you will very seldom have to use these functions directly unless
- when you write pure Python operators.
- 
-\end_layout
-
-\begin_layout Section
-Reference of class 
-\family typewriter
-individual
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-individualRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
+\begin_layout Subsection
 \begin_inset LatexCommand label
 name "sub:Population-Variables"
 
@@ -2077,7 +2362,7 @@ subPop
  namespaces.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Sample from a Population
 \end_layout
 
@@ -2094,7 +2379,680 @@ reference "sec:Ascertainment"
 .
 \end_layout
 
+\begin_layout Subsection
+\begin_inset LatexCommand label
+name "sub:Ancestral-populations"
+
+\end_inset
+
+Ancestral populations
+\end_layout
+
+\begin_layout Standard
+By default, a population object only holds the current generation.
+ All ancestral populations (generations) will be discarded.
+ You can, however, keep as many ancestral generations as you wish, provided
+ that you have enough RAM to store all these extra information.
+\end_layout
+
+\begin_layout Standard
+Parameter 
+\family typewriter
+ancestralDepth
+\family default
+ is used to specify the number of generations to keep.
+ This parameter is default to 
+\family typewriter
+0
+\family default
+, meaning keeping no ancestral population.
+ You can specify a positive number to store most recent 
+\family typewriter
+ancestry
+\family default
+ generations; or -
+\family typewriter
+1
+\family default
+ to store all populations.
+ 
+\end_layout
+
+\begin_layout Standard
+Several important usage of ancestral populations:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+dumper()
+\family default
+ operator and 
+\family typewriter
+Dump()
+\family default
+ function has a parameter 
+\family typewriter
+ancestralPops
+\family default
+.
+ If set to 
+\family typewriter
+True
+\family default
+, they will dump all ancestral generations.
+\end_layout
+
+\begin_layout Itemize
+function 
+\family typewriter
+population::setAncestralDepth()
+\family default
+ and operator 
+\family typewriter
+setAncestralDepth()
+\family default
+ set the number of ancestral generations to keep for a population.
+ A typical use of 
+\family typewriter
+setAncestralDepth()
+\family default
+ is
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+simu.evolve(...
+\end_layout
+
+\begin_layout Standard
+
+  setAncestralDepth(3, at=[-3])
+\end_layout
+
+\begin_layout Standard
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which saves the last three generations in populations so that pedigree based
+ sampling schemes can sample from the population.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+pop.useAncestralPop(idx)
+\family default
+ set the current generation of population 
+\family typewriter
+pop
+\family default
+ to 
+\family typewriter
+idx
+\family default
+ generation.
+ 
+\family typewriter
+idx
+\family default
+ 
+\family typewriter
+= 1
+\family default
+ for the first ancestral generation, 
+\family typewriter
+2
+\family default
+ for second ancestral ..., and 
+\family typewriter
+0
+\family default
+ for the current generation.
+ After this function, all functions, operators will be applied to this ancestral
+ population.
+ You should always call 
+\family typewriter
+setAncestralPop(0)
+\family default
+ after you examined the ancestral populations.
+ 
+\end_layout
+
+\begin_layout Standard
+A typical use of this function is demonstrated in example 
+\begin_inset LatexCommand ref
+reference "ancestralPop"
+
+\end_inset
+
+.
+ In this example, a population with two loci is created and with initial
+ genotype 0.
+ Two 
+\family typewriter
+kamMutator
+\family default
+ with different mutation rates are applied to these two loci.
+ Five most recent populations are kept.
+ The allele frequencies at these generations are calculated afterward.
+ (Note that this is not the best way to exam the changes of allele frequencies,
+ a 
+\family typewriter
+stat
+\family default
+ operator should be used.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_ancestralPop.log}[caption={Ancestral populations},label={ancestralPop}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset LatexCommand label
+name "sub:Save-and-Load"
+
+\end_inset
+
+Save and Load a Population
+\end_layout
+
+\begin_layout Standard
+Internally, population can be saved/loaded in 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+txt
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+xml
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+bin
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ formats using 
+\family typewriter
+savePopulation
+\begin_inset LatexCommand index
+name "savePopulation"
+
+\end_inset
+
+(file, format, compress=True)
+\family default
+ member function, global 
+\family typewriter
+SavePopulation
+\begin_inset LatexCommand index
+name "Function!SavePopulation"
+
+\end_inset
+
+(pop, file, format)
+\family default
+ and 
+\family typewriter
+LoadPopulation
+\family default
+
+\begin_inset LatexCommand index
+name "function!LoadPopulation"
+
+\end_inset
+
+.
+ (Yes, it is 
+\family typewriter
+Load..
+
+\family default
+ not 
+\family typewriter
+load..
+
+\family default
+ since 
+\family typewriter
+savePopulation
+\family default
+ is a member function and 
+\family typewriter
+LoadPopulation
+\family default
+ is a global function.) These formats have their own advantages and disadvantages
+:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+xml
+\begin_inset LatexCommand index
+name "xml format"
+
+\end_inset
+
+:
+\family default
+ most readable, easy transformation to other formats, largest file size
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+bin
+\begin_inset LatexCommand index
+name "bin format"
+
+\end_inset
+
+:
+\family default
+ not readable, small file size.
+ May not be portable.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+txt
+\begin_inset LatexCommand index
+name "text format"
+
+\end_inset
+
+:
+\family default
+ human readable with no structure, portable, median file size.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_popSaveLoad.log}[caption={Save and load population},label={popSaveLoad}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Populations are by default compressed in gzip format.
+ If you are interested in viewing the content of the file, you can use 
+\family typewriter
+compress=False
+\family default
+ when saving a population, or decompress the saved files using 
+\family typewriter
+gzip -d
+\family default
+ command.
+\end_layout
+
+\begin_layout Standard
+Populations can also be saved in other formats such as FSTAT so that they
+ can be directly analyzed by other programs.
+ These formats are not supported internally.
+ They are handled in Python in the form of Python function or pure-Python
+ operator.
+ If you would like to save/load simuPOP population in your own format, you
+ can do it by mimicking these functions in 
+\family typewriter
+simuUtil.py
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+It is also possible to save a bunch of populations in a single file, provided
+ that they have the same genotypic structure.
+ The functions are
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+SavePopulations
+\begin_inset LatexCommand index
+name "function!SavePopulations"
+
+\end_inset
+
+([pop1,pop2,...,], filename, format='auto', compress=True)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+LoadPopulations
+\begin_inset LatexCommand index
+name "functions!LoadPopulations"
+
+\end_inset
+
+(filename)
+\end_layout
+
+\begin_layout Standard
+Shared variables will also be saved (except for big objects like samples).
+ Since the number of shared variables can be very large, it maybe a good
+ idea to clear these variables before you save a population.
+ On the other hand, you may want to save key parameters used to generate
+ this population in the local namespace so that you will know these parameters
+ after the population is loaded.
+ For example, you can do
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pop.vars().clear()
+\end_layout
+
+\begin_layout Standard
+
+pop.dvars().migrationRate = 0.002
+\end_layout
+
+\begin_layout Standard
+
+pop.dvars().diseaseLoci = [4, 30]
+\end_layout
+
+\begin_layout Standard
+
+SavePopulation(pop, 'pop.bin')
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+View a population (GUI, wxPython required)
+\end_layout
+
+\begin_layout Standard
+Introduced in version 0.6.9, 
+\family typewriter
+simuViewPop.py
+\family default
+ can be used to view a population.
+ It can be used as a standalone application, or in an interactive session.
+ First, you can use this script as a standalone application, simply run
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+simuViewPop.py mypop.bin
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+will fire a GUI and allow you to exam population property, genotype and
+ calculate statistics.
+ 
+\end_layout
+
+\begin_layout Standard
+In a Python session, import this module will provide a function 
+\family typewriter
+viewPop
+\family default
+, apply it on a in-memory population or a filename will have the same effect.
+ For example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+import simuViewPop
+\end_layout
+
+\begin_layout Standard
+
+simuViewPop.viewPop(myPop)
+\end_layout
+
+\begin_layout Standard
+
+simuViewPop.viewPop(filename='mypop.bin')
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
+\begin_inset LatexCommand label
+name "sub:Individuals"
+
+\end_inset
+
+Individuals
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+individualRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can access individuals of a population through 
+\family typewriter
+individual
+\begin_inset LatexCommand index
+name "population!individual"
+
+\end_inset
+
+()
+\family default
+ function.
+ There are four forms of this function, two with and two without parameter
+ 
+\family typewriter
+subPop
+\family default
+,
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+individual(ind)
+\family default
+ returns the 
+\family typewriter
+ind
+\family default
+'th individual (absolute index) of the whole population.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+individual(ind, subPop)
+\family default
+ returns the 
+\family typewriter
+ind
+\family default
+'th (relative index) individual in the 
+\family typewriter
+subPop
+\family default
+'th subpopulation.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+individuals(), individuals(subPop)
+\family default
+ return an iterator that can be used to iterate through all individuals.
+\end_layout
+
+\begin_layout Standard
+The iterator can simplify the access of individuals, by using
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+for ind in pop.individuals(2):
+\end_layout
+
+\begin_layout Standard
+
+  # do something to ind
+\end_layout
+
+\begin_layout Standard
+
+  print ind.affected()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+instead of the older
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+for i in range(pop.popSize()):
+\end_layout
+
+\begin_layout Standard
+
+  ind = pop.individual(i)
+\end_layout
+
+\begin_layout Standard
+
+  print ind.affected()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The returned 
+\family typewriter
+individual
+\family default
+ object also has its own member functions.
+ You can retrieve genotypic information of an individual through the same
+ set of functions.
+ You can also get/set genotypes of an individual.
+ Note that you can not create an individual object directly.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_ind.log}[caption={Individual member functions},label={ind}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Again, you will very seldom have to use these functions directly unless
+ when you write pure Python operators.
+ 
+\end_layout
+
+\begin_layout Subsection
 Information fields
 \end_layout
 
@@ -2381,525 +3339,6 @@ for i in range(pop.subPopSize(2)):
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
-name "sub:Ancestral-populations"
-
-\end_inset
-
-Ancestral populations
-\end_layout
-
-\begin_layout Standard
-By default, a population object only holds the current generation.
- All ancestral populations (generations) will be discarded.
- You can, however, keep as many ancestral generations as you wish, provided
- that you have enough RAM to store all these extra information.
-\end_layout
-
-\begin_layout Standard
-Parameter 
-\family typewriter
-ancestralDepth
-\family default
- is used to specify the number of generations to keep.
- This parameter is default to 
-\family typewriter
-0
-\family default
-, meaning keeping no ancestral population.
- You can specify a positive number to store most recent 
-\family typewriter
-ancestry
-\family default
- generations; or -
-\family typewriter
-1
-\family default
- to store all populations.
- 
-\end_layout
-
-\begin_layout Standard
-Several important usage of ancestral populations:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-dumper()
-\family default
- operator and 
-\family typewriter
-Dump()
-\family default
- function has a parameter 
-\family typewriter
-ancestralPops
-\family default
-.
- If set to 
-\family typewriter
-True
-\family default
-, they will dump all ancestral generations.
-\end_layout
-
-\begin_layout Itemize
-function 
-\family typewriter
-population::setAncestralDepth()
-\family default
- and operator 
-\family typewriter
-setAncestralDepth()
-\family default
- set the number of ancestral generations to keep for a population.
- A typical use of 
-\family typewriter
-setAncestralDepth()
-\family default
- is
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-simu.evolve(...
-\end_layout
-
-\begin_layout Standard
-
-  setAncestralDepth(3, at=[-3])
-\end_layout
-
-\begin_layout Standard
-
-)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-which saves the last three generations in populations so that pedigree based
- sampling schemes can sample from the population.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-
-\family typewriter
-pop.useAncestralPop(idx)
-\family default
- set the current generation of population 
-\family typewriter
-pop
-\family default
- to 
-\family typewriter
-idx
-\family default
- generation.
- 
-\family typewriter
-idx
-\family default
- 
-\family typewriter
-= 1
-\family default
- for the first ancestral generation, 
-\family typewriter
-2
-\family default
- for second ancestral ..., and 
-\family typewriter
-0
-\family default
- for the current generation.
- After this function, all functions, operators will be applied to this ancestral
- population.
- You should always call 
-\family typewriter
-setAncestralPop(0)
-\family default
- after you examined the ancestral populations.
- 
-\end_layout
-
-\begin_layout Standard
-A typical use of this function is demonstrated in example 
-\begin_inset LatexCommand ref
-reference "ancestralPop"
-
-\end_inset
-
-.
- In this example, a population with two loci is created and with initial
- genotype 0.
- Two 
-\family typewriter
-kamMutator
-\family default
- with different mutation rates are applied to these two loci.
- Five most recent populations are kept.
- The allele frequencies at these generations are calculated afterward.
- (Note that this is not the best way to exam the changes of allele frequencies,
- a 
-\family typewriter
-stat
-\family default
- operator should be used.)
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_ancestralPop.log}[caption={Ancestral populations},label={ancestralPop}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-\begin_inset LatexCommand label
-name "sub:Save-and-Load"
-
-\end_inset
-
-Save and Load a Population
-\end_layout
-
-\begin_layout Standard
-Internally, population can be saved/loaded in 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-txt
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-, 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-xml
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
- or 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-bin
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
- formats using 
-\family typewriter
-savePopulation
-\begin_inset LatexCommand index
-name "savePopulation"
-
-\end_inset
-
-(file, format, compress=True)
-\family default
- member function, global 
-\family typewriter
-SavePopulation
-\begin_inset LatexCommand index
-name "Function!SavePopulation"
-
-\end_inset
-
-(pop, file, format)
-\family default
- and 
-\family typewriter
-LoadPopulation
-\family default
-
-\begin_inset LatexCommand index
-name "function!LoadPopulation"
-
-\end_inset
-
-.
- (Yes, it is 
-\family typewriter
-Load..
-
-\family default
- not 
-\family typewriter
-load..
-
-\family default
- since 
-\family typewriter
-savePopulation
-\family default
- is a member function and 
-\family typewriter
-LoadPopulation
-\family default
- is a global function.) These formats have their own advantages and disadvantages
-:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-xml
-\begin_inset LatexCommand index
-name "xml format"
-
-\end_inset
-
-:
-\family default
- most readable, easy transformation to other formats, largest file size
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-bin
-\begin_inset LatexCommand index
-name "bin format"
-
-\end_inset
-
-:
-\family default
- not readable, small file size.
- May not be portable.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-txt
-\begin_inset LatexCommand index
-name "text format"
-
-\end_inset
-
-:
-\family default
- human readable with no structure, portable, median file size.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_popSaveLoad.log}[caption={Save and load population},label={popSaveLoad}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Populations are by default compressed in gzip format.
- If you are interested in viewing the content of the file, you can use 
-\family typewriter
-compress=False
-\family default
- when saving a population, or decompress the saved files using 
-\family typewriter
-gzip -d
-\family default
- command.
-\end_layout
-
-\begin_layout Standard
-Populations can also be saved in other formats such as FSTAT so that they
- can be directly analyzed by other programs.
- These formats are not supported internally.
- They are handled in Python in the form of Python function or pure-Python
- operator.
- If you would like to save/load simuPOP population in your own format, you
- can do it by mimicking these functions in 
-\family typewriter
-simuUtil.py
-\family default
-.
- 
-\end_layout
-
-\begin_layout Standard
-It is also possible to save a bunch of populations in a single file, provided
- that they have the same genotypic structure.
- The functions are
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-SavePopulations
-\begin_inset LatexCommand index
-name "function!SavePopulations"
-
-\end_inset
-
-([pop1,pop2,...,], filename, format='auto', compress=True)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-LoadPopulations
-\begin_inset LatexCommand index
-name "functions!LoadPopulations"
-
-\end_inset
-
-(filename)
-\end_layout
-
-\begin_layout Standard
-Shared variables will also be saved (except for big objects like samples).
- Since the number of shared variables can be very large, it maybe a good
- idea to clear these variables before you save a population.
- On the other hand, you may want to save key parameters used to generate
- this population in the local namespace so that you will know these parameters
- after the population is loaded.
- For example, you can do
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pop.vars().clear()
-\end_layout
-
-\begin_layout Standard
-
-pop.dvars().migrationRate = 0.002
-\end_layout
-
-\begin_layout Standard
-
-pop.dvars().diseaseLoci = [4, 30]
-\end_layout
-
-\begin_layout Standard
-
-SavePopulation(pop, 'pop.bin')
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-View a population (GUI, wxPython required)
-\end_layout
-
-\begin_layout Standard
-Introduced in version 0.6.9, 
-\family typewriter
-simuViewPop.py
-\family default
- can be used to view a population.
- It can be used as a standalone application, or in an interactive session.
- First, you can use this script as a standalone application, simply run
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-simuViewPop.py mypop.bin
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-will fire a GUI and allow you to exam population property, genotype and
- calculate statistics.
- 
-\end_layout
-
-\begin_layout Standard
-In a Python session, import this module will provide a function 
-\family typewriter
-viewPop
-\family default
-, apply it on a in-memory population or a filename will have the same effect.
- For example,
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-import simuViewPop
-\end_layout
-
-\begin_layout Standard
-
-simuViewPop.viewPop(myPop)
-\end_layout
-
-\begin_layout Standard
-
-simuViewPop.viewPop(filename='mypop.bin')
-\end_layout
-
-\end_inset
-
- 
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-populationRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Chapter
 Mating Scheme
 \begin_inset LatexCommand index
 name "mating scheme"
@@ -2914,7 +3353,87 @@ Mating schemes define the rules of offspring generating.
  A mating scheme is required when a simulator is created.
 \end_layout
 
-\begin_layout Section
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+matingRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+noMatingRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+binomialSelectionRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+randomMatingRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pyMatingRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Determine the number of offspring during mating
 \end_layout
 
@@ -3111,7 +3630,7 @@ Note that all these distributions are adjusted to produce at least one offspring
  
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Determine subpopulation sizes of the next generation
 \end_layout
 
@@ -3251,7 +3770,7 @@ status open
 \end_layout
 
 \end_deeper
-\begin_layout Section
+\begin_layout Subsection
 Demographic change functions
 \end_layout
 
@@ -3486,75 +4005,7 @@ bottleneckSize
  at that generation.
 \end_layout
 
-\begin_layout Section
-References of different mating schemes
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-noMatingRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-binomialSelectionRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-randomMatingRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pyMatingRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
+\begin_layout Subsection
 Sex chromosomes
 \end_layout
 
@@ -3595,23 +4046,7 @@ not
  of XY need to be modeled.
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-matingRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Chapter
+\begin_layout Section
 Operators
 \end_layout
 
@@ -3621,7 +4056,23 @@ Operators are objects that act on populations.
  Operators are basic and important components in simuPOP.
 \end_layout
 
-\begin_layout Section
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+OperatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Types of operators
 \end_layout
 
@@ -3973,7 +4424,7 @@ preview false
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Python expression and statistics calculation
 \end_layout
 
@@ -4597,22 +5048,10 @@ pyEval/pyExec
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-OperatorRef
-\end_layout
-
-\end_inset
-
 
 \end_layout
 
-\begin_layout Chapter
+\begin_layout Section
 Simulator
 \begin_inset LatexCommand index
 name "Simulator"
@@ -4630,7 +5069,23 @@ The population evolution is implemented in simulator, which manages and
  Without it, we may only call the simuPOP 'POP'.
 \end_layout
 
-\begin_layout Section
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+simulatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Generation number
 \end_layout
 
@@ -4736,7 +5191,7 @@ start=0, step=5, end=10
  
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Operator calling sequence
 \end_layout
 
@@ -4868,7 +5323,7 @@ stage
  a good idea.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Save and Load
 \end_layout
 
@@ -4914,6 +5369,26 @@ preview false
 
 \end_layout
 
+\begin_layout Chapter
+Operator References
+\end_layout
+
+\begin_layout Section
+Python operators
+\end_layout
+
+\begin_layout Standard
+This chapter will list all functions, types and operators by category.
+\end_layout
+
+\begin_layout Standard
+ 
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -4922,7 +5397,7 @@ status open
 
 
 \backslash
-simulatorRef
+pyOperatorRef
 \end_layout
 
 \end_inset
@@ -4930,11 +5405,3986 @@ simulatorRef
 
 \end_layout
 
-\begin_layout Chapter
-Option Handling
+\begin_layout Standard
+This is the single most powerful hybrid operator.
+ Whenever you think that something is too complicated to be done by standard
+ operators, you can do it here in Python.
+ This operator accepts a Python function which accepts a population and
+ optionally a parameter.
+ To use this operator, you will need to 
+\end_layout
+
+\begin_layout Itemize
+define a function that handle a population as you wish.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+def myOperator(pop, para):
+\end_layout
+
+\begin_layout Standard
+
+  'do whatever you want'
+\end_layout
+
+\begin_layout Standard
+
+  return True
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you return 
+\family typewriter
+False
+\family default
+, this operator will work like a terminator.
+ 
+\family typewriter
+para
+\family default
+ will be omitted.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+use 
+\family typewriter
+pyOperator
+\family default
+ like
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pyOperator(mfunc=yOperator, param=para)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+all parameters of an operator are supported except for 
+\family typewriter
+output
+\family default
+ and 
+\family typewriter
+outputExpr
+\family default
+ which are ignored for now.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+When 
+\family typewriter
+pyOperator
+\family default
+ is called, it will simply pass the accepted population to the function.
+ If your function returns 
+\family typewriter
+False
+\family default
+, the simulation will be stopped.
+\end_layout
+
+\begin_layout Standard
+This operator allows implementation of arbitrarily complicated operators,
+ at a cost of efficiency.
+ Of course, to use this operator, you will have to know how to use population-re
+lated functions.
+ The following example shows how to implement a dynamic mutator which mutate
+ loci according to their allele frequencies.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_pyOperator.log}[caption={define a python operator},label={pyOperator}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_pyOperatorUse.log}[caption={use of python operator},label={pyOperatorUse}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that 
+\end_layout
+
+\begin_layout Itemize
+Currently, 
+\family typewriter
+pyOperator
+\family default
+ does not support parameters 
+\family typewriter
+output
+\family default
+ and 
+\family typewriter
+outputExpr
+\family default
+.
+ This is because of the incompatibility between Python and underlying C++
+ in the way of handling file I/O stream.
+ Consequently, you will have to handle file input/output by yourself through
+ 
+\family typewriter
+param
+\family default
+ parameter.
+ Be careful that you 
+\series bold
+\emph on
+can not
+\series default
+\emph default
+ mix output of 
+\family typewriter
+pyOperator
+\family default
+ with those of other (normal) operators.
+\end_layout
+
+\begin_layout Itemize
+If parameter 
+\family typewriter
+param
+\family default
+ is ignored, 
+\family typewriter
+myOperator
+\family default
+ must be without 
+\family typewriter
+para
+\family default
+ as well.
+ Note that you can pass arbitrary number of parameters by putting them into
+ a tuple and passing to 
+\family typewriter
+myOpeartor
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Since you can attach any information to a population, you can in practice
+ use 
+\family typewriter
+pop.dvars()
+\family default
+ to pass parameters.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pyOperator
+\family default
+ is a post-mating operator by default.
+ Remember to use 
+\family typewriter
+stage
+\family default
+ parameter to change this when necessary.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+pyOperator
+\family default
+ can also be a during-mating operator.
+ You will need to define a function 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+def Func(pop, off, dad, mom, para)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+def shortFunc(off, para)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\family typewriter
+para
+\family default
+ can be ignored.
+ To use this operator, you can do
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pyOperator(stage=DuringMating, func=Func, param=someparam, formOffGenotype=True)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pyOperator(stage=DuringMating, func=shortFunc, param=someparam,
+\end_layout
+
+\begin_layout Standard
+
+formOffGenotype=False, passOffspringOnly=True)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Two additional parameters are:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+formOffGenotype
+\family default
+:
+\family typewriter
+ 
+\family default
+(default to 
+\family typewriter
+False
+\family default
+) By default, a mating scheme will set the genotype of offspring by copying
+ one of the parental chromosomes.
+ However, if 
+\family typewriter
+formOffGenotype
+\family default
+ is 
+\family typewriter
+True
+\family default
+, the mating scheme will let you do the job.
+ You will have to set offspring genotype and sex by yourself, using, most
+ likely, a recombinator.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+passOffspringOnly
+\family default
+: In case that your function will only deal with offspring, you can set
+ this parameter to 
+\family typewriter
+True
+\family default
+ and use a short form of the function.
+ 
+\end_layout
+
+\begin_layout Standard
+Note that if your during-mating 
+\family typewriter
+pyOpeartor
+\family default
+ returns 
+\family typewriter
+False
+\family default
+, the individual will be discarded.
+ Therefore, you can write a filter in this way.
+ However, since the Python function will be called for each mating event,
+ the cost of using such an operator is high, especially when population
+ size is large.
+\end_layout
+
+\begin_layout Standard
+An example of during-mating 
+\family typewriter
+pyOperator
+\family default
+ can be found in 
+\family typewriter
+scripts/demoPyOperator.py
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pyIndOperatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Another general Python operator is 
+\family typewriter
+pyIndOperator
+\family default
+ which is similar to 
+\family typewriter
+pyOpertor
+\family default
+ but it passes the user individuals, rather than the whole population.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+def func(ind, param):
+\end_layout
+
+\begin_layout Standard
+
+  ind.setInfo(param[0], 'myinfo)
+\end_layout
+
+\begin_layout Standard
+
+pyIndOperator(func=func, param=(1,))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is the same as
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+def func(pop, param):
+\end_layout
+
+\begin_layout Standard
+
+  for ind in pop.individuals():
+\end_layout
+
+\begin_layout Standard
+
+    ind.setInfo(param[0], 'myinfo')
+\end_layout
+
+\begin_layout Standard
+
+pyIndOperator(func=func, param=(1,))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+pyIndOperator
+\family default
+ may have some performance advantages over 
+\family typewriter
+pyOperator
+\family default
+ in some cases.
 \end_layout
 
 \begin_layout Section
+Initialization
+\begin_inset LatexCommand index
+name "initializer"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+initializerRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+initByFreqRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here is an example of using 
+\family typewriter
+alleleFreq
+\family default
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_initByFreq.log}[caption={Init by freq},label={initByFreq}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Please refer to 
+\family typewriter
+test/test_init.py
+\family default
+ for more complicated examples.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+initByValueRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_initByValue.log}[caption={Init by value},label={initByValue}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+spreadRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pyInitRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_pyInit.log}[caption={Init by value},label={pyInit}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Migration
+\begin_inset LatexCommand index
+name "migrator"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+migratorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+migrator
+\family default
+ is used to migrate from 
+\family typewriter
+'fromSubPop'
+\family default
+ to 
+\family typewriter
+'toSubPop'.
+
+\family default
+ From and to subpop can be a number or an array of subpopulations.
+ The migration probability/rate/counts from 
+\family typewriter
+i->j
+\family default
+ is specified in the rate matrix.
+ The 
+\family typewriter
+'fromSubPop'
+\family default
+ and 
+\family typewriter
+'toSubPop'
+\family default
+ are default to all subpopulations.
+\end_layout
+
+\begin_layout Standard
+An detailed example can be found in 'some real examples' -> 'complex Migration
+ Scheme' section.
+\end_layout
+
+\begin_layout Subsection
+Functions (Python) 
+\family typewriter
+MigrIslandRates
+\begin_inset LatexCommand index
+name "Function!migrIslandRates"
+
+\end_inset
+
+, MigrStepstoneRates
+\begin_inset LatexCommand index
+name "Function!migrStepstoneRates"
+
+\end_inset
+
+
+\family default
+ (simuUtil.py)
+\end_layout
+
+\begin_layout Standard
+Migrator is very flexible.
+ It can accept arbitrary migration matrix, from any subset of subpopulations
+ to any (even new) other subset of subpopulations.
+ Several functions are defined in simuUtil.py, however, for easy use of popular
+ migration models:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MigrIslandRates(r, n)
+\family default
+ returns a migration matrix
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r & \frac{r}{n-1} & ... & ... & \frac{r}{n-1}\\
+\frac{r}{n-1} & 1-r & ... & ... & \frac{r}{n-1}\\
+ &  & ...\\
+\frac{r}{n-1} & ... & ... & 1-r & \frac{r}{n-1}\\
+\frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MigrStepstoneRates(r, n, circular=False)
+\family default
+ returns a migration matrix
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r & r\\
+r/2 & 1-r & r/2\\
+ &  & ...\\
+ &  & r/2 & 1-r & r/2\\
+ &  &  & r & 1-r\end{array}\right)\]
+
+\end_inset
+
+and if 
+\family typewriter
+circular=True
+\family default
+, returns
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r & r/2 &  &  & r/2\\
+r/2 & 1-r & r/2\\
+ &  & ...\\
+ &  & r/2 & 1-r & r/2\\
+r/2 &  &  & r/2 & 1-r\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pyMigratorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For even more complicated migration schemes, you may DIY using a 
+\family typewriter
+pyMigrator
+\family default
+.
+ This operator is not strictly hybrid since it does not call Python function.
+ However, it takes a 
+\family typewriter
+carray
+\family default
+ as subpopulation IDs for each individual.
+ 
+\family typewriter
+pyMigrator
+\family default
+ then complete migration according its content.
+\end_layout
+
+\begin_layout Standard
+Note that the application sequence of the operators is 
+\family typewriter
+initByFreq
+\family default
+, 
+\family typewriter
+dumper
+\family default
+,
+\family typewriter
+ pyMigrator
+\family default
+ and then 
+\family typewriter
+dumper
+\family default
+ again since its stage is set to 
+\family typewriter
+PrePostMating
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+splitSubPopRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+mergeSubPopsRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Mutation
+\begin_inset LatexCommand index
+name "Mutation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The only difference between the following mutators is the way they actually
+ mutate an allele, and corresponding input parameters.
+\end_layout
+
+\begin_layout Standard
+Mutators record the number of mutation events at each loci.
+ You can retrieve this information using
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+mut.mutationCount(locus)
+\end_layout
+
+\begin_layout Standard
+
+mut.mutationCounts()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\family typewriter
+mut
+\family default
+ is any mutator and 
+\family typewriter
+locus
+\family default
+ is locus index.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+mutatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+kamMutatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here is an example of 
+\family typewriter
+kamMutator
+\family default
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_kamMutator.log}[caption={kamMutator},label={kamMutator}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+smmMutatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The following example demonstrates the use of 
+\family typewriter
+smmMutator
+\family default
+.
+ Note that although the mutation rate is 1, some allele 1 is not mutated
+ since they can not be mutated to 0.
+ The same will be hold for the upper bound 
+\family typewriter
+maxAllele
+\family default
+ which is defaulted to 99 in this case.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_smmMutator.log}[caption={smmMutator},label={smmMutator}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+gsmMutatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here is an example of 
+\family typewriter
+gsmMutator
+\family default
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_gsmMutator.log}[caption={gsmMutator},label={gsmMutator}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pyMutatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you can not accomplish your task with the above mutators, you can always
+ use this hybrid mutator.
+ Here is an example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_pyMutator.log}[caption={pyMutator},label={pyMutator}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+clearpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pointMutatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+clearpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Recombination
+\begin_inset LatexCommand index
+name "recombination"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+recombinatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This operator takes similar parameters as a mutator.
+ However, because of potentially uneven allelic distance, you should use
+ one of the two parameters listed in the last section.
+\end_layout
+
+\begin_layout Standard
+The following example forces recombination (with rate 1, an unrealistic
+ value since the maximum recombination rate should be .5) at loci 2, 6 and
+ 10.
+ Here I use a 
+\family typewriter
+parentsTagger
+\family default
+ to mark the parents of each individual so you can (if you have enough patience)
+ see exactly how recombination works.
+ 
+\begin_inset Include \lstinputlisting{log/ref_recombinator.log}[caption={Recombinator},label={recombinator}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recombinations after each locus will be recorded.
+ You can retrieve this information through functions
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+rec.recCount(locus)
+\end_layout
+
+\begin_layout Standard
+
+rec.recCounts()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\family typewriter
+rec
+\family default
+ is the recombinator, 
+\family typewriter
+locus
+\family default
+ is locus index.
+ 
+\end_layout
+
+\begin_layout Section
+Selection
+\begin_inset LatexCommand index
+name "selection"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsection
+Mechanism
+\end_layout
+
+\begin_layout Standard
+It is not very clear that our method agrees with the traditional 'average
+ number of offspring' definition of fitness.
+ (Note that this concept is very difficult to simulate since we do not know
+ who will determine the number of offspring if two parents are involved.)
+ We can, instead, look at the consequence of selection in a simple case
+ (as derived in any population genetics textbook):
+\end_layout
+
+\begin_layout Quote
+At generation 
+\begin_inset Formula $t$
+\end_inset
+
+, genotype 
+\begin_inset Formula $P_{11},P_{12},P_{22}$
+\end_inset
+
+ has fitness values 
+\begin_inset Formula $w_{11},w_{12,}w_{22}$
+\end_inset
+
+ respectively.
+ In the next generation the proportion of genotype 
+\begin_inset Formula $P_{11}$
+\end_inset
+
+ etc., should be
+\end_layout
+
+\begin_layout Quote
+\begin_inset Formula \[
+\frac{P_{11}w_{11}}{P_{11}w_{11}+P_{12}w_{12}+P_{22}w_{22}}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now, using the 'ability-to-mate' approach, for the sexless case, the proportion
+ of genotype 
+\begin_inset Formula $11$
+\end_inset
+
+ will be the number of 
+\begin_inset Formula $11$
+\end_inset
+
+ individuals times its probability to be chosen: 
+\begin_inset Formula \[
+n_{11}\frac{w_{11}}{\sum_{n=1}^{N}w_{n}}\]
+
+\end_inset
+
+This is, however, exactly 
+\begin_inset Formula \[
+n_{11}\frac{w_{11}}{\sum_{n=1}^{N}w_{n}}=n_{11}\frac{w_{11}}{n_{11}w_{11}+n_{12}w_{12}+n_{22}w_{22}}=\frac{P_{11}w_{11}}{P_{11}w_{11}+P_{12}w_{12}+P_{22}w_{22}}\]
+
+\end_inset
+
+The same argument applies to the case of arbitrary number of genotypes and
+ random mating.
+ 
+\end_layout
+
+\begin_layout Standard
+The following operators, when applied, will set a variable 
+\family typewriter
+fitness
+\family default
+ and an indicator so that selector-aware mating scheme can select individuals
+ according to these values.
+ This has two consequences:
+\end_layout
+
+\begin_layout Itemize
+selector alone can not do selection! Only mating schemes can actually select
+ on individuals.
+\end_layout
+
+\begin_layout Itemize
+selector has to be 
+\family typewriter
+PreMating
+\family default
+ operator.
+ This is not a problem when you use the operator form of the selectors since
+ their default stage is 
+\family typewriter
+PreMating
+\family default
+.
+ However, if you use the function form of these selectors in a 
+\family typewriter
+pyOperator
+\family default
+, make sure to set the stage of 
+\family typewriter
+pyOperator
+\family default
+ to 
+\family typewriter
+PreMating
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+selectorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+mapSelectorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The following example is a typical example of heterozygote superiority.
+ When 
+\begin_inset Formula $w_{11}<w_{12}>w_{22},$
+\end_inset
+
+ the genotype frequencies will go to an equilibrium state.
+ Theoretically, if
+\begin_inset Formula \begin{eqnarray*}
+s_{1} & = & w_{12}-w_{11}\\
+s_{2} & = & w_{12}-w_{22}\end{eqnarray*}
+
+\end_inset
+
+the stable allele frequency of allele 1 is
+\begin_inset Formula \[
+p=\frac{s_{2}}{s_{1}+s_{2}}\]
+
+\end_inset
+
+Which is 
+\begin_inset Formula $.677$
+\end_inset
+
+ in the example (
+\begin_inset Formula $s_{1}=.1$
+\end_inset
+
+, 
+\begin_inset Formula $s_{2}=.2$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_basicSelector.log}[caption={map selector},label={basicSelector}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+maSelectorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+maSelector
+\family default
+ accepts an array of fitness values:
+\end_layout
+
+\begin_layout Itemize
+For single-locus, 
+\family typewriter
+fitness
+\family default
+ is the fitness for genotype AA, Aa, aa, while A stands for wildtype alleles.
+ 
+\end_layout
+
+\begin_layout Itemize
+For a two-locus model, 
+\family typewriter
+fitness
+\family default
+ is the fitness for genotype 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features>
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+BB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Bb
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+bb
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+AA
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $w_{11}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $w_{12}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $w_{13}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Aa
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $w_{21}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $w_{22}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $w_{23}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+aa
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $w_{31}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $w_{32}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $w_{33}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+in the order of 
+\begin_inset Formula $w_{11},w_{12,}...,w_{32},w_{33}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+For a model with more than two loci, use a table of length 
+\begin_inset Formula $3^{n}$
+\end_inset
+
+ in a order similar to the two-locus model.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+mlSelectorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pySelectorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The following example simulates the same scenario as before, with 
+\begin_inset Formula $s_{1}=.2,s_{2}=.3$
+\end_inset
+
+ (so
+\begin_inset Formula $p=.6$
+\end_inset
+
+) and a 
+\family typewriter
+pySelector
+\family default
+.
+ Note that although alleles at two loci are passed, the 
+\family typewriter
+sel
+\family default
+ function only uses alleles from the first one.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_pySelector.log}[caption={python selector},label={pySelector}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+clearpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Penetrance
+\begin_inset LatexCommand index
+name "penetrance"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+penetranceRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+mapPenetranceRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+An example of this operator is
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+mapPenetrance(locus=1, penetrance={'1-1':0, '1-2':0.5, '2-2':1})
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that this dictionary can take more than three elements to accommendate
+ more than one disease alleles.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+maPenetranceRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+An example of operator 
+\family typewriter
+maPenetrance
+\family default
+ is
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+maPenetrance(loci=[1,5], wildtype=[1], penetrance=[0,0.5,1,0,0,1,0,1,1])
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This operator behaves the same as the 
+\family typewriter
+mapPenetrance
+\family default
+ example but will work if there are more than one disease alleles.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+mlPenetranceRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For example, if each locus follows an additive penetrance model, we can
+ have
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pen = []
+\end_layout
+
+\begin_layout Standard
+
+for loc in loci:
+\end_layout
+
+\begin_layout Standard
+
+  pen.append( maPenetrance(locus=loc, wildtype=[1],
+\end_layout
+
+\begin_layout Standard
+
+    penetrance=[0.0.3,0.6] ) )
+\end_layout
+
+\begin_layout Standard
+
+# the multi-loci penetrance
+\end_layout
+
+\begin_layout Standard
+
+penMulti = mlPenetrance(mode=PEN_Multiplicative, peneOps=pen)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pyPenetranceRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For example, for the same multi-locus model before, we can define the following
+ function using 
+\family typewriter
+pyPenetrance
+\family default
+ as
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+def peneFunc(geno):
+\end_layout
+
+\begin_layout Standard
+
+  p = 1
+\end_layout
+
+\begin_layout Standard
+
+  for l in range(len(geno)/2):
+\end_layout
+
+\begin_layout Standard
+
+    p *= (geno[l*2]+geno[l*2+1]-2)*0.3
+\end_layout
+
+\begin_layout Standard
+
+  return p
+\end_layout
+
+\begin_layout Standard
+
+penMulti = pyPenetrance(loci=loci, func=peneFunc)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As you can see, using this operator, you can define arbitrarily complex
+ penetrance functions.
+ Typical such penetrance functions are interaction between loci (using a
+ multi-locus penetrance table), even random ones.
+\end_layout
+
+\begin_layout Standard
+It would be useful to let 
+\family typewriter
+peneFunc
+\family default
+ take parameters.
+ This can be done by defining a Python function that returns a penetrance
+ function.
+ This may sound intimidating but it is really easy:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+def peneFunc(table):
+\end_layout
+
+\begin_layout Standard
+
+  def func(geno):
+\end_layout
+
+\begin_layout Standard
+
+    return table[geno[0]-1][geno[1]-1]
+\end_layout
+
+\begin_layout Standard
+
+  return func
+\end_layout
+
+\begin_layout Standard
+
+# then, given a table, you can do
+\end_layout
+
+\begin_layout Standard
+
+pen = pyPenetrance(loci=loci, func=peneFunc( ((0,0.5),(0.3,0.8)) ) )
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now, for any table, you can use 
+\family typewriter
+peneFunc
+\family default
+ to return a penetrance function that uses this table.
+\end_layout
+
+\begin_layout Section
+Quantitative Trait
+\begin_inset LatexCommand index
+name "quantitative trait"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+quanTraitRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+mapQuanTraitRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+maQuanTraitRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+mlQuanTraitRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pyQuanTraitRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+clearpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset LatexCommand label
+name "sec:Ascertainment"
+
+\end_inset
+
+Ascertainment
+\begin_inset LatexCommand index
+name "ascertainment"
+
+\end_inset
+
+ (subset of population)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+sampleRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+function 
+\family typewriter
+population::shrinkByIndID
+\begin_inset LatexCommand index
+name "thrinkByIndInfo"
+
+\end_inset
+
+()
+\end_layout
+
+\begin_layout Standard
+This function looks at the 
+\family typewriter
+subPopID()
+\family default
+ field of each individual and remove anyone with a negative value.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pySubsetRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pySampleRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+PySample
+\begin_inset LatexCommand index
+name "function!PySample"
+
+\end_inset
+
+(pop, info, name, saveAs, format)
+\family default
+ or 
+\family typewriter
+Sample
+\begin_inset LatexCommand index
+name "function!Sample"
+
+\end_inset
+
+(pop)
+\family default
+ if you already set subpopulation ID for each individual using 
+\family typewriter
+setSubPopID
+\begin_inset LatexCommand index
+name "population!setInfo"
+
+\end_inset
+
+()
+\family default
+ function.
+ The operator version of these functions are 
+\family typewriter
+pySample
+\begin_inset LatexCommand index
+name "operator!pySample"
+
+\end_inset
+
+(info, times, name, nameExpr, saveAs, saveAsExpr, format)
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+randomSampleRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+RandomSample
+\begin_inset LatexCommand index
+name "function!RandomSample"
+
+\end_inset
+
+(pop, size, times, name, saveAs, format)
+\family default
+ will randomly choose size individuals (or 
+\family typewriter
+sizes
+\family default
+ from subpopulations) and return a new population.
+ The operator version is 
+\family typewriter
+randomSample
+\family default
+
+\begin_inset LatexCommand index
+name "operator!randomSample"
+
+\end_inset
+
+(
+\family typewriter
+size, times, name, nameExpr, saveAs, saveAsExpr, format
+\family default
+).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+caseControlSampleRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+CaseControlSample(pop, cases, controls, times, name, saveAs, format)
+\family default
+ will randomly choose cases affected individuals and controls unaffected
+ individuals.
+ The operator version of this function is 
+\family typewriter
+caseControlSample(case, cases, control, controls, times, name, nameExpr,
+ saveAs, saveAsExpr, format)
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The following example shows how to draw a random sample (without replacement
+ of course) from an existing population.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_randomSample.log}[caption={random sample},label={randomSample}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+affectedSibpairSampleRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For example, you can do
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+endGen = 1000
+\end_layout
+
+\begin_layout Standard
+
+# having two offsprings only at the last three generations
+\end_layout
+
+\begin_layout Standard
+
+def numOffsprings(gen):
+\end_layout
+
+\begin_layout Standard
+
+  if gen >= endGen - 3:
+\end_layout
+
+\begin_layout Standard
+
+    return 2
+\end_layout
+
+\begin_layout Standard
+
+  else 
+\end_layout
+
+\begin_layout Standard
+
+    return 1
+\end_layout
+
+\begin_layout Standard
+
+# evolve ...
+\end_layout
+
+\begin_layout Standard
+
+simu = simulator(pop, randomMating(numOffspringsFunc = numOffsprings))
+\end_layout
+
+\begin_layout Standard
+
+simu.evolve( ...
+\end_layout
+
+\begin_layout Standard
+
+  parentsTagger(begin = endGen - 3),
+\end_layout
+
+\begin_layout Standard
+
+  mapPenetrance(...., begin = endGen - 2),
+\end_layout
+
+\begin_layout Standard
+
+  setAncestralDepth(1, at = endGen -2 )
+\end_layout
+
+\begin_layout Standard
+
+...)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to let your population evolve 
+\emph on
+normally
+\emph default
+ and start to store ancestral generations and allow multiple offspring at
+ the last several generations.
+\end_layout
+
+\begin_layout Standard
+Briefly, you should
+\end_layout
+
+\begin_layout Itemize
+set the ancestral depth to at least 
+\family typewriter
+1
+\family default
+ to allow analyzing of the parental generation.
+\end_layout
+
+\begin_layout Itemize
+use 
+\family typewriter
+parentsTagger
+\family default
+ to track parents for each individual, with the usual limit of no post-mating
+ migration.
+ 
+\end_layout
+
+\begin_layout Itemize
+allow multiple offspring at least at the last generation.
+ (You do not have to use fixed number of offspring.
+ Other mating mode like 
+\family typewriter
+MATE_GeometricDistribution
+\family default
+ can also be used.)
+\end_layout
+
+\begin_layout Itemize
+use a penetrance operator to set affected status of each individual
+\end_layout
+
+\begin_layout Standard
+and finally use this operator (or function)
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+affectedSibpairSample(size,  times, name, saveAs, format)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to get samples accessible from 
+\family typewriter
+dvars().name[i]
+\family default
+.
+ Each sample will
+\end_layout
+
+\begin_layout Itemize
+have 2*
+\family typewriter
+size
+\family default
+ of paired individuals.
+ (e.g.
+ 
+\family typewriter
+individual(2n)
+\family default
+ and 
+\family typewriter
+individual(2n+1)
+\family default
+,
+\family typewriter
+ n=0,1,...
+\family default
+,
+\family typewriter
+ size-1
+\family default
+ are siblings.)
+\end_layout
+
+\begin_layout Itemize
+have an ancestral generation of the same size, with parents to the sibling
+ pairs.
+\end_layout
+
+\begin_layout Itemize
+if 
+\family typewriter
+size
+\family default
+ is an array, get 
+\family typewriter
+size[sp]
+\family default
+ sibling pairs from subpopulation 
+\family typewriter
+sp
+\family default
+ .
+\end_layout
+
+\begin_layout Standard
+Other than samples 
+\family typewriter
+name
+\family default
+, variable 
+\family typewriter
+numSibpairs
+\family default
+ will be set to indicate the total number of affected sibling pairs in the
+ population.
+ Subpopulation structure will be kept in the samples so you will know how
+ many individuals are drawn from each subpopulation.
+ (This information is also saved in variable 
+\family typewriter
+numSibpairs
+\family default
+ of each sample.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+largePedigreeSampleRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+nuclearFamilySampleRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Statistics Calculation
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+statorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+statRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Linkage disequilibrium 
+\end_layout
+
+\begin_layout Itemize
+parameter:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+LD: LD = [ [1,2], [ 0,1,1,2],[1,2,1,2]]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+For each item 
+\family typewriter
+[loc1, loc2, allele1, allele2]
+\family default
+, 
+\begin_inset Formula $D$
+\end_inset
+
+, 
+\begin_inset Formula $D'$
+\end_inset
+
+ and 
+\begin_inset Formula $r^{2}$
+\end_inset
+
+ will be calculated based on allele1 at loc1 and allele2 at loc2.
+ If only two loci are given, the LD values are averaged over all allele
+ pairs.
+ For example, for allele 
+\begin_inset Formula $A$
+\end_inset
+
+ at locus 1 and allele 
+\begin_inset Formula $B$
+\end_inset
+
+ at locus 2, 
+\begin_inset Formula \begin{eqnarray*}
+D & = & P_{AB}-P_{A}P_{B}\\
+D' & = & D/D_{max}\\
+D_{max} & = & \begin{cases}
+\min\left(P_{A}\left(1-P_{B}\right),\left(1-P_{A}\right)P_{B}\right) & \textrm{if }D>0\\
+\min\left(P_{A}P_{B},\left(1-P_{A}\right)\left(1-P_{B}\right)\right) & \textrm{if }D<0\end{cases}\\
+r^{2} & = & \frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)}\end{eqnarray*}
+
+\end_inset
+
+If 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+ are not specified, 
+\begin_inset Formula $D$
+\end_inset
+
+, 
+\begin_inset Formula $D'$
+\end_inset
+
+ and 
+\begin_inset Formula $r^{2}$
+\end_inset
+
+ will be the averaged value: (basically 
+\begin_inset Formula $\sum\sum P_{A}P_{B}\left|\right|$
+\end_inset
+
+ )
+\begin_inset Formula \begin{eqnarray*}
+D & = & \sum_{i}\sum_{j}P_{i}P_{j}\left|D_{ij}\right|\\
+D' & = & \sum_{i}\sum_{j}P_{i}P_{j}\left|D'_{ij}\right|\\
+r^{2} & = & \sum_{i}\sum_{j}P_{i}P_{j}r_{ij}^{2}=\sum_{i}\sum_{j}\frac{D_{ij}^{2}}{\left(1-P_{i}\right)\left(1-P_{j}\right)}\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $p_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $q_{j}$
+\end_inset
+
+ are the population allele frequencies of the 
+\begin_inset Formula $i$
+\end_inset
+
+th allele on loc1 and the 
+\begin_inset Formula $j$
+\end_inset
+
+th allele on loc2.
+ Please note that some other authors uses
+\begin_inset Formula \[
+r^{2}=\sum_{i}\sum_{j}\frac{D_{ij}^{2}}{P_{i}P_{j}}\]
+
+\end_inset
+
+If you are sure the later is correct, please send me an email (with reference).
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Expression and Statements
+\end_layout
+
+\begin_layout Subsection
+Operator (C++) 
+\family typewriter
+output
+\begin_inset LatexCommand index
+name "operator!output"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This operator output a simple string.
+ For example, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+output(r'
+\backslash
+n', rep=REP_LAST)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+output a newline at the last replicate.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pyEvalRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pyExecRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Function (Python) 
+\family typewriter
+ListVars (defined in simuUtil.py)
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+ListVars
+\begin_inset LatexCommand index
+name "function!listVars"
+
+\end_inset
+
+(variable)
+\end_layout
+
+\begin_layout Standard
+This function lists any variable in an indented text format.
+ You can use 
+\family typewriter
+listVar(simuVars)
+\family default
+ to have a look at all replicates or 
+\family typewriter
+listVar(simuVars[0]['subPop'][0])
+\family default
+ to see variables for the first subpopulation in replicate one.
+\end_layout
+
+\begin_layout Section
+Visualization
+\end_layout
+
+\begin_layout Standard
+There is no special visualizer (there was indeed a matlabPlotter before
+ ver 0.5.9 but I decide to remove it since matlab is not universally available.)
+ Since everything is exposed dynamically, all you need to do is plotting
+ variables in whatever way you prefer.
+ The basic steps are:
+\end_layout
+
+\begin_layout Itemize
+find an appropriate tool.
+ I prefer R/Rpy to any other tools since I am familiar with R.
+ You can make your own choice.
+\end_layout
+
+\begin_layout Itemize
+write a function to plot variable.
+ If you would like to plot history of a variable, you can use the 
+\family typewriter
+Aggregator
+\family default
+ object defined in 
+\family typewriter
+simuUtil.py
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+wrap this function as an operator.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+simuRPy.py
+\family default
+ provides a pure Python operator 
+\family typewriter
+varPlotter
+\family default
+.
+ It is defined in 
+\family typewriter
+simuSciPy
+\family default
+ and 
+\family typewriter
+simuMatPlt.py
+\family default
+ as well but they are lack of subplot capacity (so the usages are different)
+ due to the limit of SciPy/gplt and MatPlotLib's plotting capacities.
+ Also note as of Apr, 2006, the development of gplt in scipy was stopped
+ so support of simuPOP/simuSciPy was stopped as well.
+\end_layout
+
+\begin_layout Subsection
+Operator (Python) 
+\family typewriter
+varPlotter (simuRPy.py)
+\end_layout
+
+\begin_layout Standard
+The use of 
+\family typewriter
+varPlotter
+\family default
+ is easy, if you would like to 
+\end_layout
+
+\begin_layout Subsubsection*
+Plotting with history
+\end_layout
+
+\begin_layout Itemize
+plot a number in the form of a variable or expression, use
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+varPlotter(var='expr')
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+plot a vector in the same window and there is only one replicate in the
+ simulator, use
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+varPlotter(var='expr', varDim=len)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\family typewriter
+len
+\family default
+ is the dimension of your variable or expression.
+ Each line in the figure represents the history of an item in the array.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+plot a vector in the same window and there are several replicates, use 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+varPlotter(var='expr', varDim=len, numRep=nr, byRep=1)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+varPlotter
+\family default
+ will try to use an appropriate layout for your subplots (for example, use
+ 3x4 if 
+\family typewriter
+numRep=10
+\family default
+).
+ You can also specify parameter 
+\family typewriter
+mfrow
+\family default
+ to change the layout.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+if you would like to plot each item of your array variables in a subplot,
+ use
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+varPlotter(var='expr', varDim=len, byVal=1)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or in case of a single replicate
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There will be 
+\family typewriter
+numRep
+\family default
+ lines in each subplot.
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection*
+Plotting without history
+\end_layout
+
+\begin_layout Itemize
+use option 
+\family typewriter
+history=False
+\family default
+.
+ Parameters 
+\family typewriter
+byVal, varDim
+\family default
+ etc.
+ will be ignored.
+ 
+\end_layout
+
+\begin_layout Standard
+Other options are
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+title, xtitle, ytitle:
+\family default
+ title of your figure(s).
+ 
+\family typewriter
+title
+\family default
+ is default to your expression, 
+\family typewriter
+xtitle
+\family default
+ is defaulted to 
+\family typewriter
+generation
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+win:
+\family default
+ window of generations.
+ I.e., how many generations to keep in a figure.
+ This is useful when you want to keep track of only recent changes.
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+update:
+\family default
+ update figure after 
+\family typewriter
+update
+\family default
+ generations.
+ This is used when you do not want to update the figure at every generation.
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+saveAs:
+\family default
+ save figures in files 
+\family typewriter
+saveAs#gen.eps.
+
+\family default
+ For example, if 
+\family typewriter
+saveAs='demo
+\family default
+', you will get files 
+\family typewriter
+demo1.eps
+\family default
+, 
+\family typewriter
+demo2.eps
+\family default
+ etc.
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+separate:
+\family default
+ plot data lines in separate panels.
+ 
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+image:
+\family default
+ use R image function to plot image, instead of lines.
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+level:
+\family default
+ level of image colors (default to 20).
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+leaveOpen:
+\family default
+ whether or not leave the plot open when plotting is done.
+ Default to 
+\family typewriter
+True
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Here is an example:
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Include \verbatiminput{log/ref_simuPlotter.log}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section
+Tagging (used for pedigree tracking) 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+taggerRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+inheritTaggerRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+parentsTaggerRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pyTaggerRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Data collector
+\end_layout
+
+\begin_layout Standard
+Sometimes, instead of output data directly, we may want to collect history
+ data on some expression.
+ Data collector is designed for this purpose.
+ 
+\end_layout
+
+\begin_layout Subsection
+operator (Python) 
+\family typewriter
+collector
+\begin_inset LatexCommand index
+name "operator!collector"
+
+\end_inset
+
+
+\family default
+, in 
+\family typewriter
+simuUtil.py
+\end_layout
+
+\begin_layout Standard
+This operator accepts the following parameters:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+name:
+\family default
+ name by which the collected data will be displayed.
+ Variable names will be a list of stored values.
+ (
+\family typewriter
+generation
+\family default
+ is not stored.
+ You can always put it in 
+\family typewriter
+expr
+\family default
+ though.)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+expr:
+\family default
+ an expression that will be evaluated.
+ The result will be converted to a list (if needed) and stored in 
+\family typewriter
+name[gen]
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+When this operator is called, it will evaluate 
+\family typewriter
+expr
+\family default
+ and store its result in 
+\family typewriter
+name[gen]
+\family default
+.
+ After evolution, you will get a dictionary of values indexed by generation
+ numbers.
+\end_layout
+
+\begin_layout Section
+Output 
+\end_layout
+
+\begin_layout Subsection
+operator (C++) 
+\family typewriter
+savePopulation
+\begin_inset LatexCommand index
+name "operator!savePopulation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+function (Python) 
+\family typewriter
+SaveFstat
+\begin_inset LatexCommand index
+name "function!SaveFstat"
+
+\end_inset
+
+
+\family default
+ (in 
+\family typewriter
+simuUtil.py
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+operator (Python) 
+\family typewriter
+saveFstat
+\begin_inset LatexCommand index
+name "operator!saveFstat"
+
+\end_inset
+
+
+\family default
+ (in 
+\family typewriter
+simuUtil.py
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+function (Python) 
+\family typewriter
+loadFstat
+\begin_inset LatexCommand index
+name "function!loadFstat"
+
+\end_inset
+
+
+\family default
+ (in 
+\family typewriter
+simuUtil.py
+\family default
+)
+\end_layout
+
+\begin_layout Section
+Terminator
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+terminatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+terminateIfRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+continueIfRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Conditional operator 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+ifElseRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The following example uses some advanced operators of simuPOP:
+\end_layout
+
+\begin_layout Itemize
+set affected status using 
+\family typewriter
+maPenetrance
+\family default
+ as a 
+\family typewriter
+DuringMating
+\family default
+ operator (penetrance can be used at other stages).
+ 
+\end_layout
+
+\begin_layout Itemize
+count the number of affected individuals.
+ Note that this has to be done after the penetrance operator is applied.
+ 
+\end_layout
+
+\begin_layout Itemize
+if no one is affected, inject some mutations into the population.
+ Note the use of 
+\family typewriter
+ifElse
+\family default
+ operator.
+\end_layout
+
+\begin_layout Itemize
+expose individual affectedness to the local namespaces.
+ Note the use of 
+\family typewriter
+exposePop
+\family default
+ option.
+ With this, you can call any population member function.
+\end_layout
+
+\begin_layout Itemize
+plot affectedness, use image.
+ 
+\end_layout
+
+\begin_layout Itemize
+use dryrun to exam simulator first.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_ifElse.log}[caption={Conditional operator},label={ifElse}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Miscellaneous
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+noneOpRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This operator is used like follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+if savePop :
+\end_layout
+
+\begin_layout Standard
+
+  saveOp = savePopulation(output='a.txt')
+\end_layout
+
+\begin_layout Standard
+
+else:
+\end_layout
+
+\begin_layout Standard
+
+  saveOp = noneOp()
+\end_layout
+
+\begin_layout Standard
+
+simu.evolve( [ ...
+ saveOp ])
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pauseRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+ticTocRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+setAncestralDepthRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Debug-related operators/functions
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+turnOnDebugRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+turnOffDebugRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Standard 
+\family typewriter
+simuPOP
+\family default
+ library can print out lots of debug information upon request.
+ These are mostly used for internal debugging purposes but you can also
+ use them when error happens.
+ For example, the following code will crash simuPOP:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+>>> population(1).individual(0).arrAllele()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is not clear why this simple line will cause us trouble, instead of outputtin
+g the genotype of the only individual of this population.
+ However, the reason is clear if you turn on debug information:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+>>> TurnOnDebug(DBG_ALL)
+\end_layout
+
+\begin_layout Standard
+
+Debug code DBG_ALL is turned on.
+ cf.
+ listDebugCode(), turnOffDebug() 
+\end_layout
+
+\begin_layout Standard
+
+>>> population(1).individual(0).arrAlleles()
+\end_layout
+
+\begin_layout Standard
+
+Constructor of Population is called
+\end_layout
+
+\begin_layout Standard
+
+Population size 1
+\end_layout
+
+\begin_layout Standard
+
+Destructor of Population is called 
+\end_layout
+
+\begin_layout Standard
+
+Segmentation fault (core dumped) 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+population(1)
+\family default
+ creates a temporary object that is destroyed right after the execution
+ of the input.
+ When Python tries to display the genotype, it will refer to an invalid
+ location.
+ The right way to do this is to create a persistent population object: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+>>> pop = population(1)
+\end_layout
+
+\begin_layout Standard
+
+>>> pop.individual(0).arrAllele()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If the output is overwhelming after you turn on all debug information, you
+ can turn on certain part of the information by using the following functions:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ListDebugCode
+\begin_inset LatexCommand index
+name "listDebugCode"
+
+\end_inset
+
+()
+\family default
+ list all debug code.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+turnOnDebug()
+\begin_inset LatexCommand index
+name "operator!turnOnDebug"
+
+\end_inset
+
+, TurnOnDebug
+\begin_inset LatexCommand index
+name "Function!TurnOnDebug"
+
+\end_inset
+
+(code)
+\family default
+ turn on debug codes.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+turnOffDebug()
+\begin_inset LatexCommand index
+name "operator!turnOffDebug"
+
+\end_inset
+
+, TurnOffDebug
+\begin_inset LatexCommand index
+name "Function!turnOffDebug"
+
+\end_inset
+
+(code)
+\family default
+ turn off debug codes.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+turnOnDebug()
+\family default
+ and 
+\family typewriter
+turnOffDebug()
+\family default
+ are operators and accept all operator parameters 
+\family typewriter
+begin, step
+\family default
+ etc.
+ Usually, you can use 
+\family typewriter
+turnOnDebug
+\family default
+ to output more information about a potential bug before simuPOP starts
+ to misbehave.
+ 
+\end_layout
+
+\begin_layout Standard
+Another useful debug code is 
+\family typewriter
+DBG_PROFILE.
+
+\family default
+ When turned on, it will display running time of each operator.
+ This will give you a good sense of which operator runs slowly (or simply
+ the order of operator execution if you are not sure).
+ If most of the execution time is spent on a pure-Python operator, you may
+ want to rewrite it in C++.
+ Note that 
+\family typewriter
+DBG_PROFILE
+\family default
+ is suitable for measuring individual operator performance.
+ If you would like to measure the execution time of all operators in several
+ generations, 
+\family typewriter
+ticToc
+\family default
+ operator is better.
+  
+\end_layout
+
+\begin_layout Chapter
+Other topics
+\end_layout
+
+\begin_layout Section
+Option Handling
+\end_layout
+
+\begin_layout Subsection
 Conventions of simuPOP scripts
 \end_layout
 
@@ -5191,7 +9641,7 @@ Note that these scripts, if proper written, can also be imported.
  simulation function directly.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Parameter handling and user input 
 \end_layout
 
@@ -5744,5141 +10194,6 @@ With all these information at hand, the rest is routine, if you follow the
 
 \end_layout
 
-\begin_layout Chapter
-Operator and Function References
-\end_layout
-
-\begin_layout Standard
-This chapter will list all functions, types and operators by category.
-\end_layout
-
-\begin_layout Section
-Library-dependent functions/constants
-\end_layout
-
-\begin_layout Standard
-Several functions and constants are defined for each library:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-alleleType()
-\family default
-: return 
-\family typewriter
-'binary'
-\family default
-, 
-\family typewriter
-'short'
-\family default
-, or 
-\family typewriter
-'long'
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MaxAllele
-\family default
-: 
-\family typewriter
-1
-\family default
- for binary libraries, usually 
-\family typewriter
-255
-\family default
- for short libraries and 
-\begin_inset Formula $2^{32}-1$
-\end_inset
-
- for long libraries.
- Note that these numbers for short and long libraries might be changed on
- different platforms.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simuVer()
-\family default
-: return the version string
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simuRev()
-\family default
-: simuPOP revision number.
- If your script needs a recent version of simuPOP, it is a good idea to
- test 
-\family typewriter
-simuRev()
-\family default
- against the revision when the feature you need becomes available.
-\end_layout
-
-\begin_layout Section
-
-\family typewriter
-carray
-\begin_inset LatexCommand index
-name "carray"
-
-\end_inset
-
-
-\family default
- type
-\end_layout
-
-\begin_layout Standard
-The return value of simuPOP functions with names start with 
-\family typewriter
-arr
-\family default
- is of a special Python type 
-\family typewriter
-carray
-\family default
-.
- This object reflects the underlying C/C++ array and you can read/write
- array elements just as a regular list.
- Only a small subset of list member functions of Python, 
-\family typewriter
-count, index
-\family default
- to be exact, is available.
- This is because you are not allowed to change the size of the underlying
- C/C++ vector.
- The following shows the operations allowed:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-# obtain an object using one of the arrXXX functions
-\end_layout
-
-\begin_layout Standard
-
-pop = population(loci=[3,4], lociPos=[1,2,3,4,5,6,7])
-\end_layout
-
-\begin_layout Standard
-
-arr = pop.arrLociPos()
-\end_layout
-
-\begin_layout Standard
-
-# print and expression (just like list)
-\end_layout
-
-\begin_layout Standard
-
-print arr
-\end_layout
-
-\begin_layout Standard
-
-str(arr)
-\end_layout
-
-\begin_layout Standard
-
-# count
-\end_layout
-
-\begin_layout Standard
-
-arr.count(2)
-\end_layout
-
-\begin_layout Standard
-
-# index 
-\end_layout
-
-\begin_layout Standard
-
-arr.index, 2)
-\end_layout
-
-\begin_layout Standard
-
-# can read write
-\end_layout
-
-\begin_layout Standard
-
-arr[0] = 0.5
-\end_layout
-
-\begin_layout Standard
-
-# convert to list
-\end_layout
-
-\begin_layout Standard
-
-arr.tolist()
-\end_layout
-
-\begin_layout Standard
-
-# or simply
-\end_layout
-
-\begin_layout Standard
-
-list(arr)
-\end_layout
-
-\begin_layout Standard
-
-# compare to list directly
-\end_layout
-
-\begin_layout Standard
-
-arr == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0]
-\end_layout
-
-\begin_layout Standard
-
-# you can also convert and compare
-\end_layout
-
-\begin_layout Standard
-
-list(arr) == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0])
-\end_layout
-
-\begin_layout Standard
-
-# slice
-\end_layout
-
-\begin_layout Standard
-
-arr[:] = [1,2,3,4,5,6,7]
-\end_layout
-
-\begin_layout Standard
-
-# arr1 is 1,2,3
-\end_layout
-
-\begin_layout Standard
-
-arr1 = arr[:3]
-\end_layout
-
-\begin_layout Standard
-
-# assign slice from a number
-\end_layout
-
-\begin_layout Standard
-
-# IMPORTANT NOTE that arr will also be affected
-\end_layout
-
-\begin_layout Standard
-
-# since arr1 point to a part of arr
-\end_layout
-
-\begin_layout Standard
-
-arr1[:] = 10
-\end_layout
-
-\begin_layout Standard
-
-# assign vector of the same length
-\end_layout
-
-\begin_layout Standard
-
-arr1[:] = [30,40]
-\end_layout
-
-\begin_layout Standard
-
-# assign from another part
-\end_layout
-
-\begin_layout Standard
-
-arr[1:3] = arr[3:5]
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-No other operation is allowed.
- 
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Important note:
-\series default
- Objects returned from 
-\family typewriter
-arrXXX
-\family default
- functions should be considered temporary.
- There is no guarantee that the underlying array will still be valid after
- any population operation.
- 
-\end_layout
-
-\begin_layout Section
-Use of R (RPy) in Python
-\end_layout
-
-\begin_layout Standard
-Most of the information can be found in RPy manual.
- One function in simuRPy may help though:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-def rmatrix(mat):
-\end_layout
-
-\begin_layout Standard
-
-  ' convert a Python 2d list to r.matrix object'
-\end_layout
-
-\begin_layout Standard
-
-  return with_mode(NO_CONVERSION, r.do_call)('rbind',mat)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-With this function, you can easily handle matrices in R.
- (List and array have been easy enough to be handled).
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
->>> a = [[1,2],[4,5]]
-\end_layout
-
-\begin_layout Standard
-
->>> r.image( rmatrix(a))
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-With the help of this function, you can call almost any R function directly,
- maybe except some R-only syntax like formula, expression etc.
- In this case, you can always do
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
->>> r('''whatever R expression''')
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Since RPy is not always available, you may see the following scenario again
- and again in simuPOP scripts:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-try:
-\end_layout
-
-\begin_layout Standard
-
-  from simuRPy import *
-\end_layout
-
-\begin_layout Standard
-
-except:
-\end_layout
-
-\begin_layout Standard
-
-  hasRPy = False
-\end_layout
-
-\begin_layout Standard
-
-else:
-\end_layout
-
-\begin_layout Standard
-
-  hasRPy = True
-\end_layout
-
-\begin_layout Standard
-
-...
-\end_layout
-
-\begin_layout Standard
-
-if hasRPy:
-\end_layout
-
-\begin_layout Standard
-
-  r.....
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Operator (Hybrid) 
-\family typewriter
-pyOperator
-\begin_inset LatexCommand index
-name "operator!pyOperator"
-
-\end_inset
-
-, pyIndOperator
-\begin_inset LatexCommand index
-name "operator!pyIndOperator"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-
-\family typewriter
-pyOperator
-\end_layout
-
-\begin_layout Standard
-This is the single most powerful hybrid operator.
- Whenever you think that something is too complicated to be done by standard
- operators, you can do it here in Python.
- This operator accepts a Python function which accepts a population and
- optionally a parameter.
- To use this operator, you will need to 
-\end_layout
-
-\begin_layout Itemize
-define a function that handle a population as you wish.
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-def myOperator(pop, para):
-\end_layout
-
-\begin_layout Standard
-
-  'do whatever you want'
-\end_layout
-
-\begin_layout Standard
-
-  return True
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If you return 
-\family typewriter
-False
-\family default
-, this operator will work like a terminator.
- 
-\family typewriter
-para
-\family default
- will be omitted.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-use 
-\family typewriter
-pyOperator
-\family default
- like
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pyOperator(mfunc=yOperator, param=para)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-all parameters of an operator are supported except for 
-\family typewriter
-output
-\family default
- and 
-\family typewriter
-outputExpr
-\family default
- which are ignored for now.
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-When 
-\family typewriter
-pyOperator
-\family default
- is called, it will simply pass the accepted population to the function.
- If your function returns 
-\family typewriter
-False
-\family default
-, the simulation will be stopped.
-\end_layout
-
-\begin_layout Standard
-This operator allows implementation of arbitrarily complicated operators,
- at a cost of efficiency.
- Of course, to use this operator, you will have to know how to use population-re
-lated functions.
- The following example shows how to implement a dynamic mutator which mutate
- loci according to their allele frequencies.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_pyOperator.log}[caption={define a python operator},label={pyOperator}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_pyOperatorUse.log}[caption={use of python operator},label={pyOperatorUse}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Note that 
-\end_layout
-
-\begin_layout Itemize
-Currently, 
-\family typewriter
-pyOperator
-\family default
- does not support parameters 
-\family typewriter
-output
-\family default
- and 
-\family typewriter
-outputExpr
-\family default
-.
- This is because of the incompatibility between Python and underlying C++
- in the way of handling file I/O stream.
- Consequently, you will have to handle file input/output by yourself through
- 
-\family typewriter
-param
-\family default
- parameter.
- Be careful that you 
-\series bold
-\emph on
-can not
-\series default
-\emph default
- mix output of 
-\family typewriter
-pyOperator
-\family default
- with those of other (normal) operators.
-\end_layout
-
-\begin_layout Itemize
-If parameter 
-\family typewriter
-param
-\family default
- is ignored, 
-\family typewriter
-myOperator
-\family default
- must be without 
-\family typewriter
-para
-\family default
- as well.
- Note that you can pass arbitrary number of parameters by putting them into
- a tuple and passing to 
-\family typewriter
-myOpeartor
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-Since you can attach any information to a population, you can in practice
- use 
-\family typewriter
-pop.dvars()
-\family default
- to pass parameters.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pyOperator
-\family default
- is a post-mating operator by default.
- Remember to use 
-\family typewriter
-stage
-\family default
- parameter to change this when necessary.
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-pyOperator
-\family default
- can also be a during-mating operator.
- You will need to define a function 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-def Func(pop, off, dad, mom, para)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-or
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-def shortFunc(off, para)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-where 
-\family typewriter
-para
-\family default
- can be ignored.
- To use this operator, you can do
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pyOperator(stage=DuringMating, func=Func, param=someparam, formOffGenotype=True)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-or
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pyOperator(stage=DuringMating, func=shortFunc, param=someparam,
-\end_layout
-
-\begin_layout Standard
-
-formOffGenotype=False, passOffspringOnly=True)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Two additional parameters are:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-formOffGenotype
-\family default
-:
-\family typewriter
- 
-\family default
-(default to 
-\family typewriter
-False
-\family default
-) By default, a mating scheme will set the genotype of offspring by copying
- one of the parental chromosomes.
- However, if 
-\family typewriter
-formOffGenotype
-\family default
- is 
-\family typewriter
-True
-\family default
-, the mating scheme will let you do the job.
- You will have to set offspring genotype and sex by yourself, using, most
- likely, a recombinator.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-passOffspringOnly
-\family default
-: In case that your function will only deal with offspring, you can set
- this parameter to 
-\family typewriter
-True
-\family default
- and use a short form of the function.
- 
-\end_layout
-
-\begin_layout Standard
-Note that if your during-mating 
-\family typewriter
-pyOpeartor
-\family default
- returns 
-\family typewriter
-False
-\family default
-, the individual will be discarded.
- Therefore, you can write a filter in this way.
- However, since the Python function will be called for each mating event,
- the cost of using such an operator is high, especially when population
- size is large.
-\end_layout
-
-\begin_layout Standard
-An example of during-mating 
-\family typewriter
-pyOperator
-\family default
- can be found in 
-\family typewriter
-scripts/demoPyOperator.py
-\family default
-.
-\end_layout
-
-\begin_layout Subsection
-
-\family typewriter
-pyIndOperator
-\end_layout
-
-\begin_layout Standard
-Another general Python operator is 
-\family typewriter
-pyIndOperator
-\family default
- which is similar to 
-\family typewriter
-pyOpertor
-\family default
- but it passes the user individuals, rather than the whole population.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-def func(ind, param):
-\end_layout
-
-\begin_layout Standard
-
-  ind.setInfo(param[0], 'myinfo)
-\end_layout
-
-\begin_layout Standard
-
-pyIndOperator(func=func, param=(1,))
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-is the same as
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-def func(pop, param):
-\end_layout
-
-\begin_layout Standard
-
-  for ind in pop.individuals():
-\end_layout
-
-\begin_layout Standard
-
-    ind.setInfo(param[0], 'myinfo')
-\end_layout
-
-\begin_layout Standard
-
-pyIndOperator(func=func, param=(1,))
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The 
-\family typewriter
-pyIndOperator
-\family default
- may have some performance advantages over 
-\family typewriter
-pyOperator
-\family default
- in some cases.
-\end_layout
-
-\begin_layout Subsection
-References of class 
-\family typewriter
-pyOperator
-\family default
- and 
-\family typewriter
-pyIndOperator
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pyOperatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pyIndOperatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Initialization
-\begin_inset LatexCommand index
-name "initializer"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-initializerRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-initByFreq
-\begin_inset LatexCommand index
-name "operator!initByFreq"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-InitByFreq
-\begin_inset LatexCommand index
-name "function!InitByFreq"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-initByFreqRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Here is an example of using 
-\family typewriter
-alleleFreq
-\family default
-:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_initByFreq.log}[caption={Init by freq},label={initByFreq}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Please refer to 
-\family typewriter
-test/test_init.py
-\family default
- for more complicated examples.
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-initByValue
-\begin_inset LatexCommand index
-name "operator!initByValue"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-InitByValue
-\begin_inset LatexCommand index
-name "function!InitByValue"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-initByValueRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_initByValue.log}[caption={Init by value},label={initByValue}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-spread
-\begin_inset LatexCommand index
-name "operator!spread"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-Spread
-\begin_inset LatexCommand index
-name "function!Spread"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-spreadRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (hybrid) 
-\family typewriter
-pyInit
-\begin_inset LatexCommand index
-name "operator!pyInit"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-PyInit
-\begin_inset LatexCommand index
-name "function!PyInit"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pyInitRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_pyInit.log}[caption={Init by value},label={pyInit}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Migration
-\begin_inset LatexCommand index
-name "migrator"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Class reference and Opertor (C++) 
-\family typewriter
-migrator
-\begin_inset LatexCommand index
-name "operator!migrator"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-migratorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-Operator 
-\family typewriter
-migrator
-\family default
- is used to migrate from 
-\family typewriter
-'fromSubPop'
-\family default
- to 
-\family typewriter
-'toSubPop'.
-
-\family default
- From and to subpop can be a number or an array of subpopulations.
- The migration probability/rate/counts from 
-\family typewriter
-i->j
-\family default
- is specified in the rate matrix.
- The 
-\family typewriter
-'fromSubPop'
-\family default
- and 
-\family typewriter
-'toSubPop'
-\family default
- are default to all subpopulations.
-\end_layout
-
-\begin_layout Standard
-An detailed example can be found in 'some real examples' -> 'complex Migration
- Scheme' section.
-\end_layout
-
-\begin_layout Subsection
-Functions (Python) 
-\family typewriter
-MigrIslandRates
-\begin_inset LatexCommand index
-name "Function!migrIslandRates"
-
-\end_inset
-
-, MigrStepstoneRates
-\begin_inset LatexCommand index
-name "Function!migrStepstoneRates"
-
-\end_inset
-
-
-\family default
- (simuUtil.py)
-\end_layout
-
-\begin_layout Standard
-Migrator is very flexible.
- It can accept arbitrary migration matrix, from any subset of subpopulations
- to any (even new) other subset of subpopulations.
- Several functions are defined in simuUtil.py, however, for easy use of popular
- migration models:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MigrIslandRates(r, n)
-\family default
- returns a migration matrix
-\begin_inset Formula \[
-\left(\begin{array}{ccccc}
-1-r & \frac{r}{n-1} & ... & ... & \frac{r}{n-1}\\
-\frac{r}{n-1} & 1-r & ... & ... & \frac{r}{n-1}\\
- &  & ...\\
-\frac{r}{n-1} & ... & ... & 1-r & \frac{r}{n-1}\\
-\frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r\end{array}\right)\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MigrStepstoneRates(r, n, circular=False)
-\family default
- returns a migration matrix
-\begin_inset Formula \[
-\left(\begin{array}{ccccc}
-1-r & r\\
-r/2 & 1-r & r/2\\
- &  & ...\\
- &  & r/2 & 1-r & r/2\\
- &  &  & r & 1-r\end{array}\right)\]
-
-\end_inset
-
-and if 
-\family typewriter
-circular=True
-\family default
-, returns
-\begin_inset Formula \[
-\left(\begin{array}{ccccc}
-1-r & r/2 &  &  & r/2\\
-r/2 & 1-r & r/2\\
- &  & ...\\
- &  & r/2 & 1-r & r/2\\
-r/2 &  &  & r/2 & 1-r\end{array}\right)\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++/Hybrid) 
-\family typewriter
-pyMigrator
-\begin_inset LatexCommand index
-name "operator!pyMigrator"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For even more complicated migration schemes, you may DIY using a 
-\family typewriter
-pyMigrator
-\family default
-.
- This operator is not strictly hybrid since it does not call Python function.
- However, it takes a 
-\family typewriter
-carray
-\family default
- as subpopulation IDs for each individual.
- 
-\family typewriter
-pyMigrator
-\family default
- then complete migration according its content.
-\end_layout
-
-\begin_layout Standard
-Note that the application sequence of the operators is 
-\family typewriter
-initByFreq
-\family default
-, 
-\family typewriter
-dumper
-\family default
-,
-\family typewriter
- pyMigrator
-\family default
- and then 
-\family typewriter
-dumper
-\family default
- again since its stage is set to 
-\family typewriter
-PrePostMating
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pyMigratorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-splitSubPop
-\family default
-
-\begin_inset LatexCommand index
-name "operator!splitSubPop"
-
-\end_inset
-
-, function 
-\family typewriter
-SplitSubPop
-\begin_inset LatexCommand index
-name "function!SplitSubPop"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-splitSubPopRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-mergeSubPops
-\family default
-
-\begin_inset LatexCommand index
-name "operator!mergeSubPops"
-
-\end_inset
-
-, function 
-\family typewriter
-MergeSubPops
-\begin_inset LatexCommand index
-name "function!MergeSubPops"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-mergeSubPopsRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Mutation
-\begin_inset LatexCommand index
-name "Mutation"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The only difference between the following mutators is the way they actually
- mutate an allele, and corresponding input parameters.
-\end_layout
-
-\begin_layout Standard
-Mutators record the number of mutation events at each loci.
- You can retrieve this information using
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-mut.mutationCount(locus)
-\end_layout
-
-\begin_layout Standard
-
-mut.mutationCounts()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-where 
-\family typewriter
-mut
-\family default
- is any mutator and 
-\family typewriter
-locus
-\family default
- is locus index.
-\end_layout
-
-\begin_layout Subsection
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-mutatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-kamMutator
-\begin_inset LatexCommand index
-name "operator!kamMutator"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-KamMutate
-\begin_inset LatexCommand index
-name "function!KamMutate"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-kamMutatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Here is an example of 
-\family typewriter
-kamMutator
-\family default
-:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_kamMutator.log}[caption={kamMutator},label={kamMutator}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-smmMutator
-\begin_inset LatexCommand index
-name "operator!smmMutator"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-SmmMutate
-\begin_inset LatexCommand index
-name "function!SmmMutate"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-smmMutatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The following example demonstrates the use of 
-\family typewriter
-smmMutator
-\family default
-.
- Note that although the mutation rate is 1, some allele 1 is not mutated
- since they can not be mutated to 0.
- The same will be hold for the upper bound 
-\family typewriter
-maxAllele
-\family default
- which is defaulted to 99 in this case.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_smmMutator.log}[caption={smmMutator},label={smmMutator}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++/Hybrid) 
-\family typewriter
-gsmMutator
-\begin_inset LatexCommand index
-name "operator!gsmMutator"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-GsmMutate
-\begin_inset LatexCommand index
-name "function!GsmMutate"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-gsmMutatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Here is an example of 
-\family typewriter
-gsmMutator
-\family default
-:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_gsmMutator.log}[caption={gsmMutator},label={gsmMutator}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (Hybrid) 
-\family typewriter
-pyMutator
-\begin_inset LatexCommand index
-name "operator!pyMutator"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-PyMutate
-\begin_inset LatexCommand index
-name "function!PyMutate"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pyMutatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If you can not accomplish your task with the above mutators, you can always
- use this hybrid mutator.
- Here is an example:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_pyMutator.log}[caption={pyMutator},label={pyMutator}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
-
-\backslash
-clearpage
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-pointMutator
-\begin_inset LatexCommand index
-name "operator!pointMutator"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-PointMutate
-\begin_inset LatexCommand index
-name "function!PointMutate"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pointMutatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
-
-\backslash
-clearpage
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Recombination
-\begin_inset LatexCommand index
-name "recombination"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-recombinatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-recombinator
-\begin_inset LatexCommand index
-name "operator!recombinator"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This operator takes similar parameters as a mutator.
- However, because of potentially uneven allelic distance, you should use
- one of the two parameters listed in the last section.
-\end_layout
-
-\begin_layout Standard
-The following example forces recombination (with rate 1, an unrealistic
- value since the maximum recombination rate should be .5) at loci 2, 6 and
- 10.
- Here I use a 
-\family typewriter
-parentsTagger
-\family default
- to mark the parents of each individual so you can (if you have enough patience)
- see exactly how recombination works.
- 
-\begin_inset Include \lstinputlisting{log/ref_recombinator.log}[caption={Recombinator},label={recombinator}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Recombinations after each locus will be recorded.
- You can retrieve this information through functions
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-rec.recCount(locus)
-\end_layout
-
-\begin_layout Standard
-
-rec.recCounts()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-where 
-\family typewriter
-rec
-\family default
- is the recombinator, 
-\family typewriter
-locus
-\family default
- is locus index.
- 
-\end_layout
-
-\begin_layout Section
-Selection
-\begin_inset LatexCommand index
-name "selection"
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Subsection
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-selectorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Mechanism
-\end_layout
-
-\begin_layout Standard
-It is not very clear that our method agrees with the traditional 'average
- number of offspring' definition of fitness.
- (Note that this concept is very difficult to simulate since we do not know
- who will determine the number of offspring if two parents are involved.)
- We can, instead, look at the consequence of selection in a simple case
- (as derived in any population genetics textbook):
-\end_layout
-
-\begin_layout Quote
-At generation 
-\begin_inset Formula $t$
-\end_inset
-
-, genotype 
-\begin_inset Formula $P_{11},P_{12},P_{22}$
-\end_inset
-
- has fitness values 
-\begin_inset Formula $w_{11},w_{12,}w_{22}$
-\end_inset
-
- respectively.
- In the next generation the proportion of genotype 
-\begin_inset Formula $P_{11}$
-\end_inset
-
- etc., should be
-\end_layout
-
-\begin_layout Quote
-\begin_inset Formula \[
-\frac{P_{11}w_{11}}{P_{11}w_{11}+P_{12}w_{12}+P_{22}w_{22}}\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Now, using the 'ability-to-mate' approach, for the sexless case, the proportion
- of genotype 
-\begin_inset Formula $11$
-\end_inset
-
- will be the number of 
-\begin_inset Formula $11$
-\end_inset
-
- individuals times its probability to be chosen: 
-\begin_inset Formula \[
-n_{11}\frac{w_{11}}{\sum_{n=1}^{N}w_{n}}\]
-
-\end_inset
-
-This is, however, exactly 
-\begin_inset Formula \[
-n_{11}\frac{w_{11}}{\sum_{n=1}^{N}w_{n}}=n_{11}\frac{w_{11}}{n_{11}w_{11}+n_{12}w_{12}+n_{22}w_{22}}=\frac{P_{11}w_{11}}{P_{11}w_{11}+P_{12}w_{12}+P_{22}w_{22}}\]
-
-\end_inset
-
-The same argument applies to the case of arbitrary number of genotypes and
- random mating.
- 
-\end_layout
-
-\begin_layout Standard
-The following operators, when applied, will set a variable 
-\family typewriter
-fitness
-\family default
- and an indicator so that selector-aware mating scheme can select individuals
- according to these values.
- This has two consequences:
-\end_layout
-
-\begin_layout Itemize
-selector alone can not do selection! Only mating schemes can actually select
- on individuals.
-\end_layout
-
-\begin_layout Itemize
-selector has to be 
-\family typewriter
-PreMating
-\family default
- operator.
- This is not a problem when you use the operator form of the selectors since
- their default stage is 
-\family typewriter
-PreMating
-\family default
-.
- However, if you use the function form of these selectors in a 
-\family typewriter
-pyOperator
-\family default
-, make sure to set the stage of 
-\family typewriter
-pyOperator
-\family default
- to 
-\family typewriter
-PreMating
-\family default
-.
- 
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-mapSelector
-\begin_inset LatexCommand index
-name "operator!mapSelector"
-
-\end_inset
-
-,
-\family default
-function 
-\family typewriter
-MapSelector
-\begin_inset LatexCommand index
-name "function!MapSelect"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-mapSelectorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The following example is a typical example of heterozygote superiority.
- When 
-\begin_inset Formula $w_{11}<w_{12}>w_{22},$
-\end_inset
-
- the genotype frequencies will go to an equilibrium state.
- Theoretically, if
-\begin_inset Formula \begin{eqnarray*}
-s_{1} & = & w_{12}-w_{11}\\
-s_{2} & = & w_{12}-w_{22}\end{eqnarray*}
-
-\end_inset
-
-the stable allele frequency of allele 1 is
-\begin_inset Formula \[
-p=\frac{s_{2}}{s_{1}+s_{2}}\]
-
-\end_inset
-
-Which is 
-\begin_inset Formula $.677$
-\end_inset
-
- in the example (
-\begin_inset Formula $s_{1}=.1$
-\end_inset
-
-, 
-\begin_inset Formula $s_{2}=.2$
-\end_inset
-
-).
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_basicSelector.log}[caption={map selector},label={basicSelector}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-maSelector
-\begin_inset LatexCommand index
-name "operator!maSelector"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-MaSelect
-\begin_inset LatexCommand index
-name "function!MaSelect"
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-maSelectorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-maSelector
-\family default
- accepts an array of fitness values:
-\end_layout
-
-\begin_layout Itemize
-For single-locus, 
-\family typewriter
-fitness
-\family default
- is the fitness for genotype AA, Aa, aa, while A stands for wildtype alleles.
- 
-\end_layout
-
-\begin_layout Itemize
-For a two-locus model, 
-\family typewriter
-fitness
-\family default
- is the fitness for genotype 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="4" columns="4">
-<features>
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-BB
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Bb
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-bb
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-AA
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-\begin_inset Formula $w_{11}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-\begin_inset Formula $w_{12}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-\begin_inset Formula $w_{13}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Aa
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-\begin_inset Formula $w_{21}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-\begin_inset Formula $w_{22}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-\begin_inset Formula $w_{23}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-aa
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-\begin_inset Formula $w_{31}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-\begin_inset Formula $w_{32}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-\begin_inset Formula $w_{33}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-in the order of 
-\begin_inset Formula $w_{11},w_{12,}...,w_{32},w_{33}$
-\end_inset
-
-.
- 
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-For a model with more than two loci, use a table of length 
-\begin_inset Formula $3^{n}$
-\end_inset
-
- in a order similar to the two-locus model.
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-mlSelector
-\begin_inset LatexCommand index
-name "operator!mlSelector"
-
-\end_inset
-
-
-\family default
-, function 
-\family typewriter
-MlSelect
-\begin_inset LatexCommand index
-name "function!MlSelect"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-mlSelectorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (Hybrid) 
-\family typewriter
-pySelector
-\begin_inset LatexCommand index
-name "operator!pySelector"
-
-\end_inset
-
-
-\family default
-, function 
-\family typewriter
-PySelect
-\begin_inset LatexCommand index
-name "function!PySelect"
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pySelectorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The following example simulates the same scenario as before, with 
-\begin_inset Formula $s_{1}=.2,s_{2}=.3$
-\end_inset
-
- (so
-\begin_inset Formula $p=.6$
-\end_inset
-
-) and a 
-\family typewriter
-pySelector
-\family default
-.
- Note that although alleles at two loci are passed, the 
-\family typewriter
-sel
-\family default
- function only uses alleles from the first one.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_pySelector.log}[caption={python selector},label={pySelector}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
-
-\backslash
-clearpage
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Penetrance
-\begin_inset LatexCommand index
-name "penetrance"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-penetranceRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-mapPenetrance
-\family default
-
-\begin_inset LatexCommand index
-name "operator!mapPenetrance"
-
-\end_inset
-
- (post, during-Mating), function 
-\family typewriter
-MapPenetrance
-\begin_inset LatexCommand index
-name "function!MapPenetrance"
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-mapPenetranceRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-An example of this operator is
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-mapPenetrance(locus=1, penetrance={'1-1':0, '1-2':0.5, '2-2':1})
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Note that this dictionary can take more than three elements to accommendate
- more than one disease alleles.
- 
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-maPenetrance
-\family default
-
-\begin_inset LatexCommand index
-name "operator!maPenetrance"
-
-\end_inset
-
- (post, during-Mating), function 
-\family typewriter
-MaPenetrance
-\begin_inset LatexCommand index
-name "function!MaPenetrance"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-maPenetranceRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-An example of operator 
-\family typewriter
-maPenetrance
-\family default
- is
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-maPenetrance(loci=[1,5], wildtype=[1], penetrance=[0,0.5,1,0,0,1,0,1,1])
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This operator behaves the same as the 
-\family typewriter
-mapPenetrance
-\family default
- example but will work if there are more than one disease alleles.
- 
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-mlPenetrance
-\family default
-
-\begin_inset LatexCommand index
-name "operator!mlPenetrance"
-
-\end_inset
-
-(post, during-Mating), function 
-\family typewriter
-MlPenetrance
-\begin_inset LatexCommand index
-name "function!MlPenetrance"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-mlPenetranceRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For example, if each locus follows an additive penetrance model, we can
- have
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pen = []
-\end_layout
-
-\begin_layout Standard
-
-for loc in loci:
-\end_layout
-
-\begin_layout Standard
-
-  pen.append( maPenetrance(locus=loc, wildtype=[1],
-\end_layout
-
-\begin_layout Standard
-
-    penetrance=[0.0.3,0.6] ) )
-\end_layout
-
-\begin_layout Standard
-
-# the multi-loci penetrance
-\end_layout
-
-\begin_layout Standard
-
-penMulti = mlPenetrance(mode=PEN_Multiplicative, peneOps=pen)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (Hybrid) 
-\family typewriter
-pyPenetrance
-\family default
-
-\begin_inset LatexCommand index
-name "operator!pyPenetrance"
-
-\end_inset
-
-(post, during-Mating), function 
-\family typewriter
-PyPenetrance
-\begin_inset LatexCommand index
-name "function!PyPenetrance"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pyPenetranceRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For example, for the same multi-locus model before, we can define the following
- function using 
-\family typewriter
-pyPenetrance
-\family default
- as
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-def peneFunc(geno):
-\end_layout
-
-\begin_layout Standard
-
-  p = 1
-\end_layout
-
-\begin_layout Standard
-
-  for l in range(len(geno)/2):
-\end_layout
-
-\begin_layout Standard
-
-    p *= (geno[l*2]+geno[l*2+1]-2)*0.3
-\end_layout
-
-\begin_layout Standard
-
-  return p
-\end_layout
-
-\begin_layout Standard
-
-penMulti = pyPenetrance(loci=loci, func=peneFunc)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-As you can see, using this operator, you can define arbitrarily complex
- penetrance functions.
- Typical such penetrance functions are interaction between loci (using a
- multi-locus penetrance table), even random ones.
-\end_layout
-
-\begin_layout Standard
-It would be useful to let 
-\family typewriter
-peneFunc
-\family default
- take parameters.
- This can be done by defining a Python function that returns a penetrance
- function.
- This may sound intimidating but it is really easy:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-def peneFunc(table):
-\end_layout
-
-\begin_layout Standard
-
-  def func(geno):
-\end_layout
-
-\begin_layout Standard
-
-    return table[geno[0]-1][geno[1]-1]
-\end_layout
-
-\begin_layout Standard
-
-  return func
-\end_layout
-
-\begin_layout Standard
-
-# then, given a table, you can do
-\end_layout
-
-\begin_layout Standard
-
-pen = pyPenetrance(loci=loci, func=peneFunc( ((0,0.5),(0.3,0.8)) ) )
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Now, for any table, you can use 
-\family typewriter
-peneFunc
-\family default
- to return a penetrance function that uses this table.
-\end_layout
-
-\begin_layout Section
-Quantitative Trait
-\begin_inset LatexCommand index
-name "quantitative trait"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-quanTraitRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-mapQuanTrait
-\family default
-
-\begin_inset LatexCommand index
-name "operator!mapQuanTrait"
-
-\end_inset
-
-, function 
-\family typewriter
-MapQuanTrait
-\begin_inset LatexCommand index
-name "function!MapQuanTrait"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-mapQuanTraitRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-maQuanTrait
-\family default
-
-\begin_inset LatexCommand index
-name "operator!maQuanTrait"
-
-\end_inset
-
-, function 
-\family typewriter
-MaQuanTrait
-\begin_inset LatexCommand index
-name "function!MaQuanTrait"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-maQuanTraitRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-mlQuanTrait
-\family default
-
-\begin_inset LatexCommand index
-name "operator!mlQuanTrait"
-
-\end_inset
-
-, function 
-\family typewriter
-MlQuanTrait
-\begin_inset LatexCommand index
-name "function!MlQuanTrait"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-mlQuanTraitRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (Hybrid) 
-\family typewriter
-pyQuanTrait
-\family default
-
-\begin_inset LatexCommand index
-name "operator!pyQuanTrait"
-
-\end_inset
-
-, function 
-\family typewriter
-PyQuanTrait
-\begin_inset LatexCommand index
-name "function!PyQuanTrait"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pyQuanTraitRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
-
-\backslash
-clearpage
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-\begin_inset LatexCommand label
-name "sec:Ascertainment"
-
-\end_inset
-
-Ascertainment
-\begin_inset LatexCommand index
-name "ascertainment"
-
-\end_inset
-
- (subset of population)
-\end_layout
-
-\begin_layout Subsection
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-sampleRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-function 
-\family typewriter
-population::shrinkByIndID
-\begin_inset LatexCommand index
-name "thrinkByIndInfo"
-
-\end_inset
-
-()
-\end_layout
-
-\begin_layout Standard
-This function looks at the 
-\family typewriter
-subPopID()
-\family default
- field of each individual and remove anyone with a negative value.
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-pySubset
-\family default
-
-\begin_inset LatexCommand index
-name "operator!pySubset"
-
-\end_inset
-
-, function 
-\family typewriter
-PySubset
-\family default
-
-\begin_inset LatexCommand index
-name "function!PySubset"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pySubsetRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++/hybrid) 
-\family typewriter
-pySample
-\begin_inset LatexCommand index
-name "operator!pySample"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-PySample
-\begin_inset LatexCommand index
-name "function!PySample"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-PySample
-\begin_inset LatexCommand index
-name "function!PySample"
-
-\end_inset
-
-(pop, info, name, saveAs, format)
-\family default
- or 
-\family typewriter
-Sample
-\begin_inset LatexCommand index
-name "function!Sample"
-
-\end_inset
-
-(pop)
-\family default
- if you already set subpopulation ID for each individual using 
-\family typewriter
-setSubPopID
-\begin_inset LatexCommand index
-name "population!setInfo"
-
-\end_inset
-
-()
-\family default
- function.
- The operator version of these functions are 
-\family typewriter
-pySample
-\begin_inset LatexCommand index
-name "operator!pySample"
-
-\end_inset
-
-(info, times, name, nameExpr, saveAs, saveAsExpr, format)
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pySampleRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-randomSample
-\begin_inset LatexCommand index
-name "operator!randomSample"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-RandomSample
-\begin_inset LatexCommand index
-name "function!RandomSample"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-RandomSample
-\begin_inset LatexCommand index
-name "function!RandomSample"
-
-\end_inset
-
-(pop, size, times, name, saveAs, format)
-\family default
- will randomly choose size individuals (or 
-\family typewriter
-sizes
-\family default
- from subpopulations) and return a new population.
- The operator version is 
-\family typewriter
-randomSample
-\family default
-
-\begin_inset LatexCommand index
-name "operator!randomSample"
-
-\end_inset
-
-(
-\family typewriter
-size, times, name, nameExpr, saveAs, saveAsExpr, format
-\family default
-).
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-randomSampleRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Opeartor (C++) 
-\family typewriter
-caseControlSample
-\begin_inset LatexCommand index
-name "operator!caseControlSample"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-CaseControlSample
-\begin_inset LatexCommand index
-name "function!CaseControlSample"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-CaseControlSample(pop, cases, controls, times, name, saveAs, format)
-\family default
- will randomly choose cases affected individuals and controls unaffected
- individuals.
- The operator version of this function is 
-\family typewriter
-caseControlSample(case, cases, control, controls, times, name, nameExpr,
- saveAs, saveAsExpr, format)
-\family default
-.
- 
-\end_layout
-
-\begin_layout Standard
-The following example shows how to draw a random sample (without replacement
- of course) from an existing population.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_randomSample.log}[caption={random sample},label={randomSample}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-caseControlSampleRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-affectedSibpairSample
-\family default
-
-\begin_inset LatexCommand index
-name "operator!affectedSibpairsSample"
-
-\end_inset
-
-, function 
-\family typewriter
-AffectedSibpairSample
-\family default
-
-\begin_inset LatexCommand index
-name "function!AffectedSibpairsSample"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-affectedSibpairSampleRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For example, you can do
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-endGen = 1000
-\end_layout
-
-\begin_layout Standard
-
-# having two offsprings only at the last three generations
-\end_layout
-
-\begin_layout Standard
-
-def numOffsprings(gen):
-\end_layout
-
-\begin_layout Standard
-
-  if gen >= endGen - 3:
-\end_layout
-
-\begin_layout Standard
-
-    return 2
-\end_layout
-
-\begin_layout Standard
-
-  else 
-\end_layout
-
-\begin_layout Standard
-
-    return 1
-\end_layout
-
-\begin_layout Standard
-
-# evolve ...
-\end_layout
-
-\begin_layout Standard
-
-simu = simulator(pop, randomMating(numOffspringsFunc = numOffsprings))
-\end_layout
-
-\begin_layout Standard
-
-simu.evolve( ...
-\end_layout
-
-\begin_layout Standard
-
-  parentsTagger(begin = endGen - 3),
-\end_layout
-
-\begin_layout Standard
-
-  mapPenetrance(...., begin = endGen - 2),
-\end_layout
-
-\begin_layout Standard
-
-  setAncestralDepth(1, at = endGen -2 )
-\end_layout
-
-\begin_layout Standard
-
-...)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-to let your population evolve 
-\emph on
-normally
-\emph default
- and start to store ancestral generations and allow multiple offspring at
- the last several generations.
-\end_layout
-
-\begin_layout Standard
-Briefly, you should
-\end_layout
-
-\begin_layout Itemize
-set the ancestral depth to at least 
-\family typewriter
-1
-\family default
- to allow analyzing of the parental generation.
-\end_layout
-
-\begin_layout Itemize
-use 
-\family typewriter
-parentsTagger
-\family default
- to track parents for each individual, with the usual limit of no post-mating
- migration.
- 
-\end_layout
-
-\begin_layout Itemize
-allow multiple offspring at least at the last generation.
- (You do not have to use fixed number of offspring.
- Other mating mode like 
-\family typewriter
-MATE_GeometricDistribution
-\family default
- can also be used.)
-\end_layout
-
-\begin_layout Itemize
-use a penetrance operator to set affected status of each individual
-\end_layout
-
-\begin_layout Standard
-and finally use this operator (or function)
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-affectedSibpairSample(size,  times, name, saveAs, format)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-to get samples accessible from 
-\family typewriter
-dvars().name[i]
-\family default
-.
- Each sample will
-\end_layout
-
-\begin_layout Itemize
-have 2*
-\family typewriter
-size
-\family default
- of paired individuals.
- (e.g.
- 
-\family typewriter
-individual(2n)
-\family default
- and 
-\family typewriter
-individual(2n+1)
-\family default
-,
-\family typewriter
- n=0,1,...
-\family default
-,
-\family typewriter
- size-1
-\family default
- are siblings.)
-\end_layout
-
-\begin_layout Itemize
-have an ancestral generation of the same size, with parents to the sibling
- pairs.
-\end_layout
-
-\begin_layout Itemize
-if 
-\family typewriter
-size
-\family default
- is an array, get 
-\family typewriter
-size[sp]
-\family default
- sibling pairs from subpopulation 
-\family typewriter
-sp
-\family default
- .
-\end_layout
-
-\begin_layout Standard
-Other than samples 
-\family typewriter
-name
-\family default
-, variable 
-\family typewriter
-numSibpairs
-\family default
- will be set to indicate the total number of affected sibling pairs in the
- population.
- Subpopulation structure will be kept in the samples so you will know how
- many individuals are drawn from each subpopulation.
- (This information is also saved in variable 
-\family typewriter
-numSibpairs
-\family default
- of each sample.)
-\end_layout
-
-\begin_layout Subsection
-largePedigreeSample
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-largePedigreeSampleRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-nuclearFamilySample
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-nuclearFamilySampleRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Statistics Calculation
-\end_layout
-
-\begin_layout Subsection
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-statorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-stat
-\begin_inset LatexCommand index
-name "operator!stat"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-Stat
-\begin_inset LatexCommand index
-name "function!Stat"
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-statRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection*
-Linkage disequilibrium 
-\end_layout
-
-\begin_layout Itemize
-parameter:
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-LD: LD = [ [1,2], [ 0,1,1,2],[1,2,1,2]]
-\end_layout
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Standard
-For each item 
-\family typewriter
-[loc1, loc2, allele1, allele2]
-\family default
-, 
-\begin_inset Formula $D$
-\end_inset
-
-, 
-\begin_inset Formula $D'$
-\end_inset
-
- and 
-\begin_inset Formula $r^{2}$
-\end_inset
-
- will be calculated based on allele1 at loc1 and allele2 at loc2.
- If only two loci are given, the LD values are averaged over all allele
- pairs.
- For example, for allele 
-\begin_inset Formula $A$
-\end_inset
-
- at locus 1 and allele 
-\begin_inset Formula $B$
-\end_inset
-
- at locus 2, 
-\begin_inset Formula \begin{eqnarray*}
-D & = & P_{AB}-P_{A}P_{B}\\
-D' & = & D/D_{max}\\
-D_{max} & = & \begin{cases}
-\min\left(P_{A}\left(1-P_{B}\right),\left(1-P_{A}\right)P_{B}\right) & \textrm{if }D>0\\
-\min\left(P_{A}P_{B},\left(1-P_{A}\right)\left(1-P_{B}\right)\right) & \textrm{if }D<0\end{cases}\\
-r^{2} & = & \frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)}\end{eqnarray*}
-
-\end_inset
-
-If 
-\begin_inset Formula $A$
-\end_inset
-
- and 
-\begin_inset Formula $B$
-\end_inset
-
- are not specified, 
-\begin_inset Formula $D$
-\end_inset
-
-, 
-\begin_inset Formula $D'$
-\end_inset
-
- and 
-\begin_inset Formula $r^{2}$
-\end_inset
-
- will be the averaged value: (basically 
-\begin_inset Formula $\sum\sum P_{A}P_{B}\left|\right|$
-\end_inset
-
- )
-\begin_inset Formula \begin{eqnarray*}
-D & = & \sum_{i}\sum_{j}P_{i}P_{j}\left|D_{ij}\right|\\
-D' & = & \sum_{i}\sum_{j}P_{i}P_{j}\left|D'_{ij}\right|\\
-r^{2} & = & \sum_{i}\sum_{j}P_{i}P_{j}r_{ij}^{2}=\sum_{i}\sum_{j}\frac{D_{ij}^{2}}{\left(1-P_{i}\right)\left(1-P_{j}\right)}\end{eqnarray*}
-
-\end_inset
-
-where 
-\begin_inset Formula $p_{i}$
-\end_inset
-
- and 
-\begin_inset Formula $q_{j}$
-\end_inset
-
- are the population allele frequencies of the 
-\begin_inset Formula $i$
-\end_inset
-
-th allele on loc1 and the 
-\begin_inset Formula $j$
-\end_inset
-
-th allele on loc2.
- Please note that some other authors uses
-\begin_inset Formula \[
-r^{2}=\sum_{i}\sum_{j}\frac{D_{ij}^{2}}{P_{i}P_{j}}\]
-
-\end_inset
-
-If you are sure the later is correct, please send me an email (with reference).
-\end_layout
-
-\end_deeper
-\begin_layout Section
-Expression and Statements
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-output
-\begin_inset LatexCommand index
-name "operator!output"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This operator output a simple string.
- For example, 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-output(r'
-\backslash
-n', rep=REP_LAST)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-output a newline at the last replicate.
- 
-\end_layout
-
-\begin_layout Subsection
-Operator (Python) 
-\family typewriter
-tab
-\begin_inset LatexCommand index
-name "operator!tab"
-
-\end_inset
-
- (defined in simuUtli.py)
-\end_layout
-
-\begin_layout Standard
-Output a tab.
- (Wrapper of output operator)
-\end_layout
-
-\begin_layout Subsection
-Operator (Python) 
-\family typewriter
-endl
-\begin_inset LatexCommand index
-name "operator!endl"
-
-\end_inset
-
- (defined in simuUtli.py)
-\end_layout
-
-\begin_layout Standard
-Output a new line.
- (Wrapper of output operator)
-\end_layout
-
-\begin_layout Subsection
-Operator (hybrid) 
-\family typewriter
-pyEval
-\begin_inset LatexCommand index
-name "operator!pyEval"
-
-\end_inset
-
-,
-\family default
- function 
-\family typewriter
-PyEval
-\begin_inset LatexCommand index
-name "function!PyEval"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pyEvalRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (hybrid) 
-\family typewriter
-pyExec
-\begin_inset LatexCommand index
-name "operator!pyEval"
-
-\end_inset
-
-
-\family default
-, function 
-\family typewriter
-PyExec
-\begin_inset LatexCommand index
-name "function!PyExec"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pyExecRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Function (Python) 
-\family typewriter
-ListVars (defined in simuUtil.py)
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-ListVars
-\begin_inset LatexCommand index
-name "function!listVars"
-
-\end_inset
-
-(variable)
-\end_layout
-
-\begin_layout Standard
-This function lists any variable in an indented text format.
- You can use 
-\family typewriter
-listVar(simuVars)
-\family default
- to have a look at all replicates or 
-\family typewriter
-listVar(simuVars[0]['subPop'][0])
-\family default
- to see variables for the first subpopulation in replicate one.
-\end_layout
-
-\begin_layout Section
-Visualization
-\end_layout
-
-\begin_layout Standard
-There is no special visualizer (there was indeed a matlabPlotter before
- ver 0.5.9 but I decide to remove it since matlab is not universally available.)
- Since everything is exposed dynamically, all you need to do is plotting
- variables in whatever way you prefer.
- The basic steps are:
-\end_layout
-
-\begin_layout Itemize
-find an appropriate tool.
- I prefer R/Rpy to any other tools since I am familiar with R.
- You can make your own choice.
-\end_layout
-
-\begin_layout Itemize
-write a function to plot variable.
- If you would like to plot history of a variable, you can use the 
-\family typewriter
-Aggregator
-\family default
- object defined in 
-\family typewriter
-simuUtil.py
-\family default
-.
- 
-\end_layout
-
-\begin_layout Itemize
-wrap this function as an operator.
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-simuRPy.py
-\family default
- provides a pure Python operator 
-\family typewriter
-varPlotter
-\family default
-.
- It is defined in 
-\family typewriter
-simuSciPy
-\family default
- and 
-\family typewriter
-simuMatPlt.py
-\family default
- as well but they are lack of subplot capacity (so the usages are different)
- due to the limit of SciPy/gplt and MatPlotLib's plotting capacities.
- Also note as of Apr, 2006, the development of gplt in scipy was stopped
- so support of simuPOP/simuSciPy was stopped as well.
-\end_layout
-
-\begin_layout Subsection
-Operator (Python) 
-\family typewriter
-varPlotter (simuRPy.py)
-\end_layout
-
-\begin_layout Standard
-The use of 
-\family typewriter
-varPlotter
-\family default
- is easy, if you would like to 
-\end_layout
-
-\begin_layout Subsubsection*
-Plotting with history
-\end_layout
-
-\begin_layout Itemize
-plot a number in the form of a variable or expression, use
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-varPlotter(var='expr')
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-plot a vector in the same window and there is only one replicate in the
- simulator, use
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-varPlotter(var='expr', varDim=len)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-where 
-\family typewriter
-len
-\family default
- is the dimension of your variable or expression.
- Each line in the figure represents the history of an item in the array.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-plot a vector in the same window and there are several replicates, use 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-varPlotter(var='expr', varDim=len, numRep=nr, byRep=1)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-varPlotter
-\family default
- will try to use an appropriate layout for your subplots (for example, use
- 3x4 if 
-\family typewriter
-numRep=10
-\family default
-).
- You can also specify parameter 
-\family typewriter
-mfrow
-\family default
- to change the layout.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-if you would like to plot each item of your array variables in a subplot,
- use
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-varPlotter(var='expr', varDim=len, byVal=1)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-or in case of a single replicate
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-There will be 
-\family typewriter
-numRep
-\family default
- lines in each subplot.
-\end_layout
-
-\end_deeper
-\begin_layout Subsubsection*
-Plotting without history
-\end_layout
-
-\begin_layout Itemize
-use option 
-\family typewriter
-history=False
-\family default
-.
- Parameters 
-\family typewriter
-byVal, varDim
-\family default
- etc.
- will be ignored.
- 
-\end_layout
-
-\begin_layout Standard
-Other options are
-\end_layout
-
-\begin_layout Enumerate
-
-\family typewriter
-title, xtitle, ytitle:
-\family default
- title of your figure(s).
- 
-\family typewriter
-title
-\family default
- is default to your expression, 
-\family typewriter
-xtitle
-\family default
- is defaulted to 
-\family typewriter
-generation
-\family default
-.
-\end_layout
-
-\begin_layout Enumerate
-
-\family typewriter
-win:
-\family default
- window of generations.
- I.e., how many generations to keep in a figure.
- This is useful when you want to keep track of only recent changes.
-\end_layout
-
-\begin_layout Enumerate
-
-\family typewriter
-update:
-\family default
- update figure after 
-\family typewriter
-update
-\family default
- generations.
- This is used when you do not want to update the figure at every generation.
-\end_layout
-
-\begin_layout Enumerate
-
-\family typewriter
-saveAs:
-\family default
- save figures in files 
-\family typewriter
-saveAs#gen.eps.
-
-\family default
- For example, if 
-\family typewriter
-saveAs='demo
-\family default
-', you will get files 
-\family typewriter
-demo1.eps
-\family default
-, 
-\family typewriter
-demo2.eps
-\family default
- etc.
-\end_layout
-
-\begin_layout Enumerate
-
-\family typewriter
-separate:
-\family default
- plot data lines in separate panels.
- 
-\end_layout
-
-\begin_layout Enumerate
-
-\family typewriter
-image:
-\family default
- use R image function to plot image, instead of lines.
-\end_layout
-
-\begin_layout Enumerate
-
-\family typewriter
-level:
-\family default
- level of image colors (default to 20).
-\end_layout
-
-\begin_layout Enumerate
-
-\family typewriter
-leaveOpen:
-\family default
- whether or not leave the plot open when plotting is done.
- Default to 
-\family typewriter
-True
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-Here is an example:
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset Include \verbatiminput{log/ref_simuPlotter.log}
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Section
-Tagging (used for pedigree tracking) 
-\end_layout
-
-\begin_layout Subsection
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-taggerRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-inheritTagger,
-\family default
- duringMating
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-inheritTaggerRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-parentsTagger
-\family default
-, duringMating
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-parentsTaggerRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-pyTagger
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pyTaggerRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Data collector
-\end_layout
-
-\begin_layout Standard
-Sometimes, instead of output data directly, we may want to collect history
- data on some expression.
- Data collector is designed for this purpose.
- 
-\end_layout
-
-\begin_layout Subsection
-operator (Python) 
-\family typewriter
-collector
-\begin_inset LatexCommand index
-name "operator!collector"
-
-\end_inset
-
-
-\family default
-, in 
-\family typewriter
-simuUtil.py
-\end_layout
-
-\begin_layout Standard
-This operator accepts the following parameters:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-name:
-\family default
- name by which the collected data will be displayed.
- Variable names will be a list of stored values.
- (
-\family typewriter
-generation
-\family default
- is not stored.
- You can always put it in 
-\family typewriter
-expr
-\family default
- though.)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-expr:
-\family default
- an expression that will be evaluated.
- The result will be converted to a list (if needed) and stored in 
-\family typewriter
-name[gen]
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-When this operator is called, it will evaluate 
-\family typewriter
-expr
-\family default
- and store its result in 
-\family typewriter
-name[gen]
-\family default
-.
- After evolution, you will get a dictionary of values indexed by generation
- numbers.
-\end_layout
-
-\begin_layout Section
-Output 
-\end_layout
-
-\begin_layout Subsection
-operator (C++) 
-\family typewriter
-savePopulation
-\begin_inset LatexCommand index
-name "operator!savePopulation"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-function (Python) 
-\family typewriter
-SaveFstat
-\begin_inset LatexCommand index
-name "function!SaveFstat"
-
-\end_inset
-
-
-\family default
- (in 
-\family typewriter
-simuUtil.py
-\family default
-)
-\end_layout
-
-\begin_layout Subsection
-operator (Python) 
-\family typewriter
-saveFstat
-\begin_inset LatexCommand index
-name "operator!saveFstat"
-
-\end_inset
-
-
-\family default
- (in 
-\family typewriter
-simuUtil.py
-\family default
-)
-\end_layout
-
-\begin_layout Subsection
-function (Python) 
-\family typewriter
-loadFstat
-\begin_inset LatexCommand index
-name "function!loadFstat"
-
-\end_inset
-
-
-\family default
- (in 
-\family typewriter
-simuUtil.py
-\family default
-)
-\end_layout
-
-\begin_layout Section
-Terminator
-\end_layout
-
-\begin_layout Subsection
-Class reference
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-terminatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-terminateIf
-\begin_inset LatexCommand index
-name "operator!terminateIf"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-terminateIfRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-continueIf
-\begin_inset LatexCommand index
-name "operator!terminateIf"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-continueIfRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Conditional operator 
-\end_layout
-
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-ifElse
-\begin_inset LatexCommand index
-name "operator!ifelse"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-ifElseRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The following example uses some advanced operators of simuPOP:
-\end_layout
-
-\begin_layout Itemize
-set affected status using 
-\family typewriter
-maPenetrance
-\family default
- as a 
-\family typewriter
-DuringMating
-\family default
- operator (penetrance can be used at other stages).
- 
-\end_layout
-
-\begin_layout Itemize
-count the number of affected individuals.
- Note that this has to be done after the penetrance operator is applied.
- 
-\end_layout
-
-\begin_layout Itemize
-if no one is affected, inject some mutations into the population.
- Note the use of 
-\family typewriter
-ifElse
-\family default
- operator.
-\end_layout
-
-\begin_layout Itemize
-expose individual affectedness to the local namespaces.
- Note the use of 
-\family typewriter
-exposePop
-\family default
- option.
- With this, you can call any population member function.
-\end_layout
-
-\begin_layout Itemize
-plot affectedness, use image.
- 
-\end_layout
-
-\begin_layout Itemize
-use dryrun to exam simulator first.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_ifElse.log}[caption={Conditional operator},label={ifElse}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Miscellaneous
-\end_layout
-
-\begin_layout Subsection
-Operator: (C++) 
-\family typewriter
-noneOp
-\begin_inset LatexCommand index
-name "operator!noneOp"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-noneOpRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This operator is used like follows:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-if savePop :
-\end_layout
-
-\begin_layout Standard
-
-  saveOp = savePopulation(output='a.txt')
-\end_layout
-
-\begin_layout Standard
-
-else:
-\end_layout
-
-\begin_layout Standard
-
-  saveOp = noneOp()
-\end_layout
-
-\begin_layout Standard
-
-simu.evolve( [ ...
- saveOp ])
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator: (C++) 
-\family typewriter
-pause
-\begin_inset LatexCommand index
-name "operator!pause"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pauseRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator: (C++) 
-\family typewriter
-ticToc
-\begin_inset LatexCommand index
-name "operator!ticToc"
-
-\end_inset
-
-
-\family default
-, function 
-\family typewriter
-TicToc
-\begin_inset LatexCommand index
-name "function!TicToc"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-ticTocRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Operator: (C++) 
-\family typewriter
-setAncestralDepth
-\family default
-, function 
-\family typewriter
-pop.setAncestralDepth
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-setAncestralDepthRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Random Number Generator
 \end_layout
@@ -10983,260 +10298,6 @@ The seed can also be retrieved using
 rng().seed()
 \family default
  function, which should be saved for serious simulations.
-\end_layout
-
-\begin_layout Section
-Debug-related operators/functions
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-turnOnDebugRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-turnOffDebugRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Standard 
-\family typewriter
-simuPOP
-\family default
- library can print out lots of debug information upon request.
- These are mostly used for internal debugging purposes but you can also
- use them when error happens.
- For example, the following code will crash simuPOP:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
->>> population(1).individual(0).arrAllele()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-It is not clear why this simple line will cause us trouble, instead of outputtin
-g the genotype of the only individual of this population.
- However, the reason is clear if you turn on debug information:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
->>> TurnOnDebug(DBG_ALL)
-\end_layout
-
-\begin_layout Standard
-
-Debug code DBG_ALL is turned on.
- cf.
- listDebugCode(), turnOffDebug() 
-\end_layout
-
-\begin_layout Standard
-
->>> population(1).individual(0).arrAlleles()
-\end_layout
-
-\begin_layout Standard
-
-Constructor of Population is called
-\end_layout
-
-\begin_layout Standard
-
-Population size 1
-\end_layout
-
-\begin_layout Standard
-
-Destructor of Population is called 
-\end_layout
-
-\begin_layout Standard
-
-Segmentation fault (core dumped) 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-population(1)
-\family default
- creates a temporary object that is destroyed right after the execution
- of the input.
- When Python tries to display the genotype, it will refer to an invalid
- location.
- The right way to do this is to create a persistent population object: 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
->>> pop = population(1)
-\end_layout
-
-\begin_layout Standard
-
->>> pop.individual(0).arrAllele()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If the output is overwhelming after you turn on all debug information, you
- can turn on certain part of the information by using the following functions:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ListDebugCode
-\begin_inset LatexCommand index
-name "listDebugCode"
-
-\end_inset
-
-()
-\family default
- list all debug code.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-turnOnDebug()
-\begin_inset LatexCommand index
-name "operator!turnOnDebug"
-
-\end_inset
-
-, TurnOnDebug
-\begin_inset LatexCommand index
-name "Function!TurnOnDebug"
-
-\end_inset
-
-(code)
-\family default
- turn on debug codes.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-turnOffDebug()
-\begin_inset LatexCommand index
-name "operator!turnOffDebug"
-
-\end_inset
-
-, TurnOffDebug
-\begin_inset LatexCommand index
-name "Function!turnOffDebug"
-
-\end_inset
-
-(code)
-\family default
- turn off debug codes.
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-turnOnDebug()
-\family default
- and 
-\family typewriter
-turnOffDebug()
-\family default
- are operators and accept all operator parameters 
-\family typewriter
-begin, step
-\family default
- etc.
- Usually, you can use 
-\family typewriter
-turnOnDebug
-\family default
- to output more information about a potential bug before simuPOP starts
- to misbehave.
- 
-\end_layout
-
-\begin_layout Standard
-Another useful debug code is 
-\family typewriter
-DBG_PROFILE.
-
-\family default
- When turned on, it will display running time of each operator.
- This will give you a good sense of which operator runs slowly (or simply
- the order of operator execution if you are not sure).
- If most of the execution time is spent on a pure-Python operator, you may
- want to rewrite it in C++.
- Note that 
-\family typewriter
-DBG_PROFILE
-\family default
- is suitable for measuring individual operator performance.
- If you would like to measure the execution time of all operators in several
- generations, 
-\family typewriter
-ticToc
-\family default
- operator is better.
-  
 \end_layout
 
 \begin_layout Chapter
