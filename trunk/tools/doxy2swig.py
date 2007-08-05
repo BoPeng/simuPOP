@@ -342,25 +342,33 @@ class Doxy2SWIG:
         # first child
         # print node.firstChild.tagName
         if(node.firstChild.firstChild.data == 'Test'):
-            self.curField = 'Examples'
-            self.content[-1]['Examples'] = ''
+            #self.curField = 'Examples'
+            #self.content[-1]['Examples'] = ''
             # get file name
-            filename = node.firstChild.nextSibling.firstChild.firstChild.data
+            filename = node.firstChild.nextSibling.firstChild.firstChild.data.strip()
+	    title = ''
+	    # if the filename has an optional title, separate them
+	    if ' ' in filename:
+                pieces = filename.split(' ')
+		filename = pieces[0]
+		title = ' '.join(pieces[1:])
             # get content as string
             try:
                 try:
                     # usual ../doc/log directory
-                    file = open(os.path.join('..', 'doc', 'log', filename.strip()))
-                    self.content[-1]['ExampleFile'] = os.path.join('..', 'doc', 'log', filename.strip())
+                    file = open(os.path.join('..', 'doc', 'log', filename))
+                    self.content[-1]['ExampleFile'] = os.path.join('..', 'doc', 'log', filename)
                 except:
                     # local file
-                    file = open(filename.strip() )
-                    self.content[-1]['ExampleFile'] = filename.strip()
+                    file = open(filename)
+                    self.content[-1]['ExampleFile'] = filename
                 cont = file.read()
                 file.close()
                 self.add_text(cont)
+		self.content[-1]['ExampleTitle'] = title
             except:
                 self.content[-1]['ExampleFile'] = None
+		self.content[-1]['ExampleTitle'] = title
                 print "File " + filename + " does not exist\n"
                 self.add_text(filename + "does not exist\n")
 
@@ -675,12 +683,10 @@ class Doxy2SWIG:
             if entry.has_key('note') and entry['note'] != '':
                 print >> out, '\\par\n\\strong{Note}\n\\par'
                 print >> out, '    %s\n' % self.latex_text(entry['note'])
-            if entry.has_key('Examples') and entry['Examples'] != '':
-                print >> out, '\\strong{Examples}\n\\begin{algorithm}[h]'
-                print >> out, '\\caption{\\label{alg:%s}Example for function %s}' % (entry['Name'], entry['Name'])
-                if entry['ExampleFile'] is not None:
-                    print >> out, '\\verbatiminput{%s}' % entry['ExampleFile']
-                print >> out, '\\end{algorithm}'
+            if entry.has_key('ExampleFile') and entry['ExampleFile'] is not None:
+                label = os.path.split(entry['ExampleFile'])[-1]
+                print >> out, '\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
+                    (cons['ExampleTitle'], label, label, entry['ExampleFile'].replace('\\', '/'))
             print >> out, '}\n'
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
@@ -755,13 +761,11 @@ class Doxy2SWIG:
                 if mem.has_key('note') and mem['note'] != '':
                     print >> out, '\\par\n\\strong{Note:} %s\\par' % self.latex_text(mem['note'])
             print >> out, '\\end{description}'
-            if cons.has_key('Examples') and cons['Examples'] != '':
+            if cons.has_key('ExampleFile') and cons['ExampleFile'] is not None:
                 print >> out, '\\strong{Examples}\n'
-                #print >> out, '\\caption{\\label{alg:%s}Example for function %s}' % (cons['Name'], cons['Name'])
-                if cons['ExampleFile'] is not None:
-                    label = os.path.split(cons['ExampleFile'])[-1]
-                    print >> out, '\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
-                        (label, label, cons['ExampleFile'].replace('\\', '/'))
+                label = os.path.split(cons['ExampleFile'])[-1]
+                print >> out, '\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
+                    (cons['ExampleTitle'], label, cons['ExampleFile'].replace('\\', '/'))
             print >> out, '}\n'
 
 
@@ -808,6 +812,7 @@ class Doxy2SWIG:
 \usepackage{babel}
 \makeatother
 \begin{document}
+\lstlistoflistings
 \include{%s}''' % os.path.basename(os.path.splitext(ref_file)[0])
         for entry in [x for x in self.content if x['type'] in ['global_function'] and not x['ignore'] \
             and 'test' not in x['Name']]:
