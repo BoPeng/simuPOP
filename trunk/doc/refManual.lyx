@@ -539,7 +539,7 @@ e that your simulation is running as expected.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/importSimuPOPOpt.log}[caption={set options through simuOpt}]
+\begin_inset Include \lstinputlisting{log/ref_importSimuPOPOpt.log}[caption={set options through simuOpt}]
 preview false
 
 \end_inset
@@ -1574,24 +1574,15 @@ There are several excellent Python books and tutorials.
 \end_layout
 
 \begin_layout Enumerate
-\begin_inset LatexCommand url
-name "http://docs.python.org/tut/tut.html"
-target "The Python tutorial"
-
-\end_inset
-
-
+The Python tutorial (
+\family typewriter
+http://docs.python.org/tut/tut.html
+\family default
+)
 \end_layout
 
 \begin_layout Enumerate
-Other online tutorials listed at 
-\begin_inset LatexCommand url
-name "http://www.python.org/doc/"
-target "Python documentations"
-
-\end_inset
-
-
+Other online tutorials listed at http://www.python.org/doc/
 \end_layout
 
 \begin_layout Standard
@@ -1599,12 +1590,9 @@ The PDF version of this reference manual is distributed with simuPOP.
  You can also get the latest version of this file from the simuPOP subversion
  repository.
  To access it, go to 
-\begin_inset LatexCommand url
-name "http://simupop.sourceforge.net"
-target "simuPOP home page"
-
-\end_inset
-
+\family typewriter
+http://simupop.sourceforge.net
+\family default
 , click
 \family sans
  SF.net summary > Code > SVN Browse > trunk > doc > refManual.pdf
@@ -1615,24 +1603,13 @@ target "simuPOP home page"
 \end_layout
 
 \begin_layout Enumerate
-\begin_inset LatexCommand url
-name "Forward-time simulations using simuPOP, a tutorial"
-target "http://simupop.svn.sourceforge.net/viewvc/simupop/trunk/doc/tutorial.pdf?view=log"
-
-\end_inset
-
-: a tutorial that was given in a simuPOP workshop held at University of
- Alabama at Birmingham
+Forward-time simulations using simuPOP, a tutorial: a tutorial that was
+ given in a simuPOP workshop held at University of Alabama at Birmingham
 \end_layout
 
 \begin_layout Enumerate
-\begin_inset LatexCommand url
-name "http://simupop.svn.sourceforge.net/viewvc/simupop/trunk/doc/course.pdf?view=log"
-target "Forward-time simulations using simuPOP, an in-depth course"
-
-\end_inset
-
-: a in-depth course about simuPOP components, with a lot of examples
+Forward-time simulations using simuPOP, an in-depth course: a in-depth course
+ about simuPOP components, with a lot of examples
 \end_layout
 
 \begin_layout Standard
