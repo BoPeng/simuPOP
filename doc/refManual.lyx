@@ -1,5 +1,5 @@
-#LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
-\lyxformat 274
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass manual
@@ -58,7 +58,7 @@ Last modified \\
 \listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
-\author "BPeng1" 
+\author "" 
 \author "" 
 \end_header
 
@@ -395,37 +395,264 @@ preview false
 Introduction
 \end_layout
 
-\begin_layout Itemize
-How to access the main page (an example) from the command line? help( _,
- _ )
-\end_layout
-
-\begin_layout Itemize
-Online reference (URL).
-\end_layout
-
-\begin_layout Itemize
-Concept of base classes and how to refer to base classes for parameters.
-\end_layout
-
-\begin_layout Itemize
-What is the function form, global functions, and member functions?
-\end_layout
-
-\begin_layout Itemize
-arr_function and carray type
-\end_layout
-
-\begin_layout Itemize
-Library-dependent functions/constants
-\end_layout
-
-\begin_layout Section
-Library-dependent functions/constants
+\begin_layout Standard
+This reference manual assumes that you have read the 
+\emph on
+simuPOP User's Guide
+\emph default
+ and know the basic concepts of simuPOP.
+ It is also remcommended that you learn some basics of Python before you
+ continue.
+ I have listed a few Python resources at the end of this chapter, along
+ with links to some simuPOP totorials.
 \end_layout
 
 \begin_layout Standard
-Several functions and constants are defined for each library:
+Almost all information contained in this manual can be accessed from command
+ line, after you install and import the simuPOP module.
+ It is important that you understand that
+\end_layout
+
+\begin_layout Itemize
+The constructor is named 
+\family typewriter
+__init__
+\family default
+ in python.
+ That is to say, if you would like to see the help information of the constructo
+r of class 
+\family typewriter
+population
+\family default
+, you can use command
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+>>> help(population.__init__)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Some classes are derived from other classes and can have access to member
+ functions of its base class.
+ For example, class 
+\family typewriter
+population
+\family default
+, 
+\family typewriter
+individual
+\family default
+ and 
+\family typewriter
+simulator
+\family default
+ are all derived from class 
+\family typewriter
+genoStruTrait
+\family default
+.
+ Therefore, you can have access to all 
+\family typewriter
+genoStruTrait
+\family default
+ member functions from these classes.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The constructor of a derived class also calls the constructor of its base
+ class so you may have to refer to the base class for some parameter definitions.
+ For example, parameter 
+\family typewriter
+begin, end, step, at 
+\family default
+etc are shared by all operators, and is explained in details only in class
+ 
+\family typewriter
+baseOperator.
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Section
+Loading simuPOP
+\end_layout
+
+\begin_layout Standard
+simuPOP is composed of six libraries: standard short, long and binary alleles
+ (3), each of them have standard and optimized (
+\begin_inset Formula $\times2$
+\end_inset
+
+) modules.
+ A Message Passing Interface (MPI) versions (
+\begin_inset Formula $\times2$
+\end_inset
+
+) is under development but not yet available.
+ The short libraries use 1 byte to store each allele which limits the possible
+ allele states to 256.
+ This is enough most of the times but not so if you need to simulate models
+ like the infinite allele model.
+ In those cases, you should use the long allele version of the modules,
+ which use 2 bytes for each allele and can have 
+\begin_inset Formula $2^{16}$
+\end_inset
+
+ possible allele states.
+ On the other hand, if you would like to simulate a large number of binary
+ (SNP) markers, binary libraries can save you a lot of RAM.
+ Depending on applications, binary alleles can be faster or slower than
+ regular modules.
+\end_layout
+
+\begin_layout Standard
+Standard libraries have detailed debug and run-time validation mechanism
+ to make sure the simulations run correctly.
+ Whenever something unusual is detected, simuPOP would terminate with detailed
+ error messages.
+ The cost of such run-time checking varies from simulation to simulation
+ but can be high under some extreme circumstances.
+ Because of this, optimized versions for all libraries are provided.
+ They bypass all parameter checking and run-time validations and will simply
+ crash if things go wrong.
+ It is recommended that you use standard libraries whenever possible and
+ only use the optimized version when performance is needed and you are confidenc
+e that your simulation is running as expected.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/importSimuPOPOpt.log}[caption={set options through simuOpt}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can control the choice of modules in the following ways:
+\end_layout
+
+\begin_layout Itemize
+Set environment variable 
+\family typewriter
+SIMUALLELETYPE
+\family default
+
+\begin_inset LatexCommand index
+name "SIMUALLELETYPE"
+
+\end_inset
+
+ to be 'short', 'long' or 'binary', 
+\family typewriter
+SIMUOPTIMIZED
+\family default
+ to use the optimized modules, and 
+\family typewriter
+SIMUMPI
+\family default
+ to use MPI modules.
+ The default module is the standard short module.
+\end_layout
+
+\begin_layout Itemize
+Before you load simuPOP, set options using 
+\family typewriter
+simuOpt
+\begin_inset LatexCommand index
+name "simuOpt"
+
+\end_inset
+
+.setOptions(optimized, mpi, alleleType, quiet, debug)
+\family default
+.
+ 
+\family typewriter
+alleleType
+\family default
+
+\begin_inset LatexCommand index
+name "alleleType"
+
+\end_inset
+
+ can be 
+\family typewriter
+short, long
+\family default
+ or 
+\family typewriter
+binary.
+
+\family default
+ 
+\family typewriter
+mpi
+\family default
+ can be 
+\family typewriter
+True
+\family default
+ or 
+\family typewriter
+False
+\family default
+.
+ 
+\family typewriter
+quiet
+\family default
+ means suppress initial output, and 
+\family typewriter
+debug
+\family default
+ should be a comma-separated list of debug options specified by 
+\family typewriter
+listDebugCode
+\family default
+
+\begin_inset LatexCommand index
+name "listDebugCode"
+
+\end_inset
+
+().
+\end_layout
+
+\begin_layout Itemize
+If you are running a simuPOP script that conforms to simuPOP convention,
+ you should be able to use optimized library using command line option 
+\family typewriter
+--optimized
+\family default
+, and the MPI version using 
+\family typewriter
+--mpi.
+\end_layout
+
+\begin_layout Standard
+After a simuPOP module is loaded, you can use the following functions to
+ determine some module and platform dependent information.
 \end_layout
 
 \begin_layout Itemize
@@ -444,6 +671,22 @@ alleleType()
 , or 
 \family typewriter
 'long'
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+optimized()
+\family default
+: return 
+\family typewriter
+True
+\family default
+ or 
+\family typewriter
+False
 \family default
 .
 \end_layout
@@ -490,6 +733,406 @@ simuRev()
 simuRev()
 \family default
  against the revision when the feature you need becomes available.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+limits()
+\family default
+: print the limits of this module on this platform, this can limit the size
+ of population you can simulate.
+\end_layout
+
+\begin_layout Section
+References and the 
+\family typewriter
+clone() 
+\family default
+member function
+\end_layout
+
+\begin_layout Standard
+Assignment in Python only creates a new refernce to the exsting object.
+ For example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pop = population(...)
+\end_layout
+
+\begin_layout Standard
+
+pop1 = pop
+\end_layout
+
+\end_inset
+
+ will create a reference 
+\family typewriter
+pop1
+\family default
+ to population 
+\family typewriter
+pop
+\family default
+.
+ Modifying 
+\family typewriter
+pop1
+\family default
+ will modify 
+\family typewriter
+pop
+\family default
+ as well.
+ If you would like to have an independent copy, use
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pop1 = pop.clone()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All simuPOP classes (objects) have a clone function that can be used to
+ create an independent copy of the object.
+ Because cloning a large population can be costly, a few methods are provided
+ to access populations inside a simulator.
+ Assume that 
+\family typewriter
+simu
+\family default
+ is a simulator with several populations,
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Standard
+
+pop = simu.population(idx)
+\end_layout
+
+\end_inset
+
+ will get a reference to the 
+\family typewriter
+idx'
+\family default
+th population.
+ You can, although not recommended, modify simulator through this 
+\family typewriter
+pop
+\family default
+ reference.
+ Because this population reference will become invalid when the simulator
+ is destroyed, the following calling sequence can crash Python:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "lst:Reference-to-population"
+
+\end_inset
+
+Reference to a population of a simulator
+\end_layout
+
+\end_inset
+
+def func():
+\end_layout
+
+\begin_layout Standard
+
+    simu = simulator(
+\end_layout
+
+\begin_layout Standard
+
+        population(10), 
+\end_layout
+
+\begin_layout Standard
+
+        randomMating())
+\end_layout
+
+\begin_layout Standard
+
+    # evolve simu ..., then return population
+\end_layout
+
+\begin_layout Standard
+
+    return simu.population(0)
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+pop = func()
+\end_layout
+
+\begin_layout Standard
+
+pop.popSize()
+\end_layout
+
+\end_inset
+
+In this example, the simulator 
+\family typewriter
+simu 
+\family default
+will be destroyed after the call to 
+\family typewriter
+func() 
+\family default
+is ended, leaving 
+\family typewriter
+pop
+\family default
+ as a referece to an invalid population object.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+To get an independent copy of a population, you can use 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Standard
+
+pop = simu.getPopulation(idx)
+\end_layout
+
+\end_inset
+
+.
+ Population 
+\family typewriter
+pop
+\family default
+ returned in this way in Example 
+\begin_inset LatexCommand ref
+reference "lst:Reference-to-population"
+
+\end_inset
+
+ is valid.
+\end_layout
+
+\begin_layout Enumerate
+If the simulator will be destroyed as the case in Example 
+\begin_inset LatexCommand ref
+reference "lst:Reference-to-population"
+
+\end_inset
+
+, 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Standard
+
+pop = simu.getPopulation(idx, destructive=True)
+\end_layout
+
+\end_inset
+
+ can be used.
+ This function will 
+\emph on
+extract
+\emph default
+ population 
+\family typewriter
+idx 
+\family default
+from the simulator instead of copying it, and bypassing a potentially very
+ costly process.
+\end_layout
+
+\begin_layout Section
+Function form of an operator
+\end_layout
+
+\begin_layout Standard
+Operators are usually applied to populations through a simulator.
+ Usually, an operator is created and passed as a parameter to the 
+\family typewriter
+evolve 
+\family default
+function of a simulator.
+ During evolution, the 
+\family typewriter
+evolve()
+\family default
+ function determine if an operator can be applied to a population and apply
+ it when appropriate.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_popAndOperator.log}[caption={Population and operators},label={popAndOperator}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In Example 
+\begin_inset LatexCommand ref
+reference "popAndOperator"
+
+\end_inset
+
+, operators 
+\family typewriter
+initByFreq, stat
+\family default
+ and two copies of 
+\family typewriter
+kamMutator
+\family default
+ are created.
+ During evolution, 
+\family typewriter
+simu
+\family default
+ will apply 
+\family typewriter
+initByFreq
+\family default
+ once to each replicate of the simulator; apply the first 
+\family typewriter
+kamMutator
+\family default
+ to the first replicate and the second 
+\family typewriter
+kamMutator
+\family default
+ to the second replicate at every generation; apply 
+\family typewriter
+stat
+\family default
+ to count allele frequency and calculate 
+\begin_inset Formula $F_{st}$
+\end_inset
+
+ every 10 generations.
+ More details about operators will be described later.
+\end_layout
+
+\begin_layout Standard
+You can ignore the specialties of an operator and call its 
+\family typewriter
+apply()
+\family default
+ function directly.
+ For example, you can initialize a population outside a simulator by 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+initByFreq( [0.3, .2, .5] ).apply(pop)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or dump the content of a population by
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+dumper().apply(pop)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This style of calling is used so often that it deserves some simplification.
+ Equivalent functions are defined for most of the operators.
+ For example, function 
+\family typewriter
+InitByFreq
+\family default
+ is defined for operator 
+\family typewriter
+initByFreq
+\family default
+ as follows
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_InitByFreq.log}[caption={Function InitByFreq},label={InitByFreq}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The function form will be marked as 
+\family typewriter
+Function form
+\family default
+ in this reference manual.
 \end_layout
 
 \begin_layout Section
@@ -855,6 +1498,148 @@ if hasRPy:
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Name Conventions
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+simuPOP
+\family default
+ follows the following naming conventions.
+\end_layout
+
+\begin_layout Itemize
+Classes (objects), member functions and parameter names start with small
+ character and use capital character for the first character of each word
+ afterward.
+ For example
+\end_layout
+
+\begin_layout LyX-Code
+population, population::subPopSize(), individual::setInfo()
+\end_layout
+
+\begin_layout Itemize
+Standalone (Global) functions start with capital character.
+ This is how you can differ an operator from its function version.
+ For example, 
+\family typewriter
+initByFreq(vars)
+\family default
+ is an operator and 
+\family typewriter
+InitByFreq(pop, vars)
+\family default
+ is its function version (equivalent to 
+\family typewriter
+initByFreq(vars).apply(pop)
+\family default
+).
+\end_layout
+
+\begin_layout Itemize
+Constants start with Capital characters.
+ For example
+\end_layout
+
+\begin_layout LyX-Code
+MigrByProportion, StatNumOfFemale
+\end_layout
+
+\begin_layout Itemize
+The following words in function names are abbreviated:
+\end_layout
+
+\begin_layout LyX-Code
+pos (position),  info (information), migr (migration), subPop (subpopulation),
+ 
+\newline
+(rep) replicate, gen (generation), grp (group(s)), ops (operators), 
+\newline
+expr
+ (expression), stmts (statements) 
+\end_layout
+
+\begin_layout Section
+Online resources
+\end_layout
+
+\begin_layout Standard
+There are several excellent Python books and tutorials.
+ If you are new to Python, you can start with
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset LatexCommand url
+name "http://docs.python.org/tut/tut.html"
+target "The Python tutorial"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Other online tutorials listed at 
+\begin_inset LatexCommand url
+name "http://www.python.org/doc/"
+target "Python documentations"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The PDF version of this reference manual is distributed with simuPOP.
+ You can also get the latest version of this file from the simuPOP subversion
+ repository.
+ To access it, go to 
+\begin_inset LatexCommand url
+name "http://simupop.sourceforge.net"
+target "simuPOP home page"
+
+\end_inset
+
+, click
+\family sans
+ SF.net summary > Code > SVN Browse > trunk > doc > refManual.pdf
+\family default
+ and download the HEAD version.
+ You can also find some tutorials that are not distributed with simuPOP,
+ such as
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset LatexCommand url
+name "Forward-time simulations using simuPOP, a tutorial"
+target "http://simupop.svn.sourceforge.net/viewvc/simupop/trunk/doc/tutorial.pdf?view=log"
+
+\end_inset
+
+: a tutorial that was given in a simuPOP workshop held at University of
+ Alabama at Birmingham
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset LatexCommand url
+name "http://simupop.svn.sourceforge.net/viewvc/simupop/trunk/doc/course.pdf?view=log"
+target "Forward-time simulations using simuPOP, an in-depth course"
+
+\end_inset
+
+: a in-depth course about simuPOP components, with a lot of examples
+\end_layout
+
+\begin_layout Standard
+Note that these presentations will not be updated so their content can become
+ out of date.
+ This reference manual should be considered as the authoritative resource
+ of simuPOP.
 \end_layout
 
 \begin_layout Chapter
@@ -1518,536 +2303,6 @@ reference "popInit"
 
 \begin_layout Standard
 \begin_inset Include \lstinputlisting{log/ref_popInit.log}[caption={Use of population function},label={popInit}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Copying a population
-\end_layout
-
-\begin_layout Standard
-Like many other Python operations,
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pop = population(...)
-\end_layout
-
-\begin_layout Standard
-
-pop1 = pop
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-will create a reference 
-\family typewriter
-pop1
-\family default
- to population 
-\family typewriter
-pop
-\family default
-.
- Modifying 
-\family typewriter
-pop1
-\family default
- will modify 
-\family typewriter
-pop
-\family default
- as well.
- If you would like to have an independent copy, use
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pop1 = pop.clone()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This scenario also applies to simulator (see later sections).
- If 
-\family typewriter
-simu
-\family default
- is a simulator with several replicates
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pop = simu.population(idx)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-will get a reference to one of the replicates.
- You can, although not recommended, modify simulator through this 
-\family typewriter
-pop
-\family default
- reference.
- Note that this pop reference will become invalid when the simulator is
- destroyed so the following calling sequence will crash Python:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pop = simu.population(idx)
-\end_layout
-
-\begin_layout Standard
-
-simu = simulator(....)
-\end_layout
-
-\begin_layout Standard
-
-pop.savePopulation(....)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If you would like to get a real copy, use
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pop = simu.getPopulation(idx)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Interaction with operators and functions
-\end_layout
-
-\begin_layout Standard
-Operators are objects that can be applied to populations.
- They have special attributes like at which generations to be active, at
- what stage of a evolutionary life cycle to be applied.
- Usually, an operator is created and passed as a parameter to a simulator.
- When 
-\family typewriter
-simulator::evolve
-\family default
- (or 
-\family typewriter
-step, apply
-\family default
-) is called, the simulator will call the 
-\family typewriter
-apply()
-\family default
- function of these operators at appropriate times.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_popAndOperator.log}[caption={Population and operators},label={popAndOperator}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For example, operators 
-\family typewriter
-initByFreq, stat
-\family default
- and two copies of 
-\family typewriter
-kamMutator
-\family default
- are created in example 
-\begin_inset LatexCommand ref
-reference "popAndOperator"
-
-\end_inset
-
-.
- During evolution, 
-\family typewriter
-simu
-\family default
- will apply 
-\family typewriter
-initByFreq
-\family default
- once to each replicate of the simulator; apply the first 
-\family typewriter
-kamMutator
-\family default
- to the first replicate and the second 
-\family typewriter
-kamMutator
-\family default
- to the second replicate at every generation; apply 
-\family typewriter
-stat
-\family default
- to count allele frequency and calculate 
-\begin_inset Formula $F_{st}$
-\end_inset
-
- every 10 generations.
- More details about operators will be described later.
-\end_layout
-
-\begin_layout Standard
-You can ignore the specialties of an operator and call its 
-\family typewriter
-apply()
-\family default
- function directly.
- For example, you can initialize a population outside a simulator by 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-initByFreq( [0.3, .2, .5] ).apply(pop)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-or dump the content of a population by
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-dumper().apply(pop)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This style of calling is used so often that it deserves some simplification.
- Equivalent functions are defined for most of the operators.
- For example, function 
-\family typewriter
-InitByFreq
-\family default
- is defined for operator 
-\family typewriter
-initByFreq
-\family default
- as follows
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_InitByFreq.log}[caption={Function InitByFreq},label={InitByFreq}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout Standard
-Note that 
-\end_layout
-
-\begin_layout Enumerate
-The following two calling sequences have different consequences:
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pop = population(10)
-\end_layout
-
-\begin_layout Standard
-
-simu = simulator(pop, randomMating(), rep=3)
-\end_layout
-
-\begin_layout Standard
-
-simu.evolve( preOps = [initByFreq([.8,.2]) ] )
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-initialize three replicates of the population independently, (
-\family typewriter
-initByFreq
-\family default
- object is applied to three populations.) but
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pop = population(10)
-\end_layout
-
-\begin_layout Standard
-
-InitByFreq(pop, [.8, .2])
-\end_layout
-
-\begin_layout Standard
-
-simu = simulator(pop, randomMating(), rep=3)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-initialize a population once and create a simulator with three copies of
- the initialized population.
- 
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-If you are going to call such a function many times, it is more efficient
- to do
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-init = initByFreq([.8,.2])
-\end_layout
-
-\begin_layout Standard
-
-for i in range(0,1000):
-\end_layout
-
-\begin_layout Standard
-
-  init.apply(pop[i])
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-than 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-for i in range(0,1000):
-\end_layout
-
-\begin_layout Standard
-
-  InitByFreq(pop[i], [.8,.2])
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The difference is that the second method creates and destroys an 
-\family typewriter
-initByFreq
-\family default
- object each time it calls the function.
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-Because 
-\family typewriter
-initByFreq
-\family default
- and 
-\family typewriter
-dumper
-\family default
- will be frequently used in this manual, I will briefly describe them here.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-initByFreq
-\begin_inset LatexCommand index
-name "initByFreq"
-
-\end_inset
-
-
-\family default
- takes an array of probabilities (must be added up to one).
- When applied to a population, each allele will be assigned 
-\family typewriter
-0,1,2,3,...
-
-\family default
- etc.
- according to the provided probabilities.
- 
-\family typewriter
-InitByFreq
-\begin_inset LatexCommand index
-name "function!InitByFreq"
-
-\end_inset
-
-(pop,...)
-\family default
- is its function form.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-dumper
-\begin_inset LatexCommand index
-name "dumper"
-
-\end_inset
-
-
-\family default
- will simply display the population.
- The output format for each individual is: individual index, tag, sex, affected
- status, alleles on copy 
-\family typewriter
-1,2,...
-
-\family default
- of all chromosomes, separated by 
-\family typewriter
-|
-\family default
-.
- Its function form is named 
-\family typewriter
-Dump
-\begin_inset LatexCommand index
-name "function!Dump"
-
-\end_inset
-
-(pop)
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset LatexCommand ref
-reference "dumpPop"
-
-\end_inset
-
- demonstrates the use of these two operators:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_dumpPop.log}[caption={Operator dumper and initByFreq},label={dumpPop}]
 preview false
 
 \end_inset
@@ -8303,6 +8558,221 @@ listVar(simuVars[0]['subPop'][0])
 \end_layout
 
 \begin_layout Section
+Tagging (used for pedigree tracking) 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+taggerRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+inheritTaggerRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+parentsTaggerRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pyTaggerRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Data collector
+\end_layout
+
+\begin_layout Standard
+Sometimes, instead of output data directly, we may want to collect history
+ data on some expression.
+ Data collector is designed for this purpose.
+ 
+\end_layout
+
+\begin_layout Subsection
+operator (Python) 
+\family typewriter
+collector
+\begin_inset LatexCommand index
+name "operator!collector"
+
+\end_inset
+
+
+\family default
+, in 
+\family typewriter
+simuUtil.py
+\end_layout
+
+\begin_layout Standard
+This operator accepts the following parameters:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+name:
+\family default
+ name by which the collected data will be displayed.
+ Variable names will be a list of stored values.
+ (
+\family typewriter
+generation
+\family default
+ is not stored.
+ You can always put it in 
+\family typewriter
+expr
+\family default
+ though.)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+expr:
+\family default
+ an expression that will be evaluated.
+ The result will be converted to a list (if needed) and stored in 
+\family typewriter
+name[gen]
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+When this operator is called, it will evaluate 
+\family typewriter
+expr
+\family default
+ and store its result in 
+\family typewriter
+name[gen]
+\family default
+.
+ After evolution, you will get a dictionary of values indexed by generation
+ numbers.
+\end_layout
+
+\begin_layout Section
+Output 
+\end_layout
+
+\begin_layout Subsection
+operator (C++) 
+\family typewriter
+savePopulation
+\begin_inset LatexCommand index
+name "operator!savePopulation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+function (Python) 
+\family typewriter
+SaveFstat
+\begin_inset LatexCommand index
+name "function!SaveFstat"
+
+\end_inset
+
+
+\family default
+ (in 
+\family typewriter
+simuUtil.py
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+operator (Python) 
+\family typewriter
+saveFstat
+\begin_inset LatexCommand index
+name "operator!saveFstat"
+
+\end_inset
+
+
+\family default
+ (in 
+\family typewriter
+simuUtil.py
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+function (Python) 
+\family typewriter
+loadFstat
+\begin_inset LatexCommand index
+name "function!loadFstat"
+
+\end_inset
+
+
+\family default
+ (in 
+\family typewriter
+simuUtil.py
+\family default
+)
+\end_layout
+
+\begin_layout Section
 Visualization
 \end_layout
 
@@ -8665,221 +9135,6 @@ preview false
 
 \begin_layout Standard
 
-\end_layout
-
-\begin_layout Section
-Tagging (used for pedigree tracking) 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-taggerRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-inheritTaggerRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-parentsTaggerRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pyTaggerRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Data collector
-\end_layout
-
-\begin_layout Standard
-Sometimes, instead of output data directly, we may want to collect history
- data on some expression.
- Data collector is designed for this purpose.
- 
-\end_layout
-
-\begin_layout Subsection
-operator (Python) 
-\family typewriter
-collector
-\begin_inset LatexCommand index
-name "operator!collector"
-
-\end_inset
-
-
-\family default
-, in 
-\family typewriter
-simuUtil.py
-\end_layout
-
-\begin_layout Standard
-This operator accepts the following parameters:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-name:
-\family default
- name by which the collected data will be displayed.
- Variable names will be a list of stored values.
- (
-\family typewriter
-generation
-\family default
- is not stored.
- You can always put it in 
-\family typewriter
-expr
-\family default
- though.)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-expr:
-\family default
- an expression that will be evaluated.
- The result will be converted to a list (if needed) and stored in 
-\family typewriter
-name[gen]
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-When this operator is called, it will evaluate 
-\family typewriter
-expr
-\family default
- and store its result in 
-\family typewriter
-name[gen]
-\family default
-.
- After evolution, you will get a dictionary of values indexed by generation
- numbers.
-\end_layout
-
-\begin_layout Section
-Output 
-\end_layout
-
-\begin_layout Subsection
-operator (C++) 
-\family typewriter
-savePopulation
-\begin_inset LatexCommand index
-name "operator!savePopulation"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-function (Python) 
-\family typewriter
-SaveFstat
-\begin_inset LatexCommand index
-name "function!SaveFstat"
-
-\end_inset
-
-
-\family default
- (in 
-\family typewriter
-simuUtil.py
-\family default
-)
-\end_layout
-
-\begin_layout Subsection
-operator (Python) 
-\family typewriter
-saveFstat
-\begin_inset LatexCommand index
-name "operator!saveFstat"
-
-\end_inset
-
-
-\family default
- (in 
-\family typewriter
-simuUtil.py
-\family default
-)
-\end_layout
-
-\begin_layout Subsection
-function (Python) 
-\family typewriter
-loadFstat
-\begin_inset LatexCommand index
-name "function!loadFstat"
-
-\end_inset
-
-
-\family default
- (in 
-\family typewriter
-simuUtil.py
-\family default
-)
 \end_layout
 
 \begin_layout Section
@@ -9377,7 +9632,7 @@ ticToc
 \end_layout
 
 \begin_layout Chapter
-Other topics
+Global and Python Utility functions
 \end_layout
 
 \begin_layout Section
@@ -10192,6 +10447,14 @@ With all these information at hand, the rest is routine, if you follow the
 
 \begin_layout LyX-Code
 
+\end_layout
+
+\begin_layout Section
+Gene Mapping
+\end_layout
+
+\begin_layout Section
+Save / Write in other formats
 \end_layout
 
 \begin_layout Section
