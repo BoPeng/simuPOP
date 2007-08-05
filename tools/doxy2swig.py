@@ -685,9 +685,10 @@ class Doxy2SWIG:
                 print >> out, '\\par\n\\strong{Note}\n\\par'
                 print >> out, '    %s\n' % self.latex_text(entry['note'])
             if entry.has_key('ExampleFile') and entry['ExampleFile'] is not None:
-                label = os.path.split(entry['ExampleFile'])[-1]
+                label = self.latex_text(os.path.split(entry['ExampleFile'])[-1])
+		title = self.latex_text(cons['ExampleTitle'])
                 print >> out, '\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
-                    (cons['ExampleTitle'], label, label, entry['ExampleFile'].replace('\\', '/'))
+                    (title, label, entry['ExampleFile'].replace('\\', '/'))
             print >> out, '}\n'
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
@@ -764,9 +765,10 @@ class Doxy2SWIG:
             print >> out, '\\end{description}'
             if cons.has_key('ExampleFile') and cons['ExampleFile'] is not None:
                 print >> out, '\\strong{Examples}\n'
-                label = os.path.split(cons['ExampleFile'])[-1]
+                label = self.latex_text(os.path.split(cons['ExampleFile'])[-1])
+		title = self.latex_text(cons['ExampleTitle'])
                 print >> out, '\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
-                    (cons['ExampleTitle'], label, cons['ExampleFile'].replace('\\', '/'))
+                    (title, label, cons['ExampleFile'].replace('\\', '/'))
             print >> out, '}\n'
 
 
