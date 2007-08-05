@@ -342,8 +342,8 @@ class Doxy2SWIG:
         # first child
         # print node.firstChild.tagName
         if(node.firstChild.firstChild.data == 'Test'):
-            #self.curField = 'Examples'
-            #self.content[-1]['Examples'] = ''
+            self.curField = 'Examples'
+            self.content[-1]['Examples'] = ''
             # get file name
             filename = node.firstChild.nextSibling.firstChild.firstChild.data.strip()
 	    title = ''
@@ -364,6 +364,7 @@ class Doxy2SWIG:
                     self.content[-1]['ExampleFile'] = filename
                 cont = file.read()
                 file.close()
+		# add file content to 'Examples'
                 self.add_text(cont)
 		self.content[-1]['ExampleTitle'] = title
             except:
