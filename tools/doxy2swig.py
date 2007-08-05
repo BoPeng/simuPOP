@@ -565,7 +565,7 @@ class Doxy2SWIG:
                 print >> out, 'Note:'
                 print >> out, '\n    %s\n' % self.swig_text(entry['note'], 0, 4)
             if entry.has_key('Examples') and entry['Examples'] != '':
-                print >> out, 'Examples:'
+                print >> out, 'Example:'
                 print >> out, '\n%s\n' % entry['Examples'].replace('\\', r'\\\\').replace('"', r'\"')
             #if len(str) > 2048:
             #    #print 'Entry %s is too long (%d)' % (entry['Name'], len(str))
@@ -764,7 +764,7 @@ class Doxy2SWIG:
                     print >> out, '\\par\n\\strong{Note:} %s\\par' % self.latex_text(mem['note'])
             print >> out, '\\end{description}'
             if cons.has_key('ExampleFile') and cons['ExampleFile'] is not None:
-                print >> out, '\\strong{Examples}\n'
+                print >> out, '\\strong{Example}\n'
 		# ../log/ref_xxx.log => xxx.log
                 label = os.path.split(cons['ExampleFile'])[-1].split('_')[-1]
 		title = self.latex_text(cons['ExampleTitle'])

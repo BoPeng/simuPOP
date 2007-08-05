@@ -76,6 +76,8 @@ namespace simuPOP
 			\note There is no recombination between sex chromosomes of male individuals
                 if <tt>sexChrom()=True</tt>.??? This may change later if the exchanges
                 of genes between pseudoautosomal regions of XY need to be modeled.
+
+		\test src_recombinator.log Operator recombinator
 			*/
 			recombinator(double intensity=-1,
 				vectorf rate=vectorf(),

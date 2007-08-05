@@ -6158,31 +6158,6 @@ initByFreqRef
 \end_layout
 
 \begin_layout Standard
-Here is an example of using 
-\family typewriter
-alleleFreq
-\family default
-:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_initByFreq.log}[caption={Init by freq},label={initByFreq}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Please refer to 
-\family typewriter
-test/test_init.py
-\family default
- for more complicated examples.
-\end_layout
-
-\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -6192,15 +6167,6 @@ status open
 \backslash
 initByValueRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_initByValue.log}[caption={Init by value},label={initByValue}]
-preview false
 
 \end_inset
 
@@ -6233,15 +6199,6 @@ status open
 \backslash
 pyInitRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_pyInit.log}[caption={Init by value},label={pyInit}]
-preview false
 
 \end_inset
 
@@ -6567,23 +6524,6 @@ kamMutatorRef
 \end_layout
 
 \begin_layout Standard
-Here is an example of 
-\family typewriter
-kamMutator
-\family default
-:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_kamMutator.log}[caption={kamMutator},label={kamMutator}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -6593,30 +6533,6 @@ status open
 \backslash
 smmMutatorRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The following example demonstrates the use of 
-\family typewriter
-smmMutator
-\family default
-.
- Note that although the mutation rate is 1, some allele 1 is not mutated
- since they can not be mutated to 0.
- The same will be hold for the upper bound 
-\family typewriter
-maxAllele
-\family default
- which is defaulted to 99 in this case.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_smmMutator.log}[caption={smmMutator},label={smmMutator}]
-preview false
 
 \end_inset
 
@@ -6640,23 +6556,6 @@ gsmMutatorRef
 \end_layout
 
 \begin_layout Standard
-Here is an example of 
-\family typewriter
-gsmMutator
-\family default
-:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_gsmMutator.log}[caption={gsmMutator},label={gsmMutator}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -6665,37 +6564,6 @@ status open
 
 \backslash
 pyMutatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If you can not accomplish your task with the above mutators, you can always
- use this hybrid mutator.
- Here is an example:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_pyMutator.log}[caption={pyMutator},label={pyMutator}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
-
-\backslash
-clearpage
 \end_layout
 
 \end_inset
