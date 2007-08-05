@@ -241,7 +241,7 @@ namespace simuPOP
 			  to use. Default to \c none.
 			\return no return value. Exception will be thrown when wrong parameters are given.
 			\sa simulator, baseOperator, mating schemes
-			\test popInit.log
+			\test src_population.log Population initialization
 			*/
 			population( ULONG size=0,
 				UINT ploidy=2,
