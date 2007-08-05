@@ -164,6 +164,8 @@ namespace simuPOP
 			\param sex an array of sex <tt>[Male, Female, Male...]</tt> for individuals. The length of sex will not
                 be checked. If it is shorter than the number of individuals, sex will be reused from the beginning.
 			\param stage default to \c PreMating
+
+			\test src_initByFreq.log Operator initByFreq
 			*/
 			initByFreq( const matrix& alleleFreq=matrix(),
 				bool identicalInds=false,  const vectoru& subPop=vectoru(),
@@ -256,6 +258,8 @@ namespace simuPOP
                 The length of sex will not be checked. If length of sex is shorter than
                 the number of individuals, sex will be reused from the beginning.
 			\param stages default to \c PreMating
+
+			\test src_initByValue.log Operator initByValue
 			*/
 			initByValue( intMatrix value=intMatrix(),
 				vectoru loci=vectoru(), int atPloidy=-1,
@@ -395,6 +399,8 @@ namespace simuPOP
 			\param locus a shortcut to \c loci
 			\param atPloidy initialize which copy of chromosomes. Default to all.
 			\param stage default to \c PreMating
+
+			\test src_pyInit.log Operator pyInit
 			*/
 			pyInit(PyObject * func,  vectoru subPop=vectoru(),
 				vectoru loci=vectoru(), int atPloidy=-1,

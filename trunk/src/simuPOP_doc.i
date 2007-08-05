@@ -10,25 +10,25 @@ Function form:
 
 Description:
 
-    draw an affected sibling pair  sample
+    draw an affected sibling pair sample
 
 Details:
 
-    Special preparation for the  population is needed in order to use
+    Special preparation for the population is needed in order to use
     this operator. Obviously, to obtain affected sibling pairs, we
     need to know the parents and the affectedness status of each
-    individual. Furthermore, to get parental genotype, the  population
+    individual. Furthermore, to get parental genotype, the population
     should have ancestralDepth at least 1. The most important problem,
-    however, comes from the  mating scheme we are using.
+    however, comes from the mating scheme we are using.
     randomMating() is usually used for diploid populations. The
-    realrandom mating requires that a  mating will generate only one
+    realrandom mating requires that a mating will generate only one
     offspring. Since parents are chosen with replacement, a parent can
     have multiple offspring with different parents. On the other hand,
     it is very unlikely that two offspring will have the same parents.
     The probability of having a sibling for an offspring is  $
     \\frac{1}{N^{2}} $ (if do not consider selection). Therefore, we
-    will have to allow multiple offspring per  mating at the cost of
-    small effective  population size.
+    will have to allow multiple offspring per mating at the cost of
+    small effective population size.
     All these requirements come at a cost: multiple ancestral
     populations, determining affectedness status and tagging will slow
     down evolution; multiple offspring will reduce effective
@@ -37,21 +37,21 @@ Details:
 
 Details:
 
-    Special preparation for the  population is needed in order to use
+    Special preparation for the population is needed in order to use
     this operator. Obviously, to obtain affected sibling pairs, we
     need to know the parents and the affectedness status of each
-    individual. Furthermore, to get parental genotype, the  population
+    individual. Furthermore, to get parental genotype, the population
     should have ancestralDepth at least 1. The most important problem,
-    however, comes from the  mating scheme we are using.
+    however, comes from the mating scheme we are using.
     randomMating() is usually used for diploid populations. The
-    realrandom mating requires that a  mating will generate only one
+    realrandom mating requires that a mating will generate only one
     offspring. Since parents are chosen with replacement, a parent can
     have multiple offspring with different parents. On the other hand,
     it is very unlikely that two offspring will have the same parents.
     The probability of having a sibling for an offspring is  $
     \\frac{1}{N^{2}} $ (if do not consider selection). Therefore, we
-    will have to allow multiple offspring per  mating at the cost of
-    small effective  population size.
+    will have to allow multiple offspring per mating at the cost of
+    small effective population size.
     All these requirements come at a cost: multiple ancestral
     populations, determining affectedness status and tagging will slow
     down evolution; multiple offspring will reduce effective
@@ -64,7 +64,7 @@ Details:
 
 Description:
 
-    draw an affected sibling pair  sample
+    draw an affected sibling pair sample
 
 Usage:
 
@@ -76,25 +76,25 @@ Usage:
 
 Details:
 
-    Please refer to class  sample for other parameter descriptions.
+    Please refer to class sample for other parameter descriptions.
 
 Details:
 
-    Please refer to class  sample for other parameter descriptions.
+    Please refer to class sample for other parameter descriptions.
 
 Arguments:
 
     size:           the number of affected sibling pairs to be
                     sampled. Can be a number or an array. If a number
                     is given, it is the total number of sibpairs,
-                    ignoring  population structure. Otherwise, given
+                    ignoring population structure. Otherwise, given
                     number of sibpairs are sampled from
                     subpopulations. If size is unspecified, this
                     operator will return all affected sibpairs.
     chooseUnaffected:instead of affected sibpairs, choose unaffected
                     families.
     countOnly:      set variables about number of affected sibpairs,
-                    do not actually draw the  sample
+                    do not actually draw the sample
 
 "; 
 
@@ -126,7 +126,7 @@ Usage:
 
 Description:
 
-    preparation before drawing a  sample
+    preparation before drawing a sample
 
 Usage:
 
@@ -138,7 +138,7 @@ Usage:
 
 Description:
 
-    draw a  sample
+    draw a sample
 
 Usage:
 
@@ -163,44 +163,7 @@ Usage:
 
 Description:
 
-    this class encapsulate behavior of a sequence of Bernulli trial.
-    the main idea is that when doing a sequence of Bernulli trials of
-    the same probability, we can use much quicker algorithms instead
-    of doing n Bernulli trials
-
-Details:
-
-    For example, when N=10000, p=0.001. The usual way to do N Bin(p)
-    trials is to do N randUnif(0,1)<p comparison.using the new method,
-    we can use geometric distrubution to find the next true
-    event.Also, for the cases of p=0.5, random bits are generated.This
-    class maintain a two dimensional table: a vector of probabilities
-    cross expected number of trialsp1 p2 p3 p4 p5 trial 1 trial 2 ...
-    trial NWe expect that N is big (usually populaiton size) and p_i
-    are smallusing fast BernulliTrial method for fix p, we can fill up
-    this table very quickly column by columnThis class will provide
-    easy access to row (each trial) or column (called each prob) of
-    this table.if this table is accessed row by row (each trial), a
-    internal index is used.if index exceeds N, trials will be
-    generated all again. if trial will be called, e.g., N+2 times all
-    the time, this treatment might not be very efficient.
-
-Details:
-
-    For example, when N=10000, p=0.001. The usual way to do N Bin(p)
-    trials is to do N randUnif(0,1)<p comparison.using the new method,
-    we can use geometric distrubution to find the next true
-    event.Also, for the cases of p=0.5, random bits are generated.This
-    class maintain a two dimensional table: a vector of probabilities
-    cross expected number of trialsp1 p2 p3 p4 p5 trial 1 trial 2 ...
-    trial NWe expect that N is big (usually populaiton size) and p_i
-    are smallusing fast BernulliTrial method for fix p, we can fill up
-    this table very quickly column by columnThis class will provide
-    easy access to row (each trial) or column (called each prob) of
-    this table.if this table is accessed row by row (each trial), a
-    internal index is used.if index exceeds N, trials will be
-    generated all again. if trial will be called, e.g., N+2 times all
-    the time, this treatment might not be very efficient.
+    simuPOP::BernulliTrials
 
 "; 
 
@@ -230,7 +193,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::BernulliTrials::trialSize() const;
+%feature("docstring") simuPOP::BernulliTrials::trialSize "
+
+Description:
+
+    return size of trial
+
+Usage:
+
+    x.trialSize()
+
+"; 
 
 %feature("docstring") simuPOP::BernulliTrials::probSize "
 
@@ -375,15 +348,15 @@ Usage:
 
 Description:
 
-    a  mating scheme that uses binomial selection, regardless of sex
+    a mating scheme that uses binomial selection, regardless of sex
 
 Details:
 
     No sex information is involved (binomial random selection).
     Offspring is chosen from parental generation by random or
-    according to the fitness values. In this  mating scheme,
+    according to the fitness values. In this mating scheme,
     * numOffspring protocol is honored;
-    *  population size changes are allowed;
+    * population size changes are allowed;
     * selection is possible;
     * haploid populaton is allowed.
 
@@ -391,9 +364,9 @@ Details:
 
     No sex information is involved (binomial random selection).
     Offspring is chosen from parental generation by random or
-    according to the fitness values. In this  mating scheme,
+    according to the fitness values. In this mating scheme,
     * numOffspring protocol is honored;
-    *  population size changes are allowed;
+    * population size changes are allowed;
     * selection is possible;
     * haploid populaton is allowed.
 
@@ -403,7 +376,7 @@ Details:
 
 Description:
 
-    create a binomial selection  mating scheme
+    create a binomial selection mating scheme
 
 Usage:
 
@@ -413,11 +386,11 @@ Usage:
 
 Details:
 
-    Please refer to class  mating for parameter descriptions.
+    Please refer to class mating for parameter descriptions.
 
 Details:
 
-    Please refer to class  mating for parameter descriptions.
+    Please refer to class mating for parameter descriptions.
 
 "; 
 
@@ -437,7 +410,7 @@ Usage:
 
 Description:
 
-    deep copy of a binomial selection  mating scheme
+    deep copy of a binomial selection mating scheme
 
 Usage:
 
@@ -450,7 +423,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the binomial selection  mating scheme
+    of the binomial selection mating scheme
 
 Usage:
 
@@ -474,38 +447,38 @@ Function form:
 
 Description:
 
-    draw a case-control  sample from a  population
+    draw a case-control sample from a population
 
 Details:
 
     This operator will randomly choose cases affected individuals and
-    controls unaffected individuals as a  sample. The affected status
-    is usually set by  penetrance functions/operators. The  sample
+    controls unaffected individuals as a sample. The affected status
+    is usually set by penetrance functions/operators. The sample
     populations will have two subpopulations: cases and controls.
     You may specify the number of cases and the number of controls
     from each subpopulation using the array form of the parameters.
-    The  sample population will still have only two subpoulations
+    The sample population will still have only two subpoulations
     (cases/controls) though.
     A special case of this sampling scheme occurs when one of or both
     cases and controls are omitted (zeros). In this case, all cases
     and/or controls are chosen. If both parameters are omitted, the
-    sample is effectively the same  population with affected and
+    sample is effectively the same population with affected and
     unaffected individuals separated into two subpopulations.
 
 Details:
 
     This operator will randomly choose cases affected individuals and
-    controls unaffected individuals as a  sample. The affected status
-    is usually set by  penetrance functions/operators. The  sample
+    controls unaffected individuals as a sample. The affected status
+    is usually set by penetrance functions/operators. The sample
     populations will have two subpopulations: cases and controls.
     You may specify the number of cases and the number of controls
     from each subpopulation using the array form of the parameters.
-    The  sample population will still have only two subpoulations
+    The sample population will still have only two subpoulations
     (cases/controls) though.
     A special case of this sampling scheme occurs when one of or both
     cases and controls are omitted (zeros). In this case, all cases
     and/or controls are chosen. If both parameters are omitted, the
-    sample is effectively the same  population with affected and
+    sample is effectively the same population with affected and
     unaffected individuals separated into two subpopulations.
 
 "; 
@@ -514,7 +487,7 @@ Details:
 
 Description:
 
-    draw cases and controls as a  sample
+    draw cases and controls as a sample
 
 Usage:
 
@@ -525,11 +498,11 @@ Usage:
 
 Details:
 
-    Please refer to class  sample for other parameter descriptions.
+    Please refer to class sample for other parameter descriptions.
 
 Details:
 
-    Please refer to class  sample for other parameter descriptions.
+    Please refer to class sample for other parameter descriptions.
 
 Arguments:
 
@@ -664,13 +637,13 @@ Usage:
 
 Description:
 
-    a controlled binomial random selection  mating scheme
+    a controlled binomial random selection mating scheme
 
 Details:
 
-    This is the controlled binomial random selection  mating scheme
+    This is the controlled binomial random selection mating scheme
     described in  Peng 2007 (PLoS Genetics) . Basically, a freqFunc is
-    passed to this  mating scheme and set the allele frequencies of
+    passed to this mating scheme and set the allele frequencies of
     given alleles at given loci at the offspring generation.
     The offspring generation is conceptually populated in two steps.
     At the first step, only families with disease alleles are accepted
@@ -680,9 +653,9 @@ Details:
 
 Details:
 
-    This is the controlled binomial random selection  mating scheme
+    This is the controlled binomial random selection mating scheme
     described in  Peng 2007 (PLoS Genetics) . Basically, a freqFunc is
-    passed to this  mating scheme and set the allele frequencies of
+    passed to this mating scheme and set the allele frequencies of
     given alleles at given loci at the offspring generation.
     The offspring generation is conceptually populated in two steps.
     At the first step, only families with disease alleles are accepted
@@ -696,7 +669,7 @@ Details:
 
 Description:
 
-    create a controlled binomial random selection  mating scheme
+    create a controlled binomial random selection mating scheme
 
 Usage:
 
@@ -707,11 +680,11 @@ Usage:
 
 Details:
 
-    Please refer to class  mating for descriptions of parameters.
+    Please refer to class mating for descriptions of parameters.
 
 Details:
 
-    Please refer to class  mating for descriptions of parameters.
+    Please refer to class mating for descriptions of parameters.
 
 "; 
 
@@ -733,7 +706,7 @@ Usage:
 
 Description:
 
-    deep copy of a controlled binomial random selection  mating scheme
+    deep copy of a controlled binomial random selection mating scheme
 
 Usage:
 
@@ -746,7 +719,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the controlled binomial random selection  mating scheme
+    of the controlled binomial random selection mating scheme
 
 Usage:
 
@@ -762,25 +735,25 @@ Usage:
 
 Description:
 
-    a controlled  mating scheme
+    a controlled mating scheme
 
 Details:
 
-    This is an experimental  mating scheme that uses a frequency range
+    This is an experimental mating scheme that uses a frequency range
     to control the allele frequency of the offspring generation at
     given loci. When allele frequencies at the offspring generation
     does not fall into the given range, the offspring generation is
-    regenerated. Any  mating scheme can be used with this  mating
-    scheme by passing through parameter matingScheme.
+    regenerated. Any mating scheme can be used with this mating scheme
+    by passing through parameter matingScheme.
 
 Details:
 
-    This is an experimental  mating scheme that uses a frequency range
+    This is an experimental mating scheme that uses a frequency range
     to control the allele frequency of the offspring generation at
     given loci. When allele frequencies at the offspring generation
     does not fall into the given range, the offspring generation is
-    regenerated. Any  mating scheme can be used with this  mating
-    scheme by passing through parameter matingScheme.
+    regenerated. Any mating scheme can be used with this mating scheme
+    by passing through parameter matingScheme.
 
 "; 
 
@@ -797,7 +770,7 @@ Usage:
 
 Arguments:
 
-    matingScheme:   a  mating scheme
+    matingScheme:   a mating scheme
     loci:           loci at which allele frequency is controlled. Note
                     that controlling the allele frequencies at several
                     loci may take a long time.
@@ -830,7 +803,7 @@ Usage:
 
 Description:
 
-    deep copy of a controlled  mating scheme
+    deep copy of a controlled mating scheme
 
 Usage:
 
@@ -845,7 +818,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the controlled  mating scheme
+    of the controlled mating scheme
 
 Usage:
 
@@ -859,11 +832,11 @@ Usage:
 
 Description:
 
-    a controlled random  mating scheme
+    a controlled random mating scheme
 
 Details:
 
-    This is the controlled random  mating scheme described in  Peng
+    This is the controlled random mating scheme described in  Peng
     2007 (PLoS Genetics) . Basically, a freqFunc is passed to this
     mating scheme and set the allele frequencies of given alleles at
     given loci at the offspring generation.
@@ -875,7 +848,7 @@ Details:
 
 Details:
 
-    This is the controlled random  mating scheme described in  Peng
+    This is the controlled random mating scheme described in  Peng
     2007 (PLoS Genetics) . Basically, a freqFunc is passed to this
     mating scheme and set the allele frequencies of given alleles at
     given loci at the offspring generation.
@@ -891,7 +864,7 @@ Details:
 
 Description:
 
-    create a controlled random  mating scheme
+    create a controlled random mating scheme
 
 Usage:
 
@@ -903,13 +876,11 @@ Usage:
 
 Details:
 
-    Please refer to class  mating for descriptions of other
-    parameters.
+    Please refer to class mating for descriptions of other parameters.
 
 Details:
 
-    Please refer to class  mating for descriptions of other
-    parameters.
+    Please refer to class mating for descriptions of other parameters.
 
 Arguments:
 
@@ -942,7 +913,7 @@ Usage:
 
 Description:
 
-    deep copy of a controlled random  mating scheme
+    deep copy of a controlled random mating scheme
 
 Usage:
 
@@ -957,7 +928,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the controlled random  mating scheme
+    of the controlled random mating scheme
 
 Usage:
 
@@ -973,7 +944,7 @@ Usage:
 
 Description:
 
-    dump the content of a  population.
+    dump the content of a population.
 
 "; 
 
@@ -981,7 +952,7 @@ Description:
 
 Description:
 
-    dump  population
+    dump population
 
 Usage:
 
@@ -1074,7 +1045,7 @@ Usage:
 
 Description:
 
-    apply to one  population. It does not check if the operator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -1120,7 +1091,7 @@ Description:
 
 Description:
 
-    constructor
+    simuPOP::Exception::Exception
 
 Usage:
 
@@ -1184,7 +1155,17 @@ Usage:
 
 %ignore simuPOP::Expression::Expression(const Expression &rhs);
 
-%ignore simuPOP::Expression::setLocalDict(PyObject *dict);
+%feature("docstring") simuPOP::Expression::setLocalDict "
+
+Description:
+
+    set local dictionary
+
+Usage:
+
+    x.setLocalDict(*dict)
+
+"; 
 
 %ignore simuPOP::Expression::empty();
 
@@ -1270,7 +1251,7 @@ Usage:
 
 %ignore simuPOP::GenoStructure::locusPos(UINT locus) const;
 
-%ignore simuPOP::GenoStructure::chromIndex(UINT ch) const ;
+%ignore simuPOP::GenoStructure::chromIndex(UINT ch) const;
 
 %feature("docstring") simuPOP::GenoStruTrait "
 
@@ -1283,21 +1264,21 @@ Details:
 
     Genotypic structure refers to the number of chromosomes,
     positions, the number of loci on each chromosome, and allele and
-    locus names etc. All individuals in a  population share the same
+    locus names etc. All individuals in a population share the same
     genotypic structure. Because class  GenoStruTrait is inherited by
-    class  population, class  individual, and class  simulator,
-    functions provided in this class can be accessed at the
-    individual,  population and  simulator levels.
+    class population, class individual, and class simulator, functions
+    provided in this class can be accessed at the individual,
+    population and simulator levels.
 
 Details:
 
     Genotypic structure refers to the number of chromosomes,
     positions, the number of loci on each chromosome, and allele and
-    locus names etc. All individuals in a  population share the same
+    locus names etc. All individuals in a population share the same
     genotypic structure. Because class  GenoStruTrait is inherited by
-    class  population, class  individual, and class  simulator,
-    functions provided in this class can be accessed at the
-    individual,  population and  simulator levels.
+    class population, class individual, and class simulator, functions
+    provided in this class can be accessed at the individual,
+    population and simulator levels.
 
 "; 
 
@@ -1735,9 +1716,9 @@ Details:
     geometric distribution with parameter  $ p $, which has mean  $
     \\frac{p}{1-p} $ and variance  $ \\frac{p}{\\left(1-p\\right)^{2}} $.
     gsmMutator implements both models. If you specify a Python
-    function without a parameter, this  mutator will use its return
+    function without a parameter, this mutator will use its return
     value each time a mutation occur; otherwise, a parameter  $ p $
-    should be provided and the  mutator will act as a geometric
+    should be provided and the mutator will act as a geometric
     generalized stepwise model.
 
 Details:
@@ -1751,10 +1732,68 @@ Details:
     geometric distribution with parameter  $ p $, which has mean  $
     \\frac{p}{1-p} $ and variance  $ \\frac{p}{\\left(1-p\\right)^{2}} $.
     gsmMutator implements both models. If you specify a Python
-    function without a parameter, this  mutator will use its return
+    function without a parameter, this mutator will use its return
     value each time a mutation occur; otherwise, a parameter  $ p $
-    should be provided and the  mutator will act as a geometric
+    should be provided and the mutator will act as a geometric
     generalized stepwise model.
+
+Example:
+
+>>> simu = simulator(population(size=3, loci=[3,5]), noMating())
+>>> simu.step([
+...     initByFreq( [.2,.3,.5]),
+...     gsmMutator(rate=1, p=.8, incProb=.8),
+...     dumper(alleleOnly=True, stage=PrePostMating)])
+individual info: 
+sub population 0:
+   0: FU   1  0  1   2  2  1  2  1 |   1  1  2   1  2  1  1  0 
+   1: MU   2  0  2   2  1  0  2  1 |   1  2  0   2  2  2  2  1 
+   2: FU   0  1  2   2  1  1  1  1 |   2  1  1   0  2  0  0  1 
+End of individual info.
+
+
+No ancenstral population recorded.
+individual info: 
+sub population 0:
+   0: FU   4  0  2   1  4  0  3  0 |   2  0  3   2  0  2  3  2 
+   1: MU   1  0  1   6  2  2  3  0 |   2  3  1   3  1  3  3  2 
+   2: FU   2  2  4   4  2  2  2  2 |   4  3  2   0  0  1  1  3 
+End of individual info.
+
+
+No ancenstral population recorded.
+True
+>>> 
+>>> import random
+>>> def rndInt():
+...   return random.randrange(3,6)
+... 
+>>> simu.step([
+...     initByFreq( [.2,.3,.5]),
+...     gsmMutator(rate=1, func=rndInt, incProb=.8),
+...     dumper(alleleOnly=True, stage=PrePostMating)])
+individual info: 
+sub population 0:
+   0: FU   1  2  1   0  2  2  2  2 |   1  0  2   2  2  2  0  0 
+   1: FU   1  2  0   0  2  2  2  2 |   1  2  2   2  1  2  2  0 
+   2: MU   0  2  1   0  2  2  1  1 |   0  1  0   2  1  0  0  2 
+End of individual info.
+
+
+No ancenstral population recorded.
+individual info: 
+sub population 0:
+   0: FU   0  5  5   5  5  5  0  6 |   4  0  6   6  7  7  5  3 
+   1: FU   4  7  3   5  7  5  7  5 |   6  6  6   5  4  7  6  3 
+   2: MU   5  7  0   3  5  5  5  5 |   4  5  0   0  0  3  5  6 
+End of individual info.
+
+
+No ancenstral population recorded.
+True
+>>> 
+>>>
+
 
 "; 
 
@@ -1775,14 +1814,14 @@ Details:
 
     The generalized stepwise mutation model (GMM) is developed for
     allozymes. It provides better description for these kinds of
-    evolutionary processes. Please see  mutator for the description of
+    evolutionary processes. Please see mutator for the description of
     other parameters.
 
 Details:
 
     The generalized stepwise mutation model (GMM) is developed for
     allozymes. It provides better description for these kinds of
-    evolutionary processes. Please see  mutator for the description of
+    evolutionary processes. Please see mutator for the description of
     other parameters.
 
 Arguments:
@@ -1856,13 +1895,13 @@ Details:
     * an operator that will be applied if the expression is True
     (default to null);
     * an operator that will be applied if the expression is False
-    (default to null). When this operator is applied to a  population,
+    (default to null). When this operator is applied to a population,
     it will evaluate the expression and depending on its value, apply
     the supplied operator. Note that the begin, at, step, and at
     parameters of ifOp and elseOp will be ignored. For example, you
     can mimic the at parameter of an operator by  ifElse('rep in
     [2,5,9]' operator). The real use of this machanism is to monitor
-    the  population statistics and act accordingly.
+    the population statistics and act accordingly.
 
 Details:
 
@@ -1872,13 +1911,13 @@ Details:
     * an operator that will be applied if the expression is True
     (default to null);
     * an operator that will be applied if the expression is False
-    (default to null). When this operator is applied to a  population,
+    (default to null). When this operator is applied to a population,
     it will evaluate the expression and depending on its value, apply
     the supplied operator. Note that the begin, at, step, and at
     parameters of ifOp and elseOp will be ignored. For example, you
     can mimic the at parameter of an operator by  ifElse('rep in
     [2,5,9]' operator). The real use of this machanism is to monitor
-    the  population statistics and act accordingly.
+    the population statistics and act accordingly.
 
 "; 
 
@@ -1937,7 +1976,7 @@ Usage:
 
 Description:
 
-    apply the  ifElse operator to one  population
+    apply the  ifElse operator to one population
 
 Usage:
 
@@ -1987,13 +2026,13 @@ Description:
 Details:
 
     Individuals are the building blocks of populations, each having
-    the following  individual information:
+    the following individual information:
     * shared genotypic structure information
     * genotype
     * sex, affection status, subpopulation ID
     * optional information fields Individual genotypes are arranged by
     locus, chromosome, ploidy, in that order, and can be accessed from
-    a single index. For example, for a diploid  individual with two
+    a single index. For example, for a diploid individual with two
     loci on the first chromosome, one locus on the second, its
     genotype is arranged as  1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1
     where x-y-z represents ploidy x chromosome y and locus z. An
@@ -2004,13 +2043,13 @@ Details:
 Details:
 
     Individuals are the building blocks of populations, each having
-    the following  individual information:
+    the following individual information:
     * shared genotypic structure information
     * genotype
     * sex, affection status, subpopulation ID
     * optional information fields Individual genotypes are arranged by
     locus, chromosome, ploidy, in that order, and can be accessed from
-    a single index. For example, for a diploid  individual with two
+    a single index. For example, for a diploid individual with two
     loci on the first chromosome, one locus on the second, its
     genotype is arranged as  1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1
     where x-y-z represents ploidy x chromosome y and locus z. An
@@ -2062,7 +2101,7 @@ Usage:
 Description:
 
     return an editable array (a Python list of length
-    totNumLoci()*ploidy()) of genotypes of an  individual
+    totNumLoci()*ploidy()) of genotypes of an individual
 
 Usage:
 
@@ -2273,7 +2312,7 @@ Arguments:
 
 Description:
 
-    return the sex of an  individual, 1 for males and 2 for females.
+    return the sex of an individual, 1 for males and 2 for females.
     However, this is not guranteed so please use  sexChar().
 
 Usage:
@@ -2286,7 +2325,7 @@ Usage:
 
 Description:
 
-    return the sex of an  individual, M or F
+    return the sex of an individual, M or F
 
 Usage:
 
@@ -2311,7 +2350,7 @@ Usage:
 
 Description:
 
-    whether or not an  individual is affected
+    whether or not an individual is affected
 
 Usage:
 
@@ -2359,8 +2398,7 @@ Usage:
 
 Description:
 
-    return the ID of the subpopulation to which this  individual
-    blongs
+    return the ID of the subpopulation to which this individual blongs
 
 Usage:
 
@@ -2369,7 +2407,7 @@ Usage:
 Note:
 
     subPopID is not set by default. It only corresponds to the
-    subpopulation in which this  individual resides after
+    subpopulation in which this individual resides after
     pop::setIndSubPopID is called.
 
 "; 
@@ -2379,7 +2417,7 @@ Note:
 Description:
 
     set new subpopulation ID, pop.rearrangeByIndID will move this
-    individual to that  population
+    individual to that population
 
 Usage:
 
@@ -2455,9 +2493,9 @@ Usage:
 
 %ignore simuPOP::individual::genoEnd() const;
 
-%ignore simuPOP::individual::genoBegin(UINT p) const ;
+%ignore simuPOP::individual::genoBegin(UINT p) const;
 
-%ignore simuPOP::individual::genoEnd(UINT p) const ;
+%ignore simuPOP::individual::genoEnd(UINT p) const;
 
 %ignore simuPOP::individual::genoBegin(UINT p, UINT chrom) const ;
 
@@ -2469,7 +2507,7 @@ Usage:
 
 Description:
 
-    a python function used to compare the  individual objects
+    a python function used to compare the individual objects
 
 Usage:
 
@@ -2482,7 +2520,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the  individual
+    of the individual
 
 Usage:
 
@@ -2502,17 +2540,6 @@ Usage:
 
 Description:
 
-    this class implements a Python itertor class that can be used to
-    iterate through individuals in a  population.
-
-Details:
-
-    an instance of this class is returned by
-    population::individuals() and population::individuals(subPop)
-
-Details:
-
-    an instance of this class is returned by
     population::individuals() and population::individuals(subPop)
 
 "; 
@@ -2574,7 +2601,7 @@ Description:
 Details:
 
     This during-mating operator will copy the tag information from
-    his/her parents. Depending on mode parameter, this  tagger will
+    his/her parents. Depending on mode parameter, this tagger will
     obtain tag from his/her father (two tag fields), mother (two tag
     fields) or both (first tag field from both father and mother).An
     example may be tagging one or a few parents and see, at the last
@@ -2583,7 +2610,7 @@ Details:
 Details:
 
     This during-mating operator will copy the tag information from
-    his/her parents. Depending on mode parameter, this  tagger will
+    his/her parents. Depending on mode parameter, this tagger will
     obtain tag from his/her father (two tag fields), mother (two tag
     fields) or both (first tag field from both father and mother).An
     example may be tagging one or a few parents and see, at the last
@@ -2718,13 +2745,13 @@ Arguments:
                     ([[1,4],[5,6]]). This is how you can initialize
                     individuals differently within subpopulations.
                     Note that ranges are in the form of [a,b). I.e.,
-                    range [4,6] will intialize  individual 4, 5, but
+                    range [4,6] will intialize individual 4, 5, but
                     not 6. As a shortcut for [4,5], you can use [4] to
-                    specify one  individual.
-    identicalInds:  whether or not make  individual genotypies
+                    specify one individual.
+    identicalInds:  whether or not make individual genotypies
                     identical in all subpopulation. If True, this
                     operator will randomly generate genotype for an
-                    individual and  spread it to the whole
+                    individual and spread it to the whole
                     subpopulation in the given range.
     loci:           a vector of locus indices at which initialization
                     will be done. If empty, apply to all loci.
@@ -2739,6 +2766,30 @@ Arguments:
                     individuals, sex will be reused from the
                     beginning.
     stage:          default to PreMating
+
+Example:
+
+>>> simu = simulator( population(subPop=[2,3], loci=[5,7]),
+...     randomMating(), rep=1)
+>>> simu.step([
+...     initByFreq(alleleFreq=[ [.2,.8],[.8,.2]]),
+...     dumper(alleleOnly=True)
+...   ])
+individual info: 
+sub population 0:
+   0: FU   1  1  1  1  0   1  1  1  1  1  1  1 |   1  1  1  1  0   1  1  1  1  1  1  1 
+   1: FU   1  0  1  1  1   0  1  1  1  0  1  1 |   1  0  1  1  1   1  0  0  0  1  1  1 
+sub population 1:
+   2: MU   0  0  0  0  0   0  0  0  1  0  0  0 |   1  0  1  0  0   0  0  0  0  0  0  0 
+   3: FU   0  0  0  1  1   0  0  0  1  0  0  0 |   1  0  1  0  0   0  0  0  0  0  0  0 
+   4: FU   0  0  0  0  0   0  0  0  0  0  0  0 |   1  0  1  0  0   0  0  0  0  0  0  0 
+End of individual info.
+
+
+No ancenstral population recorded.
+True
+>>>
+
 
 "; 
 
@@ -2808,11 +2859,11 @@ Description:
 Details:
 
     initByValue operator gets one copy of chromosomes or the whole
-    genotype (or of those corresponds to loci) of an  individual and
+    genotype (or of those corresponds to loci) of an individual and
     copy them to all or a subset of individuals. This operator assign
-    given alleles to specified individuals. Every  individual will
-    have the same genotype. The parameter combinations should be
-    * value - subPop/indRange:  individual in subPop or in range(s)
+    given alleles to specified individuals. Every individual will have
+    the same genotype. The parameter combinations should be
+    * value - subPop/indRange: individual in subPop or in range(s)
     will be assigned genotype 'value';
     * subPop/indRange: subPop or indRange should have the same length
     as values. Each item of values will be assigned to each subPop or
@@ -2821,11 +2872,11 @@ Details:
 Details:
 
     initByValue operator gets one copy of chromosomes or the whole
-    genotype (or of those corresponds to loci) of an  individual and
+    genotype (or of those corresponds to loci) of an individual and
     copy them to all or a subset of individuals. This operator assign
-    given alleles to specified individuals. Every  individual will
-    have the same genotype. The parameter combinations should be
-    * value - subPop/indRange:  individual in subPop or in range(s)
+    given alleles to specified individuals. Every individual will have
+    the same genotype. The parameter combinations should be
+    * value - subPop/indRange: individual in subPop or in range(s)
     will be assigned genotype 'value';
     * subPop/indRange: subPop or indRange should have the same length
     as values. Each item of values will be assigned to each subPop or
@@ -2848,12 +2899,12 @@ Usage:
 
 Arguments:
 
-    value:          an array of genotypes of one  individual, having
+    value:          an array of genotypes of one individual, having
                     the same length as the length of loci() or
                     loci()*ploidy() or pop.genoSize() (whole genotype)
                     or totNumLoci() (one copy of chromosome). This
                     parameter can also be an array of arrays of
-                    genotypes of one  individual. Should have length
+                    genotypes of one individual. Should have length
                     one or equal to subpop or ranges or proportion. If
                     value is an array of values, it should have the
                     same length as subpop, indRange or proportions.
@@ -2875,6 +2926,29 @@ Arguments:
                     number of individuals, sex will be reused from the
                     beginning.
     stages:         default to PreMating
+
+Example:
+
+>>> simu = simulator( population(subPop=[2,3], loci=[5,7]),
+...     randomMating(), rep=1)
+>>> simu.step([
+...     initByValue([1]*5 + [2]*7 + [3]*5 +[4]*7),
+...     dumper(alleleOnly=True)])
+individual info: 
+sub population 0:
+   0: MU   1  1  1  1  1   2  2  2  2  2  2  2 |   1  1  1  1  1   4  4  4  4  4  4  4 
+   1: FU   1  1  1  1  1   4  4  4  4  4  4  4 |   1  1  1  1  1   2  2  2  2  2  2  2 
+sub population 1:
+   2: MU   1  1  1  1  1   4  4  4  4  4  4  4 |   1  1  1  1  1   4  4  4  4  4  4  4 
+   3: FU   3  3  3  3  3   4  4  4  4  4  4  4 |   3  3  3  3  3   4  4  4  4  4  4  4 
+   4: FU   3  3  3  3  3   4  4  4  4  4  4  4 |   3  3  3  3  3   2  2  2  2  2  2  2 
+End of individual info.
+
+
+No ancenstral population recorded.
+True
+>>>
+
 
 "; 
 
@@ -2955,7 +3029,7 @@ Details:
 
 Description:
 
-    create an  initializer. default to be always active
+    create an initializer. default to be always active
 
 Usage:
 
@@ -2981,7 +3055,7 @@ Usage:
 
 Description:
 
-    deep copy of an  initializer
+    deep copy of an initializer
 
 Usage:
 
@@ -2994,7 +3068,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the  initializer
+    of the initializer
 
 Usage:
 
@@ -3006,7 +3080,7 @@ Usage:
 
 Description:
 
-    set the range of a  populationpop???
+    set the range of a population pop???
 
 Usage:
 
@@ -3084,29 +3158,29 @@ Function form:
 
 Description:
 
-    K-Allele Model  mutator.
+    K-Allele Model mutator.
 
 Details:
 
-    This  mutator mutate an allele to another allelic state with equal
+    This mutator mutate an allele to another allelic state with equal
     probability. The specified mutation rate is actually the
     'probability to mutate'. So the mutation rate to any other allelic
     state is actually  $ (rate/(K-1)) $, where  $ K $ is specified by
-    parameter maxAllele. You can also specify states for this
-    mutator. If the state parameter is given, all alleles must be one
-    of the states, and mutation will happen among them. states is
-    defaulted to 1-maxAllele.???
+    parameter maxAllele. You can also specify states for this mutator.
+    If the state parameter is given, all alleles must be one of the
+    states, and mutation will happen among them. states is defaulted
+    to 1-maxAllele.???
 
 Details:
 
-    This  mutator mutate an allele to another allelic state with equal
+    This mutator mutate an allele to another allelic state with equal
     probability. The specified mutation rate is actually the
     'probability to mutate'. So the mutation rate to any other allelic
     state is actually  $ (rate/(K-1)) $, where  $ K $ is specified by
-    parameter maxAllele. You can also specify states for this
-    mutator. If the state parameter is given, all alleles must be one
-    of the states, and mutation will happen among them. states is
-    defaulted to 1-maxAllele.???
+    parameter maxAllele. You can also specify states for this mutator.
+    If the state parameter is given, all alleles must be one of the
+    states, and mutation will happen among them. states is defaulted
+    to 1-maxAllele.???
 
 "; 
 
@@ -3114,7 +3188,7 @@ Details:
 
 Description:
 
-    create a K-Allele Model  mutator
+    create a K-Allele Model mutator
 
 Usage:
 
@@ -3133,6 +3207,27 @@ Arguments:
     maxAllele:      maximum allele that can be mutated to. For binary
                     libraries allelic states will be [0, maxAllele].
                     Otherwise, they are [1, maxAllele].
+
+Example:
+
+>>> simu = simulator(population(size=5, loci=[3,5]), noMating())
+>>> simu.step([
+...     kamMutator( rate=[.2,.6,.5], loci=[0,2,6], maxAllele=9),
+...     dumper(alleleOnly=True)])
+individual info: 
+sub population 0:
+   0: MU   8  0  2   0  0  0  1  0 |   2  0  4   0  0  0  8  0 
+   1: MU   2  0  0   0  0  0  0  0 |   7  0  3   0  0  0  0  0 
+   2: MU   0  0  5   0  0  0  0  0 |   3  0  2   0  0  0  3  0 
+   3: MU   0  0  1   0  0  0  0  0 |   0  0  6   0  0  0  0  0 
+   4: MU   0  0  7   0  0  0  0  0 |   0  0  0   0  0  0  7  0 
+End of individual info.
+
+
+No ancenstral population recorded.
+True
+>>>
+
 
 "; 
 
@@ -3189,7 +3284,7 @@ Usage:
 
 Description:
 
-    draw a large pedigree  sample
+    draw a large pedigree sample
 
 "; 
 
@@ -3197,7 +3292,7 @@ Description:
 
 Description:
 
-    draw a large pedigree  sample
+    draw a large pedigree sample
 
 Usage:
 
@@ -3209,21 +3304,21 @@ Usage:
 
 Details:
 
-    Please refer to class  sample for other parameter descriptions.
+    Please refer to class sample for other parameter descriptions.
 
 Details:
 
-    Please refer to class  sample for other parameter descriptions.
+    Please refer to class sample for other parameter descriptions.
 
 Arguments:
 
-    minTotalSize:   the minimum number of individuals in the  sample
+    minTotalSize:   the minimum number of individuals in the sample
     maxOffspring:   the maximum number of offspring a parent may have
     minPedSize:     minimal pedigree size, default to 5
     minAffected:    minimal number of affected individuals in each
                     pedigree, default to 0
     countOnly:      set variables about number of affected sibpairs,
-                    do not actually draw the  sample.
+                    do not actually draw the sample.
 
 "; 
 
@@ -3255,7 +3350,7 @@ Usage:
 
 Description:
 
-    preparation before drawing a  sample
+    preparation before drawing a sample
 
 Usage:
 
@@ -3267,7 +3362,7 @@ Usage:
 
 Description:
 
-    draw a a large pedigree  sample
+    draw a a large pedigree sample
 
 Usage:
 
@@ -3300,11 +3395,11 @@ Function form:
 
 Description:
 
-    multiple allele  penetrance operator
+    multiple allele penetrance operator
 
 Details:
 
-    This is called 'multiple-alleles'???  penetrance. It separates
+    This is called 'multiple-alleles'??? penetrance. It separates
     alleles into two groups: wildtype and disease alleles. Wildtype
     alleles are specified by parameter wildtype and any other alleles
     are considered as diseased alleles.  maPenetrance accepts an array
@@ -3314,7 +3409,7 @@ Details:
 
 Details:
 
-    This is called 'multiple-alleles'???  penetrance. It separates
+    This is called 'multiple-alleles'??? penetrance. It separates
     alleles into two groups: wildtype and disease alleles. Wildtype
     alleles are specified by parameter wildtype and any other alleles
     are considered as diseased alleles.  maPenetrance accepts an array
@@ -3328,8 +3423,8 @@ Details:
 
 Description:
 
-    create a multiple allele  penetrance operator ( penetrance
-    according to diseased or wildtype alleles)
+    create a multiple allele penetrance operator (penetrance according
+    to diseased or wildtype alleles)
 
 Usage:
 
@@ -3343,7 +3438,7 @@ Arguments:
                     be examed.???
     loci:           the loci indices. The genotypes of these loci will
                     be examed.
-    penetrance:     an array of  penetrance values of AA, Aa, aa. A is
+    penetrance:     an array of penetrance values of AA, Aa, aa. A is
                     the wild type group. In the case of multiple loci,
                     fitness should be in the order of AABB, AABb,
                     AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
@@ -3371,7 +3466,7 @@ Usage:
 
 Description:
 
-    deep copy of a multi-allele  penetrance operator
+    deep copy of a multi-allele penetrance operator
 
 Usage:
 
@@ -3396,7 +3491,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the multi-allele  penetrance operator
+    of the multi-allele penetrance operator
 
 Usage:
 
@@ -3420,12 +3515,12 @@ Description:
 
 Details:
 
-    Assign  penetrance using a table with keys 'X-Y' where X and Y are
+    Assign penetrance using a table with keys 'X-Y' where X and Y are
     allele numbers.
 
 Details:
 
-    Assign  penetrance using a table with keys 'X-Y' where X and Y are
+    Assign penetrance using a table with keys 'X-Y' where X and Y are
     allele numbers.
 
 "; 
@@ -3434,7 +3529,7 @@ Details:
 
 Description:
 
-    create a map  penetrance operator
+    create a map penetrance operator
 
 Usage:
 
@@ -3448,7 +3543,7 @@ Arguments:
                     be examed.???
     loci:           the loci indices. The genotypes of these loci will
                     be examed.
-    penetrance:     a dictionary of  penetrance. The genotype must be
+    penetrance:     a dictionary of penetrance. The genotype must be
                     in the form of 'a-b' for a single locus.
     phase:          if True, a/b and b/a will have different
                     penetrance values. Default to False.
@@ -3473,7 +3568,7 @@ Usage:
 
 Description:
 
-    deep copy of a map  penetrance operator
+    deep copy of a map penetrance operator
 
 Usage:
 
@@ -3498,7 +3593,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the map  penetrance operator
+    of the map penetrance operator
 
 Usage:
 
@@ -3635,13 +3730,13 @@ Description:
 
 Details:
 
-    This map  selector implements selection at one locus. A user
+    This map selector implements selection at one locus. A user
     provided dictionary (map) of genotypes will be used in this
     selector to set each individual's fitness value.
 
 Details:
 
-    This map  selector implements selection at one locus. A user
+    This map selector implements selection at one locus. A user
     provided dictionary (map) of genotypes will be used in this
     selector to set each individual's fitness value.
 
@@ -3651,7 +3746,7 @@ Details:
 
 Description:
 
-    create a map  selector
+    create a map selector
 
 Usage:
 
@@ -3691,7 +3786,7 @@ Usage:
 
 Description:
 
-    deep copy of a map  selector
+    deep copy of a map selector
 
 Usage:
 
@@ -3716,7 +3811,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the map  selector
+    of the map selector
 
 Usage:
 
@@ -3858,19 +3953,19 @@ Function form:
 
 Description:
 
-    multiple allele  selector (selection according to wildtype or
+    multiple allele selector (selection according to wildtype or
     diseased alleles)
 
 Details:
 
-    This is called 'multiple-allele'  selector. It separate alleles
+    This is called 'multiple-allele' selector. It separate alleles
     into two groups: wildtype and disease alleles. Wildtype alleles
     are specified by parameter wildtype and any other alleles are
     considered as diseased alleles.
 
 Details:
 
-    This is called 'multiple-allele'  selector. It separate alleles
+    This is called 'multiple-allele' selector. It separate alleles
     into two groups: wildtype and disease alleles. Wildtype alleles
     are specified by parameter wildtype and any other alleles are
     considered as diseased alleles.
@@ -3881,7 +3976,7 @@ Details:
 
 Description:
 
-    create a multiple allele  selector
+    create a multiple allele selector
 
 Usage:
 
@@ -3970,13 +4065,13 @@ Usage:
 
 Description:
 
-    the base class of all  mating schemes - a required parameter of
+    the base class of all mating schemes - a required parameter of
     simulator
 
 Details:
 
     Mating schemes specify how to generate offspring from the current
-    population. It must be provided when a  simulator is created.
+    population. It must be provided when a simulator is created.
     Mating can perform the following tasks:
     * change population/subpopulation sizes;
     * randomly select parent(s) to generate offspring to fill the next
@@ -3987,7 +4082,7 @@ Details:
 Details:
 
     Mating schemes specify how to generate offspring from the current
-    population. It must be provided when a  simulator is created.
+    population. It must be provided when a simulator is created.
     Mating can perform the following tasks:
     * change population/subpopulation sizes;
     * randomly select parent(s) to generate offspring to fill the next
@@ -4003,7 +4098,7 @@ Details:
 
 Description:
 
-    create a  mating scheme
+    create a mating scheme
 
 Usage:
 
@@ -4013,13 +4108,13 @@ Usage:
 
 Details:
 
-    By default, a  mating scheme keeps a constant  population size,
-    generate one offspring per  mating event. These can be changed
+    By default, a mating scheme keeps a constant population size,
+    generate one offspring per mating event. These can be changed
     using a variety of parameters. First, newSubPopSize,
     newSubPopSizeExpr and newSubPopSizeFunc can be used to specify
     subpopulation sizes of the offspring generation. mode,
     numOffspring, maxNumOffspring can be used to specify how many
-    offspring will be produced for each  mating event. This mode
+    offspring will be produced for each mating event. This mode
     parameter can be one of
     * MATE_NumOffspring: a fixed number of offspring for all families
     at this generation. If numOffspring is given, all generations use
@@ -4045,13 +4140,13 @@ Details:
 
 Details:
 
-    By default, a  mating scheme keeps a constant  population size,
-    generate one offspring per  mating event. These can be changed
+    By default, a mating scheme keeps a constant population size,
+    generate one offspring per mating event. These can be changed
     using a variety of parameters. First, newSubPopSize,
     newSubPopSizeExpr and newSubPopSizeFunc can be used to specify
     subpopulation sizes of the offspring generation. mode,
     numOffspring, maxNumOffspring can be used to specify how many
-    offspring will be produced for each  mating event. This mode
+    offspring will be produced for each mating event. This mode
     parameter can be one of
     * MATE_NumOffspring: a fixed number of offspring for all families
     at this generation. If numOffspring is given, all generations use
@@ -4079,7 +4174,7 @@ Arguments:
 
     numOffspring:   the number of offspring or p for a random
                     distribution. Default to 1. This parameter
-                    determines the number of offspring that a  mating
+                    determines the number of offspring that a mating
                     event will produce. Therefore, it determines the
                     family size.
     numOffspringFunc:a Python function that returns the number of
@@ -4121,7 +4216,7 @@ Usage:
 
 Description:
 
-    deep copy of a  mating scheme
+    deep copy of a mating scheme
 
 Usage:
 
@@ -4134,7 +4229,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the  mating scheme
+    of the mating scheme
 
 Usage:
 
@@ -4253,14 +4348,14 @@ Usage:
 
 Description:
 
-    migrate individuals from a (sub) population to another (sub)
-    population
+    migrate individuals from a (sub)population to another
+    (sub)population
 
 Details:
 
     Migrator is the only way to mix genotypes of several
-    subpopulations because  mating is strictly within subpopulations
-    in  simuPOP. Migrators are quite flexible in  simuPOP in the sense
+    subpopulations because mating is strictly within subpopulations in
+    simuPOP. Migrators are quite flexible in  simuPOP in the sense
     that
     * Migration can happen from and to a subset of subpopulations.
     * Migration can be done by probability, proportion or by counts.
@@ -4276,8 +4371,8 @@ Details:
 Details:
 
     Migrator is the only way to mix genotypes of several
-    subpopulations because  mating is strictly within subpopulations
-    in  simuPOP. Migrators are quite flexible in  simuPOP in the sense
+    subpopulations because mating is strictly within subpopulations in
+    simuPOP. Migrators are quite flexible in  simuPOP in the sense
     that
     * Migration can happen from and to a subset of subpopulations.
     * Migration can be done by probability, proportion or by counts.
@@ -4296,7 +4391,7 @@ Details:
 
 Description:
 
-    create a  migrator
+    create a migrator
 
 Usage:
 
@@ -4322,10 +4417,10 @@ Arguments:
 
 Note:
 
-    * The overall  population size will not be changed. (Mating
-    schemes can do that). If you would like to keep the subpopulation
-    size after migration, you can use the newSubPopSize or
-    newSubPopSizeExpr parameter of a  mating scheme.
+    * The overall population size will not be changed. (Mating schemes
+    can do that). If you would like to keep the subpopulation size
+    after migration, you can use the newSubPopSize or
+    newSubPopSizeExpr parameter of a mating scheme.
     * rate is a matrix with dimensions determined by fromSubPop and
     toSubPop. By default, rate is a matrix with element r(i,j), where
     r(i, j) is the migration rate, probability or count from
@@ -4353,7 +4448,7 @@ Usage:
 
 Description:
 
-    deep copy of a  migrator
+    deep copy of a migrator
 
 Usage:
 
@@ -4401,7 +4496,7 @@ Details:
 
 Description:
 
-    apply the  migrator
+    apply the migrator
 
 Usage:
 
@@ -4414,7 +4509,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the  migrator
+    of the migrator
 
 Usage:
 
@@ -4442,13 +4537,13 @@ Details:
     mlPentrance is the 'multiple-loci'??? penetrnace calculator. It
     accepts a list of penetrances and combine them according to the
     mode parameter, which takes one of the following values:
-    * PEN_Multiplicative: the  penetrance is calculated as  $ f=\\prod
+    * PEN_Multiplicative: the penetrance is calculated as  $ f=\\prod
     f_{i} $.
-    * PEN_Additive: the  penetrance is calculated as  $
+    * PEN_Additive: the penetrance is calculated as  $
     f=\\min\\left(1,\\sum f_{i}\\right) $.  $ f $ will be set to 1 when  $
     f<0 $. In this case,  $ s_{i} $??? are added, not  $ f_{i} $
     directly.
-    * PEN_Heterogeneity: the  penetrance is calculated as  $
+    * PEN_Heterogeneity: the penetrance is calculated as  $
     f=1-\\prod\\left(1-f_{i}\\right) $. Please refer to Neil Risch (1990)
     for detailed information about these models.
 
@@ -4457,13 +4552,13 @@ Details:
     mlPentrance is the 'multiple-loci'??? penetrnace calculator. It
     accepts a list of penetrances and combine them according to the
     mode parameter, which takes one of the following values:
-    * PEN_Multiplicative: the  penetrance is calculated as  $ f=\\prod
+    * PEN_Multiplicative: the penetrance is calculated as  $ f=\\prod
     f_{i} $.
-    * PEN_Additive: the  penetrance is calculated as  $
+    * PEN_Additive: the penetrance is calculated as  $
     f=\\min\\left(1,\\sum f_{i}\\right) $.  $ f $ will be set to 1 when  $
     f<0 $. In this case,  $ s_{i} $??? are added, not  $ f_{i} $
     directly.
-    * PEN_Heterogeneity: the  penetrance is calculated as  $
+    * PEN_Heterogeneity: the penetrance is calculated as  $
     f=1-\\prod\\left(1-f_{i}\\right) $. Please refer to Neil Risch (1990)
     for detailed information about these models.
 
@@ -4473,7 +4568,7 @@ Details:
 
 Description:
 
-    create a multiple loci  penetrance operator using a multiplicative
+    create a multiple loci penetrance operator using a multiplicative
     model
 
 Usage:
@@ -4506,7 +4601,7 @@ Usage:
 
 Description:
 
-    deep copy of a multi-loci  penetrance operator
+    deep copy of a multi-loci penetrance operator
 
 Usage:
 
@@ -4531,7 +4626,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the multiple-loci  penetrance operator
+    of the multiple-loci penetrance operator
 
 Usage:
 
@@ -4679,10 +4774,10 @@ Description:
 
 Details:
 
-    This  selector is a 'multiple-loci model'  selector. The  selector
+    This selector is a 'multiple-loci model' selector. The selector
     takes a vector of selectors (can not be another  mlSelector) and
-    evaluate the fitness of an  individual as the the product or sum
-    of  individual fitness values. The mode is determined by parameter
+    evaluate the fitness of an individual as the the product or sum of
+    individual fitness values. The mode is determined by parameter
     mode, which takes the value
     * SEL_Multiplicative: the fitness is calculated as  $
     f=\\prod_{i}f_{i} $.
@@ -4693,10 +4788,10 @@ Details:
 
 Details:
 
-    This  selector is a 'multiple-loci model'  selector. The  selector
+    This selector is a 'multiple-loci model' selector. The selector
     takes a vector of selectors (can not be another  mlSelector) and
-    evaluate the fitness of an  individual as the the product or sum
-    of  individual fitness values. The mode is determined by parameter
+    evaluate the fitness of an individual as the the product or sum of
+    individual fitness values. The mode is determined by parameter
     mode, which takes the value
     * SEL_Multiplicative: the fitness is calculated as  $
     f=\\prod_{i}f_{i} $.
@@ -4711,7 +4806,7 @@ Details:
 
 Description:
 
-    create a multi-loci  selector
+    create a multi-loci selector
 
 Usage:
 
@@ -4791,7 +4886,7 @@ Description:
 Details:
 
     The base class of all functional mutators. It is not supposed to
-    be called directly.Every  mutator can specify rate (equal rate or
+    be called directly.Every mutator can specify rate (equal rate or
     different rates for different loci) and a vector of applicable
     loci (default to all but should have the same length as rate if
     rate has length greater than one).Maximum allele can be specified
@@ -4804,7 +4899,7 @@ Details:
 Details:
 
     The base class of all functional mutators. It is not supposed to
-    be called directly.Every  mutator can specify rate (equal rate or
+    be called directly.Every mutator can specify rate (equal rate or
     different rates for different loci) and a vector of applicable
     loci (default to all but should have the same length as rate if
     rate has length greater than one).Maximum allele can be specified
@@ -4820,7 +4915,7 @@ Details:
 
 Description:
 
-    create a  mutator
+    create a mutator
 
 Usage:
 
@@ -4874,7 +4969,7 @@ Usage:
 
 Description:
 
-    deep copy of a  mutator
+    deep copy of a mutator
 
 Usage:
 
@@ -4970,7 +5065,7 @@ Usage:
 
 Description:
 
-    apply a  mutator
+    apply a mutator
 
 Usage:
 
@@ -4982,12 +5077,12 @@ Usage:
 
 Description:
 
-    a  mating scheme that does nothing
+    a mating scheme that does nothing
 
 Details:
 
     In this scheme, there is
-    * no  mating. Parent generation will be considered as offspring
+    * no mating. Parent generation will be considered as offspring
     generation.
     * no subpopulation change. During-mating operators will be
     applied, but the return values are not checked. I.e., subpopsizes
@@ -4997,7 +5092,7 @@ Details:
 Details:
 
     In this scheme, there is
-    * no  mating. Parent generation will be considered as offspring
+    * no mating. Parent generation will be considered as offspring
     generation.
     * no subpopulation change. During-mating operators will be
     applied, but the return values are not checked. I.e., subpopsizes
@@ -5010,7 +5105,7 @@ Details:
 
 Description:
 
-    creat a scheme with no  mating
+    creat a scheme with no mating
 
 Usage:
 
@@ -5038,7 +5133,7 @@ Usage:
 
 Description:
 
-    deep copy of a scheme with no  mating
+    deep copy of a scheme with no mating
 
 Usage:
 
@@ -5051,7 +5146,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the scheme with no  mating
+    of the scheme with no mating
 
 Usage:
 
@@ -5120,7 +5215,7 @@ Usage:
 
 Description:
 
-    apply the  noneOp operator to one  population
+    apply the  noneOp operator to one population
 
 Usage:
 
@@ -5145,7 +5240,7 @@ Usage:
 
 Description:
 
-    draw a nuclear family  sample
+    draw a nuclear family sample
 
 "; 
 
@@ -5153,7 +5248,7 @@ Description:
 
 Description:
 
-    draw a nuclear family  sample
+    draw a nuclear family sample
 
 Usage:
 
@@ -5165,11 +5260,11 @@ Usage:
 
 Details:
 
-    Please refer to class  sample for parameter descriptions.
+    Please refer to class sample for parameter descriptions.
 
 Details:
 
-    Please refer to class  sample for parameter descriptions.
+    Please refer to class sample for parameter descriptions.
 
 "; 
 
@@ -5201,7 +5296,7 @@ Usage:
 
 Description:
 
-    preparation before drawing a  sample
+    preparation before drawing a sample
 
 Usage:
 
@@ -5213,7 +5308,7 @@ Usage:
 
 Description:
 
-    draw a nuclear family  sample
+    draw a nuclear family sample
 
 Usage:
 
@@ -5303,7 +5398,7 @@ Details:
 
     Operators are objects that act on populations. They can be applied
     to populations directly using their function forms, but they are
-    usually managed and applied by a  simulator.
+    usually managed and applied by a simulator.
     Operators can be applied at different stages of the life cycle of
     a generation. More specifically, they can be applied at pre-,
     during-, post-mating, or a combination of these stages. Applicable
@@ -5320,7 +5415,7 @@ Details:
     file, which can vary with replicates and/or generations. Outputs
     from different operators can be accumulated to the same file to
     form table-like outputs.
-    Operators are applied to every replicate of a  simulator by
+    Operators are applied to every replicate of a simulator by
     default. However, you can apply operators to one or a group of
     replicates using parameter rep or grp.
     Filenames can have the following format:
@@ -5339,7 +5434,7 @@ Details:
 
     Operators are objects that act on populations. They can be applied
     to populations directly using their function forms, but they are
-    usually managed and applied by a  simulator.
+    usually managed and applied by a simulator.
     Operators can be applied at different stages of the life cycle of
     a generation. More specifically, they can be applied at pre-,
     during-, post-mating, or a combination of these stages. Applicable
@@ -5356,7 +5451,7 @@ Details:
     file, which can vary with replicates and/or generations. Outputs
     from different operators can be accumulated to the same file to
     form table-like outputs.
-    Operators are applied to every replicate of a  simulator by
+    Operators are applied to every replicate of a simulator by
     default. However, you can apply operators to one or a group of
     replicates using parameter rep or grp.
     Filenames can have the following format:
@@ -5658,7 +5753,7 @@ Usage:
 
 Description:
 
-    apply to one  population. It does not check if the operator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -5718,9 +5813,29 @@ Usage:
 
 "; 
 
-%ignore simuPOP::OstreamManager::getOstream(const string &name, bool readable, bool realAppend, bool useString);
+%feature("docstring") simuPOP::OstreamManager::getOstream "
 
-%ignore simuPOP::OstreamManager::hasOstream(const string &filename);
+Description:
+
+    if the stream does not exist, create one and return.
+
+Usage:
+
+    x.getOstream(name, readable, realAppend, useString)
+
+"; 
+
+%feature("docstring") simuPOP::OstreamManager::hasOstream "
+
+Description:
+
+    this is mostly for debug purposes
+
+Usage:
+
+    x.hasOstream(filename)
+
+"; 
 
 %ignore simuPOP::OstreamManager::listAll();
 
@@ -5892,24 +6007,24 @@ Description:
 Details:
 
     This during-mating operator set \\c tag(), currently a pair of
-    numbers, of each  individual with indices of his/her parents in
-    the parental  population. This information will be used by
-    pedigree-related operators like  affectedSibpairSample to track
-    the pedigree information. Since parental  population will be
-    discarded or stored after  mating, and tagging information will be
-    passed with individuals, mating/population change etc. will not
-    interfere with this simple tagging system.
+    numbers, of each individual with indices of his/her parents in the
+    parental population. This information will be used by pedigree-
+    related operators like  affectedSibpairSample to track the
+    pedigree information. Since parental population will be discarded
+    or stored after mating, and tagging information will be passed
+    with individuals, mating/population change etc. will not interfere
+    with this simple tagging system.
 
 Details:
 
     This during-mating operator set \\c tag(), currently a pair of
-    numbers, of each  individual with indices of his/her parents in
-    the parental  population. This information will be used by
-    pedigree-related operators like  affectedSibpairSample to track
-    the pedigree information. Since parental  population will be
-    discarded or stored after  mating, and tagging information will be
-    passed with individuals, mating/population change etc. will not
-    interfere with this simple tagging system.
+    numbers, of each individual with indices of his/her parents in the
+    parental population. This information will be used by pedigree-
+    related operators like  affectedSibpairSample to track the
+    pedigree information. Since parental population will be discarded
+    or stored after mating, and tagging information will be passed
+    with individuals, mating/population change etc. will not interfere
+    with this simple tagging system.
 
 "; 
 
@@ -5979,47 +6094,47 @@ Usage:
 
 Description:
 
-    pause a  simulator
+    pause a simulator
 
 Details:
 
-    This operator pauses the evolution of a  simulator at given
+    This operator pauses the evolution of a simulator at given
     generations or at a key stroke, using stopOnKeyStroke=True option.
-    Users can use 'q' to stop an evolution. When a  simulator is
+    Users can use 'q' to stop an evolution. When a simulator is
     stopped, press any other key to resume the simulation or escape to
     a Python shell to examine the status of the simulation by press
     's'.
-    There are two ways to use this operator, the first one is to
-    pause the simulation at specified generations, using the usual
-    operator parameters such as at. Another way is to  pause a
-    simulation with any key stroke, using the stopOnKeyStroke
-    parameter. This feature is useful for a presentation or an
-    interactive simulation. When 's' is pressed, this operator expose
-    the current  population to the main Python dictionary as variable
-    pop and enter an interactive Python session. The way current
-    population is exposed can be controlled by parameter exposePop and
-    popName. This feature is useful when you want to examine the
-    properties of a  population during evolution.
+    There are two ways to use this operator, the first one is to pause
+    the simulation at specified generations, using the usual operator
+    parameters such as at. Another way is to pause a simulation with
+    any key stroke, using the stopOnKeyStroke parameter. This feature
+    is useful for a presentation or an interactive simulation. When
+    's' is pressed, this operator expose the current population to the
+    main Python dictionary as variable pop and enter an interactive
+    Python session. The way current population is exposed can be
+    controlled by parameter exposePop and popName. This feature is
+    useful when you want to examine the properties of a population
+    during evolution.
 
 Details:
 
-    This operator pauses the evolution of a  simulator at given
+    This operator pauses the evolution of a simulator at given
     generations or at a key stroke, using stopOnKeyStroke=True option.
-    Users can use 'q' to stop an evolution. When a  simulator is
+    Users can use 'q' to stop an evolution. When a simulator is
     stopped, press any other key to resume the simulation or escape to
     a Python shell to examine the status of the simulation by press
     's'.
-    There are two ways to use this operator, the first one is to
-    pause the simulation at specified generations, using the usual
-    operator parameters such as at. Another way is to  pause a
-    simulation with any key stroke, using the stopOnKeyStroke
-    parameter. This feature is useful for a presentation or an
-    interactive simulation. When 's' is pressed, this operator expose
-    the current  population to the main Python dictionary as variable
-    pop and enter an interactive Python session. The way current
-    population is exposed can be controlled by parameter exposePop and
-    popName. This feature is useful when you want to examine the
-    properties of a  population during evolution.
+    There are two ways to use this operator, the first one is to pause
+    the simulation at specified generations, using the usual operator
+    parameters such as at. Another way is to pause a simulation with
+    any key stroke, using the stopOnKeyStroke parameter. This feature
+    is useful for a presentation or an interactive simulation. When
+    's' is pressed, this operator expose the current population to the
+    main Python dictionary as variable pop and enter an interactive
+    Python session. The way current population is exposed can be
+    controlled by parameter exposePop and popName. This feature is
+    useful when you want to examine the properties of a population
+    during evolution.
 
 "; 
 
@@ -6041,9 +6156,9 @@ Arguments:
     prompt:         if True (default), print prompt message
     stopOnKeyStroke:if True, stop only when a key was pressed
     exposePop:      whether or not expose pop to user namespace, only
-                    useful when user choose 's' at  pause. Default to
+                    useful when user choose 's' at pause. Default to
                     True.
-    popName:        by which name the  population is exposed. Default
+    popName:        by which name the population is exposed. Default
                     to pop.
 
 "; 
@@ -6064,7 +6179,7 @@ Usage:
 
 Description:
 
-    deep copy of a  pause operator
+    deep copy of a pause operator
 
 Usage:
 
@@ -6076,7 +6191,7 @@ Usage:
 
 Description:
 
-    apply the  pause operator to one  population
+    apply the pause operator to one population
 
 Usage:
 
@@ -6089,7 +6204,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the  pause operator
+    of the pause operator
 
 Usage:
 
@@ -6101,25 +6216,25 @@ Usage:
 
 Description:
 
-    basic class of a  penetrance operator
+    basic class of a penetrance operator
 
 Details:
 
     Penetrance is the probability that one will have the disease when
     he has certain genotype(s). Calculation and the parameter set of
-    penetrance are similar to those of fitness. An  individual will be
-    randomly marked as affected/unaffected according to his
-    penetrance value.??? For example, an  individual will have
-    probability 0.8 to be affected if the  penetrance is 0.8.
+    penetrance are similar to those of fitness. An individual will be
+    randomly marked as affected/unaffected according to his penetrance
+    value.??? For example, an individual will have probability 0.8 to
+    be affected if the penetrance is 0.8.
     Penetrance can be applied at any stage (default to DuringMating).
-    It will be calculated during  mating, and then the affected status
+    It will be calculated during mating, and then the affected status
     will be set for each offspring. Penetrance can also be used as
     PreMating, PostMating or even PrePostMating??? operator. In these
     cases, the affected status will be set to all individuals
-    according to their  penetrance values. It is also possible to
-    store  penetrance in a given information field specified by
-    infoFields parameter (e.g. infoFields=['penetrance']). This is
-    useful to check the  penetrance values at a later time.
+    according to their penetrance values. It is also possible to store
+    penetrance in a given information field specified by infoFields
+    parameter (e.g. infoFields=['penetrance']). This is useful to
+    check the penetrance values at a later time.
     Affected status will be used for statistical purpose, and most
     importantly, ascertainment. They will be calculated along with
     fitness although they might not be used at every generation. You
@@ -6130,38 +6245,38 @@ Details:
     Pentrance values are used to set the affectedness of individuals,
     and are usually not saved. If you would like to know the
     penetrance value, you need to
-    * use addInfoField('penetrance') to the  population to analyze.
-    (Or use infoFields parameter of the  population constructor), and
+    * use addInfoField('penetrance') to the population to analyze. (Or
+    use infoFields parameter of the population constructor), and
     * use e.g.,  mlPenetrance(...., infoFields=['penetrance']) to add
-    the  penetrance field to the  penetrance operator you use. You may
+    the penetrance field to the penetrance operator you use. You may
     choose a name other than 'penetrance' as long as the field names
-    for the operator and  population match. Penetrance functions can
-    be applied to the current, all, or certain number of ancestral
+    for the operator and population match. Penetrance functions can be
+    applied to the current, all, or certain number of ancestral
     generations. This is controlled by the ancestralGen parameter,
     which is default to -1 (all available ancestral generations). You
     can set it to 0 if you only need affection??? status for the
     current generation, or specify a number n for the number of
     ancestral generations (n + 1 total generations) to process. Note
-    that ancestralGen parameter is ignored if the  penetrance operator
-    is used as a during  mating operator.
+    that ancestralGen parameter is ignored if the penetrance operator
+    is used as a during mating operator.
 
 Details:
 
     Penetrance is the probability that one will have the disease when
     he has certain genotype(s). Calculation and the parameter set of
-    penetrance are similar to those of fitness. An  individual will be
-    randomly marked as affected/unaffected according to his
-    penetrance value.??? For example, an  individual will have
-    probability 0.8 to be affected if the  penetrance is 0.8.
+    penetrance are similar to those of fitness. An individual will be
+    randomly marked as affected/unaffected according to his penetrance
+    value.??? For example, an individual will have probability 0.8 to
+    be affected if the penetrance is 0.8.
     Penetrance can be applied at any stage (default to DuringMating).
-    It will be calculated during  mating, and then the affected status
+    It will be calculated during mating, and then the affected status
     will be set for each offspring. Penetrance can also be used as
     PreMating, PostMating or even PrePostMating??? operator. In these
     cases, the affected status will be set to all individuals
-    according to their  penetrance values. It is also possible to
-    store  penetrance in a given information field specified by
-    infoFields parameter (e.g. infoFields=['penetrance']). This is
-    useful to check the  penetrance values at a later time.
+    according to their penetrance values. It is also possible to store
+    penetrance in a given information field specified by infoFields
+    parameter (e.g. infoFields=['penetrance']). This is useful to
+    check the penetrance values at a later time.
     Affected status will be used for statistical purpose, and most
     importantly, ascertainment. They will be calculated along with
     fitness although they might not be used at every generation. You
@@ -6172,20 +6287,20 @@ Details:
     Pentrance values are used to set the affectedness of individuals,
     and are usually not saved. If you would like to know the
     penetrance value, you need to
-    * use addInfoField('penetrance') to the  population to analyze.
-    (Or use infoFields parameter of the  population constructor), and
+    * use addInfoField('penetrance') to the population to analyze. (Or
+    use infoFields parameter of the population constructor), and
     * use e.g.,  mlPenetrance(...., infoFields=['penetrance']) to add
-    the  penetrance field to the  penetrance operator you use. You may
+    the penetrance field to the penetrance operator you use. You may
     choose a name other than 'penetrance' as long as the field names
-    for the operator and  population match. Penetrance functions can
-    be applied to the current, all, or certain number of ancestral
+    for the operator and population match. Penetrance functions can be
+    applied to the current, all, or certain number of ancestral
     generations. This is controlled by the ancestralGen parameter,
     which is default to -1 (all available ancestral generations). You
     can set it to 0 if you only need affection??? status for the
     current generation, or specify a number n for the number of
     ancestral generations (n + 1 total generations) to process. Note
-    that ancestralGen parameter is ignored if the  penetrance operator
-    is used as a during  mating operator.
+    that ancestralGen parameter is ignored if the penetrance operator
+    is used as a during mating operator.
 
 "; 
 
@@ -6193,7 +6308,7 @@ Details:
 
 Description:
 
-    create a  penetrance operator
+    create a penetrance operator
 
 Usage:
 
@@ -6217,7 +6332,7 @@ Arguments:
     stage:          specify the stage this operator will be applied,
                     default to DuringMating.
     infoFields:     If one field is specified, it will be used to
-                    store  penetrance values.???
+                    store penetrance values.???
 
 "; 
 
@@ -6237,7 +6352,7 @@ Usage:
 
 Description:
 
-    deep copy of a  penetrance operator
+    deep copy of a penetrance operator
 
 Usage:
 
@@ -6249,7 +6364,7 @@ Usage:
 
 Description:
 
-    calculate/return  penetrance etc.
+    calculate/return penetrance etc.
 
 Usage:
 
@@ -6261,7 +6376,7 @@ Usage:
 
 Description:
 
-    set  penetrance to all individuals and record  penetrance if
+    set penetrance to all individuals and record penetrance if
     requested
 
 Usage:
@@ -6274,7 +6389,7 @@ Usage:
 
 Description:
 
-    set  penetrance to all individuals
+    set penetrance to all individuals
 
 Usage:
 
@@ -6287,7 +6402,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the  penetrance operator
+    of the penetrance operator
 
 Usage:
 
@@ -6307,24 +6422,24 @@ Function form:
 
 Description:
 
-    point  mutator
+    point mutator
 
 Details:
 
     Mutate specified individuals at a specified loci to a spcified
-    allele. I.e., this is a non-random  mutator used to introduce
+    allele. I.e., this is a non-random mutator used to introduce
     diseases etc.  pointMutator, as its name suggest, does point
-    mutation. This  mutator will turn alleles at loci on the first
-    chromosome copy to toAllele for  individualinds. You can specify
+    mutation. This mutator will turn alleles at loci on the first
+    chromosome copy to toAllele for individual inds. You can specify
     atPloidy to mutate other, or all ploidy copies.
 
 Details:
 
     Mutate specified individuals at a specified loci to a spcified
-    allele. I.e., this is a non-random  mutator used to introduce
+    allele. I.e., this is a non-random mutator used to introduce
     diseases etc.  pointMutator, as its name suggest, does point
-    mutation. This  mutator will turn alleles at loci on the first
-    chromosome copy to toAllele for  individualinds. You can specify
+    mutation. This mutator will turn alleles at loci on the first
+    chromosome copy to toAllele for individual inds. You can specify
     atPloidy to mutate other, or all ploidy copies.
 
 "; 
@@ -6343,11 +6458,11 @@ Usage:
 
 Details:
 
-    Please see  mutator for the description of other parameters.
+    Please see mutator for the description of other parameters.
 
 Details:
 
-    Please see  mutator for the description of other parameters.
+    Please see mutator for the description of other parameters.
 
 Arguments:
 
@@ -6440,64 +6555,64 @@ Details:
     simuPOP populations consists of individuals of the same genotypic
     structure, which refers to the number of chromosomes, number and
     position of loci on each chromosome etc. The most important
-    components of a  population are:
-    * subpopulation. A  population is divided into subpopulations
-    (unstructured  population has a single subpopulation, which is the
-    whole  population itself). Subpopulation structure limits the
+    components of a population are:
+    * subpopulation. A population is divided into subpopulations
+    (unstructured population has a single subpopulation, which is the
+    whole population itself). Subpopulation structure limits the
     usually random exchange of genotypes between individuals
-    disallowing  mating between individuals from different
+    disallowing mating between individuals from different
     subpopulations. In the presence of subpopualtion structure,
     exchange of genetic information across subpopulations can only be
     done through migration. Note that in  simuPOP there is no sub-
     subpopulation or family in subpopulations.
-    * variables. Every  population has its own variable space, or
+    * variables. Every population has its own variable space, or
     localnamespaces in  simuPOP term. This namespace is a Python
-    dictionary that is attached to each  population and can be exposed
+    dictionary that is attached to each population and can be exposed
     to the users through  vars() or dvars() function. Many functions
     and operators work and store their results in these namespaces.
     For example, function Stat set variables such as alleleFreq[loc],
     and you can access it via pop.dvars().alleleFreq[loc][allele].
-    * ancestral generations. A  population can save arbitrary number
-    of ancestral generations. During evolution, the latest several (or
+    * ancestral generations. A population can save arbitrary number of
+    ancestral generations. During evolution, the latest several (or
     all) ancestral generations are saved. Functions??? to make a
     certain ancestral generation current are provided so that one can
     examine and modify ancestral generations. Other important concepts
-    like information fields are explained in class  individual???.
+    like information fields are explained in class individual???.
 
 Details:
 
     simuPOP populations consists of individuals of the same genotypic
     structure, which refers to the number of chromosomes, number and
     position of loci on each chromosome etc. The most important
-    components of a  population are:
-    * subpopulation. A  population is divided into subpopulations
-    (unstructured  population has a single subpopulation, which is the
-    whole  population itself). Subpopulation structure limits the
+    components of a population are:
+    * subpopulation. A population is divided into subpopulations
+    (unstructured population has a single subpopulation, which is the
+    whole population itself). Subpopulation structure limits the
     usually random exchange of genotypes between individuals
-    disallowing  mating between individuals from different
+    disallowing mating between individuals from different
     subpopulations. In the presence of subpopualtion structure,
     exchange of genetic information across subpopulations can only be
     done through migration. Note that in  simuPOP there is no sub-
     subpopulation or family in subpopulations.
-    * variables. Every  population has its own variable space, or
+    * variables. Every population has its own variable space, or
     localnamespaces in  simuPOP term. This namespace is a Python
-    dictionary that is attached to each  population and can be exposed
+    dictionary that is attached to each population and can be exposed
     to the users through  vars() or dvars() function. Many functions
     and operators work and store their results in these namespaces.
     For example, function Stat set variables such as alleleFreq[loc],
     and you can access it via pop.dvars().alleleFreq[loc][allele].
-    * ancestral generations. A  population can save arbitrary number
-    of ancestral generations. During evolution, the latest several (or
+    * ancestral generations. A population can save arbitrary number of
+    ancestral generations. During evolution, the latest several (or
     all) ancestral generations are saved. Functions??? to make a
     certain ancestral generation current are provided so that one can
     examine and modify ancestral generations. Other important concepts
-    like information fields are explained in class  individual???.
+    like information fields are explained in class individual???.
 
 Note:
 
     Although a large number of member functions are provided, most of
     the operations are performed by operators. These functions will
-    only be useful when you need to manipulate a  population
+    only be useful when you need to manipulate a population
     explicitly.
 
 "; 
@@ -6506,7 +6621,7 @@ Note:
 
 Description:
 
-    Create a  population object with given size and genotypic
+    Create a population object with given size and genotypic
     structure.
 
 Usage:
@@ -6518,12 +6633,12 @@ Usage:
 Details:
 
     FIXME: Details of constructure is missing. ???This is techniquely
-    the __init__ function of the  population object.
+    the __init__ function of the population object.
 
 Details:
 
     FIXME: Details of constructure is missing. ???This is techniquely
-    the __init__ function of the  population object.
+    the __init__ function of the population object.
 
 Arguments:
 
@@ -6540,7 +6655,7 @@ Arguments:
                     case, the maximum number of loci on X and Y should
                     be provided. I.e., if there are 3 loci on Y
                     chromosme and 5 on X chromosome, use 5.
-    sexChrom:       true or false. Diploid  population only. If true,
+    sexChrom:       true or false. Diploid population only. If true,
                     the last homologous chromosome will be treated as
                     sex chromosome. (XY for male and XX for female.)
                     If X and Y have different number of loci, number
@@ -6557,13 +6672,13 @@ Arguments:
                     each chromosome.
     subPop:         an array of subpopulation sizes. Default value is
                     [size] which means a single subpopulation of the
-                    whole  population. If both size and subPop are are
+                    whole population. If both size and subPop are are
                     provided, subPop should add up to size.
     ancestralDepth: number of most recent ancestral generations to
                     keep during evolution. Default to 0, which means
                     only the current generation will be available. You
                     can set it to a positive number m to keep the
-                    latest m generations in the  population, or -1 to
+                    latest m generations in the population, or -1 to
                     keep all ancestral populations. Note that keeping
                     track of all ancestral populations may quickly
                     exhaust your computer RAM. If you really need to
@@ -6588,16 +6703,16 @@ Arguments:
                     the number of allele states minus 1 since allele
                     number starts from 0.
     infoFields:     name of information fields that will be attached
-                    to each  individual. For example, if you need to
-                    record the parents of each  individual you will
+                    to each individual. For example, if you need to
+                    record the parents of each individual you will
                     need two, if you need to record the age of
                     individual, you need an additional one. Other
                     possibilities include offspring IDs etc. Note that
                     you have to plan this ahead of time since, for
-                    example,  tagger will need to know what info unit
+                    example, tagger will need to know what info unit
                     to use. Default to none.
 
-Examples:
+Example:
 
 >>> # a Wright-Fisher population
 >>> WF = population(size=100, ploidy=1, loci=[1])
@@ -6623,8 +6738,8 @@ Examples:
 
 Description:
 
-    deep copy of a  population. (In python, pop1 = pop will only
-    create a reference to pop.)
+    deep copy of a population. (In python, pop1 = pop will only create
+    a reference to pop.)
 
 Usage:
 
@@ -6648,7 +6763,7 @@ Usage:
 
 Description:
 
-    destroy a  population
+    destroy a population
 
 Usage:
 
@@ -6661,7 +6776,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the  population
+    of the population
 
 Usage:
 
@@ -6673,7 +6788,7 @@ Usage:
 
 Description:
 
-    a python function used to compare the  population objects
+    a python function used to compare the population objects
 
 Usage:
 
@@ -6693,11 +6808,11 @@ Usage:
 
 Arguments:
 
-    subPopSize:     an array of subpopulation sizes. The  population
+    subPopSize:     an array of subpopulation sizes. The population
                     may or may not change according to parameter
                     allowPopSizeChange if the sum of subPopSize does
                     not match popSize.
-    allowPopSizeChange:if this parameter is true,  population will be
+    allowPopSizeChange:if this parameter is true, population will be
                     resized.
 
 "; 
@@ -6706,7 +6821,7 @@ Arguments:
 
 Description:
 
-    number of subpopulations in a  population
+    number of subpopulations in a population
 
 Usage:
 
@@ -6746,7 +6861,7 @@ Usage:
 
 Description:
 
-    obtain total  population size
+    obtain total population size
 
 Usage:
 
@@ -6758,7 +6873,7 @@ Usage:
 
 Description:
 
-    return the absolute index of an  individual in a subpopulation
+    return the absolute index of an individual in a subpopulation
 
 Usage:
 
@@ -6766,7 +6881,7 @@ Usage:
 
 Arguments:
 
-    index:          index of an  individual in a subpopulation subPop
+    index:          index of an individual in a subpopulation subPop
     subPop:         subpopulation index (start from 0)
 
 "; 
@@ -6775,7 +6890,7 @@ Arguments:
 
 Description:
 
-    return the (sp, idx) pair from an absolute index of an  individual
+    return the (sp, idx) pair from an absolute index of an individual
 
 Usage:
 
@@ -6787,7 +6902,7 @@ Usage:
 
 Description:
 
-    index of the first  individual of a subpopulation
+    index of the first individual of a subpopulation
 
 Usage:
 
@@ -6803,7 +6918,7 @@ Arguments:
 
 Description:
 
-    return the value of the index of the last  individual of a
+    return the value of the index of the last individual of a
     subpopulation plus 1
 
 Usage:
@@ -6826,7 +6941,7 @@ Note:
 
 Description:
 
-    refernce to  individualind in subpopulation subPop
+    refernce to individual ind in subpopulation subPop
 
 Usage:
 
@@ -6834,11 +6949,11 @@ Usage:
 
 Details:
 
-    This function is named  individual in the Python interface.
+    This function is named individual in the Python interface.
 
 Details:
 
-    This function is named  individual in the Python interface.
+    This function is named individual in the Python interface.
 
 Arguments:
 
@@ -6905,9 +7020,9 @@ Usage:
 
 %ignore simuPOP::population::genoEnd(UINT subPop, bool order);
 
-%ignore simuPOP::population::indGenoBegin(ULONG ind) const ;
+%ignore simuPOP::population::indGenoBegin(ULONG ind) const;
 
-%ignore simuPOP::population::indGenoEnd(ULONG ind) const ;
+%ignore simuPOP::population::indGenoEnd(ULONG ind) const;
 
 %feature("docstring") simuPOP::population::arrGenotype "
 
@@ -6921,14 +7036,14 @@ Usage:
 
 Details:
 
-    Return an editable array of all genotypes of the  population. You
+    Return an editable array of all genotypes of the population. You
     need to know how these genotypes are organized to safely
     read/write genotype directly. Individuals will be in order before
     exposing their genotypes.
 
 Details:
 
-    Return an editable array of all genotypes of the  population. You
+    Return an editable array of all genotypes of the population. You
     need to know how these genotypes are organized to safely
     read/write genotype directly. Individuals will be in order before
     exposing their genotypes.
@@ -6936,7 +7051,7 @@ Details:
 Arguments:
 
     order:          if order is true, respect order; otherwise, do not
-                    repect  population structure.
+                    repect population structure.
 
 "; 
 
@@ -6980,18 +7095,18 @@ Usage:
 
 Details:
 
-    Set subpopulation ID of each  individual with given ID.
-    Individuals can be rearranged afterwards using setSubPopByIndID.
+    Set subpopulation ID of each individual with given ID. Individuals
+    can be rearranged afterwards using setSubPopByIndID.
 
 Details:
 
-    Set subpopulation ID of each  individual with given ID.
-    Individuals can be rearranged afterwards using setSubPopByIndID.
+    Set subpopulation ID of each individual with given ID. Individuals
+    can be rearranged afterwards using setSubPopByIndID.
 
 Arguments:
 
-    id:             an array of the same length of  population size,
-                    resprenting subpopulation ID of each  individual.
+    id:             an array of the same length of population size,
+                    resprenting subpopulation ID of each individual.
 
 "; 
 
@@ -6999,7 +7114,7 @@ Arguments:
 
 Description:
 
-    set subpopulation ID of each  individual with their current
+    set subpopulation ID of each individual with their current
     subpopulation ID???
 
 Usage:
@@ -7012,7 +7127,7 @@ Usage:
 
 Description:
 
-    adjust subpopulation according to  individual subpopulation ID.
+    adjust subpopulation according to individual subpopulation ID.
 
 Usage:
 
@@ -7032,8 +7147,8 @@ Details:
 
 Arguments:
 
-    id:             new subpopulation ID, if given, current
-                    individual subpopulation ID will be ignored.
+    id:             new subpopulation ID, if given, current individual
+                    subpopulation ID will be ignored.
 
 Note:
 
@@ -7200,7 +7315,7 @@ Usage:
 
 Details:
 
-    Merge individuals from pop to the current  population. Two
+    Merge individuals from pop to the current population. Two
     populations should have the same genotypic structures. By default,
     subpopulations of the merged populations are kept. I.e., if you
     merge two populations with one subpopulation, the resulting
@@ -7209,7 +7324,7 @@ Details:
 
 Details:
 
-    Merge individuals from pop to the current  population. Two
+    Merge individuals from pop to the current population. Two
     populations should have the same genotypic structures. By default,
     subpopulations of the merged populations are kept. I.e., if you
     merge two populations with one subpopulation, the resulting
@@ -7250,12 +7365,12 @@ Details:
 
     Two populations should have the same number of individuals. This
     also holds for any ancestral generations. By default, chromosomes
-    of pop are added to the current  population. That is to say,
+    of pop are added to the current population. That is to say,
     chromosomes from pop is added, as new chromosomes to this
     populaton. You can change this arrangement in two ways
     * specify new chromosome structure using parameter newLoci. loci
-    from new and old  population are still in their original order,
-    but chromosome number and position can be changed in this way.
+    from new and old population are still in their original order, but
+    chromosome number and position can be changed in this way.
     * specify byChromosome=true so that chromosomes will be merged one
     by one. In this case, loci position of two popualtions are
     important because loci will be arranged in the order of loci
@@ -7266,12 +7381,12 @@ Details:
 
     Two populations should have the same number of individuals. This
     also holds for any ancestral generations. By default, chromosomes
-    of pop are added to the current  population. That is to say,
+    of pop are added to the current population. That is to say,
     chromosomes from pop is added, as new chromosomes to this
     populaton. You can change this arrangement in two ways
     * specify new chromosome structure using parameter newLoci. loci
-    from new and old  population are still in their original order,
-    but chromosome number and position can be changed in this way.
+    from new and old population are still in their original order, but
+    chromosome number and position can be changed in this way.
     * specify byChromosome=true so that chromosomes will be merged one
     by one. In this case, loci position of two popualtions are
     important because loci will be arranged in the order of loci
@@ -7292,7 +7407,7 @@ Note:
 
     * Information fields are not merged.
     * All ancestral generations will be merged because all individuals
-    in a  population have to have the same genotypic structure.
+    in a population have to have the same genotypic structure.
 
 "; 
 
@@ -7420,7 +7535,7 @@ Details:
 
 Description:
 
-    resize  population
+    resize population
 
 Usage:
 
@@ -7428,11 +7543,11 @@ Usage:
 
 Details:
 
-    Resize  population by giving new subpopulation sizes.
+    Resize population by giving new subpopulation sizes.
 
 Details:
 
-    Resize  population by giving new subpopulation sizes.
+    Resize population by giving new subpopulation sizes.
 
 Arguments:
 
@@ -7479,7 +7594,7 @@ Usage:
 
 Details:
 
-    Form a new  population according to the parameter information.
+    Form a new population according to the parameter information.
     Information can be given directly as
     * keepAncestralPops=-1: keep all
     * keepAncestralPops=0: only current
@@ -7487,7 +7602,7 @@ Details:
 
 Details:
 
-    Form a new  population according to the parameter information.
+    Form a new population according to the parameter information.
     Information can be given directly as
     * keepAncestralPops=-1: keep all
     * keepAncestralPops=0: only current
@@ -7499,7 +7614,7 @@ Details:
 
 Description:
 
-    remove some loci from the current  population. Loci that will be
+    remove some loci from the current population. Loci that will be
     removed or kept can be specified.
 
 Usage:
@@ -7512,7 +7627,7 @@ Usage:
 
 Description:
 
-    obtain a new  population with selected loci
+    obtain a new population with selected loci
 
 Usage:
 
@@ -7520,13 +7635,13 @@ Usage:
 
 Details:
 
-    Copy current  population to a new one with selected loci and
-    remove specified loci. (No change on the current  population.)
+    Copy current population to a new one with selected loci and remove
+    specified loci. (No change on the current population.)
 
 Details:
 
-    Copy current  population to a new one with selected loci and
-    remove specified loci. (No change on the current  population.)
+    Copy current population to a new one with selected loci and remove
+    specified loci. (No change on the current population.)
 
 "; 
 
@@ -7534,7 +7649,7 @@ Details:
 
 Description:
 
-    Absorb rhs population as the current generation of a  population.
+    Absorb rhs population as the current generation of a population.
 
 Usage:
 
@@ -7542,17 +7657,17 @@ Usage:
 
 Details:
 
-    This is mainly used by a  simulator to push offspring generation
-    rhs to the current  population, while the current  population is
-    pushed back as an ancestral  population (if ancestralDepath() !=
+    This is mainly used by a simulator to push offspring generation
+    rhs to the current population, while the current population is
+    pushed back as an ancestral population (if ancestralDepath() !=
     0). Because rhs population is swapped in, rhs will be empty after
     this operation.
 
 Details:
 
-    This is mainly used by a  simulator to push offspring generation
-    rhs to the current  population, while the current  population is
-    pushed back as an ancestral  population (if ancestralDepath() !=
+    This is mainly used by a simulator to push offspring generation
+    rhs to the current population, while the current population is
+    pushed back as an ancestral population (if ancestralDepath() !=
     0). Because rhs population is swapped in, rhs will be empty after
     this operation.
 
@@ -7562,7 +7677,7 @@ Details:
 
 Description:
 
-    ancestral depth of the current  population
+    ancestral depth of the current population
 
 Usage:
 
@@ -7571,7 +7686,7 @@ Usage:
 Note:
 
     The returned value is the number of ancestral generations exists
-    in the  population, not necessarily equal to the number set by
+    in the population, not necessarily equal to the number set by
     setAncestralDepth().
 
 "; 
@@ -7580,7 +7695,7 @@ Note:
 
 Description:
 
-    currently used ancestral  population (0 for the latest generation)
+    currently used ancestral population (0 for the latest generation)
 
 Usage:
 
@@ -7588,23 +7703,21 @@ Usage:
 
 Details:
 
-    Current ancestral  population activated by useAncestralPop. There
-    can be several ancestral generations in a  population. 0
-    (current), 1 (parental) etc. When useAncestralPop(gen) is used,
-    current generation is set to one of the parental generation, which
-    is the information returned by this function. useAncestralPop(0)
-    should always be used to set a  population to its usual ancestral
-    order.
+    Current ancestral population activated by useAncestralPop. There
+    can be several ancestral generations in a population. 0 (current),
+    1 (parental) etc. When useAncestralPop(gen) is used, current
+    generation is set to one of the parental generation, which is the
+    information returned by this function. useAncestralPop(0) should
+    always be used to set a population to its usual ancestral order.
 
 Details:
 
-    Current ancestral  population activated by useAncestralPop. There
-    can be several ancestral generations in a  population. 0
-    (current), 1 (parental) etc. When useAncestralPop(gen) is used,
-    current generation is set to one of the parental generation, which
-    is the information returned by this function. useAncestralPop(0)
-    should always be used to set a  population to its usual ancestral
-    order.
+    Current ancestral population activated by useAncestralPop. There
+    can be several ancestral generations in a population. 0 (current),
+    1 (parental) etc. When useAncestralPop(gen) is used, current
+    generation is set to one of the parental generation, which is the
+    information returned by this function. useAncestralPop(0) should
+    always be used to set a population to its usual ancestral order.
 
 "; 
 
@@ -7612,7 +7725,7 @@ Details:
 
 Description:
 
-    set  individual information for the given information field
+    set individual information for the given information field
     (index),
 
 Usage:
@@ -7621,7 +7734,7 @@ Usage:
 
 Arguments:
 
-    values:         an array that has the same length as  population
+    values:         an array that has the same length as population
                     size.
     idx:            index to the information field.
 
@@ -7631,7 +7744,7 @@ Arguments:
 
 Description:
 
-    set  individual information for the given information field (name)
+    set individual information for the given information field (name)
 
 Usage:
 
@@ -7670,7 +7783,7 @@ Usage:
 Arguments:
 
     idx:            index in all information fields
-    order:          if true, sort returned vector in  individual order
+    order:          if true, sort returned vector in individual order
 
 "; 
 
@@ -7687,7 +7800,7 @@ Usage:
 Arguments:
 
     name:           name of the information field
-    order:          if true, sort returned vector in  individual order
+    order:          if true, sort returned vector in individual order
 
 "; 
 
@@ -7705,7 +7818,7 @@ Arguments:
 
     idx:            index in all information fields
     subPop:         subpopulation index
-    order:          if true, sort returned vector in  individual order
+    order:          if true, sort returned vector in individual order
 
 "; 
 
@@ -7723,7 +7836,7 @@ Arguments:
 
     name:           name of the information field
     subPop:         subpopulation index
-    order:          if true, sort returned vector in  individual order
+    order:          if true, sort returned vector in individual order
 
 "; 
 
@@ -7748,7 +7861,7 @@ Arguments:
 
 Description:
 
-    add an information field to a  population.
+    add an information field to a population.
 
 Usage:
 
@@ -7766,7 +7879,7 @@ Arguments:
 
 Description:
 
-    add one or more information fields to a  population
+    add one or more information fields to a population
 
 Usage:
 
@@ -7785,7 +7898,7 @@ Arguments:
 
 Description:
 
-    set information fields for an existing  population. The existing
+    set information fields for an existing population. The existing
     fields will be removed.
 
 Usage:
@@ -7846,7 +7959,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::population::adjustGenoPosition(bool order);
+%feature("docstring") simuPOP::population::adjustGenoPosition "
+
+Description:
+
+    order=false: make individuals in each subpopulation
+
+Usage:
+
+    x.adjustGenoPosition(order)
+
+"; 
 
 %feature("docstring") simuPOP::population::adjustInfoPosition "
 
@@ -7886,7 +8009,17 @@ Arguments:
 
 %ignore simuPOP::population::loadPopulation(const string &filename, const string &format="auto");
 
-%ignore simuPOP::population::selectionOn();
+%feature("docstring") simuPOP::population::selectionOn "
+
+Description:
+
+    selection is on at any subpopulation?
+
+Usage:
+
+    x.selectionOn()
+
+"; 
 
 %ignore simuPOP::population::selectionOn(UINT sp);
 
@@ -7902,25 +8035,35 @@ Usage:
 
 Details:
 
-    If you really want to apply another  selector, run
-    turnOffSelection to eliminate the effect of the previous one.
+    If you really want to apply another selector, run turnOffSelection
+    to eliminate the effect of the previous one.
 
 Details:
 
-    If you really want to apply another  selector, run
-    turnOffSelection to eliminate the effect of the previous one.
+    If you really want to apply another selector, run turnOffSelection
+    to eliminate the effect of the previous one.
 
 "; 
 
 %ignore simuPOP::population::turnOnSelection(UINT sp);
 
-%ignore simuPOP::population::turnOnSelection();
+%feature("docstring") simuPOP::population::turnOnSelection "
+
+Description:
+
+    Turn on selection for all subpopulations.
+
+Usage:
+
+    x.turnOnSelection()
+
+"; 
 
 %feature("docstring") simuPOP::population::rep "
 
 Description:
 
-    current replicate in a  simulator
+    current replicate in a simulator
 
 Usage:
 
@@ -7928,13 +8071,11 @@ Usage:
 
 Details:
 
-    Replication number is not meaningful for a stand-alone
-    population.
+    Replication number is not meaningful for a stand-alone population.
 
 Details:
 
-    Replication number is not meaningful for a stand-alone
-    population.
+    Replication number is not meaningful for a stand-alone population.
 
 "; 
 
@@ -7944,7 +8085,7 @@ Details:
 
 Description:
 
-    current group ID in a  simulator
+    current group ID in a simulator
 
 Usage:
 
@@ -7952,11 +8093,11 @@ Usage:
 
 Details:
 
-    Group number is not meaningful for a stand-alone  population.
+    Group number is not meaningful for a stand-alone population.
 
 Details:
 
-    Group number is not meaningful for a stand-alone  population.
+    Group number is not meaningful for a stand-alone population.
 
 "; 
 
@@ -7980,7 +8121,7 @@ Usage:
 
 Description:
 
-    return variables of a  population. If subPop is given, return a
+    return variables of a population. If subPop is given, return a
     dictionary for specified subpopulation.
 
 Usage:
@@ -8105,22 +8246,22 @@ Description:
 Details:
 
     Python expressions/statements will be executed when  pyEval is
-    applied to a  population by using parameters expr/stmts.
-    Statements can also been executed when  pyEval is created and
-    destroyed or before expr is executed. The corresponding parameters
-    are preStmts, postStmts and stmts. For example, operator
-    varPlotter uses this feature to initialize R plots and save plots
-    to a file when finished.
+    applied to a population by using parameters expr/stmts. Statements
+    can also been executed when  pyEval is created and destroyed or
+    before expr is executed. The corresponding parameters are
+    preStmts, postStmts and stmts. For example, operator varPlotter
+    uses this feature to initialize R plots and save plots to a file
+    when finished.
 
 Details:
 
     Python expressions/statements will be executed when  pyEval is
-    applied to a  population by using parameters expr/stmts.
-    Statements can also been executed when  pyEval is created and
-    destroyed or before expr is executed. The corresponding parameters
-    are preStmts, postStmts and stmts. For example, operator
-    varPlotter uses this feature to initialize R plots and save plots
-    to a file when finished.
+    applied to a population by using parameters expr/stmts. Statements
+    can also been executed when  pyEval is created and destroyed or
+    before expr is executed. The corresponding parameters are
+    preStmts, postStmts and stmts. For example, operator varPlotter
+    uses this feature to initialize R plots and save plots to a file
+    when finished.
 
 "; 
 
@@ -8148,8 +8289,7 @@ Arguments:
                     operator is constructed
     postStmts:      the statement that will be executed when the
                     operator is destroyed
-    exposePop:      if true, expose current  population as variable
-                    pop
+    exposePop:      if true, expose current population as variable pop
     name:           used to let pure Python operator to identify
                     themselves
     output:         default to >. I.e., output to standard output.
@@ -8277,8 +8417,7 @@ Arguments:
                     operator is constructed
     postStmts:      the statement that will be executed when the
                     operator is destroyed
-    exposePop:      if true, expose current  population as variable
-                    pop
+    exposePop:      if true, expose current population as variable pop
     default:        to >. I.e., output to standard output.
 
 "; 
@@ -8331,7 +8470,7 @@ Details:
     This operator is similar to a  pyOperator but works at the
     individual level. It expects a function that accepts an
     individual, optional genotype at certain loci, and an optional
-    parameter. When it is applied, it passes each  individual to this
+    parameter. When it is applied, it passes each individual to this
     function. When infoFields is given, this function should return an
     array to fill these infoFields. Otherwise, True/False is
     expected.More specifically, func can be
@@ -8345,7 +8484,7 @@ Details:
     This operator is similar to a  pyOperator but works at the
     individual level. It expects a function that accepts an
     individual, optional genotype at certain loci, and an optional
-    parameter. When it is applied, it passes each  individual to this
+    parameter. When it is applied, it passes each individual to this
     function. When infoFields is given, this function should return an
     array to fill these infoFields. Otherwise, True/False is
     expected.More specifically, func can be
@@ -8371,7 +8510,7 @@ Usage:
 
 Arguments:
 
-    func:           a Python function that accepts an  individual and
+    func:           a Python function that accepts an individual and
                     optional genotype and parameters.
     param:          any Python object that will be passed to func
                     after pop parameter. Multiple parameters can be
@@ -8412,7 +8551,7 @@ Usage:
 
 Description:
 
-    apply the  pyIndOperator operator to one  population
+    apply the  pyIndOperator operator to one population
 
 Usage:
 
@@ -8445,27 +8584,27 @@ Function form:
 
 Description:
 
-    a hybrid  initializer???
+    a hybrid initializer???
 
 Details:
 
-    pyInit is a hybrid  initializer. User should define a function
-    with parameters allele, ploidy and subpopulation indices, and
-    return an allele value. Users of this operator must supply a
-    Python function with parameter (index, ploidy, subpop). This
-    operator will loop through all  individual in each subpopulation
-    and call this function to initialize populations. The arrange of
-    parameters allows different initialization scheme for each subpop.
+    pyInit is a hybrid initializer. User should define a function with
+    parameters allele, ploidy and subpopulation indices, and return an
+    allele value. Users of this operator must supply a Python function
+    with parameter (index, ploidy, subpop). This operator will loop
+    through all individual in each subpopulation and call this
+    function to initialize populations. The arrange of parameters
+    allows different initialization scheme for each subpop.
 
 Details:
 
-    pyInit is a hybrid  initializer. User should define a function
-    with parameters allele, ploidy and subpopulation indices, and
-    return an allele value. Users of this operator must supply a
-    Python function with parameter (index, ploidy, subpop). This
-    operator will loop through all  individual in each subpopulation
-    and call this function to initialize populations. The arrange of
-    parameters allows different initialization scheme for each subpop.
+    pyInit is a hybrid initializer. User should define a function with
+    parameters allele, ploidy and subpopulation indices, and return an
+    allele value. Users of this operator must supply a Python function
+    with parameter (index, ploidy, subpop). This operator will loop
+    through all individual in each subpopulation and call this
+    function to initialize populations. The arrange of parameters
+    allows different initialization scheme for each subpop.
 
 "; 
 
@@ -8496,6 +8635,33 @@ Arguments:
     atPloidy:       initialize which copy of chromosomes. Default to
                     all.
     stage:          default to PreMating
+
+Example:
+
+>>> def initAllele(ind, p, sp):
+...   return sp + ind + p
+... 
+>>> simu = simulator( 
+...     population(subPop=[2,3], loci=[5,7]),
+...     randomMating(), rep=1)
+>>> simu.step([
+...     pyInit(func=initAllele),
+...     dumper(alleleOnly=True, dispWidth=2)])
+individual info: 
+sub population 0:
+   0: FU   1  2  3  4  5   5  6  7  8  9 10 11 |   0  1  2  3  4   6  7  8  9 10 11 12 
+   1: MU   0  1  2  3  4   5  6  7  8  9 10 11 |   0  1  2  3  4   5  6  7  8  9 10 11 
+sub population 1:
+   2: MU   1  2  3  4  5   6  7  8  9 10 11 12 |   1  2  3  4  5   7  8  9 10 11 12 13 
+   3: MU   1  2  3  4  5   7  8  9 10 11 12 13 |   1  2  3  4  5   6  7  8  9 10 11 12 
+   4: FU   2  3  4  5  6   6  7  8  9 10 11 12 |   2  3  4  5  6   6  7  8  9 10 11 12 
+End of individual info.
+
+
+No ancenstral population recorded.
+True
+>>>
+
 
 "; 
 
@@ -8554,34 +8720,34 @@ Usage:
 
 Description:
 
-    a Python  mating scheme
+    a Python mating scheme
 
 Details:
 
-    Hybird  mating scheme. This  mating scheme takes a Python function
+    Hybird mating scheme. This mating scheme takes a Python function
     that accepts both the parental and offspring populations and this
     function is responsible for setting genotype, sex of the offspring
     generation. During-mating operators, if needed, have to be applied
     from this function as well. Note that the subpopulaton size
     parameters are honored and the passed offspring generation has the
-    desired (sub) population sizes. Parameters that control the number
+    desired (sub)population sizes. Parameters that control the number
     of offspring of each family are ignored.
-    This is likely an extremely slow  mating scheme and should be used
-    for experimental uses only. When a  mating scheme is tested, it is
+    This is likely an extremely slow mating scheme and should be used
+    for experimental uses only. When a mating scheme is tested, it is
     recommended to implement it at the C++ level.
 
 Details:
 
-    Hybird  mating scheme. This  mating scheme takes a Python function
+    Hybird mating scheme. This mating scheme takes a Python function
     that accepts both the parental and offspring populations and this
     function is responsible for setting genotype, sex of the offspring
     generation. During-mating operators, if needed, have to be applied
     from this function as well. Note that the subpopulaton size
     parameters are honored and the passed offspring generation has the
-    desired (sub) population sizes. Parameters that control the number
+    desired (sub)population sizes. Parameters that control the number
     of offspring of each family are ignored.
-    This is likely an extremely slow  mating scheme and should be used
-    for experimental uses only. When a  mating scheme is tested, it is
+    This is likely an extremely slow mating scheme and should be used
+    for experimental uses only. When a mating scheme is tested, it is
     recommended to implement it at the C++ level.
 
 "; 
@@ -8590,7 +8756,7 @@ Details:
 
 Description:
 
-    create a Python  mating scheme
+    create a Python mating scheme
 
 Usage:
 
@@ -8601,7 +8767,7 @@ Arguments:
 
     func:           a Python function that accepts two parameters: the
                     parental and the offspring populations. The
-                    offspring  population is empty, and this function
+                    offspring population is empty, and this function
                     is responsible for setting genotype, sex etc. of
                     individuals in the offspring generation.
 
@@ -8623,7 +8789,7 @@ Usage:
 
 Description:
 
-    deep copy of a Python  mating scheme
+    deep copy of a Python mating scheme
 
 Usage:
 
@@ -8638,7 +8804,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the Python  mating scheme
+    of the Python mating scheme
 
 Usage:
 
@@ -8652,11 +8818,11 @@ Usage:
 
 Description:
 
-    a more flexible Python  migrator
+    a more flexible Python migrator
 
 Details:
 
-    This  migrator can be used in two ways
+    This migrator can be used in two ways
     * define a function that accepts a generation number and returns a
     migration rate matrix. This can be used in the varying migration
     rate cases.
@@ -8669,7 +8835,7 @@ Details:
 
 Details:
 
-    This  migrator can be used in two ways
+    This migrator can be used in two ways
     * define a function that accepts a generation number and returns a
     migration rate matrix. This can be used in the varying migration
     rate cases.
@@ -8686,7 +8852,7 @@ Details:
 
 Description:
 
-    create a hybrid  migrator
+    create a hybrid migrator
 
 Usage:
 
@@ -8699,12 +8865,12 @@ Arguments:
 
     rateFunc:       a Python function that accepts a generation
                     number, current subpopulation sizes, and returns a
-                    migration rate matrix. The  migrator then migrate
-                    like a usual  migrator.
-    indFunc:        a Python function that accepts an  individual,
+                    migration rate matrix. The migrator then migrate
+                    like a usual migrator.
+    indFunc:        a Python function that accepts an individual,
                     optional genotype and parameter, then returns a
                     subpopulation id. This method can be used to
-                    separate a  population according to  individual
+                    separate a population according to individual
                     genotype.
     stage:          default to PreMating
 
@@ -8773,18 +8939,18 @@ Function form:
 
 Description:
 
-    hybrid  mutator
+    hybrid mutator
 
 Details:
 
-    Hybrid  mutator. Mutation rate etc. are set just like others and
+    Hybrid mutator. Mutation rate etc. are set just like others and
     you are supposed to provide a Python function to return a new
     allele state given an old state.  pyMutator will choose an allele
     as usual and call your function to mutate it to another allele.
 
 Details:
 
-    Hybrid  mutator. Mutation rate etc. are set just like others and
+    Hybrid mutator. Mutation rate etc. are set just like others and
     you are supposed to provide a Python function to return a new
     allele state given an old state.  pyMutator will choose an allele
     as usual and call your function to mutate it to another allele.
@@ -8802,6 +8968,28 @@ Usage:
     pyMutator(rate=[], loci=[], maxAllele=0, *func=NULL, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+
+Example:
+
+>>> def mut(x):
+...   return 8
+... 
+>>> simu = simulator(population(size=3, loci=[3,5]), noMating())
+>>> simu.step([
+...   pyMutator(rate=.5, loci=[3,4,5], func=mut),
+...   dumper(alleleOnly=True)])
+individual info: 
+sub population 0:
+   0: MU   0  0  0   0  0  0  0  0 |   0  0  0   0  0  8  0  0 
+   1: MU   0  0  0   8  0  8  0  0 |   0  0  0   8  8  0  0  0 
+   2: MU   0  0  0   8  0  0  0  0 |   0  0  0   0  8  8  0  0 
+End of individual info.
+
+
+No ancenstral population recorded.
+True
+>>>
+
 
 "; 
 
@@ -8876,10 +9064,10 @@ Details:
     passOffspringOnly=False, with param;
     * func(off, param) when stage=DuringMating and
     passOffspringOnly=True, with param. For Pre- and PostMating
-    usages, a  population and an optional parameter is passed to the
-    given function. For DuringMating usages,  population, offspring,
+    usages, a population and an optional parameter is passed to the
+    given function. For DuringMating usages, population, offspring,
     its parents and an optional parameter are passed to the given
-    function. Arbitrary operations can be applied to the  population
+    function. Arbitrary operations can be applied to the population
     and offspring (if stage=DuringMating).
 
 Details:
@@ -8896,11 +9084,31 @@ Details:
     passOffspringOnly=False, with param;
     * func(off, param) when stage=DuringMating and
     passOffspringOnly=True, with param. For Pre- and PostMating
-    usages, a  population and an optional parameter is passed to the
-    given function. For DuringMating usages,  population, offspring,
+    usages, a population and an optional parameter is passed to the
+    given function. For DuringMating usages, population, offspring,
     its parents and an optional parameter are passed to the given
-    function. Arbitrary operations can be applied to the  population
+    function. Arbitrary operations can be applied to the population
     and offspring (if stage=DuringMating).
+
+Example:
+
+>>> def dynaMutator(pop, param):
+...   ''' this mutator mutate common loci with low mutation rate
+...   and rare loci with high mutation rate, as an attempt to
+...   bring allele frequency of these loci at an equal level.'''
+...   # unpack parameter
+...   (cutoff, mu1, mu2) = param;
+...   Stat(pop, alleleFreq=range( pop.totNumLoci() ) )
+...   for i in range( pop.totNumLoci() ):
+...     # 1-freq of wild type = total disease allele frequency
+...     if 1-pop.dvars().alleleFreq[i][1] < cutoff:
+...       KamMutate(pop, maxAllele=2, rate=mu1, loci=[i])
+...     else:
+...       KamMutate(pop, maxAllele=2, rate=mu2, loci=[i])
+...   return True
+... #end
+... 
+
 
 "; 
 
@@ -8908,7 +9116,7 @@ Details:
 
 Description:
 
-    Python operator, using a function that accepts a  population
+    Python operator, using a function that accepts a population
     object.
 
 Usage:
@@ -8924,10 +9132,10 @@ Arguments:
     param:          any Python object that will be passed to func
                     after pop parameter. Multiple parameters can be
                     passed as a tuple.
-    formOffGenotype:This option tells the  mating scheme this operator
+    formOffGenotype:This option tells the mating scheme this operator
                     will set the genotype of offspring (valid only for
                     stage=DuringMating). By default
-                    (formOffGenotype=False), a  mating scheme will set
+                    (formOffGenotype=False), a mating scheme will set
                     the genotype of offspring before it is passed to
                     the given Python function. Otherwise, a 'blank'
                     offspring will be passed.
@@ -8945,7 +9153,7 @@ Note:
     function.
     * This operator can be applied Pre-, During- or Post- mating and
     is applied PostMating by default. For example, if you would like
-    to examine the fitness values set by a  selector, a PreMating
+    to examine the fitness values set by a selector, a PreMating
     Python operator should be used.
 
 "; 
@@ -8980,7 +9188,7 @@ Usage:
 
 Description:
 
-    apply the  pyOperator operator to one  population
+    apply the  pyOperator operator to one population
 
 Usage:
 
@@ -9015,18 +9223,18 @@ Function form:
 
 Description:
 
-    assign  penetrance values by calling a user provided function
+    assign penetrance values by calling a user provided function
 
 Details:
 
-    For each  individual, users provide a function to calculate
+    For each individual, users provide a function to calculate
     penetrance. This method is very flexible but will be slower than
     previous operators since a function will be called for each
     individual.
 
 Details:
 
-    For each  individual, users provide a function to calculate
+    For each individual, users provide a function to calculate
     penetrance. This method is very flexible but will be slower than
     previous operators since a function will be called for each
     individual.
@@ -9037,7 +9245,7 @@ Details:
 
 Description:
 
-    provide locus and  penetrance for 11, 12, 13 (in the form of
+    provide locus and penetrance for 11, 12, 13 (in the form of
     dictionary)
 
 Usage:
@@ -9054,7 +9262,7 @@ Arguments:
                     loc2_2, ... if the individuals are diploid.
     func:           a user-defined Python function that accepts an
                     array of genotypes at susceptibility loci and
-                    return a  penetrance value. The returned value
+                    return a penetrance value. The returned value
                     should be between 0 and 1.
     output:         and other parameters please refer to
                     help(baseOperator.__init__)???
@@ -9079,7 +9287,7 @@ Usage:
 
 Description:
 
-    deep copy of a Python  penetrance operator
+    deep copy of a Python penetrance operator
 
 Usage:
 
@@ -9104,7 +9312,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the Python  penetrance operator
+    of the Python penetrance operator
 
 Usage:
 
@@ -9128,13 +9336,13 @@ Description:
 
 Details:
 
-    For each  individual, a user provided function is used to
-    calculate quantitative trait.
+    For each individual, a user provided function is used to calculate
+    quantitative trait.
 
 Details:
 
-    For each  individual, a user provided function is used to
-    calculate quantitative trait.
+    For each individual, a user provided function is used to calculate
+    quantitative trait.
 
 "; 
 
@@ -9237,11 +9445,11 @@ Description:
 
 Details:
 
-    A Python sampler that generate a  sample with given individuals.
+    A Python sampler that generate a sample with given individuals.
 
 Details:
 
-    A Python sampler that generate a  sample with given individuals.
+    A Python sampler that generate a sample with given individuals.
 
 "; 
 
@@ -9260,18 +9468,18 @@ Usage:
 
 Details:
 
-    Please refer to class  sample for other parameter descriptions.
+    Please refer to class sample for other parameter descriptions.
 
 Details:
 
-    Please refer to class  sample for other parameter descriptions.
+    Please refer to class sample for other parameter descriptions.
 
 Arguments:
 
     keep:           subpopulation IDs of all individuals
     keepAncestralPop:the number of ancestral populations that will be
                     kept. If -1, keep all ancestral populations
-                    (default). If 0, no ancestral  population will be
+                    (default). If 0, no ancestral population will be
                     kept.
 
 "; 
@@ -9306,7 +9514,7 @@ Usage:
 
 Description:
 
-    draw a Python  sample
+    draw a Python sample
 
 Usage:
 
@@ -9345,7 +9553,7 @@ Details:
 
     pySelector assigns fitness values by calling a user provided
     function. It accepts a list of susceptibility loci and a Python
-    function. For each  individual, this operator will pass the
+    function. For each individual, this operator will pass the
     genotypes at these loci (in the order of 0-0,0-1,1-0,1-1 etc.
     where X-Y represents locus X - ploidy Y, in the case of diploid
     population), generation number,??? and expect a returned fitness
@@ -9356,7 +9564,7 @@ Details:
 
     pySelector assigns fitness values by calling a user provided
     function. It accepts a list of susceptibility loci and a Python
-    function. For each  individual, this operator will pass the
+    function. For each individual, this operator will pass the
     genotypes at these loci (in the order of 0-0,0-1,1-0,1-1 etc.
     where X-Y represents locus X - ploidy Y, in the case of diploid
     population), generation number,??? and expect a returned fitness
@@ -9369,7 +9577,7 @@ Details:
 
 Description:
 
-    create a Python hybrid  selector
+    create a Python hybrid selector
 
 Usage:
 
@@ -9452,17 +9660,17 @@ Function form:
 
 Description:
 
-    shrink  population
+    shrink population
 
 Details:
 
-    This operator shrinks a  population according to a given array or
+    This operator shrinks a population according to a given array or
     the subPopID() value of each indvidual. Subpopulations are kept
     intact.
 
 Details:
 
-    This operator shrinks a  population according to a given array or
+    This operator shrinks a population according to a given array or
     the subPopID() value of each indvidual. Subpopulations are kept
     intact.
 
@@ -9481,8 +9689,7 @@ Usage:
 
 Arguments:
 
-    keep:           an array of subpopulation IDs for each
-                    individual.
+    keep:           an array of subpopulation IDs for each individual.
 
 "; 
 
@@ -9539,16 +9746,16 @@ Usage:
 
 Details:
 
-    This  tagger takes some information fields from both parents, pass
-    to a Python function and set the  individual field with the
+    This tagger takes some information fields from both parents, pass
+    to a Python function and set the individual field with the
     returned value.
     This operator can be used to trace the inheritance of trait
     values.
 
 Details:
 
-    This  tagger takes some information fields from both parents, pass
-    to a Python function and set the  individual field with the
+    This tagger takes some information fields from both parents, pass
+    to a Python function and set the individual field with the
     returned value.
     This operator can be used to trace the inheritance of trait
     values.
@@ -9641,11 +9848,11 @@ Description:
 Details:
 
     Quantitative trait is the measure of certain phenotype for given
-    genotype. Quantitative trait is similar to  penetrance in that the
-    consequence of  penetrance is binary: affected or unaffected;
-    while it is continuous for quantitative trait.
+    genotype. Quantitative trait is similar to penetrance in that the
+    consequence of penetrance is binary: affected or unaffected; while
+    it is continuous for quantitative trait.
     In  simuPOP, different operators/functions were implemented to
-    calculate quantitative traits for each  individual and store the
+    calculate quantitative traits for each individual and store the
     values in the information fields specified by user (default to
     qtrait). The quantitative trait operators also accept the
     ancestralGen parameter to control the number of generations for
@@ -9654,11 +9861,11 @@ Details:
 Details:
 
     Quantitative trait is the measure of certain phenotype for given
-    genotype. Quantitative trait is similar to  penetrance in that the
-    consequence of  penetrance is binary: affected or unaffected;
-    while it is continuous for quantitative trait.
+    genotype. Quantitative trait is similar to penetrance in that the
+    consequence of penetrance is binary: affected or unaffected; while
+    it is continuous for quantitative trait.
     In  simuPOP, different operators/functions were implemented to
-    calculate quantitative traits for each  individual and store the
+    calculate quantitative traits for each individual and store the
     values in the information fields specified by user (default to
     qtrait). The quantitative trait operators also accept the
     ancestralGen parameter to control the number of generations for
@@ -9719,7 +9926,7 @@ Usage:
 
 Description:
 
-    set qtrait to all  individual
+    set qtrait to all individual
 
 Usage:
 
@@ -9744,24 +9951,24 @@ Usage:
 
 Description:
 
-    a  mating scheme of basic sexually random  mating
+    a mating scheme of basic sexually random mating
 
 Details:
 
-    In this scheme, sex information is considered for each
-    individual, and ploidy is always 2. Within each subpopulation,
-    males and females are randomly chosen. Then randomly get one copy
-    of chromosomes from father and mother. When only one sex exists in
-    a subpopulation, a parameter (contWhenUniSex) can be set to
+    In this scheme, sex information is considered for each individual,
+    and ploidy is always 2. Within each subpopulation, males and
+    females are randomly chosen. Then randomly get one copy of
+    chromosomes from father and mother. When only one sex exists in a
+    subpopulation, a parameter (contWhenUniSex) can be set to
     determine the behavior. Default to continuing without warning.
 
 Details:
 
-    In this scheme, sex information is considered for each
-    individual, and ploidy is always 2. Within each subpopulation,
-    males and females are randomly chosen. Then randomly get one copy
-    of chromosomes from father and mother. When only one sex exists in
-    a subpopulation, a parameter (contWhenUniSex) can be set to
+    In this scheme, sex information is considered for each individual,
+    and ploidy is always 2. Within each subpopulation, males and
+    females are randomly chosen. Then randomly get one copy of
+    chromosomes from father and mother. When only one sex exists in a
+    subpopulation, a parameter (contWhenUniSex) can be set to
     determine the behavior. Default to continuing without warning.
 
 "; 
@@ -9770,7 +9977,7 @@ Details:
 
 Description:
 
-    create a random  mating scheme
+    create a random mating scheme
 
 Usage:
 
@@ -9800,7 +10007,7 @@ Arguments:
                     (current subpopulation size)
     contWhenUniSex: continue when there is only one sex in the
                     population, default to true
-                    Please refer to class  mating for descriptions of
+                    Please refer to class mating for descriptions of
                     other parameters.
 
 "; 
@@ -9821,7 +10028,7 @@ Usage:
 
 Description:
 
-    deep copy of a random  mating scheme
+    deep copy of a random mating scheme
 
 Usage:
 
@@ -9836,7 +10043,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the random  mating scheme
+    of the random mating scheme
 
 Usage:
 
@@ -9860,27 +10067,25 @@ Function form:
 
 Description:
 
-    randomly draw a  sample from a  population
+    randomly draw a sample from a population
 
 Details:
 
     This operator will randomly choose size individuals (or  size[i]
-    individuals from subpopulation i) and return a new  population.
-    The function form of this operator returns the samples directly.
-    The operator keeps samples in an array name in the local
-    namespace. You may access them through dvars() or vars()
-    functions.
+    individuals from subpopulation i) and return a new population. The
+    function form of this operator returns the samples directly. The
+    operator keeps samples in an array name in the local namespace.
+    You may access them through dvars() or vars() functions.
     The original subpopulation structure/boundary is kept in the
     samples.
 
 Details:
 
     This operator will randomly choose size individuals (or  size[i]
-    individuals from subpopulation i) and return a new  population.
-    The function form of this operator returns the samples directly.
-    The operator keeps samples in an array name in the local
-    namespace. You may access them through dvars() or vars()
-    functions.
+    individuals from subpopulation i) and return a new population. The
+    function form of this operator returns the samples directly. The
+    operator keeps samples in an array name in the local namespace.
+    You may access them through dvars() or vars() functions.
     The original subpopulation structure/boundary is kept in the
     samples.
 
@@ -9890,7 +10095,7 @@ Details:
 
 Description:
 
-    draw a random  sample, regardless of the affected status
+    draw a random sample, regardless of the affected status
 
 Usage:
 
@@ -9901,17 +10106,17 @@ Usage:
 
 Details:
 
-    Please refer to class  sample for other parameter descriptions.
+    Please refer to class sample for other parameter descriptions.
 
 Details:
 
-    Please refer to class  sample for other parameter descriptions.
+    Please refer to class sample for other parameter descriptions.
 
 Arguments:
 
-    size:           size of the  sample. It can be either a number
-                    which represents the overall  sample size,
-                    regardless of the  population structure; or an
+    size:           size of the sample. It can be either a number
+                    which represents the overall sample size,
+                    regardless of the population structure; or an
                     array which represents the number of samples drawn
                     from each subpopulation.
 
@@ -9970,7 +10175,7 @@ Description:
 
 Details:
 
-    In  simuPOP, only one  recombinator is provided. Recombination
+    In  simuPOP, only one recombinator is provided. Recombination
     events between loci a/b and b/c are independent, otherwise there
     will be some linkage between loci, users need to specify physical
     recombination rate between adjacent loci. In addition, for the
@@ -9988,7 +10193,7 @@ Details:
 
 Details:
 
-    In  simuPOP, only one  recombinator is provided. Recombination
+    In  simuPOP, only one recombinator is provided. Recombination
     events between loci a/b and b/c are independent, otherwise there
     will be some linkage between loci, users need to specify physical
     recombination rate between adjacent loci. In addition, for the
@@ -10052,6 +10257,58 @@ Note:
     exchanges of genes between pseudoautosomal regions of XY need to
     be modeled.
 
+Example:
+
+>>> simu = simulator(population(4, loci=[4,5,6], 
+...     infoFields=['father_idx', 'mother_idx']),
+...     randomMating())
+>>> simu.step([
+...   parentsTagger(),
+...   ],
+...   preOps = [initByFreq([.2,.2,.4,.2]), dumper(alleleOnly=True) ],
+...   postOps = [ dumper(alleleOnly=True)]
+... )
+individual info: 
+sub population 0:
+   0: MU   3  2  3  0   2  0  1  2  3   0  1  2  1  0  2 |   2  0  0  0   1  0  2  2  2   2  0  2  2  0  0 
+   1: FU   0  1  2  2   2  3  1  1  1   2  2  2  3  0  2 |   2  0  2  3   2  0  1  3  3   1  0  2  1  2  3 
+   2: MU   2  0  1  3   3  0  0  3  2   0  3  1  2  1  0 |   0  3  2  1   3  2  1  2  2   3  3  1  2  2  2 
+   3: MU   2  3  0  2   2  2  0  2  2   1  2  2  1  0  0 |   1  1  2  3   3  3  2  2  2   3  3  0  2  2  0 
+End of individual info.
+
+
+No ancenstral population recorded.
+individual info: 
+sub population 0:
+   0: FU   2  3  0  2   2  2  0  2  2   1  2  2  1  0  0 |   2  0  2  3   2  0  1  3  3   1  0  2  1  2  3 
+   1: FU   2  0  1  3   3  2  1  2  2   0  3  1  2  1  0 |   0  1  2  2   2  0  1  3  3   2  2  2  3  0  2 
+   2: FU   0  3  2  1   3  2  1  2  2   3  3  1  2  2  2 |   2  0  2  3   2  0  1  3  3   1  0  2  1  2  3 
+   3: FU   0  3  2  1   3  0  0  3  2   0  3  1  2  1  0 |   0  1  2  2   2  3  1  1  1   1  0  2  1  2  3 
+End of individual info.
+
+
+No ancenstral population recorded.
+True
+>>> simu.step([
+...   parentsTagger(),
+...   recombinator(rate=[1,1,1], afterLoci=[2,6,10])
+...   ],
+...   postOps = [ dumper(alleleOnly=True)]
+... )
+individual info: 
+sub population 0:
+   0: FU   2  0  2  2   2  2  0  3  3   1  2  2  1  2  3 |   2  0  2  1   2  0  1  2  2   1  0  1  2  2  2 
+   1: FU   0  1  2  1   2  3  1  3  2   0  3  2  1  2  3 |   0  3  2  3   2  0  1  2  2   1  0  1  2  2  2 
+   2: MU   2  0  1  2   3  2  1  3  3   0  3  2  3  0  2 |   2  0  1  2   3  2  1  3  3   0  3  2  3  0  2 
+   3: MU   2  0  2  1   3  2  1  3  3   3  3  2  1  2  3 |   2  0  1  2   3  2  1  3  3   0  3  2  3  0  2 
+End of individual info.
+
+
+No ancenstral population recorded.
+True
+>>>
+
+
 "; 
 
 %feature("docstring") simuPOP::recombinator::~recombinator "
@@ -10070,7 +10327,7 @@ Usage:
 
 Description:
 
-    deep copy of a  recombinator
+    deep copy of a recombinator
 
 Usage:
 
@@ -10083,7 +10340,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the  recombinator
+    of the recombinator
 
 Usage:
 
@@ -10119,7 +10376,7 @@ Usage:
 
 Description:
 
-    apply the  recombinator during  mating???
+    apply the recombinator during mating???
 
 Usage:
 
@@ -10163,8 +10420,7 @@ Usage:
 
 Description:
 
-    choose an random number generator. This can be done by setting
-    GSL_RNG_TYPE as well.
+    This can be done by setting GSL_RNG_TYPE as well.
 
 Usage:
 
@@ -10404,7 +10660,7 @@ Usage:
 
 Description:
 
-    basic class of other  sample operator
+    basic class of other sample operator
 
 Details:
 
@@ -10414,20 +10670,20 @@ Details:
     operators work like this except for  pySubset which shrink the
     population itself.
     Individuals in sampled populations may or may not keep their
-    original order but their indices in the whole  population are
+    original order but their indices in the whole population are
     stored in a information field oldindex. That is to say, you can
     use ind.info('oldindex') to check the original position of an
     individual.
-    Two forms of  sample size specification are supported: with or
+    Two forms of sample size specification are supported: with or
     without subpopulation structure. For example, the size parameter
     of  randomSample can be a number or an array (which has the length
-    of the number of subpopulations). If a number is given, a  sample
-    will be drawn from the whole  population, regardless of the
+    of the number of subpopulations). If a number is given, a sample
+    will be drawn from the whole population, regardless of the
     population structure. If an array is given, individuals will be
     drawn from each subpopulation sp according to size[sp].
-    An important special case of  sample size specification occurs
-    when size=[] (default). In this case, usually all qualified
-    individuals will be returned.
+    An important special case of sample size specification occurs when
+    size=[] (default). In this case, usually all qualified individuals
+    will be returned.
     The function forms of these operators are a little different from
     others. They do return a value: an array of samples.
 
@@ -10439,20 +10695,20 @@ Details:
     operators work like this except for  pySubset which shrink the
     population itself.
     Individuals in sampled populations may or may not keep their
-    original order but their indices in the whole  population are
+    original order but their indices in the whole population are
     stored in a information field oldindex. That is to say, you can
     use ind.info('oldindex') to check the original position of an
     individual.
-    Two forms of  sample size specification are supported: with or
+    Two forms of sample size specification are supported: with or
     without subpopulation structure. For example, the size parameter
     of  randomSample can be a number or an array (which has the length
-    of the number of subpopulations). If a number is given, a  sample
-    will be drawn from the whole  population, regardless of the
+    of the number of subpopulations). If a number is given, a sample
+    will be drawn from the whole population, regardless of the
     population structure. If an array is given, individuals will be
     drawn from each subpopulation sp according to size[sp].
-    An important special case of  sample size specification occurs
-    when size=[] (default). In this case, usually all qualified
-    individuals will be returned.
+    An important special case of sample size specification occurs when
+    size=[] (default). In this case, usually all qualified individuals
+    will be returned.
     The function forms of these operators are a little different from
     others. They do return a value: an array of samples.
 
@@ -10462,7 +10718,7 @@ Details:
 
 Description:
 
-    draw a  sample
+    draw a sample
 
 Usage:
 
@@ -10480,16 +10736,16 @@ Details:
 
 Arguments:
 
-    name:           name of the  sample in local namespace. This
+    name:           name of the sample in local namespace. This
                     variable is an array of populations of size times.
-                    Default to  sample. If name='' is set, samples
-                    will not be saved in local namespace.
+                    Default to sample. If name='' is set, samples will
+                    not be saved in local namespace.
     nameExpr:       expression version of parameter name. If both name
                     and nameExpr are empty, do not store pop. This
                     expression will be evaluated dynamically in
                     population's local namespace.
-    times:          how many times to  sample from the  population.
-                    This is usually 1, but we may want to take several
+    times:          how many times to sample from the population. This
+                    is usually 1, but we may want to take several
                     random samples.
     saveAs:         filename to save the samples
     saveAsExpr:     expression version of parameter saveAs. It will be
@@ -10515,7 +10771,7 @@ Usage:
 
 Description:
 
-    deep copy of a  sample operator
+    deep copy of a sample operator
 
 Usage:
 
@@ -10543,7 +10799,7 @@ Usage:
 
 Description:
 
-    apply the  sample operator
+    apply the sample operator
 
 Usage:
 
@@ -10556,7 +10812,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the  sample operator
+    of the sample operator
 
 Usage:
 
@@ -10568,7 +10824,7 @@ Usage:
 
 Description:
 
-    save the index of each  individual to a field (usually oldindex)
+    save the index of each individual to a field (usually oldindex)
 
 Usage:
 
@@ -10618,7 +10874,7 @@ Usage:
 
 Description:
 
-    save  population to a file
+    save population to a file
 
 "; 
 
@@ -10664,7 +10920,7 @@ Usage:
 
 Description:
 
-    apply to one  population. It does not check if the operator is
+    apply to one population. It does not check if the operator is
     activated.
 
 Usage:
@@ -10697,13 +10953,13 @@ Details:
     Genetic selection is tricky to simulate since there are many
     different fitness values and many different ways to apply
     selection.  simuPOP employs an 'ability-to-mate' approach. Namely,
-    the probability that an  individual will be chosen for  mating is
+    the probability that an individual will be chosen for mating is
     proportional to its fitness value. More specifically,
-    * PreMating selectors assign fitness values to each  individual.
-    * During sexless  mating (e.g.  binomialSelection???), individuals
+    * PreMating selectors assign fitness values to each individual.
+    * During sexless mating (e.g.  binomialSelection???), individuals
     are chosen at probabilities that are proportional to their fitness
     values. If there are  $ N $ individuals with fitness values  $
-    f_{i},i=1,...,N $,  individual $ i $ will have probability  $
+    f_{i},i=1,...,N $, individual  $ i $ will have probability  $
     \\frac{f_{i}}{\\sum_{j}f_{j}} $ to be chosen and passed to the next
     generation.
     * During  randomMating, males and females are separated. They are
@@ -10713,12 +10969,12 @@ Details:
     this concept is very difficult to simulate since we do not know
     who will determine the number of offspring if two parents are
     involved.)All of the selection operators, when applied, will set a
-    variable fitness and an indicator so that 'selector-aware'  mating
+    variable fitness and an indicator so that 'selector-aware' mating
     scheme can select individuals according to these values. Hence,
     two consequences are stated below:
-    *  selector alone can not do selection! Only  mating schemes can
+    * selector alone can not do selection! Only mating schemes can
     actually select individuals.
-    *  selector has to be PreMating operator. This is not a problem
+    * selector has to be PreMating operator. This is not a problem
     when you use the operator form of the selectors since their
     default stage is PreMating. However, if you use the function form
     of these selectors in a  pyOperator, make sure to set the stage of
@@ -10729,13 +10985,13 @@ Details:
     Genetic selection is tricky to simulate since there are many
     different fitness values and many different ways to apply
     selection.  simuPOP employs an 'ability-to-mate' approach. Namely,
-    the probability that an  individual will be chosen for  mating is
+    the probability that an individual will be chosen for mating is
     proportional to its fitness value. More specifically,
-    * PreMating selectors assign fitness values to each  individual.
-    * During sexless  mating (e.g.  binomialSelection???), individuals
+    * PreMating selectors assign fitness values to each individual.
+    * During sexless mating (e.g.  binomialSelection???), individuals
     are chosen at probabilities that are proportional to their fitness
     values. If there are  $ N $ individuals with fitness values  $
-    f_{i},i=1,...,N $,  individual $ i $ will have probability  $
+    f_{i},i=1,...,N $, individual  $ i $ will have probability  $
     \\frac{f_{i}}{\\sum_{j}f_{j}} $ to be chosen and passed to the next
     generation.
     * During  randomMating, males and females are separated. They are
@@ -10745,12 +11001,12 @@ Details:
     this concept is very difficult to simulate since we do not know
     who will determine the number of offspring if two parents are
     involved.)All of the selection operators, when applied, will set a
-    variable fitness and an indicator so that 'selector-aware'  mating
+    variable fitness and an indicator so that 'selector-aware' mating
     scheme can select individuals according to these values. Hence,
     two consequences are stated below:
-    *  selector alone can not do selection! Only  mating schemes can
+    * selector alone can not do selection! Only mating schemes can
     actually select individuals.
-    *  selector has to be PreMating operator. This is not a problem
+    * selector has to be PreMating operator. This is not a problem
     when you use the operator form of the selectors since their
     default stage is PreMating. However, if you use the function form
     of these selectors in a  pyOperator, make sure to set the stage of
@@ -10762,7 +11018,7 @@ Details:
 
 Description:
 
-    create a  selector
+    create a selector
 
 Usage:
 
@@ -10772,7 +11028,7 @@ Usage:
 Arguments:
 
     subPop:         a shortcut to subPops=[subPop]
-    subPops:        subpopulations that the  selector will apply to.
+    subPops:        subpopulations that the selector will apply to.
                     Default to all.
 
 "; 
@@ -10793,7 +11049,7 @@ Usage:
 
 Description:
 
-    deep copy of a  selector
+    deep copy of a selector
 
 Usage:
 
@@ -10830,7 +11086,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the  selector
+    of the selector
 
 Usage:
 
@@ -10848,17 +11104,17 @@ Details:
 
     This operator set the number of ancestral generations to keep in a
     population. It is usually called like setAncestral(at=[-2]) to
-    start recording ancestral generations to a  population at the end
+    start recording ancestral generations to a population at the end
     of the evolution. This is useful when constructing pedigree trees
-    from a  population.
+    from a population.
 
 Details:
 
     This operator set the number of ancestral generations to keep in a
     population. It is usually called like setAncestral(at=[-2]) to
-    start recording ancestral generations to a  population at the end
+    start recording ancestral generations to a population at the end
     of the evolution. This is useful when constructing pedigree trees
-    from a  population.
+    from a population.
 
 "; 
 
@@ -10904,7 +11160,7 @@ Usage:
 
 Description:
 
-    apply the  setAncestralDepth operator to one  population
+    apply the  setAncestralDepth operator to one population
 
 Usage:
 
@@ -10937,8 +11193,7 @@ Usage:
 
 Description:
 
-    destructor I can not clear dict here since a resize of g_vars will
-    copy this object and hence call this destructore.
+    hence call this destructore.
 
 Usage:
 
@@ -11036,26 +11291,26 @@ Usage:
 
 Description:
 
-    simulator manages several replicates of a  population, evolve them
-    using given  mating scheme and operators
+    simulator manages several replicates of a population, evolve them
+    using given mating scheme and operators
 
 Details:
 
     Simulators combine three important components of  simuPOP:
-    population,  mating scheme and operators together. A  simulator is
-    created with an instance of  population, a replicate number rep
-    and a  mating scheme. It makes rep number of replicates of this
+    population, mating scheme and operators together. A simulator is
+    created with an instance of population, a replicate number rep and
+    a mating scheme. It makes rep number of replicates of this
     population and control the evolution process of them.
-    The most important function of a  simulator is  evolve(). It
+    The most important function of a simulator is  evolve(). It
     accepts an array of operators as its parameters, among which,
     preOps and postOps will be applied to the populations at the
     beginning and the end of evolution, respectively, whereas ops will
     be applied at every generation.
     Simulators separate operators into pre-, during-, and post-mating
-    operators. During evolution, a  simulator first apply all pre-
+    operators. During evolution, a simulator first apply all pre-
     mating operators and then call the mate() function of the given
     mating scheme, which will call during-mating operators during the
-    birth of each offspring. After  mating is completed, post-mating
+    birth of each offspring. After mating is completed, post-mating
     operators are applied to the offspring in the order at which they
     appear in the operator list.
     Operators can be applied to a specific replicate, a group of
@@ -11066,8 +11321,8 @@ Details:
     of operators called terminators terminates it. In this case, one
     or more terminators will check the status of evolution and
     determine if the simulation should be stopped. An obvious example
-    of such a  terminator is a fixation-checker.
-    Finally, a  simulator can be saved to a file in the format of
+    of such a terminator is a fixation-checker.
+    Finally, a simulator can be saved to a file in the format of
     'txt', 'bin', or 'xml'. So we can stop a simulation and resume it
     at another time or on another machine. It is also a good idea to
     save a snapshot of a simulation every several hundred generations.
@@ -11075,20 +11330,20 @@ Details:
 Details:
 
     Simulators combine three important components of  simuPOP:
-    population,  mating scheme and operators together. A  simulator is
-    created with an instance of  population, a replicate number rep
-    and a  mating scheme. It makes rep number of replicates of this
+    population, mating scheme and operators together. A simulator is
+    created with an instance of population, a replicate number rep and
+    a mating scheme. It makes rep number of replicates of this
     population and control the evolution process of them.
-    The most important function of a  simulator is  evolve(). It
+    The most important function of a simulator is  evolve(). It
     accepts an array of operators as its parameters, among which,
     preOps and postOps will be applied to the populations at the
     beginning and the end of evolution, respectively, whereas ops will
     be applied at every generation.
     Simulators separate operators into pre-, during-, and post-mating
-    operators. During evolution, a  simulator first apply all pre-
+    operators. During evolution, a simulator first apply all pre-
     mating operators and then call the mate() function of the given
     mating scheme, which will call during-mating operators during the
-    birth of each offspring. After  mating is completed, post-mating
+    birth of each offspring. After mating is completed, post-mating
     operators are applied to the offspring in the order at which they
     appear in the operator list.
     Operators can be applied to a specific replicate, a group of
@@ -11099,8 +11354,8 @@ Details:
     of operators called terminators terminates it. In this case, one
     or more terminators will check the status of evolution and
     determine if the simulation should be stopped. An obvious example
-    of such a  terminator is a fixation-checker.
-    Finally, a  simulator can be saved to a file in the format of
+    of such a terminator is a fixation-checker.
+    Finally, a simulator can be saved to a file in the format of
     'txt', 'bin', or 'xml'. So we can stop a simulation and resume it
     at another time or on another machine. It is also a good idea to
     save a snapshot of a simulation every several hundred generations.
@@ -11111,7 +11366,7 @@ Details:
 
 Description:
 
-    create a  simulator
+    create a simulator
 
 Usage:
 
@@ -11120,18 +11375,18 @@ Usage:
 
 Arguments:
 
-    population:     a  population created by population() function.
-                    This  population will be copied rep times to the
+    population:     a population created by population() function.
+                    This population will be copied rep times to the
                     simulator. Its content will not be changed.
-    matingScheme:   a  mating scheme
+    matingScheme:   a mating scheme
     rep:            number of replicates. Default to 1.
     grp:            group number for each replicate. Operators can be
                     applied to a group of replicates using its grp
                     parameter.
-    applyOpToStoppedReps:If set, the  simulator will continue to apply
+    applyOpToStoppedReps:If set, the simulator will continue to apply
                     operators to all stopped replicates until all
                     replicates are marked 'stopped'.
-    stopIfOneRepStops:If set, the  simulator will stop evolution if one
+    stopIfOneRepStops:If set, the simulator will stop evolution if one
                     replicate stops.
 
 "; 
@@ -11140,7 +11395,7 @@ Arguments:
 
 Description:
 
-    destroy a  simulator along with all its populations
+    destroy a simulator along with all its populations
 
 Usage:
 
@@ -11149,8 +11404,8 @@ Usage:
 Note:
 
     pop = simulator::population() returns temporary reference to an
-    internal  population. After a  simulator evolves another genertion
-    or after the  simulator is destroyed, this referenced  population
+    internal population. After a simulator evolves another genertion
+    or after the simulator is destroyed, this referenced population
     should not be used.
 
 "; 
@@ -11159,7 +11414,7 @@ Note:
 
 Description:
 
-    deep copy of a  simulator
+    deep copy of a simulator
 
 Usage:
 
@@ -11179,19 +11434,19 @@ Usage:
 
 Details:
 
-    Add an information field to all replicate, and to the  simulator
+    Add an information field to all replicate, and to the simulator
     itself. This is important because all populations must have the
-    same genotypic information as the  simulator. Adding an
-    information field to one or more of the replicates will compromise
-    the integrity of the  simulator.
+    same genotypic information as the simulator. Adding an information
+    field to one or more of the replicates will compromise the
+    integrity of the simulator.
 
 Details:
 
-    Add an information field to all replicate, and to the  simulator
+    Add an information field to all replicate, and to the simulator
     itself. This is important because all populations must have the
-    same genotypic information as the  simulator. Adding an
-    information field to one or more of the replicates will compromise
-    the integrity of the  simulator.
+    same genotypic information as the simulator. Adding an information
+    field to one or more of the replicates will compromise the
+    integrity of the simulator.
 
 Arguments:
 
@@ -11237,7 +11492,7 @@ Usage:
 
 Description:
 
-    the rep replicate of this  simulator
+    the rep replicate of this simulator
 
 Usage:
 
@@ -11245,11 +11500,11 @@ Usage:
 
 Details:
 
-    This function is named  population in the Python interface.
+    This function is named population in the Python interface.
 
 Details:
 
-    This function is named  population in the Python interface.
+    This function is named population in the Python interface.
 
 Arguments:
 
@@ -11270,7 +11525,7 @@ Note:
 
 Description:
 
-    return a copy of  populationrep
+    return a copy of population rep
 
 Usage:
 
@@ -11279,25 +11534,25 @@ Usage:
 Details:
 
     return a temporary reference of one of the populations.
-    'Reference' means that the changes to the referred  population
-    will reflect to the one in  simulator. 'Temporary' means that the
-    referred  population might be invalid after evolution.
+    'Reference' means that the changes to the referred population will
+    reflect to the one in simulator. 'Temporary' means that the
+    referred population might be invalid after evolution.
 
 Details:
 
     return a temporary reference of one of the populations.
-    'Reference' means that the changes to the referred  population
-    will reflect to the one in  simulator. 'Temporary' means that the
-    referred  population might be invalid after evolution.
+    'Reference' means that the changes to the referred population will
+    reflect to the one in simulator. 'Temporary' means that the
+    referred population might be invalid after evolution.
 
 Arguments:
 
     rep:            the index number of the replicate which will be
                     obtained
-    destructive:    if true, destroy the copy of  population within
-                    this  simulator. Default to false.
+    destructive:    if true, destroy the copy of population within
+                    this simulator. Default to false.
                     getPopulation(rep, true) is a more efficient way
-                    to get hold of a  population when the  simulator
+                    to get hold of a population when the simulator
                     will no longer be used.
 
 "; 
@@ -11306,7 +11561,7 @@ Arguments:
 
 Description:
 
-    set  mating scheme
+    set mating scheme
 
 Usage:
 
@@ -11372,7 +11627,7 @@ Usage:
 
 Description:
 
-    set the current generation. Usually used to reset a  simulator.
+    set the current generation. Usually used to reset a simulator.
 
 Usage:
 
@@ -11400,7 +11655,7 @@ Usage:
 
 Description:
 
-    evolve all replicates of the  population, subject to operators
+    evolve all replicates of the population, subject to operators
 
 Usage:
 
@@ -11408,29 +11663,29 @@ Usage:
 
 Details:
 
-    Evolve to the end generation unless an operator ( terminator)
-    stops it earlier.
+    Evolve to the end generation unless an operator (terminator) stops
+    it earlier.
     ops will be applied in the order of:
     * all pre-mating opertors
-    * during-mating operators called by the  mating scheme at the
-    birth of each offspring
+    * during-mating operators called by the mating scheme at the birth
+    of each offspring
     * all post-mating operators If any pre- or post-mating operator
     fails to apply, that replicate will be stopped. The behavior of
-    the  simulator will be determined by flags applyOpToStoppedReps
-    and stopIfOneRepStopss. This is exactly how terminators work.
+    the simulator will be determined by flags applyOpToStoppedReps and
+    stopIfOneRepStopss. This is exactly how terminators work.
 
 Details:
 
-    Evolve to the end generation unless an operator ( terminator)
-    stops it earlier.
+    Evolve to the end generation unless an operator (terminator) stops
+    it earlier.
     ops will be applied in the order of:
     * all pre-mating opertors
-    * during-mating operators called by the  mating scheme at the
-    birth of each offspring
+    * during-mating operators called by the mating scheme at the birth
+    of each offspring
     * all post-mating operators If any pre- or post-mating operator
     fails to apply, that replicate will be stopped. The behavior of
-    the  simulator will be determined by flags applyOpToStoppedReps
-    and stopIfOneRepStopss. This is exactly how terminators work.
+    the simulator will be determined by flags applyOpToStoppedReps and
+    stopIfOneRepStopss. This is exactly how terminators work.
 
 Arguments:
 
@@ -11443,8 +11698,8 @@ Arguments:
                     active.
     postOps:        operators that will be applied after evolution
     end:            ending generation. Default to -1. In this case,
-                    there is no ending generation and a  simulator
-                    will only be ended by a  terminator. Otherwise, it
+                    there is no ending generation and a simulator will
+                    only be ended by a terminator. Otherwise, it
                     should be a number greater than current generation
                     number.
     dry:            run mode. Default to False.
@@ -11471,8 +11726,8 @@ Note:
 
 Description:
 
-    get  simulator namespace. If rep > 0 is given, return the
-    namespace of replicate rep
+    get simulator namespace. If rep > 0 is given, return the namespace
+    of replicate rep
 
 Usage:
 
@@ -11484,7 +11739,7 @@ Usage:
 
 Description:
 
-    save  simulator in 'txt', 'bin' or 'xml' format
+    save simulator in 'txt', 'bin' or 'xml' format
 
 Usage:
 
@@ -11506,7 +11761,7 @@ Details:
 
 Arguments:
 
-    filename:       filename to save the  simulator. Default to simu.
+    filename:       filename to save the simulator. Default to simu.
     format:         format to save. Default to auto. I.e., determine
                     the format by file extensions.
     compress:       whether or not compress the file in 'gzip' format
@@ -11520,7 +11775,7 @@ Arguments:
 Description:
 
     used by Python print function to print out the general information
-    of the  simulator
+    of the simulator
 
 Usage:
 
@@ -11564,7 +11819,7 @@ Details:
 
 Description:
 
-    create a SMM  mutator
+    create a SMM mutator
 
 Usage:
 
@@ -11576,20 +11831,49 @@ Details:
 
     The stepwise mutation model (SMM) is developed for allozymes. It
     provides better description for these kinds of evolutionary
-    processes. Please see  mutator for the description of other
+    processes. Please see mutator for the description of other
     parameters.
 
 Details:
 
     The stepwise mutation model (SMM) is developed for allozymes. It
     provides better description for these kinds of evolutionary
-    processes. Please see  mutator for the description of other
+    processes. Please see mutator for the description of other
     parameters.
 
 Arguments:
 
     incProb:        probability to increase allele state. Default to
                     0.5.
+
+Example:
+
+>>> simu = simulator(population(size=3, loci=[3,5]), noMating())
+>>> simu.step([
+...     initByFreq( [.2,.3,.5]),
+...     smmMutator(rate=1,  incProb=.8),
+...     dumper(alleleOnly=True, stage=PrePostMating)])
+individual info: 
+sub population 0:
+   0: FU   0  2  0   1  0  2  2  0 |   0  2  2   2  2  0  2  0 
+   1: MU   2  2  1   1  2  2  2  2 |   0  2  1   0  2  0  0  1 
+   2: MU   2  2  1   1  2  1  0  2 |   2  2  2   1  2  2  0  1 
+End of individual info.
+
+
+No ancenstral population recorded.
+individual info: 
+sub population 0:
+   0: FU   1  3  1   2  1  3  3  1 |   1  3  3   3  1  1  3  1 
+   1: MU   1  3  0   2  3  3  1  3 |   1  3  0   1  3  1  1  2 
+   2: MU   3  3  2   2  3  2  1  3 |   3  3  3   2  3  3  1  2 
+End of individual info.
+
+
+No ancenstral population recorded.
+True
+>>>
+
 
 "; 
 
@@ -11670,7 +11954,7 @@ Details:
 
 Description:
 
-    split a subpopulation or the whole  population as subpopulation 0
+    split a subpopulation or the whole population as subpopulation 0
 
 Usage:
 
@@ -11804,7 +12088,7 @@ Usage:
 
 Description:
 
-    deep copy of the operator  spread
+    deep copy of the operator spread
 
 Usage:
 
@@ -11817,7 +12101,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the operator  spread
+    of the operator spread
 
 Usage:
 
@@ -11829,7 +12113,7 @@ Usage:
 
 Description:
 
-    apply operator  spread???
+    apply operator spread???
 
 Usage:
 
@@ -11853,20 +12137,20 @@ Description:
 
 Details:
 
-    Operator stat calculatse various basic statistics for the
+    Operatorstat calculatse various basic statistics for the
     population and sets variables in the local namespace. Other
     operators/functions can refer to the results from the namespace
-    after  stat is applied. Stat is the function form of the operator.
+    after stat is applied. Stat is the function form of the operator.
     Note that these statistics are dependent to each other. For
     example, heterotype and allele frequencies of related loci will be
     automatically calculated if linkage diseqilibrium is requested.
 
 Details:
 
-    Operator stat calculatse various basic statistics for the
+    Operatorstat calculatse various basic statistics for the
     population and sets variables in the local namespace. Other
     operators/functions can refer to the results from the namespace
-    after  stat is applied. Stat is the function form of the operator.
+    after stat is applied. Stat is the function form of the operator.
     Note that these statistics are dependent to each other. For
     example, heterotype and allele frequencies of related loci will be
     automatically calculated if linkage diseqilibrium is requested.
@@ -11877,7 +12161,7 @@ Details:
 
 Description:
 
-    create an  stat operator
+    create an stat operator
 
 Usage:
 
@@ -11899,12 +12183,12 @@ Details:
     following variables. Please note that the difference between the
     data structures used for ld and LD. The names are potentially very
     confusing but I have no better idea.
-    * ld['loc1-loc2']['allele1-allele2'], subPop[sp]['ld']['loc1-
-    loc2']['allele1-allele2']
+    * ld['loc1-loc2']['allele1-allele2'],
+    subPop[sp]['ld']['loc1-loc2']['allele1-allele2']
     * ld_prime['loc1-loc2']['allele1-allele2'],
     subPop[sp]['ld_prime']['loc1-loc2']['allele1-allele2']
-    * r2['loc1-loc2']['allele1-allele2'], subPop[sp]['r2']['loc1-
-    loc2']['allele1-allele2']
+    * r2['loc1-loc2']['allele1-allele2'],
+    subPop[sp]['r2']['loc1-loc2']['allele1-allele2']
     * LD[loc1][loc2], subPop[sp]['LD'][loc1][loc2]
     * LD_prime[loc1][loc2], subPop[sp]['LD_prime'][loc1][loc2]
     * R2[loc1][loc2], subPop[sp]['R2'][loc1][loc2]
@@ -11916,19 +12200,19 @@ Details:
     following variables. Please note that the difference between the
     data structures used for ld and LD. The names are potentially very
     confusing but I have no better idea.
-    * ld['loc1-loc2']['allele1-allele2'], subPop[sp]['ld']['loc1-
-    loc2']['allele1-allele2']
+    * ld['loc1-loc2']['allele1-allele2'],
+    subPop[sp]['ld']['loc1-loc2']['allele1-allele2']
     * ld_prime['loc1-loc2']['allele1-allele2'],
     subPop[sp]['ld_prime']['loc1-loc2']['allele1-allele2']
-    * r2['loc1-loc2']['allele1-allele2'], subPop[sp]['r2']['loc1-
-    loc2']['allele1-allele2']
+    * r2['loc1-loc2']['allele1-allele2'],
+    subPop[sp]['r2']['loc1-loc2']['allele1-allele2']
     * LD[loc1][loc2], subPop[sp]['LD'][loc1][loc2]
     * LD_prime[loc1][loc2], subPop[sp]['LD_prime'][loc1][loc2]
     * R2[loc1][loc2], subPop[sp]['R2'][loc1][loc2]
 
 Arguments:
 
-    popSize:        whether or not calculate  population sizes. This
+    popSize:        whether or not calculate population sizes. This
                     parameter will set the following variables:
                     * numSubPop the number of subpopulations
                     * subPopSize an array of subpopulation sizes. Not
@@ -12006,7 +12290,7 @@ Arguments:
                     will be calculated (genoFreq=[loc1, loc2, ...]
                     where loc1 etc. are loci where genotype
                     frequencies will be calculated). All the genotypes
-                    in the  population will be counted. You may use
+                    in the population will be counted. You may use
                     hasPhase to set if a/b and b/a are the same
                     genotype. This parameter will set the following
                     dictionary variables. Note that unlike list used
@@ -12093,7 +12377,7 @@ Arguments:
                     $ r^{2} = \\frac{D^{2}}{P_{A}\\left(1-P_{A}\\right)P_
                     {B}\\left(1-P_{B}\\right)} $
     LD_param:       a dictionary of parameters of LD statistics. Can
-                    have key  stat which is a list of statistics to
+                    have key stat which is a list of statistics to
                     calculate. Default to all. If any statistics is
                     specified, only those specified will be
                     calculated. For example, you may use
@@ -12122,7 +12406,7 @@ Arguments:
                     *  $ \\theta $ ( $ F_{ST} $) the correlation of
                     genes of difference individuals in the same
                     population (will evaluate for each subpopulation
-                    and the whole  population)
+                    and the whole population)
                     *  $ f $ ( $ F_{IS} $) the correlation of genes
                     within individuals within populations. Population
                     refers to subpopulations in  simuPOP term.??? This
@@ -12182,7 +12466,7 @@ Usage:
 
 Description:
 
-    deep copy of a  stat operator
+    deep copy of a stat operator
 
 Usage:
 
@@ -12194,7 +12478,7 @@ Usage:
 
 Description:
 
-    apply the  stat operator
+    apply the stat operator
 
 Usage:
 
@@ -12207,7 +12491,7 @@ Usage:
 Description:
 
     used by Python print function to print out the general information
-    of the  stat operator
+    of the stat operator
 
 Usage:
 
@@ -12857,18 +13141,18 @@ Description:
 
 Details:
 
-    Operator stator calculate various basic statistics for the
+    Operatorstator calculate various basic statistics for the
     population and set variables in the local namespace. Other
     operators/functions can refer to the results from the namespace
-    after  stat is applied. Stat is the function form of the operator.
+    after stat is applied. Stat is the function form of the operator.
     ????
 
 Details:
 
-    Operator stator calculate various basic statistics for the
+    Operatorstator calculate various basic statistics for the
     population and set variables in the local namespace. Other
     operators/functions can refer to the results from the namespace
-    after  stat is applied. Stat is the function form of the operator.
+    after stat is applied. Stat is the function form of the operator.
     ????
 
 "; 
@@ -12877,7 +13161,7 @@ Details:
 
 Description:
 
-    create a  stator
+    create a stator
 
 Usage:
 
@@ -12902,7 +13186,7 @@ Usage:
 
 Description:
 
-    deep copy of a  stator
+    deep copy of a stator
 
 Usage:
 
@@ -12965,7 +13249,7 @@ Arguments:
 
     groups:         can be [ [1,2,3],[4,5,6],[7,8,9]] as three groups
                     of individuals; or [ 1 3 4] as three
-                    subpopulations. To specify between  individual
+                    subpopulations. To specify between individual
                     relatedness, use [[1],[2],[3]] (the first form).
                     If this parameter is ignored, this operator
                     calculate relatedness between all subpopulations.
@@ -13080,7 +13364,21 @@ Usage:
 
 %ignore simuPOP::StreamElem;
 
-%ignore simuPOP::StreamElem::StreamElem(const string &name, bool readable, bool realAppend, bool useString);
+%feature("docstring") simuPOP::StreamElem::StreamElem "
+
+Description:
+
+    simuPOP::StreamElem::StreamElem
+
+Usage:
+
+    StreamElem(name, readable, realAppend, useString)
+
+Arguments:
+
+    useString:      use a stringstream rather than a file.
+
+"; 
 
 %ignore simuPOP::StreamElem::StreamElem(const StreamElem &rhs);
 
@@ -13104,7 +13402,17 @@ Usage:
 
 %ignore simuPOP::StreamElem::type();
 
-%ignore simuPOP::StreamElem::info();
+%feature("docstring") simuPOP::StreamElem::info "
+
+Description:
+
+    mostly for debug purposes
+
+Usage:
+
+    x.info()
+
+"; 
 
 %ignore simuPOP::StreamElem::append();
 
@@ -13160,18 +13468,18 @@ Description:
 
 Details:
 
-    tagger is a during  mating operator that tag individuals with
+    tagger is a during mating operator that tag individuals with
     various information. Potential usages are:
     * recording parental information to track pedigree;
-    * tagging an individual/allele and monitor its  spread in the
+    * tagging an individual/allele and monitor its spread in the
     population etc.
 
 Details:
 
-    tagger is a during  mating operator that tag individuals with
+    tagger is a during mating operator that tag individuals with
     various information. Potential usages are:
     * recording parental information to track pedigree;
-    * tagging an individual/allele and monitor its  spread in the
+    * tagging an individual/allele and monitor its spread in the
     population etc.
 
 "; 
@@ -13180,7 +13488,7 @@ Details:
 
 Description:
 
-    create a  tagger, default to be always active but no output
+    create a tagger, default to be always active but no output
 
 Usage:
 
@@ -13205,7 +13513,7 @@ Usage:
 
 Description:
 
-    deep copy of a \\  tagger
+    deep copy of a \\ tagger
 
 Usage:
 
@@ -13225,7 +13533,7 @@ Details:
     For example,  terminateIf(condition='alleleFreq[0][1]<0.05',
     begin=100) terminates the evolution if the allele frequency of
     allele 1 at locus 0 is less than 0.05. Of course, to make this
-    opertor work, you will need to use a  stat operator before it so
+    opertor work, you will need to use a stat operator before it so
     that variable alleleFreq exists in the local namespace.
     When the condition is true, a shared variable var=\"terminate\" will
     be set to the current generation.
@@ -13236,7 +13544,7 @@ Details:
     For example,  terminateIf(condition='alleleFreq[0][1]<0.05',
     begin=100) terminates the evolution if the allele frequency of
     allele 1 at locus 0 is less than 0.05. Of course, to make this
-    opertor work, you will need to use a  stat operator before it so
+    opertor work, you will need to use a stat operator before it so
     that variable alleleFreq exists in the local namespace.
     When the condition is true, a shared variable var=\"terminate\" will
     be set to the current generation.
@@ -13330,7 +13638,7 @@ Details:
 
 Description:
 
-    create a  terminator, default to be always active
+    create a terminator, default to be always active
 
 Usage:
 
@@ -13356,7 +13664,7 @@ Usage:
 
 Description:
 
-    deep copy of a  terminator
+    deep copy of a terminator
 
 Usage:
 
@@ -13451,7 +13759,7 @@ Usage:
 
 Description:
 
-    apply the  ticToc operator to one  population
+    apply the  ticToc operator to one population
 
 Usage:
 
@@ -13537,7 +13845,7 @@ Usage:
 
 Description:
 
-    apply the  turnOffDebug operator to one  population
+    apply the  turnOffDebug operator to one population
 
 Usage:
 
@@ -13635,7 +13943,7 @@ Usage:
 
 Description:
 
-    apply the  turnOnDebug operator to one  population
+    apply the  turnOnDebug operator to one population
 
 Usage:
 
@@ -14012,9 +14320,29 @@ Usage:
 
 %ignore simuPOP::NumArray_Data(PyObject *obj);
 
-%ignore simuPOP::mainVars();
+%feature("docstring") simuPOP::mainVars "
 
-%ignore simuPOP::moduleVars();
+Description:
+
+    get main dictionary (user namespace)
+
+Usage:
+
+    mainVars()
+
+"; 
+
+%feature("docstring") simuPOP::moduleVars "
+
+Description:
+
+    get module dictionary (it is different than mainDict!
+
+Usage:
+
+    moduleVars()
+
+"; 
 
 %ignore simuPOP::pyPopObj(void *p);
 
@@ -14154,7 +14482,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::initialize();
+%feature("docstring") simuPOP::initialize "
+
+Description:
+
+    initialize module  simuPOP when using \"import simuPOP\"
+
+Usage:
+
+    initialize()
+
+"; 
 
 %feature("docstring") simuPOP::optimized "
 
@@ -14230,7 +14568,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::cnull();
+%feature("docstring") simuPOP::cnull "
+
+Description:
+
+    get a null stream that discard everything
+
+Usage:
+
+    cnull()
+
+"; 
 
 %feature("docstring") simuPOP::setLogOutput "
 

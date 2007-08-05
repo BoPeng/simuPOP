@@ -879,6 +879,8 @@ namespace simuPOP
     function. For \c DuringMating usages, population, offspring, its parents and an optional parameter
     are passed to the given function. Arbitrary operations can be applied to the population and
     offspring (if <tt>stage=DuringMating</tt>).
+
+    \test src_pyOperator.log Operator pyOperator
     */
 	class pyOperator: public Operator
 	{

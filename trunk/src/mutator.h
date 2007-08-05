@@ -205,6 +205,8 @@ namespace simuPOP
                 Default to all loci.
 			\param maxAllele maximum allele that can be mutated to. For binary libraries
 			  allelic states will be <tt>[0, maxAllele]</tt>. Otherwise, they are <tt>[1, maxAllele]</tt>.
+
+			  \test src_kamMutator.log Operator kamMutator
 			*/
 			kamMutator(const vectorf& rate=vectorf(),
 				const vectoru& loci=vectoru(),
@@ -256,6 +258,8 @@ namespace simuPOP
 			\param incProb probability to increase allele state. Default to \c 0.5.
 
             Please see \c mutator for the description of other parameters.     
+
+			  \test src_smmMutator.log Operator smmMutator
 			*/
 			smmMutator(const vectorf& rate=vectorf(), 
 				const vectoru & loci=vectoru(),
@@ -322,6 +326,8 @@ namespace simuPOP
 
     <funcForm>GsmMutate</funcForm>
 	\sa Kimura & Ohta 1978
+
+			  \test src_gsmMutator.log Operator gsmMutator
 	*/
 	class gsmMutator: public mutator
 	{
@@ -407,6 +413,9 @@ namespace simuPOP
 	{
 		public:
             /// create a \c pyMutator
+	    /**
+			  \test src_pyMutator.log Operator pyMutator
+				  */
 			pyMutator(const vectorf & rate=vectorf(), 
 				const vectoru & loci=vectoru(), UINT maxAllele=0,
 				PyObject* func=NULL,
