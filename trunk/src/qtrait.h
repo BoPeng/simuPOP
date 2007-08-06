@@ -25,7 +25,7 @@
 #define _QTRAIT_H
 /**
 \file
-\brief head file of class selector:public Operator
+\brief head file of class selector:public baseOperator
 */
 #include "utility.h"
 #include "operator.h"
@@ -52,13 +52,13 @@ namespace simuPOP
     also accept the \c ancestralGen parameter to control the number of generations
     for which the \c qtrait information field will be set.
 	*/
-	class quanTrait: public Operator
+	class quanTrait: public baseOperator
 	{
 		public:
 			/// create a quantitative trait operator, default to be always active
 			quanTrait(int ancestralGen=-1,  int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr(1, "qtrait"))
-				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields),
+				: baseOperator("","",stage, begin, end, step, at, rep, grp, infoFields),
 				m_ancestralGen(ancestralGen)
 			{
 			}
@@ -69,7 +69,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a quantitative trait operator            
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new quanTrait(*this);
 			}
@@ -136,7 +136,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a map quantitative trait operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new mapQuanTrait(*this);
 			}
@@ -210,7 +210,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a multiple allele quantitative trait
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new maQuanTrait(*this);
 			}
@@ -263,7 +263,7 @@ namespace simuPOP
 #define QT_Additive 2
 
 			/// vector of operator pointers.
-			typedef std::vector< Operator * > vectorop;
+			typedef std::vector< baseOperator * > vectorop;
 
 		public:
             /// multiple loci quantitative trait using a multiplicative model
@@ -298,7 +298,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a multiple loci quantitative trait operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				throw ValueError("Multi-loci selector can not be nested.");
 			}
@@ -379,7 +379,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a Python quantitative trait operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pyQuanTrait(*this);
 			}

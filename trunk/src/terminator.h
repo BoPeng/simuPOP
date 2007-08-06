@@ -25,7 +25,7 @@
 #define _TERMINATOR_H
 /**
 \file
-\brief head file of class terminator: public Operator
+\brief head file of class terminator: public baseOperator
 */
 #include "population.h"
 #include "operator.h"
@@ -41,14 +41,14 @@ namespace simuPOP
     These operators are used to see if an evolution is running as expected, and
     terminate the evolution if a certain condition fails.
     */
-	class terminator: public Operator
+	class terminator: public baseOperator
 	{
 
 		public:
 			/// create a terminator, default to be always active
 			terminator(string message = "", string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			Operator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
+baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 				m_message(message)
 			{
 			};
@@ -57,7 +57,7 @@ namespace simuPOP
 			virtual ~terminator(){};
 
             /// deep copy of a terminator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new terminator(*this);
 			}
@@ -99,7 +99,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a \c terminateIf terminator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new terminateIf(*this);
 			}
@@ -166,7 +166,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a \c continueIf terminator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new continueIf(*this);
 			}

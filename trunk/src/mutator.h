@@ -25,7 +25,7 @@
 #define _MUTATOR_H
 /**
 \file
-\brief head file of class mutator:public Operator
+\brief head file of class mutator:public baseOperator
 */
 /// for hybrid mutator
 #include "operator.h"
@@ -47,7 +47,7 @@ namespace simuPOP
 	number of allelic states to avoid any homoplasy. If it facilitates any analysis,
 	this is however extremely unrealistic.
 	*/
-	class mutator: public Operator
+	class mutator: public baseOperator
 	{
 		public:
             /// create a mutator
@@ -68,7 +68,7 @@ namespace simuPOP
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				:Operator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
+				: baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 				m_rate(rate), m_maxAllele(maxAllele), m_loci(loci),
 				m_bt(rng()), m_initialized(false), m_mutCount(0)
 			{
@@ -97,7 +97,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a \c mutator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new mutator(*this);
 			}
@@ -225,7 +225,7 @@ namespace simuPOP
 			virtual void mutate(AlleleRef allele);
 
 			/// deep copy of a \c kamMutator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new kamMutator(*this);
 			}
@@ -295,7 +295,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a \c smmMutator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new smmMutator(*this);
 			}
@@ -377,7 +377,7 @@ namespace simuPOP
 			~gsmMutator(){}
 
 			/// deep copy of a \c gsmMutator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new gsmMutator(*this);
 			}
@@ -448,7 +448,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a \c pyMutator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pyMutator(*this);
 			}
@@ -490,7 +490,7 @@ namespace simuPOP
 
     <funcForm>PointMutate</funcForm>	
 	*/
-	class pointMutator: public Operator
+	class pointMutator: public baseOperator
 	{
 		public:
             /// create a \c pointMutator
@@ -508,7 +508,7 @@ namespace simuPOP
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				:Operator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
+				: baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 				m_loci(loci), m_toAllele(toAllele),
 				m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)
 			{
@@ -522,7 +522,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a \c pointMutator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pointMutator(*this);
 			}

@@ -97,7 +97,7 @@ namespace simuPOP
 
 	\li \c '' supress output.
 	*/
-	class Operator
+	class baseOperator
 	{
 		public:
 
@@ -128,7 +128,7 @@ namespace simuPOP
               intepretted as <tt>endGen + gen + 1</tt>. For example, <tt>begin = -2</tt> in
               <tt>simu.evolve(..., end=20)</tt> starts at generation \c 19.
 			*/
-			Operator(string output, string outputExpr, int stage,
+baseOperator(string output, string outputExpr, int stage,
 				int begin, int end, int step, vectorl at,
 				int rep, int grp, const vectorstr& infoFields):
 			m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at),
@@ -142,14 +142,14 @@ namespace simuPOP
 			}
 
 			/// destroy an operator
-			virtual ~Operator()
+			virtual ~baseOperator()
 			{
 			}
 
 			/// deep copy of an operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
-				return new Operator(*this);
+				return new baseOperator(*this);
 			}
 
 			//@}
@@ -481,7 +481,7 @@ namespace simuPOP
     can be controlled by parameter \c exposePop and \c popName. This feature is
     useful when you want to examine the properties of a population during evolution.
 	*/
-	class pause: public Operator
+	class pause: public baseOperator
 	{
 
 		public:
@@ -498,7 +498,7 @@ namespace simuPOP
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_LAST, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			Operator("", "", stage, begin, end, step, at, rep, grp, infoFields),
+baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke),
 				m_exposePop(exposePop), m_popName(popName)
 			{
@@ -508,7 +508,7 @@ namespace simuPOP
 			virtual ~pause(){}
 
 			/// deep copy of a \c pause operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pause(*this);
 			}
@@ -535,7 +535,7 @@ namespace simuPOP
 	};
 
 	/// none operator
-	class noneOp: public Operator
+	class noneOp: public baseOperator
 	{
 
 		public:
@@ -545,7 +545,7 @@ namespace simuPOP
 			noneOp( string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=0, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			Operator("", "", stage, begin, end, step, at, rep, grp, infoFields)
+baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields)
 			{
 			}
 
@@ -555,7 +555,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a \c noneOp operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new noneOp(*this);
 			}
@@ -600,7 +600,7 @@ namespace simuPOP
     <tt>ifElse('rep in [2,5,9]' operator)</tt>. The real use of this machanism is
     to monitor the population statistics and act accordingly.
 	*/
-	class ifElse: public Operator
+	class ifElse: public baseOperator
 	{
 
 		public:
@@ -609,11 +609,11 @@ namespace simuPOP
 			\param ifOp an operator that will be applied when \c cond is \c True
         	\param elseOp an operator that will be applied when \c cond is \c False
 			*/
-			ifElse(const string& cond, Operator* ifOp=NULL, Operator* elseOp = NULL,
+			ifElse(const string& cond, baseOperator * ifOp=NULL, baseOperator * elseOp = NULL,
 				string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			Operator("", "", stage, begin, end, step, at, rep, grp, infoFields),
+baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_cond(cond,""), m_ifOp(NULL), m_elseOp(NULL)
 			{
 				if( ifOp != NULL)
@@ -633,7 +633,7 @@ namespace simuPOP
 
 			/// CPPONLY copy constructor
 			ifElse(const ifElse& rhs)
-				: Operator(rhs), m_cond(rhs.m_cond), m_ifOp(NULL), m_elseOp(NULL)
+				: baseOperator(rhs), m_cond(rhs.m_cond), m_ifOp(NULL), m_elseOp(NULL)
 			{
 				if( rhs.m_ifOp != NULL)
 					m_ifOp = rhs.m_ifOp->clone();
@@ -642,7 +642,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of an \c ifElse operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new ifElse(*this);
 			}
@@ -666,8 +666,8 @@ namespace simuPOP
 		private:
 			Expression m_cond;
 
-			Operator* m_ifOp;
-			Operator *m_elseOp;
+			baseOperator * m_ifOp;
+			baseOperator * m_elseOp;
 	};
 
 	/// timer operator
@@ -680,14 +680,14 @@ namespace simuPOP
     parameter.
     <funcForm>TicToc</funcForm>
 	*/
-	class ticToc: public Operator
+	class ticToc: public baseOperator
 	{
 		public:
 			/// create a timer
 			ticToc( string output=">", string outputExpr="",
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields)
+baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields)
 			{
 				time(&m_startTime);
 				m_lastTime = m_startTime;
@@ -699,7 +699,7 @@ namespace simuPOP
 			};
 
 			/// deep copy of a \c ticToc operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new ticToc(*this);
 			}
@@ -725,7 +725,7 @@ namespace simuPOP
     ancestral generations to a population at the end of the evolution. This is
     useful when constructing pedigree trees from a population. 
 	*/
-	class setAncestralDepth: public Operator
+	class setAncestralDepth: public baseOperator
 	{
 
 		public:
@@ -733,7 +733,7 @@ namespace simuPOP
 			setAncestralDepth( int depth, string output=">", string outputExpr="",
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
+baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_depth(depth)
 			{
 			};
@@ -744,7 +744,7 @@ namespace simuPOP
 			};
 
 			/// deep copy of a \c setAncestralDepth operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new setAncestralDepth(*this);
 			}
@@ -779,14 +779,14 @@ namespace simuPOP
     given generations.
     <funcForm>TurnOnDebug</funcForm>
     */
-	class turnOnDebug: public Operator
+	class turnOnDebug: public baseOperator
 	{
 		public:
 			
 			turnOnDebug(DBG_CODE code,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
+baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_code(code)
 			{
 			};
@@ -797,7 +797,7 @@ namespace simuPOP
 			};
 
 			/// deep copy of a \c turnOnDebug operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new turnOnDebug(*this);
 			}
@@ -824,14 +824,14 @@ namespace simuPOP
     Turn off debug.
     <funcForm>TurnOffDebug</funcForm>
 	*/
-	class turnOffDebug: public Operator
+	class turnOffDebug: public baseOperator
 	{
 
 		public:
 			turnOffDebug(DBG_CODE code,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
+baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_code(code)
 			{
 			};
@@ -842,7 +842,7 @@ namespace simuPOP
 			};
 
 			/// deep copy of a \c turnOffDebug operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new turnOffDebug(*this);
 			}
@@ -882,7 +882,7 @@ namespace simuPOP
 
     \test src_pyOperator.log Operator pyOperator
     */
-	class pyOperator: public Operator
+	class pyOperator: public baseOperator
 	{
 		public:
             /// Python operator, using a function that accepts a population object
@@ -910,7 +910,7 @@ namespace simuPOP
 				int stage=PostMating, bool formOffGenotype=false, bool passOffspringOnly=false,
 				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
+baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
 			{
 				if( !PyCallable_Check(func))
@@ -936,7 +936,7 @@ namespace simuPOP
 
 			/// CPPONLY need a copy operator because of m_func
 			pyOperator(const pyOperator& rhs):
-			Operator(rhs),
+baseOperator(rhs),
 				m_func(rhs.m_func),
 				m_param(rhs.m_param)
 			{
@@ -947,7 +947,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a \c pyOperator operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pyOperator(*this);
 			}
@@ -991,7 +991,7 @@ namespace simuPOP
 	\li <tt>func(ind, param)</tt> when param is given
 	\li <tt>func(ind, genotype, param)</tt> when both loci and param are given.	
     */
-	class pyIndOperator: public Operator
+	class pyIndOperator: public baseOperator
 	{
 
 		public:
@@ -1007,7 +1007,7 @@ namespace simuPOP
 				int stage=PostMating, bool formOffGenotype=false,
 				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			Operator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
+baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_func(func), m_loci(loci), m_param(param)
 			{
 				if( !PyCallable_Check(func))
@@ -1035,7 +1035,7 @@ namespace simuPOP
 
 			/// CPPONLY need a copy operator because of m_func
 			pyIndOperator(const pyIndOperator& rhs):
-			Operator(rhs),
+baseOperator(rhs),
 				m_func(rhs.m_func),
 				m_param(rhs.m_param)
 			{
@@ -1046,7 +1046,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a \c pyIndOperator operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pyIndOperator(*this);
 			}

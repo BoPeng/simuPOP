@@ -25,7 +25,7 @@
 
 namespace simuPOP
 {
-	offspringGenerator::offspringGenerator(const population& pop, vector<Operator *>& ops)
+	offspringGenerator::offspringGenerator(const population& pop, vector<baseOperator *>& ops)
 		: m_bt(rng()), m_ops(ops)
 	{
 		m_formOffGenotype = formOffspringGenotype();
@@ -38,7 +38,7 @@ namespace simuPOP
 
 	bool offspringGenerator::formOffspringGenotype()
 	{
-		for(vector<Operator *>::const_iterator iop = m_ops.begin();
+		for(vector<baseOperator *>::const_iterator iop = m_ops.begin();
 			iop != m_ops.end(); ++iop)
 		{
 			if((*iop)->formOffGenotype())
@@ -63,7 +63,7 @@ namespace simuPOP
 			// apply during mating operators
 			if(!m_ops.empty())
 			{
-				for(vector<Operator *>::iterator iop = m_ops.begin(),
+				for(vector<baseOperator *>::iterator iop = m_ops.begin(),
 					iopEnd = m_ops.end(); iop != iopEnd;  ++iop)
 				{
 					try
@@ -261,7 +261,7 @@ namespace simuPOP
 			// apply all during mating operators
 			if(!m_ops.empty())
 			{
-				for( vector<Operator *>::iterator iop = m_ops.begin(), iopEnd = m_ops.end(); iop != iopEnd;  ++iop)
+				for( vector<baseOperator *>::iterator iop = m_ops.begin(), iopEnd = m_ops.end(); iop != iopEnd;  ++iop)
 				{
 					try
 					{
@@ -443,14 +443,14 @@ namespace simuPOP
 	}
 
 	// nomating does nothing but applying during-mating operators
-	bool noMating::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	bool noMating::mate(population& pop, population& scratch, vector<baseOperator *>& ops, bool submit)
 	{
 		// apply during mating operators
 		if(!ops.empty() )
 		{
 			for(population::IndIterator it = pop.indBegin(), itEnd = pop.indEnd(); it != itEnd;  ++it)
 			{
-				for( vector<Operator *>::iterator iop = ops.begin(), iopEnd = ops.end(); iop != iopEnd;  ++iop)
+				for( vector<baseOperator *>::iterator iop = ops.begin(), iopEnd = ops.end(); iop != iopEnd;  ++iop)
 				{
 					(*iop)->applyDuringMating(pop, it, NULL, NULL);
 				}								  // all during-mating operators
@@ -460,7 +460,7 @@ namespace simuPOP
 	}
 
 	///
-	bool binomialSelection::mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	bool binomialSelection::mate( population& pop, population& scratch, vector<baseOperator *>& ops, bool submit)
 	{
 		resetNumOffspring();
 		// scrtach will have the right structure.
@@ -524,7 +524,7 @@ namespace simuPOP
 		return true;
 	}
 
-	bool randomMating::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	bool randomMating::mate(population& pop, population& scratch, vector<baseOperator *>& ops, bool submit)
 	{
 		this->resetNumOffspring();
 		// scrtach will have the right structure.
@@ -707,7 +707,7 @@ namespace simuPOP
 		}
 	}
 
-	bool controlledMating::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	bool controlledMating::mate(population& pop, population& scratch, vector<baseOperator *>& ops, bool submit)
 	{
 		// first call the function and get the range
 		vectorf freqRange;
@@ -937,7 +937,7 @@ namespace simuPOP
 		}
 	}
 
-	bool controlledBinomialSelection::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	bool controlledBinomialSelection::mate(population& pop, population& scratch, vector<baseOperator *>& ops, bool submit)
 	{
 		resetNumOffspring();
 		// scrtach will have the right structure.
@@ -1236,7 +1236,7 @@ namespace simuPOP
 	// This mating scheme is very complicated, it is similar to randomMating, but it tries to control
 	// the mating process so that the total disease allele frequency controlled to pre-specified values.
 	//
-	bool controlledRandomMating::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	bool controlledRandomMating::mate(population& pop, population& scratch, vector<baseOperator *>& ops, bool submit)
 	{
 		resetNumOffspring();
 		// scrtach will have the right structure.
@@ -1648,7 +1648,7 @@ namespace simuPOP
 		return true;
 	}
 
-	bool pyMating::mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit)
+	bool pyMating::mate(population& pop, population& scratch, vector<baseOperator *>& ops, bool submit)
 	{
 		// scrtach will have the right structure.
 		this->prepareScratchPop(pop, scratch);

@@ -25,7 +25,7 @@
 #define _INITIALIZER_H
 /**
 \file
-\brief head file of class initializer:public Operator
+\brief head file of class initializer:public baseOperator
 */
 #include "utility.h"
 #include "operator.h"
@@ -44,7 +44,7 @@ namespace simuPOP
     three initializers. One assigns alleles by random, one assigns a fixed
     set of genotypes, and the last one calls a user-defined function.
     */
-	class initializer: public Operator
+	class initializer: public baseOperator
 	{
 		public:
 			/// create an initializer. default to be always active
@@ -55,7 +55,7 @@ namespace simuPOP
 				double maleFreq=0.5, const vectori& sex = vectori(),
 				int stage=PreMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				:Operator("","", stage, begin, end, step, at, rep, grp, infoFields),
+				: baseOperator("","", stage, begin, end, step, at, rep, grp, infoFields),
 				m_subPop(subPop), m_indRange(indRange),
 				m_atLoci(loci), m_atPloidy(atPloidy),
 				m_maleFreq(maleFreq), m_sex(sex)
@@ -78,7 +78,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of an initializer
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new initializer(*this);
 			}
@@ -193,7 +193,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of the operator \c initByFreq
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new initByFreq(*this);
 			}
@@ -288,7 +288,7 @@ namespace simuPOP
 			~initByValue(){}
 
 			/// deep copy of the operator \c initByValue
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new initByValue(*this);
 			}
@@ -318,14 +318,14 @@ namespace simuPOP
     
     <funcForm>Spread</funcForm>                 
     */
-	class spread:public Operator
+	class spread:public baseOperator
 	{
 		public:
 			/// copy genotypes of \c ind to all individuals in \c subPop            
 			spread(ULONG ind, vectoru subPop=vectoru(),
 				int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				: Operator("","", stage, begin, end, step, at, rep, grp, infoFields),
+				: baseOperator("","", stage, begin, end, step, at, rep, grp, infoFields),
 				m_ind(ind), m_subPop(subPop)
 			{
 			}
@@ -333,7 +333,7 @@ namespace simuPOP
 			~spread(){}
 
 			/// deep copy of the operator \c spread
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new spread(*this);
 			}
@@ -434,7 +434,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of the operator \c pyInit
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pyInit(*this);
 			}

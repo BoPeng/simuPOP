@@ -25,7 +25,7 @@
 #define _PENETRANCE_H
 /**
 \file
-\brief head file of class selector:public Operator
+\brief head file of class selector:public baseOperator
 */
 #include "utility.h"
 #include "operator.h"
@@ -75,7 +75,7 @@ namespace simuPOP
     to process. Note that \c ancestralGen parameter is ignored if the penetrance operator is used
     as a during mating operator.
 	*/
-	class penetrance: public Operator
+	class penetrance: public baseOperator
 	{
 		public:
 			/// create a penetrance operator
@@ -91,7 +91,7 @@ namespace simuPOP
 				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr())
-				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields),
+				: baseOperator("","",stage, begin, end, step, at, rep, grp, infoFields),
 				m_ancestralGen(ancestralGen)
 			{
 			}
@@ -102,7 +102,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a penetrance operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new penetrance(*this);
 			}
@@ -164,7 +164,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a map penetrance operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new mapPenetrance(*this);
 			}
@@ -230,7 +230,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a multi-allele penetrance operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new maPenetrance(*this);
 			}
@@ -278,7 +278,7 @@ namespace simuPOP
 #define PEN_Additive 2
 #define PEN_Heterogeneity 3
 
-			typedef std::vector< Operator * > vectorop;
+			typedef std::vector< baseOperator * > vectorop;
 
 		public:
             /// create a multiple loci penetrance operator using a multiplicative model
@@ -311,7 +311,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a multi-loci penetrance operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				throw ValueError("Multi-loci selector can not be nested.");
 			}
@@ -393,7 +393,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a Python penetrance operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pyPenetrance(*this);
 			}

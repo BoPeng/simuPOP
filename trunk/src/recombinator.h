@@ -25,7 +25,7 @@
 #define _RECOMBINATOR_H
 /**
 \file
-\brief head file of class recombinator:public Operator
+\brief head file of class recombinator:public baseOperator
 */
 #include "operator.h"
 
@@ -51,7 +51,7 @@ namespace simuPOP
     at the next locus is randomly drawn.
 	*/
 
-	class recombinator: public Operator
+	class recombinator: public baseOperator
 	{
 		public:
 			/// recombine chromosomes from parents
@@ -88,7 +88,7 @@ namespace simuPOP
 				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				:
-			Operator( "", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
+baseOperator( "", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
 				, m_intensity(intensity), m_maleIntensity(maleIntensity),
 				m_rate(rate), m_maleRate(maleRate),
 				m_afterLoci(afterLoci), m_maleAfterLoci(maleAfterLoci),
@@ -106,7 +106,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a recombinator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new recombinator(*this);
 			}
