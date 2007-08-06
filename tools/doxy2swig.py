@@ -517,6 +517,7 @@ class Doxy2SWIG:
                     cont = file.read()
                     file.close()
                     # add file content to 'Examples'
+                    entry['Examples'] = cont
                     entry['ExampleTitle'] = title
                 except:
                     entry['ExampleFile'] = None
