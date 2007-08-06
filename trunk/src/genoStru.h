@@ -69,7 +69,7 @@ using std::pair;
 
 namespace simuPOP
 {
-    /// CPPONLY
+	/// CPPONLY
 	/** \brief genetic structure. Shared by individuals of one population
 
 	populations create a copy of GenoStrcture and assign its pointer to each individual.
@@ -98,7 +98,7 @@ namespace simuPOP
 				{}
 
 			/** CPPONLY \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
-			
+
 			\param ploidy number of sets of chromosomes
 			\param loci number of loci on each chromosome.
 			\param lociPos loci distance on each chromosome. the default values
@@ -124,21 +124,21 @@ namespace simuPOP
 			~GenoStructure()
 			{
 			}
-			
+
 			/// CPPONLY
 			// population::mergePopulationByLoci needs to hanle this
 			double locusPos(UINT locus) const
 			{
 				return m_lociPos[locus];
 			}
-			
+
 			/// CPPONLY
 			// population::mergePopulationByLoci needs to hanle this
 			const size_t chromIndex(UINT ch) const
 			{
 				return m_chromIndex[ch];
 			}
-			
+
 #if  defined(_WIN32) || defined(__WIN32__)
 
 			// due to an weird compiling error fo vc7.1,
@@ -315,9 +315,9 @@ namespace simuPOP
 	Genotypic structure refers to the number of chromosomes, positions, the
 	number of loci on each chromosome, and allele and locus names etc. All individuals
 	in a population share the same genotypic structure. Because class \c GenoStruTrait
-    is inherited by class \c population, class \c individual, and class \c simulator,
-    functions provided in this class can be accessed at the individual, population and
-    simulator levels.
+	is inherited by class \c population, class \c individual, and class \c simulator,
+	functions provided in this class can be accessed at the individual, population and
+	simulator levels.
 	*/
 	class GenoStruTrait
 	{
@@ -503,8 +503,8 @@ namespace simuPOP
 			/// return the index of the last locus on a chromosome plus 1
 			/**
 			\note From the description of this function, the returned value may not be a valid index.
-                (This is consistant with Python ranges.)
-            */
+				(This is consistant with Python ranges.)
+			*/
 			UINT chromEnd(UINT chrom) const
 			{
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,

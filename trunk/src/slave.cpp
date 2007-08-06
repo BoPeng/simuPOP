@@ -51,13 +51,13 @@ namespace simuPOP
 	population * g_curPop = NULL;
 
 #define setCurPop(id) \
-	if (g_curID != id) \
-	{ \
-		g_curID = id; \
-		g_curPop = g_popMap[id]; \
-	}
+if (g_curID != id) \
+{ \
+	g_curID = id; \
+	g_curPop = g_popMap[id]; \
+}
 
-	population * slavePopulationCreate()
+		population * slavePopulationCreate()
 	{
 		//
 		ULONG size;
@@ -94,9 +94,9 @@ namespace simuPOP
 	Allele slavePopulationGetAllele(population * pop)
 	{
 		re
-		mpiComm().recv(0, 2, idx);
+			mpiComm().recv(0, 2, idx);
 	}
-	
+
 	bool slaveExecutionLoop()
 	{
 		// get population ID

@@ -658,7 +658,6 @@ namespace simuPOP
 		return true;
 	}
 
-
 	/// CPPONLY
 	void countAlleles(population& pop, int subpop, const vectori& loci, const vectori& alleles,
 		vectorlu& alleleNum)

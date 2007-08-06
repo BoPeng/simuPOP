@@ -8,7 +8,7 @@
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
+ *   (at your option) any later version.                                   *
  *                                                                         *
  *   This program is distributed in the hope that it will be useful,       *
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
@@ -70,40 +70,40 @@ using std::pair;
 
 namespace simuPOP
 {
-    /// individuals with genotype, affection status, sex etc.
-	/** 
+	/// individuals with genotype, affection status, sex etc.
+	/**
 	Individuals are the building blocks of populations, each having
-    the following individual information:
+	the following individual information:
 	\li shared genotypic structure information
-    \li genotype
+	\li genotype
 	\li sex, affection status, subpopulation ID
-    \li optional information fields
+	\li optional information fields
 
-    Individual genotypes are arranged by locus, chromosome, ploidy, in that order,
-    and can be accessed from a single index. For example, for a diploid individual with
-    two loci on the first chromosome, one locus on the second, its genotype is arranged
-    as <tt> 1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1 </tt> where \c x-y-z represents ploidy \c x
-    chromosome \c y and locus \c z. An allele \c 2-1-2 can be accessed by
-    \c allele(4) (by absolute index), \c allele(2, 1) (by index and ploidy) or \c allele(1, 1, 0)
-    (by index, ploidy and chromosome).
-    */
-    /*
-    Usage information: (for population class developers)
+	Individual genotypes are arranged by locus, chromosome, ploidy, in that order,
+	and can be accessed from a single index. For example, for a diploid individual with
+	two loci on the first chromosome, one locus on the second, its genotype is arranged
+	as <tt> 1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1 </tt> where \c x-y-z represents ploidy \c x
+	chromosome \c y and locus \c z. An allele \c 2-1-2 can be accessed by
+	\c allele(4) (by absolute index), \c allele(2, 1) (by index and ploidy) or \c allele(1, 1, 0)
+	(by index, ploidy and chromosome).
+	*/
+	/*
+	Usage information: (for population class developers)
 	\li for individuals created, you are responsible for setting their genotypic
 	  pointer and genotypic information by using
 	  <tt>setGenoStructure(GenoStructure gs)</tt>.
 	\li \c setSubPopID() and \c subPopID() can be used for any \em temporary purpose.
 
-	\note 
+	\note
 	\li \c individual does \em not manage memory. Instead, it use a pointer passed
-      from \c population class. This may cause a \em lot of troubles.
+	  from \c population class. This may cause a \em lot of troubles.
 	\li \c operator= uses shallow copy. This is required by \em sort algorithm since
-      otherwise individuals will not be able to be copied. However, in population
-      memory management, it is sometimes required that genotypic information within
-	  one subpopulation should go together. This is done by using a \c shollow_copied
-      flag for each individual and for all individuals. Population might have to rearrange
-	  individuals to solve this problem.
-	\li Output of \c individual can be adjusted by \c setOutputDelimeter.	
+	otherwise individuals will not be able to be copied. However, in population
+	memory management, it is sometimes required that genotypic information within
+	one subpopulation should go together. This is done by using a \c shollow_copied
+	flag for each individual and for all individuals. Population might have to rearrange
+	individuals to solve this problem.
+	\li Output of \c individual can be adjusted by \c setOutputDelimeter.
 	*/
 	class individual : public GenoStruTrait
 	{
@@ -157,7 +157,7 @@ namespace simuPOP
 			/// shallow copy of an individual class
 			individual& operator= (const individual& rhs);
 
-			/// CPPONLY deep copy of an individual class 
+			/// CPPONLY deep copy of an individual class
 			individual& copyFrom( const individual& rhs);
 
 			//@}
@@ -182,10 +182,10 @@ namespace simuPOP
 
 			/// return an editable array (a Python list of length <tt>totNumLoci()*ploidy()</tt>) of genotypes of an individual
 			/**
-            This function returns the whole genotype. Although this function is
-            not as easy to use as other functions that access alleles,
-            it is the fastest one since you can read/write genotype directly.
-            */
+			This function returns the whole genotype. Although this function is
+			not as easy to use as other functions that access alleles,
+			it is the fastest one since you can read/write genotype directly.
+			*/
 			PyObject* arrGenotype();
 
 			/// return only the \c p-th copy of the chromosomes
@@ -194,13 +194,13 @@ namespace simuPOP
 			/// return only the \c ch-th chromosome of the \c p-th copy
 			PyObject* arrGenotype(UINT p, UINT ch);
 
-            /// return an editable array of all information fields (a Python list of length \c infosSize())
+			/// return an editable array of all information fields (a Python list of length \c infosSize())
 			PyObject* arrInfo();
 
 			/// return the allele at locus \c index
 			/**
-            \param index absolute index from the beginning of the genotype, ranging from \c 0
-                to <tt> totNumLoci()*ploidy() </tt>
+			\param index absolute index from the beginning of the genotype, ranging from \c 0
+				to <tt> totNumLoci()*ploidy() </tt>
 			 */
 #ifdef SIMUMPI
 			Allele allele(UINT index) const;
@@ -214,8 +214,8 @@ namespace simuPOP
 
 			/// return the allele at locus \c index of the \c p-th copy of the chromosomes
 			/**
-            \param index index from the begining of the \c p-th set of the chromosomes, ranging from
-                \c 0 to <tt> totNumLoci() </tt>
+			\param index index from the begining of the \c p-th set of the chromosomes, ranging from
+				\c 0 to <tt> totNumLoci() </tt>
 			\param p index of the ploidy
 			*/
 #ifdef SIMUMPI
@@ -229,10 +229,10 @@ namespace simuPOP
 			}
 #endif
 
-            /// return the allele at locus \c index of the \c ch-th chromosome of the \c p-th chromosome set
+			/// return the allele at locus \c index of the \c ch-th chromosome of the \c p-th chromosome set
 			/**
-            \param index index from the begining of chromosome \c ch of ploidy \c p,
-                ranging from \c 0 to <tt> numLoci(ch) </tt>
+			\param index index from the begining of chromosome \c ch of ploidy \c p,
+				ranging from \c 0 to <tt> numLoci(ch) </tt>
 			\param p index of the polidy
 			\param ch index of the chromosome in the \c p-th chromosome set
 			*/
@@ -248,7 +248,7 @@ namespace simuPOP
 			}
 #endif
 
-            /// return the name of \c allele(index)
+			/// return the name of \c allele(index)
 			string alleleChar(UINT index) const
 			{
 				CHECKRANGEGENOSIZE(index);
@@ -279,7 +279,7 @@ namespace simuPOP
 			/**
 			\param allele allele to be set
 			\param index index from the begining of genotype, ranging from \c 0
-                to <tt> totNumLoci()*ploidy() </tt>
+				to <tt> totNumLoci()*ploidy() </tt>
 			 */
 #ifdef SIMUMPI
 			void setAllele(Allele allele, UINT index);
@@ -308,7 +308,7 @@ namespace simuPOP
 			}
 #endif
 
-            /// set the allele at locus \c index of the \c ch-th chromosome in the \c p-th chromosome set
+			/// set the allele at locus \c index of the \c ch-th chromosome in the \c p-th chromosome set
 			/**
 			\param allele allele to be set
 			\param index index from the begining of the chromosome, ranging from \c 0 to \c numLoci(ch)
@@ -383,7 +383,7 @@ namespace simuPOP
 			/// return the ID of the subpopulation to which this individual blongs
 			/**
 			\note \c subPopID is not set by default. It only corresponds to the subpopulation
-                in which this individual resides after \c pop::setIndSubPopID is called.
+				in which this individual resides after \c pop::setIndSubPopID is called.
 			*/
 			SubPopID subPopID() const
 			{
@@ -410,7 +410,7 @@ namespace simuPOP
 			/// get information field \c name
 			/**
 			Equivalent to <tt>info(infoIdx(name))</tt>.
-            \param name name of the information field
+			\param name name of the information field
 			*/
 			InfoType info(const string& name) const
 			{
@@ -419,8 +419,8 @@ namespace simuPOP
 					"Info name " + name + " is not a valid info field name");
 				return m_infoPtr[idx];
 			}
-			
-			/// set information field by \c idx 
+
+			/// set information field by \c idx
 			void setInfo(InfoType value, UINT idx)
 			{
 				CHECKRANGEINFO(idx);
@@ -523,7 +523,7 @@ namespace simuPOP
 			//@{
 			/// compare if two individuals are the same used in case of serialization etc.
 			/**
-            \note We do not compare info because \c m_subPopID is considered temporary.
+			\note We do not compare info because \c m_subPopID is considered temporary.
 			*/
 			bool operator== (const individual& rhs) const;
 
@@ -535,21 +535,21 @@ namespace simuPOP
 
 			// allow compaison of individuals in python
 			// only equal or unequal, no greater or less than
-            /// a python function used to compare the individual objects
+			/// a python function used to compare the individual objects
 			int __cmp__(const individual& rhs) const;
 
 			/**
-            There is usally no '>', '<' comparisons for individuals.
+			There is usally no '>', '<' comparisons for individuals.
 			If order is required, it is a comparison of \c info.
 			This behavior is used in migration.???
-            */
+			*/
 			bool operator< (const individual& rhs) const
 			{
 				return subPopID() < rhs.subPopID();
 			}
 
 			// allow str(population) to get something better looking
-            /// used by Python print function to print out the general information of the individual
+			/// used by Python print function to print out the general information of the individual
 			string __repr__();
 
 			/// CPPONLY swap individuals
@@ -600,34 +600,34 @@ namespace simuPOP
 			template<class Archive>
 				void save(Archive &ar, const UINT version) const
 			{
-					// ar & boost::serialization::make_nvp("base ptr",
-					//  boost::serialization::base_object<GenoStruTrait>(*this));
-					bool b;
-					b= ISSETFLAG(m_flags, m_flagFemale);
-					ar & boost::serialization::make_nvp("sex",b);
+				// ar & boost::serialization::make_nvp("base ptr",
+				//  boost::serialization::base_object<GenoStruTrait>(*this));
+				bool b;
+				b= ISSETFLAG(m_flags, m_flagFemale);
+				ar & boost::serialization::make_nvp("sex",b);
 
-					b= ISSETFLAG(m_flags, m_flagAffected);
-					ar & boost::serialization::make_nvp("affected",b);
+				b= ISSETFLAG(m_flags, m_flagAffected);
+				ar & boost::serialization::make_nvp("affected",b);
 			}
 
 			template<class Archive>
 				void load(Archive &ar, const UINT version)
 			{
-					bool b;
-					m_flags = 0;
-					ar & boost::serialization::make_nvp("sex",b);
-					if(b) SETFLAG(m_flags, m_flagFemale);
-					ar & boost::serialization::make_nvp("affected",b);
-					if(b) SETFLAG(m_flags, m_flagAffected);
+				bool b;
+				m_flags = 0;
+				ar & boost::serialization::make_nvp("sex",b);
+				if(b) SETFLAG(m_flags, m_flagFemale);
+				ar & boost::serialization::make_nvp("affected",b);
+				if(b) SETFLAG(m_flags, m_flagAffected);
 
-					RESETFLAG(m_flags, m_flagShallowCopied);
+				RESETFLAG(m_flags, m_flagShallowCopied);
 
-					if (version < 1)
-					{
-						std::pair<int, int> tag;
-						ar & make_nvp("tag", tag);
-						ar & make_nvp("info", m_subPopID);
-					}
+				if (version < 1)
+				{
+					std::pair<int, int> tag;
+					ar & make_nvp("tag", tag);
+					ar & make_nvp("info", m_subPopID);
+				}
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -643,19 +643,20 @@ namespace simuPOP
 
 #ifdef SIMUMPI
 			/// pointer to genotype.
-			union {
+			union
+			{
 				// used by slave node
 				GenoIterator m_genoPtr;
 				// used by master node
 				ULONG m_indIndex;
 			};
 
-			// population ID. 
+			// population ID.
 			ULONG m_popID;
-#else			
+#else
 			/// pointer to genotype.
 			GenoIterator m_genoPtr;
-#endif			
+#endif
 
 			/// pointer to info
 			InfoIterator m_infoPtr;

@@ -36,34 +36,34 @@ using std::min;
 
 namespace simuPOP
 {
-    /// genetic selection
+	/// genetic selection
 	/**
-    Genetic selection is tricky to simulate since there are many different \em fitness
-    values and many different ways to apply selection. \c simuPOP employs an
-    \em 'ability-to-mate' approach. Namely, the probability that an individual will be
-    chosen for mating is proportional to its fitness value. More specifically,
-    \li \c PreMating selectors assign fitness values to each individual.
-    \li During sexless mating (e.g. \c binomialSelection???), individuals are chosen
-        at probabilities that are proportional to their fitness values. If there are
-        \f$ N \f$ individuals with fitness values \f$ f_{i},i=1,...,N \f$, individual
-        \f$ i \f$ will have probability \f$ \frac{f_{i}}{\sum_{j}f_{j}} \f$ to be chosen
-        and passed to the next generation.
-    \li During \c randomMating, males and females are separated. They are chosen from
-        their respective groups in the same manner and mate.
+	Genetic selection is tricky to simulate since there are many different \em fitness
+	values and many different ways to apply selection. \c simuPOP employs an
+	\em 'ability-to-mate' approach. Namely, the probability that an individual will be
+	chosen for mating is proportional to its fitness value. More specifically,
+	\li \c PreMating selectors assign fitness values to each individual.
+	\li During sexless mating (e.g. \c binomialSelection???), individuals are chosen
+		at probabilities that are proportional to their fitness values. If there are
+		\f$ N \f$ individuals with fitness values \f$ f_{i},i=1,...,N \f$, individual
+		\f$ i \f$ will have probability \f$ \frac{f_{i}}{\sum_{j}f_{j}} \f$ to be chosen
+		and passed to the next generation.
+	\li During \c randomMating, males and females are separated. They are chosen from
+	their respective groups in the same manner and mate.
 
-    It is not very clear that our method agrees with the traditional
-    <em>'average number of offspring'</em> definition of fitness. (Note that this concept
-    is very difficult to simulate since we do not know who will determine the number of
-    offspring if two parents are involved.) 
+	It is not very clear that our method agrees with the traditional
+	<em>'average number of offspring'</em> definition of fitness. (Note that this concept
+	is very difficult to simulate since we do not know who will determine the number of
+	offspring if two parents are involved.)
 
-    All of the selection operators, when applied, will set a variable \c fitness and an
-    indicator so that 'selector-aware' mating scheme can select individuals according to
-    these values. Hence, two consequences are stated below:
-    \li selector alone can not do selection! Only mating schemes can actually select individuals.
-    \li selector has to be \c PreMating operator. This is not a problem when you use the
-        operator form of the selectors since their default stage is \c PreMating. However,
-        if you use the function form of these selectors in a \c pyOperator, make sure to
-        set the stage of \c pyOperator to \c PreMating.
+	All of the selection operators, when applied, will set a variable \c fitness and an
+	indicator so that 'selector-aware' mating scheme can select individuals according to
+	these values. Hence, two consequences are stated below:
+	\li selector alone can not do selection! Only mating schemes can actually select individuals.
+	\li selector has to be \c PreMating operator. This is not a problem when you use the
+	operator form of the selectors since their default stage is \c PreMating. However,
+	if you use the function form of these selectors in a \c pyOperator, make sure to
+	set the stage of \c pyOperator to \c PreMating.
 	*/
 	class selector: public baseOperator
 	{
@@ -84,7 +84,7 @@ namespace simuPOP
 			{
 			}
 
-            /// deep copy of a selector
+			/// deep copy of a selector
 			virtual baseOperator * clone() const
 			{
 				return new selector(*this);
@@ -101,31 +101,31 @@ namespace simuPOP
 			/// set fitness to all individuals???
 			bool apply(population& pop);
 
-            /// used by Python print function to print out the general information of the selector
+			/// used by Python print function to print out the general information of the selector
 			virtual string __repr__()
 			{
 				return "<simuPOP::selector>" ;
 			}
-			
+
 		private:
 			vectoru m_subPops;
 	};
 
-    /// selection according to the genotype at one locus
+	/// selection according to the genotype at one locus
 	/**
 	This map selector implements selection at one locus. A user provided dictionary (map) of
-    genotypes will be used in this selector to set each individual's fitness value.
-    <funcForm>MapSelector</funcForm>
+	genotypes will be used in this selector to set each individual's fitness value.
+	<funcForm>MapSelector</funcForm>
 	*/
 	class mapSelector: public selector
 	{
 		public:
-            /// create a map selector
+			/// create a map selector
 			/**
 			\param locus the locus index. The genotype of this locus will be examed.???
 			\param loci the locus indices. The genotypes of these loci will be examed.
 			\param fitness a dictionary of fitness values. The genotype must be in the form of <tt>'a-b'</tt>
-                for a single locus, and <tt>'a-b|c-d|e-f'</tt> for multi-loci.
+				for a single locus, and <tt>'a-b|c-d|e-f'</tt> for multi-loci.
 			\param phase if \c True, genotypes \c a-b and \c b-a will have different fitness values. Default to false.
 			\param output and other parameters please refer to help(baseOperator.__init__)???
 			*/
@@ -142,7 +142,7 @@ namespace simuPOP
 			{
 			}
 
-            /// deep copy of a map selector
+			/// deep copy of a map selector
 			virtual baseOperator * clone() const
 			{
 				return new mapSelector(*this);
@@ -151,7 +151,7 @@ namespace simuPOP
 			/// calculate/return the fitness value, currently assuming diploid
 			virtual double indFitness(individual * ind, ULONG gen);
 
-            /// used by Python print function to print out the general information of the map selector
+			/// used by Python print function to print out the general information of the map selector
 			virtual string __repr__()
 			{
 				return "<simuPOP::selector::map selector>" ;
@@ -168,30 +168,30 @@ namespace simuPOP
 			bool m_phase;
 	};
 
-    /// multiple allele selector (selection according to wildtype or diseased alleles)  
+	/// multiple allele selector (selection according to wildtype or diseased alleles)
 	/**
-    This is called 'multiple-allele' selector. It separate alleles into two groups:
-    wildtype and disease alleles. Wildtype alleles are specified by parameter
-    \c wildtype and any other alleles are considered as diseased alleles.
-    <funcForm>MaSelect</funcForm>
+	This is called 'multiple-allele' selector. It separate alleles into two groups:
+	wildtype and disease alleles. Wildtype alleles are specified by parameter
+	\c wildtype and any other alleles are considered as diseased alleles.
+	<funcForm>MaSelect</funcForm>
 	*/
 	class maSelector: public selector
 	{
 		public:
 
-            /// create a multiple allele selector       
+			/// create a multiple allele selector
 			/**
 			\param fitness for the single locus case, fitness is an array of fitness of AA, Aa, aa.
-                A is the wildtype group. In the case of multiple loci, fitness should be in the order of
+				A is the wildtype group. In the case of multiple loci, fitness should be in the order of
 				AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
 			\param wildtype an array of alleles in the wildtype group. Any other alleles are
-                considered to be diseased alleles. Default to <tt>[0]</tt>.
+				considered to be diseased alleles. Default to <tt>[0]</tt>.
 			\param output and other parameters please refer to help(baseOperator.__init__)???
 
-            Please refer to \c mapSelector for other parameter descriptions.
-                
-            \note \li \c maSelector only works for diploid populations now.
-                  \li \c wildtype at all loci are the same.
+			Please refer to \c mapSelector for other parameter descriptions.
+
+			\note \li \c maSelector only works for diploid populations now.
+			\li \c wildtype at all loci are the same.
 			*/
 			maSelector( vectoru loci, const vectorf& fitness, const vectora& wildtype,
 				const vectoru & subPops=vectoru(), int stage=PreMating, int begin=0, int end=-1, int step=1,
@@ -209,7 +209,7 @@ namespace simuPOP
 			{
 			}
 
-            /// deep copy of a \c maSelector
+			/// deep copy of a \c maSelector
 			virtual baseOperator * clone() const
 			{
 				return new maSelector(*this);
@@ -218,7 +218,7 @@ namespace simuPOP
 			/// calculate/return the fitness value, currently assuming diploid
 			virtual double indFitness(individual * ind, ULONG gen);
 
-            /// used by Python print function to print out the general information of the \c maSelector
+			/// used by Python print function to print out the general information of the \c maSelector
 			virtual string __repr__()
 			{
 				return "<simuPOP::selector::multiple-alleles selector>" ;
@@ -235,19 +235,19 @@ namespace simuPOP
 			vectora m_wildtype;
 	};
 
-    /// selection according to genotypes at multiple loci in a multiplicative model
+	/// selection according to genotypes at multiple loci in a multiplicative model
 	/**
-    This selector is a 'multiple-loci model' selector. The selector takes a vector of
-    selectors (can not be another \c mlSelector) and evaluate the fitness of an
-    individual as the the product or sum of individual fitness values. The mode is
-    determined by parameter \c mode, which takes the value
-    \li \c SEL_Multiplicative: the fitness is calculated as \f$ f=\prod_{i}f_{i} \f$.
-    \li \c SEL_Additive: the fitness is calculated as
-        \f$ f=\max\left(0,1-\sum_{i}(1-f_{i})\right)=\max\left(0,1-\sum_{i}s_{i}\right) \f$.
-        \f$ f \f$ will be set to \c 0 when \f$ f<0 \f$. In this case, \f$ s_{i} \f$ are added,
-        not \f$ f_{i} \f$ directly. 
+	This selector is a 'multiple-loci model' selector. The selector takes a vector of
+	selectors (can not be another \c mlSelector) and evaluate the fitness of an
+	individual as the the product or sum of individual fitness values. The mode is
+	determined by parameter \c mode, which takes the value
+	\li \c SEL_Multiplicative: the fitness is calculated as \f$ f=\prod_{i}f_{i} \f$.
+	\li \c SEL_Additive: the fitness is calculated as
+		\f$ f=\max\left(0,1-\sum_{i}(1-f_{i})\right)=\max\left(0,1-\sum_{i}s_{i}\right) \f$.
+		\f$ f \f$ will be set to \c 0 when \f$ f<0 \f$. In this case, \f$ s_{i} \f$ are added,
+		not \f$ f_{i} \f$ directly.
 
-    <funcForm>MlSelect</funcForm>
+	<funcForm>MlSelect</funcForm>
 	*/
 	class mlSelector: public selector
 	{
@@ -261,11 +261,11 @@ namespace simuPOP
 			typedef std::vector< baseOperator * > vectorop;
 
 		public:
-            /// create a multi-loci selector
-			/** 
+			/// create a multi-loci selector
+			/**
 			\param selectors a list of selectors
 
-            Please refer to \c mapSelector for other parameter descriptions.        
+			Please refer to \c mapSelector for other parameter descriptions.
 			*/
 			mlSelector( const vectorop selectors, int mode = SEL_Multiplicative,
 				const vectoru & subPops=vectoru(), int stage=PreMating, int begin=0, int end=-1, int step=1,
@@ -289,7 +289,7 @@ namespace simuPOP
 					delete *s;
 			}
 
-            /// deep copy of a \c mlSelector
+			/// deep copy of a \c mlSelector
 			virtual baseOperator * clone() const
 			{
 				throw ValueError("Multi-loci selector can not be nested.");
@@ -298,7 +298,7 @@ namespace simuPOP
 			/// calculate/return the fitness value, currently assuming diploid
 			virtual double indFitness(individual * ind, ULONG gen);
 
-            /// used by Python print function to print out the general information of the \c mlSelector
+			/// used by Python print function to print out the general information of the \c mlSelector
 			virtual string __repr__()
 			{
 				return "<simuPOP::selector::multiple-loci selector>" ;
@@ -312,30 +312,30 @@ namespace simuPOP
 			int m_mode;
 	};
 
-    /// selection using user provided function
+	/// selection using user provided function
 	/**
-    \c pySelector assigns fitness values by calling a user provided function.
-    It accepts a list of susceptibility loci and a Python function. For
-    each individual, this operator will pass the genotypes at these loci (in the order
-    of <tt>0-0,0-1,1-0,1-1</tt> etc. where X-Y represents locus X - ploidy Y, in the case
-    of diploid population), generation number,??? and expect a returned fitness value.
-    This, at least in theory, can accommodate all selection scenarios.
+	\c pySelector assigns fitness values by calling a user provided function.
+	It accepts a list of susceptibility loci and a Python function. For
+	each individual, this operator will pass the genotypes at these loci (in the order
+	of <tt>0-0,0-1,1-0,1-1</tt> etc. where X-Y represents locus X - ploidy Y, in the case
+	of diploid population), generation number,??? and expect a returned fitness value.
+	This, at least in theory, can accommodate all selection scenarios.
 
-    <funcForm>PySelect</funcForm>    
+	<funcForm>PySelect</funcForm>
 	*/
 	class pySelector: public selector
 	{
 		public:
-            /// create a Python hybrid selector
+			/// create a Python hybrid selector
 			/**
-            \param loci susceptibility loci. The genotype at these loci will be
-                passed to \c func.
+			\param loci susceptibility loci. The genotype at these loci will be
+				passed to \c func.
 			\param func a Python function that accepts genotypes at susceptibility loci
 				generation number, and return fitness value.???
 			\param output and other parameters please refer to help(baseOperator.__init__)???
 			*/
 			// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
-			pySelector( vectoru loci, PyObject* func, const vectoru & subPops=vectoru(), 
+			pySelector( vectoru loci, PyObject* func, const vectoru & subPops=vectoru(),
 				int stage=PreMating, int begin=0, int end=-1, int step=1,
 				vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
 				const vectorstr& infoFields=vectorstr(1, "fitness")):
@@ -372,7 +372,7 @@ namespace simuPOP
 					Py_INCREF(m_func);
 			}
 
-            /// deep copy of a \c pySelector
+			/// deep copy of a \c pySelector
 			virtual baseOperator * clone() const
 			{
 				return new pySelector(*this);
@@ -381,7 +381,7 @@ namespace simuPOP
 			/// calculate/return the fitness value, currently assuming diploid
 			virtual double indFitness(individual * ind, ULONG gen);
 
-            /// used by Python print function to print out the general information of the \c pySelector
+			/// used by Python print function to print out the general information of the \c pySelector
 			virtual string __repr__()
 			{
 				return "<simuPOP::selector::python selector>" ;

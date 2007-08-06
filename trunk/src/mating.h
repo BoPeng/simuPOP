@@ -45,12 +45,12 @@ using std::stack;
 namespace simuPOP
 {
 	/// CPPONLY the default method to generate offspring from parents
-	/** 
+	/**
 	This part is separated from the mating schemes, because mating schemes
 	usually only differ in the way parents are choosing.\n
-	
+
 	In this class, we input parents, and the output will be offspring.
-    */
+	*/
 	class offspringGenerator
 	{
 		public:
@@ -59,15 +59,15 @@ namespace simuPOP
 
 			/// generate \c numOff offspring, or until reach \c offEnd
 			/**
-            This is because <tt>offBegin+numOff</tt> may go beyond the subpopulation boundary.
-            */
+			This is because <tt>offBegin+numOff</tt> may go beyond the subpopulation boundary.
+			*/
 			void generateOffspring(population& pop, individual* dad, individual* mom, UINT numOff,
 				population::IndIterator& offBegin);
 
 			/// copy \c numOff offspring, or until reach \c offEnd
 			/**
-            This is because <tt>offBegin+numOff</tt> may go beyond the subpopulation boundary.
-            */
+			This is because <tt>offBegin+numOff</tt> may go beyond the subpopulation boundary.
+			*/
 			void copyOffspring(population& pop, individual* par, UINT numOff,
 				population::IndIterator& offBegin);
 
@@ -92,14 +92,14 @@ namespace simuPOP
 			vectoru m_chIdx;
 	};
 
-    /// the base class of all mating schemes - a required parameter of \c simulator
-	/**	
+	/// the base class of all mating schemes - a required parameter of \c simulator
+	/**
 	Mating schemes specify how to generate offspring from the current population.
 	It must be provided when a simulator is created. Mating can perform the following tasks:
-    \li change population/subpopulation sizes;
-    \li randomly select parent(s) to generate offspring to fill the next generation;
-    \li \em during-mating operators are applied to all offspring;
-    \li apply selection if applicable.
+	\li change population/subpopulation sizes;
+	\li randomly select parent(s) to generate offspring to fill the next generation;
+	\li \em during-mating operators are applied to all offspring;
+	\li apply selection if applicable.
 	*/
 	class mating
 	{
@@ -120,7 +120,7 @@ namespace simuPOP
 		public:
 			/// CPPONLY check if the mating type is compatible with the population structure
 			/**
-            possible things to check:
+			possible things to check:
 			\li need certain types of individuals (age, sex etc)
 			\li need resizeable population...
 			*/
@@ -138,37 +138,37 @@ namespace simuPOP
 			\c mode, \c numOffspring, \c maxNumOffspring can be used to specify how
 			many offspring will be produced for each mating event. This \c mode parameter
 			can be one of
-            \li \c MATE_NumOffspring: a fixed number of offspring for all families at this generation.
-                If \c numOffspring is given, all generations use this fixed number. If \c numOffspringFunc
-                is given, the number of offspring at each generation is determined by the value
-                returned from this function.
-            \li \c MATE_NumOffspringEachFamily: each family can have its own number of offspring.
-                Usually, \c numOffspringFunc is used to determine the number of offspring of each
-                family. If \c numOffspring is used, \c MATE_NumOffspringEachFamily is equivalent to
-                \c MATE_NumOffspring.
-            \li \c MATE_GeometricDistribution: a Geometric distribution with parameter \c numOffspring
-                is used to determine the number of offspring of each family.
-            \li \c MATE_PoissonDistribution: a Poisson distribution with parameter \c numOffspring
-                is used to determine the number of offspring of each family.
-            \li \c MATE_BinomialDistribution: a Binomial distribution with parameter \c numOffspring
-                is used to determine the number of offspring of each family.
-            \li \c MATE_UniformDistribution: a Uniform distribution <tt> [a, b] </tt> with parameter
-                \c numOffspring (a) and \c maxNumOffspring (b) is used to determine the number of offspring of each family.
-                
-            \param numOffspring the number of offspring or \em p for a random distribution.
-                Default to \c 1. This parameter determines the number of offspring that a
-                mating event will produce. Therefore, it determines the family size.
-            \param numOffspringFunc a Python function that returns the number of offspring or \em p
-            \param maxNumOffspring used when \c numOffspring is generated from a binomial distribution
-            \param mode can be one of <tt>MATE_NumOffspring, MATE_NumOffspringEachFamily,
-                MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,
-                MATE_UniformDistribution</tt>.
-            \param newSubPopSize an array of subpopulaitons sizes
-            \param newSubPopSizeExpr an expression that will return the new subpopulation size
-            \param newSubPopSizeFunc a function that accepts an \c int parameter(generation),
-                an array of current population size and return an array of subpopulation sizes.
-                This is usually easier to use than its expression version of this parameter.
-            */
+			\li \c MATE_NumOffspring: a fixed number of offspring for all families at this generation.
+				If \c numOffspring is given, all generations use this fixed number. If \c numOffspringFunc
+				is given, the number of offspring at each generation is determined by the value
+			returned from this function.
+			\li \c MATE_NumOffspringEachFamily: each family can have its own number of offspring.
+			Usually, \c numOffspringFunc is used to determine the number of offspring of each
+			family. If \c numOffspring is used, \c MATE_NumOffspringEachFamily is equivalent to
+			\c MATE_NumOffspring.
+			\li \c MATE_GeometricDistribution: a Geometric distribution with parameter \c numOffspring
+			is used to determine the number of offspring of each family.
+			\li \c MATE_PoissonDistribution: a Poisson distribution with parameter \c numOffspring
+			is used to determine the number of offspring of each family.
+			\li \c MATE_BinomialDistribution: a Binomial distribution with parameter \c numOffspring
+			is used to determine the number of offspring of each family.
+			\li \c MATE_UniformDistribution: a Uniform distribution <tt> [a, b] </tt> with parameter
+			\c numOffspring (a) and \c maxNumOffspring (b) is used to determine the number of offspring of each family.
+
+			\param numOffspring the number of offspring or \em p for a random distribution.
+			Default to \c 1. This parameter determines the number of offspring that a
+			mating event will produce. Therefore, it determines the family size.
+			\param numOffspringFunc a Python function that returns the number of offspring or \em p
+			\param maxNumOffspring used when \c numOffspring is generated from a binomial distribution
+			\param mode can be one of <tt>MATE_NumOffspring, MATE_NumOffspringEachFamily,
+			MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,
+			MATE_UniformDistribution</tt>.
+			\param newSubPopSize an array of subpopulaitons sizes
+			\param newSubPopSizeExpr an expression that will return the new subpopulation size
+			\param newSubPopSizeFunc a function that accepts an \c int parameter(generation),
+			an array of current population size and return an array of subpopulation sizes.
+			This is usually easier to use than its expression version of this parameter.
+			*/
 			mating(double numOffspring=1.0,
 				PyObject* numOffspringFunc=NULL,
 				UINT maxNumOffspring = 0,
@@ -177,7 +177,7 @@ namespace simuPOP
 				string newSubPopSizeExpr="",
 				PyObject* newSubPopSizeFunc=NULL);
 
-            /// CPPONLY
+			/// CPPONLY
 			mating(const mating& rhs)
 				: m_numOffspring(rhs.m_numOffspring),
 				m_numOffspringFunc(rhs.m_numOffspringFunc),
@@ -214,7 +214,7 @@ namespace simuPOP
 				return "<simuPOP::generic mating scheme>";
 			}
 
-            /// CPPONLY
+			/// CPPONLY
 			virtual void submitScratch(population& pop, population& scratch)
 			{
 			}
@@ -231,22 +231,22 @@ namespace simuPOP
 				throw SystemError("You are not supposed to call base mating scheme.");
 			}
 
-            /// CPPONLY
+			/// CPPONLY
 			bool fixedFamilySize();
 
-            /// CPPONLY the number of offspring of a genaration \c gen
-            /**
-            This is called whenever a family size is needed.
-            Its actual meaning depending on \c mode.
-            */
+			/// CPPONLY the number of offspring of a genaration \c gen
+			/**
+			This is called whenever a family size is needed.
+			Its actual meaning depending on \c mode.
+			*/
 			ULONG numOffspring(int gen);
 
-            /// CPPONLY reset the number of offspring
-            /**
-            This is used to tell a mating scheme that the current number
-            of offspring need to be recaculated. e.g., when a new generation
-            starts and mode=MATE_numOffspring and numOffspringFunc is given.
-            */
+			/// CPPONLY reset the number of offspring
+			/**
+			This is used to tell a mating scheme that the current number
+			of offspring need to be recaculated. e.g., when a new generation
+			starts and mode=MATE_numOffspring and numOffspringFunc is given.
+			*/
 			void resetNumOffspring()
 			{
 				m_firstOffspring =  true;
@@ -289,22 +289,22 @@ namespace simuPOP
 			PyObject* m_subPopSizeFunc;
 	};
 
-    /// a mating scheme that does nothing
+	/// a mating scheme that does nothing
 	/**
 	In this scheme, there is
 	\li no mating. Parent generation will be considered as offspring generation.
 	\li no subpopulation change. \em During-mating operators will be applied, but
-        the return values are not checked. I.e., \c subpopsizes will be ignored
-        although some during-mating operators may be applied.
+		the return values are not checked. I.e., \c subpopsizes will be ignored
+		although some during-mating operators may be applied.
 	*/
 	class noMating: public mating
 	{
 		public:
 
 			/// creat a scheme with no mating
-            /**
-            \note There is no new \c subPopsize parameter.
-            */
+			/**
+			\note There is no new \c subPopsize parameter.
+			*/
 			noMating()
 				:mating(1, NULL, 0, MATE_NumOffspring,
 				vectorlu(),"",NULL)
@@ -317,7 +317,7 @@ namespace simuPOP
 
 			/// deep copy of a scheme with no mating
 			/**
-            \sa mating::clone() const
+			\sa mating::clone() const
 			 */
 			virtual mating* clone() const
 			{
@@ -330,12 +330,12 @@ namespace simuPOP
 				return "<simuPOP::no mating>";
 			}
 
-            /// CPPONLY
+			/// CPPONLY
 			virtual void submitScratch(population& pop, population& scratch)
 			{
 			}
 
-            /// CPPONLY perform mating, but no mating in this scheme
+			/// CPPONLY perform mating, but no mating in this scheme
 			/**
 			All individuals will be passed to during-mating operators but
 			no one will die (ignore the during-mating failing signal).
@@ -343,24 +343,24 @@ namespace simuPOP
 			virtual bool mate( population& pop, population& scratch, vector<baseOperator *>& ops, bool submit);
 	};
 
-    /// a mating scheme that uses binomial selection, regardless of sex
+	/// a mating scheme that uses binomial selection, regardless of sex
 	/**
 	No sex information is involved (binomial random selection). Offspring is chosen from parental generation
 	by random or according to the fitness values.
-    In this mating scheme,
+	In this mating scheme,
 	\li \c numOffspring protocol is honored;
 	\li population size changes are allowed;
 	\li selection is possible;
-	\li haploid populaton is allowed.  
+	\li haploid populaton is allowed.
 	*/
 	class binomialSelection: public mating
 	{
 		public:
 
 			/// create a binomial selection mating scheme
-            /**
-            Please refer to class \c mating for parameter descriptions.
-            */
+			/**
+			Please refer to class \c mating for parameter descriptions.
+			*/
 			binomialSelection(double numOffspring=1.,
 				PyObject* numOffspringFunc=NULL,
 				UINT maxNumOffspring=0,
@@ -380,7 +380,7 @@ namespace simuPOP
 
 			/// deep copy of a binomial selection mating scheme
 			/**
-            \sa mating::clone() const
+			\sa mating::clone() const
 			 */
 			virtual mating* clone() const
 			{
@@ -393,7 +393,7 @@ namespace simuPOP
 				return "<simuPOP::binomial random selection>";
 			}
 
-            ///CPPONLY
+			///CPPONLY
 			virtual void submitScratch(population& pop, population& scratch)
 			{
 				pop.turnOffSelection();
@@ -402,7 +402,7 @@ namespace simuPOP
 				DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
 			}
 
-            /// CPPONLY perform sexless random mating
+			/// CPPONLY perform sexless random mating
 			/**
 			 \param pop population
 			 \param scratch scratch population
@@ -421,7 +421,7 @@ namespace simuPOP
 #endif
 	};
 
-    /// a mating scheme of basic sexually random mating
+	/// a mating scheme of basic sexually random mating
 	/**
 	In this scheme, sex information is considered for each individual,
 	and ploidy is always 2. Within each subpopulation, males and females
@@ -438,18 +438,18 @@ namespace simuPOP
 			/**
 			\param numOffspring number of offspring or \em p in some modes
 			\param numOffspringFunc a python function that determines the
-                number of offspring or \em p
+				number of offspring or \em p
 			\param maxNumOffspring used when \c numOffspring is generated from a binomial distribution
 			\param mode can be one of <tt>MATE_NumOffspring, MATE_NumOffspringEachFamily,
-                MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution</tt>
+				MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution</tt>
 			\param newSubPopSize an array of subpopulation sizes, should have the same
-                number of subpopulations as the current population
+				number of subpopulations as the current population
 			\param newSubPopSizeExpr an expression that will be evaluated as an array of subpopulation sizes
 			\param newSubPopSizeFunc an function that have parameter \c gen and \c oldSize
-                (current subpopulation size)
+			(current subpopulation size)
 			\param contWhenUniSex continue when there is only one sex in the population, default to \c true
-            \n
-            Please refer to class \c mating for descriptions of other parameters.
+			\n
+			Please refer to class \c mating for descriptions of other parameters.
 			*/
 			randomMating( double numOffspring=1.,
 				PyObject* numOffspringFunc=NULL,
@@ -478,7 +478,7 @@ namespace simuPOP
 				return new randomMating(*this);
 			}
 
-            /// CPPONLY
+			/// CPPONLY
 			virtual bool isCompatible(const population& pop) const
 			{
 				// test if individual has sex
@@ -493,13 +493,13 @@ namespace simuPOP
 				return true;
 			}
 
-			/// used by Python print function to print out the general information of the random mating scheme 
+			/// used by Python print function to print out the general information of the random mating scheme
 			virtual string __repr__()
 			{
 				return "<simuPOP::sexual random mating>";
 			}
 
-            /// CPPONLY
+			/// CPPONLY
 			virtual void submitScratch(population& pop, population& scratch)
 			{
 				pop.turnOffSelection();
@@ -532,7 +532,6 @@ namespace simuPOP
 #endif
 	};
 
-
 	/// CPPONLY
 	void countAlleles(population& pop, int subpop, const vectori& loci, const vectori& alleles,
 		vectorlu& numAllele);
@@ -544,7 +543,7 @@ namespace simuPOP
 	at the offspring generation does not fall into the given range, the offspring generation
 	is regenerated. Any mating scheme can be used with this mating scheme by passing through
 	parameter \c matingScheme.
-	*/                                                                           
+	*/
 	class controlledMating : public mating
 	{
 		public:
@@ -553,12 +552,12 @@ namespace simuPOP
 			/**
 			\param matingScheme a mating scheme
 			\param loci loci at which allele frequency is controlled. Note that controlling
-                the allele frequencies at several loci may take a long time.
+				the allele frequencies at several loci may take a long time.
 			\param alleles alleles to control at each locus. Should have the same length as \c loci.
 			\param freqFunc frequency boundaries. If the length of the returned value equals the size
-                of \c loci, the range for loci will be <tt>[value0, value0+range]</tt>,
-                <tt>[value1, value1+range]</tt> etc. If the length of the returned value is 2 times
-                the size of \c loci, it will be interpreted as <tt>[low1, high1, low2, high2, ...]</tt>.
+				of \c loci, the range for loci will be <tt>[value0, value0+range]</tt>,
+				<tt>[value1, value1+range]</tt> etc. If the length of the returned value is 2 times
+				the size of \c loci, it will be interpreted as <tt>[low1, high1, low2, high2, ...]</tt>.
 			*/
 			controlledMating(
 				mating& matingScheme,
@@ -610,7 +609,7 @@ namespace simuPOP
 				return new controlledMating(*this);
 			}
 
-            /// CPPONLY
+			/// CPPONLY
 			virtual bool isCompatible(const population& pop) const
 			{
 				return m_matingScheme->isCompatible(pop);
@@ -622,7 +621,7 @@ namespace simuPOP
 				return "<simuPOP::controlled mating>";
 			}
 
-            /// CPPONLY perform controlled mating
+			/// CPPONLY perform controlled mating
 			virtual bool mate( population& pop, population& scratch, vector<baseOperator *>& ops, bool submit);
 
 		private:
@@ -647,27 +646,27 @@ namespace simuPOP
 	void getExpectedAlleles(population& pop, vectorf& expFreq, const vectori& loci, const vectori& alleles,
 		vectoru& expAlleles);
 
-    /// a controlled binomial random selection mating scheme
-    /**
-    This is the controlled binomial random selection mating scheme described in
-    <em> Peng 2007 (PLoS Genetics) </em>. Basically, a \c freqFunc is passed
-    to this mating scheme and set the allele frequencies of given
-    alleles at given loci at the offspring generation.
-    \n
-    The offspring generation is conceptually populated in two steps.
-    At the first step, only families with disease alleles are accepted
-    until the expected number of disease alleles are met. At the second
-    step, only families with wide type alleles are accepted to populate
-    the rest of the offspring generation.
-    */
+	/// a controlled binomial random selection mating scheme
+	/**
+	This is the controlled binomial random selection mating scheme described in
+	<em> Peng 2007 (PLoS Genetics) </em>. Basically, a \c freqFunc is passed
+	to this mating scheme and set the allele frequencies of given
+	alleles at given loci at the offspring generation.
+	\n
+	The offspring generation is conceptually populated in two steps.
+	At the first step, only families with disease alleles are accepted
+	until the expected number of disease alleles are met. At the second
+	step, only families with wide type alleles are accepted to populate
+	the rest of the offspring generation.
+	*/
 	class controlledBinomialSelection: public binomialSelection
 	{
 		public:
 
 			/// create a controlled binomial random selection mating scheme
-            /**
-            Please refer to class \c mating for descriptions of parameters.
-            */
+			/**
+			Please refer to class \c mating for descriptions of parameters.
+			*/
 			controlledBinomialSelection(
 				vectori loci,
 				vectori alleles,
@@ -726,7 +725,7 @@ namespace simuPOP
 				return "<simuPOP::binomial random selection>";
 			}
 
-            /// CPPONLY 
+			/// CPPONLY
 			virtual void submitScratch(population& pop, population& scratch)
 			{
 				pop.turnOffSelection();
@@ -735,7 +734,7 @@ namespace simuPOP
 				DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
 			}
 
-            /// CPPONLY perform controlled binomial random selection mating
+			/// CPPONLY perform controlled binomial random selection mating
 			virtual bool mate( population& pop, population& scratch, vector<baseOperator *>& ops, bool submit);
 
 		private:
@@ -752,33 +751,32 @@ namespace simuPOP
 			stack<population::IndIterator> m_stack;
 	};
 
-    
-    /// a controlled random mating scheme
-    /** This is the controlled random mating scheme described in
-    <em> Peng 2007 (PLoS Genetics) </em>. Basically, a \c freqFunc
-    is passed to this mating scheme and set the allele frequencies of given
-    alleles at given loci at the offspring generation.
-    \n
-    The offspring generation is conceptually populated in two steps.
-    At the first step, only families with disease alleles are accepted
-    until the expected number of disease alleles are met. At the second
-    step, only families with wide type alleles are accepted to populate
-    the rest of the offspring generation.
-    */
+	/// a controlled random mating scheme
+	/** This is the controlled random mating scheme described in
+	<em> Peng 2007 (PLoS Genetics) </em>. Basically, a \c freqFunc
+	is passed to this mating scheme and set the allele frequencies of given
+	alleles at given loci at the offspring generation.
+	\n
+	The offspring generation is conceptually populated in two steps.
+	At the first step, only families with disease alleles are accepted
+	until the expected number of disease alleles are met. At the second
+	step, only families with wide type alleles are accepted to populate
+	the rest of the offspring generation.
+	*/
 	class controlledRandomMating : public randomMating
 	{
 		public:
 
 			/// create a controlled random mating scheme
-            /**
-            \param loci loci at which allele frequencies are monitored (controlled)
-            \param alleles alleles at given loci. It should have the same length as \c loci
-            \param freqFunc a Python function that accepts a generation number and returns
-                expected allele frequencies at given loci
-            \param acceptScheme internal use only
-        
-            Please refer to class \c mating for descriptions of other parameters.
-            */
+			/**
+			\param loci loci at which allele frequencies are monitored (controlled)
+			\param alleles alleles at given loci. It should have the same length as \c loci
+			\param freqFunc a Python function that accepts a generation number and returns
+				expected allele frequencies at given loci
+			\param acceptScheme internal use only
+
+			Please refer to class \c mating for descriptions of other parameters.
+			*/
 			controlledRandomMating(
 				vectori loci,
 				vectori alleles,
@@ -833,7 +831,7 @@ namespace simuPOP
 				return new controlledRandomMating(*this);
 			}
 
-            /// CPPONLY
+			/// CPPONLY
 			virtual bool isCompatible(const population& pop) const
 			{
 				// test if individual has sex
@@ -854,7 +852,7 @@ namespace simuPOP
 				return "<simuPOP::sexual random mating>";
 			}
 
-            /// CPPONLY
+			/// CPPONLY
 			virtual void submitScratch(population& pop, population& scratch)
 			{
 				pop.turnOffSelection();
@@ -881,7 +879,7 @@ namespace simuPOP
 			stack<population::IndIterator> m_stack;
 	};
 
-    /// a Python mating scheme
+	/// a Python mating scheme
 	/**
 	Hybird mating scheme. This mating scheme takes a Python function
 	that accepts both the parental and offspring populations and this function
@@ -900,12 +898,12 @@ namespace simuPOP
 		public:
 
 			/// create a Python mating scheme
-            /**
-            \param func a Python function that accepts two parameters: the parental
-                and the offspring populations. The offspring population is empty,
-                and this function is responsible for setting genotype, sex etc. of
-                individuals in the offspring generation.
-            */
+			/**
+			\param func a Python function that accepts two parameters: the parental
+				and the offspring populations. The offspring population is empty,
+				and this function is responsible for setting genotype, sex etc. of
+				individuals in the offspring generation.
+			*/
 			pyMating(PyObject* func=NULL,
 				vectorlu newSubPopSize=vectorlu(),
 				string newSubPopSizeExpr="",
@@ -947,7 +945,7 @@ namespace simuPOP
 				return "<simuPOP::pyMating>";
 			}
 
-            /// CPPONLY perform Python mating
+			/// CPPONLY perform Python mating
 			/**
 			 All individuals will be passed to during mating operators but
 			 no one will die (ignore during mating failing signal).

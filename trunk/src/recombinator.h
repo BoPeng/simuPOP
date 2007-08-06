@@ -35,20 +35,20 @@ using std::ostream_iterator;
 
 namespace simuPOP
 {
-    /// recombination
+	/// recombination
 	/**
-    In simuPOP, only one recombinator is provided. Recombination events between loci
-    a/b and b/c are independent, otherwise there will be some linkage between loci, users
+	In simuPOP, only one recombinator is provided. Recombination events between loci
+	a/b and b/c are independent, otherwise there will be some linkage between loci, users
 	need to specify physical recombination rate between adjacent loci. In addition,
-    for the recombinator
+	for the recombinator
 	\li it only works for diploid (and for females in haplodiploid) populations.
-    \li the recombination rate must be comprised between \c 0.0 and \c 0.5. A recombination
-    rate of \c 0.0 means that the loci are completely linked, and thus behave together
-    as a single linked locus. A recombination rate of \c 0.5 is equivalent to free
+	\li the recombination rate must be comprised between \c 0.0 and \c 0.5. A recombination
+	rate of \c 0.0 means that the loci are completely linked, and thus behave together
+	as a single linked locus. A recombination rate of \c 0.5 is equivalent to free
 	recombination. All other values between \c 0.0 and \c 0.5 will represent various
-    linkage intensities	between adjacent pairs of loci. The recombination rate is
-    equivalent to <tt>1-linkage</tt> and represents the probability that the allele
-    at the next locus is randomly drawn.
+	linkage intensities	between adjacent pairs of loci. The recombination rate is
+	equivalent to <tt>1-linkage</tt> and represents the probability that the allele
+	at the next locus is randomly drawn.
 	*/
 
 	class recombinator: public baseOperator
@@ -57,27 +57,27 @@ namespace simuPOP
 			/// recombine chromosomes from parents
 			/**
 			\param intensity intensity of recombination. The actually recombination rate
-                between two loci is determined by <tt>intensity*locus distance</tt> between them.
+				between two loci is determined by <tt>intensity*locus distance</tt> between them.
 			\param rate recombination rate regardless of locus distance after all \c afterLoci.
-                It can also be an array of recombination rates. Should have the same length
-                as \c afterLoci or \c totNumOfLoci(). If \c totNumLoci, the last item can be ignored.??? 
-                The recombination rates are independent of locus distance.
+				It can also be an array of recombination rates. Should have the same length
+				as \c afterLoci or \c totNumOfLoci(). If \c totNumLoci, the last item can be ignored.???
+				The recombination rates are independent of locus distance.
 			\param afterLoci an array of locus indices. Recombination will occur after these
-                loci. If \c rate is also specified, they should have the same length. Default
-                to all loci (but meaningless for those loci located at the end of a chromosome).
-                If this parameter is given, it should be ordered, and can not include loci at
-                the end of a chromosome. 
+				loci. If \c rate is also specified, they should have the same length. Default
+				to all loci (but meaningless for those loci located at the end of a chromosome).
+				If this parameter is given, it should be ordered, and can not include loci at
+			the end of a chromosome.
 			\param maleIntensity recombination intensity for male individuals. If given,
-                parameter \c intensity will be considered as female intensity.
+			parameter \c intensity will be considered as female intensity.
 			\param maleRate recombination rate for male individuals. If given,
-                parameter \c rate will be considered as female recombination rate.
+			parameter \c rate will be considered as female recombination rate.
 			\param maleAfterLoci if given, males will recombine at different locations.
-                This is rarely used.???
+			This is rarely used.???
 			\note There is no recombination between sex chromosomes of male individuals
-                if <tt>sexChrom()=True</tt>.??? This may change later if the exchanges
-                of genes between pseudoautosomal regions of XY need to be modeled.
+			if <tt>sexChrom()=True</tt>.??? This may change later if the exchanges
+			of genes between pseudoautosomal regions of XY need to be modeled.
 
-		\test src_recombinator.log Operator recombinator
+			\test src_recombinator.log Operator recombinator
 			*/
 			recombinator(double intensity=-1,
 				vectorf rate=vectorf(),
@@ -88,7 +88,7 @@ namespace simuPOP
 				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
 				:
-baseOperator( "", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
+			baseOperator( "", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
 				, m_intensity(intensity), m_maleIntensity(maleIntensity),
 				m_rate(rate), m_maleRate(maleRate),
 				m_afterLoci(afterLoci), m_maleAfterLoci(maleAfterLoci),
@@ -111,7 +111,7 @@ baseOperator( "", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
 				return new recombinator(*this);
 			}
 
-            /// used by Python print function to print out the general information of the recombinator
+			/// used by Python print function to print out the general information of the recombinator
 			virtual string __repr__()
 			{
 				return "<simuPOP::recombination>" ;
@@ -131,12 +131,12 @@ baseOperator( "", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
 				return m_recCount;
 			}
 
-            /// apply the recombinator during mating???
+			/// apply the recombinator during mating???
 			virtual bool applyDuringMating(population& pop,
 				population::IndIterator offspring,
 				individual* dad=NULL,
 				individual* mom=NULL);
-			
+
 		private:
 
 			// this function implement how to recombine
@@ -159,7 +159,7 @@ baseOperator( "", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
 				vectoru afterLoci,				  //
 				bool sexChrom,					  // whether or not recombine the last chromosome
 				vectoru& recBeforeLoci,			  // return before loci vector
-				vectorf& vecP);					  // return recombination rate      
+				vectorf& vecP);					  // return recombination rate
 
 		private:
 

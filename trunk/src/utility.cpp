@@ -477,7 +477,6 @@ namespace simuPOP
 		}
 	}
 
-
 	void PyObj_As_Matrix(PyObject* obj, matrix& val)
 	{
 		if (obj==NULL)
@@ -505,7 +504,6 @@ namespace simuPOP
 		}
 	}
 
- 
 	void PyObj_As_IntDict(PyObject* obj, intDict& val)
 	{
 		if(obj==NULL)
@@ -1193,8 +1191,8 @@ namespace simuPOP
 			// get value
 			PyObject* val = loadObj(vars, offset);
 			PyDict_SetItem(d, key, val);
-            Py_DECREF(key);
-            Py_DECREF(val);
+			Py_DECREF(key);
+			Py_DECREF(val);
 		}
 		offset++;								  // skip 'e'
 		return d;
@@ -1222,7 +1220,7 @@ namespace simuPOP
 		{
 			PyObject* elem = loadObj(vars, offset);
 			PyList_Append(d, elem);
-            Py_DECREF(elem);
+			Py_DECREF(elem);
 		}
 		offset++;								  // skip 'e'
 		return d;
@@ -1256,7 +1254,7 @@ namespace simuPOP
 		{
 			PyObject* elem = loadObj(vars, offset);
 			PyTuple_SET_ITEM(d, i, elem);
-            Py_DECREF(elem);
+			Py_DECREF(elem);
 		}
 		return d;
 	}
@@ -1533,7 +1531,7 @@ namespace simuPOP
 		Py_XDECREF(res);
 		return val;
 	}
-	
+
 	double Expression::valueAsDouble()
 	{
 		PyObject* res = evaluate();
@@ -1544,7 +1542,7 @@ namespace simuPOP
 		Py_XDECREF(res);
 		return val;
 	}
-	
+
 	string Expression::valueAsString()
 	{
 		PyObject* res = evaluate();
@@ -2198,7 +2196,7 @@ namespace simuPOP
 		}
 	}
 
-	// 
+	//
 	BernulliTrials::~BernulliTrials()
 	{
 	}
@@ -2753,7 +2751,7 @@ namespace simuPOP
 		cout << "Maximum allele state: " << hex << MaxAllele << endl;
 		cout << "Maximum random number: " << hex << MaxRandomNumber << endl;
 		cout << "Maximum number of subpopulations: " << hex << MaxSubPopID << endl;
-		cout << "Maximum index size (limits population size * total number of markers): " 
+		cout << "Maximum index size (limits population size * total number of markers): "
 			<< hex << MaxIndexSize << endl;
 		cout << "Maximum integer: " << hex << std::numeric_limits<int>::max() << endl;
 		cout << "Maximum long integer: " << hex << std::numeric_limits<long int>::max() << endl;
@@ -2816,7 +2814,6 @@ namespace simuPOP
 		g_mpiComm.barrier();
 #endif
 	}
-
 
 	string alleleType()
 	{

@@ -1023,7 +1023,7 @@ namespace simuPOP
 		// make copy of old genotype structure
 		GenoStructure * gs1 = new GenoStructure(genoStru());
 		GenoStructure * gs2 = new GenoStructure(pop.genoStru());
-		
+
 		// obtain new genotype structure and set it
 		setGenoStructure(mergeGenoStru(pop.genoStruIdx(), byChromosome));
 		// if byChromosome, we have to figure out how to copy loci
@@ -1069,7 +1069,7 @@ namespace simuPOP
 			vectora newGenotype(newPopGenoSize);
 
 			if (byChromosome)
-			// merge chromosome by chromosome
+				// merge chromosome by chromosome
 			{
 				// copy data over
 				GenoIterator ptr = newGenotype.begin();
@@ -1088,8 +1088,8 @@ namespace simuPOP
 						for(size_t j=0; j < numloci1 + numloci2; ++j)
 							if (source[j] == 0)
 								*(ptr++) = *(ptr1++);
-							else
-								*(ptr++) = *(ptr2++);
+						else
+							*(ptr++) = *(ptr2++);
 					}
 				}
 			}
@@ -1683,9 +1683,9 @@ namespace simuPOP
 	{
 		DBG_ASSERT(m_info.size() == infoSize()*popSize(), SystemError,
 			"Info size is wrong");
-		
+
 		vectorstr newfields;
-		
+
 		// oldsize, this is valid for rank 0
 		UINT os = infoSize();
 		for(vectorstr::const_iterator it=fields.begin(); it!=fields.end(); ++it)
@@ -1715,7 +1715,7 @@ namespace simuPOP
 		if (!newfields.empty())
 		{
 			setGenoStructure(struAddInfoFields(newfields));
-				
+
 			// adjust information size.
 			UINT is = infoSize();
 			int oldAncPop = m_curAncestralGen;
