@@ -55,7 +55,7 @@ namespace simuPOP
 	{
 		public:
 			/// create an offspring generator, save information from \c pop and \c ops to speed up the calls to \c generateOffspring
-			offspringGenerator(const population& pop, vector<Operator *>& ops);
+			offspringGenerator(const population& pop, vector<baseOperator *>& ops);
 
 			/// generate \c numOff offspring, or until reach \c offEnd
 			/**
@@ -80,7 +80,7 @@ namespace simuPOP
 
 			/// cache during-mating operators
 			/// we do not cache pop since it may be changed during mating.
-			vector<Operator *>& m_ops;
+			vector<baseOperator *>& m_ops;
 
 			/// see if who will generate offspring genotype
 			bool m_formOffGenotype;
@@ -226,7 +226,7 @@ namespace simuPOP
 			\param ops during-mating operators
 			\return return false when mating fail
 			*/
-			virtual bool mate( population& pop, population& scratch, vector<Operator* >& ops, bool submit)
+			virtual bool mate( population& pop, population& scratch, vector<baseOperator * >& ops, bool submit)
 			{
 				throw SystemError("You are not supposed to call base mating scheme.");
 			}
@@ -340,7 +340,7 @@ namespace simuPOP
 			All individuals will be passed to during-mating operators but
 			no one will die (ignore the during-mating failing signal).
 			*/
-			virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit);
+			virtual bool mate( population& pop, population& scratch, vector<baseOperator *>& ops, bool submit);
 	};
 
     /// a mating scheme that uses binomial selection, regardless of sex
@@ -409,7 +409,7 @@ namespace simuPOP
 			 \param ops during-mating operators
 			 \return return false when mating fails
 			*/
-			virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit);
+			virtual bool mate( population& pop, population& scratch, vector<baseOperator *>& ops, bool submit);
 
 		protected:
 			/// accumulative fitness
@@ -509,7 +509,7 @@ namespace simuPOP
 			}
 
 			/// CPPONLY perform random mating
-			virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit);
+			virtual bool mate( population& pop, population& scratch, vector<baseOperator *>& ops, bool submit);
 
 		protected:
 
@@ -623,7 +623,7 @@ namespace simuPOP
 			}
 
             /// CPPONLY perform controlled mating
-			virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit);
+			virtual bool mate( population& pop, population& scratch, vector<baseOperator *>& ops, bool submit);
 
 		private:
 
@@ -736,7 +736,7 @@ namespace simuPOP
 			}
 
             /// CPPONLY perform controlled binomial random selection mating
-			virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit);
+			virtual bool mate( population& pop, population& scratch, vector<baseOperator *>& ops, bool submit);
 
 		private:
 			/// locus at which mating is controlled.
@@ -864,7 +864,7 @@ namespace simuPOP
 			}
 
 			/// CPPONLY perform controlled random mating
-			virtual bool mate( population& pop, population& scratch, vector<Operator *>& ops, bool submit);
+			virtual bool mate( population& pop, population& scratch, vector<baseOperator *>& ops, bool submit);
 
 		private:
 
@@ -952,7 +952,7 @@ namespace simuPOP
 			 All individuals will be passed to during mating operators but
 			 no one will die (ignore during mating failing signal).
 			*/
-			virtual bool mate(population& pop, population& scratch, vector<Operator *>& ops, bool submit);
+			virtual bool mate(population& pop, population& scratch, vector<baseOperator *>& ops, bool submit);
 
 		private:
 			PyObject* m_mateFunc;

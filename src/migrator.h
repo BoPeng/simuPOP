@@ -25,7 +25,7 @@
 #define _MIGRATOR_H
 /**
 \file
-\brief head file of class migrator:public Operator
+\brief head file of class migrator:public baseOperator
 */
 #include "operator.h"
 #include <list>
@@ -62,7 +62,7 @@ namespace simuPOP
     \li New subpopulation can be generated through migration. You simply
         need to migrate to a new subpopulation number.
     */
-	class migrator: public Operator
+	class migrator: public baseOperator
 	{
 
 		public:
@@ -99,7 +99,7 @@ namespace simuPOP
 				vectoru fromSubPop=vectoru(), vectoru toSubPop=vectoru(),
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				: Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
+				: baseOperator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)
 			{
                 // when migrator is constructed from a pyMigrator, initial
@@ -120,7 +120,7 @@ namespace simuPOP
 			virtual ~migrator(){};
 
             /// deep copy of a migrator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new migrator(*this);
 			}
@@ -242,7 +242,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a \c pyMigrator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pyMigrator(*this);
 			}
@@ -276,7 +276,7 @@ namespace simuPOP
 	/**
 	<funcForm>SplitSubPop</funcForm>
 	*/
-	class splitSubPop: public Operator
+	class splitSubPop: public baseOperator
 	{
 
 		public:
@@ -298,7 +298,7 @@ namespace simuPOP
 				bool randomize=true,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				: Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
+				: baseOperator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_which(which), m_subPopSizes(sizes), m_proportions(proportions),
 				m_subPopID(subPopID), m_randomize(randomize)
 			{
@@ -314,7 +314,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a \c splitSubPop operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new splitSubPop(*this);
 			}
@@ -355,7 +355,7 @@ namespace simuPOP
     single subpopulation. If \c subPops is ignored, all subpopulations will be merged.
     <funcForm>MergeSubPops</funcForm>
     */
-	class mergeSubPops: public Operator
+	class mergeSubPops: public baseOperator
 	{
 
 		public:
@@ -366,7 +366,7 @@ namespace simuPOP
 			mergeSubPops( vectoru subPops=vectoru(), bool removeEmptySubPops=false,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				: Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
+				: baseOperator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_subPops(subPops), m_removeEmptySubPops(removeEmptySubPops)
 			{
 			}
@@ -377,7 +377,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a \c mergeSubPops operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new mergeSubPops(*this);
 			}

@@ -25,7 +25,7 @@
 #define _SELECTOR_H
 /**
 \file
-\brief head file of class selector:public Operator
+\brief head file of class selector:public baseOperator
 */
 #include "utility.h"
 #include "operator.h"
@@ -65,7 +65,7 @@ namespace simuPOP
         if you use the function form of these selectors in a \c pyOperator, make sure to
         set the stage of \c pyOperator to \c PreMating.
 	*/
-	class selector: public Operator
+	class selector: public baseOperator
 	{
 		public:
 			/// create a selector
@@ -75,7 +75,7 @@ namespace simuPOP
 			*/
 			selector(const vectoru & subPops=vectoru(), int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr(1, "fitness"))
-				:Operator("","",stage, begin, end, step, at, rep, grp, infoFields), m_subPops(subPops)
+				: baseOperator("","",stage, begin, end, step, at, rep, grp, infoFields), m_subPops(subPops)
 			{
 			}
 
@@ -85,7 +85,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a selector
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new selector(*this);
 			}
@@ -143,7 +143,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a map selector
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new mapSelector(*this);
 			}
@@ -210,7 +210,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a \c maSelector
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new maSelector(*this);
 			}
@@ -258,7 +258,7 @@ namespace simuPOP
 #define SEL_Additive 2
 #define SEL_Heterogeneity 3
 
-			typedef std::vector< Operator * > vectorop;
+			typedef std::vector< baseOperator * > vectorop;
 
 		public:
             /// create a multi-loci selector
@@ -290,7 +290,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a \c mlSelector
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				throw ValueError("Multi-loci selector can not be nested.");
 			}
@@ -373,7 +373,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a \c pySelector
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pySelector(*this);
 			}

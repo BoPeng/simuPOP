@@ -25,7 +25,7 @@
 #define _OUTPUTER_H
 /**
 \file
-\brief head file of class outputer: public Operator
+\brief head file of class outputer: public baseOperator
 */
 #include "utility.h"
 #include "operator.h"
@@ -45,7 +45,7 @@ namespace simuPOP
 	@author Bo Peng
 	*/
 
-	class outputer: public Operator
+	class outputer: public baseOperator
 	{
 
 		public:
@@ -53,14 +53,14 @@ namespace simuPOP
 			outputer(string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			Operator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields)
+baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields)
 			{
 			};
 
 			/// destructor
 			virtual ~outputer(){};
 
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new outputer(*this);
 			}
@@ -94,7 +94,7 @@ namespace simuPOP
 			{
 			}
 
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new outputHelper(*this);
 			}
@@ -152,7 +152,7 @@ namespace simuPOP
 				m_chrom(chrom), m_loci(loci), m_subPop(subPop), m_indRange(indRange), m_max(max)
 				{}
 
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new dumper(*this);
 			}
@@ -238,7 +238,7 @@ namespace simuPOP
 			{
 			}
 
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new savePopulation(*this);
 			}

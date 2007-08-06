@@ -26,7 +26,7 @@
 namespace simuPOP
 {
 
-	bool Operator::isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly )
+	bool baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly )
 	{
 		// rep does not match
 		if( ( m_rep >= 0 && static_cast<UINT>(m_rep) != rep ) ||
@@ -118,7 +118,7 @@ namespace simuPOP
 		return false;
 	}
 
-	void Operator::setFlags()
+	void baseOperator::setFlags()
 	{
 		RESETFLAG(m_flags, m_flagAtAllGen);
 		RESETFLAG(m_flags, m_flagOnlyAtBegin);

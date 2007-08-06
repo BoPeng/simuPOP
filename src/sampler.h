@@ -25,7 +25,7 @@
 #define _SAMPLER_H
 /**
 \file
-\brief head file of class selector:public Operator
+\brief head file of class selector:public baseOperator
 */
 #include "utility.h"
 #include "operator.h"
@@ -47,7 +47,7 @@ namespace simuPOP
     \c subPopID() value of each indvidual. Subpopulations are kept intact.
     <funcForm>PySubset</funcForm>
     */
-	class pySubset: public Operator
+	class pySubset: public baseOperator
 	{
 
 		public:
@@ -58,7 +58,7 @@ namespace simuPOP
 			pySubset(const vectori& keep=vectori(),
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()) :
-			Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
+baseOperator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_keep(keep)
 			{
 			}
@@ -69,7 +69,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a \c pySubset operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pySubset(*this);
 			}
@@ -129,7 +129,7 @@ namespace simuPOP
     The function forms of these operators are a little different from others.
     They do return a value: an array of samples.
     */
-	class sample: public Operator
+	class sample: public baseOperator
 	{
 
 		public:
@@ -154,7 +154,7 @@ namespace simuPOP
 				const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
-				: Operator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
+				: baseOperator( "", "", stage, begin, end, step, at, rep, grp, infoFields),
 				m_name(name), m_nameExpr(nameExpr,""), m_times(times), m_saveAs(saveAs),
 				m_saveAsExpr(saveAsExpr), m_format(format)
 			{
@@ -166,7 +166,7 @@ namespace simuPOP
 			virtual ~sample(){};
 
 			/// deep copy of a \c sample operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new sample(*this);
 			}
@@ -276,7 +276,7 @@ namespace simuPOP
 			virtual ~randomSample(){};
 
 			/// deep copy of a \c randomSample operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new randomSample(*this);
 			}
@@ -344,7 +344,7 @@ namespace simuPOP
 			virtual ~caseControlSample(){};
 
 			/// deep copy of a \c caseControlSample operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new caseControlSample(*this);
 			}
@@ -435,7 +435,7 @@ namespace simuPOP
 			virtual ~affectedSibpairSample(){};
 
 			/// deep copy of a \c affectedSibpairSample operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new affectedSibpairSample(*this);
 			}
@@ -510,7 +510,7 @@ namespace simuPOP
 			virtual ~largePedigreeSample(){};
 
 			/// deep copy of a \c largePedigreeSample operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new largePedigreeSample(*this);
 			}
@@ -587,7 +587,7 @@ namespace simuPOP
 			virtual ~nuclearFamilySample(){};
 
 			/// deep copy of a \c nuclearFamilySample operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new nuclearFamilySample(*this);
 			}
@@ -679,7 +679,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a Python sampler
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pySample(*this);
 			}

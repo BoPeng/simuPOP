@@ -129,7 +129,7 @@ namespace simuPOP
 	{
 		public:
 			/// vector of operator pointers
-			typedef std::vector< Operator * > vectorop;
+			typedef std::vector< baseOperator * > vectorop;
 
 		public:
 

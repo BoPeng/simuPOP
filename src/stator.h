@@ -25,7 +25,7 @@
 #define _STATOR_H
 /**
 \file
-\brief head file of class stator:public Operator
+\brief head file of class stator:public baseOperator
 */
 #include "utility.h"
 #include "population.h"
@@ -53,7 +53,7 @@ namespace simuPOP
     from the namespace after \c stat is applied. \c Stat is the function form of the
     operator. ????
     */
-	class stator: public Operator
+	class stator: public baseOperator
 	{
 		public:
 			// constructor. default to be always active.
@@ -62,7 +62,7 @@ namespace simuPOP
 			stator(string output="", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			Operator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields)
+baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields)
 			{
 			};
 
@@ -72,7 +72,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a stator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new stator(*this);
 			}
@@ -119,7 +119,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a \c pyEval operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pyEval(*this);
 			}
@@ -188,7 +188,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a \c pyExec operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pyExec(*this);
 			}
@@ -1565,7 +1565,7 @@ namespace simuPOP
 			}
 
 			/// deep copy of a \c stat operator
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new stat(*this);
 			}

@@ -25,7 +25,7 @@
 #define _TAGGER_H
 /**
 \file
-\brief head file of class tagger: public Operator
+\brief head file of class tagger: public baseOperator
 */
 #include "operator.h"
 
@@ -41,7 +41,7 @@ namespace simuPOP
 	\li recording parental information to track pedigree;
 	\li tagging an individual/allele and monitor its spread in the population etc.
 	*/
-	class tagger: public Operator
+	class tagger: public baseOperator
 	{
 
 		public:
@@ -50,7 +50,7 @@ namespace simuPOP
 				int rep=REP_ALL, int grp=GRP_ALL,
 			// this is not nice, but is the only way I know how to initialize this array.
 				const vectorstr& infoFields=vectorstr()):
-			Operator("", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
+baseOperator("", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
 			{
 			};
 
@@ -58,7 +58,7 @@ namespace simuPOP
 			virtual ~tagger(){};
 
             /// deep copy of a \ tagger
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new tagger(*this);
 			}
@@ -110,7 +110,7 @@ namespace simuPOP
 				individual* dad=NULL, individual* mom=NULL);
 
             /// deep copy of a \c inheritTagger
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new inheritTagger(*this);
 			}
@@ -149,7 +149,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a \c parentsTagger
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new parentsTagger(*this);
 			}
@@ -213,7 +213,7 @@ namespace simuPOP
 			}
 
             /// deep copy of a \c pyTagger
-			virtual Operator* clone() const
+			virtual baseOperator * clone() const
 			{
 				return new pyTagger(*this);
 			}
