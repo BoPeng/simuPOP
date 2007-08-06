@@ -344,36 +344,7 @@ class Doxy2SWIG:
         if(node.firstChild.firstChild.data == 'Test'):
             self.curField = 'Examples'
             self.content[-1]['Examples'] = ''
-            # get file name
-            filename = node.firstChild.nextSibling.firstChild.firstChild.data.strip()
-	    title = ''
-	    # if the filename has an optional title, separate them
-	    if ' ' in filename:
-                pieces = filename.split(' ')
-		filename = pieces[0]
-		title = ' '.join(pieces[1:])
-            print "Filename ", filename
-            print "Title ", title
-            # get content as string
-            try:
-                try:
-                    # usual ../doc/log directory
-                    file = open(os.path.join('..', 'doc', 'log', filename))
-                    self.content[-1]['ExampleFile'] = os.path.join('..', 'doc', 'log', filename)
-                except:
-                    # local file
-                    file = open(filename)
-                    self.content[-1]['ExampleFile'] = filename
-                cont = file.read()
-                file.close()
-		# add file content to 'Examples'
-                self.add_text(cont)
-		self.content[-1]['ExampleTitle'] = title
-            except:
-                self.content[-1]['ExampleFile'] = None
-		self.content[-1]['ExampleTitle'] = title
-                print "File " + filename + " does not exist\n"
-                self.add_text(filename + "does not exist\n")
+            self.parse_childnodes(node)
 
 
     def do_simplesect(self, node):
@@ -522,6 +493,35 @@ class Doxy2SWIG:
             if entry['ignore'] and '~' in entry['Name']:
                 print "Desctructor of %s has CPPONLY. Please correct it." % entry['Name']
                 sys.exit(1)
+        # handle Examples
+        for entry in self.content:
+            if entry.has_key('Examples') and entry['Examples'].strip() != '':
+                # get file name
+                filename = entry['Examples'][4:]
+                title = ''
+                # if the filename has an optional title, separate them
+                if ' ' in filename:
+                    pieces = filename.split(' ')
+                    filename = pieces[0]
+                    title = ' '.join(pieces[1:])
+                # get content as string
+                try:
+                    try:
+                        # usual ../doc/log directory
+                        file = open(os.path.join('..', 'doc', 'log', filename))
+                        entry['ExampleFile'] = os.path.join('..', 'doc', 'log', filename)
+                    except:
+                        # local file
+                        file = open(filename)
+                        entry['ExampleFile'] = filename
+                    cont = file.read()
+                    file.close()
+                    # add file content to 'Examples'
+                    entry['ExampleTitle'] = title
+                except:
+                    entry['ExampleFile'] = None
+                    entry['ExampleTitle'] = title
+                    print "File " + filename + " does not exist\n"
         #for entry in self.content:
         #    if entry.has_key('description') and 'PLOIDY:' in entry['description'];
         #        if 'PLOIDY:ALL' in entry['description']:
@@ -688,7 +688,7 @@ class Doxy2SWIG:
                 print >> out, '    %s\n' % self.latex_text(entry['note'])
             if entry.has_key('ExampleFile') and entry['ExampleFile'] is not None:
                 label = os.path.split(cons['ExampleFile'])[-1].split('_')[-1]
-		title = self.latex_text(cons['ExampleTitle'])
+                title = self.latex_text(cons['ExampleTitle'])
                 print >> out, '\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
                     (title, label, entry['ExampleFile'].replace('\\', '/'))
             print >> out, '}\n'
@@ -767,9 +767,9 @@ class Doxy2SWIG:
             print >> out, '\\end{description}'
             if cons.has_key('ExampleFile') and cons['ExampleFile'] is not None:
                 print >> out, '\\strong{Example}\n'
-		# ../log/ref_xxx.log => xxx.log
+                # ../log/ref_xxx.log => xxx.log
                 label = os.path.split(cons['ExampleFile'])[-1].split('_')[-1]
-		title = self.latex_text(cons['ExampleTitle'])
+                title = self.latex_text(cons['ExampleTitle'])
                 print >> out, '\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
                     (title, label, cons['ExampleFile'].replace('\\', '/'))
             print >> out, '}\n'
