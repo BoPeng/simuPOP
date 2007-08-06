@@ -1721,6 +1721,43 @@ Usage:
 
     GenoStruTrait()
 
+Example:
+
+>>> # create a population, most parameters have default values
+>>> pop = population(size=5, ploidy=2, loci=[5,10],
+...     lociPos=[range(0,5),range(0,20,2)],
+...     alleleNames=['A','C','T','G'],
+...     subPop=[2,3], maxAllele=3)
+>>> print pop.popSize()
+5
+>>> print pop.ploidy()
+2
+>>> print pop.ploidyName()
+diploid
+>>> print pop.numChrom()
+2
+>>> print pop.locusPos(2)
+2.0
+>>> print pop.alleleName(1)
+C
+>>> # get the fourth individual of the population
+>>> ind = pop.individual(3)
+>>> # access genotypic structure info
+>>> print ind.ploidy()
+2
+>>> print ind.numChrom()
+2
+>>> print ind.numLoci(0)
+5
+>>> print ind.genoSize()
+30
+>>> # and from simulator level
+>>> simu = simulator(pop, randomMating(), rep=3)
+>>> print simu.numChrom()
+2
+>>>
+
+
 "; 
 
 %ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields, const vectori &chromMap);
@@ -2174,18 +2211,18 @@ Example:
 ...     dumper(alleleOnly=True, stage=PrePostMating)])
 individual info: 
 sub population 0:
-   0: FU   2  2  1   2  1  2  2  2 |   1  1  0   1  2  2  2  1 
-   1: FU   2  2  2   2  1  2  2  2 |   1  1  2   2  2  2  1  0 
-   2: FU   1  2  1   2  1  1  0  2 |   2  1  1   1  2  1  1  2 
+   0: MU   2  1  1   0  2  1  2  2 |   0  0  2   2  2  1  2  2 
+   1: FU   2  1  2   2  0  2  2  2 |   0  0  0   0  1  2  2  2 
+   2: MU   2  0  2   2  1  0  0  1 |   2  2  1   2  1  2  2  1 
 End of individual info.
 
 
 No ancenstral population recorded.
 individual info: 
 sub population 0:
-   0: FU   5  3  2   3  0  3  3  3 |   2  2  1   4  3  3  3  0 
-   1: FU   3  3  3   3  3  4  3  3 |   2  2  3   3  3  3  0  1 
-   2: FU   2  5  2   4  0  2  1  3 |   3  2  2   0  4  2  2  3 
+   0: MU   3  2  0   1  5  3  3  3 |   1  0  1   1  3  2  1  3 
+   1: FU   3  2  4   3  0  3  1  3 |   0  1  1   2  2  4  3  3 
+   2: MU   3  0  3   3  3  1  1  2 |   3  3  3   0  0  3  3  4 
 End of individual info.
 
 
@@ -2202,18 +2239,18 @@ True
 ...     dumper(alleleOnly=True, stage=PrePostMating)])
 individual info: 
 sub population 0:
-   0: FU   2  2  2   1  2  0  1  0 |   0  0  2   2  2  1  2  2 
-   1: MU   1  1  1   2  2  2  1  2 |   2  2  2   1  0  0  0  2 
-   2: MU   1  1  2   2  0  1  1  2 |   2  1  0   2  2  1  2  0 
+   0: MU   2  2  1   1  0  0  1  0 |   2  0  2   2  1  1  1  0 
+   1: MU   1  2  1   0  2  2  1  2 |   2  1  2   2  0  1  0  1 
+   2: FU   2  2  0   2  1  2  2  0 |   2  1  1   1  2  2  0  2 
 End of individual info.
 
 
 No ancenstral population recorded.
 individual info: 
 sub population 0:
-   0: FU   5  5  5   6  5  5  0  0 |   3  5  7   0  5  6  7  5 
-   1: MU   5  0  6   5  0  5  4  6 |   7  6  5   6  4  5  0  7 
-   2: MU   4  0  6   6  5  5  5  6 |   0  0  4   7  5  5  7  4 
+   0: MU   5  0  4   6  4  0  0  0 |   7  3  7   0  6  0  6  0 
+   1: MU   4  6  4   4  5  6  0  0 |   7  0  5   5  3  5  0  6 
+   2: FU   0  7  0   0  4  6  6  5 |   7  4  0   5  0  0  5  0 
 End of individual info.
 
 
@@ -3218,12 +3255,12 @@ Example:
 ...   ])
 individual info: 
 sub population 0:
-   0: FU 11111 1101110 | 00111 1011111 
-   1: FU 11111 1111111 | 11011 1111111 
+   0: FU 10000 1111111 | 11111 1111111 
+   1: FU 10000 1101101 | 11111 1111111 
 sub population 1:
-   2: FU 10010 0000101 | 00011 0000000 
-   3: FU 10010 0000101 | 00011 0000000 
-   4: FU 00000 0000000 | 00011 0000010 
+   2: MU 00000 0000000 | 00000 0001000 
+   3: MU 00001 0000000 | 00000 0000100 
+   4: MU 00000 0000100 | 00001 0111000 
 End of individual info.
 
 
@@ -3377,12 +3414,12 @@ Example:
 ...     dumper(alleleOnly=True)])
 individual info: 
 sub population 0:
-   0: MU   3  3  3  3  3   4  4  4  4  4  4  4 |   1  1  1  1  1   2  2  2  2  2  2  2 
-   1: MU   1  1  1  1  1   4  4  4  4  4  4  4 |   1  1  1  1  1   4  4  4  4  4  4  4 
+   0: MU   3  3  3  3  3   2  2  2  2  2  2  2 |   1  1  1  1  1   4  4  4  4  4  4  4 
+   1: FU   3  3  3  3  3   4  4  4  4  4  4  4 |   1  1  1  1  1   2  2  2  2  2  2  2 
 sub population 1:
-   2: FU   3  3  3  3  3   4  4  4  4  4  4  4 |   1  1  1  1  1   4  4  4  4  4  4  4 
-   3: MU   1  1  1  1  1   2  2  2  2  2  2  2 |   1  1  1  1  1   4  4  4  4  4  4  4 
-   4: MU   1  1  1  1  1   2  2  2  2  2  2  2 |   3  3  3  3  3   2  2  2  2  2  2  2 
+   2: MU   1  1  1  1  1   4  4  4  4  4  4  4 |   3  3  3  3  3   4  4  4  4  4  4  4 
+   3: FU   1  1  1  1  1   4  4  4  4  4  4  4 |   3  3  3  3  3   4  4  4  4  4  4  4 
+   4: MU   3  3  3  3  3   4  4  4  4  4  4  4 |   3  3  3  3  3   4  4  4  4  4  4  4 
 End of individual info.
 
 
@@ -3657,11 +3694,11 @@ Example:
 ...     dumper(alleleOnly=True)])
 individual info: 
 sub population 0:
-   0: MU   3  0  6   0  0  0  7  0 |   0  0  6   0  0  0  7  0 
-   1: MU   3  0  8   0  0  0  0  0 |   0  0  1   0  0  0  9  0 
-   2: MU   7  0  0   0  0  0  0  0 |   0  0  1   0  0  0  0  0 
-   3: MU   2  0  1   0  0  0  6  0 |   7  0  0   0  0  0  0  0 
-   4: MU   7  0  0   0  0  0  0  0 |   0  0  5   0  0  0  3  0 
+   0: MU   1  0  7   0  0  0  0  0 |   0  0  7   0  0  0  9  0 
+   1: MU   0  0  0   0  0  0  0  0 |   7  0  9   0  0  0  0  0 
+   2: MU   0  0  0   0  0  0  0  0 |   0  0  0   0  0  0  6  0 
+   3: MU   0  0  6   0  0  0  5  0 |   0  0  0   0  0  0  0  0 
+   4: MU   0  0  4   0  0  0  1  0 |   6  0  4   0  0  0  0  0 
 End of individual info.
 
 
@@ -8637,12 +8674,12 @@ Example:
 ...     dumper(alleleOnly=True, dispWidth=2)])
 individual info: 
 sub population 0:
-   0: FU   1  2  3  4  5   5  6  7  8  9 10 11 |   0  1  2  3  4   6  7  8  9 10 11 12 
-   1: MU   1  2  3  4  5   6  7  8  9 10 11 12 |   0  1  2  3  4   6  7  8  9 10 11 12 
+   0: FU   0  1  2  3  4   6  7  8  9 10 11 12 |   0  1  2  3  4   6  7  8  9 10 11 12 
+   1: MU   1  2  3  4  5   5  6  7  8  9 10 11 |   1  2  3  4  5   5  6  7  8  9 10 11 
 sub population 1:
-   2: MU   1  2  3  4  5   6  7  8  9 10 11 12 |   1  2  3  4  5   6  7  8  9 10 11 12 
-   3: MU   1  2  3  4  5   7  8  9 10 11 12 13 |   1  2  3  4  5   7  8  9 10 11 12 13 
-   4: FU   1  2  3  4  5   6  7  8  9 10 11 12 |   2  3  4  5  6   6  7  8  9 10 11 12 
+   2: FU   1  2  3  4  5   7  8  9 10 11 12 13 |   2  3  4  5  6   7  8  9 10 11 12 13 
+   3: FU   1  2  3  4  5   6  7  8  9 10 11 12 |   1  2  3  4  5   6  7  8  9 10 11 12 
+   4: FU   2  3  4  5  6   7  8  9 10 11 12 13 |   2  3  4  5  6   6  7  8  9 10 11 12 
 End of individual info.
 
 
@@ -8968,9 +9005,9 @@ Example:
 ...   dumper(alleleOnly=True)])
 individual info: 
 sub population 0:
-   0: MU   0  0  0   0  0  0  0  0 |   0  0  0   8  8  8  0  0 
-   1: MU   0  0  0   0  8  0  0  0 |   0  0  0   8  0  0  0  0 
-   2: MU   0  0  0   8  8  8  0  0 |   0  0  0   8  0  0  0  0 
+   0: MU   0  0  0   8  8  8  0  0 |   0  0  0   8  0  0  0  0 
+   1: MU   0  0  0   0  0  0  0  0 |   0  0  0   0  8  0  0  0 
+   2: MU   0  0  0   8  0  0  0  0 |   0  0  0   8  8  8  0  0 
 End of individual info.
 
 
@@ -9110,10 +9147,10 @@ Example:
 ...     ],
 ...   end = 30
 ... )        
-0.398450	0.201000
-0.398350	0.197800
-0.399650	0.193450
-0.395200	0.187200
+0.394850	0.201850
+0.402450	0.199350
+0.399000	0.185350
+0.404400	0.172750
 True
 >>>
 
@@ -10281,20 +10318,20 @@ Example:
 ... )
 individual info: 
 sub population 0:
-   0: FU   1  0  3  2   2  2  2  0  2   0  3  1  0  0  2 |   2  1  2  1   2  2  1  2  0   1  1  1  0  2  3 
-   1: FU   2  1  1  1   2  2  2  3  1   3  2  2  1  0  2 |   2  3  1  1   2  0  1  2  2   2  3  0  1  2  1 
-   2: FU   1  1  2  0   3  1  1  1  0   2  3  2  1  1  1 |   3  2  3  2   3  2  0  1  0   0  1  3  1  2  0 
-   3: FU   2  2  3  0   3  1  3  2  2   1  2  2  2  3  2 |   0  3  1  3   3  2  0  2  2   0  3  2  0  0  3 
+   0: MU   2  2  1  1   3  0  2  3  2   0  3  2  0  0  2 |   2  2  1  0   0  2  0  1  2   3  1  3  1  0  3 
+   1: FU   1  0  2  2   1  3  0  1  0   2  0  3  3  2  0 |   1  2  2  2   1  2  2  1  2   1  1  2  2  3  2 
+   2: MU   2  1  0  2   2  3  3  1  0   1  2  3  2  3  2 |   2  2  3  3   2  2  2  3  2   1  2  3  2  2  3 
+   3: FU   3  3  1  1   2  2  2  3  0   1  1  1  0  2  1 |   2  2  1  3   2  2  2  0  2   0  1  1  0  2  2 
 End of individual info.
 
 
 No ancenstral population recorded.
 individual info: 
 sub population 0:
-   0: FU   2  1  1  1   2  2  2  3  1   2  3  0  1  2  1 |   2  1  2  1   2  2  2  0  2   1  1  1  0  2  3 
-   1: FU   2  3  1  1   2  2  2  3  1   2  3  0  1  2  1 |   2  3  1  1   2  2  2  3  1   3  2  2  1  0  2 
-   2: FU   1  0  3  2   2  2  2  0  2   0  3  1  0  0  2 |   2  3  1  1   2  0  1  2  2   3  2  2  1  0  2 
-   3: FU   1  0  3  2   2  2  1  2  0   1  1  1  0  2  3 |   0  3  1  3   3  2  0  2  2   0  3  2  0  0  3 
+   0: FU   2  2  3  3   2  3  3  1  0   1  2  3  2  3  2 |   1  0  2  2   1  3  0  1  0   2  0  3  3  2  0 
+   1: MU   2  2  1  0   0  2  0  1  2   0  3  2  0  0  2 |   1  0  2  2   1  2  2  1  2   1  1  2  2  3  2 
+   2: FU   2  2  3  3   2  2  2  3  2   1  2  3  2  2  3 |   2  2  1  3   2  2  2  0  2   1  1  1  0  2  1 
+   3: FU   2  1  0  2   2  2  2  3  2   1  2  3  2  2  3 |   2  2  1  3   2  2  2  3  0   0  1  1  0  2  2 
 End of individual info.
 
 
@@ -10308,10 +10345,10 @@ True
 ... )
 individual info: 
 sub population 0:
-   0: FU   0  3  1  2   3  2  0  2  0   0  3  1  0  2  3 |   2  1  1  1   2  2  2  3  1   2  3  1  0  2  3 
-   1: FU   2  3  1  1   2  2  2  3  1   2  3  2  1  0  2 |   2  1  2  1   2  2  2  0  2   2  3  1  0  2  3 
-   2: MU   0  3  1  2   2  2  1  2  2   1  1  2  0  0  3 |   2  1  1  1   2  2  2  0  2   1  1  0  1  2  1 
-   3: FU   2  1  2  1   2  2  2  0  2   1  1  0  1  2  1 |   2  3  1  2   2  0  1  0  2   0  3  2  1  0  2 
+   0: MU   2  1  0  3   2  2  2  3  0   0  1  3  2  2  3 |   2  2  1  2   1  2  2  1  2   1  1  2  0  0  2 
+   1: MU   2  2  1  3   2  2  2  0  2   1  2  1  0  2  1 |   2  2  1  2   0  2  0  1  2   1  1  2  0  0  2 
+   2: MU   2  2  1  2   2  2  2  3  2   0  1  3  2  2  3 |   2  2  1  2   1  2  2  1  2   1  1  2  0  0  2 
+   3: FU   2  2  3  3   2  2  2  0  2   1  2  1  0  2  1 |   2  2  1  2   1  2  2  1  2   1  1  2  0  0  2 
 End of individual info.
 
 
@@ -11868,18 +11905,18 @@ Example:
 ...     dumper(alleleOnly=True, stage=PrePostMating)])
 individual info: 
 sub population 0:
-   0: FU   2  1  2   2  1  2  1  2 |   2  2  0   2  2  1  0  2 
-   1: MU   1  0  2   2  0  1  2  1 |   2  1  1   2  2  2  2  1 
-   2: MU   1  2  2   0  2  0  0  1 |   2  2  2   2  2  1  2  0 
+   0: FU   1  2  1   2  1  2  2  2 |   1  2  1   1  0  2  1  1 
+   1: MU   2  1  0   0  1  1  2  0 |   2  2  0   1  1  0  2  2 
+   2: MU   0  0  0   1  2  2  0  2 |   2  2  1   0  2  2  1  2 
 End of individual info.
 
 
 No ancenstral population recorded.
 individual info: 
 sub population 0:
-   0: FU   3  2  1   1  2  1  2  1 |   3  1  1   3  3  0  1  1 
-   1: MU   2  1  3   3  1  2  3  2 |   3  2  2   3  3  3  1  2 
-   2: MU   2  3  3   0  3  1  1  2 |   1  3  3   3  1  2  3  0 
+   0: FU   2  3  2   1  2  3  3  1 |   2  1  0   0  1  3  2  2 
+   1: MU   3  2  1   1  2  0  3  1 |   3  1  1   2  2  1  3  3 
+   2: MU   1  0  1   0  3  3  0  1 |   3  1  2   1  3  3  0  3 
 End of individual info.
 
 

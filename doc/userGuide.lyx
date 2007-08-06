@@ -1,4 +1,4 @@
-#LyX 1.5.0rc2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -18,7 +18,7 @@
 
 \setreleaseinfo{Release 0.7.11 (\mbox{$$Rev$$})}
 \authoraddress{
-{\bf Department of Epidemiology, U.T. MD Anderson Cancer Center}\\
+{\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
 {\bf URL: } \textsf{http://simupop.sourceforge.net} \\
 {\bf Mailing List: } \textsf{simupop-list@lists.sourceforge.net}
@@ -65,7 +65,8 @@ Last modified \\
 \listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
-\author "Anonymous" 
+\author "" 
+\author "" 
 \author "" 
 \end_header
 
@@ -86,7 +87,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status collapsed
+status open
 
 \begin_layout Standard
 \begin_inset ERT
@@ -203,6 +204,23 @@ hspace{.3cm} Python user community
 
 \backslash
 hspace{.3cm} Keck Center for Computational and Structural Biology
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} U.T.
+ M.D.
+ Anderson Cancer Center
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \end_inset

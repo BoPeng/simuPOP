@@ -26,6 +26,30 @@ if not os.path.isdir('log'):
 from simuPOP import *
 
 
+#file log/src_genoStruTrait.log
+# create a population, most parameters have default values
+pop = population(size=5, ploidy=2, loci=[5,10],
+    lociPos=[range(0,5),range(0,20,2)],
+    alleleNames=['A','C','T','G'],
+    subPop=[2,3], maxAllele=3)
+print pop.popSize()
+print pop.ploidy()
+print pop.ploidyName()
+print pop.numChrom()
+print pop.locusPos(2)
+print pop.alleleName(1)
+# get the fourth individual of the population
+ind = pop.individual(3)
+# access genotypic structure info
+print ind.ploidy()
+print ind.numChrom()
+print ind.numLoci(0)
+print ind.genoSize()
+# and from simulator level
+simu = simulator(pop, randomMating(), rep=3)
+print simu.numChrom()
+#end
+
 #file log/src_population.log
 # a Wright-Fisher population
 WF = population(size=100, ploidy=1, loci=[1])
