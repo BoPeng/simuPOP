@@ -230,7 +230,7 @@ namespace std
 %newobject simuPOP::population::clone;
 %newobject simuPOP::simulator::getPopulation;
 %newobject simuPOP::simulator::clone;
-%newobject simuPOP::Operator::clone;
+%newobject simuPOP::baseOperator::clone;
 %newobject simuPOP::stat::clone;
 
 // the following load a docstring file extracted from doxgen output.

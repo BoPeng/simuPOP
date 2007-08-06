@@ -544,7 +544,7 @@ namespace simuPOP
 		{
 			pop.ind(off[2*i]).setInfo(i, pedindexIdx);
 			pop.ind(off[2*i+1]).setInfo(i, pedindexIdx);
-			if( m_affectedness == pop.ind(off[2*i]).affected() 
+			if( m_affectedness == pop.ind(off[2*i]).affected()
 				&& m_affectedness == pop.ind(off[2*i+1]).affected())
 			{
 				m_validSibs[pop.subPopIndPair(off[2*i]).first].push_back(i);
@@ -942,13 +942,13 @@ namespace simuPOP
 		}
 		// just to make sure
 		pop.useAncestralPop(0);
-		// saving samples in a new population, 
+		// saving samples in a new population,
 		population & newPop = pop.newPopByIndID(2);
 		//
 		resetParentalIndex(newPop, "father_idx", "mother_idx", "oldindex");
 		return newPop;
 	}
-	
+
 	bool nuclearFamilySample::prepareSample(population& pop)
 	{
 		DBG_FAILIF(pop.ancestralDepth() < 1, ValueError,
@@ -1101,7 +1101,7 @@ namespace simuPOP
 		pop.useAncestralPop(1);
 		vectorf off;
 		int pedIdx = 0;
-		
+
 		for(size_t i=0; i< pop.popSize(); ++i)
 		{
 			individual& ind = pop.ind(i);

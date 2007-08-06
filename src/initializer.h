@@ -38,12 +38,12 @@ namespace simuPOP
 {
 
 	/// initialize alleles at the start of a generation
-    /**
-    Initializers are used to initialize populations before evolution.
-    They are set to be \c PreMating operators by default. simuPOP provides
-    three initializers. One assigns alleles by random, one assigns a fixed
-    set of genotypes, and the last one calls a user-defined function.
-    */
+	/**
+	Initializers are used to initialize populations before evolution.
+	They are set to be \c PreMating operators by default. simuPOP provides
+	three initializers. One assigns alleles by random, one assigns a fixed
+	set of genotypes, and the last one calls a user-defined function.
+	*/
 	class initializer: public baseOperator
 	{
 		public:
@@ -83,23 +83,23 @@ namespace simuPOP
 				return new initializer(*this);
 			}
 
-            /// used by Python print function to print out the general information of the initializer
+			/// used by Python print function to print out the general information of the initializer
 			virtual string __repr__()
 			{
 				return "<simuPOP::initializer>";
 			}
 
-            /// set the range of a population \c pop???
+			/// set the range of a population \c pop???
 			void setRanges(population& pop);
 
-            /// ???
+			/// ???
 			void initSexIter()
 			{
 				if(! m_sex.empty())
 					m_sexItr = m_sex.begin();
 			}
 
-            /// ???
+			/// ???
 			Sex nextSex();
 
 		protected:
@@ -133,36 +133,36 @@ namespace simuPOP
 	/// initialize genotypes by given allele frequencies, and sex by male frequency
 	/**
 	This operator accepts \c alleleFreq or \c alleleFreqs.??? The first one
-    ignores subpopulation structure while the second one gives different initial
-    allele frequencies to different \c subpop or ranges. Allele frequencies can
-    differ in \c subpop. Sex is also assigned randomly.
+	ignores subpopulation structure while the second one gives different initial
+	allele frequencies to different \c subpop or ranges. Allele frequencies can
+	differ in \c subpop. Sex is also assigned randomly.
 
-    <funcForm>InitByFreq</funcForm>       
+	<funcForm>InitByFreq</funcForm>
 	*/
 	class initByFreq: public initializer
 	{
 		public:
-            /// randomly assign alleles according to given allele frequencies
-			/** 			
+			/// randomly assign alleles according to given allele frequencies
+			/**
 			\param alleleFreq an array of allele frequencies. The sum of all the frequencies
-                must be 1; or for a matrix of allele frequencies, each row corresponses to
-                a subpopulation.
+				must be 1; or for a matrix of allele frequencies, each row corresponses to
+				a subpopulation.
 			\param subPop an array specifies applicable subpopulations
 			\param indRange a <tt>[begin, end]</tt> pair of the range of absolute indices
-                of individuals, for example, <tt>([1,2])</tt>; or an array of <tt>[begin, end]</tt>
-                pairs, such as <tt>([[1,4],[5,6]])</tt>. This is how you can initialize individuals
-                differently within subpopulations. Note that ranges are in the form of [a,b).
-                I.e., range [4,6] will intialize individual 4, 5, but not 6. As a shortcut for [4,5],
-                you can use [4] to specify one individual.
+				of individuals, for example, <tt>([1,2])</tt>; or an array of <tt>[begin, end]</tt>
+				pairs, such as <tt>([[1,4],[5,6]])</tt>. This is how you can initialize individuals
+				differently within subpopulations. Note that ranges are in the form of [a,b).
+				I.e., range [4,6] will intialize individual 4, 5, but not 6. As a shortcut for [4,5],
+				you can use [4] to specify one individual.
 			\param identicalInds whether or not make individual genotypies identical
-                in all subpopulation. If \c True, this operator will randomly generate genotype for
-                an individual and spread it to the whole subpopulation in the given range.
+			in all subpopulation. If \c True, this operator will randomly generate genotype for
+			an individual and spread it to the whole subpopulation in the given range.
 			\param loci a vector of locus indices at which initialization will be done. If empty, apply to all loci.
-            \param locus a shortcut to \c loci
+			\param locus a shortcut to \c loci
 			\param atPloidy initialize which copy of chromosomes. Default to all.
 			\param maleFreq male frequency. Default to \c 0.5. Sex will be initialized with this parameter.
 			\param sex an array of sex <tt>[Male, Female, Male...]</tt> for individuals. The length of sex will not
-                be checked. If it is shorter than the number of individuals, sex will be reused from the beginning.
+			be checked. If it is shorter than the number of individuals, sex will be reused from the beginning.
 			\param stage default to \c PreMating
 
 			\test src_initByFreq.log Operator initByFreq
@@ -198,13 +198,13 @@ namespace simuPOP
 				return new initByFreq(*this);
 			}
 
-            /// used by Python print function to print out the general information of the operator \c initByFreq
+			/// used by Python print function to print out the general information of the operator \c initByFreq
 			virtual string __repr__()
 			{
 				return "<simuPOP::initByFreq>";
 			}
 
-            /// apply operator \c initByFreq???
+			/// apply operator \c initByFreq???
 			bool apply(population& pop);
 
 		private:
@@ -220,43 +220,43 @@ namespace simuPOP
 	/// initialize genotype by value and then copy to all individuals
 	/**
 	\c initByValue operator gets one copy of chromosomes or the whole
-    genotype (or of those corresponds to \c loci) of an individual
-    and copy them to all or a subset of individuals.
+	genotype (or of those corresponds to \c loci) of an individual
+	and copy them to all or a subset of individuals.
 	This operator assign given alleles to specified individuals. Every
-    individual will have the same genotype. The parameter combinations should be
+	individual will have the same genotype. The parameter combinations should be
 	\li <tt>value - subPop/indRange</tt>: individual in
-        \c subPop or in range(s) will be assigned genotype 'value';
+		\c subPop or in range(s) will be assigned genotype 'value';
 	\li <tt>subPop/indRange</tt>: \c subPop or \c indRange should have
-        the same length as values. Each item of values will be assigned to
-        each \c subPop or \c indRange.
+		the same length as values. Each item of values will be assigned to
+		each \c subPop or \c indRange.
 
-    <funcForm>InitByValue</funcForm>
+	<funcForm>InitByValue</funcForm>
 	*/
 	class initByValue: public initializer
 	{
 		public:
-            /// initialize populations by given alleles
+			/// initialize populations by given alleles
 			/**
 			\param value an array of genotypes of one individual, having the same
-                length as the length of <tt>loci()</tt> or <tt>loci()*ploidy()</tt>
-                or <tt>pop.genoSize()</tt> (whole genotype) or <tt>totNumLoci()</tt>
-                (one copy of chromosome). This parameter can also be an array of arrays
-                of genotypes of one individual. Should have length one or equal to \c subpop
-                or ranges or proportion. If value is an array of values, it should have
-                the same length as \c subpop, \c indRange or \c proportions.
+				length as the length of <tt>loci()</tt> or <tt>loci()*ploidy()</tt>
+				or <tt>pop.genoSize()</tt> (whole genotype) or <tt>totNumLoci()</tt>
+				(one copy of chromosome). This parameter can also be an array of arrays
+				of genotypes of one individual. Should have length one or equal to \c subpop
+				or ranges or proportion. If value is an array of values, it should have
+				the same length as \c subpop, \c indRange or \c proportions.
 			\param loci a vector of loci indices. If empty, apply to all loci.
-            \param locus a shortcut to \c loci
+			\param locus a shortcut to \c loci
 			\param atPloidy initialize which copy of chromosomes. Default to all.
 			\param subPop an array of applicable subpopulations. If values are given,
-                should have equal length to values.
- 			\param indRange a <tt>[begin, end]</tt> pair of range of individuals; or
-                an array of <tt>[begin, end]</tt> pairs.
+			should have equal length to values.
+			\param indRange a <tt>[begin, end]</tt> pair of range of individuals; or
+			an array of <tt>[begin, end]</tt> pairs.
 			\param proportions an array of percentages for each item in values. If given,
-                assign given genotypes randomly.
+			assign given genotypes randomly.
 			\param maleFreq male frequency
 			\param sex an array of sex <tt>[Male, Female, Male...]</tt> for individuals.
-                The length of sex will not be checked. If length of sex is shorter than
-                the number of individuals, sex will be reused from the beginning.
+			The length of sex will not be checked. If length of sex is shorter than
+			the number of individuals, sex will be reused from the beginning.
 			\param stages default to \c PreMating
 
 			\test src_initByValue.log Operator initByValue
@@ -293,13 +293,13 @@ namespace simuPOP
 				return new initByValue(*this);
 			}
 
-            /// used by Python print function to print out the general information of the operator \c initByValue
+			/// used by Python print function to print out the general information of the operator \c initByValue
 			virtual string __repr__()
 			{
 				return "<simuPOP::initByValue>";
 			}
 
-            /// apply operator \c initByValue???
+			/// apply operator \c initByValue???
 			bool apply(population& pop);
 
 		private:
@@ -312,16 +312,16 @@ namespace simuPOP
 
 	/// initialize genotype by value and then copy to all individuals
 	/**
-    <tt>Spread(ind, subPop)</tt> spreads the genotype of \c ind to all
-    individuals in an array of subpopulations. The default value of \c subPop
-    is the subpopulation where \c ind resides.
-    
-    <funcForm>Spread</funcForm>                 
-    */
+	<tt>Spread(ind, subPop)</tt> spreads the genotype of \c ind to all
+	individuals in an array of subpopulations. The default value of \c subPop
+	is the subpopulation where \c ind resides.
+
+	<funcForm>Spread</funcForm>
+	*/
 	class spread:public baseOperator
 	{
 		public:
-			/// copy genotypes of \c ind to all individuals in \c subPop            
+			/// copy genotypes of \c ind to all individuals in \c subPop
 			spread(ULONG ind, vectoru subPop=vectoru(),
 				int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
@@ -338,13 +338,13 @@ namespace simuPOP
 				return new spread(*this);
 			}
 
-            /// used by Python print function to print out the general information of the operator \c spread
+			/// used by Python print function to print out the general information of the operator \c spread
 			virtual string __repr__()
 			{
 				return "<simuPOP::spread genotype>";
 			}
 
-            /// apply operator \c spread???
+			/// apply operator \c spread???
 			bool apply(population& pop)
 			{
 				std::pair<UINT, ULONG> p = pop.subPopIndPair(m_ind);
@@ -371,30 +371,29 @@ namespace simuPOP
 
 	};
 
-	
-    /// a hybrid initializer???
-    /**
-    \c pyInit is a hybrid initializer. User should define a function with parameters
-    allele, ploidy and subpopulation indices, and return an allele value. 
-	Users of this operator must supply a Python function with parameter 
+	/// a hybrid initializer???
+	/**
+	\c pyInit is a hybrid initializer. User should define a function with parameters
+	allele, ploidy and subpopulation indices, and return an allele value.
+	Users of this operator must supply a Python function with parameter
 	<tt>(index, ploidy, subpop)</tt>.
 	This operator will loop through all individual in each subpopulation and call this function
 	to initialize populations. The arrange of parameters allows different initialization scheme for each subpop.
 
-    <funcForm>PyInit</funcForm>
-    */
+	<funcForm>PyInit</funcForm>
+	*/
 	class pyInit:public initializer
 	{
 
-        /// initialize populations using given user function        
+		/// initialize populations using given user function
 		public:
 			/**
 			\param func a Python function with parameter <tt>(index, ploidy, subpop)</tt>, where
-                \li \c index is the allele index ranging from \c 0 to <tt>totNumLoci(-1)</tt>,
-                \li \c ploidy is the index of the copy of chromosomes)
-                \li \c subpop is the subpopulation index.
+				\li \c index is the allele index ranging from \c 0 to <tt>totNumLoci(-1)</tt>,
+				\li \c ploidy is the index of the copy of chromosomes)
+				\li \c subpop is the subpopulation index.
 
-                The return value of this function should be an integer.
+				The return value of this function should be an integer.
 			\param loci a vector of loci indices. If empty, apply to all loci.
 			\param locus a shortcut to \c loci
 			\param atPloidy initialize which copy of chromosomes. Default to all.
@@ -439,13 +438,13 @@ namespace simuPOP
 				return new pyInit(*this);
 			}
 
-            /// used by Python print function to print out the general information of the operator \c pyInit
+			/// used by Python print function to print out the general information of the operator \c pyInit
 			virtual string __repr__()
 			{
 				return "<simuPOP::pyInit>";
 			}
 
-            ///  apply operator \c pyInit???
+			///  apply operator \c pyInit???
 			bool apply(population& pop);
 
 		private:

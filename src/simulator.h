@@ -83,25 +83,25 @@ namespace simuPOP
 	// population (or one of its subclasses) plus a 'scratch population'; it has
 	// a mating object that knows how to generate next gen; it controls
 	// the evolution process by applying pre- during- and post- mating Operators
-	// during evolution. } 
+	// during evolution. }
 
-    /// simulator manages several replicates of a population, evolve them using given mating scheme and operators
+	/// simulator manages several replicates of a population, evolve them using given mating scheme and operators
 	/**
 	Simulators combine three important components of simuPOP:
 	population, mating scheme and operators together. A
 	simulator is created with an instance of \c population, a
 	replicate number \c rep and a mating scheme. It makes \c rep
-    number of replicates of this population and control the
-    evolution process of them. \n
+	number of replicates of this population and control the
+	evolution process of them. \n
 
 	The most important function of a simulator is \c evolve().
-    It accepts an array of operators as its parameters,
+	It accepts an array of operators as its parameters,
 	among which, \c preOps and \c postOps will be applied to the
 	populations at the beginning and the end of evolution, respectively,
-    whereas	\c ops will be applied at every generation. \n
+	whereas	\c ops will be applied at every generation. \n
 
 	Simulators separate operators into \em pre-, \em during-, and
-    \em post-mating operators. During evolution, a simulator first
+	\em post-mating operators. During evolution, a simulator first
 	apply all pre-mating operators and then call the \c mate()
 	function of the given mating scheme, which will call
 	during-mating operators during the birth of each offspring.
@@ -109,8 +109,8 @@ namespace simuPOP
 	applied to the offspring in the order at which they appear in the operator list. \n
 
 	Operators can be applied to a specific replicate, a group of replicates,
-    or specific generations, determined by the \c rep, \c grp, \c begin,
-    \c end, \c step, and \c at parameters.\n
+	or specific generations, determined by the \c rep, \c grp, \c begin,
+	\c end, \c step, and \c at parameters.\n
 
 	Simulators can evolve a given number of generations (the
 	\c end parameter of \c evolve), or evolve indefinitely until
@@ -123,7 +123,7 @@ namespace simuPOP
 	of \c 'txt', \c 'bin', or \c 'xml'. So we can stop a
 	simulation and resume it at another time or on another
 	machine. It is also a good idea to save a snapshot of a
-	simulation every several hundred generations. 
+	simulation every several hundred generations.
 	*/
 	class simulator : public GenoStruTrait
 	{
@@ -143,15 +143,15 @@ namespace simuPOP
 			\param matingScheme a mating scheme
 			\param rep number of replicates. Default to \c 1.
 			\param grp group number for each replicate. Operators can
-              be applied to a group of replicates using its \c grp parameter.
-            \param applyOpToStoppedReps 	If set, the simulator will continue to apply operators
+			  be applied to a group of replicates using its \c grp parameter.
+			\param applyOpToStoppedReps 	If set, the simulator will continue to apply operators
 			to all stopped replicates until all replicates are marked
 			'stopped'.
-            \param stopIfOneRepStops If set, the simulator will stop evolution if one replicate stops.
+			\param stopIfOneRepStops If set, the simulator will stop evolution if one replicate stops.
 			\return a simulator
 			\sa population, mating
 			*/
-			simulator(const population & pop, mating&  matingScheme, 
+			simulator(const population & pop, mating&  matingScheme,
 				bool stopIfOneRepStops=false,
 				bool applyOpToStoppedReps=false,
 				int rep = 1, vectori grp=vectori());
@@ -166,12 +166,11 @@ namespace simuPOP
 			*/
 			~simulator();
 
-            /// deep copy of a simulator
+			/// deep copy of a simulator
 			simulator * clone() const;
 
-			
 			/// add an information field to all replicates
-			/** 
+			/**
 			Add an information field to all replicate, and to the
 			simulator itself. This is important because all populations
 			must have the same genotypic information as the simulator.
@@ -181,22 +180,19 @@ namespace simuPOP
 			*/
 			void addInfoField(const string & field, double init=0);
 
-
 			/// add information fields to all replicates
-			/** 
+			/**
 			Add given information fields to all replicate, and to the
 			simulator itself.
 			*/
 			void addInfoFields(const vectorstr & fields, double init=0);
 
-
 			/// set ancestral depth of all replicates
 			void setAncestralDepth(UINT depth);
 
-
 			/// the \c rep replicate of this simulator
 			/**
-            This function is named \c population in the Python interface.
+			This function is named \c population in the Python interface.
 			\param rep the index number of replicate which will be accessed
 			\return reference to population \c rep.
 			\note  The returned reference is temporary in the sense that
@@ -213,13 +209,13 @@ namespace simuPOP
 				return *m_ptrRep[rep];
 			}
 
-            /// return a copy of population \c rep            
+			/// return a copy of population \c rep
 			/**
 			return a temporary reference of one of the populations. \em 'Reference' means
-		    that the changes to the referred population will reflect to the one in simulator.
-		    \em 'Temporary' means that the referred population might be invalid after evolution.
+			that the changes to the referred population will reflect to the one in simulator.
+			\em 'Temporary' means that the referred population might be invalid after evolution.
 			\param rep the index number of the replicate which will be obtained
-			\param destructive if true, destroy the copy of population within this simulator. 
+			\param destructive if true, destroy the copy of population within this simulator.
 				Default to false. <tt>getPopulation(rep, true)</tt> is a more efficient way
 				to get hold of a population when the simulator will no longer be used.
 			\return reference to a population
@@ -232,7 +228,7 @@ namespace simuPOP
 					pop->swap(*m_ptrRep[rep]);
 					return *pop;
 				} else
-					return *new population( *m_ptrRep[rep]);
+				return *new population( *m_ptrRep[rep]);
 			}
 
 			/// set mating scheme
@@ -266,13 +262,13 @@ namespace simuPOP
 				return m_curRep;
 			}
 
-            /// return the number of replicates
+			/// return the number of replicates
 			UINT numRep() const
 			{
 				return m_numRep;
 			}
 
-            /// return the current generation number
+			/// return the current generation number
 			ULONG gen() const
 			{
 				return m_gen;
@@ -335,26 +331,26 @@ namespace simuPOP
 			replicate will be stopped. The behavior of the simulator
 			will be determined by flags \c applyOpToStoppedReps and \c stopIfOneRepStopss.
 			This is exactly how terminators work.
-			
+
 			\note that an operator can be applied at multiple stages, e.g.
 			stage=PrePostMating.
-			
+
 			\param ops operators that will be applied at each generation,
-              if they are active at that generation. (Determined by
-              the \c begin, \c end, \c step and \c at parameters of the operator.)
+			if they are active at that generation. (Determined by
+			the \c begin, \c end, \c step and \c at parameters of the operator.)
 			\param preOps operators that will be applied before evolution.
-			  \c evolve() function will \em not check if they are active.
+			\c evolve() function will \em not check if they are active.
 			\param postOps operators that will be applied after evolution
 			\param end ending generation. Default to \c -1. In this case, there
-			  is no ending generation and a simulator will only be ended by a
-			  terminator. Otherwise, it should be a number greater than current
-			  generation number.
+			is no ending generation and a simulator will only be ended by a
+			terminator. Otherwise, it should be a number greater than current
+			generation number.
 			\param dry run mode. Default to \c False.
 			\result True if evolution performed successfully.
 			\sa simulator::step()
 			\note When <tt>end = -1</tt>, you can not specify negative generation
-			  parameters to operators. How would an operator know which
-			  genertion is the -1 genertion if no ending genertion is given?
+			parameters to operators. How would an operator know which
+			genertion is the -1 genertion if no ending genertion is given?
 			*/
 			bool evolve(const vectorop& ops,
 				const vectorop& preOps = vectorop(),
@@ -366,7 +362,7 @@ namespace simuPOP
 			\param ops operators that will be applied at all generations.
 			  Of course they might not be active at all generations.
 			\result True if evolution finishs successfully.
-            \note Pre-mating oeprators are applied before post-mating operators.
+			\note Pre-mating oeprators are applied before post-mating operators.
 			  No during-mating operators are allowed.
 			*/
 			bool apply(const vectorop ops, bool dryrun=false);
@@ -382,7 +378,7 @@ namespace simuPOP
 				return(on);
 			}
 
-            /// CPPONLY get the status of \c setStopIfOneRepStops
+			/// CPPONLY get the status of \c setStopIfOneRepStops
 			bool stopIfOneRepStops()
 			{
 				return(m_stopIfOneRepStops);
@@ -401,13 +397,13 @@ namespace simuPOP
 				return(on);
 			}
 
-            /// CPPONLY get the status of \c setApplyOpToStoppedReps
+			/// CPPONLY get the status of \c setApplyOpToStoppedReps
 			bool applyOpToStoppedReps()
 			{
 				return(m_applyOpToStoppedReps);
 			}
 
-			/// get simulator namespace. If <tt>rep > 0</tt> is given, return the namespace of replicate \c rep 
+			/// get simulator namespace. If <tt>rep > 0</tt> is given, return the namespace of replicate \c rep
 			PyObject* vars(UINT rep, int subPop=-1)
 			{
 				if( static_cast<UINT>(rep) >= m_numRep )

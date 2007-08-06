@@ -327,7 +327,7 @@ namespace simuPOP
 			{
 				DBG_FAILIF((diff > 0 && diff*m_step < 0) || (diff < 0 && diff*m_step > 0),
 					IndexError, "Index difference exceeds integer range. Your may need a 64bit computer to simulate such a big population.");
-					
+
 				m_ptr -= diff * m_step;
 				return *this;
 			}
@@ -473,8 +473,6 @@ namespace simuPOP
 
 	// ///////////////////////////////////////////////////////
 	/** CPPONLY shared variables.
-
-	 
 
 	This class set and read Python variables using the given
 	dictionary.

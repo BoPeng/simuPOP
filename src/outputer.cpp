@@ -103,7 +103,7 @@ namespace simuPOP
 				UINT sp = pop.subPopIndPair(range[i]).first;
 				out << "sub population " << sp << ":" << endl;
 
-				for( population::IndIterator ind = pop.indBegin()+range[i]; 
+				for( population::IndIterator ind = pop.indBegin()+range[i];
 					ind != pop.indBegin()+range[i+1]; ++ind, ++count)
 				{
 					out << setw(4) << (ind - pop.indBegin()) << ": ";

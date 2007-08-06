@@ -32,7 +32,7 @@
 
 namespace simuPOP
 {
-    /// mutator class
+	/// mutator class
 	/**
 	The base class of all functional mutators. It is not supposed to be called directly.
 
@@ -50,16 +50,16 @@ namespace simuPOP
 	class mutator: public baseOperator
 	{
 		public:
-            /// create a mutator
+			/// create a mutator
 			/**
 			All mutators have the following common parameters. However, the actual meaning
 			of these parameters may vary according to different model. The only differences
-            between the following mutators are they way they actually mutate an allele, and
-            corresponding input parameters. Mutators record the number of mutation events at each locus.
+			between the following mutators are they way they actually mutate an allele, and
+			corresponding input parameters. Mutators record the number of mutation events at each locus.
 
 			\param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c loci)
 			\param loci a vector of loci indices. Will be ignored only when single rate is specified.
-                Default to all loci.
+				Default to all loci.
 			\param maxAllele maximum allowable allele. Interpreted by each sub mutaor class. Default to \c pop.maxAllele().
 			*/
 			mutator( const vectorf & rate=vectorf(),
@@ -185,12 +185,12 @@ namespace simuPOP
 
 	/// K-Allele Model mutator
 	/**
-    This mutator mutate an allele to another allelic state with equal probability.
-    The specified mutation rate is actually the 'probability to mutate'. So the
-    mutation rate to any other allelic state is actually \f$ (rate/(K-1)) \f$, where
-    \f$ K \f$ is specified by parameter \c maxAllele. You can also specify states for
-    this mutator. If the state parameter is given, all alleles must be one of the
-    states, and mutation will happen among them. states is defaulted to \c 1-maxAllele.???
+	This mutator mutate an allele to another allelic state with equal probability.
+	The specified mutation rate is actually the 'probability to mutate'. So the
+	mutation rate to any other allelic state is actually \f$ (rate/(K-1)) \f$, where
+	\f$ K \f$ is specified by parameter \c maxAllele. You can also specify states for
+	this mutator. If the state parameter is given, all alleles must be one of the
+	states, and mutation will happen among them. states is defaulted to \c 1-maxAllele.???
 	<funcForm>KamMutate</funcForm>
 	\sa Crow & Kimura 1970
 	*/
@@ -200,9 +200,9 @@ namespace simuPOP
 			/// create a K-Allele Model mutator
 			/**
 			\param rate mutation rate. It is the 'probability to mutate'. The actual
-                mutation rate to any of the other \c K-1 allelic states are <tt>rates/(K-1)</tt>.
+				mutation rate to any of the other \c K-1 allelic states are <tt>rates/(K-1)</tt>.
 			\param loci a vector of loci indices. Will be ignored only when single rate is specified.
-                Default to all loci.
+				Default to all loci.
 			\param maxAllele maximum allele that can be mutated to. For binary libraries
 			  allelic states will be <tt>[0, maxAllele]</tt>. Otherwise, they are <tt>[1, maxAllele]</tt>.
 
@@ -230,7 +230,7 @@ namespace simuPOP
 				return new kamMutator(*this);
 			}
 
-            /// used by Python print function to print out the general information of the \c kamMutator
+			/// used by Python print function to print out the general information of the \c kamMutator
 			virtual string __repr__()
 			{
 				return "<simuPOP::k-allele model mutator K=" +
@@ -244,7 +244,7 @@ namespace simuPOP
 	and that a mutation either increases or decreases the allele value by one.
 	For variable number tandem repeats loci (VNTR), the allele value is generally
 	taken as the number of tandem repeats in the DNA sequence.
-    <funcForm>SmmMutate</funcForm>
+	<funcForm>SmmMutate</funcForm>
 	\sa Kimura & Ohta 1978
 	*/
 	class smmMutator: public mutator
@@ -257,11 +257,11 @@ namespace simuPOP
 
 			\param incProb probability to increase allele state. Default to \c 0.5.
 
-            Please see \c mutator for the description of other parameters.     
+			Please see \c mutator for the description of other parameters.
 
 			  \test src_smmMutator.log Operator smmMutator
 			*/
-			smmMutator(const vectorf& rate=vectorf(), 
+			smmMutator(const vectorf& rate=vectorf(),
 				const vectoru & loci=vectoru(),
 				UINT maxAllele=0, double incProb=0.5,
 				string output=">", string outputExpr="",
@@ -280,7 +280,7 @@ namespace simuPOP
 
 			~smmMutator(){}
 
-            /// mutate according to the SMM model ???
+			/// mutate according to the SMM model ???
 			virtual void mutate(AlleleRef allele)
 			{
 				// inc
@@ -300,7 +300,7 @@ namespace simuPOP
 				return new smmMutator(*this);
 			}
 
-           /// used by Python print function to print out the general information of the \c smmMutator
+			/// used by Python print function to print out the general information of the \c smmMutator
 			virtual string __repr__()
 			{
 				return "<simuPOP::step-wise mutation model mutator>" ;
@@ -316,18 +316,18 @@ namespace simuPOP
 	<em>Generalized Stepwise Mutation model</em> (GSM) is an extension to stepwise
 	mutation model. This model assumes that alleles are represented by integer values
 	and that a mutation either increases or decreases the allele value by a random value.
-    In other words, in this model the change in the allelic state is drawn from a random
-    distribution. A <em>geometric generalized stepwise model</em> uses a geometric distribution with
-    parameter \f$ p \f$, which has mean \f$ \frac{p}{1-p} \f$ and variance \f$ \frac{p}{\left(1-p\right)^{2}} \f$. \n
-    
-    \c gsmMutator implements both models. If you specify a Python function without a
-    parameter, this mutator will use its return value each time a mutation occur; otherwise,
-    a parameter \f$ p \f$ should be provided and the mutator will act as a geometric generalized stepwise model.
+	In other words, in this model the change in the allelic state is drawn from a random
+	distribution. A <em>geometric generalized stepwise model</em> uses a geometric distribution with
+	parameter \f$ p \f$, which has mean \f$ \frac{p}{1-p} \f$ and variance \f$ \frac{p}{\left(1-p\right)^{2}} \f$. \n
 
-    <funcForm>GsmMutate</funcForm>
+	\c gsmMutator implements both models. If you specify a Python function without a
+	parameter, this mutator will use its return value each time a mutation occur; otherwise,
+	a parameter \f$ p \f$ should be provided and the mutator will act as a geometric generalized stepwise model.
+
+	<funcForm>GsmMutate</funcForm>
 	\sa Kimura & Ohta 1978
 
-			  \test src_gsmMutator.log Operator gsmMutator
+	\test src_gsmMutator.log Operator gsmMutator
 	*/
 	class gsmMutator: public mutator
 	{
@@ -340,9 +340,9 @@ namespace simuPOP
 			\param incProb probability to increase allele state. Default to \c 0.5.
 			\param func return number of steps. No parameter.???
 
-            Please see \c mutator for the description of other parameters.            
+			Please see \c mutator for the description of other parameters.
 			*/
-			gsmMutator(const vectorf & rate=vectorf(), 
+			gsmMutator(const vectorf & rate=vectorf(),
 				const vectoru & loci=vectoru(),
 				UINT maxAllele=0, double incProb=0.5, double p=0, PyObject* func=NULL,
 				string output=">", string outputExpr="",
@@ -382,10 +382,10 @@ namespace simuPOP
 				return new gsmMutator(*this);
 			}
 
-            /// mutate according to the GSM model
+			/// mutate according to the GSM model
 			virtual void mutate(AlleleRef allele);
 
-            /// used by Python print function to print out the general information of the \c gsmMutator
+			/// used by Python print function to print out the general information of the \c gsmMutator
 			virtual string __repr__()
 			{
 				return "<simuPOP::generalized step-wise mutator>" ;
@@ -407,16 +407,16 @@ namespace simuPOP
 	Hybrid mutator. Mutation rate etc. are set just like others and you are supposed to
 	provide a Python function to return a new allele state given an old state. \c pyMutator
 	will choose an allele as usual and call your function to mutate it to another allele.
-    <funcForm>PyMutate</funcForm>
-    */
+	<funcForm>PyMutate</funcForm>
+	*/
 	class pyMutator: public mutator
 	{
 		public:
-            /// create a \c pyMutator
-	    /**
-			  \test src_pyMutator.log Operator pyMutator
-				  */
-			pyMutator(const vectorf & rate=vectorf(), 
+			/// create a \c pyMutator
+			/**
+				  \test src_pyMutator.log Operator pyMutator
+					  */
+			pyMutator(const vectorf & rate=vectorf(),
 				const vectoru & loci=vectoru(), UINT maxAllele=0,
 				PyObject* func=NULL,
 				string output=">", string outputExpr="",
@@ -432,7 +432,7 @@ namespace simuPOP
 				m_func = func;
 			}
 
-            /// destructor
+			/// destructor
 			~pyMutator()
 			{
 				if( m_func != NULL )
@@ -453,7 +453,7 @@ namespace simuPOP
 				return new pyMutator(*this);
 			}
 
-            /// mutate according to the mixed model
+			/// mutate according to the mixed model
 			virtual void mutate(AlleleRef allele)
 			{
 				int resInt;
@@ -469,7 +469,7 @@ namespace simuPOP
 #endif
 			}
 
-            /// used by Python print function to print out the general information of the \c pyMutator
+			/// used by Python print function to print out the general information of the \c pyMutator
 			virtual string __repr__()
 			{
 				return "<simuPOP::python mutator>" ;
@@ -488,17 +488,17 @@ namespace simuPOP
 	alleles at \c loci on the first chromosome copy to \c toAllele for individual \c inds.
 	You can specify \c atPloidy to mutate other, or all ploidy copies.
 
-    <funcForm>PointMutate</funcForm>	
+	<funcForm>PointMutate</funcForm>
 	*/
 	class pointMutator: public baseOperator
 	{
 		public:
-            /// create a \c pointMutator
+			/// create a \c pointMutator
 			/**
 			\param inds individuals who will mutate
 			\param toAllele allele that will be mutate to
 
-            Please see \c mutator for the description of other parameters.     
+			Please see \c mutator for the description of other parameters.
 			*/
 			pointMutator(
 				const vectoru & loci,
@@ -548,7 +548,7 @@ namespace simuPOP
 				return true;
 			}
 
-            /// used by Python print function to print out the general information of the \c pointMutator
+			/// used by Python print function to print out the general information of the \c pointMutator
 			virtual string __repr__()
 			{
 				return "<simuPOP::point mutator>" ;

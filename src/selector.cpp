@@ -29,7 +29,8 @@ namespace simuPOP
 	{
 		UINT fit_id = pop.infoIdx(this->infoField(0));
 
-		if (m_subPops.empty()) {
+		if (m_subPops.empty())
+		{
 			GappedInfoIterator fitness = pop.infoBegin(fit_id, true);
 			// fitness may change with generation so pass generation information
 			for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)

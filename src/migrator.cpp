@@ -185,20 +185,20 @@ namespace simuPOP
 			// get rate,
 			matrix rate;
 			PyObject* curSize = PyTuple_New(pop.numSubPop());
-            
+
 			for(size_t i=0; i<pop.numSubPop(); ++i)
 				PyTuple_SetItem(curSize, i, PyInt_FromLong(pop.subPopSize(i)));
 
-            DBG_DO(DBG_MIGRATOR, cout << "Current population size " << pop.subPopSizes() << endl);
-            
+			DBG_DO(DBG_MIGRATOR, cout << "Current population size " << pop.subPopSizes() << endl);
+
 			PyCallFunc2(m_rateFunc, "(iO)", pop.gen(), curSize, rate, PyObj_As_Matrix);
 
-            DBG_DO(DBG_MIGRATOR, cout << "Migration rate: " << rate << endl);                    
+			DBG_DO(DBG_MIGRATOR, cout << "Migration rate: " << rate << endl);
 			Py_XDECREF(curSize);
 			//
 			setRates(rate, m_mode);
 			// apply migrator
-			return migrator::apply(pop);			
+			return migrator::apply(pop);
 		}
 		// now, m_indFunc
 		//

@@ -217,19 +217,22 @@ namespace simuPOP
 	GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) const
 	{
 #define addLocusName(name); \
-	if(std::find(lociNames.begin(), lociNames.end(), name) == lociNames.end()) \
-		lociNames.push_back(name); \
-	else { \
-		int n = 1; \
-		while(true) { \
-			string name_ = name + "_" + toStr(n++); \
-			if(std::find(lociNames.begin(), lociNames.end(), name_) == lociNames.end())	{ \
-				lociNames.push_back(name_); \
-				break; \
-			} \
+if(std::find(lociNames.begin(), lociNames.end(), name) == lociNames.end()) \
+lociNames.push_back(name); \
+else \
+{ \
+	int n = 1; \
+	while(true) \
+	{ \
+		string name_ = name + "_" + toStr(n++); \
+		if(std::find(lociNames.begin(), lociNames.end(), name_) == lociNames.end()) \
+		{ \
+			lociNames.push_back(name_); \
+			break; \
 		} \
-	}
-		GenoStructure & gs1 = s_genoStruRepository[m_genoStruIdx];
+	} \
+}
+						GenoStructure & gs1 = s_genoStruRepository[m_genoStruIdx];
 		GenoStructure & gs2 = s_genoStruRepository[idx];
 
 		// identify another
@@ -309,7 +312,7 @@ namespace simuPOP
 					else
 						throw SystemError("This should not happen");
 				}
-			} // each chromosome
+			}									  // each chromosome
 			DBG_DO(DBG_POPULATION, cout << "New loci positions: " << lociPos << endl);
 			DBG_DO(DBG_POPULATION, cout << "New loci names: " << lociNames << endl);
 			//
@@ -505,7 +508,6 @@ namespace simuPOP
 		m_genoStruIdx = s_genoStruRepository.size() - 1;
 	}
 
-	
 	string GenoStruTrait::ploidyName() const
 	{
 		DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -598,8 +600,6 @@ namespace simuPOP
 		return * gs;
 	}
 
-
-	
 #ifdef SIMUMPI
 	/// return node rank by chromosome number, according to map on setChromMap
 	UINT GenoStruTrait::rankOfChrom(UINT chrom) const

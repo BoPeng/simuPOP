@@ -122,7 +122,6 @@ namespace simuPOP
 			*(m_genoPtr + index + localChromBegin(ch) +
 			p*localNumLoci()) = allele;
 	}
-
 #endif
 
 	PyObject* individual::arrGenotype()
@@ -148,7 +147,7 @@ namespace simuPOP
 		CHECKRANGEPLOIDY(p);
 #ifdef SIMUMPI
 		return Allele_Vec_As_NumArray(p*totalNumLoci(),
-			totalNumLoci(),	totNumLoci(), locusMap());
+			totalNumLoci(), totNumLoci(), locusMap());
 #else
 		return Allele_Vec_As_NumArray( m_genoPtr + p*totNumLoci(),
 			m_genoPtr + (p+1)*totNumLoci() );

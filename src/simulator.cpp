@@ -39,7 +39,7 @@ namespace simuPOP
 		bool applyOpToStoppedReps,
 		int rep , vectori grp)
 		: m_gen(0), m_curRep(0), m_numRep(rep), m_groups(0),
-		m_stopIfOneRepStops(stopIfOneRepStops), 
+		m_stopIfOneRepStops(stopIfOneRepStops),
 		m_applyOpToStoppedReps(applyOpToStoppedReps)
 	{
 		DBG_ASSERT(m_numRep >= 1, ValueError,
@@ -135,7 +135,8 @@ namespace simuPOP
 		if (!newfields.empty())
 			setGenoStructure(struAddInfoFields(newfields));
 		// all replicate
-		for (UINT i = 0; i < m_numRep; ++i) {
+		for (UINT i = 0; i < m_numRep; ++i)
+		{
 			m_ptrRep[i]->addInfoField(field, init);
 			DBG_ASSERT(genoStruIdx() == m_ptrRep[i]->genoStruIdx(),
 				ValueError, "Genotypic structure of one of the "
@@ -178,14 +179,14 @@ namespace simuPOP
 			ValueError, "Genotypic structure of one of the "
 			"replicates does not agree with the structure of the simulator");
 	}
-	
+
 	void simulator::setAncestralDepth(UINT depth)
 	{
 		for (UINT i = 0; i < m_numRep; ++i)
 			m_ptrRep[i]->setAncestralDepth(depth);
 		m_scratchPop->setAncestralDepth(depth);
 	}
-	
+
 	void simulator::setMatingScheme(const mating& matingScheme)
 	{
 		delete m_matingScheme;
@@ -218,20 +219,20 @@ namespace simuPOP
 		// it is possible that a user changes the internal population's
 		// genotype strucutre. It is therefore necessary to check if
 		// all populations have the same structure.
-#ifndef OPTIMIZED		
+#ifndef OPTIMIZED
 		for (size_t i = 0; i < m_numRep; ++i)
 		{
 			DBG_FAILIF(genoStruIdx() != m_ptrRep[i]->genoStruIdx(),
 				ValueError, "Genotypic structure of one of the \n"
-					"replicates does not agree with the simulator. It is likely that you\n"
-					"have changed the genotypic structure of a population obtained from \n"
-					"simu::population(rep). This is not allowed.\n");
-		}
-		DBG_FAILIF(genoStruIdx() != m_scratchPop->genoStruIdx(),
-			ValueError, "Genotypic structure of one of the \n"
 				"replicates does not agree with the simulator. It is likely that you\n"
 				"have changed the genotypic structure of a population obtained from \n"
 				"simu::population(rep). This is not allowed.\n");
+		}
+		DBG_FAILIF(genoStruIdx() != m_scratchPop->genoStruIdx(),
+			ValueError, "Genotypic structure of one of the \n"
+			"replicates does not agree with the simulator. It is likely that you\n"
+			"have changed the genotypic structure of a population obtained from \n"
+			"simu::population(rep). This is not allowed.\n");
 #endif
 
 		DBG_DO(DBG_SIMULATOR, cout << "Starting generation: " << gen()

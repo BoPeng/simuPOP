@@ -36,11 +36,11 @@
 namespace simuPOP
 {
 
-    /// terminate the evolution
-    /**
-    These operators are used to see if an evolution is running as expected, and
-    terminate the evolution if a certain condition fails.
-    */
+	/// terminate the evolution
+	/**
+	These operators are used to see if an evolution is running as expected, and
+	terminate the evolution if a certain condition fails.
+	*/
 	class terminator: public baseOperator
 	{
 
@@ -48,7 +48,7 @@ namespace simuPOP
 			/// create a terminator, default to be always active
 			terminator(string message = "", string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
+			baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 				m_message(message)
 			{
 			};
@@ -56,13 +56,13 @@ baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFiel
 			/// destructor
 			virtual ~terminator(){};
 
-            /// deep copy of a terminator
+			/// deep copy of a terminator
 			virtual baseOperator * clone() const
 			{
 				return new terminator(*this);
 			}
 
-            /// return the message to print when terminated???
+			/// return the message to print when terminated???
 			string message()
 			{
 				return m_message;
@@ -76,19 +76,19 @@ baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFiel
 	/// terminate according to a condition
 	/**
 	This operator terminates the evolution under certain conditions. For example,
-    <tt>terminateIf(condition='alleleFreq[0][1]<0.05', begin=100)</tt>
-    terminates the evolution if the allele frequency of allele \c 1 at locus \c 0
-    is less than 0.05. Of course, to make this opertor work, you will need to use
-    a \c stat operator before it so that variable \c alleleFreq exists in the local namespace. \n
+	<tt>terminateIf(condition='alleleFreq[0][1]<0.05', begin=100)</tt>
+	terminates the evolution if the allele frequency of allele \c 1 at locus \c 0
+	is less than 0.05. Of course, to make this opertor work, you will need to use
+	a \c stat operator before it so that variable \c alleleFreq exists in the local namespace. \n
 
-    When the condition is true, a shared variable <tt>var="terminate"</tt> will be
+	When the condition is true, a shared variable <tt>var="terminate"</tt> will be
 	set to the current generation.
 	*/
 	class terminateIf: public terminator
 	{
 
 		public:
-            /// create a \c terminateIf terminator
+			/// create a \c terminateIf terminator
 			terminateIf(string condition="", string message="", string var="terminate",
 				string output="", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -98,13 +98,13 @@ baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFiel
 			{
 			}
 
-            /// deep copy of a \c terminateIf terminator
+			/// deep copy of a \c terminateIf terminator
 			virtual baseOperator * clone() const
 			{
 				return new terminateIf(*this);
 			}
 
-            /// used by Python print function to print out the general information of the \c terminateIf terminator
+			/// used by Python print function to print out the general information of the \c terminateIf terminator
 			virtual string __repr__()
 			{
 				return "<simuPOP::terminateIf>";
@@ -148,14 +148,14 @@ baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFiel
 	};
 
 	/// terminate according to a condition failure
-	/** 
+	/**
 	The same as \c terminateIf but continue if the condition is \c True.
-    */
+	*/
 	class continueIf: public terminator
 	{
 
 		public:
-            /// create a \c continueIf terminator
+			/// create a \c continueIf terminator
 			continueIf(string condition="", string message="", string var="terminate",
 				string output="", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -165,13 +165,13 @@ baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFiel
 			{
 			}
 
-            /// deep copy of a \c continueIf terminator
+			/// deep copy of a \c continueIf terminator
 			virtual baseOperator * clone() const
 			{
 				return new continueIf(*this);
 			}
 
-            /// used by Python print function to print out the general information of the \c continueIf terminator
+			/// used by Python print function to print out the general information of the \c continueIf terminator
 			virtual string __repr__()
 			{
 				return "<simuPOP::terminateIf>";
