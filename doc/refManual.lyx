@@ -526,24 +526,21 @@ simuPOP is composed of six libraries: standard short, long and binary alleles
 \end_inset
 
 ) modules.
- A Message Passing Interface (MPI) versions (
-\begin_inset Formula $\times2$
-\end_inset
-
-) is under development but not yet available.
+ A Message Passing Interface (MPI) versions is under development but not
+ yet available.
  The short libraries use 1 byte to store each allele which limits the possible
  allele states to 256.
  This is enough most of the times but not so if you need to simulate models
- like the infinite allele model.
- In those cases, you should use the long allele version of the modules,
- which use 2 bytes for each allele and can have 
+ such as the infinite allele model.
+ In those cases, you can use the long allele version of the modules, which
+ use 2 bytes for each allele and can have 
 \begin_inset Formula $2^{16}$
 \end_inset
 
  possible allele states.
  On the other hand, if you would like to simulate a large number of binary
  (SNP) markers, binary libraries can save you a lot of RAM.
- Depending on applications, binary alleles can be faster or slower than
+ Depending on applications, binary modules can be faster or slower than
  regular modules.
 \end_layout
 
@@ -553,7 +550,7 @@ Standard libraries have detailed debug and run-time validation mechanism
  Whenever something unusual is detected, simuPOP would terminate with detailed
  error messages.
  The cost of such run-time checking varies from simulation to simulation
- but can be high under some extreme circumstances.
+ but can be very high under some extreme circumstances.
  Because of this, optimized versions for all libraries are provided.
  They bypass all parameter checking and run-time validations and will simply
  crash if things go wrong.
@@ -563,8 +560,201 @@ e that your simulation is running as expected.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_importSimuPOPOpt.log}[caption={set options through simuOpt}]
-preview false
+Example 
+\begin_inset LatexCommand ref
+reference "lst:Use-of-standard-module"
+
+\end_inset
+
+ and 
+\begin_inset LatexCommand ref
+reference "lst:Use-of-optimized-module"
+
+\end_inset
+
+ demonstrate the differences between standard and optimized modules, by
+ executing two invalid commands.
+ The standard module returns proper error messages, while the optimized
+ module returns erroneous results and even crashes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "lst:Use-of-standard-module"
+
+\end_inset
+
+Use of standard simuPOP module
+\end_layout
+
+\end_inset
+
+>>> pop = population(10, loci=[2])
+\end_layout
+
+\begin_layout Standard
+
+>>> pop.locusPos(10)
+\end_layout
+
+\begin_layout Standard
+
+Traceback (most recent call last):
+\end_layout
+
+\begin_layout Standard
+
+File "course.py", line 1, in ?
+\end_layout
+
+\begin_layout Standard
+
+#!/usr/bin/env python
+\end_layout
+
+\begin_layout Standard
+
+IndexError: src/genoStru.h:428 absolute locus index (10) out of range of
+ 0 - 1
+\end_layout
+
+\begin_layout Standard
+
+>>> pop.individual(20).setAllele(1, 0)
+\end_layout
+
+\begin_layout Standard
+
+Traceback (most recent call last):
+\end_layout
+
+\begin_layout Standard
+
+File "course.py", line 1, in ?
+\end_layout
+
+\begin_layout Standard
+
+#!/usr/bin/env python
+\end_layout
+
+\begin_layout Standard
+
+IndexError: src/population.h:452 individual index (20) is out of range of
+ 0 ~ 9
+\end_layout
+
+\begin_layout Standard
+
+>>>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "lst:Use-of-optimized-module"
+
+\end_inset
+
+Use of optimized simuPOP module
+\end_layout
+
+\end_inset
+
+% setenv SIMUOPTIMIZED
+\end_layout
+
+\begin_layout Standard
+
+% python
+\end_layout
+
+\begin_layout Standard
+
+>>> from simuPOP import *
+\end_layout
+
+\begin_layout Standard
+
+simuPOP : Copyright (c) 2004-2006 Bo Peng
+\end_layout
+
+\begin_layout Standard
+
+Developmental Version (May 21 2007) for Python 2.3.4
+\end_layout
+
+\begin_layout Standard
+
+[GCC 3.4.6 20060404 (Red Hat 3.4.6-3)]
+\end_layout
+
+\begin_layout Standard
+
+Random Number Generator is set to mt19937 with random seed 0x2f04b9dc5ca0fc00
+\end_layout
+
+\begin_layout Standard
+
+This is the optimied short allele version with 256 maximum allelic states.
+\end_layout
+
+\begin_layout Standard
+
+For more information, please visit http://simupop.sourceforge.net,
+\end_layout
+
+\begin_layout Standard
+
+or email simupop-list@lists.sourceforge.net (subscription required).
+\end_layout
+
+\begin_layout Standard
+
+>>> pop = population(10, loci=[2])
+\end_layout
+
+\begin_layout Standard
+
+>>> pop.locusPos(10)
+\end_layout
+
+\begin_layout Standard
+
+1.2731974748756028e-313
+\end_layout
+
+\begin_layout Standard
+
+>>> pop.individual(20).setAllele(1, 0)
+\end_layout
+
+\begin_layout Standard
+
+Segmentation fault
+\end_layout
 
 \end_inset
 
@@ -672,6 +862,15 @@ If you are running a simuPOP script that conforms to simuPOP convention,
 , and the MPI version using 
 \family typewriter
 --mpi.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_importSimuPOPOpt.log}[caption={set options through simuOpt}]
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4545,7 +4744,7 @@ status open
 
 
 \backslash
-OperatorRef
+baseOperatorRef
 \end_layout
 
 \end_inset
