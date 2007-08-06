@@ -328,6 +328,9 @@ namespace simuPOP
 
 		public:
 			/// This object can not be created directly. It is created by a population.
+            /**
+            \test src_genoStruTrait.log Genotypic structure
+            */
 			GenoStruTrait():m_genoStruIdx(TraitMaxIndex)
 			{
 			}

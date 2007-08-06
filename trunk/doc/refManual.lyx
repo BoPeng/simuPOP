@@ -8,7 +8,7 @@
 
 \setreleaseinfo{Release 0.8.0 (\mbox{$$Rev$$})}
 \authoraddress{
-{\bf Department of Epidemiology, U.T. MD Anderson Cancer Center}\\
+{\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
 {\bf URL: } \textsf{http://simupop.sourceforge.net} \\
 {\bf Mailing List: } \textsf{simupop-list@lists.sourceforge.net}
@@ -206,7 +206,8 @@ hspace{.3cm} Keck Center for Computational and Structural Biology
 
 
 \backslash
-hspace{.3cm} UT M.D.
+hspace{.3cm} U.T.
+ M.D.
  Anderson Cancer Center
 \end_layout
 
@@ -579,84 +580,8 @@ reference "lst:Use-of-optimized-module"
 \end_layout
 
 \begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "lst:Use-of-standard-module"
-
-\end_inset
-
-Use of standard simuPOP module
-\end_layout
-
-\end_inset
-
->>> pop = population(10, loci=[2])
-\end_layout
-
-\begin_layout Standard
-
->>> pop.locusPos(10)
-\end_layout
-
-\begin_layout Standard
-
-Traceback (most recent call last):
-\end_layout
-
-\begin_layout Standard
-
-File "course.py", line 1, in ?
-\end_layout
-
-\begin_layout Standard
-
-#!/usr/bin/env python
-\end_layout
-
-\begin_layout Standard
-
-IndexError: src/genoStru.h:428 absolute locus index (10) out of range of
- 0 - 1
-\end_layout
-
-\begin_layout Standard
-
->>> pop.individual(20).setAllele(1, 0)
-\end_layout
-
-\begin_layout Standard
-
-Traceback (most recent call last):
-\end_layout
-
-\begin_layout Standard
-
-File "course.py", line 1, in ?
-\end_layout
-
-\begin_layout Standard
-
-#!/usr/bin/env python
-\end_layout
-
-\begin_layout Standard
-
-IndexError: src/population.h:452 individual index (20) is out of range of
- 0 ~ 9
-\end_layout
-
-\begin_layout Standard
-
->>>
-\end_layout
+\begin_inset Include \lstinputlisting{log/ref_standard.log}[caption={Use of standard simuPOP modules},label={lst:Use-of-standard-module}]
+preview false
 
 \end_inset
 
@@ -666,7 +591,7 @@ IndexError: src/population.h:452 individual index (20) is out of range of
 \begin_layout Standard
 \begin_inset listings
 inline false
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -678,7 +603,7 @@ name "lst:Use-of-optimized-module"
 
 \end_inset
 
-Use of optimized simuPOP module
+Use of optimized simuPOP modules
 \end_layout
 
 \end_inset
@@ -797,7 +722,7 @@ name "simuOpt"
 
 \end_inset
 
-.setOptions(optimized, mpi, alleleType, quiet, debug)
+.setOptions(optimized, alleleType, quiet, debug)
 \family default
 .
  
@@ -819,19 +744,6 @@ short, long
 binary.
 
 \family default
- 
-\family typewriter
-mpi
-\family default
- can be 
-\family typewriter
-True
-\family default
- or 
-\family typewriter
-False
-\family default
-.
  
 \family typewriter
 quiet
@@ -857,20 +769,7 @@ name "listDebugCode"
 If you are running a simuPOP script that conforms to simuPOP convention,
  you should be able to use optimized library using command line option 
 \family typewriter
---optimized
-\family default
-, and the MPI version using 
-\family typewriter
---mpi.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_importSimuPOPOpt.log}[caption={set options through simuOpt}]
-preview false
-
-\end_inset
-
-
+--optimized.
 \end_layout
 
 \begin_layout Standard
@@ -965,6 +864,15 @@ limits()
 \family default
 : print the limits of this module on this platform, this can limit the size
  of population you can simulate.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_importSimuPOPOpt.log}[caption={set options through simuOpt}]
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -1075,7 +983,7 @@ pop
 \begin_layout Standard
 \begin_inset listings
 inline false
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -1188,8 +1096,8 @@ reference "lst:Reference-to-population"
 
 , 
 \begin_inset listings
-inline true
-status open
+inline false
+status collapsed
 
 \begin_layout Standard
 
@@ -1212,12 +1120,162 @@ from the simulator instead of copying it, and bypassing a potentially very
 \end_layout
 
 \begin_layout Section
+Zero-based indexes, ranges, absolute and relative indexes
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+All arrays in simuPOP start at index 0
+\series default
+.
+ This conforms to Python and C++ indexes.
+ To avoid confusion, I will refer the first locus as locus zero, the second
+ locus as locus one; the first individual in a population as individual
+ zero, and so on.
+\end_layout
+
+\begin_layout Standard
+Ranges in simuPOP also conforms to Python ranges.
+ That is to say, a range has the form of 
+\family typewriter
+[a,b) 
+\family default
+where 
+\family typewriter
+a 
+\family default
+belongs to the range, and 
+\family typewriter
+b 
+\family default
+does not.
+ For example, 
+\family typewriter
+pop.chromBegin(1) 
+\family default
+refers to the index of the first locus on chromosome 1 (actually exists),
+ and 
+\family typewriter
+pop.chromEnd(1) 
+\family default
+is the index of the last locus on chromosome 1
+\series bold
+ plus 1
+\series default
+, which might or might not be a valid index.
+ In this way
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+for locus in range(pop.chromBegin(1), pop.chromEnd(1)):
+\end_layout
+
+\begin_layout Standard
+
+    print locus
+\end_layout
+
+\end_inset
+
+will iterate through all locus on chromosome 1.
+ 
+\end_layout
+
+\begin_layout Standard
+Another two important concepts are the
+\emph on
+ absolute index
+\begin_inset LatexCommand index
+name "index!absolute"
+
+\end_inset
+
+
+\emph default
+ and
+\emph on
+ 
+\emph default
+the
+\emph on
+ relative index
+\begin_inset LatexCommand index
+name "index!relative"
+
+\end_inset
+
+ 
+\emph default
+of a locus.
+ The former index ignores chromosome structure.
+
+\emph on
+ 
+\emph default
+For example, if there are 5 and 7 loci on the first two chromosomes, the
+ absolute indexes of the two loci are (0, 1, 2, 3, 4), (5, 6, 7, 8, 9, 10,
+ 11) and the relative indexes are (0, 1, 2, 3, 4), (0, 1, 2, 3, 4, 5, 6).
+ Absolute indexes are more frequently used because they avoid the trouble
+ of having to use two numbers (chrom, index) to refer to a locus.
+ Two functions 
+\family typewriter
+chromLocusPair(absIndex)
+\family default
+ and 
+\family typewriter
+absLocusIndex(chrom,index)
+\family default
+ are provided to convert between these two kinds of indexes.
+ An individual can also be referred by its 
+\emph on
+absolute index
+\begin_inset LatexCommand index
+name "index!absolute"
+
+\end_inset
+
+
+\emph default
+ and
+\emph on
+ relative index
+\begin_inset LatexCommand index
+name "index!relative"
+
+\end_inset
+
+ 
+\emph default
+where 
+\emph on
+relative index 
+\emph default
+is the index in its a subpopulation.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_absIndex.log}[caption={Conversion between absolute and relative indices},label={absIndex}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Function form of an operator
 \end_layout
 
 \begin_layout Standard
 Operators are usually applied to populations through a simulator.
- Usually, an operator is created and passed as a parameter to the 
+ An operator is created and passed as a parameter to the 
 \family typewriter
 evolve 
 \family default
@@ -1383,181 +1441,22 @@ carray
 \family default
 .
  This object reflects the underlying C/C++ array and you can read/write
- array elements just as a regular list.
- Only a small subset of list member functions of Python, 
+ array elements just as a regular list, with the exception that you can
+ not change the size of the array.
+ Therefore, only 
 \family typewriter
-count, index
+count
 \family default
- to be exact, is available.
- This is because you are not allowed to change the size of the underlying
- C/C++ vector.
- The following shows the operations allowed:
+ and
+\family typewriter
+ index
+\family default
+ list function can be used.
 \end_layout
 
 \begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-# obtain an object using one of the arrXXX functions
-\end_layout
-
-\begin_layout Standard
-
-pop = population(loci=[3,4], lociPos=[1,2,3,4,5,6,7])
-\end_layout
-
-\begin_layout Standard
-
-arr = pop.arrLociPos()
-\end_layout
-
-\begin_layout Standard
-
-# print and expression (just like list)
-\end_layout
-
-\begin_layout Standard
-
-print arr
-\end_layout
-
-\begin_layout Standard
-
-str(arr)
-\end_layout
-
-\begin_layout Standard
-
-# count
-\end_layout
-
-\begin_layout Standard
-
-arr.count(2)
-\end_layout
-
-\begin_layout Standard
-
-# index 
-\end_layout
-
-\begin_layout Standard
-
-arr.index, 2)
-\end_layout
-
-\begin_layout Standard
-
-# can read write
-\end_layout
-
-\begin_layout Standard
-
-arr[0] = 0.5
-\end_layout
-
-\begin_layout Standard
-
-# convert to list
-\end_layout
-
-\begin_layout Standard
-
-arr.tolist()
-\end_layout
-
-\begin_layout Standard
-
-# or simply
-\end_layout
-
-\begin_layout Standard
-
-list(arr)
-\end_layout
-
-\begin_layout Standard
-
-# compare to list directly
-\end_layout
-
-\begin_layout Standard
-
-arr == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0]
-\end_layout
-
-\begin_layout Standard
-
-# you can also convert and compare
-\end_layout
-
-\begin_layout Standard
-
-list(arr) == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0])
-\end_layout
-
-\begin_layout Standard
-
-# slice
-\end_layout
-
-\begin_layout Standard
-
-arr[:] = [1,2,3,4,5,6,7]
-\end_layout
-
-\begin_layout Standard
-
-# arr1 is 1,2,3
-\end_layout
-
-\begin_layout Standard
-
-arr1 = arr[:3]
-\end_layout
-
-\begin_layout Standard
-
-# assign slice from a number
-\end_layout
-
-\begin_layout Standard
-
-# IMPORTANT NOTE that arr will also be affected
-\end_layout
-
-\begin_layout Standard
-
-# since arr1 point to a part of arr
-\end_layout
-
-\begin_layout Standard
-
-arr1[:] = 10
-\end_layout
-
-\begin_layout Standard
-
-# assign vector of the same length
-\end_layout
-
-\begin_layout Standard
-
-arr1[:] = [30,40]
-\end_layout
-
-\begin_layout Standard
-
-# assign from another part
-\end_layout
-
-\begin_layout Standard
-
-arr[1:3] = arr[3:5]
-\end_layout
+\begin_inset Include \lstinputlisting{log/ref_carray.log}[caption={Usage of the carray type},label={carray}]
+preview false
 
 \end_inset
 
@@ -1583,143 +1482,7 @@ arrXXX
  any population operation.
 \end_layout
 
-\begin_layout Section
-Use of R (RPy) in Python
-\end_layout
-
 \begin_layout Standard
-Most of the information can be found in RPy manual.
- One function in simuRPy may help though:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-def rmatrix(mat):
-\end_layout
-
-\begin_layout Standard
-
-  ' convert a Python 2d list to r.matrix object'
-\end_layout
-
-\begin_layout Standard
-
-  return with_mode(NO_CONVERSION, r.do_call)('rbind',mat)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-With this function, you can easily handle matrices in R.
- (List and array have been easy enough to be handled).
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
->>> a = [[1,2],[4,5]]
-\end_layout
-
-\begin_layout Standard
-
->>> r.image( rmatrix(a))
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-With the help of this function, you can call almost any R function directly,
- maybe except some R-only syntax like formula, expression etc.
- In this case, you can always do
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
->>> r('''whatever R expression''')
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Since RPy is not always available, you may see the following scenario again
- and again in simuPOP scripts:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-try:
-\end_layout
-
-\begin_layout Standard
-
-  from simuRPy import *
-\end_layout
-
-\begin_layout Standard
-
-except:
-\end_layout
-
-\begin_layout Standard
-
-  hasRPy = False
-\end_layout
-
-\begin_layout Standard
-
-else:
-\end_layout
-
-\begin_layout Standard
-
-  hasRPy = True
-\end_layout
-
-\begin_layout Standard
-
-...
-\end_layout
-
-\begin_layout Standard
-
-if hasRPy:
-\end_layout
-
-\begin_layout Standard
-
-  r.....
-\end_layout
-
-\end_inset
-
 
 \end_layout
 
@@ -1843,7 +1606,7 @@ Note that these presentations will not be updated so their content can become
 \end_layout
 
 \begin_layout Chapter
-simuPOP components
+simuPOP Components
 \end_layout
 
 \begin_layout Section
@@ -1857,27 +1620,7 @@ name "genotypic structure"
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-GenoStruTraitRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Introduction
-\end_layout
-
-\begin_layout Standard
-Genotypic structure refers to 
+Genotypic structure refers to
 \end_layout
 
 \begin_layout Itemize
@@ -2045,25 +1788,6 @@ Information fields
 \end_layout
 
 \begin_layout Standard
-Example 
-\begin_inset LatexCommand ref
-reference "alg:Genotype-structure-functions"
-
-\end_inset
-
- creates a population and displays some of its genotypic information.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_genoStru.log}[caption={Genotype structure functions},label={alg:Genotype-structure-functions}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Individuals in the same population share the same genotypic structure.
  Consequently, 
 \emph on
@@ -2079,81 +1803,23 @@ levels
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_indGenoStru.log}[caption={Calling genotype structure functions from individual or simulator}]
-preview false
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+GenoStruTraitRef
+\end_layout
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Standard
-You may have noticed that locus indexes start from 0.
- As a matter of fact,
-\series bold
- all arrays in simuPOP start at index 0
-\series default
-.
- To avoid confusion, I will refer the first locus as locus zero, the second
- locus as locus one; the first individual in a population as individual
- zero, and so on.
-\end_layout
-
-\begin_layout Standard
-Another two important concepts are the
-\emph on
- absolute index
-\begin_inset LatexCommand index
-name "index!absolute"
-
-\end_inset
-
-
-\emph default
- and
-\emph on
- 
-\emph default
-the
-\emph on
- relative index
-\begin_inset LatexCommand index
-name "index!relative"
-
-\end_inset
-
- 
-\emph default
-of a locus.
- The former index ignores chromosome structure.
-
-\emph on
- 
-\emph default
-For example, if there are 5 and 7 loci on the first two chromosomes, the
- absolute indexes of the two loci are (0, 1, 2, 3, 4), (5, 6, 7, 8, 9, 10,
- 11) and the relative indexes are (0, 1, 2, 3, 4), (0, 1, 2, 3, 4, 5, 6).
- Absolute indexes are more frequently used because they avoid the trouble
- of having to use two numbers (chrom, index) to refer to a locus.
- Two functions 
-\family typewriter
-chromLocusPair(absIndex)
-\family default
- and 
-\family typewriter
-absLocusIndex(chrom,index)
-\family default
- are provided to convert between these two kinds of indexes.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_absIndex.log}[caption={Conversion between absolute and relative indices},label={absIndex}]
-preview false
-
-\end_inset
-
-
+\begin_layout Subsection
+Introduction
 \end_layout
 
 \begin_layout Subsection
