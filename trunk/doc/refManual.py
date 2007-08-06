@@ -39,32 +39,9 @@ simuOpt.setOptions(optimized=False, alleleType='long', quiet=True)
 from simuPOP import *
 #end
 
-#file log/ref_simpleExample.log
-from simuPOP import *
-from simuRPy import *
-simu = simulator(
-    population(size=1000, ploidy=2, loci=[2]),
-    randomMating(),
-    rep = 3)
-simu.evolve(
-    preOps = [initByValue([1,2,2,1])],  
-    ops = [
-        recombinator(rate=0.1),
-        stat(LD=[0,1]),
-        varPlotter('LD[0][1]', numRep=3,
-                   ylim=[0,.25], xlab='generation',
-                   ylab='D', title='LD Decay'),
-        pyEval(r"'%3d   ' % gen", rep=0, step=25),
-        pyEval(r"'%f    ' % LD[0][1]", step=25),
-        pyEval(r"'\n'", rep=REP_LAST, step=25)
-    ],
-    end=100
-)
-r.dev_print(file='log/ref_LDdecay.eps')
+#file log/ref_help.log
+help(population.addInfoField)
 #end
-#PS epstopdf log/ref_LDdecay.eps
-r.dev_off()
-
 
 #file log/ref_genoStru.log
 # create a population, most parameters have default values

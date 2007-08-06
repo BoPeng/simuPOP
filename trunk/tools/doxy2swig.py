@@ -352,6 +352,8 @@ class Doxy2SWIG:
                 pieces = filename.split(' ')
 		filename = pieces[0]
 		title = ' '.join(pieces[1:])
+            print "Filename ", filename
+            print "Title ", title
             # get content as string
             try:
                 try:

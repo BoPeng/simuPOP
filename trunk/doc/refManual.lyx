@@ -404,27 +404,51 @@ simuPOP User's Guide
  It is also remcommended that you learn some basics of Python before you
  continue.
  I have listed a few Python resources at the end of this chapter, along
- with links to some simuPOP totorials.
+ with links to some simuPOP tutorials.
 \end_layout
 
 \begin_layout Standard
 Almost all information contained in this manual can be accessed from command
  line, after you install and import the simuPOP module.
- It is important that you understand that
+ For example, you can use 
+\family typewriter
+help(population.addInfoField) 
+\family default
+to view the help information of member function 
+\family typewriter
+addInfoField
+\family default
+ of class 
+\family typewriter
+populayion.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_help.log}[caption={Getting help using the help() function}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is important that you understand that
 \end_layout
 
 \begin_layout Itemize
-The constructor is named 
+The constructor of a class is named 
 \family typewriter
 __init__
 \family default
  in python.
- That is to say, if you would like to see the help information of the constructo
-r of class 
+ That is to say, you should use the following command to display the help
+ information of the constructor of class 
 \family typewriter
 population
 \family default
-, you can use command
+: 
 \end_layout
 
 \begin_deeper
@@ -445,8 +469,8 @@ status open
 
 \end_deeper
 \begin_layout Itemize
-Some classes are derived from other classes and can have access to member
- functions of its base class.
+Some classes are derived from other classes and have access to member functions
+ of its base class.
  For example, class 
 \family typewriter
 population
@@ -461,12 +485,12 @@ simulator
 \family default
  are all derived from class 
 \family typewriter
-genoStruTrait
+GenoStruTrait
 \family default
 .
  Therefore, you can have access to all 
 \family typewriter
-genoStruTrait
+GenoStruTrait
 \family default
  member functions from these classes.
  
@@ -2595,19 +2619,244 @@ subPop
 \end_layout
 
 \begin_layout Subsection
-Sample from a Population
+FIXME: duplicate information?
 \end_layout
 
 \begin_layout Standard
-Sampling (or ascertainment) is a complicated issue.
- simuPOP provides several methods to generate samples from an existing populatio
-n.
- For more details please refer to Chapter 
-\begin_inset LatexCommand ref
-reference "sec:Ascertainment"
+All populations have their own attached variables.
+ We have seen the structure of a population dictionary: it is empty at the
+ beginning and will have many variables created by various operators later.
+ You can access the local namespace of each replicate through a simulator's
+ 
+\family typewriter
+vars(rep)
+\family default
+ function:
+\end_layout
+
+\begin_layout LyX-Code
+simu.vars(0)        simu.vars(1) ...
+     // replicate
+\end_layout
+
+\begin_layout LyX-Code
+  popSize             popSize            // local namespace
+\end_layout
+
+\begin_layout LyX-Code
+  alleleFreq[0]       alleleFreq[0]      // allele frequency at locus 1
+\end_layout
+
+\begin_layout LyX-Code
+  alleleFreq[1]       alleleFreq[1]      // at locus 2
+\end_layout
+
+\begin_layout LyX-Code
+  ...
+                 ....
+\end_layout
+
+\begin_layout LyX-Code
+  subPop[0]           subPop[0]          // subpop namespace
+\end_layout
+
+\begin_layout LyX-Code
+    popSize             popSize          // subpopulation 1 size
+\end_layout
+
+\begin_layout LyX-Code
+    allaleFreq[0]       allaleFreq[0]    // allele frequency at locus 1
+\end_layout
+
+\begin_layout LyX-Code
+    ...
+                 ...
+\end_layout
+
+\begin_layout LyX-Code
+  subPop[1]           subPop[1]          // variables for subpop 2
+\end_layout
+
+\begin_layout LyX-Code
+    ...
+                 ...
+\end_layout
+
+\begin_layout Standard
+It is important to know that
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simulator::vars(0), vars(1)
+\family default
+ etc.
+ are the 
+\emph on
+local namespaces
+\emph default
+ for each replicate.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+subPop[0]
+\family default
+, 
+\family typewriter
+subPop[1]
+\family default
+ etc.
+ have almost the same set of keys as those for the whole population.
+ This is because 
+\family typewriter
+stat
+\family default
+ operator calculates statistics of each replicate of population, and all
+ subpopulations.
+\end_layout
+
+\begin_layout Standard
+To list these variables, you can use the 
+\family typewriter
+ListVars()
+\family default
+ function defined in 
+\family typewriter
+simuUtil.py
+\family default
+.
+ For example
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+ListVars(simu.vars(0), level=2)
+\end_layout
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
+list all variables for the first replicate.
+ 
+\family typewriter
+level=2
+\family default
+ stops 
+\family typewriter
+ListVars
+\family default
+ from expanding lists and dictionaries after two levels.
+ 
+\end_layout
+
+\begin_layout Standard
+Two functions can be used to access simulator and population variables:
+ 
+\family typewriter
+vars()
+\family default
+ and 
+\family typewriter
+dvars()
+\family default
+.
+ We have known 
+\family typewriter
+population::vars()
+\family default
+ and 
+\family typewriter
+population::dvars()
+\family default
+, 
+\family typewriter
+simulator::vars()
+\family default
+ and 
+\family typewriter
+simulator::dvars()
+\family default
+ work in almost the same way.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simulator::vars(rep
+\family default
+), 
+\family typewriter
+dvars(rep)
+\family default
+: return replicate 
+\family typewriter
+rep
+\family default
+'s local namespace.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simulator::vars(rep, subPop
+\family default
+), 
+\family typewriter
+dvars(rep, subPop)
+\family default
+: return the namespace of 
+\family typewriter
+subPop
+\family default
+ subpopulation of replicate 
+\family typewriter
+rep
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The return values of 
+\family typewriter
+vars()
+\family default
+ and 
+\family typewriter
+dvars()
+\family default
+ are different.
+ 
+\family typewriter
+vars()
+\family default
+ returns a Python dictionary.
+ You should access their keys in the usual Python way.
+ 
+\family typewriter
+dvars()
+\family default
+ returns a 'wrapped' Python dictionary.
+ You can access their dictionary keys as attributes.
+ 
+\family typewriter
+dvars()
+\family default
+ is usually considered to be easier to use than 
+\family typewriter
+vars()
+\family default
 .
 \end_layout
 
@@ -4657,10 +4906,6 @@ preview false
 \end_layout
 
 \begin_layout Subsection
-Python expression and statistics calculation
-\end_layout
-
-\begin_layout Subsection
 Expressions and statements
 \end_layout
 
@@ -4702,248 +4947,6 @@ not
 a=range(1,5)
 \family default
  .
-\end_layout
-
-\begin_layout Subsection
-simuPOP variables
-\end_layout
-
-\begin_layout Standard
-All populations have their own attached variables.
- We have seen the structure of a population dictionary: it is empty at the
- beginning and will have many variables created by various operators later.
- You can access the local namespace of each replicate through a simulator's
- 
-\family typewriter
-vars(rep)
-\family default
- function:
-\end_layout
-
-\begin_layout LyX-Code
-simu.vars(0)        simu.vars(1) ...
-     // replicate
-\end_layout
-
-\begin_layout LyX-Code
-  popSize             popSize            // local namespace
-\end_layout
-
-\begin_layout LyX-Code
-  alleleFreq[0]       alleleFreq[0]      // allele frequency at locus 1
-\end_layout
-
-\begin_layout LyX-Code
-  alleleFreq[1]       alleleFreq[1]      // at locus 2
-\end_layout
-
-\begin_layout LyX-Code
-  ...
-                 ....
-\end_layout
-
-\begin_layout LyX-Code
-  subPop[0]           subPop[0]          // subpop namespace
-\end_layout
-
-\begin_layout LyX-Code
-    popSize             popSize          // subpopulation 1 size
-\end_layout
-
-\begin_layout LyX-Code
-    allaleFreq[0]       allaleFreq[0]    // allele frequency at locus 1
-\end_layout
-
-\begin_layout LyX-Code
-    ...
-                 ...
-\end_layout
-
-\begin_layout LyX-Code
-  subPop[1]           subPop[1]          // variables for subpop 2
-\end_layout
-
-\begin_layout LyX-Code
-    ...
-                 ...
-\end_layout
-
-\begin_layout Standard
-It is important to know that
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simulator::vars(0), vars(1)
-\family default
- etc.
- are the 
-\emph on
-local namespaces
-\emph default
- for each replicate.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-subPop[0]
-\family default
-, 
-\family typewriter
-subPop[1]
-\family default
- etc.
- have almost the same set of keys as those for the whole population.
- This is because 
-\family typewriter
-stat
-\family default
- operator calculates statistics of each replicate of population, and all
- subpopulations.
-\end_layout
-
-\begin_layout Standard
-To list these variables, you can use the 
-\family typewriter
-ListVars()
-\family default
- function defined in 
-\family typewriter
-simuUtil.py
-\family default
-.
- For example
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-ListVars(simu.vars(0), level=2)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-list all variables for the first replicate.
- 
-\family typewriter
-level=2
-\family default
- stops 
-\family typewriter
-ListVars
-\family default
- from expanding lists and dictionaries after two levels.
- 
-\end_layout
-
-\begin_layout Standard
-Two functions can be used to access simulator and population variables:
- 
-\family typewriter
-vars()
-\family default
- and 
-\family typewriter
-dvars()
-\family default
-.
- We have known 
-\family typewriter
-population::vars()
-\family default
- and 
-\family typewriter
-population::dvars()
-\family default
-, 
-\family typewriter
-simulator::vars()
-\family default
- and 
-\family typewriter
-simulator::dvars()
-\family default
- work in almost the same way.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simulator::vars(rep
-\family default
-), 
-\family typewriter
-dvars(rep)
-\family default
-: return replicate 
-\family typewriter
-rep
-\family default
-'s local namespace.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simulator::vars(rep, subPop
-\family default
-), 
-\family typewriter
-dvars(rep, subPop)
-\family default
-: return the namespace of 
-\family typewriter
-subPop
-\family default
- subpopulation of replicate 
-\family typewriter
-rep
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-The return values of 
-\family typewriter
-vars()
-\family default
- and 
-\family typewriter
-dvars()
-\family default
- are different.
- 
-\family typewriter
-vars()
-\family default
- returns a Python dictionary.
- You should access their keys in the usual Python way.
- 
-\family typewriter
-dvars()
-\family default
- returns a 'wrapped' Python dictionary.
- You can access their dictionary keys as attributes.
- 
-\family typewriter
-dvars()
-\family default
- is usually considered to be easier to use than 
-\family typewriter
-vars()
-\family default
-.
 \end_layout
 
 \begin_layout Subsection
