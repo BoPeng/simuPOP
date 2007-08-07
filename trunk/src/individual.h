@@ -84,7 +84,7 @@ namespace simuPOP
 	two loci on the first chromosome, one locus on the second, its genotype is arranged
 	as <tt> 1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1 </tt> where \c x-y-z represents ploidy \c x
 	chromosome \c y and locus \c z. An allele \c 2-1-2 can be accessed by
-	\c allele(4) (by absolute index), \c allele(2, 1) (by index and ploidy) or \c allele(1, 1, 0)
+	\c allele(4) (by absolute index), \c allele(1, 1) (by index and ploidy) or \c allele(1, 1, 0)
 	(by index, ploidy and chromosome).
 	*/
 	/*
@@ -123,6 +123,9 @@ namespace simuPOP
 			///  @name constructor, destructor etc
 			//@{
 			/// Individuals are created by populations automatically. Do not call this function directly.
+            /**
+            \test src_individual.log Individual member functions
+            */
 			individual():m_flags(0), m_subPopID(0)
 			{
 			}
@@ -180,7 +183,7 @@ namespace simuPOP
 			/// @name allele, info get/set functions
 			//@{
 
-			/// return an editable array (a Python list of length <tt>totNumLoci()*ploidy()</tt>) of genotypes of an individual
+			/// return an editable array (a carray of length <tt>totNumLoci()*ploidy()</tt>) of genotypes of an individual
 			/**
 			This function returns the whole genotype. Although this function is
 			not as easy to use as other functions that access alleles,
@@ -188,13 +191,13 @@ namespace simuPOP
 			*/
 			PyObject* arrGenotype();
 
-			/// return only the \c p-th copy of the chromosomes
+			/// return a carray with the genotype of the \c p-th copy of the chromosomes
 			PyObject* arrGenotype(UINT p);
 
-			/// return only the \c ch-th chromosome of the \c p-th copy
+			/// return a carray with the genotype of the \c ch-th chromosome of the \c p-th copy
 			PyObject* arrGenotype(UINT p, UINT ch);
 
-			/// return an editable array of all information fields (a Python list of length \c infosSize())
+			/// return a carray of all information fields (of size \c infosSize()) of this individual
 			PyObject* arrInfo();
 
 			/// return the allele at locus \c index
@@ -327,7 +330,7 @@ namespace simuPOP
 			}
 #endif
 
-			/// return the sex of an individual, \c 1 for males and \c 2 for females. However, this is not guranteed so please use \c sexChar().
+			/// return the sex of an individual, \c 1 for males and \c 2 for females.
 			Sex sex() const
 			{
 				if( ISSETFLAG(m_flags, m_flagFemale) )
@@ -342,7 +345,7 @@ namespace simuPOP
 				return sex() == Female ? 'F' : 'M';
 			}
 
-			/// set the sex. You should use \c setSex(Male) or \c setSex(Female) instead of \c 1 and \c 2.
+			/// set sex. \c sex can be \c Male of \c Female.
 			void setSex(Sex sex)
 			{
 				CHECKRANGESEX(sex);

@@ -51,6 +51,7 @@ print simu.numChrom()
 #end
 
 #file log/src_population.log
+# use of population function
 # a Wright-Fisher population
 WF = population(size=100, ploidy=1, loci=[1])
 
@@ -58,12 +59,68 @@ WF = population(size=100, ploidy=1, loci=[1])
 # there are two chromosomes with 5 and 7 loci respectively
 pop = population(size=10, ploidy=2, loci=[5, 7], subPop=[2, 8])
 
-# a population with SNP markers (with names A,C,T,G
+# a population with SNP markers (with names A,C,T,G)
 # range() are python functions
 pop = population(size=5, ploidy=2, loci=[5,10],
     lociPos=[range(0,5),range(0,20,2)],
     alleleNames=['A','C','T','G'],
     subPop=[2,3], maxAllele=3)
+
+#
+# population structure functions
+print pop.popSize()
+print pop.numSubPop()
+print pop.subPopSize(0)
+print pop.subPopSizes()
+print pop.subPopBegin(1)
+print pop.subPopEnd(1)
+print pop.subPopIndPair(3)
+print pop.absIndIndex(1,1)
+
+#
+# functions of setting population structure
+pop.setIndSubPopID([1,2,2,3,1])
+pop.setSubPopByIndID()
+pop.removeLoci(keep=range(2,7))
+Dump(pop)
+
+#
+# save and load population
+# save it in various formats, default format is "txt"
+pop = population(1000, loci=[2, 5, 10])
+pop.savePopulation("pop.txt")
+pop.savePopulation("pop.txt", compress=False)
+pop.savePopulation("pop.xml", format="xml")
+pop.savePopulation("pop.bin", format="bin")
+
+# load it in another population
+pop1 = LoadPopulation("pop.xml", format="xml")
+#end
+
+
+#file log/src_individual.log
+pop = population(500, loci=[2, 5, 10])
+# get an individual
+ind = pop.individual(9)
+# oops, wrong index
+ind = pop.individual(3)
+# you can access genotypic structure info
+print ind.ploidy()
+print ind.numChrom()
+# ...
+# as well as genotype
+print ind.allele(1) 
+ind.setAllele(1,5)
+print ind.allele(1)
+# you can also use an overloaded function
+# with a second parameter being the ploidy index
+print ind.allele(1,1) # second locus at the second copy of chromosome
+# other information
+print ind.affected()
+print ind.affectedChar()
+ind.setAffected(1)
+print ind.affectedChar()
+print ind.sexChar()
 #end
 
 
@@ -302,6 +359,7 @@ r=rng()
 for n in range(1,10):
   print r.randBinomial(10, .7),
 #end
+
 
 
 
