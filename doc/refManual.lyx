@@ -1,4 +1,4 @@
-#LyX 1.5.0rc2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -58,7 +58,8 @@ Last modified \\
 \listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
-\author "Anonymous" 
+\author "" 
+\author "" 
 \author "" 
 \end_header
 
@@ -1776,6 +1777,13 @@ Information fields
 'fitness'
 \family default
  field is required by all selectors.
+ Details please refer to section 
+\begin_inset LatexCommand ref
+reference "sec:Information-fields"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -2022,464 +2030,6 @@ simulator::getPopulation()
 
 \begin_layout Standard
 
-\end_layout
-
-\begin_layout Subsection
-\begin_inset LatexCommand label
-name "sub:Population-Variables"
-
-\end_inset
-
-Population variables
-\end_layout
-
-\begin_layout Standard
-Populations are associated with Python variables.
- These variables are usually set by various operators.
- For example, 
-\family typewriter
-stat
-\begin_inset LatexCommand index
-name "operator!stat"
-
-\end_inset
-
-
-\family default
- operator calculates many population statistics and store results in population
- namespace.
- Example 
-\begin_inset LatexCommand ref
-reference "sub:Population-Variables"
-
-\end_inset
-
- demonstrates how 
-\family typewriter
-stat
-\family default
- set variables 
-\family typewriter
-popSize
-\family default
-, 
-\family typewriter
-alleleFreq
-\family default
- etc.
- 
-\end_layout
-
-\begin_layout Standard
-You can refer to these variables using 
-\family typewriter
-population::vars
-\begin_inset LatexCommand index
-name "population!vars"
-
-\end_inset
-
-()
-\family default
- or 
-\family typewriter
-population::
-\begin_inset LatexCommand index
-name "population!population"
-
-\end_inset
-
-dvars()
-\family default
- function.
- The returned values of 
-\family typewriter
-vars()
-\family default
- and 
-\family typewriter
-dvars()
-\family default
- reflect the same dictionary.
- However, 
-\family typewriter
-dvars()
-\family default
- uses a little Python magic so that you can use attribute syntax to access
- dictionary keys.
- Since 
-\family typewriter
-a.allaleFreq[0]
-\family default
- is much easier to read than 
-\family typewriter
-a['alleleFre'][0]
-\family default
-, 
-\family typewriter
-dvars()
-\family default
- is always preferred to 
-\family typewriter
-vars()
-\family default
-.
- A function 
-\family typewriter
-ListVars
-\family default
- defined in 
-\family typewriter
-simuUtil
-\family default
- can be used to display the variables.
- With wxPython installed, this function will open a nice window with a tree
- representing the variables.
- Without wxPython (or use parameter 
-\family typewriter
-useWxPython=False
-\family default
-), variables will be displayed in a indented form.
- Several parameters can be used to limit your display.
- They are
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-level
-\family default
-: the level of the tree, further nested variables will not be displayed
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-name
-\family default
-: the name of the variable to display
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-subPop
-\family default
-: whether or not display variables for each subpopulation.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_popVars.log}[caption={Population variables},label={popVars}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-These variables form a Python dictionary, and furthermore a local namespace
- for functions like 
-\family typewriter
-population::evaluate
-\family default
-
-\begin_inset LatexCommand index
-name "population!evaluate"
-
-\end_inset
-
-.
- 
-\emph on
-Local namespace
-\emph default
- means that you can use dictionary items as variables during evaluation.
- For example: 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_localNamespace.log}[caption={Local namespaces of populations},label={localNamespace}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-As you can see, these variables are 
-\emph on
-local
-\emph default
- to the population and is not directly accessible from the main namespace.
- 
-\family typewriter
-vars(subPop)
-\family default
- and 
-\family typewriter
-dvars(subPop)
-\family default
- function can be used.
- Both functions take an optional 
-\family typewriter
-subPop
-\family default
- option.
- If ignored, they will return the population dictionary; otherwise, they
- will return the dictionary for subpopulation 
-\family typewriter
-subPop
-\family default
-.
- This is a very convenient feature, because subpopulations and populations
- have similar keys, you can calculate the same statistics for the whole
- population and individual subpopulations, just by specifying different
- namespaces.
-\end_layout
-
-\begin_layout Subsection
-FIXME: duplicate information?
-\end_layout
-
-\begin_layout Standard
-You can access the local namespace of each replicate through a simulator's
- 
-\family typewriter
-vars(rep)
-\family default
- function:
-\end_layout
-
-\begin_layout LyX-Code
-simu.vars(0)        simu.vars(1) ...
-     // replicate
-\end_layout
-
-\begin_layout LyX-Code
-  popSize             popSize            // local namespace
-\end_layout
-
-\begin_layout LyX-Code
-  alleleFreq[0]       alleleFreq[0]      // allele frequency at locus 1
-\end_layout
-
-\begin_layout LyX-Code
-  alleleFreq[1]       alleleFreq[1]      // at locus 2
-\end_layout
-
-\begin_layout LyX-Code
-  ...
-                 ....
-\end_layout
-
-\begin_layout LyX-Code
-  subPop[0]           subPop[0]          // subpop namespace
-\end_layout
-
-\begin_layout LyX-Code
-    popSize             popSize          // subpopulation 1 size
-\end_layout
-
-\begin_layout LyX-Code
-    allaleFreq[0]       allaleFreq[0]    // allele frequency at locus 1
-\end_layout
-
-\begin_layout LyX-Code
-    ...
-                 ...
-\end_layout
-
-\begin_layout LyX-Code
-  subPop[1]           subPop[1]          // variables for subpop 2
-\end_layout
-
-\begin_layout LyX-Code
-    ...
-                 ...
-\end_layout
-
-\begin_layout Standard
-It is important to know that
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simulator::vars(0), vars(1)
-\family default
- etc.
- are the 
-\emph on
-local namespaces
-\emph default
- for each replicate.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-subPop[0]
-\family default
-, 
-\family typewriter
-subPop[1]
-\family default
- etc.
- have almost the same set of keys as those for the whole population.
- This is because 
-\family typewriter
-stat
-\family default
- operator by default calculates statistics of each replicate of population,
- and all subpopulations.
-\end_layout
-
-\begin_layout Standard
-To list these variables, you can use the 
-\family typewriter
-ListVars()
-\family default
- function defined in 
-\family typewriter
-simuUtil.py
-\family default
-.
- For example
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-ListVars(simu.vars(0), level=2)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-list all variables for the first replicate.
- 
-\family typewriter
-level=2
-\family default
- stops 
-\family typewriter
-ListVars
-\family default
- from expanding lists and dictionaries after two levels.
- 
-\end_layout
-
-\begin_layout Standard
-Two functions can be used to access simulator and population variables:
- 
-\family typewriter
-vars()
-\family default
- and 
-\family typewriter
-dvars()
-\family default
-.
- We have known 
-\family typewriter
-population::vars()
-\family default
- and 
-\family typewriter
-population::dvars()
-\family default
-, 
-\family typewriter
-simulator::vars()
-\family default
- and 
-\family typewriter
-simulator::dvars()
-\family default
- work in almost the same way.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simulator::vars(rep
-\family default
-), 
-\family typewriter
-dvars(rep)
-\family default
-: return replicate 
-\family typewriter
-rep
-\family default
-'s local namespace.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simulator::vars(rep, subPop
-\family default
-), 
-\family typewriter
-dvars(rep, subPop)
-\family default
-: return the namespace of 
-\family typewriter
-subPop
-\family default
- subpopulation of replicate 
-\family typewriter
-rep
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-The return values of 
-\family typewriter
-vars()
-\family default
- and 
-\family typewriter
-dvars()
-\family default
- are different.
- 
-\family typewriter
-vars()
-\family default
- returns a Python dictionary.
- You should access their keys in the usual Python way.
- 
-\family typewriter
-dvars()
-\family default
- returns a 'wrapped' Python dictionary.
- You can access their dictionary keys as attributes.
- 
-\family typewriter
-dvars()
-\family default
- is usually considered to be easier to use than 
-\family typewriter
-vars()
-\family default
-.
 \end_layout
 
 \begin_layout Subsection
@@ -2977,23 +2527,7 @@ Individuals
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-individualRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-You can access individuals of a population through 
+Individuals of a population can be accessed through 
 \family typewriter
 individual
 \begin_inset LatexCommand index
@@ -3003,7 +2537,7 @@ name "population!individual"
 
 ()
 \family default
- function, or its iteration form 
+, or its iteration form 
 \family typewriter
 individuals()
 \family default
@@ -3041,14 +2575,48 @@ subPop
 \begin_layout Itemize
 
 \family typewriter
-individuals(), individuals(subPop)
+individuals()
+\family default
+return an iterator that can be used to iterate through all individuals in
+ a population.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+individuals(subPop)
 \family default
  return an iterator that can be used to iterate through all individuals
- in a population or one of its subpopulations.
+ in the 
+\family typewriter
+subPop
+\family default
+'th subpopulations.
 \end_layout
 
 \begin_layout Standard
-The iterator can simplify the access of individuals, by using
+For example, example 
+\begin_inset LatexCommand ref
+reference "lst:population-individual"
+
+\end_inset
+
+ iterates through all individuals in subpopulaiton 2 using 
+\family typewriter
+population::individual() 
+\family default
+function, while 
+\begin_inset LatexCommand ref
+reference "lst:population-individuals"
+
+\end_inset
+
+ uses 
+\family typewriter
+population::individuals()
+\family default
+.
+ The latter is usually easier to use.
 \end_layout
 
 \begin_layout Standard
@@ -3057,6 +2625,58 @@ inline false
 status open
 
 \begin_layout Standard
+
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "lst:population-individual"
+
+\end_inset
+
+Function population::individual()
+\end_layout
+
+\end_inset
+
+for i in range(pop.subPopSize(2)):
+\end_layout
+
+\begin_layout Standard
+
+    ind = pop.individual(i, 2)
+\end_layout
+
+\begin_layout Standard
+
+    print ind.affected()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "lst:population-individuals"
+
+\end_inset
+
+
+Function population::individuals()
+\end_layout
+
+\end_inset
 
 for ind in pop.individuals(2):
 \end_layout
@@ -3077,298 +2697,19 @@ for ind in pop.individuals(2):
 \end_layout
 
 \begin_layout Standard
-instead of the older
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
+\begin_inset ERT
+status collapsed
 
 \begin_layout Standard
 
-for i in range(pop.subPopSize(2)):
-\end_layout
 
-\begin_layout Standard
-
-    ind = pop.individual(i, 2)
-\end_layout
-
-\begin_layout Standard
-
-    print ind.affected()
+\backslash
+individualRef
 \end_layout
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Information fields
-\end_layout
-
-\begin_layout Standard
-An individual will by default have genotype, sex and affection status informatio
-n, but other information is needed for some operations.
- For example, the fitness value of an individual is needed for selection,
- one or more trait values may be needed to calculate quantitative traits,
- and age may be needed if age-dependent mating schemes are used.
- Because the need for information fields varies from simulation to simulation,
- simuPOP does not fix the amount of information fields, and allow users
- to specify these fields during the construction of populations.
-\end_layout
-
-\begin_layout Standard
-Operators may require certain information fields to work properly.
- For example, all selectors require field 
-\family typewriter
-fitness
-\family default
- to store evaluated fitness values for each individual.
- 
-\family typewriter
-parentTagger
-\family default
- needs 
-\family typewriter
-father_idx
-\family default
- and 
-\family typewriter
-mother_idx
-\family default
- to store indices of the parents of each individual in the parental generation.
- These information fields can be added by the 
-\family typewriter
-infoFields
-\family default
- parameter of the population constructor or be added later using relevant
- function.
- If a required information field is unavailable, an error message will appear
- and tell you which fields are needed.
-\end_layout
-
-\begin_layout Standard
-The information fields can be accessed from each individual (c.f.
- 
-\family typewriter
-info(idx), info(name), setInfo(value, idx), setInfo(value, name), arrInfo()
-\family default
- of the individual), or from the population level (c.f.
- 
-\family typewriter
-setIndInfo(value), arrIndInfo(subPop)
-\family default
-).
- Some operators allow you to specify which information field(s) to use.
- For example, quantitative trait operator can work on specified fields so
- an individual can have several quantitative traits.
-\end_layout
-
-\begin_layout Standard
-The information fields are information that is attached to each individual.
- For example, an individual may need 
-\family typewriter
-father_idx
-\family default
- and 
-\family typewriter
-mother_idx
-\family default
- to track pedigree information, may need 
-\family typewriter
-penetrance
-\family default
- to set affectedness.
-\end_layout
-
-\begin_layout Standard
-The information fields is usually set during population creation, in preparation
- for all the operators, using the 
-\family typewriter
-infoFields
-\family default
- option of population constructor.
- It can also be set or added by functions
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.setInfoFields(fields, init)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.addInfoField(field, init)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.addInfoFields(fields, init)
-\end_layout
-
-\begin_layout Standard
-Note that changing information fields for a simulator is dangerous since
- all populations in a simulator share the same genotypic structure.
- You should use 
-\family typewriter
-addIndField
-\family default
- to all populations to avoid potential problems.
-\end_layout
-
-\begin_layout Standard
-One can set/retrieve information at individual level:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ind.info(idx or name)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ind.setInfo(idx or name)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ind.arrInfo()
-\end_layout
-
-\begin_layout Standard
-or set at the population level
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.indInfo(idx or name, order)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.indInfo(idx or name, subPop, order)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.setIndInfo(idx or name, [subPop])
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.arrIndInfo(order)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.arrIndInfo(subPop, order)
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-idx
-\family default
- or 
-\family typewriter
-name
-\family default
- means that you can use field index obtained from 
-\family typewriter
-infoIdx(name)
-\family default
-, or use field name directly.
- 
-\family typewriter
-name
-\family default
- is easier to use but 
-\family typewriter
-idx
-\family default
- is faster.
- Although population information fields are kept in a population object
- linearly, there is no guarantee that they are ordered.
- If you would like to access 
-\family typewriter
-info
-\family default
- individual by individual, passing 
-\family typewriter
-order=True
-\family default
- to functions 
-\family typewriter
-indInfo
-\family default
- and 
-\family typewriter
-arrIndInfo
-\family default
- will ensure that the returned information fields are ordered by individual
- order.
- If you only need to get a summary of some information fields, passing 
-\family typewriter
-order=False
-\family default
- will speed up the process.
- 
-\end_layout
-
-\begin_layout Standard
-For each individual, 
-\family typewriter
-ind.arrInfo()
-\family default
- will return 
-\family typewriter
-f1, f2, f3, ...
-
-\family default
- etc.
- for that individual.
- From a population point of view, 
-\family typewriter
-pop.arrIndInfo([subPop])
-\family default
- will return a list of 
-\family typewriter
-f1, f2, f3, ..., f1, f2, f3, ...
-\family default
-of individual information fields, which are not necessarily in the order
- of individuals unless 
-\family typewriter
-order = True
-\family default
- is set.
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-indInfo
-\family default
- is more convenient but it is less efficient than 
-\family typewriter
-arrIndInfo
-\family default
-.
- For example, the following two examples both assign an information field
- from the value of another one, but ??? is more efficient.
 \end_layout
 
 \begin_layout Section
@@ -3379,11 +2720,6 @@ name "mating scheme"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Mating schemes define the rules of offspring generation.
- A mating scheme is required when a simulator is created.
 \end_layout
 
 \begin_layout Standard
@@ -4501,6 +3837,782 @@ a=range(1,5)
  .
 \end_layout
 
+\begin_layout Section
+Simulator
+\begin_inset LatexCommand index
+name "Simulator"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The population evolution is implemented in simulator, which manages and
+ manipulates other components of simuPOP.
+ Simulator is the basic and important simulation function or environment
+ in simuPOP.
+ Without it, we may only call the simuPOP 'POP'.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+simulatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Generation number
+\end_layout
+
+\begin_layout Standard
+Several aspects of the generation number may cause confusion:
+\end_layout
+
+\begin_layout Itemize
+generation starts from zero
+\end_layout
+
+\begin_layout Itemize
+a generation number presents a 'to-be-evolved' generation
+\end_layout
+
+\begin_layout Itemize
+the ending generation specified in 
+\family typewriter
+evolve()
+\family default
+ will be executed
+\end_layout
+
+\begin_layout Standard
+That is to say, a new simulator will have generation 0 (at the beginning
+ of generation 0).
+ If you do 
+\family typewriter
+evolve(..., end=0), evolve
+\family default
+ will evolve one generation and stop at the beginning of generation 1.
+\end_layout
+
+\begin_layout Standard
+It may sound strange that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+evolve(end=2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+evolve the population three times.
+ Generation 0, generation 1, and generation 2.
+ At the end of the simulation, current generation number is 3! (If you are
+ familiar with C, this is like a 
+\family typewriter
+for
+\family default
+ loop index).
+ This is why you should test if a simulation is finished correctly by
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+if(simu.gen() == endGen+1)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+instead of 
+\family typewriter
+simu.gen() == endGen.
+
+\family default
+ (endGen is the value for parameter 
+\family typewriter
+end
+\family default
+).
+\end_layout
+
+\begin_layout Standard
+When you use 
+\family typewriter
+start=0, step=5, end=10
+\family default
+ for your operator, it will be applied at generations 
+\family typewriter
+0,5,10
+\family default
+ etc.
+ 
+\end_layout
+
+\begin_layout Subsection
+Operator calling sequence
+\end_layout
+
+\begin_layout Standard
+In a simulation, operators are applied at different stages, pre-, during-,
+ and post-mating.
+ However, operators are not always active.
+ They can be applied to certain generations or certain replicate(s) of a
+ population.
+ A simulator will always apply 
+\family typewriter
+preOps
+\family default
+ and 
+\family typewriter
+postOps
+\family default
+ operators, but will ask if an operator is active (by providing 
+\family typewriter
+rep, grp, gen
+\family default
+ information) before it is called.
+\end_layout
+
+\begin_layout Standard
+The order of applying operators usually does not matter but errors may occur
+ if you are not careful.
+ For example, 
+\family typewriter
+stat(...)
+\family default
+ calculates the statistics of the current population.
+ It is a pre-mating operator so you should set 
+\family typewriter
+stage=PostMating
+\family default
+ and put it after all operators if you would like to measure a post-mating
+ population.
+ However, it should be put before any operator (such as an terminator) that
+ uses the shared variable set by 
+\family typewriter
+stat(...).
+\end_layout
+
+\begin_layout Standard
+If you are not sure about the calling sequence of operators, you can set
+ the 
+\family typewriter
+dryrun
+\family default
+
+\begin_inset LatexCommand index
+name "simulator!dryun"
+
+\end_inset
+
+ parameter of 
+\family typewriter
+evolve()
+\family default
+ function to 
+\family typewriter
+True
+\family default
+.
+ 
+\family typewriter
+evolve
+\family default
+ will then print out the order of operators to apply.
+ Consider that operators can be 
+\family typewriter
+PreMating
+\begin_inset LatexCommand index
+name "constant!PreMating"
+
+\end_inset
+
+
+\begin_inset LatexCommand index
+name "operator!PreMating"
+
+\end_inset
+
+, PostMating
+\begin_inset LatexCommand index
+name "constant!PostMating"
+
+\end_inset
+
+
+\begin_inset LatexCommand index
+name "operator!PostMating"
+
+\end_inset
+
+, PrePostMating
+\begin_inset LatexCommand index
+name "constant!PrePostMating"
+
+\end_inset
+
+
+\begin_inset LatexCommand index
+name "operator!PrePostMating"
+
+\end_inset
+
+, DuringMating
+\begin_inset LatexCommand index
+name "constant!DuringMating"
+
+\end_inset
+
+
+\begin_inset LatexCommand index
+name "operator!DuringMating"
+
+\end_inset
+
+
+\family default
+ and the default value (parameter 
+\family typewriter
+stage
+\family default
+) may not be what you expect.
+ Having a look at the calling sequence before the real evolution is always
+ a good idea.
+\end_layout
+
+\begin_layout Subsection
+Save and Load
+\end_layout
+
+\begin_layout Standard
+Using function 
+\family typewriter
+saveSimulator
+\family default
+, we can save a simulator to a file in the format of 
+\family typewriter
+'txt'
+\family default
+,
+\family typewriter
+ 'bin'
+\family default
+, or 
+\family typewriter
+'xml'
+\family default
+.
+ However, a mating scheme can not be saved and has to be re-specified in
+ 
+\family typewriter
+LoadSimulator
+\begin_inset LatexCommand index
+name "loadSimulator"
+
+\end_inset
+
+()
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_simulatorsaveload.log}[caption={save and load a simulator},label={simulatorsaveload}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset LatexCommand label
+name "sec:Population-Variables"
+
+\end_inset
+
+Population variables
+\end_layout
+
+\begin_layout Standard
+Populations are associated with Python variables.
+ These variables are usually set by various operators.
+ For example, 
+\family typewriter
+stat
+\begin_inset LatexCommand index
+name "operator!stat"
+
+\end_inset
+
+
+\family default
+ operator calculates many population statistics and store results in population
+ namespace.
+ Example 
+\begin_inset LatexCommand ref
+reference "sec:Population-Variables"
+
+\end_inset
+
+ demonstrates how 
+\family typewriter
+stat
+\family default
+ set variables 
+\family typewriter
+popSize
+\family default
+, 
+\family typewriter
+alleleFreq
+\family default
+ etc.
+ 
+\end_layout
+
+\begin_layout Standard
+You can refer to these variables using 
+\family typewriter
+population::vars
+\begin_inset LatexCommand index
+name "population!vars"
+
+\end_inset
+
+()
+\family default
+ or 
+\family typewriter
+population::
+\begin_inset LatexCommand index
+name "population!population"
+
+\end_inset
+
+dvars()
+\family default
+ function.
+ The returned values of 
+\family typewriter
+vars()
+\family default
+ and 
+\family typewriter
+dvars()
+\family default
+ reflect the same dictionary.
+ However, 
+\family typewriter
+dvars()
+\family default
+ uses a little Python magic so that you can use attribute syntax to access
+ dictionary keys.
+ Since 
+\family typewriter
+a.allaleFreq[0]
+\family default
+ is much easier to read than 
+\family typewriter
+a['alleleFre'][0]
+\family default
+, 
+\family typewriter
+dvars()
+\family default
+ is always preferred to 
+\family typewriter
+vars()
+\family default
+.
+ A function 
+\family typewriter
+ListVars
+\family default
+ defined in 
+\family typewriter
+simuUtil
+\family default
+ can be used to display the variables.
+ With wxPython installed, this function will open a nice window with a tree
+ representing the variables.
+ Without wxPython (or use parameter 
+\family typewriter
+useWxPython=False
+\family default
+), variables will be displayed in a indented form.
+ Several parameters can be used to limit your display.
+ They are
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+level
+\family default
+: the level of the tree, further nested variables will not be displayed
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+name
+\family default
+: the name of the variable to display
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+subPop
+\family default
+: whether or not display variables for each subpopulation.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_popVars.log}[caption={Population variables},label={popVars}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+These variables form a Python dictionary, and furthermore a local namespace
+ for functions like 
+\family typewriter
+population::evaluate
+\family default
+
+\begin_inset LatexCommand index
+name "population!evaluate"
+
+\end_inset
+
+.
+ 
+\emph on
+Local namespace
+\emph default
+ means that you can use dictionary items as variables during evaluation.
+ For example: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_localNamespace.log}[caption={Local namespaces of populations},label={localNamespace}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As you can see, these variables are 
+\emph on
+local
+\emph default
+ to the population and is not directly accessible from the main namespace.
+ 
+\family typewriter
+vars(subPop)
+\family default
+ and 
+\family typewriter
+dvars(subPop)
+\family default
+ function can be used.
+ Both functions take an optional 
+\family typewriter
+subPop
+\family default
+ option.
+ If ignored, they will return the population dictionary; otherwise, they
+ will return the dictionary for subpopulation 
+\family typewriter
+subPop
+\family default
+.
+ This is a very convenient feature, because subpopulations and populations
+ have similar keys, you can calculate the same statistics for the whole
+ population and individual subpopulations, just by specifying different
+ namespaces.
+\end_layout
+
+\begin_layout Standard
+You can access the local namespace of each replicate through a simulator's
+ 
+\family typewriter
+vars(rep)
+\family default
+ function:
+\end_layout
+
+\begin_layout LyX-Code
+simu.vars(0)        simu.vars(1) ...
+     // replicate
+\end_layout
+
+\begin_layout LyX-Code
+  popSize             popSize            // local namespace
+\end_layout
+
+\begin_layout LyX-Code
+  alleleFreq[0]       alleleFreq[0]      // allele frequency at locus 1
+\end_layout
+
+\begin_layout LyX-Code
+  alleleFreq[1]       alleleFreq[1]      // at locus 2
+\end_layout
+
+\begin_layout LyX-Code
+  ...
+                 ....
+\end_layout
+
+\begin_layout LyX-Code
+  subPop[0]           subPop[0]          // subpop namespace
+\end_layout
+
+\begin_layout LyX-Code
+    popSize             popSize          // subpopulation 1 size
+\end_layout
+
+\begin_layout LyX-Code
+    allaleFreq[0]       allaleFreq[0]    // allele frequency at locus 1
+\end_layout
+
+\begin_layout LyX-Code
+    ...
+                 ...
+\end_layout
+
+\begin_layout LyX-Code
+  subPop[1]           subPop[1]          // variables for subpop 2
+\end_layout
+
+\begin_layout LyX-Code
+    ...
+                 ...
+\end_layout
+
+\begin_layout Standard
+It is important to know that
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simulator::vars(0), vars(1)
+\family default
+ etc.
+ are the 
+\emph on
+local namespaces
+\emph default
+ for each replicate.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+subPop[0]
+\family default
+, 
+\family typewriter
+subPop[1]
+\family default
+ etc.
+ have almost the same set of keys as those for the whole population.
+ This is because 
+\family typewriter
+stat
+\family default
+ operator by default calculates statistics of each replicate of population,
+ and all subpopulations.
+\end_layout
+
+\begin_layout Standard
+To list these variables, you can use the 
+\family typewriter
+ListVars()
+\family default
+ function defined in 
+\family typewriter
+simuUtil.py
+\family default
+.
+ For example
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+ListVars(simu.vars(0), level=2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+list all variables for the first replicate.
+ 
+\family typewriter
+level=2
+\family default
+ stops 
+\family typewriter
+ListVars
+\family default
+ from expanding lists and dictionaries after two levels.
+ 
+\end_layout
+
+\begin_layout Standard
+Two functions can be used to access simulator and population variables:
+ 
+\family typewriter
+vars()
+\family default
+ and 
+\family typewriter
+dvars()
+\family default
+.
+ We have known 
+\family typewriter
+population::vars()
+\family default
+ and 
+\family typewriter
+population::dvars()
+\family default
+, 
+\family typewriter
+simulator::vars()
+\family default
+ and 
+\family typewriter
+simulator::dvars()
+\family default
+ work in almost the same way.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simulator::vars(rep
+\family default
+), 
+\family typewriter
+dvars(rep)
+\family default
+: return replicate 
+\family typewriter
+rep
+\family default
+'s local namespace.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simulator::vars(rep, subPop
+\family default
+), 
+\family typewriter
+dvars(rep, subPop)
+\family default
+: return the namespace of 
+\family typewriter
+subPop
+\family default
+ subpopulation of replicate 
+\family typewriter
+rep
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The return values of 
+\family typewriter
+vars()
+\family default
+ and 
+\family typewriter
+dvars()
+\family default
+ are different.
+ 
+\family typewriter
+vars()
+\family default
+ returns a Python dictionary.
+ You should access their keys in the usual Python way.
+ 
+\family typewriter
+dvars()
+\family default
+ returns a 'wrapped' Python dictionary.
+ You can access their dictionary keys as attributes.
+ 
+\family typewriter
+dvars()
+\family default
+ is usually considered to be easier to use than 
+\family typewriter
+vars()
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
 \begin_layout Subsection
 
 \family typewriter
@@ -4839,9 +4951,9 @@ pyEval/pyExec
 \end_layout
 
 \begin_layout Section
-Simulator
-\begin_inset LatexCommand index
-name "Simulator"
+Information fields
+\begin_inset LatexCommand label
+name "sec:Information-fields"
 
 \end_inset
 
@@ -4849,311 +4961,265 @@ name "Simulator"
 \end_layout
 
 \begin_layout Standard
-The population evolution is implemented in simulator, which manages and
- manipulates other components of simuPOP.
- Simulator is the basic and important simulation function or environment
- in simuPOP.
- Without it, we may only call the simuPOP 'POP'.
+An individual will by default have genotype, sex and affection status informatio
+n, but other information is needed for some operations.
+ For example, the fitness value of an individual is needed for selection,
+ one or more trait values may be needed to calculate quantitative traits,
+ and age may be needed if age-dependent mating schemes are used.
+ Because the need for information fields varies from simulation to simulation,
+ simuPOP does not fix the amount of information fields, and allow users
+ to specify these fields during the construction of populations.
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-simulatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Generation number
-\end_layout
-
-\begin_layout Standard
-Several aspects of the generation number may cause confusion:
-\end_layout
-
-\begin_layout Itemize
-generation starts from zero
-\end_layout
-
-\begin_layout Itemize
-a generation number presents a 'to-be-evolved' generation
-\end_layout
-
-\begin_layout Itemize
-the ending generation specified in 
+Operators may require certain information fields to work properly.
+ For example, all selectors require field 
 \family typewriter
-evolve()
+fitness
 \family default
- will be executed
-\end_layout
-
-\begin_layout Standard
-That is to say, a new simulator will have generation 0 (at the beginning
- of generation 0).
- If you do 
-\family typewriter
-evolve(..., end=0), evolve
-\family default
- will evolve one generation and stop at the beginning of generation 1.
-\end_layout
-
-\begin_layout Standard
-It may sound strange that 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-evolve(end=2)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-evolve the population three times.
- Generation 0, generation 1, and generation 2.
- At the end of the simulation, current generation number is 3! (If you are
- familiar with C, this is like a 
-\family typewriter
-for
-\family default
- loop index).
- This is why you should test if a simulation is finished correctly by
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-if(simu.gen() == endGen+1)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-instead of 
-\family typewriter
-simu.gen() == endGen.
-
-\family default
- (endGen is the value for parameter 
-\family typewriter
-end
-\family default
-).
-\end_layout
-
-\begin_layout Standard
-When you use 
-\family typewriter
-start=0, step=5, end=10
-\family default
- for your operator, it will be applied at generations 
-\family typewriter
-0,5,10
-\family default
- etc.
+ to store evaluated fitness values for each individual.
  
-\end_layout
-
-\begin_layout Subsection
-Operator calling sequence
-\end_layout
-
-\begin_layout Standard
-In a simulation, operators are applied at different stages, pre-, during-,
- and post-mating.
- However, operators are not always active.
- They can be applied to certain generations or certain replicate(s) of a
- population.
- A simulator will always apply 
 \family typewriter
-preOps
+parentTagger
+\family default
+ needs 
+\family typewriter
+father_idx
 \family default
  and 
 \family typewriter
-postOps
+mother_idx
 \family default
- operators, but will ask if an operator is active (by providing 
+ to store indices of the parents of each individual in the parental generation.
+ These information fields can be added by the 
 \family typewriter
-rep, grp, gen
+infoFields
 \family default
- information) before it is called.
+ parameter of the population constructor or be added later using relevant
+ function.
+ If a required information field is unavailable, an error message will appear
+ and tell you which fields are needed.
 \end_layout
 
 \begin_layout Standard
-The order of applying operators usually does not matter but errors may occur
- if you are not careful.
- For example, 
-\family typewriter
-stat(...)
-\family default
- calculates the statistics of the current population.
- It is a pre-mating operator so you should set 
-\family typewriter
-stage=PostMating
-\family default
- and put it after all operators if you would like to measure a post-mating
- population.
- However, it should be put before any operator (such as an terminator) that
- uses the shared variable set by 
-\family typewriter
-stat(...).
-\end_layout
-
-\begin_layout Standard
-If you are not sure about the calling sequence of operators, you can set
- the 
-\family typewriter
-dryrun
-\family default
-
-\begin_inset LatexCommand index
-name "simulator!dryun"
-
-\end_inset
-
- parameter of 
-\family typewriter
-evolve()
-\family default
- function to 
-\family typewriter
-True
-\family default
-.
+The information fields can be accessed from each individual (c.f.
  
 \family typewriter
-evolve
+info(idx), info(name), setInfo(value, idx), setInfo(value, name), arrInfo()
 \family default
- will then print out the order of operators to apply.
- Consider that operators can be 
+ of the individual), or from the population level (c.f.
+ 
 \family typewriter
-PreMating
-\begin_inset LatexCommand index
-name "constant!PreMating"
-
-\end_inset
-
-
-\begin_inset LatexCommand index
-name "operator!PreMating"
-
-\end_inset
-
-, PostMating
-\begin_inset LatexCommand index
-name "constant!PostMating"
-
-\end_inset
-
-
-\begin_inset LatexCommand index
-name "operator!PostMating"
-
-\end_inset
-
-, PrePostMating
-\begin_inset LatexCommand index
-name "constant!PrePostMating"
-
-\end_inset
-
-
-\begin_inset LatexCommand index
-name "operator!PrePostMating"
-
-\end_inset
-
-, DuringMating
-\begin_inset LatexCommand index
-name "constant!DuringMating"
-
-\end_inset
-
-
-\begin_inset LatexCommand index
-name "operator!DuringMating"
-
-\end_inset
-
-
+setIndInfo(value), arrIndInfo(subPop)
 \family default
- and the default value (parameter 
-\family typewriter
-stage
-\family default
-) may not be what you expect.
- Having a look at the calling sequence before the real evolution is always
- a good idea.
-\end_layout
-
-\begin_layout Subsection
-Save and Load
+).
+ Some operators allow you to specify which information field(s) to use.
+ For example, quantitative trait operator can work on specified fields so
+ an individual can have several quantitative traits.
 \end_layout
 
 \begin_layout Standard
-Using function 
+The information fields are information that is attached to each individual.
+ For example, an individual may need 
 \family typewriter
-saveSimulator
+father_idx
 \family default
-, we can save a simulator to a file in the format of 
+ and 
 \family typewriter
-'txt'
+mother_idx
 \family default
-,
+ to track pedigree information, may need 
 \family typewriter
- 'bin'
+penetrance
 \family default
-, or 
+ to set affectedness.
+\end_layout
+
+\begin_layout Standard
+The information fields is usually set during population creation, in preparation
+ for all the operators, using the 
 \family typewriter
-'xml'
+infoFields
 \family default
-.
- However, a mating scheme can not be saved and has to be re-specified in
+ option of population constructor.
+ It can also be set or added by functions
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.setInfoFields(fields, init)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.addInfoField(field, init)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.addInfoFields(fields, init)
+\end_layout
+
+\begin_layout Standard
+Note that changing information fields for a simulator is dangerous since
+ all populations in a simulator share the same genotypic structure.
+ You should use 
+\family typewriter
+addIndField
+\family default
+ to all populations to avoid potential problems.
+\end_layout
+
+\begin_layout Standard
+One can set/retrieve information at individual level:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ind.info(idx or name)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ind.setInfo(idx or name)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ind.arrInfo()
+\end_layout
+
+\begin_layout Standard
+or set at the population level
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.indInfo(idx or name, order)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.indInfo(idx or name, subPop, order)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.setIndInfo(idx or name, [subPop])
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.arrIndInfo(order)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.arrIndInfo(subPop, order)
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+idx
+\family default
+ or 
+\family typewriter
+name
+\family default
+ means that you can use field index obtained from 
+\family typewriter
+infoIdx(name)
+\family default
+, or use field name directly.
  
 \family typewriter
-LoadSimulator
-\begin_inset LatexCommand index
-name "loadSimulator"
-
-\end_inset
-
-()
+name
 \family default
-.
+ is easier to use but 
+\family typewriter
+idx
+\family default
+ is faster.
+ Although population information fields are kept in a population object
+ linearly, there is no guarantee that they are ordered.
+ If you would like to access 
+\family typewriter
+info
+\family default
+ individual by individual, passing 
+\family typewriter
+order=True
+\family default
+ to functions 
+\family typewriter
+indInfo
+\family default
+ and 
+\family typewriter
+arrIndInfo
+\family default
+ will ensure that the returned information fields are ordered by individual
+ order.
+ If you only need to get a summary of some information fields, passing 
+\family typewriter
+order=False
+\family default
+ will speed up the process.
  
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_simulatorsaveload.log}[caption={save and load a simulator},label={simulatorsaveload}]
-preview false
+For each individual, 
+\family typewriter
+ind.arrInfo()
+\family default
+ will return 
+\family typewriter
+f1, f2, f3, ...
 
-\end_inset
+\family default
+ etc.
+ for that individual.
+ From a population point of view, 
+\family typewriter
+pop.arrIndInfo([subPop])
+\family default
+ will return a list of 
+\family typewriter
+f1, f2, f3, ..., f1, f2, f3, ...
+\family default
+of individual information fields, which are not necessarily in the order
+ of individuals unless 
+\family typewriter
+order = True
+\family default
+ is set.
+\end_layout
 
+\begin_layout Standard
 
+\family typewriter
+indInfo
+\family default
+ is more convenient but it is less efficient than 
+\family typewriter
+arrIndInfo
+\family default
+.
+ For example, the following two examples both assign an information field
+ from the value of another one, but ??? is more efficient.
 \end_layout
 
 \begin_layout Chapter
