@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.0rc2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -58,7 +58,7 @@ Last modified \\
 \listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
-\author "" 
+\author "Anonymous" 
 \author "" 
 \end_header
 
@@ -421,7 +421,11 @@ addInfoField
 \family default
  of class 
 \family typewriter
-populayion.
+population
+\family default
+.
+
+\family typewriter
  
 \end_layout
 
@@ -471,7 +475,7 @@ status open
 \end_deeper
 \begin_layout Itemize
 Some classes are derived from other classes and have access to member functions
- of its base class.
+ of their base classes.
  For example, class 
 \family typewriter
 population
@@ -489,7 +493,7 @@ simulator
 GenoStruTrait
 \family default
 .
- Therefore, you can have access to all 
+ Therefore, you can use all 
 \family typewriter
 GenoStruTrait
 \family default
@@ -550,7 +554,7 @@ Standard libraries have detailed debug and run-time validation mechanism
  to make sure the simulations run correctly.
  Whenever something unusual is detected, simuPOP would terminate with detailed
  error messages.
- The cost of such run-time checking varies from simulation to simulation
+ The cost of such run-time checking varies from application to application
  but can be very high under some extreme circumstances.
  Because of this, optimized versions for all libraries are provided.
  They bypass all parameter checking and run-time validations and will simply
@@ -946,7 +950,7 @@ All simuPOP classes (objects) have a clone function that can be used to
  create an independent copy of the object.
  Because cloning a large population can be costly, a few methods are provided
  to access populations inside a simulator.
- Assume that 
+ Assuming that 
 \family typewriter
 simu
 \family default
@@ -975,8 +979,20 @@ th population.
 pop
 \family default
  reference.
- Because this population reference will become invalid when the simulator
- is destroyed, the following calling sequence can crash Python:
+ For example, the following calling sequence can crash simuPOP, because
+ the simulator 
+\family typewriter
+simu 
+\family default
+will be destroyed after the call to 
+\family typewriter
+func() 
+\family default
+is ended, leaving 
+\family typewriter
+pop
+\family default
+ as a referece to an invalid population object.
 \end_layout
 
 \begin_deeper
@@ -1044,19 +1060,7 @@ pop.popSize()
 
 \end_inset
 
-In this example, the simulator 
-\family typewriter
-simu 
-\family default
-will be destroyed after the call to 
-\family typewriter
-func() 
-\family default
-is ended, leaving 
-\family typewriter
-pop
-\family default
- as a referece to an invalid population object.
+
 \end_layout
 
 \end_deeper
@@ -1073,22 +1077,24 @@ pop = simu.getPopulation(idx)
 
 \end_inset
 
-.
- Population 
+, which returns an independent copy of population 
 \family typewriter
-pop
+idx
 \family default
- returned in this way in Example 
-\begin_inset LatexCommand ref
-reference "lst:Reference-to-population"
-
-\end_inset
-
- is valid.
+ of 
+\family typewriter
+simu
+\family default
+.
+ 
+\family typewriter
+simu
+\family default
+ is untouched.
 \end_layout
 
 \begin_layout Enumerate
-If the simulator will be destroyed as the case in Example 
+If the simulator will be destroyed as in Example 
 \begin_inset LatexCommand ref
 reference "lst:Reference-to-population"
 
@@ -1220,8 +1226,9 @@ of a locus.
  
 \emph default
 For example, if there are 5 and 7 loci on the first two chromosomes, the
- absolute indexes of the two loci are (0, 1, 2, 3, 4), (5, 6, 7, 8, 9, 10,
- 11) and the relative indexes are (0, 1, 2, 3, 4), (0, 1, 2, 3, 4, 5, 6).
+ absolute indexes of the two chromosomes are (0, 1, 2, 3, 4), (5, 6, 7,
+ 8, 9, 10, 11) and the relative indexes are (0, 1, 2, 3, 4), (0, 1, 2, 3,
+ 4, 5, 6).
  Absolute indexes are more frequently used because they avoid the trouble
  of having to use two numbers (chrom, index) to refer to a locus.
  Two functions 
@@ -1257,7 +1264,7 @@ where
 \emph on
 relative index 
 \emph default
-is the index in its a subpopulation.
+is the index in its subpopulation.
 \end_layout
 
 \begin_layout Standard
@@ -1275,7 +1282,7 @@ Function form of an operator
 
 \begin_layout Standard
 Operators are usually applied to populations through a simulator.
- An operator is created and passed as a parameter to the 
+ They are created and passed as parameters to the 
 \family typewriter
 evolve 
 \family default
@@ -1322,7 +1329,7 @@ simu
 \family typewriter
 initByFreq
 \family default
- once to each replicate of the simulator; apply the first 
+ once to each replicate of the simulator once; apply the first 
 \family typewriter
 kamMutator
 \family default
@@ -1339,7 +1346,7 @@ stat
 \end_inset
 
  every 10 generations.
- More details about operators will be described later.
+ More details about operators will be described in section.
 \end_layout
 
 \begin_layout Standard
@@ -1409,15 +1416,12 @@ preview false
 \end_layout
 
 \begin_layout Standard
-The function form will be marked as 
-\family typewriter
-Function form
-\family default
- in this reference manual.
+The function form of an operator is listed after the class name in this
+ reference manual.
 \end_layout
 
 \begin_layout Section
-
+The 
 \family typewriter
 carray
 \begin_inset LatexCommand index
@@ -1431,7 +1435,7 @@ name "carray"
 \end_layout
 
 \begin_layout Standard
-The return value of simuPOP functions with names start with 
+The return value of simuPOP functions with names starting with 
 \family typewriter
 arr
 \family default
@@ -1440,10 +1444,10 @@ arr
 carray
 \family default
 .
- This object reflects the underlying C/C++ array and you can read/write
- array elements just as a regular list, with the exception that you can
- not change the size of the array.
- Therefore, only 
+ This object reflects the underlying C/C++ array which can be modified through
+ this list-like interface, with the exception that you can not change the
+ size of the array.
+ Only 
 \family typewriter
 count
 \family default
@@ -1451,7 +1455,7 @@ count
 \family typewriter
  index
 \family default
- list function can be used.
+ list functions can be used.
 \end_layout
 
 \begin_layout Standard
@@ -1461,11 +1465,6 @@ preview false
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-No other operation is allowed.
- 
 \end_layout
 
 \begin_layout Standard
@@ -1480,10 +1479,6 @@ arrXXX
  functions should be considered temporary.
  There is no guarantee that the underlying array will still be valid after
  any population operation.
-\end_layout
-
-\begin_layout Standard
-
 \end_layout
 
 \begin_layout Section
@@ -1520,15 +1515,11 @@ initByFreq(vars)
 \family typewriter
 InitByFreq(pop, vars)
 \family default
- is its function version (equivalent to 
-\family typewriter
-initByFreq(vars).apply(pop)
-\family default
-).
+ is its function version.
 \end_layout
 
 \begin_layout Itemize
-Constants start with Capital characters.
+Constants start with capital characters.
  For example
 \end_layout
 
@@ -1584,18 +1575,18 @@ http://simupop.sourceforge.net
  SF.net summary > Code > SVN Browse > trunk > doc > refManual.pdf
 \family default
  and download the HEAD version.
- You can also find some tutorials that are not distributed with simuPOP,
- such as
+ You can also find some tutorials that are not distributed with simuPOP
+ from the subversion repository, such as
 \end_layout
 
 \begin_layout Enumerate
 Forward-time simulations using simuPOP, a tutorial: a tutorial that was
- given in a simuPOP workshop held at University of Alabama at Birmingham
+ given in a simuPOP workshop held at University of Alabama at Birmingham.
 \end_layout
 
 \begin_layout Enumerate
 Forward-time simulations using simuPOP, an in-depth course: a in-depth course
- about simuPOP components, with a lot of examples
+ about simuPOP components, with a lot of examples.
 \end_layout
 
 \begin_layout Standard
@@ -1794,7 +1785,7 @@ Individuals in the same population share the same genotypic structure.
 the genotypic information can be accessed from individual, population and
  simulator
 \emph default
- (consists of populations with the same genotypic structure) 
+ 
 \emph on
 levels
 \emph default
@@ -1816,10 +1807,6 @@ GenoStruTraitRef
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Introduction
 \end_layout
 
 \begin_layout Subsection
@@ -1865,68 +1852,6 @@ it is assumed that males have XY and females have XX chromosomes.
  
 \end_layout
 
-\begin_layout Subsection
-Information fields
-\end_layout
-
-\begin_layout Standard
-An individual will by default have genotype, sex and affection status informatio
-n, but other information is needed for some operations.
- For example, the fitness value of an individual is needed for selection,
- one or more trait values may be needed to calculate quantitative traits,
- and age may be needed if age-dependent mating schemes are used.
- Because the need for information fields varies from simulation to simulation,
- simuPOP does not fix the amount of information fields, and allow users
- to specify these fields during the construction of populations.
-\end_layout
-
-\begin_layout Standard
-Operators may require certain information fields to work properly.
- For example, all selectors require field 
-\family typewriter
-fitness
-\family default
- to store evaluated fitness values for each individual.
- 
-\family typewriter
-parentTagger
-\family default
- needs 
-\family typewriter
-father_idx
-\family default
- and 
-\family typewriter
-mother_idx
-\family default
- to store indices of the parents of each individual in the parental generation.
- These information fields can be added by the 
-\family typewriter
-infoFields
-\family default
- parameter of the population constructor or be added later using relevant
- function.
- If a required information field is unavailable, an error message will appear
- and tell you which fields are needed.
-\end_layout
-
-\begin_layout Standard
-The information fields can be accessed from each individual (c.f.
- 
-\family typewriter
-info(idx), info(name), setInfo(value, idx), setInfo(value, name), arrInfo()
-\family default
- of the individual), or from the population level (c.f.
- 
-\family typewriter
-setIndInfo(value), arrIndInfo(subPop)
-\family default
-).
- Some operators allow you to specify which information field(s) to use.
- For example, quantitative trait operator can work on specified fields so
- an individual can have several quantitative traits.
-\end_layout
-
 \begin_layout Section
 Population
 \end_layout
@@ -1943,9 +1868,9 @@ name "population"
 
 \family default
  objects are essential to simuPOP.
- They are composed of subpopulations each with certain number of individuals,
- all have the same genotypic structure.
- A population can store arbitrary number of ancestral populations to facilitate
+ They are composed of subpopulations each with certain number of individuals
+ having the same genotypic structure.
+ A population can store arbitrary number of ancestral generations to facilitate
  pedigree analysis.
 \end_layout
 
@@ -2022,7 +1947,7 @@ Note that migration will most likely change the subpopulation sizes.
 \end_layout
 
 \begin_layout Standard
-
+Class 
 \family typewriter
 population
 \family default
@@ -2044,7 +1969,7 @@ Creating a population
 \end_layout
 
 \begin_layout Standard
-A population can be created by the following methods:
+A population can be created in the following ways:
 \end_layout
 
 \begin_layout Itemize
@@ -2074,8 +1999,8 @@ LoadFstat
 \end_layout
 
 \begin_layout Itemize
-be generated as a subset of an existing population by operators such as
- 
+be generated as a subset of an existing population by functions or operators
+ such as 
 \family typewriter
 randomSample, caseControlSample
 \family default
@@ -2096,171 +2021,6 @@ simulator::getPopulation()
 \end_layout
 
 \begin_layout Standard
-Help contents of all functions of 
-\family typewriter
-population
-\family default
- class can be displayed by 
-\family typewriter
-help
-\begin_inset LatexCommand index
-name "help"
-
-\end_inset
-
-(population)
-\family default
-.
- Help on a member function can be viewed by 
-\family typewriter
-help(population.func)
-\family default
-.
- In Python, constructors are named 
-\family typewriter
-__init__
-\family default
- and you can use the class name to create an instance of this class.
- Therefore, to display parameters of 
-\family typewriter
-population
-\begin_inset LatexCommand index
-name "population"
-
-\end_inset
-
-
-\family default
- function, you need to run 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-help(population.__init__)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Please refer to 
-\family typewriter
-population
-\family default
- class reference for detailed information of parameters.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset LatexCommand ref
-reference "popInit"
-
-\end_inset
-
- shows a few examples of using the population function to create populations.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_popInit.log}[caption={Use of population function},label={popInit}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-\begin_inset LatexCommand label
-name "sub:Population-Structure"
-
-\end_inset
-
-Population structure
-\end_layout
-
-\begin_layout Standard
-Please refer to the class reference of population for detailed information
- of its member functions.
- Here is an example of population structure.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_popStru.log}[caption={population structure functions},label={popStru}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-There is another set of functions that deal with population/subpopulation
- size changes.
- In these functions, the 
-\family typewriter
-info
-\family default
- field of each individual plays an important role.
- This field represents an individual's (new) subpopulation ID most of the
- times.
- For example, function 
-\family typewriter
-rearrangeByIndID
-\begin_inset LatexCommand index
-name "population!rearrangeByIndInfo"
-
-\end_inset
-
-()
-\family default
- rearranges individuals in the order of their 
-\family typewriter
-info
-\family default
- values.
-\end_layout
-
-\begin_layout Standard
-These functions may look useful and appealing but you will almost never
- use them directly.
- All these operations will be performed by various operators, in a more
- user-friendly way.
- Only when you begin to write your own operators will you have to read about
- the details of these functions.
- 
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset LatexCommand ref
-reference "popStruManip"
-
-\end_inset
-
- demonstrates the use of functions 
-\family typewriter
-setIndSubPopID, setSubPopByIndID
-\family default
- and 
-\family typewriter
-removeLoci
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_popStruManip.log}[caption={population structure functions},label={popStruManip}]
-preview false
-
-\end_inset
-
 
 \end_layout
 
@@ -2488,10 +2248,7 @@ FIXME: duplicate information?
 \end_layout
 
 \begin_layout Standard
-All populations have their own attached variables.
- We have seen the structure of a population dictionary: it is empty at the
- beginning and will have many variables created by various operators later.
- You can access the local namespace of each replicate through a simulator's
+You can access the local namespace of each replicate through a simulator's
  
 \family typewriter
 vars(rep)
@@ -2579,8 +2336,8 @@ subPop[1]
 \family typewriter
 stat
 \family default
- operator calculates statistics of each replicate of population, and all
- subpopulations.
+ operator by default calculates statistics of each replicate of population,
+ and all subpopulations.
 \end_layout
 
 \begin_layout Standard
@@ -2752,11 +2509,11 @@ ancestralDepth
 0
 \family default
 , meaning keeping no ancestral population.
- You can specify a positive number to store most recent 
+ You can specify a positive number 
 \family typewriter
-ancestry
+n
 \family default
- generations; or -
+ to store most recent n generations; or -
 \family typewriter
 1
 \family default
@@ -2765,7 +2522,7 @@ ancestry
 \end_layout
 
 \begin_layout Standard
-Several important usage of ancestral populations:
+Several important usage of ancestral generations:
 \end_layout
 
 \begin_layout Itemize
@@ -2834,7 +2591,7 @@ simu.evolve(...
 
 \begin_layout Standard
 which saves the last three generations in populations so that pedigree based
- sampling schemes can sample from the population.
+ sampling schemes can be used.
 \end_layout
 
 \end_deeper
@@ -2870,12 +2627,12 @@ idx
 \family default
  for the current generation.
  After this function, all functions, operators will be applied to this ancestral
- population.
+ generation.
  You should always call 
 \family typewriter
 setAncestralPop(0)
 \family default
- after you examined the ancestral populations.
+ after you examined the ancestral generations.
  
 \end_layout
 
@@ -3055,13 +2812,22 @@ name "text format"
  human readable with no structure, portable, median file size.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_popSaveLoad.log}[caption={Save and load population},label={popSaveLoad}]
-preview false
+\begin_layout Itemize
+
+\family typewriter
+auto
+\family default
+ 
+\family typewriter
+
+\begin_inset LatexCommand index
+name "text format"
 
 \end_inset
 
-
+:
+\family default
+ the format is determined by the filename extension specified.
 \end_layout
 
 \begin_layout Standard
@@ -3090,36 +2856,6 @@ simuUtil.py
 \family default
 .
  
-\end_layout
-
-\begin_layout Standard
-It is also possible to save a bunch of populations in a single file, provided
- that they have the same genotypic structure.
- The functions are
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-SavePopulations
-\begin_inset LatexCommand index
-name "function!SavePopulations"
-
-\end_inset
-
-([pop1,pop2,...,], filename, format='auto', compress=True)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-LoadPopulations
-\begin_inset LatexCommand index
-name "functions!LoadPopulations"
-
-\end_inset
-
-(filename)
 \end_layout
 
 \begin_layout Standard
@@ -3267,13 +3003,11 @@ name "population!individual"
 
 ()
 \family default
- function.
- There are four forms of this function, two with and two without parameter
- 
+ function, or its iteration form 
 \family typewriter
-subPop
+individuals()
 \family default
-,
+ function:
 \end_layout
 
 \begin_layout Itemize
@@ -3309,7 +3043,8 @@ subPop
 \family typewriter
 individuals(), individuals(subPop)
 \family default
- return an iterator that can be used to iterate through all individuals.
+ return an iterator that can be used to iterate through all individuals
+ in a population or one of its subpopulations.
 \end_layout
 
 \begin_layout Standard
@@ -3328,12 +3063,12 @@ for ind in pop.individuals(2):
 
 \begin_layout Standard
 
-  # do something to ind
+    # do something to ind
 \end_layout
 
 \begin_layout Standard
 
-  print ind.affected()
+    print ind.affected()
 \end_layout
 
 \end_inset
@@ -3352,54 +3087,84 @@ status open
 
 \begin_layout Standard
 
-for i in range(pop.popSize()):
+for i in range(pop.subPopSize(2)):
 \end_layout
 
 \begin_layout Standard
 
-  ind = pop.individual(i)
+    ind = pop.individual(i, 2)
 \end_layout
 
 \begin_layout Standard
 
-  print ind.affected()
+    print ind.affected()
 \end_layout
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-The returned 
-\family typewriter
-individual
-\family default
- object also has its own member functions.
- You can retrieve genotypic information of an individual through the same
- set of functions.
- You can also get/set genotypes of an individual.
- Note that you can not create an individual object directly.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_ind.log}[caption={Individual member functions},label={ind}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Again, you will very seldom have to use these functions directly unless
- when you write pure Python operators.
- 
 \end_layout
 
 \begin_layout Subsection
 Information fields
+\end_layout
+
+\begin_layout Standard
+An individual will by default have genotype, sex and affection status informatio
+n, but other information is needed for some operations.
+ For example, the fitness value of an individual is needed for selection,
+ one or more trait values may be needed to calculate quantitative traits,
+ and age may be needed if age-dependent mating schemes are used.
+ Because the need for information fields varies from simulation to simulation,
+ simuPOP does not fix the amount of information fields, and allow users
+ to specify these fields during the construction of populations.
+\end_layout
+
+\begin_layout Standard
+Operators may require certain information fields to work properly.
+ For example, all selectors require field 
+\family typewriter
+fitness
+\family default
+ to store evaluated fitness values for each individual.
+ 
+\family typewriter
+parentTagger
+\family default
+ needs 
+\family typewriter
+father_idx
+\family default
+ and 
+\family typewriter
+mother_idx
+\family default
+ to store indices of the parents of each individual in the parental generation.
+ These information fields can be added by the 
+\family typewriter
+infoFields
+\family default
+ parameter of the population constructor or be added later using relevant
+ function.
+ If a required information field is unavailable, an error message will appear
+ and tell you which fields are needed.
+\end_layout
+
+\begin_layout Standard
+The information fields can be accessed from each individual (c.f.
+ 
+\family typewriter
+info(idx), info(name), setInfo(value, idx), setInfo(value, name), arrInfo()
+\family default
+ of the individual), or from the population level (c.f.
+ 
+\family typewriter
+setIndInfo(value), arrIndInfo(subPop)
+\family default
+).
+ Some operators allow you to specify which information field(s) to use.
+ For example, quantitative trait operator can work on specified fields so
+ an individual can have several quantitative traits.
 \end_layout
 
 \begin_layout Standard
@@ -3432,13 +3197,19 @@ infoFields
 \begin_layout Itemize
 
 \family typewriter
-pop.setInfoFields(fields)
+pop.setInfoFields(fields, init)
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-pop.addIndField(field)
+pop.addInfoField(field, init)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.addInfoFields(fields, init)
 \end_layout
 
 \begin_layout Standard
@@ -3458,13 +3229,13 @@ One can set/retrieve information at individual level:
 \begin_layout Itemize
 
 \family typewriter
-ind.info(idx or field)
+ind.info(idx or name)
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-ind.setInfo(idx or field)
+ind.setInfo(idx or name)
 \end_layout
 
 \begin_layout Itemize
@@ -3480,19 +3251,19 @@ or set at the population level
 \begin_layout Itemize
 
 \family typewriter
-pop.indInfo(idx or field, order)
+pop.indInfo(idx or name, order)
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-pop.indInfo(idx or field, subPop, order)
+pop.indInfo(idx or name, subPop, order)
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-pop.setIndInfo(idx or field, [subPop])
+pop.setIndInfo(idx or name, [subPop])
 \end_layout
 
 \begin_layout Itemize
@@ -3514,24 +3285,24 @@ idx
 \family default
  or 
 \family typewriter
-field
+name
 \family default
  means that you can use field index obtained from 
 \family typewriter
-infoIdx(field)
+infoIdx(name)
 \family default
 , or use field name directly.
  
 \family typewriter
-field
+name
 \family default
  is easier to use but 
 \family typewriter
 idx
 \family default
  is faster.
- Although population information is kept in a population object linearly,
- there is no guarantee that they are ordered.
+ Although population information fields are kept in a population object
+ linearly, there is no guarantee that they are ordered.
  If you would like to access 
 \family typewriter
 info
@@ -3539,6 +3310,14 @@ info
  individual by individual, passing 
 \family typewriter
 order=True
+\family default
+ to functions 
+\family typewriter
+indInfo
+\family default
+ and 
+\family typewriter
+arrIndInfo
 \family default
  will ensure that the returned information fields are ordered by individual
  order.
@@ -3570,118 +3349,26 @@ pop.arrIndInfo([subPop])
 \family typewriter
 f1, f2, f3, ..., f1, f2, f3, ...
 \family default
-.
- Note that the order of individuals may not be kept in this (sub)population-wise
- array.
- That is to say, 
+of individual information fields, which are not necessarily in the order
+ of individuals unless 
 \family typewriter
-pop.arrIndInfo()[0]
+order = True
 \family default
- does not have to be the first field of the first individual.
- This property is also true for 
-\family typewriter
-setIndInfo(values, idx or name)
-\family default
-.
- That is to say, if you want to set information field for individuals in
- a population unordered, you can use 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-setIndInfo(values, idx)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Otherwise, you will have to use the less efficient way:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-for i in range(pop.popSize()):
+ is set.
 \end_layout
 
 \begin_layout Standard
 
-    pop.individual(i).setInfo(values[i], idx)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Note that 
 \family typewriter
 indInfo
 \family default
- is more convenient but it is less efficient (fields must be copied out)
- than 
+ is more convenient but it is less efficient than 
 \family typewriter
 arrIndInfo
 \family default
 .
- To handle the returned value of 
-\family typewriter
-arrIndInfo
-\family default
-, you would usually do:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-idx = pop.infoIdx('trait2')
-\end_layout
-
-\begin_layout Standard
-
-step = pop.infoSize()
-\end_layout
-
-\begin_layout Standard
-
-arr = pop.arrIndInfo(subPop=2)
-\end_layout
-
-\begin_layout Standard
-
-for i in range(pop.subPopSize(2)):
-\end_layout
-
-\begin_layout Standard
-
-  # note again that arr is writable.
-\end_layout
-
-\begin_layout Standard
-
-  arr[idx + step*i] = something
-\end_layout
-
-\end_inset
-
-
+ For example, the following two examples both assign an information field
+ from the value of another one, but ??? is more efficient.
 \end_layout
 
 \begin_layout Section
@@ -3695,7 +3382,7 @@ name "mating scheme"
 \end_layout
 
 \begin_layout Standard
-Mating schemes define the rules of offspring generating.
+Mating schemes define the rules of offspring generation.
  A mating scheme is required when a simulator is created.
 \end_layout
 

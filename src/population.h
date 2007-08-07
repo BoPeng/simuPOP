@@ -139,33 +139,33 @@ namespace simuPOP
 
 	/// a collection of individuals with the same genotypic structure
 	/**
-	simuPOP populations consists of individuals of the same genotypic structure,
+	A simuPOP population consists of individuals of the same genotypic structure,
 	which refers to the number of chromosomes, number and position of loci on each
 	chromosome etc. The most important components of a population are:
 
 	\li subpopulation. A population is divided into subpopulations (unstructured
 	population has a single	subpopulation, which is the whole population itself).
 	Subpopulation structure limits the usually random exchange of genotypes between
-	individuals disallowing mating between individuals from different subpopulations.
+	individuals by disallowing mating between individuals from different subpopulations.
 	In the presence of subpopualtion structure, exchange of genetic information
 	across subpopulations can only be done through migration. Note that in simuPOP
 	there is no	sub-subpopulation or family in subpopulations.
 
-	\li variables. Every population has its own variable space, or \em local \em
-	namespaces in simuPOP term. This namespace is a Python dictionary that is
+	\li variables. Every population has its own variable space, or <em>local
+	namespace</em> in simuPOP term. This namespace is a Python dictionary that is
 	attached to each population and can be exposed to the users through \c vars()
 	or \c dvars() function. Many functions and operators work and store their results
-	in these namespaces. For example, function \c Stat set variables
+	in this namespace. For example, function \c Stat sets variables
 	such as <tt>alleleFreq[loc]</tt>, and you can access it via
 	<tt>pop.dvars().alleleFreq[loc][allele]</tt>.
 
 	\li ancestral generations. A population can save arbitrary number of ancestral
 	generations. During evolution, the latest several (or all) ancestral generations
-	are saved. Functions??? to make a certain ancestral generation \em current are
+	are saved. Functions to switch between ancestral generations are
 	provided so that one can examine and modify ancestral generations.
 
 	Other important concepts like <em>information fields</em> are explained in
-	class \c individual???.
+	class \c individual.
 
 	\note Although a large number of member functions are provided,
 	most of the operations are performed by \em operators. These functions will only
@@ -184,64 +184,56 @@ namespace simuPOP
 
 			///Create a population object with given size and genotypic structure.
 			/**
-			FIXME: Details of constructure is missing. ???
-
 			This is techniquely the \c __init__ function of the population object.
 
 			\param size population size. Can be ignored if \c subPop is specified.
-			  In that case, \c size is the sum of \c subPop. Default to \c 0.
-			\param ploidy number of sets of chromosomes. Default to \c 2 (diploid).
+                In that case, \c size is the sum of \c subPop. Default to \c 0.
+			\param ploidy number of sets of homologous copies of chromosomes. Default to \c 2 (diploid).
 			\param loci an array of numbers of loci on each chromosome. The length
-			  of parameter \c loci determines the number of chromosomes. Default
-			  to [1],	meaning one chromosome with a single locus. \n
-			The last chromosome can be sex chromosome. In this case, the maximum
-			number of loci on X and Y should be provided. I.e., if there are 3
-			loci on Y chromosme and 5 on X chromosome, use \c 5.
+                of parameter \c loci determines the number of chromosomes. Default
+                to [1],	meaning one chromosome with a single locus. \n
+                The last chromosome can be sex chromosome. In this case, the maximum
+                number of loci on X and Y should be provided. I.e., if there are 3
+                loci on Y chromosme and 5 on X chromosome, use \c 5.
 			\param sexChrom \c true or \c false. Diploid population only. If \c true,
-			the last homologous chromosome will be treated as sex chromosome.
-			(XY for male and XX for female.) If X and Y have different number of loci,
-			number of loci of the longer one of the last (sex) chromosome should be
-			specified in \c loci.
+                the last homologous chromosome will be treated as sex chromosome.
+                (XY for male and XX for female.) If X and Y have different number of loci,
+                number of loci of the longer one of the last (sex) chromosome should be
+                specified in \c loci.
 			\param lociPos a 1-d or 2-d array specifying positions of loci on each
-			chromosome. You can use a nested array to specify loci position for
-			each chromosome. For example, you can use <tt>lociPos=[1,2,3]</tt>
-			when <tt>loci=[3]</tt> or <tt>lociPos=[[1,2],[1.5,3,5]]</tt> for
-			<tt>loci=[2,3]</tt>. simuPOP does not assume a unit for these
-			locations, although they are usually intepreted as centiMorgans.
-			The default values are \c 1, \c 2, etc. on each chromosome.
+                chromosome. You can use a nested array to specify loci position for
+                each chromosome. For example, you can use <tt>lociPos=[1,2,3]</tt>
+                when <tt>loci=[3]</tt> or <tt>lociPos=[[1,2],[1.5,3,5]]</tt> for
+                <tt>loci=[2,3]</tt>. simuPOP does not assume a unit for these
+                positions, although they are usually intepreted as centiMorgans.
+                The default values are \c 1, \c 2, etc. on each chromosome.
 			\param subPop an array of subpopulation sizes. Default value is
-			<tt>[size]</tt>	which means a single subpopulation of the whole
-			population. If both	\c size and \c subPop are are provided,
-			\c subPop should add up to \c size.
+                <tt>[size]</tt>	which means a single subpopulation of the whole
+                population. If both	\c size and \c subPop are provided,
+                \c subPop should add up to \c size.
 			\param ancestralDepth number of most recent ancestral generations to keep
-			during evolution. Default to \c 0, which means only the current generation
-			will be available. You can set it to a positive number m to
-			keep the latest m generations in the population, or \c -1 to keep all ancestral
-			populations. Note that keeping track of all ancestral populations may quickly
-			exhaust your computer RAM. If you really need to do that, use \c savePopulation
-			operator to save each generation to a file is a much better choice.
-			\param alleleNames an array of allele names. The first element should be
-			given to invalid/unknown allele. For example, for a locus with alleles
-			A,C,T,G, you can specify \c alleleNames as <tt>('_','A','C','T','G')</tt>. Note that
-			simuPOP uses <tt>1,2,3,4</tt> internally and these names will only be used for
-			display purpose.
+                during evolution. Default to \c 0, which means only the current generation
+                will be available. You can set it to a positive number \c m to
+                keep the latest m generations in the population, or \c -1 to keep all ancestral
+                populations. Note that keeping track of all ancestral generations may quickly
+                exhaust your computer RAM. If you really need to do that, use \c savePopulation
+                operator to save each generation to a file is a much better choice.
+			\param alleleNames an array of allele names. For example, for a locus with alleles
+                A,C,T,G, you can specify \c alleleNames as <tt>('A','C','T','G')</tt>.
 			\param lociNames an array or a matrix (separated by chromosomes) of names for
-			each loci. Default to \c "locX-X" where \c X-X is a chromosome-loci index starting from 1.
-			\param maxAllele maximum allele number. Default to the max allowed allele states
-			of current library (standard or long allele version) maximum allele state for the
-			whole population. This will set a cap for all loci. For individual locus, you can
-			specify maxAllele in mutation models, which can be smaller than global maxAllele
-			but not larger. Note that this number is the number of allele states minus 1 since
-			allele number starts from 0.
+                each locus. Default to \c "locX-Y" where \c X is chromosome index and \c Y
+                is locus number, both starting from 1.
+			\param maxAllele maximum allele number. Default to the maximum allowed allele state
+                of the current library. This will set a cap for all loci. For individual locus, you can
+                specify maxAllele in mutation models, which can be smaller than global maxAllele
+                but not larger. Note that this number is the number of allele states minus 1 since
+                allele number starts from 0.
 			\param infoFields name of information fields that will be attached to each
-			individual. For example, if you need to record the parents of each individual
-			you will need two, if you need to record the age of individual, you need an additional
-			one. Other possibilities include offspring IDs etc. Note that you have to plan
-			this ahead of time since, for example, tagger will need to know what info unit
-			to use. Default to \c none.
+                individual. For example, if you need to record the parents of each individual
+                using operator \c parentTagger(), you will need two fields \c father_idx and \c mother_idx. 
 			\return no return value. Exception will be thrown when wrong parameters are given.
 			\sa simulator, baseOperator, mating schemes
-			\test src_population.log Population initialization
+			\test src_population.log Population initialization and member functions
 			*/
 			population( ULONG size=0,
 				UINT ploidy=2,
@@ -260,6 +252,10 @@ namespace simuPOP
 			population(const population& rhs);
 
 			/// deep copy of a population. (In python, <tt>pop1 = pop</tt> will only create a reference to \c pop.)
+            /**
+            This function by default copies all ancestral generations, but you can copy only one (current,
+            <tt>keepAncestralPops=0</tt>), or specified number of ancestral generations.
+            */
 			population * clone(int keepAncestralPops=-1) const;
 
 			/// swap the content of two populations
@@ -350,7 +346,7 @@ namespace simuPOP
 			 */
 			//@{
 
-			/// obtain total population size
+			/// total population size
 			/**
 			\return total number of individuals in this population
 			*/
@@ -398,9 +394,8 @@ namespace simuPOP
 				return loc;
 			}
 
-			/// index of the first individual of a subpopulation
+			/// index of the first individual of a subpopulation \c subPop
 			/**
-			\param subPop subpopulation index
 			\result beginning index of this subpopulation
 			\sa absIndIndex
 			*/
@@ -411,13 +406,9 @@ namespace simuPOP
 				return m_subPopIndex[subPop];
 			}
 
-			/// return the value of the index of the last individual of a subpopulation plus 1
+			/// return the value of the index of the last individual of a subpopulation \c subPop plus 1
 			/**
-			\param subPop subpopulation index
 			\return ending index of this subpopulation (not in this subpop)
-			\note As with all ...End functions, the returning index is out of the range
-			  so that the actual range is [xxxBegin, xxxEnd). This agrees with all STL
-			  conventions and Python range.
 			\sa absIndIndex
 			*/
 			ULONG subPopEnd(UINT subPop) const
@@ -456,6 +447,9 @@ namespace simuPOP
 			}
 
 			/// return an iterator that can be used to iterate through all individuals
+            /**
+            Typical usage is <tt>for ind in pop.individuals():</tt>
+            */
 			individualIterator individuals()
 			{
 				return individualIterator(this, 0, popSize());
@@ -759,17 +753,17 @@ namespace simuPOP
 			/**
 			Return an editable array of all genotypes of the population. You need to
 			know how these genotypes are organized to safely read/write genotype
-			directly. Individuals will be in order before exposing their genotypes.
-			\param order if order is \c true, respect order; otherwise, do not repect population structure.
+			directly.
+			\param order if order is \c true, individuals will be ordered such that
+                <tt>pop.individual(x).arrGenotype() == pop.arrGenotype()[x*pop.genoSize():(x+1)*pop.genoSize()]</tt>.
 			*/
 			PyObject* arrGenotype(bool order);
 
-			/// get the whole genotypes
+			/// get the whole genotypes of individuals in a subpopulation
 			/**
-			Return an editable array of all genotype of a subpopulation. Individuals will be in order before exposing
-			their genotypes.
+			Return an editable array of all genotype in a subpopulation.
 			\param subPop index of subpopulation (start from 0)
-			\param order if order is \c true, keep order; otherwise, respect \c subpop structure.
+			\param order if order is \c true, individuals will be ordered.
 			*/
 			PyObject* arrGenotype(UINT subPop, bool order);
 
@@ -788,7 +782,8 @@ namespace simuPOP
 			  subpopulation ID of each individual.
 			\sa individual::setSubPopID, individual::subPopID
 			*/
-			void setIndSubPopID( const vectori& id)
+			void
+            ( const vectori& id)
 			{
 				DBG_ASSERT( id.size() == m_popSize, ValueError,
 					"Info should have the same length as pop size");
@@ -797,7 +792,7 @@ namespace simuPOP
 					ind(it).setSubPopID( static_cast<SubPopID>(id[it]));
 			}
 
-			/// set subpopulation ID of each individual with their current subpopulation ID???
+			/// set subpopulation ID of each individual with their current subpopulation ID
 			void setIndSubPopIDWithID()
 			{
 				for( UINT i=0, iEnd = numSubPop(); i < iEnd;  ++i)
@@ -846,17 +841,16 @@ namespace simuPOP
 			*/
 			void removeSubPops(const vectoru& subPops=vectoru(), bool shiftSubPopID=true, bool removeEmptySubPops=false);
 
-			/// remove individuals
-			/**
-			If a valid \c subPop is given, remove individuals from this subpopulation.
-			*/
+			/// remove individuals. If a valid \c subPop is given, remove individuals from this subpopulation. Indexes in \c inds will be treated as relative indexes.
 			void removeIndividuals(const vectoru& inds=vectoru(), int subPop=-1, bool removeEmptySubPops=false);
 
 			/// merge given subpopulations
 			/**
 			Merge subpopulations, the first subpopulation ID (the first one in array
 			\c subPops) will be used as the ID of the new subpopulation. That is to
-			say, all subpopulations will take the ID of the first one.
+			say, all merged subpopulations will take the ID of the first one. The
+            subpopulation ID of the empty subpopulations will be kept (so that other
+            subpopulations are unaffected, unless they are removed by <tt>removeEmptySubPops = True</tt>).
 			*/
 			void mergeSubPops(vectoru subPops=vectoru(), bool removeEmptySubPops=false);
 
@@ -866,11 +860,11 @@ namespace simuPOP
 			Two populations should have the same genotypic structures. By default, subpopulations
 			of the merged populations are kept. I.e., if you merge two populations with one
 			subpopulation, the resulting population will have two subpopulations. All ancestral
-			generations are also merged.
+			generations are also merged by default.
 			\param newSubPopSizes subpopulation sizes can be specified. The overall size should
 			be the combined size of the two populations. Because this parameter will
 			be used for all ancestral generations, it may fail if ancestral generations have
-			different sizes. To avoid this problem, you may run \c mergePopulation without this parameter,
+			different sizes. To avoid this problem, you can run \c mergePopulation without this parameter,
 			and then adjust subpopulation sizes generation by generation.
 			\param keepAncestralPops ancestral populations to merge, default to all (\c -1)
 			\note Population variables are not copied to \c pop.
@@ -881,11 +875,10 @@ namespace simuPOP
 			/// merge populations by loci
 			/**
 			Two populations should have the same number of individuals. This also holds for
-			any ancestral generations. By default, chromosomes of \c pop are added to the current
-			population.	That is to say, chromosomes from \c pop is added, as new chromosomes
-			to this populaton. You can change this arrangement in two ways
-			\li specify new chromosome structure using parameter \c newLoci. loci from new and old
-				population are still in their original order, but chromosome number and position
+			any ancestral generations. By default, chromosomes of \c pop are appended to the current
+			population.	You can change this arrangement in two ways
+			\li specify new chromosome structure using parameter \c newLoci and \c newLociPos. Loci from new and old
+				populations are still in their original order, but chromosome number and positions
 				can be changed in this way.
 			\li specify \c byChromosome=true so that chromosomes will be merged one by one. In this
 				case, loci position of two popualtions are important because loci will be arranged
@@ -894,26 +887,25 @@ namespace simuPOP
 
 			\param newNumLoci the new number of loci for the combined genotypic structure.
 			\param newLociPos the new loci position if number of loci on each chromosomes are
-			changed with \c newNumLoci. On each chromosome, loci position should in order.
+			changed with \c newNumLoci. New loci positions should be in order on the new chromosomes.
 			\param byChromosome merge chromosome by chromosome, loci are ordered by loci position
-			default to false.
+			Default to \c False.
 			\note \li Information fields are not merged.
-			\li All ancestral generations will be merged because all individuals in a
+			\li All ancestral generations are merged because all individuals in a
 			population have to have the same genotypic structure.
 			*/
 			void mergePopulationByLoci(const population & pop, const vectoru & newNumLoci = vectoru(),
 				const vectorf & newLociPos=vectorf(), bool byChromosome=false);
 
 			/// insert loci at given locations
-			/** Insert loci at some given locations. In an inserted location, alleles will be zero.
+			/** Insert loci at some given locations. Alleles at inserted loci are initialized with zero allele.
 			\param idx an array of locus index. The loci will be inserted \em before each index.
-			  If you need to append to the last locus, please use \c insertAfterLoci. If your index is the first
-			  locus of a chromosome, the inserted locus will become the first of that chromosome.
-			  If you need to insert multiple loci before a locus, please repeat that locus number.
-			\param pos an array of locus positions. You need to make sure that the position
-			  will make the inserted locus between adjacent markers.
+			  If you need to append to the last locus, use \c insertAfterLoci instead. If your index is the first
+			  locus of a chromosome, the inserted locus will become the first locus of that chromosome.
+			  If you need to insert multiple loci before a locus, repeat that locus number.
+			\param pos an array of locus positions. The positions of the appended loci have to be between adjacent markers.
 			\param names an array of locus names. If this parameter is not given, some unique names such as
-			  "insX_X", will be given.
+			  "insX_Y" will be given.
 			*/
 			void insertBeforeLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names=vectorstr());
 
@@ -925,15 +917,14 @@ namespace simuPOP
 
 			/// append loci at given locations
 			/**
-			Append loci at some given locations. In an appended location, alleles will be zero.
+			Append loci at some given locations. Alleles at inserted loci are initialized with zero allele.
 			\param idx an array of locus index. The loci will be added \em after each index.
-			  If you need to append to the first locus, please use \c insertBeforeLoci. If your index is the last
-			  locus of a chromosome, the appended locus will become the last of that chromosome.
-			  If you need to append multiple loci after a locus, please repeat that locus number.
-			\param pos an array of locus positions. You need to make sure that the position
-			  will make the appended locus between adjacent markers.
+			  If you need to append to the first locus of a chromosome, use \c insertBeforeLoci instead.
+              If your index is the last locus of a chromosome, the appended locus will become the last locus
+              of that chromosome. If you need to append multiple loci after a locus, repeat that locus number.
+			\param pos an array of locus positions. The positions of the appended loci have to be between adjacent markers.
 			\param names an array of locus names. If this parameter is not given, some unique names such as
-			  "insX_X", will be given.
+			  "insX_Y" will be given.
 			*/
 			void insertAfterLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names=vectorstr());
 
@@ -966,30 +957,28 @@ namespace simuPOP
 				bool removeEmptySubPops=false);
 
 			/**
-			Form a new population according to the parameter information. Information can be given directly as
-			  \li \c keepAncestralPops=-1: keep all
-			  \li \c keepAncestralPops=0: only current
-			  \li \c keepAncestralPops=1: keep one ...
+			Form a new population according to individual subpopulation ID. Individuals with negative subpopulation
+            ID will be removed.			
 			*/
 			population& newPopByIndID(int keepAncestralPops=-1,
 				const vectori& id=vectori(),
 				bool removeEmptySubPops=false);
 
-			/// remove some loci from the current population. Loci that will be removed or kept can be specified.
+			/// remove some loci from the current population. Only one of the two parameters can be specified.
 			void removeLoci( const vectoru& remove=vectoru(), const vectoru& keep=vectoru());
 
 			/// obtain a new population with selected loci
 			/**
-			Copy current population to a new one with selected loci and remove specified loci.
-			(No change on the current population.)
+			Copy current population to a new one with selected loci \c keep or remove specified loci \c remove
+			(no change on the current population), equivalent to \n <tt>y=x.clone</tt> \n <tt>y.removeLoci(remove, keep)</tt>
 			*/
 			population& newPopWithPartialLoci(
 				const vectoru& remove=vectoru(),
 				const vectoru& keep=vectoru());
 
-			/// Absorb \c rhs population as the current generation of a population
+			/// absorb \c rhs population as the current generation of a population
 			/**
-			This is mainly used by a simulator to push offspring generation \c rhs
+			This function is used by a simulator to push offspring generation \c rhs
 			to the current population, while the current population is pushed
 			back as an ancestral population (if <tt>ancestralDepath() != 0</tt>). Because \c rhs
 			population is swapped in, \c rhs will be empty after this operation.
@@ -998,7 +987,7 @@ namespace simuPOP
 
 			/// ancestral depth of the current population
 			/** \note The returned value is the number of ancestral generations
-				exists in the population, not necessarily equal to the number set by
+				exist in the population, not necessarily equals to the number set by
 				setAncestralDepth().
 			*/
 			UINT ancestralDepth() const
@@ -1006,14 +995,14 @@ namespace simuPOP
 				return m_ancestralPops.size();
 			}
 
-			/// currently used ancestral population (0 for the latest generation)
+			/// currently used ancestral population (\c 0 for the latest generation)
 			/**
-			Current ancestral population activated by useAncestralPop. There can be
+			Current ancestral population activated by \c useAncestralPop(). There can be
 			several ancestral generations in a population. \c 0 (current), \c 1 (parental)
-			etc. When useAncestralPop(gen) is used, current generation is set to
-			one of the parental generation, which is the information returned by this
+			etc. When \c useAncestralPop(gen) is used, current generation is set to
+			one of the parental generations, which is the information returned by this
 			function. \c useAncestralPop(0) should always be used to set a population
-			to its usual ancestral order.
+			to its usual ancestral order after operations to the ancestral generation are done.
 			*/
 			int ancestralGen() const
 			{
@@ -1060,7 +1049,7 @@ namespace simuPOP
 
 			/// set individual information for the given information field (name)
 			/**
-			setIndInfo using field name, <tt>x.setIndInfo(values, name)</tt> is
+			<tt>x.setIndInfo(values, name)</tt> is
 			equivalent to the \c idx version <tt>x.setIndInfo(values, x.infoIdx(name))</tt>.
 			 */
 			template<class T>
@@ -1133,9 +1122,9 @@ namespace simuPOP
 				return GappedInfoIterator(m_info.begin()+index+m_subPopIndex[subPop+1]*infoSize(), infoSize());
 			}
 
-			/// get information \c idx of all individuals.
+			/// get information field \c idx of all individuals
 			/**
-			\param idx index in all information fields
+			\param idx index of the information field
 			\param order if true, sort returned vector in individual order
 			\return a vector with value of the information field
 			*/
@@ -1144,7 +1133,7 @@ namespace simuPOP
 				return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 			}
 
-			/// get information \c name of all individuals.
+			/// get information field \c name of all individuals
 			/**
 			\param name name of the information field
 			\param order if true, sort returned vector in individual order
@@ -1156,9 +1145,9 @@ namespace simuPOP
 				return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 			}
 
-			/// get information \c idx of all individuals in a subpopulation \c subPop.
+			/// get information field \c idx of all individuals in a subpopulation \c subPop
 			/**
-			\param idx index in all information fields
+			\param idx index of the information field
 			\param subPop subpopulation index
 			\param order if true, sort returned vector in individual order
 			\return a vector with value of the information field
@@ -1168,7 +1157,7 @@ namespace simuPOP
 				return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
 			}
 
-			/// get information \c name of all individuals in a subpopulation \c subPop.
+			/// get information field \c name of all individuals in a subpopulation \c subPop
 			/**
 			\param name name of the information field
 			\param subPop subpopulation index
@@ -1183,6 +1172,7 @@ namespace simuPOP
 
 			/// get an editable array (Python list) of all information fields
 			/**
+			The length of the array is <tt>infoSize()*popSize()</tt>.
 			\param order whether or not the list has the same order as individuals
 			\return a python list that has all information fields for all individual
 			  values of information fields of the same individual are put together.
@@ -1213,18 +1203,18 @@ namespace simuPOP
 			}
 #endif
 
-			///	add an information field to a population.
+			///	add an information field to a population
 			/**
 			\param field new information field. If it already exists, it will
 			  be re-initialized.
-			\param init inital value for the new field.
+			\param init initial value for the new field.
 			*/
 			void addInfoField(const string field, double init=0);
 
 			/// add one or more information fields to a population
 			/**
-			\param fields new information fields. If one or more of the fields
-			  alreay exist, they will simply be re-initialized.
+			\param fields an array of new information fields. If one or more of the fields
+			  alreay exist, they will be re-initialized.
 			\param init initial value for the new fields.
 			*/
 			void addInfoFields(const vectorstr& fields, double init=0);
@@ -1252,7 +1242,7 @@ namespace simuPOP
 			*/
 			void useAncestralPop(UINT idx);
 
-			/// compare two populations
+			/// CPPONLY compare two populations
 			bool equalTo(const population& rhs)
 			{
 				return(
@@ -1264,24 +1254,25 @@ namespace simuPOP
 			//@}
 
 			/// CPPONLY
-			/// some iterators requires that genotype information is within
-			/// each subpopulation. We need to adjust genotypic info to
-			/// obey this.
-			/// order=true: make individuals in order
-			/// order=false: make individuals in each subpopulation
+			/**
+			some iterators requires that genotype information is within
+            each subpopulation. We need to adjust genotypic info to
+            obey this.
+            order=true: make individuals in order
+            order=false: make individuals in each subpopulation
+			*/
 			void adjustGenoPosition(bool order);
+			
+			/// CPPONLY
 			void adjustInfoPosition(bool order);
 
 			/// save population to a file
 			/**
 			\param filename save to filename
-			\param format format to save. Can be one of the following: 'text', 'bin', or 'xml'.
-			  The default format is 'text' but the output is not supposed to be read.
-			  'bin' has smaller size than the other two and should be used for large populations.
-			  'xml' is the most readable format and should be used when you would
-			  like to convert simuPOP populations to other formats.
+			\param format format to save. Can be one of the following: 'txt', 'bin', or 'xml',
+                or 'auto' which is determined by the extension of \c filename.
+			\sa global function loadPopulation
 			*/
-			/// \sa global function loadPopulation
 			void savePopulation(const string& filename, const string& format="auto", bool compress=true) const;
 
 			/// CPPONLY load population from a file
@@ -1316,9 +1307,10 @@ namespace simuPOP
 				return (!m_selectionFlags.empty() && m_selectionFlags[sp]);
 			}
 
-			/// Turn off selection for all subpopulations
-			/** If you really want to apply another selector, run
-				turnOffSelection to eliminate the effect of the previous one.
+			/// turn off selection for all subpopulations
+			/**
+			This is only used when you would like to apply two selectors. Maybe using two
+			different information fields.
 			*/
 			void turnOffSelection()
 			{
@@ -1366,10 +1358,7 @@ namespace simuPOP
 
 		public:
 
-			/// current replicate in a simulator
-			/**
-			Replication number is not meaningful for a stand-alone population.
-			*/
+			/// current replicate in a simulator which is not meaningful for a stand-alone population
 			int rep()
 			{
 				return m_rep;
@@ -1383,9 +1372,7 @@ namespace simuPOP
 					m_vars.setIntVar("rep", rep);
 			}
 
-			/// current group ID in a simulator
-			/**
-			Group number is not meaningful for a stand-alone population.
+			/// current group ID in a simulator which is not meaningful for a stand-alone population.
 			 */
 			int grp()
 			{
@@ -1547,23 +1534,23 @@ namespace simuPOP
 				return m_vars.fromString(vars);
 			}
 
-			/// evaluate a python statment/expression
+			/// evaluate a python statment/expression in the population's local namespace
 			/**
-			This function evaluates a python statment/expression
-			and return its result as a string. Optionally run statement first.
+			This function evaluates a Python statment( \c stmts )/expression( \c expr )
+			and return its result as a string. Optionally run statement( \c stmts ) first.
 			*/
 			PyObject* evaluate(const string& expr="", const string& stmts="")
 			{
 				return Expression(expr, stmts, m_vars.dict() ).evaluate();
 			}
 
-			/// evaluate a statement (can be multi-line string)
+			/// execute a statement (can be a multi-line string) in the population's local namespace
 			void execute(const string& stmts="")
 			{
 				Expression("", stmts, m_vars.dict() ).evaluate();
 			}
 
-			/// rearrange loci on chromosomes, e.g. combine two chromosomes into one
+			/// CPPONLY rearrange loci on chromosomes, e.g. combine two chromosomes into one
 			/**
 			This is used by \c mergeByLoci.
 			*/

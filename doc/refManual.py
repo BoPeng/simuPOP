@@ -61,14 +61,16 @@ arr.count(2)
 arr.index(2)
 # can read write
 arr[0] = 0.5
+# the underlying locus position is also changed
+print pop.lociPos()
 # convert to list
 arr.tolist()
 # or simply
 list(arr)
 # compare to list directly
-arr == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0]
+arr == [0.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]
 # you can also convert and compare
-list(arr) == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0]
+list(arr) == [0.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]
 # slice
 arr[:] = [1,2,3,4,5,6,7]
 # assign from another part
@@ -221,7 +223,8 @@ pop = simu.population(0)
 for i in range(pop.ancestralDepth()+1):
     pop.useAncestralPop(i)
     Stat(pop, alleleFreq=[0,1])
-    print '%d     %5f     %5f' % (i, pop.dvars().alleleFreq[0][1], pop.dvars().alleleFreq[1][1])
+    print '%d     %5f     %5f' %
+        (i, pop.dvars().alleleFreq[0][1], pop.dvars().alleleFreq[1][1])
 
 # restore to the current generation    
 pop.useAncestralPop(0)    
