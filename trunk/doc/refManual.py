@@ -48,6 +48,29 @@ print pop.absIndIndex(10, 1)
 print pop.subPopIndPair(40)
 #end
 
+
+#file log/ref_popAndOperator.log
+simu = simulator(pop, randomMating(), rep=3)
+simu.evolve(
+    preOps = [ initByFreq([.8, .2])],
+    ops = [
+        stat(alleleFreq=[0,1], Fst=[1], step=10),
+        kamMutator(rate=0.001, rep=1),
+        kamMutator(rate=0.0001, rep=2)
+    ],
+    end=10
+)
+#end
+
+
+#file log/ref_InitByFreq.log
+def InitByFreq(pop, *args, **kwargs):
+    initByFreq(*args, **kwargs).apply(pop)
+
+InitByFreq(pop, [.2, .3, .4, .1])
+#end
+
+
 #file log/ref_carray.log
 # obtain an object using one of the arrXXX functions
 pop = population(loci=[3,4], lociPos=[1,2,3,4,5,6,7])
@@ -87,42 +110,6 @@ arr1[:] = [30,40, 50]
 
 
 
-#file log/ref_popInit.log
-# a Wright-Fisher population
-WF = population(size=100, ploidy=1, loci=[1])
-
-# a diploid population of size 10
-# there are two chromosomes with 5 and 7 loci respectively
-pop = population(size=10, ploidy=2, loci=[5, 7], subPop=[2, 8])
-
-# a population with SNP markers (with names A,C,T,G
-# range() are python functions
-pop = population(size=5, ploidy=2, loci=[5,10],
-    lociPos=[range(0,5),range(0,20,2)],
-    alleleNames=['A','C','T','G'],
-    subPop=[2,3], maxAllele=3)
-#end
-
-#file log/ref_popAndOperator.log
-simu = simulator(pop, randomMating(), rep=3)
-simu.evolve(
-    preOps = [ initByFreq([.8, .2])],
-    ops = [
-        stat(alleleFreq=[0,1], Fst=[1], step=10),
-        kamMutator(rate=0.001, rep=1),
-        kamMutator(rate=0.0001, rep=2)
-    ],
-    end=10
-)
-#end
-
-
-#file log/ref_InitByFreq.log
-def InitByFreq(pop, *args, **kwargs):
-    initByFreq(*args, **kwargs).apply(pop)
-
-InitByFreq(pop, [.2, .3, .4, .1])
-#end
 
 
 
@@ -187,6 +174,8 @@ print ind.sexChar()
 
 #file log/ref_popVars.log
 from simuUtil import ListVars
+pop = population(subPop=[1000, 2000], loci=[1])
+InitByFreq(pop, [0.2, 0.8])
 ListVars(pop.vars(), useWxPython=False)
 Stat(pop, popSize=1, alleleFreq=[0])
 # subPop is True by default, use name to limit the variables to display
@@ -195,18 +184,54 @@ ListVars(pop.vars(), useWxPython=False, subPop=False, name='alleleFreq')
 print pop.vars()['alleleNum'][0][1]
 print pop.dvars().alleleNum[0][1]
 print pop.dvars().alleleFreq[0]
+print pop.dvars(1).alleleNum[0][1]
 #end
 
 
 #file log/ref_localNamespace.log
-print pop.evaluate('alleleNum[0][1] + alleleNum[0][2]')
+print pop.evaluate('alleleNum[0][0] + alleleNum[0][1]')
 pop.execute('newPopSize=int(popSize*1.5)')
 ListVars(pop.vars(), level=1, useWxPython=False)
 # this variable is 'local' to the population and is
 # not available in the main namespace
 newPopSize
+#
+simu = simulator(population(10),noMating(), rep=2)
+# evaluate an expression in different areas
+print simu.vars(1)
+aa = 2
+print simu.population(0).evaluate("grp*2")
+print simu.population(1).evaluate("grp*2")
+print simu.population(0).evaluate("aa+1")
+# a statement (no return value)
+simu.population(0).execute("myRep=2+rep*rep")
+simu.population(1).execute("myRep=2*rep")
+print simu.vars(0)
 #end
 
+#file log/ref_info1.log
+pop = population(10, infoFields=['a', 'b'])
+aIdx = pop.infoIdx('a')
+bIdx = pop.infoIdx('b')
+for ind in pop.individuals():
+    a = ind.info(aIdx)
+    ind.setInfo(a+1, bIdx)
+
+print pop.indInfo(bIdx, False)
+#end
+
+
+#file log/ref_info2.log
+pop = population(10, infoFields=['a', 'b'])
+aIdx = pop.infoIdx('a')
+bIdx = pop.infoIdx('b')
+info = pop.arrIndInfo(False)
+sz = pop.infoSize()
+for idx in range(pop.popSize()):
+    info[sz*idx + bIdx] = info[sz*idx + aIdx] + 1
+
+print pop.indInfo(bIdx, False)
+#end
 
 #file log/ref_ancestralPop.log
 simu = simulator(population(10000, loci=[2]), randomMating())
@@ -223,7 +248,7 @@ pop = simu.population(0)
 for i in range(pop.ancestralDepth()+1):
     pop.useAncestralPop(i)
     Stat(pop, alleleFreq=[0,1])
-    print '%d     %5f     %5f' %
+    print '%d     %5f     %5f' % \
         (i, pop.dvars().alleleFreq[0][1], pop.dvars().alleleFreq[1][1])
 
 # restore to the current generation    
@@ -234,23 +259,6 @@ pop.useAncestralPop(0)
 
 #turnOnDebug(DBG_SIMULATOR)
 #turnOnDebug(DBG_UTILITY)
-
-#file log/ref_expr.log
-simu = simulator(population(10),noMating(), rep=2)
-# evaluate an expression in different areas
-print simu.vars(0)
-print simu.population(0).evaluate("grp*2")
-print simu.population(1).evaluate("grp*2")
-print simu.population(0).evaluate("gen+1")
-# a statement (no return value)
-simu.population(0).execute("myRep=2+rep*rep")
-simu.population(1).execute("myRep=2*rep")
-print simu.vars(0)
-#end
-#file log/ref_expreval.log
-simu.step([ pyExec("myRep=2+rep*rep") ])
-print simu.vars(0)
-#end
 
 
 # Note that I can not use pop now, since it is
@@ -424,91 +432,6 @@ simu.evolve(
 )                
 #end
 
-
-#file log/ref_initByFreq.log
-simu = simulator( population(subPop=[2,3], loci=[5,7]),
-        randomMating(), rep=1)
-simu.step([
-        initByFreq(alleleFreq=[ [.2,.8],[.8,.2]]),
-        dumper(alleleOnly=True)
-    ])
-#end
-
-#file log/ref_initByValue.log
-simu.step([
-        initByValue([1]*5 + [2]*7 + [3]*5 +[4]*7),
-        dumper(alleleOnly=True)])
-#end
-
-#file log/ref_pyInit.log
-def initAllele(ind, p, sp):
-    return sp + ind + p
-
-simu.step([
-        pyInit(func=initAllele),
-        dumper(alleleOnly=True, dispWidth=2)])
-#end
-
-
-#file log/ref_kamMutator.log
-simu = simulator(population(size=5, loci=[3,5]), noMating())
-simu.step([
-        kamMutator( rate=[.2,.6,.5], loci=[0,2,6], maxAllele=9),
-        dumper(alleleOnly=True)])
-#end
-
-#file log/ref_smmMutator.log
-simu = simulator(population(size=3, loci=[3,5]), noMating())
-simu.step([
-        initByFreq( [.2,.3,.5]),
-        smmMutator(rate=1,    incProb=.8),
-        dumper(alleleOnly=True, stage=PrePostMating)])
-#end
-
-#file log/ref_gsmMutator.log
-simu.step([
-        initByFreq( [.2,.3,.5]),
-        gsmMutator(rate=1, p=.8, incProb=.8),
-        dumper(alleleOnly=True, stage=PrePostMating)])
-
-import random
-def rndInt():
-    return random.randrange(3,6)
-
-simu.step([
-        initByFreq( [.2,.3,.5]),
-        gsmMutator(rate=1, func=rndInt, incProb=.8),
-        dumper(alleleOnly=True, stage=PrePostMating)])
-
-#end
-
-#file log/ref_pyMutator.log
-def mut(x):
-    return 8
-
-simu.step([
-    pyMutator(rate=.5, loci=[3,4,5], func=mut),
-    dumper(alleleOnly=True)])
-#end
-
-
-#file log/ref_recombinator.log
-simu = simulator(population(4, loci=[4,5,6], 
-        infoFields=['father_idx', 'mother_idx']),
-        randomMating())
-simu.step([
-    parentsTagger(),
-    ],
-    preOps = [initByFreq([.2,.2,.4,.2]), dumper(alleleOnly=True) ],
-    postOps = [ dumper(alleleOnly=True)]
-)
-simu.step([
-    parentsTagger(),
-    recombinator(rate=[1,1,1], afterLoci=[2,6,10])
-    ],
-    postOps = [ dumper(alleleOnly=True)]
-)
-#end
 
 
 #file log/ref_basicSelector.log
