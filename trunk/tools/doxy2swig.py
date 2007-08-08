@@ -780,45 +780,31 @@ class Doxy2SWIG:
         print >> out, r'''\documentclass[oneside,english]{manual}
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{inputenc}
+\usepackage{listings}
+\lstset{basicstyle={\ttfamily},
+language=Python,
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+xleftmargin=15pt}
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
 \usepackage{verbatim}
-\usepackage{float}
+\usepackage{amsmath}
+\usepackage{makeidx}
+\makeindex
 \usepackage{listings}
+
 \makeatletter
-
-\providecommand{\tabularnewline}{\\}
-\floatstyle{ruled}
-\newfloat{algorithm}{tbp}{loa}
-\floatname{algorithm}{Algorithm}
-
-\newenvironment{lyxcode}
-{\begin{list}{}{
-\setlength{\rightmargin}{\leftmargin}
-\setlength{\listparindent}{0pt}
-\raggngth{\itemsep}{0pt}
-\setlength{\parsep}{0pt}
-\normalfont\ttfamily}
- \item[]}
-{\end{list}}
-\floatname{algorithm}{Example}
-
-\lstset{language=Python,
-   basicstyle=\ttfamily,
-   showstringspaces=false,
-   xleftmargin=30pt,
-   xrightmargin=10pt,
-   resetmargins=false,
-   showspaces=false,
-   showtabs=false,
-   frame=none,
-   columns=fixed,
-   keepspaces=true,
-}
-
 \usepackage{babel}
 \makeatother
+
 \begin{document}
+
+\title{simuPOP Reference Manual}
+
+\maketitle
+
 \lstlistoflistings
 \include{%s}''' % os.path.basename(os.path.splitext(ref_file)[0])
         for entry in [x for x in self.content if x['type'] in ['global_function'] and not x['ignore'] \
