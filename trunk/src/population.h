@@ -448,7 +448,7 @@ namespace simuPOP
 
 			/// return an iterator that can be used to iterate through all individuals
             /**
-            Typical usage is <tt>for ind in pop.individuals():</tt>
+            Typical usage is \n <tt>for ind in pop.individuals():</tt>
             */
 			individualIterator individuals()
 			{

@@ -109,10 +109,6 @@ arr1[:] = [30,40, 50]
 #end
 
 
-
-
-
-
 #file log/ref_dumpPop.log
 pop = population(size=5, ploidy=2, loci=[5,10],
         lociPos=[range(0,5),range(0,20,2)],
@@ -123,53 +119,6 @@ initByFreq([.2, .3, .4, .1]).apply(pop)
 # function form
 Dump(pop)
 #end
-
-
-
-#file log/ref_popStru.log
-print pop.popSize()
-print pop.numSubPop()
-print pop.subPopSize(0)
-print pop.subPopSizes()
-print pop.subPopBegin(1)
-print pop.subPopEnd(1)
-print pop.subPopIndPair(3)
-print pop.absIndIndex(1,1)
-#end
-
-#file log/ref_popStruManip.log
-pop.setIndSubPopID([1,2,2,3,1])
-pop.setSubPopByIndID()
-pop.removeLoci(keep=range(2,7))
-Dump(pop)
-#end
-
-
-
-#file log/ref_ind.log
-# get an individual
-ind = pop.individual(9)
-# oops, wrong index
-ind = pop.individual(3)
-# you can access genotypic structure info
-print ind.ploidy()
-print ind.numChrom()
-# ...
-# as well as genotype
-print ind.allele(1) 
-ind.setAllele(1,5)
-print ind.allele(1)
-# you can also use an overloaded function
-# with a second parameter being the ploidy index
-print ind.allele(1,1) # second locus at the second copy of chromosome
-# other information
-print ind.affected()
-print ind.affectedChar()
-ind.setAffected(1)
-print ind.affectedChar()
-print ind.sexChar()
-#end
-
 
 
 #file log/ref_popVars.log
@@ -264,17 +213,6 @@ pop.useAncestralPop(0)
 # Note that I can not use pop now, since it is
 # obtained from simu.population(0) which is invalid now.
 
-#file log/ref_popSaveLoad.log
-# save it in various formats, default format is "txt"
-pop = population(1000, loci=[2, 5, 10])
-pop.savePopulation("pop.txt")
-pop.savePopulation("pop.txt", compress=False)
-pop.savePopulation("pop.xml", format="xml")
-pop.savePopulation("pop.bin", format="bin")
-
-# load it in another population
-pop1 = LoadPopulation("pop.xml", format="xml")
-#end
 
 #file log/ref_saveFstat.log
 from simuUtil import *
@@ -297,11 +235,11 @@ os.remove('pop.txt')
 Dump( RandomSample(pop, 3)[0])
 #end
 
+
 #file log/ref_calcStat.log
 Stat(pop, popSize=1, alleleFreq=range(0, pop.totNumLoci()),
     heteroFreq=range(0,pop.totNumLoci()), Fst=[0])
 #end
-
 
 
 #file log/ref_operatorstages.log
@@ -311,6 +249,7 @@ print d.canApplyDuringMating()
 # so dumper is a post mating operator
 print d.canApplyPostMating()
 #end
+
 
 #file log/ref_operatorgen.log
 simu = simulator(population(1),binomialSelection(), rep=3)
