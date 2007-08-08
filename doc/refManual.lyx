@@ -60,7 +60,6 @@ Last modified \\
 \output_changes false
 \author "" 
 \author "" 
-\author "" 
 \end_header
 
 \begin_body
@@ -1417,7 +1416,7 @@ preview false
 \end_layout
 
 \begin_layout Standard
-The function form of an operator is listed after the class name in this
+The function form of an operator is listed after its class name in this
  reference manual.
 \end_layout
 
@@ -1456,7 +1455,8 @@ count
 \family typewriter
  index
 \family default
- list functions can be used.
+ list functions can be used, but all comparison, assignment, slices operations
+ are allowed.
 \end_layout
 
 \begin_layout Standard
@@ -1787,41 +1787,6 @@ reference "sec:Information-fields"
 \end_layout
 
 \begin_layout Standard
-Individuals in the same population share the same genotypic structure.
- Consequently, 
-\emph on
-the genotypic information can be accessed from individual, population and
- simulator
-\emph default
- 
-\emph on
-levels
-\emph default
-.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-GenoStruTraitRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Sex chromosome
-\end_layout
-
-\begin_layout Standard
 If 
 \family typewriter
 sexChrom()
@@ -1860,6 +1825,37 @@ it is assumed that males have XY and females have XX chromosomes.
  
 \end_layout
 
+\begin_layout Standard
+Individuals in the same population share the same genotypic structure.
+ Consequently, 
+\emph on
+the genotypic information can be accessed from individual, population and
+ simulator
+\emph default
+ 
+\emph on
+levels
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+GenoStruTraitRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Population
 \end_layout
@@ -1878,29 +1874,15 @@ name "population"
  objects are essential to simuPOP.
  They are composed of subpopulations each with certain number of individuals
  having the same genotypic structure.
- A population can store arbitrary number of ancestral generations to facilitate
- pedigree analysis.
-\end_layout
-
-\begin_layout Standard
- 
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-populationRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Population overview
+ Class 
+\family typewriter
+population
+\family default
+ has a large number of member functions, ranging from reviewing simple propertie
+s to generating a new population from the current one.
+ Fortunately, you do not have to know all the member functions to use a
+ population unless you need to write pure Python functions/operators that
+ involves complicated manipulation of populations.
 \end_layout
 
 \begin_layout Standard
@@ -1955,80 +1937,18 @@ Note that migration will most likely change the subpopulation sizes.
 \end_layout
 
 \begin_layout Standard
-Class 
-\family typewriter
-population
-\family default
- has a large number of member functions, ranging from reviewing simple propertie
-s to generating a new population from the current one.
- However, you do not have to know all the member functions to use a population.
- As a matter of fact, you will only use a small portion of these functions
- unless you need to write pure Python functions/operators that involves
- complicated manipulation of populations.
-\end_layout
+\begin_inset ERT
+status open
 
-\begin_layout Subsection
-\begin_inset LatexCommand label
-name "sub:Creating-a-population"
+\begin_layout Standard
+
+
+\backslash
+populationRef
+\end_layout
 
 \end_inset
 
-Creating a population
-\end_layout
-
-\begin_layout Standard
-A population can be created in the following ways:
-\end_layout
-
-\begin_layout Itemize
-call 
-\family typewriter
-population
-\family default
- function to create an instance of population from 
-\family typewriter
-population
-\family default
- class.
-\end_layout
-
-\begin_layout Itemize
-call 
-\family typewriter
-LoadPopulation
-\family default
-, 
-\family typewriter
-LoadFstat
-\family default
- etc.
- to load a population from a saved file.
- 
-\end_layout
-
-\begin_layout Itemize
-be generated as a subset of an existing population by functions or operators
- such as 
-\family typewriter
-randomSample, caseControlSample
-\family default
- or equivalent functions 
-\family typewriter
-RandomSample, CaseControlSample
-\family default
-.
- 
-\end_layout
-
-\begin_layout Itemize
-be obtained from an existing simulator through 
-\family typewriter
-simulator::getPopulation()
-\family default
-.
-\end_layout
-
-\begin_layout Standard
 
 \end_layout
 
@@ -2409,7 +2329,13 @@ simuUtil.py
 \end_layout
 
 \begin_layout Standard
-Shared variables will also be saved (except for big objects like samples).
+Shared variables (c.f section 
+\begin_inset LatexCommand ref
+reference "sec:Population-Variables"
+
+\end_inset
+
+) are also saved (except for big objects like samples).
  Since the number of shared variables can be very large, it maybe a good
  idea to clear these variables before you save a population.
  On the other hand, you may want to save key parameters used to generate
@@ -2422,6 +2348,19 @@ Shared variables will also be saved (except for big objects like samples).
 \begin_inset listings
 inline false
 status open
+
+\begin_layout Standard
+
+\begin_inset Caption
+
+\begin_layout Standard
+Save population variables
+\end_layout
+
+\end_inset
+
+
+\end_layout
 
 \begin_layout Standard
 
@@ -2498,6 +2437,14 @@ inline false
 status open
 
 \begin_layout Standard
+
+\begin_inset Caption
+
+\begin_layout Standard
+Use simuViewPop to view a population
+\end_layout
+
+\end_inset
 
 import simuViewPop
 \end_layout
@@ -2671,7 +2618,6 @@ status open
 name "lst:population-individuals"
 
 \end_inset
-
 
 Function population::individuals()
 \end_layout
@@ -3703,7 +3649,7 @@ The following example shows the difference between
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_operatoroutput.log}[caption={operatoroutput},label={operatoroutput}]
+\begin_inset Include \lstinputlisting{log/ref_operatoroutput.log}[caption={Out specification of an operator},label={operatoroutput}]
 preview false
 
 \end_inset
@@ -3785,56 +3731,12 @@ generations.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_operatoroutputexpr.log}[caption={operatoroutputexpr},label={operatoroutputexpr}]
+\begin_inset Include \lstinputlisting{log/ref_operatoroutputexpr.log}[caption={Output expression of an operator},label={operatoroutputexpr}]
 preview false
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Expressions and statements
-\end_layout
-
-\begin_layout Standard
-Expressions are used extensively in operators so some basic knowledge of
- Python is required.
- If you know almost nothing about Python, please spend some time on the
- Python tutorial from Python website.
-\end_layout
-
-\begin_layout Standard
-Unlike C/C++, assignments in Python do not return values.
- This is the most notable difference between Python expressions and statements:
-\end_layout
-
-\begin_layout Itemize
-expressions consist of constants, variables, operators, functions, but 
-\emph on
-no
-\emph default
- assignment, condition, loop etc.
- An expression returns a value when executed.
- An example of expression is 
-\family typewriter
-range(1,5)+10
-\family default
- .
-\end_layout
-
-\begin_layout Itemize
-statements consist of arbitrary valid Python codes.
- A statement does 
-\emph on
-not
-\emph default
- return a value when executed.
- An example of statement is 
-\family typewriter
-a=range(1,5)
-\family default
- .
 \end_layout
 
 \begin_layout Section
@@ -4166,7 +4068,8 @@ Population variables
 
 \begin_layout Standard
 Populations are associated with Python variables.
- These variables are usually set by various operators.
+ These variables are usually set by various operators but you can also set
+ them manually.
  For example, 
 \family typewriter
 stat
@@ -4177,210 +4080,25 @@ name "operator!stat"
 
 
 \family default
- operator calculates many population statistics and store results in population
- namespace.
- Example 
-\begin_inset LatexCommand ref
-reference "sec:Population-Variables"
-
-\end_inset
-
- demonstrates how 
-\family typewriter
-stat
-\family default
- set variables 
-\family typewriter
-popSize
-\family default
-, 
-\family typewriter
-alleleFreq
-\family default
- etc.
- 
+ operator calculates many population statistics and store the results in
+ a population's local namespace.
 \end_layout
 
-\begin_layout Standard
-You can refer to these variables using 
-\family typewriter
-population::vars
-\begin_inset LatexCommand index
-name "population!vars"
+\begin_layout Subsection
 
-\end_inset
-
-()
-\family default
- or 
-\family typewriter
-population::
-\begin_inset LatexCommand index
-name "population!population"
-
-\end_inset
-
-dvars()
-\family default
- function.
- The returned values of 
 \family typewriter
 vars()
 \family default
- and 
+and 
 \family typewriter
-dvars()
+dvars() 
 \family default
- reflect the same dictionary.
- However, 
-\family typewriter
-dvars()
-\family default
- uses a little Python magic so that you can use attribute syntax to access
- dictionary keys.
- Since 
-\family typewriter
-a.allaleFreq[0]
-\family default
- is much easier to read than 
-\family typewriter
-a['alleleFre'][0]
-\family default
-, 
-\family typewriter
-dvars()
-\family default
- is always preferred to 
-\family typewriter
-vars()
-\family default
-.
- A function 
-\family typewriter
-ListVars
-\family default
- defined in 
-\family typewriter
-simuUtil
-\family default
- can be used to display the variables.
- With wxPython installed, this function will open a nice window with a tree
- representing the variables.
- Without wxPython (or use parameter 
-\family typewriter
-useWxPython=False
-\family default
-), variables will be displayed in a indented form.
- Several parameters can be used to limit your display.
- They are
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-level
-\family default
-: the level of the tree, further nested variables will not be displayed
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-name
-\family default
-: the name of the variable to display
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-subPop
-\family default
-: whether or not display variables for each subpopulation.
+functions
 \end_layout
 
 \begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_popVars.log}[caption={Population variables},label={popVars}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-These variables form a Python dictionary, and furthermore a local namespace
- for functions like 
-\family typewriter
-population::evaluate
-\family default
-
-\begin_inset LatexCommand index
-name "population!evaluate"
-
-\end_inset
-
-.
- 
-\emph on
-Local namespace
-\emph default
- means that you can use dictionary items as variables during evaluation.
- For example: 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_localNamespace.log}[caption={Local namespaces of populations},label={localNamespace}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-As you can see, these variables are 
-\emph on
-local
-\emph default
- to the population and is not directly accessible from the main namespace.
- 
-\family typewriter
-vars(subPop)
-\family default
- and 
-\family typewriter
-dvars(subPop)
-\family default
- function can be used.
- Both functions take an optional 
-\family typewriter
-subPop
-\family default
- option.
- If ignored, they will return the population dictionary; otherwise, they
- will return the dictionary for subpopulation 
-\family typewriter
-subPop
-\family default
-.
- This is a very convenient feature, because subpopulations and populations
- have similar keys, you can calculate the same statistics for the whole
- population and individual subpopulations, just by specifying different
- namespaces.
-\end_layout
-
-\begin_layout Standard
-You can access the local namespace of each replicate through a simulator's
- 
-\family typewriter
-vars(rep)
-\family default
- function:
+Conceptually, population variables are organized as follows (looking from
+ a simulator's point of view):
 \end_layout
 
 \begin_layout LyX-Code
@@ -4432,231 +4150,228 @@ simu.vars(0)        simu.vars(1) ...
 \end_layout
 
 \begin_layout Standard
-It is important to know that
-\end_layout
-
-\begin_layout Itemize
-
+You can refer to these variables using 
 \family typewriter
-simulator::vars(0), vars(1)
+population::vars
+\begin_inset LatexCommand index
+name "population!vars"
+
+\end_inset
+
+()
 \family default
- etc.
- are the 
-\emph on
-local namespaces
-\emph default
- for each replicate.
-\end_layout
-
-\begin_layout Itemize
-
+ or 
 \family typewriter
-subPop[0]
+population::
+\begin_inset LatexCommand index
+name "population!population"
+
+\end_inset
+
+dvars()
+\family default
+ function.
+ The returned values of 
+\family typewriter
+vars()
+\family default
+ and 
+\family typewriter
+dvars()
+\family default
+ reflect the same dictionary.
+ However, 
+\family typewriter
+dvars()
+\family default
+ uses a little Python magic so that you can use attribute syntax to access
+ dictionary keys.
+ Because 
+\family typewriter
+a.allaleFreq[0]
+\family default
+ is easier to read than 
+\family typewriter
+a['alleleFre'][0]
 \family default
 , 
 \family typewriter
-subPop[1]
+dvars()
 \family default
- etc.
- have almost the same set of keys as those for the whole population.
- This is because 
+ is usually preferred to 
 \family typewriter
-stat
+vars()
 \family default
- operator by default calculates statistics of each replicate of population,
- and all subpopulations.
+.
+ 
 \end_layout
 
 \begin_layout Standard
-To list these variables, you can use the 
+There are several ways to use these two functions
+\end_layout
+
+\begin_layout Itemize
+
 \family typewriter
-ListVars()
+pop.vars(), pop.dvars()
 \family default
- function defined in 
+ return the variables of population 
+\family typewriter
+pop
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.vars(subPop), pop.dvars(subPop) 
+\family default
+returns dictionary 
+\family typewriter
+pop.vars()['subPop'][subPop]
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simu.vars(rep), simu.dvars(rep) 
+\family default
+return the variables of the 
+\family typewriter
+rep
+\family default
+'th population of simulator 
+\family typewriter
+simu
+\family default
+ , i.e.
+ 
+\family typewriter
+simu.population(rep).vars().
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simu.vars(rep, subPop), simu.dvars(rep, subPop) 
+\family default
+returns dictionary 
+\family typewriter
+simu.vars(rep)['subPop'][subPop]
+\end_layout
+
+\begin_layout Standard
+Direct access to variables 
+\family typewriter
+pop.vars()['subPop'][subPop]
+\family default
+ is provided because statistics calculator 
+\family typewriter
+stat
+\family default
+, by default, calculates the same set of statistics for all subpopulations
+ (and the whole population).
+\end_layout
+
+\begin_layout Standard
+To have a look at all variables defined in this dictionary, you can use
+ function 
+\family typewriter
+ListVars
+\family default
+ defined in 
 \family typewriter
 simuUtil.py
 \family default
 .
- For example
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-ListVars(simu.vars(0), level=2)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-list all variables for the first replicate.
- 
+ With wxPython installed, this function opens a nice window with a tree
+ representing the variables.
+ Without wxPython (or use parameter 
 \family typewriter
-level=2
+useWxPython=False
 \family default
- stops 
-\family typewriter
-ListVars
-\family default
- from expanding lists and dictionaries after two levels.
- 
-\end_layout
-
-\begin_layout Standard
-Two functions can be used to access simulator and population variables:
- 
-\family typewriter
-vars()
-\family default
- and 
-\family typewriter
-dvars()
-\family default
-.
- We have known 
-\family typewriter
-population::vars()
-\family default
- and 
-\family typewriter
-population::dvars()
-\family default
-, 
-\family typewriter
-simulator::vars()
-\family default
- and 
-\family typewriter
-simulator::dvars()
-\family default
- work in almost the same way.
- 
+), variables are displayed in a indented form.
+ Several parameters can be used to limit your display.
+ They are
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-simulator::vars(rep
+level
 \family default
-), 
-\family typewriter
-dvars(rep)
-\family default
-: return replicate 
-\family typewriter
-rep
-\family default
-'s local namespace.
+: the level of the tree, further nested variables will not be displayed
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-simulator::vars(rep, subPop
+name
 \family default
-), 
-\family typewriter
-dvars(rep, subPop)
-\family default
-: return the namespace of 
+: the name of the variable to display
+\end_layout
+
+\begin_layout Itemize
+
 \family typewriter
 subPop
 \family default
- subpopulation of replicate 
-\family typewriter
-rep
-\family default
-.
+: whether or not display variables for each subpopulation.
 \end_layout
 
 \begin_layout Standard
-The return values of 
-\family typewriter
-vars()
-\family default
- and 
-\family typewriter
-dvars()
-\family default
- are different.
- 
-\family typewriter
-vars()
-\family default
- returns a Python dictionary.
- You should access their keys in the usual Python way.
- 
-\family typewriter
-dvars()
-\family default
- returns a 'wrapped' Python dictionary.
- You can access their dictionary keys as attributes.
- 
-\family typewriter
-dvars()
-\family default
- is usually considered to be easier to use than 
-\family typewriter
-vars()
-\family default
-.
-\end_layout
+\begin_inset Include \lstinputlisting{log/ref_popVars.log}[caption={Population variables},label={popVars}]
+preview false
 
-\begin_layout Standard
+\end_inset
+
 
 \end_layout
 
 \begin_layout Subsection
-
-\family typewriter
-evaluate
-\begin_inset LatexCommand index
-name "calculate"
-
-\end_inset
-
-
-\family default
- function and 
+Local namespace, 
 \family typewriter
 pyEval
-\begin_inset LatexCommand index
-name "calc"
-
-\end_inset
-
-
 \family default
- and 
+ and
 \family typewriter
-pyExec
-\begin_inset LatexCommand index
-name "pyExec"
-
-\end_inset
-
-
+ pyExec
 \family default
  operators
 \end_layout
 
 \begin_layout Standard
-Function 
+Population variables is a Python dictionary, and furthermore a 
+\emph on
+Local namespace
+\emph default
+, which means that you can use dictionary items as variables during evaluation.
+ To evaluate in a population's local namespace, you can use function 
 \family typewriter
-population::evaluate
+population::evalulate() 
 \family default
- and operator 
+or 
+\family typewriter
+population::execute()
+\family default
+.
+ For example: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_localNamespace.log}[caption={Local namespaces of populations},label={localNamespace}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Operator 
 \family typewriter
 pyEval/pyExec
 \family default
- will work in local namespaces.
+ work in local namespaces.
  For example, if there are 
 \family typewriter
 a
@@ -4695,53 +4410,6 @@ b
 \family default
  in the local namespace.
  If this is still too abstract, here is a real example
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_expr.log}[caption={python expression},label={expr}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simulator
-\family default
- creates a simulator with two replicates 0 and 1.
- 
-\end_layout
-
-\begin_layout Itemize
-We evaluate 
-\family typewriter
-grp*2
-\family default
- in different replicates and get different results.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gen
-\family default
- is not in either replicate's namespace so the global one will be used.
-\end_layout
-
-\begin_layout Itemize
-Using statements can create variables in the local namespaces.
- (You can use 
-\family typewriter
-global
-\family default
- statement to create global variables if you are familiar with Python.)
 \end_layout
 
 \begin_layout Standard
@@ -4968,7 +4636,8 @@ n, but other information is needed for some operations.
  and age may be needed if age-dependent mating schemes are used.
  Because the need for information fields varies from simulation to simulation,
  simuPOP does not fix the amount of information fields, and allow users
- to specify these fields during the construction of populations.
+ to specify these fields during the construction of populations, or add
+ them when you need them.
 \end_layout
 
 \begin_layout Standard
@@ -5219,7 +4888,31 @@ arrIndInfo
 \family default
 .
  For example, the following two examples both assign an information field
- from the value of another one, but ??? is more efficient.
+ from the value of another one, but 
+\begin_inset LatexCommand ref
+reference "carray-info"
+
+\end_inset
+
+ is more efficient.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_info1.log}[caption={Use regular information field function},label={regu-info}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_info2.log}[caption={Use carray information fields function},label={carray-info}]
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
