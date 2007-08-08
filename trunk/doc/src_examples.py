@@ -253,6 +253,35 @@ simu.evolve(
 
 
 
+#file log/src_mating.log
+# arbitrary demographic model
+def lin_inc(gen, oldsize=[]):
+    return [10+gen]*5
+
+simu = simulator(
+    population(subPop=[5]*5, loci=[1]),
+    randomMating(newSubPopSizeFunc=lin_inc)
+)
+simu.evolve(
+    ops = [
+        stat(popSize=True),
+        pyEval(r'"%d %d\n"%(gen, subPop[0]["popSize"])'),
+    ],
+    end=5
+)
+
+#
+# control the number of offspring per mating event
+# famSizes is only defined when DBG_MATING is defined
+TurnOnDebug(DBG_MATING)
+simu = simulator(population(50, loci=[1]),
+    randomMating(numOffspring=2, 
+        maxNumOffspring=5,
+        mode=MATE_UniformDistribution))
+simu.step(ops=[])
+print simu.population(0).dvars().famSizes
+TurnOffDebug(DBG_MATING)
+#end
 
 
 #file log/src_basicSelector.log
