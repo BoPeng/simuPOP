@@ -782,8 +782,7 @@ namespace simuPOP
 			  subpopulation ID of each individual.
 			\sa individual::setSubPopID, individual::subPopID
 			*/
-			void
-            ( const vectori& id)
+			void setIndSubPopID( const vectori& id)
 			{
 				DBG_ASSERT( id.size() == m_popSize, ValueError,
 					"Info should have the same length as pop size");
@@ -1373,7 +1372,6 @@ namespace simuPOP
 			}
 
 			/// current group ID in a simulator which is not meaningful for a stand-alone population.
-			 */
 			int grp()
 			{
 				return m_grp;
