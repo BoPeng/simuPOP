@@ -1068,6 +1068,18 @@ def valueLE(a):
     return func
 
 
+def valueEqual(a):
+    def func(val):
+        return val == a
+    return func
+
+
+def valueNotEqual(a):
+    def func(val):
+        return val != a
+    return func
+
+
 def valueIsNum():
     def func(val):
         return type(val) in [types.IntType, types.LongType, types.FloatType]
