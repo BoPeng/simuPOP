@@ -97,8 +97,8 @@ namespace simuPOP
 	Mating schemes specify how to generate offspring from the current population.
 	It must be provided when a simulator is created. Mating can perform the following tasks:
 	\li change population/subpopulation sizes;
-	\li randomly select parent(s) to generate offspring to fill the next generation;
-	\li \em during-mating operators are applied to all offspring;
+	\li randomly select parent(s) to generate offspring to populate the offspring generation;
+	\li apply \em during-mating operators;
 	\li apply selection if applicable.
 	*/
 	class mating
@@ -129,16 +129,16 @@ namespace simuPOP
 				return true;
 			}
 
-			/// create a mating scheme
+			/// create a mating scheme (do not use this base mating scheme, use one of its derived classes instead)
 			/**
-			By default, a mating scheme keeps a constant population size, generate
-			one offspring per mating event. These can be changed using a variety of
-			parameters. First, \c newSubPopSize, \c newSubPopSizeExpr and \c newSubPopSizeFunc
+			By default, a mating scheme keeps a constant population size, generates
+			one offspring per mating event. These can be changed using certain
+			parameters. \c newSubPopSize, \c newSubPopSizeExpr and \c newSubPopSizeFunc
 			can be used to specify subpopulation sizes of the offspring generation.
 			\c mode, \c numOffspring, \c maxNumOffspring can be used to specify how
-			many offspring will be produced for each mating event. This \c mode parameter
+			many offspring will be produced at each mating event. This \c mode parameter
 			can be one of
-			\li \c MATE_NumOffspring: a fixed number of offspring for all families at this generation.
+			\li \c MATE_NumOffspring: a fixed number of offspring at all mating events at this generation.
 				If \c numOffspring is given, all generations use this fixed number. If \c numOffspringFunc
 				is given, the number of offspring at each generation is determined by the value
 			returned from this function.
@@ -303,11 +303,15 @@ namespace simuPOP
 
 			/// creat a scheme with no mating
 			/**
-			\note There is no new \c subPopsize parameter.
+			\note All parameters are ignored!
 			*/
-			noMating()
-				:mating(1, NULL, 0, MATE_NumOffspring,
-				vectorlu(),"",NULL)
+			noMating(double numOffspring=1.0,
+				PyObject* numOffspringFunc=NULL,
+				UINT maxNumOffspring = 0,
+				UINT mode=MATE_NumOffspring,
+				vectorlu newSubPopSize=vectorlu(),
+				string newSubPopSizeExpr="",
+				PyObject* newSubPopSizeFunc=NULL)
 			{
 
 			}

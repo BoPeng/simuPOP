@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.0rc2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -58,7 +58,7 @@ Last modified \\
 \listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
-\author "" 
+\author "Anonymous" 
 \author "" 
 \end_header
 
@@ -8792,6 +8792,10 @@ ticToc
 
 \begin_layout Chapter
 Global and Python Utility functions
+\end_layout
+
+\begin_layout Section
+Global functions
 \end_layout
 
 \begin_layout Section

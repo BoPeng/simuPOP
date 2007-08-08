@@ -282,7 +282,7 @@ class Doxy2SWIG:
             first = self.get_specific_nodes(node, ('definition', 'name'))
             name = first['name'].firstChild.data
             if name[:8] == 'operator': # Don't handle operators yet.
-                return
+                return            
             # defn = first['definition'].firstChild.data
             defn = ''
             for n in first['definition'].childNodes:
@@ -387,8 +387,9 @@ class Doxy2SWIG:
             s = s.replace('@', r',')
             piece = s.split('=')
             var = piece[0].split(' ')[-1].split(')')[0].split('(')[-1]
-            #delete &
+            #delete &,*
             var = var.replace('&', '')
+            var = var.replace('*', '')
             if( len( piece ) == 2 ):
                 defVal = piece[1].split('(')[0].split(')')[0].split(')')[0]
                 # re function used to repalce the following sentances
@@ -402,6 +403,7 @@ class Doxy2SWIG:
                 defVal = defVal.replace('intMatrix','[]')
                 defVal = defVal.replace('true','True')
                 defVal = defVal.replace('false','False')
+                defVal = defVal.replace('NULL','None')
                 out.append(var + '=' + defVal)
             else:
                 out.append(var)
@@ -739,6 +741,15 @@ class Doxy2SWIG:
                 print >> out, '%s' % self.latex_text(cons['note'])
             members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and \
                        not x['ignore'] and not '~' in x['Name'] and not '__' in x['Name']]
+            for mem in members:
+                # change pop()->population() in simulator.h
+                # change ind()->individual() in population.h
+                if mem['Name'] == 'simuPOP::simulator::pop':
+                    mem['Name'] = 'simuPOP::simulator::population'
+                    mem['Usage'] = mem['Usage'].replace('pop(', 'population(')
+                if mem['Name'] == 'simuPOP::population::ind':
+                    mem['Name'] = 'simuPOP::population::individual'
+                    mem['Usage'] = mem['Usage'].replace('ind(', 'individual(')
             members.sort(lambda x, y: cmp(x['Name'], y['Name']))
             if len(members) == 0:
                 print >> out, '}\n'
@@ -807,8 +818,10 @@ xleftmargin=15pt}
 
 \lstlistoflistings
 \include{%s}''' % os.path.basename(os.path.splitext(ref_file)[0])
-        for entry in [x for x in self.content if x['type'] in ['global_function'] and not x['ignore'] \
-            and 'test' not in x['Name']]:
+        global_funcs = [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] \
+                and 'test' not in x['Name']]
+        global_funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
+        for entry in global_funcs:
              print >> out, r'\%sRef' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
              print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
         for entry in [x for x in self.content if x['type'] in ['class'] and not x['ignore']]:
