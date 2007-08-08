@@ -1,4 +1,4 @@
-#LyX 1.5.0rc2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -58,7 +58,8 @@ Last modified \\
 \listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
-\author "Anonymous" 
+\author "" 
+\author "" 
 \author "" 
 \end_header
 
@@ -8796,6 +8797,197 @@ Global and Python Utility functions
 
 \begin_layout Section
 Global functions
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+ListAllRNGRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+ListDebugCodeRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+LoadPopulationRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+LoadSimulatorRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+MarginalFitnessRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+SetRNGRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+TurnOffDebugRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+TurnOnDebugRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+TurnOnDebugWithNameRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+alleleTypeRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+compileCompilerRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+compileDateRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+compilePlatFormRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+compilePyVersionRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+limitsRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+listAllRNGRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+maxAlleleRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+mpiRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+mpiRankRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+mpiSizeRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+optimizedRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+rngRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+setLogOutputRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+setRNGRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+simuRevRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+simuVerRef
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
