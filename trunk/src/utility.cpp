@@ -2828,6 +2828,11 @@ namespace simuPOP
 #endif
 	}
 
+	ULONG maxAllele()
+	{	
+		return MaxAllele;
+	}
+
 	string compileCompiler()
 	{
 		return COMPILER;

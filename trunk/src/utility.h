@@ -1536,6 +1536,8 @@ namespace simuPOP
 
 	string alleleType();
 
+	ULONG maxAllele();
+
 	/// CPPONLY
 	/// get a null stream that discard everything
 	ostream& cnull();
