@@ -168,6 +168,8 @@ namespace simuPOP
 			\param newSubPopSizeFunc a function that accepts an \c int parameter(generation),
 			an array of current population size and return an array of subpopulation sizes.
 			This is usually easier to use than its expression version of this parameter.
+
+			\test src_mating.log Demographic models and control of number of offspring per mating event
 			*/
 			mating(double numOffspring=1.0,
 				PyObject* numOffspringFunc=NULL,
