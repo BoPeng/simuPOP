@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -3326,12 +3326,6 @@ Operators
 \end_layout
 
 \begin_layout Standard
-Operators are objects that act on populations.
- They can be applied to certain replicates of populations in a simulator
- at certain generations, controlling the evolution of populations in a simulator.
-\end_layout
-
-\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -3382,7 +3376,7 @@ name "hybrid"
 \family typewriter
 pyMutator
 \family default
- will determine if an allele will be mutated and call a user-defined Python
+ determines if an allele will be mutated and call a user-defined Python
  function to mutate it.
 \end_layout
 
@@ -4139,8 +4133,7 @@ vars()
 \family typewriter
 dvars()
 \family default
- reflect the same dictionary.
- However, 
+ reflect the same dictionary, but 
 \family typewriter
 dvars()
 \family default
@@ -4152,17 +4145,13 @@ a.allaleFreq[0]
 \family default
  is easier to read than 
 \family typewriter
-a['alleleFre'][0]
+a['alleleFreq'][0]
 \family default
 , 
 \family typewriter
 dvars()
 \family default
- is usually preferred to 
-\family typewriter
-vars()
-\family default
-.
+ is more frequently used.
  
 \end_layout
 
@@ -4249,7 +4238,7 @@ simuUtil.py
 \family typewriter
 useWxPython=False
 \family default
-), variables are displayed in a indented form.
+), variables are displayed in an indented form.
  Several parameters can be used to limit your display.
  They are
 \end_layout
@@ -4327,254 +4316,65 @@ preview false
 \end_layout
 
 \begin_layout Standard
-Operator 
+These two functions are rarely used, because 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pop.evaluate('alleleNum[0][1] + 1')
+\end_layout
+
+\end_inset
+
+is equivalent to 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pop.dvar().alleleNum[0][1] + 1
+\end_layout
+
+\end_inset
+
+Operators 
 \family typewriter
 pyEval/pyExec
 \family default
- work in local namespaces.
- For example, if there are 
+ are more useful in that they can be applied to different populations during
+ evolution, and report statistics calculated by operator 
 \family typewriter
-a
+stat
 \family default
- and 
-\family typewriter
-b
-\family default
- in the main namespace and 
-\family typewriter
-a
-\family default
- in 
-\family typewriter
-pop
-\family default
-, 
-\family typewriter
-pop.evaluate('a')
-\family default
- will return 
-\family typewriter
-pop.vars()['a']
-\family default
-, 
-\family typewriter
-pop.evaluate('b')
-\family default
- will return global 
-\family typewriter
-b
-\family default
- since there is no 
-\family typewriter
-b
-\family default
- in the local namespace.
- If this is still too abstract, here is a real example
-\end_layout
-
-\begin_layout Standard
-
+ dynamically.
+ The difference between these two operators are that 
 \family typewriter
 pyEval 
 \family default
-and
+evaluates a Python expression and returns its value, while
 \family typewriter
  pyExec
 \family default
- operators execute Python expressions/statements, 
-\emph on
-using the local namespaces
-\emph default
-.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pyEval
-\family default
- (operator) evaluates a Python expression and returns its value, optionally
- executes a list of statements beforehand.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pyExec
-\family default
- (operator) executes a list of statements in the form of a multi-line string.
- No return value or output.
-\end_layout
-
-\begin_layout Standard
-Here, 
-\family typewriter
-expr
-\family default
- is a simple string containing an expression that will return a value when
- executed; 
-\family typewriter
-stmts
-\family default
- is a string of statements, separated by 
-\family typewriter
-'
-\backslash
-n'
-\family default
-.
+ executes a list of statements in the form of a multi-line string, and does
+ not return any value.
  
 \end_layout
 
 \begin_layout Standard
-For example, you can return a string of 
-\family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
-gen:rep
-\begin_inset Quotes erd
-\end_inset
-
-
-\family default
- using the following function
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pop.evaluate(r'%d:%d' % (gen,rep))
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-but if you would like to change/create variables, you have to use statements
- like
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pop.evalulate(rmyval, stmts=rmyval=rep+1)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Since you are executing Python statements, you can of course do it directly
- in Python.
- For example, the above function does exactly the following
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pop.vars()['myval'] = pop.vars()['rep'] + 1
-\end_layout
-
-\begin_layout Standard
-
-pop.vars()['myvar']
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-As a matter of fact, we seldom use 
-\family typewriter
-evaluate
-\family default
- function directly (maybe for debugging), usually
-\end_layout
-
-\begin_layout Itemize
-we use expressions for dynamic parameters.
- For example:
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-newSubPopSizeExpr=range(10,20)*1.2
-\end_layout
-
-\begin_layout Standard
-
-outputExpr= ' saveAt%s.txt % gen'
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-These parameters will be evaluated whenever they are referred.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-we use expressions/statements in 
-\family typewriter
-pyEval/pyExec
-\family default
- operators.
- These statements will work in local namespaces.
- For example:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_expreval.log}[caption={Expression evaluation},label={expreval}]
+\begin_inset Include \lstinputlisting{log/ref_pyEval.log}[caption={Use of operators pyEval and pyExec},label={expreval}]
 preview false
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-Because of the interactive nature of Python, it is very easy to write short
- programs, quote them in 
-\family typewriter
-r'''program'''
-\family default
- and put them into 
-\family typewriter
-pyEval/pyExec
-\family default
- operators.
-\end_layout
-
-\begin_layout Standard
 
 \end_layout
 
@@ -4589,11 +4389,10 @@ name "sec:Information-fields"
 \end_layout
 
 \begin_layout Standard
-An individual will by default have genotype, sex and affection status informatio
-n, but other information is needed for some operations.
- For example, the fitness value of an individual is needed for selection,
- one or more trait values may be needed to calculate quantitative traits,
- and age may be needed if age-dependent mating schemes are used.
+An individuals have genotype, sex and affection status information, but
+ other information may be needed.
+ For example, one or more trait values may be needed to calculate quantitative
+ traits, and one may want to keep track of all offspring of a parent.
  Because the need for information fields varies from simulation to simulation,
  simuPOP does not fix the amount of information fields, and allow users
  to specify these fields during the construction of populations, or add
@@ -4627,46 +4426,15 @@ infoFields
  parameter of the population constructor or be added later using relevant
  function.
  If a required information field is unavailable, an error message will appear
- and tell you which fields are needed.
-\end_layout
-
-\begin_layout Standard
-The information fields can be accessed from each individual (c.f.
- 
-\family typewriter
-info(idx), info(name), setInfo(value, idx), setInfo(value, name), arrInfo()
-\family default
- of the individual), or from the population level (c.f.
- 
-\family typewriter
-setIndInfo(value), arrIndInfo(subPop)
-\family default
-).
+ and tell you which field is needed.
  Some operators allow you to specify which information field(s) to use.
  For example, quantitative trait operator can work on specified fields so
  an individual can have several quantitative traits.
 \end_layout
 
 \begin_layout Standard
-The information fields are information that is attached to each individual.
- For example, an individual may need 
-\family typewriter
-father_idx
-\family default
- and 
-\family typewriter
-mother_idx
-\family default
- to track pedigree information, may need 
-\family typewriter
-penetrance
-\family default
- to set affectedness.
-\end_layout
-
-\begin_layout Standard
-The information fields is usually set during population creation, in preparation
- for all the operators, using the 
+The information fields is usually set during population creation, using
+ the 
 \family typewriter
 infoFields
 \family default
@@ -4677,89 +4445,132 @@ infoFields
 \begin_layout Itemize
 
 \family typewriter
-pop.setInfoFields(fields, init)
+pop.setInfoFields(fields, init) 
+\family default
+set information fields of a population, removing all previous ones
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-pop.addInfoField(field, init)
+pop.addInfoField(field, init) 
+\family default
+add an information field to a population
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
 pop.addInfoFields(fields, init)
-\end_layout
-
-\begin_layout Standard
-Note that changing information fields for a simulator is dangerous since
- all populations in a simulator share the same genotypic structure.
- You should use 
-\family typewriter
-addIndField
 \family default
- to all populations to avoid potential problems.
+ add information fields to a population
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simu.addInfoField(field, init)
+\family default
+ add an information field to all populations in a simulator
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+simu.addInfoFields(fields, init) 
+\family default
+add information fields to all populations in a simulator
 \end_layout
 
 \begin_layout Standard
-One can set/retrieve information at individual level:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ind.info(idx or name)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ind.setInfo(idx or name)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ind.arrInfo()
+When adding information fields to a simulator, information fields are added
+ to all populations of the simulator.
+ Note that it is illegal to add information field (or in a broader sense
+ changing genotypic structure) to part of the populations of a simulator,
+ because all populations in a simulator should have the same genotypic structure.
 \end_layout
 
 \begin_layout Standard
-or set at the population level
+One can read/write information fields at individual level:
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-pop.indInfo(idx or name, order)
+ind.info(idx), ind.info(name)
+\family default
+ return individual information field by index or name
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-pop.indInfo(idx or name, subPop, order)
+ind.setInfo(value, idx), ind.setInfo(value, name)
+\family default
+ set individual information field by index or name
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-pop.setIndInfo(idx or name, [subPop])
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.arrIndInfo(order)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.arrIndInfo(subPop, order)
+ind.arrInfo() 
+\family default
+returns a carray of all information fields of an individual
 \end_layout
 
 \begin_layout Standard
+or at the population level
+\end_layout
 
+\begin_layout Itemize
+
+\family typewriter
+pop.indInfo(idx, order), pop.indInfo(name, order)
+\family default
+ return an information field (referred by index or name) of all individuals
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.indInfo(idx, subPop, order), pop.indInfo(name, subPop, order)
+\family default
+ return an information field (referred by index or name) of all individuals
+ in a subpopulation 
+\family typewriter
+subPop
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.setIndInfo(values, idx, order), pop.setInfIndo(values, name, order)
+\family default
+ set information fields of all individuals with values in an array.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.arrIndInfo(order) 
+\family default
+return an carray of all information fields
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.arrIndInfo(subPop, order) 
+\family default
+return an carray of all information fields of subpopulation 
+\family typewriter
+subPop.
+\end_layout
+
+\begin_layout Standard
+Both 
 \family typewriter
 idx
 \family default
@@ -4767,11 +4578,7 @@ idx
 \family typewriter
 name
 \family default
- means that you can use field index obtained from 
-\family typewriter
-infoIdx(name)
-\family default
-, or use field name directly.
+ can be used in these functions.
  
 \family typewriter
 name
@@ -4779,6 +4586,10 @@ name
  is easier to use but 
 \family typewriter
 idx
+\family default
+, which can be obtained by
+\family typewriter
+ idx=pop.infoIdx(name),
 \family default
  is faster.
  Although population information fields are kept in a population object
@@ -4791,16 +4602,8 @@ info
 \family typewriter
 order=True
 \family default
- to functions 
-\family typewriter
-indInfo
-\family default
- and 
-\family typewriter
-arrIndInfo
-\family default
- will ensure that the returned information fields are ordered by individual
- order.
+ to these functions will ensure that the returned information fields are
+ ordered by individual order.
  If you only need to get a summary of some information fields, passing 
 \family typewriter
 order=False
@@ -4810,35 +4613,39 @@ order=False
 \end_layout
 
 \begin_layout Standard
-For each individual, 
+
 \family typewriter
 ind.arrInfo()
 \family default
- will return 
+ returns an carray 
 \family typewriter
-f1, f2, f3, ...
+f1, f2, f3
+\family default
+ (assuming 
+\family typewriter
+infoSize()==3
+\family default
+) of individual 
+\family typewriter
+ind
+\family default
+.
+ At a population level, 
+\family typewriter
+pop.arrIndInfo([subPop], order)
+\family default
+ returns a carray of 
+\family typewriter
+f1, f2, f3, f1, f2, f3, ...
 
 \family default
- etc.
- for that individual.
- From a population point of view, 
-\family typewriter
-pop.arrIndInfo([subPop])
-\family default
- will return a list of 
-\family typewriter
-f1, f2, f3, ..., f1, f2, f3, ...
-\family default
-of individual information fields, which are not necessarily in the order
+ of individual information fields, which are not necessarily in the order
  of individuals unless 
 \family typewriter
 order = True
 \family default
  is set.
-\end_layout
-
-\begin_layout Standard
-
+ 
 \family typewriter
 indInfo
 \family default

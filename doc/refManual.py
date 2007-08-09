@@ -138,6 +138,8 @@ print pop.dvars(1).alleleNum[0][1]
 
 
 #file log/ref_localNamespace.log
+pop = population(subPop=[1000, 2000], loci=[1])
+InitByFreq(pop, [0.2, 0.8])
 print pop.evaluate('alleleNum[0][0] + alleleNum[0][1]')
 pop.execute('newPopSize=int(popSize*1.5)')
 ListVars(pop.vars(), level=1, useWxPython=False)
@@ -148,14 +150,27 @@ newPopSize
 simu = simulator(population(10),noMating(), rep=2)
 # evaluate an expression in different areas
 print simu.vars(1)
-aa = 2
 print simu.population(0).evaluate("grp*2")
 print simu.population(1).evaluate("grp*2")
-print simu.population(0).evaluate("aa+1")
 # a statement (no return value)
 simu.population(0).execute("myRep=2+rep*rep")
 simu.population(1).execute("myRep=2*rep")
 print simu.vars(0)
+#end
+
+
+#file log/ref_pyEval.log
+simu = simulator(population(100, loci=[1]),
+    randomMating(), rep=2)
+simu.evolve(
+    preOps = [initByFreq([0.2, 0.8])],
+    ops = [ stat(alleleFreq=[0]),
+        pyExec('myNum = alleleNum[0][0] * 2'),
+        pyEval(r'"gen %d, rep %d, num %d, myNum %d\n"' \
+            ' % (gen, rep, alleleNum[0][0], myNum)')
+        ],
+    end=2
+)
 #end
 
 #file log/ref_info1.log
