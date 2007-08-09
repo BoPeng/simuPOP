@@ -1014,36 +1014,23 @@ namespace simuPOP
 			/**
 			\param values an array that has the same length as population size.
 			\param idx index to the information field.
+			\param order if true, info will be in the order of individuals
 			*/
 			template<typename T, typename T1>
-				void setIndInfo(const T& values, T1 idx)
+				void setIndInfo(const T& values, T1 idx, bool order=true)
 			{
-#ifdef SIMUMPI
-				// this function can be called within mpiRank() == 0
-				// can only check local index
-				CHECKRANGEINFO(idx);
-				DBG_ASSERT(values.size() == popSize(), IndexError,
-					"Size of values should be the same as population size");
-				if(mpiRank()==0)
-				{
-					UINT is = localInfoSize();
-					typename T::const_iterator infoIter = values.begin();
-					for(vectorinfo::iterator ptr=m_info.begin() + idx;
-						ptr != m_info.end() + idx; ptr += is)
-					{
-						*ptr = static_cast<InfoType>(*infoIter++);
-					}
-				}
-#else
 				CHECKRANGEINFO(idx);
 				DBG_ASSERT(values.size() == popSize(), IndexError,
 					"Size of values should be the same as population size");
 				UINT is = infoSize();
+				if(order && !infoOrdered())
+					adjustInfoPosition(true);
 				typename T::const_iterator infoIter = values.begin();
 				for(vectorinfo::iterator ptr=m_info.begin() + idx;
 					ptr != m_info.end() + idx; ptr += is)
-				*ptr = static_cast<InfoType>(*infoIter++);
-#endif
+				{
+					*ptr = static_cast<InfoType>(*infoIter++);
+				}
 			}
 
 			/// set individual information for the given information field (name)
@@ -1052,11 +1039,11 @@ namespace simuPOP
 			equivalent to the \c idx version <tt>x.setIndInfo(values, x.infoIdx(name))</tt>.
 			 */
 			template<class T>
-				void setIndInfo(const T& values, const string& name)
+				void setIndInfo(const T& values, const string& name, bool order=true)
 			{
 				// for mpi version , use gloal idx
 				int idx = infoIdx(name);
-				setIndInfo<T, UINT>(values, idx);
+				setIndInfo<T, UINT>(values, idx, order);
 			}
 
 #ifdef SIMUMPI
