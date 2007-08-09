@@ -144,7 +144,7 @@ namespace simuPOP
 	}
 
 	// set debug area, default to turn all code on
-	void TurnOnDebugWithName(string code)
+	void TurnOnDebug(string code)
 	{
 #ifndef OPTIMIZED
 		for(int i=0; i < DBG_CODE_LENGTH; ++i)

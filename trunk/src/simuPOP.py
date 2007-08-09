@@ -67,12 +67,6 @@ else:
         else:
             from simuPOP_std import *
 
-if simuOptions['Debug'] != []:
-    for g in simuOptions['Debug']:
-        if g not in ['', None]:
-            print "Turn on debug '%s'" % g
-            TurnOnDebugWithName(g)
-
 # seed rng() if necessay
 if not os.path.isfile('/etc/urandom') and not os.path.isfile('/etc/random'):
     import time, random, sys
@@ -114,4 +108,10 @@ if not simuOptions['Quiet']:
         print "This is the standard %s allele version with %d maximum allelic states." % (alleleType(), MaxAllele+1)
     print "For more information, please visit http://simupop.sourceforge.net,"
     print "or email simupop-list@lists.sourceforge.net (subscription required)."
+
+    if simuOptions['Debug'] != []:
+        for g in simuOptions['Debug']:
+            if g not in ['', None]:
+                print "Turn on debug '%s'" % g
+                TurnOnDebug(g)
 
