@@ -4692,10 +4692,17 @@ Python operators
 
 \begin_layout Standard
 This chapter will list all functions, types and operators by category.
-\end_layout
+ The reference for 
+\family typewriter
+class baseOperator 
+\family default
+is in section 
+\begin_inset LatexCommand ref
+reference "sec:Operators"
 
-\begin_layout Standard
- 
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -4723,7 +4730,17 @@ This is the single most powerful hybrid operator.
  Whenever you think that something is too complicated to be done by standard
  operators, you can do it here in Python.
  This operator accepts a Python function which accepts a population and
- optionally a parameter.
+ an optional parameter.
+ When 
+\family typewriter
+pyOperator
+\family default
+ is called, it will simply pass the accepted population to the function.
+ If your function returns 
+\family typewriter
+False
+\family default
+, the simulation will be stopped.
  To use this operator, you will need to 
 \end_layout
 
@@ -4763,11 +4780,6 @@ If you return
 False
 \family default
 , this operator will work like a terminator.
- 
-\family typewriter
-para
-\family default
- will be omitted.
 \end_layout
 
 \end_deeper
@@ -4787,7 +4799,7 @@ status open
 
 \begin_layout Standard
 
-pyOperator(mfunc=yOperator, param=para)
+pyOperator(mfunc=pyOperator, param=para)
 \end_layout
 
 \end_inset
@@ -4808,19 +4820,6 @@ outputExpr
 \end_layout
 
 \end_deeper
-\begin_layout Standard
-When 
-\family typewriter
-pyOperator
-\family default
- is called, it will simply pass the accepted population to the function.
- If your function returns 
-\family typewriter
-False
-\family default
-, the simulation will be stopped.
-\end_layout
-
 \begin_layout Standard
 This operator allows implementation of arbitrarily complicated operators,
  at a cost of efficiency.
