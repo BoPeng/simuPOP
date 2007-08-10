@@ -257,17 +257,8 @@ Stat(pop, popSize=1, alleleFreq=range(0, pop.totNumLoci()),
 #end
 
 
-#file log/ref_operatorstages.log
-d = dumper()
-print d.canApplyPreMating()
-print d.canApplyDuringMating()
-# so dumper is a post mating operator
-print d.canApplyPostMating()
-#end
-
-
 #file log/ref_operatorgen.log
-simu = simulator(population(1),binomialSelection(), rep=3)
+simu = simulator(population(1),binomialSelection(), rep=2)
 op1 = output("a", begin=5, end=20, step=3)
 op2 = output("a", begin=-5, end=-1, step=2)
 op3 = output("a", at=[2,5,10])
@@ -280,10 +271,13 @@ simu.evolve( [ pyEval(r"str(gen)+'\n'", begin=5, end=-1, step=2)],
 #file log/ref_operatorgrp.log
 from simuUtil import *
 simu = simulator(population(1),binomialSelection(), rep=4,
-                                 grp=[1,2,1,2])
-simu.step([ pyEval(r"grp+3", grp=1),
-                         pyEval(r"grp+6", grp=2),
-                         output('\n', rep=REP_LAST)]
+    grp=[1,2,1,2])
+simu.step(
+    ops = [ 
+        pyEval(r"grp+3", grp=1),
+        pyEval(r"grp+6", grp=2),
+        output('\n', rep=REP_LAST)
+    ]
 )
 #end
 

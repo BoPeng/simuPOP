@@ -3314,26 +3314,6 @@ Operators
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-baseOperatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Types of operators
-\end_layout
-
-\begin_layout Standard
 There are three kinds of operators:
 \end_layout
 
@@ -3389,24 +3369,6 @@ name "varPlotter"
 \end_layout
 
 \begin_layout Standard
-You do not have to know the type of an operator to use them.
- The interfaces of them are all the same.
- Note that although it is possible to write pure Python operators to operate
- directly on populations, it might work very slowly compared to the built-in
- ones.
-\end_layout
-
-\begin_layout Subsection
-Applicable stages
-\begin_inset LatexCommand index
-name "applicable stage"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Operators can be applied at 
 \emph on
 pre-
@@ -3420,20 +3382,24 @@ during-
 post-mating
 \emph default
 , or a combination of these stages.
- Note that it is possible for an operator to apply multiple times in a life
- cycle.
- For example, a save-to-file operator might be applied before and after
- mating to trace parental information.
- Also please refer to the class reference for setting the 
+ It is possible for an operator to apply multiple times in a life cycle.
+ For example, a 
 \family typewriter
-stage
+savePopulation
 \family default
- parameter.
+ operator might be applied before and after mating to trace parental information.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_operatorstages.log}[caption={Operator stage},label={operatorstages}]
-preview false
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+baseOperatorRef
+\end_layout
 
 \end_inset
 
@@ -3626,34 +3592,24 @@ a.txt
 \family default
 ).
  This file is repeatedly covered by other operators, so what we finally
- get is a new line written by 
+ get is the output from replicate 1.
+ The second 
 \family typewriter
-output(
-\begin_inset Quotes eld
-\end_inset
-
-
-\backslash
-n
-\begin_inset Quotes erd
-\end_inset
-
-)
+step
 \family default
-.
- The second simulator works fine by using 
+ function keeps output from all replicates using the 
 \family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
->>a.txt
-\begin_inset Quotes erd
-\end_inset
-
-
+>>
 \family default
-.
+ form, and the last 
+\family typewriter
+step
+\family default
+ call does not clear 
+\family typewriter
+a.txt
+\family default
+ before it is used.
 \end_layout
 
 \begin_layout Standard
@@ -3769,8 +3725,17 @@ evolve(end=2)
 \end_layout
 
 \begin_layout Standard
-evolve the population three times.
+evolve the population 3 generations.
  Generation 0, generation 1, and generation 2.
+ When you use 
+\family typewriter
+start=0, step=5, end=10
+\family default
+ for your operator, it will be applied at generations 
+\family typewriter
+0,5,10
+\family default
+ etc.
  At the end of the simulation, current generation number is 3! (If you are
  familiar with C, this is like a 
 \family typewriter
@@ -3808,47 +3773,27 @@ end
 ).
 \end_layout
 
-\begin_layout Standard
-When you use 
-\family typewriter
-start=0, step=5, end=10
-\family default
- for your operator, it will be applied at generations 
-\family typewriter
-0,5,10
-\family default
- etc.
- 
-\end_layout
-
 \begin_layout Subsection
 Operator calling sequence
 \end_layout
 
 \begin_layout Standard
 In a simulation, operators are applied at different stages, pre-, during-,
- and post-mating.
- However, operators are not always active.
- They can be applied to certain generations or certain replicate(s) of a
- population.
- A simulator will always apply 
+ and post-mating (controlled by 
 \family typewriter
-preOps
+stage
 \family default
- and 
+ parameter), at specified generations (controlled by 
 \family typewriter
-postOps
+begin, end, step, at
 \family default
- operators, but will ask if an operator is active (by providing 
+ parameters), and to specified replicates (controlled by 
 \family typewriter
-rep, grp, gen
+rep, grp
 \family default
- information) before it is called.
-\end_layout
-
-\begin_layout Standard
-The order of applying operators usually does not matter but errors may occur
- if you are not careful.
+ parameters).
+ The order of applying operators usually does not matter but errors may
+ occur if you are not careful.
  For example, 
 \family typewriter
 stat(...)
@@ -3860,7 +3805,7 @@ stage=PostMating
 \family default
  and put it after all operators if you would like to measure a post-mating
  population.
- However, it should be put before any operator (such as an terminator) that
+ It also should be put before any operator (such as an terminator) that
  uses the shared variable set by 
 \family typewriter
 stat(...).
@@ -6573,6 +6518,20 @@ LoadPopulationRef
 
 \backslash
 LoadSimulatorRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+MergePopulationsRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+MergePopulationsByLociRef 
 \end_layout
 
 \begin_layout Standard
