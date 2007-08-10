@@ -135,7 +135,8 @@ simu.step([
 #end
 
 #file log/src_initByValue.log
-simu = simulator( population(subPop=[2,3], loci=[5,7]),
+simu = simulator(
+    population(subPop=[2,3], loci=[5,7], maxAllele=9),
     randomMating(), rep=1)
 simu.step([
     initByValue([1]*5 + [2]*7 + [3]*5 +[4]*7),
@@ -200,7 +201,8 @@ simu.step([
 
 
 #file log/src_recombinator.log
-simu = simulator(population(4, loci=[4,5,6], 
+simu = simulator(
+    population(4, loci=[4,5,6], maxAllele=9,
     infoFields=['father_idx', 'mother_idx']),
     randomMating())
 simu.step([
@@ -284,7 +286,7 @@ TurnOffDebug(DBG_MATING)
 #end
 
 
-#file log/src_basicSelector.log
+#file log/src_mapSelector.log
 simu = simulator(
     population(size=1000, ploidy=2, loci=[1], infoFields=['fitness']),
     randomMating())
@@ -296,6 +298,23 @@ simu.evolve([
     pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
     ],
     preOps=[  initByFreq(alleleFreq=[.2,.8])],
+    end=300)
+#end
+
+
+#file log/src_maSelector.log
+simu = simulator(
+    population(size=1000, ploidy=2, loci=[1], infoFields=['fitness']),
+    randomMating())
+s1 = .1
+s2 = .2
+simu.evolve(
+    preOps=[initByFreq(alleleFreq=[.2,.8])],
+    ops = [
+        stat( alleleFreq=[0], genoFreq=[0]),
+        maSelector(locus=0, fitness=[1-s1, 1, 1-s2]),
+        pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
+    ],
     end=300)
 #end
 
@@ -340,6 +359,47 @@ simu.step([
 #end
 
 
+#file log/src_mlPenetrance.log
+pop = population(1000, loci=[3])
+InitByFreq(pop, [0.3, 0.7])
+pen = []
+for loc in (0, 1, 2):
+    pen.append( maPenetrance(locus=loc, wildtype=[1],
+        penetrance=[0, 0.3, 0.6] ) )
+
+# the multi-loci penetrance
+MlPenetrance(pop, mode=PEN_Multiplicative, peneOps=pen)
+Stat(pop, numOfAffected=True)
+print pop.dvars().numOfAffected
+#end
+
+
+#file log/src_pyPenetrance.log
+pop = population(1000, loci=[3])
+InitByFreq(pop, [0.3, 0.7])
+def peneFunc(geno):
+    p = 1
+    for l in range(len(geno)/2):
+        p *= (geno[l*2]+geno[l*2+1])*0.3
+    return p
+
+PyPenetrance(pop, func=peneFunc, loci=(0, 1, 2))
+Stat(pop, numOfAffected=True)
+print pop.dvars().numOfAffected
+#
+# You can also define a function, that returns a penetrance
+# function using given parameters
+def peneFunc(table):
+    def func(geno):
+      return table[geno[0]][geno[1]]
+    return func
+
+# then, given a table, you can do
+PyPenetrance(pop, loci=(0, 1, 2),
+    func=peneFunc( ((0,0.5),(0.3,0.8)) ) )
+#end
+
+
 
 #turnOnDebug(DBG_ALL)
 #turnOnDebug(DBG_SIMULATOR)
@@ -374,6 +434,19 @@ simu.evolve(
   dryrun=False
 )
 #end
+
+#file log/src_none.log
+# this may be set from command line option
+savePop = False
+# then, saveOp is defined accordingly
+if savePop:
+    saveOp = savePopulation(output='a.txt')
+else:
+    saveOp = noneOp()
+simu = simulator(population(10), randomMating())
+simu.evolve( [saveOp])
+#end
+
 
 #file log/src_rng.log
 print ListAllRNG()
