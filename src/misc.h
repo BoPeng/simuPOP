@@ -80,7 +80,7 @@ namespace simuPOP
 		long maxAttempts=1000,
 		bool allowFixation=false);
 
-	// a utility function to get marginal fitness given interaction and allele freq
+	/// CPPONLY a utility function to get marginal fitness given interaction and allele freq
 	vectorf MarginalFitness(unsigned nLoci, const vectorf & fitness, const vectorf & freq);
 
 	//

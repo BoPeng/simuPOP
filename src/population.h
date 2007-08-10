@@ -2035,6 +2035,7 @@ namespace simuPOP
 
 	};
 
+    /// load a population from a file. The file format is by default determined by \c file extension (<tt>format="auto"</tt>). Otherwise, \c format can be one of \c txt, \c bin, or \c xml. 
 	population& LoadPopulation(const string& file, const string& format="auto");
 
 	/// get info through ind.info()

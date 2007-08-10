@@ -87,12 +87,12 @@ namespace simuPOP
 	// / Debug and info functions
 	// ////////////////////////////////////////////////////////////
 
-	/// set debug code, default to turn all code on
+	/// set debug codes. Default to turn on all debug codes. Only available in non-optimized modules.
 	void TurnOnDebug(DBG_CODE code=DBG_ALL);
 
 	void TurnOnDebug(string code);
 
-	/// turn off debug, default to turn all code off
+	/// turn off debug information. Default to turn off all debug codes. Only available in non-optimized modules.
 	void TurnOffDebug(DBG_CODE code=DBG_ALL);
 
 #ifndef OPTIMIZED
@@ -100,7 +100,7 @@ namespace simuPOP
 	bool debug(DBG_CODE code);
 #endif
 
-	/// show all dbg codes (print to cout)
+	/// show all debug codes (print to \c cout)
 	void ListDebugCode();
 
 	/// dbg string for a code CPPONLY
@@ -1053,9 +1053,7 @@ namespace simuPOP
 			///
 			~RNG();
 
-			///
-			/// choose an random number generator.
-			/// This can be done by setting GSL_RNG_TYPE as well.
+			/// CPPONLY choose an random number generator. This can be done by setting GSL_RNG_TYPE as well.
 			void setRNG(const char * rng=NULL, unsigned long seed=0);
 
 			/// return RNG name
@@ -1455,38 +1453,41 @@ namespace simuPOP
 			size_t m_cur;
 	};
 
-	/// currently, return a global RNG.
+	/// return the currently used random number generator
 	RNG& rng();
 
-	/// set random number generator
+	/// set random number generator. If <tt>seed=0</tt> (default), a random seed will be given. If <tt>rng=""</tt>, seed will be set to the current random number generator.
 	void SetRNG(const string rng="", unsigned long seed=0);
 
 	/// for backward compatibilit, will remove later
 	void setRNG(const string rng="", unsigned long seed=0);
 
-	/// list all available RNG.
+	/// list all available random number generators
 	vectorstr ListAllRNG();
 
-	/// for backward compatibility, will remove later
+	/// CPPONLY for backward compatibility, will remove later
 	vectorstr listAllRNG();
 
 	// ////////////////////////////////////////////////////////////
 	// /  Global debug and initialization related functions
 	// ////////////////////////////////////////////////////////////
 
-	/// return svn revision
+	/// return the revision number of this simuPOP module. Can be used to test if a feature is available.
 	int simuRev();
 
-	/// return version infomation of simuPOP
+	/// return the version of this simuPOP module
 	string simuVer();
 
-	///
+	/// return the compiler used to compile this simuPOP module
 	string compileCompiler();
 
+    /// return the date when this simuPOP module is compiled    
 	string compileDate();
 
+    /// return the Python version this simuPOP module is compiled for
 	string compilePyVersion();
 
+    /// return the platform on which this simuPOP module is compiled
 	string compilePlatForm();
 
 #ifdef BINARYALLELE
@@ -1497,13 +1498,14 @@ namespace simuPOP
 	void testCopyGenotype();
 #endif
 #endif
-
-	/// CPPONLY
-	/// initialize module simuPOP when using "import simuPOP"
+ 
+	/// CPPONLY initialize module simuPOP when using "import simuPOP"
 	bool initialize();
 
+    /// return \c True if this simuPOP module is optimized
 	bool optimized();
 
+    /// CPPONLY    
 	bool mpi();
 
 	/// print out system limits
@@ -1526,22 +1528,26 @@ namespace simuPOP
 	ULONG uniqueID();
 #endif
 
+    /// CPPONLY
 	UINT mpiRank();
 
+    /// CPPONLY
 	UINT mpiSize();
 
 	/// CPPONLY
 	void mpiBarrier();
 
+    /// return the allele type of the current module. Can be \c binary, \c short, or \c long.
 	string alleleType();
 
+    /// return \f$ 1 \f$, \f$ 2^8-1 \f$, \f$ 2^{16}-1 \f$ for binary, short, or long allele modules, respectively
 	ULONG maxAllele();
 
-	/// CPPONLY
-	/// get a null stream that discard everything
+
+	/// CPPONLY get a null stream that discard everything
 	ostream& cnull();
 
-	/// set standard output to (default standard Python output)
+	/// set the standard output (default to standard Python output)
 	void setLogOutput(const string filename="");
 
 	/// check if a file is a gzipped file CPPONLY
