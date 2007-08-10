@@ -74,6 +74,7 @@ namespace simuPOP
 	generation, or specify a number \c n for the number of ancestral generations (n + 1 total generations)
 	to process. Note that \c ancestralGen parameter is ignored if the penetrance operator is used
 	as a during mating operator.
+
 	*/
 	class penetrance: public baseOperator
 	{
@@ -285,6 +286,8 @@ namespace simuPOP
 			/**
 			\param peneOps a list of selectors???
 			\param mode can be one of \c PEN_Multiplicative, \c PEN_Additive, and \c PEN_Heterogeneity
+	
+			\test src_mlPenetrace.log Use of multi-locus penetrance operator
 			*/
 			mlPenetrance( const vectorop peneOps, int mode = PEN_Multiplicative,
 				int ancestralGen=-1, int stage=DuringMating, int begin=0, int end=-1, int step=1,
@@ -351,6 +354,8 @@ namespace simuPOP
 				at susceptibility loci and return a penetrance value. The returned value
 				should be between \c 0 and \c 1.
 			\param output and other parameters please refer to help(baseOperator.__init__)???
+
+			\test src_pyPenetrance Use of python penetrance operator
 			*/
 			/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
 			pyPenetrance(const vectoru & loci, PyObject* func, int ancestralGen=-1,

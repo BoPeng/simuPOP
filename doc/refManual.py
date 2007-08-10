@@ -388,51 +388,6 @@ simu.evolve(
 
 
 
-#file log/ref_basicSelector.log
-simu = simulator(
-        population(size=1000, ploidy=2, loci=[1], infoFields=['fitness']),
-        randomMating())
-s1 = .1
-s2 = .2
-simu.evolve([
-        stat( alleleFreq=[0], genoFreq=[0]),
-        mapSelector(locus=0, fitness={'0-0':(1-s1), '0-1':1, '1-1':(1-s2)}),
-        pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
-        ],
-        preOps=[    initByFreq(alleleFreq=[.2,.8])],
-        end=300)
-#end
-
-#file log/ref_pySelector.log
-simu = simulator(
-        population(size=1000, ploidy=2, loci=[3], infoFields=['fitness'] ),
-        randomMating())
-
-s1 = .2
-s2 = .3
-# the second parameter gen can be used for varying selection pressure
-def sel(arr, gen=0):
-    if arr[0] == 1 and arr[1] == 1:
-        return 1 - s1
-    elif arr[0] == 1 and arr[1] == 2:
-        return 1
-    elif arr[0] == 2 and arr[1] == 1:
-        return 1
-    else:
-        return 1 - s2
-
-# test func
-print sel([1,1])
-
-simu.evolve([
-        stat( alleleFreq=[0], genoFreq=[0]),
-        pySelector(loci=[0,1],func=sel),
-        pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=25)
-        ],
-        preOps=[    initByFreq(alleleFreq=[.2,.8])],
-        end=100)
-#end
-
 #file log/ref_pySubset.log
 simu = simulator(population(subPop=[2,3], loci=[3,4], infoFields=['fitness']),
         randomMating())

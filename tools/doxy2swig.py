@@ -1068,6 +1068,7 @@ if __name__ == '__main__':
     p.scan_interface('../src/simuPOP_common.i')
     p.scan_module('../src/simuOpt.py')
     p.scan_module('../src/simuUtil.py')
+    p.scan_module('../src/simuRPy.py')
     p.scan_module('../src/hapMapUtil.py')
     print 'Writing latex reference file to', latex_file
     p.write(latex_file, type='latex_single')

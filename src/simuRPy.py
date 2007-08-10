@@ -29,6 +29,56 @@
 simuPOP utilities.
 This module provides some commonly used operators
 and some utility class for plotting.
+
+Plotting with history
+
+plot a number in the form of a variable or expression, use
+
+    varPlotter(var='expr')
+
+plot a vector in the same window and there is only one replicate in the simulator, use
+
+    varPlotter(var='expr', varDim=len)
+
+where len is the dimension of your variable or expression. Each line in the figure represents the history of an item in the array.
+
+plot a vector in the same window and there are several replicates, use 
+
+    varPlotter(var='expr', varDim=len, numRep=nr, byRep=1)
+
+varPlotter will try to use an appropriate layout for your subplots (for example, use 3x4 if numRep=10). You can also specify parameter mfrow to change the layout.
+
+if you would like to plot each item of your array variables in a subplot, use
+
+    varPlotter(var='expr', varDim=len, byVal=1)
+
+or in case of a single replicate
+    varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
+
+    
+There will be numRep lines in each subplot.
+Plotting without history
+
+use option history=False. Parameters byVal, varDim etc. will be ignored. 
+
+Other options are
+
+title, xtitle, ytitle: title of your figure(s). title is default to your expression, xtitle is defaulted to generation.
+
+win: window of generations. I.e., how many generations to keep in a figure. This is useful when you want to keep track of only recent changes.
+
+update: update figure after update generations. This is used when you do not want to update the figure at every generation.
+
+saveAs: save figures in files saveAs#gen.eps. For example, if saveAs='demo', you will get files demo1.eps, demo2.eps etc.
+
+separate: plot data lines in separate panels. 
+
+image: use R image function to plot image, instead of lines.
+
+level: level of image colors (default to 20).
+
+leaveOpen: whether or not leave the plot open when plotting is done. Default to True.
+
 """
 
 from exceptions import *
