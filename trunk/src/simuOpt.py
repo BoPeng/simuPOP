@@ -24,7 +24,90 @@
 ############################################################################
 
 '''
-simuOpt documentation (FIXME)
+Module simuOpt provides two important functions. 
+
+\li control which simuPOP module to load, and how it is loaded using function
+setOptions.
+\li provide a simple way to set simulation options.
+
+The option description list consists of dictionaries with some predefined keys.
+Each dictionary defines an option. With defined properties, this option can be
+obtained from command line (using short (-h, -k=100) or long (--help, 
+--allele=2) command line options), a configuration file, interactive user input,
+or a Tcl/Tk or wxPython based parameter dialog.
+
+The option description dictionaries can have the following keys:
+
+arg: short command line option name. 'h' checks the presence of argument -h. 
+  If an argument is expected, add a comma to the option name. For example, 'p:'
+  matches command line option -p=100 or -p 100.
+
+longarg: long command line option name. 'help' checks the presence of argument
+  '--help'. 'mu=' matches command line option --mu=0.001 or -mu 0.001.
+
+label: The label of the input field in a parameter dialog, and as the prompt for
+  user input.
+
+default: default value for this parameter. It is used to as the default value
+  in the parameter dialog, and as the option value when a user presses 'Enter'
+  directly during interactive parameter input.
+
+useDefault: use default value without asking, if the value can not be determined
+  from GUI, command line option or config file. This is useful for options that 
+  rarely need to be changed. Setting them to useDfault allows shorter command 
+  lines, and easy user input.
+
+description: a long description of this parameter, will be put into the usage 
+  information, which will be displayed with ( -h, --help command line option, or 
+  help button in parameter dialog).
+
+allowedTypes: acceptable types of this option. If allowedTypes is types.ListType
+  or types.TupleType and the user's input is a scalar, the input will be converted
+  to a list automatically. If the conversion can not be done, this option will
+  not be accepted.
+
+validate: a function to validate the parameter. You can define your own functions 
+  or use the ones defined in this module.
+
+chooseOneOf: if specified, simuOpt will choose one from a list of values using a 
+  listbox (Tk) or a combo box (wxPython) .
+
+chooseFrom: if specified, simuOpt will choose one or more items from a list of
+  values using a listbox (tk) or a combo box (wxPython).
+
+separator: if specified, a blue label will be used to separate groups of 
+  parameters.
+
+jump: it is used to skip some parameters when doing the interactive user input. 
+  For example, _getParam will skip the rest of the parameters if -h is specified 
+  since parameter -h has item 'jump':-1 which means that jump to the end. 
+  Another situation of using this value is when you have a hierarchical parameter
+  set. For example, if mutation is on, specify mutation rate, otherwise proceed.
+
+jumpIfFalse: The same as jump but jump if current parameter is False.
+
+
+This module, is loaded, pre-process the command line options. More specifically,
+it checks
+
+-c configfile: read from a configuration file
+
+--config configgile: the same as -c
+
+--optimized: load optimized modules, unless setOption explicitly use non-optimized
+  modules.
+
+-q: quiet. Do not display banner information when simuPOP is loaded
+
+--quiet: the same as -q
+
+--useTkinter: force the use of Tcl/Tk dialog even when wxPython is available. By 
+  default, wxPython is used whenever possible.
+
+--noDialog: do not use option dialog. If the options can not be obtained from
+  command line or configuraiton file, users will be asked to input them interactively.
+
+
 '''
 
 # First try to get environmental variable
@@ -34,9 +117,10 @@ import os, sys, exceptions, types, re, time, imp
 allowed_keys = ['arg', 'longarg', 'label', 'allowedTypes', 'prompt', 'useDefault', 'jump', \
     'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', 'chooseFrom', 'separator']
 
-allowed_commandline_options = ['-c', '--config', '--optimized', '--mpi', '--chromMap', '-q', '--useTkinter', '--quiet', '--noDialog']
+allowed_commandline_options = ['-c', '--config', '--optimized', '--mpi', '--chromMap', \
+    '-q', '--useTkinter', '--quiet', '--noDialog']
 
-def getParamShortArg(p, processedArgs):
+def _getParamShortArg(p, processedArgs):
     ''' try to get a param from short arg '''
     if not p.has_key('arg'):
         return None
@@ -51,7 +135,7 @@ def getParamShortArg(p, processedArgs):
                 if idx+1 in processedArgs or idx+2 in processedArgs:
                     raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
                 try:
-                    val = getParamValue(p, sys.argv[idx+2])
+                    val = _getParamValue(p, sys.argv[idx+2])
                     processedArgs.append(idx+1)
                     processedArgs.append(idx+2)
                     return val
@@ -63,9 +147,9 @@ def getParamShortArg(p, processedArgs):
                     raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
                 try:
                     if sys.argv[idx+1][1] == '=':
-                        val = getParamValue(p, sys.argv[idx+1][2:])
+                        val = _getParamValue(p, sys.argv[idx+1][2:])
                     else:
-                        val = getParamValue(p, sys.argv[idx+1][1:])
+                        val = _getParamValue(p, sys.argv[idx+1][1:])
                     processedArgs.append(idx+1)
                     return val
                 except:
@@ -85,7 +169,7 @@ def getParamShortArg(p, processedArgs):
             return None
 
 
-def getParamLongArg(p, processedArgs):
+def _getParamLongArg(p, processedArgs):
     ''' get param from long arg '''
     if not p.has_key('longarg'):
         return None
@@ -100,7 +184,7 @@ def getParamLongArg(p, processedArgs):
                 if idx+1 in processedArgs or idx+2 in processedArgs:
                     raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
                 try:
-                    val = getParamValue(p, sys.argv[idx+2])
+                    val = _getParamValue(p, sys.argv[idx+2])
                     processedArgs.append(idx+1)
                     processedArgs.append(idx+2)
                     return val
@@ -111,7 +195,7 @@ def getParamLongArg(p, processedArgs):
                 if sys.argv[idx+1][endChar+2] != '=':
                     raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " is invalid. (--longarg=value)")
                 try:
-                    val = getParamValue(p, sys.argv[idx+1][(endChar+3):])
+                    val = _getParamValue(p, sys.argv[idx+1][(endChar+3):])
                     processedArgs.append(idx+1)
                     return val
                 except:
@@ -128,7 +212,7 @@ def getParamLongArg(p, processedArgs):
             return True
 
 
-def getParamConfigFile(p, processedArgs):
+def _getParamConfigFile(p, processedArgs):
     ''' get param from configuration file    '''
     if not p.has_key('longarg'):
         return None
@@ -164,7 +248,7 @@ def getParamConfigFile(p, processedArgs):
             else:
                 file.close()
                 try:
-                    return getParamValue(p, value.strip('''"'\n'''))
+                    return _getParamValue(p, value.strip('''"'\n'''))
                 except:
                     return None
         file.close()
@@ -175,7 +259,7 @@ def getParamConfigFile(p, processedArgs):
         return None
 
 
-def getParamUserInput(p):
+def _getParamUserInput(p):
     ''' get param from user input '''
     # prompt
     if p.has_key('prompt'):
@@ -195,7 +279,7 @@ def getParamUserInput(p):
             break
         else:
             try:
-                return getParamValue(p, value)
+                return _getParamValue(p, value)
             except:
                 print "Invalid input.\n"
                 continue
@@ -206,7 +290,7 @@ def getParamUserInput(p):
             raise exceptions.ValueError("Can not get param for parameter (no default value): " + str(p['longarg']))
 
 
-def getParamValue(p, val):
+def _getParamValue(p, val):
     ''' try to get a value from value, raise exception if error happens. '''
     # if we are giving a unicode string, convert!
     if type(val) == types.UnicodeType:
@@ -244,7 +328,7 @@ def getParamValue(p, val):
             + p.setdefault('longarg','none') +")")
 
 
-def termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=False):
+def _termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=False):
     ''' using user input to get param '''
     # get param from short arg
     processedArgs = []
@@ -262,20 +346,20 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=F
                 raise exceptions.ValueError("Unrecognized option entry " + k )
         if p.has_key('separator'):
             continue
-        val = getParamShortArg(p, processedArgs)
+        val = _getParamShortArg(p, processedArgs)
         if val == None:
-            val = getParamLongArg(p, processedArgs)
+            val = _getParamLongArg(p, processedArgs)
         if val == None:
-            val = getParamConfigFile(p, processedArgs)
+            val = _getParamConfigFile(p, processedArgs)
         if val == None:
             if (useDefault or (not p.has_key('label')) or (p.has_key('useDefault') and p['useDefault'])) and p.has_key('default'):
                 val = p['default']
             else:
-                val = getParamUserInput(p)
+                val = _getParamUserInput(p)
         # should have a valid value now.
         if val == None:
             raise exceptions.ValueError("Failed to get parameter " + p.setdefault("label",'') + " " + p.setdefault("longarg",''))
-        values.append( getParamValue(p, val))
+        values.append( _getParamValue(p, val))
         # now we really short have something not None, unless the default is None
         # if a string is fine
         # now, deal with jump option
@@ -318,7 +402,7 @@ def termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=F
 # function to handle all the stuff.
 # Maybe a class approach will be used later.
 #
-def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
+def _tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
     ''' get options from a given options structure '''
     import Tkinter as tk
     if len(opt) == 0:
@@ -343,11 +427,11 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
         for k in p.keys():
             if not k in allowed_keys:
                 raise exceptions.ValueError("Unrecognized option entry " + k )
-        val = getParamShortArg(p, processedArgs)
+        val = _getParamShortArg(p, processedArgs)
         if val == None:
-            val = getParamLongArg(p, processedArgs)
+            val = _getParamLongArg(p, processedArgs)
         if val == None:
-            val = getParamConfigFile(p, processedArgs)
+            val = _getParamConfigFile(p, processedArgs)
         if val == None:
             if p.has_key('default'):
                 val = p['default']
@@ -387,7 +471,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
             try:
                 # get text from different type of entries
                 try:    # an entry box?
-                    val = getParamValue( options[g], entryWidgets[g].get())
+                    val = _getParamValue( options[g], entryWidgets[g].get())
                 except:    # a listbox
                     sel = entryWidgets[g].curselection()
                     if len(sel) == 1:
@@ -396,7 +480,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
                         items = []
                         for s in sel:
                             items.append( entryWidgets[g].get( s))
-                    val = getParamValue( options[g], items)
+                    val = _getParamValue( options[g], items)
             except:
                 #print "Invalid Value: ", entryWidgets[g].class()
                 # incorrect value
@@ -560,7 +644,7 @@ def tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs
 # function to handle all the stuff.
 # Maybe a class approach will be used later.
 #
-def wxGetParam(options, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
+def _wxGetParam(options, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
     ''' get options from a given options structure '''
     import wx
     if len(options) == 0:
@@ -583,11 +667,11 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
         if p.has_key('separator'):
             val = p['separator']
         else:
-            val = getParamShortArg(p, processedArgs)
+            val = _getParamShortArg(p, processedArgs)
             if val == None:
-                val = getParamLongArg(p, processedArgs)
+                val = _getParamLongArg(p, processedArgs)
             if val == None:
-                val = getParamConfigFile(p, processedArgs)
+                val = _getParamConfigFile(p, processedArgs)
             if val == None:
                 if p.has_key('default'):
                     val = p['default']
@@ -618,17 +702,17 @@ def wxGetParam(options, title = '', description='', details='', checkUnprocessed
             try:
                 # get text from different type of entries
                 try:    # an entry box?
-                    val = getParamValue( options[g], entryWidgets[g].GetValue())
+                    val = _getParamValue( options[g], entryWidgets[g].GetValue())
                 except:
                     try:    # a list box?
-                        val = getParamValue( options[g],
+                        val = _getParamValue( options[g],
                             options[g]['chooseOneOf'][int(entryWidgets[g].GetSelection())])
                     except: # a checklist box?
                         items = []
                         for s in range(len(options[g]['chooseFrom'])):
                             if entryWidgets[g].IsChecked(s):
                                 items.append( options[g]['chooseFrom'][s])
-                        val = getParamValue( options[g], items)
+                        val = _getParamValue( options[g], items)
             except exceptions.Exception, e:
                 # incorrect value
                 # set to red
@@ -810,7 +894,6 @@ def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArg
             - configuration file specified by -f file, or
             - prompt for user input
 
-    parameter:
         verbose: whether or not print detailed info
 
         checkUnprocessedArgs: check args, avoid misspelling of arg name
@@ -855,16 +938,16 @@ def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArg
             opt['label'] = opt('configName')
     if noDialog or '--noDialog' in sys.argv[1:] or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
         or True not in map(lambda x:x.has_key('label'), options):
-        return termGetParam(options, doc, verbose)
+        return _termGetParam(options, doc, verbose)
     else:
         if useTkinter:
-            return tkGetParam(options, sys.argv[0], doc, details,
+            return _tkGetParam(options, sys.argv[0], doc, details,
                 checkUnprocessedArgs, nCol)
         elif useWxPython:
-            return wxGetParam(options, sys.argv[0], doc, details,
+            return _wxGetParam(options, sys.argv[0], doc, details,
                 checkUnprocessedArgs, nCol)
         else:
-            return termGetParam(options, doc, verbose)
+            return _termGetParam(options, doc, verbose)
 
 
 def usage(options, before=''):
@@ -995,6 +1078,8 @@ def printConfig(opt, param, out=sys.stdout):
 
 # define some validataion functions
 def valueNot(t):
+    '''Return a function that returns true if passed option does not passes
+    validator t'''
     def func(val):
         if type(t) == types.FunctionType:
             return not t(val)
@@ -1004,6 +1089,8 @@ def valueNot(t):
 
 
 def valueOr(t1, t2):
+    '''Return a function that returns true if passed option passes validator
+    t1 or t2'''
     def func(val):
         if type(t1) == types.FunctionType and type(t2) == types.FunctionType:
             return t1(val) or t2(val)
@@ -1013,6 +1100,8 @@ def valueOr(t1, t2):
 
 
 def valueAnd(t1, t2):
+    '''Return a function that returns true if passed option passes validator
+    t1 and t2'''
     def func(val):
         if type(t1) == types.FunctionType and type(t2) == types.FunctionType:
             return t1(val) and t2(val)
@@ -1022,6 +1111,8 @@ def valueAnd(t1, t2):
 
 
 def valueOneOf(t):
+    '''Return a function that returns true if passed option is one of the values
+    list in t'''
     if not type(t) in [types.ListType, types.TupleType]:
         raise exceptions.ValueError('argument of valueOneOf should be a list')
     def func(val):
@@ -1037,76 +1128,97 @@ def valueOneOf(t):
 
 
 def valueTrueFalse():
+    '''Return a function that returns true if passed option is True or False'''
     return valueOneOf([True, False])
 
 
 def valueBetween(a,b):
+    '''Return a function that returns true if passed option is between value a and b
+    (a and b included)
+    '''
     def func(val):
         return val >= a and val <=b
     return func
 
 
 def valueGT(a):
+    '''Return a function that returns true if passed option is greater than a'''
     def func(val):
         return val > a
     return func
 
 
 def valueGE(a):
+    '''Return a function that returns true if passed option is greater than or 
+    equal to a'''
     def func(val):
         return val >= a
     return func
 
 
 def valueLT(a):
+    '''Return a function that returns true if passed option is less than a'''
     def func(val):
         return val < a
     return func
 
 
 def valueLE(a):
+    '''Return a function that returns true if passed option is less than or 
+    equal to a'''
     def func(val):
         return val <= a
     return func
 
 
 def valueEqual(a):
+    'Return a function that returns true if passed option equals a'
     def func(val):
         return val == a
     return func
 
 
 def valueNotEqual(a):
+    'Return a function that returns true if passed option does not equal a'
     def func(val):
         return val != a
     return func
 
 
 def valueIsNum():
+    'Return a function that returns true if passed option is a number (int, long or float)'
     def func(val):
         return type(val) in [types.IntType, types.LongType, types.FloatType]
     return func
 
 
 def valueIsList():
+    'Return a function that returns true if passed option is a list (or tuple)'
     def func(val):
         return type(val) in [types.ListType, types.TupleType]
     return func
 
 
 def valueValidDir():
+    '''Return a function that returns true if passed option val if a valid
+    directory'''
     def func(val):
         return os.path.isdir(val)
     return func
 
 
 def valueValidFile():
+    '''Return a function that returns true if passed option val if a valid
+    file'''
     def func(val):
         return os.path.isfile(val)
     return func
 
 
 def valueListOf(t):
+    '''Return a function that returns true if passed option val is a list of
+    type t. If t is a function (validator), check if all v in val pass t(v)
+    '''
     def func(val):
         if not type(val) in [types.ListType, types.TupleType]:
             return False
@@ -1132,15 +1244,15 @@ env_chrom_map = os.getenv('SIMUCHROMMAP')
 env_longAllele = os.getenv('SIMUALLELETYPE')
 env_debug = os.getenv('SIMUDEBUG')
 
-[par_optimized] = termGetParam([{'longarg':'optimized', \
+[par_optimized] = _termGetParam([{'longarg':'optimized', \
     'default':''}], False, False, True)
-[par_mpi] = termGetParam([{'longarg':'mpi', \
+[par_mpi] = _termGetParam([{'longarg':'mpi', \
     'default':''}], False, False, True)
-[par_chrom_map] = termGetParam([{'longarg':'chromMap', \
+[par_chrom_map] = _termGetParam([{'longarg':'chromMap', \
     'default':[]}], False, False, True)
-[par_quiet] = termGetParam([{'arg':'q','longarg':'quiet', \
+[par_quiet] = _termGetParam([{'arg':'q','longarg':'quiet', \
     'default':False}], False, False, True)
-[par_useTkinter] = termGetParam([{'longarg':'useTkinter', \
+[par_useTkinter] = _termGetParam([{'longarg':'useTkinter', \
     'default':False }], False, False, True) 
 
 # remove these parameters from sys.argv
@@ -1176,12 +1288,36 @@ if env_longAllele in ['standard', 'short', 'long', 'binary']:
 else:
     _longAllele = 'standard'
 
-simuOptions = {'Optimized':_optimized, 'MPI':_mpi, 'ChromMap':_chrom_map, 'AlleleType':_longAllele, 'Debug':[], 'Quiet':par_quiet}
+simuOptions = {'Optimized':_optimized, 'MPI':_mpi, 'ChromMap':_chrom_map, 
+    'AlleleType':_longAllele, 'Debug':[], 'Quiet':par_quiet}
 
 if env_debug != None:
     simuOptions['Debug'].extend( env_debug.split(',') )
 
 def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=None, debug=[]):
+    '''set options before simuPOP is loaded to control which simuPOP module to load,
+    and how the module should be loaded.
+
+    optimized: whether or not load optimized version of a module. If not set,
+        environmental variable SIMUOPTIMIZED, and commandline option --optimized
+        will be used if available. If nothing is defined, standard version will
+        be used.
+
+    mpi: currently unused
+
+    chromMap: currently unused
+
+    alleleType: 'binary', 'short', or 'long'. 'standard' can be used as 'short'
+        for backward compatibility. If not set, environmental variable 
+        SIMUALLELETYPE will be used if available. if it is not defined, the 
+        short allele version will be used.
+
+    quiet: If True, supress banner information when simuPOP is loaded.
+
+    debug: a list of debug code (or string). If not set, environmental variable
+        SIMUDEBUG will be used if available.
+    
+    '''
     if optimized in [True, False]:
         simuOptions['Optimized'] = optimized
     if mpi in [True, False]:
