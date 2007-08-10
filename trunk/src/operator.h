@@ -540,6 +540,8 @@ namespace simuPOP
 		public:
 			/**
 			This operator does nothing.
+
+			\test src_nonOp Use of noneOp operator
 			*/
 			noneOp( string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=0, int step=1, vectorl at=vectorl(),
@@ -607,6 +609,8 @@ namespace simuPOP
 			\param cond expression that will be treated as a bool variable
 			\param ifOp an operator that will be applied when \c cond is \c True
 			\param elseOp an operator that will be applied when \c cond is \c False
+
+			\test src_ifElse.log Use of conditional operator
 			*/
 			ifElse(const string& cond, baseOperator * ifOp=NULL, baseOperator * elseOp = NULL,
 				string output=">", string outputExpr="",
@@ -781,7 +785,6 @@ namespace simuPOP
 	class turnOnDebug: public baseOperator
 	{
 		public:
-
 			turnOnDebug(DBG_CODE code,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):

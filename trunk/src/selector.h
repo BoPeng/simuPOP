@@ -128,6 +128,8 @@ namespace simuPOP
 				for a single locus, and <tt>'a-b|c-d|e-f'</tt> for multi-loci.
 			\param phase if \c True, genotypes \c a-b and \c b-a will have different fitness values. Default to false.
 			\param output and other parameters please refer to help(baseOperator.__init__)???
+
+			\test src_mapSelector.log Use of mapSelector
 			*/
 			mapSelector( vectoru loci, const strDict& fitness, bool phase=false,
 				const vectoru & subPops=vectoru(), int stage=PreMating, int begin=0, int end=-1, int step=1,
@@ -173,7 +175,16 @@ namespace simuPOP
 	This is called 'multiple-allele' selector. It separate alleles into two groups:
 	wildtype and disease alleles. Wildtype alleles are specified by parameter
 	\c wildtype and any other alleles are considered as diseased alleles.
+
+	This selector accepts an array of fitness values:
+	
+	\li For single-locus, \c fitness is the fitness for genotype AA, Aa, aa, while A stands for wildtype alleles. 
+	\li For a two-locus model, \c fitness is the fitness for genotype AABB, AABb, AAbb, AaBB, AbBb, Aabb, aaBB, aaBb and aaBb.
+	\li For a model with more than two loci, use a table of length 3^{n} in a order similar to the two-locus model.
+	
 	<funcForm>MaSelect</funcForm>
+
+	
 	*/
 	class maSelector: public selector
 	{
@@ -188,10 +199,12 @@ namespace simuPOP
 				considered to be diseased alleles. Default to <tt>[0]</tt>.
 			\param output and other parameters please refer to help(baseOperator.__init__)???
 
-			Please refer to \c mapSelector for other parameter descriptions.
+			Please refer to \c basicSelector for other parameter descriptions.
 
 			\note \li \c maSelector only works for diploid populations now.
 			\li \c wildtype at all loci are the same.
+
+			\test src_maSelector Use of maSelector
 			*/
 			maSelector( vectoru loci, const vectorf& fitness, const vectora& wildtype,
 				const vectoru & subPops=vectoru(), int stage=PreMating, int begin=0, int end=-1, int step=1,
@@ -322,6 +335,8 @@ namespace simuPOP
 	This, at least in theory, can accommodate all selection scenarios.
 
 	<funcForm>PySelect</funcForm>
+
+	\test src_pySelector.log Use of pySelector
 	*/
 	class pySelector: public selector
 	{
