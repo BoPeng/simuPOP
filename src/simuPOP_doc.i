@@ -14590,7 +14590,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mpi();
+%feature("docstring") simuPOP::mpi "
+
+Description:
+
+    simuPOP::mpi
+
+Usage:
+
+    mpi()
+
+"; 
 
 %feature("docstring") simuPOP::limits "
 
@@ -14604,7 +14614,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mpiRank();
+%feature("docstring") simuPOP::mpiRank "
+
+Description:
+
+    simuPOP::mpiRank
+
+Usage:
+
+    mpiRank()
+
+"; 
 
 %ignore simuPOP::mpiSize();
 

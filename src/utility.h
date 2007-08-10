@@ -1505,7 +1505,6 @@ namespace simuPOP
     /// return \c True if this simuPOP module is optimized
 	bool optimized();
 
-    /// CPPONLY    
 	bool mpi();
 
 	/// print out system limits
@@ -1528,7 +1527,6 @@ namespace simuPOP
 	ULONG uniqueID();
 #endif
 
-    /// CPPONLY
 	UINT mpiRank();
 
     /// CPPONLY
