@@ -578,6 +578,89 @@ class Doxy2SWIG:
             print >> out, '\"; \n'
 
 
+    def scan_interface(self, file):
+        ''' scan simuPOP_common.i and retrieve function definitions '''
+        add_def = False
+        add_desc = False
+        begin_desc = False
+        for line in open(file).readlines():
+            if line.startswith('def'):
+                # remove def, and ending :
+                self.content.append({'type': 'global_function', 'ignore': False})
+                self.content[-1]['Name'] = line[4:].split('(')[0]
+                self.content[-1]['Usage'] = line[4:].strip()
+                self.content[-1]['Description'] = ''
+                if line.strip().endswith(':'):
+                    # remove ending :
+                    self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
+                    add_desc = True
+                    begin_desc = True
+                else:
+                    add_def = True
+            elif add_def:
+                self.content[-1]['Usage'] = line.strip()
+                if line.strip().endswith(':'):
+                    self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
+                    add_desc = True
+                    begin_desc = True
+                    add_def = False
+            elif add_desc:
+                if begin_desc:
+                    if not (line.strip().startswith('"') or line.strip().startswith("'")):
+                        add_desc = False
+                        continue
+                    begin_desc = False
+                self.content[-1]['Description'] += line.strip().strip('"').strip("'") + '\n'
+                if line.endswith('"\n') or line.endswith("'\n"):
+                    add_desc = False
+
+
+    def scan_module(self, file):
+        ''' scan python module file and retrieve function definitions '''
+        module = os.path.split(file)[-1].split('.')[0]
+        # add module entry
+        self.content.append({'type': 'docofmodule_' + module, 
+            'Name': module})
+        # load module
+        exec('import ' + module)
+        self.content[-1]['Description'] = eval('%s.__doc__' % module)
+        add_def = False
+        add_desc = False
+        begin_desc = False
+        for line in open(file).readlines():
+            if line.startswith('def'):
+                # remove def, and ending :
+                self.content.append({'type': 'module', 'module': module})
+                self.content[-1]['Name'] = line[4:].split('(')[0]
+                self.content[-1]['ignore'] = self.content[-1]['Name'].startswith('_')
+                self.content[-1]['Usage'] = line[4:].strip()
+                self.content[-1]['Description'] = ''
+                if line.strip().endswith(':'):
+                    # remove ending :
+                    self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
+                    add_desc = True
+                    begin_desc = True
+                else:
+                    add_def = True
+            elif add_def:
+                self.content[-1]['Usage'] = line.strip()
+                if line.strip().endswith(':'):
+                    self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
+                    add_desc = True
+                    begin_desc = True
+                    add_def = False
+            elif add_desc:
+                if begin_desc:
+                    if not (line.strip().startswith('"') or line.strip().startswith("'")):
+                        add_desc = False
+                        continue
+                    begin_desc = False
+                self.content[-1]['Description'] += line.strip().strip('"').strip("'") + '\n'
+                if line.endswith('"\n') or line.endswith("'\n"):
+                    add_desc = False
+        print self.content[-1]
+
+
     def latexName(self, name):
         # function name can overload
         uname = None
@@ -672,11 +755,10 @@ class Doxy2SWIG:
         for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] \
                 and 'test' not in x['Name']]:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
-            if entry.has_key('Description') and entry['Description'] != '':
-                print >> out, '\\par\nFunction \\strong{\\texttt{%s}}\n\\par' % self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
-                print >> out, '%s\par' % self.latex_text(entry['Description'])
             if entry.has_key('Usage') and entry['Usage'] != '':
-                print >> out, '\\begin{quote}\\function{%s}\\end{quote}' % self.latex_text(entry['Usage'])
+                print >> out, '\\par\n\\strong{\\texttt{%s}}\n\\par' % self.latex_text(entry['Usage']) #.replace('simuPOP::', '', 1))
+            if entry.has_key('Description') and entry['Description'] != '':
+                print >> out, '%s\par' % self.latex_text(entry['Description'])
             if entry.has_key('Details') and entry['Details'] != '':
                 print >> out, '\\par\n\\strong{Details}\n\\par'
                 print >> out, '    %s\n' % self.latex_text(entry['Details'])
@@ -695,6 +777,45 @@ class Doxy2SWIG:
                 print >> out, '\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
                     (title, label, entry['ExampleFile'].replace('\\', '/'))
             print >> out, '}\n'
+        # then python modules
+        modules = sets.Set(
+            [x['module'] for x in self.content if x['type'] == 'module' and not x['ignore']])
+        for module in modules:
+            # class object
+            mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
+            print >> out, '\\newcommand{\\%sRef}{' % module
+            print >> out, '\n\\subsection{Module \\texttt{%s}\index{module!%s}' % (module, module)
+            print >> out, '}\n\\par %s' % self.latex_text(mod['Description'])
+            # module functions
+            funcs = [x for x in self.content if x['type'] == 'module' and x['module'] == module and not x['ignore']]
+            # sort it
+            funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
+            # print all functions
+            print >> out, '\\par\n\\strong{Module Functions}\n\\par'
+            print >> out, '\\begin{description}'
+            for mem in funcs:
+                if mem.has_key('Usage') and mem['Usage'] != '':
+                    print >> out, '\\item [\\function{%s}] ' % self.latex_text(mem['Usage'])
+                if mem.has_key('Description') and mem['Description'] != '':
+                    print >> out, '%s' % self.latex_text(mem['Description'])
+                if mem.has_key('Details') and mem['Details'] != '':
+                    # if we have short description, use a separate paragraph for details.
+                    if mem.has_key('Description') and mem['Description'] != '':
+                        print >> out, '\\par\n%s\\par' % self.latex_text(mem['Details'])
+                    # otherwise, use details as description
+                    else:
+                        print >> out, '%s' % self.latex_text(mem['Details'])
+                if mem.has_key('Arguments') and mem['Arguments'] != '':
+                    print >> out, '\\begin{description}'
+                    mem['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
+                    for arg in mem['Arguments']:
+                        print >> out, '\\item [{%s}]%s' % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
+                    print >> out, '\\end{description}'
+                if mem.has_key('note') and mem['note'] != '':
+                    print >> out, '\\par\n\\strong{Note:} %s\\par' % self.latex_text(mem['note'])
+            print >> out, '\\end{description}\n}\n'
+
+
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
@@ -824,6 +945,12 @@ xleftmargin=15pt}
         for entry in global_funcs:
              print >> out, r'\%sRef' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
              print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
+        # modules
+        modules = sets.Set(
+            [x['module'] for x in self.content if x['type'] == 'module' and not x['ignore']])
+        for module in modules:
+             print >> out, r'\%sRef' % module
+             print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
         for entry in [x for x in self.content if x['type'] in ['class'] and not x['ignore']]:
              print >> out, r'\%sRef' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
              print >> out, r'\vspace{.1in}\par\rule[.3ex]{\linewidth}{1pt}\par\vspace{0.1in}'
@@ -841,22 +968,8 @@ xleftmargin=15pt}
         fout.close()
 
 
-def scan_module(file):
-    ''' scan a python file, get its definitions, and help information '''
-    # read function definition
-    funcs = []
-    for line in open(file).readlines():
-        if line.startswith('def'):
-            funcs.append(line.split('(')[0].split()[1])
-    module_name = os.path.split(file)[1].split('.')[0]
-    exec('import %s' % module_name)
-    for func in funcs:
-        print eval('%s.%s.__doc__' % (module_name, func))
-    print funcs
-
+       
 if __name__ == '__main__':
-    #scan_module('../src/simuUtil.py')
-    #sys.exit(0)
     if '-h' in sys.argv[1:] or '--help' in sys.argv[1:]:
         print __doc__
         sys.exit(1)
@@ -890,6 +1003,11 @@ if __name__ == '__main__':
     # write interface file to output interface file.
     print 'Writing SWIG interface file to', interface_file
     p.write(interface_file, type='swig')
+    # add some other functions
+    p.scan_interface('../src/simuPOP_common.i')
+    p.scan_module('../src/simuOpt.py')
+    p.scan_module('../src/simuUtil.py')
+    p.scan_module('../src/hapMapUtil.py')
     print 'Writing latex reference file to', latex_file
     p.write(latex_file, type='latex_single')
     # clear unique name
