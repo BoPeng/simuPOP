@@ -816,9 +816,9 @@ Description:
 
 Usage:
 
-    binomialSelection(numOffspring=1., *numOffspringFunc=NULL,
+    binomialSelection(numOffspring=1., numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
-      newSubPopSizeExpr=\"\", *newSubPopSizeFunc=NULL)
+      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None)
 
 Details:
 
@@ -1109,10 +1109,10 @@ Description:
 
 Usage:
 
-    controlledBinomialSelection(loci, alleles, *freqFunc,
-      numOffspring=1., *numOffspringFunc=NULL, maxNumOffspring=0,
+    controlledBinomialSelection(loci, alleles, freqFunc,
+      numOffspring=1., numOffspringFunc=None, maxNumOffspring=0,
       mode=MATE_NumOffspring, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      *newSubPopSizeFunc=NULL)
+      newSubPopSizeFunc=None)
 
 Details:
 
@@ -1201,7 +1201,7 @@ Description:
 
 Usage:
 
-    controlledMating(matingScheme, loci, alleles, *freqFunc,
+    controlledMating(matingScheme, loci, alleles, freqFunc,
       range=0.01)
 
 Arguments:
@@ -1304,10 +1304,10 @@ Description:
 
 Usage:
 
-    controlledRandomMating(loci, alleles, *freqFunc, acceptScheme=0,
-      numOffspring=1., *numOffspringFunc=NULL, maxNumOffspring=0,
+    controlledRandomMating(loci, alleles, freqFunc, acceptScheme=0,
+      numOffspring=1., numOffspringFunc=None, maxNumOffspring=0,
       mode=MATE_NumOffspring, newSubPopSize=[],
-      *newSubPopSizeFunc=NULL, newSubPopSizeExpr=\"\",
+      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
       contWhenUniSex=True)
 
 Details:
@@ -1575,7 +1575,7 @@ Description:
 
 Usage:
 
-    Expression(expr=\"\", stmts=\"\", *locals=NULL)
+    Expression(expr=\"\", stmts=\"\", locals=None)
 
 "; 
 
@@ -2211,18 +2211,18 @@ Example:
 ...     dumper(alleleOnly=True, stage=PrePostMating)])
 individual info: 
 sub population 0:
-   0: MU   2  1  1   0  2  1  2  2 |   0  0  2   2  2  1  2  2 
-   1: FU   2  1  2   2  0  2  2  2 |   0  0  0   0  1  2  2  2 
-   2: MU   2  0  2   2  1  0  0  1 |   2  2  1   2  1  2  2  1 
+   0: MU   0  2  1   0  2  1  2  1 |   2  2  1   2  0  2  1  2 
+   1: FU   2  2  2   0  1  1  0  2 |   2  2  2   0  1  2  1  1 
+   2: FU   2  1  1   2  2  2  1  1 |   2  2  0   0  0  2  2  2 
 End of individual info.
 
 
 No ancenstral population recorded.
 individual info: 
 sub population 0:
-   0: MU   3  2  0   1  5  3  3  3 |   1  0  1   1  3  2  1  3 
-   1: FU   3  2  4   3  0  3  1  3 |   0  1  1   2  2  4  3  3 
-   2: MU   3  0  3   3  3  1  1  2 |   3  3  3   0  0  3  3  4 
+   0: MU   2  3  3   2  3  2  3  2 |   3  3  0   3  1  3  2  1 
+   1: FU   1  3  1   1  2  0  2  3 |   4  0  1   1  2  3  3  2 
+   2: FU   3  0  2   5  3  0  3  4 |   3  5  1   0  2  3  3  4 
 End of individual info.
 
 
@@ -2239,18 +2239,18 @@ True
 ...     dumper(alleleOnly=True, stage=PrePostMating)])
 individual info: 
 sub population 0:
-   0: MU   2  2  1   1  0  0  1  0 |   2  0  2   2  1  1  1  0 
-   1: MU   1  2  1   0  2  2  1  2 |   2  1  2   2  0  1  0  1 
-   2: FU   2  2  0   2  1  2  2  0 |   2  1  1   1  2  2  0  2 
+   0: FU   1  1  2   2  1  0  2  0 |   2  1  1   1  2  2  2  2 
+   1: FU   2  1  2   1  2  2  2  2 |   1  2  1   1  1  2  1  2 
+   2: FU   2  2  2   1  2  2  2  1 |   2  2  2   2  2  2  2  0 
 End of individual info.
 
 
 No ancenstral population recorded.
 individual info: 
 sub population 0:
-   0: MU   5  0  4   6  4  0  0  0 |   7  3  7   0  6  0  6  0 
-   1: MU   4  6  4   4  5  6  0  0 |   7  0  5   5  3  5  0  6 
-   2: FU   0  7  0   0  4  6  6  5 |   7  4  0   5  0  0  5  0 
+   0: FU   0  0  7   7  0  5  7  5 |   0  4  6   6  0  0  6  7 
+   1: FU   0  4  0   4  0  7  0  7 |   4  6  4   5  6  6  4  7 
+   2: FU   7  5  5   6  7  0  5  6 |   7  0  5   5  7  5  0  5 
 End of individual info.
 
 
@@ -2271,9 +2271,8 @@ Description:
 Usage:
 
     gsmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5, p=0,
-      *func=NULL, output=\">\", outputExpr=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[])
+      func=None, output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
 Details:
 
@@ -2394,9 +2393,9 @@ Description:
 
 Usage:
 
-    ifElse(cond, *ifOp=NULL, *elseOp=NULL, output=\">\",
-      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+    ifElse(cond, ifOp=None, elseOp=None, output=\">\", outputExpr=\"\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
 
 Arguments:
 
@@ -2502,7 +2501,7 @@ Details:
     genotype is arranged as  1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1
     where x-y-z represents ploidy x chromosome y and locus z. An
     allele 2-1-2 can be accessed by allele(4) (by absolute index),
-    allele(2, 1) (by index and ploidy) or allele(1, 1, 0) (by index,
+    allele(1, 1) (by index and ploidy) or allele(1, 1, 0) (by index,
     ploidy and chromosome).
 
 Details:
@@ -2519,7 +2518,7 @@ Details:
     genotype is arranged as  1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1
     where x-y-z represents ploidy x chromosome y and locus z. An
     allele 2-1-2 can be accessed by allele(4) (by absolute index),
-    allele(2, 1) (by index and ploidy) or allele(1, 1, 0) (by index,
+    allele(1, 1) (by index and ploidy) or allele(1, 1, 0) (by index,
     ploidy and chromosome).
 
 "; 
@@ -2534,6 +2533,42 @@ Description:
 Usage:
 
     individual()
+
+Example:
+
+>>> pop = population(500, loci=[2, 5, 10])
+>>> # get an individual
+>>> ind = pop.individual(9)
+>>> # oops, wrong index
+>>> ind = pop.individual(3)
+>>> # you can access genotypic structure info
+>>> print ind.ploidy()
+2
+>>> print ind.numChrom()
+3
+>>> # ...
+>>> # as well as genotype
+>>> print ind.allele(1) 
+0
+>>> ind.setAllele(1,5)
+>>> print ind.allele(1)
+0
+>>> # you can also use an overloaded function
+>>> # with a second parameter being the ploidy index
+>>> print ind.allele(1,1) # second locus at the second copy of chromosome
+0
+>>> # other information
+>>> print ind.affected()
+False
+>>> print ind.affectedChar()
+U
+>>> ind.setAffected(1)
+>>> print ind.affectedChar()
+A
+>>> print ind.sexChar()
+M
+>>>
+
 
 "; 
 
@@ -2565,7 +2600,7 @@ Usage:
 
 Description:
 
-    return an editable array (a Python list of length
+    return an editable array (a carray of length
     totNumLoci()*ploidy()) of genotypes of an  individual
 
 Usage:
@@ -2590,7 +2625,8 @@ Details:
 
 Description:
 
-    return only the p-th copy of the chromosomes
+    return a carray with the genotype of the p-th copy of the
+    chromosomes
 
 Usage:
 
@@ -2602,7 +2638,8 @@ Usage:
 
 Description:
 
-    return only the ch-th chromosome of the p-th copy
+    return a carray with the genotype of the ch-th chromosome of the
+    p-th copy
 
 Usage:
 
@@ -2614,8 +2651,8 @@ Usage:
 
 Description:
 
-    return an editable array of all information fields (a Python list
-    of length infosSize())
+    return a carray of all information fields (of size infosSize()) of
+    this  individual
 
 Usage:
 
@@ -2778,7 +2815,6 @@ Arguments:
 Description:
 
     return the sex of an  individual, 1 for males and 2 for females.
-    However, this is not guranteed so please use  sexChar().
 
 Usage:
 
@@ -2802,8 +2838,7 @@ Usage:
 
 Description:
 
-    set the sex. You should use setSex(Male) or setSex(Female) instead
-    of 1 and 2.
+    set sex. sex can be Male of Female.
 
 Usage:
 
@@ -3029,7 +3064,7 @@ Description:
 
 Usage:
 
-    individualIterator(*pop, s, e)
+    individualIterator(pop, s, e)
 
 "; 
 
@@ -3147,7 +3182,7 @@ Description:
 
 Usage:
 
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
+    x.applyDuringMating(pop, offspring, dad=None, mom=None)
 
 "; 
 
@@ -3255,12 +3290,12 @@ Example:
 ...   ])
 individual info: 
 sub population 0:
-   0: FU 10000 1111111 | 11111 1111111 
-   1: FU 10000 1101101 | 11111 1111111 
+   0: MU 11111 1011101 | 10111 1111011 
+   1: FU 10111 1111011 | 11111 1011101 
 sub population 1:
-   2: MU 00000 0000000 | 00000 0001000 
-   3: MU 00001 0000000 | 00000 0000100 
-   4: MU 00000 0000100 | 00001 0111000 
+   2: FU 00000 0000010 | 10010 0100010 
+   3: MU 00000 0000010 | 01100 0000000 
+   4: FU 00000 0000100 | 01000 0100000 
 End of individual info.
 
 
@@ -3415,11 +3450,11 @@ Example:
 individual info: 
 sub population 0:
    0: MU   3  3  3  3  3   2  2  2  2  2  2  2 |   1  1  1  1  1   4  4  4  4  4  4  4 
-   1: FU   3  3  3  3  3   4  4  4  4  4  4  4 |   1  1  1  1  1   2  2  2  2  2  2  2 
+   1: FU   3  3  3  3  3   2  2  2  2  2  2  2 |   1  1  1  1  1   2  2  2  2  2  2  2 
 sub population 1:
-   2: MU   1  1  1  1  1   4  4  4  4  4  4  4 |   3  3  3  3  3   4  4  4  4  4  4  4 
-   3: FU   1  1  1  1  1   4  4  4  4  4  4  4 |   3  3  3  3  3   4  4  4  4  4  4  4 
-   4: MU   3  3  3  3  3   4  4  4  4  4  4  4 |   3  3  3  3  3   4  4  4  4  4  4  4 
+   2: FU   3  3  3  3  3   2  2  2  2  2  2  2 |   1  1  1  1  1   4  4  4  4  4  4  4 
+   3: MU   3  3  3  3  3   2  2  2  2  2  2  2 |   1  1  1  1  1   2  2  2  2  2  2  2 
+   4: MU   1  1  1  1  1   4  4  4  4  4  4  4 |   3  3  3  3  3   2  2  2  2  2  2  2 
 End of individual info.
 
 
@@ -3694,11 +3729,11 @@ Example:
 ...     dumper(alleleOnly=True)])
 individual info: 
 sub population 0:
-   0: MU   1  0  7   0  0  0  0  0 |   0  0  7   0  0  0  9  0 
-   1: MU   0  0  0   0  0  0  0  0 |   7  0  9   0  0  0  0  0 
-   2: MU   0  0  0   0  0  0  0  0 |   0  0  0   0  0  0  6  0 
-   3: MU   0  0  6   0  0  0  5  0 |   0  0  0   0  0  0  0  0 
-   4: MU   0  0  4   0  0  0  1  0 |   6  0  4   0  0  0  0  0 
+   0: MU   0  0  0   0  0  0  0  0 |   0  0  6   0  0  0  1  0 
+   1: MU   0  0  1   0  0  0  0  0 |   0  0  8   0  0  0  0  0 
+   2: MU   0  0  8   0  0  0  0  0 |   0  0  1   0  0  0  0  0 
+   3: MU   6  0  2   0  0  0  7  0 |   0  0  0   0  0  0  5  0 
+   4: MU   0  0  0   0  0  0  5  0 |   0  0  8   0  0  0  1  0 
 End of individual info.
 
 
@@ -3960,7 +3995,7 @@ Description:
 
 Usage:
 
-    x.penet(*ind)
+    x.penet(ind)
 
 "; 
 
@@ -4062,7 +4097,7 @@ Description:
 
 Usage:
 
-    x.penet(*ind)
+    x.penet(ind)
 
 "; 
 
@@ -4175,7 +4210,7 @@ Description:
 
 Usage:
 
-    x.qtrait(*ind)
+    x.qtrait(ind)
 
 "; 
 
@@ -4280,7 +4315,7 @@ Description:
 
 Usage:
 
-    x.indFitness(*ind, gen)
+    x.indFitness(ind, gen)
 
 "; 
 
@@ -4402,7 +4437,7 @@ Description:
 
 Usage:
 
-    x.qtrait(*ind)
+    x.qtrait(ind)
 
 "; 
 
@@ -4522,7 +4557,7 @@ Description:
 
 Usage:
 
-    x.indFitness(*ind, gen)
+    x.indFitness(ind, gen)
 
 "; 
 
@@ -4552,9 +4587,9 @@ Details:
     population. It must be provided when a  simulator is created.
     Mating can perform the following tasks:
     * change population/subpopulation sizes;
-    * randomly select parent(s) to generate offspring to fill the next
-    generation;
-    * during-mating operators are applied to all offspring;
+    * randomly select parent(s) to generate offspring to populate the
+    offspring generation;
+    * apply during-mating operators;
     * apply selection if applicable.
 
 Details:
@@ -4563,9 +4598,9 @@ Details:
     population. It must be provided when a  simulator is created.
     Mating can perform the following tasks:
     * change population/subpopulation sizes;
-    * randomly select parent(s) to generate offspring to fill the next
-    generation;
-    * during-mating operators are applied to all offspring;
+    * randomly select parent(s) to generate offspring to populate the
+    offspring generation;
+    * apply during-mating operators;
     * apply selection if applicable.
 
 "; 
@@ -4576,29 +4611,29 @@ Details:
 
 Description:
 
-    create a  mating scheme
+    create a  mating scheme (do not use this base  mating scheme, use
+    one of its derived classes instead)
 
 Usage:
 
-    mating(numOffspring=1.0, *numOffspringFunc=NULL,
+    mating(numOffspring=1.0, numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
-      newSubPopSizeExpr=\"\", *newSubPopSizeFunc=NULL)
+      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None)
 
 Details:
 
     By default, a  mating scheme keeps a constant  population size,
-    generate one offspring per  mating event. These can be changed
-    using a variety of parameters. First, newSubPopSize,
-    newSubPopSizeExpr and newSubPopSizeFunc can be used to specify
-    subpopulation sizes of the offspring generation. mode,
-    numOffspring, maxNumOffspring can be used to specify how many
-    offspring will be produced for each  mating event. This mode
-    parameter can be one of
-    * MATE_NumOffspring: a fixed number of offspring for all families
-    at this generation. If numOffspring is given, all generations use
-    this fixed number. If numOffspringFunc is given, the number of
-    offspring at each generation is determined by the value returned
-    from this function.
+    generates one offspring per  mating event. These can be changed
+    using certain parameters. newSubPopSize, newSubPopSizeExpr and
+    newSubPopSizeFunc can be used to specify subpopulation sizes of
+    the offspring generation. mode, numOffspring, maxNumOffspring can
+    be used to specify how many offspring will be produced at each
+    mating event. This mode parameter can be one of
+    * MATE_NumOffspring: a fixed number of offspring at all  mating
+    events at this generation. If numOffspring is given, all
+    generations use this fixed number. If numOffspringFunc is given,
+    the number of offspring at each generation is determined by the
+    value returned from this function.
     * MATE_NumOffspringEachFamily: each family can have its own number
     of offspring. Usually, numOffspringFunc is used to determine the
     number of offspring of each family. If numOffspring is used,
@@ -4619,18 +4654,17 @@ Details:
 Details:
 
     By default, a  mating scheme keeps a constant  population size,
-    generate one offspring per  mating event. These can be changed
-    using a variety of parameters. First, newSubPopSize,
-    newSubPopSizeExpr and newSubPopSizeFunc can be used to specify
-    subpopulation sizes of the offspring generation. mode,
-    numOffspring, maxNumOffspring can be used to specify how many
-    offspring will be produced for each  mating event. This mode
-    parameter can be one of
-    * MATE_NumOffspring: a fixed number of offspring for all families
-    at this generation. If numOffspring is given, all generations use
-    this fixed number. If numOffspringFunc is given, the number of
-    offspring at each generation is determined by the value returned
-    from this function.
+    generates one offspring per  mating event. These can be changed
+    using certain parameters. newSubPopSize, newSubPopSizeExpr and
+    newSubPopSizeFunc can be used to specify subpopulation sizes of
+    the offspring generation. mode, numOffspring, maxNumOffspring can
+    be used to specify how many offspring will be produced at each
+    mating event. This mode parameter can be one of
+    * MATE_NumOffspring: a fixed number of offspring at all  mating
+    events at this generation. If numOffspring is given, all
+    generations use this fixed number. If numOffspringFunc is given,
+    the number of offspring at each generation is determined by the
+    value returned from this function.
     * MATE_NumOffspringEachFamily: each family can have its own number
     of offspring. Usually, numOffspringFunc is used to determine the
     number of offspring of each family. If numOffspring is used,
@@ -4673,6 +4707,48 @@ Arguments:
                     population size and return an array of
                     subpopulation sizes. This is usually easier to use
                     than its expression version of this parameter.
+
+Example:
+
+>>> # arbitrary demographic model
+>>> def lin_inc(gen, oldsize=[]):
+...     return [10+gen]*5
+... 
+>>> simu = simulator(
+...     population(subPop=[5]*5, loci=[1]),
+...     randomMating(newSubPopSizeFunc=lin_inc)
+... )
+>>> simu.evolve(
+...     ops = [
+...         stat(popSize=True),
+...         pyEval(r'\"%d %d\\\\n\"%(gen, subPop[0][\"popSize\"])'),
+...     ],
+...     end=5
+... )
+0 10
+1 11
+2 12
+3 13
+4 14
+5 15
+True
+>>> 
+>>> #
+>>> # control the number of offspring per mating event
+>>> # famSizes is only defined when DBG_MATING is defined
+>>> TurnOnDebug(DBG_MATING)
+>>> simu = simulator(population(50, loci=[1]),
+...     randomMating(numOffspring=2, 
+...         maxNumOffspring=5,
+...         mode=MATE_UniformDistribution))
+>>> simu.step(ops=[])
+True
+>>> print simu.population(0).dvars().famSizes
+[5, 3, 2, 5, 2, 2, 5, 3, 3, 3, 4, 3, 2, 5, 3]
+>>> TurnOffDebug(DBG_MATING)
+Debug code DBG_MATING is turned off. cf. ListDebugCode(), TurnOnDebug().
+>>>
+
 
 "; 
 
@@ -5095,7 +5171,7 @@ Description:
 
 Usage:
 
-    x.penet(*ind)
+    x.penet(ind)
 
 "; 
 
@@ -5218,7 +5294,7 @@ Description:
 
 Usage:
 
-    x.qtrait(*ind)
+    x.qtrait(ind)
 
 "; 
 
@@ -5338,7 +5414,7 @@ Description:
 
 Usage:
 
-    x.indFitness(*ind, gen)
+    x.indFitness(ind, gen)
 
 "; 
 
@@ -5427,7 +5503,7 @@ Arguments:
                     when single rate is specified. Default to all
                     loci.
     maxAllele:      maximum allowable allele. Interpreted by each sub
-                    mutaor class. Default to pop.maxAllele().
+                    mutaor class. Default to  pop.maxAllele().
 
 "; 
 
@@ -5587,11 +5663,13 @@ Description:
 
 Usage:
 
-    noMating()
+    noMating(numOffspring=1.0, numOffspringFunc=None,
+      maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
+      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None)
 
 Note:
 
-    There is no new subPopsize parameter.
+    All parameters are ignored!
 
 "; 
 
@@ -5830,7 +5908,7 @@ Description:
 
 Usage:
 
-    x.generateOffspring(pop, *dad, *mom, numOff, offBegin)
+    x.generateOffspring(pop, dad, mom, numOff, offBegin)
 
 Details:
 
@@ -5852,7 +5930,7 @@ Description:
 
 Usage:
 
-    x.copyOffspring(pop, *par, numOff, offBegin)
+    x.copyOffspring(pop, par, numOff, offBegin)
 
 Details:
 
@@ -6135,7 +6213,7 @@ Description:
 
 Usage:
 
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
+    x.applyDuringMating(pop, offspring, dad=None, mom=None)
 
 "; 
 
@@ -6417,7 +6495,7 @@ Description:
 
 Usage:
 
-    x.penet(*)
+    x.penet()
 
 "; 
 
@@ -6442,7 +6520,7 @@ Description:
 
 Usage:
 
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
+    x.applyDuringMating(pop, offspring, dad=None, mom=None)
 
 "; 
 
@@ -6601,61 +6679,61 @@ Description:
 
 Details:
 
-    simuPOP populations consists of individuals of the same genotypic
-    structure, which refers to the number of chromosomes, number and
-    position of loci on each chromosome etc. The most important
-    components of a  population are:
+    A  simuPOP population consists of individuals of the same
+    genotypic structure, which refers to the number of chromosomes,
+    number and position of loci on each chromosome etc. The most
+    important components of a  population are:
     * subpopulation. A  population is divided into subpopulations
     (unstructured  population has a single subpopulation, which is the
     whole  population itself). Subpopulation structure limits the
-    usually random exchange of genotypes between individuals
+    usually random exchange of genotypes between individuals by
     disallowing  mating between individuals from different
     subpopulations. In the presence of subpopualtion structure,
     exchange of genetic information across subpopulations can only be
     done through migration. Note that in  simuPOP there is no sub-
     subpopulation or family in subpopulations.
     * variables. Every  population has its own variable space, or
-    localnamespaces in  simuPOP term. This namespace is a Python
+    local namespace in  simuPOP term. This namespace is a Python
     dictionary that is attached to each  population and can be exposed
     to the users through  vars() or dvars() function. Many functions
-    and operators work and store their results in these namespaces.
-    For example, function Stat set variables such as alleleFreq[loc],
-    and you can access it via pop.dvars().alleleFreq[loc][allele].
+    and operators work and store their results in this namespace. For
+    example, function Stat sets variables such as alleleFreq[loc], and
+    you can access it via pop.dvars().alleleFreq[loc][allele].
     * ancestral generations. A  population can save arbitrary number
     of ancestral generations. During evolution, the latest several (or
-    all) ancestral generations are saved. Functions??? to make a
-    certain ancestral generation current are provided so that one can
-    examine and modify ancestral generations. Other important concepts
-    like information fields are explained in class  individual???.
+    all) ancestral generations are saved. Functions to switch between
+    ancestral generations are provided so that one can examine and
+    modify ancestral generations. Other important concepts like
+    information fields are explained in class  individual.
 
 Details:
 
-    simuPOP populations consists of individuals of the same genotypic
-    structure, which refers to the number of chromosomes, number and
-    position of loci on each chromosome etc. The most important
-    components of a  population are:
+    A  simuPOP population consists of individuals of the same
+    genotypic structure, which refers to the number of chromosomes,
+    number and position of loci on each chromosome etc. The most
+    important components of a  population are:
     * subpopulation. A  population is divided into subpopulations
     (unstructured  population has a single subpopulation, which is the
     whole  population itself). Subpopulation structure limits the
-    usually random exchange of genotypes between individuals
+    usually random exchange of genotypes between individuals by
     disallowing  mating between individuals from different
     subpopulations. In the presence of subpopualtion structure,
     exchange of genetic information across subpopulations can only be
     done through migration. Note that in  simuPOP there is no sub-
     subpopulation or family in subpopulations.
     * variables. Every  population has its own variable space, or
-    localnamespaces in  simuPOP term. This namespace is a Python
+    local namespace in  simuPOP term. This namespace is a Python
     dictionary that is attached to each  population and can be exposed
     to the users through  vars() or dvars() function. Many functions
-    and operators work and store their results in these namespaces.
-    For example, function Stat set variables such as alleleFreq[loc],
-    and you can access it via pop.dvars().alleleFreq[loc][allele].
+    and operators work and store their results in this namespace. For
+    example, function Stat sets variables such as alleleFreq[loc], and
+    you can access it via pop.dvars().alleleFreq[loc][allele].
     * ancestral generations. A  population can save arbitrary number
     of ancestral generations. During evolution, the latest several (or
-    all) ancestral generations are saved. Functions??? to make a
-    certain ancestral generation current are provided so that one can
-    examine and modify ancestral generations. Other important concepts
-    like information fields are explained in class  individual???.
+    all) ancestral generations are saved. Functions to switch between
+    ancestral generations are provided so that one can examine and
+    modify ancestral generations. Other important concepts like
+    information fields are explained in class  individual.
 
 Note:
 
@@ -6681,21 +6759,21 @@ Usage:
 
 Details:
 
-    FIXME: Details of constructure is missing. ???This is techniquely
-    the __init__ function of the  population object.
+    This is techniquely the __init__ function of the  population
+    object.
 
 Details:
 
-    FIXME: Details of constructure is missing. ???This is techniquely
-    the __init__ function of the  population object.
+    This is techniquely the __init__ function of the  population
+    object.
 
 Arguments:
 
     size:           population size. Can be ignored if subPop is
                     specified. In that case, size is the sum of
                     subPop. Default to 0.
-    ploidy:         number of sets of chromosomes. Default to 2
-                    (diploid).
+    ploidy:         number of sets of homologous copies of
+                    chromosomes. Default to 2 (diploid).
     loci:           an array of numbers of loci on each chromosome.
                     The length of parameter loci determines the number
                     of chromosomes. Default to [1], meaning one
@@ -6716,12 +6794,12 @@ Arguments:
                     example, you can use lociPos=[1,2,3] when loci=[3]
                     or lociPos=[[1,2],[1.5,3,5]] for loci=[2,3].
                     simuPOP does not assume a unit for these
-                    locations, although they are usually intepreted as
+                    positions, although they are usually intepreted as
                     centiMorgans. The default values are 1, 2, etc. on
                     each chromosome.
     subPop:         an array of subpopulation sizes. Default value is
                     [size] which means a single subpopulation of the
-                    whole  population. If both size and subPop are are
+                    whole  population. If both size and subPop are
                     provided, subPop should add up to size.
     ancestralDepth: number of most recent ancestral generations to
                     keep during evolution. Default to 0, which means
@@ -6729,40 +6807,34 @@ Arguments:
                     can set it to a positive number m to keep the
                     latest m generations in the  population, or -1 to
                     keep all ancestral populations. Note that keeping
-                    track of all ancestral populations may quickly
+                    track of all ancestral generations may quickly
                     exhaust your computer RAM. If you really need to
                     do that, use  savePopulation operator to save each
                     generation to a file is a much better choice.
-    alleleNames:    an array of allele names. The first element should
-                    be given to invalid/unknown allele. For example,
-                    for a locus with alleles A,C,T,G, you can specify
-                    alleleNames as ('_','A','C','T','G'). Note that
-                    simuPOP uses 1,2,3,4 internally and these names
-                    will only be used for display purpose.
+    alleleNames:    an array of allele names. For example, for a locus
+                    with alleles A,C,T,G, you can specify alleleNames
+                    as ('A','C','T','G').
     lociNames:      an array or a matrix (separated by chromosomes) of
-                    names for each loci. Default to \"locX-X\" where X-X
-                    is a chromosome-loci index starting from 1.
-    maxAllele:      maximum allele number. Default to the max allowed
-                    allele states of current library (standard or long
-                    allele version) maximum allele state for the whole
-                    population. This will set a cap for all loci. For
-                    individual locus, you can specify maxAllele in
-                    mutation models, which can be smaller than global
-                    maxAllele but not larger. Note that this number is
-                    the number of allele states minus 1 since allele
+                    names for each locus. Default to \"locX-Y\" where X
+                    is chromosome index and Y is locus number, both
+                    starting from 1.
+    maxAllele:      maximum allele number. Default to the maximum
+                    allowed allele state of the current library. This
+                    will set a cap for all loci. For  individual
+                    locus, you can specify maxAllele in mutation
+                    models, which can be smaller than global maxAllele
+                    but not larger. Note that this number is the
+                    number of allele states minus 1 since allele
                     number starts from 0.
     infoFields:     name of information fields that will be attached
                     to each  individual. For example, if you need to
-                    record the parents of each  individual you will
-                    need two, if you need to record the age of
-                    individual, you need an additional one. Other
-                    possibilities include offspring IDs etc. Note that
-                    you have to plan this ahead of time since, for
-                    example,  tagger will need to know what info unit
-                    to use. Default to none.
+                    record the parents of each  individual using
+                    operator \\c parentTagger(), you will need two
+                    fields father_idx and mother_idx.
 
 Example:
 
+>>> # use of population function
 >>> # a Wright-Fisher population
 >>> WF = population(size=100, ploidy=1, loci=[1])
 >>> 
@@ -6770,12 +6842,77 @@ Example:
 >>> # there are two chromosomes with 5 and 7 loci respectively
 >>> pop = population(size=10, ploidy=2, loci=[5, 7], subPop=[2, 8])
 >>> 
->>> # a population with SNP markers (with names A,C,T,G
+>>> # a population with SNP markers (with names A,C,T,G)
 >>> # range() are python functions
 >>> pop = population(size=5, ploidy=2, loci=[5,10],
 ...     lociPos=[range(0,5),range(0,20,2)],
 ...     alleleNames=['A','C','T','G'],
 ...     subPop=[2,3], maxAllele=3)
+>>> 
+>>> #
+>>> # population structure functions
+>>> print pop.popSize()
+5
+>>> print pop.numSubPop()
+2
+>>> print pop.subPopSize(0)
+2
+>>> print pop.subPopSizes()
+(2, 3)
+>>> print pop.subPopBegin(1)
+2
+>>> print pop.subPopEnd(1)
+5
+>>> print pop.subPopIndPair(3)
+(1, 1)
+>>> print pop.absIndIndex(1,1)
+3
+>>> 
+>>> #
+>>> # functions of setting population structure
+>>> pop.setIndSubPopID([1,2,2,3,1])
+>>> pop.setSubPopByIndID()
+>>> pop.removeLoci(keep=range(2,7))
+>>> Dump(pop)
+Ploidy:         	2
+Number of chrom:	2
+Number of loci: 	3 2 
+Maximum allele state:	3
+Loci positions: 
+		2 3 4 
+		0 2 
+Loci names: 
+		loc1-3 loc1-4 loc1-5 
+		loc2-1 loc2-2 
+population size:	5
+Number of subPop:	4
+Subpop sizes:   	0 2 2 1 
+Number of ancestral populations:	0
+individual info: 
+sub population 1:
+   0: MU AAA AA | AAA AA 
+   1: MU AAA AA | AAA AA 
+sub population 2:
+   2: MU AAA AA | AAA AA 
+   3: MU AAA AA | AAA AA 
+sub population 3:
+   4: MU AAA AA | AAA AA 
+End of individual info.
+
+
+No ancenstral population recorded.
+>>> 
+>>> #
+>>> # save and load population
+>>> # save it in various formats, default format is \"txt\"
+>>> pop = population(1000, loci=[2, 5, 10])
+>>> pop.savePopulation(\"pop.txt\")
+>>> pop.savePopulation(\"pop.txt\", compress=False)
+>>> pop.savePopulation(\"pop.xml\", format=\"xml\")
+>>> pop.savePopulation(\"pop.bin\", format=\"bin\")
+>>> 
+>>> # load it in another population
+>>> pop1 = LoadPopulation(\"pop.xml\", format=\"xml\")
 >>>
 
 
@@ -6793,6 +6930,18 @@ Description:
 Usage:
 
     x.clone(keepAncestralPops=-1)
+
+Details:
+
+    This function by default copies all ancestral generations, but you
+    can copy only one (current, keepAncestralPops=0), or specified
+    number of ancestral generations.
+
+Details:
+
+    This function by default copies all ancestral generations, but you
+    can copy only one (current, keepAncestralPops=0), or specified
+    number of ancestral generations.
 
 "; 
 
@@ -6910,7 +7059,7 @@ Usage:
 
 Description:
 
-    obtain total  population size
+    total  population size
 
 Usage:
 
@@ -6951,15 +7100,11 @@ Usage:
 
 Description:
 
-    index of the first  individual of a subpopulation
+    index of the first  individual of a subpopulation subPop
 
 Usage:
 
     x.subPopBegin(subPop)
-
-Arguments:
-
-    subPop:         subpopulation index
 
 "; 
 
@@ -6968,21 +7113,11 @@ Arguments:
 Description:
 
     return the value of the index of the last  individual of a
-    subpopulation plus 1
+    subpopulation subPop plus 1
 
 Usage:
 
     x.subPopEnd(subPop)
-
-Arguments:
-
-    subPop:         subpopulation index
-
-Note:
-
-    As with all ...End functions, the returning index is out of the
-    range so that the actual range is [xxxBegin, xxxEnd). This agrees
-    with all STL conventions and Python range.
 
 "; 
 
@@ -7021,6 +7156,16 @@ Description:
 Usage:
 
     x.individuals()
+
+Details:
+
+    Typical usage is
+    for ind in pop.individuals():
+
+Details:
+
+    Typical usage is
+    for ind in pop.individuals():
 
 "; 
 
@@ -7087,20 +7232,20 @@ Details:
 
     Return an editable array of all genotypes of the  population. You
     need to know how these genotypes are organized to safely
-    read/write genotype directly. Individuals will be in order before
-    exposing their genotypes.
+    read/write genotype directly.
 
 Details:
 
     Return an editable array of all genotypes of the  population. You
     need to know how these genotypes are organized to safely
-    read/write genotype directly. Individuals will be in order before
-    exposing their genotypes.
+    read/write genotype directly.
 
 Arguments:
 
-    order:          if order is true, respect order; otherwise, do not
-                    repect  population structure.
+    order:          if order is true, individuals will be ordered such
+                    that pop.individual(x). arrGenotype() ==
+                    pop.arrGenotype()[x*pop. genoSize():(x+1)*pop.
+                    genoSize()].
 
 "; 
 
@@ -7108,7 +7253,7 @@ Arguments:
 
 Description:
 
-    get the whole genotypes
+    get the whole genotypes of individuals in a subpopulation
 
 Usage:
 
@@ -7116,19 +7261,16 @@ Usage:
 
 Details:
 
-    Return an editable array of all genotype of a subpopulation.
-    Individuals will be in order before exposing their genotypes.
+    Return an editable array of all genotype in a subpopulation.
 
 Details:
 
-    Return an editable array of all genotype of a subpopulation.
-    Individuals will be in order before exposing their genotypes.
+    Return an editable array of all genotype in a subpopulation.
 
 Arguments:
 
     subPop:         index of subpopulation (start from 0)
-    order:          if order is true, keep order; otherwise, respect
-                    subpop structure.
+    order:          if order is true, individuals will be ordered.
 
 "; 
 
@@ -7164,7 +7306,7 @@ Arguments:
 Description:
 
     set subpopulation ID of each  individual with their current
-    subpopulation ID???
+    subpopulation ID
 
 Usage:
 
@@ -7307,22 +7449,14 @@ Details:
 
 Description:
 
-    remove individuals
+    remove individuals. If a valid subPop is given, remove individuals
+    from this subpopulation. Indexes in inds will be treated as
+    relative indexes.
 
 Usage:
 
     x.removeIndividuals(inds=[], subPop=-1,
       removeEmptySubPops=False)
-
-Details:
-
-    If a valid subPop is given, remove individuals from this
-    subpopulation.
-
-Details:
-
-    If a valid subPop is given, remove individuals from this
-    subpopulation.
 
 "; 
 
@@ -7340,15 +7474,19 @@ Details:
 
     Merge subpopulations, the first subpopulation ID (the first one in
     array subPops) will be used as the ID of the new subpopulation.
-    That is to say, all subpopulations will take the ID of the first
-    one.
+    That is to say, all merged subpopulations will take the ID of the
+    first one. The subpopulation ID of the empty subpopulations will
+    be kept (so that other subpopulations are unaffected, unless they
+    are removed by removeEmptySubPops = True).
 
 Details:
 
     Merge subpopulations, the first subpopulation ID (the first one in
     array subPops) will be used as the ID of the new subpopulation.
-    That is to say, all subpopulations will take the ID of the first
-    one.
+    That is to say, all merged subpopulations will take the ID of the
+    first one. The subpopulation ID of the empty subpopulations will
+    be kept (so that other subpopulations are unaffected, unless they
+    are removed by removeEmptySubPops = True).
 
 "; 
 
@@ -7369,7 +7507,7 @@ Details:
     subpopulations of the merged populations are kept. I.e., if you
     merge two populations with one subpopulation, the resulting
     population will have two subpopulations. All ancestral generations
-    are also merged.
+    are also merged by default.
 
 Details:
 
@@ -7378,7 +7516,7 @@ Details:
     subpopulations of the merged populations are kept. I.e., if you
     merge two populations with one subpopulation, the resulting
     population will have two subpopulations. All ancestral generations
-    are also merged.
+    are also merged by default.
 
 Arguments:
 
@@ -7387,7 +7525,7 @@ Arguments:
                     populations. Because this parameter will be used
                     for all ancestral generations, it may fail if
                     ancestral generations have different sizes. To
-                    avoid this problem, you may run mergePopulation
+                    avoid this problem, you can run mergePopulation
                     without this parameter, and then adjust
                     subpopulation sizes generation by generation.
     keepAncestralPops:ancestral populations to merge, default to all
@@ -7414,12 +7552,12 @@ Details:
 
     Two populations should have the same number of individuals. This
     also holds for any ancestral generations. By default, chromosomes
-    of pop are added to the current  population. That is to say,
-    chromosomes from pop is added, as new chromosomes to this
-    populaton. You can change this arrangement in two ways
-    * specify new chromosome structure using parameter newLoci. loci
-    from new and old  population are still in their original order,
-    but chromosome number and position can be changed in this way.
+    of pop are appended to the current  population. You can change
+    this arrangement in two ways
+    * specify new chromosome structure using parameter newLoci and
+    newLociPos. Loci from new and old populations are still in their
+    original order, but chromosome number and positions can be changed
+    in this way.
     * specify byChromosome=true so that chromosomes will be merged one
     by one. In this case, loci position of two popualtions are
     important because loci will be arranged in the order of loci
@@ -7430,12 +7568,12 @@ Details:
 
     Two populations should have the same number of individuals. This
     also holds for any ancestral generations. By default, chromosomes
-    of pop are added to the current  population. That is to say,
-    chromosomes from pop is added, as new chromosomes to this
-    populaton. You can change this arrangement in two ways
-    * specify new chromosome structure using parameter newLoci. loci
-    from new and old  population are still in their original order,
-    but chromosome number and position can be changed in this way.
+    of pop are appended to the current  population. You can change
+    this arrangement in two ways
+    * specify new chromosome structure using parameter newLoci and
+    newLociPos. Loci from new and old populations are still in their
+    original order, but chromosome number and positions can be changed
+    in this way.
     * specify byChromosome=true so that chromosomes will be merged one
     by one. In this case, loci position of two popualtions are
     important because loci will be arranged in the order of loci
@@ -7447,16 +7585,17 @@ Arguments:
     newNumLoci:     the new number of loci for the combined genotypic
                     structure.
     newLociPos:     the new loci position if number of loci on each
-                    chromosomes are changed with newNumLoci. On each
-                    chromosome, loci position should in order.
+                    chromosomes are changed with newNumLoci. New loci
+                    positions should be in order on the new
+                    chromosomes.
     byChromosome:   merge chromosome by chromosome, loci are ordered
-                    by loci position default to false.
+                    by loci position Default to False.
 
 Note:
 
     * Information fields are not merged.
-    * All ancestral generations will be merged because all individuals
-    in a  population have to have the same genotypic structure.
+    * All ancestral generations are merged because all individuals in
+    a  population have to have the same genotypic structure.
 
 "; 
 
@@ -7472,28 +7611,27 @@ Usage:
 
 Details:
 
-    Insert loci at some given locations. In an inserted location,
-    alleles will be zero.
+    Insert loci at some given locations. Alleles at inserted loci are
+    initialized with zero allele.
 
 Details:
 
-    Insert loci at some given locations. In an inserted location,
-    alleles will be zero.
+    Insert loci at some given locations. Alleles at inserted loci are
+    initialized with zero allele.
 
 Arguments:
 
     idx:            an array of locus index. The loci will be inserted
                     before each index. If you need to append to the
-                    last locus, please use insertAfterLoci. If your
+                    last locus, use insertAfterLoci instead. If your
                     index is the first locus of a chromosome, the
-                    inserted locus will become the first of that
+                    inserted locus will become the first locus of that
                     chromosome. If you need to insert multiple loci
-                    before a locus, please repeat that locus number.
-    pos:            an array of locus positions. You need to make sure
-                    that the position will make the inserted locus
-                    between adjacent markers.
+                    before a locus, repeat that locus number.
+    pos:            an array of locus positions. The positions of the
+                    appended loci have to be between adjacent markers.
     names:          an array of locus names. If this parameter is not
-                    given, some unique names such as \"insX_X\", will be
+                    given, some unique names such as \"insX_Y\" will be
                     given.
 
 "; 
@@ -7532,28 +7670,28 @@ Usage:
 
 Details:
 
-    Append loci at some given locations. In an appended location,
-    alleles will be zero.
+    Append loci at some given locations. Alleles at inserted loci are
+    initialized with zero allele.
 
 Details:
 
-    Append loci at some given locations. In an appended location,
-    alleles will be zero.
+    Append loci at some given locations. Alleles at inserted loci are
+    initialized with zero allele.
 
 Arguments:
 
     idx:            an array of locus index. The loci will be added
                     after each index. If you need to append to the
-                    first locus, please use insertBeforeLoci. If your
-                    index is the last locus of a chromosome, the
-                    appended locus will become the last of that
-                    chromosome. If you need to append multiple loci
-                    after a locus, please repeat that locus number.
-    pos:            an array of locus positions. You need to make sure
-                    that the position will make the appended locus
-                    between adjacent markers.
+                    first locus of a chromosome, use insertBeforeLoci
+                    instead. If your index is the last locus of a
+                    chromosome, the appended locus will become the
+                    last locus of that chromosome. If you need to
+                    append multiple loci after a locus, repeat that
+                    locus number.
+    pos:            an array of locus positions. The positions of the
+                    appended loci have to be between adjacent markers.
     names:          an array of locus names. If this parameter is not
-                    given, some unique names such as \"insX_X\", will be
+                    given, some unique names such as \"insX_Y\" will be
                     given.
 
 "; 
@@ -7643,19 +7781,13 @@ Usage:
 
 Details:
 
-    Form a new  population according to the parameter information.
-    Information can be given directly as
-    * keepAncestralPops=-1: keep all
-    * keepAncestralPops=0: only current
-    * keepAncestralPops=1: keep one ...
+    Form a new  population according to  individual subpopulation ID.
+    Individuals with negative subpopulation ID will be removed.
 
 Details:
 
-    Form a new  population according to the parameter information.
-    Information can be given directly as
-    * keepAncestralPops=-1: keep all
-    * keepAncestralPops=0: only current
-    * keepAncestralPops=1: keep one ...
+    Form a new  population according to  individual subpopulation ID.
+    Individuals with negative subpopulation ID will be removed.
 
 "; 
 
@@ -7663,8 +7795,8 @@ Details:
 
 Description:
 
-    remove some loci from the current  population. Loci that will be
-    removed or kept can be specified.
+    remove some loci from the current  population. Only one of the two
+    parameters can be specified.
 
 Usage:
 
@@ -7684,13 +7816,19 @@ Usage:
 
 Details:
 
-    Copy current  population to a new one with selected loci and
-    remove specified loci. (No change on the current  population.)
+    Copy current  population to a new one with selected loci keep or
+    remove specified loci remove (no change on the current
+    population), equivalent to
+    y=x.clone
+    y.removeLoci(remove, keep)
 
 Details:
 
-    Copy current  population to a new one with selected loci and
-    remove specified loci. (No change on the current  population.)
+    Copy current  population to a new one with selected loci keep or
+    remove specified loci remove (no change on the current
+    population), equivalent to
+    y=x.clone
+    y.removeLoci(remove, keep)
 
 "; 
 
@@ -7698,7 +7836,7 @@ Details:
 
 Description:
 
-    Absorb rhs population as the current generation of a  population.
+    absorb rhs population as the current generation of a  population
 
 Usage:
 
@@ -7706,7 +7844,7 @@ Usage:
 
 Details:
 
-    This is mainly used by a  simulator to push offspring generation
+    This function is used by a  simulator to push offspring generation
     rhs to the current  population, while the current  population is
     pushed back as an ancestral  population (if ancestralDepath() !=
     0). Because rhs population is swapped in, rhs will be empty after
@@ -7714,7 +7852,7 @@ Details:
 
 Details:
 
-    This is mainly used by a  simulator to push offspring generation
+    This function is used by a  simulator to push offspring generation
     rhs to the current  population, while the current  population is
     pushed back as an ancestral  population (if ancestralDepath() !=
     0). Because rhs population is swapped in, rhs will be empty after
@@ -7734,8 +7872,8 @@ Usage:
 
 Note:
 
-    The returned value is the number of ancestral generations exists
-    in the  population, not necessarily equal to the number set by
+    The returned value is the number of ancestral generations exist in
+    the  population, not necessarily equals to the number set by
     setAncestralDepth().
 
 "; 
@@ -7752,23 +7890,25 @@ Usage:
 
 Details:
 
-    Current ancestral  population activated by useAncestralPop. There
-    can be several ancestral generations in a  population. 0
+    Current ancestral  population activated by  useAncestralPop().
+    There can be several ancestral generations in a  population. 0
     (current), 1 (parental) etc. When useAncestralPop(gen) is used,
-    current generation is set to one of the parental generation, which
-    is the information returned by this function. useAncestralPop(0)
-    should always be used to set a  population to its usual ancestral
-    order.
+    current generation is set to one of the parental generations,
+    which is the information returned by this function.
+    useAncestralPop(0) should always be used to set a  population to
+    its usual ancestral order after operations to the ancestral
+    generation are done.
 
 Details:
 
-    Current ancestral  population activated by useAncestralPop. There
-    can be several ancestral generations in a  population. 0
+    Current ancestral  population activated by  useAncestralPop().
+    There can be several ancestral generations in a  population. 0
     (current), 1 (parental) etc. When useAncestralPop(gen) is used,
-    current generation is set to one of the parental generation, which
-    is the information returned by this function. useAncestralPop(0)
-    should always be used to set a  population to its usual ancestral
-    order.
+    current generation is set to one of the parental generations,
+    which is the information returned by this function.
+    useAncestralPop(0) should always be used to set a  population to
+    its usual ancestral order after operations to the ancestral
+    generation are done.
 
 "; 
 
@@ -7781,13 +7921,14 @@ Description:
 
 Usage:
 
-    x.setIndInfo(values, idx)
+    x.setIndInfo(values, idx, order=True)
 
 Arguments:
 
     values:         an array that has the same length as  population
                     size.
     idx:            index to the information field.
+    order:          if true, info will be in the order of individuals
 
 "; 
 
@@ -7799,19 +7940,17 @@ Description:
 
 Usage:
 
-    x.setIndInfo(values, name)
+    x.setIndInfo(values, name, order=True)
 
 Details:
 
-    setIndInfo using field name, x.setIndInfo(values, name) is
-    equivalent to the idx version x.setIndInfo(values,
-    x.infoIdx(name)).
+    x.setIndInfo(values, name) is equivalent to the idx version
+    x.setIndInfo(values, x.infoIdx(name)).
 
 Details:
 
-    setIndInfo using field name, x.setIndInfo(values, name) is
-    equivalent to the idx version x.setIndInfo(values,
-    x.infoIdx(name)).
+    x.setIndInfo(values, name) is equivalent to the idx version
+    x.setIndInfo(values, x.infoIdx(name)).
 
 "; 
 
@@ -7825,7 +7964,7 @@ Details:
 
 Description:
 
-    get information idx of all individuals.
+    get information field idx of all individuals
 
 Usage:
 
@@ -7833,7 +7972,7 @@ Usage:
 
 Arguments:
 
-    idx:            index in all information fields
+    idx:            index of the information field
     order:          if true, sort returned vector in  individual order
 
 "; 
@@ -7842,7 +7981,7 @@ Arguments:
 
 Description:
 
-    get information name of all individuals.
+    get information field name of all individuals
 
 Usage:
 
@@ -7859,7 +7998,8 @@ Arguments:
 
 Description:
 
-    get information idx of all individuals in a subpopulation subPop.
+    get information field idx of all individuals in a subpopulation
+    subPop
 
 Usage:
 
@@ -7867,7 +8007,7 @@ Usage:
 
 Arguments:
 
-    idx:            index in all information fields
+    idx:            index of the information field
     subPop:         subpopulation index
     order:          if true, sort returned vector in  individual order
 
@@ -7877,7 +8017,8 @@ Arguments:
 
 Description:
 
-    get information name of all individuals in a subpopulation subPop.
+    get information field name of all individuals in a subpopulation
+    subPop
 
 Usage:
 
@@ -7901,6 +8042,31 @@ Usage:
 
     x.arrIndInfo(order)
 
+Details:
+
+    The length of the array is  infoSize()*popSize().
+
+Details:
+
+    The length of the array is  infoSize()*popSize().
+
+Arguments:
+
+    order:          whether or not the list has the same order as
+                    individuals
+
+"; 
+
+%feature("docstring") simuPOP::population::arrIndInfo "
+
+Description:
+
+    get an editable array (Python list) of all information fields
+
+Usage:
+
+    x.arrIndInfo(subPop, order)
+
 Arguments:
 
     order:          whether or not the list has the same order as
@@ -7912,7 +8078,7 @@ Arguments:
 
 Description:
 
-    add an information field to a  population.
+    add an information field to a  population
 
 Usage:
 
@@ -7922,7 +8088,7 @@ Arguments:
 
     field:          new information field. If it already exists, it
                     will be re-initialized.
-    init:           inital value for the new field.
+    init:           initial value for the new field.
 
 "; 
 
@@ -7938,8 +8104,8 @@ Usage:
 
 Arguments:
 
-    fields:         new information fields. If one or more of the
-                    fields alreay exist, they will simply be re-
+    fields:         an array of new information fields. If one or more
+                    of the fields alreay exist, they will be re-
                     initialized.
     init:           initial value for the new fields.
 
@@ -7998,37 +8164,17 @@ Arguments:
 
 "; 
 
-%feature("docstring") simuPOP::population::equalTo "
-
-Description:
-
-    compare two populations
-
-Usage:
-
-    x.equalTo(rhs)
-
-"; 
+%ignore simuPOP::population::equalTo(const population &rhs);
 
 %ignore simuPOP::population::adjustGenoPosition(bool order);
 
-%feature("docstring") simuPOP::population::adjustInfoPosition "
-
-Description:
-
-    simuPOP::population::adjustInfoPosition
-
-Usage:
-
-    x.adjustInfoPosition(order)
-
-"; 
+%ignore simuPOP::population::adjustInfoPosition(bool order);
 
 %feature("docstring") simuPOP::population::savePopulation "
 
 Description:
 
-    simuPOP::population::savePopulation
+    save  population to a file
 
 Usage:
 
@@ -8038,13 +8184,8 @@ Arguments:
 
     filename:       save to filename
     format:         format to save. Can be one of the following:
-                    'text', 'bin', or 'xml'. The default format is
-                    'text' but the output is not supposed to be read.
-                    'bin' has smaller size than the other two and
-                    should be used for large populations. 'xml' is the
-                    most readable format and should be used when you
-                    would like to convert  simuPOP populations to
-                    other formats.
+                    'txt', 'bin', or 'xml', or 'auto' which is
+                    determined by the extension of filename.
 
 "; 
 
@@ -8058,7 +8199,7 @@ Arguments:
 
 Description:
 
-    Turn off selection for all subpopulations.
+    turn off selection for all subpopulations
 
 Usage:
 
@@ -8066,13 +8207,13 @@ Usage:
 
 Details:
 
-    If you really want to apply another  selector, run
-    turnOffSelection to eliminate the effect of the previous one.
+    This is only used when you would like to apply two selectors.
+    Maybe using two different information fields.
 
 Details:
 
-    If you really want to apply another  selector, run
-    turnOffSelection to eliminate the effect of the previous one.
+    This is only used when you would like to apply two selectors.
+    Maybe using two different information fields.
 
 "; 
 
@@ -8084,21 +8225,12 @@ Details:
 
 Description:
 
-    current replicate in a  simulator
+    current replicate in a  simulator which is not meaningful for a
+    stand-alone  population
 
 Usage:
 
     x.rep()
-
-Details:
-
-    Replication number is not meaningful for a stand-alone
-    population.
-
-Details:
-
-    Replication number is not meaningful for a stand-alone
-    population.
 
 "; 
 
@@ -8108,19 +8240,12 @@ Details:
 
 Description:
 
-    current group ID in a  simulator
+    current group ID in a  simulator which is not meaningful for a
+    stand-alone  population.
 
 Usage:
 
     x.grp()
-
-Details:
-
-    Group number is not meaningful for a stand-alone  population.
-
-Details:
-
-    Group number is not meaningful for a stand-alone  population.
 
 "; 
 
@@ -8201,7 +8326,8 @@ Usage:
 
 Description:
 
-    evaluate a python statment/expression
+    evaluate a python statment/expression in the population's local
+    namespace
 
 Usage:
 
@@ -8209,13 +8335,15 @@ Usage:
 
 Details:
 
-    This function evaluates a python statment/expression and return
-    its result as a string. Optionally run statement first.
+    This function evaluates a Python statment( stmts )/expression(
+    expr ) and return its result as a string. Optionally run
+    statement( stmts ) first.
 
 Details:
 
-    This function evaluates a python statment/expression and return
-    its result as a string. Optionally run statement first.
+    This function evaluates a Python statment( stmts )/expression(
+    expr ) and return its result as a string. Optionally run
+    statement( stmts ) first.
 
 "; 
 
@@ -8223,7 +8351,8 @@ Details:
 
 Description:
 
-    evaluate a statement (can be multi-line string)
+    execute a statement (can be a multi-line string) in the
+    population's local namespace
 
 Usage:
 
@@ -8231,26 +8360,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::population::rearrangeLoci "
-
-Description:
-
-    rearrange loci on chromosomes, e.g. combine two chromosomes into
-    one
-
-Usage:
-
-    x.rearrangeLoci(newNumLoci, newLociPos)
-
-Details:
-
-    This is used by mergeByLoci.
-
-Details:
-
-    This is used by mergeByLoci.
-
-"; 
+%ignore simuPOP::population::rearrangeLoci(const vectoru &newNumLoci, const vectorf &newLociPos);
 
 %feature("docstring") simuPOP::pyEval "
 
@@ -8529,7 +8639,7 @@ Description:
 
 Usage:
 
-    pyIndOperator(*func, loci=[], *param=NULL, stage=PostMating,
+    pyIndOperator(func, loci=[], param=None, stage=PostMating,
       formOffGenotype=False, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
@@ -8641,7 +8751,7 @@ Description:
 
 Usage:
 
-    pyInit(*func, subPop=[], loci=[], atPloidy=-1, indRange=[],
+    pyInit(func, subPop=[], loci=[], atPloidy=-1, indRange=[],
       maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=1, step=1,
       at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
@@ -8674,12 +8784,12 @@ Example:
 ...     dumper(alleleOnly=True, dispWidth=2)])
 individual info: 
 sub population 0:
-   0: FU   0  1  2  3  4   6  7  8  9 10 11 12 |   0  1  2  3  4   6  7  8  9 10 11 12 
-   1: MU   1  2  3  4  5   5  6  7  8  9 10 11 |   1  2  3  4  5   5  6  7  8  9 10 11 
+   0: MU   1  2  3  4  5   6  7  8  9 10 11 12 |   0  1  2  3  4   5  6  7  8  9 10 11 
+   1: FU   1  2  3  4  5   5  6  7  8  9 10 11 |   1  2  3  4  5   6  7  8  9 10 11 12 
 sub population 1:
-   2: FU   1  2  3  4  5   7  8  9 10 11 12 13 |   2  3  4  5  6   7  8  9 10 11 12 13 
-   3: FU   1  2  3  4  5   6  7  8  9 10 11 12 |   1  2  3  4  5   6  7  8  9 10 11 12 
-   4: FU   2  3  4  5  6   7  8  9 10 11 12 13 |   2  3  4  5  6   6  7  8  9 10 11 12 
+   2: FU   1  2  3  4  5   7  8  9 10 11 12 13 |   1  2  3  4  5   6  7  8  9 10 11 12 
+   3: FU   1  2  3  4  5   6  7  8  9 10 11 12 |   1  2  3  4  5   7  8  9 10 11 12 13 
+   4: FU   2  3  4  5  6   6  7  8  9 10 11 12 |   1  2  3  4  5   7  8  9 10 11 12 13 
 End of individual info.
 
 
@@ -8785,8 +8895,8 @@ Description:
 
 Usage:
 
-    pyMating(*func=NULL, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      *newSubPopSizeFunc=NULL)
+    pyMating(func=None, newSubPopSize=[], newSubPopSizeExpr=\"\",
+      newSubPopSizeFunc=None)
 
 Arguments:
 
@@ -8881,10 +8991,10 @@ Description:
 
 Usage:
 
-    pyMigrator(*rateFunc=NULL, mode=MigrByProbability,
-      fromSubPop=[], toSubPop=[], *indFunc=NULL, loci=[], *param=NULL,
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+    pyMigrator(rateFunc=None, mode=MigrByProbability, fromSubPop=[],
+      toSubPop=[], indFunc=None, loci=[], param=None, stage=PreMating,
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+      infoFields=[])
 
 Arguments:
 
@@ -8990,7 +9100,7 @@ Description:
 
 Usage:
 
-    pyMutator(rate=[], loci=[], maxAllele=0, *func=NULL, output=\">\",
+    pyMutator(rate=[], loci=[], maxAllele=0, func=None, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
@@ -9005,9 +9115,9 @@ Example:
 ...   dumper(alleleOnly=True)])
 individual info: 
 sub population 0:
-   0: MU   0  0  0   8  8  8  0  0 |   0  0  0   8  0  0  0  0 
-   1: MU   0  0  0   0  0  0  0  0 |   0  0  0   0  8  0  0  0 
-   2: MU   0  0  0   8  0  0  0  0 |   0  0  0   8  8  8  0  0 
+   0: MU   0  0  0   0  8  8  0  0 |   0  0  0   8  0  8  0  0 
+   1: MU   0  0  0   0  0  8  0  0 |   0  0  0   0  0  8  0  0 
+   2: MU   0  0  0   0  8  8  0  0 |   0  0  0   8  0  0  0  0 
 End of individual info.
 
 
@@ -9147,10 +9257,10 @@ Example:
 ...     ],
 ...   end = 30
 ... )        
-0.394850	0.201850
-0.402450	0.199350
-0.399000	0.185350
-0.404400	0.172750
+0.387100	0.199450
+0.392450	0.198800
+0.409650	0.208250
+0.406100	0.206300
 True
 >>>
 
@@ -9166,7 +9276,7 @@ Description:
 
 Usage:
 
-    pyOperator(*func, *param=NULL, stage=PostMating,
+    pyOperator(func, param=None, stage=PostMating,
       formOffGenotype=False, passOffspringOnly=False, begin=0, end=-1,
       step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
@@ -9295,7 +9405,7 @@ Description:
 
 Usage:
 
-    pyPenetrance(loci, *func, ancestralGen=-1, stage=DuringMating,
+    pyPenetrance(loci, func, ancestralGen=-1, stage=DuringMating,
       begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
       infoFields=[])
 
@@ -9348,7 +9458,7 @@ Description:
 
 Usage:
 
-    x.penet(*ind)
+    x.penet(ind)
 
 "; 
 
@@ -9399,7 +9509,7 @@ Description:
 
 Usage:
 
-    pyQuanTrait(loci, *func, ancestralGen=-1, stage=PostMating,
+    pyQuanTrait(loci, func, ancestralGen=-1, stage=PostMating,
       begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
       infoFields=[\"qtrait\"])
 
@@ -9457,7 +9567,7 @@ Description:
 
 Usage:
 
-    x.qtrait(*ind)
+    x.qtrait(ind)
 
 "; 
 
@@ -9506,8 +9616,8 @@ Description:
 
 Usage:
 
-    pySample(*keep, keepAncestralPops=-1, name=\"sample\",
-      nameExpr=\"\", times=1, saveAs=\"\", saveAsExpr=\"\", format=\"auto\",
+    pySample(keep, keepAncestralPops=-1, name=\"sample\", nameExpr=\"\",
+      times=1, saveAs=\"\", saveAsExpr=\"\", format=\"auto\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[])
 
@@ -9626,7 +9736,7 @@ Description:
 
 Usage:
 
-    pySelector(loci, *func, subPops=[], stage=PreMating, begin=0,
+    pySelector(loci, func, subPops=[], stage=PreMating, begin=0,
       end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
       infoFields=[\"fitness\"])
 
@@ -9676,7 +9786,7 @@ Description:
 
 Usage:
 
-    x.indFitness(*ind, gen)
+    x.indFitness(ind, gen)
 
 "; 
 
@@ -9816,8 +9926,8 @@ Description:
 
 Usage:
 
-    pyTagger(*func=NULL, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+    pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
 
 Arguments:
 
@@ -9881,7 +9991,7 @@ Description:
 
 Usage:
 
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
+    x.applyDuringMating(pop, offspring, dad=None, mom=None)
 
 "; 
 
@@ -9964,7 +10074,7 @@ Description:
 
 Usage:
 
-    x.qtrait(*)
+    x.qtrait()
 
 "; 
 
@@ -10027,9 +10137,9 @@ Description:
 
 Usage:
 
-    randomMating(numOffspring=1., *numOffspringFunc=NULL,
+    randomMating(numOffspring=1., numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
-      *newSubPopSizeFunc=NULL, newSubPopSizeExpr=\"\",
+      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
       contWhenUniSex=True)
 
 Arguments:
@@ -10318,20 +10428,20 @@ Example:
 ... )
 individual info: 
 sub population 0:
-   0: MU   2  2  1  1   3  0  2  3  2   0  3  2  0  0  2 |   2  2  1  0   0  2  0  1  2   3  1  3  1  0  3 
-   1: FU   1  0  2  2   1  3  0  1  0   2  0  3  3  2  0 |   1  2  2  2   1  2  2  1  2   1  1  2  2  3  2 
-   2: MU   2  1  0  2   2  3  3  1  0   1  2  3  2  3  2 |   2  2  3  3   2  2  2  3  2   1  2  3  2  2  3 
-   3: FU   3  3  1  1   2  2  2  3  0   1  1  1  0  2  1 |   2  2  1  3   2  2  2  0  2   0  1  1  0  2  2 
+   0: FU   3  0  1  3   1  2  0  2  2   3  0  2  3  0  1 |   2  0  0  3   2  2  2  3  2   2  3  2  3  2  0 
+   1: MU   2  3  2  0   2  2  1  2  3   0  2  2  2  1  1 |   1  3  2  0   2  3  2  3  3   1  1  2  1  3  0 
+   2: MU   2  1  3  0   2  0  1  3  3   2  1  3  2  0  2 |   2  2  1  2   3  2  3  3  3   3  3  2  2  2  2 
+   3: MU   2  2  0  0   2  2  1  3  0   3  1  0  3  2  0 |   2  3  1  3   2  3  2  2  2   0  1  2  0  1  2 
 End of individual info.
 
 
 No ancenstral population recorded.
 individual info: 
 sub population 0:
-   0: FU   2  2  3  3   2  3  3  1  0   1  2  3  2  3  2 |   1  0  2  2   1  3  0  1  0   2  0  3  3  2  0 
-   1: MU   2  2  1  0   0  2  0  1  2   0  3  2  0  0  2 |   1  0  2  2   1  2  2  1  2   1  1  2  2  3  2 
-   2: FU   2  2  3  3   2  2  2  3  2   1  2  3  2  2  3 |   2  2  1  3   2  2  2  0  2   1  1  1  0  2  1 
-   3: FU   2  1  0  2   2  2  2  3  2   1  2  3  2  2  3 |   2  2  1  3   2  2  2  3  0   0  1  1  0  2  2 
+   0: FU   1  3  2  0   2  2  1  2  3   1  1  2  1  3  0 |   3  0  1  3   1  2  0  2  2   3  0  2  3  0  1 
+   1: FU   2  3  1  3   2  2  1  3  0   0  1  2  0  1  2 |   2  0  0  3   2  2  2  3  2   2  3  2  3  2  0 
+   2: MU   2  2  1  2   2  0  1  3  3   3  3  2  2  2  2 |   3  0  1  3   1  2  0  2  2   2  3  2  3  2  0 
+   3: MU   2  2  0  0   2  3  2  2  2   3  1  0  3  2  0 |   3  0  1  3   2  2  2  3  2   2  3  2  3  2  0 
 End of individual info.
 
 
@@ -10345,10 +10455,10 @@ True
 ... )
 individual info: 
 sub population 0:
-   0: MU   2  1  0  3   2  2  2  3  0   0  1  3  2  2  3 |   2  2  1  2   1  2  2  1  2   1  1  2  0  0  2 
-   1: MU   2  2  1  3   2  2  2  0  2   1  2  1  0  2  1 |   2  2  1  2   0  2  0  1  2   1  1  2  0  0  2 
-   2: MU   2  2  1  2   2  2  2  3  2   0  1  3  2  2  3 |   2  2  1  2   1  2  2  1  2   1  1  2  0  0  2 
-   3: FU   2  2  3  3   2  2  2  0  2   1  2  1  0  2  1 |   2  2  1  2   1  2  2  1  2   1  1  2  0  0  2 
+   0: MU   1  3  2  3   2  2  1  2  2   1  1  2  3  0  1 |   3  0  1  0   2  3  2  3  2   2  3  0  3  2  0 
+   1: FU   2  3  1  3   2  2  1  3  2   0  1  2  3  2  0 |   2  2  0  3   2  2  2  2  2   2  3  0  3  2  0 
+   2: MU   3  0  1  0   2  2  1  2  2   1  1  2  3  0  1 |   2  2  1  3   1  2  0  3  3   3  3  2  3  2  0 
+   3: FU   2  0  0  3   2  2  1  3  2   0  1  2  3  2  0 |   3  0  1  2   1  2  0  3  3   2  3  2  2  2  2 
 End of individual info.
 
 
@@ -10428,7 +10538,7 @@ Description:
 
 Usage:
 
-    x.applyDuringMating(pop, offspring, *dad=NULL, *mom=NULL)
+    x.applyDuringMating(pop, offspring, dad=None, mom=None)
 
 "; 
 
@@ -10448,7 +10558,7 @@ Description:
 
 Usage:
 
-    RNG(*rng=NULL, seed=0)
+    RNG(rng=None, seed=0)
 
 "; 
 
@@ -10464,18 +10574,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::RNG::setRNG "
-
-Description:
-
-    choose an random number generator. This can be done by setting
-    GSL_RNG_TYPE as well.
-
-Usage:
-
-    x.setRNG(*rng=NULL, seed=0)
-
-"; 
+%ignore simuPOP::RNG::setRNG(const char *rng=NULL, unsigned long seed=0);
 
 %feature("docstring") simuPOP::RNG::name "
 
@@ -10593,7 +10692,7 @@ Description:
 
 Usage:
 
-    x.randIntArray(n, size, *vec)
+    x.randIntArray(n, size, vec)
 
 "; 
 
@@ -10641,7 +10740,7 @@ Description:
 
 Usage:
 
-    x.randUniform01Array(size, *vec)
+    x.randUniform01Array(size, vec)
 
 "; 
 
@@ -11114,7 +11213,7 @@ Description:
 
 Usage:
 
-    x.indFitness(*, gen)
+    x.indFitness(, gen)
 
 "; 
 
@@ -11905,18 +12004,18 @@ Example:
 ...     dumper(alleleOnly=True, stage=PrePostMating)])
 individual info: 
 sub population 0:
-   0: FU   1  2  1   2  1  2  2  2 |   1  2  1   1  0  2  1  1 
-   1: MU   2  1  0   0  1  1  2  0 |   2  2  0   1  1  0  2  2 
-   2: MU   0  0  0   1  2  2  0  2 |   2  2  1   0  2  2  1  2 
+   0: FU   0  2  0   0  2  2  2  0 |   2  2  0   2  2  0  0  2 
+   1: FU   1  0  1   2  0  2  0  2 |   2  1  0   2  2  2  0  2 
+   2: FU   0  1  2   2  0  2  2  2 |   0  2  1   0  0  0  2  2 
 End of individual info.
 
 
 No ancenstral population recorded.
 individual info: 
 sub population 0:
-   0: FU   2  3  2   1  2  3  3  1 |   2  1  0   0  1  3  2  2 
-   1: MU   3  2  1   1  2  0  3  1 |   3  1  1   2  2  1  3  3 
-   2: MU   1  0  1   0  3  3  0  1 |   3  1  2   1  3  3  0  3 
+   0: FU   1  3  1   1  3  3  3  1 |   3  3  1   3  1  1  1  3 
+   1: FU   2  1  2   3  1  1  1  3 |   1  2  1   3  1  3  0  3 
+   2: FU   0  0  3   3  0  3  3  1 |   1  3  2   1  1  1  3  3 
 End of individual info.
 
 
@@ -14134,24 +14233,14 @@ Description:
 
 Usage:
 
-    FreqTrajectoryStoch(curGen=0, freq=0, N=0, *NtFunc=NULL,
-      fitness=[], *fitnessFunc=NULL, minMutAge=0, maxMutAge=100000,
+    FreqTrajectoryStoch(curGen=0, freq=0, N=0, NtFunc=None,
+      fitness=[], fitnessFunc=None, minMutAge=0, maxMutAge=100000,
       ploidy=2, restartIfFail=False, maxAttempts=1000,
       allowFixation=False)
 
 "; 
 
-%feature("docstring") simuPOP::MarginalFitness "
-
-Description:
-
-    simuPOP::MarginalFitness
-
-Usage:
-
-    MarginalFitness(nLoci, fitness, freq)
-
-"; 
+%ignore simuPOP::MarginalFitness(unsigned nLoci, const vectorf &fitness, const vectorf &freq);
 
 %feature("docstring") simuPOP::FreqTrajectoryMultiStoch "
 
@@ -14161,8 +14250,8 @@ Description:
 
 Usage:
 
-    FreqTrajectoryMultiStoch(curGen=0, freq=[], N=0, *NtFunc=NULL,
-      fitness=[], *fitnessFunc=NULL, minMutAge=0, maxMutAge=100000,
+    FreqTrajectoryMultiStoch(curGen=0, freq=[], N=0, NtFunc=None,
+      fitness=[], fitnessFunc=None, minMutAge=0, maxMutAge=100000,
       ploidy=2, restartIfFail=False, maxAttempts=1000)
 
 "; 
@@ -14196,7 +14285,9 @@ Usage:
 
 Description:
 
-    simuPOP::LoadPopulation
+    load a  population from a file. The file format is by default
+    determined by file extension (format=\"auto\"). Otherwise, format
+    can be one of txt, bin, or xml.
 
 Usage:
 
@@ -14232,7 +14323,9 @@ Usage:
 
 Description:
 
-    simuPOP::LoadSimulator
+    load a  simulator from a file with the specified  mating scheme.
+    The file format is by default determined by file extension
+    (format=\"auto\"). Otherwise, format can be one of txt, bin, or xml.
 
 Usage:
 
@@ -14246,7 +14339,8 @@ Usage:
 
 Description:
 
-    set debug code, default to turn all code on
+    set debug codes. Default to turn on all debug codes. Only
+    available in non-optimized modules.
 
 Usage:
 
@@ -14254,15 +14348,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::TurnOnDebugWithName "
+%feature("docstring") simuPOP::TurnOnDebug "
 
 Description:
 
-    set debug code, using name
+    simuPOP::TurnOnDebug
 
 Usage:
 
-    TurnOnDebugWithName(code)
+    TurnOnDebug(code)
 
 "; 
 
@@ -14270,7 +14364,8 @@ Usage:
 
 Description:
 
-    turn off debug, default to turn all code off
+    turn off debug information. Default to turn off all debug codes.
+    Only available in non-optimized modules.
 
 Usage:
 
@@ -14284,7 +14379,7 @@ Usage:
 
 Description:
 
-    show all dbg codes (print to cout)
+    show all debug codes (print to cout)
 
 Usage:
 
@@ -14360,7 +14455,7 @@ Usage:
 
 Description:
 
-    currently, return a global  RNG.
+    return the currently used random number generator
 
 Usage:
 
@@ -14372,7 +14467,9 @@ Usage:
 
 Description:
 
-    set random number generator
+    set random number generator. If seed=0 (default), a random seed
+    will be given. If rng=\"\", seed will be set to the current random
+    number generator.
 
 Usage:
 
@@ -14396,7 +14493,7 @@ Usage:
 
 Description:
 
-    list all available  RNG.
+    list all available random number generators
 
 Usage:
 
@@ -14404,23 +14501,14 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::listAllRNG "
-
-Description:
-
-    for backward compatibility, will remove later
-
-Usage:
-
-    listAllRNG()
-
-"; 
+%ignore simuPOP::listAllRNG();
 
 %feature("docstring") simuPOP::simuRev "
 
 Description:
 
-    return svn revision
+    return the revision number of this  simuPOP module. Can be used to
+    test if a feature is available.
 
 Usage:
 
@@ -14432,7 +14520,7 @@ Usage:
 
 Description:
 
-    return version infomation of  simuPOP
+    return the version of this  simuPOP module
 
 Usage:
 
@@ -14444,7 +14532,7 @@ Usage:
 
 Description:
 
-    simuPOP::compileCompiler
+    return the compiler used to compile this  simuPOP module
 
 Usage:
 
@@ -14456,7 +14544,7 @@ Usage:
 
 Description:
 
-    simuPOP::compileDate
+    return the date when this  simuPOP module is compiled
 
 Usage:
 
@@ -14468,7 +14556,7 @@ Usage:
 
 Description:
 
-    simuPOP::compilePyVersion
+    return the Python version this  simuPOP module is compiled for
 
 Usage:
 
@@ -14480,7 +14568,7 @@ Usage:
 
 Description:
 
-    simuPOP::compilePlatForm
+    return the platform on which this  simuPOP module is compiled
 
 Usage:
 
@@ -14494,7 +14582,7 @@ Usage:
 
 Description:
 
-    simuPOP::optimized
+    return True if this  simuPOP module is optimized
 
 Usage:
 
@@ -14502,17 +14590,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mpi "
-
-Description:
-
-    simuPOP::mpi
-
-Usage:
-
-    mpi()
-
-"; 
+%ignore simuPOP::mpi();
 
 %feature("docstring") simuPOP::limits "
 
@@ -14526,29 +14604,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mpiRank "
+%ignore simuPOP::mpiRank();
 
-Description:
-
-    simuPOP::mpiRank
-
-Usage:
-
-    mpiRank()
-
-"; 
-
-%feature("docstring") simuPOP::mpiSize "
-
-Description:
-
-    simuPOP::mpiSize
-
-Usage:
-
-    mpiSize()
-
-"; 
+%ignore simuPOP::mpiSize();
 
 %ignore simuPOP::mpiBarrier();
 
@@ -14556,11 +14614,25 @@ Usage:
 
 Description:
 
-    simuPOP::alleleType
+    return the allele type of the current module. Can be binary,
+    short, or long.
 
 Usage:
 
     alleleType()
+
+"; 
+
+%feature("docstring") simuPOP::maxAllele "
+
+Description:
+
+    return  $ 1 $,  $ 2^8-1 $,  $ 2^{16}-1 $ for binary, short, or
+    long allele modules, respectively
+
+Usage:
+
+    maxAllele()
 
 "; 
 
@@ -14570,7 +14642,7 @@ Usage:
 
 Description:
 
-    set standard output to (default standard Python output)
+    set the standard output (default to standard Python output)
 
 Usage:
 
