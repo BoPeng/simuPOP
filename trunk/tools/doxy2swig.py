@@ -673,7 +673,7 @@ class Doxy2SWIG:
                 and 'test' not in x['Name']]:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
             if entry.has_key('Description') and entry['Description'] != '':
-                print >> out, '\\par\n\\strong{Function \\texttt{%s}}\n\\par' % self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
+                print >> out, '\\par\nFunction \\strong{\\texttt{%s}}\n\\par' % self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
                 print >> out, '%s\par' % self.latex_text(entry['Description'])
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, '\\begin{quote}\\function{%s}\\end{quote}' % self.latex_text(entry['Usage'])
@@ -841,7 +841,22 @@ xleftmargin=15pt}
         fout.close()
 
 
+def scan_module(file):
+    ''' scan a python file, get its definitions, and help information '''
+    # read function definition
+    funcs = []
+    for line in open(file).readlines():
+        if line.startswith('def'):
+            funcs.append(line.split('(')[0].split()[1])
+    module_name = os.path.split(file)[1].split('.')[0]
+    exec('import %s' % module_name)
+    for func in funcs:
+        print eval('%s.%s.__doc__' % (module_name, func))
+    print funcs
+
 if __name__ == '__main__':
+    #scan_module('../src/simuUtil.py')
+    #sys.exit(0)
     if '-h' in sys.argv[1:] or '--help' in sys.argv[1:]:
         print __doc__
         sys.exit(1)
