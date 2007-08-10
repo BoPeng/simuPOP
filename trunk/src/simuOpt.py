@@ -26,9 +26,10 @@
 '''
 Module simuOpt provides two important functions. 
 
-\li control which simuPOP module to load, and how it is loaded using function
+- control which simuPOP module to load, and how it is loaded using function
 setOptions.
-\li provide a simple way to set simulation options.
+
+- provide a simple way to set simulation options.
 
 The option description list consists of dictionaries with some predefined keys.
 Each dictionary defines an option. With defined properties, this option can be
