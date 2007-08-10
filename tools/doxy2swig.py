@@ -546,18 +546,12 @@ class Doxy2SWIG:
             if entry.has_key('funcForm'):
                 print >> out, 'Function form:'
                 print >> out, '\n    %s\n' % self.swig_text(entry['funcForm'], 0, 4)
-            if entry.has_key('funcForm'):
-                print >> out, 'Function form:'
-                print >> out, '\n    %s\n' % self.swig_text(entry['funcForm'], 0, 4)
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, 'Description:'
                 print >> out, '\n    %s\n' % self.swig_text(entry['Description'], 0, 4)
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, 'Usage:'
                 print >> out, '\n    %s\n' % self.swig_text(entry['Usage'], 0, 6)
-            if entry.has_key('Details') and entry['Details'] != '':
-                print >> out, 'Details:'
-                print >> out, '\n    %s\n' % self.swig_text(entry['Details'], 0, 4)
             if entry.has_key('Details') and entry['Details'] != '':
                 print >> out, 'Details:'
                 print >> out, '\n    %s\n' % self.swig_text(entry['Details'], 0, 4)
@@ -627,6 +621,7 @@ class Doxy2SWIG:
         add_def = False
         add_desc = False
         begin_desc = False
+        add_argu = False
         for line in open(file).readlines():
             if line.startswith('def'):
                 # remove def, and ending :
@@ -649,15 +644,35 @@ class Doxy2SWIG:
                     add_desc = True
                     begin_desc = True
                     add_def = False
-            elif add_desc:
+            elif add_desc:               
+                # comments should be first description then parameters
+                # ':' should be only used after a parameter name in the comments
+                
+                # determine if there are description comments
                 if begin_desc:
                     if not (line.strip().startswith('"') or line.strip().startswith("'")):
                         add_desc = False
                         continue
                     begin_desc = False
+                # first time catch a parameter
+                if ':' in line and line.strip().split(':').count(' ') < 2:
+                    add_argu = True
+                    self.content[-1]['Arguments'] = []
+                    self.content[-1]['Arguments'].append({'Name': line.split(':')[0].strip(),
+                                                          'Description': line.split(':')[1]})
+                    add_desc = False
+                    continue
                 self.content[-1]['Description'] += line.strip().strip('"').strip("'") + '\n'
                 if line.endswith('"\n') or line.endswith("'\n"):
-                    add_desc = False
+                    add_desc = False                     
+            elif add_argu:
+                if ':' in line:
+                    self.content[-1]['Arguments'].append({'Name': line.split(':')[0].strip(),
+                                                          'Description': line.split(':')[1]})
+                else:
+                    self.content[-1]['Arguments'][-1]['Description'] += line
+                if line.endswith('"\n') or line.endswith("'\n"):
+                    add_argu = False                    
         print self.content[-1]
 
 
@@ -723,6 +738,48 @@ class Doxy2SWIG:
         return text
 
 
+    def latex_formatted_text(self, text):
+        """format text according to some simple rules"""
+        text = self.latex_text(text)
+        in_list = False
+        in_desc = False
+        end_list = 0
+        
+        str = ''        
+        for line in text.split('\n'):
+            line = line.strip()
+            if line.startswith('- ') and not in_desc:
+                if not in_list:
+                    str += '\\begin{itemize}\n' 
+                    in_list = True
+                str += r'\item ' + line[1:]
+                end_list = 0
+            elif ':' in line and not in_list and line.split(':')[0].count(' ') < 3:
+                if not in_desc:
+                    str += '\\begin{description}\n' 
+                    in_desc = True
+                kword = line.split(':')[0]
+                desc = line.split(':')[1]
+                str += r'\item[{\texttt{{%s}}}] %s' % (kword.replace('--', '---'), desc)
+                end_list = 0
+            elif in_list or in_desc:
+                if line == '':
+                    end_list += 1
+                if end_list == 2:
+                    if in_list:
+                        str += '\n\\end{itemize}\n'
+                    else:
+                        str += '\n\\end{description}\n'
+                    end_list = 0
+                    in_list = False
+                    in_desc = False
+                else:
+                    str += line + '\n'
+            else:
+                str += line + '\n'
+        return str
+                 
+                
     def swig_text(self, text, start_pos, indent):
         """ wrap text given current indent """
         #delete format sign used in latex file
@@ -785,7 +842,7 @@ class Doxy2SWIG:
             mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
             print >> out, '\\newcommand{\\%sRef}{' % module
             print >> out, '\n\\subsection{Module \\texttt{%s}\index{module!%s}' % (module, module)
-            print >> out, '}\n\\par %s' % self.latex_text(mod['Description'])
+            print >> out, '}\n\\par %s' % self.latex_formatted_text(mod['Description'])
             # module functions
             funcs = [x for x in self.content if x['type'] == 'module' and x['module'] == module and not x['ignore']]
             # sort it
@@ -795,7 +852,11 @@ class Doxy2SWIG:
             print >> out, '\\begin{description}'
             for mem in funcs:
                 if mem.has_key('Usage') and mem['Usage'] != '':
-                    print >> out, '\\item [\\function{%s}] ' % self.latex_text(mem['Usage'])
+                    func_name = mem['Usage'].split('(')[0]
+                    func_body = mem['Usage'][len(func_name):]
+                    print >> out, '\\item [\\function{%s}]\\strong{\\texttt{%s}}\n ' % (self.latex_text(func_name),
+                        self.latex_text(func_body))
+                        # textwrap.wrap(mem['Usage'], width=self.maxChar))
                 if mem.has_key('Description') and mem['Description'] != '':
                     print >> out, '%s' % self.latex_text(mem['Description'])
                 if mem.has_key('Details') and mem['Details'] != '':
