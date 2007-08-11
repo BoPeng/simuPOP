@@ -213,9 +213,12 @@ Arguments:
 
 Note:
 
-    Negative generation numbers are allowed for begin, end and at.
+    * Negative generation numbers are allowed for begin, end and at.
     They are intepretted as endGen + gen + 1. For example, begin = -2
     in simu.evolve(..., end=20) starts at generation 19.
+    * REP_ALL, REP_LAST, GRP_ALL are special constant that can only be
+    used in the constructor of an operator. That is to say, explicit
+    test of rep() == REP_LAST will not work.
 
 "; 
 
@@ -245,131 +248,25 @@ Usage:
 
 %ignore simuPOP::baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly=false);
 
-%feature("docstring") simuPOP::baseOperator::applicableGroup "
+%ignore simuPOP::baseOperator::applicableGroup();
 
-Description:
+%ignore simuPOP::baseOperator::setApplicableGroup(int grp=GRP_ALL);
 
-    return applicable group
+%ignore simuPOP::baseOperator::applicableReplicate();
 
-Usage:
+%ignore simuPOP::baseOperator::setApplicableReplicate(int rep);
 
-    x.applicableGroup()
+%ignore simuPOP::baseOperator::setActiveGenerations(int begin=0, int end=-1, int step=1, vectorl at=vectorl());
 
-"; 
+%ignore simuPOP::baseOperator::setApplicableStage(int stage);
 
-%feature("docstring") simuPOP::baseOperator::setApplicableGroup "
+%ignore simuPOP::baseOperator::canApplyPreMating();
 
-Description:
+%ignore simuPOP::baseOperator::canApplyDuringMating();
 
-    set applicable group
+%ignore simuPOP::baseOperator::canApplyPostMating();
 
-Usage:
-
-    x.setApplicableGroup(grp=GRP_ALL)
-
-Details:
-
-    Default to GRP_ALL (applicable to all groups). Otherwise, the
-    operator is applicable to only one group of replicates. Groups can
-    be set in  simulator::setGroup().
-
-"; 
-
-%feature("docstring") simuPOP::baseOperator::applicableReplicate "
-
-Description:
-
-    return applicable replicate
-
-Usage:
-
-    x.applicableReplicate()
-
-"; 
-
-%feature("docstring") simuPOP::baseOperator::setApplicableReplicate "
-
-Description:
-
-    set applicable replicate
-
-Usage:
-
-    x.setApplicableReplicate(rep)
-
-"; 
-
-%feature("docstring") simuPOP::baseOperator::setActiveGenerations "
-
-Description:
-
-    set applicable generation parameters: begin, end, step and at
-
-Usage:
-
-    x.setActiveGenerations(begin=0, end=-1, step=1, at=[])
-
-"; 
-
-%feature("docstring") simuPOP::baseOperator::setApplicableStage "
-
-Description:
-
-    set applicable stage. Another way to set stage parameter.
-
-Usage:
-
-    x.setApplicableStage(stage)
-
-"; 
-
-%feature("docstring") simuPOP::baseOperator::canApplyPreMating "
-
-Description:
-
-    set if this operator can be applied pre-mating
-
-Usage:
-
-    x.canApplyPreMating()
-
-"; 
-
-%feature("docstring") simuPOP::baseOperator::canApplyDuringMating "
-
-Description:
-
-    set if this operator can be applied during-mating
-
-Usage:
-
-    x.canApplyDuringMating()
-
-"; 
-
-%feature("docstring") simuPOP::baseOperator::canApplyPostMating "
-
-Description:
-
-    set if this operator can be applied post-mating
-
-Usage:
-
-    x.canApplyPostMating()
-
-"; 
-
-%feature("docstring") simuPOP::baseOperator::canApplyPreOrPostMating "
-
-Description:
-
-    set of this operator can be applied pre- or post-mating
-
-Usage:
-
-    x.canApplyPreOrPostMating()
-
-"; 
+%ignore simuPOP::baseOperator::canApplyPreOrPostMating();
 
 %ignore simuPOP::baseOperator::isCompatible(const population &pop);
 
@@ -399,17 +296,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::baseOperator::MPIReady "
-
-Description:
-
-    determine if this operator can be used in a MPI module
-
-Usage:
-
-    x.MPIReady()
-
-"; 
+%ignore simuPOP::baseOperator::MPIReady();
 
 %ignore simuPOP::baseOperator::setHaploidOnly();
 
@@ -462,17 +349,7 @@ Usage:
 
 %ignore simuPOP::baseOperator::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::baseOperator::setOutput "
-
-Description:
-
-    set ouput stream, if was not set during construction
-
-Usage:
-
-    x.setOutput(output=\"\", outputExpr=\"\")
-
-"; 
+%ignore simuPOP::baseOperator::setOutput(string output="", string outputExpr="");
 
 %ignore simuPOP::baseOperator::getOstream(PyObject *dict=NULL, bool readable=false);
 
@@ -10517,15 +10394,11 @@ Usage:
 
 Description:
 
-    the rep replicate of this  simulator
+    Return a reference to the rep replicate of this  simulator.
 
 Usage:
 
     x.pop(rep)
-
-Details:
-
-    This function is named  population in the Python interface.
 
 Arguments:
 
@@ -10535,10 +10408,9 @@ Arguments:
 Note:
 
     The returned reference is temporary in the sense that the refered
-    population will be invalid after another round of evolution.
-    Therefore, the use of this function should be limited to
-    immediateafterretrival. If you would like to get a persistent
-    population, please use getPopulation(rep).
+    population will be invalid after another round of evolution. If
+    you would like to get a persistent  population, please use
+    getPopulation(rep).
 
 "; 
 
@@ -10554,10 +10426,9 @@ Usage:
 
 Details:
 
-    return a temporary reference of one of the populations.
-    'Reference' means that the changes to the referred  population
-    will reflect to the one in  simulator. 'Temporary' means that the
-    referred  population might be invalid after evolution.
+    By default return a cloned copy of  populationrep of the
+    simulator. If destructive==True, the  population is extracted from
+    the  simulator, leaving a defunct  simulator.
 
 Arguments:
 
@@ -10575,7 +10446,7 @@ Arguments:
 
 Description:
 
-    set  mating scheme
+    set a new  mating scheme
 
 Usage:
 
@@ -10698,12 +10569,14 @@ Arguments:
                     evolve() function will not check if they are
                     active.
     postOps:        operators that will be applied after evolution
+                    evolve() function will not check if they are
+                    active.
     end:            ending generation. Default to -1. In this case,
                     there is no ending generation and a  simulator
                     will only be ended by a  terminator. Otherwise, it
                     should be a number greater than current generation
                     number.
-    dry:            run mode. Default to False.
+    dryrun:         dryrun mode. Default to False.
 
 Note:
 
@@ -10727,8 +10600,8 @@ Note:
 
 Description:
 
-    get  simulator namespace. If rep > 0 is given, return the
-    namespace of replicate rep
+    Return the local namespace of  populationrep, equivalent to
+    x.population(rep).vars(subPop).
 
 Usage:
 
@@ -10745,13 +10618,6 @@ Description:
 Usage:
 
     x.saveSimulator(filename, format=\"auto\", compress=True)
-
-Details:
-
-    The default format is 'txt' but the output is not supposed to be
-    read. 'bin' has smaller size and should be used for large
-    populations. 'xml' format is most verbose and should be used when
-    you would like to convert  simuPOP populations to other formats.
 
 Arguments:
 
@@ -13088,7 +12954,7 @@ Usage:
 
 Description:
 
-    show all debug codes (print to cout)
+    list all debug codes
 
 Usage:
 
@@ -13202,7 +13068,7 @@ Usage:
 
 Description:
 
-    list all available random number generators
+    list the name of all available random number generators
 
 Usage:
 

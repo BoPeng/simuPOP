@@ -160,8 +160,7 @@ def evolveHapMap(pop,
     mutRate=1e-7,
     step=10, 
     keepParents=False, 
-    numOffspring=1
-    ):
+    numOffspring=1):
     ''' evolve and expand the hapmap population
     
     gen: total evolution generation

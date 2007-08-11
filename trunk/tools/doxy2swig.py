@@ -435,7 +435,7 @@ class Doxy2SWIG:
             fname = refid + '.xml'
             if not os.path.exists(fname):
                 fname = os.path.join(self.my_dir, fname)
-            print "parsing file: %s"%fname
+            print "parsing file: %s" % fname
             try:
                 p = Doxy2SWIG(fname)
                 p.generate()
@@ -604,7 +604,7 @@ class Doxy2SWIG:
                         add_desc = False
                         continue
                     begin_desc = False
-                self.content[-1]['Description'] += line.strip().strip('"').strip("'") + '\n'
+                self.content[-1]['Description'] += ' ' + line.strip().strip('"').strip("'")
                 if line.endswith('"\n') or line.endswith("'\n"):
                     add_desc = False
 
@@ -635,10 +635,12 @@ class Doxy2SWIG:
                     self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
                     add_desc = True
                     begin_desc = True
+                    add_def = False
                 else:
+                    self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
                     add_def = True
             elif add_def:
-                self.content[-1]['Usage'] = line.strip()
+                self.content[-1]['Usage'] += line.strip()
                 if line.strip().endswith(':'):
                     self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
                     add_desc = True
@@ -662,7 +664,7 @@ class Doxy2SWIG:
                                                           'Description': line.split(':')[1]})
                     add_desc = False
                     continue
-                self.content[-1]['Description'] += line.strip().strip('"').strip("'") + '\n'
+                self.content[-1]['Description'] += ' ' + line.strip().strip('"').strip("'")
                 if line.endswith('"\n') or line.endswith("'\n"):
                     add_desc = False                     
             elif add_argu:
@@ -670,10 +672,9 @@ class Doxy2SWIG:
                     self.content[-1]['Arguments'].append({'Name': line.split(':')[0].strip(),
                                                           'Description': line.split(':')[1]})
                 else:
-                    self.content[-1]['Arguments'][-1]['Description'] += line
+                    self.content[-1]['Arguments'][-1]['Description'] += ' ' + line.strip()
                 if line.endswith('"\n') or line.endswith("'\n"):
                     add_argu = False                    
-        print self.content[-1]
 
 
     def latexName(self, name):
@@ -747,12 +748,11 @@ class Doxy2SWIG:
         
         str = ''        
         for line in text.split('\n'):
-            line = line.strip()
             if line.startswith('- ') and not in_desc:
                 if not in_list:
                     str += '\\begin{itemize}\n' 
                     in_list = True
-                str += r'\item ' + line[1:]
+                str += r'\item ' + line[2:].lstrip() + '\n'
                 end_list = 0
             elif ':' in line and not in_list and line.split(':')[0].count(' ') < 3:
                 if not in_desc:
@@ -760,10 +760,10 @@ class Doxy2SWIG:
                     in_desc = True
                 kword = line.split(':')[0]
                 desc = line.split(':')[1]
-                str += r'\item[{\texttt{{%s}}}] %s' % (kword.replace('--', '---'), desc)
+                str += r'\item[{\texttt{{%s}}}] %s' % (kword.replace('--', '---'), desc.lstrip()) + '\n'
                 end_list = 0
             elif in_list or in_desc:
-                if line == '':
+                if line.strip() == '':
                     end_list += 1
                 if end_list == 2:
                     if in_list:
@@ -777,7 +777,17 @@ class Doxy2SWIG:
                     str += line + '\n'
             else:
                 str += line + '\n'
-        return str
+        # '    xxx' is quote
+        # '  xx  ' is texttt
+        paras = str.split('\n')
+        str = []
+        for para in paras:
+            pieces = para.split('  ')
+            for i in range(1, len(pieces), 2):
+                if pieces[i].count(' ') < 3:
+                    pieces[i] = r'\texttt{' + pieces[i] + '}'
+            str.append(' '.join(pieces))
+        return '\n'.join(str)
                  
                 
     def swig_text(self, text, start_pos, indent):
@@ -815,7 +825,7 @@ class Doxy2SWIG:
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, '\\par\n\\strong{\\texttt{%s}}\n\\par' % self.latex_text(entry['Usage']) #.replace('simuPOP::', '', 1))
             if entry.has_key('Description') and entry['Description'] != '':
-                print >> out, '%s\par' % self.latex_text(entry['Description'])
+                print >> out, r'\MakeUppercase %s\par' % self.latex_text(entry['Description'])
             if entry.has_key('Details') and entry['Details'] != '':
                 print >> out, '\\par\n\\strong{Details}\n\\par'
                 print >> out, '    %s\n' % self.latex_text(entry['Details'])
@@ -823,7 +833,7 @@ class Doxy2SWIG:
                 print >> out, '\\par\n\\strong{Arguments}'
                 print >> out, '\\begin{description}'
                 for arg in entry['Arguments']:
-                    print >> out, '\\item [{%s}]%s' % (arg['Name'], self.latex_text(arg['Description']))
+                    print >> out, r'\item [{%s}]\MakeUppercase %s' % (arg['Name'], self.latex_text(arg['Description']))
                 print >> out, '\\end{description}'
             if entry.has_key('note') and entry['note'] != '':
                 print >> out, '\\par\n\\strong{Note}\n\\par'
@@ -858,7 +868,7 @@ class Doxy2SWIG:
                         self.latex_text(func_body))
                         # textwrap.wrap(mem['Usage'], width=self.maxChar))
                 if mem.has_key('Description') and mem['Description'] != '':
-                    print >> out, '%s' % self.latex_text(mem['Description'])
+                    print >> out, r' %s' % self.latex_text(mem['Description'])
                 if mem.has_key('Details') and mem['Details'] != '':
                     # if we have short description, use a separate paragraph for details.
                     if mem.has_key('Description') and mem['Description'] != '':
@@ -875,8 +885,6 @@ class Doxy2SWIG:
                 if mem.has_key('note') and mem['note'] != '':
                     print >> out, '\\par\n\\strong{Note:} %s\\par' % self.latex_text(mem['note'])
             print >> out, '\\end{description}\n}\n'
-
-
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
@@ -886,10 +894,10 @@ class Doxy2SWIG:
                 if entry.has_key('funcForm'):
                     print >> out, '  (Function form: %s\index{function!%s})' % (
                         self.latex_text(entry['funcForm']), self.latex_text(entry['funcForm']))
-                print >> out, '}\n\\par %s' % self.latex_text(entry['Description'])
-            if entry.has_key('Details') and entry['Details'] != '':
+                print >> out, '}\n\\par \\MakeUppercase %s' % self.latex_text(entry['Description'])
+            if entry.has_key('Details') and entry['Details'].strip() != '':
                 print >> out, '\\par\n\\strong{Details}\n\\par'
-                print >> out, '%s' % self.latex_text(entry['Details'])
+                print >> out, r'\MakeUppercase %s' % self.latex_text(entry['Details'])
             if entry.has_key('note') and entry['note'] != '':
                 print >> out, '\\par\n\\strong{Note}\n\\par'
                 print >> out, '%s' % self.latex_text(entry['note'])
@@ -903,9 +911,9 @@ class Doxy2SWIG:
             cons = constructor[0]
             print >> out, '\\par\n\\strong{Initialization}\n\\par'
             if cons.has_key('Description') and cons['Description'] != '':
-                print >> out, '%s\par' % self.latex_text(cons['Description'])
+                print >> out, r'\MakeUppercase %s\par' % self.latex_text(cons['Description'])
             if cons.has_key('Usage') and cons['Usage'] != '':
-                print >> out, '\\begin{quote}\\function{%s}\\end{quote}' % self.latex_text(cons['Usage'])
+                print >> out, r'\begin{quote}\function{%s}\end{quote}' % self.latex_text(cons['Usage'])
             if cons.has_key('Details') and cons['Details'] != '':
                 print >> out, '%s\par' % self.latex_text(cons['Details'])
             #if cons.has_key('Details') and cons['Details'] != '':
@@ -916,7 +924,7 @@ class Doxy2SWIG:
                 print >> out, '\\begin{description}'
                 cons['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                 for arg in cons['Arguments']:
-                    print >> out, '\\item [{%s}]{\\leftskip 0.5cm %s\par}' % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
+                    print >> out, r'\item [{%s}]{\leftskip 0.5cm \MakeUppercase %s\par}' % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
                 print >> out, '\\end{description}'
             if cons.has_key('note') and cons['note'] != '':
                 print >> out, '\\par\n\\strong{Note}\n\\par'
@@ -941,8 +949,8 @@ class Doxy2SWIG:
             for mem in members:
                 if mem.has_key('Usage') and mem['Usage'] != '':
                     print >> out, '\\item [\\function{%s}] ' % self.latex_text(mem['Usage'])
-                if mem.has_key('Description') and mem['Description'] != '':
-                    print >> out, '%s' % self.latex_text(mem['Description'])
+                if mem.has_key('Description') and mem['Description'].strip() != '':
+                    print >> out, r'\MakeUppercase %s' % self.latex_text(mem['Description'])
                 if mem.has_key('Details') and mem['Details'] != '':
                     # if we have short description, use a separate paragraph for details.
                     if mem.has_key('Description') and mem['Description'] != '':

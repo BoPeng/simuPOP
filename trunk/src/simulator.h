@@ -190,16 +190,14 @@ namespace simuPOP
 			/// set ancestral depth of all replicates
 			void setAncestralDepth(UINT depth);
 
-			/// the \c rep replicate of this simulator
+			/// Return a reference to the \c rep replicate of this simulator
 			/**
-			This function is named \c population in the Python interface.
+			
 			\param rep the index number of replicate which will be accessed
 			\return reference to population \c rep.
 			\note  The returned reference is temporary in the sense that
 			  the refered population will be invalid after another round
-			  of evolution. Therefore, the use of this function should
-			  be limited to \em immediate \em after \em retrival.
-			  If you would like to get a persistent population, please use \c getPopulation(rep).
+			  of evolution. If you would like to get a persistent population, please use \c getPopulation(rep).
 			*/
 			population& pop(UINT rep) const
 			{
@@ -211,9 +209,10 @@ namespace simuPOP
 
 			/// return a copy of population \c rep
 			/**
-			return a temporary reference of one of the populations. \em 'Reference' means
-			that the changes to the referred population will reflect to the one in simulator.
-			\em 'Temporary' means that the referred population might be invalid after evolution.
+			By default return a cloned copy of population \c rep of the simulator. If
+			<tt>destructive==True</tt>, the population is extracted from the simulator,
+			leaving a defunct simulator.
+
 			\param rep the index number of the replicate which will be obtained
 			\param destructive if true, destroy the copy of population within this simulator.
 				Default to false. <tt>getPopulation(rep, true)</tt> is a more efficient way
@@ -231,7 +230,7 @@ namespace simuPOP
 				return *new population( *m_ptrRep[rep]);
 			}
 
-			/// set mating scheme
+			/// set a new mating scheme
 			void setMatingScheme(const mating& matingScheme);
 
 			/// CPPONLY set population... unsafe!
@@ -341,11 +340,12 @@ namespace simuPOP
 			\param preOps operators that will be applied before evolution.
 			\c evolve() function will \em not check if they are active.
 			\param postOps operators that will be applied after evolution
+			\c evolve() function will \em not check if they are active.
 			\param end ending generation. Default to \c -1. In this case, there
 			is no ending generation and a simulator will only be ended by a
 			terminator. Otherwise, it should be a number greater than current
 			generation number.
-			\param dry run mode. Default to \c False.
+			\param dryrun dryrun mode. Default to \c False.
 			\result True if evolution performed successfully.
 			\sa simulator::step()
 			\note When <tt>end = -1</tt>, you can not specify negative generation
@@ -403,7 +403,7 @@ namespace simuPOP
 				return(m_applyOpToStoppedReps);
 			}
 
-			/// get simulator namespace. If <tt>rep > 0</tt> is given, return the namespace of replicate \c rep
+			/// Return the local namespace of population \c rep, equivalent to <tt>x.population(rep).vars(subPop)</tt>
 			PyObject* vars(UINT rep, int subPop=-1)
 			{
 				if( static_cast<UINT>(rep) >= m_numRep )
@@ -414,10 +414,6 @@ namespace simuPOP
 
 			/// save simulator in \c 'txt', \c 'bin' or \c 'xml' format
 			/**
-			The default format is \c 'txt' but the output is not supposed to be read.
-			\c 'bin' has smaller size and should be used for large populations.
-			\c 'xml' format is most verbose and should be used when you would
-			like to convert \c simuPOP populations to other formats.
 			\param filename filename to save the simulator. Default to \c simu.
 			\param format format to save. Default to \c auto. I.e., determine the
 			  format by file extensions.
