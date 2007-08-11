@@ -144,7 +144,7 @@ namespace simuPOP
 			/// create a map penetrance operator
 			/**
 			\param locus the locus index. The genotype of this locus will be examed.???
-			\param loci the loci indices. The genotypes of these loci will be examed.
+			\param loci the loci indexes. The genotypes of these loci will be examed.
 			\param penetrance a dictionary of penetrance. The genotype must be in the form
 				of 'a-b' for a single locus.
 			\param phase if True, <tt>a/b</tt> and <tt>b/a</tt> will have different penetrance values.
@@ -205,7 +205,7 @@ namespace simuPOP
 			/// create a multiple allele penetrance operator (penetrance according to diseased or wildtype alleles)
 			/**
 			\param locus the locus index. The genotype of this locus will be examed.???
-			\param loci the loci indices. The genotypes of these loci will be examed.
+			\param loci the loci indexes. The genotypes of these loci will be examed.
 			\param penetrance an array of penetrance values of AA, Aa, aa. A is the
 				wild type group. In the case of multiple loci, fitness should be in the order of
 				AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
@@ -286,7 +286,7 @@ namespace simuPOP
 			/**
 			\param peneOps a list of selectors???
 			\param mode can be one of \c PEN_Multiplicative, \c PEN_Additive, and \c PEN_Heterogeneity
-	
+
 			\test src_mlPenetrace.log Use of multi-locus penetrance operator
 			*/
 			mlPenetrance( const vectorop peneOps, int mode = PEN_Multiplicative,

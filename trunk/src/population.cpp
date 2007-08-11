@@ -713,7 +713,7 @@ namespace simuPOP
 		}
 		else
 		{
-			// reset indices etc.
+			// reset indexes etc.
 			m_numSubPop = static_cast<UINT>(m_inds.back().subPopID())+1;
 			m_subPopSize.resize(m_numSubPop);
 			m_subPopIndex.resize(m_numSubPop+1);

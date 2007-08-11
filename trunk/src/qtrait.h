@@ -111,7 +111,7 @@ namespace simuPOP
 			/// create a map quantitative trait operator
 			/**
 			\param locus the locus index. The quantitative trait is determined by genotype at this locus.
-			\param loci an array of locus indices. The quantitative trait is determined by genotype at these loci.
+			\param loci an array of locus indexes. The quantitative trait is determined by genotype at these loci.
 			\param qtrait a dictionary of quantitative traits. The genotype must be in the
 				form of 'a-b'. This is the mean	of the quantitative trait. The actual trait
 				value will be <tt>N(mean, sigma^2)</tt>. For multiple loci, the form is

@@ -192,7 +192,7 @@ namespace simuPOP
 
 			/// Return a reference to the \c rep replicate of this simulator
 			/**
-			
+
 			\param rep the index number of replicate which will be accessed
 			\return reference to population \c rep.
 			\note  The returned reference is temporary in the sense that
@@ -279,7 +279,7 @@ namespace simuPOP
 				return m_groups[m_curRep];
 			}
 
-			/// return group indices
+			/// return group indexes
 			vectori group()
 			{
 				return m_groups;
@@ -536,7 +536,7 @@ namespace simuPOP
 
 	};
 
-    /// load a simulator from a file with the specified mating scheme. The file format is by default determined by file extension (<tt>format="auto"</tt>). Otherwise, \c format can be one of \c txt, \c bin, or \c xml. 
+	/// load a simulator from a file with the specified mating scheme. The file format is by default determined by file extension (<tt>format="auto"</tt>). Otherwise, \c format can be one of \c txt, \c bin, or \c xml.
 	simulator& LoadSimulator(const string& file,
 		mating& mate,
 		string format="auto");

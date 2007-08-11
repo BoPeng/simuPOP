@@ -152,7 +152,7 @@ namespace simuPOP
 				for(UINT i=0; i<toSize; ++i)
 					toNum[i] = static_cast<ULONG>(m_rate[from][i]);
 			}
-			// create a vector and assign indices, then random shuffle
+			// create a vector and assign indexes, then random shuffle
 			// and assign info
 			toIndices.resize( spSize);
 			UINT k=0;

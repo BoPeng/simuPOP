@@ -1327,7 +1327,7 @@ namespace simuPOP
 
 			\param numOfAlleles an array of loci at which the numbers of distinct alleles
 			will be counted (<tt>numOfAlleles=[loc1, loc2, ...]</tt> where \c loc1 etc.
-			are absolute locus indices). This is done through the calculation of allele
+			are absolute locus indexes). This is done through the calculation of allele
 			frequencies. Therefore, allele frequencies will also be calculated if this
 			statistics is requested. This parameter will set the following variables
 			(\c carray objects of the numbers of alleles for \em all \em loci. Unrequested loci will
@@ -1357,7 +1357,7 @@ namespace simuPOP
 			in the population will be counted. You may use \c hasPhase to set if
 			a/b and b/a are the same genotype. This parameter will set the following
 			dictionary variables. Note that unlike list used for \c alleleFreq etc.,
-			the indices \c a, \c b of <tt>genoFreq[a][b]</tt> are dictionary keys,
+			the indexes \c a, \c b of <tt>genoFreq[a][b]</tt> are dictionary keys,
 			so you will get a \em KeyError when you used a wrong key. Usually,
 			<tt>genoNum.setDefault(a,{})</tt> is preferred.
 			\li <tt>genoNum[a][geno]</tt> and <tt>subPop[sp]['genoNum'][a][geno]</tt>,

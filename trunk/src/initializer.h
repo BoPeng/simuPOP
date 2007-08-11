@@ -148,7 +148,7 @@ namespace simuPOP
 				must be 1; or for a matrix of allele frequencies, each row corresponses to
 				a subpopulation.
 			\param subPop an array specifies applicable subpopulations
-			\param indRange a <tt>[begin, end]</tt> pair of the range of absolute indices
+			\param indRange a <tt>[begin, end]</tt> pair of the range of absolute indexes
 				of individuals, for example, <tt>([1,2])</tt>; or an array of <tt>[begin, end]</tt>
 				pairs, such as <tt>([[1,4],[5,6]])</tt>. This is how you can initialize individuals
 				differently within subpopulations. Note that ranges are in the form of [a,b).
@@ -157,7 +157,7 @@ namespace simuPOP
 			\param identicalInds whether or not make individual genotypies identical
 			in all subpopulation. If \c True, this operator will randomly generate genotype for
 			an individual and spread it to the whole subpopulation in the given range.
-			\param loci a vector of locus indices at which initialization will be done. If empty, apply to all loci.
+			\param loci a vector of locus indexes at which initialization will be done. If empty, apply to all loci.
 			\param locus a shortcut to \c loci
 			\param atPloidy initialize which copy of chromosomes. Default to all.
 			\param maleFreq male frequency. Default to \c 0.5. Sex will be initialized with this parameter.
@@ -244,7 +244,7 @@ namespace simuPOP
 				of genotypes of one individual. Should have length one or equal to \c subpop
 				or ranges or proportion. If value is an array of values, it should have
 				the same length as \c subpop, \c indRange or \c proportions.
-			\param loci a vector of loci indices. If empty, apply to all loci.
+			\param loci a vector of loci indexes. If empty, apply to all loci.
 			\param locus a shortcut to \c loci
 			\param atPloidy initialize which copy of chromosomes. Default to all.
 			\param subPop an array of applicable subpopulations. If values are given,
@@ -374,7 +374,7 @@ namespace simuPOP
 	/// a hybrid initializer???
 	/**
 	\c pyInit is a hybrid initializer. User should define a function with parameters
-	allele, ploidy and subpopulation indices, and return an allele value.
+	allele, ploidy and subpopulation indexes, and return an allele value.
 	Users of this operator must supply a Python function with parameter
 	<tt>(index, ploidy, subpop)</tt>.
 	This operator will loop through all individual in each subpopulation and call this function
@@ -394,7 +394,7 @@ namespace simuPOP
 				\li \c subpop is the subpopulation index.
 
 				The return value of this function should be an integer.
-			\param loci a vector of loci indices. If empty, apply to all loci.
+			\param loci a vector of loci indexes. If empty, apply to all loci.
 			\param locus a shortcut to \c loci
 			\param atPloidy initialize which copy of chromosomes. Default to all.
 			\param stage default to \c PreMating

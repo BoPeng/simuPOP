@@ -62,7 +62,7 @@ namespace simuPOP
 				It can also be an array of recombination rates. Should have the same length
 				as \c afterLoci or \c totNumOfLoci(). If \c totNumLoci, the last item can be ignored.???
 				The recombination rates are independent of locus distance.
-			\param afterLoci an array of locus indices. Recombination will occur after these
+			\param afterLoci an array of locus indexes. Recombination will occur after these
 				loci. If \c rate is also specified, they should have the same length. Default
 				to all loci (but meaningless for those loci located at the end of a chromosome).
 				If this parameter is given, it should be ordered, and can not include loci at
