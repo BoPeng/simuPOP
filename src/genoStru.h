@@ -310,10 +310,10 @@ BOOST_CLASS_VERSION(simuPOP::GenoStructure, 2)
 
 namespace simuPOP
 {
-	/// genotypic structure related functions, can be accessed from both individuals and populations
+	/// genotypic structure related functions, can be accessed from individuals, populations and simulator levels.
 	/**
-	Genotypic structure refers to the number of chromosomes, positions, the
-	number of loci on each chromosome, and allele and locus names etc. All individuals
+	Genotypic structure refers to the number of chromosomes, the
+	number and position of loci on each chromosome, and allele and locus names etc. All individuals
 	in a population share the same genotypic structure. Because class \c GenoStruTrait
 	is inherited by class \c population, class \c individual, and class \c simulator,
 	functions provided in this class can be accessed at the individual, population and
@@ -328,9 +328,9 @@ namespace simuPOP
 
 		public:
 			/// This object can not be created directly. It is created by a population.
-            /**
-            \test src_genoStruTrait.log Genotypic structure
-            */
+			/**
+			\test src_genoStruTrait.log Genotypic structure
+			*/
 			GenoStruTrait():m_genoStruIdx(TraitMaxIndex)
 			{
 			}
@@ -454,7 +454,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_lociPos;
 			}
 
-			/// return an (editable) array of loci positions of all loci
+			/// return a \c carray of loci positions of all loci
 			/**
 			\note Modifying loci position directly using this function is strongly discouraged.
 			*/
@@ -464,7 +464,7 @@ namespace simuPOP
 					s_genoStruRepository[m_genoStruIdx].m_lociPos.end() );
 			}
 
-			/// return an (editable) array of loci positions on a given chromosome
+			/// return a \c carray of loci positions on a given chromosome
 			/**
 			\note Modifying loci position directly using this function is strongly discouraged.
 			*/
@@ -486,7 +486,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_numChrom;
 			}
 
-			/// CPPONLY return an array of chromosome indices
+			/// CPPONLY return an array of chromosome indexes
 			const vectoru& chromIndex() const
 			{
 				return s_genoStruRepository[m_genoStruIdx].m_chromIndex;
@@ -504,10 +504,6 @@ namespace simuPOP
 			}
 
 			/// return the index of the last locus on a chromosome plus 1
-			/**
-			\note From the description of this function, the returned value may not be a valid index.
-				(This is consistant with Python ranges.)
-			*/
 			UINT chromEnd(UINT chrom) const
 			{
 				DBG_FAILIF( m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -518,7 +514,7 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_chromIndex[chrom+1];
 			}
 
-			/// return the absolute index of a locus on a chromosome
+			/// return the absolute index of a locus on a chromosome. c.f. \c chromLocusPair
 			UINT absLocusIndex(UINT chrom, UINT locus)
 			{
 				CHECKRANGECHROM(chrom);
@@ -527,7 +523,7 @@ namespace simuPOP
 				return( s_genoStruRepository[m_genoStruIdx].m_chromIndex[chrom] + locus );
 			}
 
-			/// return a <tt>(chrom, locus)</tt> pair of an absolute locus index
+			/// return a <tt>(chrom, locus)</tt> pair of an absolute locus index, c.f. \c absLocusIndex
 			std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
 
 			/// return the name of an allele (if previously specified). Default to allele index.
@@ -565,13 +561,13 @@ namespace simuPOP
 				return it - names.begin();
 			}
 
-			/// return an array of locus indices by locus names
+			/// return an array of locus indexes by locus names
 			vectoru lociByNames(const vectorstr& names) const
 			{
-				vectoru indices;
+				vectoru indexes;
 				for(vectorstr::const_iterator name = names.begin(); name != names.end(); ++name)
-					indices.push_back(locusByName(*name));
-				return indices;
+					indexes.push_back(locusByName(*name));
+				return indexes;
 			}
 
 			/// return the maximum allele value for all loci. Default to maximum allowed allele state.

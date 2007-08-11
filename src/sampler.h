@@ -112,7 +112,7 @@ namespace simuPOP
 	which shrink the population itself. \n
 
 	Individuals in sampled populations may or may not keep their original order but
-	their indices in the whole population are stored in a information field \c oldindex.
+	their indexes in the whole population are stored in a information field \c oldindex.
 	That is to say, you can use <tt>ind.info('oldindex')</tt> to check the original
 	position of an individual. \n
 

@@ -1481,13 +1481,13 @@ namespace simuPOP
 	/// return the compiler used to compile this simuPOP module
 	string compileCompiler();
 
-    /// return the date when this simuPOP module is compiled    
+	/// return the date when this simuPOP module is compiled
 	string compileDate();
 
-    /// return the Python version this simuPOP module is compiled for
+	/// return the Python version this simuPOP module is compiled for
 	string compilePyVersion();
 
-    /// return the platform on which this simuPOP module is compiled
+	/// return the platform on which this simuPOP module is compiled
 	string compilePlatForm();
 
 #ifdef BINARYALLELE
@@ -1498,11 +1498,11 @@ namespace simuPOP
 	void testCopyGenotype();
 #endif
 #endif
- 
+
 	/// CPPONLY initialize module simuPOP when using "import simuPOP"
 	bool initialize();
 
-    /// return \c True if this simuPOP module is optimized
+	/// return \c True if this simuPOP module is optimized
 	bool optimized();
 
 	bool mpi();
@@ -1529,18 +1529,17 @@ namespace simuPOP
 
 	UINT mpiRank();
 
-    /// CPPONLY
+	/// CPPONLY
 	UINT mpiSize();
 
 	/// CPPONLY
 	void mpiBarrier();
 
-    /// return the allele type of the current module. Can be \c binary, \c short, or \c long.
+	/// return the allele type of the current module. Can be \c binary, \c short, or \c long.
 	string alleleType();
 
-    /// return \f$ 1 \f$, \f$ 2^8-1 \f$, \f$ 2^{16}-1 \f$ for binary, short, or long allele modules, respectively
+	/// return \f$ 1 \f$, \f$ 2^8-1 \f$, \f$ 2^{16}-1 \f$ for binary, short, or long allele modules, respectively
 	ULONG maxAllele();
-
 
 	/// CPPONLY get a null stream that discard everything
 	ostream& cnull();

@@ -332,7 +332,7 @@ namespace simuPOP
 				cout << "Warning: Not enough unaffected individuals to be sampled." <<
 					"expected " << m_numControls[0] << " available: " << numUnaffected;
 
-			// save individual indices
+			// save individual indexes
 			m_caseIdx.resize(1);
 			m_controlIdx.resize(1);
 			m_caseIdx[0].resize(numAffected);
@@ -371,7 +371,7 @@ namespace simuPOP
 					cout << "Warning: Not enough unaffected individuals to be sampled." <<
 						"expected " << m_numControls[sp] << " available: " << numUnaffected[sp];
 
-				// save indices
+				// save indexes
 				m_caseIdx[sp].resize(numAffected[sp]);
 				m_controlIdx[sp].resize(numUnaffected[sp]);
 				for(size_t i=0, j=0, k=0, iEnd = pop.subPopSize(sp); i < iEnd; ++i)
@@ -399,7 +399,7 @@ namespace simuPOP
 			int numAffected = m_caseIdx[0].size();
 			int numUnaffected = m_controlIdx[0].size();
 
-			// keep first m_size individuals of shuffled indices
+			// keep first m_size individuals of shuffled indexes
 			int nCase, nControl;
 			if( m_numCases.empty()  || m_numCases[0] == 0 || m_numCases[0] > numAffected )
 				nCase = numAffected;
@@ -425,7 +425,7 @@ namespace simuPOP
 			for( i= nCase; i < numAffected; ++i)
 				pop.ind( m_caseIdx[0][i] ).setSubPopID( -1 );
 
-			// keep first m_size individuals of shuffled indices
+			// keep first m_size individuals of shuffled indexes
 			for( i=0; i < nControl; ++i)
 			{
 				nControlInSP[pop.subPopIndPair(m_controlIdx[0][i]).first]++;
@@ -455,7 +455,7 @@ namespace simuPOP
 				random_shuffle(m_caseIdx[sp].begin(), m_caseIdx[sp].end());
 				random_shuffle(m_controlIdx[sp].begin(), m_controlIdx[sp].end());
 
-				// keep first m_size individuals of shuffled indices
+				// keep first m_size individuals of shuffled indexes
 				nCase = std::min(m_numCases[sp], static_cast<int>(m_caseIdx[sp].size()));
 				for(int i=0; i < nCase; ++i)
 					pop.ind( m_caseIdx[sp][i],sp ).setSubPopID( 0 );
@@ -463,7 +463,7 @@ namespace simuPOP
 				for(int i= nCase, iEnd= m_caseIdx[sp].size(); i<iEnd; ++i)
 					pop.ind( m_caseIdx[sp][i],sp ).setSubPopID( -1 );
 
-				// keep first m_size individuals of shuffled indices
+				// keep first m_size individuals of shuffled indexes
 				nControl = std::min(m_numControls[sp], static_cast<int>(m_controlIdx[sp].size()));
 				for(int i=0; i < nControl; ++i)
 					pop.ind( m_controlIdx[sp][i],sp ).setSubPopID( 1 );

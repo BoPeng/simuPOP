@@ -123,7 +123,7 @@ namespace simuPOP
 			/// create a map selector
 			/**
 			\param locus the locus index. The genotype of this locus will be examed.???
-			\param loci the locus indices. The genotypes of these loci will be examed.
+			\param loci the locus indexes. The genotypes of these loci will be examed.
 			\param fitness a dictionary of fitness values. The genotype must be in the form of <tt>'a-b'</tt>
 				for a single locus, and <tt>'a-b|c-d|e-f'</tt> for multi-loci.
 			\param phase if \c True, genotypes \c a-b and \c b-a will have different fitness values. Default to false.
@@ -177,14 +177,13 @@ namespace simuPOP
 	\c wildtype and any other alleles are considered as diseased alleles.
 
 	This selector accepts an array of fitness values:
-	
-	\li For single-locus, \c fitness is the fitness for genotype AA, Aa, aa, while A stands for wildtype alleles. 
+
+	\li For single-locus, \c fitness is the fitness for genotype AA, Aa, aa, while A stands for wildtype alleles.
 	\li For a two-locus model, \c fitness is the fitness for genotype AABB, AABb, AAbb, AaBB, AbBb, Aabb, aaBB, aaBb and aaBb.
 	\li For a model with more than two loci, use a table of length 3^{n} in a order similar to the two-locus model.
-	
+
 	<funcForm>MaSelect</funcForm>
 
-	
 	*/
 	class maSelector: public selector
 	{

@@ -58,7 +58,7 @@ namespace simuPOP
 			corresponding input parameters. Mutators record the number of mutation events at each locus.
 
 			\param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c loci)
-			\param loci a vector of loci indices. Will be ignored only when single rate is specified.
+			\param loci a vector of loci indexes. Will be ignored only when single rate is specified.
 				Default to all loci.
 			\param maxAllele maximum allowable allele. Interpreted by each sub mutaor class. Default to \c pop.maxAllele().
 			*/
@@ -201,7 +201,7 @@ namespace simuPOP
 			/**
 			\param rate mutation rate. It is the 'probability to mutate'. The actual
 				mutation rate to any of the other \c K-1 allelic states are <tt>rates/(K-1)</tt>.
-			\param loci a vector of loci indices. Will be ignored only when single rate is specified.
+			\param loci a vector of loci indexes. Will be ignored only when single rate is specified.
 				Default to all loci.
 			\param maxAllele maximum allele that can be mutated to. For binary libraries
 			  allelic states will be <tt>[0, maxAllele]</tt>. Otherwise, they are <tt>[1, maxAllele]</tt>.

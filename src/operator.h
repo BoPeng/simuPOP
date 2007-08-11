@@ -124,7 +124,7 @@ namespace simuPOP
 			an output filename is required. For example, <tt> "'>>out%s_%s.xml' % (gen, rep)" </tt>
 			will output to <tt> >>>out1_1.xml </tt> for replicate \c 1 at generation \c 1.
 
-			\note 
+			\note
 			\li Negative generation numbers are allowed for \c begin, \c end and \c at. They are
 			intepretted as <tt>endGen + gen + 1</tt>. For example, <tt>begin = -2</tt> in
 			<tt>simu.evolve(..., end=20)</tt> starts at generation \c 19.

@@ -2829,7 +2829,7 @@ namespace simuPOP
 	}
 
 	ULONG maxAllele()
-	{	
+	{
 		return MaxAllele;
 	}
 

@@ -123,9 +123,9 @@ namespace simuPOP
 			///  @name constructor, destructor etc
 			//@{
 			/// Individuals are created by populations automatically. Do not call this function directly.
-            /**
-            \test src_individual.log Individual member functions
-            */
+			/**
+			\test src_individual.log Individual member functions
+			*/
 			individual():m_flags(0), m_subPopID(0)
 			{
 			}

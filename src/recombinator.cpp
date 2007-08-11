@@ -105,7 +105,7 @@ namespace simuPOP
 				vecP[index++] = .5;
 			}
 
-			// FIXME: remove zero indices for efficiency purpose, but there is no
+			// FIXME: remove zero indexes for efficiency purpose, but there is no
 			// real need for this if atLoci is not specified.
 
 			DBG_DO(DBG_RECOMBINATOR, cout << "Use all Loci. With rates "

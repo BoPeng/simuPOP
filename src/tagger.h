@@ -123,10 +123,10 @@ namespace simuPOP
 			int m_mode;
 	};
 
-	/// tagging according to parents' indices
+	/// tagging according to parents' indexes
 	/**
 	This during-mating operator set \c tag(), currently a pair of numbers, of each
-	individual with indices of his/her parents in the parental population. This information
+	individual with indexes of his/her parents in the parental population. This information
 	will be used by pedigree-related operators like \c affectedSibpairSample to track
 	the pedigree information. Since parental population will be discarded or stored after
 	mating, and tagging information will be passed with individuals, mating/population
