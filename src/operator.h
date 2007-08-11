@@ -124,9 +124,13 @@ namespace simuPOP
 			an output filename is required. For example, <tt> "'>>out%s_%s.xml' % (gen, rep)" </tt>
 			will output to <tt> >>>out1_1.xml </tt> for replicate \c 1 at generation \c 1.
 
-			\note Negative generation numbers are allowed for \c begin, \c end and \c at. They are
+			\note 
+			\li Negative generation numbers are allowed for \c begin, \c end and \c at. They are
 			intepretted as <tt>endGen + gen + 1</tt>. For example, <tt>begin = -2</tt> in
 			<tt>simu.evolve(..., end=20)</tt> starts at generation \c 19.
+			\li REP_ALL, REP_LAST, GRP_ALL are special constant that can only be used in the
+			constructor of an operator. That is to say, explicit test of <tt>rep() == REP_LAST</tt>
+			will not work.
 			*/
 			baseOperator(string output, string outputExpr, int stage,
 				int begin, int end, int step, vectorl at,
@@ -167,12 +171,13 @@ namespace simuPOP
 			bool isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly=false);
 
 			/// return applicable group
+			/// CPPONLY
 			int applicableGroup()
 			{
 				return m_grp;
 			}
 
-			/// set applicable group
+			/// CPPONLY set applicable group
 			/**
 			Default to \c GRP_ALL (applicable to all groups).
 			Otherwise, the operator is applicable to only \em one group of replicates.
@@ -184,18 +189,21 @@ namespace simuPOP
 			}
 
 			/// return applicable replicate
+			/// CPPONLY
 			int applicableReplicate()
 			{
 				return m_rep;
 			}
 
 			/// set applicable replicate
+			/// CPPONLY
 			void setApplicableReplicate(int rep)
 			{
 				m_rep = rep;
 			}
 
 			/// set applicable generation parameters: \c begin, \c end, \c step and \c at
+			/// CPPONLY
 			void setActiveGenerations(int begin=0, int end=-1, int step=1, vectorl at=vectorl())
 			{
 				m_beginGen = begin;
@@ -215,6 +223,7 @@ namespace simuPOP
 			//@{
 
 			/// set applicable stage. Another way to set \c stage parameter.
+			/// CPPONLY
 			void setApplicableStage(int stage)
 			{
 				RESETFLAG(m_flags, PreDuringPostMating);
@@ -222,24 +231,28 @@ namespace simuPOP
 			}
 
 			/// set if this operator can be applied \em pre-mating
+			/// CPPONLY
 			bool canApplyPreMating()
 			{
 				return ISSETFLAG(m_flags, m_flagPreMating);
 			}
 
 			/// set if this operator can be applied \em during-mating
+			/// CPPONLY
 			bool canApplyDuringMating()
 			{
 				return ISSETFLAG(m_flags, m_flagDuringMating);
 			}
 
 			/// set if this operator can be applied \em post-mating
+			/// CPPONLY
 			bool canApplyPostMating()
 			{
 				return ISSETFLAG(m_flags, m_flagPostMating);
 			}
 
 			/// set of this operator can be applied \em pre- or \em post-mating
+			/// CPPONLY
 			bool canApplyPreOrPostMating()
 			{
 				return ISSETFLAG(m_flags, m_flagPreMating) || ISSETFLAG(m_flags, m_flagPostMating);
@@ -270,6 +283,7 @@ namespace simuPOP
 			}
 
 			/// determine if this operator can be used in a MPI module
+			/// CPPONLY
 			bool MPIReady()
 			{
 				return ISSETFLAG(m_flags, m_flagMPI);
@@ -350,6 +364,7 @@ namespace simuPOP
 			//@{
 
 			/// set ouput stream, if was not set during construction
+			/// CPPONLY
 			void setOutput(string output="", string outputExpr="")
 			{
 				m_ostream.setOutput(output, outputExpr);

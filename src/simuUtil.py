@@ -30,64 +30,6 @@ simuPOP utilities.
 This module provides some commonly used operators
 and format conversion utilities.
 
-
-Function list:
-
-- getGenotype: get genotype of specified loci, subpopulation, individual range
-               etc and return as an array.
-- listVars:    list a dictionary (usually pop.vars()) in a human readable format,
-               use wxPython if it is available
-- ConstSize
-  LinearExpansion
-  ExponentialExpansion
-  InstantExpansion
-               Sample demographic functions. Return a function that can be passed
-               to newSubPopSizeFunc.
-- MigrIslandRates
-  MigrSteppingStoneRates
-               Migration rate for two popular migration models.
-- tab
-  endl       
-               two operators
-- dataAggregator
-  CollectValue
-  collector
-               a data collector to collect information over the generations
-               Currently used by simuRPy, possibly needs an overhaul.
-- trajFunc
-  FreqTrajectoryMultiStochWithSubPop
-               simulate trajectory in the case of subpopulation, a wrapper
-               to C++ version FreqTrajectoryMultiStoch
-- SaveFstat
-  saveFstat (operator)
-  LoadFstat
-  LoadGCData
-  SaveLinkage
-  saveLinkage (operator)
-  SaveQTDT
-  SaveCSV
-               Save, and sometimes load from various format. Some functions
-               need more testing.
-- TDT_gh
-  LOD_gh
-  ChiSq_test
-  LOD_merlin
-  VC_merlin
-  Regression_merlin
-               Various gene mapping routines, calling genehunter or merlin
-               They work on samples saved in specified formats.
-               need more testing.
-- Sibpair_TDT_gh
-  Sibpair_LOD_gh
-  Sibpair_LOD_merlin
-  CaseControl_ChiSq
-  QtraitSibs_Reg_merlin
-  QtraitSibs_VC_merlin
-  LargePeds_Reg_merlin
-  LargePeds_VC_merlin
-               Various gene mapping routines, acting on a population.
-               These functions need more testing.
-               
 """
 
 import exceptions, operator, types, os, sys, getopt, re, math, tempfile, shutil

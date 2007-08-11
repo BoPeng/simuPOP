@@ -27,24 +27,24 @@
 Module simuOpt provides two important functions. 
 
 - control which simuPOP module to load, and how it is loaded using function
-setOptions.
+  setOptions  .
 
 - provide a simple way to set simulation options.
 
 The option description list consists of dictionaries with some predefined keys.
 Each dictionary defines an option. With defined properties, this option can be
-obtained from command line (using short (-h, -k=100) or long (--help, 
---allele=2) command line options), a configuration file, interactive user input,
+obtained from command line (using short  (-h, -k=100)  or long  (--help, 
+--allele=2)  command line options), a configuration file, interactive user input,
 or a Tcl/Tk or wxPython based parameter dialog.
 
 The option description dictionaries can have the following keys:
 
-arg: short command line option name. 'h' checks the presence of argument -h. 
-  If an argument is expected, add a comma to the option name. For example, 'p:'
-  matches command line option -p=100 or -p 100.
+arg: short command line option name.  'h'  checks the presence of argument  -h  . 
+If an argument is expected, add a comma to the option name. For example, 'p:'
+matches command line option -p=100 or -p 100.
 
 longarg: long command line option name. 'help' checks the presence of argument
-  '--help'. 'mu=' matches command line option --mu=0.001 or -mu 0.001.
+  '--help'  .  'mu='  matches command line option --mu=0.001 or -mu 0.001.
 
 label: The label of the input field in a parameter dialog, and as the prompt for
   user input.
