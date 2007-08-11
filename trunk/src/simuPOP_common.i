@@ -336,7 +336,7 @@ population.dvars = dvars
 simulator.dvars = dvars
 
 def MergePopulations(pops, newSubPopSizes=[], keepAncestralPops=-1):
-    'merge several populations and create a new population'
+    'merge several populations with the same genotypic structure and create a new population'
     if len(pops) == 0:
         raise exceptions.ValueError("MergePopuations: empty population list is given")
     res = pops[0].clone()
@@ -350,7 +350,7 @@ def MergePopulations(pops, newSubPopSizes=[], keepAncestralPops=-1):
 
 
 def MergePopulationsByLoci(pops, newNumLoci=[], newLociPos=[], byChromosome=False):
-    'merge several populations by loci and create a new population'
+    'merge several populations of the same size by loci and create a new population'
     if len(pops) == 0:
         raise exceptions.ValueError("MergePopuations: empty population list is given")
     res = pops[0].clone()
