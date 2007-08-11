@@ -540,7 +540,7 @@ namespace simuPOP
 
 	};
 
-    /// load a simulator from a file with the specified mating scheme. The file format is by default determined by \c file extension (<tt>format="auto"</tt>). Otherwise, \c format can be one of \c txt, \c bin, or \c xml. 
+    /// load a simulator from a file with the specified mating scheme. The file format is by default determined by file extension (<tt>format="auto"</tt>). Otherwise, \c format can be one of \c txt, \c bin, or \c xml. 
 	simulator& LoadSimulator(const string& file,
 		mating& mate,
 		string format="auto");

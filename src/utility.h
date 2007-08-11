@@ -100,7 +100,7 @@ namespace simuPOP
 	bool debug(DBG_CODE code);
 #endif
 
-	/// show all debug codes (print to \c cout)
+	/// list all debug codes
 	void ListDebugCode();
 
 	/// dbg string for a code CPPONLY
@@ -1462,7 +1462,7 @@ namespace simuPOP
 	/// for backward compatibilit, will remove later
 	void setRNG(const string rng="", unsigned long seed=0);
 
-	/// list all available random number generators
+	/// list the name of all available random number generators
 	vectorstr ListAllRNG();
 
 	/// CPPONLY for backward compatibility, will remove later
