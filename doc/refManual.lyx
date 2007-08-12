@@ -1,4 +1,4 @@
-#LyX 1.5.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -3648,14 +3648,6 @@ name "Simulator"
 \end_layout
 
 \begin_layout Standard
-The population evolution is implemented in simulator, which manages and
- manipulates other components of simuPOP.
- Simulator is the basic and important simulation function or environment
- in simuPOP.
- Without it, we may only call the simuPOP 'POP'.
-\end_layout
-
-\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -4699,12 +4691,12 @@ def myOperator(pop, para):
 
 \begin_layout Standard
 
-  'do whatever you want'
+    'do whatever you want'
 \end_layout
 
 \begin_layout Standard
 
-  return True
+    return True
 \end_layout
 
 \end_inset
@@ -4759,10 +4751,9 @@ outputExpr
 
 \end_deeper
 \begin_layout Standard
-This operator allows implementation of arbitrarily complicated operators,
- at a cost of efficiency.
- Of course, to use this operator, you will have to know how to use population-re
-lated functions.
+This operator allows implementation of arbitrarily complicated operators,.
+ To use this operator, you will have to know how to use population-related
+ functions.
  The following example shows how to implement a dynamic mutator which mutate
  loci according to their allele frequencies.
 \end_layout

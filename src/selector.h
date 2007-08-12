@@ -36,34 +36,37 @@ using std::min;
 
 namespace simuPOP
 {
-	/// genetic selection
+	/// A base selection operator for all selectors
 	/**
 	Genetic selection is tricky to simulate since there are many different \em fitness
 	values and many different ways to apply selection. \c simuPOP employs an
 	\em 'ability-to-mate' approach. Namely, the probability that an individual will be
 	chosen for mating is proportional to its fitness value. More specifically,
-	\li \c PreMating selectors assign fitness values to each individual.
-	\li During sexless mating (e.g. \c binomialSelection???), individuals are chosen
+	\li \c PreMating selectors assign fitness values to each individual, and mark part or
+        all subpopulations as under selection.
+	\li During sexless mating (e.g. \c binomialSelection mating scheme), individuals are chosen
 		at probabilities that are proportional to their fitness values. If there are
 		\f$ N \f$ individuals with fitness values \f$ f_{i},i=1,...,N \f$, individual
 		\f$ i \f$ will have probability \f$ \frac{f_{i}}{\sum_{j}f_{j}} \f$ to be chosen
 		and passed to the next generation.
 	\li During \c randomMating, males and females are separated. They are chosen from
-	their respective groups in the same manner and mate.
+	their respective groups in the same manner as \c binomialSelection and mate.\n
 
-	It is not very clear that our method agrees with the traditional
-	<em>'average number of offspring'</em> definition of fitness. (Note that this concept
-	is very difficult to simulate since we do not know who will determine the number of
-	offspring if two parents are involved.)
+	All of the selection operators, when applied, will set an information field 
+        \c fitness (configurable) and then mark part or all subpopulations as under
+        selection. (You can use different selectors to simulate varying selection
+        intensity for different subpopulations). Then, a 'selector-aware' mating scheme
+        can select individuals according to this \c fitness information field. This implies
+        that \n
 
-	All of the selection operators, when applied, will set a variable \c fitness and an
-	indicator so that 'selector-aware' mating scheme can select individuals according to
-	these values. Hence, two consequences are stated below:
-	\li selector alone can not do selection! Only mating schemes can actually select individuals.
-	\li selector has to be \c PreMating operator. This is not a problem when you use the
+	\li Only mating schemes can actually select individuals.
+	\li Selector has to be \c PreMating operator. This is not a problem when you use the
 	operator form of the selectors since their default stage is \c PreMating. However,
 	if you use the function form of these selectors in a \c pyOperator, make sure to
 	set the stage of \c pyOperator to \c PreMating.
+        
+        \note You can not apply two selectors to the same subpopulation, because only one
+        fitness value is allowed for each individual. 
 	*/
 	class selector: public baseOperator
 	{
@@ -90,7 +93,7 @@ namespace simuPOP
 				return new selector(*this);
 			}
 
-			/// calculate/return the fitness value???
+			/// CPPONLY
 			virtual double indFitness(individual *, ULONG gen)
 			{
 				///
@@ -98,7 +101,7 @@ namespace simuPOP
 				return 1.;
 			}
 
-			/// set fitness to all individuals???
+			/// set fitness to all individuals. No selection will happen!
 			bool apply(population& pop);
 
 			/// used by Python print function to print out the general information of the selector

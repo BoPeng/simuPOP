@@ -77,22 +77,14 @@ if(debug(DBG_PROFILE)) \
 namespace simuPOP
 {
 
-	// DEVONLY{This is a template class that manage the whole simulation process. It glues
-	// three major components of simuPOP together: population, mating, Operation.
-	// More specifically, a simuPOP<population> object manages several copies of
-	// population (or one of its subclasses) plus a 'scratch population'; it has
-	// a mating object that knows how to generate next gen; it controls
-	// the evolution process by applying pre- during- and post- mating Operators
-	// during evolution. }
-
 	/// simulator manages several replicates of a population, evolve them using given mating scheme and operators
 	/**
 	Simulators combine three important components of simuPOP:
-	population, mating scheme and operators together. A
+	population, mating scheme and operator together. A
 	simulator is created with an instance of \c population, a
 	replicate number \c rep and a mating scheme. It makes \c rep
 	number of replicates of this population and control the
-	evolution process of them. \n
+	evolutionary process of them. \n
 
 	The most important function of a simulator is \c evolve().
 	It accepts an array of operators as its parameters,
@@ -100,7 +92,7 @@ namespace simuPOP
 	populations at the beginning and the end of evolution, respectively,
 	whereas	\c ops will be applied at every generation. \n
 
-	Simulators separate operators into \em pre-, \em during-, and
+	A simulators separates operators into \em pre-, \em during-, and
 	\em post-mating operators. During evolution, a simulator first
 	apply all pre-mating operators and then call the \c mate()
 	function of the given mating scheme, which will call
@@ -108,22 +100,18 @@ namespace simuPOP
 	After mating is completed, post-mating operators are
 	applied to the offspring in the order at which they appear in the operator list. \n
 
-	Operators can be applied to a specific replicate, a group of replicates,
-	or specific generations, determined by the \c rep, \c grp, \c begin,
-	\c end, \c step, and \c at parameters.\n
 
 	Simulators can evolve a given number of generations (the
 	\c end parameter of \c evolve), or evolve indefinitely until
-	a certain type of operators called terminators terminates it. In this
+	a certain type of operators called terminator terminates it. In this
 	case, one or more terminators will check the status of
 	evolution and determine if the simulation should be stopped.
 	An obvious example of such a terminator is a fixation-checker. \n
 
-	Finally, a simulator can be saved to a file in the format
-	of \c 'txt', \c 'bin', or \c 'xml'. So we can stop a
-	simulation and resume it at another time or on another
-	machine. It is also a good idea to save a snapshot of a
-	simulation every several hundred generations.
+	A simulator can be saved to a file in the format
+	of \c 'txt', \c 'bin', or \c 'xml'. This allows youm to stop a
+	simulator and resume it at another time or on another
+	machine.
 	*/
 	class simulator : public GenoStruTrait
 	{
@@ -318,28 +306,24 @@ namespace simuPOP
 
 			/// evolve all replicates of the population, subject to operators
 			/**
-			Evolve to the \c end generation unless an operator (terminator)
-			stops it earlier.
+			Evolve to the \c end generation unless \c end=-1. An operator (terminator)
+			may stop the evolution earlier.
 			\n
-			\c ops will be applied in the order of:
+			\c ops will be applied to each replicate of the population in the order of:
 			\li all pre-mating opertors
 			\li during-mating operators called by the mating scheme at the
 			  birth of each offspring
-			\li  all post-mating operators
+			\li all post-mating operators
 			If any pre- or post-mating operator fails to apply, that
 			replicate will be stopped. The behavior of the simulator
 			will be determined by flags \c applyOpToStoppedReps and \c stopIfOneRepStopss.
-			This is exactly how terminators work.
-
-			\note that an operator can be applied at multiple stages, e.g.
-			stage=PrePostMating.
 
 			\param ops operators that will be applied at each generation,
 			if they are active at that generation. (Determined by
 			the \c begin, \c end, \c step and \c at parameters of the operator.)
 			\param preOps operators that will be applied before evolution.
 			\c evolve() function will \em not check if they are active.
-			\param postOps operators that will be applied after evolution
+			\param postOps operators that will be applied after evolution. 
 			\c evolve() function will \em not check if they are active.
 			\param end ending generation. Default to \c -1. In this case, there
 			is no ending generation and a simulator will only be ended by a

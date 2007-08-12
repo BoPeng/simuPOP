@@ -48,6 +48,19 @@ namespace simuPOP
 	{
 		public:
 			/// create an initializer. default to be always active
+			/**
+			\param subPop an array specifies applicable subpopulations
+			\param indRange a <tt>[begin, end]</tt> pair of the range of absolute indexes
+				of individuals, for example, <tt>([1,2])</tt>; or an array of <tt>[begin, end]</tt>
+				pairs, such as <tt>([[1,4],[5,6]])</tt>. This is how you can initialize individuals
+				differently within subpopulations. Note that ranges are in the form of [a,b).
+				I.e., range [4,6] will intialize individual 4, 5, but not 6. As a shortcut for [4,5],
+				you can use [4] to specify one individual.
+			\param loci a vector of locus indexes at which initialization will be done. If empty, apply to all loci.
+			\param locus a shortcut to \c loci
+			\param atPloidy initialize which copy of chromosomes. Default to all.
+			\param maleFreq male frequency. Default to \c 0.5. Sex will be initialized with this parameter.
+			*/
 			initializer( const vectoru& subPop=vectoru(),
 				intMatrix indRange=intMatrix(),
 				const vectoru& loci = vectoru(),
@@ -89,17 +102,17 @@ namespace simuPOP
 				return "<simuPOP::initializer>";
 			}
 
-			/// set the range of a population \c pop???
+			/// CPPONLY
 			void setRanges(population& pop);
 
-			/// ???
+			/// CPPONLY
 			void initSexIter()
 			{
 				if(! m_sex.empty())
 					m_sexItr = m_sex.begin();
 			}
 
-			/// ???
+			/// CPPONLY
 			Sex nextSex();
 
 		protected:
@@ -132,11 +145,11 @@ namespace simuPOP
 
 	/// initialize genotypes by given allele frequencies, and sex by male frequency
 	/**
-	This operator accepts \c alleleFreq or \c alleleFreqs.??? The first one
-	ignores subpopulation structure while the second one gives different initial
-	allele frequencies to different \c subpop or ranges. Allele frequencies can
-	differ in \c subpop. Sex is also assigned randomly.
-
+	This operator assigns alleles at \c loci with given allele frequencies. By default,
+	all individuals will be assigned with random alleles. If \c identicalInds=True, an
+	individual is assigned with random alleles and is then copied to all others. If \c subPop
+	or \c indRange is given, multiple arrays of alleleFreq can be given to given different
+	frequencies for different subpopulation or individual ranges.
 	<funcForm>InitByFreq</funcForm>
 	*/
 	class initByFreq: public initializer
@@ -146,21 +159,10 @@ namespace simuPOP
 			/**
 			\param alleleFreq an array of allele frequencies. The sum of all the frequencies
 				must be 1; or for a matrix of allele frequencies, each row corresponses to
-				a subpopulation.
-			\param subPop an array specifies applicable subpopulations
-			\param indRange a <tt>[begin, end]</tt> pair of the range of absolute indexes
-				of individuals, for example, <tt>([1,2])</tt>; or an array of <tt>[begin, end]</tt>
-				pairs, such as <tt>([[1,4],[5,6]])</tt>. This is how you can initialize individuals
-				differently within subpopulations. Note that ranges are in the form of [a,b).
-				I.e., range [4,6] will intialize individual 4, 5, but not 6. As a shortcut for [4,5],
-				you can use [4] to specify one individual.
+				a subpopulation or range.
 			\param identicalInds whether or not make individual genotypies identical
 			in all subpopulation. If \c True, this operator will randomly generate genotype for
 			an individual and spread it to the whole subpopulation in the given range.
-			\param loci a vector of locus indexes at which initialization will be done. If empty, apply to all loci.
-			\param locus a shortcut to \c loci
-			\param atPloidy initialize which copy of chromosomes. Default to all.
-			\param maleFreq male frequency. Default to \c 0.5. Sex will be initialized with this parameter.
 			\param sex an array of sex <tt>[Male, Female, Male...]</tt> for individuals. The length of sex will not
 			be checked. If it is shorter than the number of individuals, sex will be reused from the beginning.
 			\param stage default to \c PreMating
@@ -244,13 +246,6 @@ namespace simuPOP
 				of genotypes of one individual. Should have length one or equal to \c subpop
 				or ranges or proportion. If value is an array of values, it should have
 				the same length as \c subpop, \c indRange or \c proportions.
-			\param loci a vector of loci indexes. If empty, apply to all loci.
-			\param locus a shortcut to \c loci
-			\param atPloidy initialize which copy of chromosomes. Default to all.
-			\param subPop an array of applicable subpopulations. If values are given,
-			should have equal length to values.
-			\param indRange a <tt>[begin, end]</tt> pair of range of individuals; or
-			an array of <tt>[begin, end]</tt> pairs.
 			\param proportions an array of percentages for each item in values. If given,
 			assign given genotypes randomly.
 			\param maleFreq male frequency
@@ -310,7 +305,7 @@ namespace simuPOP
 			vectorf m_proportion;
 	};
 
-	/// initialize genotype by value and then copy to all individuals
+	/// copy the genotype of an individual to all individuals 
 	/**
 	<tt>Spread(ind, subPop)</tt> spreads the genotype of \c ind to all
 	individuals in an array of subpopulations. The default value of \c subPop
@@ -371,7 +366,7 @@ namespace simuPOP
 
 	};
 
-	/// a hybrid initializer???
+	/// A python operator that uses a user-defined function to initialize individuals
 	/**
 	\c pyInit is a hybrid initializer. User should define a function with parameters
 	allele, ploidy and subpopulation indexes, and return an allele value.
