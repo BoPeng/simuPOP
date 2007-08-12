@@ -222,7 +222,7 @@ namespace simuPOP
 		m_selectionFlags()
 	{
 		DBG_DO(DBG_POPULATION,
-			cout << "Copy constructor of population is called\n" << endl);
+			cout << "Copy constructor of population is called" << endl);
 
 		try
 		{

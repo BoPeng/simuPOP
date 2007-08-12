@@ -140,6 +140,7 @@ print pop.dvars(1).alleleNum[0][1]
 #file log/ref_localNamespace.log
 pop = population(subPop=[1000, 2000], loci=[1])
 InitByFreq(pop, [0.2, 0.8])
+Stat(pop, popSize=1, alleleFreq=[0])
 print pop.evaluate('alleleNum[0][0] + alleleNum[0][1]')
 pop.execute('newPopSize=int(popSize*1.5)')
 ListVars(pop.vars(), level=1, useWxPython=False)

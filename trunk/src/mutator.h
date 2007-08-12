@@ -32,9 +32,9 @@
 
 namespace simuPOP
 {
-	/// mutator class
+	/// Base class of all mutators
 	/**
-	The base class of all functional mutators. It is not supposed to be called directly.
+	The base class of all functional mutators. It is not supposed to be called directly. 
 
 	Every mutator can specify \c rate (equal rate or different rates for different
 	loci) and a vector of applicable loci (default to all but should have the same
@@ -55,7 +55,9 @@ namespace simuPOP
 			All mutators have the following common parameters. However, the actual meaning
 			of these parameters may vary according to different model. The only differences
 			between the following mutators are they way they actually mutate an allele, and
-			corresponding input parameters. Mutators record the number of mutation events at each locus.
+			corresponding input parameters. The number of mutation events at each locus is
+                        recorded and can be accessed from the \c mutationCount or \c mutationCounts 
+                        functions.
 
 			\param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c loci)
 			\param loci a vector of loci indexes. Will be ignored only when single rate is specified.
@@ -187,10 +189,8 @@ namespace simuPOP
 	/**
 	This mutator mutate an allele to another allelic state with equal probability.
 	The specified mutation rate is actually the 'probability to mutate'. So the
-	mutation rate to any other allelic state is actually \f$ (rate/(K-1)) \f$, where
-	\f$ K \f$ is specified by parameter \c maxAllele. You can also specify states for
-	this mutator. If the state parameter is given, all alleles must be one of the
-	states, and mutation will happen among them. states is defaulted to \c 1-maxAllele.???
+	mutation rate to any other allelic state is actually \f$ \frac{rate}{K-1} \f$, where
+	\f$ K \f$ is specified by parameter \c maxAllele.
 	<funcForm>KamMutate</funcForm>
 	\sa Crow & Kimura 1970
 	*/
@@ -238,7 +238,7 @@ namespace simuPOP
 			}
 	};
 
-	/// stepwise mutation model
+	/// The stepwise mutation model
 	/**
 	<em>Stepwise Mutation Model</em> (SMM) assumes that alleles are represented by integer values
 	and that a mutation either increases or decreases the allele value by one.
@@ -402,9 +402,9 @@ namespace simuPOP
 			PyObject* m_func;
 	};
 
-	/// hybrid mutator
+	/// A hybrid mutator
 	/**
-	Hybrid mutator. Mutation rate etc. are set just like others and you are supposed to
+	Parameters such as mutation rate of this operator are set just like others and you are supposed to
 	provide a Python function to return a new allele state given an old state. \c pyMutator
 	will choose an allele as usual and call your function to mutate it to another allele.
 	<funcForm>PyMutate</funcForm>
@@ -415,7 +415,7 @@ namespace simuPOP
 			/// create a \c pyMutator
 			/**
 				  \test src_pyMutator.log Operator pyMutator
-					  */
+			*/
 			pyMutator(const vectorf & rate=vectorf(),
 				const vectoru & loci=vectoru(), UINT maxAllele=0,
 				PyObject* func=NULL,

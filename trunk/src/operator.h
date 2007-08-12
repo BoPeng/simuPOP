@@ -881,7 +881,7 @@ namespace simuPOP
 			DBG_CODE m_code;
 	};
 
-	/// the one and only Python operator???
+	/// A python operator that directly operate a population
 	/**
 	This operator accepts a function that can take the form of
 	\li <tt>func(pop)</tt> when <tt>stage=PreMating</tt> or \c PostMating, without setting \c param;
