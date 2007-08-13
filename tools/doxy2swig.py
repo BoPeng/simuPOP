@@ -578,7 +578,7 @@ class Doxy2SWIG:
         add_desc = False
         begin_desc = False
         for line in open(file).readlines():
-            if line.startswith('def'):
+            if line.startswith('def '):
                 # remove def, and ending :
                 self.content.append({'type': 'global_function', 'ignore': False})
                 self.content[-1]['Name'] = line[4:].split('(')[0]
@@ -623,7 +623,7 @@ class Doxy2SWIG:
         begin_desc = False
         add_argu = False
         for line in open(file).readlines():
-            if line.startswith('def'):
+            if line.startswith('def '):
                 # remove def, and ending :
                 self.content.append({'type': 'module', 'module': module})
                 self.content[-1]['Name'] = line[4:].split('(')[0]
@@ -640,7 +640,7 @@ class Doxy2SWIG:
                     self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
                     add_def = True
             elif add_def:
-                self.content[-1]['Usage'] += line.strip()
+                self.content[-1]['Usage'] += line.strip() + ' '
                 if line.strip().endswith(':'):
                     self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
                     add_desc = True

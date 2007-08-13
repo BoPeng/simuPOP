@@ -27,23 +27,6 @@ def opRecorder(*args, **kwargs):
     
 class TestOperator(unittest.TestCase):
 
-    def testMemberFunctions(self):
-        'Testing common operator member functions'
-        d = dumper()
-        self.assertEqual(d.canApplyPreMating(), False)
-        self.assertEqual(d.canApplyDuringMating(), False)
-        self.assertEqual(d.canApplyPostMating(), True)
-        # apply to any replicate
-        self.assertEqual(d.applicableReplicate(), REP_ALL)
-        # apply to any group
-        self.assertEqual(d.applicableGroup(), GRP_ALL)
-        # set grp
-        d.setApplicableGroup(GRP_ALL)
-        self.assertEqual(d.applicableGroup(), GRP_ALL)
-        #
-        d.setApplicableReplicate(REP_LAST)
-        self.assertEqual(d.applicableReplicate(), REP_LAST)
-
     def testStage(self):
         'Testing stage parameter of operators'
         simu = simulator(
@@ -130,7 +113,7 @@ class TestOperator(unittest.TestCase):
         simu = simulator( population(), 
                 noMating(), rep=5)
         simu.evolve([
-            output("a", output=">a.txt"),
+            pyOutput("a", output=">a.txt"),
             ], end=10)
         # although everyone have written to this file,
         # only the last one will be kept
@@ -140,7 +123,7 @@ class TestOperator(unittest.TestCase):
         # you can ignore >
         simu.setGen(0)
         simu.evolve([
-            output("a", output="a.txt"),
+            pyOutput("a", output="a.txt"),
             ], end=10)
         # although everyone have written to this file,
         # only the last one will be kept
@@ -150,7 +133,7 @@ class TestOperator(unittest.TestCase):
         # >>
         simu.setGen(0)
         simu.evolve([
-            output("a", output=">>a.txt"),
+            pyOutput("a", output=">>a.txt"),
             ], end=10)
         # a is appended 5 rep * 11 generations
         self.assertFileContent("a.txt", 'a'*55)
@@ -159,7 +142,7 @@ class TestOperator(unittest.TestCase):
         # rep = ...
         simu.setGen(0)
         simu.evolve([
-            output("a", output=">>a.txt", rep=REP_LAST),
+            pyOutput("a", output=">>a.txt", rep=REP_LAST),
             ], end=10)
         # a is appended 5 rep * 11 generations
         self.assertFileContent("a.txt", 'a'*11)
@@ -167,7 +150,7 @@ class TestOperator(unittest.TestCase):
         simu.setGen(0)
         simu.setGroup([0,0,1,1,1])
         simu.evolve([
-            output("b", output=">>>a.txt", grp=1),
+            pyOutput("b", output=">>>a.txt", grp=1),
             ], end=10)
         # a is appended 5 rep * 11 generations
         self.assertFileContent("a.txt", 'a'*11+'b'*33)
@@ -190,7 +173,7 @@ class TestOperator(unittest.TestCase):
             noMating(), rep=5)
         # each replicate
         simu.evolve([
-            output("a", outputExpr="'rep%d.txt'%rep"),
+            pyOutput("a", outputExpr="'rep%d.txt'%rep"),
             ], end=10)
         # although everyone have written to this file,
         # only the last one will be kept
@@ -201,7 +184,7 @@ class TestOperator(unittest.TestCase):
         # you can ignore >
         simu.setGen(0)
         simu.evolve([
-            output("a", outputExpr="'>rep%d.txt'%rep"),
+            pyOutput("a", outputExpr="'>rep%d.txt'%rep"),
             ], end=10)
         # although everyone have written to this file,
         # only the last one will be kept
@@ -212,7 +195,7 @@ class TestOperator(unittest.TestCase):
         # >>
         simu.setGen(0)
         simu.evolve([
-            output("a", outputExpr="'>>rep%d.txt'%rep"),
+            pyOutput("a", outputExpr="'>>rep%d.txt'%rep"),
             ], end=10)
         # a is appended 1 rep * 11 generations
         for i in range(5):
@@ -221,7 +204,7 @@ class TestOperator(unittest.TestCase):
         # each generation?
         simu.setGen(0)
         simu.evolve([
-            output("a", outputExpr="'>>gen%d.txt'%gen"),
+            pyOutput("a", outputExpr="'>>gen%d.txt'%gen"),
             ], end=10)
         # a is appended 1 rep * 11 generations
         for i in range(11):

@@ -39,7 +39,7 @@ namespace simuPOP
 
 	// ///////////////////////// Quantitative trait ////////////////////////
 
-	/// basic class of quantitative trait
+	/// base class of quantitative trait
 	/**
 	Quantitative trait is the measure of certain phenotype for given genotype.
 	Quantitative trait is similar to penetrance in that the consequence of
@@ -74,6 +74,7 @@ namespace simuPOP
 				return new quanTrait(*this);
 			}
 
+			/// CPPONLY
 			/// calculate/return quantitative trait etc.
 			virtual double qtrait(individual *)
 			{
@@ -141,6 +142,7 @@ namespace simuPOP
 				return new mapQuanTrait(*this);
 			}
 
+			/// CPPONLY
 			/// currently assuming diploid
 			virtual double qtrait(individual * ind);
 
@@ -215,6 +217,7 @@ namespace simuPOP
 				return new maQuanTrait(*this);
 			}
 
+			/// CPPONLY
 			/// currently assuming diploid
 			virtual double qtrait(individual * ind);
 
@@ -303,6 +306,7 @@ namespace simuPOP
 				throw ValueError("Multi-loci selector can not be nested.");
 			}
 
+			/// CPPONLY
 			/// currently assuming diploid
 			virtual double qtrait(individual * ind);
 
@@ -384,6 +388,7 @@ namespace simuPOP
 				return new pyQuanTrait(*this);
 			}
 
+			/// CPPONLY
 			/// currently assuming diploid
 			virtual double qtrait(individual * ind);
 

@@ -38,7 +38,7 @@ namespace simuPOP
 {
 	// ///////////////////////// PENETRANCE ///////////////////////////////
 
-	/// base class of all penetrance operator
+	/// Base class of all penetrance operators
 	/**
 	Penetrance is the probability that one will have the disease when he has certain
 	genotype(s). Calculation and the parameter set of penetrance are similar to those
@@ -46,19 +46,11 @@ namespace simuPOP
 	to his/her penetrance value. For example, an individual will have probability 0.8 to
 	be affected if the penetrance is 0.8. \n
 
-	Penetrance can be applied at any stage (default to \c DuringMating). It will be
-	calculated during mating, and then the affected status will be set for each offspring.
-	Penetrance can also be used as \c PreMating, \c PostMating or even \c PrePostMating??? operator.
-	In these cases, the affected status will be set to all individuals according to their
-	penetrance values. It is also possible to store penetrance in a given information
-	field specified by \c infoFields parameter (e.g. <tt>infoFields=['penetrance']</tt>). This is
-	useful to check the penetrance values at a later time. \n
-
-	Affected status will be used for statistical purpose, and most importantly, ascertainment.
-	They will be calculated along with fitness although they might not be used at every
-	generation. You can use two operators: one for fitness/selection, active at every
-	generation; one for affected status, active only at ascertainments, to avoid unnecessary
-	calculation of the affected status. \n
+	Penetrance can be applied at any stage (default to \c DuringMating). When a penetrance
+	operator is applied, it calculate the penetrance value of each offspring and assign
+	affected status accordingly. Penetrance can also be used \c PreMating or
+	\c PostMating. In these cases, the affected status will be set to all individuals
+	according to their penetrance values.
 
 	Pentrance values are used to set the affectedness of individuals, and are usually not saved.
 	If you would like to know the penetrance value, you need to
@@ -70,7 +62,7 @@ namespace simuPOP
 
 	Penetrance functions can be applied to the current, all, or certain number of ancestral generations.
 	This is controlled by the \c ancestralGen parameter, which is default to \c -1 (all available
-	ancestral generations). You can set it to \c 0 if you only need affection??? status for the current
+	ancestral generations). You can set it to \c 0 if you only need affection status for the current
 	generation, or specify a number \c n for the number of ancestral generations (n + 1 total generations)
 	to process. Note that \c ancestralGen parameter is ignored if the penetrance operator is used
 	as a during mating operator.
@@ -86,7 +78,7 @@ namespace simuPOP
 				the current generation; if \c -1, apply to all generations; otherwise, apply
 				to the specified number of ancestral generations
 			\param stage specify the stage this operator will be applied, default to \c DuringMating.
-			\param infoFields If one field is specified, it will be used to store penetrance values.???
+			\param infoFields If one field is specified, it will be used to store penetrance values.
 			*/
 			penetrance(int ancestralGen=-1, int stage=DuringMating,
 				int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -108,6 +100,7 @@ namespace simuPOP
 				return new penetrance(*this);
 			}
 
+			/// CPPONLY
 			/// calculate/return penetrance etc.
 			virtual double penet(individual *)
 			{
@@ -143,13 +136,14 @@ namespace simuPOP
 		public:
 			/// create a map penetrance operator
 			/**
-			\param locus the locus index. The genotype of this locus will be examed.???
-			\param loci the loci indexes. The genotypes of these loci will be examed.
+			\param locus the locus index. Shortcut to <tt>loci=[locus]</tt>
+			\param loci the loci indexes. The genotypes of these loci will be used to determine 
+			penetrance.
 			\param penetrance a dictionary of penetrance. The genotype must be in the form
 				of 'a-b' for a single locus.
 			\param phase if True, <tt>a/b</tt> and <tt>b/a</tt> will have different penetrance values.
 				Default to \c False.
-			\param output and other parameters please refer to help(baseOperator.__init__)???
+			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
 			mapPenetrance( vectoru loci, const strDict& penet, bool phase=false,
 				int ancestralGen=-1, int stage=DuringMating, int begin=0, int end=-1, int step=1,
@@ -170,7 +164,8 @@ namespace simuPOP
 				return new mapPenetrance(*this);
 			}
 
-			/// currently assuming diploid???
+			/// currently assuming diploid
+			/// CPPONLY
 			virtual double penet(individual * ind);
 
 			/// used by Python print function to print out the general information of the map penetrance operator
@@ -192,7 +187,7 @@ namespace simuPOP
 
 	/// multiple allele penetrance operator
 	/**
-	This is called 'multiple-alleles'??? penetrance. It separates alleles into two groups:
+	This is called 'multiple-allele' penetrance. It separates alleles into two groups:
 	wildtype and disease alleles. Wildtype alleles are specified by parameter \c wildtype
 	and any other alleles are considered as diseased alleles. \c maPenetrance accepts an
 	array of fitness for AA, Aa, aa in the single-locus case, and a longer table for
@@ -204,14 +199,15 @@ namespace simuPOP
 		public:
 			/// create a multiple allele penetrance operator (penetrance according to diseased or wildtype alleles)
 			/**
-			\param locus the locus index. The genotype of this locus will be examed.???
+			\param locus the locus index. The genotype of this locus will be used to determine
+				penetrance.
 			\param loci the loci indexes. The genotypes of these loci will be examed.
 			\param penetrance an array of penetrance values of AA, Aa, aa. A is the
 				wild type group. In the case of multiple loci, fitness should be in the order of
 				AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
 			\param wildtype an array of alleles in the wildtype group. Any other alleles will
 				be considered as in the disease allele group.
-			\param output and other parameters please refer to help(baseOperator.__init__)???
+			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
 			maPenetrance( vectoru loci, const vectorf& penet, const vectora& wildtype,
 				int ancestralGen=-1,
@@ -236,7 +232,8 @@ namespace simuPOP
 				return new maPenetrance(*this);
 			}
 
-			/// currently assuming diploid???
+			/// CPPONLY
+			/// currently assuming diploid
 			virtual double penet(individual * ind);
 
 			/// used by Python print function to print out the general information of the multi-allele penetrance operator
@@ -257,13 +254,13 @@ namespace simuPOP
 	};
 	/// penetrance according to the genotype according to a multiple loci multiplicative model
 	/**
-	\c mlPentrance is the 'multiple-loci'??? penetrnace calculator. It accepts a list of
+	\c mlPentrance is the 'multiple-locus' penetrnace calculator. It accepts a list of
 	penetrances and combine them according to the \c mode parameter, which takes one of the
 	following values:
 
 	\li \c PEN_Multiplicative: the penetrance is calculated as \f$ f=\prod f_{i} \f$.
 	\li \c PEN_Additive: the penetrance is calculated as \f$ f=\min\left(1,\sum f_{i}\right) \f$.
-		\f$ f \f$ will be set to \c 1 when \f$ f<0 \f$. In this case, \f$ s_{i} \f$??? are
+		\f$ f \f$ will be set to \c 1 when \f$ f<0 \f$. In this case, \f$ s_{i} \f$ are
 		added, not \f$ f_{i} \f$ directly.
 	\li \c PEN_Heterogeneity: the penetrance is calculated as \f$ f=1-\prod\left(1-f_{i}\right) \f$.
 
@@ -284,10 +281,10 @@ namespace simuPOP
 		public:
 			/// create a multiple loci penetrance operator using a multiplicative model
 			/**
-			\param peneOps a list of selectors???
+			\param peneOps a list of penetrance operators
 			\param mode can be one of \c PEN_Multiplicative, \c PEN_Additive, and \c PEN_Heterogeneity
 
-			\test src_mlPenetrace.log Use of multi-locus penetrance operator
+			\test src_mlPenetrance.log Use of multi-locus penetrance operator
 			*/
 			mlPenetrance( const vectorop peneOps, int mode = PEN_Multiplicative,
 				int ancestralGen=-1, int stage=DuringMating, int begin=0, int end=-1, int step=1,
@@ -319,7 +316,8 @@ namespace simuPOP
 				throw ValueError("Multi-loci selector can not be nested.");
 			}
 
-			/// currently assuming diploid???
+			/// CPPONLY
+			/// currently assuming diploid
 			virtual double penet(individual * ind);
 
 			/// used by Python print function to print out the general information of the multiple-loci penetrance operator
@@ -353,9 +351,9 @@ namespace simuPOP
 			\param func a user-defined Python function that accepts an array of genotypes
 				at susceptibility loci and return a penetrance value. The returned value
 				should be between \c 0 and \c 1.
-			\param output and other parameters please refer to help(baseOperator.__init__)???
+			\param output and other parameters please refer to help(baseOperator.__init__)
 
-			\test src_pyPenetrance Use of python penetrance operator
+			\test src_pyPenetrance.log Use of python penetrance operator
 			*/
 			/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
 			pyPenetrance(const vectoru & loci, PyObject* func, int ancestralGen=-1,
@@ -403,7 +401,8 @@ namespace simuPOP
 				return new pyPenetrance(*this);
 			}
 
-			/// currently assuming diploid???
+			/// CPPONLY
+			/// currently assuming diploid
 			virtual double penet(individual * ind);
 
 			/// used by Python print function to print out the general information of the Python penetrance operator

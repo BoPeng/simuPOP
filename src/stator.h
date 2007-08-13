@@ -46,12 +46,11 @@ using std::setprecision;
 
 namespace simuPOP
 {
-	/// basic class of all the statistics
+	/// base class of all the statistics calculator
 	/**
 	Operator \c stator calculate various basic statistics for the population and set
 	variables in the local namespace. Other operators/functions can refer to the results
-	from the namespace after \c stat is applied. \c Stat is the function form of the
-	operator. ????
+	from the namespace after \c stat is applied.
 	*/
 	class stator: public baseOperator
 	{
@@ -1457,7 +1456,7 @@ namespace simuPOP
 			\li \f$ \theta \f$ (\f$ F_{ST} \f$) the correlation of genes of difference individuals
 			in the same population (will evaluate for each subpopulation and the whole population)
 			\li \f$ f \f$ (\f$ F_{IS} \f$) the correlation of genes within individuals within
-			populations. Population refers to subpopulations in simuPOP term.???
+			populations.
 
 			This parameter will set the following variables:
 			\li <tt>Fst[loc]</tt>, <tt>Fis[loc]</tt>, <tt>Fit[loc]</tt>

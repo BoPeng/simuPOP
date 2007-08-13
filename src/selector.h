@@ -125,12 +125,12 @@ namespace simuPOP
 		public:
 			/// create a map selector
 			/**
-			\param locus the locus index. The genotype of this locus will be examed.???
-			\param loci the locus indexes. The genotypes of these loci will be examed.
+			\param locus the locus index. A shortcut to <tt> loci=[locus] </tt>
+			\param loci the locus indexes. The genotypes at these loci will be used to determine fitness value.
 			\param fitness a dictionary of fitness values. The genotype must be in the form of <tt>'a-b'</tt>
 				for a single locus, and <tt>'a-b|c-d|e-f'</tt> for multi-loci.
 			\param phase if \c True, genotypes \c a-b and \c b-a will have different fitness values. Default to false.
-			\param output and other parameters please refer to help(baseOperator.__init__)???
+			\param output and other parameters please refer to help(baseOperator.__init__)
 
 			\test src_mapSelector.log Use of mapSelector
 			*/
@@ -153,6 +153,7 @@ namespace simuPOP
 				return new mapSelector(*this);
 			}
 
+			/// CPPONLY
 			/// calculate/return the fitness value, currently assuming diploid
 			virtual double indFitness(individual * ind, ULONG gen);
 
@@ -199,14 +200,14 @@ namespace simuPOP
 				AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
 			\param wildtype an array of alleles in the wildtype group. Any other alleles are
 				considered to be diseased alleles. Default to <tt>[0]</tt>.
-			\param output and other parameters please refer to help(baseOperator.__init__)???
+			\param output and other parameters please refer to help(baseOperator.__init__)
 
 			Please refer to \c basicSelector for other parameter descriptions.
 
 			\note \li \c maSelector only works for diploid populations now.
 			\li \c wildtype at all loci are the same.
 
-			\test src_maSelector Use of maSelector
+			\test src_maSelector.log Use of maSelector
 			*/
 			maSelector( vectoru loci, const vectorf& fitness, const vectora& wildtype,
 				const vectoru & subPops=vectoru(), int stage=PreMating, int begin=0, int end=-1, int step=1,
@@ -230,6 +231,7 @@ namespace simuPOP
 				return new maSelector(*this);
 			}
 
+			/// CPPONLY
 			/// calculate/return the fitness value, currently assuming diploid
 			virtual double indFitness(individual * ind, ULONG gen);
 
@@ -310,6 +312,7 @@ namespace simuPOP
 				throw ValueError("Multi-loci selector can not be nested.");
 			}
 
+			/// CPPONLY
 			/// calculate/return the fitness value, currently assuming diploid
 			virtual double indFitness(individual * ind, ULONG gen);
 
@@ -331,10 +334,10 @@ namespace simuPOP
 	/**
 	\c pySelector assigns fitness values by calling a user provided function.
 	It accepts a list of susceptibility loci and a Python function. For
-	each individual, this operator will pass the genotypes at these loci (in the order
-	of <tt>0-0,0-1,1-0,1-1</tt> etc. where X-Y represents locus X - ploidy Y, in the case
-	of diploid population), generation number,??? and expect a returned fitness value.
-	This, at least in theory, can accommodate all selection scenarios.
+	each individual, this operator will pass the genotypes at these loci and 
+	the generation number and use the returned value as the fitness value. 
+	The genotypes are arranged in the order
+	of <tt>0-0,0-1,1-0,1-1</tt> etc. where X-Y represents locus X - ploidy Y.
 
 	<funcForm>PySelect</funcForm>
 
@@ -348,8 +351,8 @@ namespace simuPOP
 			\param loci susceptibility loci. The genotype at these loci will be
 				passed to \c func.
 			\param func a Python function that accepts genotypes at susceptibility loci
-				generation number, and return fitness value.???
-			\param output and other parameters please refer to help(baseOperator.__init__)???
+				generation number, and return fitness value.
+			\param output and other parameters please refer to help(baseOperator.__init__)
 			*/
 			// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
 			pySelector( vectoru loci, PyObject* func, const vectoru & subPops=vectoru(),
@@ -395,6 +398,7 @@ namespace simuPOP
 				return new pySelector(*this);
 			}
 
+			/// CPPONLY
 			/// calculate/return the fitness value, currently assuming diploid
 			virtual double indFitness(individual * ind, ULONG gen);
 

@@ -44,7 +44,8 @@ namespace simuPOP
 	/// shrink population
 	/**
 	This operator shrinks a population according to a given array or the
-	\c subPopID() value of each indvidual. Subpopulations are kept intact.
+	\c subPopID() value of each indvidual. individuals with negative
+	subPop ID are removed.
 	<funcForm>PySubset</funcForm>
 	*/
 	class pySubset: public baseOperator
@@ -84,7 +85,7 @@ namespace simuPOP
 
 				for(size_t i=0, iEnd=pop.popSize(); i<iEnd; ++i)
 				{
-					DBG_ASSERT(static_cast<size_t>(m_keep[i]) <= MaxSubPopID, ValueError,
+					DBG_FAILIF(m_keep[i] > 0 && static_cast<size_t>(m_keep[i]) > MaxSubPopID, ValueError,
 						"Subpop id exceeding maximum allowed subpopulations");
 					// subpop id is short
 					pop.ind(i).setSubPopID(static_cast<SubPopID>(m_keep[i]));
@@ -104,7 +105,7 @@ namespace simuPOP
 			vectori m_keep;
 	};
 
-	/// basic class of other sample operator
+	/// base class of other sample operator
 	/**
 	Ascertainment/sampling refers to ways to select individuals from a population.
 	In simuPOP, ascerntainment operators form separate populations in a population's
@@ -198,7 +199,7 @@ namespace simuPOP
 				return "<simuPOP::sample>" ;
 			}
 
-		public:
+		protected:
 			// service functions that can be used by everyone
 
 			/// save the index of each individual to a field (usually \c oldindex)
@@ -641,6 +642,10 @@ namespace simuPOP
 		public:
 			/// create a Python sampler
 			/**
+			This sampler accepts a Python array which will be assigned to 
+			each individual as subPOP ID. Individuals with positive subPOPID 
+			will then be picked out and form a sample.
+			
 			\param keep subpopulation IDs of all individuals
 			\param keepAncestralPop the number of ancestral populations that will be kept. If \c -1,
 				keep all ancestral populations (default). If \c 0, no ancestral population will be kept.
