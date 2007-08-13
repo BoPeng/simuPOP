@@ -1481,16 +1481,16 @@ namespace simuPOP
 	string simuVer();
 
 	/// return the compiler used to compile this simuPOP module
-	string moduleCompiler();
+	string ModuleCompiler();
 
 	/// return the date when this simuPOP module is compiled
-	string moduleDate();
+	string ModuleDate();
 
 	/// return the Python version this simuPOP module is compiled for
-	string modulePyVersion();
+	string ModulePyVersion();
 
 	/// return the platform on which this simuPOP module is compiled
-	string modulePlatForm();
+	string ModulePlatForm();
 
 #ifdef BINARYALLELE
 	// efficiently copy alleles (block by block, rather than 1 by 1)
@@ -1505,12 +1505,12 @@ namespace simuPOP
 	bool initialize();
 
 	/// return \c True if this simuPOP module is optimized
-	bool optimized();
+	bool Optimized();
 
 	bool mpi();
 
 	/// print out system limits
-	void limits();
+	void Limits();
 
 #ifdef SIMUMPI
 	class comm : public mpi::communicator
@@ -1538,10 +1538,10 @@ namespace simuPOP
 	void mpiBarrier();
 
 	/// return the allele type of the current module. Can be \c binary, \c short, or \c long.
-	string alleleType();
+	string AlleleType();
 
 	/// return \f$ 1 \f$, \f$ 2^8-1 \f$, \f$ 2^{16}-1 \f$ for binary, short, or long allele modules, respectively
-	ULONG maxAllele();
+	ULONG MaxAllele();
 
 	/// CPPONLY get a null stream that discard everything
 	ostream& cnull();

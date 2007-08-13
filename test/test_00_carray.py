@@ -83,12 +83,12 @@ class TestCarray(unittest.TestCase):
         arr[:] = [0,1,2]*4
         # can print
         # expression
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             self.assertEqual( str(arr), "[0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2]")
         else:
             self.assertEqual( str(arr), "[0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1]")
         # count
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             self.assertEqual(arr[5], 2)
             self.assertEqual(arr.count(2), 4)
         else:
@@ -96,7 +96,7 @@ class TestCarray(unittest.TestCase):
             self.assertEqual(arr.count(2), 0)
             self.assertEqual(arr.count(1), 8)
         arr[0] = 1
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             self.assertEqual(arr.count(1), 5)
         else:
             self.assertEqual(arr.count(1), 9)
@@ -106,38 +106,38 @@ class TestCarray(unittest.TestCase):
         self.assertEqual(arr.index(1), 0)
         # can read write
         arr[3] = 3
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             self.assertEqual(arr[3], 3)
         else:
             self.assertEqual(arr[3], 1)
         # convert to list
         arr[:] = [0,1,2]*4
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             self.assertEqual( arr.tolist(), [0,1,2]*4)
         else:
             self.assertEqual( arr.tolist(), [0,1,1]*4)
             self.assertNotEqual( arr.tolist(), [0,1,2]*4)
         # convert to list
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             self.assertEqual( arr, [0,1,2]*4)
         else:
             self.assertEqual( arr, [0,1,1]*4)
         # slice
         arr[:] = [0,1,2]*4
         arr1 = arr[:3]
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             self.assertEqual( arr1, [0, 1, 2])
         else:
             self.assertEqual( arr1, [0, 1, 1])
         arr1 = arr[3:5]
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             self.assertEqual( arr1, [0, 1])
         else:
             self.assertEqual( arr1, [0, 1])
         # assign slice
         arr1[:] = 5
         # IMPORTANT NOTE that arr will also be affected
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             self.assertEqual( arr1, [5, 5] )
             self.assertEqual( arr, [0,1,2,5,5,2,0,1,2,0,1,2])
         else:
@@ -146,7 +146,7 @@ class TestCarray(unittest.TestCase):
         # assign vector
         arr1[:] = [0,0]
         self.assertEqual( arr1, [0, 0] )
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             self.assertEqual( arr, [0,1,2,0,0,2,0,1,2,0,1,2])
         else:
             self.assertEqual( arr, [0,1,1,0,0,1,0,1,1,0,1,1])
@@ -161,7 +161,7 @@ class TestCarray(unittest.TestCase):
             pass
         # assign from another part
         arr[:6] = arr[6:12]
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             self.assertEqual( arr, [0,1,2,0,1,2,0,1,2,0,1,2])
         else:
             self.assertEqual( arr, [0,1,1,0,1,1,0,1,1,0,1,1])

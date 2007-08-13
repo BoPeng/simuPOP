@@ -83,7 +83,7 @@ class TestPyOperator(unittest.TestCase):
         # unpack parameter
         (cutoff, mu1, mu2) = param;
         Stat(pop, alleleFreq=range( pop.totNumLoci() ) )
-        if alleleType() == 'binary':
+        if AlleleType() == 'binary':
             for i in range( pop.totNumLoci() ):
                 # 1-freq of wild type = total disease allele frequency
                 if 1-pop.dvars().alleleFreq[i][0] < cutoff:
@@ -132,28 +132,28 @@ class TestPyOperator(unittest.TestCase):
             return True
         def indFunc2(ind, genotype):
             self.assertEqual(len(genotype), 4)
-            if alleleType() == 'binary':
+            if AlleleType() == 'binary':
                 self.assertEqual(genotype, (1, 1, 1, 1))
             else:
                 self.assertEqual(genotype, (1, 1, 2, 2))
             ind.setInfo(sum(genotype), 'info1')
             return True
         def testFunc2(ind):
-            if alleleType() == 'binary':
+            if AlleleType() == 'binary':
                 self.assertEqual(ind.info('info1'), 4)
             else:
                 self.assertEqual(ind.info('info1'), 6)
             return True
         def indFunc3(ind, genotype, param):
             self.assertEqual(len(genotype), 4)
-            if alleleType() == 'binary':
+            if AlleleType() == 'binary':
                 self.assertEqual(genotype, (1, 1, 1, 1))
             else:
                 self.assertEqual(genotype, (1, 1, 2, 2))
             ind.setInfo(sum(genotype) + param[0], 'info1')
             return True
         def testFunc3(ind):
-            if alleleType() == 'binary':
+            if AlleleType() == 'binary':
                 self.assertEqual(ind.info('info1'), 2)
             else:
                 self.assertEqual(ind.info('info1'), 4)
@@ -171,26 +171,26 @@ class TestPyOperator(unittest.TestCase):
             return True            
         def indFunc6(ind, genotype):
             self.assertEqual(len(genotype), 4)
-            if alleleType() == 'binary':
+            if AlleleType() == 'binary':
                 self.assertEqual(genotype, (1, 1, 1, 1))
             else:
                 self.assertEqual(genotype, (1, 1, 2, 2))
             return (sum(genotype),)
         def testFunc6(ind):
-            if alleleType() == 'binary':
+            if AlleleType() == 'binary':
                 self.assertEqual(ind.info('info1'), 4)
             else:
                 self.assertEqual(ind.info('info1'), 6)
             return True            
         def indFunc7(ind, genotype, param):
             self.assertEqual(len(genotype), 4)
-            if alleleType() == 'binary':
+            if AlleleType() == 'binary':
                 self.assertEqual(genotype, (1, 1, 1, 1))
             else:
                 self.assertEqual(genotype, (1, 1, 2, 2))
             return (sum(genotype) + param[0],)
         def testFunc7(ind):
-            if alleleType() == 'binary':
+            if AlleleType() == 'binary':
                 self.assertEqual(ind.info('info2'), 6)
             else:
                 self.assertEqual(ind.info('info2'), 8)

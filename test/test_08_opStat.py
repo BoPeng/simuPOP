@@ -113,7 +113,7 @@ class TestStat(unittest.TestCase):
         pop = population(subPop=[5000,15000], loci=[1])
         InitByFreq(pop, [.2, 0, .5, .3])
         Stat(pop, numOfAlleles=[0])
-        if alleleType() == 'binary':
+        if AlleleType() == 'binary':
             self.assertEqual(pop.dvars().numOfAlleles[0], 2)
             self.assertEqual(pop.dvars(0).numOfAlleles[0], 2)
             self.assertEqual(pop.dvars(1).numOfAlleles[0], 2)
@@ -126,7 +126,7 @@ class TestStat(unittest.TestCase):
         'Testing counting of heterozygote frequency'
         pop = population(subPop=[500,100,1000], 
             ploidy=2, loci = [1])
-        if alleleType() == 'binary':
+        if AlleleType() == 'binary':
             InitByValue(pop, 
                 value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
                 indRange = [[0,125], [125,375],[375,500],[500,550],
@@ -277,7 +277,7 @@ class TestStat(unittest.TestCase):
         'Testing calculation of haplotype frequency'
         # test haplotype frequency
         pop = population(subPop=[5000,1000], ploidy=2, loci = [10])
-        if alleleType() == 'binary':
+        if AlleleType() == 'binary':
             InitByValue(pop, value=[[0]*10,[1]*10], proportions=[.3,.7])
             Stat(pop, haploFreq=[[0,1,5],[2,5]])
             assert abs(pop.dvars().haploFreq['0-1-5']['0-0-0'] - 0.3) < 0.05
@@ -301,7 +301,7 @@ class TestStat(unittest.TestCase):
         pop = population(subPop=[500,100,1000], 
             ploidy=2, loci = [5])
         InitByFreq(pop, freq)
-        if alleleType() == 'binary':
+        if AlleleType() == 'binary':
             Stat(pop, LD=[2,4], LD_param={'midValues':True})
         else:
             Stat(pop, LD=[2,4], LD_param={'midValues':True})

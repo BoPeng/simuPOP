@@ -594,7 +594,7 @@ def SaveSimulator(simu, *args, **kwargs):
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
 def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False, 
     lociPos=[], subPop=[], ancestralDepth=0, alleleNames=[], lociNames=[],
-    maxAllele=MaxAllele, infoFields=[], chromMap=[]):
+    maxAllele=ModuleMaxAllele, infoFields=[], chromMap=[]):
     if type(infoFields) not in (type([]), type(())):
         raise exceptions.ValueError('infoFields needs to be an array')
     ld = lociPos

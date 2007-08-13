@@ -777,7 +777,7 @@ After a simuPOP module is loaded, you can use the following functions to
 \begin_layout Itemize
 
 \family typewriter
-alleleType()
+AlleleType()
 \family default
 : return 
 \family typewriter
@@ -797,7 +797,7 @@ alleleType()
 \begin_layout Itemize
 
 \family typewriter
-optimized()
+Optimized()
 \family default
 : return 
 \family typewriter
@@ -813,7 +813,7 @@ False
 \begin_layout Itemize
 
 \family typewriter
-maxAllele
+MaxAllele
 \family default
 (): return 
 \family typewriter
@@ -855,7 +855,7 @@ simuRev()
 \begin_layout Itemize
 
 \family typewriter
-limits()
+Limits()
 \family default
 : print the limits of this module on this platform, such as the maximum
  number of loci in a population.
@@ -1450,7 +1450,7 @@ population, population::subPopSize(), individual::setInfo()
 \end_layout
 
 \begin_layout Itemize
-Standalone (Global) functions start with capital character.
+Most standalone (global) functions start with capital character.
  This is how you can differ an operator from its function version.
  For example, 
 \family typewriter
@@ -5705,10 +5705,6 @@ pyTaggerRef
 \end_layout
 
 \begin_layout Section
-Output 
-\end_layout
-
-\begin_layout Section
 Terminator
 \end_layout
 
@@ -5773,74 +5769,6 @@ status open
 
 \backslash
 ifElseRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Miscellaneous
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-noneOpRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-pauseRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-ticTocRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-setAncestralDepthRef
 \end_layout
 
 \end_inset
@@ -6109,6 +6037,74 @@ turnOffDebugRef
  
 \end_layout
 
+\begin_layout Section
+Miscellaneous
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+noneOpRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pauseRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+ticTocRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+setAncestralDepthRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Global and Python Utility functions
 \end_layout
@@ -6120,6 +6116,20 @@ Global functions
 \begin_layout Standard
 \begin_inset ERT
 status open
+
+\begin_layout Standard
+
+
+\backslash
+AlleleTypeRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+LimitsRef
+\end_layout
 
 \begin_layout Standard
 
@@ -6153,6 +6163,13 @@ LoadSimulatorRef
 
 
 \backslash
+MaxAlleleRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
 MergePopulationsRef
 \end_layout
 
@@ -6161,6 +6178,41 @@ MergePopulationsRef
 
 \backslash
 MergePopulationsByLociRef 
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+ModuleCompilerRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+ModuleDateRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+ModulePlatFormRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+ModulePyVersionRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+OptimizedRef
 \end_layout
 
 \begin_layout Standard
@@ -6188,70 +6240,7 @@ TurnOnDebugRef
 
 
 \backslash
-alleleTypeRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-compileCompilerRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-compileDateRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-compilePlatFormRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-compilePyVersionRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-limitsRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-maxAlleleRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-optimizedRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
 rngRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-setLogOutputRef
 \end_layout
 
 \begin_layout Standard

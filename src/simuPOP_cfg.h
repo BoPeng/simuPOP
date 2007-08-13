@@ -124,8 +124,8 @@ typedef std::vector<Allele>::iterator GenoIterator;
 typedef std::vector<Allele>::const_iterator constGenoIterator;
 
 // max allowed allele state
-const unsigned long MaxAllele = std::numeric_limits<Allele>::max();
-const unsigned long int MaxRandomNumber = std::numeric_limits<int32_t>::max();
+const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
+const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
 
 #define PopSWIGType "simuPOP::population *"
 #define IndSWIGType "simuPOP::individual *"

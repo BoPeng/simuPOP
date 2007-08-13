@@ -87,8 +87,8 @@ namespace simuPOP
 				DBG_WARNING( maxAllele > 1, "MaxAllele for binary libraries must be 1");
 				m_maxAllele = 1;
 #else
-				DBG_ASSERT( maxAllele <= MaxAllele, ValueError,
-					"The maximum allele number exceeds " + toStr(MaxAllele)
+				DBG_ASSERT( maxAllele <= ModuleMaxAllele, ValueError,
+					"The maximum allele number exceeds " + toStr(ModuleMaxAllele)
 					+ ". \nIf you need longer allele size, please use simuPOP_la libraries.");
 #endif
 			}
@@ -463,7 +463,7 @@ namespace simuPOP
 					"Can only mutate to 0 or 1 in binary mode.");
 				allele = resInt != 0;
 #else
-				DBG_ASSERT(static_cast<unsigned>(resInt) <= MaxAllele, ValueError,
+				DBG_ASSERT(static_cast<unsigned>(resInt) <= ModuleMaxAllele, ValueError,
 					"Mutated to an allele greater than maximum allowed allele value");
 				allele = static_cast<Allele>(resInt);
 #endif

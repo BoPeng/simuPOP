@@ -18,7 +18,7 @@ class TestRecombinator(unittest.TestCase):
   
   def testRecRate(self):
     'Testing to see if we actually recombine at this rate '
-    if alleleType() == 'binary':
+    if AlleleType() == 'binary':
       a1, a2 = 0, 1
     else:
       a1, a2 = 1, 2
@@ -39,7 +39,7 @@ class TestRecombinator(unittest.TestCase):
     
   def testAtLociRecRates(self):
     'Testing loci parameter'
-    if alleleType() == 'binary':
+    if AlleleType() == 'binary':
       a1, a2 = 0, 1
     else:
       a1, a2 = 1, 2
@@ -62,7 +62,7 @@ class TestRecombinator(unittest.TestCase):
           
   def testRecIntensity(self):
     'Testing recombination intensity'
-    if alleleType() == 'binary':
+    if AlleleType() == 'binary':
       a1, a2 = 0, 1
     else:
       a1, a2 = 1, 2
@@ -82,7 +82,7 @@ class TestRecombinator(unittest.TestCase):
   
   def testRecIntensityAfterLoci(self):
     'Testing RecIntensity after loci'
-    if alleleType() == 'binary':
+    if AlleleType() == 'binary':
       a1, a2 = 0, 1
     else:
       a1, a2 = 1, 2
@@ -102,7 +102,7 @@ class TestRecombinator(unittest.TestCase):
     
   def testNoNewAllele(self):
     'Testing that no new allele appear because of recombination'
-    if alleleType() == 'binary':
+    if AlleleType() == 'binary':
       geno = [x%2 for x in [1,2,3,4,5,6,7] ]
     else:
       geno = [1,2,3,4,5,6,7]
@@ -116,7 +116,7 @@ class TestRecombinator(unittest.TestCase):
     
   def testCrossBetweenChrom(self):
     'Testing if chromsomes are crossed by default'
-    if alleleType() == 'binary':
+    if AlleleType() == 'binary':
       a1, a2 = 0, 1
     else:
       a1, a2 = 1, 2
@@ -169,7 +169,7 @@ class TestRecombinator(unittest.TestCase):
     N = 10000
     pop = population(size=N, loci=[2])
     # genotype 11/22, with LD=1
-    if alleleType() == 'binary':
+    if AlleleType() == 'binary':
       a1, a2 = 0, 1
     else:
       a1, a2 = 1, 2
@@ -207,7 +207,7 @@ class TestRecombinator(unittest.TestCase):
     # we will test if 3333 is untouched under recombination
     r = 0.1
     N = 100
-    if alleleType() == 'binary':
+    if AlleleType() == 'binary':
       a1, a2, a3 = 0, 1, 1
     else:
       a1, a2, a3 = 1, 2, 3
@@ -231,7 +231,7 @@ class TestRecombinator(unittest.TestCase):
         self.assertEqual(ind.arrGenotype(1, 1), [a3]*5)
       else: 
         # there is no allele 3 anywhere (only non-binary...)
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
           self.assertEqual(ind.arrGenotype().count(a3), 0)
 
 if __name__ == '__main__':
