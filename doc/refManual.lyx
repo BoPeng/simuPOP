@@ -323,7 +323,7 @@ This is a reference manual to all variables, functions, and objects of simuPOP.
  To learn different components of simuPOP and how to write simuPOP scripts,
  please refer to the 
 \emph on
-simuPOP user's guide.
+simuPOP User's Guide.
 \end_layout
 
 \begin_layout Abstract
@@ -759,6 +759,7 @@ name "listDebugCode"
 \end_inset
 
 ().
+ Debug information is only available for standard modules.
 \end_layout
 
 \begin_layout Itemize
@@ -1281,7 +1282,7 @@ function of a simulator.
 \family typewriter
 evolve()
 \family default
- function determine if an operator can be applied to a population and apply
+ function determines if an operator can be applied to a population and apply
  it when appropriate.
  More details about operators will be described in section 
 \begin_inset LatexCommand ref
@@ -1308,7 +1309,7 @@ status open
 
 \begin_layout Standard
 
-initByFreq( [0.3, .2, .5] ).apply(pop)
+initByFreq( [.3, .2, .5] ).apply(pop)
 \end_layout
 
 \end_inset
@@ -1398,8 +1399,8 @@ count
 \family typewriter
  index
 \family default
- list functions can be used, but all comparison, assignment and slices operation
-s are allowed.
+ list functions can be used, but all comparison, assignment and slice operations
+ are allowed.
 \end_layout
 
 \begin_layout Standard
@@ -1534,13 +1535,23 @@ Forward-time simulations using simuPOP, an in-depth course: a in-depth course
 \end_layout
 
 \begin_layout Standard
-Note that these presentations will not be updated so their content can become
- out of date.
+The filenames are 
+\family typewriter
+tutorial.pdf 
+\family default
+and 
+\family typewriter
+course.pdf
+\family default
+, respectively.
+ Note that these presentations will not be updated so their content can
+ become out of date.
  This reference manual should be considered as the authoritative resource
  of simuPOP.
 \end_layout
 
 \begin_layout Chapter
+\InsetSpace \thinspace{}
 simuPOP Components
 \end_layout
 
@@ -2941,7 +2952,6 @@ pyExec
 newSubPopSizeFunc
 \family default
  are recommended.
- Note that the expression uses variables from the local namespace.
 \end_layout
 
 \begin_layout Itemize
@@ -2962,72 +2972,13 @@ newSubPopSizeFunc
 newsize
 \family default
  when you do not have any subpopulation structure).
- For example, the following function defines a linear expansion demographic
- scenario where a population splits at generation 200 and starts expanding
- .
+ The example of 
+\family typewriter
+class Mating 
+\family default
+demonstrates the use of this parameter.
 \end_layout
 
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-def lin_exp(gen, oldSize=[]):
-\end_layout
-
-\begin_layout Standard
-
-  if gen < 200:   # burn in, constant population size
-\end_layout
-
-\begin_layout Standard
-
-    return [1000]
-\end_layout
-
-\begin_layout Standard
-
-  else:           # increase subpopulation sizes
-\end_layout
-
-\begin_layout Standard
-
-    incSize = (10000-1000)/(500-200)/len(oldSize)
-\end_layout
-
-\begin_layout Standard
-
-    return [oldSize[x]+incSize for x in range(0, len(oldSize))]
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-you can then use this function as follows
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-...randomMating(newSubPopSizeFunc=lin_exp) ...
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
 \begin_layout Subsection
 Demographic change functions
 \end_layout
@@ -3119,10 +3070,19 @@ split
 .
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
 
-\family typewriter
+\begin_layout Standard
+
 ConstSize(size, split, numSubPop, bottleneckGen, bottleneckSize)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3147,11 +3107,24 @@ bottleneckSize
  
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
 
-\family typewriter
-LinearExpansion(initSize, endSize, end, burnin, split, numSubPop, bottleneckGen,
- bottleneckSize)
+\begin_layout Standard
+
+LinearExpansion(initSize, endSize, end, burnin, split, numSubPop, 
+\end_layout
+
+\begin_layout Standard
+
+    bottleneckGen, bottleneckSize)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3184,14 +3157,24 @@ bottleneckSize
  
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
 
-\family typewriter
-ExponentialExpansion
-\family default
-(
-\family typewriter
-initSize, endSize, end, burnin, split, numSubPop, bottleneckGen, bottleneckSize)
+\begin_layout Standard
+
+ExponentialExpansion(initSize, endSize, end, burnin, split, 
+\end_layout
+
+\begin_layout Standard
+
+    numSubPop, bottleneckGen, bottleneckSize)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3224,14 +3207,24 @@ bottleneckSize
  
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
 
-\family typewriter
-InstantExpansion
-\family default
-(
-\family typewriter
-initSize, endSize, end, burnin, split, numSubPop, bottleneckGen, bottleneckSize)
+\begin_layout Standard
+
+InstantExpansion(initSize, endSize, end, burnin, split, 
+\end_layout
+
+\begin_layout Standard
+
+    numSubPop, bottleneckGen, bottleneckSize)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3292,16 +3285,27 @@ False
 \end_layout
 
 \begin_layout Standard
-Recombinations on sex chromosomes of females (XX) are just like those on
- autosomes.
+Recombinations on sex chromosomes of females (
+\family typewriter
+XX
+\family default
+) are just like those on autosomes.
  However, this is not true in males.
- Currently, recombinations between male sex chromosomes (XY) are 
+ Currently, recombinations between male sex chromosomes (
+\family typewriter
+XY
+\family default
+) are 
 \emph on
 not
 \emph default
  allowed (a bug/feature of recombinators).
  This may change later if exchanges of genes between pseudoautosomal regions
- of XY need to be modeled.
+ of 
+\family typewriter
+XY 
+\family default
+need to be modeled.
 \end_layout
 
 \begin_layout Section
@@ -3314,83 +3318,6 @@ Operators
 \end_layout
 
 \begin_layout Standard
-There are three kinds of operators:
-\end_layout
-
-\begin_layout Itemize
-
-\emph on
-built-in:
-\emph default
- written in C++, the fastest.
- They do not interact with Python shell except that some of them set variables
- that are accessible from Python.
-\end_layout
-
-\begin_layout Itemize
-
-\emph on
-hybrid
-\emph default
-
-\begin_inset LatexCommand index
-name "hybrid"
-
-\end_inset
-
-: written in C++ but calls a Python function during simulation.
- Less efficient.
- For example, a hybrid mutator 
-\family typewriter
-pyMutator
-\family default
- determines if an allele will be mutated and call a user-defined Python
- function to mutate it.
-\end_layout
-
-\begin_layout Itemize
-
-\emph on
-pure Python
-\emph default
-: written in Python.
- The same speed as Python.
- For example, a 
-\family typewriter
-varPlotter
-\begin_inset LatexCommand index
-name "varPlotter"
-
-\end_inset
-
-
-\family default
- can plot Python variables that are set by other operators.
-\end_layout
-
-\begin_layout Standard
-Operators can be applied at 
-\emph on
-pre-
-\emph default
-, 
-\emph on
-during-
-\emph default
- or 
-\emph on
-post-mating
-\emph default
-, or a combination of these stages.
- It is possible for an operator to apply multiple times in a life cycle.
- For example, a 
-\family typewriter
-savePopulation
-\family default
- operator might be applied before and after mating to trace parental information.
-\end_layout
-
-\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -3400,237 +3327,6 @@ status open
 \backslash
 baseOperatorRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Active generations
-\end_layout
-
-\begin_layout Standard
-You can specify 
-\family typewriter
-begin
-\family default
-, 
-\family typewriter
-end
-\family default
-, 
-\family typewriter
-step
-\family default
-, and 
-\family typewriter
-at
-\family default
- parameters of an operator during initialization.
- For example,
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_operatorgen.log}[caption={Set active generations of an operator},label={operatorgen}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The last example displays variable 
-\family typewriter
-gen
-\family default
- for each replicate.
- Note that you can use negative generation number whenever you specify the
- 
-\family typewriter
-end
-\family default
- parameter of the evolution.
- In this case, generation -1 is the last generation (
-\family typewriter
-end
-\family default
-), -2 is 
-\family typewriter
-end-1
-\family default
-, and so on.
-\end_layout
-
-\begin_layout Subsection
-Replicates and groups
-\end_layout
-
-\begin_layout Standard
-Most operators are applied to every replicate of a simulator during evolution.
- However, you can apply operators to one or a group of replicates only.
- For example, you can initialize different replicates with different initial
- values and then start evolution.
- c.f.
- 
-\family typewriter
-simulator::setGroup
-\family default
- .
- 
-\end_layout
-
-\begin_layout Standard
-The most useful example is 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-output('
-\backslash
-n',rep=REP_LAST)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-which will output 
-\family typewriter
-
-\backslash
-n
-\family default
- at the end of each generation.
- Here is an example of using replicate groups:
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_operatorgrp.log}[caption={Replicate group},label={operatorgrp}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Output Specification
-\end_layout
-
-\begin_layout Standard
-The following example shows the difference between 
-\family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
->
-\begin_inset Quotes erd
-\end_inset
-
-
-\family default
- and 
-\family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
->>
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_operatoroutput.log}[caption={Out specification of an operator},label={operatoroutput}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In the first simulator, all operators use 
-\family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
-a.txt
-\begin_inset Quotes erd
-\end_inset
-
-
-\family default
- (the same as 
-\family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
->a.txt
-\begin_inset Quotes erd
-\end_inset
-
-
-\family default
-).
- This file is repeatedly covered by other operators, so what we finally
- get is the output from replicate 1.
- The second 
-\family typewriter
-step
-\family default
- function keeps output from all replicates using the 
-\family typewriter
->>
-\family default
- form, and the last 
-\family typewriter
-step
-\family default
- call does not clear 
-\family typewriter
-a.txt
-\family default
- before it is used.
-\end_layout
-
-\begin_layout Standard
-The output filename does not have to be fixed.
- If 
-\family typewriter
-outputExpr
-\family default
- parameter is used (
-\family typewriter
-output
-\family default
- will be ignored), it will be evaluated when a filename is needed.
- This is useful when you need to write different files for different replicates/
-generations.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_operatoroutputexpr.log}[caption={Output expression of an operator},label={operatoroutputexpr}]
-preview false
 
 \end_inset
 
@@ -3749,10 +3445,6 @@ if(simu.gen() == endGen+1)
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 instead of 
 \family typewriter
 simu.gen() == endGen.

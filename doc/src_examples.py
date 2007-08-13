@@ -124,6 +124,77 @@ print ind.sexChar()
 #end
 
 
+#file log/src_operator.log
+simu = simulator(population(1),binomialSelection(), rep=2)
+op1 = output("a", begin=5, end=20, step=3)
+op2 = output("a", begin=-5, end=-1, step=2)
+op3 = output("a", at=[2,5,10])
+op4 = output("a", at=[-10,-5,-1])
+simu.evolve( [ pyEval(r"str(gen)+'\n'", begin=5, end=-1, step=2)],
+                             end=10)
+#
+#
+# operator group
+from simuUtil import *
+simu = simulator(population(1),binomialSelection(), rep=4,
+    grp=[1,2,1,2])
+simu.step(
+    ops = [ 
+        pyEval(r"grp+3", grp=1),
+        pyEval(r"grp+6", grp=2),
+        output('\n', rep=REP_LAST)
+    ]
+)
+
+#
+# parameter output 
+simu = simulator(population(100), randomMating(), rep=2)
+simu.step(
+    preOps=[
+        initByFreq([0.2, 0.8], rep=0),
+        initByFreq([0.5, 0.5], rep=1) ],
+    ops = [
+        stat(alleleFreq=[0]),
+        pyEval('alleleFreq[0][0]', output='a.txt')
+    ]
+)
+# only from rep 1
+print open('a.txt').read()
+
+simu.step(
+    ops = [
+        stat(alleleFreq=[0]),
+        pyEval('alleleFreq[0][0]', output='>>a.txt')
+    ])
+# from both rep0 and rep1
+print open("a.txt").read()
+
+outfile='>>>a.txt'
+simu.step(
+    ops = [
+        stat(alleleFreq=[0]),
+        pyEval('alleleFreq[0][0]', output=outfile),
+        output("\t", output=outfile),
+        output("\n", output=outfile, rep=0)
+    ],
+)
+print open("a.txt").read()
+#
+# Output expression
+outfile="'>>a'+str(rep)+'.txt'"
+simu.step(
+    ops = [
+        stat(alleleFreq=[0]),
+        pyEval('alleleFreq[0][0]', outputExpr=outfile)
+    ]
+)
+print open("a0.txt").read()
+print open("a1.txt").read()
+#end
+os.remove('a.txt')
+
+
+
 #file log/src_initByFreq.log
 simu = simulator( 
     population(subPop=[2,3], loci=[5,7], maxAllele=1),
