@@ -38,12 +38,12 @@ namespace simuPOP
 {
 	// ///////////////////////// PENETRANCE ///////////////////////////////
 
-	/// basic class of a penetrance operator
+	/// base class of all penetrance operator
 	/**
 	Penetrance is the probability that one will have the disease when he has certain
 	genotype(s). Calculation and the parameter set of penetrance are similar to those
 	of fitness. An individual will be randomly marked as affected/unaffected according
-	to his penetrance value.??? For example, an individual will have probability 0.8 to
+	to his/her penetrance value. For example, an individual will have probability 0.8 to
 	be affected if the penetrance is 0.8. \n
 
 	Penetrance can be applied at any stage (default to \c DuringMating). It will be

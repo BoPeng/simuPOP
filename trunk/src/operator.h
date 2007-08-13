@@ -56,8 +56,26 @@ namespace simuPOP
 	applied	to populations directly using their function forms,
 	but they are usually managed and applied by a simulator. \n
 
+    There are three kinds of operators: \n
+    
+    \li built-in: written in C++, the fastest. They do not 
+    interact with Python shell except that some of them set
+    variables that are accessible from Python.
+
+    \li hybrid: written in C++ but calls a Python function during
+    simulation. Less efficient. For example, a hybrid mutator
+    pyMutator determines if an allele will be mutated and
+    call a user-defined Python function to mutate it.
+
+    \li pure Python: written in Python. The same speed as Python. 
+    For example, a \c varPlotter can plot Python variables that are
+    set by other operators.
+
 	Operators can be applied at different stages of the life cycle of
-	a generation. More specifically, they can be applied at \em pre-,
+	a generation. It is possible for an operator to apply multiple 
+    times in a life cycle. For example, a \c savePopulation operator 
+    might be applied before and after mating to trace parental information. 
+    More specifically, operators can be applied at \em pre-,
 	\em during-, \em post-mating, or a combination of these stages. Applicable stages
 	are usually set by default but you can change it by setting
 	<tt>stage=(PreMating|PostMating|DuringMating|PrePostMating)</tt> parameter.
@@ -65,19 +83,24 @@ namespace simuPOP
 	work at one stage. \n
 
 	Operators do not have to be applied at all generations. You can specify
-	starting/ending generation, gaps between applicable generations,
-	or even specific generations. For example, you might want to
+	starting/ending generation (parameters \c start, \c end), gaps 
+    between applicable generations (parameter \c step),
+	or specific generations (parameter \c at). For example, you might want to
 	start applying migrations after certain burn-in generations, or
-	calculate certain statistics only sparsely. \n
+	calculate certain statistics only sparsely. Generation numbers can count
+    from the last generation, using negative generation numbers. \n
 
-	Operators can have outputs. Output can be standard (terminal)
-	or a file, which can vary with replicates and/or generations.
-	Outputs from different operators can be accumulated to the same file to form
+
+    Most operators are applied to every replicate of a simulator during 
+    evolution. However, you can apply operators to one (parameter \c rep)
+    or a group of replicates only (parameter \c grp). For example, you 
+    can initialize different replicates with different initial values 
+    and then start evolution. c.f. simulator::setGroup . 
+
+	Operators can have outputs, which can be standard (terminal) or a file.
+	Output can vary with replicates and/or generations, and outputs from different
+	operators can be accumulated to the same file to form
 	table-like outputs. \n
-
-	Operators are applied to every replicate of a simulator by default.
-	However, you can apply operators to one or a group of
-	replicates using parameter \c rep or \c grp. \n
 
 	Filenames can have the following format:
 
@@ -87,8 +110,8 @@ namespace simuPOP
 	\li \c '>filename' the same as \c 'filename';
 
 	\li <tt>'>>filename'</tt> the file will be created at the beginning of evolution
-	(\c simulator::evolve) and closed at the end. Output from several operators
-	is allowed;
+	(\c simulator::evolve) and closed at the end. Outputs from several operators
+	are appended;
 
 	\li <tt>'>>>filename'</tt> the same as <tt>'>>filename'</tt> except that the file will not
 	be cleared at the beginning of evolution if it is not empty;
@@ -96,6 +119,11 @@ namespace simuPOP
 	\li \c '>' standard output (terminal);
 
 	\li \c '' supress output.
+    
+    The output filename does not have to be fixed. If parameter \c outputExpr
+    is used (parameter \c output will be ignored), it will be evaluated when
+    a filename is needed. This is useful when you need to write different 
+    files for different replicates/generations. 
 	*/
 	class baseOperator
 	{
@@ -107,8 +135,8 @@ namespace simuPOP
 			/// common interface for all operators (this base operator does nothing by itself.)
 			/**
 
-			\param begin the starting generation. Default to \c 0. Negative numbers are allowed.
-			\param end stop applying after this generation. Negative numbers are allowed.
+			\param begin the starting generation. Default to \c 0. A negative number is allowed.
+			\param end stop applying after this generation. A negative numbers is allowed.
 			\param step the number of generations between active generations. Default to \c 1.
 			\param at an array of active generations. If given, \c stage, \c begin, \c end,
 			  and \c step will be ignored.
@@ -125,12 +153,14 @@ namespace simuPOP
 			will output to <tt> >>>out1_1.xml </tt> for replicate \c 1 at generation \c 1.
 
 			\note
-			\li Negative generation numbers are allowed for \c begin, \c end and \c at. They are
+			\li Negative generation numbers are allowed for parameter \c begin, \c end and \c at. They are
 			intepretted as <tt>endGen + gen + 1</tt>. For example, <tt>begin = -2</tt> in
 			<tt>simu.evolve(..., end=20)</tt> starts at generation \c 19.
 			\li REP_ALL, REP_LAST, GRP_ALL are special constant that can only be used in the
 			constructor of an operator. That is to say, explicit test of <tt>rep() == REP_LAST</tt>
 			will not work.
+
+			\test src_operator.log Common features of all operators
 			*/
 			baseOperator(string output, string outputExpr, int stage,
 				int begin, int end, int step, vectorl at,

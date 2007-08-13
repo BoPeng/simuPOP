@@ -137,7 +137,7 @@ namespace simuPOP
 	//   */
 	//
 
-	/// a collection of individuals with the same genotypic structure
+	/// A collection of individuals with the same genotypic structure
 	/**
 	A simuPOP population consists of individuals of the same genotypic structure,
 	which refers to the number of chromosomes, number and position of loci on each
@@ -164,7 +164,7 @@ namespace simuPOP
 	are saved. Functions to switch between ancestral generations are
 	provided so that one can examine and modify ancestral generations.
 
-	Other important concepts like <em>information fields</em> are explained in
+	Other concepts like <em>information fields</em> are explained in
 	class \c individual.
 
 	\note Although a large number of member functions are provided,
@@ -231,6 +231,7 @@ namespace simuPOP
 			\param infoFields name of information fields that will be attached to each
 			individual. For example, if you need to record the parents of each individual
 			using operator \c parentTagger(), you will need two fields \c father_idx and \c mother_idx.
+			\param chromMap For MPI modules, currently unused.
 			\return no return value. Exception will be thrown when wrong parameters are given.
 			\sa simulator, baseOperator, mating schemes
 			\test src_population.log Population initialization and member functions
