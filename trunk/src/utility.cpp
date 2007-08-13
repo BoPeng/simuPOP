@@ -2833,22 +2833,22 @@ namespace simuPOP
 		return MaxAllele;
 	}
 
-	string compileCompiler()
+	string moduleCompiler()
 	{
 		return COMPILER;
 	}
 
-	string compileDate()
+	string moduleDate()
 	{
 		return __DATE__;
 	}
 
-	string compilePyVersion()
+	string modulePyVersion()
 	{
 		return PY_VERSION;
 	}
 
-	string compilePlatForm()
+	string modulePlatForm()
 	{
 		return PLATFORM;
 	}
