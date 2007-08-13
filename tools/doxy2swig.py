@@ -652,29 +652,17 @@ class Doxy2SWIG:
                 
                 # determine if there are description comments
                 if begin_desc:
-                    if not (line.strip().startswith('"') or line.strip().startswith("'")):
+                    if line.strip().startswith('"') or line.strip().startswith("'"):
+                        quote_type = line.strip()[0]
+                        if line.strip()[1] == quote_type:
+                            quote_type = quote_type * 3
+                    else:
                         add_desc = False
                         continue
                     begin_desc = False
-                # first time catch a parameter
-                if ':' in line and line.strip().split(':').count(' ') < 2:
-                    add_argu = True
-                    self.content[-1]['Arguments'] = []
-                    self.content[-1]['Arguments'].append({'Name': line.split(':')[0].strip(),
-                                                          'Description': line.split(':')[1]})
-                    add_desc = False
-                    continue
-                self.content[-1]['Description'] += ' ' + line.strip().strip('"').strip("'")
-                if line.endswith('"\n') or line.endswith("'\n"):
+                self.content[-1]['Description'] += ' ' + line.strip().strip('"').strip("'") + '\n'
+                if line.endswith(quote_type + '\n'):
                     add_desc = False                     
-            elif add_argu:
-                if ':' in line:
-                    self.content[-1]['Arguments'].append({'Name': line.split(':')[0].strip(),
-                                                          'Description': line.split(':')[1]})
-                else:
-                    self.content[-1]['Arguments'][-1]['Description'] += ' ' + line.strip()
-                if line.endswith('"\n') or line.endswith("'\n"):
-                    add_argu = False                    
 
 
     def latexName(self, name):
@@ -748,7 +736,7 @@ class Doxy2SWIG:
         
         str = ''        
         for line in text.split('\n'):
-            if line.startswith('- ') and not in_desc:
+            if line.lstrip().startswith('- ') and not in_desc:
                 if not in_list:
                     str += '\\begin{itemize}\n' 
                     in_list = True
@@ -868,20 +856,9 @@ class Doxy2SWIG:
                         self.latex_text(func_body))
                         # textwrap.wrap(mem['Usage'], width=self.maxChar))
                 if mem.has_key('Description') and mem['Description'] != '':
-                    print >> out, r' %s' % self.latex_text(mem['Description'])
+                    print >> out, r' %s' % self.latex_formatted_text(mem['Description'])
                 if mem.has_key('Details') and mem['Details'] != '':
-                    # if we have short description, use a separate paragraph for details.
-                    if mem.has_key('Description') and mem['Description'] != '':
-                        print >> out, '\\par\n%s\\par' % self.latex_text(mem['Details'])
-                    # otherwise, use details as description
-                    else:
-                        print >> out, '%s' % self.latex_text(mem['Details'])
-                if mem.has_key('Arguments') and mem['Arguments'] != '':
-                    print >> out, '\\begin{description}'
-                    mem['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
-                    for arg in mem['Arguments']:
-                        print >> out, '\\item [{%s}]%s' % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
-                    print >> out, '\\end{description}'
+                    print >> out, '%s' % self.latex_formatted_text(mem['Details'])
                 if mem.has_key('note') and mem['note'] != '':
                     print >> out, '\\par\n\\strong{Note:} %s\\par' % self.latex_text(mem['note'])
             print >> out, '\\end{description}\n}\n'

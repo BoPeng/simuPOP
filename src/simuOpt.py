@@ -24,72 +24,15 @@
 ############################################################################
 
 '''
-Module simuOpt provides two important functions. 
+Module  simuOpt  can be used to control which simuPOP module to load, and 
+how it is loaded using function  setOptions  . It also provides a simple 
+way to set simulation options, from user input, command line, configuration
+file or a parameter dialog. All you need to do is to define an option
+description list that list all parameters in a given format, and call
+the   getParam  function.
 
-- control which simuPOP module to load, and how it is loaded using function
-  setOptions  .
-
-- provide a simple way to set simulation options.
-
-The option description list consists of dictionaries with some predefined keys.
-Each dictionary defines an option. With defined properties, this option can be
-obtained from command line (using short  (-h, -k=100)  or long  (--help, 
---allele=2)  command line options), a configuration file, interactive user input,
-or a Tcl/Tk or wxPython based parameter dialog.
-
-The option description dictionaries can have the following keys:
-
-arg: short command line option name.  'h'  checks the presence of argument  -h  . 
-If an argument is expected, add a comma to the option name. For example, 'p:'
-matches command line option -p=100 or -p 100.
-
-longarg: long command line option name. 'help' checks the presence of argument
-  '--help'  .  'mu='  matches command line option --mu=0.001 or -mu 0.001.
-
-label: The label of the input field in a parameter dialog, and as the prompt for
-  user input.
-
-default: default value for this parameter. It is used to as the default value
-  in the parameter dialog, and as the option value when a user presses 'Enter'
-  directly during interactive parameter input.
-
-useDefault: use default value without asking, if the value can not be determined
-  from GUI, command line option or config file. This is useful for options that 
-  rarely need to be changed. Setting them to useDfault allows shorter command 
-  lines, and easy user input.
-
-description: a long description of this parameter, will be put into the usage 
-  information, which will be displayed with ( -h, --help command line option, or 
-  help button in parameter dialog).
-
-allowedTypes: acceptable types of this option. If allowedTypes is types.ListType
-  or types.TupleType and the user's input is a scalar, the input will be converted
-  to a list automatically. If the conversion can not be done, this option will
-  not be accepted.
-
-validate: a function to validate the parameter. You can define your own functions 
-  or use the ones defined in this module.
-
-chooseOneOf: if specified, simuOpt will choose one from a list of values using a 
-  listbox (Tk) or a combo box (wxPython) .
-
-chooseFrom: if specified, simuOpt will choose one or more items from a list of
-  values using a listbox (tk) or a combo box (wxPython).
-
-separator: if specified, a blue label will be used to separate groups of 
-  parameters.
-
-jump: it is used to skip some parameters when doing the interactive user input. 
-  For example, _getParam will skip the rest of the parameters if -h is specified 
-  since parameter -h has item 'jump':-1 which means that jump to the end. 
-  Another situation of using this value is when you have a hierarchical parameter
-  set. For example, if mutation is on, specify mutation rate, otherwise proceed.
-
-jumpIfFalse: The same as jump but jump if current parameter is False.
-
-
-This module, is loaded, pre-process the command line options. More specifically,
-it checks
+This module, if loaded, pre-process the command line options. More specifically,
+it checks command line option:
 
 -c configfile: read from a configuration file
 
@@ -108,7 +51,7 @@ it checks
 --noDialog: do not use option dialog. If the options can not be obtained from
   command line or configuraiton file, users will be asked to input them interactively.
 
-
+Because these options are reserved, you can not use them in your simuPOP script.
 '''
 
 # First try to get environmental variable
@@ -895,32 +838,62 @@ def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArg
             - configuration file specified by -f file, or
             - prompt for user input
 
-        verbose: whether or not print detailed info
-
-        checkUnprocessedArgs: check args, avoid misspelling of arg name
-
-        options: a list of dictionaries with key
-            arg:    command line argument, conformable to that of
-                        python getopt module. For example, "d:" means
-                        -d name
-
-            longarg: command line argument, --arg. For exmaple
-                "mu=". c.f. getopt.
-
-            label: config name in a config file
-
-            default: default value if user hit enter for prompt. Default value can not be none
-
-            allowedTypes: an array of allowed types. Default to string.
-                if type is not string, input will be evaluated and
-                resulting type will be checked.
-
-            jump: go to option 'jump'    if current option is True.
-                This is useful for -h (goto -1 (end)) or conditional options
-                where you need only part of the options. goto can not go backwards.
-
-            jumpIfFalse: go to option 'jumpIfFalse' if current option is False.
-
+        The option description list consists of dictionaries with some predefined keys.
+        Each dictionary defines an option. With defined properties, this option can be
+        obtained from command line (using short  (-h, -k=100)  or long  (--help, 
+        --allele=2)  command line options), a configuration file, interactive user input,
+        or a Tcl/Tk or wxPython based parameter dialog.
+        
+        The option description dictionaries can have the following keys:
+        
+        arg: short command line option name.  'h'  checks the presence of argument  -h  . 
+        If an argument is expected, add a comma to the option name. For example, 
+        'p:' matches command line option -p=100 or -p 100.
+        
+        longarg: long command line option name. 'help' checks the presence of argument
+          '--help'  .  'mu='  matches command line option --mu=0.001 or -mu 0.001.
+        
+        label: The label of the input field in a parameter dialog, and as the prompt for
+          user input.
+        
+        default: default value for this parameter. It is used to as the default value
+          in the parameter dialog, and as the option value when a user presses 
+          'Enter' directly during interactive parameter input.
+        
+        useDefault: use default value without asking, if the value can not be determined
+          from GUI, command line option or config file. This is useful for options that 
+          rarely need to be changed. Setting them to useDfault allows shorter command 
+          lines, and easy user input.
+        
+        description: a long description of this parameter, will be put into the usage 
+          information, which will be displayed with ( -h, --help command line option, or 
+          help button in parameter dialog).
+        
+        allowedTypes: acceptable types of this option. If allowedTypes is types.ListType
+          or types.TupleType and the user's input is a scalar, the input will be converted
+          to a list automatically. If the conversion can not be done, this option will
+          not be accepted.
+        
+        validate: a function to validate the parameter. You can define your own functions 
+          or use the ones defined in this module.
+        
+        chooseOneOf: if specified, simuOpt will choose one from a list of values using a 
+          listbox (Tk) or a combo box (wxPython) .
+        
+        chooseFrom: if specified, simuOpt will choose one or more items from a list of
+          values using a listbox (tk) or a combo box (wxPython).
+        
+        separator: if specified, a blue label will be used to separate groups of 
+          parameters.
+        
+        jump: it is used to skip some parameters when doing the interactive user input. 
+          For example, _getParam will skip the rest of the parameters if -h is specified 
+          since parameter -h has item 'jump':-1 which means that jump to the end. 
+          Another situation of using this value is when you have a hierarchical parameter
+          set. For example, if mutation is on, specify mutation rate, otherwise proceed.
+        
+        jumpIfFalse: The same as jump but jump if current parameter is False.
+        
         This function will first check command line argument.
         If the argument is available, use its value.
         Otherwise check if a config file is specified. If so,
@@ -929,6 +902,13 @@ def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArg
 
         All input will be checked against types, if exists, an array of
         allowed types.
+
+        verbose: whether or not print detailed info
+
+        checkUnprocessedArgs: check args, avoid misspelling of arg name
+
+        options: a list of dictionaries with key
+
     """
     # check if --noDialog, -h is present
     # or there is no 'label' in the options structure

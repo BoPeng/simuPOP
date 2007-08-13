@@ -4891,7 +4891,7 @@ Arguments:
                     when single rate is specified. Default to all
                     loci.
     maxAllele:      maximum allowable allele. Interpreted by each sub
-                    mutaor class. Default to  pop.maxAllele().
+                    mutaor class. Default to pop.maxAllele().
 
 "; 
 
@@ -5983,7 +5983,8 @@ Usage:
 
     population(size=0, ploidy=2, loci=[], sexChrom=False,
       lociPos=[], subPop=[], ancestralDepth=0, alleleNames=[],
-      lociNames=[], maxAllele=MaxAllele, infoFields=[], chromMap=[])
+      lociNames=[], maxAllele=ModuleMaxAllele, infoFields=[],
+      chromMap=[])
 
 Details:
 
@@ -8843,8 +8844,8 @@ Description:
 Details:
 
     This operator shrinks a  population according to a given array or
-    the subPopID() value of each indvidual. Subpopulations are kept
-    intact.
+    the subPopID() value of each indvidual. individuals with negative
+    subPop ID are removed.
 
 "; 
 
@@ -12918,7 +12919,8 @@ Usage:
 Description:
 
     set debug codes. Default to turn on all debug codes. Only
-    available in non-optimized modules.
+    available in non-optimized modules. Do not mix this function with
+    turnOnDebug(), which creates an operator
 
 Usage:
 
@@ -12943,7 +12945,8 @@ Usage:
 Description:
 
     turn off debug information. Default to turn off all debug codes.
-    Only available in non-optimized modules.
+    Only available in non-optimized modules. Do not mix this function
+    with turnOffDebug(), which creates an operator
 
 Usage:
 
@@ -13106,7 +13109,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::compileCompiler "
+%feature("docstring") simuPOP::ModuleCompiler "
 
 Description:
 
@@ -13114,11 +13117,11 @@ Description:
 
 Usage:
 
-    compileCompiler()
+    ModuleCompiler()
 
 "; 
 
-%feature("docstring") simuPOP::compileDate "
+%feature("docstring") simuPOP::ModuleDate "
 
 Description:
 
@@ -13126,11 +13129,11 @@ Description:
 
 Usage:
 
-    compileDate()
+    ModuleDate()
 
 "; 
 
-%feature("docstring") simuPOP::compilePyVersion "
+%feature("docstring") simuPOP::ModulePyVersion "
 
 Description:
 
@@ -13138,11 +13141,11 @@ Description:
 
 Usage:
 
-    compilePyVersion()
+    ModulePyVersion()
 
 "; 
 
-%feature("docstring") simuPOP::compilePlatForm "
+%feature("docstring") simuPOP::ModulePlatForm "
 
 Description:
 
@@ -13150,13 +13153,13 @@ Description:
 
 Usage:
 
-    compilePlatForm()
+    ModulePlatForm()
 
 "; 
 
 %ignore simuPOP::initialize();
 
-%feature("docstring") simuPOP::optimized "
+%feature("docstring") simuPOP::Optimized "
 
 Description:
 
@@ -13164,7 +13167,7 @@ Description:
 
 Usage:
 
-    optimized()
+    Optimized()
 
 "; 
 
@@ -13180,7 +13183,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::limits "
+%feature("docstring") simuPOP::Limits "
 
 Description:
 
@@ -13188,7 +13191,7 @@ Description:
 
 Usage:
 
-    limits()
+    Limits()
 
 "; 
 
@@ -13208,7 +13211,7 @@ Usage:
 
 %ignore simuPOP::mpiBarrier();
 
-%feature("docstring") simuPOP::alleleType "
+%feature("docstring") simuPOP::AlleleType "
 
 Description:
 
@@ -13217,11 +13220,11 @@ Description:
 
 Usage:
 
-    alleleType()
+    AlleleType()
 
 "; 
 
-%feature("docstring") simuPOP::maxAllele "
+%feature("docstring") simuPOP::MaxAllele "
 
 Description:
 
@@ -13230,7 +13233,7 @@ Description:
 
 Usage:
 
-    maxAllele()
+    MaxAllele()
 
 "; 
 
