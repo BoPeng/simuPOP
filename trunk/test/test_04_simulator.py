@@ -88,7 +88,7 @@ class TestSimulator(unittest.TestCase):
     def testGenoStru(self):
         'Testing genotypic structure related functions'
         # genetic structure can also be accessed from simulator
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             pop = population(size=100, ploidy=2, loci=[5, 7], 
                 subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=4, alleleNames=['_','A','C','T','G']) 
@@ -123,7 +123,7 @@ class TestSimulator(unittest.TestCase):
         self.assertRaises(exceptions.IndexError, simu.chromLocusPair, 50 )
         self.assertEqual(simu.totNumLoci(), 12)
         self.assertEqual(simu.genoSize(), simu.totNumLoci()*simu.ploidy() )
-        if alleleType() == 'binary':
+        if AlleleType() == 'binary':
             self.assertEqual(simu.alleleNames(), ('1','2') )
             self.assertEqual(simu.alleleName(0), '1')
             self.assertEqual(simu.alleleName(1), '2')

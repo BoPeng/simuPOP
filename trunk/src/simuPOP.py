@@ -94,18 +94,18 @@ if not simuOptions['Quiet']:
     # compile date, compiler etc are macros that are replaced during compile time.
     if simuVer() == '9.9.9':
         # this is the subversion version of simuPOP
-        print ("Developmental Version (%s) for Python %s" % (moduleDate(), modulePyVersion() ))
+        print ("Developmental Version (%s) for Python %s" % (ModuleDate(), ModulePyVersion() ))
     else:
         # this is the released version
-        print ("Version %s (Revision %d, %s) for Python %s" % (simuVer(), simuRev(), moduleDate(),
-            modulePyVersion() ))
-    print moduleCompiler()
+        print ("Version %s (Revision %d, %s) for Python %s" % (simuVer(), simuRev(), ModuleDate(),
+            ModulePyVersion() ))
+    print ModuleCompiler()
     print "Random Number Generator is set to %s with random seed 0x%08x" % (rng().name(), rng().seed())
     # MaxAllele + 1 since 0 is one of the allelic states
-    if optimized():
-        print "This is the optimied %s allele version with %d maximum allelic states." % (alleleType(), MaxAllele+1)
+    if Optimized():
+        print "This is the optimied %s allele version with %d maximum allelic states." % (AlleleType(), MaxAllele()+1)
     else:
-        print "This is the standard %s allele version with %d maximum allelic states." % (alleleType(), MaxAllele+1)
+        print "This is the standard %s allele version with %d maximum allelic states." % (AlleleType(), MaxAllele()+1)
     print "For more information, please visit http://simupop.sourceforge.net,"
     print "or email simupop-list@lists.sourceforge.net (subscription required)."
 

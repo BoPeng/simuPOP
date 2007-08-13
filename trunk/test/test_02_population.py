@@ -22,7 +22,7 @@ class TestPopulation(unittest.TestCase):
         'Assert if the genotype of subPop of pop is genotype '
         gt = list(pop.arrGenotype(subPop, True))
         gt.sort()
-        if alleleType() == 'binary':
+        if AlleleType() == 'binary':
             self.assertEqual(gt, [x>0 for x in genotype])
         else:
             self.assertEqual(gt, genotype)
@@ -32,7 +32,7 @@ class TestPopulation(unittest.TestCase):
         self.assertRaises(exceptions.ValueError,
             [1,2,4,5].index, 6)
         # no exception '
-        if alleleType() == 'binary':
+        if AlleleType() == 'binary':
             population(size=100, ploidy=2, loci=[5, 7], subPop=[20, 80],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=1, alleleNames=['_','A','C','T','G'])
@@ -43,7 +43,7 @@ class TestPopulation(unittest.TestCase):
         # raise exception when max allele is wrong
         # MaxAllele may be too big.
         self.assertRaises( (exceptions.TypeError, exceptions.ValueError, exceptions.OverflowError),
-            population, size=10, maxAllele=MaxAllele+1)
+            population, size=10, maxAllele=MaxAllele()+1)
         # raise exception when subpop size does not match
         self.assertRaises(exceptions.ValueError, 
             population, size=1000, ploidy=4, loci=[5, 7]*20, \
@@ -101,7 +101,7 @@ class TestPopulation(unittest.TestCase):
 
     def testGenoStructure(self):
         'Testing geno structure related functions'
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             pop = population(size=100, ploidy=2, loci=[5, 7], 
                 subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=3, alleleNames=['A','C','T','G']) 
@@ -144,7 +144,7 @@ class TestPopulation(unittest.TestCase):
         #
         self.assertEqual(pop.genoSize(), pop.totNumLoci()*pop.ploidy() )
         #
-        if alleleType() == 'binary':
+        if AlleleType() == 'binary':
             self.assertEqual(pop.alleleNames(), ('1','2') )
             self.assertEqual(pop.alleleName(0), '1')
             self.assertEqual(pop.alleleName(1), '2')
@@ -169,7 +169,7 @@ class TestPopulation(unittest.TestCase):
         
     def testPopProperties(self):
         'Testing population properties'
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             pop = population(size=100, ploidy=2, loci=[5, 7], 
                 subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=4, alleleNames=['_','A','C','T','G']) 
@@ -209,7 +209,7 @@ class TestPopulation(unittest.TestCase):
             ind.setAllele(2, 0)
         for ind in pop.individuals(0):
             self.assertEqual(ind.allele(0), 1)
-        if alleleType() == 'binary':
+        if AlleleType() == 'binary':
             for ind in pop.individuals(1):
                 self.assertEqual(ind.allele(0), 1)
         else:
@@ -558,7 +558,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual( pop.numChrom(), 2)
         self.assertEqual( pop.numLoci(0), 1)
         self.assertEqual( pop.numLoci(1), 1)
-        if alleleType() == 'binary':
+        if AlleleType() == 'binary':
             self.assertEqual( pop.arrGenotype(True).count(3), 0 )
             self.assertEqual( pop.arrGenotype(True).count(1), pop.popSize()*pop.ploidy()*2 )
         else:
@@ -804,7 +804,7 @@ class TestPopulation(unittest.TestCase):
 
     def testSaveLoadPopulation(self):
         'Testing save and load populations'
-        if alleleType() != 'binary':
+        if AlleleType() != 'binary':
             pop = population(size=10, ploidy=2, loci=[5, 7], 
                 subPop=[2, 8], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=4, alleleNames=['_','A','C','T','G'],
@@ -845,7 +845,7 @@ class TestPopulation(unittest.TestCase):
 
     def testCrossSaveLoad(self):
         'Testing population saved by other modules'
-        if alleleType() == 'binary':
+        if AlleleType() == 'binary':
             if os.path.isfile('test_ba.txt'):
                 pop = LoadPopulation('test_ba.txt')
             else:
@@ -865,7 +865,7 @@ class TestPopulation(unittest.TestCase):
             if os.path.isfile('test_la.txt'):
                 pop1 = LoadPopulation('test_la.txt')
                 self.assertEqual(pop, pop1)            
-        elif alleleType() == 'short':
+        elif AlleleType() == 'short':
             if os.path.isfile('test_ba.txt'):
                 pop = LoadPopulation('test_ba.txt')
                 pop.savePopulation('test_std.txt')

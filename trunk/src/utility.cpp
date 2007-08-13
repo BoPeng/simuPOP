@@ -2728,7 +2728,7 @@ namespace simuPOP
 #endif
 	}
 
-	bool optimized()
+	bool Optimized()
 	{
 #ifdef OPTIMIZED
 		return(true);
@@ -2746,9 +2746,9 @@ namespace simuPOP
 #endif
 	}
 
-	void limits()
+	void Limits()
 	{
-		cout << "Maximum allele state: " << hex << MaxAllele << endl;
+		cout << "Maximum allele state: " << hex << ModuleMaxAllele << endl;
 		cout << "Maximum random number: " << hex << MaxRandomNumber << endl;
 		cout << "Maximum number of subpopulations: " << hex << MaxSubPopID << endl;
 		cout << "Maximum index size (limits population size * total number of markers): "
@@ -2815,7 +2815,7 @@ namespace simuPOP
 #endif
 	}
 
-	string alleleType()
+	string AlleleType()
 	{
 #ifdef LONGALLELE
 		return "long";
@@ -2828,27 +2828,27 @@ namespace simuPOP
 #endif
 	}
 
-	ULONG maxAllele()
+	ULONG MaxAllele()
 	{
-		return MaxAllele;
+		return ModuleMaxAllele;
 	}
 
-	string moduleCompiler()
+	string ModuleCompiler()
 	{
 		return COMPILER;
 	}
 
-	string moduleDate()
+	string ModuleDate()
 	{
 		return __DATE__;
 	}
 
-	string modulePyVersion()
+	string ModulePyVersion()
 	{
 		return PY_VERSION;
 	}
 
-	string modulePlatForm()
+	string ModulePlatForm()
 	{
 		return PLATFORM;
 	}

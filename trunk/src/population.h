@@ -245,7 +245,7 @@ namespace simuPOP
 				int ancestralDepth=0,
 				const vectorstr& alleleNames=vectorstr(),
 				const vectorstr& lociNames=vectorstr(),
-				UINT maxAllele = MaxAllele,
+				UINT maxAllele = ModuleMaxAllele,
 				const vectorstr& infoFields = vectorstr(),
 				const vectori& chromMap = vectori());
 
@@ -1553,7 +1553,7 @@ namespace simuPOP
 				// deep adjustment: everyone in order
 				//const_cast<population*>(this)->adjustGenoPosition(true);
 
-				ar & make_nvp("libraryMaxAllele", MaxAllele);
+				ar & make_nvp("libraryMaxAllele", ModuleMaxAllele);
 
 				DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
 				// GenoStructure genoStru = this->genoStru();
@@ -1668,9 +1668,9 @@ namespace simuPOP
 				ULONG ma;
 				ar & make_nvp("libraryMaxAllele", ma);
 
-				if( ma > MaxAllele)
+				if( ma > ModuleMaxAllele)
 					cout << "Warning: The population is saved in library with more allele states. \n"
-						<< "Unless all alleles are less than "  << MaxAllele
+						<< "Unless all alleles are less than "  << ModuleMaxAllele
 						<< ", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n";
 
 				GenoStructure stru;

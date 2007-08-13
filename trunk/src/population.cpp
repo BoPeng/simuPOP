@@ -80,8 +80,8 @@ namespace simuPOP
 		m_infoOrdered(true),
 		m_selectionFlags()
 	{
-		DBG_FAILIF(maxAllele > MaxAllele, ValueError,
-			"maxAllele is bigger than maximum allowed allele state of this library (" + toStr(MaxAllele) +
+		DBG_FAILIF(maxAllele > ModuleMaxAllele, ValueError,
+			"maxAllele is bigger than maximum allowed allele state of this library (" + toStr(ModuleMaxAllele) +
 			")\nPlease use simuOpt.setOptions(alleleType='long') to use the long allele version of simuPOP.");
 
 		DBG_FAILIF(maxAllele == 0, ValueError,
