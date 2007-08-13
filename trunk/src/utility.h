@@ -88,11 +88,13 @@ namespace simuPOP
 	// ////////////////////////////////////////////////////////////
 
 	/// set debug codes. Default to turn on all debug codes. Only available in non-optimized modules.
+	/// Do not mix this function with \c turnOnDebug(), which creates an operator 
 	void TurnOnDebug(DBG_CODE code=DBG_ALL);
 
 	void TurnOnDebug(string code);
 
 	/// turn off debug information. Default to turn off all debug codes. Only available in non-optimized modules.
+	/// Do not mix this function with \c turnOffDebug(), which creates an operator 
 	void TurnOffDebug(DBG_CODE code=DBG_ALL);
 
 #ifndef OPTIMIZED
@@ -1479,16 +1481,16 @@ namespace simuPOP
 	string simuVer();
 
 	/// return the compiler used to compile this simuPOP module
-	string compileCompiler();
+	string moduleCompiler();
 
 	/// return the date when this simuPOP module is compiled
-	string compileDate();
+	string moduleDate();
 
 	/// return the Python version this simuPOP module is compiled for
-	string compilePyVersion();
+	string modulePyVersion();
 
 	/// return the platform on which this simuPOP module is compiled
-	string compilePlatForm();
+	string modulePlatForm();
 
 #ifdef BINARYALLELE
 	// efficiently copy alleles (block by block, rather than 1 by 1)
