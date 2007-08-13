@@ -576,6 +576,11 @@ def NuclearFamilySample(pop, *args, **kwargs):
     s.apply(pop)
     return s.samples(pop)
 
+def PySubset(pop, *args, **kwargs):
+    s = pySubset(*args, **kwargs)
+    s.apply(pop)
+
+
 def SavePopulation(pop, *args, **kwargs):
     pop.savePopulation(*args, **kwargs)
 

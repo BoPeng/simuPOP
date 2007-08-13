@@ -34,7 +34,7 @@ const string TAG_ParentsFields[2] = {"father_idx", "mother_idx"};
 
 namespace simuPOP
 {
-	/// basic class of tagging individuals
+	/// base class of tagging individuals
 	/**
 	\c tagger is a during mating operator that tag individuals with various information.
 	Potential usages are:
@@ -84,6 +84,11 @@ namespace simuPOP
 		public:
 			/// create an \c inheritTagger, default to be always active
 			/**
+			Create a inheritTagger that inherit a tag from one or both parents. A tag is actually
+			a information field whose value will be copied from parents to offspring. By default,
+			paternal tag is copied to offspring's using the specified information field. If
+			<tt>mode=TAG_Both</tt>, two tags will be copied from parents (info1 from father,
+			and info2 from mother).
 			\param mode can be one of \c TAG_Paternal, \c TAG_Maternal, and \c TAG_Both
 			*/
 			inheritTagger(int mode=TAG_Paternal, int begin=0, int end=-1, int step=1,
@@ -105,6 +110,7 @@ namespace simuPOP
 				return "<simuPOP::inherittagger>" ;
 			}
 
+			/// CPPONLY
 			/// apply the \c inheritTagger
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL);
@@ -160,6 +166,7 @@ namespace simuPOP
 				return "<simuPOP::parentstagger>" ;
 			}
 
+			/// CPPONLY
 			/// apply the \c parentsTagger
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL);
@@ -224,6 +231,7 @@ namespace simuPOP
 				return "<simuPOP::pyTagger>" ;
 			}
 
+			/// CPPONLY
 			/// apply the \c pyTagger
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL);

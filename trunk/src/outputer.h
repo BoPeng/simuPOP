@@ -39,7 +39,7 @@ using std::dec;
 namespace simuPOP
 {
 	/**
-	\brief outputer is a (special) subclass of Operator that will output files with
+	\brief Base class of all operators that out information.
 	different format.
 
 	@author Bo Peng
@@ -49,7 +49,7 @@ namespace simuPOP
 	{
 
 		public:
-			/// constructor. default to be always active.
+			/// constructor. 
 			outputer(string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
@@ -67,12 +67,82 @@ namespace simuPOP
 
 	};
 
+	/// Output a given string.
+	/**
+	A common usage is <tt>pyOutpue('\n', rep=REP_LAST)</tt>
+	*/
+	class pyOutput: public outputer
+	{
+
+		public:
+			/// Create a pyOutput operator that output a given string.
+			/**
+				\param str string to be outputted
+			*/
+			pyOutput(string str="", string output=">", string outputExpr="",
+				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
+				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
+			outputer( output, outputExpr, stage, begin, end,
+				step, at, rep, grp, infoFields), m_string(str)
+			{
+			}
+
+			/// simply output some info
+			virtual bool apply(population& pop)
+			{
+				ostream& out = this->getOstream(pop.dict());
+				out << m_string;
+				this->closeOstream();
+				return true;
+			}
+
+			///// destructor
+			virtual ~pyOutput()
+			{
+			}
+
+			virtual baseOperator * clone() const
+			{
+				return new pyOutput(*this);
+			}
+
+			/// set output string.
+			void setString(const string str)
+			{
+				m_string = str;
+			}
+
+			virtual string __repr__()
+			{
+				string reprStr;
+				for(size_t i=0; i<10 && i < m_string.size(); ++i)
+					if(m_string[i] != '\n')
+						reprStr += m_string[i];
+				if( m_string.size() > 10)
+					reprStr += "... ";
+				return "<simuPOP::output " + reprStr + "> " ;
+			}
+
+		private:
+			string m_string;
+	};
+
+	/// Output a given string.
+	/**
+	A common usage is <tt>pyOutpue('\n', rep=REP_LAST)</tt>
+
+	This operator, renamed to output, in the python interface
+	is obsolete. It is replaced by pyOutput.
+	*/
 	class outputHelper: public outputer
 	{
 
 		public:
-			///
-			outputHelper(string str="\n", string output=">", string outputExpr="",
+			/// Create a outputHelper operator that output a given string.
+			/**
+				\param str string to be outputted
+			*/
+			outputHelper(string str="", string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
 			outputer( output, outputExpr, stage, begin, end,

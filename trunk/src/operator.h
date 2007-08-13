@@ -586,7 +586,7 @@ namespace simuPOP
 			/**
 			This operator does nothing.
 
-			\test src_nonOp Use of noneOp operator
+			\test src_noneOp.log Use of noneOp operator
 			*/
 			noneOp( string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=0, int step=1, vectorl at=vectorl(),

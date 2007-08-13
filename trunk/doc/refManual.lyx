@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -5417,7 +5417,7 @@ name "ascertainment"
 
 \end_inset
 
- (subset of population)
+
 \end_layout
 
 \begin_layout Standard
@@ -5592,52 +5592,30 @@ statRef
 Expression and Statements
 \end_layout
 
-\begin_layout Subsection
-Operator (C++) 
-\family typewriter
-output
-\begin_inset LatexCommand index
-name "operator!output"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This operator output a simple string.
- For example, 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-output(r'
-\backslash
-n', rep=REP_LAST)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-output a newline at the last replicate.
- 
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
 \begin_layout Standard
 \begin_inset ERT
 status open
+
+\begin_layout Standard
+
+
+\backslash
+dumperRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+savePopulationRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+pyOutputRef
+\end_layout
 
 \begin_layout Standard
 
@@ -5645,15 +5623,6 @@ status open
 \backslash
 pyEvalRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Standard
 
@@ -5737,29 +5706,6 @@ pyTaggerRef
 
 \begin_layout Section
 Output 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-dumperRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-savePopulationRef
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section

@@ -5,6 +5,7 @@ BUGS:
 
 version 0.8.0 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - Reference manual
+  - Rename outputHelper to pyOutput
 
 version 0.7.11 - (Rev 1133) July 26, 2007
   - NEW: add subPop(s) parameters to selectors, allowing different selection pressure 

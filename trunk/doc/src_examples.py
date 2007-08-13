@@ -126,10 +126,10 @@ print ind.sexChar()
 
 #file log/src_operator.log
 simu = simulator(population(1),binomialSelection(), rep=2)
-op1 = output("a", begin=5, end=20, step=3)
-op2 = output("a", begin=-5, end=-1, step=2)
-op3 = output("a", at=[2,5,10])
-op4 = output("a", at=[-10,-5,-1])
+op1 = pyOutput("a", begin=5, end=20, step=3)
+op2 = pyOutput("a", begin=-5, end=-1, step=2)
+op3 = pyOutput("a", at=[2,5,10])
+op4 = pyOutput("a", at=[-10,-5,-1])
 simu.evolve( [ pyEval(r"str(gen)+'\n'", begin=5, end=-1, step=2)],
                              end=10)
 #
@@ -142,7 +142,7 @@ simu.step(
     ops = [ 
         pyEval(r"grp+3", grp=1),
         pyEval(r"grp+6", grp=2),
-        output('\n', rep=REP_LAST)
+        pyOutput('\n', rep=REP_LAST)
     ]
 )
 
@@ -174,8 +174,8 @@ simu.step(
     ops = [
         stat(alleleFreq=[0]),
         pyEval('alleleFreq[0][0]', output=outfile),
-        output("\t", output=outfile),
-        output("\n", output=outfile, rep=0)
+        pyOutput("\t", output=outfile),
+        pyOutput("\n", output=outfile, rep=0)
     ],
 )
 print open("a.txt").read()
@@ -420,11 +420,12 @@ simu.evolve([
 #end
 
 #file log/src_pySubset.log
-simu = simulator(population(subPop=[2,3], loci=[3,4], infoFields=['fitness']),
+simu = simulator(
+    population(subPop=[2,3], loci=[3,4]),
     randomMating())
 simu.step([
-    initByFreq([.3,.5,.2]),
-    pySubset( [1,-1,-1,1,-1] ),
+    initByFreq([.3, .5, .2]),
+    pySubset([0, -1, -1, 1, -1] ),
     dumper(alleleOnly=True, stage=PrePostMating)
    ])
 #end
@@ -476,14 +477,9 @@ PyPenetrance(pop, loci=(0, 1, 2),
 #turnOnDebug(DBG_SIMULATOR)
 
 #file log/src_ifElse.log
-from simuRPy import *
-from simuUtil import *
-numRep=4
-popSize=100
-endGen=50
-
-simu = simulator(population(size=popSize, loci=[1]),
-  randomMating(), rep=numRep)
+simu = simulator(
+    population(size=1000, loci=[1]),
+    randomMating(), rep=4)
 simu.evolve(
   preOps = [ initByValue([1,1])],
   ops = [
@@ -494,19 +490,14 @@ simu.evolve(
     # introduce disease if no one is affected
     ifElse(cond='numOfAffected==0',
       ifOp=kamMutator(rate=0.01, maxAllele=2)),
-    # expose affected status
-    pyExec('pop.exposeAffectedness()', exposePop=True),
-    # plot affected status
-    varPlotter(expr='affected',plotType="image", byRep=1, update=endGen, 
-      varDim=popSize, win=endGen, numRep=numRep,
-      title='affected status', saveAs="ifElse")
+    ifElse(cond='numOfAffected==0',
+        ifOp=pyEval(r'"No affected at gen %d\n" % gen'))
   ],
-  end=endGen,
-  dryrun=False
+  end=50
 )
 #end
 
-#file log/src_none.log
+#file log/src_noneOp.log
 # this may be set from command line option
 savePop = False
 # then, saveOp is defined accordingly
@@ -514,8 +505,9 @@ if savePop:
     saveOp = savePopulation(output='a.txt')
 else:
     saveOp = noneOp()
+
 simu = simulator(population(10), randomMating())
-simu.evolve( [saveOp])
+simu.step([saveOp])
 #end
 
 
