@@ -2047,10 +2047,14 @@ namespace simuPOP
 	}
 
 	// choose an random number generator.
-	// This can be done by setting GSL_RNG_TYPE as well.
 	void RNG::setRNG(const char * rng, unsigned long seed)
 	{
-		if (rng != NULL && rng[0] != '\0')
+		const char * rng_name = rng;
+		// if RNG name is not given, try GSL_RNG_TYPE
+		if (rng_name == NULL)
+			rng_name = getenv("GSL_RNG_TYPE");
+
+		if (rng_name != NULL && rng_name[0] != '\0')
 		{
 			// locate the RNG
 			const gsl_rng_type **t, **t0 = gsl_rng_types_setup ();
@@ -2062,7 +2066,7 @@ namespace simuPOP
 			for (t = t0; *t != 0; t++)
 			{
 				// require that a RNG can generate full range of integer from 0 to the max of unsigned long int
-				if (strcmp (rng, (*t)->name) == 0)
+				if (strcmp (rng_name, (*t)->name) == 0)
 				{
 					// free current RNG
 					if( m_RNG != NULL )
@@ -2077,7 +2081,7 @@ namespace simuPOP
 			}
 
 			if ( *t == 0 )
-				throw SystemError("GSL_RNG_TYPE=" + toStr(rng)
+				throw SystemError("GSL_RNG_TYPE=" + toStr(rng_name)
 					+ " not recognized or can not generate full range (0-2^32-1) of integers.\n c.f. ListAllRNG()" );
 		}
 		else
