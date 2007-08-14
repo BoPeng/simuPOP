@@ -3,10 +3,12 @@ ChangeLog of simuPOP
 BUGS:
   - all known bugs have been cleared.
 
-version 0.8.0 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
-  - Reference manual
+version 0.8.1 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.8.0 - (Rev 1215) Aug 14, 2007
+  - Reference manual overhaul
   - Rename outputHelper to pyOutput, and alleleType to AlleleType for consistency.
-  - Respect environmental variable GSL_RNG_TYPE
+  - NEW: Respect environmental variable GSL_RNG_TYPE for the choice of RNG
 
 version 0.7.11 - (Rev 1133) July 26, 2007
   - NEW: add subPop(s) parameters to selectors, allowing different selection pressure 
