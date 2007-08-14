@@ -1,0 +1,1502 @@
+#LyX 1.5.2svn created this file. For more info see http://www.lyx.org/
+\lyxformat 276
+\begin_document
+\begin_header
+\textclass manual
+\begin_preamble
+\usepackage{underscore}
+\renewcommand{\py@ptsize}{12pt}
+
+\setreleaseinfo{Release 0.6.9 (\mbox{$$Rev: 75 $$})}
+\authoraddress{
+{\bf Department of Statistics, Rice University}\\
+{\bf Email: }{\textsf bpeng@rice.edu}\\
+{\bf URL: }{\textsf http://simupop.sourceforge.net} \\
+{\bf Mailing List: }{\textsf simupop-list@lists.sourceforge.net}
+}
+\author{Bo Peng}
+\date{December 2004\\
+\hfill{}\\
+Last modified \\
+\today }
+
+\ifhtml
+\chapter*{Front Matter\label{front}}
+\fi
+\end_preamble
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\float_placement H
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 2
+\use_esint 0
+\cite_engine natbib_authoryear
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+simuPOP Developer's Guide
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "c"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1pt"
+height_special "totalheight"
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+hspace{1cm}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+vspace{5in}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+{
+\backslash
+large
+\backslash
+textsf Acknowledgements: }
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+vspace{.2cm}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Dr.
+ Marek Kimmel
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Dr.
+ Fran
+\backslash
+c cious Balloux
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Dr.
+ William Amos
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} SWIG user community
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Python user community 
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+hspace{.3cm} Keck Center for Computational and Structural Biology
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+vspace{.7in} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+ 
+\backslash
+copyright{} 
+\end_layout
+
+\end_inset
+
+ 2004-2005 Bo Peng 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+vspace{.3cm} 
+\backslash
+hrule 
+\backslash
+vspace{0.1cm} 
+\end_layout
+
+\end_inset
+
+Permission is granted to make and distribute verbatim copies of this manual
+ provided the copyright notice and this permission notice are preserved
+ on all copies.
+ Permission is granted to copy and distribute modified versions of this
+ manual under the conditions for verbatim copying, provided also that the
+ sections entitled Copying and GNU General Public License are included exactly
+ as in the original, and provided that the entire resulting derived work
+ is distributed under the terms of a permission notice identical to this
+ one.
+ Permission is granted to copy and distribute translations of this manual
+ into another language, under the above conditions for modified versions,
+ except that this permission notice may be stated in a translation approved
+ by the Free Software Foundation.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Extending simuPOP
+\end_layout
+
+\begin_layout Standard
+simuPOP can be extended easily using Python programming language.
+ Because almost all data are exposed to the Python interface, your ability
+ of extending simuPOP is 
+\emph on
+unlimited
+\emph default
+.
+ However, because Python is slower than C++ and the exchange of data between
+ internal C++ data structure and Python interface may be costly, it is not
+ recommended to write frequently used operators in Python.
+ Appropriate pure Python operators are visualizers, statistics calculators,
+ file outputers etc.
+\end_layout
+
+\begin_layout Standard
+To write simuPOP extension, you will have to know more about data structures
+ and member functions of population.
+ Note that for efficiency and implementation reasons, many of the following
+ functions do not provide keyword parameters.
+\end_layout
+
+\begin_layout Section
+\begin_inset LatexCommand label
+name "sec:Genotypic-structure"
+
+\end_inset
+
+Genotypic structure
+\end_layout
+
+\begin_layout Standard
+The genotypes of an individual are organized as a single array.
+ For example, if you have an diploid individual with two chromosomes, having
+ 2 and 3 loci respectively.
+ The genotypes should be in the order of
+\end_layout
+
+\begin_layout LyX-Code
+0-0-0, 1-0-0, 0-1-0, 1-1-0, 2-1-0, 0-0-1, 1-0-1, 0-1-1, 1-1-1, 2-1-1,
+\end_layout
+
+\begin_layout Standard
+where X-X-X are locus-chromosome-ploidy indices.
+ An important consequence of this arrangement is that 'locus location' +
+ 'the total number of loci' is the location of the locus on the other set
+ of chromosomes.
+ 
+\end_layout
+
+\begin_layout Standard
+Several functions are provided to retrieve genotypic information:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ploidy
+\begin_inset LatexCommand index
+name "function!ploidy"
+
+\end_inset
+
+()
+\family default
+, ploidy
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+numChrom
+\begin_inset LatexCommand index
+name "function!numChrom"
+
+\end_inset
+
+()
+\family default
+,
+\family typewriter
+ 
+\family default
+the number of chromosomes
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+numLoci
+\begin_inset LatexCommand index
+name "function!numLoci"
+
+\end_inset
+
+(chrom)
+\family default
+, the number of loci on chromosome 
+\family typewriter
+chrom
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+totNumLoci
+\begin_inset LatexCommand index
+name "function!totNumLoci"
+
+\end_inset
+
+()
+\family default
+, the total number of loci
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+genoSize
+\begin_inset LatexCommand index
+name "function!genoSize"
+
+\end_inset
+
+()
+\family default
+, the size of genotype.
+ Equals to 
+\family typewriter
+totNumLoci()*ploidy()
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+alleleName
+\begin_inset LatexCommand index
+name "function!alleleName"
+
+\end_inset
+
+()
+\family default
+, allele name given by parameter 
+\family typewriter
+alleleNames
+\family default
+.
+ Otherwise the allele number is returned.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+locusPos
+\begin_inset LatexCommand index
+name "function!locusPos"
+
+\end_inset
+
+(loc)
+\family default
+, the locus position on chromosome (Distance to the beginning of chromosome)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+arrlociPos
+\begin_inset LatexCommand index
+name "function!arrLociPos"
+
+\end_inset
+
+()
+\family default
+, returns an 
+\family typewriter
+carray
+\family default
+ of the locus distances.
+\end_layout
+
+\begin_layout Standard
+The last function is very interesting.
+ It actually returns the reference of the internal locus distance array.
+ If you change the values of the returned array, the internal locus distance
+ will be changed! All functions with this property will be named 
+\family typewriter
+arrFunc()
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The following example shows how to change the locus distance through this
+ function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_extgenostru.log}[caption={geno stru},label={extgenostru}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset LatexCommand label
+name "sec:Accessing-genotype-and"
+
+\end_inset
+
+Accessing genotype and other info
+\end_layout
+
+\begin_layout Standard
+Genotype of an individual can be retrieved through the following functions:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ind.allele
+\begin_inset LatexCommand index
+name "function!allele"
+
+\end_inset
+
+(index, p=0)
+\family default
+,
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ind.setAllele
+\begin_inset LatexCommand index
+name "function!setAllele"
+
+\end_inset
+
+(value, index, p=0)
+\family default
+,
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ind.arrGenotype
+\begin_inset LatexCommand index
+name "function!arrAlleles"
+
+\end_inset
+
+(p=0, ch=0)
+\family default
+,
+\end_layout
+
+\begin_layout Standard
+where 
+\family typewriter
+p
+\family default
+ means ploidy.
+ I.e., the index of the copy of chromosomes.
+ 
+\family typewriter
+ch
+\family default
+ means chromosome.
+ For example
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pop.individual(1).arrGenotype(1, 2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+returns an array of alleles on the third chromosome of the second copy of
+ chromosomes, of the second individual in the population 
+\family typewriter
+pop
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_extgenotype.log}[caption={genotype},label={extgenotype}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Sex, affected status can be accessed through 
+\family typewriter
+sex, setSex, affected, setAffected
+\family default
+ functions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_extother.log}[caption={genotype},label={extother}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Writing pure Python operator 
+\end_layout
+
+\begin_layout Standard
+Now we know how to access information for individuals in a population, but
+ how can we use them in reality? Namely, how can you write an pure Python
+ operator?
+\end_layout
+
+\begin_layout Subsection
+Use 
+\family typewriter
+pyOperator
+\end_layout
+
+\begin_layout Standard
+There are two kinds of pure Python operators.
+ The first one is easy: define a function and wrap it with a 
+\family typewriter
+pyOperator
+\family default
+ operator.
+ This method is highly recommended because of its simplicity.
+ Many user scripts will use this kind of pure Python operator.
+ You can find such examples in scripts directory.
+ A good one may be simuCDCV.py where a pure Python operator is used to calculate
+ and visualize special statistics.
+ 
+\end_layout
+
+\begin_layout Standard
+For example, if you would like to record a silly statistics, namely the
+ genotype of the 
+\begin_inset Formula $m$
+\end_inset
+
+ individual at locu 
+\begin_inset Formula $n$
+\end_inset
+
+, you can do:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+def sillyStat(pop, para):
+\end_layout
+
+\begin_layout Standard
+
+  # para can be used to pass any number of parameters
+\end_layout
+
+\begin_layout Standard
+
+  (filename, m, n) = para # unpack parameter
+\end_layout
+
+\begin_layout Standard
+
+  f = open(filename)
+\end_layout
+
+\begin_layout Standard
+
+  f.write('%d ' % pop.individual(m).allele(n) )
+\end_layout
+
+\begin_layout Standard
+
+  f.close()
+\end_layout
+
+\begin_layout Standard
+
+# then in the evole function
+\end_layout
+
+\begin_layout Standard
+
+evolve(...
+\end_layout
+
+\begin_layout Standard
+
+  ops=[ # other operators
+\end_layout
+
+\begin_layout Standard
+
+    pyOperator(func=sillyStat, param=('file.txt', 2, 1) )
+\end_layout
+
+\begin_layout Standard
+
+  ]
+\end_layout
+
+\begin_layout Standard
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+pyOperator
+\family default
+ is by default a post-mating operator, you can redefine its stage by 
+\family typewriter
+stage
+\family default
+ parameter.
+ 
+\end_layout
+
+\begin_layout Subsection
+Use Python 
+\family typewriter
+eval
+\family default
+ function
+\end_layout
+
+\begin_layout Standard
+This kind of pure Python operators acts more like an ordinary operator.
+ They are usually 
+\family typewriter
+pyEval
+\family default
+ or 
+\family typewriter
+pyExec
+\family default
+ operators returned by a wrapper function.
+ For example, the following function defines a 
+\family typewriter
+tab
+\family default
+ operator:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_tab.log}[caption={Tab operator},label={tab}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This function actually returns an operator
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+output(r"
+\backslash
+t", rep=REP_LAST, begin=500)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This kind of operators have some advantages, namely
+\end_layout
+
+\begin_layout Itemize
+it acts more like ordinary operator.
+ 
+\end_layout
+
+\begin_layout Itemize
+it is more efficient since it is handled (at least the first layer) by a
+ C/C++ operator.
+\end_layout
+
+\begin_layout Standard
+However, because of its complexity, such operators can only be found in
+ system modules.
+ You can ignore the rest of this section if 
+\family typewriter
+pyOperator
+\family default
+ is enough to you.
+ 
+\end_layout
+
+\begin_layout Standard
+To define a pure Python operator, here are what you will generally do:
+\end_layout
+
+\begin_layout Itemize
+write a function that acts on a population.
+ This function should be able to be called like 
+\family typewriter
+func(simu.population(0))
+\family default
+.
+
+\family typewriter
+ 
+\end_layout
+
+\begin_layout Itemize
+wrap this function as an operator.
+ 
+\end_layout
+
+\begin_layout Standard
+For example, function 
+\family typewriter
+saveInFstatFormat(pop, output, outputExpr, dict)
+\family default
+ saves a population in FSTAT format.
+ Its definition is (first 15 lines)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_extother.log}[caption={genotype},label={extother}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that
+\end_layout
+
+\begin_layout Itemize
+you can use this function independently like
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+saveInFstatFormat(simu.population(1),'a.txt')
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pop.vars()
+\family default
+ is used to evaluate 
+\family typewriter
+outputExpr
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Then you can wrap this function by an operator, actually a function that
+ returns a 
+\family typewriter
+pyEval
+\family default
+ operator:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_saveFstat.log}[caption={save fstat},label={saveFstat}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This function takes all parameters of an ordinary operator:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+saveFstat(at=[-1], outputExpr=r'a'+str(rep)+'.txt')
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and generates a 
+\family typewriter
+pyEval
+\family default
+ operator (use above example).
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pyEval(exposePop=1, at=[-1], 
+\end_layout
+
+\begin_layout Standard
+
+  stmts=r"""saveInFSTATFormat(pop,
+\end_layout
+
+\begin_layout Standard
+
+    output='''''', outputExpr=r''' 'a'+str(rep)+'.txt' """ 
+\end_layout
+
+\begin_layout Standard
+
+  )
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this example,
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pyEval
+\family default
+ works in the local namespace of each replicate.
+ To access that replicate of population, you should use the magic parameter
+ 
+\family typewriter
+exposePop
+\family default
+ of 
+\family typewriter
+pyEval
+\family default
+.
+ When set 
+\family typewriter
+True
+\family default
+, 
+\family typewriter
+pyEval
+\family default
+ will automatically set a variable 
+\family typewriter
+pop
+\family default
+ in the current local namespace before any statement is executed.
+ This is why we can call 
+\family typewriter
+saveInFSTATFormat(pop...)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+'''a'''
+\family default
+ quotes are used to avoid conflicts with quotes in 
+\family typewriter
+outputExpr
+\family default
+ etc.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+clearpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+ 
+\end_layout
+
+\begin_layout Section
+Ultimate extension: working in C++
+\end_layout
+
+\begin_layout Standard
+It is sometimes desired to write simuPOP extension in C++.
+ For example,
+\end_layout
+
+\begin_layout Itemize
+when you need some other mating scheme.
+\end_layout
+
+\begin_layout Itemize
+when you need certain operator that a pure Python implementation would be
+ too slow.
+\end_layout
+
+\begin_layout Itemize
+if some aspect of simuPOP is too limited (like the number of maximum alleles).
+\end_layout
+
+\begin_layout Standard
+It is not difficult to write simuPOP extension in C++, once you know how
+ simuPOP is organized.
+ The general procedure is
+\end_layout
+
+\begin_layout Itemize
+install the latest version of SWIG (>1.3.28)
+\end_layout
+
+\begin_layout Itemize
+check out simuPOP source using subversion
+\end_layout
+
+\begin_layout Itemize
+build from source and see if your programming environment works well
+\end_layout
+
+\begin_layout Itemize
+to add an operator, make changes in appropriate 
+\family typewriter
+.h
+\family default
+ file.
+ Check 
+\family typewriter
+simuPOP_common.i
+\family default
+ if your operator can not be used.
+\end_layout
+
+\begin_layout Standard
+The source code is reasonably well commented with full doxygen based documentati
+on.
+ Please post to the simuPOP forum if you encounter any problem while writing
+ operators in C++.
+\end_layout
+
+\begin_layout Section
+Debugging
+\end_layout
+
+\begin_layout Subsection
+Test scripts
+\end_layout
+
+\begin_layout Standard
+There are many test scripts under the 
+\family typewriter
+test
+\family default
+ directory.
+ It is recommended that you run the test scripts after you installed simuPOP.
+ This will make sure that your system is working correctly.
+ To run all tests, run
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+sh run_tests.sh
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Or, if you do not install RPy and R, run
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+sh run_tests.sh norpy
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Please report any failed test.
+\end_layout
+
+\begin_layout Subsection
+Memory leak detection
+\end_layout
+
+\begin_layout Standard
+Python extensions tend to have memory leak problem, caused by the refcount
+ mechanism.
+ If your simuPOP script uses more and more RAM without population size increase,
+ you may have this problem.
+ You may try to disable individual operators and find out the offending
+ operator if the problem persist.
+ 
+\end_layout
+
+\begin_layout Standard
+Potential simuPOP developers can make use of simuPOP's built-in refcount
+ detection mechanism.
+ To use it,
+\end_layout
+
+\begin_layout Itemize
+compile Python with configure option -- with - 
+\family typewriter
+pydebug
+\family default
+ .
+ This will enable 
+\family typewriter
+sys.totalrefcount()
+\family default
+ etc.
+\end_layout
+
+\begin_layout Itemize
+compile simuPOP with - 
+\family typewriter
+DPy_REF_DEBUG
+\family default
+.
+ This can be done in setup.py, or better in SConstruct.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+simulator.evolve
+\family default
+ will check reference counts at the end of each generation and report any
+ increased reference count.
+ Some operators may create Python objects (like ascertainment operators)
+ but if you see repeated warnings at each generation, there is definitely
+ a memory leak.
+\end_layout
+
+\begin_layout Chapter
+MPI implementations
+\end_layout
+
+\begin_layout Section
+Design
+\end_layout
+
+\begin_layout Standard
+It is quite challenging to write a MPI version of simuPOP because simuPOP
+ is a python module.
+ The first thing I need to decide is: how to run the simuPOP script?
+\end_layout
+
+\begin_layout Standard
+There are two choices:
+\end_layout
+
+\begin_layout Itemize
+All processes run the same script
+\end_layout
+
+\begin_layout Itemize
+Only the head node run the script
+\end_layout
+
+\begin_layout Standard
+In the first method, all processes run the same script.
+ Write operation write to a certain node and read operation read from a
+ node and broadcast to all nodes.
+ This ensures all nodes have the same execution logic.
+ However, this approach has some obvious disadvantages
+\end_layout
+
+\begin_layout Itemize
+Not all nodes need to execute the same script.
+ The script can contain something computationally intensive for something
+ else....
+\end_layout
+
+\begin_layout Itemize
+It is difficult to ensure identical execution logic.
+ For example, the script might randomly choose a population using python
+ random module.
+ There is no way simuPOP can detect such changes.
+\end_layout
+
+\begin_layout Itemize
+The program becomes really difficult to implement when things like python
+ operator is involved.
+\end_layout
+
+\begin_layout Standard
+I choose the second method.
+ Namely only the head node execute the script.
+ All other nodes becomes slave nodes after simuPOP is loaded.
+ This is seem in 
+\family typewriter
+simuPOP.py
+\end_layout
+
+\begin_layout LyX-Code
+if mpi() and mpiRank() > 0: 
+\end_layout
+
+\begin_layout LyX-Code
+    slaveExecutionLoop() 
+\end_layout
+
+\begin_layout LyX-Code
+    sys.exit(0)
+\end_layout
+
+\begin_layout Standard
+The slave process will go to a dead loop, waiting for master instruction
+ and act accordingly.
+ When the communicator in the master process is destroyed (master node stops),
+ it send 
+\family typewriter
+SLAVE_TERMINATE
+\family default
+ signal to all slaves and terminate them.
+\end_layout
+
+\begin_layout Section
+Kick back execution
+\end_layout
+
+\begin_layout Standard
+The logic in many functions may look strange to you so let me explain here,
+ taking the constructor of 
+\family typewriter
+population
+\family default
+ as an example.
+\end_layout
+
+\begin_layout Standard
+This function goes like this
+\end_layout
+
+\begin_layout Itemize
+The master node is instructed to create a population
+\end_layout
+
+\begin_layout Itemize
+It execute 
+\family typewriter
+population::population()
+\family default
+, and send a 
+\family typewriter
+SLAVE_POPULATION_CREATE
+\family default
+ signal to all slave nodes, along with all the parameters.
+\end_layout
+
+\begin_layout Itemize
+The master process finishes this function without allocating any memory
+ for genotype.
+\end_layout
+
+\begin_layout Itemize
+The slave processes get the 
+\family typewriter
+SLAVE_POPULATION_CREATE
+\family default
+ signal, get all the parameters and call the same 
+\family typewriter
+population::population()
+\family default
+ function.
+ Of course, this function execute differently because of the 
+\family typewriter
+mpiRank()
+\family default
+ conditions.
+ For example, master node does not allocate memory for genotype, but slave
+ node does.
+ Master node takes care of information fields, but slave node does not.
+\end_layout
+
+\begin_layout Section
+Population ID
+\end_layout
+
+\begin_layout Standard
+From a slave process point of view, it does not know anything about the
+ script.
+ It creates populations when it is asked to do so, but how can a master
+ process tell the slave process WHICH population to operate on?
+\end_layout
+
+\begin_layout Standard
+This problem is solved by population ID.
+ Each population, when it is created, get a unique ID.
+ The master process passes this 
+\family typewriter
+m_popID
+\family default
+ to the slave processes and they store the create populations in a map,
+ with this ID and the population pointer.
+ When a population is being accessed, the slave process retrieves this populatio
+n using this ID.
+ A cache (
+\family typewriter
+g_curID, g_curPop
+\family default
+) is used to avoid repeative map search when operations are done to the
+ same population.
+\end_layout
+
+\begin_layout Standard
+Since the slave processes know nothing about the script, it has to be instructed
+ hand by hand.
+ That to say, for every operation, parameters have to be passed and in most
+ cases, such kick back calls have to be made.
+ So in general, if you see
+\end_layout
+
+\begin_layout LyX-Code
+action = SLAVE_XXX
+\end_layout
+
+\begin_layout LyX-Code
+mpiComm().send(node, 0, action)
+\end_layout
+
+\begin_layout Standard
+some slave-process action is triggered.
+ If you see
+\end_layout
+
+\begin_layout LyX-Code
+#ifdef SIMUMPI
+\end_layout
+
+\begin_layout LyX-Code
+#endif
+\end_layout
+
+\begin_layout Standard
+and 
+\end_layout
+
+\begin_layout LyX-Code
+if(mpiRank() == 0)
+\end_layout
+
+\begin_layout LyX-Code
+...
+\end_layout
+
+\begin_layout LyX-Code
+else
+\end_layout
+
+\begin_layout Standard
+then, the function will be executed by both master and slave processes,
+ doing probably different things.
+\end_layout
+
+\begin_layout Section
+Individual objects
+\end_layout
+
+\begin_layout Standard
+We use ID to look up populations but looking up individuals in this way
+ is unacceptable.
+ One extra ID field will waste a lot of ram, but more importantly, searching
+ in a map for an individual object will be very slow.
+\end_layout
+
+\begin_layout Standard
+So the first thing we need to do is storing individual index instead of
+ genoPtr on the master node, and because genoPtr does not point to any real
+ memory anyway.
+ On the slave node, genoPtr is meaningful though.
+ A union has to be used.
+\end_layout
+
+\begin_layout Standard
+Then, allele access at the individual level is done by:
+\end_layout
+
+\begin_layout Itemize
+the master node needs to know the genotype of an individual at certain location
+\end_layout
+
+\begin_layout Itemize
+it sends out 
+\family typewriter
+SLAVE_INDIVIDUEL_GET_ALLELE
+\family default
+ to the slave node.
+ Population id, individual index and locus index is needed.
+ The latter is now stored in genoPtr.
+ The master nodes need to figure out which slave it should send the request
+ to.
+\end_layout
+
+\begin_layout Itemize
+the slave node get the allele from the information it gets and send the
+ allele back.
+\end_layout
+
+\begin_layout Standard
+And now you see some other problems:
+\end_layout
+
+\begin_layout Itemize
+population ID must be saved at individual level.
+ This is a waste of RAM but I see no way out.
+\end_layout
+
+\begin_layout Itemize
+Individual index has to be reset over and over again...
+ I need to be REALLY CAREFUL about this.
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand printindex
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
