@@ -112,6 +112,7 @@ namespace simuPOP
 			virtual bool apply(population& pop);
 
 			/// set penetrance to all individuals
+			/// CPPONLY
 			virtual bool applyDuringMating(population& pop, population::IndIterator offspring,
 				individual* dad=NULL, individual* mom=NULL);
 

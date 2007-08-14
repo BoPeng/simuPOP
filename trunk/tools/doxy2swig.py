@@ -633,7 +633,6 @@ class Doxy2SWIG:
                     continue
                 self.content.append({'type': 'module', 'module': module})
                 self.content[-1]['Name'] = key
-                self.content[-1]['ignore'] = False
                 args, varargs, varkw, defaults = inspect.getargspec(value.__init__)
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
                     args, varargs, varkw, defaults)
@@ -641,17 +640,18 @@ class Doxy2SWIG:
                 des += '\n\nInitialization\n\n'
                 des += getdoc(value.__init__)
                 self.content[-1]['Description'] = des
+                self.content[-1]['ignore'] = 'UNDOCUMENTED' in des
         for key, value in inspect.getmembers(object, inspect.isroutine):
             if inspect.isbuiltin(value) or inspect.getmodule(value) is object:
                 if not visiblename(key) or not inspect.isfunction(value):
                     continue
                 self.content.append({'type': 'module', 'module': module})
                 self.content[-1]['Name'] = key
-                self.content[-1]['ignore'] = False
                 args, varargs, varkw, defaults = inspect.getargspec(value)
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
                     args, varargs, varkw, defaults)
                 self.content[-1]['Description'] = getdoc(value)
+                self.content[-1]['ignore'] = 'EXPERIMENTAL' in self.content[-1]['Description'] 
 
 
     def latexName(self, name):

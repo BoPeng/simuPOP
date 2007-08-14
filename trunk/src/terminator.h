@@ -36,7 +36,7 @@
 namespace simuPOP
 {
 
-	/// terminate the evolution
+	/// Base class of all terminators
 	/**
 	These operators are used to see if an evolution is running as expected, and
 	terminate the evolution if a certain condition fails.
@@ -45,7 +45,10 @@ namespace simuPOP
 	{
 
 		public:
-			/// create a terminator, default to be always active
+			/// create a terminator 
+			/**
+			\param message a message that will be displayed when the evolution is terminated.
+			*/
 			terminator(string message = "", string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
 			baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
@@ -62,7 +65,8 @@ namespace simuPOP
 				return new terminator(*this);
 			}
 
-			/// return the message to print when terminated???
+			/// return the message to print when terminated
+			/// CPPONLY
 			string message()
 			{
 				return m_message;
@@ -177,8 +181,7 @@ namespace simuPOP
 				return "<simuPOP::terminateIf>";
 			}
 
-			// check all alleles in vector allele if they are fixed.
-			/// apply the \c continueIf terminator???
+			/// apply this operator
 			virtual bool apply(population& pop)
 			{
 				// experssion return true

@@ -905,7 +905,7 @@ Usage:
 
 Description:
 
-    apply the  continueIf terminator???
+    apply this operator
 
 Usage:
 
@@ -2060,7 +2060,8 @@ Arguments:
 
     incProb:        probability to increase allele state. Default to
                     0.5.
-    func:           return number of steps. No parameter.???
+    func:           a function that returns the number of steps. This
+                    function does not accept any parameter.
 
 "; 
 
@@ -3062,7 +3063,7 @@ Usage:
 
 Description:
 
-    apply operator  initByFreq???
+    apply this operator to  populationpop
 
 Usage:
 
@@ -3196,7 +3197,7 @@ Usage:
 
 Description:
 
-    apply operator  initByValue???
+    apply this operator to  populationpop
 
 Usage:
 
@@ -4334,9 +4335,9 @@ Description:
 
 Details:
 
-    This operator merges subpopulations subPops (the only
-    parameter???) to a single subpopulation. If subPops is ignored,
-    all subpopulations will be merged.
+    This operator merges subpopulations subPops to a single
+    subpopulation. If subPops is ignored, all subpopulations will be
+    merged.
 
 "; 
 
@@ -4450,7 +4451,7 @@ Arguments:
     rate:           migration rate, can be a proportion or counted
                     number. Determined by parameter mode. rate should
                     be an m by n matrix. If a number is given, the
-                    migration rate will be r*ones(m,n)???.
+                    migration rate will be a m by n matrix of value r
     mode:           one of MigrByProbability (default),
                     MigrByProportion or MigrByCounts
     fromSubPop:     an array of 'from' subpopulations. Default to all.
@@ -4474,7 +4475,7 @@ Note:
     migration will only happen between these subpopulations. An
     extreme case is 'point migration', rate=[[r]], fromSubPop=a,
     toSubPop=b which migrate from subpopulation a to b with given rate
-    r.???
+    r.
 
 "; 
 
@@ -5786,17 +5787,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::penetrance::applyDuringMating "
-
-Description:
-
-    set  penetrance to all individuals
-
-Usage:
-
-    x.applyDuringMating(pop, offspring, dad=None, mom=None)
-
-"; 
+%ignore simuPOP::penetrance::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::penetrance::__repr__ "
 
@@ -7848,7 +7839,7 @@ Usage:
 
 Description:
 
-    apply operator  pyInit???
+    apply this operator to  populationpop
 
 Usage:
 
@@ -8930,14 +8921,14 @@ Details:
 
 %feature("docstring") simuPOP::pyTagger::pyTagger "
 
-Description:
-
-    simuPOP::pyTagger::pyTagger
-
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[])
+
+Details:
+
+    Creates a  pyTagger that work on specified information fields.
 
 Arguments:
 
@@ -9320,8 +9311,7 @@ Arguments:
     rate:           recombination rate regardless of locus distance
                     after all afterLoci. It can also be an array of
                     recombination rates. Should have the same length
-                    as afterLoci or totNumOfLoci(). If totNumLoci, the
-                    last item can be ignored.??? The recombination
+                    as afterLoci or totNumOfLoci(). The recombination
                     rates are independent of locus distance.
     afterLoci:      an array of locus indexes. Recombination will
                     occur after these loci. If rate is also specified,
@@ -9337,12 +9327,12 @@ Arguments:
                     parameter rate will be considered as female
                     recombination rate.
     maleAfterLoci:  if given, males will recombine at different
-                    locations. This is rarely used.???
+                    locations.
 
 Note:
 
     There is no recombination between sex chromosomes of male
-    individuals if sexChrom()=True.??? This may change later if the
+    individuals if sexChrom()=True. This may change later if the
     exchanges of genes between pseudoautosomal regions of XY need to
     be modeled.
 
@@ -9462,17 +9452,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::recombinator::applyDuringMating "
-
-Description:
-
-    apply the  recombinator during  mating???
-
-Usage:
-
-    x.applyDuringMating(pop, offspring, dad=None, mom=None)
-
-"; 
+%ignore simuPOP::recombinator::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::RNG "
 
@@ -9486,7 +9466,8 @@ Description:
 
 Description:
 
-    simuPOP::RNG::RNG
+    Create a  RNG object. You can also use  rng() function to get the
+    RNG used by  simuPOP.
 
 Usage:
 
@@ -9506,7 +9487,28 @@ Usage:
 
 "; 
 
-%ignore simuPOP::RNG::setRNG(const char *rng=NULL, unsigned long seed=0);
+%feature("docstring") simuPOP::RNG::setRNG "
+
+Description:
+
+    choose an random number generator, or set seed to the current  RNG
+
+Usage:
+
+    x.setRNG(rng=None, seed=0)
+
+Arguments:
+
+    rng:            name of the  RNG. If rng is not given,
+                    environmental variable GSL_RNG_TYPE will be used
+                    if it is available. Otherwise,  RNGmt19937 will be
+                    used.
+    seed:           random seed. If not given, /dev/urandom,
+                    /dev/random, system time will be used, depending
+                    on availability, in that order. Note that windows
+                    system does not have /dev so system time is used.
+
+"; 
 
 %feature("docstring") simuPOP::RNG::name "
 
@@ -9524,7 +9526,7 @@ Usage:
 
 Description:
 
-    simuPOP::RNG::seed
+    return the seed of this  RNG
 
 Usage:
 
@@ -9536,7 +9538,7 @@ Usage:
 
 Description:
 
-    simuPOP::RNG::maxSeed
+    return the maximum allowed seed value
 
 Usage:
 
@@ -9548,7 +9550,8 @@ Usage:
 
 Description:
 
-    simuPOP::RNG::setSeed
+    set random seed for this random number generator if seed is 0,
+    method described in setRNG is used.
 
 Usage:
 
@@ -9556,23 +9559,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::RNG::generateRandomSeed "
-
-Description:
-
-    simuPOP::RNG::generateRandomSeed
-
-Usage:
-
-    x.generateRandomSeed()
-
-"; 
+%ignore simuPOP::RNG::generateRandomSeed();
 
 %feature("docstring") simuPOP::RNG::max "
 
 Description:
 
-    simuPOP::RNG::max
+    Maximum value of this  RNG.
 
 Usage:
 
@@ -9596,7 +9589,7 @@ Usage:
 
 Description:
 
-    return min, 1, 2, ... max
+    return a random number in the range of [0, 2, ...  max()-1]
 
 Usage:
 
@@ -9608,7 +9601,7 @@ Usage:
 
 Description:
 
-    return [0, 1, 2, ... n-1]
+    return a random number in the range of [0, 1, 2, ... n-1]
 
 Usage:
 
@@ -9616,23 +9609,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::RNG::randIntArray "
-
-Description:
-
-    return [0, 1, 2, ... n-1]
-
-Usage:
-
-    x.randIntArray(n, size, vec)
-
-"; 
+%ignore simuPOP::RNG::randIntArray(ULONG n, ULONG size, ULONG *vec);
 
 %feature("docstring") simuPOP::RNG::randGeometric "
 
 Description:
 
-    return geometric with parameter p (k>=1)
+    Geometric distribution.
 
 Usage:
 
@@ -9644,7 +9627,7 @@ Usage:
 
 Description:
 
-    return double [0,1)
+    Uniform distribution [0,1).
 
 Usage:
 
@@ -9656,7 +9639,7 @@ Usage:
 
 Description:
 
-    return double -inf, inf, v is standard deviation
+    Normal distribution.
 
 Usage:
 
@@ -9664,23 +9647,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::RNG::randUniform01Array "
-
-Description:
-
-    return double [0,1)
-
-Usage:
-
-    x.randUniform01Array(size, vec)
-
-"; 
+%ignore simuPOP::RNG::randUniform01Array(ULONG size, double *vec);
 
 %feature("docstring") simuPOP::RNG::randBinomial "
 
 Description:
 
-    binomial distribution
+    Binomial distribution B(n, p).
 
 Usage:
 
@@ -9688,29 +9661,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::RNG::randMultinomial "
+%ignore simuPOP::RNG::randMultinomial(unsigned int N, const vectorf &p, vectoru::iterator n);
 
-Description:
-
-    simuPOP::RNG::randMultinomial
-
-Usage:
-
-    x.randMultinomial(N, p, n)
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randMultinomialVal "
-
-Description:
-
-    simuPOP::RNG::randMultinomialVal
-
-Usage:
-
-    x.randMultinomialVal(N, p)
-
-"; 
+%ignore simuPOP::RNG::randMultinomialVal(unsigned int N, const vectorf &p);
 
 %feature("docstring") simuPOP::RNG::randPoisson "
 
@@ -10736,17 +10689,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::smmMutator::mutate "
-
-Description:
-
-    mutate according to the SMM model ???
-
-Usage:
-
-    x.mutate(allele)
-
-"; 
+%ignore simuPOP::smmMutator::mutate(AlleleRef allele);
 
 %feature("docstring") simuPOP::smmMutator::clone "
 
@@ -10810,14 +10753,10 @@ Arguments:
                     up to the original subpopulation (subpopulation
                     which) size.
     proportions:    proportions of new subpopulations. Should be added
-                    up to 1. Optionally, you can use one of subPopID
-                    or proportions to split. ???
+                    up to 1.
     subPopID:       new subpopulation IDs. Otherwise, the operator
                     will automatically set new subpopulation IDs to
-                    new subpopulations. If given, should have the same
-                    length as subPop or proportions.??? Since subpop
-                    with negative id will be removed. You can remove
-                    part of a subpop by setting a new negative ID.???
+                    new subpopulations.
 
 "; 
 
@@ -10942,7 +10881,7 @@ Usage:
 
 Description:
 
-    apply operator  spread???
+    apply this operator to  populationpop
 
 Usage:
 
@@ -12363,7 +12302,7 @@ Usage:
 
 Description:
 
-    terminate the evolution
+    Base class of all terminators.
 
 Details:
 
@@ -12377,13 +12316,18 @@ Details:
 
 Description:
 
-    create a  terminator, default to be always active
+    create a  terminator
 
 Usage:
 
     terminator(message=\"\", output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[])
+
+Arguments:
+
+    message:        a message that will be displayed when the
+                    evolution is terminated.
 
 "; 
 
@@ -12411,17 +12355,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::terminator::message "
-
-Description:
-
-    return the message to print when terminated???
-
-Usage:
-
-    x.message()
-
-"; 
+%ignore simuPOP::terminator::message();
 
 %feature("docstring") simuPOP::ticToc "
 

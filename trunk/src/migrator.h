@@ -76,7 +76,7 @@ namespace simuPOP
 			/**
 			\param rate migration rate, can be a proportion or counted number. Determined by
 				parameter \c mode. \c rate should be an m by n matrix. If a number is given,
-				the migration rate will be <tt>r*ones(m,n)</tt>???.
+				the migration rate will be a \c m by \c n matrix of value \c r
 			\param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
 			\param fromSubPop an array of 'from' subpopulations. Default to all. If a single \c subpop
 				is specified, <tt>[]</tt> can be ignored. I.e., <tt>[a]</tt> is equvalent to \c a.
@@ -93,7 +93,7 @@ namespace simuPOP
 			migration rate, probability or count from subpopulation \c i to \c j. If \c fromSubPop
 			and/or \c toSubPop are given, migration will only happen between these subpopulations.
 			An extreme case is 'point migration', <tt>rate=[[r]], fromSubPop=a, toSubPop=b</tt>
-			which migrate from subpopulation \c a to \c b with given rate \c r.???
+			which migrate from subpopulation \c a to \c b with given rate \c r.
 			*/
 			migrator( const matrix& rate, int mode = MigrByProbability,
 				vectoru fromSubPop=vectoru(), vectoru toSubPop=vectoru(),
@@ -286,11 +286,8 @@ namespace simuPOP
 			\param sizes new subpopulation sizes. The sizes should be added up to the original
 				subpopulation (subpopulation \c which) size.
 			\param proportions proportions of new subpopulations. Should be added up to \c 1.
-				Optionally, you can use one of \c subPopID or \c proportions to split. ???
 			\param subPopID new subpopulation IDs. Otherwise, the operator will automatically
-				set new subpopulation IDs to new subpopulations. If given, should have the same length
-			   as subPop or proportions.??? Since subpop with negative id will be removed.
-			   You can remove part of a subpop by setting a new negative ID.???
+				set new subpopulation IDs to new subpopulations.
 			*/
 			splitSubPop( UINT which=0,  vectorlu sizes=vectorlu(), vectorf proportions=vectorf(),
 				vectoru subPopID=vectoru(),
@@ -350,7 +347,7 @@ namespace simuPOP
 
 	///  merge subpopulations
 	/**
-	This operator merges subpopulations \c subPops (the only parameter???) to a
+	This operator merges subpopulations \c subPops to a
 	single subpopulation. If \c subPops is ignored, all subpopulations will be merged.
 	<funcForm>MergeSubPops</funcForm>
 	*/

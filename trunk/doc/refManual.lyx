@@ -870,6 +870,85 @@ preview false
 
 \end_layout
 
+\begin_layout Standard
+After simuPOP is installed.
+ It is recommended that you run the test scripts under the 
+\family typewriter
+tests 
+\family default
+directory.
+ This will make sure that your system is working correctly.
+ To run all tests, run
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+sh run_tests.sh
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Or, if you do not install RPy and R, run
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+sh run_tests.sh norpy
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Windows users have to run
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+set SIMUALLELETYPE=short
+\end_layout
+
+\begin_layout Standard
+
+python run_tests.py
+\end_layout
+
+\end_inset
+
+repeatedly, with 
+\family typewriter
+SIMUALLELETYPE 
+\family default
+set to 
+\family typewriter
+short, long 
+\family default
+and 
+\family typewriter
+binary.
+\end_layout
+
 \begin_layout Section
 References and the 
 \family typewriter
@@ -1424,6 +1503,135 @@ arrXXX
  functions should be considered temporary.
  There is no guarantee that the underlying array will still be valid after
  any population operation.
+\end_layout
+
+\begin_layout Section
+Random Number Generator
+\end_layout
+
+\begin_layout Standard
+There are many random number generators (RNG) with different properties.
+ Using a bad RNG can serious compromise the validity of simulation results.
+ Although the default RNG 
+\family typewriter
+mt19937
+\family default
+ has good performance, simuPOP allows you to choose from a number of RNGs,
+ all from GNU Scientific Library (GSL).
+ Please refer to the documentation of GSL for more details about these RNGs.
+\end_layout
+
+\begin_layout Standard
+If you need to use a RNG in your simuPOP script, you can either use Python
+ random module (
+\family typewriter
+import random
+\family default
+) , use 
+\family typewriter
+rng
+\begin_inset LatexCommand index
+name "function!rng"
+
+\end_inset
+
+()
+\family default
+ function to get the RNG of simuPOP, or create a separate RNG using 
+\family typewriter
+RNG(name, seed)
+\family default
+ function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_rng.log}[caption={Random number generator},label={rng}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Random seed
+\end_layout
+
+\begin_layout Standard
+When simuPOP is loaded, it creates a random number generator.
+ This RNG gets its seed from:
+\end_layout
+
+\begin_layout Itemize
+random number from 
+\family typewriter
+/dev/urandom
+\family default
+ if it is available
+\end_layout
+
+\begin_layout Itemize
+random number from 
+\family typewriter
+/dev/random
+\family default
+ if it is available
+\end_layout
+
+\begin_layout Itemize
+use Python 
+\family typewriter
+random 
+\family default
+module and assign random seed with
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+(random.randint(0, sys.maxint) + int(time.time())) % sys.maxint
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+The last method is used mostly under windows, on which random devices are
+ not available.
+ It tries to avoid sole use of system time because simultaneously started
+ jobs may get the same random seed.
+\end_layout
+
+\begin_layout Standard
+Random seed can be retrieved using 
+\family typewriter
+rng().seed()
+\family default
+ function, which can be saved for future reference.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+RNGRef
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -6315,1057 +6523,28 @@ hapMapUtilRef
 
 \end_layout
 
-\begin_layout Section
-Random Number Generator
-\end_layout
-
 \begin_layout Standard
-Random number generator is a tricky business.
- Reliable and fast RNGs are hard to find and everyone seems to trust/distrust
- certain RNGs.
- To avoid such arguments, I have included all RNGs from GNU Scientific Library
- and you can choose any of the 61 RNGs, if you really know what the differences
- between them.
- (I do not, except that some of them are really bad but fast.) Note that
- RNG that can not generate a full range of integers are removed.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_rng.log}[caption={Random number generator},label={rng}]
-preview false
-
-\end_inset
-
 
 \end_layout
 
 \begin_layout Standard
-If you need to use a random number generator in your 
-\family typewriter
-pyEval
-\family default
- operator, you can either use Python random module (
-\family typewriter
-import random
-\family default
-) or use 
-\family typewriter
-rng
-\begin_inset LatexCommand index
-name "function!rng"
-
-\end_inset
-
-()
-\family default
- function to get the random number generator of simuPOP.
- Note that 
-\family typewriter
-rng()
-\family default
- does not have many member functions and it might be tricky to use them
- correctly.
- (This object is not designed to be used at Python level.
- For a full list of member functions, check 
-\family typewriter
-src/utility.h
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_rngrand.log}[caption={Random number generator},label={rngrand}]
-preview false
-
-\end_inset
-
 
 \end_layout
 
 \begin_layout Standard
-Since simuPOP 0.7.1, RNGs are seeded in the following order:
-\end_layout
-
-\begin_layout Itemize
-use random number from 
-\family typewriter
-/dev/urandom
-\family default
- if it is available
-\end_layout
-
-\begin_layout Itemize
-use random number from 
-\family typewriter
-/dev/random
-\family default
- if it is available
-\end_layout
-
-\begin_layout Itemize
-use Python expression 
-\family typewriter
-(random.randint(0, sys.maxint) + int(time.time())) % sys.maxint
-\family default
- .
- This method is used only if simuPOP is first loaded and you are going to
- set random number generator by yourself.
- The relevant codes in simuPOP.py are recommended in this case.
-\end_layout
-
-\begin_layout Standard
-The seed can also be retrieved using 
-\family typewriter
-rng().seed()
-\family default
- function, which should be saved for serious simulations.
-\end_layout
-
-\begin_layout Chapter
-Extending simuPOP
-\end_layout
-
-\begin_layout Standard
-simuPOP can be extended easily using Python programming language.
- Because almost all data are exposed to the Python interface, your ability
- of extending simuPOP is 
-\emph on
-unlimited
-\emph default
-.
- However, because Python is slower than C++ and the exchange of data between
- internal C++ data structure and Python interface may be costly, it is not
- recommended to write frequently used operators in Python.
- Appropriate pure Python operators are visualizers, statistics calculators,
- file outputers etc.
-\end_layout
-
-\begin_layout Standard
-To write simuPOP extension, you will have to know more about data structures
- and member functions of population.
- Note that for efficiency and implementation reasons, many of the following
- functions do not provide keyword parameters.
-\end_layout
-
-\begin_layout Section
-\begin_inset LatexCommand label
-name "sec:Genotypic-structure"
-
-\end_inset
-
-Genotypic structure
-\end_layout
-
-\begin_layout Standard
-The genotypes of an individual are organized as a single array.
- For example, if you have an diploid individual with two chromosomes, having
- 2 and 3 loci respectively.
- The genotypes should be in the order of
-\end_layout
-
-\begin_layout LyX-Code
-0-0-0, 1-0-0, 0-1-0, 1-1-0, 2-1-0, 0-0-1, 1-0-1, 0-1-1, 1-1-1, 2-1-1,
-\end_layout
-
-\begin_layout Standard
-where X-X-X are locus-chromosome-ploidy indices.
- An important consequence of this arrangement is that 'locus location' +
- 'the total number of loci' is the location of the locus on the other set
- of chromosomes.
- 
-\end_layout
-
-\begin_layout Standard
-Several functions are provided to retrieve genotypic information:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ploidy
-\begin_inset LatexCommand index
-name "function!ploidy"
-
-\end_inset
-
-()
-\family default
-, ploidy
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-numChrom
-\begin_inset LatexCommand index
-name "function!numChrom"
-
-\end_inset
-
-()
-\family default
-,
-\family typewriter
- 
-\family default
-the number of chromosomes
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-numLoci
-\begin_inset LatexCommand index
-name "function!numLoci"
-
-\end_inset
-
-(chrom)
-\family default
-, the number of loci on chromosome 
-\family typewriter
-chrom
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-totNumLoci
-\begin_inset LatexCommand index
-name "function!totNumLoci"
-
-\end_inset
-
-()
-\family default
-, the total number of loci
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-genoSize
-\begin_inset LatexCommand index
-name "function!genoSize"
-
-\end_inset
-
-()
-\family default
-, the size of genotype.
- Equals to 
-\family typewriter
-totNumLoci()*ploidy()
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-alleleName
-\begin_inset LatexCommand index
-name "function!alleleName"
-
-\end_inset
-
-()
-\family default
-, allele name given by parameter 
-\family typewriter
-alleleNames
-\family default
-.
- Otherwise the allele number is returned.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-locusPos
-\begin_inset LatexCommand index
-name "function!locusPos"
-
-\end_inset
-
-(loc)
-\family default
-, the locus position on chromosome (Distance to the beginning of chromosome)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-arrlociPos
-\begin_inset LatexCommand index
-name "function!arrLociPos"
-
-\end_inset
-
-()
-\family default
-, returns an 
-\family typewriter
-carray
-\family default
- of the locus distances.
-\end_layout
-
-\begin_layout Standard
-The last function is very interesting.
- It actually returns the reference of the internal locus distance array.
- If you change the values of the returned array, the internal locus distance
- will be changed! All functions with this property will be named 
-\family typewriter
-arrFunc()
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-The following example shows how to change the locus distance through this
- function.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_extgenostru.log}[caption={geno stru},label={extgenostru}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-\begin_inset LatexCommand label
-name "sec:Accessing-genotype-and"
-
-\end_inset
-
-Accessing genotype and other info
-\end_layout
-
-\begin_layout Standard
-Genotype of an individual can be retrieved through the following functions:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ind.allele
-\begin_inset LatexCommand index
-name "function!allele"
-
-\end_inset
-
-(index, p=0)
-\family default
-,
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ind.setAllele
-\begin_inset LatexCommand index
-name "function!setAllele"
-
-\end_inset
-
-(value, index, p=0)
-\family default
-,
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ind.arrGenotype
-\begin_inset LatexCommand index
-name "function!arrAlleles"
-
-\end_inset
-
-(p=0, ch=0)
-\family default
-,
-\end_layout
-
-\begin_layout Standard
-where 
-\family typewriter
-p
-\family default
- means ploidy.
- I.e., the index of the copy of chromosomes.
- 
-\family typewriter
-ch
-\family default
- means chromosome.
- For example
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
+\begin_inset Note Note
 status open
 
 \begin_layout Standard
-
-pop.individual(1).arrGenotype(1, 2)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-returns an array of alleles on the third chromosome of the second copy of
- chromosomes, of the second individual in the population 
-\family typewriter
-pop
-\family default
-.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_extgenotype.log}[caption={genotype},label={extgenotype}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Sex, affected status can be accessed through 
-\family typewriter
-sex, setSex, affected, setAffected
-\family default
- functions.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_extother.log}[caption={genotype},label={extother}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Writing pure Python operator 
-\end_layout
-
-\begin_layout Standard
-Now we know how to access information for individuals in a population, but
- how can we use them in reality? Namely, how can you write an pure Python
- operator?
-\end_layout
-
-\begin_layout Subsection
-Use 
-\family typewriter
-pyOperator
-\end_layout
-
-\begin_layout Standard
-There are two kinds of pure Python operators.
- The first one is easy: define a function and wrap it with a 
-\family typewriter
-pyOperator
-\family default
- operator.
- This method is highly recommended because of its simplicity.
- Many user scripts will use this kind of pure Python operator.
- You can find such examples in scripts directory.
- A good one may be simuCDCV.py where a pure Python operator is used to calculate
- and visualize special statistics.
- 
-\end_layout
-
-\begin_layout Standard
-For example, if you would like to record a silly statistics, namely the
- genotype of the 
-\begin_inset Formula $m$
-\end_inset
-
- individual at locu 
-\begin_inset Formula $n$
-\end_inset
-
-, you can do:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-def sillyStat(pop, para):
-\end_layout
-
-\begin_layout Standard
-
-  # para can be used to pass any number of parameters
-\end_layout
-
-\begin_layout Standard
-
-  (filename, m, n) = para # unpack parameter
-\end_layout
-
-\begin_layout Standard
-
-  f = open(filename)
-\end_layout
-
-\begin_layout Standard
-
-  f.write('%d ' % pop.individual(m).allele(n) )
-\end_layout
-
-\begin_layout Standard
-
-  f.close()
-\end_layout
-
-\begin_layout Standard
-
-# then in the evole function
-\end_layout
-
-\begin_layout Standard
-
-evolve(...
-\end_layout
-
-\begin_layout Standard
-
-  ops=[ # other operators
-\end_layout
-
-\begin_layout Standard
-
-    pyOperator(func=sillyStat, param=('file.txt', 2, 1) )
-\end_layout
-
-\begin_layout Standard
-
-  ]
-\end_layout
-
-\begin_layout Standard
-
-)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-pyOperator
-\family default
- is by default a post-mating operator, you can redefine its stage by 
-\family typewriter
-stage
-\family default
- parameter.
- 
-\end_layout
-
-\begin_layout Subsection
-Use Python 
-\family typewriter
-eval
-\family default
- function
-\end_layout
-
-\begin_layout Standard
-This kind of pure Python operators acts more like an ordinary operator.
- They are usually 
-\family typewriter
-pyEval
-\family default
- or 
-\family typewriter
-pyExec
-\family default
- operators returned by a wrapper function.
- For example, the following function defines a 
-\family typewriter
-tab
-\family default
- operator:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_tab.log}[caption={Tab operator},label={tab}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This function actually returns an operator
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-output(r"
-\backslash
-t", rep=REP_LAST, begin=500)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This kind of operators have some advantages, namely
-\end_layout
-
-\begin_layout Itemize
-it acts more like ordinary operator.
- 
-\end_layout
-
-\begin_layout Itemize
-it is more efficient since it is handled (at least the first layer) by a
- C/C++ operator.
-\end_layout
-
-\begin_layout Standard
-However, because of its complexity, such operators can only be found in
- system modules.
- You can ignore the rest of this section if 
-\family typewriter
-pyOperator
-\family default
- is enough to you.
- 
-\end_layout
-
-\begin_layout Standard
-To define a pure Python operator, here are what you will generally do:
-\end_layout
-
-\begin_layout Itemize
-write a function that acts on a population.
- This function should be able to be called like 
-\family typewriter
-func(simu.population(0))
-\family default
-.
-
-\family typewriter
- 
-\end_layout
-
-\begin_layout Itemize
-wrap this function as an operator.
- 
-\end_layout
-
-\begin_layout Standard
-For example, function 
-\family typewriter
-saveInFstatFormat(pop, output, outputExpr, dict)
-\family default
- saves a population in FSTAT format.
- Its definition is (first 15 lines)
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_extother.log}[caption={genotype},label={extother}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Note that
-\end_layout
-
-\begin_layout Itemize
-you can use this function independently like
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-saveInFstatFormat(simu.population(1),'a.txt')
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.vars()
-\family default
- is used to evaluate 
-\family typewriter
-outputExpr
-\family default
-.
- 
-\end_layout
-
-\begin_layout Standard
-Then you can wrap this function by an operator, actually a function that
- returns a 
-\family typewriter
-pyEval
-\family default
- operator:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_saveFstat.log}[caption={save fstat},label={saveFstat}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This function takes all parameters of an ordinary operator:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-saveFstat(at=[-1], outputExpr=r'a'+str(rep)+'.txt')
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-and generates a 
-\family typewriter
-pyEval
-\family default
- operator (use above example).
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pyEval(exposePop=1, at=[-1], 
-\end_layout
-
-\begin_layout Standard
-
-  stmts=r"""saveInFSTATFormat(pop,
-\end_layout
-
-\begin_layout Standard
-
-    output='''''', outputExpr=r''' 'a'+str(rep)+'.txt' """ 
-\end_layout
-
-\begin_layout Standard
-
-  )
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In this example,
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pyEval
-\family default
- works in the local namespace of each replicate.
- To access that replicate of population, you should use the magic parameter
- 
-\family typewriter
-exposePop
-\family default
- of 
-\family typewriter
-pyEval
-\family default
-.
- When set 
-\family typewriter
-True
-\family default
-, 
-\family typewriter
-pyEval
-\family default
- will automatically set a variable 
-\family typewriter
-pop
-\family default
- in the current local namespace before any statement is executed.
- This is why we can call 
-\family typewriter
-saveInFSTATFormat(pop...)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-'''a'''
-\family default
- quotes are used to avoid conflicts with quotes in 
-\family typewriter
-outputExpr
-\family default
- etc.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
-
-\backslash
-clearpage
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-.
- 
-\end_layout
-
-\begin_layout Section
-Ultimate extension: working in C++
-\end_layout
-
-\begin_layout Standard
-It is sometimes desired to write simuPOP extension in C++.
- For example,
-\end_layout
-
-\begin_layout Itemize
-when you need some other mating scheme.
-\end_layout
-
-\begin_layout Itemize
-when you need certain operator that a pure Python implementation would be
- too slow.
-\end_layout
-
-\begin_layout Itemize
-if some aspect of simuPOP is too limited (like the number of maximum alleles).
-\end_layout
-
-\begin_layout Standard
-It is not difficult to write simuPOP extension in C++, once you know how
- simuPOP is organized.
- The general procedure is
-\end_layout
-
-\begin_layout Itemize
-install the latest version of SWIG (>1.3.28)
-\end_layout
-
-\begin_layout Itemize
-check out simuPOP source using subversion
-\end_layout
-
-\begin_layout Itemize
-build from source and see if your programming environment works well
-\end_layout
-
-\begin_layout Itemize
-to add an operator, make changes in appropriate 
-\family typewriter
-.h
-\family default
- file.
- Check 
-\family typewriter
-simuPOP_common.i
-\family default
- if your operator can not be used.
-\end_layout
-
-\begin_layout Standard
-The source code is reasonably well commented with full doxygen based documentati
-on.
- Please post to the simuPOP forum if you encounter any problem while writing
- operators in C++.
-\end_layout
-
-\begin_layout Section
-Debugging
-\end_layout
-
-\begin_layout Subsection
-Test scripts
-\end_layout
-
-\begin_layout Standard
-There are many test scripts under the 
-\family typewriter
-test
-\family default
- directory.
- It is recommended that you run the test scripts after you installed simuPOP.
- This will make sure that your system is working correctly.
- To run all tests, run
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-sh run_tests.sh
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Or, if you do not install RPy and R, run
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-sh run_tests.sh norpy
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Please report any failed test.
-\end_layout
-
-\begin_layout Subsection
-Memory leak detection
-\end_layout
-
-\begin_layout Standard
-Python extensions tend to have memory leak problem, caused by the refcount
- mechanism.
- If your simuPOP script uses more and more RAM without population size increase,
- you may have this problem.
- You may try to disable individual operators and find out the offending
- operator if the problem persist.
- 
-\end_layout
-
-\begin_layout Standard
-Potential simuPOP developers can make use of simuPOP's built-in refcount
- detection mechanism.
- To use it,
-\end_layout
-
-\begin_layout Itemize
-compile Python with configure option -- with - 
-\family typewriter
-pydebug
-\family default
- .
- This will enable 
-\family typewriter
-sys.totalrefcount()
-\family default
- etc.
-\end_layout
-
-\begin_layout Itemize
-compile simuPOP with - 
-\family typewriter
-DPy_REF_DEBUG
-\family default
-.
- This can be done in setup.py, or better in SConstruct.
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-simulator.evolve
-\family default
- will check reference counts at the end of each generation and report any
- increased reference count.
- Some operators may create Python objects (like ascertainment operators)
- but if you see repeated warnings at each generation, there is definitely
- a memory leak.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
+No bibliography for now.
 \begin_inset LatexCommand bibtex
 options "bibtotoc,plainnat"
 bibfiles "bib/all"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 

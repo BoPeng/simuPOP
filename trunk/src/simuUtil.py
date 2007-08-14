@@ -37,7 +37,8 @@ import exceptions, operator, types, os, sys, getopt, re, math, tempfile, shutil
 from simuPOP import *
 
 def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
-    '''Obtain genotype as specified by parameters
+    '''EXPERIMENTAL
+    Obtain genotype as specified by parameters
         atLoci:     subset of loci, default to all
         subPop:     subset of subpopulations, default ao all
         indRange:   individual ranges 
@@ -256,7 +257,7 @@ def ExponentialExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1,
     return func
 
 def InstantExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
-    '''    Instaneously expand population size from intiSize to endSize
+    ''' Instaneously expand population size from intiSize to endSize
         after burnin, split the population at generation split.
     '''
     def func(gen, oldSize=[]):
@@ -279,6 +280,7 @@ def InstantExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bot
 
 # for internal use only
 def testDemoFunc(end, func):
+    'EXPERIMENTAL'
     g = range(end)
     rng = [min( [ func(x)[0] for x in g]), 
             max( [ sum(func(x)) for x in g])]
@@ -291,10 +293,10 @@ def MigrIslandRates(r, n):
     '''
      migration rate matrix
 
-     x m/(n-1) m/(n-1) ....
-     m/(n-1) x ............
-     .....
-     .... m/(n-1) m/(n-1) x
+             x m/(n-1) m/(n-1) ....
+             m/(n-1) x ............
+             .....
+             .... m/(n-1) m/(n-1) x
      
     where x = 1-m
     '''
@@ -310,22 +312,21 @@ def MigrIslandRates(r, n):
     
 
 def MigrSteppingStoneRates(r, n, circular=False):
-    '''
-     migration rate matrix, circular step stone model (X=1-m)
+    '''migration rate matrix, circular step stone model (X=1-m)
   
-   X   m/2               m/2
-   m/2 X   m/2           0
-   0   m/2 x   m/2 ......0
-   ...
-   m/2 0 ....       m/2  X
+           X   m/2               m/2
+           m/2 X   m/2           0
+           0   m/2 x   m/2 ......0
+           ...
+           m/2 0 ....       m/2  X
 
    or non-circular
   
-   X   m/2               m/2
-   m/2 X   m/2           0
-   0   m/2 X   m/2 ......0
-   ...
-   ...              m   X
+           X   m/2               m/2
+           m/2 X   m/2           0
+           0   m/2 X   m/2 ......0
+           ...
+           ...              m   X
     ''' 
     if n < 2: 
         raise exceptions.ValueError("Can not define step stone model for n < 2")
@@ -346,35 +347,10 @@ def MigrSteppingStoneRates(r, n, circular=False):
     return m
 
  
-# 
-# operator tab (I can use operator output
-# but the name conflicts with parameter name
-# and I would not want to go through the trouble
-# of a walkaround (like aliasing output)
-def tab(output=">", outputExpr="", **kwargs):
-    parm = ''    
-    for (k,v) in kwargs.items():
-        parm += ' , ' + str(k) + '=' + str(v)
-    cmd = r'''pyEval( r'"\t"' ''' + ', output="""' + output + \
-        '""", outputExpr="""' + outputExpr + '"""' + parm + ')'
-    # print cmd
-    return eval(cmd)
-
-
-def endl(output=">", outputExpr="", **kwargs):
-    parm = ''    
-    for (k,v) in kwargs.items():
-        parm += ' , ' + str(k) + '=' + str(v)
-    cmd = r'''pyEval( r'"\n"' ''' + ', output="""' + output + \
-        '""", outputExpr="""' + outputExpr + '"""' + parm + ')'
-    # print cmd
-    return eval(cmd)
-
-
 # aggregator
 # used by varPlotters
 class dataAggregator:
-    """
+    """ EXPERIMENTAL
     collect variables so that plotters can plot them all at once
 
     You can of course put it in other uses
@@ -523,9 +499,8 @@ class dataAggregator:
                     raise exceptions.ValueError("Appending data with wrong idx")
 
 
-# data collector
-#
 def CollectValue(pop, gen, expr, name):
+    'EXPERIMENTAL'
     value = eval(expr, globals(), pop.vars())
     d = pop.vars()
     if not d.has_key(name):
@@ -533,8 +508,8 @@ def CollectValue(pop, gen, expr, name):
     d[name][gen] = value
 
 
-# wrapper
 def collector(name, expr, **kwargs):
+    'EXPERIMENTAL'
     # deal with additional arguments
     parm = ''
     for (k,v) in kwargs.items():
@@ -551,7 +526,8 @@ def collector(name, expr, **kwargs):
 
 
 def trajFunc(endingGen, traj):
-    ''' return freq at each generation from a 
+    '''EXPERIMENTAL
+    return freq at each generation from a 
         simulated trajctories. '''
     def func(gen):
         freq = []
@@ -576,7 +552,8 @@ def FreqTrajectoryMultiStochWithSubPop(
         ploidy=2,
         restartIfFail=True,
         fitnessFunc=None):
-    ''' Simulate frequency trajectory with subpopulation structure,
+    ''' EXPERIMENTAL
+    Simulate frequency trajectory with subpopulation structure,
         migration is currently ignored. The essential part of this 
         script is to simulate the trajectory of each subpopulation 
         independently by calling FreqTrajectoryMultiStoch with properly
@@ -859,8 +836,8 @@ def SaveFstat(pop, output='', outputExpr='', maxAllele=0, loci=[], shift=1,
     f.close()
 
 
-# operator version of the function SaveFstat
 def saveFstat(output='', outputExpr='', **kwargs):
+    'operator version of the function SaveFstat'
     # deal with additional arguments
     parm = ''
     for (k,v) in kwargs.items():
@@ -878,11 +855,12 @@ def saveFstat(output='', outputExpr='', **kwargs):
 import re
 
 
-# load population from fstat file 'file'
-# since fstat does not have chromosome structure
-# an additional parameter can be given
 def LoadFstat(file, loci=[]):
-    # open file
+    '''
+    load population from fstat file 'file'
+    since fstat does not have chromosome structure
+    an additional parameter can be given
+    '''
     try:
         f = open(file, "r")
     except exceptions.IOError:
@@ -962,8 +940,10 @@ def LoadFstat(file, loci=[]):
     return pop
 
 
-# read GC data file in http://wpicr.wpic.pitt.edu/WPICCompGen/genomic_control/genomic_control.htm
 def LoadGCData(file, loci=[]):
+    ''' EXPERIMENTAL
+    read GC data file in http://wpicr.wpic.pitt.edu/WPICCompGen/genomic_control/genomic_control.htm
+    '''
     # open file
     try:
         f = open(file, "r")
@@ -1579,7 +1559,6 @@ q
 def ChiSq_test(pop):
     ''' perform case control test
 
-    Parameters;
         pop: loaded population, or population file in simuPOP format. 
             This function assumes that pop has two 
             subpopulations, cases and controls, and have 0 as wildtype and 1 as 

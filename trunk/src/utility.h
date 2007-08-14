@@ -1034,28 +1034,33 @@ namespace simuPOP
 	// / Random number generator
 	// ////////////////////////////////////////////////////////////
 
-	/* \brief random number generator, functor, initializer etc,
+	/* \brief random number generator
 
-	  They can be individual functions but I will need a
-	  destructor to clear RNG structure.
-
-	  This implementation uses GSL rather than boost:;random because
-	  GSL has more distributions and easier/wide choice of RNGs.
-
-	  Right now, I can using the gsl library and will copy individual files
-	  to simupop directory later for easy distribution.
+	This random number generator class wraps around a number of
+	RNG from GNU Scientific Library. You can choose RNG, set 
+	seed, and use RNG in your simuPOP script.
 	*/
 	class RNG
 	{
 
 		public:
-			///
+			/// Create a RNG object. You can also use \c rng() function to get the 
+			/// RNG used by simuPOP.
 			RNG(const char* rng=NULL, unsigned long seed=0);
 
 			///
 			~RNG();
 
-			/// CPPONLY choose an random number generator. This can be done by setting GSL_RNG_TYPE as well.
+			/// choose an random number generator, or set seed to the current RNG
+			/**
+			\param rng name of the RNG. If rng is not given, environmental variable 
+			GSL_RNG_TYPE will be used if it is available. Otherwise, RNG \c mt19937 
+			will be used.
+			\param seed random seed. If not given, <tt>/dev/urandom</tt>, 
+			<tt>/dev/random</tt>, system time will be used, depending on availability,
+			in that order. Note that windows system does not have \c /dev so system 
+			time is used.
+			*/
 			void setRNG(const char * rng=NULL, unsigned long seed=0);
 
 			/// return RNG name
@@ -1064,24 +1069,30 @@ namespace simuPOP
 				return gsl_rng_name(m_RNG);
 			}
 
+			/// return the seed of this RNG
 			unsigned long seed()
 			{
 				return m_seed;
 			}
 
+			/// return the maximum allowed seed value
 			unsigned long maxSeed()
 			{
 				return std::numeric_limits<unsigned long>::max();
 			}
 
+			/// set random seed for this random number generator
+			/// if seed is 0, method described in \c setRNG is used.
 			void setSeed(unsigned long seed)
 			{
 				m_seed = seed;
 				setRNG(name(), m_seed);
 			}
 
+			/// CPPONLY
 			unsigned long generateRandomSeed();
 
+			/// Maximum value of this RNG
 			unsigned long max()
 			{
 				return gsl_rng_max(m_RNG);
@@ -1092,19 +1103,19 @@ namespace simuPOP
 				return toStr("<simuPOP::RNG ") + gsl_rng_name(m_RNG) + ">";
 			}
 
-			/// return min, 1, 2, ... max
+			/// return a random number in the range of [0, 2, ... max()-1]
 			unsigned long int randGet()
 			{
 				return gsl_rng_get(m_RNG);
 			}
 
-			/// return [0, 1, 2, ... n-1]
+			/// return a random number in the range of [0, 1, 2, ... n-1]
 			unsigned long int randInt(unsigned long int n)
 			{
 				return gsl_rng_uniform_int(m_RNG, n);
 			}
 
-			/// return [0, 1, 2, ... n-1]
+			/// CPPONLY
 			void randIntArray(ULONG n, ULONG size, ULONG* vec)
 			{
 
@@ -1114,32 +1125,32 @@ namespace simuPOP
 					vec[i] =  gsl_rng_uniform_int(m_RNG, n);
 			}
 
-			/// return geometric with parameter p (k>=1)
+			/// Geometric distribution
 			int randGeometric(double p)
 			{
 				return gsl_ran_geometric(m_RNG, p);
 			}
 
-			/// return double [0,1)
+			/// Uniform distribution  [0,1)
 			double randUniform01()
 			{
 				return gsl_rng_uniform(m_RNG);
 			}
 
-			/// return double -inf, inf, v is standard deviation
+			/// Normal distribution
 			double randNormal(double m, double v)
 			{
 				return gsl_ran_gaussian(m_RNG, v) + m;
 			}
 
-			/// return double [0,1)
+			/// CPPONLY
 			void randUniform01Array(ULONG size, double * vec)
 			{
 				for(size_t i=0; i<size; ++size)
 					vec[i] =  gsl_rng_uniform(m_RNG);
 			}
 
-			/// binomial distribution
+			/// Binomial distribution B(n, p)
 			UINT randBinomial(UINT n, double p)
 			{
 				DBG_FAILIF( n <= 0 , ValueError, "RandBinomial: n should be positive.");
@@ -1147,6 +1158,8 @@ namespace simuPOP
 				return gsl_ran_binomial(m_RNG, p, n);
 			}
 
+			/// Multinomial distribution
+			/// CPPONLY
 			void randMultinomial(unsigned int N, const vectorf& p, vectoru::iterator n)
 			{
 				// if sum p_i != 1, it will be normalized.
@@ -1154,6 +1167,7 @@ namespace simuPOP
 				gsl_ran_multinomial(m_RNG, p.size(), N, &p[0], &*n);
 			}
 
+			/// CPPONLY
 			vectoru randMultinomialVal(unsigned int N, const vectorf& p)
 			{
 				// if sum p_i != 1, it will be normalized.

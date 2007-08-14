@@ -482,15 +482,7 @@ namespace simuPOP
 			{
 				CHECKRANGEPLOIDY(p);
 				CHECKRANGECHROM(chrom);
-#ifdef SIMUMPI
-				if (hasChrom(chrom))
-					return m_genoPtr + p*localNumLoci() + localChromBegin(chrom);
-				else
-					// ??? Right treatment?
-					return m_genoPtr;
-#else
 				return m_genoPtr + p*totNumLoci() + chromBegin(chrom);
-#endif
 			}
 
 			/// CPPONLY end of allele of the pth set of chromosome
@@ -498,15 +490,7 @@ namespace simuPOP
 			{
 				CHECKRANGEPLOIDY(p);
 				CHECKRANGECHROM(chrom);
-#ifdef SIMUMPI
-				if (hasChrom(chrom))
-					return m_genoPtr + p*localNumLoci() + localChromEnd(chrom);
-				else
-					// ??? Right treatment?
-					return m_genoPtr;
-#else
 				return m_genoPtr + p*totNumLoci() + chromEnd(chrom);
-#endif
 			}
 
 			/// CPPONLY start of info
@@ -544,7 +528,7 @@ namespace simuPOP
 			/**
 			There is usally no '>', '<' comparisons for individuals.
 			If order is required, it is a comparison of \c info.
-			This behavior is used in migration.???
+			This behavior is used in migration.
 			*/
 			bool operator< (const individual& rhs) const
 			{
