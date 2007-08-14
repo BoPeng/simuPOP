@@ -45,7 +45,7 @@ namespace simuPOP
 	{
 
 		public:
-			/// create a terminator 
+			/// create a terminator
 			/**
 			\param message a message that will be displayed when the evolution is terminated.
 			*/

@@ -167,7 +167,7 @@ namespace simuPOP
 			be checked. If it is shorter than the number of individuals, sex will be reused from the beginning.
 			\param stage default to \c PreMating
 
-			\test src_initByFreq.log Operator initByFreq
+			\test src_initByFreq.log Operator \c initByFreq
 			*/
 			initByFreq( const matrix& alleleFreq=matrix(),
 				bool identicalInds=false,  const vectoru& subPop=vectoru(),
@@ -221,7 +221,7 @@ namespace simuPOP
 
 	/// initialize genotype by value and then copy to all individuals
 	/**
-	\c initByValue operator gets one copy of chromosomes or the whole
+	Operator \c initByValue gets one copy of chromosomes or the whole
 	genotype (or of those corresponds to \c loci) of an individual
 	and copy them to all or a subset of individuals.
 	This operator assign given alleles to specified individuals. Every
@@ -254,7 +254,7 @@ namespace simuPOP
 			the number of individuals, sex will be reused from the beginning.
 			\param stages default to \c PreMating
 
-			\test src_initByValue.log Operator initByValue
+			\test src_initByValue.log Operator \c initByValue
 			*/
 			initByValue( intMatrix value=intMatrix(),
 				vectoru loci=vectoru(), int atPloidy=-1,
@@ -305,9 +305,9 @@ namespace simuPOP
 			vectorf m_proportion;
 	};
 
-	/// copy the genotype of an individual to all individuals 
+	/// copy the genotype of an individual to all individuals
 	/**
-	<tt>Spread(ind, subPop)</tt> spreads the genotype of \c ind to all
+	Function <tt>Spread(ind, subPop)</tt> spreads the genotype of \c ind to all
 	individuals in an array of subpopulations. The default value of \c subPop
 	is the subpopulation where \c ind resides.
 
@@ -317,6 +317,9 @@ namespace simuPOP
 	{
 		public:
 			/// copy genotypes of \c ind to all individuals in \c subPop
+			/**
+			\test src_spread.log Operator \c spread
+			*/
 			spread(ULONG ind, vectoru subPop=vectoru(),
 				int stage=PreMating, int begin=0, int end=1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr())
@@ -394,7 +397,7 @@ namespace simuPOP
 			\param atPloidy initialize which copy of chromosomes. Default to all.
 			\param stage default to \c PreMating
 
-			\test src_pyInit.log Operator pyInit
+			\test src_pyInit.log Operator \c pyInit
 			*/
 			pyInit(PyObject * func,  vectoru subPop=vectoru(),
 				vectoru loci=vectoru(), int atPloidy=-1,

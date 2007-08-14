@@ -34,7 +34,7 @@ namespace simuPOP
 {
 	/// Base class of all mutators
 	/**
-	The base class of all functional mutators. It is not supposed to be called directly. 
+	The base class of all functional mutators. It is not supposed to be called directly.
 
 	Every mutator can specify \c rate (equal rate or different rates for different
 	loci) and a vector of applicable loci (default to all but should have the same
@@ -56,8 +56,8 @@ namespace simuPOP
 			of these parameters may vary according to different model. The only differences
 			between the following mutators are they way they actually mutate an allele, and
 			corresponding input parameters. The number of mutation events at each locus is
-                        recorded and can be accessed from the \c mutationCount or \c mutationCounts 
-                        functions.
+						recorded and can be accessed from the \c mutationCount or \c mutationCounts
+						functions.
 
 			\param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c loci)
 			\param loci a vector of loci indexes. Will be ignored only when single rate is specified.
@@ -206,7 +206,7 @@ namespace simuPOP
 			\param maxAllele maximum allele that can be mutated to. For binary libraries
 			  allelic states will be <tt>[0, maxAllele]</tt>. Otherwise, they are <tt>[1, maxAllele]</tt>.
 
-			  \test src_kamMutator.log Operator kamMutator
+			\test src_kamMutator.log Operator \c kamMutator
 			*/
 			kamMutator(const vectorf& rate=vectorf(),
 				const vectoru& loci=vectoru(),
@@ -240,7 +240,7 @@ namespace simuPOP
 
 	/// The stepwise mutation model
 	/**
-	<em>Stepwise Mutation Model</em> (SMM) assumes that alleles are represented by integer values
+	The <em>Stepwise Mutation Model</em> (SMM) assumes that alleles are represented by integer values
 	and that a mutation either increases or decreases the allele value by one.
 	For variable number tandem repeats loci (VNTR), the allele value is generally
 	taken as the number of tandem repeats in the DNA sequence.
@@ -259,7 +259,7 @@ namespace simuPOP
 
 			Please see \c mutator for the description of other parameters.
 
-			  \test src_smmMutator.log Operator smmMutator
+			\test src_smmMutator.log Operator \c smmMutator
 			*/
 			smmMutator(const vectorf& rate=vectorf(),
 				const vectoru & loci=vectoru(),
@@ -280,7 +280,7 @@ namespace simuPOP
 
 			~smmMutator(){}
 
-			/// mutate according to the SMM model 
+			/// mutate according to the SMM model
 			/// CPPONLY
 			virtual void mutate(AlleleRef allele)
 			{
@@ -314,7 +314,7 @@ namespace simuPOP
 
 	/// generalized stepwise mutation model
 	/**
-	<em>Generalized Stepwise Mutation model</em> (GSM) is an extension to stepwise
+	The <em>Generalized Stepwise Mutation model</em> (GSM) is an extension to stepwise
 	mutation model. This model assumes that alleles are represented by integer values
 	and that a mutation either increases or decreases the allele value by a random value.
 	In other words, in this model the change in the allelic state is drawn from a random
@@ -327,8 +327,6 @@ namespace simuPOP
 
 	<funcForm>GsmMutate</funcForm>
 	\sa Kimura & Ohta 1978
-
-	\test src_gsmMutator.log Operator gsmMutator
 	*/
 	class gsmMutator: public mutator
 	{
@@ -343,6 +341,8 @@ namespace simuPOP
 				does not accept any parameter.
 
 			Please see \c mutator for the description of other parameters.
+
+			\test src_gsmMutator.log Operator \c gsmMutator
 			*/
 			gsmMutator(const vectorf & rate=vectorf(),
 				const vectoru & loci=vectoru(),
@@ -416,7 +416,7 @@ namespace simuPOP
 		public:
 			/// create a \c pyMutator
 			/**
-				  \test src_pyMutator.log Operator pyMutator
+			\test src_pyMutator.log Operator \c pyMutator
 			*/
 			pyMutator(const vectorf & rate=vectorf(),
 				const vectoru & loci=vectoru(), UINT maxAllele=0,

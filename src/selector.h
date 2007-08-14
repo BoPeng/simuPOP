@@ -43,30 +43,30 @@ namespace simuPOP
 	\em 'ability-to-mate' approach. Namely, the probability that an individual will be
 	chosen for mating is proportional to its fitness value. More specifically,
 	\li \c PreMating selectors assign fitness values to each individual, and mark part or
-        all subpopulations as under selection.
+		all subpopulations as under selection.
 	\li During sexless mating (e.g. \c binomialSelection mating scheme), individuals are chosen
 		at probabilities that are proportional to their fitness values. If there are
 		\f$ N \f$ individuals with fitness values \f$ f_{i},i=1,...,N \f$, individual
 		\f$ i \f$ will have probability \f$ \frac{f_{i}}{\sum_{j}f_{j}} \f$ to be chosen
-		and passed to the next generation.
+	and passed to the next generation.
 	\li During \c randomMating, males and females are separated. They are chosen from
 	their respective groups in the same manner as \c binomialSelection and mate.\n
 
-	All of the selection operators, when applied, will set an information field 
-        \c fitness (configurable) and then mark part or all subpopulations as under
-        selection. (You can use different selectors to simulate varying selection
-        intensity for different subpopulations). Then, a 'selector-aware' mating scheme
-        can select individuals according to this \c fitness information field. This implies
-        that \n
+	All of the selection operators, when applied, will set an information field
+	\c fitness (configurable) and then mark part or all subpopulations as under
+	selection. (You can use different selectors to simulate varying selection
+	intensity for different subpopulations). Then, a 'selector-aware' mating scheme
+	can select individuals according to this \c fitness information field. This implies
+	that \n
 
 	\li Only mating schemes can actually select individuals.
 	\li Selector has to be \c PreMating operator. This is not a problem when you use the
 	operator form of the selectors since their default stage is \c PreMating. However,
 	if you use the function form of these selectors in a \c pyOperator, make sure to
 	set the stage of \c pyOperator to \c PreMating.
-        
-        \note You can not apply two selectors to the same subpopulation, because only one
-        fitness value is allowed for each individual. 
+
+	\note You can not apply two selectors to the same subpopulation, because only one
+	fitness value is allowed for each individual.
 	*/
 	class selector: public baseOperator
 	{
@@ -132,7 +132,7 @@ namespace simuPOP
 			\param phase if \c True, genotypes \c a-b and \c b-a will have different fitness values. Default to false.
 			\param output and other parameters please refer to help(baseOperator.__init__)
 
-			\test src_mapSelector.log Use of mapSelector
+			\test src_mapSelector.log Operator \c mapSelector
 			*/
 			mapSelector( vectoru loci, const strDict& fitness, bool phase=false,
 				const vectoru & subPops=vectoru(), int stage=PreMating, int begin=0, int end=-1, int step=1,
@@ -207,7 +207,7 @@ namespace simuPOP
 			\note \li \c maSelector only works for diploid populations now.
 			\li \c wildtype at all loci are the same.
 
-			\test src_maSelector.log Use of maSelector
+			\test src_maSelector.log Operator \c maSelector
 			*/
 			maSelector( vectoru loci, const vectorf& fitness, const vectora& wildtype,
 				const vectoru & subPops=vectoru(), int stage=PreMating, int begin=0, int end=-1, int step=1,
@@ -283,6 +283,8 @@ namespace simuPOP
 			\param selectors a list of selectors
 
 			Please refer to \c mapSelector for other parameter descriptions.
+
+			\test src_mlSelector.log Operator \c mlSelector
 			*/
 			mlSelector( const vectorop selectors, int mode = SEL_Multiplicative,
 				const vectoru & subPops=vectoru(), int stage=PreMating, int begin=0, int end=-1, int step=1,
@@ -334,14 +336,12 @@ namespace simuPOP
 	/**
 	\c pySelector assigns fitness values by calling a user provided function.
 	It accepts a list of susceptibility loci and a Python function. For
-	each individual, this operator will pass the genotypes at these loci and 
-	the generation number and use the returned value as the fitness value. 
+	each individual, this operator will pass the genotypes at these loci and
+	the generation number and use the returned value as the fitness value.
 	The genotypes are arranged in the order
 	of <tt>0-0,0-1,1-0,1-1</tt> etc. where X-Y represents locus X - ploidy Y.
 
 	<funcForm>PySelect</funcForm>
-
-	\test src_pySelector.log Use of pySelector
 	*/
 	class pySelector: public selector
 	{
@@ -353,6 +353,7 @@ namespace simuPOP
 			\param func a Python function that accepts genotypes at susceptibility loci
 				generation number, and return fitness value.
 			\param output and other parameters please refer to help(baseOperator.__init__)
+			\test src_pySelector.log Operator \c pySelector
 			*/
 			// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
 			pySelector( vectoru loci, PyObject* func, const vectoru & subPops=vectoru(),

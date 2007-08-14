@@ -88,13 +88,13 @@ namespace simuPOP
 	// ////////////////////////////////////////////////////////////
 
 	/// set debug codes. Default to turn on all debug codes. Only available in non-optimized modules.
-	/// Do not mix this function with \c turnOnDebug(), which creates an operator 
+	/// Do not mix this function with \c turnOnDebug(), which creates an operator
 	void TurnOnDebug(DBG_CODE code=DBG_ALL);
 
 	void TurnOnDebug(string code);
 
 	/// turn off debug information. Default to turn off all debug codes. Only available in non-optimized modules.
-	/// Do not mix this function with \c turnOffDebug(), which creates an operator 
+	/// Do not mix this function with \c turnOffDebug(), which creates an operator
 	void TurnOffDebug(DBG_CODE code=DBG_ALL);
 
 #ifndef OPTIMIZED
@@ -1034,17 +1034,19 @@ namespace simuPOP
 	// / Random number generator
 	// ////////////////////////////////////////////////////////////
 
-	/* \brief random number generator
+	/** \brief random number generator
 
 	This random number generator class wraps around a number of
-	RNG from GNU Scientific Library. You can choose RNG, set 
-	seed, and use RNG in your simuPOP script.
+	random number generators from GNU Scientific Library. You can obtain
+	and change system random number generator through the \c rng() 
+	function. Or create a separate random number generator and use
+	it in your script.
 	*/
 	class RNG
 	{
 
 		public:
-			/// Create a RNG object. You can also use \c rng() function to get the 
+			/// Create a RNG object. You can also use \c rng() function to get the
 			/// RNG used by simuPOP.
 			RNG(const char* rng=NULL, unsigned long seed=0);
 
@@ -1053,12 +1055,12 @@ namespace simuPOP
 
 			/// choose an random number generator, or set seed to the current RNG
 			/**
-			\param rng name of the RNG. If rng is not given, environmental variable 
-			GSL_RNG_TYPE will be used if it is available. Otherwise, RNG \c mt19937 
+			\param rng name of the RNG. If rng is not given, environmental variable
+			GSL_RNG_TYPE will be used if it is available. Otherwise, RNG \c mt19937
 			will be used.
-			\param seed random seed. If not given, <tt>/dev/urandom</tt>, 
+			\param seed random seed. If not given, <tt>/dev/urandom</tt>,
 			<tt>/dev/random</tt>, system time will be used, depending on availability,
-			in that order. Note that windows system does not have \c /dev so system 
+			in that order. Note that windows system does not have \c /dev so system
 			time is used.
 			*/
 			void setRNG(const char * rng=NULL, unsigned long seed=0);
