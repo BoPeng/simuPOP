@@ -33,7 +33,8 @@ are where the output interface and latex files will be written.
 
 
 from xml.dom import minidom
-import re, textwrap, sys, types, os.path, sets
+import re, textwrap, sys, types, os.path, sets, inspect
+from pydoc import *
 
 class Doxy2SWIG:
     """Converts Doxygen generated XML files into a data struture
@@ -611,58 +612,46 @@ class Doxy2SWIG:
 
     def scan_module(self, file):
         ''' scan python module file and retrieve function definitions '''
-        module = os.path.split(file)[-1].split('.')[0]
+        module = inspect.getmodulename(file)
         # add module entry
+        # load module
+        try:
+            object, name = resolve(module, True)
+            #exec('import ' + module)
+        except:
+            print "Module %s failed to load. It is description is not documented." % module
+            print "Please compile simuPOP and rerun this program"
+            return
+        #object = eval(module)
+        synop, desc = splitdoc(getdoc(object))
         self.content.append({'type': 'docofmodule_' + module, 
             'Name': module})
-        # load module
-        exec('import ' + module)
-        self.content[-1]['Description'] = eval('%s.__doc__' % module)
-        add_def = False
-        add_desc = False
-        begin_desc = False
-        add_argu = False
-        for line in open(file).readlines():
-            if line.startswith('def '):
-                # remove def, and ending :
+        self.content[-1]['Description'] = desc
+        for key, value in inspect.getmembers(object, inspect.isclass):
+            if (inspect.getmodule(value) or object) is object:
+                if not visiblename(key):
+                    continue
                 self.content.append({'type': 'module', 'module': module})
-                self.content[-1]['Name'] = line[4:].split('(')[0]
-                self.content[-1]['ignore'] = self.content[-1]['Name'].startswith('_')
-                self.content[-1]['Usage'] = line[4:].strip()
-                self.content[-1]['Description'] = ''
-                if line.strip().endswith(':'):
-                    # remove ending :
-                    self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
-                    add_desc = True
-                    begin_desc = True
-                    add_def = False
-                else:
-                    self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
-                    add_def = True
-            elif add_def:
-                self.content[-1]['Usage'] += line.strip() + ' '
-                if line.strip().endswith(':'):
-                    self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
-                    add_desc = True
-                    begin_desc = True
-                    add_def = False
-            elif add_desc:               
-                # comments should be first description then parameters
-                # ':' should be only used after a parameter name in the comments
-                
-                # determine if there are description comments
-                if begin_desc:
-                    if line.strip().startswith('"') or line.strip().startswith("'"):
-                        quote_type = line.strip()[0]
-                        if line.strip()[1] == quote_type:
-                            quote_type = quote_type * 3
-                    else:
-                        add_desc = False
-                        continue
-                    begin_desc = False
-                self.content[-1]['Description'] += ' ' + line.strip().strip('"').strip("'") + '\n'
-                if line.endswith(quote_type + '\n'):
-                    add_desc = False                     
+                self.content[-1]['Name'] = key
+                self.content[-1]['ignore'] = False
+                args, varargs, varkw, defaults = inspect.getargspec(value.__init__)
+                self.content[-1]['Usage'] = key + inspect.formatargspec(
+                    args, varargs, varkw, defaults)
+                des = getdoc(value)
+                des += '\n\nInitialization\n\n'
+                des += getdoc(value.__init__)
+                self.content[-1]['Description'] = des
+        for key, value in inspect.getmembers(object, inspect.isroutine):
+            if inspect.isbuiltin(value) or inspect.getmodule(value) is object:
+                if not visiblename(key) or not inspect.isfunction(value):
+                    continue
+                self.content.append({'type': 'module', 'module': module})
+                self.content[-1]['Name'] = key
+                self.content[-1]['ignore'] = False
+                args, varargs, varkw, defaults = inspect.getargspec(value)
+                self.content[-1]['Usage'] = key + inspect.formatargspec(
+                    args, varargs, varkw, defaults)
+                self.content[-1]['Description'] = getdoc(value)
 
 
     def latexName(self, name):
@@ -730,25 +719,35 @@ class Doxy2SWIG:
     def latex_formatted_text(self, text):
         """format text according to some simple rules"""
         text = self.latex_text(text)
+        print "------------------------------"
+        print text
         in_list = False
         in_desc = False
+        in_code = False
         end_list = 0
-        
         str = ''        
         for line in text.split('\n'):
+            if line.strip().startswith('>{}>{}>{}'):
+                in_code = True
+                str += '\\par\\texttt{%s' % line
+                continue
+            else:
+                if in_code:
+                    in_code = False
+                    str += '}\\par\n'                
             if line.lstrip().startswith('- ') and not in_desc:
                 if not in_list:
                     str += '\\begin{itemize}\n' 
                     in_list = True
-                str += r'\item ' + line[2:].lstrip() + '\n'
+                str += r'\item ' + line.lstrip()[2:].lstrip() + '\n'
                 end_list = 0
-            elif ':' in line and not in_list and line.split(':')[0].count(' ') < 3:
+            elif ':' in line and not in_list and line.split(':')[0].strip().count(' ') < 3:
                 if not in_desc:
                     str += '\\begin{description}\n' 
                     in_desc = True
-                kword = line.split(':')[0]
+                kword = line.split(':')[0].strip()
                 desc = line.split(':')[1]
-                str += r'\item[{\texttt{{%s}}}] %s' % (kword.replace('--', '---'), desc.lstrip()) + '\n'
+                str += r'\item[\texttt{%s}] %s' % (kword.replace('--', '---'), desc.lstrip())
                 end_list = 0
             elif in_list or in_desc:
                 if line.strip() == '':
@@ -762,11 +761,15 @@ class Doxy2SWIG:
                     in_list = False
                     in_desc = False
                 else:
-                    str += line + '\n'
-            else:
-                str += line + '\n'
+                    str += line.strip() + '\n'
+            elif line.strip() != '':
+                str += line.strip() + '\n'
         # '    xxx' is quote
         # '  xx  ' is texttt
+        if in_list:
+            str += '\n\\end{itemize}\n'
+        if in_desc:
+            str += '\n\\end{description}\n'
         paras = str.split('\n')
         str = []
         for para in paras:
@@ -775,6 +778,8 @@ class Doxy2SWIG:
                 if pieces[i].count(' ') < 3:
                     pieces[i] = r'\texttt{' + pieces[i] + '}'
             str.append(' '.join(pieces))
+        print "------------------------------"
+        print '\n'.join(str)
         return '\n'.join(str)
                  
                 
