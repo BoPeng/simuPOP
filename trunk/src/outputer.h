@@ -69,7 +69,7 @@ namespace simuPOP
 
 	/// Output a given string.
 	/**
-	A common usage is <tt>pyOutpue('\n', rep=REP_LAST)</tt>
+	A common usage is outputting a new line for the last replicate.
 	*/
 	class pyOutput: public outputer
 	{
