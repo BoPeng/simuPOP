@@ -581,30 +581,35 @@ class varPlotter(pyOperator):
     plot a number in the form of a variable or expression, use
         >>> varPlotter(var='expr')
     
-    plot a vector in the same window and there is only one replicate in the simulator, use
+    plot a vector in the same window and there is only one replicate in 
+    the simulator, use
     
         >>> varPlotter(var='expr', varDim=len)
     
-    where len is the dimension of your variable or expression. Each line in the figure represents the history of an item in the array.
+    where len is the dimension of your variable or expression. Each line 
+    in the figure represents the history of an item in the array.
     
     plot a vector in the same window and there are several replicates, use 
     
-        varPlotter(var='expr', varDim=len, numRep=nr, byRep=1)
+        >>> varPlotter(var='expr', varDim=len, numRep=nr, byRep=1)
     
-    varPlotter will try to use an appropriate layout for your subplots (for example, use 3x4 if numRep=10). You can also specify parameter mfrow to change the layout.
+    varPlotter will try to use an appropriate layout for your subplots 
+    (for example, use 3x4 if  numRep=10  ). You can also specify parameter
+    mfrow to change the layout.
     
-    if you would like to plot each item of your array variables in a subplot, use
+    if you would like to plot each item of your array variables in a subplot,
+    use
     
-        varPlotter(var='expr', varDim=len, byVal=1)
+        >>> varPlotter(var='expr', varDim=len, byVal=1)
     
     or in case of a single replicate
-        varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
     
-        
+        >>> varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
+    
+    
     There will be numRep lines in each subplot.
-    Plotting without history
     
-    use option history=False. Parameters byVal, varDim etc. will be ignored. 
+    Use option   history=False  to plot with history. Parameters   byVal  ,  varDim  etc. will be ignored. 
     
     Other options are
     
@@ -630,7 +635,6 @@ class varPlotter(pyOperator):
         mfrow=[1,1], separate=False, byRep=False, byVal=False, plotType="plot",
         level=20, saveAs="", leaveOpen=True, dev='', width=0, height=0, 
         *args, **kwargs):
-        ' create a varplotter instance'
         self.expr = expr
         if history == True:
             self.plotter = _VarPlotter_His(numRep=numRep, varDim=varDim, win=win, ylim=ylim,

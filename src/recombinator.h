@@ -60,7 +60,7 @@ namespace simuPOP
 				between two loci is determined by <tt>intensity*locus distance</tt> between them.
 			\param rate recombination rate regardless of locus distance after all \c afterLoci.
 				It can also be an array of recombination rates. Should have the same length
-				as \c afterLoci or \c totNumOfLoci(). If \c totNumLoci, the last item can be ignored.???
+				as \c afterLoci or \c totNumOfLoci(). 
 				The recombination rates are independent of locus distance.
 			\param afterLoci an array of locus indexes. Recombination will occur after these
 				loci. If \c rate is also specified, they should have the same length. Default
@@ -72,10 +72,9 @@ namespace simuPOP
 			\param maleRate recombination rate for male individuals. If given,
 			parameter \c rate will be considered as female recombination rate.
 			\param maleAfterLoci if given, males will recombine at different locations.
-			This is rarely used.???
 			\note There is no recombination between sex chromosomes of male individuals
-			if <tt>sexChrom()=True</tt>.??? This may change later if the exchanges
-			of genes between pseudoautosomal regions of XY need to be modeled.
+			if <tt>sexChrom()=True</tt>. This may change later if the exchanges
+			of genes between pseudoautosomal regions of \c XY need to be modeled.
 
 			\test src_recombinator.log Operator recombinator
 			*/
@@ -131,7 +130,8 @@ namespace simuPOP
 				return m_recCount;
 			}
 
-			/// apply the recombinator during mating???
+			/// apply the recombinator during mating
+			/// CPPONLY
 			virtual bool applyDuringMating(population& pop,
 				population::IndIterator offspring,
 				individual* dad=NULL,

@@ -182,6 +182,7 @@ namespace simuPOP
 	{
 		public:
 			/**
+			Creates a pyTagger that work on specified information fields.
 			\param infoFields information fields. The user should gurantee the existence
 				of these fields.
 			\param func a Pyton function that returns a list to assign the information fields.

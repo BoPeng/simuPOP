@@ -280,7 +280,8 @@ namespace simuPOP
 
 			~smmMutator(){}
 
-			/// mutate according to the SMM model ???
+			/// mutate according to the SMM model 
+			/// CPPONLY
 			virtual void mutate(AlleleRef allele)
 			{
 				// inc
@@ -338,7 +339,8 @@ namespace simuPOP
 			It  provides better description for these kinds of evolutionary processes.
 
 			\param incProb probability to increase allele state. Default to \c 0.5.
-			\param func return number of steps. No parameter.???
+			\param func a function that returns the number of steps. This function
+				does not accept any parameter.
 
 			Please see \c mutator for the description of other parameters.
 			*/

@@ -384,16 +384,16 @@ simu.evolve(
 
 #file log/ref_rng.log
 print ListAllRNG()
+# get system RNG
 print rng().name()
+# set system RNG
 SetRNG("taus2", seed=10)
 print rng().name()
-#end
-
-#file log/ref_rngrand.log
-r=rng()
-#help(RNG)
-for n in range(1,10):
+# create a seprate RNG instance
+r=RNG()
+for n in range(1,5):
     print r.randBinomial(10, .7),
+
 #end
 
 

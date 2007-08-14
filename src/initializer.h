@@ -206,7 +206,7 @@ namespace simuPOP
 				return "<simuPOP::initByFreq>";
 			}
 
-			/// apply operator \c initByFreq???
+			/// apply this operator to population \c pop
 			bool apply(population& pop);
 
 		private:
@@ -294,7 +294,7 @@ namespace simuPOP
 				return "<simuPOP::initByValue>";
 			}
 
-			/// apply operator \c initByValue???
+			/// apply this operator to population \c pop
 			bool apply(population& pop);
 
 		private:
@@ -339,7 +339,7 @@ namespace simuPOP
 				return "<simuPOP::spread genotype>";
 			}
 
-			/// apply operator \c spread???
+			/// apply this operator to population \c pop
 			bool apply(population& pop)
 			{
 				std::pair<UINT, ULONG> p = pop.subPopIndPair(m_ind);
@@ -439,7 +439,7 @@ namespace simuPOP
 				return "<simuPOP::pyInit>";
 			}
 
-			///  apply operator \c pyInit???
+			///  apply this operator to population \c pop
 			bool apply(population& pop);
 
 		private:
