@@ -221,7 +221,10 @@ def replaceIntHeader(file):
     shutil.copyfile(name, file)
     os.remove(name)    
     # restore old file modification time
-    os.utime(file, (-1, time))
+    try:
+        os.utime(file, (-1, time))
+    except:
+        pass
     
 #
 # SOURCE FILES
