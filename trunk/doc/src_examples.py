@@ -256,8 +256,9 @@ def rndInt():
 simu.step([
     initByFreq( [.2,.3,.5]),
     gsmMutator(rate=1, func=rndInt, incProb=.8),
-    dumper(alleleOnly=True, stage=PrePostMating)])
-
+    dumper(alleleOnly=True, stage=PrePostMating)
+    ]
+)
 #end
 
 #file log/src_pyMutator.log
@@ -522,9 +523,74 @@ print rng().name()
 r=rng()
 #help(RNG)
 for n in range(1,10):
-  print r.randBinomial(10, .7),
+    print r.randBinomial(10, .7),
 #end
 
 
+#file log/src_pyIndOperator.log
+def indFunc(ind, param):
+    ind.setInfo(ind.info('info2')+param[1], 'info2')
+    print ind.info('info2')
+    return True
+
+simu = simulator(
+    population(5, loci=[2,5], infoFields=['info1', 'info2']),
+    randomMating(), rep=1)
+simu.step(
+    ops = [
+        pyIndOperator(func=indFunc, param=(3,2)), 
+    ],
+)
+#end
 
 
+#file log/src_spread.log
+pop = population(ploidy=2, loci=[2], subPop=[4, 4])
+InitByFreq(pop, [.5, .5])
+Spread(pop, 2, subPop=[1]),
+Dump(pop)
+#end
+
+
+#file log/src_splitSubPop.log
+pop = population(size=10, loci=[2,6])
+InitByFreq(pop, [.2,.4,.4])
+SplitSubPop(pop, which=0, sizes=[2,8], randomize=False)
+print pop.subPopSizes()
+#end
+
+
+#file log/src_mlSelector.log
+simu = simulator(
+    population(size=10, ploidy=2, loci=[2], 
+    infoFields=['fitness', 'spare']),
+    randomMating())
+simu.evolve(
+    [ mlSelector([
+         mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+         mapSelector(locus=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+         ], mode=SEL_Additive),
+    ],
+    preOps = [
+        initByFreq(alleleFreq=[.2,.8])
+    ],
+    end=2
+)
+#end
+
+
+#file log/src_mapPenetrance.log
+pop = population(size=10, ploidy=2, loci=[2], subPop=[2, 8])
+InitByFreq(pop, [.2, .8])
+MapPenetrance(pop, locus=0, 
+    penetrance={'0-0':0, '0-1':1, '1-1':1})
+Stat(pop, numOfAffected=1)
+#end
+
+
+#file log/src_maPenetrance.log
+pop = population(size=10, ploidy=2, loci=[2], subPop=[2, 8])
+InitByFreq(pop, [.2, .8])
+MaPenetrance(pop, locus=0, wildtype=0, penetrance=[0, 1, 1])
+Stat(pop, numOfAffected=1)
+#end

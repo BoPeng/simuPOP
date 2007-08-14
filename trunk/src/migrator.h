@@ -288,6 +288,7 @@ namespace simuPOP
 			\param proportions proportions of new subpopulations. Should be added up to \c 1.
 			\param subPopID new subpopulation IDs. Otherwise, the operator will automatically
 				set new subpopulation IDs to new subpopulations.
+			\test src_splitSubPop.log Operator \c splitSubPop
 			*/
 			splitSubPop( UINT which=0,  vectorlu sizes=vectorlu(), vectorf proportions=vectorf(),
 				vectoru subPopID=vectoru(),

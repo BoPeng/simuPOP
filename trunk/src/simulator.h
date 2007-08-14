@@ -100,7 +100,6 @@ namespace simuPOP
 	After mating is completed, post-mating operators are
 	applied to the offspring in the order at which they appear in the operator list. \n
 
-
 	Simulators can evolve a given number of generations (the
 	\c end parameter of \c evolve), or evolve indefinitely until
 	a certain type of operators called terminator terminates it. In this
@@ -323,7 +322,7 @@ namespace simuPOP
 			the \c begin, \c end, \c step and \c at parameters of the operator.)
 			\param preOps operators that will be applied before evolution.
 			\c evolve() function will \em not check if they are active.
-			\param postOps operators that will be applied after evolution. 
+			\param postOps operators that will be applied after evolution.
 			\c evolve() function will \em not check if they are active.
 			\param end ending generation. Default to \c -1. In this case, there
 			is no ending generation and a simulator will only be ended by a

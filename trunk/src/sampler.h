@@ -642,10 +642,10 @@ namespace simuPOP
 		public:
 			/// create a Python sampler
 			/**
-			This sampler accepts a Python array which will be assigned to 
-			each individual as subPOP ID. Individuals with positive subPOPID 
+			This sampler accepts a Python array which will be assigned to
+			each individual as subPOP ID. Individuals with positive subPOPID
 			will then be picked out and form a sample.
-			
+
 			\param keep subpopulation IDs of all individuals
 			\param keepAncestralPop the number of ancestral populations that will be kept. If \c -1,
 				keep all ancestral populations (default). If \c 0, no ancestral population will be kept.

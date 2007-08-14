@@ -243,7 +243,7 @@ namespace simuPOP
 
 	/// quantitative trait according to genotypes from a multiple loci multiplicative model
 	/**
-	\c mlQuanTrait is a 'multiple-loci' quantitative trait calculator. It accepts a list
+	Operator \c mlQuanTrait is a 'multiple-loci' quantitative trait calculator. It accepts a list
 	of quantitative traits and combine them according to the \c mode parameter, which takes
 	one of the following values
 	\li \c QT_Multiplicative: the mean of the quantitative trait is calculated as

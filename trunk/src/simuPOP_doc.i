@@ -289,7 +289,7 @@ True
 True
 >>> # only from rep 1
 >>> print open('a.txt').read()
-0.455
+0.465
 >>> 
 >>> simu.step(
 ...     ops = [
@@ -299,7 +299,7 @@ True
 True
 >>> # from both rep0 and rep1
 >>> print open(\"a.txt\").read()
-0.230.46
+0.220.45
 >>> 
 >>> outfile='>>>a.txt'
 >>> simu.step(
@@ -312,8 +312,8 @@ True
 ... )
 True
 >>> print open(\"a.txt\").read()
-0.230.460.27	
-0.415	
+0.220.450.245	
+0.45	
 >>> #
 >>> # Output expression
 >>> outfile=\"'>>a'+str(rep)+'.txt'\"
@@ -325,9 +325,9 @@ True
 ... )
 True
 >>> print open(\"a0.txt\").read()
-0.255
+0.26
 >>> print open(\"a1.txt\").read()
-0.42
+0.475
 >>>
 
 
@@ -1963,7 +1963,7 @@ Description:
 
 Details:
 
-    Generalized Stepwise Mutation model (GSM) is an extension to
+    The Generalized Stepwise Mutation model (GSM) is an extension to
     stepwise mutation model. This model assumes that alleles are
     represented by integer values and that a mutation either increases
     or decreases the allele value by a random value. In other words,
@@ -1976,64 +1976,6 @@ Details:
     value each time a mutation occur; otherwise, a parameter  $ p $
     should be provided and the  mutator will act as a geometric
     generalized stepwise model.
-
-Example:
-
->>> simu = simulator(population(size=3, loci=[3,5]), noMating())
->>> simu.step([
-...     initByFreq( [.2,.3,.5]),
-...     gsmMutator(rate=1, p=.8, incProb=.8),
-...     dumper(alleleOnly=True, stage=PrePostMating)])
-individual info: 
-sub population 0:
-   0: MU   1  1  0   2  2  2  1  1 |   1  1  2   2  2  0  2  2 
-   1: MU   2  2  0   2  1  2  0  2 |   2  1  0   2  0  2  2  1 
-   2: MU   1  2  1   0  1  2  0  2 |   1  2  0   1  1  1  0  2 
-End of individual info.
-
-
-No ancenstral population recorded.
-individual info: 
-sub population 0:
-   0: MU   2  2  0   3  1  3  3  2 |   2  0  3   1  3  1  3  1 
-   1: MU   0  3  0   5  2  1  1  1 |   3  2  1   4  3  3  3  2 
-   2: MU   0  3  0   2  2  1  1  1 |   2  0  1   0  3  2  1  3 
-End of individual info.
-
-
-No ancenstral population recorded.
-True
->>> 
->>> import random
->>> def rndInt():
-...   return random.randrange(3,6)
-... 
->>> simu.step([
-...     initByFreq( [.2,.3,.5]),
-...     gsmMutator(rate=1, func=rndInt, incProb=.8),
-...     dumper(alleleOnly=True, stage=PrePostMating)])
-individual info: 
-sub population 0:
-   0: MU   2  0  2   0  2  1  1  1 |   1  0  2   0  1  2  2  2 
-   1: FU   0  2  2   2  2  2  2  1 |   0  2  2   2  2  1  0  0 
-   2: FU   0  2  1   1  1  2  2  2 |   2  0  1   0  2  0  2  2 
-End of individual info.
-
-
-No ancenstral population recorded.
-individual info: 
-sub population 0:
-   0: MU   5  0  7   4  5  5  4  5 |   6  3  6   5  4  5  5  7 
-   1: FU   0  6  7   0  7  0  5  6 |   4  5  6   7  6  5  5  5 
-   2: FU   3  6  5   5  5  6  7  5 |   7  0  5   3  5  0  5  5 
-End of individual info.
-
-
-No ancenstral population recorded.
-True
->>> 
->>>
-
 
 "; 
 
@@ -2062,6 +2004,65 @@ Arguments:
                     0.5.
     func:           a function that returns the number of steps. This
                     function does not accept any parameter.
+
+Example:
+
+>>> simu = simulator(population(size=3, loci=[3,5]), noMating())
+>>> simu.step([
+...     initByFreq( [.2,.3,.5]),
+...     gsmMutator(rate=1, p=.8, incProb=.8),
+...     dumper(alleleOnly=True, stage=PrePostMating)])
+individual info: 
+sub population 0:
+   0: FU   2  1  1   2  0  2  1  2 |   0  0  2   1  0  2  2  0 
+   1: FU   2  2  0   1  2  2  2  0 |   2  2  1   2  0  0  2  0 
+   2: MU   1  2  2   2  2  0  2  2 |   1  2  2   0  0  2  1  0 
+End of individual info.
+
+
+No ancenstral population recorded.
+individual info: 
+sub population 0:
+   0: FU   4  2  2   3  1  3  0  3 |   3  0  3   2  1  1  3  0 
+   1: FU   3  3  1   2  3  3  3  1 |   4  3  0   3  1  1  4  2 
+   2: MU   2  3  3   3  1  1  3  3 |   0  3  4   1  1  3  0  1 
+End of individual info.
+
+
+No ancenstral population recorded.
+True
+>>> 
+>>> import random
+>>> def rndInt():
+...   return random.randrange(3,6)
+... 
+>>> simu.step([
+...     initByFreq( [.2,.3,.5]),
+...     gsmMutator(rate=1, func=rndInt, incProb=.8),
+...     dumper(alleleOnly=True, stage=PrePostMating)
+...     ]
+... )
+individual info: 
+sub population 0:
+   0: MU   2  2  2   2  1  0  2  1 |   0  2  2   2  2  0  1  2 
+   1: MU   0  2  1   2  2  2  0  1 |   2  2  1   2  1  1  2  1 
+   2: FU   2  1  2   0  2  1  0  2 |   1  0  2   1  2  1  0  2 
+End of individual info.
+
+
+No ancenstral population recorded.
+individual info: 
+sub population 0:
+   0: MU   0  7  0   0  6  4  0  6 |   4  6  7   7  7  4  5  0 
+   1: MU   5  7  6   6  0  6  4  5 |   0  7  4   5  4  0  5  6 
+   2: FU   5  4  7   3  7  5  5  0 |   5  4  6   6  5  6  4  0 
+End of individual info.
+
+
+No ancenstral population recorded.
+True
+>>>
+
 
 "; 
 
@@ -2181,10 +2182,9 @@ No affected at gen 0
 No affected at gen 0
 No affected at gen 0
 No affected at gen 0
-No affected at gen 19
-No affected at gen 22
-No affected at gen 26
-No affected at gen 32
+No affected at gen 11
+No affected at gen 12
+No affected at gen 41
 True
 >>>
 
@@ -3006,12 +3006,12 @@ Example:
 ...   ])
 individual info: 
 sub population 0:
-   0: MU 00111 0111110 | 10111 0111101 
-   1: MU 11111 1110111 | 10111 1011111 
+   0: FU 11111 1111111 | 11111 1111111 
+   1: FU 11111 0111111 | 11111 1111111 
 sub population 1:
-   2: MU 00000 0001000 | 00110 0000000 
-   3: FU 00000 0001000 | 01000 0000000 
-   4: MU 00000 0001000 | 01000 0000000 
+   2: FU 00000 0000000 | 00000 0000000 
+   3: FU 10100 0000000 | 00000 0001000 
+   4: FU 00000 0000000 | 00000 0001000 
 End of individual info.
 
 
@@ -3083,7 +3083,7 @@ Description:
 
 Details:
 
-    initByValue operator gets one copy of chromosomes or the whole
+    Operator  initByValue gets one copy of chromosomes or the whole
     genotype (or of those corresponds to loci) of an  individual and
     copy them to all or a subset of individuals. This operator assign
     given alleles to specified individuals. Every  individual will
@@ -3140,12 +3140,12 @@ Example:
 ...     dumper(alleleOnly=True)])
 individual info: 
 sub population 0:
-   0: MU 11111 2222222 | 33333 4444444 
-   1: FU 33333 4444444 | 11111 2222222 
+   0: FU 33333 2222222 | 33333 2222222 
+   1: MU 11111 4444444 | 11111 4444444 
 sub population 1:
-   2: FU 33333 4444444 | 11111 2222222 
-   3: FU 11111 2222222 | 33333 2222222 
-   4: MU 33333 2222222 | 11111 2222222 
+   2: FU 33333 4444444 | 33333 2222222 
+   3: FU 11111 4444444 | 11111 2222222 
+   4: FU 11111 2222222 | 33333 2222222 
 End of individual info.
 
 
@@ -3384,11 +3384,11 @@ Example:
 ...     dumper(alleleOnly=True)])
 individual info: 
 sub population 0:
-   0: MU   0  0  0   0  0  0  6  0 |   5  0  1   0  0  0  0  0 
-   1: MU   0  0  0   0  0  0  0  0 |   0  0  0   0  0  0  0  0 
-   2: MU   0  0  1   0  0  0  0  0 |   0  0  5   0  0  0  0  0 
-   3: MU   0  0  0   0  0  0  0  0 |   0  0  9   0  0  0  4  0 
-   4: MU   0  0  6   0  0  0  1  0 |   0  0  5   0  0  0  3  0 
+   0: MU   0  0  5   0  0  0  0  0 |   0  0  9   0  0  0  0  0 
+   1: MU   2  0  5   0  0  0  2  0 |   0  0  0   0  0  0  1  0 
+   2: MU   0  0  3   0  0  0  4  0 |   0  0  2   0  0  0  0  0 
+   3: MU   0  0  8   0  0  0  0  0 |   6  0  7   0  0  0  0  0 
+   4: MU   0  0  0   0  0  0  0  0 |   0  0  5   0  0  0  0  0 
 End of individual info.
 
 
@@ -3598,6 +3598,15 @@ Arguments:
     output:         and other parameters please refer to
                     help(baseOperator.__init__)
 
+Example:
+
+>>> pop = population(size=10, ploidy=2, loci=[2], subPop=[2, 8])
+>>> InitByFreq(pop, [.2, .8])
+>>> MaPenetrance(pop, locus=0, wildtype=0, penetrance=[0, 1, 1])
+>>> Stat(pop, numOfAffected=1)
+>>>
+
+
 "; 
 
 %feature("docstring") simuPOP::maPenetrance::~maPenetrance "
@@ -3679,6 +3688,16 @@ Arguments:
                     penetrance values. Default to False.
     output:         and other parameters please refer to
                     help(baseOperator.__init__)
+
+Example:
+
+>>> pop = population(size=10, ploidy=2, loci=[2], subPop=[2, 8])
+>>> InitByFreq(pop, [.2, .8])
+>>> MapPenetrance(pop, locus=0, 
+...     penetrance={'0-0':0, '0-1':1, '1-1':1})
+>>> Stat(pop, numOfAffected=1)
+>>>
+
 
 "; 
 
@@ -3870,9 +3889,9 @@ Example:
 ...     preOps=[  initByFreq(alleleFreq=[.2,.8])],
 ...     end=300)
 0.7740
-0.3310
-0.3635
-0.3335
+0.3210
+0.3380
+0.3175
 True
 >>>
 
@@ -4087,10 +4106,10 @@ Example:
 ...         pyEval(r\"'%.4f\\\\n' % alleleFreq[0][1]\", step=100)
 ...     ],
 ...     end=300)
-0.7915
-0.3210
+0.7975
 0.3645
-0.2865
+0.3085
+0.3110
 True
 >>>
 
@@ -4264,7 +4283,7 @@ True
 >>> simu.step(ops=[])
 True
 >>> print simu.population(0).dvars().famSizes
-[5, 5, 2, 5, 5, 5, 5, 3, 2, 5, 2, 3, 2, 1]
+[5, 2, 4, 2, 4, 3, 4, 3, 3, 2, 3, 5, 5, 2, 3]
 >>> TurnOffDebug(DBG_MATING)
 Debug code DBG_MATING is turned off. cf. ListDebugCode(), TurnOnDebug().
 >>>
@@ -4676,9 +4695,10 @@ Description:
 
 Details:
 
-    mlQuanTrait is a 'multiple-loci' quantitative trait calculator. It
-    accepts a list of quantitative traits and combine them according
-    to the mode parameter, which takes one of the following values
+    Operator  mlQuanTrait is a 'multiple-loci' quantitative trait
+    calculator. It accepts a list of quantitative traits and combine
+    them according to the mode parameter, which takes one of the
+    following values
     * QT_Multiplicative: the mean of the quantitative trait is
     calculated as  $ f=\\prod f_{i} $.
     * QT_Additive: the mean of the quantitative trait is calculated as
@@ -4799,6 +4819,27 @@ Details:
 Arguments:
 
     selectors:      a list of selectors
+
+Example:
+
+>>> simu = simulator(
+...     population(size=10, ploidy=2, loci=[2], 
+...     infoFields=['fitness', 'spare']),
+...     randomMating())
+>>> simu.evolve(
+...     [ mlSelector([
+...          mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+...          mapSelector(locus=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+...          ], mode=SEL_Additive),
+...     ],
+...     preOps = [
+...         initByFreq(alleleFreq=[.2,.8])
+...     ],
+...     end=2
+... )
+True
+>>>
+
 
 "; 
 
@@ -7663,6 +7704,30 @@ Arguments:
                     the same length and fill these infoFields of an
                     individual.
 
+Example:
+
+>>> def indFunc(ind, param):
+...     ind.setInfo(ind.info('info2')+param[1], 'info2')
+...     print ind.info('info2')
+...     return True
+... 
+>>> simu = simulator(
+...     population(5, loci=[2,5], infoFields=['info1', 'info2']),
+...     randomMating(), rep=1)
+>>> simu.step(
+...     ops = [
+...         pyIndOperator(func=indFunc, param=(3,2)), 
+...     ],
+... )
+2.0
+2.0
+2.0
+2.0
+2.0
+True
+>>>
+
+
 "; 
 
 %feature("docstring") simuPOP::pyIndOperator::~pyIndOperator "
@@ -7780,12 +7845,12 @@ Example:
 ...     dumper(alleleOnly=True, dispWidth=2)])
 individual info: 
 sub population 0:
-   0: FU   0  1  2  3  4   5  6  7  8  9 10 11 |   0  1  2  3  4   6  7  8  9 10 11 12 
-   1: FU   1  2  3  4  5   5  6  7  8  9 10 11 |   0  1  2  3  4   6  7  8  9 10 11 12 
+   0: MU   0  1  2  3  4   6  7  8  9 10 11 12 |   1  2  3  4  5   5  6  7  8  9 10 11 
+   1: MU   0  1  2  3  4   5  6  7  8  9 10 11 |   0  1  2  3  4   5  6  7  8  9 10 11 
 sub population 1:
    2: MU   1  2  3  4  5   6  7  8  9 10 11 12 |   1  2  3  4  5   7  8  9 10 11 12 13 
-   3: MU   1  2  3  4  5   6  7  8  9 10 11 12 |   2  3  4  5  6   6  7  8  9 10 11 12 
-   4: MU   2  3  4  5  6   6  7  8  9 10 11 12 |   1  2  3  4  5   6  7  8  9 10 11 12 
+   3: FU   1  2  3  4  5   6  7  8  9 10 11 12 |   1  2  3  4  5   7  8  9 10 11 12 13 
+   4: MU   2  3  4  5  6   6  7  8  9 10 11 12 |   2  3  4  5  6   7  8  9 10 11 12 13 
 End of individual info.
 
 
@@ -8074,9 +8139,9 @@ Example:
 ...   dumper(alleleOnly=True)])
 individual info: 
 sub population 0:
-   0: MU   0  0  0   8  8  8  0  0 |   0  0  0   8  8  8  0  0 
-   1: MU   0  0  0   0  0  8  0  0 |   0  0  0   8  8  0  0  0 
-   2: MU   0  0  0   8  8  8  0  0 |   0  0  0   0  0  8  0  0 
+   0: MU   0  0  0   0  8  8  0  0 |   0  0  0   0  8  0  0  0 
+   1: MU   0  0  0   8  0  8  0  0 |   0  0  0   0  8  8  0  0 
+   2: MU   0  0  0   8  0  8  0  0 |   0  0  0   8  0  0  0  0 
 End of individual info.
 
 
@@ -8196,10 +8261,10 @@ Example:
 ...     ],
 ...   end = 30
 ... )        
-0.403250	0.203100
-0.398250	0.197650
-0.396150	0.198800
-0.399350	0.204300
+0.401300	0.203750
+0.405600	0.200750
+0.425150	0.201700
+0.416850	0.196500
 True
 >>>
 
@@ -8313,8 +8378,7 @@ Description:
 
 Details:
 
-    A common usage is pyOutpue('
-    ', rep=REP_LAST)
+    A common usage is outputting a new line for the last replicate.
 
 "; 
 
@@ -8455,7 +8519,7 @@ Example:
 >>> PyPenetrance(pop, func=peneFunc, loci=(0, 1, 2))
 >>> Stat(pop, numOfAffected=True)
 >>> print pop.dvars().numOfAffected
-75
+62
 >>> #
 >>> # You can also define a function, that returns a penetrance
 >>> # function using given parameters
@@ -8716,6 +8780,30 @@ Details:
     the order of 0-0,0-1,1-0,1-1 etc. where X-Y represents locus X -
     ploidy Y.
 
+"; 
+
+%feature("docstring") simuPOP::pySelector::pySelector "
+
+Description:
+
+    create a Python hybrid  selector
+
+Usage:
+
+    pySelector(loci, func, subPops=[], stage=PreMating, begin=0,
+      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+      infoFields=[\"fitness\"])
+
+Arguments:
+
+    loci:           susceptibility loci. The genotype at these loci
+                    will be passed to func.
+    func:           a Python function that accepts genotypes at
+                    susceptibility loci generation number, and return
+                    fitness value.
+    output:         and other parameters please refer to
+                    help(baseOperator.__init__)
+
 Example:
 
 >>> simu = simulator(
@@ -8746,38 +8834,14 @@ Example:
 ...     ],
 ...     preOps=[  initByFreq(alleleFreq=[.2,.8])],
 ...     end=100)
-0.8050
-0.9965
+0.7980
+1.0000
 1.0000
 1.0000
 1.0000
 True
 >>>
 
-
-"; 
-
-%feature("docstring") simuPOP::pySelector::pySelector "
-
-Description:
-
-    create a Python hybrid  selector
-
-Usage:
-
-    pySelector(loci, func, subPops=[], stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[\"fitness\"])
-
-Arguments:
-
-    loci:           susceptibility loci. The genotype at these loci
-                    will be passed to func.
-    func:           a Python function that accepts genotypes at
-                    susceptibility loci generation number, and return
-                    fitness value.
-    output:         and other parameters please refer to
-                    help(baseOperator.__init__)
 
 "; 
 
@@ -9350,20 +9414,20 @@ Example:
 ... )
 individual info: 
 sub population 0:
-   0: FU 0022 02222 302110 | 0330 02323 221121 
-   1: MU 0211 03122 221322 | 1133 03222 303311 
-   2: MU 2323 22022 210223 | 2222 12330 302220 
-   3: MU 3020 13223 012002 | 3022 13020 133202 
+   0: MU 2200 03300 020102 | 1223 21120 022312 
+   1: MU 1032 13121 232001 | 1103 32333 223232 
+   2: MU 0002 23111 223220 | 2222 22133 011010 
+   3: FU 3122 20122 301231 | 1231 20223 213032 
 End of individual info.
 
 
 No ancenstral population recorded.
 individual info: 
 sub population 0:
-   0: MU 3022 13223 012002 | 0022 02222 221121 
-   1: FU 3020 13020 133202 | 0330 02222 221121 
-   2: MU 2222 12330 210223 | 0022 02323 302110 
-   3: FU 1133 03122 221322 | 0330 02323 221121 
+   0: FU 0002 22133 011010 | 3122 20223 213032 
+   1: FU 2200 03300 020102 | 1231 20223 213032 
+   2: MU 1223 21120 020102 | 1231 20122 213032 
+   3: FU 1223 03300 020102 | 1231 20122 301231 
 End of individual info.
 
 
@@ -9377,10 +9441,10 @@ True
 ... )
 individual info: 
 sub population 0:
-   0: MU 3020 13022 131121 | 0022 02223 011121 
-   1: FU 0333 03123 221322 | 3022 02223 011121 
-   2: FU 0333 03123 221121 | 0022 12323 300223 
-   3: FU 0330 13022 131121 | 0022 13222 011121 
+   0: FU 3122 20233 211010 | 1221 21122 210102 
+   1: MU 2201 03323 023032 | 1233 21122 023032 
+   2: FU 1233 03322 300102 | 1221 20120 023032 
+   3: MU 2201 20200 023032 | 1233 20120 023032 
 End of individual info.
 
 
@@ -9458,7 +9522,15 @@ Usage:
 
 Description:
 
-    simuPOP::RNG
+    random number generator
+
+Details:
+
+    This random number generator class wraps around a number of random
+    number generators from GNU Scientific Library. You can obtain and
+    change system random number generator through the  rng() function.
+    Or create a separate random number generator and use it in your
+    script.
 
 "; 
 
@@ -10614,9 +10686,9 @@ Description:
 
 Details:
 
-    Stepwise Mutation Model (SMM) assumes that alleles are represented
-    by integer values and that a mutation either increases or
-    decreases the allele value by one. For variable number tandem
+    The Stepwise Mutation Model (SMM) assumes that alleles are
+    represented by integer values and that a mutation either increases
+    or decreases the allele value by one. For variable number tandem
     repeats loci (VNTR), the allele value is generally taken as the
     number of tandem repeats in the DNA sequence.
 
@@ -10655,18 +10727,18 @@ Example:
 ...     dumper(alleleOnly=True, stage=PrePostMating)])
 individual info: 
 sub population 0:
-   0: FU   2  2  1   2  0  1  0  0 |   1  1  2   2  2  0  0  2 
-   1: FU   2  2  2   2  0  2  2  2 |   2  1  1   2  1  1  2  2 
-   2: MU   1  2  1   1  1  0  2  2 |   1  1  1   1  1  2  1  2 
+   0: FU   0  1  2   2  2  0  0  1 |   1  2  0   0  0  0  1  1 
+   1: MU   1  2  1   0  0  0  2  1 |   0  2  2   2  2  2  2  1 
+   2: MU   2  2  1   2  1  0  2  2 |   2  1  1   0  0  1  2  2 
 End of individual info.
 
 
 No ancenstral population recorded.
 individual info: 
 sub population 0:
-   0: FU   1  3  2   3  0  0  1  1 |   2  2  3   3  3  1  1  3 
-   1: FU   1  3  3   1  1  1  3  3 |   3  2  2   3  0  0  3  1 
-   2: MU   2  1  2   2  2  1  3  1 |   2  2  2   0  2  3  0  3 
+   0: FU   1  2  1   3  3  1  1  2 |   2  1  1   0  1  0  2  2 
+   1: MU   0  3  2   0  1  1  3  2 |   1  1  3   3  1  3  1  2 
+   2: MU   3  3  2   3  2  1  1  3 |   3  2  2   1  1  2  1  3 
 End of individual info.
 
 
@@ -10758,6 +10830,16 @@ Arguments:
                     will automatically set new subpopulation IDs to
                     new subpopulations.
 
+Example:
+
+>>> pop = population(size=10, loci=[2,6])
+>>> InitByFreq(pop, [.2,.4,.4])
+>>> SplitSubPop(pop, which=0, sizes=[2,8], randomize=False)
+>>> print pop.subPopSizes()
+(2, 8)
+>>>
+
+
 "; 
 
 %feature("docstring") simuPOP::splitSubPop::~splitSubPop "
@@ -10821,9 +10903,9 @@ Description:
 
 Details:
 
-    Spread(ind, subPop) spreads the genotype of ind to all individuals
-    in an array of subpopulations. The default value of subPop is the
-    subpopulation where ind resides.
+    Function Spread(ind, subPop) spreads the genotype of ind to all
+    individuals in an array of subpopulations. The default value of
+    subPop is the subpopulation where ind resides.
 
 "; 
 
@@ -10837,6 +10919,43 @@ Usage:
 
     spread(ind, subPop=[], stage=PreMating, begin=0, end=1, step=1,
       at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+
+Example:
+
+>>> pop = population(ploidy=2, loci=[2], subPop=[4, 4])
+>>> InitByFreq(pop, [.5, .5])
+>>> Spread(pop, 2, subPop=[1]),
+(None,)
+>>> Dump(pop)
+Ploidy:         	2
+Number of chrom:	1
+Number of loci: 	2 
+Maximum allele state:	255
+Loci positions: 
+		1 2 
+Loci names: 
+		loc1-1 loc1-2 
+population size:	8
+Number of subPop:	2
+Subpop sizes:   	4 4 
+Number of ancestral populations:	0
+individual info: 
+sub population 0:
+   0: FU   1  0 |   1  1 
+   1: MU   1  1 |   1  1 
+   2: MU   1  1 |   1  0 
+   3: MU   1  1 |   1  0 
+sub population 1:
+   4: FU   1  1 |   1  0 
+   5: MU   1  1 |   1  0 
+   6: MU   1  1 |   1  0 
+   7: FU   1  1 |   1  0 
+End of individual info.
+
+
+No ancenstral population recorded.
+>>>
+
 
 "; 
 

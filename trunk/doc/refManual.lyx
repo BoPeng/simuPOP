@@ -430,7 +430,7 @@ population
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_help.log}[caption={Getting help using the help() function}]
+\begin_inset Include \lstinputlisting{log/ref_help.log}[caption={Getting help using the \texttt{help()} function}]
 preview false
 
 \end_inset
@@ -862,7 +862,7 @@ Limits()
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_importSimuPOPOpt.log}[caption={Use simuOpt to control which simuPOP module to load}]
+\begin_inset Include \lstinputlisting{log/ref_importSimuPOPOpt.log}[caption={Use \texttt{simuOpt} to control which simuPOP module to load}]
 preview false
 
 \end_inset
@@ -1338,7 +1338,7 @@ is the index in its subpopulation.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_absIndex.log}[caption={Conversion between absolute and relative indices},label={absIndex}]
+\begin_inset Include \lstinputlisting{log/ref_absIndex.log}[caption={Conversion between absolute and relative indexes},label={absIndex}]
 preview false
 
 \end_inset
@@ -1430,7 +1430,7 @@ initByFreq
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_InitByFreq.log}[caption={Function InitByFreq},label={InitByFreq}]
+\begin_inset Include \lstinputlisting{log/ref_InitByFreq.log}[caption={Function \texttt{InitByFreq}},label={InitByFreq}]
 preview false
 
 \end_inset
@@ -1483,7 +1483,7 @@ count
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_carray.log}[caption={Usage of the carray type},label={carray}]
+\begin_inset Include \lstinputlisting{log/ref_carray.log}[caption={Usage of the \texttt{carray} type},label={carray}]
 preview false
 
 \end_inset
@@ -3828,7 +3828,7 @@ name "loadSimulator"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_simulatorsaveload.log}[caption={save and load a simulator},label={simulatorsaveload}]
+\begin_inset Include \lstinputlisting{log/ref_simulatorsaveload.log}[caption={Save and load a simulator},label={simulatorsaveload}]
 preview false
 
 \end_inset
@@ -4195,7 +4195,7 @@ evaluates a Python expression and returns its value, while
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_pyEval.log}[caption={Use of operators pyEval and pyExec},label={expreval}]
+\begin_inset Include \lstinputlisting{log/ref_pyEval.log}[caption={Use of operators \texttt{pyEval} and \texttt{pyExec}},label={expreval}]
 preview false
 
 \end_inset
@@ -4659,7 +4659,7 @@ This operator allows implementation of arbitrarily complicated operators,.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_pyOperator.log}[caption={define a python operator},label={pyOperator}]
+\begin_inset Include \lstinputlisting{log/ref_pyOperator.log}[caption={Define a python operator},label={pyOperator}]
 preview false
 
 \end_inset
@@ -4668,7 +4668,7 @@ preview false
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_pyOperatorUse.log}[caption={use of python operator},label={pyOperatorUse}]
+\begin_inset Include \lstinputlisting{log/ref_pyOperatorUse.log}[caption={Use of python operator},label={pyOperatorUse}]
 preview false
 
 \end_inset

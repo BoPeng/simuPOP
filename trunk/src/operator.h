@@ -56,26 +56,26 @@ namespace simuPOP
 	applied	to populations directly using their function forms,
 	but they are usually managed and applied by a simulator. \n
 
-    There are three kinds of operators: \n
-    
-    \li built-in: written in C++, the fastest. They do not 
-    interact with Python shell except that some of them set
-    variables that are accessible from Python.
+	There are three kinds of operators: \n
 
-    \li hybrid: written in C++ but calls a Python function during
-    simulation. Less efficient. For example, a hybrid mutator
-    pyMutator determines if an allele will be mutated and
-    call a user-defined Python function to mutate it.
+	\li built-in: written in C++, the fastest. They do not
+	interact with Python shell except that some of them set
+	variables that are accessible from Python.
 
-    \li pure Python: written in Python. The same speed as Python. 
-    For example, a \c varPlotter can plot Python variables that are
-    set by other operators.
+	\li hybrid: written in C++ but calls a Python function during
+	simulation. Less efficient. For example, a hybrid mutator
+	pyMutator determines if an allele will be mutated and
+	call a user-defined Python function to mutate it.
+
+	\li pure Python: written in Python. The same speed as Python.
+	For example, a \c varPlotter can plot Python variables that are
+	set by other operators.
 
 	Operators can be applied at different stages of the life cycle of
-	a generation. It is possible for an operator to apply multiple 
-    times in a life cycle. For example, a \c savePopulation operator 
-    might be applied before and after mating to trace parental information. 
-    More specifically, operators can be applied at \em pre-,
+	a generation. It is possible for an operator to apply multiple
+	times in a life cycle. For example, a \c savePopulation operator
+	might be applied before and after mating to trace parental information.
+	More specifically, operators can be applied at \em pre-,
 	\em during-, \em post-mating, or a combination of these stages. Applicable stages
 	are usually set by default but you can change it by setting
 	<tt>stage=(PreMating|PostMating|DuringMating|PrePostMating)</tt> parameter.
@@ -83,19 +83,18 @@ namespace simuPOP
 	work at one stage. \n
 
 	Operators do not have to be applied at all generations. You can specify
-	starting/ending generation (parameters \c start, \c end), gaps 
-    between applicable generations (parameter \c step),
+	starting/ending generation (parameters \c start, \c end), gaps
+	between applicable generations (parameter \c step),
 	or specific generations (parameter \c at). For example, you might want to
 	start applying migrations after certain burn-in generations, or
 	calculate certain statistics only sparsely. Generation numbers can count
-    from the last generation, using negative generation numbers. \n
+	from the last generation, using negative generation numbers. \n
 
-
-    Most operators are applied to every replicate of a simulator during 
-    evolution. However, you can apply operators to one (parameter \c rep)
-    or a group of replicates only (parameter \c grp). For example, you 
-    can initialize different replicates with different initial values 
-    and then start evolution. c.f. simulator::setGroup . 
+	Most operators are applied to every replicate of a simulator during
+	evolution. However, you can apply operators to one (parameter \c rep)
+	or a group of replicates only (parameter \c grp). For example, you
+	can initialize different replicates with different initial values
+	and then start evolution. c.f. simulator::setGroup .
 
 	Operators can have outputs, which can be standard (terminal) or a file.
 	Output can vary with replicates and/or generations, and outputs from different
@@ -119,11 +118,11 @@ namespace simuPOP
 	\li \c '>' standard output (terminal);
 
 	\li \c '' supress output.
-    
-    The output filename does not have to be fixed. If parameter \c outputExpr
-    is used (parameter \c output will be ignored), it will be evaluated when
-    a filename is needed. This is useful when you need to write different 
-    files for different replicates/generations. 
+
+	The output filename does not have to be fixed. If parameter \c outputExpr
+	is used (parameter \c output will be ignored), it will be evaluated when
+	a filename is needed. This is useful when you need to write different
+	files for different replicates/generations.
 	*/
 	class baseOperator
 	{
@@ -586,7 +585,7 @@ namespace simuPOP
 			/**
 			This operator does nothing.
 
-			\test src_noneOp.log Use of noneOp operator
+			\test src_noneOp.log Operator \c noneOp
 			*/
 			noneOp( string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=0, int step=1, vectorl at=vectorl(),
@@ -655,7 +654,7 @@ namespace simuPOP
 			\param ifOp an operator that will be applied when \c cond is \c True
 			\param elseOp an operator that will be applied when \c cond is \c False
 
-			\test src_ifElse.log Use of conditional operator
+			\test src_ifElse.log Operator \c ifElse
 			*/
 			ifElse(const string& cond, baseOperator * ifOp=NULL, baseOperator * elseOp = NULL,
 				string output=">", string outputExpr="",
@@ -926,7 +925,7 @@ namespace simuPOP
 	are passed to the given function. Arbitrary operations can be applied to the population and
 	offspring (if <tt>stage=DuringMating</tt>).
 
-	\test src_pyOperator.log Operator pyOperator
+	\test src_pyOperator.log Operator \c pyOperator
 	*/
 	class pyOperator: public baseOperator
 	{
@@ -1048,6 +1047,7 @@ namespace simuPOP
 				Multiple parameters can be passed as a tuple.
 			\param infoFields if given, \c func is expected to return an array of the same length
 				and fill these \c infoFields of an individual.
+			\test src_pyIndOperator.log Applying a \c pyIndOperator
 			*/
 			pyIndOperator(PyObject* func, const vectoru & loci=vectoru(), PyObject* param=NULL,
 				int stage=PostMating, bool formOffGenotype=false,

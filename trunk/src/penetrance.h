@@ -138,13 +138,14 @@ namespace simuPOP
 			/// create a map penetrance operator
 			/**
 			\param locus the locus index. Shortcut to <tt>loci=[locus]</tt>
-			\param loci the loci indexes. The genotypes of these loci will be used to determine 
+			\param loci the loci indexes. The genotypes of these loci will be used to determine
 			penetrance.
 			\param penetrance a dictionary of penetrance. The genotype must be in the form
 				of 'a-b' for a single locus.
 			\param phase if True, <tt>a/b</tt> and <tt>b/a</tt> will have different penetrance values.
 				Default to \c False.
 			\param output and other parameters please refer to help(baseOperator.__init__)
+			\test src_mapPenetrance.log Operator \c mapPenetrance
 			*/
 			mapPenetrance( vectoru loci, const strDict& penet, bool phase=false,
 				int ancestralGen=-1, int stage=DuringMating, int begin=0, int end=-1, int step=1,
@@ -209,6 +210,7 @@ namespace simuPOP
 			\param wildtype an array of alleles in the wildtype group. Any other alleles will
 				be considered as in the disease allele group.
 			\param output and other parameters please refer to help(baseOperator.__init__)
+			\test src_maPenetrance.log Operator \c maPenetrance
 			*/
 			maPenetrance( vectoru loci, const vectorf& penet, const vectora& wildtype,
 				int ancestralGen=-1,
@@ -285,7 +287,7 @@ namespace simuPOP
 			\param peneOps a list of penetrance operators
 			\param mode can be one of \c PEN_Multiplicative, \c PEN_Additive, and \c PEN_Heterogeneity
 
-			\test src_mlPenetrance.log Use of multi-locus penetrance operator
+			\test src_mlPenetrance.log Operator \c mlPenetrance
 			*/
 			mlPenetrance( const vectorop peneOps, int mode = PEN_Multiplicative,
 				int ancestralGen=-1, int stage=DuringMating, int begin=0, int end=-1, int step=1,
@@ -354,7 +356,7 @@ namespace simuPOP
 				should be between \c 0 and \c 1.
 			\param output and other parameters please refer to help(baseOperator.__init__)
 
-			\test src_pyPenetrance.log Use of python penetrance operator
+			\test src_pyPenetrance.log Operator \c pyPenetrance
 			*/
 			/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
 			pyPenetrance(const vectoru & loci, PyObject* func, int ancestralGen=-1,
