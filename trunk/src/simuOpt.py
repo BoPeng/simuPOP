@@ -28,8 +28,8 @@ Module  simuOpt  can be used to control which simuPOP module to load, and
 how it is loaded using function  setOptions  . It also provides a simple 
 way to set simulation options, from user input, command line, configuration
 file or a parameter dialog. All you need to do is to define an option
-description list that list all parameters in a given format, and call
-the   getParam  function.
+description list that lists all parameters in a given format, and call
+the  getParam  function.
 
 This module, if loaded, pre-process the command line options. More specifically,
 it checks command line option:
@@ -41,7 +41,7 @@ it checks command line option:
 --optimized: load optimized modules, unless setOption explicitly use non-optimized
   modules.
 
--q: quiet. Do not display banner information when simuPOP is loaded
+-q: Do not display banner information when simuPOP is loaded
 
 --quiet: the same as -q
 
@@ -50,6 +50,7 @@ it checks command line option:
 
 --noDialog: do not use option dialog. If the options can not be obtained from
   command line or configuraiton file, users will be asked to input them interactively.
+
 
 Because these options are reserved, you can not use them in your simuPOP script.
 '''
@@ -831,34 +832,33 @@ def _wxGetParam(options, title = '', description='', details='', checkUnprocesse
 
 
 # get parameter
-def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArgs=True, verbose=False, nCol=1):
-    """ get parameter from either
-            - useTk ...
+def getParam(options=[], doc="", details="", noDialog=False, checkUnprocessedArgs=True, verbose=False, nCol=1):
+    """ Get parameters from either
+            - a Tcl/Tk based, or wxPython based parameter dialog 
+              (wxPython is used if it is available)
             - command line argument
-            - configuration file specified by -f file, or
+            - configuration file specified by  -c file   (  --config  file), or
             - prompt for user input
 
-        The option description list consists of dictionaries with some predefined keys.
-        Each dictionary defines an option. With defined properties, this option can be
-        obtained from command line (using short  (-h, -k=100)  or long  (--help, 
-        --allele=2)  command line options), a configuration file, interactive user input,
-        or a Tcl/Tk or wxPython based parameter dialog.
-        
-        The option description dictionaries can have the following keys:
+
+        The option description list consists of dictionaries with some
+        predefined keys. Each dictionary defines an option. Each option
+        description item can have the following keys:
         
         arg: short command line option name.  'h'  checks the presence of argument  -h  . 
-        If an argument is expected, add a comma to the option name. For example, 
-        'p:' matches command line option -p=100 or -p 100.
+        If an argument is expected, add a comma to the option name. For example,  'p:'  
+        matches command line option  -p=100  or  -p 100  .
         
-        longarg: long command line option name. 'help' checks the presence of argument
-          '--help'  .  'mu='  matches command line option --mu=0.001 or -mu 0.001.
+        longarg: long command line option name.  'help'  checks the presence of 
+            argument  '--help'  .  'mu='  matches command line 
+            option  --mu=0.001  or  -mu 0.001  .
         
         label: The label of the input field in a parameter dialog, and as the prompt for
           user input.
         
         default: default value for this parameter. It is used to as the default value
-          in the parameter dialog, and as the option value when a user presses 
-          'Enter' directly during interactive parameter input.
+          in the parameter dialog, and as the option value when a user presses  'Enter'  
+          directly during interactive parameter input.
         
         useDefault: use default value without asking, if the value can not be determined
           from GUI, command line option or config file. This is useful for options that 
@@ -866,49 +866,56 @@ def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArg
           lines, and easy user input.
         
         description: a long description of this parameter, will be put into the usage 
-          information, which will be displayed with ( -h, --help command line option, or 
+          information, which will be displayed with (  -h  ,  --help  command line option, or 
           help button in parameter dialog).
         
-        allowedTypes: acceptable types of this option. If allowedTypes is types.ListType
-          or types.TupleType and the user's input is a scalar, the input will be converted
+        allowedTypes: acceptable types of this option. If  allowedTypes  is  types.ListType  
+          or  types.TupleType  and the user's input is a scalar, the input will be converted
           to a list automatically. If the conversion can not be done, this option will
           not be accepted.
         
         validate: a function to validate the parameter. You can define your own functions 
           or use the ones defined in this module.
         
-        chooseOneOf: if specified, simuOpt will choose one from a list of values using a 
+        chooseOneOf: if specified,  simuOpt  will choose one from a list of values using a 
           listbox (Tk) or a combo box (wxPython) .
         
-        chooseFrom: if specified, simuOpt will choose one or more items from a list of
+        chooseFrom: if specified,  simuOpt  will choose one or more items from a list of
           values using a listbox (tk) or a combo box (wxPython).
         
         separator: if specified, a blue label will be used to separate groups of 
           parameters.
         
         jump: it is used to skip some parameters when doing the interactive user input. 
-          For example, _getParam will skip the rest of the parameters if -h is specified 
-          since parameter -h has item 'jump':-1 which means that jump to the end. 
+          For example,  getParam  will skip the rest of the parameters if  -h  is specified 
+          if parameter  -h  has item  'jump':-1  which means jumping to the end.
           Another situation of using this value is when you have a hierarchical parameter
           set. For example, if mutation is on, specify mutation rate, otherwise proceed.
         
-        jumpIfFalse: The same as jump but jump if current parameter is False.
+        jumpIfFalse: The same as jump but jump if current parameter is  False  .
         
-        This function will first check command line argument.
-        If the argument is available, use its value.
-        Otherwise check if a config file is specified. If so,
-        get the value from the config file. If both failed,
-        prompt user to input a value.
+        
+        This function will first check command line argument. If the argument
+        is available, use its value. Otherwise check if a config file is 
+        specified. If so, get the value from the config file. If both failed,
+        prompt user to input a value. All input will be checked against types, 
+        if exists, an array of allowed types.
 
-        All input will be checked against types, if exists, an array of
-        allowed types.
+        Parameters of this function are:
 
-        verbose: whether or not print detailed info
+        options: a list of option description dictionaries
+
+        doc: short description put to the top of parameter dialog
+        
+        details: module help. Usually set to  __doc__  .
+
+        noDialog: do not use a parameter dialog, used in batch mode. Default to False.
 
         checkUnprocessedArgs: check args, avoid misspelling of arg name
 
-        options: a list of dictionaries with key
-
+        verbose: whether or not print detailed info
+        
+        nCol: number of columns in the parameter dialog.
     """
     # check if --noDialog, -h is present
     # or there is no 'label' in the options structure
@@ -932,8 +939,12 @@ def getParam(options=[], doc='', details='', noDialog=False, checkUnprocessedArg
 
 
 def usage(options, before=''):
-    """
-        extract information from options and form a formated string of usage.
+    """ Print usage information from the option description list. Used
+    with  -h  (or  --help   ) option, and in the parameter input dialog.
+    
+    options: option description list.
+
+    before: optional information
     """
     message = ''
     if before != '':
@@ -975,8 +986,15 @@ def usage(options, before=''):
 
 
 def saveConfig(opt, file, param):
-    """
-        extract information from options and form a formated string of usage.
+    """ Write a configuration file. This file can be later read with
+    command line option  -c  or --config  . 
+
+    opt: the option description list
+
+    file: output file
+
+    param: parameters returned from  getParam  
+    
     """
     try:
         f = open(file,'w')
@@ -1039,8 +1057,13 @@ def saveConfig(opt, file, param):
 
 
 def printConfig(opt, param, out=sys.stdout):
-    """
-        Print configuration.
+    """ Print configuration.
+    
+        opt: option description list
+
+        param: parameters returned from  getParam()  
+
+        out: output
     """
     # remove separators from opt
     options = []
@@ -1275,6 +1298,7 @@ simuOptions = {'Optimized':_optimized, 'MPI':_mpi, 'ChromMap':_chrom_map,
 if env_debug != None:
     simuOptions['Debug'].extend( env_debug.split(',') )
 
+
 def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=None, debug=[]):
     '''set options before simuPOP is loaded to control which simuPOP module to load,
     and how the module should be loaded.
@@ -1283,10 +1307,6 @@ def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=Non
         environmental variable SIMUOPTIMIZED, and commandline option --optimized
         will be used if available. If nothing is defined, standard version will
         be used.
-
-    mpi: currently unused
-
-    chromMap: currently unused
 
     alleleType: 'binary', 'short', or 'long'. 'standard' can be used as 'short'
         for backward compatibility. If not set, environmental variable 
@@ -1298,6 +1318,9 @@ def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=Non
     debug: a list of debug code (or string). If not set, environmental variable
         SIMUDEBUG will be used if available.
     
+    mpi: currently unused
+
+    chromMap: currently unused    
     '''
     if optimized in [True, False]:
         simuOptions['Optimized'] = optimized
@@ -1321,6 +1344,8 @@ if simuOptions['MPI'] not in [True, False]:
     simuOptions['MPI'] = False
 
 def requireRevision(rev):
+    '''Compare the revision of this simuPOP module with given revision. Raise
+    an exception if current module is out of date. '''
     if simuRev() <= rev:
         raise exceptions.SystemError('''This script requires simuPOP revision >= %d,
             please upgrade your installation. ''' % rev)

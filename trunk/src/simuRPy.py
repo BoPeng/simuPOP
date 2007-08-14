@@ -26,59 +26,9 @@
 
 
 """
-simuPOP utilities.
-This module provides some commonly used operators
-and some utility class for plotting.
-
-Plotting with history
-
-plot a number in the form of a variable or expression, use
-
-    varPlotter(var='expr')
-
-plot a vector in the same window and there is only one replicate in the simulator, use
-
-    varPlotter(var='expr', varDim=len)
-
-where len is the dimension of your variable or expression. Each line in the figure represents the history of an item in the array.
-
-plot a vector in the same window and there are several replicates, use 
-
-    varPlotter(var='expr', varDim=len, numRep=nr, byRep=1)
-
-varPlotter will try to use an appropriate layout for your subplots (for example, use 3x4 if numRep=10). You can also specify parameter mfrow to change the layout.
-
-if you would like to plot each item of your array variables in a subplot, use
-
-    varPlotter(var='expr', varDim=len, byVal=1)
-
-or in case of a single replicate
-    varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
-
-    
-There will be numRep lines in each subplot.
-Plotting without history
-
-use option history=False. Parameters byVal, varDim etc. will be ignored. 
-
-Other options are
-
-title, xtitle, ytitle: title of your figure(s). title is default to your expression, xtitle is defaulted to generation.
-
-win: window of generations. I.e., how many generations to keep in a figure. This is useful when you want to keep track of only recent changes.
-
-update: update figure after update generations. This is used when you do not want to update the figure at every generation.
-
-saveAs: save figures in files saveAs#gen.eps. For example, if saveAs='demo', you will get files demo1.eps, demo2.eps etc.
-
-separate: plot data lines in separate panels. 
-
-image: use R image function to plot image, instead of lines.
-
-level: level of image colors (default to 20).
-
-leaveOpen: whether or not leave the plot open when plotting is done. Default to True.
-
+This module helps the use of  rpy  package with simuPOP. It defines an 
+operator  varPlotter  that can be used to plot population expressions
+when  rpy  is installed.
 """
 
 from exceptions import *
@@ -106,8 +56,7 @@ from simuPOP import *
 from simuUtil import dataAggregator
 
 def rmatrix(mat):
-    ''' VERY IMPORTANT 
-        convert a Python 2d list to r matrix format
+    ''' Convert a Python 2d list to r matrix format
         that can be passed to functions like image
         directly.
     '''
@@ -115,7 +64,7 @@ def rmatrix(mat):
     return r.do_call('rbind', mat)
 
 
-class VarPlotter_Base:
+class _VarPlotter_Base:
     def __init__(self, nplot, update, title, xlab, ylab, axes, lty, col, 
         mfrow, plotType, saveAs, leaveOpen, dev='', width=0, height=0):
         """
@@ -251,7 +200,7 @@ class VarPlotter_Base:
         else:
             r.dev_print(file=self.saveAs + str(gen) + '.eps')
  
-class VarPlotter_NoHis(VarPlotter_Base):
+class _VarPlotter_NoHis(_VarPlotter_Base):
     """
     a class to plot variable, potentially from different replicate
     DO NOT PLOT HISTORY.
@@ -293,10 +242,10 @@ class VarPlotter_NoHis(VarPlotter_Base):
         self.byRep = byRep
         
         if byRep:
-            VarPlotter_Base.__init__(self, numRep, update, title, xlab,
+            _VarPlotter_Base.__init__(self, numRep, update, title, xlab,
                 ylab, axes, lty, col, mfrow, plotType, saveAs, leaveOpen, dev, width, height)
         else:
-            VarPlotter_Base.__init__(self, 1, update, title, xlab,
+            _VarPlotter_Base.__init__(self, 1, update, title, xlab,
                 ylab, axes, lty, col, mfrow, plotType, saveAs, leaveOpen, dev, width, height)
              
         self.numRep = numRep
@@ -384,7 +333,7 @@ class VarPlotter_NoHis(VarPlotter_Base):
         return True
 
 # with history
-class VarPlotter_His(VarPlotter_Base):
+class _VarPlotter_His(_VarPlotter_Base):
     """
     a class to plot variable, potentially from different replicate
     The idea is:
@@ -468,7 +417,7 @@ class VarPlotter_His(VarPlotter_Base):
         if col==[]:
             col = ['black']*numRep
         # initialize base plotter
-        VarPlotter_Base.__init__(self, nplot, update, title,
+        _VarPlotter_Base.__init__(self, nplot, update, title,
             xlab, ylab, axes, lty, col, mfrow, plotType, saveAs, leaveOpen, dev, width, height)
         #
         self.varDim = varDim
@@ -626,6 +575,56 @@ class VarPlotter_His(VarPlotter_Base):
 # currently, type can be plot, image
 #
 class varPlotter(pyOperator):
+    ''' 
+    Plotting with history
+    
+    plot a number in the form of a variable or expression, use
+        >>> varPlotter(var='expr')
+    
+    plot a vector in the same window and there is only one replicate in the simulator, use
+    
+        >>> varPlotter(var='expr', varDim=len)
+    
+    where len is the dimension of your variable or expression. Each line in the figure represents the history of an item in the array.
+    
+    plot a vector in the same window and there are several replicates, use 
+    
+        varPlotter(var='expr', varDim=len, numRep=nr, byRep=1)
+    
+    varPlotter will try to use an appropriate layout for your subplots (for example, use 3x4 if numRep=10). You can also specify parameter mfrow to change the layout.
+    
+    if you would like to plot each item of your array variables in a subplot, use
+    
+        varPlotter(var='expr', varDim=len, byVal=1)
+    
+    or in case of a single replicate
+        varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
+    
+        
+    There will be numRep lines in each subplot.
+    Plotting without history
+    
+    use option history=False. Parameters byVal, varDim etc. will be ignored. 
+    
+    Other options are
+    
+    title, xtitle, ytitle: title of your figure(s). title is default to your expression, xtitle is defaulted to generation.
+    
+    win: window of generations. I.e., how many generations to keep in a figure. This is useful when you want to keep track of only recent changes.
+    
+    update: update figure after update generations. This is used when you do not want to update the figure at every generation.
+    
+    saveAs: save figures in files saveAs#gen.eps. For example, if saveAs='demo', you will get files demo1.eps, demo2.eps etc.
+    
+    separate: plot data lines in separate panels. 
+    
+    image: use R image function to plot image, instead of lines.
+    
+    level: level of image colors (default to 20).
+    
+    leaveOpen: whether or not leave the plot open when plotting is done. Default to True.
+    
+    '''
     def __init__(self, expr, history=True, varDim=1, numRep=1, win=0, ylim=[0,0],
         update=1, title="", xlab="generation", ylab="",axes=True, lty=[], col=[],
         mfrow=[1,1], separate=False, byRep=False, byVal=False, plotType="plot",
@@ -634,13 +633,13 @@ class varPlotter(pyOperator):
         ' create a varplotter instance'
         self.expr = expr
         if history == True:
-            self.plotter = VarPlotter_His(numRep=numRep, varDim=varDim, win=win, ylim=ylim,
+            self.plotter = _VarPlotter_His(numRep=numRep, varDim=varDim, win=win, ylim=ylim,
                 update=update, title=title, xlab=xlab, ylab=ylab, axes=axes, mfrow=mfrow,
                 byRep=byRep, byVal=byVal, separate=separate, plotType=plotType, 
                 level=level, saveAs=saveAs, lty=lty, col=col,
                 leaveOpen=leaveOpen, dev=dev, width=width, height=height)
         else:
-            self.plotter = VarPlotter_NoHis(numRep=numRep, win=win, ylim=ylim,
+            self.plotter = _VarPlotter_NoHis(numRep=numRep, win=win, ylim=ylim,
                 update=update, title=title, xlab=xlab, ylab=ylab, axes=axes, mfrow=mfrow,
                 byRep=byRep, plotType=plotType, level=level, saveAs=saveAs, lty=lty, col=col,
                 leaveOpen=leaveOpen, dev=dev, width=width, height=height)
@@ -649,83 +648,4 @@ class varPlotter(pyOperator):
         pyOperator.__init__(self, func=self.plotter.plot, 
             param=self.expr, *args, **kwargs)
 
-# VarPlotter wrapper     
-def VarPlot(value, history=0, varDim=1, numRep=1, win=0, ylim=[0,0],
-    update=1, title="", xlab="generation", ylab="", axes=True, lty=[], col=[],
-    mfrow=[1,1], separate=False, byRep=0, byVal=0, plotType="plot",
-    level=20, saveAs=""):
-    # no history.
-    return VarPlotter_NoHis( numRep=1, win=0, ylim=[0,0],
-        update=1, title=title, xlab=xlab, ylab=ylab, 
-        plotType=plotType, axes=axes, lty=lty, col=col,
-        mfrow=[1,1], byRep=0, saveAs=saveAs, level = level).plot(population(0), value)
 
-# 
-# genomic contro, use whole subpopulation as case/control
-# case: subpop index of the cases
-# control: subpop indx of the controls.
-# loci considered.
-#
-# To use this function, genoNum for 1-1, 1-2, 2-2 should
-# exist. I.e., genoFreq[ [0 1 1 1 2 2 2] ] should
-# be specified.
-#
-# the result is put in stat(rep).GC as a dictinary
-# its keys are explained in R/gap/gcontrol .
-# 
-def GControl(pop, case=0, control=1, loci=[]):
-    # first collect data, in the form of
-    #
-    # r0 r1 r2 s0 s1 s2
-    #
-    # for each loci.
-    # here, we strictly use alleles    1 2
-    # and treat 11 as r0, 12/21 as r1 and 22 as r2.
-    #
-    # so r0 is basically stat(rep,case).genoNum('1-1') and so on
-    #
-    #
-    R = pop.dvars(case)
-    S = pop.dvars(control)
-    A = pop.dvars()
-    def listGet(lst, idx, default={}):
-        try:
-            return lst[idx]
-        except:
-            return default
-            
-    if loci==[]:
-        loci = range(0, pop.totNumLoci())
-    data = []
-    for loc in loci:
-        data.extend( [R.genoNum[loc][1].get(1,0),
-            R.genoNum[loc][1].get(2,0),
-            listGet(R.genoNum[loc],2,{}).get(2,0),
-            S.genoNum[loc][1].get(1,0),
-            S.genoNum[loc][1].get(2,0),
-            listGet(S.genoNum[loc],2,{}).get(2,0)])
-    # now put data in R
-    r.assign("data", data)
-    r("""
-        # import genetic analysis package library
-        library(gap)
-        data = matrix(data, ncol=6, byrow=TRUE)
-        res = gcontrol(data)
-        lambda = (median( res$x2 ) / 0.675)
-        """)
-    # get result
-    A.GC = r('res')
-    A.GC['lambda'] = r.get("lambda")
-    return A.GC
-
-# a wrapper of GControl
-def gControl(case=0,control=1,loci=[],**kwargs):
-    # deal with additional arguments
-    parm = ''
-    for (k,v) in kwargs.items():
-        parm += str(k) + '=' + str(v) + ', '
-    opt = ("""pyEval(%s stmts=r\'\'\'GControl(loci=""" + \
-        str(loci) + """, case=%d, control=%d, rep=rep )\'\'\')""")\
-        % ( parm, case, control) 
-    #print opt
-    return eval(opt)    

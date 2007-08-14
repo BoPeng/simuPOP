@@ -23,7 +23,13 @@
 ############################################################################
 
 '''
-Utility functions to manipulate HapMap data
+Utility functions to manipulate HapMap data. These functions 
+are provided as samples on how to load and evolve the HapMap
+dataset. They tend to change frequently so do not call
+these functions directly. It is recommended that you
+copy these function to your script when you need to use 
+them.
+
 '''
 
 import sys, os, math
@@ -40,7 +46,12 @@ from simuUtil import SaveQTDT
 # 
 
 def getMarkersFromName(hapmap_dir, names, chroms=[]):
-    ''' get population from marker names
+    ''' Get population from marker names. This function 
+        returns a tuple with a population with found markers and names of
+        markers that can not be located in the HapMap data. The returned
+        population has three subpopulations, corresponding to CEU, YRI and
+        JPT+CHB hapmap populations.
+    
     hapmap_dir: where hapmap data in simuPOP format is stored. The files
         should have been prepared by scripts/loadHapMap.py.
 
@@ -49,10 +60,6 @@ def getMarkersFromName(hapmap_dir, names, chroms=[]):
     chroms: a list of chromosomes to look in. If empty, all 22 autosomes
         will be tried.
 
-    return: a tuple with
-        1. a population with found markers. This population has three
-        subpopulations, corresponding to CEU, YRI and JPT+CHB.
-        2. names of markers that can not be located in the HapMap data
     '''
     pops = []
     if len(chroms) == 0:
@@ -97,7 +104,7 @@ def getMarkersFromName(hapmap_dir, names, chroms=[]):
 #    getMarkersFromRange(2, 0, 100, sys.maxint. 0, 0.1)
 
 def getMarkersFromRange(hapmap_dir, chrom, startPos, endPos, maxNum, minAF, minDist):
-    '''get markers from given range
+    '''Get a population with markers from given range
     
         hapmap_dir: where hapmap data in simuPOP format is stored. The files
             should have been prepared by scripts/loadHapMap.py.
@@ -112,7 +119,7 @@ def getMarkersFromRange(hapmap_dir, chrom, startPos, endPos, maxNum, minAF, minD
         
         minAF:    minimal minor allele frequency
         
-        minDist:  minimal distance between two markers, in cM
+        minDist:  minimal distance between two adjacent markers, in cM
         
     '''
     print "Loading hapmap population hapmap_%d.bin" % (chrom-1)
@@ -148,12 +155,11 @@ def getMarkersFromRange(hapmap_dir, chrom, startPos, endPos, maxNum, minAF, minD
 # 
 ###########################################################
 
-def evolveHapMap(pop,
+def evolveHapMap(pop, 
     endingSize, 
     endGen,
     migr=noneOp(),
     expand='exponential',
-    # do not merge
     mergeAt=10000, 
     initMultiple=1, 
     recIntensity=0.01, 
@@ -161,7 +167,7 @@ def evolveHapMap(pop,
     step=10, 
     keepParents=False, 
     numOffspring=1):
-    ''' evolve and expand the hapmap population
+    ''' Evolve and expand the hapmap population
     
     gen: total evolution generation
     
@@ -240,7 +246,7 @@ def evolveHapMap(pop,
 #
 #
 def sample1DSL(pop, DSL, DA, pene, name, sampleSize):
-    '''sample from the final population
+    '''Sample from the final population, using a single lcous penetrance model.
 
     DSL: disease locus
     
@@ -274,16 +280,11 @@ def sample1DSL(pop, DSL, DA, pene, name, sampleSize):
 
 
 def sample2DSL(pop, DSL, pene, name, size):
-    '''sample from the final population
+    '''Sample from the final population, using a two locus penetrance model
     
     DSL: disease loci (two locus)
     
     pene: penetrance value, assuming a two-locus model
-         penetrance
-                 BB Bb bb
-             AA  0  1  2
-             Aa  3  4  5
-             aa  6  7  8
     
     name: name to save sample
     
