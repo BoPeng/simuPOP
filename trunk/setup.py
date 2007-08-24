@@ -9,7 +9,7 @@ install swig >= 1.3.27 to generate the wrap files.
 import os, sys, shutil, glob, re, tempfile
 
 # simuPOP works with these boost versions.
-boost_versions = ['1_33_1', '1_34_0', '1_35']
+boost_versions = ['1_33_1', '1_34_0', '1_34_1', '1_35']
 
 # if the source package is districuted with boost 1.33.1, use
 # this bundled version.
