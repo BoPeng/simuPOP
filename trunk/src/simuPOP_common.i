@@ -339,6 +339,8 @@ def MergePopulations(pops, newSubPopSizes=[], keepAncestralPops=-1):
     'merge several populations with the same genotypic structure and create a new population'
     if len(pops) == 0:
         raise exceptions.ValueError("MergePopuations: empty population list is given")
+    elif len(pops) == 1:
+        return pops[0].clone()
     res = pops[0].clone()
     for i in range(1, len(pops)):
         res.mergePopulation(pops[i], keepAncestralPops=keepAncestralPops)
@@ -353,6 +355,8 @@ def MergePopulationsByLoci(pops, newNumLoci=[], newLociPos=[], byChromosome=Fals
     'merge several populations of the same size by loci and create a new population'
     if len(pops) == 0:
         raise exceptions.ValueError("MergePopuations: empty population list is given")
+    elif len(pops) == 1:
+        return pops[0].clone()
     res = pops[0].clone()
     for i in range(1, len(pops)):
         res.mergePopulationByLoci(pops[i], [], [], byChromosome)

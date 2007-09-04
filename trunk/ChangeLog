@@ -1,9 +1,13 @@
 ChangeLog of simuPOP
 
 BUGS:
+  - when useDefault is set, wrong parameter is ignored silently
+  - better handling of True/False in simuOpt
   - all known bugs have been cleared.
 
 version 0.8.1 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+  - Allow len(pops) == 1 in MergePopulationsByLoci(pops) and
+	MergePopulations(pops)
 
 version 0.8.0 - (Rev 1215) Aug 14, 2007
   - Reference manual overhaul
