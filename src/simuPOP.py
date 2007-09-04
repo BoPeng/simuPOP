@@ -67,11 +67,6 @@ else:
         else:
             from simuPOP_std import *
 
-# seed rng() if necessay
-if not os.path.isfile('/etc/urandom') and not os.path.isfile('/etc/random'):
-    import time, random, sys
-    rng().setSeed(int(time.time() + random.randint(0, rng().maxSeed())) % rng().maxSeed())
-
 # IMPORTANT:
 #  the MPI modules work in a master slave mode in that
 #  the master intepret the user input and execute the script, it calls

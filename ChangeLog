@@ -6,8 +6,10 @@ BUGS:
   - all known bugs have been cleared.
 
 version 0.8.1 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
-  - Allow len(pops) == 1 in MergePopulationsByLoci(pops) and
+  - NEW: Allow len(pops) == 1 in MergePopulationsByLoci(pops) and
 	MergePopulations(pops)
+  - BUG: Use /dev/urandom for unix users. os.path.isfile('/dev/urandom') 
+	returns false even if this file does exist.
 
 version 0.8.0 - (Rev 1215) Aug 14, 2007
   - Reference manual overhaul
