@@ -91,10 +91,11 @@ def _getParamShortArg(p, processedArgs):
                 if idx+1 in processedArgs:
                     raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
                 try:
-                    if sys.argv[idx+1][1] == '=':
-                        val = _getParamValue(p, sys.argv[idx+1][2:])
+                    opt = sys.argv[idx+1]
+                    if len(opt) > 3 and opt[2] == '=':
+                        val = _getParamValue(p, sys.argv[idx+1][3:])
                     else:
-                        val = _getParamValue(p, sys.argv[idx+1][1:])
+                        val = _getParamValue(p, sys.argv[idx+1][2:])
                     processedArgs.append(idx+1)
                     return val
                 except:
@@ -244,6 +245,15 @@ def _getParamValue(p, val):
         if p.has_key('validate') and not p['validate'](val):
                 raise exceptions.ValueError("Value "+str(val)+' does not pass validation')
         return val
+    # handle another 'auto-boolean' case
+    elif (p.has_key('arg') and p['arg'][-1] != ':') or \
+        (p.has_key('longarg') and p['longarg'][-1] != '='):
+        if val in ['1', 'true', 'True']:
+            return True
+        elif val in ['0', 'false', 'False']:
+            return False
+        else:
+            raise exceptions.ValueError('Expect 0/1, true/false for boolean values')
     # other wise, need conversion
     if type(val) in [types.StringType, types.UnicodeType] :
         try:
@@ -415,9 +425,9 @@ def _tkGetParam(opt, title = '', description='', details='', checkUnprocessedArg
                 continue
             try:
                 # get text from different type of entries
-                try:    # an entry box?
+                if entryWidgets[g].winfo_class() == "Entry":    # an entry box?
                     val = _getParamValue( options[g], entryWidgets[g].get())
-                except:    # a listbox
+                elif entryWidgets[g].winfo_class() == "Listbox":    # a listbox
                     sel = entryWidgets[g].curselection()
                     if len(sel) == 1:
                         items = entryWidgets[g].get( sel)
@@ -426,7 +436,10 @@ def _tkGetParam(opt, title = '', description='', details='', checkUnprocessedArg
                         for s in sel:
                             items.append( entryWidgets[g].get( s))
                     val = _getParamValue( options[g], items)
-            except:
+                elif entryWidgets[g].winfo_class() == "Checkbutton":    # a checkbutton (true or false)
+                    var = values[g].get()
+                    val = _getParamValue( options[g], var)
+            except:                
                 #print "Invalid Value: ", entryWidgets[g].class()
                 # incorrect value
                 # set to red
@@ -538,6 +551,24 @@ def _tkGetParam(opt, title = '', description='', details='', checkUnprocessedArg
                         entryWidgets[g].select_set( opt['chooseFrom'].index(val))
                 else:
                     entryWidgets[g].select_set( opt['chooseFrom'].index( values[g] ))
+        elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
+             (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
+            labelWidgets[g] = tk.Label(root, text=opt['label'])
+            labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
+                rowspan = 1, sticky=tk.E)
+            # replace values[g] by a tk IntVar() because tk.Checkbutton has to store
+            # its value in such a variable. values[g].get() will be used to return the
+            # state of this Checkbutton.
+            # c.f. http://infohost.nmt.edu/tcc/help/pubs/tkinter/control-variables.html
+            iv = tk.IntVar()
+            iv.set(values[g] == True) # values[g] can be None, True or False
+            values[g] = iv
+            entryWidgets[g] = tk.Checkbutton(root, height=1,
+                     text = "Yes / No", variable=values[g])
+            entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10,
+                rowspan = 1)
+            colCount += 1
+            entryWidgets[g].deselect()
         else:
             labelWidgets[g] = tk.Label(root, text=opt['label'])
             labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10, sticky=tk.E)
@@ -646,7 +677,7 @@ def _wxGetParam(options, title = '', description='', details='', checkUnprocesse
                 continue
             try:
                 # get text from different type of entries
-                try:    # an entry box?
+                try:    # an entry box or check box
                     val = _getParamValue( options[g], entryWidgets[g].GetValue())
                 except:
                     try:    # a list box?
@@ -781,6 +812,16 @@ def _wxGetParam(options, title = '', description='', details='', checkUnprocesse
                     entryWidgets[g].Check( opt['chooseFrom'].index(values[g]))
             gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND)
             colCount += len(opt['chooseFrom']) -1
+        elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
+             (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
+            w,h = labelWidgets[g].GetTextExtent('a')
+            entryWidgets[g] = wx.CheckBox(parent=dlg, id=g, label = 'Yes / No')
+            if opt.has_key('description'):
+                entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
+            if values[g] != None:
+                entryWidgets[g].SetValue(values[g])
+            gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND)
+            colCount += 1
         else: # a edit box
             # put default value into the entryWidget
             txt = ''
@@ -924,6 +965,12 @@ def getParam(options=[], doc="", details="", noDialog=False, checkUnprocessedArg
         if opt.has_key('configName'):
             print 'Warning: configName is obsolete, please use "label" instead'
             opt['label'] = opt('configName')
+        if not opt.has_key('default'):
+            raise exceptions.ValueError('Error: a default value must be provided for all options')
+        if opt.has_key('arg') and opt.has_key('longarg') and\
+            opt['arg'].endswith(':') != opt['longarg'].endswith('='):
+            raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
+                
     if noDialog or '--noDialog' in sys.argv[1:] or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
         or True not in map(lambda x:x.has_key('label'), options):
         return _termGetParam(options, doc, verbose)
@@ -1308,6 +1355,10 @@ def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=Non
         will be used if available. If nothing is defined, standard version will
         be used.
 
+    mpi: currently unused
+
+    chromMap: currently unused
+
     alleleType: 'binary', 'short', or 'long'. 'standard' can be used as 'short'
         for backward compatibility. If not set, environmental variable 
         SIMUALLELETYPE will be used if available. if it is not defined, the 
@@ -1318,9 +1369,6 @@ def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=Non
     debug: a list of debug code (or string). If not set, environmental variable
         SIMUDEBUG will be used if available.
     
-    mpi: currently unused
-
-    chromMap: currently unused    
     '''
     if optimized in [True, False]:
         simuOptions['Optimized'] = optimized
