@@ -317,7 +317,7 @@ namespace simuPOP
 	in a population share the same genotypic structure. Because class \c GenoStruTrait
 	is inherited by class \c population, class \c individual, and class \c simulator,
 	functions provided in this class can be accessed at the individual, population and
-	simulator levels.
+	simulator levels. This object can not be created directly. It is created by a population.
 	*/
 	class GenoStruTrait
 	{
@@ -327,7 +327,7 @@ namespace simuPOP
 #define TraitMaxIndex 0xFF
 
 		public:
-			/// This object can not be created directly. It is created by a population.
+			///
 			/**
 			\test src_genoStruTrait.log Genotypic structure
 			*/

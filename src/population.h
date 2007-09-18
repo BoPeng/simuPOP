@@ -137,19 +137,20 @@ namespace simuPOP
 	//   */
 	//
 
-	/// A collection of individuals with the same genotypic structure
+	/// A collection of individuals with the same genotypic structure.
 	/**
 	A simuPOP population consists of individuals of the same genotypic structure,
-	which refers to the number of chromosomes, number and position of loci on each
+	which refers to the number of chromosomes, numbers and positions of loci on each
 	chromosome etc. The most important components of a population are:
 
-	\li subpopulation. A population is divided into subpopulations (unstructured
+	\li subpopulations. A population is divided into subpopulations (unstructured
 	population has a single	subpopulation, which is the whole population itself).
 	Subpopulation structure limits the usually random exchange of genotypes between
 	individuals by disallowing mating between individuals from different subpopulations.
 	In the presence of subpopualtion structure, exchange of genetic information
-	across subpopulations can only be done through migration. Note that in simuPOP
-	there is no	sub-subpopulation or family in subpopulations.
+	across subpopulations can only be done through migration. Note that simuPOP uses
+	one-level population structure, which means there is no sub-subpopulation or
+	family in subpopulations.
 
 	\li variables. Every population has its own variable space, or <em>local
 	namespace</em> in simuPOP term. This namespace is a Python dictionary that is
@@ -163,9 +164,6 @@ namespace simuPOP
 	generations. During evolution, the latest several (or all) ancestral generations
 	are saved. Functions to switch between ancestral generations are
 	provided so that one can examine and modify ancestral generations.
-
-	Other concepts like <em>information fields</em> are explained in
-	class \c individual.
 
 	\note Although a large number of member functions are provided,
 	most of the operations are performed by \em operators. These functions will only
@@ -184,21 +182,19 @@ namespace simuPOP
 
 			///Create a population object with given size and genotypic structure.
 			/**
-			This is techniquely the \c __init__ function of the population object.
-
 			\param size population size. Can be ignored if \c subPop is specified.
 				In that case, \c size is the sum of \c subPop. Default to \c 0.
 			\param ploidy number of sets of homologous copies of chromosomes. Default to \c 2 (diploid).
 			\param loci an array of numbers of loci on each chromosome. The length
 				of parameter \c loci determines the number of chromosomes. Default
-				to [1],	meaning one chromosome with a single locus. \n
+				to <tt>[1]</tt>, meaning one chromosome with a single locus. \n
 				The last chromosome can be sex chromosome. In this case, the maximum
 				number of loci on X and Y should be provided. I.e., if there are 3
-			loci on Y chromosme and 5 on X chromosome, use \c 5.
-			\param sexChrom \c true or \c false. Diploid population only. If \c true,
+                loci on Y chromosme and 5 on X chromosome, use \c 5.
+			\param sexChrom \c True or \c False. Diploid population only. If \c True,
 			the last homologous chromosome will be treated as sex chromosome.
-			(XY for male and XX for female.) If X and Y have different number of loci,
-			number of loci of the longer one of the last (sex) chromosome should be
+			(XY for male and XX for female.) If X and Y have different numbers of loci,
+			the number of loci of the longer one of the last (sex) chromosome should be
 			specified in \c loci.
 			\param lociPos a 1-d or 2-d array specifying positions of loci on each
 			chromosome. You can use a nested array to specify loci position for
@@ -216,19 +212,19 @@ namespace simuPOP
 			will be available. You can set it to a positive number \c m to
 			keep the latest m generations in the population, or \c -1 to keep all ancestral
 			populations. Note that keeping track of all ancestral generations may quickly
-			exhaust your computer RAM. If you really need to do that, use \c savePopulation
+			exhaust your computer RAM. If you really need to do that, using \c savePopulation
 			operator to save each generation to a file is a much better choice.
 			\param alleleNames an array of allele names. For example, for a locus with alleles
-			A,C,T,G, you can specify \c alleleNames as <tt>('A','C','T','G')</tt>.
+			A, C, T, G, you can specify \c alleleNames as <tt>('A','C','T','G')</tt>.
 			\param lociNames an array or a matrix (separated by chromosomes) of names for
-			each locus. Default to \c "locX-Y" where \c X is chromosome index and \c Y
-			is locus number, both starting from 1.
+			each locus. Default to \c "locX-Y" where \c X is the chromosome index and \c Y
+			is the locus number, both starting from 1.
 			\param maxAllele maximum allele number. Default to the maximum allowed allele state
 			of the current library. This will set a cap for all loci. For individual locus, you can
-			specify maxAllele in mutation models, which can be smaller than global maxAllele
+			specify \c maxAllele in mutation models, which can be smaller than the global \c maxAllele
 			but not larger. Note that this number is the number of allele states minus 1 since
 			allele number starts from 0.
-			\param infoFields name of information fields that will be attached to each
+			\param infoFields names of information fields that will be attached to each
 			individual. For example, if you need to record the parents of each individual
 			using operator \c parentTagger(), you will need two fields \c father_idx and \c mother_idx.
 			\param chromMap For MPI modules, currently unused.
@@ -311,7 +307,7 @@ namespace simuPOP
 			*/
 			void setSubPopStru(const vectorlu& newSubPopSizes, bool allowPopSizeChange=false);
 
-			///  number of subpopulations in a population
+			///  number of subpopulations in a population.
 			/**
 			\return number of subpopulations (>=1)
 			*/
@@ -320,7 +316,7 @@ namespace simuPOP
 				return m_numSubPop;
 			}
 
-			/// return size of a subpopulation \c subPop
+			/// return size of a subpopulation \c subPop.
 			/**
 			\param subPop index of subpopulation (start from 0)
 
@@ -333,7 +329,7 @@ namespace simuPOP
 				return m_subPopSize[subPop];
 			}
 
-			/// return an array of all subpopulation sizes
+			/// return an array of all subpopulation sizes.
 			/**
 			\return an array of size of subpopulations
 			*/
@@ -356,7 +352,7 @@ namespace simuPOP
 				return m_popSize;
 			}
 
-			///  return the absolute index of an individual in a subpopulation
+			///  return the absolute index of an individual in a subpopulation.
 			/**
 			\param index index of an individual in a subpopulation \c subPop
 			\param subPop subpopulation index (start from \c 0)
@@ -986,9 +982,9 @@ namespace simuPOP
 			void pushAndDiscard(population& rhs, bool force=false);
 
 			/// ancestral depth of the current population
-			/** \note The returned value is the number of ancestral generations
+			/** \note The return value is the number of ancestral generations
 				exist in the population, not necessarily equals to the number set by
-				setAncestralDepth().
+				\c setAncestralDepth().
 			*/
 			UINT ancestralDepth() const
 			{
