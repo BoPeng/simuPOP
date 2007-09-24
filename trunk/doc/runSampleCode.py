@@ -61,7 +61,7 @@ def runScript(inputFile, outputFile):
 def splitFile(outputFile, runCommand=True):
     if runCommand:
         begin_re = re.compile('^(>>>|\.\.\.)\s*#file\s*(.*)')
-        end_re = re.compile('^>>>\s*#end')
+        end_re = re.compile('^(>>>|\.\.\.)\s*#end')
         cmd_re = re.compile('^(>>>|\.\.\.)\s*#PS\s*(.*)')
     else:
         begin_re = re.compile('^(## )*#file\s*(.*)')
