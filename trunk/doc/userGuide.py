@@ -41,7 +41,6 @@ from simuPOP import *
 
 #file log/simpleExample.log
 from simuPOP import *
-from simuRPy import *
 simu = simulator(
     population(size=1000, ploidy=2, loci=[2]),
     randomMating(),
