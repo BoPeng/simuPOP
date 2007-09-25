@@ -167,20 +167,21 @@ namespace simuPOP
 			for(UINT p=0; p < pEnd; ++p)
 				m_alleles[j++] = ind->allele(m_loci[i], p);
 
-		if (infoSize() > 0) {
-			if (m_info.size() != infoSize())
+		if (infoSize() > 1)
+		{
+			if (m_info.size() + 1 != infoSize())
 			{
-				m_info.resize(infoSize());
+				m_info.resize(infoSize() - 1);
 				m_infoArray = Double_Vec_As_NumArray(m_info.begin(), m_info.end());
 			}
 			// assign information fields from individusl
-			for (size_t i=0; i < infoSize(); ++i)
-				m_info[i] = ind->info(infoField(i));
+			for (size_t i=1; i < infoSize(); ++i)
+				m_info[i-1] = ind->info(infoField(i));
 		}
 
 
 		double resDouble;
-		if (infoSize() == 0)
+		if (infoSize() <= 1)
 		{
 			PyCallFunc2(m_func, "(Oi)", m_numArray, gen, resDouble, PyObj_As_Double);
 		}

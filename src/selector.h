@@ -342,8 +342,9 @@ namespace simuPOP
 	The genotypes are arranged in the order
 	of <tt>0-0,0-1,1-0,1-1</tt> etc. where X-Y represents locus X - ploidy Y.
 	More specifically, \c func can be
-	\li <tt>func(geno, gen)</tt> when \c infoFields is not given
-	\li <tt>func(geno, gen, fields)</tt> when \c infoFields is given
+	\li <tt>func(geno, gen)</tt> if \c infoFields has length 0 or 1
+	\li <tt>func(geno, gen, fields)</tt> when \c infoFields has more than 1 fields.
+		Values of fields 1, 2, ... will be passed.
 	Both \c geno and \c fields should be an list.
 
 	<funcForm>PySelect</funcForm>
@@ -358,6 +359,10 @@ namespace simuPOP
 			\param func a Python function that accepts genotypes at susceptibility loci
 				generation number, and return fitness value.
 			\param output and other parameters please refer to help(baseOperator.__init__)
+			\param infoFields if specified, the first field should be the information
+				field to save calculated fitness value (should be 'fitness' in most cases).
+				The values of the rest of the information fields (if available) will also 
+				be passed to the user defined penetrance function.
 			\test src_pySelector.log Operator \c pySelector
 			*/
 			// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
