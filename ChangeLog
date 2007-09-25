@@ -11,7 +11,9 @@ version 0.8.1 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Fix the handling of binary option in command line, and handling of short 
 		arguments.
   - NEW: Use a checkbox for binary options in the parameter dialogs.
-  - NEW: add inforFields to allow infor fields in pyPenetrance and pySelector.
+  - NEW: make use of second to last inforFields passed to pyPenetrance 
+		and pySelector to pass specified information fields to user-defined
+		functions.
 
 version 0.8.0 - (Rev 1215) Aug 14, 2007
   - Reference manual overhaul
