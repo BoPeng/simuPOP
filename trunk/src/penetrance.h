@@ -399,8 +399,10 @@ namespace simuPOP
 				m_loci(rhs.m_loci),
 				m_func(rhs.m_func),
 				m_alleles(rhs.m_alleles),
+				m_info(rhs.m_info),
 				m_len(rhs.m_len),
-				m_numArray(NULL)
+				m_numArray(NULL),
+				m_infoArray(NULL)
 			{
 				if( m_func != NULL)
 					Py_INCREF(m_func);

@@ -184,13 +184,31 @@ namespace simuPOP
 #endif
 		}
 
+		if (infoSize() > 0) {
+			if (m_info.size() != infoSize())
+			{
+				m_info.resize(infoSize());
+				m_infoArray = Double_Vec_As_NumArray(m_info.begin(), m_info.end());
+			}
+			// assign information fields from individusl
+			for (size_t i=0; i < infoSize(); ++i)
+				m_info[i] = ind->info(infoField(i));
+		}
+
 		UINT pEnd = ind->ploidy();
 		for(size_t i=0, iEnd=m_loci.size(), j=0; i < iEnd; ++i)
 			for(UINT p=0; p < pEnd; ++p)
 				m_alleles[j++] = ind->allele(m_loci[i], p);
 
 		double resDouble;
-		PyCallFunc(m_func, "(O)", m_numArray, resDouble, PyObj_As_Double);
+		if (infoSize() == 0)
+		{
+			PyCallFunc(m_func, "(O)", m_numArray, resDouble, PyObj_As_Double);
+		}
+		else
+		{
+			PyCallFunc2(m_func, "(OO)", m_numArray, m_infoArray, resDouble, PyObj_As_Double);
+		}
 
 		// make sure the returned value is legitimate.
 		DBG_ASSERT( fcmp_ge( resDouble, 0.) && fcmp_le( resDouble, 1.),
