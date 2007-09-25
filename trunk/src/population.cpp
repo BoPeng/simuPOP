@@ -1761,7 +1761,7 @@ namespace simuPOP
 		useAncestralPop(oldAncPop);
 	}
 
-	/// set ancestral depth, can be -1
+	// set ancestral depth, can be -1
 	void population::setAncestralDepth(int depth)
 	{
 		// just to make sure.
