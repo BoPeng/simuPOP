@@ -184,15 +184,16 @@ namespace simuPOP
 #endif
 		}
 
-		if (infoSize() > 0) {
-			if (m_info.size() != infoSize())
+		if (infoSize() > 1)
+		{
+			if (m_info.size() + 1 != infoSize() )
 			{
-				m_info.resize(infoSize());
+				m_info.resize(infoSize() - 1);
 				m_infoArray = Double_Vec_As_NumArray(m_info.begin(), m_info.end());
 			}
 			// assign information fields from individusl
-			for (size_t i=0; i < infoSize(); ++i)
-				m_info[i] = ind->info(infoField(i));
+			for (size_t i=1; i < infoSize(); ++i)
+				m_info[i-1] = ind->info(infoField(i));
 		}
 
 		UINT pEnd = ind->ploidy();
@@ -201,7 +202,7 @@ namespace simuPOP
 				m_alleles[j++] = ind->allele(m_loci[i], p);
 
 		double resDouble;
-		if (infoSize() == 0)
+		if (infoSize() <= 1)
 		{
 			PyCallFunc(m_func, "(O)", m_numArray, resDouble, PyObj_As_Double);
 		}

@@ -345,8 +345,8 @@ namespace simuPOP
 	considered as the penetrance for this individual.
 
 	More specifically, \c func can be
-	\li <tt>func(geno)</tt> when \c infoFields is not given
-	\li <tt>func(geno, fields)</tt> when \c infoFields is given
+	\li <tt>func(geno)</tt> if \c infoFields has length 0 or 1
+	\li <tt>func(geno, fields)</tt> when \c infoFields has more than 1 fields
 	Both parameters should be an list.
 	<funcForm>PyPenetrance</funcForm>
 	*/
@@ -360,8 +360,10 @@ namespace simuPOP
 			\param func a user-defined Python function that accepts an array of genotypes
 				at susceptibility loci and return a penetrance value. The returned value
 				should be between \c 0 and \c 1.
-			\param infoFields if specified, values for these information fields will
-				also be passed to the user defined penetrance function.
+			\param infoFields if specified, the first field should be the information
+				field to save calculated penetrance value. The values of the rest of the
+				information fields (if available) will also be passed to the user defined
+				penetrance function.
 			\param output and other parameters please refer to help(baseOperator.__init__)
 
 			\test src_pyPenetrance.log Operator \c pyPenetrance
@@ -380,7 +382,7 @@ namespace simuPOP
 				Py_XINCREF(func);
 				m_func = func;
 
-				DBG_FAILIF( loci.empty(), ValueError,
+				DBG_FAILIF(loci.empty(), ValueError,
 					"Please specify susceptibility loci");
 			};
 
