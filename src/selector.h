@@ -335,11 +335,16 @@ namespace simuPOP
 	/// selection using user provided function
 	/**
 	\c pySelector assigns fitness values by calling a user provided function.
-	It accepts a list of susceptibility loci and a Python function. For
-	each individual, this operator will pass the genotypes at these loci and
-	the generation number and use the returned value as the fitness value.
+	It accepts a list of susceptibility loci and a Python function \c func. For
+	each individual, this operator will pass the genotypes at these loci, 
+	generation number, and optionally values at some information fields
+	to this function. The return value is treated as the fitness value.
 	The genotypes are arranged in the order
 	of <tt>0-0,0-1,1-0,1-1</tt> etc. where X-Y represents locus X - ploidy Y.
+	More specifically, \c func can be
+	\li <tt>func(geno, gen)</tt> when \c infoFields is not given
+	\li <tt>func(geno, gen, fields)</tt> when \c infoFields is given
+	Both \c geno and \c fields should be an list.
 
 	<funcForm>PySelect</funcForm>
 	*/
@@ -386,8 +391,10 @@ namespace simuPOP
 				m_loci(rhs.m_loci),
 				m_func(rhs.m_func),
 				m_alleles(rhs.m_alleles),
+				m_info(rhs.m_info),
 				m_len(rhs.m_len),
-				m_numArray(NULL)
+				m_numArray(NULL),
+				m_infoArray(NULL)
 			{
 				if( m_func != NULL)
 					Py_INCREF(m_func);
@@ -420,11 +427,17 @@ namespace simuPOP
 			/// copy of alleles of each individual a time.
 			vectora m_alleles;
 
+			/// copy of information fields
+			vectorinfo m_info;
+
 			/// length of m_alleles
 			int m_len;
 
 			/// the object that passed to func
 			PyObject * m_numArray;
+
+			// the object that passed to func
+			PyObject * m_infoArray;
 
 	};
 }
