@@ -226,7 +226,8 @@ namespace simuPOP
 			allele number starts from 0.
 			\param infoFields names of information fields that will be attached to each
 			individual. For example, if you need to record the parents of each individual
-			using operator \c parentTagger(), you will need two fields \c father_idx and \c mother_idx.
+			using operator
+            <tt>parentTagger()</tt>, you will need two fields \c father_idx and \c mother_idx.
 			\param chromMap For MPI modules, currently unused.
 			\return no return value. Exception will be thrown when wrong parameters are given.
 			\sa simulator, baseOperator, mating schemes
@@ -297,11 +298,11 @@ namespace simuPOP
 
 			/// set population/subpopulation structure given subpopulation sizes
 			/**
-			\param subPopSize an array of subpopulation sizes.
+			\param newSubPopSizes an array of new subpopulation sizes.
 			  The population may or may not change according to
 			  parameter \c allowPopSizeChange if the sum of \c subPopSize
 			  does not match \c popSize.
-			\param allowPopSizeChange if this parameter is \c true, population will be resized.
+			\param allowPopSizeChange if this parameter is \c True, population will be resized.
 			\return none
 			\sa migration, mating
 			*/
@@ -367,7 +368,7 @@ namespace simuPOP
 				return( m_subPopIndex[subPop] + ind);
 			}
 
-			/// return the <tt>(sp, idx)</tt> pair from an absolute index of an individual
+			/// return the <tt>(subPop, idx)</tt> pair according to an absolute index of an individual
 			/*
 			  \param absInd absolute index of an individual
 			  \return a pair of values (subPop, index)
@@ -941,7 +942,7 @@ namespace simuPOP
 			*/
 			void resize(const vectorlu  & newSubPopSizes, bool propagate=false);
 
-			/// reorder subpopulations by order or by rank
+			/// reorder subpopulations by \c order or by \c rank
 			/**
 			\param order new order of the subpopulations. For examples, 3 2 0 1
 			  means \c subpop3, \c subpop2, \c subpop0, \c subpop1 will be the new layout.
@@ -1007,7 +1008,7 @@ namespace simuPOP
 
 			// int requestInfoField(const string name);
 
-			/// set individual information for the given information field (index),
+			/// set individual information for the given information field \c idx
 			/**
 			\param values an array that has the same length as population size.
 			\param idx index to the information field.
@@ -1030,7 +1031,7 @@ namespace simuPOP
 				}
 			}
 
-			/// set individual information for the given information field (name)
+			/// set individual information for the given information field \c name
 			/**
 			<tt>x.setIndInfo(values, name)</tt> is
 			equivalent to the \c idx version <tt>x.setIndInfo(values, x.infoIdx(name))</tt>.
@@ -1168,7 +1169,7 @@ namespace simuPOP
 				return Info_Vec_As_NumArray(m_info.begin(), m_info.end());
 			}
 
-			/// get an editable array (Python list) of all information fields
+			/// get an editable array (Python list) of all information fields in \c subPop
 			/**
 			\param order whether or not the list has the same order as individuals
 			\return a python list that has all information fields for all individual
@@ -1209,7 +1210,7 @@ namespace simuPOP
 			 */
 			void setInfoFields(const vectorstr& fields, double init=0);
 
-			/// set ancestral depth.
+			/// set ancestral depth
 			/**
 			\param depth \c 0 for none, \c -1 for unlimited, a positive number sets
 			  the number of ancestral generations to save.
@@ -1516,7 +1517,7 @@ namespace simuPOP
 				return m_vars.fromString(vars);
 			}
 
-			/// evaluate a python statment/expression in the population's local namespace
+			/// evaluate a Python statment/expression in the population's local namespace
 			/**
 			This function evaluates a Python statment( \c stmts )/expression( \c expr )
 			and return its result as a string. Optionally run statement( \c stmts ) first.

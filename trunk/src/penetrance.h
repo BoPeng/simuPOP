@@ -339,9 +339,15 @@ namespace simuPOP
 
 	/// assign penetrance values by calling a user provided function
 	/**
-	For each individual, users provide a function to calculate penetrance. This
-	method is very flexible but will be slower than previous operators since a
-	function will be called for each individual.
+	For each individual, the penetrance is determined by a user-defined penetrance
+	function \c func. This function takes genetype at specified loci, and 
+	optionally values of specified information fields. The return value is 
+	considered as the penetrance for this individual.
+
+	More specifically, \c func can be
+	\li <tt>func(geno)</tt> when \c infoFields is not given
+	\li <tt>func(geno, fields)</tt> when \c infoFields is given
+	Both parameters should be an list.
 	<funcForm>PyPenetrance</funcForm>
 	*/
 	class pyPenetrance: public penetrance
@@ -354,6 +360,8 @@ namespace simuPOP
 			\param func a user-defined Python function that accepts an array of genotypes
 				at susceptibility loci and return a penetrance value. The returned value
 				should be between \c 0 and \c 1.
+			\param infoFields if specified, values for these information fields will
+				also be passed to the user defined penetrance function.
 			\param output and other parameters please refer to help(baseOperator.__init__)
 
 			\test src_pyPenetrance.log Operator \c pyPenetrance
@@ -425,11 +433,17 @@ namespace simuPOP
 			/// copy of alleles of each individual a time.
 			vectora m_alleles;
 
+			/// copy of information fields
+			vectorinfo m_info;
+
 			/// length of m_alleles
 			int m_len;
 
 			/// the object that passed to func
 			PyObject * m_numArray;
+
+			// the object that passed to func
+			PyObject * m_infoArray;
 
 	};
 

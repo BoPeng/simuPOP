@@ -92,7 +92,7 @@ namespace simuPOP
 	populations at the beginning and the end of evolution, respectively,
 	whereas	\c ops will be applied at every generation. \n
 
-	A simulators separates operators into \em pre-, \em during-, and
+	A simulator separates operators into \em pre-, \em during-, and
 	\em post-mating operators. During evolution, a simulator first
 	apply all pre-mating operators and then call the \c mate()
 	function of the given mating scheme, which will call
@@ -108,7 +108,7 @@ namespace simuPOP
 	An obvious example of such a terminator is a fixation-checker. \n
 
 	A simulator can be saved to a file in the format
-	of \c 'txt', \c 'bin', or \c 'xml'. This allows youm to stop a
+	of \c 'txt', \c 'bin', or \c 'xml'. This allows you to stop a
 	simulator and resume it at another time or on another
 	machine.
 	*/

@@ -85,7 +85,8 @@ namespace simuPOP
 	as <tt> 1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1 </tt> where \c x-y-z represents ploidy \c x
 	chromosome \c y and locus \c z. An allele \c 2-1-2 can be accessed by
 	\c allele(4) (by absolute index), \c allele(1, 1) (by index and ploidy) or \c allele(1, 1, 0)
-	(by index, ploidy and chromosome).
+	(by index, ploidy and chromosome). Individuals are created by populations automatically.
+    Do not call the constructor function directly.
 	*/
 	/*
 	Usage information: (for population class developers)
@@ -122,7 +123,7 @@ namespace simuPOP
 
 			///  @name constructor, destructor etc
 			//@{
-			/// Individuals are created by populations automatically. Do not call this function directly.
+			///
 			/**
 			\test src_individual.log Individual member functions
 			*/
@@ -191,13 +192,13 @@ namespace simuPOP
 			*/
 			PyObject* arrGenotype();
 
-			/// return a carray with the genotype of the \c p-th copy of the chromosomes
+			/// return a carray with the genotypes of the \c p-th copy of the chromosomes
 			PyObject* arrGenotype(UINT p);
 
-			/// return a carray with the genotype of the \c ch-th chromosome of the \c p-th copy
+			/// return a carray with the genotypes of the \c ch-th chromosome in the \c p-th chromosome set
 			PyObject* arrGenotype(UINT p, UINT ch);
 
-			/// return a carray of all information fields (of size \c infosSize()) of this individual
+			/// return a carray of all information fields (of size \c infoSize()) of this individual
 			PyObject* arrInfo();
 
 			/// return the allele at locus \c index
@@ -232,7 +233,7 @@ namespace simuPOP
 			}
 #endif
 
-			/// return the allele at locus \c index of the \c ch-th chromosome of the \c p-th chromosome set
+			/// return the allele at locus \c index of the \c ch-th chromosome in the \c p-th chromosome set
 			/**
 			\param index index from the begining of chromosome \c ch of ploidy \c p,
 				ranging from \c 0 to <tt> numLoci(ch) </tt>
@@ -368,7 +369,7 @@ namespace simuPOP
 				return ! affected();
 			}
 
-			/// return \c A or \c U for affection status
+			/// return \c A (affected) or \c U (unaffected) for affection status
 			char affectedChar() const
 			{
 				return affected() ? 'A' : 'U';
