@@ -63,13 +63,19 @@ namespace simuPOP
 	variables that are accessible from Python.
 
 	\li hybrid: written in C++ but calls a Python function during
-	simulation. Less efficient. For example, a hybrid mutator
-	pyMutator determines if an allele will be mutated and
-	call a user-defined Python function to mutate it.
+	execution. Less efficient. For example, a hybrid mutator \c pyMutator
+    will go through a population and mutate alleles with given mutation
+    rate. How exactly the allele will be mutated is determined by a
+    user-provided Python function. More specifically, this operator will
+    pass the current allele to a user-provided Python function and take
+    its return value as the mutant allele.
 
 	\li pure Python: written in Python. The same speed as Python.
 	For example, a \c varPlotter can plot Python variables that are
-	set by other operators.
+	set by other operators. Usually, an individual or a population
+    object is passed to a user-provided Python function. Because
+    arbitrary operations can be performed on the passed object,
+    this operator is very flexible. 
 
 	Operators can be applied at different stages of the life cycle of
 	a generation. It is possible for an operator to apply multiple
@@ -83,7 +89,7 @@ namespace simuPOP
 	work at one stage. \n
 
 	Operators do not have to be applied at all generations. You can specify
-	starting/ending generation (parameters \c start, \c end), gaps
+	starting and/or ending generations (parameters \c start, \c end), gaps
 	between applicable generations (parameter \c step),
 	or specific generations (parameter \c at). For example, you might want to
 	start applying migrations after certain burn-in generations, or
@@ -94,7 +100,7 @@ namespace simuPOP
 	evolution. However, you can apply operators to one (parameter \c rep)
 	or a group of replicates only (parameter \c grp). For example, you
 	can initialize different replicates with different initial values
-	and then start evolution. c.f. simulator::setGroup .
+	and then start evolution. c.f. <tt>simulator::setGroup</tt>.
 
 	Operators can have outputs, which can be standard (terminal) or a file.
 	Output can vary with replicates and/or generations, and outputs from different
@@ -149,13 +155,13 @@ namespace simuPOP
 			\param outputExpr an expression that determines the output filename dynamically. This
 			expression will be evaluated against a population's local namespace each time when
 			an output filename is required. For example, <tt> "'>>out%s_%s.xml' % (gen, rep)" </tt>
-			will output to <tt> >>>out1_1.xml </tt> for replicate \c 1 at generation \c 1.
+			will output to <tt> >>>out1_1.xml</tt> for replicate \c 1 at generation \c 1.
 
 			\note
-			\li Negative generation numbers are allowed for parameter \c begin, \c end and \c at. They are
-			intepretted as <tt>endGen + gen + 1</tt>. For example, <tt>begin = -2</tt> in
+			\li Negative generation numbers are allowed for parameters \c begin, \c end and \c at. They are
+			interpreted as <tt>endGen + gen + 1</tt>. For example, <tt>begin = -2</tt> in
 			<tt>simu.evolve(..., end=20)</tt> starts at generation \c 19.
-			\li REP_ALL, REP_LAST, GRP_ALL are special constant that can only be used in the
+			\li <tt>REP_ALL, REP_LAST, GRP_ALL</tt> are special constant that can only be used in the
 			constructor of an operator. That is to say, explicit test of <tt>rep() == REP_LAST</tt>
 			will not work.
 

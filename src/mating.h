@@ -152,7 +152,7 @@ namespace simuPOP
 			is used to determine the number of offspring of each family.
 			\li \c MATE_BinomialDistribution: a Binomial distribution with parameter \c numOffspring
 			is used to determine the number of offspring of each family.
-			\li \c MATE_UniformDistribution: a Uniform distribution <tt> [a, b] </tt> with parameter
+			\li \c MATE_UniformDistribution: a Uniform <tt> [a, b] </tt> distribution with parameter
 			\c numOffspring (a) and \c maxNumOffspring (b) is used to determine the number of offspring of each family.
 
 			\param numOffspring the number of offspring or \em p for a random distribution.
@@ -161,13 +161,14 @@ namespace simuPOP
 			\param numOffspringFunc a Python function that returns the number of offspring or \em p
 			\param maxNumOffspring used when \c numOffspring is generated from a binomial distribution
 			\param mode can be one of <tt>MATE_NumOffspring, MATE_NumOffspringEachFamily,
-			MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,
-			MATE_UniformDistribution</tt>.
-			\param newSubPopSize an array of subpopulaitons sizes
-			\param newSubPopSizeExpr an expression that will return the new subpopulation size
+			MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,</tt> 
+			or <tt>MATE_UniformDistribution</tt>.
+			\param newSubPopSize an array of subpopulations sizes, should have the same
+				number of subpopulations as the current population
+			\param newSubPopSizeExpr an expression that will be evaluated as an array of new subpopulation sizes
 			\param newSubPopSizeFunc a function that accepts an \c int parameter(generation),
 			an array of current population size and return an array of subpopulation sizes.
-			This is usually easier to use than its expression version of this parameter.
+			This is usually easier to use than its expression version of this parameter.	
 
 			\test src_mating.log Demographic models and control of number of offspring per mating event
 			*/
@@ -296,8 +297,8 @@ namespace simuPOP
 	In this scheme, there is
 	\li no mating. Parent generation will be considered as offspring generation.
 	\li no subpopulation change. \em During-mating operators will be applied, but
-		the return values are not checked. I.e., \c subpopsizes will be ignored
-		although some during-mating operators may be applied.
+		the return values are not checked. I.e., \c subPopSizes will be ignored
+		although some during-mating operators might be applied.
 	*/
 	class noMating: public mating
 	{
@@ -357,7 +358,7 @@ namespace simuPOP
 	\li \c numOffspring protocol is honored;
 	\li population size changes are allowed;
 	\li selection is possible;
-	\li haploid populaton is allowed.
+	\li haploid population is allowed.
 	*/
 	class binomialSelection: public mating
 	{
@@ -432,7 +433,7 @@ namespace simuPOP
 	In this scheme, sex information is considered for each individual,
 	and ploidy is always 2. Within each subpopulation, males and females
 	are randomly chosen. Then randomly get one copy of chromosomes from
-	father and mother. When only one sex exists in a subpopulation, a
+	father and mother. If only one sex exists in a subpopulation, a
 	parameter (\c contWhenUniSex) can be set to determine the behavior.
 	Default to continuing without warning.
 	*/
@@ -442,19 +443,9 @@ namespace simuPOP
 
 			/// create a random mating scheme
 			/**
-			\param numOffspring number of offspring or \em p in some modes
-			\param numOffspringFunc a python function that determines the
-				number of offspring or \em p
-			\param maxNumOffspring used when \c numOffspring is generated from a binomial distribution
-			\param mode can be one of <tt>MATE_NumOffspring, MATE_NumOffspringEachFamily,
-				MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution</tt>
-			\param newSubPopSize an array of subpopulation sizes, should have the same
-				number of subpopulations as the current population
-			\param newSubPopSizeExpr an expression that will be evaluated as an array of subpopulation sizes
-			\param newSubPopSizeFunc an function that have parameter \c gen and \c oldSize
-			(current subpopulation size)
-			\param contWhenUniSex continue when there is only one sex in the population, default to \c true
+			\param contWhenUniSex continue when there is only one sex in the population. Default to \c True.
 			\n
+        
 			Please refer to class \c mating for descriptions of other parameters.
 			*/
 			randomMating( double numOffspring=1.,
@@ -891,7 +882,7 @@ namespace simuPOP
 	that accepts both the parental and offspring populations and this function
 	is responsible for setting genotype, sex of the offspring generation.
 	During-mating operators, if needed, have to be applied from this function as well.
-	Note that the subpopulaton size parameters are honored and the
+	Note that the subpopulation size parameters are honored and the
 	passed offspring generation has the desired (sub)population sizes.
 	Parameters that control the number of offspring of each family are ignored.
 	\n
@@ -909,6 +900,9 @@ namespace simuPOP
 				and the offspring populations. The offspring population is empty,
 				and this function is responsible for setting genotype, sex etc. of
 				individuals in the offspring generation.
+            \n
+
+            Please refer to class \c mating for descriptions of other parameters.        
 			*/
 			pyMating(PyObject* func=NULL,
 				vectorlu newSubPopSize=vectorlu(),
