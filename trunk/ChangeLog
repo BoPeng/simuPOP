@@ -14,6 +14,8 @@ version 0.8.1 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: make use of second to last inforFields passed to pyPenetrance 
 		and pySelector to pass specified information fields to user-defined
 		functions.
+  - BUG: Fix a new functions in hapMapUtil.py
+
 
 version 0.8.0 - (Rev 1215) Aug 14, 2007
   - Reference manual overhaul

@@ -1624,7 +1624,7 @@ def VC_merlin(file, merlin='merlin'):
         file: file.ped, file.dat, file.map and file,mdl are expected.
             file can contain directory name.
     '''
-    cmd = 'merlin -d %s.dat -p %s.ped -m %s.map --pair --vc' % (file, file, file)
+    cmd = 'merlin -d %s.dat -p %s.ped -m %s.map  --vc' % (file, file, file)
     resline = re.compile('\s+([\d.+-]+|na)\s+([\d.+-]+|na)%\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)')
     print "Running"
     print cmd

@@ -103,44 +103,57 @@ def getMarkersFromName(hapmap_dir, names, chroms=[]):
 # get markers in range 0, 100cM, with minimal distance 0.1cM
 #    getMarkersFromRange(2, 0, 100, sys.maxint. 0, 0.1)
 
-def getMarkersFromRange(hapmap_dir, chrom, startPos, endPos, maxNum, minAF, minDist):
+
+def getMarkersFromRange(HapMap_dir, pops, chrom, startPos, endPos, maxNum, 
+    minAF, minDiffAF, minDist):
     '''Get a population with markers from given range
     
-        hapmap_dir: where hapmap data in simuPOP format is stored. The files
+        HapMap_dir: where HapMap data in simuPOP format is stored. The files
             should have been prepared by scripts/loadHapMap.py.
     
+        pops:     HapMap populations to load
+
         chrom:    chromosome number (1-based index)
         
         startPos: starting position (in cM)
         
-        endPos:   ending position (in cM)
+        endPos:   ending position (in cM). If 0, ignore this parameter.
         
-        maxNum:   maximum number of markers to get
+        maxNum:   maximum number of markers to get. If 0, ignore this parameter.
         
         minAF:    minimal minor allele frequency
+        
+        minDiffAf: minimal allele frequency between HapMap populations.
         
         minDist:  minimal distance between two adjacent markers, in cM
         
     '''
-    print "Loading hapmap population hapmap_%d.bin" % (chrom-1)
-    pop = LoadPopulation(os.path.join(hapmap_dir, 'hapmap_%d.bin' % (chrom-1)))
+    print "Loading HapMap population hapmap_%d.bin" % chrom
+    pop = LoadPopulation(os.path.join(HapMap_dir, 'hapmap_%d.bin' % chrom))
     markers = []
     lastPos = 0
     for loc in range(pop.totNumLoci()):
         pos = pop.locusPos(loc)
-        if pos < startPos or pos > endPos:
+        if pos < startPos or (endPos > 0 and pos > endPos):
             continue
-        if len(markers) > maxNum:
-            break
-        if pos - lastPos < minDist:
+        if lastPos != 0 and pos - lastPos < minDist:
             continue
-        maf = min(pop.dvars().alleleFreq[loc][0], 1 - pop.dvars().alleleFreq[loc][1])
+        maf = min(pop.dvars().alleleFreq[loc][0], 1 - pop.dvars().alleleFreq[loc][0])
         if maf < minAF:
             continue
+        if minDiffAF > 0:
+            maf1 = min(pop.dvars(pops[0]).alleleFreq[loc][0], 1 - pop.dvars(pops[0]).alleleFreq[loc][0])
+            maf2 = min(pop.dvars(pops[1]).alleleFreq[loc][0], 1 - pop.dvars(pops[1]).alleleFreq[loc][0])
+            if abs(maf1 - maf2) < minDiffAF:
+                continue
         # this marker is OK
         markers.append(loc)
+        if maxNum > 0 and len(markers) == maxNum:
+            break
         lastPos = pos
+    print '%d markers located' % len(markers)
     pop.removeLoci(keep=markers)
+    pop.removeSubPops([x for x in range(3) if x not in pops], removeEmptySubPops=True)
     return pop
 
 
@@ -154,10 +167,9 @@ def getMarkersFromRange(hapmap_dir, chrom, startPos, endPos, maxNum, minAF, minD
 #        mendelian inconsistency error.
 # 
 ###########################################################
-
 def evolveHapMap(pop, 
     endingSize, 
-    endGen,
+    gen,
     migr=noneOp(),
     expand='exponential',
     mergeAt=10000, 
@@ -180,7 +192,7 @@ def evolveHapMap(pop,
     
     mergeAt: when to merge population?
     
-    endGen: endingGeneration
+    gen: generations to evolve
     
     recIntensity: recombination intensity
     
@@ -204,33 +216,28 @@ def evolveHapMap(pop,
     N0 = pop.popSize()
     N1 = endingSize
     if expand == 'linear':
-        rate = (N1-N0)*1.0/(endGen)
+        rate = (N1-N0)*1.0/gen
     else:
-        rate = math.exp(math.log(N1*1.0/N0)/(endGen))
+        rate = math.exp(math.log(N1*1.0/N0)/gen)
     def popSizeFunc(gen, cur):
         if expand == 'linear':
             sz = [int(x+rate/len(cur)) for x in cur]
         else:
             sz = [int(x*rate) for x in cur]
-        # the last generation, try to achieve perfect endingSize
-        if gen == endGen - 1:
-            extra = N1 - sum(sz)
-            sz = [x  + extra/len(cur) for x in sz]
-            sz[-1] += N1 - sum(sz)
         return sz
     #
     simu = simulator(pop, randomMating(newSubPopSizeFunc=popSizeFunc), rep=1)
     operators = [
         # mutation will be disallowed in the last generation (see later)
         kamMutator(rate=mutRate, loci=range(pop.totNumLoci())),
-        mergeSubPops(subPops=[0,1,2], removeEmptySubPops=True, at=[mergeAt]),
+        mergeSubPops(subPops=range(pop.numSubPop()), removeEmptySubPops=True, at=[mergeAt]),
         recombinator(intensity=recIntensity),
         stat(popSize=True, step=step, begin=step-1),
         migr,
         pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=step, begin=step-1)
     ]
     del pop
-    simu.evolve(ops=operators, end=endGen-1)
+    simu.evolve(ops=operators, end=gen-1)
     if keepParents:
         print "Preparing the last generation"
         simu.addInfoFields(['father_idx', 'mother_idx'])
@@ -239,6 +246,8 @@ def evolveHapMap(pop,
         # evolve, but without mutation
         simu.step(ops=operators[1:] + [parentsTagger()])
     return simu.getPopulation(0, True)
+
+
 
 #
 #
