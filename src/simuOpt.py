@@ -975,11 +975,12 @@ def getParam(options=[], doc="", details="", noDialog=False, checkUnprocessedArg
         or True not in map(lambda x:x.has_key('label'), options):
         return _termGetParam(options, doc, verbose)
     else:
+        title = os.path.split(sys.argv[0])[-1]
         if useTkinter:
-            return _tkGetParam(options, sys.argv[0], doc, details,
+            return _tkGetParam(options, title, doc, details,
                 checkUnprocessedArgs, nCol)
         elif useWxPython:
-            return _wxGetParam(options, sys.argv[0], doc, details,
+            return _wxGetParam(options, title, doc, details,
                 checkUnprocessedArgs, nCol)
         else:
             return _termGetParam(options, doc, verbose)
