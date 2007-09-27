@@ -51,15 +51,15 @@ namespace simuPOP
 	Migrator is the only way to mix genotypes of several subpopulations
 	because mating is strictly within subpopulations in simuPOP. Migrators
 	are quite flexible in simuPOP in the sense that
-	\li Migration can happen from and to a subset of subpopulations.
-	\li Migration can be done by probability, proportion or by counts. In
+	\li migration can happen from and to a subset of subpopulations.
+	\li migration can be done by probability, proportion or by counts. In
 		the case of probability, if the migration rate from subpopulation
 		\c a to \c b is \c r, then everyone in subpopulation \c a will have this
 		probability to migrate to \c b. In the case of proportion, exactly
 		<tt>r*size_of_subPop_a</tt> individuals (chosen by random) will migrate
 		to subpopulation \c b. In the last case, a given number of individuals will
 	migrate.
-	\li New subpopulation can be generated through migration. You simply
+	\li new subpopulation can be generated through migration. You simply
 	need to migrate to a new subpopulation number.
 	*/
 	class migrator: public baseOperator
@@ -78,15 +78,15 @@ namespace simuPOP
 				parameter \c mode. \c rate should be an m by n matrix. If a number is given,
 				the migration rate will be a \c m by \c n matrix of value \c r
 			\param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
-			\param fromSubPop an array of 'from' subpopulations. Default to all. If a single \c subpop
+			\param fromSubPop an array of 'from' subpopulations. Default to all. If a single subpopulation
 				is specified, <tt>[]</tt> can be ignored. I.e., <tt>[a]</tt> is equvalent to \c a.
 			\param toSubPop an array of 'to' subpopulations. Default to all subpopulations. If a single
-				\c subpop is specified, <tt>[]</tt> can be ignored.
+				subpopulation is specified, <tt>[]</tt> can be ignored.
 			\param stage default to \c PreMating
 
 			\note
 			\li The overall population size will not be changed. (Mating schemes can
-			do that). If you would like to keep the subpopulation size after migration, you
+			do that). If you would like to keep the subpopulation sizes after migration, you
 			can use the \c newSubPopSize or \c newSubPopSizeExpr parameter of a mating scheme.
 			\li \c rate is a matrix with dimensions determined by \c fromSubPop and \c toSubPop.
 			By default, \c rate is a matrix with element \c r(i,j), where \c r(i, j) is the
@@ -165,7 +165,7 @@ namespace simuPOP
 	/**
 	This migrator can be used in two ways
 	\li define a function that accepts a generation number and returns a migration rate matrix.
-		This can be used in the varying migration rate cases.
+		This can be used in various migration rate cases.
 	\li define a function that accepts individuals etc, and returns the new subpopulation ID.
 
 	More specifically, \c func can be
@@ -184,7 +184,7 @@ namespace simuPOP
 				current subpopulation sizes, and returns a migration rate matrix.
 				The migrator then migrate like a usual migrator.
 			\param indFunc a Python function that accepts an individual, optional
-				genotype and parameter, then returns a subpopulation id. This
+				genotype and parameter, then returns a subpopulation ID. This
 				method can be used to separate a population according to individual
 				genotype.
 			\param stage default to \c PreMating
@@ -282,7 +282,7 @@ namespace simuPOP
 			/// split a subpopulation or the whole population as subpopulation \c 0
 			/**
 			\param which which subpopulation to split. If there is no subpopulation structure,
-				use 0 as the first (and only) subpopulation.
+				use \c 0 as the first (and only) subpopulation.
 			\param sizes new subpopulation sizes. The sizes should be added up to the original
 				subpopulation (subpopulation \c which) size.
 			\param proportions proportions of new subpopulations. Should be added up to \c 1.
@@ -358,7 +358,7 @@ namespace simuPOP
 		public:
 			/// merge subpopulations
 			/**
-			\param subPops subpopulatinos to be merged. Default to all.
+			\param subPops subpopulations to be merged. Default to all.
 			*/
 			mergeSubPops( vectoru subPops=vectoru(), bool removeEmptySubPops=false,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),

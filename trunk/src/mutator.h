@@ -34,35 +34,35 @@ namespace simuPOP
 {
 	/// Base class of all mutators
 	/**
-	The base class of all functional mutators. It is not supposed to be called directly.
-
+	The base class of all functional mutators. It is not supposed to be called directly. 
+    \n
 	Every mutator can specify \c rate (equal rate or different rates for different
 	loci) and a vector of applicable loci (default to all but should have the same
 	length as \c rate if \c rate has length greater than one).
-
-	Maximum allele can be specified as well but more parameter, if needed, should
+    \n
+	Maximum allele can be specified as well but more parameters, if needed, should
 	be implemented by individual mutator classes.
-
-	There are number of possible allelic states. Most theoretical studies assume an infinite
+    \n
+	There are numbers of possible allelic states. Most theoretical studies assume an infinite
 	number of allelic states to avoid any homoplasy. If it facilitates any analysis,
 	this is however extremely unrealistic.
 	*/
 	class mutator: public baseOperator
 	{
 		public:
-			/// create a mutator
+			/// create a mutator, do not call this constructor directly
 			/**
 			All mutators have the following common parameters. However, the actual meaning
-			of these parameters may vary according to different model. The only differences
-			between the following mutators are they way they actually mutate an allele, and
+			of these parameters may vary according to different models. The only differences
+			between the following mutators are the way they actually mutate an allele, and
 			corresponding input parameters. The number of mutation events at each locus is
 						recorded and can be accessed from the \c mutationCount or \c mutationCounts
 						functions.
 
 			\param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c loci)
-			\param loci a vector of loci indexes. Will be ignored only when single rate is specified.
+			\param loci a vector of locus indexes. Will be ignored only when single rate is specified.
 				Default to all loci.
-			\param maxAllele maximum allowable allele. Interpreted by each sub mutaor class. Default to \c pop.maxAllele().
+			\param maxAllele maximum allowed allele. Interpreted by each sub mutator class. Default to \c pop.maxAllele().
 			*/
 			mutator( const vectorf & rate=vectorf(),
 				const vectoru & loci=vectoru(),
@@ -200,12 +200,11 @@ namespace simuPOP
 			/// create a K-Allele Model mutator
 			/**
 			\param rate mutation rate. It is the 'probability to mutate'. The actual
-				mutation rate to any of the other \c K-1 allelic states are <tt>rates/(K-1)</tt>.
-			\param loci a vector of loci indexes. Will be ignored only when single rate is specified.
-				Default to all loci.
-			\param maxAllele maximum allele that can be mutated to. For binary libraries
-			  allelic states will be <tt>[0, maxAllele]</tt>. Otherwise, they are <tt>[1, maxAllele]</tt>.
+				mutation rate to any of the other \c K-1 allelic states are <tt>rate/(K-1)</tt>.
+			\param maxAllele maximum allele that can be mutated to. For binary libraries,
+			  allelic states will be <tt>[0, maxAllele]</tt>. Otherwise, they are <tt>[1, maxAllele]</tt>.        
 
+            Please see class \c mutator for the descriptions of other parameters.
 			\test src_kamMutator.log Operator \c kamMutator
 			*/
 			kamMutator(const vectorf& rate=vectorf(),
@@ -242,7 +241,7 @@ namespace simuPOP
 	/**
 	The <em>Stepwise Mutation Model</em> (SMM) assumes that alleles are represented by integer values
 	and that a mutation either increases or decreases the allele value by one.
-	For variable number tandem repeats loci (VNTR), the allele value is generally
+	For variable number tandem repeats(VNTR) loci, the allele value is generally
 	taken as the number of tandem repeats in the DNA sequence.
 	<funcForm>SmmMutate</funcForm>
 	\sa Kimura & Ohta 1978
@@ -252,12 +251,12 @@ namespace simuPOP
 		public:
 			/// create a SMM mutator
 			/**
-			The stepwise mutation model (SMM) is developed for allozymes. It  provides better description
+			The SMM is developed for allozymes. It  provides better description
 			for these kinds of evolutionary processes.
 
 			\param incProb probability to increase allele state. Default to \c 0.5.
 
-			Please see \c mutator for the description of other parameters.
+            Please see class \c mutator for the descriptions of other parameters.
 
 			\test src_smmMutator.log Operator \c smmMutator
 			*/
@@ -314,7 +313,7 @@ namespace simuPOP
 
 	/// generalized stepwise mutation model
 	/**
-	The <em>Generalized Stepwise Mutation model</em> (GSM) is an extension to stepwise
+	The <em>Generalized Stepwise Mutation model</em> (GSM) is an extension to the stepwise
 	mutation model. This model assumes that alleles are represented by integer values
 	and that a mutation either increases or decreases the allele value by a random value.
 	In other words, in this model the change in the allelic state is drawn from a random
@@ -333,14 +332,14 @@ namespace simuPOP
 		public:
 			/// create a \c gsmMutator
 			/**
-			The generalized stepwise mutation model (GMM) is developed for allozymes.
+			The GSM model is developed for allozymes.
 			It  provides better description for these kinds of evolutionary processes.
 
 			\param incProb probability to increase allele state. Default to \c 0.5.
 			\param func a function that returns the number of steps. This function
 				does not accept any parameter.
 
-			Please see \c mutator for the description of other parameters.
+			Please see class \c mutator for the descriptions of other parameters.
 
 			\test src_gsmMutator.log Operator \c gsmMutator
 			*/
@@ -484,7 +483,7 @@ namespace simuPOP
 
 	/// point mutator
 	/**
-	Mutate specified individuals at a specified loci to a spcified allele.
+	Mutate specified individuals at specified loci to a spcified allele.
 	I.e., this is a non-random mutator used to introduce diseases etc.
 	\c pointMutator, as its name suggest, does point mutation. This mutator will turn
 	alleles at \c loci on the first chromosome copy to \c toAllele for individual \c inds.
@@ -500,7 +499,7 @@ namespace simuPOP
 			\param inds individuals who will mutate
 			\param toAllele allele that will be mutate to
 
-			Please see \c mutator for the description of other parameters.
+			Please see class \c mutator for the descriptions of other parameters.
 			*/
 			pointMutator(
 				const vectoru & loci,
