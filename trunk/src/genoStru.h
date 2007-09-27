@@ -89,7 +89,7 @@ namespace simuPOP
 			/// CPPONLY serialization library requires a default constructor
 			GenoStructure():m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
 				m_numLoci(0), m_sexChrom(false), m_lociPos(0), m_chromIndex(0),
-				m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0),
+				m_chromNames(), m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0),
 				m_chromMap()
 	#ifdef SIMUMPI
 				, m_beginChrom(0), m_endChrom(0), m_beginLocus(0), m_endLocus(0),
@@ -103,13 +103,14 @@ namespace simuPOP
 			\param loci number of loci on each chromosome.
 			\param lociPos loci distance on each chromosome. the default values
 			   are 1,2,etc.
+			\param chromNames chromosome names
 			\param alleleNames allele names
 			\param lociNames name of loci
 			\param maxAllele maximum possible allele number for all alleles.
 			\param length of info field
 			*/
 			GenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
-				const vectorf& lociPos, const vectorstr& alleleNames,
+				const vectorf& lociPos, const vectorstr& chromNames, const vectorstr& alleleNames,
 				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields,
 				const vectori& chromMap);
 
@@ -179,6 +180,7 @@ namespace simuPOP
 					ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
 					ar & make_nvp("sex_chromosome", m_sexChrom);
 					ar & make_nvp("loci_distance_on_chrom", m_lociPos);
+					ar & make_nvp("chrom_name", m_chromNames);
 					ar & make_nvp("allele_name", m_alleleNames);
 					ar & make_nvp("loci_name", m_lociNames);
 					ar & make_nvp("max_allele", m_maxAllele);
@@ -207,6 +209,8 @@ namespace simuPOP
 					else
 						m_sexChrom = false;
 					ar & make_nvp("loci_distance_on_chrom", m_lociPos);
+					if (version > 2)
+						ar & make_nvp("chrom_name", m_chromNames);
 					ar & make_nvp("allele_name", m_alleleNames);
 					ar & make_nvp("loci_name", m_lociNames);
 					ar & make_nvp("max_allele", m_maxAllele);
@@ -252,6 +256,9 @@ namespace simuPOP
 
 			/// loci index
 			vectoru m_chromIndex;
+
+			/// chromosome names
+			vectorstr m_chromNames;
 
 			/// allele names
 			vectorstr m_alleleNames;
@@ -304,8 +311,9 @@ namespace simuPOP
 // set version for GenoStructure class
 // version 0: base
 // version 1: add sexChrom indicator
-// version 2: add infoSize
-BOOST_CLASS_VERSION(simuPOP::GenoStructure, 2)
+// version 2: add info name
+// version 3: add chromName
+BOOST_CLASS_VERSION(simuPOP::GenoStructure, 3)
 #endif
 
 namespace simuPOP
@@ -337,7 +345,7 @@ namespace simuPOP
 
 			/// CPPONLY set genotypic structure
 			void setGenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
-				const vectorf& lociPos, const vectorstr& alleleNames,
+				const vectorf& lociPos, const vectorstr& chromNames, const vectorstr& alleleNames,
 				const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields,
 				const vectori& chromMap);
 
@@ -525,7 +533,23 @@ namespace simuPOP
 
 			/// return a <tt>(chrom, locus)</tt> pair of an absolute locus index, c.f. \c absLocusIndex
 			std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
+			
+			/// return the name of an chrom
+			string chromName(const UINT chrom) const
+			{
+				DBG_FAILIF( chrom >= s_genoStruRepository[m_genoStruIdx].m_numChrom, IndexError,
+					"Chromosome index " + toStr(chrom) + " out of range of 0 ~ " +
+					toStr(s_genoStruRepository[m_genoStruIdx].m_numChrom));
 
+				return s_genoStruRepository[m_genoStruIdx].m_chromNames[chrom];
+			}
+
+			/// return an array of chrom names
+			vectorstr chromNames() const
+			{
+				return s_genoStruRepository[m_genoStruIdx].m_chromNames;
+			}
+			
 			/// return the name of an allele (if previously specified). Default to allele index.
 			string alleleName(const Allele allele) const;
 

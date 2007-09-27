@@ -143,7 +143,7 @@ namespace simuPOP
 		// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 		// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
 		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames,
-			lociNames, maxAllele, infoFields, chromMap);
+			vectorstr(), lociNames, maxAllele, infoFields, chromMap);
 
 		DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
 			<< sizeof(Allele) << '*' << genoSize() << endl
@@ -1539,7 +1539,7 @@ namespace simuPOP
 			"Re-arrange loci must keep the same total number of loci");
 		setGenoStructure(ploidy(), newNumLoci.empty()?numLoci():newNumLoci,
 			sexChrom(), newLociPos.empty()?lociPos():newLociPos,
-			alleleNames(), lociNames(), maxAllele(), infoFields(),
+			chromNames(), alleleNames(), lociNames(), maxAllele(), infoFields(),
 			chromMap());
 		for(int depth = ancestralDepth(); depth >=0; --depth)
 		{
