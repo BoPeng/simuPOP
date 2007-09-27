@@ -38,13 +38,13 @@ namespace simuPOP
 	/// recombination
 	/**
 	In simuPOP, only one recombinator is provided. Recombination events between loci
-	a/b and b/c are independent, otherwise there will be some linkage between loci, users
+	a/b and b/c are independent, otherwise there will be some linkage between loci. Users
 	need to specify physical recombination rate between adjacent loci. In addition,
 	for the recombinator
 	\li it only works for diploid (and for females in haplodiploid) populations.
 	\li the recombination rate must be comprised between \c 0.0 and \c 0.5. A recombination
 	rate of \c 0.0 means that the loci are completely linked, and thus behave together
-	as a single linked locus. A recombination rate of \c 0.5 is equivalent to free
+	as a single linked locus. A recombination rate of \c 0.5 is equivalent to free of
 	recombination. All other values between \c 0.0 and \c 0.5 will represent various
 	linkage intensities	between adjacent pairs of loci. The recombination rate is
 	equivalent to <tt>1-linkage</tt> and represents the probability that the allele
@@ -56,8 +56,8 @@ namespace simuPOP
 		public:
 			/// recombine chromosomes from parents
 			/**
-			\param intensity intensity of recombination. The actually recombination rate
-				between two loci is determined by <tt>intensity*locus distance</tt> between them.
+			\param intensity intensity of recombination. The actual recombination rate
+				between two loci is determined by <tt>intensity*locus distance (between them)</tt>.
 			\param rate recombination rate regardless of locus distance after all \c afterLoci.
 				It can also be an array of recombination rates. Should have the same length
 				as \c afterLoci or \c totNumOfLoci().
@@ -72,6 +72,7 @@ namespace simuPOP
 			\param maleRate recombination rate for male individuals. If given,
 			parameter \c rate will be considered as female recombination rate.
 			\param maleAfterLoci if given, males will recombine at different locations.
+        
 			\note There is no recombination between sex chromosomes of male individuals
 			if <tt>sexChrom()=True</tt>. This may change later if the exchanges
 			of genes between pseudoautosomal regions of \c XY need to be modeled.

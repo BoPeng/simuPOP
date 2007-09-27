@@ -953,7 +953,7 @@ namespace simuPOP
 			\note
 			\li Output to \c output or \c outputExpr is not supported. That is to say,
 			you have to open/close/append to files explicitly in the Python function.
-			\li This operator can be applied \c Pre-, \c During- or \c Post- mating and is applied \c PostMating
+			\li This operator can be applied \c Pre-, \c During- or <tt>Post- Mating</tt> and is applied \c PostMating
 			by default. For example, if you would like to examine the fitness values set by
 			a selector, a \c PreMating Python operator should be used.
 			*/
@@ -1033,14 +1033,14 @@ namespace simuPOP
 	This operator is similar to a \c pyOperator but works at the individual level. It expects
 	a function that accepts an individual, optional genotype at certain loci, and an optional
 	parameter. When it is applied, it passes each individual to this function. When
-	\c infoFields is given, this function should return an array to fill these infoFields.
-	Otherwise, True/False is expected.
+	\c infoFields is given, this function should return an array to fill these \c infoFields.
+	Otherwise, \c True or \c False is expected.
 
 	More specifically, \c func can be
-	\li <tt>func(ind)</tt> when neither loci nor param is given.
-	\li <tt>func(ind, genotype)</tt> when loci is given
-	\li <tt>func(ind, param)</tt> when param is given
-	\li <tt>func(ind, genotype, param)</tt> when both loci and param are given.
+	\li <tt>func(ind)</tt> when neither \c loci nor \c param is given.
+	\li <tt>func(ind, genotype)</tt> when \c loci is given.
+	\li <tt>func(ind, param)</tt> when \c param is given.
+	\li <tt>func(ind, genotype, param)</tt> when both \c loci and \c param are given.
 	*/
 	class pyIndOperator: public baseOperator
 	{

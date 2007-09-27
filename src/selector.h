@@ -39,30 +39,30 @@ namespace simuPOP
 	/// A base selection operator for all selectors
 	/**
 	Genetic selection is tricky to simulate since there are many different \em fitness
-	values and many different ways to apply selection. \c simuPOP employs an
+	values and many different ways to apply selection. simuPOP employs an
 	\em 'ability-to-mate' approach. Namely, the probability that an individual will be
 	chosen for mating is proportional to its fitness value. More specifically,
 	\li \c PreMating selectors assign fitness values to each individual, and mark part or
 		all subpopulations as under selection.
-	\li During sexless mating (e.g. \c binomialSelection mating scheme), individuals are chosen
+	\li during sexless mating (e.g. \c binomialSelection mating scheme), individuals are chosen
 		at probabilities that are proportional to their fitness values. If there are
 		\f$ N \f$ individuals with fitness values \f$ f_{i},i=1,...,N \f$, individual
 		\f$ i \f$ will have probability \f$ \frac{f_{i}}{\sum_{j}f_{j}} \f$ to be chosen
 	and passed to the next generation.
-	\li During \c randomMating, males and females are separated. They are chosen from
+	\li during \c randomMating, males and females are separated. They are chosen from
 	their respective groups in the same manner as \c binomialSelection and mate.\n
 
 	All of the selection operators, when applied, will set an information field
 	\c fitness (configurable) and then mark part or all subpopulations as under
-	selection. (You can use different selectors to simulate varying selection
-	intensity for different subpopulations). Then, a 'selector-aware' mating scheme
-	can select individuals according to this \c fitness information field. This implies
+	selection. (You can use different selectors to simulate various selection
+	intensities for different subpopulations). Then, a \em 'selector-aware' mating scheme
+	can select individuals according to their \c fitness information fields. This implies
 	that \n
 
-	\li Only mating schemes can actually select individuals.
-	\li Selector has to be \c PreMating operator. This is not a problem when you use the
-	operator form of the selectors since their default stage is \c PreMating. However,
-	if you use the function form of these selectors in a \c pyOperator, make sure to
+	\li only mating schemes can actually select individuals.
+	\li a selector has to be a \c PreMating operator. This is not a problem when you use the
+	operator form of the selector since its default stage is \c PreMating. However,
+	if you use the function form of the selector in a \c pyOperator, make sure to
 	set the stage of \c pyOperator to \c PreMating.
 
 	\note You can not apply two selectors to the same subpopulation, because only one
