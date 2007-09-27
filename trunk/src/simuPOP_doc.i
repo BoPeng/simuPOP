@@ -1970,7 +1970,7 @@ Description:
 Details:
 
     The Generalized Stepwise Mutation model (GSM) is an extension to
-    stepwise mutation model. This model assumes that alleles are
+    the stepwise mutation model. This model assumes that alleles are
     represented by integer values and that a mutation either increases
     or decreases the allele value by a random value. In other words,
     in this model the change in the allelic state is drawn from a
@@ -1999,10 +1999,9 @@ Usage:
 
 Details:
 
-    The generalized stepwise mutation model (GMM) is developed for
-    allozymes. It provides better description for these kinds of
-    evolutionary processes. Please see  mutator for the description of
-    other parameters.
+    The GSM model is developed for allozymes. It provides better
+    description for these kinds of evolutionary processes. Please see
+    class  mutator for the descriptions of other parameters.
 
 Arguments:
 
@@ -2985,12 +2984,12 @@ Usage:
 
 Arguments:
 
-    alleleFreq:     an array of allele frequencies. The sum of all the
+    alleleFreq:     an array of allele frequencies. The sum of all
                     frequencies must be 1; or for a matrix of allele
                     frequencies, each row corresponses to a
                     subpopulation or range.
-    identicalInds:  whether or not make  individual genotypies
-                    identical in all subpopulation. If True, this
+    identicalInds:  whether or not make  individual genotypes
+                    identical in all subpopulations. If True, this
                     operator will randomly generate genotype for an
                     individual and  spread it to the whole
                     subpopulation in the given range.
@@ -2999,7 +2998,7 @@ Arguments:
                     checked. If it is shorter than the number of
                     individuals, sex will be reused from the
                     beginning.
-    stage:          default to PreMating
+    stage:          default to PreMating.
 
 Example:
 
@@ -3091,13 +3090,13 @@ Details:
 
     Operator  initByValue gets one copy of chromosomes or the whole
     genotype (or of those corresponds to loci) of an  individual and
-    copy them to all or a subset of individuals. This operator assign
+    copy them to all or a subset of individuals. This operator assigns
     given alleles to specified individuals. Every  individual will
     have the same genotype. The parameter combinations should be
     * value - subPop/indRange:  individual in subPop or in range(s)
-    will be assigned genotype 'value';
+    will be assigned genotype value;
     * subPop/indRange: subPop or indRange should have the same length
-    as values. Each item of values will be assigned to each subPop or
+    as value. Each item of value will be assigned to each subPop or
     indRange.
 
 "; 
@@ -3120,21 +3119,20 @@ Arguments:
     value:          an array of genotypes of one  individual, having
                     the same length as the length of loci() or
                     loci()*ploidy() or pop.genoSize() (whole genotype)
-                    or totNumLoci() (one copy of chromosome). This
+                    or totNumLoci() (one copy of chromosomes). This
                     parameter can also be an array of arrays of
-                    genotypes of one  individual. Should have length
-                    one or equal to subpop or ranges or proportion. If
-                    value is an array of values, it should have the
-                    same length as subpop, indRange or proportions.
-    proportions:    an array of percentages for each item in values.
-                    If given, assign given genotypes randomly.
+                    genotypes of one  individual. If value is an array
+                    of values, it should have the same length as
+                    subPop, indRange or proportions.
+    proportions:    an array of percentages for each item in value. If
+                    given, assign given genotypes randomly.
     maleFreq:       male frequency
     sex:            an array of sex [Male, Female, Male...] for
                     individuals. The length of sex will not be
                     checked. If length of sex is shorter than the
                     number of individuals, sex will be reused from the
                     beginning.
-    stages:         default to PreMating
+    stages:         default to PreMating.
 
 Example:
 
@@ -3231,7 +3229,7 @@ Details:
 
 Description:
 
-    create an  initializer. default to be always active
+    create an  initializer. Default to be always active.
 
 Usage:
 
@@ -3370,16 +3368,18 @@ Usage:
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
+Details:
+
+    Please see class  mutator for the descriptions of other
+    parameters.
+
 Arguments:
 
     rate:           mutation rate. It is the 'probability to mutate'.
                     The actual mutation rate to any of the other K-1
-                    allelic states are rates/(K-1).
-    loci:           a vector of loci indexes. Will be ignored only
-                    when single rate is specified. Default to all
-                    loci.
+                    allelic states are rate/(K-1).
     maxAllele:      maximum allele that can be mutated to. For binary
-                    libraries allelic states will be [0, maxAllele].
+                    libraries, allelic states will be [0, maxAllele].
                     Otherwise, they are [1, maxAllele].
 
 Example:
@@ -4382,7 +4382,7 @@ Usage:
 
 Arguments:
 
-    subPops:        subpopulatinos to be merged. Default to all.
+    subPops:        subpopulations to be merged. Default to all.
 
 "; 
 
@@ -4448,15 +4448,15 @@ Details:
     subpopulations because  mating is strictly within subpopulations
     in  simuPOP. Migrators are quite flexible in  simuPOP in the sense
     that
-    * Migration can happen from and to a subset of subpopulations.
-    * Migration can be done by probability, proportion or by counts.
+    * migration can happen from and to a subset of subpopulations.
+    * migration can be done by probability, proportion or by counts.
     In the case of probability, if the migration rate from
     subpopulation a to b is r, then everyone in subpopulation a will
     have this probability to migrate to b. In the case of proportion,
     exactly r*size_of_subPop_a individuals (chosen by random) will
     migrate to subpopulation b. In the last case, a given number of
     individuals will migrate.
-    * New subpopulation can be generated through migration. You simply
+    * new subpopulation can be generated through migration. You simply
     need to migrate to a new subpopulation number.
 
 "; 
@@ -4482,18 +4482,18 @@ Arguments:
     mode:           one of MigrByProbability (default),
                     MigrByProportion or MigrByCounts
     fromSubPop:     an array of 'from' subpopulations. Default to all.
-                    If a single subpop is specified, [] can be
+                    If a single subpopulation is specified, [] can be
                     ignored. I.e., [a] is equvalent to a.
     toSubPop:       an array of 'to' subpopulations. Default to all
-                    subpopulations. If a single subpop is specified,
-                    [] can be ignored.
+                    subpopulations. If a single subpopulation is
+                    specified, [] can be ignored.
     stage:          default to PreMating
 
 Note:
 
     * The overall  population size will not be changed. (Mating
     schemes can do that). If you would like to keep the subpopulation
-    size after migration, you can use the newSubPopSize or
+    sizes after migration, you can use the newSubPopSize or
     newSubPopSizeExpr parameter of a  mating scheme.
     * rate is a matrix with dimensions determined by fromSubPop and
     toSubPop. By default, rate is a matrix with element r(i,j), where
@@ -4899,15 +4899,17 @@ Description:
 Details:
 
     The base class of all functional mutators. It is not supposed to
-    be called directly.Every  mutator can specify rate (equal rate or
-    different rates for different loci) and a vector of applicable
-    loci (default to all but should have the same length as rate if
-    rate has length greater than one).Maximum allele can be specified
-    as well but more parameter, if needed, should be implemented by
-    individual mutator classes.There are number of possible allelic
-    states. Most theoretical studies assume an infinite number of
-    allelic states to avoid any homoplasy. If it facilitates any
-    analysis, this is however extremely unrealistic.
+    be called directly.
+    Every  mutator can specify rate (equal rate or different rates for
+    different loci) and a vector of applicable loci (default to all
+    but should have the same length as rate if rate has length greater
+    than one).
+    Maximum allele can be specified as well but more parameters, if
+    needed, should be implemented by  individual mutator classes.
+    There are numbers of possible allelic states. Most theoretical
+    studies assume an infinite number of allelic states to avoid any
+    homoplasy. If it facilitates any analysis, this is however
+    extremely unrealistic.
 
 "; 
 
@@ -4915,7 +4917,7 @@ Details:
 
 Description:
 
-    create a  mutator
+    create a  mutator, do not call this constructor directly
 
 Usage:
 
@@ -4927,8 +4929,8 @@ Details:
 
     All mutators have the following common parameters. However, the
     actual meaning of these parameters may vary according to different
-    model. The only differences between the following mutators are
-    they way they actually mutate an allele, and corresponding input
+    models. The only differences between the following mutators are
+    the way they actually mutate an allele, and corresponding input
     parameters. The number of mutation events at each locus is
     recorded and can be accessed from the mutationCount or
     mutationCounts functions.
@@ -4937,11 +4939,11 @@ Arguments:
 
     rate:           can be a number (uniform rate) or an array of
                     mutation rates (the same length as loci)
-    loci:           a vector of loci indexes. Will be ignored only
+    loci:           a vector of locus indexes. Will be ignored only
                     when single rate is specified. Default to all
                     loci.
-    maxAllele:      maximum allowable allele. Interpreted by each sub
-                    mutaor class. Default to pop.maxAllele().
+    maxAllele:      maximum allowed allele. Interpreted by each sub
+                    mutator class. Default to pop.maxAllele().
 
 "; 
 
@@ -5863,7 +5865,7 @@ Description:
 
 Details:
 
-    Mutate specified individuals at a specified loci to a spcified
+    Mutate specified individuals at specified loci to a spcified
     allele. I.e., this is a non-random  mutator used to introduce
     diseases etc.  pointMutator, as its name suggest, does point
     mutation. This  mutator will turn alleles at loci on the first
@@ -5886,7 +5888,8 @@ Usage:
 
 Details:
 
-    Please see  mutator for the description of other parameters.
+    Please see class  mutator for the descriptions of other
+    parameters.
 
 Arguments:
 
@@ -7675,11 +7678,11 @@ Details:
     individual, optional genotype at certain loci, and an optional
     parameter. When it is applied, it passes each  individual to this
     function. When infoFields is given, this function should return an
-    array to fill these infoFields. Otherwise, True/False is
+    array to fill these infoFields. Otherwise, True or False is
     expected.More specifically, func can be
     * func(ind) when neither loci nor param is given.
-    * func(ind, genotype) when loci is given
-    * func(ind, param) when param is given
+    * func(ind, genotype) when loci is given.
+    * func(ind, param) when param is given.
     * func(ind, genotype, param) when both loci and param are given.
 
 "; 
@@ -7798,13 +7801,13 @@ Description:
 
 Details:
 
-    pyInit is a hybrid  initializer. User should define a function
-    with parameters allele, ploidy and subpopulation indexes, and
-    return an allele value. Users of this operator must supply a
-    Python function with parameter (index, ploidy, subpop). This
-    operator will loop through all  individual in each subpopulation
+    This is a hybrid  initializer. Users of this operator must supply
+    a Python function with parameters allele, ploidy and subpopulation
+    indexes (index, ploidy, subPop), and return an allele value. This
+    operator will loop through all individuals in each subpopulation
     and call this function to initialize populations. The arrange of
-    parameters allows different initialization scheme for each subpop.
+    parameters allows different initialization scheme for each
+    subpopulation.
 
 "; 
 
@@ -7823,18 +7826,18 @@ Usage:
 Arguments:
 
     func:           a Python function with parameter (index, ploidy,
-                    subpop), where
+                    subPop), where
                     * index is the allele index ranging from 0 to
-                    totNumLoci(-1),
-                    * ploidy is the index of the copy of chromosomes)
-                    * subpop is the subpopulation index. The return
+                    totNumLoci(-1);
+                    * ploidy is the index of the copy of chromosomes;
+                    * subPop is the subpopulation index. The return
                     value of this function should be an integer.
-    loci:           a vector of loci indexes. If empty, apply to all
+    loci:           a vector of locus indexes. If empty, apply to all
                     loci.
-    locus:          a shortcut to loci
+    locus:          a shortcut to loci.
     atPloidy:       initialize which copy of chromosomes. Default to
                     all.
-    stage:          default to PreMating
+    stage:          default to PreMating.
 
 Example:
 
@@ -8015,8 +8018,8 @@ Details:
 
     This  migrator can be used in two ways
     * define a function that accepts a generation number and returns a
-    migration rate matrix. This can be used in the varying migration
-    rate cases.
+    migration rate matrix. This can be used in various migration rate
+    cases.
     * define a function that accepts individuals etc, and returns the
     new subpopulation ID. More specifically, func can be
     * func(ind) when neither loci nor param is given.
@@ -8047,7 +8050,7 @@ Arguments:
                     like a usual  migrator.
     indFunc:        a Python function that accepts an  individual,
                     optional genotype and parameter, then returns a
-                    subpopulation id. This method can be used to
+                    subpopulation ID. This method can be used to
                     separate a  population according to  individual
                     genotype.
     stage:          default to PreMating
@@ -8319,7 +8322,7 @@ Note:
     * Output to output or outputExpr is not supported. That is to say,
     you have to open/close/append to files explicitly in the Python
     function.
-    * This operator can be applied Pre-, During- or Post- mating and
+    * This operator can be applied Pre-, During- or Post- Mating and
     is applied PostMating by default. For example, if you would like
     to examine the fitness values set by a  selector, a PreMating
     Python operator should be used.
@@ -9354,7 +9357,7 @@ Details:
 
     In  simuPOP, only one  recombinator is provided. Recombination
     events between loci a/b and b/c are independent, otherwise there
-    will be some linkage between loci, users need to specify physical
+    will be some linkage between loci. Users need to specify physical
     recombination rate between adjacent loci. In addition, for the
     recombinator
     * it only works for diploid (and for females in haplodiploid)
@@ -9362,11 +9365,11 @@ Details:
     * the recombination rate must be comprised between 0.0 and 0.5. A
     recombination rate of 0.0 means that the loci are completely
     linked, and thus behave together as a single linked locus. A
-    recombination rate of 0.5 is equivalent to free recombination. All
-    other values between 0.0 and 0.5 will represent various linkage
-    intensities between adjacent pairs of loci. The recombination rate
-    is equivalent to 1-linkage and represents the probability that the
-    allele at the next locus is randomly drawn.
+    recombination rate of 0.5 is equivalent to free of recombination.
+    All other values between 0.0 and 0.5 will represent various
+    linkage intensities between adjacent pairs of loci. The
+    recombination rate is equivalent to 1-linkage and represents the
+    probability that the allele at the next locus is randomly drawn.
 
 "; 
 
@@ -9384,9 +9387,9 @@ Usage:
 
 Arguments:
 
-    intensity:      intensity of recombination. The actually
+    intensity:      intensity of recombination. The actual
                     recombination rate between two loci is determined
-                    by intensity*locus distance between them.
+                    by intensity*locus distance (between them).
     rate:           recombination rate regardless of locus distance
                     after all afterLoci. It can also be an array of
                     recombination rates. Should have the same length
@@ -9998,27 +10001,27 @@ Details:
     proportional to its fitness value. More specifically,
     * PreMating selectors assign fitness values to each  individual,
     and mark part or all subpopulations as under selection.
-    * During sexless  mating (e.g.  binomialSelection mating scheme),
+    * during sexless  mating (e.g.  binomialSelection mating scheme),
     individuals are chosen at probabilities that are proportional to
     their fitness values. If there are  $ N $ individuals with fitness
     values  $ f_{i},i=1,...,N $,  individual $ i $ will have
     probability  $ \\frac{f_{i}}{\\sum_{j}f_{j}} $ to be chosen and
     passed to the next generation.
-    * During  randomMating, males and females are separated. They are
+    * during  randomMating, males and females are separated. They are
     chosen from their respective groups in the same manner as
     binomialSelection and mate.
     All of the selection operators, when applied, will set an
     information field fitness (configurable) and then mark part or all
     subpopulations as under selection. (You can use different
-    selectors to simulate varying selection intensity for different
-    subpopulations). Then, a 'selector-aware'  mating scheme can
-    select individuals according to this fitness information field.
-    This implies that
-    * Only  mating schemes can actually select individuals.
-    * Selector has to be PreMating operator. This is not a problem
-    when you use the operator form of the selectors since their
+    selectors to simulate various selection intensities for different
+    subpopulations). Then, a 'selector-aware' mating scheme can select
+    individuals according to their fitness information fields. This
+    implies that
+    * only  mating schemes can actually select individuals.
+    * a  selector has to be a PreMating operator. This is not a
+    problem when you use the operator form of the  selector since its
     default stage is PreMating. However, if you use the function form
-    of these selectors in a  pyOperator, make sure to set the stage of
+    of the  selector in a  pyOperator, make sure to set the stage of
     pyOperator to PreMating.
 
 Note:
@@ -10704,7 +10707,7 @@ Details:
     The Stepwise Mutation Model (SMM) assumes that alleles are
     represented by integer values and that a mutation either increases
     or decreases the allele value by one. For variable number tandem
-    repeats loci (VNTR), the allele value is generally taken as the
+    repeats(VNTR) loci, the allele value is generally taken as the
     number of tandem repeats in the DNA sequence.
 
 "; 
@@ -10723,10 +10726,9 @@ Usage:
 
 Details:
 
-    The stepwise mutation model (SMM) is developed for allozymes. It
-    provides better description for these kinds of evolutionary
-    processes. Please see  mutator for the description of other
-    parameters.
+    The SMM is developed for allozymes. It provides better description
+    for these kinds of evolutionary processes. Please see class
+    mutator for the descriptions of other parameters.
 
 Arguments:
 
@@ -10918,7 +10920,7 @@ Description:
 
 Details:
 
-    Function Spread(ind, subPop) spreads the genotype of ind to all
+    Function Spread(ind, subPop) spreads the genotypes of ind to all
     individuals in an array of subpopulations. The default value of
     subPop is the subpopulation where ind resides.
 
