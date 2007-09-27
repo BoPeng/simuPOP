@@ -104,16 +104,19 @@ class TestPopulation(unittest.TestCase):
         if AlleleType() != 'binary':
             pop = population(size=100, ploidy=2, loci=[5, 7], 
                 subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-                maxAllele=3, alleleNames=['A','C','T','G']) 
+                maxAllele=3, chromoName=["ch1", "ch2"], 
+                alleleNames=['A','C','T','G']) 
         else:
             pop = population(size=100, ploidy=2, loci=[5, 7], 
                 subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-                alleleNames=['1','2']) 
+                chromoName=["ch1", "ch2"], alleleNames=['1','2']) 
         #
         self.assertEqual(pop.ploidy(), 2)
         self.assertEqual(pop.ploidyName(), 'diploid')
         #
         self.assertEqual(pop.numChrom(), 2)
+        self.assertEqual(pop.chromName(0), "ch1")
+        self.assertEqual(pop.chromName(1), "ch2")
         #
         self.assertEqual(pop.numLoci(0), 5)
         self.assertEqual(pop.numLoci(1), 7)
