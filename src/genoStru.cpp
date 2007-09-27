@@ -26,12 +26,12 @@
 namespace simuPOP
 {
 	GenoStructure::GenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
-		const vectorf& lociPos, const vectorstr& alleleNames,
+		const vectorf& lociPos, const vectorstr& chromNames, const vectorstr& alleleNames,
 		const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields,
 		const vectori& chromMap)
 		:m_ploidy(ploidy),  m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom),
 		m_lociPos(lociPos), m_chromIndex(loci.size()+1),
-		m_alleleNames(alleleNames), m_lociNames(lociNames),
+		m_chromNames(chromNames), m_alleleNames(alleleNames), m_lociNames(lociNames),
 		m_maxAllele(maxAllele),
 		m_infoFields(infoFields),
 		m_chromMap(chromMap)
@@ -86,6 +86,16 @@ namespace simuPOP
 						ValueError, "Loci distance must be in order.");
 		}
 #endif
+
+		DBG_ASSERT(m_chromNames.empty() || m_chromNames.size() == m_numChrom, ValueError,
+			"Chromosome names, if specified, should be given to every chromosomes");
+	
+		if (m_chromNames.empty())
+		{
+			m_chromNames.resize(m_numChrom);
+			for(i = 0; i < m_numChrom; ++i)
+				m_chromNames[i] = "chrom"+ toStr(i+1);
+		}
 
 		DBG_ASSERT(m_lociNames.empty() || m_lociNames.size() == m_totNumLoci, ValueError,
 			"Loci names, if specified, should be given to every loci");
@@ -163,6 +173,7 @@ namespace simuPOP
 			( m_numLoci == rhs.m_numLoci) &&
 			( m_sexChrom == rhs.m_sexChrom) &&
 			( m_lociPos == rhs.m_lociPos) &&
+			( m_chromNames == rhs.m_chromNames) &&
 			( m_alleleNames == rhs.m_alleleNames) &&
 			( m_lociNames == rhs.m_lociNames) &&
 			( m_maxAllele == rhs.m_maxAllele) &&
@@ -180,7 +191,7 @@ namespace simuPOP
 	vector<GenoStructure> GenoStruTrait::s_genoStruRepository = vector<GenoStructure>();
 
 	void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru& loci, bool sexChrom,
-		const vectorf& lociPos, const vectorstr& alleleNames,
+		const vectorf& lociPos, const vectorstr& chromNames, const vectorstr& alleleNames,
 		const vectorstr& lociNames, UINT maxAllele, const vectorstr& infoFields,
 		const vectori& chromMap)
 	{
@@ -196,7 +207,7 @@ namespace simuPOP
 		}
 
 		GenoStructure tmp = GenoStructure( ploidy, loci, sexChrom,
-			lociPos, alleleNames, lociNames, maxAllele, infoFields, chromMap);
+			lociPos, chromNames, alleleNames, lociNames, maxAllele, infoFields, chromMap);
 
 		for(TraitIndexType it = 0; it < s_genoStruRepository.size();
 			++it)
@@ -262,6 +273,7 @@ else \
 			// loci pos and loci name
 			vectorf lociPos;
 			vectorstr lociNames;
+			vectorstr chromNames;
 
 			for (size_t ch = 0; ch < loci.size(); ++ch)
 			{
@@ -271,6 +283,7 @@ else \
 				{
 					if (ch < gs1.m_numLoci.size() && ch < gs2.m_numLoci.size())
 					{
+						chromNames.push_back(gs1.m_chromNames[ch]);
 						// index 1 done
 						double pos1 = idx1 < gs1.m_numLoci[ch] ? gs1.m_lociPos[gs1.m_chromIndex[ch] + idx1] : 1.e9;
 						double pos2 = idx2 < gs2.m_numLoci[ch] ? gs2.m_lociPos[gs2.m_chromIndex[ch] + idx2] : 1.e9;
@@ -295,6 +308,7 @@ else \
 					}
 					else if (ch < gs1.m_numLoci.size() && ch >= gs2.m_numLoci.size())
 					{
+						chromNames.push_back(gs1.m_chromNames[ch]);
 						// add idx 1
 						lociPos.push_back(gs1.m_lociPos[gs1.m_chromIndex[ch] + idx1]);
 						string name = gs1.m_lociNames[gs1.m_chromIndex[ch] + idx1];
@@ -303,6 +317,7 @@ else \
 					}
 					else if (ch >= gs1.m_numLoci.size() && ch < gs2.m_numLoci.size())
 					{
+						chromNames.push_back(gs2.m_chromNames[ch]);
 						// add idx 2
 						lociPos.push_back(gs2.m_lociPos[gs2.m_chromIndex[ch] + idx2]);
 						string name = gs2.m_lociNames[gs2.m_chromIndex[ch] + idx2];
@@ -318,7 +333,7 @@ else \
 			//
 			UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
 			return * new GenoStructure(gs1.m_ploidy, loci, sexChrom, lociPos,
-				gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields, gs1.m_chromMap);
+				chromNames, gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields, gs1.m_chromMap);
 		}
 		else
 		{
@@ -331,6 +346,8 @@ else \
 			DBG_FAILIF(gs1.m_alleleNames != gs2.m_alleleNames, ValueError,
 				"Merged population should have the same allele names (sorry, no allele names at each locus for now)");
 			vectorstr lociNames = gs1.m_lociNames;
+			vectorstr chromNames = gs1.m_chromNames;
+			chromNames.insert(chromNames.end(), gs2.m_chromNames.begin(), gs2.m_chromNames.end());
 			// add locus name, if there is no duplicate, fine. Otherwise, add '_' to the names.
 			for(vectorstr::const_iterator it=gs2.m_lociNames.begin(); it != gs2.m_lociNames.end(); ++it)
 			{
@@ -338,7 +355,7 @@ else \
 			}
 			UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
 			return * new GenoStructure(gs1.m_ploidy, loci, gs2.m_sexChrom, lociPos,
-				gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields, gs1.m_chromMap);
+				chromNames, gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields, gs1.m_chromMap);
 		}
 #undef addLocusName
 	}
@@ -378,7 +395,7 @@ else \
 			newLociNames.push_back(locusName(*loc));
 		}
 		return * new GenoStructure(ploidy(), newNumLoci, sexChrom(), newLociDist,
-			alleleNames(), newLociNames, maxAllele(), infoFields(), chromMap());
+			chromNames(), alleleNames(), newLociNames, maxAllele(), infoFields(), chromMap());
 	}
 
 	/// CPPONLY add some loci to genotype structure
@@ -432,7 +449,7 @@ else \
 			}
 		}
 		return * new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, lociPos,
-			gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields, gs.m_chromMap);
+			gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields, gs.m_chromMap);
 	}
 
 	/// CPPONLY append some loci to genotype structure
@@ -487,7 +504,7 @@ else \
 			}
 		}
 		return * new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, lociPos,
-			gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields, gs.m_chromMap);
+			gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields, gs.m_chromMap);
 	}
 
 	void GenoStruTrait::setGenoStructure(GenoStructure& rhs)

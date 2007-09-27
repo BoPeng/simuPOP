@@ -441,7 +441,7 @@ Number of ancestral population: %d
             generalInfo += "    " + ", ".join([str(self.pop.locusPos( self.pop.absLocusIndex(ch,a))) for a in range(self.pop.numLoci(ch))]) + "\n"            
         generalInfo += "Locus names: \n"
         for ch in range(self.pop.numChrom()):
-            generalInfo += "    " + ", ".join([self.pop.locusName( self.pop.absLocusIndex(ch,a)) for a in range(self.pop.numLoci(ch))]) + "\n"        
+            generalInfo += "  " + self.pop.chromName(ch) + "  " + ", ".join([self.pop.locusName( self.pop.absLocusIndex(ch,a)) for a in range(self.pop.numLoci(ch))]) + "\n"        
         self.txt_popGeneralInfo.SetValue(generalInfo)
         self.generalPageReady = True
  

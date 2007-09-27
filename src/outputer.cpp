@@ -49,7 +49,7 @@ namespace simuPOP
 			out << "Loci names: " << endl;
 			for(UINT ch=0; ch < pop.numChrom(); ++ch)
 			{
-				out << "\t\t";
+				out << "\t" << pop.chromName(ch) << "\t";
 				for(UINT i=0; i < pop.numLoci(ch); ++i)
 					out << pop.locusName( pop.absLocusIndex(ch,i) ) << " ";
 				out << endl;
