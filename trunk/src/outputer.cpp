@@ -41,7 +41,7 @@ namespace simuPOP
 			out << "Loci positions: " << endl;
 			for(UINT ch=0; ch < pop.numChrom(); ++ch)
 			{
-				cout << "\t\t";
+				cout << "\t" << pop.chromName(ch) << "\t";
 				for(UINT i=0; i < pop.numLoci(ch); ++i)
 					out << pop.locusPos( pop.absLocusIndex(ch,i) ) << " ";
 				out << endl;
