@@ -126,10 +126,10 @@ namespace simuPOP
 			/// create a map selector
 			/**
 			\param locus the locus index. A shortcut to <tt> loci=[locus] </tt>
-			\param loci the locus indexes. The genotypes at these loci will be used to determine fitness value.
+			\param loci the locus indexes. The genotypes at these loci will be used to determine the fitness value.
 			\param fitness a dictionary of fitness values. The genotype must be in the form of <tt>'a-b'</tt>
 				for a single locus, and <tt>'a-b|c-d|e-f'</tt> for multi-loci.
-			\param phase if \c True, genotypes \c a-b and \c b-a will have different fitness values. Default to false.
+			\param phase if \c True, genotypes \c a-b and \c b-a will have different fitness values. Default to \c False.
 			\param output and other parameters please refer to help(baseOperator.__init__)
 
 			\test src_mapSelector.log Operator \c mapSelector
@@ -176,15 +176,15 @@ namespace simuPOP
 
 	/// multiple allele selector (selection according to wildtype or diseased alleles)
 	/**
-	This is called 'multiple-allele' selector. It separate alleles into two groups:
-	wildtype and disease alleles. Wildtype alleles are specified by parameter
+	This is called 'multiple-allele' selector. It separates alleles into two groups:
+	wildtype and diseased alleles. Wildtype alleles are specified by parameter
 	\c wildtype and any other alleles are considered as diseased alleles.
 
 	This selector accepts an array of fitness values:
 
-	\li For single-locus, \c fitness is the fitness for genotype AA, Aa, aa, while A stands for wildtype alleles.
-	\li For a two-locus model, \c fitness is the fitness for genotype AABB, AABb, AAbb, AaBB, AbBb, Aabb, aaBB, aaBb and aaBb.
-	\li For a model with more than two loci, use a table of length 3^{n} in a order similar to the two-locus model.
+	\li For single-locus, \c fitness is the fitness for genotypes AA, Aa, aa, while A stands for wildtype alleles.
+	\li For a two-locus model, \c fitness is the fitness for genotypes AABB, AABb, AAbb, AaBB, AbBb, Aabb, aaBB, aaBb and aaBb.
+	\li For a model with more than two loci, use a table of length \f$ 3^{n} \f$ in a order similar to the two-locus model.
 
 	<funcForm>MaSelect</funcForm>
 
@@ -195,16 +195,16 @@ namespace simuPOP
 
 			/// create a multiple allele selector
 			/**
-			\param fitness for the single locus case, fitness is an array of fitness of AA, Aa, aa.
+			\param fitness for the single locus case, \c fitness is an array of fitness of AA, Aa, aa.
 				A is the wildtype group. In the case of multiple loci, fitness should be in the order of
 				AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
 			\param wildtype an array of alleles in the wildtype group. Any other alleles are
 				considered to be diseased alleles. Default to <tt>[0]</tt>.
-			\param output and other parameters please refer to help(baseOperator.__init__)
+			\param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
 
-			Please refer to \c basicSelector for other parameter descriptions.
+			Please refer to \c selector for other parameter descriptions.
 
-			\note \li \c maSelector only works for diploid populations now.
+			\note \li \c maSelector only works for diploid populations.
 			\li \c wildtype at all loci are the same.
 
 			\test src_maSelector.log Operator \c maSelector
@@ -254,10 +254,10 @@ namespace simuPOP
 
 	/// selection according to genotypes at multiple loci in a multiplicative model
 	/**
-	This selector is a 'multiple-loci model' selector. The selector takes a vector of
+	This selector is a 'multiple-locus model' selector. The selector takes a vector of
 	selectors (can not be another \c mlSelector) and evaluate the fitness of an
-	individual as the the product or sum of individual fitness values. The mode is
-	determined by parameter \c mode, which takes the value
+	individual as the product or sum of individual fitness values. The mode is
+	determined by parameter \c mode, which takes one of the following values
 	\li \c SEL_Multiplicative: the fitness is calculated as \f$ f=\prod_{i}f_{i} \f$.
 	\li \c SEL_Additive: the fitness is calculated as
 		\f$ f=\max\left(0,1-\sum_{i}(1-f_{i})\right)=\max\left(0,1-\sum_{i}s_{i}\right) \f$.
@@ -278,7 +278,7 @@ namespace simuPOP
 			typedef std::vector< baseOperator * > vectorop;
 
 		public:
-			/// create a multi-loci selector
+			/// create a multiple-locus selector
 			/**
 			\param selectors a list of selectors
 
@@ -334,18 +334,18 @@ namespace simuPOP
 
 	/// selection using user provided function
 	/**
-	\c pySelector assigns fitness values by calling a user provided function.
-	It accepts a list of susceptibility loci and a Python function \c func. For
+	This selector assigns fitness values by calling a user provided function.
+	It accepts a list of loci and a Python function \c func. For
 	each individual, this operator will pass the genotypes at these loci, 
 	generation number, and optionally values at some information fields
 	to this function. The return value is treated as the fitness value.
 	The genotypes are arranged in the order
 	of <tt>0-0,0-1,1-0,1-1</tt> etc. where X-Y represents locus X - ploidy Y.
 	More specifically, \c func can be
-	\li <tt>func(geno, gen)</tt> if \c infoFields has length 0 or 1
+	\li <tt>func(geno, gen)</tt> if \c infoFields has length 0 or 1.
 	\li <tt>func(geno, gen, fields)</tt> when \c infoFields has more than 1 fields.
 		Values of fields 1, 2, ... will be passed.
-	Both \c geno and \c fields should be an list.
+	Both \c geno and \c fields should be a list.
 
 	<funcForm>PySelect</funcForm>
 	*/
@@ -356,9 +356,9 @@ namespace simuPOP
 			/**
 			\param loci susceptibility loci. The genotype at these loci will be
 				passed to \c func.
-			\param func a Python function that accepts genotypes at susceptibility loci
-				generation number, and return fitness value.
-			\param output and other parameters please refer to help(baseOperator.__init__)
+			\param func a Python function that accepts genotypes at specified loci, 
+				generation number, and optionally information fields. It returns the fitness value.
+			\param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
 			\param infoFields if specified, the first field should be the information
 				field to save calculated fitness value (should be 'fitness' in most cases).
 				The values of the rest of the information fields (if available) will also 
