@@ -1483,7 +1483,7 @@ Usage:
 
 %ignore simuPOP::GenoStructure::GenoStructure();
 
-%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields, const vectori &chromMap);
+%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &chromNames, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields, const vectori &chromMap);
 
 %feature("docstring") simuPOP::GenoStructure::~GenoStructure "
 
@@ -1570,7 +1570,7 @@ C
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields, const vectori &chromMap);
+%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &chromNames, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields, const vectori &chromMap);
 
 %ignore simuPOP::GenoStruTrait::setGenoStructure(GenoStructure &rhs);
 
@@ -1792,6 +1792,42 @@ Description:
 Usage:
 
     x.chromLocusPair(locus)
+
+"; 
+
+%feature("docstring") simuPOP::GenoStruTrait::chromName "
+
+Description:
+
+    return the name of an chrom
+
+Usage:
+
+    x.chromName(chrom)
+
+"; 
+
+%feature("docstring") simuPOP::GenoStruTrait::chromNames "
+
+Description:
+
+    return an array of chrom names
+
+Usage:
+
+    x.chromNames()
+
+"; 
+
+%feature("docstring") simuPOP::GenoStruTrait::chromByName "
+
+Description:
+
+    return the index of a chromosome by its name
+
+Usage:
+
+    x.chromByName(name)
 
 "; 
 
@@ -3566,12 +3602,12 @@ Description:
 Details:
 
     This is called 'multiple-allele'  penetrance. It separates alleles
-    into two groups: wildtype and disease alleles. Wildtype alleles
+    into two groups: wildtype and diseased alleles. Wildtype alleles
     are specified by parameter wildtype and any other alleles are
     considered as diseased alleles.  maPenetrance accepts an array of
-    fitness for AA, Aa, aa in the single-locus case, and a longer
-    table for multi-locus case. Penetrance is then set for any given
-    genotype.
+    penetrance for AA, Aa, aa in the single-locus case, and a longer
+    table for the multi-locus case. Penetrance is then set for any
+    given genotype.
 
 "; 
 
@@ -3592,15 +3628,15 @@ Arguments:
 
     locus:          the locus index. The genotype of this locus will
                     be used to determine  penetrance.
-    loci:           the loci indexes. The genotypes of these loci will
-                    be examed.
-    penetrance:     an array of  penetrance values of AA, Aa, aa. A is
+    loci:           the locus indexes. The genotypes of these loci
+                    will be examed.
+    penet:          an array of  penetrance values of AA, Aa, aa. A is
                     the wild type group. In the case of multiple loci,
-                    fitness should be in the order of AABB, AABb,
+                    penetrance should be in the order of AABB, AABb,
                     AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
     wildtype:       an array of alleles in the wildtype group. Any
-                    other alleles will be considered as in the disease
-                    allele group.
+                    other alleles will be considered as in the
+                    diseased allele group.
     output:         and other parameters please refer to
                     help(baseOperator.__init__)
 
@@ -3686,9 +3722,9 @@ Usage:
 Arguments:
 
     locus:          the locus index. Shortcut to loci=[locus]
-    loci:           the loci indexes. The genotypes of these loci will
-                    be used to determine  penetrance.
-    penetrance:     a dictionary of  penetrance. The genotype must be
+    loci:           the locus indexes. The genotypes of these loci
+                    will be used to determine  penetrance.
+    penet:          a dictionary of  penetrance. The genotype must be
                     in the form of 'a-b' for a single locus.
     phase:          if True, a/b and b/a will have different
                     penetrance values. Default to False.
@@ -3760,7 +3796,7 @@ Details:
 
     Assign quantitative trait using a table with keys 'X-Y' where X
     and Y are allele numbers. If parameter sigma is not zero, the
-    returned value is the sum of the trait plus  $
+    return value is the sum of the trait plus  $
     N\\left(0,\\sigma^{2}\\right) $. This random part is usually
     considered as the environmental factor of the trait.
 
@@ -3783,7 +3819,7 @@ Arguments:
     locus:          the locus index. The quantitative trait is
                     determined by genotype at this locus.
     loci:           an array of locus indexes. The quantitative trait
-                    is determined by genotype at these loci.
+                    is determined by genotypes at these loci.
     qtrait:         a dictionary of quantitative traits. The genotype
                     must be in the form of 'a-b'. This is the mean of
                     the quantitative trait. The actual trait value
@@ -3793,8 +3829,8 @@ Arguments:
                     N(0, sigma^2).
     phase:          if True, a/b and b/a will have different
                     quantitative trait values. Default to False.
-    output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+    output:         and other parameters please refer to help
+                    (baseOperator.__init__)
 
 "; 
 
@@ -3871,12 +3907,12 @@ Arguments:
 
     locus:          the locus index. A shortcut to  loci=[locus]
     loci:           the locus indexes. The genotypes at these loci
-                    will be used to determine fitness value.
+                    will be used to determine the fitness value.
     fitness:        a dictionary of fitness values. The genotype must
                     be in the form of 'a-b' for a single locus, and
                     'a-b|c-d|e-f' for multi-loci.
     phase:          if True, genotypes a-b and b-a will have different
-                    fitness values. Default to false.
+                    fitness values. Default to False.
     output:         and other parameters please refer to
                     help(baseOperator.__init__)
 
@@ -4049,17 +4085,17 @@ Description:
 
 Details:
 
-    This is called 'multiple-allele'  selector. It separate alleles
-    into two groups: wildtype and disease alleles. Wildtype alleles
+    This is called 'multiple-allele'  selector. It separates alleles
+    into two groups: wildtype and diseased alleles. Wildtype alleles
     are specified by parameter wildtype and any other alleles are
     considered as diseased alleles.This  selector accepts an array of
     fitness values:
-    * For single-locus, fitness is the fitness for genotype AA, Aa,
+    * For single-locus, fitness is the fitness for genotypes AA, Aa,
     aa, while A stands for wildtype alleles.
-    * For a two-locus model, fitness is the fitness for genotype AABB,
-    AABb, AAbb, AaBB, AbBb, Aabb, aaBB, aaBb and aaBb.
-    * For a model with more than two loci, use a table of length 3^{n}
-    in a order similar to the two-locus model.
+    * For a two-locus model, fitness is the fitness for genotypes
+    AABB, AABb, AAbb, AaBB, AbBb, Aabb, aaBB, aaBb and aaBb.
+    * For a model with more than two loci, use a table of length  $
+    3^{n} $ in a order similar to the two-locus model.
 
 "; 
 
@@ -4077,7 +4113,7 @@ Usage:
 
 Details:
 
-    Please refer to basicSelector for other parameter descriptions.
+    Please refer to  selector for other parameter descriptions.
 
 Arguments:
 
@@ -4089,12 +4125,12 @@ Arguments:
     wildtype:       an array of alleles in the wildtype group. Any
                     other alleles are considered to be diseased
                     alleles. Default to [0].
-    output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+    output:         and other parameters please refer to help
+                    (baseOperator.__init__)
 
 Note:
 
-    *  maSelector only works for diploid populations now.
+    *  maSelector only works for diploid populations.
     * wildtype at all loci are the same.
 
 Example:
@@ -4598,9 +4634,9 @@ Description:
 
 Details:
 
-    mlPentrance is the 'multiple-locus' penetrnace calculator. It
-    accepts a list of penetrances and combine them according to the
-    mode parameter, which takes one of the following values:
+    This is the 'multiple-locus' penetrnace calculator. It accepts a
+    list of penetrances and combine them according to the mode
+    parameter, which takes one of the following values:
     * PEN_Multiplicative: the  penetrance is calculated as  $ f=\\prod
     f_{i} $.
     * PEN_Additive: the  penetrance is calculated as  $
@@ -4617,8 +4653,7 @@ Details:
 
 Description:
 
-    create a multiple loci  penetrance operator using a multiplicative
-    model
+    create a multiple locus  penetrance operator
 
 Usage:
 
@@ -4794,11 +4829,12 @@ Description:
 
 Details:
 
-    This  selector is a 'multiple-loci model'  selector. The  selector
-    takes a vector of selectors (can not be another  mlSelector) and
-    evaluate the fitness of an  individual as the the product or sum
-    of  individual fitness values. The mode is determined by parameter
-    mode, which takes the value
+    This  selector is a 'multiple-locus model'  selector. The
+    selector takes a vector of selectors (can not be another
+    mlSelector) and evaluate the fitness of an  individual as the
+    product or sum of  individual fitness values. The mode is
+    determined by parameter mode, which takes one of the following
+    values
     * SEL_Multiplicative: the fitness is calculated as  $
     f=\\prod_{i}f_{i} $.
     * SEL_Additive: the fitness is calculated as  $ f=\\max\\left(0,1-\\s
@@ -4812,7 +4848,7 @@ Details:
 
 Description:
 
-    create a multi-loci  selector
+    create a multiple-locus  selector
 
 Usage:
 
@@ -5741,19 +5777,18 @@ Description:
 Details:
 
     Penetrance is the probability that one will have the disease when
-    he has certain genotype(s). Calculation and the parameter set of
-    penetrance are similar to those of fitness. An  individual will be
-    randomly marked as affected/unaffected according to his/her
-    penetrance value. For example, an  individual will have
-    probability 0.8 to be affected if the  penetrance is 0.8.
+    he has certain genotype(s). An  individual will be randomly marked
+    as affected/unaffected according to his/her  penetrance value. For
+    example, an  individual will have probability 0.8 to be affected
+    if the  penetrance is 0.8.
     Penetrance can be applied at any stage (default to DuringMating).
-    When a  penetrance operator is applied, it calculate the
-    penetrance value of each offspring and assign affected status
+    When a  penetrance operator is applied, it calculates the
+    penetrance value of each offspring and assigns affected status
     accordingly. Penetrance can also be used PreMating or PostMating.
     In these cases, the affected status will be set to all individuals
-    according to their  penetrance values.Pentrance values are used to
-    set the affectedness of individuals, and are usually not saved. If
-    you would like to know the  penetrance value, you need to
+    according to their  penetrance values.
+    Penetrance values are usually not saved. If you would like to know
+    the  penetrance value, you need to
     * use addInfoField('penetrance') to the  population to analyze.
     (Or use infoFields parameter of the  population constructor), and
     * use e.g.,  mlPenetrance(...., infoFields=['penetrance']) to add
@@ -5765,7 +5800,7 @@ Details:
     which is default to -1 (all available ancestral generations). You
     can set it to 0 if you only need affection status for the current
     generation, or specify a number n for the number of ancestral
-    generations (n + 1 total generations) to process. Note that
+    generations (n + 1 total generations) to process. Note that the
     ancestralGen parameter is ignored if the  penetrance operator is
     used as a during  mating operator.
 
@@ -5775,25 +5810,21 @@ Details:
 
 Description:
 
-    create a  penetrance operator
+    create a  penetrance operator, default to be always active.
 
 Usage:
 
     penetrance(ancestralGen=-1, stage=DuringMating, begin=0, end=-1,
       step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
-Details:
-
-    default to be always active.
-
 Arguments:
 
-    ancestralGen:   if this parameter is set to be 0, then apply
+    ancestralGen:   if this parameter is set to be 0, apply
                     penetrance to the current generation; if -1, apply
                     to all generations; otherwise, apply to the
-                    specified number of ancestral generations
-    stage:          specify the stage this operator will be applied,
-                    default to DuringMating.
+                    specified numbers of ancestral generations.
+    stage:          specify the stage this operator will be applied.
+                    Default to DuringMating.
     infoFields:     If one field is specified, it will be used to
                     store  penetrance values.
 
@@ -6025,9 +6056,9 @@ Description:
 Usage:
 
     population(size=0, ploidy=2, loci=[], sexChrom=False,
-      lociPos=[], subPop=[], ancestralDepth=0, alleleNames=[],
-      lociNames=[], maxAllele=ModuleMaxAllele, infoFields=[],
-      chromMap=[])
+      lociPos=[], subPop=[], ancestralDepth=0, chromNames=[],
+      alleleNames=[], lociNames=[], maxAllele=ModuleMaxAllele,
+      infoFields=[], chromMap=[])
 
 Arguments:
 
@@ -6073,6 +6104,7 @@ Arguments:
                     exhaust your computer RAM. If you really need to
                     do that, using  savePopulation operator to save
                     each generation to a file is a much better choice.
+    chromNames:     an array of chromosome names.
     alleleNames:    an array of allele names. For example, for a locus
                     with alleles A, C, T, G, you can specify
                     alleleNames as ('A','C','T','G').
@@ -8486,12 +8518,12 @@ Description:
 Details:
 
     For each  individual, the  penetrance is determined by a user-
-    defined  penetrance function func. This function takes genetype at
-    specified loci, and optionally values of specified information
+    defined  penetrance function func. This function takes genetypes
+    at specified loci, and optionally values of specified information
     fields. The return value is considered as the  penetrance for this
     individual.More specifically, func can be
-    * func(geno) if infoFields has length 0 or 1
-    * func(geno, fields) when infoFields has more than 1 fields Both
+    * func(geno) if infoFields has length 0 or 1.
+    * func(geno, fields) when infoFields has more than 1 fields. Both
     parameters should be an list.
 
 "; 
@@ -8511,21 +8543,21 @@ Usage:
 
 Arguments:
 
-    loci:           disease susceptibility loci. The genotypes at
-                    these loci will be passed to the provided Python
-                    function in the form of loc1_1, loc1_2, loc2_1,
-                    loc2_2, ... if the individuals are diploid.
+    loci:           the genotypes at these loci will be passed to the
+                    provided Python function in the form of loc1_1,
+                    loc1_2, loc2_1, loc2_2, ... if the individuals are
+                    diploid.
     func:           a user-defined Python function that accepts an
-                    array of genotypes at susceptibility loci and
-                    return a  penetrance value. The returned value
-                    should be between 0 and 1.
+                    array of genotypes at specified loci and return a
+                    penetrance value. The return value should be
+                    between 0 and 1.
     infoFields:     if specified, the first field should be the
                     information field to save calculated  penetrance
                     value. The values of the rest of the information
                     fields (if available) will also be passed to the
                     user defined  penetrance function.
-    output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+    output:         and other parameters please refer to help
+                    (baseOperator.__init__)
 
 Example:
 
@@ -8793,18 +8825,18 @@ Description:
 
 Details:
 
-    pySelector assigns fitness values by calling a user provided
-    function. It accepts a list of susceptibility loci and a Python
-    function func. For each  individual, this operator will pass the
-    genotypes at these loci, generation number, and optionally values
-    at some information fields to this function. The return value is
-    treated as the fitness value. The genotypes are arranged in the
-    order of 0-0,0-1,1-0,1-1 etc. where X-Y represents locus X -
-    ploidy Y. More specifically, func can be
-    * func(geno, gen) if infoFields has length 0 or 1
+    This  selector assigns fitness values by calling a user provided
+    function. It accepts a list of loci and a Python function func.
+    For each  individual, this operator will pass the genotypes at
+    these loci, generation number, and optionally values at some
+    information fields to this function. The return value is treated
+    as the fitness value. The genotypes are arranged in the order of
+    0-0,0-1,1-0,1-1 etc. where X-Y represents locus X - ploidy Y. More
+    specifically, func can be
+    * func(geno, gen) if infoFields has length 0 or 1.
     * func(geno, gen, fields) when infoFields has more than 1 fields.
     Values of fields 1, 2, ... will be passed. Both geno and fields
-    should be an list.
+    should be a list.
 
 "; 
 
@@ -8825,10 +8857,10 @@ Arguments:
     loci:           susceptibility loci. The genotype at these loci
                     will be passed to func.
     func:           a Python function that accepts genotypes at
-                    susceptibility loci generation number, and return
-                    fitness value.
-    output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+                    specified loci, generation number, and optionally
+                    information fields. It returns the fitness value.
+    output:         and other parameters please refer to help
+                    (baseOperator.__init__)
     infoFields:     if specified, the first field should be the
                     information field to save calculated fitness value
                     (should be 'fitness' in most cases). The values of
@@ -9094,9 +9126,9 @@ Details:
     genotype. Quantitative trait is similar to  penetrance in that the
     consequence of  penetrance is binary: affected or unaffected;
     while it is continuous for quantitative trait.
-    In  simuPOP, different operators/functions were implemented to
+    In  simuPOP, different operators or functions were implemented to
     calculate quantitative traits for each  individual and store the
-    values in the information fields specified by user (default to
+    values in the information fields specified by the user (default to
     qtrait). The quantitative trait operators also accept the
     ancestralGen parameter to control the number of generations for
     which the qtrait information field will be set.
