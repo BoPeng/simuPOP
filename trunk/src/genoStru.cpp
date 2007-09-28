@@ -261,6 +261,14 @@ else \
 				if (ch < gs2.m_numLoci.size())
 					loci[ch] += gs2.m_numLoci[ch];
 			}
+			vectorstr chromNames;
+			for (size_t ch = 0; ch < loci.size(); ++ch)
+			{
+				if (ch < gs1.m_numLoci.size())
+					chromNames.push_back(gs1.m_chromNames[ch]);
+				else
+					chromNames.push_back(gs2.m_chromNames[ch]);
+			}
 			DBG_DO(DBG_POPULATION, cout << "New number of loci " << loci << endl);
 			// sex chrom
 			DBG_FAILIF(gs1.m_sexChrom && gs2.m_sexChrom && gs1.m_numLoci.size() != gs2.m_numLoci.size(),
@@ -273,7 +281,6 @@ else \
 			// loci pos and loci name
 			vectorf lociPos;
 			vectorstr lociNames;
-			vectorstr chromNames;
 
 			for (size_t ch = 0; ch < loci.size(); ++ch)
 			{
@@ -283,7 +290,6 @@ else \
 				{
 					if (ch < gs1.m_numLoci.size() && ch < gs2.m_numLoci.size())
 					{
-						chromNames.push_back(gs1.m_chromNames[ch]);
 						// index 1 done
 						double pos1 = idx1 < gs1.m_numLoci[ch] ? gs1.m_lociPos[gs1.m_chromIndex[ch] + idx1] : 1.e9;
 						double pos2 = idx2 < gs2.m_numLoci[ch] ? gs2.m_lociPos[gs2.m_chromIndex[ch] + idx2] : 1.e9;
@@ -308,7 +314,6 @@ else \
 					}
 					else if (ch < gs1.m_numLoci.size() && ch >= gs2.m_numLoci.size())
 					{
-						chromNames.push_back(gs1.m_chromNames[ch]);
 						// add idx 1
 						lociPos.push_back(gs1.m_lociPos[gs1.m_chromIndex[ch] + idx1]);
 						string name = gs1.m_lociNames[gs1.m_chromIndex[ch] + idx1];
@@ -317,7 +322,6 @@ else \
 					}
 					else if (ch >= gs1.m_numLoci.size() && ch < gs2.m_numLoci.size())
 					{
-						chromNames.push_back(gs2.m_chromNames[ch]);
 						// add idx 2
 						lociPos.push_back(gs2.m_lociPos[gs2.m_chromIndex[ch] + idx2]);
 						string name = gs2.m_lociNames[gs2.m_chromIndex[ch] + idx2];
@@ -379,6 +383,7 @@ else \
 		vectoru newNumLoci;
 		vectorf newLociDist;
 		vectorstr newLociNames;
+		vectorstr newChromNames;
 		UINT curCh = 999999;					  // not 0, will be set to 0 soon.
 		for(vectoru::iterator loc = loci.begin();
 			loc != loci.end(); ++loc)
@@ -387,6 +392,7 @@ else \
 			if( newNumLoci.empty() || curCh != ch )
 			{
 				newNumLoci.push_back(1);
+				newChromNames.push_back(chromName(ch));
 				curCh = ch;
 			}
 			else
@@ -395,7 +401,7 @@ else \
 			newLociNames.push_back(locusName(*loc));
 		}
 		return * new GenoStructure(ploidy(), newNumLoci, sexChrom(), newLociDist,
-			chromNames(), alleleNames(), newLociNames, maxAllele(), infoFields(), chromMap());
+			newChromNames, alleleNames(), newLociNames, maxAllele(), infoFields(), chromMap());
 	}
 
 	/// CPPONLY add some loci to genotype structure
