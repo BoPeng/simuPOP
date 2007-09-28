@@ -67,6 +67,7 @@ if (g_curID != id) \
 		vectorf lociPos;
 		vectorlu subPop;
 		int ancestralDepth;
+		vectorstr chromNames;
 		vectorstr alleleNames;
 		vectorstr lociNames;
 		UINT maxAllele;
@@ -80,21 +81,21 @@ if (g_curID != id) \
 		mpiComm().recv(0, 6, lociPos);
 		mpiComm().recv(0, 7, subPop);
 		mpiComm().recv(0, 8, ancestralDepth);
-		mpiComm().recv(0, 9, alleleNames);
-		mpiComm().recv(0, 10, lociNames);
-		mpiComm().recv(0, 11, maxAllele);
-		mpiComm().recv(0, 12, infoFields);
-		mpiComm().recv(0, 13, chromMap);
+		mpiComm().recv(0, 9, chromNames);
+		mpiComm().recv(0, 10, alleleNames);
+		mpiComm().recv(0, 11, lociNames);
+		mpiComm().recv(0, 12, maxAllele);
+		mpiComm().recv(0, 13, infoFields);
+		mpiComm().recv(0, 14, chromMap);
 		// create population
 		return new population(size, ploidy, loci, sexChrom,
-			lociPos, subPop, ancestralDepth, alleleNames,
+			lociPos, subPop, ancestralDepth, chromNames, alleleNames,
 			lociNames, maxAllele, infoFields, chromMap);
 	}
 
 	Allele slavePopulationGetAllele(population * pop)
 	{
-		re
-			mpiComm().recv(0, 2, idx);
+		mpiComm().recv(0, 2, idx);
 	}
 
 	bool slaveExecutionLoop()
