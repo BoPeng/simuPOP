@@ -46,9 +46,9 @@ namespace simuPOP
 	penetrance is binary: affected or unaffected; while it is continuous for
 	quantitative trait. \n
 
-	In simuPOP, different operators/functions were implemented to calculate
+	In simuPOP, different operators or functions were implemented to calculate
 	quantitative traits for each individual and store the values in the information
-	fields specified by user (default to \c qtrait). The quantitative trait operators
+	fields specified by the user (default to \c qtrait). The quantitative trait operators
 	also accept the \c ancestralGen parameter to control the number of generations
 	for which the \c qtrait information field will be set.
 	*/
@@ -101,7 +101,7 @@ namespace simuPOP
 	/// quantitative trait according to genotype at one locus
 	/**
 	Assign quantitative trait using a table with keys 'X-Y' where X and Y are allele
-	numbers. If parameter \c sigma is not zero, the returned value is the sum of the
+	numbers. If parameter \c sigma is not zero, the return value is the sum of the
 	trait plus \f$ N\left(0,\sigma^{2}\right) \f$. This random part is usually considered
 	as the environmental factor of the trait.
 	<funcForm>MapQuanTrait</funcForm>
@@ -112,15 +112,15 @@ namespace simuPOP
 			/// create a map quantitative trait operator
 			/**
 			\param locus the locus index. The quantitative trait is determined by genotype at this locus.
-			\param loci an array of locus indexes. The quantitative trait is determined by genotype at these loci.
+			\param loci an array of locus indexes. The quantitative trait is determined by genotypes at these loci.
 			\param qtrait a dictionary of quantitative traits. The genotype must be in the
 				form of 'a-b'. This is the mean	of the quantitative trait. The actual trait
 				value will be <tt>N(mean, sigma^2)</tt>. For multiple loci, the form is
 				'a-b|c-d|e-f' etc.
 			\param sigma standard deviation of the environmental factor <tt>N(0, sigma^2)</tt>.
 			\param phase if \c True, a/b and b/a will have different quantitative trait values.
-				Default to False.
-			\param output and other parameters please refer to help(baseOperator.__init__)
+				Default to \c False.
+			\param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
 			*/
 			mapQuanTrait(vectoru loci, const strDict& qtrait, double sigma=0, bool phase=false,
 				int ancestralGen=-1,
