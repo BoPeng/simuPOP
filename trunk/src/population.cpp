@@ -55,6 +55,7 @@ namespace simuPOP
 		const vectorf& lociPos,
 		const vectorlu& subPop,
 		int ancestralDepth,
+		const vectorstr& chromNames,
 		const vectorstr& alleleNames,
 		const vectorstr& lociNames,
 		UINT maxAllele,
@@ -143,8 +144,8 @@ namespace simuPOP
 #endif
 		// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 		// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
-		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, alleleNames,
-			vectorstr(), lociNames, maxAllele, infoFields, chromMap);
+		this->setGenoStructure(ploidy, loci, sexChrom, lociPos, chromNames, alleleNames,
+			lociNames, maxAllele, infoFields, chromMap);
 
 		DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
 			<< sizeof(Allele) << '*' << genoSize() << endl
@@ -1385,7 +1386,7 @@ namespace simuPOP
 
 		// create a population with this size
 		population * pop = new population(0, ploidy(), numLoci(), sexChrom(), lociPos(), sz, 0,
-			alleleNames(), lociNames(), maxAllele(), infoFields(), chromMap());
+			chromNames(), alleleNames(), lociNames(), maxAllele(), infoFields(), chromMap());
 		// copy individuals over
 		IndIterator from = indBegin();
 		vector<IndIterator> to;

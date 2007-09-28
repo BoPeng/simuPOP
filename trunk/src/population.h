@@ -214,6 +214,7 @@ namespace simuPOP
 			populations. Note that keeping track of all ancestral generations may quickly
 			exhaust your computer RAM. If you really need to do that, using \c savePopulation
 			operator to save each generation to a file is a much better choice.
+			\param chromNames an array of chromosome names.
 			\param alleleNames an array of allele names. For example, for a locus with alleles
 			A, C, T, G, you can specify \c alleleNames as <tt>('A','C','T','G')</tt>.
 			\param lociNames an array or a matrix (separated by chromosomes) of names for
@@ -240,6 +241,7 @@ namespace simuPOP
 				const vectorf& lociPos=vectorf(),
 				const vectorlu& subPop=vectorlu(),
 				int ancestralDepth=0,
+				const vectorstr& chromNames=vectorstr(),
 				const vectorstr& alleleNames=vectorstr(),
 				const vectorstr& lociNames=vectorstr(),
 				UINT maxAllele = ModuleMaxAllele,
