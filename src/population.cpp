@@ -132,11 +132,12 @@ namespace simuPOP
 				mpiComm().send(node, 6, lociPos);
 				mpiComm().send(node, 7, subPop);
 				mpiComm().send(node, 8, ancestralDepth);
-				mpiComm().send(node, 9, alleleNames);
-				mpiComm().send(node, 10, lociNames);
-				mpiComm().send(node, 11, maxAllele);
-				mpiComm().send(node, 12, infoFields);
-				mpiComm().send(node, 13, chromMap);
+				mpiComm().send(node, 9, chromNames);
+				mpiComm().send(node, 10, alleleNames);
+				mpiComm().send(node, 11, lociNames);
+				mpiComm().send(node, 12, maxAllele);
+				mpiComm().send(node, 13, infoFields);
+				mpiComm().send(node, 14, chromMap);
 			}
 		}
 #endif
