@@ -555,6 +555,16 @@ namespace simuPOP
 				return s_genoStruRepository[m_genoStruIdx].m_chromNames;
 			}
 			
+			/// return the index of a chromosome by its name
+			UINT chromByName(const string name) const
+			{
+				const vectorstr& names = s_genoStruRepository[m_genoStruIdx].m_chromNames;
+				vectorstr::const_iterator it = std::find(names.begin(), names.end(), name);
+				if (it == names.end())
+					throw ValueError("Failed to find chrom with name " + name);
+				return it - names.begin();
+			}
+
 			/// return the name of an allele (if previously specified). Default to allele index.
 			string alleleName(const Allele allele) const;
 

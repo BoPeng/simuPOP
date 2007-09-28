@@ -117,6 +117,9 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.numChrom(), 2)
         self.assertEqual(pop.chromName(0), "ch1")
         self.assertEqual(pop.chromName(1), "ch2")
+        self.assertEqual(pop.chromByName("ch2"), 1)
+        self.assertRaises(exceptions.ValueError, pop.chromByName, "ch3")
+        self.assertRaises(exceptions.IndexError, pop.chromName, 2)
         #
         self.assertEqual(pop.numLoci(0), 5)
         self.assertEqual(pop.numLoci(1), 7)
