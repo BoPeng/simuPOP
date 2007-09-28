@@ -211,6 +211,11 @@ namespace simuPOP
 					ar & make_nvp("loci_distance_on_chrom", m_lociPos);
 					if (version > 2)
 						ar & make_nvp("chrom_name", m_chromNames);
+					else {
+						m_chromNames.resize(m_numChrom);
+						for (size_t i=0; i < m_numChrom; ++i)
+							m_chromNames[i] = "chrom" + toStr(i+1);
+					}
 					ar & make_nvp("allele_name", m_alleleNames);
 					ar & make_nvp("loci_name", m_lociNames);
 					ar & make_nvp("max_allele", m_maxAllele);
