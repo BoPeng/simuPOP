@@ -1541,7 +1541,8 @@ namespace simuPOP
 			"Re-arrange loci must keep the same total number of loci");
 		setGenoStructure(ploidy(), newNumLoci.empty()?numLoci():newNumLoci,
 			sexChrom(), newLociPos.empty()?lociPos():newLociPos,
-			chromNames(), alleleNames(), lociNames(), maxAllele(), infoFields(),
+			// chromosome names are discarded
+			vectorstr(), alleleNames(), lociNames(), maxAllele(), infoFields(),
 			chromMap());
 		for(int depth = ancestralDepth(); depth >=0; --depth)
 		{
