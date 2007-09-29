@@ -165,7 +165,7 @@ options = [
      'label': 'Length of mixing stage',
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''Number of generations when migration is present. This stage
-                will mix individuals from subpopulations using an circular stepstone
+                will mix individuals from subpopulations using an circular stepping stone
                 migration model.''',
      'validate':    simuOpt.valueGT(0)
     },    
@@ -187,16 +187,16 @@ options = [
      'default': 'none',
      'label': 'Migration model',
      'allowedTypes': [types.StringType],
-     'description': '''Migration model. Choose between stepstone and island.    
-                A stepstone model will be a circular model.''',
-     'validate':    simuOpt.valueOneOf(['island', 'stepstone', 'none']),
-     'chooseOneOf': ['stepstone', 'island', 'none']
+     'description': '''Migration model. Choose between stepping stone and island.    
+                A stepping stone model will be a circular model.''',
+     'validate':    simuOpt.valueOneOf(['island', 'stepping stone', 'none']),
+     'chooseOneOf': ['stepping stone', 'island', 'none']
     }, 
     {'longarg': 'migrRate=',
      'default': 0.05,
      'label': 'Migration rate',
      'description': '''Migration rate during mixing stage. 
-                Island or circular stepstone migration model can be used. ''',
+                Island or circular stepping stone migration model can be used. ''',
      'allowedTypes': [types.FloatType, types.IntType],
      'validate':    simuOpt.valueBetween(0,1)
     },
@@ -564,9 +564,9 @@ def simuCDCV(numDSL, initSpec, selModel,
         migration = noneOp()
     else:
         if migrModel == 'island':
-            migration = migrator(migrIslandRates(migrRate, numSubPop), begin=mixing)
+            migration = migrator(MigrIslandRates(migrRate, numSubPop), begin=mixing)
         else:
-            migration = migrator(migrStepstoneRates(migrRate, numSubPop, circular=True), begin=mixing)
+            migration = migrator(MigrSteppingStoneRates(migrRate, numSubPop, circular=True), begin=mixing)
     #            
     # prepare log file, if not in resume mode
     if resume == '':    # not resume
