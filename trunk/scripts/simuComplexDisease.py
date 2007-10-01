@@ -821,11 +821,12 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             # with five multiple-allele selector as parameter
             [ maSelector(locus=DSL[x], wildtype=[0], 
                 fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) for x in range(len(DSL)) ],
-            mode=mlSelModel, begin=splitGen),
+            mode=mlSelModel, begin=burninGen),
         )
     elif mlSelModelTmp == 'interaction':
         # multi-allele selector can handle multiple DSL case
-        operators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0]) )
+        operators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0],
+            begin=burninGen) )
     ###
     ### migration
     ###
