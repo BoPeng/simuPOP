@@ -965,7 +965,7 @@ def getParam(options=[], doc="", details="", noDialog=False, checkUnprocessedArg
         if opt.has_key('configName'):
             print 'Warning: configName is obsolete, please use "label" instead'
             opt['label'] = opt('configName')
-        if not opt.has_key('default'):
+        if not opt.has_key('default') and not opt.has_key('separator'):
             raise exceptions.ValueError('Error: a default value must be provided for all options')
         if opt.has_key('arg') and opt.has_key('longarg') and\
             opt['arg'].endswith(':') != opt['longarg'].endswith('='):
