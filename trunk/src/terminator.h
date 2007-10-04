@@ -38,7 +38,7 @@ namespace simuPOP
 
 	/// Base class of all terminators
 	/**
-	These operators are used to see if an evolution is running as expected, and
+	Teminators are used to see if an evolution is running as expected, and
 	terminate the evolution if a certain condition fails.
 	*/
 	class terminator: public baseOperator
@@ -85,7 +85,7 @@ namespace simuPOP
 	is less than 0.05. Of course, to make this opertor work, you will need to use
 	a \c stat operator before it so that variable \c alleleFreq exists in the local namespace. \n
 
-	When the condition is true, a shared variable <tt>var="terminate"</tt> will be
+	When the value of condition is \c True, a shared variable <tt>var="terminate"</tt> will be
 	set to the current generation.
 	*/
 	class terminateIf: public terminator

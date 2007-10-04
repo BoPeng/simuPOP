@@ -36,10 +36,10 @@ namespace simuPOP
 {
 	/// base class of tagging individuals
 	/**
-	\c tagger is a during mating operator that tag individuals with various information.
+	This is a during-mating operator that tags individuals with various information.
 	Potential usages are:
-	\li recording parental information to track pedigree;
-	\li tagging an individual/allele and monitor its spread in the population etc.
+	\li recording the parental information to track pedigree;
+	\li tagging an individual/allele and monitoring its spread in the population etc.
 	*/
 	class tagger: public baseOperator
 	{
@@ -64,14 +64,14 @@ namespace simuPOP
 			}
 	};
 
-	/// inherite tag from parents.
+	/// inherite tag from parents
 	/**
-	This during-mating operator will copy the tag information from his/her parents.
+	This during-mating operator will copy the tag (information field) from his/her parents.
 	Depending on \c mode parameter, this tagger will obtain tag from his/her father
 	(two tag fields), mother (two tag fields) or both (first tag field from both
-	father and mother).
+	father and mother). \n
 
-	An example may be tagging one or a few parents and see, at the last generation,
+	An example may be tagging one or a few parents and examining, at the last generation,
 	how many offspring they have.
 	*/
 	class inheritTagger: public tagger
@@ -82,13 +82,8 @@ namespace simuPOP
 #define TAG_Both       2
 
 		public:
-			/// create an \c inheritTagger, default to be always active
+			/// create an \c inheritTagger that inherits a tag from one or both parents
 			/**
-			Create a inheritTagger that inherit a tag from one or both parents. A tag is actually
-			a information field whose value will be copied from parents to offspring. By default,
-			paternal tag is copied to offspring's using the specified information field. If
-			<tt>mode=TAG_Both</tt>, two tags will be copied from parents (info1 from father,
-			and info2 from mother).
 			\param mode can be one of \c TAG_Paternal, \c TAG_Maternal, and \c TAG_Both
 			*/
 			inheritTagger(int mode=TAG_Paternal, int begin=0, int end=-1, int step=1,
@@ -131,17 +126,18 @@ namespace simuPOP
 
 	/// tagging according to parents' indexes
 	/**
-	This during-mating operator set \c tag(), currently a pair of numbers, of each
+	This during-mating operator
+	set \c tag(), currently a pair of numbers, of each
 	individual with indexes of his/her parents in the parental population. This information
 	will be used by pedigree-related operators like \c affectedSibpairSample to track
 	the pedigree information. Since parental population will be discarded or stored after
-	mating, and tagging information will be passed with individuals, mating/population
+	mating, tagging information will be passed with individuals, and mating or population
 	change etc. will not interfere with this simple tagging system.
 	*/
 	class parentsTagger: public tagger
 	{
 		public:
-			/// create a \c parentsTagger, default to be always active
+			/// create a \c parentsTagger
 			// string can be any string (m_Delimiter will be ignored for this class.)
 			//  %r will be replicate number %g will be generation number.
 			parentsTagger( int begin=0, int end=-1, int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,
@@ -172,24 +168,25 @@ namespace simuPOP
 				individual* dad=NULL, individual* mom=NULL);
 	};
 
+    /// Python tagger
 	/**
 	This tagger takes some information fields from both parents, pass to a Python
-	function and set the individual field with the returned value. \n
-
-	This operator can be used to trace the inheritance of trait values.
+	function and set the individual field with the return value. This operator can
+	be used to trace the inheritance of trait values.
 	*/
 	class pyTagger: public tagger
 	{
 		public:
+			
+			/// creates a \c pyTagger that works on specified information fields
 			/**
-			Creates a pyTagger that work on specified information fields.
-			\param infoFields information fields. The user should gurantee the existence
+            \param infoFields information fields. The user should gurantee the existence
 				of these fields.
 			\param func a Pyton function that returns a list to assign the information fields.
 				e.g., if <tt>fields=['A', 'B']</tt>, the function will pass values of fields
 				\c 'A' and \c 'B' of father, followed by mother if there is one, to this
-				function. The returned value is assigned to fields \c 'A' and \c 'B' of the
-				offspring. The returned value has to be a list even if only one field is given.
+				function. The return value is assigned to fields \c 'A' and \c 'B' of the
+				offspring. The return value has to be a list even if only one field is given.
 			*/
 			pyTagger(PyObject * func=NULL, int begin=0, int end=-1,
 				int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL,

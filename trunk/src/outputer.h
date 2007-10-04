@@ -67,15 +67,15 @@ namespace simuPOP
 
 	};
 
-	/// Output a given string.
+	/// Output a given string
 	/**
-	A common usage is outputting a new line for the last replicate.
+	A common usage is to output a new line for the last replicate.
 	*/
 	class pyOutput: public outputer
 	{
 
 		public:
-			/// Create a pyOutput operator that output a given string.
+			/// Create a \c pyOutput operator that outputs a given string
 			/**
 				\param str string to be outputted
 			*/
@@ -191,23 +191,22 @@ namespace simuPOP
 	};
 
 	/// dump the content of a population.
-
 	class dumper: public outputer
 	{
 		public:
-			/** \brief dump population
-
+			/// dump a population
+            /**
 			\param alleleOnly only display allele
-			\param infoOnly only display info
-			\param dispWidth width of allele display, default to 1
-			\param ancestralPops whether or not display ancestral populations, default to False
-			\param chrom chromsoome(s) to display
+			\param infoOnly only display genotypic information
+			\param dispWidth number of characters to display an allele. Default to \c 1.
+			\param ancestralPops whether or not display ancestral populations. Default to \c False.
+			\param chrom chromosome(s) to display
 			\param loci loci to display
-			\param subPop only display subPop(s)
+			\param subPop only display subpopulation(s)
 			\param indRange range(s) of individuals to display
-			\param max max number of individuals to display, default to 100.
+			\param max the maximum number of individuals to display. Default to \c 100.
 			This is to avoid careless dump of huge populations.
-			\param output output file, default to standard output.
+			\param output output file. Default to the standard output.
 			\param outputExpr and other parameters: refer to help(baseOperator.__init__)
 
 			*/
@@ -290,10 +289,10 @@ namespace simuPOP
 	};
 
 	/// save population to a file
-
 	class savePopulation: public outputer
 	{
 		public:
+            /// save population
 			savePopulation( string output="", string outputExpr="",
 				string format = "bin", bool compress=true, int stage=PostMating, int begin=0, int end=-1,
 				int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):

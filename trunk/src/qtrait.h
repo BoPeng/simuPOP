@@ -55,7 +55,7 @@ namespace simuPOP
 	class quanTrait: public baseOperator
 	{
 		public:
-			/// create a quantitative trait operator, default to be always active
+			/// create a quantitative trait operator
 			quanTrait(int ancestralGen=-1,  int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr(1, "qtrait"))
 				: baseOperator("","",stage, begin, end, step, at, rep, grp, infoFields),
@@ -115,9 +115,9 @@ namespace simuPOP
 			\param loci an array of locus indexes. The quantitative trait is determined by genotypes at these loci.
 			\param qtrait a dictionary of quantitative traits. The genotype must be in the
 				form of 'a-b'. This is the mean	of the quantitative trait. The actual trait
-				value will be <tt>N(mean, sigma^2)</tt>. For multiple loci, the form is
+				value will be \f$ N\left(mean,\sigma^{2}\right) \f$. For multiple loci, the form is
 				'a-b|c-d|e-f' etc.
-			\param sigma standard deviation of the environmental factor <tt>N(0, sigma^2)</tt>.
+			\param sigma standard deviation of the environmental factor \f$ N\left(0,\sigma^{2}\right) \f$.
 			\param phase if \c True, a/b and b/a will have different quantitative trait values.
 				Default to \c False.
 			\param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
@@ -169,8 +169,8 @@ namespace simuPOP
 	/// multiple allele quantitative trait (quantitative trait according to disease or wildtype alleles)
 	/**
 	This is called 'multiple-allele' quantitative trait. It separates alleles into
-	two groups: wildtype and disease susceptibility alleles. Wildtype alleles are specified by parameter
-	\c wildtype and any other alleles are considered as disease alleles.
+	two groups: wildtype and diseased alleles. Wildtype alleles are specified by parameter
+	\c wildtype and any other alleles are considered as diseased alleles.
 	\c maQuanTrait accepts an array of fitness. Quantitative trait is then set for any given
 	genotype. A standard normal distribution \f$ N\left(0,\sigma^{2}\right) \f$ will
 	be added to the returned trait value.
@@ -181,11 +181,11 @@ namespace simuPOP
 		public:
 			/// create a multiple allele quantitative trait operator
 			/**
-			\param qtrait an array of quantitative traits of AA, Aa, aa. A is the wild type group
+			\param qtrait an array of quantitative traits of AA, Aa, aa. A is the wildtype group
 			\param sigma an array of standard deviations for each of the trait genotype (AA, Aa, aa)
 			\param wildtype an array of alleles in the wildtype group. Any other alleles will be
-				considered as disease alleles. Default to <tt>[0]</tt>.
-			\param output and other parameters please refer to help(baseOperator.__init__)
+				considered as diseased alleles. Default to <tt>[0]</tt>.
+			\param output and other parameters please refer to help(<tt>baseOperator.__init__</tt>)
 
 			Please refer to \c quanTrait for other parameter descriptions.
 			*/
@@ -243,7 +243,7 @@ namespace simuPOP
 
 	/// quantitative trait according to genotypes from a multiple loci multiplicative model
 	/**
-	Operator \c mlQuanTrait is a 'multiple-loci' quantitative trait calculator. It accepts a list
+	Operator \c mlQuanTrait is a 'multiple-locus' quantitative trait calculator. It accepts a list
 	of quantitative traits and combine them according to the \c mode parameter, which takes
 	one of the following values
 	\li \c QT_Multiplicative: the mean of the quantitative trait is calculated as
@@ -252,7 +252,7 @@ namespace simuPOP
 		\f$ f=\sum f_{i} \f$.
 
 	Note that all \f$ \sigma_{i} \f$ (for \f$ f_{i} \f$) and \f$ \sigma \f$ (for \f$ f \f$)
-	will all be considered. I.e, the trait value should be
+	will be considered. I.e, the trait value should be
 	\f[ f=\sum_{i}\left(f_{i}+N\left(0,\sigma_{i}^{2}\right)\right)+\sigma^{2} \f]
 	for \c QT_Additive case. If this is not desired, you can set some of the \f$ \sigma \f$ to zero.
 
@@ -269,7 +269,7 @@ namespace simuPOP
 			typedef std::vector< baseOperator * > vectorop;
 
 		public:
-			/// multiple loci quantitative trait using a multiplicative model
+			/// create a multiple locus quantitative trait operator
 			/**
 			\param qtraits a list of quantitative traits
 			\param mode can be one of \c QT_Multiplicative and \c QT_Additive
@@ -337,11 +337,11 @@ namespace simuPOP
 		public:
 			/// create a Python quantitative trait operator
 			/**
-			\param loci susceptibility loci. The genotypes at these loci will be
+			\param loci The genotypes at these loci will be
 				passed to \c func.
-			\param func a Python function that accepts genotypes at susceptibility loci
+			\param func a Python function that accepts genotypes at specified loci
 				and returns the quantitative trait value.
-			\param output and other parameters please refer to help(baseOperator.__init__)
+			\param output and other parameters please refer to help(<tt>baseOperator.__init__</tt>)
 
 			Please refer to \c quanTrait for other parameter descriptions.
 			*/

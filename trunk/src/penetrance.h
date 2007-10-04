@@ -70,7 +70,7 @@ namespace simuPOP
 	class penetrance: public baseOperator
 	{
 		public:
-			/// create a penetrance operator, default to be always active.
+			/// create a penetrance operator
 			/**
 			\param ancestralGen if this parameter is set to be \c 0, apply penetrance to
 				the current generation; if \c -1, apply to all generations; otherwise, apply

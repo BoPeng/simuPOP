@@ -29,14 +29,14 @@ how it is loaded using function  setOptions  . It also provides a simple
 way to set simulation options, from user input, command line, configuration
 file or a parameter dialog. All you need to do is to define an option
 description list that lists all parameters in a given format, and call
-the  getParam  function.
+the getParam function.
 
 This module, if loaded, pre-process the command line options. More specifically,
 it checks command line option:
 
 -c configfile: read from a configuration file
 
---config configgile: the same as -c
+--config configfile: the same as -c
 
 --optimized: load optimized modules, unless setOption explicitly use non-optimized
   modules.

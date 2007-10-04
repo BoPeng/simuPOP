@@ -60,7 +60,7 @@ namespace simuPOP
 		to subpopulation \c b. In the last case, a given number of individuals will
 	migrate.
 	\li new subpopulation can be generated through migration. You simply
-	need to migrate to a new subpopulation number.
+	need to migrate to a subpopulation with a new subpopulation number.
 	*/
 	class migrator: public baseOperator
 	{
@@ -184,7 +184,7 @@ namespace simuPOP
 				current subpopulation sizes, and returns a migration rate matrix.
 				The migrator then migrate like a usual migrator.
 			\param indFunc a Python function that accepts an individual, optional
-				genotype and parameter, then returns a subpopulation ID. This
+				genotypes and parameters, then returns a subpopulation ID. This
 				method can be used to separate a population according to individual
 				genotype.
 			\param stage default to \c PreMating
@@ -279,7 +279,7 @@ namespace simuPOP
 	{
 
 		public:
-			/// split a subpopulation or the whole population as subpopulation \c 0
+			/// split a subpopulation
 			/**
 			\param which which subpopulation to split. If there is no subpopulation structure,
 				use \c 0 as the first (and only) subpopulation.
