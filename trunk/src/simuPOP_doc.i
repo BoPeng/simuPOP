@@ -13,11 +13,12 @@ Details:
     Special preparation for the  population is needed in order to use
     this operator. Obviously, to obtain affected sibling pairs, we
     need to know the parents and the affectedness status of each
-    individual. Furthermore, to get parental genotype, the  population
-    should have ancestralDepth at least 1. The most important problem,
-    however, comes from the  mating scheme we are using.
-    randomMating() is usually used for diploid populations. The
-    realrandom mating requires that a  mating will generate only one
+    individual. Furthermore, to get parental genotypes, the
+    population should have ancestralDepth at least 1. The most
+    important problem, however, comes from the  mating scheme we are
+    using.
+    randomMating() is usually used for diploid populations. The real
+    random mating requires that a  mating will generate only one
     offspring. Since parents are chosen with replacement, a parent can
     have multiple offspring with different parents. On the other hand,
     it is very unlikely that two offspring will have the same parents.
@@ -25,11 +26,6 @@ Details:
     \\frac{1}{N^{2}} $ (if do not consider selection). Therefore, we
     will have to allow multiple offspring per  mating at the cost of
     small effective  population size.
-    All these requirements come at a cost: multiple ancestral
-    populations, determining affectedness status and tagging will slow
-    down evolution; multiple offspring will reduce effective
-    population size. Fortunately,  simuPOP is flexible enough to let
-    all these happen only at the last several generations.
 
 "; 
 
@@ -56,14 +52,14 @@ Arguments:
     size:           the number of affected sibling pairs to be
                     sampled. Can be a number or an array. If a number
                     is given, it is the total number of sibpairs,
-                    ignoring  population structure. Otherwise, given
-                    number of sibpairs are sampled from
+                    ignoring the  population structure. Otherwise,
+                    specified numbers of sibpairs are sampled from
                     subpopulations. If size is unspecified, this
                     operator will return all affected sibpairs.
     chooseUnaffected:instead of affected sibpairs, choose unaffected
                     families.
-    countOnly:      set variables about number of affected sibpairs,
-                    do not actually draw the  sample
+    countOnly:      set variables about the number of affected
+                    sibpairs, do not actually draw the  sample
 
 "; 
 
@@ -172,7 +168,8 @@ Details:
     specific generations (parameter at). For example, you might want
     to start applying migrations after certain burn-in generations, or
     calculate certain statistics only sparsely. Generation numbers can
-    count from the last generation, using negative generation numbers.
+    be counted from the last generation, using negative generation
+    numbers.
     Most operators are applied to every replicate of a  simulator
     during evolution. However, you can apply operators to one
     (parameter rep) or a group of replicates only (parameter grp). For
@@ -192,7 +189,7 @@ Details:
     * '>>>filename' the same as '>>filename' except that the file will
     not be cleared at the beginning of evolution if it is not empty;
     * '>' standard output (terminal);
-    * '' supress output. The output filename does not have to be
+    * '' suppress output. The output filename does not have to be
     fixed. If parameter outputExpr is used (parameter output will be
     ignored), it will be evaluated when a filename is needed. This is
     useful when you need to write different files for different
@@ -774,13 +771,14 @@ Description:
 Details:
 
     This operator will randomly choose cases affected individuals and
-    controls unaffected individuals as a  sample. The affected status
-    is usually set by  penetrance functions/operators. The  sample
-    populations will have two subpopulations: cases and controls.
+    controls unaffected individuals as a  sample. The affectedness
+    status is usually set by  penetrance functions or operators. The
+    sample populations will have two subpopulations: cases and
+    controls.
     You may specify the number of cases and the number of controls
     from each subpopulation using the array form of the parameters.
     The  sample population will still have only two subpoulations
-    (cases/controls) though.
+    (cases and controls) though.
     A special case of this sampling scheme occurs when one of or both
     cases and controls are omitted (zeros). In this case, all cases
     and/or controls are chosen. If both parameters are omitted, the
@@ -1210,7 +1208,7 @@ Description:
 
 Description:
 
-    dump  population
+    dump a  population
 
 Usage:
 
@@ -1222,18 +1220,19 @@ Usage:
 Arguments:
 
     alleleOnly:     only display allele
-    infoOnly:       only display info
-    dispWidth:      width of allele display, default to 1
-    ancestralPops:  whether or not display ancestral populations,
-                    default to False
-    chrom:          chromsoome(s) to display
+    infoOnly:       only display genotypic information
+    dispWidth:      number of characters to display an allele. Default
+                    to 1.
+    ancestralPops:  whether or not display ancestral populations.
+                    Default to False.
+    chrom:          chromosome(s) to display
     loci:           loci to display
-    subPop:         only display subPop(s)
+    subPop:         only display subpopulation(s)
     indRange:       range(s) of individuals to display
-    max:            max number of individuals to display, default to
-                    100. This is to avoid careless dump of huge
-                    populations.
-    output:         output file, default to standard output.
+    max:            the maximum number of individuals to display.
+                    Default to 100. This is to avoid careless dump of
+                    huge populations.
+    output:         output file. Default to the standard output.
     outputExpr:     and other parameters: refer to
                     help(baseOperator.__init__)
 
@@ -2166,13 +2165,13 @@ Details:
 
     This operator accepts
     * an expression that will be evaluated when this operator is
-    applied;
+    applied.
     * an operator that will be applied if the expression is True
-    (default to null);
+    (default to null).
     * an operator that will be applied if the expression is False
     (default to null). When this operator is applied to a  population,
     it will evaluate the expression and depending on its value, apply
-    the supplied operator. Note that the begin, at, step, and at
+    the supplied operator. Note that the begin, end, step, and at
     parameters of ifOp and elseOp will be ignored. For example, you
     can mimic the at parameter of an operator by  ifElse('rep in
     [2,5,9]' operator). The real use of this machanism is to monitor
@@ -2184,7 +2183,7 @@ Details:
 
 Description:
 
-    simuPOP::ifElse::ifElse
+    create a conditional operator
 
 Usage:
 
@@ -2194,7 +2193,8 @@ Usage:
 
 Arguments:
 
-    cond:           expression that will be treated as a bool variable
+    cond:           expression that will be treated as a boolean
+                    variable
     ifOp:           an operator that will be applied when cond is True
     elseOp:         an operator that will be applied when cond is
                     False
@@ -2902,16 +2902,16 @@ Usage:
 
 Description:
 
-    inherite tag from parents.
+    inherite tag from parents
 
 Details:
 
-    This during-mating operator will copy the tag information from
-    his/her parents. Depending on mode parameter, this  tagger will
-    obtain tag from his/her father (two tag fields), mother (two tag
-    fields) or both (first tag field from both father and mother).An
-    example may be tagging one or a few parents and see, at the last
-    generation, how many offspring they have.
+    This during-mating operator will copy the tag (information field)
+    from his/her parents. Depending on mode parameter, this  tagger
+    will obtain tag from his/her father (two tag fields), mother (two
+    tag fields) or both (first tag field from both father and mother).
+    An example may be tagging one or a few parents and examining, at
+    the last generation, how many offspring they have.
 
 "; 
 
@@ -2919,22 +2919,14 @@ Details:
 
 Description:
 
-    create an  inheritTagger, default to be always active
+    create an  inheritTagger that inherits a tag from one or both
+    parents
 
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[\"paternal_tag\",
       \"maternal_tag\"])
-
-Details:
-
-    Create a  inheritTagger that inherit a tag from one or both
-    parents. A tag is actually a information field whose value will be
-    copied from parents to offspring. By default, paternal tag is
-    copied to offspring's using the specified information field. If
-    mode=TAG_Both, two tags will be copied from parents (info1 from
-    father, and info2 from mother).
 
 Arguments:
 
@@ -3141,7 +3133,7 @@ Details:
 
 Description:
 
-    initialize populations by given alleles
+    initialize a  population by given alleles
 
 Usage:
 
@@ -3158,8 +3150,9 @@ Arguments:
                     or totNumLoci() (one copy of chromosomes). This
                     parameter can also be an array of arrays of
                     genotypes of one  individual. If value is an array
-                    of values, it should have the same length as
-                    subPop, indRange or proportions.
+                    of values, it should have the length one, number
+                    of subpopulations, or the length of ranges of
+                    proportions.
     proportions:    an array of percentages for each item in value. If
                     given, assign given genotypes randomly.
     maleFreq:       male frequency
@@ -3520,11 +3513,11 @@ Arguments:
 
     minTotalSize:   the minimum number of individuals in the  sample
     maxOffspring:   the maximum number of offspring a parent may have
-    minPedSize:     minimal pedigree size, default to 5
-    minAffected:    minimal number of affected individuals in each
-                    pedigree, default to 0
-    countOnly:      set variables about number of affected sibpairs,
-                    do not actually draw the  sample.
+    minPedSize:     the minimal pedigree size. Default to 5.
+    minAffected:    the minimal number of affected individuals in each
+                    pedigree. Default to 0.
+    countOnly:      set variables about the number of affected
+                    sibpairs, do not actually draw the  sample.
 
 "; 
 
@@ -3823,10 +3816,10 @@ Arguments:
     qtrait:         a dictionary of quantitative traits. The genotype
                     must be in the form of 'a-b'. This is the mean of
                     the quantitative trait. The actual trait value
-                    will be N(mean, sigma^2). For multiple loci, the
-                    form is 'a-b|c-d|e-f' etc.
-    sigma:          standard deviation of the environmental factor
-                    N(0, sigma^2).
+                    will be  $ N\\left(mean,\\sigma^{2}\\right) $. For
+                    multiple loci, the form is 'a-b|c-d|e-f' etc.
+    sigma:          standard deviation of the environmental factor  $
+                    N\\left(0,\\sigma^{2}\\right) $.
     phase:          if True, a/b and b/a will have different
                     quantitative trait values. Default to False.
     output:         and other parameters please refer to help
@@ -3913,8 +3906,8 @@ Arguments:
                     'a-b|c-d|e-f' for multi-loci.
     phase:          if True, genotypes a-b and b-a will have different
                     fitness values. Default to False.
-    output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+    output:         and other parameters please refer to help
+                    (baseOperator.__init__)
 
 Example:
 
@@ -3993,13 +3986,12 @@ Description:
 Details:
 
     This is called 'multiple-allele' quantitative trait. It separates
-    alleles into two groups: wildtype and disease susceptibility
-    alleles. Wildtype alleles are specified by parameter wildtype and
-    any other alleles are considered as disease alleles.  maQuanTrait
-    accepts an array of fitness. Quantitative trait is then set for
-    any given genotype. A standard normal distribution  $
-    N\\left(0,\\sigma^{2}\\right) $ will be added to the returned trait
-    value.
+    alleles into two groups: wildtype and diseased alleles. Wildtype
+    alleles are specified by parameter wildtype and any other alleles
+    are considered as diseased alleles.  maQuanTrait accepts an array
+    of fitness. Quantitative trait is then set for any given genotype.
+    A standard normal distribution  $ N\\left(0,\\sigma^{2}\\right) $
+    will be added to the returned trait value.
 
 "; 
 
@@ -4022,11 +4014,11 @@ Details:
 Arguments:
 
     qtrait:         an array of quantitative traits of AA, Aa, aa. A
-                    is the wild type group
+                    is the wildtype group
     sigma:          an array of standard deviations for each of the
                     trait genotype (AA, Aa, aa)
     wildtype:       an array of alleles in the wildtype group. Any
-                    other alleles will be considered as disease
+                    other alleles will be considered as diseased
                     alleles. Default to [0].
     output:         and other parameters please refer to
                     help(baseOperator.__init__)
@@ -4113,7 +4105,7 @@ Usage:
 
 Details:
 
-    Please refer to  selector for other parameter descriptions.
+    Please refer to  baseOperator for other parameter descriptions.
 
 Arguments:
 
@@ -4131,7 +4123,7 @@ Arguments:
 Note:
 
     *  maSelector only works for diploid populations.
-    * wildtype at all loci are the same.
+    * wildtype alleles at all loci are the same.
 
 Example:
 
@@ -4285,11 +4277,12 @@ Arguments:
                     population
     newSubPopSizeExpr:an expression that will be evaluated as an array
                     of new subpopulation sizes
-    newSubPopSizeFunc:a function that accepts an int
-                    parameter(generation), an array of current
-                    population size and return an array of
-                    subpopulation sizes. This is usually easier to use
-                    than its expression version of this parameter.
+    newSubPopSizeFunc:a function that takes parameters gen (generation
+                    number) and oldsize (an array of current
+                    population size) and return an array of
+                    subpopulation sizes of the next generation. This
+                    is usually easier to use than its expression
+                    version of this parameter.
 
 Example:
 
@@ -4493,7 +4486,8 @@ Details:
     migrate to subpopulation b. In the last case, a given number of
     individuals will migrate.
     * new subpopulation can be generated through migration. You simply
-    need to migrate to a new subpopulation number.
+    need to migrate to a subpopulation with a new subpopulation
+    number.
 
 "; 
 
@@ -4738,7 +4732,7 @@ Description:
 
 Details:
 
-    Operator  mlQuanTrait is a 'multiple-loci' quantitative trait
+    Operator  mlQuanTrait is a 'multiple-locus' quantitative trait
     calculator. It accepts a list of quantitative traits and combine
     them according to the mode parameter, which takes one of the
     following values
@@ -4746,8 +4740,8 @@ Details:
     calculated as  $ f=\\prod f_{i} $.
     * QT_Additive: the mean of the quantitative trait is calculated as
     $ f=\\sum f_{i} $. Note that all  $ \\sigma_{i} $ (for  $ f_{i} $)
-    and  $ \\sigma $ (for  $ f $) will all be considered. I.e, the
-    trait value should be
+    and  $ \\sigma $ (for  $ f $) will be considered. I.e, the trait
+    value should be
     $ f=\\sum_{i}\\left(f_{i}+N\\left(0,\\sigma_{i}^{2}\\right)\\right)+\\sig
     ma^{2} $ for QT_Additive case. If this is not desired, you can set
     some of the  $ \\sigma $ to zero.
@@ -4758,7 +4752,7 @@ Details:
 
 Description:
 
-    multiple loci quantitative trait using a multiplicative model
+    create a multiple locus quantitative trait operator
 
 Usage:
 
@@ -4836,11 +4830,11 @@ Details:
     determined by parameter mode, which takes one of the following
     values
     * SEL_Multiplicative: the fitness is calculated as  $
-    f=\\prod_{i}f_{i} $.
-    * SEL_Additive: the fitness is calculated as  $ f=\\max\\left(0,1-\\s
-    um_{i}(1-f_{i})\\right)=\\max\\left(0,1-\\sum_{i}s_{i}\\right) $.  $ f
-    $ will be set to 0 when  $ f<0 $. In this case,  $ s_{i} $ are
-    added, not  $ f_{i} $ directly.
+    f=\\prod_{i}f_{i} $, where  $ f_{i} $ is the single-locus fitness
+    value.
+    * SEL_Additive: the fitness is calculated as  $
+    f=\\max\\left(0,1-\\sum_{i}(1-f_{i})\\right) $.  $ f $ will be set to
+    0 when  $ f<0 $.
 
 "; 
 
@@ -5115,9 +5109,9 @@ Details:
     * no  mating. Parent generation will be considered as offspring
     generation.
     * no subpopulation change. During-mating operators will be
-    applied, but the return values are not checked. I.e., subPopSizes
-    will be ignored although some during-mating operators might be
-    applied.
+    applied, but the return values are not checked. I.e.,
+    subpopulation size parameters will be ignored although some
+    during-mating operators might be applied.
 
 "; 
 
@@ -5186,18 +5180,22 @@ Description:
 
     none operator
 
+Details:
+
+    This operator does nothing.
+
 "; 
 
 %feature("docstring") simuPOP::noneOp::noneOp "
+
+Description:
+
+    create a none operator
 
 Usage:
 
     noneOp(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
       end=0, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
-
-Details:
-
-    This operator does nothing.
 
 Example:
 
@@ -5603,14 +5601,14 @@ Description:
 
 Details:
 
-    This during-mating operator set \\c tag(), currently a pair of
+    This during-mating operator set tag(), currently a pair of
     numbers, of each  individual with indexes of his/her parents in
     the parental  population. This information will be used by
     pedigree-related operators like  affectedSibpairSample to track
     the pedigree information. Since parental  population will be
-    discarded or stored after  mating, and tagging information will be
-    passed with individuals, mating/population change etc. will not
-    interfere with this simple tagging system.
+    discarded or stored after  mating, tagging information will be
+    passed with individuals, and  mating or  population change etc.
+    will not interfere with this simple tagging system.
 
 "; 
 
@@ -5618,7 +5616,7 @@ Details:
 
 Description:
 
-    create a  parentsTagger, default to be always active
+    create a  parentsTagger
 
 Usage:
 
@@ -5678,7 +5676,7 @@ Details:
     generations or at a key stroke, using stopOnKeyStroke=True option.
     Users can use 'q' to stop an evolution. When a  simulator is
     stopped, press any other key to resume the simulation or escape to
-    a Python shell to examine the status of the simulation by press
+    a Python shell to examine the status of the simulation by pressing
     's'.
     There are two ways to use this operator, the first one is to
     pause the simulation at specified generations, using the usual
@@ -5709,8 +5707,8 @@ Usage:
 
 Arguments:
 
-    prompt:         if True (default), print prompt message
-    stopOnKeyStroke:if True, stop only when a key was pressed
+    prompt:         if True (default), print prompt message.
+    stopOnKeyStroke:if True, stop only when a key was pressed.
     exposePop:      whether or not expose pop to user namespace, only
                     useful when user choose 's' at  pause. Default to
                     True.
@@ -5810,7 +5808,7 @@ Details:
 
 Description:
 
-    create a  penetrance operator, default to be always active.
+    create a  penetrance operator
 
 Usage:
 
@@ -6037,13 +6035,6 @@ Details:
     ancestral generations are provided so that one can examine and
     modify ancestral generations.
 
-Note:
-
-    Although a large number of member functions are provided, most of
-    the operations are performed by operators. These functions will
-    only be useful when you need to manipulate a  population
-    explicitly.
-
 "; 
 
 %feature("docstring") simuPOP::population::population "
@@ -6075,12 +6066,12 @@ Arguments:
                     case, the maximum number of loci on X and Y should
                     be provided. I.e., if there are 3 loci on Y
                     chromosme and 5 on X chromosome, use 5.
-    sexChrom:       True or False. Diploid  population only. If True,
-                    the last homologous chromosome will be treated as
-                    sex chromosome. (XY for male and XX for female.)
-                    If X and Y have different numbers of loci, the
-                    number of loci of the longer one of the last (sex)
-                    chromosome should be specified in loci.
+    sexChrom:       Diploid  population only. If this parameter is
+                    True, the last homologous chromosome will be
+                    treated as sex chromosome. (XY for male and XX for
+                    female.) If X and Y have different numbers of
+                    loci, the number of loci of the longer one of the
+                    last (sex) chromosome should be specified in loci.
     lociPos:        a 1-d or 2-d array specifying positions of loci on
                     each chromosome. You can use a nested array to
                     specify loci position for each chromosome. For
@@ -6377,8 +6368,8 @@ Arguments:
 
 Description:
 
-    return the (subPop, idx) pair according to an absolute index of an
-    individual
+    return the subpopulation ID and relative index of an  individual
+    with absolute index ind
 
 Usage:
 
@@ -6584,7 +6575,8 @@ Usage:
 
 Description:
 
-    adjust subpopulation according to  individual subpopulation ID.
+    move individuals to subpopulations according to  individual
+    subpopulation IDs
 
 Usage:
 
@@ -6811,7 +6803,7 @@ Note:
 
 Description:
 
-    insert loci at given locations
+    insert loci before given positions
 
 Usage:
 
@@ -6843,7 +6835,7 @@ Arguments:
 
 Description:
 
-    insert an locus at given location.
+    insert an locus before a given position
 
 Usage:
 
@@ -6860,7 +6852,7 @@ Details:
 
 Description:
 
-    append loci at given locations
+    append loci after given positions
 
 Usage:
 
@@ -6893,7 +6885,7 @@ Arguments:
 
 Description:
 
-    append an locus at a given location
+    append an locus after a given position
 
 Usage:
 
@@ -6910,7 +6902,7 @@ Details:
 
 Description:
 
-    resize  population
+    resize current  population
 
 Usage:
 
@@ -7532,7 +7524,7 @@ Usage:
 
 Arguments:
 
-    expr:           the expression to be evaluated. Its result will be
+    expr:           the expression to be evaluated. The result will be
                     sent to output.
     stmts:          the statement that will be executed before the
                     expression
@@ -7540,8 +7532,8 @@ Arguments:
                     operator is constructed
     postStmts:      the statement that will be executed when the
                     operator is destroyed
-    exposePop:      if true, expose current  population as variable
-                    pop
+    exposePop:      if True, expose the current  population as a
+                    variable named pop
     name:           used to let pure Python operator to identify
                     themselves
     output:         default to >. I.e., output to standard output.
@@ -7627,7 +7619,7 @@ Description:
 
 Details:
 
-    This operator takes a list of statements and execute them. No
+    This operator takes a list of statements and executes them. No
     value will be returned or outputted.
 
 "; 
@@ -7645,18 +7637,9 @@ Usage:
       name=\"\", output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
       end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
-Arguments:
+Details:
 
-    stmts:          the statements (a single or multi-line string)
-                    that will be executed when this operator is
-                    applied.
-    preStmts:       the statement that will be executed when the
-                    operator is constructed
-    postStmts:      the statement that will be executed when the
-                    operator is destroyed
-    exposePop:      if true, expose current  population as variable
-                    pop
-    default:        to >. I.e., output to standard output.
+    Please refer to class  pyEval for parameter descriptions.
 
 "; 
 
@@ -7860,7 +7843,7 @@ Arguments:
     func:           a Python function with parameter (index, ploidy,
                     subPop), where
                     * index is the allele index ranging from 0 to
-                    totNumLoci(-1);
+                    totNumLoci-1;
                     * ploidy is the index of the copy of chromosomes;
                     * subPop is the subpopulation index. The return
                     value of this function should be an integer.
@@ -8081,7 +8064,7 @@ Arguments:
                     migration rate matrix. The  migrator then migrate
                     like a usual  migrator.
     indFunc:        a Python function that accepts an  individual,
-                    optional genotype and parameter, then returns a
+                    optional genotypes and parameters, then returns a
                     subpopulation ID. This method can be used to
                     separate a  population according to  individual
                     genotype.
@@ -8422,7 +8405,7 @@ Description:
 
 Details:
 
-    A common usage is outputting a new line for the last replicate.
+    A common usage is to output a new line for the last replicate.
 
 "; 
 
@@ -8430,7 +8413,7 @@ Details:
 
 Description:
 
-    Create a  pyOutput operator that output a given string.
+    Create a  pyOutput operator that outputs a given string.
 
 Usage:
 
@@ -8665,11 +8648,11 @@ Details:
 
 Arguments:
 
-    loci:           susceptibility loci. The genotypes at these loci
-                    will be passed to func.
+    loci:           The genotypes at these loci will be passed to
+                    func.
     func:           a Python function that accepts genotypes at
-                    susceptibility loci and returns the quantitative
-                    trait value.
+                    specified loci and returns the quantitative trait
+                    value.
     output:         and other parameters please refer to
                     help(baseOperator.__init__)
 
@@ -8729,6 +8712,10 @@ Description:
 Details:
 
     A Python sampler that generate a  sample with given individuals.
+    This sampler accepts a Python array with elements that will be
+    assigned to individuals as their subpopulation IDs. Individuals
+    with positive subpopulation IDs will then be picked out and form a
+    sample.
 
 "; 
 
@@ -8747,18 +8734,15 @@ Usage:
 
 Details:
 
-    This sampler accepts a Python array which will be assigned to each
-    individual as subPOP ID. Individuals with positive subPOPID will
-    then be picked out and form a  sample. Please refer to class
-    sample for other parameter descriptions.
+    Please refer to class  sample for other parameter descriptions.
 
 Arguments:
 
     keep:           subpopulation IDs of all individuals
     keepAncestralPop:the number of ancestral populations that will be
-                    kept. If -1, keep all ancestral populations
-                    (default). If 0, no ancestral  population will be
-                    kept.
+                    kept. If -1 is given, keep all ancestral
+                    populations (default). If 0 is given, no ancestral
+                    population will be kept.
 
 "; 
 
@@ -8963,8 +8947,8 @@ Description:
 Details:
 
     This operator shrinks a  population according to a given array or
-    the subPopID() value of each indvidual. individuals with negative
-    subPop ID are removed.
+    the subPopID() value of each  individual. Individuals with
+    negative subpopulation IDs will be removed.
 
 "; 
 
@@ -8981,8 +8965,7 @@ Usage:
 
 Arguments:
 
-    keep:           an array of subpopulation IDs for each
-                    individual.
+    keep:           an array of  individual subpopulation IDs
 
 "; 
 
@@ -9037,26 +9020,29 @@ Usage:
 
 %feature("docstring") simuPOP::pyTagger "
 
+Description:
+
+    Python  tagger.
+
 Details:
 
     This  tagger takes some information fields from both parents, pass
-    to a Python function and set the  individual field with the
-    returned value.
-    This operator can be used to trace the inheritance of trait
+    to a Python function and set the  individual field with the return
+    value. This operator can be used to trace the inheritance of trait
     values.
 
 "; 
 
 %feature("docstring") simuPOP::pyTagger::pyTagger "
 
+Description:
+
+    creates a  pyTagger that works on specified information fields
+
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[])
-
-Details:
-
-    Creates a  pyTagger that work on specified information fields.
 
 Arguments:
 
@@ -9066,10 +9052,10 @@ Arguments:
                     information fields. e.g., if fields=['A', 'B'],
                     the function will pass values of fields 'A' and
                     'B' of father, followed by mother if there is one,
-                    to this function. The returned value is assigned
-                    to fields 'A' and 'B' of the offspring. The
-                    returned value has to be a list even if only one
-                    field is given.
+                    to this function. The return value is assigned to
+                    fields 'A' and 'B' of the offspring. The return
+                    value has to be a list even if only one field is
+                    given.
 
 "; 
 
@@ -9139,7 +9125,7 @@ Details:
 
 Description:
 
-    create a quantitative trait operator, default to be always active
+    create a quantitative trait operator
 
 Usage:
 
@@ -9299,10 +9285,10 @@ Details:
     This operator will randomly choose size individuals (or  size[i]
     individuals from subpopulation i) and return a new  population.
     The function form of this operator returns the samples directly.
-    The operator keeps samples in an array name in the local
+    This operator keeps samples in an array name in the local
     namespace. You may access them through dvars() or vars()
     functions.
-    The original subpopulation structure/boundary is kept in the
+    The original subpopulation structure or boundary is kept in the
     samples.
 
 "; 
@@ -9311,7 +9297,7 @@ Details:
 
 Description:
 
-    draw a random  sample, regardless of the affected status
+    draw a random  sample, regardless of the affectedness status
 
 Usage:
 
@@ -9329,8 +9315,8 @@ Arguments:
     size:           size of the  sample. It can be either a number
                     which represents the overall  sample size,
                     regardless of the  population structure; or an
-                    array which represents the number of samples drawn
-                    from each subpopulation.
+                    array which represents the number of individuals
+                    drawn from each subpopulation.
 
 Note:
 
@@ -9819,14 +9805,14 @@ Description:
 
 Details:
 
-    Ascertainment/sampling refers to ways to select individuals from a
-    population. In  simuPOP, ascerntainment operators form separate
-    populations in a population's namespace. All the ascertainment
-    operators work like this except for  pySubset which shrink the
-    population itself.
+    Ascertainment/sampling refers to the ways of selecting individuals
+    from a  population. In  simuPOP, ascerntainment operators create
+    sample populations that can be accessed from the population's
+    local namespace. All the ascertainment operators work like this
+    except for  pySubset which shrink the  population itself.
     Individuals in sampled populations may or may not keep their
     original order but their indexes in the whole  population are
-    stored in a information field oldindex. That is to say, you can
+    stored in an information field oldindex. This is to say, you can
     use ind.info('oldindex') to check the original position of an
     individual.
     Two forms of  sample size specification are supported: with or
@@ -9858,17 +9844,18 @@ Usage:
 
 Details:
 
-    Please refer to baseOperator::__init__ for other parameters.
+    Please refer to baseOperator::__init__ for other parameter
+    descriptions.
 
 Arguments:
 
-    name:           name of the  sample in local namespace. This
+    name:           name of the  sample in the local namespace. This
                     variable is an array of populations of size times.
-                    Default to  sample. If name='' is set, samples
-                    will not be saved in local namespace.
+                    Default to  sample.
     nameExpr:       expression version of parameter name. If both name
-                    and nameExpr are empty, do not store pop. This
-                    expression will be evaluated dynamically in
+                    and nameExpr are empty,  sample populations will
+                    not be saved in the population's local namespace.
+                    This expression will be evaluated dynamically in
                     population's local namespace.
     times:          how many times to  sample from the  population.
                     This is usually 1, but we may want to take several
@@ -9958,7 +9945,7 @@ Description:
 
 Description:
 
-    simuPOP::savePopulation::savePopulation
+    save  population
 
 Usage:
 
@@ -10857,7 +10844,7 @@ Details:
 
 Description:
 
-    split a subpopulation or the whole  population as subpopulation 0
+    split a subpopulation
 
 Usage:
 
@@ -11069,9 +11056,9 @@ Description:
 
 Details:
 
-    Operator  stat calculatse various basic statistics for the
+    Operator  stat calculates various basic statistics for the
     population and sets variables in the local namespace. Other
-    operators/functions can refer to the results from the namespace
+    operators or functions can refer to the results from the namespace
     after  stat is applied. Stat is the function form of the operator.
     Note that these statistics are dependent to each other. For
     example, heterotype and allele frequencies of related loci will be
@@ -11098,65 +11085,47 @@ Usage:
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
-Details:
-
-    If only one item is specified, the outer [] can be ignored. I.e.,
-    LD=[loc1, loc2] is acceptable. This parameter will set the
-    following variables. Please note that the difference between the
-    data structures used for ld and LD. The names are potentially very
-    confusing but I have no better idea.
-    * ld['loc1-loc2']['allele1-allele2'], subPop[sp]['ld']['loc1-
-    loc2']['allele1-allele2']
-    * ld_prime['loc1-loc2']['allele1-allele2'],
-    subPop[sp]['ld_prime']['loc1-loc2']['allele1-allele2']
-    * r2['loc1-loc2']['allele1-allele2'], subPop[sp]['r2']['loc1-
-    loc2']['allele1-allele2']
-    * LD[loc1][loc2], subPop[sp]['LD'][loc1][loc2]
-    * LD_prime[loc1][loc2], subPop[sp]['LD_prime'][loc1][loc2]
-    * R2[loc1][loc2], subPop[sp]['R2'][loc1][loc2]
-
 Arguments:
 
     popSize:        whether or not calculate  population sizes. This
                     parameter will set the following variables:
-                    * numSubPop the number of subpopulations
-                    * subPopSize an array of subpopulation sizes. Not
-                    available for subpopulations.
-                    * popSize, subPop[sp]['popSize']
+                    * numSubPop the number of subpopulations.
+                    * subPopSize an array of subpopulation sizes.
+                    * popSize, subPop[sp]['popSize'] the
                     population/subpopulation size.
-    numOfMale:      whether or not count the numbers/proportions of
+    numOfMale:      whether or not count the numbers or proportions of
                     males and females. This parameter can set the
                     following variables by user's specification:
                     * numOfMale, subPop[sp]['numOfMale'] the number of
-                    males in the population/subpopulation
+                    males in the population/subpopulation.
                     * numOfFemale, subPop[sp]['numOfFemale'] the
                     number of females in the population/subpopulation.
                     * propOfMale, subPop[sp]['propOfMale'] the
                     proportion of males in the
-                    population/subpopulation
+                    population/subpopulation.
                     * propOfFemale, subPop[sp]['propOfFemale'] the
                     proportion of females in the
-                    population/subpopulation
+                    population/subpopulation.
     numOfMale_param:a dictionary of parameters of numOfMale
                     statistics. Can be one or more items choosen from
                     the following options: numOfMale, propOfMale,
                     numOfFemale, and propOfFemale.
-    numOfAffected:  whether or not count the numbers/proportions of
+    numOfAffected:  whether or not count the numbers or proportions of
                     affected and unaffected individuals. This
                     parameter can set the following variables by
                     user's specification:
                     * numOfAffected, subPop[sp]['numOfAffected'] the
                     number of affected individuals in the
-                    population/subpopulation
+                    population/subpopulation.
                     * numOfUnaffected, subPop[sp]['numOfUnAffected']
                     the number of unaffected individuals in the
-                    population/subpopulation
+                    population/subpopulation.
                     * propOfAffected, subPop[sp]['propOfAffected'] the
                     proportion of affected individuals in the
-                    population/subpopulation
+                    population/subpopulation.
                     * propOfUnaffected, subPop[sp]['propOfUnAffected']
                     the proportion of unaffected individuals in the
-                    population/subpopulation
+                    population/subpopulation.
     numOfAffected_param:a dictionary of parameters of numOfAffected
                     statistics. Can be one or more items choosen from
                     the following options: numOfAffected,
@@ -11169,11 +11138,11 @@ Arguments:
                     also be calculated if this statistics is
                     requested. This parameter will set the following
                     variables (carray objects of the numbers of
-                    alleles for allloci. Unrequested loci will have 0
-                    distinct alleles.):
-                    * numOfAlleles, subPop[sp]['numOfAlleles'], number
-                    of distinct alleles at each locus. (Calculated
-                    only at requested loci.)
+                    alleles for all loci). Unrequested loci will have
+                    0 distinct alleles.
+                    * numOfAlleles, subPop[sp]['numOfAlleles'] the
+                    number of distinct alleles at each locus.
+                    (Calculated only at requested loci.)
     numOfAlleles_param:a dictionary of parameters of numOfAlleles
                     statistics. Can be one or more items choosen from
                     the following options: numOfAffected,
@@ -11209,7 +11178,7 @@ Arguments:
                     * genoFreq[a][geno] and
                     subPop[sp]['genoFreq'][a][geno], the frequency of
                     genotype geno at allele a.
-    heteroFreq:     an array of loci to calaulate observed
+    heteroFreq:     an array of loci to calculate observed
                     heterozygosities and expected heterozygosities
                     (heteroFreq=[loc1, loc2, ...]). This parameter
                     will set the following variables (arrays of
@@ -11219,30 +11188,31 @@ Arguments:
                     (proportions) of heterozygotes are calculated for
                     each allele. HeteroNum[loc] and HeterFreq[loc] are
                     the overall heterozygosity number and frequency.
-                    I.e., the number/frequency of genotype xy,  $ x
-                    \\ne y $. From this number, we can easily derive
-                    the number of homozygosity.
+                    I.e., the number and frequency of genotype xy,  $
+                    x \\ne y $. From these numbers, we can easily
+                    derive the number and frequency of homozygosity.
                     * HeteroNum[loc], subPop[sp]['HeteroNum'][loc],
-                    the overall heterozygote number
+                    the overall heterozygote number.
                     * HeteroFreq[loc], subPop[sp]['HeteroFreq'][loc],
-                    the overall heterozygote frequency
+                    the overall heterozygote frequency.
                     * heteroNum[loc][allele],
-                    subPop[sp]['heteroNum'][loc][allele]
+                    subPop[sp]['heteroNum'][loc][allele].
                     * heteroFreq[loc][allele],
-                    subPop[sp]['heteroFreq'][loc][allele]
-    homoFreq:       an array of loci to calaulate observed
+                    subPop[sp]['heteroFreq'][loc][allele].
+    homoFreq:       an array of loci to calculate observed
                     homozygosities and expected homozygosities
                     (homoFreq=[loc1, loc2, ...]). This parameter will
                     calculate the numbers and frequencies of
                     homozygotes xx and set the following variables:
-                    * homoNum[loc], subPop[sp]['homoNum'][loc],
+                    * homoNum[loc], subPop[sp]['homoNum'][loc].
                     * homoFreq[loc], subPop[sp]['homoFreq'][loc].
     expHetero:      an array of loci at which the expected
                     heterozygosities will be calculated
                     (expHetero=[loc1, loc2, ...]). The expected
                     heterozygosity is calculated by
-                    $ h_{exp}=1-p_{i}^{2}. $ The following variables
-                    will be set:
+                    $ h_{exp}=1-p_{i}^{2}, $ where  $ p_i $ is the
+                    allele frequency of allele  $ i $. The following
+                    variables will be set:
                     * expHetero[loc], subPop[sp]['expHetero'][loc].
     expHetero_param:a dictionary of parameters of expHetero
                     statistics. Can be one or more items choosen from
@@ -11250,13 +11220,13 @@ Arguments:
     haploFreq:      a matrix of haplotypes (allele sequences on
                     different loci) to count. For example, haploFreq =
                     [ [ 0,1,2 ], [1,2] ] will count all haplotypes on
-                    loci 0,1 and 2; and all haplotypes on loci 1, 2.
+                    loci 0, 1 and 2; and all haplotypes on loci 1, 2.
                     If only one haplotype is specified, the outer []
                     can be omitted. I.e., haploFreq=[0,1] is
                     acceptable. The following dictionary variables
                     will be set with keys 0-1-2 etc. For example,
                     haploNum['1-2']['5-6'] is the number of allele
-                    pair 5,6 (on loci 1 and 2 respectively) in the
+                    pair 5, 6 (on loci 1 and 2 respectively) in the
                     population.
                     * haploNum[haplo] and
                     subPop[sp]['haploNum'][haplo], the number of
@@ -11266,7 +11236,7 @@ Arguments:
                     allele sequencies on loci haplo.
     LD:             calculate linkage disequilibria  $ LD $,  $ LD' $
                     and  $ r^{2} $, given LD=[ [loc1, loc2], [ loc1,
-                    loc2, allele1, allele2], ... ] For each item
+                    loc2, allele1, allele2], ... ]. For each item
                     [loc1, loc2, allele1, allele2],  $ D $,  $ D' $
                     and  $ r^{2} $ will be calculated based on allele1
                     at loc1 and allele2 at loc2. If only two loci are
@@ -11280,7 +11250,23 @@ Arguments:
                     min\\left(P_{A}P_{B},\\left(1-P_{A}\\right)\\left(1-P_
                     {B}\\right)\\right) \\textrm{if }D<0 $
                     $ r^{2} = \\frac{D^{2}}{P_{A}\\left(1-P_{A}\\right)P_
-                    {B}\\left(1-P_{B}\\right)} $
+                    {B}\\left(1-P_{B}\\right)} $ If only one item is
+                    specified, the outer [] can be ignored. I.e.,
+                    LD=[loc1, loc2] is acceptable. This parameter will
+                    set the following variables. Please note that the
+                    difference between the data structures used for ld
+                    and LD.
+                    * ld['loc1-loc2']['allele1-allele2'],
+                    subPop[sp]['ld']['loc1-loc2']['allele1-allele2'].
+                    * ld_prime['loc1-loc2']['allele1-allele2'],
+                    subPop[sp]['ld_prime']['loc1-loc2']['allele1-
+                    allele2'].
+                    * r2['loc1-loc2']['allele1-allele2'],
+                    subPop[sp]['r2']['loc1-loc2']['allele1-allele2'].
+                    * LD[loc1][loc2], subPop[sp]['LD'][loc1][loc2].
+                    * LD_prime[loc1][loc2],
+                    subPop[sp]['LD_prime'][loc1][loc2].
+                    * R2[loc1][loc2], subPop[sp]['R2'][loc1][loc2].
     LD_param:       a dictionary of parameters of LD statistics. Can
                     have key  stat which is a list of statistics to
                     calculate. Default to all. If any statistics is
@@ -11289,9 +11275,9 @@ Arguments:
                     LD_param={LD_prime} to calculate D' only, where
                     LD_prime is a shortcut for 'stat':['LD_prime'].
                     Other parameters that you may use are:
-                    * subPop, whether or not calculate statistics for
-                    subpopulations
-                    * midValues, whether or not keep intermediate
+                    * subPop whether or not calculate statistics for
+                    subpopulations.
+                    * midValues whether or not keep intermediate
                     results.
     association:    association measures
     association_param:a dictionary of parameters of association
@@ -11305,7 +11291,7 @@ Arguments:
                     will be used to calculate AvgFst, which is an
                     average value over all alleles (Weir & Cockerham,
                     1984). Terms and values that match Weir &
-                    Cockerham:
+                    Cockerham are:
                     *  $ F $ ( $ F_{IT} $) the correlation of genes
                     within individuals (inbreeding);
                     *  $ \\theta $ ( $ F_{ST} $) the correlation of
@@ -11331,7 +11317,7 @@ Arguments:
                     matrix. Original group or subpopulation numbers
                     are discarded. relatedness[grp1][grp2] is the
                     relatedness value between grp1 and grp2. There is
-                    no subpopulation level relatedness values.
+                    no subpopulation level relatedness value.
     relGroups:      calculate pairwise relatedness between groups. Can
                     be in the form of either [[1,2,3],[5,6,7],[8,9]]
                     or [2,3,4]. The first one specifies groups of
@@ -12045,9 +12031,9 @@ Description:
 
 Details:
 
-    Operator  stator calculate various basic statistics for the
+    Operator  stator calculates various basic statistics for the
     population and set variables in the local namespace. Other
-    operators/functions can refer to the results from the namespace
+    operators or functions can refer to the results from the namespace
     after  stat is applied.
 
 "; 
@@ -12339,10 +12325,10 @@ Description:
 
 Details:
 
-    tagger is a during  mating operator that tag individuals with
+    This is a during-mating operator that tags individuals with
     various information. Potential usages are:
-    * recording parental information to track pedigree;
-    * tagging an individual/allele and monitor its  spread in the
+    * recording the parental information to track pedigree;
+    * tagging an individual/allele and monitoring its  spread in the
     population etc.
 
 "; 
@@ -12398,8 +12384,8 @@ Details:
     allele 1 at locus 0 is less than 0.05. Of course, to make this
     opertor work, you will need to use a  stat operator before it so
     that variable alleleFreq exists in the local namespace.
-    When the condition is true, a shared variable var=\"terminate\" will
-    be set to the current generation.
+    When the value of condition is True, a shared variable
+    var=\"terminate\" will be set to the current generation.
 
 "; 
 
@@ -12474,9 +12460,8 @@ Description:
 
 Details:
 
-    These operators are used to see if an evolution is running as
-    expected, and terminate the evolution if a certain condition
-    fails.
+    Teminators are used to see if an evolution is running as expected,
+    and terminate the evolution if a certain condition fails.
 
 "; 
 
@@ -12628,7 +12613,7 @@ Details:
 
 Description:
 
-    simuPOP::turnOffDebug::turnOffDebug
+    create a  turnOffDebug operator
 
 Usage:
 
@@ -12700,9 +12685,9 @@ Details:
 
     Turn on debug. There are several ways to turn on debug information
     for non-optimized modules, namely
-    * set environment variable SIMUDEBUG
-    * use simuOpt.setOptions(debug) function, or
-    * use TurnOnDebug or TurnOnDebugByName function
+    * set environment variable SIMUDEBUG.
+    * use simuOpt.setOptions(debug) function.
+    * use TurnOnDebug or TurnOnDebugByName function.
     * use this  turnOnDebug operator The advantage of using this
     operator is that you can turn on debug at given generations.
 
@@ -12712,7 +12697,7 @@ Details:
 
 Description:
 
-    simuPOP::turnOnDebug::turnOnDebug
+    create a  turnOnDebug operator
 
 Usage:
 
@@ -13021,8 +13006,7 @@ Usage:
 Description:
 
     set debug codes. Default to turn on all debug codes. Only
-    available in non-optimized modules. Do not mix this function with
-    turnOnDebug(), which creates an operator
+    available in non-optimized modules.
 
 Usage:
 
@@ -13047,8 +13031,7 @@ Usage:
 Description:
 
     turn off debug information. Default to turn off all debug codes.
-    Only available in non-optimized modules. Do not mix this function
-    with turnOffDebug(), which creates an operator
+    Only available in non-optimized modules.
 
 Usage:
 
@@ -13176,7 +13159,7 @@ Usage:
 
 Description:
 
-    list the name of all available random number generators
+    list the names of all available random number generators
 
 Usage:
 
