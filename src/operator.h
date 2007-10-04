@@ -93,7 +93,7 @@ namespace simuPOP
 	between applicable generations (parameter \c step),
 	or specific generations (parameter \c at). For example, you might want to
 	start applying migrations after certain burn-in generations, or
-	calculate certain statistics only sparsely. Generation numbers can count
+	calculate certain statistics only sparsely. Generation numbers can be counted
 	from the last generation, using negative generation numbers. \n
 
 	Most operators are applied to every replicate of a simulator during
@@ -123,7 +123,7 @@ namespace simuPOP
 
 	\li \c '>' standard output (terminal);
 
-	\li \c '' supress output.
+	\li \c '' suppress output.
 
 	The output filename does not have to be fixed. If parameter \c outputExpr
 	is used (parameter \c output will be ignored), it will be evaluated when
@@ -518,7 +518,7 @@ namespace simuPOP
 	at a key stroke, using <tt>stopOnKeyStroke=True</tt> option. Users can
 	use \c 'q' to stop an evolution. When a simulator is stopped, press any
 	other key to resume	the simulation or escape to a Python shell to examine
-	the status of the simulation by press \c 's'. \n
+	the status of the simulation by pressing \c 's'. \n
 
 	There are two ways to use this operator, the first one is to pause the
 	simulation at specified generations, using the usual operator parameters
@@ -536,8 +536,8 @@ namespace simuPOP
 		public:
 			/// stop a simulation. Press \c 'q' to exit or any other key to continue.
 			/**
-			\param prompt if \c True (default), print prompt message
-			\param stopOnKeyStroke if \c True, stop only when a key was pressed
+			\param prompt if \c True (default), print prompt message.
+			\param stopOnKeyStroke if \c True, stop only when a key was pressed.
 			\param exposePop whether or not expose \c pop to user namespace, only
 				useful when user choose \c 's' at pause. Default to \c True.
 			\param popName by which name the population is exposed. Default to \c pop.
@@ -584,14 +584,16 @@ namespace simuPOP
 	};
 
 	/// none operator
+	/**
+	This operator does nothing.
+    */
 	class noneOp: public baseOperator
 	{
 
 		public:
+            /// create a none operator
 			/**
-			This operator does nothing.
-
-			\test src_noneOp.log Operator \c noneOp
+    		\test src_noneOp.log Operator \c noneOp
 			*/
 			noneOp( string output=">", string outputExpr="",
 				int stage=PostMating, int begin=0, int end=0, int step=1, vectorl at=vectorl(),
@@ -640,12 +642,12 @@ namespace simuPOP
 	/// conditional operator
 	/**
 	This operator accepts
-	\li an expression that will be evaluated when this operator is applied;
-	\li an operator that will be applied if the expression is <tt>True</tt> (default to null);
+	\li an expression that will be evaluated when this operator is applied.
+	\li an operator that will be applied if the expression is <tt>True</tt> (default to null).
 	\li an operator that will be applied if the expression is <tt>False</tt> (default to null).
 
 	When this operator is applied to a population, it will evaluate the expression and
-	depending on its value, apply the supplied operator. Note that the \c begin, \c at,
+	depending on its value, apply the supplied operator. Note that the \c begin, \c end,
 	\c step, and \c at parameters of \c ifOp and \c elseOp will be ignored.
 	For example, you can mimic the \c at parameter of an operator by
 	<tt>ifElse('rep in [2,5,9]' operator)</tt>. The real use of this machanism is
@@ -655,8 +657,9 @@ namespace simuPOP
 	{
 
 		public:
+            /// create a conditional operator
 			/**
-			\param cond expression that will be treated as a bool variable
+			\param cond expression that will be treated as a boolean variable
 			\param ifOp an operator that will be applied when \c cond is \c True
 			\param elseOp an operator that will be applied when \c cond is \c False
 
@@ -823,9 +826,9 @@ namespace simuPOP
 	/**
 	Turn on debug. There are several ways to turn on debug information for
 	non-optimized modules, namely
-	\li set environment variable \c SIMUDEBUG
-	\li use <tt>simuOpt.setOptions(debug)</tt> function, or
-	\li use \c TurnOnDebug or \c TurnOnDebugByName function
+	\li set environment variable \c SIMUDEBUG.
+	\li use <tt>simuOpt.setOptions(debug)</tt> function.
+	\li use \c TurnOnDebug or \c TurnOnDebugByName function.
 	\li use this \c turnOnDebug operator
 
 	The advantage of using this operator is that you can turn on debug at
@@ -835,6 +838,7 @@ namespace simuPOP
 	class turnOnDebug: public baseOperator
 	{
 		public:
+            /// create a \c turnOnDebug operator
 			turnOnDebug(DBG_CODE code,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
@@ -880,6 +884,7 @@ namespace simuPOP
 	{
 
 		public:
+            /// create a \c turnOffDebug operator
 			turnOffDebug(DBG_CODE code,
 				int stage=PreMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
 				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):

@@ -166,8 +166,8 @@ namespace simuPOP
 			\param newSubPopSize an array of subpopulations sizes, should have the same
 				number of subpopulations as the current population
 			\param newSubPopSizeExpr an expression that will be evaluated as an array of new subpopulation sizes
-			\param newSubPopSizeFunc a function that accepts an \c int parameter(generation),
-			an array of current population size and return an array of subpopulation sizes.
+			\param newSubPopSizeFunc a function that takes parameters \c gen (generation number) and \c oldsize 
+			(an array of current population size) and return an array of subpopulation sizes of the next generation.
 			This is usually easier to use than its expression version of this parameter.	
 
 			\test src_mating.log Demographic models and control of number of offspring per mating event
@@ -297,7 +297,7 @@ namespace simuPOP
 	In this scheme, there is
 	\li no mating. Parent generation will be considered as offspring generation.
 	\li no subpopulation change. \em During-mating operators will be applied, but
-		the return values are not checked. I.e., \c subPopSizes will be ignored
+		the return values are not checked. I.e., subpopulation size parameters will be ignored
 		although some during-mating operators might be applied.
 	*/
 	class noMating: public mating

@@ -164,10 +164,6 @@ namespace simuPOP
 	generations. During evolution, the latest several (or all) ancestral generations
 	are saved. Functions to switch between ancestral generations are
 	provided so that one can examine and modify ancestral generations.
-
-	\note Although a large number of member functions are provided,
-	most of the operations are performed by \em operators. These functions will only
-	be useful when you need to manipulate a population explicitly.
 	*/
 	class population : public GenoStruTrait
 	{
@@ -191,7 +187,7 @@ namespace simuPOP
 				The last chromosome can be sex chromosome. In this case, the maximum
 				number of loci on X and Y should be provided. I.e., if there are 3
                 loci on Y chromosme and 5 on X chromosome, use \c 5.
-			\param sexChrom \c True or \c False. Diploid population only. If \c True,
+			\param sexChrom Diploid population only. If this parameter is \c True,
 			the last homologous chromosome will be treated as sex chromosome.
 			(XY for male and XX for female.) If X and Y have different numbers of loci,
 			the number of loci of the longer one of the last (sex) chromosome should be
@@ -370,7 +366,7 @@ namespace simuPOP
 				return( m_subPopIndex[subPop] + ind);
 			}
 
-			/// return the <tt>(subPop, idx)</tt> pair according to an absolute index of an individual
+			/// return the subpopulation ID and relative index of an individual with absolute index \c ind
 			/*
 			  \param absInd absolute index of an individual
 			  \return a pair of values (subPop, index)
@@ -799,7 +795,7 @@ namespace simuPOP
 						it -> setSubPopID(i);
 			}
 
-			/// adjust subpopulation according to individual subpopulation ID.
+			/// move individuals to subpopulations according to individual subpopulation IDs
 			/**
 			Rearrange individuals to their new subpopulations according to their
 			subpopulation ID (or the new given \c ID). Order within each subpopulation is not respected.
@@ -896,7 +892,7 @@ namespace simuPOP
 			void mergePopulationByLoci(const population & pop, const vectoru & newNumLoci = vectoru(),
 				const vectorf & newLociPos=vectorf(), bool byChromosome=false);
 
-			/// insert loci at given locations
+			/// insert loci before given positions
 			/** Insert loci at some given locations. Alleles at inserted loci are initialized with zero allele.
 			\param idx an array of locus index. The loci will be inserted \em before each index.
 			  If you need to append to the last locus, use \c insertAfterLoci instead. If your index is the first
@@ -908,13 +904,13 @@ namespace simuPOP
 			*/
 			void insertBeforeLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names=vectorstr());
 
-			/// insert an locus at given location.
+			/// insert an locus before a given position
 			/**
 			<tt>insertBeforeLocus(idx, pos, name)</tt> is a shortcut to <tt>insertBeforeLoci([idx], [pos], [name])</tt>
 			*/
 			void insertBeforeLocus(UINT idx, double pos, const string & name=string());
 
-			/// append loci at given locations
+			/// append loci after given positions
 			/**
 			Append loci at some given locations. Alleles at inserted loci are initialized with zero allele.
 			\param idx an array of locus index. The loci will be added \em after each index.
@@ -927,13 +923,13 @@ namespace simuPOP
 			*/
 			void insertAfterLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names=vectorstr());
 
-			/// append an locus at a given location
+			/// append an locus after a given position
 			/**
 			<tt>insertAfterLocus(idx, pos, name)</tt> is a shortcut to <tt>insertAfterLoci([idx], [pos], [name])</tt>.
 			*/
 			void insertAfterLocus(UINT idx, double pos, const string & name=string());
 
-			/// resize population
+			/// resize current population
 			/**
 			Resize population by giving new subpopulation sizes.
 			\param newSubPopSizes an array of new subpopulation sizes. If there

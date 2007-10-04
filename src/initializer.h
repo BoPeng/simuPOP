@@ -237,14 +237,14 @@ namespace simuPOP
 	class initByValue: public initializer
 	{
 		public:
-			/// initialize populations by given alleles
+			/// initialize a population by given alleles
 			/**
 			\param value an array of genotypes of one individual, having the same
 				length as the length of <tt>loci()</tt> or <tt>loci()*ploidy()</tt>
 				or <tt>pop.genoSize()</tt> (whole genotype) or <tt>totNumLoci()</tt>
 				(one copy of chromosomes). This parameter can also be an array of arrays
 				of genotypes of one individual. If \c value is an array of values, it should have
-				the same length as \c subPop, \c indRange or \c proportions.
+				the length one, number of subpopulations, or the length of ranges of proportions.
 			\param proportions an array of percentages for each item in \c value. If given,
 			assign given genotypes randomly.
 			\param maleFreq male frequency
@@ -384,7 +384,7 @@ namespace simuPOP
 		public:
 			/**
 			\param func a Python function with parameter <tt>(index, ploidy, subPop)</tt>, where
-				\li \c index is the allele index ranging from \c 0 to <tt>totNumLoci(-1)</tt>;
+				\li \c index is the allele index ranging from \c 0 to <tt>totNumLoci-1</tt>;
 				\li \c ploidy is the index of the copy of chromosomes;
 				\li \c subPop is the subpopulation index.
 

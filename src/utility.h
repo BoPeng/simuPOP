@@ -88,13 +88,11 @@ namespace simuPOP
 	// ////////////////////////////////////////////////////////////
 
 	/// set debug codes. Default to turn on all debug codes. Only available in non-optimized modules.
-	/// Do not mix this function with \c turnOnDebug(), which creates an operator
 	void TurnOnDebug(DBG_CODE code=DBG_ALL);
 
 	void TurnOnDebug(string code);
 
 	/// turn off debug information. Default to turn off all debug codes. Only available in non-optimized modules.
-	/// Do not mix this function with \c turnOffDebug(), which creates an operator
 	void TurnOffDebug(DBG_CODE code=DBG_ALL);
 
 #ifndef OPTIMIZED
@@ -1480,7 +1478,7 @@ namespace simuPOP
 	/// for backward compatibilit, will remove later
 	void setRNG(const string rng="", unsigned long seed=0);
 
-	/// list the name of all available random number generators
+	/// list the names of all available random number generators
 	vectorstr ListAllRNG();
 
 	/// CPPONLY for backward compatibility, will remove later

@@ -130,7 +130,7 @@ namespace simuPOP
 			\param fitness a dictionary of fitness values. The genotype must be in the form of <tt>'a-b'</tt>
 				for a single locus, and <tt>'a-b|c-d|e-f'</tt> for multi-loci.
 			\param phase if \c True, genotypes \c a-b and \c b-a will have different fitness values. Default to \c False.
-			\param output and other parameters please refer to help(baseOperator.__init__)
+			\param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
 
 			\test src_mapSelector.log Operator \c mapSelector
 			*/
@@ -202,10 +202,10 @@ namespace simuPOP
 				considered to be diseased alleles. Default to <tt>[0]</tt>.
 			\param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
 
-			Please refer to \c selector for other parameter descriptions.
+			Please refer to \c baseOperator for other parameter descriptions.
 
 			\note \li \c maSelector only works for diploid populations.
-			\li \c wildtype at all loci are the same.
+			\li \c wildtype alleles at all loci are the same.
 
 			\test src_maSelector.log Operator \c maSelector
 			*/
@@ -258,11 +258,11 @@ namespace simuPOP
 	selectors (can not be another \c mlSelector) and evaluate the fitness of an
 	individual as the product or sum of individual fitness values. The mode is
 	determined by parameter \c mode, which takes one of the following values
-	\li \c SEL_Multiplicative: the fitness is calculated as \f$ f=\prod_{i}f_{i} \f$.
+	\li \c SEL_Multiplicative: the fitness is calculated as \f$ f=\prod_{i}f_{i} \f$, where \f$ f_{i} \f$
+        is the single-locus fitness value.
 	\li \c SEL_Additive: the fitness is calculated as
-		\f$ f=\max\left(0,1-\sum_{i}(1-f_{i})\right)=\max\left(0,1-\sum_{i}s_{i}\right) \f$.
-		\f$ f \f$ will be set to \c 0 when \f$ f<0 \f$. In this case, \f$ s_{i} \f$ are added,
-		not \f$ f_{i} \f$ directly.
+		\f$ f=\max\left(0,1-\sum_{i}(1-f_{i})\right) \f$.
+		\f$ f \f$ will be set to \c 0 when \f$ f<0 \f$. 
 
 	<funcForm>MlSelect</funcForm>
 	*/

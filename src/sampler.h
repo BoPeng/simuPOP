@@ -44,8 +44,8 @@ namespace simuPOP
 	/// shrink population
 	/**
 	This operator shrinks a population according to a given array or the
-	\c subPopID() value of each indvidual. individuals with negative
-	subPop ID are removed.
+	\c subPopID() value of each individual. Individuals with negative
+	subpopulation IDs will be removed.
 	<funcForm>PySubset</funcForm>
 	*/
 	class pySubset: public baseOperator
@@ -54,7 +54,7 @@ namespace simuPOP
 		public:
 			/// create a \c pySubset operator
 			/**
-			\param keep an array of subpopulation IDs for each individual.
+			\param keep an array of individual subpopulation IDs
 			*/
 			pySubset(const vectori& keep=vectori(),
 				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
@@ -107,14 +107,14 @@ namespace simuPOP
 
 	/// base class of other sample operator
 	/**
-	Ascertainment/sampling refers to ways to select individuals from a population.
-	In simuPOP, ascerntainment operators form separate populations in a population's
-	namespace. All the ascertainment operators work like this except for \c pySubset
+	Ascertainment/sampling refers to the ways of selecting individuals from a population.
+	In simuPOP, ascerntainment operators create sample populations that can be accessed
+	from the population's local namespace. All the ascertainment operators work like this except for \c pySubset
 	which shrink the population itself. \n
 
 	Individuals in sampled populations may or may not keep their original order but
-	their indexes in the whole population are stored in a information field \c oldindex.
-	That is to say, you can use <tt>ind.info('oldindex')</tt> to check the original
+	their indexes in the whole population are stored in an information field \c oldindex.
+	This is to say, you can use <tt>ind.info('oldindex')</tt> to check the original
 	position of an individual. \n
 
 	Two forms of sample size specification are supported: with or without subpopulation
@@ -136,12 +136,11 @@ namespace simuPOP
 		public:
 			/// draw a sample
 			/**
-			\param name name of the sample in local namespace. This variable is an array of
-				populations of size \c times. Default to \c sample. If <tt>name=''</tt> is set,
-				samples will not be saved in local namespace.
+			\param name name of the sample in the local namespace. This variable is an array of
+				populations of size \c times. Default to \c sample. 
 			\param nameExpr expression version of parameter \c name. If both \c name and \c nameExpr
-				are empty, do not store \c pop. This expression will be evaluated dynamically
-				in population's local namespace.
+				are empty, sample populations will not be saved in the population's local namespace.
+                This expression will be evaluated dynamically in population's local namespace.
 			\param times how many times to sample from the population. This is usually \c 1,
 				but we may want to take several random samples.
 			\param saveAs filename to save the samples
@@ -149,7 +148,7 @@ namespace simuPOP
 			dynamically in population's local namespace.
 			\param format format to save the samples
 
-			Please refer to <tt>baseOperator::__init__</tt> for other parameters.
+			Please refer to <tt>baseOperator::__init__</tt> for other parameter descriptions.
 			*/
 			sample( const string& name="sample", const string& nameExpr="", UINT times=1,
 				const string& saveAs="", const string& saveAsExpr="",   const string& format="auto",
@@ -242,21 +241,21 @@ namespace simuPOP
 	This operator will randomly choose \c size individuals (or <tt> size[i] </tt> individuals
 	from subpopulation \c i)
 	and return a new population. The function form of this operator returns the samples
-	directly. The operator keeps samples in an array \c name in the local namespace. You
+	directly. This operator keeps samples in an array \c name in the local namespace. You
 	may access them through \c dvars() or \c vars() functions. \n
 
-	The original subpopulation structure/boundary is kept in the samples.
+	The original subpopulation structure or boundary is kept in the samples.
 	<funcForm>RandomSample</funcForm>
 	*/
 	class randomSample: public sample
 	{
 
 		public:
-			/// draw a random sample, regardless of the affected status
+			/// draw a random sample, regardless of the affectedness status
 			/**
 			\param size size of the sample. It can be either a number which represents the
 				overall sample size, regardless of the population structure; or an array
-				which represents the number of samples drawn from each subpopulation.
+				which represents the number of individuals drawn from each subpopulation.
 
 			Please refer to class \c sample for other parameter descriptions.
 
@@ -302,13 +301,13 @@ namespace simuPOP
 	/// draw a case-control sample from a population
 	/**
 	This operator will randomly choose \c cases affected individuals and \c controls
-	unaffected individuals as a sample. The affected status is usually set by penetrance
-	functions/operators. The sample populations will have two subpopulations: cases
+	unaffected individuals as a sample. The affectedness status is usually set by penetrance
+	functions or operators. The sample populations will have two subpopulations: cases
 	and controls. \n
 
 	You may specify the number of cases and the number of controls from
 	each subpopulation using the array form of the parameters. The sample population
-	will still have only two subpoulations (cases/controls) though. \n
+	will still have only two subpoulations (cases and controls) though. \n
 
 	A special case of this sampling scheme occurs when one of or both \c cases and \c controls
 	are omitted (zeros). In this case, all cases and/or controls are chosen. If both
@@ -378,11 +377,11 @@ namespace simuPOP
 	/**
 	Special preparation for the population is needed in order to use this operator.
 	Obviously, to obtain affected sibling pairs, we need to know the parents and
-	the affectedness status of each individual. Furthermore, to get parental genotype,
+	the affectedness status of each individual. Furthermore, to get parental genotypes,
 	the population should have \c ancestralDepth at least \c 1. The most important problem,
 	however, comes from the mating scheme we are using. \n
 
-	\c randomMating() is usually used for diploid populations. The \em real \em random mating
+	\c randomMating() is usually used for diploid populations. The <em>real random</em> mating
 	requires that a mating will generate only one offspring. Since parents are chosen
 	with replacement, a parent can have multiple offspring with different parents.
 	On the other hand, it is very unlikely that two offspring will have the same parents.
@@ -390,11 +389,6 @@ namespace simuPOP
 	(if do not consider selection).
 	Therefore, we will have to allow multiple offspring per mating at the cost of
 	small effective population size. \n
-
-	All these requirements come at a cost: multiple ancestral populations, determining
-	affectedness status and tagging will slow down evolution; multiple offspring
-	will reduce effective population size. Fortunately, simuPOP is flexible enough to
-	let all these happen only at the last several generations.
 
 	<funcForm>AffectedSibpairSample</funcForm>
 	*/
@@ -406,11 +400,11 @@ namespace simuPOP
 			/**
 			\param size the number of affected sibling pairs to be sampled. Can be a
 				number or an array. If a number is given, it is the total number of
-				sibpairs, ignoring population structure. Otherwise, given number of
-				sibpairs are sampled from subpopulations. If size is unspecified,
+				sibpairs, ignoring the population structure. Otherwise, specified numbers of
+				sibpairs are sampled from subpopulations. If \c size is unspecified,
 				this operator will return all affected sibpairs.
 			\param chooseUnaffected instead of affected sibpairs, choose unaffected families.
-			\param countOnly set variables about number of affected sibpairs,
+			\param countOnly set variables about the number of affected sibpairs,
 				do not actually draw the sample
 
 			Please refer to class \c sample for other parameter descriptions.
@@ -479,9 +473,9 @@ namespace simuPOP
 			/**
 			\param minTotalSize the minimum number of individuals in the sample
 			\param maxOffspring the maximum number of offspring a parent may have
-			\param minPedSize minimal pedigree size, default to \c 5
-			\param minAffected minimal number of affected individuals in each pedigree, default to \c 0
-			\param countOnly  set variables about number of affected sibpairs,
+			\param minPedSize the minimal pedigree size. Default to \c 5.
+			\param minAffected the minimal number of affected individuals in each pedigree. Default to \c 0.
+			\param countOnly set variables about the number of affected sibpairs,
 				do not actually draw the sample.
 
 			Please refer to class \c sample for other parameter descriptions.
@@ -634,6 +628,10 @@ namespace simuPOP
 	/// Python sampler
 	/**
 	A Python sampler that generate a sample with given individuals.
+	This sampler accepts a Python array with elements that will be assigned to
+	individuals as their subpopulation IDs. Individuals with positive subpopulation IDs
+	will then be picked out and form a sample.
+
 	<funcForm>PySample</funcForm>
 	*/
 	class pySample: public sample
@@ -642,13 +640,9 @@ namespace simuPOP
 		public:
 			/// create a Python sampler
 			/**
-			This sampler accepts a Python array which will be assigned to
-			each individual as subPOP ID. Individuals with positive subPOPID
-			will then be picked out and form a sample.
-
 			\param keep subpopulation IDs of all individuals
-			\param keepAncestralPop the number of ancestral populations that will be kept. If \c -1,
-				keep all ancestral populations (default). If \c 0, no ancestral population will be kept.
+			\param keepAncestralPop the number of ancestral populations that will be kept. If \c -1 is given,
+				keep all ancestral populations (default). If \c 0 is given, no ancestral population will be kept.
 
 			Please refer to class \c sample for other parameter descriptions.
 			*/
