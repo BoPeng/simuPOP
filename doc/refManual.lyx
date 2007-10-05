@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.8.0 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.8.1 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
