@@ -3,21 +3,24 @@ ChangeLog of simuPOP
 BUGS:
   - all known bugs have been cleared.
 
-version 0.8.1 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.8.2 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.8.1 - (Rev 1254) Oct 05, 2007
   - NEW: Allow len(pops) == 1 in MergePopulationsByLoci(pops) and
 	MergePopulations(pops)
   - BUG: Use /dev/urandom for unix users. os.path.isfile('/dev/urandom') 
-	returns false even if this file does exist.
+		returns false even if this file does exist.
   - BUG: Fix the handling of binary option in command line, and handling of short 
 		arguments.
   - NEW: Use a checkbox for binary options in the parameter dialogs.
   - NEW: make use of second to last inforFields passed to pyPenetrance 
 		and pySelector to pass specified information fields to user-defined
 		functions.
-  - BUG: Fix a new functions in hapMapUtil.py
+  - BUG: Fix a few functions in hapMapUtil.py
   - BUG: stop displaying full path name in the title of the parameter dialog.
   - NEW: add chromName(), chromNames(), chromByName() to genotypic structure, and
 		chromNames parameter to population constructor.
+  - NEW: Some documentation improvement.
 
 
 version 0.8.0 - (Rev 1215) Aug 14, 2007
