@@ -792,7 +792,7 @@ def SaveFstat(pop, output='', outputExpr='', maxAllele=0, loci=[], shift=1,
     if np > 200:
         print "Warning: Current version (2.93) of FSTAT can not handle more than 200 samples"
     if loci == []:
-        loci = range(pop.totalNumLoci())
+        loci = range(pop.totNumLoci())
     nl = len(loci)
     if nl > 100:
         print "Warning: Current version (2.93) of FSTAT can not handle more than 100 loci"
@@ -816,6 +816,7 @@ def SaveFstat(pop, output='', outputExpr='', maxAllele=0, loci=[], shift=1,
     # following lines with loci name.
     for loc in loci:
         f.write( pop.locusName(loc) +"\n");
+    gs = pop.totNumLoci()
     for sp in range(0, pop.numSubPop()):
         # genotype of subpopulation sp, individuals are
         # rearranged in perfect order
