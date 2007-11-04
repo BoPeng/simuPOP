@@ -34,8 +34,7 @@
 #include <numeric>
 using std::min;
 
-namespace simuPOP
-{
+namespace simuPOP {
 /// A base selection operator for all selectors
 /**
    Genetic selection is tricky to simulate since there are many different \em fitness

@@ -38,8 +38,7 @@ namespace mpi = boost::parallel::mpi;
 
 namespace io = boost::iostreams;
 
-namespace simuPOP
-{
+namespace simuPOP {
 individual & individualIterator::next()
 {
 	if (m_index == m_end)

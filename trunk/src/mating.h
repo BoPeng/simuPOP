@@ -42,8 +42,7 @@ using std::string;
 #include <stack>
 using std::stack;
 
-namespace simuPOP
-{
+namespace simuPOP {
 /// CPPONLY the default method to generate offspring from parents
 /**
    This part is separated from the mating schemes, because mating schemes

@@ -36,8 +36,7 @@ using std::min;
 
 const string ASC_AS_Fields[2] = { "father_idx", "mother_idx" };
 
-namespace simuPOP
-{
+namespace simuPOP {
 // ///////////////////// SUBSET ///////////////////////////////////////////
 // // ascertainment ........................................
 

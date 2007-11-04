@@ -96,8 +96,7 @@ using std::find;
 using std::sort;
 using std::greater;
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 // ////////////////////////////////////////////////////////////
 // / Debug functions
@@ -300,8 +299,7 @@ int simuPOP_getch(void)
 
 
 
-namespace std
-{
+namespace std {
 // how to output a dictionary
 ostream & operator<<(ostream & out, const strDict & dict)
 {
@@ -351,8 +349,7 @@ unsigned pow3(unsigned n)
 
 
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 // ///////////////////////////////////////////////////////////////
 //

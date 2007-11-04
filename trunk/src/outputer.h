@@ -36,8 +36,7 @@ using std::setw;
 using std::hex;
 using std::dec;
 
-namespace simuPOP
-{
+namespace simuPOP {
 /**
  \brief Base class of all operators that out information.
    different format.

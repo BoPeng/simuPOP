@@ -22,8 +22,7 @@
 ***************************************************************************/
 #include "outputer.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 bool dumper::apply(population & pop)
 {
 	ostream & out = this->getOstream(pop.dict());

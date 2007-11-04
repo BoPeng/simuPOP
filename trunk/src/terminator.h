@@ -33,8 +33,7 @@
 #include <iostream>
 #include <iomanip>
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 /// Base class of all terminators
 /**

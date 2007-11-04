@@ -67,8 +67,7 @@ using std::dec;
 #include <numeric>
 using std::pair;
 
-namespace simuPOP
-{
+namespace simuPOP {
 /// CPPONLY
 /** \brief genetic structure. Shared by individuals of one population
 
@@ -334,8 +333,7 @@ private:
 BOOST_CLASS_VERSION(simuPOP::GenoStructure, 3)
 #endif
 
-namespace simuPOP
-{
+namespace simuPOP {
 /// genotypic structure related functions, can be accessed from individuals, populations and simulator levels.
 /**
    Genotypic structure refers to the number of chromosomes, the

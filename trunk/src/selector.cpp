@@ -23,8 +23,7 @@
 
 #include "selector.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 bool selector::apply(population & pop)
 {
 	UINT fit_id = pop.infoIdx(this->infoField(0));

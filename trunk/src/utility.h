@@ -80,8 +80,7 @@ using std::setw;
 // bits directly in vector<bool>
 typedef vector<bool> BitSet;
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 // ////////////////////////////////////////////////////////////
 // / Debug and info functions
@@ -139,8 +138,7 @@ int simuPOP_getch();
 
 
 
-namespace std
-{
+namespace std {
 /// CPPONLY how to output any std::pair
 template<class T1, class T2>
 ostream & operator<<(ostream & out, const pair<T1, T2> & pair)
@@ -176,8 +174,7 @@ unsigned pow3(unsigned n);
 
 
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 /// CPPONLY operator to tell the affected status of an individual
 template<class individual>

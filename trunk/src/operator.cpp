@@ -23,8 +23,7 @@
 
 #include "operator.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 bool baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly)
 {

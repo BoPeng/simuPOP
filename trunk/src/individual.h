@@ -68,8 +68,7 @@ using std::dec;
 #include <numeric>
 using std::pair;
 
-namespace simuPOP
-{
+namespace simuPOP {
 /// individuals with genotype, affection status, sex etc.
 /**
    Individuals are the building blocks of populations, each having

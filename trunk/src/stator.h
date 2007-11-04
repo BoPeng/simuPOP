@@ -44,8 +44,7 @@ using std::max;
 #include <iomanip>
 using std::setprecision;
 
-namespace simuPOP
-{
+namespace simuPOP {
 /// base class of all the statistics calculator
 /**
    Operator \c stator calculates various basic statistics for the population and set

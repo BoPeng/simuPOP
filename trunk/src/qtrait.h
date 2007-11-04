@@ -34,8 +34,7 @@
 #include <numeric>
 using std::min;
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 // ///////////////////////// Quantitative trait ////////////////////////
 

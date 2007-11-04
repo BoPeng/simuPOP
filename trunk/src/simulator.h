@@ -74,8 +74,7 @@ using boost::serialization::make_nvp;
 
 /** \brief all classes in simuPOP is defined in this namespace
  */
-namespace simuPOP
-{
+namespace simuPOP {
 
 /// simulator manages several replicates of a population, evolve them using given mating scheme and operators
 /**
