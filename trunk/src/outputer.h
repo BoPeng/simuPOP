@@ -1,32 +1,32 @@
 /***************************************************************************
- *   Copyright (C) 2004 by Bo Peng                                         *
- *   bpeng@rice.edu
- *                                                                         *
- *   $LastChangedDate$
- *   $Rev$                                                    *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************/
+*   Copyright (C) 2004 by Bo Peng                                         *
+*   bpeng@rice.edu
+*                                                                         *
+*   $LastChangedDate$
+*   $Rev$                                                    *
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+*   This program is distributed in the hope that it will be useful,       *
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+*   GNU General Public License for more details.                          *
+*                                                                         *
+*   You should have received a copy of the GNU General Public License     *
+*   along with this program; if not, write to the                         *
+*   Free Software Foundation, Inc.,                                       *
+*   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+***************************************************************************/
 
 #ifndef _OUTPUTER_H
 #define _OUTPUTER_H
 /**
-\file
-\brief head file of class outputer: public baseOperator
-*/
+ \file
+ \brief head file of class outputer: public baseOperator
+ */
 #include "utility.h"
 #include "operator.h"
 #include <iostream>
@@ -38,300 +38,333 @@ using std::dec;
 
 namespace simuPOP
 {
+/**
+ \brief Base class of all operators that out information.
+   different format.
+
+   @author Bo Peng
+ */
+
+class outputer : public baseOperator
+{
+
+public:
+	/// constructor.
+	outputer(string output = ">", string outputExpr = "",
+		 int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		 int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields)
+	{
+	};
+
+	/// destructor
+	virtual ~outputer()
+	{
+	};
+
+	virtual baseOperator * clone() const
+	{
+		return new outputer(*this);
+	}
+
+
+};
+
+/// Output a given string
+/**
+   A common usage is to output a new line for the last replicate.
+ */
+class pyOutput : public outputer
+{
+
+public:
+	/// Create a \c pyOutput operator that outputs a given string
 	/**
-	\brief Base class of all operators that out information.
-	different format.
-
-	@author Bo Peng
-	*/
-
-	class outputer: public baseOperator
+	 \param str string to be outputted
+	 */
+	pyOutput(string str = "", string output = ">", string outputExpr = "",
+		 int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		 int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+		outputer(output, outputExpr, stage, begin, end,
+			 step, at, rep, grp, infoFields), m_string(str)
 	{
+	}
 
-		public:
-			/// constructor.
-			outputer(string output=">", string outputExpr="",
-				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields)
-			{
-			};
 
-			/// destructor
-			virtual ~outputer(){};
+	/// simply output some info
+	virtual bool apply(population & pop)
+	{
+		ostream & out = this->getOstream(pop.dict());
 
-			virtual baseOperator * clone() const
-			{
-				return new outputer(*this);
-			}
+		out << m_string;
+		this->closeOstream();
+		return true;
+	}
 
-	};
 
-	/// Output a given string
+	///// destructor
+	virtual ~pyOutput()
+	{
+	}
+
+
+	virtual baseOperator * clone() const
+	{
+		return new pyOutput(*this);
+	}
+
+
+	/// set output string.
+	void setString(const string str)
+	{
+		m_string = str;
+	}
+
+
+	virtual string __repr__()
+	{
+		string reprStr;
+
+		for (size_t i = 0; i < 10 && i < m_string.size(); ++i)
+			if (m_string[i] != '\n')
+				reprStr += m_string[i];
+		if (m_string.size() > 10)
+			reprStr += "... ";
+		return "<simuPOP::output " + reprStr + "> " ;
+	}
+
+
+private:
+	string m_string;
+};
+
+/// Output a given string.
+/**
+   A common usage is <tt>pyOutpue('\n', rep=REP_LAST)</tt>
+
+   This operator, renamed to output, in the python interface
+   is obsolete. It is replaced by pyOutput.
+ */
+class outputHelper : public outputer
+{
+
+public:
+	/// Create a outputHelper operator that output a given string.
 	/**
-	A common usage is to output a new line for the last replicate.
-	*/
-	class pyOutput: public outputer
+	 \param str string to be outputted
+	 */
+	outputHelper(string str = "", string output = ">", string outputExpr = "",
+		     int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		     int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+		outputer(output, outputExpr, stage, begin, end,
+			 step, at, rep, grp, infoFields), m_string(str)
 	{
+	}
 
-		public:
-			/// Create a \c pyOutput operator that outputs a given string
-			/**
-				\param str string to be outputted
-			*/
-			pyOutput(string str="", string output=">", string outputExpr="",
-				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			outputer( output, outputExpr, stage, begin, end,
-				step, at, rep, grp, infoFields), m_string(str)
-			{
-			}
 
-			/// simply output some info
-			virtual bool apply(population& pop)
-			{
-				ostream& out = this->getOstream(pop.dict());
-				out << m_string;
-				this->closeOstream();
-				return true;
-			}
+	/// simply output some info
+	virtual bool apply(population & pop)
+	{
+		ostream & out = this->getOstream(pop.dict());
 
-			///// destructor
-			virtual ~pyOutput()
-			{
-			}
+		out << m_string;
+		this->closeOstream();
+		return true;
+	}
 
-			virtual baseOperator * clone() const
-			{
-				return new pyOutput(*this);
-			}
 
-			/// set output string.
-			void setString(const string str)
-			{
-				m_string = str;
-			}
+	///// destructor
+	virtual ~outputHelper()
+	{
+	}
 
-			virtual string __repr__()
-			{
-				string reprStr;
-				for(size_t i=0; i<10 && i < m_string.size(); ++i)
-					if(m_string[i] != '\n')
-						reprStr += m_string[i];
-				if( m_string.size() > 10)
-					reprStr += "... ";
-				return "<simuPOP::output " + reprStr + "> " ;
-			}
 
-		private:
-			string m_string;
-	};
+	virtual baseOperator * clone() const
+	{
+		return new outputHelper(*this);
+	}
 
-	/// Output a given string.
+
+	/// set output string.
+	void setString(const string str)
+	{
+		m_string = str;
+	}
+
+
+	virtual string __repr__()
+	{
+		string reprStr;
+
+		for (size_t i = 0; i < 10 && i < m_string.size(); ++i)
+			if (m_string[i] != '\n')
+				reprStr += m_string[i];
+		if (m_string.size() > 10)
+			reprStr += "... ";
+		return "<simuPOP::output " + reprStr + "> " ;
+	}
+
+
+private:
+	string m_string;
+};
+
+/// dump the content of a population.
+class dumper : public outputer
+{
+public:
+	/// dump a population
 	/**
-	A common usage is <tt>pyOutpue('\n', rep=REP_LAST)</tt>
+	 \param alleleOnly only display allele
+	 \param infoOnly only display genotypic information
+	 \param dispWidth number of characters to display an allele. Default to \c 1.
+	 \param ancestralPops whether or not display ancestral populations. Default to \c False.
+	 \param chrom chromosome(s) to display
+	 \param loci loci to display
+	 \param subPop only display subpopulation(s)
+	 \param indRange range(s) of individuals to display
+	 \param max the maximum number of individuals to display. Default to \c 100.
+	   	    This is to avoid careless dump of huge populations.
+	 \param output output file. Default to the standard output.
+	 \param outputExpr and other parameters: refer to help(baseOperator.__init__)
 
-	This operator, renamed to output, in the python interface
-	is obsolete. It is replaced by pyOutput.
-	*/
-	class outputHelper: public outputer
+	 */
+	dumper(bool alleleOnly = false, bool infoOnly = false, bool ancestralPops = false, int dispWidth = 1, UINT max = 100,
+	       const vectori & chrom = vectori(), const vectori & loci = vectori(), const vectoru & subPop = vectoru(),
+	       const vectorlu & indRange = vectorlu(),
+	       string output = ">", string outputExpr = "",
+	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+		outputer(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
+		m_alleleOnly(alleleOnly), m_infoOnly(infoOnly), m_dispAncestry(ancestralPops), m_width(dispWidth),
+		m_chrom(chrom), m_loci(loci), m_subPop(subPop), m_indRange(indRange), m_max(max)
 	{
+	}
 
-		public:
-			/// Create a outputHelper operator that output a given string.
-			/**
-				\param str string to be outputted
-			*/
-			outputHelper(string str="", string output=">", string outputExpr="",
-				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			outputer( output, outputExpr, stage, begin, end,
-				step, at, rep, grp, infoFields), m_string(str)
-			{
-			}
 
-			/// simply output some info
-			virtual bool apply(population& pop)
-			{
-				ostream& out = this->getOstream(pop.dict());
-				out << m_string;
-				this->closeOstream();
-				return true;
-			}
+	virtual baseOperator * clone() const
+	{
+		return new dumper(*this);
+	}
 
-			///// destructor
-			virtual ~outputHelper()
-			{
-			}
 
-			virtual baseOperator * clone() const
-			{
-				return new outputHelper(*this);
-			}
+	/// only show alleles (not structure, gene information?
+	bool alleleOnly()
+	{
+		return m_alleleOnly;
+	}
 
-			/// set output string.
-			void setString(const string str)
-			{
-				m_string = str;
-			}
 
-			virtual string __repr__()
-			{
-				string reprStr;
-				for(size_t i=0; i<10 && i < m_string.size(); ++i)
-					if(m_string[i] != '\n')
-						reprStr += m_string[i];
-				if( m_string.size() > 10)
-					reprStr += "... ";
-				return "<simuPOP::output " + reprStr + "> " ;
-			}
+	///
+	void setAlleleOnly(bool alleleOnly)
+	{
+		m_alleleOnly = alleleOnly;
+	}
 
-		private:
-			string m_string;
+
+	/// only show info
+	bool infoOnly()
+	{
+		return m_infoOnly;
+	}
+
+
+	///
+	void setInfoOnly(bool infoOnly)
+	{
+		m_infoOnly = infoOnly;
+	}
+
+
+	virtual bool apply(population & pop);
+
+	virtual ~dumper()
+	{
 	};
 
-	/// dump the content of a population.
-	class dumper: public outputer
+	virtual string __repr__()
 	{
-		public:
-			/// dump a population
-            /**
-			\param alleleOnly only display allele
-			\param infoOnly only display genotypic information
-			\param dispWidth number of characters to display an allele. Default to \c 1.
-			\param ancestralPops whether or not display ancestral populations. Default to \c False.
-			\param chrom chromosome(s) to display
-			\param loci loci to display
-			\param subPop only display subpopulation(s)
-			\param indRange range(s) of individuals to display
-			\param max the maximum number of individuals to display. Default to \c 100.
-			This is to avoid careless dump of huge populations.
-			\param output output file. Default to the standard output.
-			\param outputExpr and other parameters: refer to help(baseOperator.__init__)
+		return "<simuPOP::dumper>" ;
+	}
 
-			*/
-			dumper( bool alleleOnly=false, bool infoOnly=false, bool ancestralPops=false, int dispWidth=1, UINT max=100,
-				const vectori& chrom=vectori(), const vectori& loci=vectori(), const vectoru& subPop=vectoru(),
-				const vectorlu& indRange=vectorlu(),
-				string output=">", string outputExpr="",
-				int stage=PostMating, int begin=0, int end=-1, int step=1, vectorl at=vectorl(),
-				int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			outputer(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
-				m_alleleOnly(alleleOnly), m_infoOnly(infoOnly), m_dispAncestry(ancestralPops), m_width(dispWidth),
-				m_chrom(chrom), m_loci(loci), m_subPop(subPop), m_indRange(indRange), m_max(max)
-				{}
 
-			virtual baseOperator * clone() const
-			{
-				return new dumper(*this);
-			}
+private:
+	/// only output alleles, not structure info
+	bool m_alleleOnly;
 
-			/// only show alleles (not structure, gene information?
-			bool alleleOnly()
-			{
-				return m_alleleOnly;
-			}
+	/// only display info
+	bool m_infoOnly;
 
-			///
-			void setAlleleOnly(bool alleleOnly)
-			{
-				m_alleleOnly = alleleOnly;
-			}
+	/// whether or not display ancestral populations
+	bool m_dispAncestry;
 
-			/// only show info
-			bool infoOnly()
-			{
-				return m_infoOnly;
-			}
+	/// disp width when outputing alleles
+	int m_width;
 
-			///
-			void setInfoOnly(bool infoOnly)
-			{
-				m_infoOnly = infoOnly;
-			}
+	///
+	vectori m_chrom;
 
-			virtual bool apply(population& pop);
+	///
+	vectori m_loci;
 
-			virtual ~dumper(){};
+	///
+	vectoru m_subPop;
 
-			virtual string __repr__()
-			{
-				return "<simuPOP::dumper>" ;
-			}
+	///
+	vectorlu m_indRange;
 
-		private:
-			/// only output alleles, not structure info
-			bool m_alleleOnly;
+	/// only output first ... individuals. Good for large population
+	UINT m_max;
+};
 
-			/// only display info
-			bool m_infoOnly;
-
-			/// whether or not display ancestral populations
-			bool m_dispAncestry;
-
-			/// disp width when outputing alleles
-			int m_width;
-
-			///
-			vectori m_chrom;
-
-			///
-			vectori m_loci;
-
-			///
-			vectoru m_subPop;
-
-			///
-			vectorlu m_indRange;
-
-			/// only output first ... individuals. Good for large population
-			UINT m_max;
-	};
-
-	/// save population to a file
-	class savePopulation: public outputer
+/// save population to a file
+class savePopulation : public outputer
+{
+public:
+	/// save population
+	savePopulation(string output = "", string outputExpr = "",
+		       string format = "bin", bool compress = true, int stage = PostMating, int begin = 0, int end = -1,
+		       int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+		outputer("", "", stage, begin, end, step, at, rep, grp, infoFields),
+		m_filename(output), m_filenameParser(outputExpr), m_format(format), m_compress(compress)
 	{
-		public:
-            /// save population
-			savePopulation( string output="", string outputExpr="",
-				string format = "bin", bool compress=true, int stage=PostMating, int begin=0, int end=-1,
-				int step=1, vectorl at=vectorl(), int rep=REP_ALL, int grp=GRP_ALL, const vectorstr& infoFields=vectorstr()):
-			outputer( "", "", stage, begin, end, step, at, rep, grp, infoFields),
-				m_filename(output), m_filenameParser(outputExpr), m_format(format), m_compress(compress)
-			{
-				if(output == "" && outputExpr == "")
-					throw ValueError("Please specify one of output and outputExpr.");
-			}
+		if (output == "" && outputExpr == "")
+			throw ValueError("Please specify one of output and outputExpr.");
+	}
 
-			~savePopulation()
-			{
-			}
 
-			virtual baseOperator * clone() const
-			{
-				return new savePopulation(*this);
-			}
+	~savePopulation()
+	{
+	}
 
-			virtual bool apply(population& pop);
 
-			virtual string __repr__()
-			{
-				return "<simuPOP::save population>" ;
-			}
+	virtual baseOperator * clone() const
+	{
+		return new savePopulation(*this);
+	}
 
-		private:
-			/// filename,
-			string m_filename;
 
-			/// or an expression that will be evaluated dynamically
-			Expression m_filenameParser;
+	virtual bool apply(population & pop);
 
-			/// can specify format, default to 'auto'
-			string m_format;
+	virtual string __repr__()
+	{
+		return "<simuPOP::save population>" ;
+	}
 
-			/// whether or not compress population
-			bool m_compress;
-	};
+
+private:
+	/// filename,
+	string m_filename;
+
+	/// or an expression that will be evaluated dynamically
+	Expression m_filenameParser;
+
+	/// can specify format, default to 'auto'
+	string m_format;
+
+	/// whether or not compress population
+	bool m_compress;
+};
 
 }
 #endif

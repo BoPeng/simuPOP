@@ -98,6 +98,7 @@ public:
 	{
 	}
 
+
 	/** CPPONLY \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
 
 	 \param ploidy number of sets of chromosomes

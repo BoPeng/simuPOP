@@ -177,11 +177,13 @@ public:
 	{
 	}
 
+
 	/// return error message
 	const char * message()
 	{
 		return m_msg.c_str();
 	}
+
 
 	virtual ~Exception()
 	{
