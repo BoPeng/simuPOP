@@ -23,8 +23,7 @@
 
 #include "sampler.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 PyObject * sample::samples(population & pop)
 {
 	DBG_FAILIF(m_name.empty() && m_nameExpr.empty(), ValueError,

@@ -31,8 +31,7 @@ using std::map;
 #include <boost/parallel/mpi.hpp>
 namespace mpi = boost::parallel::mpi;
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 // NOTE:
 // populations are saved in a map ('ID', population pointer) in slave's local

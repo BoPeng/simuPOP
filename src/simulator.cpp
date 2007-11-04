@@ -30,8 +30,7 @@
 
 namespace io = boost::iostreams;
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 simulator::simulator(const population & pop,
 		     mating & matingScheme,

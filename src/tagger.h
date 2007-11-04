@@ -32,8 +32,7 @@
 const string TAG_InheritFields[2] = { "paternal_tag", "maternal_tag" };
 const string TAG_ParentsFields[2] = { "father_idx", "mother_idx" };
 
-namespace simuPOP
-{
+namespace simuPOP {
 /// base class of tagging individuals
 /**
    This is a during-mating operator that tags individuals with various information.

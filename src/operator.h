@@ -47,8 +47,7 @@ using std::string;
 #include "individual.h"
 #include "population.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 /// base class of all classes that manipulate populations
 /**

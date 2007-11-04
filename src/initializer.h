@@ -34,8 +34,7 @@
 using std::string;
 using std::accumulate;
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 /// initialize alleles at the start of a generation
 /**

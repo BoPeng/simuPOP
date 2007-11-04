@@ -23,8 +23,7 @@
 
 #include "genoStru.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom,
 			     const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
 			     const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields,

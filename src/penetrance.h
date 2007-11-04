@@ -34,8 +34,7 @@
 #include <numeric>
 using std::min;
 
-namespace simuPOP
-{
+namespace simuPOP {
 // ///////////////////////// PENETRANCE ///////////////////////////////
 
 /// Base class of all penetrance operators

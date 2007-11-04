@@ -69,8 +69,7 @@ using boost::serialization::make_nvp;
  #define SLAVE_DESTROY 2
 #endif
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 class population;
 

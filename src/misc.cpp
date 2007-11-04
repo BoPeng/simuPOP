@@ -23,8 +23,7 @@
 
 #include "misc.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
 			    PyObject * NtFunc, vectorf fitness, PyObject * fitnessFunc,
 			    ULONG minMutAge, ULONG maxMutAge, int ploidy,

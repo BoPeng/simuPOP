@@ -23,8 +23,7 @@
 
 #include "initializer.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 void initializer::setRanges(population & pop)
 {

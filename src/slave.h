@@ -30,8 +30,7 @@
 
 #ifdef SIMUMPI
 
-namespace simuPOP
-{
+namespace simuPOP {
 enum {
 	SLAVE_POPULATION_CREATE,
 	SLAVE_POPULATION_COPY,

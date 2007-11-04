@@ -43,8 +43,7 @@ using std::random_shuffle;
 #include <math.h>
 // using std::sqrt;
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 /// migrate individuals from a (sub)population to another (sub)population
 /**

@@ -164,8 +164,7 @@ typedef std::map<int, double>              intDict;
 #define ValidPyObject(obj)   (obj != NULL && obj != Py_None)
 #define InvalidPyObject(obj) (obj == NULL || obj == Py_None)
 
-namespace simuPOP
-{
+namespace simuPOP {
 /// exception handler. Exceptions will be passed to Python.
 class Exception
 {

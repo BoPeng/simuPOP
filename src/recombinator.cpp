@@ -23,8 +23,7 @@
 
 #include "recombinator.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 void recombinator::prepareRecRates(population & pop,
 				   double intensity,
 				   vectorf rate,

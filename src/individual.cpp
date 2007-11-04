@@ -25,8 +25,7 @@
 #include <sstream>
 using std::ostringstream;
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 #ifdef SIMUMPI
 Allele individual::allele(UINT index) const

@@ -23,8 +23,7 @@
 
 #include "mutator.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 void mutator::initialize(population & pop)
 {

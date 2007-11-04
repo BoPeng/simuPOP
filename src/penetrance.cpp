@@ -23,8 +23,7 @@
 
 #include "penetrance.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 /// set pentrance to all individuals and record penetrance if requested.
 bool penetrance::apply(population & pop)
 {

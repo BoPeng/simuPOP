@@ -23,8 +23,7 @@
 
 #include "migrator.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 void migrator::setRates(const matrix & rate, int mode)
 {
 	if (rate.empty() )

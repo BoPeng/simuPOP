@@ -23,8 +23,7 @@
 
 #include "stator.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 bool pyEval::apply(population & pop)
 {
 	if (m_exposePop) {

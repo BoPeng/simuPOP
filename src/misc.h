@@ -29,8 +29,7 @@
  */
 #include "utility.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 
 //
 // simulate trajectories of disease susceptibility loci using an extension of

@@ -23,8 +23,7 @@
 
 #include "mating.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 offspringGenerator::offspringGenerator(const population & pop, vector<baseOperator *> & ops)
 	: m_bt(rng()), m_ops(ops)
 {
@@ -328,8 +327,8 @@ ULONG mating::numOffspring(int gen)
 		 m_mode == MATE_NumOffspringEachFamily ||
 		 ( m_firstOffspring &&
 		  ( m_mode == MATE_GeometricDistribution  ||
-			   m_mode == MATE_PoissonDistribution   ||
-			   m_mode == MATE_BinomialDistribution ))) {
+		   m_mode == MATE_PoissonDistribution   ||
+		   m_mode == MATE_BinomialDistribution ))) {
 		PyCallFunc(m_numOffspringFunc, "(i)", gen, numOS, PyObj_As_Double);
 	}
 
@@ -374,7 +373,7 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 	// use population structure of pop
 	if (m_subPopSize.empty() && m_subPopSizeExpr.empty() && m_subPopSizeFunc == NULL)
 		scratch.setSubPopStru(pop.subPopSizes(), true);
-	else if (!m_subPopSize.empty())          // set subPoplation size
+	else if (!m_subPopSize.empty())  // set subPoplation size
 		scratch.setSubPopStru(this->m_subPopSize, true);
 	// evaluate from an expression
 	else if (!m_subPopSizeExpr.empty()) {

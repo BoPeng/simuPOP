@@ -23,8 +23,7 @@
 
 #include "qtrait.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 bool quanTrait::apply(population & pop)
 {
 	UINT idx = pop.infoIdx(infoField(0));

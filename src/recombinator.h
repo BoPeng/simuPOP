@@ -33,8 +33,7 @@
 using std::ostream;
 using std::ostream_iterator;
 
-namespace simuPOP
-{
+namespace simuPOP {
 /// recombination
 /**
    In simuPOP, only one recombinator is provided. Recombination events between loci

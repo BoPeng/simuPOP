@@ -23,8 +23,7 @@
 
 #include "tagger.h"
 
-namespace simuPOP
-{
+namespace simuPOP {
 bool inheritTagger::applyDuringMating(population & pop, population::IndIterator offspring,
 				      individual * dad, individual * mom)
 {
