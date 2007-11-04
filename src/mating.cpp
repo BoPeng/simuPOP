@@ -28,6 +28,7 @@ namespace simuPOP
 	offspringGenerator::offspringGenerator(const population& pop, vector<baseOperator *>& ops)
 		: m_bt(rng()), m_ops(ops)
 	{
+		m_genoStruIdx = pop.genoStruIdx();
 		m_formOffGenotype = formOffspringGenotype();
 		m_hasSexChrom = pop.sexChrom();
 		vectorf prob(2*pop.numChrom(), 0.5);
@@ -50,6 +51,10 @@ namespace simuPOP
 	void offspringGenerator::copyOffspring(population& pop, individual* parent, UINT numOff,
 		population::IndIterator & it)
 	{
+		// if population has changed.
+		DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
+			"Offspring generator is used for two different types of populations");
+		
 		// generate numOff offspring per mating, or until it  reaches offEnd
 		UINT count = 0;
 		bool accept = true;
@@ -93,6 +98,10 @@ namespace simuPOP
 	void offspringGenerator::generateOffspring(population& pop, individual* dad, individual* mom,
 		UINT numOff, population::IndIterator& it)
 	{
+		// if population has changed.
+		if (m_genoStruIdx != pop.genoStruIdx())
+			throw ValueError("Offspring generator is used for two different types of populations");
+		
 		// generate numOffspring offspring per mating
 		UINT count = 0;
 		bool accept = true;
@@ -259,24 +268,21 @@ namespace simuPOP
 
 			accept = true;
 			// apply all during mating operators
-			if(!m_ops.empty())
+			for( vector<baseOperator *>::iterator iop = m_ops.begin(), iopEnd = m_ops.end(); iop != iopEnd;  ++iop)
 			{
-				for( vector<baseOperator *>::iterator iop = m_ops.begin(), iopEnd = m_ops.end(); iop != iopEnd;  ++iop)
+				try
 				{
-					try
+					// During mating operator might reject this offspring.
+					if(!(*iop)->applyDuringMating(pop, it, dad, mom))
 					{
-						// During mating operator might reject this offspring.
-						if(!(*iop)->applyDuringMating(pop, it, dad, mom))
-						{
-							accept = false;
-							break;
-						}
+						accept = false;
+						break;
 					}
-					catch(...)
-					{
-						cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
-						throw;
-					}
+				}
+				catch(...)
+				{
+					cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
+					throw;
 				}
 			}
 			if(accept)
