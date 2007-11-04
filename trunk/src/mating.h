@@ -29,8 +29,8 @@
 */
 #include "utility.h"
 // for trajectory simulation functions
-#include "misc.h"
 #include "simuPOP_cfg.h"
+#include "misc.h"
 #include "population.h"
 #include "operator.h"
 
@@ -90,6 +90,8 @@ namespace simuPOP
 
 			// cache chromBegin, chromEnd for better performance.
 			vectoru m_chIdx;
+
+			size_t m_genoStruIdx;
 	};
 
 	/// the base class of all mating schemes - a required parameter of \c simulator

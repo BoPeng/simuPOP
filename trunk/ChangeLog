@@ -5,6 +5,10 @@ BUGS:
 
 version 0.8.2 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - BUG: Fix saveFstat in simuUtil.py
+  - NEW: add parameter parentsFunc to pyMating.
+  - NEW: add multiMating to allow different mating scheme used for different
+		subpopulations, or proportions of individuals
+  - NEW: add selfMating mating scheme.
 
 version 0.8.1 - (Rev 1254) Oct 05, 2007
   - NEW: Allow len(pops) == 1 in MergePopulationsByLoci(pops) and
