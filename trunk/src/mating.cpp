@@ -48,8 +48,8 @@ bool offspringGenerator::formOffspringGenotype()
 }
 
 
-void offspringGenerator::copyOffspring(population & pop, individual * parent, UINT numOff,
-				       population::IndIterator & it)
+void cloneOffspringGenerator::generateOffspring(population & pop, individual * parent, individual *, UINT numOff,
+						population::IndIterator & it)
 {
 	// if population has changed.
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
@@ -91,12 +91,198 @@ void offspringGenerator::copyOffspring(population & pop, individual * parent, UI
 }
 
 
-void offspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
-					   UINT numOff, population::IndIterator & it)
+void mendelianOffspringGenerator::formOffspring(individual * dad, individual * mom,
+						population::IndIterator & it)
 {
-	// if population has changed.
-	if (m_genoStruIdx != pop.genoStruIdx())
-		throw ValueError("Offspring generator is used for two different types of populations");
+	//const BoolResults& bs = m_bt.trial();
+	m_bt.trial();
+	// const BitSet& bs = m_bt.succ(0);
+
+	// initialize to avoid compiler complains
+	int dadPloidy = 0, momPloidy = 0;
+	GenoIterator cd[2], cm[2], offd, offm;
+	cd[0] = dad->genoBegin(0);
+	cd[1] = dad->genoBegin(1);
+	cm[0] = mom->genoBegin(0);
+	cm[1] = mom->genoBegin(1);
+	offd = it->genoBegin(0);
+	offm = it->genoBegin(1);
+
+#ifndef BINARYALLELE
+	// the easy way to copy things.
+	//
+	for (UINT ch = 0, chEnd = dad->numChrom(); ch < chEnd; ++ch) {
+		// bs is 2*totNumLoci() long
+		//bs[ch];
+		dadPloidy = m_bt.trialSucc(ch);
+		// bs[ch+chEnd];
+		momPloidy = m_bt.trialSucc(ch + chEnd);
+		for (size_t gt = m_chIdx[ch]; gt < m_chIdx[ch + 1]; ++gt) {
+			offd[gt] = cd[dadPloidy][gt];
+			offm[gt] = cm[momPloidy][gt];
+		}
+	}
+#else
+	// this has to be optimized...
+	//
+	// 1. try to copy in blocks,
+	// 2. if two chromosomes can be copied together, copy together
+	// 3. if length is short, using the old method.
+	//
+	size_t dadBegin = 0;
+	size_t dadEnd = 0;
+	size_t momBegin = 0;
+	size_t momEnd = 0;
+	// bs is 2*totNumLoci() long,
+	// first chromosome
+	UINT chEnd = dad->numChrom();
+	dadPloidy = m_bt.trialSucc(0);
+	momPloidy = m_bt.trialSucc(chEnd);
+	//
+	int nextDadPloidy = 0;
+	int nextMomPloidy = 0;
+	bool copyDad;
+	bool copyMom;
+	for (UINT ch = 0; ch < chEnd; ++ch) {
+		// if it is the last chromosome, copy anyway
+		if (ch == chEnd - 1) {
+			copyDad = true;
+			copyMom = true;
+		} else {                                                                    // is there a different chromosome?
+			nextDadPloidy = m_bt.trialSucc(ch + 1);
+			nextMomPloidy = m_bt.trialSucc(ch + 1 + chEnd);
+			copyDad = dadPloidy != nextDadPloidy;
+			copyMom = momPloidy != nextMomPloidy;
+		}
+		if (copyDad) {
+			// end of this chromosome, is the beginning of the next
+			dadEnd = m_chIdx[ch + 1];
+			size_t length = dadEnd - dadBegin;
+			//
+			// less than one block, copy directly (not worth the trouble)
+			/*
+			   if(length < std::WORDBIT)
+			   {
+			   	for(size_t gt = dadBegin; gt < dadEnd; ++gt)
+			   		offd[gt] = cd[dadPloidy][gt];
+			   }
+			   else
+			   	for(size_t gt = dadBegin; gt < dadEnd; ++gt)
+			   		offd[gt] = cd[dadPloidy][gt];
+			 */
+			// the easiest case, try to get some speed up...
+			if (length == 1)
+				offd[dadBegin] = cd[dadPloidy][dadBegin];
+			else
+				copyGenotype(cd[dadPloidy] + dadBegin, offd + dadBegin, length);
+
+ #ifndef OPTIMIZED
+			// check if the bits are correctly copied
+			if (debug(DBG_MATING)) {
+				if (vectora(cd[dadPloidy] + dadBegin, cd[dadPloidy] + dadEnd) !=
+				    vectora(offd + dadBegin, offd + dadEnd)) {
+					cout << "Copy from " << vectora(cd[dadPloidy] + dadBegin, cd[dadPloidy] + dadEnd)
+					     << " to " << vectora(offd + dadBegin, offd + dadEnd) << " failed " << endl;
+					GenoIterator d = cd[dadPloidy] + dadBegin;
+					GenoIterator o = offd + dadBegin;
+					cout << "Offsets are " << BITOFF(d) << " and " << BITOFF(o) << endl;
+				}
+			}
+ #endif
+			if (ch != chEnd - 1)
+				dadPloidy = nextDadPloidy;
+			dadBegin = dadEnd;
+		}
+		if (copyMom) {
+			momEnd = m_chIdx[ch + 1];
+			size_t length = momEnd - momBegin;
+			//
+			// less than one block, copy directly
+			/*
+			   if(length < std::WORDBIT)
+			   	for(size_t gt = momBegin; gt < momEnd; ++gt)
+			   		offm[gt] = cm[momPloidy][gt];
+			   else
+			   	for(size_t gt = momBegin; gt < momEnd; ++gt)
+			   		offm[gt] = cm[momPloidy][gt];
+			 */
+			// the easiest case, try to get some speed up...
+			if (length == 1)
+				offm[momBegin] = cm[momPloidy][momBegin];
+			else
+				copyGenotype(cm[momPloidy] + momBegin, offm + momBegin, length);
+ #ifndef OPTIMIZED
+			if (debug(DBG_MATING)) {
+				if (vectora(cm[momPloidy] + momBegin, cm[momPloidy] + momEnd) !=
+				    vectora(offm + momBegin, offm + momEnd)) {
+					cout << "Copy from " << vectora(cm[momPloidy] + momBegin, cm[momPloidy] + momEnd)
+					     << " to " << vectora(offm + momBegin, offm + momEnd) << " failed " << endl;
+					GenoIterator d = cm[momPloidy] + momBegin;
+					GenoIterator o = offm + momBegin;
+					cout << "Offsets are " << BITOFF(d) << " and " << BITOFF(o) << endl;
+				}
+			}
+ #endif
+
+			if (ch != chEnd - 1)
+				momPloidy = nextMomPloidy;
+			momBegin = momEnd;
+		}
+	}
+#endif
+
+	// last chromosome (sex chromosomes) determine sex
+	if (m_hasSexChrom)
+		it->setSex(dadPloidy == 1 ? Male : Female);
+	else
+		it->setSex(rng().randInt(2) == 0 ? Male : Female);
+}
+
+
+void mendelianOffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
+						    UINT numOff, population::IndIterator & it)
+{
+	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
+		   "Offspring generator is used for two different types of populations");
+
+	// generate numOffspring offspring per mating
+	UINT count = 0;
+	bool accept = true;
+
+	while (count < numOff) {
+		if (m_formOffGenotype)
+			formOffspring(dad, mom, it);
+
+		accept = true;
+		// apply all during mating operators
+		for (vector<baseOperator *>::iterator iop = m_ops.begin(), iopEnd = m_ops.end(); iop != iopEnd;  ++iop) {
+			try
+			{
+				// During mating operator might reject this offspring.
+				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {
+					accept = false;
+					break;
+				}
+			}
+			catch (...)
+			{
+				cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
+				throw;
+			}
+		}
+		if (accept) {
+			it++;
+			count++;
+		}
+	}                                                                                         // one offspring is successfully generated
+}
+
+
+void selfingOffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
+						  UINT numOff, population::IndIterator & it)
+{
+	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
+		   "Offspring generator is used for two different types of populations");
 
 	// generate numOffspring offspring per mating
 	UINT count = 0;
@@ -440,7 +626,7 @@ bool binomialSelection::mate(population & pop, population & scratch, vector<base
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
-	offspringGenerator og(pop, ops);
+	cloneOffspringGenerator og(pop, ops);
 
 	GappedInfoIterator fitness;
 	UINT fit_id = 0;
@@ -483,7 +669,7 @@ bool binomialSelection::mate(population & pop, population & scratch, vector<base
 			// record family size, for debug reasons.
 			DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
 			//
-			og.copyOffspring(pop, parent, numOS, it);
+			og.generateOffspring(pop, parent, NULL, numOS, it);
 		}                                                                                       // all offspring
 	}                                                                                               // all subpopulation.
 
@@ -505,7 +691,7 @@ bool randomMating::mate(population & pop, population & scratch, vector<baseOpera
 	if (pop.selectionOn())
 		fit_id = pop.infoIdx("fitness");
 
-	offspringGenerator og(pop, ops);
+	mendelianOffspringGenerator og(pop, ops);
 
 	UINT numMale, numFemale;
 	/// random mating happens within each subpopulation
@@ -896,7 +1082,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 	if (pop.selectionOn())
 		fit_id = pop.infoIdx("fitness");
 
-	offspringGenerator og(pop, ops);
+	mendelianOffspringGenerator og(pop, ops);
 	// use to go through offspring generation to count alleles
 	UINT totNumLoci = pop.totNumLoci();
 
@@ -1236,7 +1422,7 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
-	offspringGenerator og(pop, ops);
+	mendelianOffspringGenerator og(pop, ops);
 	/// random mating happens within each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 		// generate scratch.subPopSize(sp) individuals.
