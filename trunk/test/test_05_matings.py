@@ -227,75 +227,7 @@ class TestMatingSchemes(unittest.TestCase):
                 #print "Gen ", gen, " exp: ", freq[gen-1-burnin]
                 return [freq[gen-1-burnin]]
         #
-        # turn On debug
-        #TurnOnDebug(DBG_MATING)
-        simu = simulator( population(100, loci=[1], ploidy=2), 
-            controlledBinomialSelection( locus=0, 
-                allele=1, freqFunc=expectedFreq ) 
-            )
-        #print "Simulator created"
-        simu.evolve( 
-            preOps=[
-                initByValue([0])
-                ],
-            ops=[
-                pointMutator(loci=[0], 
-                    toAllele=1, 
-                    inds = [0],
-                    at = [burnin+1],
-                    stage = PreMating),
-                stat(alleleFreq=[0]),
-                #pyEval(r'"%d %6.4f\n"%(gen, 1-alleleFreq[0][0])', begin=burnin),
-            ], 
-            end=burnin+mutAge
-        )
-        #Dump(simu.population(0))
 
-    def TestControlledMultiBinomialSelection(self):
-        'Testing the multi-locus version of controlled bionomial selection'
-        # THIS TEST IS IGNORED SINCE THE MATING SCHEME HAS NOT BEEN TESTED.
-        #TurnOnDebug(DBG_MATING)
-        #TurnOnDebug(DBG_DEVEL)
-        N = 50
-        # planned trajectory
-        traj = FreqTrajectoryMultiStoch(
-            freq=[0.05, 0.10], N=N)
-        # staring from when?
-        burnin = 100
-        mutAge = max([len(x) for x in traj])
-        # trajectory function
-        # 0 ...., 100, 101, .... 100+mutAge
-        #                            x                 traj
-        endingGen = burnin + mutAge
-        from simuUtil import trajFunc
-        # defined in simuUtil
-        expFreqFunc = trajFunc(endingGen, traj)
-        #
-        simu = simulator( population(N, loci=[1,1], ploidy=2), 
-            controlledBinomialSelection( loci=[0,1], 
-                alleles=[1]*2, freqFunc=expFreqFunc ) 
-            )
-        #print "Simulator created"
-        simu.evolve( 
-            preOps=[
-                initByValue([0]*2)
-                ],
-            ops=[
-                pointMutator(loci=[0], 
-                    toAllele=1, 
-                    inds = [0],
-                    at = [endingGen-len(traj[0])+1],
-                    stage = PreMating),
-                pointMutator(loci=[1], 
-                    toAllele=1, 
-                    inds = [1],
-                    at = [endingGen-len(traj[1])+1],
-                    stage = PreMating),
-                stat(alleleFreq=[0,1]),
-                #pyEval(r'"%d %6.4f %6.4f\n"%(gen, 1-alleleFreq[0][0], 1-alleleFreq[1][0])')
-            ], 
-            end=endingGen
-        )
         
     def testControlledRandomMating(self):
         'Testing controlled random mating'

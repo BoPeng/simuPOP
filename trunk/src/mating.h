@@ -43,6 +43,7 @@ using std::string;
 using std::stack;
 
 namespace simuPOP {
+
 /// CPPONLY the default method to generate offspring from parents
 /**
    This part is separated from the mating schemes, because mating schemes
@@ -681,117 +682,6 @@ private:
 void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loci, const vectori & alleles,
 			vectoru & expAlleles);
 
-/// a controlled binomial random selection mating scheme
-/**
-   This is the controlled binomial random selection mating scheme described in
-   <em> Peng 2007 (PLoS Genetics) </em>. Basically, a \c freqFunc is passed
-   to this mating scheme and set the allele frequencies of given
-   alleles at given loci at the offspring generation.
- \n
-   The offspring generation is conceptually populated in two steps.
-   At the first step, only families with disease alleles are accepted
-   until the expected number of disease alleles are met. At the second
-   step, only families with wide type alleles are accepted to populate
-   the rest of the offspring generation.
- */
-class controlledBinomialSelection : public binomialSelection
-{
-public:
-
-	/// create a controlled binomial random selection mating scheme
-	/**
-	   Please refer to class \c mating for descriptions of parameters.
-	 */
-	controlledBinomialSelection(
-				    vectori loci,
-				    vectori alleles,
-				    PyObject * freqFunc,
-				    double numOffspring = 1.,
-				    PyObject * numOffspringFunc = NULL,
-				    UINT maxNumOffspring = 0,
-				    UINT mode = MATE_NumOffspring,
-				    vectorlu newSubPopSize = vectorlu(),
-				    string newSubPopSizeExpr = "",
-				    PyObject * newSubPopSizeFunc = NULL)
-		: binomialSelection(numOffspring,
-				    numOffspringFunc, maxNumOffspring, mode,
-				    newSubPopSize, newSubPopSizeExpr,
-				    newSubPopSizeFunc),
-		m_loci(loci),
-		m_alleles(alleles),
-		m_freqFunc(freqFunc)
-	{
-		if (m_loci.empty() || m_loci.size() != m_alleles.size() )
-			throw ValueError("Please specify loci and corresponding alleles");
-
-		if (m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
-			throw ValueError("Please specify a valid frequency function");
-		else
-			Py_INCREF(m_freqFunc);
-	}
-
-
-	/// CPPONLY
-	controlledBinomialSelection(const controlledBinomialSelection & rhs)
-		: binomialSelection(rhs),
-		m_loci(rhs.m_loci),
-		m_alleles(rhs.m_alleles),
-		m_freqFunc(rhs.m_freqFunc),
-		m_stack()
-	{
-		Py_INCREF(m_freqFunc);
-	}
-
-
-	/// destructor
-	~controlledBinomialSelection()
-	{
-		if (m_freqFunc != NULL)
-			Py_DECREF(m_freqFunc);
-	}
-
-
-	/// deep copy of a controlled binomial random selection mating scheme
-	virtual mating * clone() const
-	{
-		return new controlledBinomialSelection(*this);
-	}
-
-
-	/// used by Python print function to print out the general information of the controlled binomial random selection mating scheme
-	virtual string __repr__()
-	{
-		return "<simuPOP::binomial random selection>";
-	}
-
-
-	/// CPPONLY
-	virtual void submitScratch(population & pop, population & scratch)
-	{
-		pop.turnOffSelection();
-		// use scratch population,
-		pop.pushAndDiscard(scratch);
-		DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
-	}
-
-
-	/// CPPONLY perform controlled binomial random selection mating
-	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
-
-private:
-	/// locus at which mating is controlled.
-	vectori m_loci;
-
-	/// allele to be controlled at each locus
-	vectori m_alleles;
-
-	/// function that return an array of frquency range
-	PyObject * m_freqFunc;
-
-	///
-	stack<population::IndIterator> m_stack;
-};
-
 /// a controlled random mating scheme
 /** This is the controlled random mating scheme described in
    <em> Peng 2007 (PLoS Genetics) </em>. Basically, a \c freqFunc
@@ -929,17 +819,17 @@ private:
 
 /// a Python mating scheme
 /**
-   Hybird mating scheme. This mating scheme takes a Python function
-   that accepts both the parental and offspring populations and this function
-   is responsible for setting genotype, sex of the offspring generation.
-   During-mating operators, if needed, have to be applied from this function as well.
-   Note that the subpopulation size parameters are honored and the
-   passed offspring generation has the desired (sub)population sizes.
-   Parameters that control the number of offspring of each family are ignored.
- \n
-   This is likely an extremely slow mating scheme and should be used for
-   experimental uses only. When a mating scheme is tested, it is recommended
-   to implement it at the C++ level.
+   Hybird mating scheme. This mating scheme takes a Python generator
+   that generate parents that will be mated by the mating scheme.
+   The mating scheme will generate offspring population (controlled by 
+   newSubPopSize etc), call this function repeatedly to get parents,
+   perform the mating, produce a number of offspring  (controlled by
+   numOffspring etc), and apply given during mating operators.
+
+   The parentsGenerator is not a usually Python function, rather a
+   Python generator (use of yield keyword). Please refer to simuPOP
+   user's guide for an example of how to use this mating scheme.
+   
  */
 class pyMating : public mating
 {
@@ -947,34 +837,43 @@ public:
 
 	/// create a Python mating scheme
 	/**
-	 \param func a Python function that accepts two parameters: the parental
-	   	and the offspring populations. The offspring population is empty,
-	   	and this function is responsible for setting genotype, sex etc. of
-	   	individuals in the offspring generation.
+	 \param parentsGenerator a Python generator that accepts the parental
+		population, and yield parents. 
 	 \n
 
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
-	pyMating(PyObject * func = NULL,
-		 vectorlu newSubPopSize = vectorlu(),
-		 string newSubPopSizeExpr = "",
-		 PyObject * newSubPopSizeFunc = NULL)
-		: mating(1.0, NULL, 0, MATE_NumOffspring,
-			 newSubPopSize, newSubPopSizeExpr,
-			 newSubPopSizeFunc)
+	pyMating(PyObject * parentsGenerator = NULL,
+			 double numOffspring = 1.,
+		     PyObject * numOffspringFunc = NULL,
+		     UINT maxNumOffspring = 0,
+		     UINT mode = MATE_NumOffspring,
+		     vectorlu newSubPopSize = vectorlu(),
+		     string newSubPopSizeExpr = "",
+		     PyObject * newSubPopSizeFunc = NULL
+			 )
+		: mating(numOffspring,
+			 numOffspringFunc, maxNumOffspring, mode,
+			 newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+		m_parentsGenerator(NULL) 
 	{
-		if (!PyCallable_Check(func))
-			throw ValueError("Passed variable is not a callable python function.");
+#if PY_VERSION_HEX < 0x02040000
+		throw SystemError("Your Python version does not have good support for generator"
+			" so operator pyMating can not be used.");
+#else
+		if (!PyGen_Check(parentsGenerator))
+			throw ValueError("Passed variable is not a Python generator.");
 
-		Py_XINCREF(func);
-		m_mateFunc = func;
+		Py_XINCREF(parentsGenerator);
+		m_parentsGenerator = parentsGenerator;
+#endif		
 	}
-
 
 	/// destructor
 	~pyMating()
 	{
-		Py_XDECREF(m_mateFunc);
+		if (m_parentsGenerator != NULL)
+			Py_XDECREF(m_parentsGenerator);
 	}
 
 
@@ -987,10 +886,10 @@ public:
 
 	/// CPPONLY
 	pyMating(const pyMating & rhs) :
-		mating(rhs), m_mateFunc(rhs.m_mateFunc)
+		mating(rhs), m_parentsGenerator(rhs.m_parentsGenerator)
 	{
-		if (m_mateFunc != NULL)
-			Py_INCREF(m_mateFunc);
+		if (m_parentsGenerator != NULL)
+			Py_INCREF(m_parentsGenerator);
 	}
 
 
@@ -1009,8 +908,12 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 private:
-	PyObject * m_mateFunc;
+	PyObject * m_parentsGenerator;
 
+#ifndef OPTIMIZED
+	///
+	vectori m_famSize;
+#endif
 };
 
 }

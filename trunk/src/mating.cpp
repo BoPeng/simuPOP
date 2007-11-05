@@ -863,258 +863,6 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 }
 
 
-bool controlledBinomialSelection::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
-{
-	resetNumOffspring();
-	// scrtach will have the right structure.
-	prepareScratchPop(pop, scratch);
-
-	size_t pldy = pop.ploidy(), nLoci = m_loci.size();
-
-	// expected frequency at each locus
-	vectorf expFreq;
-	PyCallFunc(m_freqFunc, "(i)", pop.gen(), expFreq, PyObj_As_Array);
-	DBG_DO(DBG_MATING, cout << "expected freq " << expFreq << endl);
-
-	UINT numSP = pop.numSubPop();
-	vectoru expAlleles;
-	getExpectedAlleles(pop, expFreq, m_loci, m_alleles, expAlleles);
-	DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
-
-	/// whether or not use stack.
-	bool useStack = fixedFamilySize();
-	m_stack = stack<population::IndIterator>();
-
-	//
-	GappedInfoIterator fitness;
-	UINT fit_id = 0;
-	if (pop.selectionOn()) {
-		fit_id = pop.infoIdx("fitness");
-		fitness = pop.infoBegin(fit_id, true);
-	}
-
-	offspringGenerator og(pop, ops);
-	// for each subpopulation
-	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		UINT spSize = pop.subPopSize(sp);
-		if (spSize == 0)
-			continue;
-
-		// total allowed disease alleles.
-		vectoru totAllele(nLoci);
-		// currently available disease allele.
-		vectoru curAllele(nLoci, 0);
-		for (UINT i = 0; i < nLoci; ++i) {
-			totAllele[i] = expAlleles[sp + numSP * i];
-			if (totAllele[i] > spSize * pldy) {
-				cout << "Warning: number of planned affected alleles exceed population size.";
-				totAllele[i] = spSize * pldy;
-			}
-		}
-
-		// if selection is on
-		bool selectionOn = pop.selectionOn(sp);
-		if (selectionOn) {
-			m_sampler.set(vectorf(fitness + pop.subPopBegin(sp),
-					      fitness + pop.subPopEnd(sp) ) );
-		}
-
-		// ploidy
-		vectori na(nLoci, 0);
-		bool freqRequMet = true;
-		for (UINT i = 0; i < nLoci; ++i) {
-			if (totAllele[i] > 0) {
-				freqRequMet = false;
-				break;
-			}
-		}
-		DBG_DO(DBG_MATING, if (freqRequMet) cout << "Frequency requirements met" << endl;);
-		bool hasAff;
-		bool stackStage = false;
-		int noAAcount = 0;
-		// start!
-		population::IndIterator it = scratch.indBegin(sp);
-		population::IndIterator itEnd = scratch.indEnd(sp);
-		population::IndIterator itBegin = it;
-		UINT numOS;
-		while (true) {
-			// the logic is complicated here and I will try to be explicit
-			// if already in the stackStage, it is taken from the stack.
-			if (useStack && stackStage) {
-				if (m_stack.empty())
-					throw SystemError("Go to stack stage with empty stack. Something wrong");
-				it = m_stack.top();
-			}
-
-			individual * parent;
-			// choose a parent
-			if (selectionOn)
-				parent = &pop.ind(m_sampler.get(), sp);
-			else
-				parent = &pop.ind(rng().randInt(spSize), sp);
-
-			//
-			itBegin = it;
-			numOS = numOffspring(pop.gen());
-			if (it + numOS > itEnd)
-				numOS = itEnd - it;
-			og.copyOffspring(pop, parent, numOS, it);
-
-			for (UINT i = 0; i < nLoci; ++i)
-				na[i] = 0;
-			hasAff = false;
-			noAAcount = 0;
-
-			// count alleles in this family
-			for (population::IndIterator tmp = itBegin; tmp != it; ++tmp) {
-				// success count na, nu
-				for (UINT i = 0; i < nLoci; ++i) {
-					for (UINT p = 0; p < pldy; ++p) {
-						if (tmp->allele(m_loci[i], p) == m_alleles[i]) {
-							na[i]++;
-							hasAff = true;
-						}
-					}
-				}
-			}                                                                         // family generated.
-
-			if (useStack) {
-				// now check if this family is usable.
-				bool accept = false;
-				// all disease alleles have been satidfied.
-				// only accept unaffected families
-				// otherwise, accept any family that can help.
-				if (freqRequMet) {
-					// and not it == itEnd, that is to say, we only accept unaffected
-					if (!hasAff) {
-						// has AA, so no need to compromise
-						noAAcount = -1;
-						accept = true;
-					}
-					// tried 100 times, no AA is found.
-					else if (noAAcount >= 100) {
-						if (noAAcount == 100)
-							cout << "Warning: there might not be any AA, accept unqualified individuals." << endl;
-						noAAcount++;
-						accept = true;
-					} else if (noAAcount >= 0)
-						noAAcount++;
-				} else {
-					// we accept affected helpful ones, and purely unsffected ones,
-					if (hasAff) {
-						// has the right kind of mutant?
-						for (UINT i = 0; i < nLoci; ++i) {
-							// accept the whole family, if we need this allele
-							if (curAllele[i] < totAllele[i] && na[i] > 0) {
-								accept = true;
-								break;
-							}
-						}
-					} else {
-						// in the stack stage, we only accept affected.
-						if (!stackStage)
-							accept = true;
-					}
-				}
-
-				// reject this family
-				if (!accept) {
-					// it relocate to its begin point
-					// DBG_DO(DBG_MATING, cout << "Reject " << na << endl);
-					it = itBegin;
-					continue;
-				}
-				DBG_DO(DBG_MATING, cout << "Accept (numOS: " << numOS << ") " << na << " CUR " << curAllele << " TOT  " << totAllele << endl);
-
-				// accpet this family, see if all done.
-				if (!freqRequMet) {
-					freqRequMet = true;
-					for (UINT i = 0; i < nLoci; ++i) {
-						curAllele[i] += na[i];
-						if (curAllele[i] < totAllele[i])
-							freqRequMet = false;
-					}
-				}
-				if (!stackStage && !freqRequMet && !hasAff) {
-					// this family is in stack, might be
-					m_stack.push(itBegin);
-					DBG_DO(DBG_MATING, cout << "Push in stack " << m_stack.size() << endl);
-				}
-				// accepted,
-				if (stackStage) {
-					m_stack.pop();
-					DBG_DO(DBG_MATING, cout << "Pop index " << m_stack.size() << endl);
-				}
-				// see if break
-				if (it == itEnd) {
-					stackStage = true;
-					DBG_DO(DBG_MATING, cout << "Stack stage " << m_stack.size() << endl);
-				}
-				if (freqRequMet && stackStage)
-					break;
-			} else {
-				// now check if this family is usable.
-				bool accept = false;
-				// all disease alleles have been satidfied.
-				// only accept unaffected families
-				// otherwise, accept any family that can help.
-				if (freqRequMet) {
-					if (!hasAff) {
-						// has AA, so no need to compromise
-						noAAcount = -1;
-						accept = true;
-					}
-					// tried 100 times, no AA is found.
-					else if (noAAcount >= 100) {
-						if (noAAcount == 100)
-							cout << "Warning: there might not be any AA, accept unqualified individuals." << endl;
-						noAAcount++;
-						accept = true;
-					} else if (noAAcount >= 0)
-						noAAcount++;
-				} else {                                                  // do not use stack
-					for (UINT i = 0; i < nLoci; ++i) {
-						// accept the whole family, if we need this allele
-						if (curAllele[i] < totAllele[i] && na[i] > 0) {
-							accept = true;
-							break;
-						}
-					}
-				}
-
-				// reject this family
-				if (!accept) {
-					// it relocate to its begin point
-					// DBG_DO(DBG_MATING, cout << "Reject " << na << endl);
-					it = itBegin;
-					continue;
-				}
-				DBG_DO(DBG_MATING, if (it - scratch.indBegin(sp) < 100) cout << "Accept " << na << endl;);
-
-				// accpet this family, see if all done.
-				if (!freqRequMet) {
-					freqRequMet = true;
-					for (UINT i = 0; i < nLoci; ++i) {
-						curAllele[i] += na[i];
-						if (curAllele[i] < totAllele[i])
-							freqRequMet = false;
-					}
-				}
-				// see if break
-				if (it == itEnd)
-					break;
-			}
-		}                                                                                 // nostack scheme
-		if (!freqRequMet)
-			cout << "Can not obtain enough disease alleles at generation " << pop.gen() << endl;
-	}                                                                                         // all subpopulation.
-
-	if (submit)
-		submitScratch(pop, scratch);
-	return true;
-}
-
-
 //
 // This mating scheme is very complicated, it is similar to randomMating, but it tries to control
 // the mating process so that the total disease allele frequency controlled to pre-specified values.
@@ -1482,35 +1230,36 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 
 bool pyMating::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
 {
+	this->resetNumOffspring();
 	// scrtach will have the right structure.
 	this->prepareScratchPop(pop, scratch);
-	//
-	// prepare parameters and pass them to user function
-	PyObject * parentalPop = pyPopObj(static_cast<void *>(&pop));
-	PyObject * offspringPop = pyPopObj(static_cast<void *>(&scratch));
 
-	if (parentalPop == NULL || offspringPop == NULL)
-		throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
+	DBG_DO(DBG_MATING, m_famSize.clear());
 
-	// call the mating function
-	PyObject * arglist = Py_BuildValue("OO", parentalPop, offspringPop);
-	PyObject * pyResult = PyEval_CallObject(m_mateFunc, arglist);
-	Py_DECREF(arglist);
-	if (pyResult == NULL) {
-		PyErr_Print();
-		throw ValueError("Function call failed when calling mating function");
-	}
-	bool res;
-	PyObj_As_Bool(pyResult, res);
-	Py_DECREF(pyResult);
-	Py_DECREF(parentalPop);
-	Py_DECREF(offspringPop);
+	offspringGenerator og(pop, ops);
+	/// random mating happens within each subpopulation
+	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
+		// generate scratch.subPopSize(sp) individuals.
+		population::IndIterator it = scratch.indBegin(sp);
+		population::IndIterator itEnd = scratch.indEnd(sp);
+		UINT numOS;
+		while (it != itEnd) {
+			individual * dad, * mom;
 
-	// release population objects (check later.)
+			// record family size (this may be wrong for the last family)
+			numOS = numOffspring(pop.gen());
+			if (it + numOS > itEnd)
+				numOS = itEnd - it;
+			// record family size (this may be wrong for the last family)
+			DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
+			//
+			og.generateOffspring(pop, dad, mom, numOS, it);
+		}
+	}                                                                                         // each subPop
 
 	if (submit)
 		submitScratch(pop, scratch);
-	return res;
+	return true;
 }
 
 
