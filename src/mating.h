@@ -44,6 +44,16 @@ using std::stack;
 
 namespace simuPOP {
 
+/**
+   A mating scheme is a complex object that does many things.
+   1. create offspring generation
+   2. from which subset of parents to generate offspring
+   3. to which subset of offspring to produce offspring
+   4. how to choose parents
+   5. how to produce offspring per mating event
+
+
+ */
 /// CPPONLY the default method to generate offspring from parents
 /**
    This part is separated from the mating schemes, because mating schemes
@@ -57,19 +67,13 @@ public:
 	/// create an offspring generator, save information from \c pop and \c ops to speed up the calls to \c generateOffspring
 	offspringGenerator(const population & pop, vector<baseOperator *> & ops);
 
-	/// generate \c numOff offspring, or until reach \c offEnd
-	/**
-	   This is because <tt>offBegin+numOff</tt> may go beyond the subpopulation boundary.
-	 */
-	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
-			       population::IndIterator & offBegin);
+	/// generate \c numOff offspring
+	virtual void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
+				       population::IndIterator & offBegin) = 0;
 
-	/// copy \c numOff offspring, or until reach \c offEnd
-	/**
-	   This is because <tt>offBegin+numOff</tt> may go beyond the subpopulation boundary.
-	 */
-	void copyOffspring(population & pop, individual * par, UINT numOff,
-			   population::IndIterator & offBegin);
+	virtual ~offspringGenerator()
+	{
+	}
 
 private:
 	bool formOffspringGenotype();
@@ -92,6 +96,48 @@ public:
 	vectoru m_chIdx;
 
 	size_t m_genoStruIdx;
+};
+
+
+class mendelianOffspringGenerator : public offspringGenerator
+{
+public:
+	mendelianOffspringGenerator(const population & pop, vector<baseOperator *> & ops)
+		: offspringGenerator(pop, ops)
+	{
+	}
+
+	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
+			       population::IndIterator & offBegin);
+	// the default method to produce offspring
+	void formOffspring(individual * dad, individual * mom,
+			   population::IndIterator & it);
+};
+
+
+class cloneOffspringGenerator : public offspringGenerator
+{
+public:
+	cloneOffspringGenerator(const population & pop, vector<baseOperator *> & ops)
+		: offspringGenerator(pop, ops)
+	{
+	}
+
+	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
+			       population::IndIterator & offBegin);
+};
+
+
+class selfingOffspringGenerator : public offspringGenerator
+{
+public:
+	selfingOffspringGenerator(const population & pop, vector<baseOperator *> & ops)
+		: offspringGenerator(pop, ops)
+	{
+	}
+
+	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
+			       population::IndIterator & offBegin);
 };
 
 /// the base class of all mating schemes - a required parameter of \c simulator
@@ -821,7 +867,7 @@ private:
 /**
    Hybird mating scheme. This mating scheme takes a Python generator
    that generate parents that will be mated by the mating scheme.
-   The mating scheme will generate offspring population (controlled by 
+   The mating scheme will generate offspring population (controlled by
    newSubPopSize etc), call this function repeatedly to get parents,
    perform the mating, produce a number of offspring  (controlled by
    numOffspring etc), and apply given during mating operators.
@@ -829,7 +875,7 @@ private:
    The parentsGenerator is not a usually Python function, rather a
    Python generator (use of yield keyword). Please refer to simuPOP
    user's guide for an example of how to use this mating scheme.
-   
+
  */
 class pyMating : public mating
 {
@@ -838,36 +884,37 @@ public:
 	/// create a Python mating scheme
 	/**
 	 \param parentsGenerator a Python generator that accepts the parental
-		population, and yield parents. 
+	   	population, and yield parents.
 	 \n
 
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
 	pyMating(PyObject * parentsGenerator = NULL,
-			 double numOffspring = 1.,
-		     PyObject * numOffspringFunc = NULL,
-		     UINT maxNumOffspring = 0,
-		     UINT mode = MATE_NumOffspring,
-		     vectorlu newSubPopSize = vectorlu(),
-		     string newSubPopSizeExpr = "",
-		     PyObject * newSubPopSizeFunc = NULL
-			 )
+		 double numOffspring = 1.,
+		 PyObject * numOffspringFunc = NULL,
+		 UINT maxNumOffspring = 0,
+		 UINT mode = MATE_NumOffspring,
+		 vectorlu newSubPopSize = vectorlu(),
+		 string newSubPopSizeExpr = "",
+		 PyObject * newSubPopSizeFunc = NULL
+		 )
 		: mating(numOffspring,
 			 numOffspringFunc, maxNumOffspring, mode,
 			 newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
-		m_parentsGenerator(NULL) 
+		m_parentsGenerator(NULL)
 	{
 #if PY_VERSION_HEX < 0x02040000
 		throw SystemError("Your Python version does not have good support for generator"
-			" so operator pyMating can not be used.");
+				  " so operator pyMating can not be used.");
 #else
 		if (!PyGen_Check(parentsGenerator))
 			throw ValueError("Passed variable is not a Python generator.");
 
 		Py_XINCREF(parentsGenerator);
 		m_parentsGenerator = parentsGenerator;
-#endif		
+#endif
 	}
+
 
 	/// destructor
 	~pyMating()
