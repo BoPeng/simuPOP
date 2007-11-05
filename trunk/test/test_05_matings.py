@@ -208,25 +208,6 @@ class TestMatingSchemes(unittest.TestCase):
             end=burnin+mutAge
         )
             
-    def TestControlledBinomialSelection(self):
-        'Testing controlled bionomial selection (broken mating scheme)'
-        #TurnOnDebug(DBG_MATING)
-        #TurnOnDebug(DBG_DEVEL)
-        # planned trajectory
-        freq = FreqTrajectoryStoch(freq=0.05, N=100)
-        # staring from when?
-        burnin = 100
-        mutAge = len(freq)
-        # trajectory function
-        # 0 ...., 100, 101, .... 100+mutAge
-        #                            x                 freq
-        def expectedFreq(gen):
-            if gen <= burnin:
-                return [0]
-            else:
-                #print "Gen ", gen, " exp: ", freq[gen-1-burnin]
-                return [freq[gen-1-burnin]]
-        #
 
         
     def testControlledRandomMating(self):
