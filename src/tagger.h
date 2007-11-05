@@ -175,6 +175,7 @@ public:
 	/// apply the \c parentsTagger
 	virtual bool applyDuringMating(population & pop, population::IndIterator offspring,
 				       individual * dad = NULL, individual * mom = NULL);
+
 };
 
 /// Python tagger

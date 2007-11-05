@@ -111,9 +111,11 @@ public:
 
 	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
 			       population::IndIterator & offBegin);
+
 	// the default method to produce offspring
 	void formOffspring(individual * dad, individual * mom,
 			   population::IndIterator & it);
+
 };
 
 
@@ -128,6 +130,7 @@ public:
 
 	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
 			       population::IndIterator & offBegin);
+
 };
 
 
@@ -140,8 +143,12 @@ public:
 	}
 
 
-	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
+	void generateOffspring(population & parent, individual * dad, individual *, UINT numOff,
 			       population::IndIterator & offBegin);
+
+	// the default method to produce offspring
+	void formOffspring(individual * parent, population::IndIterator & it);
+
 };
 
 /// the base class of all mating schemes - a required parameter of \c simulator
@@ -415,6 +422,7 @@ public:
 	   no one will die (ignore the during-mating failing signal).
 	 */
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
+
 };
 
 /// a mating scheme that uses binomial selection, regardless of sex

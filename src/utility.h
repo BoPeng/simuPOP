@@ -97,6 +97,7 @@ void TurnOffDebug(DBG_CODE code = DBG_ALL);
 #ifndef OPTIMIZED
 /// test if one code is turned on, CPPONLY
 bool debug(DBG_CODE code);
+
 #endif
 
 /// list all debug codes
@@ -111,6 +112,7 @@ void saveRefCount();
 
 /// check if refcount increase
 void checkRefCount();
+
 #endif
 
 // ////////////////////////////////////////////////////////////
@@ -170,6 +172,7 @@ ostream & operator<<(ostream & out, const intDict & dict);
 
 /// CPPONLY can not use pow(3, n) because of overloading problem in msvc.
 unsigned pow3(unsigned n);
+
 }
 
 
@@ -433,6 +436,7 @@ typedef GappedIterator<InfoType, InfoType & , InfoIterator> GappedInfoIterator;
 
 #ifndef OPTIMIZED
 bool testGappedIterator();
+
 #endif
 // ////////////////////////////////////////////////////////////
 // / Shared variables
@@ -484,8 +488,10 @@ PyObject * Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end
 #ifdef SIMUMPI
 PyObject * Allele_Vec_As_NumArray(UINT shift, ULONG size,
 				  UINT trunk_size, vectoru map);
+
 #else
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
+
 #endif
 
 /// CPPONLY
@@ -1501,10 +1507,12 @@ public:
 
 	// first and next succ across prob
 	size_t probFirstSucc() const;
+
 	size_t probNextSucc(size_t pos) const;
 
 	// first and next succ across trial
 	size_t trialFirstSucc(size_t idx) const;
+
 	size_t trialNextSucc(size_t idx, size_t pos) const;
 
 	void setTrialSucc(size_t idx, bool succ);
@@ -1600,8 +1608,10 @@ string ModulePlatForm();
 // efficiently copy alleles (block by block, rather than 1 by 1)
 /// CPPONLY
 void copyGenotype(GenoIterator fr, GenoIterator to, size_t n);
+
  #ifndef OPTIMIZED
 void testCopyGenotype();
+
  #endif
 #endif
 
@@ -1631,6 +1641,7 @@ const comm mpiComm();
 // unique id for a population or other object, used by slave nodes to
 // identify a population
 ULONG uniqueID();
+
 #endif
 
 UINT mpiRank();
@@ -1658,5 +1669,6 @@ bool isGzipped(const string & filename);
 
 /// file extension, including .gz, CPPONLY
 const string fileExtension(const string & filename);
+
 }
 #endif

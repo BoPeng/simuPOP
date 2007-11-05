@@ -67,18 +67,25 @@ using boost::lowest_bit;
 // these functions are defined in arraymodule.c which is included
 // in simuPOP_wrap.cpp CPPONLY
 extern "C" PyObject * newcarrayobject(char * buf, char type, int size);
+
 #ifdef SIMUMPI
  #include "slave.h"
 extern "C" PyObject * newcarrayiterobject(ULONG shift,
 					  ULONG size, UINT piece_size, vectoru map);
+
 #else
 extern "C" PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
+
 #endif
 extern "C" bool is_carrayobject(PyObject *);
 extern "C" int    carray_length(PyObject * a);
+
 extern "C" int    carray_itemsize(PyObject * a);
+
 extern "C" char   carray_type(PyObject * a);
+
 extern "C" char * carray_data(PyObject * a);
+
 extern "C" void initcarray(void);
 extern "C" PyTypeObject Arraytype;
 
@@ -1181,6 +1188,7 @@ PyObject * load_string(const string & str, size_t & offset)
 
 
 void saveObj(string & str, PyObject * args);
+
 PyObject * loadObj(const string & vars, size_t & offset);
 
 void save_dict(string & str, PyObject * args)
