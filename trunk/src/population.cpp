@@ -148,8 +148,7 @@ population::population(ULONG size,
 			       << ", GenoPtr: " << sizeof(Allele *) << ", Flag: " << sizeof(unsigned char)
 			       << ", plus genoStru" << endl);
 
-	try
-	{
+	try {
 		// allocate memory here (not in function definition)
 		m_inds.resize(m_popSize);
 
@@ -186,9 +185,7 @@ population::population(ULONG size,
 			m_inds[i].setShallowCopied(false);
 			m_inds[i].setInfoPtr(infoPtr);
 		}
-	}
-	catch (...)
-	{
+	} catch (...) {
 		cout << "Memory allocation fail. A population of size 1 is created." << endl;
 		*this = population(0);
 		throw OutOfMemory("Memory allocation fail");
@@ -221,8 +218,7 @@ population::population(const population & rhs) :
 	DBG_DO(DBG_POPULATION,
 	       cout << "Copy constructor of population is called" << endl);
 
-	try
-	{
+	try {
 		m_inds.resize(rhs.m_popSize);
 #ifdef SIMUMPI
 		m_genotype.resize(m_popSize * localGenoSize());
@@ -233,9 +229,7 @@ population::population(const population & rhs) :
 		// have 0 length for mpi/non-head node
 		m_info.resize(rhs.m_popSize * infoSize());
 #endif
-	}
-	catch (...)
-	{
+	} catch (...) {
 		cout << "Memory allocation fail. A population of size 1 is created." << endl;
 		*this = population(0);
 		throw OutOfMemory("Memory allocation fail");
@@ -265,8 +259,7 @@ population::population(const population & rhs) :
 	}
 
 	// copy ancestral populations
-	try
-	{
+	try {
 		// copy all. individual will be shallow copied
 		m_ancestralPops = rhs.m_ancestralPops;
 		// need to setGenoPtr
@@ -290,9 +283,7 @@ population::population(const population & rhs) :
 				linds[i].setInfoPtr(rinds[i].infoPtr() - ri + li);
 			}
 		}
-	}
-	catch (...)
-	{
+	} catch (...) {
 		cout << "Unable to copy ancestral populations. "
 		     << "The popolation size may be too big." << endl
 		     << "The population will still be usable but without any ancestral population stored." << endl;
@@ -583,8 +574,7 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSiz
 			// but pointers need to be recalibrated.
 			m_popSize = totSize;
 
-			try
-			{
+			try {
 #ifdef SIMUMPI
 				m_genotype.resize(m_popSize * localGenoSize());
 				m_info.resize(m_popSize * localInfoSize());
@@ -594,9 +584,7 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSiz
 #endif
 				m_inds.resize(m_popSize);
 
-			}
-			catch (...)
-			{
+			} catch (...) {
 				throw OutOfMemory("Memory allocation fail");
 			}
 			// reset individual pointers
@@ -1577,8 +1565,7 @@ void population::addInfoField(const string field, double init)
 	UINT os = infoSize();
 	UINT idx;
 	// if this field exists, return directly
-	try
-	{
+	try {
 		idx = infoIdx(field);
 		// only needs to initialize
 		int oldAncPop = m_curAncestralGen;
@@ -1589,9 +1576,7 @@ void population::addInfoField(const string field, double init)
 		}
 		useAncestralPop(oldAncPop);
 		return;
-	}
-	catch (IndexError & )
-	{
+	} catch (IndexError & ) {
 		newfields.push_back(field);
 	}
 
@@ -1630,8 +1615,7 @@ void population::addInfoFields(const vectorstr & fields, double init)
 	// oldsize, this is valid for rank 0
 	UINT os = infoSize();
 	for (vectorstr::const_iterator it = fields.begin(); it != fields.end(); ++it) {
-		try
-		{
+		try {
 			// has field
 			UINT idx = infoIdx(*it);
 			// only needs to initialize
@@ -1643,9 +1627,7 @@ void population::addInfoFields(const vectorstr & fields, double init)
 					ind->setInfo(init, idx);
 			}
 			useAncestralPop(oldAncPop);
-		}
-		catch (IndexError & )
-		{
+		} catch (IndexError & ) {
 			newfields.push_back(*it);
 		}
 	}
@@ -1823,8 +1805,7 @@ void population::loadPopulation(const string & filename, const string & format)
 	string ext = fileExtension(filename);
 
 	// try to load the file, according to file extension.
-	try
-	{
+	try {
 		if (format == "text" || (format == "auto" && (ext == "txt" || ext == "txt.gz" ) )) {
 			boost::archive::text_iarchive ia(ifs);
 			ia >> *this;
@@ -1834,11 +1815,9 @@ void population::loadPopulation(const string & filename, const string & format)
 		} else if (format == "bin" || (format == "auto" && (ext == "bin" || ext == "bin.gz" ) )) {
 			boost::archive::binary_iarchive ia(ifs);
 			ia >> *this;
-		} else  // need special handling
+		} else                                                                          // need special handling
 			throw;
-	}
-	catch (...)                                                                       // if any error happens, or can not determine format, try different methods
-	{
+	} catch (...) {                                                                         // if any error happens, or can not determine format, try different methods
 		// first close the file handle.
 
 		DBG_DO(DBG_POPULATION,
@@ -1855,31 +1834,23 @@ void population::loadPopulation(const string & filename, const string & format)
 		{
 			boost::archive::binary_iarchive ia(ifbin);
 			ia >> *this;
-		}
-		catch (...)                                                               // not binary, text?
-		{
+		} catch (...) {                                                             // not binary, text?
 			io::filtering_istream iftxt;
 			if (gzipped)
 				iftxt.push(io::gzip_decompressor());
 			iftxt.push(io::file_source(filename));
-			try
-			{
+			try {
 				boost::archive::text_iarchive ia(iftxt);
 				ia >> *this;
-			}
-			catch (...)                                                       // then xml?
-			{
+			} catch (...) {                                                     // then xml?
 				io::filtering_istream ifxml;
 				if (gzipped)
 					ifxml.push(io::gzip_decompressor());
 				ifxml.push(io::file_source(filename));
-				try
-				{
+				try {
 					boost::archive::xml_iarchive ia(ifxml);
 					ia >> boost::serialization::make_nvp("population", *this);
-				}
-				catch (...)
-				{
+				} catch (...) {
 					throw ValueError("Failed to load population " + filename + " in " + format + " format.\n");
 				}
 			}                                                                               // try xml

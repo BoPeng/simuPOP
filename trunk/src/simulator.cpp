@@ -60,8 +60,7 @@ simulator::simulator(const population & pop,
 	DBG_FAILIF(m_scratchPop == NULL,
 		   SystemError, "Fail to create scratch population");
 
-	try
-	{
+	try {
 		for (UINT i = 0; i < m_numRep; ++i) {
 			m_ptrRep[i] = new population(pop);
 
@@ -71,9 +70,7 @@ simulator::simulator(const population & pop,
 			// set replication number
 			m_ptrRep[i]->setRep(i);
 		}
-	}
-	catch (OutOfMemory & )
-	{
+	} catch (OutOfMemory & ) {
 		cout << "Can not create " << m_numRep << " populations" << endl;
 		throw OutOfMemory("Out of memory");
 	}
@@ -126,12 +123,9 @@ void simulator::addInfoField(const string & field, double init)
 {
 	vectorstr newfields;
 
-	try
-	{
+	try {
 		infoIdx(field);
-	}
-	catch (IndexError & )
-	{
+	} catch (IndexError & ) {
 		newfields.push_back(field);
 	}
 
@@ -157,12 +151,9 @@ void simulator::addInfoFields(const vectorstr & fields, double init)
 	vectorstr newfields;
 
 	for (vectorstr::const_iterator it = fields.begin(); it != fields.end(); ++it) {
-		try
-		{
+		try {
 			infoIdx(*it);
-		}
-		catch (IndexError & )
-		{
+		} catch (IndexError & ) {
 			newfields.push_back(*it);
 		}
 	}
@@ -343,8 +334,7 @@ bool simulator::evolve(const vectorop & ops,
 					if (!preMatingOps[it]->isActive(m_curRep, m_numRep, m_gen, end, grp()))
 						continue;
 
-					try
-					{
+					try {
 						if (!preMatingOps[it]->applyWithScratch(curpopulation(), scratchpopulation(), PreMating)) {
 							DBG_DO(DBG_SIMULATOR, cout << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
 							       " stops at replicate " + toStr(curRep()) << endl);
@@ -354,9 +344,7 @@ bool simulator::evolve(const vectorop & ops,
 								stop[m_curRep] = true;
 							}
 						}
-					}
-					catch (...)
-					{
+					} catch (...) {
 						cout << "PreMating operator " << preMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
 						throw;
 					}
@@ -379,8 +367,7 @@ bool simulator::evolve(const vectorop & ops,
 					activeDurmatingOps.push_back(*op);
 			}
 
-			try
-			{
+			try {
 				if (!dryrun && !m_matingScheme->mate(curpopulation(), scratchpopulation(), activeDurmatingOps, true)) {
 					DBG_DO(DBG_SIMULATOR, cout << "During-mating Operator stops at replicate "
 					       + toStr(curRep()) << endl);
@@ -390,9 +377,7 @@ bool simulator::evolve(const vectorop & ops,
 						stop[m_curRep] = true;
 					}
 				}
-			}
-			catch (...)
-			{
+			} catch (...) {
 				cout << "mating or one of the during mating operator throws an exception." << endl << endl;
 				throw;
 			}
@@ -415,8 +400,7 @@ bool simulator::evolve(const vectorop & ops,
 					if (!postMatingOps[it]->isActive(m_curRep, m_numRep, m_gen, end, grp()))
 						continue;
 
-					try
-					{
+					try {
 						if (!postMatingOps[it]->applyWithScratch(curpopulation(), scratchpopulation(), PostMating)) {
 							DBG_DO(DBG_SIMULATOR, cout << "Post-mating Operator " + postMatingOps[it]->__repr__() +
 							       " stops at replicate " + toStr(curRep()) << endl);
@@ -426,9 +410,7 @@ bool simulator::evolve(const vectorop & ops,
 								stop[m_curRep] = true;;
 							}
 						}
-					}
-					catch (...)
-					{
+					} catch (...) {
 						cout << "PostMating operator " << postMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
 						throw;
 					}
@@ -562,8 +544,7 @@ void simulator::loadSimulator(string filename, string format)
 	if (!ifs)
 		throw ValueError("Can not open file " + filename);
 
-	try
-	{
+	try {
 		if (format == "text" || (format == "auto" && filename.substr(filename.size() - 4, 4) == ".txt" )) {
 			boost::archive::text_iarchive ia(ifs);
 			ia >> *this;
@@ -575,9 +556,7 @@ void simulator::loadSimulator(string filename, string format)
 			ia >> *this;
 		} else
 			throw;
-	}
-	catch (...)
-	{
+	} catch (...) {
 		// first close the file handle.
 
 		DBG_DO(DBG_POPULATION,
@@ -594,32 +573,24 @@ void simulator::loadSimulator(string filename, string format)
 		{
 			boost::archive::binary_iarchive ia(ifbin);
 			ia >> *this;
-		}
-		catch (...)                                                               // not binary, text?
-		{
+		} catch (...) {                                                             // not binary, text?
 			io::filtering_istream iftxt;
 			if (isGzipped(filename))
 				iftxt.push(io::gzip_decompressor());
 			iftxt.push(io::file_source(filename));
 
-			try
-			{
+			try {
 				boost::archive::text_iarchive ia(iftxt);
 				ia >> *this;
-			}
-			catch (...)                                                       // then xml?
-			{
+			} catch (...) {                                                     // then xml?
 				io::filtering_istream ifxml;
 				if (isGzipped(filename))
 					ifxml.push(io::gzip_decompressor());
 				ifxml.push(io::file_source(filename));
-				try
-				{
+				try {
 					boost::archive::xml_iarchive ia(ifxml);
 					ia >> boost::serialization::make_nvp("simulator", *this);
-				}
-				catch (...)
-				{
+				} catch (...) {
 					throw ValueError("Failed to load simulator. Your file may be corrupted, "
 							 "or being a copy of non-transferrable file (.bin)");
 				}
