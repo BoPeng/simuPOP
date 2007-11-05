@@ -264,7 +264,7 @@ void selfingOffspringGenerator::formOffspring(individual * parent,
 	size_t momEnd = 0;
 	// bs is 2*totNumLoci() long,
 	// first chromosome
-	UINT chEnd = dad->numChrom();
+	UINT chEnd = parent->numChrom();
 	dadPloidy = m_bt.trialSucc(0);
 	momPloidy = m_bt.trialSucc(chEnd);
 	//
