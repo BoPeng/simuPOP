@@ -1084,15 +1084,25 @@ public:
 
 #ifdef SIMUMPI
 	GappedInfoIterator infoBegin(UINT idx, bool order);
+
 	GappedInfoIterator infoEnd(UINT idx, bool order);
+
 	GappedInfoIterator infoBegin(UINT index, UINT subPop, bool order);
+
 	GappedInfoIterator infoEnd(UINT index, UINT subPop, bool order);
+
 	vectorinfo indInfo(UINT idx, bool order);
+
 	vectorinfo indInfo(const string & name, bool order);
+
 	vectorinfo indInfo(UINT idx, UINT subPop, bool order);
+
 	vectorinfo indInfo(const string & name, UINT subPop, bool order);
+
 	PyObject * arrIndInfo(bool order);
+
 	PyObject * arrIndInfo(UINT subPop, bool order);
+
 #else
 	/// CPPONLY info iterator
 	/**

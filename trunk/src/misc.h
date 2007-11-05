@@ -147,6 +147,7 @@ vectorf FreqTrajectorySelSim(
    on #disease >0, else, normal dis.)*/
 vectorf FreqTrajectoryForward(double lowbound, double highbound,
 			      int disAge, double grate, long N0, double seleCo);
+
 #endif
 }
 #endif

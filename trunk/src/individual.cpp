@@ -34,6 +34,7 @@ Allele individual::allele(UINT index) const
 	// find out which node has the allele and broadcast it.
 	UINT p = index / totNumLoci();
 	UINT locus = index - p * totNumLoci();
+
 	std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
 	UINT rank = rankOfChrom(chIdx.first);
 	Allele val = 0;
@@ -86,6 +87,7 @@ void individual::setAllele(Allele allele, UINT index)
 	// find out which node has the allele and broadcast it.
 	UINT p = index / totNumLoci();
 	UINT locus = index - p * totNumLoci();
+
 	std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
 	UINT rank = rankOfChrom(chIdx.first);
 	if (mpiRank() == rank)

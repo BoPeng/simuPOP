@@ -214,6 +214,7 @@ public:
 	 */
 #ifdef SIMUMPI
 	Allele allele(UINT index) const;
+
 #else
 	Allele allele(UINT index) const
 	{
@@ -232,6 +233,7 @@ public:
 	 */
 #ifdef SIMUMPI
 	Allele allele(UINT index, UINT p) const;
+
 #else
 	Allele allele(UINT index, UINT p) const
 	{
@@ -252,6 +254,7 @@ public:
 	 */
 #ifdef SIMUMPI
 	Allele allele(UINT index, UINT p, UINT ch) const;
+
 #else
 	Allele allele(UINT index, UINT p, UINT ch) const
 	{
@@ -302,6 +305,7 @@ public:
 	 */
 #ifdef SIMUMPI
 	void setAllele(Allele allele, UINT index);
+
 #else
 	void setAllele(Allele allele, UINT index)
 	{
@@ -320,6 +324,7 @@ public:
 	 */
 #ifdef SIMUMPI
 	void setAllele(Allele allele, UINT index, UINT p);
+
 #else
 	void setAllele(Allele allele, UINT index, UINT p)
 	{
@@ -340,6 +345,7 @@ public:
 	 */
 #ifdef SIMUMPI
 	void setAllele(Allele allele, UINT index, UINT p, UINT ch);
+
 #else
 	void setAllele(Allele allele, UINT index, UINT p, UINT ch)
 	{
@@ -500,8 +506,10 @@ public:
 		CHECKRANGEPLOIDY(p);
 #ifdef SIMUMPI
 		return m_genoPtr + p * localNumLoci();
+
 #else
 		return m_genoPtr + p * totNumLoci();
+
 #endif
 	}
 
@@ -524,6 +532,7 @@ public:
 		CHECKRANGEPLOIDY(p);
 		CHECKRANGECHROM(chrom);
 		return m_genoPtr + p * totNumLoci() + chromBegin(chrom);
+
 	}
 
 
@@ -533,6 +542,7 @@ public:
 		CHECKRANGEPLOIDY(p);
 		CHECKRANGECHROM(chrom);
 		return m_genoPtr + p * totNumLoci() + chromEnd(chrom);
+
 	}
 
 

@@ -225,6 +225,7 @@ protected:
 
 	/// set all subpopulation IDs to \c -1 (remove)
 	void resetSubPopID(population & pop);
+
 private:
 
 	/// name to save sample, default to 'sample'
