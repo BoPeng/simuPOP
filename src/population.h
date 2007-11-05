@@ -1722,14 +1722,11 @@ private:
 
 		// save shared variables as string.
 		// note that many format are not supported.
-		try
-		{
+		try {
 			DBG_DO(DBG_POPULATION, cout << "Handling shared variables" << endl);
 			string vars = varsAsString();
 			ar & make_nvp("vars", vars);
-		}
-		catch (...)
-		{
+		} catch (...) {
 			cout << "Warning: shared variable is not saved correctly.\npopulation should still be usable." << endl;
 		}
 	}
@@ -1981,15 +1978,12 @@ private:
 		}
 
 		// load vars from string
-		try
-		{
+		try {
 			DBG_DO(DBG_POPULATION, cout << "Handling shared variables" << endl);
 			string vars;
 			ar & make_nvp("vars", vars);
 			varsFromString(vars);
-		}
-		catch (...)
-		{
+		} catch (...) {
 			cout << "Warning: shared variable is not loaded correctly.\npopulation should still be usable." << endl;
 		}
 

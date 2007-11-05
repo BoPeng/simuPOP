@@ -75,6 +75,7 @@ public:
 	{
 	}
 
+
 private:
 	bool formOffspringGenotype();
 
@@ -107,6 +108,7 @@ public:
 	{
 	}
 
+
 	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
 			       population::IndIterator & offBegin);
 	// the default method to produce offspring
@@ -123,6 +125,7 @@ public:
 	{
 	}
 
+
 	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
 			       population::IndIterator & offBegin);
 };
@@ -135,6 +138,7 @@ public:
 		: offspringGenerator(pop, ops)
 	{
 	}
+
 
 	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
 			       population::IndIterator & offBegin);

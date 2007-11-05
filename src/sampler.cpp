@@ -37,15 +37,12 @@ PyObject * sample::samples(population & pop)
 	} else if (!m_name.empty() )
 		sampleName = m_name;
 
-	try
-	{
+	try {
 		PyObject * s = pop.getVar(sampleName);
 		Py_INCREF(s);
 
 		return s;
-	}
-	catch (...)                                                                       // if there is no sample
-	{
+	} catch (...) {                                                                     // if there is no sample
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
