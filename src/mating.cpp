@@ -240,7 +240,7 @@ void selfingOffspringGenerator::formOffspring(individual * parent,
 #ifndef BINARYALLELE
 	// the easy way to copy things.
 	//
-	for (UINT ch = 0, chEnd = dad->numChrom(); ch < chEnd; ++ch) {
+	for (UINT ch = 0, chEnd = parent->numChrom(); ch < chEnd; ++ch) {
 		// bs is 2*totNumLoci() long
 		//bs[ch];
 		dadPloidy = m_bt.trialSucc(ch);
@@ -334,14 +334,14 @@ void selfingOffspringGenerator::generateOffspring(population & pop, individual *
 
 	while (count < numOff) {
 		if (m_formOffGenotype)  // use the default no recombination random mating.
-			formGenotype(parent, it);
+			formOffspring(parent, it);
 
 		accept = true;
 		// apply all during mating operators
 		for (vector<baseOperator *>::iterator iop = m_ops.begin(), iopEnd = m_ops.end(); iop != iopEnd;  ++iop) {
 			try {
 				// During mating operator might reject this offspring.
-				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {
+				if (!(*iop)->applyDuringMating(pop, it, parent, NULL)) {
 					accept = false;
 					break;
 				}
