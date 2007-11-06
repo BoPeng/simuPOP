@@ -1014,14 +1014,14 @@ public:
 			If a recombinator is used in a diploid population, the cloning behavior
 			is replaced by a 'selfing' recombination so this mode the same as selfing.
 		\li MATE_MendelianOffspringGenerator Mendelian transmission without recombination. 
-			That is to say, one or the two copies of maternal chromosomes is passed to 
-			the maternal (first) chromosomes of the offspring; the one or the two copies of
+			That is to say, the first or the second copy of maternal chromosomes is passed to 
+			the maternal (first) chromosomes of the offspring; the first or the second copy of
 			paternal chromosomes is passed the paternal (second) chromosomes of the
 			offspring. Independent segregations are applied to chromosomes.
 		\li MATE_SelfingOffspringGenerator Selfing transmission without recombination.
-			That is to say, both copies of the offspring chromosomes come from the
-			same parent. Random choices of parental chromosomes are applied independently
-			to each offspring copies.
+			Only one parent is involved, and serves both paternal and maternal roles in a 
+			Mendelian offspring generator. Two copies of the offspring chromosomes are 
+			generated independently.
 	 \param offspringGenerator An offspring generator that is used for 
 		all subpopulations. This is a shortcut for 
 		<tt>offspringGenerators=[offspringGenerator]</tt>.

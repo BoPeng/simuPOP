@@ -419,9 +419,11 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 		DBG_ASSERT(parents.size() == 2, ValueError,
 			"Returned parents indexes should have size 2");
 #ifndef OPTIMIZED
-		DBG_ASSERT(static_cast<unsigned>(parents[0]) <= m_size 
-			&& static_cast<unsigned>(parents[1]) <= m_size,
-		    ValueError, "Returned index is greater than subpopulation size");
+		DBG_ASSERT(static_cast<unsigned>(parents[0]) < m_size 
+			&& static_cast<unsigned>(parents[1]) < m_size,
+		    ValueError, "Returned parent index (" + toStr(parents[0])
+				+ ", and " + toStr(parents[1]) + 
+				") is greater than subpopulation size " + toStr(m_size));
 #endif
 		DBG_DO(DBG_MATING, cout << "choose parents " << parents[0] 
 			<< " and " << parents[1] << endl;);
@@ -431,8 +433,9 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 	} else if (PyInt_Check(item) || PyLong_Check(item)) {
 		PyObj_As_Int(item, parent);
 #ifndef OPTIMIZED
-		DBG_ASSERT(static_cast<unsigned>(parent) <= m_size,
-		    ValueError, "Returned index is greater than subpopulation size");
+		DBG_ASSERT(static_cast<unsigned>(parent) < m_size,
+		    ValueError, "Returned index (" + toStr(parent) + 
+				") is greater than subpopulation size " + toStr(m_size));
 #endif
 		DBG_DO(DBG_MATING, cout << "choose parent " << parent
 			<< endl;);
@@ -1293,9 +1296,8 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 			pc = new randomParentsChooser(pop, sp);
 			break;
 		case MATE_PyParentsChooser:
-			DBG_ASSERT(pcIdx < m_pyChoosers.size(), IndexError,
-			    "Not enough of python parent chooser");
-			pc = new pyParentsChooser(pop, sp, m_pyChoosers[pcIdx++]);
+			pc = new pyParentsChooser(pop, sp, 
+				m_pyChoosers.size() > 1 ? m_pyChoosers[pcIdx++] : m_pyChoosers[0]);
 			break;
 		default:
 			throw ValueError("Unknown parentChoosers type");
