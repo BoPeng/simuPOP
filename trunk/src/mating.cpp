@@ -110,20 +110,21 @@ void mendelianOffspringGenerator::formOffspring(individual * dad, individual * m
 	cd[1] = dad->genoBegin(1);
 	cm[0] = mom->genoBegin(0);
 	cm[1] = mom->genoBegin(1);
-	offd = it->genoBegin(0);
-	offm = it->genoBegin(1);
+	// The order is maternal/paternal (XY).
+	offm = it->genoBegin(0);
+	offd = it->genoBegin(1);
 
 #ifndef BINARYALLELE
 	// the easy way to copy things.
 	for (UINT ch = 0, chEnd = dad->numChrom(); ch < chEnd; ++ch) {
 		// bs is 2*totNumLoci() long
 		//bs[ch];
-		dadPloidy = m_bt.trialSucc(ch);
+		momPloidy = m_bt.trialSucc(ch);
 		// bs[ch+chEnd];
-		momPloidy = m_bt.trialSucc(ch + chEnd);
+		dadPloidy = m_bt.trialSucc(ch + chEnd);
 		for (size_t gt = m_chIdx[ch]; gt < m_chIdx[ch + 1]; ++gt) {
-			offd[gt] = cd[dadPloidy][gt];
 			offm[gt] = cm[momPloidy][gt];
+			offd[gt] = cd[dadPloidy][gt];
 		}
 	}
 #else
@@ -140,8 +141,8 @@ void mendelianOffspringGenerator::formOffspring(individual * dad, individual * m
 	// bs is 2*totNumLoci() long,
 	// first chromosome
 	UINT chEnd = dad->numChrom();
-	dadPloidy = m_bt.trialSucc(0);
-	momPloidy = m_bt.trialSucc(chEnd);
+	momPloidy = m_bt.trialSucc(0);
+	dadPloidy = m_bt.trialSucc(chEnd);
 	//
 	int nextDadPloidy = 0;
 	int nextMomPloidy = 0;
@@ -247,8 +248,9 @@ void selfingOffspringGenerator::formOffspring(individual * parent,
 	cd[1] = parent->genoBegin(1);
 	cm[0] = parent->genoBegin(0);
 	cm[1] = parent->genoBegin(1);
-	offd = it->genoBegin(0);
-	offm = it->genoBegin(1);
+	// maternal / paternal (XY)
+	offm = it->genoBegin(0);
+	offd = it->genoBegin(1);
 
 #ifndef BINARYALLELE
 	// the easy way to copy things.
@@ -278,8 +280,8 @@ void selfingOffspringGenerator::formOffspring(individual * parent,
 	// bs is 2*totNumLoci() long,
 	// first chromosome
 	UINT chEnd = parent->numChrom();
-	dadPloidy = m_bt.trialSucc(0);
-	momPloidy = m_bt.trialSucc(chEnd);
+	momPloidy = m_bt.trialSucc(0);
+	dadPloidy = m_bt.trialSucc(chEnd);
 	//
 	int nextDadPloidy = 0;
 	int nextMomPloidy = 0;
