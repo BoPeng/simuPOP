@@ -235,7 +235,7 @@ public:
 
 
 	/// CPPONLY
-	GappedIterator(pointer p, difference_type s = 1)
+	GappedIterator(const pointer p, difference_type s = 1)
 		: m_step(s), m_ptr(p)
 	{
 	}

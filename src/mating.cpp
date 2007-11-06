@@ -24,7 +24,8 @@
 #include "mating.h"
 
 namespace simuPOP {
-offspringGenerator::offspringGenerator(const population & pop, vector<baseOperator *> & ops)
+offspringGenerator::offspringGenerator(const population & pop, 
+	vector<baseOperator *> & ops)
 	: m_bt(rng()), m_ops(ops)
 {
 	m_genoStruIdx = pop.genoStruIdx();
@@ -49,11 +50,11 @@ bool offspringGenerator::formOffspringGenotype()
 
 
 void cloneOffspringGenerator::generateOffspring(population & pop, individual * parent, individual *, UINT numOff,
-						population::IndIterator & it)
+                                                population::IndIterator & it)
 {
 	// if population has changed.
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
-		   "Offspring generator is used for two different types of populations");
+	    "Offspring generator is used for two different types of populations");
 
 	// generate numOff offspring per mating, or until it  reaches offEnd
 	UINT count = 0;
@@ -66,7 +67,7 @@ void cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 		accept = true;
 		// apply during mating operators
 		for (vector<baseOperator *>::iterator iop = m_ops.begin(),
-						      iopEnd = m_ops.end(); iop != iopEnd;  ++iop) {
+		                                      iopEnd = m_ops.end(); iop != iopEnd;  ++iop) {
 			try {
 				// During mating operator might reject this offspring.
 				if (!(*iop)->applyDuringMating(pop, it, parent, NULL)) {
@@ -74,7 +75,8 @@ void cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 					break;
 				}
 			} catch (...) {
-				cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
+				cout << "DuringMating operator " << (*iop)->__repr__() 
+					<< " throws an exception." << endl << endl;
 				throw;
 			}
 		}                                                                         // all during-mating operators
@@ -87,7 +89,7 @@ void cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 
 
 void mendelianOffspringGenerator::formOffspring(individual * dad, individual * mom,
-						population::IndIterator & it)
+                                                population::IndIterator & it)
 {
 	m_bt.trial();
 
@@ -186,10 +188,10 @@ void mendelianOffspringGenerator::formOffspring(individual * dad, individual * m
 
 
 void mendelianOffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
-						    UINT numOff, population::IndIterator & it)
+                                                    UINT numOff, population::IndIterator & it)
 {
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
-		   "Offspring generator is used for two different types of populations");
+	    "Offspring generator is used for two different types of populations");
 
 	// generate numOffspring offspring per mating
 	UINT count = 0;
@@ -222,7 +224,7 @@ void mendelianOffspringGenerator::generateOffspring(population & pop, individual
 
 
 void selfingOffspringGenerator::formOffspring(individual * parent,
-					      population::IndIterator & it)
+                                              population::IndIterator & it)
 {
 	m_bt.trial();
 	// const BitSet& bs = m_bt.succ(0);
@@ -323,10 +325,10 @@ void selfingOffspringGenerator::formOffspring(individual * parent,
 
 
 void selfingOffspringGenerator::generateOffspring(population & pop, individual * parent,
-						  individual *, UINT numOff, population::IndIterator & it)
+                                                  individual *, UINT numOff, population::IndIterator & it)
 {
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
-		   "Offspring generator is used for two different types of populations");
+	    "Offspring generator is used for two different types of populations");
 
 	// generate numOffspring offspring per mating
 	UINT count = 0;
@@ -358,14 +360,131 @@ void selfingOffspringGenerator::generateOffspring(population & pop, individual *
 }
 
 
+randomParentChooser::randomParentChooser(population & pop, size_t sp)
+	: parentChooser(), m_sampler(rng())
+{
+	m_selection = pop.selectionOn(sp);
+	m_begin = pop.indBegin(sp);
+	if (m_selection) {
+		UINT fit_id = pop.infoIdx("fitness");
+		// we need to order (true) the individual fitness.
+		GappedInfoIterator fitness = pop.infoBegin(fit_id, true);
+		// regardless of sex, get fitness for everyone.
+		m_sampler.set(vectorf(fitness + pop.subPopBegin(sp),
+		        fitness + pop.subPopEnd(sp) ) );
+	} else
+		m_size = pop.subPopSize(sp);
+}
+
+
+individual * randomParentChooser::chooseParent()
+{
+	// choose a parent
+	if (m_selection)
+		return & * (m_begin + m_sampler.get());
+	else
+		return & * (m_begin + rng().randInt(m_size));
+}
+
+randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
+	: parentChooser(), m_maleIndex(0), m_femaleIndex(0),
+		m_maleFitness(0), m_femaleFitness(0),
+		m_malesampler(rng()), m_femalesampler(rng())
+
+{
+	ULONG spSize = pop.subPopSize(sp);
+	// m_begin is relative to the beginning of the whole population.
+	m_begin = pop.indBegin();
+
+	m_numMale = 0;
+	m_numFemale = 0;
+	population::IndIterator it = pop.indBegin(sp);
+	population::IndIterator itEnd = pop.indEnd(sp);
+	for (; it < itEnd; ++it)
+		if (it->sex() == Male)
+			m_numMale++;
+
+	// allocate memory at first for performance reasons
+	m_maleIndex.resize(m_numMale);
+	m_femaleIndex.resize(spSize - m_numMale);
+
+	m_selection = pop.selectionOn(sp);
+	UINT fit_id = 0;
+	if (m_selection) {
+		fit_id = pop.infoIdx("fitness");
+		m_maleFitness.resize(m_numMale);
+		m_femaleFitness.resize(spSize - m_numMale);
+	}
+	
+	m_numMale = 0;
+	m_numFemale = 0;
+
+	size_t idx = pop.subPopBegin(sp);
+	for (population::IndIterator ind = pop.indBegin(sp), indEnd = pop.indEnd(sp); ind < indEnd; ind++) {
+		if (ind->sex() == Male) {
+			m_maleIndex[m_numMale] = idx;
+			if (m_selection)
+				m_maleFitness[m_numMale] = ind->info(fit_id);
+			m_numMale++;
+		} else {
+			m_femaleIndex[m_numFemale] = idx;
+			if (m_selection)
+				m_femaleFitness[m_numFemale] = ind->info(fit_id);
+			m_numFemale++;
+		}
+		idx++;
+	}
+
+	if (m_selection) {
+		m_malesampler.set(m_maleFitness);
+		m_femalesampler.set(m_femaleFitness);
+		DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
+		DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
+	}
+
+	DBG_ASSERT(m_numFemale + m_numMale == spSize, SystemError,
+	    "Wrong number of male/female.");
+}
+
+
+parentChooser::individualPair randomParentsChooser::chooseParents()
+{
+	individual * dad = NULL;
+	individual * mom = NULL;
+	if (m_selection) {                                        // with selection
+		// using weidhted sampler.
+		if (m_numMale != 0)
+			dad = &*(m_begin + m_maleIndex[m_malesampler.get()]);
+		else
+			dad = &*(m_begin + m_femaleIndex[m_femalesampler.get()]);
+
+		if (m_numFemale != 0)
+			mom = &*(m_begin + m_femaleIndex[m_femalesampler.get()]);
+		else
+			mom = &*(m_begin + m_maleIndex[m_malesampler.get()]);
+	} else {
+		// using random sample.
+		if (m_numMale != 0)
+			dad = &*(m_begin + m_maleIndex[rng().randInt(m_numMale)]);
+		else
+			dad = &*(m_begin + m_femaleIndex[rng().randInt(m_numFemale)]);
+
+		if (m_numFemale != 0)
+			mom = &*(m_begin + m_femaleIndex[rng().randInt(m_numFemale)]);
+		else
+			mom = &*(m_begin + m_maleIndex[rng().randInt(m_numMale)]);
+	}
+	return std::make_pair(dad, mom);
+}
+
 mating::mating(double numOffspring, PyObject * numOffspringFunc, UINT maxNumOffspring,
-	       UINT mode, vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newSubPopSizeFunc)
+               UINT mode, vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newSubPopSizeFunc)
 	: m_numOffspring(numOffspring), m_numOffspringFunc(NULL), m_maxNumOffspring(maxNumOffspring),
 	m_mode(mode), m_firstOffspring(true), m_subPopSize(newSubPopSize),
 	m_subPopSizeExpr(newSubPopSizeExpr, ""), m_subPopSizeFunc(NULL)
 {
 	DBG_FAILIF(!m_subPopSizeExpr.empty() && newSubPopSizeFunc != NULL,
-		   ValueError, "Please only specify one of newSubPopSizeExpr and newSubPopSizeFunc.");
+	    ValueError, "Please only specify one of newSubPopSizeExpr and newSubPopSizeFunc.");
 
 	if (numOffspringFunc != NULL) {
 		if (!PyCallable_Check(numOffspringFunc))
@@ -384,9 +503,9 @@ mating::mating(double numOffspring, PyObject * numOffspringFunc, UINT maxNumOffs
 	}
 
 	DBG_FAILIF(mode == MATE_BinomialDistribution && maxNumOffspring < 2,
-		   ValueError, "If mode is MATE_BinomialDistribution, maxNumOffspring should be > 1");
+	    ValueError, "If mode is MATE_BinomialDistribution, maxNumOffspring should be > 1");
 	DBG_FAILIF(mode == MATE_UniformDistribution && maxNumOffspring < static_cast<UINT>(numOffspring),
-		   ValueError, "If mode is MATE_UniformDistribution, maxNumOffspring should be greater than numOffspring");
+	    ValueError, "If mode is MATE_UniformDistribution, maxNumOffspring should be greater than numOffspring");
 }
 
 
@@ -408,12 +527,12 @@ ULONG mating::numOffspring(int gen)
 	if (m_numOffspringFunc == NULL)
 		numOS = m_numOffspring;
 	else if (m_mode == MATE_NumOffspring ||           // case 1, first time
-		 // case 2, all the time; case 3,4,5, first time
-		 m_mode == MATE_NumOffspringEachFamily ||
-		 ( m_firstOffspring &&
-		  ( m_mode == MATE_GeometricDistribution  ||
-		   m_mode == MATE_PoissonDistribution   ||
-		   m_mode == MATE_BinomialDistribution ))) {
+	         // case 2, all the time; case 3,4,5, first time
+	         m_mode == MATE_NumOffspringEachFamily ||
+	         ( m_firstOffspring &&
+	          ( m_mode == MATE_GeometricDistribution  ||
+	           m_mode == MATE_PoissonDistribution   ||
+	           m_mode == MATE_BinomialDistribution ))) {
 		PyCallFunc(m_numOffspringFunc, "(i)", gen, numOS, PyObj_As_Double);
 	}
 
@@ -424,7 +543,7 @@ ULONG mating::numOffspring(int gen)
 		return static_cast<UINT>(numOS);
 	} else if (m_mode == MATE_GeometricDistribution) {
 		DBG_FAILIF(fcmp_lt(numOS, 0) || fcmp_gt(numOS, 1.), ValueError,
-			   "P for a geometric distribution should be within [0,1], given " + toStr(numOS));
+		    "P for a geometric distribution should be within [0,1], given " + toStr(numOS));
 		UINT nos = rng().randGeometric(numOS);
 		return nos;
 	} else if (m_mode == MATE_PoissonDistribution) {
@@ -433,10 +552,10 @@ ULONG mating::numOffspring(int gen)
 		return nos;
 	} else if (m_mode == MATE_BinomialDistribution) {
 		DBG_FAILIF(fcmp_lt(numOS, 0) || fcmp_gt(numOS, 1.), ValueError,
-			   "P for a Bionomial distribution should be within [0,1], given " + toStr(numOS));
+		    "P for a Bionomial distribution should be within [0,1], given " + toStr(numOS));
 		DBG_FAILIF(m_maxNumOffspring < 1, ValueError,
-			   "Max number of offspring should be greater than 1. Given "
-			   + toStr(m_maxNumOffspring));
+		    "Max number of offspring should be greater than 1. Given "
+		    + toStr(m_maxNumOffspring));
 		UINT nos = rng().randBinomial(m_maxNumOffspring - 1, numOS) + 1;
 		return nos;
 	} else if (m_mode == MATE_UniformDistribution) {
@@ -445,11 +564,11 @@ ULONG mating::numOffspring(int gen)
 		// randint(4)  ==> 0, 1, 2, 3
 		// + 2 ==> 2, 3, 4, 5
 		UINT nos = rng().randInt(m_maxNumOffspring - static_cast<unsigned long>(m_numOffspring) + 1)
-			   + static_cast<UINT>(m_numOffspring);
+		           + static_cast<UINT>(m_numOffspring);
 		return nos;
 	} else
 		throw ValueError("Wrong mating numoffspring mode. Should be one of \n"
-				 "MATE_NumOffspring, MATE_NumOffspringEachFamily and MATE_GEometricDistribution");
+		    "MATE_NumOffspring, MATE_NumOffspringEachFamily and MATE_GEometricDistribution");
 }
 
 
@@ -496,8 +615,8 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 	DBG_DO(DBG_SIMULATOR, cout << "New subpop size " << scratch.subPopSizes() << endl);
 
 	DBG_FAILIF(scratch.numSubPop() != pop.numSubPop(),
-		   ValueError, "number of subPopulaitons must agree.\n Pre: "
-		   + toStr(pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
+	    ValueError, "number of subPopulaitons must agree.\n Pre: "
+	    + toStr(pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
 }
 
 
@@ -527,39 +646,20 @@ bool binomialSelection::mate(population & pop, population & scratch, vector<base
 
 	cloneOffspringGenerator og(pop, ops);
 
-	GappedInfoIterator fitness;
-	UINT fit_id = 0;
-	if (pop.selectionOn()) {
-		fit_id = pop.infoIdx("fitness");
-		// we need to order (true) the individual fitness.
-		fitness = pop.infoBegin(fit_id, true);
-	}
-
 	// for each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 		UINT spSize = pop.subPopSize(sp);
 		if (spSize == 0)
 			continue;
 
-		bool selectionOn = pop.selectionOn(sp);
-		if (selectionOn) {
-			// regardless of sex, get fitness for everyone.
-			m_sampler.set(vectorf(fitness + pop.subPopBegin(sp),
-					      fitness + pop.subPopEnd(sp) ) );
-		}
+		randomParentChooser pc(pop, sp);
 
 		// choose a parent and genereate m_numOffspring offspring
 		population::IndIterator it = scratch.indBegin(sp);
 		population::IndIterator itEnd = scratch.indEnd(sp);
 		UINT numOS;
 		while (it != itEnd) {
-			individual * parent;
-			// choose a parent
-			if (selectionOn)
-				parent = &pop.ind(m_sampler.get(), sp);
-			else
-				// repeated call of rng() does not matter, since it will be inlined
-				parent = &pop.ind(rng().randInt(spSize), sp);
+			individual * parent = pc.chooseParent();
 
 			numOS = numOffspring(pop.gen());
 			// avoid warning assocaited with 'numOS > itEnd - it'
@@ -569,7 +669,7 @@ bool binomialSelection::mate(population & pop, population & scratch, vector<base
 			DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
 			//
 			og.generateOffspring(pop, parent, NULL, numOS, it);
-		}                                                                                       // all offspring
+		}                                                                                           // all offspring
 	}                                                                                               // all subpopulation.
 
 	if (submit)
@@ -586,104 +686,29 @@ bool randomMating::mate(population & pop, population & scratch, vector<baseOpera
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
-	UINT fit_id = 0;
-	if (pop.selectionOn())
-		fit_id = pop.infoIdx("fitness");
-
 	mendelianOffspringGenerator og(pop, ops);
 
-	UINT numMale, numFemale;
 	/// random mating happens within each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 		ULONG spSize = pop.subPopSize(sp);
 		if (spSize == 0)
 			continue;
 
-		numMale = 0;
-		population::IndIterator it = pop.indBegin(sp);
-		population::IndIterator itEnd = pop.indEnd(sp);
-		for (; it < itEnd; ++it)
-			if (it->sex() == Male)
-				numMale++;
-
-		// allocate memory at first for performance reasons
-		m_maleIndex.resize(numMale);
-		m_femaleIndex.resize(spSize - numMale);
-
-		/// if selection is on
-		bool selectionOn = pop.selectionOn(sp);
-		if (selectionOn) {
-			m_maleFitness.resize(numMale);
-			m_femaleFitness.resize(spSize - numMale);
-		}
-
-		numMale = 0;
-		numFemale = 0;
-
-		size_t idx = pop.subPopBegin(sp);
-		for (population::IndIterator ind = pop.indBegin(sp), indEnd = pop.indEnd(sp); ind < indEnd; ind++) {
-			if (ind->sex() == Male) {
-				m_maleIndex[numMale] = idx;
-				if (selectionOn)
-					m_maleFitness[numMale] = ind->info(fit_id);
-				numMale++;
-			} else {
-				m_femaleIndex[numFemale] = idx;
-				if (selectionOn)
-					m_femaleFitness[numFemale] = ind->info(fit_id);
-				numFemale++;
-			}
-			idx++;
-		}
-
-		if (selectionOn) {
-			m_malesampler.set(m_maleFitness);
-			m_femalesampler.set(m_femaleFitness);
-			DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
-			DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
-		}
-
+		randomParentsChooser pc(pop, sp);
 		/// now, all individuals of needToFind sex is collected
-		if ( (numMale == 0 || numFemale == 0 ) && !m_contWhenUniSex) {
+		if ( (pc.numMale() == 0 || pc.numFemale() == 0 ) && !m_contWhenUniSex) {
 			throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
-					 "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
-					 "(same sex mating if have to) options to get around this problem.");
+				"You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
+				"(same sex mating if have to) options to get around this problem.");
 		}
-
-		DBG_ASSERT(numFemale + numMale == spSize, SystemError,
-			   "Wrong number of male/female.");
-
+		
 		// generate scratch.subPopSize(sp) individuals.
-		it = scratch.indBegin(sp);
-		itEnd = scratch.indEnd(sp);
+		population::IndIterator it = scratch.indBegin(sp);
+		population::IndIterator itEnd = scratch.indEnd(sp);
 		UINT numOS;
 		while (it != itEnd) {
-			individual * dad, * mom;
-
-			if (selectionOn) {                                        // with selection
-				// using weidhted sampler.
-				if (numMale != 0)
-					dad = &pop.ind(m_maleIndex[m_malesampler.get()]);
-				else
-					dad = &pop.ind(m_femaleIndex[m_femalesampler.get()]);
-
-				if (numFemale != 0)
-					mom = &pop.ind(m_femaleIndex[m_femalesampler.get()]);
-				else
-					mom = &pop.ind(m_maleIndex[m_malesampler.get()]);
-			} else {
-				// using random sample.
-				if (numMale != 0)
-					dad = &pop.ind(m_maleIndex[rng().randInt(numMale)]);
-				else
-					dad = &pop.ind(m_femaleIndex[rng().randInt(numFemale)]);
-
-				if (numFemale != 0)
-					mom = &pop.ind(m_femaleIndex[rng().randInt(numFemale)]);
-				else
-					mom = &pop.ind(m_maleIndex[rng().randInt(numMale)]);
-			}
-
+			parentChooser::individualPair const parents = pc.chooseParents();
+		
 			// record family size (this may be wrong for the last family)
 			numOS = numOffspring(pop.gen());
 			if (it + numOS > itEnd)
@@ -691,7 +716,7 @@ bool randomMating::mate(population & pop, population & scratch, vector<baseOpera
 			// record family size (this may be wrong for the last family)
 			DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
 			//
-			og.generateOffspring(pop, dad, mom, numOS, it);
+			og.generateOffspring(pop, parents.first, parents.second, numOS, it);
 		}
 	}                                                                                         // each subPop
 
@@ -703,7 +728,7 @@ bool randomMating::mate(population & pop, population & scratch, vector<baseOpera
 
 /// CPPONLY
 void countAlleles(population & pop, int subpop, const vectori & loci, const vectori & alleles,
-		  vectorlu & alleleNum)
+                  vectorlu & alleleNum)
 {
 	int pldy = pop.ploidy();
 
@@ -720,7 +745,7 @@ void countAlleles(population & pop, int subpop, const vectori & loci, const vect
 							alleleNum[l]++;
 			} else {
 				for (GappedAlleleIterator a = pop.alleleBegin(loc, false),
-							  aEnd = pop.alleleEnd(loc, false); a != aEnd; ++a)
+				                          aEnd = pop.alleleEnd(loc, false); a != aEnd; ++a)
 					if (AlleleUnsigned(*a) == ale)
 						alleleNum[l]++;
 			}
@@ -732,7 +757,7 @@ void countAlleles(population & pop, int subpop, const vectori & loci, const vect
 							alleleNum[l]++;
 			} else {
 				for (GappedAlleleIterator a = pop.alleleBegin(loc, subpop, false),
-							  aEnd = pop.alleleEnd(loc, subpop, false); a != aEnd; ++a)
+				                          aEnd = pop.alleleEnd(loc, subpop, false); a != aEnd; ++a)
 					if (AlleleUnsigned(*a) == ale)
 						alleleNum[l]++;
 			}
@@ -747,10 +772,10 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 	vectorf freqRange;
 
 	PyCallFunc(m_freqFunc, "(i)", pop.gen(),
-		   freqRange, PyObj_As_Array);
+	    freqRange, PyObj_As_Array);
 
 	DBG_ASSERT(freqRange.size() == m_loci.size() || freqRange.size() == 2 * m_loci.size(),
-		   ValueError, "Length of returned range should have the same or double the number of loci.");
+	    ValueError, "Length of returned range should have the same or double the number of loci.");
 
 	vectorlu alleleNum;
 
@@ -760,7 +785,7 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 	countAlleles(pop, -1, m_loci, m_alleles, alleleNum);
 
 	DBG_DO(DBG_MATING, cout << "Range of allele frequencies at generation "
-				<< pop.gen() << " is " << freqRange << endl);
+	                        << pop.gen() << " is " << freqRange << endl);
 #endif
 
 	// compare integer is easier and more acurate, and we need to make sure
@@ -781,7 +806,7 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 #ifndef OPTIMIZED
 			if (alleleNum[i] == 0 && alleleRange[2 * i] > 0)
 				throw ValueError("No allele exists so there is no way to reach specified allele frequency.\n"
-						 "Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
+				    "Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
 #endif
 		}
 	} else {
@@ -795,8 +820,8 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 			alleleRange[2 * i] = static_cast<ULONG>(freqRange[2 * i] * pop.popSize() * pop.ploidy());
 
 			DBG_FAILIF(freqRange[2 * i] > freqRange[2 * i + 1], ValueError,
-				   "Incorrect frequency range: " + toStr(freqRange[2 * i]) +
-				   " - " + toStr(freqRange[2 * i + 1]));
+			    "Incorrect frequency range: " + toStr(freqRange[2 * i]) +
+			    " - " + toStr(freqRange[2 * i + 1]));
 
 			if (freqRange[2 * i] > 0 && alleleRange[2 * i] == 0)
 				alleleRange[2 * i] = 1;
@@ -804,7 +829,7 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 #ifndef OPTIMIZED
 			if (alleleNum[i] == 0 && alleleRange[2 * i] > 0)
 				throw ValueError("No allele exists so there is no way to reach specified allele frequency.\n"
-						 "Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
+				    "Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
 #endif
 		}
 	}
@@ -817,7 +842,7 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 		countAlleles(scratch, -1, m_loci, m_alleles, alleleNum);
 
 		DBG_DO(DBG_MATING, cout << "mating finished, new count "
-					<< alleleNum << " range " << alleleRange << endl);
+		                        << alleleNum << " range " << alleleRange << endl);
 		//
 		bool succ = true;
 		for (size_t i = 0; i < m_loci.size(); ++i) {
@@ -841,7 +866,7 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 /// return expected number of alleles at each subpopulations.
 /// CPPONLY
 void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loci,
-			const vectori & alleles, vectoru & expAlleles)
+                        const vectori & alleles, vectoru & expAlleles)
 {
 	// determine expected number of alleles of each allele
 	// at each subpopulation.
@@ -885,7 +910,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 								n++;
 				} else {
 					for (GappedAlleleIterator a = pop.alleleBegin(locus, sp, false),
-								  aEnd = pop.alleleEnd(locus, sp, false); a != aEnd; ++a)
+					                          aEnd = pop.alleleEnd(locus, sp, false); a != aEnd; ++a)
 						if (AlleleUnsigned(*a) == allele)
 							n++;
 				}
@@ -898,7 +923,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 			// if there is no alleles
 			if (numOfAlleles == 0 && expFreq[i] > 0.)
 				throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
-						 " Generation " + toStr(pop.gen()) );
+				    " Generation " + toStr(pop.gen()) );
 
 			// calculate exp number of affected offspring in the next generation.
 			//
@@ -907,7 +932,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 			// distribution with p_i beging allele frequency at each subpopulation.
 			// assign these numbers to each subpopulation
 			rng().randMultinomial(static_cast<unsigned int>(pop.popSize() * expFreq[i] * pldy),
-					      curFreq, expAlleles.begin() + numSP * i);
+			    curFreq, expAlleles.begin() + numSP * i);
 		}
 	}
 	// simpler case, one subpopulation, or with gieven allele frequency
@@ -926,7 +951,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 								n++;
 				} else {
 					for (GappedAlleleIterator a = pop.alleleBegin(locus, sp, false),
-								  aEnd = pop.alleleEnd(locus, sp, false); a != aEnd; ++a) {
+					                          aEnd = pop.alleleEnd(locus, sp, false); a != aEnd; ++a) {
 						if (AlleleUnsigned(*a) == allele)
 							n++;
 					}
@@ -935,7 +960,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 				// if there is no alleles
 				if (n == 0 && expFreq[numSP * i + sp] > 0.)
 					throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
-							 " Generation " + toStr(pop.gen()) );
+					    " Generation " + toStr(pop.gen()) );
 #endif
 				expAlleles[numSP * i + sp] = static_cast<UINT>(pop.subPopSize(sp) * pldy * expFreq[numSP * i + sp]);
 				if (expFreq[numSP * i + sp] > 0. && expAlleles[numSP * i + sp] == 0)
@@ -976,16 +1001,10 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 	/// whether or not use stack.
 	bool useStack = fixedFamilySize();
 
-	// empty fitness means no selection
-	UINT fit_id = 0;
-	if (pop.selectionOn())
-		fit_id = pop.infoIdx("fitness");
-
 	mendelianOffspringGenerator og(pop, ops);
 	// use to go through offspring generation to count alleles
 	UINT totNumLoci = pop.totNumLoci();
 
-	UINT numMale, numFemale;
 	/// controlled random mating happens within each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 		ULONG spSize = pop.subPopSize(sp);
@@ -1008,60 +1027,15 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			}
 		}
 
-		numMale = 0;
-		population::IndIterator it = pop.indBegin(sp);
-		population::IndIterator itEnd = pop.indEnd(sp);
-		for (; it < itEnd;  ++it)
-			if (it->sex() == Male)
-				numMale++;
-
-		// to gain some performance, allocate memory at first.
-		m_maleIndex.resize(numMale);
-		m_femaleIndex.resize(spSize - numMale);
-		/// if selection is on
-		bool selectionOn = pop.selectionOn(sp);
-		if (selectionOn) {
-			m_maleFitness.resize(numMale);
-			m_femaleFitness.resize(spSize - numMale);
-		}
-
-		numMale = 0;
-		numFemale = 0;
-		size_t idx = pop.subPopBegin(sp);
-		for (population::IndIterator ind = pop.indBegin(sp), indEnd = pop.indEnd(sp); ind < indEnd; ind++) {
-			if (ind->sex() == Male) {
-				m_maleIndex[numMale] = idx;
-				if (selectionOn)
-					m_maleFitness[numMale] = ind->info(fit_id);
-				numMale++;
-			} else {
-				m_femaleIndex[numFemale] = idx;
-				if (selectionOn)
-					m_femaleFitness[numFemale] = ind->info(fit_id);
-				numFemale++;
-			}
-			idx++;
-		}
-
-		if (selectionOn) {
-			m_malesampler.set(m_maleFitness);
-			m_femalesampler.set(m_femaleFitness);
-			DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
-			DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
-		}
-
-		/// now, all individuals of needToFind sex is collected
-		if (numMale == 0 || numFemale == 0) {
+		randomParentsChooser pc(pop, sp);
+		if (pc.numMale() == 0 || pc.numFemale() == 0) {
 			if (m_contWhenUniSex)
 				cout << "Warning: the subpopulation is uni-sex. Mating will continue with same-sex mate" << endl;
 			else
 				throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
-						 "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
-						 "(same sex mating if have to) options to get around this problem.");
+				    "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
+				    "(same sex mating if have to) options to get around this problem.");
 		}
-
-		DBG_ASSERT(numFemale + numMale == spSize, SystemError,
-			   "Wrong number of male/female.");
 
 		// ploidy
 		vectori na(nLoci, 0);
@@ -1078,8 +1052,8 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 		bool hasAff;
 		bool stackStage = false;
 		// start!
-		it = scratch.indBegin(sp);
-		itEnd = scratch.indEnd(sp);
+		population::IndIterator it = scratch.indBegin(sp);
+		population::IndIterator itEnd = scratch.indEnd(sp);
 		population::IndIterator itBegin = it;
 		UINT numOS = 0;
 		/// if mor ethan noAAattempt times, no pure homo found,
@@ -1099,31 +1073,9 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			}
 
 			// randomly choose parents
-			individual * dad, * mom;
+			
+			parentChooser::individualPair parents = pc.chooseParents();
 
-			if (selectionOn) {                                                       // with selection
-				// using weidhted sampler.
-				if (numMale != 0)
-					dad = &pop.ind(m_maleIndex[m_malesampler.get()]);
-				else
-					dad = &pop.ind(m_femaleIndex[m_femalesampler.get()]);
-
-				if (numFemale != 0)
-					mom = &pop.ind(m_femaleIndex[m_femalesampler.get()]);
-				else
-					mom = &pop.ind(m_maleIndex[m_malesampler.get()]);
-			} else {
-				// using random sample.
-				if (numMale != 0)
-					dad = &pop.ind(m_maleIndex[rng().randInt(numMale)]);
-				else
-					dad = &pop.ind(m_femaleIndex[rng().randInt(numFemale)]);
-
-				if (numFemale != 0)
-					mom = &pop.ind(m_femaleIndex[rng().randInt(numFemale)]);
-				else
-					mom = &pop.ind(m_maleIndex[rng().randInt(numMale)]);
-			}
 			// generate m_numOffspring offspring per mating
 			// record family size (this may be wrong for the last family)
 
@@ -1137,7 +1089,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 				numOS = itEnd - it;
 			// generate numOffspring offspring per mating
 			// it moves forward
-			og.generateOffspring(pop, dad, mom, numOS, it);
+			og.generateOffspring(pop, parents.first, parents.second, numOS, it);
 
 			// count alleles in this family
 			// count number of alleles in the family.
@@ -1304,7 +1256,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 					break;
 				}
 			}
-		}                                                                                       // nostack scheme
+		}                                                                                           // nostack scheme
 	}                                                                                               // each subPop
 
 	if (submit)
