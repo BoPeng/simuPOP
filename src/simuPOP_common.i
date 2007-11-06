@@ -256,7 +256,7 @@ namespace std
 
 namespace std
 {
-	%template(vectorobj)    vector<PyObject*>;
+    %template(vectorobj)    vector<PyObject*>;
     %template(vectorop)     vector<simuPOP::baseOperator * >;
 }
 
@@ -705,6 +705,34 @@ def new_controlledRandomMating(self, freqFunc, locus=-1, loci=[],
 new_controlledRandomMating.__doc__ = controlledRandomMating.__init__.__doc__
 del controlledRandomMating.__init__
 controlledRandomMating.__init__ = new_controlledRandomMating
+
+
+def new_pyMating(self, parentChooser=None, parentChoosers=[MATE_RandomParentsChooser],
+    offspringGenerator=None, offspringGenerators=[MATE_MendelianOffspringGenerator],
+    *args, **kwargs):
+    # paremeter parentChoosers
+    if parentChooser is not None:
+        pc = [parentChooser]
+    else:
+        pc = parentChoosers
+    # 
+    pyPC = []
+    for i in range(len(pc)):
+        # not MATE_RandomParentChooser or MATE_RandomParentsChooser
+        if type(pc[i]) != type(1):
+            pyPC.append(pc[i])
+            pc[i] = MATE_PyParentsChooser
+    og = offspringGenerators
+    if offspringGenerator is not None:
+        og = [offspringGenerator]
+    cppModule.pyMating_swiginit(self,
+        cppModule.new_pyMating(parentChoosers=pc, pyChoosers=pyPC,
+            offspringGenerators=og, *args, **kwargs))
+ 
+new_pyMating.__doc__ = pyMating.__init__.__doc__
+del pyMating.__init__
+pyMating.__init__ = new_pyMating
+
 
 def mutator_setRate(self, rate, loci=[], atLoci=[], *args, **kwargs):
     # rate -> [rate] if needed

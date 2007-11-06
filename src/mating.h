@@ -149,6 +149,8 @@ public:
 	typedef std::pair<individual *, individual *> individualPair;
 
 public:
+	// numParents can be 0 (undetermined, can be 1 or 2)
+	// 1 (one parent), or 2 (two parents)
 	parentChooser(int numParents)
 	{
 		m_numParents = numParents;
@@ -234,35 +236,6 @@ private:
 };
 
 
-/// choose a parent using a Python generator,
-/// does not consider selection
-class pyParentChooser : public parentChooser
-{
-public:
-	pyParentChooser(population & pop, size_t sp, PyObject * parentGenerator);
-
-	/// destructor
-	~pyParentChooser()
-	{
-		if (m_popObj != NULL)
-			Py_XDECREF(m_popObj);
-	}
-
-
-	individual * chooseParent();
-
-private:
-	PyObject * m_parentChooser;
-
-#ifndef OPTIMIZED
-	ULONG m_size;
-#endif
-	population::IndIterator m_begin;
-
-	PyObject * m_popObj;
-};
-
-
 /// choose two parents using a Python generator
 /// does not consider selection
 class pyParentsChooser : public parentChooser
@@ -273,22 +246,23 @@ public:
 	/// destructor
 	~pyParentsChooser()
 	{
-		if (m_popObj != NULL)
-			Py_XDECREF(m_popObj);
+		if (m_generator != NULL)
+			Py_XDECREF(m_generator);
+		if (m_parIterator != NULL)
+			Py_XDECREF(m_parIterator);
 	}
 
 
 	individualPair chooseParents();
 
 private:
-	PyObject * m_parentsChooser;
-
 #ifndef OPTIMIZED
 	ULONG m_size;
 #endif
 	population::IndIterator m_begin;
 
-	PyObject * m_popObj;
+	PyObject * m_generator;
+	PyObject * m_parIterator;
 };
 
 
@@ -410,7 +384,7 @@ public:
 	/// deep copy of a mating scheme
 	virtual mating * clone() const
 	{
-		return new mating(*this);
+		return NULL;
 	}
 
 
@@ -422,9 +396,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void submitScratch(population & pop, population & scratch)
-	{
-	}
+	virtual void submitScratch(population & pop, population & scratch) = 0;
 
 
 	/// CPPONLY this is not supposed to be called for a base mating class
@@ -548,7 +520,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void submitScratch(population & pop, population & scratch)
+	void submitScratch(population & pop, population & scratch)
 	{
 	}
 
@@ -618,7 +590,7 @@ public:
 
 
 	///CPPONLY
-	virtual void submitScratch(population & pop, population & scratch)
+	void submitScratch(population & pop, population & scratch)
 	{
 		pop.turnOffSelection();
 		// use scratch population,
@@ -715,7 +687,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void submitScratch(population & pop, population & scratch)
+	void submitScratch(population & pop, population & scratch)
 	{
 		pop.turnOffSelection();
 		// use scratch population,
@@ -810,6 +782,10 @@ public:
 		delete m_matingScheme;
 	}
 
+	/// CPPONLY
+	void submitScratch(population & pop, population & scratch)
+	{
+	}
 
 	/// deep copy of a controlled mating scheme
 	virtual mating * clone() const
@@ -963,7 +939,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void submitScratch(population & pop, population & scratch)
+	void submitScratch(population & pop, population & scratch)
 	{
 		pop.turnOffSelection();
 		// use scratch population,
@@ -1008,8 +984,7 @@ class pyMating : public mating
 public:
 #define MATE_RandomParentChooser  1
 #define MATE_RandomParentsChooser 2
-#define MATE_PyParentChooser      3
-#define MATE_PyParentsChooser     4
+#define MATE_PyParentsChooser     3
 
 #define MATE_CloneOffspringGenerator     1
 #define MATE_MendelianOffspringGenerator 2
@@ -1017,15 +992,48 @@ public:
 
 	/// create a Python mating scheme
 	/**
-	 \param parentsGenerator a Python generator that accepts the parental
+	 \param parentChoosers a list of parent choosers for each subpopulation. If only
+		one parentChooser is specified, it is used for all subpopulations. a parentChooser
+			can be 
+			\li MATE_RandomParentChooser a random parent is chosen, regardless of sex.
+			\li MATE_RandomParentsChooser two parents with different sex are chosen randomly from
+				their respective sex groups.
+			\li a Python generator that returns a relative index of a parent, or a tuple 
+				of two relative indexes of two parents. The indexes should be relative to
+				the subpopulations it will be applied to. A population, and a subpopulation
+				index will be passed to this generator. Please refer to simuPOP user's guide
+				for a detailed explanation of this technique.
+	 \param parentChooser A parent chooser that is used for all subpopulations. This is
+		a shortcut for <tt> parentChoosers=[parentChooser] </tt>.
+	 \param pyChoosers for internal use only.
+	 \param offspringGenerators A list of offspringGenerator for each subpopulation. If only
+		one offspringGenerator is specified, it is used for all subpopulations.
+		offspringGenerator can be 
+		\li MATE_CloneOffspringGenerator Parental chromosomes are copied directly to offspring.
+			This offspring generator can be used to haploid populations.
+			If a recombinator is used in a diploid population, the cloning behavior
+			is replaced by a 'selfing' recombination so this mode the same as selfing.
+		\li MATE_MendelianOffspringGenerator Mendelian transmission without recombination. 
+			That is to say, one or the two copies of maternal chromosomes is passed to 
+			the maternal (first) chromosomes of the offspring; the one or the two copies of
+			paternal chromosomes is passed the paternal (second) chromosomes of the
+			offspring. Independent segregations are applied to chromosomes.
+		\li MATE_SelfingOffspringGenerator Selfing transmission without recombination.
+			That is to say, both copies of the offspring chromosomes come from the
+			same parent. Random choices of parental chromosomes are applied independently
+			to each offspring copies.
+	 \param offspringGenerator An offspring generator that is used for 
+		all subpopulations. This is a shortcut for 
+		<tt>offspringGenerators=[offspringGenerator]</tt>.
+	 Generator a Python generator that accepts the parental
 	   	population, and yield parents.
 	 \n
 
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
-	pyMating(vectori const & parentChoosers = vectori(1, 2),
-	         vectorobj const & pyChoosers = vectorobj(),
-	         vectori const & offspringGenerators = vectori(1, 2),
+	pyMating(vectori const & parentChoosers,
+	         vectorobj const & pyChoosers,
+	         vectori const & offspringGenerators,
 	         double numOffspring = 1.,
 	         PyObject * numOffspringFunc = NULL,
 	         UINT maxNumOffspring = 0,
@@ -1073,7 +1081,15 @@ public:
 	{
 		return "<simuPOP::pyMating>";
 	}
-
+	
+	///CPPONLY
+	void submitScratch(population & pop, population & scratch)
+	{
+		pop.turnOffSelection();
+		// use scratch population,
+		pop.pushAndDiscard(scratch);
+		DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
+	}
 
 	/// CPPONLY perform Python mating
 	/**
