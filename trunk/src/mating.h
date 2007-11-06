@@ -111,8 +111,8 @@ public:
 	                       population::IndIterator & offBegin);
 
 	// the default method to produce offspring
-	void formOffspring(individual * dad, individual * mom,
-	                   population::IndIterator & it);
+	void formOffspringGenotype(individual * parent,
+	                           population::IndIterator & it, int ploidy, bool setSex);
 
 protected:
 	// use bernullitrisls with p=0.5 for free recombination
@@ -136,11 +136,8 @@ public:
 	}
 
 
-	// the default method to produce offspring
-	void generateOffspring(population & pop, individual * parent, individual *, UINT numOff,
-	                       population::IndIterator & offBegin);
-
-	void formOffspring(individual * parent, population::IndIterator & it);
+	void generateOffspring(population & pop, individual * parent, individual *,
+	                       UINT numOff, population::IndIterator & offBegin);
 
 };
 
