@@ -155,6 +155,7 @@ typedef std::vector<std::string>           vectorstr;
 typedef std::vector<std::vector<int > >    intMatrix;
 typedef std::vector<InfoType>              vectorinfo;
 typedef std::vector<std::vector<double > > matrix;
+typedef std::vector<PyObject * >           vectorobj;
 
 #include <map>
 using std::map;

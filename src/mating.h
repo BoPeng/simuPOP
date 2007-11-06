@@ -68,6 +68,7 @@ public:
 	{
 	}
 
+
 protected:
 	bool checkFormOffspringGenotype();
 
@@ -246,18 +247,22 @@ public:
 	/// destructor
 	~pyParentChooser()
 	{
+		if (m_popObj != NULL)
+			Py_XDECREF(m_popObj);
 	}
 
 
 	individual * chooseParent();
 
 private:
-	PyObject * m_parentGenerator;
+	PyObject * m_parentChooser;
 
 #ifndef OPTIMIZED
 	ULONG m_size;
 #endif
 	population::IndIterator m_begin;
+
+	PyObject * m_popObj;
 };
 
 
@@ -271,18 +276,22 @@ public:
 	/// destructor
 	~pyParentsChooser()
 	{
+		if (m_popObj != NULL)
+			Py_XDECREF(m_popObj);
 	}
 
 
 	individualPair chooseParents();
 
 private:
-	PyObject * m_parentsGenerator;
+	PyObject * m_parentsChooser;
 
 #ifndef OPTIMIZED
 	ULONG m_size;
 #endif
 	population::IndIterator m_begin;
+
+	PyObject * m_popObj;
 };
 
 
@@ -1017,10 +1026,9 @@ public:
 
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
-	pyMating(
-	         vector<int> parentChooser = vector<int>(1, 2),
-	         vector<PyObject *> pyChoosers = std::vector<PyObject *>(),
-	         vector<int> offspringGenerator = vector<int>(1, 1),
+	pyMating(vectori const & parentChoosers = vectori(1, 2),
+	         vectorobj const & pyChoosers = vectorobj(),
+	         vectori const & offspringGenerators = vectori(1, 2),
 	         double numOffspring = 1.,
 	         PyObject * numOffspringFunc = NULL,
 	         UINT maxNumOffspring = 0,
@@ -1028,47 +1036,29 @@ public:
 	         vectorlu newSubPopSize = vectorlu(),
 	         string newSubPopSizeExpr = "",
 	         PyObject * newSubPopSizeFunc = NULL
-	         )
-		: mating(numOffspring,
-		         numOffspringFunc, maxNumOffspring, mode,
-		         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
-		m_parentChooser(parentChooser),
-		m_pyChoosers(),
-		m_offspringGenerator(offspringGenerator)
-	{
-		vector<PyObject *>::iterator it = pyChoosers.begin();
-		vector<PyObject *>::iterator it_end = pyChoosers.end();
-		for (; it != it_end; ++it) {
-#if PY_VERSION_HEX < 0x02040000
-			throw SystemError("Your Python version does not have good support for generator"
-			    " so operator pyMating can not be used.");
-#else
-			if (!PyGen_Check(*it))
-				throw ValueError("Passed variable is not a Python generator.");
-
-			Py_XINCREF(*it);
-			m_pyChoosers.push_back(*it);
-			Py_XINCREF(*it);
-#endif
-		}
-	}
-
+	         );
 
 	/// destructor
 	~pyMating()
 	{
-		vector<PyObject *>::iterator it = m_pyChoosers.begin();
-		vector<PyObject *>::iterator it_end = m_pyChoosers.end();
+		vectorobj::iterator it = m_pyChoosers.begin();
+		vectorobj::iterator it_end = m_pyChoosers.end();
+
 		for (; it != it_end; ++it)
 			Py_XDECREF(*it);
 	}
 
 
 	/// CPPONLY
-	pyMating(const pyMating & rhs)
+	pyMating(const pyMating & rhs) :
+		mating(rhs),
+		m_parentChoosers(rhs.m_parentChoosers),
+		m_pyChoosers(rhs.m_pyChoosers),
+		m_offspringGenerators(rhs.m_offspringGenerators)
 	{
-		vector<PyObject *>::iterator it = m_pyChoosers.begin();
-		vector<PyObject *>::iterator it_end = m_pyChoosers.end();
+		vectorobj::iterator it = m_pyChoosers.begin();
+		vectorobj::iterator it_end = m_pyChoosers.end();
+
 		for (; it != it_end; ++it)
 			Py_INCREF(*it);
 	}
@@ -1096,11 +1086,11 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 private:
-	vector<int> m_parentChooser;
+	vectori m_parentChoosers;
 
-	vector<PyObject *> m_pyChoosers;
+	vectorobj m_pyChoosers;
 
-	vector<int> m_offspringGenerator;
+	vectori m_offspringGenerators;
 
 #ifndef OPTIMIZED
 	///

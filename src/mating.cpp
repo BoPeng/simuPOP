@@ -491,38 +491,39 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 }
 
 
-pyParentChooser::pyParentChooser(population & pop, size_t sp, PyObject * parentGenerator)
+pyParentChooser::pyParentChooser(population & pop, size_t sp, PyObject * pc)
 	: parentChooser(1),
-	m_parentGenerator(NULL)
+	m_parentChooser(pc),
+	m_popObj(NULL)
 {
-#if PY_VERSION_HEX < 0x02040000
-	throw SystemError("Your Python version does not have good support for generator"
-	    " so operator pyMating can not be used.");
-#else
-	if (!PyGen_Check(parentGenerator))
-		throw ValueError("Passed variable is not a Python generator.");
-
-	Py_XINCREF(parentGenerator);
-	m_parentGenerator = parentGenerator;
-#endif
 #ifndef OPTIMIZED
 	m_size = pop.subPopSize(sp);
 #endif
 	m_begin = pop.indBegin(sp);
+	m_popObj = pyPopObj(static_cast<void *>(&pop));
+	// if pop is valid?
+	DBG_FAILIF(m_popObj == NULL, SystemError,
+	    "Could not pass population to the provided function. \n"
+	    "Compiled with the wrong version of SWIG?");
 }
 
 
 individual * pyParentChooser::chooseParent()
 {
-	PyObject * pyResult = PyEval_CallObject(m_parentGenerator, NULL);
+	/*
+	   PyObject * pyResult = PyEval_CallObject(m_parentGenerator, NULL);
 
-	if (pyResult == NULL) {
-		PyErr_Print();
-		throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n");
-	}
+	   if (pyResult == NULL) {
+	   	PyErr_Print();
+	   	throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n");
+	   }
+	   int idx = 0;
+	   PyObj_As_Int(pyResult, idx);
+	   Py_DECREF(pyResult);
+	 */
 	int idx = 0;
-	PyObj_As_Int(pyResult, idx);
-	Py_DECREF(pyResult);
+
+	PyCallFunc(m_parentChooser, "(O)", m_popObj, idx, PyObj_As_Int);
 #ifndef OPTIMIZED
 	DBG_ASSERT(static_cast<unsigned>(idx) <= m_size, ValueError,
 	    "Returned index is greater than subpopulation size");
@@ -531,40 +532,28 @@ individual * pyParentChooser::chooseParent()
 }
 
 
-pyParentsChooser::pyParentsChooser(population & pop, size_t sp, PyObject * parentsGenerator)
-	: parentChooser(1),
-	m_parentsGenerator(NULL)
+pyParentsChooser::pyParentsChooser(population & pop, size_t sp, PyObject * pc)
+	: parentChooser(2),
+	m_parentsChooser(pc)
 {
-#if PY_VERSION_HEX < 0x02040000
-	throw SystemError("Your Python version does not have good support for generator"
-	    " so operator pyMating can not be used.");
-#else
-	if (!PyGen_Check(parentsGenerator))
-		throw ValueError("Passed variable is not a Python generator.");
-
-	Py_XINCREF(parentsGenerator);
-	m_parentsGenerator = parentsGenerator;
-#endif
 #ifndef OPTIMIZED
 	m_size = pop.subPopSize(sp);
 #endif
 	m_begin = pop.indBegin(sp);
+	m_popObj = pyPopObj(static_cast<void *>(&pop));
+	// if pop is valid?
+	DBG_FAILIF(m_popObj == NULL, SystemError,
+	    "Could not pass population to the provided function. \n"
+	    "Compiled with the wrong version of SWIG?");
+
 }
 
 
 parentChooser::individualPair pyParentsChooser::chooseParents()
 {
-	PyObject * pyResult = PyEval_CallObject(m_parentsGenerator, NULL);
-
-	if (pyResult == NULL) {
-		PyErr_Print();
-		throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n");
-	}
 	vectori idx;
-	PyObj_As_IntArray(pyResult, idx);
-	DBG_FAILIF(idx.size() != 2, ValueError, "An array of size 2 is expected");
 
-	Py_DECREF(pyResult);
+	PyCallFunc(m_parentsChooser, "(O)", m_popObj, idx, PyObj_As_IntArray);
 #ifndef OPTIMIZED
 	DBG_ASSERT(static_cast<unsigned>(idx[0]) <= m_size && static_cast<unsigned>(idx[1]) <= m_size,
 	    ValueError, "Returned index is greater than subpopulation size");
@@ -1361,6 +1350,34 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 }
 
 
+pyMating::pyMating(vectori const & parentChoosers,
+                   vectorobj const & pyChoosers,
+                   vectori const & offspringGenerators,
+                   double numOffspring,
+                   PyObject * numOffspringFunc,
+                   UINT maxNumOffspring,
+                   UINT mode,
+                   vectorlu newSubPopSize,
+                   string newSubPopSizeExpr,
+                   PyObject * newSubPopSizeFunc
+                   )
+	: mating(numOffspring,
+	         numOffspringFunc, maxNumOffspring, mode,
+	         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+	m_parentChoosers(parentChoosers),
+	m_pyChoosers(),
+	m_offspringGenerators(offspringGenerators)
+{
+	vectorobj::const_iterator it = pyChoosers.begin();
+	vectorobj::const_iterator it_end = pyChoosers.end();
+
+	for (; it != it_end; ++it) {
+		m_pyChoosers.push_back(*it);
+		Py_XINCREF(*it);
+	}
+}
+
+
 bool pyMating::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
 {
 	this->resetNumOffspring();
@@ -1371,10 +1388,11 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 
 	mendelianOffspringGenerator og(pop, ops);
 
-	DBG_ASSERT(m_parentChooser.size() == 1 || m_parentChooser.size() == pop.numSubPop(),
-	    ValueError, "You should specify one parentChooser, or one parentChooser for each subpopulation");
+	DBG_ASSERT(m_parentChoosers.size() == 1 || m_parentChoosers.size() == pop.numSubPop(),
+	    ValueError, "You should specify one parentChoosers, or one parentChoosers for each subpopulation. ("
+	    + toStr(m_parentChoosers.size()) + ")");
 
-	DBG_ASSERT(m_offspringGenerator.size() == 1 || m_offspringGenerator.size() == pop.numSubPop(),
+	DBG_ASSERT(m_offspringGenerators.size() == 1 || m_offspringGenerators.size() == pop.numSubPop(),
 	    ValueError, "You should specify one offspringGenerator, or one offspringGenerator for each subpopulation");
 
 	size_t pcIdx = 0;
@@ -1384,7 +1402,7 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 		if (spSize == 0)
 			continue;
 
-		int pcType = m_parentChooser.size() > 1 ? m_parentChooser[sp] : m_parentChooser[0];
+		int pcType = m_parentChoosers.size() > 1 ? m_parentChoosers[sp] : m_parentChoosers[0];
 		parentChooser * pc = NULL;
 
 		switch (pcType) {
@@ -1405,10 +1423,10 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 			pc = new pyParentsChooser(pop, sp, m_pyChoosers[pcIdx++]);
 			break;
 		default:
-			throw ValueError("Unknown parentChooser type");
+			throw ValueError("Unknown parentChoosers type");
 		}
 
-		int ogType = m_offspringGenerator.size() > 1 ? m_offspringGenerator[sp] : m_offspringGenerator[0];
+		int ogType = m_offspringGenerators.size() > 1 ? m_offspringGenerators[sp] : m_offspringGenerators[0];
 		offspringGenerator * og = NULL;
 		switch (ogType) {
 		case MATE_CloneOffspringGenerator:

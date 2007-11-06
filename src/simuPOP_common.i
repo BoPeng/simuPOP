@@ -256,7 +256,8 @@ namespace std
 
 namespace std
 {
-    %template(vectorop)     vector< simuPOP::baseOperator * >;
+	%template(vectorobj)    vector<PyObject*>;
+    %template(vectorop)     vector<simuPOP::baseOperator * >;
 }
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////
