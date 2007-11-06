@@ -64,11 +64,11 @@ public:
 	 \param maxAllele maximum allowed allele. Interpreted by each sub mutator class. Default to \c pop.maxAllele().
 	 */
 	mutator(const vectorf & rate = vectorf(),
-		const vectoru & loci = vectoru(),
-		UINT maxAllele = 0,
-		string output = ">", string outputExpr = "",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	        const vectoru & loci = vectoru(),
+	        UINT maxAllele = 0,
+	        string output = ">", string outputExpr = "",
+	        int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	        int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 		m_rate(rate), m_maxAllele(maxAllele), m_loci(loci),
 		m_bt(rng()), m_initialized(false), m_mutCount(0)
@@ -87,8 +87,8 @@ public:
 		m_maxAllele = 1;
 #else
 		DBG_ASSERT(maxAllele <= ModuleMaxAllele, ValueError,
-			   "The maximum allele number exceeds " + toStr(ModuleMaxAllele)
-			   + ". \nIf you need longer allele size, please use simuPOP_la libraries.");
+		    "The maximum allele number exceeds " + toStr(ModuleMaxAllele)
+		    + ". \nIf you need longer allele size, please use simuPOP_la libraries.");
 #endif
 	}
 
@@ -147,7 +147,7 @@ public:
 	ULONG mutationCount(size_t locus)
 	{
 		DBG_ASSERT(locus < m_mutCount.size(), IndexError,
-			   "locus index " + toStr(locus) + " is out of range");
+		    "locus index " + toStr(locus) + " is out of range");
 		return m_mutCount[locus];
 	}
 
@@ -169,7 +169,6 @@ public:
 	virtual bool apply(population & pop);
 
 private:
-
 	/// initialize bernulli trial according to pop size etc
 	virtual void initialize(population & pop);
 
@@ -216,13 +215,13 @@ public:
 	 \test src_kamMutator.log Operator \c kamMutator
 	 */
 	kamMutator(const vectorf & rate = vectorf(),
-		   const vectoru & loci = vectoru(),
-		   UINT maxAllele = 0,
-		   string output = ">", string outputExpr = "",
-		   int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		   int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	           const vectoru & loci = vectoru(),
+	           UINT maxAllele = 0,
+	           string output = ">", string outputExpr = "",
+	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-			  output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields)
+		          output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields)
 	{
 	}
 
@@ -276,20 +275,20 @@ public:
 	 \test src_smmMutator.log Operator \c smmMutator
 	 */
 	smmMutator(const vectorf & rate = vectorf(),
-		   const vectoru & loci = vectoru(),
-		   UINT maxAllele = 0, double incProb = 0.5,
-		   string output = ">", string outputExpr = "",
-		   int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		   int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	           const vectoru & loci = vectoru(),
+	           UINT maxAllele = 0, double incProb = 0.5,
+	           string output = ">", string outputExpr = "",
+	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-			  output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
+		          output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 		m_incProb(incProb)
 	{
 #ifdef BINARYALLELE
 		DBG_WARNING(true, "Symetric stepwise mutation does not work well on two state alleles.");
 #endif
 		DBG_ASSERT(fcmp_ge(incProb, 0.) && fcmp_le(incProb, 1.),
-			   ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
+		    ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
 	}
 
 
@@ -365,17 +364,17 @@ public:
 	 \test src_gsmMutator.log Operator \c gsmMutator
 	 */
 	gsmMutator(const vectorf & rate = vectorf(),
-		   const vectoru & loci = vectoru(),
-		   UINT maxAllele = 0, double incProb = 0.5, double p = 0, PyObject * func = NULL,
-		   string output = ">", string outputExpr = "",
-		   int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		   int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	           const vectoru & loci = vectoru(),
+	           UINT maxAllele = 0, double incProb = 0.5, double p = 0, PyObject * func = NULL,
+	           string output = ">", string outputExpr = "",
+	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-			  output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
+		          output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 		m_incProb(incProb), m_p(p), m_func(func)
 	{
 		DBG_ASSERT(fcmp_ge(incProb, 0.) && fcmp_le(incProb, 1.),
-			   ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
+		    ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
 
 #ifdef BINARYALLELE
 		DBG_WARNING(true, "Generalized stepwise mutation does not work well on two state alleles.");
@@ -383,13 +382,13 @@ public:
 
 		if (func != NULL) {                                               // use this function
 			DBG_ASSERT(PyCallable_Check(func),
-				   ValueError, "Func is not a Python function");
+			    ValueError, "Func is not a Python function");
 
 			Py_XINCREF(func);
 			m_func = func;
 		} else {
 			DBG_ASSERT(fcmp_ge(p, 0.) && fcmp_le(p, 1.),
-				   ValueError, "Parameter p of a geometric distribution should be between [0,1], given " + toStr(m_p));
+			    ValueError, "Parameter p of a geometric distribution should be between [0,1], given " + toStr(m_p));
 		}
 	}
 
@@ -442,16 +441,16 @@ public:
 	 \test src_pyMutator.log Operator \c pyMutator
 	 */
 	pyMutator(const vectorf & rate = vectorf(),
-		  const vectoru & loci = vectoru(), UINT maxAllele = 0,
-		  PyObject * func = NULL,
-		  string output = ">", string outputExpr = "",
-		  int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		  int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	          const vectoru & loci = vectoru(), UINT maxAllele = 0,
+	          PyObject * func = NULL,
+	          string output = ">", string outputExpr = "",
+	          int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	          int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-			  output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields), m_func(NULL)
+		          output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields), m_func(NULL)
 	{
 		DBG_ASSERT(PyCallable_Check(func), ValueError,
-			   "Passed variable is not a callable python function.");
+		    "Passed variable is not a callable python function.");
 
 		Py_XINCREF(func);
 		m_func = func;
@@ -483,22 +482,7 @@ public:
 
 
 	/// mutate according to the mixed model
-	virtual void mutate(AlleleRef allele)
-	{
-		int resInt;
-
-		PyCallFunc(m_func, "(i)", static_cast<int>(allele), resInt, PyObj_As_Int);
-#ifdef BINARYALLELE
-		DBG_ASSERT(resInt == 0 || resInt == 1, ValueError,
-			   "Can only mutate to 0 or 1 in binary mode.");
-		allele = resInt != 0;
-#else
-		DBG_ASSERT(static_cast<unsigned>(resInt) <= ModuleMaxAllele, ValueError,
-			   "Mutated to an allele greater than maximum allowed allele value");
-		allele = static_cast<Allele>(resInt);
-#endif
-	}
-
+	virtual void mutate(AlleleRef allele);
 
 	/// used by Python print function to print out the general information of the \c pyMutator
 	virtual string __repr__()
@@ -508,7 +492,6 @@ public:
 
 
 private:
-
 	PyObject * m_func;
 };
 
@@ -533,13 +516,13 @@ public:
 	   Please see class \c mutator for the descriptions of other parameters.
 	 */
 	pointMutator(
-		     const vectoru & loci,
-		     Allele toAllele,
-		     vectoru atPloidy = vectoru(),
-		     vectorlu inds = vectorlu(),
-		     string output = ">", string outputExpr = "",
-		     int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		     int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	             const vectoru & loci,
+	             Allele toAllele,
+	             vectoru atPloidy = vectoru(),
+	             vectorlu inds = vectorlu(),
+	             string output = ">", string outputExpr = "",
+	             int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	             int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 		m_loci(loci), m_toAllele(toAllele),
 		m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)
@@ -592,7 +575,7 @@ public:
 	ULONG mutationCount(size_t locus)
 	{
 		DBG_ASSERT(locus < m_mutCount.size(), IndexError,
-			   "locus index " + toStr(locus) + " is out of range");
+		    "locus index " + toStr(locus) + " is out of range");
 		return m_mutCount[locus];
 	}
 
@@ -605,7 +588,6 @@ public:
 
 
 private:
-
 	/// applicable loci.
 	vectoru m_loci;
 	Allele m_toAllele;
