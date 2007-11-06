@@ -47,19 +47,12 @@ namespace simuPOP {
 /**
    A mating scheme is a complex object that does many things.
    1. create offspring generation
-   2. from which subset of parents to generate offspring
-   3. to which subset of offspring to produce offspring
-   4. how to choose parents
-   5. how to produce offspring per mating event
-
+   2. how to choose parents
+   3. how to produce offspring per mating event
 
  */
-/// CPPONLY the default method to generate offspring from parents
-/**
-   This part is separated from the mating schemes, because mating schemes
-   usually only differ in the way parents are choosing.\n
-
-   In this class, we input parents, and the output will be offspring.
+/// CPPONLY
+/** How to generate offspring.
  */
 class offspringGenerator
 {
@@ -75,47 +68,19 @@ public:
 	{
 	}
 
+protected:
+	bool checkFormOffspringGenotype();
 
-private:
-	bool formOffspringGenotype();
-
-public:
-	// use bernullitrisls with p=0.5 for free recombination
-	BernulliTrials m_bt;
+	/// see if who will generate offspring genotype
+	bool m_formOffGenotype;
 
 	/// cache during-mating operators
 	/// we do not cache pop since it may be changed during mating.
 	vector<baseOperator *> & m_ops;
 
-	/// see if who will generate offspring genotype
-	bool m_formOffGenotype;
-
-	/// sex chromosome handling
-	bool m_hasSexChrom;
-
-	// cache chromBegin, chromEnd for better performance.
-	vectoru m_chIdx;
-
+#ifndef OPTIMIZED
 	size_t m_genoStruIdx;
-};
-
-
-class mendelianOffspringGenerator : public offspringGenerator
-{
-public:
-	mendelianOffspringGenerator(const population & pop, vector<baseOperator *> & ops)
-		: offspringGenerator(pop, ops)
-	{
-	}
-
-
-	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
-	                       population::IndIterator & offBegin);
-
-	// the default method to produce offspring
-	void formOffspring(individual * dad, individual * mom,
-	                   population::IndIterator & it);
-
+#endif
 };
 
 
@@ -135,11 +100,37 @@ public:
 };
 
 
-class selfingOffspringGenerator : public offspringGenerator
+class mendelianOffspringGenerator : public offspringGenerator
+{
+public:
+	mendelianOffspringGenerator(const population & pop,
+	                            vector<baseOperator *> & ops);
+
+	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
+	                       population::IndIterator & offBegin);
+
+	// the default method to produce offspring
+	void formOffspring(individual * dad, individual * mom,
+	                   population::IndIterator & it);
+
+protected:
+	// use bernullitrisls with p=0.5 for free recombination
+	BernulliTrials m_bt;
+
+	/// sex chromosome handling
+	bool m_hasSexChrom;
+
+	// cache chromBegin, chromEnd for better performance.
+	vectoru m_chIdx;
+
+};
+
+
+class selfingOffspringGenerator : public mendelianOffspringGenerator
 {
 public:
 	selfingOffspringGenerator(const population & pop, vector<baseOperator *> & ops)
-		: offspringGenerator(pop, ops)
+		: mendelianOffspringGenerator(pop, ops)
 	{
 	}
 
