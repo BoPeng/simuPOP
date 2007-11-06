@@ -391,7 +391,7 @@ pyParentsChooser::pyParentsChooser(population & pop, size_t sp, PyObject * pc)
 	DBG_FAILIF(popObj == NULL, SystemError,
 	    "Could not pass population to the provided function. \n"
 	    "Compiled with the wrong version of SWIG?");
-	PyObject * arglist = Py_BuildValue("(O)", popObj);
+	PyObject * arglist = Py_BuildValue("(Oi)", popObj, pop.gen());
 	m_generator = PyEval_CallObject(pc, arglist);
 	Py_XDECREF(arglist);
 
