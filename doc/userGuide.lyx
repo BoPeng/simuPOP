@@ -1,4 +1,4 @@
-#LyX 1.5.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -643,6 +643,23 @@ Built-in ascertainment methods including case/control, affected sibpair,
 Maybe most importantly: 
 \emph on
 a complete and detailed reference manual!
+\end_layout
+
+\begin_layout Standard
+New in 0.8.2
+\end_layout
+
+\begin_layout Itemize
+selfing is introduced as a way to produce offspring from a parent
+\end_layout
+
+\begin_layout Itemize
+pyMating can work with different, including a hybrid, parent choosers and
+ different offspring generator including selfing.
+\end_layout
+
+\begin_layout Itemize
+recombinator works with selfing.
 \end_layout
 
 \begin_layout Section
@@ -1859,6 +1876,15 @@ A few mating schemes are available, among which
 randomMating()
 \family default
  is the most important.
+ Non-random mating can be achieved using 
+\series bold
+pyMating
+\series default
+, which is explained in detailed in 
+\emph on
+simuPOP reference manual
+\emph default
+.
 \end_layout
 
 \begin_layout Section
@@ -4188,6 +4214,170 @@ preview false
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Non-random mating
+\end_layout
+
+\begin_layout Standard
+Random-mating implies random choices of parents.
+ Non-random mating is much more difficult to implement because there are
+ numerous way to introduce non-randomness.
+ In simuPOP, users can implement non-random mating using a hybrid operator
+ 
+\family typewriter
+pyMating
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+pyMating
+\family default
+ mating scheme accepts a user-defined 
+\emph on
+parents chooser
+\emph default
+, which is a Python generator function, instead of a normal python function.
+ When this generator function is called, it returns a 
+\emph on
+generator
+\emph default
+ object that provides an iterator interface.
+ Each time when the 
+\family typewriter
+next()
+\family default
+ member function of this object is called, this function resumes where it
+ was stopped last time, executes and returns what the next 
+\emph on
+yield
+\emph default
+ statement returns.
+ For example, example 
+\begin_inset LatexCommand ref
+reference "generator"
+
+\end_inset
+
+ defines a function that calculate 
+\begin_inset Formula $f\left(k\right)=\sum_{i=1}^{k}\frac{1}{i}$
+\end_inset
+
+ for 
+\begin_inset Formula $k=1,...,10$
+\end_inset
+
+.
+ It does not calculate each 
+\begin_inset Formula $f\left(k\right)$
+\end_inset
+
+ repeatedly but returns 
+\begin_inset Formula $f\left(1\right)$
+\end_inset
+
+, 
+\begin_inset Formula $f\left(2\right)$
+\end_inset
+
+, ...
+ in a sequence interface.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/generator.log}[caption={A sample generator function},label={generator}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A 
+\emph on
+parents chooser
+\emph default
+ takes two parameters, a population and a subpopulation index.
+ It can return different generator objects for different subpopulations.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/generator_random.log}[caption={A generator function that mimicks random mating},label={generator_random}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A user defined parents chooser can be very complicated, involving user defined
+ information such as geometric locations.
+ An example is given in 
+\family typewriter
+scripts/demoNonRandomMating.py
+\family default
+.
+ In example 
+\begin_inset LatexCommand ref
+reference "generator_random"
+
+\end_inset
+
+, the parents chooser 
+\family typewriter
+randomChooser 
+\family default
+collects indexes of males and females and simply return a pair of random
+ male and female repeatedly.
+ This is exactly what 
+\family typewriter
+randomMating
+\family default
+ does if selection is not considered.
+ It becomes obvious now that whereas a python function can return random
+ male/famale pair, the generator interface is much more efficient because
+ the identification of two sex groups is done only once.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/pyMating.log}[caption={pyMating with a user-defined parent chooser},label={pyMating}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset LatexCommand ref
+reference "pyMating"
+
+\end_inset
+
+ demonstrates how to use this user-defined parent chooser.
+ 
+\family typewriter
+pyMating
+\family default
+ is more powerful than what is demonstrated here.
+ As a matter of fact, different parent choosers can be specified for each
+ subpopulation, and different 
+\emph on
+offspring generators
+\emph default
+, such as cloning, selfing, and of course Mendelian genertor,
+\emph on
+ 
+\emph default
+can be used to produce offspring.
 \end_layout
 
 \begin_layout Section

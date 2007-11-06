@@ -305,6 +305,54 @@ Stat(pop, popSize=1, alleleFreq=range(0, pop.totNumLoci()),
 #end
 
 
+#file log/generator.log
+def func():
+    i = 1
+    all = 0
+    while i < 10:
+        all += 1./i
+        i += 1
+        yield all 
+
+a = func()
+a.next()
+a.next()
+for i in a:
+    print '%.3f' % i,
+
+#end
+
+#file log/generator_random.log
+from random import randint
+
+def randomChooser(pop, sp):
+    males = [x for x in range(pop.subPopSize(sp)) \
+        if pop.individual(x, sp).sex() == Male]
+    females = [x for x in range(pop.subPopSize(sp)) \
+        if pop.individual(x, sp).sex() == Female]
+    nm = len(males)
+    nf = len(females)
+    while True:
+        yield males[randint(0, nm-1)], females[randint(0, nf-1)]
+
+pop = population(subPop=[100, 20], loci=[1])
+# this will initialize sex randomly
+InitByFreq(pop, [0.2, 0.8])
+rc1 = randomChooser(pop, 0)
+for i in range(5):
+    print rc1.next(),
+
+rc2 = randomChooser(pop, 1)
+for i in range(5):
+    print rc2.next(),
+
+#end
+
+#file log/pyMating.log
+simu = simulator(pop,
+    pyMating(parentChooser=randomChooser))
+simu.step()
+#end
 
 #file log/operatorstages.log
 d = dumper()

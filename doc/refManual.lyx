@@ -1,4 +1,4 @@
-#LyX 1.5.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -3514,6 +3514,341 @@ not
 XY 
 \family default
 need to be modeled.
+\end_layout
+
+\begin_layout Subsection
+parent choosers
+\end_layout
+
+\begin_layout Standard
+To implement more complex mating schemes, some concepts need to be understood.
+ The first one is 
+\emph on
+parent chooser
+\emph default
+.
+ Parent chooser determines how parent or parents are chosen from a given
+ subpopulation.
+ simuPOP provides three parent choosers
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_RandomParentChooser
+\family default
+ Choose a random individual from a subpopulation, regardless of individual
+ sex.
+ If selection is enabled, individuals are choosen with a probability that
+ is proportional to his/her fitness value.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_RandomParentsChooser
+\family default
+ Choose a male and a female from their respective sex groups of a subpopulation.
+ If selection is enabled, individuals are choosen with a probability that
+ is proportional to his/her fitness value in their respective sex groups.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_PyParentsChooser
+\family default
+ This kind of parent chooser is represented by a user-defined Python generator
+ function.
+ This is the major method to implement non-random mating so I will explain
+ it in detail.
+\end_layout
+
+\begin_layout Standard
+A user-defined 
+\emph on
+parents chooser
+\emph default
+ is a Python generator function, instead of a normal python function.
+ When this generator function is called, it returns a 
+\emph on
+generator
+\emph default
+ object that provides an iterator interface.
+ Each time when the 
+\family typewriter
+next()
+\family default
+ member function of this object is called, this function resumes where it
+ was stopped last time, executes and returns what the next 
+\emph on
+yield
+\emph default
+ statement returns.
+ An example of generator is given in simuPOP user's guide.
+\end_layout
+
+\begin_layout Standard
+A 
+\emph on
+parents chooser
+\emph default
+ takes two parameters, a population and a subpopulation index.
+ It can return different generator objects for different subpopulations.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_generator_random.log}[caption={A generator function that mimicks random mating},label={generator_random}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A user defined parents chooser can be very complicated, involving user defined
+ information such as geometric locations.
+ An example is given in 
+\family typewriter
+scripts/demoNonRandomMating.py
+\family default
+.
+ In example 
+\begin_inset LatexCommand ref
+reference "generator_random"
+
+\end_inset
+
+, the parents chooser 
+\family typewriter
+randomChooser 
+\family default
+collects indexes of males and females that are over the age of 30 and return
+ a pair of random male and female repeatedly.
+ That is to say, individuals with age < 30 is not involved in mating.
+ Of course, to completely implement age-dependent mating, other factors
+ need to be considered.
+ For example, a 
+\family typewriter
+pyTagger
+\family default
+ is likely to be used to assign age to offspring.
+\end_layout
+
+\begin_layout Standard
+It becomes obvious now that whereas a python function can return random
+ male/famale pair, the generator interface is much more efficient because
+ the identification of two sex groups is done only once.
+\end_layout
+
+\begin_layout Standard
+A parents chooser can yield a pair of parents, or a single parent.
+ Obviously, a single diploid parent can not produce offspring using the
+ usual Medelian fashion, so here comes another concept: 
+\emph on
+offspring generator
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+Offspring generator
+\end_layout
+
+\begin_layout Standard
+An offspring generator determines how to produce offspring from given parent
+ or parents.
+ Currently, there are three standard offspring generators
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_CloneOffspringGenerator
+\family default
+ This offspring generator copies a parent to offspring.
+ It works only with parent choosers that returns a single parent.
+ E.g.
+ a 
+\family typewriter
+MATE_RandomParentChooser
+\family default
+, or a
+\family typewriter
+ MATE_PyParentsChooser
+\family default
+ that returns a single parent.
+ It is not limited by ploidy though.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_MendelianOffspringGenerator 
+\family default
+(default) This offspring generator transmit parental genotypes according
+ Mendelian rules.
+ That is to say, the first or the second copy of the maternal chromosomes
+ is passed to the maternal (first) chromosomes of the offspring; the first
+ the second copy of the paternal chromosomes is passed to the paternal (second)
+ chromosomes of the offspring.
+ The chromosomes segregate independently.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_SelfingOffspringGenerator 
+\family default
+Selfing transmission without recombination.
+ Only one parent is involved, and serves both paternal and maternal roles
+ in a Mendelian offspring generator.
+ Two copies of the offspring chromosomes are generated independently.
+\end_layout
+
+\begin_layout Standard
+These offspring generator defines only the default way to fill offspring
+ genotype.
+ When a during-mating operator is involved, it may override what an offspring
+ generator does.
+ For example, a 
+\family typewriter
+recombinator
+\family default
+ recombines parental chromosomes to fill offspring genotype.
+ In the diploid case, it will behave the same for 
+\family typewriter
+MATE_CloneOffspringGenerator
+\family default
+ and 
+\family typewriter
+MATE_SelfingOffspringGenerator.
+\end_layout
+
+\begin_layout Subsection
+Non-random mating
+\end_layout
+
+\begin_layout Standard
+Parent choosers and offspring generators can be combined to form non-standard
+ mating schemes.
+ The only limit is that they have to be compatible in that a parent chooser
+ that choose one parent can not be used with an offspring generator that
+ needs two parents.
+ The basic usage of a 
+\family typewriter
+pyMating 
+\family default
+operator is as follows
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pyMating(parentChooser=MATE_RandomParentChooser
+\family typewriter
+,
+\end_layout
+
+\begin_layout Standard
+
+    offspringGenerator=MATE_SelfingOffspringGenerator,
+\end_layout
+
+\begin_layout Standard
+
+    numOffspring=2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pyMating(parentChooser=random_Chooser
+\family typewriter
+,
+\end_layout
+
+\begin_layout Standard
+
+    offspringGenerator=MATE_CloneOffspringGenerator)
+\end_layout
+
+\end_inset
+
+parameter 
+\family typewriter
+offspringGenerator
+\family default
+ can be ignored if 
+\family typewriter
+MATE_MedelianOffspringGenerator
+\family default
+ is desired.
+\end_layout
+
+\begin_layout Standard
+If there are more than one subpopulations, the above usages will use the
+ same parentChooser and offspringGenerator for all subpopulations.
+ Different 
+\family typewriter
+parentChooser
+\family default
+ and 
+\family typewriter
+offspringGenerator
+\family default
+ can be used for each subpopulation by using parameters 
+\family typewriter
+parentChoosers
+\family default
+ and 
+\family typewriter
+offspringGenerators
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pyMating(parentChoosers=[MATE_RandomsParentChooser, random_Chooser
+\family typewriter
+],
+\end_layout
+
+\begin_layout Standard
+
+    offspringGenerators=[MATE_MedelianOffspringGenerator, MATE_CloneOffspringGen
+erator])
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Hints for more complicated mating schemes
 \end_layout
 
 \begin_layout Section

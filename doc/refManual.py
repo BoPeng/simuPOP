@@ -320,6 +320,37 @@ simu.step([
      ])
 #end
 
+#file log/ref_generator_random.log
+from random import randint
+
+def randomChooser(pop, sp):
+    males = [x for x in range(pop.subPopSize(sp)) \
+        if pop.individual(x, sp).sex() == Male \
+            and pop.individual(x, sp).info('age') > 30]
+    females = [x for x in range(pop.subPopSize(sp)) \
+        if pop.individual(x, sp).sex() == Female \
+            and pop.individual(x, sp).info('age') > 30]
+    nm = len(males)
+    nf = len(females)
+    while True:
+        yield males[randint(0, nm-1)], females[randint(0, nf-1)]
+
+pop = population(subPop=[1000, 200], loci=[1], infoFields=['age'])
+# this will initialize sex randomly
+InitByFreq(pop, [0.2, 0.8])
+for ind in pop.individuals():
+    ind.setInfo(randint(0, 60), 'age')
+
+rc1 = randomChooser(pop, 0)
+for i in range(5):
+    print rc1.next(),
+
+rc2 = randomChooser(pop, 1)
+for i in range(5):
+    print rc2.next(),
+
+#end
+
 
 
 #turnOnDebug(DBG_ALL)
