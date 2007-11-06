@@ -24,8 +24,8 @@
 #include "mating.h"
 
 namespace simuPOP {
-offspringGenerator::offspringGenerator(const population & pop, 
-	vector<baseOperator *> & ops)
+offspringGenerator::offspringGenerator(const population & pop,
+                                       vector<baseOperator *> & ops)
 	: m_bt(rng()), m_ops(ops)
 {
 	m_genoStruIdx = pop.genoStruIdx();
@@ -75,8 +75,8 @@ void cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 					break;
 				}
 			} catch (...) {
-				cout << "DuringMating operator " << (*iop)->__repr__() 
-					<< " throws an exception." << endl << endl;
+				cout << "DuringMating operator " << (*iop)->__repr__()
+				     << " throws an exception." << endl << endl;
 				throw;
 			}
 		}                                                                         // all during-mating operators
@@ -361,7 +361,7 @@ void selfingOffspringGenerator::generateOffspring(population & pop, individual *
 
 
 randomParentChooser::randomParentChooser(population & pop, size_t sp)
-	: parentChooser(), m_sampler(rng())
+	: parentChooser(1), m_sampler(rng())
 {
 	m_selection = pop.selectionOn(sp);
 	m_begin = pop.indBegin(sp);
@@ -386,13 +386,14 @@ individual * randomParentChooser::chooseParent()
 		return & * (m_begin + rng().randInt(m_size));
 }
 
-randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
-	: parentChooser(), m_maleIndex(0), m_femaleIndex(0),
-		m_maleFitness(0), m_femaleFitness(0),
-		m_malesampler(rng()), m_femalesampler(rng())
 
+randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
+	: parentChooser(2), m_maleIndex(0), m_femaleIndex(0),
+	m_maleFitness(0), m_femaleFitness(0),
+	m_malesampler(rng()), m_femalesampler(rng())
 {
 	ULONG spSize = pop.subPopSize(sp);
+
 	// m_begin is relative to the beginning of the whole population.
 	m_begin = pop.indBegin();
 
@@ -415,7 +416,7 @@ randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
 		m_maleFitness.resize(m_numMale);
 		m_femaleFitness.resize(spSize - m_numMale);
 	}
-	
+
 	m_numMale = 0;
 	m_numFemale = 0;
 
@@ -451,31 +452,73 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 {
 	individual * dad = NULL;
 	individual * mom = NULL;
+
 	if (m_selection) {                                        // with selection
 		// using weidhted sampler.
 		if (m_numMale != 0)
-			dad = &*(m_begin + m_maleIndex[m_malesampler.get()]);
+			dad = & * (m_begin + m_maleIndex[m_malesampler.get()]);
 		else
-			dad = &*(m_begin + m_femaleIndex[m_femalesampler.get()]);
+			dad = & * (m_begin + m_femaleIndex[m_femalesampler.get()]);
 
 		if (m_numFemale != 0)
-			mom = &*(m_begin + m_femaleIndex[m_femalesampler.get()]);
+			mom = & * (m_begin + m_femaleIndex[m_femalesampler.get()]);
 		else
-			mom = &*(m_begin + m_maleIndex[m_malesampler.get()]);
+			mom = & * (m_begin + m_maleIndex[m_malesampler.get()]);
 	} else {
 		// using random sample.
 		if (m_numMale != 0)
-			dad = &*(m_begin + m_maleIndex[rng().randInt(m_numMale)]);
+			dad = & * (m_begin + m_maleIndex[rng().randInt(m_numMale)]);
 		else
-			dad = &*(m_begin + m_femaleIndex[rng().randInt(m_numFemale)]);
+			dad = & * (m_begin + m_femaleIndex[rng().randInt(m_numFemale)]);
 
 		if (m_numFemale != 0)
-			mom = &*(m_begin + m_femaleIndex[rng().randInt(m_numFemale)]);
+			mom = & * (m_begin + m_femaleIndex[rng().randInt(m_numFemale)]);
 		else
-			mom = &*(m_begin + m_maleIndex[rng().randInt(m_numMale)]);
+			mom = & * (m_begin + m_maleIndex[rng().randInt(m_numMale)]);
 	}
 	return std::make_pair(dad, mom);
 }
+
+
+pyParentChooser::pyParentChooser(population & pop, size_t sp)
+	: parentChooser(1),
+	m_parentsGenerator(NULL)
+{
+#if PY_VERSION_HEX < 0x02040000
+	throw SystemError("Your Python version does not have good support for generator"
+	    " so operator pyMating can not be used.");
+#else
+	if (!PyGen_Check(parentsGenerator))
+		throw ValueError("Passed variable is not a Python generator.");
+
+	Py_XINCREF(parentsGenerator);
+	m_parentsGenerator = parentsGenerator;
+#endif
+#ifndef OPTIMZIED
+	m_size = pop.subPopSize(sp);
+#endif
+	m_begin = pop.indBegin(sp);
+}
+
+
+individual * pyParentChooser::chooseParent()
+{
+	PyObject * pyResult = PyEval_CallObject(m_parentsGenerator, NULL);
+
+	if (pyResult == NULL) {
+		PyErr_Print();
+		throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n");
+	}
+	int idx = 0;
+	PyObj_As_Int(pyResult, idx);
+	Py_DECREF(pyResult);
+#ifndef OPTIMIZED
+	DBG_ASSERT(static_cast<unsigned>(idx) <= m_size, ValueError,
+	    "Returned index is greater than subpopulation size");
+#endif
+	return & * (m_begin + idx);
+}
+
 
 mating::mating(double numOffspring, PyObject * numOffspringFunc, UINT maxNumOffspring,
                UINT mode, vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newSubPopSizeFunc)
@@ -698,17 +741,17 @@ bool randomMating::mate(population & pop, population & scratch, vector<baseOpera
 		/// now, all individuals of needToFind sex is collected
 		if ( (pc.numMale() == 0 || pc.numFemale() == 0 ) && !m_contWhenUniSex) {
 			throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
-				"You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
-				"(same sex mating if have to) options to get around this problem.");
+			    "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
+			    "(same sex mating if have to) options to get around this problem.");
 		}
-		
+
 		// generate scratch.subPopSize(sp) individuals.
 		population::IndIterator it = scratch.indBegin(sp);
 		population::IndIterator itEnd = scratch.indEnd(sp);
 		UINT numOS;
 		while (it != itEnd) {
 			parentChooser::individualPair const parents = pc.chooseParents();
-		
+
 			// record family size (this may be wrong for the last family)
 			numOS = numOffspring(pop.gen());
 			if (it + numOS > itEnd)
@@ -1073,7 +1116,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			}
 
 			// randomly choose parents
-			
+
 			parentChooser::individualPair parents = pc.chooseParents();
 
 			// generate m_numOffspring offspring per mating
