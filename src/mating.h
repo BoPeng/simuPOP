@@ -188,6 +188,7 @@ public:
 
 private:
 	int m_numParents;
+
 };
 
 
@@ -249,30 +250,18 @@ private:
 class pyParentChooser : public parentChooser
 {
 public:
-	pyParentChooser(population & pop, size_t sp);
+	pyParentChooser(population & pop, size_t sp, PyObject * parentGenerator);
 
 	/// destructor
 	~pyParentChooser()
 	{
-		if (m_parentsGenerator != NULL)
-			Py_XDECREF(m_parentsGenerator);
-	}
-
-
-	/// CPPONLY
-	pyParentChooser(const pyParentChooser & rhs)
-		: parentChooser(rhs),
-		m_parentsGenerator(rhs.m_parentsGenerator)
-	{
-		if (m_parentsGenerator != NULL)
-			Py_INCREF(m_parentsGenerator);
 	}
 
 
 	individual * chooseParent();
 
 private:
-	PyObject * m_parentsGenerator;
+	PyObject * m_parentGenerator;
 
 #ifndef OPTIMIZED
 	ULONG m_size;
@@ -286,14 +275,23 @@ private:
 class pyParentsChooser : public parentChooser
 {
 public:
-	pyParentsChooser(const population & pop, bool selection)
-		: parentChooser(2)
+	pyParentsChooser(population & pop, size_t sp, PyObject * parentsGenerator);
+
+	/// destructor
+	~pyParentsChooser()
 	{
 	}
 
 
-	individual * chooseParent() { return NULL; }
+	individualPair chooseParents();
 
+private:
+	PyObject * m_parentsGenerator;
+
+#ifndef OPTIMIZED
+	ULONG m_size;
+#endif
+	population::IndIterator m_begin;
 };
 
 
@@ -1011,6 +1009,15 @@ private:
 class pyMating : public mating
 {
 public:
+#define MATE_RandomParentChooser  1
+#define MATE_RandomParentsChooser 2
+#define MATE_PyParentChooser      3
+#define MATE_PyParentsChooser     4
+
+#define MATE_CloneOffspringGenerator     1
+#define MATE_MendelianOffspringGenerator 2
+#define MATE_SelfingOffspringGenerator   3
+
 	/// create a Python mating scheme
 	/**
 	 \param parentsGenerator a Python generator that accepts the parental
@@ -1019,7 +1026,10 @@ public:
 
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
-	pyMating(PyObject * parentsGenerator = NULL,
+	pyMating(
+	         vector<int> parentChooser = vector<int>(1, 2),
+	         vector<PyObject *> pyChoosers = std::vector<PyObject *>(),
+	         vector<int> offspringGenerator = vector<int>(1, 1),
 	         double numOffspring = 1.,
 	         PyObject * numOffspringFunc = NULL,
 	         UINT maxNumOffspring = 0,
@@ -1030,14 +1040,46 @@ public:
 	         )
 		: mating(numOffspring,
 		         numOffspringFunc, maxNumOffspring, mode,
-		         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc)
+		         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+		m_parentChooser(parentChooser),
+		m_pyChoosers(),
+		m_offspringGenerator(offspringGenerator)
 	{
+		vector<PyObject *>::iterator it = pyChoosers.begin();
+		vector<PyObject *>::iterator it_end = pyChoosers.end();
+		for (; it != it_end; ++it) {
+#if PY_VERSION_HEX < 0x02040000
+			throw SystemError("Your Python version does not have good support for generator"
+			    " so operator pyMating can not be used.");
+#else
+			if (!PyGen_Check(*it))
+				throw ValueError("Passed variable is not a Python generator.");
+
+			Py_XINCREF(*it);
+			m_pyChoosers.push_back(*it);
+			Py_XINCREF(*it);
+#endif
+		}
 	}
 
 
 	/// destructor
 	~pyMating()
 	{
+		vector<PyObject *>::iterator it = m_pyChoosers.begin();
+		vector<PyObject *>::iterator it_end = m_pyChoosers.end();
+		for (; it != it_end; ++it)
+			Py_XDECREF(*it);
+	}
+
+
+	/// CPPONLY
+	pyMating(const pyMating & rhs)
+	{
+		vector<PyObject *>::iterator it = m_pyChoosers.begin();
+		vector<PyObject *>::iterator it_end = m_pyChoosers.end();
+		for (; it != it_end; ++it)
+			Py_INCREF(*it);
 	}
 
 
@@ -1063,6 +1105,12 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 private:
+	vector<int> m_parentChooser;
+
+	vector<PyObject *> m_pyChoosers;
+
+	vector<int> m_offspringGenerator;
+
 #ifndef OPTIMIZED
 	///
 	vectori m_famSize;
