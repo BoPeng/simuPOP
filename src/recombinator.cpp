@@ -25,27 +25,27 @@
 
 namespace simuPOP {
 void recombinator::prepareRecRates(population & pop,
-				   double intensity,
-				   vectorf rate,
-				   vectoru afterLoci,                                   //
-				   bool sexChrom,                                       // whether or not recombine the last chromosome
-				   vectoru & recBeforeLoci,                             // return before loci vector
-				   vectorf & vecP)                                      // return recombination rate
+                                   double intensity,
+                                   vectorf rate,
+                                   vectoru afterLoci,                   //
+                                   bool sexChrom,                       // whether or not recombine the last chromosome
+                                   vectoru & recBeforeLoci,             // return before loci vector
+                                   vectorf & vecP)                      // return recombination rate
 {
 	if (!recBeforeLoci.empty() )
 		return;
 
 	DBG_FAILIF(intensity < 0 && rate.empty(), ValueError,
-		   "You should specify intensity, or rate "
-		   "(a number or a sequence of recombination rates.)");
+	    "You should specify intensity, or rate "
+	    "(a number or a sequence of recombination rates.)");
 
 	DBG_FAILIF(rate.size() > 1 && afterLoci.empty(), ValueError,
-		   "When more than one rates are given, afterLoci should be"
-		   " explicitly specified.");
+	    "When more than one rates are given, afterLoci should be"
+	    " explicitly specified.");
 
 	DBG_FAILIF(rate.size() > 1 && rate.size() != afterLoci.size(),
-		   ValueError, "If both rates and atLoci are specified, "
-		   "they should have the same length.");
+	    ValueError, "If both rates and atLoci are specified, "
+	    "they should have the same length.");
 
 	bool useLociDist;
 	if (rate.empty() )  // actually use intensity
@@ -90,10 +90,10 @@ void recombinator::prepareRecRates(population & pop,
 					vecP[index] = rate[0];
 
 				DBG_ASSERT(fcmp_ge(vecP[index], 0) && fcmp_le(vecP[index], 1),
-					   ValueError,
-					   "Recombination rate should be in [0,1]. (This may happen \n"
-					   "when you use intensity instead of loci, and your loci \n"
-					   " distance is too high.)");
+				    ValueError,
+				    "Recombination rate should be in [0,1]. (This may happen \n"
+				    "when you use intensity instead of loci, and your loci \n"
+				    " distance is too high.)");
 				index++;
 			}
 			// 'recombine' after each chromosome.
@@ -104,10 +104,10 @@ void recombinator::prepareRecRates(population & pop,
 		// real need for this if atLoci is not specified.
 
 		DBG_DO(DBG_RECOMBINATOR, cout << "Use all Loci. With rates "
-					      << vecP << " before " << recBeforeLoci << endl);
+		                              << vecP << " before " << recBeforeLoci << endl);
 	} else {                                                                          // afterLoci not empty
 		DBG_FAILIF(rate.size() > 1 && rate.size() != afterLoci.size(), SystemError,
-			   "If an array is given, rates and afterLoci should have the same length");
+		    "If an array is given, rates and afterLoci should have the same length");
 
 		vectoru::iterator pos;
 		vecP.clear();
@@ -147,8 +147,8 @@ void recombinator::prepareRecRates(population & pop,
 					}
 
 					DBG_ASSERT(fcmp_ge(vecP[vecP.size() - 1], 0) && fcmp_le(vecP[vecP.size() - 1], 1),
-						   ValueError,
-						   "Recombination rate should be in [0,1]. (Maybe your loci distance is too high.)");
+					    ValueError,
+					    "Recombination rate should be in [0,1]. (Maybe your loci distance is too high.)");
 				}
 				index++;
 			}
@@ -165,21 +165,21 @@ void recombinator::prepareRecRates(population & pop,
 		// for debug purpose, check the original list:
 		for (size_t i = 0; i < afterLoci.size(); ++i) {
 			DBG_FAILIF(find(recBeforeLoci.begin(), recBeforeLoci.end(), afterLoci[i] + 1) == recBeforeLoci.end(),
-				   ValueError, "Specified locus " + toStr(afterLoci[i]) +
-				   " is not used in recombinator. Is it valid?");
+			    ValueError, "Specified locus " + toStr(afterLoci[i]) +
+			    " is not used in recombinator. Is it valid?");
 		}
 
 		DBG_ASSERT(vecP.size() == recBeforeLoci.size(), SystemError,
-			   "Rate and before loci should have the same length.");
+		    "Rate and before loci should have the same length.");
 
 		DBG_ASSERT(recBeforeLoci.back() == pop.totNumLoci(),
-			   SystemError, "The last beforeLoci elem should be total number of loci.");
+		    SystemError, "The last beforeLoci elem should be total number of loci.");
 
 		DBG_ASSERT(vecP.back() == .5, SystemError,
-			   "The last elem of rate should be half.");
+		    "The last elem of rate should be half.");
 
 		DBG_DO(DBG_RECOMBINATOR, cout << "Specify after Loci. With rates "
-					      << vecP << " before " << recBeforeLoci << endl);
+		                              << vecP << " before " << recBeforeLoci << endl);
 	}
 
 	/// initialize recombination counter,
@@ -194,12 +194,12 @@ void recombinator::prepareRecRates(population & pop,
 // parental chromosomes and set one copy of offspring chromosome
 // bt contains the bernulli trailer
 void recombinator::recombine(
-			     individual * parent,                                       // one of the parent
-			     population::IndIterator & offspring,                       // offspring
-			     int offPloidy,                                             // which offspring ploidy to fill
-			     BernulliTrials & bt,
-			     const vectoru & recBeforeLoci,
-			     bool setSex)
+                             individual * parent,                           // one of the parent
+                             population::IndIterator & offspring,           // offspring
+                             int offPloidy,                                 // which offspring ploidy to fill
+                             BernulliTrials & bt,
+                             const vectoru & recBeforeLoci,
+                             bool setSex)
 {
 	// use which copy of chromosome
 	GenoIterator cp[2], off;
@@ -288,9 +288,9 @@ void recombinator::recombine(
 
 
 bool recombinator::applyDuringMating(population & pop,
-				     population::IndIterator offspring,
-				     individual * dad,
-				     individual * mom)
+                                     population::IndIterator offspring,
+                                     individual * dad,
+                                     individual * mom)
 {
 	DBG_ASSERT(dad && mom, ValueError, "Either dad or mom is NULL");
 
@@ -301,7 +301,7 @@ bool recombinator::applyDuringMating(population & pop,
 		vectorf vecP;
 		// female does not determine sex
 		prepareRecRates(pop, m_intensity, m_rate, m_afterLoci,
-				false, m_recBeforeLoci, vecP);
+		    false, m_recBeforeLoci, vecP);
 
 		m_bt.setParameter(vecP, pop.popSize());
 		/*
@@ -315,14 +315,14 @@ bool recombinator::applyDuringMating(population & pop,
 		// male case is most complicated.
 		m_hasSexChrom = pop.sexChrom() ? true : false;
 		double maleIntensity = (m_maleIntensity != -1 || !m_maleRate.empty() )
-				       ? m_maleIntensity : m_intensity;
+		                       ? m_maleIntensity : m_intensity;
 		vectorf & maleRate = (m_maleIntensity != -1 || !m_maleRate.empty() )
-				     ? m_maleRate : m_rate;
+		                     ? m_maleRate : m_rate;
 		vectoru & maleAfterLoci = m_maleAfterLoci.empty() ?
-					  m_afterLoci : m_maleAfterLoci;
+		                          m_afterLoci : m_maleAfterLoci;
 		// prepare male recombination
 		prepareRecRates(pop, maleIntensity, maleRate, maleAfterLoci,
-				m_hasSexChrom, m_maleRecBeforeLoci, vecP);
+		    m_hasSexChrom, m_maleRecBeforeLoci, vecP);
 		m_maleBt.setParameter(vecP, pop.popSize());
 		// choose an algorithm
 		// if recombinations are dense. use the first algorithm

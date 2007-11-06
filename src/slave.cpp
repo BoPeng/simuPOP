@@ -50,7 +50,7 @@ int g_curID = 0;
 population * g_curPop = NULL;
 
 #define setCurPop(id) \
-	if (g_curID != id) \
+    if (g_curID != id) \
 	{ \
 		g_curID = id; \
 		g_curPop = g_popMap[id]; \
@@ -89,8 +89,8 @@ population * slavePopulationCreate()
 	mpiComm().recv(0, 14, chromMap);
 	// create population
 	return new population(size, ploidy, loci, sexChrom,
-			      lociPos, subPop, ancestralDepth, chromNames, alleleNames,
-			      lociNames, maxAllele, infoFields, chromMap);
+	           lociPos, subPop, ancestralDepth, chromNames, alleleNames,
+	           lociNames, maxAllele, infoFields, chromMap);
 }
 
 

@@ -124,7 +124,7 @@ bool statNumOfMale::apply(population & pop)
 				pop.setIntVar(subPopVar_String(sp, numOfMale_String), n);
 			if (m_output_propOfMale)
 				pop.setDoubleVar(subPopVar_String(sp, propOfMale_String),
-						 (double)(n) / pop.subPopSize(sp));
+				    (double)(n) / pop.subPopSize(sp));
 		}
 
 		n = pop.subPopSize(sp) - n;
@@ -135,7 +135,7 @@ bool statNumOfMale::apply(population & pop)
 				pop.setIntVar(subPopVar_String(sp, numOfFemale_String), n);
 			if (m_output_propOfFemale)
 				pop.setDoubleVar(subPopVar_String(sp, propOfFemale_String),
-						 (double)(n) / pop.subPopSize(sp));
+				    (double)(n) / pop.subPopSize(sp));
 		}
 	}
 	if (m_output_numOfMale)
@@ -164,14 +164,14 @@ bool statNumOfAffected::apply(population & pop)
 	if (m_evalInSubPop) {
 		for (size_t sp = 0; sp < numSP; ++sp) {
 			ULONG n = count_if(pop.indBegin(sp), pop.indEnd(sp),
-					   isAffected<individual>());
+			              isAffected<individual>());
 			numOfAffected += n;
 			m_numOfAffected[sp] = n;
 			if (m_output_numOfAffected)
 				pop.setIntVar(subPopVar_String(sp, numOfAffected_String), n);
 			if (m_output_propOfAffected)
 				pop.setDoubleVar(subPopVar_String(sp, propOfAffected_String),
-						 (double)(n) / pop.subPopSize(sp));
+				    (double)(n) / pop.subPopSize(sp));
 			if (m_output_numOfUnaffected || m_output_propOfUnaffected) {
 				n = pop.subPopSize(sp) - n;
 				m_numOfUnaffected[sp] = n;
@@ -180,7 +180,7 @@ bool statNumOfAffected::apply(population & pop)
 				pop.setIntVar(subPopVar_String(sp, numOfUnaffected_String), n);
 			if (m_output_propOfUnaffected)
 				pop.setDoubleVar(subPopVar_String(sp, propOfUnaffected_String),
-						 (double)(n) / pop.subPopSize(sp));
+				    (double)(n) / pop.subPopSize(sp));
 		}
 	}
 	if (m_output_numOfAffected)
@@ -242,8 +242,8 @@ bool statAlleleFreq::apply(population & pop)
 	if (m_alleleNum.size() != len) {
 		for (size_t i = 0; i < numLoci;  ++i)
 			DBG_FAILIF(static_cast<UINT>(m_atLoci[i]) >= pop.totNumLoci(),
-				   IndexError, "locus index (" + toStr(m_atLoci[i])
-				   + ") out of range of 0 - " + toStr(pop.totNumLoci() - 1));
+			    IndexError, "locus index (" + toStr(m_atLoci[i])
+			    + ") out of range of 0 - " + toStr(pop.totNumLoci() - 1));
 
 		m_alleleNum.resize(len);
 		m_alleleFreq.resize(len);
@@ -277,7 +277,7 @@ bool statAlleleFreq::apply(population & pop)
 
 			// go through all alleles
 			for (GappedAlleleIterator a = pop.alleleBegin(loc, sp, false),
-						  aEnd = pop.alleleEnd(loc, sp, false); a != aEnd; ++a) {
+			                          aEnd = pop.alleleEnd(loc, sp, false); a != aEnd; ++a) {
 				if (AlleleUnsigned(*a) >= num.size() )
 					num.resize(*a + 1, 0);
 				num[*a]++;
@@ -329,7 +329,7 @@ bool statAlleleFreq::apply(population & pop)
 			// set numOfAlleles if necessary
 			if (m_output_numOfAlleles)
 				m_numOfAlleles[sp][loc] = count_if(num.begin(), num.end(),
-								   bind2nd(std::greater<int>(), 0));
+				                              bind2nd(std::greater<int>(), 0));
 		}                                                                                       // subpop
 
 		if (numSP > 1) {                                                                        // calculate sum and post overall result
@@ -354,7 +354,7 @@ bool statAlleleFreq::apply(population & pop)
 			// set numOfAlleles if necessary
 			if (m_output_numOfAlleles)
 				m_numOfAlleles.back()[loc] = count_if(sum.begin(), sum.end(),
-								      bind2nd(std::greater<int>(), 0));
+				                                 bind2nd(std::greater<int>(), 0));
 		}
 	}                                                                                         // all loci
 
@@ -363,7 +363,7 @@ bool statAlleleFreq::apply(population & pop)
 		// post number of alleles
 		for (UINT sp = 0; sp < numSP; ++sp) {
 			PyObject * d = pop.setIntVectorVar(subPopVar_String(sp, NumOfAlleles_String),
-							   m_numOfAlleles[sp]);
+			                   m_numOfAlleles[sp]);
 			if (numSP == 1) {
 				Py_INCREF(d);
 				pop.setVar(NumOfAlleles_String, d);
@@ -421,7 +421,7 @@ bool statHeteroFreq::apply(population & pop)
 			// go through all alleles
 			//?>> \todo here we assume diploid population
 			for (GappedAlleleIterator a = pop.alleleBegin(loc, sp, false),
-						  aEnd = pop.alleleEnd(loc, sp, false);
+			                          aEnd = pop.alleleEnd(loc, sp, false);
 			     a != aEnd; a += 2) {
 				if (AlleleUnsigned(*a) >= num.size() )
 					num.resize(*a + 1);
@@ -509,7 +509,7 @@ bool statHeteroFreq::apply(population & pop)
 				varname = string(AllHeteroFreq_String) + "[" + toStr(loc) + "]";
 				pop.setDoubleVar(varname, static_cast<double>(sumAll) / pop.popSize());
 			}
-		}                                                                                       // whole population
+		}                                                                                           // whole population
 	}                                                                                               // for all loci
 
 	if (m_postHomo) {
@@ -534,9 +534,9 @@ bool statHeteroFreq::apply(population & pop)
 		// post result
 		for (UINT sp = 0; sp < numSP; ++sp) {
 			pop.setIntVectorVar(subPopVar_String(sp, HomoNum_String),
-					    m_homoNum[sp]);
+			    m_homoNum[sp]);
 			pop.setDoubleVectorVar(subPopVar_String(sp, HomoFreq_String),
-					       m_homoFreq[sp]);
+			    m_homoFreq[sp]);
 		}
 		pop.setIntVectorVar(HomoNum_String, m_homoNum[numSP]);
 		pop.setDoubleVectorVar(HomoFreq_String, m_homoFreq[numSP]);
@@ -591,9 +591,9 @@ bool statExpHetero::apply(population & pop)
 	// post result
 	for (UINT sp = 0; sp < numSP; ++sp)
 		pop.setDoubleVectorVar(subPopVar_String(sp, ExpHetero_String),
-				       m_expHetero[sp]);
+		    m_expHetero[sp]);
 	pop.setDoubleVectorVar(ExpHetero_String,
-			       m_expHetero[numSP]);
+	    m_expHetero[numSP]);
 	return true;
 }
 
@@ -612,8 +612,8 @@ bool statGenoFreq::apply(population & pop)
 	for (size_t i = 0, iEnd = m_atLoci.size(); i < iEnd;  ++i) {
 		if (static_cast<UINT>(m_atLoci[i]) >= pop.totNumLoci() )
 			throw IndexError("Absolute locus index "
-					 + toStr(m_atLoci[i]) + " is out of range of 0 ~ "
-					 + toStr(pop.totNumLoci() - 1));
+			    + toStr(m_atLoci[i]) + " is out of range of 0 ~ "
+			    + toStr(pop.totNumLoci() - 1));
 	}
 
 	// first remove genoNum that may be set by previous count.
@@ -645,13 +645,13 @@ bool statGenoFreq::apply(population & pop)
 		// for each subpopulation
 		for (UINT sp = 0; sp < numSP;  ++sp) {
 			DBG_DO(DBG_STATOR, cout << "Counting genotypes at locus " <<
-			       loc << " subPop " << sp << endl);
+			    loc << " subPop " << sp << endl);
 
 			vector<intDict> num;
 
 			/// go through a single allele for all individual, all diploid
 			for (GappedAlleleIterator it = pop.alleleBegin(loc, sp, false),
-						  itEnd = pop.alleleEnd(loc, sp, false); it != itEnd;  it += 2) {
+			                          itEnd = pop.alleleEnd(loc, sp, false); it != itEnd;  it += 2) {
 				a = *it;
 				b = *(it + 1);
 
@@ -677,7 +677,7 @@ bool statGenoFreq::apply(population & pop)
 
 				// empty dictionary should be allowed
 				varname = subPopVar_String(sp, GenotypeNum_String) +
-					  + "[" + toStr(loc) + "][" + toStr(int (a)) + "]";
+				          + "[" + toStr(loc) + "][" + toStr(int (a)) + "]";
 				pop.setIntDictVar(varname, num[a]);
 
 				// apply frequency
@@ -685,7 +685,7 @@ bool statGenoFreq::apply(population & pop)
 					it->second = it->second / pop.subPopSize(sp);
 
 				varname =  subPopVar_String(sp, GenotypeFreq_String) +
-					  + "[" + toStr(loc) + "][" + toStr(int (a)) + "]";
+				          + "[" + toStr(loc) + "][" + toStr(int (a)) + "]";
 				pop.setIntDictVar(varname, num[a]);
 			}
 		}
@@ -769,7 +769,7 @@ bool statHaploFreq::apply(population & pop)
 			vectori sampleHap(sz);
 
 			for (GappedAlleleIterator it = pop.alleleBegin(0, sp, false),
-						  itEnd = pop.alleleEnd(0, sp, false); it != itEnd;  ++it) {
+			                          itEnd = pop.alleleEnd(0, sp, false); it != itEnd;  ++it) {
 				for (size_t hap = 0; hap < sz; ++hap)
 					sampleHap[hap] = *(it.ptr() + haplotype[hap]);
 
@@ -797,7 +797,7 @@ bool statHaploFreq::apply(population & pop)
 				if (m_ifPost[h]) {
 					pop.setIntVar(varNumName + haploKey(haplotype) + haploKey(it->first), it->second);
 					pop.setDoubleVar(varFreqName + haploKey(haplotype) + haploKey(it->first),
-							 double (it->second) / (pop.subPopSize(sp) * pop.ploidy()));
+					    double (it->second) / (pop.subPopSize(sp) * pop.ploidy()));
 				}
 			}
 		}
@@ -813,7 +813,7 @@ bool statHaploFreq::apply(population & pop)
 			if (m_ifPost[h]) {
 				pop.setIntVar(HaplotypeNum_String + haploKey(haplotype) + haploKey(it->first), it->second);
 				pop.setDoubleVar(HaplotypeFreq_String + haploKey(haplotype) + haploKey(it->first),
-						 double (it->second) / (pop.popSize() * pop.ploidy()));
+				    double (it->second) / (pop.popSize() * pop.ploidy()));
 			}
 		}
 	}
@@ -822,7 +822,7 @@ bool statHaploFreq::apply(population & pop)
 
 
 statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
-	       const intMatrix & LD, const strDict & param)
+               const intMatrix & LD, const strDict & param)
 	: m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
 	m_LD(LD),
 	// default values,
@@ -885,7 +885,7 @@ statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 	for (size_t i = 0, iEnd = m_LD.size(); i < iEnd; ++i) {
 		// these asserts will only be checked in non-optimized modules
 		DBG_FAILIF(m_LD[i].size() != 2 && m_LD[i].size() != 4,
-			   ValueError, "Expecting [locus locus [allele allele ]] items");
+		    ValueError, "Expecting [locus locus [allele allele ]] items");
 
 		// midValues is used to tell alleleFreq that the calculated allele
 		// frequency values should not be posted to pop.dvars()
@@ -914,7 +914,7 @@ statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 // D, D_p and r2 are used to return calculated values.
 // LD for subpopulation sp is calculated if subPop is true
 void statLD::calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
-			 double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2)
+                         double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2)
 {
 	if (subPop) {
 		// get haplotype freq from the m_haploFreq object
@@ -939,8 +939,8 @@ void statLD::calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UI
 		// if environmental variable SIMUDEBUG is set to DBG_STATOR, or
 		// if TurnOnDebug(DBG_STATOR) is called in python, the following will be printed.
 		DBG_DO(DBG_STATOR, cout << "LD: subpop " << sp << " : P_AB: " << P_AB
-					<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
-		       " LD: " << D << " LD': " << D_prime << " r2: " << r2 << " delta2: " << delta2 << endl);
+		                        << " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
+		    " LD: " << D << " LD': " << D_prime << " r2: " << r2 << " delta2: " << delta2 << endl);
 	} else {
 		// whole population
 		// get haplotype freq
@@ -961,15 +961,15 @@ void statLD::calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UI
 		delta2 = (fcmp_eq(P_A, 0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1)) ? 0. : pow((P_AB * ((1 - P_A) - (P_B - P_AB)) - (P_A - P_AB) * (P_B - P_AB)), 2) / (P_A * (1 - P_A) * P_B * (1 - P_B));
 
 		DBG_DO(DBG_STATOR, cout << "LD: P_AB: " << P_AB
-					<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
-		       " LD: " << D << " LD': " << D_prime << " r2: " << r2 << " delta2: " << delta2 << endl);
+		                        << " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
+		    " LD: " << D << " LD': " << D_prime << " r2: " << r2 << " delta2: " << delta2 << endl);
 	}
 }
 
 
 // try to shorten statLD::apply
 void statLD::outputLD(population & pop, const vectori & hapLoci, const string & allele_string, UINT sp, bool subPop,
-		      bool valid_delta2, double D, double D_prime, double r2, double delta2)
+                      bool valid_delta2, double D, double D_prime, double r2, double delta2)
 {
 	string ld_name, ldp_name, r2_name, d2_name, key_name;
 	bool ld_cond, ldp_cond, r2_cond, d2_cond;
@@ -1166,17 +1166,17 @@ bool statLD::apply(population & pop)
 							}
 						}
 						outputLD(pop, hapLoci, "", sp, true, valid_delta2, D, D_prime, r2, delta2);
-					}                                                               // each subpop
-				}                                                                       // numSP
-			}                                                                               // eval in subpop
-		}                                                                                       // size = 2, 4
+					}                                                                               // each subpop
+				}                                                                                   // numSP
+			}                                                                                       // eval in subpop
+		}                                                                                           // size = 2, 4
 	}                                                                                               // for all LD
 	return true;
 }
 
 
 statAssociation::statAssociation(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
-				 const intMatrix & Association, const strDict & param)
+                                 const intMatrix & Association, const strDict & param)
 	: m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
 	m_association(Association),
 	m_midValues(false),
@@ -1188,10 +1188,10 @@ statAssociation::statAssociation(statAlleleFreq & alleleFreq, statHaploFreq & ha
 	for (size_t i = 0, iEnd = m_association.size(); i < iEnd; ++i) {
 		// these asserts will only be checked in non-optimized modules
 		DBG_FAILIF(m_association[i].size() != 2,
-			   ValueError, "Expecting [locus locus] items");
+		    ValueError, "Expecting [locus locus] items");
 
 		DBG_FAILIF(m_association[i][0] == m_association[i][1],
-			   ValueError, "Association has to be calculated between different loci");
+		    ValueError, "Association has to be calculated between different loci");
 		// parameters
 		if (!param.empty()) {
 			strDict::const_iterator it;
@@ -1267,7 +1267,7 @@ bool statAssociation::apply(population & pop)
 		vectori A_alleles = m_alleleFreq.alleles(hapLoci[0]);
 		vectori B_alleles = m_alleleFreq.alleles(hapLoci[1]);
 		string hapLociStr = '[' + toStr(hapLoci[0]) + "][" +
-				    toStr(hapLoci[1]) + ']';
+		                    toStr(hapLoci[1]) + ']';
 
 		UINT as = A_alleles.size();
 		UINT bs = B_alleles.size();
@@ -1297,7 +1297,7 @@ bool statAssociation::apply(population & pop)
 			}
 		}
 		DBG_ASSERT(fcmp_eq(cont_table[as][bs], 1.), ValueError,
-			   "Sum of haplotype frequencies is not 1. Association will not be computed.");
+		    "Sum of haplotype frequencies is not 1. Association will not be computed.");
 		//DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
 		// calculate statistics
 		//ChiSq
@@ -1305,7 +1305,7 @@ bool statAssociation::apply(population & pop)
 			for (size_t i = 0; i < as; ++i)
 				for (size_t j = 0; j < bs; ++j)
 					ChiSq += pow((n * cont_table[i][j] - n * cont_table[i][bs] * cont_table[as][j]), 2)
-						 / (n * cont_table[i][bs] * cont_table[as][j]);
+					         / (n * cont_table[i][bs] * cont_table[as][j]);
 			ChiSq_P = rng().pvalChiSq(ChiSq, (as - 1) * (bs - 1));
 		}
 		if (m_output_ChiSq) {
@@ -1365,7 +1365,7 @@ bool statAssociation::apply(population & pop)
 						cont_table[as][bs] += cont_table[i][j];
 					}
 				DBG_ASSERT(fcmp_eq(cont_table[as][bs], 1.), ValueError,
-					   "Sum of haplotype frequencies is not 1. Association will not be computed.");
+				    "Sum of haplotype frequencies is not 1. Association will not be computed.");
 				//DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
 				// calculate statistics
 				//ChiSq
@@ -1373,7 +1373,7 @@ bool statAssociation::apply(population & pop)
 					for (size_t i = 0; i < as; ++i)
 						for (size_t j = 0; j < bs; ++j)
 							ChiSq += pow((n * cont_table[i][j] - n * cont_table[i][bs] * cont_table[as][j]), 2)
-								 / (n * cont_table[i][bs] * cont_table[as][j]);
+							         / (n * cont_table[i][bs] * cont_table[as][j]);
 					ChiSq_P = rng().pvalChiSq(ChiSq, (as - 1) * (bs - 1));
 				}
 				if (m_output_ChiSq) {
@@ -1397,15 +1397,15 @@ bool statAssociation::apply(population & pop)
 					CramerV = sqrt(ChiSq / (n * std::min(as - 1, bs - 1)));
 					pop.setDoubleVar(subPopVar_String(sp, CramerV_String) + hapLociStr, CramerV);
 				}
-			}                                                                               // each sp
-		}                                                                                       // numSP > 1
+			}                                                                                       // each sp
+		}                                                                                           // numSP > 1
 	}                                                                                               // each parameter
 	return true;
 }
 
 
 statFst::statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
-		 const vectori & Fst, const strDict & param)
+                 const vectori & Fst, const strDict & param)
 	: m_alleleFreq(alleleFreq), m_heteroFreq(heteroFreq), m_atLoci(Fst),
 	m_midValues(false),
 	m_output_Fst(true),
@@ -1486,7 +1486,7 @@ bool statFst::apply(population & pop)
 		int loc = m_atLoci[st];
 
 		DBG_ASSERT(static_cast<size_t>(loc) < pop.totNumLoci(), IndexError,
-			   "Index out of range of 0 ~ " + toStr(pop.totNumLoci() - 1));
+		    "Index out of range of 0 ~ " + toStr(pop.totNumLoci() - 1));
 
 		// get all available alleles
 		vectori alleles = m_alleleFreq.alleles(loc);
@@ -1536,8 +1536,8 @@ bool statFst::apply(population & pop)
 			c += h_bar / 2.;
 
 			DBG_DO(DBG_STATOR, cout << "allele " << *ale << "\tn_c: " << n_c
-						<< "\tp_i: " << p_i << "\tp_bar: " << p_bar << "\ts^2: " << s_2 << "\th_bar:"
-						<< h_bar << "\ta: " << a << "\tb: " << b << "\tc: " << c << endl);
+			                        << "\tp_i: " << p_i << "\tp_bar: " << p_bar << "\ts^2: " << s_2 << "\th_bar:"
+			                        << h_bar << "\ta: " << a << "\tb: " << b << "\tc: " << c << endl);
 		}                                                                                 // each allele
 
 		DBG_DO(DBG_STATOR, cout << "Fst= " << a / (a + b + c) << endl);
@@ -1577,8 +1577,8 @@ bool statFst::apply(population & pop)
 
 
 statRelatedness::statRelatedness(statAlleleFreq & alleleFreq, const intMatrix & groups,
-				 bool useSubPop, const vectori & loci, vectori method,
-				 int minScored, const strDict & param) :
+                                 bool useSubPop, const vectori & loci, vectori method,
+                                 int minScored, const strDict & param) :
 	m_alleleFreq(alleleFreq), m_groups(groups), m_useSubPop(useSubPop),
 	m_atLoci(loci), m_method(method), m_minScored(minScored),
 	m_midValues(false)
@@ -1601,7 +1601,7 @@ statRelatedness::statRelatedness(statAlleleFreq & alleleFreq, const intMatrix & 
 
 // relatedness between individuals
 statRelatedness::fraction statRelatedness::relQueller(individual ind1,
-						      individual ind2)
+                                                      individual ind2)
 {
 	matrix & af = m_alleleFreq.alleleFreqAll();
 	statRelatedness::fraction res(0., 0.);
@@ -1635,7 +1635,7 @@ statRelatedness::fraction statRelatedness::relQueller(individual ind1,
 
 
 statRelatedness::fraction statRelatedness::relLynch(individual ind1,
-						    individual ind2)
+                                                    individual ind2)
 {
 	matrix & af = m_alleleFreq.alleleFreqAll();
 
@@ -1664,9 +1664,9 @@ statRelatedness::fraction statRelatedness::relLynch(individual ind1,
 		if (pa < 1e-8 || pb < 1e-8 || pc < 1e-8 || pd < 1e-8) continue;
 
 		double r_xy = ( pa * ((b == c) + (b == d)) + pb * ((a == c) + (a == d)) - 4 * pa * pb ) /
-			      ( (1 + (a == b)) * (pa + pb) - 4 * pa * pb);
+		              ( (1 + (a == b)) * (pa + pb) - 4 * pa * pb);
 		double r_yx = ( pc * ((d == a) + (d == b)) + pd * ((c == a) + (c == b)) - 4 * pc * pd ) /
-			      ( (1 + (c == d)) * (pc + pd) - 4 * pc * pd);
+		              ( (1 + (c == d)) * (pc + pd) - 4 * pc * pd);
 		double w_xy = ( (1 + (a == b)) * (pa + pb) - 4 * pa * pb) / (2 * pa * pb);
 		double w_yx = ( (1 + (c == d)) * (pc + pd) - 4 * pc * pd) / (2 * pc * pd);
 
@@ -1678,7 +1678,7 @@ statRelatedness::fraction statRelatedness::relLynch(individual ind1,
 		numScored++;
 	}                                                                                         // all loci
 	DBG_FAILIF(numScored <= m_minScored || weight_xy == 0.0 || weight_yx == 0.0,
-		   ValueError, "Not enough allels to calculated relatedness.");
+	    ValueError, "Not enough allels to calculated relatedness.");
 	res.first = (rel_xy / weight_xy + rel_yx / weight_yx) / 2.;
 	res.second = 1.;
 	return res;
@@ -1721,7 +1721,7 @@ statRelatedness::fraction statRelatedness::relD2(individual ind1, int locus)
 
 // REL measure for individual ind at specified locus
 statRelatedness::fraction statRelatedness::relRel(individual ind1,
-						  individual ind2,  int locus)
+                                                  individual ind2,  int locus)
 {
 	matrix & af = m_alleleFreq.alleleFreqAll();
 
@@ -1811,9 +1811,9 @@ double statRelatedness::groupRelatedness(population & pop, int i, int j, int met
 					res.first += tmp.first;
 					res.second += tmp.second;
 				}
-			}                                                                               // lynch
+			}                                                                                       // lynch
 			return res.first / res.second;
-		}                                                                                       // switch
+		}                                                                                           // switch
 	}                                                                                               // m_useSubPop
 	else {
 		switch (method) {
@@ -1862,13 +1862,13 @@ double statRelatedness::groupRelatedness(population & pop, int i, int j, int met
 				for (vectori::iterator ind2 = ind1 + 1;
 				     ind2 != m_groups[i].end(); ++ind2) {
 					fraction tmp = relRel(pop.ind(*ind1),
-							      pop.ind(*ind2), j);
+					                   pop.ind(*ind2), j);
 					res.first += tmp.first;
 					res.second += tmp.second;
 				}
 			}
 			return res.first / res.second;
-		}                                                                                       // switch
+		}                                                                                           // switch
 	}                                                                                               // m_useSubPop
 	// will never reach here.
 	return 0;
@@ -1913,7 +1913,7 @@ bool statRelatedness::apply(population & pop)
 
 			for (UINT i = 0; i < nGroups; ++i)
 				pop.setDoubleVectorVar(Rel_Queller_String + toStr("[")
-						       + toStr(i) + "]", m_relQueller[i]);
+				    + toStr(i) + "]", m_relQueller[i]);
 			break;
 		case REL_Lynch:
 			m_relLynch.resize(nGroups);
@@ -1928,7 +1928,7 @@ bool statRelatedness::apply(population & pop)
 
 			for (UINT i = 0; i < nGroups; ++i)
 				pop.setDoubleVectorVar(Rel_Lynch_String + toStr("[")
-						       + toStr(i) + "]", m_relLynch[i]);
+				    + toStr(i) + "]", m_relLynch[i]);
 			break;
 		case REL_IR:
 			m_relIR.resize(nGroups);
@@ -1941,7 +1941,7 @@ bool statRelatedness::apply(population & pop)
 
 			for (UINT i = 0; i < nGroups; ++i)
 				pop.setDoubleVectorVar(Rel_IR_String + toStr("[")
-						       + toStr(i) + "]", m_relIR[i]);
+				    + toStr(i) + "]", m_relIR[i]);
 			break;
 		case REL_D2:
 			m_relD2.resize(nGroups);
@@ -1954,7 +1954,7 @@ bool statRelatedness::apply(population & pop)
 
 			for (UINT i = 0; i < nGroups; ++i)
 				pop.setDoubleVectorVar(Rel_D2_String + toStr("[")
-						       + toStr(i) + "]", m_relD2[i]);
+				    + toStr(i) + "]", m_relD2[i]);
 			break;
 		case REL_Rel:
 			m_relRel.resize(nGroups);
@@ -1967,7 +1967,7 @@ bool statRelatedness::apply(population & pop)
 
 			for (UINT i = 0; i < nGroups; ++i)
 				pop.setDoubleVectorVar(Rel_Rel_String + toStr("[")
-						       + toStr(i) + "]", m_relRel[i]);
+				    + toStr(i) + "]", m_relRel[i]);
 			break;
 		}
 	}                                                                                         // for all method

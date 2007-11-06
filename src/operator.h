@@ -132,7 +132,6 @@ namespace simuPOP {
 class baseOperator
 {
 public:
-
 	/** @name constructor and destructor */
 	//@{
 
@@ -167,8 +166,8 @@ public:
 	 \test src_operator.log Common features of all operators
 	 */
 	baseOperator(string output, string outputExpr, int stage,
-		     int begin, int end, int step, vectorl at,
-		     int rep, int grp, const vectorstr & infoFields) :
+	             int begin, int end, int step, vectorl at,
+	             int rep, int grp, const vectorstr & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at),
 		m_flags(0), m_rep(rep), m_grp(grp),
 		m_ostream(output, outputExpr), m_infoFields(infoFields)
@@ -310,7 +309,7 @@ public:
 	{
 #ifdef SIMUMPI
 		DBG_ASSERT(MPIReady(), ValueError,
-			   "Operator " + __repr__() + " is not MPI ready. ");
+		    "Operator " + __repr__() + " is not MPI ready. ");
 		return true;
 #else
 		return true;
@@ -372,7 +371,7 @@ public:
 	string infoField(UINT idx)
 	{
 		DBG_ASSERT(idx < m_infoFields.size(), IndexError, "Given info index " + toStr(idx) +
-			   " is out of range of 0 ~ " + toStr(m_infoFields.size()));
+		    " is out of range of 0 ~ " + toStr(m_infoFields.size()));
 		return m_infoFields[idx];
 	}
 
@@ -413,7 +412,7 @@ public:
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(population & pop, population::IndIterator offspring,
-				       individual * dad = NULL, individual * mom = NULL)
+	                               individual * dad = NULL, individual * mom = NULL)
 	{
 		throw SystemError("ApplyDuringMating: This function is not supposed to be called.");
 	}
@@ -493,12 +492,10 @@ public:
 
 
 protected:
-
 	/// analyze active generations: set m_flagAtAllGen etc
 	void setFlags();
 
 private:
-
 	/// internal m_flags of the operator. They are set during initialization for
 	/// performance considerations.
 	static const size_t m_flagPreMating      = PreMating;
@@ -516,7 +513,6 @@ private:
 	static const size_t m_flagMPI            = 512;
 
 private:
-
 	/// starting generation, default to 0
 	int m_beginGen;
 
@@ -665,7 +661,7 @@ public:
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(population & pop, population::IndIterator offspring,
-				       individual * dad = NULL, individual * mom = NULL)
+	                               individual * dad = NULL, individual * mom = NULL)
 	{
 		return true;
 	}
@@ -758,7 +754,7 @@ public:
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(population & pop, population::IndIterator offspring,
-				       individual * dad = NULL, individual * mom = NULL);
+	                               individual * dad = NULL, individual * mom = NULL);
 
 	/// apply the \c ifElse operator to one population
 	virtual bool apply(population & pop);
@@ -823,7 +819,6 @@ public:
 
 
 private:
-
 	time_t m_startTime, m_lastTime;
 };
 
@@ -840,8 +835,8 @@ class setAncestralDepth : public baseOperator
 public:
 	/// create a \c setAncestralDepth operator
 	setAncestralDepth(int depth, string output = ">", string outputExpr = "",
-			  int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-			  int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	                  int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	                  int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_depth(depth)
 	{
@@ -896,8 +891,8 @@ class turnOnDebug : public baseOperator
 public:
 	/// create a \c turnOnDebug operator
 	turnOnDebug(DBG_CODE code,
-		    int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		    int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	            int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	            int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_code(code)
 	{
@@ -945,8 +940,8 @@ class turnOffDebug : public baseOperator
 public:
 	/// create a \c turnOffDebug operator
 	turnOffDebug(DBG_CODE code,
-		     int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		     int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	             int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	             int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_code(code)
 	{
@@ -1025,9 +1020,9 @@ public:
 	   a selector, a \c PreMating Python operator should be used.
 	 */
 	pyOperator(PyObject * func, PyObject * param = NULL,
-		   int stage = PostMating, bool formOffGenotype = false, bool passOffspringOnly = false,
-		   int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		   int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	           int stage = PostMating, bool formOffGenotype = false, bool passOffspringOnly = false,
+	           int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
 	{
@@ -1077,7 +1072,7 @@ public:
 
 	/// CPPONLY
 	virtual bool applyDuringMating(population & pop, population::IndIterator offspring,
-				       individual * dad = NULL, individual * mom = NULL);
+	                               individual * dad = NULL, individual * mom = NULL);
 
 	/// used by Python print function to print out the general information of the \c pyOperator operator
 	virtual string __repr__()
@@ -1087,7 +1082,6 @@ public:
 
 
 private:
-
 	/// the function
 	PyObject * m_func;
 
@@ -1126,9 +1120,9 @@ public:
 	 \test src_pyIndOperator.log Applying a \c pyIndOperator
 	 */
 	pyIndOperator(PyObject * func, const vectoru & loci = vectoru(), PyObject * param = NULL,
-		      int stage = PostMating, bool formOffGenotype = false,
-		      int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		      int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	              int stage = PostMating, bool formOffGenotype = false,
+	              int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	              int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_func(func), m_loci(loci), m_param(param)
 	{
@@ -1142,7 +1136,7 @@ public:
 			Py_XINCREF(param);
 
 		DBG_FAILIF(stage == DuringMating, ValueError,
-			   "This operator can not be used DuringMating.");
+		    "This operator can not be used DuringMating.");
 		this->setFormOffGenotype(formOffGenotype);
 	};
 
@@ -1186,7 +1180,6 @@ public:
 
 
 private:
-
 	/// the function
 	PyObject * m_func;
 

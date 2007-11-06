@@ -67,7 +67,7 @@ bool penetrance::apply(population & pop)
 
 
 bool penetrance::applyDuringMating(population & pop, population::IndIterator offspring,
-				   individual * dad, individual * mom)
+                                   individual * dad, individual * mom)
 {
 	double p = penet(& * offspring);
 
@@ -103,7 +103,7 @@ double mapPenetrance::penet(individual * ind)
 	strDict::iterator pos = m_dict.find(key);
 
 	DBG_ASSERT(pos != m_dict.end(), ValueError,
-		   "No penetrance value for genotype " + key);
+	    "No penetrance value for genotype " + key);
 
 	return pos->second;
 }
@@ -174,7 +174,7 @@ double pyPenetrance::penet(individual * ind)
 			Py_DECREF(m_numArray);
 #ifdef SIMUMPI
 		m_numArray = Allele_Vec_As_NumArray(m_alleles.begin(), m_alleles.end(),
-						    m_alleles.size(), m_alleles.size(), 0, m_alleles.size());
+		                 m_alleles.size(), m_alleles.size(), 0, m_alleles.size());
 #else
 		m_numArray = Allele_Vec_As_NumArray(m_alleles.begin(), m_alleles.end() );
 #endif
@@ -204,7 +204,7 @@ double pyPenetrance::penet(individual * ind)
 
 	// make sure the returned value is legitimate.
 	DBG_ASSERT(fcmp_ge(resDouble, 0.) && fcmp_le(resDouble, 1.),
-		   ValueError, "Returned fitness " + toStr(resDouble) + " is out of range [0,1]");
+	    ValueError, "Returned fitness " + toStr(resDouble) + " is out of range [0,1]");
 
 	return resDouble;
 }

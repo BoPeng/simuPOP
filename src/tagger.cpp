@@ -25,7 +25,7 @@
 
 namespace simuPOP {
 bool inheritTagger::applyDuringMating(population & pop, population::IndIterator offspring,
-				      individual * dad, individual * mom)
+                                      individual * dad, individual * mom)
 {
 	UINT id1 = 0, id2 = 0;
 
@@ -63,7 +63,7 @@ bool inheritTagger::applyDuringMating(population & pop, population::IndIterator 
 
 
 bool parentsTagger::applyDuringMating(population & pop, population::IndIterator offspring,
-				      individual * dad, individual * mom)
+                                      individual * dad, individual * mom)
 {
 	UINT id1 = pop.infoIdx(infoField(0));
 	UINT id2 = pop.infoIdx(infoField(1));
@@ -83,7 +83,7 @@ bool parentsTagger::applyDuringMating(population & pop, population::IndIterator 
 
 
 bool pyTagger::applyDuringMating(population & pop, population::IndIterator offspring,
-				 individual * dad, individual * mom)
+                                 individual * dad, individual * mom)
 {
 	UINT numFields = infoSize();
 
@@ -104,7 +104,7 @@ bool pyTagger::applyDuringMating(population & pop, population::IndIterator offsp
 	//
 	vectorf res;
 	PyCallFunc(m_func, "(O)", Double_Vec_As_NumArray(values.begin(), values.end()),
-		   res, PyObj_As_Array);
+	    res, PyObj_As_Array);
 
 	DBG_FAILIF(res.size() != numFields, ValueError, "Please return a value for each information field");
 

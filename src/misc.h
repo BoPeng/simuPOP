@@ -67,17 +67,17 @@ namespace simuPOP {
 //
 //
 vectorf FreqTrajectoryStoch(ULONG curGen = 0,
-			    double freq = 0,
-			    long N = 0,
-			    PyObject * NtFunc = NULL,
-			    vectorf fitness = vectorf(),
-			    PyObject * fitnessFunc = NULL,
-			    ULONG minMutAge = 0,
-			    ULONG maxMutAge = 100000,
-			    int ploidy = 2,
-			    bool restartIfFail = false,
-			    long maxAttempts = 1000,
-			    bool allowFixation = false);
+                            double freq = 0,
+                            long N = 0,
+                            PyObject * NtFunc = NULL,
+                            vectorf fitness = vectorf(),
+                            PyObject * fitnessFunc = NULL,
+                            ULONG minMutAge = 0,
+                            ULONG maxMutAge = 100000,
+                            int ploidy = 2,
+                            bool restartIfFail = false,
+                            long maxAttempts = 1000,
+                            bool allowFixation = false);
 
 /// CPPONLY a utility function to get marginal fitness given interaction and allele freq
 vectorf MarginalFitness(unsigned nLoci, const vectorf & fitness, const vectorf & freq);
@@ -115,27 +115,27 @@ vectorf MarginalFitness(unsigned nLoci, const vectorf & fitness, const vectorf &
 //
 //
 matrix FreqTrajectoryMultiStoch(
-				ULONG curGen = 0,
-				vectorf freq = vectorf(),
-				long N = 0,
-				PyObject * NtFunc = NULL,
-				vectorf fitness = vectorf(),
-				PyObject * fitnessFunc = NULL,
-				ULONG minMutAge = 0,
-				ULONG maxMutAge = 100000,
-				int ploidy = 2,
-				bool restartIfFail = false,
-				long maxAttempts = 1000);
+                                ULONG curGen = 0,
+                                vectorf freq = vectorf(),
+                                long N = 0,
+                                PyObject * NtFunc = NULL,
+                                vectorf fitness = vectorf(),
+                                PyObject * fitnessFunc = NULL,
+                                ULONG minMutAge = 0,
+                                ULONG maxMutAge = 100000,
+                                int ploidy = 2,
+                                bool restartIfFail = false,
+                                long maxAttempts = 1000);
 
 #ifndef OPTIMIZED
 // simulate trajectory
 vectorf FreqTrajectorySelSim(
-			     double sel,                                                        // strength of selection coef  ::8
-			     long Ne,                                                           // effective population size ::9
-			     double freq,                                                       // initial freq ::10
-			     double dom_h,                                                      // strength of dominance ::27
-			     int selection                                                      // selection ::5
-			     );
+                             double sel,                                            // strength of selection coef  ::8
+                             long Ne,                                               // effective population size ::9
+                             double freq,                                           // initial freq ::10
+                             double dom_h,                                          // strength of dominance ::27
+                             int selection                                          // selection ::5
+                             );
 
 /*simulate the sample path of the frequency of disease allele,
    conditional on non-extinction and non-fixation
@@ -146,7 +146,7 @@ vectorf FreqTrajectorySelSim(
    present-day (if #disease allele <5, poisson dis. conditional
    on #disease >0, else, normal dis.)*/
 vectorf FreqTrajectoryForward(double lowbound, double highbound,
-			      int disAge, double grate, long N0, double seleCo);
+                              int disAge, double grate, long N0, double seleCo);
 
 #endif
 }

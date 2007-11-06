@@ -27,7 +27,7 @@ namespace simuPOP {
 PyObject * sample::samples(population & pop)
 {
 	DBG_FAILIF(m_name.empty() && m_nameExpr.empty(), ValueError,
-		   "No sample or sample is not saved. (with empty name and nameExpr)");
+	    "No sample or sample is not saved. (with empty name and nameExpr)");
 
 	// save sample to local namespace?
 	string sampleName = "", saveAsName = "";
@@ -124,7 +124,7 @@ void sample::saveIndIndex(population & pop, const string & indexField)
 
 
 void sample::resetParentalIndex(population & pop, const string & fatherField,
-				const string & motherField, const string & indexField)
+                                const string & motherField, const string & indexField)
 {
 	UINT fatherIdx = pop.infoIdx(fatherField);
 	UINT motherIdx = pop.infoIdx(motherField);
@@ -165,9 +165,9 @@ void sample::resetParentalIndex(population & pop, const string & fatherField,
 
 
 void sample::findOffspringAndSpouse(population & pop, unsigned ancestralDepth,
-				    unsigned maxOffspring,
-				    const string & fatherField, const string & motherField,
-				    const string & spouseField, const string & offspringField)
+                                    unsigned maxOffspring,
+                                    const string & fatherField, const string & motherField,
+                                    const string & spouseField, const string & offspringField)
 {
 	vectori offspringIdx(maxOffspring);
 
@@ -179,7 +179,7 @@ void sample::findOffspringAndSpouse(population & pop, unsigned ancestralDepth,
 
 	DBG_DO(DBG_SELECTOR, cout << "Finding spouse and offspring of all individuals" << endl);
 	DBG_FAILIF(ancestralDepth > pop.ancestralDepth(), ValueError,
-		   "The population does not have enough ancestral generations for this operation");
+	    "The population does not have enough ancestral generations for this operation");
 
 	for (unsigned ans = 1; ans <= ancestralDepth; ++ans) {
 		pop.useAncestralPop(ans - 1);
@@ -198,7 +198,7 @@ void sample::findOffspringAndSpouse(population & pop, unsigned ancestralDepth,
 				pop.ind(static_cast<ULONG>(dad[idx])).setInfo(idx, offspringIdx[0]);
 				pop.ind(static_cast<ULONG>(mom[idx])).setInfo(idx, offspringIdx[0]);
 			} else if (dadSpouse != -1 && momSpouse != -1 &&
-				   dadSpouse == mom[idx] && momSpouse == dad[idx]) {
+			           dadSpouse == mom[idx] && momSpouse == dad[idx]) {
 				// which offspring
 				for (size_t i = 1; i < maxOffspring; ++i) {
 					if (pop.ind(static_cast<ULONG>(dad[idx])).info(offspringIdx[i]) == -1.) {
@@ -208,7 +208,7 @@ void sample::findOffspringAndSpouse(population & pop, unsigned ancestralDepth,
 					}
 				}
 			}
-		}                                                                                       // idx
+		}                                                                                           // idx
 	}                                                                                               // ancestal generations
 	pop.useAncestralPop(0);
 }
@@ -230,20 +230,20 @@ void sample::resetSubPopID(population & pop)
 bool randomSample::prepareSample(population & pop)
 {
 	DBG_FAILIF(m_size.size() == 1 && m_size[0] > pop.popSize(), ValueError,
-		   "sample size > population size. Can not continue.");
+	    "sample size > population size. Can not continue.");
 
 	DBG_FAILIF(m_size.empty(), ValueError,
-		   "sample size can not be zero/empty for random sampling.");
+	    "sample size can not be zero/empty for random sampling.");
 
 	DBG_FAILIF(m_size.size() > 1 && m_size.size() != pop.numSubPop(),
-		   ValueError, "Length of size and number of subpops do not match.");
+	    ValueError, "Length of size and number of subpops do not match.");
 
 	pop.addInfoField("oldindex", -1);
 	saveIndIndex(pop, "oldindex");
 	if (m_size.size() > 1) {
 		for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 			DBG_FAILIF(m_size[sp] > pop.subPopSize(sp), ValueError,
-				   "sample size exceed subpopulation size.");
+			    "sample size exceed subpopulation size.");
 		}
 	}
 	return true;
@@ -283,7 +283,7 @@ population & randomSample::drawsample(population & pop)
 			// remove others
 			for (size_t i = m_size[sp]; i < spSize; ++i)
 				pop.ind(pick[i], sp).setSubPopID(-1);
-		}                                                                                       // each subpop
+		}                                                                                           // each subpop
 	}                                                                                               // else
 	return pop.newPopByIndID(-1);
 }
@@ -296,11 +296,11 @@ bool caseControlSample::prepareSample(population & pop)
 	saveIndIndex(pop, "oldindex");
 	if (!m_spSample) {                                                        // sample from the whole population.
 		DBG_FAILIF(m_numCases.size() > 1 || m_numControls.size() > 1,
-			   ValueError, "Cases, controls need to be a number if sample from the whole population.");
+		    ValueError, "Cases, controls need to be a number if sample from the whole population.");
 
 		// first get number of affected.
 		int numAffected = count_if(pop.indBegin(), pop.indEnd(),
-					   isAffected<individual>());
+		                      isAffected<individual>());
 		int numUnaffected = pop.popSize() - numAffected;
 
 		if (m_numCases.size() == 1 && m_numCases[0] > numAffected)
@@ -335,7 +335,7 @@ bool caseControlSample::prepareSample(population & pop)
 		for (UINT sp = 0; sp < numSP; ++sp) {
 			// first get number of affected.
 			numAffected[sp] = count_if(pop.indBegin(sp), pop.indEnd(sp),
-						   isAffected<individual>());
+			                      isAffected<individual>());
 			numUnaffected[sp] = pop.subPopSize(sp) - numAffected[sp];
 
 			if (m_numCases[sp] > numAffected[sp])
@@ -453,8 +453,8 @@ bool affectedSibpairSample::prepareSample(population & pop)
 {
 	// get parental index for each subpop
 	DBG_FAILIF(m_size.size() > 1 && m_size.size() != pop.numSubPop(),
-		   ValueError,
-		   "Length of array size and number of subpopulations do not match.");
+	    ValueError,
+	    "Length of array size and number of subpopulations do not match.");
 
 	m_validSibs.clear();
 
@@ -476,7 +476,7 @@ bool affectedSibpairSample::prepareSample(population & pop)
 	// 1: one ancestralDepth
 	// 2: two offsprings
 	findOffspringAndSpouse(pop, 1, 2, "father_idx", "mother_idx",
-			       "spouse", "offspring");                    // ans = 1, 2
+	    "spouse", "offspring");                             // ans = 1, 2
 	//
 	// find sibpairs from the parental generation.
 	pop.useAncestralPop(1);
@@ -500,7 +500,7 @@ bool affectedSibpairSample::prepareSample(population & pop)
 			}
 		}
 		DBG_DO(DBG_SELECTOR, cout << "Number of sibpairs in subpop " << sp << " is "
-					  << m_validSibs[sp].size() << endl);
+		                          << m_validSibs[sp].size() << endl);
 	}                                                                                         // each subpop
 	pop.useAncestralPop(0);
 	m_validSibs.resize(pop.numSubPop());
@@ -614,7 +614,7 @@ population & affectedSibpairSample::drawsample(population & pop)
 bool largePedigreeSample::prepareSample(population & pop)
 {
 	DBG_FAILIF(pop.ancestralDepth() < 2, ValueError,
-		   "At least two ancestral populations are needed to draw large pedigrees");
+	    "At least two ancestral populations are needed to draw large pedigrees");
 	//
 	m_validPedigrees.clear();
 	UINT nPed = 0;
@@ -637,7 +637,7 @@ bool largePedigreeSample::prepareSample(population & pop)
 	//
 	// 2 means find till grandfather.
 	findOffspringAndSpouse(pop, 2, m_maxOffspring, "father_idx", "mother_idx",
-			       "spouse", "offspring");                    // ans = 1, 2
+	    "spouse", "offspring");                             // ans = 1, 2
 	//
 	pop.useAncestralPop(2);
 	m_validPedigrees.resize(pop.numSubPop());
@@ -828,7 +828,7 @@ population & largePedigreeSample::drawsample(population & pop)
 		//
 		size_t grandpar1 = tmp - grandIdx.begin();
 		DBG_FAILIF(pop.ind(grandpar1).info(spouseIdx) == -1., SystemError,
-			   "Grand parent's spouse is invalid");
+		    "Grand parent's spouse is invalid");
 		size_t grandpar2 = static_cast<size_t>(pop.ind(grandpar1).info(spouseIdx));
 		pop.ind(grandpar1).setSubPopID(newPedID);
 		pop.ind(grandpar2).setSubPopID(newPedID);
@@ -853,7 +853,7 @@ population & largePedigreeSample::drawsample(population & pop)
 					pop.ind(static_cast<ULONG>(spouse)).setSubPopID(newPedID);
 					ps++;
 					DBG_ASSERT(pop.ind(static_cast<ULONG>(spouse)).info(pedindexIdx) == pedID,
-						   ValueError, "Spouse does not belong to this pedigree, something wrong.");
+					    ValueError, "Spouse does not belong to this pedigree, something wrong.");
 					for (size_t x = 0; x < m_maxOffspring; ++x) {
 						InfoType off = pop.ind(*it).info(offspringIdx[x]);
 						if (off != -1)
@@ -871,7 +871,7 @@ population & largePedigreeSample::drawsample(population & pop)
 			}
 		}
 		DBG_FAILIF(ps != boost::get<1>(*ped), SystemError,
-			   "Pedigree sizes do not match, estimated " + toStr(boost::get<1>(*ped)) + " real: " + toStr(ps));
+		    "Pedigree sizes do not match, estimated " + toStr(boost::get<1>(*ped)) + " real: " + toStr(ps));
 	}
 	// just to make sure
 	pop.useAncestralPop(0);
@@ -886,7 +886,7 @@ population & largePedigreeSample::drawsample(population & pop)
 bool nuclearFamilySample::prepareSample(population & pop)
 {
 	DBG_FAILIF(pop.ancestralDepth() < 1, ValueError,
-		   "At least one ancestral populations are needed to draw large pedigrees");
+	    "At least one ancestral populations are needed to draw large pedigrees");
 	//
 	m_validPedigrees.clear();
 	UINT nPed = 0;
@@ -909,7 +909,7 @@ bool nuclearFamilySample::prepareSample(population & pop)
 	//
 	// 1 means find till parents
 	findOffspringAndSpouse(pop, 1, m_maxOffspring, "father_idx", "mother_idx",
-			       "spouse", "offspring");
+	    "spouse", "offspring");
 	// offspring index
 	m_validPedigrees.resize(pop.numSubPop());
 	size_t pedIdx = 0;
@@ -952,7 +952,7 @@ bool nuclearFamilySample::prepareSample(population & pop)
 		}
 		nPed += m_validPedigrees[sp].size();
 		DBG_DO(DBG_SELECTOR, cout << "Number of valid pedigrees in subpop " + toStr(sp) + " is "
-		       + toStr(m_validPedigrees[sp].size()) << endl);
+		    + toStr(m_validPedigrees[sp].size()) << endl);
 	}
 	pop.useAncestralPop(0);
 	pop.setIntVar("numPedigrees", nPed);

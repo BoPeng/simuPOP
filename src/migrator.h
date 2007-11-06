@@ -65,7 +65,6 @@ class migrator : public baseOperator
 {
 
 public:
-
 #define MigrByProbability  1
 #define MigrByProportion   2
 #define MigrByCounts       3
@@ -95,9 +94,9 @@ public:
 	   which migrate from subpopulation \c a to \c b with given rate \c r.
 	 */
 	migrator(const matrix & rate, int mode = MigrByProbability,
-		 vectoru fromSubPop = vectoru(), vectoru toSubPop = vectoru(),
-		 int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		 int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	         vectoru fromSubPop = vectoru(), vectoru toSubPop = vectoru(),
+	         int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)
 	{
@@ -105,10 +104,10 @@ public:
 		// rate is empty
 		if (!rate.empty()) {
 			DBG_FAILIF(!m_from.empty() && m_from.size() != rate.size(),
-				   ValueError, "Length of param fromSubPop must match rows of rate matrix.");
+			    ValueError, "Length of param fromSubPop must match rows of rate matrix.");
 
 			DBG_FAILIF(!m_to.empty() && m_to.size() != rate[0].size(),
-				   ValueError, "Length of param toSubPop must match columns of rate matrix.");
+			    ValueError, "Length of param toSubPop must match columns of rate matrix.");
 
 			setRates(rate, mode);
 		}
@@ -152,7 +151,6 @@ public:
 
 
 protected:
-
 	/// migration rate. its meaning is controled by m_mode
 	matrix m_rate;
 
@@ -193,23 +191,23 @@ public:
 	 \param stage default to \c PreMating
 	 */
 	pyMigrator(PyObject * rateFunc = NULL, int mode = MigrByProbability,
-		   vectoru fromSubPop = vectoru(), vectoru toSubPop = vectoru(),
-		   PyObject * indFunc = NULL,
-		   const vectoru & loci = vectoru(), PyObject * param = NULL,
-		   int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		   int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	           vectoru fromSubPop = vectoru(), vectoru toSubPop = vectoru(),
+	           PyObject * indFunc = NULL,
+	           const vectoru & loci = vectoru(), PyObject * param = NULL,
+	           int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: migrator(matrix(), mode, fromSubPop, toSubPop, stage, begin, end, step, at, rep, grp, infoFields),
 		m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(param)
 	{
 		// carray of python list/typle
 		DBG_FAILIF(rateFunc != NULL && !PyCallable_Check(rateFunc),
-			   ValueError, "Passed rateFunc is not a callable Python function.");
+		    ValueError, "Passed rateFunc is not a callable Python function.");
 		DBG_FAILIF(indFunc != NULL && !PyCallable_Check(indFunc),
-			   ValueError, "Passed indFunc is not a callable Python function.");
+		    ValueError, "Passed indFunc is not a callable Python function.");
 		DBG_FAILIF(rateFunc == NULL && indFunc == NULL,
-			   ValueError, "Please specify either rateFunc or indFunc");
+		    ValueError, "Please specify either rateFunc or indFunc");
 		DBG_FAILIF(rateFunc != NULL && indFunc != NULL,
-			   ValueError, "Please specify only one of rateFunc or indFunc");
+		    ValueError, "Please specify only one of rateFunc or indFunc");
 
 		if (m_rateFunc != NULL)
 			Py_INCREF(m_rateFunc);
@@ -299,18 +297,18 @@ public:
 	 \test src_splitSubPop.log Operator \c splitSubPop
 	 */
 	splitSubPop(UINT which = 0,  vectorlu sizes = vectorlu(), vectorf proportions = vectorf(),
-		    vectoru subPopID = vectoru(),
-		    bool randomize = true,
-		    int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		    int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	            vectoru subPopID = vectoru(),
+	            bool randomize = true,
+	            int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	            int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_which(which), m_subPopSizes(sizes), m_proportions(proportions),
 		m_subPopID(subPopID), m_randomize(randomize)
 	{
 		DBG_FAILIF(sizes.empty() && proportions.empty(), ValueError,
-			   "Please specify one of subPop and proportions.");
+		    "Please specify one of subPop and proportions.");
 		DBG_FAILIF(!sizes.empty() && !proportions.empty(), ValueError,
-			   "Please specify only one of subPop and proportions.");
+		    "Please specify only one of subPop and proportions.");
 	}
 
 
@@ -373,8 +371,8 @@ public:
 	 \param subPops subpopulations to be merged. Default to all.
 	 */
 	mergeSubPops(vectoru subPops = vectoru(), bool removeEmptySubPops = false,
-		     int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		     int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	             int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	             int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_subPops(subPops), m_removeEmptySubPops(removeEmptySubPops)
 	{

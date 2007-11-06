@@ -76,7 +76,7 @@ public:
 	 \param subPops subpopulations that the selector will apply to. Default to all.
 	 */
 	selector(const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		 int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr(1, "fitness"))
+	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr(1, "fitness"))
 		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields), m_subPops(subPops)
 	{
 	}
@@ -139,9 +139,9 @@ public:
 	 \test src_mapSelector.log Operator \c mapSelector
 	 */
 	mapSelector(vectoru loci, const strDict & fitness, bool phase = false,
-		    const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		    vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-		    const vectorstr & infoFields = vectorstr(1, "fitness")) :
+	            const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	            const vectorstr & infoFields = vectorstr(1, "fitness")) :
 		selector(subPops, stage, begin, end, step, at, rep, grp, infoFields),
 		m_loci(loci), m_dict(fitness), m_phase(phase)
 	{
@@ -199,7 +199,6 @@ private:
 class maSelector : public selector
 {
 public:
-
 	/// create a multiple allele selector
 	/**
 	 \param fitness for the single locus case, \c fitness is an array of fitness of AA, Aa, aa.
@@ -217,15 +216,15 @@ public:
 	 \test src_maSelector.log Operator \c maSelector
 	 */
 	maSelector(vectoru loci, const vectorf & fitness, const vectora & wildtype,
-		   const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		   vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-		   const vectorstr & infoFields = vectorstr(1, "fitness")) :
+	           const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+	           vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	           const vectorstr & infoFields = vectorstr(1, "fitness")) :
 		selector(subPops, stage, begin, end, step, at, rep, grp, infoFields),
 		m_loci(loci), m_fitness(fitness), m_wildtype(wildtype)
 	{
 		DBG_ASSERT(m_fitness.size() == static_cast<UINT>(pow(static_cast<double>(3),
-								     static_cast<double>(loci.size()))),
-			   ValueError, "Please specify fitness for each combination of genotype.");
+		                                                     static_cast<double>(loci.size()))),
+		    ValueError, "Please specify fitness for each combination of genotype.");
 	};
 
 	virtual ~maSelector()
@@ -279,7 +278,6 @@ private:
 class mlSelector : public selector
 {
 public:
-
 #define SEL_None 0
 #define SEL_Multiplicative 1
 #define SEL_Additive 2
@@ -297,16 +295,16 @@ public:
 	 \test src_mlSelector.log Operator \c mlSelector
 	 */
 	mlSelector(const vectorop selectors, int mode = SEL_Multiplicative,
-		   const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		   vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-		   const vectorstr & infoFields = vectorstr(1, "fitness")) :
+	           const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+	           vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	           const vectorstr & infoFields = vectorstr(1, "fitness")) :
 		selector(subPops, stage, begin, end, step, at, rep, grp, infoFields),
 		m_selectors(0), m_mode(mode)
 	{
 		DBG_FAILIF(selectors.empty(), ValueError, "Please specify at least one selector.");
 		for (vectorop::const_iterator s = selectors.begin(), sEnd = selectors.end(); s != sEnd; ++s) {
 			DBG_ASSERT( (*s)->__repr__().substr(10, 8) == "selector", ValueError,
-				   "Expecting a list of fitness calculator. Given " + (*s)->__repr__());
+			    "Expecting a list of fitness calculator. Given " + (*s)->__repr__());
 			m_selectors.push_back( (*s)->clone());
 		}
 	};
@@ -379,9 +377,9 @@ public:
 	 */
 	// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
 	pySelector(vectoru loci, PyObject * func, const vectoru & subPops = vectoru(),
-		   int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		   vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-		   const vectorstr & infoFields = vectorstr(1, "fitness")) :
+	           int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+	           vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	           const vectorstr & infoFields = vectorstr(1, "fitness")) :
 		selector(subPops, stage, begin, end, step, at, rep, grp, infoFields),
 		m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
@@ -392,7 +390,7 @@ public:
 		m_func = func;
 
 		DBG_FAILIF(loci.empty(), ValueError,
-			   "Please specify susceptibility loci");
+		    "Please specify susceptibility loci");
 	};
 
 	/// destructor
@@ -438,7 +436,6 @@ public:
 
 
 private:
-
 	/// susceptibility loci
 	vectoru m_loci;
 

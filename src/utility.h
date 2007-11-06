@@ -47,10 +47,10 @@
 #include "simuPOP_cfg.h"
 
 #ifdef SIMUMPI
- #include "boost/parallel/mpi.hpp"
- #ifndef SWIG
+#include "boost/parallel/mpi.hpp"
+#ifndef SWIG
 namespace mpi = boost::parallel::mpi;
- #endif
+#endif
 #endif
 
 #include <iostream>
@@ -139,7 +139,6 @@ int simuPOP_getch();
 }
 
 
-
 namespace std {
 /// CPPONLY how to output any std::pair
 template<class T1, class T2>
@@ -174,7 +173,6 @@ ostream & operator<<(ostream & out, const intDict & dict);
 unsigned pow3(unsigned n);
 
 }
-
 
 
 namespace simuPOP {
@@ -221,7 +219,6 @@ template<typename T, typename Ref, typename Ptr>
 class GappedIterator
 {
 public:
-
 	typedef std::random_access_iterator_tag iterator_category;
 	typedef T value_type;
 	typedef long int difference_type;
@@ -288,7 +285,7 @@ public:
 	reference operator[](difference_type diff) const
 	{
 		DBG_FAILIF((diff > 0 && diff * m_step < 0) || (diff < 0 && diff * m_step > 0),
-			   IndexError, "Index difference exceeds integer range. Your may need a 64bit computer to simulate such a big population.");
+		    IndexError, "Index difference exceeds integer range. Your may need a 64bit computer to simulate such a big population.");
 
 		return *(m_ptr + diff * m_step);
 	}
@@ -334,7 +331,7 @@ public:
 	GappedIterator & operator+=(difference_type diff)
 	{
 		DBG_FAILIF((diff > 0 && diff * m_step < 0) || (diff < 0 && diff * m_step > 0),
-			   IndexError, "Index difference exceeds integer range. Your may need a 64bit computer to simulate such a big population.");
+		    IndexError, "Index difference exceeds integer range. Your may need a 64bit computer to simulate such a big population.");
 
 		m_ptr += diff * m_step;
 		return *this;
@@ -345,7 +342,7 @@ public:
 	GappedIterator & operator-=(difference_type diff)
 	{
 		DBG_FAILIF((diff > 0 && diff * m_step < 0) || (diff < 0 && diff * m_step > 0),
-			   IndexError, "Index difference exceeds integer range. Your may need a 64bit computer to simulate such a big population.");
+		    IndexError, "Index difference exceeds integer range. Your may need a 64bit computer to simulate such a big population.");
 
 		m_ptr -= diff * m_step;
 		return *this;
@@ -487,7 +484,7 @@ PyObject * Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end
 /// CPPONLY
 #ifdef SIMUMPI
 PyObject * Allele_Vec_As_NumArray(UINT shift, ULONG size,
-				  UINT trunk_size, vectoru map);
+                                  UINT trunk_size, vectoru map);
 
 #else
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
@@ -513,7 +510,6 @@ char * NumArray_Data(PyObject * obj);
 class SharedVariables
 {
 public:
-
 	/// CPPONLY
 	SharedVariables() : m_dict(NULL), m_ownVars(false)
 	{
@@ -681,7 +677,6 @@ public:
 	void fromString(const string & vars);
 
 private:
-
 	/// the list
 	PyObject * m_dict;
 
@@ -767,7 +762,7 @@ class Expression
 {
 public:
 	Expression(const string & expr = "", const string & stmts = "",
-		   PyObject * locals = NULL)
+	           PyObject * locals = NULL)
 		: m_expr(NULL), m_stmts(NULL), m_locals(locals)
 	{
 		if (m_locals == NULL)
@@ -914,7 +909,6 @@ public:
 
 
 private:
-
 	/// type of the stream
 	streamType m_type;
 
@@ -939,7 +933,6 @@ private:
 class OstreamManager
 {
 public:
-
 	/// CPPONLY
 	OstreamManager();
 
@@ -960,7 +953,6 @@ public:
 	void closeAll();
 
 private:
-
 	typedef map<string, StreamElem> ostreamMap;
 	typedef map<string, StreamElem>::iterator ostreamMapIterator;
 	typedef map<string, StreamElem>::value_type ostreamMapValue;
@@ -1008,7 +1000,6 @@ OstreamManager & ostreamManager();
 class StreamProvider
 {
 public:
-
 	/// CPPONLY constructor. set the name parser
 	StreamProvider(const string & output, const string & outputExpr);
 
@@ -1059,7 +1050,6 @@ public:
 	void closeOstream();
 
 private:
-
 	/// we need to set
 	///  m_flagNoOutput
 	///  m_flagUseDefault (when no file is specified.)
@@ -1280,7 +1270,6 @@ public:
 
 
 private:
-
 	/// global random number generator
 	gsl_rng * m_RNG;
 
@@ -1465,7 +1454,6 @@ private:
 class BernulliTrials
 {
 public:
-
 	/// CPPONLY
 	BernulliTrials(RNG & rng);
 
@@ -1609,10 +1597,10 @@ string ModulePlatForm();
 /// CPPONLY
 void copyGenotype(GenoIterator fr, GenoIterator to, size_t n);
 
- #ifndef OPTIMIZED
+#ifndef OPTIMIZED
 void testCopyGenotype();
 
- #endif
+#endif
 #endif
 
 /// CPPONLY initialize module simuPOP when using "import simuPOP"
