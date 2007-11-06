@@ -507,7 +507,7 @@ public:
 
 
 	/// CPPONLY
-	bool infoOrdered()
+	bool infoOrdered() const
 	{
 		return m_infoOrdered;
 	}
@@ -1340,14 +1340,14 @@ private:
 public:
 	/// CPPONLY
 	/// selection is on at any subpopulation?
-	bool selectionOn()
+	bool selectionOn() const
 	{
 		return !m_selectionFlags.empty();
 	}
 
 
 	/// CPPONLY
-	bool selectionOn(UINT sp)
+	bool selectionOn(UINT sp) const
 	{
 		DBG_ASSERT(m_selectionFlags.empty() || m_selectionFlags.size() == numSubPop(),
 			   IndexError, "Selection flags are wrong");

@@ -69,7 +69,7 @@ public:
 
 	/// generate \c numOff offspring
 	virtual void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
-				       population::IndIterator & offBegin) = 0;
+	                               population::IndIterator & offBegin) = 0;
 
 	virtual ~offspringGenerator()
 	{
@@ -110,11 +110,11 @@ public:
 
 
 	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
-			       population::IndIterator & offBegin);
+	                       population::IndIterator & offBegin);
 
 	// the default method to produce offspring
 	void formOffspring(individual * dad, individual * mom,
-			   population::IndIterator & it);
+	                   population::IndIterator & it);
 
 };
 
@@ -128,8 +128,9 @@ public:
 	}
 
 
+	// the default method to produce offspring
 	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
-			       population::IndIterator & offBegin);
+	                       population::IndIterator & offBegin);
 
 };
 
@@ -143,13 +144,117 @@ public:
 	}
 
 
-	void generateOffspring(population & parent, individual * dad, individual *, UINT numOff,
-			       population::IndIterator & offBegin);
-
 	// the default method to produce offspring
+	void generateOffspring(population & pop, individual * parent, individual *, UINT numOff,
+	                       population::IndIterator & offBegin);
+
 	void formOffspring(individual * parent, population::IndIterator & it);
 
 };
+
+
+// a base class for parent choosers
+class parentChooser
+{
+public:
+	typedef std::pair<individual *, individual *> individualPair;
+
+public:
+	parentChooser() { }
+
+	virtual individual * chooseParent()
+	{
+		return NULL;
+	}
+
+
+	virtual individualPair chooseParents()
+	{
+		return individualPair(NULL, NULL);
+	}
+
+
+	virtual ~parentChooser() { }
+};
+
+/// choose a parent randomly
+class randomParentChooser : public parentChooser
+{
+public:
+	randomParentChooser(population & pop, size_t sp);
+
+	individual * chooseParent();
+
+private:
+	bool m_selection;
+	/// accumulative fitness
+	Weightedsampler m_sampler;
+	/// starting individual
+	population::IndIterator m_begin;
+	/// individuals to choose
+	size_t m_size;
+};
+
+/// choose two parents randomly, considering selection
+class randomParentsChooser : public parentChooser
+{
+public:
+	randomParentsChooser(population & pop, size_t sp);
+
+	individualPair chooseParents();
+
+	ULONG numMale() { return m_numMale; }
+	ULONG numFemale() { return m_numFemale; }
+private:
+	bool m_selection;
+
+	ULONG m_numMale;
+	ULONG m_numFemale;
+	
+	/// internal index to female/males.
+	vectorlu m_maleIndex;
+	vectorlu m_femaleIndex;
+
+	vectorf m_maleFitness;
+	vectorf m_femaleFitness;
+
+	// weighted sampler
+	Weightedsampler m_malesampler;
+	Weightedsampler m_femalesampler;
+
+	/// starting individual of the whole population
+	/// because m_maleIndex is relative to the whole population
+	population::IndIterator m_begin;
+};
+
+/// choose a parent using a Python generator,
+/// does not consider selection
+class pyParentChooser : public parentChooser
+{
+public:
+	pyParentChooser(const population & pop, bool selection)
+	{
+	}
+
+
+	individual * chooseParent() {};
+
+};
+
+/// choose two parents using a Python generator
+/// does not consider selection
+class pyParentsChooser : public parentChooser
+{
+public:
+	pyParentsChooser(const population & pop, bool selection)
+	{
+	}
+
+
+	individual * chooseParent() {};
+
+};
+
 
 /// the base class of all mating schemes - a required parameter of \c simulator
 /**
@@ -376,12 +481,12 @@ public:
 	 \note All parameters are ignored!
 	 */
 	noMating(double numOffspring = 1.0,
-		 PyObject * numOffspringFunc = NULL,
-		 UINT maxNumOffspring = 0,
-		 UINT mode = MATE_NumOffspring,
-		 vectorlu newSubPopSize = vectorlu(),
-		 string newSubPopSizeExpr = "",
-		 PyObject * newSubPopSizeFunc = NULL)
+	         PyObject * numOffspringFunc = NULL,
+	         UINT maxNumOffspring = 0,
+	         UINT mode = MATE_NumOffspring,
+	         vectorlu newSubPopSize = vectorlu(),
+	         string newSubPopSizeExpr = "",
+	         PyObject * newSubPopSizeFunc = NULL)
 	{
 
 	}
@@ -444,17 +549,16 @@ public:
 	   Please refer to class \c mating for parameter descriptions.
 	 */
 	binomialSelection(double numOffspring = 1.,
-			  PyObject * numOffspringFunc = NULL,
-			  UINT maxNumOffspring = 0,
-			  UINT mode = MATE_NumOffspring,
-			  vectorlu newSubPopSize = vectorlu(),
-			  string newSubPopSizeExpr = "",
-			  PyObject * newSubPopSizeFunc = NULL)
+	                  PyObject * numOffspringFunc = NULL,
+	                  UINT maxNumOffspring = 0,
+	                  UINT mode = MATE_NumOffspring,
+	                  vectorlu newSubPopSize = vectorlu(),
+	                  string newSubPopSizeExpr = "",
+	                  PyObject * newSubPopSizeFunc = NULL)
 		: mating(numOffspring,
-			 numOffspringFunc, maxNumOffspring, mode,
-			 newSubPopSize, newSubPopSizeExpr,
-			 newSubPopSizeFunc),
-		m_sampler(rng())
+		         numOffspringFunc, maxNumOffspring, mode,
+		         newSubPopSize, newSubPopSizeExpr,
+		         newSubPopSizeFunc)
 	{
 	}
 
@@ -502,9 +606,6 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 protected:
-	/// accumulative fitness
-	Weightedsampler m_sampler;
-
 #ifndef OPTIMIZED
 	///
 	vectori m_famSize;
@@ -532,20 +633,17 @@ public:
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
 	randomMating(double numOffspring = 1.,
-		     PyObject * numOffspringFunc = NULL,
-		     UINT maxNumOffspring = 0,
-		     UINT mode = MATE_NumOffspring,
-		     vectorlu newSubPopSize = vectorlu(),
-		     PyObject * newSubPopSizeFunc = NULL,
-		     string newSubPopSizeExpr = "",
-		     bool contWhenUniSex = true)
+	             PyObject * numOffspringFunc = NULL,
+	             UINT maxNumOffspring = 0,
+	             UINT mode = MATE_NumOffspring,
+	             vectorlu newSubPopSize = vectorlu(),
+	             PyObject * newSubPopSizeFunc = NULL,
+	             string newSubPopSizeExpr = "",
+	             bool contWhenUniSex = true)
 		: mating(numOffspring,
-			 numOffspringFunc, maxNumOffspring, mode,
-			 newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
-		m_contWhenUniSex(contWhenUniSex),
-		m_maleIndex(0), m_femaleIndex(0),
-		m_maleFitness(0), m_femaleFitness(0),
-		m_malesampler(rng()), m_femalesampler(rng())
+		         numOffspringFunc, maxNumOffspring, mode,
+		         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+		m_contWhenUniSex(contWhenUniSex)
 	{
 	}
 
@@ -605,15 +703,6 @@ protected:
 	/// same sex mating will occur if m_contWhenUniSex is set.
 	/// otherwise, an exception will be thrown.
 	bool m_contWhenUniSex;
-
-	/// internal index to female/males.
-	vectorlu m_maleIndex, m_femaleIndex;
-
-	vectorf m_maleFitness, m_femaleFitness;
-
-	// weighted sampler
-	Weightedsampler m_malesampler, m_femalesampler;
-
 #ifndef OPTIMIZED
 	///
 	vectori m_famSize;
@@ -622,7 +711,7 @@ protected:
 
 /// CPPONLY
 void countAlleles(population & pop, int subpop, const vectori & loci, const vectori & alleles,
-		  vectorlu & numAllele);
+                  vectorlu & numAllele);
 
 /// a controlled mating scheme
 /**
@@ -648,12 +737,12 @@ public:
 	   	the size of \c loci, it will be interpreted as <tt>[low1, high1, low2, high2, ...]</tt>.
 	 */
 	controlledMating(
-			 mating & matingScheme,
-			 vectori loci,
-			 vectori alleles,
-			 PyObject * freqFunc,
-			 double range = 0.01
-			 )
+	                 mating & matingScheme,
+	                 vectori loci,
+	                 vectori alleles,
+	                 PyObject * freqFunc,
+	                 double range = 0.01
+	                 )
 		: m_loci(loci), m_alleles(alleles),
 		m_freqFunc(freqFunc),
 		m_range(range)
@@ -738,7 +827,7 @@ private:
 
 /// CPPONLY
 void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loci, const vectori & alleles,
-			vectoru & expAlleles);
+                        vectoru & expAlleles);
 
 /// a controlled random mating scheme
 /** This is the controlled random mating scheme described in
@@ -767,24 +856,24 @@ public:
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
 	controlledRandomMating(
-			       vectori loci,
-			       vectori alleles,
-			       PyObject * freqFunc,
-			       int acceptScheme = 0,
-			       double numOffspring = 1.,
-			       PyObject * numOffspringFunc = NULL,
-			       UINT maxNumOffspring = 0,
-			       UINT mode = MATE_NumOffspring,
-			       vectorlu newSubPopSize = vectorlu(),
-			       PyObject * newSubPopSizeFunc = NULL,
-			       string newSubPopSizeExpr = "",
-			       bool contWhenUniSex = true)
+	                       vectori loci,
+	                       vectori alleles,
+	                       PyObject * freqFunc,
+	                       int acceptScheme = 0,
+	                       double numOffspring = 1.,
+	                       PyObject * numOffspringFunc = NULL,
+	                       UINT maxNumOffspring = 0,
+	                       UINT mode = MATE_NumOffspring,
+	                       vectorlu newSubPopSize = vectorlu(),
+	                       PyObject * newSubPopSizeFunc = NULL,
+	                       string newSubPopSizeExpr = "",
+	                       bool contWhenUniSex = true)
 		: randomMating(numOffspring,
-			       numOffspringFunc, maxNumOffspring, mode,
-			       newSubPopSize,
-			       newSubPopSizeFunc,
-			       newSubPopSizeExpr,
-			       contWhenUniSex),
+		               numOffspringFunc, maxNumOffspring, mode,
+		               newSubPopSize,
+		               newSubPopSizeFunc,
+		               newSubPopSizeExpr,
+		               contWhenUniSex),
 		m_loci(loci),
 		m_alleles(alleles),
 		m_freqFunc(freqFunc),
@@ -902,22 +991,22 @@ public:
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
 	pyMating(PyObject * parentsGenerator = NULL,
-		 double numOffspring = 1.,
-		 PyObject * numOffspringFunc = NULL,
-		 UINT maxNumOffspring = 0,
-		 UINT mode = MATE_NumOffspring,
-		 vectorlu newSubPopSize = vectorlu(),
-		 string newSubPopSizeExpr = "",
-		 PyObject * newSubPopSizeFunc = NULL
-		 )
+	         double numOffspring = 1.,
+	         PyObject * numOffspringFunc = NULL,
+	         UINT maxNumOffspring = 0,
+	         UINT mode = MATE_NumOffspring,
+	         vectorlu newSubPopSize = vectorlu(),
+	         string newSubPopSizeExpr = "",
+	         PyObject * newSubPopSizeFunc = NULL
+	         )
 		: mating(numOffspring,
-			 numOffspringFunc, maxNumOffspring, mode,
-			 newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+		         numOffspringFunc, maxNumOffspring, mode,
+		         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
 		m_parentsGenerator(NULL)
 	{
 #if PY_VERSION_HEX < 0x02040000
 		throw SystemError("Your Python version does not have good support for generator"
-				  " so operator pyMating can not be used.");
+		    " so operator pyMating can not be used.");
 #else
 		if (!PyGen_Check(parentsGenerator))
 			throw ValueError("Passed variable is not a Python generator.");

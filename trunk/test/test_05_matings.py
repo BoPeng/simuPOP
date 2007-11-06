@@ -294,7 +294,10 @@ class TestMatingSchemes(unittest.TestCase):
     
     def testPyMating(self):
         ' test pyMating '
-
+        ver = sys.version_info[:3]
+        # only python >= 2.4 supports pymating
+        if ver[0] <= 2 and ver[1] < 4:
+            return
         def mate(par, off):
             ''' a function that get aprental, offspring generations 
                 it will select all male and add 1 to their age,
