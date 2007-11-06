@@ -26,19 +26,16 @@
 namespace simuPOP {
 offspringGenerator::offspringGenerator(const population & pop,
                                        vector<baseOperator *> & ops)
-	: m_bt(rng()), m_ops(ops)
+	: m_ops(ops)
 {
+#ifndef OPTIMIZED
 	m_genoStruIdx = pop.genoStruIdx();
-	m_formOffGenotype = formOffspringGenotype();
-	m_hasSexChrom = pop.sexChrom();
-	vectorf prob(2 * pop.numChrom(), 0.5);
-	if (m_formOffGenotype)
-		m_bt.setParameter(prob, pop.popSize());
-	m_chIdx = pop.chromIndex();
+#endif
+	m_formOffGenotype = checkFormOffspringGenotype();
 }
 
 
-bool offspringGenerator::formOffspringGenotype()
+bool offspringGenerator::checkFormOffspringGenotype()
 {
 	for (vector<baseOperator *>::const_iterator iop = m_ops.begin();
 	     iop != m_ops.end(); ++iop) {
@@ -66,8 +63,9 @@ void cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 
 		accept = true;
 		// apply during mating operators
-		for (vector<baseOperator *>::iterator iop = m_ops.begin(),
-		                                      iopEnd = m_ops.end(); iop != iopEnd;  ++iop) {
+		vector<baseOperator *>::iterator iop = m_ops.begin();
+		vector<baseOperator *>::iterator iopEnd = m_ops.end();
+		for (; iop != iopEnd;  ++iop) {
 			try {
 				// During mating operator might reject this offspring.
 				if (!(*iop)->applyDuringMating(pop, it, parent, NULL)) {
@@ -85,6 +83,19 @@ void cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 			count++;
 		}
 	}
+}
+
+
+mendelianOffspringGenerator::mendelianOffspringGenerator(const population & pop,
+                                                         vector<baseOperator *> & ops)
+	: offspringGenerator(pop, ops), m_bt(rng())
+{
+	m_hasSexChrom = pop.sexChrom();
+	if (m_formOffGenotype) {
+		vectorf prob(2 * pop.numChrom(), 0.5);
+		m_bt.setParameter(prob, pop.popSize());
+	}
+	m_chIdx = pop.chromIndex();
 }
 
 
