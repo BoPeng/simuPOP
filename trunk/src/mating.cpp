@@ -480,21 +480,21 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 }
 
 
-pyParentChooser::pyParentChooser(population & pop, size_t sp)
+pyParentChooser::pyParentChooser(population & pop, size_t sp, PyObject * parentGenerator)
 	: parentChooser(1),
-	m_parentsGenerator(NULL)
+	m_parentGenerator(NULL)
 {
 #if PY_VERSION_HEX < 0x02040000
 	throw SystemError("Your Python version does not have good support for generator"
 	    " so operator pyMating can not be used.");
 #else
-	if (!PyGen_Check(parentsGenerator))
+	if (!PyGen_Check(parentGenerator))
 		throw ValueError("Passed variable is not a Python generator.");
 
-	Py_XINCREF(parentsGenerator);
-	m_parentsGenerator = parentsGenerator;
+	Py_XINCREF(parentGenerator);
+	m_parentGenerator = parentGenerator;
 #endif
-#ifndef OPTIMZIED
+#ifndef OPTIMIZED
 	m_size = pop.subPopSize(sp);
 #endif
 	m_begin = pop.indBegin(sp);
@@ -503,7 +503,7 @@ pyParentChooser::pyParentChooser(population & pop, size_t sp)
 
 individual * pyParentChooser::chooseParent()
 {
-	PyObject * pyResult = PyEval_CallObject(m_parentsGenerator, NULL);
+	PyObject * pyResult = PyEval_CallObject(m_parentGenerator, NULL);
 
 	if (pyResult == NULL) {
 		PyErr_Print();
@@ -517,6 +517,48 @@ individual * pyParentChooser::chooseParent()
 	    "Returned index is greater than subpopulation size");
 #endif
 	return & * (m_begin + idx);
+}
+
+
+pyParentsChooser::pyParentsChooser(population & pop, size_t sp, PyObject * parentsGenerator)
+	: parentChooser(1),
+	m_parentsGenerator(NULL)
+{
+#if PY_VERSION_HEX < 0x02040000
+	throw SystemError("Your Python version does not have good support for generator"
+	    " so operator pyMating can not be used.");
+#else
+	if (!PyGen_Check(parentsGenerator))
+		throw ValueError("Passed variable is not a Python generator.");
+
+	Py_XINCREF(parentsGenerator);
+	m_parentsGenerator = parentsGenerator;
+#endif
+#ifndef OPTIMIZED
+	m_size = pop.subPopSize(sp);
+#endif
+	m_begin = pop.indBegin(sp);
+}
+
+
+parentChooser::individualPair pyParentsChooser::chooseParents()
+{
+	PyObject * pyResult = PyEval_CallObject(m_parentsGenerator, NULL);
+
+	if (pyResult == NULL) {
+		PyErr_Print();
+		throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n");
+	}
+	vectori idx;
+	PyObj_As_IntArray(pyResult, idx);
+	DBG_FAILIF(idx.size() != 2, ValueError, "An array of size 2 is expected");
+
+	Py_DECREF(pyResult);
+#ifndef OPTIMIZED
+	DBG_ASSERT(static_cast<unsigned>(idx[0]) <= m_size && static_cast<unsigned>(idx[1]) <= m_size,
+	    ValueError, "Returned index is greater than subpopulation size");
+#endif
+	return std::make_pair(& * (m_begin + idx[0]), & * (m_begin + idx[1]));
 }
 
 
@@ -1317,14 +1359,80 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
 	mendelianOffspringGenerator og(pop, ops);
+
+	DBG_ASSERT(m_parentChooser.size() == 1 || m_parentChooser.size() == pop.numSubPop(),
+	    ValueError, "You should specify one parentChooser, or one parentChooser for each subpopulation");
+
+	DBG_ASSERT(m_offspringGenerator.size() == 1 || m_offspringGenerator.size() == pop.numSubPop(),
+	    ValueError, "You should specify one offspringGenerator, or one offspringGenerator for each subpopulation");
+
+	size_t pcIdx = 0;
 	/// random mating happens within each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
+		ULONG spSize = pop.subPopSize(sp);
+		if (spSize == 0)
+			continue;
+
+		int pcType = m_parentChooser.size() > 1 ? m_parentChooser[sp] : m_parentChooser[0];
+		parentChooser * pc = NULL;
+
+		switch (pcType) {
+		case MATE_RandomParentChooser:
+			pc = new randomParentChooser(pop, sp);
+			break;
+		case MATE_RandomParentsChooser:
+			pc = new randomParentsChooser(pop, sp);
+			break;
+		case MATE_PyParentChooser:
+			DBG_ASSERT(pcIdx < m_pyChoosers.size(), IndexError,
+			    "Not enough of python parent chooser");
+			pc = new pyParentChooser(pop, sp, m_pyChoosers[pcIdx++]);
+			break;
+		case MATE_PyParentsChooser:
+			DBG_ASSERT(pcIdx < m_pyChoosers.size(), IndexError,
+			    "Not enough of python parent chooser");
+			pc = new pyParentsChooser(pop, sp, m_pyChoosers[pcIdx++]);
+			break;
+		default:
+			throw ValueError("Unknown parentChooser type");
+		}
+
+		int ogType = m_offspringGenerator.size() > 1 ? m_offspringGenerator[sp] : m_offspringGenerator[0];
+		offspringGenerator * og = NULL;
+		switch (ogType) {
+		case MATE_CloneOffspringGenerator:
+			og = new cloneOffspringGenerator(pop, ops);
+			DBG_ASSERT(pc->numParents() == 1, ValueError,
+			    "Imcompatible parent chooser and offspring generator");
+			break;
+		case MATE_MendelianOffspringGenerator:
+			og = new mendelianOffspringGenerator(pop, ops);
+			DBG_ASSERT(pc->numParents() == 2, ValueError,
+			    "Imcompatible parent chooser and offspring generator");
+			break;
+		case MATE_SelfingOffspringGenerator:
+			og = new selfingOffspringGenerator(pop, ops);
+			DBG_ASSERT(pc->numParents() == 1, ValueError,
+			    "Imcompatible parent chooser and offspring generator");
+			break;
+		default:
+			throw ValueError("Unknown offspring generator type");
+		}
+
+
 		// generate scratch.subPopSize(sp) individuals.
 		population::IndIterator it = scratch.indBegin(sp);
 		population::IndIterator itEnd = scratch.indEnd(sp);
 		UINT numOS;
 		while (it != itEnd) {
-			individual * dad, * mom;
+			individual * dad = NULL;
+			individual * mom = NULL;
+			if (pc->numParents() == 2) {
+				parentChooser::individualPair const parents = pc->chooseParents();
+				dad = parents.first;
+				mom = parents.second;
+			} else
+				dad = pc->chooseParent();
 
 			// record family size (this may be wrong for the last family)
 			numOS = numOffspring(pop.gen());
@@ -1333,8 +1441,10 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 			// record family size (this may be wrong for the last family)
 			DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
 			//
-			og.generateOffspring(pop, dad, mom, numOS, it);
+			og->generateOffspring(pop, dad, mom, numOS, it);
 		}
+		delete og;
+		delete pc;
 	}                                                                                         // each subPop
 
 	if (submit)
