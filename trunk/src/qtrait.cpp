@@ -73,7 +73,7 @@ double mapQuanTrait::qtrait(individual * ind)
 	strDict::iterator pos = m_dict.find(key);
 
 	DBG_ASSERT(pos != m_dict.end(), ValueError,
-		   "No qtrait value for genotype " + key);
+	    "No qtrait value for genotype " + key);
 
 	return rng().randNormal(pos->second, m_sigma) ;
 }
@@ -129,15 +129,15 @@ double pyQuanTrait::qtrait(individual * ind)
 		m_alleles.resize(m_len);
 #ifdef SIMUMPI
 		m_numArray = Allele_Vec_As_NumArray(m_alleles.begin(), m_alleles.end(),
-						    m_alleles.size(), m_alleles.size(), 0, m_alleles.size());
+		                 m_alleles.size(), m_alleles.size(), 0, m_alleles.size());
 #else
 		m_numArray = Allele_Vec_As_NumArray(m_alleles.begin(), m_alleles.end() );
 #endif
 	}
 
 	DBG_FAILIF(static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),
-		   SystemError,
-		   "Length of m_len is wrong. Have you changed pop type?");
+	    SystemError,
+	    "Length of m_len is wrong. Have you changed pop type?");
 
 	UINT pEnd = ind->ploidy();
 	for (size_t i = 0, iEnd = m_loci.size(), j = 0; i < iEnd; ++i)

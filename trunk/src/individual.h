@@ -36,9 +36,9 @@
 //
 // the following is required by a vc7.1 bug.
 #if  defined (_WIN32) || defined (__WIN32__)
- #include <boost/archive/binary_iarchive.hpp>
- #include <boost/archive/binary_oarchive.hpp>
- #include <fstream>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <fstream>
 using std::ofstream;
 using std::ifstream;
 #endif                                                                                    // win32
@@ -119,7 +119,6 @@ protected:
 	static const size_t m_flagShallowCopied   = 4;
 
 public:
-
 	///  @name constructor, destructor etc
 	//@{
 	///
@@ -458,7 +457,7 @@ public:
 		int idx = infoIdx(name);
 
 		DBG_ASSERT(idx >= 0, IndexError,
-			   "Info name " + name + " is not a valid info field name");
+		    "Info name " + name + " is not a valid info field name");
 		return m_infoPtr[idx];
 	}
 
@@ -477,7 +476,7 @@ public:
 		int idx = infoIdx(name);
 
 		DBG_ASSERT(idx >= 0, IndexError,
-			   "Info name " + name + " is not a valid info field name");
+		    "Info name " + name + " is not a valid info field name");
 		m_infoPtr[idx] = value;
 	}
 
@@ -639,8 +638,8 @@ public:
 	void display(ostream & out, int width = 1, const vectori & chrom = vectori(), const vectori & loci = vectori() );
 
 	//@}
-private:
 
+private:
 	friend class boost::serialization::access;
 
 	template<class Archive>
@@ -682,7 +681,6 @@ private:
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 
 protected:
-
 	// internal flag. Can be used to perform many things.
 	// bitset<3> was previously used but that will take 4 bytes.
 	unsigned char m_flags;
@@ -710,7 +708,6 @@ protected:
 	InfoIterator m_infoPtr;
 };
 }
-
 
 
 #ifndef SWIG

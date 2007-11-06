@@ -33,16 +33,16 @@ namespace io = boost::iostreams;
 namespace simuPOP {
 
 simulator::simulator(const population & pop,
-		     mating & matingScheme,
-		     bool stopIfOneRepStops,
-		     bool applyOpToStoppedReps,
-		     int rep, vectori grp)
+                     mating & matingScheme,
+                     bool stopIfOneRepStops,
+                     bool applyOpToStoppedReps,
+                     int rep, vectori grp)
 	: m_gen(0), m_curRep(0), m_numRep(rep), m_groups(0),
 	m_stopIfOneRepStops(stopIfOneRepStops),
 	m_applyOpToStoppedReps(applyOpToStoppedReps)
 {
 	DBG_ASSERT(m_numRep >= 1, ValueError,
-		   "Number of replicates should be greater than or equal one.");
+	    "Number of replicates should be greater than or equal one.");
 
 	DBG_DO(DBG_SIMULATOR, cout << "Creating simulator " << endl);
 
@@ -58,14 +58,14 @@ simulator::simulator(const population & pop,
 	m_scratchPop = new population(pop);
 
 	DBG_FAILIF(m_scratchPop == NULL,
-		   SystemError, "Fail to create scratch population");
+	    SystemError, "Fail to create scratch population");
 
 	try {
 		for (UINT i = 0; i < m_numRep; ++i) {
 			m_ptrRep[i] = new population(pop);
 
 			DBG_FAILIF(m_ptrRep[i] == NULL,
-				   SystemError, "Fail to create new replicate");
+			    SystemError, "Fail to create new replicate");
 
 			// set replication number
 			m_ptrRep[i]->setRep(i);
@@ -102,16 +102,16 @@ simulator::~simulator()
 	delete m_matingScheme;
 
 	DBG_DO(DBG_SIMULATOR, cout << "populations have been erased. " << endl
-				   << "If you have ever used population() function to access some of the replicates, " << endl
-				   << "these referenced population will not be working now." << endl);
+	                           << "If you have ever used population() function to access some of the replicates, " << endl
+	                           << "these referenced population will not be working now." << endl);
 }
 
 
 simulator * simulator::clone() const
 {
 	simulator * simu = new simulator(population(0),
-					 *m_matingScheme, m_stopIfOneRepStops,
-					 m_applyOpToStoppedReps, m_numRep, m_groups);
+	                       *m_matingScheme, m_stopIfOneRepStops,
+	                       m_applyOpToStoppedReps, m_numRep, m_groups);
 
 	for (size_t i = 0; i < m_numRep; ++i)
 		simu->setPopulation(*m_ptrRep[i], i);
@@ -135,14 +135,14 @@ void simulator::addInfoField(const string & field, double init)
 	for (UINT i = 0; i < m_numRep; ++i) {
 		m_ptrRep[i]->addInfoField(field, init);
 		DBG_ASSERT(genoStruIdx() == m_ptrRep[i]->genoStruIdx(),
-			   ValueError, "Genotypic structure of one of the "
-			   "replicates does not agree with the structure of the simulator");
+		    ValueError, "Genotypic structure of one of the "
+		    "replicates does not agree with the structure of the simulator");
 	}
 	// and the scratch pop
 	m_scratchPop->addInfoField(field, init);
 	DBG_ASSERT(genoStruIdx() == m_scratchPop->genoStruIdx(),
-		   ValueError, "Genotypic structure of one of the "
-		   "replicates does not agree with the structure of the simulator");
+	    ValueError, "Genotypic structure of one of the "
+	    "replicates does not agree with the structure of the simulator");
 }
 
 
@@ -164,13 +164,13 @@ void simulator::addInfoFields(const vectorstr & fields, double init)
 	for (UINT i = 0; i < m_numRep; ++i) {
 		m_ptrRep[i]->addInfoFields(fields, init);
 		DBG_ASSERT(genoStruIdx() == m_ptrRep[i]->genoStruIdx(),
-			   ValueError, "Genotypic structure of one of the "
-			   "replicates does not agree with the structure of the simulator");
+		    ValueError, "Genotypic structure of one of the "
+		    "replicates does not agree with the structure of the simulator");
 	}
 	m_scratchPop->addInfoFields(fields, init);
 	DBG_ASSERT(genoStruIdx() == m_scratchPop->genoStruIdx(),
-		   ValueError, "Genotypic structure of one of the "
-		   "replicates does not agree with the structure of the simulator");
+	    ValueError, "Genotypic structure of one of the "
+	    "replicates does not agree with the structure of the simulator");
 }
 
 
@@ -200,7 +200,7 @@ void simulator::setGroup(const vectori & grp)
 	}
 
 	DBG_ASSERT(m_groups.size() == m_numRep, ValueError,
-		   "Specified group index should have equal length to numRep()");
+	    "Specified group index should have equal length to numRep()");
 
 	for (UINT i = 0; i < m_numRep; ++i)
 		m_ptrRep[i]->setGrp(m_groups[i]);
@@ -208,9 +208,9 @@ void simulator::setGroup(const vectori & grp)
 
 
 bool simulator::evolve(const vectorop & ops,
-		       const vectorop & preOps,
-		       const vectorop & postOps,
-		       int end, bool dryrun)
+                       const vectorop & preOps,
+                       const vectorop & postOps,
+                       int end, bool dryrun)
 {
 	// it is possible that a user changes the internal population's
 	// genotype strucutre. It is therefore necessary to check if
@@ -218,26 +218,26 @@ bool simulator::evolve(const vectorop & ops,
 #ifndef OPTIMIZED
 	for (size_t i = 0; i < m_numRep; ++i) {
 		DBG_FAILIF(genoStruIdx() != m_ptrRep[i]->genoStruIdx(),
-			   ValueError, "Genotypic structure of one of the \n"
-			   "replicates does not agree with the simulator. It is likely that you\n"
-			   "have changed the genotypic structure of a population obtained from \n"
-			   "simu::population(rep). This is not allowed.\n");
+		    ValueError, "Genotypic structure of one of the \n"
+		    "replicates does not agree with the simulator. It is likely that you\n"
+		    "have changed the genotypic structure of a population obtained from \n"
+		    "simu::population(rep). This is not allowed.\n");
 	}
 	DBG_FAILIF(genoStruIdx() != m_scratchPop->genoStruIdx(),
-		   ValueError, "Genotypic structure of one of the \n"
-		   "replicates does not agree with the simulator. It is likely that you\n"
-		   "have changed the genotypic structure of a population obtained from \n"
-		   "simu::population(rep). This is not allowed.\n");
+	    ValueError, "Genotypic structure of one of the \n"
+	    "replicates does not agree with the simulator. It is likely that you\n"
+	    "have changed the genotypic structure of a population obtained from \n"
+	    "simu::population(rep). This is not allowed.\n");
 #endif
 
 	DBG_DO(DBG_SIMULATOR, cout << "Starting generation: " << gen()
-				   << " with ending generation " << end << endl);
+	                           << " with ending generation " << end << endl);
 
 	DBG_FAILIF(end > 0 && gen() > static_cast<UINT>(end), ValueError,
-		   "population gen is already greater than ending generation.");
+	    "population gen is already greater than ending generation.");
 
 	DBG_FAILIF(end < 0 && ops.empty(), ValueError,
-		   "Evolve with unspecified ending generation should have at least one terminator (operator)");
+	    "Evolve with unspecified ending generation should have at least one terminator (operator)");
 
 	vectorop preMatingOps, durmatingOps, postMatingOps, activeDurmatingOps;
 
@@ -260,7 +260,7 @@ bool simulator::evolve(const vectorop & ops,
 	// check compatibility of operators
 	for (size_t i = 0; i < ops.size(); ++i) {
 		DBG_ASSERT(ops[i]->isCompatible(curpopulation()), ValueError,
-			   "Operator " + ops[i]->__repr__() + " is not compatible.");
+		    "Operator " + ops[i]->__repr__() + " is not compatible.");
 	}
 
 	InitClock();
@@ -298,7 +298,7 @@ bool simulator::evolve(const vectorop & ops,
 
 		for (m_curRep = 0; m_curRep < m_numRep; m_curRep++) {
 			DBG_ASSERT(static_cast<int>(m_curRep) == curpopulation().rep(), SystemError,
-				   "Replicate number does not match");
+			    "Replicate number does not match");
 
 			if (dryrun)
 				cout << "  Replicate " << m_curRep << endl;
@@ -313,7 +313,7 @@ bool simulator::evolve(const vectorop & ops,
 			// that is to say, if some one set selection=True in a post mating opertor
 			// it will have no effect
 			DBG_FAILIF(curpopulation().hasVar("selection") && curpopulation().getVarAsBool("selection"),
-				   ValueError, "Selection is on from previous generation. Did you use PostMating selector?");
+			    ValueError, "Selection is on from previous generation. Did you use PostMating selector?");
 
 			curpopulation().setBoolVar("selection", false);
 
@@ -337,7 +337,7 @@ bool simulator::evolve(const vectorop & ops,
 					try {
 						if (!preMatingOps[it]->applyWithScratch(curpopulation(), scratchpopulation(), PreMating)) {
 							DBG_DO(DBG_SIMULATOR, cout << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
-							       " stops at replicate " + toStr(curRep()) << endl);
+							    " stops at replicate " + toStr(curRep()) << endl);
 
 							if (!stop[m_curRep]) {
 								numStopped++;
@@ -370,7 +370,7 @@ bool simulator::evolve(const vectorop & ops,
 			try {
 				if (!dryrun && !m_matingScheme->mate(curpopulation(), scratchpopulation(), activeDurmatingOps, true)) {
 					DBG_DO(DBG_SIMULATOR, cout << "During-mating Operator stops at replicate "
-					       + toStr(curRep()) << endl);
+					    + toStr(curRep()) << endl);
 
 					if (!stop[m_curRep]) {
 						numStopped++;
@@ -403,7 +403,7 @@ bool simulator::evolve(const vectorop & ops,
 					try {
 						if (!postMatingOps[it]->applyWithScratch(curpopulation(), scratchpopulation(), PostMating)) {
 							DBG_DO(DBG_SIMULATOR, cout << "Post-mating Operator " + postMatingOps[it]->__repr__() +
-							       " stops at replicate " + toStr(curRep()) << endl);
+							    " stops at replicate " + toStr(curRep()) << endl);
 
 							if (!stop[m_curRep]) {
 								numStopped++;
@@ -416,7 +416,7 @@ bool simulator::evolve(const vectorop & ops,
 					}
 					ElapsedTime("PostMatingOp: " + postMatingOps[it]->__repr__());
 				}
-			}                                                                               // post mating ops
+			}                                                                                   // post mating ops
 		}                                                                                       // each replicates
 
 		if (dryrun)
@@ -444,7 +444,7 @@ bool simulator::evolve(const vectorop & ops,
 		//  therefore, step should:
 		if ( (numStopped >= 1 && m_stopIfOneRepStops)
 		    || numStopped >= m_numRep || (end >= 0
-						  && gen() > static_cast<UINT>(end)))
+		                                  && gen() > static_cast<UINT>(end)))
 			break;
 	}                                                                                         // the big loop
 
@@ -470,7 +470,7 @@ bool simulator::apply(const vectorop ops, bool dryrun)
 			throw TypeError("During-mating operator has to be called by a simulator.");
 		// check compatibility of operators
 		DBG_ASSERT(ops[i]->isCompatible(curpopulation()), ValueError,
-			   "Operator " + ops[i]->__repr__() + " is not compatible.");
+		    "Operator " + ops[i]->__repr__() + " is not compatible.");
 	}
 
 	// really apply
@@ -492,7 +492,7 @@ bool simulator::apply(const vectorop ops, bool dryrun)
 				continue;
 
 			ops[it]->applyWithScratch(curpopulation(),
-						  scratchpopulation(), PreMating);
+			    scratchpopulation(), PreMating);
 
 			ElapsedTime("PrePost-preMatingop" + toStr(it));
 		}
@@ -560,7 +560,7 @@ void simulator::loadSimulator(string filename, string format)
 		// first close the file handle.
 
 		DBG_DO(DBG_POPULATION,
-		       cout << "Can not determine file type, or file type is wrong. Trying different ways." << endl);
+		    cout << "Can not determine file type, or file type is wrong. Trying different ways." << endl);
 
 		// open a fresh ifstream
 		io::filtering_istream ifbin;
@@ -592,20 +592,20 @@ void simulator::loadSimulator(string filename, string format)
 					ia >> boost::serialization::make_nvp("simulator", *this);
 				} catch (...) {
 					throw ValueError("Failed to load simulator. Your file may be corrupted, "
-							 "or being a copy of non-transferrable file (.bin)");
+					    "or being a copy of non-transferrable file (.bin)");
 				}
-			}                                                                               // try xml
-		}                                                                                       // try text
+			}                                                                                       // try xml
+		}                                                                                           // try text
 	}                                                                                               // try bin
 }
 
 
 simulator & LoadSimulator(const string & file,
-			  mating & mate, string format)
+                          mating & mate, string format)
 {
 	population p;
 	simulator * a = new simulator(
-				      p, mate);
+	                    p, mate);
 
 #ifndef _NO_SERIALIZATION_
 	a->loadSimulator(file, format);

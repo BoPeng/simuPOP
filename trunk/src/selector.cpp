@@ -38,8 +38,8 @@ bool selector::apply(population & pop)
 		for (vectoru::iterator sp = m_subPops.begin(); sp != m_subPops.end(); ++sp) {
 			GappedInfoIterator fitness = pop.infoBegin(fit_id, *sp, true);
 			DBG_FAILIF(*sp > pop.numSubPop(), IndexError,
-				   "Wrong subpopulation index" + toStr(*sp) + " (number of subpops is " +
-				   toStr(pop.numSubPop()) + ")");
+			    "Wrong subpopulation index" + toStr(*sp) + " (number of subpops is " +
+			    toStr(pop.numSubPop()) + ")");
 			for (population::IndIterator it = pop.indBegin(*sp); it != pop.indEnd(*sp); ++it)
 				*fitness++ = indFitness(& * it, pop.gen());
 			pop.turnOnSelection(*sp);
@@ -70,7 +70,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 	strDict::iterator pos = m_dict.find(key);
 
 	DBG_ASSERT(pos != m_dict.end(), ValueError,
-		   "No fitness value for genotype " + key);
+	    "No fitness value for genotype " + key);
 
 	return pos->second;
 }
@@ -141,15 +141,15 @@ double pySelector::indFitness(individual * ind, ULONG gen)
 		m_alleles.resize(m_len);
 #ifdef SIMUMPI
 		m_numArray = Allele_Vec_As_NumArray(m_alleles.begin(), m_alleles.end(),
-						    m_alleles.size(), m_alleles.size(), 0, m_alleles.size());
+		                 m_alleles.size(), m_alleles.size(), 0, m_alleles.size());
 #else
 		m_numArray = Allele_Vec_As_NumArray(m_alleles.begin(), m_alleles.end() );
 #endif
 	}
 
 	DBG_FAILIF(static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),
-		   SystemError,
-		   "Length of m_len is wrong. Have you changed pop type?");
+	    SystemError,
+	    "Length of m_len is wrong. Have you changed pop type?");
 
 	UINT pEnd = ind->ploidy();
 	for (size_t i = 0, iEnd = m_loci.size(), j = 0; i < iEnd; ++i)

@@ -52,9 +52,9 @@ using std::ofstream;
 
 // for kbhit
 #if  defined (_WIN32) || defined (__WIN32__)
- #include <conio.h>
+#include <conio.h>
 #else
- #include <termios.h>
+#include <termios.h>
 #endif
 
 #include "boost/pending/lowest_bit.hpp"
@@ -69,9 +69,9 @@ using boost::lowest_bit;
 extern "C" PyObject * newcarrayobject(char * buf, char type, int size);
 
 #ifdef SIMUMPI
- #include "slave.h"
+#include "slave.h"
 extern "C" PyObject * newcarrayiterobject(ULONG shift,
-					  ULONG size, UINT piece_size, vectoru map);
+                                          ULONG size, UINT piece_size, vectoru map);
 
 #else
 extern "C" PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
@@ -305,7 +305,6 @@ int simuPOP_getch(void)
 }
 
 
-
 namespace std {
 // how to output a dictionary
 ostream & operator<<(ostream & out, const strDict & dict)
@@ -353,7 +352,6 @@ unsigned pow3(unsigned n)
 
 
 }
-
 
 
 namespace simuPOP {
@@ -592,7 +590,7 @@ PyObject * Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end
 
 #ifdef SIMUMPI
 PyObject * Allele_Vec_As_NumArray(ULONG shift,
-				  ULONG size, UINT piece_size, vectoru map)
+                                  ULONG size, UINT piece_size, vectoru map)
 {
 	PyObject * res = newcarrayiterobject(shift, size, piece_size, map);
 
@@ -819,7 +817,7 @@ next:
 PyObject * SharedVariables::getVar(const string & name, bool nameError)
 {
 	DBG_ASSERT(m_dict != NULL, ValueError,
-		   "Shared variables are not associated with any Python variable. You populaiton might not be part of a simulator.");
+	    "Shared variables are not associated with any Python variable. You populaiton might not be part of a simulator.");
 
 	// go deep in to the string
 	size_t i, s;
@@ -905,7 +903,7 @@ next:
 void SharedVariables::removeVar(const string & name)
 {
 	DBG_ASSERT(m_dict != NULL, ValueError,
-		   "Shared variables are not associated with any Python variable. You populaiton might not be part of a simulator.");
+	    "Shared variables are not associated with any Python variable. You populaiton might not be part of a simulator.");
 
 	DBG_DO(DBG_UTILITY, cout << "Removing variable " << name << endl);
 
@@ -1064,7 +1062,7 @@ PyObject * SharedVariables::setStrDictVar(const string & name, const strDict & v
 
 	for (strDict::const_iterator i = val.begin(); i != val.end(); ++i) {
 		PyDict_SetItemString(obj, const_cast<char *>(i->first.c_str()),
-				     v = PyFloat_FromDouble(i->second));
+		    v = PyFloat_FromDouble(i->second));
 		Py_XDECREF(v);
 	}
 	return setVar(name, obj);
@@ -1078,8 +1076,8 @@ PyObject * SharedVariables::setIntDictVar(const string & name, const intDict & v
 
 	for (intDict::const_iterator i = val.begin(); i != val.end(); ++i) {
 		PyDict_SetItem(obj,
-			       u = PyInt_FromLong(i->first),
-			       v = PyFloat_FromDouble(i->second));
+		    u = PyInt_FromLong(i->first),
+		    v = PyFloat_FromDouble(i->second));
 		Py_XDECREF(u);
 		Py_XDECREF(v);
 	}
@@ -1117,8 +1115,8 @@ PyObject * load_int(const string & str, size_t & offset)
 
 	while (str[offset + len + 1] != ' ') len++;
 	PyObject * val = PyInt_FromString(
-					  const_cast<char *>(str.substr(offset + 1, len).c_str()),
-					  NULL, 0);
+	                     const_cast<char *>(str.substr(offset + 1, len).c_str()),
+	                     NULL, 0);
 	offset += len + 2;
 	return val;
 }
@@ -1139,8 +1137,8 @@ PyObject * load_long(const string & str, size_t & offset)
 
 	while (str[offset + len + 1] != ' ') len++;
 	PyObject * val = PyLong_FromString(
-					   const_cast<char *>(str.substr(offset + 1, len).c_str()),
-					   NULL, 0);
+	                     const_cast<char *>(str.substr(offset + 1, len).c_str()),
+	                     NULL, 0);
 	offset += len + 2;
 	return val;
 }
@@ -1181,7 +1179,7 @@ PyObject * load_string(const string & str, size_t & offset)
 
 	offset += len + 2;
 	DBG_ASSERT(str[offset - 1] == '\0', SystemError,
-		   "Error while loading string from str");
+	    "Error while loading string from str");
 
 	return PyString_FromString(s);
 }
@@ -1393,7 +1391,7 @@ void SharedVariables::fromString(const string & vars)
 	obj = loadObj(vars, offset);
 
 	DBG_ASSERT(obj == NULL || vars[offset] == 'e', SystemError,
-		   "Failed to load objects from string");
+	    "Failed to load objects from string");
 
 	// remove m_dict
 	if (m_ownVars) {
@@ -1477,7 +1475,7 @@ void Expression::compileExpr(const string & expr)
 		return;
 
 	m_expr = Py_CompileString(const_cast<char *>(expr.c_str()), "<embed>",
-				  Py_eval_input);
+	             Py_eval_input);
 
 	if (m_expr == NULL)
 		throw ValueError("Expression '" + expr + "' is not a valid python expression.");
@@ -1497,7 +1495,7 @@ void Expression::compileStmts(const string & stmts)
 
 	// clear leading blank etc for statements ? Not yet.
 	m_stmts = Py_CompileString(const_cast<char *>(stmts.c_str()), "<embed>",
-				   Py_file_input);
+	              Py_file_input);
 
 	if (m_stmts == NULL)
 		throw ValueError("statement '" + stmts + "' is not valid.");
@@ -1511,12 +1509,12 @@ PyObject * Expression::evaluate()
 		return NULL;
 
 	DBG_ASSERT(mainVars().dict() != NULL && m_locals != NULL,
-		   ValueError, "Can not evalulate. Dictionary is empty!");
+	    ValueError, "Can not evalulate. Dictionary is empty!");
 
 	PyObject * res = NULL;
 	if (m_stmts != NULL) {
 		res = PyEval_EvalCode((PyCodeObject *)m_stmts,
-				      mainVars().dict(), m_locals);
+		          mainVars().dict(), m_locals);
 		if (res == NULL) {
 			PyErr_Print();
 			throw SystemError("Evalulation of statements failed");
@@ -1528,7 +1526,7 @@ PyObject * Expression::evaluate()
 
 	if (m_expr != NULL) {
 		res = PyEval_EvalCode((PyCodeObject *)m_expr,
-				      mainVars().dict(), m_locals);
+		          mainVars().dict(), m_locals);
 		if (res  == NULL) {
 			PyErr_Print();
 			throw SystemError("Evalulation of expression failed");
@@ -1639,7 +1637,7 @@ StreamElem::StreamElem(const string & name, bool readable, bool realAppend, bool
 {
 
 	DBG_DO(DBG_UTILITY, cout << "creating " << name << " with parameter " <<
-	       readable << " " << realAppend << " " << useString << " " << endl);
+	    readable << " " << realAppend << " " << useString << " " << endl);
 
 	if (useString) {
 		// existing file will be truncated...
@@ -1650,16 +1648,16 @@ StreamElem::StreamElem(const string & name, bool readable, bool realAppend, bool
 		m_append = realAppend;
 		if (readable) {
 			m_type = FSTREAM;
-			if (realAppend)         // readable , append
+			if (realAppend)     // readable , append
 				m_stream = new fstream(name.c_str(),  std::ios::in | std::ios::out | std::ios::ate);
-			else                    // readable, ! append
+			else                // readable, ! append
 				// existing file will be truncated...
 				m_stream = new fstream(name.c_str(),  std::ios::in | std::ios::trunc | std::ios::out);
 		} else {
 			m_type = OFSTREAM;
-			if (realAppend)         // ! readable, append
+			if (realAppend)     // ! readable, append
 				m_stream = new ofstream(name.c_str(), std::ios::out | std::ios::app);
-			else                    //  !readable, !append )
+			else                //  !readable, !append )
 				// existing file will be truncated...
 				m_stream = new fstream(name.c_str(),  std::ios::trunc | std::ios::out);
 		}
@@ -1770,14 +1768,14 @@ string StreamElem::info()
 		out << m_filename << " : read-write file stream ";
 
 		DBG_DO(DBG_UTILITY, out << "(write pos: " << static_cast<fstream *>(m_stream)->tellp()
-					<< ", read pos: " << static_cast<fstream *>(m_stream)->tellg() << ")");
+		                        << ", read pos: " << static_cast<fstream *>(m_stream)->tellg() << ")");
 
 		break;
 	case SSTREAM:
 		out << m_filename << " : string stream. " << endl;
 
 		DBG_DO(DBG_UTILITY, out <<  "(write pos: " << static_cast<stringstream *>(m_stream)->tellp()
-					<< ", read pos: " << static_cast<stringstream *>(m_stream)->tellg() << ")");
+		                        << ", read pos: " << static_cast<stringstream *>(m_stream)->tellg() << ")");
 
 		break;
 	}
@@ -1810,7 +1808,7 @@ ostream * OstreamManager::getOstream(const string & name, bool readable,  bool r
 		DBG_DO(DBG_UTILITY, cout << "Create new file " << name << endl);
 
 		return m_ostreams.insert(ostreamMapValue(name,
-							 StreamElem(name, readable, realAppend, useString))).first->second.stream();
+		               StreamElem(name, readable, realAppend, useString))).first->second.stream();
 	} else {                                                                          // already exist
 
 		DBG_DO(DBG_UTILITY, cout << "Find existing ostream " << name << " of info " << it->second.info() << endl);
@@ -1892,7 +1890,7 @@ void StreamProvider::setOutput(const string & output, const string & outputExpr)
 ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 {
 	DBG_FAILIF(readable && ( ISSETFLAG(m_flags, m_flagNoOutput) || ISSETFLAG(m_flags, m_flagUseDefault)),
-		   SystemError, "A readable file is requested but this Opertor uses cout or cnull.");
+	    SystemError, "A readable file is requested but this Opertor uses cout or cnull.");
 
 	if (ISSETFLAG(m_flags,  m_flagNoOutput) )
 		return cnull();
@@ -1905,7 +1903,7 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 	string filename;
 	if (!m_filenameExpr.empty()) {
 		DBG_ASSERT(dict != NULL, ValueError,
-			   "Need to know local dictionary to evaluate filename expression");
+		    "Need to know local dictionary to evaluate filename expression");
 		m_filenameExpr.setLocalDict(dict);
 		m_filename = m_filenameExpr.valueAsString();
 
@@ -1924,14 +1922,14 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 	if (ISSETFLAG(m_flags, m_flagAppend) ) {
 
 		DBG_DO(DBG_UTILITY, cout << "Get a persistent file: "
-					 << filename << endl);
+		                         << filename << endl);
 
 		return *ostreamManager().getOstream(filename, readable,
-						    ISSETFLAG(m_flags, m_flagRealAppend), ISSETFLAG(m_flags, m_flagUseString));
+		           ISSETFLAG(m_flags, m_flagRealAppend), ISSETFLAG(m_flags, m_flagUseString));
 	} else {                                                                          // not in append mode, but check if this file is alreay there
 
 		DBG_DO(DBG_UTILITY, cout << "File is not persistent : "
-					 << filename << endl);
+		                         << filename << endl);
 
 		if (!ostreamManager().hasOstream(filename) ) {
 			if (readable)
@@ -1951,12 +1949,12 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 		} else {
 
 			DBG_DO(DBG_UTILITY, cout << "file " + filename +
-			       " is already opened as appendable. Use that file instead." << endl);
+			    " is already opened as appendable. Use that file instead." << endl);
 
 			RESETFLAG(m_flags, m_flagCloseAfterUse);
 			SETFLAG(m_flags, m_flagAppend);
 			return *ostreamManager().getOstream(filename, readable, ISSETFLAG(m_flags, m_flagRealAppend),
-							    ISSETFLAG(m_flags, m_flagUseString));
+			           ISSETFLAG(m_flags, m_flagUseString));
 		}
 	}
 }
@@ -2024,7 +2022,7 @@ void StreamProvider::analyzeOutputString(const string & output)
 		RESETFLAG(m_flags, m_flagUseDefault);
 
 	DBG_DO(DBG_UTILITY, cout << "Analyzed string is " << output << endl
-				 << "Filename is " << format << endl);
+	                         << "Filename is " << format << endl);
 
 	m_filename = format;
 }
@@ -2096,14 +2094,14 @@ void RNG::setRNG(const char * rng, unsigned long seed)
 				m_RNG = gsl_rng_alloc(*t);
 
 				DBG_ASSERT(gsl_rng_max(m_RNG) >= MaxRandomNumber && gsl_rng_min(m_RNG) == 0,
-					   ValueError, "You chosen random number generator can not generate full range of int.");
+				    ValueError, "You chosen random number generator can not generate full range of int.");
 				break;
 			}
 		}
 
 		if (*t == 0)
 			throw SystemError("GSL_RNG_TYPE=" + toStr(rng_name)
-					  + " not recognized or can not generate full range (0-2^32-1) of integers.\n c.f. ListAllRNG()");
+			    + " not recognized or can not generate full range (0-2^32-1) of integers.\n c.f. ListAllRNG()");
 	} else {
 		// free current RNG
 		if (m_RNG != NULL)
@@ -2173,8 +2171,8 @@ void Weightedsampler::set(const vectorf & weight)
 
 		L--;                                                                            // remove j from L
 		if (m_q[k] < 1.) {
-			*L++ = k;                                                               // add k to L
-			++H;                                                                    // remove k from H
+			*L++ = k;                                                                   // add k to L
+			++H;                                                                        // remove k from H
 		}
 	}
 	delete[] HL;
@@ -2250,7 +2248,7 @@ void BernulliTrials::setAll(size_t idx, bool v)
 
 	DBG_ASSERT(BITOFF(m_table[idx].begin()) == 0, SystemError, "Start of a vector<bool> is not 0");
 	DBG_ASSERT(BITPTR(m_table[idx].begin()) == m_pointer[idx],
-		   SystemError, "Pointers mismatch");
+	    SystemError, "Pointers mismatch");
 
 	size_t blk = m_N / WORDBIT;
 	size_t rest = m_N - blk * WORDBIT;
@@ -2279,164 +2277,164 @@ void BernulliTrials::setAll(size_t idx, bool v)
 
 void BernulliTrials::doTrial()
 {
-	DBG_ASSERT(m_N != 0, ValueError, "number of trials should be positive");
+    DBG_ASSERT(m_N != 0, ValueError, "number of trials should be positive");
 
-	DBG_DO(DBG_UTILITY, cout << "n=" << m_N << " doTrial, cur trial: " << m_cur << endl);
+    DBG_DO(DBG_UTILITY, cout << "n=" << m_N << " doTrial, cur trial: " << m_cur << endl);
 
-	// for each column
-	for (size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl) {
-		WORDTYPE * ptr = m_pointer[cl];
-		double prob = m_prob[cl];
-		if (prob == 0.) {
-			setAll(cl, false);
+    // for each column
+    for (size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl) {
+        WORDTYPE * ptr = m_pointer[cl];
+        double prob = m_prob[cl];
+        if (prob == 0.) {
+            setAll(cl, false);
 		} else if (prob == 0.5) {                                 // random 0,1 bit, this will be quicker
-			// set to 0..
-			setAll(cl, false);
-			// treat a randInt as random bits and set them directly.
-			// I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
-			// first several blocks
-			// WORDTYPE * ptr = BITPTR(succ.begin());
-			WORDTYPE tmp;
-			size_t blk = m_N / WORDBIT;
-			size_t rest = m_N - blk * WORDBIT;
-			for (size_t i = 0; i < blk; ++i) {
-				// even if the block size is large (I can not set it to int16_t)
-				// I only take the last 16 bit of a rng
-				// for the quality of random bits.
-				*ptr = 0;
-				for (size_t b = 0; b < WORDBIT / 16; ++b) {
-					// blocks[i] = static_cast<int16_t>(rng().randGet());
-					tmp = rng().randInt(0xFFFF);
-					*ptr |= (0xFFFF & tmp) << (b * 16);
+            // set to 0..
+            setAll(cl, false);
+            // treat a randInt as random bits and set them directly.
+            // I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
+            // first several blocks
+            // WORDTYPE * ptr = BITPTR(succ.begin());
+            WORDTYPE tmp;
+            size_t blk = m_N / WORDBIT;
+            size_t rest = m_N - blk * WORDBIT;
+            for (size_t i = 0; i < blk; ++i) {
+                // even if the block size is large (I can not set it to int16_t)
+                // I only take the last 16 bit of a rng
+                // for the quality of random bits.
+                *ptr = 0;
+                for (size_t b = 0; b < WORDBIT / 16; ++b) {
+                    // blocks[i] = static_cast<int16_t>(rng().randGet());
+                    tmp = rng().randInt(0xFFFF);
+                    *ptr |= (0xFFFF & tmp) << (b * 16);
 				}
-				ptr++;
+                ptr++;
 			}
-			// last block
-			if (rest != 0) {
-				size_t b = 0;
-				for (b = 0; b < rest / 16; ++b) {
-					tmp = rng().randInt(0xFFFF);
-					*ptr |= (0xFFFF & tmp) << (b * 16);
+            // last block
+            if (rest != 0) {
+                size_t b = 0;
+                for (b = 0; b < rest / 16; ++b) {
+                    tmp = rng().randInt(0xFFFF);
+                    *ptr |= (0xFFFF & tmp) << (b * 16);
 				}
-				// last bits
-				rest -= b * 16;
-				if (rest != 0) {
-					tmp = rng().randInt(0xFFFF);
-					*ptr |= (g_bitMask[rest] & tmp) << b * 16;
+                // last bits
+                rest -= b * 16;
+                if (rest != 0) {
+                    tmp = rng().randInt(0xFFFF);
+                    *ptr |= (g_bitMask[rest] & tmp) << b * 16;
 				}
 			}
 		}
-		// algorithm i Sheldon Ross' book simulation (4ed), page 54
-		else if (prob < 0.5) {
-			// set all to 0, then set some to 1
-			setAll(cl, false);
-			// it may make sense to limit the use of this method to low p,
-			UINT i = 0;
-			while (true) {
-				// i moves at least one.
-				i += m_RNG->randGeometric(prob);
-				if (i <= m_N)
+        // algorithm i Sheldon Ross' book simulation (4ed), page 54
+        else if (prob < 0.5) {
+            // set all to 0, then set some to 1
+            setAll(cl, false);
+            // it may make sense to limit the use of this method to low p,
+            UINT i = 0;
+            while (true) {
+                // i moves at least one.
+                i += m_RNG->randGeometric(prob);
+                if (i <= m_N)
 					// succ[i-1] = true;
 					setBit(ptr, i - 1);
-				else
+                else
 					break;
 			}
 		} else if (prob == 1.) {
-			setAll(cl, true);
+            setAll(cl, true);
 		} else {                                                                  // 1 > m_proc[cl] > 0.5
-			// set all to 1, and then unset some.
-			setAll(cl, true);
-			// it may make sense to limit the use of this method to low p,
-			UINT i = 0;
-			prob = 1. - prob;
-			while (true) {
-				i += m_RNG->randGeometric(prob);
-				if (i <= m_N)
+            // set all to 1, and then unset some.
+            setAll(cl, true);
+            // it may make sense to limit the use of this method to low p,
+            UINT i = 0;
+            prob = 1. - prob;
+            while (true) {
+                i += m_RNG->randGeometric(prob);
+                if (i <= m_N)
 					// succ[i-1] = false;
 					unsetBit(ptr, i - 1);
-				else
+                else
 					break;
 			}
 		}
 	}
-	m_cur = 0;
+    m_cur = 0;
 }
 
 
 UINT BernulliTrials::curTrial()
 {
-	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-	return m_cur;
+    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+    return m_cur;
 }
 
 
 // get a trial corresponding to m_prob.
 void BernulliTrials::trial()
 {
-	if (m_cur == npos || m_cur == m_N - 1)  // reach the last trial
+    if (m_cur == npos || m_cur == m_N - 1)  // reach the last trial
 		doTrial();
-	else
+    else
 		m_cur++;
-	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
 }
 
 
 bool BernulliTrials::trialSucc(size_t idx) const
 {
-	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-	return getBit(m_pointer[idx], m_cur);
+    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+    return getBit(m_pointer[idx], m_cur);
 }
 
 
 bool BernulliTrials::trialSucc(size_t idx, size_t cur) const
 {
-	return getBit(m_pointer[idx], cur);
+    return getBit(m_pointer[idx], cur);
 }
 
 
 size_t BernulliTrials::probFirstSucc() const
 {
-	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-	size_t i = 0;
-	const size_t sz = probSize();
-	while (i < sz && !getBit(m_pointer[i], m_cur))
+    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+    size_t i = 0;
+    const size_t sz = probSize();
+    while (i < sz && !getBit(m_pointer[i], m_cur))
 		++i;
-	return i >= sz ? npos : i;
+    return i >= sz ? npos : i;
 }
 
 
 size_t BernulliTrials::probNextSucc(size_t pos) const
 {
-	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-	const size_t sz = probSize();
-	if (pos >= (sz - 1) || sz == 0)
+    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+    const size_t sz = probSize();
+    if (pos >= (sz - 1) || sz == 0)
 		return npos;
 
-	++pos;
-	while (pos < sz && !getBit(m_pointer[pos], m_cur))
+    ++pos;
+    while (pos < sz && !getBit(m_pointer[pos], m_cur))
 		++pos;
-	return pos >= sz ? npos : pos;
+    return pos >= sz ? npos : pos;
 }
 
 
 size_t BernulliTrials::trialFirstSucc(size_t idx) const
 {
-	size_t blk = m_N / WORDBIT;
-	WORDTYPE * ptr = m_pointer[idx];
+    size_t blk = m_N / WORDBIT;
+    WORDTYPE * ptr = m_pointer[idx];
 
-	size_t i = 0;
+    size_t i = 0;
 
-	while (i < blk && *ptr++ == 0)
+    while (i < blk && *ptr++ == 0)
 		++i;
 
-	if (i < blk) {                                                                          // not at the last blk
-		return i * WORDBIT + lowest_bit(*(ptr - 1));
+    if (i < blk) {                                                                          // not at the last blk
+        return i * WORDBIT + lowest_bit(*(ptr - 1));
 	} else {                                                                                // last block?
-		size_t rest = m_N - blk * WORDBIT;
-		size_t tmp = *ptr & g_bitMask[rest];
-		if (tmp == 0)
+        size_t rest = m_N - blk * WORDBIT;
+        size_t tmp = *ptr & g_bitMask[rest];
+        if (tmp == 0)
 			return npos;
-		else
+        else
 			return blk * WORDBIT + lowest_bit(tmp);
 	}
 }
@@ -2444,44 +2442,44 @@ size_t BernulliTrials::trialFirstSucc(size_t idx) const
 
 size_t BernulliTrials::trialNextSucc(size_t idx, size_t pos) const
 {
-	const BitSet & bs = m_table[idx];
+    const BitSet & bs = m_table[idx];
 
-	if (pos >= (m_N - 1) || m_N == 0)
+    if (pos >= (m_N - 1) || m_N == 0)
 		return npos;
 
-	++pos;
+    ++pos;
 
-	// first block
-	BitSet::const_iterator it = bs.begin() + pos;
-	WORDTYPE * ptr = BITPTR(it);
-	int offset = BITOFF(it);
-	size_t i = ptr - BITPTR(bs.begin());
+    // first block
+    BitSet::const_iterator it = bs.begin() + pos;
+    WORDTYPE * ptr = BITPTR(it);
+    int offset = BITOFF(it);
+    size_t i = ptr - BITPTR(bs.begin());
 
-	// mask out bits before pos
-	WORDTYPE tmp = *ptr & ~g_bitMask[offset];
+    // mask out bits before pos
+    WORDTYPE tmp = *ptr & ~g_bitMask[offset];
 
-	size_t blk =  m_N / WORDBIT;
-	if (tmp != 0)
+    size_t blk =  m_N / WORDBIT;
+    if (tmp != 0)
 		return i * WORDBIT + lowest_bit(tmp);
-	else if (blk == i)
+    else if (blk == i)
 		// if i is the last block, return no.
 		return npos;
 
-	// now, go from next block
-	++ptr;
-	++i;
-	while (i < blk && *ptr++ == 0)
+    // now, go from next block
+    ++ptr;
+    ++i;
+    while (i < blk && *ptr++ == 0)
 		++i;
 
-	if (i < blk)                                                                            // not at the last blk
+    if (i < blk)                                                                            // not at the last blk
 		return i * WORDBIT + lowest_bit(*(ptr - 1));
-	else {                                                                                  // last block?
-		size_t rest = m_N - blk * WORDBIT;
-		// mask out bits after rest
-		size_t tmp = *ptr & g_bitMask[rest];
-		if (tmp == 0)
+    else {                                                                                  // last block?
+        size_t rest = m_N - blk * WORDBIT;
+        // mask out bits after rest
+        size_t tmp = *ptr & g_bitMask[rest];
+        if (tmp == 0)
 			return npos;
-		else
+        else
 			return blk * WORDBIT + lowest_bit(tmp);
 	}
 }
@@ -2489,33 +2487,33 @@ size_t BernulliTrials::trialNextSucc(size_t idx, size_t pos) const
 
 void BernulliTrials::setTrialSucc(size_t idx, bool succ)
 {
-	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-	if (succ)
+    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+    if (succ)
 		setBit(m_pointer[idx], m_cur);
-	else
+    else
 		unsetBit(m_pointer[idx], m_cur);
 }
 
 
 double BernulliTrials::trialSuccRate(UINT index) const
 {
-	// efficiency is not considered here
-	size_t count = 0;
+    // efficiency is not considered here
+    size_t count = 0;
 
-	for (size_t i = 0; i < trialSize(); ++i)
+    for (size_t i = 0; i < trialSize(); ++i)
 		if (getBit(m_pointer[index], i))
 			count++;
-	return count / static_cast<double>(m_table[index].size());
+    return count / static_cast<double>(m_table[index].size());
 }
 
 
 double BernulliTrials::probSuccRate() const
 {
-	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-	UINT count = 0;
-	for (size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl)
+    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+    UINT count = 0;
+    for (size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl)
 		count += getBit(m_pointer[cl], m_cur) ? 1 : 0;
-	return count / static_cast<double>(probSize());
+    return count / static_cast<double>(probSize());
 }
 
 
@@ -2530,7 +2528,7 @@ RNG g_RNG;
 // return the global RNG
 RNG & rng()
 {
-	return g_RNG;
+    return g_RNG;
 }
 
 
@@ -2538,42 +2536,42 @@ RNG & rng()
 // this is temporary since rng() might not exist in the future
 void SetRNG(const string r, unsigned long seed)
 {
-	rng().setRNG(r.c_str(), seed);
+    rng().setRNG(r.c_str(), seed);
 }
 
 
 void setRNG(const string r, unsigned long seed)
 {
-	DBG_WARNING(true, "This function has been renamed to SetRNG() and will be removed at the next major release");
-	rng().setRNG(r.c_str(), seed);
+    DBG_WARNING(true, "This function has been renamed to SetRNG() and will be removed at the next major release");
+    rng().setRNG(r.c_str(), seed);
 }
 
 
 // list all available RNG.
 vectorstr ListAllRNG()
 {
-	vectorstr list;
+    vectorstr list;
 
-	const gsl_rng_type * * t, * * t0;
-	gsl_rng * rng;
+    const gsl_rng_type * * t, * * t0;
+    gsl_rng * rng;
 
-	t0 = gsl_rng_types_setup();
+    t0 = gsl_rng_types_setup();
 
-	for (t = t0; *t != 0; t++) {
-		rng = gsl_rng_alloc(*t);
-		if (gsl_rng_min(rng) == 0 && gsl_rng_max(rng) >= MaxRandomNumber)
+    for (t = t0; *t != 0; t++) {
+        rng = gsl_rng_alloc(*t);
+        if (gsl_rng_min(rng) == 0 && gsl_rng_max(rng) >= MaxRandomNumber)
 			list.push_back((*t)->name);
-		gsl_rng_free(rng);
+        gsl_rng_free(rng);
 	}
 
-	return list;
+    return list;
 }
 
 
 vectorstr listAllRNG()
 {
-	DBG_WARNING(true, "This function has been renamed to SetRNG() and will be removed at the next major release");
-	return ListAllRNG();
+    DBG_WARNING(true, "This function has been renamed to SetRNG() and will be removed at the next major release");
+    return ListAllRNG();
 }
 
 
@@ -2582,10 +2580,10 @@ vectorstr listAllRNG()
 // ////////////////////////////////////////////////////////////
 
 void gsl_error_handler(const char * reason, const char *,
-		       int, int gsl_errno)
+                       int, int gsl_errno)
 {
-	throw SystemError("GSL Error " + toStr(gsl_errno) + ":\t"
-			  + reason);
+    throw SystemError("GSL Error " + toStr(gsl_errno) + ":\t"
+        + reason);
 }
 
 
@@ -2595,47 +2593,47 @@ void gsl_error_handler(const char * reason, const char *,
 class PythonCoutBuf : public streambuf
 {
 public:
-	PythonCoutBuf()
-	{
+    PythonCoutBuf()
+    {
 	}
 
 
 protected:
-	int overflow(int c)
-	{
-		/* In the maste slave mode, slave can also output
+    int overflow(int c)
+    {
+        /* In the maste slave mode, slave can also output
 		 #ifdef SIMUMPI
 		   				// only head node can output to python output
 		   				if(mpiRank() != 0)
 		   					return 0;
 		 #endif
 		 */
-		// write out current buffer
-		if (pbase() != pptr() ) {
-			// the end of string might not be \0
-			char_type * endPtr = pptr();
-			char_type endChar = *endPtr;
-			*endPtr = '\0';
-			//          int len = pptr() - pbase();
-			//          char * str = new char[len+1];
-			//          strncpy(str, pbase(), len);
-			//          str[len] = '\0';
-			PySys_WriteStdout("%s", pbase());
-			// put original end character back, whatever it is.
-			*endPtr = endChar;
-			//          delete[] str;
-			setp(pbase(), epptr());
+        // write out current buffer
+        if (pbase() != pptr() ) {
+            // the end of string might not be \0
+            char_type * endPtr = pptr();
+            char_type endChar = *endPtr;
+            *endPtr = '\0';
+            //          int len = pptr() - pbase();
+            //          char * str = new char[len+1];
+            //          strncpy(str, pbase(), len);
+            //          str[len] = '\0';
+            PySys_WriteStdout("%s", pbase());
+            // put original end character back, whatever it is.
+            *endPtr = endChar;
+            //          delete[] str;
+            setp(pbase(), epptr());
 
 		}
-		// push character c in
-		if (c != EOF) {
-			// unbuffered, write out this character, do not put into buffer
-			if (pbase() == epptr() )
+        // push character c in
+        if (c != EOF) {
+            // unbuffered, write out this character, do not put into buffer
+            if (pbase() == epptr() )
 				PySys_WriteStdout("%c", c);
-			else
+            else
 				sputc(c);
 		}
-		return 0;
+        return 0;
 	}
 
 
@@ -2645,15 +2643,15 @@ protected:
 class NullStreamBuf : public streambuf
 {
 public:
-	NullStreamBuf()
-	{
+    NullStreamBuf()
+    {
 	}
 
 
 protected:
-	int overflow(int)
-	{
-		return 0;
+    int overflow(int)
+    {
+        return 0;
 	}
 
 
@@ -2671,30 +2669,30 @@ ostream g_cnull(&g_nullStreamBuf);
 // return null stream
 ostream & cnull()
 {
-	return g_cnull;
+    return g_cnull;
 }
 
 
 // set default output ("" means standard output)
 void setLogOutput(const string filename)
 {
-	static ofstream * outputFile = NULL;
+    static ofstream * outputFile = NULL;
 
-	// close old file is necessary
-	if (outputFile != NULL) {
-		outputFile->close();
-		delete outputFile;
-		outputFile = NULL;
+    // close old file is necessary
+    if (outputFile != NULL) {
+        outputFile->close();
+        delete outputFile;
+        outputFile = NULL;
 	}
-	// use stanard output
-	if (filename == "")
+    // use stanard output
+    if (filename == "")
 		cout.rdbuf(&g_pythonCoutBuf);
-	else {
-		// use a file.
-		outputFile = new ofstream(filename.c_str());
-		if (outputFile == NULL || ! * outputFile)
+    else {
+        // use a file.
+        outputFile = new ofstream(filename.c_str());
+        if (outputFile == NULL || ! * outputFile)
 			throw ValueError("Can not open file " + filename + " to store standard output");
-		cout.rdbuf(outputFile->rdbuf());
+        cout.rdbuf(outputFile->rdbuf());
 	}
 }
 
@@ -2705,47 +2703,47 @@ void setLogOutput(const string filename)
 // be displayed when simuPOP is loaded.
 
 #ifndef COMPILER
- #ifdef __GNUC__
-  #define COMPILER "[GCC " __VERSION__ "]"
- #endif
+#ifdef __GNUC__
+#define COMPILER "[GCC " __VERSION__ "]"
+#endif
 #endif                                                                            /* !COMPILER */
 
 #ifndef COMPILER
- #ifdef __cplusplus
-  #define COMPILER "[C++]"
- #else
-  #define COMPILER "[C]"
- #endif
+#ifdef __cplusplus
+#define COMPILER "[C++]"
+#else
+#define COMPILER "[C]"
+#endif
 #endif
 
 #ifndef PLATFORM
- #define PLATFORM ""
+#define PLATFORM ""
 #endif
 
 // these macros will be passed from commandline, if not, use the default
 #ifndef SIMUPOP_REV
- #define REVISION "9999"
+#define REVISION "9999"
 #else
 // make passed macro to a real string
- #define REVISION MacroQuote(SIMUPOP_REV)
+#define REVISION MacroQuote(SIMUPOP_REV)
 #endif
 
 int simuRev()
 {
-	char * rev = REVISION;
-	// can have form xx:xxM etc, or simply a number
-	// we certainly like a single number but it is often the case that
-	// svn local copy is not up to date.
-	int num;
+    char * rev = REVISION;
+    // can have form xx:xxM etc, or simply a number
+    // we certainly like a single number but it is often the case that
+    // svn local copy is not up to date.
+    int num;
 
-	// first try XX:XX or XX:XXM
-	if (sscanf(rev, "%*d:%d", &num) == 1)   //success
+    // first try XX:XX or XX:XXM
+    if (sscanf(rev, "%*d:%d", &num) == 1)   //success
 		return num;
-	else if (sscanf(rev, "%d", &num) == 1)  // XX or XXM
+    else if (sscanf(rev, "%d", &num) == 1)  // XX or XXM
 		return num;
-	else {
-		cout << "Can not extract revision information from " << REVISION << endl;
-		return 0;
+    else {
+        cout << "Can not extract revision information from " << REVISION << endl;
+        return 0;
 	}
 }
 
@@ -2753,10 +2751,10 @@ int simuRev()
 string simuVer()
 {
 #ifndef SIMUPOP_VER
-	return "snapshot";
+    return "snapshot";
 #else
-	// convert name to a string
-	return MacroQuote(SIMUPOP_VER);
+    // convert name to a string
+    return MacroQuote(SIMUPOP_VER);
 #endif
 }
 
@@ -2764,9 +2762,9 @@ string simuVer()
 bool Optimized()
 {
 #ifdef OPTIMIZED
-	return true;
+    return true;
 #else
-	return false;
+    return false;
 #endif
 }
 
@@ -2774,22 +2772,22 @@ bool Optimized()
 bool mpi()
 {
 #ifdef SIMUMPI
-	return true;
+    return true;
 #else
-	return false;
+    return false;
 #endif
 }
 
 
 void Limits()
 {
-	cout << "Maximum allele state: " << hex << ModuleMaxAllele << endl;
-	cout << "Maximum random number: " << hex << MaxRandomNumber << endl;
-	cout << "Maximum number of subpopulations: " << hex << MaxSubPopID << endl;
-	cout << "Maximum index size (limits population size * total number of markers): "
-	     << hex << MaxIndexSize << endl;
-	cout << "Maximum integer: " << hex << std::numeric_limits<int>::max() << endl;
-	cout << "Maximum long integer: " << hex << std::numeric_limits<long int>::max() << endl;
+    cout << "Maximum allele state: " << hex << ModuleMaxAllele << endl;
+    cout << "Maximum random number: " << hex << MaxRandomNumber << endl;
+    cout << "Maximum number of subpopulations: " << hex << MaxSubPopID << endl;
+    cout << "Maximum index size (limits population size * total number of markers): "
+         << hex << MaxIndexSize << endl;
+    cout << "Maximum integer: " << hex << std::numeric_limits<int>::max() << endl;
+    cout << "Maximum long integer: " << hex << std::numeric_limits<long int>::max() << endl;
 
 }
 
@@ -2807,9 +2805,9 @@ ULONG g_uniqueID = 1;
 
 comm::~comm()
 {
-	if (mpiRank() == 0) {
-		int action = SLAVE_TERMINATE;
-		for (size_t node = 1; node < mpiSize(); ++node)
+    if (mpiRank() == 0) {
+        int action = SLAVE_TERMINATE;
+        for (size_t node = 1; node < mpiSize(); ++node)
 			send(node, 0, action);
 	}
 }
@@ -2817,13 +2815,13 @@ comm::~comm()
 
 const comm mpiComm()
 {
-	return g_mpiComm;
+    return g_mpiComm;
 }
 
 
 ULONG uniqueID()
 {
-	return g_uniqueID++;
+    return g_uniqueID++;
 }
 
 
@@ -2832,9 +2830,9 @@ ULONG uniqueID()
 UINT mpiRank()
 {
 #ifdef SIMUMPI
-	return g_mpiComm.rank();
+    return g_mpiComm.rank();
 #else
-	return 0;
+    return 0;
 #endif
 }
 
@@ -2842,9 +2840,9 @@ UINT mpiRank()
 UINT mpiSize()
 {
 #ifdef SIMUMPI
-	return g_mpiComm.size();
+    return g_mpiComm.size();
 #else
-	return 0;
+    return 0;
 #endif
 }
 
@@ -2852,7 +2850,7 @@ UINT mpiSize()
 void mpiBarrier()
 {
 #ifdef SIMUMPI
-	g_mpiComm.barrier();
+    g_mpiComm.barrier();
 #endif
 }
 
@@ -2860,79 +2858,79 @@ void mpiBarrier()
 string AlleleType()
 {
 #ifdef LONGALLELE
-	return "long";
+    return "long";
 #else
- #ifdef BINARYALLELE
-	return "binary";
- #else
-	return "short";
- #endif
+#ifdef BINARYALLELE
+    return "binary";
+#else
+    return "short";
+#endif
 #endif
 }
 
 
 ULONG MaxAllele()
 {
-	return ModuleMaxAllele;
+    return ModuleMaxAllele;
 }
 
 
 string ModuleCompiler()
 {
-	return COMPILER;
+    return COMPILER;
 }
 
 
 string ModuleDate()
 {
-	return __DATE__;
+    return __DATE__;
 }
 
 
 string ModulePyVersion()
 {
-	return PY_VERSION;
+    return PY_VERSION;
 }
 
 
 string ModulePlatForm()
 {
-	return PLATFORM;
+    return PLATFORM;
 }
 
 
 // GZIP	\037\213	http://www.ietf.org/rfc/rfc1952.txt
 bool isGzipped(const string & filename)
 {
-	// paranoia check
-	if (filename.empty())
+    // paranoia check
+    if (filename.empty())
 		return false;
 
-	ifstream ifs(filename.c_str());
-	if (!ifs)
+    ifstream ifs(filename.c_str());
+    if (!ifs)
 		// Couldn't open file...
 		return false;
 
-	string str;
-	getline(ifs, str);
-	return str.substr(0, 2) == "\037\213";
+    string str;
+    getline(ifs, str);
+    return str.substr(0, 2) == "\037\213";
 }
 
 
 const string fileExtension(const string & filename)
 {
-	const string::size_type last_slash = filename.rfind('/');
-	string::size_type last_dot;
+    const string::size_type last_slash = filename.rfind('/');
+    string::size_type last_dot;
 
-	if (filename.size() > 3 && filename.substr(filename.size() - 3, 3) == ".gz")
+    if (filename.size() > 3 && filename.substr(filename.size() - 3, 3) == ".gz")
 		last_dot = filename.rfind('.', filename.size() - 4);
-	else
+    else
 		last_dot = filename.rfind('.');
-	if (last_dot != string::npos &&
-	    (last_slash == string::npos || last_dot > last_slash))
+    if (last_dot != string::npos &&
+        (last_slash == string::npos || last_dot > last_slash))
 		return filename.substr(last_dot + 1,
-				       filename.size() - (last_dot + 1));
-	else
+		           filename.size() - (last_dot + 1));
+    else
 		return string();
 }
 
@@ -2942,204 +2940,204 @@ const string fileExtension(const string & filename)
 // define a good way to copy long genotype sequence
 void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 {
-	DBG_ASSERT(BITOFF(fr) < WORDBIT, SystemError,
-		   "Your vector<bool> implementation is different...");
+    DBG_ASSERT(BITOFF(fr) < WORDBIT, SystemError,
+        "Your vector<bool> implementation is different...");
 
-	WORDTYPE * fr_p = BITPTR(fr);
-	WORDTYPE * to_p = BITPTR(to);
-	unsigned int fr_off = BITOFF(fr);
-	unsigned int to_off = BITOFF(to);
+    WORDTYPE * fr_p = BITPTR(fr);
+    WORDTYPE * to_p = BITPTR(to);
+    unsigned int fr_off = BITOFF(fr);
+    unsigned int to_off = BITOFF(to);
 
-	// if offset is different, can not copy in block.
-	if (n < WORDBIT) {
-		for (size_t i = 0; i < n; ++i) {
-			// set bit according to from bit
-			if (*fr_p & (1UL << fr_off))
+    // if offset is different, can not copy in block.
+    if (n < WORDBIT) {
+        for (size_t i = 0; i < n; ++i) {
+            // set bit according to from bit
+            if (*fr_p & (1UL << fr_off))
 				*to_p |= (1UL << to_off);
-			else
+            else
 				*to_p &= ~(1UL << to_off);
-			// next location
-			if (fr_off++ == WORDBIT - 1) {
-				fr_off = 0;
-				++fr_p;
+            // next location
+            if (fr_off++ == WORDBIT - 1) {
+                fr_off = 0;
+                ++fr_p;
 			}
-			if (to_off++ == WORDBIT - 1) {
-				to_off = 0;
-				++to_p;
+            if (to_off++ == WORDBIT - 1) {
+                to_off = 0;
+                ++to_p;
 			}
 		}
 	} else if (fr_off == to_off) {
-		// copy first block, fr_off + 1 bits
-		// ABCDxxxx for off=4
-		// what I am doing is
-		// mask[4] = xxxx1111 <==== NOTICE mask[4] has four 1s
-		//
-		//  off = 4,
-		//  from:  ABCDxxxx
-		//  to:    EFGHxxxx
-		// from & ~mask =  ABCD0000
-		// to &    mask  = 0000xxxx
-		// (from & mask) | (to & ~mask) = ABCDxxxx
-		WORDTYPE mask = g_bitMask[fr_off];
-		*to_p = (*fr_p & ~mask) | (*to_p & mask);
+        // copy first block, fr_off + 1 bits
+        // ABCDxxxx for off=4
+        // what I am doing is
+        // mask[4] = xxxx1111 <==== NOTICE mask[4] has four 1s
+        //
+        //  off = 4,
+        //  from:  ABCDxxxx
+        //  to:    EFGHxxxx
+        // from & ~mask =  ABCD0000
+        // to &    mask  = 0000xxxx
+        // (from & mask) | (to & ~mask) = ABCDxxxx
+        WORDTYPE mask = g_bitMask[fr_off];
+        *to_p = (*fr_p & ~mask) | (*to_p & mask);
 
-		size_t rest = n - (WORDBIT - fr_off);
-		size_t blks = rest / WORDBIT;
-		for (size_t i = 0; i < blks; ++i)
+        size_t rest = n - (WORDBIT - fr_off);
+        size_t blks = rest / WORDBIT;
+        for (size_t i = 0; i < blks; ++i)
 			*++to_p = *++fr_p;
-		// the rest of the bits?
-		rest -= blks * WORDBIT;
-		if (rest != 0) {
-			// rest = 3
-			// from:   xxxxxABC
-			// to:     xxxxxCDE
-			// mask:   00000111
-			//    &:   00000ABC
-			//    & :  xxxxx000
-			//    |:   xxxxxABC
-			to_p++;
-			fr_p++;
-			// mask has top rest zeros.
-			mask = g_bitMask[rest];
-			*to_p = (*fr_p & mask) | (*to_p & ~mask);
+        // the rest of the bits?
+        rest -= blks * WORDBIT;
+        if (rest != 0) {
+            // rest = 3
+            // from:   xxxxxABC
+            // to:     xxxxxCDE
+            // mask:   00000111
+            //    &:   00000ABC
+            //    & :  xxxxx000
+            //    |:   xxxxxABC
+            to_p++;
+            fr_p++;
+            // mask has top rest zeros.
+            mask = g_bitMask[rest];
+            *to_p = (*fr_p & mask) | (*to_p & ~mask);
 		}
 	} else if (fr_off < to_off) {
-		WORDTYPE maskFrom = g_bitMask[fr_off];
-		WORDTYPE maskTo = g_bitMask[to_off];
-		WORDTYPE maskFrom1;
-		size_t shift;
+        WORDTYPE maskFrom = g_bitMask[fr_off];
+        WORDTYPE maskTo = g_bitMask[to_off];
+        WORDTYPE maskFrom1;
+        size_t shift;
 
-		shift = to_off - fr_off;
-		// fr_off=5, to_off=7, shift=3
-		// from:    ABCxxxxx,  maskFrom: 00011111
-		// to:      Dxxxxxxx,  maskTo:   01111111
-		//   (from & ~maskFrom) = ABC00000
-		//   <<                   C0000000
-		//   to & maskTo        = 0xxxxxxx
-		//   |                  = Cxxxxxxx
-		*to_p = ((*fr_p & ~maskFrom) << shift) |
-			(*to_p & maskTo);
-		// now. for other block bits
-		// to other bits
-		size_t rest = n - (WORDBIT - to_off);
-		size_t blks = rest / WORDBIT;
-		//
-		//  already copied to_off+1 bits
-		// from:   ABxxxxxx, maskFrom:    00111111
-		// from1:  xxCDEFGH, maskFrom:    00111111
-		// from & ~maskFrom            =  AB000000
-		// >>                          =  000000AB
-		// from1 & maskFrom            =  00CDEFGH
-		// <<                          =  CDEFGHxx
-		// |                           =  CDEFGHAB
-		maskFrom  = g_bitMask[WORDBIT - shift];
-		for (size_t i = 0; i < blks; ++i) {
-			to_p++;
-			*to_p = ((*fr_p & ~maskFrom) >> (WORDBIT - shift)) |
-				( (*(fr_p + 1) & maskFrom) << shift);
-			fr_p++;
+        shift = to_off - fr_off;
+        // fr_off=5, to_off=7, shift=3
+        // from:    ABCxxxxx,  maskFrom: 00011111
+        // to:      Dxxxxxxx,  maskTo:   01111111
+        //   (from & ~maskFrom) = ABC00000
+        //   <<                   C0000000
+        //   to & maskTo        = 0xxxxxxx
+        //   |                  = Cxxxxxxx
+        *to_p = ((*fr_p & ~maskFrom) << shift) |
+                (*to_p & maskTo);
+        // now. for other block bits
+        // to other bits
+        size_t rest = n - (WORDBIT - to_off);
+        size_t blks = rest / WORDBIT;
+        //
+        //  already copied to_off+1 bits
+        // from:   ABxxxxxx, maskFrom:    00111111
+        // from1:  xxCDEFGH, maskFrom:    00111111
+        // from & ~maskFrom            =  AB000000
+        // >>                          =  000000AB
+        // from1 & maskFrom            =  00CDEFGH
+        // <<                          =  CDEFGHxx
+        // |                           =  CDEFGHAB
+        maskFrom  = g_bitMask[WORDBIT - shift];
+        for (size_t i = 0; i < blks; ++i) {
+            to_p++;
+            *to_p = ((*fr_p & ~maskFrom) >> (WORDBIT - shift)) |
+                    ( (*(fr_p + 1) & maskFrom) << shift);
+            fr_p++;
 		}
-		// the rest of the bits?
-		rest -= blks * WORDBIT;
-		if (rest != 0) {
-			to_p++;
-			if (rest <= shift) {
-				// rest = 2, shift = 5
-				// from:  ABCEDxxx, maskfrom: 00000111
-				// to:    xxxxxxAB, maskto:   00000011
-				// & ~                        ABCDE000
-				// >>                         000ABCDE
-				// & naskTo                   000000DE
-				// & ~                        xxxxxx00
-				// |                          xxxxxxDE
-				maskFrom = g_bitMask[WORDBIT - shift];
-				maskTo   = g_bitMask[rest];
-				*to_p =  (((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) & maskTo)
-					| (*to_p & ~maskTo);
+        // the rest of the bits?
+        rest -= blks * WORDBIT;
+        if (rest != 0) {
+            to_p++;
+            if (rest <= shift) {
+                // rest = 2, shift = 5
+                // from:  ABCEDxxx, maskfrom: 00000111
+                // to:    xxxxxxAB, maskto:   00000011
+                // & ~                        ABCDE000
+                // >>                         000ABCDE
+                // & naskTo                   000000DE
+                // & ~                        xxxxxx00
+                // |                          xxxxxxDE
+                maskFrom = g_bitMask[WORDBIT - shift];
+                maskTo   = g_bitMask[rest];
+                *to_p =  (((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) & maskTo)
+                        | (*to_p & ~maskTo);
 			} else {
-				// rest = 5, shift = 2
-				// from:     ABxxxxxx, maskFrom: 00111111
-				// from:     xxxxxCDE, maskFrom1:00000111
-				// to:       xxxCDEAB, maskTo:   00011111
-				//   from & ~ mask  =  AB000000
-				//     >>           =  000000AB .
-				//   from 1 & mask1 =  00000CDE
-				//     <<           =  000CDE00 .
-				//  to * ~mask      =  xxx00000
-				//  |               =  xxxCDEAB
-				maskFrom = g_bitMask[WORDBIT - shift];
-				maskFrom1 = g_bitMask[rest - shift];
-				maskTo   = g_bitMask[rest];
+                // rest = 5, shift = 2
+                // from:     ABxxxxxx, maskFrom: 00111111
+                // from:     xxxxxCDE, maskFrom1:00000111
+                // to:       xxxCDEAB, maskTo:   00011111
+                //   from & ~ mask  =  AB000000
+                //     >>           =  000000AB .
+                //   from 1 & mask1 =  00000CDE
+                //     <<           =  000CDE00 .
+                //  to * ~mask      =  xxx00000
+                //  |               =  xxxCDEAB
+                maskFrom = g_bitMask[WORDBIT - shift];
+                maskFrom1 = g_bitMask[rest - shift];
+                maskTo   = g_bitMask[rest];
 
-				*to_p =  ((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) |
-					((*(fr_p + 1) & maskFrom1) << shift) |
-					(*to_p & ~maskTo);
+                *to_p =  ((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) |
+                        ((*(fr_p + 1) & maskFrom1) << shift) |
+                        (*to_p & ~maskTo);
 			}
 		}
 	} else {                                                                          // fr_off > to_off
-		size_t shift = fr_off - to_off;
-		WORDTYPE maskFrom = g_bitMask[fr_off];
-		WORDTYPE maskFrom1 = g_bitMask[shift];
-		WORDTYPE maskTo   = g_bitMask[to_off];
-		// from:   ABCxxxxx, maskFrom: 00011111
-		// from1:  xxxxxxDE, maskFrom1:00000011
-		// to:     DEABCxxx, maskTo:   00011111
-		//
-		*to_p = ((*fr_p & ~maskFrom) >> shift) |
-			( (*(fr_p + 1) & maskFrom1) << (WORDBIT - shift)) |
-			(*to_p & maskTo);
-		to_p++;
-		fr_p++;
-		//
-		// to other bits
-		size_t rest = n - (WORDBIT - to_off);
-		size_t blks = rest / WORDBIT;
-		//
-		// already copied shift bits
-		// from:   ABCDEFxx, maskFrom:   00000011
-		// from1:  xxxxxxGH, maskFrom:   00000011
-		// to:     GHABCDEF
-		maskFrom  = g_bitMask[shift];
-		for (size_t i = 0; i < blks; ++i) {
-			*to_p = ((*fr_p & ~maskFrom) >> shift) |
-				( (*(fr_p + 1) & maskFrom) << (WORDBIT - shift));
-			fr_p++;
-			to_p++;
+        size_t shift = fr_off - to_off;
+        WORDTYPE maskFrom = g_bitMask[fr_off];
+        WORDTYPE maskFrom1 = g_bitMask[shift];
+        WORDTYPE maskTo   = g_bitMask[to_off];
+        // from:   ABCxxxxx, maskFrom: 00011111
+        // from1:  xxxxxxDE, maskFrom1:00000011
+        // to:     DEABCxxx, maskTo:   00011111
+        //
+        *to_p = ((*fr_p & ~maskFrom) >> shift) |
+                ( (*(fr_p + 1) & maskFrom1) << (WORDBIT - shift)) |
+                (*to_p & maskTo);
+        to_p++;
+        fr_p++;
+        //
+        // to other bits
+        size_t rest = n - (WORDBIT - to_off);
+        size_t blks = rest / WORDBIT;
+        //
+        // already copied shift bits
+        // from:   ABCDEFxx, maskFrom:   00000011
+        // from1:  xxxxxxGH, maskFrom:   00000011
+        // to:     GHABCDEF
+        maskFrom  = g_bitMask[shift];
+        for (size_t i = 0; i < blks; ++i) {
+            *to_p = ((*fr_p & ~maskFrom) >> shift) |
+                    ( (*(fr_p + 1) & maskFrom) << (WORDBIT - shift));
+            fr_p++;
+            to_p++;
 		}
-		// the rest of the bits
-		rest -= blks * WORDBIT;
-		if (rest != 0) {
-			if (rest < WORDBIT - shift) {
-				// rest = 2, shift = 3,
-				// from:     ABCDExxx, maskFrom: 00000111
-				// to:       xxxxxxDE, maskTo:   00000011
-				maskFrom = g_bitMask[shift];
-				maskTo   = g_bitMask[rest];
-				*to_p = (((*fr_p & ~maskFrom) >> shift) & maskTo) |
-					(*to_p & ~maskTo) ;
+        // the rest of the bits
+        rest -= blks * WORDBIT;
+        if (rest != 0) {
+            if (rest < WORDBIT - shift) {
+                // rest = 2, shift = 3,
+                // from:     ABCDExxx, maskFrom: 00000111
+                // to:       xxxxxxDE, maskTo:   00000011
+                maskFrom = g_bitMask[shift];
+                maskTo   = g_bitMask[rest];
+                *to_p = (((*fr_p & ~maskFrom) >> shift) & maskTo) |
+                        (*to_p & ~maskTo) ;
 			} else {
-				// rest = 5, shift = 6
-				// from:   ABxxxxxx, maskFrom: 00111111
-				// from1:  xxxxxCDE, maskFrom1:00000111
-				// rest:   xxxCDEAB, maskTo:   00011111
-				maskFrom  = g_bitMask[shift];
-				maskFrom1 = g_bitMask[rest - (WORDBIT - shift)];
-				maskTo    = g_bitMask[rest];
-				*to_p = ((*fr_p & ~maskFrom) >> shift) |
-					((*(fr_p + 1) & maskFrom1) << (WORDBIT - shift)) |
-					(*to_p & ~maskTo);
+                // rest = 5, shift = 6
+                // from:   ABxxxxxx, maskFrom: 00111111
+                // from1:  xxxxxCDE, maskFrom1:00000111
+                // rest:   xxxCDEAB, maskTo:   00011111
+                maskFrom  = g_bitMask[shift];
+                maskFrom1 = g_bitMask[rest - (WORDBIT - shift)];
+                maskTo    = g_bitMask[rest];
+                *to_p = ((*fr_p & ~maskFrom) >> shift) |
+                        ((*(fr_p + 1) & maskFrom1) << (WORDBIT - shift)) |
+                        (*to_p & ~maskTo);
 			}
 		}
 	}
- #ifndef OPTIMIZED
-	if (debug(DBG_UTILITY)) {
-		if (vectora(fr, fr + n) != vectora(to, to + n)) {
-			cout << "Copy from " << vectora(fr, fr + n)
-			     << " to " << vectora(to, to + n) << " failed " << endl;
-			cout << "Offsets are " << BITOFF(fr) << " and " << BITOFF(to) << endl;
+#ifndef OPTIMIZED
+    if (debug(DBG_UTILITY)) {
+        if (vectora(fr, fr + n) != vectora(to, to + n)) {
+            cout << "Copy from " << vectora(fr, fr + n)
+                 << " to " << vectora(to, to + n) << " failed " << endl;
+            cout << "Offsets are " << BITOFF(fr) << " and " << BITOFF(to) << endl;
 		}
 	}
- #endif
+#endif
 }
 
 
@@ -3150,132 +3148,132 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
    include this file. */
 bool initialize()
 {
-	// tie python stdout to cout
-	setLogOutput();
+    // tie python stdout to cout
+    setLogOutput();
 
-	// for example, if WORDBIT is 8 (most likely 32), we define
-	// 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
-	for (size_t i = 0; i < WORDBIT; ++i) {
-		// g_bitMask[i] is the number of 1 count from right.
-		for (size_t j = 0; j < i; ++j)
+    // for example, if WORDBIT is 8 (most likely 32), we define
+    // 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
+    for (size_t i = 0; i < WORDBIT; ++i) {
+        // g_bitMask[i] is the number of 1 count from right.
+        for (size_t j = 0; j < i; ++j)
 			g_bitMask[i] |= (1UL << j);
 	}
 
 #ifndef OPTIMIZED
-	// turn on some debug info
-	TurnOnDebug(DBG_GENERAL);
-	// give at most 100 ref count warnings.
+    // turn on some debug info
+    TurnOnDebug(DBG_GENERAL);
+    // give at most 100 ref count warnings.
 #endif
 #ifdef Py_REF_DEBUG
-	g_refWarningCount = 100;
+    g_refWarningCount = 100;
 #endif
 
-	// SIMUPOP_MODULE is passed as name, but we need it to be quoted.
-	// Note that under gcc, I could pass the macro from command line
-	// using \" \" but this trick does not work under VC.
-	// the following process is safer.
+    // SIMUPOP_MODULE is passed as name, but we need it to be quoted.
+    // Note that under gcc, I could pass the macro from command line
+    // using \" \" but this trick does not work under VC.
+    // the following process is safer.
 #define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
 
-	// set global dictionary/variable
-	PyObject * mm = PyImport_AddModule(SimuPOP_Module_Name);
-	g_module_vars = SharedVariables(PyModule_GetDict(mm), false);
+    // set global dictionary/variable
+    PyObject * mm = PyImport_AddModule(SimuPOP_Module_Name);
+    g_module_vars = SharedVariables(PyModule_GetDict(mm), false);
 
-	// main dictionary
-	mm = PyImport_AddModule("__main__");
-	g_main_vars = SharedVariables(PyModule_GetDict(mm), false);
+    // main dictionary
+    mm = PyImport_AddModule("__main__");
+    g_main_vars = SharedVariables(PyModule_GetDict(mm), false);
 
-	// get population and individual type pointer
-	g_swigPopType = SWIG_TypeQuery(PopSWIGType);
-	g_swigindividual = SWIG_TypeQuery(IndSWIGType);
-	//
-	// g_swigOperator = SWIG_TypeQuery(OperatorSWIGType);
-	if (g_swigPopType == NULL || g_swigindividual == NULL)
+    // get population and individual type pointer
+    g_swigPopType = SWIG_TypeQuery(PopSWIGType);
+    g_swigindividual = SWIG_TypeQuery(IndSWIGType);
+    //
+    // g_swigOperator = SWIG_TypeQuery(OperatorSWIGType);
+    if (g_swigPopType == NULL || g_swigindividual == NULL)
 		throw SystemError("Can not get population and individual type pointer, your SWIG version may be run.");
 
-	/// load carray function and type
-	initcarray();
+    /// load carray function and type
+    initcarray();
 
-	// set gsl error handler
-	gsl_set_error_handler(&gsl_error_handler);
+    // set gsl error handler
+    gsl_set_error_handler(&gsl_error_handler);
 
 #ifndef OPTIMIZED
- #ifdef BINARYALLELE
-	// binary level genotype copy is compiler dependent and may
-	// fail on some systems. Such a test will make sure the binary
-	// library work fine.
-	testCopyGenotype();
- #endif
+#ifdef BINARYALLELE
+    // binary level genotype copy is compiler dependent and may
+    // fail on some systems. Such a test will make sure the binary
+    // library work fine.
+    testCopyGenotype();
 #endif
-	return true;
+#endif
+    return true;
 }
 
 
 #ifndef OPTIMIZED
 bool testGappedIterator()
 {
-	vectorinfo a(20);
-	size_t i;
+    vectorinfo a(20);
+    size_t i;
 
-	for (i = 0; i < 20; ++i)
+    for (i = 0; i < 20; ++i)
 		a[i] = i;
 
-	// access to the right elements?
-	GappedInfoIterator a5(a.begin(), 5);
-	for (i = 0; i < 4; ++i)
+    // access to the right elements?
+    GappedInfoIterator a5(a.begin(), 5);
+    for (i = 0; i < 4; ++i)
 		if (*a5++ != i * 5)
 			return false;
 
-	// not start from the first?
-	GappedInfoIterator a4(a.begin() + 1, 4);
-	for (i = 0; i < 4; ++i)
+    // not start from the first?
+    GappedInfoIterator a4(a.begin() + 1, 4);
+    for (i = 0; i < 4; ++i)
 		if (*a4++ != 1 + i * 4)
 			return false;
 
-	// can I get a vector from it?
-	vectorinfo b(GappedInfoIterator(a.begin() + 1, 4),
-		     GappedInfoIterator(a.end() + 1, 4));
-	vectorinfo::iterator it = b.begin();
-	for (i = 0; it != b.end(); ++it, ++i)
+    // can I get a vector from it?
+    vectorinfo b(GappedInfoIterator(a.begin() + 1, 4),
+                 GappedInfoIterator(a.end() + 1, 4));
+    vectorinfo::iterator it = b.begin();
+    for (i = 0; it != b.end(); ++it, ++i)
 		if (*it != 1 + i * 4)
 			return false;
 
-	return true;
+    return true;
 }
 
 
- #ifdef BINARYALLELE
+#ifdef BINARYALLELE
 void testCopyGenotype()
 {
-	vectora from(1000);
-	vectora to(1000);
+    vectora from(1000);
+    vectora to(1000);
 
-	for (size_t i = 0; i < 100; ++i) {
-		for (size_t j = 0; j < 1000; ++j) {
-			// use != 0 to reduce compiler warning
-			from[j] = rng().randInt(2) != 0;
-			to[j] = 0;
+    for (size_t i = 0; i < 100; ++i) {
+        for (size_t j = 0; j < 1000; ++j) {
+            // use != 0 to reduce compiler warning
+            from[j] = rng().randInt(2) != 0;
+            to[j] = 0;
 		}
-		size_t from_idx = rng().randInt(300);
-		size_t to_idx = rng().randInt(300);
-		if (from_idx > to_idx)
+        size_t from_idx = rng().randInt(300);
+        size_t to_idx = rng().randInt(300);
+        if (from_idx > to_idx)
 			continue;
-		size_t length = rng().randInt(500);
-		copyGenotype(from.begin() + from_idx,
-			     to.begin() + to_idx, length);
-		if (vectora(from.begin() + from_idx, from.begin() + from_idx + length) !=
-		    vectora(to.begin() + to_idx, to.begin() + to_idx + length)) {
-			cout << "Copying: " << vectora(from.begin() + from_idx, from.begin() + from_idx + length) << '\n'
-			     <<  "Obtain:  " << vectora(to.begin() + to_idx, to.begin() + to_idx + length) << '\n'
-			     <<  "Index From: " << from_idx << " to: " << to_idx << " length: " << length << endl;
-			// the error message can not be shown
-			throw SystemError("Allele copy test for your system fails.\n"
-					  "Please email simuPOP mailing list with detailed os and compiler information");
+        size_t length = rng().randInt(500);
+        copyGenotype(from.begin() + from_idx,
+            to.begin() + to_idx, length);
+        if (vectora(from.begin() + from_idx, from.begin() + from_idx + length) !=
+            vectora(to.begin() + to_idx, to.begin() + to_idx + length)) {
+            cout << "Copying: " << vectora(from.begin() + from_idx, from.begin() + from_idx + length) << '\n'
+                 <<  "Obtain:  " << vectora(to.begin() + to_idx, to.begin() + to_idx + length) << '\n'
+                 <<  "Index From: " << from_idx << " to: " << to_idx << " length: " << length << endl;
+            // the error message can not be shown
+            throw SystemError("Allele copy test for your system fails.\n"
+                "Please email simuPOP mailing list with detailed os and compiler information");
 		}
 	}
 }
 
 
- #endif
+#endif
 #endif
 
 }

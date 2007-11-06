@@ -49,7 +49,7 @@ public:
 	 \param message a message that will be displayed when the evolution is terminated.
 	 */
 	terminator(string message = "", string output = ">", string outputExpr = "",
-		   int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 		m_message(message)
 	{
@@ -97,11 +97,11 @@ class terminateIf : public terminator
 public:
 	/// create a \c terminateIf terminator
 	terminateIf(string condition = "", string message = "", string var = "terminate",
-		    string output = "", string outputExpr = "",
-		    int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		    int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	            string output = "", string outputExpr = "",
+	            int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	            int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		terminator(message, output, outputExpr, stage, begin, end, step, at,
-			   rep, grp), m_expr(condition), m_var(var)
+		           rep, grp), m_expr(condition), m_var(var)
 	{
 	}
 
@@ -167,11 +167,11 @@ class continueIf : public terminator
 public:
 	/// create a \c continueIf terminator
 	continueIf(string condition = "", string message = "", string var = "terminate",
-		   string output = "", string outputExpr = "",
-		   int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		   int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	           string output = "", string outputExpr = "",
+	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		terminator(message, output, outputExpr, stage, begin, end, step, at,
-			   rep, grp), m_expr(condition), m_var(var)
+		           rep, grp), m_expr(condition), m_var(var)
 	{
 	}
 

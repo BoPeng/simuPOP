@@ -50,8 +50,8 @@ class outputer : public baseOperator
 public:
 	/// constructor.
 	outputer(string output = ">", string outputExpr = "",
-		 int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		 int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields)
 	{
 	};
@@ -82,10 +82,10 @@ public:
 	 \param str string to be outputted
 	 */
 	pyOutput(string str = "", string output = ">", string outputExpr = "",
-		 int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		 int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		outputer(output, outputExpr, stage, begin, end,
-			 step, at, rep, grp, infoFields), m_string(str)
+		         step, at, rep, grp, infoFields), m_string(str)
 	{
 	}
 
@@ -153,10 +153,10 @@ public:
 	 \param str string to be outputted
 	 */
 	outputHelper(string str = "", string output = ">", string outputExpr = "",
-		     int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		     int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	             int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	             int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		outputer(output, outputExpr, stage, begin, end,
-			 step, at, rep, grp, infoFields), m_string(str)
+		         step, at, rep, grp, infoFields), m_string(str)
 	{
 	}
 
@@ -223,7 +223,7 @@ public:
 	 \param subPop only display subpopulation(s)
 	 \param indRange range(s) of individuals to display
 	 \param max the maximum number of individuals to display. Default to \c 100.
-	   	    This is to avoid careless dump of huge populations.
+	   		This is to avoid careless dump of huge populations.
 	 \param output output file. Default to the standard output.
 	 \param outputExpr and other parameters: refer to help(baseOperator.__init__)
 
@@ -322,8 +322,8 @@ class savePopulation : public outputer
 public:
 	/// save population
 	savePopulation(string output = "", string outputExpr = "",
-		       string format = "bin", bool compress = true, int stage = PostMating, int begin = 0, int end = -1,
-		       int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	               string format = "bin", bool compress = true, int stage = PostMating, int begin = 0, int end = -1,
+	               int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		outputer("", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_filename(output), m_filenameParser(outputExpr), m_format(format), m_compress(compress)
 	{

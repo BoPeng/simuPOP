@@ -61,12 +61,12 @@ public:
 	 \param maleFreq male frequency. Default to \c 0.5. Sex will be initialized with this parameter.
 	 */
 	initializer(const vectoru & subPop = vectoru(),
-		    intMatrix indRange = intMatrix(),
-		    const vectoru & loci = vectoru(),
-		    int atPloidy = -1,
-		    double maleFreq = 0.5, const vectori & sex = vectori(),
-		    int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		    vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	            intMatrix indRange = intMatrix(),
+	            const vectoru & loci = vectoru(),
+	            int atPloidy = -1,
+	            double maleFreq = 0.5, const vectori & sex = vectori(),
+	            int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_subPop(subPop), m_indRange(indRange),
 		m_atLoci(loci), m_atPloidy(atPloidy),
@@ -119,7 +119,6 @@ public:
 	Sex nextSex();
 
 protected:
-
 	/// applicable subpop
 	vectoru m_subPop;
 
@@ -173,20 +172,20 @@ public:
 	 \test src_initByFreq.log Operator \c initByFreq
 	 */
 	initByFreq(const matrix & alleleFreq = matrix(),
-		   bool identicalInds = false,  const vectoru & subPop = vectoru(),
-		   intMatrix indRange = intMatrix(),
-		   const vectoru & loci = vectoru(), int atPloidy = -1,
-		   double maleFreq = 0.5, const vectori & sex = vectori(),
-		   int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-		   int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	           bool identicalInds = false,  const vectoru & subPop = vectoru(),
+	           intMatrix indRange = intMatrix(),
+	           const vectoru & loci = vectoru(), int atPloidy = -1,
+	           double maleFreq = 0.5, const vectori & sex = vectori(),
+	           int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
+	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: initializer(subPop, indRange, loci,
-			      atPloidy, maleFreq, sex,
-			      stage, begin, end, step, at, rep, grp, infoFields),
+		              atPloidy, maleFreq, sex,
+		              stage, begin, end, step, at, rep, grp, infoFields),
 		m_alleleFreq(alleleFreq), m_identicalInds(identicalInds)
 	{
 
 		DBG_FAILIF(m_alleleFreq.empty(),
-			   IndexError, "Should specify one of alleleFreq, alleleFreqs");
+		    IndexError, "Should specify one of alleleFreq, alleleFreqs");
 
 		for (size_t i = 0; i < m_alleleFreq.size(); ++i)
 			if (fcmp_ne(accumulate(m_alleleFreq[i].begin(), m_alleleFreq[i].end(), 0.), 1.0))
@@ -217,7 +216,6 @@ public:
 	bool apply(population & pop);
 
 private:
-
 	/// allele frequencies (assume all loci are the same for a subPop
 	matrix m_alleleFreq;
 
@@ -263,27 +261,27 @@ public:
 	 \test src_initByValue.log Operator \c initByValue
 	 */
 	initByValue(intMatrix value = intMatrix(),
-		    vectoru loci = vectoru(), int atPloidy = -1,
-		    vectoru subPop = vectoru(), intMatrix indRange = intMatrix(),
-		    const vectorf & proportions = vectorf(),
-		    double maleFreq = 0.5, const vectori & sex = vectori(),
-		    int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-		    int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	            vectoru loci = vectoru(), int atPloidy = -1,
+	            vectoru subPop = vectoru(), intMatrix indRange = intMatrix(),
+	            const vectorf & proportions = vectorf(),
+	            double maleFreq = 0.5, const vectori & sex = vectori(),
+	            int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
+	            int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: initializer(subPop, indRange, loci, atPloidy, maleFreq, sex,
-			      stage, begin, end, step, at, rep, grp, infoFields),
+		              stage, begin, end, step, at, rep, grp, infoFields),
 		m_value(value), m_proportion(proportions)
 	{
 		DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
-			   IndexError, "male frequency in the population should be in the range of [0,1]");
+		    IndexError, "male frequency in the population should be in the range of [0,1]");
 
 		DBG_FAILIF(m_value.empty(), ValueError,
-			   "Please specify an array of alleles in the order of chrom_1...chrom_n for all copies of chromosomes");
+		    "Please specify an array of alleles in the order of chrom_1...chrom_n for all copies of chromosomes");
 
 		DBG_FAILIF(!m_proportion.empty() && m_proportion.size() != m_value.size(), ValueError,
-			   "If proportions are given, its length should match that of values.");
+		    "If proportions are given, its length should match that of values.");
 
 		DBG_FAILIF(!m_proportion.empty() && fcmp_ne(accumulate(m_proportion.begin(), m_proportion.end(), 0.0), 1),
-			   ValueError, "Proportion should add up to one.");
+		    ValueError, "Proportion should add up to one.");
 	}
 
 
@@ -369,7 +367,7 @@ public:
 			m_subPop.resize(1, p.first);
 
 		GenoIterator srcBegin = pop.indGenoBegin(m_ind),
-			     srcEnd = pop.indGenoEnd(m_ind);
+		             srcEnd = pop.indGenoEnd(m_ind);
 
 		for (vectoru::iterator sp = m_subPop.begin(); sp != m_subPop.end(); ++sp) {
 			for (ULONG i = pop.subPopBegin(*sp); i < pop.subPopEnd(*sp); ++i)
@@ -400,6 +398,7 @@ class pyInit : public initializer
 {
 
 	/// initialize populations using given user function
+
 public:
 	/**
 	 \param func a Python function with parameter <tt>(index, ploidy, subPop)</tt>, where
@@ -422,12 +421,12 @@ public:
 	       int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
 	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: initializer(subPop, indRange, loci, atPloidy, maleFreq, sex,
-			      stage, begin, end, step, at, rep, grp, infoFields)
+		              stage, begin, end, step, at, rep, grp, infoFields)
 	{
 		DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
-			   IndexError, "male frequency in the population should be in the range of [0,1]");
+		    IndexError, "male frequency in the population should be in the range of [0,1]");
 		DBG_ASSERT(PyCallable_Check(func),
-			   ValueError, "Func is not a Python function");
+		    ValueError, "Func is not a Python function");
 
 		Py_XINCREF(func);
 		m_func = func;

@@ -40,8 +40,8 @@ Allele individual::allele(UINT index) const
 	Allele val = 0;
 	if (mpiRank() == rank)
 		val = *(m_genoPtr + chIdx.second +                      // infex in chrom
-			localChromBegin(chIdx.first) +                  // local chrom begin
-			p * localNumLoci());
+		        localChromBegin(chIdx.first) +                  // local chrom begin
+		        p * localNumLoci());
 	broadcast(mpiComm(), val, rank);
 	return val;
 }
@@ -57,8 +57,8 @@ Allele individual::allele(UINT index, UINT p) const
 	Allele val = 0;
 	if (mpiRank() == rank)
 		val = *(m_genoPtr
-			+ index - beginLocus()                            // index is within a  block
-			+ p * localNumLoci());
+		        + index - beginLocus()                        // index is within a  block
+		        + p * localNumLoci());
 	broadcast(mpiComm(), val, rank);
 	return val;
 }
@@ -74,7 +74,7 @@ Allele individual::allele(UINT index, UINT p, UINT ch) const
 	Allele val = 0;
 	if (mpiRank() == rank)
 		val = *(m_genoPtr + index + localChromBegin(ch)
-			+ p * localNumLoci());
+		        + p * localNumLoci());
 	broadcast(mpiComm(), val, rank);
 	return val;
 }
@@ -142,7 +142,7 @@ PyObject * individual::arrGenotype()
 #ifdef SIMUMPI
 	// which portion is this piece of array in?
 	return Allele_Vec_As_NumArray(0, genoSize(),
-				      totNumLoci(), locusMap());
+	           totNumLoci(), locusMap());
 #else
 	return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
 #endif
@@ -156,10 +156,10 @@ PyObject * individual::arrGenotype(UINT p)
 	CHECKRANGEPLOIDY(p);
 #ifdef SIMUMPI
 	return Allele_Vec_As_NumArray(p * totalNumLoci(),
-				      totalNumLoci(), totNumLoci(), locusMap());
+	           totalNumLoci(), totNumLoci(), locusMap());
 #else
 	return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci(),
-				      m_genoPtr + (p + 1) * totNumLoci() );
+	           m_genoPtr + (p + 1) * totNumLoci() );
 #endif
 }
 
@@ -171,10 +171,10 @@ PyObject * individual::arrGenotype(UINT p, UINT ch)
 	CHECKRANGEPLOIDY(p);
 #ifdef SIMUMPI
 	return Allele_Vec_As_NumArray(p * localNumLoci() + chromBegin(ch),
-				      numLoci(ch), totNumLoci(), locusMap());
+	           numLoci(ch), totNumLoci(), locusMap());
 #else
 	return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci() + chromBegin(ch),
-				      m_genoPtr + p * totNumLoci() + chromEnd(ch));
+	           m_genoPtr + p * totNumLoci() + chromEnd(ch));
 #endif
 }
 
@@ -229,9 +229,9 @@ bool individual::operator==(const individual & rhs) const
 		if (ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
 		    || ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) ) {
 			DBG_DO(DBG_POPULATION, cout << "Flags different: sex "
-						    << ISSETFLAG(m_flags, m_flagFemale) << " vs " << ISSETFLAG(rhs.m_flags, m_flagFemale) << ", aff "
-						    << ISSETFLAG(m_flags, m_flagAffected) << " vs " << ISSETFLAG(rhs.m_flags, m_flagAffected)
-						    << endl);
+			                            << ISSETFLAG(m_flags, m_flagFemale) << " vs " << ISSETFLAG(rhs.m_flags, m_flagFemale) << ", aff "
+			                            << ISSETFLAG(m_flags, m_flagAffected) << " vs " << ISSETFLAG(rhs.m_flags, m_flagAffected)
+			                            << endl);
 			equal = false;
 		}
 
@@ -273,9 +273,9 @@ bool individual::operator==(const individual & rhs) const
 	if (ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
 	    || ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) ) {
 		DBG_DO(DBG_POPULATION, cout << "Flags different: sex "
-					    << ISSETFLAG(m_flags, m_flagFemale) << " vs " << ISSETFLAG(rhs.m_flags, m_flagFemale) << ", aff "
-					    << ISSETFLAG(m_flags, m_flagAffected) << " vs " << ISSETFLAG(rhs.m_flags, m_flagAffected)
-					    << endl);
+		                            << ISSETFLAG(m_flags, m_flagFemale) << " vs " << ISSETFLAG(rhs.m_flags, m_flagFemale) << ", aff "
+		                            << ISSETFLAG(m_flags, m_flagAffected) << " vs " << ISSETFLAG(rhs.m_flags, m_flagAffected)
+		                            << endl);
 		return false;
 	}
 
@@ -345,8 +345,8 @@ void individual::display(ostream & out, int width, const vectori & chrom, const 
 {
 	out << sexChar() << affectedChar() << " ";
 	DBG_DO(DBG_POPULATION,
-	       out << subPopID() << "," << genoStruIdx() << " "
-	       );
+	    out << subPopID() << "," << genoStruIdx() << " "
+	    );
 	for (UINT p = 0, pEnd = ploidy(); p < pEnd;  ++p) {
 		// copy( genoBegin()+i, genoBegin()+i+totNumLoci(),
 		// std::ostream_iterator<string>(out, outputSeparator()) );

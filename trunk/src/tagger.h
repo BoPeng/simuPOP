@@ -90,12 +90,12 @@ public:
 	 \param mode can be one of \c TAG_Paternal, \c TAG_Maternal, and \c TAG_Both
 	 */
 	inheritTagger(int mode = TAG_Paternal, int begin = 0, int end = -1, int step = 1,
-		      vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-		      const vectorstr & infoFields = vectorstr (TAG_InheritFields, TAG_InheritFields + 2)) :
+	              vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	              const vectorstr & infoFields = vectorstr (TAG_InheritFields, TAG_InheritFields + 2)) :
 		tagger(begin, end, step, at, rep, grp, infoFields), m_mode(mode)
 	{
 		DBG_ASSERT(infoSize() == 2, ValueError,
-			   "Inherit tagger needs to know the information fields of both parents");
+		    "Inherit tagger needs to know the information fields of both parents");
 	};
 
 	virtual ~inheritTagger()
@@ -113,7 +113,7 @@ public:
 	/// CPPONLY
 	/// apply the \c inheritTagger
 	virtual bool applyDuringMating(population & pop, population::IndIterator offspring,
-				       individual * dad = NULL, individual * mom = NULL);
+	                               individual * dad = NULL, individual * mom = NULL);
 
 	/// deep copy of a \c inheritTagger
 	virtual baseOperator * clone() const
@@ -147,7 +147,7 @@ public:
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
 	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-		      const vectorstr & infoFields = vectorstr (TAG_ParentsFields, TAG_ParentsFields + 2)) :
+	              const vectorstr & infoFields = vectorstr (TAG_ParentsFields, TAG_ParentsFields + 2)) :
 		tagger(begin, end, step, at, rep, grp, infoFields)
 	{
 	};
@@ -174,7 +174,7 @@ public:
 	/// CPPONLY
 	/// apply the \c parentsTagger
 	virtual bool applyDuringMating(population & pop, population::IndIterator offspring,
-				       individual * dad = NULL, individual * mom = NULL);
+	                               individual * dad = NULL, individual * mom = NULL);
 
 };
 
@@ -187,7 +187,6 @@ public:
 class pyTagger : public tagger
 {
 public:
-
 	/// creates a \c pyTagger that works on specified information fields
 	/**
 	 \param infoFields information fields. The user should gurantee the existence
@@ -199,15 +198,15 @@ public:
 	   	offspring. The return value has to be a list even if only one field is given.
 	 */
 	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
-		 int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-		 const vectorstr & infoFields = vectorstr()) :
+	         int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	         const vectorstr & infoFields = vectorstr()) :
 		tagger(begin, end, step, at, rep, grp, infoFields)
 	{
 		DBG_FAILIF(infoSize() == 0, ValueError,
-			   "infoFields can not be empty.");
+		    "infoFields can not be empty.");
 
 		DBG_ASSERT(PyCallable_Check(func), ValueError,
-			   "Passed variable is not a callable python function.");
+		    "Passed variable is not a callable python function.");
 
 		Py_XINCREF(func);
 		m_func = func;
@@ -246,10 +245,9 @@ public:
 	/// CPPONLY
 	/// apply the \c pyTagger
 	virtual bool applyDuringMating(population & pop, population::IndIterator offspring,
-				       individual * dad = NULL, individual * mom = NULL);
+	                               individual * dad = NULL, individual * mom = NULL);
 
 private:
-
 	PyObject * m_func;
 };
 }

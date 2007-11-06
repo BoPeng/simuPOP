@@ -56,20 +56,20 @@ using boost::serialization::make_nvp;
 #include <boost/serialization/split_free.hpp>
 
 #ifndef OPTIMIZED
- #include <time.h>                                                                // for clock() function
+#include <time.h>                                                                // for clock() function
 
- #define InitClock(); \
-	if (debug(DBG_PROFILE)) m_clock = clock();
+#define InitClock(); \
+    if (debug(DBG_PROFILE)) m_clock = clock();
 
- #define ElapsedTime(name); \
-	if (debug(DBG_PROFILE)) \
+#define ElapsedTime(name); \
+    if (debug(DBG_PROFILE)) \
 	{ \
 		cout << name << ": " << static_cast<double>( clock() - m_clock ) / CLOCKS_PER_SEC << "\n"; \
 		m_clock = clock(); \
 	}
 #else
- #define InitClock();
- #define ElapsedTime(name);
+#define InitClock();
+#define ElapsedTime(name);
 #endif
 
 /** \brief all classes in simuPOP is defined in this namespace
@@ -118,7 +118,6 @@ public:
 	typedef std::vector< baseOperator * > vectorop;
 
 public:
-
 	// DEVONLY{ m_curRep, gen  are reference to
 	// glocal shared variables. }
 	/// create a simulator
@@ -138,9 +137,9 @@ public:
 	 \sa population, mating
 	 */
 	simulator(const population & pop, mating & matingScheme,
-		  bool stopIfOneRepStops = false,
-		  bool applyOpToStoppedReps = false,
-		  int rep = 1, vectori grp = vectori());
+	          bool stopIfOneRepStops = false,
+	          bool applyOpToStoppedReps = false,
+	          int rep = 1, vectori grp = vectori());
 
 	/// destroy a simulator along with all its populations
 	/**
@@ -188,7 +187,7 @@ public:
 	population & pop(UINT rep) const
 	{
 		DBG_FAILIF(rep >= m_numRep, IndexError,
-			   "replicate index out of range. From 0 to numRep()-1 ");
+		    "replicate index out of range. From 0 to numRep()-1 ");
 
 		return *m_ptrRep[rep];
 	}
@@ -224,7 +223,7 @@ public:
 	void setPopulation(population & pop, UINT rep)
 	{
 		DBG_FAILIF(rep >= m_numRep, IndexError,
-			   "replicate index out of range. From 0 to numRep()-1 ");
+		    "replicate index out of range. From 0 to numRep()-1 ");
 		// get a copy of population
 		delete m_ptrRep[rep];
 		m_ptrRep[rep] = new population(pop);
@@ -297,9 +296,9 @@ public:
 	 \sa simulator::evolve()
 	 */
 	bool step(const vectorop & ops = vectorop(),
-		  const vectorop & preOps = vectorop(),
-		  const vectorop & postOps = vectorop(), UINT steps = 1,
-		  bool dryrun = false)
+	          const vectorop & preOps = vectorop(),
+	          const vectorop & postOps = vectorop(), UINT steps = 1,
+	          bool dryrun = false)
 	{
 		// since end gen itself will be executed
 		// cur = 5,
@@ -342,9 +341,9 @@ public:
 	   genertion is the -1 genertion if no ending genertion is given?
 	 */
 	bool evolve(const vectorop & ops,
-		    const vectorop & preOps = vectorop(),
-		    const vectorop & postOps = vectorop(),
-		    int end =  -1, bool dryrun = false);
+	            const vectorop & preOps = vectorop(),
+	            const vectorop & postOps = vectorop(),
+	            int end =  -1, bool dryrun = false);
 
 	///  CPPONLY apply a list of operators to all populations, \c geneartion of the population does not change
 	/**
@@ -434,7 +433,6 @@ public:
 
 
 private:
-
 	friend class boost::serialization::access;
 
 	template<class Archive>
@@ -483,7 +481,6 @@ private:
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 
 private:
-
 	/// access current population
 	population & curpopulation()
 	{
@@ -499,7 +496,6 @@ private:
 
 
 private:
-
 	/// current generation
 	ULONG m_gen;
 
@@ -537,8 +533,8 @@ private:
 
 /// load a simulator from a file with the specified mating scheme. The file format is by default determined by file extension (<tt>format="auto"</tt>). Otherwise, \c format can be one of \c txt, \c bin, or \c xml.
 simulator & LoadSimulator(const string & file,
-			  mating & mate,
-			  string format = "auto");
+                          mating & mate,
+                          string format = "auto");
 
 }
 #endif

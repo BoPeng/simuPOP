@@ -56,8 +56,8 @@ public:
 	 \param keep an array of individual subpopulation IDs
 	 */
 	pySubset(const vectori & keep = vectori(),
-		 int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		 int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_keep(keep)
 	{
@@ -81,13 +81,13 @@ public:
 	virtual bool apply(population & pop)
 	{
 		DBG_ASSERT(m_keep.size() >= pop.popSize(),
-			   ValueError, "Given subpopid array has a length of "
-			   + toStr(m_keep.size()) + " which is less than population size "
-			   + toStr(pop.popSize()));
+		    ValueError, "Given subpopid array has a length of "
+		    + toStr(m_keep.size()) + " which is less than population size "
+		    + toStr(pop.popSize()));
 
 		for (size_t i = 0, iEnd = pop.popSize(); i < iEnd; ++i) {
 			DBG_FAILIF(m_keep[i] > 0 && static_cast<size_t>(m_keep[i]) > MaxSubPopID, ValueError,
-				   "Subpop id exceeding maximum allowed subpopulations");
+			    "Subpop id exceeding maximum allowed subpopulations");
 			// subpop id is short
 			pop.ind(i).setSubPopID(static_cast<SubPopID>(m_keep[i]));
 		}
@@ -216,18 +216,17 @@ protected:
 
 	/// reset \c father_idx and \c mother_idx
 	void resetParentalIndex(population & pop, const string & fatherField = "father_idx",
-				const string & motherField = "mother_idx", const string & indexField = "oldindex");
+	                        const string & motherField = "mother_idx", const string & indexField = "oldindex");
 
 	/// find offspring and spouse
 	void findOffspringAndSpouse(population & pop, unsigned ancestralDepth, unsigned maxOffspring,
-				    const string & fatherField, const string & motherField,
-				    const string & spouseField, const string & offspringField);
+	                            const string & fatherField, const string & motherField,
+	                            const string & spouseField, const string & offspringField);
 
 	/// set all subpopulation IDs to \c -1 (remove)
 	void resetSubPopID(population & pop);
 
 private:
-
 	/// name to save sample, default to 'sample'
 	string m_name;
 
@@ -273,12 +272,12 @@ public:
 	 \note Ancestral populations will not be copied to the samples.
 	 */
 	randomSample(vectorlu size = vectorlu(),
-		     const string & name = "sample", const string & nameExpr = "", UINT times = 1,
-		     const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
-		     int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		     int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	             const string & name = "sample", const string & nameExpr = "", UINT times = 1,
+	             const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
+	             int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	             int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-			 stage, begin, end, step, at, rep, grp, infoFields),
+		         stage, begin, end, step, at, rep, grp, infoFields),
 		m_size(size)
 	{
 	}
@@ -345,12 +344,12 @@ public:
 	   Please refer to class \c sample for other parameter descriptions.
 	 */
 	caseControlSample(const vectori & cases = vectori(), const vectori & controls = vectori(),
-			  bool spSample = false, const string & name = "sample", const string & nameExpr = "", UINT times = 1,
-			  const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
-			  int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-			  int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	                  bool spSample = false, const string & name = "sample", const string & nameExpr = "", UINT times = 1,
+	                  const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
+	                  int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	                  int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-			 stage, begin, end, step, at, rep, grp, infoFields),
+		         stage, begin, end, step, at, rep, grp, infoFields),
 		m_numCases(cases), m_numControls(controls), m_spSample(spSample),
 		m_caseIdx(0), m_controlIdx(0)
 	{
@@ -383,7 +382,6 @@ public:
 
 
 private:
-
 	/// number of cases, use vectori instead of vectorlu because
 	/// this will be post to setIntVectorVar
 	vectori m_numCases, m_numControls;
@@ -431,17 +429,17 @@ public:
 	   Please refer to class \c sample for other parameter descriptions.
 	 */
 	affectedSibpairSample(vectoru size = vectoru(),
-			      bool chooseUnaffected = false,
-			      bool countOnly = false,
-			      const string & name = "sample", const string & nameExpr = "", UINT times = 1,
-			      const string & saveAs = "", const string & saveAsExpr = "",
-			      const string & format = "auto",
-			      int stage = PostMating, int begin = 0, int end = -1,
-			      int step = 1, vectorl at = vectorl(),
-			      int rep = REP_ALL, int grp = GRP_ALL,
-			      const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
+	                      bool chooseUnaffected = false,
+	                      bool countOnly = false,
+	                      const string & name = "sample", const string & nameExpr = "", UINT times = 1,
+	                      const string & saveAs = "", const string & saveAsExpr = "",
+	                      const string & format = "auto",
+	                      int stage = PostMating, int begin = 0, int end = -1,
+	                      int step = 1, vectorl at = vectorl(),
+	                      int rep = REP_ALL, int grp = GRP_ALL,
+	                      const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-			 stage, begin, end, step, at, rep, grp, infoFields),
+		         stage, begin, end, step, at, rep, grp, infoFields),
 		m_size(size), m_affectedness(!chooseUnaffected), m_countOnly(countOnly),
 		m_validSibs(0)
 	{
@@ -507,20 +505,20 @@ public:
 	   Please refer to class \c sample for other parameter descriptions.
 	 */
 	largePedigreeSample(vectoru size = vectoru(),
-			    unsigned minTotalSize = 0,
-			    unsigned maxOffspring = 5,
-			    unsigned minPedSize = 5,
-			    unsigned minAffected = 0,
-			    bool countOnly = false,
-			    const string & name = "sample", const string & nameExpr = "", UINT times = 1,
-			    const string & saveAs = "", const string & saveAsExpr = "",
-			    const string & format = "auto",
-			    int stage = PostMating, int begin = 0, int end = -1,
-			    int step = 1, vectorl at = vectorl(),
-			    int rep = REP_ALL, int grp = GRP_ALL,
-			    const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
+	                    unsigned minTotalSize = 0,
+	                    unsigned maxOffspring = 5,
+	                    unsigned minPedSize = 5,
+	                    unsigned minAffected = 0,
+	                    bool countOnly = false,
+	                    const string & name = "sample", const string & nameExpr = "", UINT times = 1,
+	                    const string & saveAs = "", const string & saveAsExpr = "",
+	                    const string & format = "auto",
+	                    int stage = PostMating, int begin = 0, int end = -1,
+	                    int step = 1, vectorl at = vectorl(),
+	                    int rep = REP_ALL, int grp = GRP_ALL,
+	                    const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-			 stage, begin, end, step, at, rep, grp, infoFields),
+		         stage, begin, end, step, at, rep, grp, infoFields),
 		m_size(size), m_minTotalSize(minTotalSize), m_maxOffspring(maxOffspring),
 		m_minPedSize(minPedSize), m_minAffected(minAffected),
 		m_countOnly(countOnly), m_validPedigrees()
@@ -589,20 +587,20 @@ public:
 	   Please refer to class \c sample for parameter descriptions.
 	 */
 	nuclearFamilySample(vectoru size = vectoru(),
-			    unsigned minTotalSize = 0,
-			    unsigned maxOffspring = 5,
-			    unsigned minPedSize = 5,
-			    unsigned minAffected = 0,
-			    bool countOnly = false,
-			    const string & name = "sample", const string & nameExpr = "", UINT times = 1,
-			    const string & saveAs = "", const string & saveAsExpr = "",
-			    const string & format = "auto",
-			    int stage = PostMating, int begin = 0, int end = -1,
-			    int step = 1, vectorl at = vectorl(),
-			    int rep = REP_ALL, int grp = GRP_ALL,
-			    const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
+	                    unsigned minTotalSize = 0,
+	                    unsigned maxOffspring = 5,
+	                    unsigned minPedSize = 5,
+	                    unsigned minAffected = 0,
+	                    bool countOnly = false,
+	                    const string & name = "sample", const string & nameExpr = "", UINT times = 1,
+	                    const string & saveAs = "", const string & saveAsExpr = "",
+	                    const string & format = "auto",
+	                    int stage = PostMating, int begin = 0, int end = -1,
+	                    int step = 1, vectorl at = vectorl(),
+	                    int rep = REP_ALL, int grp = GRP_ALL,
+	                    const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-			 stage, begin, end, step, at, rep, grp, infoFields),
+		         stage, begin, end, step, at, rep, grp, infoFields),
 		m_size(size), m_minTotalSize(minTotalSize), m_maxOffspring(maxOffspring),
 		m_minPedSize(minPedSize), m_minAffected(minAffected),
 		m_countOnly(countOnly), m_validPedigrees()
@@ -683,16 +681,16 @@ public:
 	   Please refer to class \c sample for other parameter descriptions.
 	 */
 	pySample(PyObject * keep, int keepAncestralPops = -1,
-		 const string & name = "sample", const string & nameExpr = "", UINT times = 1,
-		 const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
-		 int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		 int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	         const string & name = "sample", const string & nameExpr = "", UINT times = 1,
+	         const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
+	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-			 stage, begin, end, step, at, rep, grp, infoFields),
+		         stage, begin, end, step, at, rep, grp, infoFields),
 		m_keepAncestralPops(keepAncestralPops)
 	{
 		DBG_ASSERT(PyObj_Is_IntNumArray(keep), ValueError,
-			   "Passed vector is not a Python/Numeric int array");
+		    "Passed vector is not a Python/Numeric int array");
 		Py_INCREF(keep);
 		m_keep = keep;
 	}
@@ -727,15 +725,15 @@ public:
 	virtual population & drawsample(population & pop)
 	{
 		DBG_ASSERT(NumArray_Size(m_keep) >= static_cast<int>(pop.popSize()),
-			   ValueError, "Given subpopid array has a length of "
-			   + toStr(NumArray_Size(m_keep)) + " which is less than population size "
-			   + toStr(pop.popSize()));
+		    ValueError, "Given subpopid array has a length of "
+		    + toStr(NumArray_Size(m_keep)) + " which is less than population size "
+		    + toStr(pop.popSize()));
 
 		long * id = reinterpret_cast<long *>(NumArray_Data(m_keep));
 
 		for (size_t i = 0, iEnd = pop.popSize(); i < iEnd; ++i) {
 			DBG_ASSERT(static_cast<size_t>(id[i]) <= MaxSubPopID, ValueError,
-				   "Subpop id exceeding maximum allowed subpopulations");
+			    "Subpop id exceeding maximum allowed subpopulations");
 			// convert from int to signed short
 			pop.ind(i).setSubPopID(static_cast<SubPopID>(id[i]));
 		}

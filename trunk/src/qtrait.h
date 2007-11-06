@@ -56,7 +56,7 @@ class quanTrait : public baseOperator
 public:
 	/// create a quantitative trait operator
 	quanTrait(int ancestralGen = -1,  int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		  int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr(1, "qtrait"))
+	          int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr(1, "qtrait"))
 		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_ancestralGen(ancestralGen)
 	{
@@ -127,10 +127,10 @@ public:
 	 \param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
 	 */
 	mapQuanTrait(vectoru loci, const strDict & qtrait, double sigma = 0, bool phase = false,
-		     int ancestralGen = -1,
-		     int stage = PostMating, int begin = 0, int end = -1, int step = 1,
-		     vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-		     const vectorstr & infoFields = vectorstr(1, "qtrait")) :
+	             int ancestralGen = -1,
+	             int stage = PostMating, int begin = 0, int end = -1, int step = 1,
+	             vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	             const vectorstr & infoFields = vectorstr(1, "qtrait")) :
 		quanTrait(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 		m_loci(loci), m_dict(qtrait), m_sigma(sigma), m_phase(phase)
 	{
@@ -197,10 +197,10 @@ public:
 	   Please refer to \c quanTrait for other parameter descriptions.
 	 */
 	maQuanTrait(vectoru loci, const vectorf & qtrait, const vectora & wildtype,
-		    const vectorf & sigma = vectorf(), int ancestralGen = -1,
-		    int stage = PostMating, int begin = 0, int end = -1, int step = 1,
-		    vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-		    const vectorstr & infoFields = vectorstr(1, "qtrait")) :
+	            const vectorf & sigma = vectorf(), int ancestralGen = -1,
+	            int stage = PostMating, int begin = 0, int end = -1, int step = 1,
+	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	            const vectorstr & infoFields = vectorstr(1, "qtrait")) :
 		quanTrait(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 		m_loci(loci), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
 	{
@@ -208,9 +208,9 @@ public:
 			m_sigma.resize(3, 0.);
 
 		DBG_ASSERT(m_qtrait.size() == static_cast<UINT>(pow(static_cast<double>(3),
-								    static_cast<double>(loci.size())))
-			   && m_sigma.size() == m_qtrait.size(),
-			   ValueError, "Please specify qtrait for every combination of genotype.");
+		                                                    static_cast<double>(loci.size())))
+		    && m_sigma.size() == m_qtrait.size(),
+		    ValueError, "Please specify qtrait for every combination of genotype.");
 	};
 
 	/// destructor
@@ -271,7 +271,6 @@ private:
 class mlQuanTrait : public quanTrait
 {
 public:
-
 #define QT_Multiplicative 1
 #define QT_Additive 2
 
@@ -287,17 +286,17 @@ public:
 	   Please refer to \c quanTrait for other parameter descriptions.
 	 */
 	mlQuanTrait(const vectorop qtraits, int mode = QT_Multiplicative,
-		    double sigma = 0, int ancestralGen = -1,
-		    int stage = PostMating, int begin = 0, int end = -1, int step = 1,
-		    vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-		    const vectorstr & infoFields = vectorstr(1, "qtrait")) :
+	            double sigma = 0, int ancestralGen = -1,
+	            int stage = PostMating, int begin = 0, int end = -1, int step = 1,
+	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	            const vectorstr & infoFields = vectorstr(1, "qtrait")) :
 		quanTrait(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 		m_qtraits(0), m_sigma(sigma), m_mode(mode)
 	{
 		DBG_FAILIF(qtraits.empty(), ValueError, "Please specify at least one selector.");
 		for (vectorop::const_iterator s = qtraits.begin(), sEnd = qtraits.end(); s != sEnd; ++s) {
 			DBG_ASSERT( (*s)->__repr__().substr(10, 6) == "qtrait", ValueError,
-				   "Expecting a vector of quantitative trait calculator");
+			    "Expecting a vector of quantitative trait calculator");
 			m_qtraits.push_back( (*s)->clone() );
 		}
 
@@ -359,9 +358,9 @@ public:
 	 */
 	// provide locus and qtrait for 11, 12, 13 (in the form of dictionary)
 	pyQuanTrait(vectoru loci, PyObject * func, int ancestralGen = -1,
-		    int stage = PostMating, int begin = 0, int end = -1, int step = 1,
-		    vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-		    const vectorstr & infoFields = vectorstr(1, "qtrait")) :
+	            int stage = PostMating, int begin = 0, int end = -1, int step = 1,
+	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	            const vectorstr & infoFields = vectorstr(1, "qtrait")) :
 		quanTrait(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 		m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
@@ -372,7 +371,7 @@ public:
 		m_func = func;
 
 		DBG_FAILIF(loci.empty(), ValueError,
-			   "Please specify susceptibility loci");
+		    "Please specify susceptibility loci");
 	};
 
 	virtual ~pyQuanTrait()
@@ -415,7 +414,6 @@ public:
 
 
 private:
-
 	/// susceptibility loci
 	vectoru m_loci;
 

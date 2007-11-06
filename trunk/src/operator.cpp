@@ -49,7 +49,7 @@ bool baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, int grp, 
 		return true;
 
 	DBG_FAILIF(end > 0 && gen > end, IndexError,
-		   "Current generation can not be bigger than ending generation.");
+	    "Current generation can not be bigger than ending generation.");
 
 	if (ISSETFLAG(m_flags, m_flagOnlyAtBegin) ) {
 		if (gen == 0) return true;
@@ -72,7 +72,7 @@ bool baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, int grp, 
 				else continue;
 			}                                                                               // atGen <=0
 			else {
-				if (end < 0)                                                            // can not determine.
+				if (end < 0)                                                                // can not determine.
 					continue;
 				// now end >= 0 atGen <=0
 				if (end + atGen + 1 == gen)
@@ -206,7 +206,7 @@ bool ifElse::applyWithScratch(population & pop, population & scratch, int stage)
 
 
 bool ifElse::applyDuringMating(population & pop, population::IndIterator offspring,
-			       individual * dad, individual * mom)
+                               individual * dad, individual * mom)
 {
 	m_cond.setLocalDict(pop.dict());
 	bool res = m_cond.valueAsBool();
@@ -267,7 +267,7 @@ bool pyOperator::apply(population & pop)
 	// if pop is valid?
 	if (popObj == NULL)
 		throw SystemError("Could not pass population to the provided function. \n"
-				  "Compiled with the wrong version of SWIG?");
+		    "Compiled with the wrong version of SWIG?");
 
 	// parammeter list, ref count increased
 	bool resBool;
@@ -284,14 +284,14 @@ bool pyOperator::apply(population & pop)
 
 
 bool pyOperator::applyDuringMating(population & pop, population::IndIterator offspring,
-				   individual * dad, individual * mom)
+                                   individual * dad, individual * mom)
 {
 	// get offspring object
 	PyObject * offObj = pyIndObj(static_cast<void *>(&(*offspring)));
 
 	DBG_FAILIF(offObj == NULL, SystemError,
-		   "Could not pass offspring to the provided function. \n"
-		   "Compiled with the wrong version of SWIG?");
+	    "Could not pass offspring to the provided function. \n"
+	    "Compiled with the wrong version of SWIG?");
 
 	PyObject * arglist, * result;
 	if (m_passOffspringOnly) {
@@ -326,8 +326,8 @@ bool pyOperator::applyDuringMating(population & pop, population::IndIterator off
 
 		// if pop is valid?
 		DBG_FAILIF(popObj == NULL || dadObj == NULL || momObj == NULL, SystemError,
-			   "Could not pass population or parental individuals to the provided function. \n"
-			   "Compiled with the wrong version of SWIG?");
+		    "Could not pass population or parental individuals to the provided function. \n"
+		    "Compiled with the wrong version of SWIG?");
 
 		// parammeter list, ref count increased
 		if (m_param == NULL)
@@ -384,7 +384,7 @@ bool pyIndOperator::apply(population & pop)
 		// if pop is valid?
 		if (indObj == NULL)
 			throw SystemError("Could not pass population to the provided function. \n"
-					  "Compiled with the wrong version of SWIG?");
+			    "Compiled with the wrong version of SWIG?");
 
 		// loci
 		if (!m_loci.empty()) {
@@ -430,7 +430,7 @@ bool pyIndOperator::apply(population & pop)
 				}
 			}
 			DBG_FAILIF(resArray.size() != infoIdx.size(), ValueError,
-				   "Returned array should have the same size as given information fields");
+			    "Returned array should have the same size as given information fields");
 			for (size_t i = 0; i < infoSize(); ++i)
 				it->setInfo(resArray[i], infoIdx[i]);
 		}

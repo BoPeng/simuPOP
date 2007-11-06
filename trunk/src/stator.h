@@ -180,7 +180,7 @@ public:
 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: pyEval("", stmts, preStmts, postStmts, exposePop, name, "", "",
-			 stage, begin, end, step, at, rep, grp, infoFields)
+		         stage, begin, end, step, at, rep, grp, infoFields)
 	{
 	}
 
@@ -228,7 +228,6 @@ string haploKey(const vectori & seq);
 class statPopSize
 {
 private:
-
 #define  numSubPop_String   "numSubPop"
 #define  popSize_String     "popSize"
 #define  subPopSize_String  "subPopSize"
@@ -256,14 +255,12 @@ private:
 class statNumOfMale
 {
 private:
-
 #define  numOfMale_String    "numOfMale"
 #define  propOfMale_String   "propOfMale"
 #define  numOfFemale_String  "numOfFemale"
 #define  propOfFemale_String   "propOfFemale"
 
 public:
-
 	statNumOfMale(bool numOfMale = false, const strDict & param = strDict())
 		: m_numOfMale(numOfMale ? 1 : 0), m_numOfFemale(0),
 		m_evalInSubPop(true),
@@ -308,7 +305,7 @@ public:
 	ULONG numOfMale()
 	{
 		DBG_ASSERT(m_numOfMale.size() > 1, ValueError,
-			   "num of male has not been counted.");
+		    "num of male has not been counted.");
 
 		return m_numOfMale[ m_numOfMale.size() - 1 ];
 	}
@@ -317,7 +314,7 @@ public:
 	ULONG numOfFemale()
 	{
 		DBG_ASSERT(m_numOfFemale.size() > 1, ValueError,
-			   "num of female has not been counted.");
+		    "num of female has not been counted.");
 
 		return m_numOfFemale[ m_numOfFemale.size() - 1 ];
 	}
@@ -326,10 +323,10 @@ public:
 	ULONG numOfMale(UINT subPop)
 	{
 		DBG_ASSERT(m_numOfMale.size() > 1, ValueError,
-			   "num of male has not been counted.");
+		    "num of male has not been counted.");
 
 		DBG_ASSERT(subPop >= m_numOfMale.size() - 1, ValueError,
-			   "subPop index out of range.");
+		    "subPop index out of range.");
 
 		return m_numOfMale[ subPop ];
 	}
@@ -338,10 +335,10 @@ public:
 	ULONG numOfFemale(UINT subPop)
 	{
 		DBG_ASSERT(m_numOfFemale.size() > 1, ValueError,
-			   "num of male has not been counted.");
+		    "num of male has not been counted.");
 
 		DBG_ASSERT(subPop >= m_numOfFemale.size() - 1, ValueError,
-			   "subPop index out of range.");
+		    "subPop index out of range.");
 
 		return m_numOfFemale[ subPop ];
 	}
@@ -363,14 +360,12 @@ private:
 class statNumOfAffected
 {
 private:
-
 #define  numOfAffected_String    "numOfAffected"
 #define  propOfAffected_String   "propOfAffected"
 #define  numOfUnaffected_String  "numOfUnaffected"
 #define  propOfUnaffected_String  "propOfUnaffected"
 
 public:
-
 	statNumOfAffected(bool numOfAffected = false, const strDict & param = strDict())
 		: m_numOfAffected(numOfAffected ? 1 : 0), m_numOfUnaffected(0),
 		m_evalInSubPop(true),
@@ -420,7 +415,7 @@ public:
 	ULONG numOfAffected()
 	{
 		DBG_ASSERT(m_numOfAffected.size() > 1, ValueError,
-			   "num of affected has not been counted.");
+		    "num of affected has not been counted.");
 
 		return m_numOfAffected[ m_numOfAffected.size() - 1 ];
 	}
@@ -429,7 +424,7 @@ public:
 	ULONG numOfUnaffected()
 	{
 		DBG_ASSERT(m_numOfUnaffected.size() > 1, ValueError,
-			   "num of unaffected has not been counted.");
+		    "num of unaffected has not been counted.");
 
 		return m_numOfUnaffected[ m_numOfUnaffected.size() - 1 ];
 	}
@@ -438,10 +433,10 @@ public:
 	ULONG numOfAffected(UINT subPop)
 	{
 		DBG_ASSERT(m_numOfAffected.size() > 1, ValueError,
-			   "num of affected has not been counted.");
+		    "num of affected has not been counted.");
 
 		DBG_ASSERT(subPop >= m_numOfAffected.size() - 1, ValueError,
-			   "subPop index out of range.");
+		    "subPop index out of range.");
 
 		return m_numOfAffected[ subPop ];
 	}
@@ -450,10 +445,10 @@ public:
 	ULONG numOfUnaffected(UINT subPop)
 	{
 		DBG_ASSERT(m_numOfUnaffected.size() > 1, ValueError,
-			   "num of unaffected has not been counted.");
+		    "num of unaffected has not been counted.");
 
 		DBG_ASSERT(subPop >= m_numOfUnaffected.size() - 1, ValueError,
-			   "subPop index out of range.");
+		    "subPop index out of range.");
 
 		return m_numOfUnaffected[ subPop ];
 	}
@@ -475,13 +470,11 @@ private:
 class statAlleleFreq
 {
 private:
-
 #define  NumOfAlleles_String  "numOfAlleles"
 #define  AlleleNum_String     "alleleNum"
 #define  AlleleFreq_String    "alleleFreq"
 
 public:
-
 	statAlleleFreq(const vectori & atLoci = vectori(), const strDict & param = strDict())
 		: m_atLoci(atLoci), m_ifPost(atLoci.size()), m_numOfAlleles(0),
 		m_alleleNum(0), m_alleleFreq(0),
@@ -611,8 +604,8 @@ public:
 	vectori & numOfAlleles(UINT subPop)
 	{
 		DBG_ASSERT(subPop < m_numOfAlleles.size() - 1, IndexError,
-			   "Subpop index " + toStr(subPop) + " out of range of 0 ~ "
-			   + toStr(m_numOfAlleles.size() - 2));
+		    "Subpop index " + toStr(subPop) + " out of range of 0 ~ "
+		    + toStr(m_numOfAlleles.size() - 2));
 		return m_numOfAlleles[subPop];
 	}
 
@@ -626,10 +619,10 @@ public:
 				al.push_back(j);
 
 		DBG_ASSERT(al.size() == static_cast<UINT>(numOfAlleles()[loc]),
-			   SystemError, "Number of alleles at locus " + toStr(loc)
-			   + " does not match.Observed "
-			   + toStr(al.size()) + " previous count: "
-			   + toStr(numOfAlleles()[loc]));
+		    SystemError, "Number of alleles at locus " + toStr(loc)
+		    + " does not match.Observed "
+		    + toStr(al.size()) + " previous count: "
+		    + toStr(numOfAlleles()[loc]));
 
 		return al;
 	}
@@ -647,14 +640,14 @@ public:
 
 #ifndef BINARYALLELE
 		DBG_WARNING(m_alleleNum[subPop][loc][0] != 0,
-			    "Having zero (NA) allele, counted as one allele.");
+		    "Having zero (NA) allele, counted as one allele.");
 #endif
 
 		DBG_ASSERT(al.size() == static_cast<UINT>(numOfAlleles(subPop)[loc]),
-			   SystemError, "Number of alleles at locus " + toStr(loc)
-			   + " at subpop " + toStr(subPop) + " does not match. Observed "
-			   + toStr(al.size()) + " previous count: "
-			   + toStr(numOfAlleles(subPop)[loc]));
+		    SystemError, "Number of alleles at locus " + toStr(loc)
+		    + " at subpop " + toStr(subPop) + " does not match. Observed "
+		    + toStr(al.size()) + " previous count: "
+		    + toStr(numOfAlleles(subPop)[loc]));
 
 		return al;
 	}
@@ -663,7 +656,6 @@ public:
 	bool apply(population & pop);
 
 private:
-
 	/// which alleles?
 	vectori m_atLoci;
 
@@ -694,7 +686,7 @@ class statNumOfAlleles
 {
 public:
 	statNumOfAlleles(statAlleleFreq & calc, const vectori & atLoci = vectori(),
-			 const strDict & param = strDict())
+	                 const strDict & param = strDict())
 		: m_calc(calc), m_evalInSubPop(true)
 	{
 		if (!param.empty()) {
@@ -721,7 +713,6 @@ public:
 
 
 private:
-
 	/// a reference to an existing allelefreq calculator
 	statAlleleFreq & m_calc;
 
@@ -732,7 +723,6 @@ private:
 class statHeteroFreq
 {
 private:
-
 #define HeteroNum_String        "heteroNum"
 #define HeteroFreq_String       "heteroFreq"
 #define AllHeteroNum_String     "HeteroNum"
@@ -747,7 +737,7 @@ private:
 		while (m_atLoci[idx] != loc && idx < m_atLoci.size() )
 			idx++;
 		DBG_ASSERT(m_atLoci[idx] == loc, ValueError,
-			   "Can not find allele freq for locus " + toStr(loc));
+		    "Can not find allele freq for locus " + toStr(loc));
 		return idx;
 	}
 
@@ -777,9 +767,9 @@ private:
 	int resIdx(int idx, UINT subPop)
 	{
 		DBG_ASSERT(subPop < m_heteroNum.size() / m_atLoci.size() - 1,
-			   IndexError,
-			   "Subpop index " + toStr(subPop) + " out of range of 0 ~ "
-			   + toStr(m_heteroNum.size() / m_atLoci.size() - 2));
+		    IndexError,
+		    "Subpop index " + toStr(subPop) + " out of range of 0 ~ "
+		    + toStr(m_heteroNum.size() / m_atLoci.size() - 2));
 
 		return idx + subPop * m_atLoci.size();
 	}
@@ -787,7 +777,7 @@ private:
 
 public:
 	statHeteroFreq(const vectori & heteroFreq = vectori(),
-		       const vectori & homoFreq = vectori())
+	               const vectori & homoFreq = vectori())
 		: m_atLoci(heteroFreq), m_ifPost(0),
 		m_postHetero(!heteroFreq.empty()), m_postHomo(!homoFreq.empty()),
 		m_heteroNum(0), m_heteroFreq(0), m_homoNum(0), m_homoFreq(0)
@@ -853,7 +843,6 @@ public:
 	bool apply(population & pop);
 
 private:
-
 	/// heteroFreq
 	vectori m_atLoci;
 
@@ -881,12 +870,11 @@ private:
 class statExpHetero
 {
 private:
-
 #define ExpHetero_String "expHetero"
 
 public:
 	statExpHetero(statAlleleFreq & alleleFreq, const vectori & expHetero = vectori(),
-		      const strDict & param = strDict())
+	              const strDict & param = strDict())
 		: m_alleleFreq(alleleFreq), m_atLoci(expHetero), m_expHetero(0),
 		m_midValues(false), m_evalInSubPop(true)
 	{
@@ -907,7 +895,6 @@ public:
 	bool apply(population & pop);
 
 private:
-
 	/// need this to apply alleleFreq
 	statAlleleFreq & m_alleleFreq;
 
@@ -931,7 +918,6 @@ private:
 class statGenoFreq
 {
 private:
-
 #define  GenotypeNum_String   "genoNum"
 #define  GenotypeFreq_String  "genoFreq"
 
@@ -956,7 +942,6 @@ private:
 class statHaploFreq
 {
 private:
-
 #define  HaplotypeNum_String    "haploNum"
 #define  HaplotypeFreq_String   "haploFreq"
 	int haploIndex(const vectori & haplo)
@@ -968,14 +953,13 @@ private:
 			idx++;
 
 		DBG_ASSERT(idx != m_haplotypes.size(), ValueError,
-			   "Can not find haplotype." + toStr(haplo[0]) + ", " + toStr(haplo[1]));
+		    "Can not find haplotype." + toStr(haplo[0]) + ", " + toStr(haplo[1]));
 
 		return idx;
 	}
 
 
 public:
-
 	statHaploFreq(const intMatrix & haploFreq = intMatrix())
 		: m_haplotypes(haploFreq), m_ifPost(haploFreq.size())
 	{
@@ -997,7 +981,7 @@ public:
 		UINT idx = haploIndex(haplo);
 
 		return m_haploNum[idx + m_haploNum.size() -
-				  m_haplotypes.size()].size();
+		                  m_haplotypes.size()].size();
 	}
 
 
@@ -1061,7 +1045,6 @@ private:
 class statLD
 {
 private:
-
 	// these are names of calcualted statistics, will be accessed like
 	// pop.dvars().r2 or pop.vars()['r2']
 #define   LD_String           "ld"
@@ -1076,7 +1059,6 @@ private:
 #define   AvgDELTA2_String    "Delta2"
 
 public:
-
 	// alleleFreq and haploFreq is required to calculate LD
 	// needed allele and halplotype are added to alleleFreq and haploFreq
 	// objects during the initialization of statLD, as well as stat.
@@ -1090,17 +1072,15 @@ public:
 	bool apply(population & pop);
 
 private:
-
 	// calculate single allele LD values
 	void calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
-			 double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2);
+	                 double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2);
 
 	// output statistics
 	void outputLD(population & pop, const vectori & hapLoci, const string & allele_string, UINT sp, bool subPop,
-		      bool valid_delta2, double D, double D_prime, double r2, double delta2);
+	              bool valid_delta2, double D, double D_prime, double r2, double delta2);
 
 private:
-
 	/// need to get allele freq
 	statAlleleFreq & m_alleleFreq;
 
@@ -1131,7 +1111,6 @@ private:
 class statAssociation
 {
 private:
-
 	// these are names of calcualted statistics, will be accessed like
 	// pop.dvars().Chisq or pop.vars()['Chisq']
 #define   ChiSq_String      "ChiSq"
@@ -1140,7 +1119,6 @@ private:
 #define   CramerV_String    "CramerV"
 
 public:
-
 	// alleleFreq and haploFreq is required to calculate Chisq
 	// needed allele and halplotype are added to alleleFreq and haploFreq
 	// objects during the initialization of statAssociation, as well as stat.
@@ -1148,13 +1126,12 @@ public:
 	// is called before statAssociation.apply() and ensures that allele frequencies
 	// are calculated when statAssociation needs them.
 	statAssociation(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
-			const intMatrix & Association = intMatrix(), const strDict & param = strDict());
+	                const intMatrix & Association = intMatrix(), const strDict & param = strDict());
 
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
 
 private:
-
 	/// need to get allele freq
 	statAlleleFreq & m_alleleFreq;
 
@@ -1178,7 +1155,6 @@ class statFst
 {
 
 private:
-
 #define  Fst_String  "Fst"
 #define  Fis_String  "Fis"
 #define  Fit_String  "Fit"
@@ -1188,7 +1164,7 @@ private:
 
 public:
 	statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
-		const vectori & Fst = vectori(), const strDict & param = strDict());
+	        const vectori & Fst = vectori(), const strDict & param = strDict());
 
 	double Fst()
 	{
@@ -1229,7 +1205,6 @@ public:
 	bool apply(population & pop);
 
 private:
-
 	statAlleleFreq & m_alleleFreq;
 	statHeteroFreq & m_heteroFreq;
 
@@ -1264,7 +1239,6 @@ class statRelatedness
 {
 
 public:
-
 #define Rel_Queller_String "relQueller"
 #define Rel_Lynch_String   "relLynch"
 #define Rel_IR_String      "relIR"
@@ -1272,11 +1246,9 @@ public:
 #define Rel_Rel_String     "relRel"
 
 public:
-
 	typedef std::pair<double, double> fraction;
 
 public:
-
 	/// \brief calculate relatedness measures between elements in groups
 	/**
 	 \param groups can be [ [1,2,3],[4,5,6],[7,8,9]] as three groups of
@@ -1289,15 +1261,15 @@ public:
 	   or REL_Rel. Please refer to the manual for details.
 	 */
 	statRelatedness(statAlleleFreq & alleleFreq, const intMatrix & groups = intMatrix(),
-			bool useSubPop = false, const vectori & loci = vectori(), vectori method = vectori(),
-			int minScored = 10, const strDict & param = strDict());
+	                bool useSubPop = false, const vectori & loci = vectori(), vectori method = vectori(),
+	                int minScored = 10, const strDict & param = strDict());
 
 	// relatedness between individuals
 	fraction relQueller(individual ind1,
-			    individual ind2);
+	                    individual ind2);
 
 	fraction relLynch(individual ind1,
-			  individual ind2);
+	                  individual ind2);
 
 	// IR measure for individual ind at specified locus
 	fraction relIR(individual ind1, int locus);
@@ -1307,7 +1279,7 @@ public:
 
 	// REL measure for individual ind at specified locus
 	fraction relRel(individual ind1,
-			individual ind2,  int locus);
+	                individual ind2,  int locus);
 
 	// between group i and j if method=REL_Queller and REL_Lynch
 	/// for group i and locus j otherwise
@@ -1316,7 +1288,6 @@ public:
 	bool apply(population & pop);
 
 private:
-
 	/// need to get allele freq
 	statAlleleFreq & m_alleleFreq;
 
@@ -1357,7 +1328,6 @@ private:
 class stat : public stator
 {
 public:
-
 	/// create an \c stat operator
 	/**
 
@@ -1621,7 +1591,7 @@ public:
 		m_association(m_alleleFreq, m_haploFreq, association, association_param),
 		m_Fst(m_alleleFreq, m_heteroFreq, Fst, Fst_param),
 		m_relatedness(m_alleleFreq, relGroups, relBySubPop, relLoci,
-			      relMethod, relMinScored, rel_param)
+		              relMethod, relMinScored, rel_param)
 	{
 	}
 
