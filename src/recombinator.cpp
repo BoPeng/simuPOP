@@ -292,7 +292,7 @@ bool recombinator::applyDuringMating(population & pop,
                                      individual * dad,
                                      individual * mom)
 {
-	DBG_ASSERT(dad && mom, ValueError, "Either dad or mom is NULL");
+	DBG_FAILIF(dad == NULL && mom == NULL, ValueError, "Neither dad or mom is invalid.");
 
 	// first time setup
 	if (m_recBeforeLoci.empty()) {
@@ -304,13 +304,7 @@ bool recombinator::applyDuringMating(population & pop,
 		    false, m_recBeforeLoci, vecP);
 
 		m_bt.setParameter(vecP, pop.popSize());
-		/*
-		 #ifdef BINARYALLELE
-		   			m_algorithm = 1;
-		 #else
-		   			m_algorithm = 0;
-		 #endif
-		 */
+
 		vecP.clear();
 		// male case is most complicated.
 		m_hasSexChrom = pop.sexChrom() ? true : false;
@@ -335,9 +329,18 @@ bool recombinator::applyDuringMating(population & pop,
 		DBG_DO(DBG_RECOMBINATOR, cout << "Algorithm " << m_algorithm << " is being used " << endl);
 	}
 
-	recombine(mom, offspring, 0, m_bt, m_recBeforeLoci, false);
-	// only set sex once for offspring
-	recombine(dad, offspring, 1, m_maleBt, m_maleRecBeforeLoci, true);
+	// allows selfing. I.e., if mom or dad is NULL, the other parent will
+	// produce both copies of the offspring chromosomes.
+	if (mom != NULL)
+		recombine(mom, offspring, 0, m_bt, m_recBeforeLoci, false);
+	else
+		recombine(dad, offspring, 0, m_bt, m_recBeforeLoci, false);
+
+	if (dad != NULL)
+		// only set sex once for offspring
+		recombine(dad, offspring, 1, m_maleBt, m_maleRecBeforeLoci, true);
+	else
+		recombine(mom, offspring, 1, m_maleBt, m_maleRecBeforeLoci, true);
 	return true;
 }
 

@@ -48,6 +48,9 @@ namespace simuPOP {
    linkage intensities	between adjacent pairs of loci. The recombination rate is
    equivalent to <tt>1-linkage</tt> and represents the probability that the allele
    at the next locus is randomly drawn.
+ \li it works for selfing. I.e., when only one parent is provided, it will be
+   recombined twice, producing both maternal and paternal chromosomes of the
+   offspring.
  */
 
 class recombinator : public baseOperator
