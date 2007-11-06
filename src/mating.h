@@ -160,7 +160,17 @@ public:
 	typedef std::pair<individual *, individual *> individualPair;
 
 public:
-	parentChooser() { }
+	parentChooser(int numParents)
+	{
+		m_numParents = numParents;
+	}
+
+
+	int numParents()
+	{
+		return m_numParents;
+	}
+
 
 	virtual individual * chooseParent()
 	{
@@ -175,7 +185,11 @@ public:
 
 
 	virtual ~parentChooser() { }
+
+private:
+	int m_numParents;
 };
+
 
 /// choose a parent randomly
 class randomParentChooser : public parentChooser
@@ -195,6 +209,7 @@ private:
 	size_t m_size;
 };
 
+
 /// choose two parents randomly, considering selection
 class randomParentsChooser : public parentChooser
 {
@@ -205,12 +220,13 @@ public:
 
 	ULONG numMale() { return m_numMale; }
 	ULONG numFemale() { return m_numFemale; }
+
 private:
 	bool m_selection;
 
 	ULONG m_numMale;
 	ULONG m_numFemale;
-	
+
 	/// internal index to female/males.
 	vectorlu m_maleIndex;
 	vectorlu m_femaleIndex;
@@ -227,19 +243,43 @@ private:
 	population::IndIterator m_begin;
 };
 
+
 /// choose a parent using a Python generator,
 /// does not consider selection
 class pyParentChooser : public parentChooser
 {
 public:
-	pyParentChooser(const population & pop, bool selection)
+	pyParentChooser(population & pop, size_t sp);
+
+	/// destructor
+	~pyParentChooser()
 	{
+		if (m_parentsGenerator != NULL)
+			Py_XDECREF(m_parentsGenerator);
 	}
 
 
-	individual * chooseParent() {};
+	/// CPPONLY
+	pyParentChooser(const pyParentChooser & rhs)
+		: parentChooser(rhs),
+		m_parentsGenerator(rhs.m_parentsGenerator)
+	{
+		if (m_parentsGenerator != NULL)
+			Py_INCREF(m_parentsGenerator);
+	}
 
+
+	individual * chooseParent();
+
+private:
+	PyObject * m_parentsGenerator;
+
+#ifndef OPTIMIZED
+	ULONG m_size;
+#endif
+	population::IndIterator m_begin;
 };
+
 
 /// choose two parents using a Python generator
 /// does not consider selection
@@ -247,11 +287,12 @@ class pyParentsChooser : public parentChooser
 {
 public:
 	pyParentsChooser(const population & pop, bool selection)
+		: parentChooser(2)
 	{
 	}
 
 
-	individual * chooseParent() {};
+	individual * chooseParent() { return NULL; }
 
 };
 
@@ -268,7 +309,6 @@ public:
 class mating
 {
 public:
-
 	// numOffspring: constant, numOffspringFunc: call each time before mating
 #define MATE_NumOffspring           1
 	// call numOffspringFunc each time during mating.
@@ -428,12 +468,10 @@ public:
 
 
 public:
-
 	/// CPPONLY dealing with the \c pop/subPop size change, copy of structure etc.
 	void prepareScratchPop(population & pop, population & scratch);
 
 protected:
-
 	/// number of offspring each mate
 	double m_numOffspring;
 
@@ -475,7 +513,6 @@ protected:
 class noMating : public mating
 {
 public:
-
 	/// creat a scheme with no mating
 	/**
 	 \note All parameters are ignored!
@@ -543,7 +580,6 @@ public:
 class binomialSelection : public mating
 {
 public:
-
 	/// create a binomial selection mating scheme
 	/**
 	   Please refer to class \c mating for parameter descriptions.
@@ -624,7 +660,6 @@ protected:
 class randomMating : public mating
 {
 public:
-
 	/// create a random mating scheme
 	/**
 	 \param contWhenUniSex continue when there is only one sex in the population. Default to \c True.
@@ -698,7 +733,6 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 protected:
-
 	/// if no other sex exist in a subpopulation,
 	/// same sex mating will occur if m_contWhenUniSex is set.
 	/// otherwise, an exception will be thrown.
@@ -724,7 +758,6 @@ void countAlleles(population & pop, int subpop, const vectori & loci, const vect
 class controlledMating : public mating
 {
 public:
-
 	/// control allele frequencies at a locus
 	/**
 	 \param matingScheme a mating scheme
@@ -808,7 +841,6 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 private:
-
 	/// mating scheme
 	mating * m_matingScheme;
 
@@ -844,7 +876,6 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 class controlledRandomMating : public randomMating
 {
 public:
-
 	/// create a controlled random mating scheme
 	/**
 	 \param loci loci at which allele frequencies are monitored (controlled)
@@ -950,7 +981,6 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 private:
-
 	/// locus at which mating is controlled.
 	vectori m_loci;
 
@@ -981,7 +1011,6 @@ private:
 class pyMating : public mating
 {
 public:
-
 	/// create a Python mating scheme
 	/**
 	 \param parentsGenerator a Python generator that accepts the parental
@@ -1001,27 +1030,14 @@ public:
 	         )
 		: mating(numOffspring,
 		         numOffspringFunc, maxNumOffspring, mode,
-		         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
-		m_parentsGenerator(NULL)
+		         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc)
 	{
-#if PY_VERSION_HEX < 0x02040000
-		throw SystemError("Your Python version does not have good support for generator"
-		    " so operator pyMating can not be used.");
-#else
-		if (!PyGen_Check(parentsGenerator))
-			throw ValueError("Passed variable is not a Python generator.");
-
-		Py_XINCREF(parentsGenerator);
-		m_parentsGenerator = parentsGenerator;
-#endif
 	}
 
 
 	/// destructor
 	~pyMating()
 	{
-		if (m_parentsGenerator != NULL)
-			Py_XDECREF(m_parentsGenerator);
 	}
 
 
@@ -1029,15 +1045,6 @@ public:
 	virtual mating * clone() const
 	{
 		return new pyMating(*this);
-	}
-
-
-	/// CPPONLY
-	pyMating(const pyMating & rhs) :
-		mating(rhs), m_parentsGenerator(rhs.m_parentsGenerator)
-	{
-		if (m_parentsGenerator != NULL)
-			Py_INCREF(m_parentsGenerator);
 	}
 
 
@@ -1056,8 +1063,6 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 private:
-	PyObject * m_parentsGenerator;
-
 #ifndef OPTIMIZED
 	///
 	vectori m_famSize;
