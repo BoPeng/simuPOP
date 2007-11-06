@@ -373,74 +373,74 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 }
 
 
-pyParentChooser::pyParentChooser(population & pop, size_t sp, PyObject * pc)
-	: parentChooser(1),
-	m_parentChooser(pc),
-	m_popObj(NULL)
-{
-#ifndef OPTIMIZED
-	m_size = pop.subPopSize(sp);
-#endif
-	m_begin = pop.indBegin(sp);
-	m_popObj = pyPopObj(static_cast<void *>(&pop));
-	// if pop is valid?
-	DBG_FAILIF(m_popObj == NULL, SystemError,
-	    "Could not pass population to the provided function. \n"
-	    "Compiled with the wrong version of SWIG?");
-}
-
-
-individual * pyParentChooser::chooseParent()
-{
-	/*
-	   PyObject * pyResult = PyEval_CallObject(m_parentGenerator, NULL);
-
-	   if (pyResult == NULL) {
-	   	PyErr_Print();
-	   	throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n");
-	   }
-	   int idx = 0;
-	   PyObj_As_Int(pyResult, idx);
-	   Py_DECREF(pyResult);
-	 */
-	int idx = 0;
-
-	PyCallFunc(m_parentChooser, "(O)", m_popObj, idx, PyObj_As_Int);
-#ifndef OPTIMIZED
-	DBG_ASSERT(static_cast<unsigned>(idx) <= m_size, ValueError,
-	    "Returned index is greater than subpopulation size");
-#endif
-	return & * (m_begin + idx);
-}
-
 
 pyParentsChooser::pyParentsChooser(population & pop, size_t sp, PyObject * pc)
-	: parentChooser(2),
-	m_parentsChooser(pc)
+	: parentChooser(0), m_generator(NULL), m_parIterator(NULL)
 {
+#if PY_VERSION_HEX < 0x02040000
+			throw SystemError("Your Python version does not have good support for generator"
+			    " so this python parent chooser can not be used.");
+#else
 #ifndef OPTIMIZED
 	m_size = pop.subPopSize(sp);
 #endif
 	m_begin = pop.indBegin(sp);
-	m_popObj = pyPopObj(static_cast<void *>(&pop));
+
+	PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
 	// if pop is valid?
-	DBG_FAILIF(m_popObj == NULL, SystemError,
+	DBG_FAILIF(popObj == NULL, SystemError,
 	    "Could not pass population to the provided function. \n"
 	    "Compiled with the wrong version of SWIG?");
+	PyObject * arglist = Py_BuildValue("(O)", popObj);
+	m_generator = PyEval_CallObject(pc, arglist);
+	Py_XDECREF(arglist);
 
+	// test if m_generator is a generator
+	DBG_ASSERT(PyGen_Check(m_generator), ValueError,
+	    "Passed function is not a python generator");
+
+	m_parIterator = PyObject_GetIter(m_generator);
+
+	// test if m_parIterator is iteratable.
+	DBG_FAILIF(m_parIterator == NULL, ValueError,
+	    "Can not iterate through parent generator");
+#endif		
 }
 
 
 parentChooser::individualPair pyParentsChooser::chooseParents()
 {
-	vectori idx;
-
-	PyCallFunc(m_parentsChooser, "(O)", m_popObj, idx, PyObj_As_IntArray);
+	PyObject * item = PyIter_Next(m_parIterator);
+	
+	vectori parents;
+	int parent;
+	if (PySequence_Check(item)) {
+		PyObj_As_IntArray(item, parents);
+		DBG_ASSERT(parents.size() == 2, ValueError,
+			"Returned parents indexes should have size 2");
 #ifndef OPTIMIZED
-	DBG_ASSERT(static_cast<unsigned>(idx[0]) <= m_size && static_cast<unsigned>(idx[1]) <= m_size,
-	    ValueError, "Returned index is greater than subpopulation size");
+		DBG_ASSERT(static_cast<unsigned>(parents[0]) <= m_size 
+			&& static_cast<unsigned>(parents[1]) <= m_size,
+		    ValueError, "Returned index is greater than subpopulation size");
 #endif
-	return std::make_pair(& * (m_begin + idx[0]), & * (m_begin + idx[1]));
+		DBG_DO(DBG_MATING, cout << "choose parents " << parents[0] 
+			<< " and " << parents[1] << endl;);
+		Py_DECREF(item);
+		return std::make_pair(& * (m_begin + parents[0]),
+			& * (m_begin + parents[1]));
+	} else if (PyInt_Check(item) || PyLong_Check(item)) {
+		PyObj_As_Int(item, parent);
+#ifndef OPTIMIZED
+		DBG_ASSERT(static_cast<unsigned>(parent) <= m_size,
+		    ValueError, "Returned index is greater than subpopulation size");
+#endif
+		DBG_DO(DBG_MATING, cout << "choose parent " << parent
+			<< endl;);
+		Py_DECREF(item);
+		return parentChooser::individualPair(& * (m_begin + parent), NULL);
+	} else
+		DBG_ASSERT(false, ValueError, 
+			"Invalid type of returned parent index(es)");
 }
 
 
@@ -1263,12 +1263,10 @@ pyMating::pyMating(vectori const & parentChoosers,
 bool pyMating::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
 {
 	this->resetNumOffspring();
-	// scrtach will have the right structure.
+	// scratach will have the right structure.
 	this->prepareScratchPop(pop, scratch);
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
-
-	mendelianOffspringGenerator og(pop, ops);
 
 	DBG_ASSERT(m_parentChoosers.size() == 1 || m_parentChoosers.size() == pop.numSubPop(),
 	    ValueError, "You should specify one parentChoosers, or one parentChoosers for each subpopulation. ("
@@ -1294,11 +1292,6 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 		case MATE_RandomParentsChooser:
 			pc = new randomParentsChooser(pop, sp);
 			break;
-		case MATE_PyParentChooser:
-			DBG_ASSERT(pcIdx < m_pyChoosers.size(), IndexError,
-			    "Not enough of python parent chooser");
-			pc = new pyParentChooser(pop, sp, m_pyChoosers[pcIdx++]);
-			break;
 		case MATE_PyParentsChooser:
 			DBG_ASSERT(pcIdx < m_pyChoosers.size(), IndexError,
 			    "Not enough of python parent chooser");
@@ -1313,17 +1306,23 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 		switch (ogType) {
 		case MATE_CloneOffspringGenerator:
 			og = new cloneOffspringGenerator(pop, ops);
-			DBG_ASSERT(pc->numParents() == 1, ValueError,
+			// numParents can be 0 and its parents are
+			// determined dynamically
+			DBG_FAILIF(pc->numParents() == 2, ValueError,
 			    "Imcompatible parent chooser and offspring generator");
 			break;
 		case MATE_MendelianOffspringGenerator:
 			og = new mendelianOffspringGenerator(pop, ops);
-			DBG_ASSERT(pc->numParents() == 2, ValueError,
+			// numParents can be 0 and its parents are
+			// determined dynamically
+			DBG_FAILIF(pc->numParents() == 1, ValueError,
 			    "Imcompatible parent chooser and offspring generator");
 			break;
 		case MATE_SelfingOffspringGenerator:
 			og = new selfingOffspringGenerator(pop, ops);
-			DBG_ASSERT(pc->numParents() == 1, ValueError,
+			// numParents can be 0 and its parents are
+			// determined dynamically
+			DBG_FAILIF(pc->numParents() == 2, ValueError,
 			    "Imcompatible parent chooser and offspring generator");
 			break;
 		default:
@@ -1338,12 +1337,14 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 		while (it != itEnd) {
 			individual * dad = NULL;
 			individual * mom = NULL;
-			if (pc->numParents() == 2) {
+			if (pc->numParents() == 1)
+				dad = pc->chooseParent();
+			// 0 or 2, that is to say, dad or mom can be NULL
+			else {
 				parentChooser::individualPair const parents = pc->chooseParents();
 				dad = parents.first;
 				mom = parents.second;
-			} else
-				dad = pc->chooseParent();
+			}
 
 			// record family size (this may be wrong for the last family)
 			numOS = numOffspring(pop.gen());
