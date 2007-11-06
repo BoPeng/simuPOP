@@ -99,103 +99,74 @@ mendelianOffspringGenerator::mendelianOffspringGenerator(const population & pop,
 }
 
 
-void mendelianOffspringGenerator::formOffspring(individual * dad, individual * mom,
-                                                population::IndIterator & it)
+void mendelianOffspringGenerator::formOffspringGenotype(individual * parent,
+                                                        population::IndIterator & it, int ploidy, bool setSex)
 {
-	m_bt.trial();
+	// current parental ploidy (copy from which chromosome copy)
+	int parPloidy = 0;
+	// pointer to parental, and offspring chromosome copies
+	GenoIterator par[2];
+	GenoIterator off;
 
-	int dadPloidy = 0, momPloidy = 0;
-	GenoIterator cd[2], cm[2], offd, offm;
-	cd[0] = dad->genoBegin(0);
-	cd[1] = dad->genoBegin(1);
-	cm[0] = mom->genoBegin(0);
-	cm[1] = mom->genoBegin(1);
-	// The order is maternal/paternal (XY).
-	offm = it->genoBegin(0);
-	offd = it->genoBegin(1);
+	par[0] = parent->genoBegin(0);
+	par[1] = parent->genoBegin(1);
+	off = it->genoBegin(ploidy);
 
+	UINT chEnd = parent->numChrom();
+	int btShift = ploidy * chEnd;
 #ifndef BINARYALLELE
 	// the easy way to copy things.
-	for (UINT ch = 0, chEnd = dad->numChrom(); ch < chEnd; ++ch) {
-		// bs is 2*totNumLoci() long
-		//bs[ch];
-		momPloidy = m_bt.trialSucc(ch);
-		// bs[ch+chEnd];
-		dadPloidy = m_bt.trialSucc(ch + chEnd);
-		for (size_t gt = m_chIdx[ch]; gt < m_chIdx[ch + 1]; ++gt) {
-			offm[gt] = cm[momPloidy][gt];
-			offd[gt] = cd[dadPloidy][gt];
-		}
+	for (UINT ch = 0; ch < chEnd; ++ch) {
+		parPloidy = m_bt.trialSucc(ch + btShift);
+		for (size_t gt = m_chIdx[ch]; gt < m_chIdx[ch + 1]; ++gt)
+			off[gt] = par[parPloidy][gt];
 	}
 #else
-	// this has to be optimized...
 	//
 	// 1. try to copy in blocks,
 	// 2. if two chromosomes can be copied together, copy together
 	// 3. if length is short, using the old method.
 	//
-	size_t dadBegin = 0;
-	size_t dadEnd = 0;
-	size_t momBegin = 0;
-	size_t momEnd = 0;
-	// bs is 2*totNumLoci() long,
+	size_t parBegin = 0;
+	size_t parEnd = 0;
 	// first chromosome
-	UINT chEnd = dad->numChrom();
-	momPloidy = m_bt.trialSucc(0);
-	dadPloidy = m_bt.trialSucc(chEnd);
+	parPloidy = m_bt.trialSucc(btShift);
 	//
-	int nextDadPloidy = 0;
-	int nextMomPloidy = 0;
-	bool copyDad;
-	bool copyMom;
+	int nextParPloidy = 0;
+	bool copyPar;
 	for (UINT ch = 0; ch < chEnd; ++ch) {
 		// if it is the last chromosome, copy anyway
-		if (ch == chEnd - 1) {
-			copyDad = true;
-			copyMom = true;
-		} else {                                                                    // is there a different chromosome?
-			nextDadPloidy = m_bt.trialSucc(ch + 1);
-			nextMomPloidy = m_bt.trialSucc(ch + 1 + chEnd);
-			copyDad = dadPloidy != nextDadPloidy;
-			copyMom = momPloidy != nextMomPloidy;
+		if (ch == chEnd - 1)
+			copyPar = true;
+		else {                                                                    // is there a different chromosome?
+			nextParPloidy = m_bt.trialSucc(ch + 1 + btShift);
+			copyPar = parPloidy != nextParPloidy;
 		}
-		if (copyDad) {
+		if (copyPar) {
 			// end of this chromosome, is the beginning of the next
-			dadEnd = m_chIdx[ch + 1];
-			size_t length = dadEnd - dadBegin;
+			parEnd = m_chIdx[ch + 1];
+			size_t length = parEnd - parBegin;
 			//
 			// the easiest case, try to get some speed up...
 			if (length == 1)
-				offd[dadBegin] = cd[dadPloidy][dadBegin];
+				off[parBegin] = par[parPloidy][parBegin];
 			else
-				copyGenotype(cd[dadPloidy] + dadBegin, offd + dadBegin, length);
+				copyGenotype(par[parPloidy] + parBegin, off + parBegin, length);
 
 			if (ch != chEnd - 1)
-				dadPloidy = nextDadPloidy;
-			dadBegin = dadEnd;
-		}
-		if (copyMom) {
-			momEnd = m_chIdx[ch + 1];
-			size_t length = momEnd - momBegin;
-			//
-			// the easiest case, try to get some speed up...
-			if (length == 1)
-				offm[momBegin] = cm[momPloidy][momBegin];
-			else
-				copyGenotype(cm[momPloidy] + momBegin, offm + momBegin, length);
-
-			if (ch != chEnd - 1)
-				momPloidy = nextMomPloidy;
-			momBegin = momEnd;
+				parPloidy = nextParPloidy;
+			parBegin = parEnd;
 		}
 	}
 #endif
 
-	// last chromosome (sex chromosomes) determine sex
-	if (m_hasSexChrom)
-		it->setSex(dadPloidy == 1 ? Male : Female);
-	else
-		it->setSex(rng().randInt(2) == 0 ? Male : Female);
+	if (setSex) {
+		// last chromosome (sex chromosomes) determine sex
+		if (m_hasSexChrom)
+			it->setSex(parPloidy == 1 ? Male : Female);
+		else
+			it->setSex(rng().randInt(2) == 0 ? Male : Female);
+	}
 }
 
 
@@ -210,8 +181,13 @@ void mendelianOffspringGenerator::generateOffspring(population & pop, individual
 	bool accept = true;
 
 	while (count < numOff) {
-		if (m_formOffGenotype)
-			formOffspring(dad, mom, it);
+		if (m_formOffGenotype) {
+			// m_bt 's width is 2*numChrom() and can be used for
+			// the next two functions.
+			m_bt.trial();
+			formOffspringGenotype(mom, it, 0, false);
+			formOffspringGenotype(dad, it, 1, true);
+		}
 
 		accept = true;
 		// apply all during mating operators
@@ -235,108 +211,6 @@ void mendelianOffspringGenerator::generateOffspring(population & pop, individual
 }
 
 
-void selfingOffspringGenerator::formOffspring(individual * parent,
-                                              population::IndIterator & it)
-{
-	m_bt.trial();
-	// const BitSet& bs = m_bt.succ(0);
-
-	// initialize to avoid compiler complains
-	int dadPloidy = 0, momPloidy = 0;
-	GenoIterator cd[2], cm[2], offd, offm;
-	cd[0] = parent->genoBegin(0);
-	cd[1] = parent->genoBegin(1);
-	cm[0] = parent->genoBegin(0);
-	cm[1] = parent->genoBegin(1);
-	// maternal / paternal (XY)
-	offm = it->genoBegin(0);
-	offd = it->genoBegin(1);
-
-#ifndef BINARYALLELE
-	// the easy way to copy things.
-	//
-	for (UINT ch = 0, chEnd = parent->numChrom(); ch < chEnd; ++ch) {
-		// bs is 2*totNumLoci() long
-		//bs[ch];
-		dadPloidy = m_bt.trialSucc(ch);
-		// bs[ch+chEnd];
-		momPloidy = m_bt.trialSucc(ch + chEnd);
-		for (size_t gt = m_chIdx[ch]; gt < m_chIdx[ch + 1]; ++gt) {
-			offd[gt] = cd[dadPloidy][gt];
-			offm[gt] = cm[momPloidy][gt];
-		}
-	}
-#else
-	// this has to be optimized...
-	//
-	// 1. try to copy in blocks,
-	// 2. if two chromosomes can be copied together, copy together
-	// 3. if length is short, using the old method.
-	//
-	size_t dadBegin = 0;
-	size_t dadEnd = 0;
-	size_t momBegin = 0;
-	size_t momEnd = 0;
-	// bs is 2*totNumLoci() long,
-	// first chromosome
-	UINT chEnd = parent->numChrom();
-	momPloidy = m_bt.trialSucc(0);
-	dadPloidy = m_bt.trialSucc(chEnd);
-	//
-	int nextDadPloidy = 0;
-	int nextMomPloidy = 0;
-	bool copyDad;
-	bool copyMom;
-	for (UINT ch = 0; ch < chEnd; ++ch) {
-		// if it is the last chromosome, copy anyway
-		if (ch == chEnd - 1) {
-			copyDad = true;
-			copyMom = true;
-		} else {                                                                    // is there a different chromosome?
-			nextDadPloidy = m_bt.trialSucc(ch + 1);
-			nextMomPloidy = m_bt.trialSucc(ch + 1 + chEnd);
-			copyDad = dadPloidy != nextDadPloidy;
-			copyMom = momPloidy != nextMomPloidy;
-		}
-		if (copyDad) {
-			// end of this chromosome, is the beginning of the next
-			dadEnd = m_chIdx[ch + 1];
-			size_t length = dadEnd - dadBegin;
-			//
-			// the easiest case, try to get some speed up...
-			if (length == 1)
-				offd[dadBegin] = cd[dadPloidy][dadBegin];
-			else
-				copyGenotype(cd[dadPloidy] + dadBegin, offd + dadBegin, length);
-
-			if (ch != chEnd - 1)
-				dadPloidy = nextDadPloidy;
-			dadBegin = dadEnd;
-		}
-		if (copyMom) {
-			momEnd = m_chIdx[ch + 1];
-			size_t length = momEnd - momBegin;
-			//
-			if (length == 1)
-				offm[momBegin] = cm[momPloidy][momBegin];
-			else
-				copyGenotype(cm[momPloidy] + momBegin, offm + momBegin, length);
-
-			if (ch != chEnd - 1)
-				momPloidy = nextMomPloidy;
-			momBegin = momEnd;
-		}
-	}
-#endif
-
-	// last chromosome (sex chromosomes) determine sex
-	if (m_hasSexChrom)
-		it->setSex(dadPloidy == 1 ? Male : Female);
-	else
-		it->setSex(rng().randInt(2) == 0 ? Male : Female);
-}
-
-
 void selfingOffspringGenerator::generateOffspring(population & pop, individual * parent,
                                                   individual *, UINT numOff, population::IndIterator & it)
 {
@@ -348,8 +222,14 @@ void selfingOffspringGenerator::generateOffspring(population & pop, individual *
 	bool accept = true;
 
 	while (count < numOff) {
-		if (m_formOffGenotype)  // use the default no recombination random mating.
-			formOffspring(parent, it);
+		if (m_formOffGenotype) {
+			// m_bt 's width is 2*numChrom() and can be used for
+			// the next two functions.
+			m_bt.trial();
+			// use the same parent to produce to copies of chromosomes
+			formOffspringGenotype(parent, it, 0, false);
+			formOffspringGenotype(parent, it, 1, true);
+		}
 
 		accept = true;
 		// apply all during mating operators
