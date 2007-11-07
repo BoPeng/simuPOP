@@ -70,12 +70,9 @@ class TestMatingSchemes(unittest.TestCase):
         # MATE_NumOffspringEachFamily
         def nos(gen):
             return random.randrange(1,4)
-        # default mode: the first guess used by all
-        cnt = self.getFamSize(randomMating(numOffspringFunc=nos) )
-        assert cnt[0]==cnt[1] and cnt[2]==cnt[3]
         #
         cnt = self.getFamSize( randomMating(numOffspringFunc=nos, 
-            mode= MATE_NumOffspringEachFamily))
+            mode= MATE_PyNumOffspring))
         self.assertEqual( sum(cnt), 1000)
         num = [ cnt.count(i) for i in range(1,4) ]
         # test for uniform?
@@ -292,7 +289,7 @@ class TestMatingSchemes(unittest.TestCase):
             end=endingGen
         )
     
-    def testPyMating(self):
+    def NOtestPyMating(self):
         ' test pyMating '
         ver = sys.version_info[:3]
         # only python >= 2.4 supports pymating
