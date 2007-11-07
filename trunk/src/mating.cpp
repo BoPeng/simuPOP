@@ -373,17 +373,16 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 }
 
 
-
 pyParentsChooser::pyParentsChooser(population & pop, size_t sp, PyObject * pc)
 	: parentChooser(0), m_generator(NULL), m_parIterator(NULL)
 {
 #if PY_VERSION_HEX < 0x02040000
-			throw SystemError("Your Python version does not have good support for generator"
-			    " so this python parent chooser can not be used.");
+	throw SystemError("Your Python version does not have good support for generator"
+	    " so this python parent chooser can not be used.");
 #else
-#ifndef OPTIMIZED
+ #ifndef OPTIMIZED
 	m_size = pop.subPopSize(sp);
-#endif
+ #endif
 	m_begin = pop.indBegin(sp);
 
 	PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
@@ -404,46 +403,47 @@ pyParentsChooser::pyParentsChooser(population & pop, size_t sp, PyObject * pc)
 	// test if m_parIterator is iteratable.
 	DBG_FAILIF(m_parIterator == NULL, ValueError,
 	    "Can not iterate through parent generator");
-#endif		
+#endif
 }
 
 
 parentChooser::individualPair pyParentsChooser::chooseParents()
 {
 	PyObject * item = PyIter_Next(m_parIterator);
-	
+
 	vectori parents;
 	int parent;
+
 	if (PySequence_Check(item)) {
 		PyObj_As_IntArray(item, parents);
 		DBG_ASSERT(parents.size() == 2, ValueError,
-			"Returned parents indexes should have size 2");
+		    "Returned parents indexes should have size 2");
 #ifndef OPTIMIZED
-		DBG_ASSERT(static_cast<unsigned>(parents[0]) < m_size 
-			&& static_cast<unsigned>(parents[1]) < m_size,
+		DBG_ASSERT(static_cast<unsigned>(parents[0]) < m_size
+		    && static_cast<unsigned>(parents[1]) < m_size,
 		    ValueError, "Returned parent index (" + toStr(parents[0])
-				+ ", and " + toStr(parents[1]) + 
-				") is greater than subpopulation size " + toStr(m_size));
+		    + ", and " + toStr(parents[1]) +
+		    ") is greater than subpopulation size " + toStr(m_size));
 #endif
-		DBG_DO(DBG_MATING, cout << "choose parents " << parents[0] 
-			<< " and " << parents[1] << endl;);
+		DBG_DO(DBG_MATING, cout << "choose parents " << parents[0]
+		                        << " and " << parents[1] << endl;);
 		Py_DECREF(item);
 		return std::make_pair(& * (m_begin + parents[0]),
-			& * (m_begin + parents[1]));
+		           & * (m_begin + parents[1]));
 	} else if (PyInt_Check(item) || PyLong_Check(item)) {
 		PyObj_As_Int(item, parent);
 #ifndef OPTIMIZED
 		DBG_ASSERT(static_cast<unsigned>(parent) < m_size,
-		    ValueError, "Returned index (" + toStr(parent) + 
-				") is greater than subpopulation size " + toStr(m_size));
+		    ValueError, "Returned index (" + toStr(parent) +
+		    ") is greater than subpopulation size " + toStr(m_size));
 #endif
 		DBG_DO(DBG_MATING, cout << "choose parent " << parent
-			<< endl;);
+		                        << endl;);
 		Py_DECREF(item);
 		return parentChooser::individualPair(& * (m_begin + parent), NULL);
 	} else
-		DBG_ASSERT(false, ValueError, 
-			"Invalid type of returned parent index(es)");
+		DBG_ASSERT(false, ValueError,
+		    "Invalid type of returned parent index(es)");
 }
 
 
@@ -587,6 +587,30 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 	DBG_FAILIF(scratch.numSubPop() != pop.numSubPop(),
 	    ValueError, "number of subPopulaitons must agree.\n Pre: "
 	    + toStr(pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
+}
+
+
+duplicateSplitter::duplicateSplitter(vectori const & offWeights)
+	: virtualSplitter(offWeights)
+{
+}
+
+
+infoSplitter::infoSplitter(vectori const & offWeights)
+	: virtualSplitter(offWeights)
+{
+}
+
+
+proportionSplitter::proportionSplitter(vectori const & offWeights)
+	: virtualSplitter(offWeights)
+{
+}
+
+
+rangeSplitter::rangeSplitter(vectori const & offWeights)
+	: virtualSplitter(offWeights)
+{
 }
 
 
@@ -1238,6 +1262,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 pyMating::pyMating(vectori const & parentChoosers,
                    vectorobj const & pyChoosers,
                    vectori const & offspringGenerators,
+                   vector<virtualSplitter *> const & splitters,
                    double numOffspring,
                    PyObject * numOffspringFunc,
                    UINT maxNumOffspring,
@@ -1251,7 +1276,8 @@ pyMating::pyMating(vectori const & parentChoosers,
 	         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
 	m_parentChoosers(parentChoosers),
 	m_pyChoosers(),
-	m_offspringGenerators(offspringGenerators)
+	m_offspringGenerators(offspringGenerators),
+	m_splitters()
 {
 	vectorobj::const_iterator it = pyChoosers.begin();
 	vectorobj::const_iterator it_end = pyChoosers.end();
@@ -1260,6 +1286,10 @@ pyMating::pyMating(vectori const & parentChoosers,
 		m_pyChoosers.push_back(*it);
 		Py_XINCREF(*it);
 	}
+	vector<virtualSplitter *>::const_iterator sit = splitters.begin();
+	vector<virtualSplitter *>::const_iterator sit_end = splitters.end();
+	for (; sit != sit_end; ++sit)
+		m_splitters.push_back((*sit)->clone());
 }
 
 
@@ -1296,8 +1326,8 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 			pc = new randomParentsChooser(pop, sp);
 			break;
 		case MATE_PyParentsChooser:
-			pc = new pyParentsChooser(pop, sp, 
-				m_pyChoosers.size() > 1 ? m_pyChoosers[pcIdx++] : m_pyChoosers[0]);
+			pc = new pyParentsChooser(pop, sp,
+			         m_pyChoosers.size() > 1 ? m_pyChoosers[pcIdx++] : m_pyChoosers[0]);
 			break;
 		default:
 			throw ValueError("Unknown parentChoosers type");

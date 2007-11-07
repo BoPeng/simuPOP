@@ -265,6 +265,123 @@ private:
 	PyObject * m_parIterator;
 };
 
+/** virtual splitters split a subpopulation into virtual sub-subpopulations.
+   The virtual subpopulations does not have to add up to the whole
+   subpopulation, nor they have to be distinct. For example,
+   a virtual subpopulation may be all individuals in a population
+   that is over the age of 30. Or, two virtual populations may
+   overlap so some of the inviduals will go through more than one
+   mating schemes.
+
+   When a subpopulation is splitted by a virtual splitter, only its
+   virtual subpopulations will go through mating. The virtual subpopulations
+   are identified as virtual-subPopulations, relative to their parental
+   subpopulation.
+
+   virtual splitter will split a parental subpopulation, and the corresponding
+   offspring subpopulation ino the same number of virtual subpopulations.
+   Whereas parental virtual subpopulations can be virtual, offspring virtual
+   subpopulations has to occupy the whole offspring subpopulation, and
+   can not overlap. A wight-system is used to determine the offspring
+   sub-subpopulation sizes. For each sub-subpopulation, weight
+ \li 0 no sub-subpopulation. The corresponding parental virtual subpopulation
+   	is ignored.
+ \li -1 The same size as the corresponding parental virtual subpopulation
+ \li n a weight. After 0, -1 are handled, the rest of the weights are
+   	added and a proportion is calculated for each offspring sub-subpopulation.
+
+   Note that if any parental virtual subpopulation is empty, its corresponding
+   entry in the offspring sub-subpopulations is removed.
+ */
+class virtualSplitter
+{
+public:
+	virtualSplitter(vectori const & offWeights) : m_offWeights(offWeights)
+	{
+	}
+
+
+	virtual virtualSplitter * clone() const = 0;
+
+	virtual ~virtualSplitter()
+	{
+	}
+
+
+private:
+	vectori m_offWeights;
+};
+
+
+/** duplicateSplitter does not split the parental subpopulation in any way.
+   It presents the specified subpopulation as several subpopulations to the
+   mating system, thus allow several different mating schemes to be appllied to the
+   same subpopulation. For example, a selfing-mating scheme can be applied to
+   the subpopulation and populate half of the offspring subpopulation, and a
+   random-mating scheme can be used to generate the rest of the offspring
+   subpopulation.
+ */
+class duplicateSplitter : public virtualSplitter
+{
+public:
+	duplicateSplitter(vectori const & offWeights);
+
+	virtualSplitter * clone() const
+	{
+		return new duplicateSplitter(*this);
+	}
+
+
+};
+
+
+/** Split the population according to the value of an information field.
+   A cutoff vector of length \c n is given to split the subpopulation into
+ \c n+1 distinct virtual subpopulations.
+ */
+class infoSplitter : public virtualSplitter
+{
+public:
+	infoSplitter(vectori const & offWeights);
+
+	virtualSplitter * clone() const
+	{
+		return new infoSplitter(*this);
+	}
+
+
+};
+
+/** Split the population according to a proportion */
+class proportionSplitter : public virtualSplitter
+{
+public:
+	proportionSplitter(vectori const & offWeights);
+
+	virtualSplitter * clone() const
+	{
+		return new proportionSplitter(*this);
+	}
+
+
+};
+
+/** Split the population using given ranges. The duplicateSplitter
+   can be a special case of this virtual splitter.
+ */
+class rangeSplitter : public virtualSplitter
+{
+public:
+	rangeSplitter(vectori const & offWeights);
+
+	virtualSplitter * clone() const
+	{
+		return new rangeSplitter(*this);
+	}
+
+
+};
+
 
 /// the base class of all mating schemes - a required parameter of \c simulator
 /**
@@ -782,10 +899,12 @@ public:
 		delete m_matingScheme;
 	}
 
+
 	/// CPPONLY
 	void submitScratch(population & pop, population & scratch)
 	{
 	}
+
 
 	/// deep copy of a controlled mating scheme
 	virtual mating * clone() const
@@ -993,39 +1112,39 @@ public:
 	/// create a Python mating scheme
 	/**
 	 \param parentChoosers a list of parent choosers for each subpopulation. If only
-		one parentChooser is specified, it is used for all subpopulations. a parentChooser
-			can be 
-			\li MATE_RandomParentChooser a random parent is chosen, regardless of sex.
-			\li MATE_RandomParentsChooser two parents with different sex are chosen randomly from
-				their respective sex groups.
-			\li a Python generator that returns a relative index of a parent, or a tuple 
-				of two relative indexes of two parents. The indexes should be relative to
-				the subpopulations it will be applied to. A population, and a subpopulation
-				index will be passed to this generator. Please refer to simuPOP user's guide
-				for a detailed explanation of this technique.
+	   	one parentChooser is specified, it is used for all subpopulations. a parentChooser
+	   		can be
+	 \li MATE_RandomParentChooser a random parent is chosen, regardless of sex.
+	 \li MATE_RandomParentsChooser two parents with different sex are chosen randomly from
+	   			their respective sex groups.
+	 \li a Python generator that returns a relative index of a parent, or a tuple
+	   			of two relative indexes of two parents. The indexes should be relative to
+	   			the subpopulations it will be applied to. A population, and a subpopulation
+	   			index will be passed to this generator. Please refer to simuPOP user's guide
+	   			for a detailed explanation of this technique.
 	 \param parentChooser A parent chooser that is used for all subpopulations. This is
-		a shortcut for <tt> parentChoosers=[parentChooser] </tt>.
+	   	a shortcut for <tt> parentChoosers=[parentChooser] </tt>.
 	 \param pyChoosers for internal use only.
 	 \param offspringGenerators A list of offspringGenerator for each subpopulation. If only
-		one offspringGenerator is specified, it is used for all subpopulations.
-		offspringGenerator can be 
-		\li MATE_CloneOffspringGenerator Parental chromosomes are copied directly to offspring.
-			This offspring generator can be used to haploid populations.
-			If a recombinator is used in a diploid population, the cloning behavior
-			is replaced by a 'selfing' recombination so this mode the same as selfing.
-		\li MATE_MendelianOffspringGenerator Mendelian transmission without recombination. 
-			That is to say, the first or the second copy of maternal chromosomes is passed to 
-			the maternal (first) chromosomes of the offspring; the first or the second copy of
-			paternal chromosomes is passed the paternal (second) chromosomes of the
-			offspring. Independent segregations are applied to chromosomes.
-		\li MATE_SelfingOffspringGenerator Selfing transmission without recombination.
-			Only one parent is involved, and serves both paternal and maternal roles in a 
-			Mendelian offspring generator. Two copies of the offspring chromosomes are 
-			generated independently.
-	 \param offspringGenerator An offspring generator that is used for 
-		all subpopulations. This is a shortcut for 
-		<tt>offspringGenerators=[offspringGenerator]</tt>.
-	 Generator a Python generator that accepts the parental
+	   	one offspringGenerator is specified, it is used for all subpopulations.
+	   	offspringGenerator can be
+	 \li MATE_CloneOffspringGenerator Parental chromosomes are copied directly to offspring.
+	   		This offspring generator can be used to haploid populations.
+	   		If a recombinator is used in a diploid population, the cloning behavior
+	   		is replaced by a 'selfing' recombination so this mode the same as selfing.
+	 \li MATE_MendelianOffspringGenerator Mendelian transmission without recombination.
+	   		That is to say, the first or the second copy of maternal chromosomes is passed to
+	   		the maternal (first) chromosomes of the offspring; the first or the second copy of
+	   		paternal chromosomes is passed the paternal (second) chromosomes of the
+	   		offspring. Independent segregations are applied to chromosomes.
+	 \li MATE_SelfingOffspringGenerator Selfing transmission without recombination.
+	   		Only one parent is involved, and serves both paternal and maternal roles in a
+	   		Mendelian offspring generator. Two copies of the offspring chromosomes are
+	   		generated independently.
+	 \param offspringGenerator An offspring generator that is used for
+	   	all subpopulations. This is a shortcut for
+	   	<tt>offspringGenerators=[offspringGenerator]</tt>.
+	   Generator a Python generator that accepts the parental
 	   	population, and yield parents.
 	 \n
 
@@ -1034,6 +1153,7 @@ public:
 	pyMating(vectori const & parentChoosers,
 	         vectorobj const & pyChoosers,
 	         vectori const & offspringGenerators,
+	         vector<virtualSplitter *> const & splitters,
 	         double numOffspring = 1.,
 	         PyObject * numOffspringFunc = NULL,
 	         UINT maxNumOffspring = 0,
@@ -1059,7 +1179,8 @@ public:
 		mating(rhs),
 		m_parentChoosers(rhs.m_parentChoosers),
 		m_pyChoosers(rhs.m_pyChoosers),
-		m_offspringGenerators(rhs.m_offspringGenerators)
+		m_offspringGenerators(rhs.m_offspringGenerators),
+		m_splitters(rhs.m_splitters)
 	{
 		vectorobj::iterator it = m_pyChoosers.begin();
 		vectorobj::iterator it_end = m_pyChoosers.end();
@@ -1081,7 +1202,8 @@ public:
 	{
 		return "<simuPOP::pyMating>";
 	}
-	
+
+
 	///CPPONLY
 	void submitScratch(population & pop, population & scratch)
 	{
@@ -1090,6 +1212,7 @@ public:
 		pop.pushAndDiscard(scratch);
 		DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
 	}
+
 
 	/// CPPONLY perform Python mating
 	/**
@@ -1104,6 +1227,8 @@ private:
 	vectorobj m_pyChoosers;
 
 	vectori m_offspringGenerators;
+
+	vector<virtualSplitter *> m_splitters;
 
 #ifndef OPTIMIZED
 	///
