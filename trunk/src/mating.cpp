@@ -59,13 +59,6 @@ numOffspringGenerator::numOffspringGenerator(double numOffspring,
 }
 
 
-bool numOffspringGenerator::fixedFamilySize() const
-{
-	// not eachFamily...
-	return m_mode == MATE_NumOffspring;
-}
-
-
 ULONG numOffspringGenerator::numOffspring(int gen)
 {
 	switch (m_mode) {
@@ -94,6 +87,9 @@ ULONG numOffspringGenerator::numOffspring(int gen)
 		throw ValueError("Wrong mating numoffspring mode. Should be one of \n"
 		    "MATE_NumOffspring, MATE_NumOffspringEachFamily and MATE_GEometricDistribution");
 	}
+	//
+	DBG_ASSERT(false, SystemError, "This line should never be reached");
+	return 0;
 }
 
 
@@ -519,9 +515,6 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 	} else
 		DBG_ASSERT(false, ValueError,
 		    "Invalid type of returned parent index(es)");
-	//
-	DBG_ASSERT(false, SystemError, "This line should never be reached");
-	return 0;
 }
 
 

@@ -70,7 +70,11 @@ public:
 
 
 	/// CPPONLY
-	bool fixedFamilySize() const;
+	bool fixedFamilySize() const
+	{
+		return m_mode == MATE_NumOffspring;
+	}
+
 
 	/// CPPONLY the number of offspring of a genaration \c gen
 	/**
