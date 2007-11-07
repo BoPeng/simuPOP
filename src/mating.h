@@ -54,7 +54,7 @@ public:
 		: m_numOffspring(rhs.m_numOffspring),
 		m_numOffspringFunc(rhs.m_numOffspringFunc),
 		m_maxNumOffspring(rhs.m_maxNumOffspring),
-		m_mode(rhs.m_mode), m_firstOffspring(true)
+		m_mode(rhs.m_mode)
 	{
 		if (m_numOffspringFunc != NULL)
 			Py_INCREF(m_numOffspringFunc);
@@ -70,7 +70,7 @@ public:
 
 
 	/// CPPONLY
-	bool fixedFamilySize();
+	bool fixedFamilySize() const;
 
 	/// CPPONLY the number of offspring of a genaration \c gen
 	/**
@@ -78,18 +78,6 @@ public:
 	   Its actual meaning depending on \c mode.
 	 */
 	ULONG numOffspring(int gen);
-
-	/// CPPONLY reset the number of offspring
-	/**
-	   This is used to tell a mating scheme that the current number
-	   of offspring need to be recaculated. e.g., when a new generation
-	   starts and mode=MATE_numOffspring and numOffspringFunc is given.
-	 */
-	void resetNumOffspring()
-	{
-		m_firstOffspring =  true;
-	}
-
 
 protected:
 	/// number of offspring each mate
@@ -103,10 +91,6 @@ protected:
 
 	/// whether or not call m_numOffspringFunc each time
 	UINT m_mode;
-
-	///
-	bool m_firstOffspring;
-
 };
 
 
@@ -463,7 +447,8 @@ public:
 	// numOffspring: constant, numOffspringFunc: call each time before mating
 #define MATE_NumOffspring           1
 	// call numOffspringFunc each time during mating.
-#define MATE_NumOffspringEachFamily 2
+#define MATE_NumOffspringEachFamily 2 // This name is obsolete
+#define MATE_PyNumOffspring         2
 	// numOffspring and numOffsrpingsFunc call each time before mating is
 	// the p for a geometric distribution
 #define MATE_GeometricDistribution   3

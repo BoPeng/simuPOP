@@ -258,6 +258,7 @@ namespace std
 {
     %template(vectorobj)    vector<PyObject*>;
     %template(vectorop)     vector<simuPOP::baseOperator * >;
+    %template()             vector<simuPOP::virtualSplitter * >;
 }
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////
@@ -709,7 +710,7 @@ controlledRandomMating.__init__ = new_controlledRandomMating
 
 def new_pyMating(self, parentChooser=None, parentChoosers=[MATE_RandomParentsChooser],
     offspringGenerator=None, offspringGenerators=[MATE_MendelianOffspringGenerator],
-    *args, **kwargs):
+    splitter=None, splitters=[], *args, **kwargs):
     # paremeter parentChoosers
     if parentChooser is not None:
         pc = [parentChooser]
@@ -725,9 +726,14 @@ def new_pyMating(self, parentChooser=None, parentChoosers=[MATE_RandomParentsCho
     og = offspringGenerators
     if offspringGenerator is not None:
         og = [offspringGenerator]
+    #
+    if splitter is not None:
+        sp = [splitter]
+    else:
+        sp = splitters
     cppModule.pyMating_swiginit(self,
         cppModule.new_pyMating(parentChoosers=pc, pyChoosers=pyPC,
-            offspringGenerators=og, *args, **kwargs))
+            offspringGenerators=og, splitters=sp, *args, **kwargs))
  
 new_pyMating.__doc__ = pyMating.__init__.__doc__
 del pyMating.__init__
