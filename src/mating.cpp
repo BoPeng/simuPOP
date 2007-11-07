@@ -25,6 +25,90 @@
 
 namespace simuPOP {
 
+
+numOffspringGenerator::numOffspringGenerator(double numOffspring, PyObject * numOffspringFunc, UINT maxNumOffspring,
+                                             UINT mode) :
+	m_numOffspring(numOffspring), m_numOffspringFunc(NULL), m_maxNumOffspring(maxNumOffspring),
+	m_mode(mode), m_firstOffspring(true)
+{
+	if (numOffspringFunc != NULL) {
+		if (!PyCallable_Check(numOffspringFunc))
+			throw ValueError("Passed variable is not a callable python function.");
+
+		Py_INCREF(numOffspringFunc);
+		m_numOffspringFunc = numOffspringFunc;
+	}
+	DBG_FAILIF(mode == MATE_BinomialDistribution && maxNumOffspring < 2,
+	    ValueError, "If mode is MATE_BinomialDistribution, maxNumOffspring should be > 1");
+	DBG_FAILIF(mode == MATE_UniformDistribution && maxNumOffspring < static_cast<UINT>(numOffspring),
+	    ValueError, "If mode is MATE_UniformDistribution, maxNumOffspring should be greater than numOffspring");
+
+}
+
+
+bool numOffspringGenerator::fixedFamilySize()
+{
+	// not eachFamily...
+	return m_mode == MATE_NumOffspring;
+}
+
+
+ULONG numOffspringGenerator::numOffspring(int gen)
+{
+	static double numOS = 0.;
+
+	// use the same numOffspings each generation
+	if (!m_firstOffspring && m_mode == MATE_NumOffspring)
+		return static_cast<UINT>(numOS);
+
+	if (m_numOffspringFunc == NULL)
+		numOS = m_numOffspring;
+	else if (m_mode == MATE_NumOffspring ||           // case 1, first time
+	         // case 2, all the time; case 3,4,5, first time
+	         m_mode == MATE_NumOffspringEachFamily ||
+	         ( m_firstOffspring &&
+	          ( m_mode == MATE_GeometricDistribution  ||
+	           m_mode == MATE_PoissonDistribution   ||
+	           m_mode == MATE_BinomialDistribution ))) {
+		PyCallFunc(m_numOffspringFunc, "(i)", gen, numOS, PyObj_As_Double);
+	}
+
+	m_firstOffspring = false;
+
+	if (m_mode == MATE_NumOffspring || m_mode == MATE_NumOffspringEachFamily) {
+		DBG_FAILIF(numOS < 1, ValueError, "Need at least one offspring.");
+		return static_cast<UINT>(numOS);
+	} else if (m_mode == MATE_GeometricDistribution) {
+		DBG_FAILIF(fcmp_lt(numOS, 0) || fcmp_gt(numOS, 1.), ValueError,
+		    "P for a geometric distribution should be within [0,1], given " + toStr(numOS));
+		UINT nos = rng().randGeometric(numOS);
+		return nos;
+	} else if (m_mode == MATE_PoissonDistribution) {
+		// FIXME: numOS is no longer the average.
+		UINT nos = rng().randPoisson(numOS) + 1;
+		return nos;
+	} else if (m_mode == MATE_BinomialDistribution) {
+		DBG_FAILIF(fcmp_lt(numOS, 0) || fcmp_gt(numOS, 1.), ValueError,
+		    "P for a Bionomial distribution should be within [0,1], given " + toStr(numOS));
+		DBG_FAILIF(m_maxNumOffspring < 1, ValueError,
+		    "Max number of offspring should be greater than 1. Given "
+		    + toStr(m_maxNumOffspring));
+		UINT nos = rng().randBinomial(m_maxNumOffspring - 1, numOS) + 1;
+		return nos;
+	} else if (m_mode == MATE_UniformDistribution) {
+		// max: 5
+		// num: 2
+		// randint(4)  ==> 0, 1, 2, 3
+		// + 2 ==> 2, 3, 4, 5
+		UINT nos = rng().randInt(m_maxNumOffspring - static_cast<unsigned long>(m_numOffspring) + 1)
+		           + static_cast<UINT>(m_numOffspring);
+		return nos;
+	} else
+		throw ValueError("Wrong mating numoffspring mode. Should be one of \n"
+		    "MATE_NumOffspring, MATE_NumOffspringEachFamily and MATE_GEometricDistribution");
+}
+
+
 offspringGenerator::offspringGenerator(const population & pop,
                                        vector<baseOperator *> & ops)
 	: m_ops(ops)
@@ -316,7 +400,7 @@ randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
 
 	size_t idx = 0;
 	population::IndIterator ind = pop.indBegin(sp);
-	population::IndIterator indEnd = pop.indEnd(sp)
+	population::IndIterator indEnd = pop.indEnd(sp);
 	for (; ind < indEnd; ind++) {
 		if (ind->sex() == Male) {
 			m_maleIndex[m_numMale] = idx;
@@ -450,22 +534,13 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 }
 
 
-mating::mating(double numOffspring, PyObject * numOffspringFunc, UINT maxNumOffspring,
-               UINT mode, vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newSubPopSizeFunc)
-	: m_numOffspring(numOffspring), m_numOffspringFunc(NULL), m_maxNumOffspring(maxNumOffspring),
-	m_mode(mode), m_firstOffspring(true), m_subPopSize(newSubPopSize),
+mating::mating(vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newSubPopSizeFunc)
+	: m_subPopSize(newSubPopSize),
 	m_subPopSizeExpr(newSubPopSizeExpr, ""), m_subPopSizeFunc(NULL)
 {
 	DBG_FAILIF(!m_subPopSizeExpr.empty() && newSubPopSizeFunc != NULL,
 	    ValueError, "Please only specify one of newSubPopSizeExpr and newSubPopSizeFunc.");
 
-	if (numOffspringFunc != NULL) {
-		if (!PyCallable_Check(numOffspringFunc))
-			throw ValueError("Passed variable is not a callable python function.");
-
-		Py_INCREF(numOffspringFunc);
-		m_numOffspringFunc = numOffspringFunc;
-	}
 
 	if (newSubPopSizeFunc != NULL) {
 		if (!PyCallable_Check(newSubPopSizeFunc))
@@ -474,74 +549,6 @@ mating::mating(double numOffspring, PyObject * numOffspringFunc, UINT maxNumOffs
 		Py_INCREF(newSubPopSizeFunc);
 		m_subPopSizeFunc = newSubPopSizeFunc;
 	}
-
-	DBG_FAILIF(mode == MATE_BinomialDistribution && maxNumOffspring < 2,
-	    ValueError, "If mode is MATE_BinomialDistribution, maxNumOffspring should be > 1");
-	DBG_FAILIF(mode == MATE_UniformDistribution && maxNumOffspring < static_cast<UINT>(numOffspring),
-	    ValueError, "If mode is MATE_UniformDistribution, maxNumOffspring should be greater than numOffspring");
-}
-
-
-bool mating::fixedFamilySize()
-{
-	// not eachFamily...
-	return m_mode == MATE_NumOffspring;
-}
-
-
-ULONG mating::numOffspring(int gen)
-{
-	static double numOS = 0.;
-
-	// use the same numOffspings each generation
-	if (!m_firstOffspring && m_mode == MATE_NumOffspring)
-		return static_cast<UINT>(numOS);
-
-	if (m_numOffspringFunc == NULL)
-		numOS = m_numOffspring;
-	else if (m_mode == MATE_NumOffspring ||           // case 1, first time
-	         // case 2, all the time; case 3,4,5, first time
-	         m_mode == MATE_NumOffspringEachFamily ||
-	         ( m_firstOffspring &&
-	          ( m_mode == MATE_GeometricDistribution  ||
-	           m_mode == MATE_PoissonDistribution   ||
-	           m_mode == MATE_BinomialDistribution ))) {
-		PyCallFunc(m_numOffspringFunc, "(i)", gen, numOS, PyObj_As_Double);
-	}
-
-	m_firstOffspring = false;
-
-	if (m_mode == MATE_NumOffspring || m_mode == MATE_NumOffspringEachFamily) {
-		DBG_FAILIF(numOS < 1, ValueError, "Need at least one offspring.");
-		return static_cast<UINT>(numOS);
-	} else if (m_mode == MATE_GeometricDistribution) {
-		DBG_FAILIF(fcmp_lt(numOS, 0) || fcmp_gt(numOS, 1.), ValueError,
-		    "P for a geometric distribution should be within [0,1], given " + toStr(numOS));
-		UINT nos = rng().randGeometric(numOS);
-		return nos;
-	} else if (m_mode == MATE_PoissonDistribution) {
-		// FIXME: numOS is no longer the average.
-		UINT nos = rng().randPoisson(numOS) + 1;
-		return nos;
-	} else if (m_mode == MATE_BinomialDistribution) {
-		DBG_FAILIF(fcmp_lt(numOS, 0) || fcmp_gt(numOS, 1.), ValueError,
-		    "P for a Bionomial distribution should be within [0,1], given " + toStr(numOS));
-		DBG_FAILIF(m_maxNumOffspring < 1, ValueError,
-		    "Max number of offspring should be greater than 1. Given "
-		    + toStr(m_maxNumOffspring));
-		UINT nos = rng().randBinomial(m_maxNumOffspring - 1, numOS) + 1;
-		return nos;
-	} else if (m_mode == MATE_UniformDistribution) {
-		// max: 5
-		// num: 2
-		// randint(4)  ==> 0, 1, 2, 3
-		// + 2 ==> 2, 3, 4, 5
-		UINT nos = rng().randInt(m_maxNumOffspring - static_cast<unsigned long>(m_numOffspring) + 1)
-		           + static_cast<UINT>(m_numOffspring);
-		return nos;
-	} else
-		throw ValueError("Wrong mating numoffspring mode. Should be one of \n"
-		    "MATE_NumOffspring, MATE_NumOffspringEachFamily and MATE_GEometricDistribution");
 }
 
 
@@ -635,7 +642,7 @@ bool noMating::mate(population & pop, population & scratch, vector<baseOperator 
 ///
 bool binomialSelection::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
 {
-	resetNumOffspring();
+	m_numOffGen.resetNumOffspring();
 	// scrtach will have the right structure.
 	prepareScratchPop(pop, scratch);
 
@@ -658,7 +665,7 @@ bool binomialSelection::mate(population & pop, population & scratch, vector<base
 		while (it != itEnd) {
 			individual * parent = pc.chooseParent();
 
-			numOS = numOffspring(pop.gen());
+			numOS = m_numOffGen.numOffspring(pop.gen());
 			// avoid warning assocaited with 'numOS > itEnd - it'
 			if (it + numOS > itEnd)
 				numOS = itEnd - it;
@@ -677,9 +684,9 @@ bool binomialSelection::mate(population & pop, population & scratch, vector<base
 
 bool randomMating::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
 {
-	this->resetNumOffspring();
+	m_numOffGen.resetNumOffspring();
 	// scrtach will have the right structure.
-	this->prepareScratchPop(pop, scratch);
+	prepareScratchPop(pop, scratch);
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
@@ -707,7 +714,7 @@ bool randomMating::mate(population & pop, population & scratch, vector<baseOpera
 			parentChooser::individualPair const parents = pc.chooseParents();
 
 			// record family size (this may be wrong for the last family)
-			numOS = numOffspring(pop.gen());
+			numOS = m_numOffGen.numOffspring(pop.gen());
 			if (it + numOS > itEnd)
 				numOS = itEnd - it;
 			// record family size (this may be wrong for the last family)
@@ -976,7 +983,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 //
 bool controlledRandomMating::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
 {
-	resetNumOffspring();
+	m_numOffGen.resetNumOffspring();
 	// scrtach will have the right structure.
 	prepareScratchPop(pop, scratch);
 
@@ -996,7 +1003,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 	DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
 
 	/// whether or not use stack.
-	bool useStack = fixedFamilySize();
+	bool useStack = m_numOffGen.fixedFamilySize();
 
 	mendelianOffspringGenerator og(pop, ops);
 	// use to go through offspring generation to count alleles
@@ -1080,7 +1087,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			// use stage 1, stage 2 as described in the paper
 
 			itBegin = it;
-			numOS = numOffspring(pop.gen());
+			numOS = m_numOffGen.numOffspring(pop.gen());
 			// note that this is still valid in stack stage
 			if (it + numOS > itEnd)
 				numOS = itEnd - it;
@@ -1274,9 +1281,9 @@ pyMating::pyMating(vectori const & parentChoosers,
                    string newSubPopSizeExpr,
                    PyObject * newSubPopSizeFunc
                    )
-	: mating(numOffspring,
-	         numOffspringFunc, maxNumOffspring, mode,
-	         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+	m_numOffGen(numOffspring,
+	            numOffspringFunc, maxNumOffspring, mode),
 	m_parentChoosers(parentChoosers),
 	m_pyChoosers(),
 	m_offspringGenerators(offspringGenerators),
@@ -1298,9 +1305,9 @@ pyMating::pyMating(vectori const & parentChoosers,
 
 bool pyMating::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
 {
-	this->resetNumOffspring();
+	m_numOffGen.resetNumOffspring();
 	// scratach will have the right structure.
-	this->prepareScratchPop(pop, scratch);
+	prepareScratchPop(pop, scratch);
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
@@ -1382,7 +1389,7 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 			}
 
 			// record family size (this may be wrong for the last family)
-			numOS = numOffspring(pop.gen());
+			numOS = m_numOffGen.numOffspring(pop.gen());
 			if (it + numOS > itEnd)
 				numOS = itEnd - it;
 			// record family size (this may be wrong for the last family)

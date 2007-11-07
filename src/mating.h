@@ -44,6 +44,72 @@ using std::stack;
 
 namespace simuPOP {
 
+class numOffspringGenerator
+{
+public:
+	numOffspringGenerator(double numOffspring, PyObject * numOffspringFunc, UINT maxNumOffspring,
+	                      UINT mode);
+
+	numOffspringGenerator(const numOffspringGenerator & rhs)
+		: m_numOffspring(rhs.m_numOffspring),
+		m_numOffspringFunc(rhs.m_numOffspringFunc),
+		m_maxNumOffspring(rhs.m_maxNumOffspring),
+		m_mode(rhs.m_mode), m_firstOffspring(true)
+	{
+		if (m_numOffspringFunc != NULL)
+			Py_INCREF(m_numOffspringFunc);
+	}
+
+
+	/// destructor
+	virtual ~numOffspringGenerator()
+	{
+		if (m_numOffspringFunc != NULL)
+			Py_DECREF(m_numOffspringFunc);
+	}
+
+
+	/// CPPONLY
+	bool fixedFamilySize();
+
+	/// CPPONLY the number of offspring of a genaration \c gen
+	/**
+	   This is called whenever a family size is needed.
+	   Its actual meaning depending on \c mode.
+	 */
+	ULONG numOffspring(int gen);
+
+	/// CPPONLY reset the number of offspring
+	/**
+	   This is used to tell a mating scheme that the current number
+	   of offspring need to be recaculated. e.g., when a new generation
+	   starts and mode=MATE_numOffspring and numOffspringFunc is given.
+	 */
+	void resetNumOffspring()
+	{
+		m_firstOffspring =  true;
+	}
+
+
+protected:
+	/// number of offspring each mate
+	double m_numOffspring;
+
+	/// number of offspring func
+	PyObject * m_numOffspringFunc;
+
+	///
+	UINT m_maxNumOffspring;
+
+	/// whether or not call m_numOffspringFunc each time
+	UINT m_mode;
+
+	///
+	bool m_firstOffspring;
+
+};
+
+
 /**
    A mating scheme is a complex object that does many things.
    1. create offspring generation
@@ -462,28 +528,18 @@ public:
 
 	 \test src_mating.log Demographic models and control of number of offspring per mating event
 	 */
-	mating(double numOffspring = 1.0,
-	       PyObject * numOffspringFunc = NULL,
-	       UINT maxNumOffspring = 0,
-	       UINT mode = MATE_NumOffspring,
-	       vectorlu newSubPopSize = vectorlu(),
+	mating(vectorlu newSubPopSize = vectorlu(),
 	       string newSubPopSizeExpr = "",
 	       PyObject * newSubPopSizeFunc = NULL);
 
 	/// CPPONLY
 	mating(const mating & rhs)
-		: m_numOffspring(rhs.m_numOffspring),
-		m_numOffspringFunc(rhs.m_numOffspringFunc),
-		m_maxNumOffspring(rhs.m_maxNumOffspring),
-		m_mode(rhs.m_mode), m_firstOffspring(true),
-		m_subPopSize(rhs.m_subPopSize),
+		: m_subPopSize(rhs.m_subPopSize),
 		m_subPopSizeExpr(rhs.m_subPopSizeExpr),
 		m_subPopSizeFunc(rhs.m_subPopSizeFunc)
 	{
 		if (m_subPopSizeFunc != NULL)
 			Py_INCREF(m_subPopSizeFunc);
-		if (m_numOffspringFunc != NULL)
-			Py_INCREF(m_numOffspringFunc);
 	}
 
 
@@ -492,8 +548,6 @@ public:
 	{
 		if (m_subPopSizeFunc != NULL)
 			Py_DECREF(m_subPopSizeFunc);
-		if (m_numOffspringFunc != NULL)
-			Py_DECREF(m_numOffspringFunc);
 	}
 
 
@@ -528,48 +582,11 @@ public:
 	}
 
 
-	/// CPPONLY
-	bool fixedFamilySize();
-
-	/// CPPONLY the number of offspring of a genaration \c gen
-	/**
-	   This is called whenever a family size is needed.
-	   Its actual meaning depending on \c mode.
-	 */
-	ULONG numOffspring(int gen);
-
-	/// CPPONLY reset the number of offspring
-	/**
-	   This is used to tell a mating scheme that the current number
-	   of offspring need to be recaculated. e.g., when a new generation
-	   starts and mode=MATE_numOffspring and numOffspringFunc is given.
-	 */
-	void resetNumOffspring()
-	{
-		m_firstOffspring =  true;
-	}
-
-
 public:
 	/// CPPONLY dealing with the \c pop/subPop size change, copy of structure etc.
 	void prepareScratchPop(population & pop, population & scratch);
 
 protected:
-	/// number of offspring each mate
-	double m_numOffspring;
-
-	/// number of offspring func
-	PyObject * m_numOffspringFunc;
-
-	///
-	UINT m_maxNumOffspring;
-
-	/// whether or not call m_numOffspringFunc each time
-	UINT m_mode;
-
-	///
-	bool m_firstOffspring;
-
 	/// new subpopulation size. mostly used to 'keep' subPopsize
 	/// after migration.
 	vectorlu m_subPopSize;
@@ -674,10 +691,8 @@ public:
 	                  vectorlu newSubPopSize = vectorlu(),
 	                  string newSubPopSizeExpr = "",
 	                  PyObject * newSubPopSizeFunc = NULL)
-		: mating(numOffspring,
-		         numOffspringFunc, maxNumOffspring, mode,
-		         newSubPopSize, newSubPopSizeExpr,
-		         newSubPopSizeFunc)
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+		m_numOffGen(numOffspring, numOffspringFunc, maxNumOffspring, mode)
 	{
 	}
 
@@ -729,6 +744,8 @@ protected:
 	///
 	vectori m_famSize;
 #endif
+
+	numOffspringGenerator m_numOffGen;
 };
 
 /// a mating scheme of basic sexually random mating
@@ -758,9 +775,9 @@ public:
 	             PyObject * newSubPopSizeFunc = NULL,
 	             string newSubPopSizeExpr = "",
 	             bool contWhenUniSex = true)
-		: mating(numOffspring,
-		         numOffspringFunc, maxNumOffspring, mode,
-		         newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+		m_numOffGen(numOffspring,
+		            numOffspringFunc, maxNumOffspring, mode),
 		m_contWhenUniSex(contWhenUniSex)
 	{
 	}
@@ -816,6 +833,8 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 protected:
+	numOffspringGenerator m_numOffGen;
+
 	/// if no other sex exist in a subpopulation,
 	/// same sex mating will occur if m_contWhenUniSex is set.
 	/// otherwise, an exception will be thrown.
@@ -1176,6 +1195,7 @@ public:
 	/// CPPONLY
 	pyMating(const pyMating & rhs) :
 		mating(rhs),
+		m_numOffGen(rhs.m_numOffGen),
 		m_parentChoosers(rhs.m_parentChoosers),
 		m_pyChoosers(rhs.m_pyChoosers),
 		m_offspringGenerators(rhs.m_offspringGenerators),
@@ -1221,6 +1241,8 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 private:
+	numOffspringGenerator m_numOffGen;
+
 	vectori m_parentChoosers;
 
 	vectorobj m_pyChoosers;
