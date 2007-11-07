@@ -230,8 +230,7 @@ private:
 	Weightedsampler m_malesampler;
 	Weightedsampler m_femalesampler;
 
-	/// starting individual of the whole population
-	/// because m_maleIndex is relative to the whole population
+	/// starting individual of this subpopulaiton
 	population::IndIterator m_begin;
 };
 
