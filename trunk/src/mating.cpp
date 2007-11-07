@@ -24,6 +24,7 @@
 #include "mating.h"
 
 namespace simuPOP {
+
 offspringGenerator::offspringGenerator(const population & pop,
                                        vector<baseOperator *> & ops)
 	: m_ops(ops)
@@ -288,7 +289,7 @@ randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
 	ULONG spSize = pop.subPopSize(sp);
 
 	// m_begin is relative to the beginning of the whole population.
-	m_begin = pop.indBegin();
+	m_begin = pop.indBegin(sp);
 
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -313,8 +314,10 @@ randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
 	m_numMale = 0;
 	m_numFemale = 0;
 
-	size_t idx = pop.subPopBegin(sp);
-	for (population::IndIterator ind = pop.indBegin(sp), indEnd = pop.indEnd(sp); ind < indEnd; ind++) {
+	size_t idx = 0;
+	population::IndIterator ind = pop.indBegin(sp);
+	population::IndIterator indEnd = pop.indEnd(sp)
+	for (; ind < indEnd; ind++) {
 		if (ind->sex() == Male) {
 			m_maleIndex[m_numMale] = idx;
 			if (m_selection)
