@@ -129,7 +129,7 @@ public:
 	/**
 	 \test src_individual.log Individual member functions
 	 */
-	individual() : m_flags(0), m_subPopID(0)
+	individual() : m_flags(m_flagVisible), m_subPopID(0)
 	{
 	}
 
@@ -141,7 +141,7 @@ public:
 		m_genoPtr(ind.m_genoPtr),
 		m_infoPtr(ind.m_infoPtr)
 	{
-		setShallowCopied(true);
+		setShallowCopied(true);		
 	}
 
 
@@ -410,7 +410,6 @@ public:
 		return affected() ? 'A' : 'U';
 	}
 
-
 	/// set affection status
 	void setAffected(bool affected)
 	{
@@ -420,6 +419,18 @@ public:
 			RESETFLAG(m_flags, m_flagAffected);
 	}
 
+	bool visible() const
+	{
+		return ISSETFLAG(m_flags, m_flagVisible);
+	}
+
+	void setVisible(bool visible)
+	{
+		if (affected)
+			SETFLAG(m_flags, m_flagVisible);
+		else
+			RESETFLAG(m_flags, m_flagVisible);
+	}
 
 	/// return the ID of the subpopulation to which this individual blongs
 	/**
