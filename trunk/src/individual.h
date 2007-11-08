@@ -118,6 +118,10 @@ protected:
 	/// if this individual is the result of a shoallow copy
 	static const size_t m_flagShallowCopied   = 4;
 
+	/// if this individual is visible. This is used
+	/// to implement virtual subpopulations
+	static const size_t m_flagVisible          = 8;
+
 public:
 	///  @name constructor, destructor etc
 	//@{

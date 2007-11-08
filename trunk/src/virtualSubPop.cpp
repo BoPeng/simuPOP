@@ -26,26 +26,26 @@
 namespace simuPOP {
 
 
-duplicateSplitter::duplicateSplitter(vectori const & offWeights)
-	: virtualSplitter(offWeights)
+duplicateVirtualSubPops::duplicateVirtualSubPops(vectori const & offWeights)
+	: virtualSubPops(offWeights)
 {
 }
 
 
-infoSplitter::infoSplitter(vectori const & offWeights)
-	: virtualSplitter(offWeights)
+infoVirtualSubPops::infoVirtualSubPops(vectori const & offWeights)
+	: virtualSubPops(offWeights)
 {
 }
 
 
-proportionSplitter::proportionSplitter(vectori const & offWeights)
-	: virtualSplitter(offWeights)
+proportionVirtualSubPops::proportionVirtualSubPops(vectori const & offWeights)
+	: virtualSubPops(offWeights)
 {
 }
 
 
-rangeSplitter::rangeSplitter(vectori const & offWeights)
-	: virtualSplitter(offWeights)
+rangeVirtualSubPops::rangeVirtualSubPops(vectori const & offWeights)
+	: virtualSubPops(offWeights)
 {
 }
 
