@@ -388,8 +388,8 @@ private:
 class pyParentsChooser : public parentChooser
 {
 public:
-	pyParentsChooser(population & pop, UINT realSP,
-	                 UINT sp, UINT ssp, PyObject * parentsGenerator);
+	pyParentsChooser(population & pop, UINT sp,
+	                 PyObject * parentsGenerator);
 
 	/// destructor
 	~pyParentsChooser()
@@ -1354,7 +1354,6 @@ public:
 	pyMating(vectori const & parentChoosers,
 	         vectorobj const & pyChoosers,
 	         vector<offspringGenerator *> const & offspringGenerators,
-	         vector<virtualSplitter *> const & splitters,
 	         vectorlu newSubPopSize = vectorlu(),
 	         string newSubPopSizeExpr = "",
 	         PyObject * newSubPopSizeFunc = NULL
@@ -1376,8 +1375,7 @@ public:
 		mating(rhs),
 		m_parentChoosers(rhs.m_parentChoosers),
 		m_pyChoosers(rhs.m_pyChoosers),
-		m_offspringGenerators(rhs.m_offspringGenerators),
-		m_splitters(rhs.m_splitters)
+		m_offspringGenerators(rhs.m_offspringGenerators)
 	{
 		vectorobj::iterator it = m_pyChoosers.begin();
 		vectorobj::iterator it_end = m_pyChoosers.end();
@@ -1424,8 +1422,6 @@ private:
 	vectorobj m_pyChoosers;
 
 	vector<offspringGenerator *> m_offspringGenerators;
-
-	vector<virtualSplitter *> m_splitters;
 
 #ifndef OPTIMIZED
 	///
