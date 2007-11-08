@@ -159,7 +159,8 @@ public:
 	{
 		m_numParents = numParents;
 	}
-	
+
+
 	int numParents() const
 	{
 		return m_numParents;
@@ -387,7 +388,8 @@ private:
 class pyParentsChooser : public parentChooser
 {
 public:
-	pyParentsChooser(population & pop, size_t sp, PyObject * parentsGenerator);
+	pyParentsChooser(population & pop, UINT realSP,
+	                 UINT sp, UINT ssp, PyObject * parentsGenerator);
 
 	/// destructor
 	~pyParentsChooser()
@@ -447,15 +449,51 @@ public:
 	}
 
 
-	virtual virtualSplitter * clone() const = 0;
+	virtual virtualSplitter * clone() const { return NULL; }
 
 	virtual ~virtualSplitter()
 	{
 	}
 
 
+	// number of virtual subpops of subpopulation sp
+	virtual UINT numVirtualSubPops(UINT sp) { return 0; }
+
+	// prepare a subpopulation ssp, and return a real SP
+	// id of the virtual subpopulation. The population
+	// may be manipulated.
+	virtual UINT prepareVirtualSubPop(population & pop, population & scratch,
+	                                  UINT sp, UINT ssp) { return 0; }
+
+	// because prepareVirtualSubPop may manipulate subpopulation
+	// this function removes such manipulations. At least, there
+	// should be no subpopulation exist in this subpopulation.
+	virtual void restoreSubPop(population & pop, population & scratch,
+	                           UINT sp) { }
+
 private:
 	vectori m_offWeights;
+};
+
+
+/** This splitter does nothing. It treats the whole
+   subpopulation as the only virtual subpopulation.
+ */
+class nullSplitter : public virtualSplitter
+{
+public:
+	nullSplitter() : virtualSplitter(vectori(1, 1)) { }
+
+	UINT numVirtualSubPops()
+	{
+		return 1;
+	}
+
+
+	// no need to prepare anything.
+	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
+	{ return 0; }
+
 };
 
 
