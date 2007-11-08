@@ -73,17 +73,17 @@ namespace simuPOP {
    Note that if any parental virtual subpopulation is empty, its corresponding
    entry in the offspring sub-subpopulations is removed.
  */
-class virtualSplitter
+class virtualSubPops
 {
 public:
-	virtualSplitter(vectori const & offWeights) : m_offWeights(offWeights)
+	virtualSubPops(vectori const & offWeights) : m_offWeights(offWeights)
 	{
 	}
 
 
-	virtual virtualSplitter * clone() const = 0;
+	virtual virtualSubPops * clone() const = 0;
 
-	virtual ~virtualSplitter()
+	virtual ~virtualSubPops()
 	{
 	}
 
@@ -111,16 +111,16 @@ private:
 /** This splitter does nothing. It treats the whole
    subpopulation as the only virtual subpopulation.
  */
-class nullSplitter : public virtualSplitter
+class nullVirtualSubPops : public virtualSubPops
 {
 public:
-	nullSplitter() : virtualSplitter(vectori(1, 1))
+	nullVirtualSubPops() : virtualSubPops(vectori(1, 1))
 	{
 	}
 
-	virtualSplitter * clone() const
+	virtualSubPops * clone() const
 	{
-		return new nullSplitter(*this);
+		return new nullVirtualSubPops(*this);
 	}
 
 	UINT numVirtualSubPops(UINT sp)
@@ -142,7 +142,7 @@ public:
 };
 
 
-/** duplicateSplitter does not split the parental subpopulation in any way.
+/** duplicateVirtualSubPops does not split the parental subpopulation in any way.
    It presents the specified subpopulation as several subpopulations to the
    mating system, thus allow several different mating schemes to be appllied to the
    same subpopulation. For example, a selfing-mating scheme can be applied to
@@ -150,14 +150,14 @@ public:
    random-mating scheme can be used to generate the rest of the offspring
    subpopulation.
  */
-class duplicateSplitter : public virtualSplitter
+class duplicateVirtualSubPops : public virtualSubPops
 {
 public:
-	duplicateSplitter(vectori const & offWeights);
+	duplicateVirtualSubPops(vectori const & offWeights);
 
-	virtualSplitter * clone() const
+	virtualSubPops * clone() const
 	{
-		return new duplicateSplitter(*this);
+		return new duplicateVirtualSubPops(*this);
 	}
 
 	UINT numVirtualSubPops(UINT sp)
@@ -184,14 +184,14 @@ public:
    A cutoff vector of length \c n is given to split the subpopulation into
  \c n+1 distinct virtual subpopulations.
  */
-class infoSplitter : public virtualSplitter
+class infoVirtualSubPops : public virtualSubPops
 {
 public:
-	infoSplitter(vectori const & offWeights);
+	infoVirtualSubPops(vectori const & offWeights);
 
-	virtualSplitter * clone() const
+	virtualSubPops * clone() const
 	{
-		return new infoSplitter(*this);
+		return new infoVirtualSubPops(*this);
 	}
 
 
@@ -215,14 +215,14 @@ public:
 };
 
 /** Split the population according to a proportion */
-class proportionSplitter : public virtualSplitter
+class proportionVirtualSubPops : public virtualSubPops
 {
 public:
-	proportionSplitter(vectori const & offWeights);
+	proportionVirtualSubPops(vectori const & offWeights);
 
-	virtualSplitter * clone() const
+	virtualSubPops * clone() const
 	{
-		return new proportionSplitter(*this);
+		return new proportionVirtualSubPops(*this);
 	}
 
 
@@ -243,17 +243,17 @@ public:
 	}
 };
 
-/** Split the population using given ranges. The duplicateSplitter
+/** Split the population using given ranges. The duplicateVirtualSubPops
    can be a special case of this virtual splitter.
  */
-class rangeSplitter : public virtualSplitter
+class rangeVirtualSubPops : public virtualSubPops
 {
 public:
-	rangeSplitter(vectori const & offWeights);
+	rangeVirtualSubPops(vectori const & offWeights);
 
-	virtualSplitter * clone() const
+	virtualSubPops * clone() const
 	{
-		return new rangeSplitter(*this);
+		return new rangeVirtualSubPops(*this);
 	}
 
 

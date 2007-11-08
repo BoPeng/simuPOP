@@ -33,6 +33,7 @@
 #include "genoStru.h"
 #include "individual.h"
 #include "population.h"
+#include "virtualSubPop.h"
 #include "slave.h"
 #include "operator.h"
 #include "simulator.h"
@@ -242,6 +243,7 @@ namespace std
 %include "genoStru.h"
 %include "individual.h"
 %include "population.h"
+%include "virtualSubPop.h"
 %include "slave.h"
 %include "operator.h"
 
@@ -258,7 +260,6 @@ namespace std
 {
     %template(vectorobj)    vector<PyObject*>;
     %template(vectorop)     vector<simuPOP::baseOperator * >;
-    %template()             vector<simuPOP::virtualSplitter * >;
 }
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////
