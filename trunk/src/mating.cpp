@@ -1303,11 +1303,26 @@ pyMating::pyMating(vectori const & parentChoosers,
 {
 	vectorobj::const_iterator it = pyChoosers.begin();
 	vectorobj::const_iterator it_end = pyChoosers.end();
-
+#ifndef OPTIMIZED
+	// count the number of MATE_PyParentsChooser
+	UINT pyCount = 0;
+	vectori::const_iterator pit = parentChoosers.begin();
+	vectori::const_iterator pit_end = parentChoosers.end();
+	for (; pit != pit_end; ++pit)
+		if (*pit == MATE_PyParentsChooser)
+			pyCount ++;
+	DBG_FAILIF(pit_end != pit + 1 && pyCount != pit_end - pit, ValueError,
+		"Please specify one python parent chooser, or one chooser for each MATE_PyParentsChooser");
+#endif
 	for (; it != it_end; ++it) {
 		m_pyChoosers.push_back(*it);
 		Py_XINCREF(*it);
 	}
+
+	if (m_parentChoosers.empty())
+		m_parentChoosers.push_back(MATE_RandomParentsChooser);
+	
+
 	vector<virtualSplitter *>::const_iterator sit = splitters.begin();
 	vector<virtualSplitter *>::const_iterator sit_end = splitters.end();
 	for (; sit != sit_end; ++sit)
@@ -1320,6 +1335,9 @@ pyMating::pyMating(vectori const & parentChoosers,
 	vector<offspringGenerator *>::const_iterator oit_end = offspringGenerators.end();
 	for (; oit != oit_end; ++oit)
 		m_offspringGenerators.push_back((*oit)->clone());
+
+	if (m_offspringGenerators.empty())
+		m_offspringGenerators.push_back(new mendelianOffspringGenerator());	
 }
 
 

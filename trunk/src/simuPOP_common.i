@@ -708,8 +708,8 @@ del controlledRandomMating.__init__
 controlledRandomMating.__init__ = new_controlledRandomMating
 
 
-def new_pyMating(self, parentChooser=None, parentChoosers=[MATE_RandomParentsChooser],
-    offspringGenerator=None, offspringGenerators=[MATE_MendelianOffspringGenerator],
+def new_pyMating(self, parentChooser=None, parentChoosers=[],
+    offspringGenerator=None, offspringGenerators=[],
     splitter=None, splitters=[], *args, **kwargs):
     # paremeter parentChoosers
     if parentChooser is not None:

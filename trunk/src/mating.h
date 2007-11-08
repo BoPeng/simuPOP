@@ -220,10 +220,10 @@ public:
 class mendelianOffspringGenerator : public offspringGenerator
 {
 public:
-	mendelianOffspringGenerator(double numOffspring,
-	                            PyObject * numOffspringFunc,
-	                            UINT maxNumOffspring,
-	                            UINT mode
+	mendelianOffspringGenerator(double numOffspring=1,
+	                            PyObject * numOffspringFunc=NULL,
+	                            UINT maxNumOffspring=1,
+	                            UINT mode=MATE_NumOffspring
 	                            ) :
 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode),
 		m_bt(rng())
@@ -449,7 +449,7 @@ public:
 	}
 
 
-	virtual virtualSplitter * clone() const { return NULL; }
+	virtual virtualSplitter * clone() const = 0;
 
 	virtual ~virtualSplitter()
 	{
@@ -457,19 +457,19 @@ public:
 
 
 	// number of virtual subpops of subpopulation sp
-	virtual UINT numVirtualSubPops(UINT sp) { return 0; }
+	virtual UINT numVirtualSubPops(UINT sp) = 0;
 
 	// prepare a subpopulation ssp, and return a real SP
 	// id of the virtual subpopulation. The population
 	// may be manipulated.
 	virtual UINT prepareVirtualSubPop(population & pop, population & scratch,
-	                                  UINT sp, UINT ssp) { return 0; }
+	                                  UINT sp, UINT ssp) = 0;
 
 	// because prepareVirtualSubPop may manipulate subpopulation
 	// this function removes such manipulations. At least, there
 	// should be no subpopulation exist in this subpopulation.
 	virtual void restoreSubPop(population & pop, population & scratch,
-	                           UINT sp) { }
+	                           UINT sp) = 0;
 
 private:
 	vectori m_offWeights;
@@ -482,9 +482,16 @@ private:
 class nullSplitter : public virtualSplitter
 {
 public:
-	nullSplitter() : virtualSplitter(vectori(1, 1)) { }
+	nullSplitter() : virtualSplitter(vectori(1, 1))
+	{
+	}
 
-	UINT numVirtualSubPops()
+	virtualSplitter * clone() const
+	{
+		return new nullSplitter(*this);
+	}
+
+	UINT numVirtualSubPops(UINT sp)
 	{
 		return 1;
 	}
@@ -492,8 +499,14 @@ public:
 
 	// no need to prepare anything.
 	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
-	{ return 0; }
+	{
+		return sp;
+	}
 
+	void restoreSubPop(population & pop, population & scratch,
+	                           UINT sp)
+	{
+	}
 };
 
 
@@ -515,6 +528,22 @@ public:
 		return new duplicateSplitter(*this);
 	}
 
+	UINT numVirtualSubPops(UINT sp)
+	{
+		return 1;
+	}
+
+	// no need to prepare anything.
+	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
+	{
+		return sp;
+	}
+
+	void restoreSubPop(population & pop, population & scratch,
+	                           UINT sp)
+	{
+	}
+
 
 };
 
@@ -534,6 +563,23 @@ public:
 	}
 
 
+	UINT numVirtualSubPops(UINT sp)
+	{
+		return 1;
+	}
+
+	// no need to prepare anything.
+	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
+	{
+		return sp;
+	}
+
+	void restoreSubPop(population & pop, population & scratch,
+	                           UINT sp)
+	{
+	}
+
+
 };
 
 /** Split the population according to a proportion */
@@ -548,6 +594,21 @@ public:
 	}
 
 
+	UINT numVirtualSubPops(UINT sp)
+	{
+		return 1;
+	}
+
+	// no need to prepare anything.
+	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
+	{
+		return sp;
+	}
+
+	void restoreSubPop(population & pop, population & scratch,
+	                           UINT sp)
+	{
+	}
 };
 
 /** Split the population using given ranges. The duplicateSplitter
@@ -564,6 +625,21 @@ public:
 	}
 
 
+	UINT numVirtualSubPops(UINT sp)
+	{
+		return 1;
+	}
+
+	// no need to prepare anything.
+	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
+	{
+		return sp;
+	}
+
+	void restoreSubPop(population & pop, population & scratch,
+	                           UINT sp)
+	{
+	}
 };
 
 
