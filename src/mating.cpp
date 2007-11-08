@@ -65,10 +65,10 @@ ULONG numOffspringGenerator::numOffspring(int gen)
 	case MATE_NumOffspring:
 		return static_cast<UINT>(m_numOffspring);
 	case MATE_PyNumOffspring: {
-		int numOS;
-		PyCallFunc(m_numOffspringFunc, "(i)", gen, numOS, PyObj_As_Int);
-		DBG_FAILIF(numOS < 1, ValueError, "Need at least one offspring.");
-		return numOS;
+		int numOff;
+		PyCallFunc(m_numOffspringFunc, "(i)", gen, numOff, PyObj_As_Int);
+		DBG_FAILIF(numOff < 1, ValueError, "Need at least one offspring.");
+		return numOff;
 	}
 	case MATE_GeometricDistribution:
 		return rng().randGeometric(m_numOffspring);
@@ -93,21 +93,33 @@ ULONG numOffspringGenerator::numOffspring(int gen)
 }
 
 
-offspringGenerator::offspringGenerator(const population & pop,
-                                       vector<baseOperator *> & ops)
-	: m_ops(ops)
+offspringGenerator::offspringGenerator(double numOffspring,
+                                       PyObject * numOffspringFunc,
+                                       UINT maxNumOffspring,
+                                       UINT mode):
+	m_numOffGen(numOffspring, numOffspringFunc, maxNumOffspring, mode),
+	m_formOffGenotype(false),
+	m_numParents(0),
+	m_initialized(false)
+{
+}
+
+
+void offspringGenerator::initialize(const population & pop, vector<baseOperator *> const & ops)
 {
 #ifndef OPTIMIZED
 	m_genoStruIdx = pop.genoStruIdx();
 #endif
-	m_formOffGenotype = checkFormOffspringGenotype();
+	m_formOffGenotype = checkFormOffspringGenotype(ops);
+	m_initialized = true;
 }
 
 
-bool offspringGenerator::checkFormOffspringGenotype()
+bool offspringGenerator::checkFormOffspringGenotype(vector<baseOperator *> const & ops)
 {
-	for (vector<baseOperator *>::const_iterator iop = m_ops.begin();
-	     iop != m_ops.end(); ++iop) {
+	vector<baseOperator *>::const_iterator iop = ops.begin();
+	vector<baseOperator *>::const_iterator iop_end = ops.end();
+	for (; iop != ops.end(); ++iop) {
 		if ((*iop)->formOffGenotype())
 			return false;
 	}
@@ -115,9 +127,14 @@ bool offspringGenerator::checkFormOffspringGenotype()
 }
 
 
-void cloneOffspringGenerator::generateOffspring(population & pop, individual * parent, individual *, UINT numOff,
-                                                population::IndIterator & it)
+UINT cloneOffspringGenerator::generateOffspring(population & pop, individual * parent, individual *,
+                                                population::IndIterator & it,
+                                                population::IndIterator & itEnd,
+                                                vector<baseOperator *> & ops)
 {
+	DBG_ASSERT(initialized(), ValueError,
+	    "Offspring is not initialized before used to generate offspring");
+
 	// if population has changed.
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
 	    "Offspring generator is used for two different types of populations");
@@ -125,6 +142,9 @@ void cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 	// generate numOff offspring per mating, or until it  reaches offEnd
 	UINT count = 0;
 	bool accept = true;
+	UINT numOff = m_numOffGen.numOffspring(pop.gen());
+	if (it + numOff > itEnd)
+		numOff = itEnd - it;
 	while (count < numOff) {
 		if (m_formOffGenotype)
 			// use deep copy!!!!!!!
@@ -132,8 +152,8 @@ void cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 
 		accept = true;
 		// apply during mating operators
-		vector<baseOperator *>::iterator iop = m_ops.begin();
-		vector<baseOperator *>::iterator iopEnd = m_ops.end();
+		vector<baseOperator *>::iterator iop = ops.begin();
+		vector<baseOperator *>::iterator iopEnd = ops.end();
 		for (; iop != iopEnd;  ++iop) {
 			try {
 				// During mating operator might reject this offspring.
@@ -152,13 +172,14 @@ void cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 			count++;
 		}
 	}
+	return numOff;
 }
 
 
-mendelianOffspringGenerator::mendelianOffspringGenerator(const population & pop,
-                                                         vector<baseOperator *> & ops)
-	: offspringGenerator(pop, ops), m_bt(rng())
+void mendelianOffspringGenerator::initialize(const population & pop,
+                                             vector<baseOperator *> const & ops)
 {
+	offspringGenerator::initialize(pop, ops);
 	m_hasSexChrom = pop.sexChrom();
 	if (m_formOffGenotype) {
 		vectorf prob(2 * pop.numChrom(), 0.5);
@@ -239,9 +260,14 @@ void mendelianOffspringGenerator::formOffspringGenotype(individual * parent,
 }
 
 
-void mendelianOffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
-                                                    UINT numOff, population::IndIterator & it)
+UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
+                                                    population::IndIterator & it,
+                                                    population::IndIterator & itEnd,
+                                                    vector<baseOperator *> & ops)
 {
+	DBG_ASSERT(initialized(), ValueError,
+	    "Offspring is not initialized before used to generate offspring");
+
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
 	    "Offspring generator is used for two different types of populations");
 
@@ -249,6 +275,9 @@ void mendelianOffspringGenerator::generateOffspring(population & pop, individual
 	UINT count = 0;
 	bool accept = true;
 
+	UINT numOff = m_numOffGen.numOffspring(pop.gen());
+	if (it + numOff > itEnd)
+		numOff = itEnd - it;
 	while (count < numOff) {
 		if (m_formOffGenotype) {
 			// m_bt 's width is 2*numChrom() and can be used for
@@ -260,7 +289,9 @@ void mendelianOffspringGenerator::generateOffspring(population & pop, individual
 
 		accept = true;
 		// apply all during mating operators
-		for (vector<baseOperator *>::iterator iop = m_ops.begin(), iopEnd = m_ops.end(); iop != iopEnd;  ++iop) {
+		vector<baseOperator *>::iterator iop = ops.begin();
+		vector<baseOperator *>::iterator iopEnd = ops.end();
+		for (; iop != iopEnd; ++iop) {
 			try {
 				// During mating operator might reject this offspring.
 				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {
@@ -277,12 +308,19 @@ void mendelianOffspringGenerator::generateOffspring(population & pop, individual
 			count++;
 		}
 	}                                                                                         // one offspring is successfully generated
+	return numOff;
 }
 
 
-void selfingOffspringGenerator::generateOffspring(population & pop, individual * parent,
-                                                  individual *, UINT numOff, population::IndIterator & it)
+UINT selfingOffspringGenerator::generateOffspring(population & pop, individual * parent,
+                                                  individual *,
+                                                  population::IndIterator & it,
+                                                  population::IndIterator & itEnd,
+                                                  vector<baseOperator *> & ops)
 {
+	DBG_ASSERT(initialized(), ValueError,
+	    "Offspring is not initialized before used to generate offspring");
+
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
 	    "Offspring generator is used for two different types of populations");
 
@@ -290,6 +328,9 @@ void selfingOffspringGenerator::generateOffspring(population & pop, individual *
 	UINT count = 0;
 	bool accept = true;
 
+	UINT numOff = m_numOffGen.numOffspring(pop.gen());
+	if (it + numOff > itEnd)
+		numOff = itEnd - it;
 	while (count < numOff) {
 		if (m_formOffGenotype) {
 			// m_bt 's width is 2*numChrom() and can be used for
@@ -302,7 +343,9 @@ void selfingOffspringGenerator::generateOffspring(population & pop, individual *
 
 		accept = true;
 		// apply all during mating operators
-		for (vector<baseOperator *>::iterator iop = m_ops.begin(), iopEnd = m_ops.end(); iop != iopEnd;  ++iop) {
+		vector<baseOperator *>::iterator iop = ops.begin();
+		vector<baseOperator *>::iterator iopEnd = ops.end();
+		for (; iop != iopEnd; ++iop) {
 			try {
 				// During mating operator might reject this offspring.
 				if (!(*iop)->applyDuringMating(pop, it, parent, NULL)) {
@@ -319,6 +362,7 @@ void selfingOffspringGenerator::generateOffspring(population & pop, individual *
 			count++;
 		}
 	}                                                                                         // one offspring is successfully generated
+	return numOff;
 }
 
 
@@ -451,9 +495,9 @@ pyParentsChooser::pyParentsChooser(population & pop, size_t sp, PyObject * pc)
 	throw SystemError("Your Python version does not have good support for generator"
 	    " so this python parent chooser can not be used.");
 #else
- #ifndef OPTIMIZED
+#  ifndef OPTIMIZED
 	m_size = pop.subPopSize(sp);
- #endif
+#  endif
 	m_begin = pop.indBegin(sp);
 
 	PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
@@ -515,6 +559,8 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 	} else
 		DBG_ASSERT(false, ValueError,
 		    "Invalid type of returned parent index(es)");
+	// this should not be reached
+	return parentChooser::individualPair(NULL, NULL);
 }
 
 
@@ -614,7 +660,9 @@ bool noMating::mate(population & pop, population & scratch, vector<baseOperator 
 	// apply during mating operators
 	if (!ops.empty() ) {
 		for (population::IndIterator it = pop.indBegin(), itEnd = pop.indEnd(); it != itEnd;  ++it) {
-			for (vector<baseOperator *>::iterator iop = ops.begin(), iopEnd = ops.end(); iop != iopEnd;  ++iop) {
+			vector<baseOperator *>::iterator iop = ops.begin();
+			vector<baseOperator *>::iterator iopEnd = ops.end();
+			for (; iop != iopEnd; ++iop) {
 				(*iop)->applyDuringMating(pop, it, NULL, NULL);
 			}                                                                         // all during-mating operators
 		}
@@ -631,7 +679,8 @@ bool binomialSelection::mate(population & pop, population & scratch, vector<base
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
-	cloneOffspringGenerator og(pop, ops);
+	if (!m_offGenerator.initialized())
+		m_offGenerator.initialize(pop, ops);
 
 	// for each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
@@ -644,18 +693,13 @@ bool binomialSelection::mate(population & pop, population & scratch, vector<base
 		// choose a parent and genereate m_numOffspring offspring
 		population::IndIterator it = scratch.indBegin(sp);
 		population::IndIterator itEnd = scratch.indEnd(sp);
-		UINT numOS;
+		UINT numOff;
 		while (it != itEnd) {
 			individual * parent = pc.chooseParent();
-
-			numOS = m_numOffGen.numOffspring(pop.gen());
-			// avoid warning assocaited with 'numOS > itEnd - it'
-			if (it + numOS > itEnd)
-				numOS = itEnd - it;
-			// record family size, for debug reasons.
-			DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
 			//
-			og.generateOffspring(pop, parent, NULL, numOS, it);
+			numOff = m_offGenerator.generateOffspring(pop, parent, NULL, it, itEnd, ops);
+			// record family size, for debug reasons.
+			DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 		}                                                                                           // all offspring
 	}                                                                                               // all subpopulation.
 
@@ -672,7 +716,8 @@ bool randomMating::mate(population & pop, population & scratch, vector<baseOpera
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
-	mendelianOffspringGenerator og(pop, ops);
+	if (!m_offspringGenerator.initialized())
+		m_offspringGenerator.initialize(pop, ops);
 
 	/// random mating happens within each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
@@ -691,18 +736,13 @@ bool randomMating::mate(population & pop, population & scratch, vector<baseOpera
 		// generate scratch.subPopSize(sp) individuals.
 		population::IndIterator it = scratch.indBegin(sp);
 		population::IndIterator itEnd = scratch.indEnd(sp);
-		UINT numOS;
+		UINT numOff;
 		while (it != itEnd) {
 			parentChooser::individualPair const parents = pc.chooseParents();
-
-			// record family size (this may be wrong for the last family)
-			numOS = m_numOffGen.numOffspring(pop.gen());
-			if (it + numOS > itEnd)
-				numOS = itEnd - it;
-			// record family size (this may be wrong for the last family)
-			DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
 			//
-			og.generateOffspring(pop, parents.first, parents.second, numOS, it);
+			numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, itEnd, ops);
+			// record family size (this may be wrong for the last family)
+			DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 		}
 	}                                                                                         // each subPop
 
@@ -984,9 +1024,9 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 	DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
 
 	/// whether or not use stack.
-	bool useStack = m_numOffGen.fixedFamilySize();
-
-	mendelianOffspringGenerator og(pop, ops);
+	if (!m_offspringGenerator.initialized())
+		m_offspringGenerator.initialize(pop, ops);
+	bool useStack = m_offspringGenerator.m_numOffGen.fixedFamilySize();
 	// use to go through offspring generation to count alleles
 	UINT totNumLoci = pop.totNumLoci();
 
@@ -1040,7 +1080,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 		population::IndIterator it = scratch.indBegin(sp);
 		population::IndIterator itEnd = scratch.indEnd(sp);
 		population::IndIterator itBegin = it;
-		UINT numOS = 0;
+		UINT numOff = 0;
 		/// if mor ethan noAAattempt times, no pure homo found,
 		/// accept non-homo cases.
 		int AAattempt = 200;
@@ -1068,13 +1108,9 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			// use stage 1, stage 2 as described in the paper
 
 			itBegin = it;
-			numOS = m_numOffGen.numOffspring(pop.gen());
-			// note that this is still valid in stack stage
-			if (it + numOS > itEnd)
-				numOS = itEnd - it;
 			// generate numOffspring offspring per mating
 			// it moves forward
-			og.generateOffspring(pop, parents.first, parents.second, numOS, it);
+			numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, itEnd, ops);
 
 			// count alleles in this family
 			// count number of alleles in the family.
@@ -1103,7 +1139,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			// this, to my surprise, does not improve performance.
 			for (i = 0; i < nLoci; ++i) {
 				GenoIterator ptr = itBegin->genoBegin() + m_loci[i];
-				for (size_t j = 0; j < numOS * pldy; ++j, ptr += totNumLoci) {
+				for (size_t j = 0; j < numOff * pldy; ++j, ptr += totNumLoci) {
 					if (*ptr == m_alleles[i]) {
 						na[i]++;
 						hasAff = true;
@@ -1252,22 +1288,16 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 
 pyMating::pyMating(vectori const & parentChoosers,
                    vectorobj const & pyChoosers,
-                   vectori const & offspringGenerators,
+                   vector<offspringGenerator *> const & offspringGenerators,
                    vector<virtualSplitter *> const & splitters,
-                   double numOffspring,
-                   PyObject * numOffspringFunc,
-                   UINT maxNumOffspring,
-                   UINT mode,
                    vectorlu newSubPopSize,
                    string newSubPopSizeExpr,
                    PyObject * newSubPopSizeFunc
                    )
 	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
-	m_numOffGen(numOffspring,
-	            numOffspringFunc, maxNumOffspring, mode),
 	m_parentChoosers(parentChoosers),
 	m_pyChoosers(),
-	m_offspringGenerators(offspringGenerators),
+	m_offspringGenerators(),
 	m_splitters()
 {
 	vectorobj::const_iterator it = pyChoosers.begin();
@@ -1281,6 +1311,11 @@ pyMating::pyMating(vectori const & parentChoosers,
 	vector<virtualSplitter *>::const_iterator sit_end = splitters.end();
 	for (; sit != sit_end; ++sit)
 		m_splitters.push_back((*sit)->clone());
+
+	vector<offspringGenerator *>::const_iterator oit = offspringGenerators.begin();
+	vector<offspringGenerator *>::const_iterator oit_end = offspringGenerators.end();
+	for (; oit != oit_end; ++oit)
+		m_offspringGenerators.push_back((*oit)->clone());
 }
 
 
@@ -1323,39 +1358,18 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 			throw ValueError("Unknown parentChoosers type");
 		}
 
-		int ogType = m_offspringGenerators.size() > 1 ? m_offspringGenerators[sp] : m_offspringGenerators[0];
-		offspringGenerator * og = NULL;
-		switch (ogType) {
-		case MATE_CloneOffspringGenerator:
-			og = new cloneOffspringGenerator(pop, ops);
-			// numParents can be 0 and its parents are
-			// determined dynamically
-			DBG_FAILIF(pc->numParents() == 2, ValueError,
-			    "Imcompatible parent chooser and offspring generator");
-			break;
-		case MATE_MendelianOffspringGenerator:
-			og = new mendelianOffspringGenerator(pop, ops);
-			// numParents can be 0 and its parents are
-			// determined dynamically
-			DBG_FAILIF(pc->numParents() == 1, ValueError,
-			    "Imcompatible parent chooser and offspring generator");
-			break;
-		case MATE_SelfingOffspringGenerator:
-			og = new selfingOffspringGenerator(pop, ops);
-			// numParents can be 0 and its parents are
-			// determined dynamically
-			DBG_FAILIF(pc->numParents() == 2, ValueError,
-			    "Imcompatible parent chooser and offspring generator");
-			break;
-		default:
-			throw ValueError("Unknown offspring generator type");
-		}
+		offspringGenerator * og = m_offspringGenerators.size() > 1 ? m_offspringGenerators[sp] : m_offspringGenerators[0];
 
+		DBG_FAILIF(pc->numParents() != 0 && pc->numParents() != og->numParents(),
+		    ValueError, "Imcompatible parent chooser and offspring generator");
+
+		if (!og->initialized())
+			og->initialize(pop, ops);
 
 		// generate scratch.subPopSize(sp) individuals.
 		population::IndIterator it = scratch.indBegin(sp);
 		population::IndIterator itEnd = scratch.indEnd(sp);
-		UINT numOS;
+		UINT numOff;
 		while (it != itEnd) {
 			individual * dad = NULL;
 			individual * mom = NULL;
@@ -1368,14 +1382,10 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 				mom = parents.second;
 			}
 
-			// record family size (this may be wrong for the last family)
-			numOS = m_numOffGen.numOffspring(pop.gen());
-			if (it + numOS > itEnd)
-				numOS = itEnd - it;
-			// record family size (this may be wrong for the last family)
-			DBG_DO(DBG_MATING, m_famSize.push_back(numOS));
 			//
-			og->generateOffspring(pop, dad, mom, numOS, it);
+			numOff = og->generateOffspring(pop, dad, mom, it, itEnd, ops);
+			// record family size (this may be wrong for the last family)
+			DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 		}
 		delete og;
 		delete pc;

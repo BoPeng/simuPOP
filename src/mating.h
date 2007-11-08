@@ -47,6 +47,20 @@ namespace simuPOP {
 class numOffspringGenerator
 {
 public:
+	// numOffspring: constant, numOffspringFunc: call each time before mating
+#define MATE_NumOffspring           1
+	// call numOffspringFunc each time during mating.
+#define MATE_NumOffspringEachFamily 2 // This name is obsolete
+#define MATE_PyNumOffspring         2
+	// numOffspring and numOffsrpingsFunc call each time before mating is
+	// the p for a geometric distribution
+#define MATE_GeometricDistribution   3
+#define MATE_PoissonDistribution     4
+#define MATE_BinomialDistribution    5
+	// uniform between numOffspring and maxNumOffspring
+#define MATE_UniformDistribution     6
+
+public:
 	numOffspringGenerator(double numOffspring, PyObject * numOffspringFunc, UINT maxNumOffspring,
 	                      UINT mode);
 
@@ -111,46 +125,93 @@ protected:
 class offspringGenerator
 {
 public:
-	/// create an offspring generator, save information from \c pop and \c ops to speed up the calls to \c generateOffspring
-	offspringGenerator(const population & pop, vector<baseOperator *> & ops);
+	offspringGenerator(double numOffspring,
+	                   PyObject * numOffspringFunc,
+	                   UINT maxNumOffspring,
+	                   UINT mode
+	                   );
+
+	/// create an offspring generator, save information from \c pop and \c ops to
+	/// speed up the calls to \c generateOffspring
+	virtual void initialize(const population & pop, vector<baseOperator *> const & ops);
 
 	/// generate \c numOff offspring
-	virtual void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
-	                               population::IndIterator & offBegin) = 0;
+	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
+	                               population::IndIterator & offBegin,
+	                               population::IndIterator & offEnd,
+	                               vector<baseOperator *> & ops) = 0;
+
 
 	virtual ~offspringGenerator()
 	{
 	}
 
 
+	virtual offspringGenerator * clone() const = 0;
+
+	bool initialized() const
+	{
+		return m_initialized;
+	}
+
+
+	void setNumParents(int numParents)
+	{
+		m_numParents = numParents;
+	}
+	
+	int numParents() const
+	{
+		return m_numParents;
+	}
+
+
+public:
+	numOffspringGenerator m_numOffGen;
+
 protected:
-	bool checkFormOffspringGenotype();
+	bool checkFormOffspringGenotype(vector<baseOperator *> const & ops);
 
 	/// see if who will generate offspring genotype
 	bool m_formOffGenotype;
 
-	/// cache during-mating operators
-	/// we do not cache pop since it may be changed during mating.
-	vector<baseOperator *> & m_ops;
-
 #ifndef OPTIMIZED
 	size_t m_genoStruIdx;
 #endif
+
+private:
+	// number of parents needed
+	int m_numParents;
+
+	bool m_initialized;
 };
 
 
 class cloneOffspringGenerator : public offspringGenerator
 {
 public:
-	cloneOffspringGenerator(const population & pop, vector<baseOperator *> & ops)
-		: offspringGenerator(pop, ops)
+	cloneOffspringGenerator(double numOffspring,
+	                        PyObject * numOffspringFunc,
+	                        UINT maxNumOffspring,
+	                        UINT mode
+	                        ) :
+		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode)
 	{
+		setNumParents(1);
+	}
+
+
+	offspringGenerator * clone() const
+	{
+		return new cloneOffspringGenerator(*this);
 	}
 
 
 	// the default method to produce offspring
-	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
-	                       population::IndIterator & offBegin);
+	UINT generateOffspring(population & pop, individual * dad, individual * mom,
+	                       population::IndIterator & offBegin,
+	                       population::IndIterator & offEnd,
+	                       vector<baseOperator *> & ops);
 
 };
 
@@ -158,15 +219,34 @@ public:
 class mendelianOffspringGenerator : public offspringGenerator
 {
 public:
-	mendelianOffspringGenerator(const population & pop,
-	                            vector<baseOperator *> & ops);
+	mendelianOffspringGenerator(double numOffspring,
+	                            PyObject * numOffspringFunc,
+	                            UINT maxNumOffspring,
+	                            UINT mode
+	                            ) :
+		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode),
+		m_bt(rng())
+	{
+		setNumParents(2);
+	}
 
-	void generateOffspring(population & pop, individual * dad, individual * mom, UINT numOff,
-	                       population::IndIterator & offBegin);
+
+	offspringGenerator * clone() const
+	{
+		return new mendelianOffspringGenerator(*this);
+	}
+
+
+	virtual void initialize(const population & pop, vector<baseOperator *> const & ops);
 
 	// the default method to produce offspring
 	void formOffspringGenotype(individual * parent,
 	                           population::IndIterator & it, int ploidy, bool setSex);
+
+	UINT generateOffspring(population & pop, individual * dad, individual * mom,
+	                       population::IndIterator & offBegin,
+	                       population::IndIterator & offEnd,
+	                       vector<baseOperator *> & ops);
 
 protected:
 	// use bernullitrisls with p=0.5 for free recombination
@@ -184,14 +264,27 @@ protected:
 class selfingOffspringGenerator : public mendelianOffspringGenerator
 {
 public:
-	selfingOffspringGenerator(const population & pop, vector<baseOperator *> & ops)
-		: mendelianOffspringGenerator(pop, ops)
+	selfingOffspringGenerator(double numOffspring,
+	                          PyObject * numOffspringFunc,
+	                          UINT maxNumOffspring,
+	                          UINT mode
+	                          )
+		: mendelianOffspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode)
 	{
+		setNumParents(2);
 	}
 
 
-	void generateOffspring(population & pop, individual * parent, individual *,
-	                       UINT numOff, population::IndIterator & offBegin);
+	offspringGenerator * clone() const
+	{
+		return new selfingOffspringGenerator(*this);
+	}
+
+
+	UINT generateOffspring(population & pop, individual * parent, individual *,
+	                       population::IndIterator & offBegin,
+	                       population::IndIterator & offEnd,
+	                       vector<baseOperator *> & ops);
 
 };
 
@@ -447,19 +540,6 @@ public:
  */
 class mating
 {
-public:
-	// numOffspring: constant, numOffspringFunc: call each time before mating
-#define MATE_NumOffspring           1
-	// call numOffspringFunc each time during mating.
-#define MATE_NumOffspringEachFamily 2 // This name is obsolete
-#define MATE_PyNumOffspring         2
-	// numOffspring and numOffsrpingsFunc call each time before mating is
-	// the p for a geometric distribution
-#define MATE_GeometricDistribution   3
-#define MATE_PoissonDistribution     4
-#define MATE_BinomialDistribution    5
-	// uniform between numOffspring and maxNumOffspring
-#define MATE_UniformDistribution     6
 
 public:
 	/// CPPONLY check if the mating type is compatible with the population structure
@@ -681,7 +761,7 @@ public:
 	                  string newSubPopSizeExpr = "",
 	                  PyObject * newSubPopSizeFunc = NULL)
 		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
-		m_numOffGen(numOffspring, numOffspringFunc, maxNumOffspring, mode)
+		m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode)
 	{
 	}
 
@@ -734,7 +814,7 @@ protected:
 	vectori m_famSize;
 #endif
 
-	numOffspringGenerator m_numOffGen;
+	cloneOffspringGenerator m_offGenerator;
 };
 
 /// a mating scheme of basic sexually random mating
@@ -765,8 +845,8 @@ public:
 	             string newSubPopSizeExpr = "",
 	             bool contWhenUniSex = true)
 		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
-		m_numOffGen(numOffspring,
-		            numOffspringFunc, maxNumOffspring, mode),
+		m_offspringGenerator(numOffspring,
+		                     numOffspringFunc, maxNumOffspring, mode),
 		m_contWhenUniSex(contWhenUniSex)
 	{
 	}
@@ -822,7 +902,7 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 protected:
-	numOffspringGenerator m_numOffGen;
+	mendelianOffspringGenerator m_offspringGenerator;
 
 	/// if no other sex exist in a subpopulation,
 	/// same sex mating will occur if m_contWhenUniSex is set.
@@ -1159,12 +1239,8 @@ public:
 	 */
 	pyMating(vectori const & parentChoosers,
 	         vectorobj const & pyChoosers,
-	         vectori const & offspringGenerators,
+	         vector<offspringGenerator *> const & offspringGenerators,
 	         vector<virtualSplitter *> const & splitters,
-	         double numOffspring = 1.,
-	         PyObject * numOffspringFunc = NULL,
-	         UINT maxNumOffspring = 0,
-	         UINT mode = MATE_NumOffspring,
 	         vectorlu newSubPopSize = vectorlu(),
 	         string newSubPopSizeExpr = "",
 	         PyObject * newSubPopSizeFunc = NULL
@@ -1184,7 +1260,6 @@ public:
 	/// CPPONLY
 	pyMating(const pyMating & rhs) :
 		mating(rhs),
-		m_numOffGen(rhs.m_numOffGen),
 		m_parentChoosers(rhs.m_parentChoosers),
 		m_pyChoosers(rhs.m_pyChoosers),
 		m_offspringGenerators(rhs.m_offspringGenerators),
@@ -1230,13 +1305,11 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 private:
-	numOffspringGenerator m_numOffGen;
-
 	vectori m_parentChoosers;
 
 	vectorobj m_pyChoosers;
 
-	vectori m_offspringGenerators;
+	vector<offspringGenerator *> m_offspringGenerators;
 
 	vector<virtualSplitter *> m_splitters;
 
