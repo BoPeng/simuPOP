@@ -426,7 +426,7 @@ public:
 
 	void setVisible(bool visible)
 	{
-		if (affected)
+		if (visible)
 			SETFLAG(m_flags, m_flagVisible);
 		else
 			RESETFLAG(m_flags, m_flagVisible);

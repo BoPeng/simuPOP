@@ -28,22 +28,50 @@
  \brief head file of class mating and its subclasses
  */
 #include "utility.h"
-// for trajectory simulation functions
 #include "simuPOP_cfg.h"
-#include "misc.h"
 #include "population.h"
-#include "operator.h"
 
-#include <string>
-#include <algorithm>
-using std::max_element;
-using std::string;
-
-#include <stack>
-using std::stack;
+#include <cmath>
 
 namespace simuPOP {
 
+/* this is a class that store subpopulation, or subpopulation+virtual subpop id.
+Basically, a integer number reprents a subpop, and a float number such as
+1.1 represents the second virtual subpop in the second subpopulation.
+*/
+class virtualSubPopID
+{
+	virtualSubPopID(int id) : m_subPop(id), m_virtualSubPop(MaxSubPopID)
+	{
+	}
+
+	virtualSubPopID(double id)
+	{
+		m_subPop = static_cast<SubPopID>(floor(id));
+		m_virtualSubPop = static_cast<SubPopID>(floor((id-m_subPop)*10));
+		DBG_ASSERT(fcmp_eq(id - m_subPop - 0.1*m_virtualSubPop, 0.), ValueError,
+			"Wrong virtual subpopulation id " + toStr(id));
+	}
+
+	SubPopID id() const 
+	{
+		return m_subPop;
+	}
+
+	SubPopID vid() const
+	{
+		return m_virtualSubPop;
+	}
+
+	bool isVirtual() const
+	{
+		return static_cast<unsigned long>(m_virtualSubPop) != MaxSubPopID;
+	}
+
+private:
+	SubPopID m_subPop;
+	SubPopID m_virtualSubPop;
+};
 
 /** virtual splitters split a subpopulation into virtual sub-subpopulations.
    The virtual subpopulations does not have to add up to the whole
