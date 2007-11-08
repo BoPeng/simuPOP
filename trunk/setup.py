@@ -253,6 +253,7 @@ HEADER_FILES = [
     'src/recombinator.h',
     'src/tagger.h',
     'src/misc.h',
+    'src/virtualSubPop.h',
 ]
 
 SOURCE_FILES = [
@@ -277,6 +278,7 @@ SOURCE_FILES = [
     'src/recombinator.cpp',
     'src/tagger.cpp',
     'src/misc.cpp',
+    'src/virtualSubPop.cpp',
 ]
 
 # since it is troublesome to link to external gsl library,
