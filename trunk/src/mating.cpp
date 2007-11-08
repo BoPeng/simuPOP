@@ -488,8 +488,8 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 }
 
 
-pyParentsChooser::pyParentsChooser(population & pop, UINT realSP,
-                                   UINT sp, UINT ssp, PyObject * pc)
+pyParentsChooser::pyParentsChooser(population & pop, UINT sp,
+                                   PyObject * pc)
 	: parentChooser(0), m_generator(NULL), m_parIterator(NULL)
 {
 #if PY_VERSION_HEX < 0x02040000
@@ -497,16 +497,16 @@ pyParentsChooser::pyParentsChooser(population & pop, UINT realSP,
 	    " so this python parent chooser can not be used.");
 #else
 #  ifndef OPTIMIZED
-	m_size = pop.subPopSize(realSP);
+	m_size = pop.subPopSize(sp);
 #  endif
-	m_begin = pop.indBegin(realSP);
+	m_begin = pop.indBegin(sp);
 
 	PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
 	// if pop is valid?
 	DBG_FAILIF(popObj == NULL, SystemError,
 	    "Could not pass population to the provided function. \n"
 	    "Compiled with the wrong version of SWIG?");
-	PyObject * arglist = Py_BuildValue("(Oiii)", popObj, realSP, sp, ssp);
+	PyObject * arglist = Py_BuildValue("(Oi)", popObj, sp);
 	m_generator = PyEval_CallObject(pc, arglist);
 	Py_XDECREF(arglist);
 
@@ -630,29 +630,6 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 	    + toStr(pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
 }
 
-
-duplicateSplitter::duplicateSplitter(vectori const & offWeights)
-	: virtualSplitter(offWeights)
-{
-}
-
-
-infoSplitter::infoSplitter(vectori const & offWeights)
-	: virtualSplitter(offWeights)
-{
-}
-
-
-proportionSplitter::proportionSplitter(vectori const & offWeights)
-	: virtualSplitter(offWeights)
-{
-}
-
-
-rangeSplitter::rangeSplitter(vectori const & offWeights)
-	: virtualSplitter(offWeights)
-{
-}
 
 
 // nomating does nothing but applying during-mating operators
@@ -1290,7 +1267,6 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 pyMating::pyMating(vectori const & parentChoosers,
                    vectorobj const & pyChoosers,
                    vector<offspringGenerator *> const & offspringGenerators,
-                   vector<virtualSplitter *> const & splitters,
                    vectorlu newSubPopSize,
                    string newSubPopSizeExpr,
                    PyObject * newSubPopSizeFunc
@@ -1298,8 +1274,7 @@ pyMating::pyMating(vectori const & parentChoosers,
 	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
 	m_parentChoosers(parentChoosers),
 	m_pyChoosers(),
-	m_offspringGenerators(),
-	m_splitters()
+	m_offspringGenerators()
 {
 	vectorobj::const_iterator it = pyChoosers.begin();
 	vectorobj::const_iterator it_end = pyChoosers.end();
@@ -1323,14 +1298,6 @@ pyMating::pyMating(vectori const & parentChoosers,
 		m_parentChoosers.push_back(MATE_RandomParentsChooser);
 	
 
-	vector<virtualSplitter *>::const_iterator sit = splitters.begin();
-	vector<virtualSplitter *>::const_iterator sit_end = splitters.end();
-	for (; sit != sit_end; ++sit)
-		m_splitters.push_back((*sit)->clone());
-
-	if (m_splitters.empty())
-		m_splitters.push_back(new nullSplitter());
-
 	vector<offspringGenerator *>::const_iterator oit = offspringGenerators.begin();
 	vector<offspringGenerator *>::const_iterator oit_end = offspringGenerators.end();
 	for (; oit != oit_end; ++oit)
@@ -1349,97 +1316,74 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
 	// count all virtual subpopulations
-	UINT allVSP = 0;
-	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		virtualSplitter * vs = m_splitters.size() > 1 ? m_splitters[sp] : m_splitters[0];
-		allVSP += vs->numVirtualSubPops(sp);
-	}
-
-	DBG_ASSERT(m_parentChoosers.size() == 1 || m_parentChoosers.size() == allVSP,
+	DBG_ASSERT(m_parentChoosers.size() == 1 || m_parentChoosers.size() == pop.numSubPop(),
 	    ValueError, "You should specify one parentChoosers, or one parentChoosers"
 	    " for each (virtual) subpopulation. ("
 	    + toStr(m_parentChoosers.size()) + ")");
 
-	DBG_ASSERT(m_offspringGenerators.size() == 1 || m_offspringGenerators.size() == allVSP,
+	DBG_ASSERT(m_offspringGenerators.size() == 1 || m_offspringGenerators.size() == pop.numSubPop(),
 	    ValueError, "You should specify one offspringGenerator, or one "
 	    "offspringGenerator for each (virtual) subpopulation");
 
-	DBG_ASSERT(m_splitters.size() == 1 || m_splitters.size() == allVSP,
-	    ValueError, "You should specify one virtual splitter, or one splitter "
-	    "for each (virtual) subpopulation");
-
-	// the virtual sp indexes can be confusing
-	// vspIdx: index of the virtual subpopulations
-	// sp: real subpopulation
-	// ssp: vsp in each subpopulation
-	// realSP: the dynamic subpopulation number returned by prepareVirtualSubPops.
-	//     note that realSP does not have to change from vsp to vsp.
 	size_t pcIdx = 0;
 	size_t vspIdx = 0;
 	/// random mating happens within each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		virtualSplitter * vs = m_splitters.size() > 1 ? m_splitters[sp] : m_splitters[0];
-		// iterate all virtual populations
-		for (UINT ssp = 0; ssp < vs->numVirtualSubPops(sp); ++ssp, ++vspIdx) {
-			UINT realSP = vs->prepareVirtualSubPop(pop, scratch, sp, ssp);
+		// do we have virtual populations?
+		ULONG spSize = pop.subPopSize(sp);
+		if (spSize == 0)
+			continue;
 
-			// do we have virtual populations?
-			ULONG spSize = pop.subPopSize(realSP);
-			if (spSize == 0)
-				continue;
+		int pcType = m_parentChoosers.size() > 1 ? m_parentChoosers[vspIdx] : m_parentChoosers[0];
+		parentChooser * pc = NULL;
 
-			int pcType = m_parentChoosers.size() > 1 ? m_parentChoosers[vspIdx] : m_parentChoosers[0];
-			parentChooser * pc = NULL;
-
-			switch (pcType) {
-			case MATE_RandomParentChooser:
-				pc = new randomParentChooser(pop, realSP);
-				break;
-			case MATE_RandomParentsChooser:
-				pc = new randomParentsChooser(pop, realSP);
-				break;
-			case MATE_PyParentsChooser:
-				pc = new pyParentsChooser(pop, realSP, sp, ssp,
-				         m_pyChoosers.size() > 1 ? m_pyChoosers[pcIdx++] : m_pyChoosers[0]);
-				break;
-			default:
-				throw ValueError("Unknown parentChoosers type");
-			}
-
-			offspringGenerator * og = m_offspringGenerators.size() > 1 ?
-			                          m_offspringGenerators[vspIdx] : m_offspringGenerators[0];
-
-			DBG_FAILIF(pc->numParents() != 0 && pc->numParents() != og->numParents(),
-			    ValueError, "Imcompatible parent chooser and offspring generator");
-
-			if (!og->initialized())
-				og->initialize(pop, ops);
-
-			// generate scratch.subPopSize(sp) individuals.
-			population::IndIterator it = scratch.indBegin(realSP);
-			population::IndIterator itEnd = scratch.indEnd(realSP);
-			UINT numOff;
-			while (it != itEnd) {
-				individual * dad = NULL;
-				individual * mom = NULL;
-				if (pc->numParents() == 1)
-					dad = pc->chooseParent();
-				// 0 or 2, that is to say, dad or mom can be NULL
-				else {
-					parentChooser::individualPair const parents = pc->chooseParents();
-					dad = parents.first;
-					mom = parents.second;
-				}
-
-				//
-				numOff = og->generateOffspring(pop, dad, mom, it, itEnd, ops);
-				// record family size (this may be wrong for the last family)
-				DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
-			}
-			delete og;
-			delete pc;
+		switch (pcType) {
+		case MATE_RandomParentChooser:
+			pc = new randomParentChooser(pop, sp);
+			break;
+		case MATE_RandomParentsChooser:
+			pc = new randomParentsChooser(pop, sp);
+			break;
+		case MATE_PyParentsChooser:
+			pc = new pyParentsChooser(pop, sp,
+					 m_pyChoosers.size() > 1 ? m_pyChoosers[pcIdx++] : m_pyChoosers[0]);
+			break;
+		default:
+			throw ValueError("Unknown parentChoosers type");
 		}
-		vs->restoreSubPop(pop, scratch, sp);
+
+		offspringGenerator * og = m_offspringGenerators.size() > 1 ?
+								  m_offspringGenerators[vspIdx] : m_offspringGenerators[0];
+
+		DBG_FAILIF(pc->numParents() != 0 && pc->numParents() != og->numParents(),
+			ValueError, "Imcompatible parent chooser and offspring generator");
+
+		if (!og->initialized())
+			og->initialize(pop, ops);
+
+		// generate scratch.subPopSize(sp) individuals.
+		population::IndIterator it = scratch.indBegin(sp);
+		population::IndIterator itEnd = scratch.indEnd(sp);
+		UINT numOff;
+		while (it != itEnd) {
+			individual * dad = NULL;
+			individual * mom = NULL;
+			if (pc->numParents() == 1)
+				dad = pc->chooseParent();
+			// 0 or 2, that is to say, dad or mom can be NULL
+			else {
+				parentChooser::individualPair const parents = pc->chooseParents();
+				dad = parents.first;
+				mom = parents.second;
+			}
+
+			//
+			numOff = og->generateOffspring(pop, dad, mom, it, itEnd, ops);
+			// record family size (this may be wrong for the last family)
+			DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
+		}
+		delete og;
+		delete pc;
 	}
 	if (submit)
 		submitScratch(pop, scratch);
