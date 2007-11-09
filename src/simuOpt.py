@@ -253,7 +253,7 @@ def _getParamValue(p, val):
         elif val in ['0', 'false', 'False']:
             return False
         else:
-            raise exceptions.ValueError('Expect 0/1, true/false for boolean values')
+            raise exceptions.ValueError('Expect 0/1, true/false for boolean values for parameter %s ' % p['longarg'])
     # other wise, need conversion
     if type(val) in [types.StringType, types.UnicodeType] :
         try:
