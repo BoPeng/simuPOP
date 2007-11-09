@@ -497,6 +497,7 @@ public:
 
 
 	/// CPPONLY individual iterator: with subPop info.
+	/// The iterator will skip invisible individuals
 	IndIterator indBegin(UINT subPop)
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -519,6 +520,7 @@ public:
 
 
 	/// CPPONLY individual iterator: without subPop info
+	/// The iterator will skip invisible individuals
 	ConstIndIterator indBegin() const
 	{
 		return ConstIndIterator(m_inds.begin(), m_inds.end(),
@@ -536,6 +538,7 @@ public:
 
 
 	/// CPPONLY individual iterator: with subPop info.
+	/// The iterator will skip invisible individuals
 	ConstIndIterator indBegin(UINT subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
