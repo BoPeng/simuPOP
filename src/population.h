@@ -76,184 +76,6 @@ class population;
 typedef int vsp;
 typedef vector<vsp*> vectorvsp;
 
-/**
-	this class implements a Python itertor class that can be used to iterate
-    through individuals in a (sub)population. If allInds are true, 
-    visiblility of individuals will not be checked. Note that 
-    individualIterator *will* iterate through only visible individuals, and
-    allInds is only provided when we know in advance that all individuals are
-    visible. This is a way to obtain better performance in simple cases.
-   
-    An instance of this class is returned by
-    population::individuals() and population::individuals(subPop)
-  */
-class individualIterator
-{
-public:
-	individualIterator(population * pop, ULONG s, ULONG e, bool allInds) :
-		m_population(pop),
-		m_index(s),
-		m_end(e),
-		m_allInds(allInds)
-	{
-	}
-
-
-	~individualIterator()
-	{
-	}
-
-
-	individualIterator __iter__()
-	{
-		return *this;
-	}
-
-
-	individual & next();
-
-private:
-	// an instance of the population being iterated.
-	population * m_population;
-
-	// current (initialized as strt) index
-	ULONG m_index;
-
-	// ending index
-	ULONG m_end;
-
-	//
-	bool m_allInds;
-};
-
-/** 
-	this class implements a C++ iterator class that iterate through
-	individuals in a (sub)population. If allInds are true, the
-	visiblility of individuals will not be checked. Note that 
-    individualIterator *will* iterate through only visible individuals, and
-    allInds is only provided when we know in advance that all individuals are
-    visible. This is a way to obtain better performance in simple cases.
-   */
-template <typename T>
-class IndividualIterator
-{
-public:
-	typedef std::random_access_iterator_tag iterator_category;
-	typedef typename T::value_type value_type;
-	typedef long int difference_type;
-	typedef typename T::reference reference;
-	typedef typename T::pointer pointer;
-
-	IndividualIterator() : m_it(), m_allInds(true)
-	{
-	}
-
-	IndividualIterator(T it, bool allInds=true)
-	: m_it(it), m_allInds(allInds)
-	{
-	}
-
-	IndividualIterator(const IndividualIterator & rhs) 
-	: m_it(rhs.m_it), m_allInds(rhs.m_allInds)
-	{
-	}
-
-
-	IndividualIterator & operator=(const IndividualIterator & rhs)
-	{
-		m_it = rhs.m_it;
-		m_allInds = rhs.m_allInds;
-		return *this;
-	}
-
-	reference operator*() const
-	{
-		return *m_it;
-	}
-
-	pointer operator->() const
-	{
-		return &*m_it;
-	}
-	
-	reference operator[](difference_type diff) const
-	{
-//		if (m_allInds)
-			return *(m_it + diff);
-	}
-
-	IndividualIterator operator++(int)
-	{
-//		if (m_allInds)
-			return IndividualIterator(m_it++);
-	}
-	
-	IndividualIterator operator++()
-	{
-//		if (m_allInds)
-			return IndividualIterator(++m_it);
-	}
-	
-	IndividualIterator operator+(difference_type diff)
-	{
-//		if (m_allInds)
-			return IndividualIterator(m_it+diff);
-	}
-	
-	IndividualIterator operator-(difference_type diff)
-	{
-//		if (m_allInds)
-			return IndividualIterator(m_it - diff);
-	}
-
-	difference_type operator-(IndividualIterator rhs)
-	{
-//		if (m_allInds)
-			return m_it - rhs.m_it;
-	}
-
-	IndividualIterator operator--(int)
-	{
-//		if (m_allInds)
-			return IndividualIterator(m_it--);
-	}
-	
-	IndividualIterator operator--()
-	{
-//		if (m_allInds)
-			return IndividualIterator(--m_it);
-	}
-
-	bool operator!=(const IndividualIterator & rhs)
-	{
-		return m_it != rhs.m_it;
-	}
-
-	bool operator==(const IndividualIterator & rhs)
-	{
-		return m_it == rhs.m_it;
-	}
-
-	bool operator<(const IndividualIterator & rhs)
-	{
-		return m_it < rhs.m_it;
-	}
-	
-	bool operator>(const IndividualIterator & rhs)
-	{
-		return m_it > rhs.m_it;
-	}
-
-private:
-	
-	T m_it;
-	bool m_allInds;
-};
-
-typedef IndividualIterator<vector<individual>::iterator> IndIterator;
-typedef IndividualIterator<vector<individual>::const_iterator> ConstIndIterator;
-//typedef vector<individual>::iterator IndIterator;
-//typedef vector<individual>::const_iterator ConstIndIterator;
 
 //************Documentation Format*****************
 //   /// brief description
@@ -592,22 +414,22 @@ public:
 	/**
 	   Typical usage is \n <tt>for ind in pop.individuals():</tt>
 	 */
-	individualIterator individuals()
+	pyIndIterator individuals()
 	{
-		return individualIterator(this, 0, popSize(), 
+		return pyIndIterator(m_inds.begin(), m_inds.end(), 
 			hasVirtualSubPop());
 	}
 
 
 	/// return an iterator that can be used to iterate through all individuals in subpopulation \c subPop
-	individualIterator individuals(UINT subPop)
+	pyIndIterator individuals(UINT subPop)
 	{
 #ifndef OPTIMIZED
 		CHECKRANGESUBPOP(subPop);
 #endif
 
-		return individualIterator(this, subPopBegin(subPop), 
-			subPopEnd(subPop), isSubPopVirtual(subPop));
+		return pyIndIterator(m_inds.begin() + subPopBegin(subPop), 
+			m_inds.begin() + subPopEnd(subPop), isSubPopVirtual(subPop));
 	}
 
 
