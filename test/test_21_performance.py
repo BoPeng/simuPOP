@@ -208,6 +208,25 @@ class TestPerformance(unittest.TestCase):
             # 4.26, 8.00, 10.8
             # 92.62, 121.88, 155.84
             # 
+            # baop
+            # 0.42, 0.51, 0.78
+            # 5.59, 9.72, 12.91
+            # 97.35,
+            #
+            # Store IndIteartor.rawIter in parentsChooser. No improvement.
+            # 0.31, 0.39, 0.64
+            # 4.22, 7.70, 10.88
+            # 92.92
+            # 
+            # Using The visible algorithm of IndIterator,
+            # Storing IndIterator.rawIter() in parentsChooser
+            #
+            # op
+            # 0.32, 0.38, 0.71
+            # 4.31, 7.96, 12.12
+            # 95.14,
+            #
+            # 
 
     def TestLongGenome(self):
         'Testing the performance of recombination with long genome'

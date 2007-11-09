@@ -795,14 +795,12 @@ public:
 
 	IndividualIterator() : m_it(), m_end(), m_allInds(true)
 	{
-		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
 	}
 
 
 	IndividualIterator(T it, T end, bool allInds = true)
 		: m_it(it), m_end(end), m_allInds(allInds)
 	{
-		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
 	}
 
 
@@ -812,20 +810,9 @@ public:
 	}
 
 
-	IndividualIterator(const IndividualIterator & rhs)
-		: m_it(rhs.m_it), m_end(rhs.m_end), m_allInds(rhs.m_allInds)
+	T rawIter()
 	{
-		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
-	}
-
-
-	IndividualIterator & operator=(const IndividualIterator & rhs)
-	{
-		m_it = rhs.m_it;
-		m_end = rhs.m_end;
-		m_allInds = rhs.m_allInds;
-		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
-		return *this;
+		return m_it;
 	}
 
 
@@ -841,67 +828,111 @@ public:
 	}
 
 
-	reference operator[](difference_type diff) const
-	{
-		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
-		if (m_allInds)
-			return *(m_it + diff);
-	}
-
-
+	// return, then advance.
 	IndividualIterator operator++(int)
 	{
-		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
+		DBG_ASSERT(m_it < m_end, ValueError,
+		    "Can not advance invalid iterator");
+
 		if (m_allInds)
 			return IndividualIterator(m_it++, m_end, m_allInds);
+
+		// save current state
+		IndividualIterator tmp(*this);
+		// move forward
+		while (m_it < m_end)
+			if ((++m_it)->visible())
+				break;
+		// return the original one
+		return tmp;
 	}
 
 
 	IndividualIterator operator++()
 	{
-		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
-		if (m_allInds)
-			return IndividualIterator(++m_it, m_end, m_allInds);
+		DBG_ASSERT(m_it < m_end, ValueError,
+		    "Can not advance invalid iterator");
+		if (m_allInds) {
+			++m_it;
+			return *this;
+		}
+
+		while (m_it < m_end)
+			if ((++m_it)->visible())
+				return *this;
+		DBG_ASSERT(m_it == m_end, IndexError,
+		    "Something wrong with operator++ here");
+		return *this;
 	}
 
 
+	// NOTE: This is very slow, and it is here only
+	// because sort() requires this. This means that
+	// sorting in virtual populations will be slow
+	//
 	IndividualIterator operator+(difference_type diff)
 	{
-		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
-		if (m_allInds)
+		if (!m_allInds)
 			return IndividualIterator(m_it + diff, m_end, m_allInds);
+		IndividualIterator tmp(*this);
+		DBG_ASSERT(tmp.m_it < tmp.m_end, ValueError,
+		    "Can not advance invalid iterator");
+		difference_type i = 0;
+		while (i < diff && tmp.m_it < tmp.m_end)
+			if ((++tmp.m_it)->visible())
+				++i;
+		DBG_FAILIF(i != diff, ValueError,
+		    "Can not add to IndIterator");
+		return tmp;
 	}
 
 
 	IndividualIterator operator-(difference_type diff)
 	{
-		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
 		if (m_allInds)
 			return IndividualIterator(m_it - diff, m_end, m_allInds);
+		else {
+			IndividualIterator tmp(*this);
+			// can not check. Possible problem
+			for (difference_type i = 0; i < diff; ++i)
+				while (!(--tmp.m_it)->visible()) ;
+			return tmp;
+		}
 	}
 
 
 	difference_type operator-(IndividualIterator rhs)
 	{
-		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
 		if (m_allInds)
 			return m_it - rhs.m_it;
+		else {
+			difference_type i = 0;
+			for (T it = rhs.m_it; it != m_it; ++it)
+				if (it->visible())
+					++i;
+			return i;
+		}
 	}
 
 
 	IndividualIterator operator--(int)
 	{
-		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
 		if (m_allInds)
 			return IndividualIterator(m_it--, m_end, m_allInds);
+		IndividualIterator tmp(*this);
+		while (!(--m_it)->visible()) ;
+		return tmp;
 	}
 
 
 	IndividualIterator operator--()
 	{
-		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
-		if (m_allInds)
-			return IndividualIterator(--m_it, m_end, m_allInds);
+		if (m_allInds) {
+			--m_it;
+			return *this;
+		}
+		while (!(--m_it)->visible()) ;
+		return *this;
 	}
 
 
@@ -930,15 +961,23 @@ public:
 
 
 private:
+	/// The current individual iterator
 	T m_it;
+
+	/// the ending iterator. Used to make sure that m_it will not
+	/// go past m_end beceause m_it->visible() will be invalid otherwise.
 	T m_end;
+
+	// a shortcut. If m_allInds is set, using a simpler algorithm.
 	bool m_allInds;
 };
 
-typedef IndividualIterator<vector<individual>::iterator> IndIterator;
-typedef IndividualIterator<vector<individual>::const_iterator> ConstIndIterator;
-//typedef vector<individual>::iterator IndIterator;
-//typedef vector<individual>::const_iterator ConstIndIterator;
+//
+typedef vector<individual>::iterator RawIndIterator;
+typedef vector<individual>::const_iterator ConstRawIndIterator;
+
+typedef IndividualIterator<RawIndIterator> IndIterator;
+typedef IndividualIterator<ConstRawIndIterator> ConstIndIterator;
 
 }
 

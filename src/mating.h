@@ -364,8 +364,8 @@ private:
 	ULONG m_numFemale;
 
 	/// internal index to female/males.
-	vectorlu m_maleIndex;
-	vectorlu m_femaleIndex;
+	vector<RawIndIterator> m_maleIndex;
+	vector<RawIndIterator> m_femaleIndex;
 
 	vectorf m_maleFitness;
 	vectorf m_femaleFitness;
@@ -373,9 +373,6 @@ private:
 	// weighted sampler
 	Weightedsampler m_malesampler;
 	Weightedsampler m_femalesampler;
-
-	/// starting individual of this subpopulaiton
-	IndIterator m_begin;
 };
 
 
