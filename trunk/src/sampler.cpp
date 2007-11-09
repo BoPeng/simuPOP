@@ -132,7 +132,7 @@ void sample::resetParentalIndex(population & pop, const string & fatherField,
 
 	// for the top generation, no parents
 	pop.useAncestralPop(pop.ancestralDepth());
-	for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it) {
+	for (IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it) {
 		// -1 means no parents.
 		// we do not use 0 since 0 is valid
 		it->setInfo(-1, fatherIdx);
@@ -145,7 +145,7 @@ void sample::resetParentalIndex(population & pop, const string & fatherField,
 		vectorf oldindex = pop.indInfo(indexIdx, true);
 		// children
 		pop.useAncestralPop(ans);
-		for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it) {
+		for (IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it) {
 			// what is the idx of my parents now?
 			vectorf::iterator tmp = find(oldindex.begin(), oldindex.end(), it->info(fatherIdx));
 			// no parents
@@ -220,7 +220,7 @@ void sample::resetSubPopID(population & pop)
 
 	for (size_t anc = 0; anc <= pop.ancestralDepth(); ++anc) {
 		pop.useAncestralPop(anc);
-		for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
+		for (IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
 			it->setSubPopID(-1);
 	}
 	pop.useAncestralPop(oldGen);
@@ -484,7 +484,7 @@ bool affectedSibpairSample::prepareSample(population & pop)
 	int pedIdx = 0;
 	// valid sibpairs for each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		for (population::IndIterator it = pop.indBegin(sp); it != pop.indEnd(sp); ++it) {
+		for (IndIterator it = pop.indBegin(sp); it != pop.indEnd(sp); ++it) {
 			// individual already belongs to another family
 			if (it->info(pedindexIdx) != -1.)
 				continue;
@@ -917,7 +917,7 @@ bool nuclearFamilySample::prepareSample(population & pop)
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 		pop.useAncestralPop(1);
 		vectorf off;
-		for (population::IndIterator it = pop.indBegin(sp); it != pop.indEnd(sp); ++it) {
+		for (IndIterator it = pop.indBegin(sp); it != pop.indEnd(sp); ++it) {
 			// individual already belongs to another family
 			if (it->info(pedindexIdx) != -1.)
 				continue;

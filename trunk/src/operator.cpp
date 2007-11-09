@@ -205,7 +205,7 @@ bool ifElse::applyWithScratch(population & pop, population & scratch, int stage)
 }
 
 
-bool ifElse::applyDuringMating(population & pop, population::IndIterator offspring,
+bool ifElse::applyDuringMating(population & pop, IndIterator offspring,
                                individual * dad, individual * mom)
 {
 	m_cond.setLocalDict(pop.dict());
@@ -283,7 +283,7 @@ bool pyOperator::apply(population & pop)
 }
 
 
-bool pyOperator::applyDuringMating(population & pop, population::IndIterator offspring,
+bool pyOperator::applyDuringMating(population & pop, IndIterator offspring,
                                    individual * dad, individual * mom)
 {
 	// get offspring object
@@ -379,7 +379,7 @@ bool pyIndOperator::apply(population & pop)
 	}
 	// call the python function, pass the each individual to it.
 	// get pop object
-	for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it) {
+	for (IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it) {
 		PyObject * indObj = pyIndObj(static_cast<void *>(& * it));
 		// if pop is valid?
 		if (indObj == NULL)

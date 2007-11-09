@@ -91,7 +91,7 @@ bool dumper::apply(population & pop)
 			UINT sp = pop.subPopIndPair(range[i]).first;
 			out << "sub population " << sp << ":" << endl;
 
-			for (population::IndIterator ind = pop.indBegin() + range[i];
+			for (IndIterator ind = pop.indBegin() + range[i];
 			     ind != pop.indBegin() + range[i + 1]; ++ind, ++count) {
 				out << setw(4) << (ind - pop.indBegin()) << ": ";
 				ind->display(out, m_width, m_chrom, m_loci);
@@ -154,7 +154,7 @@ done:
 					UINT sp = pop.subPopIndPair(range[j]).first;
 					out << "sub population " << sp << ":" << endl;
 
-					for (population::IndIterator ind = pop.indBegin() + range[j]; ind != pop.indBegin() + range[j + 1]; ++ind) {
+					for (IndIterator ind = pop.indBegin() + range[j]; ind != pop.indBegin() + range[j + 1]; ++ind) {
 						out << setw(4) << count++ << ": " ;
 						ind->display(out, m_width, m_chrom, m_loci);
 						out << endl;

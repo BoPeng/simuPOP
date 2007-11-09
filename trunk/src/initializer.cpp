@@ -537,7 +537,7 @@ bool pyInit::apply(population & pop)
 	// call randUnif once for each individual
 	// (initialize allele need to call randUnif for each locus
 	if (this->m_sex.empty()) {
-		for (population::IndIterator it = pop.indBegin(), itEnd = pop.indEnd();
+		for (IndIterator it = pop.indBegin(), itEnd = pop.indEnd();
 		     it != itEnd; ++it) {
 			if (rng().randUniform01() < this->m_maleFreq)
 				it->setSex(Male);
@@ -545,7 +545,7 @@ bool pyInit::apply(population & pop)
 				it->setSex(Female);
 		}
 	} else {
-		for (population::IndIterator it = pop.indBegin(), itEnd = pop.indEnd();
+		for (IndIterator it = pop.indBegin(), itEnd = pop.indEnd();
 		     it != itEnd; ++it) {
 			it->setSex(this->nextSex() );
 		}

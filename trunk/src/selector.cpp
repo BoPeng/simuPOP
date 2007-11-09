@@ -31,7 +31,7 @@ bool selector::apply(population & pop)
 	if (m_subPops.empty()) {
 		GappedInfoIterator fitness = pop.infoBegin(fit_id, true);
 		// fitness may change with generation so pass generation information
-		for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
+		for (IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it)
 			*fitness++ = indFitness(& * it, pop.gen()) ;
 		pop.turnOnSelection();
 	} else {
@@ -40,7 +40,7 @@ bool selector::apply(population & pop)
 			DBG_FAILIF(*sp > pop.numSubPop(), IndexError,
 			    "Wrong subpopulation index" + toStr(*sp) + " (number of subpops is " +
 			    toStr(pop.numSubPop()) + ")");
-			for (population::IndIterator it = pop.indBegin(*sp); it != pop.indEnd(*sp); ++it)
+			for (IndIterator it = pop.indBegin(*sp); it != pop.indEnd(*sp); ++it)
 				*fitness++ = indFitness(& * it, pop.gen());
 			pop.turnOnSelection(*sp);
 		}

@@ -114,7 +114,7 @@ public:
 
 	/// set penetrance to all individuals
 	/// CPPONLY
-	virtual bool applyDuringMating(population & pop, population::IndIterator offspring,
+	virtual bool applyDuringMating(population & pop, IndIterator offspring,
 	                               individual * dad = NULL, individual * mom = NULL);
 
 	/// used by Python print function to print out the general information of the penetrance operator

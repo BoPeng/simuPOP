@@ -128,8 +128,8 @@ bool offspringGenerator::checkFormOffspringGenotype(vector<baseOperator *> const
 
 
 UINT cloneOffspringGenerator::generateOffspring(population & pop, individual * parent, individual *,
-                                                population::IndIterator & it,
-                                                population::IndIterator & itEnd,
+                                                IndIterator & it,
+                                                IndIterator & itEnd,
                                                 vector<baseOperator *> & ops)
 {
 	DBG_ASSERT(initialized(), ValueError,
@@ -190,7 +190,7 @@ void mendelianOffspringGenerator::initialize(const population & pop,
 
 
 void mendelianOffspringGenerator::formOffspringGenotype(individual * parent,
-                                                        population::IndIterator & it, int ploidy, bool setSex)
+                                                        IndIterator & it, int ploidy, bool setSex)
 {
 	// current parental ploidy (copy from which chromosome copy)
 	int parPloidy = 0;
@@ -261,8 +261,8 @@ void mendelianOffspringGenerator::formOffspringGenotype(individual * parent,
 
 
 UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
-                                                    population::IndIterator & it,
-                                                    population::IndIterator & itEnd,
+                                                    IndIterator & it,
+                                                    IndIterator & itEnd,
                                                     vector<baseOperator *> & ops)
 {
 	DBG_ASSERT(initialized(), ValueError,
@@ -314,8 +314,8 @@ UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual
 
 UINT selfingOffspringGenerator::generateOffspring(population & pop, individual * parent,
                                                   individual *,
-                                                  population::IndIterator & it,
-                                                  population::IndIterator & itEnd,
+                                                  IndIterator & it,
+                                                  IndIterator & itEnd,
                                                   vector<baseOperator *> & ops)
 {
 	DBG_ASSERT(initialized(), ValueError,
@@ -405,8 +405,8 @@ randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
 
 	m_numMale = 0;
 	m_numFemale = 0;
-	population::IndIterator it = pop.indBegin(sp);
-	population::IndIterator itEnd = pop.indEnd(sp);
+	IndIterator it = pop.indBegin(sp);
+	IndIterator itEnd = pop.indEnd(sp);
 	for (; it < itEnd; ++it)
 		if (it->sex() == Male)
 			m_numMale++;
@@ -427,8 +427,8 @@ randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
 	m_numFemale = 0;
 
 	size_t idx = 0;
-	population::IndIterator ind = pop.indBegin(sp);
-	population::IndIterator indEnd = pop.indEnd(sp);
+	IndIterator ind = pop.indBegin(sp);
+	IndIterator indEnd = pop.indEnd(sp);
 	for (; ind < indEnd; ind++) {
 		if (ind->sex() == Male) {
 			m_maleIndex[m_numMale] = idx;
@@ -637,7 +637,7 @@ bool noMating::mate(population & pop, population & scratch, vector<baseOperator 
 {
 	// apply during mating operators
 	if (!ops.empty() ) {
-		for (population::IndIterator it = pop.indBegin(), itEnd = pop.indEnd(); it != itEnd;  ++it) {
+		for (IndIterator it = pop.indBegin(), itEnd = pop.indEnd(); it != itEnd;  ++it) {
 			vector<baseOperator *>::iterator iop = ops.begin();
 			vector<baseOperator *>::iterator iopEnd = ops.end();
 			for (; iop != iopEnd; ++iop) {
@@ -669,8 +669,8 @@ bool binomialSelection::mate(population & pop, population & scratch, vector<base
 		randomParentChooser pc(pop, sp);
 
 		// choose a parent and genereate m_numOffspring offspring
-		population::IndIterator it = scratch.indBegin(sp);
-		population::IndIterator itEnd = scratch.indEnd(sp);
+		IndIterator it = scratch.indBegin(sp);
+		IndIterator itEnd = scratch.indEnd(sp);
 		UINT numOff;
 		while (it != itEnd) {
 			individual * parent = pc.chooseParent();
@@ -712,8 +712,8 @@ bool randomMating::mate(population & pop, population & scratch, vector<baseOpera
 		}
 
 		// generate scratch.subPopSize(sp) individuals.
-		population::IndIterator it = scratch.indBegin(sp);
-		population::IndIterator itEnd = scratch.indEnd(sp);
+		IndIterator it = scratch.indBegin(sp);
+		IndIterator itEnd = scratch.indEnd(sp);
 		UINT numOff;
 		while (it != itEnd) {
 			parentChooser::individualPair const parents = pc.chooseParents();
@@ -743,7 +743,7 @@ void countAlleles(population & pop, int subpop, const vectori & loci, const vect
 		// go through all alleles
 		if (subpop == -1) {
 			if (pop.shallowCopied()) {
-				for (population::IndIterator it = pop.indBegin(); it < pop.indEnd(); ++it)
+				for (IndIterator it = pop.indBegin(); it < pop.indEnd(); ++it)
 					for (int p = 0; p < pldy; ++p)
 						if (it->allele(loc, p) == ale)
 							alleleNum[l]++;
@@ -755,7 +755,7 @@ void countAlleles(population & pop, int subpop, const vectori & loci, const vect
 			}
 		} else {
 			if (pop.shallowCopied()) {
-				for (population::IndIterator it = pop.indBegin(subpop); it < pop.indEnd(subpop); ++it)
+				for (IndIterator it = pop.indBegin(subpop); it < pop.indEnd(subpop); ++it)
 					for (int p = 0; p < pldy; ++p)
 						if (it->allele(loc, p) == ale)
 							alleleNum[l]++;
@@ -908,7 +908,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 			for (size_t sp = 0; sp < numSP; ++sp) {
 				ULONG n = 0;
 				if (pop.shallowCopied()) {
-					for (population::IndIterator it = pop.indBegin(sp); it < pop.indEnd(sp); ++it)
+					for (IndIterator it = pop.indBegin(sp); it < pop.indEnd(sp); ++it)
 						for (p = 0; p < pldy; ++p)
 							if (it->allele(locus, p) == allele)
 								n++;
@@ -949,7 +949,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 				ULONG n = 0;
 				// go through all alleles
 				if (pop.shallowCopied()) {
-					for (population::IndIterator it = pop.indBegin(sp); it < pop.indEnd(sp); ++it)
+					for (IndIterator it = pop.indBegin(sp); it < pop.indEnd(sp); ++it)
 						for (p = 0; p < pldy; ++p)
 							if (it->allele(locus, p) == allele)
 								n++;
@@ -1016,7 +1016,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 
 		// reset stack each time
 		if (useStack)
-			m_stack = stack<population::IndIterator>();
+			m_stack = stack<IndIterator>();
 
 		// total allowed disease alleles.
 		vectoru totAllele(nLoci);
@@ -1055,9 +1055,9 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 		bool hasAff;
 		bool stackStage = false;
 		// start!
-		population::IndIterator it = scratch.indBegin(sp);
-		population::IndIterator itEnd = scratch.indEnd(sp);
-		population::IndIterator itBegin = it;
+		IndIterator it = scratch.indBegin(sp);
+		IndIterator itEnd = scratch.indEnd(sp);
+		IndIterator itBegin = it;
 		UINT numOff = 0;
 		/// if mor ethan noAAattempt times, no pure homo found,
 		/// accept non-homo cases.
@@ -1096,7 +1096,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 				na[i] = 0;
 			hasAff = false;
 			/*
-			   for(population::IndIterator tmp=itBegin; tmp != it; ++tmp)
+			   for(IndIterator tmp=itBegin; tmp != it; ++tmp)
 			   {
 			   	// success count na, nu
 			   	for(i=0; i<nLoci; ++i)
@@ -1362,8 +1362,8 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 			og->initialize(pop, ops);
 
 		// generate scratch.subPopSize(sp) individuals.
-		population::IndIterator it = scratch.indBegin(sp);
-		population::IndIterator itEnd = scratch.indEnd(sp);
+		IndIterator it = scratch.indBegin(sp);
+		IndIterator itEnd = scratch.indEnd(sp);
 		UINT numOff;
 		while (it != itEnd) {
 			individual * dad = NULL;

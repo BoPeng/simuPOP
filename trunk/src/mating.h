@@ -137,8 +137,8 @@ public:
 
 	/// generate \c numOff offspring
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
-	                               population::IndIterator & offBegin,
-	                               population::IndIterator & offEnd,
+	                               IndIterator & offBegin,
+	                               IndIterator & offEnd,
 	                               vector<baseOperator *> & ops) = 0;
 
 
@@ -210,8 +210,8 @@ public:
 
 	// the default method to produce offspring
 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
-	                       population::IndIterator & offBegin,
-	                       population::IndIterator & offEnd,
+	                       IndIterator & offBegin,
+	                       IndIterator & offEnd,
 	                       vector<baseOperator *> & ops);
 
 };
@@ -242,11 +242,11 @@ public:
 
 	// the default method to produce offspring
 	void formOffspringGenotype(individual * parent,
-	                           population::IndIterator & it, int ploidy, bool setSex);
+	                           IndIterator & it, int ploidy, bool setSex);
 
 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
-	                       population::IndIterator & offBegin,
-	                       population::IndIterator & offEnd,
+	                       IndIterator & offBegin,
+	                       IndIterator & offEnd,
 	                       vector<baseOperator *> & ops);
 
 protected:
@@ -283,8 +283,8 @@ public:
 
 
 	UINT generateOffspring(population & pop, individual * parent, individual *,
-	                       population::IndIterator & offBegin,
-	                       population::IndIterator & offEnd,
+	                       IndIterator & offBegin,
+	                       IndIterator & offEnd,
 	                       vector<baseOperator *> & ops);
 
 };
@@ -344,7 +344,7 @@ private:
 	/// accumulative fitness
 	Weightedsampler m_sampler;
 	/// starting individual
-	population::IndIterator m_begin;
+	IndIterator m_begin;
 	/// individuals to choose
 	size_t m_size;
 };
@@ -379,7 +379,7 @@ private:
 	Weightedsampler m_femalesampler;
 
 	/// starting individual of this subpopulaiton
-	population::IndIterator m_begin;
+	IndIterator m_begin;
 };
 
 
@@ -407,7 +407,7 @@ private:
 #ifndef OPTIMIZED
 	ULONG m_size;
 #endif
-	population::IndIterator m_begin;
+	IndIterator m_begin;
 
 	PyObject * m_generator;
 	PyObject * m_parIterator;
@@ -1053,7 +1053,7 @@ private:
 	PyObject * m_freqFunc;
 
 	///
-	stack<population::IndIterator> m_stack;
+	stack<IndIterator> m_stack;
 };
 
 /// a Python mating scheme

@@ -444,8 +444,6 @@ options = [
     {'longarg': 'dryrun',
      'useDefault': True,
      'default': False,
-     'allowedTypes': [types.IntType],
-     'validate':    simuOpt.valueOneOf([True, False]),
      'description':    'Only display how simulation will perform.'
      # do not save to config, do not prompt, so this appeared to be an undocumented option.
     },
@@ -483,7 +481,6 @@ options = [
      'longarg': 'verbose',
      'useDefault': True,
      'default': False,
-     'allowedTypes': [types.NoneType, types.IntType],
      'description': 'Verbose mode.'
     },
 ]
