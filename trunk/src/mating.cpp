@@ -376,6 +376,11 @@ randomParentChooser::randomParentChooser(population & pop, size_t sp)
 
 individual * randomParentChooser::chooseParent()
 {
+	// FIXME:
+	//
+	// In a virtual subpopulation, because m_begin + ... is ***really** slow
+	// It might be a good idea to cache IndIterators.
+	//
 	// choose a parent
 	if (m_selection)
 		return & * (m_begin + m_sampler.get());
@@ -390,9 +395,6 @@ randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
 	m_malesampler(rng()), m_femalesampler(rng())
 {
 	ULONG spSize = pop.subPopSize(sp);
-
-	// m_begin is relative to the beginning of the whole population.
-	m_begin = pop.indBegin(sp);
 
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -420,12 +422,12 @@ randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
 	IndIterator ind = pop.indBegin(sp);
 	for (; ind.valid(); ind++) {
 		if (ind->sex() == Male) {
-			m_maleIndex[m_numMale] = idx;
+			m_maleIndex[m_numMale] = ind.rawIter();
 			if (m_selection)
 				m_maleFitness[m_numMale] = ind->info(fit_id);
 			m_numMale++;
 		} else {
-			m_femaleIndex[m_numFemale] = idx;
+			m_femaleIndex[m_numFemale] = ind.rawIter();
 			if (m_selection)
 				m_femaleFitness[m_numFemale] = ind->info(fit_id);
 			m_numFemale++;
@@ -453,25 +455,25 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 	if (m_selection) {                                        // with selection
 		// using weidhted sampler.
 		if (m_numMale != 0)
-			dad = & * (m_begin + m_maleIndex[m_malesampler.get()]);
+			dad = & * (m_maleIndex[m_malesampler.get()]);
 		else
-			dad = & * (m_begin + m_femaleIndex[m_femalesampler.get()]);
+			dad = & * (m_femaleIndex[m_femalesampler.get()]);
 
 		if (m_numFemale != 0)
-			mom = & * (m_begin + m_femaleIndex[m_femalesampler.get()]);
+			mom = & * (m_femaleIndex[m_femalesampler.get()]);
 		else
-			mom = & * (m_begin + m_maleIndex[m_malesampler.get()]);
+			mom = & * (m_maleIndex[m_malesampler.get()]);
 	} else {
 		// using random sample.
 		if (m_numMale != 0)
-			dad = & * (m_begin + m_maleIndex[rng().randInt(m_numMale)]);
+			dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
 		else
-			dad = & * (m_begin + m_femaleIndex[rng().randInt(m_numFemale)]);
+			dad = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
 
 		if (m_numFemale != 0)
-			mom = & * (m_begin + m_femaleIndex[rng().randInt(m_numFemale)]);
+			mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
 		else
-			mom = & * (m_begin + m_maleIndex[rng().randInt(m_numMale)]);
+			mom = & * (m_maleIndex[rng().randInt(m_numMale)]);
 	}
 	return std::make_pair(dad, mom);
 }
@@ -533,6 +535,9 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 		DBG_DO(DBG_MATING, cout << "choose parents " << parents[0]
 		                        << " and " << parents[1] << endl;);
 		Py_DECREF(item);
+		// FIXME: this can be really slow in a virtual population because
+		// visibility between m_begin and m_begin+parents[x] need to
+		// be checked. It should make sense to return individual directly.
 		return std::make_pair(& * (m_begin + parents[0]),
 		           & * (m_begin + parents[1]));
 	} else if (PyInt_Check(item) || PyLong_Check(item)) {
@@ -545,6 +550,9 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 		DBG_DO(DBG_MATING, cout << "choose parent " << parent
 		                        << endl;);
 		Py_DECREF(item);
+		// FIXME: this can be really slow in a virtual population because
+		// visibility between m_begin and m_begin+parent need to
+		// be checked. It should make sense to return individual directly.
 		return parentChooser::individualPair(& * (m_begin + parent), NULL);
 	} else
 		DBG_ASSERT(false, ValueError,
