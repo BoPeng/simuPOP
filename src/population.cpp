@@ -95,41 +95,6 @@ population::population(ULONG size,
 			    ValueError, "If both size and subPop are specified, size should equal to sum(subPop)");
 	}
 
-#ifdef SIMUMPI
-	UINT nodes = chromMap.empty() ? (loci.size() + 1) : (chromMap.size() + 1);
-	if (mpiSize() < nodes) {
-		if (mpiRank() == 0) {
-			cout << "Available nodes: " << mpiSize() << endl;
-			cout << "Number of chromosomes: " << loci.size() << endl;
-			if (!chromMap.empty())
-				cout << "Length of chromosome map: " << chromMap.size() << endl;
-		}
-		throw SystemError("Insufficient nodes. At least " + toStr(nodes) + " (1 + number of chromosomes "
-		                                                                   "or 1 + length of chromMap ) number of nodes are required\n");
-	}
-	m_popID = uniqueID();
-	// create the population on other nodes by sending other nodes the command and parameters
-	if (mpiRank() == 0) {
-		for (size_t node = 1; node < nodes; ++node) {
-			int action = SLAVE_POPULATION_CREATE;
-			mpiComm().send(node, 0, action);
-			mpiComm().send(node, 1, m_popID);
-			mpiComm().send(node, 2, size);
-			mpiComm().send(node, 3, ploidy);
-			mpiComm().send(node, 4, loci);
-			mpiComm().send(node, 5, sexChrom);
-			mpiComm().send(node, 6, lociPos);
-			mpiComm().send(node, 7, subPop);
-			mpiComm().send(node, 8, ancestralDepth);
-			mpiComm().send(node, 9, chromNames);
-			mpiComm().send(node, 10, alleleNames);
-			mpiComm().send(node, 11, lociNames);
-			mpiComm().send(node, 12, maxAllele);
-			mpiComm().send(node, 13, infoFields);
-			mpiComm().send(node, 14, chromMap);
-		}
-	}
-#endif
 	// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 	// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
 	this->setGenoStructure(ploidy, loci, sexChrom, lociPos, chromNames, alleleNames,
@@ -146,19 +111,11 @@ population::population(ULONG size,
 		m_inds.resize(m_popSize);
 
 		// create genotype vector holding alleles for all individuals.
-#ifdef SIMUMPI
-		m_genotype.resize(m_popSize * localGenoSize());
-		/// only head node allocate info
-		size_t is = localInfoSize();
-		DBG_FAILIF(mpiRank() == 0 && is != infoFields.size(), SystemError, "Wrong geno structure");
-		m_info.resize(m_popSize * is);
-#else
 		m_genotype.resize(m_popSize * genoSize());
 		/// allocate info
 		size_t is = infoSize();
 		DBG_ASSERT(is == infoFields.size(), SystemError, "Wrong geno structure");
 		m_info.resize(m_popSize * is);
-#endif
 
 		// set subpopulation indexes, do not allow popsize change
 		setSubPopStru(subPop, false);
@@ -167,11 +124,7 @@ population::population(ULONG size,
 		// reset individual pointers
 		GenoIterator ptr = m_genotype.begin();
 		InfoIterator infoPtr = m_info.begin();
-#ifdef SIMUMPI
-		UINT step = localGenoSize();
-#else
 		UINT step = genoSize();
-#endif
 		for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
 			m_inds[i].setGenoPtr(ptr);
 			m_inds[i].setGenoStruIdx(genoStruIdx());
@@ -213,15 +166,9 @@ population::population(const population & rhs) :
 
 	try {
 		m_inds.resize(rhs.m_popSize);
-#ifdef SIMUMPI
-		m_genotype.resize(m_popSize * localGenoSize());
-		// have 0 length for mpi/non-head node
-		m_info.resize(rhs.m_popSize * localInfoSize());
-#else
 		m_genotype.resize(m_popSize * genoSize());
 		// have 0 length for mpi/non-head node
 		m_info.resize(rhs.m_popSize * infoSize());
-#endif
 	} catch (...) {
 		cout << "Memory allocation fail. A population of size 1 is created." << endl;
 		*this = population(0);
@@ -238,13 +185,8 @@ population::population(const population & rhs) :
 	// point outside of subpopulation region.
 	GenoIterator ptr = m_genotype.begin();
 	InfoIterator infoPtr = m_info.begin();
-#ifdef SIMUMPI
-	UINT step = localGenoSize();
-	UINT infoStep = localInfoSize();
-#else
 	UINT step = this->genoSize();
 	UINT infoStep = this->infoSize();
-#endif
 	for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
 		m_inds[i].setGenoPtr(ptr);
 		m_inds[i].setInfoPtr(infoPtr);
@@ -304,173 +246,8 @@ population * population::clone(int keepAncestralPops) const
 }
 
 
-#ifdef SIMUMPI
-/// CPPONLY
-/// info iterator
-/// if order=true, keep order,
-/// if flase, do not respect pop structure
-GappedInfoIterator population::infoBegin(UINT idx, bool order)
-{
-	CHECKRANGELOCALINFO(idx);
-	if (order && !infoOrdered())
-		adjustInfoPosition(true);
-	return GappedInfoIterator(m_info.begin() + idx, localInfoSize());
-}
-
-
-/// CPPONLY
-GappedInfoIterator population::infoEnd(UINT idx, bool order)
-{
-	CHECKRANGELOCALINFO(idx);
-	if (order && !infoOrdered())
-		adjustInfoPosition(true);
-	return GappedInfoIterator(m_info.begin() + idx + m_info.size(), localInfoSize());
-}
-
-
-/// info iterator
-/// oder = true: keep order
-/// otherwise, respect subpop structure
-GappedInfoIterator population::infoBegin(UINT index, UINT subPop, bool order)
-{
-	CHECKRANGELOCALINFO(index);
-	CHECKRANGESUBPOP(subPop);
-
-	if (!infoOrdered())
-		adjustInfoPosition(order);
-
-	return GappedInfoIterator(m_info.begin() + index + m_subPopIndex[subPop] * localInfoSize(), localInfoSize());
-}
-
-
-///
-GappedInfoIterator population::infoEnd(UINT index, UINT subPop, bool order)
-{
-	CHECKRANGELOCALINFO(index);
-	CHECKRANGESUBPOP(subPop);
-
-	if (!infoOrdered())
-		adjustInfoPosition(order);
-
-	return GappedInfoIterator(m_info.begin() + index + m_subPopIndex[subPop + 1] * localInfoSize(), localInfoSize());
-}
-
-
-vectorinfo population::indInfo(UINT idx, bool order)
-{
-	vectorinfo info;
-
-	if (mpiRank() == 0)
-		vectorinfo info = vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
-	broadcast(mpiComm(), info, 0);
-	return info;
-}
-
-
-vectorinfo population::indInfo(const string & name, bool order)
-{
-	vectorinfo info;
-
-	if (mpiRank() == 0) {
-		UINT idx = localInfoIdx(name);
-		info = vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
-	}
-	broadcast(mpiComm(), info, 0);
-	return info;
-}
-
-
-vectorinfo population::indInfo(UINT idx, UINT subPop, bool order)
-{
-	vectorinfo info;
-
-	if (mpiRank() == 0)
-		info = vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
-	broadcast(mpiComm(), info, 0);
-	return info;
-}
-
-
-vectorinfo population::indInfo(const string & name, UINT subPop, bool order)
-{
-	vectorinfo info;
-
-	if (mpiRank() == 0) {
-		UINT idx = localInfoIdx(name);
-		info = vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
-	}
-	broadcast(mpiComm(), info, 0);
-	return info;
-}
-
-
-/// if order: keep order
-/// otherwise: do not respect subpop info
-PyObject * population::arrIndInfo(bool order)
-{
-	if (mpiRank() == 0) {
-		if (order && !infoOrdered())
-			adjustInfoPosition(true);
-
-		return Info_Vec_As_NumArray(m_info.begin(), m_info.end());
-	} else
-		DBG_ASSERT(false, ValueError,
-		    "Only head node has info information");
-}
-
-
-/// if order: keep order
-/// otherwise: respect subpop info
-PyObject * population::arrIndInfo(UINT subPop, bool order)
-{
-	CHECKRANGESUBPOP(subPop);
-
-	if (mpiRank() == 0) {
-		if (!infoOrdered())
-			adjustInfoPosition(order);
-
-		return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop] * localInfoSize(),
-		           m_info.begin() + m_subPopIndex[subPop + 1] * localInfoSize());
-	} else
-		DBG_ASSERT(false, ValueError,
-		    "Only head node has info information");
-}
-
-
-#endif
-
 int population::__cmp__(const population & rhs) const
 {
-#ifdef SIMUMPI
-	bool res = 0;
-	if (genoStruIdx() != rhs.genoStruIdx() ) {
-		DBG_DO(DBG_POPULATION, cout << "Genotype structures are different" << endl);
-		res = 1;
-	}
-
-	if (res == 0 && popSize() != rhs.popSize() ) {
-		DBG_DO(DBG_POPULATION, cout << "Population sizes are different" << endl);
-		res = 1;
-	}
-
-	if (res == 0) {
-		for (ULONG i = 0, iEnd = popSize(); i < iEnd; ++i)
-			if (m_inds[i] != rhs.m_inds[i]) {
-				DBG_DO(DBG_POPULATION, cout << "Individuals are different" << endl);
-				res = 1;
-				break;
-			}
-	}
-	// now collect result for all nodes
-	bool allRes = 0;
-	if (mpiRank() == 0)
-		reduce(mpiComm(), res, allRes, std::logical_or<bool>(), 0);
-	else
-		reduce(mpiComm(), res, std::logical_or<bool>(), 0);
-	broadcast(mpiComm(), !!allRes, 0);
-
-	return allRes;
-#else
 	if (genoStruIdx() != rhs.genoStruIdx() ) {
 		DBG_DO(DBG_POPULATION, cout << "Genotype structures are different" << endl);
 		return 1;
@@ -488,7 +265,6 @@ int population::__cmp__(const population & rhs) const
 		}
 
 	return 0;
-#endif
 }
 
 
@@ -497,15 +273,8 @@ PyObject * population::arrGenotype(bool order)
 	if (shallowCopied() && order)
 		// adjust position. deep=true
 		adjustGenoPosition(true);
-#ifdef SIMUMPI
-	// shift (starting point), size (total size)
-	// trunk size, pieces map
-	return Allele_Vec_As_NumArray(0, genoSize() * popSize(),
-	           totNumLoci(), locusMap());
-#else
 	// directly expose values. Do not copy data over.
 	return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
-#endif
 }
 
 
@@ -520,12 +289,7 @@ PyObject * population::arrGenotype(UINT subPop, bool order)
 	CHECKRANGESUBPOP(subPop);
 	if (shallowCopied())
 		adjustGenoPosition(order);
-#ifdef SIMUMPI
-	return Allele_Vec_As_NumArray(m_subPopIndex[subPop] * genoSize(),
-	           genoSize() * subPopSize(subPop), totNumLoci(), locusMap());
-#else
 	return Allele_Vec_As_NumArray(genoBegin(subPop, order), genoEnd(subPop, order));
-#endif
 }
 
 
@@ -568,13 +332,8 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSiz
 			m_popSize = totSize;
 
 			try {
-#ifdef SIMUMPI
-				m_genotype.resize(m_popSize * localGenoSize());
-				m_info.resize(m_popSize * localInfoSize());
-#else
 				m_genotype.resize(m_popSize * genoSize());
 				m_info.resize(m_popSize * infoSize());
-#endif
 				m_inds.resize(m_popSize);
 
 			} catch (...) {
@@ -583,13 +342,8 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSiz
 			// reset individual pointers
 			GenoIterator ptr = m_genotype.begin();
 			InfoIterator infoPtr = m_info.begin();
-#ifdef SIMUMPI
-			UINT step = localGenoSize();
-			UINT is = localInfoSize();
-#else
 			UINT step = genoSize();
 			UINT is = infoSize();
-#endif
 			for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
 				m_inds[i].setGenoPtr(ptr);
 				m_inds[i].setInfoPtr(infoPtr);
@@ -640,13 +394,8 @@ void population::setSubPopByIndID(vectori id)
 		DBG_DO(DBG_POPULATION, cout << "New pop size" << newPopSize << endl);
 
 		// allocate new genotype and inds
-#ifdef SIMUMPI
-		vectora newGenotype(localGenoSize() * newPopSize);
-		vectorinfo newInfo(newPopSize * localInfoSize());
-#else
 		vectora newGenotype(genoSize() * newPopSize);
 		vectorinfo newInfo(newPopSize * infoSize());
-#endif
 		vector<individual> newInds(newPopSize);
 
 		DBG_ASSERT(indEnd() == it + newPopSize, SystemError,
@@ -655,13 +404,8 @@ void population::setSubPopByIndID(vectori id)
 		// assign genotype location and set structure information for individuals
 		GenoIterator ptr = newGenotype.begin();
 		InfoIterator infoPtr = newInfo.begin();
-#ifdef SIMUMPI
-		UINT step = localGenoSize();
-		UINT infoStep = localInfoSize();
-#else
 		UINT step = genoSize();
 		UINT infoStep = infoSize();
-#endif
 		for (ULONG i = 0; i < newPopSize; ++i, ptr += step, ++it, infoPtr += infoStep) {
 			newInds[i].setGenoStruIdx(genoStruIdx());
 			newInds[i].setGenoPtr(ptr);
@@ -1909,17 +1653,10 @@ void population::adjustGenoPosition(bool order)
 	// everyone in strict order
 	if (order) {
 		DBG_DO(DBG_POPULATION, cout << "Refresh all order " << endl);
-#ifdef SIMUMPI
-		vectora tmpGenotype(m_popSize * localGenoSize());
-		size_t sz = localGenoSize();
-		vectorinfo tmpInfo(m_popSize * localInfoSize());
-		UINT is = localInfoSize();
-#else
 		vectora tmpGenotype(m_popSize * genoSize());
 		size_t sz = genoSize();
 		vectorinfo tmpInfo(m_popSize * infoSize());
 		UINT is = infoSize();
-#endif
 		vectora::iterator it = tmpGenotype.begin();
 		vectorinfo::iterator infoPtr = tmpInfo.begin();
 
@@ -1950,13 +1687,8 @@ void population::adjustGenoPosition(bool order)
 	ULONG j, k = 0, jEnd;
 
 	for (UINT sp = 0, spEd = numSubPop(); sp < spEd;  sp++) {
-#ifdef SIMUMPI
-		GenoIterator spBegin = m_genotype.begin() + m_subPopIndex[sp] * localGenoSize();
-		GenoIterator spEnd = m_genotype.begin() + m_subPopIndex[sp + 1] * localGenoSize();
-#else
 		GenoIterator spBegin = m_genotype.begin() + m_subPopIndex[sp] * genoSize();
 		GenoIterator spEnd = m_genotype.begin() + m_subPopIndex[sp + 1] * genoSize();
-#endif
 		for (j = 0, jEnd = subPopSize(sp); j < jEnd;  j++) {
 			if (m_inds[k].shallowCopied() ) {
 				if (indGenoBegin(k) < spBegin || indGenoEnd(k) > spEnd)
@@ -1991,11 +1723,7 @@ void population::adjustGenoPosition(bool order)
 
 		// copy info
 		InfoType tmp2;
-#ifdef SIMUMPI
-		for (UINT a = 0; a < localInfoSize(); ++a)
-#else
 		for (UINT a = 0; a < infoSize(); ++a)
-#endif
 		{
 			tmp2 = m_inds[ scIndex[0] ].info(a);
 			m_inds[scIndex[0] ].setInfo(m_inds[ scIndex[1] ].info(a), a);
@@ -2010,13 +1738,8 @@ void population::adjustGenoPosition(bool order)
 	}
 
 	/// save genotypic info
-#ifdef SIMUMPI
-	vectora scGeno(scIndex.size() * localNumLoci() * ploidy());
-	vectorinfo scInfo(scIndex.size() * localInfoSize());
-#else
 	vectora scGeno(scIndex.size() * totNumLoci() * ploidy());
 	vectorinfo scInfo(scIndex.size() * infoSize());
-#endif
 	vector<GenoIterator> scPtr(scIndex.size() );
 	vector<InfoIterator> scInfoPtr(scIndex.size() );
 
@@ -2024,16 +1747,6 @@ void population::adjustGenoPosition(bool order)
 
 	for (i = 0, iEnd = scIndex.size(); i < iEnd;  i++) {
 		scPtr[i] = m_inds[ scIndex[i]].genoPtr();
-#ifdef SIMUMPI
-#  ifdef BINARYALLELE
-		copyGenotype(indGenoBegin(scIndex[i]), scGeno.begin() + i * localGenoSize(), localGenoSize());
-#  else
-		copy(indGenoBegin(scIndex[i]), indGenoEnd(scIndex[i]), scGeno.begin() + i * localGenoSize());
-#  endif
-		scInfoPtr[i] = m_inds[ scIndex[i]].infoPtr();
-		copy(ind(scIndex[i]).infoBegin(), ind(scIndex[i]).infoEnd(),
-		    scInfo.begin() + i * localInfoSize());
-#else
 #  ifdef BINARYALLELE
 		copyGenotype(indGenoBegin(scIndex[i]), scGeno.begin() + i * genoSize(), genoSize());
 #  else
@@ -2042,7 +1755,6 @@ void population::adjustGenoPosition(bool order)
 		scInfoPtr[i] = m_inds[ scIndex[i]].infoPtr();
 		copy(ind(scIndex[i]).infoBegin(), ind(scIndex[i]).infoEnd(),
 		    scInfo.begin() + i * infoSize());
-#endif
 	}
 
 	DBG_DO(DBG_POPULATION, cout << "Shallow copied" << scIndex << endl);
@@ -2054,17 +1766,7 @@ void population::adjustGenoPosition(bool order)
 	/// copy back.
 	for (i = 0, iEnd = scIndex.size(); i < iEnd;  i++) {
 		m_inds[ scIndex[i] ].setGenoPtr(scPtr[i]);
-#ifdef SIMUMPI
-#  ifdef BINARYALLELE
-		copyGenotype(scGeno.begin() + i * localGenoSize(), indGenoBegin(scIndex[i]), localGenoSize());
-#  else
-		copy(scGeno.begin() + i * localGenoSize(), scGeno.begin() + (i + 1) * localGenoSize(),
-		    indGenoBegin(scIndex[i]));
-#  endif
-		m_inds[ scIndex[i] ].setInfoPtr(scInfoPtr[i]);
-		copy(scInfo.begin() + i * localInfoSize(), scInfo.begin() + (i + 1) * localInfoSize(),
-		    ind(scIndex[i]).infoBegin());
-#else
+
 #  ifdef BINARYALLELE
 		copyGenotype(scGeno.begin() + i * genoSize(), indGenoBegin(scIndex[i]), genoSize());
 #  else
@@ -2074,7 +1776,6 @@ void population::adjustGenoPosition(bool order)
 		m_inds[ scIndex[i] ].setInfoPtr(scInfoPtr[i]);
 		copy(scInfo.begin() + i * infoSize(), scInfo.begin() + (i + 1) * infoSize(),
 		    ind(scIndex[i]).infoBegin());
-#endif
 		m_inds[ scIndex[i] ].setShallowCopied(false);
 	}
 	//setShallowCopied(false);
@@ -2093,11 +1794,7 @@ void population::adjustInfoPosition(bool order)
 	   {
 	 */
 	DBG_DO(DBG_POPULATION, cout << "Refresh all order " << endl);
-#ifdef SIMUMPI
-	UINT is = localInfoSize();
-#else
 	UINT is = infoSize();
-#endif
 	size_t i;
 	vectorinfo tmpInfo(m_popSize * is);
 	vectorinfo::iterator infoPtr = tmpInfo.begin();

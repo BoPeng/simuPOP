@@ -578,17 +578,7 @@ public:
 		CHECKRANGEABSLOCUS(locus);
 		if (order && shallowCopied())
 			adjustGenoPosition(true);
-#ifdef SIMUMPI
-		UINT rank = rankOfLocus(locus);
-		if (mpiRank() == rank)
-			return GappedAlleleIterator(m_genotype.begin() + locus - beginLocus(),
-			           localNumLoci());
-		else
-			// this iterator is invalid
-			return GappedAlleleIterator(m_genotype.begin(), 0);
-#else
 		return GappedAlleleIterator(m_genotype.begin() + locus, totNumLoci());
-#endif
 	}
 
 
@@ -598,16 +588,7 @@ public:
 		CHECKRANGEABSLOCUS(locus);
 		if (order && shallowCopied())
 			adjustGenoPosition(true);
-#ifdef SIMUMPI
-		UINT rank = rankOfLocus(locus);
-		if (mpiRank() == rank)
-			return GappedAlleleIterator(m_genotype.begin() + locus -
-			           beginLocus() + m_popSize * localGenoSize(), localNumLoci());
-		else
-			return GappedAlleleIterator(m_genotype.begin(), 0);
-#else
 		return GappedAlleleIterator(m_genotype.begin() + locus + m_popSize * genoSize(), totNumLoci());
-#endif
 	}
 
 
@@ -623,18 +604,8 @@ public:
 
 		if (shallowCopied())
 			adjustGenoPosition(order);
-#ifdef SIMUMPI
-		UINT rank = rankOfLocus(locus);
-		if (mpiRank() == rank)
-			return GappedAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * localGenoSize() +
-			           locus - beginLocus(), localNumLoci());
-		else
-			return GappedAlleleIterator(m_genotype.begin(), 0);
-
-#else
 		return GappedAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
 		           locus, totNumLoci());
-#endif
 	}
 
 
@@ -647,17 +618,8 @@ public:
 		if (shallowCopied())
 			adjustGenoPosition(order);
 
-#ifdef SIMUMPI
-		UINT rank = rankOfLocus(locus);
-		if (mpiRank() == rank)
-			return GappedAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * localGenoSize() +
-			           locus - beginLocus(), localNumLoci());
-		else
-			return GappedAlleleIterator(m_genotype.begin(), 0);
-#else
 		return GappedAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
 		           locus, totNumLoci());
-#endif
 	}
 
 
@@ -697,11 +659,7 @@ public:
 		if (shallowCopied())
 			adjustGenoPosition(order);
 
-#ifdef SIMUMPI
-		return m_genotype.begin() + m_subPopIndex[subPop] * localGenoSize();
-#else
 		return m_genotype.begin() + m_subPopIndex[subPop] * genoSize();
-#endif
 	}
 
 
@@ -712,11 +670,7 @@ public:
 		if (shallowCopied())
 			adjustGenoPosition(order);
 
-#ifdef SIMUMPI
-		return m_genotype.begin() + m_subPopIndex[subPop + 1] * localGenoSize();
-#else
 		return m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize();
-#endif
 	}
 
 
@@ -1059,28 +1013,6 @@ public:
 	}
 
 
-#ifdef SIMUMPI
-	GappedInfoIterator infoBegin(UINT idx, bool order);
-
-	GappedInfoIterator infoEnd(UINT idx, bool order);
-
-	GappedInfoIterator infoBegin(UINT index, UINT subPop, bool order);
-
-	GappedInfoIterator infoEnd(UINT index, UINT subPop, bool order);
-
-	vectorinfo indInfo(UINT idx, bool order);
-
-	vectorinfo indInfo(const string & name, bool order);
-
-	vectorinfo indInfo(UINT idx, UINT subPop, bool order);
-
-	vectorinfo indInfo(const string & name, UINT subPop, bool order);
-
-	PyObject * arrIndInfo(bool order);
-
-	PyObject * arrIndInfo(UINT subPop, bool order);
-
-#else
 	/// CPPONLY info iterator
 	/**
 	   if order=true, keep order,
@@ -1223,7 +1155,6 @@ public:
 	}
 
 
-#endif
 
 	///	add an information field to a population
 	/**
