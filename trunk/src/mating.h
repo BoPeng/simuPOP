@@ -138,7 +138,6 @@ public:
 	/// generate \c numOff offspring
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
 	                               IndIterator & offBegin,
-	                               IndIterator & offEnd,
 	                               vector<baseOperator *> & ops) = 0;
 
 
@@ -211,7 +210,6 @@ public:
 	// the default method to produce offspring
 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
 	                       IndIterator & offBegin,
-	                       IndIterator & offEnd,
 	                       vector<baseOperator *> & ops);
 
 };
@@ -220,10 +218,10 @@ public:
 class mendelianOffspringGenerator : public offspringGenerator
 {
 public:
-	mendelianOffspringGenerator(double numOffspring=1,
-	                            PyObject * numOffspringFunc=NULL,
-	                            UINT maxNumOffspring=1,
-	                            UINT mode=MATE_NumOffspring
+	mendelianOffspringGenerator(double numOffspring = 1,
+	                            PyObject * numOffspringFunc = NULL,
+	                            UINT maxNumOffspring = 1,
+	                            UINT mode = MATE_NumOffspring
 	                            ) :
 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode),
 		m_bt(rng())
@@ -246,7 +244,6 @@ public:
 
 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
 	                       IndIterator & offBegin,
-	                       IndIterator & offEnd,
 	                       vector<baseOperator *> & ops);
 
 protected:
@@ -284,7 +281,6 @@ public:
 
 	UINT generateOffspring(population & pop, individual * parent, individual *,
 	                       IndIterator & offBegin,
-	                       IndIterator & offEnd,
 	                       vector<baseOperator *> & ops);
 
 };

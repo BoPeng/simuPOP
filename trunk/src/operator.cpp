@@ -379,7 +379,7 @@ bool pyIndOperator::apply(population & pop)
 	}
 	// call the python function, pass the each individual to it.
 	// get pop object
-	for (IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it) {
+	for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
 		PyObject * indObj = pyIndObj(static_cast<void *>(& * it));
 		// if pop is valid?
 		if (indObj == NULL)

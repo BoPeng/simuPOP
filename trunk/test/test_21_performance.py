@@ -188,6 +188,25 @@ class TestPerformance(unittest.TestCase):
             # 4.43, 8.42, 10.55
             # 97.44
             # 
+            # Using IndIterator with m_allInds (no obvious performance penalty)
+            #
+            # op 
+            # 0.31, 0.38, 0.58
+            # 4.22, 7.94, 10.42
+            # 92.87, 121.83, 152.49
+            #
+            # baop
+            # 0.41, 0.53, 0.76
+            # 5.64, 9.70, 12.66
+            # 100.48,
+            #
+            # Using IndIterator.valid(), should be quicker, 
+            # but there is no performance gain.
+            #
+            # op
+            # 0.31, 0.38, 0.61
+            # 4.26, 8.00, 10.8
+            # 92.62, 121.88, 155.84
             # 
 
     def TestLongGenome(self):

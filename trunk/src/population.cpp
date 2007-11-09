@@ -30,11 +30,11 @@
 #include <boost/iostreams/device/file.hpp>
 
 #ifdef SIMUMPI
-#include <boost/parallel/mpi.hpp>
+#  include <boost/parallel/mpi.hpp>
 namespace mpi = boost::parallel::mpi;
 
 // define action codes
-#include "slave.h"
+#  include "slave.h"
 #endif
 
 namespace io = boost::iostreams;
@@ -105,7 +105,7 @@ population::population(ULONG size,
 				cout << "Length of chromosome map: " << chromMap.size() << endl;
 		}
 		throw SystemError("Insufficient nodes. At least " + toStr(nodes) + " (1 + number of chromosomes "
-		    "or 1 + length of chromMap ) number of nodes are required\n");
+		                                                                   "or 1 + length of chromMap ) number of nodes are required\n");
 	}
 	m_popID = uniqueID();
 	// create the population on other nodes by sending other nodes the command and parameters
@@ -558,7 +558,7 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSiz
 				DBG_DO(DBG_POPULATION, cout << "Current subpop size " <<
 				    this->subPopSizes() << endl);
 				throw ValueError("Populaiton size is fixed (by allowPopSizeChange parameter).\n"
-				    " Subpop sizes should add up to popsize");
+				                 " Subpop sizes should add up to popsize");
 			}
 #endif
 
@@ -629,7 +629,7 @@ void population::setSubPopByIndID(vectori id)
 		// popsize etc will be changed.
 		ULONG newPopSize = m_popSize;
 		IndIterator it = indBegin();
-		for (; it != indEnd();  ++it) {
+		for (; it.valid();  ++it) {
 			if (it->subPopID() < 0)
 				newPopSize-- ;
 			else
@@ -691,7 +691,7 @@ void population::setSubPopByIndID(vectori id)
 
 		// check subpop size
 		fill(m_subPopSize.begin(), m_subPopSize.end(), 0);
-		for (IndIterator it = indBegin(), itEnd = indEnd(); it < itEnd;  ++it)
+		for (IndIterator it = indBegin(); it.valid();  ++it)
 			m_subPopSize[ static_cast<UINT>(it->subPopID()) ]++;
 	}
 	// rebuild index
@@ -726,7 +726,7 @@ void population::splitSubPop(UINT which, vectorlu sizes, vectoru subPopID)
 	}
 	ULONG sz = 0;                                                                     // idx within subpop
 	size_t newSPIdx = 0;
-	for (IndIterator ind = indBegin(which); ind != indEnd(which); ++ind) {
+	for (IndIterator ind = indBegin(which); ind.valid(); ++ind) {
 		if (sz == sizes[newSPIdx]) {
 			sz = 0;
 			newSPIdx++;
@@ -798,12 +798,12 @@ void population::removeSubPops(const vectoru & subPops, bool shiftSubPopID, bool
 	for (size_t sp = 0; sp < m_numSubPop; ++sp) {
 		if (find(subPops.begin(), subPops.end(), sp) != subPops.end()) {
 			shift++;
-			for (IndIterator ind = indBegin(sp); ind != indEnd(sp); ++ind)
+			for (IndIterator ind = indBegin(sp); ind.valid(); ++ind)
 				ind->setSubPopID(-1); // remove
 		}
 		// other subpop shift left
 		else if (shiftSubPopID) {
-			for (IndIterator ind = indBegin(sp); ind != indEnd(sp); ++ind)
+			for (IndIterator ind = indBegin(sp); ind.valid(); ++ind)
 				ind->setSubPopID(sp - shift); // shift left
 		}
 	}
@@ -867,7 +867,7 @@ void population::mergeSubPops(vectoru subPops, bool removeEmptySubPops)
 	UINT id = subPops[0];
 	for (UINT sp = 0; sp < numSubPop(); ++sp) {
 		if (find(subPops.begin(), subPops.end(), sp) != subPops.end())
-			for (IndIterator ind = indBegin(sp); ind != indEnd(sp); ++ind)
+			for (IndIterator ind = indBegin(sp); ind.valid(); ++ind)
 				ind->setSubPopID(id);
 	}
 	int oldNumSP = numSubPop();
@@ -1263,8 +1263,8 @@ void population::reorderSubPops(const vectoru & order, const vectoru & rank,
 	if (removeEmptySubPops)
 		this->removeEmptySubPops();
 
-	if ( ( !order.empty() && order.size() != m_numSubPop )
-	    || ( !rank.empty() && rank.size() != m_numSubPop))
+	if ( (!order.empty() && order.size() != m_numSubPop)
+	    || (!rank.empty() && rank.size() != m_numSubPop))
 		cout << "Warning: Given order or rank does not have the length of number of subpop." << endl;
 
 	if (!order.empty()) {
@@ -1272,14 +1272,14 @@ void population::reorderSubPops(const vectoru & order, const vectoru & rank,
 		for (size_t i = 0; i < order.size(); ++i) {
 			if (order[i] >= numSubPop())
 				continue;
-			for (IndIterator ind = indBegin(order[i]); ind != indEnd(order[i]); ++ind)
+			for (IndIterator ind = indBegin(order[i]); ind.valid(); ++ind)
 				ind->setSubPopID(i);
 		}
 	} else {
 		for (size_t i = 0; i < rank.size(); ++i) {
 			if (i >= numSubPop())
 				continue;
-			for (IndIterator ind = indBegin(i); ind != indEnd(i); ++ind)
+			for (IndIterator ind = indBegin(i); ind.valid(); ++ind)
 				ind->setSubPopID(rank[i]);
 		}
 	}
@@ -1304,7 +1304,7 @@ population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmpt
 		}
 	} else {
 		for (UINT sp = 0; sp < numSubPop(); ++sp) {
-			for (IndIterator it = indBegin(sp); it != indEnd(sp); ++it) {
+			for (IndIterator it = indBegin(sp); it.valid(); ++it) {
 				int indID = it->subPopID();
 				if (indID < 0)
 					continue;
@@ -1332,7 +1332,7 @@ population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmpt
 			}
 		}
 	} else {
-		for (; from != indEnd(); ++from) {
+		for (; from.valid(); ++from) {
 			int indID = from->subPopID();
 			if (indID >= 0) {
 				to[indID]->copyFrom(*from);
@@ -1564,12 +1564,12 @@ void population::addInfoField(const string field, double init)
 		int oldAncPop = m_curAncestralGen;
 		for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
 			useAncestralPop(anc);
-			for (IndIterator ind = indBegin(); ind != indEnd(); ++ind)
+			for (IndIterator ind = indBegin(); ind.valid(); ++ind)
 				ind->setInfo(init, idx);
 		}
 		useAncestralPop(oldAncPop);
 		return;
-	} catch (IndexError & ) {
+	} catch (IndexError &) {
 		newfields.push_back(field);
 	}
 
@@ -1583,7 +1583,7 @@ void population::addInfoField(const string field, double init)
 			vectorinfo newInfo(is * popSize());
 			// copy the old stuff in
 			InfoIterator ptr = newInfo.begin();
-			for (IndIterator ind = indBegin(); ind != indEnd(); ++ind) {
+			for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
 				copy(ind->infoBegin(), ind->infoBegin() + is - 1, ptr);
 				ind->setInfoPtr(ptr);
 				ind->setGenoStruIdx(genoStruIdx());
@@ -1616,11 +1616,11 @@ void population::addInfoFields(const vectorstr & fields, double init)
 			for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
 				useAncestralPop(anc);
 
-				for (IndIterator ind = indBegin(); ind != indEnd(); ++ind)
+				for (IndIterator ind = indBegin(); ind.valid(); ++ind)
 					ind->setInfo(init, idx);
 			}
 			useAncestralPop(oldAncPop);
-		} catch (IndexError & ) {
+		} catch (IndexError &) {
 			newfields.push_back(*it);
 		}
 	}
@@ -1637,7 +1637,7 @@ void population::addInfoFields(const vectorstr & fields, double init)
 			vectorinfo newInfo(is * popSize(), 0.);
 			// copy the old stuff in
 			InfoIterator ptr = newInfo.begin();
-			for (IndIterator ind = indBegin(); ind != indEnd(); ++ind) {
+			for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
 				copy(ind->infoBegin(), ind->infoBegin() + os, ptr);
 				ind->setInfoPtr(ptr);
 				ind->setGenoStruIdx(genoStruIdx());
@@ -1662,7 +1662,7 @@ void population::setInfoFields(const vectorstr & fields, double init)
 		useAncestralPop(anc);
 		vectorinfo newInfo(is * popSize(), init);
 		InfoIterator ptr = newInfo.begin();
-		for (IndIterator ind = indBegin(); ind != indEnd(); ++ind, ptr += is) {
+		for (IndIterator ind = indBegin(); ind.valid(); ++ind, ptr += is) {
 			ind->setInfoPtr(ptr);
 			ind->setGenoStruIdx(genoStruIdx());
 		}
@@ -1696,7 +1696,7 @@ void population::useAncestralPop(UINT idx)
 		return;
 
 	DBG_DO(DBG_POPULATION, cout << "Use ancestralPop: " << idx <<
-	    "Curidx: " <<  m_curAncestralGen << endl);
+	    "Curidx: " << m_curAncestralGen << endl);
 
 	if (idx == 0 || m_curAncestralGen != 0) {         // recover pop.
 		popData & pd = m_ancestralPops[ m_curAncestralGen - 1 ];
@@ -1764,13 +1764,13 @@ void population::savePopulation(const string & filename, const string & format, 
 	if (!ofs)
 		throw ValueError("Can not open file " + filename);
 
-	if (format == "text" || (format == "auto" && (ext == "txt" || ext == "txt.gz" ))) {
+	if (format == "text" || (format == "auto" && (ext == "txt" || ext == "txt.gz"))) {
 		boost::archive::text_oarchive oa(ofs);
 		oa << *this;
-	} else if (format == "xml" || (format == "auto" && (ext == "xml" || ext == "xml.gz" ))) {
+	} else if (format == "xml" || (format == "auto" && (ext == "xml" || ext == "xml.gz"))) {
 		boost::archive::xml_oarchive oa(ofs);
 		oa << boost::serialization::make_nvp("population", *this);
-	} else if (format == "bin" ||  (format == "auto" && (ext == "bin" || ext == "bin.gz" ))) {
+	} else if (format == "bin" || (format == "auto" && (ext == "bin" || ext == "bin.gz"))) {
 		boost::archive::binary_oarchive oa(ofs);
 		oa << *this;
 	} else
@@ -1799,13 +1799,13 @@ void population::loadPopulation(const string & filename, const string & format)
 
 	// try to load the file, according to file extension.
 	try {
-		if (format == "text" || (format == "auto" && (ext == "txt" || ext == "txt.gz" ) )) {
+		if (format == "text" || (format == "auto" && (ext == "txt" || ext == "txt.gz") )) {
 			boost::archive::text_iarchive ia(ifs);
 			ia >> *this;
-		} else if (format == "xml" ||  (format == "auto" && (ext == "xml" || ext == "xml.gz" ) )) {
+		} else if (format == "xml" || (format == "auto" && (ext == "xml" || ext == "xml.gz") )) {
 			boost::archive::xml_iarchive ia(ifs);
 			ia >> boost::serialization::make_nvp("population", *this);
-		} else if (format == "bin" || (format == "auto" && (ext == "bin" || ext == "bin.gz" ) )) {
+		} else if (format == "bin" || (format == "auto" && (ext == "bin" || ext == "bin.gz") )) {
 			boost::archive::binary_iarchive ia(ifs);
 			ia >> *this;
 		} else                                                                              // need special handling
@@ -1890,7 +1890,7 @@ PyObject * population::dict(int subPop)
 		DBG_ASSERT(hasVar("subPop"), ValueError,
 		    "subPop statistics does not exist yet.");
 
-		PyObject * spObj =  getVar("subPop");
+		PyObject * spObj = getVar("subPop");
 		spObj = PyList_GetItem(spObj, subPop);
 
 		DBG_ASSERT(spObj != NULL, SystemError,
@@ -1923,7 +1923,7 @@ void population::adjustGenoPosition(bool order)
 		vectora::iterator it = tmpGenotype.begin();
 		vectorinfo::iterator infoPtr = tmpInfo.begin();
 
-		for (IndIterator ind = indBegin(), indEd = indEnd(); ind != indEd; ++ind) {
+		for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
 #ifdef BINARYALLELE
 			copyGenotype(ind->genoBegin(), it, sz);
 #else
@@ -1952,10 +1952,10 @@ void population::adjustGenoPosition(bool order)
 	for (UINT sp = 0, spEd = numSubPop(); sp < spEd;  sp++) {
 #ifdef SIMUMPI
 		GenoIterator spBegin = m_genotype.begin() + m_subPopIndex[sp] * localGenoSize();
-		GenoIterator spEnd   = m_genotype.begin() + m_subPopIndex[sp + 1] * localGenoSize();
+		GenoIterator spEnd = m_genotype.begin() + m_subPopIndex[sp + 1] * localGenoSize();
 #else
 		GenoIterator spBegin = m_genotype.begin() + m_subPopIndex[sp] * genoSize();
-		GenoIterator spEnd   = m_genotype.begin() + m_subPopIndex[sp + 1] * genoSize();
+		GenoIterator spEnd = m_genotype.begin() + m_subPopIndex[sp + 1] * genoSize();
 #endif
 		for (j = 0, jEnd = subPopSize(sp); j < jEnd;  j++) {
 			if (m_inds[k].shallowCopied() ) {
@@ -1984,7 +1984,7 @@ void population::adjustGenoPosition(bool order)
 
 		Allele tmp1;
 		for (UINT a = 0; a < genoSize(); ++a) {
-			tmp1 =  m_inds[ scIndex[0] ].allele(a);
+			tmp1 = m_inds[ scIndex[0] ].allele(a);
 			m_inds[scIndex[0] ].setAllele(m_inds[ scIndex[1] ].allele(a), a);
 			m_inds[scIndex[1] ].setAllele(tmp1, a);
 		}
@@ -1997,7 +1997,7 @@ void population::adjustGenoPosition(bool order)
 		for (UINT a = 0; a < infoSize(); ++a)
 #endif
 		{
-			tmp2 =  m_inds[ scIndex[0] ].info(a);
+			tmp2 = m_inds[ scIndex[0] ].info(a);
 			m_inds[scIndex[0] ].setInfo(m_inds[ scIndex[1] ].info(a), a);
 			m_inds[scIndex[1] ].setInfo(tmp2, a);
 		}
@@ -2025,20 +2025,20 @@ void population::adjustGenoPosition(bool order)
 	for (i = 0, iEnd = scIndex.size(); i < iEnd;  i++) {
 		scPtr[i] = m_inds[ scIndex[i]].genoPtr();
 #ifdef SIMUMPI
-#ifdef BINARYALLELE
+#  ifdef BINARYALLELE
 		copyGenotype(indGenoBegin(scIndex[i]), scGeno.begin() + i * localGenoSize(), localGenoSize());
-#else
+#  else
 		copy(indGenoBegin(scIndex[i]), indGenoEnd(scIndex[i]), scGeno.begin() + i * localGenoSize());
-#endif
+#  endif
 		scInfoPtr[i] = m_inds[ scIndex[i]].infoPtr();
 		copy(ind(scIndex[i]).infoBegin(), ind(scIndex[i]).infoEnd(),
 		    scInfo.begin() + i * localInfoSize());
 #else
-#ifdef BINARYALLELE
+#  ifdef BINARYALLELE
 		copyGenotype(indGenoBegin(scIndex[i]), scGeno.begin() + i * genoSize(), genoSize());
-#else
+#  else
 		copy(indGenoBegin(scIndex[i]), indGenoEnd(scIndex[i]), scGeno.begin() + i * genoSize());
-#endif
+#  endif
 		scInfoPtr[i] = m_inds[ scIndex[i]].infoPtr();
 		copy(ind(scIndex[i]).infoBegin(), ind(scIndex[i]).infoEnd(),
 		    scInfo.begin() + i * infoSize());
@@ -2055,24 +2055,24 @@ void population::adjustGenoPosition(bool order)
 	for (i = 0, iEnd = scIndex.size(); i < iEnd;  i++) {
 		m_inds[ scIndex[i] ].setGenoPtr(scPtr[i]);
 #ifdef SIMUMPI
-#ifdef BINARYALLELE
+#  ifdef BINARYALLELE
 		copyGenotype(scGeno.begin() + i * localGenoSize(), indGenoBegin(scIndex[i]), localGenoSize());
-#else
-		copy(scGeno.begin() + i *  localGenoSize(), scGeno.begin() + (i + 1) *  localGenoSize(),
+#  else
+		copy(scGeno.begin() + i * localGenoSize(), scGeno.begin() + (i + 1) * localGenoSize(),
 		    indGenoBegin(scIndex[i]));
-#endif
+#  endif
 		m_inds[ scIndex[i] ].setInfoPtr(scInfoPtr[i]);
-		copy(scInfo.begin() + i *  localInfoSize(), scInfo.begin() + (i + 1) *  localInfoSize(),
+		copy(scInfo.begin() + i * localInfoSize(), scInfo.begin() + (i + 1) * localInfoSize(),
 		    ind(scIndex[i]).infoBegin());
 #else
-#ifdef BINARYALLELE
+#  ifdef BINARYALLELE
 		copyGenotype(scGeno.begin() + i * genoSize(), indGenoBegin(scIndex[i]), genoSize());
-#else
-		copy(scGeno.begin() + i *  genoSize(), scGeno.begin() + (i + 1) *  genoSize(),
+#  else
+		copy(scGeno.begin() + i * genoSize(), scGeno.begin() + (i + 1) * genoSize(),
 		    indGenoBegin(scIndex[i]));
-#endif
+#  endif
 		m_inds[ scIndex[i] ].setInfoPtr(scInfoPtr[i]);
-		copy(scInfo.begin() + i *  infoSize(), scInfo.begin() + (i + 1) *  infoSize(),
+		copy(scInfo.begin() + i * infoSize(), scInfo.begin() + (i + 1) * infoSize(),
 		    ind(scIndex[i]).infoBegin());
 #endif
 		m_inds[ scIndex[i] ].setShallowCopied(false);
@@ -2103,7 +2103,7 @@ void population::adjustInfoPosition(bool order)
 	vectorinfo::iterator infoPtr = tmpInfo.begin();
 	vectorinfo::iterator tmp;
 
-	for (IndIterator ind = indBegin(), indEd = indEnd(); ind != indEd; ++ind) {
+	for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
 		tmp = ind->infoBegin();
 		for (i = 0; i < is; ++i)
 			infoPtr[i] = tmp[i];
@@ -2135,8 +2135,7 @@ vectorf testGetinfoFromInd(population & pop)
 	vectorf a(pop.popSize());
 	size_t i = 0;
 
-	for (IndIterator ind = pop.indBegin(), indEnd = pop.indEnd();
-	     ind != indEnd; ++ind)
+	for (IndIterator ind = pop.indBegin(); ind.valid(); ++ind)
 		a[i++] = ind->info(0);
 	return a;
 }
