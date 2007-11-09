@@ -697,11 +697,10 @@ bool randomMating::mate(population & pop, population & scratch, vector<baseOpera
 
 		// generate scratch.subPopSize(sp) individuals.
 		IndIterator it = scratch.indBegin(sp);
-		UINT numOff;
 		while (it.valid()) {
 			parentChooser::individualPair const parents = pc.chooseParents();
 			//
-			numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, ops);
+			UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, ops);
 			// record family size (this may be wrong for the last family)
 			DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 		}
