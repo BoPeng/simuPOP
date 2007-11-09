@@ -22,6 +22,7 @@
 ***************************************************************************/
 
 #include "population.h"
+#include "virtualSubPop.h"
 
 // for file compression
 #include <boost/iostreams/filtering_stream.hpp>
@@ -41,10 +42,22 @@ namespace io = boost::iostreams;
 namespace simuPOP {
 individual & individualIterator::next()
 {
-	if (m_index == m_end)
-		throw StopIteration("");
-	else
-		return m_population->ind(m_index++);
+	// this is the easy (and faster) case
+	if (m_allInds) {
+		if (m_index == m_end)
+			throw StopIteration("");
+		else
+			return m_population->ind(m_index++);
+	}
+	// check the visibility of individuals
+	do {
+		if (m_index == m_end)
+			throw StopIteration("");
+		else if (m_population->ind(m_index).visible())
+			return m_population->ind(m_index++);
+		else
+			++m_index;
+	} while (true);
 }
 
 
@@ -656,7 +669,7 @@ void population::setSubPopByIndID(vectori id)
 #endif
 		vector<individual> newInds(newPopSize);
 
-		DBG_ASSERT(indEnd() == newPopSize + it, SystemError,
+		DBG_ASSERT(indEnd() == it + newPopSize, SystemError,
 		    "Pointer misplaced. ");
 
 		// assign genotype location and set structure information for individuals
@@ -2142,7 +2155,7 @@ vectorf testGetinfoFromInd(population & pop)
 	vectorf a(pop.popSize());
 	size_t i = 0;
 
-	for (population::IndIterator ind = pop.indBegin(), indEnd = pop.indEnd();
+	for (IndIterator ind = pop.indBegin(), indEnd = pop.indEnd();
 	     ind != indEnd; ++ind)
 		a[i++] = ind->info(0);
 	return a;

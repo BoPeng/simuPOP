@@ -302,5 +302,7 @@ public:
 	}
 };
 
+
+//typedef vector<virtualSubPop*> vectorvsp;
 }
 #endif

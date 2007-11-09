@@ -141,7 +141,7 @@ public:
 	/// apply the recombinator during mating
 	/// CPPONLY
 	virtual bool applyDuringMating(population & pop,
-	                               population::IndIterator offspring,
+	                               IndIterator offspring,
 	                               individual * dad = NULL,
 	                               individual * mom = NULL);
 
@@ -151,7 +151,7 @@ private:
 	// bt contains the bernulli trailer
 	void recombine(
 	               individual * parent,                                         // one of the parent
-	               population::IndIterator & offspring,                         // offspring
+	               IndIterator & offspring,                         // offspring
 	               int offPloidy,                                               // which offspring ploidy to fill
 	               BernulliTrials & bt,
 	               const vectoru & recBeforeLoci,

@@ -24,7 +24,7 @@
 #include "tagger.h"
 
 namespace simuPOP {
-bool inheritTagger::applyDuringMating(population & pop, population::IndIterator offspring,
+bool inheritTagger::applyDuringMating(population & pop, IndIterator offspring,
                                       individual * dad, individual * mom)
 {
 	UINT id1 = 0, id2 = 0;
@@ -62,7 +62,7 @@ bool inheritTagger::applyDuringMating(population & pop, population::IndIterator 
 }
 
 
-bool parentsTagger::applyDuringMating(population & pop, population::IndIterator offspring,
+bool parentsTagger::applyDuringMating(population & pop, IndIterator offspring,
                                       individual * dad, individual * mom)
 {
 	UINT id1 = pop.infoIdx(infoField(0));
@@ -82,7 +82,7 @@ bool parentsTagger::applyDuringMating(population & pop, population::IndIterator 
 }
 
 
-bool pyTagger::applyDuringMating(population & pop, population::IndIterator offspring,
+bool pyTagger::applyDuringMating(population & pop, IndIterator offspring,
                                  individual * dad, individual * mom)
 {
 	UINT numFields = infoSize();

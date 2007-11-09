@@ -30,6 +30,7 @@
 
 #include "utility.h"
 #include <vector>
+#include <iterator>
 #include <numeric>
 using std::vector;
 using std::accumulate;
@@ -72,20 +73,28 @@ using boost::serialization::make_nvp;
 namespace simuPOP {
 
 class population;
+typedef int vsp;
+typedef vector<vsp*> vectorvsp;
 
-/// this class implements a Python itertor class that
-/// can be used to iterate through individuals in a
-/// population.
-///
-/// an instance of this class is returned by
-/// population::individuals() and population::individuals(subPop)
+/**
+	this class implements a Python itertor class that can be used to iterate
+    through individuals in a (sub)population. If allInds are true, 
+    visiblility of individuals will not be checked. Note that 
+    individualIterator *will* iterate through only visible individuals, and
+    allInds is only provided when we know in advance that all individuals are
+    visible. This is a way to obtain better performance in simple cases.
+   
+    An instance of this class is returned by
+    population::individuals() and population::individuals(subPop)
+  */
 class individualIterator
 {
 public:
-	individualIterator(population * pop, ULONG s, ULONG e) :
+	individualIterator(population * pop, ULONG s, ULONG e, bool allInds) :
 		m_population(pop),
 		m_index(s),
-		m_end(e)
+		m_end(e),
+		m_allInds(allInds)
 	{
 	}
 
@@ -112,20 +121,139 @@ private:
 
 	// ending index
 	ULONG m_end;
+
+	//
+	bool m_allInds;
 };
 
-/** NOTE TO THE MPI VERSION OF THE POPULATION
- *
- * The MPI version of simuPOP spread the chromosomes
- * across the nodes of a cluster system.
- *
- * The head node (0) keeps all the individual, variables
- * and information fields, but no genotype.
- *
- * Other nodes (1-...) has one chromosome (0-...) of genotype
- * nothing else.
- *
- **/
+/** 
+	this class implements a C++ iterator class that iterate through
+	individuals in a (sub)population. If allInds are true, the
+	visiblility of individuals will not be checked. Note that 
+    individualIterator *will* iterate through only visible individuals, and
+    allInds is only provided when we know in advance that all individuals are
+    visible. This is a way to obtain better performance in simple cases.
+   */
+template <typename T>
+class IndividualIterator
+{
+public:
+	typedef std::random_access_iterator_tag iterator_category;
+	typedef typename T::value_type value_type;
+	typedef long int difference_type;
+	typedef typename T::reference reference;
+	typedef typename T::pointer pointer;
+
+	IndividualIterator() : m_it(), m_allInds(true)
+	{
+	}
+
+	IndividualIterator(T it, bool allInds=true)
+	: m_it(it), m_allInds(allInds)
+	{
+	}
+
+	IndividualIterator(const IndividualIterator & rhs) 
+	: m_it(rhs.m_it), m_allInds(rhs.m_allInds)
+	{
+	}
+
+
+	IndividualIterator & operator=(const IndividualIterator & rhs)
+	{
+		m_it = rhs.m_it;
+		m_allInds = rhs.m_allInds;
+		return *this;
+	}
+
+	reference operator*() const
+	{
+		return *m_it;
+	}
+
+	pointer operator->() const
+	{
+		return &*m_it;
+	}
+	
+	reference operator[](difference_type diff) const
+	{
+//		if (m_allInds)
+			return *(m_it + diff);
+	}
+
+	IndividualIterator operator++(int)
+	{
+//		if (m_allInds)
+			return IndividualIterator(m_it++);
+	}
+	
+	IndividualIterator operator++()
+	{
+//		if (m_allInds)
+			return IndividualIterator(++m_it);
+	}
+	
+	IndividualIterator operator+(difference_type diff)
+	{
+//		if (m_allInds)
+			return IndividualIterator(m_it+diff);
+	}
+	
+	IndividualIterator operator-(difference_type diff)
+	{
+//		if (m_allInds)
+			return IndividualIterator(m_it - diff);
+	}
+
+	difference_type operator-(IndividualIterator rhs)
+	{
+//		if (m_allInds)
+			return m_it - rhs.m_it;
+	}
+
+	IndividualIterator operator--(int)
+	{
+//		if (m_allInds)
+			return IndividualIterator(m_it--);
+	}
+	
+	IndividualIterator operator--()
+	{
+//		if (m_allInds)
+			return IndividualIterator(--m_it);
+	}
+
+	bool operator!=(const IndividualIterator & rhs)
+	{
+		return m_it != rhs.m_it;
+	}
+
+	bool operator==(const IndividualIterator & rhs)
+	{
+		return m_it == rhs.m_it;
+	}
+
+	bool operator<(const IndividualIterator & rhs)
+	{
+		return m_it < rhs.m_it;
+	}
+	
+	bool operator>(const IndividualIterator & rhs)
+	{
+		return m_it > rhs.m_it;
+	}
+
+private:
+	
+	T m_it;
+	bool m_allInds;
+};
+
+typedef IndividualIterator<vector<individual>::iterator> IndIterator;
+typedef IndividualIterator<vector<individual>::const_iterator> ConstIndIterator;
+//typedef vector<individual>::iterator IndIterator;
+//typedef vector<individual>::const_iterator ConstIndIterator;
 
 //************Documentation Format*****************
 //   /// brief description
@@ -170,9 +298,6 @@ private:
 class population : public GenoStruTrait
 {
 public:
-	/// individual itertor, used to iterate all individuals.
-	typedef vector<individual>::iterator IndIterator;
-	typedef vector<individual>::const_iterator ConstIndIterator;
 
 	/** @name  constructors and destructor */
 	//@{
@@ -290,6 +415,18 @@ public:
 	string __repr__()
 	{
 		return "<simuPOP::population of size " + toStr(popSize()) + ">";
+	}
+
+
+	bool hasVirtualSubPop()
+	{
+		return !m_vsps.empty();
+	}
+
+	bool isSubPopVirtual(SubPopID subPop)
+	{
+		return !m_vsps.empty() &&
+			m_vsps[subPop] != NULL;
 	}
 
 
@@ -457,7 +594,8 @@ public:
 	 */
 	individualIterator individuals()
 	{
-		return individualIterator(this, 0, popSize());
+		return individualIterator(this, 0, popSize(), 
+			hasVirtualSubPop());
 	}
 
 
@@ -468,7 +606,8 @@ public:
 		CHECKRANGESUBPOP(subPop);
 #endif
 
-		return individualIterator(this, subPopBegin(subPop), subPopEnd(subPop));
+		return individualIterator(this, subPopBegin(subPop), 
+			subPopEnd(subPop), isSubPopVirtual(subPop));
 	}
 
 
@@ -491,7 +630,7 @@ public:
 	}
 
 
-	/// CPPONLY
+/// CPPONLY
 	bool shallowCopied()
 	{
 		return m_shallowCopied;
@@ -522,14 +661,14 @@ public:
 	/// CPPONLY individual iterator: without subPop info
 	IndIterator indBegin()
 	{
-		return m_inds.begin();
+		return IndIterator(m_inds.begin());
 	}
 
 
 	/// CPPONLY individual iterator: without subPop info
 	IndIterator indEnd()
 	{
-		return m_inds.end();
+		return IndIterator(m_inds.end());
 	}
 
 
@@ -538,7 +677,7 @@ public:
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		return m_inds.begin() + absIndIndex(0, subPop);
+		return IndIterator(m_inds.begin() + absIndIndex(0, subPop));
 	}
 
 
@@ -547,21 +686,21 @@ public:
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		return m_inds.begin() + m_subPopIndex[subPop + 1];
+		return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1]);
 	}
 
 
 	/// CPPONLY individual iterator: without subPop info
 	ConstIndIterator indBegin() const
 	{
-		return m_inds.begin();
+		return ConstIndIterator(m_inds.begin());
 	}
 
 
 	/// CPPONLY individual iterator: without subPop info
 	ConstIndIterator indEnd() const
 	{
-		return m_inds.end();
+		return ConstIndIterator(m_inds.end());
 	}
 
 
@@ -570,7 +709,7 @@ public:
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		return m_inds.begin() + absIndIndex(0, subPop);
+		return ConstIndIterator(m_inds.begin() + absIndIndex(0, subPop));
 	}
 
 
@@ -579,7 +718,7 @@ public:
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		return m_inds.begin() + m_subPopIndex[subPop + 1];
+		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop + 1]);
 	}
 
 
@@ -2002,23 +2141,21 @@ private:
 
 private:
 	/// population size: number of individual
-	/// MPI: in all nodes
 	ULONG m_popSize;
 
 	/// number of subpopulations
-	/// MPI: in all nodes
 	UINT m_numSubPop;
 
 	/// size of each subpopulation
-	/// MPI: in all nodes
 	vectorlu m_subPopSize;
 
 	/// index to subPop \todo change to vectorl
-	/// MPI: in all nodes
 	vectorlu m_subPopIndex;
 
+	///
+	vectorvsp m_vsps;
+
 	/// pool of genotypic information
-	/// MPI: empty in head node, one chromosome for others.
 	vectora m_genotype;
 
 	/// information

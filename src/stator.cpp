@@ -111,7 +111,7 @@ bool statNumOfMale::apply(population & pop)
 	ULONG numOfMale = 0;
 	for (size_t sp = 0; sp < numSP; ++sp) {
 		ULONG n = 0;
-		for (population::IndIterator it = pop.indBegin(sp), itEnd = pop.indEnd(sp);
+		for (IndIterator it = pop.indBegin(sp), itEnd = pop.indEnd(sp);
 		     it < itEnd; ++it) {
 			if (it->sex() == Male)
 				n++;
@@ -1764,9 +1764,9 @@ double statRelatedness::groupRelatedness(population & pop, int i, int j, int met
 		switch (method) {
 		case REL_Queller:
 			// from subpop i and j
-			for (population::IndIterator ind1 = pop.indBegin(sp1);
+			for (IndIterator ind1 = pop.indBegin(sp1);
 			     ind1 != pop.indEnd(sp1); ++ind1) {
-				for (population::IndIterator ind2 = pop.indBegin(sp2);
+				for (IndIterator ind2 = pop.indBegin(sp2);
 				     ind2 != pop.indEnd(sp2); ++ind2) {
 					fraction tmp = relQueller(*ind1, *ind2);
 					res.first += tmp.first / tmp.second;
@@ -1776,9 +1776,9 @@ double statRelatedness::groupRelatedness(population & pop, int i, int j, int met
 			return res.first / res.second;
 		case REL_Lynch:
 			// from subpop i and j
-			for (population::IndIterator ind1 = pop.indBegin(sp1);
+			for (IndIterator ind1 = pop.indBegin(sp1);
 			     ind1 != pop.indEnd(sp1); ++ind1) {
-				for (population::IndIterator ind2 = pop.indBegin(sp2);
+				for (IndIterator ind2 = pop.indBegin(sp2);
 				     ind2 != pop.indEnd(sp2); ++ind2) {
 					fraction tmp = relLynch(*ind1, *ind2);
 					res.first += tmp.first / tmp.second;
@@ -1787,7 +1787,7 @@ double statRelatedness::groupRelatedness(population & pop, int i, int j, int met
 			}                                                                         // lynch
 			return res.first / res.second;
 		case REL_IR:
-			for (population::IndIterator ind1 = pop.indBegin(sp1);
+			for (IndIterator ind1 = pop.indBegin(sp1);
 			     ind1 != pop.indEnd(sp1); ++ind1) {
 				fraction tmp = relIR(*ind1, j);
 				res.first += tmp.first;
@@ -1795,7 +1795,7 @@ double statRelatedness::groupRelatedness(population & pop, int i, int j, int met
 			}                                                                         // lynch
 			return res.first / res.second;
 		case REL_D2:
-			for (population::IndIterator ind1 = pop.indBegin(sp1);
+			for (IndIterator ind1 = pop.indBegin(sp1);
 			     ind1 != pop.indEnd(sp1); ++ind1) {
 				fraction tmp = relD2(*ind1, j);
 				res.first += tmp.first / tmp.second;
@@ -1803,9 +1803,9 @@ double statRelatedness::groupRelatedness(population & pop, int i, int j, int met
 			}                                                                         // lynch
 			return res.first / res.second;
 		case REL_Rel:
-			for (population::IndIterator ind1 = pop.indBegin(sp1);
+			for (IndIterator ind1 = pop.indBegin(sp1);
 			     ind1 != pop.indEnd(sp1); ++ind1) {
-				for (population::IndIterator ind2 = ind1 + 1;
+				for (IndIterator ind2 = ind1 + 1;
 				     ind2 != pop.indEnd(sp1); ++ind2) {
 					fraction tmp = relRel(*ind1, *ind2, j);
 					res.first += tmp.first;

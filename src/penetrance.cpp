@@ -49,7 +49,7 @@ bool penetrance::apply(population & pop)
 			UINT idx = pop.infoIdx(infoField(0));
 			penIt = pop.infoBegin(idx, true);
 		}
-		for (population::IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it) {
+		for (IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it) {
 			p = penet(& * it);
 
 			if (rng().randUniform01() < p)
@@ -66,7 +66,7 @@ bool penetrance::apply(population & pop)
 }
 
 
-bool penetrance::applyDuringMating(population & pop, population::IndIterator offspring,
+bool penetrance::applyDuringMating(population & pop, IndIterator offspring,
                                    individual * dad, individual * mom)
 {
 	double p = penet(& * offspring);

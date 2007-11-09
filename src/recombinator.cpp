@@ -195,7 +195,7 @@ void recombinator::prepareRecRates(population & pop,
 // bt contains the bernulli trailer
 void recombinator::recombine(
                              individual * parent,                           // one of the parent
-                             population::IndIterator & offspring,           // offspring
+                             IndIterator & offspring,           // offspring
                              int offPloidy,                                 // which offspring ploidy to fill
                              BernulliTrials & bt,
                              const vectoru & recBeforeLoci,
@@ -288,7 +288,7 @@ void recombinator::recombine(
 
 
 bool recombinator::applyDuringMating(population & pop,
-                                     population::IndIterator offspring,
+                                     IndIterator offspring,
                                      individual * dad,
                                      individual * mom)
 {
