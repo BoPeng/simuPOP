@@ -374,6 +374,7 @@ void individual::display(ostream & out, int width, const vectori & chrom, const 
 	}
 }
 
+
 individual & pyIndIterator::next()
 {
 	// this is the easy (and faster) case
@@ -393,7 +394,6 @@ individual & pyIndIterator::next()
 			++m_index;
 	} while (true);
 }
-
 
 
 }

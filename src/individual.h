@@ -36,9 +36,9 @@
 //
 // the following is required by a vc7.1 bug.
 #if  defined (_WIN32) || defined (__WIN32__)
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <fstream>
+#  include <boost/archive/binary_iarchive.hpp>
+#  include <boost/archive/binary_oarchive.hpp>
+#  include <fstream>
 using std::ofstream;
 using std::ifstream;
 #endif                                                                                    // win32
@@ -110,17 +110,17 @@ class individual : public GenoStruTrait
 
 protected:
 	/// 0: male, 1: female regardless of outside coding
-	static const size_t m_flagFemale          = 1;
+	static const size_t m_flagFemale = 1;
 
 	/// if this individual is affect
-	static const size_t m_flagAffected        = 2;
+	static const size_t m_flagAffected = 2;
 
 	/// if this individual is the result of a shoallow copy
-	static const size_t m_flagShallowCopied   = 4;
+	static const size_t m_flagShallowCopied = 4;
 
 	/// if this individual is visible. This is used
 	/// to implement virtual subpopulations
-	static const size_t m_flagVisible          = 8;
+	static const size_t m_flagVisible = 8;
 
 public:
 	///  @name constructor, destructor etc
@@ -141,7 +141,7 @@ public:
 		m_genoPtr(ind.m_genoPtr),
 		m_infoPtr(ind.m_infoPtr)
 	{
-		setShallowCopied(true);		
+		setShallowCopied(true);
 	}
 
 
@@ -410,6 +410,7 @@ public:
 		return affected() ? 'A' : 'U';
 	}
 
+
 	/// set affection status
 	void setAffected(bool affected)
 	{
@@ -419,10 +420,12 @@ public:
 			RESETFLAG(m_flags, m_flagAffected);
 	}
 
+
 	bool visible() const
 	{
 		return ISSETFLAG(m_flags, m_flagVisible);
 	}
+
 
 	void setVisible(bool visible)
 	{
@@ -431,6 +434,7 @@ public:
 		else
 			RESETFLAG(m_flags, m_flagVisible);
 	}
+
 
 	/// return the ID of the subpopulation to which this individual blongs
 	/**
@@ -724,23 +728,22 @@ protected:
 };
 
 
-
 /**
-	this class implements a Python itertor class that can be used to iterate
-    through individuals in a (sub)population. If allInds are true, 
-    visiblility of individuals will not be checked. Note that 
-    individualIterator *will* iterate through only visible individuals, and
-    allInds is only provided when we know in advance that all individuals are
-    visible. This is a way to obtain better performance in simple cases.
-   
-    An instance of this class is returned by
-    population::individuals() and population::individuals(subPop)
-  */
+   	this class implements a Python itertor class that can be used to iterate
+   	through individuals in a (sub)population. If allInds are true,
+   	visiblility of individuals will not be checked. Note that
+   	individualIterator *will* iterate through only visible individuals, and
+   	allInds is only provided when we know in advance that all individuals are
+   	visible. This is a way to obtain better performance in simple cases.
+
+   	An instance of this class is returned by
+   	population::individuals() and population::individuals(subPop)
+ */
 class pyIndIterator
 {
 public:
 	pyIndIterator(vector<individual>::iterator const begin,
-		vector<individual>::iterator const end, bool allInds) :
+	              vector<individual>::iterator const end, bool allInds) :
 		m_index(begin),
 		m_end(end),
 		m_allInds(allInds)
@@ -772,14 +775,14 @@ private:
 	bool m_allInds;
 };
 
-/** 
-	this class implements a C++ iterator class that iterate through
-	individuals in a (sub)population. If allInds are true, the
-	visiblility of individuals will not be checked. Note that 
-    individualIterator *will* iterate through only visible individuals, and
-    allInds is only provided when we know in advance that all individuals are
-    visible. This is a way to obtain better performance in simple cases.
-   */
+/**
+   	this class implements a C++ iterator class that iterate through
+   	individuals in a (sub)population. If allInds are true, the
+   	visiblility of individuals will not be checked. Note that
+   	individualIterator *will* iterate through only visible individuals, and
+   	allInds is only provided when we know in advance that all individuals are
+   	visible. This is a way to obtain better performance in simple cases.
+ */
 template <typename T>
 class IndividualIterator
 {
@@ -790,109 +793,145 @@ public:
 	typedef typename T::reference reference;
 	typedef typename T::pointer pointer;
 
-	IndividualIterator() : m_it(), m_allInds(true)
+	IndividualIterator() : m_it(), m_end(), m_allInds(true)
 	{
+		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
 	}
 
-	IndividualIterator(T it, bool allInds=true)
-	: m_it(it), m_allInds(allInds)
+
+	IndividualIterator(T it, T end, bool allInds = true)
+		: m_it(it), m_end(end), m_allInds(allInds)
 	{
+		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
 	}
 
-	IndividualIterator(const IndividualIterator & rhs) 
-	: m_it(rhs.m_it), m_allInds(rhs.m_allInds)
+
+	bool valid()
 	{
+		return m_it < m_end;
+	}
+
+
+	IndividualIterator(const IndividualIterator & rhs)
+		: m_it(rhs.m_it), m_end(rhs.m_end), m_allInds(rhs.m_allInds)
+	{
+		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
 	}
 
 
 	IndividualIterator & operator=(const IndividualIterator & rhs)
 	{
 		m_it = rhs.m_it;
+		m_end = rhs.m_end;
 		m_allInds = rhs.m_allInds;
+		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
 		return *this;
 	}
+
 
 	reference operator*() const
 	{
 		return *m_it;
 	}
 
+
 	pointer operator->() const
 	{
-		return &*m_it;
+		return & * m_it;
 	}
-	
+
+
 	reference operator[](difference_type diff) const
 	{
-//		if (m_allInds)
+		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
+		if (m_allInds)
 			return *(m_it + diff);
 	}
 
+
 	IndividualIterator operator++(int)
 	{
-//		if (m_allInds)
-			return IndividualIterator(m_it++);
+		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
+		if (m_allInds)
+			return IndividualIterator(m_it++, m_end, m_allInds);
 	}
-	
+
+
 	IndividualIterator operator++()
 	{
-//		if (m_allInds)
-			return IndividualIterator(++m_it);
+		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
+		if (m_allInds)
+			return IndividualIterator(++m_it, m_end, m_allInds);
 	}
-	
+
+
 	IndividualIterator operator+(difference_type diff)
 	{
-//		if (m_allInds)
-			return IndividualIterator(m_it+diff);
+		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
+		if (m_allInds)
+			return IndividualIterator(m_it + diff, m_end, m_allInds);
 	}
-	
+
+
 	IndividualIterator operator-(difference_type diff)
 	{
-//		if (m_allInds)
-			return IndividualIterator(m_it - diff);
+		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
+		if (m_allInds)
+			return IndividualIterator(m_it - diff, m_end, m_allInds);
 	}
+
 
 	difference_type operator-(IndividualIterator rhs)
 	{
-//		if (m_allInds)
+		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
+		if (m_allInds)
 			return m_it - rhs.m_it;
 	}
 
+
 	IndividualIterator operator--(int)
 	{
-//		if (m_allInds)
-			return IndividualIterator(m_it--);
+		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
+		if (m_allInds)
+			return IndividualIterator(m_it--, m_end, m_allInds);
 	}
-	
+
+
 	IndividualIterator operator--()
 	{
-//		if (m_allInds)
-			return IndividualIterator(--m_it);
+		DBG_ASSERT(m_allInds, ValueError, "Only allinds is supported");
+		if (m_allInds)
+			return IndividualIterator(--m_it, m_end, m_allInds);
 	}
+
 
 	bool operator!=(const IndividualIterator & rhs)
 	{
 		return m_it != rhs.m_it;
 	}
 
+
 	bool operator==(const IndividualIterator & rhs)
 	{
 		return m_it == rhs.m_it;
 	}
 
+
 	bool operator<(const IndividualIterator & rhs)
 	{
 		return m_it < rhs.m_it;
 	}
-	
+
+
 	bool operator>(const IndividualIterator & rhs)
 	{
 		return m_it > rhs.m_it;
 	}
 
+
 private:
-	
 	T m_it;
+	T m_end;
 	bool m_allInds;
 };
 

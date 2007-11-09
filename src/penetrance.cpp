@@ -49,7 +49,7 @@ bool penetrance::apply(population & pop)
 			UINT idx = pop.infoIdx(infoField(0));
 			penIt = pop.infoBegin(idx, true);
 		}
-		for (IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it) {
+		for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
 			p = penet(& * it);
 
 			if (rng().randUniform01() < p)

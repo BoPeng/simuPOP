@@ -91,8 +91,6 @@ bool migrator::apply(population & pop)
 	// set info of individual
 	pop.setIndSubPopIDWithID();
 
-	IndIterator ind, indEd;
-
 	vectorlu toIndices(0);
 
 	Weightedsampler ws(rng());
@@ -110,8 +108,7 @@ bool migrator::apply(population & pop)
 			ws.set(m_rate[from]);
 
 			// for each individual, migrate according to migration probability
-			for (ind = pop.indBegin(spFrom), indEd = pop.indEnd(spFrom);
-			     ind != indEd;  ++ind) {
+			for (IndIterator ind = pop.indBegin(spFrom); ind.valid();  ++ind) {
 				//toIndex = rng().randIntByFreq( rateSize, &m_rate[from][0] ) ;
 				toIndex = ws.get();
 
@@ -152,11 +149,11 @@ bool migrator::apply(population & pop)
 			toIndices[k++] = spFrom;
 
 		random_shuffle(toIndices.begin(), toIndices.end());
-		ind = pop.indBegin(spFrom);
+		IndIterator ind = pop.indBegin(spFrom);
 		// set info
 		for (UINT i = 0; i < spSize; ++i)
 			// SubPopID is signed short, to save a few bits
-			(ind + i )->setSubPopID(static_cast<SubPopID>(toIndices[i]));
+			(ind + i)->setSubPopID(static_cast<SubPopID>(toIndices[i]));
 	}                                                                                         /// for all subPop.
 
 	// do migration.
@@ -201,7 +198,7 @@ bool pyMigrator::apply(population & pop)
 	}
 	// call the python function, pass the each individual to it.
 	// get pop object
-	for (IndIterator it = pop.indBegin(); it != pop.indEnd(); ++it) {
+	for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
 		PyObject * indObj = pyIndObj(static_cast<void *>(& * it));
 		// if pop is valid?
 		if (indObj == NULL)

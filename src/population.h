@@ -66,15 +66,15 @@ using boost::serialization::make_nvp;
 
 #ifdef SIMUMPI
 
-#define SLAVE_CREATE 1
-#define SLAVE_DESTROY 2
+#  define SLAVE_CREATE 1
+#  define SLAVE_DESTROY 2
 #endif
 
 namespace simuPOP {
 
 class population;
 typedef int vsp;
-typedef vector<vsp*> vectorvsp;
+typedef vector<vsp *> vectorvsp;
 
 
 //************Documentation Format*****************
@@ -120,7 +120,6 @@ typedef vector<vsp*> vectorvsp;
 class population : public GenoStruTrait
 {
 public:
-
 	/** @name  constructors and destructor */
 	//@{
 
@@ -240,15 +239,16 @@ public:
 	}
 
 
-	bool hasVirtualSubPop()
+	bool hasVirtualSubPop() const
 	{
 		return !m_vsps.empty();
 	}
 
-	bool isSubPopVirtual(SubPopID subPop)
+
+	bool isSubPopVirtual(SubPopID subPop) const
 	{
 		return !m_vsps.empty() &&
-			m_vsps[subPop] != NULL;
+		       m_vsps[subPop] != NULL;
 	}
 
 
@@ -416,8 +416,8 @@ public:
 	 */
 	pyIndIterator individuals()
 	{
-		return pyIndIterator(m_inds.begin(), m_inds.end(), 
-			hasVirtualSubPop());
+		return pyIndIterator(m_inds.begin(), m_inds.end(),
+		           hasVirtualSubPop());
 	}
 
 
@@ -428,8 +428,8 @@ public:
 		CHECKRANGESUBPOP(subPop);
 #endif
 
-		return pyIndIterator(m_inds.begin() + subPopBegin(subPop), 
-			m_inds.begin() + subPopEnd(subPop), isSubPopVirtual(subPop));
+		return pyIndIterator(m_inds.begin() + subPopBegin(subPop),
+		           m_inds.begin() + subPopEnd(subPop), isSubPopVirtual(subPop));
 	}
 
 
@@ -452,7 +452,7 @@ public:
 	}
 
 
-/// CPPONLY
+	/// CPPONLY
 	bool shallowCopied()
 	{
 		return m_shallowCopied;
@@ -483,14 +483,16 @@ public:
 	/// CPPONLY individual iterator: without subPop info
 	IndIterator indBegin()
 	{
-		return IndIterator(m_inds.begin());
+		return IndIterator(m_inds.begin(), m_inds.end(),
+		           !hasVirtualSubPop());
 	}
 
 
 	/// CPPONLY individual iterator: without subPop info
 	IndIterator indEnd()
 	{
-		return IndIterator(m_inds.end());
+		return IndIterator(m_inds.end(), m_inds.end(),
+		           !hasVirtualSubPop());
 	}
 
 
@@ -499,7 +501,9 @@ public:
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		return IndIterator(m_inds.begin() + absIndIndex(0, subPop));
+		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
+		           m_inds.begin() + m_subPopIndex[subPop + 1],
+		           !isSubPopVirtual(subPop));
 	}
 
 
@@ -508,21 +512,26 @@ public:
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1]);
+		return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
+		           m_inds.begin() + m_subPopIndex[subPop + 1],
+		           !isSubPopVirtual(subPop));
 	}
 
 
 	/// CPPONLY individual iterator: without subPop info
 	ConstIndIterator indBegin() const
 	{
-		return ConstIndIterator(m_inds.begin());
+		return ConstIndIterator(m_inds.begin(), m_inds.end(),
+		           !hasVirtualSubPop());
 	}
 
 
 	/// CPPONLY individual iterator: without subPop info
+	/// It is recommended to use it.valid(), instead of it != indEnd()
 	ConstIndIterator indEnd() const
 	{
-		return ConstIndIterator(m_inds.end());
+		return ConstIndIterator(m_inds.end(), m_inds.end(),
+		           !hasVirtualSubPop());
 	}
 
 
@@ -531,16 +540,21 @@ public:
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		return ConstIndIterator(m_inds.begin() + absIndIndex(0, subPop));
+		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
+		           m_inds.begin() + m_subPopIndex[subPop + 1],
+		           !isSubPopVirtual(subPop));
 	}
 
 
 	/// CPPONLY individual iterator: with subPop info.
+	/// It is recommended to use it.valid(), instead of it != indEnd(sp)
 	ConstIndIterator indEnd(UINT subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop + 1]);
+		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
+		           m_inds.begin() + m_subPopIndex[subPop + 1],
+		           !isSubPopVirtual(subPop));
 	}
 
 
@@ -1708,7 +1722,7 @@ private:
 
 		if (ma > ModuleMaxAllele)
 			cout << "Warning: The population is saved in library with more allele states. \n"
-			     << "Unless all alleles are less than "  << ModuleMaxAllele
+			     << "Unless all alleles are less than " << ModuleMaxAllele
 			     << ", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n";
 
 		GenoStructure stru;
@@ -1817,7 +1831,7 @@ private:
 			cout << "Number of individuals loaded" << m_inds.size() << endl;
 			cout << "population size" << m_popSize << endl;
 			throw ValueError("Number of individuals does not match population size.\n"
-			    "Please use the same (binary, short or long) module to save and load files.");
+			                 "Please use the same (binary, short or long) module to save and load files.");
 		}
 
 		DBG_DO(DBG_POPULATION, cout << "Reconstruct individual genotype" << endl);
@@ -2047,11 +2061,11 @@ vectorf testGetinfoFromPop(population & pop, bool order);
 
 
 #ifndef SWIG
-#ifndef _NO_SERIALIZATION_
+#  ifndef _NO_SERIALIZATION_
 // version 0: base
 // version 1: save info
 // version 2: reduce binary file size
 BOOST_CLASS_VERSION(simuPOP::population, 2)
-#endif
+#  endif
 #endif
 #endif
