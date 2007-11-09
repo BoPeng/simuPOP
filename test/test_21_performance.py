@@ -21,7 +21,7 @@
 # .cpp files, and will be available ONLY when SIMUDEBUG is defined
 #
 import simuOpt
-simuOpt.setOptions(quiet=False, optimized=True)
+simuOpt.setOptions(quiet=False)
 
 from simuPOP import *
 import unittest, os, sys, exceptions, time
@@ -72,6 +72,22 @@ class TestPerformance(unittest.TestCase):
         # and enougrage the use of individual iterator
         # I am not sure why, but mating schemes have been 
         # rewitten according to this. 
+        #
+        # version 0.8.2, gcc 4.2
+        # 
+        # N=10000
+        # From ind: 0.030000
+        # From pop, no rearrange: 0.030000
+        # From pop, with rearrange: 0.040000
+        # N=100000
+        # From ind: 0.850000
+        # From pop, no rearrange: 0.790000
+        # From pop, with rearrange: 1.200000
+        # N=1000000
+        # From ind: 10.410000
+        # From pop, no rearrange: 9.560000
+        # From pop, with rearrange: 13.860000
+
 
     def TestRandomMating(self):
         'Testing the performance of random mating '
@@ -95,7 +111,6 @@ class TestPerformance(unittest.TestCase):
             # with sel
             print "N=%d" % N
             pop = population(N, loci=[1], infoFields=['a', 'fitness'])
-            TurnOnDebug(DBG_DEVEL)
             c1 = time.clock()
             simu = simulator(pop, randomMating())
             simu.evolve(
@@ -153,6 +168,27 @@ class TestPerformance(unittest.TestCase):
             #    4.26, 6.02, 7.65
             #    43.66, 64.6, 83.77
             #
+            #
+            # Version 0.8.2, rewrite offspringGenerators, GCC 4.1.2
+            #
+            # 11/8/2007 
+            #
+            # op
+            # 0.31, 0.37, 0.55
+            # 4.31, 7.81, 9.93
+            # 93.81,
+            # 
+            # baop
+            # 0.41, 0.51, 0.71
+            # 5.6, 9.61, 12.05
+            # 98.84, ...
+            # 
+            # laop
+            # 0.32, 0.35, 0.54
+            # 4.43, 8.42, 10.55
+            # 97.44
+            # 
+            # 
 
     def TestLongGenome(self):
         'Testing the performance of recombination with long genome'
@@ -221,6 +257,10 @@ class TestPerformance(unittest.TestCase):
     # short:  4.52,  18.64, 50.28
     # long:   5.59,  20.04, 52.00
     #
+    # 2007/11/9, version 0.8.2
+    # binary: 2.28, 15.61, 98.95
+    # short: 5.32, 18.62, 50.72
+    # long: 6.32, 19.82, 52.03
 
 
     def TestBernulliTrials(self):
@@ -305,11 +345,16 @@ class TestPerformance(unittest.TestCase):
         # STRANGE: I can not reproduce this wonderful result
         # something went wrong with this run...
         #   0.17, 1.26, 1.67, 12.68
-        #   
+        #
+        # long:
+        #   0.78, 1.38, 17.89, 53.31
+        # binary:
+        #   1.00, 1.79, 17.56, 34.66
+        # 
 
     def TestSimuComplexDisease(self):
         ''' recording the runtime of simuComplexDisease.py '''
-        cmd = '''time python /home/bpeng/simuPOP/test/simuComplexDisease.py --noDialog
+        cmd = '''time python /home/bpeng/simuPOP/scripts/simuComplexDisease.py --noDialog
             --numChrom='8' --optimized
             --numLoci='10' --markerType='SNP' --DSL='(15, 26, 37, 48)' 
             --DSLLoc='(0.5, 0.5, 0.5, 0.5)' --initSize='1000' --endingSize='50000' 
@@ -335,6 +380,9 @@ class TestPerformance(unittest.TestCase):
         # 44.5u
         #
         # Remove rebombinator: 57.5s
+        #
+        # Something wrong. only 41s is needed.
+        #
 
     def TestRecombinationAlgorithm0(self):
         ''' Testing the performance of different recombination algorithms '''
