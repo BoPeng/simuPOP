@@ -374,5 +374,26 @@ void individual::display(ostream & out, int width, const vectori & chrom, const 
 	}
 }
 
+individual & pyIndIterator::next()
+{
+	// this is the easy (and faster) case
+	if (m_allInds) {
+		if (m_index == m_end)
+			throw StopIteration("");
+		else
+			return *m_index++;
+	}
+	// check the visibility of individuals
+	do {
+		if (m_index == m_end)
+			throw StopIteration("");
+		else if (m_index->visible())
+			return *m_index++;
+		else
+			++m_index;
+	} while (true);
+}
+
+
 
 }

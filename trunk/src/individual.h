@@ -722,14 +722,194 @@ protected:
 	/// pointer to info
 	InfoIterator m_infoPtr;
 };
+
+
+
+/**
+	this class implements a Python itertor class that can be used to iterate
+    through individuals in a (sub)population. If allInds are true, 
+    visiblility of individuals will not be checked. Note that 
+    individualIterator *will* iterate through only visible individuals, and
+    allInds is only provided when we know in advance that all individuals are
+    visible. This is a way to obtain better performance in simple cases.
+   
+    An instance of this class is returned by
+    population::individuals() and population::individuals(subPop)
+  */
+class pyIndIterator
+{
+public:
+	pyIndIterator(vector<individual>::iterator const begin,
+		vector<individual>::iterator const end, bool allInds) :
+		m_index(begin),
+		m_end(end),
+		m_allInds(allInds)
+	{
+	}
+
+
+	~pyIndIterator()
+	{
+	}
+
+
+	pyIndIterator __iter__()
+	{
+		return *this;
+	}
+
+
+	individual & next();
+
+private:
+	// current (initial individual)
+	vector<individual>::iterator m_index;
+
+	// ending index
+	vector<individual>::iterator m_end;
+
+	//
+	bool m_allInds;
+};
+
+/** 
+	this class implements a C++ iterator class that iterate through
+	individuals in a (sub)population. If allInds are true, the
+	visiblility of individuals will not be checked. Note that 
+    individualIterator *will* iterate through only visible individuals, and
+    allInds is only provided when we know in advance that all individuals are
+    visible. This is a way to obtain better performance in simple cases.
+   */
+template <typename T>
+class IndividualIterator
+{
+public:
+	typedef std::random_access_iterator_tag iterator_category;
+	typedef typename T::value_type value_type;
+	typedef long int difference_type;
+	typedef typename T::reference reference;
+	typedef typename T::pointer pointer;
+
+	IndividualIterator() : m_it(), m_allInds(true)
+	{
+	}
+
+	IndividualIterator(T it, bool allInds=true)
+	: m_it(it), m_allInds(allInds)
+	{
+	}
+
+	IndividualIterator(const IndividualIterator & rhs) 
+	: m_it(rhs.m_it), m_allInds(rhs.m_allInds)
+	{
+	}
+
+
+	IndividualIterator & operator=(const IndividualIterator & rhs)
+	{
+		m_it = rhs.m_it;
+		m_allInds = rhs.m_allInds;
+		return *this;
+	}
+
+	reference operator*() const
+	{
+		return *m_it;
+	}
+
+	pointer operator->() const
+	{
+		return &*m_it;
+	}
+	
+	reference operator[](difference_type diff) const
+	{
+//		if (m_allInds)
+			return *(m_it + diff);
+	}
+
+	IndividualIterator operator++(int)
+	{
+//		if (m_allInds)
+			return IndividualIterator(m_it++);
+	}
+	
+	IndividualIterator operator++()
+	{
+//		if (m_allInds)
+			return IndividualIterator(++m_it);
+	}
+	
+	IndividualIterator operator+(difference_type diff)
+	{
+//		if (m_allInds)
+			return IndividualIterator(m_it+diff);
+	}
+	
+	IndividualIterator operator-(difference_type diff)
+	{
+//		if (m_allInds)
+			return IndividualIterator(m_it - diff);
+	}
+
+	difference_type operator-(IndividualIterator rhs)
+	{
+//		if (m_allInds)
+			return m_it - rhs.m_it;
+	}
+
+	IndividualIterator operator--(int)
+	{
+//		if (m_allInds)
+			return IndividualIterator(m_it--);
+	}
+	
+	IndividualIterator operator--()
+	{
+//		if (m_allInds)
+			return IndividualIterator(--m_it);
+	}
+
+	bool operator!=(const IndividualIterator & rhs)
+	{
+		return m_it != rhs.m_it;
+	}
+
+	bool operator==(const IndividualIterator & rhs)
+	{
+		return m_it == rhs.m_it;
+	}
+
+	bool operator<(const IndividualIterator & rhs)
+	{
+		return m_it < rhs.m_it;
+	}
+	
+	bool operator>(const IndividualIterator & rhs)
+	{
+		return m_it > rhs.m_it;
+	}
+
+private:
+	
+	T m_it;
+	bool m_allInds;
+};
+
+typedef IndividualIterator<vector<individual>::iterator> IndIterator;
+typedef IndividualIterator<vector<individual>::const_iterator> ConstIndIterator;
+//typedef vector<individual>::iterator IndIterator;
+//typedef vector<individual>::const_iterator ConstIndIterator;
+
 }
 
 
 #ifndef SWIG
-// set version for GenoStructure class
+// set version for individual class
 // version 0: base
 // version 1: add sexChrom indicator
 // version 2: add infoSize
 BOOST_CLASS_VERSION(simuPOP::individual, 1)
 #endif
+
 #endif

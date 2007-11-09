@@ -40,26 +40,6 @@ namespace mpi = boost::parallel::mpi;
 namespace io = boost::iostreams;
 
 namespace simuPOP {
-individual & individualIterator::next()
-{
-	// this is the easy (and faster) case
-	if (m_allInds) {
-		if (m_index == m_end)
-			throw StopIteration("");
-		else
-			return m_population->ind(m_index++);
-	}
-	// check the visibility of individuals
-	do {
-		if (m_index == m_end)
-			throw StopIteration("");
-		else if (m_population->ind(m_index).visible())
-			return m_population->ind(m_index++);
-		else
-			++m_index;
-	} while (true);
-}
-
 
 population::population(ULONG size,
                        UINT ploidy,
