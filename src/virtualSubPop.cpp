@@ -140,4 +140,168 @@ void affectionSplitter::reset(population & pop, SubPopID subPop)
 }
 
 
+infoSplitter::infoSplitter(string info, vectorinfo const & values,
+                           vectorf const & cutoff)
+						   : vspSplitter(),
+	m_info(info), m_values(values), m_cutoff(cutoff)
+{
+	DBG_FAILIF(m_values.empty() && m_cutoff.empty(),
+	    ValueError, "Please specify either a list of values, or a set of cutoff values");
+	DBG_FAILIF(!m_values.empty() && !m_cutoff.empty(),
+	    ValueError, "Please specify only a list of values, or a set of cutoff values");
+	// cutoff value has to be ordered
+	if (m_values.empty())
+		for (size_t i = 1; i < m_cutoff.size(); ++i) {
+			DBG_ASSERT(m_cutoff[i - 1] < m_cutoff[i],
+			    ValueError,
+			    "Cutoff values have to be in increasing order");
+		}
 }
+
+
+ULONG infoSplitter::size(const population & pop, virtualSubPopID subPop) const
+{
+	UINT idx = pop.infoIdx(m_info);
+
+	ULONG count = 0;
+
+	ConstRawIndIterator it = pop.rawIndBegin(subPop.id());
+	ConstRawIndIterator it_end = pop.rawIndEnd(subPop.id());
+	if (m_values.empty()) {
+		DBG_FAILIF(subPop.vid() > m_cutoff.size(), IndexError,
+		    "Virtual Subpoplation index out of range of 0 ~ "
+		    + toStr(m_cutoff.size()));
+
+		// using cutoff, below
+		if (subPop.vid() == 0) {
+			for (; it != it_end; ++it)
+				if (it->info(idx) < m_cutoff[0])
+					count++;
+			return count;
+		} else if (subPop.vid() == m_cutoff.size()) {
+			double v = m_cutoff.back();
+			for (; it != it_end; ++it)
+				if (it->info(idx) >= v)
+					count++;
+			return count;
+		} else {         // in between
+			double v1 = m_cutoff[subPop.vid() - 1];
+			double v2 = m_cutoff[subPop.vid()];
+			for (; it != it_end; ++it) {
+				double v = it->info(idx);
+				if (v >= v1 && v < v2)
+					count++;
+			}
+			return count;
+		}
+	} else {
+		DBG_FAILIF(subPop.vid() >= m_values.size(), IndexError,
+		    "Virtual Subpoplation index out of range of 0 ~ "
+		    + toStr(m_values.size() - 1));
+		double v = m_values[subPop.vid()];
+		for (; it != it_end; ++it)
+			if (fcmp_eq(it->info(idx), v))
+				count++;
+		return count;
+	}
+	// should never reach here.
+	return 0;
+}
+
+
+UINT infoSplitter::numVirtualSubPop()
+{
+	if (m_values.empty())
+		return m_cutoff.size() + 1;
+	else
+		return m_values.size();
+}
+
+
+void infoSplitter::activate(population & pop, virtualSubPopID subPop)
+{
+	if (m_activated && m_vsp == subPop.vid())
+		return;
+
+	UINT idx = pop.infoIdx(m_info);
+
+	RawIndIterator it = pop.rawIndBegin(subPop.id());
+	RawIndIterator it_end = pop.rawIndEnd(subPop.id());
+	if (m_values.empty()) {
+		DBG_FAILIF(subPop.id() > m_cutoff.size(), IndexError,
+		    "Virtual Subpoplation index out of range of 0 ~ "
+		    + toStr(m_cutoff.size()));
+
+		// using cutoff, below
+		if (subPop.vid() == 0) {
+			for (; it != it_end; ++it)
+				if (it->info(idx) >= m_cutoff[0])
+					it->setVisible(false);
+				else if (m_activated)
+					it->setVisible(true);
+		} else if (subPop.vid() == m_cutoff.size()) {
+			double v = m_cutoff.back();
+			for (; it != it_end; ++it)
+				if (it->info(idx) < v)
+					it->setVisible(false);
+				else if (m_activated)
+					it->setVisible(true);
+		} else {         // in between
+			double v1 = m_cutoff[subPop.vid() - 1];
+			double v2 = m_cutoff[subPop.vid()];
+			double v = it->info(idx);
+			for (; it != it_end; ++it)
+				if (v < v1 || v >= v2)
+					it->setVisible(false);
+				else if (m_activated)
+					it->setVisible(true);
+		}
+	} else {
+		DBG_FAILIF(subPop.id() >= m_values.size(), IndexError,
+		    "Virtual Subpoplation index out of range of 0 ~ "
+		    + toStr(m_values.size() - 1));
+		for (; it != it_end; ++it) {
+			double v = m_values[subPop.vid()];
+			if (fcmp_ne(it->info(idx), v))
+				it->setVisible(false);
+			else if (m_activated)
+				it->setVisible(true);
+		}
+	}
+	m_activated = true;
+	m_vsp = subPop.vid();
+}
+
+
+void infoSplitter::reset(population & pop, SubPopID subPop)
+{
+	resetSubPop(pop, subPop);
+}
+
+
+string infoSplitter::name(SubPopID sp)
+{
+	if (m_values.empty()) {
+		DBG_FAILIF(sp > m_cutoff.size(), IndexError,
+		    "Virtual Subpoplation index out of range of 0 ~ "
+		    + toStr(m_cutoff.size()));
+		if (sp == 0)
+			return "Info < " + toStr(m_cutoff[0]);
+		else if (sp == m_cutoff.size())
+			return "Info >= " + toStr(m_cutoff[sp - 1]);
+		else
+			return toStr(m_cutoff[sp - 1]) + " <= Info < "
+			       + toStr(m_cutoff[sp]);
+	} else {
+		DBG_FAILIF(sp >= m_values.size(), IndexError,
+		    "Virtual Subpoplation index out of range of 0 ~ "
+		    + toStr(m_values.size() - 1));
+		return "Info " + toStr(m_values[sp]);
+	}
+
+
+}
+
+
+} // namespce simuPOP
+

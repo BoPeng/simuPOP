@@ -14,7 +14,7 @@ import simuOpt
 #simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions
+import unittest, os, sys, exceptions, random
 
 class TestPopulation(unittest.TestCase):
 
@@ -1287,6 +1287,25 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(numUnaffected == 0, False)
      
 
+    def testInfoSplitter(self):
+        'Test info virtual subpop splitter'
+        pop = population(1000, infoFields=['x'])
+        for ind in pop.individuals():
+            ind.setInfo(random.randint(10, 20), 'x')
+        pop.setSplitter(infoSplitter('x', values=range(10, 15)), 0)
+        self.assertEqual(pop.numVirtualSubPop(0), 5)
+        infos = list(pop.indInfo('x', False))
+        self.assertEqual(pop.virtualSubPopName(0.0), "Info 10")
+        self.assertEqual(pop.virtualSubPopName(0.1), "Info 11")
+        self.assertEqual(pop.virtualSubPopName(0.4), "Info 14")
+        self.assertEqual(pop.virtualSubPopSize(0.0), infos.count(10))
+        self.assertEqual(pop.virtualSubPopSize(0.1), infos.count(11))
+        self.assertEqual(pop.virtualSubPopSize(0.2), infos.count(12))
+        self.assertEqual(pop.virtualSubPopSize(0.3), infos.count(13))
+        self.assertEqual(pop.virtualSubPopSize(0.4), infos.count(14))
+        pop.activateVirtualSubPop(0.1)
+        for ind in pop.individuals(0):
+            self.assertEqual(ind.info('x'), 11)
 
 if __name__ == '__main__':
     unittest.main()
