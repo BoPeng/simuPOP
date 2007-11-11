@@ -48,13 +48,20 @@ public:
 	}
 
 
+	virtualSubPopID(int id, int vid) : m_subPop(id),
+		m_virtualSubPop(vid)
+	{
+	}
+
+
 	virtualSubPopID(double id)
 	{
 		m_subPop = static_cast<SubPopID>(floor(id));
 		m_virtualSubPop = static_cast<SubPopID>(floor((id - m_subPop) * 10));
 		DBG_ASSERT(fcmp_eq(id, m_subPop + 0.1 * m_virtualSubPop), ValueError,
 		    "Wrong virtual subpopulation id " + toStr(id) + " ("
-		    + toStr(m_subPop) + ", " + toStr(m_virtualSubPop) + ")");
+		    + toStr(m_subPop) + ", " + toStr(m_virtualSubPop) + ")\n"
+		                                                        "Please use virtualSubPopID(id, vid) instead.");
 	}
 
 
@@ -252,8 +259,6 @@ public:
 	}
 
 
-private:
-	Sex m_sex;
 };
 
 
@@ -291,8 +296,6 @@ public:
 	}
 
 
-private:
-	bool m_affection;
 };
 
 
@@ -330,74 +333,67 @@ private:
 	vectorinfo m_values;
 	//
 	vectorf m_cutoff;
-	//
-	SubPopID m_vsp;
 };
 
 
 /** Split the population according to a proportion */
-/*
-   class proportionSplitter : public vspSplitter
-   {
-   public:
-   	proportionSplitter(vectori const & offWeights);
+class proportionSplitter : public vspSplitter
+{
+public:
+	proportionSplitter(vectorf const & proportions = vectorf());
 
-   	vspSplitter * clone() const
-   	{
-   		return new proportionSplitter(*this);
-   	}
+	vspSplitter * clone() const
+	{
+		return new proportionSplitter(*this);
+	}
 
 
-   	UINT numSplitter(UINT sp)
-   	{
-   		return 1;
-   	}
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
 
-   	// no need to prepare anything.
-   	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
-   	{
-   		return sp;
-   	}
+	UINT numVirtualSubPop();
 
-   	void restoreSubPop(population & pop, population & scratch,
-   							   UINT sp)
-   	{
-   	}
-   };
+	void activate(population & pop, virtualSubPopID subPop);
+
+	void reset(population & pop, SubPopID sp);
+
+	string name(SubPopID sp);
+
+private:
+	vectorf m_proportions;
+};
+
+
+/** split the population according to range status
  */
+class rangeSplitter : public vspSplitter
+{
+public:
+	/**
+	 \param range a shortcut for ranges=[range]
+	 \param ranges a list of ranges
+	 */
+	rangeSplitter(const intMatrix & ranges);
 
-/** Split the population using given ranges. The duplicateSplitter
-   can be a special case of this virtual subpops.
- */
-/*
-   class rangeSplitter : public vspSplitter
-   {
-   public:
-   rangeSplitter(vectori const & offWeights);
-
-   vspSplitter * clone() const
-   {
-   	   return new rangeSplitter(*this);
-   }
+	vspSplitter * clone() const
+	{
+		return new rangeSplitter(*this);
+	}
 
 
-   UINT numSplitter(UINT sp)
-   {
-   	   return 1;
-   }
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
 
-   // no need to prepare anything.
-   UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
-   {
-   	   return sp;
-   }
+	UINT numVirtualSubPop();
 
-   void restoreSubPop(population & pop, population & scratch,
-   							  UINT sp)
-   {
-   }
-   };
- */
+	void activate(population & pop, virtualSubPopID subPop);
+
+	void reset(population & pop, SubPopID sp);
+
+	string name(SubPopID sp);
+
+private:
+	intMatrix m_ranges;
+};
+
 
 typedef vector<vspSplitter *> vectorvsp;
 }

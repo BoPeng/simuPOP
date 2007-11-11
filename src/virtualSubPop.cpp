@@ -73,20 +73,11 @@ void sexSplitter::activate(population & pop, virtualSubPopID subPop)
 {
 	Sex s = subPop.vid() == 0 ? Male : Female;
 
-	if (m_activated && m_sex == s)
-		return;
-
 	RawIndIterator it = pop.rawIndBegin(subPop.id());
 	RawIndIterator it_end = pop.rawIndEnd(subPop.id());
-	for (; it != it_end; ++it) {
-		if (it->sex() != s)
-			// only turn off opposite sex
-			it->setVisible(false);
-		else if (m_activated)
-			// switch? set all
-			it->setVisible(true);
-	}
-	m_sex = s;
+
+	for (; it != it_end; ++it)
+		it->setVisible(it->sex() == s);
 	m_activated = true;
 }
 
@@ -116,20 +107,11 @@ void affectionSplitter::activate(population & pop, virtualSubPopID subPop)
 {
 	bool aff = subPop.vid() == 0 ? false : true;
 
-	if (m_activated && m_affection == aff)
-		return;
-
 	RawIndIterator it = pop.rawIndBegin(subPop.id());
 	RawIndIterator it_end = pop.rawIndEnd(subPop.id());
-	for (; it != it_end; ++it) {
-		if (it->affected() != aff)
-			// only turn off opposite affection status
-			it->setVisible(false);
-		else if (m_activated)
-			// switch? set all
-			it->setVisible(true);
-	}
-	m_affection = aff;
+
+	for (; it != it_end; ++it)
+		it->setVisible(it->affected() == aff);
 	m_activated = true;
 }
 
@@ -221,13 +203,11 @@ UINT infoSplitter::numVirtualSubPop()
 
 void infoSplitter::activate(population & pop, virtualSubPopID subPop)
 {
-	if (m_activated && m_vsp == subPop.vid())
-		return;
-
 	UINT idx = pop.infoIdx(m_info);
 
 	RawIndIterator it = pop.rawIndBegin(subPop.id());
 	RawIndIterator it_end = pop.rawIndEnd(subPop.id());
+
 	if (m_values.empty()) {
 		DBG_FAILIF(subPop.id() > m_cutoff.size(), IndexError,
 		    "Virtual Subpoplation index out of range of 0 ~ "
@@ -236,41 +216,27 @@ void infoSplitter::activate(population & pop, virtualSubPopID subPop)
 		// using cutoff, below
 		if (subPop.vid() == 0) {
 			for (; it != it_end; ++it)
-				if (it->info(idx) >= m_cutoff[0])
-					it->setVisible(false);
-				else if (m_activated)
-					it->setVisible(true);
+				it->setVisible(it->info(idx) < m_cutoff[0]);
 		} else if (subPop.vid() == m_cutoff.size()) {
 			double v = m_cutoff.back();
 			for (; it != it_end; ++it)
-				if (it->info(idx) < v)
-					it->setVisible(false);
-				else if (m_activated)
-					it->setVisible(true);
+				it->setVisible(it->info(idx) >= v);
 		} else {         // in between
 			double v1 = m_cutoff[subPop.vid() - 1];
 			double v2 = m_cutoff[subPop.vid()];
 			double v = it->info(idx);
 			for (; it != it_end; ++it)
-				if (v < v1 || v >= v2)
-					it->setVisible(false);
-				else if (m_activated)
-					it->setVisible(true);
+				it->setVisible(v >= v1 && v < v2);
 		}
 	} else {
 		DBG_FAILIF(subPop.id() >= m_values.size(), IndexError,
 		    "Virtual Subpoplation index out of range of 0 ~ "
 		    + toStr(m_values.size() - 1));
-		for (; it != it_end; ++it) {
-			double v = m_values[subPop.vid()];
-			if (fcmp_ne(it->info(idx), v))
-				it->setVisible(false);
-			else if (m_activated)
-				it->setVisible(true);
-		}
+		double v = m_values[subPop.vid()];
+		for (; it != it_end; ++it)
+			it->setVisible(fcmp_eq(it->info(idx), v));
 	}
 	m_activated = true;
-	m_vsp = subPop.vid();
 }
 
 
@@ -287,20 +253,158 @@ string infoSplitter::name(SubPopID sp)
 		    "Virtual Subpoplation index out of range of 0 ~ "
 		    + toStr(m_cutoff.size()));
 		if (sp == 0)
-			return "Info < " + toStr(m_cutoff[0]);
+			return m_info + " < " + toStr(m_cutoff[0]);
 		else if (sp == m_cutoff.size())
-			return "Info >= " + toStr(m_cutoff[sp - 1]);
+			return m_info + " >= " + toStr(m_cutoff[sp - 1]);
 		else
-			return toStr(m_cutoff[sp - 1]) + " <= Info < "
+			return toStr(m_cutoff[sp - 1]) + " <= " + m_info + " < "
 			       + toStr(m_cutoff[sp]);
 	} else {
 		DBG_FAILIF(sp >= m_values.size(), IndexError,
 		    "Virtual Subpoplation index out of range of 0 ~ "
 		    + toStr(m_values.size() - 1));
-		return "Info " + toStr(m_values[sp]);
+		return m_info + " = " + toStr(m_values[sp]);
 	}
+}
 
 
+proportionSplitter::proportionSplitter(vectorf const & proportions)
+	: vspSplitter(), m_proportions(proportions)
+{
+	DBG_ASSERT(fcmp_eq(std::accumulate(proportions.begin(),
+	            proportions.end(), 0.), 1.), ValueError,
+	    "Passed proportions should add up to one");
+}
+
+
+ULONG proportionSplitter::size(const population & pop, virtualSubPopID subPop) const
+{
+	DBG_FAILIF(subPop.vid() >= m_proportions.size(), IndexError,
+	    "Virtual subpopulation index out of range");
+	//
+	if (subPop.vid() < m_proportions.size() - 1)
+		return static_cast<ULONG>(pop.subPopSize(subPop.id()) * m_proportions[subPop.vid()]);
+	// to avoid floating point problem, the last subpop is specially treated
+	ULONG size = pop.subPopSize(subPop.id());
+	ULONG spSize = size;
+	// subPop.vid() == m_proportions.size() - 1
+	for (size_t i = 0; i < subPop.vid(); ++i)
+		spSize -= static_cast<ULONG>(size * m_proportions[i]);
+	return spSize;
+}
+
+
+UINT proportionSplitter::numVirtualSubPop()
+{
+	return m_proportions.size();
+}
+
+
+void proportionSplitter::activate(population & pop, virtualSubPopID subPop)
+{
+	DBG_FAILIF(subPop.vid() >= m_proportions.size(), IndexError,
+	    "Virtual subpopulation index out of range");
+
+	ULONG size = pop.subPopSize(subPop.id());
+	ULONG spSize = static_cast<ULONG>(size * m_proportions[0]);
+	ULONG spCount = 0;
+	SubPopID sp = 0;
+	SubPopID visibleSP = subPop.vid();
+
+	RawIndIterator it = pop.rawIndBegin(subPop.id());
+	RawIndIterator it_end = pop.rawIndEnd(subPop.id());
+	for (; it != it_end; ++it, ++spCount) {
+		if (spCount == spSize) {
+			++sp;
+			if (sp < m_proportions.size() - 1)
+				spSize = static_cast<ULONG>(size * m_proportions[sp]);
+			else
+				// in the last virtual sp.
+				// use a bigger size to make sure the last few
+				// individuals are counted.
+				spSize = size;
+			spCount = 0;
+		}
+		it->setVisible(sp == visibleSP);
+	}
+	m_activated = true;
+}
+
+
+void proportionSplitter::reset(population & pop, SubPopID subPop)
+{
+	resetSubPop(pop, subPop);
+}
+
+
+string proportionSplitter::name(SubPopID subPop)
+{
+	DBG_FAILIF(subPop >= m_proportions.size(), IndexError,
+	    "Virtual subpopulation index out of range");
+	return "Prop " + toStr(m_proportions[subPop]);
+}
+
+
+rangeSplitter::rangeSplitter(const intMatrix & ranges)
+	: vspSplitter(), m_ranges(ranges)
+{
+	for (size_t i = 0; i < m_ranges.size(); ++i) {
+		DBG_FAILIF(m_ranges[i].size() != 2
+		    || m_ranges[i][0] > m_ranges[i][1],
+		    ValueError, "Wrong range [" +
+		    toStr(m_ranges[i][0]) + ", " +
+		    toStr(m_ranges[i][1]) + ")");
+	}
+}
+
+
+ULONG rangeSplitter::size(const population & pop, virtualSubPopID subPop) const
+{
+	DBG_FAILIF(subPop.vid() >= m_ranges.size(), IndexError,
+	    "Virtual subpopulation index out of range");
+	if (m_ranges[subPop.vid()][0] > pop.subPopSize(subPop.id()))
+		return 0;
+	if (m_ranges[subPop.vid()][1] > pop.subPopSize(subPop.id()))
+		return pop.subPopSize(subPop.id()) - m_ranges[subPop.vid()][0];
+	return m_ranges[subPop.vid()][1] - m_ranges[subPop.vid()][0];
+}
+
+
+UINT rangeSplitter::numVirtualSubPop()
+{
+	return m_ranges.size();
+}
+
+
+void rangeSplitter::activate(population & pop, virtualSubPopID subPop)
+{
+	DBG_FAILIF(subPop.vid() >= m_ranges.size(), IndexError,
+	    "Virtual subpopulation index out of range");
+
+	ULONG low = m_ranges[subPop.vid()][0];
+	ULONG high = m_ranges[subPop.vid()][1];
+	ULONG idx = 0;
+
+	RawIndIterator it = pop.rawIndBegin(subPop.id());
+	RawIndIterator it_end = pop.rawIndEnd(subPop.id());
+	for (; it != it_end; ++it, ++idx)
+		it->setVisible(idx >= low && idx < high);
+	m_activated = true;
+}
+
+
+void rangeSplitter::reset(population & pop, SubPopID subPop)
+{
+	resetSubPop(pop, subPop);
+}
+
+
+string rangeSplitter::name(SubPopID subPop)
+{
+	DBG_FAILIF(static_cast<UINT>(subPop) >= m_ranges.size(), IndexError,
+	    "Virtual subpopulation index out of range");
+	return "Range [" + toStr(m_ranges[subPop][0]) + ", " +
+	       toStr(m_ranges[subPop][1]) + ")";
 }
 
 

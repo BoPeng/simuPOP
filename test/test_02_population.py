@@ -1295,9 +1295,9 @@ class TestPopulation(unittest.TestCase):
         pop.setSplitter(infoSplitter('x', values=range(10, 15)), 0)
         self.assertEqual(pop.numVirtualSubPop(0), 5)
         infos = list(pop.indInfo('x', False))
-        self.assertEqual(pop.virtualSubPopName(0.0), "Info 10")
-        self.assertEqual(pop.virtualSubPopName(0.1), "Info 11")
-        self.assertEqual(pop.virtualSubPopName(0.4), "Info 14")
+        self.assertEqual(pop.virtualSubPopName(0.0), "x = 10")
+        self.assertEqual(pop.virtualSubPopName(0.1), "x = 11")
+        self.assertEqual(pop.virtualSubPopName(0.4), "x = 14")
         self.assertEqual(pop.virtualSubPopSize(0.0), infos.count(10))
         self.assertEqual(pop.virtualSubPopSize(0.1), infos.count(11))
         self.assertEqual(pop.virtualSubPopSize(0.2), infos.count(12))
@@ -1306,6 +1306,56 @@ class TestPopulation(unittest.TestCase):
         pop.activateVirtualSubPop(0.1)
         for ind in pop.individuals(0):
             self.assertEqual(ind.info('x'), 11)
+        # test cutoff
+        pop.setSplitter(infoSplitter('x', cutoff=[11.5, 13.5]), 0)
+        self.assertEqual(pop.virtualSubPopName(0.0), "x < 11.5")
+        self.assertEqual(pop.virtualSubPopName(0.1), "11.5 <= x < 13.5")
+        self.assertEqual(pop.virtualSubPopName(0.2), "x >= 13.5")
+        self.assertEqual(pop.virtualSubPopSize(0.0), infos.count(10) + infos.count(11))
+        self.assertEqual(pop.virtualSubPopSize(0.1), infos.count(12) + infos.count(13))
+        self.assertEqual(pop.virtualSubPopSize(0.2), 
+            sum([infos.count(x) for x in range(14, 21)]))
+
+
+    def testProportionSplitter(self):
+        'Test proportion virtual subpop splitter'
+        pop = population(10)
+        pop.setSplitter(proportionSplitter([0.01]*100), 0)
+        for i in range(100):
+            self.assertEqual(pop.virtualSubPopName(virtualSubPopID(0, i)), "Prop 0.01")
+            if i != 99:
+                self.assertEqual(pop.virtualSubPopSize(virtualSubPopID(0, i)), 0)
+            else:
+                # the last vsp is specially treated to avoid such problem.
+                self.assertEqual(pop.virtualSubPopSize(virtualSubPopID(0, i)), 10)
+        #
+        pop = population(1000)
+        pop.setSplitter(proportionSplitter([0.4, 0.6]), 0)
+        self.assertEqual(pop.virtualSubPopSize(0.0), 400)
+        self.assertEqual(pop.virtualSubPopSize(0.1), 600)
+        pop.activateVirtualSubPop(0.1)
+        count = 0
+        for ind in pop.individuals(0):
+            count += 1
+        self.assertEqual(count, 600)
+
+
+    def testRangeSplitter(self):
+        'Test range virtual subpop splitter'
+        pop = population(100)
+        pop.setSplitter(rangeSplitter(range=[10, 20]), 0)
+        self.assertEqual(pop.virtualSubPopName(0.0), "Range [10, 20)")
+        pop.setSplitter(rangeSplitter(ranges=[[10, 20], [80, 200]]), 0)
+        self.assertEqual(pop.virtualSubPopName(0.0), "Range [10, 20)")
+        self.assertEqual(pop.virtualSubPopName(0.1), "Range [80, 200)")
+        self.assertEqual(pop.virtualSubPopSize(0.0), 10)
+        self.assertEqual(pop.virtualSubPopSize(0.1), 20)
+        pop.activateVirtualSubPop(0.1)
+        count = 0
+        for ind in pop.individuals(0):
+            count += 1
+        self.assertEqual(count, 20)
+
 
 if __name__ == '__main__':
     unittest.main()
