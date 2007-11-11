@@ -452,11 +452,11 @@ bool statHeteroFreq::apply(population & pop)
 
 			// set variable.
 			if (m_ifPost[i] && m_postHetero) {
-				varname =  subPopVar_String(sp, HeteroNum_String) + "[" + toStr(loc) + "]";
+				varname = subPopVar_String(sp, HeteroNum_String) + "[" + toStr(loc) + "]";
 				PyObject * d = pop.setIntVectorVar(varname, num);
 				if (numSP == 1) {
 					Py_INCREF(d);
-					varname =  toStr(HeteroNum_String) + "[" + toStr(loc) + "]";
+					varname = toStr(HeteroNum_String) + "[" + toStr(loc) + "]";
 					pop.setVar(varname, d);
 				}
 
@@ -465,16 +465,16 @@ bool statHeteroFreq::apply(population & pop)
 
 				if (numSP == 1) {
 					Py_INCREF(d);
-					varname =  toStr(HeteroFreq_String) + "[" + toStr(loc) + "]";
+					varname = toStr(HeteroFreq_String) + "[" + toStr(loc) + "]";
 					pop.setVar(varname, d);
 				}
 
 				// overall hetero
-				varname =  subPopVar_String(sp, AllHeteroNum_String) + "[" + toStr(loc) + "]";
+				varname = subPopVar_String(sp, AllHeteroNum_String) + "[" + toStr(loc) + "]";
 				d = pop.setIntVar(varname, numAll);
 				if (numSP == 1) {
 					Py_INCREF(d);
-					varname =  toStr(AllHeteroNum_String) + "[" + toStr(loc) + "]";
+					varname = toStr(AllHeteroNum_String) + "[" + toStr(loc) + "]";
 					pop.setVar(varname, d);
 				}
 
@@ -483,7 +483,7 @@ bool statHeteroFreq::apply(population & pop)
 
 				if (numSP == 1) {
 					Py_INCREF(d);
-					varname =  toStr(AllHeteroFreq_String) + "[" + toStr(loc) + "]";
+					varname = toStr(AllHeteroFreq_String) + "[" + toStr(loc) + "]";
 					pop.setVar(varname, d);
 				}
 			}
@@ -597,6 +597,19 @@ bool statExpHetero::apply(population & pop)
 }
 
 
+statGenoFreq::statGenoFreq(const vectori & genoFreq,
+                           const strDict & param)
+	: m_atLoci(genoFreq), m_phase(false)
+{
+	if (!param.empty()) {
+		strDict::const_iterator it;
+		strDict::const_iterator itEnd = param.end();
+		if ((it = param.find("phase")) != itEnd)
+			m_phase = it->second != 0.;
+	}
+}
+
+
 bool statGenoFreq::apply(population & pop)
 {
 	if (m_atLoci.empty())
@@ -683,7 +696,7 @@ bool statGenoFreq::apply(population & pop)
 				for (intDict::iterator it = num[a].begin(), itEnd = num[a].end(); it != itEnd; ++it)
 					it->second = it->second / pop.subPopSize(sp);
 
-				varname =  subPopVar_String(sp, GenotypeFreq_String) +
+				varname = subPopVar_String(sp, GenotypeFreq_String) +
 				          + "[" + toStr(loc) + "][" + toStr(int (a)) + "]";
 				pop.setIntDictVar(varname, num[a]);
 			}
@@ -701,7 +714,7 @@ bool statGenoFreq::apply(population & pop)
 			for (intDict::iterator it = sum[a].begin(), itEnd = sum[a].end(); it != itEnd; ++it)
 				it->second = it->second / popSize;
 
-			varname =  toStr(GenotypeFreq_String) + "[" + toStr(loc) + "][" + toStr(int (a)) + "]";
+			varname = toStr(GenotypeFreq_String) + "[" + toStr(loc) + "][" + toStr(int (a)) + "]";
 			pop.setIntDictVar(varname, sum[a]);
 		}
 	}
@@ -784,8 +797,8 @@ bool statHaploFreq::apply(population & pop)
 	// for each subpopulation
 	for (UINT sp = 0; sp < numSP;  ++sp) {
 		// record both num and freq
-		string varNumName =  subPopVar_String(sp, HaplotypeNum_String);
-		string varFreqName =  subPopVar_String(sp, HaplotypeFreq_String);
+		string varNumName = subPopVar_String(sp, HaplotypeNum_String);
+		string varFreqName = subPopVar_String(sp, HaplotypeFreq_String);
 		for (size_t h = 0; h < nHap; ++h) {
 			vectori & haplotype = m_haplotypes[h];
 			map< vectori, UINT> & count = m_haploNum[h + sp * nHap];
@@ -989,7 +1002,7 @@ void statLD::outputLD(population & pop, const vectori & hapLoci, const string & 
 		ldp_name = AvgLDPRIME_String;
 		r2_name = AvgR2_String;
 		d2_name = AvgDELTA2_String;
-		key_name = "[" + toStr(hapLoci[0]) + "][" +   toStr(hapLoci[1]) + ']';
+		key_name = "[" + toStr(hapLoci[0]) + "][" + toStr(hapLoci[1]) + ']';
 		ld_cond = m_output_LD;
 		ldp_cond = m_output_LD_prime;
 		r2_cond = m_output_R2;
@@ -1501,7 +1514,7 @@ bool statFst::apply(population & pop)
 		// n_c
 		double n_c = n;
 		for (int i = 0; i < r; ++i)
-			n_c  -= n_i[i] * n_i[i] / n;
+			n_c -= n_i[i] * n_i[i] / n;
 		n_c /= (r - 1);
 
 		double a = 0.0, b = 0.0, c = 0.0;
@@ -1530,8 +1543,8 @@ bool statFst::apply(population & pop)
 			h_bar /= n;
 
 			// a, b, c
-			a += n_bar / n_c * ( s_2 - ( p_bar * (1 - p_bar) - (r - 1.) / r * s_2 - h_bar / 4.) / (n_bar - 1. ) );
-			b += n_bar / (n_bar - 1 ) * ( p_bar * (1 - p_bar) - (r - 1) / r * s_2 - (2 * n_bar - 1 ) / (4. * n_bar) * h_bar );
+			a += n_bar / n_c * (s_2 - (p_bar * (1 - p_bar) - (r - 1.) / r * s_2 - h_bar / 4.) / (n_bar - 1.) );
+			b += n_bar / (n_bar - 1) * (p_bar * (1 - p_bar) - (r - 1) / r * s_2 - (2 * n_bar - 1) / (4. * n_bar) * h_bar);
 			c += h_bar / 2.;
 
 			DBG_DO(DBG_STATOR, cout << "allele " << *ale << "\tn_c: " << n_c
@@ -1546,17 +1559,17 @@ bool statFst::apply(population & pop)
 			m_Fit.resize(loc + 1, 0.);
 			m_Fis.resize(loc + 1, 0.);
 		}
-		m_Fst[loc] = fcmp_eq(a + b + c, 0.) ? 0. : (a / ( a + b + c));
+		m_Fst[loc] = fcmp_eq(a + b + c, 0.) ? 0. : (a / (a + b + c));
 		m_Fit[loc] = fcmp_eq(a + b + c, 0.) ? 1. : (1 - c / (a + b + c));
-		m_Fis[loc] = fcmp_eq(b + c, 0.) ? 1. : (1 - c / ( b + c));
+		m_Fis[loc] = fcmp_eq(b + c, 0.) ? 1. : (1 - c / (b + c));
 
 		aa += a;
 		bb += b;
 		cc += c;
 	}
-	m_avgFst = fcmp_eq(aa + bb + cc, 0.) ? 0 : (aa / ( aa + bb + cc));
+	m_avgFst = fcmp_eq(aa + bb + cc, 0.) ? 0 : (aa / (aa + bb + cc));
 	m_avgFit = fcmp_eq(aa + bb + cc, 0.) ? 1. : (1 - cc / (aa + bb + cc));
-	m_avgFis = fcmp_eq(aa + bb + cc, 0) ? 1. : (1 - cc / ( bb + cc));
+	m_avgFis = fcmp_eq(aa + bb + cc, 0) ? 1. : (1 - cc / (bb + cc));
 
 	// post results
 	if (m_output_Fst)
@@ -1662,9 +1675,9 @@ statRelatedness::fraction statRelatedness::relLynch(individual ind1,
 
 		if (pa < 1e-8 || pb < 1e-8 || pc < 1e-8 || pd < 1e-8) continue;
 
-		double r_xy = ( pa * ((b == c) + (b == d)) + pb * ((a == c) + (a == d)) - 4 * pa * pb ) /
+		double r_xy = (pa * ((b == c) + (b == d)) + pb * ((a == c) + (a == d)) - 4 * pa * pb) /
 		              ( (1 + (a == b)) * (pa + pb) - 4 * pa * pb);
-		double r_yx = ( pc * ((d == a) + (d == b)) + pd * ((c == a) + (c == b)) - 4 * pc * pd ) /
+		double r_yx = (pc * ((d == a) + (d == b)) + pd * ((c == a) + (c == b)) - 4 * pc * pd) /
 		              ( (1 + (c == d)) * (pc + pd) - 4 * pc * pd);
 		double w_xy = ( (1 + (a == b)) * (pa + pb) - 4 * pa * pb) / (2 * pa * pb);
 		double w_yx = ( (1 + (c == d)) * (pc + pd) - 4 * pc * pd) / (2 * pc * pd);

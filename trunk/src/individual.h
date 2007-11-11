@@ -804,7 +804,7 @@ public:
 	IndividualIterator(T it, T end, bool allInds = true)
 		: m_it(it), m_end(end), m_allInds(allInds)
 	{
-		// m_it need to point to the first valid 
+		// m_it need to point to the first valid
 		// individual. otherwise *it will fail.
 		while (!m_it->visible() && m_it < m_end)
 			++m_it;
