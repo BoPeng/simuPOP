@@ -396,7 +396,7 @@ bool initByValue::apply(population & pop)
 							return true;
 #endif
 						for (size_t loc = 0; loc != srcSz ; ++loc)
-							*(pop.indGenoBegin(ind) + m_atLoci[loc % lociSz] + loc / lociSz * totNumLoci ) = src[loc];
+							*(pop.indGenoBegin(ind) + m_atLoci[loc % lociSz] + loc / lociSz * totNumLoci) = src[loc];
 					} else {                                          // one of the copies.
 						DBG_ASSERT(src.size() == m_atLoci.size(), ValueError,
 						    "Ploidy is specified but the length of alleles do not match length of given allele array.");
@@ -406,7 +406,7 @@ bool initByValue::apply(population & pop)
 #endif
 						for (size_t loc = 0; loc != srcSz ; ++loc)
 							*(pop.ind(ind).genoBegin(m_atPloidy) +
-							  m_atLoci[loc % lociSz] + loc / lociSz * totNumLoci ) = src[loc];
+							  m_atLoci[loc % lociSz] + loc / lociSz * totNumLoci) = src[loc];
 					}
 				}
 				if (m_sex.empty()) {
@@ -488,13 +488,13 @@ bool initByValue::apply(population & pop)
 							UINT idx = ws.get();
 							for (size_t loc = 0; loc != srcSz ; ++loc)
 								*(pop.indGenoBegin(ind) + m_atLoci[loc % lociSz] +
-								  loc / lociSz * totNumLoci ) = m_value[idx][loc];
+								  loc / lociSz * totNumLoci) = m_value[idx][loc];
 						} else {
 							UINT idx = ws.get();
 							for (size_t loc = 0; loc != srcSz ; ++loc)
 								*(pop.ind(ind).genoBegin(m_atPloidy)
 								  + m_atLoci[loc % lociSz] +
-								  loc / lociSz * totNumLoci ) = m_value[idx][loc];
+								  loc / lociSz * totNumLoci) = m_value[idx][loc];
 						}
 					}
 				}

@@ -95,9 +95,9 @@ double mapPenetrance::penet(individual * ind)
 			key += '|';
 
 		if (!m_phase && a > b)  // ab=ba
-			key +=  toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
+			key += toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
 		else
-			key +=  toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
+			key += toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
 	}
 
 	strDict::iterator pos = m_dict.find(key);
@@ -148,7 +148,7 @@ double mlPenetrance::penet(individual * ind)
 		double pen = 0;
 		for (vectorop::iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen +=  static_cast<penetrance *>(*s)->penet(ind);
+			pen += static_cast<penetrance *>(*s)->penet(ind);
 		return pen > 1 ? 1 : pen;
 	} else if (m_mode == PEN_Heterogeneity) {
 		// 1-(1-x1)(1-x2)

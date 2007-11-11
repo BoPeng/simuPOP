@@ -45,7 +45,7 @@ void recombinator::prepareRecRates(population & pop,
 
 	DBG_FAILIF(rate.size() > 1 && rate.size() != afterLoci.size(),
 	    ValueError, "If both rates and atLoci are specified, "
-	    "they should have the same length.");
+	                "they should have the same length.");
 
 	bool useLociDist;
 	if (rate.empty() )  // actually use intensity
@@ -195,7 +195,7 @@ void recombinator::prepareRecRates(population & pop,
 // bt contains the bernulli trailer
 void recombinator::recombine(
                              individual * parent,                           // one of the parent
-                             IndIterator & offspring,           // offspring
+                             IndIterator & offspring,                       // offspring
                              int offPloidy,                                 // which offspring ploidy to fill
                              BernulliTrials & bt,
                              const vectoru & recBeforeLoci,

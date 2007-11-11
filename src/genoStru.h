@@ -35,9 +35,9 @@
 //
 // the following is required by a vc7.1 bug.
 #if  defined (_WIN32) || defined (__WIN32__)
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <fstream>
+#  include <boost/archive/binary_iarchive.hpp>
+#  include <boost/archive/binary_oarchive.hpp>
+#  include <fstream>
 using std::ofstream;
 using std::ifstream;
 #endif                                                                                    // win32
@@ -118,7 +118,7 @@ public:
 
 	bool operator!=(const GenoStructure & rhs)
 	{
-		return !( *this == rhs);
+		return !(*this == rhs);
 	}
 
 

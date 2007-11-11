@@ -52,9 +52,9 @@ using std::ofstream;
 
 // for kbhit
 #if  defined (_WIN32) || defined (__WIN32__)
-#include <conio.h>
+#  include <conio.h>
 #else
-#include <termios.h>
+#  include <termios.h>
 #endif
 
 #include "boost/pending/lowest_bit.hpp"
@@ -69,7 +69,7 @@ using boost::lowest_bit;
 extern "C" PyObject * newcarrayobject(char * buf, char type, int size);
 
 #ifdef SIMUMPI
-#include "slave.h"
+#  include "slave.h"
 extern "C" PyObject * newcarrayiterobject(ULONG shift,
                                           ULONG size, UINT piece_size, vectoru map);
 
@@ -78,6 +78,7 @@ extern "C" PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
 
 #endif
 extern "C" bool is_carrayobject(PyObject *);
+
 extern "C" int    carray_length(PyObject * a);
 
 extern "C" int    carray_itemsize(PyObject * a);
@@ -292,7 +293,7 @@ int simuPOP_getch(void)
 
 	tcgetattr(STDIN_FILENO, &oldt);
 	newt = oldt;
-	newt.c_lflag &= ~( ICANON | ECHO );
+	newt.c_lflag &= ~(ICANON | ECHO);
 	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
 	ch = getchar();
 	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
@@ -313,7 +314,7 @@ ostream & operator<<(ostream & out, const strDict & dict)
 	if (!dict.empty() ) {
 		strDict::const_iterator it = dict.begin();
 
-		out <<  it->first << ":" << it->second;
+		out << it->first << ":" << it->second;
 
 		for (++it; it != dict.end(); ++it)
 			out << ", " << it->first << ":" << it->second;
@@ -330,7 +331,7 @@ ostream & operator<<(ostream & out, const intDict & dict)
 	if (!dict.empty() ) {
 		intDict::const_iterator it = dict.begin();
 
-		out <<  it->first << ":" << it->second;
+		out << it->first << ":" << it->second;
 
 		for (++it; it != dict.end(); ++it)
 			out << ", " << it->first << ":" << it->second;
@@ -1527,7 +1528,7 @@ PyObject * Expression::evaluate()
 	if (m_expr != NULL) {
 		res = PyEval_EvalCode((PyCodeObject *)m_expr,
 		          mainVars().dict(), m_locals);
-		if (res  == NULL) {
+		if (res == NULL) {
 			PyErr_Print();
 			throw SystemError("Evalulation of expression failed");
 		}
@@ -1693,7 +1694,7 @@ StreamElem::~StreamElem()
 
 		if (m_type == OFSTREAM)
 			static_cast<ofstream *>(m_stream)->close();
-		else if (m_type ==  FSTREAM)
+		else if (m_type == FSTREAM)
 			static_cast<fstream *>(m_stream)->close();
 
 		// do not do anything for fstream (no close function
@@ -1707,7 +1708,7 @@ StreamElem::~StreamElem()
 void StreamElem::makeReadable()
 {
 
-	DBG_DO(DBG_UTILITY, cout << "File was opened write-only. Re-open it.  " << info()  <<  endl);
+	DBG_DO(DBG_UTILITY, cout << "File was opened write-only. Re-open it.  " << info() << endl);
 
 	static_cast<ofstream *>(m_stream)->close();
 
@@ -1728,7 +1729,7 @@ void StreamElem::makeReadable()
 void StreamElem::makeAppend(bool append)
 {
 
-	DBG_DO(DBG_UTILITY, cout << "File append status changes to " << append <<  endl);
+	DBG_DO(DBG_UTILITY, cout << "File append status changes to " << append << endl);
 
 	DBG_FAILIF(m_type == SSTREAM, ValueError, "String stream can not be maded appendable. ");
 
@@ -1738,7 +1739,7 @@ void StreamElem::makeAppend(bool append)
 	// reopen file. Otherwise,
 	if (!append) {
 
-		DBG_DO(DBG_UTILITY, cout << "Re-open the file " <<  endl);
+		DBG_DO(DBG_UTILITY, cout << "Re-open the file " << endl);
 
 		// re-open the file.
 
@@ -1774,7 +1775,7 @@ string StreamElem::info()
 	case SSTREAM:
 		out << m_filename << " : string stream. " << endl;
 
-		DBG_DO(DBG_UTILITY, out <<  "(write pos: " << static_cast<stringstream *>(m_stream)->tellp()
+		DBG_DO(DBG_UTILITY, out << "(write pos: " << static_cast<stringstream *>(m_stream)->tellp()
 		                        << ", read pos: " << static_cast<stringstream *>(m_stream)->tellg() << ")");
 
 		break;
@@ -1835,14 +1836,14 @@ ostream * OstreamManager::getOstream(const string & name, bool readable,  bool r
 
 bool OstreamManager::hasOstream(const string & filename)
 {
-	return m_ostreams.end() !=  m_ostreams.find(filename) ;
+	return m_ostreams.end() != m_ostreams.find(filename) ;
 }
 
 
 void OstreamManager::listAll()
 {
 	for (ostreamMapIterator it = m_ostreams.begin(), itEnd = m_ostreams.end(); it != itEnd;  ++it)
-		cout << it->first << " : "  << it->second.info() << endl;
+		cout << it->first << " : " << it->second.info() << endl;
 }
 
 
@@ -1889,7 +1890,7 @@ void StreamProvider::setOutput(const string & output, const string & outputExpr)
 
 ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 {
-	DBG_FAILIF(readable && ( ISSETFLAG(m_flags, m_flagNoOutput) || ISSETFLAG(m_flags, m_flagUseDefault)),
+	DBG_FAILIF(readable && (ISSETFLAG(m_flags, m_flagNoOutput) || ISSETFLAG(m_flags, m_flagUseDefault)),
 	    SystemError, "A readable file is requested but this Opertor uses cout or cnull.");
 
 	if (ISSETFLAG(m_flags,  m_flagNoOutput) )
@@ -2078,7 +2079,7 @@ void RNG::setRNG(const char * rng, unsigned long seed)
 
 	if (rng_name != NULL && rng_name[0] != '\0') {
 		// locate the RNG
-		const gsl_rng_type * * t, * * t0 = gsl_rng_types_setup();
+		const gsl_rng_type ** t, ** t0 = gsl_rng_types_setup();
 
 		gsl_rng_default = 0;
 
@@ -2270,10 +2271,10 @@ void BernulliTrials::setAll(size_t idx, bool v)
 }
 
 
-#define setBit(ptr, i)    ( *((ptr) + (i) / WORDBIT) |= 1UL << ((i) - ((i) / WORDBIT) * WORDBIT))
-#define unsetBit(ptr, i)  ( *((ptr) + (i) / WORDBIT) &= ~(1UL << ((i) - ((i) / WORDBIT) * WORDBIT)))
+#define setBit(ptr, i)    (*((ptr) + (i) / WORDBIT) |= 1UL << ((i) - ((i) / WORDBIT) * WORDBIT))
+#define unsetBit(ptr, i)  (*((ptr) + (i) / WORDBIT) &= ~(1UL << ((i) - ((i) / WORDBIT) * WORDBIT)))
 // use a != 0 to avoid compiler warning
-#define getBit(ptr, i)    (( *((ptr) + (i) / WORDBIT) & (1UL << ((i) - ((i) / WORDBIT) * WORDBIT))) != 0)
+#define getBit(ptr, i)    ((*((ptr) + (i) / WORDBIT) & (1UL << ((i) - ((i) / WORDBIT) * WORDBIT))) != 0)
 
 void BernulliTrials::doTrial()
 {
@@ -2458,7 +2459,7 @@ size_t BernulliTrials::trialNextSucc(size_t idx, size_t pos) const
     // mask out bits before pos
     WORDTYPE tmp = *ptr & ~g_bitMask[offset];
 
-    size_t blk =  m_N / WORDBIT;
+    size_t blk = m_N / WORDBIT;
     if (tmp != 0)
 		return i * WORDBIT + lowest_bit(tmp);
     else if (blk == i)
@@ -2552,7 +2553,7 @@ vectorstr ListAllRNG()
 {
     vectorstr list;
 
-    const gsl_rng_type * * t, * * t0;
+    const gsl_rng_type ** t, ** t0;
     gsl_rng * rng;
 
     t0 = gsl_rng_types_setup();
@@ -2703,29 +2704,29 @@ void setLogOutput(const string filename)
 // be displayed when simuPOP is loaded.
 
 #ifndef COMPILER
-#ifdef __GNUC__
-#define COMPILER "[GCC " __VERSION__ "]"
-#endif
+#  ifdef __GNUC__
+#    define COMPILER "[GCC " __VERSION__ "]"
+#  endif
 #endif                                                                            /* !COMPILER */
 
 #ifndef COMPILER
-#ifdef __cplusplus
-#define COMPILER "[C++]"
-#else
-#define COMPILER "[C]"
-#endif
+#  ifdef __cplusplus
+#    define COMPILER "[C++]"
+#  else
+#    define COMPILER "[C]"
+#  endif
 #endif
 
 #ifndef PLATFORM
-#define PLATFORM ""
+#  define PLATFORM ""
 #endif
 
 // these macros will be passed from commandline, if not, use the default
 #ifndef SIMUPOP_REV
-#define REVISION "9999"
+#  define REVISION "9999"
 #else
 // make passed macro to a real string
-#define REVISION MacroQuote(SIMUPOP_REV)
+#  define REVISION MacroQuote(SIMUPOP_REV)
 #endif
 
 int simuRev()
@@ -2798,7 +2799,7 @@ void Limits()
 /** this is rediculus */
 int g_mpiArgc = 0;
 char * g_mpiArgv = "";
-char * * g_mpiArgvv = &g_mpiArgv;
+char ** g_mpiArgvv = &g_mpiArgv;
 mpi::environment g_mpiEnv(g_mpiArgc, g_mpiArgvv);
 comm g_mpiComm;
 ULONG g_uniqueID = 1;
@@ -2860,11 +2861,11 @@ string AlleleType()
 #ifdef LONGALLELE
     return "long";
 #else
-#ifdef BINARYALLELE
+#  ifdef BINARYALLELE
     return "binary";
-#else
+#  else
     return "short";
-#endif
+#  endif
 #endif
 }
 
@@ -3030,7 +3031,7 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
         // from1 & maskFrom            =  00CDEFGH
         // <<                          =  CDEFGHxx
         // |                           =  CDEFGHAB
-        maskFrom  = g_bitMask[WORDBIT - shift];
+        maskFrom = g_bitMask[WORDBIT - shift];
         for (size_t i = 0; i < blks; ++i) {
             to_p++;
             *to_p = ((*fr_p & ~maskFrom) >> (WORDBIT - shift)) |
@@ -3051,8 +3052,8 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
                 // & ~                        xxxxxx00
                 // |                          xxxxxxDE
                 maskFrom = g_bitMask[WORDBIT - shift];
-                maskTo   = g_bitMask[rest];
-                *to_p =  (((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) & maskTo)
+                maskTo = g_bitMask[rest];
+                *to_p = (((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) & maskTo)
                         | (*to_p & ~maskTo);
 			} else {
                 // rest = 5, shift = 2
@@ -3067,9 +3068,9 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
                 //  |               =  xxxCDEAB
                 maskFrom = g_bitMask[WORDBIT - shift];
                 maskFrom1 = g_bitMask[rest - shift];
-                maskTo   = g_bitMask[rest];
+                maskTo = g_bitMask[rest];
 
-                *to_p =  ((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) |
+                *to_p = ((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) |
                         ((*(fr_p + 1) & maskFrom1) << shift) |
                         (*to_p & ~maskTo);
 			}
@@ -3078,7 +3079,7 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
         size_t shift = fr_off - to_off;
         WORDTYPE maskFrom = g_bitMask[fr_off];
         WORDTYPE maskFrom1 = g_bitMask[shift];
-        WORDTYPE maskTo   = g_bitMask[to_off];
+        WORDTYPE maskTo = g_bitMask[to_off];
         // from:   ABCxxxxx, maskFrom: 00011111
         // from1:  xxxxxxDE, maskFrom1:00000011
         // to:     DEABCxxx, maskTo:   00011111
@@ -3097,7 +3098,7 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
         // from:   ABCDEFxx, maskFrom:   00000011
         // from1:  xxxxxxGH, maskFrom:   00000011
         // to:     GHABCDEF
-        maskFrom  = g_bitMask[shift];
+        maskFrom = g_bitMask[shift];
         for (size_t i = 0; i < blks; ++i) {
             *to_p = ((*fr_p & ~maskFrom) >> shift) |
                     ( (*(fr_p + 1) & maskFrom) << (WORDBIT - shift));
@@ -3112,7 +3113,7 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
                 // from:     ABCDExxx, maskFrom: 00000111
                 // to:       xxxxxxDE, maskTo:   00000011
                 maskFrom = g_bitMask[shift];
-                maskTo   = g_bitMask[rest];
+                maskTo = g_bitMask[rest];
                 *to_p = (((*fr_p & ~maskFrom) >> shift) & maskTo) |
                         (*to_p & ~maskTo) ;
 			} else {
@@ -3120,16 +3121,16 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
                 // from:   ABxxxxxx, maskFrom: 00111111
                 // from1:  xxxxxCDE, maskFrom1:00000111
                 // rest:   xxxCDEAB, maskTo:   00011111
-                maskFrom  = g_bitMask[shift];
+                maskFrom = g_bitMask[shift];
                 maskFrom1 = g_bitMask[rest - (WORDBIT - shift)];
-                maskTo    = g_bitMask[rest];
+                maskTo = g_bitMask[rest];
                 *to_p = ((*fr_p & ~maskFrom) >> shift) |
                         ((*(fr_p + 1) & maskFrom1) << (WORDBIT - shift)) |
                         (*to_p & ~maskTo);
 			}
 		}
 	}
-#ifndef OPTIMIZED
+#  ifndef OPTIMIZED
     if (debug(DBG_UTILITY)) {
         if (vectora(fr, fr + n) != vectora(to, to + n)) {
             cout << "Copy from " << vectora(fr, fr + n)
@@ -3137,7 +3138,7 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
             cout << "Offsets are " << BITOFF(fr) << " and " << BITOFF(to) << endl;
 		}
 	}
-#endif
+#  endif
 }
 
 
@@ -3197,12 +3198,12 @@ bool initialize()
     gsl_set_error_handler(&gsl_error_handler);
 
 #ifndef OPTIMIZED
-#ifdef BINARYALLELE
+#  ifdef BINARYALLELE
     // binary level genotype copy is compiler dependent and may
     // fail on some systems. Such a test will make sure the binary
     // library work fine.
     testCopyGenotype();
-#endif
+#  endif
 #endif
     return true;
 }
@@ -3241,7 +3242,7 @@ bool testGappedIterator()
 }
 
 
-#ifdef BINARYALLELE
+#  ifdef BINARYALLELE
 void testCopyGenotype()
 {
     vectora from(1000);
@@ -3263,17 +3264,17 @@ void testCopyGenotype()
         if (vectora(from.begin() + from_idx, from.begin() + from_idx + length) !=
             vectora(to.begin() + to_idx, to.begin() + to_idx + length)) {
             cout << "Copying: " << vectora(from.begin() + from_idx, from.begin() + from_idx + length) << '\n'
-                 <<  "Obtain:  " << vectora(to.begin() + to_idx, to.begin() + to_idx + length) << '\n'
-                 <<  "Index From: " << from_idx << " to: " << to_idx << " length: " << length << endl;
+                 << "Obtain:  " << vectora(to.begin() + to_idx, to.begin() + to_idx + length) << '\n'
+                 << "Index From: " << from_idx << " to: " << to_idx << " length: " << length << endl;
             // the error message can not be shown
             throw SystemError("Allele copy test for your system fails.\n"
-                "Please email simuPOP mailing list with detailed os and compiler information");
+                              "Please email simuPOP mailing list with detailed os and compiler information");
 		}
 	}
 }
 
 
-#endif
+#  endif
 #endif
 
 }

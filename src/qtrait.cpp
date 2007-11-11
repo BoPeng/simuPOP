@@ -66,9 +66,9 @@ double mapQuanTrait::qtrait(individual * ind)
 			key += '|';
 
 		if (!m_phase && a > b)  // ab=ba
-			key +=  toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
+			key += toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
 		else
-			key +=  toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
+			key += toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
 	}
 	strDict::iterator pos = m_dict.find(key);
 
@@ -115,7 +115,7 @@ double mlQuanTrait::qtrait(individual * ind)
 		double fit = 0;
 		for (vectorop::iterator s = m_qtraits.begin(), sEnd = m_qtraits.end();
 		     s != sEnd; ++s)
-			fit +=  static_cast<quanTrait *>(*s)->qtrait(ind);
+			fit += static_cast<quanTrait *>(*s)->qtrait(ind);
 		return rng().randNormal(fit, m_sigma);
 	}
 	return 0.;

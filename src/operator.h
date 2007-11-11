@@ -498,19 +498,19 @@ protected:
 private:
 	/// internal m_flags of the operator. They are set during initialization for
 	/// performance considerations.
-	static const size_t m_flagPreMating      = PreMating;
-	static const size_t m_flagDuringMating   = DuringMating;
-	static const size_t m_flagPostMating     = PostMating;
-	static const size_t m_flagAtAllGen       = 8;
-	static const size_t m_flagOnlyAtBegin    = 16;
-	static const size_t m_flagOnlyAtEnd      = 32;
+	static const size_t m_flagPreMating = PreMating;
+	static const size_t m_flagDuringMating = DuringMating;
+	static const size_t m_flagPostMating = PostMating;
+	static const size_t m_flagAtAllGen = 8;
+	static const size_t m_flagOnlyAtBegin = 16;
+	static const size_t m_flagOnlyAtEnd = 32;
 	static const size_t m_flagFormOffGenotype = 64;
 	// limited to haploid?
-	static const size_t m_flagHaploid        = 128;
+	static const size_t m_flagHaploid = 128;
 	// limited to diploid?
-	static const size_t m_flagDiploid        = 256;
+	static const size_t m_flagDiploid = 256;
 	// can be used for MPI version?
-	static const size_t m_flagMPI            = 512;
+	static const size_t m_flagMPI = 512;
 
 private:
 	/// starting generation, default to 0

@@ -179,7 +179,7 @@ public:
 
 
 	/// CPPONLY prepare the population for sampling. E.g., find out all affected individuals.
-	virtual bool prepareSample(population & )
+	virtual bool prepareSample(population &)
 	{
 		return true;
 	}

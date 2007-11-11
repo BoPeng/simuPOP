@@ -158,17 +158,17 @@ bool GenoStructure::operator==(const GenoStructure & rhs)
 {
 	// compare pointer directly will be fastest
 	if (this == &rhs || (
-	                     ( m_ploidy == rhs.m_ploidy) &&
-	                     ( m_numLoci == rhs.m_numLoci) &&
-	                     ( m_sexChrom == rhs.m_sexChrom) &&
-	                     ( m_lociPos == rhs.m_lociPos) &&
-	                     ( m_chromNames == rhs.m_chromNames) &&
-	                     ( m_alleleNames == rhs.m_alleleNames) &&
-	                     ( m_lociNames == rhs.m_lociNames) &&
-	                     ( m_maxAllele == rhs.m_maxAllele) &&
-	                     ( m_infoFields == rhs.m_infoFields)
+	                     (m_ploidy == rhs.m_ploidy) &&
+	                     (m_numLoci == rhs.m_numLoci) &&
+	                     (m_sexChrom == rhs.m_sexChrom) &&
+	                     (m_lociPos == rhs.m_lociPos) &&
+	                     (m_chromNames == rhs.m_chromNames) &&
+	                     (m_alleleNames == rhs.m_alleleNames) &&
+	                     (m_lociNames == rhs.m_lociNames) &&
+	                     (m_maxAllele == rhs.m_maxAllele) &&
+	                     (m_infoFields == rhs.m_infoFields)
 #ifdef SIMUMPI
-	                     && ( m_chromMap == rhs.m_chromMap )
+	                     && (m_chromMap == rhs.m_chromMap)
 #endif
 	                     ))
 		return true;
@@ -552,8 +552,8 @@ UINT GenoStruTrait::infoIdx(const string & name) const
 		if (names[i] == name)
 			return i;
 	throw IndexError("Info field '" + name + "' is not found. "
-	    "Plese use infoFields=['" + name + "'] option of population() during construction\n"
-	    "or use addInfoField('" + name + "') to add to an existing population.");
+	                                         "Plese use infoFields=['" + name + "'] option of population() during construction\n"
+	                                                                            "or use addInfoField('" + name + "') to add to an existing population.");
 	// this should never be reached.
 	return 0;
 }
