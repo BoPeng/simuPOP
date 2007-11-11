@@ -42,6 +42,8 @@ using std::string;
 #include <stack>
 using std::stack;
 
+typedef std::vector<PyObject * >           vectorobj;
+
 namespace simuPOP {
 
 class numOffspringGenerator

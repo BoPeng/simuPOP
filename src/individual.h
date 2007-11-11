@@ -748,6 +748,9 @@ public:
 		m_end(end),
 		m_allInds(allInds)
 	{
+		// m_index does not have to be pointed to the first
+		// valid individual. the next() function will return
+		// so.
 	}
 
 
@@ -801,6 +804,10 @@ public:
 	IndividualIterator(T it, T end, bool allInds = true)
 		: m_it(it), m_end(end), m_allInds(allInds)
 	{
+		// m_it need to point to the first valid 
+		// individual. otherwise *it will fail.
+		while (!m_it->visible() && m_it < m_end)
+			++m_it;
 	}
 
 

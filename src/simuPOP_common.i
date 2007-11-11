@@ -241,9 +241,9 @@ namespace std
 %include "utility.h"
 %include "misc.h"
 %include "genoStru.h"
+%include "virtualSubPop.h"
 %include "individual.h"
 %include "population.h"
-%include "virtualSubPop.h"
 %include "slave.h"
 %include "operator.h"
 

@@ -246,6 +246,95 @@ population * population::clone(int keepAncestralPops) const
 }
 
 
+ULONG population::virtualSubPopSize(virtualSubPopID subPop) const
+{
+	CHECKRANGESUBPOP(subPop.id());
+
+	DBG_ASSERT(subPop.isVirtual(), ValueError,
+	    "Subpopulation id is not virtual");
+	DBG_ASSERT(hasVirtualSubPop(subPop.id()), ValueError,
+	    "There is no virtual subpopulation in subpop " + toStr(subPop.id()));
+	return m_virtualSubPops[subPop.id()]->size(*this, subPop);
+}
+
+
+string population::virtualSubPopName(virtualSubPopID subPop) const
+{
+	CHECKRANGESUBPOP(subPop.id());
+	DBG_ASSERT(subPop.isVirtual(), ValueError,
+	    "Subpopulation id is not virtual");
+	DBG_ASSERT(hasVirtualSubPop(subPop.id()), ValueError,
+	    "There is no virtual subpopulation in subpop " + toStr(subPop.id()));
+	return m_virtualSubPops[subPop.id()]->name(subPop.vid());
+}
+
+
+bool population::hasActivatedVirtualSubPop() const
+{
+	if (m_virtualSubPops.empty())
+		return false;
+	vectorvsp::const_iterator it = m_virtualSubPops.begin();
+	vectorvsp::const_iterator it_end = m_virtualSubPops.end();
+	for (; it != it_end; ++it)
+		if (*it != NULL && (*it)->activated())
+			return true;
+	return false;
+}
+
+
+bool population::hasActivatedVirtualSubPop(SubPopID subPop) const
+{
+	return !m_virtualSubPops.empty() &&
+	       m_virtualSubPops[subPop] != NULL &&
+	       m_virtualSubPops[subPop]->activated();
+}
+
+
+bool population::hasVirtualSubPop(SubPopID subPop) const
+{
+	return !m_virtualSubPops.empty() &&
+	       m_virtualSubPops[subPop] != NULL;
+}
+
+
+vspSplitter * population::setSplitter(vspSplitter * vsp, SubPopID subPop)
+{
+	CHECKRANGESUBPOP(subPop);
+	if (m_virtualSubPops.size() != numSubPop())
+		m_virtualSubPops.resize(numSubPop(), NULL);
+	vspSplitter * old = m_virtualSubPops[subPop];
+	m_virtualSubPops[subPop] = vsp->clone();
+	return old;
+}
+
+
+UINT population::numVirtualSubPop(SubPopID subPop) const
+{
+	return hasVirtualSubPop(subPop)
+	       ? m_virtualSubPops[subPop]->numVirtualSubPop()
+		   : 1;
+}
+
+
+void population::activateVirtualSubPop(virtualSubPopID subPop)
+{
+	CHECKRANGESUBPOP(subPop.id());
+	DBG_ASSERT(subPop.isVirtual(), ValueError, "Given virtual subpopulation ID is wrong");
+	DBG_ASSERT(hasVirtualSubPop(subPop.id()), ValueError,
+	    "Subpopulation " + toStr(subPop.id()) + " has no virtual subpopulations");
+	m_virtualSubPops[subPop.id()]->activate(*this, subPop);
+}
+
+
+void population::resetVirtualSubPop(SubPopID subPop)
+{
+	CHECKRANGESUBPOP(subPop);
+	if (!hasActivatedVirtualSubPop(subPop))
+		return;
+	m_virtualSubPops[subPop]->reset(*this, subPop);
+}
+
+
 int population::__cmp__(const population & rhs) const
 {
 	if (genoStruIdx() != rhs.genoStruIdx() ) {
@@ -1723,8 +1812,7 @@ void population::adjustGenoPosition(bool order)
 
 		// copy info
 		InfoType tmp2;
-		for (UINT a = 0; a < infoSize(); ++a)
-		{
+		for (UINT a = 0; a < infoSize(); ++a) {
 			tmp2 = m_inds[ scIndex[0] ].info(a);
 			m_inds[scIndex[0] ].setInfo(m_inds[ scIndex[1] ].info(a), a);
 			m_inds[scIndex[1] ].setInfo(tmp2, a);
@@ -1747,11 +1835,11 @@ void population::adjustGenoPosition(bool order)
 
 	for (i = 0, iEnd = scIndex.size(); i < iEnd;  i++) {
 		scPtr[i] = m_inds[ scIndex[i]].genoPtr();
-#  ifdef BINARYALLELE
+#ifdef BINARYALLELE
 		copyGenotype(indGenoBegin(scIndex[i]), scGeno.begin() + i * genoSize(), genoSize());
-#  else
+#else
 		copy(indGenoBegin(scIndex[i]), indGenoEnd(scIndex[i]), scGeno.begin() + i * genoSize());
-#  endif
+#endif
 		scInfoPtr[i] = m_inds[ scIndex[i]].infoPtr();
 		copy(ind(scIndex[i]).infoBegin(), ind(scIndex[i]).infoEnd(),
 		    scInfo.begin() + i * infoSize());
@@ -1767,12 +1855,12 @@ void population::adjustGenoPosition(bool order)
 	for (i = 0, iEnd = scIndex.size(); i < iEnd;  i++) {
 		m_inds[ scIndex[i] ].setGenoPtr(scPtr[i]);
 
-#  ifdef BINARYALLELE
+#ifdef BINARYALLELE
 		copyGenotype(scGeno.begin() + i * genoSize(), indGenoBegin(scIndex[i]), genoSize());
-#  else
+#else
 		copy(scGeno.begin() + i * genoSize(), scGeno.begin() + (i + 1) * genoSize(),
 		    indGenoBegin(scIndex[i]));
-#  endif
+#endif
 		m_inds[ scIndex[i] ].setInfoPtr(scInfoPtr[i]);
 		copy(scInfo.begin() + i * infoSize(), scInfo.begin() + (i + 1) * infoSize(),
 		    ind(scIndex[i]).infoBegin());
