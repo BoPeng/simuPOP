@@ -1398,4 +1398,23 @@ del rangeSplitter.__init__
 rangeSplitter.__init__ = new_rangeSplitter
 
 
+def new_genotypeSplitter(self, locus=None, loci=[],
+    alleles=[], *args, **kwargs):
+    if locus is not None:
+        loc = [locus]
+    else:
+        loc = loci
+    if len(alleles) == 0:
+        raise exceptions.ValueError("Please specify alleles at each locus")
+    if type(alleles[0]) in [type(0), type(0L)]:
+        als = [alleles]
+    else:
+        als = alleles
+    cppModule.genotypeSplitter_swiginit(self,
+        cppModule.new_genotypeSplitter(loci=loc, alleles=als, *args, **kwargs))
+ 
+new_genotypeSplitter.__doc__ = genotypeSplitter.__init__.__doc__
+del genotypeSplitter.__init__
+genotypeSplitter.__init__ = new_genotypeSplitter
+
 %}

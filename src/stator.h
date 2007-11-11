@@ -807,7 +807,7 @@ public:
 	{
 		UINT idx = locusIdx(loc);
 
-		vectori & hn =  m_heteroNum[resIdx(idx)];
+		vectori & hn = m_heteroNum[resIdx(idx)];
 
 		return allele < hn.size() ? hn[allele] : 0;
 	}
@@ -816,7 +816,7 @@ public:
 	double heteroFreq(UINT allele, int loc)
 	{
 		UINT idx = locusIdx(loc);
-		vectorf & hf =  m_heteroFreq[resIdx(idx)];
+		vectorf & hf = m_heteroFreq[resIdx(idx)];
 
 		return allele < hf.size() ? hf[allele] : 0.;
 	}
@@ -825,7 +825,7 @@ public:
 	int heteroNum(UINT allele, int loc, UINT subPop)
 	{
 		UINT idx = locusIdx(loc);
-		vectori & hn =  m_heteroNum[resIdx(idx, subPop)];
+		vectori & hn = m_heteroNum[resIdx(idx, subPop)];
 
 		return allele < hn.size() ? hn[allele] : 0;
 	}
@@ -834,7 +834,7 @@ public:
 	double heteroFreq(UINT allele, int loc, UINT subPop)
 	{
 		UINT idx = locusIdx(loc);
-		vectorf & hf =  m_heteroFreq[resIdx(idx, subPop)];
+		vectorf & hf = m_heteroFreq[resIdx(idx, subPop)];
 
 		return allele < hf.size() ? hf[allele] : 0;
 	}
@@ -922,11 +922,8 @@ private:
 #define  GenotypeFreq_String  "genoFreq"
 
 public:
-	statGenoFreq(const vectori & genoFreq = vectori(), bool phase = true)
-		: m_atLoci(genoFreq), m_phase(phase)
-	{
-	}
-
+	statGenoFreq(const vectori & genoFreq = vectori(),
+	             const strDict & param = strDict());
 
 	bool apply(population & pop);
 
@@ -1404,6 +1401,7 @@ public:
 	   the number of genotype \c geno at allele \c a. \c geno has the form <tt>x-y</tt>.
 	 \li <tt>genoFreq[a][geno]</tt> and <tt>subPop[sp]['genoFreq'][a][geno]</tt>,
 	   the frequency of genotype \c geno at allele \c a.
+	 \li genoFreq_param a dictionary of parameters of \c phase = 0 or 1.
 
 	 \param heteroFreq an array of loci to calculate observed heterozygosities
 	   and expected heterozygosities (<tt>heteroFreq=[loc1, loc2, ...]</tt>).
@@ -1552,6 +1550,7 @@ public:
 	     //
 	     vectori homoFreq = vectori(),
 	     vectori genoFreq = vectori(),
+	     strDict genoFreq_param = strDict(),
 	     intMatrix haploFreq = intMatrix(),
 	     //
 	     intMatrix LD = intMatrix(),
@@ -1585,7 +1584,7 @@ public:
 		m_numOfAlleles(m_alleleFreq, numOfAlleles, numOfAlleles_param),
 		m_heteroFreq(heteroFreq, homoFreq),
 		m_expHetero(m_alleleFreq, expHetero, expHetero_param),
-		m_genoFreq(genoFreq, hasPhase),
+		m_genoFreq(genoFreq, genoFreq_param),
 		m_haploFreq(haploFreq),
 		m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
 		m_association(m_alleleFreq, m_haploFreq, association, association_param),

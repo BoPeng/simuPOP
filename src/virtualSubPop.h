@@ -34,6 +34,7 @@
 
 namespace simuPOP {
 
+class individual;
 class population;
 
 /* this is a class that store subpopulation, or subpopulation+virtual subpop id.
@@ -363,7 +364,7 @@ private:
 };
 
 
-/** split the population according to range status
+/** split the population according to individual range
  */
 class rangeSplitter : public vspSplitter
 {
@@ -394,6 +395,43 @@ private:
 	intMatrix m_ranges;
 };
 
+
+/** split the population according to given genotype
+ */
+class genotypeSplitter : public vspSplitter
+{
+public:
+	/**
+	 \param genotype a shortcut for genotypes=[genotype]
+	 \param genotypes a list of genotypes
+	 */
+	genotypeSplitter(const vectori & loci,
+	                 const intMatrix & alleles, bool phase);
+
+	vspSplitter * clone() const
+	{
+		return new genotypeSplitter(*this);
+	}
+
+
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
+
+	UINT numVirtualSubPop();
+
+	void activate(population & pop, virtualSubPopID subPop);
+
+	void reset(population & pop, SubPopID sp);
+
+	string name(SubPopID sp);
+
+private:
+	bool match(const individual * ind, const vectori & alleles) const;
+
+private:
+	vectori m_loci;
+	intMatrix m_alleles;
+	bool m_phase;
+};
 
 typedef vector<vspSplitter *> vectorvsp;
 }
