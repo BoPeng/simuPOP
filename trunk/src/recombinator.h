@@ -151,7 +151,7 @@ private:
 	// bt contains the bernulli trailer
 	void recombine(
 	               individual * parent,                                         // one of the parent
-	               IndIterator & offspring,                         // offspring
+	               IndIterator & offspring,                                     // offspring
 	               int offPloidy,                                               // which offspring ploidy to fill
 	               BernulliTrials & bt,
 	               const vectoru & recBeforeLoci,

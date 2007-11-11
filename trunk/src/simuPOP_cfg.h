@@ -42,22 +42,22 @@
 
 #ifdef _MSC_VER
 
-#define WORDBIT (8 * sizeof(unsigned))
-#define WORDTYPE unsigned
-#define BITPTR(ref) ref._Myptr
-#define BITOFF(ref) ref._Myoff
+#  define WORDBIT (8 * sizeof(unsigned))
+#  define WORDTYPE unsigned
+#  define BITPTR(ref) ref._Myptr
+#  define BITOFF(ref) ref._Myoff
 
 #else
-#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-#if GCC_VERSION > 30400
-#define WORDBIT std::_S_word_bit
-#else
+#  define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#  if GCC_VERSION > 30400
+#    define WORDBIT std::_S_word_bit
+#  else
 // previous version uses _M_word_bit
-#define WORDBIT std::_M_word_bit
-#endif
-#define WORDTYPE std::_Bit_type
-#define BITPTR(ref) ref._M_p
-#define BITOFF(ref) ref._M_offset
+#    define WORDBIT std::_M_word_bit
+#  endif
+#  define WORDTYPE std::_Bit_type
+#  define BITPTR(ref) ref._M_p
+#  define BITOFF(ref) ref._M_offset
 #endif
 
 #include <string>
@@ -77,10 +77,10 @@ typedef unsigned int UINT;
 
 // for msvc, I have a portable stdint.h under win32 directory
 #ifdef HAVE_STDINT_H
-#include <stdint.h>
+#  include <stdint.h>
 #else
 // for solaris, I have to use inttypes.h because there is no stdint.h
-#include <inttypes.h>
+#  include <inttypes.h>
 #endif
 
 // NOTE: the change of allele type here may need similar changes
@@ -89,35 +89,35 @@ typedef unsigned int UINT;
 typedef uint16_t Allele;
 typedef uint16_t & AlleleRef;
 
-#define AlleleInc(a)  ++ (a)
-#define AlleleDec(a)  -- (a)
-#define AlleleAdd(a, b) (a) += (b)
-#define AlleleMinus(a, b) (a) -= (b)
-#define AlleleUnsigned(a) (a)
+#  define AlleleInc(a)  ++ (a)
+#  define AlleleDec(a)  -- (a)
+#  define AlleleAdd(a, b) (a) += (b)
+#  define AlleleMinus(a, b) (a) -= (b)
+#  define AlleleUnsigned(a) (a)
 
 #else
 
-#ifdef BINARYALLELE
+#  ifdef BINARYALLELE
 
 typedef bool Allele;
 typedef vector<Allele>::reference AlleleRef;
 // bool type, inc go to 1, dec go to 0
-#define AlleleInc(a)  (a) = true
-#define AlleleDec(a)  (a) = false
-#define AlleleAdd(a, b) (a) = ((b) == 0 ? (a) : ((b) > 0 ? true : false))
-#define AlleleMinus(a, b) (a) = ((b) == 0 ? (a) : ((b) > 0 ? false : true))
-#define AlleleUnsigned(a) (static_cast<unsigned char>(a))
+#    define AlleleInc(a)  (a) = true
+#    define AlleleDec(a)  (a) = false
+#    define AlleleAdd(a, b) (a) = ((b) == 0 ? (a) : ((b) > 0 ? true : false))
+#    define AlleleMinus(a, b) (a) = ((b) == 0 ? (a) : ((b) > 0 ? false : true))
+#    define AlleleUnsigned(a) (static_cast<unsigned char>(a))
 
-#else
+#  else
 
 typedef unsigned char Allele;
 typedef unsigned char & AlleleRef;
-#define AlleleInc(a)  ++ (a)
-#define AlleleDec(a)  -- (a)
-#define AlleleAdd(a, b) (a) += (b)
-#define AlleleMinus(a, b) (a) -= (b)
-#define AlleleUnsigned(a) (a)
-#endif
+#    define AlleleInc(a)  ++ (a)
+#    define AlleleDec(a)  -- (a)
+#    define AlleleAdd(a, b) (a) += (b)
+#    define AlleleMinus(a, b) (a) -= (b)
+#    define AlleleUnsigned(a) (a)
+#  endif
 #endif
 
 typedef std::vector<Allele>::iterator GenoIterator;
@@ -307,44 +307,44 @@ enum DBG_CODE {
 // standard library
 #ifndef OPTIMIZED
 
-#define DBG_ASSERT(cond, exception, message) \
+#  define DBG_ASSERT(cond, exception, message) \
     if (!(cond)) \
 	{ \
 		throw exception(\
 		    toStr(__FILE__) + toStr(":") + toStr(__LINE__) + toStr(" ") + message); \
 	}
 
-#define DBG_FAILIF(cond, exception, message) \
+#  define DBG_FAILIF(cond, exception, message) \
     if (cond) \
 	{ \
 		throw exception(\
 		    toStr(__FILE__) + toStr(":") + toStr(__LINE__) + toStr(" ") + message); \
 	}
 
-#define DBG_WARNING(cond, message) \
+#  define DBG_WARNING(cond, message) \
     if (cond) \
 	{ \
 		cout << "Warning (line " << __LINE__ << " in " << __FILE__ << "): " << message << endl; \
 	}
 
-#define DBG_DO(dbgCode, expr) \
+#  define DBG_DO(dbgCode, expr) \
     if (debug(dbgCode)) { expr; }
 
-#define DBG_DO_(expr) expr
+#  define DBG_DO_(expr) expr
 
 #else                                                                             // optimized mode
 
-#define DBG_ASSERT(cond, exception, message)
-#define DBG_FAILIF(cond, exception, message)
-#define DBG_WARNING(cond, message)
-#define DBG_DO(dbgCode, expr)
-#define DBG_DO_(expr)
+#  define DBG_ASSERT(cond, exception, message)
+#  define DBG_FAILIF(cond, exception, message)
+#  define DBG_WARNING(cond, message)
+#  define DBG_DO(dbgCode, expr)
+#  define DBG_DO_(expr)
 #endif
 
 #ifdef SIMUMPI
-#define PENDING_MPI DBG_FAILIF(true, SystemError, "This function is not available in MPI modules")
+#  define PENDING_MPI DBG_FAILIF(true, SystemError, "This function is not available in MPI modules")
 #else
-#define PENDING_MPI
+#  define PENDING_MPI
 #endif
 // definition for all mode
 
@@ -358,7 +358,7 @@ enum DBG_CODE {
 
 // check range.
 #define CHECKRANGEPLOIDY(p)  DBG_FAILIF(p >= ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy() - 1))
-#define CHECKRANGESEX(sex) DBG_FAILIF(sex != Male && sex != Female, IndexError, "Wrong sex info. Male " + toStr(Male) + " or Fenamle "  + toStr(Female) + " only.")
+#define CHECKRANGESEX(sex) DBG_FAILIF(sex != Male && sex != Female, IndexError, "Wrong sex info. Male " + toStr(Male) + " or Fenamle " + toStr(Female) + " only.")
 #define CHECKRANGESUBPOP(subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  - " + toStr(numSubPop() - 1))
 #define CHECKRANGECHROM(chrom)   DBG_FAILIF(chrom >= numChrom(), IndexError, "chromosome index (" + toStr(chrom) + ") out of range of 0 - " + toStr(numChrom() - 1))
 #define CHECKRANGELOCUS(chrom, locus) DBG_FAILIF(locus >= numLoci(chrom), IndexError, "locus index (" + toStr(chrom) + ") out of range of 0 - " + toStr(numLoci(chrom) - 1))
@@ -368,7 +368,7 @@ enum DBG_CODE {
 #define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, "individual index (" + toStr(ind) + ") is out of range of 0 ~ " + toStr(popSize() - 1))
 #define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= infoSize(), IndexError, "info index (" + toStr(ind) + ") is out of rage of 0 ~ " + toStr(infoSize() - 1))
 #ifdef SIMUMPI
-#define CHECKRANGELOCALINFO(ind) DBG_FAILIF(ind >= localInfoSize(), IndexError, "Local info index (" + toStr(ind) + ") is out of rage of 0 ~ " + toStr(localInfoSize() - 1))
+#  define CHECKRANGELOCALINFO(ind) DBG_FAILIF(ind >= localInfoSize(), IndexError, "Local info index (" + toStr(ind) + ") is out of rage of 0 ~ " + toStr(localInfoSize() - 1))
 #endif
 }
 #endif

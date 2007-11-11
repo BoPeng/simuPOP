@@ -47,10 +47,10 @@
 #include "simuPOP_cfg.h"
 
 #ifdef SIMUMPI
-#include "boost/parallel/mpi.hpp"
-#ifndef SWIG
+#  include "boost/parallel/mpi.hpp"
+#  ifndef SWIG
 namespace mpi = boost::parallel::mpi;
-#endif
+#  endif
 #endif
 
 #include <iostream>
@@ -130,11 +130,11 @@ int simuPOP_getch();
 /// very important: re-define floating point comparison
 
 #define fcmp_lt(a, b) (gsl_fcmp(a, b, cmp_epsilon) == -1)
-#define fcmp_le(a, b) (gsl_fcmp(a, b, cmp_epsilon) <= 0 )
-#define fcmp_gt(a, b) (gsl_fcmp(a, b, cmp_epsilon) == 1 )
-#define fcmp_ge(a, b) (gsl_fcmp(a, b, cmp_epsilon) >= 0 )
-#define fcmp_eq(a, b) (gsl_fcmp(a, b, cmp_epsilon) == 0 )
-#define fcmp_ne(a, b) (gsl_fcmp(a, b, cmp_epsilon) != 0 )
+#define fcmp_le(a, b) (gsl_fcmp(a, b, cmp_epsilon) <= 0)
+#define fcmp_gt(a, b) (gsl_fcmp(a, b, cmp_epsilon) == 1)
+#define fcmp_ge(a, b) (gsl_fcmp(a, b, cmp_epsilon) >= 0)
+#define fcmp_eq(a, b) (gsl_fcmp(a, b, cmp_epsilon) == 0)
+#define fcmp_ne(a, b) (gsl_fcmp(a, b, cmp_epsilon) != 0)
 #define f_asBool(a)  (fcmp_ne(a, 0.))
 }
 
@@ -155,7 +155,7 @@ ostream & operator<<(ostream & out, const vector<T> & vec)
 {
 	if (!vec.empty() ) {
 		typename vector<T>::const_iterator it = vec.begin();
-		out <<  *it;
+		out << *it;
 		for (++it; it != vec.end(); ++it)
 			out << ", " << *it ;
 	}
@@ -429,7 +429,7 @@ private:
 };
 
 typedef GappedIterator<Allele, AlleleRef, GenoIterator> GappedAlleleIterator;
-typedef GappedIterator<InfoType, InfoType & , InfoIterator> GappedInfoIterator;
+typedef GappedIterator<InfoType, InfoType &, InfoIterator> GappedInfoIterator;
 
 #ifndef OPTIMIZED
 bool testGappedIterator();
@@ -1074,13 +1074,13 @@ private:
 
 	/// internal m_flags of the operator. They are set during initialization for
 	/// performance considerations.
-	static const size_t m_flagNoOutput      = 1;
-	static const size_t m_flagUseDefault    = 2;
-	static const size_t m_flagAppend        = 4;
-	static const size_t m_flagRealAppend    = 8;
+	static const size_t m_flagNoOutput = 1;
+	static const size_t m_flagUseDefault = 2;
+	static const size_t m_flagAppend = 4;
+	static const size_t m_flagRealAppend = 8;
 	static const size_t m_flagCloseAfterUse = 16;
-	static const size_t m_flagUseString     = 32;
-	static const size_t m_flagReadable      = 64;
+	static const size_t m_flagUseString = 32;
+	static const size_t m_flagReadable = 64;
 
 	/// m_flags
 	unsigned char m_flags;
@@ -1191,7 +1191,7 @@ public:
 		DBG_FAILIF(n <= 0, ValueError, "RandInt: n should be positive.");
 
 		for (size_t i = 0; i < size; ++size)
-			vec[i] =  gsl_rng_uniform_int(m_RNG, n);
+			vec[i] = gsl_rng_uniform_int(m_RNG, n);
 	}
 
 
@@ -1220,7 +1220,7 @@ public:
 	void randUniform01Array(ULONG size, double * vec)
 	{
 		for (size_t i = 0; i < size; ++size)
-			vec[i] =  gsl_rng_uniform(m_RNG);
+			vec[i] = gsl_rng_uniform(m_RNG);
 	}
 
 
@@ -1597,10 +1597,10 @@ string ModulePlatForm();
 /// CPPONLY
 void copyGenotype(GenoIterator fr, GenoIterator to, size_t n);
 
-#ifndef OPTIMIZED
+#  ifndef OPTIMIZED
 void testCopyGenotype();
 
-#endif
+#  endif
 #endif
 
 /// CPPONLY initialize module simuPOP when using "import simuPOP"

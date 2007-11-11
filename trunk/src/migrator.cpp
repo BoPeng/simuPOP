@@ -45,7 +45,7 @@ void migrator::setRates(const matrix & rate, int mode)
 	if (m_mode != MigrByProbability && m_mode != MigrByProportion
 	    && m_mode != MigrByCounts)
 		throw ValueError("Migration mode can only be MigrByProbability), "
-		    " MigrByProportion or MigrByCounts");
+		                 " MigrByProportion or MigrByCounts");
 
 	// check parameters
 	for (UINT i = 0; i < szFrom; ++i) {
@@ -54,7 +54,7 @@ void migrator::setRates(const matrix & rate, int mode)
 
 		for (size_t j = 0; j < szTo; ++j)
 			if (fcmp_lt(rate[i][j], 0.)
-			    || (m_mode != MigrByCounts &&  fcmp_gt(rate[i][j], 1.)))
+			    || (m_mode != MigrByCounts && fcmp_gt(rate[i][j], 1.)))
 				throw ValueError("Migration rate should be in the range of [0,1]");
 	}
 
@@ -203,7 +203,7 @@ bool pyMigrator::apply(population & pop)
 		// if pop is valid?
 		if (indObj == NULL)
 			throw SystemError("Could not pass population to the provided function. \n"
-			    "Compiled with the wrong version of SWIG?");
+			                  "Compiled with the wrong version of SWIG?");
 
 		// loci
 		if (!m_loci.empty()) {

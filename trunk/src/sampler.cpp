@@ -77,8 +77,8 @@ bool sample::apply(population & pop)
 				throw SystemError("Could not expose sample pointer.");
 
 			if (pop.hasVar(sampleName))
-				cout << "Warning: sample " << sampleName  <<
-				" already exists and will be overwritten."  << endl <<
+				cout << "Warning: sample " << sampleName <<
+				" already exists and will be overwritten." << endl <<
 				"You may want to set name parameter to avoid conflict." << endl;
 
 			// store it.
@@ -375,12 +375,12 @@ population & caseControlSample::drawsample(population & pop)
 
 		// keep first m_size individuals of shuffled indexes
 		int nCase, nControl;
-		if (m_numCases.empty()  || m_numCases[0] == 0 || m_numCases[0] > numAffected)
+		if (m_numCases.empty() || m_numCases[0] == 0 || m_numCases[0] > numAffected)
 			nCase = numAffected;
 		else
 			nCase = m_numCases[0];
 
-		if (m_numControls.empty()  || m_numControls[0] == 0 || m_numControls[0] > numUnaffected)
+		if (m_numControls.empty() || m_numControls[0] == 0 || m_numControls[0] > numUnaffected)
 			nControl = numUnaffected;
 		else
 			nControl = m_numControls[0];

@@ -28,8 +28,8 @@ namespace simuPOP {
 bool baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly)
 {
 	// rep does not match
-	if ( ( m_rep >= 0 && static_cast<UINT>(m_rep) != rep ) ||
-	    ( m_rep == REP_LAST && rep != numRep - 1 ) )
+	if ( (m_rep >= 0 && static_cast<UINT>(m_rep) != rep) ||
+	    (m_rep == REP_LAST && rep != numRep - 1) )
 		return false;
 
 	// group does not match
@@ -267,7 +267,7 @@ bool pyOperator::apply(population & pop)
 	// if pop is valid?
 	if (popObj == NULL)
 		throw SystemError("Could not pass population to the provided function. \n"
-		    "Compiled with the wrong version of SWIG?");
+		                  "Compiled with the wrong version of SWIG?");
 
 	// parammeter list, ref count increased
 	bool resBool;
@@ -384,7 +384,7 @@ bool pyIndOperator::apply(population & pop)
 		// if pop is valid?
 		if (indObj == NULL)
 			throw SystemError("Could not pass population to the provided function. \n"
-			    "Compiled with the wrong version of SWIG?");
+			                  "Compiled with the wrong version of SWIG?");
 
 		// loci
 		if (!m_loci.empty()) {

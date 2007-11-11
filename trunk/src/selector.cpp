@@ -62,9 +62,9 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 		if (loc != m_loci.begin() )
 			key += '|';
 		if (!m_phase && a > b)  // ab=ba
-			key +=  toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
+			key += toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
 		else
-			key +=  toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
+			key += toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
 	}
 
 	strDict::iterator pos = m_dict.find(key);

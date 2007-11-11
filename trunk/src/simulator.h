@@ -56,20 +56,20 @@ using boost::serialization::make_nvp;
 #include <boost/serialization/split_free.hpp>
 
 #ifndef OPTIMIZED
-#include <time.h>                                                                // for clock() function
+#  include <time.h>                                                             // for clock() function
 
-#define InitClock(); \
+#  define InitClock(); \
     if (debug(DBG_PROFILE)) m_clock = clock();
 
-#define ElapsedTime(name); \
+#  define ElapsedTime(name); \
     if (debug(DBG_PROFILE)) \
 	{ \
-		cout << name << ": " << static_cast<double>( clock() - m_clock ) / CLOCKS_PER_SEC << "\n"; \
+		cout << name << ": " << static_cast<double>(clock() - m_clock) / CLOCKS_PER_SEC << "\n"; \
 		m_clock = clock(); \
 	}
 #else
-#define InitClock();
-#define ElapsedTime(name);
+#  define InitClock();
+#  define ElapsedTime(name);
 #endif
 
 /** \brief all classes in simuPOP is defined in this namespace
@@ -343,7 +343,7 @@ public:
 	bool evolve(const vectorop & ops,
 	            const vectorop & preOps = vectorop(),
 	            const vectorop & postOps = vectorop(),
-	            int end =  -1, bool dryrun = false);
+	            int end = -1, bool dryrun = false);
 
 	///  CPPONLY apply a list of operators to all populations, \c geneartion of the population does not change
 	/**
@@ -512,7 +512,7 @@ private:
 	vectori m_groups;
 
 	/// replicate pointers
-	population * * m_ptrRep;
+	population ** m_ptrRep;
 
 	/// the scratch pop
 	population * m_scratchPop;

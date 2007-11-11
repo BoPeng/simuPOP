@@ -70,7 +70,7 @@ simulator::simulator(const population & pop,
 			// set replication number
 			m_ptrRep[i]->setRep(i);
 		}
-	} catch (OutOfMemory & ) {
+	} catch (OutOfMemory &) {
 		cout << "Can not create " << m_numRep << " populations" << endl;
 		throw OutOfMemory("Out of memory");
 	}
@@ -125,7 +125,7 @@ void simulator::addInfoField(const string & field, double init)
 
 	try {
 		infoIdx(field);
-	} catch (IndexError & ) {
+	} catch (IndexError &) {
 		newfields.push_back(field);
 	}
 
@@ -136,13 +136,13 @@ void simulator::addInfoField(const string & field, double init)
 		m_ptrRep[i]->addInfoField(field, init);
 		DBG_ASSERT(genoStruIdx() == m_ptrRep[i]->genoStruIdx(),
 		    ValueError, "Genotypic structure of one of the "
-		    "replicates does not agree with the structure of the simulator");
+		                "replicates does not agree with the structure of the simulator");
 	}
 	// and the scratch pop
 	m_scratchPop->addInfoField(field, init);
 	DBG_ASSERT(genoStruIdx() == m_scratchPop->genoStruIdx(),
 	    ValueError, "Genotypic structure of one of the "
-	    "replicates does not agree with the structure of the simulator");
+	                "replicates does not agree with the structure of the simulator");
 }
 
 
@@ -153,7 +153,7 @@ void simulator::addInfoFields(const vectorstr & fields, double init)
 	for (vectorstr::const_iterator it = fields.begin(); it != fields.end(); ++it) {
 		try {
 			infoIdx(*it);
-		} catch (IndexError & ) {
+		} catch (IndexError &) {
 			newfields.push_back(*it);
 		}
 	}
@@ -165,12 +165,12 @@ void simulator::addInfoFields(const vectorstr & fields, double init)
 		m_ptrRep[i]->addInfoFields(fields, init);
 		DBG_ASSERT(genoStruIdx() == m_ptrRep[i]->genoStruIdx(),
 		    ValueError, "Genotypic structure of one of the "
-		    "replicates does not agree with the structure of the simulator");
+		                "replicates does not agree with the structure of the simulator");
 	}
 	m_scratchPop->addInfoFields(fields, init);
 	DBG_ASSERT(genoStruIdx() == m_scratchPop->genoStruIdx(),
 	    ValueError, "Genotypic structure of one of the "
-	    "replicates does not agree with the structure of the simulator");
+	                "replicates does not agree with the structure of the simulator");
 }
 
 
@@ -219,15 +219,15 @@ bool simulator::evolve(const vectorop & ops,
 	for (size_t i = 0; i < m_numRep; ++i) {
 		DBG_FAILIF(genoStruIdx() != m_ptrRep[i]->genoStruIdx(),
 		    ValueError, "Genotypic structure of one of the \n"
-		    "replicates does not agree with the simulator. It is likely that you\n"
-		    "have changed the genotypic structure of a population obtained from \n"
-		    "simu::population(rep). This is not allowed.\n");
+		                "replicates does not agree with the simulator. It is likely that you\n"
+		                "have changed the genotypic structure of a population obtained from \n"
+		                "simu::population(rep). This is not allowed.\n");
 	}
 	DBG_FAILIF(genoStruIdx() != m_scratchPop->genoStruIdx(),
 	    ValueError, "Genotypic structure of one of the \n"
-	    "replicates does not agree with the simulator. It is likely that you\n"
-	    "have changed the genotypic structure of a population obtained from \n"
-	    "simu::population(rep). This is not allowed.\n");
+	                "replicates does not agree with the simulator. It is likely that you\n"
+	                "have changed the genotypic structure of a population obtained from \n"
+	                "simu::population(rep). This is not allowed.\n");
 #endif
 
 	DBG_DO(DBG_SIMULATOR, cout << "Starting generation: " << gen()
@@ -514,13 +514,13 @@ void simulator::saveSimulator(string filename, string format, bool compress) con
 	if (!ofs)
 		throw ValueError("Can not open file " + filename);
 
-	if (format == "text" || (format == "auto" && filename.substr(filename.size() - 4, 4) == ".txt" )) {
+	if (format == "text" || (format == "auto" && filename.substr(filename.size() - 4, 4) == ".txt")) {
 		boost::archive::text_oarchive oa(ofs);
 		oa << *this;
-	} else if (format == "xml" || (format == "auto" && filename.substr(filename.size() - 4, 4) == ".xml" ) ) {
+	} else if (format == "xml" || (format == "auto" && filename.substr(filename.size() - 4, 4) == ".xml") ) {
 		boost::archive::xml_oarchive oa(ofs);
 		oa << boost::serialization::make_nvp("simulator", *this);
-	} else if (format == "bin"  ||  (format == "auto" && filename.substr(filename.size() - 4, 4) == ".bin" )) {
+	} else if (format == "bin" || (format == "auto" && filename.substr(filename.size() - 4, 4) == ".bin")) {
 		boost::archive::binary_oarchive oa(ofs);
 		oa << *this;
 	} else
@@ -545,13 +545,13 @@ void simulator::loadSimulator(string filename, string format)
 		throw ValueError("Can not open file " + filename);
 
 	try {
-		if (format == "text" || (format == "auto" && filename.substr(filename.size() - 4, 4) == ".txt" )) {
+		if (format == "text" || (format == "auto" && filename.substr(filename.size() - 4, 4) == ".txt")) {
 			boost::archive::text_iarchive ia(ifs);
 			ia >> *this;
-		} else if (format == "xml"  ||  (format == "auto" && filename.substr(filename.size() - 4, 4) == ".xml" )) {
+		} else if (format == "xml" || (format == "auto" && filename.substr(filename.size() - 4, 4) == ".xml")) {
 			boost::archive::xml_iarchive ia(ifs);
 			ia >> boost::serialization::make_nvp("simulator", *this);
-		} else if (format == "bin" || (format == "auto" && filename.substr(filename.size() - 4, 4) == ".bin" ) ) {
+		} else if (format == "bin" || (format == "auto" && filename.substr(filename.size() - 4, 4) == ".bin") ) {
 			boost::archive::binary_iarchive ia(ifs);
 			ia >> *this;
 		} else
@@ -592,7 +592,7 @@ void simulator::loadSimulator(string filename, string format)
 					ia >> boost::serialization::make_nvp("simulator", *this);
 				} catch (...) {
 					throw ValueError("Failed to load simulator. Your file may be corrupted, "
-					    "or being a copy of non-transferrable file (.bin)");
+					                 "or being a copy of non-transferrable file (.bin)");
 				}
 			}                                                                                       // try xml
 		}                                                                                           // try text

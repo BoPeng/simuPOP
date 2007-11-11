@@ -322,7 +322,7 @@ void interFitness(unsigned nLoci, const vectorf & fitness, const vectorf::const_
 				DBG_DO(DBG_DEVEL, cout << allgeno << " " << fitOfGeno(loc, allgeno, fitness, freq) << " , ");
 			}
 			// sum over other genotype
-			DBG_DO(DBG_DEVEL, cout << loc << " " << geno << " " <<  f << endl);
+			DBG_DO(DBG_DEVEL, cout << loc << " " << geno << " " << f << endl);
 			sAll[loc * 3 + geno] = f;
 		}
 		// convert to the form 1, s1, s2
@@ -526,7 +526,7 @@ matrix FreqTrajectoryMultiStoch(ULONG curGen,
 			//
 			s1 = sAll[i * 3 + 1];
 			s2 = sAll[i * 3 + 2];
-			x  = xt[curI];
+			x = xt[curI];
 			if (s1 == 0. && s2 == 0.) {
 				// special case when a = 0.
 				y = x;
@@ -677,8 +677,8 @@ vectorf FreqTrajectorySelSim(
 		if (selection == 2)
 			prod[i] = prod[i - 1] * ((1 - (s) * (1 - 2 * ((double)i / N))) / (1 + (s) * (1 - 2 * ((double)i / N))));
 		if (selection == 3)
-			prod[i] = prod[i - 1] * ( 1 - (s / 2.0) * (((double)i / N) + h * (1 - 2 * ((double)i / N)) ) ) /
-			          ( 1 + (s / 2.0) * (((double)i / N) + h * (1 - 2 * ((double)i / N)) ) );
+			prod[i] = prod[i - 1] * (1 - (s / 2.0) * (((double)i / N) + h * (1 - 2 * ((double)i / N)) ) ) /
+			          (1 + (s / 2.0) * (((double)i / N) + h * (1 - 2 * ((double)i / N)) ) );
 	}
 	u[N - 1] = prod[N - 1];
 	for (long i = N - 2; i > 0; i--)
@@ -708,7 +708,7 @@ vectorf FreqTrajectorySelSim(
 
 	double * pos_log_ptr = &log_lookup[j];
 	double * neg_log_ptr = &log_lookup[N - j - 1];
-	double * u0_pnt_j   = &u[j];
+	double * u0_pnt_j = &u[j];
 	double * u0_pnt_jp1 = &u[j + 1];
 
 	double lambda_driving = 1 + s / 4.0;
@@ -723,8 +723,8 @@ vectorf FreqTrajectorySelSim(
 	vector<double> traj_integral_pos(1, 0);
 	vector<double> traj_integral_neg(1, 0);
 
-	double prev_pos  = 0;
-	double prev_neg  = 0;
+	double prev_pos = 0;
+	double prev_neg = 0;
 	double t_time = 0;
 
 	traj_time.push_back(0);
@@ -746,8 +746,8 @@ vectorf FreqTrajectorySelSim(
 		if (selection == 2)
 			prob_up = (1 + (s) * (1 - 2 * ((double)j / N))) / 2.0;
 		if (selection == 3)
-			prob_up = ( 1 + (s / 2.0) * (((double)j / N) +
-			                             h * (1 - 2 * (double (j) / N)) ) ) / 2.0 ;
+			prob_up = (1 + (s / 2.0) * (((double)j / N) +
+			                            h * (1 - 2 * (double (j) / N)) ) ) / 2.0 ;
 
 		//Jump
 		if (rng().randUniform01() < prob_up * weight_up) {

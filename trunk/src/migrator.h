@@ -213,7 +213,7 @@ public:
 			Py_INCREF(m_rateFunc);
 		if (m_indFunc != NULL)
 			Py_INCREF(m_indFunc);
-		if (m_param  != NULL)
+		if (m_param != NULL)
 			Py_INCREF(m_param);
 	}
 
@@ -225,7 +225,7 @@ public:
 			Py_DECREF(m_rateFunc);
 		if (m_indFunc != NULL)
 			Py_DECREF(m_indFunc);
-		if (m_param  != NULL)
+		if (m_param != NULL)
 			Py_DECREF(m_param);
 	}
 
@@ -240,7 +240,7 @@ public:
 			Py_INCREF(m_rateFunc);
 		if (m_indFunc != NULL)
 			Py_INCREF(m_indFunc);
-		if (m_param  != NULL)
+		if (m_param != NULL)
 			Py_INCREF(m_param);
 	}
 

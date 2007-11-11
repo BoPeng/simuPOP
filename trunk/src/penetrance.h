@@ -225,8 +225,8 @@ public:
 		penetrance(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
 		m_loci(loci), m_penetrance(penet), m_wildtype(wildtype)
 	{
-		DBG_ASSERT(m_penetrance.size() ==  static_cast<UINT>(pow(static_cast<double>(3),
-		                                                         static_cast<double>(loci.size()))),
+		DBG_ASSERT(m_penetrance.size() == static_cast<UINT>(pow(static_cast<double>(3),
+		                                                        static_cast<double>(loci.size()))),
 		    ValueError, "Please specify penetrance for each combination of genotype.");
 	};
 
