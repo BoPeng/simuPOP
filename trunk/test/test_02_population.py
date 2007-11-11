@@ -1215,6 +1215,78 @@ class TestPopulation(unittest.TestCase):
             for i in range(pop2.subPopSize(sp)):
                 self.assertEqual(pop2.individual(i, sp), pop.individual(i%pop.subPopSize(sp), sp))
 
+    def testVirtualSubPop(self):
+        'Testing virtual subpopulations'
+        pop = population(subPop=[20, 80], loci=[1])
+        pop.setSplitter(duplicateSplitter(4), 0)
+        pop.setSplitter(duplicateSplitter(2), 1)
+        self.assertEqual(pop.numVirtualSubPop(0), 4)
+        self.assertEqual(pop.numVirtualSubPop(1), 2)
+        self.assertEqual(pop.virtualSubPopSize(0.0), 20)
+        self.assertEqual(pop.virtualSubPopSize(0.1), 20)
+        self.assertEqual(pop.virtualSubPopSize(0.3), 20)
+        self.assertRaises(exceptions.IndexError, pop.virtualSubPopSize, 0.4) 
+        self.assertEqual(pop.virtualSubPopSize(1.1), 80)
+        pop.activateVirtualSubPop(0.1)
+    
+    def testSexSplitter(self):
+        'Test sex virtual subpop splitter'
+        pop = population(subPop=[20, 80])
+        InitByFreq(pop, [0.4, 0.6])
+        Stat(pop, numOfMale=True)
+        pop.setSplitter(sexSplitter(), 1)
+        self.assertEqual(pop.virtualSubPopSize(1.0), pop.dvars(1).numOfMale)
+        self.assertEqual(pop.virtualSubPopSize(1.1), pop.dvars(1).numOfFemale)
+        self.assertEqual(pop.virtualSubPopName(1.0), 'Male')
+        self.assertEqual(pop.virtualSubPopName(1.1), 'Female')
+        pop.activateVirtualSubPop(1.1)
+        for ind in pop.individuals(1):
+            self.assertEqual(ind.sex(), Female)
+        pop.activateVirtualSubPop(1.0)
+        for ind in pop.individuals(1):
+            self.assertEqual(ind.sex(), Male)
+        pop.resetVirtualSubPop(1)
+        numMale = 0
+        numFemale = 0
+        for ind in pop.individuals(1):
+            if ind.sex() == Male:
+                numMale += 1
+            else:
+                numFemale += 1
+        #print numMale, numFemale
+        self.assertEqual(numMale == 0, False)
+        self.assertEqual(numFemale == 0, False)
+
+
+    def testAffectionSplitter(self):
+        'Test sex virtual subpop splitter'
+        pop = population(subPop=[20, 80])
+        InitByFreq(pop, [0.4, 0.6])
+        MaPenetrance(pop, locus=0, wildtype=0, penetrance=[0.2, 0.4, 0.8])
+        Stat(pop, numOfAffected=True)
+        pop.setSplitter(affectionSplitter(), 1)
+        self.assertEqual(pop.virtualSubPopSize(1.0), pop.dvars(1).numOfAffected)
+        self.assertEqual(pop.virtualSubPopSize(1.1), pop.dvars(1).numOfUnaffected)
+        self.assertEqual(pop.virtualSubPopName(1.0), 'Unaffected')
+        self.assertEqual(pop.virtualSubPopName(1.1), 'Affected')
+        pop.activateVirtualSubPop(1.1)
+        for ind in pop.individuals(1):
+            self.assertEqual(ind.affected(), True)
+        pop.activateVirtualSubPop(1.0)
+        for ind in pop.individuals(1):
+            self.assertEqual(ind.affected(), False)
+        pop.resetVirtualSubPop(1)
+        numAffected = 0
+        numUnaffected = 0
+        for ind in pop.individuals(1):
+            if ind.affected():
+                numAffected += 1
+            else:
+                numUnaffected += 1
+        self.assertEqual(numAffected == 0, False)
+        self.assertEqual(numUnaffected == 0, False)
+     
+
 
 if __name__ == '__main__':
     unittest.main()

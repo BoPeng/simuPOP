@@ -63,6 +63,7 @@ using std::deque;
 using boost::serialization::make_nvp;
 
 #include "individual.h"
+#include "virtualSubPop.h"
 
 #ifdef SIMUMPI
 
@@ -73,9 +74,6 @@ using boost::serialization::make_nvp;
 namespace simuPOP {
 
 class population;
-typedef int vsp;
-typedef vector<vsp *> vectorvsp;
-
 
 //************Documentation Format*****************
 //   /// brief description
@@ -239,18 +237,26 @@ public:
 	}
 
 
-	bool hasVirtualSubPop() const
+	bool hasActivatedVirtualSubPop() const;
+
+	bool hasActivatedVirtualSubPop(SubPopID subPop) const;
+
+	bool hasVirtualSubPop(SubPopID subpop) const;
+
+	vspSplitter * setSplitter(vspSplitter * vsp, SubPopID sp);
+
+	UINT numVirtualSubPop(SubPopID subPop) const;
+
+	void activateVirtualSubPop(virtualSubPopID subPop);
+
+	// for swig interface
+	void activateVirtualSubPop(double subPop)
 	{
-		return !m_vsps.empty();
+		activateVirtualSubPop(virtualSubPopID(subPop));
 	}
 
 
-	bool isSubPopVirtual(SubPopID subPop) const
-	{
-		return !m_vsps.empty() &&
-		       m_vsps[subPop] != NULL;
-	}
-
+	void resetVirtualSubPop(SubPopID subPop);
 
 	// allow compaison of populations in python
 	// only equal or unequal, no greater or less than
@@ -285,11 +291,28 @@ public:
 
 	 \return size of subpopulation \c subPop
 	 */
-	ULONG subPopSize(UINT subPop) const
+	ULONG subPopSize(SubPopID subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
-
 		return m_subPopSize[subPop];
+	}
+
+
+	ULONG virtualSubPopSize(virtualSubPopID subPop) const;
+
+	// for swig interface
+	ULONG virtualSubPopSize(double subPop) const
+	{
+		return virtualSubPopSize(virtualSubPopID(subPop));
+	}
+
+
+	string virtualSubPopName(virtualSubPopID subPop) const;
+
+	// for swig interface
+	string virtualSubPopName(double subPop) const
+	{
+		return virtualSubPopName(virtualSubPopID(subPop));
 	}
 
 
@@ -417,7 +440,7 @@ public:
 	pyIndIterator individuals()
 	{
 		return pyIndIterator(m_inds.begin(), m_inds.end(),
-		           hasVirtualSubPop());
+		           !hasActivatedVirtualSubPop());
 	}
 
 
@@ -429,7 +452,8 @@ public:
 #endif
 
 		return pyIndIterator(m_inds.begin() + subPopBegin(subPop),
-		           m_inds.begin() + subPopEnd(subPop), isSubPopVirtual(subPop));
+		           m_inds.begin() + subPopEnd(subPop),
+		           !hasActivatedVirtualSubPop(subPop));
 	}
 
 
@@ -484,7 +508,7 @@ public:
 	IndIterator indBegin()
 	{
 		return IndIterator(m_inds.begin(), m_inds.end(),
-		           !hasVirtualSubPop());
+		           !hasActivatedVirtualSubPop());
 	}
 
 
@@ -492,7 +516,7 @@ public:
 	IndIterator indEnd()
 	{
 		return IndIterator(m_inds.end(), m_inds.end(),
-		           !hasVirtualSubPop());
+		           !hasActivatedVirtualSubPop());
 	}
 
 
@@ -504,7 +528,7 @@ public:
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
 		           m_inds.begin() + m_subPopIndex[subPop + 1],
-		           !isSubPopVirtual(subPop));
+		           !hasActivatedVirtualSubPop(subPop));
 	}
 
 
@@ -515,7 +539,7 @@ public:
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
 		           m_inds.begin() + m_subPopIndex[subPop + 1],
-		           !isSubPopVirtual(subPop));
+		           !hasActivatedVirtualSubPop(subPop));
 	}
 
 
@@ -524,7 +548,7 @@ public:
 	ConstIndIterator indBegin() const
 	{
 		return ConstIndIterator(m_inds.begin(), m_inds.end(),
-		           !hasVirtualSubPop());
+		           !hasActivatedVirtualSubPop());
 	}
 
 
@@ -533,7 +557,7 @@ public:
 	ConstIndIterator indEnd() const
 	{
 		return ConstIndIterator(m_inds.end(), m_inds.end(),
-		           !hasVirtualSubPop());
+		           !hasActivatedVirtualSubPop());
 	}
 
 
@@ -545,7 +569,7 @@ public:
 
 		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
 		           m_inds.begin() + m_subPopIndex[subPop + 1],
-		           !isSubPopVirtual(subPop));
+		           !hasActivatedVirtualSubPop(subPop));
 	}
 
 
@@ -557,7 +581,76 @@ public:
 
 		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
 		           m_inds.begin() + m_subPopIndex[subPop + 1],
-		           !isSubPopVirtual(subPop));
+		           !hasActivatedVirtualSubPop(subPop));
+	}
+
+
+	/// CPPONLY individual iterator: without subPop info
+	RawIndIterator rawIndBegin()
+	{
+		return m_inds.begin();
+	}
+
+
+	/// CPPONLY individual iterator: without subPop info
+	RawIndIterator rawIndEnd()
+	{
+		return m_inds.end();
+	}
+
+
+	/// CPPONLY individual iterator: with subPop info.
+	/// The iterator will skip invisible individuals
+	RawIndIterator rawIndBegin(UINT subPop)
+	{
+		CHECKRANGESUBPOP(subPop);
+
+		return m_inds.begin() + m_subPopIndex[subPop];
+	}
+
+
+	/// CPPONLY individual iterator: with subPop info.
+	RawIndIterator rawIndEnd(UINT subPop)
+	{
+		CHECKRANGESUBPOP(subPop);
+
+		return m_inds.begin() + m_subPopIndex[subPop + 1];
+	}
+
+
+	/// CPPONLY individual iterator: without subPop info
+	/// The iterator will skip invisible individuals
+	ConstRawIndIterator rawIndBegin() const
+	{
+		return m_inds.begin();
+	}
+
+
+	/// CPPONLY individual iterator: without subPop info
+	/// It is recommended to use it.valid(), instead of it != indEnd()
+	ConstRawIndIterator rawIndEnd() const
+	{
+		return m_inds.end();
+	}
+
+
+	/// CPPONLY individual iterator: with subPop info.
+	/// The iterator will skip invisible individuals
+	ConstRawIndIterator rawIndBegin(UINT subPop) const
+	{
+		CHECKRANGESUBPOP(subPop);
+
+		return m_inds.begin() + m_subPopIndex[subPop];
+	}
+
+
+	/// CPPONLY individual iterator: with subPop info.
+	/// It is recommended to use it.valid(), instead of it != indEnd(sp)
+	ConstRawIndIterator rawIndEnd(UINT subPop) const
+	{
+		CHECKRANGESUBPOP(subPop);
+
+		return m_inds.begin() + m_subPopIndex[subPop + 1];
 	}
 
 
@@ -1153,7 +1246,6 @@ public:
 		return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop] * infoSize(),
 		           m_info.begin() + m_subPopIndex[subPop + 1] * infoSize());
 	}
-
 
 
 	///	add an information field to a population
@@ -1923,7 +2015,7 @@ private:
 	vectorlu m_subPopIndex;
 
 	///
-	vectorvsp m_vsps;
+	vectorvsp m_virtualSubPops;
 
 	/// pool of genotypic information
 	vectora m_genotype;

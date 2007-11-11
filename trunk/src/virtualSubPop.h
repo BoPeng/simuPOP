@@ -29,148 +29,155 @@
  */
 #include "utility.h"
 #include "simuPOP_cfg.h"
-#include "population.h"
 
 #include <cmath>
 
 namespace simuPOP {
 
+class population;
+
 /* this is a class that store subpopulation, or subpopulation+virtual subpop id.
-Basically, a integer number reprents a subpop, and a float number such as
-1.1 represents the second virtual subpop in the second subpopulation.
-*/
+   Basically, a integer number reprents a subpop, and a float number such as
+   1.1 represents the second virtual subpop in the second subpopulation.
+ */
 class virtualSubPopID
 {
+public:
 	virtualSubPopID(int id) : m_subPop(id), m_virtualSubPop(MaxSubPopID)
 	{
 	}
 
+
 	virtualSubPopID(double id)
 	{
 		m_subPop = static_cast<SubPopID>(floor(id));
-		m_virtualSubPop = static_cast<SubPopID>(floor((id-m_subPop)*10));
-		DBG_ASSERT(fcmp_eq(id - m_subPop - 0.1*m_virtualSubPop, 0.), ValueError,
-			"Wrong virtual subpopulation id " + toStr(id));
+		m_virtualSubPop = static_cast<SubPopID>(floor((id - m_subPop) * 10));
+		DBG_ASSERT(fcmp_eq(id, m_subPop + 0.1 * m_virtualSubPop), ValueError,
+		    "Wrong virtual subpopulation id " + toStr(id) + " ("
+		    + toStr(m_subPop) + ", " + toStr(m_virtualSubPop) + ")");
 	}
 
-	SubPopID id() const 
+
+	SubPopID id() const
 	{
 		return m_subPop;
 	}
+
 
 	SubPopID vid() const
 	{
 		return m_virtualSubPop;
 	}
 
+
 	bool isVirtual() const
 	{
 		return static_cast<unsigned long>(m_virtualSubPop) != MaxSubPopID;
 	}
+
 
 private:
 	SubPopID m_subPop;
 	SubPopID m_virtualSubPop;
 };
 
-/** virtual splitters split a subpopulation into virtual sub-subpopulations.
-   The virtual subpopulations does not have to add up to the whole
+/** virtual subpopss split a subpopulation into virtual sub-subpopulations.
+   The virtual subpopulations do not have to add up to the whole
    subpopulation, nor they have to be distinct. For example,
    a virtual subpopulation may be all individuals in a population
    that is over the age of 30. Or, two virtual populations may
    overlap so some of the inviduals will go through more than one
    mating schemes.
-
-   When a subpopulation is splitted by a virtual splitter, only its
-   virtual subpopulations will go through mating. The virtual subpopulations
-   are identified as virtual-subPopulations, relative to their parental
-   subpopulation.
-
-   virtual splitter will split a parental subpopulation, and the corresponding
-   offspring subpopulation ino the same number of virtual subpopulations.
-   Whereas parental virtual subpopulations can be virtual, offspring virtual
-   subpopulations has to occupy the whole offspring subpopulation, and
-   can not overlap. A wight-system is used to determine the offspring
-   sub-subpopulation sizes. For each sub-subpopulation, weight
- \li 0 no sub-subpopulation. The corresponding parental virtual subpopulation
-   	is ignored.
- \li -1 The same size as the corresponding parental virtual subpopulation
- \li n a weight. After 0, -1 are handled, the rest of the weights are
-   	added and a proportion is calculated for each offspring sub-subpopulation.
-
-   Note that if any parental virtual subpopulation is empty, its corresponding
-   entry in the offspring sub-subpopulations is removed.
  */
-class virtualSubPops
+class vspSplitter
 {
 public:
-	virtualSubPops(vectori const & offWeights) : m_offWeights(offWeights)
+	vspSplitter()
 	{
 	}
 
 
-	virtual virtualSubPops * clone() const = 0;
+	virtual vspSplitter * clone() const = 0;
 
-	virtual ~virtualSubPops()
+	virtual ~vspSplitter()
 	{
 	}
 
+
+	bool activated() const
+	{
+		return m_activated;
+	}
+
+
+	virtual ULONG size(const population & pop, virtualSubPopID subPop) const = 0;
 
 	// number of virtual subpops of subpopulation sp
-	virtual UINT numVirtualSubPops(UINT sp) = 0;
+	virtual UINT numVirtualSubPop() = 0;
 
 	// prepare a subpopulation ssp, and return a real SP
 	// id of the virtual subpopulation. The population
 	// may be manipulated.
-	virtual UINT prepareVirtualSubPop(population & pop, population & scratch,
-	                                  UINT sp, UINT ssp) = 0;
+	virtual void activate(population & pop, virtualSubPopID subPop) = 0;
 
 	// because prepareVirtualSubPop may manipulate subpopulation
 	// this function removes such manipulations. At least, there
 	// should be no subpopulation exist in this subpopulation.
-	virtual void restoreSubPop(population & pop, population & scratch,
-	                           UINT sp) = 0;
+	virtual void reset(population & pop, SubPopID subPop) = 0;
 
-private:
-	vectori m_offWeights;
+	virtual string name(SubPopID sp) = 0;
+
+protected:
+	bool m_activated;
+
+	void resetSubPop(population & pop, SubPopID subPop);
+
 };
 
 
-/** This splitter does nothing. It treats the whole
+/** This subpops does nothing. It treats the whole
    subpopulation as the only virtual subpopulation.
  */
-class nullVirtualSubPops : public virtualSubPops
+class nullSplitter : public vspSplitter
 {
 public:
-	nullVirtualSubPops() : virtualSubPops(vectori(1, 1))
+	nullSplitter() : vspSplitter()
 	{
 	}
 
-	virtualSubPops * clone() const
+
+	vspSplitter * clone() const
 	{
-		return new nullVirtualSubPops(*this);
+		return new nullSplitter(*this);
 	}
 
-	UINT numVirtualSubPops(UINT sp)
+
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
+
+
+	UINT numVirtualSubPop()
 	{
 		return 1;
 	}
 
 
-	// no need to prepare anything.
-	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
+	void activate(population & pop, virtualSubPopID subPop)
 	{
-		return sp;
+		m_activated = true;
 	}
 
-	void restoreSubPop(population & pop, population & scratch,
-	                           UINT sp)
+
+	void reset(population & pop, SubPopID sp)
 	{
+		m_activated = false;
 	}
+
+
+	string name(SubPopID sp) { return "orignal pop"; }
 };
 
 
-/** duplicateVirtualSubPops does not split the parental subpopulation in any way.
+/** duplicateSplitter does not split the parental subpopulation in any way.
    It presents the specified subpopulation as several subpopulations to the
    mating system, thus allow several different mating schemes to be appllied to the
    same subpopulation. For example, a selfing-mating scheme can be applied to
@@ -178,33 +185,114 @@ public:
    random-mating scheme can be used to generate the rest of the offspring
    subpopulation.
  */
-class duplicateVirtualSubPops : public virtualSubPops
+class duplicateSplitter : public nullSplitter
 {
 public:
-	duplicateVirtualSubPops(vectori const & offWeights);
-
-	virtualSubPops * clone() const
-	{
-		return new duplicateVirtualSubPops(*this);
-	}
-
-	UINT numVirtualSubPops(UINT sp)
-	{
-		return 1;
-	}
-
-	// no need to prepare anything.
-	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
-	{
-		return sp;
-	}
-
-	void restoreSubPop(population & pop, population & scratch,
-	                           UINT sp)
+	duplicateSplitter(int num) : nullSplitter(), m_num(num)
 	{
 	}
 
 
+	vspSplitter * clone() const
+	{
+		return new duplicateSplitter(*this);
+	}
+
+
+	UINT numVirtualSubPop()
+	{
+		return m_num;
+	}
+
+
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
+
+	string name(SubPopID sp)
+	{
+		return "replicate" + toStr(sp);
+	}
+
+
+private:
+	int m_num;
+};
+
+
+/** split the population according to sex
+ */
+class sexSplitter : public vspSplitter
+{
+public:
+	sexSplitter() : vspSplitter()
+	{
+	}
+
+
+	vspSplitter * clone() const
+	{
+		return new sexSplitter(*this);
+	}
+
+
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
+
+	UINT numVirtualSubPop()
+	{
+		return 2;
+	}
+
+
+	void activate(population & pop, virtualSubPopID subPop);
+
+	void reset(population & pop, SubPopID sp);
+
+	string name(SubPopID sp)
+	{
+		return sp == 0 ? "Male" : "Female";
+	}
+
+
+private:
+	Sex m_sex;
+};
+
+
+/** split the population according to affection status
+ */
+class affectionSplitter : public vspSplitter
+{
+public:
+	affectionSplitter() : vspSplitter()
+	{
+	}
+
+
+	vspSplitter * clone() const
+	{
+		return new affectionSplitter(*this);
+	}
+
+
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
+
+	UINT numVirtualSubPop()
+	{
+		return 2;
+	}
+
+
+	void activate(population & pop, virtualSubPopID subPop);
+
+	void reset(population & pop, SubPopID sp);
+
+	string name(SubPopID sp)
+	{
+		return sp == 0 ? "Unaffected" : "Affected";
+	}
+
+
+private:
+	bool m_affection;
 };
 
 
@@ -212,97 +300,102 @@ public:
    A cutoff vector of length \c n is given to split the subpopulation into
  \c n+1 distinct virtual subpopulations.
  */
-class infoVirtualSubPops : public virtualSubPops
-{
-public:
-	infoVirtualSubPops(vectori const & offWeights);
+/*
+   class infoSplitter : public vspSplitter
+   {
+   public:
+   infoSplitter(vectori const & offWeights);
 
-	virtualSubPops * clone() const
-	{
-		return new infoVirtualSubPops(*this);
-	}
-
-
-	UINT numVirtualSubPops(UINT sp)
-	{
-		return 1;
-	}
-
-	// no need to prepare anything.
-	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
-	{
-		return sp;
-	}
-
-	void restoreSubPop(population & pop, population & scratch,
-	                           UINT sp)
-	{
-	}
+   vspSplitter * clone() const
+   {
+   	   return new infoSplitter(*this);
+   }
 
 
-};
+   UINT numSplitter(UINT sp)
+   {
+   	   return 1;
+   }
+
+   // no need to prepare anything.
+   UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
+   {
+   	   return sp;
+   }
+
+   void restoreSubPop(population & pop, population & scratch,
+   							  UINT sp)
+   {
+   }
+
+
+   };
+ */
 
 /** Split the population according to a proportion */
-class proportionVirtualSubPops : public virtualSubPops
-{
-public:
-	proportionVirtualSubPops(vectori const & offWeights);
+/*
+   class proportionSplitter : public vspSplitter
+   {
+   public:
+   	proportionSplitter(vectori const & offWeights);
 
-	virtualSubPops * clone() const
-	{
-		return new proportionVirtualSubPops(*this);
-	}
+   	vspSplitter * clone() const
+   	{
+   		return new proportionSplitter(*this);
+   	}
 
 
-	UINT numVirtualSubPops(UINT sp)
-	{
-		return 1;
-	}
+   	UINT numSplitter(UINT sp)
+   	{
+   		return 1;
+   	}
 
-	// no need to prepare anything.
-	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
-	{
-		return sp;
-	}
+   	// no need to prepare anything.
+   	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
+   	{
+   		return sp;
+   	}
 
-	void restoreSubPop(population & pop, population & scratch,
-	                           UINT sp)
-	{
-	}
-};
-
-/** Split the population using given ranges. The duplicateVirtualSubPops
-   can be a special case of this virtual splitter.
+   	void restoreSubPop(population & pop, population & scratch,
+   							   UINT sp)
+   	{
+   	}
+   };
  */
-class rangeVirtualSubPops : public virtualSubPops
-{
-public:
-	rangeVirtualSubPops(vectori const & offWeights);
 
-	virtualSubPops * clone() const
-	{
-		return new rangeVirtualSubPops(*this);
-	}
+/** Split the population using given ranges. The duplicateSplitter
+   can be a special case of this virtual subpops.
+ */
+/*
+   class rangeSplitter : public vspSplitter
+   {
+   public:
+   rangeSplitter(vectori const & offWeights);
 
-
-	UINT numVirtualSubPops(UINT sp)
-	{
-		return 1;
-	}
-
-	// no need to prepare anything.
-	UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
-	{
-		return sp;
-	}
-
-	void restoreSubPop(population & pop, population & scratch,
-	                           UINT sp)
-	{
-	}
-};
+   vspSplitter * clone() const
+   {
+   	   return new rangeSplitter(*this);
+   }
 
 
-//typedef vector<virtualSubPop*> vectorvsp;
+   UINT numSplitter(UINT sp)
+   {
+   	   return 1;
+   }
+
+   // no need to prepare anything.
+   UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
+   {
+   	   return sp;
+   }
+
+   void restoreSubPop(population & pop, population & scratch,
+   							  UINT sp)
+   {
+   }
+   };
+ */
+
+typedef vector<vspSplitter *> vectorvsp;
 }
 #endif

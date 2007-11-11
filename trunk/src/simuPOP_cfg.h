@@ -155,7 +155,6 @@ typedef std::vector<std::string>           vectorstr;
 typedef std::vector<std::vector<int > >    intMatrix;
 typedef std::vector<InfoType>              vectorinfo;
 typedef std::vector<std::vector<double > > matrix;
-typedef std::vector<PyObject * >           vectorobj;
 
 #include <map>
 using std::map;
@@ -360,7 +359,7 @@ enum DBG_CODE {
 // check range.
 #define CHECKRANGEPLOIDY(p)  DBG_FAILIF(p >= ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy() - 1))
 #define CHECKRANGESEX(sex) DBG_FAILIF(sex != Male && sex != Female, IndexError, "Wrong sex info. Male " + toStr(Male) + " or Fenamle "  + toStr(Female) + " only.")
-#define CHECKRANGESUBPOP(subPop) DBG_FAILIF(subPop >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  - " + toStr(numSubPop() - 1))
+#define CHECKRANGESUBPOP(subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  - " + toStr(numSubPop() - 1))
 #define CHECKRANGECHROM(chrom)   DBG_FAILIF(chrom >= numChrom(), IndexError, "chromosome index (" + toStr(chrom) + ") out of range of 0 - " + toStr(numChrom() - 1))
 #define CHECKRANGELOCUS(chrom, locus) DBG_FAILIF(locus >= numLoci(chrom), IndexError, "locus index (" + toStr(chrom) + ") out of range of 0 - " + toStr(numLoci(chrom) - 1))
 #define CHECKRANGEABSLOCUS(locus) DBG_FAILIF(locus >= totNumLoci(), IndexError, "absolute locus index (" + toStr(locus) + ") out of range of 0 - " + toStr(totNumLoci() - 1))
