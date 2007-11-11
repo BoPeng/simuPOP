@@ -297,40 +297,43 @@ private:
 
 
 /** Split the population according to the value of an information field.
-   A cutoff vector of length \c n is given to split the subpopulation into
- \c n+1 distinct virtual subpopulations.
+   A list of distinct values, or a cutoff vector can be given
+   to determine how the virtual subpopulations are divided.
+   Note that in the first case, an individual does not have to belong to
+   any virtual subpopulation.
  */
-/*
-   class infoSplitter : public vspSplitter
-   {
-   public:
-   infoSplitter(vectori const & offWeights);
+class infoSplitter : public vspSplitter
+{
+public:
+	infoSplitter(string info, vectorinfo const & values = vectorinfo(),
+	             vectorf const & cutoff = vectorf());
 
-   vspSplitter * clone() const
-   {
-   	   return new infoSplitter(*this);
-   }
-
-
-   UINT numSplitter(UINT sp)
-   {
-   	   return 1;
-   }
-
-   // no need to prepare anything.
-   UINT prepareVirtualSubPop(population & pop, population & scratch, UINT sp, UINT ssp)
-   {
-   	   return sp;
-   }
-
-   void restoreSubPop(population & pop, population & scratch,
-   							  UINT sp)
-   {
-   }
+	vspSplitter * clone() const
+	{
+		return new infoSplitter(*this);
+	}
 
 
-   };
- */
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
+
+	UINT numVirtualSubPop();
+
+	void activate(population & pop, virtualSubPopID subPop);
+
+	void reset(population & pop, SubPopID sp);
+
+	string name(SubPopID sp);
+
+private:
+	string m_info;
+	//
+	vectorinfo m_values;
+	//
+	vectorf m_cutoff;
+	//
+	SubPopID m_vsp;
+};
+
 
 /** Split the population according to a proportion */
 /*
