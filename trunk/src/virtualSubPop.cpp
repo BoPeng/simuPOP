@@ -142,7 +142,7 @@ void affectionSplitter::reset(population & pop, SubPopID subPop)
 
 infoSplitter::infoSplitter(string info, vectorinfo const & values,
                            vectorf const & cutoff)
-						   : vspSplitter(),
+	: vspSplitter(),
 	m_info(info), m_values(values), m_cutoff(cutoff)
 {
 	DBG_FAILIF(m_values.empty() && m_cutoff.empty(),
@@ -167,6 +167,7 @@ ULONG infoSplitter::size(const population & pop, virtualSubPopID subPop) const
 
 	ConstRawIndIterator it = pop.rawIndBegin(subPop.id());
 	ConstRawIndIterator it_end = pop.rawIndEnd(subPop.id());
+
 	if (m_values.empty()) {
 		DBG_FAILIF(subPop.vid() > m_cutoff.size(), IndexError,
 		    "Virtual Subpoplation index out of range of 0 ~ "
