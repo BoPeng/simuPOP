@@ -1107,61 +1107,71 @@ public:
 
 
 	/// CPPONLY info iterator
-	IndInfoIterator infoBegin(UINT idx)
+	IndInfoIterator infoBegin(UINT idx, bool order)
 	{
 		CHECKRANGEINFO(idx);
-		return IndInfoIterator(idx, indBegin());
+		if (order && !infoOrdered())
+			adjustInfoPosition(true);
+		return IndInfoIterator(idx, indBegin(), order);
 	}
 
 
 	/// CPPONLY
-	IndInfoIterator infoEnd(UINT idx)
+	IndInfoIterator infoEnd(UINT idx, bool order)
 	{
 		CHECKRANGEINFO(idx);
-		return IndInfoIterator(idx, indEnd());
+		if (order && !infoOrdered())
+			adjustInfoPosition(true);
+		return IndInfoIterator(idx, indEnd(), order);
 	}
 
 
 	/// CPPONLY info iterator
-	IndInfoIterator infoBegin(UINT index, UINT subPop)
+	IndInfoIterator infoBegin(UINT index, UINT subPop, bool order)
 	{
 		CHECKRANGEINFO(index);
 		CHECKRANGESUBPOP(subPop);
-		return IndInfoIterator(index, indBegin(subPop));
+		if (!infoOrdered())
+			adjustInfoPosition(order);
+		return IndInfoIterator(index, indBegin(subPop), order);
 	}
 
 
 	/// CPPONLY
-	IndInfoIterator infoEnd(UINT index, UINT subPop)
+	IndInfoIterator infoEnd(UINT index, UINT subPop, bool order)
 	{
 		CHECKRANGEINFO(index);
 		CHECKRANGESUBPOP(subPop);
 
-		return IndInfoIterator(index, indEnd(subPop));
+		if (!infoOrdered())
+			adjustInfoPosition(order);
+		return IndInfoIterator(index, indEnd(subPop), order);
 	}
 
 
 	/// get information field \c idx of all individuals
 	/**
 	 \param idx index of the information field
+	 \param order if true, sort returned vector in individual order
 	 \return a vector with value of the information field
 	 */
-	vectorinfo indInfo(UINT idx)
+	vectorinfo indInfo(UINT idx, bool order)
 	{
-		return vectorinfo(infoBegin(idx), infoEnd(idx));
+		return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 	}
 
 
 	/// get information field \c name of all individuals
 	/**
 	 \param name name of the information field
+	 \param order if true, sort returned vector in individual order
 	 \return a vector with value of the information field
 	 */
-	vectorinfo indInfo(const string & name)
+	vectorinfo indInfo(const string & name, bool order)
 	{
 		UINT idx = infoIdx(name);
 
-		return vectorinfo(infoBegin(idx), infoEnd(idx));
+		return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
 	}
 
 
@@ -1169,11 +1179,13 @@ public:
 	/**
 	 \param idx index of the information field
 	 \param subPop subpopulation index
+	 \param order if true, sort returned vector in individual order
 	 \return a vector with value of the information field
 	 */
-	vectorinfo indInfo(UINT idx, UINT subPop)
+	vectorinfo indInfo(UINT idx, UINT subPop, bool order)
 	{
-		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
+		return vectorinfo(infoBegin(idx, subPop, order),
+		           infoEnd(idx, subPop, order));
 	}
 
 
@@ -1184,11 +1196,11 @@ public:
 	 \param order if true, sort returned vector in individual order
 	 \return a vector with value of the information field
 	 */
-	vectorinfo indInfo(const string & name, UINT subPop)
+	vectorinfo indInfo(const string & name, UINT subPop, bool order)
 	{
 		UINT idx = infoIdx(name);
 
-		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
+		return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
 	}
 
 

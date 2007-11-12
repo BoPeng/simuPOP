@@ -1933,7 +1933,7 @@ vectorf testGetinfoFromPop(population & pop, bool order)
 
 	if (order)
 		pop.adjustInfoPosition(true);
-	for (IndInfoIterator it = pop.infoBegin(0); it.valid(); ++it)
+	for (IndInfoIterator it = pop.infoBegin(0, true); it.valid(); ++it)
 		a[i++] = *it;
 	return a;
 }

@@ -1017,7 +1017,7 @@ public:
 	}
 
 
-	InformationIterator(UINT info, IndividualIterator<T> it)
+	InformationIterator(UINT info, IndividualIterator<T> it, bool order)
 		: m_info(info), m_it(it)
 	{
 	}
@@ -1071,8 +1071,8 @@ private:
 typedef InformationIterator<RawIndIterator> IndInfoIterator;
 typedef InformationIterator<ConstRawIndIterator> ConstIndInfoIterator;
 
-}
 
+}
 
 #ifndef SWIG
 // set version for individual class
