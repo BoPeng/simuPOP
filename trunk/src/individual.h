@@ -997,10 +997,11 @@ typedef IndividualIterator<ConstRawIndIterator> ConstIndIterator;
 
 /**
    	this class implements a C++ iterator class that iterate through
-   	infomation fields in a (sub)population using an IndIterator that
-   	will skip invisible individuals. Using this iterator, instead of
-   	the previous GappedInfoIterator, I do not have to worry about the
-   	order of individuals, and the visibility of individuals.
+   	infomation fields in a (sub)population using 
+	1. an IndIterator that	will skip invisible individuals, or
+	2. a gapped iterator that will run faster.
+	Note that 1, 2 should yield identical result, and 2 should be used
+	when there is no virtual subpopulation.q
  */
 template <typename T>
 class InformationIterator
@@ -1012,27 +1013,31 @@ public:
 	typedef typename T::reference reference;
 	typedef typename T::pointer pointer;
 
-	InformationIterator() : m_it()
+	
+	InformationIterator()
 	{
 	}
 
-
-	InformationIterator(UINT info, IndividualIterator<T> it, bool order)
-		: m_info(info), m_it(it)
+	InformationIterator(UINT info, InfoIterator ptr, UINT size)
+		: m_info(info), m_useGappedIterator(true), 
+			m_it(),	m_git(&*ptr, size)
 	{
 	}
-
-
-	bool valid()
+	
+	InformationIterator(UINT info, IndividualIterator<T> it)
+		: m_info(info), m_useGappedIterator(false),
+			m_it(it), m_git()
 	{
-		return m_it.valid();
 	}
 
 
 	// this is the most important part!
 	InfoType & operator *() const
 	{
-		return *m_it->infoPtr(m_info);
+		if (m_useGappedIterator)
+			return *m_git;
+		else
+			return *m_it->infoPtr(m_info);
 	}
 
 
@@ -1041,30 +1046,42 @@ public:
 	{
 		// save current state
 		InformationIterator tmp(*this);
-
-		++m_it;
+		if (m_useGappedIterator)
+			++m_git;
+		else
+			++m_it;
 		return tmp;
 	}
 
 
 	InformationIterator operator++()
 	{
-		++m_it;
+		if (m_useGappedIterator)
+			++m_git;
+		else
+			++m_it;
 		return *this;
 	}
 
 
 	bool operator!=(const InformationIterator & rhs)
 	{
-		return m_it != rhs.m_it || m_info != rhs.m_info;
+		if (m_useGappedIterator)
+			return m_git != rhs.m_git || m_info != rhs.m_info;
+		else
+			return m_it != rhs.m_it || m_info != rhs.m_info;
 	}
 
 
 private:
 	// index of the information field
 	UINT m_info;
+	///
+	bool m_useGappedIterator;
 	// individual iterator
 	IndividualIterator<T> m_it;
+	//
+	GappedInfoIterator m_git;
 };
 
 
