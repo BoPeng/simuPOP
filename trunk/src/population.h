@@ -666,22 +666,22 @@ public:
 	   subpopulations will be respected.	Therefore, it is possible to access all alleles within an
 	   subpopulation	through such iterators.
 	 */
-	GappedAlleleIterator alleleBegin(UINT locus, bool order)
+	IndAlleleIterator alleleBegin(UINT locus, bool order)
 	{
 		CHECKRANGEABSLOCUS(locus);
 		if (order && shallowCopied())
 			adjustGenoPosition(true);
-		return GappedAlleleIterator(m_genotype.begin() + locus, totNumLoci());
+		return IndAlleleIterator(m_genotype.begin() + locus, totNumLoci());
 	}
 
 
 	/// CPPONLY allele iterator
-	GappedAlleleIterator alleleEnd(UINT locus, bool order)
+	IndAlleleIterator alleleEnd(UINT locus, bool order)
 	{
 		CHECKRANGEABSLOCUS(locus);
 		if (order && shallowCopied())
 			adjustGenoPosition(true);
-		return GappedAlleleIterator(m_genotype.begin() + locus + m_popSize * genoSize(), totNumLoci());
+		return IndAlleleIterator(m_genotype.begin() + locus + m_popSize * genoSize(), totNumLoci());
 	}
 
 
@@ -690,20 +690,20 @@ public:
 	   order = True: keep order
 	   order = false: repect subpop
 	 */
-	GappedAlleleIterator alleleBegin(UINT locus, UINT subPop, bool order)
+	IndAlleleIterator alleleBegin(UINT locus, UINT subPop, bool order)
 	{
 		CHECKRANGEABSLOCUS(locus);
 		CHECKRANGESUBPOP(subPop);
 
 		if (shallowCopied())
 			adjustGenoPosition(order);
-		return GappedAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
+		return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
 		           locus, totNumLoci());
 	}
 
 
 	///  CPPONLY allele iterator
-	GappedAlleleIterator alleleEnd(UINT locus, UINT subPop, bool order)
+	IndAlleleIterator alleleEnd(UINT locus, UINT subPop, bool order)
 	{
 		CHECKRANGEABSLOCUS(locus);
 		CHECKRANGESUBPOP(subPop);
@@ -711,7 +711,7 @@ public:
 		if (shallowCopied())
 			adjustGenoPosition(order);
 
-		return GappedAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
+		return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
 		           locus, totNumLoci());
 	}
 
@@ -1137,7 +1137,7 @@ public:
 	/// CPPONLY info iterator
 	IndInfoIterator infoBegin(UINT idx, UINT subPop, bool order)
 	{
-		CHECKRANGEINFO(index);
+		CHECKRANGEINFO(idx);
 		CHECKRANGESUBPOP(subPop);
 		if (hasActivatedVirtualSubPop(subPop) || (order && !infoOrdered()))
 			return IndInfoIterator(idx, indBegin(subPop));
@@ -1149,7 +1149,7 @@ public:
 	/// CPPONLY
 	IndInfoIterator infoEnd(UINT idx, UINT subPop, bool order)
 	{
-		CHECKRANGEINFO(index);
+		CHECKRANGEINFO(idx);
 		CHECKRANGESUBPOP(subPop);
 
 		if (hasActivatedVirtualSubPop(subPop) || (order && !infoOrdered()))
