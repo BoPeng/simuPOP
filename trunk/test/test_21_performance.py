@@ -324,8 +324,9 @@ class TestPerformance(unittest.TestCase):
         # 0.48   5.77   58.70
         #
         
-
-
+    def testAlleleIterator(self):
+        'Testing the performance of the new combined allele iterator'
+        
             
     def TestLongGenome(self):
         'Testing the performance of recombination with long genome'
