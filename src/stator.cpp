@@ -275,7 +275,7 @@ bool statAlleleFreq::apply(population & pop)
 				num.resize(2, 0);
 
 			// go through all alleles
-			for (GappedAlleleIterator a = pop.alleleBegin(loc, sp, false),
+			for (IndAlleleIterator a = pop.alleleBegin(loc, sp, false),
 			                          aEnd = pop.alleleEnd(loc, sp, false); a != aEnd; ++a) {
 				if (AlleleUnsigned(*a) >= num.size() )
 					num.resize(*a + 1, 0);
@@ -419,7 +419,7 @@ bool statHeteroFreq::apply(population & pop)
 
 			// go through all alleles
 			//?>> \todo here we assume diploid population
-			for (GappedAlleleIterator a = pop.alleleBegin(loc, sp, false),
+			for (IndAlleleIterator a = pop.alleleBegin(loc, sp, false),
 			                          aEnd = pop.alleleEnd(loc, sp, false);
 			     a != aEnd; a += 2) {
 				if (AlleleUnsigned(*a) >= num.size() )
@@ -662,7 +662,7 @@ bool statGenoFreq::apply(population & pop)
 			vector<intDict> num;
 
 			/// go through a single allele for all individual, all diploid
-			for (GappedAlleleIterator it = pop.alleleBegin(loc, sp, false),
+			for (IndAlleleIterator it = pop.alleleBegin(loc, sp, false),
 			                          itEnd = pop.alleleEnd(loc, sp, false); it != itEnd;  it += 2) {
 				a = *it;
 				b = *(it + 1);
@@ -780,7 +780,7 @@ bool statHaploFreq::apply(population & pop)
 
 			vectori sampleHap(sz);
 
-			for (GappedAlleleIterator it = pop.alleleBegin(0, sp, false),
+			for (IndAlleleIterator it = pop.alleleBegin(0, sp, false),
 			                          itEnd = pop.alleleEnd(0, sp, false); it != itEnd;  ++it) {
 				for (size_t hap = 0; hap < sz; ++hap)
 					sampleHap[hap] = *(it.ptr() + haplotype[hap]);
