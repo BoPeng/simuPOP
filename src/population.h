@@ -1110,9 +1110,16 @@ public:
 	IndInfoIterator infoBegin(UINT idx, bool order)
 	{
 		CHECKRANGEINFO(idx);
-		if (order && !infoOrdered())
-			adjustInfoPosition(true);
-		return IndInfoIterator(idx, indBegin(), order);
+		
+		// if there is virtual subpop, use individual based iterator
+		// or
+		// if requires order, but the information is not ordered
+		// use individual based
+		if (hasActivatedVirtualSubPop() || (order && !infoOrdered()))
+			return IndInfoIterator(idx, indBegin());
+		else
+			// if not required order, or if the information is ordered
+			return IndInfoIterator(idx, m_info.begin() + idx, infoSize());
 	}
 
 
@@ -1120,32 +1127,35 @@ public:
 	IndInfoIterator infoEnd(UINT idx, bool order)
 	{
 		CHECKRANGEINFO(idx);
-		if (order && !infoOrdered())
-			adjustInfoPosition(true);
-		return IndInfoIterator(idx, indEnd(), order);
+		if (hasActivatedVirtualSubPop() || (order && !infoOrdered()))
+			return IndInfoIterator(idx, indEnd());
+		else
+			return IndInfoIterator(idx, m_info.begin() + idx + m_info.size(), infoSize());
 	}
 
 
 	/// CPPONLY info iterator
-	IndInfoIterator infoBegin(UINT index, UINT subPop, bool order)
+	IndInfoIterator infoBegin(UINT idx, UINT subPop, bool order)
 	{
 		CHECKRANGEINFO(index);
 		CHECKRANGESUBPOP(subPop);
-		if (!infoOrdered())
-			adjustInfoPosition(order);
-		return IndInfoIterator(index, indBegin(subPop), order);
+		if (hasActivatedVirtualSubPop(subPop) || (order && !infoOrdered()))
+			return IndInfoIterator(idx, indBegin(subPop));
+		else
+			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop] * infoSize(), infoSize());
 	}
 
 
 	/// CPPONLY
-	IndInfoIterator infoEnd(UINT index, UINT subPop, bool order)
+	IndInfoIterator infoEnd(UINT idx, UINT subPop, bool order)
 	{
 		CHECKRANGEINFO(index);
 		CHECKRANGESUBPOP(subPop);
 
-		if (!infoOrdered())
-			adjustInfoPosition(order);
-		return IndInfoIterator(index, indEnd(subPop), order);
+		if (hasActivatedVirtualSubPop(subPop) || (order && !infoOrdered()))
+			return IndInfoIterator(idx, indEnd(subPop));
+		else
+			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop + 1] * infoSize(), infoSize());
 	}
 
 

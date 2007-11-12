@@ -283,13 +283,13 @@ class TestPerformance(unittest.TestCase):
 		# 0.18   2.97   30.64
 		#
         # baop
-        #  0.53   9.56   125.22
+        # 0.53   9.56   125.22
 		# 0.33   5.99   75.34
 		# 0.47   5.72   58.07
 		#
 		#
-        # With the new IndInfoIterator, seems to be acceptable.
-		# (2007/11/12, r1316
+        # With the new individual based IndInfoIterator.
+		# (2007/11/12, r1316) The performance loss is noticable.
 		#
         # op:
         # 0.37   7.76  112.79
@@ -306,6 +306,23 @@ class TestPerformance(unittest.TestCase):
         # 0.38   6.50   80.08
         # 0.51   6.12   62.07
 		#
+        # With the combined iterator, we have
+        # 
+        # op:
+        # 0.38   7.94   114.32
+        # 0.24   4.64   59.81
+        # 0.21   2.96   31.24
+        # 
+        # laop:
+        # 0.37   8.18   114.80
+        # 0.23   5.12   69.29
+        # 0.20   3.00   30.77
+
+        # baop:
+        # 0.54   9.67   124.93
+        # 0.35   6.19   76.71
+        # 0.48   5.77   58.70
+
 
             
     def TestLongGenome(self):
