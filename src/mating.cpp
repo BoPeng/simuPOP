@@ -365,8 +365,8 @@ randomParentChooser::randomParentChooser(population & pop, size_t sp)
 	if (m_selection) {
 		UINT fit_id = pop.infoIdx("fitness");
 		// regardless of sex, get fitness for everyone.
-		m_sampler.set(vectorf(pop.infoBegin(fit_id, sp),
-			pop.infoEnd(fit_id, sp)));
+		m_sampler.set(vectorf(pop.infoBegin(fit_id, sp, true),
+		        pop.infoEnd(fit_id, sp, true)));
 	} else
 		m_size = pop.subPopSize(sp);
 }

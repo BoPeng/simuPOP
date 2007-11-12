@@ -3210,37 +3210,6 @@ bool initialize()
 
 
 #ifndef OPTIMIZED
-bool testGappedIterator()
-{
-    vectorinfo a(20);
-    size_t i;
-
-    for (i = 0; i < 20; ++i)
-		a[i] = i;
-
-    // access to the right elements?
-    IndInfoIterator a5(a.begin(), 5);
-    for (i = 0; i < 4; ++i)
-		if (*a5++ != i * 5)
-			return false;
-
-    // not start from the first?
-    IndInfoIterator a4(a.begin() + 1, 4);
-    for (i = 0; i < 4; ++i)
-		if (*a4++ != 1 + i * 4)
-			return false;
-
-    // can I get a vector from it?
-    vectorinfo b(IndInfoIterator(a.begin() + 1, 4),
-                 IndInfoIterator(a.end() + 1, 4));
-    vectorinfo::iterator it = b.begin();
-    for (i = 0; it != b.end(); ++it, ++i)
-		if (*it != 1 + i * 4)
-			return false;
-
-    return true;
-}
-
 
 #  ifdef BINARYALLELE
 void testCopyGenotype()
