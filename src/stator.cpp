@@ -275,9 +275,10 @@ bool statAlleleFreq::apply(population & pop)
 				num.resize(2, 0);
 
 			// go through all alleles
-			for (IndAlleleIterator a = pop.alleleBegin(loc, sp, false),
-			                          aEnd = pop.alleleEnd(loc, sp, false); a != aEnd; ++a) {
-				if (AlleleUnsigned(*a) >= num.size() )
+			IndAlleleIterator a = pop.alleleBegin(loc, sp, false);
+			IndAlleleIterator aEnd = pop.alleleEnd(loc, sp, false);
+			for (; a != aEnd; ++a) {
+				if (AlleleUnsigned(*a) >= num.size())
 					num.resize(*a + 1, 0);
 				num[*a]++;
 			}
@@ -419,9 +420,9 @@ bool statHeteroFreq::apply(population & pop)
 
 			// go through all alleles
 			//?>> \todo here we assume diploid population
-			for (IndAlleleIterator a = pop.alleleBegin(loc, sp, false),
-			                          aEnd = pop.alleleEnd(loc, sp, false);
-			     a != aEnd; a += 2) {
+			IndAlleleIterator a = pop.alleleBegin(loc, sp, false);
+			IndAlleleIterator aEnd = pop.alleleEnd(loc, sp, false);
+			for (; a != aEnd; a += 2) {
 				if (AlleleUnsigned(*a) >= num.size() )
 					num.resize(*a + 1);
 
@@ -662,8 +663,9 @@ bool statGenoFreq::apply(population & pop)
 			vector<intDict> num;
 
 			/// go through a single allele for all individual, all diploid
-			for (IndAlleleIterator it = pop.alleleBegin(loc, sp, false),
-			                          itEnd = pop.alleleEnd(loc, sp, false); it != itEnd;  it += 2) {
+			IndAlleleIterator it = pop.alleleBegin(loc, sp, false);
+			IndAlleleIterator itEnd = pop.alleleEnd(loc, sp, false);
+			for (; it != itEnd;  it += 2) {
 				a = *it;
 				b = *(it + 1);
 
@@ -780,8 +782,9 @@ bool statHaploFreq::apply(population & pop)
 
 			vectori sampleHap(sz);
 
-			for (IndAlleleIterator it = pop.alleleBegin(0, sp, false),
-			                          itEnd = pop.alleleEnd(0, sp, false); it != itEnd;  ++it) {
+			IndAlleleIterator it = pop.alleleBegin(0, sp, false);
+			IndAlleleIterator itEnd = pop.alleleEnd(0, sp, false);
+			for (; it != itEnd; ++it) {
 				for (size_t hap = 0; hap < sz; ++hap)
 					sampleHap[hap] = *(it.ptr() + haplotype[hap]);
 
@@ -1085,7 +1088,7 @@ bool statLD::apply(population & pop)
 			outputLD(pop, hapLoci, haploKey(hapAlleles), 0, false, valid_delta2, D, D_prime, r2, delta2);
 
 			if (m_evalInSubPop) {
-				if (numSP == 1)  // use the whole population result
+				if (numSP == 1)          // use the whole population result
 					outputLD(pop, hapLoci, haploKey(hapAlleles), 0, true, valid_delta2, D, D_prime, r2, delta2);
 				else {
 					for (UINT sp = 0; sp < numSP;  ++sp) {
@@ -1144,7 +1147,7 @@ bool statLD::apply(population & pop)
 			outputLD(pop, hapLoci, "", 0, false, valid_delta2, D, D_prime, r2, delta2);
 
 			if (m_evalInSubPop) {
-				if (numSP == 1)  // use the whole population result
+				if (numSP == 1)          // use the whole population result
 					outputLD(pop, hapLoci, "", 0, true, valid_delta2, D, D_prime, r2, delta2);
 				else {
 					for (UINT sp = 0; sp < numSP;  ++sp) {
@@ -1980,3 +1983,5 @@ bool statRelatedness::apply(population & pop)
 
 
 }
+
+
