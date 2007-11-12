@@ -228,6 +228,86 @@ class TestPerformance(unittest.TestCase):
             #
             # 
 
+    def TestInfoIterator(self):
+        'Testing the performance of info iterator'
+        sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
+        r = 0.001
+        p = 0.4
+        for N in [10000, 100000, 1000000]:
+            # with sel
+            pop = population(N, loci=[1], infoFields=['a', 'fitness'])
+            c1 = time.clock()
+            simu = simulator(pop, randomMating())
+            simu.evolve(
+                preOps = [initByFreq([1-p]+[p/10.]*10)],
+                ops = [sel],
+                end = 100
+            )
+            c2 = time.clock()
+            print " %.2f " % (c2 - c1),
+        print 
+        for N in [10000, 100000, 1000000]:
+            # with sel
+            pop = population(N, loci=[1], infoFields=['a', 'fitness'])
+            c1 = time.clock()
+            simu = simulator(pop, binomialSelection())
+            simu.evolve(
+                preOps = [initByFreq([1-p]+[p/10.]*10)],
+                ops = [sel],
+                end = 100
+            )
+            c2 = time.clock()
+            print " %.2f " % (c2 - c1),
+        print 
+        for N in [10000, 100000, 1000000]:
+            # with sel
+            pop = population(N, loci=[1], infoFields=['a', 'fitness'])
+            c1 = time.clock()
+            for i in range(200):
+                MaPenetrance(pop, locus = 0, penetrance=[0.2, 0.4, 0.8])
+                info = pop.indInfo('fitness', True)
+            c2 = time.clock()
+            print " %.2f " % (c2 - c1),
+        print 
+
+        #
+        # With the old infoIterator,
+        # op
+        # 0.37   7.82   114.52
+		# 0.19   4.65   58.93
+		# 0.18   2.90   30.34
+		#
+        # laop
+        # 0.38   8.26   116.15
+		# 0.21   5.13   70.09
+		# 0.18   2.97   30.64
+		#
+        # baop
+        #  0.53   9.56   125.22
+		# 0.33   5.99   75.34
+		# 0.47   5.72   58.07
+		#
+		#
+        # With the new IndInfoIterator, seems to be acceptable.
+		# (2007/11/12, r1316
+		#
+        # op:
+        # 0.37   7.76  112.79
+        # 0.23   4.77  61.21
+        # 0.21   3.20  32.99
+        #
+        # laop:
+        # 0.38   8.35   117.35
+        # 0.25   5.37   72.33
+        # 0.22   3.27   33.54
+        #
+        # baop:
+        # 0.55   9.85   127.83
+        # 0.38   6.50   80.08
+        # 0.51   6.12   62.07
+		#
+
+            
     def TestLongGenome(self):
         'Testing the performance of recombination with long genome'
         sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])

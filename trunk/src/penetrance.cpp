@@ -44,10 +44,10 @@ bool penetrance::apply(population & pop)
 
 	for (UINT i = 0; i <= ansGen; ++i) {
 		pop.useAncestralPop(i);
-		GappedInfoIterator penIt;
+		IndInfoIterator penIt;
 		if (savePene) {
 			UINT idx = pop.infoIdx(infoField(0));
-			penIt = pop.infoBegin(idx, true);
+			penIt = pop.infoBegin(idx);
 		}
 		for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
 			p = penet(& * it);
