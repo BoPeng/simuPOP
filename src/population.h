@@ -1107,82 +1107,61 @@ public:
 
 
 	/// CPPONLY info iterator
-	/**
-	   if order=true, keep order,
-	   if flase, do not respect pop structure
-	 */
-	GappedInfoIterator infoBegin(UINT idx, bool order)
+	IndInfoIterator infoBegin(UINT idx)
 	{
 		CHECKRANGEINFO(idx);
-		if (order && !infoOrdered())
-			adjustInfoPosition(true);
-		return GappedInfoIterator(m_info.begin() + idx, infoSize());
+		return IndInfoIterator(idx, indBegin());
 	}
 
 
 	/// CPPONLY
-	GappedInfoIterator infoEnd(UINT idx, bool order)
+	IndInfoIterator infoEnd(UINT idx)
 	{
 		CHECKRANGEINFO(idx);
-		if (order && !infoOrdered())
-			adjustInfoPosition(true);
-		return GappedInfoIterator(m_info.begin() + idx + m_info.size(), infoSize());
+		return IndInfoIterator(idx, indEnd());
 	}
 
 
 	/// CPPONLY info iterator
-	/**
-	   If order is true, keep order;
-	   otherwise, respect subpop structure.
-	 */
-	GappedInfoIterator infoBegin(UINT index, UINT subPop, bool order)
+	IndInfoIterator infoBegin(UINT index, UINT subPop)
 	{
 		CHECKRANGEINFO(index);
 		CHECKRANGESUBPOP(subPop);
-
-		if (!infoOrdered())
-			adjustInfoPosition(order);
-
-		return GappedInfoIterator(m_info.begin() + index + m_subPopIndex[subPop] * infoSize(), infoSize());
+		return IndInfoIterator(index, indBegin(subPop));
 	}
 
 
 	/// CPPONLY
-	GappedInfoIterator infoEnd(UINT index, UINT subPop, bool order)
+	IndInfoIterator infoEnd(UINT index, UINT subPop)
 	{
 		CHECKRANGEINFO(index);
 		CHECKRANGESUBPOP(subPop);
 
-		if (!infoOrdered())
-			adjustInfoPosition(order);
-
-		return GappedInfoIterator(m_info.begin() + index + m_subPopIndex[subPop + 1] * infoSize(), infoSize());
+		return IndInfoIterator(index, indEnd(subPop));
 	}
 
 
 	/// get information field \c idx of all individuals
 	/**
 	 \param idx index of the information field
-	 \param order if true, sort returned vector in individual order
 	 \return a vector with value of the information field
 	 */
-	vectorinfo indInfo(UINT idx, bool order)
+	vectorinfo indInfo(UINT idx)
 	{
-		return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
+		return vectorinfo(infoBegin(idx), infoEnd(idx));
 	}
 
 
 	/// get information field \c name of all individuals
 	/**
 	 \param name name of the information field
-	 \param order if true, sort returned vector in individual order
 	 \return a vector with value of the information field
 	 */
-	vectorinfo indInfo(const string & name, bool order)
+	vectorinfo indInfo(const string & name)
 	{
 		UINT idx = infoIdx(name);
 
-		return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
+		return vectorinfo(infoBegin(idx), infoEnd(idx));
 	}
 
 
@@ -1190,12 +1169,11 @@ public:
 	/**
 	 \param idx index of the information field
 	 \param subPop subpopulation index
-	 \param order if true, sort returned vector in individual order
 	 \return a vector with value of the information field
 	 */
-	vectorinfo indInfo(UINT idx, UINT subPop, bool order)
+	vectorinfo indInfo(UINT idx, UINT subPop)
 	{
-		return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
+		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
 	}
 
 
@@ -1206,11 +1184,11 @@ public:
 	 \param order if true, sort returned vector in individual order
 	 \return a vector with value of the information field
 	 */
-	vectorinfo indInfo(const string & name, UINT subPop, bool order)
+	vectorinfo indInfo(const string & name, UINT subPop)
 	{
 		UINT idx = infoIdx(name);
 
-		return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
+		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
 	}
 
 
@@ -2080,7 +2058,7 @@ population & LoadPopulation(const string & file, const string & format = "auto")
 /// get info through ind.info()
 vectorf testGetinfoFromInd(population & pop);
 
-/// get info through GappedInfoIterator
+/// get info through IndInfoIterator
 vectorf testGetinfoFromPop(population & pop, bool order);
 
 }

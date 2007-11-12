@@ -466,6 +466,15 @@ public:
 	}
 
 
+	/// CPPONLY
+	InfoType * infoPtr(UINT idx) const
+	{
+		CHECKRANGEINFO(idx);
+
+		return & * (m_infoPtr + idx);
+	}
+
+
 	/// get information field \c name
 	/**
 	   Equivalent to <tt>info(infoIdx(name))</tt>.
@@ -879,7 +888,7 @@ public:
 	//
 	IndividualIterator operator+(difference_type diff)
 	{
-		if (!m_allInds)
+		if (m_allInds)
 			return IndividualIterator(m_it + diff, m_end, m_allInds);
 		IndividualIterator tmp(*this);
 		DBG_ASSERT(tmp.m_it < tmp.m_end, ValueError,
@@ -985,6 +994,82 @@ typedef vector<individual>::const_iterator ConstRawIndIterator;
 
 typedef IndividualIterator<RawIndIterator> IndIterator;
 typedef IndividualIterator<ConstRawIndIterator> ConstIndIterator;
+
+/**
+   	this class implements a C++ iterator class that iterate through
+   	infomation fields in a (sub)population using an IndIterator that
+   	will skip invisible individuals. Using this iterator, instead of
+   	the previous GappedInfoIterator, I do not have to worry about the
+   	order of individuals, and the visibility of individuals.
+ */
+template <typename T>
+class InformationIterator
+{
+public:
+	typedef std::forward_iterator_tag iterator_category;
+	typedef typename T::value_type value_type;
+	typedef long int difference_type;
+	typedef typename T::reference reference;
+	typedef typename T::pointer pointer;
+
+	InformationIterator() : m_it()
+	{
+	}
+
+
+	InformationIterator(UINT info, IndividualIterator<T> it)
+		: m_info(info), m_it(it)
+	{
+	}
+
+
+	bool valid()
+	{
+		return m_it.valid();
+	}
+
+
+	// this is the most important part!
+	InfoType & operator *() const
+	{
+		return *m_it->infoPtr(m_info);
+	}
+
+
+	// return, then advance.
+	InformationIterator operator++(int)
+	{
+		// save current state
+		InformationIterator tmp(*this);
+
+		++m_it;
+		return tmp;
+	}
+
+
+	InformationIterator operator++()
+	{
+		++m_it;
+		return *this;
+	}
+
+
+	bool operator!=(const InformationIterator & rhs)
+	{
+		return m_it != rhs.m_it || m_info != rhs.m_info;
+	}
+
+
+private:
+	// index of the information field
+	UINT m_info;
+	// individual iterator
+	IndividualIterator<T> m_it;
+};
+
+
+typedef InformationIterator<RawIndIterator> IndInfoIterator;
+typedef InformationIterator<ConstRawIndIterator> ConstIndInfoIterator;
 
 }
 

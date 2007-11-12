@@ -364,11 +364,9 @@ randomParentChooser::randomParentChooser(population & pop, size_t sp)
 	m_begin = pop.indBegin(sp);
 	if (m_selection) {
 		UINT fit_id = pop.infoIdx("fitness");
-		// we need to order (true) the individual fitness.
-		GappedInfoIterator fitness = pop.infoBegin(fit_id, true);
 		// regardless of sex, get fitness for everyone.
-		m_sampler.set(vectorf(fitness + pop.subPopBegin(sp),
-		        fitness + pop.subPopEnd(sp) ) );
+		m_sampler.set(vectorf(pop.infoBegin(fit_id, sp),
+			pop.infoEnd(fit_id, sp)));
 	} else
 		m_size = pop.subPopSize(sp);
 }

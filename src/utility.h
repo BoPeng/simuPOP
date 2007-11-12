@@ -429,7 +429,6 @@ private:
 };
 
 typedef GappedIterator<Allele, AlleleRef, GenoIterator> GappedAlleleIterator;
-typedef GappedIterator<InfoType, InfoType &, InfoIterator> GappedInfoIterator;
 
 #ifndef OPTIMIZED
 bool testGappedIterator();
