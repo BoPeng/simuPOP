@@ -137,7 +137,7 @@ enum Sex { Male = 1, Female = 2 };
 // if this is changed Info_Var_As_Numarray in utility.cpp also needs to be changed.
 typedef double InfoType;
 typedef std::vector<double>::iterator InfoIterator;
-typedef std::vector<double>::const_iterator InfoConstIterator;
+typedef std::vector<double>::const_iterator ConstInfoIterator;
 typedef signed short SubPopID;
 const unsigned long MaxSubPopID = std::numeric_limits<SubPopID>::max();
 

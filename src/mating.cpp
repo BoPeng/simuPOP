@@ -360,8 +360,7 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
 }
 
 
-randomParentChooser::randomParentChooser(population & pop, size_t sp)
-	: parentChooser(1), m_sampler(rng())
+void randomParentChooser::initialize(population & pop, SubPopID sp)
 {
 	m_selection = pop.selectionOn(sp);
 	m_begin = pop.indBegin(sp);
@@ -372,11 +371,14 @@ randomParentChooser::randomParentChooser(population & pop, size_t sp)
 		        pop.infoEnd(fit_id, sp, true)));
 	} else
 		m_size = pop.subPopSize(sp);
+	m_initialized = true;
 }
 
 
 individual * randomParentChooser::chooseParent()
 {
+	DBG_ASSERT(initialized(), SystemError,
+	    "Please initialize this parent chooser before using it");
 	// FIXME:
 	//
 	// In a virtual subpopulation, because m_begin + ... is ***really** slow
@@ -390,47 +392,44 @@ individual * randomParentChooser::chooseParent()
 }
 
 
-randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
-	: parentChooser(2), m_maleIndex(0), m_femaleIndex(0),
-	m_maleFitness(0), m_femaleFitness(0),
-	m_malesampler(rng()), m_femalesampler(rng())
+void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 {
-	ULONG spSize = pop.subPopSize(sp);
-
 	m_numMale = 0;
 	m_numFemale = 0;
-	IndIterator it = pop.indBegin(sp);
+	IndIterator it = pop.indBegin(subPop);
 	for (; it.valid(); ++it)
 		if (it->sex() == Male)
 			m_numMale++;
+		else
+			m_numFemale++;
 
 	// allocate memory at first for performance reasons
 	m_maleIndex.resize(m_numMale);
-	m_femaleIndex.resize(spSize - m_numMale);
+	m_femaleIndex.resize(m_numFemale);
 
-	m_selection = pop.selectionOn(sp);
+	m_selection = pop.selectionOn(subPop);
 	UINT fit_id = 0;
 	if (m_selection) {
 		fit_id = pop.infoIdx("fitness");
 		m_maleFitness.resize(m_numMale);
-		m_femaleFitness.resize(spSize - m_numMale);
+		m_femaleFitness.resize(m_numFemale);
 	}
 
 	m_numMale = 0;
 	m_numFemale = 0;
 
 	size_t idx = 0;
-	IndIterator ind = pop.indBegin(sp);
-	for (; ind.valid(); ind++) {
-		if (ind->sex() == Male) {
-			m_maleIndex[m_numMale] = ind.rawIter();
+	it = pop.indBegin(subPop);
+	for (; it.valid(); it++) {
+		if (it->sex() == Male) {
+			m_maleIndex[m_numMale] = it.rawIter();
 			if (m_selection)
-				m_maleFitness[m_numMale] = ind->info(fit_id);
+				m_maleFitness[m_numMale] = it->info(fit_id);
 			m_numMale++;
 		} else {
-			m_femaleIndex[m_numFemale] = ind.rawIter();
+			m_femaleIndex[m_numFemale] = it.rawIter();
 			if (m_selection)
-				m_femaleFitness[m_numFemale] = ind->info(fit_id);
+				m_femaleFitness[m_numFemale] = it->info(fit_id);
 			m_numFemale++;
 		}
 		idx++;
@@ -443,13 +442,15 @@ randomParentsChooser::randomParentsChooser(population & pop, size_t sp)
 		DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
 	}
 
-	DBG_ASSERT(m_numFemale + m_numMale == spSize, SystemError,
-	    "Wrong number of male/female.");
+	m_initialized = true;
 }
 
 
 parentChooser::individualPair randomParentsChooser::chooseParents()
 {
+	DBG_ASSERT(initialized(), SystemError,
+	    "Please initialize this parent chooser before using it");
+
 	individual * dad = NULL;
 	individual * mom = NULL;
 
@@ -480,9 +481,14 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 }
 
 
-pyParentsChooser::pyParentsChooser(population & pop, UINT sp,
-                                   PyObject * pc)
-	: parentChooser(0), m_generator(NULL), m_parIterator(NULL)
+pyParentsChooser::pyParentsChooser(PyObject * pc)
+	: parentChooser(0), m_generator(pc), m_parIterator(NULL)
+{
+	Py_INCREF(m_generator);
+}
+
+
+void pyParentsChooser::initialize(population & pop, SubPopID sp)
 {
 #if PY_VERSION_HEX < 0x02040000
 	throw SystemError("Your Python version does not have good support for generator"
@@ -499,24 +505,28 @@ pyParentsChooser::pyParentsChooser(population & pop, UINT sp,
 	    "Could not pass population to the provided function. \n"
 	    "Compiled with the wrong version of SWIG?");
 	PyObject * arglist = Py_BuildValue("(Oi)", popObj, sp);
-	m_generator = PyEval_CallObject(pc, arglist);
+	PyObject * generator = PyEval_CallObject(m_generator, arglist);
 	Py_XDECREF(arglist);
 
 	// test if m_generator is a generator
-	DBG_ASSERT(PyGen_Check(m_generator), ValueError,
+	DBG_ASSERT(PyGen_Check(generator), ValueError,
 	    "Passed function is not a python generator");
 
-	m_parIterator = PyObject_GetIter(m_generator);
+	m_parIterator = PyObject_GetIter(generator);
 
 	// test if m_parIterator is iteratable.
 	DBG_FAILIF(m_parIterator == NULL, ValueError,
 	    "Can not iterate through parent generator");
 #endif
+	m_initialized = true;
 }
 
 
 parentChooser::individualPair pyParentsChooser::chooseParents()
 {
+	DBG_ASSERT(initialized(), SystemError,
+	    "Please initialize this parent chooser before using it");
+
 	PyObject * item = PyIter_Next(m_parIterator);
 
 	vectori parents;
@@ -637,7 +647,7 @@ bool mating::mate(population & pop, population & scratch,
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
-	for (SubPopID sp = 0; sp < pop.numSubPop(); ++sp)
+	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp)
 		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp),
 		        scratch.rawIndEnd(sp), ops))
 			return false;
@@ -671,7 +681,8 @@ bool binomialSelection::mateSubPop(population & pop, SubPopID subPop,
 	if (offBegin == offEnd)
 		return true;
 
-	randomParentChooser pc(pop, subPop);
+	randomParentChooser pc;
+	pc.initialize(pop, subPop);
 
 	// choose a parent and genereate m_numOffspring offspring
 	RawIndIterator it = offBegin;
@@ -697,7 +708,8 @@ bool randomMating::mateSubPop(population & pop, SubPopID subPop,
 		m_offspringGenerator.initialize(pop, ops);
 
 
-	randomParentsChooser pc(pop, subPop);
+	randomParentsChooser pc;
+	pc.initialize(pop, subPop);
 	/// now, all individuals of needToFind sex is collected
 	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
 		throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
@@ -1005,7 +1017,8 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			}
 		}
 
-		randomParentsChooser pc(pop, sp);
+		randomParentsChooser pc;
+		pc.initialize(pop, sp);
 		if (pc.numMale() == 0 || pc.numFemale() == 0) {
 			if (m_contWhenUniSex)
 				cout << "Warning: the subpopulation is uni-sex. Mating will continue with same-sex mate" << endl;
@@ -1315,18 +1328,19 @@ bool pyMating::mate(population & pop, population & scratch, vector<baseOperator 
 
 		switch (pcType) {
 		case MATE_RandomParentChooser:
-			pc = new randomParentChooser(pop, sp);
+			pc = new randomParentChooser();
 			break;
 		case MATE_RandomParentsChooser:
-			pc = new randomParentsChooser(pop, sp);
+			pc = new randomParentsChooser();
 			break;
 		case MATE_PyParentsChooser:
-			pc = new pyParentsChooser(pop, sp,
-			         m_pyChoosers.size() > 1 ? m_pyChoosers[pcIdx++] : m_pyChoosers[0]);
+			pc = new pyParentsChooser(m_pyChoosers.size() > 1 ? m_pyChoosers[pcIdx++] : m_pyChoosers[0]);
+
 			break;
 		default:
 			throw ValueError("Unknown parentChoosers type");
 		}
+		pc->initialize(pop, sp);
 
 		offspringGenerator * og = m_offspringGenerators.size() > 1 ?
 		                          m_offspringGenerators[vspIdx] : m_offspringGenerators[0];

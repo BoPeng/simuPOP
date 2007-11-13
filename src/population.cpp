@@ -209,7 +209,7 @@ population::population(const population & rhs) :
 			constGenoIterator rg = rp.m_genotype.begin();
 
 			InfoIterator li = lp.m_info.begin();
-			InfoConstIterator ri = rp.m_info.begin();
+			ConstInfoIterator ri = rp.m_info.begin();
 
 			ULONG ps = rinds.size();
 
