@@ -669,7 +669,7 @@ public:
 	IndAlleleIterator alleleBegin(UINT locus, bool order)
 	{
 		CHECKRANGEABSLOCUS(locus);
-		
+
 		// if there is virtual subpop, use individual based iterator
 		// or
 		// if requires order, but the alleles are not ordered
@@ -706,7 +706,7 @@ public:
 			return IndAlleleIterator(locus, indBegin(subPop), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
-		           locus, totNumLoci());
+			           locus, totNumLoci());
 	}
 
 
@@ -720,7 +720,7 @@ public:
 			return IndAlleleIterator(locus, indEnd(subPop), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
-		           locus, totNumLoci());
+			           locus, totNumLoci());
 	}
 
 
@@ -1118,7 +1118,7 @@ public:
 	IndInfoIterator infoBegin(UINT idx, bool order)
 	{
 		CHECKRANGEINFO(idx);
-		
+
 		// if there is virtual subpop, use individual based iterator
 		// or
 		// if requires order, but the information is not ordered

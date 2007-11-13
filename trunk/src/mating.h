@@ -139,7 +139,8 @@ public:
 
 	/// generate \c numOff offspring
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
-	                               IndIterator & offBegin,
+	                               RawIndIterator & offBegin,
+	                               RawIndIterator & offEnd,
 	                               vector<baseOperator *> & ops) = 0;
 
 
@@ -211,7 +212,8 @@ public:
 
 	// the default method to produce offspring
 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
-	                       IndIterator & offBegin,
+	                       RawIndIterator & offBegin,
+	                       RawIndIterator & offEnd,
 	                       vector<baseOperator *> & ops);
 
 };
@@ -242,10 +244,11 @@ public:
 
 	// the default method to produce offspring
 	void formOffspringGenotype(individual * parent,
-	                           IndIterator & it, int ploidy, bool setSex);
+	                           RawIndIterator & it, int ploidy, bool setSex);
 
 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
-	                       IndIterator & offBegin,
+	                       RawIndIterator & offBegin,
+	                       RawIndIterator & offEnd,
 	                       vector<baseOperator *> & ops);
 
 protected:
@@ -282,7 +285,8 @@ public:
 
 
 	UINT generateOffspring(population & pop, individual * parent, individual *,
-	                       IndIterator & offBegin,
+	                       RawIndIterator & offBegin,
+	                       RawIndIterator & offEnd,
 	                       vector<baseOperator *> & ops);
 
 };
@@ -1048,7 +1052,7 @@ private:
 	PyObject * m_freqFunc;
 
 	///
-	stack<IndIterator> m_stack;
+	stack<RawIndIterator> m_stack;
 };
 
 /// a Python mating scheme

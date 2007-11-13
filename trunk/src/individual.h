@@ -1210,6 +1210,7 @@ public:
 	CombinedAlleleIterator operator+(difference_type diff)
 	{
 		CombinedAlleleIterator tmp(*this);
+
 		if (m_useGappedIterator)
 			tmp.m_ptr += diff * m_size;
 		else {

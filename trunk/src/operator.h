@@ -411,7 +411,7 @@ public:
 
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
-	virtual bool applyDuringMating(population & pop, IndIterator offspring,
+	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 	                               individual * dad = NULL, individual * mom = NULL)
 	{
 		throw SystemError("ApplyDuringMating: This function is not supposed to be called.");
@@ -660,7 +660,7 @@ public:
 
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
-	virtual bool applyDuringMating(population & pop, IndIterator offspring,
+	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 	                               individual * dad = NULL, individual * mom = NULL)
 	{
 		return true;
@@ -753,7 +753,7 @@ public:
 	virtual bool applyWithScratch(population & pop, population & scratch, int stage);
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
-	virtual bool applyDuringMating(population & pop, IndIterator offspring,
+	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 	                               individual * dad = NULL, individual * mom = NULL);
 
 	/// apply the \c ifElse operator to one population
@@ -1071,7 +1071,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// CPPONLY
-	virtual bool applyDuringMating(population & pop, IndIterator offspring,
+	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 	                               individual * dad = NULL, individual * mom = NULL);
 
 	/// used by Python print function to print out the general information of the \c pyOperator operator
