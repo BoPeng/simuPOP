@@ -729,6 +729,33 @@ bool randomMating::mateSubPop(population & pop, SubPopID subPop,
 }
 
 
+bool selfMating::mateSubPop(population & pop, SubPopID subPop,
+                            RawIndIterator offBegin, RawIndIterator offEnd,
+                            vector<baseOperator * > & ops)
+{
+	// nothing to do.
+	if (offBegin == offEnd)
+		return true;
+
+	if (!m_offspringGenerator.initialized())
+		m_offspringGenerator.initialize(pop, ops);
+
+	randomParentChooser pc;
+	pc.initialize(pop, subPop);
+
+	// generate scratch.subPopSize(sp) individuals.
+	RawIndIterator it = offBegin;
+	while (it != offEnd) {
+		parentChooser::individualPair const parents = pc.chooseParents();
+		//
+		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
+		// record family size (this may be wrong for the last family)
+		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
+	}
+	return true;
+}
+
+
 /// CPPONLY
 void countAlleles(population & pop, int subpop, const vectori & loci, const vectori & alleles,
                   vectorlu & alleleNum)

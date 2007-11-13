@@ -852,6 +852,87 @@ protected:
 
 };
 
+
+/// a mating scheme of selfing
+/**
+   In this mating scheme, a parent is choosen randomly, acts
+   both as father and mother as in random mating.
+ */
+class selfMating : public mating
+{
+public:
+	/// create a self mating scheme
+	/**
+	 \param contWhenUniSex continue when there is only one sex in the population. Default to \c True.
+	 \n
+
+	   Please refer to class \c mating for descriptions of other parameters.
+	 */
+	selfMating(double numOffspring = 1.,
+	           PyObject * numOffspringFunc = NULL,
+	           UINT maxNumOffspring = 0,
+	           UINT mode = MATE_NumOffspring,
+	           vectorlu newSubPopSize = vectorlu(),
+	           PyObject * newSubPopSizeFunc = NULL,
+	           string newSubPopSizeExpr = "",
+	           bool contWhenUniSex = true)
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+		m_offspringGenerator(numOffspring,
+		                     numOffspringFunc, maxNumOffspring, mode)
+	{
+	}
+
+
+	/// destructor
+	~selfMating()
+	{
+	}
+
+
+	/// deep copy of a self mating scheme
+	virtual mating * clone() const
+	{
+		return new selfMating(*this);
+	}
+
+
+	/// CPPONLY
+	virtual bool isCompatible(const population & pop) const
+	{
+#ifndef OPTIMIZED
+		if (pop.ploidy() != 2)
+			cout << "Warning: This mating type only works with diploid population." << endl;
+#endif
+		return true;
+	}
+
+
+	/// used by Python print function to print out the general information of the self mating scheme
+	virtual string __repr__()
+	{
+		return "<simuPOP::self mating>";
+	}
+
+
+	/// CPPONLY
+	void submitScratch(population & pop, population & scratch)
+	{
+		pop.turnOffSelection();
+		// use scratch population,
+		pop.pushAndDiscard(scratch);
+		DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
+	}
+
+
+	/// CPPONLY perform self mating
+	virtual bool mateSubPop(population & pop, SubPopID subPop,
+	                        RawIndIterator offBegin, RawIndIterator offEnd,
+	                        vector<baseOperator *> & ops);
+
+protected:
+	selfingOffspringGenerator m_offspringGenerator;
+};
+
 /// CPPONLY
 void countAlleles(population & pop, int subpop, const vectori & loci, const vectori & alleles,
                   vectorlu & numAllele);
