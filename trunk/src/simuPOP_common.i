@@ -709,38 +709,6 @@ del controlledRandomMating.__init__
 controlledRandomMating.__init__ = new_controlledRandomMating
 
 
-def new_pyMating(self, parentChooser=None, parentChoosers=[],
-    offspringGenerator=None, offspringGenerators=[],
-    splitter=None, splitters=[], *args, **kwargs):
-    # paremeter parentChoosers
-    if parentChooser is not None:
-        pc = [parentChooser]
-    else:
-        pc = parentChoosers
-    # 
-    pyPC = []
-    for i in range(len(pc)):
-        # not MATE_RandomParentChooser or MATE_RandomParentsChooser
-        if type(pc[i]) != type(1):
-            pyPC.append(pc[i])
-            pc[i] = MATE_PyParentsChooser
-    og = offspringGenerators
-    if offspringGenerator is not None:
-        og = [offspringGenerator]
-    #
-    if splitter is not None:
-        sp = [splitter]
-    else:
-        sp = splitters
-    cppModule.pyMating_swiginit(self,
-        cppModule.new_pyMating(parentChoosers=pc, pyChoosers=pyPC,
-            offspringGenerators=og, splitters=sp, *args, **kwargs))
- 
-new_pyMating.__doc__ = pyMating.__init__.__doc__
-del pyMating.__init__
-pyMating.__init__ = new_pyMating
-
-
 def mutator_setRate(self, rate, loci=[], atLoci=[], *args, **kwargs):
     # rate -> [rate] if needed
     if type(rate)    in [types.IntType, types.FloatType]:
