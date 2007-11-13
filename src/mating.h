@@ -1178,14 +1178,6 @@ private:
 class pyMating : public mating
 {
 public:
-#define MATE_RandomParentChooser  1
-#define MATE_RandomParentsChooser 2
-#define MATE_PyParentsChooser     3
-
-#define MATE_CloneOffspringGenerator     1
-#define MATE_MendelianOffspringGenerator 2
-#define MATE_SelfingOffspringGenerator   3
-
 	/// create a Python mating scheme
 	/**
 	 */
@@ -1251,6 +1243,7 @@ private:
 	offspringGenerator * m_offspringGenerator;
 
 };
+
 
 }
 #endif
