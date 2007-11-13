@@ -330,6 +330,8 @@ public:
 	}
 
 
+	virtual parentChooser * clone() const = 0;
+
 	virtual void initialize(population & pop, SubPopID subPop);
 
 	bool initialized() const
@@ -375,6 +377,12 @@ public:
 	}
 
 
+	parentChooser * clone() const
+	{
+		return new randomParentChooser(*this);
+	}
+
+
 	void initialize(population & pop, SubPopID sp);
 
 	individual * chooseParent();
@@ -399,6 +407,12 @@ public:
 		m_maleFitness(0), m_femaleFitness(0),
 		m_malesampler(rng()), m_femalesampler(rng())
 	{
+	}
+
+
+	parentChooser * clone() const
+	{
+		return new randomParentsChooser(*this);
 	}
 
 
@@ -434,6 +448,22 @@ class pyParentsChooser : public parentChooser
 {
 public:
 	pyParentsChooser(PyObject * parentsGenerator);
+
+	pyParentsChooser(const pyParentsChooser & rhs)
+		: parentChooser(rhs),
+		m_generator(rhs.m_generator),
+		m_parIterator(rhs.m_parIterator)
+	{
+		Py_INCREF(m_generator);
+		Py_INCREF(m_parIterator);
+	}
+
+
+	parentChooser * clone() const
+	{
+		return new pyParentsChooser(*this);
+	}
+
 
 	void initialize(population & pop, SubPopID sp);
 
@@ -1145,9 +1175,12 @@ public:
 
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
-	pyMating(vectori const & parentChoosers,
-	         vectorobj const & pyChoosers,
-	         vector<offspringGenerator *> const & offspringGenerators,
+	pyMating(parentChooser & chooser,
+	         offspringGenerator & generator,
+	         double numOffspring = 1.,
+	         PyObject * numOffspringFunc = NULL,
+	         UINT maxNumOffspring = 0,
+	         UINT mode = MATE_NumOffspring,
 	         vectorlu newSubPopSize = vectorlu(),
 	         string newSubPopSizeExpr = "",
 	         PyObject * newSubPopSizeFunc = NULL
@@ -1156,26 +1189,17 @@ public:
 	/// destructor
 	~pyMating()
 	{
-		vectorobj::iterator it = m_pyChoosers.begin();
-		vectorobj::iterator it_end = m_pyChoosers.end();
-
-		for (; it != it_end; ++it)
-			Py_XDECREF(*it);
+		delete m_parentChooser;
+		delete m_offspringGenerator;
 	}
 
 
 	/// CPPONLY
 	pyMating(const pyMating & rhs) :
-		mating(rhs),
-		m_parentChoosers(rhs.m_parentChoosers),
-		m_pyChoosers(rhs.m_pyChoosers),
-		m_offspringGenerators(rhs.m_offspringGenerators)
+		mating(rhs)
 	{
-		vectorobj::iterator it = m_pyChoosers.begin();
-		vectorobj::iterator it_end = m_pyChoosers.end();
-
-		for (; it != it_end; ++it)
-			Py_INCREF(*it);
+		m_offspringGenerator = rhs.m_offspringGenerator->clone();
+		m_parentChooser = rhs.m_parentChooser->clone();
 	}
 
 
@@ -1208,14 +1232,14 @@ public:
 	   All individuals will be passed to during mating operators but
 	   no one will die (ignore during mating failing signal).
 	 */
-	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
+	virtual bool mateSubPop(population & pop, SubPopID subPop,
+	                        RawIndIterator offBegin, RawIndIterator offEnd,
+	                        vector<baseOperator * > & ops);
 
 private:
-	vectori m_parentChoosers;
+	parentChooser * m_parentChooser;
+	offspringGenerator * m_offspringGenerator;
 
-	vectorobj m_pyChoosers;
-
-	vector<offspringGenerator *> m_offspringGenerators;
 };
 
 }
