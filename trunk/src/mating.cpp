@@ -704,9 +704,9 @@ bool randomMating::mateSubPop(population & pop, SubPopID subPop,
 	// nothing to do.
 	if (offBegin == offEnd)
 		return true;
+
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
-
 
 	randomParentsChooser pc;
 	pc.initialize(pop, subPop);
@@ -1252,130 +1252,59 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 }
 
 
-pyMating::pyMating(vectori const & parentChoosers,
-                   vectorobj const & pyChoosers,
-                   vector<offspringGenerator *> const & offspringGenerators,
+pyMating::pyMating(parentChooser & chooser,
+                   offspringGenerator & generator,
+                   double numOffspring,
+                   PyObject * numOffspringFunc,
+                   UINT maxNumOffspring,
+                   UINT mode,
                    vectorlu newSubPopSize,
                    string newSubPopSizeExpr,
-                   PyObject * newSubPopSizeFunc
-                   )
-	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
-	m_parentChoosers(parentChoosers),
-	m_pyChoosers(),
-	m_offspringGenerators()
+                   PyObject * newSubPopSizeFunc)
+	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc)
 {
-	vectorobj::const_iterator it = pyChoosers.begin();
-	vectorobj::const_iterator it_end = pyChoosers.end();
-
-#ifndef OPTIMIZED
-	// count the number of MATE_PyParentsChooser
-	UINT pyCount = 0;
-	vectori::const_iterator pit = parentChoosers.begin();
-	vectori::const_iterator pit_end = parentChoosers.end();
-	for (; pit != pit_end; ++pit)
-		if (*pit == MATE_PyParentsChooser)
-			pyCount++;
-	DBG_FAILIF(pit_end != pit + 1 && pyCount != pit_end - pit, ValueError,
-	    "Please specify one python parent chooser, or one chooser for each MATE_PyParentsChooser");
-#endif
-	for (; it != it_end; ++it) {
-		m_pyChoosers.push_back(*it);
-		Py_XINCREF(*it);
-	}
-
-	if (m_parentChoosers.empty())
-		m_parentChoosers.push_back(MATE_RandomParentsChooser);
-
-
-	vector<offspringGenerator *>::const_iterator oit = offspringGenerators.begin();
-	vector<offspringGenerator *>::const_iterator oit_end = offspringGenerators.end();
-	for (; oit != oit_end; ++oit)
-		m_offspringGenerators.push_back((*oit)->clone());
-
-	if (m_offspringGenerators.empty())
-		m_offspringGenerators.push_back(new mendelianOffspringGenerator());
+	m_parentChooser = chooser.clone();
+	m_offspringGenerator = generator.clone();
 }
 
 
-bool pyMating::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
+bool pyMating::mateSubPop(population & pop, SubPopID subPop,
+                          RawIndIterator offBegin, RawIndIterator offEnd,
+                          vector<baseOperator * > & ops)
 {
-	// scratach will have the right structure.
-	prepareScratchPop(pop, scratch);
+	// nothing to do.
+	if (offBegin == offEnd)
+		return true;
 
-	DBG_DO(DBG_MATING, m_famSize.clear());
+	if (!m_parentChooser->initialized())
+		m_parentChooser->initialize(pop, subPop);
 
-	// count all virtual subpopulations
-	DBG_ASSERT(m_parentChoosers.size() == 1 || m_parentChoosers.size() == pop.numSubPop(),
-	    ValueError, "You should specify one parentChoosers, or one parentChoosers"
-	                " for each (virtual) subpopulation. ("
-	    + toStr(m_parentChoosers.size()) + ")");
+	if (!m_offspringGenerator->initialized())
+		m_offspringGenerator->initialize(pop, ops);
 
-	DBG_ASSERT(m_offspringGenerators.size() == 1 || m_offspringGenerators.size() == pop.numSubPop(),
-	    ValueError, "You should specify one offspringGenerator, or one "
-	                "offspringGenerator for each (virtual) subpopulation");
+	DBG_FAILIF(m_parentChooser->numParents() != 0
+	    && m_parentChooser->numParents() != m_offspringGenerator->numParents(),
+	    ValueError, "Imcompatible parent chooser and offspring generator");
 
-	size_t pcIdx = 0;
-	size_t vspIdx = 0;
-	/// random mating happens within each subpopulation
-	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		// do we have virtual populations?
-		ULONG spSize = pop.subPopSize(sp);
-		if (spSize == 0)
-			continue;
-
-		int pcType = m_parentChoosers.size() > 1 ? m_parentChoosers[vspIdx] : m_parentChoosers[0];
-		parentChooser * pc = NULL;
-
-		switch (pcType) {
-		case MATE_RandomParentChooser:
-			pc = new randomParentChooser();
-			break;
-		case MATE_RandomParentsChooser:
-			pc = new randomParentsChooser();
-			break;
-		case MATE_PyParentsChooser:
-			pc = new pyParentsChooser(m_pyChoosers.size() > 1 ? m_pyChoosers[pcIdx++] : m_pyChoosers[0]);
-
-			break;
-		default:
-			throw ValueError("Unknown parentChoosers type");
+	// generate scratch.subPopSize(sp) individuals.
+	RawIndIterator it = offBegin;
+	while (it != offEnd) {
+		individual * dad = NULL;
+		individual * mom = NULL;
+		if (m_parentChooser->numParents() == 1)
+			dad = m_parentChooser->chooseParent();
+		// 0 or 2, that is to say, dad or mom can be NULL
+		else {
+			parentChooser::individualPair const parents = m_parentChooser->chooseParents();
+			dad = parents.first;
+			mom = parents.second;
 		}
-		pc->initialize(pop, sp);
 
-		offspringGenerator * og = m_offspringGenerators.size() > 1 ?
-		                          m_offspringGenerators[vspIdx] : m_offspringGenerators[0];
-
-		DBG_FAILIF(pc->numParents() != 0 && pc->numParents() != og->numParents(),
-		    ValueError, "Imcompatible parent chooser and offspring generator");
-
-		if (!og->initialized())
-			og->initialize(pop, ops);
-
-		// generate scratch.subPopSize(sp) individuals.
-		RawIndIterator it = scratch.rawIndBegin(sp);
-		RawIndIterator it_end = scratch.rawIndEnd(sp);
-		while (it != it_end) {
-			individual * dad = NULL;
-			individual * mom = NULL;
-			if (pc->numParents() == 1)
-				dad = pc->chooseParent();
-			// 0 or 2, that is to say, dad or mom can be NULL
-			else {
-				parentChooser::individualPair const parents = pc->chooseParents();
-				dad = parents.first;
-				mom = parents.second;
-			}
-
-			//
-			UINT numOff = og->generateOffspring(pop, dad, mom, it, it_end, ops);
-			// record family size (this may be wrong for the last family)
-			DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
-		}
-		delete og;
-		delete pc;
+		//
+		UINT numOff = m_offspringGenerator->generateOffspring(pop, dad, mom, it, offEnd, ops);
+		// record family size (this may be wrong for the last family)
+		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}
-	if (submit)
-		submitScratch(pop, scratch);
 	return true;
 }
 
