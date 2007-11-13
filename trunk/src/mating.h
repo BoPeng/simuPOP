@@ -553,6 +553,11 @@ protected:
 	/// the python function should take one parameter (gen) and
 	/// return a vector of subpop size.
 	PyObject * m_subPopSizeFunc;
+
+#ifndef OPTIMIZED
+	///
+	vectori m_famSize;
+#endif
 };
 
 /// a mating scheme that does nothing
@@ -693,11 +698,6 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 protected:
-#ifndef OPTIMIZED
-	///
-	vectori m_famSize;
-#endif
-
 	cloneOffspringGenerator m_offGenerator;
 };
 
@@ -792,10 +792,7 @@ protected:
 	/// same sex mating will occur if m_contWhenUniSex is set.
 	/// otherwise, an exception will be thrown.
 	bool m_contWhenUniSex;
-#ifndef OPTIMIZED
-	///
-	vectori m_famSize;
-#endif
+
 };
 
 /// CPPONLY
@@ -1192,11 +1189,6 @@ private:
 	vectorobj m_pyChoosers;
 
 	vector<offspringGenerator *> m_offspringGenerators;
-
-#ifndef OPTIMIZED
-	///
-	vectori m_famSize;
-#endif
 };
 
 }
