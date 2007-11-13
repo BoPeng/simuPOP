@@ -893,6 +893,7 @@ public:
 		return tmp;
 	}
 
+
 	IndividualIterator operator+=(difference_type diff)
 	{
 		if (m_allInds) {
@@ -908,6 +909,7 @@ public:
 		DBG_FAILIF(i != diff, ValueError, "Can not add to IndIterator");
 		return *this;
 	}
+
 
 	IndividualIterator operator-(difference_type diff)
 	{
@@ -1003,11 +1005,11 @@ typedef IndividualIterator<ConstRawIndIterator> ConstIndIterator;
 
 /**
    	this class implements a C++ iterator class that iterate through
-   	infomation fields in a (sub)population using 
-	1. an IndIterator that	will skip invisible individuals, or
-	2. a gapped iterator that will run faster.
-	Note that 1, 2 should yield identical result, and 2 should be used
-	when there is no virtual subpopulation.q
+   	infomation fields in a (sub)population using
+   	1. an IndIterator that	will skip invisible individuals, or
+   	2. a gapped iterator that will run faster.
+   	Note that 1, 2 should yield identical result, and 2 should be used
+   	when there is no virtual subpopulation.q
  */
 template <typename T>
 class InformationIterator
@@ -1019,20 +1021,22 @@ public:
 	typedef typename T::reference reference;
 	typedef typename T::pointer pointer;
 
-	
+
 	InformationIterator()
 	{
 	}
 
+
 	InformationIterator(UINT info, InfoIterator ptr, UINT size)
-		: m_info(info), m_useGappedIterator(true), 
-			m_it(),	m_git(&*ptr, size)
+		: m_info(info), m_useGappedIterator(true),
+		m_it(), m_ptr(& * ptr), m_step(size)
 	{
 	}
-	
+
+
 	InformationIterator(UINT info, IndividualIterator<T> it)
 		: m_info(info), m_useGappedIterator(false),
-			m_it(it), m_git()
+		m_it(it), m_ptr(), m_step()
 	{
 	}
 
@@ -1041,7 +1045,7 @@ public:
 	InfoType & operator *() const
 	{
 		if (m_useGappedIterator)
-			return *m_git;
+			return *m_ptr;
 		else
 			return *(m_it->infoPtr() + m_info);
 	}
@@ -1052,8 +1056,9 @@ public:
 	{
 		// save current state
 		InformationIterator tmp(*this);
+
 		if (m_useGappedIterator)
-			++m_git;
+			m_ptr += m_step;
 		else
 			++m_it;
 		return tmp;
@@ -1063,7 +1068,7 @@ public:
 	InformationIterator operator++()
 	{
 		if (m_useGappedIterator)
-			++m_git;
+			m_ptr += m_step;
 		else
 			++m_it;
 		return *this;
@@ -1072,9 +1077,11 @@ public:
 
 	bool operator!=(const InformationIterator & rhs)
 	{
-		if (m_useGappedIterator)
-			return m_git != rhs.m_git || m_info != rhs.m_info;
-		else
+		if (m_useGappedIterator) {
+			DBG_FAILIF(m_step != rhs.m_step, ValueError,
+			    "Iterator comparison failed");
+			return m_ptr != rhs.m_ptr || m_info != rhs.m_info;
+		} else
 			return m_it != rhs.m_it || m_info != rhs.m_info;
 	}
 
@@ -1087,7 +1094,9 @@ private:
 	// individual iterator
 	IndividualIterator<T> m_it;
 	//
-	GappedInfoIterator m_git;
+	InfoType * m_ptr;
+	//
+	UINT m_step;
 };
 
 
@@ -1096,11 +1105,11 @@ typedef InformationIterator<ConstRawIndIterator> ConstIndInfoIterator;
 
 /**
    	this class implements a C++ iterator class that iterate through
-   	infomation fields in a (sub)population using 
-	1. an IndIterator that	will skip invisible individuals, or
-	2. a gapped iterator that will run faster.
-	Note that 1, 2 should yield identical result, and 2 should be used
-	when there is no virtual subpopulation.q
+   	infomation fields in a (sub)population using
+   	1. an IndIterator that	will skip invisible individuals, or
+   	2. a gapped iterator that will run faster.
+   	Note that 1, 2 should yield identical result, and 2 should be used
+   	when there is no virtual subpopulation.q
  */
 template <typename T>
 class CombinedAlleleIterator
@@ -1112,20 +1121,22 @@ public:
 	typedef AlleleRef reference;
 	typedef GenoIterator pointer;
 
-	
+
 	CombinedAlleleIterator()
 	{
 	}
 
+
 	CombinedAlleleIterator(GenoIterator ptr, UINT size)
-		: m_useGappedIterator(true), m_it(), m_git(ptr, size)
+		: m_useGappedIterator(true), m_it(), m_ptr(ptr), m_size(size)
 	{
 	}
-	
+
+
 	CombinedAlleleIterator(UINT index, IndividualIterator<T> it,
-		UINT ploidy, UINT size)
+	                       UINT ploidy, UINT size)
 		: m_index(index), m_useGappedIterator(false),
-			m_it(it), m_git(), m_p(0), m_ploidy(ploidy), m_size(size)
+		m_it(it), m_ptr(), m_p(0), m_ploidy(ploidy), m_size(size)
 	{
 	}
 
@@ -1134,24 +1145,27 @@ public:
 	AlleleRef operator *() const
 	{
 		if (m_useGappedIterator)
-			return *m_git;
+			return *m_ptr;
 		else
 			return *(m_it->genoBegin() + m_index + m_p * m_size);
 	}
 
+
 	GenoIterator ptr()
 	{
 		if (m_useGappedIterator)
-			return m_git.ptr();
+			return m_ptr;
 	}
-	
+
+
 	// return, then advance.
 	CombinedAlleleIterator operator++(int)
 	{
 		// save current state
 		CombinedAlleleIterator tmp(*this);
+
 		if (m_useGappedIterator)
-			++m_git;
+			m_ptr += m_size;
 		else {
 			++m_p;
 			if (m_p == m_ploidy) {
@@ -1166,7 +1180,7 @@ public:
 	CombinedAlleleIterator operator++()
 	{
 		if (m_useGappedIterator)
-			++m_git;
+			m_ptr += m_size;
 		else {
 			++m_p;
 			if (m_p == m_ploidy) {
@@ -1177,31 +1191,34 @@ public:
 		return *this;
 	}
 
+
 	CombinedAlleleIterator & operator+=(difference_type diff)
 	{
 		if (m_useGappedIterator)
-			m_git += diff;
+			m_ptr += diff * m_size;
 		// FIXME
 		return *this;
 	}
-	
+
+
 	CombinedAlleleIterator operator+(difference_type diff)
 	{
 		if (m_useGappedIterator) {
 			CombinedAlleleIterator tmp(*this);
-			tmp.m_git += diff;
+			tmp.m_ptr += diff * m_size;
 			return tmp;
 		}
 		// FIXME
 	}
-	
+
+
 	bool operator!=(const CombinedAlleleIterator & rhs)
 	{
 		if (m_useGappedIterator)
-			return m_git != rhs.m_git;
+			return m_ptr != rhs.m_ptr;
 		else {
 			DBG_FAILIF(m_ploidy != rhs.m_ploidy || m_size != rhs.m_size, ValueError,
-				"Iterator comparison fails");
+			    "Iterator comparison fails");
 			return m_it != rhs.m_it || m_index != rhs.m_index || m_p != rhs.m_p;
 		}
 	}
@@ -1215,7 +1232,7 @@ private:
 	// individual iterator
 	IndividualIterator<T> m_it;
 	//
-	GappedAlleleIterator m_git;
+	GenoIterator m_ptr;
 	// current ploidy, used in individualiterator
 	UINT m_p;
 	// overall ploidy

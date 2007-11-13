@@ -350,9 +350,16 @@ class TestPerformance(unittest.TestCase):
         # Combined iterator
         #
         # op:   2.42, 24.81, 247.89
-        # laop: 3.30  33.07  332.46
+        # laop: 3.21  32.89  326.94
         # baop: 3.78  36.89  367.50
         #
+        # Use ptr directly (without gappediterator interface)
+        # very strangely, there is some slight performance loss. I apply the patch any
+        # way to remove the gapped iterator interface.
+        #
+        # op: 2.46  25.18 250.65
+        # baop: 3.85 37.41 372.60
+
           
     def TestLongGenome(self):
         'Testing the performance of recombination with long genome'
