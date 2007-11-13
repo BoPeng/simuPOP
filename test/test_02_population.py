@@ -1410,6 +1410,8 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.allele(2, 1), 1)
             self.assertEqual(ind.allele(5, 0), 1)
             self.assertEqual(ind.allele(5, 1), 1)
+        Stat(pop, alleleFreq=[2])
+        self.assertEqual(pop.dvars().alleleNum[2][0], 0)
         # see if the same info are obtained, using duplicate virtual subpops
         pop.resetVirtualSubPop(0)
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
