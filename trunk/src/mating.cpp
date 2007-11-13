@@ -573,9 +573,11 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 }
 
 
-mating::mating(vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newSubPopSizeFunc)
+mating::mating(vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newSubPopSizeFunc,
+               virtualSubPopID subPop, int weight)
 	: m_subPopSize(newSubPopSize),
-	m_subPopSizeExpr(newSubPopSizeExpr, ""), m_subPopSizeFunc(NULL)
+	m_subPopSizeExpr(newSubPopSizeExpr, ""), m_subPopSizeFunc(NULL),
+	m_subPop(subPop), m_weight(weight)
 {
 	DBG_FAILIF(!m_subPopSizeExpr.empty() && newSubPopSizeFunc != NULL,
 	    ValueError, "Please only specify one of newSubPopSizeExpr and newSubPopSizeFunc.");
@@ -1292,8 +1294,10 @@ pyMating::pyMating(parentChooser & chooser,
                    offspringGenerator & generator,
                    vectorlu newSubPopSize,
                    string newSubPopSizeExpr,
-                   PyObject * newSubPopSizeFunc)
-	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc)
+                   PyObject * newSubPopSizeFunc,
+                   virtualSubPopID subPop,
+                   int weight)
+	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight)
 {
 	m_parentChooser = chooser.clone();
 	m_offspringGenerator = generator.clone();
@@ -1344,8 +1348,10 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 heteroMating::heteroMating(vectormating const & matingSchemes,
                            vectorlu newSubPopSize,
                            string newSubPopSizeExpr,
-                           PyObject * newSubPopSizeFunc)
-	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc)
+                           PyObject * newSubPopSizeFunc,
+                           virtualSubPopID subPop,
+                           int weight)
+	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight)
 {
 	vectormating::const_iterator it = matingSchemes.begin();
 	vectormating::const_iterator it_end = matingSchemes.end();
@@ -1359,6 +1365,7 @@ heteroMating::~heteroMating()
 {
 	vectormating::iterator it = m_matingSchemes.begin();
 	vectormating::iterator it_end = m_matingSchemes.end();
+
 	for (; it != it_end; ++it)
 		delete * it;
 }

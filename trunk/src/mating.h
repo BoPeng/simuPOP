@@ -528,12 +528,26 @@ public:
 	 \param newSubPopSizeFunc a function that takes parameters \c gen (generation number) and \c oldsize
 	   (an array of current population size) and return an array of subpopulation sizes of the next generation.
 	   This is usually easier to use than its expression version of this parameter.
+	 \param subPop if this parameter is given, the mating scheme
+	   	will be applied only to the given (virtual) subpopulation.
+	   	This is only used in heteroMating where mating schemes
+	   	are passed to.
+	 \param weight When subPop is virtual, this is used to detemine
+	   	the number of offspring for this mating scheme. Weight can be
+	 \li 0 (default) the weight will be proportional to the
+	   		current (virtual) subpopulation size. If other virutal
+	   		subpopulation has non-zero weight, try to keep the current
+	   		virtual subpopulation size.
+	 \li any positive number: the size will be determined by
+	   		weights from other virtual subpopulations.
 
 	 \test src_mating.log Demographic models and control of number of offspring per mating event
 	 */
 	mating(vectorlu newSubPopSize = vectorlu(),
 	       string newSubPopSizeExpr = "",
-	       PyObject * newSubPopSizeFunc = NULL);
+	       PyObject * newSubPopSizeFunc = NULL,
+	       virtualSubPopID subPop = virtualSubPopID(),
+	       int weight = 0);
 
 	/// CPPONLY
 	mating(const mating & rhs)
@@ -551,6 +565,18 @@ public:
 	{
 		if (m_subPopSizeFunc != NULL)
 			Py_DECREF(m_subPopSizeFunc);
+	}
+
+
+	virtualSubPopID subPop()
+	{
+		return m_subPop;
+	}
+
+
+	int weight()
+	{
+		return m_weight;
 	}
 
 
@@ -608,6 +634,12 @@ protected:
 	/// return a vector of subpop size.
 	PyObject * m_subPopSizeFunc;
 
+	///
+	virtualSubPopID m_subPop;
+
+	///
+	int m_weight;
+
 #ifndef OPTIMIZED
 	///
 	vectori m_famSize;
@@ -635,9 +667,12 @@ public:
 	         UINT mode = MATE_NumOffspring,
 	         vectorlu newSubPopSize = vectorlu(),
 	         string newSubPopSizeExpr = "",
-	         PyObject * newSubPopSizeFunc = NULL)
+	         PyObject * newSubPopSizeFunc = NULL,
+	         virtualSubPopID subPop = virtualSubPopID(),
+	         int weight = 0)
 	{
-
+		DBG_FAILIF(subPop.isVirtual(), ValueError,
+		    "noMating can not be used in virtual subpopulations");
 	}
 
 
@@ -702,8 +737,10 @@ public:
 	                  UINT mode = MATE_NumOffspring,
 	                  vectorlu newSubPopSize = vectorlu(),
 	                  string newSubPopSizeExpr = "",
-	                  PyObject * newSubPopSizeFunc = NULL)
-		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+	                  PyObject * newSubPopSizeFunc = NULL,
+	                  virtualSubPopID subPop = virtualSubPopID(),
+	                  int weight = 0)
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode)
 	{
 	}
@@ -773,8 +810,10 @@ public:
 	             vectorlu newSubPopSize = vectorlu(),
 	             PyObject * newSubPopSizeFunc = NULL,
 	             string newSubPopSizeExpr = "",
-	             bool contWhenUniSex = true)
-		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+	             bool contWhenUniSex = true,
+	             virtualSubPopID subPop = virtualSubPopID(),
+	             int weight = 0)
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offspringGenerator(numOffspring,
 		                     numOffspringFunc, maxNumOffspring, mode),
 		m_contWhenUniSex(contWhenUniSex)
@@ -856,8 +895,10 @@ public:
 	           vectorlu newSubPopSize = vectorlu(),
 	           PyObject * newSubPopSizeFunc = NULL,
 	           string newSubPopSizeExpr = "",
-	           bool contWhenUniSex = true)
-		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc),
+	           bool contWhenUniSex = true,
+	           virtualSubPopID subPop = virtualSubPopID(),
+	           int weight = 0)
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offspringGenerator(numOffspring,
 		                     numOffspringFunc, maxNumOffspring, mode)
 	{
@@ -1065,13 +1106,16 @@ public:
 	                       vectorlu newSubPopSize = vectorlu(),
 	                       PyObject * newSubPopSizeFunc = NULL,
 	                       string newSubPopSizeExpr = "",
-	                       bool contWhenUniSex = true)
+	                       bool contWhenUniSex = true,
+	                       virtualSubPopID subPop = virtualSubPopID(),
+	                       int weight = 0)
 		: randomMating(numOffspring,
 		               numOffspringFunc, maxNumOffspring, mode,
 		               newSubPopSize,
 		               newSubPopSizeFunc,
 		               newSubPopSizeExpr,
-		               contWhenUniSex),
+		               contWhenUniSex,
+		               subPop, weight),
 		m_loci(loci),
 		m_alleles(alleles),
 		m_freqFunc(freqFunc),
@@ -1185,8 +1229,9 @@ public:
 	         offspringGenerator & generator,
 	         vectorlu newSubPopSize = vectorlu(),
 	         string newSubPopSizeExpr = "",
-	         PyObject * newSubPopSizeFunc = NULL
-	         );
+	         PyObject * newSubPopSizeFunc = NULL,
+	         virtualSubPopID subPop = virtualSubPopID(),
+	         int weight = 0);
 
 	/// destructor
 	~pyMating()
@@ -1240,15 +1285,15 @@ typedef vector<mating *> vectormating;
 class heteroMating : public mating
 {
 public:
-public:
 	/// create a Python mating scheme
 	/**
 	 */
 	heteroMating(vectormating const & matingSchemes,
 	             vectorlu newSubPopSize = vectorlu(),
 	             string newSubPopSizeExpr = "",
-	             PyObject * newSubPopSizeFunc = NULL
-	             );
+	             PyObject * newSubPopSizeFunc = NULL,
+	             virtualSubPopID subPop = virtualSubPopID(),
+	             int weight = 0);
 
 	/// destructor
 	~heteroMating();
