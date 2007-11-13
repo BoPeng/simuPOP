@@ -574,7 +574,7 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 
 
 mating::mating(vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newSubPopSizeFunc,
-               virtualSubPopID subPop, int weight)
+               virtualSubPopID subPop, double weight)
 	: m_subPopSize(newSubPopSize),
 	m_subPopSizeExpr(newSubPopSizeExpr, ""), m_subPopSizeFunc(NULL),
 	m_subPop(subPop), m_weight(weight)
@@ -1296,7 +1296,7 @@ pyMating::pyMating(parentChooser & chooser,
                    string newSubPopSizeExpr,
                    PyObject * newSubPopSizeFunc,
                    virtualSubPopID subPop,
-                   int weight)
+                   double weight)
 	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight)
 {
 	m_parentChooser = chooser.clone();
@@ -1350,7 +1350,7 @@ heteroMating::heteroMating(vectormating const & matingSchemes,
                            string newSubPopSizeExpr,
                            PyObject * newSubPopSizeFunc,
                            virtualSubPopID subPop,
-                           int weight)
+                           double weight)
 	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight)
 {
 	vectormating::const_iterator it = matingSchemes.begin();
@@ -1377,8 +1377,11 @@ heteroMating::heteroMating(const heteroMating & rhs) :
 	vectormating::const_iterator it = rhs.m_matingSchemes.begin();
 	vectormating::const_iterator it_end = rhs.m_matingSchemes.end();
 
-	for (; it != it_end; ++it)
+	for (; it != it_end; ++it) {
+		DBG_FAILIF((*it)->subPop().isValid(), ValueError,
+			"Please specify (virtual) subpopulation for each mating scheme used in heteroMating");
 		m_matingSchemes.push_back((*it)->clone());
+	}
 }
 
 
@@ -1390,10 +1393,72 @@ bool heteroMating::mate(population & pop, population & scratch,
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
-	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp)
-		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp),
-		        scratch.rawIndEnd(sp), ops))
-			return false;
+	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp) {
+		vectormating m;
+		vectorf w;
+		vectormating::iterator it = m_matingSchemes.begin();
+		vectormating::iterator it_end = m_matingSchemes.end();
+		for (; it != it_end; ++it) {
+			if ((*it)->subPop().id() == sp) {
+				m.push_back(*it);
+				w.push_back((*it)->weight());
+				DBG_FAILIF(fcmp_lt((*it)->weight(), 0.), ValueError,
+					"Negative weight is not allowed");
+			}
+		}
+		DBG_FAILIF(m.empty(), ValueError,
+			"No mating scheme is available for subpopulation " + toStr(sp));
+		// determine the weight
+		if (m.size() == 1)
+			w[0] = 1.;
+		else {
+			it = m.begin();
+			it_end = m.end();
+			for (; it != it_end; ++it)
+				DBG_ASSERT((*it)->subPop().isVirtual(), ValueError,
+					"If more than one mating scheme is applied to a" 
+					" subpopulation, they should all be virtual");
+		}
+		// the default case (all zero)
+		if (fcmp_eq(std::accumulate(w.begin(), w.end(), 0.), 0.)) {
+			// weight is subpopulation size
+			for (size_t i = 0; i < m.size(); ++i)
+				w[i] = pop.virtualSubPopSize(m[i]->subPop());
+		}
+		// weight.
+		double overall = std::accumulate(w.begin(), w.end(), 0.);
+		DBG_FAILIF(fcmp_eq(overall, 0.), ValueError,
+			"Overall weight is zero");
+		// 
+		vectorlu vspSize(m.size());
+		ULONG all = pop.subPopSize(sp);
+		for (size_t i=0; i<m.size(); ++i) {
+			vspSize[i] = static_cast<ULONG>(pop.subPopSize(sp)*w[i]/overall);
+			DBG_ASSERT(all >= vspSize[i], SystemError,
+				"Something wrong with weight calculation");
+			all -= vspSize[i];
+		}
+		// individuals left by floating point calculation is added to
+		// the last virtual subpopulation.
+		if (all > 0)
+			vspSize[m.size()-1] += all;
+
+		// it points to the first mating scheme.
+		it = m.begin();
+		vectorlu::iterator itSize = vspSize.begin();
+		RawIndIterator ind = scratch.rawIndBegin(sp);
+		for (; it != it_end; ++it, ++itSize) {
+			if ((*it)->subPop().isVirtual())
+				pop.activateVirtualSubPop((*it)->subPop());
+			// real mating
+			if (!(*it)->mateSubPop(pop, sp, ind, ind + *itSize, ops))
+				return false;
+			ind += *itSize;
+		}
+		DBG_ASSERT(ind == scratch.rawIndEnd(sp), SystemError,
+			"Maing somehow does not go to the last individual.");
+		pop.resetVirtualSubPop(sp);
+	} // each subpopulation.
 	if (submit)
 		submitScratch(pop, scratch);
 	return true;
