@@ -1381,7 +1381,7 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual((ind.allele(1, 0), ind.allele(1, 1)) in [(1,0), (0,1)], True)
 
     def testInfoIterator(self):
-        'Testing the info iterator in virtual subpopulation'
+        'Testing the info iterator in virtual subpopulations'
         pop = population(1000, infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
@@ -1390,7 +1390,36 @@ class TestPopulation(unittest.TestCase):
         for ind in pop.individuals(0):
             self.assertEqual(ind.info('x'), 11)
         # this makes sure that the new infoIterator can skip invisible individuals.
-        self.assertEqual(pop.indInfo('x'), tuple([11.0]*pop.virtualSubPopSize(0.1)))
+        self.assertEqual(pop.indInfo('x', True), tuple([11.0]*pop.virtualSubPopSize(0.1)))
+        pop.resetVirtualSubPop(0)
+        # see if the same info are obtained, using duplicate virtual subpops
+        info = pop.indInfo('x', True)
+        pop.setSplitter(duplicateSplitter(2), 0)
+        pop.activateVirtualSubPop(0.1)
+        self.assertEqual(pop.indInfo('x', True), info)
+
+
+    def testAlleleIterator(self):
+        'Test the allele iterator in virtual subpopulations'
+        pop = population(1000, loci=[5, 8])
+        InitByFreq(pop, [0.2, 0.4, 0.4])
+        pop.setSplitter(genotypeSplitter(loci=[2,5], alleles=[1,1,1,1], phase=False), 0)
+        pop.activateVirtualSubPop(0.0)
+        for ind in pop.individuals(0):
+            self.assertEqual(ind.allele(2, 0), 1)
+            self.assertEqual(ind.allele(2, 1), 1)
+            self.assertEqual(ind.allele(5, 0), 1)
+            self.assertEqual(ind.allele(5, 1), 1)
+        # see if the same info are obtained, using duplicate virtual subpops
+        pop.resetVirtualSubPop(0)
+        Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        an = [pop.dvars().alleleNum[x][0] for x in range(pop.totNumLoci())]
+        pop.setSplitter(duplicateSplitter(2), 0)
+        pop.activateVirtualSubPop(0.1)
+        # these should be calcuated using virtual stuff
+        Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        self.assertEqual(an, [pop.dvars().alleleNum[x][0] for x in range(pop.totNumLoci())])        
+
         
 if __name__ == '__main__':
     unittest.main()
