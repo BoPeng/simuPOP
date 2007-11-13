@@ -569,7 +569,8 @@ public:
 
 
 	/// CPPONLY
-	virtual void submitScratch(population & pop, population & scratch) = 0;
+	/// a common submit procedure is defined.
+	virtual void submitScratch(population & pop, population & scratch);
 
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
 	                        RawIndIterator offBegin, RawIndIterator offEnd,
@@ -731,16 +732,6 @@ public:
 	}
 
 
-	///CPPONLY
-	void submitScratch(population & pop, population & scratch)
-	{
-		pop.turnOffSelection();
-		// use scratch population,
-		pop.pushAndDiscard(scratch);
-		DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
-	}
-
-
 	/// CPPONLY perform sexless random mating
 	/**
 	 \param pop population
@@ -827,16 +818,6 @@ public:
 	}
 
 
-	/// CPPONLY
-	void submitScratch(population & pop, population & scratch)
-	{
-		pop.turnOffSelection();
-		// use scratch population,
-		pop.pushAndDiscard(scratch);
-		DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
-	}
-
-
 	/// CPPONLY perform random mating
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
 	                        RawIndIterator offBegin, RawIndIterator offEnd,
@@ -911,16 +892,6 @@ public:
 	virtual string __repr__()
 	{
 		return "<simuPOP::self mating>";
-	}
-
-
-	/// CPPONLY
-	void submitScratch(population & pop, population & scratch)
-	{
-		pop.turnOffSelection();
-		// use scratch population,
-		pop.pushAndDiscard(scratch);
-		DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
 	}
 
 

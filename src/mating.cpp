@@ -657,6 +657,15 @@ bool mating::mate(population & pop, population & scratch,
 }
 
 
+void mating::submitScratch(population & pop, population & scratch)
+{
+	pop.turnOffSelection();
+	// use scratch population,
+	pop.pushAndDiscard(scratch);
+	DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
+}
+
+
 // nomating does nothing but applying during-mating operators
 bool noMating::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
 {
