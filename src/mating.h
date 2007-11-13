@@ -115,34 +115,34 @@ protected:
 
 
 /**
-	 \c mode, \c numOffspring, \c maxNumOffspring can be used to specify how
-	   many offspring will be produced at each mating event. This \c mode parameter
-	   can be one of
-	 \li \c MATE_NumOffspring: a fixed number of offspring at all mating events at this generation.
-	   	If \c numOffspring is given, all generations use this fixed number. If \c numOffspringFunc
-	   	is given, the number of offspring at each generation is determined by the value
-	   returned from this function.
-	 \li \c MATE_NumOffspringEachFamily: each family can have its own number of offspring.
-	   Usually, \c numOffspringFunc is used to determine the number of offspring of each
-	   family. If \c numOffspring is used, \c MATE_NumOffspringEachFamily is equivalent to
-	 \c MATE_NumOffspring.
-	 \li \c MATE_GeometricDistribution: a Geometric distribution with parameter \c numOffspring
-	   is used to determine the number of offspring of each family.
-	 \li \c MATE_PoissonDistribution: a Poisson distribution with parameter \c numOffspring
-	   is used to determine the number of offspring of each family.
-	 \li \c MATE_BinomialDistribution: a Binomial distribution with parameter \c numOffspring
-	   is used to determine the number of offspring of each family.
-	 \li \c MATE_UniformDistribution: a Uniform <tt> [a, b] </tt> distribution with parameter
-	 \c numOffspring (a) and \c maxNumOffspring (b) is used to determine the number of offspring of each family.
+ \c mode, \c numOffspring, \c maxNumOffspring can be used to specify how
+   	   many offspring will be produced at each mating event. This \c mode parameter
+   	   can be one of
+ \li \c MATE_NumOffspring: a fixed number of offspring at all mating events at this generation.
+   		If \c numOffspring is given, all generations use this fixed number. If \c numOffspringFunc
+   		is given, the number of offspring at each generation is determined by the value
+   	   returned from this function.
+ \li \c MATE_NumOffspringEachFamily: each family can have its own number of offspring.
+   	   Usually, \c numOffspringFunc is used to determine the number of offspring of each
+   	   family. If \c numOffspring is used, \c MATE_NumOffspringEachFamily is equivalent to
+ \c MATE_NumOffspring.
+ \li \c MATE_GeometricDistribution: a Geometric distribution with parameter \c numOffspring
+   	   is used to determine the number of offspring of each family.
+ \li \c MATE_PoissonDistribution: a Poisson distribution with parameter \c numOffspring
+   	   is used to determine the number of offspring of each family.
+ \li \c MATE_BinomialDistribution: a Binomial distribution with parameter \c numOffspring
+   	   is used to determine the number of offspring of each family.
+ \li \c MATE_UniformDistribution: a Uniform <tt> [a, b] </tt> distribution with parameter
+ \c numOffspring (a) and \c maxNumOffspring (b) is used to determine the number of offspring of each family.
 
-	 \param numOffspring the number of offspring or \em p for a random distribution.
-	   Default to \c 1. This parameter determines the number of offspring that a
-	   mating event will produce. Therefore, it determines the family size.
-	 \param numOffspringFunc a Python function that returns the number of offspring or \em p
-	 \param maxNumOffspring used when \c numOffspring is generated from a binomial distribution
-	 \param mode can be one of <tt>MATE_NumOffspring, MATE_NumOffspringEachFamily,
-	   MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,</tt>
-	   or <tt>MATE_UniformDistribution</tt>.
+ \param numOffspring the number of offspring or \em p for a random distribution.
+   	   Default to \c 1. This parameter determines the number of offspring that a
+   	   mating event will produce. Therefore, it determines the family size.
+ \param numOffspringFunc a Python function that returns the number of offspring or \em p
+ \param maxNumOffspring used when \c numOffspring is generated from a binomial distribution
+ \param mode can be one of <tt>MATE_NumOffspring, MATE_NumOffspringEachFamily,
+   	   MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,</tt>
+   	   or <tt>MATE_UniformDistribution</tt>.
  */
 /// CPPONLY
 /** How to generate offspring.
@@ -517,6 +517,13 @@ public:
 	/// CPPONLY
 	virtual void submitScratch(population & pop, population & scratch) = 0;
 
+	virtual bool mateSubPop(population & pop, SubPopID subPop,
+	                        RawIndIterator offBegin, RawIndIterator offEnd,
+	                        vector<baseOperator * > & ops)
+	{
+		return true;
+	}
+
 
 	/// CPPONLY this is not supposed to be called for a base mating class
 	/**
@@ -525,11 +532,7 @@ public:
 	 \param ops during-mating operators
 	 \return return false when mating fail
 	 */
-	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit)
-	{
-		throw SystemError("You are not supposed to call base mating scheme.");
-	}
-
+	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
 
 public:
 	/// CPPONLY dealing with the \c pop/subPop size change, copy of structure etc.
@@ -691,7 +694,9 @@ public:
 	 \param ops during-mating operators
 	 \return return false when mating fails
 	 */
-	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
+	virtual bool mateSubPop(population & pop, SubPopID subPop,
+	                        RawIndIterator offBegin, RawIndIterator offEnd,
+	                        vector<baseOperator * > & ops);
 
 protected:
 	cloneOffspringGenerator m_offGenerator;
@@ -779,7 +784,9 @@ public:
 
 
 	/// CPPONLY perform random mating
-	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
+	virtual bool mateSubPop(population & pop, SubPopID subPop,
+	                        RawIndIterator offBegin, RawIndIterator offEnd,
+	                        vector<baseOperator * > & ops);
 
 protected:
 	mendelianOffspringGenerator m_offspringGenerator;
