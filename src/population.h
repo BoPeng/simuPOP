@@ -669,9 +669,15 @@ public:
 	IndAlleleIterator alleleBegin(UINT locus, bool order)
 	{
 		CHECKRANGEABSLOCUS(locus);
-		if (order && shallowCopied())
-			adjustGenoPosition(true);
-		return IndAlleleIterator(m_genotype.begin() + locus, totNumLoci());
+		
+		// if there is virtual subpop, use individual based iterator
+		// or
+		// if requires order, but the alleles are not ordered
+		// use individual based
+		if (hasActivatedVirtualSubPop() || (order && shallowCopied()))
+			return IndAlleleIterator(locus, indBegin(), ploidy(), totNumLoci());
+		else
+			return IndAlleleIterator(m_genotype.begin() + locus, totNumLoci());
 	}
 
 
@@ -679,9 +685,10 @@ public:
 	IndAlleleIterator alleleEnd(UINT locus, bool order)
 	{
 		CHECKRANGEABSLOCUS(locus);
-		if (order && shallowCopied())
-			adjustGenoPosition(true);
-		return IndAlleleIterator(m_genotype.begin() + locus + m_popSize * genoSize(), totNumLoci());
+		if (hasActivatedVirtualSubPop() || (order && shallowCopied()))
+			return IndAlleleIterator(locus, indEnd(), ploidy(), totNumLoci());
+		else
+			return IndAlleleIterator(m_genotype.begin() + locus + m_popSize * genoSize(), totNumLoci());
 	}
 
 
@@ -695,9 +702,10 @@ public:
 		CHECKRANGEABSLOCUS(locus);
 		CHECKRANGESUBPOP(subPop);
 
-		if (shallowCopied())
-			adjustGenoPosition(order);
-		return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
+		if (hasActivatedVirtualSubPop() || (order && shallowCopied()))
+			return IndAlleleIterator(locus, indBegin(subPop), ploidy(), totNumLoci());
+		else
+			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
 		           locus, totNumLoci());
 	}
 
@@ -708,10 +716,10 @@ public:
 		CHECKRANGEABSLOCUS(locus);
 		CHECKRANGESUBPOP(subPop);
 
-		if (shallowCopied())
-			adjustGenoPosition(order);
-
-		return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
+		if (hasActivatedVirtualSubPop() || (order && shallowCopied()))
+			return IndAlleleIterator(locus, indEnd(subPop), ploidy(), totNumLoci());
+		else
+			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
 		           locus, totNumLoci());
 	}
 

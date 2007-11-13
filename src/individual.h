@@ -1155,6 +1155,8 @@ public:
 	{
 		if (m_useGappedIterator)
 			return m_ptr;
+		else
+			return m_it->genoBegin() + m_index + m_p * m_size;
 	}
 
 
@@ -1196,19 +1198,26 @@ public:
 	{
 		if (m_useGappedIterator)
 			m_ptr += diff * m_size;
-		// FIXME
+		else {
+			m_p += diff;
+			m_it += m_p / m_ploidy;
+			m_p %= m_ploidy;
+		}
 		return *this;
 	}
 
 
 	CombinedAlleleIterator operator+(difference_type diff)
 	{
-		if (m_useGappedIterator) {
-			CombinedAlleleIterator tmp(*this);
+		CombinedAlleleIterator tmp(*this);
+		if (m_useGappedIterator)
 			tmp.m_ptr += diff * m_size;
-			return tmp;
+		else {
+			tmp.m_p += diff;
+			tmp.m_it += tmp.m_p / m_ploidy;
+			tmp.m_p %= m_ploidy;
 		}
-		// FIXME
+		return tmp;
 	}
 
 
