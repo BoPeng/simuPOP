@@ -44,6 +44,10 @@ class population;
 class virtualSubPopID
 {
 public:
+	virtualSubPopID() : m_subPop(MaxSubPopID), m_virtualSubPop(MaxSubPopID)
+	{
+	}
+	
 	virtualSubPopID(int id) : m_subPop(id), m_virtualSubPop(MaxSubPopID)
 	{
 	}
@@ -77,6 +81,11 @@ public:
 		return m_virtualSubPop;
 	}
 
+
+	bool isValid() const
+	{
+		return static_cast<unsigned long>(m_subPop) != MaxSubPopID;
+	}
 
 	bool isVirtual() const
 	{
