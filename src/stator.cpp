@@ -1088,7 +1088,7 @@ bool statLD::apply(population & pop)
 			outputLD(pop, hapLoci, haploKey(hapAlleles), 0, false, valid_delta2, D, D_prime, r2, delta2);
 
 			if (m_evalInSubPop) {
-				if (numSP == 1)          // use the whole population result
+				if (numSP == 1)  // use the whole population result
 					outputLD(pop, hapLoci, haploKey(hapAlleles), 0, true, valid_delta2, D, D_prime, r2, delta2);
 				else {
 					for (UINT sp = 0; sp < numSP;  ++sp) {
@@ -1147,7 +1147,7 @@ bool statLD::apply(population & pop)
 			outputLD(pop, hapLoci, "", 0, false, valid_delta2, D, D_prime, r2, delta2);
 
 			if (m_evalInSubPop) {
-				if (numSP == 1)          // use the whole population result
+				if (numSP == 1)  // use the whole population result
 					outputLD(pop, hapLoci, "", 0, true, valid_delta2, D, D_prime, r2, delta2);
 				else {
 					for (UINT sp = 0; sp < numSP;  ++sp) {

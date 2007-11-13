@@ -406,7 +406,7 @@ public:
 	 \param genotypes a list of genotypes
 	 */
 	genotypeSplitter(const vectori & loci,
-	                 const intMatrix & alleles, bool phase=false);
+	                 const intMatrix & alleles, bool phase = false);
 
 	vspSplitter * clone() const
 	{

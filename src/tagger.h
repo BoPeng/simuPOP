@@ -112,7 +112,7 @@ public:
 
 	/// CPPONLY
 	/// apply the \c inheritTagger
-	virtual bool applyDuringMating(population & pop, IndIterator offspring,
+	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 	                               individual * dad = NULL, individual * mom = NULL);
 
 	/// deep copy of a \c inheritTagger
@@ -173,7 +173,7 @@ public:
 
 	/// CPPONLY
 	/// apply the \c parentsTagger
-	virtual bool applyDuringMating(population & pop, IndIterator offspring,
+	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 	                               individual * dad = NULL, individual * mom = NULL);
 
 };
@@ -244,7 +244,7 @@ public:
 
 	/// CPPONLY
 	/// apply the \c pyTagger
-	virtual bool applyDuringMating(population & pop, IndIterator offspring,
+	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 	                               individual * dad = NULL, individual * mom = NULL);
 
 private:
