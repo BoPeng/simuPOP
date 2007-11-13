@@ -1219,16 +1219,6 @@ public:
 	}
 
 
-	///CPPONLY
-	void submitScratch(population & pop, population & scratch)
-	{
-		pop.turnOffSelection();
-		// use scratch population,
-		pop.pushAndDiscard(scratch);
-		DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
-	}
-
-
 	/// CPPONLY perform Python mating
 	/**
 	   All individuals will be passed to during mating operators but
@@ -1241,6 +1231,53 @@ public:
 private:
 	parentChooser * m_parentChooser;
 	offspringGenerator * m_offspringGenerator;
+
+};
+
+/** a heterogeneous mating scheme
+ */
+typedef vector<mating *> vectormating;
+class heteroMating : public mating
+{
+public:
+public:
+	/// create a Python mating scheme
+	/**
+	 */
+	heteroMating(vectormating const & matingSchemes,
+	             vectorlu newSubPopSize = vectorlu(),
+	             string newSubPopSizeExpr = "",
+	             PyObject * newSubPopSizeFunc = NULL
+	             );
+
+	/// destructor
+	~heteroMating();
+
+	/// CPPONLY
+	heteroMating(const heteroMating & rhs);
+
+	/// deep copy of a Python mating scheme
+	virtual mating * clone() const
+	{
+		return new heteroMating(*this);
+	}
+
+
+	/// used by Python print function to print out the general information of the Python mating scheme
+	virtual string __repr__()
+	{
+		return "<simuPOP::heteroMating>";
+	}
+
+
+	/*
+	   mateSubPop is not redefined. They are called by each
+	   mating schemes.
+	 */
+	bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
+
+private:
+	vectormating m_matingSchemes;
 
 };
 

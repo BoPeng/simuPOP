@@ -1341,4 +1341,56 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 }
 
 
+heteroMating::heteroMating(vectormating const & matingSchemes,
+                           vectorlu newSubPopSize,
+                           string newSubPopSizeExpr,
+                           PyObject * newSubPopSizeFunc)
+	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc)
+{
+	vectormating::const_iterator it = matingSchemes.begin();
+	vectormating::const_iterator it_end = matingSchemes.end();
+
+	for (; it != it_end; ++it)
+		m_matingSchemes.push_back((*it)->clone());
+}
+
+
+heteroMating::~heteroMating()
+{
+	vectormating::iterator it = m_matingSchemes.begin();
+	vectormating::iterator it_end = m_matingSchemes.end();
+	for (; it != it_end; ++it)
+		delete * it;
+}
+
+
+heteroMating::heteroMating(const heteroMating & rhs) :
+	mating(rhs)
+{
+	vectormating::const_iterator it = rhs.m_matingSchemes.begin();
+	vectormating::const_iterator it_end = rhs.m_matingSchemes.end();
+
+	for (; it != it_end; ++it)
+		m_matingSchemes.push_back((*it)->clone());
+}
+
+
+bool heteroMating::mate(population & pop, population & scratch,
+                        vector<baseOperator * > & ops, bool submit)
+{
+	// scrtach will have the right structure.
+	prepareScratchPop(pop, scratch);
+
+	DBG_DO(DBG_MATING, m_famSize.clear());
+
+	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp)
+		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp),
+		        scratch.rawIndEnd(sp), ops))
+			return false;
+	if (submit)
+		submitScratch(pop, scratch);
+	return true;
+}
+
+
 }
