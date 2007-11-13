@@ -330,6 +330,14 @@ public:
 	}
 
 
+	virtual void initialize(population & pop, SubPopID subPop);
+
+	bool initialized() const
+	{
+		return m_initialized;
+	}
+
+
 	int numParents()
 	{
 		return m_numParents;
@@ -353,6 +361,8 @@ public:
 private:
 	int m_numParents;
 
+protected:
+	bool m_initialized;
 };
 
 
@@ -360,7 +370,12 @@ private:
 class randomParentChooser : public parentChooser
 {
 public:
-	randomParentChooser(population & pop, size_t sp);
+	randomParentChooser() : parentChooser(1), m_sampler(rng())
+	{
+	}
+
+
+	void initialize(population & pop, SubPopID sp);
 
 	individual * chooseParent();
 
@@ -379,7 +394,15 @@ private:
 class randomParentsChooser : public parentChooser
 {
 public:
-	randomParentsChooser(population & pop, size_t sp);
+	randomParentsChooser() :
+		parentChooser(2), m_maleIndex(0), m_femaleIndex(0),
+		m_maleFitness(0), m_femaleFitness(0),
+		m_malesampler(rng()), m_femalesampler(rng())
+	{
+	}
+
+
+	void initialize(population & pop, SubPopID sp);
 
 	individualPair chooseParents();
 
@@ -410,8 +433,9 @@ private:
 class pyParentsChooser : public parentChooser
 {
 public:
-	pyParentsChooser(population & pop, UINT sp,
-	                 PyObject * parentsGenerator);
+	pyParentsChooser(PyObject * parentsGenerator);
+
+	void initialize(population & pop, SubPopID sp);
 
 	/// destructor
 	~pyParentsChooser()
