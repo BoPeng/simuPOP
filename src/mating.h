@@ -1188,44 +1188,6 @@ public:
 
 	/// create a Python mating scheme
 	/**
-	 \param parentChoosers a list of parent choosers for each subpopulation. If only
-	   	one parentChooser is specified, it is used for all subpopulations. a parentChooser
-	   		can be
-	 \li MATE_RandomParentChooser a random parent is chosen, regardless of sex.
-	 \li MATE_RandomParentsChooser two parents with different sex are chosen randomly from
-	   			their respective sex groups.
-	 \li a Python generator that returns a relative index of a parent, or a tuple
-	   			of two relative indexes of two parents. The indexes should be relative to
-	   			the subpopulations it will be applied to. A population, and a subpopulation
-	   			index will be passed to this generator. Please refer to simuPOP user's guide
-	   			for a detailed explanation of this technique.
-	 \param parentChooser A parent chooser that is used for all subpopulations. This is
-	   	a shortcut for <tt> parentChoosers=[parentChooser] </tt>.
-	 \param pyChoosers for internal use only.
-	 \param offspringGenerators A list of offspringGenerator for each subpopulation. If only
-	   	one offspringGenerator is specified, it is used for all subpopulations.
-	   	offspringGenerator can be
-	 \li MATE_CloneOffspringGenerator Parental chromosomes are copied directly to offspring.
-	   		This offspring generator can be used to haploid populations.
-	   		If a recombinator is used in a diploid population, the cloning behavior
-	   		is replaced by a 'selfing' recombination so this mode the same as selfing.
-	 \li MATE_MendelianOffspringGenerator Mendelian transmission without recombination.
-	   		That is to say, the first or the second copy of maternal chromosomes is passed to
-	   		the maternal (first) chromosomes of the offspring; the first or the second copy of
-	   		paternal chromosomes is passed the paternal (second) chromosomes of the
-	   		offspring. Independent segregations are applied to chromosomes.
-	 \li MATE_SelfingOffspringGenerator Selfing transmission without recombination.
-	   		Only one parent is involved, and serves both paternal and maternal roles in a
-	   		Mendelian offspring generator. Two copies of the offspring chromosomes are
-	   		generated independently.
-	 \param offspringGenerator An offspring generator that is used for
-	   	all subpopulations. This is a shortcut for
-	   	<tt>offspringGenerators=[offspringGenerator]</tt>.
-	   Generator a Python generator that accepts the parental
-	   	population, and yield parents.
-	 \n
-
-	   Please refer to class \c mating for descriptions of other parameters.
 	 */
 	pyMating(parentChooser & chooser,
 	         offspringGenerator & generator,
