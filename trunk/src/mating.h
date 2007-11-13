@@ -1229,10 +1229,6 @@ public:
 	 */
 	pyMating(parentChooser & chooser,
 	         offspringGenerator & generator,
-	         double numOffspring = 1.,
-	         PyObject * numOffspringFunc = NULL,
-	         UINT maxNumOffspring = 0,
-	         UINT mode = MATE_NumOffspring,
 	         vectorlu newSubPopSize = vectorlu(),
 	         string newSubPopSizeExpr = "",
 	         PyObject * newSubPopSizeFunc = NULL

@@ -1290,10 +1290,6 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 
 pyMating::pyMating(parentChooser & chooser,
                    offspringGenerator & generator,
-                   double numOffspring,
-                   PyObject * numOffspringFunc,
-                   UINT maxNumOffspring,
-                   UINT mode,
                    vectorlu newSubPopSize,
                    string newSubPopSizeExpr,
                    PyObject * newSubPopSizeFunc)
