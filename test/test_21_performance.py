@@ -324,10 +324,39 @@ class TestPerformance(unittest.TestCase):
         # 0.48   5.77   58.70
         #
         
-    def testAlleleIterator(self):
+    def TestAlleleIterator(self):
         'Testing the performance of the new combined allele iterator'
-        
-            
+        for N in [10000, 100000, 1000000]:
+            c1 = time.clock()
+            for i in range(10):
+                pop = population(N, loci=[20,40])
+                InitByFreq(pop, [0.2, 0.8])
+                InitByFreq(pop, [0.4, 0.6])
+                InitByFreq(pop, [0.5, 0.5])
+                Stat(pop, alleleFreq=range(0, pop.totNumLoci()))
+                Stat(pop, heteroFreq=range(0, pop.totNumLoci()))
+                Stat(pop, genoFreq=range(0, pop.totNumLoci()))
+            c2 = time.clock()
+            print "%.2f" % (c2-c1)
+        print
+        #
+        # Original iterator
+        #
+        # op:   2.20, 23.29, 231.69
+        # laop: 3.04  31.96, 318.13
+        # baop: 3.05 29.46 294.36
+        #
+        #
+        # Combined iterator
+        #
+        # op:   2.42, 24.81, 247.89
+        # laop: 3.30  33.07  332.46
+        # baop: 3.78  36.89  367.50
+
+
+
+
+          
     def TestLongGenome(self):
         'Testing the performance of recombination with long genome'
         sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
