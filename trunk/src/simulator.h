@@ -56,7 +56,7 @@ using boost::serialization::make_nvp;
 #include <boost/serialization/split_free.hpp>
 
 #ifndef OPTIMIZED
-#  include <time.h>                                                          // for clock() function
+#  include <time.h>                                                         // for clock() function
 
 #  define InitClock(); \
     if (debug(DBG_PROFILE)) m_clock = clock();

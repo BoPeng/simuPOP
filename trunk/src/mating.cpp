@@ -629,6 +629,24 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 }
 
 
+bool mating::mate(population & pop, population & scratch,
+                  vector<baseOperator * > & ops, bool submit)
+{
+	// scrtach will have the right structure.
+	prepareScratchPop(pop, scratch);
+
+	DBG_DO(DBG_MATING, m_famSize.clear());
+
+	for (SubPopID sp = 0; sp < pop.numSubPop(); ++sp)
+		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp),
+		        scratch.rawIndEnd(sp), ops))
+			return false;
+	if (submit)
+		submitScratch(pop, scratch);
+	return true;
+}
+
+
 // nomating does nothing but applying during-mating operators
 bool noMating::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
 {
@@ -646,79 +664,55 @@ bool noMating::mate(population & pop, population & scratch, vector<baseOperator 
 
 
 ///
-bool binomialSelection::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
+bool binomialSelection::mateSubPop(population & pop, SubPopID subPop,
+                                   RawIndIterator offBegin, RawIndIterator offEnd,
+                                   vector<baseOperator * > & ops)
 {
-	// scrtach will have the right structure.
-	prepareScratchPop(pop, scratch);
+	if (offBegin == offEnd)
+		return true;
 
-	DBG_DO(DBG_MATING, m_famSize.clear());
+	randomParentChooser pc(pop, subPop);
 
-	if (!m_offGenerator.initialized())
-		m_offGenerator.initialize(pop, ops);
-
-	// for each subpopulation
-	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		UINT spSize = pop.subPopSize(sp);
-		if (spSize == 0)
-			continue;
-
-		randomParentChooser pc(pop, sp);
-
-		// choose a parent and genereate m_numOffspring offspring
-		RawIndIterator it = scratch.rawIndBegin(sp);
-		RawIndIterator it_end = scratch.rawIndEnd(sp);
-		while (it != it_end) {
-			individual * parent = pc.chooseParent();
-			//
-			UINT numOff = m_offGenerator.generateOffspring(pop, parent, NULL, it, it_end, ops);
-			// record family size, for debug reasons.
-			DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
-		}                                                                                           // all offspring
-	}                                                                                               // all subpopulation.
-
-	if (submit)
-		submitScratch(pop, scratch);
+	// choose a parent and genereate m_numOffspring offspring
+	RawIndIterator it = offBegin;
+	while (it != offEnd) {
+		individual * parent = pc.chooseParent();
+		//
+		UINT numOff = m_offGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
+		// record family size, for debug reasons.
+		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
+	}                                                                                           // all offspring
 	return true;
 }
 
 
-bool randomMating::mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit)
+bool randomMating::mateSubPop(population & pop, SubPopID subPop,
+                              RawIndIterator offBegin, RawIndIterator offEnd,
+                              vector<baseOperator * > & ops)
 {
-	// scrtach will have the right structure.
-	prepareScratchPop(pop, scratch);
-
-	DBG_DO(DBG_MATING, m_famSize.clear());
-
+	// nothing to do.
+	if (offBegin == offEnd)
+		return true;
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
 
-	/// random mating happens within each subpopulation
-	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		ULONG spSize = pop.subPopSize(sp);
-		if (spSize == 0)
-			continue;
 
-		randomParentsChooser pc(pop, sp);
-		/// now, all individuals of needToFind sex is collected
-		if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
-			throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
-			                 "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
-			                 "(same sex mating if have to) options to get around this problem.");
+	randomParentsChooser pc(pop, subPop);
+	/// now, all individuals of needToFind sex is collected
+	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
+		throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
+		                 "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
+		                 "(same sex mating if have to) options to get around this problem.");
 
-		// generate scratch.subPopSize(sp) individuals.
-		RawIndIterator it = scratch.rawIndBegin(sp);
-		RawIndIterator it_end = scratch.rawIndEnd(sp);
-		while (it != it_end) {
-			parentChooser::individualPair const parents = pc.chooseParents();
-			//
-			UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, it_end, ops);
-			// record family size (this may be wrong for the last family)
-			DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
-		}
-	}                                                                                         // each subPop
-
-	if (submit)
-		submitScratch(pop, scratch);
+	// generate scratch.subPopSize(sp) individuals.
+	RawIndIterator it = offBegin;
+	while (it != offEnd) {
+		parentChooser::individualPair const parents = pc.chooseParents();
+		//
+		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
+		// record family size (this may be wrong for the last family)
+		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
+	}
 	return true;
 }
 
@@ -727,8 +721,6 @@ bool randomMating::mate(population & pop, population & scratch, vector<baseOpera
 void countAlleles(population & pop, int subpop, const vectori & loci, const vectori & alleles,
                   vectorlu & alleleNum)
 {
-	int pldy = pop.ploidy();
-
 	alleleNum = vectorlu(loci.size(), 0L);
 	for (size_t l = 0; l < loci.size(); ++l) {
 		int loc = loci[l];
