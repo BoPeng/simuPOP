@@ -352,10 +352,7 @@ class TestPerformance(unittest.TestCase):
         # op:   2.42, 24.81, 247.89
         # laop: 3.30  33.07  332.46
         # baop: 3.78  36.89  367.50
-
-
-
-
+        #
           
     def TestLongGenome(self):
         'Testing the performance of recombination with long genome'

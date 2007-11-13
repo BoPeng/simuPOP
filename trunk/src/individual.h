@@ -1198,9 +1198,12 @@ public:
 	bool operator!=(const CombinedAlleleIterator & rhs)
 	{
 		if (m_useGappedIterator)
-			return m_git != rhs.m_git || m_index != rhs.m_index;
-		else
-			return m_it != rhs.m_it || m_index != rhs.m_index;
+			return m_git != rhs.m_git;
+		else {
+			DBG_FAILIF(m_ploidy != rhs.m_ploidy || m_size != rhs.m_size, ValueError,
+				"Iterator comparison fails");
+			return m_it != rhs.m_it || m_index != rhs.m_index || m_p != rhs.m_p;
+		}
 	}
 
 
