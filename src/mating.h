@@ -1299,7 +1299,7 @@ public:
 	/// create a Python mating scheme
 	/**
 	 */
-	heteroMating(const vectormating matingSchemes,
+	heteroMating(const vectormating & matingSchemes = vectormating(),
 	             vectorlu newSubPopSize = vectorlu(),
 	             string newSubPopSizeExpr = "",
 	             PyObject * newSubPopSizeFunc = NULL,
