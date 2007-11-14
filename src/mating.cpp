@@ -133,7 +133,7 @@ UINT cloneOffspringGenerator::generateOffspring(population & pop, individual * p
                                                 vector<baseOperator *> & ops)
 {
 	DBG_ASSERT(initialized(), ValueError,
-	    "Offspring is not initialized before used to generate offspring");
+	    "Offspring generator is not initialized before used to generate offspring");
 
 	// if population has changed.
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
@@ -696,6 +696,9 @@ bool binomialSelection::mateSubPop(population & pop, SubPopID subPop,
 
 	randomParentChooser pc;
 	pc.initialize(pop, subPop);
+
+	if (!m_offGenerator.initialized())
+		m_offGenerator.initialize(pop, ops);
 
 	// choose a parent and genereate m_numOffspring offspring
 	RawIndIterator it = offBegin;
