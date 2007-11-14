@@ -7065,15 +7065,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::population::setSplitter "
+%feature("docstring") simuPOP::population::setVirtualSplitter "
 
 Description:
 
-    simuPOP::population::setSplitter
+    simuPOP::population::setVirtualSplitter
 
 Usage:
 
-    x.setSplitter(vsp, sp)
+    x.setVirtualSplitter(vsp, sp)
 
 "; 
 
@@ -7173,6 +7173,20 @@ Usage:
 Arguments:
 
     subPop:         index of subpopulation (start from 0)
+
+"; 
+
+%feature("docstring") simuPOP::population::virtualSubPopSize "
+
+Description:
+
+    return the size of virtual subpopulation subPop. if subPop is
+    activated, and subPop does not specify which virtual subpopulation
+    to count, the currently activated virtual subpop is returned.
+
+Usage:
+
+    x.virtualSubPopSize(subPop)
 
 "; 
 
