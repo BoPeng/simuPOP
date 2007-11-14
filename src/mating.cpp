@@ -372,8 +372,13 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 		// regardless of sex, get fitness for everyone.
 		m_sampler.set(vectorf(pop.infoBegin(fit_id, sp, true),
 		        pop.infoEnd(fit_id, sp, true)));
-	} else
-		m_size = pop.subPopSize(sp);
+	} else {
+		if (pop.hasActivatedVirtualSubPop(sp))
+			// get currently visible individuals
+			m_size = pop.virtualSubPopSize(sp);
+		else
+			m_size = pop.subPopSize(sp);
+		}
 	m_initialized = true;
 }
 
@@ -550,8 +555,6 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 		    + ", and " + toStr(parents[1]) +
 		    ") is greater than subpopulation size " + toStr(m_size));
 #endif
-		DBG_DO(DBG_MATING, cout << "choose parents " << parents[0]
-		                        << " and " << parents[1] << endl;);
 		Py_DECREF(item);
 		// FIXME: this can be really slow in a virtual population because
 		// visibility between m_begin and m_begin+parents[x] need to
@@ -565,8 +568,6 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 		    ValueError, "Returned index (" + toStr(parent) +
 		    ") is greater than subpopulation size " + toStr(m_size));
 #endif
-		DBG_DO(DBG_MATING, cout << "choose parent " << parent
-		                        << endl;);
 		Py_DECREF(item);
 		// FIXME: this can be really slow in a virtual population because
 		// visibility between m_begin and m_begin+parent need to
@@ -598,6 +599,18 @@ mating::mating(vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newS
 		m_subPopSizeFunc = newSubPopSizeFunc;
 	}
 }
+
+mating::mating(const mating & rhs)
+		: m_subPopSize(rhs.m_subPopSize),
+		m_subPopSizeExpr(rhs.m_subPopSizeExpr),
+		m_subPopSizeFunc(rhs.m_subPopSizeFunc),
+		m_subPop(rhs.m_subPop),
+		m_weight(rhs.m_weight)
+	{
+		if (m_subPopSizeFunc != NULL)
+			Py_INCREF(m_subPopSizeFunc);
+		m_famSize.clear();
+	}
 
 
 void mating::prepareScratchPop(population & pop, population & scratch)
@@ -1120,7 +1133,6 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			}
 
 			// randomly choose parents
-
 			parentChooser::individualPair parents = pc.chooseParents();
 
 			// generate m_numOffspring offspring per mating
@@ -1396,7 +1408,7 @@ heteroMating::heteroMating(const heteroMating & rhs) :
 	vectormating::const_iterator it_end = rhs.m_matingSchemes.end();
 
 	for (; it != it_end; ++it) {
-		DBG_FAILIF((*it)->subPop().isValid(), ValueError,
+		DBG_ASSERT((*it)->subPop().isValid(), ValueError,
 			"Please specify (virtual) subpopulation for each mating scheme used in heteroMating");
 		m_matingSchemes.push_back((*it)->clone());
 	}
@@ -1463,14 +1475,27 @@ bool heteroMating::mate(population & pop, population & scratch,
 
 		// it points to the first mating scheme.
 		it = m.begin();
+		it_end = m.end();
 		vectorlu::iterator itSize = vspSize.begin();
 		RawIndIterator ind = scratch.rawIndBegin(sp);
 		for (; it != it_end; ++it, ++itSize) {
-			if ((*it)->subPop().isVirtual())
+			if ((*it)->subPop().isVirtual()) {
+				DBG_DO(DBG_DEVEL, cout << "Activate virtual subpop " +
+					toStr((*it)->subPop().id()) + ", " + toStr((*it)->subPop().vid()) << endl;);
 				pop.activateVirtualSubPop((*it)->subPop());
+			}
+			DBG_DO(DBG_MATING, (*it)->m_famSize.clear(););
 			// real mating
-			if (!(*it)->mateSubPop(pop, sp, ind, ind + *itSize, ops))
-				return false;
+			try {
+				if (!(*it)->mateSubPop(pop, sp, ind, ind + *itSize, ops))
+					return false;
+			} catch (...) {
+				cout << "Mating in subpopulation " + toStr(sp) + " failed" << endl;
+				throw;
+			}
+			DBG_DO(DBG_MATING, 
+				m_famSize.insert(m_famSize.end(), (*it)->m_famSize.begin(),
+					(*it)->m_famSize.end()););
 			ind += *itSize;
 		}
 		DBG_ASSERT(ind == scratch.rawIndEnd(sp), SystemError,

@@ -39,6 +39,20 @@ void vspSplitter::resetSubPop(population & pop, SubPopID subPop)
 }
 
 
+ULONG vspSplitter::countVisibleInds(const population & pop, SubPopID subPop) const
+{
+	if (!activated())
+		return pop.subPopSize(subPop);
+	ULONG count = 0;
+	ConstRawIndIterator it = pop.rawIndBegin(subPop);
+	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
+	for (; it != it_end; ++it)
+		if (it->visible())
+			++count;
+	return count;
+}
+
+
 ULONG nullSplitter::size(const population & pop, virtualSubPopID subPop) const
 {
 	DBG_ASSERT(subPop.isVirtual(), ValueError, "Given virtual subpop id is not virtual");
@@ -57,6 +71,8 @@ ULONG duplicateSplitter::size(const population & pop, virtualSubPopID subPop) co
 
 ULONG sexSplitter::size(const population & pop, virtualSubPopID subPop) const
 {
+	if (!subPop.isVirtual())
+		return countVisibleInds(pop, subPop.id());
 	ConstRawIndIterator it = pop.rawIndBegin(subPop.id());
 	ConstRawIndIterator it_end = pop.rawIndEnd(subPop.id());
 	ULONG count = 0;
@@ -90,6 +106,8 @@ void sexSplitter::reset(population & pop, SubPopID subPop)
 
 ULONG affectionSplitter::size(const population & pop, virtualSubPopID subPop) const
 {
+	if (!subPop.isVirtual())
+		return countVisibleInds(pop, subPop.id());
 	ConstRawIndIterator it = pop.rawIndBegin(subPop.id());
 	ConstRawIndIterator it_end = pop.rawIndEnd(subPop.id());
 	ULONG count = 0;
@@ -143,6 +161,8 @@ infoSplitter::infoSplitter(string info, vectorinfo const & values,
 
 ULONG infoSplitter::size(const population & pop, virtualSubPopID subPop) const
 {
+	if (!subPop.isVirtual())
+		return countVisibleInds(pop, subPop.id());
 	UINT idx = pop.infoIdx(m_info);
 
 	ULONG count = 0;
@@ -279,6 +299,8 @@ proportionSplitter::proportionSplitter(vectorf const & proportions)
 
 ULONG proportionSplitter::size(const population & pop, virtualSubPopID subPop) const
 {
+	if (!subPop.isVirtual())
+		return countVisibleInds(pop, subPop.id());
 	DBG_FAILIF(static_cast<UINT>(subPop.vid()) >= m_proportions.size(), IndexError,
 	    "Virtual subpopulation index out of range");
 	//
@@ -360,6 +382,8 @@ rangeSplitter::rangeSplitter(const intMatrix & ranges)
 
 ULONG rangeSplitter::size(const population & pop, virtualSubPopID subPop) const
 {
+	if (!subPop.isVirtual())
+		return countVisibleInds(pop, subPop.id());
 	DBG_FAILIF(static_cast<UINT>(subPop.vid()) >= m_ranges.size(), IndexError,
 	    "Virtual subpopulation index out of range");
 	if (static_cast<UINT>(m_ranges[subPop.vid()][0]) > pop.subPopSize(subPop.id()))
@@ -419,6 +443,8 @@ genotypeSplitter::genotypeSplitter(const vectori & loci,
 
 ULONG genotypeSplitter::size(const population & pop, virtualSubPopID subPop) const
 {
+	if (!subPop.isVirtual())
+		return countVisibleInds(pop, subPop.id());
 	DBG_FAILIF(static_cast<UINT>(subPop.vid()) >= m_alleles.size(), IndexError,
 	    "Virtual subpopulation index out of range");
 	const vectori & alleles = m_alleles[subPop.vid()];

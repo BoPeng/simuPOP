@@ -270,8 +270,9 @@ ULONG population::virtualSubPopSize(virtualSubPopID subPop) const
 {
 	CHECKRANGESUBPOP(subPop.id());
 
-	DBG_ASSERT(subPop.isVirtual(), ValueError,
-	    "Subpopulation id is not virtual");
+	DBG_FAILIF(!subPop.isVirtual() && !hasActivatedVirtualSubPop(subPop.id()),
+		ValueError,
+	    "Subpopulation id is not virtual, and there is no currently activated virtual subpop");
 	DBG_ASSERT(hasVirtualSubPop(subPop.id()), ValueError,
 	    "There is no virtual subpopulation in subpop " + toStr(subPop.id()));
 	return m_virtualSubPops[subPop.id()]->size(*this, subPop);
@@ -317,7 +318,7 @@ bool population::hasVirtualSubPop(SubPopID subPop) const
 }
 
 
-vspSplitter * population::setSplitter(vspSplitter * vsp, SubPopID subPop)
+vspSplitter * population::setVirtualSplitter(vspSplitter * vsp, SubPopID subPop)
 {
 	CHECKRANGESUBPOP(subPop);
 	if (m_virtualSubPops.size() != numSubPop())

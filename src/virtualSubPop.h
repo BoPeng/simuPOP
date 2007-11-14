@@ -145,6 +145,8 @@ public:
 	virtual string name(SubPopID sp) = 0;
 
 protected:
+	ULONG countVisibleInds(const population & pop, SubPopID sp) const;
+	
 	bool m_activated;
 
 	void resetSubPop(population & pop, SubPopID subPop);

@@ -239,7 +239,7 @@ public:
 
 	bool hasVirtualSubPop(SubPopID subpop) const;
 
-	vspSplitter * setSplitter(vspSplitter * vsp, SubPopID sp);
+	vspSplitter * setVirtualSplitter(vspSplitter * vsp, SubPopID sp);
 
 	UINT numVirtualSubPop(SubPopID subPop) const;
 
@@ -299,6 +299,10 @@ public:
 	}
 
 
+	/// return the size of virtual subpopulation subPop.
+	/// if subPop is activated, and subPop does not specify
+	/// which virtual subpopulation to count, the currently
+	/// activated virtual subpop is returned.
 	ULONG virtualSubPopSize(virtualSubPopID subPop) const;
 
 	// for swig interface
