@@ -47,13 +47,13 @@ class TestMatingSchemes(unittest.TestCase):
         pass
         
     def getFamSize(self, mate, endGen=0, size=1000):
-        TurnOnDebug(DBG_MATING)
         simu = simulator(population(size, loci=[1]), mate)
         simu.evolve(ops=[], end=endGen)
         return simu.population(0).dvars().famSizes
         
     def testNumOffspring(self):
         'Testing means to control number of offspring (FIXME: check distribution)'
+        TurnOnDebug(DBG_MATING)
         self.assertEqual( 
             self.getFamSize(binomialSelection(numOffspring=2)),
             [2]*500)
@@ -92,6 +92,7 @@ class TestMatingSchemes(unittest.TestCase):
         cnt = self.getFamSize( randomMating(numOffspring=.3, 
             mode=MATE_PoissonDistribution))
         #print cnt
+        TurnOffDebug(DBG_MATING)
         
 ##     def testTrajectory(self):
 ##         'Testing trajectory prediction functions'
@@ -104,8 +105,6 @@ class TestMatingSchemes(unittest.TestCase):
 ## 
 ##     def testTrajectoryStoch(self):
 ##         'Testing the trajectory obtained from backward binomial sampling'
-##         #TurnOnDebug(DBG_MATING)
-##         #TurnOnDebug(DBG_DEVEL)
 ##         # fitness
 ##         #     AA         Aa            aa
 ##         #        1         1+s1        1+s2
@@ -145,7 +144,6 @@ class TestMatingSchemes(unittest.TestCase):
 ## 
 ##     def testTrajectoryMultiStoch(self):
 ##         'Testing the trajectory obtained from backward binomial sampling'
-##         #TurnOnDebug(DBG_MATING)
 ##         #path = FreqTrajectoryMultiStoch(freq=[0.1], N=10000, 
 ##         # fitness=[1, 1,01, 1.02], maxMutAge=100000)
 ##         path = FreqTrajectoryMultiStoch(freq=[0.05, 0.1], N=10000, 
@@ -183,7 +181,6 @@ class TestMatingSchemes(unittest.TestCase):
             return [expected, expected + 0.05]
         #
         # turn On debug
-        #TurnOnDebug(DBG_MATING)
         simu = simulator( population(100, loci=[1], ploidy=2), 
             controlledMating( matingScheme=randomMating(), 
                 locus=0, allele=1, freqFunc=freqRange ) 
@@ -224,7 +221,6 @@ class TestMatingSchemes(unittest.TestCase):
                 return [freq[gen-1-burnin]]
         #
         # turn On debug
-        #TurnOnDebug(DBG_MATING)
         simu = simulator( population(100, loci=[1], ploidy=2), 
             controlledRandomMating( locus=0, allele=1, freqFunc=freqRange ) 
             )
@@ -247,8 +243,6 @@ class TestMatingSchemes(unittest.TestCase):
         
     def testControlledMultiRandomMating(self):
         'Testing the multi-locus version of controlled random mating'
-        #TurnOnDebug(DBG_MATING)
-        #TurnOnDebug(DBG_DEVEL)
         N = 5000
         # planned trajectory
         traj = FreqTrajectoryMultiStoch(freq=[0.05, 0.10], N=N, 
@@ -356,6 +350,7 @@ class TestMatingSchemes(unittest.TestCase):
     
     def testHeteroMating(self):
         'Testing heterogeneous mating schemes'
+        TurnOnDebug(DBG_MATING)
         pop = population(subPop=[100, 200])
         simu = simulator(pop,
             heteroMating(
@@ -366,12 +361,72 @@ class TestMatingSchemes(unittest.TestCase):
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
             end=10)
+        # ...
+        self.assertEqual(simu.population(0).dvars().famSizes,
+            [1]*100+[2]*100)
+        #
+        simu = simulator(pop,
+            heteroMating(
+                [selfMating(numOffspring=1, subPop=virtualSubPopID(0)),
+                selfMating(numOffspring=4, subPop=virtualSubPopID(1))])
+        )
+        simu.evolve(
+            preOps=[initByFreq([0.3, 0.7])],
+            ops=[],
+            end=10)
+        # ...
+        self.assertEqual(simu.population(0).dvars().famSizes,
+            [1]*100+[4]*50)
+        #
+        pop.setVirtualSplitter(duplicateSplitter(2), 0)
+        simu = simulator(pop,
+            heteroMating(
+                [selfMating(numOffspring=1, subPop=virtualSubPopID(0, 0)),
+                selfMating(numOffspring=2, subPop=virtualSubPopID(0, 1)),
+                selfMating(numOffspring=4, subPop=virtualSubPopID(1))])
+        )
+        simu.evolve(
+            preOps=[initByFreq([0.3, 0.7])],
+            ops=[],
+            end=10)
+        # ...
+        self.assertEqual(simu.population(0).dvars().famSizes,
+            [1]*50+[2]*25+[4]*50)
+        # test weight
+        pop.setVirtualSplitter(duplicateSplitter(2), 0)
+        simu = simulator(pop,
+            heteroMating(
+                [selfMating(numOffspring=1, subPop=virtualSubPopID(0, 0), weight=4),
+                selfMating(numOffspring=2, subPop=virtualSubPopID(0, 1), weight=1),
+                selfMating(numOffspring=4, subPop=virtualSubPopID(1))])
+        )
+        simu.evolve(
+            preOps=[initByFreq([0.3, 0.7])],
+            ops=[],
+            end=10)
+        # ...
+        self.assertEqual(simu.population(0).dvars().famSizes,
+            [1]*80+[2]*10+[4]*50)
+        #
+        # set proportional splitter
+        pop.setVirtualSplitter(proportionSplitter([0.6, 0.4]), 0)
+        simu = simulator(pop,
+            heteroMating(
+                [selfMating(numOffspring=1, subPop=virtualSubPopID(0, 0)),
+                selfMating(numOffspring=2, subPop=virtualSubPopID(0, 1)),
+                selfMating(numOffspring=4, subPop=virtualSubPopID(1))])
+        )
+        simu.evolve(
+            preOps=[initByFreq([0.3, 0.7])],
+            ops=[],
+            end=10)
+        return
+        # ...
+        self.assertEqual(simu.population(0).dvars().famSizes,
+            [1]*60+[2]*20+[4]*50)
 
-        
 ##   def testFreqTrajWithSubPop(self):
 ##     'Testing trajctory simulation with subpopulation structure'
-##     #TurnOnDebug(DBG_MATING)
-##     #TurnOnDebug(DBG_GENERAL)
 ##     from simuUtil import FreqTrajectoryMultiStochWithSubPop
 ##     initSize = 10000
 ##     endingSize = 200000

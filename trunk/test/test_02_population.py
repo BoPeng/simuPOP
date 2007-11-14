@@ -1218,8 +1218,8 @@ class TestPopulation(unittest.TestCase):
     def testVirtualSubPop(self):
         'Testing virtual subpopulations'
         pop = population(subPop=[20, 80], loci=[1])
-        pop.setSplitter(duplicateSplitter(4), 0)
-        pop.setSplitter(duplicateSplitter(2), 1)
+        pop.setVirtualSplitter(duplicateSplitter(4), 0)
+        pop.setVirtualSplitter(duplicateSplitter(2), 1)
         self.assertEqual(pop.numVirtualSubPop(0), 4)
         self.assertEqual(pop.numVirtualSubPop(1), 2)
         self.assertEqual(pop.virtualSubPopSize(0.0), 20)
@@ -1234,7 +1234,7 @@ class TestPopulation(unittest.TestCase):
         pop = population(subPop=[20, 80])
         InitByFreq(pop, [0.4, 0.6])
         Stat(pop, numOfMale=True)
-        pop.setSplitter(sexSplitter(), 1)
+        pop.setVirtualSplitter(sexSplitter(), 1)
         self.assertEqual(pop.virtualSubPopSize(1.0), pop.dvars(1).numOfMale)
         self.assertEqual(pop.virtualSubPopSize(1.1), pop.dvars(1).numOfFemale)
         self.assertEqual(pop.virtualSubPopName(1.0), 'Male')
@@ -1264,7 +1264,7 @@ class TestPopulation(unittest.TestCase):
         InitByFreq(pop, [0.4, 0.6])
         MaPenetrance(pop, locus=0, wildtype=0, penetrance=[0.2, 0.4, 0.8])
         Stat(pop, numOfAffected=True)
-        pop.setSplitter(affectionSplitter(), 1)
+        pop.setVirtualSplitter(affectionSplitter(), 1)
         self.assertEqual(pop.virtualSubPopSize(1.1), pop.dvars(1).numOfAffected)
         self.assertEqual(pop.virtualSubPopSize(1.0), pop.dvars(1).numOfUnaffected)
         self.assertEqual(pop.virtualSubPopName(1.0), 'Unaffected')
@@ -1292,7 +1292,7 @@ class TestPopulation(unittest.TestCase):
         pop = population(1000, infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
-        pop.setSplitter(infoSplitter('x', values=range(10, 15)), 0)
+        pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)), 0)
         self.assertEqual(pop.numVirtualSubPop(0), 5)
         infos = list(pop.indInfo('x', False))
         self.assertEqual(pop.virtualSubPopName(0.0), "x = 10")
@@ -1307,7 +1307,7 @@ class TestPopulation(unittest.TestCase):
         for ind in pop.individuals(0):
             self.assertEqual(ind.info('x'), 11)
         # test cutoff
-        pop.setSplitter(infoSplitter('x', cutoff=[11.5, 13.5]), 0)
+        pop.setVirtualSplitter(infoSplitter('x', cutoff=[11.5, 13.5]), 0)
         self.assertEqual(pop.virtualSubPopName(0.0), "x < 11.5")
         self.assertEqual(pop.virtualSubPopName(0.1), "11.5 <= x < 13.5")
         self.assertEqual(pop.virtualSubPopName(0.2), "x >= 13.5")
@@ -1320,7 +1320,7 @@ class TestPopulation(unittest.TestCase):
     def testProportionSplitter(self):
         'Test proportion virtual subpop splitter'
         pop = population(10)
-        pop.setSplitter(proportionSplitter([0.01]*100), 0)
+        pop.setVirtualSplitter(proportionSplitter([0.01]*100), 0)
         for i in range(100):
             self.assertEqual(pop.virtualSubPopName(virtualSubPopID(0, i)), "Prop 0.01")
             if i != 99:
@@ -1330,7 +1330,7 @@ class TestPopulation(unittest.TestCase):
                 self.assertEqual(pop.virtualSubPopSize(virtualSubPopID(0, i)), 10)
         #
         pop = population(1000)
-        pop.setSplitter(proportionSplitter([0.4, 0.6]), 0)
+        pop.setVirtualSplitter(proportionSplitter([0.4, 0.6]), 0)
         self.assertEqual(pop.virtualSubPopSize(0.0), 400)
         self.assertEqual(pop.virtualSubPopSize(0.1), 600)
         pop.activateVirtualSubPop(0.1)
@@ -1343,9 +1343,9 @@ class TestPopulation(unittest.TestCase):
     def testRangeSplitter(self):
         'Test range virtual subpop splitter'
         pop = population(100)
-        pop.setSplitter(rangeSplitter(range=[10, 20]), 0)
+        pop.setVirtualSplitter(rangeSplitter(range=[10, 20]), 0)
         self.assertEqual(pop.virtualSubPopName(0.0), "Range [10, 20)")
-        pop.setSplitter(rangeSplitter(ranges=[[10, 20], [80, 200]]), 0)
+        pop.setVirtualSplitter(rangeSplitter(ranges=[[10, 20], [80, 200]]), 0)
         self.assertEqual(pop.virtualSubPopName(0.0), "Range [10, 20)")
         self.assertEqual(pop.virtualSubPopName(0.1), "Range [80, 200)")
         self.assertEqual(pop.virtualSubPopSize(0.0), 10)
@@ -1361,7 +1361,7 @@ class TestPopulation(unittest.TestCase):
         'Test genotype virtual subpop splitter'
         pop = population(1000, loci=[2, 3])
         InitByFreq(pop, [0.3, 0.7])
-        pop.setSplitter(genotypeSplitter(locus=1, alleles=[[0,0], [1,0]], phase=True), 0)
+        pop.setVirtualSplitter(genotypeSplitter(locus=1, alleles=[[0,0], [1,0]], phase=True), 0)
         self.assertEqual(pop.virtualSubPopName(0.0), "Genotype 1: 0, 0")
         Stat(pop, genoFreq=[1], genoFreq_param={'phase':1})
         self.assertEqual(pop.virtualSubPopSize(0.0), pop.dvars().genoNum[1][0][0])
@@ -1372,7 +1372,7 @@ class TestPopulation(unittest.TestCase):
         # without phase
         #
         pop.resetVirtualSubPop(0)
-        pop.setSplitter(genotypeSplitter(locus=1, alleles=[[0,0], [1,0], [0,1]], phase=False), 0)
+        pop.setVirtualSplitter(genotypeSplitter(locus=1, alleles=[[0,0], [1,0], [0,1]], phase=False), 0)
         self.assertEqual(pop.virtualSubPopName(0.0), "Genotype 1: 0, 0")
         Stat(pop, genoFreq=[1], genoFreq_param={'phase':0})
         self.assertEqual(pop.virtualSubPopSize(0.1), pop.virtualSubPopSize(0.2))
@@ -1387,7 +1387,7 @@ class TestPopulation(unittest.TestCase):
         pop = population(1000, infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
-        pop.setSplitter(infoSplitter('x', values=range(10, 15)), 0)
+        pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)), 0)
         pop.activateVirtualSubPop(0.1)
         for ind in pop.individuals(0):
             self.assertEqual(ind.info('x'), 11)
@@ -1396,7 +1396,7 @@ class TestPopulation(unittest.TestCase):
         pop.resetVirtualSubPop(0)
         # see if the same info are obtained, using duplicate virtual subpops
         info = pop.indInfo('x', True)
-        pop.setSplitter(duplicateSplitter(2), 0)
+        pop.setVirtualSplitter(duplicateSplitter(2), 0)
         pop.activateVirtualSubPop(0.1)
         self.assertEqual(pop.indInfo('x', True), info)
 
@@ -1405,7 +1405,7 @@ class TestPopulation(unittest.TestCase):
         'Test the allele iterator in virtual subpopulations'
         pop = population(1000, loci=[5, 8])
         InitByFreq(pop, [0.2, 0.4, 0.4])
-        pop.setSplitter(genotypeSplitter(loci=[2,5], alleles=[1,1,1,1], phase=False), 0)
+        pop.setVirtualSplitter(genotypeSplitter(loci=[2,5], alleles=[1,1,1,1], phase=False), 0)
         pop.activateVirtualSubPop(0.0)
         for ind in pop.individuals(0):
             self.assertEqual(ind.allele(2, 0), 1)
@@ -1418,7 +1418,7 @@ class TestPopulation(unittest.TestCase):
         pop.resetVirtualSubPop(0)
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         an = [pop.dvars().alleleNum[x][0] for x in range(pop.totNumLoci())]
-        pop.setSplitter(duplicateSplitter(2), 0)
+        pop.setVirtualSplitter(duplicateSplitter(2), 0)
         pop.activateVirtualSubPop(0.1)
         # these should be calcuated using virtual stuff
         Stat(pop, alleleFreq=range(pop.totNumLoci()))

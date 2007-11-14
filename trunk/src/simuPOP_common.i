@@ -215,7 +215,8 @@ namespace std
 
 %ignore std::operator<<(ostream&, const strDict&);
 %ignore std::operator<<(ostream&, const intDict&);
-%ignore simuPOP::GappedAlleleIterator;
+%ignore simuPOP::IndAlleleIterator;
+%ignore simuPOP::IndInfoIterator;
 
 // individual and population are type names, and can not be used 
 // as function name. ind and pop are used instead.
@@ -238,7 +239,8 @@ namespace std
 // the following load a docstring file extracted from doxgen output.
 // there will also be a bunch of %ignore directives as well
 //
-%include "simuPOP_doc.i";
+%include "simuPOP_doc.i"
+
 %include "utility.h"
 %include "misc.h"
 %include "genoStru.h"
@@ -247,26 +249,25 @@ namespace std
 %include "population.h"
 %include "slave.h"
 %include "operator.h"
-%include "mating.h"
 
 %extend simuPOP::population
 {
-        %template(setIndInfo) setIndInfo<vectori, UINT>;
-        %template(setIndInfo) setIndInfo<vectorf, UINT>;
-        %template(setIndInfo) setIndInfo<vectori>;
-        %template(setIndInfo) setIndInfo<vectorf>;
-};
- 
+    %template(setIndInfo) setIndInfo<vectori, UINT>;
+    %template(setIndInfo) setIndInfo<vectorf, UINT>;
+    %template(setIndInfo) setIndInfo<vectori>;
+    %template(setIndInfo) setIndInfo<vectorf>;
+}
 
 namespace std
 {
-    %template(vectorobj)    vector<PyObject*>;
-    %template(vectorop)     vector<simuPOP::baseOperator * >;
-    %template(vectormating) vector<simuPOP::mating * >;
+    %template()    vector<PyObject*>;
+    %template()    vector<simuPOP::baseOperator * >;
+    %template()    vector<simuPOP::mating * >;
 }
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////
 
+%include "mating.h"
 %include "simulator.h"
 %include "stator.h"
 %include "outputer.h"

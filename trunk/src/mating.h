@@ -560,15 +560,7 @@ public:
 	       double weight = 0);
 
 	/// CPPONLY
-	mating(const mating & rhs)
-		: m_subPopSize(rhs.m_subPopSize),
-		m_subPopSizeExpr(rhs.m_subPopSizeExpr),
-		m_subPopSizeFunc(rhs.m_subPopSizeFunc)
-	{
-		if (m_subPopSizeFunc != NULL)
-			Py_INCREF(m_subPopSizeFunc);
-	}
-
+	mating(const mating & rhs);
 
 	/// destructor
 	virtual ~mating()
@@ -651,7 +643,8 @@ protected:
 	double m_weight;
 
 #ifndef OPTIMIZED
-	///
+public:
+	/// record family sizes
 	vectori m_famSize;
 #endif
 };
@@ -1299,7 +1292,7 @@ public:
 	/// create a Python mating scheme
 	/**
 	 */
-	heteroMating(const vectormating & matingSchemes = vectormating(),
+	heteroMating(const vectormating & matingSchemes,
 	             vectorlu newSubPopSize = vectorlu(),
 	             string newSubPopSizeExpr = "",
 	             PyObject * newSubPopSizeFunc = NULL,
