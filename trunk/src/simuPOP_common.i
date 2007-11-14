@@ -232,6 +232,7 @@ namespace std
 %newobject simuPOP::simulator::getPopulation;
 %newobject simuPOP::simulator::clone;
 %newobject simuPOP::baseOperator::clone;
+%newobject simuPOP::mating::clone;
 %newobject simuPOP::stat::clone;
 
 // the following load a docstring file extracted from doxgen output.
@@ -261,7 +262,7 @@ namespace std
 {
     %template(vectorobj)    vector<PyObject*>;
     %template(vectorop)     vector<simuPOP::baseOperator * >;
-    %template(vectormating)   vector<simuPOP::mating * >;
+    %template(vectormating) vector<simuPOP::mating * >;
 }
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////

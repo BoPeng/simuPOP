@@ -274,9 +274,6 @@ public:
 #define QT_Multiplicative 1
 #define QT_Additive 2
 
-	/// vector of operator pointers.
-	typedef std::vector< baseOperator * > vectorop;
-
 public:
 	/// create a multiple locus quantitative trait operator
 	/**
