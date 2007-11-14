@@ -216,10 +216,10 @@ private:
 class cloneOffspringGenerator : public offspringGenerator
 {
 public:
-	cloneOffspringGenerator(double numOffspring,
-	                        PyObject * numOffspringFunc,
-	                        UINT maxNumOffspring,
-	                        UINT mode
+	cloneOffspringGenerator(double numOffspring = 1,
+	                        PyObject * numOffspringFunc = NULL,
+	                        UINT maxNumOffspring = 1,
+	                        UINT mode = MATE_NumOffspring
 	                        ) :
 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode)
 	{
@@ -290,14 +290,14 @@ protected:
 class selfingOffspringGenerator : public mendelianOffspringGenerator
 {
 public:
-	selfingOffspringGenerator(double numOffspring,
-	                          PyObject * numOffspringFunc,
-	                          UINT maxNumOffspring,
-	                          UINT mode
+	selfingOffspringGenerator(double numOffspring = 1,
+	                          PyObject * numOffspringFunc = NULL,
+	                          UINT maxNumOffspring = 1,
+	                          UINT mode = MATE_NumOffspring
 	                          )
 		: mendelianOffspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode)
 	{
-		setNumParents(2);
+		setNumParents(1);
 	}
 
 
@@ -324,7 +324,7 @@ public:
 public:
 	// numParents can be 0 (undetermined, can be 1 or 2)
 	// 1 (one parent), or 2 (two parents)
-	parentChooser(int numParents)
+	parentChooser(int numParents) : m_initialized(false)
 	{
 		m_numParents = numParents;
 	}
@@ -454,11 +454,15 @@ public:
 
 	pyParentsChooser(const pyParentsChooser & rhs)
 		: parentChooser(rhs),
+		m_func(rhs.m_func),
 		m_generator(rhs.m_generator),
 		m_parIterator(rhs.m_parIterator)
 	{
-		Py_INCREF(m_generator);
-		Py_INCREF(m_parIterator);
+		Py_INCREF(m_func);
+		if (m_generator != NULL)
+			Py_INCREF(m_generator);
+		if (m_parIterator != NULL)
+			Py_INCREF(m_parIterator);
 	}
 
 
@@ -473,6 +477,8 @@ public:
 	/// destructor
 	~pyParentsChooser()
 	{
+		if (m_func != NULL)
+			Py_XDECREF(m_func);
 		if (m_generator != NULL)
 			Py_XDECREF(m_generator);
 		if (m_parIterator != NULL)
@@ -488,6 +494,7 @@ private:
 #endif
 	IndIterator m_begin;
 
+	PyObject * m_func;
 	PyObject * m_generator;
 	PyObject * m_parIterator;
 };
