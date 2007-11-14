@@ -57,7 +57,6 @@ def parentsChooser(pop, sp):
     # infinite supply of parents
     males = [x for x in range(pop.popSize()) if pop.individual(x).sex() == Male]
     females = [x for x in range(pop.popSize()) if pop.individual(x).sex() == Female]
-    print males
     if len(males) == 0 or len(females) == 0:
         print 'Lacking male or female. Existing'
         yield (None, None)
@@ -74,7 +73,7 @@ def parentsChooser(pop, sp):
 
 
 simu = simulator(pop,
-    pyMating(parentChooser=parentsChooser)
+    pyMating(pyParentsChooser(parentsChooser), mendelianOffspringGenerator())
 )
 
 simu.evolve(

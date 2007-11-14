@@ -309,7 +309,7 @@ UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual
 
 
 UINT selfingOffspringGenerator::generateOffspring(population & pop, individual * parent,
-                                                  individual *,
+                                                  individual * mom,
                                                   RawIndIterator & it,
                                                   RawIndIterator & it_end,
                                                   vector<baseOperator *> & ops)
@@ -320,6 +320,9 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
 	    "Offspring generator is used for two different types of populations");
 
+	DBG_FAILIF(parent == NULL, ValueError, "selfMating: Parent is NULL");
+	DBG_FAILIF(mom != NULL, ValueError, "selfMating: the second parent should be NULL");
+	
 	// generate numOffspring offspring per mating
 	UINT count = 0;
 	bool accept = true;
@@ -482,9 +485,9 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 
 
 pyParentsChooser::pyParentsChooser(PyObject * pc)
-	: parentChooser(0), m_generator(pc), m_parIterator(NULL)
+	: parentChooser(0), m_func(pc), m_generator(NULL), m_parIterator(NULL)
 {
-	Py_INCREF(m_generator);
+	Py_INCREF(m_func);
 }
 
 
@@ -505,14 +508,14 @@ void pyParentsChooser::initialize(population & pop, SubPopID sp)
 	    "Could not pass population to the provided function. \n"
 	    "Compiled with the wrong version of SWIG?");
 	PyObject * arglist = Py_BuildValue("(Oi)", popObj, sp);
-	PyObject * generator = PyEval_CallObject(m_generator, arglist);
+	m_generator = PyEval_CallObject(m_func, arglist);
 	Py_XDECREF(arglist);
 
 	// test if m_generator is a generator
-	DBG_ASSERT(PyGen_Check(generator), ValueError,
+	DBG_ASSERT(PyGen_Check(m_generator), ValueError,
 	    "Passed function is not a python generator");
 
-	m_parIterator = PyObject_GetIter(generator);
+	m_parIterator = PyObject_GetIter(m_generator);
 
 	// test if m_parIterator is iteratable.
 	DBG_FAILIF(m_parIterator == NULL, ValueError,
@@ -528,6 +531,10 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 	    "Please initialize this parent chooser before using it");
 
 	PyObject * item = PyIter_Next(m_parIterator);
+	DBG_FAILIF(item == NULL, ValueError,
+		"User-defined function yield invalid value. This may happen \n"
+		"if you function does not provide enough parents for the mating \n"
+		"scheme (a 'while True' is recommended).");
 
 	vectori parents;
 	int parent;
@@ -704,6 +711,8 @@ bool binomialSelection::mateSubPop(population & pop, SubPopID subPop,
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
 		individual * parent = pc.chooseParent();
+		DBG_FAILIF(parent == NULL, ValueError, 
+			"Random parent chooser returns invalid parent");
 		//
 		UINT numOff = m_offGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
 		// record family size, for debug reasons.
@@ -736,6 +745,8 @@ bool randomMating::mateSubPop(population & pop, SubPopID subPop,
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
 		parentChooser::individualPair const parents = pc.chooseParents();
+		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError, 
+			"Random parents chooser returns invalid parent");
 		//
 		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
 		// record family size (this may be wrong for the last family)
@@ -762,9 +773,11 @@ bool selfMating::mateSubPop(population & pop, SubPopID subPop,
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		parentChooser::individualPair const parents = pc.chooseParents();
+		individual * const parent = pc.chooseParent();
 		//
-		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
+		DBG_FAILIF(parent == NULL, ValueError, 
+			"Random parent chooser returns invalid parent");
+		UINT numOff = m_offspringGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}

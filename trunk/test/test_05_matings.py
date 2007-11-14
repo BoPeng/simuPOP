@@ -288,29 +288,72 @@ class TestMatingSchemes(unittest.TestCase):
             ], 
             end=endingGen
         )
+
+    def testSelfMating(self):
+        'Test selfing mating scheme'
+        pop = population(200, loci=[3,5])
+        simu = simulator(pop, selfMating())
+        simu.evolve(
+            preOps=[initByFreq([0.3, 0.7])],
+            ops=[],
+            end=10)
+        #
+        simu = simulator(pop, selfMating(numOffspring=2))
+        simu.evolve(
+            preOps=[initByFreq([0.3, 0.7])],
+            ops=[],
+            end=10)
+
     
-    def NOtestPyMating(self):
-        ' test pyMating '
+    def testPyMating(self):
+        'Test pyMating mating scheme'
         ver = sys.version_info[:3]
         # only python >= 2.4 supports pymating
         if ver[0] <= 2 and ver[1] < 4:
             return
-        def mate(par, off):
-            ''' a function that get aprental, offspring generations 
-                it will select all male and add 1 to their age,
-                and spread to the generation
-            '''
-            idx = par.infoIdx('age')
-            for i in range(par.popSize()):
-                ind = par.individual(i)
-                ind.setInfo(ind.info(idx)+1, idx)
-            return True
-
-        pop = population(20, loci=[1], infoFields=['age', 'stage'])
-        simu = simulator(pop, pyMating(mate))
-        simu.step([initByValue([1])])
-        self.assertEqual(simu.population(0).indInfo('age', True), tuple([1.0]*20))
-            
+        pop = population(200, loci=[3,5])
+        simu = simulator(pop, pyMating(
+            randomParentChooser(),
+            selfingOffspringGenerator()))
+        simu.evolve(
+            preOps=[initByFreq([0.3, 0.7])],
+            ops=[],
+            end=10)
+        #
+        simu = simulator(pop, pyMating(
+            randomParentsChooser(),
+            selfingOffspringGenerator()))
+        self.assertRaises(exceptions.ValueError, simu.evolve,
+            preOps=[initByFreq([0.3, 0.7])], ops=[], end=10)
+        #
+        simu = simulator(pop, pyMating(
+            randomParentChooser(),
+            cloneOffspringGenerator(numOffspring=3)))
+        simu.evolve(
+            preOps=[initByFreq([0.3, 0.7])],
+            ops=[],
+            end=10)
+        #
+        simu = simulator(pop, pyMating(
+            randomParentsChooser(),
+            mendelianOffspringGenerator(numOffspring=3)))
+        simu.evolve(
+            preOps=[initByFreq([0.3, 0.7])],
+            ops=[],
+            end=10)
+        #
+        def pc(pop, sp):
+            while True:
+                for ind in range(pop.subPopSize(sp)):
+                    yield ind
+        simu = simulator(pop, pyMating(
+            pyParentsChooser(pc),
+            cloneOffspringGenerator(numOffspring=3)))
+        simu.evolve(
+            preOps=[initByFreq([0.3, 0.7])],
+            ops=[],
+            end=10)
+    
         
 ##   def testFreqTrajWithSubPop(self):
 ##     'Testing trajctory simulation with subpopulation structure'
