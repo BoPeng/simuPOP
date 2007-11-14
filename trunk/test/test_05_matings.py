@@ -413,14 +413,13 @@ class TestMatingSchemes(unittest.TestCase):
         simu = simulator(pop,
             heteroMating(
                 [selfMating(numOffspring=1, subPop=virtualSubPopID(0, 0)),
-                selfMating(numOffspring=2, subPop=virtualSubPopID(0, 1)),
+                selfMating(numOffspring=2, subPop=virtualSubPopID(0.1)),
                 selfMating(numOffspring=4, subPop=virtualSubPopID(1))])
         )
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
             end=10)
-        return
         # ...
         self.assertEqual(simu.population(0).dvars().famSizes,
             [1]*60+[2]*20+[4]*50)

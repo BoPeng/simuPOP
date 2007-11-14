@@ -372,13 +372,10 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 		// regardless of sex, get fitness for everyone.
 		m_sampler.set(vectorf(pop.infoBegin(fit_id, sp, true),
 		        pop.infoEnd(fit_id, sp, true)));
-	} else {
-		if (pop.hasActivatedVirtualSubPop(sp))
-			// get currently visible individuals
-			m_size = pop.virtualSubPopSize(sp);
-		else
-			m_size = pop.subPopSize(sp);
-		}
+	} else
+		// get currently visible individuals. In case that sp is not virtual
+		// pop.subPopSize is called.
+		m_size = pop.virtualSubPopSize(virtualSubPopID(sp));
 	m_initialized = true;
 }
 
@@ -609,7 +606,9 @@ mating::mating(const mating & rhs)
 	{
 		if (m_subPopSizeFunc != NULL)
 			Py_INCREF(m_subPopSizeFunc);
+#ifndef OPTIMIZED			
 		m_famSize.clear();
+#endif		
 	}
 
 

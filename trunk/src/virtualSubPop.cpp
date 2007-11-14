@@ -63,8 +63,8 @@ ULONG nullSplitter::size(const population & pop, virtualSubPopID subPop) const
 
 ULONG duplicateSplitter::size(const population & pop, virtualSubPopID subPop) const
 {
-	DBG_ASSERT(subPop.isVirtual(), ValueError, "Given virtual subpop id is not virtual");
-	DBG_ASSERT(subPop.vid() < m_num, IndexError, "Virtual subpopulation id out of range");
+	DBG_FAILIF(subPop.isVirtual() && subPop.vid() >= m_num, IndexError,
+		"Virtual subpopulation id out of range");
 	return pop.subPopSize(subPop.id());
 }
 

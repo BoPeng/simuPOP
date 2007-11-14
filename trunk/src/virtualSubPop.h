@@ -48,12 +48,12 @@ public:
 	{
 	}
 	
-	virtualSubPopID(int id) : m_subPop(id), m_virtualSubPop(MaxSubPopID)
+	virtualSubPopID(SubPopID id) : m_subPop(id), m_virtualSubPop(MaxSubPopID)
 	{
 	}
 
 
-	virtualSubPopID(int id, int vid) : m_subPop(id),
+	virtualSubPopID(SubPopID id, SubPopID vid) : m_subPop(id),
 		m_virtualSubPop(vid)
 	{
 	}
@@ -65,8 +65,8 @@ public:
 		m_virtualSubPop = static_cast<SubPopID>(floor((id - m_subPop) * 10));
 		DBG_ASSERT(fcmp_eq(id, m_subPop + 0.1 * m_virtualSubPop), ValueError,
 		    "Wrong virtual subpopulation id " + toStr(id) + " ("
-		    + toStr(m_subPop) + ", " + toStr(m_virtualSubPop) + ")\n"
-		                                                        "Please use virtualSubPopID(id, vid) instead.");
+		    + toStr(m_subPop) + ", " + toStr(m_virtualSubPop) + 
+			")\nPlease use virtualSubPopID(id, vid) instead.");
 	}
 
 
