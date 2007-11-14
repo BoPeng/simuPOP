@@ -223,11 +223,7 @@ public:
 
 
 	/// destroy a population
-	~population()
-	{
-		DBG_DO(DBG_POPULATION,
-		    cout << "Destructor of population is called" << endl);
-	}
+	~population();
 
 
 	/// used by Python print function to print out the general information of the population
@@ -249,6 +245,11 @@ public:
 
 	void activateVirtualSubPop(virtualSubPopID subPop);
 
+	/// CPPONLY
+	/// Copy virtual splitters if two populations have
+	/// the same number of subpopulations.
+	void copyVirtualSplitters(const population & rhs);
+	
 	// for swig interface
 	void activateVirtualSubPop(double subPop)
 	{

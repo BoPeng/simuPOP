@@ -60,6 +60,7 @@ population::population(ULONG size,
 	m_numSubPop(subPop.size()),
 	m_subPopSize(subPop),
 	m_subPopIndex(subPop.size() + 1),
+	m_virtualSubPops(),
 	m_genotype(0),                                                                          // resize later
 	m_info(0),
 	m_inds(0),                                                                              // default constructor will be called.
@@ -142,12 +143,28 @@ population::population(ULONG size,
 }
 
 
+/// destroy a population
+population::~population()
+{
+	vectorvsp::const_iterator it = m_virtualSubPops.begin();
+	vectorvsp::const_iterator it_end = m_virtualSubPops.end();
+
+	for (; it != it_end; ++it)
+		if (*it != NULL)
+			delete * it;
+
+	DBG_DO(DBG_POPULATION,
+	    cout << "Destructor of population is called" << endl);
+}
+
+
 population::population(const population & rhs) :
 	GenoStruTrait(rhs),
 	m_popSize(rhs.m_popSize),
 	m_numSubPop(rhs.m_numSubPop),
 	m_subPopSize(rhs.m_subPopSize),
 	m_subPopIndex(rhs.m_subPopIndex),
+	m_virtualSubPops(),
 	m_genotype(0),
 	m_info(0),
 	m_inds(0),
@@ -225,6 +242,9 @@ population::population(const population & rhs) :
 		m_ancestralDepth = 0;
 		m_ancestralPops.clear();
 	}
+
+	// copy virtual subpop splitters
+	copyVirtualSplitters(rhs);
 
 	// set local variable
 	setRep(-1);
@@ -313,6 +333,21 @@ UINT population::numVirtualSubPop(SubPopID subPop) const
 	return hasVirtualSubPop(subPop)
 	       ? m_virtualSubPops[subPop]->numVirtualSubPop()
 		   : 1;
+}
+
+
+void population::copyVirtualSplitters(const population & rhs)
+{
+	if (m_virtualSubPops.empty())
+		m_virtualSubPops.resize(rhs.m_virtualSubPops.size(), NULL);
+	for (size_t i = 0; i < rhs.m_virtualSubPops.size(); ++i) {
+		if (m_virtualSubPops[i] != NULL)
+			delete m_virtualSubPops[i];
+		if (rhs.m_virtualSubPops[i] == NULL)
+			m_virtualSubPops[i] = NULL;
+		else
+			m_virtualSubPops[i] = rhs.m_virtualSubPops[i]->clone();
+	}
 }
 
 
@@ -448,6 +483,12 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSiz
 	UINT i = 1;
 	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
+	//
+	if (!m_virtualSubPops.empty() && m_virtualSubPops.size() != m_numSubPop) {
+		DBG_DO(DBG_GENERAL, 
+			cout << "Virtual subpopulation splitters are removed due to population structure changes");
+		m_virtualSubPops.clear();
+	}
 }
 
 
@@ -531,6 +572,12 @@ void population::setSubPopByIndID(vectori id)
 	size_t i = 1;
 	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
+	//
+	if (!m_virtualSubPops.empty() && m_virtualSubPops.size() != m_numSubPop) {
+		DBG_DO(DBG_GENERAL, 
+			cout << "Virtual subpopulation splitters are removed due to population structure changes");
+		m_virtualSubPops.clear();
+	}
 }
 
 
@@ -550,7 +597,7 @@ void population::splitSubPop(UINT which, vectorlu sizes, vectoru subPopID)
 	setIndSubPopIDWithID();
 
 	UINT spID;
-	if (subPopID.empty())  // starting sp number
+	if (subPopID.empty())          // starting sp number
 		spID = which;
 	else {
 		spID = subPopID[0];
@@ -601,16 +648,21 @@ void population::removeEmptySubPops()
 	// if remove empty subpops
 	UINT newSPNum = m_numSubPop;
 	vectorlu newSPSize;
+	vectorvsp newVSP;
 
 	for (size_t sp = 0; sp < m_numSubPop; ++sp) {
 		if (m_subPopSize[sp] == 0)
 			newSPNum--;
-		else
+		else {
 			newSPSize.push_back(m_subPopSize[sp]);
+			if (!m_virtualSubPops.empty())
+				newVSP.push_back(m_virtualSubPops[sp]);
+		}
 	}
 	m_numSubPop = newSPNum;
 	m_subPopSize.swap(newSPSize);
 	m_subPopIndex.resize(m_numSubPop + 1);
+	m_virtualSubPops.swap(newVSP);
 	// rebuild index
 	size_t i = 1;
 	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
@@ -627,19 +679,32 @@ void population::removeSubPops(const vectoru & subPops, bool shiftSubPopID, bool
 	}
 #endif
 	setIndSubPopIDWithID();
+	vectorvsp newVSP;
+	
 	int shift = 0;
 	for (size_t sp = 0; sp < m_numSubPop; ++sp) {
 		if (find(subPops.begin(), subPops.end(), sp) != subPops.end()) {
 			shift++;
-			for (IndIterator ind = indBegin(sp); ind.valid(); ++ind)
-				ind->setSubPopID(-1); // remove
-		}
-		// other subpop shift left
-		else if (shiftSubPopID) {
-			for (IndIterator ind = indBegin(sp); ind.valid(); ++ind)
-				ind->setSubPopID(sp - shift); // shift left
+			RawIndIterator ind = rawIndBegin(sp);
+			RawIndIterator ind_end = rawIndEnd(sp);
+			for(; ind != ind_end; ++ind)
+				ind->setSubPopID(-1);         // remove
+			if (!m_virtualSubPops.empty() && m_virtualSubPops[sp] != NULL)
+				delete m_virtualSubPops[sp];
+		} else {
+			if (!m_virtualSubPops.empty())
+				newVSP.push_back(m_virtualSubPops[sp]);
+			// other subpop shift left
+			if (shiftSubPopID) {
+				RawIndIterator ind = rawIndBegin(sp);
+				RawIndIterator ind_end = rawIndEnd(sp);
+				for(; ind != ind_end; ++ind)
+					ind->setSubPopID(sp - shift);         // shift left
+			}
 		}
 	}
+	// copy pointer directly...
+	m_virtualSubPops.swap(newVSP);
 
 	UINT pendingEmptySubPops = 0;
 	for (UINT i = m_numSubPop - 1; i >= 0 && (subPopSize(i) == 0
@@ -662,7 +727,7 @@ void population::removeIndividuals(const vectoru & inds, int subPop, bool remove
 	setIndSubPopIDWithID();
 	if (subPop == -1) {
 		for (size_t i = 0; i < inds.size(); ++i)
-			ind(inds[i]).setSubPopID(-1); // remove
+			ind(inds[i]).setSubPopID(-1);         // remove
 	} else {
 		for (size_t i = 0; i < inds.size(); ++i)
 			// remove
@@ -1355,6 +1420,7 @@ void population::pushAndDiscard(population & rhs, bool force)
 	m_numSubPop = rhs.m_numSubPop;
 	m_subPopSize.swap(rhs.m_subPopSize);
 	m_subPopIndex.swap(rhs.m_subPopIndex);
+	m_virtualSubPops.swap(rhs.m_virtualSubPops);
 	m_genotype.swap(rhs.m_genotype);
 	m_info.swap(rhs.m_info);
 	m_inds.swap(rhs.m_inds);
@@ -1376,6 +1442,7 @@ void population::pushAndDiscard(population & rhs, bool force)
 		rhs.m_subPopSize.resize(1, rhs.m_popSize);
 		rhs.m_subPopIndex.resize(2, 0);
 		rhs.m_subPopIndex[1] = rhs.m_popSize;
+		rhs.m_virtualSubPops.clear();
 		// no need to set genoPtr or genoStru()
 	}
 }
@@ -1942,3 +2009,5 @@ vectorf testGetinfoFromPop(population & pop, bool order)
 
 
 }
+
+

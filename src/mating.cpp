@@ -599,7 +599,7 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 	if (m_subPopSize.empty() && m_subPopSizeExpr.empty() && m_subPopSizeFunc == NULL)
 		scratch.setSubPopStru(pop.subPopSizes(), true);
 	else if (!m_subPopSize.empty())  // set subPoplation size
-		scratch.setSubPopStru(this->m_subPopSize, true);
+		scratch.setSubPopStru(m_subPopSize, true);
 	// evaluate from an expression
 	else if (!m_subPopSizeExpr.empty()) {
 		m_subPopSizeExpr.setLocalDict(pop.dict());
@@ -633,6 +633,8 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 		// allow change of pop size of scratch
 		scratch.setSubPopStru(sz, true);
 	}
+	scratch.copyVirtualSplitters(pop);
+	
 	DBG_DO(DBG_SIMULATOR, cout << "New subpop size " << scratch.subPopSizes() << endl);
 
 	DBG_FAILIF(scratch.numSubPop() != pop.numSubPop(),
