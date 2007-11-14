@@ -542,6 +542,8 @@ private:
 	vectorstr m_infoFields;
 };
 
+typedef std::vector< baseOperator * > vectorop;
+    
 /// pause a simulator
 /**
    This operator pauses the evolution of a simulator at given generations or

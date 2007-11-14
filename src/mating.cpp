@@ -1363,7 +1363,7 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 }
 
 
-heteroMating::heteroMating(vectormating const & matingSchemes,
+heteroMating::heteroMating(const vectormating matingSchemes,
                            vectorlu newSubPopSize,
                            string newSubPopSizeExpr,
                            PyObject * newSubPopSizeFunc,

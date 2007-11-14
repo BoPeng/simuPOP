@@ -1291,14 +1291,15 @@ private:
 
 /** a heterogeneous mating scheme
  */
-typedef vector<mating *> vectormating;
+typedef std::vector<mating *> vectormating;
+
 class heteroMating : public mating
 {
 public:
 	/// create a Python mating scheme
 	/**
 	 */
-	heteroMating(vectormating const & matingSchemes,
+	heteroMating(const vectormating matingSchemes,
 	             vectorlu newSubPopSize = vectorlu(),
 	             string newSubPopSizeExpr = "",
 	             PyObject * newSubPopSizeFunc = NULL,

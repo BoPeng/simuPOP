@@ -114,10 +114,6 @@ namespace simuPOP {
 class simulator : public GenoStruTrait
 {
 public:
-	/// vector of operator pointers
-	typedef std::vector< baseOperator * > vectorop;
-
-public:
 	// DEVONLY{ m_curRep, gen  are reference to
 	// glocal shared variables. }
 	/// create a simulator

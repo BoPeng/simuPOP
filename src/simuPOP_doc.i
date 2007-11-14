@@ -124,6 +124,98 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::affectionSplitter "
+
+Details:
+
+    split the  population according to affection status
+
+"; 
+
+%feature("docstring") simuPOP::affectionSplitter::affectionSplitter "
+
+Description:
+
+    simuPOP::affectionSplitter::affectionSplitter
+
+Usage:
+
+    affectionSplitter()
+
+"; 
+
+%feature("docstring") simuPOP::affectionSplitter::clone "
+
+Description:
+
+    simuPOP::affectionSplitter::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::affectionSplitter::size "
+
+Description:
+
+    simuPOP::affectionSplitter::size
+
+Usage:
+
+    x.size(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::affectionSplitter::numVirtualSubPop "
+
+Description:
+
+    simuPOP::affectionSplitter::numVirtualSubPop
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%feature("docstring") simuPOP::affectionSplitter::activate "
+
+Description:
+
+    simuPOP::affectionSplitter::activate
+
+Usage:
+
+    x.activate(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::affectionSplitter::reset "
+
+Description:
+
+    simuPOP::affectionSplitter::reset
+
+Usage:
+
+    x.reset(pop, sp)
+
+"; 
+
+%feature("docstring") simuPOP::affectionSplitter::name "
+
+Description:
+
+    simuPOP::affectionSplitter::name
+
+Usage:
+
+    x.name(sp)
+
+"; 
+
 %feature("docstring") simuPOP::baseOperator "
 
 Description:
@@ -461,7 +553,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::baseOperator::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::baseOperator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %ignore simuPOP::baseOperator::setOutput(string output="", string outputExpr="");
 
@@ -709,7 +801,8 @@ Usage:
 
     binomialSelection(numOffspring=1., numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
-      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None)
+      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
+      subPop=virtualSubPopID, weight=0)
 
 Details:
 
@@ -754,9 +847,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::binomialSelection::submitScratch(population &pop, population &scratch);
-
-%ignore simuPOP::binomialSelection::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
+%ignore simuPOP::binomialSelection::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::caseControlSample "
 
@@ -854,6 +945,87 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::cloneOffspringGenerator "
+
+Description:
+
+    simuPOP::cloneOffspringGenerator
+
+"; 
+
+%feature("docstring") simuPOP::cloneOffspringGenerator::cloneOffspringGenerator "
+
+Description:
+
+    simuPOP::cloneOffspringGenerator::cloneOffspringGenerator
+
+Usage:
+
+    cloneOffspringGenerator(numOffspring=1, numOffspringFunc=None,
+      maxNumOffspring=1, mode=MATE_NumOffspring)
+
+"; 
+
+%feature("docstring") simuPOP::cloneOffspringGenerator::clone "
+
+Description:
+
+    simuPOP::cloneOffspringGenerator::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::cloneOffspringGenerator::generateOffspring "
+
+Description:
+
+    generate numOff offspring
+
+Usage:
+
+    x.generateOffspring(pop, dad, mom, offBegin, offEnd, ops)
+
+"; 
+
+%feature("docstring") simuPOP::CombinedAlleleIterator "
+
+Details:
+
+    this class implements a C++ iterator class that iterate through
+    infomation fields in a (sub) population using 1. an IndIterator
+    that will skip invisible individuals, or 2. a gapped iterator that
+    will run faster. Note that 1, 2 should yield identical result, and
+    2 should be used when there is no virtual subpopulation.q
+
+"; 
+
+%feature("docstring") simuPOP::CombinedAlleleIterator::CombinedAlleleIterator "
+
+Description:
+
+    simuPOP::CombinedAlleleIterator::CombinedAlleleIterator
+
+Usage:
+
+    CombinedAlleleIterator()
+
+"; 
+
+%feature("docstring") simuPOP::CombinedAlleleIterator::ptr "
+
+Description:
+
+    simuPOP::CombinedAlleleIterator::ptr
+
+Usage:
+
+    x.ptr()
+
+"; 
+
 %feature("docstring") simuPOP::continueIf "
 
 Description:
@@ -929,88 +1101,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::controlledBinomialSelection "
-
-Description:
-
-    a controlled binomial random selection  mating scheme
-
-Details:
-
-    This is the controlled binomial random selection  mating scheme
-    described in  Peng 2007 (PLoS Genetics) . Basically, a freqFunc is
-    passed to this  mating scheme and set the allele frequencies of
-    given alleles at given loci at the offspring generation.
-    The offspring generation is conceptually populated in two steps.
-    At the first step, only families with disease alleles are accepted
-    until the expected number of disease alleles are met. At the
-    second step, only families with wide type alleles are accepted to
-    populate the rest of the offspring generation.
-
-"; 
-
-%feature("docstring") simuPOP::controlledBinomialSelection::controlledBinomialSelection "
-
-Description:
-
-    create a controlled binomial random selection  mating scheme
-
-Usage:
-
-    controlledBinomialSelection(loci, alleles, freqFunc,
-      numOffspring=1., numOffspringFunc=None, maxNumOffspring=0,
-      mode=MATE_NumOffspring, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None)
-
-Details:
-
-    Please refer to class  mating for descriptions of parameters.
-
-"; 
-
-%ignore simuPOP::controlledBinomialSelection::controlledBinomialSelection(const controlledBinomialSelection &rhs);
-
-%feature("docstring") simuPOP::controlledBinomialSelection::~controlledBinomialSelection "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~controlledBinomialSelection()
-
-"; 
-
-%feature("docstring") simuPOP::controlledBinomialSelection::clone "
-
-Description:
-
-    deep copy of a controlled binomial random selection  mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::controlledBinomialSelection::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the controlled binomial random selection  mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%ignore simuPOP::controlledBinomialSelection::submitScratch(population &pop, population &scratch);
-
-%ignore simuPOP::controlledBinomialSelection::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
-
 %feature("docstring") simuPOP::controlledMating "
 
 Description:
@@ -1069,6 +1159,8 @@ Usage:
     x.~controlledMating()
 
 "; 
+
+%ignore simuPOP::controlledMating::submitScratch(population &pop, population &scratch);
 
 %feature("docstring") simuPOP::controlledMating::clone "
 
@@ -1131,7 +1223,7 @@ Usage:
       numOffspring=1., numOffspringFunc=None, maxNumOffspring=0,
       mode=MATE_NumOffspring, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True)
+      contWhenUniSex=True, subPop=virtualSubPopID, weight=0)
 
 Details:
 
@@ -1336,6 +1428,81 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::duplicateSplitter "
+
+Details:
+
+    duplicateSplitter does not split the parental subpopulation in any
+    way. It presents the specified subpopulation as several
+    subpopulations to the  mating system, thus allow several different
+    mating schemes to be appllied to the same subpopulation. For
+    example, a selfing-mating scheme can be applied to the
+    subpopulation and populate half of the offspring subpopulation,
+    and a random-mating scheme can be used to generate the rest of the
+    offspring subpopulation.
+
+"; 
+
+%feature("docstring") simuPOP::duplicateSplitter::duplicateSplitter "
+
+Description:
+
+    simuPOP::duplicateSplitter::duplicateSplitter
+
+Usage:
+
+    duplicateSplitter(num)
+
+"; 
+
+%feature("docstring") simuPOP::duplicateSplitter::clone "
+
+Description:
+
+    simuPOP::duplicateSplitter::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::duplicateSplitter::numVirtualSubPop "
+
+Description:
+
+    simuPOP::duplicateSplitter::numVirtualSubPop
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%feature("docstring") simuPOP::duplicateSplitter::size "
+
+Description:
+
+    simuPOP::duplicateSplitter::size
+
+Usage:
+
+    x.size(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::duplicateSplitter::name "
+
+Description:
+
+    simuPOP::duplicateSplitter::name
+
+Usage:
+
+    x.name(sp)
+
+"; 
+
 %feature("docstring") simuPOP::Exception "
 
 Description:
@@ -1435,48 +1602,6 @@ Usage:
 %ignore simuPOP::Expression::valueAsStrDict();
 
 %ignore simuPOP::Expression::valueAsIntDict();
-
-%ignore simuPOP::GappedIterator;
-
-%feature("docstring") simuPOP::GappedIterator::GappedIterator "
-
-Description:
-
-    simuPOP::GappedIterator::GappedIterator
-
-Usage:
-
-    GappedIterator()
-
-"; 
-
-%ignore simuPOP::GappedIterator::GappedIterator(pointer p, difference_type s=1);
-
-%feature("docstring") simuPOP::GappedIterator::~GappedIterator "
-
-Description:
-
-    simuPOP::GappedIterator::~GappedIterator
-
-Usage:
-
-    x.~GappedIterator()
-
-"; 
-
-%feature("docstring") simuPOP::GappedIterator::ptr "
-
-Description:
-
-    get pointer so that  ptr()+1 will be the next locus.
-
-Usage:
-
-    x.ptr()
-
-"; 
-
-%ignore simuPOP::GappedIterator::step();
 
 %ignore simuPOP::GenoStructure;
 
@@ -1992,6 +2117,103 @@ Usage:
 
 %ignore simuPOP::GenoStruTrait::chromMap() const;
 
+%feature("docstring") simuPOP::genotypeSplitter "
+
+Details:
+
+    split the  population according to given genotype
+
+"; 
+
+%feature("docstring") simuPOP::genotypeSplitter::genotypeSplitter "
+
+Description:
+
+    simuPOP::genotypeSplitter::genotypeSplitter
+
+Usage:
+
+    genotypeSplitter(loci, alleles, phase=False)
+
+Arguments:
+
+    genotype:       a shortcut for genotypes=[genotype]
+    genotypes:      a list of genotypes
+
+"; 
+
+%feature("docstring") simuPOP::genotypeSplitter::clone "
+
+Description:
+
+    simuPOP::genotypeSplitter::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::genotypeSplitter::size "
+
+Description:
+
+    simuPOP::genotypeSplitter::size
+
+Usage:
+
+    x.size(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::genotypeSplitter::numVirtualSubPop "
+
+Description:
+
+    simuPOP::genotypeSplitter::numVirtualSubPop
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%feature("docstring") simuPOP::genotypeSplitter::activate "
+
+Description:
+
+    simuPOP::genotypeSplitter::activate
+
+Usage:
+
+    x.activate(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::genotypeSplitter::reset "
+
+Description:
+
+    simuPOP::genotypeSplitter::reset
+
+Usage:
+
+    x.reset(pop, sp)
+
+"; 
+
+%feature("docstring") simuPOP::genotypeSplitter::name "
+
+Description:
+
+    simuPOP::genotypeSplitter::name
+
+Usage:
+
+    x.name(sp)
+
+"; 
+
 %feature("docstring") simuPOP::gsmMutator "
 
 Function form:
@@ -2155,6 +2377,69 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::heteroMating "
+
+Description:
+
+    simuPOP::heteroMating
+
+"; 
+
+%feature("docstring") simuPOP::heteroMating::heteroMating "
+
+Description:
+
+    create a Python  mating scheme
+
+Usage:
+
+    heteroMating(matingSchemes, newSubPopSize=[],
+      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
+      subPop=virtualSubPopID, weight=0)
+
+"; 
+
+%feature("docstring") simuPOP::heteroMating::~heteroMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~heteroMating()
+
+"; 
+
+%ignore simuPOP::heteroMating::heteroMating(const heteroMating &rhs);
+
+%feature("docstring") simuPOP::heteroMating::clone "
+
+Description:
+
+    deep copy of a Python  mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::heteroMating::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the Python  mating scheme
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::heteroMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
+
 %feature("docstring") simuPOP::ifElse "
 
 Description:
@@ -2260,7 +2545,7 @@ Usage:
 
 %ignore simuPOP::ifElse::applyWithScratch(population &pop, population &scratch, int stage);
 
-%ignore simuPOP::ifElse::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::ifElse::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::ifElse::apply "
 
@@ -2697,6 +2982,30 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::individual::visible "
+
+Description:
+
+    simuPOP::individual::visible
+
+Usage:
+
+    x.visible()
+
+"; 
+
+%feature("docstring") simuPOP::individual::setVisible "
+
+Description:
+
+    simuPOP::individual::setVisible
+
+Usage:
+
+    x.setVisible(visible)
+
+"; 
+
 %feature("docstring") simuPOP::individual::subPopID "
 
 Description:
@@ -2836,65 +3145,173 @@ Usage:
 
 %ignore simuPOP::individual::display(ostream &out, int width=1, const vectori &chrom=vectori(), const vectori &loci=vectori());
 
-%feature("docstring") simuPOP::individualIterator "
-
-Description:
-
-    this class implements a Python itertor class that can be used to
-    iterate through individuals in a  population.
+%feature("docstring") simuPOP::IndividualIterator "
 
 Details:
 
-    an instance of this class is returned by
-    population::individuals() and population::individuals(subPop)
+    this class implements a C++ iterator class that iterate through
+    individuals in a (sub) population. If allInds are true, the
+    visiblility of individuals will not be checked. Note that
+    individualIterator *will* iterate through only visible
+    individuals, and allInds is only provided when we know in advance
+    that all individuals are visible. This is a way to obtain better
+    performance in simple cases.
 
 "; 
 
-%feature("docstring") simuPOP::individualIterator::individualIterator "
+%feature("docstring") simuPOP::IndividualIterator::IndividualIterator "
 
 Description:
 
-    simuPOP::individualIterator::individualIterator
+    simuPOP::IndividualIterator::IndividualIterator
 
 Usage:
 
-    individualIterator(pop, s, e)
+    IndividualIterator()
 
 "; 
 
-%feature("docstring") simuPOP::individualIterator::~individualIterator "
+%feature("docstring") simuPOP::IndividualIterator::valid "
 
 Description:
 
-    simuPOP::individualIterator::~individualIterator
+    simuPOP::IndividualIterator::valid
 
 Usage:
 
-    x.~individualIterator()
+    x.valid()
 
 "; 
 
-%feature("docstring") simuPOP::individualIterator::__iter__ "
+%feature("docstring") simuPOP::IndividualIterator::rawIter "
 
 Description:
 
-    simuPOP::individualIterator::__iter__
+    simuPOP::IndividualIterator::rawIter
 
 Usage:
 
-    x.__iter__()
+    x.rawIter()
 
 "; 
 
-%feature("docstring") simuPOP::individualIterator::next "
+%feature("docstring") simuPOP::InformationIterator "
+
+Details:
+
+    this class implements a C++ iterator class that iterate through
+    infomation fields in a (sub) population using 1. an IndIterator
+    that will skip invisible individuals, or 2. a gapped iterator that
+    will run faster. Note that 1, 2 should yield identical result, and
+    2 should be used when there is no virtual subpopulation.q
+
+"; 
+
+%feature("docstring") simuPOP::InformationIterator::InformationIterator "
 
 Description:
 
-    simuPOP::individualIterator::next
+    simuPOP::InformationIterator::InformationIterator
 
 Usage:
 
-    x.next()
+    InformationIterator()
+
+"; 
+
+%feature("docstring") simuPOP::infoSplitter "
+
+Details:
+
+    Split the  population according to the value of an information
+    field. A list of distinct values, or a cutoff vector can be given
+    to determine how the virtual subpopulations are divided. Note that
+    in the first case, an  individual does not have to belong to any
+    virtual subpopulation.
+
+"; 
+
+%feature("docstring") simuPOP::infoSplitter::infoSplitter "
+
+Description:
+
+    simuPOP::infoSplitter::infoSplitter
+
+Usage:
+
+    infoSplitter(info, values=[]nfo, cutoff=[])
+
+"; 
+
+%feature("docstring") simuPOP::infoSplitter::clone "
+
+Description:
+
+    simuPOP::infoSplitter::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::infoSplitter::size "
+
+Description:
+
+    simuPOP::infoSplitter::size
+
+Usage:
+
+    x.size(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::infoSplitter::numVirtualSubPop "
+
+Description:
+
+    simuPOP::infoSplitter::numVirtualSubPop
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%feature("docstring") simuPOP::infoSplitter::activate "
+
+Description:
+
+    simuPOP::infoSplitter::activate
+
+Usage:
+
+    x.activate(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::infoSplitter::reset "
+
+Description:
+
+    simuPOP::infoSplitter::reset
+
+Usage:
+
+    x.reset(pop, sp)
+
+"; 
+
+%feature("docstring") simuPOP::infoSplitter::name "
+
+Description:
+
+    simuPOP::infoSplitter::name
+
+Usage:
+
+    x.name(sp)
 
 "; 
 
@@ -2960,7 +3377,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::inheritTagger::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::inheritTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::inheritTagger::clone "
 
@@ -4220,9 +4637,8 @@ Description:
 
 Usage:
 
-    mating(numOffspring=1.0, numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
-      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None)
+    mating(newSubPopSize=[], newSubPopSizeExpr=\"\",
+      newSubPopSizeFunc=None, subPop=virtualSubPopID, weight=0)
 
 Details:
 
@@ -4230,48 +4646,10 @@ Details:
     generates one offspring per  mating event. These can be changed
     using certain parameters. newSubPopSize, newSubPopSizeExpr and
     newSubPopSizeFunc can be used to specify subpopulation sizes of
-    the offspring generation. mode, numOffspring, maxNumOffspring can
-    be used to specify how many offspring will be produced at each
-    mating event. This mode parameter can be one of
-    * MATE_NumOffspring: a fixed number of offspring at all  mating
-    events at this generation. If numOffspring is given, all
-    generations use this fixed number. If numOffspringFunc is given,
-    the number of offspring at each generation is determined by the
-    value returned from this function.
-    * MATE_NumOffspringEachFamily: each family can have its own number
-    of offspring. Usually, numOffspringFunc is used to determine the
-    number of offspring of each family. If numOffspring is used,
-    MATE_NumOffspringEachFamily is equivalent to MATE_NumOffspring.
-    * MATE_GeometricDistribution: a Geometric distribution with
-    parameter numOffspring is used to determine the number of
-    offspring of each family.
-    * MATE_PoissonDistribution: a Poisson distribution with parameter
-    numOffspring is used to determine the number of offspring of each
-    family.
-    * MATE_BinomialDistribution: a Binomial distribution with
-    parameter numOffspring is used to determine the number of
-    offspring of each family.
-    * MATE_UniformDistribution: a Uniform  [a, b]  distribution with
-    parameter numOffspring (a) and maxNumOffspring (b) is used to
-    determine the number of offspring of each family.
+    the offspring generation.
 
 Arguments:
 
-    numOffspring:   the number of offspring or p for a random
-                    distribution. Default to 1. This parameter
-                    determines the number of offspring that a  mating
-                    event will produce. Therefore, it determines the
-                    family size.
-    numOffspringFunc:a Python function that returns the number of
-                    offspring or p
-    maxNumOffspring:used when numOffspring is generated from a
-                    binomial distribution
-    mode:           can be one of MATE_NumOffspring,
-                    MATE_NumOffspringEachFamily,
-                    MATE_GeometricDistribution,
-                    MATE_PoissonDistribution,
-                    MATE_BinomialDistribution, or
-                    MATE_UniformDistribution.
     newSubPopSize:  an array of subpopulations sizes, should have the
                     same number of subpopulations as the current
                     population
@@ -4283,6 +4661,20 @@ Arguments:
                     subpopulation sizes of the next generation. This
                     is usually easier to use than its expression
                     version of this parameter.
+    subPop:         if this parameter is given, the  mating scheme
+                    will be applied only to the given (virtual)
+                    subpopulation. This is only used in  heteroMating
+                    where  mating schemes are passed to.
+    weight:         When subPop is virtual, this is used to detemine
+                    the number of offspring for this  mating scheme.
+                    Weight can be
+                    * 0 (default) the weight will be proportional to
+                    the current (virtual) subpopulation size. If other
+                    virutal subpopulation has non-zero weight, this
+                    virtual subpopulation will produce no offspring
+                    (weight 0).
+                    * any positive number: the size will be determined
+                    by weights from other virtual subpopulations.
 
 Example:
 
@@ -4342,6 +4734,30 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::mating::subPop "
+
+Description:
+
+    simuPOP::mating::subPop
+
+Usage:
+
+    x.subPop()
+
+"; 
+
+%feature("docstring") simuPOP::mating::weight "
+
+Description:
+
+    simuPOP::mating::weight
+
+Usage:
+
+    x.weight()
+
+"; 
+
 %feature("docstring") simuPOP::mating::clone "
 
 Description:
@@ -4369,15 +4785,92 @@ Usage:
 
 %ignore simuPOP::mating::submitScratch(population &pop, population &scratch);
 
+%feature("docstring") simuPOP::mating::mateSubPop "
+
+Description:
+
+    simuPOP::mating::mateSubPop
+
+Usage:
+
+    x.mateSubPop(pop, subPop, offBegin, offEnd, ops)
+
+"; 
+
 %ignore simuPOP::mating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
 
-%ignore simuPOP::mating::fixedFamilySize();
-
-%ignore simuPOP::mating::numOffspring(int gen);
-
-%ignore simuPOP::mating::resetNumOffspring();
-
 %ignore simuPOP::mating::prepareScratchPop(population &pop, population &scratch);
+
+%feature("docstring") simuPOP::mendelianOffspringGenerator "
+
+Description:
+
+    simuPOP::mendelianOffspringGenerator
+
+"; 
+
+%feature("docstring") simuPOP::mendelianOffspringGenerator::mendelianOffspringGenerator "
+
+Description:
+
+    simuPOP::mendelianOffspringGenerator::mendelianOffspringGenerator
+
+Usage:
+
+    mendelianOffspringGenerator(numOffspring=1,
+      numOffspringFunc=None, maxNumOffspring=1,
+      mode=MATE_NumOffspring)
+
+"; 
+
+%feature("docstring") simuPOP::mendelianOffspringGenerator::clone "
+
+Description:
+
+    simuPOP::mendelianOffspringGenerator::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::mendelianOffspringGenerator::initialize "
+
+Description:
+
+    create an offspring generator, save information from pop and ops
+    to speed up the calls to generateOffspring
+
+Usage:
+
+    x.initialize(pop, ops)
+
+"; 
+
+%feature("docstring") simuPOP::mendelianOffspringGenerator::formOffspringGenotype "
+
+Description:
+
+    simuPOP::mendelianOffspringGenerator::formOffspringGenotype
+
+Usage:
+
+    x.formOffspringGenotype(parent, it, ploidy, setSex)
+
+"; 
+
+%feature("docstring") simuPOP::mendelianOffspringGenerator::generateOffspring "
+
+Description:
+
+    generate numOff offspring
+
+Usage:
+
+    x.generateOffspring(pop, dad, mom, offBegin, offEnd, ops)
+
+"; 
 
 %feature("docstring") simuPOP::mergeSubPops "
 
@@ -5125,7 +5618,8 @@ Usage:
 
     noMating(numOffspring=1.0, numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
-      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None)
+      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
+      subPop=virtualSubPopID, weight=0)
 
 Note:
 
@@ -5241,7 +5735,7 @@ Usage:
 
 %ignore simuPOP::noneOp::applyWithScratch(population &pop, population &scratch, int stage);
 
-%ignore simuPOP::noneOp::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::noneOp::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::noneOp::apply "
 
@@ -5357,9 +5851,152 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::nullSplitter "
+
+Details:
+
+    This subpops does nothing. It treats the whole subpopulation as
+    the only virtual subpopulation.
+
+"; 
+
+%feature("docstring") simuPOP::nullSplitter::nullSplitter "
+
+Description:
+
+    simuPOP::nullSplitter::nullSplitter
+
+Usage:
+
+    nullSplitter()
+
+"; 
+
+%feature("docstring") simuPOP::nullSplitter::clone "
+
+Description:
+
+    simuPOP::nullSplitter::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::nullSplitter::size "
+
+Description:
+
+    simuPOP::nullSplitter::size
+
+Usage:
+
+    x.size(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::nullSplitter::numVirtualSubPop "
+
+Description:
+
+    simuPOP::nullSplitter::numVirtualSubPop
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%feature("docstring") simuPOP::nullSplitter::activate "
+
+Description:
+
+    simuPOP::nullSplitter::activate
+
+Usage:
+
+    x.activate(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::nullSplitter::reset "
+
+Description:
+
+    simuPOP::nullSplitter::reset
+
+Usage:
+
+    x.reset(pop, sp)
+
+"; 
+
+%feature("docstring") simuPOP::nullSplitter::name "
+
+Description:
+
+    simuPOP::nullSplitter::name
+
+Usage:
+
+    x.name(sp)
+
+"; 
+
+%feature("docstring") simuPOP::numOffspringGenerator "
+
+Description:
+
+    simuPOP::numOffspringGenerator
+
+"; 
+
+%feature("docstring") simuPOP::numOffspringGenerator::numOffspringGenerator "
+
+Description:
+
+    simuPOP::numOffspringGenerator::numOffspringGenerator
+
+Usage:
+
+    numOffspringGenerator(numOffspring, numOffspringFunc,
+      maxNumOffspring, mode)
+
+"; 
+
+%feature("docstring") simuPOP::numOffspringGenerator::~numOffspringGenerator "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~numOffspringGenerator()
+
+"; 
+
+%ignore simuPOP::numOffspringGenerator::fixedFamilySize() const;
+
+%ignore simuPOP::numOffspringGenerator::numOffspring(int gen);
+
 %ignore simuPOP::offspringGenerator;
 
 %feature("docstring") simuPOP::offspringGenerator::offspringGenerator "
+
+Description:
+
+    simuPOP::offspringGenerator::offspringGenerator
+
+Usage:
+
+    offspringGenerator(numOffspring, numOffspringFunc,
+      maxNumOffspring, mode)
+
+"; 
+
+%feature("docstring") simuPOP::offspringGenerator::initialize "
 
 Description:
 
@@ -5368,7 +6005,7 @@ Description:
 
 Usage:
 
-    offspringGenerator(pop, ops)
+    x.initialize(pop, ops)
 
 "; 
 
@@ -5376,33 +6013,71 @@ Usage:
 
 Description:
 
-    generate numOff offspring, or until reach offEnd
+    generate numOff offspring
 
 Usage:
 
-    x.generateOffspring(pop, dad, mom, numOff, offBegin)
-
-Details:
-
-    This is because offBegin+numOff may go beyond the subpopulation
-    boundary.
+    x.generateOffspring(pop, dad, mom, offBegin, offEnd, ops=0)
 
 "; 
 
-%feature("docstring") simuPOP::offspringGenerator::copyOffspring "
+%feature("docstring") simuPOP::offspringGenerator::~offspringGenerator "
 
 Description:
 
-    copy numOff offspring, or until reach offEnd
+    simuPOP::offspringGenerator::~offspringGenerator
 
 Usage:
 
-    x.copyOffspring(pop, par, numOff, offBegin)
+    x.~offspringGenerator()
 
-Details:
+"; 
 
-    This is because offBegin+numOff may go beyond the subpopulation
-    boundary.
+%feature("docstring") simuPOP::offspringGenerator::clone "
+
+Description:
+
+    simuPOP::offspringGenerator::clone
+
+Usage:
+
+    x.clone(const=0)
+
+"; 
+
+%feature("docstring") simuPOP::offspringGenerator::initialized "
+
+Description:
+
+    simuPOP::offspringGenerator::initialized
+
+Usage:
+
+    x.initialized()
+
+"; 
+
+%feature("docstring") simuPOP::offspringGenerator::setNumParents "
+
+Description:
+
+    simuPOP::offspringGenerator::setNumParents
+
+Usage:
+
+    x.setNumParents(numParents)
+
+"; 
+
+%feature("docstring") simuPOP::offspringGenerator::numParents "
+
+Description:
+
+    simuPOP::offspringGenerator::numParents
+
+Usage:
+
+    x.numParents()
 
 "; 
 
@@ -5593,6 +6268,110 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::parentChooser "
+
+Description:
+
+    simuPOP::parentChooser
+
+"; 
+
+%feature("docstring") simuPOP::parentChooser::parentChooser "
+
+Description:
+
+    simuPOP::parentChooser::parentChooser
+
+Usage:
+
+    parentChooser(numParents)
+
+"; 
+
+%feature("docstring") simuPOP::parentChooser::clone "
+
+Description:
+
+    simuPOP::parentChooser::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::parentChooser::initialize "
+
+Description:
+
+    simuPOP::parentChooser::initialize
+
+Usage:
+
+    x.initialize(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::parentChooser::initialized "
+
+Description:
+
+    simuPOP::parentChooser::initialized
+
+Usage:
+
+    x.initialized()
+
+"; 
+
+%feature("docstring") simuPOP::parentChooser::numParents "
+
+Description:
+
+    simuPOP::parentChooser::numParents
+
+Usage:
+
+    x.numParents()
+
+"; 
+
+%feature("docstring") simuPOP::parentChooser::chooseParent "
+
+Description:
+
+    simuPOP::parentChooser::chooseParent
+
+Usage:
+
+    x.chooseParent()
+
+"; 
+
+%feature("docstring") simuPOP::parentChooser::chooseParents "
+
+Description:
+
+    simuPOP::parentChooser::chooseParents
+
+Usage:
+
+    x.chooseParents()
+
+"; 
+
+%feature("docstring") simuPOP::parentChooser::~parentChooser "
+
+Description:
+
+    simuPOP::parentChooser::~parentChooser
+
+Usage:
+
+    x.~parentChooser()
+
+"; 
+
 %feature("docstring") simuPOP::parentsTagger "
 
 Description:
@@ -5662,7 +6441,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::parentsTagger::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::parentsTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::pause "
 
@@ -5867,7 +6646,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::penetrance::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::penetrance::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::penetrance::__repr__ "
 
@@ -6262,6 +7041,80 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::population::hasActivatedVirtualSubPop "
+
+Description:
+
+    simuPOP::population::hasActivatedVirtualSubPop
+
+Usage:
+
+    x.hasActivatedVirtualSubPop()
+
+"; 
+
+%feature("docstring") simuPOP::population::hasVirtualSubPop "
+
+Description:
+
+    simuPOP::population::hasVirtualSubPop
+
+Usage:
+
+    x.hasVirtualSubPop(subpop)
+
+"; 
+
+%feature("docstring") simuPOP::population::setSplitter "
+
+Description:
+
+    simuPOP::population::setSplitter
+
+Usage:
+
+    x.setSplitter(vsp, sp)
+
+"; 
+
+%feature("docstring") simuPOP::population::numVirtualSubPop "
+
+Description:
+
+    simuPOP::population::numVirtualSubPop
+
+Usage:
+
+    x.numVirtualSubPop(subPop)
+
+"; 
+
+%feature("docstring") simuPOP::population::activateVirtualSubPop "
+
+Description:
+
+    simuPOP::population::activateVirtualSubPop
+
+Usage:
+
+    x.activateVirtualSubPop(subPop)
+
+"; 
+
+%ignore simuPOP::population::copyVirtualSplitters(const population &rhs);
+
+%feature("docstring") simuPOP::population::resetVirtualSubPop "
+
+Description:
+
+    simuPOP::population::resetVirtualSubPop
+
+Usage:
+
+    x.resetVirtualSubPop(subPop)
+
+"; 
+
 %feature("docstring") simuPOP::population::__cmp__ "
 
 Description:
@@ -6320,6 +7173,30 @@ Usage:
 Arguments:
 
     subPop:         index of subpopulation (start from 0)
+
+"; 
+
+%feature("docstring") simuPOP::population::virtualSubPopSize "
+
+Description:
+
+    simuPOP::population::virtualSubPopSize
+
+Usage:
+
+    x.virtualSubPopSize(subPop)
+
+"; 
+
+%feature("docstring") simuPOP::population::virtualSubPopName "
+
+Description:
+
+    simuPOP::population::virtualSubPopName
+
+Usage:
+
+    x.virtualSubPopName(subPop)
 
 "; 
 
@@ -6460,7 +7337,7 @@ Usage:
 
 %ignore simuPOP::population::setShallowCopied(bool s);
 
-%ignore simuPOP::population::infoOrdered();
+%ignore simuPOP::population::infoOrdered() const;
 
 %ignore simuPOP::population::setInfoOrdered(bool s);
 
@@ -6471,6 +7348,26 @@ Usage:
 %ignore simuPOP::population::indBegin(UINT subPop);
 
 %ignore simuPOP::population::indEnd(UINT subPop);
+
+%ignore simuPOP::population::indBegin() const;
+
+%ignore simuPOP::population::indEnd() const;
+
+%ignore simuPOP::population::indEnd(UINT subPop) const;
+
+%ignore simuPOP::population::rawIndBegin();
+
+%ignore simuPOP::population::rawIndEnd();
+
+%ignore simuPOP::population::rawIndBegin(UINT subPop);
+
+%ignore simuPOP::population::rawIndEnd(UINT subPop);
+
+%ignore simuPOP::population::rawIndBegin() const;
+
+%ignore simuPOP::population::rawIndEnd() const;
+
+%ignore simuPOP::population::rawIndEnd(UINT subPop) const;
 
 %ignore simuPOP::population::alleleBegin(UINT locus, bool order);
 
@@ -7096,8 +7993,6 @@ Details:
 
 %ignore simuPOP::population::infoEnd(UINT idx, bool order);
 
-%ignore simuPOP::population::infoBegin(UINT index, UINT subPop, bool order);
-
 %feature("docstring") simuPOP::population::indInfo "
 
 Description:
@@ -7326,9 +8221,9 @@ Arguments:
 
 %ignore simuPOP::population::loadPopulation(const string &filename, const string &format="auto");
 
-%ignore simuPOP::population::selectionOn();
+%ignore simuPOP::population::selectionOn() const;
 
-%ignore simuPOP::population::selectionOn(UINT sp);
+%ignore simuPOP::population::selectionOn(UINT sp) const ;
 
 %feature("docstring") simuPOP::population::turnOffSelection "
 
@@ -7485,6 +8380,98 @@ Usage:
 "; 
 
 %ignore simuPOP::population::rearrangeLoci(const vectoru &newNumLoci, const vectorf &newLociPos);
+
+%feature("docstring") simuPOP::proportionSplitter "
+
+Details:
+
+    Split the  population according to a proportion
+
+"; 
+
+%feature("docstring") simuPOP::proportionSplitter::proportionSplitter "
+
+Description:
+
+    simuPOP::proportionSplitter::proportionSplitter
+
+Usage:
+
+    proportionSplitter(proportions=[])
+
+"; 
+
+%feature("docstring") simuPOP::proportionSplitter::clone "
+
+Description:
+
+    simuPOP::proportionSplitter::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::proportionSplitter::size "
+
+Description:
+
+    simuPOP::proportionSplitter::size
+
+Usage:
+
+    x.size(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::proportionSplitter::numVirtualSubPop "
+
+Description:
+
+    simuPOP::proportionSplitter::numVirtualSubPop
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%feature("docstring") simuPOP::proportionSplitter::activate "
+
+Description:
+
+    simuPOP::proportionSplitter::activate
+
+Usage:
+
+    x.activate(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::proportionSplitter::reset "
+
+Description:
+
+    simuPOP::proportionSplitter::reset
+
+Usage:
+
+    x.reset(pop, sp)
+
+"; 
+
+%feature("docstring") simuPOP::proportionSplitter::name "
+
+Description:
+
+    simuPOP::proportionSplitter::name
+
+Usage:
+
+    x.name(sp)
+
+"; 
 
 %feature("docstring") simuPOP::pyEval "
 
@@ -7677,6 +8664,69 @@ Description:
 Usage:
 
     x.__repr__()
+
+"; 
+
+%feature("docstring") simuPOP::pyIndIterator "
+
+Details:
+
+    this class implements a Python itertor class that can be used to
+    iterate through individuals in a (sub) population. If allInds are
+    true, visiblility of individuals will not be checked. Note that
+    individualIterator *will* iterate through only visible
+    individuals, and allInds is only provided when we know in advance
+    that all individuals are visible. This is a way to obtain better
+    performance in simple cases.An instance of this class is returned
+    by  population::individuals() and population::individuals(subPop)
+
+"; 
+
+%feature("docstring") simuPOP::pyIndIterator::pyIndIterator "
+
+Description:
+
+    simuPOP::pyIndIterator::pyIndIterator
+
+Usage:
+
+    pyIndIterator(begin, end, allInds)
+
+"; 
+
+%feature("docstring") simuPOP::pyIndIterator::~pyIndIterator "
+
+Description:
+
+    simuPOP::pyIndIterator::~pyIndIterator
+
+Usage:
+
+    x.~pyIndIterator()
+
+"; 
+
+%feature("docstring") simuPOP::pyIndIterator::__iter__ "
+
+Description:
+
+    simuPOP::pyIndIterator::__iter__
+
+Usage:
+
+    x.__iter__()
+
+"; 
+
+%feature("docstring") simuPOP::pyIndIterator::next "
+
+Description:
+
+    simuPOP::pyIndIterator::next
+
+Usage:
+
+    x.next()
 
 "; 
 
@@ -7942,17 +8992,16 @@ Description:
 
 Details:
 
-    Hybird  mating scheme. This  mating scheme takes a Python function
-    that accepts both the parental and offspring populations and this
-    function is responsible for setting genotype, sex of the offspring
-    generation. During-mating operators, if needed, have to be applied
-    from this function as well. Note that the subpopulation size
-    parameters are honored and the passed offspring generation has the
-    desired (sub) population sizes. Parameters that control the number
-    of offspring of each family are ignored.
-    This is likely an extremely slow  mating scheme and should be used
-    for experimental uses only. When a  mating scheme is tested, it is
-    recommended to implement it at the C++ level.
+    Hybird  mating scheme. This  mating scheme takes a Python
+    generator that generate parents that will be mated by the  mating
+    scheme. The  mating scheme will generate offspring  population
+    (controlled by newSubPopSize etc), call this function repeatedly
+    to get parents, perform the  mating, produce a number of offspring
+    (controlled by numOffspring etc), and apply given during  mating
+    operators.The parentsGenerator is not a usually Python function,
+    rather a Python generator (use of yield keyword). Please refer to
+    simuPOP user's guide for an example of how to use this  mating
+    scheme.
 
 "; 
 
@@ -7964,21 +9013,9 @@ Description:
 
 Usage:
 
-    pyMating(func=None, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None)
-
-Details:
-
-    Please refer to class  mating for descriptions of other
-    parameters.
-
-Arguments:
-
-    func:           a Python function that accepts two parameters: the
-                    parental and the offspring populations. The
-                    offspring  population is empty, and this function
-                    is responsible for setting genotype, sex etc. of
-                    individuals in the offspring generation.
+    pyMating(chooser, generator, newSubPopSize=[],
+      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
+      subPop=virtualSubPopID, weight=0)
 
 "; 
 
@@ -7994,6 +9031,8 @@ Usage:
 
 "; 
 
+%ignore simuPOP::pyMating::pyMating(const pyMating &rhs);
+
 %feature("docstring") simuPOP::pyMating::clone "
 
 Description:
@@ -8005,8 +9044,6 @@ Usage:
     x.clone()
 
 "; 
-
-%ignore simuPOP::pyMating::pyMating(const pyMating &rhs);
 
 %feature("docstring") simuPOP::pyMating::__repr__ "
 
@@ -8021,7 +9058,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pyMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
+%ignore simuPOP::pyMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::pyMigrator "
 
@@ -8382,7 +9419,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pyOperator::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::pyOperator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::pyOperator::__repr__ "
 
@@ -8485,6 +9522,75 @@ Description:
 Usage:
 
     x.__repr__()
+
+"; 
+
+%feature("docstring") simuPOP::pyParentsChooser "
+
+Description:
+
+    choose two parents using a Python generator does not consider
+    selection
+
+"; 
+
+%feature("docstring") simuPOP::pyParentsChooser::pyParentsChooser "
+
+Description:
+
+    simuPOP::pyParentsChooser::pyParentsChooser
+
+Usage:
+
+    pyParentsChooser(parentsGenerator)
+
+"; 
+
+%feature("docstring") simuPOP::pyParentsChooser::clone "
+
+Description:
+
+    simuPOP::pyParentsChooser::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::pyParentsChooser::initialize "
+
+Description:
+
+    simuPOP::pyParentsChooser::initialize
+
+Usage:
+
+    x.initialize(pop, sp)
+
+"; 
+
+%feature("docstring") simuPOP::pyParentsChooser::~pyParentsChooser "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~pyParentsChooser()
+
+"; 
+
+%feature("docstring") simuPOP::pyParentsChooser::chooseParents "
+
+Description:
+
+    simuPOP::pyParentsChooser::chooseParents
+
+Usage:
+
+    x.chooseParents()
 
 "; 
 
@@ -9098,7 +10204,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pyTagger::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::pyTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::quanTrait "
 
@@ -9213,7 +10319,7 @@ Usage:
     randomMating(numOffspring=1., numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True)
+      contWhenUniSex=True, subPop=virtualSubPopID, weight=0)
 
 Details:
 
@@ -9266,9 +10372,143 @@ Usage:
 
 "; 
 
-%ignore simuPOP::randomMating::submitScratch(population &pop, population &scratch);
+%ignore simuPOP::randomMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
-%ignore simuPOP::randomMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
+%feature("docstring") simuPOP::randomParentChooser "
+
+Description:
+
+    choose a parent randomly
+
+"; 
+
+%feature("docstring") simuPOP::randomParentChooser::randomParentChooser "
+
+Description:
+
+    simuPOP::randomParentChooser::randomParentChooser
+
+Usage:
+
+    randomParentChooser()
+
+"; 
+
+%feature("docstring") simuPOP::randomParentChooser::clone "
+
+Description:
+
+    simuPOP::randomParentChooser::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::randomParentChooser::initialize "
+
+Description:
+
+    simuPOP::randomParentChooser::initialize
+
+Usage:
+
+    x.initialize(pop, sp)
+
+"; 
+
+%feature("docstring") simuPOP::randomParentChooser::chooseParent "
+
+Description:
+
+    simuPOP::randomParentChooser::chooseParent
+
+Usage:
+
+    x.chooseParent()
+
+"; 
+
+%feature("docstring") simuPOP::randomParentsChooser "
+
+Description:
+
+    choose two parents randomly, considering selection
+
+"; 
+
+%feature("docstring") simuPOP::randomParentsChooser::randomParentsChooser "
+
+Description:
+
+    simuPOP::randomParentsChooser::randomParentsChooser
+
+Usage:
+
+    randomParentsChooser()
+
+"; 
+
+%feature("docstring") simuPOP::randomParentsChooser::clone "
+
+Description:
+
+    simuPOP::randomParentsChooser::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::randomParentsChooser::initialize "
+
+Description:
+
+    simuPOP::randomParentsChooser::initialize
+
+Usage:
+
+    x.initialize(pop, sp)
+
+"; 
+
+%feature("docstring") simuPOP::randomParentsChooser::chooseParents "
+
+Description:
+
+    simuPOP::randomParentsChooser::chooseParents
+
+Usage:
+
+    x.chooseParents()
+
+"; 
+
+%feature("docstring") simuPOP::randomParentsChooser::numMale "
+
+Description:
+
+    simuPOP::randomParentsChooser::numMale
+
+Usage:
+
+    x.numMale()
+
+"; 
+
+%feature("docstring") simuPOP::randomParentsChooser::numFemale "
+
+Description:
+
+    simuPOP::randomParentsChooser::numFemale
+
+Usage:
+
+    x.numFemale()
+
+"; 
 
 %feature("docstring") simuPOP::randomSample "
 
@@ -9365,6 +10605,103 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::rangeSplitter "
+
+Details:
+
+    split the  population according to  individual range
+
+"; 
+
+%feature("docstring") simuPOP::rangeSplitter::rangeSplitter "
+
+Description:
+
+    simuPOP::rangeSplitter::rangeSplitter
+
+Usage:
+
+    rangeSplitter(ranges)
+
+Arguments:
+
+    range:          a shortcut for ranges=[range]
+    ranges:         a list of ranges
+
+"; 
+
+%feature("docstring") simuPOP::rangeSplitter::clone "
+
+Description:
+
+    simuPOP::rangeSplitter::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::rangeSplitter::size "
+
+Description:
+
+    simuPOP::rangeSplitter::size
+
+Usage:
+
+    x.size(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::rangeSplitter::numVirtualSubPop "
+
+Description:
+
+    simuPOP::rangeSplitter::numVirtualSubPop
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%feature("docstring") simuPOP::rangeSplitter::activate "
+
+Description:
+
+    simuPOP::rangeSplitter::activate
+
+Usage:
+
+    x.activate(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::rangeSplitter::reset "
+
+Description:
+
+    simuPOP::rangeSplitter::reset
+
+Usage:
+
+    x.reset(pop, sp)
+
+"; 
+
+%feature("docstring") simuPOP::rangeSplitter::name "
+
+Description:
+
+    simuPOP::rangeSplitter::name
+
+Usage:
+
+    x.name(sp)
+
+"; 
+
 %feature("docstring") simuPOP::recombinator "
 
 Description:
@@ -9388,6 +10725,9 @@ Details:
     linkage intensities between adjacent pairs of loci. The
     recombination rate is equivalent to 1-linkage and represents the
     probability that the allele at the next locus is randomly drawn.
+    * it works for selfing. I.e., when only one parent is provided, it
+    will be recombined twice, producing both maternal and paternal
+    chromosomes of the offspring.
 
 "; 
 
@@ -9552,7 +10892,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::recombinator::applyDuringMating(population &pop, population::IndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::recombinator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::RNG "
 
@@ -10120,6 +11460,130 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::selfingOffspringGenerator "
+
+Description:
+
+    simuPOP::selfingOffspringGenerator
+
+"; 
+
+%feature("docstring") simuPOP::selfingOffspringGenerator::selfingOffspringGenerator "
+
+Description:
+
+    simuPOP::selfingOffspringGenerator::selfingOffspringGenerator
+
+Usage:
+
+    selfingOffspringGenerator(numOffspring=1, numOffspringFunc=None,
+      maxNumOffspring=1, mode=MATE_NumOffspring)
+
+"; 
+
+%feature("docstring") simuPOP::selfingOffspringGenerator::clone "
+
+Description:
+
+    simuPOP::selfingOffspringGenerator::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::selfingOffspringGenerator::generateOffspring "
+
+Description:
+
+    generate numOff offspring
+
+Usage:
+
+    x.generateOffspring(pop, parent, , offBegin, offEnd, ops)
+
+"; 
+
+%feature("docstring") simuPOP::selfMating "
+
+Description:
+
+    a  mating scheme of selfing
+
+Details:
+
+    In this  mating scheme, a parent is choosen randomly, acts both as
+    father and mother as in random  mating.
+
+"; 
+
+%feature("docstring") simuPOP::selfMating::selfMating "
+
+Description:
+
+    create a self  mating scheme
+
+Usage:
+
+    selfMating(numOffspring=1., numOffspringFunc=None,
+      maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
+      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
+      contWhenUniSex=True, subPop=virtualSubPopID, weight=0)
+
+Details:
+
+    Please refer to class  mating for descriptions of other
+    parameters.
+
+Arguments:
+
+    contWhenUniSex: continue when there is only one sex in the
+                    population. Default to True.
+
+"; 
+
+%feature("docstring") simuPOP::selfMating::~selfMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~selfMating()
+
+"; 
+
+%feature("docstring") simuPOP::selfMating::clone "
+
+Description:
+
+    deep copy of a self  mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::selfMating::isCompatible(const population &pop) const ;
+
+%feature("docstring") simuPOP::selfMating::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the self  mating scheme
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::selfMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+
 %feature("docstring") simuPOP::setAncestralDepth "
 
 Description:
@@ -10196,6 +11660,98 @@ Description:
 Usage:
 
     x.__repr__()
+
+"; 
+
+%feature("docstring") simuPOP::sexSplitter "
+
+Details:
+
+    split the  population according to sex
+
+"; 
+
+%feature("docstring") simuPOP::sexSplitter::sexSplitter "
+
+Description:
+
+    simuPOP::sexSplitter::sexSplitter
+
+Usage:
+
+    sexSplitter()
+
+"; 
+
+%feature("docstring") simuPOP::sexSplitter::clone "
+
+Description:
+
+    simuPOP::sexSplitter::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::sexSplitter::size "
+
+Description:
+
+    simuPOP::sexSplitter::size
+
+Usage:
+
+    x.size(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::sexSplitter::numVirtualSubPop "
+
+Description:
+
+    simuPOP::sexSplitter::numVirtualSubPop
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%feature("docstring") simuPOP::sexSplitter::activate "
+
+Description:
+
+    simuPOP::sexSplitter::activate
+
+Usage:
+
+    x.activate(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::sexSplitter::reset "
+
+Description:
+
+    simuPOP::sexSplitter::reset
+
+Usage:
+
+    x.reset(pop, sp)
+
+"; 
+
+%feature("docstring") simuPOP::sexSplitter::name "
+
+Description:
+
+    simuPOP::sexSplitter::name
+
+Usage:
+
+    x.name(sp)
 
 "; 
 
@@ -11078,12 +12634,13 @@ Usage:
       numOfAffected=False, numOfAffected_param={}, numOfAlleles=[],
       numOfAlleles_param={}, alleleFreq=[], alleleFreq_param={},
       heteroFreq=[], expHetero=[], expHetero_param={}, homoFreq=[],
-      genoFreq=[], haploFreq=[], LD=[], LD_param={}, association=[],
-      association_param={}, Fst=[], Fst_param={}, relGroups=[],
-      relLoci=[], rel_param={}, relBySubPop=False, relMethod=[],
-      relMinScored=10, hasPhase=False, midValues=False, output=\"\",
-      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      genoFreq=[], genoFreq_param={}, haploFreq=[], LD=[],
+      LD_param={}, association=[], association_param={}, Fst=[],
+      Fst_param={}, relGroups=[], relLoci=[], rel_param={},
+      relBySubPop=False, relMethod=[], relMinScored=10,
+      hasPhase=False, midValues=False, output=\"\", outputExpr=\"\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
 
 Arguments:
 
@@ -11178,6 +12735,8 @@ Arguments:
                     * genoFreq[a][geno] and
                     subPop[sp]['genoFreq'][a][geno], the frequency of
                     genotype geno at allele a.
+                    * genoFreq_param a dictionary of parameters of
+                    phase = 0 or 1.
     heteroFreq:     an array of loci to calculate observed
                     heterozygosities and expected heterozygosities
                     (heteroFreq=[loc1, loc2, ...]). This parameter
@@ -11258,9 +12817,8 @@ Arguments:
                     and LD.
                     * ld['loc1-loc2']['allele1-allele2'],
                     subPop[sp]['ld']['loc1-loc2']['allele1-allele2'].
-                    * ld_prime['loc1-loc2']['allele1-allele2'],
-                    subPop[sp]['ld_prime']['loc1-loc2']['allele1-
-                    allele2'].
+                    * ld_prime['loc1-loc2']['allele1-allele2'], subPop
+                    [sp]['ld_prime']['loc1-loc2']['allele1-allele2'].
                     * r2['loc1-loc2']['allele1-allele2'],
                     subPop[sp]['r2']['loc1-loc2']['allele1-allele2'].
                     * LD[loc1][loc2], subPop[sp]['LD'][loc1][loc2].
@@ -11659,7 +13217,7 @@ Description:
 
 Usage:
 
-    statGenoFreq(genoFreq=[], phase=True)
+    statGenoFreq(genoFreq=[], param={})
 
 "; 
 
@@ -12795,6 +14353,196 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::virtualSubPopID "
+
+Description:
+
+    simuPOP::virtualSubPopID
+
+"; 
+
+%feature("docstring") simuPOP::virtualSubPopID::virtualSubPopID "
+
+Description:
+
+    simuPOP::virtualSubPopID::virtualSubPopID
+
+Usage:
+
+    virtualSubPopID()
+
+"; 
+
+%feature("docstring") simuPOP::virtualSubPopID::id "
+
+Description:
+
+    simuPOP::virtualSubPopID::id
+
+Usage:
+
+    x.id()
+
+"; 
+
+%feature("docstring") simuPOP::virtualSubPopID::vid "
+
+Description:
+
+    simuPOP::virtualSubPopID::vid
+
+Usage:
+
+    x.vid()
+
+"; 
+
+%feature("docstring") simuPOP::virtualSubPopID::isValid "
+
+Description:
+
+    simuPOP::virtualSubPopID::isValid
+
+Usage:
+
+    x.isValid()
+
+"; 
+
+%feature("docstring") simuPOP::virtualSubPopID::isVirtual "
+
+Description:
+
+    simuPOP::virtualSubPopID::isVirtual
+
+Usage:
+
+    x.isVirtual()
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter "
+
+Details:
+
+    virtual subpopss split a subpopulation into virtual sub-
+    subpopulations. The virtual subpopulations do not have to add up
+    to the whole subpopulation, nor they have to be distinct. For
+    example, a virtual subpopulation may be all individuals in a
+    population that is over the age of 30. Or, two virtual populations
+    may overlap so some of the inviduals will go through more than one
+    mating schemes.
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter::vspSplitter "
+
+Description:
+
+    simuPOP::vspSplitter::vspSplitter
+
+Usage:
+
+    vspSplitter()
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter::clone "
+
+Description:
+
+    simuPOP::vspSplitter::clone
+
+Usage:
+
+    x.clone(const=0)
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter::~vspSplitter "
+
+Description:
+
+    simuPOP::vspSplitter::~vspSplitter
+
+Usage:
+
+    x.~vspSplitter()
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter::activated "
+
+Description:
+
+    simuPOP::vspSplitter::activated
+
+Usage:
+
+    x.activated()
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter::size "
+
+Description:
+
+    simuPOP::vspSplitter::size
+
+Usage:
+
+    x.size(pop, =0)
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter::numVirtualSubPop "
+
+Description:
+
+    simuPOP::vspSplitter::numVirtualSubPop
+
+Usage:
+
+    x.numVirtualSubPop(=0)
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter::activate "
+
+Description:
+
+    simuPOP::vspSplitter::activate
+
+Usage:
+
+    x.activate(pop, subPop=0)
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter::reset "
+
+Description:
+
+    simuPOP::vspSplitter::reset
+
+Usage:
+
+    x.reset(pop, subPop=0)
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter::name "
+
+Description:
+
+    simuPOP::vspSplitter::name
+
+Usage:
+
+    x.name(sp=0)
+
+"; 
+
 %feature("docstring") simuPOP::Weightedsampler "
 
 Description:
@@ -12977,7 +14725,7 @@ Usage:
 
 Description:
 
-    get info through GappedInfoIterator
+    get info through IndInfoIterator
 
 Usage:
 
@@ -13058,18 +14806,6 @@ Usage:
 %ignore simuPOP::simuPOP_kbhit();
 
 %ignore simuPOP::simuPOP_getch();
-
-%feature("docstring") simuPOP::testGappedIterator "
-
-Description:
-
-    simuPOP::testGappedIterator
-
-Usage:
-
-    testGappedIterator()
-
-"; 
 
 %ignore simuPOP::PyObj_As_Bool(PyObject *obj, bool &val);
 

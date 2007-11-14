@@ -354,6 +354,19 @@ class TestMatingSchemes(unittest.TestCase):
             ops=[],
             end=10)
     
+    def testHeteroMating(self):
+        'Testing heterogeneous mating schemes'
+        pop = population(subPop=[100, 200])
+        simu = simulator(pop,
+            heteroMating(
+                [randomMating(numOffspring=1, subPop=virtualSubPopID(0)),
+                randomMating(numOffspring=2, subPop=virtualSubPopID(1))])
+        )
+        simu.evolve(
+            preOps=[initByFreq([0.3, 0.7])],
+            ops=[],
+            end=10)
+
         
 ##   def testFreqTrajWithSubPop(self):
 ##     'Testing trajctory simulation with subpopulation structure'
