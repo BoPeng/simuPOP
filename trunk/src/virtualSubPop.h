@@ -109,7 +109,7 @@ private:
 class vspSplitter
 {
 public:
-	vspSplitter()
+	vspSplitter() : m_activated(false)
 	{
 	}
 

@@ -66,7 +66,7 @@ bool penetrance::apply(population & pop)
 }
 
 
-bool penetrance::applyDuringMating(population & pop, IndIterator offspring,
+bool penetrance::applyDuringMating(population & pop, RawIndIterator offspring,
                                    individual * dad, individual * mom)
 {
 	double p = penet(& * offspring);

@@ -121,11 +121,6 @@ class TestUtility(unittest.TestCase):
         #print [num.count(i) for i in range(4)]
 
 
-    def testGappedIterator(self):
-        'Testing gapped iterator (internal)'
-        self.assertEqual(testGappedIterator(), True)
-            
-    
     def TestLargePedigree(self):
         'Testing getting large pedigree, for simuUtils.ascertainPedigree'
         import simuUtil

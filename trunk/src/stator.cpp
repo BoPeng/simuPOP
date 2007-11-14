@@ -668,7 +668,6 @@ bool statGenoFreq::apply(population & pop)
 			for (; it != itEnd;  it += 2) {
 				a = *it;
 				b = *(it + 1);
-
 				if (!m_phase && a > b)
 					std::swap(a, b);
 
