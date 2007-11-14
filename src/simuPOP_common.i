@@ -246,6 +246,7 @@ namespace std
 %include "population.h"
 %include "slave.h"
 %include "operator.h"
+%include "mating.h"
 
 %extend simuPOP::population
 {
@@ -260,13 +261,11 @@ namespace std
 {
     %template(vectorobj)    vector<PyObject*>;
     %template(vectorop)     vector<simuPOP::baseOperator * >;
+    %template(vectormating)   vector<simuPOP::mating * >;
 }
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////
 
-%rename(output) simuPOP::outputHelper;
-
-%include "mating.h"
 %include "simulator.h"
 %include "stator.h"
 %include "outputer.h"

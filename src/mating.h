@@ -330,9 +330,12 @@ public:
 	}
 
 
-	virtual parentChooser * clone() const = 0;
+	virtual parentChooser * clone() const
+	{
+		return new parentChooser(*this);
+	}
 
-	virtual void initialize(population & pop, SubPopID subPop);
+	virtual void initialize(population & pop, SubPopID subPop) {}
 
 	bool initialized() const
 	{
