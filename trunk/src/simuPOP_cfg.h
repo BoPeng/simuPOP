@@ -139,6 +139,7 @@ typedef double InfoType;
 typedef std::vector<double>::iterator InfoIterator;
 typedef std::vector<double>::const_iterator ConstInfoIterator;
 typedef signed short SubPopID;
+const signed short InvalidSubPopID = -1;
 const unsigned long MaxSubPopID = std::numeric_limits<SubPopID>::max();
 
 typedef unsigned long ULONG;

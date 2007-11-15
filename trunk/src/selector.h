@@ -283,7 +283,6 @@ public:
 #define SEL_Additive 2
 #define SEL_Heterogeneity 3
 
-
 public:
 	/// create a multiple-locus selector
 	/**

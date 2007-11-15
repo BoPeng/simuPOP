@@ -233,31 +233,40 @@ public:
 	}
 
 
+	/// if a population has any activated virtual subpopulations
 	bool hasActivatedVirtualSubPop() const;
 
+	/// if a subpopulation has any activated virtual subpopulation
 	bool hasActivatedVirtualSubPop(SubPopID subPop) const;
 
+	/// if a subpopulation has any virtual subpopulation
 	bool hasVirtualSubPop(SubPopID subpop) const;
 
+	/// set a virtual splitter to a given subpopulation.
 	vspSplitter * setVirtualSplitter(vspSplitter * vsp, SubPopID sp);
 
+	/// number of virtual subpopulation of a given subpopulation.
 	UINT numVirtualSubPop(SubPopID subPop) const;
 
-	void activateVirtualSubPop(virtualSubPopID subPop);
+	/// activate a virtual subpopulation.
+	/**
+	 \param id subpopulation id
+	 \param vid virtual subpopulation id
+	 */
+	void activateVirtualSubPop(SubPopID id, SubPopID vid = InvalidSubPopID);
+
+	/// CPPONLY
+	void activateVirtualSubPop(vspID subPop);
 
 	/// CPPONLY
 	/// Copy virtual splitters if two populations have
 	/// the same number of subpopulations.
 	void copyVirtualSplitters(const population & rhs);
-	
-	// for swig interface
-	void activateVirtualSubPop(double subPop)
-	{
-		activateVirtualSubPop(virtualSubPopID(subPop));
-	}
 
-
-	void resetVirtualSubPop(SubPopID subPop);
+	/// deactivate virtual subpopulations in a given
+	/// subpopulation. In another word, all individuals
+	/// will become visible.
+	void deactivateVirtualSubPop(SubPopID subPop);
 
 	// allow compaison of populations in python
 	// only equal or unequal, no greater or less than
@@ -299,27 +308,33 @@ public:
 	}
 
 
-	/// return the size of virtual subpopulation subPop.
-	/// if subPop is activated, and subPop does not specify
-	/// which virtual subpopulation to count, the currently
-	/// activated virtual subpop is returned.
-	ULONG virtualSubPopSize(virtualSubPopID subPop) const;
+	/// CPPONLY
+	ULONG virtualSubPopSize(vspID subPop) const;
 
-	// for swig interface
-	ULONG virtualSubPopSize(double subPop) const
-	{
-		return virtualSubPopSize(virtualSubPopID(subPop));
-	}
+	/**
+	   return the size of virtual subpopulation subPop.
+	   if subPop is activated, and subPop does not specify
+	   which virtual subpopulation to count, the currently
+	   activated virtual subpop is returned. Therefore,
+	   When it is not certain if a subpopulation has activated
+	   virtual subpopulation, this function can be used.
 
+	 \param id subpopulation id
+	 \param vid virtual subpopulation id. If not given,
+	   current subpopulation, or current actived subpopulation size
+	   will be returned.
+	 */
+	ULONG virtualSubPopSize(SubPopID id, SubPopID vid = InvalidSubPopID) const;
 
-	string virtualSubPopName(virtualSubPopID subPop) const;
+	/// name of the given virtual subpopulation.
+	/**
+	 \param id subpopulation id
+	 \param vid virtual subpopulation id
+	 */
+	string virtualSubPopName(SubPopID id, SubPopID vid = InvalidSubPopID) const;
 
-	// for swig interface
-	string virtualSubPopName(double subPop) const
-	{
-		return virtualSubPopName(virtualSubPopID(subPop));
-	}
-
+	/// CPPONLY
+	string virtualSubPopName(vspID subPop) const;
 
 	/// return an array of all subpopulation sizes.
 	/**
