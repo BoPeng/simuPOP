@@ -229,6 +229,27 @@ pop.useAncestralPop(0)
 # Note that I can not use pop now, since it is
 # obtained from simu.population(0) which is invalid now.
 
+#file log/ref_virtualSubPop.log
+import random
+pop = population(1000, loci=[2, 3], infoFields=['age'])
+InitByFreq(pop, [0.2, 0.8])
+for ind in pop.individuals():
+    ind.setInfo(random.randint(0,5), 'age')
+
+# split by age
+pop.setVirtualSplitter(infoSplitter('age', values=[2,4]), 0)
+pop.virtualSubPopSize(0, 0)
+pop.virtualSubPopName(0, 1)
+
+# split by genotype
+a = pop.setVirtualSplitter(
+    genotypeSplitter(locus=2, alleles=[[0,1], [1,1]], phase=True),
+    0)
+pop.virtualSubPopSize(0, 0)
+pop.virtualSubPopSize(0, 1)
+#end
+
+
 
 #file log/ref_saveFstat.log
 from simuUtil import *

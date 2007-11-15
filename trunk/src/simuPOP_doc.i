@@ -160,7 +160,7 @@ Usage:
 
 Description:
 
-    simuPOP::affectionSplitter::size
+    the size of a given virtual subpopulation.
 
 Usage:
 
@@ -172,7 +172,7 @@ Usage:
 
 Description:
 
-    simuPOP::affectionSplitter::numVirtualSubPop
+    number of virtual subpops of subpopulation sp
 
 Usage:
 
@@ -184,7 +184,8 @@ Usage:
 
 Description:
 
-    simuPOP::affectionSplitter::activate
+    mark individuals in the given vsp as visible, and others
+    invisible.
 
 Usage:
 
@@ -192,15 +193,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::affectionSplitter::reset "
+%feature("docstring") simuPOP::affectionSplitter::deactivate "
 
 Description:
 
-    simuPOP::affectionSplitter::reset
+    deactivate. Namely make all individuals visible again.
 
 Usage:
 
-    x.reset(pop, sp)
+    x.deactivate(pop, sp)
 
 "; 
 
@@ -208,7 +209,7 @@ Usage:
 
 Description:
 
-    simuPOP::affectionSplitter::name
+    name of a virtual subpopulation
 
 Usage:
 
@@ -802,7 +803,7 @@ Usage:
     binomialSelection(numOffspring=1., numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
       newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
-      subPop=virtualSubPopID, weight=0)
+      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
 
 Details:
 
@@ -1223,7 +1224,8 @@ Usage:
       numOffspring=1., numOffspringFunc=None, maxNumOffspring=0,
       mode=MATE_NumOffspring, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=virtualSubPopID, weight=0)
+      contWhenUniSex=True, subPop=InvalidSubPopID,
+      virtualSubPop=InvalidSubPopID, weight=0)
 
 Details:
 
@@ -1471,7 +1473,7 @@ Usage:
 
 Description:
 
-    simuPOP::duplicateSplitter::numVirtualSubPop
+    number of virtual subpops of subpopulation sp
 
 Usage:
 
@@ -1483,7 +1485,7 @@ Usage:
 
 Description:
 
-    simuPOP::duplicateSplitter::size
+    the size of a given virtual subpopulation.
 
 Usage:
 
@@ -1495,7 +1497,7 @@ Usage:
 
 Description:
 
-    simuPOP::duplicateSplitter::name
+    name of a virtual subpopulation
 
 Usage:
 
@@ -2158,7 +2160,7 @@ Usage:
 
 Description:
 
-    simuPOP::genotypeSplitter::size
+    the size of a given virtual subpopulation.
 
 Usage:
 
@@ -2170,7 +2172,7 @@ Usage:
 
 Description:
 
-    simuPOP::genotypeSplitter::numVirtualSubPop
+    number of virtual subpops of subpopulation sp
 
 Usage:
 
@@ -2182,7 +2184,8 @@ Usage:
 
 Description:
 
-    simuPOP::genotypeSplitter::activate
+    mark individuals in the given vsp as visible, and others
+    invisible.
 
 Usage:
 
@@ -2190,15 +2193,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::genotypeSplitter::reset "
+%feature("docstring") simuPOP::genotypeSplitter::deactivate "
 
 Description:
 
-    simuPOP::genotypeSplitter::reset
+    deactivate. Namely make all individuals visible again.
 
 Usage:
 
-    x.reset(pop, sp)
+    x.deactivate(pop, sp)
 
 "; 
 
@@ -2206,7 +2209,7 @@ Usage:
 
 Description:
 
-    simuPOP::genotypeSplitter::name
+    name of a virtual subpopulation
 
 Usage:
 
@@ -2395,7 +2398,7 @@ Usage:
 
     heteroMating(matingSchemes, newSubPopSize=[],
       newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
-      subPop=virtualSubPopID, weight=0)
+      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
 
 "; 
 
@@ -3259,7 +3262,7 @@ Usage:
 
 Description:
 
-    simuPOP::infoSplitter::size
+    the size of a given virtual subpopulation.
 
 Usage:
 
@@ -3271,7 +3274,7 @@ Usage:
 
 Description:
 
-    simuPOP::infoSplitter::numVirtualSubPop
+    number of virtual subpops of subpopulation sp
 
 Usage:
 
@@ -3283,7 +3286,8 @@ Usage:
 
 Description:
 
-    simuPOP::infoSplitter::activate
+    mark individuals in the given vsp as visible, and others
+    invisible.
 
 Usage:
 
@@ -3291,15 +3295,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::infoSplitter::reset "
+%feature("docstring") simuPOP::infoSplitter::deactivate "
 
 Description:
 
-    simuPOP::infoSplitter::reset
+    deactivate. Namely make all individuals visible again.
 
 Usage:
 
-    x.reset(pop, sp)
+    x.deactivate(pop, sp)
 
 "; 
 
@@ -3307,7 +3311,7 @@ Usage:
 
 Description:
 
-    simuPOP::infoSplitter::name
+    name of a virtual subpopulation
 
 Usage:
 
@@ -4638,7 +4642,8 @@ Description:
 Usage:
 
     mating(newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None, subPop=virtualSubPopID, weight=0)
+      newSubPopSizeFunc=None, subPop=InvalidSubPopID,
+      virtualSubPop=InvalidSubPopID, weight=0)
 
 Details:
 
@@ -5619,7 +5624,7 @@ Usage:
     noMating(numOffspring=1.0, numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
       newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
-      subPop=virtualSubPopID, weight=0)
+      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
 
 Note:
 
@@ -5888,7 +5893,7 @@ Usage:
 
 Description:
 
-    simuPOP::nullSplitter::size
+    the size of a given virtual subpopulation.
 
 Usage:
 
@@ -5900,7 +5905,7 @@ Usage:
 
 Description:
 
-    simuPOP::nullSplitter::numVirtualSubPop
+    number of virtual subpops of subpopulation sp
 
 Usage:
 
@@ -5912,7 +5917,8 @@ Usage:
 
 Description:
 
-    simuPOP::nullSplitter::activate
+    mark individuals in the given vsp as visible, and others
+    invisible.
 
 Usage:
 
@@ -5920,15 +5926,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::nullSplitter::reset "
+%feature("docstring") simuPOP::nullSplitter::deactivate "
 
 Description:
 
-    simuPOP::nullSplitter::reset
+    deactivate. Namely make all individuals visible again.
 
 Usage:
 
-    x.reset(pop, sp)
+    x.deactivate(pop, sp)
 
 "; 
 
@@ -5936,7 +5942,7 @@ Usage:
 
 Description:
 
-    simuPOP::nullSplitter::name
+    name of a virtual subpopulation
 
 Usage:
 
@@ -7045,7 +7051,7 @@ Usage:
 
 Description:
 
-    simuPOP::population::hasActivatedVirtualSubPop
+    if a  population has any activated virtual subpopulations
 
 Usage:
 
@@ -7053,11 +7059,23 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::population::hasActivatedVirtualSubPop "
+
+Description:
+
+    if a subpopulation has any activated virtual subpopulation
+
+Usage:
+
+    x.hasActivatedVirtualSubPop(subPop)
+
+"; 
+
 %feature("docstring") simuPOP::population::hasVirtualSubPop "
 
 Description:
 
-    simuPOP::population::hasVirtualSubPop
+    if a subpopulation has any virtual subpopulation
 
 Usage:
 
@@ -7069,7 +7087,7 @@ Usage:
 
 Description:
 
-    simuPOP::population::setVirtualSplitter
+    set a virtual splitter to a given subpopulation.
 
 Usage:
 
@@ -7081,7 +7099,7 @@ Usage:
 
 Description:
 
-    simuPOP::population::numVirtualSubPop
+    number of virtual subpopulation of a given subpopulation.
 
 Usage:
 
@@ -7093,25 +7111,33 @@ Usage:
 
 Description:
 
-    simuPOP::population::activateVirtualSubPop
+    activate a virtual subpopulation.
 
 Usage:
 
-    x.activateVirtualSubPop(subPop)
+    x.activateVirtualSubPop(id, vid=InvalidSubPopID)
+
+Arguments:
+
+    id:             subpopulation id
+    vid:            virtual subpopulation id
 
 "; 
 
+%ignore simuPOP::population::activateVirtualSubPop(virtualSubPopID subPop);
+
 %ignore simuPOP::population::copyVirtualSplitters(const population &rhs);
 
-%feature("docstring") simuPOP::population::resetVirtualSubPop "
+%feature("docstring") simuPOP::population::deactivateVirtualSubPop "
 
 Description:
 
-    simuPOP::population::resetVirtualSubPop
+    deactivate virtual subpopulations in a given subpopulation. In
+    another word, all individuals will become visible.
 
 Usage:
 
-    x.resetVirtualSubPop(subPop)
+    x.deactivateVirtualSubPop(subPop)
 
 "; 
 
@@ -7176,29 +7202,28 @@ Arguments:
 
 "; 
 
+%ignore simuPOP::population::virtualSubPopSize(virtualSubPopID subPop) const ;
+
 %feature("docstring") simuPOP::population::virtualSubPopSize "
 
-Description:
+Usage:
+
+    x.virtualSubPopSize(id, vid=InvalidSubPopID)
+
+Details:
 
     return the size of virtual subpopulation subPop. if subPop is
     activated, and subPop does not specify which virtual subpopulation
     to count, the currently activated virtual subpop is returned.
+    Therefore, When it is not certain if a subpopulation has activated
+    virtual subpopulation, this function can be used.
 
-Usage:
+Arguments:
 
-    x.virtualSubPopSize(subPop)
-
-"; 
-
-%feature("docstring") simuPOP::population::virtualSubPopSize "
-
-Description:
-
-    simuPOP::population::virtualSubPopSize
-
-Usage:
-
-    x.virtualSubPopSize(subPop)
+    id:             subpopulation id
+    vid:            virtual subpopulation id. If not given, current
+                    subpopulation, or current actived subpopulation
+                    size will be returned.
 
 "; 
 
@@ -7206,13 +7231,20 @@ Usage:
 
 Description:
 
-    simuPOP::population::virtualSubPopName
+    name of the given virtual subpopulation.
 
 Usage:
 
-    x.virtualSubPopName(subPop)
+    x.virtualSubPopName(id, vid=InvalidSubPopID)
+
+Arguments:
+
+    id:             subpopulation id
+    vid:            virtual subpopulation id
 
 "; 
+
+%ignore simuPOP::population::virtualSubPopName(virtualSubPopID subPop) const ;
 
 %feature("docstring") simuPOP::population::subPopSizes "
 
@@ -8431,7 +8463,7 @@ Usage:
 
 Description:
 
-    simuPOP::proportionSplitter::size
+    the size of a given virtual subpopulation.
 
 Usage:
 
@@ -8443,7 +8475,7 @@ Usage:
 
 Description:
 
-    simuPOP::proportionSplitter::numVirtualSubPop
+    number of virtual subpops of subpopulation sp
 
 Usage:
 
@@ -8455,7 +8487,8 @@ Usage:
 
 Description:
 
-    simuPOP::proportionSplitter::activate
+    mark individuals in the given vsp as visible, and others
+    invisible.
 
 Usage:
 
@@ -8463,15 +8496,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::proportionSplitter::reset "
+%feature("docstring") simuPOP::proportionSplitter::deactivate "
 
 Description:
 
-    simuPOP::proportionSplitter::reset
+    deactivate. Namely make all individuals visible again.
 
 Usage:
 
-    x.reset(pop, sp)
+    x.deactivate(pop, sp)
 
 "; 
 
@@ -8479,7 +8512,7 @@ Usage:
 
 Description:
 
-    simuPOP::proportionSplitter::name
+    name of a virtual subpopulation
 
 Usage:
 
@@ -9029,7 +9062,7 @@ Usage:
 
     pyMating(chooser, generator, newSubPopSize=[],
       newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
-      subPop=virtualSubPopID, weight=0)
+      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
 
 "; 
 
@@ -10333,7 +10366,8 @@ Usage:
     randomMating(numOffspring=1., numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=virtualSubPopID, weight=0)
+      contWhenUniSex=True, subPop=InvalidSubPopID,
+      virtualSubPop=InvalidSubPopID, weight=0)
 
 Details:
 
@@ -10660,7 +10694,7 @@ Usage:
 
 Description:
 
-    simuPOP::rangeSplitter::size
+    the size of a given virtual subpopulation.
 
 Usage:
 
@@ -10672,7 +10706,7 @@ Usage:
 
 Description:
 
-    simuPOP::rangeSplitter::numVirtualSubPop
+    number of virtual subpops of subpopulation sp
 
 Usage:
 
@@ -10684,7 +10718,8 @@ Usage:
 
 Description:
 
-    simuPOP::rangeSplitter::activate
+    mark individuals in the given vsp as visible, and others
+    invisible.
 
 Usage:
 
@@ -10692,15 +10727,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::rangeSplitter::reset "
+%feature("docstring") simuPOP::rangeSplitter::deactivate "
 
 Description:
 
-    simuPOP::rangeSplitter::reset
+    deactivate. Namely make all individuals visible again.
 
 Usage:
 
-    x.reset(pop, sp)
+    x.deactivate(pop, sp)
 
 "; 
 
@@ -10708,7 +10743,7 @@ Usage:
 
 Description:
 
-    simuPOP::rangeSplitter::name
+    name of a virtual subpopulation
 
 Usage:
 
@@ -11543,7 +11578,8 @@ Usage:
     selfMating(numOffspring=1., numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=virtualSubPopID, weight=0)
+      contWhenUniSex=True, subPop=InvalidSubPopID,
+      virtualSubPop=InvalidSubPopID, weight=0)
 
 Details:
 
@@ -11713,7 +11749,7 @@ Usage:
 
 Description:
 
-    simuPOP::sexSplitter::size
+    the size of a given virtual subpopulation.
 
 Usage:
 
@@ -11725,7 +11761,7 @@ Usage:
 
 Description:
 
-    simuPOP::sexSplitter::numVirtualSubPop
+    number of virtual subpops of subpopulation sp
 
 Usage:
 
@@ -11737,7 +11773,8 @@ Usage:
 
 Description:
 
-    simuPOP::sexSplitter::activate
+    mark individuals in the given vsp as visible, and others
+    invisible.
 
 Usage:
 
@@ -11745,15 +11782,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::sexSplitter::reset "
+%feature("docstring") simuPOP::sexSplitter::deactivate "
 
 Description:
 
-    simuPOP::sexSplitter::reset
+    deactivate. Namely make all individuals visible again.
 
 Usage:
 
-    x.reset(pop, sp)
+    x.deactivate(pop, sp)
 
 "; 
 
@@ -11761,7 +11798,7 @@ Usage:
 
 Description:
 
-    simuPOP::sexSplitter::name
+    name of a virtual subpopulation
 
 Usage:
 
@@ -14379,7 +14416,7 @@ Description:
 
 Description:
 
-    simuPOP::virtualSubPopID::virtualSubPopID
+    Default constructor that returns an invalid  virtualSubPopID.
 
 Usage:
 
@@ -14387,11 +14424,37 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::virtualSubPopID::virtualSubPopID "
+
+Description:
+
+    Construct an  virtualSubPopID with only subpopulaton index. Such a
+    virtualSubPopID does not refer to any virtual subpop.
+
+Usage:
+
+    virtualSubPopID(id)
+
+"; 
+
+%feature("docstring") simuPOP::virtualSubPopID::virtualSubPopID "
+
+Description:
+
+    Construct an  virtualSubPopID with both subpopulation and virtual
+    subpopulation ID.
+
+Usage:
+
+    virtualSubPopID(id, vid)
+
+"; 
+
 %feature("docstring") simuPOP::virtualSubPopID::id "
 
 Description:
 
-    simuPOP::virtualSubPopID::id
+    Return the subpopulation ID.
 
 Usage:
 
@@ -14403,7 +14466,7 @@ Usage:
 
 Description:
 
-    simuPOP::virtualSubPopID::vid
+    Return the virtual subpopulaiton ID.
 
 Usage:
 
@@ -14415,7 +14478,7 @@ Usage:
 
 Description:
 
-    simuPOP::virtualSubPopID::isValid
+    If the  virtualSubPopID is valid.
 
 Usage:
 
@@ -14427,7 +14490,7 @@ Usage:
 
 Description:
 
-    simuPOP::virtualSubPopID::isVirtual
+    If the  virtualSubPopID has a virtual subpopulation ID.
 
 Usage:
 
@@ -14444,8 +14507,8 @@ Details:
     to the whole subpopulation, nor they have to be distinct. For
     example, a virtual subpopulation may be all individuals in a
     population that is over the age of 30. Or, two virtual populations
-    may overlap so some of the inviduals will go through more than one
-    mating schemes.
+    may overlap so some of the inviduals may belong to more than one
+    virtual subpopulations.
 
 "; 
 
@@ -14489,7 +14552,7 @@ Usage:
 
 Description:
 
-    simuPOP::vspSplitter::activated
+    if the virtual subpopulation is activated.
 
 Usage:
 
@@ -14501,7 +14564,7 @@ Usage:
 
 Description:
 
-    simuPOP::vspSplitter::size
+    the size of a given virtual subpopulation.
 
 Usage:
 
@@ -14513,7 +14576,7 @@ Usage:
 
 Description:
 
-    simuPOP::vspSplitter::numVirtualSubPop
+    number of virtual subpops of subpopulation sp
 
 Usage:
 
@@ -14525,7 +14588,8 @@ Usage:
 
 Description:
 
-    simuPOP::vspSplitter::activate
+    mark individuals in the given vsp as visible, and others
+    invisible.
 
 Usage:
 
@@ -14533,15 +14597,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::vspSplitter::reset "
+%feature("docstring") simuPOP::vspSplitter::deactivate "
 
 Description:
 
-    simuPOP::vspSplitter::reset
+    deactivate. Namely make all individuals visible again.
 
 Usage:
 
-    x.reset(pop, subPop=0)
+    x.deactivate(pop, subPop=0)
 
 "; 
 
@@ -14549,7 +14613,7 @@ Usage:
 
 Description:
 
-    simuPOP::vspSplitter::name
+    name of a virtual subpopulation
 
 Usage:
 
