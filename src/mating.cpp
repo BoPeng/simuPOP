@@ -375,7 +375,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 	} else
 		// get currently visible individuals. In case that sp is not virtual
 		// pop.subPopSize is called.
-		m_size = pop.virtualSubPopSize(vspID(sp));
+		m_size = pop.virtualSubPopSize(virtualSubPopID(sp));
 	m_initialized = true;
 }
 

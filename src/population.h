@@ -256,7 +256,7 @@ public:
 	void activateVirtualSubPop(SubPopID id, SubPopID vid = InvalidSubPopID);
 
 	/// CPPONLY
-	void activateVirtualSubPop(vspID subPop);
+	void activateVirtualSubPop(virtualSubPopID subPop);
 
 	/// CPPONLY
 	/// Copy virtual splitters if two populations have
@@ -309,7 +309,7 @@ public:
 
 
 	/// CPPONLY
-	ULONG virtualSubPopSize(vspID subPop) const;
+	ULONG virtualSubPopSize(virtualSubPopID subPop) const;
 
 	/**
 	   return the size of virtual subpopulation subPop.
@@ -334,7 +334,7 @@ public:
 	string virtualSubPopName(SubPopID id, SubPopID vid = InvalidSubPopID) const;
 
 	/// CPPONLY
-	string virtualSubPopName(vspID subPop) const;
+	string virtualSubPopName(virtualSubPopID subPop) const;
 
 	/// return an array of all subpopulation sizes.
 	/**

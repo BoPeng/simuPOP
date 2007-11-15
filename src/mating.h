@@ -572,7 +572,7 @@ public:
 	}
 
 
-	vspID subPop() const
+	virtualSubPopID subPop() const
 	{
 		return m_subPop;
 	}
@@ -639,7 +639,7 @@ protected:
 	PyObject * m_subPopSizeFunc;
 
 	///
-	vspID m_subPop;
+	virtualSubPopID m_subPop;
 
 	///
 	double m_weight;
