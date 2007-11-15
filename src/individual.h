@@ -122,6 +122,16 @@ protected:
 	/// to implement virtual subpopulations
 	static const size_t m_flagVisible = 8;
 
+	/// if this individual is iteratable. This will
+	/// not affect how activated virtual subpoulations 
+	/// behave, but will affect how pyIndIterator
+	/// iterate through the population.
+	///
+	/// In short, this is supposed to be a temporary, light
+	/// weight flag that help iterators go through virtual
+	/// subpopulation.
+	static const size_t m_flagIteratable = 16;
+
 public:
 	///  @name constructor, destructor etc
 	//@{
@@ -420,13 +430,28 @@ public:
 			RESETFLAG(m_flags, m_flagAffected);
 	}
 
+	/// CPPONLY
+	bool iteratable() const
+	{
+		return ISSETFLAG(m_flags, m_flagIteratable);
+	}
 
+	/// CPPONLY
+	void setIteratable(bool iteratable)
+	{
+		if (iteratable)
+			SETFLAG(m_flags, m_flagIteratable);
+		else
+			RESETFLAG(m_flags, m_flagIteratable);
+	}
+	
+	/// CPPONLY
 	bool visible() const
 	{
 		return ISSETFLAG(m_flags, m_flagVisible);
 	}
 
-
+	/// CPPONLY
 	void setVisible(bool visible)
 	{
 		if (visible)
@@ -743,10 +768,12 @@ class pyIndIterator
 {
 public:
 	pyIndIterator(vector<individual>::iterator const begin,
-	              vector<individual>::iterator const end, bool allInds) :
+	              vector<individual>::iterator const end,
+				  bool allInds, bool allVisibles) :
 		m_index(begin),
 		m_end(end),
-		m_allInds(allInds)
+		m_allInds(allInds),
+		m_allVisibles(allVisibles)
 	{
 		// m_index does not have to be pointed to the first
 		// valid individual. the next() function will return
@@ -776,6 +803,8 @@ private:
 
 	//
 	bool m_allInds;
+	//
+	bool m_allVisibles;
 };
 
 /**

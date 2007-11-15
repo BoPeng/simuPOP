@@ -234,9 +234,11 @@ public:
 
 
 	/// if a population has any activated virtual subpopulations
+	/// CPPONLY
 	bool hasActivatedVirtualSubPop() const;
 
 	/// if a subpopulation has any activated virtual subpopulation
+	/// CPPONLY
 	bool hasActivatedVirtualSubPop(SubPopID subPop) const;
 
 	/// if a subpopulation has any virtual subpopulation
@@ -248,12 +250,13 @@ public:
 	/// number of virtual subpopulation of a given subpopulation.
 	UINT numVirtualSubPop(SubPopID subPop) const;
 
-	/// activate a virtual subpopulation.
+	/// activate a virtual subpopulation. CPPONLY
 	/**
 	 \param id subpopulation id
 	 \param vid virtual subpopulation id
 	 */
-	void activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID);
+	void activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID,
+		vspSplitter::activateType type = vspSplitter::Visible);
 
 	/// CPPONLY
 	/// Copy virtual splitters if two populations have
@@ -263,6 +266,7 @@ public:
 	/// deactivate virtual subpopulations in a given
 	/// subpopulation. In another word, all individuals
 	/// will become visible.
+	/// CPPONLY
 	void deactivateVirtualSubPop(SubPopID subPop);
 
 	// allow compaison of populations in python
@@ -450,24 +454,55 @@ public:
 	 */
 	pyIndIterator individuals()
 	{
+		// if a virtual subpopulation is activated, this will
+		// iterate through virtual subpopulation. However,
+		// users are not supposed to manually activate subpopulation
+		// so this feature is CPPONLY
 		return pyIndIterator(m_inds.begin(), m_inds.end(),
-		           !hasActivatedVirtualSubPop());
+		           !hasActivatedVirtualSubPop(), true);
 	}
 
 
 	/// return an iterator that can be used to iterate through all individuals in subpopulation \c subPop
-	pyIndIterator individuals(UINT subPop)
+	pyIndIterator individuals(SubPopID subPop)
 	{
 #ifndef OPTIMIZED
 		CHECKRANGESUBPOP(subPop);
 #endif
-
+		// if a virtual subpopulation is activated, this will
+		// iterate through virtual subpopulation. However,
+		// users are not supposed to manually activate subpopulation
+		// so this feature is CPPONLY
 		return pyIndIterator(m_inds.begin() + subPopBegin(subPop),
 		           m_inds.begin() + subPopEnd(subPop),
-		           !hasActivatedVirtualSubPop(subPop));
+				   // if there is no activated virtual subpopualtions
+				   // iterate through all individuals.
+		           !hasActivatedVirtualSubPop(subPop),
+				   // otherwise, iterate through all visible individuals.
+				   true);
 	}
 
-
+	pyIndIterator individuals(SubPopID subPop, SubPopID virtualSubPop)
+	{
+#ifndef OPTIMIZED
+		CHECKRANGESUBPOP(subPop);
+#endif
+		DBG_FAILIF(hasVirtualSubPop(subPop), ValueError,
+			"Population does not have any virtual subpopulation");
+		
+		// this does not need to be deactivated...
+		activateVirtualSubPop(subPop, virtualSubPop, vspSplitter::Iteratable);
+		
+		// if there is no virtual subpop
+		return pyIndIterator(m_inds.begin() + subPopBegin(subPop),
+		           m_inds.begin() + subPopEnd(subPop),
+				   // allInds will not work at all, because there will be
+				   // virtual subpopulation
+		           false,
+				   // and we count visible, and iteratable individuals.
+				   false);
+	}
+	
 	/// CPPONLY refernce to individual \c ind in subpopulation \c subPop
 	/**
 	   Return individual \ind from subpopulation \subPop. This function

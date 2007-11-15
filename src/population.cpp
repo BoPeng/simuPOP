@@ -350,13 +350,14 @@ void population::copyVirtualSplitters(const population & rhs)
 }
 
 
-void population::activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop)
+void population::activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop,
+	vspSplitter::activateType type )
 {
 	CHECKRANGESUBPOP(subPop);
 	DBG_ASSERT(virtualSubPop != InvalidSubPopID, ValueError, "Given virtual subpopulation ID is wrong");
 	DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
 	    "Subpopulation " + toStr(subPop) + " has no virtual subpopulations");
-	m_virtualSubPops[subPop]->activate(*this, subPop, virtualSubPop);
+	m_virtualSubPops[subPop]->activate(*this, subPop, virtualSubPop, type);
 }
 
 

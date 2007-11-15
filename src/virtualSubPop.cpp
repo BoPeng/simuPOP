@@ -85,7 +85,8 @@ ULONG sexSplitter::size(const population & pop, SubPopID subPop, SubPopID virtua
 }
 
 
-void sexSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void sexSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type)
 {
 	Sex s = virtualSubPop == 0 ? Male : Female;
 
@@ -121,7 +122,8 @@ ULONG affectionSplitter::size(const population & pop, SubPopID subPop, SubPopID 
 }
 
 
-void affectionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void affectionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type)
 {
 	bool aff = virtualSubPop == 0 ? false : true;
 
@@ -221,7 +223,8 @@ UINT infoSplitter::numVirtualSubPop()
 }
 
 
-void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type)
 {
 	UINT idx = pop.infoIdx(m_info);
 
@@ -322,7 +325,8 @@ UINT proportionSplitter::numVirtualSubPop()
 }
 
 
-void proportionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void proportionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type)
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_proportions.size(), IndexError,
 	    "Virtual subpopulation index out of range");
@@ -400,7 +404,8 @@ UINT rangeSplitter::numVirtualSubPop()
 }
 
 
-void rangeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void rangeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type)
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_ranges.size(), IndexError,
 	    "Virtual subpopulation index out of range");
@@ -464,7 +469,8 @@ UINT genotypeSplitter::numVirtualSubPop()
 }
 
 
-void genotypeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void genotypeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type)
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_alleles.size(), IndexError,
 	    "Virtual subpopulation index out of genotype");
