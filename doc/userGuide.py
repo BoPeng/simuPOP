@@ -355,6 +355,20 @@ simu = simulator(pop,
 simu.step()
 #end
 
+#file log/heteroMating.log
+TurnOnDebug(DBG_MATING)
+pop = population(100, loci=[2])
+pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]), 0)
+simu = simulator(pop, heteroMating(
+    [selfMating(numOffspring=5, subPop=0, virtualSubPop=0),
+    randomMating(numOffspring=20, subPop=0, virtualSubPop=1)]))
+
+simu.step()
+print simu.dvars(0).famSizes
+TurnOffDebug(DBG_MATING)
+#end
+
+
 #file log/operatorstages.log
 d = dumper()
 print d.canApplyPreMating()

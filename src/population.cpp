@@ -266,10 +266,16 @@ population * population::clone(int keepAncestralPops) const
 }
 
 
-ULONG population::virtualSubPopSize(virtualSubPopID subPop) const
+ULONG population::virtualSubPopSize(SubPopID id, SubPopID vid) const
+{
+	return virtualSubPopSize(vspID(id, vid));
+}
+
+
+ULONG population::virtualSubPopSize(vspID subPop) const
 {
 	CHECKRANGESUBPOP(subPop.id());
-	if (!subPop.isVirtual() && ! hasActivatedVirtualSubPop(subPop.id()))
+	if (!subPop.isVirtual() && !hasActivatedVirtualSubPop(subPop.id()))
 		return subPopSize(subPop.id());
 	DBG_ASSERT(hasVirtualSubPop(subPop.id()), ValueError,
 	    "There is no virtual subpopulation in subpop " + toStr(subPop.id()));
@@ -277,7 +283,13 @@ ULONG population::virtualSubPopSize(virtualSubPopID subPop) const
 }
 
 
-string population::virtualSubPopName(virtualSubPopID subPop) const
+string population::virtualSubPopName(SubPopID id, SubPopID vid) const
+{
+	return virtualSubPopName(vspID(id, vid));
+}
+
+
+string population::virtualSubPopName(vspID subPop) const
 {
 	CHECKRANGESUBPOP(subPop.id());
 	DBG_ASSERT(subPop.isVirtual(), ValueError,
@@ -350,7 +362,13 @@ void population::copyVirtualSplitters(const population & rhs)
 }
 
 
-void population::activateVirtualSubPop(virtualSubPopID subPop)
+void population::activateVirtualSubPop(SubPopID id, SubPopID vid)
+{
+	activateVirtualSubPop(vspID(id, vid));
+}
+
+
+void population::activateVirtualSubPop(vspID subPop)
 {
 	CHECKRANGESUBPOP(subPop.id());
 	DBG_ASSERT(subPop.isVirtual(), ValueError, "Given virtual subpopulation ID is wrong");
@@ -360,12 +378,12 @@ void population::activateVirtualSubPop(virtualSubPopID subPop)
 }
 
 
-void population::resetVirtualSubPop(SubPopID subPop)
+void population::deactivateVirtualSubPop(SubPopID subPop)
 {
 	CHECKRANGESUBPOP(subPop);
 	if (!hasActivatedVirtualSubPop(subPop))
 		return;
-	m_virtualSubPops[subPop]->reset(*this, subPop);
+	m_virtualSubPops[subPop]->deactivate(*this, subPop);
 }
 
 
@@ -484,8 +502,8 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSiz
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 	//
 	if (!m_virtualSubPops.empty() && m_virtualSubPops.size() != m_numSubPop) {
-		DBG_DO(DBG_GENERAL, 
-			cout << "Virtual subpopulation splitters are removed due to population structure changes");
+		DBG_DO(DBG_GENERAL,
+		    cout << "Virtual subpopulation splitters are removed due to population structure changes");
 		m_virtualSubPops.clear();
 	}
 }
@@ -573,8 +591,8 @@ void population::setSubPopByIndID(vectori id)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 	//
 	if (!m_virtualSubPops.empty() && m_virtualSubPops.size() != m_numSubPop) {
-		DBG_DO(DBG_GENERAL, 
-			cout << "Virtual subpopulation splitters are removed due to population structure changes");
+		DBG_DO(DBG_GENERAL,
+		    cout << "Virtual subpopulation splitters are removed due to population structure changes");
 		m_virtualSubPops.clear();
 	}
 }
@@ -596,7 +614,7 @@ void population::splitSubPop(UINT which, vectorlu sizes, vectoru subPopID)
 	setIndSubPopIDWithID();
 
 	UINT spID;
-	if (subPopID.empty())          // starting sp number
+	if (subPopID.empty())  // starting sp number
 		spID = which;
 	else {
 		spID = subPopID[0];
@@ -679,15 +697,15 @@ void population::removeSubPops(const vectoru & subPops, bool shiftSubPopID, bool
 #endif
 	setIndSubPopIDWithID();
 	vectorvsp newVSP;
-	
+
 	int shift = 0;
 	for (size_t sp = 0; sp < m_numSubPop; ++sp) {
 		if (find(subPops.begin(), subPops.end(), sp) != subPops.end()) {
 			shift++;
 			RawIndIterator ind = rawIndBegin(sp);
 			RawIndIterator ind_end = rawIndEnd(sp);
-			for(; ind != ind_end; ++ind)
-				ind->setSubPopID(-1);         // remove
+			for (; ind != ind_end; ++ind)
+				ind->setSubPopID(-1); // remove
 			if (!m_virtualSubPops.empty() && m_virtualSubPops[sp] != NULL)
 				delete m_virtualSubPops[sp];
 		} else {
@@ -697,8 +715,8 @@ void population::removeSubPops(const vectoru & subPops, bool shiftSubPopID, bool
 			if (shiftSubPopID) {
 				RawIndIterator ind = rawIndBegin(sp);
 				RawIndIterator ind_end = rawIndEnd(sp);
-				for(; ind != ind_end; ++ind)
-					ind->setSubPopID(sp - shift);         // shift left
+				for (; ind != ind_end; ++ind)
+					ind->setSubPopID(sp - shift); // shift left
 			}
 		}
 	}
@@ -726,7 +744,7 @@ void population::removeIndividuals(const vectoru & inds, int subPop, bool remove
 	setIndSubPopIDWithID();
 	if (subPop == -1) {
 		for (size_t i = 0; i < inds.size(); ++i)
-			ind(inds[i]).setSubPopID(-1);         // remove
+			ind(inds[i]).setSubPopID(-1); // remove
 	} else {
 		for (size_t i = 0; i < inds.size(); ++i)
 			// remove

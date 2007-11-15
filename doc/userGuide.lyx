@@ -16,7 +16,7 @@
 
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.8.1 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.8.2 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -515,9 +515,8 @@ Currently, simuPOP provides the following features:
 \end_layout
 
 \begin_layout Itemize
-Population with one-level subpopulation structure.
- (family structure can be attached as individual information) Sex chromosomes
- can be modeled.
+Population with arbitrary subpopulation structure.
+ Sex chromosome is modeled.
 \end_layout
 
 \begin_layout Itemize
@@ -1608,11 +1607,12 @@ name "population"
 \end_layout
 
 \begin_layout Standard
-simuPOP uses one-level population structure.
- That is to say, there is no sub-subpopulation or families in subpopulations.
- Any complicated structure, however, can be achieve by the use of individual
- information fields.
- Mating is within subpopulations only.
+simuPOP uses one-level population structure, but aribitrary temprary subpopulati
+on structure can be defined.
+ Such temporary subpopulations are called virtual subpopulations, where
+ individuals can be grouped by sex, affection status, genotype, or values
+ of information fields.
+ Mating is within (virtual) subpopulations only.
  Exchange of genetic information across subpopulations can only be done
  through migration.
  Population and subpopulation sizes can be changed, as a result of mating
@@ -1663,6 +1663,10 @@ access population variables
 
 \begin_layout Itemize
 save/load populations in various formats
+\end_layout
+
+\begin_layout Itemize
+control virtual subpopulation structure.
 \end_layout
 
 \begin_layout Standard
@@ -1842,7 +1846,7 @@ Mating schemes specify how to generate offspring from the current population.
 \end_layout
 
 \begin_layout Itemize
-change population/subpopulation sizes.
+Change population/subpopulation sizes.
  This is where demographic models are handled in simuPOP.
  There are a few methods to control population sizes.
  The most flexible one is through a user-provided function that returns
@@ -1850,11 +1854,11 @@ change population/subpopulation sizes.
 \end_layout
 
 \begin_layout Itemize
-Randomly choose parent(s) to generate offspring to populate the next generation.
- The number of offspring per mating event can be controlled.
- This can be a fixed number (default to 1), or a random number following
- one of geometric, Poisson or binomial distribution.
- More complicated schemes are allowed.
+Choose parent(s) to generate offspring to populate the next generation.
+ The number of offspring per mating event can be a fixed number (default
+ to 1), or a random number following one of geometric, Poisson or binomial
+ distribution.
+ Customized (hybrid) parent choosers can be used.
 \end_layout
 
 \begin_layout Itemize
@@ -4228,8 +4232,8 @@ Non-random mating
 Random-mating implies random choices of parents.
  Non-random mating is much more difficult to implement because there are
  numerous way to introduce non-randomness.
- In simuPOP, users can implement non-random mating using a hybrid operator
- 
+ One of the ways to achive non-random mating in simuPOP is to use a hybrid
+ operator 
 \family typewriter
 pyMating
 \family default
@@ -4252,7 +4256,7 @@ offspring generator
 .
  The parents chooser is responsible for choosing one or two parents from
  the parental generation, and the offspring generator is responsible for
- generating a number of offspring.
+ generating a number of offspring from the chosen parents.
  There are a number of default parents choosers and offspring generators
  and a 
 \family typewriter
@@ -4267,7 +4271,7 @@ pyMating(randomParentsChooser(), mendelianOffspringGenerator())
 \end_layout
 
 \begin_layout Standard
-works exactly like a 
+works exactly as a 
 \family typewriter
 randomMating
 \family default
@@ -4279,14 +4283,14 @@ pyMating(randomParentChooser(), selfingOffspringGenerator(numOffspring=2))
 \end_layout
 
 \begin_layout Standard
-works like 
+works as 
 \family typewriter
 selfMating(numOffspring=2)
 \family default
 .
- Note that parent chooser and offspring generator should be compatible in
- that if a parent chooser chooses one parent each time, the offspring generator
- should be able to produce offspring from a single parent.
+ Note that parent chooser and offspring generator should be compatible ,
+ meaning that if a parent chooser chooses one parent each time, the offspring
+ generator should be able to produce offspring from a single parent.
 \end_layout
 
 \begin_layout Standard
@@ -4402,6 +4406,14 @@ randomMating
  It becomes obvious now that whereas a python function can return random
  male/famale pair, the generator interface is much more efficient because
  the identification of two sex groups is done only once.
+ Example 
+\begin_inset LatexCommand ref
+reference "pyMating"
+
+\end_inset
+
+ demonstrates how to use this user-defined parent chooser.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -4414,33 +4426,46 @@ preview false
 \end_layout
 
 \begin_layout Standard
-Example 
-\begin_inset LatexCommand ref
-reference "pyMating"
-
-\end_inset
-
- demonstrates how to use this user-defined parent chooser.
- 
+Because arbitrary information can be stored with an individual through informati
+on fields, 
 \family typewriter
 pyMating
 \family default
- is more powerful than what is demonstrated here.
- As a matter of fact, different parent choosers can be specified for each
- subpopulation, and different 
-\emph on
-offspring generators
-\emph default
-, such as cloning, selfing, and of course Mendelian genertor,
-\emph on
- 
-\emph default
-can be used to produce offspring.
-\end_layout
+ can be very complicated.
+ For example, one can choose individuals according their age, and/or geographic
+ information.
+ For populations with well-defined structure, virtual subpopulations can
+ be used.
+ Basically, one needs to specify a virtual subpopulation splitter to a subpopula
+tion.
+ Then, different mating schemes can be applied to different virtual subpopulatio
+ns.
+ A simple example is given in Example 
+\begin_inset LatexCommand ref
+reference "heteroMating"
 
-\begin_layout Standard
-Different mating schemes can be applied to different subpopulations, or
- arbitrary virtual
+\end_inset
+
+ where the first subpopulation is divided into two parts.
+ The first 20% of individuals undergo selfing, and the rest of the subpopulation
+ undergoes usual sexed random mating.
+ Note that two mating schemes produce different number of offspring per
+ mating event, and the family sizes are recorded in a shared variable 
+\family typewriter
+famSizes
+\family default
+ when 
+\family typewriter
+DBG_MATING
+\family default
+ is turned on.
+ 
+\begin_inset Include \lstinputlisting{log/heteroMating.log}[caption={A heterogeneous mating scheme},label={heteroMating}]
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

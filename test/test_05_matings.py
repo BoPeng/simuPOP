@@ -354,8 +354,8 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(subPop=[100, 200])
         simu = simulator(pop,
             heteroMating(
-                [randomMating(numOffspring=1, subPop=virtualSubPopID(0)),
-                randomMating(numOffspring=2, subPop=virtualSubPopID(1))])
+                [randomMating(numOffspring=1, subPop=0),
+                randomMating(numOffspring=2, subPop=1)])
         )
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
@@ -367,8 +367,8 @@ class TestMatingSchemes(unittest.TestCase):
         #
         simu = simulator(pop,
             heteroMating(
-                [selfMating(numOffspring=1, subPop=virtualSubPopID(0)),
-                selfMating(numOffspring=4, subPop=virtualSubPopID(1))])
+                [selfMating(numOffspring=1, subPop=0),
+                selfMating(numOffspring=4, subPop=1)])
         )
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
@@ -381,9 +381,9 @@ class TestMatingSchemes(unittest.TestCase):
         pop.setVirtualSplitter(duplicateSplitter(2), 0)
         simu = simulator(pop,
             heteroMating(
-                [selfMating(numOffspring=1, subPop=virtualSubPopID(0, 0)),
-                selfMating(numOffspring=2, subPop=virtualSubPopID(0, 1)),
-                selfMating(numOffspring=4, subPop=virtualSubPopID(1))])
+                [selfMating(numOffspring=1, subPop=0, virtualSubPop=0),
+                selfMating(numOffspring=2, subPop=0, virtualSubPop=1),
+                selfMating(numOffspring=4, subPop=1)])
         )
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
@@ -396,9 +396,9 @@ class TestMatingSchemes(unittest.TestCase):
         pop.setVirtualSplitter(duplicateSplitter(2), 0)
         simu = simulator(pop,
             heteroMating(
-                [selfMating(numOffspring=1, subPop=virtualSubPopID(0, 0), weight=4),
-                selfMating(numOffspring=2, subPop=virtualSubPopID(0, 1), weight=1),
-                selfMating(numOffspring=4, subPop=virtualSubPopID(1))])
+                [selfMating(numOffspring=1, subPop=0, virtualSubPop=0, weight=4),
+                selfMating(numOffspring=2, subPop=0, virtualSubPop=1, weight=1),
+                selfMating(numOffspring=4, subPop=1)])
         )
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
@@ -412,9 +412,9 @@ class TestMatingSchemes(unittest.TestCase):
         pop.setVirtualSplitter(proportionSplitter([0.6, 0.4]), 0)
         simu = simulator(pop,
             heteroMating(
-                [selfMating(numOffspring=1, subPop=virtualSubPopID(0, 0)),
-                selfMating(numOffspring=2, subPop=virtualSubPopID(0.1)),
-                selfMating(numOffspring=4, subPop=virtualSubPopID(1))])
+                [selfMating(numOffspring=1, subPop=0, virtualSubPop=0),
+                selfMating(numOffspring=2, subPop=0, virtualSubPop=1),
+                selfMating(numOffspring=4, subPop=1)])
         )
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
