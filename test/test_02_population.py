@@ -1322,12 +1322,12 @@ class TestPopulation(unittest.TestCase):
         pop = population(10)
         pop.setVirtualSplitter(proportionSplitter([0.01]*100), 0)
         for i in range(100):
-            self.assertEqual(pop.virtualSubPopName(vspID(0, i)), "Prop 0.01")
+            self.assertEqual(pop.virtualSubPopName(0, i), "Prop 0.01")
             if i != 99:
-                self.assertEqual(pop.virtualSubPopSize(vspID(0, i)), 0)
+                self.assertEqual(pop.virtualSubPopSize(0, i), 0)
             else:
                 # the last vsp is specially treated to avoid such problem.
-                self.assertEqual(pop.virtualSubPopSize(vspID(0, i)), 10)
+                self.assertEqual(pop.virtualSubPopSize(0, i), 10)
         #
         pop = population(1000)
         pop.setVirtualSplitter(proportionSplitter([0.4, 0.6]), 0)

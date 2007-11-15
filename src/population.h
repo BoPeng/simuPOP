@@ -253,10 +253,7 @@ public:
 	 \param id subpopulation id
 	 \param vid virtual subpopulation id
 	 */
-	void activateVirtualSubPop(SubPopID id, SubPopID vid = InvalidSubPopID);
-
-	/// CPPONLY
-	void activateVirtualSubPop(virtualSubPopID subPop);
+	void activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID);
 
 	/// CPPONLY
 	/// Copy virtual splitters if two populations have
@@ -308,9 +305,6 @@ public:
 	}
 
 
-	/// CPPONLY
-	ULONG virtualSubPopSize(virtualSubPopID subPop) const;
-
 	/**
 	   return the size of virtual subpopulation subPop.
 	   if subPop is activated, and subPop does not specify
@@ -324,17 +318,14 @@ public:
 	   current subpopulation, or current actived subpopulation size
 	   will be returned.
 	 */
-	ULONG virtualSubPopSize(SubPopID id, SubPopID vid = InvalidSubPopID) const;
+	ULONG virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID) const;
 
 	/// name of the given virtual subpopulation.
 	/**
 	 \param id subpopulation id
 	 \param vid virtual subpopulation id
 	 */
-	string virtualSubPopName(SubPopID id, SubPopID vid = InvalidSubPopID) const;
-
-	/// CPPONLY
-	string virtualSubPopName(virtualSubPopID subPop) const;
+	string virtualSubPopName(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID) const;
 
 	/// return an array of all subpopulation sizes.
 	/**
