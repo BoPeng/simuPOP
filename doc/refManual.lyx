@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.8.1 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.8.2 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -2048,8 +2048,8 @@ s to generating a new population from the current one.
 \end_layout
 
 \begin_layout Standard
-simuPOP uses one-level population structure.
- That is to say, there is no sub-subpopulation or family in subpopulations.
+simuPOP supports subpopulations with boundary, and virtual subpopulations
+ within subpopulations.
  Mating is within subpopulations only.
  Exchanges of genetic information across subpopulations can only be done
  through migration.
@@ -2296,6 +2296,180 @@ stat
 \begin_layout Standard
 \begin_inset Include \lstinputlisting{log/ref_ancestralPop.log}[caption={Ancestral populations},label={ancestralPop}]
 preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Virtual subpopulations
+\end_layout
+
+\begin_layout Standard
+simuPOP 0.8.2 introduces the concept of 
+\emph on
+virtual subpopulations
+\emph default
+.
+ Virtual subpopulations are collections of individuals in a subpoulation,
+ defined by certain criterias.
+ For example, all male individuals, all unaffected individuals, all individuals
+ with information field age > 20, all individuals with genotype 0, 0 at
+ a given locus, can form virtual subpopulations.
+ Virtual subpopulations do not have to add up to the whole subpopulation,
+ nor do they have to be distinct.
+ Because properties of individuals are variable, virtual subpopulations
+ do not have fixed sizes as subpopulations do.
+\end_layout
+
+\begin_layout Standard
+Virtual subpopulations allow easy handling of heterogeneous populations,
+ and can facilitate some computations that are previously very difficult
+ to do.
+ For example, mating schemes can work on virtual subpopulations.
+ This allows complicated mating schemes such as mating in aged population,
+ and mixed mating schems.
+ By limiting operators to virtual subpopulations, one can apply different
+ genetic forces to different groups of individuals.
+ It is also easy to calculate statistics at a finer scale, such as allele
+ frequency of all males.
+\end_layout
+
+\begin_layout Standard
+Virtual subpopulations are defined by virtual splitters.
+ A splitter splits a subpopulation into pre-determined number of virtual
+ subpopulations.
+ It also assign a name, such as 
+\family typewriter
+age=5
+\family default
+ to each virtual subpopulation.
+ For example
+\end_layout
+
+\begin_layout Itemize
+A 
+\family typewriter
+duplicateSplitter
+\family default
+ does not split the subpopulation at all.
+ It presents the whole subpopulation as several virtual subpopulations.
+ By applying different mating schemes to such virtual subpopulations, one
+ can apply several mating schemes to the same subpopulation.
+\end_layout
+
+\begin_layout Itemize
+A 
+\family typewriter
+infoSplitter
+\family default
+ splits the population according to values of a given information field.
+ It can split the population by given values, or by some cut-off values.
+\end_layout
+
+\begin_layout Itemize
+A 
+\family typewriter
+proportionSplitter
+\family default
+ splits the population with given proportions, and
+\end_layout
+
+\begin_layout Itemize
+A 
+\family typewriter
+rangeSplitters 
+\family default
+choose individuals from given ranges.
+\end_layout
+
+\begin_layout Itemize
+A 
+\family typewriter
+genotypeSplitter 
+\family default
+splits the population with genotype values at given loci.
+\end_layout
+
+\begin_layout Standard
+The population class provies several functions to assign a splitter to a
+ given subpopulation, retrieve virtual subpopulation sizes and names.
+ Example 
+\begin_inset LatexCommand ref
+reference "virtualSubPop"
+
+\end_inset
+
+ demonstrates how to assign virtual splitter, and how to use them.
+ 
+\begin_inset Include \lstinputlisting{log/ref_virtualSubPop.log}[caption={Virtual subpopulation related functions},label={virtualSubPop}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+nullSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+duplicateSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+sexSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+affectionSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+infoSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+proportionSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+rangeSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+genotypeSplitterRef
+\end_layout
 
 \end_inset
 
@@ -2841,30 +3015,12 @@ status open
 matingRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
 \backslash
 noMatingRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Standard
 
@@ -2873,15 +3029,6 @@ status open
 binomialSelectionRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
@@ -2889,20 +3036,25 @@ status open
 randomMatingRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status open
+
+
+\backslash
+selfMatingRef
+\end_layout
 
 \begin_layout Standard
 
 
 \backslash
 pyMatingRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+heteroMatingRef
 \end_layout
 
 \end_inset
@@ -3529,47 +3681,21 @@ parent chooser
 .
  Parent chooser determines how parent or parents are chosen from a given
  subpopulation.
- simuPOP provides three parent choosers
-\end_layout
-
-\begin_layout Itemize
-
+ There are several predefined parent choosers such as 
 \family typewriter
-MATE_RandomParentChooser
+randomParentChooser, randomParentsChooser
 \family default
- Choose a random individual from a subpopulation, regardless of individual
- sex.
- If selection is enabled, individuals are choosen with a probability that
- is proportional to his/her fitness value.
-\end_layout
-
-\begin_layout Itemize
-
+, and the most powerful one is called 
 \family typewriter
-MATE_RandomParentsChooser
-\family default
- Choose a male and a female from their respective sex groups of a subpopulation.
- If selection is enabled, individuals are choosen with a probability that
- is proportional to his/her fitness value in their respective sex groups.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_PyParentsChooser
-\family default
- This kind of parent chooser is represented by a user-defined Python generator
- function.
- This is the major method to implement non-random mating so I will explain
- it in detail.
+pyParentsChooser.
 \end_layout
 
 \begin_layout Standard
-A user-defined 
-\emph on
-parents chooser
-\emph default
- is a Python generator function, instead of a normal python function.
+A 
+\family typewriter
+pyParensChooser
+\family default
+ accepts a Python generator function, instead of a normal python function.
  When this generator function is called, it returns a 
 \emph on
 generator
@@ -3586,16 +3712,6 @@ yield
 \emph default
  statement returns.
  An example of generator is given in simuPOP user's guide.
-\end_layout
-
-\begin_layout Standard
-A 
-\emph on
-parents chooser
-\emph default
- takes two parameters, a population and a subpopulation index.
- It can return different generator objects for different subpopulations.
- 
 \end_layout
 
 \begin_layout Standard
@@ -3644,6 +3760,36 @@ It becomes obvious now that whereas a python function can return random
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+randomParentChooserRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+randomParentsChooserRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+pyParentsChooserRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 A parents chooser can yield a pair of parents, or a single parent.
  Obviously, a single diploid parent can not produce offspring using the
  usual Medelian fashion, so here comes another concept: 
@@ -3660,52 +3806,7 @@ Offspring generator
 \begin_layout Standard
 An offspring generator determines how to produce offspring from given parent
  or parents.
- Currently, there are three standard offspring generators
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_CloneOffspringGenerator
-\family default
- This offspring generator copies a parent to offspring.
- It works only with parent choosers that returns a single parent.
- E.g.
- a 
-\family typewriter
-MATE_RandomParentChooser
-\family default
-, or a
-\family typewriter
- MATE_PyParentsChooser
-\family default
- that returns a single parent.
- It is not limited by ploidy though.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_MendelianOffspringGenerator 
-\family default
-(default) This offspring generator transmit parental genotypes according
- Mendelian rules.
- That is to say, the first or the second copy of the maternal chromosomes
- is passed to the maternal (first) chromosomes of the offspring; the first
- the second copy of the paternal chromosomes is passed to the paternal (second)
- chromosomes of the offspring.
- The chromosomes segregate independently.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_SelfingOffspringGenerator 
-\family default
-Selfing transmission without recombination.
- Only one parent is involved, and serves both paternal and maternal roles
- in a Mendelian offspring generator.
- Two copies of the offspring chromosomes are generated independently.
+ Currently, there are three standard offspring generators.
 \end_layout
 
 \begin_layout Standard
@@ -3720,15 +3821,47 @@ recombinator
  recombines parental chromosomes to fill offspring genotype.
  In the diploid case, it will behave the same for 
 \family typewriter
-MATE_CloneOffspringGenerator
+cloneOffspringGenerator
 \family default
  and 
 \family typewriter
-MATE_SelfingOffspringGenerator.
+selfingOffspringGenerator.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+cloneOffspringGeneratorRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+selfingOffspringGeneratorRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+mendelianOffspringGeneratorRef
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
-Non-random mating
+Hybrid non-random mating scheme 
+\family typewriter
+pyMating
 \end_layout
 
 \begin_layout Standard
@@ -3751,19 +3884,12 @@ status open
 
 \begin_layout Standard
 
-pyMating(parentChooser=MATE_RandomParentChooser
-\family typewriter
-,
+pyMating(randomParentChooser(),
 \end_layout
 
 \begin_layout Standard
 
-    offspringGenerator=MATE_SelfingOffspringGenerator,
-\end_layout
-
-\begin_layout Standard
-
-    numOffspring=2)
+    selfingOffspringGenerator(numOffspring=2))
 \end_layout
 
 \end_inset
@@ -3779,67 +3905,12 @@ status open
 
 \begin_layout Standard
 
-pyMating(parentChooser=random_Chooser
-\family typewriter
-,
+pyMating(randomParentsChooser(),
 \end_layout
 
 \begin_layout Standard
 
-    offspringGenerator=MATE_CloneOffspringGenerator)
-\end_layout
-
-\end_inset
-
-parameter 
-\family typewriter
-offspringGenerator
-\family default
- can be ignored if 
-\family typewriter
-MATE_MedelianOffspringGenerator
-\family default
- is desired.
-\end_layout
-
-\begin_layout Standard
-If there are more than one subpopulations, the above usages will use the
- same parentChooser and offspringGenerator for all subpopulations.
- Different 
-\family typewriter
-parentChooser
-\family default
- and 
-\family typewriter
-offspringGenerator
-\family default
- can be used for each subpopulation by using parameters 
-\family typewriter
-parentChoosers
-\family default
- and 
-\family typewriter
-offspringGenerators
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-pyMating(parentChoosers=[MATE_RandomsParentChooser, random_Chooser
-\family typewriter
-],
-\end_layout
-
-\begin_layout Standard
-
-    offspringGenerators=[MATE_MedelianOffspringGenerator, MATE_CloneOffspringGen
-erator])
+    cloneOffspringGenerator())
 \end_layout
 
 \end_inset
@@ -3848,7 +3919,9 @@ erator])
 \end_layout
 
 \begin_layout Subsection
-Hints for more complicated mating schemes
+Heterogeneous non-random mating scheme 
+\family typewriter
+heteroMating
 \end_layout
 
 \begin_layout Section
