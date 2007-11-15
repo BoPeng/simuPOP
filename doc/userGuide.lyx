@@ -1877,9 +1877,13 @@ randomMating()
 \family default
  is the most important.
  Non-random mating can be achieved using 
-\series bold
+\family typewriter
 pyMating
-\series default
+\family default
+ and 
+\family typewriter
+heteroMating
+\family default
 , which is explained in detailed in 
 \emph on
 simuPOP reference manual
@@ -4237,12 +4241,66 @@ A
 \family typewriter
 pyMating
 \family default
- mating scheme accepts a user-defined 
+ mating scheme accepts a 
 \emph on
 parents chooser
 \emph default
-, which is a Python generator function, instead of a normal python function.
- When this generator function is called, it returns a 
+ and an 
+\emph on
+offspring generator
+\emph default
+.
+ The parents chooser is responsible for choosing one or two parents from
+ the parental generation, and the offspring generator is responsible for
+ generating a number of offspring.
+ There are a number of default parents choosers and offspring generators
+ and a 
+\family typewriter
+pyMating
+\family default
+ can be built with them.
+ For example
+\end_layout
+
+\begin_layout LyX-Code
+pyMating(randomParentsChooser(), mendelianOffspringGenerator())
+\end_layout
+
+\begin_layout Standard
+works exactly like a 
+\family typewriter
+randomMating
+\family default
+ scheme, and
+\end_layout
+
+\begin_layout LyX-Code
+pyMating(randomParentChooser(), selfingOffspringGenerator(numOffspring=2))
+\end_layout
+
+\begin_layout Standard
+works like 
+\family typewriter
+selfMating(numOffspring=2)
+\family default
+.
+ Note that parent chooser and offspring generator should be compatible in
+ that if a parent chooser chooses one parent each time, the offspring generator
+ should be able to produce offspring from a single parent.
+\end_layout
+
+\begin_layout Standard
+The power of 
+\family typewriter
+pyMating 
+\family default
+lies in its 
+\family typewriter
+pyParentChooser()
+\family default
+, which accepts a user-defined Python generator function, instead of a normal
+ python function.
+ Generally speaking, when a generator function is called, it returns a 
 \emph on
 generator
 \emph default
@@ -4378,6 +4436,11 @@ offspring generators
  
 \emph default
 can be used to produce offspring.
+\end_layout
+
+\begin_layout Standard
+Different mating schemes can be applied to different subpopulations, or
+ arbitrary virtual
 \end_layout
 
 \begin_layout Section
