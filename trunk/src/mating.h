@@ -1409,6 +1409,7 @@ public:
 	             vectorlu newSubPopSize = vectorlu(),
 	             string newSubPopSizeExpr = "",
 	             PyObject * newSubPopSizeFunc = NULL,
+	             bool shuffleOffspring = true,
 	             SubPopID subPop = InvalidSubPopID,
 	             SubPopID virtualSubPop = InvalidSubPopID,
 	             double weight = 0);
@@ -1441,7 +1442,8 @@ public:
 
 private:
 	vectormating m_matingSchemes;
-
+	///
+	bool m_shuffleOffspring;
 };
 
 
